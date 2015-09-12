@@ -2,6 +2,7 @@ package hugo
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/spf13/hugo/commands"
 
@@ -14,26 +15,29 @@ func Setup(c *setup.Controller) (middleware.Middleware, error) {
 	commands.Execute()
 
 	return func(next middleware.Handler) middleware.Handler {
-		return &handler{
-			Next: next,
-		}
+		return &handler{Next: next}
 	}, nil
 }
 
 type handler struct{ Next middleware.Handler }
-type adminHandler struct{}
 
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
-	// do path matching
 	if middleware.Path(r.URL.Path).Matches("/admin") {
-		a := new(adminHandler)
-		return a.ServeHTTP(w, r)
+
+		if middleware.Path(r.URL.Path).Matches("/admin/new") {
+			w.Write([]byte("New"))
+		} else if middleware.Path(r.URL.Path).Matches("/admin/edit") {
+			var fileName string
+
+			fileName = strings.Replace(r.URL.Path, "/admin/edit", "", 1)
+
+			w.Write([]byte("Edit " + fileName))
+		} else {
+			w.Write([]byte("Admin"))
+		}
+
+		return 200, nil
 	}
 
 	return h.Next.ServeHTTP(w, r)
-}
-
-func (a adminHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
-	w.Write([]byte("Admin area"))
-	return 200, nil
 }
