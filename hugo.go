@@ -30,7 +30,7 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 		return a.ServeHTTP(w, r)
 	}
 
-	return 200, nil
+	return h.Next.ServeHTTP(w, r)
 }
 
 func (a adminHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
