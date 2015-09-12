@@ -3,12 +3,10 @@ package hugo
 import (
 	"net/http"
 
-	"github.com/spf13/hugo/commands"
-
+	"github.com/hacdias/caddy-hugo/routing"
 	"github.com/mholt/caddy/config/setup"
 	"github.com/mholt/caddy/middleware"
-
-	"github.com/hacdias/caddy-hugo/routing"
+	"github.com/spf13/hugo/commands"
 )
 
 // Setup function

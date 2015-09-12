@@ -20,6 +20,8 @@ func Execute(w http.ResponseWriter, r *http.Request, file string) (int, error) {
 		}
 
 		file, _ := ioutil.ReadFile(file)
+
+		// render the template here
 		w.Write([]byte(string(file)))
 	}
 
