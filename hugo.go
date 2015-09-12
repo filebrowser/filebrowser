@@ -9,10 +9,9 @@ import (
 	"github.com/mholt/caddy/middleware"
 )
 
+// Setup function
 func Setup(c *setup.Controller) (middleware.Middleware, error) {
-	for c.Next() {
-		commands.Execute()
-	}
+	commands.Execute()
 
 	return func(next middleware.Handler) middleware.Handler {
 		return &handler{}
@@ -20,8 +19,21 @@ func Setup(c *setup.Controller) (middleware.Middleware, error) {
 }
 
 type handler struct{}
+type adminHandler struct{}
 
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
+
+	// do path matching
+	if middleware.Path(r.URL.Path).Matches("/admin") {
+		a := new(adminHandler)
+		return a.ServeHTTP(w, r)
+	}
 	http.ServeFile(w, r, "public"+r.URL.Path)
+
+	return 200, nil
+}
+
+func (a adminHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
+	w.Write([]byte("Admin area"))
 	return 200, nil
 }
