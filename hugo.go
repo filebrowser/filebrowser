@@ -14,21 +14,21 @@ func Setup(c *setup.Controller) (middleware.Middleware, error) {
 	commands.Execute()
 
 	return func(next middleware.Handler) middleware.Handler {
-		return &handler{}
+		return &handler{
+			Next: next,
+		}
 	}, nil
 }
 
-type handler struct{}
+type handler struct{ Next middleware.Handler }
 type adminHandler struct{}
 
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
-
 	// do path matching
 	if middleware.Path(r.URL.Path).Matches("/admin") {
 		a := new(adminHandler)
 		return a.ServeHTTP(w, r)
 	}
-	http.ServeFile(w, r, "public"+r.URL.Path)
 
 	return 200, nil
 }
