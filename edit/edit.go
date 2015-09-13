@@ -17,7 +17,7 @@ type fileInfo struct {
 
 // Execute sth
 func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
-	filename := strings.Replace(r.URL.Path, "admin/edit/", "", 1)
+	filename := strings.Replace(r.URL.Path, "/admin/edit/", "", 1)
 
 	if r.Method == "POST" {
 		r.ParseForm()
