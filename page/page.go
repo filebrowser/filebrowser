@@ -14,14 +14,14 @@ const (
 	footerMark        = "{{#FOOTER#}}"
 )
 
-// Info type
-type Info struct {
+// Page type
+type Page struct {
 	Title string
 	Body  interface{}
 }
 
 // Render the page
-func (p *Info) Render(name string, w http.ResponseWriter) (int, error) {
+func (p *Page) Render(name string, w http.ResponseWriter) (int, error) {
 	rawHeader, err := assets.Asset("templates/header" + templateExtension)
 
 	if err != nil {

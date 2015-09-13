@@ -1,5 +1,12 @@
 {{#HEADER#}}
 
-<textarea>{{ .Body.Var1 }}</textarea>
+{{ with .Body }}
 
+<form id="editForm" method="POST" action="">
+  <textarea id="content">{{ .File }}</textarea>
+  <input type="submit" value="Send">
+</form>
+
+
+{{ end }}
 {{#FOOTER#}}

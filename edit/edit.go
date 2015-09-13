@@ -8,8 +8,8 @@ import (
 	"github.com/hacdias/caddy-hugo/page"
 )
 
-type editPage struct {
-	Var1 string
+type info struct {
+	File string
 }
 
 // Execute sth
@@ -27,12 +27,12 @@ func Execute(w http.ResponseWriter, r *http.Request, file string) (int, error) {
 			return 500, err
 		}
 
-		editInfo := new(editPage)
-		editInfo.Var1 = string(file)
+		inf := new(info)
+		inf.File = string(file)
 
-		page := new(page.Info)
+		page := new(page.Page)
 		page.Title = "Edit"
-		page.Body = editInfo
+		page.Body = inf
 		return page.Render("edit", w)
 	}
 
