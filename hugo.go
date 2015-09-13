@@ -15,15 +15,6 @@ import (
 	"github.com/spf13/hugo/commands"
 )
 
-const (
-	mainURL     string = "/admin"
-	contentURL  string = mainURL + "/content"
-	browseURL   string = mainURL + "/browse"
-	editURL     string = mainURL + "/edit"
-	settingsURL string = mainURL + "/settings"
-	assetsURL   string = mainURL + "/assets"
-)
-
 // Setup function
 func Setup(c *setup.Controller) (middleware.Middleware, error) {
 	commands.Execute()
@@ -44,21 +35,9 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 }
 
 func route(w http.ResponseWriter, r *http.Request) (int, error) {
-	if urlMatch(r, contentURL) {
-		// content folder management
-		w.Write([]byte("Show Content Folder"))
-	} else if urlMatch(r, browseURL) {
-		// browse files
-		w.Write([]byte("Show Data Folder"))
-	} else if urlMatch(r, editURL) {
-		// edit file
-		return edit.Execute(w, r, strings.Replace(r.URL.Path, editURL+"/", "", 1))
-	} else if urlMatch(r, settingsURL) {
-		// edit settings
-		w.Write([]byte("Settings Page"))
+	page := parseComponents(r)[1]
 
-	} else if urlMatch(r, assetsURL) {
-		// assets like css, javascript and images
+	if page == "assets" {
 		filename := strings.Replace(r.URL.Path, assetsURL, "static", 1)
 		file, err := assets.Asset(filename)
 
@@ -73,9 +52,14 @@ func route(w http.ResponseWriter, r *http.Request) (int, error) {
 		header.Set("Content-Type", mime)
 
 		w.Write(file)
-	} else if r.URL.Path == mainURL || r.URL.Path == mainURL+"/" {
-		// dashboard
-		w.Write([]byte("Dashboard"))
+	} else if page == "content" {
+		w.Write([]byte("Content Page"))
+	} else if page == "browse" {
+		w.Write([]byte("Show Data Folder"))
+	} else if page == "edit" {
+		return edit.Execute(w, r)
+	} else if page == "settings" {
+		w.Write([]byte("Settings Page"))
 	} else {
 		return 404, nil
 	}
@@ -83,6 +67,21 @@ func route(w http.ResponseWriter, r *http.Request) (int, error) {
 	return 200, nil
 }
 
-func urlMatch(r *http.Request, str string) bool {
-	return middleware.Path(r.URL.Path).Matches(str)
+func parseComponents(r *http.Request) []string {
+	//The URL that the user queried.
+	path := r.URL.Path
+	path = strings.TrimSpace(path)
+	//Cut off the leading and trailing forward slashes, if they exist.
+	//This cuts off the leading forward slash.
+	if strings.HasPrefix(path, "/") {
+		path = path[1:]
+	}
+	//This cuts off the trailing forward slash.
+	if strings.HasSuffix(path, "/") {
+		cutOffLastCharLen := len(path) - 1
+		path = path[:cutOffLastCharLen]
+	}
+	//We need to isolate the individual components of the path.
+	components := strings.Split(path, "/")
+	return components
 }
