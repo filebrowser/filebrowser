@@ -6,29 +6,39 @@ import (
 	"os"
 
 	"github.com/hacdias/caddy-hugo/page"
+	"github.com/spf13/hugo/commands"
 )
 
-type info struct {
-	File string
+type fileInfo struct {
+	Content string
+	Name    string
 }
 
 // Execute sth
-func Execute(w http.ResponseWriter, r *http.Request, file string) (int, error) {
+func Execute(w http.ResponseWriter, r *http.Request, filename string) (int, error) {
 	if r.Method == "POST" {
-		// it's saving the post
-	} else {
-		if _, err := os.Stat(file); os.IsNotExist(err) {
-			return 404, nil
-		}
-
-		file, err := ioutil.ReadFile(file)
+		r.ParseForm()
+		err := ioutil.WriteFile(filename, []byte(r.Form["content"][0]), 0666)
 
 		if err != nil {
 			return 500, err
 		}
 
-		inf := new(info)
-		inf.File = string(file)
+		commands.Execute()
+	} else {
+		if _, err := os.Stat(filename); os.IsNotExist(err) {
+			return 404, nil
+		}
+
+		file, err := ioutil.ReadFile(filename)
+
+		if err != nil {
+			return 500, err
+		}
+
+		inf := new(fileInfo)
+		inf.Content = string(file)
+		inf.Name = filename
 
 		page := new(page.Page)
 		page.Title = "Edit"

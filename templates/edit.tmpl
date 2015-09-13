@@ -1,12 +1,16 @@
 {{#HEADER#}}
-
 {{ with .Body }}
 
-<form id="editForm" method="POST" action="">
-  <textarea id="content">{{ .File }}</textarea>
-  <input type="submit" value="Send">
-</form>
+<div class="content">
 
+  <h1>Editing {{ .Name }}</h1>
+
+  <form id="editForm" method="POST" action="">
+    <textarea name="content">{{ .Content }}</textarea>
+    <input type="submit" value="Save">
+  </form>
+
+</div>
 
 {{ end }}
 {{#FOOTER#}}

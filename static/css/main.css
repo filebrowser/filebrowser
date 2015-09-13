@@ -1,0 +1,32 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  padding-top: 3em;
+}
+
+/* SITE HEADER */
+
+.site-header {
+  height: 3em;
+  width: 100%;
+  background-color: #263238;
+  color: #fff;
+  padding: 0 2em;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.content {
+  margin: 1.5em auto;
+  width: 80%;
+  max-width: 960px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 50em;
+  resize: vertical;
+  border: 0;
+  font-family: inherit;
+}

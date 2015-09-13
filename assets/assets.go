@@ -2,6 +2,7 @@
 // sources:
 // static/css/main.css
 // static/css/normalize.css
+// static/js/app.js
 // templates/edit.tmpl
 // templates/footer.tmpl
 // templates/header.tmpl
@@ -53,6 +54,24 @@ func staticCssMainCss() (*asset, error) {
 func staticCssNormalizeCss() (*asset, error) {
 	path := "/home/henrique/Code/Go/src/github.com/hacdias/caddy-hugo/static/css/normalize.css"
 	name := "static/css/normalize.css"
+	bytes, err := bindataRead(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// staticJsAppJs reads file data from disk. It returns an error on failure.
+func staticJsAppJs() (*asset, error) {
+	path := "/home/henrique/Code/Go/src/github.com/hacdias/caddy-hugo/static/js/app.js"
+	name := "static/js/app.js"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
@@ -175,6 +194,7 @@ func AssetNames() []string {
 var _bindata = map[string]func() (*asset, error){
 	"static/css/main.css": staticCssMainCss,
 	"static/css/normalize.css": staticCssNormalizeCss,
+	"static/js/app.js": staticJsAppJs,
 	"templates/edit.tmpl": templatesEditTmpl,
 	"templates/footer.tmpl": templatesFooterTmpl,
 	"templates/header.tmpl": templatesHeaderTmpl,
@@ -225,6 +245,10 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"main.css": &bintree{staticCssMainCss, map[string]*bintree{
 			}},
 			"normalize.css": &bintree{staticCssNormalizeCss, map[string]*bintree{
+			}},
+		}},
+		"js": &bintree{nil, map[string]*bintree{
+			"app.js": &bintree{staticJsAppJs, map[string]*bintree{
 			}},
 		}},
 	}},

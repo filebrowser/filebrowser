@@ -1,9 +1,11 @@
-//go:generate go-bindata -pkg assets -o assets/assets.go static/css/ templates/
+//go:generate go-bindata -pkg assets -o assets/assets.go static/css/ static/js/ templates/
 
 package hugo
 
 import (
+	"mime"
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/assets"
@@ -57,12 +59,18 @@ func route(w http.ResponseWriter, r *http.Request) (int, error) {
 
 	} else if urlMatch(r, assetsURL) {
 		// assets like css, javascript and images
-		fileName := strings.Replace(r.URL.Path, assetsURL, "static", 1)
-		file, err := assets.Asset(fileName)
+		filename := strings.Replace(r.URL.Path, assetsURL, "static", 1)
+		file, err := assets.Asset(filename)
 
 		if err != nil {
 			return 404, nil
 		}
+
+		extension := filepath.Ext(filename)
+		mime := mime.TypeByExtension(extension)
+
+		header := w.Header()
+		header.Set("Content-Type", mime)
 
 		w.Write(file)
 	} else if r.URL.Path == mainURL || r.URL.Path == mainURL+"/" {
