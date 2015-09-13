@@ -1,0 +1,30 @@
+{{#HEADER#}}
+{{ with .Body }}
+
+<div class="content">
+
+  <h1>Settings</h1>
+
+  <form>
+  {{ range $key, $value := . }}
+    {{ if isMap $value }}
+      <h2>{{ splitCapitalize $key }}</h2>
+
+      <div id="{{ $key }}">
+        <!-- call this range again -->
+      </div>
+
+    {{ else }}
+
+    <label for="{{ $key }}">{{ splitCapitalize $key }}</label>
+    <input name="{{ $key }}" id="{{ $key }}" value="{{ $value }}"></input><br>
+
+    {{ end }}
+  {{ end }}
+  </form>
+
+
+</div>
+
+{{ end }}
+{{#FOOTER#}}
