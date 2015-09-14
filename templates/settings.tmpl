@@ -1,4 +1,4 @@
-{{ template "header" . }}
+{{ define "content" }}
 
 {{ with .Body }}
 <div class="content">
@@ -9,4 +9,4 @@
 </div>
 {{ end }}
 
-{{ template "footer" . }}
+{{ end }}

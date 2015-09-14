@@ -25,7 +25,7 @@ type Page struct {
 
 // Render the page
 func (p *Page) Render(w http.ResponseWriter, templates ...string) (int, error) {
-	templates = append(templates, "header", "footer")
+	templates = append(templates, "base_full")
 	var tpl *template.Template
 
 	for i, t := range templates {
