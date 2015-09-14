@@ -1,36 +1,76 @@
 body {
-  font-family: 'Roboto', sans-serif;
-  padding-top: 3em;
+    font-family: 'Roboto', sans-serif;
+    color: #212121;
+    height: 100%;
+    width: 100%;
 }
-
-/* SITE HEADER */
-
-.site-header {
-  height: 3em;
-  width: 100%;
-  background-color: #263238;
-  color: #fff;
-  padding: 0 2em;
-  box-sizing: border-box;
-  position: fixed;
-  top: 0;
-  left: 0;
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3em;
+    width: 100%;
+    background-color: #212121;
+    padding: 0 2em;
+    box-sizing: border-box;
+    z-index: 999;
+    color: #fff;
 }
-
+header nav {} header nav ul {
+    margin: 0;
+    padding: 0;
+}
+header nav ul li {
+    list-style-type: none;
+    display: inline-block;
+    vertical-align: middle;
+}
+header nav img {
+  height: 2em;
+}
+header nav ul li a {
+    padding: 0.5em 0.5em;
+    line-height: 2em;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: .5s ease background-color;
+}
+header nav ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+main {
+    top: 3em;
+    position: relative;
+}
 .content {
-  margin: 1.5em auto;
-  width: 80%;
-  max-width: 960px;
+    margin: 1.5em auto;
+    width: 80%;
+    max-width: 800px;
 }
-
 textarea {
-  width: 100%;
-  min-height: 50em;
-  resize: vertical;
-  border: 0;
-  font-family: inherit;
+    width: 100%;
+    min-height: 50em;
+    resize: vertical;
+    border: 0;
+    font-family: inherit;
 }
 
-.block {
-  margin: 1em 0;
+/* FORMS */
+
+form {
+
 }
+
+form input {
+
+color: rgba(0, 0, 0, 0.41);width: 15em;line-height: 1.25em;margin: .5em 0;border: 1px solid #fff;transition: .5s ease-out all;}
+
+form input:focus {
+    color: inherit;
+    outline: 0;
+    border-bottom: 1px solid #2196F3;
+}
+
+form label {
+width: 10.5em;display: inline-block;}

@@ -24,12 +24,12 @@ func Pretty(content []byte, language string) (interface{}, error) {
 		return []string{}, err
 	}
 
+	//log.Print(c)
 	return rawToPretty(c, ""), nil
 }
 
 type frontmatter struct {
 	Name       string
-	Tag        string
 	Content    interface{}
 	SubContent bool
 }
@@ -55,7 +55,6 @@ func rawToPretty(config interface{}, master string) interface{} {
 	for index := range names {
 		c := new(frontmatter)
 		c.Name = names[index]
-		c.Tag = master + "_" + names[index]
 		c.SubContent = false
 
 		i := config.(map[string]interface{})[names[index]]

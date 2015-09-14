@@ -3,8 +3,9 @@
 {{ with .Body }}
 <div class="content">
   <h1>Settings</h1>
-  <form>
+  <form method="POST" action="/admin/settings">
   {{ template "frontmatter" . }}
+  <input type="submit" value="Save">
   </form>
 </div>
 {{ end }}

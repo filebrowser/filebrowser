@@ -1,28 +1,37 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#fff">
-    <title>{{ .Title }}</title>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fff">
+<title>{{ .Title }}</title>
 
-    <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Roboto:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
 
-    <link rel="stylesheet" href="/admin/assets/css/normalize.css">
-    <link rel="stylesheet" href="/admin/assets/css/main.css">
+<link rel="stylesheet" href="/admin/static/css/normalize.css">
+<link rel="stylesheet" href="/admin/static/css/main.css">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="/admin/assets/js/app.js"></script>
-  </head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="/admin/static/js/app.js"></script>
+</head>
 
-  <body>
-    <header class="site-header">
-      Admin
-    </header>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><img src="/admin/static/hugo.png"></li>
+        <li><a href="/admin/browse/content">Content</a></li>
+        <li><a href="/admin/browse">Browse</a></li>
+        <li><a href="/admin/settings">Settings</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    {{ template "content" . }}
+  </main>
+  <footer>
 
-{{ template "content" . }}
-
-<footer></footer>
+  </footer>
 </body>
 </html>

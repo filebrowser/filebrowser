@@ -1,4 +1,4 @@
-//go:generate go-bindata -pkg assets -o assets/assets.go static/css/ static/js/ templates/
+//go:generate go-bindata -pkg assets -o assets/assets.go static/css/ static/js/ templates/ static/
 
 package hugo
 
@@ -31,8 +31,8 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 	if middleware.Path(r.URL.Path).Matches("/admin") {
 		page := parseComponents(r)[1]
 
-		if page == "assets" {
-			filename := strings.Replace(r.URL.Path, "/admin/assets", "static", 1)
+		if page == "static" {
+			filename := strings.Replace(r.URL.Path, "/admin/", "", 1)
 			file, err := assets.Asset(filename)
 
 			if err != nil {

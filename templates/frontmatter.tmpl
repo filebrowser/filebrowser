@@ -1,11 +1,13 @@
 {{ define "frontmatter" }}
   {{ range $key, $value := . }}
     {{ if $value.SubContent }}
-      <h2>{{ splitCapitalize $value.Name }}</h2>
-      {{ template "frontmatter" $value.Content }}
+      <fieldset name="{{ $value.Name }}">
+        <legend>{{ splitCapitalize $value.Name }}</legend>
+        {{ template "frontmatter" $value.Content }}
+      </fieldset>
     {{ else}}
-    <label for="{{ $value.Tag }}">{{ splitCapitalize $value.Name }}</label>
-    <input name="{{ $value.Tag }}" id="{{ $value.Tag }}" value="{{ $value.Content }}"></input><br>
+    <label for="{{ $value.Name }}">{{ splitCapitalize $value.Name }}</label>
+    <input name="{{ $value.Name }}" id="{{ $value.Name }}" value="{{ $value.Content }}"></input><br>
     {{ end }}
   {{ end }}
 {{ end }}

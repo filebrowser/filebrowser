@@ -24,8 +24,13 @@ type Page struct {
 }
 
 // Render the page
-func (p *Page) Render(w http.ResponseWriter, templates ...string) (int, error) {
-	templates = append(templates, "base_full")
+func (p *Page) Render(w http.ResponseWriter, r *http.Request, templates ...string) (int, error) {
+	if r.URL.Query().Get("minimal") == "true" {
+		templates = append(templates, "base_minimal")
+	} else {
+		templates = append(templates, "base_full")
+	}
+
 	var tpl *template.Template
 
 	for i, t := range templates {

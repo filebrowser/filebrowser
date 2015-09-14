@@ -1,6 +1,8 @@
 package settings
 
 import (
+	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -8,20 +10,46 @@ import (
 
 	"github.com/hacdias/caddy-hugo/frontmatter"
 	"github.com/hacdias/caddy-hugo/page"
+	"github.com/spf13/hugo/commands"
 )
+
+type test struct {
+	Test string
+}
 
 // Execute the page
 func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
+	language := getConfigFrontMatter()
+
+	if language == "" {
+		log.Print("Configuration frontmatter can't be defined")
+		return 500, nil
+	}
+
 	if r.Method == "POST" {
+		err := os.Remove("config." + language)
 
-	} else {
-		language := getConfigFrontMatter()
-
-		if language == "" {
-			log.Print("Configuration frontmatter can't be defined")
+		if err != nil {
+			log.Print(err)
 			return 500, nil
 		}
 
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(r.Body)
+		raw := buf.Bytes()
+
+		content := new(bytes.Buffer)
+		json.Indent(content, raw, "", "  ")
+
+		err = ioutil.WriteFile("config.json", content.Bytes(), 0666)
+
+		if err != nil {
+			log.Print(err)
+			return 500, err
+		}
+
+		commands.Execute()
+	} else {
 		content, err := ioutil.ReadFile("config." + language)
 
 		if err != nil {
@@ -39,7 +67,7 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 		page := new(page.Page)
 		page.Title = "Settings"
 		page.Body = f
-		return page.Render(w, "settings", "frontmatter")
+		return page.Render(w, r, "settings", "frontmatter")
 	}
 	return 200, nil
 }
