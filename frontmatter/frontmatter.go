@@ -8,24 +8,15 @@ import (
 )
 
 // Pretty creates a new FrontMatter object
-func Pretty(content []byte, language string) (interface{}, error) {
-	var err error
-	var c interface{}
-
-	if language == "yaml" {
-		c, err = parser.HandleYAMLMetaData(content)
-	} else if language == "json" {
-		c, err = parser.HandleJSONMetaData(content)
-	} else if language == "toml" {
-		c, err = parser.HandleTOMLMetaData(content)
-	}
+func Pretty(content []byte) (interface{}, error) {
+	frontType := parser.DetectFrontMatter(rune(content[0]))
+	front, err := frontType.Parse(content)
 
 	if err != nil {
 		return []string{}, err
 	}
 
-	//log.Print(c)
-	return rawToPretty(c, ""), nil
+	return rawToPretty(front, ""), nil
 }
 
 type frontmatter struct {

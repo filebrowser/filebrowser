@@ -1,16 +1,14 @@
-{{ define "content" }}
-{{ with .Body }}
+{{ define "content" }} {{ with .Body }}
 
 <div class="content">
-
   <h1>Editing {{ .Name }}</h1>
 
   <form method="POST" action="">
+    {{ template "frontmatter" .FrontMatter }}
     <textarea name="content">{{ .Content }}</textarea>
     <input type="submit" value="Save">
   </form>
 
 </div>
 
-{{ end }}
-{{ end }}
+{{ end }} {{ end }}

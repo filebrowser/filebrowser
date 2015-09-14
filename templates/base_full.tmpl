@@ -1,29 +1,32 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#fff">
-<title>{{ .Title }}</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff">
+  <title>{{ .Title }}</title>
 
-<link href='https://fonts.googleapis.com/css?family=Roboto:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
 
-<link rel="stylesheet" href="/admin/static/css/normalize.css">
-<link rel="stylesheet" href="/admin/static/css/main.css">
+  <link rel="stylesheet" href="/admin/static/css/normalize.css">
+  <link rel="stylesheet" href="/admin/static/css/main.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script src="/admin/static/js/app.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="/admin/static/js/app.js"></script>
 </head>
 
 <body>
   <header>
     <nav>
       <ul>
-        <li><img src="/admin/static/hugo.png"></li>
-        <li><a href="/admin/browse/content">Content</a></li>
-        <li><a href="/admin/browse">Browse</a></li>
-        <li><a href="/admin/settings">Settings</a></li>
+        <li><a href="/"><i class="fa fa-home fa-lg"></i> Home</a></li>
+        <li><a href="/admin/browse/content"><i class="fa fa-newspaper-o"></i> Content</a></li>
+        <li><a href="/admin/browse"><i class="fa fa-folder-o"></i> Browse</a></li>
+        <li><a href="/admin/settings"><i class="fa fa-cog"></i> Settings</a></li>
+        <li><a id="logout" href="#logout"><i class="fa fa-sign-out"></i> Logout</a></li>
       </ul>
     </nav>
   </header>
@@ -34,4 +37,5 @@
 
   </footer>
 </body>
+
 </html>

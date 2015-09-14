@@ -59,7 +59,7 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 			return 500, err
 		}
 
-		f, err := frontmatter.Pretty(content, language)
+		f, err := frontmatter.Pretty(content)
 
 		if err != nil {
 			log.Print(err)
