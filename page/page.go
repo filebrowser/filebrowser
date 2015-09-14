@@ -24,35 +24,30 @@ type Page struct {
 }
 
 // Render the page
-func (p *Page) Render(name string, w http.ResponseWriter) (int, error) {
-	base, err := assets.Asset("templates/base" + templateExtension)
+func (p *Page) Render(w http.ResponseWriter, templates ...string) (int, error) {
+	templates = append(templates, "header", "footer")
+	var tpl *template.Template
 
-	if err != nil {
-		log.Print(err)
-		return 500, err
+	for i, t := range templates {
+		page, err := assets.Asset("templates/" + t + templateExtension)
+
+		if err != nil {
+			log.Print(err)
+			return 500, err
+		}
+
+		if i == 0 {
+			tpl, err = template.New(t).Funcs(funcMap).Parse(string(page))
+		} else {
+			tpl, err = tpl.Parse(string(page))
+		}
+
+		if err != nil {
+			log.Print(err)
+			return 500, err
+		}
 	}
 
-	page, err := assets.Asset("templates/" + name + templateExtension)
-
-	if err != nil {
-		log.Print(err)
-		return 500, err
-	}
-
-	tpl, err := template.New("base").Funcs(funcMap).Parse(string(base))
-
-	if err != nil {
-		log.Print(err)
-		return 500, err
-	}
-
-	tpl, err = tpl.Parse(string(page))
-
-	if err != nil {
-		log.Print(err)
-		return 500, err
-	}
-
-	tpl.ExecuteTemplate(w, "base", p)
+	tpl.Execute(w, p)
 	return 200, nil
 }

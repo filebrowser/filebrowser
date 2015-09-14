@@ -50,7 +50,7 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 		page := new(page.Page)
 		page.Title = "Edit"
 		page.Body = inf
-		return page.Render("edit", w)
+		return page.Render(w, "edit")
 	}
 
 	return 200, nil

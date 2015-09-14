@@ -42,7 +42,7 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 		page := new(page.Page)
 		page.Title = "Settings"
 		page.Body = cnf
-		return page.Render("settings", w)
+		return page.Render(w, "settings", "frontmatter")
 	}
 
 	return 200, nil

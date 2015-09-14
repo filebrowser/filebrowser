@@ -1,30 +1,12 @@
-{{ define "optsLoop" }}
-{{ range $key, $value := . }}
-{{ if $value.SubContent }}
-  <h2>{{ splitCapitalize $value.Name }}</h2>
-  {{ template "optsLoop" $value.Content }}
-{{ else}}
+{{ template "header" . }}
 
-<label for="{{ $value.Master }}_{{ $value.Name }}">{{ splitCapitalize $value.Name }}</label>
-<input name="{{ $value.Master }}_{{ $value.Name }}" id="{{ $value.Master }}_{{ $value.Name }}" value="{{ $value.Content }}"></input><br>
-{{ end }}
-{{ end }}
-{{ end }}
-
-
-{{ define "content" }}
 {{ with .Body }}
-
 <div class="content">
-
   <h1>Settings</h1>
-
   <form>
-  {{ template "optsLoop" .Settings }}
+  {{ template "frontmatter" .Settings }}
   </form>
-
-
 </div>
+{{ end }}
 
-{{ end }}
-{{ end }}
+{{ template "footer" . }}
