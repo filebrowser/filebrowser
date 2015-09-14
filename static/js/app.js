@@ -3,10 +3,16 @@ $(document).ready(function() {
     var data = JSON.stringify($(this).serializeField())
     var url = $(this).attr('action')
 
+    console.log(data)
+
     $.ajax({
       type: 'POST',
       url: url,
       data: data,
+      beforeSend: function(xhr) {
+        // add publish and save
+        xhr.setRequestHeader('X-Save-Mode', 'publish');
+      }
       dataType: 'json',
       encode: true,
     }).done(function(data) {

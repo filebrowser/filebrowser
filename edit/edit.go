@@ -1,6 +1,8 @@
 package edit
 
 import (
+	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -24,15 +26,47 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 	filename := strings.Replace(r.URL.Path, "/admin/edit/", "", 1)
 
 	if r.Method == "POST" {
-		r.ParseForm()
-		err := ioutil.WriteFile(filename, []byte(r.Form["content"][0]), 0666)
+		// Get the JSON information sent using a buffer
+		rawBuffer := new(bytes.Buffer)
+		rawBuffer.ReadFrom(r.Body)
+
+		// Creates the raw file "map" using the JSON
+		var rawFile map[string]interface{}
+		json.Unmarshal(rawBuffer.Bytes(), &rawFile)
+
+		// The main content of the file
+		mainContent := rawFile["content"].(string)
+
+		// Removes the main content from the rest of the frontmatter
+		delete(rawFile, "content")
+
+		// Converts the frontmatter in JSON
+		jsonFrontmatter, err := json.Marshal(rawFile)
 
 		if err != nil {
 			log.Print(err)
 			return 500, err
 		}
 
-		commands.Execute()
+		// Indents the json
+		frontMatterBuffer := new(bytes.Buffer)
+		json.Indent(frontMatterBuffer, jsonFrontmatter, "", "  ")
+
+		// Generates the final file
+		file := new(bytes.Buffer)
+		file.Write(frontMatterBuffer.Bytes())
+		file.Write([]byte(mainContent))
+
+		err = ioutil.WriteFile(filename, file.Bytes(), 0666)
+
+		if err != nil {
+			log.Print(err)
+			return 500, err
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte("{}"))
+		go commands.Execute()
 	} else {
 		if _, err := os.Stat(filename); os.IsNotExist(err) {
 			log.Print(err)
