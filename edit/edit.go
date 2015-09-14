@@ -2,6 +2,7 @@ package edit
 
 import (
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -24,18 +25,21 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 		err := ioutil.WriteFile(filename, []byte(r.Form["content"][0]), 0666)
 
 		if err != nil {
+			log.Print(err)
 			return 500, err
 		}
 
 		commands.Execute()
 	} else {
 		if _, err := os.Stat(filename); os.IsNotExist(err) {
+			log.Print(err)
 			return 404, nil
 		}
 
 		file, err := ioutil.ReadFile(filename)
 
 		if err != nil {
+			log.Print(err)
 			return 500, err
 		}
 

@@ -30,3 +30,7 @@ textarea {
   border: 0;
   font-family: inherit;
 }
+
+.block {
+  margin: 1em 0;
+}

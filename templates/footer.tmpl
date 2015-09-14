@@ -1,5 +1,0 @@
-<footer>
-
-</footer>
-</body>
-</html>
