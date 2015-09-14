@@ -48,7 +48,9 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 			return 500, err
 		}
 
-		commands.Execute()
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte("{}"))
+		go commands.Execute()
 	} else {
 		content, err := ioutil.ReadFile("config." + language)
 

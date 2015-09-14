@@ -8,9 +8,11 @@ $(document).ready(function() {
       url         : url,
       data        : data,
       dataType    : 'json',
-      encode      : true
+      encode      : true,
     }).done(function(data) {
-      console.log(data);
+      alert("it workss");
+    }).fail(function(data) {
+      alert("it failed");
     });
 
     event.preventDefault();
