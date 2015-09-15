@@ -1,7 +1,6 @@
 $(document).ready(function() {
   $('.scroll').perfectScrollbar();
 
-
   $('form').submit(function(event) {
     var data = JSON.stringify($(this).serializeField())
     var url = $(this).attr('action')
