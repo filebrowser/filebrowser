@@ -9,8 +9,10 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/assets"
+	"github.com/hacdias/caddy-hugo/browse"
 	"github.com/hacdias/caddy-hugo/edit"
 	"github.com/hacdias/caddy-hugo/settings"
+	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/mholt/caddy/config/setup"
 	"github.com/mholt/caddy/middleware"
 	"github.com/spf13/hugo/commands"
@@ -29,7 +31,7 @@ type handler struct{ Next middleware.Handler }
 
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	if middleware.Path(r.URL.Path).Matches("/admin") {
-		page := parseComponents(r)[1]
+		page := utils.ParseComponents(r)[1]
 
 		if page == "static" {
 			filename := strings.Replace(r.URL.Path, "/admin/", "", 1)
@@ -47,12 +49,8 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 
 			w.Write(file)
 			return 200, nil
-		} else if page == "content" {
-			w.Write([]byte("Content Page"))
-			return 200, nil
 		} else if page == "browse" {
-			w.Write([]byte("Show Data Folder"))
-			return 200, nil
+			return browse.Execute(w, r)
 		} else if page == "edit" {
 			return edit.Execute(w, r)
 		} else if page == "settings" {
@@ -63,24 +61,4 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 	}
 
 	return h.Next.ServeHTTP(w, r)
-}
-
-// TODO: utils package
-func parseComponents(r *http.Request) []string {
-	//The URL that the user queried.
-	path := r.URL.Path
-	path = strings.TrimSpace(path)
-	//Cut off the leading and trailing forward slashes, if they exist.
-	//This cuts off the leading forward slash.
-	if strings.HasPrefix(path, "/") {
-		path = path[1:]
-	}
-	//This cuts off the trailing forward slash.
-	if strings.HasSuffix(path, "/") {
-		cutOffLastCharLen := len(path) - 1
-		path = path[:cutOffLastCharLen]
-	}
-	//We need to isolate the individual components of the path.
-	components := strings.Split(path, "/")
-	return components
 }
