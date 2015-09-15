@@ -1,14 +1,24 @@
 {{ define "content" }} {{ with .Body }}
 
-<div class="content">
-  <h1>Editing {{ .Name }}</h1>
+<form method="POST" action="">
 
-  <form method="POST" action="">
-    {{ template "frontmatter" .FrontMatter }}
-    <textarea name="content">{{ .Content }}</textarea>
-    <input type="submit" value="Save">
-  </form>
-
+<div class="container left scroll">
+  <h2>Metadata</h2>
+  {{ template "frontmatter" .FrontMatter }}
 </div>
+
+<div class="container main">
+  <textarea name="content" class="scroll">
+    {{ .Content }}
+  </textarea>
+</div>
+
+<div class="action-bar">
+  <button id="preview" class="left">Preview</button>
+  <input type="submit" value="Save">
+  <input type="submit" class="default" value="Publish">
+</div>
+
+</form>
 
 {{ end }} {{ end }}

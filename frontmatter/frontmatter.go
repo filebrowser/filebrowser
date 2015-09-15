@@ -16,16 +16,42 @@ func Pretty(content []byte) (interface{}, error) {
 		return []string{}, err
 	}
 
-	return rawToPretty(front, ""), nil
+	return rawToPretty(front, "", ""), nil
 }
 
 type frontmatter struct {
-	Name       string
-	Content    interface{}
-	SubContent bool
+	Name    string
+	Content interface{}
+	Parent  string
+	Type    string
 }
 
-func rawToPretty(config interface{}, master string) interface{} {
+func rawToPretty(config interface{}, master string, parent string) interface{} {
+	if utils.IsSlice(config) {
+		settings := make([]interface{}, len(config.([]interface{})))
+
+		for index, element := range config.([]interface{}) {
+			c := new(frontmatter)
+			c.Name = master
+			c.Parent = parent
+
+			if utils.IsMap(element) {
+				c.Type = "object"
+				c.Content = rawToPretty(element, c.Name, "object")
+			} else if utils.IsSlice(element) {
+				c.Type = "array"
+				c.Content = rawToPretty(element, c.Name, "array")
+			} else {
+				c.Type = "text"
+				c.Content = element
+			}
+
+			settings[index] = c
+		}
+
+		return settings
+	}
+
 	var mapsNames []string
 	var stringsNames []string
 
@@ -46,14 +72,18 @@ func rawToPretty(config interface{}, master string) interface{} {
 	for index := range names {
 		c := new(frontmatter)
 		c.Name = names[index]
-		c.SubContent = false
+		c.Parent = parent
 
 		i := config.(map[string]interface{})[names[index]]
 
 		if utils.IsMap(i) {
-			c.Content = rawToPretty(i, c.Name)
-			c.SubContent = true
+			c.Type = "object"
+			c.Content = rawToPretty(i, c.Name, "object")
+		} else if utils.IsSlice(i) {
+			c.Type = "array"
+			c.Content = rawToPretty(i, c.Name, "array")
 		} else {
+			c.Type = "text"
 			c.Content = i
 		}
 

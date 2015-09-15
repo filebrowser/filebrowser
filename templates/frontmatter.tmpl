@@ -1,12 +1,15 @@
 {{ define "frontmatter" }}
   {{ range $key, $value := . }}
-    {{ if $value.SubContent }}
-      <fieldset name="{{ $value.Name }}">
+    {{ if or (eq $value.Type "object") (eq $value.Type "array") }}
+      <fieldset name="{{ $value.Name }}" type="{{ $value.Type }}">
         <legend>{{ splitCapitalize $value.Name }}</legend>
         {{ template "frontmatter" $value.Content }}
+        <button><i class="fa fa-plus"></i> Add field</button>
       </fieldset>
-    {{ else}}
+    {{ else }}
+    {{ if not (eq $value.Parent "array") }}
     <label for="{{ $value.Name }}">{{ splitCapitalize $value.Name }}</label>
+    {{ end }}
     <input name="{{ $value.Name }}" id="{{ $value.Name }}" value="{{ $value.Content }}"></input><br>
     {{ end }}
   {{ end }}

@@ -1,18 +1,21 @@
 $(document).ready(function() {
+  $('.scroll').perfectScrollbar();
+
+
   $('form').submit(function(event) {
     var data = JSON.stringify($(this).serializeField())
     var url = $(this).attr('action')
+    var action = $(this).find("input[type=submit]:focus").val();
 
-    console.log(data)
+    console.log(data);
 
     $.ajax({
       type: 'POST',
       url: url,
       data: data,
       beforeSend: function(xhr) {
-        // add publish and save
-        xhr.setRequestHeader('X-Save-Mode', 'publish');
-      }
+        xhr.setRequestHeader('X-Save-Mode', action);
+      },
       dataType: 'json',
       encode: true,
     }).done(function(data) {
@@ -47,12 +50,20 @@ $(document).ready(function() {
 $.fn.serializeField = function() {
   var result = {};
   this.each(function() {
-    $(this).find("> *").each(function() {
+    $(this).find(".container > *").each(function() {
       var $this = $(this);
       var name = $this.attr("name");
 
       if ($this.is("fieldset") && name) {
-        result[name] = $this.serializeField();
+        if ($this.attr("type") == "array") {
+          result[this.name] = [];
+
+          $.each($this.serializeArray(), function() {
+            result[this.name].push(this.value);
+          });
+        } else {
+          result[name] = $this.serializeField();
+        }
       } else {
         $.each($this.serializeArray(), function() {
           result[this.name] = this.value;

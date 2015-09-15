@@ -27,6 +27,14 @@ func IsMap(sth interface{}) bool {
 	return reflect.ValueOf(sth).Kind() == reflect.Map
 }
 
+func IsSlice(sth interface{}) bool {
+	return reflect.ValueOf(sth).Kind() == reflect.Slice
+}
+
+func IsArray(sth interface{}) bool {
+	return reflect.ValueOf(sth).Kind() == reflect.Array
+}
+
 func SplitCapitalize(name string) string {
 	var words []string
 	l := 0

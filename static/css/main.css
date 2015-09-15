@@ -11,14 +11,12 @@ header {
   left: 0;
   height: 3em;
   width: 100%;
-  background-color: #EEE;
+  background-color: #263238;
   padding: 0 2em;
   box-sizing: border-box;
   z-index: 999;
-  color: #555;
+  color: #eee;
 }
-
-header nav {}
 
 header nav ul {
   margin: 0;
@@ -63,7 +61,49 @@ header nav ul li a:hover {
 
 main {
   top: 3em;
-  position: relative;
+  left: 0;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: inherit;
+}
+
+.container {
+  box-sizing: border-box;
+  top: 3em;
+  height: auto;
+  max-height: 100%;
+  bottom: 0;
+}
+
+.container.left {
+  position: fixed;
+  left: 0;
+  width: 25%;
+  background-color: #37474F;
+  overflow: auto;
+  color: #eee;
+  padding: 1.5em 1.5em;
+}
+
+.container.main {
+  position: fixed;
+  right: 0;
+  width: 75%;
+  overflow: auto;
+  padding: 0;
+  margin-bottom: 3em;
+}
+
+.container *:first-child {
+  margin-top: 0;
+}
+
+.container.main textarea {
+  height: 100%;
+  width: 100%;
+  padding: 2em 5em;
+  box-sizing: border-box;
 }
 
 .content {
@@ -75,15 +115,14 @@ main {
 textarea {
   width: 100%;
   min-height: 50em;
-  resize: vertical;
   border: 0;
+  resize: vertical;
+  box-sizing: content-box;
   font-family: inherit;
 }
 
 
 /* FORMS */
-
-form {}
 
 form input {
   color: rgba(0, 0, 0, 0.41);
@@ -92,6 +131,7 @@ form input {
   margin: .5em 0;
   border: 1px solid #fff;
   transition: .5s ease-out all;
+  background-color: transparent;
 }
 
 form input:focus {
@@ -103,4 +143,69 @@ form input:focus {
 form label {
   width: 10.5em;
   display: inline-block;
+}
+
+form fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+form legend {
+  font-size: 1.5em;
+}
+
+form .container.left input {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: .5em 1em;
+  box-sizing: border-box;
+}
+
+form .container.left input:focus {
+  border: 1px solid #ddd;
+}
+
+form .container.left label {}
+
+form .container.left legend {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.action-bar {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 75%;
+  background-color: #455A64;
+  height: 3em;
+  display: flex;
+  padding: 0.5em 1em;
+  box-sizing: border-box;
+}
+
+.action-bar .left {
+  margin-right: auto;
+}
+
+.action-bar *:last-child {
+  margin-left: 1em;
+}
+
+button, input[type="submit"] {
+  border: 0;
+  color: #fff;
+  margin: 0;
+  padding: .5em 1em;
+  border-radius: 10px;
+  font-size: .9em;
+  width: auto;
+  line-height: 1em;
+  background-color: #BBB;
+}
+
+button.default, input[type="submit"].default {
+  background-color: #2196F3;
 }
