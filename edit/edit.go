@@ -36,6 +36,7 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 
 		// The main content of the file
 		mainContent := rawFile["content"].(string)
+		mainContent = "\n\n" + strings.TrimSpace(mainContent)
 
 		// Removes the main content from the rest of the frontmatter
 		delete(rawFile, "content")
@@ -86,7 +87,7 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 		file, err := parser.ReadFrom(reader)
 
 		inf := new(information)
-		inf.Content = string(file.Content())
+		inf.Content = strings.TrimSpace(string(file.Content()))
 		inf.FrontMatter, err = frontmatter.Pretty(file.FrontMatter())
 
 		if err != nil {

@@ -1,16 +1,15 @@
 {{ define "content" }} {{ with .Body }}
 
 <main class="editor">
-  <form method="POST" action="_self">
-    <div class="sidebar scroll">
+  <form method="POST" action="">
+    <div class="sidebar data scroll">
       <h2>Metadata</h2>
       {{ template "frontmatter" .FrontMatter }}
     </div>
 
-    <div class="container">
-      <textarea name="content" class="scroll">
-        {{ .Content }}
-      </textarea>
+    <div class="container data">
+      <textarea name="content" class="scroll">{{ .Content }}</textarea>
+      <div id="preview-area" class="scroll hidden"></div>
     </div>
 
     <div class="action-bar">

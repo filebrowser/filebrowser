@@ -2,9 +2,8 @@
   {{ range $key, $value := . }}
     {{ if or (eq $value.Type "object") (eq $value.Type "array") }}
       <fieldset name="{{ $value.Name }}" type="{{ $value.Type }}">
-        <legend>{{ splitCapitalize $value.Name }}</legend>
+        <h3>{{ splitCapitalize $value.Name }}   <button class="add"><i class="fa fa-plus"></i></button></h3>
         {{ template "frontmatter" $value.Content }}
-        <button><i class="fa fa-plus"></i> Add field</button>
       </fieldset>
     {{ else }}
     {{ if not (eq $value.Parent "array") }}

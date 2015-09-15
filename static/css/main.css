@@ -5,6 +5,10 @@ body {
   width: 100%;
 }
 
+h2 {
+  margin: .83em 0;
+}
+
 header {
   position: fixed;
   top: 0;
@@ -74,6 +78,10 @@ main {
   max-width: 800px;
 }
 
+.hidden {
+  display: none;
+}
+
 
 /* EDITOR STYLE */
 
@@ -86,7 +94,7 @@ main {
   height: calc(100% - 3em);
   width: 25%;
   background-color: #37474F;
-  color: #fff;
+  color: #ddd;
   box-sizing: border-box;
   padding: 1.5em 1em;
 }
@@ -101,36 +109,52 @@ main {
   box-sizing: border-box;
 }
 
-.editor .sidebar *:first-child {
+.editor .sidebar h2 {
+  margin-top: 0;
+}
+
+.editor #preview-area, .editor textarea {
+  position: relative;
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  border: 0;
+  padding: 1.5em 10%;
+  font-size: 1.05em;
+}
+
+.editor #preview-area *:first-child {
   margin-top: 0;
 }
 
 .editor textarea {
-  box-sizing: border-box;
-  height: 100%;
-  width: 100%;
   resize: none;
-  border: 0;
-  padding: 1.5em 11em;
   font-family: monospace;
-  font-size: 1.05em;
+}
+
+.editor textarea:focus {
+  outline: 0;
 }
 
 .editor input {
   width: 100%;
-  background-color: #fff;
+  background-color: rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.3);
+  border: 0;
   border-radius: 5px;
   padding: .5em 1em;
   box-sizing: border-box;
 }
 
 .editor input:focus {
-  border: 1px solid #ddd;
+  color: rgba(255, 255, 255, 0.7);
+  border: 0;
 }
 
-.editor legend {
+.editor h3 {
   font-size: 1em;
   font-weight: bold;
+  margin: 0;
 }
 
 .action-bar {
@@ -175,12 +199,14 @@ form input:focus {
 form label {
   width: 10.5em;
   display: inline-block;
+  margin: .1em 0 0;
 }
 
 form fieldset {
   border: 0;
-  margin: 0;
-  padding: 0;
+  margin: 1em 0 0;
+  padding: 1em 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 form legend {
@@ -197,8 +223,30 @@ button, input[type="submit"] {
   width: auto;
   line-height: 1em;
   background-color: #BBB;
+  transition: .3s ease all;
+}
+
+button, input[type="submit"], button:active, input[type="submit"]:active, button:hover, input[type="submit"]:hover, button:focus, input[type="submit"]:focus {
+  outline: 0;
+}
+
+button:hover, input[type="submit"]:hover, button:active, input[type="submit"]:active {
+  background-color: #999;
 }
 
 button.default, input[type="submit"].default {
   background-color: #2196F3;
+}
+
+button.default:hover, input[type="submit"].default:hover, button.default:active, input[type="submit"].default:active {
+  background-color: #1E88E5;
+}
+
+button.add {
+  vertical-align: middle;
+  border-radius: 50%;
+  height: 1.5em;
+  width: 1.5em;
+  font-size: .7em;
+  padding: 0;
 }

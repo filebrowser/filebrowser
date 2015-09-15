@@ -56,7 +56,7 @@ func rawToPretty(config interface{}, master string, parent string) interface{} {
 	var stringsNames []string
 
 	for index, element := range config.(map[string]interface{}) {
-		if utils.IsMap(element) {
+		if utils.IsMap(element) || utils.IsSlice(element) {
 			mapsNames = append(mapsNames, index)
 		} else {
 			stringsNames = append(stringsNames, index)

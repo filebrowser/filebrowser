@@ -1,8 +1,31 @@
 $(document).ready(function() {
   $('.scroll').perfectScrollbar();
 
+  $("#preview").click(function(e) {
+    e.preventDefault();
+
+    var preview = $("#preview-area"),
+      editor = $('.editor textarea');
+
+    if ($(this).attr("previewing") == "true") {
+      preview.hide();
+      editor.fadeIn();
+      $(this).attr("previewing", "false");
+    } else {
+      var converter = new showdown.Converter(),
+        text = editor.val(),
+        html = converter.makeHtml(text);
+
+      editor.hide();
+      preview.html(html).fadeIn();
+      $(this).attr("previewing", "true");
+    }
+
+    return false;
+  });
+
   $('form').submit(function(event) {
-    var data = JSON.stringify($(this).serializeField())
+    var data = JSON.stringify($(this).serializeForm())
     var url = $(this).attr('action')
     var action = $(this).find("input[type=submit]:focus").val();
 
@@ -18,9 +41,9 @@ $(document).ready(function() {
       dataType: 'json',
       encode: true,
     }).done(function(data) {
-      alert("it workss");
+      alert("It was saved and/or published");
     }).fail(function(data) {
-      alert("it failed");
+      alert("Something went wrong");
     });
 
     event.preventDefault();
@@ -43,13 +66,22 @@ $(document).ready(function() {
       });
     return false;
   });
+
+
+
+  $(".add").click(function(e) {
+    e.preventDefault();
+    fieldset = $(this).closest("fieldset");
+    fieldset.append("<input name=\"" + fieldset.attr("name") + "\" id=\"" + fieldset.attr("name") + "\" value=\"\"></input><br>");
+    return false;
+  });
 });
 
 
-$.fn.serializeField = function() {
+$.fn.serializeForm = function() {
   var result = {};
   this.each(function() {
-    $(this).find(".container > *").each(function() {
+    $(this).find(".data > *").each(function() {
       var $this = $(this);
       var name = $this.attr("name");
 
@@ -61,7 +93,7 @@ $.fn.serializeField = function() {
             result[this.name].push(this.value);
           });
         } else {
-          result[name] = $this.serializeField();
+          result[name] = $this.serializeForm();
         }
       } else {
         $.each($this.serializeArray(), function() {
