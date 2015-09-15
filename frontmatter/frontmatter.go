@@ -30,6 +30,8 @@ func rawToPretty(config interface{}, master string, parent string) interface{} {
 	if utils.IsSlice(config) {
 		settings := make([]interface{}, len(config.([]interface{})))
 
+		// TODO: improve this function
+
 		for index, element := range config.([]interface{}) {
 			c := new(frontmatter)
 			c.Name = master

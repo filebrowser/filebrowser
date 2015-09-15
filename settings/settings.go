@@ -13,10 +13,6 @@ import (
 	"github.com/spf13/hugo/commands"
 )
 
-type test struct {
-	Test string
-}
-
 // Execute the page
 func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 	language := getConfigFrontMatter()
@@ -62,7 +58,7 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 			return 500, err
 		}
 
-		f, err := frontmatter.Pretty(content)
+		f, err := frontmatter.Pretty(appendFrontMatterRune(content, language))
 
 		if err != nil {
 			log.Print(err)
@@ -90,6 +86,19 @@ func getConfigFrontMatter() string {
 
 	if _, err := os.Stat("config.toml"); err == nil {
 		frontmatter = "toml"
+	}
+
+	return frontmatter
+}
+
+func appendFrontMatterRune(frontmatter []byte, language string) []byte {
+	switch language {
+	case "yaml":
+		return []byte("---\n" + string(frontmatter) + "\n---")
+	case "toml":
+		return []byte("+++\n" + string(frontmatter) + "\n+++")
+	case "json":
+		return frontmatter
 	}
 
 	return frontmatter
