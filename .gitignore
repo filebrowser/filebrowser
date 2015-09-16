@@ -1,1 +1,3 @@
-assets
+assets.go
+node_modules
+.sass-cache

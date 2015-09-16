@@ -1,0 +1,32 @@
+{
+  "name": "caddy-hugo",
+  "version": "1.0.0",
+  "description": "This is an add-on for Caddy which wants to deliver a good UI to edit the content of the website.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hacdias/caddy-hugo.git"
+  },
+  "main": "gruntfile.js",
+  "author": "Henrique Dias <hacdias@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hacdias/caddy-hugo/issues"
+  },
+  "homepage": "https://github.com/hacdias/caddy-hugo#readme",
+  "dependencies": {
+    "font-awesome": "^4.4.0",
+    "jquery": "^2.1.4",
+    "normalize.css": "^3.0.3",
+    "perfect-scrollbar": "^0.6.4",
+    "showdown": "^1.2.3"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-copy": "^0.8.1",
+    "grunt-contrib-cssmin": "^0.14.0",
+    "grunt-contrib-sass": "^0.9.2",
+    "grunt-contrib-uglify": "^0.9.2",
+    "grunt-contrib-watch": "^0.6.1"
+  }
+}
