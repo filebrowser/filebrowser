@@ -1,4 +1,5 @@
 $(document).ready(function() {
+  $(document).pjax('a', '#container');
   $('.scroll').perfectScrollbar();
 
   $("#preview").click(function(e) {
@@ -7,10 +8,16 @@ $(document).ready(function() {
     var preview = $("#preview-area"),
       editor = $('.editor textarea');
 
-    if ($(this).attr("previewing") == "true") {
+    if ($(this).data("previewing") == "true") {
       preview.hide();
       editor.fadeIn();
-      $(this).attr("previewing", "false");
+      $(this).data("previewing", "false");
+
+      notification({
+        text: "You've gone into editing mode.",
+        type: 'information',
+        timeout: 2000
+      });
     } else {
       var converter = new showdown.Converter(),
         text = editor.val(),
@@ -18,18 +25,23 @@ $(document).ready(function() {
 
       editor.hide();
       preview.html(html).fadeIn();
-      $(this).attr("previewing", "true");
+      $(this).data("previewing", "true");
+
+      notification({
+        text: "You've gone into preview mode.",
+        type: 'information',
+        timeout: 2000
+      });
     }
 
     return false;
   });
 
   $('form').submit(function(event) {
-    var data = JSON.stringify($(this).serializeForm())
-    var url = $(this).attr('action')
-    var action = $(this).find("input[type=submit]:focus").val();
-
-    console.log(data);
+    var data = JSON.stringify($(this).serializeForm()),
+      url = $(this).attr('action'),
+      button = $(this).find("input[type=submit]:focus"),
+      action = button.val();
 
     $.ajax({
       type: 'POST',
@@ -41,21 +53,17 @@ $(document).ready(function() {
       dataType: 'json',
       encode: true,
     }).done(function(data) {
-      if (action == "Save") {
-        var word = "saved";
-      } else {
-        var word = "published";
-      }
-
       notification({
-        text: 'The post was ' + word + '.',
-        type: 'success'
+        text: button.data("message"),
+        type: 'success',
+        timeout: 5000
       });
     }).fail(function(data) {
       notification({
         text: 'Something went wrong.',
         type: 'error'
       });
+      console.log(data);
     });
 
     event.preventDefault();

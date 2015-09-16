@@ -2,7 +2,7 @@
 
 <main class="editor">
   <form method="POST" action="">
-    <div class="sidebar data scroll">
+    <div class="sidebar scroll data">
       <h2>Metadata</h2>
       {{ template "frontmatter" .FrontMatter }}
     </div>
@@ -14,8 +14,8 @@
 
     <div class="action-bar">
       <button id="preview" class="left">Preview</button>
-      <input type="submit" value="Save">
-      <input type="submit" class="default" value="Publish">
+      <input type="submit" data-message="Post saved." value="Save">
+      <input type="submit" data-message="Post published successfully." class="default" value="Publish">
     </div>
   </form>
 </main>

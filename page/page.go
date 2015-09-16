@@ -25,7 +25,7 @@ type Page struct {
 
 // Render the page
 func (p *Page) Render(w http.ResponseWriter, r *http.Request, templates ...string) (int, error) {
-	if r.URL.Query().Get("minimal") == "true" {
+	if r.Header.Get("X-PJAX") == "true" {
 		templates = append(templates, "base_minimal")
 	} else {
 		templates = append(templates, "base_full")

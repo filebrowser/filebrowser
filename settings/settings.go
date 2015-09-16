@@ -48,7 +48,7 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 		w.Write([]byte("{}"))
 
 		if r.Header.Get("X-Save-Mode") == "publish" {
-			go commands.Execute()
+			commands.Execute()
 		}
 	} else {
 		content, err := ioutil.ReadFile("config." + language)
