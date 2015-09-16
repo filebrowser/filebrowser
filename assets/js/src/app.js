@@ -67,8 +67,6 @@ $(document).ready(function() {
     return false;
   });
 
-
-
   $(".add").click(function(e) {
     e.preventDefault();
     fieldset = $(this).closest("fieldset");

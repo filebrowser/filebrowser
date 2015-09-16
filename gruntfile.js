@@ -9,11 +9,14 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     watch: {
-      files: [
-        'assets/src/js/**/*.js',
-        'assets/src/css/sass/**/*.scss'
-      ],
-      tasks: ['sass', 'concat', 'cssmin', 'uglify']
+      sass: {
+        files: ['assets/css/src/sass/**/*.scss'],
+        tasks: ['sass', 'concat', 'cssmin']
+      },
+      js: {
+        files: ['assets/js/src/**/*.js'],
+        tasks: ['uglify']
+      },
     },
     sass: {
       dist: {
@@ -34,7 +37,7 @@ module.exports = function(grunt) {
       css: {
         src: ['node_modules/normalize.css/normalize.css',
           'node_modules/font-awesome/css/font-awesome.css',
-          'assets/src/css/main.css'
+          'assets/css/src/main.css'
         ],
         dest: 'assets/css/src/main.css',
       },
@@ -66,7 +69,7 @@ module.exports = function(grunt) {
           'assets/js/app.min.js': ['node_modules/jquery/dist/jquery.js',
             'node_modules/perfect-scrollbar/dist/js/perfect-scrollbar.jquery.js',
             'node_modules/showdown/dist/showdown.js',
-            'assets/src/js/**/*.js'
+            'assets/js/src/**/*.js'
           ]
         }
       }
