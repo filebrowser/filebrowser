@@ -14,6 +14,7 @@
   },
   "homepage": "https://github.com/hacdias/caddy-hugo#readme",
   "dependencies": {
+    "animate.css": "^3.4.0",
     "font-awesome": "^4.4.0",
     "jquery": "^2.1.4",
     "normalize.css": "^3.0.3",

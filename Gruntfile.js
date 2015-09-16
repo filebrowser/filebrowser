@@ -37,6 +37,7 @@ module.exports = function(grunt) {
       css: {
         src: ['node_modules/normalize.css/normalize.css',
           'node_modules/font-awesome/css/font-awesome.css',
+          'node_modules/animate.css/animate.min.css',
           'assets/css/src/main.css'
         ],
         dest: 'assets/css/src/main.css',

@@ -51,7 +51,7 @@ header nav img {
 }
 
 header nav ul li a {
-  padding: 0.5em 0.5em;
+  padding: .5em;
   line-height: 2em;
   display: block;
   text-decoration: none;
@@ -82,9 +82,7 @@ main {
   display: none;
 }
 
-
 /* EDITOR STYLE */
-
 .editor .sidebar {
   position: fixed;
   left: 0;
@@ -93,7 +91,7 @@ main {
   overflow-x: hidden;
   height: calc(100% - 3em);
   width: 25%;
-  background-color: #37474F;
+  background-color: #37474f;
   color: #ddd;
   box-sizing: border-box;
   padding: 1.5em 1em;
@@ -113,7 +111,8 @@ main {
   margin-top: 0;
 }
 
-.editor #preview-area, .editor textarea {
+.editor #preview-area,
+.editor textarea {
   position: relative;
   box-sizing: border-box;
   height: 100%;
@@ -162,10 +161,10 @@ main {
   bottom: 0;
   right: 0;
   width: 75%;
-  background-color: #455A64;
+  background-color: #455a64;
   height: 3em;
   display: flex;
-  padding: 0.5em 1em;
+  padding: .5em 1em;
   box-sizing: border-box;
 }
 
@@ -177,9 +176,7 @@ main {
   margin-left: 1em;
 }
 
-
 /* FORMS ELEMENTS */
-
 form input {
   color: rgba(0, 0, 0, 0.41);
   width: 15em;
@@ -193,7 +190,7 @@ form input {
 form input:focus {
   color: inherit;
   outline: 0;
-  border-bottom: 1px solid #2196F3;
+  border-bottom: 1px solid #2196f3;
 }
 
 form label {
@@ -213,7 +210,8 @@ form legend {
   font-size: 1.5em;
 }
 
-button, input[type="submit"] {
+button,
+input[type="submit"] {
   border: 0;
   color: #fff;
   margin: 0;
@@ -222,24 +220,38 @@ button, input[type="submit"] {
   font-size: .9em;
   width: auto;
   line-height: 1em;
-  background-color: #BBB;
+  background-color: #bbb;
   transition: .3s ease all;
 }
 
-button, input[type="submit"], button:active, input[type="submit"]:active, button:hover, input[type="submit"]:hover, button:focus, input[type="submit"]:focus {
+button,
+input[type="submit"],
+button:active,
+input[type="submit"]:active,
+button:hover,
+input[type="submit"]:hover,
+button:focus,
+input[type="submit"]:focus {
   outline: 0;
 }
 
-button:hover, input[type="submit"]:hover, button:active, input[type="submit"]:active {
+button:hover,
+input[type="submit"]:hover,
+button:active,
+input[type="submit"]:active {
   background-color: #999;
 }
 
-button.default, input[type="submit"].default {
-  background-color: #2196F3;
+button.default,
+input[type="submit"].default {
+  background-color: #2196f3;
 }
 
-button.default:hover, input[type="submit"].default:hover, button.default:active, input[type="submit"].default:active {
-  background-color: #1E88E5;
+button.default:hover,
+input[type="submit"].default:hover,
+button.default:active,
+input[type="submit"].default:active {
+  background-color: #1e88e5;
 }
 
 button.add {
@@ -255,5 +267,5 @@ button.add {
 h3:hover > button.add {
   opacity: 1;
 }
-
 @import "scrollbar";
+@import "notifications";

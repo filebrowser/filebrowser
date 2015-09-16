@@ -1,12 +1,6 @@
 $(document).ready(function() {
   $('.scroll').perfectScrollbar();
 
-  var n = noty({
-    layout: 'topRight',
-    type: 'success',
-    text: 'noty - a jquery notification library!'
-  });
-
   $("#preview").click(function(e) {
     e.preventDefault();
 
@@ -47,9 +41,21 @@ $(document).ready(function() {
       dataType: 'json',
       encode: true,
     }).done(function(data) {
-      alert("It was saved and/or published");
+      if (action == "Save") {
+        var word = "saved";
+      } else {
+        var word = "published";
+      }
+
+      notification({
+        text: 'The post was ' + word + '.',
+        type: 'success'
+      });
     }).fail(function(data) {
-      alert("Something went wrong");
+      notification({
+        text: 'Something went wrong.',
+        type: 'error'
+      });
     });
 
     event.preventDefault();

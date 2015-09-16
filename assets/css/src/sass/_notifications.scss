@@ -1,0 +1,67 @@
+#noty_topRight_layout_container {
+  font-family    : sans-serif;
+  top            : 3.5em !important;
+  right          : .5em !important;
+  position       : fixed !important;
+  width          : 310px;
+  height         : auto;
+  margin         : 0;
+  padding        : 0;
+  list-style-type: none;
+  z-index        : 10000000;
+}
+
+#noty_topRight_layout_container li {
+  overflow: hidden;
+  margin  : 0 0 .25em;
+}
+
+.noty_bar {
+  color           : #fff;
+  background-color: #cfd8dc;
+  border-radius   : .3em;
+}
+
+.noty_message {
+  font-size  : .75em;
+  font-weight: bold;
+  line-height: 1.2em;
+  text-align : left;
+  padding    : 1em;
+  width      : auto;
+  position   : relative;
+}
+
+.noty_icon {
+  padding                  : 1em;
+  margin-left              : -1em;
+  margin-right             : .9em;
+  background-color         : rgba(0,0,0,0.1);
+  border-top-left-radius   : .3em;
+  border-bottom-left-radius: .3em;
+  text-align               : center;
+}
+
+.noty_icon .fa {
+  width: 1em !important;
+}
+
+.noty_type_alert {
+  
+}
+
+.noty_type_success {
+  background-color: #00c853;
+}
+
+.noty_type_error {
+  background-color: #ff5252;
+}
+
+.noty_type_warning {
+  background-color: #ffd600;
+}
+
+.noty_type_information {
+  background-color: #448aff;
+}
