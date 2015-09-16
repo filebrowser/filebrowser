@@ -23,9 +23,9 @@ module.exports = function(grunt) {
         },
         files: [{
           expand: true,
-          cwd: 'assets/src/css/sass',
+          cwd: 'assets/css/src/sass',
           src: ['**/*.scss'],
-          dest: 'assets/src/css',
+          dest: 'assets/css/src',
           ext: '.css'
         }]
       }
@@ -36,16 +36,26 @@ module.exports = function(grunt) {
           'node_modules/font-awesome/css/font-awesome.css',
           'assets/src/css/main.css'
         ],
-        dest: 'assets/src/css/main.css',
+        dest: 'assets/css/src/main.css',
+      },
+    },
+    copy: {
+      main: {
+        files: [{
+          expand: true,
+          flatten: true,
+          src: ['node_modules/font-awesome/fonts/**'],
+          dest: 'assets/fonts'
+        }],
       },
     },
     cssmin: {
       target: {
         files: [{
           expand: true,
-          cwd: 'assets/src/css/',
+          cwd: 'assets/css/src',
           src: ['*.css', '!*.min.css'],
-          dest: 'assets/dist/css/',
+          dest: 'assets/css/',
           ext: '.min.css'
         }]
       }
@@ -53,8 +63,8 @@ module.exports = function(grunt) {
     uglify: {
       target: {
         files: {
-          'assets/dist/js/app.min.js': ['node_modules/jquery/jquery.js',
-            'node_modules/perfect-scrollbar/**/perfect-scrollbar.jquery.js',
+          'assets/js/app.min.js': ['node_modules/jquery/dist/jquery.js',
+            'node_modules/perfect-scrollbar/dist/js/perfect-scrollbar.jquery.js',
             'node_modules/showdown/dist/showdown.js',
             'assets/src/js/**/*.js'
           ]
@@ -63,5 +73,5 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('default', ['sass', 'concat', 'cssmin', 'uglify']);
+  grunt.registerTask('default', ['copy', 'sass', 'concat', 'cssmin', 'uglify']);
 };
