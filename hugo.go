@@ -3,7 +3,6 @@
 package hugo
 
 import (
-	"log"
 	"mime"
 	"net/http"
 	"path/filepath"
@@ -33,8 +32,6 @@ type handler struct{ Next middleware.Handler }
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	if middleware.Path(r.URL.Path).Matches("/admin") {
 		page := utils.ParseComponents(r)[1]
-
-		log.Print(page)
 
 		if page == "assets" {
 			filename := strings.Replace(r.URL.Path, "/admin/", "", 1)

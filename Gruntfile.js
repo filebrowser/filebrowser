@@ -69,6 +69,7 @@ module.exports = function(grunt) {
           'assets/js/app.min.js': ['node_modules/jquery/dist/jquery.js',
             'node_modules/perfect-scrollbar/dist/js/perfect-scrollbar.jquery.js',
             'node_modules/showdown/dist/showdown.js',
+            'node_modules/noty/js/noty/packaged/jquery.noty.packaged.js',
             'assets/js/src/**/*.js'
           ]
         }

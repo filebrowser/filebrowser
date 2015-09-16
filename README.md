@@ -9,7 +9,7 @@ This is an add-on for Caddy which wants to deliver a good UI to edit the content
 If you want to try the Hugo add-on for Caddy (and improve it maybe), you'll have to install some tools.
 
 + [Go 1.4 or higher](https://golang.org/dl/)
-+ [Caddydev](https://github.com/caddyserver/caddydev)
++ [caddydev](https://github.com/caddyserver/caddydev)
 + [go-bindata](https://github.com/jteeuwen/go-bindata)
 
 If you want to go deeper and make changes in front-end assets like JavaScript or CSS, you'll need some more tools.

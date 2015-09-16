@@ -249,6 +249,11 @@ button.add {
   width: 1.5em;
   font-size: .7em;
   padding: 0;
+  opacity: 0;
+}
+
+h3:hover > button.add {
+  opacity: 1;
 }
 
 @import "scrollbar";

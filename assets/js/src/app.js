@@ -1,6 +1,12 @@
 $(document).ready(function() {
   $('.scroll').perfectScrollbar();
 
+  var n = noty({
+    layout: 'topRight',
+    type: 'success',
+    text: 'noty - a jquery notification library!'
+  });
+
   $("#preview").click(function(e) {
     e.preventDefault();
 
