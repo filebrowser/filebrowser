@@ -63,7 +63,7 @@ notification = function(options) {
   }
 
   var defaults = {
-    template: '<div class="noty_message"><span class="noty_icon">' + icon + '</span><span class="noty_text"></span>...<div class="noty_close"></div></div>'
+    template: '<div class="noty_message"><span class="noty_icon">' + icon + '</span><span class="noty_text"></span><div class="noty_close"></div></div>'
   }
 
   options = $.extend({}, defaults, options);
