@@ -82,6 +82,22 @@ header h1 {
   margin: 0;
 }
 
+footer {
+  background-color: #ddd;
+  padding         : 1.5em 0;
+  text-align      : center;
+  color           : rgba(0,0,0,0.5);
+}
+
+footer a {
+  text-decoration: none;
+  color          : inherit;
+}
+
+footer p {
+  margin: 0;
+}
+
 .content {
   margin   : 1.5em auto;
   width    : 80%;
@@ -220,6 +236,10 @@ form legend {
   font-size: 1.5em;
 }
 
+input[type="file"] {
+  display: none;
+}
+
 button,
 input[type="submit"] {
   border          : 0;
@@ -276,6 +296,48 @@ button.add {
 
 h3:hover > button.add {
   opacity: 1;
+}
+
+/* BROWSE */
+.left {
+  text-align: left;
+}
+
+.right {
+  text-align: right;
+}
+
+.browse a {
+  color          : inherit;
+  text-decoration: none;
+}
+
+.browse table {
+  width: 100%;
+}
+
+.browse .actions {
+  background-color: #455a64;
+  color           : #fff;
+  padding         : 1.5em 0;
+}
+
+.actions .content {
+  margin : 0 auto;
+  display: flex;
+}
+
+.actions .fa {
+  vertical-align: middle;
+}
+
+.actions .go-right {
+  margin-left: auto;
+}
+
+.browse tr {
+  line-height  : 2em;
+  border-bottom: 1px solid rgba(0,0,0,0.03);
 }
 @import "scrollbar";
 @import "notifications";

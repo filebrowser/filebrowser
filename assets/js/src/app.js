@@ -3,10 +3,12 @@ $(document).ready(function() {
 });
 
 $(document).on('ready pjax:success', function() {
+  // Starts the perfect scroolbar plugin
   $('.scroll').perfectScrollbar();
 
-  $("#preview").click(function(e) {
-    e.preventDefault();
+  // Toggles between preview and editing mode
+  $("#preview").click(function(event) {
+    event.preventDefault();
 
     var preview = $("#preview-area"),
       editor = $('.editor textarea');
@@ -40,6 +42,7 @@ $(document).on('ready pjax:success', function() {
     return false;
   });
 
+  // Submites any form in the page in JSON format
   $('form').submit(function(event) {
     event.preventDefault();
 
@@ -51,8 +54,8 @@ $(document).on('ready pjax:success', function() {
       type: 'POST',
       url: url,
       data: data,
-      beforeSend: function(xhr) {
-        xhr.setRequestHeader('X-Regenerate', button.data("regenerate"));
+      headers: {
+        'X-Regenerate': button.data("regenerate")
       },
       dataType: 'json',
       encode: true,
@@ -71,24 +74,27 @@ $(document).on('ready pjax:success', function() {
     });
   });
 
+  // Log out the user sending bad credentials to the server
   $("#logout").click(function(e) {
     e.preventDefault();
-    jQuery.ajax({
-        type: "GET",
-        url: "/admin",
-        async: false,
-        username: "logmeout",
-        password: "123456",
-        headers: {
-          "Authorization": "Basic xxx"
-        }
-      })
-      .fail(function() {
-        window.location = "/";
-      });
+    $.ajax({
+      type: "GET",
+      url: "/admin",
+      async: false,
+      username: "username",
+      password: "password",
+      headers: {
+        "Authorization": "Basic xxx"
+      }
+    }).fail(function() {
+      window.location = "/";
+    });
+
     return false;
   });
 
+  // Adds one more field to the current group
+  // TODO: improve this function. add group/field/array/obj
   $(".add").click(function(e) {
     e.preventDefault();
     fieldset = $(this).closest("fieldset");

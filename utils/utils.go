@@ -52,6 +52,10 @@ func IsInterface(sth interface{}) bool {
 	return reflect.ValueOf(sth).Kind() == reflect.Interface
 }
 
+func IsMarkdownFile(filename string) bool {
+	return strings.HasSuffix(filename, ".markdown") || strings.HasSuffix(filename, ".md")
+}
+
 func SplitCapitalize(name string) string {
 	var words []string
 	l := 0

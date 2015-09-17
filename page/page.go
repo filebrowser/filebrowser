@@ -15,6 +15,7 @@ const (
 
 var funcMap = template.FuncMap{
 	"splitCapitalize": utils.SplitCapitalize,
+	"isMarkdown":      utils.IsMarkdownFile,
 }
 
 // Page type

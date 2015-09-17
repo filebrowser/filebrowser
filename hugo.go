@@ -32,8 +32,15 @@ type handler struct{ Next middleware.Handler }
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	if middleware.Path(r.URL.Path).Matches("/admin") {
 		page := utils.ParseComponents(r)[1]
-		code := 400
+		code := 404
 		var err error
+
+		if page != "assets" && page != "edit" {
+			if r.URL.Path[len(r.URL.Path)-1] != '/' {
+				http.Redirect(w, r, r.URL.Path+"/", http.StatusTemporaryRedirect)
+				return 0, nil
+			}
+		}
 
 		if page == "assets" {
 			filename := strings.Replace(r.URL.Path, "/admin/", "", 1)
@@ -51,11 +58,17 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 
 			w.Write(file)
 			return 200, nil
-		} else if page == "browse" {
+		}
+
+		if page == "browse" {
 			code, err = browse.Execute(w, r)
-		} else if page == "edit" {
+		}
+
+		if page == "edit" {
 			code, err = edit.Execute(w, r)
-		} else if page == "settings" {
+		}
+
+		if r.URL.Path == "/admin/settings/" {
 			code, err = settings.Execute(w, r)
 		}
 
