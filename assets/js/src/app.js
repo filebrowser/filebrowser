@@ -17,7 +17,7 @@ $(document).on('ready pjax:success', function() {
       $(this).data("previewing", "false");
 
       notification({
-        text: "You've gone into editing mode.",
+        text: "Think, relax and do the better you can!",
         type: 'information',
         timeout: 2000
       });
@@ -31,7 +31,7 @@ $(document).on('ready pjax:success', function() {
       $(this).data("previewing", "true");
 
       notification({
-        text: "You've gone into preview mode.",
+        text: "This is how your post looks like.",
         type: 'information',
         timeout: 2000
       });

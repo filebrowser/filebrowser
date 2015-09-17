@@ -35,27 +35,6 @@ type frontmatter struct {
 	Parent  *frontmatter
 }
 
-func sortByTitle(config []*frontmatter) {
-	keys := make([]string, len(config))
-	positionByTitle := make(map[string]int)
-
-	for index, element := range config {
-		keys[index] = element.Title
-		positionByTitle[element.Title] = index
-	}
-
-	sort.Strings(keys)
-	cnf := make([]*frontmatter, len(config))
-
-	for index, title := range keys {
-		cnf[index] = config[positionByTitle[title]]
-	}
-
-	for index := range config {
-		config[index] = cnf[index]
-	}
-}
-
 func rawToPretty(config interface{}, parent *frontmatter) interface{} {
 	objects := []*frontmatter{}
 	arrays := []*frontmatter{}
@@ -94,6 +73,27 @@ func rawToPretty(config interface{}, parent *frontmatter) interface{} {
 	settings = append(settings, arrays...)
 	settings = append(settings, objects...)
 	return settings
+}
+
+func sortByTitle(config []*frontmatter) {
+	keys := make([]string, len(config))
+	positionByTitle := make(map[string]int)
+
+	for index, element := range config {
+		keys[index] = element.Title
+		positionByTitle[element.Title] = index
+	}
+
+	sort.Strings(keys)
+	cnf := make([]*frontmatter, len(config))
+
+	for index, title := range keys {
+		cnf[index] = config[positionByTitle[title]]
+	}
+
+	for index := range config {
+		config[index] = cnf[index]
+	}
 }
 
 func handleObjects(content interface{}, parent *frontmatter, name string) *frontmatter {
