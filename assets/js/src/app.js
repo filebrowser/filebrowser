@@ -1,5 +1,8 @@
 $(document).ready(function() {
   $(document).pjax('a', '#container');
+});
+
+$(document).on('ready pjax:success', function() {
   $('.scroll').perfectScrollbar();
 
   $("#preview").click(function(e) {
@@ -45,9 +48,7 @@ $(document).ready(function() {
       button = $(this).find("input[type=submit]:focus"),
       action = button.val();
 
-    console.log(data);
-
-    /*$.ajax({
+    $.ajax({
       type: 'POST',
       url: url,
       data: data,
@@ -68,7 +69,7 @@ $(document).ready(function() {
         type: 'error'
       });
       console.log(data);
-    }); */
+    });
   });
 
   $("#logout").click(function(e) {
@@ -96,31 +97,3 @@ $(document).ready(function() {
     return false;
   });
 });
-
-
-$.fn.serializeForm = function() {
-  var result = {};
-  this.each(function() {
-    $(this).find(".data > *").each(function() {
-      var $this = $(this);
-      var name = $this.attr("name");
-
-      if ($this.is("fieldset") && name) {
-        if ($this.attr("type") == "array") {
-          result[this.name] = [];
-
-          $.each($this.serializeArray(), function() {
-            result[this.name].push(this.value);
-          });
-        } else {
-          result[name] = $this.serializeForm();
-        }
-      } else {
-        $.each($this.serializeArray(), function() {
-          result[this.name] = this.value;
-        });
-      }
-    });
-  });
-  return result;
-};

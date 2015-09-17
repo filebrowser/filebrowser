@@ -4,9 +4,7 @@
 <div class="content">
   <h1>Settings</h1>
   <form method="POST" action="/admin/settings">
-    <div class="data">
-      {{ template "frontmatter" . }}
-    </div>
+  {{ template "frontmatter" . }}
   <input type="submit" data-message="Settings updated." value="Save">
   </form>
 </div>
