@@ -2467,7 +2467,7 @@ h2 {
   margin: .83em 0;
 }
 
-header {
+nav {
   position: fixed;
   top: 0;
   left: 0;
@@ -2480,7 +2480,7 @@ header {
   color: #eee;
 }
 
-header nav ul {
+nav ul {
   margin: 0;
   padding: 0;
   display: -webkit-box;
@@ -2494,21 +2494,21 @@ header nav ul {
   display: flex;
 }
 
-header nav ul li {
+nav ul li {
   list-style-type: none;
   display: inline-block;
   vertical-align: middle;
 }
 
-header nav ul li:last-child {
+nav ul li:last-child {
   margin-left: auto;
 }
 
-header nav img {
+nav img {
   height: 2em;
 }
 
-header nav ul li a {
+nav ul li a {
   padding: .5em;
   line-height: 2em;
   display: block;
@@ -2517,17 +2517,27 @@ header nav ul li a {
   transition: .5s ease background-color;
 }
 
-header nav ul li a:hover {
+nav ul li a:hover {
   background-color: rgba(255, 255, 255, 0.57);
 }
 
-main {
+.main {
   position: fixed;
   top: 3em;
   left: 0;
   width: 100%;
   height: calc(100% - 3em);
   overflow: auto;
+}
+
+header {
+  color: #fff;
+  background-color: #37474f;
+  padding: .67em 0;
+}
+
+header h1 {
+  margin: 0;
 }
 
 .content {

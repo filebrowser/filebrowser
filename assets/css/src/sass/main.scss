@@ -1,29 +1,29 @@
 body {
   font-family: 'Roboto', sans-serif;
-  color: #212121;
-  height: 100%;
-  width: 100%;
+  color      : #212121;
+  height     : 100%;
+  width      : 100%;
 }
 
 h2 {
   margin: .83em 0;
 }
 
-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 3em;
-  width: 100%;
+nav {
+  position        : fixed;
+  top             : 0;
+  left            : 0;
+  height          : 3em;
+  width           : 100%;
   background-color: #263238;
-  padding: 0 1em;
-  box-sizing: border-box;
-  z-index: 999;
-  color: #eee;
+  padding         : 0 1em;
+  box-sizing      : border-box;
+  z-index         : 999;
+  color           : #eee;
 }
 
-header nav ul {
-  margin: 0;
+nav ul {
+  margin : 0;
   padding: 0;
   display: -webkit-box;
   /* OLD - iOS 6-, Safari 3.1-6 */
@@ -36,45 +36,55 @@ header nav ul {
   display: flex;
 }
 
-header nav ul li {
+nav ul li {
   list-style-type: none;
-  display: inline-block;
-  vertical-align: middle;
+  display        : inline-block;
+  vertical-align : middle;
 }
 
-header nav ul li:last-child {
+nav ul li:last-child {
   margin-left: auto;
 }
 
-header nav img {
+nav img {
   height: 2em;
 }
 
-header nav ul li a {
-  padding: .5em;
-  line-height: 2em;
-  display: block;
+nav ul li a {
+  padding        : .5em;
+  line-height    : 2em;
+  display        : block;
   text-decoration: none;
-  color: inherit;
-  transition: .5s ease background-color;
+  color          : inherit;
+  transition     : .5s ease background-color;
 }
 
-header nav ul li a:hover {
+nav ul li a:hover {
   background-color: rgba(255, 255, 255, 0.57);
 }
 
-main {
+.main {
   position: fixed;
-  top: 3em;
-  left: 0;
-  width: 100%;
-  height: calc(100% - 3em);
+  top     : 3em;
+  left    : 0;
+  width   : 100%;
+  height  : calc(100% - 3em);
   overflow: auto;
 }
 
+header {
+  color           : #fff;
+  background-color: #37474f;
+  padding         : .67em 0;
+}
+
+header h1 {
+  margin: 0;
+}
+
 .content {
-  margin: 1.5em auto;
-  width: 80%;
+  margin   : 1.5em auto;
+  width    : 80%;
   max-width: 800px;
 }
 
@@ -84,26 +94,26 @@ main {
 
 /* EDITOR STYLE */
 .editor .sidebar {
-  position: fixed;
-  left: 0;
-  top: 3em;
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: calc(100% - 3em);
-  width: 25%;
+  position        : fixed;
+  left            : 0;
+  top             : 3em;
+  overflow-y      : auto;
+  overflow-x      : hidden;
+  height          : calc(100% - 3em);
+  width           : 25%;
   background-color: #37474f;
-  color: #ddd;
-  box-sizing: border-box;
-  padding: 1.5em 1em;
+  color           : #ddd;
+  box-sizing      : border-box;
+  padding         : 1.5em 1em;
 }
 
 .editor .container {
-  position: fixed;
-  top: 3em;
-  right: 0;
-  overflow: hidden;
-  height: calc(100% - 6em);
-  width: 75%;
+  position  : fixed;
+  top       : 3em;
+  right     : 0;
+  overflow  : hidden;
+  height    : calc(100% - 6em);
+  width     : 75%;
   box-sizing: border-box;
 }
 
@@ -113,13 +123,13 @@ main {
 
 .editor #preview-area,
 .editor textarea {
-  position: relative;
+  position  : relative;
   box-sizing: border-box;
-  height: 100%;
-  width: 100%;
-  border: 0;
-  padding: 1.5em 10%;
-  font-size: 1.05em;
+  height    : 100%;
+  width     : 100%;
+  border    : 0;
+  padding   : 1.5em 10%;
+  font-size : 1.05em;
 }
 
 .editor #preview-area *:first-child {
@@ -127,7 +137,7 @@ main {
 }
 
 .editor textarea {
-  resize: none;
+  resize     : none;
   font-family: monospace;
 }
 
@@ -136,36 +146,36 @@ main {
 }
 
 .editor input {
-  width: 100%;
+  width           : 100%;
   background-color: rgba(0, 0, 0, 0.25);
-  color: rgba(255, 255, 255, 0.3);
-  border: 0;
-  border-radius: 5px;
-  padding: .5em 1em;
-  box-sizing: border-box;
+  color           : rgba(255, 255, 255, 0.3);
+  border          : 0;
+  border-radius   : 5px;
+  padding         : .5em 1em;
+  box-sizing      : border-box;
 }
 
 .editor input:focus {
-  color: rgba(255, 255, 255, 0.7);
+  color : rgba(255, 255, 255, 0.7);
   border: 0;
 }
 
 .editor h3 {
-  font-size: 1em;
+  font-size  : 1em;
   font-weight: bold;
-  margin: 0;
+  margin     : 0;
 }
 
 .action-bar {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  width: 75%;
+  position        : fixed;
+  bottom          : 0;
+  right           : 0;
+  width           : 75%;
   background-color: #455a64;
-  height: 3em;
-  display: flex;
-  padding: .5em 1em;
-  box-sizing: border-box;
+  height          : 3em;
+  display         : flex;
+  padding         : .5em 1em;
+  box-sizing      : border-box;
 }
 
 .action-bar .left {
@@ -178,31 +188,31 @@ main {
 
 /* FORMS ELEMENTS */
 form input {
-  color: rgba(0, 0, 0, 0.41);
-  width: 15em;
-  line-height: 1.25em;
-  margin: .5em 0;
-  border: 1px solid #fff;
-  transition: .5s ease-out all;
+  color           : rgba(0, 0, 0, 0.41);
+  width           : 15em;
+  line-height     : 1.25em;
+  margin          : .5em 0;
+  border          : 1px solid #fff;
+  transition      : .5s ease-out all;
   background-color: transparent;
 }
 
 form input:focus {
-  color: inherit;
-  outline: 0;
+  color        : inherit;
+  outline      : 0;
   border-bottom: 1px solid #2196f3;
 }
 
 form label {
-  width: 10.5em;
+  width  : 10.5em;
   display: inline-block;
-  margin: .1em 0 0;
+  margin : .1em 0 0;
 }
 
 form fieldset {
-  border: 0;
-  margin: 1em 0 0;
-  padding: 1em 0 0;
+  border    : 0;
+  margin    : 1em 0 0;
+  padding   : 1em 0 0;
   border-top: 1px solid rgba(255, 255, 255, 0.25);
 }
 
@@ -212,16 +222,16 @@ form legend {
 
 button,
 input[type="submit"] {
-  border: 0;
-  color: #fff;
-  margin: 0;
-  padding: .5em 1em;
-  border-radius: 10px;
-  font-size: .9em;
-  width: auto;
-  line-height: 1em;
+  border          : 0;
+  color           : #fff;
+  margin          : 0;
+  padding         : .5em 1em;
+  border-radius   : 10px;
+  font-size       : .9em;
+  width           : auto;
+  line-height     : 1em;
   background-color: #bbb;
-  transition: .3s ease all;
+  transition      : .3s ease all;
 }
 
 button,
@@ -256,12 +266,12 @@ input[type="submit"].default:active {
 
 button.add {
   vertical-align: middle;
-  border-radius: 50%;
-  height: 1.5em;
-  width: 1.5em;
-  font-size: .7em;
-  padding: 0;
-  opacity: 0;
+  border-radius : 50%;
+  height        : 1.5em;
+  width         : 1.5em;
+  font-size     : .7em;
+  padding       : 0;
+  opacity       : 0;
 }
 
 h3:hover > button.add {

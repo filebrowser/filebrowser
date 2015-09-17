@@ -91,7 +91,7 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 		}
 
 		page := new(page.Page)
-		page.Title = "Edit"
+		page.Name = "Edit"
 		page.Body = inf
 		return page.Render(w, r, "edit", "frontmatter")
 	}

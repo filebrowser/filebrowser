@@ -1,9 +1,9 @@
 package page
 
 import (
-	"html/template"
 	"log"
 	"net/http"
+	"text/template"
 
 	"github.com/hacdias/caddy-hugo/assets"
 	"github.com/hacdias/caddy-hugo/utils"
@@ -19,12 +19,24 @@ var funcMap = template.FuncMap{
 
 // Page type
 type Page struct {
-	Title string
-	Body  interface{}
+	Name string
+	Body interface{}
 }
 
 // Render the page
 func (p *Page) Render(w http.ResponseWriter, r *http.Request, templates ...string) (int, error) {
+	tpl, err := GetTemplate(r, templates...)
+
+	if err != nil {
+		log.Print(err)
+		return 500, err
+	}
+
+	tpl.Execute(w, p)
+	return 200, nil
+}
+
+func GetTemplate(r *http.Request, templates ...string) (*template.Template, error) {
 	if r.Header.Get("X-PJAX") == "true" {
 		templates = append(templates, "base_minimal")
 	} else {
@@ -38,7 +50,7 @@ func (p *Page) Render(w http.ResponseWriter, r *http.Request, templates ...strin
 
 		if err != nil {
 			log.Print(err)
-			return 500, err
+			return new(template.Template), err
 		}
 
 		if i == 0 {
@@ -49,10 +61,9 @@ func (p *Page) Render(w http.ResponseWriter, r *http.Request, templates ...strin
 
 		if err != nil {
 			log.Print(err)
-			return 500, err
+			return new(template.Template), err
 		}
 	}
 
-	tpl.Execute(w, p)
-	return 200, nil
+	return tpl, nil
 }

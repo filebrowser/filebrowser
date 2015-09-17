@@ -61,7 +61,7 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 		}
 
 		page := new(page.Page)
-		page.Title = "Settings"
+		page.Name = "Settings"
 		page.Body = f
 		return page.Render(w, r, "settings", "frontmatter")
 	}

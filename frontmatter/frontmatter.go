@@ -85,6 +85,7 @@ func sortByTitle(config []*frontmatter) {
 	}
 
 	sort.Strings(keys)
+	// TODO: http://golang.org/pkg/sort/#Interface
 	cnf := make([]*frontmatter, len(config))
 
 	for index, title := range keys {

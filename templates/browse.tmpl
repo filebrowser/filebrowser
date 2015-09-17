@@ -1,5 +1,61 @@
 {{ define "content" }}
+<header>
+  <div class="content">
+  <h1>{{.Path}}</h1>
+  {{ $path := .Path }}
+</div>
+</header>
+
 <main>
-<a href="/admin/settings">Settings</a>
+  <div class="content">
+    {{if .CanGoUp}}
+			<a href=".." class="up" title="Up one level">&#11025;</a>
+			{{else}}
+			<div class="up">&nbsp;</div>
+			{{end}}
+
+    <table>
+  				<tr>
+  					<th>
+  						{{if and (eq .Sort "name") (ne .Order "desc")}}
+  						<a href="?sort=name&order=desc">Name &#9650;</a>
+  						{{else if and (eq .Sort "name") (ne .Order "asc")}}
+  						<a href="?sort=name&order=asc">Name &#9660;</a>
+  						{{else}}
+  						<a href="?sort=name&order=asc">Name</a>
+  						{{end}}
+  					</th>
+  					<th>
+  						{{if and (eq .Sort "size") (ne .Order "desc")}}
+  						<a href="?sort=size&order=desc">Size &#9650;</a>
+  						{{else if and (eq .Sort "size") (ne .Order "asc")}}
+  						<a href="?sort=size&order=asc">Size &#9660;</a>
+  						{{else}}
+  						<a href="?sort=size&order=asc">Size</a>
+  						{{end}}
+  					</th>
+  					<th class="hideable">
+  						{{if and (eq .Sort "time") (ne .Order "desc")}}
+  						<a href="?sort=time&order=desc">Modified &#9650;</a>
+  						{{else if and (eq .Sort "time") (ne .Order "asc")}}
+  						<a href="?sort=time&order=asc">Modified &#9660;</a>
+  						{{else}}
+  						<a href="?sort=time&order=asc">Modified</a>
+  						{{end}}
+  					</th>
+  				</tr>
+  				{{range .Items}}
+  				<tr>
+  					<td>
+  						{{if .IsDir}}&#128194;<a href="{{.URL}}">{{.Name}}</a>{{else}}
+              &#128196;<a href="/admin/edit{{ $path }}{{.URL}}">{{.Name}}</a>{{end}}
+
+  					</td>
+  					<td>{{.HumanSize}}</td>
+  					<td class="hideable">{{.HumanModTime "01/02/2006 3:04:05 PM -0700"}}</td>
+  				</tr>
+  				{{end}}
+  			</table>
+</div>
 </main>
 {{ end }}
