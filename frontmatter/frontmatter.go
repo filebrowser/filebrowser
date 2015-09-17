@@ -2,11 +2,14 @@ package frontmatter
 
 import (
 	"log"
+	"reflect"
 	"sort"
 
 	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/spf13/hugo/parser"
 )
+
+const mainName = "#MAIN#"
 
 // Pretty creates a new FrontMatter object
 func Pretty(content []byte) (interface{}, error) {
@@ -19,6 +22,7 @@ func Pretty(content []byte) (interface{}, error) {
 
 	object := new(frontmatter)
 	object.Type = "object"
+	object.Name = mainName
 
 	return rawToPretty(front, object), nil
 }
@@ -59,76 +63,22 @@ func rawToPretty(config interface{}, parent *frontmatter) interface{} {
 
 	if parent.Type == "array" {
 		for index, element := range config.([]interface{}) {
-			c := new(frontmatter)
-			c.Parent = parent
-
 			if utils.IsMap(element) {
-				c.Type = "object"
-
-				if parent.Name == "" {
-					c.Name = c.Title
-				} else {
-					c.Name = parent.Name + "[" + c.Name + "]"
-				}
-
-				c.Content = rawToPretty(config.([]interface{})[index], c)
-				objects = append(objects, c)
+				objects = append(objects, handleObjects(element, parent, string(index)))
 			} else if utils.IsSlice(element) {
-				c.Type = "array"
-				c.Name = parent.Name + "[" + c.Name + "]"
-				c.Content = rawToPretty(config.([]interface{})[index], c)
-
-				arrays = append(arrays, c)
+				arrays = append(arrays, handleArrays(element, parent, string(index)))
 			} else {
-				// TODO: add string, boolean, number
-				c.Type = "string"
-				c.Name = parent.Name + "[]"
-				c.Title = element.(string)
-				c.Content = config.([]interface{})[index]
-				fields = append(fields, c)
+				fields = append(fields, handleFlatValues(element, parent, string(index)))
 			}
 		}
 	} else if parent.Type == "object" {
 		for name, element := range config.(map[string]interface{}) {
-			c := new(frontmatter)
-			c.Title = name
-			c.Parent = parent
-
 			if utils.IsMap(element) {
-				c.Type = "object"
-
-				if parent.Name == "" {
-					c.Name = c.Title
-				} else {
-					c.Name = parent.Name + "[" + c.Title + "]"
-				}
-
-				c.Content = rawToPretty(config.(map[string]interface{})[name], c)
-				objects = append(objects, c)
+				objects = append(objects, handleObjects(element, parent, name))
 			} else if utils.IsSlice(element) {
-				c.Type = "array"
-
-				if parent.Name == "" {
-					c.Name = name
-				} else {
-					c.Name = parent.Name + "[" + c.Name + "]"
-				}
-
-				c.Content = rawToPretty(config.(map[string]interface{})[c.Title], c)
-
-				arrays = append(arrays, c)
+				arrays = append(arrays, handleArrays(element, parent, name))
 			} else {
-				// TODO: add string, boolean, number
-				c.Type = "string"
-
-				if parent.Name == "" {
-					c.Name = name
-				} else {
-					c.Name = parent.Name + "[" + name + "]"
-				}
-
-				c.Content = element
-				fields = append(fields, c)
+				fields = append(fields, handleFlatValues(element, parent, name))
 			}
 		}
 	} else {
@@ -143,6 +93,71 @@ func rawToPretty(config interface{}, parent *frontmatter) interface{} {
 	settings = append(settings, fields...)
 	settings = append(settings, arrays...)
 	settings = append(settings, objects...)
-
 	return settings
+}
+
+func handleObjects(content interface{}, parent *frontmatter, name string) *frontmatter {
+	c := new(frontmatter)
+	c.Parent = parent
+	c.Type = "object"
+	c.Title = name
+
+	if parent.Name == mainName {
+		c.Name = c.Title
+	} else {
+		c.Name = parent.Name + "[" + c.Title + "]"
+	}
+
+	c.Content = rawToPretty(content, c)
+	return c
+}
+
+func handleArrays(content interface{}, parent *frontmatter, name string) *frontmatter {
+	c := new(frontmatter)
+	c.Parent = parent
+	c.Type = "array"
+	c.Title = name
+
+	if parent.Type == "object" && parent.Name == mainName {
+		c.Name = name
+	} else {
+		c.Name = parent.Name + "[" + c.Name + "]"
+	}
+
+	c.Content = rawToPretty(content, c)
+	return c
+}
+
+func handleFlatValues(content interface{}, parent *frontmatter, name string) *frontmatter {
+	c := new(frontmatter)
+	c.Parent = parent
+
+	switch reflect.ValueOf(content).Kind() {
+	case reflect.Bool:
+		c.Type = "boolean"
+	case reflect.Int:
+	case reflect.Float32:
+	case reflect.Float64:
+		c.Type = "number"
+	case reflect.String:
+	default:
+		c.Type = "string"
+	}
+
+	if parent.Type == "array" {
+		c.Name = parent.Name + "[]"
+		c.Title = content.(string)
+	} else if parent.Type == "object" {
+		c.Title = name
+		c.Name = parent.Name + "[" + name + "]"
+
+		if parent.Name == mainName {
+			c.Name = name
+		}
+	} else {
+		log.Panic("Parent type not allowed in handleFlatValues.")
+	}
+
+	c.Content = content
+	return c
 }

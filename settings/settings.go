@@ -10,7 +10,6 @@ import (
 
 	"github.com/hacdias/caddy-hugo/frontmatter"
 	"github.com/hacdias/caddy-hugo/page"
-	"github.com/spf13/hugo/commands"
 )
 
 // Execute the page
@@ -46,10 +45,6 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte("{}"))
-
-		if r.Header.Get("X-Save-Mode") == "publish" {
-			commands.Execute()
-		}
 	} else {
 		content, err := ioutil.ReadFile("config." + language)
 

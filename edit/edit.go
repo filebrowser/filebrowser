@@ -11,7 +11,6 @@ import (
 
 	"github.com/hacdias/caddy-hugo/frontmatter"
 	"github.com/hacdias/caddy-hugo/page"
-	"github.com/spf13/hugo/commands"
 	"github.com/spf13/hugo/parser"
 )
 
@@ -67,10 +66,6 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte("{}"))
-
-		if r.Header.Get("X-Save-Mode") == "Publish" {
-			go commands.Execute()
-		}
 	} else {
 		if _, err := os.Stat(filename); os.IsNotExist(err) {
 			log.Print(err)

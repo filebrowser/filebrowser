@@ -43,17 +43,16 @@ $(document).on('ready pjax:success', function() {
   $('form').submit(function(event) {
     event.preventDefault();
 
-    var data = $(this).serializeJSON(),
+    var data = JSON.stringify($(this).serializeJSON()),
       url = $(this).attr('action'),
-      button = $(this).find("input[type=submit]:focus"),
-      action = button.val();
+      button = $(this).find("input[type=submit]:focus");
 
     $.ajax({
       type: 'POST',
       url: url,
       data: data,
       beforeSend: function(xhr) {
-        xhr.setRequestHeader('X-Save-Mode', action);
+        xhr.setRequestHeader('X-Regenerate', button.data("regenerate"));
       },
       dataType: 'json',
       encode: true,

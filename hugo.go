@@ -32,6 +32,8 @@ type handler struct{ Next middleware.Handler }
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	if middleware.Path(r.URL.Path).Matches("/admin") {
 		page := utils.ParseComponents(r)[1]
+		code := 400
+		var err error
 
 		if page == "assets" {
 			filename := strings.Replace(r.URL.Path, "/admin/", "", 1)
@@ -50,14 +52,18 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 			w.Write(file)
 			return 200, nil
 		} else if page == "browse" {
-			return browse.Execute(w, r)
+			code, err = browse.Execute(w, r)
 		} else if page == "edit" {
-			return edit.Execute(w, r)
+			code, err = edit.Execute(w, r)
 		} else if page == "settings" {
-			return settings.Execute(w, r)
+			code, err = settings.Execute(w, r)
 		}
 
-		return 404, nil
+		if r.Header.Get("X-Regenerate") == "true" {
+			commands.Execute()
+		}
+
+		return code, err
 	}
 
 	return h.Next.ServeHTTP(w, r)

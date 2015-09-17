@@ -5,7 +5,7 @@
   <h1>Settings</h1>
   <form method="POST" action="/admin/settings">
   {{ template "frontmatter" . }}
-  <input type="submit" data-message="Settings updated." value="Save">
+  <input type="submit" data-message="Settings updated." data-regenerate="true" value="Save">
   </form>
 </div>
 {{ end }}
