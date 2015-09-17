@@ -36,6 +36,22 @@ func IsArray(sth interface{}) bool {
 	return reflect.ValueOf(sth).Kind() == reflect.Array
 }
 
+func IsString(sth interface{}) bool {
+	return reflect.ValueOf(sth).Kind() == reflect.String
+}
+
+func IsInt(sth interface{}) bool {
+	return reflect.ValueOf(sth).Kind() == reflect.Int
+}
+
+func IsBool(sth interface{}) bool {
+	return reflect.ValueOf(sth).Kind() == reflect.Bool
+}
+
+func IsInterface(sth interface{}) bool {
+	return reflect.ValueOf(sth).Kind() == reflect.Interface
+}
+
 func SplitCapitalize(name string) string {
 	var words []string
 	l := 0

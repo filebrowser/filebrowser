@@ -67,11 +67,12 @@ module.exports = function(grunt) {
     uglify: {
       target: {
         files: {
-          'assets/js/app.min.js': ['node_modules/jquery/dist/jquery.js',
-            'node_modules/perfect-scrollbar/dist/js/perfect-scrollbar.jquery.js',
-            'node_modules/showdown/dist/showdown.js',
-            'node_modules/noty/js/noty/packaged/jquery.noty.packaged.js',
+          'assets/js/app.min.js': ['node_modules/jquery/dist/jquery.min.js',
+            'node_modules/perfect-scrollbar/dist/js/min/perfect-scrollbar.jquery.min.js',
+            'node_modules/showdown/dist/showdown.min.js',
+            'node_modules/noty/js/noty/packaged/jquery.noty.packaged.min.js',
             'node_modules/jquery-pjax/jquery.pjax.js',
+            'node_modules/jquery-serializejson/jquery.serializejson.min.js',
             'assets/js/src/**/*.js'
           ]
         }

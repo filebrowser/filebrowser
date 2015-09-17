@@ -38,12 +38,16 @@ $(document).ready(function() {
   });
 
   $('form').submit(function(event) {
-    var data = JSON.stringify($(this).serializeForm()),
+    event.preventDefault();
+
+    var data = $(this).serializeJSON(),
       url = $(this).attr('action'),
       button = $(this).find("input[type=submit]:focus"),
       action = button.val();
 
-    $.ajax({
+    console.log(data);
+
+    /*$.ajax({
       type: 'POST',
       url: url,
       data: data,
@@ -64,9 +68,7 @@ $(document).ready(function() {
         type: 'error'
       });
       console.log(data);
-    });
-
-    event.preventDefault();
+    }); */
   });
 
   $("#logout").click(function(e) {
