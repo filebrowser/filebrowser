@@ -25,7 +25,8 @@
     "normalize.css": "^3.0.3",
     "noty": "^2.3.6",
     "perfect-scrollbar": "^0.6.4",
-    "showdown": "^1.2.3"
+    "showdown": "^1.2.3",
+    "textarea-autosize": "^0.4.1"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

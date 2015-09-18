@@ -6,7 +6,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/hacdias/caddy-hugo/edit"
+	"github.com/hacdias/caddy-hugo/editor"
 	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/mholt/caddy/middleware"
 	"github.com/mholt/caddy/middleware/browse"
@@ -26,7 +26,7 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 
 	functions := template.FuncMap{
-		"canBeEdited": edit.CanBeEdited,
+		"canBeEdited": editor.CanBeEdited,
 	}
 
 	tpl, err := utils.GetTemplate(r, functions, "browse")

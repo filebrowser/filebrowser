@@ -120,15 +120,11 @@ func handleFlatValues(content interface{}, parent *frontmatter, name string) *fr
 	c := new(frontmatter)
 	c.Parent = parent
 
-	// TODO: see why isn't this working
 	switch reflect.ValueOf(content).Kind() {
 	case reflect.Bool:
 		c.Type = "boolean"
-	case reflect.Int:
-	case reflect.Float32:
-	case reflect.Float64:
+	case reflect.Int, reflect.Float32, reflect.Float64:
 		c.Type = "number"
-	case reflect.String:
 	default:
 		c.Type = "string"
 	}

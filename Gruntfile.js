@@ -75,6 +75,7 @@ module.exports = function(grunt) {
             'node_modules/jquery-pjax/jquery.pjax.js',
             'node_modules/jquery-serializejson/jquery.serializejson.min.js',
             'node_modules/codemirror/lib/codemirror.js',
+            'node_modules/textarea-autosize/dist/jquery.textarea_autosize.js',
             'assets/js/src/**/*.js'
           ]
         }

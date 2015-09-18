@@ -5,13 +5,13 @@ package hugo
 import (
 	"mime"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/assets"
 	"github.com/hacdias/caddy-hugo/browse"
-	"github.com/hacdias/caddy-hugo/edit"
-	"github.com/hacdias/caddy-hugo/settings"
+	"github.com/hacdias/caddy-hugo/editor"
 	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/mholt/caddy/config/setup"
 	"github.com/mholt/caddy/middleware"
@@ -82,7 +82,22 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 		// page variable isn't used here to avoid people using URLs like
 		// "/admin/settings/something".
 		if r.URL.Path == "/admin/settings/" {
-			code, err = settings.Execute(w, r)
+			var frontmatter string
+
+			if _, err := os.Stat("config.yaml"); err == nil {
+				frontmatter = "yaml"
+			}
+
+			if _, err := os.Stat("config.json"); err == nil {
+				frontmatter = "json"
+			}
+
+			if _, err := os.Stat("config.toml"); err == nil {
+				frontmatter = "toml"
+			}
+
+			http.Redirect(w, r, "/admin/edit/config."+frontmatter, http.StatusTemporaryRedirect)
+			return 0, nil
 		}
 
 		// Browse page
@@ -92,7 +107,7 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 
 		// Edit page
 		if page == "edit" {
-			code, err = edit.Execute(w, r)
+			code, err = editor.Execute(w, r)
 		}
 
 		// Whenever the header "X-Refenerate" is true, the website should be

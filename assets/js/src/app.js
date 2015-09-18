@@ -5,6 +5,7 @@ $(document).ready(function() {
 $(document).on('ready pjax:success', function() {
   // Starts the perfect scroolbar plugin
   $('.scroll').perfectScrollbar();
+  $('textarea.auto-size').textareaAutoSize();
 
   // Toggles between preview and editing mode
   $("#preview").click(function(event) {
@@ -49,6 +50,8 @@ $(document).on('ready pjax:success', function() {
     var data = JSON.stringify($(this).serializeJSON()),
       url = $(this).attr('action'),
       button = $(this).find("input[type=submit]:focus");
+
+    console.log(data)
 
     $.ajax({
       type: 'POST',
