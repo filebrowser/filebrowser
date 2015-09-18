@@ -43,6 +43,16 @@ $(document).on('ready pjax:success', function() {
     return false;
   });
 
+  if ($('#content-area')[0]) {
+    var myCodeMirror = CodeMirror.fromTextArea($('#content-area')[0], {
+      mode: 'markdown',
+      theme: 'mdn-like',
+      lineWrapping: true,
+      lineNumbers: false,
+      scrollbarStyle: null
+    });
+  }
+
   // Submites any form in the page in JSON format
   $('form').submit(function(event) {
     event.preventDefault();

@@ -58,6 +58,20 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 			}
 
 			f, err := parser.InterfaceToFrontMatter(rawFile, mark)
+			fString := string(f)
+
+			// If it's toml or yaml, strip frontmatter identifier
+			if frontmatter == "toml" {
+				fString = strings.TrimSuffix(fString, "+++\n")
+				fString = strings.TrimPrefix(fString, "+++\n")
+			}
+
+			if frontmatter == "yaml" {
+				fString = strings.TrimSuffix(fString, "---\n")
+				fString = strings.TrimPrefix(fString, "---\n")
+			}
+
+			f = []byte(fString)
 
 			if err != nil {
 				log.Print(err)

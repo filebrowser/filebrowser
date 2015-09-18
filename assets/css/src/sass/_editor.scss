@@ -13,7 +13,7 @@
   box-sizing: border-box;
 }
 
-.editor.full .container {
+.full .container {
   position: fixed;
   top     : 3em;
   right   : 0;
@@ -26,7 +26,8 @@
 }
 
 .editor #preview-area,
-.editor textarea {
+.editor textarea,
+.CodeMirror {
   position  : relative;
   box-sizing: border-box;
   height    : 100%;
@@ -34,6 +35,10 @@
   border    : 0;
   padding   : 1.5em 10%;
   font-size : 1.05em;
+}
+
+.CodeMirror {
+  padding: 0;
 }
 
 .editor #preview-area *:first-child {
@@ -142,4 +147,10 @@
 
 .full .action-bar {
   width: 75%;
+}
+
+.full .cm-s-mdn-like.CodeMirror {
+  background: none;
+  width     : auto;
+  margin    : 1.5em 10%;
 }

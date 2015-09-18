@@ -39,6 +39,7 @@ module.exports = function(grunt) {
           'node_modules/font-awesome/css/font-awesome.css',
           'node_modules/animate.css/animate.min.css',
           'node_modules/codemirror/lib/codemirror.css',
+          'node_modules/codemirror/theme/mdn-like.css',
           'assets/css/src/main.css'
         ],
         dest: 'assets/css/src/main.css',
@@ -75,6 +76,7 @@ module.exports = function(grunt) {
             'node_modules/jquery-pjax/jquery.pjax.js',
             'node_modules/jquery-serializejson/jquery.serializejson.min.js',
             'node_modules/codemirror/lib/codemirror.js',
+            'node_modules/codemirror/mode/markdown/markdown.js',
             'node_modules/textarea-autosize/dist/jquery.textarea_autosize.js',
             'assets/js/src/**/*.js'
           ]
