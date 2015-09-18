@@ -9,7 +9,7 @@
   {{ if not (eq $value.Parent.Type "array") }}
   <label for="{{ $value.Name }}">{{ splitCapitalize $value.Title }}</label>
   {{ end }}
-  <input name="{{ $value.Name }}" id="{{ $value.Name }}" value="{{ $value.Content }}"></input><br>
+  <input name="{{ $value.Name }}:auto" id="{{ $value.Name }}" value="{{ $value.Content }}"></input><br>
   {{ end }}
 {{ end }}
 {{ end }}

@@ -4,6 +4,7 @@ import (
 	"log"
 	"reflect"
 	"sort"
+	"strings"
 
 	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/spf13/hugo/parser"
@@ -64,9 +65,9 @@ func rawToPretty(config interface{}, parent *frontmatter) interface{} {
 		log.Panic("Parent type not allowed.")
 	}
 
-	sortByTitle(objects)
-	sortByTitle(arrays)
-	sortByTitle(fields)
+	sort.Sort(sortByTitle(objects))
+	sort.Sort(sortByTitle(arrays))
+	sort.Sort(sortByTitle(fields))
 
 	settings := []*frontmatter{}
 	settings = append(settings, fields...)
@@ -75,26 +76,12 @@ func rawToPretty(config interface{}, parent *frontmatter) interface{} {
 	return settings
 }
 
-func sortByTitle(config []*frontmatter) {
-	keys := make([]string, len(config))
-	positionByTitle := make(map[string]int)
+type sortByTitle []*frontmatter
 
-	for index, element := range config {
-		keys[index] = element.Title
-		positionByTitle[element.Title] = index
-	}
-
-	sort.Strings(keys)
-	// TODO: http://golang.org/pkg/sort/#Interface
-	cnf := make([]*frontmatter, len(config))
-
-	for index, title := range keys {
-		cnf[index] = config[positionByTitle[title]]
-	}
-
-	for index := range config {
-		config[index] = cnf[index]
-	}
+func (f sortByTitle) Len() int      { return len(f) }
+func (f sortByTitle) Swap(i, j int) { f[i], f[j] = f[j], f[i] }
+func (f sortByTitle) Less(i, j int) bool {
+	return strings.ToLower(f[i].Name) < strings.ToLower(f[j].Name)
 }
 
 func handleObjects(content interface{}, parent *frontmatter, name string) *frontmatter {
@@ -133,6 +120,7 @@ func handleFlatValues(content interface{}, parent *frontmatter, name string) *fr
 	c := new(frontmatter)
 	c.Parent = parent
 
+	// TODO: see why isn't this working
 	switch reflect.ValueOf(content).Kind() {
 	case reflect.Bool:
 		c.Type = "boolean"

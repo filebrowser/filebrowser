@@ -1,8 +1,13 @@
 {{ define "content" }}
+<header>
+  <div class="content">
+    <h1>Settings</h1>
+  </div>
+</header>
+
 <main>
 {{ with .Body }}
 <div class="content">
-  <h1>Settings</h1>
   <form method="POST" action="/admin/settings">
   {{ template "frontmatter" . }}
   <input type="submit" data-message="Settings updated." data-regenerate="true" value="Save">

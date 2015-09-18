@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "animate.css": "^3.4.0",
+    "codemirror": "^5.6.0",
     "font-awesome": "^4.4.0",
     "jquery": "^2.1.4",
     "jquery-serializejson": "^2.5.0",

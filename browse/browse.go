@@ -41,6 +41,7 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 				Template:  tpl,
 			},
 		},
+		IgnoreIndexes: true,
 	}
 
 	return b.ServeHTTP(w, r)

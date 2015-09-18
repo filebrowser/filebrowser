@@ -24,38 +24,48 @@ func Dict(values ...interface{}) (map[string]interface{}, error) {
 	return dict, nil
 }
 
+// IsMap checks if some variable is a map
 func IsMap(sth interface{}) bool {
 	return reflect.ValueOf(sth).Kind() == reflect.Map
 }
 
+// IsSlice checks if some variable is a slice
 func IsSlice(sth interface{}) bool {
 	return reflect.ValueOf(sth).Kind() == reflect.Slice
 }
 
+// IsArray checks if some variable is an array
 func IsArray(sth interface{}) bool {
 	return reflect.ValueOf(sth).Kind() == reflect.Array
 }
 
+// IsString checks if some variable is a string
 func IsString(sth interface{}) bool {
 	return reflect.ValueOf(sth).Kind() == reflect.String
 }
 
+// IsInt checks if some variable is an integer
 func IsInt(sth interface{}) bool {
 	return reflect.ValueOf(sth).Kind() == reflect.Int
 }
 
+// IsBool checks if some variable is a boolean
 func IsBool(sth interface{}) bool {
 	return reflect.ValueOf(sth).Kind() == reflect.Bool
 }
 
+// IsInterface checks if some variable is an interface
 func IsInterface(sth interface{}) bool {
 	return reflect.ValueOf(sth).Kind() == reflect.Interface
 }
 
+// IsMarkdownFile checks if a filename belongs to a markdown file
 func IsMarkdownFile(filename string) bool {
 	return strings.HasSuffix(filename, ".markdown") || strings.HasSuffix(filename, ".md")
 }
 
+// SplitCapitalize splits a string by its uppercase letters and capitalize the
+// first letter of the string
 func SplitCapitalize(name string) string {
 	var words []string
 	l := 0
@@ -79,6 +89,7 @@ func SplitCapitalize(name string) string {
 	return name
 }
 
+// ParseComponents parses the components of an URL creating an array
 func ParseComponents(r *http.Request) []string {
 	//The URL that the user queried.
 	path := r.URL.Path
