@@ -4,8 +4,10 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"text/template"
 
-	"github.com/hacdias/caddy-hugo/page"
+	"github.com/hacdias/caddy-hugo/edit"
+	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/mholt/caddy/middleware"
 	"github.com/mholt/caddy/middleware/browse"
 )
@@ -23,7 +25,11 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 		r.URL.Path = "/"
 	}
 
-	tpl, err := page.GetTemplate(r, "browse")
+	functions := template.FuncMap{
+		"canBeEdited": edit.CanBeEdited,
+	}
+
+	tpl, err := utils.GetTemplate(r, functions, "browse")
 
 	if err != nil {
 		log.Print(err)

@@ -2856,7 +2856,7 @@ nav ul li a:hover {
   background-color: rgba(255, 255, 255, 0.57);
 }
 
-.main {
+#main {
   position: fixed;
   top: 3em;
   left: 0;

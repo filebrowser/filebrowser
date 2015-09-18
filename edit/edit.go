@@ -8,13 +8,14 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"text/template"
 
 	"github.com/hacdias/caddy-hugo/frontmatter"
-	"github.com/hacdias/caddy-hugo/page"
+	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/spf13/hugo/parser"
 )
 
-type information struct {
+type editor struct {
 	Name        string
 	Content     string
 	FrontMatter interface{}
@@ -81,7 +82,7 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 
 		file, err := parser.ReadFrom(reader)
 
-		inf := new(information)
+		inf := new(editor)
 		inf.Content = strings.TrimSpace(string(file.Content()))
 		inf.FrontMatter, err = frontmatter.Pretty(file.FrontMatter())
 
@@ -90,12 +91,37 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 			return 500, err
 		}
 
-		page := new(page.Page)
-		page.Name = "Editor"
-		page.Class = "editor"
-		page.Body = inf
-		return page.Render(w, r, "edit", "frontmatter")
+		functions := template.FuncMap{
+			"splitCapitalize": utils.SplitCapitalize,
+		}
+
+		tpl, err := utils.GetTemplate(r, functions, "edit", "frontmatter")
+
+		if err != nil {
+			log.Print(err)
+			return 500, err
+		}
+
+		tpl.Execute(w, inf)
 	}
 
 	return 200, nil
+}
+
+// CanBeEdited checks if a file has a supported extension
+func CanBeEdited(filename string) bool {
+	extensions := [...]string{".markdown", ".md",
+		".json", ".toml", ".yaml",
+		".css", ".sass", ".scss",
+		".js",
+		".html",
+	}
+
+	for _, extension := range extensions {
+		if strings.HasSuffix(filename, extension) {
+			return true
+		}
+	}
+
+	return false
 }

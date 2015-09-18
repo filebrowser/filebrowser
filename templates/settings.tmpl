@@ -6,14 +6,12 @@
 </header>
 
 <main>
-{{ with .Body }}
 <div class="content">
   <form method="POST" action="/admin/settings">
-  {{ template "frontmatter" . }}
+  {{ template "frontmatter" .Settings }}
   <input type="submit" data-message="Settings updated." data-regenerate="true" value="Save">
   </form>
 </div>
-{{ end }}
 </main>
 
 {{ end }}

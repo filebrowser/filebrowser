@@ -2,11 +2,56 @@ package utils
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"reflect"
 	"strings"
+	"text/template"
 	"unicode"
+
+	"github.com/hacdias/caddy-hugo/assets"
 )
+
+// GetTemplate is used to get a ready to use template based on the url and on
+// other sent templates
+func GetTemplate(r *http.Request, functions template.FuncMap, templates ...string) (*template.Template, error) {
+	// If this is a pjax request, use the minimal template to send only
+	// the main content
+	if r.Header.Get("X-PJAX") == "true" {
+		templates = append(templates, "base_minimal")
+	} else {
+		templates = append(templates, "base_full")
+	}
+
+	var tpl *template.Template
+
+	// For each template, add it to the the tpl variable
+	for i, t := range templates {
+		// Get the template from the assets
+		page, err := assets.Asset("templates/" + t + ".tmpl")
+
+		// Check if there is some error. If so, the template doesn't exist
+		if err != nil {
+			log.Print(err)
+			return new(template.Template), err
+		}
+
+		// If it's the first iteration, creates a new template and add the
+		// functions map
+		if i == 0 {
+			tpl, err = template.New(t).Funcs(functions).Parse(string(page))
+		} else {
+			tpl, err = tpl.Parse(string(page))
+		}
+
+		if err != nil {
+			log.Print(err)
+			return new(template.Template), err
+		}
+	}
+
+	return tpl, nil
+}
 
 // Dict allows to send more than one variable into a template
 func Dict(values ...interface{}) (map[string]interface{}, error) {
@@ -32,36 +77,6 @@ func IsMap(sth interface{}) bool {
 // IsSlice checks if some variable is a slice
 func IsSlice(sth interface{}) bool {
 	return reflect.ValueOf(sth).Kind() == reflect.Slice
-}
-
-// IsArray checks if some variable is an array
-func IsArray(sth interface{}) bool {
-	return reflect.ValueOf(sth).Kind() == reflect.Array
-}
-
-// IsString checks if some variable is a string
-func IsString(sth interface{}) bool {
-	return reflect.ValueOf(sth).Kind() == reflect.String
-}
-
-// IsInt checks if some variable is an integer
-func IsInt(sth interface{}) bool {
-	return reflect.ValueOf(sth).Kind() == reflect.Int
-}
-
-// IsBool checks if some variable is a boolean
-func IsBool(sth interface{}) bool {
-	return reflect.ValueOf(sth).Kind() == reflect.Bool
-}
-
-// IsInterface checks if some variable is an interface
-func IsInterface(sth interface{}) bool {
-	return reflect.ValueOf(sth).Kind() == reflect.Interface
-}
-
-// IsMarkdownFile checks if a filename belongs to a markdown file
-func IsMarkdownFile(filename string) bool {
-	return strings.HasSuffix(filename, ".markdown") || strings.HasSuffix(filename, ".md")
 }
 
 // SplitCapitalize splits a string by its uppercase letters and capitalize the

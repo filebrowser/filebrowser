@@ -52,7 +52,7 @@
     {{if .IsDir}}
     <i class="fa fa-folder"></i> <a href="{{.URL}}">{{.Name}}</a>
     {{else}}
-    {{ if isMarkdown .URL }}
+    {{ if canBeEdited .URL }}
     <i class="fa fa-file"></i> <a class="file" href="/admin/edit{{ $path }}{{.URL}}">{{.Name}}</a>
     {{ else }}
     <i class="fa fa-file"></i> {{.Name}}

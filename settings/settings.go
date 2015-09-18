@@ -7,10 +7,16 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"text/template"
 
 	"github.com/hacdias/caddy-hugo/frontmatter"
-	"github.com/hacdias/caddy-hugo/page"
+	"github.com/hacdias/caddy-hugo/utils"
 )
+
+type page struct {
+	Name     string
+	Settings interface{}
+}
 
 // Execute the page
 func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
@@ -60,11 +66,22 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 			return 500, err
 		}
 
-		page := new(page.Page)
-		page.Name = "Settings"
-		page.Class = "settings"
-		page.Body = f
-		return page.Render(w, r, "settings", "frontmatter")
+		functions := template.FuncMap{
+			"splitCapitalize": utils.SplitCapitalize,
+		}
+
+		tpl, err := utils.GetTemplate(r, functions, "settings", "frontmatter")
+
+		if err != nil {
+			log.Print(err)
+			return 500, err
+		}
+
+		p := new(page)
+		p.Name = "settings"
+		p.Settings = f
+
+		tpl.Execute(w, p)
 	}
 	return 200, nil
 }
