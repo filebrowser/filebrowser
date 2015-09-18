@@ -1,4 +1,5 @@
 {{ define "content" }}
+
 <div class="editor {{ .Class }}">
   <form method="POST" action="">
     <div class="box scroll">
@@ -43,8 +44,8 @@
       {{ else }}
       <span class="left"></span>
       {{ end }}
-      <input type="submit" data-message="Post saved." data-regenerate="false"  value="Save">
-      <input type="submit" data-message="Post published successfully." data-regenerate="true" class="default" value="Publish">
+      <input type="submit" data-type="{{ .Class }}" data-message="{{ if eq .Class "frontmatter-only" }}The fields were put on their way.{{ else if eq .Class "content-only" }}Every byte was saved.{{ else }}Post saved with pomp and circumstance.{{ end }}" data-regenerate="false"  value="Save">
+      <input type="submit" data-type="{{ .Class }}" data-message="{{ if eq .Class "frontmatter-only" }}Saved and regenerated.{{ else if eq .Class "content-only" }}Done. What do you want more?{{ else }}Post published. Go and share it!{{ end }}" data-regenerate="true" class="default" value="Publish">
     </div>
   </form>
 </div>

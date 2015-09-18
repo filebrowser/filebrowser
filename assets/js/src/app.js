@@ -3,9 +3,9 @@ $(document).ready(function() {
 });
 
 $(document).on('ready pjax:success', function() {
+  $('textarea.auto-size').textareaAutoSize();
   // Starts the perfect scroolbar plugin
   $('.scroll').perfectScrollbar();
-  $('textarea.auto-size').textareaAutoSize();
 
   // Toggles between preview and editing mode
   $("#preview").click(function(event) {
@@ -48,17 +48,17 @@ $(document).on('ready pjax:success', function() {
     event.preventDefault();
 
     var data = JSON.stringify($(this).serializeJSON()),
-      url = $(this).attr('action'),
       button = $(this).find("input[type=submit]:focus");
 
     console.log(data)
 
     $.ajax({
       type: 'POST',
-      url: url,
+      url: window.location,
       data: data,
       headers: {
-        'X-Regenerate': button.data("regenerate")
+        'X-Regenerate': button.data("regenerate"),
+        'X-Content-Type': button.data("type")
       },
       dataType: 'json',
       encode: true,
@@ -105,3 +105,10 @@ $(document).on('ready pjax:success', function() {
     return false;
   });
 });
+
+$(document).on('pjax:send', function() {
+  $('#loading').fadeIn()
+})
+$(document).on('pjax:complete', function() {
+  $('#loading').fadeOut()
+})

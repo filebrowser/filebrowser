@@ -2,6 +2,7 @@ package editor
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"log"
@@ -29,16 +30,48 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 	filename := strings.Replace(r.URL.Path, "/admin/edit/", "", 1)
 
 	if r.Method == "POST" {
-		// TODO: review post saving
-		/*
-			// Get the JSON information sent using a buffer
-			rawBuffer := new(bytes.Buffer)
-			rawBuffer.ReadFrom(r.Body)
+		// Get the JSON information sent using a buffer
+		rawBuffer := new(bytes.Buffer)
+		rawBuffer.ReadFrom(r.Body)
 
-			// Creates the raw file "map" using the JSON
-			var rawFile map[string]interface{}
-			json.Unmarshal(rawBuffer.Bytes(), &rawFile)
+		// Creates the raw file "map" using the JSON
+		var rawFile map[string]interface{}
+		json.Unmarshal(rawBuffer.Bytes(), &rawFile)
 
+		// Initializes the file content to write
+		var file []byte
+
+		switch r.Header.Get("X-Content-Type") {
+		case "frontmatter-only":
+			frontmatter := strings.TrimPrefix(filepath.Ext(filename), ".")
+			var mark rune
+
+			switch frontmatter {
+			case "toml":
+				mark = rune('+')
+			case "json":
+				mark = rune('{')
+			case "yaml":
+				mark = rune('-')
+			default:
+				return 400, nil
+			}
+
+			f, err := parser.InterfaceToFrontMatter(rawFile, mark)
+
+			if err != nil {
+				log.Print(err)
+				return 500, err
+			}
+
+			file = f
+		case "content-only":
+			// The main content of the file
+			mainContent := rawFile["content"].(string)
+			mainContent = "\n\n" + strings.TrimSpace(mainContent)
+
+			file = []byte(mainContent)
+		case "full":
 			// The main content of the file
 			mainContent := rawFile["content"].(string)
 			mainContent = "\n\n" + strings.TrimSpace(mainContent)
@@ -59,19 +92,24 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 			json.Indent(frontMatterBuffer, jsonFrontmatter, "", "  ")
 
 			// Generates the final file
-			file := new(bytes.Buffer)
-			file.Write(frontMatterBuffer.Bytes())
-			file.Write([]byte(mainContent))
+			f := new(bytes.Buffer)
+			f.Write(frontMatterBuffer.Bytes())
+			f.Write([]byte(mainContent))
+			file = f.Bytes()
+		default:
+			return 400, nil
+		}
 
-			err = ioutil.WriteFile(filename, file.Bytes(), 0666)
+		// Write the file
+		err := ioutil.WriteFile(filename, file, 0666)
 
-			if err != nil {
-				log.Print(err)
-				return 500, err
-			}
+		if err != nil {
+			log.Print(err)
+			return 500, err
+		}
 
-			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte("{}")) */
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte("{}"))
 	} else {
 		// Check if the file format is supported. If not, send a "Not Acceptable"
 		// header and an error

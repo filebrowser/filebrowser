@@ -98,6 +98,10 @@ footer p {
   margin: 0;
 }
 
+main {
+  width: 100%;
+}
+
 .content {
   margin   : 1.5em auto;
   width    : 80%;
@@ -393,3 +397,4 @@ h3:hover > button.add {
 }
 @import "scrollbar";
 @import "notifications";
+@import "animations";
