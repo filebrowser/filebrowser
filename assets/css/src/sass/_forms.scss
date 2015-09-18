@@ -1,0 +1,98 @@
+/* FORMS ELEMENTS */
+form input {
+  color           : rgba(0, 0, 0, 0.41);
+  width           : 15em;
+  line-height     : 1.25em;
+  margin          : .5em 0;
+  border          : 1px solid #fff;
+  transition      : .5s ease-out all;
+  background-color: transparent;
+}
+
+form input:focus {
+  color        : inherit;
+  outline      : 0;
+  border-bottom: 1px solid #2196f3;
+}
+
+form label {
+  width  : 10.5em;
+  display: inline-block;
+  margin : .1em 0 0;
+}
+
+form fieldset {
+  border    : 0;
+  margin    : 1em 0 0;
+  padding   : 1em 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+form legend {
+  font-size: 1.5em;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+button,
+input[type="submit"] {
+  border          : 0;
+  color           : #fff;
+  margin          : 0;
+  padding         : .5em 1em;
+  border-radius   : 10px;
+  font-size       : .9em;
+  width           : auto;
+  line-height     : 1em;
+  background-color: #bbb;
+  transition      : .3s ease all;
+}
+
+button,
+input[type="submit"],
+button:active,
+input[type="submit"]:active,
+button:hover,
+input[type="submit"]:hover,
+button:focus,
+input[type="submit"]:focus {
+  outline: 0;
+}
+
+button:hover,
+input[type="submit"]:hover,
+button:active,
+input[type="submit"]:active,
+button:focus,
+input[type="submit"]:focus {
+  background-color: #999;
+  color           : #fff;
+}
+
+button.default,
+input[type="submit"].default {
+  background-color: #2196f3;
+}
+
+button.default:hover,
+input[type="submit"].default:hover,
+button.default:active,
+input[type="submit"].default:active {
+  background-color: #1e88e5;
+}
+
+button.add {
+  vertical-align: middle;
+  border-radius : 50%;
+  height        : 1.5em;
+  width         : 1.5em;
+  font-size     : .7em;
+  padding       : 0;
+  opacity       : 0;
+}
+
+h3:hover > button.add {
+  opacity: 1;
+}
