@@ -177,16 +177,11 @@ $(document).on('ready pjax:success', function() {
 
     $(".delete").click(function(event) {
       event.preventDefault();
-      name = $(this).parent().parent().attr("for");
-
-      if (name == "undefined") {
-        name = $(this).parent().parent().attr("id");
-      }
-
+      name = $(this).parent().parent().attr("for") || $(this).parent().parent().parent().attr("id");
       console.log(name)
 
-      $('#' + name).remove();
-      $('label[for="' + name + '"]').remove();
+      $('#' + name).fadeOut().remove();
+      $('label[for="' + name + '"]').fadeOut().remove();
     });
 
     $('body').on('keypress', 'input', function(event) {
