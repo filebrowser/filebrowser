@@ -1,18 +1,21 @@
 /* FORMS ELEMENTS */
 form input {
-  color           : rgba(0, 0, 0, 0.41);
-  width           : 15em;
-  line-height     : 1.25em;
+  width           : 100%;
+  background-color: rgba(0, 0, 0, 0.25);
+  color           : rgba(255, 255, 255, 0.3);
+  border          : 0;
+  border-radius   : 5px;
+  padding         : .5em 1em;
+  box-sizing      : border-box;
   margin          : .5em 0;
-  border          : 1px solid #fff;
+  line-height     : 1.25em;
   transition      : .5s ease-out all;
-  background-color: transparent;
 }
 
 form input:focus {
-  color        : inherit;
-  outline      : 0;
-  border-bottom: 1px solid #2196f3;
+  color  : rgba(255, 255, 255, 0.7);
+  border : 0;
+  outline: 0;
 }
 
 form label {
@@ -26,10 +29,6 @@ form fieldset {
   margin    : 1em 0 0;
   padding   : 1em 0 0;
   border-top: 1px solid rgba(255, 255, 255, 0.25);
-}
-
-form legend {
-  font-size: 1.5em;
 }
 
 input[type="file"] {

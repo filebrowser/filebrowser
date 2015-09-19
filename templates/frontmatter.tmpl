@@ -1,15 +1,19 @@
-{{ define "frontmatter" }}
-{{ range $key, $value := . }}
-  {{ if or (eq $value.Type "object") (eq $value.Type "array") }}
-  <fieldset id="{{ $value.Name }}" data-name="{{ $value.Name }}" data-type="{{ $value.Type }}">
-    <h3>{{ splitCapitalize $value.Title }} <span class="actions"><button class="delete"><i class="fa fa-minus"></i></button> <button class="add"><i class="fa fa-plus"></i></button></span></h3>
-    {{ template "frontmatter" $value.Content }}
-  </fieldset>
-  {{ else }}
-  {{ if not (eq $value.Parent.Type "array") }}
-  <label for="{{ $value.Name }}">{{ splitCapitalize $value.Title }} <span class="actions"><button class="delete"><i class="fa fa-minus"></i></button></span></label>
-  {{ end }}
-  <input name="{{ $value.Name }}:auto" id="{{ $value.Name }}" value="{{ $value.Content }}"></input>
-  {{ end }}
+{{ define "frontmatter" }} {{ range $key, $value := . }} {{ if or (eq $value.Type "object") (eq $value.Type "array") }}
+<fieldset id="{{ $value.Name }}" data-name="{{ $value.Name }}" data-type="{{ $value.Type }}">
+  <h3>{{ splitCapitalize $value.Title }}
+    <span class="actions">
+      <button class="delete"><i class="fa fa-minus"></i></button>
+      <button class="add"><i class="fa fa-plus"></i></button>
+    </span>
+  </h3>
+  {{ template "frontmatter" $value.Content }}
+</fieldset>
+{{ else }} {{ if not (eq $value.Parent.Type "array") }}
+<label for="{{ $value.Name }}">{{ splitCapitalize $value.Title }}
+  <span class="actions">
+    <button class="delete"><i class="fa fa-minus"></i></button>
+  </span>
+</label>
 {{ end }}
-{{ end }}
+<input name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" value="{{ $value.Content }}"></input>
+{{ end }} {{ end }} {{ end }}

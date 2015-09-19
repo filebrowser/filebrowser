@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  $(document).pjax('a', '#main');
+  $(document).pjax('a', '#content');
 });
 
 $(document).on('ready pjax:success', function() {

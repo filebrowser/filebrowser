@@ -110,7 +110,7 @@ func post(w http.ResponseWriter, r *http.Request, filename string) (int, error) 
 		mainContent = "\n\n" + strings.TrimSpace(mainContent)
 
 		file = []byte(mainContent)
-	case "full":
+	case "complete":
 		// The main content of the file
 		mainContent := rawFile["content"].(string)
 		mainContent = "\n\n" + strings.TrimSpace(mainContent)
@@ -195,7 +195,7 @@ func get(w http.ResponseWriter, r *http.Request, filename string) (int, error) {
 			// Parses the page content and the frontmatter
 			page.Content = strings.TrimSpace(string(file.Content()))
 			page.FrontMatter, err = frontmatter.Pretty(file.FrontMatter())
-			page.Class = "full"
+			page.Class = "complete"
 		} else {
 			// The editor will handle only content
 			page.Class = "content-only"

@@ -1,0 +1,49 @@
+nav {
+  position        : fixed;
+  top             : 0;
+  left            : 0;
+  height          : 3em;
+  width           : 100%;
+  background-color: #263238;
+  padding         : 0 1em;
+  box-sizing      : border-box;
+  z-index         : 999;
+  color           : #eee;
+}
+
+nav ul {
+  margin : 0;
+  padding: 0;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+nav ul li {
+  list-style-type: none;
+  display        : inline-block;
+  vertical-align : middle;
+}
+
+nav ul li:last-child {
+  margin-left: auto;
+}
+
+nav img {
+  height: 2em;
+}
+
+nav ul li a {
+  padding        : .5em;
+  line-height    : 2em;
+  display        : block;
+  text-decoration: none;
+  color          : inherit;
+  transition     : .5s ease background-color;
+}
+
+nav ul li a:hover {
+  background-color: rgba(255, 255, 255, 0.57);
+}

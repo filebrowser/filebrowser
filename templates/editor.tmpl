@@ -2,35 +2,35 @@
 
 <div class="editor {{ .Class }}">
   <form method="POST" action="">
-    <div class="box scroll">
+    <div class="full box scroll">
       <main>
-        {{ if not (eq .Class "full") }}
+        {{ if not (eq .Class "complete") }}
         <header>
-          <div class="content">
-            <h1>{{ .Name }} <span class="actions"><button class="add"><i class="fa fa-plus"></i></button></span></h1>
+          <div class="container">
+            <h1>{{ .Name }}{{ if eq .Class "frontmatter-only" }}
+              <span class="actions">
+                <button class="add"><i class="fa fa-plus"></i></button>
+              </span>{{ end }}
+            </h1>
           </div>
         </header>
-        {{ end }}
-
-        {{ if eq .Class "frontmatter-only" }}
-        <div class="sidebar">
-          <div class="content">
-          {{ template "frontmatter" .FrontMatter }}
+        {{ end }} {{ if eq .Class "frontmatter-only" }}
+        <div class="frontmatter">
+          <div class="container">
+            {{ template "frontmatter" .FrontMatter }}
           </div>
         </div>
         {{ else if eq .Class "content-only" }}
         <div class="container">
-          <div class="content">
-            <textarea id="content-area" name="content" class="scroll" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
-            <div id="preview-area" class="scroll hidden"></div>
-          </div>
+          <textarea id="content-area" name="content" class="scroll" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
+          <div id="preview-area" class="scroll hidden"></div>
         </div>
         {{ else }}
         <div class="container">
           <textarea id="content-area" name="content" class="scroll" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
           <div id="preview-area" class="scroll hidden"></div>
         </div>
-        <div class="sidebar scroll">
+        <div class="frontmatter scroll">
           <h2>Metadata</h2>
           {{ template "frontmatter" .FrontMatter }}
         </div>
@@ -38,14 +38,16 @@
       </main>
     </div>
 
-    <div class="action-bar">
+    <div class="toolbar">
       {{ if or (eq .Mode "markdown") (eq .Class "full") }}
       <button id="preview" class="left">Preview</button>
       {{ else }}
       <span class="left"></span>
       {{ end }}
-      <input type="submit" data-type="{{ .Class }}" data-message="{{ if eq .Class "frontmatter-only" }}The fields were put on their way.{{ else if eq .Class "content-only" }}Every byte was saved.{{ else }}Post saved with pomp and circumstance.{{ end }}" data-regenerate="false"  value="Save">
-      <input type="submit" data-type="{{ .Class }}" data-message="{{ if eq .Class "frontmatter-only" }}Saved and regenerated.{{ else if eq .Class "content-only" }}Done. What do you want more?{{ else }}Post published. Go and share it!{{ end }}" data-regenerate="true" class="default" value="Publish">
+      <input type="submit" data-type="{{ .Class }}" data-message="{{ if eq .Class " frontmatter-only " }}The fields were put on their way.{{ else if eq .Class "content-only " }}Every byte was saved.{{ else }}Post saved with pomp and circumstance.{{ end }}"
+      data-regenerate="false" value="Save">
+      <input type="submit" data-type="{{ .Class }}" data-message="{{ if eq .Class " frontmatter-only " }}Saved and regenerated.{{ else if eq .Class "content-only " }}Done. What do you want more?{{ else }}Post published. Go and share it!{{ end }}" data-regenerate="true"
+      class="default" value="Publish">
     </div>
   </form>
 </div>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -23,15 +24,16 @@
       <li><a id="logout" href="#logout"><i class="fa fa-sign-out"></i> Logout</a></li>
     </ul>
   </nav>
-  <div id="main">
-  {{ template "content" . }}
+  <div id="content">
+    {{ template "content" . }}
   </div>
 
   <div id="loading">
     <div class="double-bounce">
-        <div class="child double-bounce1"></div>
-        <div class="child double-bounce2"></div>
-      </div>
+      <div class="child double-bounce1"></div>
+      <div class="child double-bounce2"></div>
+    </div>
   </div>
 </body>
+
 </html>
