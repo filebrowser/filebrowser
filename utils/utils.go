@@ -69,6 +69,19 @@ func Dict(values ...interface{}) (map[string]interface{}, error) {
 	return dict, nil
 }
 
+// Defined checks if variable is defined in a struct
+func Defined(data interface{}, field string) bool {
+	t := reflect.Indirect(reflect.ValueOf(data)).Type()
+
+	if t.Kind() != reflect.Struct {
+		log.Print("Non-struct type not allowed.")
+		return false
+	}
+
+	_, b := t.FieldByName(field)
+	return b
+}
+
 // IsMap checks if some variable is a map
 func IsMap(sth interface{}) bool {
 	return reflect.ValueOf(sth).Kind() == reflect.Map

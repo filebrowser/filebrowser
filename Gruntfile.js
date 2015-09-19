@@ -1,5 +1,4 @@
 module.exports = function(grunt) {
-
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-concat');
@@ -10,12 +9,12 @@ module.exports = function(grunt) {
   grunt.initConfig({
     watch: {
       sass: {
-        files: ['assets/css/src/sass/**/*.scss'],
+        files: ['assets/src/sass/**/*.scss'],
         tasks: ['sass', 'concat', 'cssmin']
       },
       js: {
-        files: ['assets/js/src/**/*.js'],
-        tasks: ['uglify']
+        files: ['assets/src/js/**/*.js'],
+        tasks: ['uglify:main']
       },
     },
     sass: {
@@ -26,9 +25,9 @@ module.exports = function(grunt) {
         },
         files: [{
           expand: true,
-          cwd: 'assets/css/src/sass',
+          cwd: 'assets/src/sass',
           src: ['**/*.scss'],
-          dest: 'assets/css/src',
+          dest: 'temp/css',
           ext: '.css'
         }]
       }
@@ -40,9 +39,9 @@ module.exports = function(grunt) {
           'node_modules/animate.css/animate.min.css',
           'node_modules/codemirror/lib/codemirror.css',
           'node_modules/codemirror/theme/mdn-like.css',
-          'assets/css/src/main.css'
+          'temp/css/**/*.css'
         ],
-        dest: 'assets/css/src/main.css',
+        dest: 'temp/css/main.css',
       },
     },
     copy: {
@@ -59,7 +58,7 @@ module.exports = function(grunt) {
       target: {
         files: [{
           expand: true,
-          cwd: 'assets/css/src',
+          cwd: 'temp/css/',
           src: ['*.css', '!*.min.css'],
           dest: 'assets/css/',
           ext: '.min.css'
@@ -67,19 +66,22 @@ module.exports = function(grunt) {
       }
     },
     uglify: {
-      target: {
+      plugins: {
         files: {
-          'assets/js/app.min.js': ['node_modules/jquery/dist/jquery.min.js',
+          'assets/js/plugins.min.js': ['node_modules/jquery/dist/jquery.min.js',
             'node_modules/perfect-scrollbar/dist/js/min/perfect-scrollbar.jquery.min.js',
             'node_modules/showdown/dist/showdown.min.js',
             'node_modules/noty/js/noty/packaged/jquery.noty.packaged.min.js',
             'node_modules/jquery-pjax/jquery.pjax.js',
             'node_modules/jquery-serializejson/jquery.serializejson.min.js',
             'node_modules/codemirror/lib/codemirror.js',
-            'node_modules/codemirror/mode/markdown/markdown.js',
-            'node_modules/textarea-autosize/dist/jquery.textarea_autosize.js',
-            'assets/js/src/**/*.js'
+            'node_modules/codemirror/mode/markdown/markdown.js'
           ]
+        }
+      },
+      main: {
+        files: {
+          'assets/js/app.min.js': ['assets/src/js/**/*.js']
         }
       }
     }

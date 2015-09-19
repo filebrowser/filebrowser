@@ -12,8 +12,8 @@ import (
 	"github.com/mholt/caddy/middleware/browse"
 )
 
-// Execute sth
-func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
+// ServeHTTP is...
+func ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	if r.URL.Path[len(r.URL.Path)-1] != '/' {
 		http.Redirect(w, r, r.URL.Path+"/", http.StatusTemporaryRedirect)
 		return 0, nil
@@ -27,6 +27,7 @@ func Execute(w http.ResponseWriter, r *http.Request) (int, error) {
 
 	functions := template.FuncMap{
 		"canBeEdited": editor.CanBeEdited,
+		"Defined":     utils.Defined,
 	}
 
 	tpl, err := utils.GetTemplate(r, functions, "browse")

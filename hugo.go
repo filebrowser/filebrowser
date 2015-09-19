@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/hugo/commands"
 )
 
+// Setup configures the middleware
 func Setup(c *setup.Controller) (middleware.Middleware, error) {
 	commands.Execute()
 
@@ -102,12 +103,12 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 
 		// Browse page
 		if page == "browse" {
-			code, err = browse.Execute(w, r)
+			code, err = browse.ServeHTTP(w, r)
 		}
 
 		// Edit page
 		if page == "edit" {
-			code, err = editor.Execute(w, r)
+			code, err = editor.ServeHTTP(w, r)
 		}
 
 		// Whenever the header "X-Refenerate" is true, the website should be

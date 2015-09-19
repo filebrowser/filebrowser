@@ -21,13 +21,13 @@
         {{ else if eq .Class "content-only" }}
         <div class="container">
           <div class="content">
-            <textarea id="content-area" name="content" class="scroll auto-size">{{ .Content }}</textarea>
+            <textarea id="content-area" name="content" class="scroll" data-extension="{{ .Extension }}">{{ .Content }}</textarea>
             <div id="preview-area" class="scroll hidden"></div>
           </div>
         </div>
         {{ else }}
         <div class="container">
-          <textarea id="content-area" name="content" class="scroll">{{ .Content }}</textarea>
+          <textarea id="content-area" name="content" class="scroll" data-extension="{{ .Extension }}">{{ .Content }}</textarea>
           <div id="preview-area" class="scroll hidden"></div>
         </div>
         <div class="sidebar scroll">

@@ -41,6 +41,10 @@
   padding: 0;
 }
 
+.cm-s-mdn-like.CodeMirror {
+  background: none;
+}
+
 .editor #preview-area *:first-child {
   margin-top: 0;
 }
@@ -150,7 +154,7 @@
 }
 
 .full .cm-s-mdn-like.CodeMirror {
-  background: none;
-  width     : auto;
-  margin    : 1.5em 10%;
+  width : auto;
+  margin: 3em 10%;
+  height: calc(100% - 6em);
 }
