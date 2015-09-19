@@ -7,8 +7,8 @@ $(document).on('ready pjax:success', function() {
   $('.scroll').perfectScrollbar();
 
   // Log out the user sending bad credentials to the server
-  $("#logout").click(function(e) {
-    e.preventDefault();
+  $("#logout").click(function(event) {
+    event.preventDefault();
     $.ajax({
       type: "GET",
       url: "/admin",
@@ -21,7 +21,6 @@ $(document).on('ready pjax:success', function() {
     }).fail(function() {
       window.location = "/";
     });
-
     return false;
   });
 
@@ -31,6 +30,7 @@ $(document).on('ready pjax:success', function() {
     preview = $("#preview-area");
     textarea = $("#content-area");
 
+    // If it has a textarea
     if (textarea[0]) {
       options = {
         mode: textarea.data("mode"),
@@ -45,57 +45,53 @@ $(document).on('ready pjax:success', function() {
       }
 
       editor = CodeMirror.fromTextArea(textarea[0], options);
+      codemirror = $('.CodeMirror');
+
+      // Toggles between preview and editing mode
+      $("#preview").click(function(event) {
+        event.preventDefault();
+
+        // If it currently in the preview mode, hide the preview
+        // and show the editor
+        if ($(this).data("previewing") == "true") {
+          preview.hide();
+          codemirror.fadeIn();
+          $(this).data("previewing", "false");
+          notification({
+            text: "Think, relax and do the better you can!",
+            type: 'information',
+            timeout: 2000
+          });
+        } else {
+          // Copy the editor content to texteare
+          editor.save()
+
+          // If it's in editing mode, convert the markdown to html
+          // and show it
+          var converter = new showdown.Converter(),
+            text = textarea.val(),
+            html = converter.makeHtml(text);
+
+          // Hide the editor and show the preview
+          codemirror.hide();
+          preview.html(html).fadeIn();
+          $(this).data("previewing", "true");
+          notification({
+            text: "This is how your post looks like.",
+            type: 'information',
+            timeout: 2000
+          });
+        }
+
+        return false;
+      });
     }
-
-    codemirror = $('.CodeMirror');
-
-    // Toggles between preview and editing mode
-    $("#preview").click(function(event) {
-      event.preventDefault();
-
-      // If it currently in the preview mode, hide the preview
-      // and show the editor
-      if ($(this).data("previewing") == "true") {
-        preview.hide();
-        codemirror.fadeIn();
-        $(this).data("previewing", "false");
-        notification({
-          text: "Think, relax and do the better you can!",
-          type: 'information',
-          timeout: 2000
-        });
-      } else {
-        // Copy the editor content to texteare
-        editor.save()
-
-        // If it's in editing mode, convert the markdown to html
-        // and show it
-        var converter = new showdown.Converter(),
-          text = textarea.val(),
-          html = converter.makeHtml(text);
-
-        // Hide the editor and show the preview
-        codemirror.hide();
-        preview.html(html).fadeIn();
-        $(this).data("previewing", "true");
-        notification({
-          text: "This is how your post looks like.",
-          type: 'information',
-          timeout: 2000
-        });
-      }
-
-      return false;
-    });
 
     // Submites any form in the page in JSON format
     $('form').submit(function(event) {
       event.preventDefault();
-
       var data = JSON.stringify($(this).serializeJSON()),
         button = $(this).find("input[type=submit]:focus");
-
-      console.log(data)
 
       $.ajax({
         type: 'POST',
@@ -120,24 +116,79 @@ $(document).on('ready pjax:success', function() {
         });
         console.log(data);
       });
+
     });
 
     // Adds one more field to the current group
-    // TODO: improve this function. add group/field/array/obj
-    $(".add").click(function(e) {
-      e.preventDefault();
-      fieldset = $(this).closest("fieldset");
-      fieldset.append("<input name=\"" + fieldset.attr("name") + "\" id=\"" + fieldset.attr("name") + "\" value=\"\"></input><br>");
+    $(".add").click(function(event) {
+      event.preventDefault();
+
+      if ($("#new").length) {
+        return false;
+      }
+
+      title = $(this).parent().parent();
+      fieldset = title.parent();
+      type = fieldset.data("type");
+      name = fieldset.data("name");
+
+      if (title.is('h1')) {
+        fieldset = $('.sidebar .content');
+        fieldset.prepend('<div id="ghost"></div>');
+        title = $('#ghost');
+        type = "object";
+      }
+
+      if (type == "object") {
+        title.after('<input id="new" placeholder="Write the field name and press enter..."></input>');
+        element = $("#new");
+
+        $(element).keypress(function(event) {
+          if (event.which == 13) {
+            event.preventDefault();
+            value = element.val();
+            element.remove();
+
+            if (value == "") {
+              return false;
+            }
+
+            if (name == "undefined") {
+              name = value
+            } else {
+              name = name + '[' + value + ']';
+            }
+
+            title.after('<input name="' + name + ':auto" id="' + name + '"></input><br>');
+            title.after('<label for="' + name + '">' + value + ' <span class="actions"><button class="delete"><i class="fa fa-minus"></i></button></span></label>');
+
+            return false;
+          }
+        });
+      }
+
+      if (type == "array") {
+        name = name + "[]";
+        title.after('<input name="' + name + ':auto" id="' + name + '"></input><br>');
+      }
+
       return false;
     });
 
-
+    $('body').on('keypress', 'input', function(event) {
+      if (event.keyCode == 13) {
+        event.preventDefault();
+        $('input[value="Save"]').focus().click();
+        return false;
+      }
+    });
   }
 });
 
 $(document).on('pjax:send', function() {
-  $('#loading').fadeIn()
-})
+  $('#loading').fadeIn();
+});
+
 $(document).on('pjax:complete', function() {
-  $('#loading').fadeOut()
-})
+  $('#loading').fadeOut();
+});

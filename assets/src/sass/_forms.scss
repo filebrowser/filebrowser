@@ -83,16 +83,31 @@ input[type="submit"].default:active {
   background-color: #1e88e5;
 }
 
-button.add {
+button.add,
+button.delete {
   vertical-align: middle;
   border-radius : 50%;
   height        : 1.5em;
   width         : 1.5em;
   font-size     : .7em;
   padding       : 0;
-  opacity       : 0;
 }
 
-h3:hover > button.add {
+button.add {
+  background-color: #00c853;
+}
+
+button.delete {
+  background-color: #ff5252;
+}
+
+.editor .actions {
+  opacity   : 0;
+  transition: .2s ease-in-out opacity;
+}
+
+label:hover > .actions,
+h1:hover > .actions,
+h3:hover > .actions {
   opacity: 1;
 }

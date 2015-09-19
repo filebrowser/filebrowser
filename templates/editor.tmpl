@@ -7,7 +7,7 @@
         {{ if not (eq .Class "full") }}
         <header>
           <div class="content">
-            <h1>{{ .Name }}</h1>
+            <h1>{{ .Name }} <span class="actions"><button class="add"><i class="fa fa-plus"></i></button> <button class="delete"><i class="fa fa-minus"></i></button></span></h1>
           </div>
         </header>
         {{ end }}

@@ -111,11 +111,16 @@
 }
 
 .frontmatter-only input {
-  color: rgba(255,255,255,.4);
+  background-color: rgba(255,255,255,0.4);
+  color           : #aaa;
+}
+
+.frontmatter-only label {
+  width: 100%;
 }
 
 .frontmatter-only input:focus {
-  color: rgba(255,255,255,.85);
+  color: #555;
 }
 
 .frontmatter-only .action-bar input,
@@ -129,6 +134,13 @@
 
 .frontmatter-only h3 {
   font-size: 1.5em;
+}
+
+input::-webkit-input-placeholder,
+input:-moz-placeholder,
+input::-moz-placeholder,
+input:-ms-input-placeholder {
+  color: #fff;
 }
 
 /* EDITOR CONTENT ONLY STYLES */
