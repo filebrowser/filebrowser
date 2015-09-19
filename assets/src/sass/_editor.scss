@@ -136,6 +136,12 @@
   font-size: 1.5em;
 }
 
+.frontmatter-only h1,
+.frontmatter-only h3,
+.frontmatter-only label {
+  position: relative !important;
+}
+
 input::-webkit-input-placeholder,
 input:-moz-placeholder,
 input::-moz-placeholder,

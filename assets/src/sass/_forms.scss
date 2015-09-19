@@ -89,7 +89,7 @@ button.delete {
   border-radius : 50%;
   height        : 1.5em;
   width         : 1.5em;
-  font-size     : .7em;
+  font-size     : .7rem;
   padding       : 0;
 }
 
@@ -109,5 +109,5 @@ button.delete {
 label:hover > .actions,
 h1:hover > .actions,
 h3:hover > .actions {
-  opacity: 1;
+  opacity: .7;
 }

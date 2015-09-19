@@ -175,6 +175,20 @@ $(document).on('ready pjax:success', function() {
       return false;
     });
 
+    $(".delete").click(function(event) {
+      event.preventDefault();
+      name = $(this).parent().parent().attr("for");
+
+      if (name == "undefined") {
+        name = $(this).parent().parent().attr("id");
+      }
+
+      console.log(name)
+
+      $('#' + name).remove();
+      $('label[for="' + name + '"]').remove();
+    });
+
     $('body').on('keypress', 'input', function(event) {
       if (event.keyCode == 13) {
         event.preventDefault();
