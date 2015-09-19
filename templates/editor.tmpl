@@ -21,13 +21,13 @@
         {{ else if eq .Class "content-only" }}
         <div class="container">
           <div class="content">
-            <textarea id="content-area" name="content" class="scroll" data-extension="{{ .Extension }}">{{ .Content }}</textarea>
+            <textarea id="content-area" name="content" class="scroll" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
             <div id="preview-area" class="scroll hidden"></div>
           </div>
         </div>
         {{ else }}
         <div class="container">
-          <textarea id="content-area" name="content" class="scroll" data-extension="{{ .Extension }}">{{ .Content }}</textarea>
+          <textarea id="content-area" name="content" class="scroll" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
           <div id="preview-area" class="scroll hidden"></div>
         </div>
         <div class="sidebar scroll">
@@ -39,7 +39,7 @@
     </div>
 
     <div class="action-bar">
-      {{ if or (eq .Extension "markdown") (eq .Extension "md") (eq .Class "full") }}
+      {{ if or (eq .Mode "markdown") (eq .Class "full") }}
       <button id="preview" class="left">Preview</button>
       {{ else }}
       <span class="left"></span>

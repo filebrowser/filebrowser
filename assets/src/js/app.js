@@ -33,14 +33,14 @@ $(document).on('ready pjax:success', function() {
 
     if (textarea[0]) {
       options = {
-        mode: 'markdown',
+        mode: textarea.data("mode"),
         theme: 'mdn-like',
         lineWrapping: true,
         lineNumbers: true,
         scrollbarStyle: null
       }
 
-      if (textarea.data("extension") == "markdown") {
+      if (textarea.data("mode") == "markdown") {
         options.lineNumbers = false
       }
 

@@ -20,7 +20,7 @@ import (
 type editor struct {
 	Name        string
 	Class       string
-	Extension   string
+	Mode        string
 	Content     string
 	FrontMatter interface{}
 }
@@ -174,13 +174,15 @@ func get(w http.ResponseWriter, r *http.Request, filename string) (int, error) {
 
 	// Create a new editor variable and set the extension
 	page := new(editor)
-	page.Extension = strings.TrimPrefix(filepath.Ext(filename), ".")
+	page.Mode = strings.TrimPrefix(filepath.Ext(filename), ".")
 	page.Name = filename
 
+	// Sanitize the extension
+	page.Mode = sanitizeMode(page.Mode)
+
 	// Handle the content depending on the file extension
-	switch page.Extension {
-	case "markdown", "md":
-		page.Extension = "markdown"
+	switch page.Mode {
+	case "markdown":
 		if hasFrontMatterRune(file) {
 			// Starts a new buffer and parses the file using Hugo's functions
 			buffer := bytes.NewBuffer(file)
@@ -208,7 +210,7 @@ func get(w http.ResponseWriter, r *http.Request, filename string) (int, error) {
 		if hasFrontMatterRune(file) {
 			page.FrontMatter, err = frontmatter.Pretty(file)
 		} else {
-			page.FrontMatter, err = frontmatter.Pretty(appendFrontMatterRune(file, page.Extension))
+			page.FrontMatter, err = frontmatter.Pretty(appendFrontMatterRune(file, page.Mode))
 		}
 
 		// Check if there were any errors
@@ -255,4 +257,19 @@ func appendFrontMatterRune(frontmatter []byte, language string) []byte {
 	}
 
 	return frontmatter
+}
+
+func sanitizeMode(extension string) string {
+	switch extension {
+	case "markdown", "md":
+		return "markdown"
+	case "css", "scss":
+		return "css"
+	case "html":
+		return "htmlmixed"
+	case "js":
+		return "javascript"
+	default:
+		return extension
+	}
 }
