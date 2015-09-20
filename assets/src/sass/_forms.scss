@@ -1,5 +1,5 @@
 /* FORMS ELEMENTS */
-form input {
+input {
   width           : 100%;
   background-color: rgba(0, 0, 0, 0.25);
   color           : rgba(255, 255, 255, 0.3);
@@ -12,13 +12,13 @@ form input {
   transition      : .5s ease-out all;
 }
 
-form input:focus {
+input:focus {
   color  : rgba(255, 255, 255, 0.7);
   border : 0;
   outline: 0;
 }
 
-form label {
+label {
   width  : 10.5em;
   display: inline-block;
   margin : .1em 0 0;
@@ -109,6 +109,10 @@ button.delete {
   transition: .2s ease-in-out opacity;
 }
 
+div[data-type="array-item"] {
+  position: relative;
+}
+
 label:hover > .actions,
 h1:hover > .actions,
 h3:hover > .actions,
@@ -120,8 +124,4 @@ input[data-parent-type="array"] + .actions {
   position: absolute;
   top     : 1em;
   right   : .5em;
-}
-
-div[data-type="array-item"] {
-  position: relative;
 }

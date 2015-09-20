@@ -1,6 +1,9 @@
 package browse
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -49,6 +52,25 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, e
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte("{}"))
+	} else if r.Method == "POST" {
+		// Get the JSON information sent using a buffer
+		buffer := new(bytes.Buffer)
+		buffer.ReadFrom(r.Body)
+
+		// Creates the raw file "map" using the JSON
+		var info map[string]interface{}
+		json.Unmarshal(buffer.Bytes(), &info)
+
+		// Check if filename and archtype are specified in
+		// the request
+		if _, ok := info["filename"]; !ok {
+			return 400, errors.New("Filename not specified.")
+		}
+
+		if _, ok := info["archtype"]; !ok {
+			return 400, errors.New("Archtype not specified.")
+		}
+
 	} else {
 		functions := template.FuncMap{
 			"CanBeEdited": utils.CanBeEdited,

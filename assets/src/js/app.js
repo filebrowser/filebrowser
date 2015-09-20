@@ -60,6 +60,79 @@ $(document).on('ready pjax:success', function() {
     return false;
   });
 
+  if ($('main').hasClass('browse')) {
+    $('.new').click(function(event) {
+      event.preventDefault();
+
+      if ($(this).data("opened")) {
+        $('#new-file').fadeOut(200);
+        $(this).data("opened", false);
+      } else {
+        $('#new-file').fadeIn(200);
+        $(this).data("opened", true);
+      }
+
+      return false;
+    });
+
+    $('#new-file').on('keypress', 'input', function(event) {
+      if (event.keyCode == 13) {
+        event.preventDefault();
+        var value = $(this).val(),
+          splited = value.split(":"),
+          filename = "",
+          archtype = "";
+
+        if (value == "") {
+          notification({
+            text: "You have to write something. If you want to close the box, click the button again.",
+            type: 'warning',
+            timeout: 5000
+          });
+
+          return false;
+        } else if (splited.length == 1) {
+          filename = value;
+        } else if (splited.length == 2) {
+          filename = splited[0];
+          archtype = splited[1];
+        } else {
+          notification({
+            text: "Hmm... I don't understand you. Try writing something like 'name[:archtype]'.",
+            type: 'error'
+          });
+
+          return false;
+        }
+
+        var content = '{"filename": "' + filename + '", "archtype": "' + archtype + '"}';
+
+        $.ajax({
+          type: 'POST',
+          url: window.location.pathname,
+          data: content,
+          dataType: 'json',
+          encode: true,
+        }).done(function(data) {
+          notification({
+            text: "File created successfully. You will be redirected.",
+            type: 'success',
+            timeout: 5000
+          });
+        }).fail(function(data) {
+          // error types
+          notification({
+            text: 'Something went wrong.',
+            type: 'error'
+          });
+          console.log(data);
+        });
+
+        return false;
+      }
+    });
+  }
+
   // If it's editor page
   if ($(".editor")[0]) {
     editor = false;
