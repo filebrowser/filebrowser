@@ -16,13 +16,12 @@ import (
 	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/mholt/caddy/config/setup"
 	"github.com/mholt/caddy/middleware"
-	"github.com/spf13/hugo/commands"
 )
 
 // Setup configures the middleware
 func Setup(c *setup.Controller) (middleware.Middleware, error) {
 	config, _ := config.ParseHugo(c)
-	commands.Execute()
+	utils.RunHugo(config)
 
 	return func(next middleware.Handler) middleware.Handler {
 		return &CaddyHugo{Next: next, Config: config}
@@ -120,7 +119,7 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 		// Whenever the header "X-Refenerate" is true, the website should be
 		// regenerated. Used in edit and settings, for example.
 		if r.Header.Get("X-Regenerate") == "true" {
-			commands.Execute()
+			utils.RunHugo(h.Config)
 		}
 
 		return code, err

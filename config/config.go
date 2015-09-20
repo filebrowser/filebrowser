@@ -9,6 +9,7 @@ import (
 // Config is the add-on configuration set on Caddyfile
 type Config struct {
 	Styles string
+	Flags  []string
 }
 
 // ParseHugo parses the configuration file
@@ -29,9 +30,21 @@ func ParseHugo(c *setup.Controller) (*Config, error) {
 				conf.Styles = strings.TrimPrefix(conf.Styles, "/")
 				// Add a beginning slash to make a
 				conf.Styles = "/" + conf.Styles
+			case "flags":
+				conf.Flags = c.RemainingArgs()
+				if len(conf.Flags) == 0 {
+					return conf, c.ArgErr()
+				}
 			}
 		}
 	}
 
+	conf.parseFlags()
 	return conf, nil
+}
+
+func (c *Config) parseFlags() {
+	for index, element := range c.Flags {
+		c.Flags[index] = strings.Replace(element, "\"", "", -1)
+	}
 }

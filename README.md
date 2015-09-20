@@ -4,13 +4,16 @@ This is an add-on for Caddy which wants to deliver a good UI to edit the content
 
 ## Add-on configuration
 
-You can define, or not, the admin UI styles. It will **not** replace the default ones, it will be included after it. The path must be relative to ```public``` folder.
-
 ```
 hugo {
-  styles [file]
+  styles    file
+  flags     flags...
 }
 ```
+
++ **file** is the relative path to ```public``` folder of the admin UI styles. They will not replace the defaults, they will be added.
+
++ **flags** are the Hugo flags (those which can be set in the command line) and they must follow one of these syntaxes: ```-f=value``` and ```--flag=value```.
 
 ## Try it
 

@@ -12,7 +12,15 @@ import (
 	"unicode"
 
 	"github.com/hacdias/caddy-hugo/assets"
+	"github.com/hacdias/caddy-hugo/config"
+	"github.com/spf13/hugo/commands"
 )
+
+// RunHugo is used to run hugo
+func RunHugo(c *config.Config) {
+	commands.HugoCmd.ParseFlags(c.Flags)
+	commands.HugoCmd.Run(commands.HugoCmd, make([]string, 0))
+}
 
 // CopyFile is used to copy a file
 func CopyFile(old, new string) error {
