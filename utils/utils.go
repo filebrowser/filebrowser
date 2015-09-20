@@ -16,10 +16,22 @@ import (
 	"github.com/spf13/hugo/commands"
 )
 
-// RunHugo is used to run hugo
-func RunHugo(c *config.Config) {
-	commands.HugoCmd.ParseFlags(c.Flags)
-	commands.HugoCmd.Run(commands.HugoCmd, make([]string, 0))
+// CanBeEdited checks if a filename has a supported extension
+func CanBeEdited(filename string) bool {
+	extensions := [...]string{".markdown", ".md",
+		".json", ".toml", ".yaml",
+		".css", ".sass", ".scss",
+		".js",
+		".html",
+	}
+
+	for _, extension := range extensions {
+		if strings.HasSuffix(filename, extension) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // CopyFile is used to copy a file
@@ -46,22 +58,33 @@ func CopyFile(old, new string) error {
 	return nil
 }
 
-// CanBeEdited checks if a filename has a supported extension
-func CanBeEdited(filename string) bool {
-	extensions := [...]string{".markdown", ".md",
-		".json", ".toml", ".yaml",
-		".css", ".sass", ".scss",
-		".js",
-		".html",
+// Defined checks if variable is defined in a struct
+func Defined(data interface{}, field string) bool {
+	t := reflect.Indirect(reflect.ValueOf(data)).Type()
+
+	if t.Kind() != reflect.Struct {
+		log.Print("Non-struct type not allowed.")
+		return false
 	}
 
-	for _, extension := range extensions {
-		if strings.HasSuffix(filename, extension) {
-			return true
+	_, b := t.FieldByName(field)
+	return b
+}
+
+// Dict allows to send more than one variable into a template
+func Dict(values ...interface{}) (map[string]interface{}, error) {
+	if len(values)%2 != 0 {
+		return nil, errors.New("invalid dict call")
+	}
+	dict := make(map[string]interface{}, len(values)/2)
+	for i := 0; i < len(values); i += 2 {
+		key, ok := values[i].(string)
+		if !ok {
+			return nil, errors.New("dict keys must be strings")
 		}
+		dict[key] = values[i+1]
 	}
-
-	return false
+	return dict, nil
 }
 
 // GetTemplate is used to get a ready to use template based on the url and on
@@ -105,35 +128,6 @@ func GetTemplate(r *http.Request, functions template.FuncMap, templates ...strin
 	return tpl, nil
 }
 
-// Dict allows to send more than one variable into a template
-func Dict(values ...interface{}) (map[string]interface{}, error) {
-	if len(values)%2 != 0 {
-		return nil, errors.New("invalid dict call")
-	}
-	dict := make(map[string]interface{}, len(values)/2)
-	for i := 0; i < len(values); i += 2 {
-		key, ok := values[i].(string)
-		if !ok {
-			return nil, errors.New("dict keys must be strings")
-		}
-		dict[key] = values[i+1]
-	}
-	return dict, nil
-}
-
-// Defined checks if variable is defined in a struct
-func Defined(data interface{}, field string) bool {
-	t := reflect.Indirect(reflect.ValueOf(data)).Type()
-
-	if t.Kind() != reflect.Struct {
-		log.Print("Non-struct type not allowed.")
-		return false
-	}
-
-	_, b := t.FieldByName(field)
-	return b
-}
-
 // IsMap checks if some variable is a map
 func IsMap(sth interface{}) bool {
 	return reflect.ValueOf(sth).Kind() == reflect.Map
@@ -142,6 +136,32 @@ func IsMap(sth interface{}) bool {
 // IsSlice checks if some variable is a slice
 func IsSlice(sth interface{}) bool {
 	return reflect.ValueOf(sth).Kind() == reflect.Slice
+}
+
+// ParseComponents parses the components of an URL creating an array
+func ParseComponents(r *http.Request) []string {
+	//The URL that the user queried.
+	path := r.URL.Path
+	path = strings.TrimSpace(path)
+	//Cut off the leading and trailing forward slashes, if they exist.
+	//This cuts off the leading forward slash.
+	if strings.HasPrefix(path, "/") {
+		path = path[1:]
+	}
+	//This cuts off the trailing forward slash.
+	if strings.HasSuffix(path, "/") {
+		cutOffLastCharLen := len(path) - 1
+		path = path[:cutOffLastCharLen]
+	}
+	//We need to isolate the individual components of the path.
+	components := strings.Split(path, "/")
+	return components
+}
+
+// RunHugo is used to run hugo
+func RunHugo(c *config.Config) {
+	commands.HugoCmd.ParseFlags(c.Flags)
+	commands.HugoCmd.Run(commands.HugoCmd, make([]string, 0))
 }
 
 // SplitCapitalize splits a string by its uppercase letters and capitalize the
@@ -167,24 +187,4 @@ func SplitCapitalize(name string) string {
 	name = strings.ToUpper(string(name[0])) + name[1:len(name)]
 
 	return name
-}
-
-// ParseComponents parses the components of an URL creating an array
-func ParseComponents(r *http.Request) []string {
-	//The URL that the user queried.
-	path := r.URL.Path
-	path = strings.TrimSpace(path)
-	//Cut off the leading and trailing forward slashes, if they exist.
-	//This cuts off the leading forward slash.
-	if strings.HasPrefix(path, "/") {
-		path = path[1:]
-	}
-	//This cuts off the trailing forward slash.
-	if strings.HasSuffix(path, "/") {
-		cutOffLastCharLen := len(path) - 1
-		path = path[:cutOffLastCharLen]
-	}
-	//We need to isolate the individual components of the path.
-	components := strings.Split(path, "/")
-	return components
 }
