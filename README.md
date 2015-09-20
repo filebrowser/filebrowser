@@ -2,7 +2,7 @@
 
 This is an add-on for Caddy which wants to deliver a good UI to edit the content of the website.
 
-## Add-on configuration
+## Configuration
 
 ```
 hugo {
@@ -15,9 +15,7 @@ hugo {
 
 + **flags** are the Hugo flags (those which can be set in the command line) and they must follow one of these syntaxes: ```-f=value``` and ```--flag=value```.
 
-## Try it
-
-### Prepare your machine
+## Build it from source
 
 If you want to try the Hugo add-on for Caddy (and improve it maybe), you'll have to install some tools.
 
