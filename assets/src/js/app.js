@@ -48,7 +48,7 @@ $(document).on('ready pjax:success', function() {
         console.log(data);
       });
     } else {
-      name = button.parent().parent().attr("for") || button.parent().parent().parent().attr("id");
+      name = button.parent().parent().attr("for") || button.parent().parent().attr("id") || button.parent().parent().parent().attr("id");
       name = name.replace(/\[/, '\\[');
       name = name.replace(/\]/, '\\]');
       console.log(name)
@@ -256,7 +256,12 @@ $(document).on('ready pjax:success', function() {
 
       if (type == "array") {
         name = name + "[]";
-        title.after('<input name="' + name + ':auto" id="' + name + '"></input><br>');
+        input = name;
+        input = input.replace(/\[/, '\\[');
+        input = input.replace(/\]/, '\\]');
+        input = '#' + input;
+
+        title.after('<div id="' + name + '-' + $(input).length + '" data-type="array-item"><input name="' + name + ':auto" id="' + name + '"></input></div>');
       }
 
       return false;

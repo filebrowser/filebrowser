@@ -15,5 +15,7 @@
   </span>
 </label>
 {{ end }}
-<input name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" value="{{ $value.Content }}"></input>
-{{ end }} {{ end }} {{ end }}
+{{ if eq $value.Parent.Type "array" }}<div id="{{ $value.Name }}-{{ $key }}" data-type="array-item">{{ end }}
+<input name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" value="{{ $value.Content }}" data-parent-type="{{ $value.Parent.Type }}"></input>
+{{ if eq $value.Parent.Type "array" }}
+<div class="actions"><button class="delete"><i class="fa fa-minus"></i></button></div></div>{{ end }} {{ end }} {{ end }} {{ end }}

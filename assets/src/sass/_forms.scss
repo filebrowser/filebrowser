@@ -111,6 +111,17 @@ button.delete {
 
 label:hover > .actions,
 h1:hover > .actions,
-h3:hover > .actions {
+h3:hover > .actions,
+div[data-type="array-item"]:hover .actions {
   opacity: .7;
+}
+
+input[data-parent-type="array"] + .actions {
+  position: absolute;
+  top     : 1em;
+  right   : .5em;
+}
+
+div[data-type="array-item"] {
+  position: relative;
 }
