@@ -1,6 +1,6 @@
 {{ define "frontmatter" }} {{ range $key, $value := . }} {{ if or (eq $value.Type "object") (eq $value.Type "array") }}
 <fieldset id="{{ $value.Name }}" data-name="{{ $value.Name }}" data-type="{{ $value.Type }}">
-  <h3>{{ splitCapitalize $value.Title }}
+  <h3>{{ SplitCapitalize $value.Title }}
     <span class="actions">
       <button class="delete"><i class="fa fa-minus"></i></button>
       <button class="add"><i class="fa fa-plus"></i></button>
@@ -9,7 +9,7 @@
   {{ template "frontmatter" $value.Content }}
 </fieldset>
 {{ else }} {{ if not (eq $value.Parent.Type "array") }}
-<label for="{{ $value.Name }}">{{ splitCapitalize $value.Title }}
+<label for="{{ $value.Name }}">{{ SplitCapitalize $value.Title }}
   <span class="actions">
     <button class="delete"><i class="fa fa-minus"></i></button>
   </span>

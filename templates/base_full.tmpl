@@ -10,6 +10,8 @@
 
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="/admin/assets/css/main.min.css">
+  {{ if and (Defined . "Config")}}{{ if not (eq .Config.Styles "") }}<link rel="stylesheet" href="{{ .Config.Styles }}">{{ end }}{{ end }}
+  {{ if and (Defined . "User") }}{{ if not (eq .User.Styles "") }}<link rel="stylesheet" href="{{ .User.Styles }}">{{ end }}{{ end }}
   <script src="/admin/assets/js/plugins.min.js"></script>
   <script src="/admin/assets/js/app.min.js"></script>
 </head>

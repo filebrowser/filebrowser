@@ -6,27 +6,25 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/hacdias/caddy-hugo/editor"
+	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/mholt/caddy/middleware"
 	"github.com/mholt/caddy/middleware/browse"
 )
 
-// ServeHTTP is...
-func ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
-	if r.URL.Path[len(r.URL.Path)-1] != '/' {
-		http.Redirect(w, r, r.URL.Path+"/", http.StatusTemporaryRedirect)
-		return 0, nil
-	}
-
+// ServeHTTP is used to serve the content of Browse page
+// using Browse middleware from Caddy
+func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+	// Removes the page main path from the URL
 	r.URL.Path = strings.Replace(r.URL.Path, "/admin/browse", "", 1)
 
+	// If the URL is blank now, replace it with a trailing slash
 	if r.URL.Path == "" {
 		r.URL.Path = "/"
 	}
 
 	functions := template.FuncMap{
-		"canBeEdited": editor.CanBeEdited,
+		"CanBeEdited": utils.CanBeEdited,
 		"Defined":     utils.Defined,
 	}
 
@@ -45,6 +43,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 		Configs: []browse.Config{
 			browse.Config{
 				PathScope: "/",
+				Variables: c,
 				Template:  tpl,
 			},
 		},

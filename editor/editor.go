@@ -12,6 +12,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/frontmatter"
 	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/spf13/hugo/parser"
@@ -23,38 +24,21 @@ type editor struct {
 	Mode        string
 	Content     string
 	FrontMatter interface{}
+	Config      *config.Config
 }
 
-// ServeHTTP is...
-func ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
+// ServeHTTP serves the editor page
+func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	filename := strings.Replace(r.URL.Path, "/admin/edit/", "", 1)
 
 	if r.Method == "POST" {
-		return post(w, r, filename)
+		return servePost(w, r, filename)
 	}
 
-	return get(w, r, filename)
+	return serveGet(w, r, c, filename)
 }
 
-// CanBeEdited checks if a file has a supported extension
-func CanBeEdited(filename string) bool {
-	extensions := [...]string{".markdown", ".md",
-		".json", ".toml", ".yaml",
-		".css", ".sass", ".scss",
-		".js",
-		".html",
-	}
-
-	for _, extension := range extensions {
-		if strings.HasSuffix(filename, extension) {
-			return true
-		}
-	}
-
-	return false
-}
-
-func post(w http.ResponseWriter, r *http.Request, filename string) (int, error) {
+func servePost(w http.ResponseWriter, r *http.Request, filename string) (int, error) {
 	// Get the JSON information sent using a buffer
 	rawBuffer := new(bytes.Buffer)
 	rawBuffer.ReadFrom(r.Body)
@@ -152,10 +136,10 @@ func post(w http.ResponseWriter, r *http.Request, filename string) (int, error) 
 	return 200, nil
 }
 
-func get(w http.ResponseWriter, r *http.Request, filename string) (int, error) {
+func serveGet(w http.ResponseWriter, r *http.Request, c *config.Config, filename string) (int, error) {
 	// Check if the file format is supported. If not, send a "Not Acceptable"
 	// header and an error
-	if !CanBeEdited(filename) {
+	if !utils.CanBeEdited(filename) {
 		return 406, errors.New("File format not supported.")
 	}
 
@@ -176,6 +160,7 @@ func get(w http.ResponseWriter, r *http.Request, filename string) (int, error) {
 	page := new(editor)
 	page.Mode = strings.TrimPrefix(filepath.Ext(filename), ".")
 	page.Name = filename
+	page.Config = c
 
 	// Sanitize the extension
 	page.Mode = sanitizeMode(page.Mode)
@@ -227,7 +212,7 @@ func get(w http.ResponseWriter, r *http.Request, filename string) (int, error) {
 	// Create the functions map, then the template, check for erros and
 	// execute the template if there aren't errors
 	functions := template.FuncMap{
-		"splitCapitalize": utils.SplitCapitalize,
+		"SplitCapitalize": utils.SplitCapitalize,
 		"Defined":         utils.Defined,
 	}
 

@@ -12,6 +12,24 @@ import (
 	"github.com/hacdias/caddy-hugo/assets"
 )
 
+// CanBeEdited checks if a filename has a supported extension
+func CanBeEdited(filename string) bool {
+	extensions := [...]string{".markdown", ".md",
+		".json", ".toml", ".yaml",
+		".css", ".sass", ".scss",
+		".js",
+		".html",
+	}
+
+	for _, extension := range extensions {
+		if strings.HasSuffix(filename, extension) {
+			return true
+		}
+	}
+
+	return false
+}
+
 // GetTemplate is used to get a ready to use template based on the url and on
 // other sent templates
 func GetTemplate(r *http.Request, functions template.FuncMap, templates ...string) (*template.Template, error) {

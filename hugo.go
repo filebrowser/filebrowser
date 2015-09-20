@@ -11,6 +11,7 @@ import (
 
 	"github.com/hacdias/caddy-hugo/assets"
 	"github.com/hacdias/caddy-hugo/browse"
+	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/editor"
 	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/mholt/caddy/config/setup"
@@ -20,16 +21,21 @@ import (
 
 // Setup configures the middleware
 func Setup(c *setup.Controller) (middleware.Middleware, error) {
+	config, _ := config.ParseHugo(c)
 	commands.Execute()
 
 	return func(next middleware.Handler) middleware.Handler {
-		return &handler{Next: next}
+		return &CaddyHugo{Next: next, Config: config}
 	}, nil
 }
 
-type handler struct{ Next middleware.Handler }
+// CaddyHugo main type
+type CaddyHugo struct {
+	Next   middleware.Handler
+	Config *config.Config
+}
 
-func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
+func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Only handle /admin path
 	if middleware.Path(r.URL.Path).Matches("/admin") {
 		var err error
@@ -103,12 +109,12 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 
 		// Browse page
 		if page == "browse" {
-			code, err = browse.ServeHTTP(w, r)
+			code, err = browse.ServeHTTP(w, r, h.Config)
 		}
 
 		// Edit page
 		if page == "edit" {
-			code, err = editor.ServeHTTP(w, r)
+			code, err = editor.ServeHTTP(w, r, h.Config)
 		}
 
 		// Whenever the header "X-Refenerate" is true, the website should be

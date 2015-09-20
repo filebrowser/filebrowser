@@ -2,6 +2,16 @@
 
 This is an add-on for Caddy which wants to deliver a good UI to edit the content of the website.
 
+## Add-on configuration
+
+You can define, or not, the admin UI styles. It will **not** replace the default ones, it will be included after it. The path must be relative to ```public``` folder.
+
+```
+hugo {
+  styles [file]
+}
+```
+
 ## Try it
 
 ### Prepare your machine
