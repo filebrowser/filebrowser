@@ -7,11 +7,14 @@
 @import "browse";
 
 body {
-  font-family     : 'Roboto', sans-serif;
-  color           : #212121;
-  background-color: #ddd;
-  height          : 100%;
-  width           : 100%;
+  font-family: 'Roboto', sans-serif;
+  color      : #212121;
+  height     : 100%;
+  width      : 100%;
+}
+
+code {
+  border-radius: .2em;
 }
 
 #content {

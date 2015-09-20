@@ -13,7 +13,9 @@ type Config struct {
 
 // ParseHugo parses the configuration file
 func ParseHugo(c *setup.Controller) (*Config, error) {
-	conf := &Config{}
+	conf := &Config{
+		Styles: "",
+	}
 
 	for c.Next() {
 		for c.NextBlock() {

@@ -75,6 +75,11 @@ $(document).on('ready pjax:success', function() {
           // Hide the editor and show the preview
           codemirror.hide();
           preview.html(html).fadeIn();
+          $('pre code').each(function(i, block) {
+            hljs.highlightBlock(block);
+            return true;
+          });
+
           $(this).data("previewing", "true");
           notification({
             text: "This is how your post looks like.",
