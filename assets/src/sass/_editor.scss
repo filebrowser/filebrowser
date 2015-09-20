@@ -139,15 +139,68 @@ input:-ms-input-placeholder {
   width    : 75%;
   max-width: none;
   height   : calc(100% - 6em);
-  margin   : 1.5em auto;
+  margin   : 0;
 }
 
 .editor.complete .toolbar {
   width: 75%;
 }
 
-.editor.complete .cm-s-mdn-like.CodeMirror {
-  width : auto;
-  margin: 0 10%;
-  height: calc(100% - 3em);
+.editor.complete .CodeMirror {
+  width     : auto;
+  margin    : 1.5em 10%;
+  height    : calc(100% - 3em);
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 1000px) {
+  .editor.complete .frontmatter {
+    width: 35%;
+  }
+
+  .editor.complete .container {
+    width: 65%;
+  }
+
+  .editor.complete .toolbar {
+    width: 65%;
+  }
+
+  .hideable {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .editor.complete .frontmatter,
+  .editor.complete .container {
+    position: static;
+    width   : 100%;
+    display : block;
+    top     : 0;
+    height  : auto;
+  }
+
+  .editor.complete .full {
+    height: calc(100% - 6em);
+  }
+
+  .editor.complete .toolbar {
+    width: 100%;
+  }
+
+  .editor.complete #preview-area {
+    padding: 1.5em 1em;
+  }
+
+  .editor.complete .CodeMirror {
+    margin: 1.5em 1em;
+  }
+}
+
+@media screen and (max-width: 530px) {
+  nav {
+    overflow  : hidden;
+    text-align: center;
+  }
 }

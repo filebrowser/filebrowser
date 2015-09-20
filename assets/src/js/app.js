@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  $(document).pjax('a', '#content');
+  $(document).pjax('a[data-pjax]', '#content');
 });
 
 $(document).on('ready pjax:success', function() {
@@ -197,12 +197,4 @@ $(document).on('ready pjax:success', function() {
       }
     });
   }
-});
-
-$(document).on('pjax:send', function() {
-  $('#loading').fadeIn();
-});
-
-$(document).on('pjax:complete', function() {
-  $('#loading').fadeOut();
 });
