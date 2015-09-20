@@ -1,7 +1,7 @@
 #noty_topRight_layout_container {
   font-family    : sans-serif;
-  top            : 3.5em !important;
-  right          : .5em !important;
+  top            : 4em !important;
+  right          : 1em !important;
   position       : fixed !important;
   width          : 310px;
   height         : auto;
@@ -32,11 +32,21 @@
   position   : relative;
 }
 
+.noty_text {
+  display    : block;
+  box-sizing : border-box;
+  margin-left: 3em;
+  top        : 1em;
+}
+
 .noty_icon {
+  position                 : absolute;
+  left                     : 0;
+  top                      : 0;
+  box-sizing               : border-box;
+  height                   : 100%;
   padding                  : 1em;
-  margin-left              : -1em;
-  margin-right             : .9em;
-  background-color         : rgba(0,0,0,0.1);
+  background-color         : rgba(0,0,0,.1);
   border-top-left-radius   : .3em;
   border-bottom-left-radius: .3em;
   text-align               : center;

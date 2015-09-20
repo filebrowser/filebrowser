@@ -106,10 +106,10 @@ func handleArrays(content interface{}, parent *frontmatter, name string) *frontm
 	c.Type = "array"
 	c.Title = name
 
-	if parent.Type == "object" && parent.Name == mainName {
+	if parent.Name == mainName {
 		c.Name = name
 	} else {
-		c.Name = parent.Name + "[" + c.Name + "]"
+		c.Name = parent.Name + "[" + name + "]"
 	}
 
 	c.Content = rawToPretty(content, c)

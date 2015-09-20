@@ -68,4 +68,15 @@ notification = function(options) {
 
   options = $.extend({}, defaults, options);
   noty(options);
+
+  if (!Cookies.get('stickynoties') && !options.timeout) {
+    Cookies.set('stickynoties', 'true', {
+      expires: 365
+    });
+
+    notification({
+      text: "Some notifications are sticky. If it doesn't go away, click to dismiss it.",
+      type: 'information'
+    });
+  }
 }

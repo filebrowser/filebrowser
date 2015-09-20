@@ -25,7 +25,7 @@ $(document).on('ready pjax:success', function() {
   });
 
   // Delete a file or a field in editor
-  $(".delete").click(function(event) {
+  $("body").on('click', '.delete', function(event) {
     event.preventDefault();
     button = $(this);
 
@@ -49,11 +49,15 @@ $(document).on('ready pjax:success', function() {
       });
     } else {
       name = button.parent().parent().attr("for") || button.parent().parent().parent().attr("id");
+      name = name.replace(/\[/, '\\[');
+      name = name.replace(/\]/, '\\]');
       console.log(name)
 
-      $('#' + name).fadeOut().remove();
       $('label[for="' + name + '"]').fadeOut().remove();
+      $('#' + name).fadeOut().remove();
     }
+
+    return false;
   });
 
   // If it's editor page
@@ -61,6 +65,14 @@ $(document).on('ready pjax:success', function() {
     editor = false;
     preview = $("#preview-area");
     textarea = $("#content-area");
+
+    $('body').on('keypress', 'input', function(event) {
+      if (event.keyCode == 13) {
+        event.preventDefault();
+        $('input[value="Save"]').focus().click();
+        return false;
+      }
+    });
 
     // If it has a textarea
     if (textarea[0]) {
@@ -154,10 +166,11 @@ $(document).on('ready pjax:success', function() {
         console.log(data);
       });
 
+      return false;
     });
 
     // Adds one more field to the current group
-    $(".add").click(function(event) {
+    $("body").on('click', '.add', function(event) {
       event.preventDefault();
 
       if ($("#new").length) {
@@ -167,10 +180,10 @@ $(document).on('ready pjax:success', function() {
       title = $(this).parent().parent();
       fieldset = title.parent();
       type = fieldset.data("type");
-      name = fieldset.data("name");
+      name = fieldset.attr("id");
 
       if (title.is('h1')) {
-        fieldset = $('.sidebar .content');
+        fieldset = $('.frontmatter .container');
         fieldset.prepend('<div id="ghost"></div>');
         title = $('#ghost');
         type = "object";
@@ -180,24 +193,61 @@ $(document).on('ready pjax:success', function() {
         title.after('<input id="new" placeholder="Write the field name and press enter..."></input>');
         element = $("#new");
 
+        if (!Cookies.get('placeholdertip')) {
+          Cookies.set('placeholdertip', 'true', {
+            expires: 365
+          });
+
+          notification({
+            text: 'Write the field name and then press enter. If you want to create an array or an object, end the name with ":array" or ":object".',
+            type: 'information'
+          });
+        }
+
         $(element).keypress(function(event) {
           if (event.which == 13) {
             event.preventDefault();
             value = element.val();
-            element.remove();
 
             if (value == "") {
+              element.remove();
               return false;
             }
 
-            if (name == "undefined") {
-              name = value
-            } else {
-              name = name + '[' + value + ']';
+            elements = value.split(":")
+
+            if (elements.length > 2) {
+              notification({
+                text: "Invalid syntax. It must be 'name[:type]'.",
+                type: 'error'
+              });
+              return false;
             }
 
-            title.after('<input name="' + name + ':auto" id="' + name + '"></input><br>');
-            title.after('<label for="' + name + '">' + value + ' <span class="actions"><button class="delete"><i class="fa fa-minus"></i></button></span></label>');
+            element.remove();
+
+            if (name == "undefined") {
+              name = elements[0]
+            } else {
+              name = name + '[' + elements[0] + ']';
+            }
+
+            if (elements.length == 1) {
+              title.after('<input name="' + name + ':auto" id="' + name + '"></input><br>');
+              title.after('<label for="' + name + '">' + value + ' <span class="actions"><button class="delete"><i class="fa fa-minus"></i></button></span></label>');
+            } else {
+              var fieldset = "<fieldset id=\"{{ $value.Name }}\" data-type=\"{{ $value.Type }}\">\r\n<h3>{{ $value.Title }}\r\n<span class=\"actions\">\r\n<button class=\"add\"><i class=\"fa fa-plus\"><\/i><\/button>\r\n<button class=\"delete\"><i class=\"fa fa-minus\"><\/i><\/button>\r\n<\/span>\r\n<\/h3>\r\n<\/fieldset>";
+
+              if (elements[1] == "array") {
+                fieldset = fieldset.replace("{{ $value.Type }}", "array");
+              } else {
+                fieldset = fieldset.replace("{{ $value.Type }}", "object");
+              }
+
+              fieldset = fieldset.replace("{{ $value.Title }}", elements[0]);
+              fieldset = fieldset.replace("{{ $value.Name }}", name);
+              title.after(fieldset);
+            }
 
             return false;
           }
@@ -210,14 +260,6 @@ $(document).on('ready pjax:success', function() {
       }
 
       return false;
-    });
-
-    $('body').on('keypress', 'input', function(event) {
-      if (event.keyCode == 13) {
-        event.preventDefault();
-        $('input[value="Save"]').focus().click();
-        return false;
-      }
     });
   }
 });

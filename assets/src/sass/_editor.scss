@@ -97,6 +97,10 @@
   border-top: 1px solid rgba(0,0,0,.1);
 }
 
+.frontmatter-only fieldset:first-child {
+  border-bottom: 1px solid rgba(0,0,0,.1);
+}
+
 .frontmatter-only h3 {
   font-size: 1.5em;
 }

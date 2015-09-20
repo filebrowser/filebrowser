@@ -82,6 +82,7 @@ module.exports = function(grunt) {
             'node_modules/codemirror/mode/sass/sass.js',
             'node_modules/codemirror/mode/htmlmixed/htmlmixed.js',
             'assets/src/js/highlight/highlight.pack.js',
+            'node_modules/js-cookie/src/js.cookie.js'
           ]
         }
       },

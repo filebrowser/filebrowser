@@ -24,11 +24,15 @@ form label {
   margin : .1em 0 0;
 }
 
-form fieldset {
+fieldset {
   border    : 0;
   margin    : 1em 0 0;
   padding   : 1em 0 0;
   border-top: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+fieldset:first-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 input[type="file"] {
