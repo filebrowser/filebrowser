@@ -31,7 +31,11 @@
           <div id="preview-area" class="scroll hidden"></div>
         </div>
         <div class="frontmatter scroll">
-          <h2>Metadata</h2>
+          <h2>Metadata
+            <span class="actions">
+              <button class="add"><i class="fa fa-plus"></i></button>
+            </span>
+          </h2>
           {{ template "frontmatter" .FrontMatter }}
         </div>
         {{ end }}

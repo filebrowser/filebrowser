@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -83,7 +82,7 @@ func servePost(w http.ResponseWriter, r *http.Request, filename string) (int, er
 		f = []byte(fString)
 
 		if err != nil {
-			log.Print(err)
+			w.Write([]byte(err.Error()))
 			return 500, err
 		}
 
@@ -106,7 +105,7 @@ func servePost(w http.ResponseWriter, r *http.Request, filename string) (int, er
 		jsonFrontmatter, err := json.Marshal(rawFile)
 
 		if err != nil {
-			log.Print(err)
+			w.Write([]byte(err.Error()))
 			return 500, err
 		}
 
@@ -127,7 +126,7 @@ func servePost(w http.ResponseWriter, r *http.Request, filename string) (int, er
 	err := ioutil.WriteFile(filename, file, 0666)
 
 	if err != nil {
-		log.Print(err)
+		w.Write([]byte(err.Error()))
 		return 500, err
 	}
 
@@ -145,14 +144,14 @@ func serveGet(w http.ResponseWriter, r *http.Request, c *config.Config, filename
 
 	// Check if the file exists. If it doesn't, send a "Not Found" message
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		log.Print(err)
+		w.Write([]byte(err.Error()))
 		return 404, nil
 	}
 
 	// Open the file and check if there was some error while opening
 	file, err := ioutil.ReadFile(filename)
 	if err != nil {
-		log.Print(err)
+		w.Write([]byte(err.Error()))
 		return 500, err
 	}
 
@@ -173,7 +172,7 @@ func serveGet(w http.ResponseWriter, r *http.Request, c *config.Config, filename
 			buffer := bytes.NewBuffer(file)
 			file, err := parser.ReadFrom(buffer)
 			if err != nil {
-				log.Print(err)
+				w.Write([]byte(err.Error()))
 				return 500, err
 			}
 
@@ -200,7 +199,7 @@ func serveGet(w http.ResponseWriter, r *http.Request, c *config.Config, filename
 
 		// Check if there were any errors
 		if err != nil {
-			log.Print(err)
+			w.Write([]byte(err.Error()))
 			return 500, err
 		}
 	default:
@@ -217,8 +216,9 @@ func serveGet(w http.ResponseWriter, r *http.Request, c *config.Config, filename
 	}
 
 	tpl, err := utils.GetTemplate(r, functions, "editor", "frontmatter")
+
 	if err != nil {
-		log.Print(err)
+		w.Write([]byte(err.Error()))
 		return 500, err
 	}
 

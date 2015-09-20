@@ -81,7 +81,7 @@ $(document).on('ready pjax:success', function() {
         var value = $(this).val(),
           splited = value.split(":"),
           filename = "",
-          archtype = "";
+          archetype = "";
 
         if (value == "") {
           notification({
@@ -95,17 +95,17 @@ $(document).on('ready pjax:success', function() {
           filename = value;
         } else if (splited.length == 2) {
           filename = splited[0];
-          archtype = splited[1];
+          archetype = splited[1];
         } else {
           notification({
-            text: "Hmm... I don't understand you. Try writing something like 'name[:archtype]'.",
+            text: "Hmm... I don't understand you. Try writing something like 'name[:archetype]'.",
             type: 'error'
           });
 
           return false;
         }
 
-        var content = '{"filename": "' + filename + '", "archtype": "' + archtype + '"}';
+        var content = '{"filename": "' + filename + '", "archetype": "' + archetype + '"}';
 
         $.ajax({
           type: 'POST',
@@ -260,6 +260,10 @@ $(document).on('ready pjax:success', function() {
         fieldset.prepend('<div id="ghost"></div>');
         title = $('#ghost');
         type = "object";
+      }
+
+      if (title.is('h2')) {
+        type = "object"
       }
 
       if (type == "object") {
