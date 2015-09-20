@@ -3,6 +3,7 @@ package browse
 import (
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"text/template"
 
@@ -23,32 +24,61 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, e
 		r.URL.Path = "/"
 	}
 
-	functions := template.FuncMap{
-		"CanBeEdited": utils.CanBeEdited,
-		"Defined":     utils.Defined,
-	}
+	if r.Method == "DELETE" {
+		// Remove both beginning and trailing slashes
+		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/")
+		r.URL.Path = strings.TrimSuffix(r.URL.Path, "/")
 
-	tpl, err := utils.GetTemplate(r, functions, "browse")
+		// Check if the file or directory exists
+		if stat, err := os.Stat(r.URL.Path); err == nil {
+			var err error
+			// If it's dir, remove all of the content inside
+			if stat.IsDir() {
+				err = os.RemoveAll(r.URL.Path)
+			} else {
+				err = os.Remove(r.URL.Path)
+			}
 
-	if err != nil {
-		log.Print(err)
-		return 500, err
-	}
-
-	b := browse.Browse{
-		Next: middleware.HandlerFunc(func(w http.ResponseWriter, r *http.Request) (int, error) {
+			// Check for errors
+			if err != nil {
+				return 500, err
+			}
+		} else {
 			return 404, nil
-		}),
-		Root: "./",
-		Configs: []browse.Config{
-			browse.Config{
-				PathScope: "/",
-				Variables: c,
-				Template:  tpl,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte("{}"))
+	} else {
+		functions := template.FuncMap{
+			"CanBeEdited": utils.CanBeEdited,
+			"Defined":     utils.Defined,
+		}
+
+		tpl, err := utils.GetTemplate(r, functions, "browse")
+
+		if err != nil {
+			log.Print(err)
+			return 500, err
+		}
+
+		b := browse.Browse{
+			Next: middleware.HandlerFunc(func(w http.ResponseWriter, r *http.Request) (int, error) {
+				return 404, nil
+			}),
+			Root: "./",
+			Configs: []browse.Config{
+				browse.Config{
+					PathScope: "/",
+					Variables: c,
+					Template:  tpl,
+				},
 			},
-		},
-		IgnoreIndexes: true,
+			IgnoreIndexes: true,
+		}
+
+		return b.ServeHTTP(w, r)
 	}
 
-	return b.ServeHTTP(w, r)
+	return 200, nil
 }

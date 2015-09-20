@@ -52,7 +52,7 @@
           </td>
           <td class="right hideable">{{.HumanSize}}</td>
           <td class="right hideable">{{.HumanModTime "01/02/2006 3:04:05 PM -0700"}}</td>
-          <td class="right"><button class="delete"><i class="fa fa-times"></i></button></td>
+          <td class="right"><button data-file="/admin/browse{{ $path }}{{.URL}}" data-message="File deleted." class="delete"><i class="fa fa-times"></i></button></td>
         </tr>
         {{end}}
       </table>

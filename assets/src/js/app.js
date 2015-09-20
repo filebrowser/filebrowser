@@ -24,6 +24,38 @@ $(document).on('ready pjax:success', function() {
     return false;
   });
 
+  // Delete a file or a field in editor
+  $(".delete").click(function(event) {
+    event.preventDefault();
+    button = $(this);
+
+    if (button.data("file") && confirm("Are you sure you want to delete this?")) {
+      $.ajax({
+        type: 'DELETE',
+        url: button.data("file")
+      }).done(function(data) {
+        button.parent().parent().fadeOut();
+        notification({
+          text: button.data("message"),
+          type: 'success',
+          timeout: 5000
+        });
+      }).fail(function(data) {
+        notification({
+          text: 'Something went wrong.',
+          type: 'error'
+        });
+        console.log(data);
+      });
+    } else {
+      name = button.parent().parent().attr("for") || button.parent().parent().parent().attr("id");
+      console.log(name)
+
+      $('#' + name).fadeOut().remove();
+      $('label[for="' + name + '"]').fadeOut().remove();
+    }
+  });
+
   // If it's editor page
   if ($(".editor")[0]) {
     editor = false;
@@ -178,15 +210,6 @@ $(document).on('ready pjax:success', function() {
       }
 
       return false;
-    });
-
-    $(".delete").click(function(event) {
-      event.preventDefault();
-      name = $(this).parent().parent().attr("for") || $(this).parent().parent().parent().attr("id");
-      console.log(name)
-
-      $('#' + name).fadeOut().remove();
-      $('label[for="' + name + '"]').fadeOut().remove();
     });
 
     $('body').on('keypress', 'input', function(event) {
