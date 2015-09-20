@@ -1,4 +1,11 @@
 /* FORMS ELEMENTS */
+pre {
+  background-color: #ddd;
+  padding         : .2em;
+  line-height     : 1.5em;
+  border-radius   : .5em;
+}
+
 input {
   width           : 100%;
   background-color: rgba(0, 0, 0, 0.25);

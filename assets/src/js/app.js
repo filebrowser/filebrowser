@@ -192,10 +192,6 @@ $(document).on('ready pjax:success', function() {
           // Hide the editor and show the preview
           codemirror.hide();
           preview.html(html).fadeIn();
-          $('pre code').each(function(i, block) {
-            hljs.highlightBlock(block);
-            return true;
-          });
 
           $(this).data("previewing", "true");
           notification({
@@ -212,6 +208,13 @@ $(document).on('ready pjax:success', function() {
     // Submites any form in the page in JSON format
     $('form').submit(function(event) {
       event.preventDefault();
+
+      // Reset preview area and button to make sure it will
+      // not serialize any form inside the preview
+      $('#preview-area').html('').fadeOut();
+      $('#preview').data("previewing", "false");
+      $('.CodeMirror').fadeIn();
+
       var data = JSON.stringify($(this).serializeJSON()),
         button = $(this).find("input[type=submit]:focus");
 

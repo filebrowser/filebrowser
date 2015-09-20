@@ -39,7 +39,6 @@ module.exports = function(grunt) {
           'node_modules/animate.css/animate.min.css',
           'node_modules/codemirror/lib/codemirror.css',
           'node_modules/codemirror/theme/mdn-like.css',
-          'assets/src/js/highlight/styles/monokai_sublime.css',
           'temp/css/**/*.css'
         ],
         dest: 'temp/css/main.css',
@@ -81,7 +80,6 @@ module.exports = function(grunt) {
             'node_modules/codemirror/mode/markdown/markdown.js',
             'node_modules/codemirror/mode/sass/sass.js',
             'node_modules/codemirror/mode/htmlmixed/htmlmixed.js',
-            'assets/src/js/highlight/highlight.pack.js',
             'node_modules/js-cookie/src/js.cookie.js'
           ]
         }

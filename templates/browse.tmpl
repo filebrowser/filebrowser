@@ -10,7 +10,7 @@
   <main class="browse">
     <div class="actions">
       <div class="container">
-        {{if .CanGoUp}}<a href=".." class="up" title="Up one level"><i class="fa fa-arrow-left fa-lg"></i></a>{{end}}
+        {{if .CanGoUp}}<a data-pjax href=".." class="up" title="Up one level"><i class="fa fa-arrow-left fa-lg"></i></a>{{end}}
         <div class="go-right">
           <input type="file" value="Upload">
           <button id="upload">Upload <i class="fa fa-cloud-upload"></i></button>
@@ -28,15 +28,15 @@
         <tr>
           <th class="left">
             {{if and (eq .Sort "name") (ne .Order "desc")}}
-            <a href="?sort=name&order=desc">Name <i class="fa fa-arrow-up"></i></a> {{else if and (eq .Sort "name") (ne .Order "asc")}}
-            <a href="?sort=name&order=asc">Name <i class="fa fa-arrow-down"></i></a> {{else}}
-            <a href="?sort=name&order=asc">Name</a> {{end}}
+            <a data-pjax href="?sort=name&order=desc">Name <i class="fa fa-arrow-up"></i></a> {{else if and (eq .Sort "name") (ne .Order "asc")}}
+            <a data-pjax href="?sort=name&order=asc">Name <i class="fa fa-arrow-down"></i></a> {{else}}
+            <a data-pjax href="?sort=name&order=asc">Name</a> {{end}}
           </th>
           <th class="right hideable">
             {{if and (eq .Sort "size") (ne .Order "desc")}}
-            <a href="?sort=size&order=desc">Size <i class="fa fa-arrow-up"></i></a> {{else if and (eq .Sort "size") (ne .Order "asc")}}
-            <a href="?sort=size&order=asc">Size <i class="fa fa-arrow-down"></i></a> {{else}}
-            <a href="?sort=size&order=asc">Size</a> {{end}}
+            <a data-pjax href="?sort=size&order=desc">Size <i class="fa fa-arrow-up"></i></a> {{else if and (eq .Sort "size") (ne .Order "asc")}}
+            <a data-pjax href="?sort=size&order=asc">Size <i class="fa fa-arrow-down"></i></a> {{else}}
+            <a data-pjax href="?sort=size&order=asc">Size</a> {{end}}
           </th>
           <th class="hideable right">
             {{if and (eq .Sort "time") (ne .Order "desc")}}
@@ -50,8 +50,8 @@
         <tr>
           <td>
             {{if .IsDir}}
-            <i class="fa fa-folder"></i> <a href="{{.URL}}">{{.Name}}</a> {{else}} {{ if CanBeEdited .URL }}
-            <i class="fa fa-file"></i> <a class="file" href="/admin/edit{{ $path }}{{.URL}}">{{.Name}}</a> {{ else }}
+            <i class="fa fa-folder"></i> <a data-pjax href="{{.URL}}">{{.Name}}</a> {{else}} {{ if CanBeEdited .URL }}
+            <i class="fa fa-file"></i> <a data-pjax class="file" href="/admin/edit{{ $path }}{{.URL}}">{{.Name}}</a> {{ else }}
             <i class="fa fa-file"></i> {{.Name}} {{ end }} {{ end }}
           </td>
           <td class="right hideable">{{.HumanSize}}</td>
