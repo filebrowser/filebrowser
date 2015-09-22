@@ -36,7 +36,9 @@ module.exports = function(grunt) {
       css: {
         src: ['node_modules/normalize.css/normalize.css',
           'node_modules/font-awesome/css/font-awesome.css',
-          'node_modules/animate.css/animate.min.css',
+          'node_modules/animate.css/source/_base.css',
+          'node_modules/animate.css/source/bouncing_entrances/bounceInRight.css',
+          'node_modules/animate.css/source/fading_exits/fadeOut.css',
           'node_modules/codemirror/lib/codemirror.css',
           'node_modules/codemirror/theme/mdn-like.css',
           'temp/css/**/*.css'
