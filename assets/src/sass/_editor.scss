@@ -61,8 +61,8 @@
   margin-right: auto;
 }
 
-.toolbar *:last-child {
-  margin-left: 1em;
+.toolbar input {
+  margin-left: 1em !important;
 }
 
 /* EDITOR FRONTMATTER ONLY STYLES */

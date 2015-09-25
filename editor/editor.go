@@ -5,21 +5,25 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/frontmatter"
 	"github.com/hacdias/caddy-hugo/utils"
+	"github.com/robfig/cron"
 	"github.com/spf13/hugo/parser"
 )
 
 type editor struct {
 	Name        string
 	Class       string
+	IsPost      bool
 	Mode        string
 	Content     string
 	FrontMatter interface{}
@@ -31,13 +35,13 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, e
 	filename := strings.Replace(r.URL.Path, "/admin/edit/", "", 1)
 
 	if r.Method == "POST" {
-		return servePost(w, r, filename)
+		return servePost(w, r, c, filename)
 	}
 
 	return serveGet(w, r, c, filename)
 }
 
-func servePost(w http.ResponseWriter, r *http.Request, filename string) (int, error) {
+func servePost(w http.ResponseWriter, r *http.Request, c *config.Config, filename string) (int, error) {
 	// Get the JSON information sent using a buffer
 	rawBuffer := new(bytes.Buffer)
 	rawBuffer.ReadFrom(r.Body)
@@ -101,6 +105,49 @@ func servePost(w http.ResponseWriter, r *http.Request, filename string) (int, er
 		// Removes the main content from the rest of the frontmatter
 		delete(rawFile, "content")
 
+		// Schedule the post
+		if r.Header.Get("X-Schedule") == "true" {
+			t, err := time.Parse("2006-01-02 15:04:05-07:00", rawFile["date"].(string))
+
+			if err != nil {
+				log.Print(err)
+				return 500, err
+			}
+
+			scheduler := cron.New()
+			scheduler.AddFunc(t.Format("05 04 15 02 01 *"), func() {
+				// Set draft to false
+				rawFile["draft"] = false
+
+				// Converts the frontmatter in JSON
+				jsonFrontmatter, err := json.Marshal(rawFile)
+
+				if err != nil {
+					return
+				}
+
+				// Indents the json
+				frontMatterBuffer := new(bytes.Buffer)
+				json.Indent(frontMatterBuffer, jsonFrontmatter, "", "  ")
+
+				// Generates the final file
+				f := new(bytes.Buffer)
+				f.Write(frontMatterBuffer.Bytes())
+				f.Write([]byte(mainContent))
+				file = f.Bytes()
+
+				// Write the file
+				err = ioutil.WriteFile(filename, file, 0666)
+
+				if err != nil {
+					return
+				}
+
+				utils.RunHugo(c)
+			})
+			scheduler.Start()
+		}
+
 		// Converts the frontmatter in JSON
 		jsonFrontmatter, err := json.Marshal(rawFile)
 
@@ -160,6 +207,7 @@ func serveGet(w http.ResponseWriter, r *http.Request, c *config.Config, filename
 	page.Mode = strings.TrimPrefix(filepath.Ext(filename), ".")
 	page.Name = filename
 	page.Config = c
+	page.IsPost = false
 
 	// Sanitize the extension
 	page.Mode = sanitizeMode(page.Mode)
@@ -174,6 +222,10 @@ func serveGet(w http.ResponseWriter, r *http.Request, c *config.Config, filename
 			if err != nil {
 				w.Write([]byte(err.Error()))
 				return 500, err
+			}
+
+			if strings.Contains(string(file.FrontMatter()), "date") {
+				page.IsPost = true
 			}
 
 			// Parses the page content and the frontmatter

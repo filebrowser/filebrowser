@@ -115,10 +115,15 @@ $(document).on('ready pjax:success', function() {
           encode: true,
         }).done(function(data) {
           notification({
-            text: "File created successfully. You will be redirected.",
+            text: "File created successfully.",
             type: 'success',
             timeout: 5000
           });
+
+          $.pjax({
+            url: "/admin/edit/" + filename,
+            container: '#content'
+          })
         }).fail(function(data) {
           // error types
           notification({
@@ -224,6 +229,7 @@ $(document).on('ready pjax:success', function() {
         data: data,
         headers: {
           'X-Regenerate': button.data("regenerate"),
+          'X-Schedule': button.data("schedule"),
           'X-Content-Type': button.data("type")
         },
         dataType: 'json',
