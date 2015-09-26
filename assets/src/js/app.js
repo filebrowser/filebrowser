@@ -136,6 +136,52 @@ $(document).on('ready pjax:success', function() {
         return false;
       }
     });
+
+    $("#upload").click(function(event) {
+      event.preventDefault();
+      $('.actions input[type="file"]').click();
+    });
+
+    $('input[type="file"]').on('change', function(event) {
+      event.preventDefault();
+      files = event.target.files;
+
+      // Create a formdata object and add the files
+      var data = new FormData();
+      $.each(files, function(key, value) {
+        data.append(key, value);
+      });
+
+      $.ajax({
+        url: window.location.pathname,
+        type: 'POST',
+        data: data,
+        cache: false,
+        dataType: 'json',
+        headers: {
+          'X-Upload': 'true',
+        },
+        processData: false,
+        contentType: false,
+      }).done(function(data) {
+        notification({
+          text: "File(s) uploaded successfully.",
+          type: 'success',
+          timeout: 5000
+        });
+
+        $.pjax({
+          url: window.location.pathname,
+          container: '#content'
+        })
+      }).fail(function(data) {
+        notification({
+          text: 'Something went wrong.',
+          type: 'error'
+        });
+        console.log(data);
+      });
+    });
   }
 
   // If it's editor page

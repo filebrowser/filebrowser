@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"strings"
@@ -65,6 +67,48 @@ func delete(w http.ResponseWriter, r *http.Request) (int, error) {
 func post(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Remove both beginning  slashes
 	r.URL.Path = strings.TrimPrefix(r.URL.Path, "/")
+
+	// If it's the upload of a file
+	if r.Header.Get("X-Upload") == "true" {
+		// Parse the multipart form in the request
+		err := r.ParseMultipartForm(100000)
+
+		if err != nil {
+			w.Write([]byte(err.Error()))
+			return 500, err
+		}
+
+		// For each file header in the multipart form
+		for _, fheaders := range r.MultipartForm.File {
+			// Handle each file
+			for _, hdr := range fheaders {
+				// Open the first file
+				var infile multipart.File
+				if infile, err = hdr.Open(); nil != err {
+					w.Write([]byte(err.Error()))
+					return 500, err
+				}
+
+				// Create the file
+				var outfile *os.File
+				if outfile, err = os.Create(r.URL.Path + hdr.Filename); nil != err {
+					w.Write([]byte(err.Error()))
+					return 500, err
+				}
+
+				// Copy the file content
+				if _, err = io.Copy(outfile, infile); nil != err {
+					w.Write([]byte(err.Error()))
+					return 500, err
+				}
+			}
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte("{}"))
+		return 200, nil
+	}
+
 	// Get the JSON information sent using a buffer
 	buffer := new(bytes.Buffer)
 	buffer.ReadFrom(r.Body)
