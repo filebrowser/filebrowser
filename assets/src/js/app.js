@@ -121,7 +121,7 @@ $(document).on('ready pjax:success', function() {
           });
 
           $.pjax({
-            url: "/admin/edit/" + filename,
+            url: window.location.pathname.replace("browse", "edit") + filename,
             container: '#content'
           })
         }).fail(function(data) {
