@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -110,12 +109,12 @@ func servePost(w http.ResponseWriter, r *http.Request, c *config.Config, filenam
 			t, err := time.Parse("2006-01-02 15:04:05-07:00", rawFile["date"].(string))
 
 			if err != nil {
-				log.Print(err)
+				w.Write([]byte(err.Error()))
 				return 500, err
 			}
 
 			scheduler := cron.New()
-			scheduler.AddFunc(t.Format("05 04 15 02 01 *"), func() {
+			scheduler.AddFunc(t.In(time.Now().Location()).Format("05 04 15 02 01 *"), func() {
 				// Set draft to false
 				rawFile["draft"] = false
 
