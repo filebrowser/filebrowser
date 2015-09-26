@@ -72,7 +72,6 @@ func post(w http.ResponseWriter, r *http.Request) (int, error) {
 	if r.Header.Get("X-Upload") == "true" {
 		// Parse the multipart form in the request
 		err := r.ParseMultipartForm(100000)
-
 		if err != nil {
 			w.Write([]byte(err.Error()))
 			return 500, err
@@ -146,7 +145,6 @@ func post(w http.ResponseWriter, r *http.Request) (int, error) {
 		// Check if the archetype ending with .markdown exists
 		if _, err := os.Stat(archetype + ".markdown"); err == nil {
 			err = utils.CopyFile(archetype+".markdown", filename)
-
 			if err != nil {
 				w.Write([]byte(err.Error()))
 				return 500, err
@@ -161,7 +159,6 @@ func post(w http.ResponseWriter, r *http.Request) (int, error) {
 		// Check if the archetype ending with .md exists
 		if _, err := os.Stat(archetype + ".md"); err == nil {
 			err = utils.CopyFile(archetype+".md", filename)
-
 			if err != nil {
 				w.Write([]byte(err.Error()))
 				return 500, err
@@ -175,7 +172,6 @@ func post(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 
 	wf, err := os.Create(filename)
-
 	if err != nil {
 		w.Write([]byte(err.Error()))
 		return 500, err
