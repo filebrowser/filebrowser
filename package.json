@@ -1,7 +1,7 @@
 {
   "name": "caddy-hugo",
   "version": "1.0.0",
-  "description": "This is an add-on for Caddy which wants to deliver a good UI to edit the content of the website.",
+  "description": "Deploy your Hugo website and enjoy of an admin interface with Caddy server.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hacdias/caddy-hugo.git"
