@@ -65,26 +65,6 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 			return 0, nil
 		}
 
-		// Serve the static assets
-		if page == "assets" {
-			filename := strings.Replace(r.URL.Path, "/admin/", "", 1)
-			file, err := assets.Asset(filename)
-
-			if err != nil {
-				return 404, nil
-			}
-
-			// Get the file extension ant its mime type
-			extension := filepath.Ext(filename)
-			mime := mime.TypeByExtension(extension)
-
-			// Write the header with the Content-Type and write the file
-			// content to the buffer
-			w.Header().Set("Content-Type", mime)
-			w.Write(file)
-			return 200, nil
-		}
-
 		// If the url matches exactly with /admin/settings/ serve that page
 		// page variable isn't used here to avoid people using URLs like
 		// "/admin/settings/something".
@@ -107,6 +87,11 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 			return 0, nil
 		}
 
+		// Serve the static assets
+		if page == "assets" {
+			return serveAssets(w, r)
+		}
+
 		// Browse page
 		if page == "browse" {
 			code, err = browse.ServeHTTP(w, r, h.Config)
@@ -127,4 +112,23 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 	}
 
 	return h.Next.ServeHTTP(w, r)
+}
+
+func serveAssets(w http.ResponseWriter, r *http.Request) (int, error) {
+	filename := strings.Replace(r.URL.Path, "/admin/", "", 1)
+	file, err := assets.Asset(filename)
+
+	if err != nil {
+		return 404, nil
+	}
+
+	// Get the file extension ant its mime type
+	extension := filepath.Ext(filename)
+	mime := mime.TypeByExtension(extension)
+
+	// Write the header with the Content-Type and write the file
+	// content to the buffer
+	w.Header().Set("Content-Type", mime)
+	w.Write(file)
+	return 200, nil
 }
