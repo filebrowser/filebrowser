@@ -52,7 +52,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename str
 
 		file = f
 	default:
-		return 400, nil
+		return http.StatusNotFound, nil
 	}
 
 	// Write the file
@@ -60,12 +60,12 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename str
 
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		return 500, err
+		return http.StatusInternalServerError, err
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte("{}"))
-	return 200, nil
+	return http.StatusOK, nil
 }
 
 func parseFrontMatterOnlyFile(rawFile map[string]interface{}, filename string) ([]byte, int, error) {
@@ -80,7 +80,7 @@ func parseFrontMatterOnlyFile(rawFile map[string]interface{}, filename string) (
 	case "yaml":
 		mark = rune('-')
 	default:
-		return []byte{}, 400, nil
+		return []byte{}, http.StatusNotFound, nil
 	}
 
 	f, err := parser.InterfaceToFrontMatter(rawFile, mark)
@@ -100,10 +100,10 @@ func parseFrontMatterOnlyFile(rawFile map[string]interface{}, filename string) (
 	f = []byte(fString)
 
 	if err != nil {
-		return []byte{}, 500, err
+		return []byte{}, http.StatusInternalServerError, err
 	}
 
-	return f, 200, nil
+	return f, http.StatusOK, nil
 }
 
 func parseCompleteFile(r *http.Request, c *config.Config, rawFile map[string]interface{}, filename string) ([]byte, int, error) {
@@ -116,10 +116,10 @@ func parseCompleteFile(r *http.Request, c *config.Config, rawFile map[string]int
 
 	// Schedule the post
 	if r.Header.Get("X-Schedule") == "true" {
-		t, err := time.Parse("2006-01-02 15:04:05-07:00", rawFile["date"].(string))
+		t, err := time.Parse("http.StatusOK6-01-02 15:04:05-07:00", rawFile["date"].(string))
 
 		if err != nil {
-			return []byte{}, 500, err
+			return []byte{}, http.StatusInternalServerError, err
 		}
 
 		scheduler := cron.New()
@@ -160,7 +160,7 @@ func parseCompleteFile(r *http.Request, c *config.Config, rawFile map[string]int
 	jsonFrontmatter, err := json.Marshal(rawFile)
 
 	if err != nil {
-		return []byte{}, 500, err
+		return []byte{}, http.StatusInternalServerError, err
 	}
 
 	// Indents the json
@@ -171,5 +171,5 @@ func parseCompleteFile(r *http.Request, c *config.Config, rawFile map[string]int
 	f := new(bytes.Buffer)
 	f.Write(frontMatterBuffer.Bytes())
 	f.Write([]byte(mainContent))
-	return f.Bytes(), 200, nil
+	return f.Bytes(), http.StatusOK, nil
 }

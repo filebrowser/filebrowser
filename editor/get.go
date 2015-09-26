@@ -21,20 +21,18 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config, filename stri
 	// Check if the file format is supported. If not, send a "Not Acceptable"
 	// header and an error
 	if !utils.CanBeEdited(filename) {
-		return 406, errors.New("File format not supported.")
+		return http.StatusNotAcceptable, errors.New("File format not supported.")
 	}
 
 	// Check if the file exists. If it doesn't, send a "Not Found" message
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		w.Write([]byte(err.Error()))
-		return 404, nil
+		return http.StatusNotFound, nil
 	}
 
 	// Open the file and check if there was some error while opening
 	file, err := ioutil.ReadFile(filename)
 	if err != nil {
-		w.Write([]byte(err.Error()))
-		return 500, err
+		return http.StatusInternalServerError, err
 	}
 
 	// Create a new editor variable and set the extension
@@ -55,8 +53,7 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config, filename stri
 			buffer := bytes.NewBuffer(file)
 			file, err := parser.ReadFrom(buffer)
 			if err != nil {
-				w.Write([]byte(err.Error()))
-				return 500, err
+				return http.StatusInternalServerError, err
 			}
 
 			if strings.Contains(string(file.FrontMatter()), "date") {
@@ -86,8 +83,7 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config, filename stri
 
 		// Check if there were any errors
 		if err != nil {
-			w.Write([]byte(err.Error()))
-			return 500, err
+			return http.StatusInternalServerError, err
 		}
 	default:
 		// The editor will handle only content
@@ -105,11 +101,10 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config, filename stri
 	tpl, err := utils.GetTemplate(r, functions, "editor", "frontmatter")
 
 	if err != nil {
-		w.Write([]byte(err.Error()))
-		return 500, err
+		return http.StatusInternalServerError, err
 	}
 
-	return 200, tpl.Execute(w, page)
+	return http.StatusOK, tpl.Execute(w, page)
 }
 
 func hasFrontMatterRune(file []byte) bool {

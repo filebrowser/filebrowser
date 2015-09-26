@@ -20,8 +20,7 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) 
 	tpl, err := utils.GetTemplate(r, functions, "browse")
 
 	if err != nil {
-		w.Write([]byte(err.Error()))
-		return 500, err
+		return http.StatusInternalServerError, err
 	}
 
 	b := browse.Browse{

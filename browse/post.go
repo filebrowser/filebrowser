@@ -34,11 +34,11 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Check if filename and archetype are specified in
 	// the request
 	if _, ok := info["filename"]; !ok {
-		return 400, errors.New("Filename not specified.")
+		return http.StatusBadRequest, errors.New("Filename not specified.")
 	}
 
 	if _, ok := info["archetype"]; !ok {
-		return 400, errors.New("Archtype not specified.")
+		return http.StatusBadRequest, errors.New("Archtype not specified.")
 	}
 
 	// Sanitize the file name path
@@ -62,7 +62,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 			err = utils.CopyFile(archetype+".markdown", filename)
 			if err != nil {
 				w.Write([]byte(err.Error()))
-				return 500, err
+				return http.StatusInternalServerError, err
 			}
 
 			w.Header().Set("Location", "/admin/edit/"+filename)
@@ -76,7 +76,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 			err = utils.CopyFile(archetype+".md", filename)
 			if err != nil {
 				w.Write([]byte(err.Error()))
-				return 500, err
+				return http.StatusInternalServerError, err
 			}
 
 			w.Header().Set("Location", "/admin/edit/"+filename)
@@ -89,7 +89,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	wf, err := os.Create(filename)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		return 500, err
+		return http.StatusInternalServerError, err
 	}
 
 	defer wf.Close()
@@ -97,7 +97,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	w.Header().Set("Location", "/admin/edit/"+filename)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte("{}"))
-	return 200, nil
+	return http.StatusOK, nil
 }
 
 func upload(w http.ResponseWriter, r *http.Request) (int, error) {
@@ -105,7 +105,7 @@ func upload(w http.ResponseWriter, r *http.Request) (int, error) {
 	err := r.ParseMultipartForm(100000)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		return 500, err
+		return http.StatusInternalServerError, err
 	}
 
 	// For each file header in the multipart form
@@ -116,25 +116,25 @@ func upload(w http.ResponseWriter, r *http.Request) (int, error) {
 			var infile multipart.File
 			if infile, err = hdr.Open(); nil != err {
 				w.Write([]byte(err.Error()))
-				return 500, err
+				return http.StatusInternalServerError, err
 			}
 
 			// Create the file
 			var outfile *os.File
 			if outfile, err = os.Create(r.URL.Path + hdr.Filename); nil != err {
 				w.Write([]byte(err.Error()))
-				return 500, err
+				return http.StatusInternalServerError, err
 			}
 
 			// Copy the file content
 			if _, err = io.Copy(outfile, infile); nil != err {
 				w.Write([]byte(err.Error()))
-				return 500, err
+				return http.StatusInternalServerError, err
 			}
 		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte("{}"))
-	return 200, nil
+	return http.StatusOK, nil
 }
