@@ -33,17 +33,14 @@ type editor struct {
 func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	filename := strings.Replace(r.URL.Path, "/admin/edit/", "", 1)
 
-	switch r.Method {
-	case "POST":
-		return post(w, r, c, filename)
-	case "GET":
-		return get(w, r, c, filename)
-	default:
-		return 400, nil
+	if r.Method == "POST" {
+		return servePost(w, r, c, filename)
 	}
+
+	return serveGet(w, r, c, filename)
 }
 
-func post(w http.ResponseWriter, r *http.Request, c *config.Config, filename string) (int, error) {
+func servePost(w http.ResponseWriter, r *http.Request, c *config.Config, filename string) (int, error) {
 	// Get the JSON information sent using a buffer
 	rawBuffer := new(bytes.Buffer)
 	rawBuffer.ReadFrom(r.Body)
@@ -109,12 +106,45 @@ func post(w http.ResponseWriter, r *http.Request, c *config.Config, filename str
 
 		// Schedule the post
 		if r.Header.Get("X-Schedule") == "true" {
-			_, err := schedule(w, c, filename, rawFile)
+			t, err := time.Parse("2006-01-02 15:04:05-07:00", rawFile["date"].(string))
 
 			if err != nil {
 				w.Write([]byte(err.Error()))
 				return 500, err
 			}
+
+			scheduler := cron.New()
+			scheduler.AddFunc(t.In(time.Now().Location()).Format("05 04 15 02 01 *"), func() {
+				// Set draft to false
+				rawFile["draft"] = false
+
+				// Converts the frontmatter in JSON
+				jsonFrontmatter, err := json.Marshal(rawFile)
+
+				if err != nil {
+					return
+				}
+
+				// Indents the json
+				frontMatterBuffer := new(bytes.Buffer)
+				json.Indent(frontMatterBuffer, jsonFrontmatter, "", "  ")
+
+				// Generates the final file
+				f := new(bytes.Buffer)
+				f.Write(frontMatterBuffer.Bytes())
+				f.Write([]byte(mainContent))
+				file = f.Bytes()
+
+				// Write the file
+				err = ioutil.WriteFile(filename, file, 0666)
+
+				if err != nil {
+					return
+				}
+
+				utils.RunHugo(c)
+			})
+			scheduler.Start()
 		}
 
 		// Converts the frontmatter in JSON
@@ -151,58 +181,7 @@ func post(w http.ResponseWriter, r *http.Request, c *config.Config, filename str
 	return 200, nil
 }
 
-func schedule(w http.ResponseWriter, c *config.Config, filename string, raw map[string]interface{}) (int, error) {
-	// The main content of the file
-	content := raw["content"].(string)
-	content = "\n\n" + strings.TrimSpace(content)
-
-	// Removes the main content from the rest of the frontmatter
-	delete(raw, "content")
-
-	// Parse the time
-	t, err := time.Parse("2006-01-02 15:04:05-07:00", raw["date"].(string))
-
-	if err != nil {
-		w.Write([]byte(err.Error()))
-		return 500, err
-	}
-
-	scheduler := cron.New()
-	scheduler.AddFunc(t.In(time.Now().Location()).Format("05 04 15 02 01 *"), func() {
-		// Set draft to false
-		raw["draft"] = false
-
-		// Converts the frontmatter in JSON
-		jsonFrontmatter, err := json.Marshal(raw)
-
-		if err != nil {
-			return
-		}
-
-		// Indents the json
-		frontMatterBuffer := new(bytes.Buffer)
-		json.Indent(frontMatterBuffer, jsonFrontmatter, "", "  ")
-
-		// Generates the final file
-		f := new(bytes.Buffer)
-		f.Write(frontMatterBuffer.Bytes())
-		f.Write([]byte(content))
-		file := f.Bytes()
-
-		// Write the file
-		err = ioutil.WriteFile(filename, file, 0666)
-
-		if err != nil {
-			return
-		}
-
-		utils.RunHugo(c)
-	})
-	scheduler.Start()
-	return 200, nil
-}
-
-func get(w http.ResponseWriter, r *http.Request, c *config.Config, filename string) (int, error) {
+func serveGet(w http.ResponseWriter, r *http.Request, c *config.Config, filename string) (int, error) {
 	// Check if the file format is supported. If not, send a "Not Acceptable"
 	// header and an error
 	if !utils.CanBeEdited(filename) {
