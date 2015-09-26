@@ -208,7 +208,7 @@ func get(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) 
 		}),
 		Root: "./",
 		Configs: []browse.Config{
-			browse.Config{
+			{
 				PathScope: "/",
 				Variables: c,
 				Template:  tpl,

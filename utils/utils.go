@@ -184,7 +184,7 @@ func SplitCapitalize(name string) string {
 	}
 
 	name = strings.ToLower(name[:len(name)-1])
-	name = strings.ToUpper(string(name[0])) + name[1:len(name)]
+	name = strings.ToUpper(string(name[0])) + name[1:]
 
 	return name
 }
