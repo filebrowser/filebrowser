@@ -70,42 +70,7 @@ func post(w http.ResponseWriter, r *http.Request) (int, error) {
 
 	// If it's the upload of a file
 	if r.Header.Get("X-Upload") == "true" {
-		// Parse the multipart form in the request
-		err := r.ParseMultipartForm(100000)
-		if err != nil {
-			w.Write([]byte(err.Error()))
-			return 500, err
-		}
-
-		// For each file header in the multipart form
-		for _, fheaders := range r.MultipartForm.File {
-			// Handle each file
-			for _, hdr := range fheaders {
-				// Open the first file
-				var infile multipart.File
-				if infile, err = hdr.Open(); nil != err {
-					w.Write([]byte(err.Error()))
-					return 500, err
-				}
-
-				// Create the file
-				var outfile *os.File
-				if outfile, err = os.Create(r.URL.Path + hdr.Filename); nil != err {
-					w.Write([]byte(err.Error()))
-					return 500, err
-				}
-
-				// Copy the file content
-				if _, err = io.Copy(outfile, infile); nil != err {
-					w.Write([]byte(err.Error()))
-					return 500, err
-				}
-			}
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte("{}"))
-		return 200, nil
+		return upload(w, r)
 	}
 
 	// Get the JSON information sent using a buffer
@@ -180,6 +145,45 @@ func post(w http.ResponseWriter, r *http.Request) (int, error) {
 	defer wf.Close()
 
 	w.Header().Set("Location", "/admin/edit/"+filename)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte("{}"))
+	return 200, nil
+}
+
+func upload(w http.ResponseWriter, r *http.Request) (int, error) {
+	// Parse the multipart form in the request
+	err := r.ParseMultipartForm(100000)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		return 500, err
+	}
+
+	// For each file header in the multipart form
+	for _, fheaders := range r.MultipartForm.File {
+		// Handle each file
+		for _, hdr := range fheaders {
+			// Open the first file
+			var infile multipart.File
+			if infile, err = hdr.Open(); nil != err {
+				w.Write([]byte(err.Error()))
+				return 500, err
+			}
+
+			// Create the file
+			var outfile *os.File
+			if outfile, err = os.Create(r.URL.Path + hdr.Filename); nil != err {
+				w.Write([]byte(err.Error()))
+				return 500, err
+			}
+
+			// Copy the file content
+			if _, err = io.Copy(outfile, infile); nil != err {
+				w.Write([]byte(err.Error()))
+				return 500, err
+			}
+		}
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte("{}"))
 	return 200, nil
