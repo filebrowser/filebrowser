@@ -69,10 +69,10 @@ notification = function(options) {
   options = $.extend({}, defaults, options);
   noty(options);
 
-  if (!Cookies.get('stickynoties') && !options.timeout) {
-    Cookies.set('stickynoties', 'true', {
-      expires: 365
-    });
+  if (!document.cookie.replace(/(?:(?:^|.*;\s*)stickynoties\s*\=\s*([^;]*).*$)|^.*$/, "$1") && !options.timeout) {
+    var date = new Date();
+    date.setDate(date.getDate() + 365);
+    document.cookie = 'stickynoties=true; expires=' + date.toUTCString + '; path=/';
 
     notification({
       text: "Some notifications are sticky. If it doesn't go away, click to dismiss it.",

@@ -57,9 +57,9 @@ module.exports = function(grunt) {
       },
     },
     cssmin: {
-       options: {
+      options: {
         keepSpecialComments: 0
-    },
+      },
       target: {
         files: [{
           expand: true,
@@ -84,8 +84,7 @@ module.exports = function(grunt) {
             'node_modules/codemirror/mode/javascript/javascript.js',
             'node_modules/codemirror/mode/markdown/markdown.js',
             'node_modules/codemirror/mode/sass/sass.js',
-            'node_modules/codemirror/mode/htmlmixed/htmlmixed.js',
-            'node_modules/js-cookie/src/js.cookie.js'
+            'node_modules/codemirror/mode/htmlmixed/htmlmixed.js'
           ]
         }
       },

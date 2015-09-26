@@ -152,64 +152,6 @@ $(document).on('ready pjax:success', function() {
       }
     });
 
-    // If it has a textarea
-    if (textarea[0]) {
-      options = {
-        mode: textarea.data("mode"),
-        theme: 'mdn-like',
-        lineWrapping: true,
-        lineNumbers: true,
-        scrollbarStyle: null
-      }
-
-      if (textarea.data("mode") == "markdown") {
-        options.lineNumbers = false
-      }
-
-      editor = CodeMirror.fromTextArea(textarea[0], options);
-      codemirror = $('.CodeMirror');
-
-      // Toggles between preview and editing mode
-      $("#preview").click(function(event) {
-        event.preventDefault();
-
-        // If it currently in the preview mode, hide the preview
-        // and show the editor
-        if ($(this).data("previewing") == "true") {
-          preview.hide();
-          codemirror.fadeIn();
-          $(this).data("previewing", "false");
-          notification({
-            text: "Think, relax and do the better you can!",
-            type: 'information',
-            timeout: 2000
-          });
-        } else {
-          // Copy the editor content to texteare
-          editor.save()
-
-          // If it's in editing mode, convert the markdown to html
-          // and show it
-          var converter = new showdown.Converter(),
-            text = textarea.val(),
-            html = converter.makeHtml(text);
-
-          // Hide the editor and show the preview
-          codemirror.hide();
-          preview.html(html).fadeIn();
-
-          $(this).data("previewing", "true");
-          notification({
-            text: "This is how your post looks like.",
-            type: 'information',
-            timeout: 2000
-          });
-        }
-
-        return false;
-      });
-    }
-
     // Submites any form in the page in JSON format
     $('form').submit(function(event) {
       event.preventDefault();
@@ -255,7 +197,8 @@ $(document).on('ready pjax:success', function() {
     $("body").on('click', '.add', function(event) {
       event.preventDefault();
 
-      if ($("#new").length) {
+      if ($("#new-admin-item-123").length) {
+        console.log("oi")
         return false;
       }
 
@@ -266,8 +209,8 @@ $(document).on('ready pjax:success', function() {
 
       if (title.is('h1')) {
         fieldset = $('.frontmatter .container');
-        fieldset.prepend('<div id="ghost"></div>');
-        title = $('#ghost');
+        fieldset.prepend('<div id="ghost-admin-item-123"></div>');
+        title = $('#ghost-admin-item-123');
         type = "object";
       }
 
@@ -276,13 +219,13 @@ $(document).on('ready pjax:success', function() {
       }
 
       if (type == "object") {
-        title.after('<input id="new" placeholder="Write the field name and press enter..."></input>');
-        element = $("#new");
+        title.after('<input id="new-admin-item-123" placeholder="Write the field name and press enter..."></input>');
+        element = $("#new-admin-item-123");
 
-        if (!Cookies.get('placeholdertip')) {
-          Cookies.set('placeholdertip', 'true', {
-            expires: 365
-          });
+        if (!document.cookie.replace(/(?:(?:^|.*;\s*)placeholdertip\s*\=\s*([^;]*).*$)|^.*$/, "$1")) {
+          var date = new Date();
+          date.setDate(date.getDate() + 365);
+          document.cookie = 'placeholdertip=true; expires=' + date.toUTCString + '; path=/';
 
           notification({
             text: 'Write the field name and then press enter. If you want to create an array or an object, end the name with ":array" or ":object".',
@@ -352,5 +295,63 @@ $(document).on('ready pjax:success', function() {
 
       return false;
     });
+
+    // If it has a textarea
+    if (textarea[0]) {
+      options = {
+        mode: textarea.data("mode"),
+        theme: 'mdn-like',
+        lineWrapping: true,
+        lineNumbers: true,
+        scrollbarStyle: null
+      }
+
+      if (textarea.data("mode") == "markdown") {
+        options.lineNumbers = false
+      }
+
+      editor = CodeMirror.fromTextArea(textarea[0], options);
+      codemirror = $('.CodeMirror');
+
+      // Toggles between preview and editing mode
+      $("#preview").click(function(event) {
+        event.preventDefault();
+
+        // If it currently in the preview mode, hide the preview
+        // and show the editor
+        if ($(this).data("previewing") == "true") {
+          preview.hide();
+          codemirror.fadeIn();
+          $(this).data("previewing", "false");
+          notification({
+            text: "Think, relax and do the better you can!",
+            type: 'information',
+            timeout: 2000
+          });
+        } else {
+          // Copy the editor content to texteare
+          editor.save()
+
+          // If it's in editing mode, convert the markdown to html
+          // and show it
+          var converter = new showdown.Converter(),
+            text = textarea.val(),
+            html = converter.makeHtml(text);
+
+          // Hide the editor and show the preview
+          codemirror.hide();
+          preview.html(html).fadeIn();
+
+          $(this).data("previewing", "true");
+          notification({
+            text: "This is how your post looks like.",
+            type: 'information',
+            timeout: 2000
+          });
+        }
+
+        return false;
+      });
+    }
   }
 });
