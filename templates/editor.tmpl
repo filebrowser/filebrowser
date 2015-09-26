@@ -48,12 +48,10 @@
       {{ else }}
       <span class="left"></span>
       {{ end }}
-      <input type="submit" data-type="{{ .Class }}" data-message="{{ if eq .Class " frontmatter-only " }}The fields were put on their way.{{ else if eq .Class "content-only " }}Every byte was saved.{{ else }}Post saved with pomp and circumstance.{{ end }}"
-      data-regenerate="false" value="Save">
-      {{ if and (eq .Class "complete") ( .IsPost ) }}
-      <input type="submit" data-type="{{ .Class }}" data-message="Post scheduled." data-schedule="true" value="Schedule">
-      {{ end }}
-      <input type="submit" data-type="{{ .Class }}" data-message="{{ if eq .Class " frontmatter-only " }}Saved and regenerated.{{ else if eq .Class "content-only " }}Done. What do you want more?{{ else }}Post published. Go and share it!{{ end }}" data-regenerate="true"
+      <input type="submit" data-type="{{ .Class }}" data-message="{{ if eq .Class "frontmatter-only" }}The fields were put on their way.{{ else if eq .Class "content-only" }}Every byte was saved.{{ else }}Post saved with pomp and circumstance.{{ end }}"
+      data-regenerate="false" value="Save"> {{ if and (eq .Class "complete") ( .IsPost ) }}
+      <input type="submit" data-type="{{ .Class }}" data-message="Post scheduled." data-schedule="true" value="Schedule"> {{ end }}
+      <input type="submit" data-type="{{ .Class }}" data-message="{{ if eq .Class "frontmatter-only" }}Saved and regenerated.{{ else if eq .Class "content-only" }}Done. What do you want more?{{ else }}Post published. Go and share it!{{ end }}" data-regenerate="true"
       class="default" value="Publish">
     </div>
   </form>
