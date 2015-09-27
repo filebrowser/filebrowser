@@ -9,4 +9,8 @@ install:
   - go install github.com/mholt/caddy
   - go install github.com/robfig/cron
   - go install github.com/spf13/hugo
+  - go get github.com/caddyserver/caddydev
+  - go install github.com/caddyserver/caddydev
   - go generate
+script:
+  - caddydev --output="caddy" --source="." hugo
