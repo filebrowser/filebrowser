@@ -1,7 +1,6 @@
 package config
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/mholt/caddy/config/setup"
@@ -9,17 +8,15 @@ import (
 
 // Config is the add-on configuration set on Caddyfile
 type Config struct {
-	Styles string
-	Args   []string
-
-	Hugo    bool
+	Styles  string
+	Args    []string
 	Command string
 	Content string
 }
 
 // ParseCMS parses the configuration file
 func ParseCMS(c *setup.Controller) (*Config, error) {
-	conf := &Config{Hugo: true, Content: "content"}
+	conf := &Config{Content: "content"}
 
 	for c.Next() {
 		for c.NextBlock() {
@@ -33,15 +30,6 @@ func ParseCMS(c *setup.Controller) (*Config, error) {
 				conf.Styles = strings.TrimPrefix(conf.Styles, "/")
 				// Add a beginning slash to make a
 				conf.Styles = "/" + conf.Styles
-			case "hugo":
-				if !c.NextArg() {
-					return nil, c.ArgErr()
-				}
-				var err error
-				conf.Hugo, err = strconv.ParseBool(c.Val())
-				if err != nil {
-					return conf, err
-				}
 			case "content":
 				if !c.NextArg() {
 					return nil, c.ArgErr()

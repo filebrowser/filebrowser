@@ -161,7 +161,7 @@ func ParseComponents(r *http.Request) []string {
 
 // Run is used to run the static website generator
 func Run(c *config.Config) {
-	if !c.Hugo {
+	if c.Command != "" {
 		out, err := exec.Command(c.Command, c.Args...).Output()
 		if err != nil {
 			log.Panic("Can't execute the commands defined on Caddyfile.")
