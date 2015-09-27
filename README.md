@@ -3,22 +3,7 @@
 [![Build](https://img.shields.io/travis/hacdias/caddy-cms.svg?style=flat-square)](https://travis-ci.org/hacdias/caddy-cms)
 [![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/hacdias/caddy-cms)
 
-Deploy your Hugo website and enjoy of an admin interface with Caddy server.
-
-## Configuration
-
-```
-caddy-cms {
-  styles    file
-  hugo      true / false    # default is true
-  command   command         # needed when hugo is false
-  args      args...        # hugo or whatever command flags/args
-}
-```
-
-+ **file** is the relative path to ```public``` folder of the admin UI styles. They will not replace the defaults, they will be added.
-
-+ **args** are the Hugo flags (those which can be set in the command line) and they must follow one of these syntaxes: ```-f=value``` and ```--flag=value```.
+Powerful and easy static site generator with admin interface. By default it uses [Hugo](http://gohugo.io/) (and you don't need to install it separately) but you can use whatever you want.
 
 ## Build it from source
 
@@ -58,7 +43,7 @@ errors {
   404 404.html
 }
 
-caddy-cms
+cms
 ```
 
 After creating the file, navigate to that folder using the terminal and run the following command, replacing ```{caddy-cms}``` with the location of your clone.
