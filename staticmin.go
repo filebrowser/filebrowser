@@ -2,7 +2,7 @@
 //go:generate go install github.com/jteeuwen/go-bindata/go-bindata
 //go:generate go-bindata -pkg assets -o assets/assets.go templates/ assets/css/ assets/js/ assets/fonts/
 
-package cms
+package staticmin
 
 import (
 	"mime"
@@ -11,11 +11,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/caddy-hugo/assets"
-	"github.com/hacdias/caddy-hugo/browse"
-	"github.com/hacdias/caddy-hugo/config"
-	"github.com/hacdias/caddy-hugo/editor"
-	"github.com/hacdias/caddy-hugo/utils"
+	"github.com/hacdias/staticmin/assets"
+	"github.com/hacdias/staticmin/browse"
+	"github.com/hacdias/staticmin/config"
+	"github.com/hacdias/staticmin/editor"
+	"github.com/hacdias/staticmin/utils"
 	"github.com/mholt/caddy/config/setup"
 	"github.com/mholt/caddy/middleware"
 )

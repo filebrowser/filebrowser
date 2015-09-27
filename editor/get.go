@@ -10,9 +10,9 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/hacdias/caddy-hugo/config"
-	"github.com/hacdias/caddy-hugo/frontmatter"
-	"github.com/hacdias/caddy-hugo/utils"
+	"github.com/hacdias/staticmin/config"
+	"github.com/hacdias/staticmin/frontmatter"
+	"github.com/hacdias/staticmin/utils"
 	"github.com/spf13/hugo/parser"
 )
 

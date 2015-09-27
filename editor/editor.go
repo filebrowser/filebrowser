@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/hacdias/caddy-hugo/config"
+	"github.com/hacdias/staticmin/config"
 )
 
 type editor struct {

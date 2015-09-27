@@ -12,8 +12,8 @@ import (
 	"text/template"
 	"unicode"
 
-	"github.com/hacdias/caddy-hugo/assets"
-	"github.com/hacdias/caddy-hugo/config"
+	"github.com/hacdias/staticmin/assets"
+	"github.com/hacdias/staticmin/config"
 	"github.com/spf13/hugo/commands"
 )
 

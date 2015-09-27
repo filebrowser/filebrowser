@@ -1,4 +1,4 @@
-# Hugo add-on for Caddy
+# staticmin
 
 [![Build](https://img.shields.io/travis/hacdias/staticmin.svg?style=flat-square)](https://travis-ci.org/hacdias/staticmin)
 [![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/hacdias/staticmin)
@@ -8,11 +8,7 @@ Deploy your Hugo website and enjoy of an admin interface with Caddy server.
 ## Configuration
 
 ```
-<<<<<<< HEAD
 staticmin {
-=======
-cms {
->>>>>>> 7b68c78b12d9b7aee61788d5e85cd3b0722906de
   styles    file
   hugo      true / false    # default is true
   command   command         # needed when hugo is false
@@ -41,7 +37,7 @@ If you want to go deeper and make changes in front-end assets like JavaScript or
 
 ### Run it
 
-If you have already installed everything above to meet the requirements for what you want to do, let's start. Firstly, open the terminal and navigate to your clone of ```caddy-hugo```. Then execute:
+If you have already installed everything above to meet the requirements for what you want to do, let's start. Firstly, open the terminal and navigate to your clone of ```staticmin```. Then execute:
 
 ```
 go-bindata [-debug] -pkg assets -o assets/assets.go templates/ assets/css/ assets/js/ assets/fonts/
@@ -75,4 +71,4 @@ Navigate to ```localhost:8080``` to see your blog running on Caddy and Hugo. Go 
 
 Everything is working now. Whenever you make a change in the back-end source code, you'll have to run the command above again.
 
-**For those who want to make changes in front-end**, make sure you have every needed tool installed and run ```npm install``` in the root of ```caddy-hugo``` clone. Then, run ```grunt watch```.
+**For those who want to make changes in front-end**, make sure you have every needed tool installed and run ```npm install``` in the root of ```staticmin``` clone. Then, run ```grunt watch```.

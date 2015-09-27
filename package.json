@@ -1,18 +1,18 @@
 {
-  "name": "caddy-hugo",
+  "name": "staticmin",
   "version": "1.0.0",
   "description": "Deploy your Hugo website and enjoy of an admin interface with Caddy server.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hacdias/caddy-hugo.git"
+    "url": "git+https://github.com/hacdias/staticmin.git"
   },
   "main": "Gruntfile.js",
   "author": "Henrique Dias <hacdias@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hacdias/caddy-hugo/issues"
+    "url": "https://github.com/hacdias/staticmin/issues"
   },
-  "homepage": "https://github.com/hacdias/caddy-hugo#readme",
+  "homepage": "https://github.com/hacdias/staticmin#readme",
   "scripts": {
     "install": "napa defunkt/jquery-pjax"
   },
