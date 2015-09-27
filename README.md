@@ -1,14 +1,14 @@
 # Hugo add-on for Caddy
 
-[![Build](https://img.shields.io/travis/hacdias/caddy-hugo.svg?style=flat-square)](https://travis-ci.org/hacdias/caddy-hugo)
-[![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/hacdias/caddy-hugo)
+[![Build](https://img.shields.io/travis/hacdias/staticmin.svg?style=flat-square)](https://travis-ci.org/hacdias/staticmin)
+[![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/hacdias/staticmin)
 
 Deploy your Hugo website and enjoy of an admin interface with Caddy server.
 
 ## Configuration
 
 ```
-hugo {
+staticmin {
   styles    file
   flags     flags...
 }
@@ -56,13 +56,13 @@ errors {
   404 404.html
 }
 
-hugo
+staticmin
 ```
 
-After creating the file, navigate to that folder using the terminal and run the following command, replacing ```{CADDY-HUGO}``` with the location of your clone.
+After creating the file, navigate to that folder using the terminal and run the following command, replacing ```{staticmin}``` with the location of your clone.
 
 ```
-caddydev --source {CADDY-HUGO} hugo
+caddydev --source {staticmin} hugo
 ```
 
 Navigate to ```localhost:8080``` to see your blog running on Caddy and Hugo. Go to ```/admin``` to try the Admin UI. The default user name is ```admin```, so is the password. You may change in your Caddyfile.
