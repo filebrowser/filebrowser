@@ -1,14 +1,14 @@
-# staticmin
+# caddy-cms
 
-[![Build](https://img.shields.io/travis/hacdias/staticmin.svg?style=flat-square)](https://travis-ci.org/hacdias/staticmin)
-[![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/hacdias/staticmin)
+[![Build](https://img.shields.io/travis/hacdias/caddy-cms.svg?style=flat-square)](https://travis-ci.org/hacdias/caddy-cms)
+[![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/hacdias/caddy-cms)
 
 Deploy your Hugo website and enjoy of an admin interface with Caddy server.
 
 ## Configuration
 
 ```
-staticmin {
+caddy-cms {
   styles    file
   hugo      true / false    # default is true
   command   command         # needed when hugo is false
@@ -37,7 +37,7 @@ If you want to go deeper and make changes in front-end assets like JavaScript or
 
 ### Run it
 
-If you have already installed everything above to meet the requirements for what you want to do, let's start. Firstly, open the terminal and navigate to your clone of ```staticmin```. Then execute:
+If you have already installed everything above to meet the requirements for what you want to do, let's start. Firstly, open the terminal and navigate to your clone of ```caddy-cms```. Then execute:
 
 ```
 go-bindata [-debug] -pkg assets -o assets/assets.go templates/ assets/css/ assets/js/ assets/fonts/
@@ -58,17 +58,17 @@ errors {
   404 404.html
 }
 
-staticmin
+caddy-cms
 ```
 
-After creating the file, navigate to that folder using the terminal and run the following command, replacing ```{staticmin}``` with the location of your clone.
+After creating the file, navigate to that folder using the terminal and run the following command, replacing ```{caddy-cms}``` with the location of your clone.
 
 ```
-caddydev --source {staticmin} hugo
+caddydev --source {caddy-cms} hugo
 ```
 
 Navigate to ```localhost:8080``` to see your blog running on Caddy and Hugo. Go to ```/admin``` to try the Admin UI. The default user name is ```admin```, so is the password. You may change in your Caddyfile.
 
 Everything is working now. Whenever you make a change in the back-end source code, you'll have to run the command above again.
 
-**For those who want to make changes in front-end**, make sure you have every needed tool installed and run ```npm install``` in the root of ```staticmin``` clone. Then, run ```grunt watch```.
+**For those who want to make changes in front-end**, make sure you have every needed tool installed and run ```npm install``` in the root of ```caddy-cms``` clone. Then, run ```grunt watch```.

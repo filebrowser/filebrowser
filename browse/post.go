@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hacdias/staticmin/utils"
+	"github.com/hacdias/caddy-cms/utils"
 )
 
 // POST handles the POST method on browse page

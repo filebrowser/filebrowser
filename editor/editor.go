@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/hacdias/staticmin/config"
+	"github.com/hacdias/caddy-cms/config"
 )
 
 // ServeHTTP serves the editor page

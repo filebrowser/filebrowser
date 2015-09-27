@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/hacdias/staticmin/config"
+	"github.com/hacdias/caddy-cms/config"
 )
 
 // ServeHTTP is used to serve the content of Browse page

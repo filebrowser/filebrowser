@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hacdias/staticmin/config"
-	"github.com/hacdias/staticmin/utils"
+	"github.com/hacdias/caddy-cms/config"
+	"github.com/hacdias/caddy-cms/utils"
 	"github.com/robfig/cron"
 	"github.com/spf13/hugo/parser"
 )

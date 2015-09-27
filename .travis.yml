@@ -13,5 +13,5 @@ install:
   - go install github.com/caddyserver/caddydev
   - go generate
 script:
-  - caddydev --output="caddy" --source="." staticmin
+  - caddydev --output="caddy" --source="." caddy-cms
   - go test ./...
