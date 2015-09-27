@@ -2,7 +2,7 @@
 //go:generate go install github.com/jteeuwen/go-bindata/go-bindata
 //go:generate go-bindata -pkg assets -o assets/assets.go templates/ assets/css/ assets/js/ assets/fonts/
 
-package hugo
+package cms
 
 import (
 	"mime"
@@ -22,21 +22,21 @@ import (
 
 // Setup configures the middleware
 func Setup(c *setup.Controller) (middleware.Middleware, error) {
-	config, _ := config.ParseHugo(c)
-	utils.RunHugo(config)
+	config, _ := config.ParseCMS(c)
+	utils.Run(config)
 
 	return func(next middleware.Handler) middleware.Handler {
-		return &CaddyHugo{Next: next, Config: config}
+		return &CaddyCMS{Next: next, Config: config}
 	}, nil
 }
 
-// CaddyHugo main type
-type CaddyHugo struct {
+// CaddyCMS main type
+type CaddyCMS struct {
 	Next   middleware.Handler
 	Config *config.Config
 }
 
-func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
+func (h CaddyCMS) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Only handle /admin path
 	if middleware.Path(r.URL.Path).Matches("/admin") {
 		var err error
@@ -106,7 +106,7 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 		// Whenever the header "X-Refenerate" is true, the website should be
 		// regenerated. Used in edit and settings, for example.
 		if r.Header.Get("X-Regenerate") == "true" {
-			utils.RunHugo(h.Config)
+			utils.Run(h.Config)
 		}
 
 		return code, err

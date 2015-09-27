@@ -8,15 +8,17 @@ Deploy your Hugo website and enjoy of an admin interface with Caddy server.
 ## Configuration
 
 ```
-hugo {
+cms {
   styles    file
-  flags     flags...
+  hugo      true / false    # default is true
+  command   command         # needed when hugo is false
+  args      args...        # hugo or whatever command flags/args
 }
 ```
 
 + **file** is the relative path to ```public``` folder of the admin UI styles. They will not replace the defaults, they will be added.
 
-+ **flags** are the Hugo flags (those which can be set in the command line) and they must follow one of these syntaxes: ```-f=value``` and ```--flag=value```.
++ **args** are the Hugo flags (those which can be set in the command line) and they must follow one of these syntaxes: ```-f=value``` and ```--flag=value```.
 
 ## Build it from source
 
