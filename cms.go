@@ -62,7 +62,7 @@ func (h CaddyCMS) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error)
 
 		// If the current page is only "/admin/", redirect to "/admin/browse/contents"
 		if r.URL.Path == "/admin/" {
-			http.Redirect(w, r, "/admin/browse/content/", http.StatusTemporaryRedirect)
+			http.Redirect(w, r, "/admin/browse/"+h.Config.Content+"/", http.StatusTemporaryRedirect)
 			return 0, nil
 		}
 

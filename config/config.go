@@ -51,11 +51,11 @@ func ParseCMS(c *setup.Controller) (*Config, error) {
 		}
 	}
 
-	conf.parseFlags()
+	conf.parseArgs()
 	return conf, nil
 }
 
-func (c *Config) parseFlags() {
+func (c *Config) parseArgs() {
 	for index, element := range c.Args {
 		c.Args[index] = strings.Replace(element, "\"", "", -1)
 	}

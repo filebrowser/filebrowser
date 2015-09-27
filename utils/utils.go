@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -163,9 +164,9 @@ func ParseComponents(r *http.Request) []string {
 func Run(c *config.Config) {
 	if c.Command != "" {
 		out, err := exec.Command(c.Command, c.Args...).Output()
+		fmt.Print(string(out))
 		if err != nil {
 			log.Panic("Can't execute the commands defined on Caddyfile.")
-			log.Print(out)
 		}
 
 		return
