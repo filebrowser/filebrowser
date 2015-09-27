@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"reflect"
 	"strings"
 	"text/template"
@@ -158,9 +159,19 @@ func ParseComponents(r *http.Request) []string {
 	return components
 }
 
-// RunHugo is used to run hugo
-func RunHugo(c *config.Config) {
-	commands.HugoCmd.ParseFlags(c.Flags)
+// Run is used to run the static website generator
+func Run(c *config.Config) {
+	if !c.Hugo {
+		out, err := exec.Command(c.Command, c.Args...).Output()
+		if err != nil {
+			log.Panic("Can't execute the commands defined on Caddyfile.")
+			log.Print(out)
+		}
+
+		return
+	}
+
+	commands.HugoCmd.ParseFlags(c.Args)
 	commands.HugoCmd.Run(commands.HugoCmd, make([]string, 0))
 }
 
