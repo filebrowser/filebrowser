@@ -1,13 +1,12 @@
 language: go
 sudo: false
-before_install:
+install:
+  - export GOPATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace:$GOPATH"
+  - export PATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace/bin:$PATH"
   - go get github.com/mholt/caddy
   - go get github.com/spf13/hugo
   - go get github.com/robfig/cron
   - go install github.com/mholt/caddy
   - go install github.com/robfig/cron
   - go install github.com/spf13/hugo
-install:
-  - export GOPATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace:$GOPATH"
-  - export PATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace/bin:$PATH"
   - go generate
