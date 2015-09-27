@@ -9,15 +9,17 @@ import (
 
 // Config is the add-on configuration set on Caddyfile
 type Config struct {
-	Styles  string
+	Styles string
+	Args   []string
+
 	Hugo    bool
-	Args    []string
 	Command string
+	Content string
 }
 
 // ParseCMS parses the configuration file
 func ParseCMS(c *setup.Controller) (*Config, error) {
-	conf := &Config{Hugo: true}
+	conf := &Config{Hugo: true, Content: "content"}
 
 	for c.Next() {
 		for c.NextBlock() {
@@ -40,6 +42,13 @@ func ParseCMS(c *setup.Controller) (*Config, error) {
 				if err != nil {
 					return conf, err
 				}
+			case "content":
+				if !c.NextArg() {
+					return nil, c.ArgErr()
+				}
+				conf.Content = c.Val()
+				conf.Content = strings.TrimPrefix(conf.Content, "/")
+				conf.Content = strings.TrimSuffix(conf.Content, "/")
 			case "command":
 				if !c.NextArg() {
 					return nil, c.ArgErr()

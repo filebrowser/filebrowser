@@ -16,6 +16,16 @@ import (
 	"github.com/spf13/hugo/parser"
 )
 
+type editor struct {
+	Name        string
+	Class       string
+	IsPost      bool
+	Mode        string
+	Content     string
+	FrontMatter interface{}
+	Config      *config.Config
+}
+
 // GET handles the GET method on editor page
 func GET(w http.ResponseWriter, r *http.Request, c *config.Config, filename string) (int, error) {
 	// Check if the file format is supported. If not, send a "Not Acceptable"

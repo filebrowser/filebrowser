@@ -7,16 +7,6 @@ import (
 	"github.com/hacdias/staticmin/config"
 )
 
-type editor struct {
-	Name        string
-	Class       string
-	IsPost      bool
-	Mode        string
-	Content     string
-	FrontMatter interface{}
-	Config      *config.Config
-}
-
 // ServeHTTP serves the editor page
 func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	filename := strings.Replace(r.URL.Path, "/admin/edit/", "", 1)
