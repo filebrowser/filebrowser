@@ -140,6 +140,7 @@ $(document).on('ready pjax:success', function() {
     $("#upload").click(function(event) {
       event.preventDefault();
       $('.actions input[type="file"]').click();
+      return false;
     });
 
     $('input[type="file"]').on('change', function(event) {
@@ -181,6 +182,7 @@ $(document).on('ready pjax:success', function() {
         });
         console.log(data);
       });
+      return false;
     });
   }
 
