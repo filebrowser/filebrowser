@@ -1,5 +1,8 @@
 # Hugo add-on for Caddy
 
+[![Build](https://img.shields.io/travis/hacdias/caddy-hugo.svg?style=flat-square)](https://travis-ci.org/hacdias/caddy-hugo)
+![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/hacdias/caddy-hugo)
+
 Deploy your Hugo website and enjoy of an admin interface with Caddy server.
 
 ## Configuration
