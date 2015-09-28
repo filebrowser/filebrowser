@@ -348,7 +348,7 @@ $(document).on('ready pjax:success', function() {
     if (textarea[0]) {
       options = {
         mode: textarea.data("mode"),
-        theme: 'mdn-like',
+        theme: 'ttcn',
         lineWrapping: true,
         lineNumbers: true,
         scrollbarStyle: null

@@ -40,7 +40,7 @@ module.exports = function(grunt) {
           'node_modules/animate.css/source/bouncing_entrances/bounceInRight.css',
           'node_modules/animate.css/source/fading_exits/fadeOut.css',
           'node_modules/codemirror/lib/codemirror.css',
-          'node_modules/codemirror/theme/mdn-like.css',
+          'node_modules/codemirror/theme/ttcn.css',
           'temp/css/**/*.css'
         ],
         dest: 'temp/css/main.css',
