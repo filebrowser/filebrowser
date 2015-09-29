@@ -7,7 +7,7 @@ Powerful and easy static site generator with admin interface. By default it uses
 
 ## Build it from source
 
-If you want to try the Hugo add-on for Caddy (and improve it maybe), you'll have to install some tools.
+If you want to try caddy-cms plugin (and improve it maybe), you'll have to install some tools.
 
 + [Go 1.4 or higher](https://golang.org/dl/)
 + [caddydev](https://github.com/caddyserver/caddydev)
@@ -30,21 +30,7 @@ go-bindata [-debug] -pkg assets -o assets/assets.go templates/ assets/css/ asset
 
 That command will create an ```assets.go``` file which contains all static files from those folders mentioned in the command. You may run with ```-debug``` option if you want, but it is only needed if you're going to make changes in front-end assets.
 
-Now, open the folder with your Hugo website and create a [Caddyfile](https://caddyserver.com/docs/caddyfile) similar to this one:
-
-```
-localhost:8080
-
-root public
-
-basicauth /admin admin admin
-
-errors {
-  404 404.html
-}
-
-cms
-```
+Now, open the folder with your static website and create a Caddyfile. Read the [docs](http://caddyserver.com/docs/cms) for more information about the directives of this plugin.
 
 After creating the file, navigate to that folder using the terminal and run the following command, replacing ```{caddy-cms}``` with the location of your clone.
 
@@ -52,7 +38,7 @@ After creating the file, navigate to that folder using the terminal and run the 
 caddydev --source {caddy-cms} hugo
 ```
 
-Navigate to ```localhost:8080``` to see your blog running on Caddy and Hugo. Go to ```/admin``` to try the Admin UI. The default user name is ```admin```, so is the password. You may change in your Caddyfile.
+Navigate to the url you set on Caddyfile to see your blog running on Caddy and Hugo. Go to ```/admin``` to try the Admin UI.
 
 Everything is working now. Whenever you make a change in the back-end source code, you'll have to run the command above again.
 
