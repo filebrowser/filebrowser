@@ -229,6 +229,7 @@ $(document).on('ready pjax:success', function() {
         },
         dataType: 'json',
         encode: true,
+        contentType: "application/json; charset=utf-8",
       }).done(function(data) {
         notification({
           text: button.data("message"),
