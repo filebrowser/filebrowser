@@ -210,6 +210,11 @@ $(document).on('ready pjax:success', function() {
       $('#preview').data("previewing", "false");
       $('.CodeMirror').fadeIn();
 
+      // Save editor values
+      if (typeof editor !== 'undefined') {
+        editor.save();
+      }
+
       var data = JSON.stringify($(this).serializeJSON()),
         button = $(this).find("input[type=submit]:focus");
 
