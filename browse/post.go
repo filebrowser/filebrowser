@@ -10,11 +10,12 @@ import (
 	"os"
 	"strings"
 
+	"github.com/hacdias/caddy-cms/config"
 	"github.com/hacdias/caddy-cms/utils"
 )
 
 // POST handles the POST method on browse page
-func POST(w http.ResponseWriter, r *http.Request) (int, error) {
+func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	// Remove both beginning  slashes
 	r.URL.Path = strings.TrimPrefix(r.URL.Path, "/")
 
@@ -45,7 +46,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	filename := info["filename"].(string)
 	filename = strings.TrimPrefix(filename, "/")
 	filename = strings.TrimSuffix(filename, "/")
-	filename = r.URL.Path + filename
+	filename = c.Path + r.URL.Path + filename
 
 	// Check if the archetype is defined
 	if info["archetype"] != "" {

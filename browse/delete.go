@@ -4,22 +4,26 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/hacdias/caddy-cms/config"
 )
 
 // DELETE handles the DELETE method on browse page
-func DELETE(w http.ResponseWriter, r *http.Request) (int, error) {
+func DELETE(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	// Remove both beginning and trailing slashes
-	r.URL.Path = strings.TrimPrefix(r.URL.Path, "/")
-	r.URL.Path = strings.TrimSuffix(r.URL.Path, "/")
+	path := r.URL.Path
+	path = strings.TrimPrefix(path, "/")
+	path = strings.TrimSuffix(path, "/")
+	path = c.Path + path
 
 	// Check if the file or directory exists
-	if stat, err := os.Stat(r.URL.Path); err == nil {
+	if stat, err := os.Stat(path); err == nil {
 		var err error
 		// If it's dir, remove all of the content inside
 		if stat.IsDir() {
-			err = os.RemoveAll(r.URL.Path)
+			err = os.RemoveAll(path)
 		} else {
-			err = os.Remove(r.URL.Path)
+			err = os.Remove(path)
 		}
 
 		// Check for errors

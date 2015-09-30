@@ -27,7 +27,7 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) 
 		Next: middleware.HandlerFunc(func(w http.ResponseWriter, r *http.Request) (int, error) {
 			return 404, nil
 		}),
-		Root: "./",
+		Root: c.Path,
 		Configs: []browse.Config{
 			{
 				PathScope: "/",

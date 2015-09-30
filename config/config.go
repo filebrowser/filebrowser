@@ -8,17 +8,33 @@ import (
 
 // Config is the add-on configuration set on Caddyfile
 type Config struct {
-	Styles  string
-	Args    []string
-	Command string
+	Public  string
 	Content string
+	Path    string
+	Styles  string
+	Command string
+	Hugo    bool
 }
 
 // ParseCMS parses the configuration file
 func ParseCMS(c *setup.Controller) (*Config, error) {
-	conf := &Config{Content: "content"}
+	conf := &Config{
+		Public:  strings.Replace(c.Root, "./", "", -1),
+		Content: "content",
+		Hugo:    true,
+		Path:    "./",
+	}
 
 	for c.Next() {
+		args := c.RemainingArgs()
+
+		switch len(args) {
+		case 1:
+			conf.Path = args[0]
+			conf.Path = strings.TrimSuffix(conf.Path, "/")
+			conf.Path += "/"
+		}
+
 		for c.NextBlock() {
 			switch c.Val() {
 			case "styles":
@@ -35,28 +51,18 @@ func ParseCMS(c *setup.Controller) (*Config, error) {
 					return nil, c.ArgErr()
 				}
 				conf.Content = c.Val()
-				conf.Content = strings.TrimPrefix(conf.Content, "/")
-				conf.Content = strings.TrimSuffix(conf.Content, "/")
 			case "command":
 				if !c.NextArg() {
 					return nil, c.ArgErr()
 				}
 				conf.Command = c.Val()
-			case "args":
-				conf.Args = c.RemainingArgs()
-				if len(conf.Args) == 0 {
-					return conf, c.ArgErr()
+
+				if conf.Command != "" && !strings.HasPrefix(conf.Command, "-") {
+					conf.Hugo = false
 				}
 			}
 		}
 	}
 
-	conf.parseArgs()
 	return conf, nil
-}
-
-func (c *Config) parseArgs() {
-	for index, element := range c.Args {
-		c.Args[index] = strings.Replace(element, "\"", "", -1)
-	}
 }

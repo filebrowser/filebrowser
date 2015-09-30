@@ -10,6 +10,7 @@ import (
 // ServeHTTP serves the editor page
 func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	filename := strings.Replace(r.URL.Path, "/admin/edit/", "", 1)
+	filename = c.Path + filename
 
 	switch r.Method {
 	case "POST":

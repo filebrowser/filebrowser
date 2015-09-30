@@ -162,8 +162,20 @@ func ParseComponents(r *http.Request) []string {
 
 // Run is used to run the static website generator
 func Run(c *config.Config) {
-	if c.Command != "" {
-		out, err := exec.Command(c.Command, c.Args...).Output()
+	cwd, err := os.Getwd()
+
+	if err != nil {
+		log.Print("Can't get working directory.")
+	}
+
+	err = os.Chdir(c.Path)
+
+	if err != nil {
+		log.Print("Can't get working directory.")
+	}
+
+	if !c.Hugo {
+		out, err := exec.Command(c.Command).Output()
 		fmt.Print(string(out))
 		if err != nil {
 			log.Panic("Can't execute the commands defined on Caddyfile.")
@@ -172,8 +184,20 @@ func Run(c *config.Config) {
 		return
 	}
 
-	commands.HugoCmd.ParseFlags(c.Args)
+	args := strings.Split(c.Command, " ")
+
+	for index, element := range args {
+		args[index] = strings.Replace(element, "\"", "", -1)
+	}
+
+	commands.HugoCmd.ParseFlags(args)
 	commands.HugoCmd.Run(commands.HugoCmd, make([]string, 0))
+
+	err = os.Chdir(cwd)
+
+	if err != nil {
+		log.Print("Can't get working directory.")
+	}
 }
 
 // SplitCapitalize splits a string by its uppercase letters and capitalize the

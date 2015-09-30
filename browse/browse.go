@@ -15,9 +15,9 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, e
 
 	switch r.Method {
 	case "DELETE":
-		return DELETE(w, r)
+		return DELETE(w, r, c)
 	case "POST":
-		return POST(w, r)
+		return POST(w, r, c)
 	case "GET":
 		return GET(w, r, c)
 	default:

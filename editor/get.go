@@ -48,7 +48,7 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config, filename stri
 	// Create a new editor variable and set the extension
 	page := new(editor)
 	page.Mode = strings.TrimPrefix(filepath.Ext(filename), ".")
-	page.Name = filename
+	page.Name = strings.Replace(filename, c.Path, "", 1)
 	page.Config = c
 	page.IsPost = false
 
