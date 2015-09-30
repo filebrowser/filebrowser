@@ -211,7 +211,7 @@ $(document).on('ready pjax:success', function() {
       $('.CodeMirror').fadeIn();
 
       // Save editor values
-      if (typeof editor !== 'undefined') {
+      if (typeof editor !== 'undefined' && editor) {
         editor.save();
       }
 
@@ -252,7 +252,6 @@ $(document).on('ready pjax:success', function() {
       event.preventDefault();
 
       if ($("#new-admin-item-123").length) {
-        console.log("oi")
         return false;
       }
 
