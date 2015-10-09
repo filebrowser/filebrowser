@@ -109,7 +109,7 @@ func parseFrontMatterOnlyFile(rawFile map[string]interface{}, filename string) (
 func parseCompleteFile(r *http.Request, c *config.Config, rawFile map[string]interface{}, filename string) ([]byte, int, error) {
 	// The main content of the file
 	mainContent := rawFile["content"].(string)
-	mainContent = "\n\n" + strings.TrimSpace(mainContent)
+	mainContent = "\n\n" + strings.TrimSpace(mainContent) + "\n"
 
 	// Removes the main content from the rest of the frontmatter
 	delete(rawFile, "content")
