@@ -72,15 +72,15 @@ func (h CaddyCMS) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error)
 		if r.URL.Path == "/admin/settings/" {
 			var frontmatter string
 
-			if _, err := os.Stat("config.yaml"); err == nil {
+			if _, err := os.Stat(h.Config.Path + "config.yaml"); err == nil {
 				frontmatter = "yaml"
 			}
 
-			if _, err := os.Stat("config.json"); err == nil {
+			if _, err := os.Stat(h.Config.Path + "config.json"); err == nil {
 				frontmatter = "json"
 			}
 
-			if _, err := os.Stat("config.toml"); err == nil {
+			if _, err := os.Stat(h.Config.Path + "config.toml"); err == nil {
 				frontmatter = "toml"
 			}
 
