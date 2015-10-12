@@ -3,6 +3,7 @@ package editor
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -52,7 +53,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename str
 
 		file = f
 	default:
-		return http.StatusBadRequest, nil
+		return http.StatusBadRequest, errors.New("X-Content-Type header not defined")
 	}
 
 	// Write the file
@@ -80,7 +81,7 @@ func parseFrontMatterOnlyFile(rawFile map[string]interface{}, filename string) (
 	case "yaml":
 		mark = rune('-')
 	default:
-		return []byte{}, http.StatusNotFound, nil
+		return []byte{}, http.StatusBadRequest, errors.New("can't define the frontmatter")
 	}
 
 	f, err := parser.InterfaceToFrontMatter(rawFile, mark)
