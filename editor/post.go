@@ -52,7 +52,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename str
 
 		file = f
 	default:
-		return http.StatusNotFound, nil
+		return http.StatusBadRequest, nil
 	}
 
 	// Write the file
