@@ -2,12 +2,10 @@ package utils
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"reflect"
 	"strings"
 	"text/template"
@@ -174,23 +172,7 @@ func Run(c *config.Config) {
 		log.Print("Can't get working directory.")
 	}
 
-	if !c.Hugo {
-		out, err := exec.Command(c.Command).Output()
-		fmt.Print(string(out))
-		if err != nil {
-			log.Panic("Can't execute the commands defined on Caddyfile.")
-		}
-
-		return
-	}
-
-	args := strings.Split(c.Command, " ")
-
-	for index, element := range args {
-		args[index] = strings.Replace(element, "\"", "", -1)
-	}
-
-	commands.HugoCmd.ParseFlags(args)
+	commands.HugoCmd.ParseFlags(c.Args)
 	commands.HugoCmd.Run(commands.HugoCmd, make([]string, 0))
 
 	err = os.Chdir(cwd)
