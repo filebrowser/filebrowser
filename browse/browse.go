@@ -1,6 +1,7 @@
 package browse
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
@@ -21,6 +22,6 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, e
 	case "GET":
 		return GET(w, r, c)
 	default:
-		return 400, nil
+		return 400, errors.New("Invalid method.")
 	}
 }

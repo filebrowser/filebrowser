@@ -81,7 +81,7 @@ func parseFrontMatterOnlyFile(rawFile map[string]interface{}, filename string) (
 	case "yaml":
 		mark = rune('-')
 	default:
-		return []byte{}, http.StatusBadRequest, errors.New("can't define the frontmatter")
+		return []byte{}, http.StatusBadRequest, errors.New("Can't define the frontmatter.")
 	}
 
 	f, err := parser.InterfaceToFrontMatter(rawFile, mark)
