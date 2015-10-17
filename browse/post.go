@@ -132,6 +132,8 @@ func upload(w http.ResponseWriter, r *http.Request) (int, error) {
 				w.Write([]byte(err.Error()))
 				return http.StatusInternalServerError, err
 			}
+
+			defer outfile.Close()
 		}
 	}
 

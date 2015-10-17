@@ -117,7 +117,7 @@ func parseCompleteFile(r *http.Request, c *config.Config, rawFile map[string]int
 
 	// Schedule the post
 	if r.Header.Get("X-Schedule") == "true" {
-		t, err := time.Parse("http.StatusOK6-01-02 15:04:05-07:00", rawFile["date"].(string))
+		t, err := time.Parse("2006-01-02 15:04:05-07:00", rawFile["date"].(string))
 
 		if err != nil {
 			return []byte{}, http.StatusInternalServerError, err
