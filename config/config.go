@@ -8,21 +8,17 @@ import (
 
 // Config is the add-on configuration set on Caddyfile
 type Config struct {
-	Public  string
-	Content string
-	Path    string
-	Styles  string
-	Command string
-	Hugo    bool
+	Public string   // Public content path
+	Path   string   // Hugo files path
+	Styles string   // Admin styles path
+	Args   []string // Hugo arguments
 }
 
-// ParseCMS parses the configuration file
-func ParseCMS(c *setup.Controller) (*Config, error) {
+// ParseHugo parses the configuration file
+func ParseHugo(c *setup.Controller) (*Config, error) {
 	conf := &Config{
-		Public:  strings.Replace(c.Root, "./", "", -1),
-		Content: "content",
-		Hugo:    true,
-		Path:    "./",
+		Public: strings.Replace(c.Root, "./", "", -1),
+		Path:   "./",
 	}
 
 	for c.Next() {
@@ -46,20 +42,18 @@ func ParseCMS(c *setup.Controller) (*Config, error) {
 				conf.Styles = strings.TrimPrefix(conf.Styles, "/")
 				// Add a beginning slash to make a
 				conf.Styles = "/" + conf.Styles
-			case "content":
+			case "args":
 				if !c.NextArg() {
 					return nil, c.ArgErr()
 				}
-				conf.Content = c.Val()
-			case "command":
-				if !c.NextArg() {
-					return nil, c.ArgErr()
-				}
-				conf.Command = c.Val()
 
-				if conf.Command != "" && !strings.HasPrefix(conf.Command, "-") {
-					conf.Hugo = false
+				// Get the arguments and split the array
+				args := strings.Split(c.Val(), " ")
+				for index, element := range args {
+					args[index] = strings.Replace(element, "\"", "", -1)
 				}
+
+				conf.Args = args
 			}
 		}
 	}

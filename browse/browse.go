@@ -1,10 +1,11 @@
 package browse
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
-	"github.com/hacdias/caddy-cms/config"
+	"github.com/hacdias/caddy-hugo/config"
 )
 
 // ServeHTTP is used to serve the content of Browse page
@@ -21,6 +22,6 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, e
 	case "GET":
 		return GET(w, r, c)
 	default:
-		return 400, nil
+		return 400, errors.New("Invalid method.")
 	}
 }

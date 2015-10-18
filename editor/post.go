@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hacdias/caddy-cms/config"
-	"github.com/hacdias/caddy-cms/utils"
+	"github.com/hacdias/caddy-hugo/config"
+	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/robfig/cron"
 	"github.com/spf13/hugo/parser"
 )
@@ -81,7 +81,7 @@ func parseFrontMatterOnlyFile(rawFile map[string]interface{}, filename string) (
 	case "yaml":
 		mark = rune('-')
 	default:
-		return []byte{}, http.StatusBadRequest, errors.New("can't define the frontmatter")
+		return []byte{}, http.StatusBadRequest, errors.New("Can't define the frontmatter.")
 	}
 
 	f, err := parser.InterfaceToFrontMatter(rawFile, mark)
@@ -117,7 +117,7 @@ func parseCompleteFile(r *http.Request, c *config.Config, rawFile map[string]int
 
 	// Schedule the post
 	if r.Header.Get("X-Schedule") == "true" {
-		t, err := time.Parse("http.StatusOK6-01-02 15:04:05-07:00", rawFile["date"].(string))
+		t, err := time.Parse("2006-01-02 15:04:05-07:00", rawFile["date"].(string))
 
 		if err != nil {
 			return []byte{}, http.StatusInternalServerError, err

@@ -10,8 +10,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hacdias/caddy-cms/config"
-	"github.com/hacdias/caddy-cms/utils"
+	"github.com/hacdias/caddy-hugo/config"
+	"github.com/hacdias/caddy-hugo/utils"
 )
 
 // POST handles the POST method on browse page
@@ -132,6 +132,8 @@ func upload(w http.ResponseWriter, r *http.Request) (int, error) {
 				w.Write([]byte(err.Error()))
 				return http.StatusInternalServerError, err
 			}
+
+			defer outfile.Close()
 		}
 	}
 

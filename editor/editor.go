@@ -1,10 +1,11 @@
 package editor
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
-	"github.com/hacdias/caddy-cms/config"
+	"github.com/hacdias/caddy-hugo/config"
 )
 
 // ServeHTTP serves the editor page
@@ -18,6 +19,6 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, e
 	case "GET":
 		return GET(w, r, c, filename)
 	default:
-		return 400, nil
+		return 400, errors.New("Invalid method.")
 	}
 }

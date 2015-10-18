@@ -2,7 +2,7 @@
 //go:generate go install github.com/jteeuwen/go-bindata/go-bindata
 //go:generate go-bindata -pkg assets -o assets/assets.go templates/ assets/css/ assets/js/ assets/fonts/
 
-package cms
+package hugo
 
 import (
 	"mime"
@@ -11,32 +11,32 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/caddy-cms/assets"
-	"github.com/hacdias/caddy-cms/browse"
-	"github.com/hacdias/caddy-cms/config"
-	"github.com/hacdias/caddy-cms/editor"
-	"github.com/hacdias/caddy-cms/utils"
+	"github.com/hacdias/caddy-hugo/assets"
+	"github.com/hacdias/caddy-hugo/browse"
+	"github.com/hacdias/caddy-hugo/config"
+	"github.com/hacdias/caddy-hugo/editor"
+	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/mholt/caddy/config/setup"
 	"github.com/mholt/caddy/middleware"
 )
 
 // Setup configures the middleware
 func Setup(c *setup.Controller) (middleware.Middleware, error) {
-	config, _ := config.ParseCMS(c)
+	config, _ := config.ParseHugo(c)
 	utils.Run(config)
 
 	return func(next middleware.Handler) middleware.Handler {
-		return &CaddyCMS{Next: next, Config: config}
+		return &CaddyHugo{Next: next, Config: config}
 	}, nil
 }
 
-// CaddyCMS main type
-type CaddyCMS struct {
+// CaddyHugo main type
+type CaddyHugo struct {
 	Next   middleware.Handler
 	Config *config.Config
 }
 
-func (h CaddyCMS) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
+func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Only handle /admin path
 	if middleware.Path(r.URL.Path).Matches("/admin") {
 		var err error
@@ -60,9 +60,9 @@ func (h CaddyCMS) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error)
 			}
 		}
 
-		// If the current page is only "/admin/", redirect to "/admin/browse/contents"
+		// If the current page is only "/admin/", redirect to "/admin/browse/content/"
 		if r.URL.Path == "/admin/" {
-			http.Redirect(w, r, "/admin/browse/"+h.Config.Content+"/", http.StatusTemporaryRedirect)
+			http.Redirect(w, r, "/admin/browse/content/", http.StatusTemporaryRedirect)
 			return 0, nil
 		}
 

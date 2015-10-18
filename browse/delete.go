@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hacdias/caddy-cms/config"
+	"github.com/hacdias/caddy-hugo/config"
 )
 
 // DELETE handles the DELETE method on browse page
