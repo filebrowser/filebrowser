@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/hacdias/caddy-cms/config"
-	"github.com/hacdias/caddy-cms/utils"
+	"github.com/hacdias/caddy-hugo/config"
+	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/mholt/caddy/middleware"
 	"github.com/mholt/caddy/middleware/browse"
 )

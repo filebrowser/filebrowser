@@ -11,11 +11,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/caddy-cms/assets"
-	"github.com/hacdias/caddy-cms/browse"
-	"github.com/hacdias/caddy-cms/config"
-	"github.com/hacdias/caddy-cms/editor"
-	"github.com/hacdias/caddy-cms/utils"
+	"github.com/hacdias/caddy-hugo/assets"
+	"github.com/hacdias/caddy-hugo/browse"
+	"github.com/hacdias/caddy-hugo/config"
+	"github.com/hacdias/caddy-hugo/editor"
+	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/mholt/caddy/config/setup"
 	"github.com/mholt/caddy/middleware"
 )

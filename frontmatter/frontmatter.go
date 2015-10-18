@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/hacdias/caddy-cms/utils"
+	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/spf13/hugo/parser"
 )
 
