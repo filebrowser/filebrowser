@@ -1,5 +1,5 @@
 {
-  "name": "caddy-cms",
+  "name": "caddy-hugo",
   "version": "1.0.0",
   "description": "Deploy your Hugo website and enjoy of an admin interface with Caddy server.",
   "repository": {
