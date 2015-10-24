@@ -16,6 +16,8 @@
 </label>
 {{ end }}
 {{ if eq $value.Parent.Type "array" }}<div id="{{ $value.Name }}-{{ $key }}" data-type="array-item">{{ end }}
-<input name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" value="{{ $value.Content }}" data-parent-type="{{ $value.Parent.Type }}"></input>
+{{ if eq $value.HTMLType "textarea" }}<textarea class="scroll" name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" data-parent-type="{{ $value.Parent.Type }}">{{ $value.Content }}</textarea>
+{{ else if eq $value.HTMLType "datetime" }}<input class="datetimepicker" name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" value="{{ $value.Content }}" type="text" data-parent-type="{{ $value.Parent.Type }}"></input>
+{{ else }}<input name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" value="{{ $value.Content }}" type="{{ $value.HTMLType }}" data-parent-type="{{ $value.Parent.Type }}"></input>{{ end }}
 {{ if eq $value.Parent.Type "array" }}
 <div class="actions"><button class="delete"><i class="fa fa-minus"></i></button></div></div>{{ end }} {{ end }} {{ end }} {{ end }}

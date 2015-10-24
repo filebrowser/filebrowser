@@ -41,6 +41,7 @@ module.exports = function(grunt) {
           'node_modules/animate.css/source/fading_exits/fadeOut.css',
           'node_modules/codemirror/lib/codemirror.css',
           'node_modules/codemirror/theme/ttcn.css',
+          'node_modules/jquery-datetimepicker/jquery.datetimepicker.css',
           'temp/css/**/*.css'
         ],
         dest: 'temp/css/main.css',
@@ -84,7 +85,8 @@ module.exports = function(grunt) {
             'node_modules/codemirror/mode/javascript/javascript.js',
             'node_modules/codemirror/mode/markdown/markdown.js',
             'node_modules/codemirror/mode/sass/sass.js',
-            'node_modules/codemirror/mode/htmlmixed/htmlmixed.js'
+            'node_modules/codemirror/mode/htmlmixed/htmlmixed.js',
+            'node_modules/jquery-datetimepicker/jquery.datetimepicker.js'
           ]
         }
       },

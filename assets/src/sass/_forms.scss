@@ -6,7 +6,8 @@ pre {
   border-radius   : .5em;
 }
 
-input {
+input,
+textarea {
   width           : 100%;
   background-color: rgba(0, 0, 0, 0.25);
   color           : rgba(255, 255, 255, 0.3);
@@ -23,6 +24,12 @@ input:focus {
   color  : rgba(255, 255, 255, 0.7);
   border : 0;
   outline: 0;
+}
+
+textarea {
+  transition: none;
+  resize    : vertical;
+  min-height: 4em;
 }
 
 label {

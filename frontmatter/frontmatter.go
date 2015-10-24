@@ -29,11 +29,12 @@ func Pretty(content []byte) (interface{}, error) {
 }
 
 type frontmatter struct {
-	Name    string
-	Title   string
-	Content interface{}
-	Type    string
-	Parent  *frontmatter
+	Name     string
+	Title    string
+	Content  interface{}
+	Type     string
+	HTMLType string
+	Parent   *frontmatter
 }
 
 func rawToPretty(config interface{}, parent *frontmatter) interface{} {
@@ -127,6 +128,15 @@ func handleFlatValues(content interface{}, parent *frontmatter, name string) *fr
 		c.Type = "number"
 	default:
 		c.Type = "string"
+	}
+
+	switch strings.ToLower(name) {
+	case "description":
+		c.HTMLType = "textarea"
+	case "date", "publishdate":
+		c.HTMLType = "datetime"
+	default:
+		c.HTMLType = "text"
 	}
 
 	if parent.Type == "array" {

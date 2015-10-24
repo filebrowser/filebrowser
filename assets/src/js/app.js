@@ -5,6 +5,9 @@ $(document).ready(function() {
 $(document).on('ready pjax:success', function() {
   // Starts the perfect scroolbar plugin
   $('.scroll').perfectScrollbar();
+  $('.datetimepicker').datetimepicker({
+    format: 'Y-m-d H:i:s+00:00'
+  });
 
   // Log out the user sending bad credentials to the server
   $("#logout").click(function(event) {
