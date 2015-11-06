@@ -16,7 +16,7 @@ import (
 	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/editor"
 	"github.com/hacdias/caddy-hugo/utils"
-	"github.com/mholt/caddy/config/setup"
+	"github.com/mholt/caddy/caddy/setup"
 	"github.com/mholt/caddy/middleware"
 )
 
