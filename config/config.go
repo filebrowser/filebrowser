@@ -3,7 +3,7 @@ package config
 import (
 	"strings"
 
-	"github.com/mholt/caddy/config/setup"
+	"github.com/mholt/caddy/caddy/setup"
 )
 
 // Config is the add-on configuration set on Caddyfile
