@@ -14,6 +14,7 @@ import (
 	"github.com/hacdias/caddy-hugo/assets"
 	"github.com/hacdias/caddy-hugo/config"
 	"github.com/spf13/hugo/commands"
+	"github.com/spf13/viper"
 )
 
 // CanBeEdited checks if a filename has a supported extension
@@ -172,8 +173,9 @@ func Run(c *config.Config) {
 		log.Print("Can't get working directory.")
 	}
 
+	viper.Reset()
 	commands.HugoCmd.ParseFlags(c.Args)
-	commands.HugoCmd.Run(commands.HugoCmd, make([]string, 0))
+	commands.HugoCmd.Run(nil, nil)
 
 	err = os.Chdir(cwd)
 
