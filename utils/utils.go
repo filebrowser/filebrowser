@@ -188,9 +188,21 @@ func Run(c *config.Config) {
 	}
 }
 
+var splitCapitalizeExceptions = map[string]string{
+	"youtube":    "YouTube",
+	"github":     "GitHub",
+	"facebook":   "Facebook",
+	"googleplus": "Google Plus",
+	"linkedin":   "LinkedIn",
+}
+
 // SplitCapitalize splits a string by its uppercase letters and capitalize the
 // first letter of the string
 func SplitCapitalize(name string) string {
+	if val, ok := splitCapitalizeExceptions[strings.ToLower(name)]; ok {
+		return val
+	}
+
 	var words []string
 	l := 0
 	for s := name; s != ""; s = s[l:] {
