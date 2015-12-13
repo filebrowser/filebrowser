@@ -191,7 +191,6 @@ func Run(c *config.Config) {
 var splitCapitalizeExceptions = map[string]string{
 	"youtube":    "YouTube",
 	"github":     "GitHub",
-	"facebook":   "Facebook",
 	"googleplus": "Google Plus",
 	"linkedin":   "LinkedIn",
 }

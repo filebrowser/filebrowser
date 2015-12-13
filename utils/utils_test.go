@@ -93,6 +93,10 @@ var testSplitCapitalizeCases = []testSplitCapitalize{
 	{"loremIpsum", "Lorem ipsum"},
 	{"LoremIpsum", "Lorem ipsum"},
 	{"loremipsum", "Loremipsum"},
+	{"YouTube", "YouTube"},
+	{"GitHub", "GitHub"},
+	{"GooglePlus", "Google Plus"},
+	{"Facebook", "Facebook"},
 }
 
 func TestSplitCapitalize(t *testing.T) {
