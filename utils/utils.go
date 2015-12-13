@@ -175,8 +175,11 @@ func Run(c *config.Config) {
 
 	viper.Reset()
 	commands.HugoCmd.ParseFlags(c.Args)
-	// EXPERIENCE: using those args instead of nil, nil
-	commands.HugoCmd.Run(commands.HugoCmd, make([]string, 0))
+	err = commands.HugoCmd.RunE(nil, nil)
+
+	if err != nil {
+		log.Print(err)
+	}
 
 	err = os.Chdir(cwd)
 
