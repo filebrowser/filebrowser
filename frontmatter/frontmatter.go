@@ -42,28 +42,28 @@ func rawToPretty(config interface{}, parent *frontmatter) interface{} {
 	arrays := []*frontmatter{}
 	fields := []*frontmatter{}
 
-	if parent.Type == "array" {
-		for index, element := range config.([]interface{}) {
-			if utils.IsMap(element) {
-				objects = append(objects, handleObjects(element, parent, string(index)))
-			} else if utils.IsSlice(element) {
-				arrays = append(arrays, handleArrays(element, parent, string(index)))
-			} else {
-				fields = append(fields, handleFlatValues(element, parent, string(index)))
-			}
+	cnf := map[string]interface{}{}
+
+	if reflect.TypeOf(config) == reflect.TypeOf(map[interface{}]interface{}{}) {
+		for key, value := range config.(map[interface{}]interface{}) {
+			cnf[key.(string)] = value
 		}
-	} else if parent.Type == "object" {
-		for name, element := range config.(map[string]interface{}) {
-			if utils.IsMap(element) {
-				objects = append(objects, handleObjects(element, parent, name))
-			} else if utils.IsSlice(element) {
-				arrays = append(arrays, handleArrays(element, parent, name))
-			} else {
-				fields = append(fields, handleFlatValues(element, parent, name))
-			}
+	} else if reflect.TypeOf(config) == reflect.TypeOf([]interface{}{}) {
+		for key, value := range config.([]interface{}) {
+			cnf[string(key)] = value
 		}
 	} else {
-		log.Panic("Parent type not allowed.")
+		cnf = config.(map[string]interface{})
+	}
+
+	for name, element := range cnf {
+		if utils.IsMap(element) {
+			objects = append(objects, handleObjects(element, parent, name))
+		} else if utils.IsSlice(element) {
+			arrays = append(arrays, handleArrays(element, parent, name))
+		} else {
+			fields = append(fields, handleFlatValues(element, parent, name))
+		}
 	}
 
 	sort.Sort(sortByTitle(objects))
