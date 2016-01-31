@@ -280,12 +280,13 @@ $(document).on('ready pjax:success', function() {
       fieldset = $(this).parent().parent();
       type = fieldset.data("type");
       name = fieldset.attr("id");
+      newItem = "";
 
       // Main add button, below the title
       if (fieldset.is('div') && fieldset.hasClass("frontmatter")) {
         fieldset = $('.blocks');
         fieldset.prepend('<div class="block" id="' + defaultId + '"></div>');
-        title = $("#" + defaultId);
+        newItem = $("#" + defaultId);
         type = "object";
       }
 
@@ -299,16 +300,9 @@ $(document).on('ready pjax:success', function() {
         fieldset.append('<div id="' + name + '-' + $(input).length + '" data-type="array-item"><input name="' + name + ':auto" id="' + name + '"></input><span class="actions"> <button class="delete">&#8722;</button></span></div></div>');
       }
 
-      /*
-
-      /* WHAT IS THIS FOR?
-      if (title.is('h2')) {
-        type = "object"
-      }
-
       if (type == "object") {
-        fieldset.after('<input id="new-admin-item-123" placeholder="Write the field name and press enter..."></input>');
-        element = $("#new-admin-item-123");
+        newItem.html('<input id="name-' + defaultId + '" placeholder="Write the field name and press enter..."></input>');
+        element = $("#name-" + defaultId);
 
         if (!document.cookie.replace(/(?:(?:^|.*;\s*)placeholdertip\s*\=\s*([^;]*).*$)|^.*$/, "$1")) {
           var date = new Date();
@@ -327,7 +321,7 @@ $(document).on('ready pjax:success', function() {
             value = element.val();
 
             if (value == "") {
-              element.remove();
+              newItem.remove();
               return false;
             }
 
@@ -350,8 +344,8 @@ $(document).on('ready pjax:success', function() {
             }
 
             if (elements.length == 1) {
-              title.after('<input name="' + name + ':auto" id="' + name + '"></input><br>');
-              title.after('<label for="' + name + '">' + value + ' <span class="actions"><button class="delete"><i class="fa fa-minus"></i></button></span></label>');
+              newItem.append('<input name="' + name + ':auto" id="' + name + '"></input><br>');
+              newItem.prepend('<label for="' + name + '">' + value + '</label> <span class="actions"><button class="delete">&#8722;</button></span>');
             } else {
               var fieldset = "<fieldset id=\"{{ $value.Name }}\" data-type=\"{{ $value.Type }}\">\r\n<h3>{{ $value.Title }}\r\n<span class=\"actions\">\r\n<button class=\"add\"><i class=\"fa fa-plus\"><\/i><\/button>\r\n<button class=\"delete\"><i class=\"fa fa-minus\"><\/i><\/button>\r\n<\/span>\r\n<\/h3>\r\n<\/fieldset>";
 
@@ -363,13 +357,22 @@ $(document).on('ready pjax:success', function() {
 
               fieldset = fieldset.replace("{{ $value.Title }}", elements[0]);
               fieldset = fieldset.replace("{{ $value.Name }}", name);
-              title.after(fieldset);
+              newItem.after(fieldset);
             }
 
             return false;
           }
         });
       }
+
+      /*
+
+      /* WHAT IS THIS FOR?
+      if (title.is('h2')) {
+        type = "object"
+      }
+
+
 
       */
 
