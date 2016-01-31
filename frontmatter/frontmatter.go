@@ -12,20 +12,22 @@ import (
 
 const mainName = "#MAIN#"
 
+var mainTitle = ""
+
 // Pretty creates a new FrontMatter object
-func Pretty(content []byte) (interface{}, error) {
+func Pretty(content []byte) (interface{}, string, error) {
 	frontType := parser.DetectFrontMatter(rune(content[0]))
 	front, err := frontType.Parse(content)
 
 	if err != nil {
-		return []string{}, err
+		return []string{}, mainTitle, err
 	}
 
 	object := new(frontmatter)
 	object.Type = "object"
 	object.Name = mainName
 
-	return rawToPretty(front, object), nil
+	return rawToPretty(front, object), mainTitle, nil
 }
 
 type frontmatter struct {
@@ -62,6 +64,10 @@ func rawToPretty(config interface{}, parent *frontmatter) interface{} {
 		} else if utils.IsSlice(element) {
 			arrays = append(arrays, handleArrays(element, parent, name))
 		} else {
+			if name == "title" && parent.Name == mainName {
+				mainTitle = element.(string)
+			}
+
 			fields = append(fields, handleFlatValues(element, parent, name))
 		}
 	}

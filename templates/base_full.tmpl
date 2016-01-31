@@ -12,14 +12,17 @@
   <link rel="stylesheet" href="/admin/assets/css/main.min.css">
   {{ if and (Defined . "Config")}}{{ if not (eq .Config.Styles "") }}<link rel="stylesheet" href="{{ .Config.Styles }}">{{ end }}{{ end }}
   {{ if and (Defined . "User") }}{{ if not (eq .User.Styles "") }}<link rel="stylesheet" href="{{ .User.Styles }}">{{ end }}{{ end }}
+
+
   <script src="/admin/assets/js/plugins.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
   <script src="/admin/assets/js/app.min.js"></script>
 </head>
 
 <body>
   <nav>
     <ul>
-      <li><a href="/"><i class="fa fa-home fa-lg"></i> Home</a></li>
+      <li><a href="/"><i class="fa fa-home fa-lg"></i> Go to website</a></li>
       <li><a data-pjax href="/admin/browse/content/"><i class="fa fa-newspaper-o"></i> Content</a></li>
       <li><a data-pjax href="/admin/browse/"><i class="fa fa-folder-o"></i> Browse</a></li>
       <li><a data-pjax href="/admin/settings/"><i class="fa fa-cog"></i> Settings</a></li>

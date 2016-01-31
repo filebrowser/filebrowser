@@ -2,57 +2,59 @@
 
 <div class="editor {{ .Class }}">
   <form method="POST" action="">
-    <div class="full box scroll">
+    <div class="container">
       <main>
         {{ if not (eq .Class "complete") }}
-        <header>
-          <div class="container">
-            <h1>{{ .Name }}{{ if eq .Class "frontmatter-only" }}
-              <span class="actions">
-                <button class="add"><i class="fa fa-plus"></i></button>
-              </span>{{ end }}
-            </h1>
-          </div>
-        </header>
-        {{ end }} {{ if eq .Class "frontmatter-only" }}
-        <div class="frontmatter">
-          <div class="container">
-            {{ template "frontmatter" .FrontMatter }}
-          </div>
-        </div>
-        {{ else if eq .Class "content-only" }}
-        <div class="container">
-          <textarea id="content-area" name="content" class="scroll" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
-          <div id="preview-area" class="scroll hidden"></div>
-        </div>
-        {{ else }}
-        <div class="container">
-          <textarea id="content-area" name="content" class="scroll" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
-          <div id="preview-area" class="scroll hidden"></div>
-        </div>
-        <div class="frontmatter scroll">
-          <h2>Metadata
+          <h1>{{ .Name }}{{ if eq .Class "frontmatter-only" }}
             <span class="actions">
-              <button class="add"><i class="fa fa-plus"></i></button>
-            </span>
-          </h2>
+              <button class="add">&#43;</button>
+            </span>{{ end }}
+          </h1>
+
+        {{ end }} {{ if eq .Class "frontmatter-only" }}
+        <div class="frontmatter blocks">
           {{ template "frontmatter" .FrontMatter }}
         </div>
+        {{ else if eq .Class "content-only" }}
+        <textarea id="content-area" name="content" class="scroll" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
+        <div id="preview-area" class="scroll hidden"></div>
+        {{ else }}
+        <div class="frontmatter">
+          <h1><textarea>{{ .Name }}</textarea></h1>
+
+          <p class="actions">
+            <button class="add">Add field</button>
+          </p>
+
+          <div class="blocks">
+          {{ template "frontmatter" .FrontMatter }}
+          </div>
+        </div>
+
+        <div class="content">
+          <nav>
+            <a id="see-source"><i class="fa fa-code"></i> Source</a>
+            <a id="see-preview"><i class="fa fa-eye"></i> Preview</a>
+          </nav>
+          <textarea id="source-area" name="content" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
+          <div id="preview-area"></div>
+        </div>
+
         {{ end }}
       </main>
-    </div>
 
-    <div class="toolbar">
-      {{ if or (eq .Mode "markdown") (eq .Class "complete") }}
-      <button id="preview" class="left">Preview</button>
-      {{ else }}
-      <span class="left"></span>
-      {{ end }}
-      <input type="submit" data-type="{{ .Class }}" data-message="{{ if eq .Class "frontmatter-only" }}The fields were put on their way.{{ else if eq .Class "content-only" }}Every byte was saved.{{ else }}Post saved with pomp and circumstance.{{ end }}"
-      data-regenerate="false" value="Save"> {{ if and (eq .Class "complete") ( .IsPost ) }}
-      <input type="submit" data-type="{{ .Class }}" data-message="Post scheduled." data-schedule="true" value="Schedule"> {{ end }}
-      <input type="submit" data-type="{{ .Class }}" data-message="{{ if eq .Class "frontmatter-only" }}Saved and regenerated.{{ else if eq .Class "content-only" }}Done. What do you want more?{{ else }}Post published. Go and share it!{{ end }}" data-regenerate="true"
-      class="default" value="Publish">
+      <div class="toolbar">
+        {{ if or (eq .Mode "markdown") (eq .Class "complete") }}
+        <button id="preview" class="left">Preview</button>
+        {{ else }}
+        <span class="left"></span>
+        {{ end }}
+        <input type="submit" data-type="{{ .Class }}" data-message="{{ if eq .Class "frontmatter-only" }}The fields were put on their way.{{ else if eq .Class "content-only" }}Every byte was saved.{{ else }}Post saved with pomp and circumstance.{{ end }}"
+        data-regenerate="false" value="Save"> {{ if and (eq .Class "complete") ( .IsPost ) }}
+        <input type="submit" data-type="{{ .Class }}" data-message="Post scheduled." data-schedule="true" value="Schedule"> {{ end }}
+        <input type="submit" data-type="{{ .Class }}" data-message="{{ if eq .Class "frontmatter-only" }}Saved and regenerated.{{ else if eq .Class "content-only" }}Done. What do you want more?{{ else }}Post published. Go and share it!{{ end }}" data-regenerate="true"
+        class="default" value="Publish">
+      </div>
     </div>
   </form>
 </div>

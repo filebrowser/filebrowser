@@ -72,7 +72,7 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config, filename stri
 
 			// Parses the page content and the frontmatter
 			page.Content = strings.TrimSpace(string(file.Content()))
-			page.FrontMatter, err = frontmatter.Pretty(file.FrontMatter())
+			page.FrontMatter, page.Name, err = frontmatter.Pretty(file.FrontMatter())
 			page.Class = "complete"
 		} else {
 			// The editor will handle only content
@@ -86,9 +86,9 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config, filename stri
 
 		// Checks if the file already has the frontmatter rune and parses it
 		if hasFrontMatterRune(file) {
-			page.FrontMatter, err = frontmatter.Pretty(file)
+			page.FrontMatter, _, err = frontmatter.Pretty(file)
 		} else {
-			page.FrontMatter, err = frontmatter.Pretty(appendFrontMatterRune(file, page.Mode))
+			page.FrontMatter, _, err = frontmatter.Pretty(appendFrontMatterRune(file, page.Mode))
 		}
 
 		// Check if there were any errors

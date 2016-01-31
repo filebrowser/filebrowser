@@ -9,28 +9,13 @@ module.exports = function(grunt) {
   grunt.initConfig({
     watch: {
       sass: {
-        files: ['assets/src/sass/**/*.scss'],
-        tasks: ['sass', 'concat', 'cssmin']
+        files: ['assets/src/css/**/*.css'],
+        tasks: ['concat', 'cssmin']
       },
       js: {
         files: ['assets/src/js/**/*.js'],
         tasks: ['uglify:main']
       },
-    },
-    sass: {
-      dist: {
-        options: {
-          style: 'expanded',
-          sourcemap: 'none'
-        },
-        files: [{
-          expand: true,
-          cwd: 'assets/src/sass',
-          src: ['**/*.scss'],
-          dest: 'temp/css',
-          ext: '.css'
-        }]
-      }
     },
     concat: {
       css: {
@@ -39,10 +24,8 @@ module.exports = function(grunt) {
           'node_modules/animate.css/source/_base.css',
           'node_modules/animate.css/source/bouncing_entrances/bounceInRight.css',
           'node_modules/animate.css/source/fading_exits/fadeOut.css',
-          'node_modules/codemirror/lib/codemirror.css',
-          'node_modules/codemirror/theme/ttcn.css',
           'node_modules/jquery-datetimepicker/jquery.datetimepicker.css',
-          'temp/css/**/*.css'
+          'assets/src/css/main.css'
         ],
         dest: 'temp/css/main.css',
       },
@@ -80,12 +63,6 @@ module.exports = function(grunt) {
             'node_modules/noty/js/noty/packaged/jquery.noty.packaged.min.js',
             'node_modules/jquery-pjax/jquery.pjax.js',
             'node_modules/jquery-serializejson/jquery.serializejson.min.js',
-            'node_modules/codemirror/lib/codemirror.js',
-            'node_modules/codemirror/mode/css/css.js',
-            'node_modules/codemirror/mode/javascript/javascript.js',
-            'node_modules/codemirror/mode/markdown/markdown.js',
-            'node_modules/codemirror/mode/sass/sass.js',
-            'node_modules/codemirror/mode/htmlmixed/htmlmixed.js',
             'node_modules/jquery-datetimepicker/jquery.datetimepicker.js'
           ]
         }

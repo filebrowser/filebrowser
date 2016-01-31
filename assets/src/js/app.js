@@ -4,7 +4,7 @@ $(document).ready(function() {
 
 $(document).on('ready pjax:success', function() {
   // Starts the perfect scroolbar plugin
-  $('.scroll').perfectScrollbar();
+  //$('.scroll').perfectScrollbar();
   $('.datetimepicker').datetimepicker({
     format: 'Y-m-d H:i:s+00:00'
   });
@@ -191,7 +191,25 @@ $(document).on('ready pjax:success', function() {
 
   // If it's editor page
   if ($(".editor")[0]) {
-    editor = false;
+    function autoGrow(element) {
+      this.style.height = "5px";
+      this.style.height = (this.scrollHeight) + "px";
+    }
+
+    $('textarea').keyup(autoGrow);
+    $("textarea").each(autoGrow);
+
+    var editor = ace.edit("source-area");
+    editor.getSession().setMode("ace/mode/markdown");
+    editor.setOptions({
+      wrap: true,
+      maxLines: Infinity,
+      theme: "ace/theme/github",
+      showPrintMargin: false,
+      fontSize: "1em"
+    });
+
+
     preview = $("#preview-area");
     textarea = $("#content-area");
 
@@ -253,29 +271,43 @@ $(document).on('ready pjax:success', function() {
     // Adds one more field to the current group
     $("body").on('click', '.add', function(event) {
       event.preventDefault();
+      defaultId = "new-admin-item-123";
 
-      if ($("#new-admin-item-123").length) {
+      if ($("#" + defaultId).length) {
         return false;
       }
 
-      title = $(this).parent().parent();
-      fieldset = title.parent();
+      fieldset = $(this).parent().parent();
       type = fieldset.data("type");
       name = fieldset.attr("id");
 
-      if (title.is('h1')) {
-        fieldset = $('.frontmatter .container');
-        fieldset.prepend('<div id="ghost-admin-item-123"></div>');
-        title = $('#ghost-admin-item-123');
+      // Main add button, below the title
+      if (fieldset.is('div') && fieldset.hasClass("frontmatter")) {
+        fieldset = $('.blocks');
+        fieldset.prepend('<div class="block" id="' + defaultId + '"></div>');
+        title = $("#" + defaultId);
         type = "object";
       }
 
+      if (type == "array") {
+        name = name + "[]";
+        input = name;
+        input = input.replace(/\[/, '\\[');
+        input = input.replace(/\]/, '\\]');
+        input = '#' + input;
+
+        fieldset.append('<div id="' + name + '-' + $(input).length + '" data-type="array-item"><input name="' + name + ':auto" id="' + name + '"></input><span class="actions"> <button class="delete">&#8722;</button></span></div></div>');
+      }
+
+      /*
+
+      /* WHAT IS THIS FOR?
       if (title.is('h2')) {
         type = "object"
       }
 
       if (type == "object") {
-        title.after('<input id="new-admin-item-123" placeholder="Write the field name and press enter..."></input>');
+        fieldset.after('<input id="new-admin-item-123" placeholder="Write the field name and press enter..."></input>');
         element = $("#new-admin-item-123");
 
         if (!document.cookie.replace(/(?:(?:^|.*;\s*)placeholdertip\s*\=\s*([^;]*).*$)|^.*$/, "$1")) {
@@ -339,15 +371,7 @@ $(document).on('ready pjax:success', function() {
         });
       }
 
-      if (type == "array") {
-        name = name + "[]";
-        input = name;
-        input = input.replace(/\[/, '\\[');
-        input = input.replace(/\]/, '\\]');
-        input = '#' + input;
-
-        title.after('<div id="' + name + '-' + $(input).length + '" data-type="array-item"><input name="' + name + ':auto" id="' + name + '"></input></div>');
-      }
+      */
 
       return false;
     });
