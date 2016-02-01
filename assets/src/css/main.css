@@ -228,19 +228,23 @@ fieldset > .actions {
 }
 
 .blocks {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  -moz-column-count: 2;
+  -webkit-column-count: 2;
+  column-count: 2;
+  -moz-column-gap: 1em;
+  -webkit-column-gap: 1em;
+  column-gap: 1em;
 }
 
 .block,
 fieldset {
+   display: inline-block;
   background-color: #EAEAEA;
   padding: 0.6em;
   box-sizing: border-box;
   margin: 0 0 1em;
   position: relative;
-  flex-basis: 49%;
+  width: 100%;
   border: 0;
 }
 
