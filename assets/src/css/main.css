@@ -12,15 +12,8 @@ code {
 img {
   max-width: 100%;
 }
-
 #content {
   padding-top: 3em;
-}
-
-.full {
-  position: fixed;
-  height: calc(100% - 3em);
-  width: 100%;
 }
 
 h2 {
@@ -108,6 +101,22 @@ body > nav ul li a:hover {
   background-color: rgba(255, 255, 255, 0.57);
 }
 
+/* FOOTER */
+
+body > footer {
+  background-color: #CFD8DC;
+  text-align: center;
+  padding: 1em 0;
+}
+
+body > footer p {
+  width: 95%;
+  max-width: 1000px;
+  margin: 0 auto;
+  color: #78909C;
+  font-size: .9em
+}
+
 
 /* NOFICATIONS */
 
@@ -188,6 +197,15 @@ body > nav ul li a:hover {
 
 /* EDITOR */
 
+button, input[type="submit"] {
+  border-radius: 0.2em;
+  border: 0;
+  padding: .5em 1em;
+  color: #fff;
+  font-weight: normal;
+  background-color: #ddd;
+}
+
 .editor h1 textarea {
   width: 100%;
   border: 0;
@@ -199,17 +217,21 @@ body > nav ul li a:hover {
   height: 1em;
 }
 
-button.add,
-button.delete,
-button.rename {
-  border-radius: 0.2em;
-  border: 0;
-  color: #fff;
-  font-weight: normal;
+button.add, button.delete, button.rename {
+  padding: 0.063em 0.375em;
 }
 
 button.add {
   background-color: #8BC34A;
+}
+
+.frontmatter > .actions {
+  margin-top: 0;
+  text-align: right;
+}
+
+.frontmatter > .actions button.add {
+  padding: .5em 1em;
 }
 
 button.delete {
@@ -238,7 +260,7 @@ fieldset > .actions {
 
 .block,
 fieldset {
-   display: inline-block;
+  display: inline-block;
   background-color: #EAEAEA;
   padding: 0.6em;
   box-sizing: border-box;

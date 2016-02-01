@@ -3,10 +3,19 @@ $(document).ready(function() {
 });
 
 $(document).on('ready pjax:success', function() {
-  // Starts the perfect scroolbar plugin
-  //$('.scroll').perfectScrollbar();
-  $('.datetimepicker').datetimepicker({
-    format: 'Y-m-d H:i:s+00:00'
+  // Auto Grow Textarea
+  function autoGrow(element) {
+    this.style.height = "5px";
+    this.style.height = (this.scrollHeight) + "px";
+  }
+
+  // Auto Grow textareas after loading
+  $("textarea").each(autoGrow);
+  // Auto Grow textareas when changing its content
+  $('textarea').keyup(autoGrow);
+  // Auto Grow textareas when resizing the window
+  $(window).resize(function() {
+    $("textarea").each(autoGrow);
   });
 
   // Log out the user sending bad credentials to the server
@@ -191,14 +200,6 @@ $(document).on('ready pjax:success', function() {
 
   // If it's editor page
   if ($(".editor")[0]) {
-    function autoGrow(element) {
-      this.style.height = "5px";
-      this.style.height = (this.scrollHeight) + "px";
-    }
-
-    $('textarea').keyup(autoGrow);
-    $("textarea").each(autoGrow);
-
     var editor = ace.edit("source-area");
     editor.getSession().setMode("ace/mode/markdown");
     editor.setOptions({
@@ -285,7 +286,7 @@ $(document).on('ready pjax:success', function() {
       // Main add button, below the title
       if (fieldset.is('div') && fieldset.hasClass("frontmatter")) {
         fieldset = $('.blocks');
-        fieldset.prepend('<div class="block" id="' + defaultId + '"></div>');
+        fieldset.append('<div class="block" id="' + defaultId + '"></div>');
         newItem = $("#" + defaultId);
         type = "object";
       }

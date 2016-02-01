@@ -22,13 +22,13 @@
         <div class="frontmatter">
           <h1><textarea>{{ .Name }}</textarea></h1>
 
-          <p class="actions">
-            <button class="add">Add field</button>
-          </p>
-
           <div class="blocks">
           {{ template "frontmatter" .FrontMatter }}
           </div>
+
+          <p class="actions">
+            <button class="add">Add field</button>
+          </p>
         </div>
 
         <div class="content">
@@ -43,7 +43,7 @@
         {{ end }}
       </main>
 
-      <div class="toolbar">
+      <p class="toolbar">
         {{ if or (eq .Mode "markdown") (eq .Class "complete") }}
         <button id="preview" class="left">Preview</button>
         {{ else }}
@@ -54,7 +54,7 @@
         <input type="submit" data-type="{{ .Class }}" data-message="Post scheduled." data-schedule="true" value="Schedule"> {{ end }}
         <input type="submit" data-type="{{ .Class }}" data-message="{{ if eq .Class "frontmatter-only" }}Saved and regenerated.{{ else if eq .Class "content-only" }}Done. What do you want more?{{ else }}Post published. Go and share it!{{ end }}" data-regenerate="true"
         class="default" value="Publish">
-      </div>
+      </p>
     </div>
   </form>
 </div>
