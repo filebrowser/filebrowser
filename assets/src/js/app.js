@@ -1,4 +1,5 @@
 $(document).ready(function() {
+  // Start pjax
   $(document).pjax('a[data-pjax]', '#content');
 });
 
@@ -200,8 +201,9 @@ $(document).on('ready pjax:success', function() {
 
   // If it's editor page
   if ($(".editor")[0]) {
+    var mode = $("#source-area").data('mode');
     var editor = ace.edit("source-area");
-    editor.getSession().setMode("ace/mode/markdown");
+    editor.getSession().setMode("ace/mode/" + mode);
     editor.setOptions({
       wrap: true,
       maxLines: Infinity,
@@ -222,6 +224,7 @@ $(document).on('ready pjax:success', function() {
       }
     });
 
+    //TODO: reform this
     // Submites any form in the page in JSON format
     $('form').submit(function(event) {
       event.preventDefault();

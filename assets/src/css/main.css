@@ -1,8 +1,15 @@
 body {
   font-family: 'Roboto', sans-serif;
   color: #212121;
+  background-color: #f5f5f5;
   height: 100%;
   width: 100%;
+  padding-top: 3em;
+}
+
+a {
+  text-decoration: none;
+  color: #1976D2;
 }
 
 code {
@@ -12,28 +19,15 @@ code {
 img {
   max-width: 100%;
 }
-#content {
-  padding-top: 3em;
-}
 
 h2 {
   margin: .83em 0;
 }
 
-header {
-  color: #fff;
-  background-color: #37474f;
-  padding: .67em 0;
-}
-
-header h1 {
-  margin: 0;
-}
-
 .container {
   margin: 0 auto;
   width: 95%;
-  max-width: 800px;
+  max-width: 1000px;
 }
 
 .hidden {
@@ -62,13 +56,13 @@ body > nav {
   box-sizing: border-box;
   z-index: 999;
   color: #eee;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
 body > nav ul {
   margin: 0;
   padding: 0;
   display: -webkit-box;
-  display: -moz-box;
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex;
@@ -94,6 +88,7 @@ body > nav ul li a {
   display: block;
   text-decoration: none;
   color: inherit;
+  -webkit-transition: .5s ease background-color;
   transition: .5s ease background-color;
 }
 
@@ -101,12 +96,14 @@ body > nav ul li a:hover {
   background-color: rgba(255, 255, 255, 0.57);
 }
 
+
 /* FOOTER */
 
 body > footer {
-  background-color: #CFD8DC;
+  background-color: #ddd;
   text-align: center;
   padding: 1em 0;
+  margin-top: 1em;
 }
 
 body > footer p {
@@ -195,34 +192,35 @@ body > footer p {
 }
 
 
-/* EDITOR */
+/* EDITOR : BUTTONS */
 
-button, input[type="submit"] {
+button,
+input[type="submit"] {
   border-radius: 0.2em;
   border: 0;
   padding: .5em 1em;
   color: #fff;
   font-weight: normal;
-  background-color: #ddd;
+  background-color: #2196F3;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.12);
 }
 
-.editor h1 textarea {
-  width: 100%;
-  border: 0;
-  font-size: 2em;
-  font-weight: 400;
-  resize: none;
-  overflow: hidden;
-  line-height: 1em;
-  height: 1em;
-}
-
-button.add, button.delete, button.rename {
+button.add,
+button.delete,
+button.rename {
   padding: 0.063em 0.375em;
 }
 
 button.add {
   background-color: #8BC34A;
+}
+
+button.delete {
+  background-color: #F44336;
+}
+
+button.rename {
+  background-color: #1565C0;
 }
 
 .frontmatter > .actions {
@@ -234,12 +232,24 @@ button.add {
   padding: .5em 1em;
 }
 
-button.delete {
-  background-color: #F44336;
+.toolbar .right {
+  float: right;
 }
 
-button.rename {
-  background-color: #1565C0;
+.toolbar .default {
+  background-color: #8BC34A;
+}
+
+.editor h1 textarea {
+  width: 100%;
+  border: 0;
+  font-size: 2em;
+  font-weight: 400;
+  resize: none;
+  overflow: hidden;
+  line-height: 1em;
+  height: 1em;
+  background-color: transparent;
 }
 
 .block > .actions,
@@ -250,18 +260,19 @@ fieldset > .actions {
 }
 
 .blocks {
-  -moz-column-count: 2;
-  -webkit-column-count: 2;
-  column-count: 2;
-  -moz-column-gap: 1em;
+  -webkit-column-count: 4;
+  -moz-column-count: 4;
+  column-count: 4;
   -webkit-column-gap: 1em;
+  -moz-column-gap: 1em;
   column-gap: 1em;
 }
 
 .block,
 fieldset {
   display: inline-block;
-  background-color: #EAEAEA;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  background-color: #fff;
   padding: 0.6em;
   box-sizing: border-box;
   margin: 0 0 1em;
@@ -281,9 +292,11 @@ fieldset h3 {
 
 .block textarea {
   width: 100%;
+  background-color: transparent;
   resize: vertical;
   background-color: inherit;
   border: 0;
+  overflow: hidden;
 }
 
 .block input,
@@ -321,6 +334,7 @@ fieldset input {
 
 .ace_editor {
   margin: 0;
+  border-radius: .5em;
 }
 
 .ace_gutter {
@@ -347,6 +361,9 @@ fieldset input {
 
 .browse .actions .container {
   margin: 0 auto;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
 }
 
