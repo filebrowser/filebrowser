@@ -275,39 +275,39 @@ $(document).on('ready pjax:success', function() {
     // Adds one more field to the current group
     $("body").on('click', '.add', function(event) {
       event.preventDefault();
-      defaultId = "new-admin-item-123";
+      defaultID = "lorem-ipsum-sin-dolor-amet";
 
-      if ($("#" + defaultId).length) {
+      if ($("#" + defaultID).length) {
         return false;
       }
 
-      fieldset = $(this).parent().parent();
-      type = fieldset.data("type");
-      name = fieldset.attr("id");
-      newItem = "";
+      block = $(this).parent().parent();
+      blockType = block.data("type");
+      blockID = block.attr("id");
 
-      // Main add button, below the title
-      if (fieldset.is('div') && fieldset.hasClass("frontmatter")) {
-        fieldset = $('.blocks');
-        fieldset.append('<div class="block" id="' + defaultId + '"></div>');
-        newItem = $("#" + defaultId);
-        type = "object";
+      // Main add button, after all blocks
+      if (block.is('div') && block.hasClass("frontmatter")) {
+        block = $('.blocks');
+        block.append('<div class="block" id="' + defaultID + '"></div>');
+        blockType = "object";
       }
 
-      if (type == "array") {
-        name = name + "[]";
-        input = name;
+      // If the Block Type is an array
+      if (blockType == "array") {
+        newID = blockID + "[]";
+        input = blockID;
         input = input.replace(/\[/, '\\[');
         input = input.replace(/\]/, '\\]');
-        input = '#' + input;
-
-        fieldset.append('<div id="' + name + '-' + $(input).length + '" data-type="array-item"><input name="' + name + ':auto" id="' + name + '"></input><span class="actions"> <button class="delete">&#8722;</button></span></div></div>');
+        block.append('<div id="' + newID + '-' + $('#' + input + ' > div').length + '" data-type="array-item"><input name="' + newID + ':auto" id="' + newID + '"></input><span class="actions"> <button class="delete">&#8722;</button></span></div></div>');
       }
 
-      if (type == "object") {
-        newItem.html('<input id="name-' + defaultId + '" placeholder="Write the field name and press enter..."></input>');
-        element = $("#name-" + defaultId);
+      // If the Block is an object
+      if (blockType == "object") {
+        newItem = $("#" + defaultID);
+        newItem.html('<input id="name-' + defaultID + '" placeholder="Write the field name and press enter..."></input>');
+        field = $("#name-" + defaultID);
 
+        // Show a notification with some information for newbies
         if (!document.cookie.replace(/(?:(?:^|.*;\s*)placeholdertip\s*\=\s*([^;]*).*$)|^.*$/, "$1")) {
           var date = new Date();
           date.setDate(date.getDate() + 365);
@@ -319,10 +319,12 @@ $(document).on('ready pjax:success', function() {
           });
         }
 
-        $(element).keypress(function(event) {
+        $(field).keypress(function(event) {
+          // When you press enter within the new name field:
           if (event.which == 13) {
             event.preventDefault();
-            value = element.val();
+            // This var should have a value of the type "name[:array, :object]"
+            value = field.val();
 
             if (value == "") {
               newItem.remove();
@@ -339,46 +341,51 @@ $(document).on('ready pjax:success', function() {
               return false;
             }
 
-            element.remove();
+            if (elements.length == 2 && elements[1] != "array" && elements[1] != "object") {
+              notification({
+                text: "Only arrays and objects are allowed.",
+                type: 'error'
+              });
+              return false;
+            }
 
-            if (name == "undefined") {
-              name = elements[0]
+            field.remove();
+
+            // TODO: continue here. :) 04/02/2016 10:30pm
+
+            if (typeof blockID === "undefined") {
+              blockID = elements[0];
             } else {
-              name = name + '[' + elements[0] + ']';
+              blockID = blockID + '[' + elements[0] + ']';
             }
 
             if (elements.length == 1) {
-              newItem.append('<input name="' + name + ':auto" id="' + name + '"></input><br>');
-              newItem.prepend('<label for="' + name + '">' + value + '</label> <span class="actions"><button class="delete">&#8722;</button></span>');
+              newItem.attr('id', 'block-' + blockID);
+              newItem.append('<input name="' + blockID + ':auto" id="' + blockID + '"></input><br>');
+              newItem.prepend('<label for="' + blockID + '">' + value + '</label> <span class="actions"><button class="delete">&#8722;</button></span>');
             } else {
-              var fieldset = "<fieldset id=\"{{ $value.Name }}\" data-type=\"{{ $value.Type }}\">\r\n<h3>{{ $value.Title }}\r\n<span class=\"actions\">\r\n<button class=\"add\"><i class=\"fa fa-plus\"><\/i><\/button>\r\n<button class=\"delete\"><i class=\"fa fa-minus\"><\/i><\/button>\r\n<\/span>\r\n<\/h3>\r\n<\/fieldset>";
+              type = "";
 
               if (elements[1] == "array") {
-                fieldset = fieldset.replace("{{ $value.Type }}", "array");
+                type = "array";
               } else {
-                fieldset = fieldset.replace("{{ $value.Type }}", "object");
+                type = "object"
               }
 
-              fieldset = fieldset.replace("{{ $value.Title }}", elements[0]);
-              fieldset = fieldset.replace("{{ $value.Name }}", name);
-              newItem.after(fieldset);
+              template = "<fieldset id=\"${blockID}\" data-type=\"${type}\"> <h3>${elements[0]}</h3> <span class=\"actions\"> <button class=\"add\">&#43;</button> <button class=\"delete\">&#8722;</button> </span> </fieldset>"
+              template = template.replace("${blockID}", blockID);
+              template = template.replace("${elements[0]}", elements[0]);
+              template = template.replace("${type}", type);
+              newItem.after(template);
+              newItem.remove();
+
+              console.log('"' + blockID + '" block of type "' + type + '" added.');
             }
 
             return false;
           }
         });
       }
-
-      /*
-
-      /* WHAT IS THIS FOR?
-      if (title.is('h2')) {
-        type = "object"
-      }
-
-
-
-      */
 
       return false;
     });

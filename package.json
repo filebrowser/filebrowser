@@ -20,7 +20,6 @@
     "animate.css": "^3.4.0",
     "font-awesome": "^4.4.0",
     "jquery": "^2.1.4",
-    "jquery-datetimepicker": "^2.4.0",
     "jquery-serializejson": "^2.5.0",
     "normalize.css": "^3.0.3",
     "noty": "^2.3.6",
@@ -32,7 +31,7 @@
     "grunt-contrib-copy": "^0.8.1",
     "grunt-contrib-cssmin": "^0.14.0",
     "grunt-contrib-sass": "^0.9.2",
-    "grunt-contrib-uglify": "^0.9.2",
+    "grunt-contrib-uglify": "^0.11.1",
     "grunt-contrib-watch": "^0.6.1",
     "napa": "^1.2.0"
   }

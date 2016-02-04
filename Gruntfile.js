@@ -2,7 +2,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
@@ -24,7 +23,6 @@ module.exports = function(grunt) {
           'node_modules/animate.css/source/_base.css',
           'node_modules/animate.css/source/bouncing_entrances/bounceInRight.css',
           'node_modules/animate.css/source/fading_exits/fadeOut.css',
-          'node_modules/jquery-datetimepicker/jquery.datetimepicker.css',
           'assets/src/css/main.css'
         ],
         dest: 'temp/css/main.css',
@@ -63,7 +61,6 @@ module.exports = function(grunt) {
             'node_modules/noty/js/noty/packaged/jquery.noty.packaged.min.js',
             'node_modules/jquery-pjax/jquery.pjax.js',
             'node_modules/jquery-serializejson/jquery.serializejson.min.js',
-            'node_modules/jquery-datetimepicker/jquery.datetimepicker.js'
           ]
         }
       },
@@ -75,5 +72,5 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('default', ['copy', 'sass', 'concat', 'cssmin', 'uglify']);
+  grunt.registerTask('default', ['copy', 'concat', 'cssmin', 'uglify']);
 };
