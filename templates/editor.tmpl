@@ -1,24 +1,28 @@
 {{ define "content" }}
 
 <div class="editor {{ .Class }} container">
+  {{ if eq .Class "complete" }}
+  <h1><textarea id="site-title">{{ .Name }}</textarea></h1>
+  {{ end }}
   <form method="POST" action="">
     <main>
       {{ if not (eq .Class "complete") }}
-        <h1>{{ .Name }}</h1>
+        <h1 id="site-title">{{ .Name }}</h1>
       {{ end }}
 
       {{ if eq .Class "frontmatter-only" }}
       <div class="frontmatter blocks">
         {{ template "frontmatter" .FrontMatter }}
-      </div>
+        <p class="actions">
+          <button class="add">Add field</button>
+        </p>
+      </div>      
       {{ else if eq .Class "content-only" }}
       <div class="content">
         <textarea id="source-area" name="content" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
       </div>
       {{ else }}
       <div class="frontmatter">
-        <h1><textarea>{{ .Name }}</textarea></h1>
-
         <div class="blocks">
         {{ template "frontmatter" .FrontMatter }}
         </div>
