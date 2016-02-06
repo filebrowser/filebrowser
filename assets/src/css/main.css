@@ -61,7 +61,7 @@ body > nav {
   box-sizing: border-box;
   z-index: 999;
   color: #eee;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
 body > nav ul {
@@ -207,7 +207,7 @@ input[type="submit"] {
   color: #fff;
   font-weight: normal;
   background-color: #2196F3;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.12);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
 button.add,
@@ -276,7 +276,7 @@ fieldset > .actions {
 .block,
 fieldset {
   display: inline-block;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   background-color: #fff;
   padding: 0.6em;
   box-sizing: border-box;
@@ -428,4 +428,20 @@ fieldset input {
   border-radius: .5em;
   padding: 1em;
   width: 182%;
+}
+
+@media screen and (max-width: 600px) {
+  body > nav span {
+    display: none;
+  }
+  body>nav ul li:last-child {
+    margin-left: 0;
+  }
+  body > nav .container {
+    justify-content: space-between;
+    text-align: center;
+  }
+  .hideable {
+    display: none;
+  }
 }
