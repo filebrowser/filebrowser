@@ -42,6 +42,11 @@ h2 {
   text-align: right;
 }
 
+#content > header {
+  background-color: #EFEBEB;
+  padding: 1px 0;
+}
+
 
 /* NAVIGATION */
 
@@ -349,12 +354,8 @@ fieldset input {
   text-decoration: none;
 }
 
-.browse table {
-  width: 100%;
-}
-
 .browse .actions {
-  background-color: #455a64;
+  background-color: #90CAF9;
   color: #fff;
   padding: 1.5em 0;
 }
@@ -367,6 +368,21 @@ fieldset input {
   display: flex;
 }
 
+.browse .actions .container > a,
+.browse .actions .container > span {
+  line-height: 2em;
+  vertical-align: middle;
+}
+
+.browse .actions .container > a {
+  margin-right: 0.5em;
+}
+
+.browse .actions .container > span {
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
 .browse .actions .fa {
   vertical-align: middle;
 }
@@ -376,9 +392,30 @@ fieldset input {
   position: relative;
 }
 
+.browse .go-right input[type="file"] {
+  display: none;
+}
+
+.browse table {
+  margin: 1em 0;
+  width: 100%;
+}
+
 .browse tr {
   line-height: 2em;
   border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.browse th.buttons {
+  width: 4em;
+}
+
+.browse tr button {
+  line-height: 1.5em;
+  border-radius: 50%;
+  width: 1.5em;
+  height: 1.5em;
+  padding: 0;
 }
 
 .browse #new-file {
