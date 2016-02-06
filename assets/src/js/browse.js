@@ -1,5 +1,48 @@
 $(document).on('page:browse', function() {
-  $("body").off('click', '.delete').on('click', '.delete', function(event) {
+  $('body').off('click', '.rename').on('click', '.rename', function(event) {
+    event.preventDefault();
+    button = $(this);
+
+    var filename = prompt("New file name:");
+
+    if (filename == "") {
+      return false;
+    }
+
+    if (filename.substring(0, 1) != "/") {
+        filename = window.location.pathname.replace("/admin/browse/", "") + '/' + filename;
+    }
+
+    var content = '{"filename": "' + filename + '"}';
+
+    $.ajax({
+      type: 'PUT',
+      url: button.data("file"),
+      data: content,
+      dataType: 'json',
+      encode: true
+    }).done(function(data) {
+      $.pjax({
+        url: window.location.pathname,
+        container: '#content'
+      });
+      notification({
+        text: button.data("message"),
+        type: 'success',
+        timeout: 5000
+      });
+    }).fail(function(data) {
+      notification({
+        text: 'Something went wrong.',
+        type: 'error'
+      });
+      console.log(data);
+    });
+
+    return false;
+  });
+
+  $('body').off('click', '.delete').on('click', '.delete', function(event) {
     event.preventDefault();
     button = $(this);
 
@@ -24,7 +67,7 @@ $(document).on('page:browse', function() {
     return false;
   });
 
-  $('.new').click(function(event) {
+  $('.new').off('click').click(function(event) {
     event.preventDefault();
 
     if ($(this).data("opened")) {
