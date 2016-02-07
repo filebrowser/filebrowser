@@ -89,6 +89,7 @@ func Dict(values ...interface{}) (map[string]interface{}, error) {
 		}
 		dict[key] = values[i+1]
 	}
+
 	return dict, nil
 }
 

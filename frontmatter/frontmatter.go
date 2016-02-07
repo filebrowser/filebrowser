@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/utils"
+	"github.com/spf13/cast"
 	"github.com/spf13/hugo/parser"
 )
 
@@ -136,11 +137,14 @@ func handleFlatValues(content interface{}, parent *frontmatter, name string) *fr
 		c.Type = "string"
 	}
 
+	c.Content = content
+
 	switch strings.ToLower(name) {
 	case "description":
 		c.HTMLType = "textarea"
 	case "date", "publishdate":
 		c.HTMLType = "datetime"
+		c.Content = cast.ToTime(content)
 	default:
 		c.HTMLType = "text"
 	}
@@ -159,6 +163,5 @@ func handleFlatValues(content interface{}, parent *frontmatter, name string) *fr
 		log.Panic("Parent type not allowed in handleFlatValues.")
 	}
 
-	c.Content = content
 	return c
 }

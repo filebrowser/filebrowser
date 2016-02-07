@@ -28,7 +28,7 @@
   {{ if eq $value.HTMLType "textarea" }}
   <textarea class="scroll" name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" data-parent-type="{{ $value.Parent.Type }}">{{ $value.Content }}</textarea>
   {{ else if eq $value.HTMLType "datetime" }}
-  <input name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" value="{{ $value.Content }}" type="text" data-parent-type="{{ $value.Parent.Type }}"></input>
+  <input name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" value="{{ $value.Content.Format "2006-01-02T15:04:05" }}" type="datetime-local" data-parent-type="{{ $value.Parent.Type }}"></input>
   {{ else }}
   <input name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" value="{{ $value.Content }}" type="{{ $value.HTMLType }}" data-parent-type="{{ $value.Parent.Type }}"></input>
   {{ end }}
