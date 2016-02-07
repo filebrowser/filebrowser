@@ -100,6 +100,8 @@ func handleObjects(content interface{}, parent *frontmatter, name string) *front
 
 	if parent.Name == mainName {
 		c.Name = c.Title
+	} else if parent.Type == "array" {
+		c.Name = parent.Name + "[]"
 	} else {
 		c.Name = parent.Name + "[" + c.Title + "]"
 	}
