@@ -39,7 +39,8 @@
           <a id="see-preview"><i class="fa fa-eye"></i> Preview</a>
         </nav>
         {{ end}}
-        <textarea id="editor-source" name="content" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
+        <div id="editor-source" data-mode="{{ .Mode }}"></div>
+        <textarea name="content">{{ .Content }}</textarea>
         <div id="editor-preview"></div>
       </div>
       {{ end }}

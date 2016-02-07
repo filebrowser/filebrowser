@@ -341,6 +341,7 @@ fieldset input {
   padding: 4% 13%;
   display: block;
   background-color: rgb(255, 255, 255);
+  display: none;
 }
 
 .ace_editor {
