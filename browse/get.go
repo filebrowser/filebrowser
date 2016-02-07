@@ -23,6 +23,7 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) 
 		return http.StatusInternalServerError, err
 	}
 
+	// Using Caddy's Browse middleware
 	b := browse.Browse{
 		Next: middleware.HandlerFunc(func(w http.ResponseWriter, r *http.Request) (int, error) {
 			return 404, nil

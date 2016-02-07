@@ -18,7 +18,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// CanBeEdited checks if a filename has a supported extension
+// CanBeEdited checks if the extension of a file is supported by the editor
 func CanBeEdited(filename string) bool {
 	extensions := [...]string{
 		"md", "markdown", "mdown", "mmark",
@@ -28,6 +28,7 @@ func CanBeEdited(filename string) bool {
 		".css", ".sass", ".scss",
 		".js",
 		".html",
+		".txt",
 	}
 
 	for _, extension := range extensions {
@@ -197,6 +198,7 @@ func Run(c *config.Config) {
 	}
 }
 
+// IsEmpty checks if a folder is empty
 func IsEmpty(name string) (bool, error) {
 	f, err := os.Open(name)
 	if err != nil {
@@ -208,7 +210,7 @@ func IsEmpty(name string) (bool, error) {
 	if err == io.EOF {
 		return true, nil
 	}
-	return false, err // Either not empty or error, suits both cases
+	return false, err
 }
 
 var splitCapitalizeExceptions = map[string]string{
