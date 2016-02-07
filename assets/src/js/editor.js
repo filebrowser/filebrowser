@@ -143,6 +143,11 @@ $(document).on('page:editor', function() {
       block.append('<div id="' + newID + '-' + $('#' + input + ' > div').length + '" data-type="array-item"><input name="' + newID + ':auto" id="' + newID + '"></input><span class="actions"> <button class="delete">&#8722;</button></span></div></div>');
     }
 
+    if (blockType == "object" && !block.hasClass("frontmatter")) {
+      block.append('<div class="block" id="' + defaultID + '"></div>');
+      blockType = "object";
+    }
+
     // If the Block is an object
     if (blockType == "object") {
       newItem = $("#" + defaultID);
@@ -162,6 +167,7 @@ $(document).on('page:editor', function() {
       }
 
       $(field).keypress(function(event) {
+        console.log('got it');
         // When you press enter within the new name field:
         if (event.which == 13) {
           event.preventDefault();
@@ -192,8 +198,6 @@ $(document).on('page:editor', function() {
           }
 
           field.remove();
-
-          // TODO: continue here. :) 04/02/2016
 
           if (typeof blockID === "undefined") {
             blockID = elements[0];
