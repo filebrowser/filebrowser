@@ -13,6 +13,7 @@ import (
 
 	"github.com/hacdias/caddy-hugo/assets"
 	"github.com/hacdias/caddy-hugo/config"
+	"github.com/spf13/cobra"
 	"github.com/spf13/hugo/commands"
 	"github.com/spf13/viper"
 )
@@ -164,6 +165,10 @@ func ParseComponents(r *http.Request) []string {
 
 // Run is used to run the static website generator
 func Run(c *config.Config) {
+	if is, _ := IsEmpty(c.Path); is {
+		commands.NewSite(&cobra.Command{}, []string{c.Path})
+	}
+
 	cwd, err := os.Getwd()
 
 	if err != nil {
@@ -189,6 +194,20 @@ func Run(c *config.Config) {
 	if err != nil {
 		log.Print("Can't get working directory.")
 	}
+}
+
+func IsEmpty(name string) (bool, error) {
+	f, err := os.Open(name)
+	if err != nil {
+		return false, err
+	}
+	defer f.Close()
+
+	_, err = f.Readdir(1)
+	if err == io.EOF {
+		return true, nil
+	}
+	return false, err // Either not empty or error, suits both cases
 }
 
 var splitCapitalizeExceptions = map[string]string{
