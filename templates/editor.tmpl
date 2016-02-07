@@ -16,7 +16,7 @@
         <p class="actions">
           <button class="add">Add field</button>
         </p>
-      </div>      
+      </div>
       {{ else if eq .Class "content-only" }}
       <div class="content">
         <textarea id="source-area" name="content" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
@@ -33,10 +33,12 @@
       </div>
 
       <div class="content">
+        {{ if eq .Mode "markdown" }}
         <nav>
           <a id="see-source"><i class="fa fa-code"></i> Source</a>
           <a id="see-preview"><i class="fa fa-eye"></i> Preview</a>
         </nav>
+        {{ end}}
         <textarea id="source-area" name="content" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
         <div id="preview-area"></div>
       </div>
