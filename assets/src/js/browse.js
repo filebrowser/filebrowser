@@ -71,76 +71,82 @@ $(document).on('page:browse', function() {
     event.preventDefault();
 
     if ($(this).data("opened")) {
-      $('#new-file').fadeOut(200);
+      $('.foreground').fadeOut(200);
+      $('#new-file-form').fadeOut(200);
       $(this).data("opened", false);
     } else {
-      $('#new-file').fadeIn(200);
+      $('.foreground').fadeIn(200);
+      $('#new-file-form').fadeIn(200);
       $(this).data("opened", true);
     }
 
     return false;
   });
 
-  $('#new-file').on('keypress', 'input', function(event) {
-    if (event.keyCode == 13) {
-      event.preventDefault();
-      var value = $(this).val(),
-        splited = value.split(":"),
-        filename = "",
-        archetype = "";
+  $('.foreground').off('click').click(function() {
+      $('.input').fadeOut(200);
+      $('.foreground').fadeOut(200);
+      $('.new').data("opened", false);
+  });
 
-      if (value == "") {
-        notification({
-          text: "You have to write something. If you want to close the box, click the button again.",
-          type: 'warning',
-          timeout: 5000
-        });
+  $('#new-file-form').submit(function(event) {
+    event.preventDefault();
+    var value = $('#new-file-name').val(),
+      splited = value.split(":"),
+      filename = "",
+      archetype = "";
 
-        return false;
-      } else if (splited.length == 1) {
-        filename = value;
-      } else if (splited.length == 2) {
-        filename = splited[0];
-        archetype = splited[1];
-      } else {
-        notification({
-          text: "Hmm... I don't understand you. Try writing something like 'name[:archetype]'.",
-          type: 'error'
-        });
+    if (value == "") {
+      notification({
+        text: "You have to write something. If you want to close the box, click the button again.",
+        type: 'warning',
+        timeout: 5000
+      });
 
-        return false;
-      }
-
-      var content = '{"filename": "' + filename + '", "archetype": "' + archetype + '"}';
-
-      $.ajax({
-        type: 'POST',
-        url: window.location.pathname,
-        data: content,
-        dataType: 'json',
-        encode: true,
-      }).done(function(data) {
-        notification({
-          text: "File created successfully.",
-          type: 'success',
-          timeout: 5000
-        });
-
-        $.pjax({
-          url: window.location.pathname.replace("browse", "edit") + filename,
-          container: '#content'
-        })
-      }).fail(function(data) {
-        // error types
-        notification({
-          text: 'Something went wrong.',
-          type: 'error'
-        });
-        console.log(data);
+      return false;
+    } else if (splited.length == 1) {
+      filename = value;
+    } else if (splited.length == 2) {
+      filename = splited[0];
+      archetype = splited[1];
+    } else {
+      notification({
+        text: "Hmm... I don't understand you. Try writing something like 'name[:archetype]'.",
+        type: 'error'
       });
 
       return false;
     }
+
+    var content = '{"filename": "' + filename + '", "archetype": "' + archetype + '"}';
+
+    $.ajax({
+      type: 'POST',
+      url: window.location.pathname,
+      data: content,
+      dataType: 'json',
+      encode: true,
+    }).done(function(data) {
+      notification({
+        text: "File created successfully.",
+        type: 'success',
+        timeout: 5000
+      });
+
+      $.pjax({
+        url: window.location.pathname.replace("browse", "edit") + filename,
+        container: '#content'
+      })
+    }).fail(function(data) {
+      // error types
+      notification({
+        text: 'Something went wrong.',
+        type: 'error'
+      });
+      console.log(data);
+    });
+
+    return false;
   });
 
   $("#upload").click(function(event) {
