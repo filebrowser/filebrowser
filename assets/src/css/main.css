@@ -339,7 +339,8 @@ fieldset input {
 
 .ace_editor {
   margin: 0;
-  border-radius: .5em;
+  border-bottom-left-radius: .5em;
+  border-bottom-right-radius: 0.5em;
 }
 
 .ace_gutter {

@@ -6,6 +6,8 @@ $(document).on('ready pjax:success', function() {
   // Update the title
   document.title = document.getElementById('site-title').innerHTML;
 
+  //TODO: navbar titles changing effect when changing page
+
   // Auto Grow Textarea
   function autoGrow(element) {
     this.style.height = "5px";

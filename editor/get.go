@@ -57,7 +57,7 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config, filename stri
 
 	// Handle the content depending on the file extension
 	switch page.Mode {
-	case "markdown":
+	case "markdown", "asciidoc", "rst":
 		if hasFrontMatterRune(file) {
 			// Starts a new buffer and parses the file using Hugo's functions
 			buffer := bytes.NewBuffer(file)
@@ -138,12 +138,14 @@ func appendFrontMatterRune(frontmatter []byte, language string) []byte {
 
 func sanitizeMode(extension string) string {
 	switch extension {
-	case "markdown", "md":
+	case "md", "markdown", "mdown", "mmark":
 		return "markdown"
-	case "css", "scss":
-		return "css"
-	case "html":
-		return "htmlmixed"
+	case "asciidoc", "adoc", "ad":
+		return "asciidoc"
+	case "rst":
+		return "rst"
+	case "html", "htm":
+		return "html"
 	case "js":
 		return "javascript"
 	default:
