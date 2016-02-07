@@ -22,6 +22,7 @@ module.exports = function(grunt) {
           'node_modules/font-awesome/css/font-awesome.css',
           'node_modules/animate.css/source/_base.css',
           'node_modules/animate.css/source/bouncing_entrances/bounceInRight.css',
+          'node_modules/animate.css/source/fading_entrances/fadeIn.css',
           'node_modules/animate.css/source/fading_exits/fadeOut.css',
           'assets/src/css/main.css'
         ],

@@ -223,6 +223,14 @@ input[type="submit"] {
   transition: .5s ease background-color;
 }
 
+button.darker {
+  background-color: #F9A825;
+}
+
+button.darker:hover {
+  background-color: #F57F17;
+}
+
 button:hover,
 input[type="submit"]:hover,
 button:active,
@@ -472,7 +480,7 @@ fieldset input {
 
 /* POPUS */
 
-.foreground {
+#foreground {
   z-index: 99999;
   position: fixed;
   top: 0;

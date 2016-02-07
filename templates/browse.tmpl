@@ -53,7 +53,16 @@
   </div>
 </main>
 
-<div class="foreground hidden"></div>
+<div id="foreground" class="hidden"></div>
+
+<form class="popup hidden" id="delete">
+  <h3>Delete</h3>
+  <p>Are you sure you want to delete "<span></span>"?</p>
+  <p class="right">
+    <button class="close" class="darker">No</button>
+    <input type="submit" value="Yes, I am">
+  </p>
+</form>
 
 <form class="popup hidden" id="new">
   <h3>New file</h3>

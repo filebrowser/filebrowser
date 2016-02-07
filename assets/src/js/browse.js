@@ -1,5 +1,50 @@
 $(document).on('page:browse', function() {
-  var foreground = $('.foreground');
+  var foreground = $('#foreground');
+
+  /* DELETE FILE */
+
+  var remove = new Object();
+  remove.form = $('form#delete');
+  remove.row = '';
+  remove.button = '';
+  remove.url = '';
+
+  $('body').off('click', '.delete').on('click', '.delete', function(event) {
+    event.preventDefault();
+    remove.button = $(this);
+    remove.row = $(this).parent().parent();
+    foreground.fadeIn(200);
+    remove.url = remove.row.find('.filename').text();
+    remove.form.fadeIn(200);
+    remove.form.find('span').text(rename.url);
+    return false;
+  });
+
+  remove.form.off('submit').submit(function(event) {
+    event.preventDefault();
+
+    $.ajax({
+      type: 'DELETE',
+      url: remove.button.data("file")
+    }).done(function(data) {
+      foreground.fadeOut(200);
+      remove.form.fadeOut(200);
+      remove.row.fadeOut(200);
+      notification({
+        text: remove.button.data("message"),
+        type: 'success',
+        timeout: 5000
+      });
+    }).fail(function(data) {
+      notification({
+        text: 'Something went wrong.',
+        type: 'error'
+      });
+      console.log(data);
+    });
+
+    return false;
+  });
 
   /* FILE UPLOAD */
 
@@ -58,20 +103,11 @@ $(document).on('page:browse', function() {
   create.button = '';
   create.url = '';
 
-  $('.new').off('click').click(function(event) {
+  $('body').off('click', '.new').on('click', '.new', function(event) {
     event.preventDefault();
     create.button = $(this);
-
-    if ($(this).data("opened")) {
-      foreground.fadeOut(200);
-      create.form.fadeOut(200);
-      create.button.data("opened", false);
-    } else {
-      foreground.fadeIn(200);
-      create.form.fadeIn(200);
-      create.button.data("opened", true);
-    }
-
+    foreground.fadeIn(200);
+    create.form.fadeIn(200);
     return false;
   });
 
@@ -150,22 +186,15 @@ $(document).on('page:browse', function() {
   rename.button = '';
   rename.url = '';
 
-  $('.rename').off('click').click(function(event) {
+  $('body').off('click', '.rename').on('click', '.rename', function(event) {
     event.preventDefault();
     rename.button = $(this);
 
-    if ($(this).data("opened")) {
-      foreground.fadeOut(200);
-      rename.form.fadeOut(200);
-      rename.button.data("opened", false);
-    } else {
-      foreground.fadeIn(200);
-      rename.url = $(this).parent().parent().find('.filename').text();
-      rename.form.fadeIn(200);
-      rename.form.find('span').text(rename.url);
-      rename.form.find('input[type="text"]').val(rename.url);
-      rename.button.data("opened", true);
-    }
+    foreground.fadeIn(200);
+    rename.url = $(this).parent().parent().find('.filename').text();
+    rename.form.fadeIn(200);
+    rename.form.find('span').text(rename.url);
+    rename.form.find('input[type="text"]').val(rename.url);
 
     return false;
   });
@@ -219,38 +248,19 @@ $(document).on('page:browse', function() {
     return false;
   });
 
-  $('body').off('click', '.delete').on('click', '.delete', function(event) {
+  /* FOREGROUND AND STUFF */
+
+  $('body').off('click', '.close').on('click', '.close', function(event) {
     event.preventDefault();
-    button = $(this);
-
-    $.ajax({
-      type: 'DELETE',
-      url: button.data("file")
-    }).done(function(data) {
-      button.parent().parent().fadeOut();
-      notification({
-        text: button.data("message"),
-        type: 'success',
-        timeout: 5000
-      });
-    }).fail(function(data) {
-      notification({
-        text: 'Something went wrong.',
-        type: 'error'
-      });
-      console.log(data);
-    });
-
+    $(this).parent().parent().fadeOut(200);
+    foreground.click();
     return false;
   });
-
-  /* FOREGROUND */
 
   foreground.off('click').click(function() {
     foreground.fadeOut(200);
     create.form.fadeOut(200);
     rename.form.fadeOut(200);
-    create.button.data("opened", false);
-    rename.button.data("opened", false);
+    remove.form.fadeOut(200);
   });
 });
