@@ -1,4 +1,23 @@
 $(document).ready(function() {
+  // Log out the user sending bad credentials to the server
+  $("#logout").click(function(event) {
+    event.preventDefault();
+    $.ajax({
+      type: "GET",
+      url: "/admin",
+      async: false,
+      username: "username",
+      password: "password",
+      headers: {
+        "Authorization": "Basic xxx"
+      }
+    }).fail(function() {
+      window.location = "/";
+    });
+    return false;
+  });
+
+
   $(document).pjax('a[data-pjax]', '#content');
 });
 
@@ -18,24 +37,6 @@ $(document).on('ready pjax:success', function() {
   $('textarea').keyup(autoGrow);
   $(window).resize(function() {
     $("textarea").each(autoGrow);
-  });
-
-  // Log out the user sending bad credentials to the server
-  $("#logout").click(function(event) {
-    event.preventDefault();
-    $.ajax({
-      type: "GET",
-      url: "/admin",
-      async: false,
-      username: "username",
-      password: "password",
-      headers: {
-        "Authorization": "Basic xxx"
-      }
-    }).fail(function() {
-      window.location = "/";
-    });
-    return false;
   });
 
   if ($('main').hasClass('browse')) {

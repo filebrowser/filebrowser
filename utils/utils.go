@@ -19,7 +19,10 @@ import (
 
 // CanBeEdited checks if a filename has a supported extension
 func CanBeEdited(filename string) bool {
-	extensions := [...]string{".markdown", ".md",
+	extensions := [...]string{
+		"md", "markdown", "mdown", "mmark",
+		"asciidoc", "adoc", "ad",
+		"rst",
 		".json", ".toml", ".yaml",
 		".css", ".sass", ".scss",
 		".js",
