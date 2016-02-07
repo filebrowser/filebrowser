@@ -16,12 +16,12 @@ import (
 
 // POST handles the POST method on browse page
 func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
-	// Remove both beginning  slashes
+	// Remove prefix slash
 	r.URL.Path = strings.TrimPrefix(r.URL.Path, "/")
 
 	// If it's the upload of a file
 	if r.Header.Get("X-Upload") == "true" {
-		return upload(w, r)
+		return upload(w, r, c)
 	}
 
 	// Get the JSON information sent using a buffer
@@ -101,7 +101,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	return http.StatusOK, nil
 }
 
-func upload(w http.ResponseWriter, r *http.Request) (int, error) {
+func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	// Parse the multipart form in the request
 	err := r.ParseMultipartForm(100000)
 	if err != nil {
@@ -122,7 +122,7 @@ func upload(w http.ResponseWriter, r *http.Request) (int, error) {
 
 			// Create the file
 			var outfile *os.File
-			if outfile, err = os.Create(r.URL.Path + hdr.Filename); nil != err {
+			if outfile, err = os.Create(c.Path + r.URL.Path + hdr.Filename); nil != err {
 				w.Write([]byte(err.Error()))
 				return http.StatusInternalServerError, err
 			}
