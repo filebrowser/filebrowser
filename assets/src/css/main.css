@@ -329,11 +329,15 @@ fieldset h3 {
   overflow: hidden;
 }
 
-input[type="text"] {
+input {
   border: 0;
   outline: 0;
   background-color: transparent;
   width: 100%;
+}
+
+input[type="submit"] {
+  width: auto;
 }
 
 fieldset input {

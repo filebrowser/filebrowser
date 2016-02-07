@@ -89,6 +89,14 @@ $(document).on('page:browse', function() {
       $('.new').data("opened", false);
   });
 
+  $('#new-file-name').off('keypress').keypress(function(event) {
+    if (event.keyCode == 13) {
+      event.preventDefault();
+      $('#new-file-form').submit();
+      return false;
+    }
+  });
+
   $('#new-file-form').submit(function(event) {
     event.preventDefault();
     var value = $('#new-file-name').val(),
