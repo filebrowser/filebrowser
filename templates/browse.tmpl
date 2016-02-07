@@ -40,9 +40,9 @@
       <tr>
         <td>
           {{if .IsDir}}
-          <i class="fa fa-folder"></i> <a data-pjax href="{{.URL}}">{{.Name}}</a> {{else}} {{ if CanBeEdited .URL }}
-          <i class="fa fa-file"></i> <a data-pjax class="file" href="/admin/edit{{ $path }}{{.URL}}">{{.Name}}</a> {{ else }}
-          <i class="fa fa-file"></i> {{.Name}} {{ end }} {{ end }}
+          <i class="fa fa-folder"></i> <a data-pjax class="filename" href="{{.URL}}">{{.Name}}</a> {{else}} {{ if CanBeEdited .URL }}
+          <i class="fa fa-file"></i> <a data-pjax class="file filename" href="/admin/edit{{ $path }}{{.URL}}">{{.Name}}</a> {{ else }}
+          <i class="fa fa-file"></i> <span class="filename">{{.Name}}</span> {{ end }} {{ end }}
         </td>
         <td class="right hideable">{{.HumanSize}}</td>
         <td class="right hideable">{{.HumanModTime "01/02/2006 3:04:05 PM"}}</td>
@@ -55,17 +55,21 @@
 
 <div class="foreground hidden"></div>
 
-<form id="new-file-form" class="input hidden">
+<form class="popup hidden" id="new">
   <h3>New file</h3>
   <p>Write the name of the new file. If you want to use an archetype, add <code>:archetype</code> in the end, replacing 'archetype' by its name.</p>
-  <input id="new-file-name" type="text" placeholder="Write here...">
+  <input type="text" placeholder="Write here...">
   <p class="right">
     <input type="submit" value="Create">
   </p>
 </form>
 
-<div class="input hidden" id="rename-form">
+<form class="popup hidden" id="rename">
   <h3>Rename file</h3>
-  <input id="new-file-name" type="text" placeholder="New name...">
-</div>
+  <p>Write down the new name of "<span></span>".</p>
+  <input type="text" placeholder="New name...">
+  <p class="right">
+    <input type="submit" value="Rename">
+  </p>
+</form>
 {{ end }}

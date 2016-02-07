@@ -1,36 +1,40 @@
 $(document).on('page:browse', function() {
-  $('body').off('click', '.rename').on('click', '.rename', function(event) {
+  var foreground = $('.foreground');
+
+  /* FILE UPLOAD */
+
+  $('input[type="file"]').on('change', function(event) {
     event.preventDefault();
-    button = $(this);
+    files = event.target.files;
 
-    var filename = prompt("New file name:");
-
-    if (filename == "") {
-      return false;
-    }
-
-    if (filename.substring(0, 1) != "/") {
-        filename = window.location.pathname.replace("/admin/browse/", "") + '/' + filename;
-    }
-
-    var content = '{"filename": "' + filename + '"}';
+    // Create a formdata object and add the files
+    var data = new FormData();
+    $.each(files, function(key, value) {
+      data.append(key, value);
+    });
 
     $.ajax({
-      type: 'PUT',
-      url: button.data("file"),
-      data: content,
+      url: window.location.pathname,
+      type: 'POST',
+      data: data,
+      cache: false,
       dataType: 'json',
-      encode: true
+      headers: {
+        'X-Upload': 'true',
+      },
+      processData: false,
+      contentType: false,
     }).done(function(data) {
+      notification({
+        text: "File(s) uploaded successfully.",
+        type: 'success',
+        timeout: 5000
+      });
+
       $.pjax({
         url: window.location.pathname,
         container: '#content'
-      });
-      notification({
-        text: button.data("message"),
-        type: 'success',
-        timeout: 5000
-      });
+      })
     }).fail(function(data) {
       notification({
         text: 'Something went wrong.',
@@ -38,68 +42,51 @@ $(document).on('page:browse', function() {
       });
       console.log(data);
     });
-
     return false;
   });
 
-  $('body').off('click', '.delete').on('click', '.delete', function(event) {
+  $("#upload").click(function(event) {
     event.preventDefault();
-    button = $(this);
-
-    $.ajax({
-      type: 'DELETE',
-      url: button.data("file")
-    }).done(function(data) {
-      button.parent().parent().fadeOut();
-      notification({
-        text: button.data("message"),
-        type: 'success',
-        timeout: 5000
-      });
-    }).fail(function(data) {
-      notification({
-        text: 'Something went wrong.',
-        type: 'error'
-      });
-      console.log(data);
-    });
-
+    $('.actions input[type="file"]').click();
     return false;
   });
+
+  /* NEW FILE */
+
+  var create = new Object();
+  create.form = $('form#new');
+  create.button = '';
+  create.url = '';
 
   $('.new').off('click').click(function(event) {
     event.preventDefault();
+    create.button = $(this);
 
     if ($(this).data("opened")) {
-      $('.foreground').fadeOut(200);
-      $('#new-file-form').fadeOut(200);
-      $(this).data("opened", false);
+      foreground.fadeOut(200);
+      create.form.fadeOut(200);
+      create.button.data("opened", false);
     } else {
-      $('.foreground').fadeIn(200);
-      $('#new-file-form').fadeIn(200);
-      $(this).data("opened", true);
+      foreground.fadeIn(200);
+      create.form.fadeIn(200);
+      create.button.data("opened", true);
     }
 
     return false;
   });
 
-  $('.foreground').off('click').click(function() {
-      $('.input').fadeOut(200);
-      $('.foreground').fadeOut(200);
-      $('.new').data("opened", false);
-  });
-
-  $('#new-file-name').off('keypress').keypress(function(event) {
+  create.form.find('input[type="text"]').off('keypress').keypress(function(event) {
     if (event.keyCode == 13) {
       event.preventDefault();
-      $('#new-file-form').submit();
+      $(create.form).submit();
       return false;
     }
   });
 
-  $('#new-file-form').submit(function(event) {
+  create.form.submit(function(event) {
     event.preventDefault();
-    var value = $('#new-file-name').val(),
+
+    var value = create.form.find('input[type="text"]').val(),
       splited = value.split(":"),
       filename = "",
       archetype = "";
@@ -146,7 +133,6 @@ $(document).on('page:browse', function() {
         container: '#content'
       })
     }).fail(function(data) {
-      // error types
       notification({
         text: 'Something went wrong.',
         type: 'error'
@@ -157,44 +143,71 @@ $(document).on('page:browse', function() {
     return false;
   });
 
-  $("#upload").click(function(event) {
+  /* RENAME FILE */
+
+  var rename = new Object();
+  rename.form = $('form#rename');
+  rename.button = '';
+  rename.url = '';
+
+  $('.rename').off('click').click(function(event) {
     event.preventDefault();
-    $('.actions input[type="file"]').click();
+    rename.button = $(this);
+
+    if ($(this).data("opened")) {
+      foreground.fadeOut(200);
+      rename.form.fadeOut(200);
+      rename.button.data("opened", false);
+    } else {
+      foreground.fadeIn(200);
+      rename.url = $(this).parent().parent().find('.filename').text();
+      rename.form.fadeIn(200);
+      rename.form.find('span').text(rename.url);
+      rename.form.find('input[type="text"]').val(rename.url);
+      rename.button.data("opened", true);
+    }
+
     return false;
   });
 
-  $('input[type="file"]').on('change', function(event) {
-    event.preventDefault();
-    files = event.target.files;
+  rename.form.find('input[type="text"]').off('keypress').keypress(function(event) {
+    if (event.keyCode == 13) {
+      event.preventDefault();
+      $(rename.form).submit();
+      return false;
+    }
+  });
 
-    // Create a formdata object and add the files
-    var data = new FormData();
-    $.each(files, function(key, value) {
-      data.append(key, value);
-    });
+  rename.form.off('submit').submit(function(event) {
+    event.preventDefault();
+
+    var filename = rename.form.find('input[type="text"]').val();
+    if (filename === "") {
+      return false;
+    }
+
+    if (filename.substring(0, 1) != "/") {
+      filename = window.location.pathname.replace("/admin/browse/", "") + '/' + filename;
+    }
+
+    var content = '{"filename": "' + filename + '"}';
 
     $.ajax({
-      url: window.location.pathname,
-      type: 'POST',
-      data: data,
-      cache: false,
+      type: 'PUT',
+      url: rename.url,
+      data: content,
       dataType: 'json',
-      headers: {
-        'X-Upload': 'true',
-      },
-      processData: false,
-      contentType: false,
+      encode: true
     }).done(function(data) {
-      notification({
-        text: "File(s) uploaded successfully.",
-        type: 'success',
-        timeout: 5000
-      });
-
       $.pjax({
         url: window.location.pathname,
         container: '#content'
-      })
+      });
+      notification({
+        text: rename.button.data("message"),
+        type: 'success',
+        timeout: 5000
+      });
     }).fail(function(data) {
       notification({
         text: 'Something went wrong.',
@@ -202,6 +215,42 @@ $(document).on('page:browse', function() {
       });
       console.log(data);
     });
+
     return false;
+  });
+
+  $('body').off('click', '.delete').on('click', '.delete', function(event) {
+    event.preventDefault();
+    button = $(this);
+
+    $.ajax({
+      type: 'DELETE',
+      url: button.data("file")
+    }).done(function(data) {
+      button.parent().parent().fadeOut();
+      notification({
+        text: button.data("message"),
+        type: 'success',
+        timeout: 5000
+      });
+    }).fail(function(data) {
+      notification({
+        text: 'Something went wrong.',
+        type: 'error'
+      });
+      console.log(data);
+    });
+
+    return false;
+  });
+
+  /* FOREGROUND */
+
+  foreground.off('click').click(function() {
+    foreground.fadeOut(200);
+    create.form.fadeOut(200);
+    rename.form.fadeOut(200);
+    create.button.data("opened", false);
+    rename.button.data("opened", false);
   });
 });
