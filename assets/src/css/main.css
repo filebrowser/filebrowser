@@ -43,7 +43,7 @@ h2 {
 }
 
 #content > header {
-  background-color: #EFEBEB;
+  background-color: #00BCD4;
   padding: 1px 0;
 }
 
@@ -56,7 +56,7 @@ body > nav {
   left: 0;
   height: 3em;
   width: 100%;
-  background-color: #2196F3;
+  background-color: #0097A7;
   padding: 0 1em;
   box-sizing: border-box;
   z-index: 999;
@@ -79,6 +79,14 @@ body > nav ul li {
   vertical-align: middle;
 }
 
+body > nav ul li:first-child a {
+  margin-left: -0.5em;
+}
+
+body > nav ul li:last-child a {
+  margin-right: -0.5em;
+}
+
 body > nav ul li:last-child {
   margin-left: auto;
 }
@@ -98,7 +106,7 @@ body > nav ul li a {
 }
 
 body > nav ul li a:hover {
-  background-color: rgba(255, 255, 255, 0.57);
+  background-color: rgba(0,0,0,0.1);
 }
 
 
@@ -204,15 +212,27 @@ input[type="submit"] {
   border-radius: 0.2em;
   border: 0;
   padding: .5em 1em;
-  color: #fff;
+  color: #000;
   font-weight: normal;
-  background-color: #2196F3;
+  background-color: #FFEB3B;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.12);
+  transition: .5s ease background-color;
+}
+
+button:hover,
+input[type="submit"]:hover,
+button:active,
+input[type="submit"]:active,
+button:focus,
+input[type="submit"]:focus {
+  outline: 0;
+  background-color: #FDD835;
 }
 
 button.add,
 button.delete,
 button.rename {
+  color: #fff;
   padding: 0.063em 0.375em;
 }
 
@@ -241,7 +261,12 @@ button.rename {
   float: right;
 }
 
-.toolbar .default {
+.toolbar input[type="submit"] {
+  background-color: #00BCD4;
+  color: #fff;
+}
+
+.toolbar input.default {
   background-color: #8BC34A;
 }
 
@@ -363,7 +388,7 @@ fieldset input {
 }
 
 .browse .actions {
-  background-color: #90CAF9;
+  background-color: #00BCD4;
   color: #fff;
   padding: 1.5em 0;
 }
@@ -436,6 +461,25 @@ fieldset input {
   border-radius: .5em;
   padding: 1em;
   width: 182%;
+}
+
+.input {
+  z-index: 99999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0,0,0,0.1);
+}
+
+.input div {
+  margin: 0 auto;
+  max-width: 200px;
+  width: 95%;
+  position: relative;
+ top: 50%;
+ transform: translateY(-50%);
 }
 
 @media screen and (max-width: 600px) {
