@@ -19,7 +19,7 @@
       </div>
       {{ else if eq .Class "content-only" }}
       <div class="content">
-        <textarea id="source-area" name="content" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
+        <textarea id="editor-source" name="content" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
       </div>
       {{ else }}
       <div class="frontmatter">
@@ -39,8 +39,8 @@
           <a id="see-preview"><i class="fa fa-eye"></i> Preview</a>
         </nav>
         {{ end}}
-        <textarea id="source-area" name="content" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
-        <div id="preview-area"></div>
+        <textarea id="editor-source" name="content" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
+        <div id="editor-preview"></div>
       </div>
       {{ end }}
 

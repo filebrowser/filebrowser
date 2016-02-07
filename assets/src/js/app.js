@@ -28,9 +28,9 @@ $(document).on('ready pjax:success', function() {
   //TODO: navbar titles changing effect when changing page
 
   // Auto Grow Textarea
-  function autoGrow(element) {
-    this.style.height = "5px";
-    this.style.height = (this.scrollHeight) + "px";
+  function autoGrow() {
+    this.style.height = '5px';
+    this.style.height = this.scrollHeight + 'px';
   }
 
   $("textarea").each(autoGrow);

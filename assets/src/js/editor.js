@@ -1,8 +1,8 @@
 $(document).on('page:editor', function() {
-  var mode = $("#source-area").data('mode');
-  var editor = ace.edit("source-area");
-  editor.getSession().setMode("ace/mode/" + mode);
-  editor.setOptions({
+  var mode = $("#editor-source").data('mode');
+  var aceEditor = ace.edit("editor-source");
+  aceEditor.getSession().setMode("ace/mode/" + mode);
+  aceEditor.setOptions({
     wrap: true,
     maxLines: Infinity,
     theme: "ace/theme/github",
@@ -10,16 +10,56 @@ $(document).on('page:editor', function() {
     fontSize: "1em"
   });
 
-
-  preview = $("#preview-area");
-  textarea = $("#content-area");
-
-  $('body').on('keypress', 'input', function(event) {
+  $('body').off('keypress', 'input').on('keypress', 'input', function(event) {
     if (event.keyCode == 13) {
       event.preventDefault();
       $('input[value="Save"]').focus().click();
       return false;
     }
+  });
+
+  $('#site-title').keyup(function() {
+    $('.frontmatter #title').val($(this).val());
+  });
+
+  // Toggles between preview and editing mode
+  $("#see-preview").off('click').click(function(event) {
+    var preview = $('#editor-preview');
+    var editor = $('pre.ace_editor');
+
+    event.preventDefault();
+
+    // If it currently in the preview mode, hide the preview
+    // and show the editor
+    if ($(this).data("previewing") == "true") {
+      preview.hide();
+      editor.fadeIn();
+      $(this).data("previewing", "false");
+      notification({
+        text: "Think, relax and do the better you can!",
+        type: 'information',
+        timeout: 2000
+      });
+    } else {
+      // If it's in editing mode, convert the markdown to html
+      // and show it
+      var converter = new showdown.Converter(),
+        text = aceEditor.getValue(),
+        html = converter.makeHtml(text);
+
+      // Hide the editor and show the preview
+      editor.hide();
+      preview.html(html).fadeIn();
+
+      $(this).data("previewing", "true");
+      notification({
+        text: "This is how your post looks like.",
+        type: 'information',
+        timeout: 2000
+      });
+    }
+
+    return false;
   });
 
   //TODO: reform this
@@ -187,64 +227,6 @@ $(document).on('page:editor', function() {
 
     return false;
   });
-
-  // If it has a textarea
-  if (textarea[0]) {
-    options = {
-      mode: textarea.data("mode"),
-      theme: 'ttcn',
-      lineWrapping: true,
-      lineNumbers: true,
-      scrollbarStyle: null
-    }
-
-    if (textarea.data("mode") == "markdown") {
-      options.lineNumbers = false
-    }
-
-    editor = CodeMirror.fromTextArea(textarea[0], options);
-    codemirror = $('.CodeMirror');
-
-    // Toggles between preview and editing mode
-    $("#preview").click(function(event) {
-      event.preventDefault();
-
-      // If it currently in the preview mode, hide the preview
-      // and show the editor
-      if ($(this).data("previewing") == "true") {
-        preview.hide();
-        codemirror.fadeIn();
-        $(this).data("previewing", "false");
-        notification({
-          text: "Think, relax and do the better you can!",
-          type: 'information',
-          timeout: 2000
-        });
-      } else {
-        // Copy the editor content to texteare
-        editor.save()
-
-        // If it's in editing mode, convert the markdown to html
-        // and show it
-        var converter = new showdown.Converter(),
-          text = textarea.val(),
-          html = converter.makeHtml(text);
-
-        // Hide the editor and show the preview
-        codemirror.hide();
-        preview.html(html).fadeIn();
-
-        $(this).data("previewing", "true");
-        notification({
-          text: "This is how your post looks like.",
-          type: 'information',
-          timeout: 2000
-        });
-      }
-
-      return false;
-    });
-  }
 
   $("body").on('click', '.delete', function(event) {
     event.preventDefault();

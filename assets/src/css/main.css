@@ -337,6 +337,12 @@ fieldset input {
   font-size: 1em;
 }
 
+#editor-preview {
+  padding: 4% 13%;
+  display: block;
+  background-color: rgb(255, 255, 255);
+}
+
 .ace_editor {
   margin: 0;
   border-bottom-left-radius: .5em;
