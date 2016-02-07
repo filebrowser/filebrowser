@@ -1,20 +1,66 @@
 $(document).on('page:editor', function() {
-  // Setup ace editor
-  var mode = $("#editor-source").data('mode');
-  var textarea = $('textarea[name="content"]').hide();
-  var aceEditor = ace.edit('editor-source');
-  aceEditor.getSession().setMode("ace/mode/" + mode);
-  aceEditor.getSession().setValue(textarea.val());
-  aceEditor.getSession().on('change', function(){
-    textarea.val(aceEditor.getSession().getValue());
-  });
-  aceEditor.setOptions({
-    wrap: true,
-    maxLines: Infinity,
-    theme: "ace/theme/github",
-    showPrintMargin: false,
-    fontSize: "1em"
-  });
+  var container = $('.editor');
+  var preview = $('#editor-preview');
+  var editor = $('#editor-source');
+
+  if (container.hasClass('complete')) {
+    // Change title field when editing the header
+    $('#site-title').keyup(function() {
+      $('.frontmatter #title').val($(this).val());
+    });
+  }
+
+  if (!container.hasClass('frontmatter-only')) {
+    // Setup ace editor
+    var mode = $("#editor-source").data('mode');
+    var textarea = $('textarea[name="content"]').hide();
+    var aceEditor = ace.edit('editor-source');
+    aceEditor.getSession().setMode("ace/mode/" + mode);
+    aceEditor.getSession().setValue(textarea.val());
+    aceEditor.getSession().on('change', function() {
+      textarea.val(aceEditor.getSession().getValue());
+    });
+    aceEditor.setOptions({
+      wrap: true,
+      maxLines: Infinity,
+      theme: "ace/theme/github",
+      showPrintMargin: false,
+      fontSize: "1em"
+    });
+
+    $("#see-source").off('click').click(function(event) {
+      event.preventDefault();
+      preview.hide();
+      editor.fadeIn();
+      $("#see-preview").data("previewing", "false");
+    })
+
+    // Toggles between preview and editing mode
+    $("#see-preview").off('click').click(function(event) {
+      event.preventDefault();
+
+      // If it currently in the preview mode, hide the preview
+      // and show the editor
+      if ($(this).data("previewing") == "true") {
+        preview.hide();
+        editor.fadeIn();
+        $(this).data("previewing", "false");
+      } else {
+        // If it's in editing mode, convert the markdown to html
+        // and show it
+        var converter = new showdown.Converter(),
+          text = aceEditor.getValue(),
+          html = converter.makeHtml(text);
+
+        // Hide the editor and show the preview
+        editor.hide();
+        preview.html(html).fadeIn();
+        $(this).data("previewing", "true");
+      }
+
+      return false;
+    });
+  }
 
   $('body').off('keypress', 'input').on('keypress', 'input', function(event) {
     if (event.keyCode == 13) {
@@ -24,57 +70,17 @@ $(document).on('page:editor', function() {
     }
   });
 
-  // Change title field when editing the header
-  $('#site-title').keyup(function() {
-    $('.frontmatter #title').val($(this).val());
-  });
-
-  var preview = $('#editor-preview');
-  var editor = $('#editor-source');
-
-  $("#see-source").off('click').click(function(event) {
-    event.preventDefault();
-    preview.hide();
-    editor.fadeIn();
-    $("#see-preview").data("previewing", "false");
-  })
-
-  // Toggles between preview and editing mode
-  $("#see-preview").off('click').click(function(event) {
-    event.preventDefault();
-
-    // If it currently in the preview mode, hide the preview
-    // and show the editor
-    if ($(this).data("previewing") == "true") {
-      preview.hide();
-      editor.fadeIn();
-      $(this).data("previewing", "false");
-    } else {
-      // If it's in editing mode, convert the markdown to html
-      // and show it
-      var converter = new showdown.Converter(),
-        text = aceEditor.getValue(),
-        html = converter.makeHtml(text);
-
-      // Hide the editor and show the preview
-      editor.hide();
-      preview.html(html).fadeIn();
-      $(this).data("previewing", "true");
-    }
-
-    return false;
-  });
-
-  //TODO: reform this
   // Submites any form in the page in JSON format
   $('form').submit(function(event) {
     event.preventDefault();
 
-    // Reset preview area and button to make sure it will
-    // not serialize any form inside the preview
-    preview.html('').fadeOut();
-    $("#see-preview").data("previewing", "false");
-    editor.fadeIn();
+    if (!container.hasClass('frontmatter-only')) {
+      // Reset preview area and button to make sure it will
+      // not serialize any form inside the preview
+      preview.html('').fadeOut();
+      $("#see-preview").data("previewing", "false");
+      editor.fadeIn();
+    }
 
     var data = JSON.stringify($(this).serializeJSON()),
       button = $(this).find("input[type=submit]:focus");

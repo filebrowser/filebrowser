@@ -1,6 +1,5 @@
 {{ define "content" }}
-
-<div class="editor {{ .Class }} container">
+<div class="editor container {{ .Class }}">
   {{ if eq .Class "complete" }}
   <h1><textarea id="site-title">{{ .Name }}</textarea></h1>
   {{ end }}
@@ -19,7 +18,8 @@
       </div>
       {{ else if eq .Class "content-only" }}
       <div class="content">
-        <textarea id="editor-source" name="content" data-mode="{{ .Mode }}">{{ .Content }}</textarea>
+        <div id="editor-source" data-mode="{{ .Mode }}"></div>
+        <textarea name="content">{{ .Content }}</textarea>
       </div>
       {{ else }}
       <div class="frontmatter">

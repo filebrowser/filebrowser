@@ -317,7 +317,7 @@ fieldset input {
   margin: 0.5em 0;
 }
 
-.editor.complete .block[data-content="title"] {
+.complete .block[data-content="title"] {
   display: none;
 }
 
