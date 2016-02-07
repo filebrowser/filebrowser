@@ -48,7 +48,7 @@ $(document).on('page:browse', function() {
 
   /* FILE UPLOAD */
 
-  $('input[type="file"]').on('change', function(event) {
+  $('body').off('change', 'input[type="file"]').on('change', 'input[type="file"]', function(event) {
     event.preventDefault();
     files = event.target.files;
 
@@ -90,7 +90,7 @@ $(document).on('page:browse', function() {
     return false;
   });
 
-  $("#upload").click(function(event) {
+  $('body').off('click', '.upload').on('click', '.upload', function(event) {
     event.preventDefault();
     $('.actions input[type="file"]').click();
     return false;
