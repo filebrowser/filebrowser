@@ -119,20 +119,15 @@ $(document).on('page:editor', function() {
     event.preventDefault();
     defaultID = "lorem-ipsum-sin-dolor-amet";
 
-    if ($("#" + defaultID).length) {
-      return false;
+    // Remove if there is an incomplete new item
+    newItem = $("#" + defaultID);
+    if (newItem.length) {
+      newItem.remove();
     }
 
     block = $(this).parent().parent();
     blockType = block.data("type");
     blockID = block.attr("id");
-
-    // Main add button, after all blocks
-    if (block.is('div') && block.hasClass("frontmatter")) {
-      block = $('.blocks');
-      block.append('<div class="block" id="' + defaultID + '"></div>');
-      blockType = "object";
-    }
 
     // If the Block Type is an array
     if (blockType == "array") {
@@ -141,15 +136,19 @@ $(document).on('page:editor', function() {
       input = input.replace(/\[/, '\\[');
       input = input.replace(/\]/, '\\]');
       block.append('<div id="' + newID + '-' + $('#' + input + ' > div').length + '" data-type="array-item"><input name="' + newID + ':auto" id="' + newID + '"></input><span class="actions"> <button class="delete">&#8722;</button></span></div></div>');
+      console.log('New array item added.');
     }
 
-    if (blockType == "object" && !block.hasClass("frontmatter")) {
-      block.append('<div class="block" id="' + defaultID + '"></div>');
+    // Main add button, after all blocks
+    if (block.is('div') && block.hasClass("frontmatter")) {
+      block = $('.blocks');
       blockType = "object";
     }
 
     // If the Block is an object
     if (blockType == "object") {
+      block.append('<div class="block" id="' + defaultID + '"></div>');
+
       newItem = $("#" + defaultID);
       newItem.html('<input id="name-' + defaultID + '" placeholder="Write the field name and press enter..."></input>');
       field = $("#name-" + defaultID);
@@ -167,7 +166,6 @@ $(document).on('page:editor', function() {
       }
 
       $(field).keypress(function(event) {
-        console.log('got it');
         // When you press enter within the new name field:
         if (event.which == 13) {
           event.preventDefault();
