@@ -224,6 +224,7 @@ input[type="submit"] {
   font-weight: normal;
   background-color: #FFEB3B;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.12);
+  -webkit-transition: .5s ease background-color;
   transition: .5s ease background-color;
 }
 
@@ -256,12 +257,24 @@ button.add {
   background-color: #8BC34A;
 }
 
+button.add:hover {
+  background-color: #689F38;
+}
+
 button.delete {
   background-color: #F44336;
 }
 
+button.delete:hover {
+  background-color: #D32F2F;
+}
+
 button.rename {
   background-color: #1565C0;
+}
+
+button.rename:hover {
+  background-color: #0D47A1;
 }
 
 .frontmatter > .actions {
@@ -461,6 +474,11 @@ fieldset input {
 .browse tr {
   line-height: 2em;
   border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  transition: .2s ease background-color;
+}
+
+.browse tr:hover {
+  background-color: rgba(0,0,0,0.04);
 }
 
 .browse th.buttons {
@@ -507,7 +525,8 @@ fieldset input {
   width: 95%;
   top: 10%;
   left:50%;
-  transform: translateX(-50%);
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
   background-color: #006064;
   color: #fff;
   padding: 1em 2em;
@@ -519,7 +538,21 @@ fieldset input {
   border-bottom: .15em solid white;
 }
 
+@media screen and (max-width: 900px) {
+  .blocks {
+    -webkit-column-count: 3;
+       -moz-column-count: 3;
+            column-count: 3;
+  }
+}
+
+
 @media screen and (max-width: 600px) {
+  .blocks {
+    -webkit-column-count: 2;
+       -moz-column-count: 2;
+            column-count: 2;
+  }
   body > nav span {
     display: none;
   }
@@ -527,10 +560,30 @@ fieldset input {
     margin-left: 0;
   }
   body > nav .container {
-    justify-content: space-between;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
     text-align: center;
   }
   .hideable {
     display: none;
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .blocks {
+    -webkit-column-count: 1;
+       -moz-column-count: 1;
+            column-count: 1;
+  }
+  .browse .actions {
+    text-align: center;
+  }
+  .browse .actions .container {
+    display: block;
+  }
+  .browse .container .go-right {
+    display: block;
   }
 }
