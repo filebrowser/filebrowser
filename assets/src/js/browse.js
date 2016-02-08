@@ -91,7 +91,7 @@ $(document).on('page:browse', function() {
     return false;
   });
 
-  $('#content').on('click', '.upload', function(event) {
+  $('#content').on('click', '#upload', function(event) {
     event.preventDefault();
     $('.actions input[type="file"]').click();
     return false;
