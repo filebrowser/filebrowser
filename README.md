@@ -1,7 +1,7 @@
 # Hugo plugin for Caddy
 
 [![Build](https://img.shields.io/travis/hacdias/caddy-hugo.svg?style=flat-square)](https://travis-ci.org/hacdias/caddy-hugo)
-[![Documentation] (https://img.shields.io/badge/caddy-doc-F06292.svg?style=flat-square](https://caddyserver.com/docs/hugo)
+[![Documentation](https://img.shields.io/badge/caddy-doc-F06292.svg?style=flat-square)](https://caddyserver.com/docs/hugo)
 [![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/hacdias/caddy-hugo)
 
 Powerful [Hugo](http://gohugo.io/) - easy and amazing static website generator - plugin for Caddy with an admin interface so you can change your website when you're not on your computer. You can also use it like any other Content Management Service.
