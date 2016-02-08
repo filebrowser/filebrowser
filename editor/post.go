@@ -13,6 +13,7 @@ import (
 	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/robfig/cron"
+	"github.com/spf13/cast"
 	"github.com/spf13/hugo/parser"
 )
 
@@ -117,11 +118,7 @@ func parseCompleteFile(r *http.Request, c *config.Config, rawFile map[string]int
 
 	// Schedule the post
 	if r.Header.Get("X-Schedule") == "true" {
-		t, err := time.Parse("2006-01-02 15:04:05-07:00", rawFile["date"].(string))
-
-		if err != nil {
-			return []byte{}, http.StatusInternalServerError, err
-		}
+		t := cast.ToTime(rawFile["date"].(string))
 
 		scheduler := cron.New()
 		scheduler.AddFunc(t.In(time.Now().Location()).Format("05 04 15 02 01 *"), func() {
