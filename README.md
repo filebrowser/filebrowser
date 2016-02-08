@@ -4,20 +4,21 @@
 [![Documentation](https://img.shields.io/badge/caddy-doc-F06292.svg?style=flat-square)](https://caddyserver.com/docs/hugo)
 [![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/hacdias/caddy-hugo)
 
-Powerful [Hugo](http://gohugo.io/) - easy and amazing static website generator - plugin for Caddy with an admin interface so you can change your website when you're not on your computer. You can also use it like any other Content Management Service.
+**Caddy-hugo fills the gap between Hugo and the browser.** [Hugo](http://gohugo.io/) is a easy, blazing fast and awesome static website generator. This plugin fills the gap between Hugo and the end-user, providing you an web interface to manage the whole website.
 
-## Build it from source
+The following information is directed to those who want to build the plugin from source and make changes to it. If you just want to try it out, read the [documentation](https://caddyserver.com/docs/hugo) at Caddy website.
+
+## Build from source
 
 ### Requirements
 
-| Back-end              | Front-end            |
-| --------------------- | -------------------- |
-| [Go 1.4 or higher][1] | [Ruby][2]            |
-| [caddydev][3]         | [SASS][4]            |
-| [go-bindata][5]       | [Node.js w/ npm][6]  |
-|                       | [Grunt][7]           |
++ [Go 1.4 or higher][1]
++ [caddydev][3]
++ [go-bindata][5]
++ [Node.js w/ npm][6] (optional)
 
-If you want to go deeper and make changes in front-end assets like JavaScript or CSS, you'll need some more tools (front-end tools in the table bellow). If you don't, install only the back-end tools.
+
+If you want to go deeper and make changes in front-end assets like JavaScript or CSS, you'll need to install the optional tools listed above. 
 
 ### Get it and build
 
