@@ -5,7 +5,7 @@ $(document).on('page:editor', function() {
 
   if (container.hasClass('complete')) {
     // Change title field when editing the header
-    $('#site-title').keyup(function() {
+    $('#content').on('keyup', '#site-title', function() {
       $('.frontmatter #title').val($(this).val());
     });
   }
@@ -28,7 +28,7 @@ $(document).on('page:editor', function() {
       fontSize: "1em"
     });
 
-    $("#see-source").off('click').click(function(event) {
+    $('#content').on('click', '#see-source', function(event) {
       event.preventDefault();
       preview.hide();
       editor.fadeIn();
@@ -36,7 +36,7 @@ $(document).on('page:editor', function() {
     })
 
     // Toggles between preview and editing mode
-    $("#see-preview").off('click').click(function(event) {
+    $('#content').on('click', '#see-preview', function(event) {
       event.preventDefault();
 
       // If it currently in the preview mode, hide the preview
@@ -62,7 +62,7 @@ $(document).on('page:editor', function() {
     });
   }
 
-  $('body').off('keypress', 'input').on('keypress', 'input', function(event) {
+  $('#content').on('keypress', 'input', function(event) {
     if (event.keyCode == 13) {
       event.preventDefault();
       $('input[value="Save"]').focus().click();
@@ -71,7 +71,7 @@ $(document).on('page:editor', function() {
   });
 
   // Submites any form in the page in JSON format
-  $('form').submit(function(event) {
+  $('#content').on('submit', 'form', function(event) {
     event.preventDefault();
 
     if (!container.hasClass('frontmatter-only')) {
@@ -115,7 +115,7 @@ $(document).on('page:editor', function() {
   });
 
   // Adds one more field to the current group
-  $("body").on('click', '.add', function(event) {
+  $("#content").on('click', '.add', function(event) {
     event.preventDefault();
     defaultID = "lorem-ipsum-sin-dolor-amet";
 
@@ -236,7 +236,7 @@ $(document).on('page:editor', function() {
     return false;
   });
 
-  $("body").on('click', '.delete', function(event) {
+  $("#content").on('click', '.delete', function(event) {
     event.preventDefault();
     button = $(this);
 
