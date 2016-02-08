@@ -1,33 +1,34 @@
 $(document).on('page:browse', function() {
-  var foreground = $('#foreground');
+  var foreground = '#foreground';
 
   /* DELETE FILE */
 
   var remove = new Object();
-  remove.form = $('form#delete');
+  remove.selector = 'form#delete';
+  remove.form = $(remove.selector);
   remove.row = '';
   remove.button = '';
   remove.url = '';
 
-  $('body').off('click', '.delete').on('click', '.delete', function(event) {
+  $('#content').on('click', '.delete', function(event) {
     event.preventDefault();
     remove.button = $(this);
     remove.row = $(this).parent().parent();
-    foreground.fadeIn(200);
+    $(foreground).fadeIn(200);
     remove.url = remove.row.find('.filename').text();
+    remove.form.find('span').text(remove.url);
     remove.form.fadeIn(200);
-    remove.form.find('span').text(rename.url);
     return false;
   });
 
-  remove.form.off('submit').submit(function(event) {
+  $('#content').on('submit', remove.selector, function(event) {
     event.preventDefault();
 
     $.ajax({
       type: 'DELETE',
       url: remove.button.data("file")
     }).done(function(data) {
-      foreground.fadeOut(200);
+      $(foreground).fadeOut(200);
       remove.form.fadeOut(200);
       remove.row.fadeOut(200);
       notification({
@@ -48,7 +49,7 @@ $(document).on('page:browse', function() {
 
   /* FILE UPLOAD */
 
-  $('body').off('change', 'input[type="file"]').on('change', 'input[type="file"]', function(event) {
+  $('#content').on('change', 'input[type="file"]', function(event) {
     event.preventDefault();
     files = event.target.files;
 
@@ -90,7 +91,7 @@ $(document).on('page:browse', function() {
     return false;
   });
 
-  $('body').off('click', '.upload').on('click', '.upload', function(event) {
+  $('#content').on('click', '.upload', function(event) {
     event.preventDefault();
     $('.actions input[type="file"]').click();
     return false;
@@ -99,19 +100,21 @@ $(document).on('page:browse', function() {
   /* NEW FILE */
 
   var create = new Object();
-  create.form = $('form#new');
+  create.selector = 'form#new';
+  create.form = $(create.selector);
+  create.input = create.selector + ' input[type="text"]';
   create.button = '';
   create.url = '';
 
-  $('body').off('click', '.new').on('click', '.new', function(event) {
+  $('#content').on('click', '.new', function(event) {
     event.preventDefault();
     create.button = $(this);
-    foreground.fadeIn(200);
+    $(foreground).fadeIn(200);
     create.form.fadeIn(200);
     return false;
   });
 
-  create.form.find('input[type="text"]').off('keypress').keypress(function(event) {
+  $('#content').on('keypress', create.input, function(event) {
     if (event.keyCode == 13) {
       event.preventDefault();
       $(create.form).submit();
@@ -119,7 +122,7 @@ $(document).on('page:browse', function() {
     }
   });
 
-  create.form.submit(function(event) {
+  $('#content').on('submit', create.selector, function(event) {
     event.preventDefault();
 
     var value = create.form.find('input[type="text"]').val(),
@@ -182,15 +185,17 @@ $(document).on('page:browse', function() {
   /* RENAME FILE */
 
   var rename = new Object();
-  rename.form = $('form#rename');
+  rename.selector = 'form#rename';
+  rename.form = $(rename.selector);
+  rename.input = rename.selector + ' input[type="text"]';
   rename.button = '';
   rename.url = '';
 
-  $('body').off('click', '.rename').on('click', '.rename', function(event) {
+  $('#content').on('click', '.rename', function(event) {
     event.preventDefault();
     rename.button = $(this);
 
-    foreground.fadeIn(200);
+    $(foreground).fadeIn(200);
     rename.url = $(this).parent().parent().find('.filename').text();
     rename.form.fadeIn(200);
     rename.form.find('span').text(rename.url);
@@ -199,7 +204,7 @@ $(document).on('page:browse', function() {
     return false;
   });
 
-  rename.form.find('input[type="text"]').off('keypress').keypress(function(event) {
+  $('#content').on('keypress', rename.input, function(event) {
     if (event.keyCode == 13) {
       event.preventDefault();
       $(rename.form).submit();
@@ -207,7 +212,7 @@ $(document).on('page:browse', function() {
     }
   });
 
-  rename.form.off('submit').submit(function(event) {
+  $('#content').on('submit', rename.selector, function(event) {
     event.preventDefault();
 
     var filename = rename.form.find('input[type="text"]').val();
@@ -248,19 +253,21 @@ $(document).on('page:browse', function() {
     return false;
   });
 
-  /* FOREGROUND AND STUFF */
+  /* $(foreground) AND STUFF */
 
-  $('body').off('click', '.close').on('click', '.close', function(event) {
+  $('#content').on('click', '.close', function(event) {
     event.preventDefault();
     $(this).parent().parent().fadeOut(200);
-    foreground.click();
+    $(foreground).click();
     return false;
   });
 
-  foreground.off('click').click(function() {
-    foreground.fadeOut(200);
+  $('#content').on('click', foreground, function(event) {
+    event.preventDefault();
+    $(foreground).fadeOut(200);
     create.form.fadeOut(200);
     rename.form.fadeOut(200);
     remove.form.fadeOut(200);
+    return false;
   });
 });
