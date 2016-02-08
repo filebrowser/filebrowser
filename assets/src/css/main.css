@@ -131,6 +131,10 @@ body > footer p {
   font-size: .9em
 }
 
+body > footer a {
+  color: #aaa;
+}
+
 
 /* NOFICATIONS */
 
@@ -375,6 +379,11 @@ fieldset input {
   line-height: 3em;
   cursor: pointer;
   font-size: 1em;
+  color: inherit;
+}
+
+.editor .content nav a.active {
+  font-weight: bold;
 }
 
 #editor-preview {

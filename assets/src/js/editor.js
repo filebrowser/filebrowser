@@ -32,6 +32,8 @@ $(document).on('page:editor', function() {
       event.preventDefault();
       preview.hide();
       editor.fadeIn();
+      $(this).addClass('active');
+      $("#see-preview").removeClass('active');
       $("#see-preview").data("previewing", "false");
     })
 
@@ -44,6 +46,8 @@ $(document).on('page:editor', function() {
       if ($(this).data("previewing") == "true") {
         preview.hide();
         editor.fadeIn();
+        $(this).removeClass('active');
+        $("#see-source").addClass('active');
         $(this).data("previewing", "false");
       } else {
         // If it's in editing mode, convert the markdown to html
@@ -55,6 +59,8 @@ $(document).on('page:editor', function() {
         // Hide the editor and show the preview
         editor.hide();
         preview.html(html).fadeIn();
+        $(this).addClass('active');
+        $("#see-source").removeClass('active');
         $(this).data("previewing", "true");
       }
 
