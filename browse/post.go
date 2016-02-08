@@ -56,7 +56,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 		archetype = strings.Replace(archetype, "archetypes", "", 1)
 		archetype = strings.TrimPrefix(archetype, "/")
 		archetype = strings.TrimSuffix(archetype, "/")
-		archetype = "archetypes/" + archetype
+		archetype = c.Path + "archetypes/" + archetype
 
 		// Check if the archetype ending with .markdown exists
 		if _, err := os.Stat(archetype + ".markdown"); err == nil {
