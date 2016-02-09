@@ -25,7 +25,8 @@ $(document).on('page:editor', function() {
       maxLines: Infinity,
       theme: "ace/theme/github",
       showPrintMargin: false,
-      fontSize: "1em"
+      fontSize: "1em",
+      minLines: 20
     });
 
     $('#content').on('click', '#see-source', function(event) {
