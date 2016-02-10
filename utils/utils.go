@@ -2,7 +2,6 @@ package utils
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -183,7 +182,6 @@ func Run(c *config.Config) {
 	}
 
 	if create {
-		fmt.Print("Are you sure you want to generate a Hugo website on " + c.Path + "? (y/n)")
 		cmd := &cobra.Command{}
 		cmd.Flags().Bool("force", true, "")
 		commands.NewSite(cmd, []string{c.Path})
