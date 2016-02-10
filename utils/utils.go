@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -167,8 +168,25 @@ func ParseComponents(r *http.Request) []string {
 
 // Run is used to run the static website generator
 func Run(c *config.Config) {
-	if is, _ := IsEmpty(c.Path); is {
-		commands.NewSite(&cobra.Command{}, []string{c.Path})
+	create := false
+
+	if _, err := os.Stat(c.Path + "config.yaml"); os.IsNotExist(err) {
+		create = true
+	}
+
+	if _, err := os.Stat(c.Path + "config.json"); os.IsNotExist(err) {
+		create = true
+	}
+
+	if _, err := os.Stat(c.Path + "config.toml"); os.IsNotExist(err) {
+		create = true
+	}
+
+	if create {
+		fmt.Print("Are you sure you want to generate a Hugo website on " + c.Path + "? (y/n)")
+		cmd := &cobra.Command{}
+		cmd.Flags().Bool("force", true, "")
+		commands.NewSite(cmd, []string{c.Path})
 	}
 
 	cwd, err := os.Getwd()
@@ -196,21 +214,6 @@ func Run(c *config.Config) {
 	if err != nil {
 		log.Print("Can't get working directory.")
 	}
-}
-
-// IsEmpty checks if a folder is empty
-func IsEmpty(name string) (bool, error) {
-	f, err := os.Open(name)
-	if err != nil {
-		return false, err
-	}
-	defer f.Close()
-
-	_, err = f.Readdir(1)
-	if err == io.EOF {
-		return true, nil
-	}
-	return false, err
 }
 
 var splitCapitalizeExceptions = map[string]string{
