@@ -143,9 +143,7 @@ func parseCompleteFile(r *http.Request, c *config.Config, rawFile map[string]int
 			file := f.Bytes()
 
 			// Write the file
-			err = ioutil.WriteFile(filename, file, 0666)
-
-			if err != nil {
+			if err = ioutil.WriteFile(filename, file, 0666); err != nil {
 				return
 			}
 

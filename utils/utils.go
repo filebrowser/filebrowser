@@ -14,7 +14,6 @@ import (
 	"github.com/hacdias/caddy-hugo/assets"
 	"github.com/hacdias/caddy-hugo/config"
 	"github.com/spf13/hugo/commands"
-	"github.com/spf13/viper"
 )
 
 // CanBeEdited checks if the extension of a file is supported by the editor
@@ -166,8 +165,7 @@ func ParseComponents(r *http.Request) []string {
 
 // Run is used to run the static website generator
 func Run(c *config.Config) {
-	viper.Reset()
-	c.Args = append([]string{"--source", c.Path, "--destination", "public"}, c.Args...)
+	c.Args = append([]string{"--source", c.Path}, c.Args...)
 	commands.HugoCmd.ParseFlags(c.Args)
 	if err := commands.HugoCmd.RunE(nil, nil); err != nil {
 		log.Print(err)
