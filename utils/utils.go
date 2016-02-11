@@ -13,7 +13,6 @@ import (
 
 	"github.com/hacdias/caddy-hugo/assets"
 	"github.com/hacdias/caddy-hugo/config"
-	"github.com/spf13/cobra"
 	"github.com/spf13/hugo/commands"
 	"github.com/spf13/viper"
 )
@@ -167,50 +166,11 @@ func ParseComponents(r *http.Request) []string {
 
 // Run is used to run the static website generator
 func Run(c *config.Config) {
-	create := false
-
-	if _, err := os.Stat(c.Path + "config.yaml"); os.IsNotExist(err) {
-		create = true
-	}
-
-	if _, err := os.Stat(c.Path + "config.json"); os.IsNotExist(err) {
-		create = true
-	}
-
-	if _, err := os.Stat(c.Path + "config.toml"); os.IsNotExist(err) {
-		create = true
-	}
-
-	if create {
-		cmd := &cobra.Command{}
-		cmd.Flags().Bool("force", true, "")
-		commands.NewSite(cmd, []string{c.Path})
-	}
-
-	cwd, err := os.Getwd()
-
-	if err != nil {
-		log.Print("Can't get working directory.")
-	}
-
-	err = os.Chdir(c.Path)
-
-	if err != nil {
-		log.Print("Can't get working directory.")
-	}
-
 	viper.Reset()
+	c.Args = append([]string{"--source", c.Path, "--destination", "public"}, c.Args...)
 	commands.HugoCmd.ParseFlags(c.Args)
-	err = commands.HugoCmd.RunE(nil, nil)
-
-	if err != nil {
+	if err := commands.HugoCmd.RunE(nil, nil); err != nil {
 		log.Print(err)
-	}
-
-	err = os.Chdir(cwd)
-
-	if err != nil {
-		log.Print("Can't get working directory.")
 	}
 }
 

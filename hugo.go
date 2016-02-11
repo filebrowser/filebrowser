@@ -18,11 +18,34 @@ import (
 	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/mholt/caddy/caddy/setup"
 	"github.com/mholt/caddy/middleware"
+	"github.com/spf13/cobra"
+	"github.com/spf13/hugo/commands"
 )
 
 // Setup configures the middleware
 func Setup(c *setup.Controller) (middleware.Middleware, error) {
 	config, _ := config.ParseHugo(c)
+
+	create := false
+
+	if _, err := os.Stat(config.Path + "config.yaml"); os.IsNotExist(err) {
+		create = true
+	}
+
+	if _, err := os.Stat(config.Path + "config.json"); os.IsNotExist(err) {
+		create = true
+	}
+
+	if _, err := os.Stat(config.Path + "config.toml"); os.IsNotExist(err) {
+		create = true
+	}
+
+	if create {
+		cmd := &cobra.Command{}
+		cmd.Flags().Bool("force", true, "")
+		commands.NewSite(cmd, []string{config.Path})
+	}
+
 	utils.Run(config)
 
 	return func(next middleware.Handler) middleware.Handler {
