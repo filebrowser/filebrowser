@@ -14,7 +14,8 @@ import (
 	"github.com/hacdias/caddy-hugo/utils"
 )
 
-// POST handles the POST method on browse page
+// POST handles the POST method on browse page. It's used to create new files,
+// folders and upload content.
 func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	// Remove prefix slash
 	r.URL.Path = strings.TrimPrefix(r.URL.Path, "/")

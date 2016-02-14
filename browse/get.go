@@ -10,7 +10,8 @@ import (
 	"github.com/mholt/caddy/middleware/browse"
 )
 
-// GET handles the GET method on browse page
+// GET handles the GET method on browse page and shows the files listing Using
+// the Browse Caddy middleware.
 func GET(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	functions := template.FuncMap{
 		"CanBeEdited": utils.CanBeEdited,

@@ -8,7 +8,7 @@ import (
 	"github.com/hacdias/caddy-hugo/config"
 )
 
-// DELETE handles the DELETE method on browse page
+// DELETE handles the delete requests on browse pages
 func DELETE(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	// Remove both beginning and trailing slashes
 	path := r.URL.Path

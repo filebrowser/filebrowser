@@ -40,9 +40,8 @@ func PUT(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) 
 	new = strings.TrimSuffix(new, "/")
 	new = c.Path + new
 
-	err := os.Rename(old, new)
-
-	if err != nil {
+	// Renames the file/folder
+	if err := os.Rename(old, new); err != nil {
 		return 500, err
 	}
 
