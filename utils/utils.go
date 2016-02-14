@@ -165,6 +165,8 @@ func ParseComponents(r *http.Request) []string {
 
 // Run is used to run the static website generator
 func Run(c *config.Config) {
+	os.RemoveAll(c.Path + "public")
+
 	commands.MainSite = nil
 	c.Args = append([]string{"--source", c.Path}, c.Args...)
 	commands.HugoCmd.ParseFlags(c.Args)

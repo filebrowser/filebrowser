@@ -2,6 +2,8 @@
 //go:generate go install github.com/jteeuwen/go-bindata/go-bindata
 //go:generate go-bindata -pkg assets -o assets/assets.go templates/ assets/css/ assets/js/ assets/fonts/
 
+// Package hugo makes the bridge between the static website generator Hugo
+// and the webserver Caddy, also providing an administrative user interface.
 package hugo
 
 import (
@@ -22,10 +24,13 @@ import (
 	"github.com/spf13/hugo/commands"
 )
 
-// Setup configures the middleware
+// Setup is the init function of Caddy plugins and it configures the whole
+// middleware thing.
 func Setup(c *setup.Controller) (middleware.Middleware, error) {
 	config, _ := config.ParseHugo(c)
 
+	// Checks if there is an Hugo website in the path that is provided.
+	// If not, a new website will be created.
 	create := false
 
 	if _, err := os.Stat(config.Path + "config.yaml"); os.IsNotExist(err) {
@@ -46,6 +51,7 @@ func Setup(c *setup.Controller) (middleware.Middleware, error) {
 		commands.NewSite(cmd, []string{config.Path})
 	}
 
+	// Generates the Hugo website for the first time the plugin is activated.
 	utils.Run(config)
 
 	return func(next middleware.Handler) middleware.Handler {
@@ -53,12 +59,15 @@ func Setup(c *setup.Controller) (middleware.Middleware, error) {
 	}, nil
 }
 
-// CaddyHugo main type
+// CaddyHugo contais the next middleware to be run and the configuration
+// of the current one.
 type CaddyHugo struct {
 	Next   middleware.Handler
 	Config *config.Config
 }
 
+// ServeHTTP is the main function of the whole plugin that routes every single
+// request to its function.
 func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Only handle /admin path
 	if middleware.Path(r.URL.Path).Matches("/admin") {
@@ -126,7 +135,7 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 			code, err = editor.ServeHTTP(w, r, h.Config)
 		}
 
-		// Whenever the header "X-Refenerate" is true, the website should be
+		// Whenever the header "X-Regenerate" is true, the website should be
 		// regenerated. Used in edit and settings, for example.
 		if r.Header.Get("X-Regenerate") == "true" {
 			utils.Run(h.Config)
@@ -138,6 +147,7 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 	return h.Next.ServeHTTP(w, r)
 }
 
+// serveAssets handles the /admin/assets requests
 func serveAssets(w http.ResponseWriter, r *http.Request) (int, error) {
 	filename := strings.Replace(r.URL.Path, "/admin/", "", 1)
 	file, err := assets.Asset(filename)
