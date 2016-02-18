@@ -42,7 +42,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename str
 	case "content-only":
 		// The main content of the file
 		mainContent := rawFile["content"].(string)
-		mainContent = "\n\n" + strings.TrimSpace(mainContent)
+		mainContent = strings.TrimSpace(mainContent)
 
 		file = []byte(mainContent)
 	case "complete":
