@@ -170,7 +170,6 @@ func Run(c *config.Config) {
 
 	commands.MainSite = nil
 	viper.Reset()
-	c.Args = append([]string{"--source", c.Path}, c.Args...)
 	commands.HugoCmd.ParseFlags(c.Args)
 	if err := commands.HugoCmd.RunE(nil, nil); err != nil {
 		log.Print(err)
