@@ -63,7 +63,6 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 		if _, err := os.Stat(archetype + ".markdown"); err == nil {
 			err = utils.CopyFile(archetype+".markdown", filename)
 			if err != nil {
-				w.Write([]byte(err.Error()))
 				return http.StatusInternalServerError, err
 			}
 
@@ -77,7 +76,6 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 		if _, err := os.Stat(archetype + ".md"); err == nil {
 			err = utils.CopyFile(archetype+".md", filename)
 			if err != nil {
-				w.Write([]byte(err.Error()))
 				return http.StatusInternalServerError, err
 			}
 
@@ -90,7 +88,6 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 
 	wf, err := os.Create(filename)
 	if err != nil {
-		w.Write([]byte(err.Error()))
 		return http.StatusInternalServerError, err
 	}
 
@@ -106,7 +103,6 @@ func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, erro
 	// Parse the multipart form in the request
 	err := r.ParseMultipartForm(100000)
 	if err != nil {
-		w.Write([]byte(err.Error()))
 		return http.StatusInternalServerError, err
 	}
 
@@ -117,20 +113,17 @@ func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, erro
 			// Open the first file
 			var infile multipart.File
 			if infile, err = hdr.Open(); nil != err {
-				w.Write([]byte(err.Error()))
 				return http.StatusInternalServerError, err
 			}
 
 			// Create the file
 			var outfile *os.File
 			if outfile, err = os.Create(c.Path + r.URL.Path + hdr.Filename); nil != err {
-				w.Write([]byte(err.Error()))
 				return http.StatusInternalServerError, err
 			}
 
 			// Copy the file content
 			if _, err = io.Copy(outfile, infile); nil != err {
-				w.Write([]byte(err.Error()))
 				return http.StatusInternalServerError, err
 			}
 

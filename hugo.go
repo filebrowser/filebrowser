@@ -7,6 +7,7 @@
 package hugo
 
 import (
+	"log"
 	"mime"
 	"net/http"
 	"os"
@@ -139,6 +140,10 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 		// regenerated. Used in edit and settings, for example.
 		if r.Header.Get("X-Regenerate") == "true" {
 			utils.Run(h.Config)
+		}
+
+		if err != nil {
+			log.Panic(err)
 		}
 
 		return code, err

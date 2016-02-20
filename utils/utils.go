@@ -172,7 +172,7 @@ func Run(c *config.Config) {
 	viper.Reset()
 	commands.HugoCmd.ParseFlags(c.Args)
 	if err := commands.HugoCmd.RunE(nil, nil); err != nil {
-		log.Print(err)
+		log.Panic(err)
 	}
 }
 
