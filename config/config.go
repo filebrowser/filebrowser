@@ -42,21 +42,19 @@ func ParseHugo(c *setup.Controller) (*Config, error) {
 				conf.Styles = strings.TrimPrefix(conf.Styles, "/")
 				// Add a beginning slash to make a
 				conf.Styles = "/" + conf.Styles
-			case "args":
-				if !c.NextArg() {
-					return nil, c.ArgErr()
+			default:
+				key := "--" + c.Val()
+				value := "true"
+
+				if c.NextArg() {
+					value = c.Val()
 				}
 
-				// Get the arguments and split the array
-				args := strings.Split(c.Val(), " ")
-				for index, element := range args {
-					args[index] = strings.Replace(element, "\"", "", -1)
-				}
-
-				conf.Args = args
+				conf.Args = append(conf.Args, key, value)
 			}
 		}
 	}
 
+	conf.Args = append([]string{"--source", conf.Path}, conf.Args...)
 	return conf, nil
 }

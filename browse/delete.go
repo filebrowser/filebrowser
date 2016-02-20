@@ -28,7 +28,6 @@ func DELETE(w http.ResponseWriter, r *http.Request, c *config.Config) (int, erro
 
 		// Check for errors
 		if err != nil {
-			w.Write([]byte(err.Error()))
 			return 500, err
 		}
 	} else {

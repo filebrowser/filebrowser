@@ -34,7 +34,6 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename str
 	case "frontmatter-only":
 		f, code, err := parseFrontMatterOnlyFile(rawFile, filename)
 		if err != nil {
-			w.Write([]byte(err.Error()))
 			return code, err
 		}
 
@@ -48,7 +47,6 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename str
 	case "complete":
 		f, code, err := parseCompleteFile(r, c, rawFile, filename)
 		if err != nil {
-			w.Write([]byte(err.Error()))
 			return code, err
 		}
 
@@ -61,7 +59,6 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename str
 	err := ioutil.WriteFile(filename, file, 0666)
 
 	if err != nil {
-		w.Write([]byte(err.Error()))
 		return http.StatusInternalServerError, err
 	}
 
