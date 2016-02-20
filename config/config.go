@@ -1,8 +1,14 @@
 package config
 
 import (
+	"fmt"
+	"log"
+	"os"
+	"os/user"
+	"runtime"
 	"strings"
 
+	"github.com/hacdias/caddy-hugo/insthugo"
 	"github.com/mholt/caddy/caddy/setup"
 )
 
@@ -12,13 +18,31 @@ type Config struct {
 	Path   string   // Hugo files path
 	Styles string   // Admin styles path
 	Args   []string // Hugo arguments
+	Hugo   string   // Hugo executable path
 }
 
 // ParseHugo parses the configuration file
 func ParseHugo(c *setup.Controller) (*Config, error) {
+	// First check if Hugo is installed
+	user, err := user.Current()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	conf := &Config{
 		Public: strings.Replace(c.Root, "./", "", -1),
 		Path:   "./",
+		Hugo:   user.HomeDir + "/.caddy/bin/hugo",
+	}
+
+	if runtime.GOOS == "windows" {
+		conf.Hugo += ".exe"
+	}
+
+	if _, err := os.Stat(conf.Hugo); os.IsNotExist(err) {
+		fmt.Print("hey")
+		insthugo.Install()
 	}
 
 	for c.Next() {
