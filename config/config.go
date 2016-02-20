@@ -55,6 +55,5 @@ func ParseHugo(c *setup.Controller) (*Config, error) {
 		}
 	}
 
-	conf.Args = append([]string{"--source", conf.Path}, conf.Args...)
 	return conf, nil
 }

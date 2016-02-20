@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"reflect"
 	"strings"
 	"text/template"
@@ -13,8 +14,6 @@ import (
 
 	"github.com/hacdias/caddy-hugo/assets"
 	"github.com/hacdias/caddy-hugo/config"
-	"github.com/spf13/hugo/commands"
-	"github.com/spf13/viper"
 )
 
 // CanBeEdited checks if the extension of a file is supported by the editor
@@ -168,12 +167,18 @@ func ParseComponents(r *http.Request) []string {
 func Run(c *config.Config) {
 	os.RemoveAll(c.Path + "public")
 
-	commands.MainSite = nil
-	viper.Reset()
-	commands.HugoCmd.ParseFlags(c.Args)
-	if err := commands.HugoCmd.RunE(nil, nil); err != nil {
+	if err := RunCommand("hugo", c.Args, c.Path); err != nil {
 		log.Panic(err)
 	}
+}
+
+// RunCommand executes an external command
+func RunCommand(command string, args []string, path string) error {
+	cmd := exec.Command(command, args...)
+	cmd.Dir = path
+	cmd.Stdout = os.Stderr
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
 
 var splitCapitalizeExceptions = map[string]string{
