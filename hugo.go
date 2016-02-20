@@ -26,7 +26,7 @@ import (
 // Setup is the init function of Caddy plugins and it configures the whole
 // middleware thing.
 func Setup(c *setup.Controller) (middleware.Middleware, error) {
-	// TODO: install Hugo first?
+	// TODO: install Hugo first? add script
 
 	config, _ := config.ParseHugo(c)
 
