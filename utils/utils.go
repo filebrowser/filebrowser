@@ -178,7 +178,7 @@ func Run(c *config.Config, force bool) {
 		}
 	}
 
-	if err := RunCommand("hugo", c.Args, c.Path); err != nil {
+	if err := RunCommand(c.Hugo, c.Args, c.Path); err != nil {
 		log.Panic(err)
 	}
 }

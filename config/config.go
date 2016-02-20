@@ -1,10 +1,10 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/user"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -40,8 +40,9 @@ func ParseHugo(c *setup.Controller) (*Config, error) {
 		conf.Hugo += ".exe"
 	}
 
+	conf.Hugo = filepath.Clean(conf.Hugo)
+
 	if _, err := os.Stat(conf.Hugo); os.IsNotExist(err) {
-		fmt.Print("hey")
 		insthugo.Install()
 	}
 

@@ -62,7 +62,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 			args = append(args, "--kind", archetype)
 		}
 
-		if err := utils.RunCommand("hugo", args, c.Path); err != nil {
+		if err := utils.RunCommand(c.Hugo, args, c.Path); err != nil {
 			return http.StatusInternalServerError, err
 		}
 	} else {

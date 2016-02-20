@@ -45,7 +45,7 @@ func Setup(c *setup.Controller) (middleware.Middleware, error) {
 	}
 
 	if create {
-		err := utils.RunCommand("hugo", []string{"new", "site", config.Path, "--force"}, ".")
+		err := utils.RunCommand(config.Hugo, []string{"new", "site", config.Path, "--force"}, ".")
 		if err != nil {
 			log.Panic(err)
 		}
