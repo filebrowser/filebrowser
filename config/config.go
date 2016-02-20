@@ -50,7 +50,7 @@ func ParseHugo(c *setup.Controller) (*Config, error) {
 					value = c.Val()
 				}
 
-				conf.Args = append(conf.Args, key, value)
+				conf.Args = append(conf.Args, key+"="+value)
 			}
 		}
 	}

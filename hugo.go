@@ -54,7 +54,7 @@ func Setup(c *setup.Controller) (middleware.Middleware, error) {
 	}
 
 	// Generates the Hugo website for the first time the plugin is activated.
-	go utils.Run(config)
+	go utils.Run(config, true)
 
 	return func(next middleware.Handler) middleware.Handler {
 		return &CaddyHugo{Next: next, Config: config}
@@ -140,7 +140,7 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 		// Whenever the header "X-Regenerate" is true, the website should be
 		// regenerated. Used in edit and settings, for example.
 		if r.Header.Get("X-Regenerate") == "true" {
-			go utils.Run(h.Config)
+			go utils.Run(h.Config, false)
 		}
 
 		if err != nil {

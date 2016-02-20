@@ -49,51 +49,32 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	filename = strings.TrimSuffix(filename, "/")
 	filename = c.Path + r.URL.Path + filename
 
-	// Check if the archetype is defined
-	if info["archetype"] != "" {
-		// Sanitize the archetype path
+	url := "/admin/edit/" + filename
+
+	if strings.HasPrefix(filename, c.Path+"content/") &&
+		(strings.HasSuffix(filename, ".md") || strings.HasSuffix(filename, ".markdown")) {
+
+		filename = strings.Replace(filename, c.Path+"content/", "", 1)
+		args := []string{"new", filename}
 		archetype := info["archetype"].(string)
-		archetype = strings.Replace(archetype, "/archetypes", "", 1)
-		archetype = strings.Replace(archetype, "archetypes", "", 1)
-		archetype = strings.TrimPrefix(archetype, "/")
-		archetype = strings.TrimSuffix(archetype, "/")
-		archetype = c.Path + "archetypes/" + archetype
 
-		// Check if the archetype ending with .markdown exists
-		if _, err := os.Stat(archetype + ".markdown"); err == nil {
-			err = utils.CopyFile(archetype+".markdown", filename)
-			if err != nil {
-				return http.StatusInternalServerError, err
-			}
-
-			w.Header().Set("Location", "/admin/edit/"+filename)
-			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte("{}"))
-			return 201, nil
+		if archetype != "" {
+			args = append(args, "--kind", archetype)
 		}
 
-		// Check if the archetype ending with .md exists
-		if _, err := os.Stat(archetype + ".md"); err == nil {
-			err = utils.CopyFile(archetype+".md", filename)
-			if err != nil {
-				return http.StatusInternalServerError, err
-			}
-
-			w.Header().Set("Location", "/admin/edit/"+filename)
-			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte("{}"))
-			return 201, nil
+		if err := utils.RunCommand("hugo", args, c.Path); err != nil {
+			return http.StatusInternalServerError, err
 		}
+	} else {
+		wf, err := os.Create(filename)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		defer wf.Close()
 	}
 
-	wf, err := os.Create(filename)
-	if err != nil {
-		return http.StatusInternalServerError, err
-	}
-
-	defer wf.Close()
-
-	w.Header().Set("Location", "/admin/edit/"+filename)
+	w.Header().Set("Location", url)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte("{}"))
 	return http.StatusOK, nil

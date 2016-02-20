@@ -164,8 +164,19 @@ func ParseComponents(r *http.Request) []string {
 }
 
 // Run is used to run the static website generator
-func Run(c *config.Config) {
+func Run(c *config.Config, force bool) {
 	os.RemoveAll(c.Path + "public")
+
+	// Prevent running if watching is enabled
+	if b, pos := stringInSlice("--watch", c.Args); b && !force {
+		if len(c.Args) > pos && c.Args[pos+1] != "false" {
+			return
+		}
+
+		if len(c.Args) == pos+1 {
+			return
+		}
+	}
 
 	if err := RunCommand("hugo", c.Args, c.Path); err != nil {
 		log.Panic(err)
@@ -179,6 +190,15 @@ func RunCommand(command string, args []string, path string) error {
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+func stringInSlice(a string, list []string) (bool, int) {
+	for i, b := range list {
+		if b == a {
+			return true, i
+		}
+	}
+	return false, 0
 }
 
 var splitCapitalizeExceptions = map[string]string{
