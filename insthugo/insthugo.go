@@ -26,7 +26,7 @@ var (
 	tempfiles  []string
 	filename   = "hugo_" + version + "_" + runtime.GOOS + "_" + runtime.GOARCH
 	sha256Hash = map[string]string{
-		"hugo_0.15_darwin_386.zip":              "",
+		"hugo_0.15_darwin_386.zip":              "f9b7353f9b64e7aece5f7981e5aa97dc4b31974ce76251edc070e77691bc03e2",
 		"hugo_0.15_darwin_amd64.zip":            "",
 		"hugo_0.15_dragonfly_amd64.zip":         "",
 		"hugo_0.15_freebsd_386.zip":             "",
@@ -155,13 +155,13 @@ func Install() string {
 
 	fmt.Println("done.")
 
-	tempfiles = append(tempfiles, bin+"README.md", bin+"LICENSE.md")
+	tempfiles = append(tempfiles, bin+"/README.md", bin+"/LICENSE.md")
 	clean()
 
-	ftorename := bin + strings.Replace(filename, ".tar.gz", "", 1)
+	ftorename := bin + "/" + strings.Replace(filename, ".tar.gz", "", 1)
 
 	if runtime.GOOS == "windows" {
-		ftorename = bin + strings.Replace(filename, ".zip", ".exe", 1)
+		ftorename = bin + "/" + strings.Replace(filename, ".zip", ".exe", 1)
 	}
 
 	os.Rename(ftorename, hugo)
