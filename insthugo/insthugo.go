@@ -80,9 +80,9 @@ func Install() string {
 
 	fmt.Println("Unable to find Hugo on " + caddy)
 
-	err = os.MkdirAll(caddy, 0666)
-	err = os.Mkdir(bin, 0666)
-	err = os.Mkdir(temp, 0666)
+	err = os.MkdirAll(caddy, 0774)
+	err = os.Mkdir(bin, 0774)
+	err = os.Mkdir(temp, 0774)
 
 	if !os.IsExist(err) {
 		fmt.Println(err)
@@ -94,6 +94,7 @@ func Install() string {
 	// Create the file
 	tempfiles = append(tempfiles, tempfile)
 	out, err := os.Create(tempfile)
+	out.Chmod(0774)
 	if err != nil {
 		clean()
 		fmt.Println(err)
