@@ -156,6 +156,10 @@ func Install() string {
 
 	ftorename := bin + "/" + strings.Replace(filename, ".tar.gz", "", 1)
 
+	if runtime.GOOS == "darwin" {
+		ftorename = bin + "/" + strings.Replace(filename, ".zip", "", 1)
+	}
+
 	if runtime.GOOS == "windows" {
 		ftorename = bin + "/" + strings.Replace(filename, ".zip", ".exe", 1)
 	}
