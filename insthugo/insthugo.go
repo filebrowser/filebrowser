@@ -154,17 +154,24 @@ func Install() string {
 	tempfiles = append(tempfiles, bin+"/README.md", bin+"/LICENSE.md")
 	clean()
 
-	ftorename := bin + "/" + strings.Replace(filename, ".tar.gz", "", 1)
+	ftorename := bin + "/"
 
-	if runtime.GOOS == "darwin" {
-		ftorename = bin + "/" + strings.Replace(filename, ".zip", "", 1)
+	switch runtime.GOOS {
+	case "darwin":
+		ftorename += strings.Replace(filename, ".zip", "", 1)
+	case "windows":
+		ftorename += strings.Replace(filename, ".zip", ".exe", 1)
+	default:
+		ftorename += strings.Replace(filename, ".tar.gz", "", 1)
 	}
 
-	if runtime.GOOS == "windows" {
-		ftorename = bin + "/" + strings.Replace(filename, ".zip", ".exe", 1)
+	err = os.Rename(ftorename, hugo)
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
 	}
 
-	os.Rename(ftorename, hugo)
 	fmt.Println("Hugo installed at " + hugo)
 	return hugo
 }
