@@ -84,12 +84,9 @@ func Install() string {
 	err = os.Mkdir(bin, 0774)
 	err = os.Mkdir(temp, 0774)
 
-	if !os.IsExist(err) {
-		fmt.Println(err)
-		os.Exit(-1)
-	}
-
 	tempfile := temp + "/" + filename
+
+	fmt.Print("Downloading Hugo from GitHub releases... ")
 
 	// Create the file
 	tempfiles = append(tempfiles, tempfile)
@@ -101,8 +98,6 @@ func Install() string {
 		os.Exit(-1)
 	}
 	defer out.Close()
-
-	fmt.Print("Downloading Hugo from GitHub releases... ")
 
 	// Get the data
 	resp, err := http.Get(baseurl + filename)
