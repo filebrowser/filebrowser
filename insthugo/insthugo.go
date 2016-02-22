@@ -53,10 +53,10 @@ func Install() string {
 		os.Exit(-1)
 	}
 
-	caddy := filepath.Clean(usr.HomeDir + "/.caddy/")
-	bin := filepath.Clean(caddy + "/bin")
-	temp := filepath.Clean(caddy + "/temp")
-	hugo := filepath.Clean(bin + "/hugo")
+	caddy := filepath.Join(usr.HomeDir, ".caddy")
+	bin := filepath.Join(caddy, "bin")
+	temp := filepath.Join(caddy, "temp")
+	hugo := filepath.Join(bin, "hugo")
 
 	switch runtime.GOOS {
 	case "darwin":
@@ -84,7 +84,7 @@ func Install() string {
 	err = os.Mkdir(bin, 0774)
 	err = os.Mkdir(temp, 0774)
 
-	tempfile := temp + "/" + filename
+	tempfile := filepath.Join(temp, filename)
 
 	fmt.Print("Downloading Hugo from GitHub releases... ")
 
@@ -151,7 +151,7 @@ func Install() string {
 
 	fmt.Println("done.")
 
-	tempfiles = append(tempfiles, bin+"/README.md", bin+"/LICENSE.md")
+	tempfiles = append(tempfiles, filepath.Join(bin, "README.md"), filepath.Join(bin, "LICENSE.md"))
 	clean()
 
 	ftorename := bin + "/"
