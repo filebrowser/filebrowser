@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
 	"runtime"
@@ -46,10 +47,10 @@ var (
 func GetPath() string {
 	initializeVariables()
 
-	/*	// Check if Hugo is already on $PATH
-		if hugo, err := exec.LookPath("hugo"); err == nil {
-			return hugo
-		} */
+	// Check if Hugo is already on $PATH
+	if hugo, err := exec.LookPath("hugo"); err == nil {
+		return hugo
+	}
 
 	// Check if Hugo is on $HOME/.caddy/bin
 	if _, err := os.Stat(hugo); err == nil {
