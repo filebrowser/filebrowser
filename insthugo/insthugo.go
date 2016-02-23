@@ -13,7 +13,6 @@ import (
 	"os/user"
 	"path/filepath"
 	"runtime"
-	"strings"
 )
 
 const (
@@ -22,10 +21,8 @@ const (
 )
 
 var (
-	usr        user.User
-	tempfiles  []string
-	filename   = "hugo_" + version + "_" + runtime.GOOS + "_" + runtime.GOARCH
-	sha256Hash = map[string]string{
+	caddy, bin, temp, hugo, tempfile, zipname, exename string
+	sha256Hash                                         = map[string]string{
 		"hugo_0.15_darwin_386.zip":              "f9b7353f9b64e7aece5f7981e5aa97dc4b31974ce76251edc070e77691bc03e2",
 		"hugo_0.15_darwin_amd64.zip":            "aeecd6a12d86ab920f5b04e9486474bbe478dc246cdc2242799849b84c61c6f1",
 		"hugo_0.15_dragonfly_amd64.zip":         "e380343789f2b2e0c366c8e1eeb251ccd90eea53dac191ff85d8177b130e53bc",
@@ -45,51 +42,109 @@ var (
 	}
 )
 
-// Install installs Hugo
-func Install() string {
+// GetPath retrives the Hugo path for the user or install it if it's not found
+func GetPath() string {
+	initializeVariables()
+
+	/*	// Check if Hugo is already on $PATH
+		if hugo, err := exec.LookPath("hugo"); err == nil {
+			return hugo
+		} */
+
+	// Check if Hugo is on $HOME/.caddy/bin
+	if _, err := os.Stat(hugo); err == nil {
+		return hugo
+	}
+
+	fmt.Println("Unable to find Hugo on your computer.")
+
+	// Create the neccessary folders
+	os.MkdirAll(caddy, 0774)
+	os.Mkdir(bin, 0774)
+	os.Mkdir(temp, 0774)
+
+	downloadHugo()
+	checkSHA256()
+
+	fmt.Print("Unziping... ")
+
+	var err error
+
+	// Unzip or Ungzip the file
+	switch runtime.GOOS {
+	case "darwin", "windows":
+		err = unzip(tempfile, temp)
+	default:
+		err = ungzip(tempfile, temp)
+	}
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+
+	fmt.Println("done.")
+
+	var exetorename string
+
+	err = filepath.Walk(temp, func(path string, f os.FileInfo, err error) error {
+		if f.Name() == exename {
+			exetorename = path
+		}
+
+		return nil
+	})
+
+	err = os.Rename(exetorename, hugo)
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+
+	fmt.Println("Hugo installed at " + hugo)
+	clean()
+	return hugo
+}
+
+func initializeVariables() {
+	exename = "hugo_" + version + "_" + runtime.GOOS + "_" + runtime.GOARCH
+	zipname = exename
+
 	usr, err := user.Current()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
 
-	caddy := filepath.Join(usr.HomeDir, ".caddy")
-	bin := filepath.Join(caddy, "bin")
-	temp := filepath.Join(caddy, "temp")
-	hugo := filepath.Join(bin, "hugo")
+	caddy = filepath.Join(usr.HomeDir, ".caddy")
+	bin = filepath.Join(caddy, "bin")
+	temp = filepath.Join(caddy, "temp")
+	hugo = filepath.Join(bin, "hugo")
 
 	switch runtime.GOOS {
 	case "darwin":
-		filename += ".zip"
+		zipname += ".zip"
 	case "windows":
 		// At least for v0.15 version
 		if runtime.GOARCH == "386" {
-			filename += "32-bit-only"
+			zipname += "32-bit-only"
 		}
 
-		filename += ".zip"
+		zipname += ".zip"
+		exename += ".exe"
 		hugo += ".exe"
 	default:
-		filename += ".tar.gz"
+		zipname += ".tar.gz"
 	}
+}
 
-	// Check if Hugo is already installed
-	if _, err := os.Stat(hugo); err == nil {
-		return hugo
-	}
-
-	fmt.Println("Unable to find Hugo on " + caddy)
-
-	err = os.MkdirAll(caddy, 0774)
-	err = os.Mkdir(bin, 0774)
-	err = os.Mkdir(temp, 0774)
-
-	tempfile := filepath.Join(temp, filename)
+func downloadHugo() {
+	tempfile = filepath.Join(temp, zipname)
 
 	fmt.Print("Downloading Hugo from GitHub releases... ")
 
 	// Create the file
-	tempfiles = append(tempfiles, tempfile)
 	out, err := os.Create(tempfile)
 	out.Chmod(0774)
 	if err != nil {
@@ -100,7 +155,7 @@ func Install() string {
 	defer out.Close()
 
 	// Get the data
-	resp, err := http.Get(baseurl + filename)
+	resp, err := http.Get(baseurl + zipname)
 	if err != nil {
 		fmt.Println("An error ocurred while downloading. If this error persists, try downloading Hugo from \"https://github.com/spf13/hugo/releases/\" and put the executable in " + bin + " and rename it to 'hugo' or 'hugo.exe' if you're on Windows.")
 		fmt.Println(err)
@@ -116,6 +171,9 @@ func Install() string {
 	}
 
 	fmt.Println("downloaded.")
+}
+
+func checkSHA256() {
 	fmt.Print("Checking SHA256...")
 
 	hasher := sha256.New()
@@ -128,52 +186,12 @@ func Install() string {
 		log.Fatal(err)
 	}
 
-	if hex.EncodeToString(hasher.Sum(nil)) != sha256Hash[filename] {
+	if hex.EncodeToString(hasher.Sum(nil)) != sha256Hash[zipname] {
 		fmt.Println("can't verify SHA256.")
 		os.Exit(-1)
 	}
 
 	fmt.Println("checked!")
-	fmt.Print("Unziping... ")
-
-	// Unzip or Ungzip the file
-	switch runtime.GOOS {
-	case "darwin", "windows":
-		err = unzip(tempfile, bin)
-	default:
-		err = ungzip(tempfile, bin)
-	}
-
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(-1)
-	}
-
-	fmt.Println("done.")
-
-	tempfiles = append(tempfiles, filepath.Join(bin, "README.md"), filepath.Join(bin, "LICENSE.md"))
-	clean()
-
-	ftorename := bin + "/"
-
-	switch runtime.GOOS {
-	case "darwin":
-		ftorename += strings.Replace(filename, ".zip", "", 1)
-	case "windows":
-		ftorename += strings.Replace(filename, ".zip", ".exe", 1)
-	default:
-		ftorename += strings.Replace(filename, ".tar.gz", "", 1)
-	}
-
-	err = os.Rename(ftorename, hugo)
-
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(-1)
-	}
-
-	fmt.Println("Hugo installed at " + hugo)
-	return hugo
 }
 
 func unzip(archive, target string) error {
@@ -239,10 +257,6 @@ func ungzip(source, target string) error {
 
 func clean() {
 	fmt.Print("Removing temporary files... ")
-
-	for _, file := range tempfiles {
-		os.Remove(file)
-	}
-
+	os.RemoveAll(temp)
 	fmt.Println("done.")
 }
