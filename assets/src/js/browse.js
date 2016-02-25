@@ -168,7 +168,7 @@ $(document).on('page:browse', function() {
       });
 
       $.pjax({
-        url: window.location.pathname.replace("browse", "edit") + filename,
+        url: data.Location,
         container: '#content'
       })
     }).fail(function(data) {

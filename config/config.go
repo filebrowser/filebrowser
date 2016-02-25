@@ -3,6 +3,7 @@ package config
 import (
 	"strings"
 
+	"github.com/hacdias/caddy-hugo/insthugo"
 	"github.com/mholt/caddy/caddy/setup"
 )
 
@@ -12,6 +13,7 @@ type Config struct {
 	Path   string   // Hugo files path
 	Styles string   // Admin styles path
 	Args   []string // Hugo arguments
+	Hugo   string   // Hugo executable path
 }
 
 // ParseHugo parses the configuration file
@@ -20,6 +22,8 @@ func ParseHugo(c *setup.Controller) (*Config, error) {
 		Public: strings.Replace(c.Root, "./", "", -1),
 		Path:   "./",
 	}
+
+	conf.Hugo = insthugo.GetPath()
 
 	for c.Next() {
 		args := c.RemainingArgs()
@@ -50,11 +54,10 @@ func ParseHugo(c *setup.Controller) (*Config, error) {
 					value = c.Val()
 				}
 
-				conf.Args = append(conf.Args, key, value)
+				conf.Args = append(conf.Args, key+"="+value)
 			}
 		}
 	}
 
-	conf.Args = append([]string{"--source", conf.Path}, conf.Args...)
 	return conf, nil
 }

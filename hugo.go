@@ -21,8 +21,6 @@ import (
 	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/mholt/caddy/caddy/setup"
 	"github.com/mholt/caddy/middleware"
-	"github.com/spf13/cobra"
-	"github.com/spf13/hugo/commands"
 )
 
 // Setup is the init function of Caddy plugins and it configures the whole
@@ -32,28 +30,29 @@ func Setup(c *setup.Controller) (middleware.Middleware, error) {
 
 	// Checks if there is an Hugo website in the path that is provided.
 	// If not, a new website will be created.
-	create := false
+	create := true
 
-	if _, err := os.Stat(config.Path + "config.yaml"); os.IsNotExist(err) {
-		create = true
+	if _, err := os.Stat(config.Path + "config.yaml"); err == nil {
+		create = false
 	}
 
-	if _, err := os.Stat(config.Path + "config.json"); os.IsNotExist(err) {
-		create = true
+	if _, err := os.Stat(config.Path + "config.json"); err == nil {
+		create = false
 	}
 
-	if _, err := os.Stat(config.Path + "config.toml"); os.IsNotExist(err) {
-		create = true
+	if _, err := os.Stat(config.Path + "config.toml"); err == nil {
+		create = false
 	}
 
 	if create {
-		cmd := &cobra.Command{}
-		cmd.Flags().Bool("force", true, "")
-		commands.NewSite(cmd, []string{config.Path})
+		err := utils.RunCommand(config.Hugo, []string{"new", "site", config.Path, "--force"}, ".")
+		if err != nil {
+			log.Panic(err)
+		}
 	}
 
 	// Generates the Hugo website for the first time the plugin is activated.
-	utils.Run(config)
+	go utils.Run(config, true)
 
 	return func(next middleware.Handler) middleware.Handler {
 		return &CaddyHugo{Next: next, Config: config}
@@ -139,7 +138,7 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 		// Whenever the header "X-Regenerate" is true, the website should be
 		// regenerated. Used in edit and settings, for example.
 		if r.Header.Get("X-Regenerate") == "true" {
-			utils.Run(h.Config)
+			go utils.Run(h.Config, false)
 		}
 
 		if err != nil {

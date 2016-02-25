@@ -144,7 +144,7 @@ func parseCompleteFile(r *http.Request, c *config.Config, rawFile map[string]int
 				return
 			}
 
-			utils.Run(c)
+			go utils.Run(c, false)
 		})
 		scheduler.Start()
 	}

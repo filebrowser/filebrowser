@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/config"
@@ -47,55 +49,45 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	filename := info["filename"].(string)
 	filename = strings.TrimPrefix(filename, "/")
 	filename = strings.TrimSuffix(filename, "/")
+	url := "/admin/edit/" + r.URL.Path + filename
 	filename = c.Path + r.URL.Path + filename
 
-	// Check if the archetype is defined
-	if info["archetype"] != "" {
-		// Sanitize the archetype path
+	if strings.HasPrefix(filename, c.Path+"content/") &&
+		(strings.HasSuffix(filename, ".md") || strings.HasSuffix(filename, ".markdown")) {
+
+		filename = strings.Replace(filename, c.Path+"content/", "", 1)
+		args := []string{"new", filename}
 		archetype := info["archetype"].(string)
-		archetype = strings.Replace(archetype, "/archetypes", "", 1)
-		archetype = strings.Replace(archetype, "archetypes", "", 1)
-		archetype = strings.TrimPrefix(archetype, "/")
-		archetype = strings.TrimSuffix(archetype, "/")
-		archetype = c.Path + "archetypes/" + archetype
 
-		// Check if the archetype ending with .markdown exists
-		if _, err := os.Stat(archetype + ".markdown"); err == nil {
-			err = utils.CopyFile(archetype+".markdown", filename)
-			if err != nil {
-				return http.StatusInternalServerError, err
-			}
-
-			w.Header().Set("Location", "/admin/edit/"+filename)
-			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte("{}"))
-			return 201, nil
+		if archetype != "" {
+			args = append(args, "--kind", archetype)
 		}
 
-		// Check if the archetype ending with .md exists
-		if _, err := os.Stat(archetype + ".md"); err == nil {
-			err = utils.CopyFile(archetype+".md", filename)
-			if err != nil {
-				return http.StatusInternalServerError, err
-			}
-
-			w.Header().Set("Location", "/admin/edit/"+filename)
-			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte("{}"))
-			return 201, nil
+		if err := utils.RunCommand(c.Hugo, args, c.Path); err != nil {
+			return http.StatusInternalServerError, err
 		}
+	} else {
+		var err error
+
+		if filepath.Ext(filename) == "" {
+			err = os.MkdirAll(filename, 0755)
+			url = strings.Replace(url, "edit", "browse", 1)
+		} else {
+			var wf *os.File
+			wf, err = os.Create(filename)
+			defer wf.Close()
+		}
+
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
 	}
 
-	wf, err := os.Create(filename)
-	if err != nil {
-		return http.StatusInternalServerError, err
-	}
+	fmt.Println(url)
 
-	defer wf.Close()
-
-	w.Header().Set("Location", "/admin/edit/"+filename)
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte("{}"))
+	w.Write([]byte("{\"Location\": \"" + url + "\"}"))
 	return http.StatusOK, nil
 }
 

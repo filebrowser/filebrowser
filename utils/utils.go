@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"reflect"
 	"strings"
 	"text/template"
@@ -13,8 +14,6 @@ import (
 
 	"github.com/hacdias/caddy-hugo/assets"
 	"github.com/hacdias/caddy-hugo/config"
-	"github.com/spf13/hugo/commands"
-	"github.com/spf13/viper"
 )
 
 // CanBeEdited checks if the extension of a file is supported by the editor
@@ -165,15 +164,41 @@ func ParseComponents(r *http.Request) []string {
 }
 
 // Run is used to run the static website generator
-func Run(c *config.Config) {
+func Run(c *config.Config, force bool) {
 	os.RemoveAll(c.Path + "public")
 
-	commands.MainSite = nil
-	viper.Reset()
-	commands.HugoCmd.ParseFlags(c.Args)
-	if err := commands.HugoCmd.RunE(nil, nil); err != nil {
+	// Prevent running if watching is enabled
+	if b, pos := stringInSlice("--watch", c.Args); b && !force {
+		if len(c.Args) > pos && c.Args[pos+1] != "false" {
+			return
+		}
+
+		if len(c.Args) == pos+1 {
+			return
+		}
+	}
+
+	if err := RunCommand(c.Hugo, c.Args, c.Path); err != nil {
 		log.Panic(err)
 	}
+}
+
+// RunCommand executes an external command
+func RunCommand(command string, args []string, path string) error {
+	cmd := exec.Command(command, args...)
+	cmd.Dir = path
+	cmd.Stdout = os.Stderr
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
+}
+
+func stringInSlice(a string, list []string) (bool, int) {
+	for i, b := range list {
+		if b == a {
+			return true, i
+		}
+	}
+	return false, 0
 }
 
 var splitCapitalizeExceptions = map[string]string{
