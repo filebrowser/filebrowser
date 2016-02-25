@@ -12,7 +12,7 @@
 
 **Requirements**
 
-+ [Go 1.4 or higher][1]
++ [Go 1.6 or higher][1]
 + [caddydev][2]
 + [go-bindata][3]
 + [Node.js w/ npm][4] (optional)
