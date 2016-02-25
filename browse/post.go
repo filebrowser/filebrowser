@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/config"
@@ -47,9 +49,8 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	filename := info["filename"].(string)
 	filename = strings.TrimPrefix(filename, "/")
 	filename = strings.TrimSuffix(filename, "/")
+	url := "/admin/edit/" + r.URL.Path + filename
 	filename = c.Path + r.URL.Path + filename
-
-	url := "/admin/edit/" + filename
 
 	if strings.HasPrefix(filename, c.Path+"content/") &&
 		(strings.HasSuffix(filename, ".md") || strings.HasSuffix(filename, ".markdown")) {
@@ -66,17 +67,27 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 			return http.StatusInternalServerError, err
 		}
 	} else {
-		wf, err := os.Create(filename)
+		var err error
+
+		if filepath.Ext(filename) == "" {
+			err = os.MkdirAll(filename, 0755)
+			url = strings.Replace(url, "edit", "browse", 1)
+		} else {
+			var wf *os.File
+			wf, err = os.Create(filename)
+			defer wf.Close()
+		}
+
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
 
-		defer wf.Close()
 	}
 
-	w.Header().Set("Location", url)
+	fmt.Println(url)
+
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte("{}"))
+	w.Write([]byte("{\"Location\": \"" + url + "\"}"))
 	return http.StatusOK, nil
 }
 
