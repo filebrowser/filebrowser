@@ -34,14 +34,20 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config, filename stri
 		return http.StatusNotAcceptable, errors.New("File format not supported.")
 	}
 
-	// Check if the file exists. If it doesn't, send a "Not Found" message
+	// Check if the file exists.
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		return http.StatusNotFound, nil
+	} else if os.IsPermission(err) {
+		return http.StatusForbidden, nil
+	} else if err != nil {
+		return http.StatusInternalServerError, err
 	}
 
 	// Open the file and check if there was some error while opening
 	file, err := ioutil.ReadFile(filename)
-	if err != nil {
+	if os.IsPermission(err) {
+		return http.StatusForbidden, nil
+	} else if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
