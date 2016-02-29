@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -47,13 +48,15 @@ var (
 func GetPath() string {
 	initializeVariables()
 
+	var err error
+
 	// Check if Hugo is already on $PATH
 	if hugo, err := exec.LookPath("hugo"); err == nil {
 		return hugo
 	}
 
 	// Check if Hugo is on $HOME/.caddy/bin
-	if _, err := os.Stat(hugo); err == nil {
+	if _, err = os.Stat(hugo); err == nil {
 		return hugo
 	}
 
@@ -62,14 +65,16 @@ func GetPath() string {
 	// Create the neccessary folders
 	os.MkdirAll(caddy, 0774)
 	os.Mkdir(bin, 0774)
-	os.Mkdir(temp, 0774)
+
+	if temp, err = ioutil.TempDir("", "caddy-hugo"); err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
 
 	downloadHugo()
 	checkSHA256()
 
 	fmt.Print("Unziping... ")
-
-	var err error
 
 	// Unzip or Ungzip the file
 	switch runtime.GOOS {
@@ -104,7 +109,7 @@ func GetPath() string {
 	}
 
 	fmt.Println("Hugo installed at " + hugo)
-	clean()
+	defer os.RemoveAll(temp)
 	return hugo
 }
 
@@ -120,7 +125,6 @@ func initializeVariables() {
 
 	caddy = filepath.Join(usr.HomeDir, ".caddy")
 	bin = filepath.Join(caddy, "bin")
-	temp = filepath.Join(caddy, "temp")
 	hugo = filepath.Join(bin, "hugo")
 
 	switch runtime.GOOS {
@@ -149,7 +153,7 @@ func downloadHugo() {
 	out, err := os.Create(tempfile)
 	out.Chmod(0774)
 	if err != nil {
-		clean()
+		defer os.RemoveAll(temp)
 		fmt.Println(err)
 		os.Exit(-1)
 	}
@@ -279,10 +283,4 @@ func ungzip(source, target string) error {
 
 	_, err = io.Copy(writer, archive)
 	return err
-}
-
-func clean() {
-	fmt.Print("Removing temporary files... ")
-	os.RemoveAll(temp)
-	fmt.Println("done.")
 }
