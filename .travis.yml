@@ -1,7 +1,6 @@
 language: go
 go:
 - tip
-- 1.6
 sudo: false
 install:
 - export GOPATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace:$GOPATH"
