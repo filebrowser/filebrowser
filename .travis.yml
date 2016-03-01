@@ -20,6 +20,7 @@ script:
 - caddydev --output="caddy" --source="." hugo
 - go test ./...
 deploy:
+  before_deploy: "bash dist/automate.sh"
   provider: bintray
   file: dist/descriptor.json
   user: hacdias
