@@ -20,7 +20,7 @@ caddyext install hugo:github.com/hacdias/caddy-hugo
 mkdir -p $BuildDir
 cd $BuildDir
 rm -f caddy*
-gox -os="linux" $Package
+gox -osarch="linux/amd64" $Package
 
 # Zip them up with release notes and stuff
 mkdir -p $ReleaseDir
@@ -57,5 +57,5 @@ done
 
 caddyext remove hugo
 
-echo $DistDir
-ls $DistDir
+echo $ReleaseDir
+ls $ReleaseDir

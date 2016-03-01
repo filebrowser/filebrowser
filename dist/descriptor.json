@@ -8,7 +8,7 @@
     "name": "latest"
   },
   "files": [{
-    "includePattern": "dist/release/(.*)",
+    "includePattern": "release/(.*)",
     "uploadPattern": "caddy-hugo/$1"
   }],
   "publish": true
