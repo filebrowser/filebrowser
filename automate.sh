@@ -29,7 +29,7 @@ rm -f caddy*
 for f in $BuildDir/*
 do
 	# Name .zip file same as binary, but strip .exe from end
-	zipname=$(basename ${f%".exe"})
+	zipname=$(date +%s)_$(basename ${f%".exe"})
 	if [[ $f == *"linux"* ]] || [[ $f == *"bsd"* ]]; then
 		zipname=${zipname}.tar.gz
 	else
