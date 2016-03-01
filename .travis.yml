@@ -19,8 +19,8 @@ install:
 script:
 - caddydev --output="caddy" --source="." hugo
 - go test ./...
+- bash dist/automate.sh
 deploy:
-  before_deploy: "bash dist/automate.sh"
   provider: bintray
   file: dist/descriptor.json
   user: hacdias
