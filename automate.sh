@@ -56,6 +56,3 @@ do
 done
 
 caddyext remove hugo
-
-echo $ReleaseDir
-ls $ReleaseDir
