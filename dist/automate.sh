@@ -48,7 +48,7 @@ do
 	if [[ $zipname == *.zip ]]; then
 		zip -j $zipname $bin
 	else
-		tar -cvzf $zipname -C $BuildDir $binbase -C
+		tar -cvzf $zipname -C $BuildDir $binbase
 	fi
 
 	# Put binary filename back to original
