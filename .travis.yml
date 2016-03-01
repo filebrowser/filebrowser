@@ -1,20 +1,27 @@
 language: go
 go:
-  - tip
-  - 1.6
+- tip
+- 1.6
 sudo: false
 install:
-  - export GOPATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace:$GOPATH"
-  - export PATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace/bin:$PATH"
-  - go get github.com/mholt/caddy
-  - go get github.com/spf13/hugo
-  - go get github.com/robfig/cron
-  - go install github.com/mholt/caddy
-  - go install github.com/robfig/cron
-  - go install github.com/spf13/hugo
-  - go get github.com/caddyserver/caddydev
-  - go install github.com/caddyserver/caddydev
-  - go generate
+- export GOPATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace:$GOPATH"
+- export PATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace/bin:$PATH"
+- go get github.com/mitchellh/gox
+- go get github.com/mholt/caddy
+- go get github.com/spf13/hugo
+- go get github.com/robfig/cron
+- go get github.com/caddyserver/caddydev
+- go get github.com/caddyserver/caddyext
+- go install github.com/caddyserver/caddydev
+- go install github.com/caddyserver/caddyext
+- go install github.com/mitchellh/gox
+- go generate
 script:
-  - caddydev --output="caddy" --source="." hugo
-  - go test ./...
+- caddydev --output="caddy" --source="." hugo
+- go test ./...
+deploy:
+  provider: bintray
+  file: dist/descriptor.json
+  user: hacdias
+  key:
+    secure: gzIpZj4UTnvcpyY3d6+9IThG/5S0vcdvu+/E0fgeryWzKvJVOUFYCNsP1TeFgi3fd64vb+p17UoHA1I6QLc8BPAYpUEGY11JZlSHE13ScAcYSd97IhixL5DMnNWQLGCHoE4v1cUwSKyZYOu9vsjCgZf2JwhJHDMzNMH+5JQxMJcA4A+GsaaqARlxy2NKxA7DwohTPJuxzxMcvoVLlcFM6rCFrqQcHZ+LosVEpSwWm30mlS9BPQPu2Zm0QZruO/xuoufxeC94Szs3nlTXLSrNi05Z7IUvCBJDOEiCzzvX1q7kkIqKE6o2gkb2fkJEdKpocLvtDv2Z2JunN2utzLZrVVOyZ33xhtYcO9df+5y3lREHeWETThoxu64eFifVTp35b/eQUb4BTuFb7WsbCLv8wB1f/oVRcqhjL+RCQVrBjzXb27OwWLK7a1y9yQAgqke07zbsRvk6BbgbIQ5zU4WeYCQmztBct3YkdC9fJQJHp8N+Oui+Jeqnypikinhxd5/RKpFGdOH9V9QDpzS29Dv8CzGtmIog0KpdMcqhZ6K6sZGGFb5z6IC7zQvFBaPZKzFFaKsaQxmnTXwhSyJfWBPjWG/GkUbhbu6QN3gzr3l6l43Gl3PcCk21UwyVZ7KnXvLLujtPPm8CtsCW43O29luJL7iq7ke4yvZnz9Uc7L/Qd3k=

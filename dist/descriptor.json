@@ -1,0 +1,15 @@
+{
+  "package": {
+    "name": "caddy-hugo",
+    "repo": "generic",
+    "subject": "hacdias"
+  },
+  "version": {
+    "name": "latest"
+  },
+  "files": [{
+    "includePattern": "$GOPATH/src/github.com/hacdias/caddy-hugo/dist/release/(.*)",
+    "uploadPattern": "gems/$1"
+  }],
+  "publish": true
+}
