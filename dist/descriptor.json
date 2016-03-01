@@ -8,7 +8,7 @@
     "name": "latest"
   },
   "files": [{
-    "includePattern": "$GOPATH/src/github.com/hacdias/caddy-hugo/dist/release/(.*)",
+    "includePattern": "release/(.*)",
     "uploadPattern": "gems/$1"
   }],
   "publish": true
