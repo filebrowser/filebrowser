@@ -9,7 +9,7 @@
   },
   "files": [{
     "includePattern": "release/(.*)",
-    "uploadPattern": "gems/$1"
+    "uploadPattern": "caddy-hugo/$1"
   }],
   "publish": true
 }
