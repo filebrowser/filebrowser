@@ -56,6 +56,7 @@ do
 done
 
 cd $DistDir
+cd ..
 pwd
 ls
 sed -i 's/{TIME}/'$(date +%s)'/g' bintray.json
