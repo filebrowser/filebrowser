@@ -55,4 +55,7 @@ do
 	mv $bin $f
 done
 
-sed -i 's/{TIME}/'$(date +%s)'/g' ${DistDir}/bintray.json
+cd $DistDir
+pwd
+ls
+sed -i 's/{TIME}/'$(date +%s)'/g' bintray.json
