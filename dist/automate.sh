@@ -3,6 +3,8 @@ set -e
 set -o pipefail
 shopt -s nullglob # if no files match glob, assume empty list instead of string literal
 
+pwd
+
 ## PACKAGE TO BUILD
 Package=github.com/mholt/caddy
 Extension=github.com/hacdias/caddy-hugo
