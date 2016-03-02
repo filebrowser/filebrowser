@@ -3,7 +3,7 @@ set -e
 set -o pipefail
 shopt -s nullglob # if no files match glob, assume empty list instead of string literal
 
-pwd
+MainDir=$(pwd)
 
 ## PACKAGE TO BUILD
 Package=github.com/mholt/caddy
@@ -57,8 +57,5 @@ do
 	mv $bin $f
 done
 
-cd $DistDir
-cd ..
-pwd
-ls
+cd $MainDir/dist
 sed -i 's/{TIME}/'$(date +%s)'/g' bintray.json
