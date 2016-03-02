@@ -7,10 +7,9 @@ MainDir=$(pwd)
 
 ## PACKAGE TO BUILD
 Package=github.com/mholt/caddy
-Extension=github.com/hacdias/caddy-hugo
 
 ## PATHS TO USE
-DistDir=$GOPATH/src/$Extension/dist
+DistDir=dir
 BuildDir=$DistDir/builds
 ReleaseDir=$DistDir/release
 
