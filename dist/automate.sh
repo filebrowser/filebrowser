@@ -22,8 +22,6 @@ cd $BuildDir
 rm -f caddy*
 gox $Package
 
-timestamp=$(date +%s)
-
 # Zip them up with release notes and stuff
 mkdir -p $ReleaseDir
 cd $ReleaseDir
@@ -31,7 +29,7 @@ rm -f caddy*
 for f in $BuildDir/*
 do
 	# Name .zip file same as binary, but strip .exe from end
-	zipname=${timestamp}_$(basename ${f%".exe"})
+	zipname=$(basename ${f%".exe"})
 	if [[ $f == *"linux"* ]] || [[ $f == *"bsd"* ]]; then
 		zipname=${zipname}.tar.gz
 	else
@@ -57,4 +55,4 @@ do
 	mv $bin $f
 done
 
-caddyext remove hugo
+sed -i 's/{TIME}/'$(date +%s)'/g' dist/bintray.json
