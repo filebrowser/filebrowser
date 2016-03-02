@@ -22,6 +22,8 @@ cd $BuildDir
 rm -f caddy*
 gox $Package
 
+timestamp=$(date +%s)
+
 # Zip them up with release notes and stuff
 mkdir -p $ReleaseDir
 cd $ReleaseDir
@@ -29,7 +31,7 @@ rm -f caddy*
 for f in $BuildDir/*
 do
 	# Name .zip file same as binary, but strip .exe from end
-	zipname=$(date +%s)_$(basename ${f%".exe"})
+	zipname=${timestamp}_$(basename ${f%".exe"})
 	if [[ $f == *"linux"* ]] || [[ $f == *"bsd"* ]]; then
 		zipname=${zipname}.tar.gz
 	else
