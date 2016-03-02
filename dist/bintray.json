@@ -8,7 +8,7 @@
     "name": "latest"
   },
   "files": [{
-    "includePattern": "/home/travis/gopath/src/github.com/hacdias/caddy-hugo/Godeps/_workspace:/home/travis/gopath/src/github.com/hacdias/caddy-hugo/dist/release/(.*)",
+    "includePattern": "dist/release/(.*)",
     "uploadPattern": "caddy-hugo/{TIME}/$1"
   }],
   "publish": true
