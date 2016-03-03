@@ -23,7 +23,7 @@ func ParseHugo(c *setup.Controller) (*Config, error) {
 		Path:   "./",
 	}
 
-	conf.Hugo = insthugo.GetPath()
+	conf.Hugo = hugo.GetPath()
 
 	for c.Next() {
 		args := c.RemainingArgs()

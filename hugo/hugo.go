@@ -1,4 +1,4 @@
-package insthugo
+package hugo
 
 import (
 	"archive/zip"
@@ -12,9 +12,10 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"os/user"
 	"path/filepath"
 	"runtime"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 const (
@@ -117,13 +118,13 @@ func initializeVariables() {
 	exename = "hugo_" + version + "_" + runtime.GOOS + "_" + runtime.GOARCH
 	zipname = exename
 
-	usr, err := user.Current()
+	homedir, err := homedir.Dir()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
 
-	caddy = filepath.Join(usr.HomeDir, ".caddy")
+	caddy = filepath.Join(homedir, ".caddy")
 	bin = filepath.Join(caddy, "bin")
 	hugo = filepath.Join(bin, "hugo")
 
