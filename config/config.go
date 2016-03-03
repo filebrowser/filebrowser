@@ -3,7 +3,7 @@ package config
 import (
 	"strings"
 
-	"github.com/hacdias/caddy-hugo/insthugo"
+	"github.com/hacdias/caddy-hugo/hugo"
 	"github.com/mholt/caddy/caddy/setup"
 )
 
