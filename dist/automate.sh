@@ -57,5 +57,7 @@ do
 done
 
 cd $MainDir/dist
+echo "Replacing TIME"
 sed -i 's/{TIME}/'$(date +%s)'/g' bintray.json
+echo "REPLACING PATH"
 sed -i 's/{PATH}/'$MainDir'/g' bintray.json
