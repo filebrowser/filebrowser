@@ -9,11 +9,9 @@ MainDir=$(pwd)
 Package=github.com/mholt/caddy
 
 ## PATHS TO USE
-DistDir=$MainDir/dir
+DistDir=$MainDir/dist
 BuildDir=$DistDir/builds
 ReleaseDir=$DistDir/release
-
-echo $ReleaseDir
 
 caddyext install hugo:github.com/hacdias/caddy-hugo
 
@@ -23,7 +21,7 @@ caddyext install hugo:github.com/hacdias/caddy-hugo
 mkdir -p $BuildDir
 cd $BuildDir
 rm -f caddy*
-gox -osarch="linux/amd64" $Package
+gox $Package
 
 # Zip them up with release notes and stuff
 mkdir -p $ReleaseDir
