@@ -21,7 +21,7 @@ caddyext install hugo:github.com/hacdias/caddy-hugo
 mkdir -p $BuildDir
 cd $BuildDir
 rm -f caddy*
-gox $Package
+gox -osarch="linux/amd64" $Package
 
 # Zip them up with release notes and stuff
 mkdir -p $ReleaseDir
@@ -58,4 +58,4 @@ done
 
 cd $MainDir/dist
 sed -i 's/{TIME}/'$(date +%s)'/g' bintray.json
-sed -i 's/{PATH}/'${MainDir}'/g' bintray.json
+sed -i 's/{PATH}/'$MainDir'/g' bintray.json
