@@ -58,3 +58,4 @@ done
 
 cd $MainDir/dist
 sed -i 's/{TIME}/'$(date +%s)'/g' bintray.json
+sed -i 's/{PATH}/'${MainDir}'/g' bintray.json

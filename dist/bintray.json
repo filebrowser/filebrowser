@@ -5,10 +5,10 @@
     "subject": "hacdias"
   },
   "version": {
-    "name": "latest"
+    "name": "{TIME}"
   },
   "files": [{
-    "includePattern": "dist/release/(.*)",
+    "includePattern": "{PATH}/dist/release/(.*)",
     "uploadPattern": "caddy-hugo/{TIME}/$1"
   }],
   "publish": true
