@@ -9,7 +9,7 @@ MainDir=$(pwd)
 Package=github.com/mholt/caddy
 
 ## PATHS TO USE
-DistDir=dir
+DistDir=$MainDir/dir
 BuildDir=$DistDir/builds
 ReleaseDir=$DistDir/release
 
