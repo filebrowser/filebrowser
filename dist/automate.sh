@@ -13,6 +13,8 @@ DistDir=$MainDir/dir
 BuildDir=$DistDir/builds
 ReleaseDir=$DistDir/release
 
+echo $ReleaseDir
+
 caddyext install hugo:github.com/hacdias/caddy-hugo
 
 ## BEGIN
