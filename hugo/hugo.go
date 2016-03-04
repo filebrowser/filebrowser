@@ -1,8 +1,6 @@
 package hugo
 
 import (
-	"archive/zip"
-	"compress/gzip"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -16,6 +14,7 @@ import (
 	"runtime"
 
 	"github.com/mitchellh/go-homedir"
+	"github.com/pivotal-golang/archiver/extractor"
 )
 
 const (
@@ -80,9 +79,11 @@ func GetPath() string {
 	// Unzip or Ungzip the file
 	switch runtime.GOOS {
 	case "darwin", "windows":
-		err = unzip(tempfile, temp)
+		zp := extractor.NewZip()
+		zp.Extract(tempfile, temp)
 	default:
-		err = ungzip(tempfile, temp)
+		gz := extractor.NewTgz()
+		gz.Extract(tempfile, temp)
 	}
 
 	if err != nil {
@@ -198,90 +199,4 @@ func checkSHA256() {
 	}
 
 	fmt.Println("checked!")
-}
-
-func unzip(src, dest string) error {
-	r, err := zip.OpenReader(src)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		if err := r.Close(); err != nil {
-			panic(err)
-		}
-	}()
-
-	os.MkdirAll(dest, 0755)
-
-	// Closure to address file descriptors issue with all the deferred .Close() methods
-	extractAndWriteFile := func(f *zip.File) error {
-		rc, err := f.Open()
-		if err != nil {
-			return err
-		}
-		defer func() {
-			if err := rc.Close(); err != nil {
-				panic(err)
-			}
-		}()
-
-		path := filepath.Join(dest, f.Name)
-
-		if f.FileInfo().IsDir() {
-			os.MkdirAll(path, f.Mode())
-		} else {
-			if _, err := os.Stat(filepath.Dir(path)); os.IsNotExist(err) {
-				os.MkdirAll(filepath.Dir(path), 0755)
-			}
-
-			f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
-			if err != nil {
-				return err
-			}
-			defer func() {
-				if err := f.Close(); err != nil {
-					panic(err)
-				}
-			}()
-			_, err = io.Copy(f, rc)
-
-			if err != nil {
-				return err
-			}
-		}
-		return nil
-	}
-
-	for _, f := range r.File {
-		err := extractAndWriteFile(f)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func ungzip(source, target string) error {
-	reader, err := os.Open(source)
-	if err != nil {
-		return err
-	}
-	defer reader.Close()
-
-	archive, err := gzip.NewReader(reader)
-	if err != nil {
-		return err
-	}
-	defer archive.Close()
-
-	target = filepath.Join(target, archive.Name)
-	writer, err := os.Create(target)
-	if err != nil {
-		return err
-	}
-	defer writer.Close()
-
-	_, err = io.Copy(writer, archive)
-	return err
 }
