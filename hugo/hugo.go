@@ -80,10 +80,10 @@ func GetPath() string {
 	switch runtime.GOOS {
 	case "darwin", "windows":
 		zp := extractor.NewZip()
-		zp.Extract(tempfile, temp)
+		err = zp.Extract(tempfile, temp)
 	default:
 		gz := extractor.NewTgz()
-		gz.Extract(tempfile, temp)
+		err = gz.Extract(tempfile, temp)
 	}
 
 	if err != nil {
