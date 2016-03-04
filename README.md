@@ -4,6 +4,7 @@
 [![Chat](https://img.shields.io/badge/chat-gitter-yellow.svg?style=flat-square)](https://gitter.im/hacdias/caddy-hugo)
 [![Documentation](https://img.shields.io/badge/caddy-doc-F06292.svg?style=flat-square)](https://caddyserver.com/docs/hugo)
 [![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/hacdias/caddy-hugo)
+[![Executables](https://img.shields.io/bintray/v/hacdias/generic/caddy-hugo.svg?style=flat-square)](https://bintray.com/hacdias/caddy-hugo)
 
 **Caddy-hugo fills the gap between Hugo and the browser.** [Hugo](http://gohugo.io/) is an easy, blazing fast and awesome static website generator. This plugin fills the gap between Hugo and the end-user, providing you an web interface to manage the whole website.
 
