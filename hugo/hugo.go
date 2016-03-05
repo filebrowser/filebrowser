@@ -74,7 +74,7 @@ func GetPath() string {
 	downloadHugo()
 	checkSHA256()
 
-	fmt.Print("Unziping... ")
+	fmt.Print("Unzipping... ")
 
 	// Unzip or Ungzip the file
 	switch runtime.GOOS {
