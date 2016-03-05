@@ -103,13 +103,31 @@ func GetPath() string {
 		return nil
 	})
 
-	err = os.Rename(exetorename, hugo)
+	// Copy the file
+	fmt.Print("Moving Hugo executable... ")
+	r, err := os.Open(exetorename)
+	if err != nil {
+		panic(err)
+	}
+	defer r.Close()
+
+	w, err := os.Create(hugo)
+	if err != nil {
+		panic(err)
+	}
+	defer w.Close()
+
+	_, err = io.Copy(w, r)
+	if err != nil {
+		panic(err)
+	}
 
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
 
+	fmt.Println("done.")
 	fmt.Println("Hugo installed at " + hugo)
 	defer os.RemoveAll(temp)
 	return hugo
