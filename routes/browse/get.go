@@ -6,6 +6,7 @@ import (
 
 	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/tools/templates"
+	"github.com/hacdias/caddy-hugo/tools/variables"
 	"github.com/mholt/caddy/middleware"
 	"github.com/mholt/caddy/middleware/browse"
 )
@@ -15,7 +16,7 @@ import (
 func GET(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	functions := template.FuncMap{
 		"CanBeEdited": templates.CanBeEdited,
-		"Defined":     templates.Defined,
+		"Defined":     variables.Defined,
 	}
 
 	tpl, err := templates.Get(r, functions, "browse")

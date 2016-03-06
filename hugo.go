@@ -1,6 +1,6 @@
 //go:generate go get github.com/jteeuwen/go-bindata
 //go:generate go install github.com/jteeuwen/go-bindata/go-bindata
-//go:generate go-bindata -pkg assets -o assets/assets.go templates/ assets/css/ assets/js/ assets/fonts/
+//go:generate go-bindata -prefix assets/ -pkg assets -o routes/assets/assets.go assets/templates/ assets/public/...
 
 // Package hugo makes the bridge between the static website generator Hugo
 // and the webserver Caddy, also providing an administrative user interface.
@@ -14,13 +14,14 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/caddy-hugo/assets"
 	"github.com/hacdias/caddy-hugo/config"
+	"github.com/hacdias/caddy-hugo/routes/assets"
 	"github.com/hacdias/caddy-hugo/routes/browse"
 	"github.com/hacdias/caddy-hugo/routes/editor"
 	"github.com/hacdias/caddy-hugo/routes/git"
 	"github.com/hacdias/caddy-hugo/tools/commands"
 	"github.com/hacdias/caddy-hugo/tools/hugo"
+	"github.com/hacdias/caddy-hugo/tools/server"
 	"github.com/mholt/caddy/caddy/setup"
 	"github.com/mholt/caddy/middleware"
 )
@@ -79,10 +80,10 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 
 		// If the length of the components string is less than one, the variable
 		// page will always be "admin"
-		if len(utils.ParseComponents(r)) > 1 {
-			page = utils.ParseComponents(r)[1]
+		if len(server.ParseURLComponents(r)) > 1 {
+			page = server.ParseURLComponents(r)[1]
 		} else {
-			page = utils.ParseComponents(r)[0]
+			page = server.ParseURLComponents(r)[0]
 		}
 
 		// If the page isn't "assets" neither "edit", it should always put a
@@ -145,7 +146,7 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 		// Whenever the header "X-Regenerate" is true, the website should be
 		// regenerated. Used in edit and settings, for example.
 		if r.Header.Get("X-Regenerate") == "true" {
-			go utils.Run(h.Config, false)
+			go hugo.Run(h.Config, false)
 		}
 
 		if err != nil {

@@ -13,6 +13,7 @@ import (
 	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/tools/frontmatter"
 	"github.com/hacdias/caddy-hugo/tools/templates"
+	"github.com/hacdias/caddy-hugo/tools/variables"
 	"github.com/spf13/hugo/parser"
 )
 
@@ -110,8 +111,8 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config, filename stri
 	// Create the functions map, then the template, check for erros and
 	// execute the template if there aren't errors
 	functions := template.FuncMap{
-		"SplitCapitalize": templates.SplitCapitalize,
-		"Defined":         templates.Defined,
+		"SplitCapitalize": variables.SplitCapitalize,
+		"Defined":         variables.Defined,
 	}
 
 	tpl, err := templates.Get(r, functions, "editor", "frontmatter")

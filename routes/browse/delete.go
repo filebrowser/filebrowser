@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/config"
-	"github.com/hacdias/caddy-hugo/tools/utils"
+	"github.com/hacdias/caddy-hugo/tools/server"
 )
 
 // DELETE handles the delete requests on browse pages
@@ -32,17 +32,17 @@ func DELETE(w http.ResponseWriter, r *http.Request, c *config.Config) (int, erro
 
 		// Check for errors
 		if err != nil {
-			return utils.RespondJSON(w, map[string]string{
+			return server.RespondJSON(w, map[string]string{
 				"message": "Something went wrong.",
 			}, 500, nil)
 		}
 	} else {
-		return utils.RespondJSON(w, map[string]string{
+		return server.RespondJSON(w, map[string]string{
 			"message": "File not found.",
 		}, 404, nil)
 	}
 
-	return utils.RespondJSON(w, map[string]string{
+	return server.RespondJSON(w, map[string]string{
 		"message": message,
 	}, 200, nil)
 }

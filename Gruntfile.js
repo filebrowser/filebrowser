@@ -8,11 +8,11 @@ module.exports = function(grunt) {
   grunt.initConfig({
     watch: {
       sass: {
-        files: ['assets/src/css/**/*.css'],
+        files: ['assets/public_src/css/**/*.css'],
         tasks: ['concat', 'cssmin']
       },
       js: {
-        files: ['assets/src/js/**/*.js'],
+        files: ['assets/public_src/js/**/*.js'],
         tasks: ['uglify:main']
       },
     },
@@ -24,7 +24,7 @@ module.exports = function(grunt) {
           'node_modules/animate.css/source/bouncing_entrances/bounceInRight.css',
           'node_modules/animate.css/source/fading_entrances/fadeIn.css',
           'node_modules/animate.css/source/fading_exits/fadeOut.css',
-          'assets/src/css/main.css'
+          'assets/public_src/css/main.css'
         ],
         dest: 'temp/css/main.css',
       },
@@ -35,7 +35,7 @@ module.exports = function(grunt) {
           expand: true,
           flatten: true,
           src: ['node_modules/font-awesome/fonts/**'],
-          dest: 'assets/fonts'
+          dest: 'assets/public/fonts'
         }],
       },
     },
@@ -48,7 +48,7 @@ module.exports = function(grunt) {
           expand: true,
           cwd: 'temp/css/',
           src: ['*.css', '!*.min.css'],
-          dest: 'assets/css/',
+          dest: 'assets/public/css/',
           ext: '.min.css'
         }]
       }
@@ -56,7 +56,7 @@ module.exports = function(grunt) {
     uglify: {
       plugins: {
         files: {
-          'assets/js/plugins.min.js': ['node_modules/jquery/dist/jquery.min.js',
+          'assets/public/js/plugins.min.js': ['node_modules/jquery/dist/jquery.min.js',
             'node_modules/perfect-scrollbar/dist/js/min/perfect-scrollbar.jquery.min.js',
             'node_modules/showdown/dist/showdown.min.js',
             'node_modules/noty/js/noty/packaged/jquery.noty.packaged.min.js',
@@ -67,7 +67,7 @@ module.exports = function(grunt) {
       },
       main: {
         files: {
-          'assets/js/app.min.js': ['assets/src/js/**/*.js']
+          'assets/public/js/app.min.js': ['assets/src/js/**/*.js']
         }
       }
     }

@@ -12,7 +12,7 @@ import (
 
 	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/tools/commands"
-	"github.com/hacdias/caddy-hugo/tools/utils"
+	"github.com/hacdias/caddy-hugo/tools/server"
 )
 
 // POST handles the POST method on browse page. It's used to create new files,
@@ -37,13 +37,13 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	// Check if filename and archetype are specified in
 	// the request
 	if _, ok := info["filename"]; !ok {
-		return utils.RespondJSON(w, map[string]string{
+		return server.RespondJSON(w, map[string]string{
 			"message": "Filename not specified.",
 		}, 500, nil)
 	}
 
 	if _, ok := info["archetype"]; !ok {
-		return utils.RespondJSON(w, map[string]string{
+		return server.RespondJSON(w, map[string]string{
 			"message": "Archtype not specified.",
 		}, 500, nil)
 	}
@@ -67,7 +67,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 		}
 
 		if err := commands.Run(c.Hugo, args, c.Path); err != nil {
-			return utils.RespondJSON(w, map[string]string{
+			return server.RespondJSON(w, map[string]string{
 				"message": "Something went wrong.",
 			}, 500, err)
 		}
@@ -84,14 +84,14 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 		}
 
 		if err != nil {
-			return utils.RespondJSON(w, map[string]string{
+			return server.RespondJSON(w, map[string]string{
 				"message": "Something went wrong.",
 			}, 500, err)
 		}
 
 	}
 
-	return utils.RespondJSON(w, map[string]string{
+	return server.RespondJSON(w, map[string]string{
 		"location": url,
 		"message":  "File created.",
 	}, 200, nil)
@@ -101,7 +101,7 @@ func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, erro
 	// Parse the multipart form in the request
 	err := r.ParseMultipartForm(100000)
 	if err != nil {
-		return utils.RespondJSON(w, map[string]string{
+		return server.RespondJSON(w, map[string]string{
 			"message": "Something went wrong.",
 		}, 500, err)
 	}
@@ -113,7 +113,7 @@ func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, erro
 			// Open the first file
 			var infile multipart.File
 			if infile, err = hdr.Open(); nil != err {
-				return utils.RespondJSON(w, map[string]string{
+				return server.RespondJSON(w, map[string]string{
 					"message": "Something went wrong.",
 				}, 500, err)
 			}
@@ -121,14 +121,14 @@ func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, erro
 			// Create the file
 			var outfile *os.File
 			if outfile, err = os.Create(c.Path + r.URL.Path + hdr.Filename); nil != err {
-				return utils.RespondJSON(w, map[string]string{
+				return server.RespondJSON(w, map[string]string{
 					"message": "Something went wrong.",
 				}, 500, err)
 			}
 
 			// Copy the file content
 			if _, err = io.Copy(outfile, infile); nil != err {
-				return utils.RespondJSON(w, map[string]string{
+				return server.RespondJSON(w, map[string]string{
 					"message": "Something went wrong.",
 				}, 500, err)
 			}
@@ -137,5 +137,5 @@ func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, erro
 		}
 	}
 
-	return utils.RespondJSON(w, nil, 200, nil)
+	return server.RespondJSON(w, nil, 200, nil)
 }

@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/caddy-hugo/tools/hugo"
 	"github.com/mholt/caddy/caddy/setup"
 )
 
@@ -27,7 +26,7 @@ func ParseHugo(c *setup.Controller) (*Config, error) {
 		Git:    false,
 	}
 
-	conf.Hugo = hugo.GetPath()
+	conf.Hugo = GetPath()
 
 	for c.Next() {
 		args := c.RemainingArgs()

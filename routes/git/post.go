@@ -8,14 +8,14 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/config"
-	"github.com/hacdias/caddy-hugo/tools/utils"
+	"github.com/hacdias/caddy-hugo/tools/server"
 )
 
 // POST handles the POST method on GIT page which is only an API.
 func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	// Check if git is installed on the computer
 	if _, err := exec.LookPath("git"); err != nil {
-		return utils.RespondJSON(w, map[string]string{
+		return server.RespondJSON(w, map[string]string{
 			"message": "Git is not installed on your computer.",
 		}, 400, nil)
 	}
@@ -30,7 +30,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 
 	// Check if command was sent
 	if _, ok := info["command"]; !ok {
-		return utils.RespondJSON(w, map[string]string{
+		return server.RespondJSON(w, map[string]string{
 			"message": "Command not specified.",
 		}, 400, nil)
 	}
@@ -43,7 +43,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	}
 
 	if len(args) == 0 {
-		return utils.RespondJSON(w, map[string]string{
+		return server.RespondJSON(w, map[string]string{
 			"message": "Command not specified.",
 		}, 400, nil)
 	}
@@ -53,12 +53,12 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
-		return utils.RespondJSON(w, map[string]string{
+		return server.RespondJSON(w, map[string]string{
 			"message": err.Error(),
 		}, 500, err)
 	}
 
-	return utils.RespondJSON(w, map[string]string{
+	return server.RespondJSON(w, map[string]string{
 		"message": string(output),
 	}, 200, nil)
 }
