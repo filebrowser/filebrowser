@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"errors"
 	"io"
 	"log"
@@ -235,4 +236,29 @@ func SplitCapitalize(name string) string {
 	name = strings.ToUpper(string(name[0])) + name[1:]
 
 	return name
+}
+
+type jsonMSG struct {
+	Message string `json:"message"`
+}
+
+func RespondJSON(w http.ResponseWriter, message string, code int, err error) (int, error) {
+	msg := &jsonMSG{
+		Message: message,
+	}
+
+	m, err := json.Marshal(msg)
+
+	if err != nil {
+		return 500, err
+	}
+
+	if code == 500 && err == nil {
+		err = errors.New(message)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(m)
+	return 0, err
 }

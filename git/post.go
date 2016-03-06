@@ -12,9 +12,10 @@ import (
 
 // POST handles the POST method on GIT page which is only an API.
 func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+	// Check if git is installed on the computer
 	if _, err := exec.LookPath("git"); err != nil {
-		jsonMessage(w, "Git is not installed on your computer.", false)
-		return 200, nil
+		jsonMessage(w, "Git is not installed on your computer.", 500)
+		return 0, nil
 	}
 
 	// Get the JSON information sent using a buffer
@@ -25,9 +26,10 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	var info map[string]interface{}
 	json.Unmarshal(buff.Bytes(), &info)
 
+	// Check if command was sent
 	if _, ok := info["command"]; !ok {
-		jsonMessage(w, "Command not specified.", false)
-		return 200, nil
+		jsonMessage(w, "Command not specified.", 500)
+		return 0, nil
 	}
 
 	command := info["command"].(string)
@@ -38,8 +40,8 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	}
 
 	if len(args) == 0 {
-		jsonMessage(w, "Command not specified.", false)
-		return 200, nil
+		jsonMessage(w, "Command not specified.", 500)
+		return 0, nil
 	}
 
 	cmd := exec.Command("git", args...)
@@ -47,26 +49,25 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
-		jsonMessage(w, err.Error(), false)
-		return 200, nil
+		jsonMessage(w, err.Error(), 500)
+		return 0, nil
 	}
 
-	jsonMessage(w, string(output), true)
-	return http.StatusOK, nil
+	jsonMessage(w, string(output), 200)
+	return 0, nil
 }
 
 type jsonMSG struct {
 	Message string `json:"message"`
-	Success bool   `json:"success"`
 }
 
-func jsonMessage(w http.ResponseWriter, message string, success bool) {
+func jsonMessage(w http.ResponseWriter, message string, code int) {
 	msg := &jsonMSG{
 		Message: message,
-		Success: success,
 	}
 
 	m, _ := json.Marshal(msg)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
 	w.Write(m)
 }

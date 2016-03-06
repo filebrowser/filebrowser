@@ -29,22 +29,24 @@ $(document).on('page:browse', function() {
     request.send();
     request.onreadystatechange = function() {
       if (request.readyState == 4) {
-        if (request.status == 200) {
-          $(foreground).fadeOut(200);
-          remove.form.fadeOut(200);
-          remove.row.fadeOut(200);
-          notification({
-            text: remove.button.data("message"),
-            type: 'success',
-            timeout: 5000
-          });
-        } else {
-          notification({
-            text: 'Something went wrong.',
-            type: 'error'
-          });
-          console.log(request.responseText);
+        var response = JSON.parse(request.responseText),
+          type = "success",
+          timeout = 5000;
+
+        $(foreground).fadeOut(200);
+        remove.form.fadeOut(200);
+        remove.row.fadeOut(200);
+
+        if (request.status != 200) {
+          type = "error";
+          timeout = false;
         }
+
+        notification({
+          text: response.message,
+          type: type,
+          timeout: timeout
+        });
       }
     }
 
@@ -244,23 +246,25 @@ $(document).on('page:browse', function() {
     request.send(JSON.stringify(content));
     request.onreadystatechange = function() {
       if (request.readyState == 4) {
-        if (request.status == 200) {
-          $.pjax({
-            url: window.location.pathname,
-            container: '#content'
-          });
-          notification({
-            text: rename.button.data("message"),
-            type: 'success',
-            timeout: 5000
-          });
-        } else {
-          notification({
-            text: 'Something went wrong.',
-            type: 'error'
-          });
-          console.log(request.responseText);
+        var response = JSON.parse(request.responseText),
+          type = "success",
+          timeout = 5000;
+
+        if (request.status != 200) {
+          type = "error";
+          timeout = false;
         }
+
+        $.pjax({
+          url: window.location.pathname,
+          container: '#content'
+        });
+
+        notification({
+          text: response.message,
+          type: type,
+          timeout: timeout
+        });
       }
     }
 
@@ -313,22 +317,17 @@ $(document).on('page:browse', function() {
     request.onreadystatechange = function() {
       if (request.readyState == 4) {
         var data = JSON.parse(request.responseText);
-        var type = "success"
-        var timeout = 5000
 
         if (request.status == 200) {
-          if (data.success == "false") {
-            type = "error"
-            timeout = false
-          }
-
           notification({
             text: data.message,
-            type: type,
-            timeout: timeout
+            type: "success"
           });
         } else {
-          console.log(request.responseText)
+          notification({
+            text: data.message,
+            type: "error"
+          });
         }
       }
     }

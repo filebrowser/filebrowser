@@ -123,7 +123,7 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 
 		// Serve the static assets
 		if page == "assets" {
-			return serveAssets(w, r)
+			code, err = serveAssets(w, r)
 		}
 
 		// Browse page
@@ -150,6 +150,22 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 		if err != nil {
 			log.Panic(err)
 		}
+
+		/*
+
+			// Create the functions map, then the template, check for erros and
+			// execute the template if there aren't errors
+			functions := template.FuncMap{
+				"Defined": utils.Defined,
+			}
+
+			switch code {
+			case 404:
+				tpl, _ := utils.GetTemplate(r, functions, "404")
+				tpl.Execute(w, nil)
+				code = 200
+				err = nil
+			} */
 
 		return code, err
 	}

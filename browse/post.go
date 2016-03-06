@@ -3,8 +3,6 @@ package browse
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -38,11 +36,11 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	// Check if filename and archetype are specified in
 	// the request
 	if _, ok := info["filename"]; !ok {
-		return http.StatusBadRequest, errors.New("Filename not specified.")
+		return utils.RespondJSON(w, "Filename not specified.", 500, nil)
 	}
 
 	if _, ok := info["archetype"]; !ok {
-		return http.StatusBadRequest, errors.New("Archtype not specified.")
+		return utils.RespondJSON(w, "Archtype not specified.", 500, nil)
 	}
 
 	// Sanitize the file name path
@@ -64,7 +62,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 		}
 
 		if err := utils.RunCommand(c.Hugo, args, c.Path); err != nil {
-			return http.StatusInternalServerError, err
+			return utils.RespondJSON(w, "Something went wrong.", 500, err)
 		}
 	} else {
 		var err error
@@ -79,23 +77,22 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 		}
 
 		if err != nil {
-			return http.StatusInternalServerError, err
+			return utils.RespondJSON(w, "Something went wrong.", 500, err)
 		}
 
 	}
 
-	fmt.Println(url)
-
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
 	w.Write([]byte("{\"Location\": \"" + url + "\"}"))
-	return http.StatusOK, nil
+	return 0, nil
 }
 
 func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	// Parse the multipart form in the request
 	err := r.ParseMultipartForm(100000)
 	if err != nil {
-		return http.StatusInternalServerError, err
+		return utils.RespondJSON(w, "Something went wrong.", 500, err)
 	}
 
 	// For each file header in the multipart form
@@ -105,25 +102,24 @@ func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, erro
 			// Open the first file
 			var infile multipart.File
 			if infile, err = hdr.Open(); nil != err {
-				return http.StatusInternalServerError, err
+				return utils.RespondJSON(w, "Something went wrong.", 500, err)
 			}
 
 			// Create the file
 			var outfile *os.File
 			if outfile, err = os.Create(c.Path + r.URL.Path + hdr.Filename); nil != err {
-				return http.StatusInternalServerError, err
+				return utils.RespondJSON(w, "Something went wrong.", 500, err)
 			}
 
 			// Copy the file content
 			if _, err = io.Copy(outfile, infile); nil != err {
-				return http.StatusInternalServerError, err
+				return utils.RespondJSON(w, "Something went wrong.", 500, err)
 			}
 
 			defer outfile.Close()
 		}
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte("{}"))
-	return http.StatusOK, nil
+	return utils.RespondJSON(w, "", 200, nil)
+	return 0, nil
 }

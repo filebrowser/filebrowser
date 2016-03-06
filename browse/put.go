@@ -3,12 +3,12 @@ package browse
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"os"
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/config"
+	"github.com/hacdias/caddy-hugo/utils"
 )
 
 // PUT handles the HTTP PUT request for all /admin/browse related requests.
@@ -31,7 +31,7 @@ func PUT(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) 
 	// Check if filename and archetype are specified in
 	// the request
 	if _, ok := info["filename"]; !ok {
-		return 400, errors.New("Filename not specified.")
+		return utils.RespondJSON(w, "Filename not specified.", 400, nil)
 	}
 
 	// Sanitize the file name path
@@ -42,10 +42,8 @@ func PUT(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) 
 
 	// Renames the file/folder
 	if err := os.Rename(old, new); err != nil {
-		return 500, err
+		return utils.RespondJSON(w, "Something went wrong.", 500, err)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte("{}"))
-	return 200, nil
+	return utils.RespondJSON(w, "File renamed.", 200, nil)
 }
