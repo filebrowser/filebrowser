@@ -92,31 +92,30 @@ $(document).on('page:editor', function() {
     var data = JSON.stringify($(this).serializeJSON()),
       button = $(this).find("input[type=submit]:focus");
 
-    $.ajax({
-      type: 'POST',
-      url: window.location,
-      data: data,
-      headers: {
-        'X-Regenerate': button.data("regenerate"),
-        'X-Schedule': button.data("schedule"),
-        'X-Content-Type': button.data("type")
-      },
-      dataType: 'json',
-      encode: true,
-      contentType: "application/json; charset=utf-8",
-    }).done(function(data) {
-      notification({
-        text: button.data("message"),
-        type: 'success',
-        timeout: 5000
-      });
-    }).fail(function(data) {
-      notification({
-        text: 'Something went wrong.',
-        type: 'error'
-      });
-      console.log(data);
-    });
+    var request = new XMLHttpRequest();
+    request.open("POST", window.location);
+    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    request.setRequestHeader("X-Regenerate", button.data("regenerate"));
+    request.setRequestHeader("X-Schedule", button.data("schedule"));
+    request.setRequestHeader("X-Content-Type", button.data("type"));
+    request.send(data);
+    request.onreadystatechange = function() {
+      if (request.readyState == 4) {
+        if (request.status == 200) {
+          notification({
+            text: button.data("message"),
+            type: 'success',
+            timeout: 5000
+          });
+        } else {
+          notification({
+            text: 'Something went wrong.',
+            type: 'error'
+          });
+          console.log(request.responseText);
+        }
+      }
+    }
 
     return false;
   });
