@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/config"
-	"github.com/hacdias/caddy-hugo/utils"
+	"github.com/hacdias/caddy-hugo/tools/utils"
 )
 
 // DELETE handles the delete requests on browse pages

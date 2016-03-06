@@ -15,11 +15,12 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/assets"
-	"github.com/hacdias/caddy-hugo/browse"
 	"github.com/hacdias/caddy-hugo/config"
-	"github.com/hacdias/caddy-hugo/editor"
-	"github.com/hacdias/caddy-hugo/git"
-	"github.com/hacdias/caddy-hugo/utils"
+	"github.com/hacdias/caddy-hugo/routes/browse"
+	"github.com/hacdias/caddy-hugo/routes/editor"
+	"github.com/hacdias/caddy-hugo/routes/git"
+	"github.com/hacdias/caddy-hugo/tools/commands"
+	"github.com/hacdias/caddy-hugo/tools/hugo"
 	"github.com/mholt/caddy/caddy/setup"
 	"github.com/mholt/caddy/middleware"
 )
@@ -46,14 +47,14 @@ func Setup(c *setup.Controller) (middleware.Middleware, error) {
 	}
 
 	if create {
-		err := utils.RunCommand(config.Hugo, []string{"new", "site", config.Path, "--force"}, ".")
+		err := commands.Run(config.Hugo, []string{"new", "site", config.Path, "--force"}, ".")
 		if err != nil {
 			log.Panic(err)
 		}
 	}
 
 	// Generates the Hugo website for the first time the plugin is activated.
-	go utils.Run(config, true)
+	go hugo.Run(config, true)
 
 	return func(next middleware.Handler) middleware.Handler {
 		return &CaddyHugo{Next: next, Config: config}

@@ -1,20 +1,15 @@
-package utils
+package templates
 
 import (
-	"encoding/json"
 	"errors"
-	"io"
+	"html/template"
 	"log"
 	"net/http"
-	"os"
-	"os/exec"
 	"reflect"
 	"strings"
-	"text/template"
 	"unicode"
 
 	"github.com/hacdias/caddy-hugo/assets"
-	"github.com/hacdias/caddy-hugo/config"
 )
 
 // CanBeEdited checks if the extension of a file is supported by the editor
@@ -37,30 +32,6 @@ func CanBeEdited(filename string) bool {
 	}
 
 	return false
-}
-
-// CopyFile is used to copy a file
-func CopyFile(old, new string) error {
-	// Open the file and create a new one
-	r, err := os.Open(old)
-	if err != nil {
-		return err
-	}
-	defer r.Close()
-
-	w, err := os.Create(new)
-	if err != nil {
-		return err
-	}
-	defer w.Close()
-
-	// Copy the content
-	_, err = io.Copy(w, r)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // Defined checks if variable is defined in a struct
@@ -93,9 +64,9 @@ func Dict(values ...interface{}) (map[string]interface{}, error) {
 	return dict, nil
 }
 
-// GetTemplate is used to get a ready to use template based on the url and on
+// Get is used to get a ready to use template based on the url and on
 // other sent templates
-func GetTemplate(r *http.Request, functions template.FuncMap, templates ...string) (*template.Template, error) {
+func Get(r *http.Request, functions template.FuncMap, templates ...string) (*template.Template, error) {
 	// If this is a pjax request, use the minimal template to send only
 	// the main content
 	if r.Header.Get("X-PJAX") == "true" {
@@ -134,74 +105,6 @@ func GetTemplate(r *http.Request, functions template.FuncMap, templates ...strin
 	return tpl, nil
 }
 
-// IsMap checks if some variable is a map
-func IsMap(sth interface{}) bool {
-	return reflect.ValueOf(sth).Kind() == reflect.Map
-}
-
-// IsSlice checks if some variable is a slice
-func IsSlice(sth interface{}) bool {
-	return reflect.ValueOf(sth).Kind() == reflect.Slice
-}
-
-// ParseComponents parses the components of an URL creating an array
-func ParseComponents(r *http.Request) []string {
-	//The URL that the user queried.
-	path := r.URL.Path
-	path = strings.TrimSpace(path)
-	//Cut off the leading and trailing forward slashes, if they exist.
-	//This cuts off the leading forward slash.
-	if strings.HasPrefix(path, "/") {
-		path = path[1:]
-	}
-	//This cuts off the trailing forward slash.
-	if strings.HasSuffix(path, "/") {
-		cutOffLastCharLen := len(path) - 1
-		path = path[:cutOffLastCharLen]
-	}
-	//We need to isolate the individual components of the path.
-	components := strings.Split(path, "/")
-	return components
-}
-
-// Run is used to run the static website generator
-func Run(c *config.Config, force bool) {
-	os.RemoveAll(c.Path + "public")
-
-	// Prevent running if watching is enabled
-	if b, pos := stringInSlice("--watch", c.Args); b && !force {
-		if len(c.Args) > pos && c.Args[pos+1] != "false" {
-			return
-		}
-
-		if len(c.Args) == pos+1 {
-			return
-		}
-	}
-
-	if err := RunCommand(c.Hugo, c.Args, c.Path); err != nil {
-		log.Panic(err)
-	}
-}
-
-// RunCommand executes an external command
-func RunCommand(command string, args []string, path string) error {
-	cmd := exec.Command(command, args...)
-	cmd.Dir = path
-	cmd.Stdout = os.Stderr
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
-}
-
-func stringInSlice(a string, list []string) (bool, int) {
-	for i, b := range list {
-		if b == a {
-			return true, i
-		}
-	}
-	return false, 0
-}
-
 var splitCapitalizeExceptions = map[string]string{
 	"youtube":    "YouTube",
 	"github":     "GitHub",
@@ -236,21 +139,4 @@ func SplitCapitalize(name string) string {
 	name = strings.ToUpper(string(name[0])) + name[1:]
 
 	return name
-}
-
-func RespondJSON(w http.ResponseWriter, message map[string]string, code int, err error) (int, error) {
-	msg, msgErr := json.Marshal(message)
-
-	if msgErr != nil {
-		return 500, msgErr
-	}
-
-	if code == 500 && err != nil {
-		err = errors.New(message["message"])
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	w.Write(msg)
-	return 0, err
 }

@@ -5,7 +5,7 @@ import (
 	"text/template"
 
 	"github.com/hacdias/caddy-hugo/config"
-	"github.com/hacdias/caddy-hugo/utils"
+	"github.com/hacdias/caddy-hugo/tools/templates"
 	"github.com/mholt/caddy/middleware"
 	"github.com/mholt/caddy/middleware/browse"
 )
@@ -14,11 +14,11 @@ import (
 // the Browse Caddy middleware.
 func GET(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	functions := template.FuncMap{
-		"CanBeEdited": utils.CanBeEdited,
-		"Defined":     utils.Defined,
+		"CanBeEdited": templates.CanBeEdited,
+		"Defined":     templates.Defined,
 	}
 
-	tpl, err := utils.GetTemplate(r, functions, "browse")
+	tpl, err := templates.Get(r, functions, "browse")
 
 	if err != nil {
 		return http.StatusInternalServerError, err

@@ -11,7 +11,8 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/config"
-	"github.com/hacdias/caddy-hugo/utils"
+	"github.com/hacdias/caddy-hugo/tools/commands"
+	"github.com/hacdias/caddy-hugo/tools/utils"
 )
 
 // POST handles the POST method on browse page. It's used to create new files,
@@ -65,7 +66,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 			args = append(args, "--kind", archetype)
 		}
 
-		if err := utils.RunCommand(c.Hugo, args, c.Path); err != nil {
+		if err := commands.Run(c.Hugo, args, c.Path); err != nil {
 			return utils.RespondJSON(w, map[string]string{
 				"message": "Something went wrong.",
 			}, 500, err)

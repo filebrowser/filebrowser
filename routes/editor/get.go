@@ -11,8 +11,8 @@ import (
 	"text/template"
 
 	"github.com/hacdias/caddy-hugo/config"
-	"github.com/hacdias/caddy-hugo/frontmatter"
-	"github.com/hacdias/caddy-hugo/utils"
+	"github.com/hacdias/caddy-hugo/tools/frontmatter"
+	"github.com/hacdias/caddy-hugo/tools/templates"
 	"github.com/spf13/hugo/parser"
 )
 
@@ -30,7 +30,7 @@ type editor struct {
 func GET(w http.ResponseWriter, r *http.Request, c *config.Config, filename string) (int, error) {
 	// Check if the file format is supported. If not, send a "Not Acceptable"
 	// header and an error
-	if !utils.CanBeEdited(filename) {
+	if !templates.CanBeEdited(filename) {
 		return http.StatusNotAcceptable, errors.New("File format not supported.")
 	}
 
@@ -110,11 +110,11 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config, filename stri
 	// Create the functions map, then the template, check for erros and
 	// execute the template if there aren't errors
 	functions := template.FuncMap{
-		"SplitCapitalize": utils.SplitCapitalize,
-		"Defined":         utils.Defined,
+		"SplitCapitalize": templates.SplitCapitalize,
+		"Defined":         templates.Defined,
 	}
 
-	tpl, err := utils.GetTemplate(r, functions, "editor", "frontmatter")
+	tpl, err := templates.Get(r, functions, "editor", "frontmatter")
 
 	if err != nil {
 		return http.StatusInternalServerError, err

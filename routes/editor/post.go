@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/hacdias/caddy-hugo/config"
-	"github.com/hacdias/caddy-hugo/utils"
+	"github.com/hacdias/caddy-hugo/tools/commands"
 	"github.com/robfig/cron"
 	"github.com/spf13/cast"
 	"github.com/spf13/hugo/parser"
@@ -144,7 +144,7 @@ func parseCompleteFile(r *http.Request, c *config.Config, rawFile map[string]int
 				return
 			}
 
-			go utils.Run(c, false)
+			go commands.Run(c, false)
 		})
 		scheduler.Start()
 	}

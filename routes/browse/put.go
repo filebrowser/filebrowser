@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/config"
-	"github.com/hacdias/caddy-hugo/utils"
+	"github.com/hacdias/caddy-hugo/tools/utils"
 )
 
 // PUT handles the HTTP PUT request for all /admin/browse related requests.

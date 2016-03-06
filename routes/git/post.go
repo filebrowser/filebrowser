@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/config"
-	"github.com/hacdias/caddy-hugo/utils"
+	"github.com/hacdias/caddy-hugo/tools/utils"
 )
 
 // POST handles the POST method on GIT page which is only an API.

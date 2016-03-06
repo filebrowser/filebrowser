@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/hacdias/caddy-hugo/utils"
+	"github.com/hacdias/caddy-hugo/tools/types"
 	"github.com/spf13/cast"
 	"github.com/spf13/hugo/parser"
 )
@@ -60,9 +60,9 @@ func rawToPretty(config interface{}, parent *frontmatter) interface{} {
 	}
 
 	for name, element := range cnf {
-		if utils.IsMap(element) {
+		if types.IsMap(element) {
 			objects = append(objects, handleObjects(element, parent, name))
-		} else if utils.IsSlice(element) {
+		} else if types.IsSlice(element) {
 			arrays = append(arrays, handleArrays(element, parent, name))
 		} else {
 			if name == "title" && parent.Name == mainName {

@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/hacdias/caddy-hugo/config"
 	"github.com/mitchellh/go-homedir"
 	"github.com/pivotal-golang/archiver/extractor"
 )
@@ -43,6 +44,35 @@ var (
 		"hugo_0.15_windows_amd64.zip":           "9f03602e48ae2199e06431d7436fb3b9464538c0d44aac9a76eb98e1d4d5d727",
 	}
 )
+
+// Run is used to run the static website generator
+func Run(c *config.Config, force bool) {
+	os.RemoveAll(c.Path + "public")
+
+	// Prevent running if watching is enabled
+	if b, pos := stringInSlice("--watch", c.Args); b && !force {
+		if len(c.Args) > pos && c.Args[pos+1] != "false" {
+			return
+		}
+
+		if len(c.Args) == pos+1 {
+			return
+		}
+	}
+
+	if err := RunCommand(c.Hugo, c.Args, c.Path); err != nil {
+		log.Panic(err)
+	}
+}
+
+func stringInSlice(a string, list []string) (bool, int) {
+	for i, b := range list {
+		if b == a {
+			return true, i
+		}
+	}
+	return false, 0
+}
 
 // GetPath retrives the Hugo path for the user or install it if it's not found
 func GetPath() string {
@@ -126,9 +156,9 @@ func GetPath() string {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
-	
+
 	err = os.Chmod(hugo, 0755)
-	
+
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(-1)

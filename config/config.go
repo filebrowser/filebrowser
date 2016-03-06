@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/caddy-hugo/hugo"
+	"github.com/hacdias/caddy-hugo/tools/hugo"
 	"github.com/mholt/caddy/caddy/setup"
 )
 
