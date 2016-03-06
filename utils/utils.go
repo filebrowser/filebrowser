@@ -238,27 +238,19 @@ func SplitCapitalize(name string) string {
 	return name
 }
 
-type jsonMSG struct {
-	Message string `json:"message"`
-}
+func RespondJSON(w http.ResponseWriter, message map[string]string, code int, err error) (int, error) {
+	msg, msgErr := json.Marshal(message)
 
-func RespondJSON(w http.ResponseWriter, message string, code int, err error) (int, error) {
-	msg := &jsonMSG{
-		Message: message,
+	if msgErr != nil {
+		return 500, msgErr
 	}
 
-	m, err := json.Marshal(msg)
-
-	if err != nil {
-		return 500, err
-	}
-
-	if code == 500 && err == nil {
-		err = errors.New(message)
+	if code == 500 && err != nil {
+		err = errors.New(message["message"])
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	w.Write(m)
+	w.Write(msg)
 	return 0, err
 }

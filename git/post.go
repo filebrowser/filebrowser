@@ -8,14 +8,16 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/config"
+	"github.com/hacdias/caddy-hugo/utils"
 )
 
 // POST handles the POST method on GIT page which is only an API.
 func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	// Check if git is installed on the computer
 	if _, err := exec.LookPath("git"); err != nil {
-		jsonMessage(w, "Git is not installed on your computer.", 500)
-		return 0, nil
+		return utils.RespondJSON(w, map[string]string{
+			"message": "Git is not installed on your computer.",
+		}, 400, nil)
 	}
 
 	// Get the JSON information sent using a buffer
@@ -28,8 +30,9 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 
 	// Check if command was sent
 	if _, ok := info["command"]; !ok {
-		jsonMessage(w, "Command not specified.", 500)
-		return 0, nil
+		return utils.RespondJSON(w, map[string]string{
+			"message": "Command not specified.",
+		}, 400, nil)
 	}
 
 	command := info["command"].(string)
@@ -40,8 +43,9 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	}
 
 	if len(args) == 0 {
-		jsonMessage(w, "Command not specified.", 500)
-		return 0, nil
+		return utils.RespondJSON(w, map[string]string{
+			"message": "Command not specified.",
+		}, 400, nil)
 	}
 
 	cmd := exec.Command("git", args...)
@@ -49,25 +53,12 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
-		jsonMessage(w, err.Error(), 500)
-		return 0, nil
+		return utils.RespondJSON(w, map[string]string{
+			"message": err.Error(),
+		}, 500, err)
 	}
 
-	jsonMessage(w, string(output), 200)
-	return 0, nil
-}
-
-type jsonMSG struct {
-	Message string `json:"message"`
-}
-
-func jsonMessage(w http.ResponseWriter, message string, code int) {
-	msg := &jsonMSG{
-		Message: message,
-	}
-
-	m, _ := json.Marshal(msg)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	w.Write(m)
+	return utils.RespondJSON(w, map[string]string{
+		"message": string(output),
+	}, 200, nil)
 }

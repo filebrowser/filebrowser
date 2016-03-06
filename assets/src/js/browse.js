@@ -169,24 +169,26 @@ $(document).on('page:browse', function() {
     request.send(JSON.stringify(content));
     request.onreadystatechange = function() {
       if (request.readyState == 4) {
-        if (request.status == 200) {
-          var data = JSON.parse(request.responseText);
+        var response = JSON.parse(request.responseText);
+        var type = "success";
+        var timeout = 5000;
 
-          notification({
-            text: "File created successfully.",
-            type: 'success',
-            timeout: 5000
-          });
+        if (request.status != 200) {
+          type = "error";
+          timeout = false;
+        }
+
+        notification({
+          text: response.message,
+          type: type,
+          timeout: timeout
+        });
+
+        if (request.status == 200) {
           $.pjax({
             url: data.Location,
             container: '#content'
           })
-        } else {
-          notification({
-            text: 'Something went wrong.',
-            type: 'error'
-          });
-          console.log(request.responseText);
         }
       }
     }

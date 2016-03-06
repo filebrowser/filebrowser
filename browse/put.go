@@ -31,7 +31,9 @@ func PUT(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) 
 	// Check if filename and archetype are specified in
 	// the request
 	if _, ok := info["filename"]; !ok {
-		return utils.RespondJSON(w, "Filename not specified.", 400, nil)
+		return utils.RespondJSON(w, map[string]string{
+			"message": "Filename not specified.",
+		}, 400, nil)
 	}
 
 	// Sanitize the file name path
@@ -42,8 +44,12 @@ func PUT(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) 
 
 	// Renames the file/folder
 	if err := os.Rename(old, new); err != nil {
-		return utils.RespondJSON(w, "Something went wrong.", 500, err)
+		return utils.RespondJSON(w, map[string]string{
+			"message": "Something went wrong.",
+		}, 500, err)
 	}
 
-	return utils.RespondJSON(w, "File renamed.", 200, nil)
+	return utils.RespondJSON(w, map[string]string{
+		"message": "File renamed.",
+	}, 200, nil)
 }

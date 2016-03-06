@@ -32,11 +32,17 @@ func DELETE(w http.ResponseWriter, r *http.Request, c *config.Config) (int, erro
 
 		// Check for errors
 		if err != nil {
-			return utils.RespondJSON(w, "Something went wrong.", 500, nil)
+			return utils.RespondJSON(w, map[string]string{
+				"message": "Something went wrong.",
+			}, 500, nil)
 		}
 	} else {
-		return utils.RespondJSON(w, "File not found.", 404, nil)
+		return utils.RespondJSON(w, map[string]string{
+			"message": "File not found.",
+		}, 404, nil)
 	}
 
-	return utils.RespondJSON(w, message, 200, nil)
+	return utils.RespondJSON(w, map[string]string{
+		"message": message,
+	}, 200, nil)
 }
