@@ -13,6 +13,6 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, e
 	case "POST":
 		return POST(w, r, c)
 	default:
-		return 400, errors.New("Invalid method.")
+		return http.StatusMethodNotAllowed, errors.New("Invalid method.")
 	}
 }

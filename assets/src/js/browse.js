@@ -312,14 +312,23 @@ $(document).on('page:browse', function() {
     }));
     request.onreadystatechange = function() {
       if (request.readyState == 4) {
+        var data = JSON.parse(request.responseText);
+        var type = "success"
+        var timeout = 5000
+
         if (request.status == 200) {
-    
-        } else {
+          if (data.success == "false") {
+            type = "error"
+            timeout = false
+          }
+
           notification({
-            text: 'Something went wrong.',
-            type: 'error'
+            text: data.message,
+            type: type,
+            timeout: timeout
           });
-          console.log(request.responseText);
+        } else {
+          console.log(request.responseText)
         }
       }
     }

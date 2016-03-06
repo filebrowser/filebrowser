@@ -19,6 +19,6 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, e
 	case "GET":
 		return GET(w, r, c, filename)
 	default:
-		return 400, errors.New("Invalid method.")
+		return http.StatusMethodNotAllowed, errors.New("Invalid method.")
 	}
 }

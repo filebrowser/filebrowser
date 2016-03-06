@@ -25,6 +25,6 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, e
 	case "PUT":
 		return PUT(w, r, c)
 	default:
-		return 400, errors.New("Invalid method.")
+		return http.StatusMethodNotAllowed, errors.New("Invalid method.")
 	}
 }

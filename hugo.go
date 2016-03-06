@@ -137,7 +137,7 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 		}
 
 		// Git API
-		if page == "edit" {
+		if page == "git" {
 			code, err = git.ServeHTTP(w, r, h.Config)
 		}
 
