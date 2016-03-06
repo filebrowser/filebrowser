@@ -1,6 +1,8 @@
 package config
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/hugo"
@@ -14,6 +16,7 @@ type Config struct {
 	Styles string   // Admin styles path
 	Args   []string // Hugo arguments
 	Hugo   string   // Hugo executable path
+	Git    bool     // Is this site a git repository
 }
 
 // ParseHugo parses the configuration file
@@ -21,6 +24,7 @@ func ParseHugo(c *setup.Controller) (*Config, error) {
 	conf := &Config{
 		Public: strings.Replace(c.Root, "./", "", -1),
 		Path:   "./",
+		Git:    false,
 	}
 
 	conf.Hugo = hugo.GetPath()
@@ -57,6 +61,10 @@ func ParseHugo(c *setup.Controller) (*Config, error) {
 				conf.Args = append(conf.Args, key+"="+value)
 			}
 		}
+	}
+
+	if _, err := os.Stat(filepath.Join(conf.Path, ".git")); err == nil {
+		conf.Git = true
 	}
 
 	return conf, nil

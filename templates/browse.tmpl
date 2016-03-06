@@ -7,9 +7,9 @@
       <span id="site-title">Path: {{ $path }}</span>
       <div class="go-right">
         <input type="file" value="Upload" multiple>
-        <!-- <button class="darker"><i class="fa fa-refresh"></i></button> -->
         <button id="upload">Upload <i class="fa fa-cloud-upload"></i></button>
         <button class="default new">New <i class="fa fa-plus"></i></button>
+        {{ if .User.Git }}<button class="darker git"><i class="fa fa-git"></i></button>{{ end }}
       </div>
     </div>
   </div>
@@ -80,6 +80,15 @@
   <input type="text" placeholder="New name...">
   <p class="right">
     <input type="submit" value="Rename">
+  </p>
+</form>
+
+<form class="popup hidden" id="git">
+  <h3>Git</h3>
+  <p>Write down the <code>git</code> command you want to execute. You don't need to write <code>git</code>.</p>
+  <input type="text" placeholder="git push origin master">
+  <p class="right">
+    <input type="submit" value="Execute">
   </p>
 </form>
 {{ end }}

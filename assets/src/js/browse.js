@@ -24,25 +24,29 @@ $(document).on('page:browse', function() {
   $('#content').on('submit', remove.selector, function(event) {
     event.preventDefault();
 
-    $.ajax({
-      type: 'DELETE',
-      url: remove.button.data("file")
-    }).done(function(data) {
-      $(foreground).fadeOut(200);
-      remove.form.fadeOut(200);
-      remove.row.fadeOut(200);
-      notification({
-        text: remove.button.data("message"),
-        type: 'success',
-        timeout: 5000
-      });
-    }).fail(function(data) {
-      notification({
-        text: 'Something went wrong.',
-        type: 'error'
-      });
-      console.log(data);
-    });
+    var request = new XMLHttpRequest();
+    request.open("DELETE", remove.button.data("file"));
+    request.send();
+    request.onreadystatechange = function() {
+      if (request.readyState == 4) {
+        if (request.status == 200) {
+          $(foreground).fadeOut(200);
+          remove.form.fadeOut(200);
+          remove.row.fadeOut(200);
+          notification({
+            text: remove.button.data("message"),
+            type: 'success',
+            timeout: 5000
+          });
+        } else {
+          notification({
+            text: 'Something went wrong.',
+            type: 'error'
+          });
+          console.log(request.responseText);
+        }
+      }
+    }
 
     return false;
   });
@@ -152,32 +156,38 @@ $(document).on('page:browse', function() {
       return false;
     }
 
-    var content = '{"filename": "' + filename + '", "archetype": "' + archetype + '"}';
+    var content = {
+      filename: filename,
+      archetype: archetype
+    }
 
-    $.ajax({
-      type: 'POST',
-      url: window.location.pathname,
-      data: content,
-      dataType: 'json',
-      encode: true,
-    }).done(function(data) {
-      notification({
-        text: "File created successfully.",
-        type: 'success',
-        timeout: 5000
-      });
+    var request = new XMLHttpRequest();
+    request.open("POST", window.location.pathname);
+    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    request.send(JSON.stringify(content));
+    request.onreadystatechange = function() {
+      if (request.readyState == 4) {
+        if (request.status == 200) {
+          var data = JSON.parse(request.responseText);
 
-      $.pjax({
-        url: data.Location,
-        container: '#content'
-      })
-    }).fail(function(data) {
-      notification({
-        text: 'Something went wrong.',
-        type: 'error'
-      });
-      console.log(data);
-    });
+          notification({
+            text: "File created successfully.",
+            type: 'success',
+            timeout: 5000
+          });
+          $.pjax({
+            url: data.Location,
+            container: '#content'
+          })
+        } else {
+          notification({
+            text: 'Something went wrong.',
+            type: 'error'
+          });
+          console.log(request.responseText);
+        }
+      }
+    }
 
     return false;
   });
@@ -253,6 +263,78 @@ $(document).on('page:browse', function() {
     return false;
   });
 
+  /* GIT ACTIONS */
+
+  var git = new Object();
+  git.selector = 'form#git';
+  git.form = $(git.selector);
+  git.input = git.selector + ' input[type="text"]';
+
+  $('#content').on('click', 'button.git', function(event) {
+    event.preventDefault();
+    $(foreground).fadeIn(200);
+    git.form.fadeIn(200);
+    return false;
+  });
+
+  $('#content').on('keypress', git.input, function(event) {
+    if (event.keyCode == 13) {
+      event.preventDefault();
+      $(git.form).submit();
+      return false;
+    }
+  });
+
+  $('#content').on('submit', git.selector, function(event) {
+    event.preventDefault();
+
+    var value = git.form.find('input[type="text"]').val();
+
+    if (value == "") {
+      notification({
+        text: "You have to write something. If you want to close the box, click outside of the box.",
+        type: 'warning',
+        timeout: 5000
+      });
+
+      return false;
+    }
+
+    var request = new XMLHttpRequest();
+    request.open("POST", "/admin/git");
+    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    request.send(JSON.stringify({
+      command: value
+    }));
+
+    /*$.ajax({
+      type: 'POST',
+      url: window.location.pathname,
+      data: content,
+      dataType: 'json',
+      encode: true,
+    }).done(function(data) {
+      notification({
+        text: "File created successfully.",
+        type: 'success',
+        timeout: 5000
+      });
+
+      $.pjax({
+        url: data.Location,
+        container: '#content'
+      })
+    }).fail(function(data) {
+      notification({
+        text: 'Something went wrong.',
+        type: 'error'
+      });
+      console.log(data);
+    }); */
+
+    return false;
+  });
+
   /* $(foreground) AND STUFF */
 
   $('#content').on('click', '.close', function(event) {
@@ -268,6 +350,7 @@ $(document).on('page:browse', function() {
     create.form.fadeOut(200);
     rename.form.fadeOut(200);
     remove.form.fadeOut(200);
+    git.form.fadeOut(200);
     return false;
   });
 });
