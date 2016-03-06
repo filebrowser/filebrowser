@@ -234,31 +234,35 @@ $(document).on('page:browse', function() {
       filename = window.location.pathname.replace("/admin/browse/", "") + '/' + filename;
     }
 
-    var content = '{"filename": "' + filename + '"}';
+    var content = {
+      filename: filename
+    };
 
-    $.ajax({
-      type: 'PUT',
-      url: rename.url,
-      data: content,
-      dataType: 'json',
-      encode: true
-    }).done(function(data) {
-      $.pjax({
-        url: window.location.pathname,
-        container: '#content'
-      });
-      notification({
-        text: rename.button.data("message"),
-        type: 'success',
-        timeout: 5000
-      });
-    }).fail(function(data) {
-      notification({
-        text: 'Something went wrong.',
-        type: 'error'
-      });
-      console.log(data);
-    });
+    var request = new XMLHttpRequest();
+    request.open("PUT", rename.url);
+    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    request.send(JSON.stringify(content));
+    request.onreadystatechange = function() {
+      if (request.readyState == 4) {
+        if (request.status == 200) {
+          $.pjax({
+            url: window.location.pathname,
+            container: '#content'
+          });
+          notification({
+            text: rename.button.data("message"),
+            type: 'success',
+            timeout: 5000
+          });
+        } else {
+          notification({
+            text: 'Something went wrong.',
+            type: 'error'
+          });
+          console.log(request.responseText);
+        }
+      }
+    }
 
     return false;
   });
@@ -306,31 +310,19 @@ $(document).on('page:browse', function() {
     request.send(JSON.stringify({
       command: value
     }));
-
-    /*$.ajax({
-      type: 'POST',
-      url: window.location.pathname,
-      data: content,
-      dataType: 'json',
-      encode: true,
-    }).done(function(data) {
-      notification({
-        text: "File created successfully.",
-        type: 'success',
-        timeout: 5000
-      });
-
-      $.pjax({
-        url: data.Location,
-        container: '#content'
-      })
-    }).fail(function(data) {
-      notification({
-        text: 'Something went wrong.',
-        type: 'error'
-      });
-      console.log(data);
-    }); */
+    request.onreadystatechange = function() {
+      if (request.readyState == 4) {
+        if (request.status == 200) {
+    
+        } else {
+          notification({
+            text: 'Something went wrong.',
+            type: 'error'
+          });
+          console.log(request.responseText);
+        }
+      }
+    }
 
     return false;
   });
