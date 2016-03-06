@@ -18,6 +18,7 @@ import (
 	"github.com/hacdias/caddy-hugo/browse"
 	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/editor"
+	"github.com/hacdias/caddy-hugo/git"
 	"github.com/hacdias/caddy-hugo/utils"
 	"github.com/mholt/caddy/caddy/setup"
 	"github.com/mholt/caddy/middleware"
@@ -133,6 +134,11 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 		// Edit page
 		if page == "edit" {
 			code, err = editor.ServeHTTP(w, r, h.Config)
+		}
+
+		// Git API
+		if page == "edit" {
+			code, err = git.ServeHTTP(w, r, h.Config)
 		}
 
 		// Whenever the header "X-Regenerate" is true, the website should be
