@@ -126,6 +126,13 @@ func GetPath() string {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
+	
+	err = os.Chmod(hugo, 0755)
+	
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
 
 	fmt.Println("done.")
 	fmt.Println("Hugo installed at " + hugo)
