@@ -177,7 +177,7 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 
 // serveAssets handles the /admin/assets requests
 func serveAssets(w http.ResponseWriter, r *http.Request) (int, error) {
-	filename := strings.Replace(r.URL.Path, "/admin/", "", 1)
+	filename := strings.Replace(r.URL.Path, "/admin/assets", "public", 1)
 	file, err := assets.Asset(filename)
 
 	if err != nil {
