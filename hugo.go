@@ -1,6 +1,6 @@
 //go:generate go get github.com/jteeuwen/go-bindata
 //go:generate go install github.com/jteeuwen/go-bindata/go-bindata
-//go:generate go-bindata -prefix assets/ -pkg assets -o routes/assets/assets.go assets/templates/ assets/public/...
+//go:generate go-bindata -debug -prefix assets/ -pkg assets -o routes/assets/assets.go assets/templates/ assets/public/...
 
 // Package hugo makes the bridge between the static website generator Hugo
 // and the webserver Caddy, also providing an administrative user interface.
@@ -143,15 +143,9 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 			code, err = git.ServeHTTP(w, r, h.Config)
 		}
 
-		// Whenever the header "X-Regenerate" is true, the website should be
-		// regenerated. Used in edit and settings, for example.
-		if r.Header.Get("X-Regenerate") == "true" {
-			go hugo.Run(h.Config, false)
-		}
-
-		if err != nil {
+	/*	if err != nil {
 			log.Panic(err)
-		}
+		} */
 
 		/*
 

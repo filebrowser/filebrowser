@@ -12,10 +12,13 @@ import (
 
 	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/tools/hugo"
+	"github.com/hacdias/caddy-hugo/tools/server"
 	"github.com/robfig/cron"
 	"github.com/spf13/cast"
 	"github.com/spf13/hugo/parser"
 )
+
+var schedule, contentType, regenerate string
 
 // POST handles the POST method on editor page
 func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename string) (int, error) {
@@ -23,18 +26,50 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename str
 	rawBuffer := new(bytes.Buffer)
 	rawBuffer.ReadFrom(r.Body)
 
-	// Creates the raw file "map" using the JSON
-	var rawFile map[string]interface{}
-	json.Unmarshal(rawBuffer.Bytes(), &rawFile)
+	// Creates the data map using the JSON
+	var data map[string]interface{}
+	json.Unmarshal(rawBuffer.Bytes(), &data)
+
+	// Checks if all the all data is defined
+	if _, ok := data["type"]; !ok {
+		return server.RespondJSON(w, map[string]string{
+			"message": "Content type not set.",
+		}, http.StatusBadRequest, nil)
+	}
+
+	if _, ok := data["content"]; !ok {
+		return server.RespondJSON(w, map[string]string{
+			"message": "Content not sent.",
+		}, http.StatusBadRequest, nil)
+	}
+
+	if _, ok := data["schedule"]; !ok {
+		return server.RespondJSON(w, map[string]string{
+			"message": "Schedule information not sent.",
+		}, http.StatusBadRequest, nil)
+	}
+
+	if _, ok := data["regenerate"]; !ok {
+		return server.RespondJSON(w, map[string]string{
+			"message": "Regenerate information not sent.",
+		}, http.StatusBadRequest, nil)
+	}
+
+	rawFile := data["content"].(map[string]interface{})
+	contentType = data["type"].(string)
+	schedule = data["schedule"].(string)
+	regenerate = data["regenerate"].(string)
 
 	// Initializes the file content to write
 	var file []byte
 
-	switch r.Header.Get("X-Content-Type") {
+	switch contentType {
 	case "frontmatter-only":
 		f, code, err := parseFrontMatterOnlyFile(rawFile, filename)
 		if err != nil {
-			return code, err
+			return server.RespondJSON(w, map[string]string{
+				"message": err.Error(),
+			}, code, err)
 		}
 
 		file = f
@@ -47,24 +82,32 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename str
 	case "complete":
 		f, code, err := parseCompleteFile(r, c, rawFile, filename)
 		if err != nil {
-			return code, err
+			return server.RespondJSON(w, map[string]string{
+				"message": err.Error(),
+			}, code, err)
 		}
 
 		file = f
 	default:
-		return http.StatusBadRequest, errors.New("X-Content-Type header not defined")
+		return server.RespondJSON(w, map[string]string{
+			"message": "Invalid content type.",
+		}, http.StatusBadRequest, nil)
 	}
 
 	// Write the file
 	err := ioutil.WriteFile(filename, file, 0666)
 
 	if err != nil {
-		return http.StatusInternalServerError, err
+		return server.RespondJSON(w, map[string]string{
+			"message": err.Error(),
+		}, http.StatusInternalServerError, err)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte("{}"))
-	return http.StatusOK, nil
+	if regenerate == "true" {
+		go hugo.Run(c, false)
+	}
+
+	return server.RespondJSON(w, map[string]string{}, http.StatusOK, nil)
 }
 
 func parseFrontMatterOnlyFile(rawFile map[string]interface{}, filename string) ([]byte, int, error) {
@@ -114,7 +157,7 @@ func parseCompleteFile(r *http.Request, c *config.Config, rawFile map[string]int
 	delete(rawFile, "content")
 
 	// Schedule the post
-	if r.Header.Get("X-Schedule") == "true" {
+	if schedule == "true" {
 		t := cast.ToTime(rawFile["date"].(string))
 
 		scheduler := cron.New()

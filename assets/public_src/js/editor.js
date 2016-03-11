@@ -89,31 +89,38 @@ $(document).on('page:editor', function() {
       editor.fadeIn();
     }
 
-    var data = JSON.stringify($(this).serializeJSON()),
-      button = $(this).find("input[type=submit]:focus");
+    var button = $(this).find("input[type=submit]:focus");
+    var data = {
+      content: $(this).serializeJSON(),
+      type: button.data("type"),
+      schedule: button.data("schedule"),
+      regenerate: button.data("regenerate")
+    }
 
     var request = new XMLHttpRequest();
     request.open("POST", window.location);
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    request.setRequestHeader("X-Regenerate", button.data("regenerate"));
-    request.setRequestHeader("X-Schedule", button.data("schedule"));
-    request.setRequestHeader("X-Content-Type", button.data("type"));
-    request.send(data);
+    request.send(JSON.stringify(data));
     request.onreadystatechange = function() {
       if (request.readyState == 4) {
+        var response = JSON.parse(request.responseText),
+          type = "success",
+          timeout = 5000;
+
         if (request.status == 200) {
-          notification({
-            text: button.data("message"),
-            type: 'success',
-            timeout: 5000
-          });
-        } else {
-          notification({
-            text: 'Something went wrong.',
-            type: 'error'
-          });
-          console.log(request.responseText);
+          response.message = button.data("message");
         }
+
+        if (request.status != 200) {
+          type = "error";
+          timeout = false;
+        }
+
+        notification({
+          text: response.message,
+          type: type,
+          timeout: timeout
+        });
       }
     }
 
