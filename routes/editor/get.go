@@ -37,9 +37,9 @@ func GET(w http.ResponseWriter, r *http.Request) (int, error) {
 
 	// Check if the file exists.
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		return http.StatusNotFound, nil
+		return http.StatusNotFound, err
 	} else if os.IsPermission(err) {
-		return http.StatusForbidden, nil
+		return http.StatusForbidden, err
 	} else if err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -47,7 +47,7 @@ func GET(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Open the file and check if there was some error while opening
 	file, err := ioutil.ReadFile(filename)
 	if os.IsPermission(err) {
-		return http.StatusForbidden, nil
+		return http.StatusForbidden, err
 	} else if err != nil {
 		return http.StatusInternalServerError, err
 	}

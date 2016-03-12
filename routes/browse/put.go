@@ -30,9 +30,7 @@ func PUT(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Check if filename and archetype are specified in
 	// the request
 	if _, ok := info["filename"]; !ok {
-		return server.RespondJSON(w, map[string]string{
-			"message": "Filename not specified.",
-		}, 400, nil)
+		return server.RespondJSON(w, &response{"Filename not specified.", ""}, http.StatusBadRequest, nil)
 	}
 
 	// Sanitize the file name path
@@ -43,12 +41,8 @@ func PUT(w http.ResponseWriter, r *http.Request) (int, error) {
 
 	// Renames the file/folder
 	if err := os.Rename(old, new); err != nil {
-		return server.RespondJSON(w, map[string]string{
-			"message": "Something went wrong.",
-		}, 500, err)
+		return server.RespondJSON(w, &response{err.Error(), ""}, http.StatusInternalServerError, err)
 	}
 
-	return server.RespondJSON(w, map[string]string{
-		"message": "File renamed.",
-	}, 200, nil)
+	return server.RespondJSON(w, &response{"File renamed.", ""}, http.StatusOK, nil)
 }

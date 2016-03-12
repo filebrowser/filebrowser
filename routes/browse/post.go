@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/tools/commands"
-	"github.com/hacdias/caddy-hugo/tools/server"
+	s "github.com/hacdias/caddy-hugo/tools/server"
 )
 
 // POST handles the POST method on browse page. It's used to create new files,
@@ -36,15 +36,11 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Check if filename and archetype are specified in
 	// the request
 	if _, ok := info["filename"]; !ok {
-		return server.RespondJSON(w, map[string]string{
-			"message": "Filename not specified.",
-		}, 500, nil)
+		return s.RespondJSON(w, &response{"Filename not specified.", ""}, http.StatusBadRequest, nil)
 	}
 
 	if _, ok := info["archetype"]; !ok {
-		return server.RespondJSON(w, map[string]string{
-			"message": "Archtype not specified.",
-		}, 500, nil)
+		return s.RespondJSON(w, &response{"Archtype not specified.", ""}, http.StatusBadRequest, nil)
 	}
 
 	// Sanitize the file name path
@@ -66,9 +62,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 		}
 
 		if err := commands.Run(conf.Hugo, args, conf.Path); err != nil {
-			return server.RespondJSON(w, map[string]string{
-				"message": "Something went wrong.",
-			}, 500, err)
+			return s.RespondJSON(w, &response{"Something went wrong.", ""}, http.StatusInternalServerError, err)
 		}
 	} else {
 		var err error
@@ -83,26 +77,19 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 		}
 
 		if err != nil {
-			return server.RespondJSON(w, map[string]string{
-				"message": "Something went wrong.",
-			}, 500, err)
+			return s.RespondJSON(w, &response{"Something went wrong.", ""}, http.StatusInternalServerError, err)
 		}
 
 	}
 
-	return server.RespondJSON(w, map[string]string{
-		"location": url,
-		"message":  "File created.",
-	}, 200, nil)
+	return s.RespondJSON(w, &response{"File created!", url}, http.StatusOK, nil)
 }
 
 func upload(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Parse the multipart form in the request
 	err := r.ParseMultipartForm(100000)
 	if err != nil {
-		return server.RespondJSON(w, map[string]string{
-			"message": "Something went wrong.",
-		}, 500, err)
+		return s.RespondJSON(w, &response{"Something went wrong.", ""}, http.StatusInternalServerError, err)
 	}
 
 	// For each file header in the multipart form
@@ -112,29 +99,23 @@ func upload(w http.ResponseWriter, r *http.Request) (int, error) {
 			// Open the first file
 			var infile multipart.File
 			if infile, err = hdr.Open(); nil != err {
-				return server.RespondJSON(w, map[string]string{
-					"message": "Something went wrong.",
-				}, 500, err)
+				return s.RespondJSON(w, &response{"Something went wrong.", ""}, http.StatusInternalServerError, err)
 			}
 
 			// Create the file
 			var outfile *os.File
 			if outfile, err = os.Create(conf.Path + r.URL.Path + hdr.Filename); nil != err {
-				return server.RespondJSON(w, map[string]string{
-					"message": "Something went wrong.",
-				}, 500, err)
+				return s.RespondJSON(w, &response{"Something went wrong.", ""}, http.StatusInternalServerError, err)
 			}
 
 			// Copy the file content
 			if _, err = io.Copy(outfile, infile); nil != err {
-				return server.RespondJSON(w, map[string]string{
-					"message": "Something went wrong.",
-				}, 500, err)
+				return s.RespondJSON(w, &response{"Something went wrong.", ""}, http.StatusInternalServerError, err)
 			}
 
 			defer outfile.Close()
 		}
 	}
 
-	return server.RespondJSON(w, nil, 200, nil)
+	return s.RespondJSON(w, nil, http.StatusOK, nil)
 }

@@ -7,16 +7,18 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/hacdias/caddy-hugo/tools/server"
+	s "github.com/hacdias/caddy-hugo/tools/server"
 )
+
+type postError struct {
+	Message string `json:"message"`
+}
 
 // POST handles the POST method on GIT page which is only an API.
 func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Check if git is installed on the computer
 	if _, err := exec.LookPath("git"); err != nil {
-		return server.RespondJSON(w, map[string]string{
-			"message": "Git is not installed on your computer.",
-		}, 400, nil)
+		return s.RespondJSON(w, &postError{"Git is not installed on your computer."}, 400, nil)
 	}
 
 	// Get the JSON information sent using a buffer
@@ -29,9 +31,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 
 	// Check if command was sent
 	if _, ok := info["command"]; !ok {
-		return server.RespondJSON(w, map[string]string{
-			"message": "Command not specified.",
-		}, 400, nil)
+		return s.RespondJSON(w, &postError{"Command not specified."}, 400, nil)
 	}
 
 	command := info["command"].(string)
@@ -42,9 +42,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 
 	if len(args) == 0 {
-		return server.RespondJSON(w, map[string]string{
-			"message": "Command not specified.",
-		}, 400, nil)
+		return s.RespondJSON(w, &postError{"Command not specified."}, 400, nil)
 	}
 
 	cmd := exec.Command("git", args...)
@@ -52,12 +50,8 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
-		return server.RespondJSON(w, map[string]string{
-			"message": err.Error(),
-		}, 500, err)
+		return s.RespondJSON(w, &postError{err.Error()}, 500, err)
 	}
 
-	return server.RespondJSON(w, map[string]string{
-		"message": string(output),
-	}, 200, nil)
+	return s.RespondJSON(w, &postError{string(output)}, 200, nil)
 }

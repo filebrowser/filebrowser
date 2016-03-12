@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hacdias/caddy-hugo/tools/server"
+	s "github.com/hacdias/caddy-hugo/tools/server"
 )
 
 // DELETE handles the delete requests on browse pages
@@ -31,17 +31,11 @@ func DELETE(w http.ResponseWriter, r *http.Request) (int, error) {
 
 		// Check for errors
 		if err != nil {
-			return server.RespondJSON(w, map[string]string{
-				"message": "Something went wrong.",
-			}, 500, nil)
+			return s.RespondJSON(w, &response{err.Error(), ""}, http.StatusInternalServerError, err)
 		}
 	} else {
-		return server.RespondJSON(w, map[string]string{
-			"message": "File not found.",
-		}, 404, nil)
+		return s.RespondJSON(w, &response{"File not found.", ""}, http.StatusNotFound, nil)
 	}
 
-	return server.RespondJSON(w, map[string]string{
-		"message": message,
-	}, 200, nil)
+	return s.RespondJSON(w, &response{message, ""}, http.StatusOK, nil)
 }

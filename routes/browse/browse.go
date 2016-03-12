@@ -10,6 +10,11 @@ import (
 
 var conf *config.Config
 
+type response struct {
+	Message  string `json:"message"`
+	Location string `json:"location"`
+}
+
 // ServeHTTP is used to serve the content of Browse page using Browse middleware
 // from Caddy. It handles the requests for DELETE, POST, GET and PUT related to
 // /browse interface.

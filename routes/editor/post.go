@@ -26,6 +26,10 @@ type info struct {
 	Content     map[string]interface{}
 }
 
+type response struct {
+	Message string `json:"message"`
+}
+
 // POST handles the POST method on editor page
 func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Get the JSON information sent using a buffer
@@ -34,9 +38,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	err := json.Unmarshal(rawBuffer.Bytes(), &data)
 
 	if err != nil {
-		return server.RespondJSON(w, map[string]string{
-			"message": "Error decrypting json.",
-		}, http.StatusInternalServerError, err)
+		return server.RespondJSON(w, &response{"Error decrypting json."}, http.StatusInternalServerError, err)
 	}
 
 	// Initializes the file content to write
@@ -46,9 +48,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	case "frontmatter-only":
 		f, code, err := parseFrontMatterOnlyFile()
 		if err != nil {
-			return server.RespondJSON(w, map[string]string{
-				"message": err.Error(),
-			}, code, err)
+			return server.RespondJSON(w, &response{err.Error()}, code, err)
 		}
 
 		file = f
@@ -61,25 +61,19 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	case "complete":
 		f, code, err := parseCompleteFile()
 		if err != nil {
-			return server.RespondJSON(w, map[string]string{
-				"message": err.Error(),
-			}, code, err)
+			return server.RespondJSON(w, &response{err.Error()}, code, err)
 		}
 
 		file = f
 	default:
-		return server.RespondJSON(w, map[string]string{
-			"message": "Invalid content type.",
-		}, http.StatusBadRequest, nil)
+		return server.RespondJSON(w, &response{"Invalid content type."}, http.StatusBadRequest, nil)
 	}
 
 	// Write the file
 	err = ioutil.WriteFile(filename, file, 0666)
 
 	if err != nil {
-		return server.RespondJSON(w, map[string]string{
-			"message": err.Error(),
-		}, http.StatusInternalServerError, err)
+		return server.RespondJSON(w, &response{err.Error()}, http.StatusInternalServerError, err)
 	}
 
 	if data.Regenerate {

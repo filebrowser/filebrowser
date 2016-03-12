@@ -18,6 +18,7 @@ import (
 	"github.com/hacdias/caddy-hugo/routes/assets"
 	"github.com/hacdias/caddy-hugo/routes/browse"
 	"github.com/hacdias/caddy-hugo/routes/editor"
+	"github.com/hacdias/caddy-hugo/routes/errors"
 	"github.com/hacdias/caddy-hugo/routes/git"
 	"github.com/hacdias/caddy-hugo/tools/commands"
 	"github.com/hacdias/caddy-hugo/tools/hugo"
@@ -141,6 +142,10 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 		// Git API
 		if page == "git" {
 			code, err = git.ServeHTTP(w, r, h.Config)
+		}
+
+		if code != 0 && code != 200 {
+			code, err = errors.ServeHTTP(w, r, code, err)
 		}
 
 		return code, err

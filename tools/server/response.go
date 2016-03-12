@@ -2,12 +2,11 @@ package server
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 )
 
 // RespondJSON used to send JSON responses to the web server
-func RespondJSON(w http.ResponseWriter, message map[string]string, code int, err error) (int, error) {
+func RespondJSON(w http.ResponseWriter, message interface{}, code int, err error) (int, error) {
 	if message == nil {
 		message = map[string]string{}
 	}
@@ -16,10 +15,6 @@ func RespondJSON(w http.ResponseWriter, message map[string]string, code int, err
 
 	if msgErr != nil {
 		return 500, msgErr
-	}
-
-	if code == 500 && err != nil {
-		err = errors.New(message["message"])
 	}
 
 	w.Header().Set("Content-Type", "application/json")
