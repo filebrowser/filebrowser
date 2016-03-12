@@ -186,7 +186,7 @@ $(document).on('page:browse', function() {
 
         if (request.status == 200) {
           $.pjax({
-            url: data.Location,
+            url: request.Location,
             container: '#content'
           })
         }

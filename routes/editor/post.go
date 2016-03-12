@@ -135,9 +135,13 @@ func parseCompleteFile() ([]byte, int, error) {
 	// Removes the main content from the rest of the frontmatter
 	delete(data.Content, "content")
 
+	if _, ok := data.Content["date"]; ok {
+		data.Content["date"] = data.Content["date"].(string) + ":00"
+	}
+
 	// Schedule the post
 	if data.Schedule {
-		t := cast.ToTime(data.Content["date"].(string))
+		t := cast.ToTime(data.Content["date"])
 
 		scheduler := cron.New()
 		scheduler.AddFunc(t.In(time.Now().Location()).Format("05 04 15 02 01 *"), func() {
