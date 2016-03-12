@@ -10,20 +10,19 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/tools/commands"
 	"github.com/hacdias/caddy-hugo/tools/server"
 )
 
 // POST handles the POST method on browse page. It's used to create new files,
 // folders and upload content.
-func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Remove prefix slash
 	r.URL.Path = strings.TrimPrefix(r.URL.Path, "/")
 
 	// If it's the upload of a file
 	if r.Header.Get("X-Upload") == "true" {
-		return upload(w, r, c)
+		return upload(w, r)
 	}
 
 	// Get the JSON information sent using a buffer
@@ -53,12 +52,12 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	filename = strings.TrimPrefix(filename, "/")
 	filename = strings.TrimSuffix(filename, "/")
 	url := "/admin/edit/" + r.URL.Path + filename
-	filename = c.Path + r.URL.Path + filename
+	filename = conf.Path + r.URL.Path + filename
 
-	if strings.HasPrefix(filename, c.Path+"content/") &&
+	if strings.HasPrefix(filename, conf.Path+"content/") &&
 		(strings.HasSuffix(filename, ".md") || strings.HasSuffix(filename, ".markdown")) {
 
-		filename = strings.Replace(filename, c.Path+"content/", "", 1)
+		filename = strings.Replace(filename, conf.Path+"content/", "", 1)
 		args := []string{"new", filename}
 		archetype := info["archetype"].(string)
 
@@ -66,7 +65,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 			args = append(args, "--kind", archetype)
 		}
 
-		if err := commands.Run(c.Hugo, args, c.Path); err != nil {
+		if err := commands.Run(conf.Hugo, args, conf.Path); err != nil {
 			return server.RespondJSON(w, map[string]string{
 				"message": "Something went wrong.",
 			}, 500, err)
@@ -97,7 +96,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	}, 200, nil)
 }
 
-func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+func upload(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Parse the multipart form in the request
 	err := r.ParseMultipartForm(100000)
 	if err != nil {
@@ -120,7 +119,7 @@ func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, erro
 
 			// Create the file
 			var outfile *os.File
-			if outfile, err = os.Create(c.Path + r.URL.Path + hdr.Filename); nil != err {
+			if outfile, err = os.Create(conf.Path + r.URL.Path + hdr.Filename); nil != err {
 				return server.RespondJSON(w, map[string]string{
 					"message": "Something went wrong.",
 				}, 500, err)

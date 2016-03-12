@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/tools/templates"
 	"github.com/hacdias/caddy-hugo/tools/variables"
 	"github.com/mholt/caddy/middleware"
@@ -13,7 +12,7 @@ import (
 
 // GET handles the GET method on browse page and shows the files listing Using
 // the Browse Caddy middleware.
-func GET(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+func GET(w http.ResponseWriter, r *http.Request) (int, error) {
 	functions := template.FuncMap{
 		"CanBeEdited": templates.CanBeEdited,
 		"Defined":     variables.Defined,
@@ -30,11 +29,11 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) 
 		Next: middleware.HandlerFunc(func(w http.ResponseWriter, r *http.Request) (int, error) {
 			return 404, nil
 		}),
-		Root: c.Path,
+		Root: conf.Path,
 		Configs: []browse.Config{
 			{
 				PathScope: "/",
-				Variables: c,
+				Variables: conf,
 				Template:  tpl,
 			},
 		},

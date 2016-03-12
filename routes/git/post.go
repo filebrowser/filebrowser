@@ -7,12 +7,11 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/tools/server"
 )
 
 // POST handles the POST method on GIT page which is only an API.
-func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Check if git is installed on the computer
 	if _, err := exec.LookPath("git"); err != nil {
 		return server.RespondJSON(w, map[string]string{
@@ -49,7 +48,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	}
 
 	cmd := exec.Command("git", args...)
-	cmd.Dir = c.Path
+	cmd.Dir = conf.Path
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {

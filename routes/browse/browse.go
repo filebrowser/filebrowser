@@ -8,22 +8,25 @@ import (
 	"github.com/hacdias/caddy-hugo/config"
 )
 
+var conf *config.Config
+
 // ServeHTTP is used to serve the content of Browse page using Browse middleware
 // from Caddy. It handles the requests for DELETE, POST, GET and PUT related to
 // /browse interface.
 func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+	conf = c
 	// Removes the page main path from the URL
 	r.URL.Path = strings.Replace(r.URL.Path, "/admin/browse", "", 1)
 
 	switch r.Method {
 	case "DELETE":
-		return DELETE(w, r, c)
+		return DELETE(w, r)
 	case "POST":
-		return POST(w, r, c)
+		return POST(w, r)
 	case "GET":
-		return GET(w, r, c)
+		return GET(w, r)
 	case "PUT":
-		return PUT(w, r, c)
+		return PUT(w, r)
 	default:
 		return http.StatusMethodNotAllowed, errors.New("Invalid method.")
 	}

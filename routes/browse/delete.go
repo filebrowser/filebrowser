@@ -5,17 +5,16 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/tools/server"
 )
 
 // DELETE handles the delete requests on browse pages
-func DELETE(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+func DELETE(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Remove both beginning and trailing slashes
 	path := r.URL.Path
 	path = strings.TrimPrefix(path, "/")
 	path = strings.TrimSuffix(path, "/")
-	path = c.Path + path
+	path = conf.Path + path
 
 	message := "File deleted."
 
