@@ -6,8 +6,12 @@ import (
 	"net/http"
 )
 
-// RespondJSON
+// RespondJSON used to send JSON responses to the web server
 func RespondJSON(w http.ResponseWriter, message map[string]string, code int, err error) (int, error) {
+	if message == nil {
+		message = map[string]string{}
+	}
+
 	msg, msgErr := json.Marshal(message)
 
 	if msgErr != nil {

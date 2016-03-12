@@ -92,7 +92,7 @@ $(document).on('page:editor', function() {
     var button = $(this).find("input[type=submit]:focus");
     var data = {
       content: $(this).serializeJSON(),
-      type: button.data("type"),
+      contentType: button.data("type"),
       schedule: button.data("schedule"),
       regenerate: button.data("regenerate")
     }

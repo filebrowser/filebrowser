@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/tools/hugo"
 	"github.com/hacdias/caddy-hugo/tools/server"
 	"github.com/robfig/cron"
@@ -18,54 +17,34 @@ import (
 	"github.com/spf13/hugo/parser"
 )
 
-var schedule, contentType, regenerate string
+var data info
+
+type info struct {
+	ContentType string
+	Schedule    bool
+	Regenerate  bool
+	Content     map[string]interface{}
+}
 
 // POST handles the POST method on editor page
-func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename string) (int, error) {
+func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Get the JSON information sent using a buffer
 	rawBuffer := new(bytes.Buffer)
 	rawBuffer.ReadFrom(r.Body)
+	err := json.Unmarshal(rawBuffer.Bytes(), &data)
 
-	// Creates the data map using the JSON
-	var data map[string]interface{}
-	json.Unmarshal(rawBuffer.Bytes(), &data)
-
-	// Checks if all the all data is defined
-	if _, ok := data["type"]; !ok {
+	if err != nil {
 		return server.RespondJSON(w, map[string]string{
-			"message": "Content type not set.",
-		}, http.StatusBadRequest, nil)
+			"message": "Error decrypting json.",
+		}, http.StatusInternalServerError, err)
 	}
-
-	if _, ok := data["content"]; !ok {
-		return server.RespondJSON(w, map[string]string{
-			"message": "Content not sent.",
-		}, http.StatusBadRequest, nil)
-	}
-
-	if _, ok := data["schedule"]; !ok {
-		return server.RespondJSON(w, map[string]string{
-			"message": "Schedule information not sent.",
-		}, http.StatusBadRequest, nil)
-	}
-
-	if _, ok := data["regenerate"]; !ok {
-		return server.RespondJSON(w, map[string]string{
-			"message": "Regenerate information not sent.",
-		}, http.StatusBadRequest, nil)
-	}
-
-	rawFile := data["content"].(map[string]interface{})
-	contentType = data["type"].(string)
-	schedule = data["schedule"].(string)
-	regenerate = data["regenerate"].(string)
 
 	// Initializes the file content to write
 	var file []byte
 
-	switch contentType {
+	switch data.ContentType {
 	case "frontmatter-only":
-		f, code, err := parseFrontMatterOnlyFile(rawFile, filename)
+		f, code, err := parseFrontMatterOnlyFile()
 		if err != nil {
 			return server.RespondJSON(w, map[string]string{
 				"message": err.Error(),
@@ -75,12 +54,12 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename str
 		file = f
 	case "content-only":
 		// The main content of the file
-		mainContent := rawFile["content"].(string)
+		mainContent := data.Content["content"].(string)
 		mainContent = strings.TrimSpace(mainContent)
 
 		file = []byte(mainContent)
 	case "complete":
-		f, code, err := parseCompleteFile(r, c, rawFile, filename)
+		f, code, err := parseCompleteFile()
 		if err != nil {
 			return server.RespondJSON(w, map[string]string{
 				"message": err.Error(),
@@ -95,7 +74,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename str
 	}
 
 	// Write the file
-	err := ioutil.WriteFile(filename, file, 0666)
+	err = ioutil.WriteFile(filename, file, 0666)
 
 	if err != nil {
 		return server.RespondJSON(w, map[string]string{
@@ -103,14 +82,14 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename str
 		}, http.StatusInternalServerError, err)
 	}
 
-	if regenerate == "true" {
-		go hugo.Run(c, false)
+	if data.Regenerate {
+		go hugo.Run(conf, false)
 	}
 
-	return server.RespondJSON(w, map[string]string{}, http.StatusOK, nil)
+	return server.RespondJSON(w, nil, http.StatusOK, nil)
 }
 
-func parseFrontMatterOnlyFile(rawFile map[string]interface{}, filename string) ([]byte, int, error) {
+func parseFrontMatterOnlyFile() ([]byte, int, error) {
 	frontmatter := strings.TrimPrefix(filepath.Ext(filename), ".")
 	var mark rune
 
@@ -125,7 +104,7 @@ func parseFrontMatterOnlyFile(rawFile map[string]interface{}, filename string) (
 		return []byte{}, http.StatusBadRequest, errors.New("Can't define the frontmatter.")
 	}
 
-	f, err := parser.InterfaceToFrontMatter(rawFile, mark)
+	f, err := parser.InterfaceToFrontMatter(data.Content, mark)
 	fString := string(f)
 
 	// If it's toml or yaml, strip frontmatter identifier
@@ -148,25 +127,25 @@ func parseFrontMatterOnlyFile(rawFile map[string]interface{}, filename string) (
 	return f, http.StatusOK, nil
 }
 
-func parseCompleteFile(r *http.Request, c *config.Config, rawFile map[string]interface{}, filename string) ([]byte, int, error) {
+func parseCompleteFile() ([]byte, int, error) {
 	// The main content of the file
-	mainContent := rawFile["content"].(string)
+	mainContent := data.Content["content"].(string)
 	mainContent = "\n\n" + strings.TrimSpace(mainContent) + "\n"
 
 	// Removes the main content from the rest of the frontmatter
-	delete(rawFile, "content")
+	delete(data.Content, "content")
 
 	// Schedule the post
-	if schedule == "true" {
-		t := cast.ToTime(rawFile["date"].(string))
+	if data.Schedule {
+		t := cast.ToTime(data.Content["date"].(string))
 
 		scheduler := cron.New()
 		scheduler.AddFunc(t.In(time.Now().Location()).Format("05 04 15 02 01 *"), func() {
 			// Set draft to false
-			rawFile["draft"] = false
+			data.Content["draft"] = false
 
 			// Converts the frontmatter in JSON
-			jsonFrontmatter, err := json.Marshal(rawFile)
+			jsonFrontmatter, err := json.Marshal(data.Content)
 
 			if err != nil {
 				return
@@ -187,13 +166,13 @@ func parseCompleteFile(r *http.Request, c *config.Config, rawFile map[string]int
 				return
 			}
 
-			go hugo.Run(c, false)
+			go hugo.Run(conf, false)
 		})
 		scheduler.Start()
 	}
 
 	// Converts the frontmatter in JSON
-	jsonFrontmatter, err := json.Marshal(rawFile)
+	jsonFrontmatter, err := json.Marshal(data.Content)
 
 	if err != nil {
 		return []byte{}, http.StatusInternalServerError, err

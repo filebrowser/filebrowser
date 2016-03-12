@@ -28,7 +28,7 @@ type editor struct {
 }
 
 // GET handles the GET method on editor page
-func GET(w http.ResponseWriter, r *http.Request, c *config.Config, filename string) (int, error) {
+func GET(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Check if the file format is supported. If not, send a "Not Acceptable"
 	// header and an error
 	if !templates.CanBeEdited(filename) {
@@ -55,8 +55,8 @@ func GET(w http.ResponseWriter, r *http.Request, c *config.Config, filename stri
 	// Create a new editor variable and set the extension
 	page := new(editor)
 	page.Mode = strings.TrimPrefix(filepath.Ext(filename), ".")
-	page.Name = strings.Replace(filename, c.Path, "", 1)
-	page.Config = c
+	page.Name = strings.Replace(filename, conf.Path, "", 1)
+	page.Config = conf
 	page.IsPost = false
 
 	// Sanitize the extension
