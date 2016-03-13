@@ -77,6 +77,12 @@ $(document).on('page:editor', function() {
     }
   });
 
+  var submitActor = null;
+
+  $('#content').on('click', 'form input[type=submit]', function(event) {
+    submitActor = this;
+  });
+
   // Submites any form in the page in JSON format
   $('#content').on('submit', 'form', function(event) {
     event.preventDefault();
@@ -89,7 +95,7 @@ $(document).on('page:editor', function() {
       editor.fadeIn();
     }
 
-    var button = $(this).find("input[type=submit]:focus");
+    var button = $(submitActor);
     var data = {
       content: $(this).serializeJSON(),
       contentType: button.data("type"),
