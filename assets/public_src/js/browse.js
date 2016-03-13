@@ -1,31 +1,43 @@
+// When the page Browse is opened
 $(document).on('page:browse', function() {
   var foreground = '#foreground';
 
   /* DELETE FILE */
-
-  var remove = new Object();
-  remove.selector = 'form#delete';
-  remove.form = $(remove.selector);
-  remove.row = '';
-  remove.button = '';
-  remove.url = '';
+  var removeForm = 'form#delete';
+  var removeItem = null;
 
   $('#content').on('click', '.delete', function(event) {
     event.preventDefault();
-    remove.button = $(this);
-    remove.row = $(this).parent().parent();
+
+    // Gets the information about the file the user wants to delete
+    removeItem = new Object();
+    removeItem.url = $(this).data("file");
+    removeItem.row = $(this).parent().parent();
+    removeItem.filename = $(removeItem.row).find('.filename').text();
+
+    // Shows the remove form and the foreground
+    $(removeForm).find('span').text(removeItem.filename);
+    $(removeForm).fadeIn(200)
     $(foreground).fadeIn(200);
-    remove.url = remove.row.find('.filename').text();
-    remove.form.find('span').text(remove.url);
-    remove.form.fadeIn(200);
+
     return false;
   });
 
-  $('#content').on('submit', remove.selector, function(event) {
+  $('#content').on('submit', removeForm, function(event) {
     event.preventDefault();
 
+    // Checks if the item to remove is defined
+    if (removeItem == null) {
+      notification({
+        text: "Something is wrong with your form.",
+        type: "error"
+      });
+      return false;
+    }
+
+    // Makes the DELETE request to the server
     var request = new XMLHttpRequest();
-    request.open("DELETE", remove.button.data("file"));
+    request.open("DELETE", removeItem.url);
     request.send();
     request.onreadystatechange = function() {
       if (request.readyState == 4) {
@@ -34,8 +46,8 @@ $(document).on('page:browse', function() {
           timeout = 5000;
 
         $(foreground).fadeOut(200);
-        remove.form.fadeOut(200);
-        remove.row.fadeOut(200);
+        $(removeForm).fadeOut(200);
+        $(removeItem.row).fadeOut(200);
 
         if (request.status != 200) {
           type = "error";
@@ -47,6 +59,8 @@ $(document).on('page:browse', function() {
           type: type,
           timeout: timeout
         });
+
+        removeItem = null;
       }
     }
 
@@ -58,6 +72,8 @@ $(document).on('page:browse', function() {
   $('#content').on('change', 'input[type="file"]', function(event) {
     event.preventDefault();
     files = event.target.files;
+
+    $('#loading').fadeIn();
 
     // Create a formdata object and add the files
     var data = new FormData();
@@ -83,17 +99,23 @@ $(document).on('page:browse', function() {
         timeout: 5000
       });
 
+      $('#loading').fadeOut();
+
       $.pjax({
         url: window.location.pathname,
         container: '#content'
       })
     }).fail(function(data) {
+      $('#loading').fadeOut();
+
       notification({
         text: 'Something went wrong.',
         type: 'error'
       });
       console.log(data);
     });
+
+
     return false;
   });
 
@@ -104,34 +126,31 @@ $(document).on('page:browse', function() {
   });
 
   /* NEW FILE */
-
-  var create = new Object();
-  create.selector = 'form#new';
-  create.form = $(create.selector);
-  create.input = create.selector + ' input[type="text"]';
-  create.button = '';
-  create.url = '';
+  var createForm = 'form#new',
+    createInput = createForm + ' input[type="text"]';
 
   $('#content').on('click', '.new', function(event) {
     event.preventDefault();
-    create.button = $(this);
+
     $(foreground).fadeIn(200);
-    create.form.fadeIn(200);
+    $(createForm).fadeIn(200);
+
     return false;
   });
 
-  $('#content').on('keypress', create.input, function(event) {
+  $('#content').on('keypress', createInput, function(event) {
+    // If it's "enter" key, submit the
     if (event.keyCode == 13) {
       event.preventDefault();
-      $(create.form).submit();
+      $(createForm).submit();
       return false;
     }
   });
 
-  $('#content').on('submit', create.selector, function(event) {
+  $('#content').on('submit', createForm, function(event) {
     event.preventDefault();
 
-    var value = create.form.find('input[type="text"]').val(),
+    var value = $(createInput).val(),
       splited = value.split(":"),
       filename = "",
       archetype = "";
@@ -197,39 +216,32 @@ $(document).on('page:browse', function() {
   });
 
   /* RENAME FILE */
-
-  var rename = new Object();
-  rename.selector = 'form#rename';
-  rename.form = $(rename.selector);
-  rename.input = rename.selector + ' input[type="text"]';
-  rename.button = '';
-  rename.url = '';
+  var renameForm = 'form#rename',
+    renameInput = renameForm + ' input[type="text"]',
+    renameItem = null;
 
   $('#content').on('click', '.rename', function(event) {
     event.preventDefault();
-    rename.button = $(this);
-
+    renameItem = $(this).parent().parent().find('.filename').text();
     $(foreground).fadeIn(200);
-    rename.url = $(this).parent().parent().find('.filename').text();
-    rename.form.fadeIn(200);
-    rename.form.find('span').text(rename.url);
-    rename.form.find('input[type="text"]').val(rename.url);
-
+    $(renameForm).fadeIn(200);
+    $(renameForm).find('span').text(renameItem);
+    $(renameForm).find('input[type="text"]').val(renameItem);
     return false;
   });
 
-  $('#content').on('keypress', rename.input, function(event) {
+  $('#content').on('keypress', renameInput, function(event) {
     if (event.keyCode == 13) {
       event.preventDefault();
-      $(rename.form).submit();
+      $(renameForm).submit();
       return false;
     }
   });
 
-  $('#content').on('submit', rename.selector, function(event) {
+  $('#content').on('submit', renameForm, function(event) {
     event.preventDefault();
 
-    var filename = rename.form.find('input[type="text"]').val();
+    var filename = $(this).find('input[type="text"]').val();
     if (filename === "") {
       return false;
     }
@@ -243,7 +255,7 @@ $(document).on('page:browse', function() {
     };
 
     var request = new XMLHttpRequest();
-    request.open("PUT", rename.url);
+    request.open("PUT", renameItem);
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     request.send(JSON.stringify(content));
     request.onreadystatechange = function() {
@@ -267,6 +279,8 @@ $(document).on('page:browse', function() {
           type: type,
           timeout: timeout
         });
+
+        renameItem = null;
       }
     }
 
@@ -274,35 +288,33 @@ $(document).on('page:browse', function() {
   });
 
   /* GIT ACTIONS */
+  var gitButton = 'button.git',
+    gitForm = 'form#git',
+    gitInput = gitForm + ' input[type="text"]';
 
-  var git = new Object();
-  git.selector = 'form#git';
-  git.form = $(git.selector);
-  git.input = git.selector + ' input[type="text"]';
-
-  $('#content').on('click', 'button.git', function(event) {
+  $('#content').on('click', gitButton, function(event) {
     event.preventDefault();
     $(foreground).fadeIn(200);
-    git.form.fadeIn(200);
+    $(gitForm).fadeIn(200);
     return false;
   });
 
-  $('#content').on('keypress', git.input, function(event) {
+  $('#content').on('keypress', gitInput, function(event) {
     if (event.keyCode == 13) {
       event.preventDefault();
-      $(git.form).submit();
+      $(gitForm).submit();
       return false;
     }
   });
 
-  $('#content').on('submit', git.selector, function(event) {
+  $('#content').on('submit', gitForm, function(event) {
     event.preventDefault();
 
-    var value = git.form.find('input[type="text"]').val();
+    var value = $(this).find('input[type="text"]').val();
 
     if (value == "") {
       notification({
-        text: "You have to write something. If you want to close the box, click outside of the box.",
+        text: "You have to write something. If you want to close the box, click outside of it.",
         type: 'warning',
         timeout: 5000
       });
@@ -323,7 +335,16 @@ $(document).on('page:browse', function() {
         if (request.status == 200) {
           notification({
             text: data.message,
-            type: "success"
+            type: "success",
+            timeout: 5000
+          });
+
+          $(gitForm).fadeOut(200);
+          $(foreground).fadeOut(200);
+
+          $.pjax({
+            url: window.location.pathname,
+            container: '#content'
           });
         } else {
           notification({
@@ -349,10 +370,10 @@ $(document).on('page:browse', function() {
   $('#content').on('click', foreground, function(event) {
     event.preventDefault();
     $(foreground).fadeOut(200);
-    create.form.fadeOut(200);
-    rename.form.fadeOut(200);
-    remove.form.fadeOut(200);
-    git.form.fadeOut(200);
+    $(createForm).fadeOut(200);
+    $(renameForm).fadeOut(200);
+    $(removeForm).fadeOut(200);
+    $(gitForm).fadeOut(200);
     return false;
   });
 });
