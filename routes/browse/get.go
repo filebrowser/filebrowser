@@ -29,10 +29,10 @@ func GET(w http.ResponseWriter, r *http.Request) (int, error) {
 		Next: middleware.HandlerFunc(func(w http.ResponseWriter, r *http.Request) (int, error) {
 			return 404, nil
 		}),
-		Root: conf.Path,
 		Configs: []browse.Config{
 			{
 				PathScope: "/",
+				Root: conf.Path,
 				Variables: conf,
 				Template:  tpl,
 			},
