@@ -32,7 +32,7 @@ func GET(w http.ResponseWriter, r *http.Request) (int, error) {
 		Configs: []browse.Config{
 			{
 				PathScope: "/",
-				Root: conf.Path,
+				Root: http.Dir(conf.Path),
 				Variables: conf,
 				Template:  tpl,
 			},
