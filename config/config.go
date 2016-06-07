@@ -5,7 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mholt/caddy/caddy/setup"
+	"github.com/hacdias/caddy-hugo/tools/installer"
+	"github.com/mholt/caddy"
 )
 
 // Config is the add-on configuration set on Caddyfile
@@ -19,16 +20,16 @@ type Config struct {
 	Git    bool     // Is this site a git repository
 }
 
-// ParseHugo parses the configuration file
-func ParseHugo(c *setup.Controller) (*Config, error) {
+// Parse parses the configuration file
+func Parse(c *caddy.Controller, root string) (*Config, error) {
 	conf := &Config{
-		Public: strings.Replace(c.Root, "./", "", -1),
+		Public: strings.Replace(root, "./", "", -1),
 		Admin:  "/admin",
 		Path:   "./",
 		Git:    false,
 	}
 
-	conf.Hugo = GetPath()
+	conf.Hugo = installer.GetPath()
 
 	for c.Next() {
 		args := c.RemainingArgs()

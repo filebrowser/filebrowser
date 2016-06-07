@@ -23,50 +23,61 @@ import (
 	"github.com/hacdias/caddy-hugo/tools/commands"
 	"github.com/hacdias/caddy-hugo/tools/hugo"
 	"github.com/hacdias/caddy-hugo/tools/server"
-	"github.com/mholt/caddy/caddy/setup"
-	"github.com/mholt/caddy/middleware"
+	"github.com/mholt/caddy"
+	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
+
+func init() {
+	caddy.RegisterPlugin("hugo", caddy.Plugin{
+		ServerType: "http",
+		Action:     setup,
+	})
+}
 
 // Setup is the init function of Caddy plugins and it configures the whole
 // middleware thing.
-func Setup(c *setup.Controller) (middleware.Middleware, error) {
-	config, _ := config.ParseHugo(c)
+func setup(c *caddy.Controller) error {
+	cnf := httpserver.GetConfig(c.Key)
+	conf, _ := config.Parse(c, cnf.Root)
 
 	// Checks if there is an Hugo website in the path that is provided.
 	// If not, a new website will be created.
 	create := true
 
-	if _, err := os.Stat(config.Path + "config.yaml"); err == nil {
+	if _, err := os.Stat(conf.Path + "config.yaml"); err == nil {
 		create = false
 	}
 
-	if _, err := os.Stat(config.Path + "config.json"); err == nil {
+	if _, err := os.Stat(conf.Path + "config.json"); err == nil {
 		create = false
 	}
 
-	if _, err := os.Stat(config.Path + "config.toml"); err == nil {
+	if _, err := os.Stat(conf.Path + "config.toml"); err == nil {
 		create = false
 	}
 
 	if create {
-		err := commands.Run(config.Hugo, []string{"new", "site", config.Path, "--force"}, ".")
+		err := commands.Run(conf.Hugo, []string{"new", "site", conf.Path, "--force"}, ".")
 		if err != nil {
 			log.Panic(err)
 		}
 	}
 
 	// Generates the Hugo website for the first time the plugin is activated.
-	go hugo.Run(config, true)
+	go hugo.Run(conf, true)
 
-	return func(next middleware.Handler) middleware.Handler {
-		return &CaddyHugo{Next: next, Config: config}
-	}, nil
+	mid := func(next httpserver.Handler) httpserver.Handler {
+		return CaddyHugo{Next: next, Config: conf}
+	}
+
+	cnf.AddMiddleware(mid)
+	return nil
 }
 
 // CaddyHugo contais the next middleware to be run and the configuration
 // of the current one.
 type CaddyHugo struct {
-	Next   middleware.Handler
+	Next   httpserver.Handler
 	Config *config.Config
 }
 
@@ -74,7 +85,7 @@ type CaddyHugo struct {
 // request to its function.
 func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Only handle /{admin} path
-	if middleware.Path(r.URL.Path).Matches(h.Config.Admin) {
+	if httpserver.Path(r.URL.Path).Matches(h.Config.Admin) {
 		var err error
 		var page string
 		code := 404
@@ -108,15 +119,15 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 		if r.URL.Path == h.Config.Admin+"/settings/" {
 			var frontmatter string
 
-			if _, err := os.Stat(h.Config.Path + "config.yaml"); err == nil {
+			if _, err = os.Stat(h.Config.Path + "config.yaml"); err == nil {
 				frontmatter = "yaml"
 			}
 
-			if _, err := os.Stat(h.Config.Path + "config.json"); err == nil {
+			if _, err = os.Stat(h.Config.Path + "config.json"); err == nil {
 				frontmatter = "json"
 			}
 
-			if _, err := os.Stat(h.Config.Path + "config.toml"); err == nil {
+			if _, err = os.Stat(h.Config.Path + "config.toml"); err == nil {
 				frontmatter = "toml"
 			}
 
