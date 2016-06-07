@@ -73,8 +73,8 @@ type CaddyHugo struct {
 // ServeHTTP is the main function of the whole plugin that routes every single
 // request to its function.
 func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
-	// Only handle /admin path
-	if middleware.Path(r.URL.Path).Matches("/admin") {
+	// Only handle /{admin} path
+	if middleware.Path(r.URL.Path).Matches(h.Config.Admin) {
 		var err error
 		var page string
 		code := 404
@@ -96,16 +96,16 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 			}
 		}
 
-		// If the current page is only "/admin/", redirect to "/admin/browse/content/"
-		if r.URL.Path == "/admin/" {
-			http.Redirect(w, r, "/admin/browse/content/", http.StatusTemporaryRedirect)
+		// If the current page is only "/{admin}/", redirect to "/{admin}/browse/content/"
+		if r.URL.Path == h.Config.Admin+"/" {
+			http.Redirect(w, r, h.Config.Admin+"/browse/content/", http.StatusTemporaryRedirect)
 			return 0, nil
 		}
 
-		// If the url matches exactly with /admin/settings/ serve that page
+		// If the url matches exactly with /{admin}/settings/ serve that page
 		// page variable isn't used here to avoid people using URLs like
-		// "/admin/settings/something".
-		if r.URL.Path == "/admin/settings/" {
+		// "/{admin}/settings/something".
+		if r.URL.Path == h.Config.Admin+"/settings/" {
 			var frontmatter string
 
 			if _, err := os.Stat(h.Config.Path + "config.yaml"); err == nil {
@@ -120,13 +120,13 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 				frontmatter = "toml"
 			}
 
-			http.Redirect(w, r, "/admin/edit/config."+frontmatter, http.StatusTemporaryRedirect)
+			http.Redirect(w, r, h.Config.Admin+"/edit/config."+frontmatter, http.StatusTemporaryRedirect)
 			return 0, nil
 		}
 
 		// Serve the static assets
 		if page == "assets" {
-			code, err = serveAssets(w, r)
+			code, err = serveAssets(w, r, h.Config)
 		}
 
 		// Browse page
@@ -154,9 +154,9 @@ func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error
 	return h.Next.ServeHTTP(w, r)
 }
 
-// serveAssets handles the /admin/assets requests
-func serveAssets(w http.ResponseWriter, r *http.Request) (int, error) {
-	filename := strings.Replace(r.URL.Path, "/admin/assets", "public", 1)
+// serveAssets handles the /{admin}/assets requests
+func serveAssets(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+	filename := strings.Replace(r.URL.Path, c.Admin+"/assets", "public", 1)
 	file, err := assets.Asset(filename)
 
 	if err != nil {

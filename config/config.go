@@ -15,6 +15,7 @@ type Config struct {
 	Styles string   // Admin styles path
 	Args   []string // Hugo arguments
 	Hugo   string   // Hugo executable path
+	Admin  string   // Hugo admin URL
 	Git    bool     // Is this site a git repository
 }
 
@@ -22,6 +23,7 @@ type Config struct {
 func ParseHugo(c *setup.Controller) (*Config, error) {
 	conf := &Config{
 		Public: strings.Replace(c.Root, "./", "", -1),
+		Admin:  "/admin",
 		Path:   "./",
 		Git:    false,
 	}
@@ -49,6 +51,13 @@ func ParseHugo(c *setup.Controller) (*Config, error) {
 				conf.Styles = strings.TrimPrefix(conf.Styles, "/")
 				// Add a beginning slash to make a
 				conf.Styles = "/" + conf.Styles
+			case "admin":
+				if !c.NextArg() {
+					return nil, c.ArgErr()
+				}
+				conf.Admin = c.Val()
+				conf.Admin = strings.TrimPrefix(conf.Admin, "/")
+				conf.Admin = "/" + conf.Admin
 			default:
 				key := "--" + c.Val()
 				value := "true"
