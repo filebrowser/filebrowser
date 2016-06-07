@@ -1,10 +1,14 @@
+var basePath = "/";
+
 $(document).ready(function() {
+  basePath += window.location.pathname.split('/')[0];
+
   // Log out the user sending bad credentials to the server
   $("#logout").click(function(event) {
     event.preventDefault();
     $.ajax({
       type: "GET",
-      url: "/admin",
+      url: basePath + "",
       async: false,
       username: "username",
       password: "password",

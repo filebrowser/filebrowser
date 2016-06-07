@@ -10,7 +10,7 @@ import (
 	"github.com/hacdias/caddy-hugo/tools/server"
 )
 
-// PUT handles the HTTP PUT request for all /admin/browse related requests.
+// PUT handles the HTTP PUT request for all /{admin}/browse related requests.
 // Renames a file and/or a folder.
 func PUT(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Remove both beginning and trailing slashes

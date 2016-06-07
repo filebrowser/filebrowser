@@ -1,4 +1,6 @@
-{{ define "content" }}{{ $path := .Path }}
+{{ define "content" }}
+{{ $path := .Path }}
+{{ $admin := .User.Admin }}
 
 <main class="browse">
   <div class="actions">
@@ -42,12 +44,12 @@
         <td>
           {{if .IsDir}}
           <i class="fa fa-folder"></i> <a data-pjax class="filename" href="{{.URL}}">{{.Name}}</a> {{else}} {{ if CanBeEdited .URL }}
-          <i class="fa fa-file"></i> <a data-pjax class="file filename" href="/admin/edit{{ $path }}{{.URL}}">{{.Name}}</a> {{ else }}
+          <i class="fa fa-file"></i> <a data-pjax class="file filename" href="{{ $admin }}/edit{{ $path }}{{.URL}}">{{.Name}}</a> {{ else }}
           <i class="fa fa-file"></i> <span class="filename">{{.Name}}</span> {{ end }} {{ end }}
         </td>
         <td class="right hideable">{{.HumanSize}}</td>
         <td class="right hideable">{{.HumanModTime "01/02/2006 3:04:05 PM"}}</td>
-        <td class="right"><button data-file="/admin/browse{{ $path }}{{.URL}}" data-message="File renamed." class="rename">&#9998;</button> <button data-file="/admin/browse{{ $path }}{{.URL}}" data-message="File deleted." class="delete">&#10006;</button></td>
+        <td class="right"><button data-file="{{ $admin }}/browse{{ $path }}{{.URL}}" data-message="File renamed." class="rename">&#9998;</button> <button data-file="{{ $admin }}/browse{{ $path }}{{.URL}}" data-message="File deleted." class="delete">&#10006;</button></td>
       </tr>
       {{end}}
     </table>

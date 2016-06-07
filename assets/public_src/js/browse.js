@@ -247,7 +247,7 @@ $(document).on('page:browse', function() {
     }
 
     if (filename.substring(0, 1) != "/") {
-      filename = window.location.pathname.replace("/admin/browse/", "") + '/' + filename;
+      filename = window.location.pathname.replace(basePath + "/browse/", "") + '/' + filename;
     }
 
     var content = {
@@ -323,7 +323,7 @@ $(document).on('page:browse', function() {
     }
 
     var request = new XMLHttpRequest();
-    request.open("POST", "/admin/git");
+    request.open("POST", basePath + "/git");
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     request.send(JSON.stringify({
       command: value

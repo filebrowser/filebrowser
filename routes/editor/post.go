@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -16,8 +17,6 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/hugo/parser"
 )
-
-var data info
 
 type info struct {
 	ContentType string
@@ -32,10 +31,14 @@ type response struct {
 
 // POST handles the POST method on editor page
 func POST(w http.ResponseWriter, r *http.Request) (int, error) {
+	var data info
+
 	// Get the JSON information sent using a buffer
 	rawBuffer := new(bytes.Buffer)
 	rawBuffer.ReadFrom(r.Body)
 	err := json.Unmarshal(rawBuffer.Bytes(), &data)
+
+	fmt.Println(string(rawBuffer.Bytes()))
 
 	if err != nil {
 		return server.RespondJSON(w, &response{"Error decrypting json."}, http.StatusInternalServerError, err)
@@ -46,7 +49,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 
 	switch data.ContentType {
 	case "frontmatter-only":
-		f, code, err := parseFrontMatterOnlyFile()
+		f, code, err := parseFrontMatterOnlyFile(data)
 		if err != nil {
 			return server.RespondJSON(w, &response{err.Error()}, code, err)
 		}
@@ -59,7 +62,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 
 		file = []byte(mainContent)
 	case "complete":
-		f, code, err := parseCompleteFile()
+		f, code, err := parseCompleteFile(data)
 		if err != nil {
 			return server.RespondJSON(w, &response{err.Error()}, code, err)
 		}
@@ -83,7 +86,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	return server.RespondJSON(w, nil, http.StatusOK, nil)
 }
 
-func parseFrontMatterOnlyFile() ([]byte, int, error) {
+func parseFrontMatterOnlyFile(data info) ([]byte, int, error) {
 	frontmatter := strings.TrimPrefix(filepath.Ext(filename), ".")
 	var mark rune
 
@@ -121,7 +124,7 @@ func parseFrontMatterOnlyFile() ([]byte, int, error) {
 	return f, http.StatusOK, nil
 }
 
-func parseCompleteFile() ([]byte, int, error) {
+func parseCompleteFile(data info) ([]byte, int, error) {
 	// The main content of the file
 	mainContent := data.Content["content"].(string)
 	mainContent = "\n\n" + strings.TrimSpace(mainContent) + "\n"

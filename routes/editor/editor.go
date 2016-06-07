@@ -16,7 +16,7 @@ var (
 // ServeHTTP serves the editor page
 func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	conf = c
-	filename = strings.Replace(r.URL.Path, "/admin/edit/", "", 1)
+	filename = strings.Replace(r.URL.Path, c.Admin+"/edit/", "", 1)
 	filename = c.Path + filename
 
 	switch r.Method {

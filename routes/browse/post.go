@@ -10,13 +10,14 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/tools/commands"
 	s "github.com/hacdias/caddy-hugo/tools/server"
 )
 
 // POST handles the POST method on browse page. It's used to create new files,
 // folders and upload content.
-func POST(w http.ResponseWriter, r *http.Request) (int, error) {
+func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	// Remove prefix slash
 	r.URL.Path = strings.TrimPrefix(r.URL.Path, "/")
 
@@ -47,7 +48,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	filename := info["filename"].(string)
 	filename = strings.TrimPrefix(filename, "/")
 	filename = strings.TrimSuffix(filename, "/")
-	url := "/admin/edit/" + r.URL.Path + filename
+	url := c.Admin + "/edit/" + r.URL.Path + filename
 	filename = conf.Path + r.URL.Path + filename
 
 	if strings.HasPrefix(filename, conf.Path+"content/") &&

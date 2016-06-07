@@ -103,6 +103,8 @@ $(document).on('page:editor', function() {
       regenerate: button.data("regenerate")
     }
 
+    console.log(JSON.stringify(data));
+
     var request = new XMLHttpRequest();
     request.open("POST", window.location);
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -155,7 +157,6 @@ $(document).on('page:editor', function() {
       input = input.replace(/\[/, '\\[');
       input = input.replace(/\]/, '\\]');
       block.append('<div id="' + newID + '-' + $('#' + input + ' > div').length + '" data-type="array-item"><input name="' + newID + ':auto" id="' + newID + '"></input><span class="actions"> <button class="delete">&#8722;</button></span></div></div>');
-      console.log('New array item added.');
     }
 
     // Main add button, after all blocks
@@ -241,8 +242,6 @@ $(document).on('page:editor', function() {
             template = template.replace("${type}", type);
             newItem.after(template);
             newItem.remove();
-
-            console.log('"' + blockID + '" block of type "' + type + '" added.');
           }
 
           return false;
@@ -260,7 +259,6 @@ $(document).on('page:editor', function() {
     name = button.parent().parent().attr("for") || button.parent().parent().attr("id") || button.parent().parent().parent().attr("id");
     name = name.replace(/\[/, '\\[');
     name = name.replace(/\]/, '\\]');
-    console.log(name)
 
     $('label[for="' + name + '"]').fadeOut().remove();
     $('#' + name).fadeOut().remove();
