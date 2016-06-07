@@ -32,7 +32,8 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, code int, err error) (int
 			"Defined": variables.Defined,
 		}
 
-		tpl, err := templates.Get(r, functions, "error")
+		var tpl *template.Template
+		tpl, err = templates.Get(r, functions, "error")
 
 		if err != nil {
 			return http.StatusInternalServerError, err

@@ -52,7 +52,7 @@ func GetPath() string {
 	var err error
 
 	// Check if Hugo is already on $PATH
-	if hugo, err := exec.LookPath("hugo"); err == nil {
+	if hugo, err = exec.LookPath("hugo"); err == nil {
 		return hugo
 	}
 

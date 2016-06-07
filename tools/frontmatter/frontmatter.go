@@ -11,7 +11,11 @@ import (
 	"github.com/spf13/hugo/parser"
 )
 
-const mainName = "#MAIN#"
+const (
+	mainName   = "#MAIN#"
+	objectType = "object"
+	arrayType  = "array"
+)
 
 var mainTitle = ""
 
@@ -25,7 +29,7 @@ func Pretty(content []byte) (interface{}, string, error) {
 	}
 
 	object := new(frontmatter)
-	object.Type = "object"
+	object.Type = objectType
 	object.Name = mainName
 
 	return rawToPretty(front, object), mainTitle, nil
@@ -95,12 +99,12 @@ func (f sortByTitle) Less(i, j int) bool {
 func handleObjects(content interface{}, parent *frontmatter, name string) *frontmatter {
 	c := new(frontmatter)
 	c.Parent = parent
-	c.Type = "object"
+	c.Type = objectType
 	c.Title = name
 
 	if parent.Name == mainName {
 		c.Name = c.Title
-	} else if parent.Type == "array" {
+	} else if parent.Type == arrayType {
 		c.Name = parent.Name + "[]"
 	} else {
 		c.Name = parent.Name + "[" + c.Title + "]"
@@ -113,7 +117,7 @@ func handleObjects(content interface{}, parent *frontmatter, name string) *front
 func handleArrays(content interface{}, parent *frontmatter, name string) *frontmatter {
 	c := new(frontmatter)
 	c.Parent = parent
-	c.Type = "array"
+	c.Type = arrayType
 	c.Title = name
 
 	if parent.Name == mainName {
@@ -151,10 +155,10 @@ func handleFlatValues(content interface{}, parent *frontmatter, name string) *fr
 		c.HTMLType = "text"
 	}
 
-	if parent.Type == "array" {
+	if parent.Type == arrayType {
 		c.Name = parent.Name + "[]"
 		c.Title = content.(string)
-	} else if parent.Type == "object" {
+	} else if parent.Type == objectType {
 		c.Title = name
 		c.Name = parent.Name + "[" + name + "]"
 
