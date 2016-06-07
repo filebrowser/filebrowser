@@ -1,7 +1,7 @@
 body {
   font-family: 'Roboto', sans-serif;
   color: #212121;
-  background-color: #f5f5f5;
+  background-color: #fff;
   height: 100%;
   width: 100%;
   padding-top: 3em;
@@ -223,7 +223,6 @@ input[type="submit"] {
   color: #000;
   font-weight: normal;
   background-color: #FFEB3B;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.12);
   -webkit-transition: .5s ease background-color;
   transition: .5s ease background-color;
 }
@@ -251,6 +250,7 @@ button.delete,
 button.rename {
   color: #fff;
   padding: 0.063em 0.375em;
+  border-radius: 50%;
 }
 
 button.add {
@@ -262,7 +262,21 @@ button.add:hover {
 }
 
 button.delete {
-  background-color: #F44336;
+  background-color: #E53935;
+}
+
+label + .delete,
+h3 + .delete {
+  visibility: hidden;
+  border-radius: .13em;
+  padding: 0 .3em;
+  font-size: .8em;
+  border: 1px solid #D32F2F;
+}
+
+.block:hover .delete,
+fieldset:hover .delete {
+  visibility: visible;
 }
 
 button.delete:hover {
@@ -319,34 +333,30 @@ fieldset > .actions {
 }
 
 .blocks {
-  -webkit-column-count: 4;
-  -moz-column-count: 4;
-  column-count: 4;
-  -webkit-column-gap: 1em;
-  -moz-column-gap: 1em;
+  column-count: 2;
   column-gap: 1em;
 }
 
 .block,
 fieldset {
   display: inline-block;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-  background-color: #fff;
-  padding: 0.6em;
+  margin-bottom: .6em;
   box-sizing: border-box;
-  margin: 0 0 1em;
   position: relative;
   width: 100%;
   border: 0;
+  padding: 0;
 }
 
 .block label,
 fieldset label,
 fieldset h3 {
-  font-weight: bold;
-  display: block;
-  margin-top: 0;
-  font-size: 1em;
+  font-weight: 700;
+display: block;
+font-size: 1em;
+margin: 0 0 .3em;
+color: #424242;
+    display: inline-block;
 }
 
 .block textarea {
@@ -356,6 +366,40 @@ fieldset h3 {
   background-color: inherit;
   border: 0;
   overflow: hidden;
+}
+
+.block input,
+.block textarea,
+fieldset .itens {
+  background-color: #fafafa;
+  border: 1px solid #e2e2e2;
+  border-radius: .2em;
+  padding: .4em;
+  color: #616161;
+}
+
+div[data-type="array-item"],
+div[data-type="array-item"] + .add {
+  display: inline-block;
+  width: auto;
+  background-color: #2196F3;
+  color: #E3F2FD;
+  border-radius: .6em;
+  margin-bottom: .2em;
+}
+
+div[data-type="array-item"] input {
+  padding: .2em .5em;
+}
+
+div[data-type="array-item"] .actions {
+  display: inline-block;
+    padding: .2em
+}
+
+div[data-type="array-item"] .delete {
+  background-color: transparent;
+  box-shadow: 0 0 0 0;
 }
 
 input {
@@ -370,8 +414,8 @@ input[type="submit"] {
 }
 
 fieldset input {
-  width: calc(100% - 1.57em);
-  margin: 0.5em 0;
+  display: inline-block;
+  width: auto;
 }
 
 .complete .block[data-content="title"] {
@@ -664,19 +708,11 @@ fieldset input {
   }
 }
 
-@media screen and (max-width: 900px) {
-  .blocks {
-    -webkit-column-count: 3;
-    -moz-column-count: 3;
-    column-count: 3;
-  }
-}
-
 @media screen and (max-width: 600px) {
   .blocks {
-    -webkit-column-count: 2;
-    -moz-column-count: 2;
-    column-count: 2;
+    -webkit-column-count: 1;
+    -moz-column-count: 1;
+    column-count: 1;
   }
   body > nav span {
     display: none;
@@ -697,11 +733,6 @@ fieldset input {
 }
 
 @media screen and (max-width: 350px) {
-  .blocks {
-    -webkit-column-count: 1;
-    -moz-column-count: 1;
-    column-count: 1;
-  }
   .browse .actions {
     text-align: center;
   }

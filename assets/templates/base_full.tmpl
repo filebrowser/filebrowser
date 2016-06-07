@@ -9,8 +9,9 @@
   <title>{{ if Defined . "Name" }}{{ .Name }}{{ end }}</title>
 
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,300,700,400italic' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="{{ if and (Defined . "User") }}{{ .User.Admin }}{{ else }}{{ .Config.Admin }}{{ end }}/assets/css/main.min.css">
-  {{ if not (eq .Config.Styles "") }}<link rel="stylesheet" href="{{ .Config.Styles }}">{{ end }}
+  {{ if (Defined . "Config") }}{{ if not (eq .Config.Styles "") }}<link rel="stylesheet" href="{{ .Config.Styles }}">{{ end }}{{ end }}
 
   <script src="{{ if and (Defined . "User") }}{{ .User.Admin }}{{ else }}{{ .Config.Admin }}{{ end }}/assets/js/plugins.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
