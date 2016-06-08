@@ -18,7 +18,8 @@ install:
 - go install github.com/mitchellh/gox
 - go generate
 script:
-- caddydev --output="caddy" --source="." hugo
+- sed -i -e 's/\/\/ This is where other plugins get plugged in \(imported\)/_ github.com/hacdias/caddy-hugo/g' $GOPATH/github.com/mholt/caddy/caddy/caddymain/run.go
+- go install github.com/mholt/caddy
 - go test ./...
 - bash dist/automate.sh
 deploy:
