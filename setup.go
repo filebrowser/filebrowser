@@ -6,12 +6,9 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/hacdias/caddy-filemanager/assets"
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
-
-const assetsURL = "/_filemanager_internal/"
 
 func init() {
 	caddy.RegisterPlugin("filemanager", caddy.Plugin{
@@ -23,7 +20,7 @@ func init() {
 // setup configures a new Browse middleware instance.
 func setup(c *caddy.Controller) error {
 	// Second argument would be the template file to use
-	tplBytes, err := assets.Asset("template.tmpl")
+	tplBytes, err := Asset("templates/template.tmpl")
 	if err != nil {
 		return err
 	}
@@ -73,7 +70,6 @@ func fileManagerParse(c *caddy.Controller) ([]Config, error) {
 			BaseURL:    "/",
 			StyleSheet: "",
 		}
-		var styles string
 
 		for c.NextBlock() {
 			switch c.Val() {
@@ -91,23 +87,12 @@ func fileManagerParse(c *caddy.Controller) ([]Config, error) {
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
-				styles = c.Val()
+				tplBytes, err := ioutil.ReadFile(c.Val())
+				if err != nil {
+					return configs, err
+				}
+				fmc.StyleSheet = string(tplBytes)
 			}
-		}
-
-		// Get StyleSheet
-		if styles != "" {
-			tplBytes, err := ioutil.ReadFile(c.Val())
-			if err != nil {
-				return configs, err
-			}
-			fmc.StyleSheet = string(tplBytes)
-		} else {
-			tplBytes, err := assets.Asset("styles.css")
-			if err != nil {
-				return configs, err
-			}
-			fmc.StyleSheet = string(tplBytes)
 		}
 
 		fmc.Root = http.Dir(fmc.PathScope)

@@ -1,0 +1,79 @@
+{{ define "content" }}
+<div class="meta">
+	<div id="summary">
+		<span class="meta-item"><b>{{.NumDirs}}</b> director{{if eq 1 .NumDirs}}y{{else}}ies{{end}}</span>
+		<span class="meta-item"><b>{{.NumFiles}}</b> file{{if ne 1 .NumFiles}}s{{end}}</span>
+		{{- if ne 0 .ItemsLimitedTo}}
+		<span class="meta-item">(of which only <b>{{.ItemsLimitedTo}}</b> are displayed)</span>
+		{{- end}}
+	</div>
+</div>
+<div class="listing">
+	<table aria-describedby="summary">
+		<thead>
+		<tr>
+			<th>
+				{{- if and (eq .Sort "name") (ne .Order "desc")}}
+				<a href="?sort=name&order=desc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Name <svg width="1em" height=".4em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#up-arrow"></use></svg></a>
+				{{- else if and (eq .Sort "name") (ne .Order "asc")}}
+				<a href="?sort=name&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Name <svg width="1em" height=".4em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#down-arrow"></use></svg></a>
+				{{- else}}
+				<a href="?sort=name&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Name</a>
+				{{- end}}
+			</th>
+			<th>
+				{{- if and (eq .Sort "size") (ne .Order "desc")}}
+				<a href="?sort=size&order=desc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Size <svg width="1em" height=".4em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#up-arrow"></use></svg></a>
+				{{- else if and (eq .Sort "size") (ne .Order "asc")}}
+				<a href="?sort=size&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Size <svg width="1em" height=".4em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#down-arrow"></use></svg></a>
+				{{- else}}
+				<a href="?sort=size&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Size</a>
+				{{- end}}
+			</th>
+			<th class="hideable">
+				{{- if and (eq .Sort "time") (ne .Order "desc")}}
+				<a href="?sort=time&order=desc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Modified <svg width="1em" height=".4em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#up-arrow"></use></svg></a>
+				{{- else if and (eq .Sort "time") (ne .Order "asc")}}
+				<a href="?sort=time&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Modified <svg width="1em" height=".4em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#down-arrow"></use></svg></a>
+				{{- else}}
+				<a href="?sort=time&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Modified</a>
+				{{- end}}
+			</th>
+		</tr>
+		</thead>
+		<tbody>
+		{{- if .CanGoUp}}
+		<tr>
+			<td>
+				<a href="..">
+					<span class="goup">Go up</span>
+				</a>
+			</td>
+			<td>&mdash;</td>
+			<td class="hideable">&mdash;</td>
+		</tr>
+		{{- end}}
+		{{- range .Items}}
+		<tr>
+			<td>
+				<a href="{{.URL}}">
+					{{- if .IsDir}}
+					<svg width="1.5em" height="1em" version="1.1" viewBox="0 0 35.678803 28.527945"><use xlink:href="#folder"></use></svg>
+					{{- else}}
+					<svg width="1.5em" height="1em" version="1.1" viewBox="0 0 26.604381 29.144726"><use xlink:href="#file"></use></svg>
+					{{- end}}
+					<span class="name">{{.Name}}</span>
+				</a>
+			</td>
+			{{- if .IsDir}}
+			<td data-order="-1">&mdash;</td>
+			{{- else}}
+			<td data-order="{{.Size}}">{{.HumanSize}}</td>
+			{{- end}}
+			<td class="hideable"><time datetime="{{.HumanModTime "2006-01-02T15:04:05Z"}}">{{.HumanModTime "01/02/2006 03:04:05 PM -07:00"}}</time></td>
+		</tr>
+		{{- end}}
+		</tbody>
+	</table>
+</div>
+{{ end }}
