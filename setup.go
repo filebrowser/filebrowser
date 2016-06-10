@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"text/template"
 
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
@@ -19,20 +18,6 @@ func init() {
 
 // setup configures a new Browse middleware instance.
 func setup(c *caddy.Controller) error {
-	// Second argument would be the template file to use
-	tplBytes, err := Asset("templates/template.tmpl")
-	if err != nil {
-		return err
-	}
-	tplText := string(tplBytes)
-
-	// Build the template
-	tpl, err := template.New("listing").Parse(tplText)
-	if err != nil {
-		return err
-	}
-	Template = tpl
-
 	configs, err := fileManagerParse(c)
 	if err != nil {
 		return err

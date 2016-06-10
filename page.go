@@ -1,36 +1,51 @@
 package filemanager
 
 import (
-	"errors"
-	"net/http"
+	"bytes"
+	"html/template"
+	"log"
 )
 
-// Page is the base type for each page
 type Page struct {
-	GET, POST, PUT, DELETE         func(w http.ResponseWriter, r *http.Request) (int, error)
-	DoGET, DoPOST, DoPUT, DoDELETE bool
+	Config *Config
+	Data   interface{}
 }
 
-// Route redirects the request for the respective method
-func (p Page) Route(w http.ResponseWriter, r *http.Request) (int, error) {
-	switch r.Method {
-	case "DELETE":
-		if p.DoDELETE {
-			return p.DELETE(w, r)
+func (f FileManager) formatAsHTML(data interface{}, fmc *Config, templates ...string) (*bytes.Buffer, error) {
+	buf := new(bytes.Buffer)
+	pg := &Page{
+		Config: fmc,
+		Data:   data,
+	}
+
+	templates = append(templates, "base")
+	var tpl *template.Template
+
+	// For each template, add it to the the tpl variable
+	for i, t := range templates {
+		// Get the template from the assets
+		page, err := Asset("templates/" + t + ".tmpl")
+
+		// Check if there is some error. If so, the template doesn't exist
+		if err != nil {
+			log.Print(err)
+			return new(bytes.Buffer), err
 		}
-	case "POST":
-		if p.DoPOST {
-			return p.POST(w, r)
+
+		// If it's the first iteration, creates a new template and add the
+		// functions map
+		if i == 0 {
+			tpl, err = template.New(t).Parse(string(page))
+		} else {
+			tpl, err = tpl.Parse(string(page))
 		}
-	case "GET":
-		if p.DoGET {
-			return p.GET(w, r)
-		}
-	case "PUT":
-		if p.DoPUT {
-			return p.PUT(w, r)
+
+		if err != nil {
+			log.Print(err)
+			return new(bytes.Buffer), err
 		}
 	}
 
-	return http.StatusMethodNotAllowed, errors.New("Invalid method.")
+	err := Template.Execute(buf, pg)
+	return buf, err
 }

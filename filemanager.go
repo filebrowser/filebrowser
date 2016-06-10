@@ -218,7 +218,7 @@ func (f FileManager) ServeListing(w http.ResponseWriter, r *http.Request, reques
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	default: // There's no 'application/json' in the 'Accept' header; browse normally
-		if buf, err = f.formatAsHTML(listing, bc); err != nil {
+		if buf, err = f.formatAsHTML(listing, bc, "listing"); err != nil {
 			return http.StatusInternalServerError, err
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -238,12 +238,5 @@ func (f FileManager) formatAsJSON(listing *Listing, bc *Config) (*bytes.Buffer, 
 
 	buf := new(bytes.Buffer)
 	_, err = buf.Write(marsh)
-	return buf, err
-}
-
-func (f FileManager) formatAsHTML(listing *Listing, fmc *Config) (*bytes.Buffer, error) {
-	buf := new(bytes.Buffer)
-	listing.StyleSheet = fmc.StyleSheet
-	err := Template.Execute(buf, listing)
 	return buf, err
 }

@@ -2,7 +2,8 @@
 // sources:
 // assets/public/css/styles.css
 // assets/public/js/application.js
-// assets/templates/template.tmpl
+// assets/templates/base.tmpl
+// assets/templates/listing.tmpl
 // DO NOT EDIT!
 
 package filemanager
@@ -65,10 +66,28 @@ func publicJsApplicationJs() (*asset, error) {
 	return a, err
 }
 
-// templatesTemplateTmpl reads file data from disk. It returns an error on failure.
-func templatesTemplateTmpl() (*asset, error) {
-	path := "D:\\Code\\Go\\src\\github.com\\hacdias\\caddy-filemanager\\assets\\templates\\template.tmpl"
-	name := "templates/template.tmpl"
+// templatesBaseTmpl reads file data from disk. It returns an error on failure.
+func templatesBaseTmpl() (*asset, error) {
+	path := "D:\\Code\\Go\\src\\github.com\\hacdias\\caddy-filemanager\\assets\\templates\\base.tmpl"
+	name := "templates/base.tmpl"
+	bytes, err := bindataRead(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// templatesListingTmpl reads file data from disk. It returns an error on failure.
+func templatesListingTmpl() (*asset, error) {
+	path := "D:\\Code\\Go\\src\\github.com\\hacdias\\caddy-filemanager\\assets\\templates\\listing.tmpl"
+	name := "templates/listing.tmpl"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
@@ -137,7 +156,8 @@ func AssetNames() []string {
 var _bindata = map[string]func() (*asset, error){
 	"public/css/styles.css": publicCssStylesCss,
 	"public/js/application.js": publicJsApplicationJs,
-	"templates/template.tmpl": templatesTemplateTmpl,
+	"templates/base.tmpl": templatesBaseTmpl,
+	"templates/listing.tmpl": templatesListingTmpl,
 }
 
 // AssetDir returns the file names below a certain
@@ -189,7 +209,8 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		}},
 	}},
 	"templates": &bintree{nil, map[string]*bintree{
-		"template.tmpl": &bintree{templatesTemplateTmpl, map[string]*bintree{}},
+		"base.tmpl": &bintree{templatesBaseTmpl, map[string]*bintree{}},
+		"listing.tmpl": &bintree{templatesListingTmpl, map[string]*bintree{}},
 	}},
 }}
 
