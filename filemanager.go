@@ -1,6 +1,6 @@
 //go:generate go get github.com/jteeuwen/go-bindata
 //go:generate go install github.com/jteeuwen/go-bindata/go-bindata
-//go:generate go-bindata -pkg assets -prefix "assets/source" -o assets/assets.go assets/source/...
+//go:generate go-bindata -debug -pkg assets -prefix "assets/source" -o assets/assets.go assets/source/...
 
 // Package filemanager provides middleware for managing files in a directory
 // when directory path is requested instead of a specific file. Based on browse
@@ -10,21 +10,19 @@ package filemanager
 import (
 	"bytes"
 	"encoding/json"
-	"mime"
 	"net/http"
 	"net/url"
 	"os"
 	"path"
-	"path/filepath"
 	"strings"
 	"text/template"
-	"time"
 
-	"github.com/dustin/go-humanize"
-	"github.com/hacdias/caddy-filemanager/assets"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 	"github.com/mholt/caddy/caddyhttp/staticfiles"
 )
+
+// Template used to show FileManager
+var Template *template.Template
 
 // FileManager is an http.Handler that can show a file listing when
 // directories in the given paths are specified.
@@ -36,94 +34,11 @@ type FileManager struct {
 
 // Config is a configuration for browsing in a particular path.
 type Config struct {
-	PathScope string
-	Root      http.FileSystem
-	Variables interface{}
-	Template  *template.Template
-}
-
-// A Listing is the context used to fill out a template.
-type Listing struct {
-	// The name of the directory (the last element of the path)
-	Name string
-
-	// The full path of the request
-	Path string
-
-	// Whether the parent directory is browsable
-	CanGoUp bool
-
-	// The items (files and folders) in the path
-	Items []FileInfo
-
-	// The number of directories in the listing
-	NumDirs int
-
-	// The number of files (items that aren't directories) in the listing
-	NumFiles int
-
-	// Which sorting order is used
-	Sort string
-
-	// And which order
-	Order string
-
-	// If ≠0 then Items have been limited to that many elements
-	ItemsLimitedTo int
-
-	// Optional custom variables for use in browse templates
-	User interface{}
-
-	httpserver.Context
-}
-
-// BreadcrumbMap returns l.Path where every element is a map
-// of URLs and path segment names.
-func (l Listing) BreadcrumbMap() map[string]string {
-	result := map[string]string{}
-
-	if len(l.Path) == 0 {
-		return result
-	}
-
-	// skip trailing slash
-	lpath := l.Path
-	if lpath[len(lpath)-1] == '/' {
-		lpath = lpath[:len(lpath)-1]
-	}
-
-	parts := strings.Split(lpath, "/")
-	for i, part := range parts {
-		if i == 0 && part == "" {
-			// Leading slash (root)
-			result["/"] = "/"
-			continue
-		}
-		result[strings.Join(parts[:i+1], "/")] = part
-	}
-
-	return result
-}
-
-// FileInfo is the info about a particular file or directory
-type FileInfo struct {
-	IsDir   bool
-	Name    string
-	Size    int64
-	URL     string
-	ModTime time.Time
-	Mode    os.FileMode
-}
-
-// HumanSize returns the size of the file as a human-readable string
-// in IEC format (i.e. power of 2 or base 1024).
-func (fi FileInfo) HumanSize() string {
-	return humanize.IBytes(uint64(fi.Size))
-}
-
-// HumanModTime returns the modified time of the file as a human-readable string.
-func (fi FileInfo) HumanModTime(format string) string {
-	return fi.ModTime.Format(format)
+	PathScope  string
+	Root       http.FileSystem
+	BaseURL    string
+	StyleSheet string
+	Variables  interface{}
 }
 
 func directoryListing(files []os.FileInfo, canGoUp bool, urlPath string) (Listing, bool) {
@@ -175,64 +90,62 @@ func directoryListing(files []os.FileInfo, canGoUp bool, urlPath string) (Listin
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 // If so, control is handed over to ServeListing.
 func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
-	var bc *Config
+	var fmc *Config
 	// See if there's a browse configuration to match the path
 	for i := range f.Configs {
-		if httpserver.Path(r.URL.Path).Matches(f.Configs[i].PathScope) {
-			bc = &f.Configs[i]
-			goto inScope
+		if httpserver.Path(r.URL.Path).Matches(f.Configs[i].BaseURL) {
+			fmc = &f.Configs[i]
+
+			// Browse works on existing directories; delegate everything else
+			requestedFilepath, err := fmc.Root.Open(strings.Replace(r.URL.Path, fmc.BaseURL, "", 1))
+			if err != nil {
+				switch {
+				case os.IsPermission(err):
+					return http.StatusForbidden, err
+				case os.IsExist(err):
+					return http.StatusNotFound, err
+				default:
+					return f.Next.ServeHTTP(w, r)
+				}
+			}
+			defer requestedFilepath.Close()
+
+			info, err := requestedFilepath.Stat()
+			if err != nil {
+				switch {
+				case os.IsPermission(err):
+					return http.StatusForbidden, err
+				case os.IsExist(err):
+					return http.StatusGone, err
+				default:
+					return f.Next.ServeHTTP(w, r)
+				}
+			}
+			if !info.IsDir() {
+				return f.Next.ServeHTTP(w, r)
+			}
+
+			// Do not reply to anything else because it might be nonsensical
+			switch r.Method {
+			case http.MethodGet, http.MethodHead:
+				// proceed, noop
+			case "PROPFIND", http.MethodOptions:
+				return http.StatusNotImplemented, nil
+			default:
+				return f.Next.ServeHTTP(w, r)
+			}
+
+			// Browsing navigation gets messed up if browsing a directory
+			// that doesn't end in "/" (which it should, anyway)
+			if !strings.HasSuffix(r.URL.Path, "/") {
+				http.Redirect(w, r, r.URL.Path+"/", http.StatusTemporaryRedirect)
+				return 0, nil
+			}
+
+			return f.ServeListing(w, r, requestedFilepath, fmc)
 		}
 	}
 	return f.Next.ServeHTTP(w, r)
-inScope:
-
-	// Browse works on existing directories; delegate everything else
-	requestedFilepath, err := bc.Root.Open(r.URL.Path)
-	if err != nil {
-		switch {
-		case os.IsPermission(err):
-			return http.StatusForbidden, err
-		case os.IsExist(err):
-			return http.StatusNotFound, err
-		default:
-			return f.Next.ServeHTTP(w, r)
-		}
-	}
-	defer requestedFilepath.Close()
-
-	info, err := requestedFilepath.Stat()
-	if err != nil {
-		switch {
-		case os.IsPermission(err):
-			return http.StatusForbidden, err
-		case os.IsExist(err):
-			return http.StatusGone, err
-		default:
-			return f.Next.ServeHTTP(w, r)
-		}
-	}
-	if !info.IsDir() {
-		return f.Next.ServeHTTP(w, r)
-	}
-
-	// Do not reply to anything else because it might be nonsensical
-	switch r.Method {
-	case http.MethodGet, http.MethodHead:
-		// proceed, noop
-	case "PROPFIND", http.MethodOptions:
-		return http.StatusNotImplemented, nil
-	default:
-		return f.Next.ServeHTTP(w, r)
-	}
-
-	// Browsing navigation gets messed up if browsing a directory
-	// that doesn't end in "/" (which it should, anyway)
-	if !strings.HasSuffix(r.URL.Path, "/") {
-		http.Redirect(w, r, r.URL.Path+"/", http.StatusTemporaryRedirect)
-		return 0, nil
-	}
-
-	return f.ServeListing(w, r, requestedFilepath, bc)
 }
 
 func (f FileManager) loadDirectoryContents(requestedFilepath http.File, urlPath string) (*Listing, bool, error) {
@@ -316,26 +229,6 @@ func (f FileManager) ServeListing(w http.ResponseWriter, r *http.Request, reques
 	return http.StatusOK, nil
 }
 
-// serveAssets handles the /{admin}/assets requests
-func serveAssets(w http.ResponseWriter, r *http.Request) (int, error) {
-	filename := strings.Replace(r.URL.Path, assetsURL, "", 1)
-	file, err := assets.Asset(filename)
-
-	if err != nil {
-		return 404, nil
-	}
-
-	// Get the file extension ant its mime type
-	extension := filepath.Ext(filename)
-	mime := mime.TypeByExtension(extension)
-
-	// Write the header with the Content-Type and write the file
-	// content to the buffer
-	w.Header().Set("Content-Type", mime)
-	w.Write(file)
-	return 200, nil
-}
-
 func (f FileManager) formatAsJSON(listing *Listing, bc *Config) (*bytes.Buffer, error) {
 	marsh, err := json.Marshal(listing.Items)
 	if err != nil {
@@ -349,6 +242,6 @@ func (f FileManager) formatAsJSON(listing *Listing, bc *Config) (*bytes.Buffer, 
 
 func (f FileManager) formatAsHTML(listing *Listing, bc *Config) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
-	err := bc.Template.Execute(buf, listing)
+	err := Template.Execute(buf, listing)
 	return buf, err
 }

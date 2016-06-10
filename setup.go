@@ -22,6 +22,20 @@ func init() {
 
 // setup configures a new Browse middleware instance.
 func setup(c *caddy.Controller) error {
+	// Second argument would be the template file to use
+	tplBytes, err := assets.Asset("template.tmpl")
+	if err != nil {
+		return err
+	}
+	tplText := string(tplBytes)
+
+	// Build the template
+	tpl, err := template.New("listing").Parse(tplText)
+	if err != nil {
+		return err
+	}
+	Template = tpl
+
 	configs, err := fileManagerParse(c)
 	if err != nil {
 		return err
@@ -43,65 +57,63 @@ func setup(c *caddy.Controller) error {
 func fileManagerParse(c *caddy.Controller) ([]Config, error) {
 	var configs []Config
 
-	cfg := httpserver.GetConfig(c.Key)
-
-	appendCfg := func(bc Config) error {
+	appendCfg := func(fmc Config) error {
 		for _, c := range configs {
-			if c.PathScope == bc.PathScope {
-				return fmt.Errorf("duplicate browsing config for %s", c.PathScope)
+			if c.PathScope == fmc.PathScope {
+				return fmt.Errorf("duplicate file managing config for %s", c.PathScope)
 			}
 		}
-		configs = append(configs, bc)
+		configs = append(configs, fmc)
 		return nil
 	}
 
 	for c.Next() {
-		var bc Config
-
-		// First argument is directory to allow browsing; default is site root
-		if c.NextArg() {
-			bc.PathScope = c.Val()
-		} else {
-			bc.PathScope = "/"
+		var fmc = Config{
+			PathScope:  ".",
+			BaseURL:    "/",
+			StyleSheet: "",
 		}
-		bc.Root = http.Dir(cfg.Root)
-		theRoot, err := bc.Root.Open("/") // catch a missing path early
-		if err != nil {
-			return configs, err
-		}
-		defer theRoot.Close()
-		_, err = theRoot.Readdir(-1)
-		if err != nil {
-			return configs, err
+		var styles string
+
+		for c.NextBlock() {
+			switch c.Val() {
+			case "show":
+				if !c.NextArg() {
+					return configs, c.ArgErr()
+				}
+				fmc.PathScope = c.Val()
+			case "on":
+				if !c.NextArg() {
+					return configs, c.ArgErr()
+				}
+				fmc.BaseURL = c.Val()
+			case "styles":
+				if !c.NextArg() {
+					return configs, c.ArgErr()
+				}
+				styles = c.Val()
+			}
 		}
 
-		var tplBytes []byte
-
-		// Second argument would be the template file to use
-		var tplText string
-		if c.NextArg() {
-			tplBytes, err = ioutil.ReadFile(c.Val())
+		// Get StyleSheet
+		if styles != "" {
+			tplBytes, err := ioutil.ReadFile(c.Val())
 			if err != nil {
 				return configs, err
 			}
-			tplText = string(tplBytes)
+			fmc.StyleSheet = string(tplBytes)
 		} else {
-			tplBytes, err = assets.Asset(assetsURL + "template.tmpl")
+			tplBytes, err := assets.Asset("template.tmpl")
 			if err != nil {
 				return configs, err
 			}
-			tplText = string(tplBytes)
+			fmc.StyleSheet = string(tplBytes)
 		}
 
-		// Build the template
-		tpl, err := template.New("listing").Parse(tplText)
-		if err != nil {
-			return configs, err
-		}
-		bc.Template = tpl
+		fmc.Root = http.Dir(fmc.PathScope)
 
 		// Save configuration
-		err = appendCfg(bc)
+		err := appendCfg(fmc)
 		if err != nil {
 			return configs, err
 		}
