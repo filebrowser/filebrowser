@@ -1,9 +1,13 @@
 package filemanager
 
 import (
+	"net/url"
+	"os"
+	"path"
 	"strings"
 
 	"github.com/mholt/caddy/caddyhttp/httpserver"
+	"github.com/mholt/caddy/caddyhttp/staticfiles"
 )
 
 // A Listing is the context used to fill out a template.
@@ -42,6 +46,52 @@ type Listing struct {
 	StyleSheet string
 
 	httpserver.Context
+}
+
+func directoryListing(files []os.FileInfo, canGoUp bool, urlPath string) (Listing, bool) {
+	var (
+		fileinfos           []FileInfo
+		dirCount, fileCount int
+		hasIndexFile        bool
+	)
+
+	for _, f := range files {
+		name := f.Name()
+
+		for _, indexName := range staticfiles.IndexPages {
+			if name == indexName {
+				hasIndexFile = true
+				break
+			}
+		}
+
+		if f.IsDir() {
+			name += "/"
+			dirCount++
+		} else {
+			fileCount++
+		}
+
+		url := url.URL{Path: "./" + name} // prepend with "./" to fix paths with ':' in the name
+
+		fileinfos = append(fileinfos, FileInfo{
+			IsDir:   f.IsDir(),
+			Name:    f.Name(),
+			Size:    f.Size(),
+			URL:     url.String(),
+			ModTime: f.ModTime().UTC(),
+			Mode:    f.Mode(),
+		})
+	}
+
+	return Listing{
+		Name:     path.Base(urlPath),
+		Path:     urlPath,
+		CanGoUp:  canGoUp,
+		Items:    fileinfos,
+		NumDirs:  dirCount,
+		NumFiles: fileCount,
+	}, hasIndexFile
 }
 
 // BreadcrumbMap returns l.Path where every element is a map

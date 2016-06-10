@@ -12,14 +12,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
-	"net/url"
 	"os"
 	"path"
 	"strings"
 	"text/template"
 
 	"github.com/mholt/caddy/caddyhttp/httpserver"
-	"github.com/mholt/caddy/caddyhttp/staticfiles"
 )
 
 // Template used to show FileManager
@@ -42,60 +40,20 @@ type Config struct {
 	Variables  interface{}
 }
 
-func directoryListing(files []os.FileInfo, canGoUp bool, urlPath string) (Listing, bool) {
-	var (
-		fileinfos           []FileInfo
-		dirCount, fileCount int
-		hasIndexFile        bool
-	)
-
-	for _, f := range files {
-		name := f.Name()
-
-		for _, indexName := range staticfiles.IndexPages {
-			if name == indexName {
-				hasIndexFile = true
-				break
-			}
-		}
-
-		if f.IsDir() {
-			name += "/"
-			dirCount++
-		} else {
-			fileCount++
-		}
-
-		url := url.URL{Path: "./" + name} // prepend with "./" to fix paths with ':' in the name
-
-		fileinfos = append(fileinfos, FileInfo{
-			IsDir:   f.IsDir(),
-			Name:    f.Name(),
-			Size:    f.Size(),
-			URL:     url.String(),
-			ModTime: f.ModTime().UTC(),
-			Mode:    f.Mode(),
-		})
-	}
-
-	return Listing{
-		Name:     path.Base(urlPath),
-		Path:     urlPath,
-		CanGoUp:  canGoUp,
-		Items:    fileinfos,
-		NumDirs:  dirCount,
-		NumFiles: fileCount,
-	}, hasIndexFile
-}
-
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 // If so, control is handed over to ServeListing.
 func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	var fmc *Config
+
 	// See if there's a browse configuration to match the path
 	for i := range f.Configs {
 		if httpserver.Path(r.URL.Path).Matches(f.Configs[i].BaseURL) {
 			fmc = &f.Configs[i]
+
+			// Serve Assets
+			if httpserver.Path(r.URL.Path).Matches(fmc.BaseURL + "/_filemanagerinternal") {
+				return ServeAssets(w, r, fmc)
+			}
 
 			// Browse works on existing directories; delegate everything else
 			requestedFilepath, err := fmc.Root.Open(strings.Replace(r.URL.Path, fmc.BaseURL, "", 1))

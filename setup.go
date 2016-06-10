@@ -52,7 +52,7 @@ func fileManagerParse(c *caddy.Controller) ([]Config, error) {
 	for c.Next() {
 		var fmc = Config{
 			PathScope:  ".",
-			BaseURL:    "/",
+			BaseURL:    "",
 			StyleSheet: "",
 		}
 
