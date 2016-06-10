@@ -103,7 +103,7 @@ func fileManagerParse(c *caddy.Controller) ([]Config, error) {
 			}
 			fmc.StyleSheet = string(tplBytes)
 		} else {
-			tplBytes, err := assets.Asset("template.tmpl")
+			tplBytes, err := assets.Asset("styles.css")
 			if err != nil {
 				return configs, err
 			}

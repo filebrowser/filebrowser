@@ -240,8 +240,9 @@ func (f FileManager) formatAsJSON(listing *Listing, bc *Config) (*bytes.Buffer, 
 	return buf, err
 }
 
-func (f FileManager) formatAsHTML(listing *Listing, bc *Config) (*bytes.Buffer, error) {
+func (f FileManager) formatAsHTML(listing *Listing, fmc *Config) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
+	listing.StyleSheet = fmc.StyleSheet
 	err := Template.Execute(buf, listing)
 	return buf, err
 }
