@@ -2,17 +2,23 @@ package filemanager
 
 import (
 	"encoding/json"
+	"html/template"
 	"log"
 	"net/http"
 	"strings"
-	"text/template"
 )
+
+// Page contains the informations and functions needed to show the page
+type Page struct {
+	Info *PageInfo
+}
 
 // PageInfo contains the information of a page
 type PageInfo struct {
-	Name string
-	Path string
-	Data interface{}
+	Name   string
+	Path   string
+	Config *Config
+	Data   interface{}
 }
 
 // BreadcrumbMap returns p.Path where every element is a map
@@ -41,11 +47,6 @@ func (p PageInfo) BreadcrumbMap() map[string]string {
 	}
 
 	return result
-}
-
-// Page contains the informations and functions needed to show the page
-type Page struct {
-	Info *PageInfo
 }
 
 // PrintAsHTML formats the page in HTML and executes the template

@@ -52,6 +52,12 @@ func GetFileInfo(url *url.URL, c *Config) (*FileInfo, int, error) {
 	return file, 0, nil
 }
 
+// GetExtendedFileInfo is used to get extra parameters for FileInfo struct
+func (fi FileInfo) GetExtendedFileInfo() error {
+	// TODO: do this!
+	return nil
+}
+
 // HumanSize returns the size of the file as a human-readable string
 // in IEC format (i.e. power of 2 or base 1024).
 func (fi FileInfo) HumanSize() string {
