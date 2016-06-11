@@ -70,7 +70,6 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 				query := r.URL.Query()
 				if val, ok := query["raw"]; ok && val[0] == "true" {
-					// wanna raw file
 					return f.Next.ServeHTTP(w, r)
 				}
 
@@ -79,7 +78,9 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					return f.Next.ServeHTTP(w, r)
 				}
 
-			//	return f.ServeSingleFile(w, r, file, c)
+				//	return f.ServeSingleFile(w, r, file, c)
+
+				return http.StatusNotImplemented, nil
 			case http.MethodPost:
 				// Upload a new file
 				if r.Header.Get("Upload") == "true" {
