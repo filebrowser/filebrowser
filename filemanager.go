@@ -64,19 +64,16 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					return ServeAssets(w, r, c)
 				}
 
-				if fi.IsDir {
-					//return f.ServeListing(w, r, file.File, c)
-					return http.StatusNotImplemented, nil
-				}
+				if !fi.IsDir {
+					query := r.URL.Query()
+					if val, ok := query["raw"]; ok && val[0] == "true" {
+						return f.Next.ServeHTTP(w, r)
+					}
 
-				query := r.URL.Query()
-				if val, ok := query["raw"]; ok && val[0] == "true" {
-					return f.Next.ServeHTTP(w, r)
-				}
-
-				if val, ok := query["download"]; ok && val[0] == "true" {
-					w.Header().Set("Content-Disposition", "attachment; filename="+fi.Name)
-					return f.Next.ServeHTTP(w, r)
+					if val, ok := query["download"]; ok && val[0] == "true" {
+						w.Header().Set("Content-Disposition", "attachment; filename="+fi.Name)
+						return f.Next.ServeHTTP(w, r)
+					}
 				}
 
 				return fi.ServeAsHTML(w, r, c)

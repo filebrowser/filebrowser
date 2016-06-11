@@ -1,16 +1,19 @@
 package filemanager
 
 import (
+	"fmt"
 	"io/ioutil"
 	"mime"
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/dustin/go-humanize"
+	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
 // FileInfo is the information about a particular file or directory
@@ -131,6 +134,14 @@ func (fi FileInfo) Rename(w http.ResponseWriter, r *http.Request) (int, error) {
 
 // ServeAsHTML is used to serve single file pages
 func (fi FileInfo) ServeAsHTML(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+	if fi.IsDir {
+		return fi.serveListing(w, r, c)
+	}
+
+	return fi.serveSingleFile(w, r)
+}
+
+func (fi FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request) (int, error) {
 	err := fi.GetExtendedFileInfo()
 	if err != nil {
 		return ErrorToHTTPCode(err), err
@@ -145,6 +156,106 @@ func (fi FileInfo) ServeAsHTML(w http.ResponseWriter, r *http.Request, c *Config
 	}
 
 	return page.PrintAsHTML(w, "single")
+}
+
+func (fi FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+	var err error
+
+	file, err := c.Root.Open("/" + fi.Path)
+	if err != nil {
+		return ErrorToHTTPCode(err), err
+	}
+	defer file.Close()
+
+	listing, err := fi.loadDirectoryContents(file, c)
+	if err != nil {
+		fmt.Println(err)
+		switch {
+		case os.IsPermission(err):
+			return http.StatusForbidden, err
+		case os.IsExist(err):
+			return http.StatusGone, err
+		default:
+			return http.StatusInternalServerError, err
+		}
+	}
+
+	listing.Context = httpserver.Context{
+		Root: c.Root,
+		Req:  r,
+		URL:  r.URL,
+	}
+
+	// Copy the query values into the Listing struct
+	var limit int
+	listing.Sort, listing.Order, limit, err = handleSortOrder(w, r, c.PathScope)
+	if err != nil {
+		return http.StatusBadRequest, err
+	}
+
+	listing.applySort()
+
+	if limit > 0 && limit <= len(listing.Items) {
+		listing.Items = listing.Items[:limit]
+		listing.ItemsLimitedTo = limit
+	}
+
+	page := &Page{
+		Info: &PageInfo{
+			Name: listing.Name,
+			Path: listing.Path,
+			Data: listing,
+		},
+	}
+
+	return page.PrintAsHTML(w, "listing")
+}
+
+func (fi FileInfo) loadDirectoryContents(file http.File, c *Config) (*Listing, error) {
+	files, err := file.Readdir(-1)
+	if err != nil {
+		return nil, err
+	}
+
+	listing := directoryListing(files, fi.Path)
+	return &listing, nil
+}
+
+func directoryListing(files []os.FileInfo, urlPath string) Listing {
+	var (
+		fileinfos           []FileInfo
+		dirCount, fileCount int
+	)
+
+	for _, f := range files {
+		name := f.Name()
+
+		if f.IsDir() {
+			name += "/"
+			dirCount++
+		} else {
+			fileCount++
+		}
+
+		url := url.URL{Path: "./" + name} // prepend with "./" to fix paths with ':' in the name
+
+		fileinfos = append(fileinfos, FileInfo{
+			IsDir:   f.IsDir(),
+			Name:    f.Name(),
+			Size:    f.Size(),
+			URL:     url.String(),
+			ModTime: f.ModTime().UTC(),
+			Mode:    f.Mode(),
+		})
+	}
+
+	return Listing{
+		Name:     path.Base(urlPath),
+		Path:     urlPath,
+		Items:    fileinfos,
+		NumDirs:  dirCount,
+		NumFiles: fileCount,
+	}
 }
 
 // SimplifyMimeType returns the base type of a file
