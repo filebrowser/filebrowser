@@ -16,58 +16,57 @@ func init() {
 	})
 }
 
-// setup configures a new Browse middleware instance.
+// setup configures a new FileManager middleware instance.
 func setup(c *caddy.Controller) error {
-	configs, err := fileManagerParse(c)
+	configs, err := parseConfiguration(c)
 	if err != nil {
 		return err
 	}
 
-	f := FileManager{
-		Configs:       configs,
-		IgnoreIndexes: false,
-	}
-
 	httpserver.GetConfig(c.Key).AddMiddleware(func(next httpserver.Handler) httpserver.Handler {
-		f.Next = next
-		return f
+		return FileManager{Configs: configs, Next: next}
 	})
 
 	return nil
 }
 
-func fileManagerParse(c *caddy.Controller) ([]Config, error) {
+// Config is a configuration for browsing in a particualr path.
+type Config struct {
+	PathScope  string
+	Root       http.FileSystem
+	BaseURL    string
+	StyleSheet string
+}
+
+// parseConfiguration parses the configuration set by the user so it can
+// be used by the middleware
+func parseConfiguration(c *caddy.Controller) ([]Config, error) {
 	var configs []Config
 
-	appendCfg := func(fmc Config) error {
+	appendConfig := func(cfg Config) error {
 		for _, c := range configs {
-			if c.PathScope == fmc.PathScope {
+			if c.PathScope == cfg.PathScope {
 				return fmt.Errorf("duplicate file managing config for %s", c.PathScope)
 			}
 		}
-		configs = append(configs, fmc)
+		configs = append(configs, cfg)
 		return nil
 	}
 
 	for c.Next() {
-		var fmc = Config{
-			PathScope:  ".",
-			BaseURL:    "",
-			StyleSheet: "",
-		}
-
+		var cfg = Config{PathScope: "."}
 		for c.NextBlock() {
 			switch c.Val() {
 			case "show":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
-				fmc.PathScope = c.Val()
+				cfg.PathScope = c.Val()
 			case "on":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
-				fmc.BaseURL = c.Val()
+				cfg.BaseURL = c.Val()
 			case "styles":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
@@ -76,15 +75,12 @@ func fileManagerParse(c *caddy.Controller) ([]Config, error) {
 				if err != nil {
 					return configs, err
 				}
-				fmc.StyleSheet = string(tplBytes)
+				cfg.StyleSheet = string(tplBytes)
 			}
 		}
 
-		fmc.Root = http.Dir(fmc.PathScope)
-
-		// Save configuration
-		err := appendCfg(fmc)
-		if err != nil {
+		cfg.Root = http.Dir(cfg.PathScope)
+		if err := appendConfig(cfg); err != nil {
 			return configs, err
 		}
 	}

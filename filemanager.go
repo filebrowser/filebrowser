@@ -9,57 +9,46 @@
 package filemanager
 
 import (
+	"mime"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
+const assetsURL = "/_filemanagerinternal"
+
 // FileManager is an http.Handler that can show a file listing when
 // directories in the given paths are specified.
 type FileManager struct {
-	Next          httpserver.Handler
-	Configs       []Config
-	IgnoreIndexes bool
-}
-
-// Config is a configuration for browsing in a particular path.
-type Config struct {
-	PathScope  string
-	Root       http.FileSystem
-	BaseURL    string
-	StyleSheet string
-	Variables  interface{}
+	Next    httpserver.Handler
+	Configs []Config
 }
 
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
-// If so, control is handed over to ServeListing.
 func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
-	var c *Config
-	var file *InfoRequest
+	var (
+		c      *Config
+		fi     *FileInfo
+		code   int
+		err    error
+		assets bool
+	)
 
-	// Check if there is a FileManager configuration to match the path
 	for i := range f.Configs {
 		if httpserver.Path(r.URL.Path).Matches(f.Configs[i].BaseURL) {
 			c = &f.Configs[i]
+			assets = httpserver.Path(r.URL.Path).Matches(c.BaseURL + assetsURL)
 
-			// Serve assets
-			if httpserver.Path(r.URL.Path).Matches(c.BaseURL + "/_filemanagerinternal") {
-				return ServeAssets(w, r, c)
-			}
-
-			// Gets the file path to be used within c.Root
-			filepath := strings.Replace(r.URL.Path, c.BaseURL, "", 1)
-
-			if r.Method != http.MethodPost {
-				file = GetFileInfo(filepath, c)
-				if file.Err != nil {
-					defer file.File.Close()
-					return file.Code, file.Err
+			if r.Method != http.MethodPost && !assets {
+				fi, code, err = GetFileInfo(r.URL, c)
+				if err != nil {
+					return code, err
 				}
 
-				if file.Info.IsDir() && !strings.HasSuffix(r.URL.Path, "/") {
+				if fi.IsDir && !strings.HasSuffix(r.URL.Path, "/") {
 					http.Redirect(w, r, r.URL.Path+"/", http.StatusTemporaryRedirect)
 					return 0, nil
 				}
@@ -69,17 +58,21 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			switch r.Method {
 			case http.MethodGet:
 				// Read and show directory or file
-				if file.Info.IsDir() {
-					return f.ServeListing(w, r, file.File, c)
+				if assets {
+					return ServeAssets(w, r, c)
 				}
-				return f.ServeSingleFile(w, r, file, c)
+
+			/* 	if file.Info.IsDir() {
+				return f.ServeListing(w, r, file.File, c)
+			}
+			return f.ServeSingleFile(w, r, file, c) */
 			case http.MethodPost:
 				// Create new file or directory
 
 				return http.StatusOK, nil
 			case http.MethodDelete:
 				// Delete a file or a directory
-				return Delete(filepath, file.Info)
+				return fi.Delete()
 			case http.MethodPut:
 				// Update/Modify a directory or file
 
@@ -93,48 +86,38 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			}
 		}
 	}
+
 	return f.Next.ServeHTTP(w, r)
 }
 
-// InfoRequest is the information given by a GetFileInfo function
-type InfoRequest struct {
-	Info os.FileInfo
-	File http.File
-	Path string
-	Code int
-	Err  error
+// ErrorToHTTPCode gets the respective HTTP code for an error
+func ErrorToHTTPCode(err error) int {
+	switch {
+	case os.IsPermission(err):
+		return http.StatusForbidden
+	case os.IsExist(err):
+		return http.StatusGone
+	default:
+		return http.StatusInternalServerError
+	}
 }
 
-// GetFileInfo gets the file information and, in case of error, returns the
-// respective HTTP error code
-func GetFileInfo(path string, c *Config) *InfoRequest {
-	request := &InfoRequest{Path: path}
-	request.File, request.Err = c.Root.Open(path)
-	if request.Err != nil {
-		switch {
-		case os.IsPermission(request.Err):
-			request.Code = http.StatusForbidden
-		case os.IsExist(request.Err):
-			request.Code = http.StatusNotFound
-		default:
-			request.Code = http.StatusInternalServerError
-		}
-
-		return request
+// ServeAssets provides the needed assets for the front-end
+func ServeAssets(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+	// gets the filename to be used with Assets function
+	filename := strings.Replace(r.URL.Path, c.BaseURL+assetsURL, "public", 1)
+	file, err := Asset(filename)
+	if err != nil {
+		return http.StatusNotFound, nil
 	}
 
-	request.Info, request.Err = request.File.Stat()
+	// Get the file extension and its mimetype
+	extension := filepath.Ext(filename)
+	mediatype := mime.TypeByExtension(extension)
 
-	if request.Err != nil {
-		switch {
-		case os.IsPermission(request.Err):
-			request.Code = http.StatusForbidden
-		case os.IsExist(request.Err):
-			request.Code = http.StatusGone
-		default:
-			request.Code = http.StatusInternalServerError
-		}
-	}
-
-	return request
+	// Write the header with the Content-Type and write the file
+	// content to the buffer
+	w.Header().Set("Content-Type", mediatype)
+	w.Write(file)
+	return 200, nil
 }
