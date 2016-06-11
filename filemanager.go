@@ -9,7 +9,9 @@
 package filemanager
 
 import (
+	"io"
 	"mime"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -67,16 +69,14 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			}
 			return f.ServeSingleFile(w, r, file, c) */
 			case http.MethodPost:
-				// Create new file or directory
-
-				return http.StatusOK, nil
+				// Upload a new file
+				if r.Header.Get("Upload") == "true" {
+					return Upload(w, r, c)
+				}
+				return NewFolder(w, r, c)
 			case http.MethodDelete:
 				// Delete a file or a directory
 				return fi.Delete()
-			case http.MethodPut:
-				// Update/Modify a directory or file
-
-				return http.StatusOK, nil
 			case http.MethodPatch:
 				// Rename a file or directory
 				return fi.Rename(w, r)
@@ -119,4 +119,64 @@ func ServeAssets(w http.ResponseWriter, r *http.Request, c *Config) (int, error)
 	w.Header().Set("Content-Type", mediatype)
 	w.Write(file)
 	return 200, nil
+}
+
+// Upload is used to handle the upload requests to the server
+func Upload(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+	// Parse the multipart form in the request
+	err := r.ParseMultipartForm(100000)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	// For each file header in the multipart form
+	for _, fheaders := range r.MultipartForm.File {
+		// Handle each file
+		for _, hdr := range fheaders {
+			// Open the first file
+			var infile multipart.File
+			if infile, err = hdr.Open(); nil != err {
+				return http.StatusInternalServerError, err
+			}
+
+			filename := strings.Replace(r.URL.Path, c.BaseURL, c.PathScope, 1)
+			filename = filepath.Clean(filename)
+
+			// Create the file
+			var outfile *os.File
+			if outfile, err = os.Create(filename); nil != err {
+				if os.IsExist(err) {
+					return http.StatusConflict, err
+				}
+				return http.StatusInternalServerError, err
+			}
+
+			// Copy the file content
+			if _, err = io.Copy(outfile, infile); nil != err {
+				return http.StatusInternalServerError, err
+			}
+
+			defer outfile.Close()
+		}
+	}
+
+	return http.StatusOK, nil
+}
+
+// NewFolder makes a new directory
+func NewFolder(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+	path := strings.Replace(r.URL.Path, c.BaseURL, c.PathScope, 1)
+	path = filepath.Clean(path)
+	err := os.MkdirAll(path, 0755)
+	if err != nil {
+		switch {
+		case os.IsPermission(err):
+			return http.StatusForbidden, err
+		case os.IsExist(err):
+			return http.StatusConflict, err
+		default:
+			return http.StatusInternalServerError, err
+		}
+	}
+	return http.StatusCreated, nil
 }
