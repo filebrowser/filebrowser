@@ -79,3 +79,21 @@ func (fi FileInfo) Delete() (int, error) {
 
 	return http.StatusOK, nil
 }
+
+// Rename function is used tor rename a file or a directory
+func (fi FileInfo) Rename(w http.ResponseWriter, r *http.Request) (int, error) {
+	newname := r.Header.Get("Rename-To")
+	if newname == "" {
+		return http.StatusBadRequest, nil
+	}
+
+	newpath := filepath.Clean(newname)
+	newpath = strings.Replace(fi.Path, fi.Name, newname, 1)
+
+	if err := os.Rename(fi.Path, newpath); err != nil {
+		return ErrorToHTTPCode(err), err
+	}
+
+	http.Redirect(w, r, strings.Replace(fi.URL, fi.Name, newname, 1), http.StatusTemporaryRedirect)
+	return 0, nil
+}

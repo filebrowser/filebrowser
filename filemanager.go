@@ -79,8 +79,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				return http.StatusOK, nil
 			case http.MethodPatch:
 				// Rename a file or directory
-
-				return http.StatusOK, nil
+				return fi.Rename(w, r)
 			default:
 				return http.StatusNotImplemented, nil
 			}
