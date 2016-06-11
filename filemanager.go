@@ -9,19 +9,12 @@
 package filemanager
 
 import (
-	"bytes"
-	"encoding/json"
 	"net/http"
 	"os"
-	"path"
 	"strings"
-	"text/template"
 
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
-
-// Template used to show FileManager
-var Template *template.Template
 
 // FileManager is an http.Handler that can show a file listing when
 // directories in the given paths are specified.
@@ -43,158 +36,105 @@ type Config struct {
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 // If so, control is handed over to ServeListing.
 func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
-	var fmc *Config
+	var c *Config
+	var file *InfoRequest
 
-	// See if there's a browse configuration to match the path
+	// Check if there is a FileManager configuration to match the path
 	for i := range f.Configs {
 		if httpserver.Path(r.URL.Path).Matches(f.Configs[i].BaseURL) {
-			fmc = &f.Configs[i]
+			c = &f.Configs[i]
 
-			// Serve Assets
-			if httpserver.Path(r.URL.Path).Matches(fmc.BaseURL + "/_filemanagerinternal") {
-				return ServeAssets(w, r, fmc)
+			// Serve assets
+			if httpserver.Path(r.URL.Path).Matches(c.BaseURL + "/_filemanagerinternal") {
+				return ServeAssets(w, r, c)
 			}
 
-			// Browse works on existing directories; delegate everything else
-			requestedFilepath, err := fmc.Root.Open(strings.Replace(r.URL.Path, fmc.BaseURL, "", 1))
-			if err != nil {
-				switch {
-				case os.IsPermission(err):
-					return http.StatusForbidden, err
-				case os.IsExist(err):
-					return http.StatusNotFound, err
-				default:
-					return f.Next.ServeHTTP(w, r)
+			// Gets the file path to be used within c.Root
+			filepath := strings.Replace(r.URL.Path, c.BaseURL, "", 1)
+
+			if r.Method != http.MethodPost {
+				file = GetFileInfo(filepath, c)
+				if file.Err != nil {
+					defer file.File.Close()
+					return file.Code, file.Err
+				}
+
+				if file.Info.IsDir() && !strings.HasSuffix(r.URL.Path, "/") {
+					http.Redirect(w, r, r.URL.Path+"/", http.StatusTemporaryRedirect)
+					return 0, nil
 				}
 			}
-			defer requestedFilepath.Close()
 
-			info, err := requestedFilepath.Stat()
-			if err != nil {
-				switch {
-				case os.IsPermission(err):
-					return http.StatusForbidden, err
-				case os.IsExist(err):
-					return http.StatusGone, err
-				default:
-					return f.Next.ServeHTTP(w, r)
-				}
-			}
-			if !info.IsDir() {
-				return f.Next.ServeHTTP(w, r)
-			}
-
-			// Do not reply to anything else because it might be nonsensical
+			// Route the request depending on the HTTP Method
 			switch r.Method {
-			case http.MethodGet, http.MethodHead:
-				// proceed, noop
-			case "PROPFIND", http.MethodOptions:
-				return http.StatusNotImplemented, nil
+			case http.MethodGet:
+				// Read and show directory or file
+				if file.Info.IsDir() {
+					return f.ServeListing(w, r, file.File, c)
+				}
+				return f.ServeSingleFile(w, r, file.File, c)
+			case http.MethodPost:
+				// Create new file or directory
+
+				return http.StatusOK, nil
+			case http.MethodDelete:
+				// Delete a file or a directory
+				return Delete(filepath, file.Info)
+			case http.MethodPut:
+				// Update/Modify a directory or file
+
+				return http.StatusOK, nil
+			case http.MethodPatch:
+				// Rename a file or directory
+
+				return http.StatusOK, nil
 			default:
-				return f.Next.ServeHTTP(w, r)
+				return http.StatusNotImplemented, nil
 			}
-
-			// Browsing navigation gets messed up if browsing a directory
-			// that doesn't end in "/" (which it should, anyway)
-			if !strings.HasSuffix(r.URL.Path, "/") {
-				http.Redirect(w, r, r.URL.Path+"/", http.StatusTemporaryRedirect)
-				return 0, nil
-			}
-
-			return f.ServeListing(w, r, requestedFilepath, fmc)
 		}
 	}
 	return f.Next.ServeHTTP(w, r)
 }
 
-func (f FileManager) loadDirectoryContents(requestedFilepath http.File, urlPath string) (*Listing, bool, error) {
-	files, err := requestedFilepath.Readdir(-1)
-	if err != nil {
-		return nil, false, err
-	}
-
-	// Determine if user can browse up another folder
-	var canGoUp bool
-	curPathDir := path.Dir(strings.TrimSuffix(urlPath, "/"))
-	for _, other := range f.Configs {
-		if strings.HasPrefix(curPathDir, other.PathScope) {
-			canGoUp = true
-			break
-		}
-	}
-
-	// Assemble listing of directory contents
-	listing, hasIndex := directoryListing(files, canGoUp, urlPath)
-
-	return &listing, hasIndex, nil
+// InfoRequest is the information given by a GetFileInfo function
+type InfoRequest struct {
+	Info os.FileInfo
+	File http.File
+	Code int
+	Err  error
 }
 
-// ServeListing returns a formatted view of 'requestedFilepath' contents'.
-func (f FileManager) ServeListing(w http.ResponseWriter, r *http.Request, requestedFilepath http.File, bc *Config) (int, error) {
-	listing, containsIndex, err := f.loadDirectoryContents(requestedFilepath, r.URL.Path)
-	if err != nil {
+// GetFileInfo gets the file information and, in case of error, returns the
+// respective HTTP error code
+func GetFileInfo(path string, c *Config) *InfoRequest {
+	request := &InfoRequest{}
+	request.File, request.Err = c.Root.Open(path)
+
+	if request.Err != nil {
 		switch {
-		case os.IsPermission(err):
-			return http.StatusForbidden, err
-		case os.IsExist(err):
-			return http.StatusGone, err
+		case os.IsPermission(request.Err):
+			request.Code = http.StatusForbidden
+		case os.IsExist(request.Err):
+			request.Code = http.StatusNotFound
 		default:
-			return http.StatusInternalServerError, err
+			request.Code = http.StatusInternalServerError
+		}
+
+		return request
+	}
+
+	request.Info, request.Err = request.File.Stat()
+
+	if request.Err != nil {
+		switch {
+		case os.IsPermission(request.Err):
+			request.Code = http.StatusForbidden
+		case os.IsExist(request.Err):
+			request.Code = http.StatusGone
+		default:
+			request.Code = http.StatusInternalServerError
 		}
 	}
-	if containsIndex && !f.IgnoreIndexes { // directory isn't browsable
-		return f.Next.ServeHTTP(w, r)
-	}
-	listing.Context = httpserver.Context{
-		Root: bc.Root,
-		Req:  r,
-		URL:  r.URL,
-	}
-	listing.User = bc.Variables
 
-	// Copy the query values into the Listing struct
-	var limit int
-	listing.Sort, listing.Order, limit, err = f.handleSortOrder(w, r, bc.PathScope)
-	if err != nil {
-		return http.StatusBadRequest, err
-	}
-
-	listing.applySort()
-
-	if limit > 0 && limit <= len(listing.Items) {
-		listing.Items = listing.Items[:limit]
-		listing.ItemsLimitedTo = limit
-	}
-
-	var buf *bytes.Buffer
-	acceptHeader := strings.ToLower(strings.Join(r.Header["Accept"], ","))
-	switch {
-	case strings.Contains(acceptHeader, "application/json"):
-		if buf, err = f.formatAsJSON(listing, bc); err != nil {
-			return http.StatusInternalServerError, err
-		}
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-
-	default: // There's no 'application/json' in the 'Accept' header; browse normally
-		if buf, err = f.formatAsHTML(listing, bc, "listing"); err != nil {
-			return http.StatusInternalServerError, err
-		}
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
-	}
-
-	buf.WriteTo(w)
-
-	return http.StatusOK, nil
-}
-
-func (f FileManager) formatAsJSON(listing *Listing, bc *Config) (*bytes.Buffer, error) {
-	marsh, err := json.Marshal(listing.Items)
-	if err != nil {
-		return nil, err
-	}
-
-	buf := new(bytes.Buffer)
-	_, err = buf.Write(marsh)
-	return buf, err
+	return request
 }

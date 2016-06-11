@@ -1,6 +1,10 @@
 package filemanager
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"path"
@@ -42,10 +46,105 @@ type Listing struct {
 	// Optional custom variables for use in browse templates
 	User interface{}
 
-	// StyleSheet to costumize the page
-	StyleSheet string
-
 	httpserver.Context
+}
+
+func (f FileManager) loadDirectoryContents(requestedFilepath http.File, urlPath string) (*Listing, bool, error) {
+	files, err := requestedFilepath.Readdir(-1)
+	if err != nil {
+		return nil, false, err
+	}
+
+	// Determine if user can browse up another folder
+	// TODO: review this
+	var canGoUp bool
+	curPathDir := path.Dir(strings.TrimSuffix(urlPath, "/"))
+	for _, other := range f.Configs {
+		if strings.HasPrefix(curPathDir, other.PathScope) {
+			canGoUp = true
+			break
+		}
+	}
+
+	// Assemble listing of directory contents
+	listing, hasIndex := directoryListing(files, canGoUp, urlPath)
+	return &listing, hasIndex, nil
+}
+
+// ServeListing returns a formatted view of 'requestedFilepath' contents'.
+func (f FileManager) ServeListing(w http.ResponseWriter, r *http.Request, requestedFilepath http.File, bc *Config) (int, error) {
+	listing, containsIndex, err := f.loadDirectoryContents(requestedFilepath, r.URL.Path)
+	if err != nil {
+		fmt.Println(err)
+		switch {
+		case os.IsPermission(err):
+			return http.StatusForbidden, err
+		case os.IsExist(err):
+			return http.StatusGone, err
+		default:
+			return http.StatusInternalServerError, err
+		}
+	}
+
+	if containsIndex && !f.IgnoreIndexes { // directory isn't browsable
+		return f.Next.ServeHTTP(w, r)
+	}
+	listing.Context = httpserver.Context{
+		Root: bc.Root,
+		Req:  r,
+		URL:  r.URL,
+	}
+	listing.User = bc.Variables
+
+	// Copy the query values into the Listing struct
+	var limit int
+	listing.Sort, listing.Order, limit, err = f.handleSortOrder(w, r, bc.PathScope)
+	if err != nil {
+		return http.StatusBadRequest, err
+	}
+
+	listing.applySort()
+
+	if limit > 0 && limit <= len(listing.Items) {
+		listing.Items = listing.Items[:limit]
+		listing.ItemsLimitedTo = limit
+	}
+
+	var buf *bytes.Buffer
+	acceptHeader := strings.ToLower(strings.Join(r.Header["Accept"], ","))
+
+	if strings.Contains(acceptHeader, "application/json") {
+		if buf, err = f.formatAsJSON(listing, bc); err != nil {
+			return http.StatusInternalServerError, err
+		}
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	} else {
+		page := &Page{
+			Name:   listing.Name,
+			Path:   listing.Path,
+			Config: bc,
+			Data:   listing,
+		}
+
+		if buf, err = f.formatAsHTML(page, "listing"); err != nil {
+			return http.StatusInternalServerError, err
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	}
+
+	buf.WriteTo(w)
+	return http.StatusOK, nil
+}
+
+func (f FileManager) formatAsJSON(listing *Listing, bc *Config) (*bytes.Buffer, error) {
+	marsh, err := json.Marshal(listing.Items)
+	if err != nil {
+		return nil, err
+	}
+
+	buf := new(bytes.Buffer)
+	_, err = buf.Write(marsh)
+	return buf, err
 }
 
 func directoryListing(files []os.FileInfo, canGoUp bool, urlPath string) (Listing, bool) {
@@ -92,32 +191,4 @@ func directoryListing(files []os.FileInfo, canGoUp bool, urlPath string) (Listin
 		NumDirs:  dirCount,
 		NumFiles: fileCount,
 	}, hasIndexFile
-}
-
-// BreadcrumbMap returns l.Path where every element is a map
-// of URLs and path segment names.
-func (l Listing) BreadcrumbMap() map[string]string {
-	result := map[string]string{}
-
-	if len(l.Path) == 0 {
-		return result
-	}
-
-	// skip trailing slash
-	lpath := l.Path
-	if lpath[len(lpath)-1] == '/' {
-		lpath = lpath[:len(lpath)-1]
-	}
-
-	parts := strings.Split(lpath, "/")
-	for i, part := range parts {
-		if i == 0 && part == "" {
-			// Leading slash (root)
-			result["/"] = "/"
-			continue
-		}
-		result[strings.Join(parts[:i+1], "/")] = part
-	}
-
-	return result
 }

@@ -4,19 +4,18 @@ import (
 	"bytes"
 	"html/template"
 	"log"
+	"strings"
 )
 
 type Page struct {
+	Name   string
+	Path   string
 	Config *Config
 	Data   interface{}
 }
 
-func (f FileManager) formatAsHTML(data interface{}, fmc *Config, templates ...string) (*bytes.Buffer, error) {
+func (f FileManager) formatAsHTML(page *Page, templates ...string) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
-	pg := &Page{
-		Config: fmc,
-		Data:   data,
-	}
 
 	templates = append(templates, "base")
 	var tpl *template.Template
@@ -46,6 +45,34 @@ func (f FileManager) formatAsHTML(data interface{}, fmc *Config, templates ...st
 		}
 	}
 
-	err := Template.Execute(buf, pg)
+	err := tpl.Execute(buf, page)
 	return buf, err
+}
+
+// BreadcrumbMap returns p.Path where every element is a map
+// of URLs and path segment names.
+func (p Page) BreadcrumbMap() map[string]string {
+	result := map[string]string{}
+
+	if len(p.Path) == 0 {
+		return result
+	}
+
+	// skip trailing slash
+	lpath := p.Path
+	if lpath[len(lpath)-1] == '/' {
+		lpath = lpath[:len(lpath)-1]
+	}
+
+	parts := strings.Split(lpath, "/")
+	for i, part := range parts {
+		if i == 0 && part == "" {
+			// Leading slash (root)
+			result["/"] = "/"
+			continue
+		}
+		result[strings.Join(parts[:i+1], "/")] = part
+	}
+
+	return result
 }
