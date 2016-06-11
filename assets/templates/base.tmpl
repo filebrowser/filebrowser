@@ -4,16 +4,19 @@
 		<title>{{.Name}}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 			<script src="https://use.fontawesome.com/ede56571a0.js"></script>
+			<link href='https://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
 		  <link rel="stylesheet" href="/_filemanagerinternal/css/styles.css">
-		<style>
+			<style>
 
-		</style>
+			</style>
 	</head>
 	<body>
     <header>
-      <h1>
-        {{range $url, $name := .BreadcrumbMap}}<a href="{{$url}}">{{$name}}</a>{{if ne $url "/"}}/{{end}}{{end}}
-      </h1>
+			<div class="container">
+	      <h1>
+	        {{range $url, $name := .BreadcrumbMap}}{{if eq $url "/"}}<a href="{{$url}}">Home</a>{{end}}{{if ne $url "/"}}<i>></i><a href="{{$url}}">{{$name}}</a>{{end}}{{end}}
+	      </h1>
+			</div>
     </header>
     <main>
       {{ template "content" .Data }}

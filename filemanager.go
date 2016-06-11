@@ -72,7 +72,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				if file.Info.IsDir() {
 					return f.ServeListing(w, r, file.File, c)
 				}
-				return f.ServeSingleFile(w, r, file.File, c)
+				return f.ServeSingleFile(w, r, file, c)
 			case http.MethodPost:
 				// Create new file or directory
 
@@ -100,6 +100,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 type InfoRequest struct {
 	Info os.FileInfo
 	File http.File
+	Path string
 	Code int
 	Err  error
 }
@@ -107,9 +108,8 @@ type InfoRequest struct {
 // GetFileInfo gets the file information and, in case of error, returns the
 // respective HTTP error code
 func GetFileInfo(path string, c *Config) *InfoRequest {
-	request := &InfoRequest{}
+	request := &InfoRequest{Path: path}
 	request.File, request.Err = c.Root.Open(path)
-
 	if request.Err != nil {
 		switch {
 		case os.IsPermission(request.Err):

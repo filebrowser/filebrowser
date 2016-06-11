@@ -1,0 +1,18 @@
+{{ define "content" }}
+
+<main class="container">
+
+  {{ if eq .Type "image" }}
+  <img src="{{.Base64}}">
+  {{ else if eq .Type "audio" }}
+  <audio src="{{.Base64}}">
+</audio>
+  {{ else if eq .Type "video" }}
+
+  {{ else}}
+  <pre>{{ .Content }}</pre>
+  {{ end }}
+
+</main>
+
+{{ end }}

@@ -8,10 +8,8 @@
 + [ ] Rename files
 + [ ] Upload files and drag & drop
 + [ ] Delete files
-+ [ ] Show text files
-+ [ ] Show pictures
-+ [ ] Show videos
-+ [ ] Show music
++ [ ] Download files
++ [ ] Preview files
 
 ```
 filemanager {

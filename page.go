@@ -2,10 +2,10 @@ package filemanager
 
 import (
 	"encoding/json"
-	"html/template"
 	"log"
 	"net/http"
 	"strings"
+	"text/template"
 )
 
 // PageInfo contains the information of a page

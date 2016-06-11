@@ -1,6 +1,6 @@
 {{ define "content" }}
 <div class="meta">
-	<div id="summary">
+	<div id="summary" class="container">
 		<span class="meta-item"><b>{{.NumDirs}}</b> director{{if eq 1 .NumDirs}}y{{else}}ies{{end}}</span>
 		<span class="meta-item"><b>{{.NumFiles}}</b> file{{if ne 1 .NumFiles}}s{{end}}</span>
 		{{- if ne 0 .ItemsLimitedTo}}
@@ -8,8 +8,10 @@
 		{{- end}}
 	</div>
 </div>
+
+
 <div class="listing">
-	<table aria-describedby="summary">
+	<table class="container" aria-describedby="summary">
 		<thead>
 		<tr>
 			<th>
@@ -46,7 +48,7 @@
 		<tr>
 			<td>
 				<a href="..">
-					<span class="goup">Go up</span>
+					<i class="fa fa-level-up fa-2x" aria-hidden="true"></i> <span class="goup">Go up</span>
 				</a>
 			</td>
 			<td>&mdash;</td>
@@ -58,9 +60,9 @@
 			<td>
 				<a href="{{.URL}}">
 					{{- if .IsDir}}
-					<i class="fa fa-folder" aria-hidden="true"></i>
+					<i class="fa fa-folder fa-2x" aria-hidden="true"></i>
 					{{- else}}
-					<i class="fa fa-file-text-o" aria-hidden="true"></i>
+					<i class="fa fa-file-text-o fa-2x" aria-hidden="true"></i>
 					{{- end}}
 					<span class="name">{{.Name}}</span>
 				</a>

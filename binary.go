@@ -4,6 +4,7 @@
 // assets/public/js/application.js
 // assets/templates/base.tmpl
 // assets/templates/listing.tmpl
+// assets/templates/single.tmpl
 // DO NOT EDIT!
 
 package filemanager
@@ -102,6 +103,24 @@ func templatesListingTmpl() (*asset, error) {
 	return a, err
 }
 
+// templatesSingleTmpl reads file data from disk. It returns an error on failure.
+func templatesSingleTmpl() (*asset, error) {
+	path := "D:\\Code\\Go\\src\\github.com\\hacdias\\caddy-filemanager\\assets\\templates\\single.tmpl"
+	name := "templates/single.tmpl"
+	bytes, err := bindataRead(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -158,6 +177,7 @@ var _bindata = map[string]func() (*asset, error){
 	"public/js/application.js": publicJsApplicationJs,
 	"templates/base.tmpl": templatesBaseTmpl,
 	"templates/listing.tmpl": templatesListingTmpl,
+	"templates/single.tmpl": templatesSingleTmpl,
 }
 
 // AssetDir returns the file names below a certain
@@ -211,6 +231,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"templates": &bintree{nil, map[string]*bintree{
 		"base.tmpl": &bintree{templatesBaseTmpl, map[string]*bintree{}},
 		"listing.tmpl": &bintree{templatesListingTmpl, map[string]*bintree{}},
+		"single.tmpl": &bintree{templatesSingleTmpl, map[string]*bintree{}},
 	}},
 }}
 
