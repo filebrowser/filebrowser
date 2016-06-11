@@ -58,9 +58,9 @@
 			<td>
 				<a href="{{.URL}}">
 					{{- if .IsDir}}
-					<svg width="1.5em" height="1em" version="1.1" viewBox="0 0 35.678803 28.527945"><use xlink:href="#folder"></use></svg>
+					<i class="fa fa-folder" aria-hidden="true"></i>
 					{{- else}}
-					<svg width="1.5em" height="1em" version="1.1" viewBox="0 0 26.604381 29.144726"><use xlink:href="#file"></use></svg>
+					<i class="fa fa-file-text-o" aria-hidden="true"></i>
 					{{- end}}
 					<span class="name">{{.Name}}</span>
 				</a>

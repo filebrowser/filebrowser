@@ -1,8 +1,6 @@
 package filemanager
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -67,8 +65,8 @@ func (f FileManager) loadDirectoryContents(requestedFilepath http.File, urlPath 
 	}
 
 	// Assemble listing of directory contents
-	listing, hasIndex := directoryListing(files, canGoUp, urlPath)
-	return &listing, hasIndex, nil
+	listing, _ := directoryListing(files, canGoUp, urlPath)
+	return &listing, false, nil
 }
 
 // ServeListing returns a formatted view of 'requestedFilepath' contents'.
@@ -110,41 +108,21 @@ func (f FileManager) ServeListing(w http.ResponseWriter, r *http.Request, reques
 		listing.ItemsLimitedTo = limit
 	}
 
-	var buf *bytes.Buffer
 	acceptHeader := strings.ToLower(strings.Join(r.Header["Accept"], ","))
 
+	page := &Page{
+		Info: &PageInfo{
+			Name: listing.Name,
+			Path: listing.Path,
+			Data: listing,
+		},
+	}
+
 	if strings.Contains(acceptHeader, "application/json") {
-		if buf, err = f.formatAsJSON(listing, bc); err != nil {
-			return http.StatusInternalServerError, err
-		}
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	} else {
-		page := &Page{
-			Name:   listing.Name,
-			Path:   listing.Path,
-			Config: bc,
-			Data:   listing,
-		}
-
-		if buf, err = f.formatAsHTML(page, "listing"); err != nil {
-			return http.StatusInternalServerError, err
-		}
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		return page.PrintAsJSON(w)
 	}
 
-	buf.WriteTo(w)
-	return http.StatusOK, nil
-}
-
-func (f FileManager) formatAsJSON(listing *Listing, bc *Config) (*bytes.Buffer, error) {
-	marsh, err := json.Marshal(listing.Items)
-	if err != nil {
-		return nil, err
-	}
-
-	buf := new(bytes.Buffer)
-	_, err = buf.Write(marsh)
-	return buf, err
+	return page.PrintAsHTML(w, "listing")
 }
 
 func directoryListing(files []os.FileInfo, canGoUp bool, urlPath string) (Listing, bool) {

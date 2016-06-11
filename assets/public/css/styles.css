@@ -17,13 +17,13 @@ h1 a:hover {
 
 header,
 #summary {
-	padding-left: 5%;
-	padding-right: 5%;
+	padding-left: 7%;
+	padding-right: 7%;
 }
 
 th:first-child,
 td:first-child {
-	padding-left: 5%;
+	padding-left: 7%;
 }
 
 th:last-child,
@@ -32,9 +32,9 @@ td:last-child {
 }
 
 header {
-	padding-top: 25px;
-	padding-bottom: 15px;
-	background-color: #f2f2f2;
+	background-color: #FFC107;
+	padding-top: 1.5em;
+	padding-bottom: 1.5em;
 }
 
 h1 {
@@ -60,9 +60,11 @@ main {
 .meta {
 	font-size: 12px;
 	font-family: Verdana, sans-serif;
-	border-bottom: 1px solid #9C9C9C;
+	/* border-bottom: 1px solid #9C9C9C; */
 	padding-top: 15px;
 	padding-bottom: 15px;
+	background-color: #FFA000;
+	color: #fff;
 }
 
 .meta-item {
