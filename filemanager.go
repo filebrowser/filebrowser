@@ -64,10 +64,22 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					return ServeAssets(w, r, c)
 				}
 
-			/* 	if file.Info.IsDir() {
-				return f.ServeListing(w, r, file.File, c)
-			}
-			return f.ServeSingleFile(w, r, file, c) */
+				if fi.IsDir {
+					//return f.ServeListing(w, r, file.File, c)
+				}
+
+				query := r.URL.Query()
+				if val, ok := query["raw"]; ok && val[0] == "true" {
+					// wanna raw file
+					return f.Next.ServeHTTP(w, r)
+				}
+
+				if val, ok := query["download"]; ok && val[0] == "true" {
+					w.Header().Set("Content-Disposition", "attachment; filename="+fi.Name)
+					return f.Next.ServeHTTP(w, r)
+				}
+
+			//	return f.ServeSingleFile(w, r, file, c)
 			case http.MethodPost:
 				// Upload a new file
 				if r.Header.Get("Upload") == "true" {

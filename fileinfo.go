@@ -29,9 +29,10 @@ func GetFileInfo(url *url.URL, c *Config) (*FileInfo, int, error) {
 
 	path := strings.Replace(url.Path, c.BaseURL, c.PathScope, 1)
 	path = filepath.Clean(path)
+	path = strings.Replace(path, "\\", "/", -1)
 
 	file := &FileInfo{Path: path}
-	f, err := c.Root.Open(path)
+	f, err := c.Root.Open("/" + path)
 	if err != nil {
 		return file, ErrorToHTTPCode(err), err
 	}
