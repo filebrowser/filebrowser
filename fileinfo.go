@@ -1,6 +1,8 @@
 package filemanager
 
 import (
+	"io/ioutil"
+	"mime"
 	"net/http"
 	"net/url"
 	"os"
@@ -13,13 +15,16 @@ import (
 
 // FileInfo is the information about a particular file or directory
 type FileInfo struct {
-	IsDir   bool
-	Name    string
-	Size    int64
-	URL     string
-	ModTime time.Time
-	Mode    os.FileMode
-	Path    string
+	IsDir    bool
+	Name     string
+	Size     int64
+	URL      string
+	ModTime  time.Time
+	Mode     os.FileMode
+	Path     string
+	Mimetype string
+	Content  string
+	Type     string
 }
 
 // GetFileInfo gets the file information and, in case of error, returns the
@@ -53,8 +58,27 @@ func GetFileInfo(url *url.URL, c *Config) (*FileInfo, int, error) {
 }
 
 // GetExtendedFileInfo is used to get extra parameters for FileInfo struct
-func (fi FileInfo) GetExtendedFileInfo() error {
-	// TODO: do this!
+func (fi *FileInfo) GetExtendedFileInfo() error {
+	fi.Mimetype = mime.TypeByExtension(filepath.Ext(fi.Path))
+	fi.Type = SimplifyMimeType(fi.Mimetype)
+
+	if fi.Type == "text" {
+		err := fi.Read()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Read is used to read a file and store its content
+func (fi *FileInfo) Read() error {
+	raw, err := ioutil.ReadFile(fi.Path)
+	if err != nil {
+		return err
+	}
+	fi.Content = string(raw)
 	return nil
 }
 
@@ -103,4 +127,39 @@ func (fi FileInfo) Rename(w http.ResponseWriter, r *http.Request) (int, error) {
 
 	http.Redirect(w, r, strings.Replace(fi.URL, fi.Name, newname, 1), http.StatusTemporaryRedirect)
 	return 0, nil
+}
+
+// ServeAsHTML is used to serve single file pages
+func (fi FileInfo) ServeAsHTML(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+	err := fi.GetExtendedFileInfo()
+	if err != nil {
+		return ErrorToHTTPCode(err), err
+	}
+
+	page := &Page{
+		Info: &PageInfo{
+			Name: fi.Path,
+			Path: fi.Path,
+			Data: fi,
+		},
+	}
+
+	return page.PrintAsHTML(w, "single")
+}
+
+// SimplifyMimeType returns the base type of a file
+func SimplifyMimeType(name string) string {
+	if strings.HasPrefix(name, "video") {
+		return "video"
+	}
+
+	if strings.HasPrefix(name, "audio") {
+		return "audio"
+	}
+
+	if strings.HasPrefix(name, "image") {
+		return "image"
+	}
+
+	return "text"
 }

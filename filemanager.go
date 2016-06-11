@@ -66,6 +66,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 				if fi.IsDir {
 					//return f.ServeListing(w, r, file.File, c)
+					return http.StatusNotImplemented, nil
 				}
 
 				query := r.URL.Query()
@@ -78,9 +79,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					return f.Next.ServeHTTP(w, r)
 				}
 
-				//	return f.ServeSingleFile(w, r, file, c)
-
-				return http.StatusNotImplemented, nil
+				return fi.ServeAsHTML(w, r, c)
 			case http.MethodPost:
 				// Upload a new file
 				if r.Header.Get("Upload") == "true" {
