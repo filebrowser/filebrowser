@@ -5,13 +5,12 @@
 
 ## Roadmap
 
-**All of this features are already written in backend :)**
-
 + [ ] Rename files
 + [ ] Upload files and drag & drop
 + [ ] Delete files
 + [ ] Download files
 + [ ] Preview files
++ [ ] Search ?
 
 ```
 filemanager {
