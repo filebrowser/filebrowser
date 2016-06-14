@@ -3,21 +3,41 @@
 	<head>
 		<title>{{.Name}}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-			<script src="https://use.fontawesome.com/ede56571a0.js"></script>
+			<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 			<link href='https://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
 		  <link rel="stylesheet" href="/_filemanagerinternal/css/styles.css">
+
+			<script src="/_filemanagerinternal/js/application.js"></script>
 			<style>
 
 			</style>
 	</head>
 	<body>
     <header>
-			<div class="container">
-	      <h1>
-	        {{range $url, $name := .BreadcrumbMap}}{{if eq $url "/"}}<a href="{{$url}}">Home</a>{{end}}{{if ne $url "/"}}<i>></i><a href="{{$url}}">{{$name}}</a>{{end}}{{end}}
-	      </h1>
+			<div>
+				<p>File Manager <i class="material-icons">chevron_right</i> {{ .Name }}</p>
+			</div>
+			<div>
+				Search
+			</div>
+			<div>
+				<div class="action" id="upload"><i class="material-icons">file_upload</i></div>
 			</div>
     </header>
+		<div id="toolbar">
+			<div>
+				<div class="action" id="back"><i class="material-icons">arrow_back</i></div>
+				<p><span id="selected-number">0</span> selected.</p>
+			</div>
+			<div>
+				<div class="action" id="open"><i class="material-icons">open_in_new</i></div>
+				<div class="action" id="rename"><i class="material-icons">mode_edit</i></div>
+				<div class="action" id="download"><i class="material-icons">file_download</i></div>
+				<div class="action" id="delete"><i class="material-icons">delete</i></div>
+			</div>
+		</div>
+
+		File Manager {{range $url, $name := .BreadcrumbMap}}<i>></i><a href="/{{$url}}">{{$name}}</a>{{end}}
     <main>
       {{ template "content" .Data }}
     </main>

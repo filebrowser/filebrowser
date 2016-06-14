@@ -1,16 +1,7 @@
 {{ define "content" }}
-<div class="meta">
-	<div id="summary" class="container">
-		<span class="meta-item"><b>{{.NumDirs}}</b> director{{if eq 1 .NumDirs}}y{{else}}ies{{end}}</span>
-		<span class="meta-item"><b>{{.NumFiles}}</b> file{{if ne 1 .NumFiles}}s{{end}}</span>
-		{{- if ne 0 .ItemsLimitedTo}}
-		<span class="meta-item">(of which only <b>{{.ItemsLimitedTo}}</b> are displayed)</span>
-		{{- end}}
-	</div>
-</div>
-
-
 <div class="listing">
+	<div>There are {{.NumDirs}}</b> director{{if eq 1 .NumDirs}}y{{else}}ies{{end}} and {{.NumFiles}}</b> file{{if ne 1 .NumFiles}}s{{end}} in here.</div>
+
 	<table class="container" aria-describedby="summary">
 		<thead>
 		<tr>
@@ -50,9 +41,9 @@
 			<td>
 				<a href="{{.URL}}">
 					{{- if .IsDir}}
-					<i class="fa fa-folder fa-2x" aria-hidden="true"></i>
+					<i class="material-icons">folder</i>
 					{{- else}}
-					<i class="fa fa-file-text-o fa-2x" aria-hidden="true"></i>
+					<i class="material-icons">insert_drive_file</i>
 					{{- end}}
 					<span class="name">{{.Name}}</span>
 				</a>

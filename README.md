@@ -5,9 +5,9 @@
 
 ## Roadmap
 
-+ [ ] Rename files
++ [x] Rename files
 + [ ] Upload files and drag & drop
-+ [ ] Delete files
++ [x] Delete files
 + [ ] Download files
 + [ ] Preview files
 + [ ] Search ?
