@@ -8,8 +8,8 @@
 + [x] Rename files
 + [ ] Upload files and drag & drop
 + [x] Delete files
-+ [ ] Download files
-+ [ ] Preview files
++ [x] Download files
++ [x] Preview files
 + [ ] Search ?
 
 ```
