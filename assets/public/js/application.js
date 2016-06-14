@@ -37,6 +37,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
     return false;
 });
 
+var changeView = function(event) {
+
+  return false;
+}
+
 var changeToLoading = function(element) {
     var originalText = element.innerHTML;
     element.style.opacity = 0;
@@ -99,6 +104,7 @@ var backEvent = function(event) {
 }
 
 var deleteEvent = function(event) {
+  if (selectedItems.length) {
     Array.from(selectedItems).forEach(item => {
         var html = changeToLoading(document.getElementById("delete"));
         var request = new XMLHttpRequest();
@@ -117,6 +123,22 @@ var deleteEvent = function(event) {
     });
 
     return false;
+  }
+
+  var request = new XMLHttpRequest();
+  request.open("DELETE", window.location);
+  request.send();
+  request.onreadystatechange = function() {
+      if (request.readyState == 4) {
+          if (request.status == 200) {
+            window.location.pathname = RemoveLastDirectoryPartOf(window.location.pathname);
+          }
+
+          changeToDone(document.getElementById("delete"), (request.status != 200), html);
+      }
+  }
+
+  return false;
 }
 
 var downloadEvent = function(event) {
@@ -129,6 +151,12 @@ var downloadEvent = function(event) {
 
     window.open(window.location + "?download=true");
     return false;
+}
+
+var RemoveLastDirectoryPartOf = function(url) {
+    var arr = url.split('/');
+    arr.pop();
+    return( arr.join('/') );
 }
 
 document.addEventListener("changed-selected", function(event) {
