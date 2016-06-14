@@ -108,7 +108,7 @@ abbr[title] {
  */
 
 b, strong {
-    font-weight: bold;
+    font-weight: 500;
 }
 
 /**
@@ -568,7 +568,7 @@ pre {
 /* HEADER */
 
 header {
-    background-color: #8BC34A;
+    background-color: #2196F3;
     padding: 1.7em 0;
 }
 header h1 {
@@ -582,8 +582,45 @@ header p {
 header p i {
   vertical-align: middle;
 }
+header form {
+  display: inline-block;
+  background-color: #1E88E5;
+  padding: .75em;
+  color: #212121;
+  border-radius: .3em;
+  height: 100%;
+  vertical-align: middle;
+}
+header form input,
+header form i {
+    vertical-align: middle;
+}
+header form i {
+    margin-right: .3em;
+    color: rgba(0,0,0,0.5)
+}
+header form input {
+  border: 0;
+  outline: 0;
+  background-color: transparent;
+  min-width: 20em;
+}
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    rgba(0,0,0,0.5);
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    rgba(0,0,0,0.5);
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    rgba(0,0,0,0.5);
+   opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:    rgba(0,0,0,0.5);
+}
 header, #toolbar {
-    position: absolute;
+    position: fixed;
     width: 100%;
     top: 0;
     left: 0;
@@ -612,7 +649,8 @@ header p {
   top: 0;
   opacity: 1;
 }
-#toolbar div:nth-child(2) {
+#toolbar div:nth-child(2),
+header  div:nth-child(2)  {
     text-align: right;
 }
 .action {
