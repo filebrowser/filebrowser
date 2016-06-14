@@ -35,7 +35,7 @@ type FileInfo struct {
 func GetFileInfo(url *url.URL, c *Config) (*FileInfo, int, error) {
 	var err error
 
-	path := strings.Replace(url.Path, c.BaseURL, c.PathScope, 1)
+	path := strings.Replace(url.Path, c.BaseURL, "", 1)
 	path = filepath.Clean(path)
 	path = strings.Replace(path, "\\", "/", -1)
 
@@ -138,10 +138,10 @@ func (fi FileInfo) ServeAsHTML(w http.ResponseWriter, r *http.Request, c *Config
 		return fi.serveListing(w, r, c)
 	}
 
-	return fi.serveSingleFile(w, r)
+	return fi.serveSingleFile(w, r, c)
 }
 
-func (fi FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request) (int, error) {
+func (fi FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
 	err := fi.GetExtendedFileInfo()
 	if err != nil {
 		return ErrorToHTTPCode(err), err
@@ -149,9 +149,10 @@ func (fi FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request) (int,
 
 	page := &Page{
 		Info: &PageInfo{
-			Name: fi.Path,
-			Path: fi.Path,
-			Data: fi,
+			Name:   fi.Path,
+			Path:   fi.Path,
+			Data:   fi,
+			Config: c,
 		},
 	}
 
@@ -202,9 +203,10 @@ func (fi FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *Confi
 
 	page := &Page{
 		Info: &PageInfo{
-			Name: listing.Name,
-			Path: listing.Path,
-			Data: listing,
+			Name:   listing.Name,
+			Path:   listing.Path,
+			Config: c,
+			Data:   listing,
 		},
 	}
 

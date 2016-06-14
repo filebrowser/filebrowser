@@ -5,17 +5,17 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 			<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 			<link href='https://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
-		  <link rel="stylesheet" href="/_filemanagerinternal/css/styles.css">
-
-			<script src="/_filemanagerinternal/js/application.js"></script>
-			<style>
-
-			</style>
+		  <link rel="stylesheet" href="{{ .Config.BaseURL }}/_filemanagerinternal/css/styles.css">
+			<script src="{{ .Config.BaseURL }}/_filemanagerinternal/js/application.js"></script>
+			{{ if ne .Config.StyleSheet "" }}<style>{{ .Config.StyleSheet}}</style>{{ end }}
 	</head>
 	<body>
     <header>
 			<div>
-				<p>File Manager <i class="material-icons">chevron_right</i> {{ .Name }}</p>
+				{{ $lnk := .PreviousLink }}
+				{{ if ne $lnk ""}}<a href="../../{{.PreviousLink}}"><div class="action" id="prev"><i class="material-icons">subdirectory_arrow_left</i></div></a>{{ else }}
+				<div class="action disabled" id="prev"><i class="material-icons">subdirectory_arrow_left</i></div>{{ end }}
+				<p><a href="{{ if eq .Config.BaseURL "" }}/{{ else }}{{ .Config.BaseURL }}{{ end }}">File Manager</a> {{ if ne .Name "."}}<i class="material-icons">chevron_right</i> {{ .Name }}</p>{{ end }}
 			</div>
 			<div>
 				<form>
@@ -39,12 +39,11 @@
 			</div>
 		</div>
 
-		File Manager {{range $url, $name := .BreadcrumbMap}}<i>></i><a href="/{{$url}}">{{$name}}</a>{{end}}
     <main>
       {{ template "content" .Data }}
     </main>
 		<footer>
-			Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a>.
+			Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a> and <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.
 		</footer>
 		<script type="text/javascript">
 			function localizeDatetime(e, index, ar) {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
@@ -54,7 +55,7 @@ func parseConfiguration(c *caddy.Controller) ([]Config, error) {
 	}
 
 	for c.Next() {
-		var cfg = Config{PathScope: "."}
+		var cfg = Config{PathScope: ".", BaseURL: ""}
 		for c.NextBlock() {
 			switch c.Val() {
 			case "show":
@@ -67,6 +68,9 @@ func parseConfiguration(c *caddy.Controller) ([]Config, error) {
 					return configs, c.ArgErr()
 				}
 				cfg.BaseURL = c.Val()
+				cfg.BaseURL = strings.TrimPrefix(cfg.BaseURL, "/")
+				cfg.BaseURL = strings.TrimSuffix(cfg.BaseURL, "/")
+				cfg.BaseURL = "/" + cfg.BaseURL
 			case "styles":
 				if !c.NextArg() {
 					return configs, c.ArgErr()

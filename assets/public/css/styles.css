@@ -417,7 +417,8 @@ td, th {
 body {
     font-family: 'Roboto', sans-serif;
     text-rendering: optimizespeed;
-    padding-top: 4em;
+    padding-top: 5em;
+    background-color: #f5f5f5;
 }
 a {
     color: #006ed3;
@@ -462,6 +463,7 @@ table {
 tr {
     border-bottom: 1px dashed #dadada;
     transition: .1s ease all;
+    cursor: pointer;
 }
 tr.selected {
     background-color: #ccc;
@@ -503,17 +505,18 @@ td .name, td .goup {
     vertical-align: middle;
 }
 footer {
-    padding: 40px 20px;
-    font-size: 12px;
+    font-size: .6em;
     text-align: center;
+    color: grey;
+}
+footer a,
+footer a:hover {
+    color: inherit;
 }
 .container {
     margin: 0 auto;
     width: 95%;
     max-width: 960px;
-}
-.listing i {
-    vertical-align: middle;
 }
 pre {
     border: 1px solid #e6e6e6;
@@ -577,47 +580,53 @@ header h1 {
 }
 header p {
     font-size: 1.5em;
-    padding: 0.25em 0;
 }
 header p i {
-  vertical-align: middle;
+    font-size: 1em !important;
+    color: rgba(0, 0, 0, 0.21);
+}
+header p i {
+    vertical-align: middle;
 }
 header form {
-  display: inline-block;
-  background-color: #1E88E5;
-  padding: .75em;
-  color: #212121;
-  border-radius: .3em;
-  height: 100%;
-  vertical-align: middle;
+    display: inline-block;
+    background-color: #1E88E5;
+    padding: .75em;
+    color: #212121;
+    border-radius: .3em;
+    height: 100%;
+    vertical-align: middle;
 }
-header form input,
-header form i {
+header form input, header form i {
     vertical-align: middle;
 }
 header form i {
     margin-right: .3em;
-    color: rgba(0,0,0,0.5)
+    color: rgba(0, 0, 0, 0.5)
 }
 header form input {
-  border: 0;
-  outline: 0;
-  background-color: transparent;
-  min-width: 20em;
+    border: 0;
+    outline: 0;
+    background-color: transparent;
+    min-width: 20em;
 }
-::-webkit-input-placeholder { /* WebKit, Blink, Edge */
-    color:    rgba(0,0,0,0.5);
+::-webkit-input-placeholder {
+    /* WebKit, Blink, Edge */
+    color: rgba(0, 0, 0, 0.5);
 }
-:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-   color:    rgba(0,0,0,0.5);
-   opacity:  1;
+:-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: rgba(0, 0, 0, 0.5);
+    opacity: 1;
 }
-::-moz-placeholder { /* Mozilla Firefox 19+ */
-   color:    rgba(0,0,0,0.5);
-   opacity:  1;
+::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: rgba(0, 0, 0, 0.5);
+    opacity: 1;
 }
-:-ms-input-placeholder { /* Internet Explorer 10-11 */
-   color:    rgba(0,0,0,0.5);
+:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: rgba(0, 0, 0, 0.5);
 }
 header, #toolbar {
     position: fixed;
@@ -627,16 +636,18 @@ header, #toolbar {
     padding: .5em;
     display: flex;
 }
-#toolbar div,
-header div {
+#toolbar div, header div {
     flex-grow: 1;
     vertical-align: middle;
 }
-#toolbar p,
-header p {
+#toolbar p, header p {
     display: inline-block;
     margin: 0;
     vertical-align: middle;
+}
+#toolbar p a, header p a,
+#toolbar p a:hover, header p a:hover {
+    color: inherit;
 }
 #toolbar {
     background-color: #6f6f6f;
@@ -646,11 +657,10 @@ header p {
     transition: .2s ease-in-out all;
 }
 #toolbar.enabled {
-  top: 0;
-  opacity: 1;
+    top: 0;
+    opacity: 1;
 }
-#toolbar div:nth-child(2),
-header  div:nth-child(2)  {
+#toolbar div:nth-child(2), header div:nth-child(2) {
     text-align: right;
 }
 .action {
@@ -662,7 +672,7 @@ header  div:nth-child(2)  {
     transition: .2s ease all;
 }
 .action.disabled {
-    opacity: 0;
+    opacity: .2;
 }
 .action i {
     padding: .5em;
@@ -671,4 +681,46 @@ header  div:nth-child(2)  {
 }
 .action:hover i {
     background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* LISTING */
+
+#listing {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 0 .5em;
+}
+#listing .item {
+    background-color: #fff;
+    border-radius: .2em;
+    padding: .5em;
+    margin: 0 .5em 1em;
+    border: .2em solid #fff;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.12);
+    transition: .2s ease all;
+    flex-grow: 1;
+}
+.item:hover {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+}
+.item.selected {
+    border-color: #6f6f6f !important;
+}
+.item div {
+    display: inline-block;
+    vertical-align: middle;
+}
+.item p {
+    margin: 0;
+    font-size: .9em;
+    color: #4e4e4e;
+}
+.item span {
+    font-weight: bold;
+}
+.item i {
+    font-size: 4em;
+    margin-right: .1em;
 }

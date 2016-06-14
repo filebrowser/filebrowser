@@ -49,6 +49,17 @@ func (p PageInfo) BreadcrumbMap() map[string]string {
 	return result
 }
 
+// PreviousLink returns the path of the previous folder
+func (p PageInfo) PreviousLink() string {
+	parts := strings.Split(p.Path, "/")
+
+	if len(parts) <= 1 {
+		return ""
+	}
+
+	return parts[len(parts)-2]
+}
+
 // PrintAsHTML formats the page in HTML and executes the template
 func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, error) {
 	templates = append(templates, "base")

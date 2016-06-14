@@ -3,7 +3,7 @@
 var selectedItems = [];
 
 document.addEventListener("DOMContentLoaded", function(event) {
-    var items = document.getElementsByTagName('tr');
+    var items = document.getElementsByClassName('item');
     Array.from(items).forEach(link => {
         link.addEventListener('click', function(event) {
             var url = link.getElementsByTagName('a')[0].getAttribute('href');
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 });
 
 var backEvent = function(event) {
-  var items = document.getElementsByTagName('tr');
+  var items = document.getElementsByClassName('item');
   Array.from(items).forEach(link => {
     link.classList.remove('selected');
   });
