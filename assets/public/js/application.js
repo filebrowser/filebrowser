@@ -37,10 +37,48 @@ document.addEventListener("DOMContentLoaded", function(event) {
     return false;
 });
 
+var changeToLoading = function(element) {
+    var originalText = element.innerHTML;
+    element.style.opacity = 0;
+    setTimeout(function() {
+        element.innerHTML = "<i class=\"material-icons spin\">autorenew</i>";
+        element.style.opacity = 1;
+    }, 200);
+
+    return originalText;
+}
+
+var changeToDone = function(element, error, html) {
+    element.style.opacity = 0;
+    setTimeout(function() {
+        if (error) {
+            element.innerHTML = "<i class=\"material-icons\">close</i>";
+        } else {
+            element.innerHTML = "<i class=\"material-icons\">done</i>";
+        }
+
+        element.style.opacity = 1;
+
+        setTimeout(function() {
+            element.style.opacity = 0;
+
+            setTimeout(function() {
+                element.innerHTML = html;
+                element.style.opacity = 1;
+
+                if (selectedItems.length == 0) {
+                    var event = new CustomEvent('changed-selected');
+                    document.dispatchEvent(event);
+                }
+            }, 200);
+        }, 1000);
+    }, 200);
+    return false;
+}
+
 var openEvent = function(event) {
     if (selectedItems.length) {
-
-
+        window.open(selectedItems[0] + "?raw=true");
         return false;
     }
 
@@ -62,22 +100,22 @@ var backEvent = function(event) {
 
 var deleteEvent = function(event) {
     Array.from(selectedItems).forEach(item => {
+        var html = changeToLoading(document.getElementById("delete"));
         var request = new XMLHttpRequest();
         request.open("DELETE", item);
         request.send();
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
-                if (request.status != 200) {
-                    alert("something wrong happened!");
-                    return false;
+                if (request.status == 200) {
+                    document.getElementById(item).remove();
+                    selectedItems.removeElement(item);
                 }
 
-                selectedItems.removeElement(item);
-                alert(item + " deleted");
-                // Add removing animation
+                changeToDone(document.getElementById("delete"), (request.status != 200), html);
             }
         }
     });
+
     return false;
 }
 

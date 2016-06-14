@@ -681,7 +681,7 @@ header, #toolbar {
 .action i {
     padding: .5em;
     border-radius: 50%;
-    transition: .5s ease-in-out all;
+    transition: .2s ease-in-out all;
 }
 .action:hover i {
     background-color: rgba(0, 0, 0, 0.1);
@@ -728,3 +728,9 @@ header, #toolbar {
     font-size: 4em;
     margin-right: .1em;
 }
+
+/* ANIMATIONS */
+i.spin {
+    animation: 1s spin linear infinite;
+}
+@keyframes spin { 100% { -webkit-transform: rotate(-360deg); transform:rotate(-360deg); } }

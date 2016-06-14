@@ -2,7 +2,7 @@
 <div class="listing">
 	<div class="container" id="listing">
 		{{- range .Items}}
-		<div class="item">
+		<div class="item" id="{{.URL}}">
 			<div>
 				<a href="{{.URL}}">
 					{{- if .IsDir}}
