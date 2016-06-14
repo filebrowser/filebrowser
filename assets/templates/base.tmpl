@@ -13,31 +13,32 @@
     <header>
 			<div>
 				{{ $lnk := .PreviousLink }}
-				{{ if ne $lnk ""}}<a href="../../{{.PreviousLink}}"><div class="action" id="prev"><i class="material-icons">subdirectory_arrow_left</i></div></a>{{ else }}
+				{{ if ne $lnk ""}}<a href="{{ if eq $lnk "/" }}/{{else }}../../{{.PreviousLink}}{{ end }}"><div class="action" id="prev"><i class="material-icons">subdirectory_arrow_left</i></div></a>{{ else }}
 				<div class="action disabled" id="prev"><i class="material-icons">subdirectory_arrow_left</i></div>{{ end }}
-				<p><a href="{{ if eq .Config.BaseURL "" }}/{{ else }}{{ .Config.BaseURL }}{{ end }}">File Manager</a> {{ if ne .Name "."}}<i class="material-icons">chevron_right</i> {{ .Name }}</p>{{ end }}
+				<p><a href="{{ if eq .Config.BaseURL "" }}/{{ else }}{{ .Config.BaseURL }}{{ end }}">File Manager</a> {{ if ne .Name "/"}}<i class="material-icons">chevron_right</i> {{ .Name }}</p>{{ end }}
 			</div>
+			{{ if .IsDir}}
 			<div>
 				<form>
 					<i class="material-icons">search</i> <input type="text" placeholder="Search">
 				</form>
-
-				<div class="action" id="view"><i class="material-icons">view_comfy</i></div>
+				<div class="action" id="view"><i class="material-icons">view_headline</i></div>
 				<div class="action" id="upload"><i class="material-icons">file_upload</i></div>
 			</div>
+			{{ else }}
+			{{ template "actions" . }}
+			{{ end }}
     </header>
+
+		{{ if .IsDir }}
 		<div id="toolbar">
 			<div>
 				<div class="action" id="back"><i class="material-icons">arrow_back</i></div>
 				<p><span id="selected-number">0</span> selected.</p>
 			</div>
-			<div>
-				<div class="action" id="open"><i class="material-icons">open_in_new</i></div>
-				<div class="action" id="rename"><i class="material-icons">mode_edit</i></div>
-				<div class="action" id="download"><i class="material-icons">file_download</i></div>
-				<div class="action" id="delete"><i class="material-icons">delete</i></div>
-			</div>
+			{{ template "actions" . }}
 		</div>
+		{{ end }}
 
     <main>
       {{ template "content" .Data }}

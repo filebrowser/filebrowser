@@ -17,6 +17,7 @@ type Page struct {
 type PageInfo struct {
 	Name   string
 	Path   string
+	IsDir  bool
 	Config *Config
 	Data   interface{}
 }
@@ -51,10 +52,16 @@ func (p PageInfo) BreadcrumbMap() map[string]string {
 
 // PreviousLink returns the path of the previous folder
 func (p PageInfo) PreviousLink() string {
-	parts := strings.Split(p.Path, "/")
-
+	parts := strings.Split(strings.TrimSuffix(p.Path, "/"), "/")
 	if len(parts) <= 1 {
 		return ""
+	}
+
+	if parts[len(parts)-2] == "" {
+		if p.Config.BaseURL == "" {
+			return "/"
+		}
+		return p.Config.BaseURL
 	}
 
 	return parts[len(parts)-2]
@@ -62,7 +69,7 @@ func (p PageInfo) PreviousLink() string {
 
 // PrintAsHTML formats the page in HTML and executes the template
 func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, error) {
-	templates = append(templates, "base")
+	templates = append(templates, "actions", "base")
 	var tpl *template.Template
 
 	// For each template, add it to the the tpl variable

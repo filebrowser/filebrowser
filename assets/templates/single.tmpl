@@ -3,9 +3,9 @@
 <main class="container">
 
   {{ if eq .Type "image" }}
-  <img src="{{.Base64}}">
+  <img src="{{ .URL }}?raw=true">
   {{ else if eq .Type "audio" }}
-  <audio src="{{.Base64}}">
+  <audio src="{{ .URL }}?raw=true">
 </audio>
   {{ else if eq .Type "video" }}
 

@@ -22,9 +22,10 @@ type FileInfo struct {
 	Name     string
 	Size     int64
 	URL      string
+	Path     string // The relative Path of the file/directory relative to Caddyfile.
+	RootPath string // The Path of the file/directory on http.FileSystem.
 	ModTime  time.Time
 	Mode     os.FileMode
-	Path     string
 	Mimetype string
 	Content  string
 	Type     string
@@ -35,12 +36,20 @@ type FileInfo struct {
 func GetFileInfo(url *url.URL, c *Config) (*FileInfo, int, error) {
 	var err error
 
-	path := strings.Replace(url.Path, c.BaseURL, "", 1)
-	path = filepath.Clean(path)
-	path = strings.Replace(path, "\\", "/", -1)
+	rootPath := strings.Replace(url.Path, c.BaseURL, "", 1)
+	rootPath = strings.TrimPrefix(rootPath, "/")
+	rootPath = "/" + rootPath
 
-	file := &FileInfo{Path: path}
-	f, err := c.Root.Open("/" + path)
+	path := c.PathScope + rootPath
+	path = strings.Replace(path, "\\", "/", -1)
+	path = filepath.Clean(path)
+
+	file := &FileInfo{
+		URL:      url.Path,
+		RootPath: rootPath,
+		Path:     path,
+	}
+	f, err := c.Root.Open(rootPath)
 	if err != nil {
 		return file, ErrorToHTTPCode(err), err
 	}
@@ -55,8 +64,6 @@ func GetFileInfo(url *url.URL, c *Config) (*FileInfo, int, error) {
 	file.ModTime = info.ModTime()
 	file.Name = info.Name()
 	file.Size = info.Size()
-	file.URL = url.Path
-
 	return file, 0, nil
 }
 
@@ -128,7 +135,7 @@ func (fi FileInfo) Rename(w http.ResponseWriter, r *http.Request) (int, error) {
 		return ErrorToHTTPCode(err), err
 	}
 
-	http.Redirect(w, r, strings.Replace(fi.URL, fi.Name, newname, 1), http.StatusTemporaryRedirect)
+	http.Redirect(w, r, strings.Replace(r.URL.Path, fi.Name, newname, 1), http.StatusTemporaryRedirect)
 	return 0, nil
 }
 
@@ -149,8 +156,9 @@ func (fi FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request, c *Co
 
 	page := &Page{
 		Info: &PageInfo{
-			Name:   fi.Path,
-			Path:   fi.Path,
+			Name:   fi.Name,
+			Path:   fi.RootPath,
+			IsDir:  false,
 			Data:   fi,
 			Config: c,
 		},
@@ -162,7 +170,7 @@ func (fi FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request, c *Co
 func (fi FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
 	var err error
 
-	file, err := c.Root.Open("/" + fi.Path)
+	file, err := c.Root.Open(fi.RootPath)
 	if err != nil {
 		return ErrorToHTTPCode(err), err
 	}
@@ -204,7 +212,8 @@ func (fi FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *Confi
 	page := &Page{
 		Info: &PageInfo{
 			Name:   listing.Name,
-			Path:   listing.Path,
+			Path:   fi.RootPath,
+			IsDir:  true,
 			Config: c,
 			Data:   listing,
 		},
@@ -219,7 +228,7 @@ func (fi FileInfo) loadDirectoryContents(file http.File, c *Config) (*Listing, e
 		return nil, err
 	}
 
-	listing := directoryListing(files, fi.Path)
+	listing := directoryListing(files, fi.RootPath)
 	return &listing, nil
 }
 
@@ -258,6 +267,22 @@ func directoryListing(files []os.FileInfo, urlPath string) Listing {
 		NumDirs:  dirCount,
 		NumFiles: fileCount,
 	}
+}
+
+// ServeRawFile serves raw files
+func (fi *FileInfo) ServeRawFile(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+	err := fi.GetExtendedFileInfo()
+	if err != nil {
+		return ErrorToHTTPCode(err), err
+	}
+
+	if fi.Type != "text" {
+		fi.Read()
+	}
+
+	w.Header().Set("Content-Type", fi.Mimetype)
+	w.Write([]byte(fi.Content))
+	return 200, nil
 }
 
 // SimplifyMimeType returns the base type of a file

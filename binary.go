@@ -2,6 +2,7 @@
 // sources:
 // assets/public/css/styles.css
 // assets/public/js/application.js
+// assets/templates/actions.tmpl
 // assets/templates/base.tmpl
 // assets/templates/listing.tmpl
 // assets/templates/single.tmpl
@@ -53,6 +54,24 @@ func publicCssStylesCss() (*asset, error) {
 func publicJsApplicationJs() (*asset, error) {
 	path := "D:\\Code\\Go\\src\\github.com\\hacdias\\caddy-filemanager\\assets\\public\\js\\application.js"
 	name := "public/js/application.js"
+	bytes, err := bindataRead(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// templatesActionsTmpl reads file data from disk. It returns an error on failure.
+func templatesActionsTmpl() (*asset, error) {
+	path := "D:\\Code\\Go\\src\\github.com\\hacdias\\caddy-filemanager\\assets\\templates\\actions.tmpl"
+	name := "templates/actions.tmpl"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
@@ -175,6 +194,7 @@ func AssetNames() []string {
 var _bindata = map[string]func() (*asset, error){
 	"public/css/styles.css": publicCssStylesCss,
 	"public/js/application.js": publicJsApplicationJs,
+	"templates/actions.tmpl": templatesActionsTmpl,
 	"templates/base.tmpl": templatesBaseTmpl,
 	"templates/listing.tmpl": templatesListingTmpl,
 	"templates/single.tmpl": templatesSingleTmpl,
@@ -229,6 +249,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		}},
 	}},
 	"templates": &bintree{nil, map[string]*bintree{
+		"actions.tmpl": &bintree{templatesActionsTmpl, map[string]*bintree{}},
 		"base.tmpl": &bintree{templatesBaseTmpl, map[string]*bintree{}},
 		"listing.tmpl": &bintree{templatesListingTmpl, map[string]*bintree{}},
 		"single.tmpl": &bintree{templatesSingleTmpl, map[string]*bintree{}},

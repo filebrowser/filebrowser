@@ -2,6 +2,13 @@
 
 var selectedItems = [];
 
+Array.prototype.removeElement = function(element) {
+    var i = this.indexOf(element);
+    if (i != -1) {
+        this.splice(i, 1);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function(event) {
     var items = document.getElementsByClassName('item');
     Array.from(items).forEach(link => {
@@ -12,10 +19,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 selectedItems.push(url);
             } else {
                 link.classList.remove('selected');
-                var i = selectedItems.indexOf(url);
-                if (i != -1) {
-                    selectedItems.splice(i, 1);
-                }
+                selectedItems.removeElement(url);
             }
 
             var event = new CustomEvent('changed-selected');
@@ -24,49 +28,69 @@ document.addEventListener("DOMContentLoaded", function(event) {
         });
     });
 
-    document.getElementById("back").addEventListener("click", backEvent);
+    document.getElementById("open").addEventListener("click", openEvent);
+    if (document.getElementById("back")) {
+        document.getElementById("back").addEventListener("click", backEvent)
+    };
     document.getElementById("delete").addEventListener("click", deleteEvent);
     document.getElementById("download").addEventListener("click", downloadEvent);
     return false;
 });
 
-var backEvent = function(event) {
-  var items = document.getElementsByClassName('item');
-  Array.from(items).forEach(link => {
-    link.classList.remove('selected');
-  });
-  selectedItems = [];
+var openEvent = function(event) {
+    if (selectedItems.length) {
 
-  var event = new CustomEvent('changed-selected');
-  document.dispatchEvent(event);
-  return false;
+
+        return false;
+    }
+
+    window.open(window.location + "?raw=true");
+    return false;
+}
+
+var backEvent = function(event) {
+    var items = document.getElementsByClassName('item');
+    Array.from(items).forEach(link => {
+        link.classList.remove('selected');
+    });
+    selectedItems = [];
+
+    var event = new CustomEvent('changed-selected');
+    document.dispatchEvent(event);
+    return false;
 }
 
 var deleteEvent = function(event) {
-  Array.from(selectedItems).forEach(item => {
-    var request = new XMLHttpRequest();
-    request.open("DELETE", item);
-    request.send();
-    request.onreadystatechange = function() {
-      if (request.readyState == 4) {
-        if (request.status != 200) {
-          alert("something wrong happened!");
-          return false;
-        }
+    Array.from(selectedItems).forEach(item => {
+        var request = new XMLHttpRequest();
+        request.open("DELETE", item);
+        request.send();
+        request.onreadystatechange = function() {
+            if (request.readyState == 4) {
+                if (request.status != 200) {
+                    alert("something wrong happened!");
+                    return false;
+                }
 
-        alert(item + " deleted");
-        // Add removing animation
-      }
-    }
-  });
-  return false;
+                selectedItems.removeElement(item);
+                alert(item + " deleted");
+                // Add removing animation
+            }
+        }
+    });
+    return false;
 }
 
 var downloadEvent = function(event) {
-  Array.from(selectedItems).forEach(item => {
-    window.open(item + "?download=true");
-  });
-  return false;
+    if (selectedItems.length) {
+        Array.from(selectedItems).forEach(item => {
+            window.open(item + "?download=true");
+        });
+        return false;
+    }
+
+    window.open(window.location + "?download=true");
+    return false;
 }
 
 document.addEventListener("changed-selected", function(event) {

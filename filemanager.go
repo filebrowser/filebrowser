@@ -66,12 +66,12 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				if !fi.IsDir {
 					query := r.URL.Query()
 					if val, ok := query["raw"]; ok && val[0] == "true" {
-						return f.Next.ServeHTTP(w, r)
+						return fi.ServeRawFile(w, r, c)
 					}
 
 					if val, ok := query["download"]; ok && val[0] == "true" {
 						w.Header().Set("Content-Disposition", "attachment; filename="+fi.Name)
-						return f.Next.ServeHTTP(w, r)
+						return fi.ServeRawFile(w, r, c)
 					}
 				}
 

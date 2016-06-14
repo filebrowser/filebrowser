@@ -63,6 +63,7 @@ func parseConfiguration(c *caddy.Controller) ([]Config, error) {
 					return configs, c.ArgErr()
 				}
 				cfg.PathScope = c.Val()
+				cfg.PathScope = strings.TrimSuffix(cfg.PathScope, "/")
 			case "on":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
