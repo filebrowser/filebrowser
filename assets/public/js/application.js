@@ -9,37 +9,38 @@ Array.prototype.removeElement = function(element) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function(event) {
-    var items = document.getElementsByClassName('item');
-    Array.from(items).forEach(link => {
-        link.addEventListener('click', function(event) {
-            var url = link.getElementsByTagName('a')[0].getAttribute('href');
-            if (selectedItems.indexOf(url) == -1) {
-                link.classList.add('selected');
-                selectedItems.push(url);
-            } else {
-                link.classList.remove('selected');
-                selectedItems.removeElement(url);
-            }
+var viewEvent = function(event) {
+  var cookie = getCookie("view-list");
+  var listing = document.getElementById("listing");
 
-            var event = new CustomEvent('changed-selected');
-            document.dispatchEvent(event);
-            return false;
-        });
-    });
+  if (cookie != "true") {
+    document.cookie = "view-list=true";
+  } else {
+    document.cookie = "view-list=false";
+  }
 
-    document.getElementById("open").addEventListener("click", openEvent);
-    if (document.getElementById("back")) {
-        document.getElementById("back").addEventListener("click", backEvent)
-    };
-    document.getElementById("delete").addEventListener("click", deleteEvent);
-    document.getElementById("download").addEventListener("click", downloadEvent);
-    return false;
-});
-
-var changeView = function(event) {
-
+  handleViewType(getCookie("view-list"));
   return false;
+}
+
+var handleViewType = function(viewList) {
+  var listing = document.getElementById("listing");
+  var button = document.getElementById("view");
+
+  if (viewList == "true") {
+    listing.classList.add("list");
+    button.innerHTML = "<i class=\"material-icons\">view_module</i>";
+    return false;
+  }
+
+  button.innerHTML = "<i class=\"material-icons\">view_list</i>";
+  listing.classList.remove("list");
+  return false;
+}
+
+var getCookie = function(name) {
+  var re = new RegExp("(?:(?:^|.*;\\s*)" + name + "\\s*\\=\\s*([^;]*).*$)|^.*$");
+  return document.cookie.replace(re, "$1");
 }
 
 var changeToLoading = function(element) {
@@ -182,5 +183,37 @@ document.addEventListener("changed-selected", function(event) {
     }
 
     toolbar.classList.remove("enabled");
+    return false;
+});
+
+document.addEventListener("DOMContentLoaded", function(event) {
+    var items = document.getElementsByClassName('item');
+    Array.from(items).forEach(link => {
+        link.addEventListener('click', function(event) {
+            var url = link.getElementsByTagName('a')[0].getAttribute('href');
+            if (selectedItems.indexOf(url) == -1) {
+                link.classList.add('selected');
+                selectedItems.push(url);
+            } else {
+                link.classList.remove('selected');
+                selectedItems.removeElement(url);
+            }
+
+            var event = new CustomEvent('changed-selected');
+            document.dispatchEvent(event);
+            return false;
+        });
+    });
+
+    document.getElementById("open").addEventListener("click", openEvent);
+    if (document.getElementById("back")) {
+        document.getElementById("back").addEventListener("click", backEvent)
+    };
+    if (document.getElementById("view")) {
+        handleViewType(getCookie("view-list"));
+        document.getElementById("view").addEventListener("click", viewEvent)
+    };
+    document.getElementById("delete").addEventListener("click", deleteEvent);
+    document.getElementById("download").addEventListener("click", downloadEvent);
     return false;
 });

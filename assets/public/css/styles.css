@@ -509,6 +509,7 @@ footer {
     font-size: .6em;
     text-align: center;
     color: grey;
+    margin: 1em 0;
 }
 footer a,
 footer a:hover {
@@ -572,7 +573,7 @@ pre {
 /* HEADER */
 
 header {
-    background-color: #2196F3;
+    background-color: #2196f3;
     padding: 1.7em 0;
 }
 header h1 {
@@ -588,7 +589,7 @@ header p {
 }
 header p i {
     font-size: 1em !important;
-    color: rgba(0, 0, 0, 0.21);
+    color: rgba(255, 255, 255, 0.31);
 }
 header p i {
     vertical-align: middle;
@@ -597,7 +598,7 @@ header form {
     display: inline-block;
     background-color: #1E88E5;
     padding: .75em;
-    color: #212121;
+    color: #fff;
     border-radius: .3em;
     height: 100%;
     vertical-align: middle;
@@ -607,7 +608,7 @@ header form input, header form i {
 }
 header form i {
     margin-right: .3em;
-    color: rgba(0, 0, 0, 0.5)
+    color: rgba(255,255,255, 0.5)
 }
 header form input {
     border: 0;
@@ -617,21 +618,21 @@ header form input {
 }
 ::-webkit-input-placeholder {
     /* WebKit, Blink, Edge */
-    color: rgba(0, 0, 0, 0.5);
+    color: rgba(255,255,255, 0.5);
 }
 :-moz-placeholder {
     /* Mozilla Firefox 4 to 18 */
-    color: rgba(0, 0, 0, 0.5);
+    color: rgba(255,255,255, 0.5);
     opacity: 1;
 }
 ::-moz-placeholder {
     /* Mozilla Firefox 19+ */
-    color: rgba(0, 0, 0, 0.5);
+    color: rgba(255,255,255, 0.5);
     opacity: 1;
 }
 :-ms-input-placeholder {
     /* Internet Explorer 10-11 */
-    color: rgba(0, 0, 0, 0.5);
+    color: rgba(255,255,255, 0.5);
 }
 header, #toolbar {
     position: fixed;
@@ -640,6 +641,7 @@ header, #toolbar {
     left: 0;
     padding: .5em;
     display: flex;
+    color: #fff;
 }
 #toolbar div, header div {
     flex-grow: 1;
@@ -696,6 +698,9 @@ header, #toolbar {
     justify-content: space-between;
     padding: 0 .5em;
 }
+#listing.list {
+  flex-direction: column;
+}
 #listing .item {
     background-color: #fff;
     border-radius: .2em;
@@ -729,7 +734,10 @@ header, #toolbar {
     font-size: 4em;
     margin-right: .1em;
 }
-
+.item a:hover,
+.item a {
+    color: #6f6f6f;
+}
 /* ANIMATIONS */
 i.spin {
     animation: 1s spin linear infinite;
