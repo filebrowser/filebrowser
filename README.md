@@ -5,7 +5,7 @@
 
 ## Roadmap
 
-+ [x] Rename files
++ [ ] Rename files
 + [ ] Upload files and drag & drop
 + [x] Delete files
 + [x] Download files
