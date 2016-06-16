@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/hacdias/caddy-hugo/config"
 	s "github.com/hacdias/caddy-hugo/tools/server"
 )
 
@@ -15,7 +16,7 @@ type postError struct {
 }
 
 // POST handles the POST method on GIT page which is only an API.
-func POST(w http.ResponseWriter, r *http.Request) (int, error) {
+func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	// Check if git is installed on the computer
 	if _, err := exec.LookPath("git"); err != nil {
 		return s.RespondJSON(w, &postError{"Git is not installed on your computer."}, 400, nil)
@@ -46,7 +47,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 
 	cmd := exec.Command("git", args...)
-	cmd.Dir = conf.Path
+	cmd.Dir = c.Path
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {

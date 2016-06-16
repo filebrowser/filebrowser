@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hacdias/caddy-hugo/config"
 	"github.com/hacdias/caddy-hugo/tools/hugo"
 	"github.com/hacdias/caddy-hugo/tools/server"
 	"github.com/robfig/cron"
@@ -30,7 +31,7 @@ type response struct {
 }
 
 // POST handles the POST method on editor page
-func POST(w http.ResponseWriter, r *http.Request) (int, error) {
+func POST(w http.ResponseWriter, r *http.Request, c *config.Config, filename string) (int, error) {
 	var data info
 
 	// Get the JSON information sent using a buffer
@@ -50,7 +51,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 
 	switch data.ContentType {
 	case "frontmatter-only":
-		file, code, err = parseFrontMatterOnlyFile(data)
+		file, code, err = parseFrontMatterOnlyFile(data, filename)
 		if err != nil {
 			return server.RespondJSON(w, &response{err.Error()}, code, err)
 		}
@@ -61,7 +62,7 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 
 		file = []byte(mainContent)
 	case "complete":
-		file, code, err = parseCompleteFile(data)
+		file, code, err = parseCompleteFile(data, filename, c)
 		if err != nil {
 			return server.RespondJSON(w, &response{err.Error()}, code, err)
 		}
@@ -77,13 +78,13 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 
 	if data.Regenerate {
-		go hugo.Run(conf, false)
+		go hugo.Run(c, false)
 	}
 
 	return server.RespondJSON(w, nil, http.StatusOK, nil)
 }
 
-func parseFrontMatterOnlyFile(data info) ([]byte, int, error) {
+func parseFrontMatterOnlyFile(data info, filename string) ([]byte, int, error) {
 	frontmatter := strings.TrimPrefix(filepath.Ext(filename), ".")
 	var mark rune
 
@@ -121,7 +122,7 @@ func parseFrontMatterOnlyFile(data info) ([]byte, int, error) {
 	return f, http.StatusOK, nil
 }
 
-func parseCompleteFile(data info) ([]byte, int, error) {
+func parseCompleteFile(data info, filename string, c *config.Config) ([]byte, int, error) {
 	// The main content of the file
 	mainContent := data.Content["content"].(string)
 	mainContent = "\n\n" + strings.TrimSpace(mainContent) + "\n"
@@ -164,7 +165,7 @@ func parseCompleteFile(data info) ([]byte, int, error) {
 				return
 			}
 
-			go hugo.Run(conf, false)
+			go hugo.Run(c, false)
 		})
 		scheduler.Start()
 	}

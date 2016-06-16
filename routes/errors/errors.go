@@ -26,27 +26,26 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, code int, err error) (int
 		page.Message = err.Error()
 	}
 
-	switch r.Method {
-	case "GET":
-		functions := template.FuncMap{
-			"Defined": variables.Defined,
-		}
-
-		var tpl *template.Template
-		tpl, err = templates.Get(r, functions, "error")
-
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		err = tpl.Execute(w, page)
-
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		return 0, page.err
-	default:
+	if r.Method != http.MethodGet {
 		return server.RespondJSON(w, page, code, err)
 	}
+
+	functions := template.FuncMap{
+		"Defined": variables.Defined,
+	}
+
+	var tpl *template.Template
+	tpl, err = templates.Get(r, functions, "error")
+
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	err = tpl.Execute(w, page)
+
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return 0, page.err
 }

@@ -1,30 +1,23 @@
 package editor
 
 import (
-	"errors"
 	"net/http"
 	"strings"
 
 	"github.com/hacdias/caddy-hugo/config"
 )
 
-var (
-	filename string
-	conf     *config.Config
-)
-
 // ServeHTTP serves the editor page
 func ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
-	conf = c
-	filename = strings.Replace(r.URL.Path, c.Admin+"/edit/", "", 1)
+	filename := strings.Replace(r.URL.Path, c.Admin+"/edit/", "", 1)
 	filename = c.Path + filename
 
 	switch r.Method {
-	case "POST":
-		return POST(w, r)
-	case "GET":
-		return GET(w, r)
+	case http.MethodPost:
+		return POST(w, r, c, filename)
+	case http.MethodGet:
+		return GET(w, r, c, filename)
 	default:
-		return http.StatusMethodNotAllowed, errors.New("Invalid method.")
+		return http.StatusNotImplemented, nil
 	}
 }

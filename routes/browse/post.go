@@ -23,7 +23,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 
 	// If it's the upload of a file
 	if r.Header.Get("X-Upload") == "true" {
-		return upload(w, r)
+		return upload(w, r, c)
 	}
 
 	// Get the JSON information sent using a buffer
@@ -49,12 +49,12 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	filename = strings.TrimPrefix(filename, "/")
 	filename = strings.TrimSuffix(filename, "/")
 	url := c.Admin + "/edit/" + r.URL.Path + filename
-	filename = conf.Path + r.URL.Path + filename
+	filename = c.Path + r.URL.Path + filename
 
-	if strings.HasPrefix(filename, conf.Path+"content/") &&
+	if strings.HasPrefix(filename, c.Path+"content/") &&
 		(strings.HasSuffix(filename, ".md") || strings.HasSuffix(filename, ".markdown")) {
 
-		filename = strings.Replace(filename, conf.Path+"content/", "", 1)
+		filename = strings.Replace(filename, c.Path+"content/", "", 1)
 		args := []string{"new", filename}
 		archetype := info["archetype"].(string)
 
@@ -62,7 +62,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 			args = append(args, "--kind", archetype)
 		}
 
-		if err := commands.Run(conf.Hugo, args, conf.Path); err != nil {
+		if err := commands.Run(c.Hugo, args, c.Path); err != nil {
 			return s.RespondJSON(w, &response{"Something went wrong.", ""}, http.StatusInternalServerError, err)
 		}
 	} else {
@@ -86,7 +86,7 @@ func POST(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error)
 	return s.RespondJSON(w, &response{"File created!", url}, http.StatusOK, nil)
 }
 
-func upload(w http.ResponseWriter, r *http.Request) (int, error) {
+func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	// Parse the multipart form in the request
 	err := r.ParseMultipartForm(100000)
 	if err != nil {
@@ -105,7 +105,7 @@ func upload(w http.ResponseWriter, r *http.Request) (int, error) {
 
 			// Create the file
 			var outfile *os.File
-			if outfile, err = os.Create(conf.Path + r.URL.Path + hdr.Filename); nil != err {
+			if outfile, err = os.Create(c.Path + r.URL.Path + hdr.Filename); nil != err {
 				return s.RespondJSON(w, &response{"Something went wrong.", ""}, http.StatusInternalServerError, err)
 			}
 
