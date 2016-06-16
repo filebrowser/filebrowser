@@ -46,15 +46,14 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 
 	// Initializes the file content to write
 	var file []byte
+	var code int
 
 	switch data.ContentType {
 	case "frontmatter-only":
-		f, code, err := parseFrontMatterOnlyFile(data)
+		file, code, err = parseFrontMatterOnlyFile(data)
 		if err != nil {
 			return server.RespondJSON(w, &response{err.Error()}, code, err)
 		}
-
-		file = f
 	case "content-only":
 		// The main content of the file
 		mainContent := data.Content["content"].(string)
@@ -62,12 +61,10 @@ func POST(w http.ResponseWriter, r *http.Request) (int, error) {
 
 		file = []byte(mainContent)
 	case "complete":
-		f, code, err := parseCompleteFile(data)
+		file, code, err = parseCompleteFile(data)
 		if err != nil {
 			return server.RespondJSON(w, &response{err.Error()}, code, err)
 		}
-
-		file = f
 	default:
 		return server.RespondJSON(w, &response{"Invalid content type."}, http.StatusBadRequest, nil)
 	}

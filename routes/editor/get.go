@@ -62,24 +62,26 @@ func GET(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Sanitize the extension
 	page.Mode = sanitizeMode(page.Mode)
 
+	var ppage parser.Page
+
 	// Handle the content depending on the file extension
 	switch page.Mode {
 	case "markdown", "asciidoc", "rst":
 		if hasFrontMatterRune(file) {
 			// Starts a new buffer and parses the file using Hugo's functions
 			buffer := bytes.NewBuffer(file)
-			file, err := parser.ReadFrom(buffer)
+			ppage, err = parser.ReadFrom(buffer)
 			if err != nil {
 				return http.StatusInternalServerError, err
 			}
 
-			if strings.Contains(string(file.FrontMatter()), "date") {
+			if strings.Contains(string(ppage.FrontMatter()), "date") {
 				page.IsPost = true
 			}
 
 			// Parses the page content and the frontmatter
-			page.Content = strings.TrimSpace(string(file.Content()))
-			page.FrontMatter, page.Name, err = frontmatter.Pretty(file.FrontMatter())
+			page.Content = strings.TrimSpace(string(ppage.Content()))
+			page.FrontMatter, page.Name, err = frontmatter.Pretty(ppage.FrontMatter())
 			page.Class = "complete"
 		} else {
 			// The editor will handle only content
@@ -89,7 +91,6 @@ func GET(w http.ResponseWriter, r *http.Request) (int, error) {
 	case "json", "toml", "yaml":
 		// Defines the class and declares an error
 		page.Class = "frontmatter-only"
-		var err error
 
 		// Checks if the file already has the frontmatter rune and parses it
 		if hasFrontMatterRune(file) {
