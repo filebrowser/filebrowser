@@ -1,13 +1,12 @@
 //go:generate go get github.com/jteeuwen/go-bindata
 //go:generate go install github.com/jteeuwen/go-bindata/go-bindata
-//go:generate go-bindata -debug -prefix assets/ -pkg assets -o routes/assets/assets.go assets/templates/ assets/public/...
+//go:generate go-bindata -prefix assets/ -pkg assets -o routes/assets/assets.go assets/templates/ assets/public/...
 
 // Package hugo makes the bridge between the static website generator Hugo
 // and the webserver Caddy, also providing an administrative user interface.
 package hugo
 
 import (
-	"log"
 	"mime"
 	"net/http"
 	"os"
@@ -20,70 +19,20 @@ import (
 	"github.com/hacdias/caddy-hugo/routes/editor"
 	"github.com/hacdias/caddy-hugo/routes/errors"
 	"github.com/hacdias/caddy-hugo/routes/git"
-	"github.com/hacdias/caddy-hugo/tools/commands"
-	"github.com/hacdias/caddy-hugo/tools/hugo"
 	"github.com/hacdias/caddy-hugo/tools/server"
-	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
-func init() {
-	caddy.RegisterPlugin("hugo", caddy.Plugin{
-		ServerType: "http",
-		Action:     setup,
-	})
-}
-
-// Setup is the init function of Caddy plugins and it configures the whole
-// middleware thing.
-func setup(c *caddy.Controller) error {
-	cnf := httpserver.GetConfig(c.Key)
-	conf, _ := config.Parse(c, cnf.Root)
-
-	// Checks if there is an Hugo website in the path that is provided.
-	// If not, a new website will be created.
-	create := true
-
-	if _, err := os.Stat(conf.Path + "config.yaml"); err == nil {
-		create = false
-	}
-
-	if _, err := os.Stat(conf.Path + "config.json"); err == nil {
-		create = false
-	}
-
-	if _, err := os.Stat(conf.Path + "config.toml"); err == nil {
-		create = false
-	}
-
-	if create {
-		err := commands.Run(conf.Hugo, []string{"new", "site", conf.Path, "--force"}, ".")
-		if err != nil {
-			log.Panic(err)
-		}
-	}
-
-	// Generates the Hugo website for the first time the plugin is activated.
-	go hugo.Run(conf, true)
-
-	mid := func(next httpserver.Handler) httpserver.Handler {
-		return CaddyHugo{Next: next, Config: conf}
-	}
-
-	cnf.AddMiddleware(mid)
-	return nil
-}
-
-// CaddyHugo contais the next middleware to be run and the configuration
+// Hugo contais the next middleware to be run and the configuration
 // of the current one.
-type CaddyHugo struct {
+type Hugo struct {
 	Next   httpserver.Handler
 	Config *config.Config
 }
 
 // ServeHTTP is the main function of the whole plugin that routes every single
 // request to its function.
-func (h CaddyHugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
+func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Only handle /{admin} path
 	if httpserver.Path(r.URL.Path).Matches(h.Config.Admin) {
 		var err error
