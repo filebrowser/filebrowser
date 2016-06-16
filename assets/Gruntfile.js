@@ -8,11 +8,11 @@ module.exports = function(grunt) {
   grunt.initConfig({
     watch: {
       sass: {
-        files: ['assets/public_src/css/**/*.css'],
+        files: ['src/css/**/*.css'],
         tasks: ['concat', 'cssmin']
       },
       js: {
-        files: ['assets/public_src/js/**/*.js'],
+        files: ['src/js/**/*.js'],
         tasks: ['uglify:main']
       },
     },
@@ -24,7 +24,7 @@ module.exports = function(grunt) {
           'node_modules/animate.css/source/bouncing_entrances/bounceInRight.css',
           'node_modules/animate.css/source/fading_entrances/fadeIn.css',
           'node_modules/animate.css/source/fading_exits/fadeOut.css',
-          'assets/public_src/css/main.css'
+          'src/css/main.css'
         ],
         dest: 'temp/css/main.css',
       },
@@ -35,7 +35,7 @@ module.exports = function(grunt) {
           expand: true,
           flatten: true,
           src: ['node_modules/font-awesome/fonts/**'],
-          dest: 'assets/public/fonts'
+          dest: 'assets/dist/public/fonts'
         }],
       },
     },
@@ -56,7 +56,7 @@ module.exports = function(grunt) {
     uglify: {
       plugins: {
         files: {
-          'assets/public/js/plugins.min.js': ['node_modules/jquery/dist/jquery.min.js',
+          'assets/dist/public/js/plugins.min.js': ['node_modules/jquery/dist/jquery.min.js',
             'node_modules/perfect-scrollbar/dist/js/min/perfect-scrollbar.jquery.min.js',
             'node_modules/showdown/dist/showdown.min.js',
             'node_modules/noty/js/noty/packaged/jquery.noty.packaged.min.js',
@@ -67,7 +67,7 @@ module.exports = function(grunt) {
       },
       main: {
         files: {
-          'assets/public/js/app.min.js': ['assets/public_src/js/**/*.js']
+          'assets/dist/public/js/app.min.js': ['src/js/**/*.js']
         }
       }
     }
