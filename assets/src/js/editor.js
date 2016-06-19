@@ -254,11 +254,7 @@ $(document).on('page:editor', function() {
 
   $("#content").on('click', '.delete', function(event) {
     event.preventDefault();
-    button = $(this);
-
-    name = button.parent().parent().attr("for") || button.parent().parent().attr("id") || button.parent().parent().parent().attr("id");
-    name = name.replace(/\[/, '\\[');
-    name = name.replace(/\]/, '\\]');
+    name = $(this).data("delete");
 
     $('label[for="' + name + '"]').fadeOut().remove();
     $('#' + name).fadeOut().remove();

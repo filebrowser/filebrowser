@@ -4,7 +4,7 @@
   {{ if or (eq $value.Type "object") (eq $value.Type "array") }}
   <fieldset id="{{ $value.Name }}" data-type="{{ $value.Type }}">
     <h3>{{ SplitCapitalize $value.Title }}</h3>
-    <button class="delete">remove</button>
+    <button class="delete" data-delete="{{ $value.Name }}">remove</button>
     {{ if (eq $value.Type "array") }}<div class="itens">{{ end }}{{ template "frontmatter" $value.Content }}{{ if (eq $value.Type "array") }}<button class="add">&#43;</button></div>{{ end }}
   </fieldset>
   {{ else }}
