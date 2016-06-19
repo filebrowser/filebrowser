@@ -191,6 +191,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     Array.from(items).forEach(link => {
         link.addEventListener('click', function(event) {
             var url = link.getElementsByTagName('a')[0].getAttribute('href');
+            
+            if (selectedItems.length != 0) event.preventDefault();
             if (selectedItems.indexOf(url) == -1) {
                 link.classList.add('selected');
                 selectedItems.push(url);
@@ -215,5 +217,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
     };
     document.getElementById("delete").addEventListener("click", deleteEvent);
     document.getElementById("download").addEventListener("click", downloadEvent);
+
+    /* var drop = document.getElementById("listing");
+    drop.addEventListener("dragenter", change, false);
+    drop.addEventListener("dragleave",change_back,false);
+
+    function change() {
+      drop.style.backgroundColor = '#EFF2AA';
+    };
+
+    function change_back() {
+      drop.style.backgroundColor = 'transparent';
+    }; */
+
+
     return false;
 });
