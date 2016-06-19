@@ -4,15 +4,20 @@
   {{ if or (eq $value.Type "object") (eq $value.Type "array") }}
   <fieldset id="{{ $value.Name }}" data-type="{{ $value.Type }}">
     <h3>{{ SplitCapitalize $value.Title }}</h3>
-    <button class="delete" data-delete="{{ $value.Name }}">remove</button>
-    {{ if (eq $value.Type "array") }}<div class="itens">{{ end }}{{ template "frontmatter" $value.Content }}{{ if (eq $value.Type "array") }}<button class="add">&#43;</button></div>{{ end }}
+    <span class="actions">
+      <button class="add">&#43;</button>
+      <button class="delete">&#8722;</button>
+    </span>
+    {{ template "frontmatter" $value.Content }}
   </fieldset>
   {{ else }}
 
   {{ if not (eq $value.Parent.Type "array") }}
   <div class="block" id="block-{{ $value.Name }}" data-content="{{ $value.Name }}">
     <label for="{{ $value.Name }}">{{ SplitCapitalize $value.Title }}</label>
-    <button class="delete">remove</button>
+    <span class="actions">
+      <button class="delete">&#8722;</button>
+    </span>
 
   {{ end }}
 
@@ -31,7 +36,7 @@
   {{ if not (eq $value.Parent.Type "array") }}</div>{{ end }}
 
   {{ if eq $value.Parent.Type "array" }}
-  <span class="actions"><button class="delete">&#215;</button></span></div>
+  <span class="actions"><button class="delete">&#8722;</button></span></div>
   {{ end }}
 
 {{ end }}

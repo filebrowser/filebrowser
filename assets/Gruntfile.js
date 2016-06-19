@@ -37,7 +37,7 @@ module.exports = function(grunt) {
           expand: true,
           flatten: true,
           src: ['node_modules/font-awesome/fonts/**'],
-          dest: 'assets/dist/public/fonts'
+          dest: 'dist/public/fonts'
         }],
       },
     },
@@ -50,7 +50,7 @@ module.exports = function(grunt) {
           expand: true,
           cwd: 'temp/css/',
           src: ['*.css', '!*.min.css'],
-          dest: 'assets/public/css/',
+          dest: 'dist/public/css/',
           ext: '.min.css'
         }]
       }
@@ -69,7 +69,7 @@ module.exports = function(grunt) {
       },
       main: {
         files: {
-          'assets/dist/public/js/app.min.js': ['src/js/**/*.js']
+          'dist/public/js/app.min.js': ['src/js/**/*.js']
         }
       }
     }
