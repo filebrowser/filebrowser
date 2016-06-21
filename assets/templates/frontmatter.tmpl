@@ -1,0 +1,44 @@
+{{ define "frontmatter" }}
+{{ range $key, $value := . }}
+
+  {{ if or (eq $value.Type "object") (eq $value.Type "array") }}
+  <fieldset id="{{ $value.Name }}" data-type="{{ $value.Type }}">
+    <h3>{{ SplitCapitalize $value.Title }}</h3>
+    <span class="actions">
+      <button class="add">&#43;</button>
+      <button class="delete">&#8722;</button>
+    </span>
+    {{ template "frontmatter" $value.Content }}
+  </fieldset>
+  {{ else }}
+
+  {{ if not (eq $value.Parent.Type "array") }}
+  <div class="block" id="block-{{ $value.Name }}" data-content="{{ $value.Name }}">
+    <label for="{{ $value.Name }}">{{ SplitCapitalize $value.Title }}</label>
+    <span class="actions">
+      <button class="delete">&#8722;</button>
+    </span>
+
+  {{ end }}
+
+  {{ if eq $value.Parent.Type "array" }}
+  <div id="{{ $value.Name }}-{{ $key }}" data-type="array-item">
+  {{ end }}
+
+  {{ if eq $value.HTMLType "textarea" }}
+  <textarea class="scroll" name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" data-parent-type="{{ $value.Parent.Type }}">{{ $value.Content }}</textarea>
+  {{ else if eq $value.HTMLType "datetime" }}
+  <input name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" value="{{ $value.Content.Format "2006-01-02T15:04" }}" type="datetime-local" data-parent-type="{{ $value.Parent.Type }}"></input>
+  {{ else }}
+  <input name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" value="{{ $value.Content }}" type="{{ $value.HTMLType }}" data-parent-type="{{ $value.Parent.Type }}"></input>
+  {{ end }}
+
+  {{ if not (eq $value.Parent.Type "array") }}</div>{{ end }}
+
+  {{ if eq $value.Parent.Type "array" }}
+  <span class="actions"><button class="delete">&#8722;</button></span></div>
+  {{ end }}
+
+{{ end }}
+{{ end }}
+{{ end }}

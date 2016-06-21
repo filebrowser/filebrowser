@@ -1,4 +1,4 @@
-package frontmatter
+package hugo
 
 import (
 	"log"
@@ -6,7 +6,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/hacdias/caddy-hugo/tools/variables"
 	"github.com/spf13/cast"
 	"github.com/spf13/hugo/parser"
 )
@@ -64,9 +63,9 @@ func rawToPretty(config interface{}, parent *frontmatter) interface{} {
 	}
 
 	for name, element := range cnf {
-		if variables.IsMap(element) {
+		if IsMap(element) {
 			objects = append(objects, handleObjects(element, parent, name))
-		} else if variables.IsSlice(element) {
+		} else if IsSlice(element) {
 			arrays = append(arrays, handleArrays(element, parent, name))
 		} else {
 			if name == "title" && parent.Name == mainName {

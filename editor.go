@@ -2,17 +2,14 @@ package hugo
 
 import (
 	"bytes"
-	"errors"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
-	"text/template"
 
-	"github.com/hacdias/caddy-hugo/tools/frontmatter"
-	"github.com/hacdias/caddy-hugo/tools/templates"
-	"github.com/hacdias/caddy-hugo/tools/variables"
+	"github.com/hacdias/caddy-filemanager"
 	"github.com/spf13/hugo/parser"
 )
 
@@ -23,17 +20,10 @@ type editor struct {
 	Mode        string
 	Content     string
 	FrontMatter interface{}
-	Config      *Config
 }
 
 // GET handles the GET method on editor page
-func GET(w http.ResponseWriter, r *http.Request, c *Config, filename string) (int, error) {
-	// Check if the file format is supported. If not, send a "Not Acceptable"
-	// header and an error
-	if !templates.CanBeEdited(filename) {
-		return http.StatusNotAcceptable, errors.New("File format not supported.")
-	}
-
+func (h Hugo) GET(w http.ResponseWriter, r *http.Request, c *Config, filename string) (int, error) {
 	// Check if the file exists.
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		return http.StatusNotFound, err
@@ -51,51 +41,56 @@ func GET(w http.ResponseWriter, r *http.Request, c *Config, filename string) (in
 		return http.StatusInternalServerError, err
 	}
 
+	page := &filemanager.Page{
+		Info: &filemanager.PageInfo{
+			IsDir:  false,
+			Config: &h.FileManager.Configs[0],
+			Name:   strings.Replace(filename, c.Root, "", 1),
+		},
+	}
+
 	// Create a new editor variable and set the extension
-	page := new(editor)
-	page.Mode = strings.TrimPrefix(filepath.Ext(filename), ".")
-	page.Name = strings.Replace(filename, c.Path, "", 1)
-	page.Config = c
-	page.IsPost = false
+	data := new(editor)
+	data.Mode = strings.TrimPrefix(filepath.Ext(filename), ".")
+	data.Name = strings.Replace(filename, c.Root, "", 1)
+	data.IsPost = false
+	data.Mode = sanitizeMode(data.Mode)
 
-	// Sanitize the extension
-	page.Mode = sanitizeMode(page.Mode)
-
-	var ppage parser.Page
+	var parserPage parser.Page
 
 	// Handle the content depending on the file extension
-	switch page.Mode {
+	switch data.Mode {
 	case "markdown", "asciidoc", "rst":
 		if hasFrontMatterRune(file) {
 			// Starts a new buffer and parses the file using Hugo's functions
 			buffer := bytes.NewBuffer(file)
-			ppage, err = parser.ReadFrom(buffer)
+			parserPage, err = parser.ReadFrom(buffer)
 			if err != nil {
 				return http.StatusInternalServerError, err
 			}
 
-			if strings.Contains(string(ppage.FrontMatter()), "date") {
-				page.IsPost = true
+			if strings.Contains(string(parserPage.FrontMatter()), "date") {
+				data.IsPost = true
 			}
 
 			// Parses the page content and the frontmatter
-			page.Content = strings.TrimSpace(string(ppage.Content()))
-			page.FrontMatter, page.Name, err = frontmatter.Pretty(ppage.FrontMatter())
-			page.Class = "complete"
+			data.Content = strings.TrimSpace(string(parserPage.Content()))
+			data.FrontMatter, data.Name, err = Pretty(parserPage.FrontMatter())
+			data.Class = "complete"
 		} else {
 			// The editor will handle only content
-			page.Class = "content-only"
-			page.Content = string(file)
+			data.Class = "content-only"
+			data.Content = string(file)
 		}
 	case "json", "toml", "yaml":
 		// Defines the class and declares an error
-		page.Class = "frontmatter-only"
+		data.Class = "frontmatter-only"
 
 		// Checks if the file already has the frontmatter rune and parses it
 		if hasFrontMatterRune(file) {
-			page.FrontMatter, _, err = frontmatter.Pretty(file)
+			data.FrontMatter, _, err = Pretty(file)
 		} else {
-			page.FrontMatter, _, err = frontmatter.Pretty(appendFrontMatterRune(file, page.Mode))
+			data.FrontMatter, _, err = Pretty(appendFrontMatterRune(file, data.Mode))
 		}
 
 		// Check if there were any errors
@@ -104,24 +99,35 @@ func GET(w http.ResponseWriter, r *http.Request, c *Config, filename string) (in
 		}
 	default:
 		// The editor will handle only content
-		page.Class = "content-only"
-		page.Content = string(file)
+		data.Class = "content-only"
+		data.Content = string(file)
 	}
 
 	// Create the functions map, then the template, check for erros and
 	// execute the template if there aren't errors
 	functions := template.FuncMap{
-		"SplitCapitalize": variables.SplitCapitalize,
-		"Defined":         variables.Defined,
+		"SplitCapitalize": SplitCapitalize,
+		"Defined":         Defined,
 	}
 
-	tpl, err := templates.Get(r, functions, "editor", "frontmatter")
+	var code int
+
+	page.Info.Data = data
+	code, err = page.AddTemplate("base", filemanager.Asset, functions)
 
 	if err != nil {
-		return http.StatusInternalServerError, err
+		return code, err
 	}
 
-	return http.StatusOK, tpl.Execute(w, page)
+	templates := []string{"listing", "actions"}
+	for _, t := range templates {
+		code, err = page.AddTemplate(t, Asset, nil)
+		if err != nil {
+			return code, err
+		}
+	}
+
+	return page.PrintAsHTML(w)
 }
 
 func hasFrontMatterRune(file []byte) bool {
