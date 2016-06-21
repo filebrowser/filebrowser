@@ -19,7 +19,7 @@ import (
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
-// AssetsURL
+// AssetsURL is the url of the assets
 const AssetsURL = "/_filemanagerinternal"
 
 // FileManager is an http.Handler that can show a file listing when
