@@ -2,6 +2,7 @@
 
 var selectedItems = [];
 
+// Array prototype function to remove an element
 Array.prototype.removeElement = function(element) {
     var i = this.indexOf(element);
     if (i != -1) {
@@ -9,12 +10,77 @@ Array.prototype.removeElement = function(element) {
     }
 }
 
+// Array prototype function to replace an element
+Array.prototype.replaceElement = function(oldEl, newEl) {
+    var i = this.indexOf(oldEl);
+    if (i != -1) {
+        this[i] = newEl;
+    }
+}
+
+// Document prototype function to send a costum event to itself
 Document.prototype.sendCostumEvent = function(text) {
     document.dispatchEvent(new CustomEvent(text));
 }
 
+// Document prototype to get a cookie content
+Document.prototype.getCookie = function(name) {
+    var re = new RegExp("(?:(?:^|.*;\\s*)" + name + "\\s*\\=\\s*([^;]*).*$)|^.*$");
+    return document.cookie.replace(re, "$1");
+}
+
+// Changes a button to the loading animation
+Element.prototype.changeToLoading = function() {
+    let element = this;
+    let originalText = element.innerHTML;
+
+    element.style.opacity = 0;
+
+    setTimeout(function() {
+        element.innerHTML = '<i class="material-icons spin">autorenew</i>';
+        element.style.opacity = 1;
+    }, 200);
+
+    return originalText;
+}
+
+// Changes an element to done animation
+Element.prototype.changeToDone = function(error, html) {
+  this.style.opacity = 0;
+
+  let thirdStep = () => {
+      this.innerHTML = html;
+      this.style.opacity = 1;
+
+      if (selectedItems.length == 0) {
+          document.sendCostumEvent('changed-selected');
+      }
+  }
+
+  let secondStep = () => {
+      this.style.opacity = 0;
+      setTimeout(thirdStep, 200);
+  }
+
+  let firstStep = () => {
+      if (error) {
+          this.innerHTML = '<i class="material-icons">close</i>';
+      } else {
+          this.innerHTML = '<i class="material-icons">done</i>';
+      }
+
+      this.style.opacity = 1;
+
+      setTimeout(secondStep, 1000);
+  }
+
+  setTimeout(firstStep, 200);
+  return false;
+}
+
+// Event for toggling the mode of view
 var viewEvent = function(event) {
-    let cookie = getCookie('view-list');
+    let cookie = document.getCookie('view-list');
     let listing = document.getElementById('listing');
 
     if (cookie != 'true') {
@@ -23,10 +89,11 @@ var viewEvent = function(event) {
         document.cookie = 'view-list=false';
     }
 
-    handleViewType(getCookie('view-list'));
+    handleViewType(document.getCookie('view-list'));
     return false;
 }
 
+// Handles the view type change
 var handleViewType = function(viewList) {
     let listing = document.getElementById('listing');
     let button = document.getElementById('view');
@@ -42,65 +109,18 @@ var handleViewType = function(viewList) {
     return false;
 }
 
-var getCookie = function(name) {
-    var re = new RegExp("(?:(?:^|.*;\\s*)" + name + "\\s*\\=\\s*([^;]*).*$)|^.*$");
-    return document.cookie.replace(re, "$1");
-}
-
-var changeToLoading = function(element) {
-    var originalText = element.innerHTML;
-    element.style.opacity = 0;
-    setTimeout(function() {
-        element.innerHTML = '<i class="material-icons spin">autorenew</i>';
-        element.style.opacity = 1;
-    }, 200);
-
-    return originalText;
-}
-
-var changeToDone = function(element, error, html) {
-    element.style.opacity = 0;
-
-    let thirdStep = () => {
-        element.innerHTML = html;
-        element.style.opacity = 1;
-
-        if (selectedItems.length == 0) {
-            document.sendCostumEvent('changed-selected');
-        }
-    }
-
-    let secondStep = () => {
-        element.style.opacity = 0;
-        setTimeout(thirdStep, 200);
-    }
-
-    let firstStep = () => {
-        if (error) {
-            element.innerHTML = '<i class="material-icons">close</i>';
-        } else {
-            element.innerHTML = '<i class="material-icons">done</i>';
-        }
-
-        element.style.opacity = 1;
-
-        setTimeout(secondStep, 1000);
-    }
-
-    setTimeout(firstStep, 200);
-    return false;
-}
-
+// Handles the open file button event
 var openEvent = function(event) {
     if (selectedItems.length) {
-        window.open(selectedItems[0] + "?raw=true");
+        window.open(selectedItems[0] + '?raw=true');
         return false;
     }
 
-    window.open(window.location + "?raw=true");
+    window.open(window.location + '?raw=true');
     return false;
 }
 
+// Handles the back button event
 var backEvent = function(event) {
     var items = document.getElementsByClassName('item');
     Array.from(items).forEach(link => {
@@ -113,22 +133,24 @@ var backEvent = function(event) {
     return false;
 }
 
+// Handles the delete button event
 var deleteEvent = function(event) {
     if (selectedItems.length) {
-        Array.from(selectedItems).forEach(item => {
-            let html = changeToLoading(document.getElementById("delete"));
+        Array.from(selectedItems).forEach(link => {
+            let html = document.getElementById("delete").changeToLoading();
             let request = new XMLHttpRequest();
-            request.open("DELETE", item);
+
+            request.open('DELETE', link);
             request.send();
             request.onreadystatechange = function() {
                 if (request.readyState == 4) {
                     if (request.status == 200) {
-                        document.getElementById(item).remove();
+                        document.getElementById(link).remove();
                         console.log(selectedItems);
-                        selectedItems.removeElement(item);
+                        selectedItems.removeElement(link);
                     }
 
-                    changeToDone(document.getElementById("delete"), (request.status != 200), html);
+                    document.getElementById('delete').changeToDone((request.status != 200), html);
                 }
             }
         });
@@ -137,7 +159,7 @@ var deleteEvent = function(event) {
     }
 
     let request = new XMLHttpRequest();
-    request.open("DELETE", window.location);
+    request.open('DELETE', window.location);
     request.send();
     request.onreadystatechange = function() {
         if (request.readyState == 4) {
@@ -145,17 +167,19 @@ var deleteEvent = function(event) {
                 window.location.pathname = RemoveLastDirectoryPartOf(window.location.pathname);
             }
 
-            changeToDone(document.getElementById("delete"), (request.status != 200), html);
+            document.getElementById('delete').changeToDone((request.status != 200), html);
         }
     }
 
     return false;
 }
 
+// Prevent Default event
 var preventDefault = function(event) {
     event.preventDefault();
 }
 
+// Rename file event
 var renameEvent = function(event) {
     if (selectedItems.length) {
         Array.from(selectedItems).forEach(link => {
@@ -171,7 +195,7 @@ var renameEvent = function(event) {
             let keyDownEvent = (event) => {
                 if (event.keyCode == 13) {
                     let newName = span.innerHTML;
-                    let html = changeToLoading(document.getElementById('rename'));
+                    let html = document.getElementById('rename').changeToLoading();
                     let request = new XMLHttpRequest();
                     request.open('PATCH', link);
                     request.setRequestHeader('Rename-To', newName);
@@ -181,10 +205,13 @@ var renameEvent = function(event) {
                             if (request.status != 200) {
                                 span.innerHTML = name;
                             } else {
+                                let newLink = link.replace(name, newName);
+                                item.id = newLink;
+                                selectedItems.replaceElement(link, newLink);
                                 span.innerHTML = newName;
                             }
 
-                            changeToDone(document.getElementById('rename'), (request.status != 200), html);
+                            document.getElementById('rename').changeToDone((request.status != 200), html);
                         }
                     }
                 }
@@ -200,6 +227,8 @@ var renameEvent = function(event) {
                     item.addEventListener('click', itemClickEvent);
                     event.preventDefault();
                 }
+
+                return false;
             }
 
             span.addEventListener('keydown', keyDownEvent);
@@ -217,6 +246,7 @@ var renameEvent = function(event) {
     return false;
 }
 
+// Download file event
 var downloadEvent = function(event) {
     if (selectedItems.length) {
         Array.from(selectedItems).forEach(item => {
@@ -262,20 +292,20 @@ document.addEventListener("changed-selected", function(event) {
 });
 
 var itemClickEvent = function(event) {
-  var url = this.getElementsByTagName('a')[0].getAttribute('href');
+    var url = this.getElementsByTagName('a')[0].getAttribute('href');
 
-  if (selectedItems.length != 0) event.preventDefault();
-  if (selectedItems.indexOf(url) == -1) {
-      this.classList.add('selected');
-      selectedItems.push(url);
-  } else {
-      this.classList.remove('selected');
-      selectedItems.removeElement(url);
-  }
+    if (selectedItems.length != 0) event.preventDefault();
+    if (selectedItems.indexOf(url) == -1) {
+        this.classList.add('selected');
+        selectedItems.push(url);
+    } else {
+        this.classList.remove('selected');
+        selectedItems.removeElement(url);
+    }
 
-  var event = new CustomEvent('changed-selected');
-  document.dispatchEvent(event);
-  return false;
+    var event = new CustomEvent('changed-selected');
+    document.dispatchEvent(event);
+    return false;
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -289,7 +319,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         document.getElementById("back").addEventListener("click", backEvent)
     };
     if (document.getElementById("view")) {
-        handleViewType(getCookie("view-list"));
+        handleViewType(document.getCookie("view-list"));
         document.getElementById("view").addEventListener("click", viewEvent)
     };
     document.getElementById("delete").addEventListener("click", deleteEvent);
