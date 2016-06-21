@@ -163,7 +163,15 @@ func (fi FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request, c *Co
 		},
 	}
 
-	return page.PrintAsHTML(w, "single")
+	templates := []string{"single", "actions", "base"}
+	for _, t := range templates {
+		code, err := page.AddTemplate(t, Asset)
+		if err != nil {
+			return code, err
+		}
+	}
+
+	return page.PrintAsHTML(w)
 }
 
 func (fi FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
@@ -218,7 +226,15 @@ func (fi FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *Confi
 		},
 	}
 
-	return page.PrintAsHTML(w, "listing")
+	templates := []string{"listing", "actions", "base"}
+	for _, t := range templates {
+		code, err := page.AddTemplate(t, Asset)
+		if err != nil {
+			return code, err
+		}
+	}
+
+	return page.PrintAsHTML(w)
 }
 
 func (fi FileInfo) loadDirectoryContents(file http.File, c *Config) (*Listing, error) {

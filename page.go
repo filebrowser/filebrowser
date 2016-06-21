@@ -11,7 +11,11 @@ import (
 // Page contains the informations and functions needed to show the page
 type Page struct {
 	Info *PageInfo
+	Tpl  *template.Template
 }
+
+// AssetFunc is an Assets function
+type AssetFunc func(name string) ([]byte, error)
 
 // PageInfo contains the information of a page
 type PageInfo struct {
@@ -67,38 +71,37 @@ func (p PageInfo) PreviousLink() string {
 	return parts[len(parts)-2]
 }
 
-// PrintAsHTML formats the page in HTML and executes the template
-func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, error) {
-	templates = append(templates, "actions", "base")
-	var tpl *template.Template
+// AddTemplate adds a template file to the page template
+func (p *Page) AddTemplate(name string, assets AssetFunc) (int, error) {
 
-	// For each template, add it to the the tpl variable
-	for i, t := range templates {
-		// Get the template from the assets
-		page, err := Asset("templates/" + t + ".tmpl")
+	// Get the template from the assets
+	page, err := assets("templates/" + name + ".tmpl")
 
-		// Check if there is some error. If so, the template doesn't exist
-		if err != nil {
-			log.Print(err)
-			return http.StatusInternalServerError, err
-		}
-
-		// If it's the first iteration, creates a new template and add the
-		// functions map
-		if i == 0 {
-			tpl, err = template.New(t).Parse(string(page))
-		} else {
-			tpl, err = tpl.Parse(string(page))
-		}
-
-		if err != nil {
-			log.Print(err)
-			return http.StatusInternalServerError, err
-		}
+	// Check if there is some error. If so, the template doesn't exist
+	if err != nil {
+		log.Print(err)
+		return http.StatusInternalServerError, err
 	}
 
+	// If it's the first iteration, creates a new template and add the
+	// functions map
+	if p.Tpl == nil {
+		p.Tpl, err = template.New(name).Parse(string(page))
+	} else {
+		p.Tpl, err = p.Tpl.Parse(string(page))
+	}
+
+	if err != nil {
+		log.Print(err)
+		return http.StatusInternalServerError, err
+	}
+	return 0, nil
+}
+
+// PrintAsHTML formats the page in HTML and executes the template
+func (p Page) PrintAsHTML(w http.ResponseWriter) (int, error) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	err := tpl.Execute(w, p.Info)
+	err := p.Tpl.Execute(w, p.Info)
 
 	if err != nil {
 		return http.StatusInternalServerError, err
