@@ -1,7 +1,6 @@
 package hugo
 
 import (
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -9,7 +8,8 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-filemanager"
-	"github.com/hacdias/caddy-hugo/installer"
+	"github.com/hacdias/caddy-hugo/tools/commands"
+	"github.com/hacdias/caddy-hugo/tools/installer"
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
@@ -31,43 +31,42 @@ func setup(c *caddy.Controller) error {
 	// If not, a new website will be created.
 	create := true
 
-	if _, err := os.Stat(conf.Root + "config.yaml"); err == nil {
+	if _, err := os.Stat(conf.Path + "config.yaml"); err == nil {
 		create = false
 	}
 
-	if _, err := os.Stat(conf.Root + "config.json"); err == nil {
+	if _, err := os.Stat(conf.Path + "config.json"); err == nil {
 		create = false
 	}
 
-	if _, err := os.Stat(conf.Root + "config.toml"); err == nil {
+	if _, err := os.Stat(conf.Path + "config.toml"); err == nil {
 		create = false
 	}
 
 	if create {
-		err := Run(conf.Hugo, []string{"new", "site", conf.Root, "--force"}, ".")
+		err := commands.Run(conf.Hugo, []string{"new", "site", conf.Path, "--force"}, ".")
 		if err != nil {
 			log.Panic(err)
 		}
 	}
 
 	// Generates the Hugo website for the first time the plugin is activated.
-	go RunHugo(conf, true)
+	go Run(conf, true)
 
 	mid := func(next httpserver.Handler) httpserver.Handler {
 		return &Hugo{
-			Next:   next,
-			Config: conf,
+			Next: next,
 			FileManager: &filemanager.FileManager{
 				Next: next,
 				Configs: []filemanager.Config{
 					filemanager.Config{
-						PathScope:  conf.Root,
-						Root:       http.Dir(conf.Root),
-						BaseURL:    conf.BaseURL,
-						StyleSheet: conf.Styles,
+						PathScope: conf.Path,
+						Root:      http.Dir(conf.Path),
+						BaseURL:   conf.Admin,
 					},
 				},
 			},
+			Config: conf,
 		}
 	}
 
@@ -75,57 +74,56 @@ func setup(c *caddy.Controller) error {
 	return nil
 }
 
-// Config contains the configuration of hugo plugin
+// Config is the add-on configuration set on Caddyfile
 type Config struct {
-	Args    []string // Hugo arguments
-	Git     bool     // Is this site a git repository
-	BaseURL string   // Admin URL to listen on
-	Hugo    string   // Hugo executable path
-	Root    string   // Hugo website path
-	Public  string   // Public content path
-	Styles  string   // Admin stylesheet
+	Public string   // Public content path
+	Path   string   // Hugo files path
+	Styles string   // Admin styles path
+	Args   []string // Hugo arguments
+	Hugo   string   // Hugo executable path
+	Admin  string   // Hugo admin URL
+	Git    bool     // Is this site a git repository
 }
 
 // ParseHugo parses the configuration file
 func ParseHugo(c *caddy.Controller, root string) (*Config, error) {
 	conf := &Config{
-		Public:  strings.Replace(root, "./", "", -1),
-		BaseURL: "/admin",
-		Root:    "./",
-		Git:     false,
-		Hugo:    installer.GetPath(),
+		Public: strings.Replace(root, "./", "", -1),
+		Admin:  "/admin",
+		Path:   "./",
+		Git:    false,
 	}
+
+	conf.Hugo = installer.GetPath()
 
 	for c.Next() {
 		args := c.RemainingArgs()
 
 		switch len(args) {
 		case 1:
-			conf.Root = args[0]
-			conf.Root = strings.TrimSuffix(conf.Root, "/")
-			conf.Root += "/"
+			conf.Path = args[0]
+			conf.Path = strings.TrimSuffix(conf.Path, "/")
+			conf.Path += "/"
 		}
 
 		for c.NextBlock() {
 			switch c.Val() {
 			case "styles":
 				if !c.NextArg() {
-					return conf, c.ArgErr()
+					return nil, c.ArgErr()
 				}
-				stylesheet, err := ioutil.ReadFile(c.Val())
-				if err != nil {
-					return conf, err
-				}
-				conf.Styles = string(stylesheet)
+				conf.Styles = c.Val()
+				// Remove the beginning slash if it exists or not
+				conf.Styles = strings.TrimPrefix(conf.Styles, "/")
+				// Add a beginning slash to make a
+				conf.Styles = "/" + conf.Styles
 			case "admin":
 				if !c.NextArg() {
 					return nil, c.ArgErr()
 				}
-				conf.BaseURL = c.Val()
-				// Remove the beginning slash if it exists or not
-				conf.BaseURL = strings.TrimPrefix(conf.BaseURL, "/")
-				// Add a beginning slash to make a
-				conf.BaseURL = "/" + conf.BaseURL
+				conf.Admin = c.Val()
+				conf.Admin = strings.TrimPrefix(conf.Admin, "/")
+				conf.Admin = "/" + conf.Admin
 			default:
 				key := "--" + c.Val()
 				value := "true"
@@ -139,7 +137,7 @@ func ParseHugo(c *caddy.Controller, root string) (*Config, error) {
 		}
 	}
 
-	if _, err := os.Stat(filepath.Join(conf.Root, ".git")); err == nil {
+	if _, err := os.Stat(filepath.Join(conf.Path, ".git")); err == nil {
 		conf.Git = true
 	}
 
