@@ -96,6 +96,14 @@ func ParseHugo(c *caddy.Controller, root string) (*Config, error) {
 		Hugo:    installer.GetPath(),
 	}
 
+	stlsbytes, err := Asset("public/css/styles.css")
+
+	if err != nil {
+		return conf, err
+	}
+
+	conf.Styles = string(stlsbytes)
+
 	for c.Next() {
 		args := c.RemainingArgs()
 
@@ -116,7 +124,7 @@ func ParseHugo(c *caddy.Controller, root string) (*Config, error) {
 				if err != nil {
 					return conf, err
 				}
-				conf.Styles = string(stylesheet)
+				conf.Styles += string(stylesheet)
 			case "admin":
 				if !c.NextArg() {
 					return nil, c.ArgErr()
