@@ -72,7 +72,7 @@ func (p PageInfo) PreviousLink() string {
 }
 
 // AddTemplate adds a template file to the page template
-func (p *Page) AddTemplate(name string, assets AssetFunc) (int, error) {
+func (p *Page) AddTemplate(name string, assets AssetFunc, functions template.FuncMap) (int, error) {
 
 	// Get the template from the assets
 	page, err := assets("templates/" + name + ".tmpl")
@@ -86,7 +86,7 @@ func (p *Page) AddTemplate(name string, assets AssetFunc) (int, error) {
 	// If it's the first iteration, creates a new template and add the
 	// functions map
 	if p.Tpl == nil {
-		p.Tpl, err = template.New(name).Parse(string(page))
+		p.Tpl, err = template.New(name).Funcs(functions).Parse(string(page))
 	} else {
 		p.Tpl, err = p.Tpl.Parse(string(page))
 	}

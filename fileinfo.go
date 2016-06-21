@@ -165,7 +165,7 @@ func (fi FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request, c *Co
 
 	templates := []string{"single", "actions", "base"}
 	for _, t := range templates {
-		code, err := page.AddTemplate(t, Asset)
+		code, err := page.AddTemplate(t, Asset, nil)
 		if err != nil {
 			return code, err
 		}
@@ -228,7 +228,7 @@ func (fi FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *Confi
 
 	templates := []string{"listing", "actions", "base"}
 	for _, t := range templates {
-		code, err := page.AddTemplate(t, Asset)
+		code, err := page.AddTemplate(t, Asset, nil)
 		if err != nil {
 			return code, err
 		}
