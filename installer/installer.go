@@ -14,7 +14,6 @@ import (
 	"regexp"
 	"runtime"
 
-	"github.com/hacdias/caddy-hugo/files"
 	"github.com/mitchellh/go-homedir"
 	"github.com/pivotal-golang/archiver/extractor"
 )
@@ -91,7 +90,7 @@ func GetPath() string {
 
 	// Copy the file
 	fmt.Print("Moving Hugo executable... ")
-	err = files.CopyFile(exetorename, hugo)
+	err = CopyFile(exetorename, hugo)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
@@ -213,4 +212,28 @@ func checkSHA256() {
 	}
 
 	fmt.Println("checked!")
+}
+
+// CopyFile is used to copy a file
+func CopyFile(old, new string) error {
+	// Open the file and create a new one
+	r, err := os.Open(old)
+	if err != nil {
+		return err
+	}
+	defer r.Close()
+
+	w, err := os.Create(new)
+	if err != nil {
+		return err
+	}
+	defer w.Close()
+
+	// Copy the content
+	_, err = io.Copy(w, r)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

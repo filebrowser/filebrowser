@@ -23,7 +23,7 @@ type editor struct {
 }
 
 // GET handles the GET method on editor page
-func (h Hugo) GET(w http.ResponseWriter, r *http.Request, c *Config, filename string) (int, error) {
+func (h Hugo) GET(w http.ResponseWriter, r *http.Request, filename string) (int, error) {
 	// Check if the file exists.
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		return http.StatusNotFound, err
@@ -45,14 +45,14 @@ func (h Hugo) GET(w http.ResponseWriter, r *http.Request, c *Config, filename st
 		Info: &filemanager.PageInfo{
 			IsDir:  false,
 			Config: &h.FileManager.Configs[0],
-			Name:   strings.Replace(filename, c.Root, "", 1),
+			Name:   strings.Replace(filename, h.Config.Root, "", 1),
 		},
 	}
 
 	// Create a new editor variable and set the extension
 	data := new(editor)
 	data.Mode = strings.TrimPrefix(filepath.Ext(filename), ".")
-	data.Name = strings.Replace(filename, c.Root, "", 1)
+	data.Name = strings.Replace(filename, h.Config.Root, "", 1)
 	data.IsPost = false
 	data.Mode = sanitizeMode(data.Mode)
 
@@ -113,15 +113,18 @@ func (h Hugo) GET(w http.ResponseWriter, r *http.Request, c *Config, filename st
 	var code int
 
 	page.Info.Data = data
-	code, err = page.AddTemplate("base", filemanager.Asset, functions)
 
-	if err != nil {
-		return code, err
+	templates := []string{"frontmatter", "editor"}
+	for _, t := range templates {
+		code, err = page.AddTemplate(t, Asset, functions)
+		if err != nil {
+			return code, err
+		}
 	}
 
-	templates := []string{"listing", "actions"}
+	templates = []string{"actions", "base"}
 	for _, t := range templates {
-		code, err = page.AddTemplate(t, Asset, nil)
+		code, err = page.AddTemplate(t, filemanager.Asset, nil)
 		if err != nil {
 			return code, err
 		}
