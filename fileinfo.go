@@ -135,8 +135,7 @@ func (fi FileInfo) Rename(w http.ResponseWriter, r *http.Request) (int, error) {
 		return ErrorToHTTPCode(err), err
 	}
 
-	http.Redirect(w, r, strings.Replace(r.URL.Path, fi.Name, newname, 1), http.StatusTemporaryRedirect)
-	return 0, nil
+	return http.StatusOK, nil
 }
 
 // ServeAsHTML is used to serve single file pages
