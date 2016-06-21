@@ -19,7 +19,8 @@ import (
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
-const assetsURL = "/_filemanagerinternal"
+// AssetsURL
+const AssetsURL = "/_filemanagerinternal"
 
 // FileManager is an http.Handler that can show a file listing when
 // directories in the given paths are specified.
@@ -41,7 +42,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 	for i := range f.Configs {
 		if httpserver.Path(r.URL.Path).Matches(f.Configs[i].BaseURL) {
 			c = &f.Configs[i]
-			assets = httpserver.Path(r.URL.Path).Matches(c.BaseURL + assetsURL)
+			assets = httpserver.Path(r.URL.Path).Matches(c.BaseURL + AssetsURL)
 
 			if r.Method != http.MethodPost && !assets {
 				fi, code, err = GetFileInfo(r.URL, c)
@@ -112,7 +113,7 @@ func ErrorToHTTPCode(err error) int {
 // ServeAssets provides the needed assets for the front-end
 func ServeAssets(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
 	// gets the filename to be used with Assets function
-	filename := strings.Replace(r.URL.Path, c.BaseURL+assetsURL, "public", 1)
+	filename := strings.Replace(r.URL.Path, c.BaseURL+AssetsURL, "public", 1)
 	file, err := Asset(filename)
 	if err != nil {
 		return http.StatusNotFound, nil
