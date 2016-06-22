@@ -8,6 +8,11 @@
 		  <link rel="stylesheet" href="{{ .Config.BaseURL }}/_filemanagerinternal/css/styles.css">
 			<script src="{{ .Config.BaseURL }}/_filemanagerinternal/js/application.js"></script>
 			{{ if ne .Config.StyleSheet "" }}<style>{{ .Config.StyleSheet}}</style>{{ end }}
+			{{ if .Config.HugoEnabled }}
+				<!-- Hugo plugin stuff -->
+				<link rel="stylesheet" href="{{ .Config.BaseURL }}/_hugointernal/css/styles.css">
+				<script src="{{ .Config.BaseURL }}/_hugointernal/js/application.js"></script>
+			{{ end }}
 	</head>
 	<body>
     <header>
@@ -17,17 +22,23 @@
 				<div class="action disabled" id="prev"><i class="material-icons">subdirectory_arrow_left</i></div>{{ end }}
 				<p><a href="{{ if eq .Config.BaseURL "" }}/{{ else }}{{ .Config.BaseURL }}{{ end }}">File Manager</a> {{ if ne .Name "/"}}<i class="material-icons">chevron_right</i> {{ .Name }}</p>{{ end }}
 			</div>
-			{{ if .IsDir}}
 			<div>
-				<form>
-					<i class="material-icons">search</i> <input type="text" placeholder="Search">
-				</form>
-				<div class="action" id="view"><i class="material-icons">view_headline</i></div>
-				<div class="action" id="upload"><i class="material-icons">file_upload</i></div>
-			</div>
+			{{ if .IsDir}}
+			<form>
+				<i class="material-icons">search</i> <input type="text" placeholder="Search">
+			</form>
+			<div class="action" id="view"><i class="material-icons">view_headline</i></div>
+			<div class="action" id="upload"><i class="material-icons">file_upload</i></div>
 			{{ else }}
 			{{ template "actions" . }}
 			{{ end }}
+
+			{{ if .Config.HugoEnabled }}
+				<!-- Hugo plugin stuff -->
+			  <div class="action" id="settings"><i class="material-icons">settings</i></div>
+			  <div class="action" id="logout"><i class="material-icons">exit_to_app</i></div>
+			{{ end }}
+			</div>
     </header>
 
 		{{ if .IsDir }}
@@ -39,29 +50,11 @@
 			{{ template "actions" . }}
 		</div>
 		{{ end }}
-
     <main>
       {{ template "content" .Data }}
     </main>
 		<footer>
-			Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a> and <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.
+			Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a> and <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>. {{ if .Config.HugoEnabled }}With a flavour of <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">Hugo</a>.{{ end }}
 		</footer>
-		<script type="text/javascript">
-			function localizeDatetime(e, index, ar) {
-				if (e.textContent === undefined) {
-					return;
-				}
-				var d = new Date(e.getAttribute('datetime'));
-				if (isNaN(d)) {
-					d = new Date(e.textContent);
-					if (isNaN(d)) {
-						return;
-					}
-				}
-				e.textContent = d.toLocaleString();
-			}
-			var timeList = Array.prototype.slice.call(document.getElementsByTagName("time"));
-			timeList.forEach(localizeDatetime);
-		</script>
 	</body>
 </html>

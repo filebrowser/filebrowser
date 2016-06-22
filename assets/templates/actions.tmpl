@@ -1,8 +1,6 @@
 {{ define "actions" }}
-<div>
-  <div class="action" id="open"><i class="material-icons">open_in_new</i></div>
-  <div class="action" id="rename"><i class="material-icons">mode_edit</i></div>
-  <div class="action" id="download"><i class="material-icons">file_download</i></div>
-  <div class="action" id="delete"><i class="material-icons">delete</i></div>
-</div>
+<div class="action" id="open"><i class="material-icons">open_in_new</i></div>
+{{ if .IsDir }}<div class="action" id="rename"><i class="material-icons">mode_edit</i></div>{{ end }}
+<div class="action" id="download"><i class="material-icons">file_download</i></div>
+<div class="action" id="delete"><i class="material-icons">delete</i></div>
 {{ end }}

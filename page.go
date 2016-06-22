@@ -1,8 +1,6 @@
 package filemanager
 
 import (
-	"bufio"
-	"bytes"
 	"encoding/json"
 	"html/template"
 	"log"
@@ -102,16 +100,18 @@ func (p *Page) AddTemplate(name string, assets AssetFunc, functions template.Fun
 
 // PrintAsHTML formats the page in HTML and executes the template
 func (p Page) PrintAsHTML(w http.ResponseWriter) (int, error) {
-	var buffer bytes.Buffer
-	writer := bufio.NewWriter(&buffer)
-	err := p.Tpl.Execute(writer, p.Info)
+	//	var buffer bytes.Buffer
+	//writer := bufio.NewWriter(&buffer)
+	err := p.Tpl.Execute(w, p.Info)
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	buffer.WriteTo(w)
+	//	_, err = buffer.WriteTo(w)
+	//	w.Write(buffer.Bytes())
 	return http.StatusOK, nil
 }
 

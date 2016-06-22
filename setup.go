@@ -33,10 +33,11 @@ func setup(c *caddy.Controller) error {
 
 // Config is a configuration for browsing in a particualr path.
 type Config struct {
-	PathScope  string
-	Root       http.FileSystem
-	BaseURL    string
-	StyleSheet string
+	PathScope   string
+	Root        http.FileSystem
+	BaseURL     string
+	StyleSheet  string // Costum stylesheet
+	HugoEnabled bool   // This must be only used by Hugo plugin
 }
 
 // parseConfiguration parses the configuration set by the user so it can
@@ -55,7 +56,7 @@ func parseConfiguration(c *caddy.Controller) ([]Config, error) {
 	}
 
 	for c.Next() {
-		var cfg = Config{PathScope: ".", BaseURL: ""}
+		var cfg = Config{PathScope: ".", BaseURL: "", HugoEnabled: false}
 		for c.NextBlock() {
 			switch c.Val() {
 			case "show":
