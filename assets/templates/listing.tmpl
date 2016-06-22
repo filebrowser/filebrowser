@@ -1,30 +1,32 @@
 {{ define "content" }}
-<div class="listing">
-	<div class="container" id="listing">
-		{{- range .Items}}
-		<div class="item" id="{{.URL}}">
-			<div>
-				<a href="{{.URL}}">
-					{{- if .IsDir}}
-					<i class="material-icons">folder</i>
-					{{- else}}
-					<i class="material-icons">insert_drive_file</i>
-					{{- end}}
-				</a>
-			</div>
-			<div>
-				<a href="{{.URL}}">
-					<span class="name">{{.Name}}</span>
-					{{- if .IsDir}}
-					<p data-order="-1">&mdash;</p>
-					{{- else}}
-					<p data-order="{{.Size}}">{{.HumanSize}}</p>
-					{{- end}}
-					<p class="hideable"><time datetime="{{.HumanModTime "2006-01-02T15:04:05Z"}}">{{.HumanModTime "01/02/2006 03:04:05 PM -07:00"}}</time></p>
-				</a>
-			</div>
-		</div>
-		{{- end}}
-	</div>
-</div>
+ <div class="listing">
+  <div class="container" id="listing">
+   {{- range .Items}}
+   <div class="item" id="{{.URL}}">
+    <div>
+     <a href="{{.URL}}">
+      {{- if .IsDir}}
+      <i class="material-icons">folder</i>
+      {{- else}}
+      <i class="material-icons">insert_drive_file</i>
+      {{- end}}
+     </a>
+    </div>
+    <div>
+     <a href="{{.URL}}">
+      <span class="name">{{.Name}}</span>
+      {{- if .IsDir}}
+      <p data-order="-1">&mdash;</p>
+      {{- else}}
+      <p data-order="{{.Size}}">{{.HumanSize}}</p>
+      {{- end}}
+      <p class="hideable">
+       <time datetime="{{.HumanModTime " 2006-01-02T15:04:05Z"}}">{{.HumanModTime "01/02/2006 03:04:05 PM -07:00"}}</time>
+      </p>
+     </a>
+    </div>
+   </div>
+   {{- end}}
+  </div>
+ </div>
 {{ end }}

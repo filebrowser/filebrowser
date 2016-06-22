@@ -1,62 +1,101 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>{{.Name}}</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-			<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-			<link href='https://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
-		  <link rel="stylesheet" href="{{ .Config.BaseURL }}/_filemanagerinternal/css/styles.css">
-			<script src="{{ .Config.BaseURL }}/_filemanagerinternal/js/application.js"></script>
-			{{ if ne .Config.StyleSheet "" }}<style>{{ .Config.StyleSheet}}</style>{{ end }}
-			{{ if .Config.HugoEnabled }}
-				<!-- Hugo plugin stuff -->
-				<link rel="stylesheet" href="{{ .Config.BaseURL }}/_hugointernal/css/styles.css">
-				<script src="{{ .Config.BaseURL }}/_hugointernal/js/application.js"></script>
-			{{ end }}
-	</head>
-	<body>
-    <header>
-			<div>
-				{{ $lnk := .PreviousLink }}
-				{{ if ne $lnk ""}}<a href="{{ if eq $lnk "/" }}/{{else }}../../{{.PreviousLink}}{{ end }}"><div class="action" id="prev"><i class="material-icons">subdirectory_arrow_left</i></div></a>{{ else }}
-				<div class="action disabled" id="prev"><i class="material-icons">subdirectory_arrow_left</i></div>{{ end }}
-				<p><a href="{{ if eq .Config.BaseURL "" }}/{{ else }}{{ .Config.BaseURL }}{{ end }}">{{ if .Config.HugoEnabled }}Hugo{{ else }}File Manager{{ end }}</a> {{ if ne .Name "/"}}<i class="material-icons">chevron_right</i> {{ .Name }}</p>{{ end }}
-			</div>
-			<div>
-			{{ if .IsDir}}
-			<form>
-				<i class="material-icons">search</i> <input type="text" placeholder="Search">
-			</form>
-			<div class="action" id="view"><i class="material-icons">view_headline</i></div>
-			<div class="action" id="upload"><i class="material-icons">file_upload</i></div>
-			{{ else }}
-			{{ template "actions" . }}
-			{{ end }}
+ <head>
+  <title>{{.Name}}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="{{ .Config.BaseURL }}/_filemanagerinternal/css/styles.css">
+  <script src="{{ .Config.BaseURL }}/_filemanagerinternal/js/application.js"></script>
+  {{ if ne .Config.StyleSheet "" }}
+   <style>
+    {{.Config.StyleSheet}}
+   </style>
+  {{ end }}
+  {{ if .Config.HugoEnabled }}
+   <!-- Hugo plugin stuff -->
+   <link rel="stylesheet" href="{{ .Config.BaseURL }}/_hugointernal/css/styles.css">
+   <script src="{{ .Config.BaseURL }}/_hugointernal/js/application.js"></script>
+  {{ end }}
+ </head>
+ <body>
+  <header>
+   <div>
+    {{ $lnk := .PreviousLink }}
+    {{ if ne $lnk ""}}
+     <a href="{{ if eq $lnk " /" }}/{{else }}../../{{.PreviousLink}}{{ end }}">
+      <div class="action" id="prev">
+       <i class="material-icons">subdirectory_arrow_left</i>
+      </div>
+     </a>{{ else }}
+     <div class="action disabled" id="prev">
+      <i class="material-icons">subdirectory_arrow_left</i>
+     </div>
+    {{ end }}
+    <p>
+     <a href="{{ if eq .Config.BaseURL " " }}/{{ else }}{{ .Config.BaseURL }}{{ end }}">
+      {{ if .Config.HugoEnabled }}Hugo{{ else }}File Manager{{ end }}
+     </a>
+     {{ if ne .Name "/"}}
+      <i class="material-icons">chevron_right</i>
+      {{ .Name }}</p>
+    {{ end }}
+   </div>
+   <div>
+    {{ if .IsDir}}
+     <form>
+      <i class="material-icons">search</i>
+      <input type="text" placeholder="Search">
+     </form>
+     <div class="action" id="view">
+      <i class="material-icons">view_headline</i>
+     </div>
+     <div class="action" id="upload">
+      <i class="material-icons">file_upload</i>
+     </div>
+     {{ else }}
+     {{ template "actions" . }}
+    {{ end }}
 
-			{{ if .Config.HugoEnabled }}
-				<!-- Hugo plugin stuff -->
-			  <a href="{{ .Config.BaseURL }}/settings"><div class="action"><i class="material-icons">settings</i></div></a>
-			  <div class="action" id="logout"><i class="material-icons">exit_to_app</i></div>
-			{{ end }}
-			</div>
-    </header>
+    {{ if .Config.HugoEnabled }}
+     <!-- Hugo plugin stuff -->
+     <a href="{{ .Config.BaseURL }}/settings">
+      <div class="action">
+       <i class="material-icons">settings</i>
+      </div>
+     </a>
+     <div class="action" id="logout">
+      <i class="material-icons">exit_to_app</i>
+     </div>
+    {{ end }}
+   </div>
+  </header>
 
-		{{ if .IsDir }}
-		<div id="toolbar">
-			<div>
-				<div class="action" id="back"><i class="material-icons">arrow_back</i></div>
-				<p><span id="selected-number">0</span> selected.</p>
-			</div>
-			<div>
-				{{ template "actions" . }}
-			</div>
-		</div>
-		{{ end }}
-    <main>
-      {{ template "content" .Data }}
-    </main>
-		<footer>
-			Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a> and <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>. {{ if .Config.HugoEnabled }}With a flavour of <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">Hugo</a>.{{ end }}
-		</footer>
-	</body>
+  {{ if .IsDir }}
+   <div id="toolbar">
+    <div>
+     <div class="action" id="back">
+      <i class="material-icons">arrow_back</i>
+     </div>
+     <p>
+      <span id="selected-number">0</span>
+      selected.</p>
+    </div>
+    <div>
+     {{ template "actions" . }}
+    </div>
+   </div>
+  {{ end }}
+  <main>
+   {{ template "content" .Data }}
+  </main>
+  <footer>
+   Served with
+   <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a>
+   and
+   <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.
+   {{ if .Config.HugoEnabled }}With a flavour of
+    <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">Hugo</a>.{{ end }}
+  </footer>
+ </body>
 </html>

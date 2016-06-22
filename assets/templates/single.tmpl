@@ -1,18 +1,15 @@
 {{ define "content" }}
 
-<main class="container">
-
+ <main class="container">
   {{ if eq .Type "image" }}
-  <img src="{{ .URL }}?raw=true">
-  {{ else if eq .Type "audio" }}
-  <audio src="{{ .URL }}?raw=true">
-</audio>
-  {{ else if eq .Type "video" }}
+   <img src="{{ .URL }}?raw=true">
+   {{ else if eq .Type "audio" }}
+   <audio src="{{ .URL }}?raw=true"></audio>
+   {{ else if eq .Type "video" }}
 
-  {{ else}}
-  <pre>{{ .Content }}</pre>
+   {{ else}}
+   <pre>{{ .Content }}</pre>
   {{ end }}
-
-</main>
+ </main>
 
 {{ end }}
