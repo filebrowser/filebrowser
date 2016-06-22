@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -35,8 +34,6 @@ func (h Hugo) POST(w http.ResponseWriter, r *http.Request, filename string) (int
 	rawBuffer := new(bytes.Buffer)
 	rawBuffer.ReadFrom(r.Body)
 	err := json.Unmarshal(rawBuffer.Bytes(), &data)
-
-	fmt.Println(string(rawBuffer.Bytes()))
 
 	if err != nil {
 		return RespondJSON(w, &response{"Error decrypting json."}, http.StatusInternalServerError, err)

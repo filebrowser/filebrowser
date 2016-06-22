@@ -24,7 +24,7 @@ func init() {
 // Setup is the init function of Caddy plugins and it configures the whole
 // middleware thing.
 func setup(c *caddy.Controller) error {
-	cnf := httpserver.GetConfig(c.Key)
+	cnf := httpserver.GetConfig(c)
 	conf, _ := ParseHugo(c, cnf.Root)
 
 	// Checks if there is an Hugo website in the path that is provided.
@@ -61,10 +61,11 @@ func setup(c *caddy.Controller) error {
 				Next: next,
 				Configs: []filemanager.Config{
 					filemanager.Config{
-						PathScope:  conf.Root,
-						Root:       http.Dir(conf.Root),
-						BaseURL:    conf.BaseURL,
-						StyleSheet: conf.Styles,
+						HugoEnabled: true,
+						PathScope:   conf.Root,
+						Root:        http.Dir(conf.Root),
+						BaseURL:     conf.BaseURL,
+						StyleSheet:  conf.Styles,
 					},
 				},
 			},
