@@ -20,7 +20,7 @@
 				{{ $lnk := .PreviousLink }}
 				{{ if ne $lnk ""}}<a href="{{ if eq $lnk "/" }}/{{else }}../../{{.PreviousLink}}{{ end }}"><div class="action" id="prev"><i class="material-icons">subdirectory_arrow_left</i></div></a>{{ else }}
 				<div class="action disabled" id="prev"><i class="material-icons">subdirectory_arrow_left</i></div>{{ end }}
-				<p><a href="{{ if eq .Config.BaseURL "" }}/{{ else }}{{ .Config.BaseURL }}{{ end }}">File Manager</a> {{ if ne .Name "/"}}<i class="material-icons">chevron_right</i> {{ .Name }}</p>{{ end }}
+				<p><a href="{{ if eq .Config.BaseURL "" }}/{{ else }}{{ .Config.BaseURL }}{{ end }}">{{ if .Config.HugoEnabled }}Hugo{{ else }}File Manager{{ end }}</a> {{ if ne .Name "/"}}<i class="material-icons">chevron_right</i> {{ .Name }}</p>{{ end }}
 			</div>
 			<div>
 			{{ if .IsDir}}
@@ -35,7 +35,7 @@
 
 			{{ if .Config.HugoEnabled }}
 				<!-- Hugo plugin stuff -->
-			  <div class="action" id="settings"><i class="material-icons">settings</i></div>
+			  <a href="{{ .Config.BaseURL }}/settings"><div class="action"><i class="material-icons">settings</i></div></a>
 			  <div class="action" id="logout"><i class="material-icons">exit_to_app</i></div>
 			{{ end }}
 			</div>
