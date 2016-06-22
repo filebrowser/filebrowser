@@ -7,6 +7,7 @@
 package hugo
 
 import (
+	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -15,6 +16,9 @@ import (
 	"github.com/hacdias/caddy-filemanager"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
+
+// AssetsURL is the base url of the assets
+const AssetsURL = "/_hugointernal"
 
 // Hugo contais the next middleware to be run and the configuration
 // of the current one.
@@ -29,6 +33,11 @@ type Hugo struct {
 func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Check if the current request if for this plugin
 	if httpserver.Path(r.URL.Path).Matches(h.Config.BaseURL) {
+		// Check if we are asking for the assets
+		if httpserver.Path(r.URL.Path).Matches(h.Config.BaseURL + AssetsURL) {
+			return h.ServeAssets(w, r)
+		}
+
 		// If the url matches exactly with /{admin}/settings/, redirect
 		// to the page of the configuration file
 		if r.URL.Path == h.Config.BaseURL+"/settings/" {
@@ -113,4 +122,24 @@ func (h Hugo) ShouldHandle(r *http.Request) bool {
 	}
 
 	return false
+}
+
+// ServeAssets provides the needed assets for the front-end
+func (h Hugo) ServeAssets(w http.ResponseWriter, r *http.Request) (int, error) {
+	// gets the filename to be used with Assets function
+	filename := strings.Replace(r.URL.Path, h.Config.BaseURL+AssetsURL, "public", 1)
+	file, err := Asset(filename)
+	if err != nil {
+		return http.StatusNotFound, nil
+	}
+
+	// Get the file extension and its mimetype
+	extension := filepath.Ext(filename)
+	mediatype := mime.TypeByExtension(extension)
+
+	// Write the header with the Content-Type and write the file
+	// content to the buffer
+	w.Header().Set("Content-Type", mediatype)
+	w.Write(file)
+	return 200, nil
 }

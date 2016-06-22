@@ -19,6 +19,7 @@ type editor struct {
 	IsPost      bool
 	Mode        string
 	Content     string
+	BaseURL     string
 	FrontMatter interface{}
 }
 
@@ -54,6 +55,7 @@ func (h Hugo) GET(w http.ResponseWriter, r *http.Request, filename string) (int,
 	data.Mode = strings.TrimPrefix(filepath.Ext(filename), ".")
 	data.Name = strings.Replace(filename, h.Config.Root, "", 1)
 	data.IsPost = false
+	data.BaseURL = h.Config.BaseURL
 	data.Mode = sanitizeMode(data.Mode)
 
 	var parserPage parser.Page

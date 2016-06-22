@@ -1,23 +1,19 @@
-{{ define "frontmatter" }}
+{{ define "options" }}
 {{ range $key, $value := . }}
 
   {{ if or (eq $value.Type "object") (eq $value.Type "array") }}
   <fieldset id="{{ $value.Name }}" data-type="{{ $value.Type }}">
     <h3>{{ SplitCapitalize $value.Title }}</h3>
-    <span class="actions">
-      <button class="add">&#43;</button>
-      <button class="delete">&#8722;</button>
-    </span>
-    {{ template "frontmatter" $value.Content }}
+    <button class="add">&#43;</button>
+    <button class="delete" data-delete="{{ $value.Name }}">&#8722;</button>
+    {{ template "options" $value.Content }}
   </fieldset>
   {{ else }}
 
   {{ if not (eq $value.Parent.Type "array") }}
   <div class="block" id="block-{{ $value.Name }}" data-content="{{ $value.Name }}">
     <label for="{{ $value.Name }}">{{ SplitCapitalize $value.Title }}</label>
-    <span class="actions">
-      <button class="delete">&#8722;</button>
-    </span>
+    <button class="delete" data-delete="block-{{ $value.Name }}">&#8722;</button>
 
   {{ end }}
 
@@ -36,7 +32,7 @@
   {{ if not (eq $value.Parent.Type "array") }}</div>{{ end }}
 
   {{ if eq $value.Parent.Type "array" }}
-  <span class="actions"><button class="delete">&#8722;</button></span></div>
+  <button class="delete" data-delete="{{ $value.Name }}">&#8722;</button></div>
   {{ end }}
 
 {{ end }}
