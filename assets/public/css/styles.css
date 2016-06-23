@@ -575,6 +575,7 @@ pre {
 header {
     background-color: #2196f3;
     padding: 1.7em 0;
+    z-index: 999;
 }
 header h1 {
     margin: 0;
@@ -662,6 +663,7 @@ header, #toolbar {
     top: -4em;
     opacity: 0;
     transition: .2s ease-in-out all;
+    z-index: 1000;
 }
 #toolbar.enabled {
     top: 0;
