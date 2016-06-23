@@ -5,18 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
+
   <link rel="stylesheet" href="{{ .Config.BaseURL }}/_filemanagerinternal/css/styles.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
   <script src="{{ .Config.BaseURL }}/_filemanagerinternal/js/application.js"></script>
+
   {{ if ne .Config.StyleSheet "" }}
    <style>
     {{.Config.StyleSheet}}
    </style>
-  {{ end }}
-  {{ if .Config.HugoEnabled }}
-   <!-- Hugo plugin stuff -->
-   <link rel="stylesheet" href="{{ .Config.BaseURL }}/_hugointernal/css/styles.css">
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
-   <script src="{{ .Config.BaseURL }}/_hugointernal/js/application.js"></script>
   {{ end }}
  </head>
  <body>
@@ -65,10 +63,11 @@
        <i class="material-icons">settings</i>
       </div>
      </a>
-     <div class="action" id="logout">
-      <i class="material-icons">exit_to_app</i>
-     </div>
+
     {{ end }}
+    <div class="action" id="logout">
+     <i class="material-icons">exit_to_app</i>
+    </div>
    </div>
   </header>
 
@@ -87,6 +86,7 @@
     </div>
    </div>
   {{ end }}
+
   <main>
    {{ template "content" .Data }}
   </main>

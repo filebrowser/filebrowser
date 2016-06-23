@@ -3,7 +3,6 @@ package filemanager
 import (
 	"fmt"
 	"io/ioutil"
-	"mime"
 	"net/http"
 	"net/url"
 	"os"
@@ -69,16 +68,12 @@ func GetFileInfo(url *url.URL, c *Config) (*FileInfo, int, error) {
 
 // GetExtendedFileInfo is used to get extra parameters for FileInfo struct
 func (fi *FileInfo) GetExtendedFileInfo() error {
-	fi.Mimetype = mime.TypeByExtension(filepath.Ext(fi.Path))
-	fi.Type = SimplifyMimeType(fi.Mimetype)
-
-	if fi.Type == "text" {
-		err := fi.Read()
-		if err != nil {
-			return err
-		}
+	err := fi.Read()
+	if err != nil {
+		return err
 	}
 
+	fi.Type = SimplifyMimeType(fi.Mimetype)
 	return nil
 }
 
@@ -88,6 +83,7 @@ func (fi *FileInfo) Read() error {
 	if err != nil {
 		return err
 	}
+	fi.Mimetype = http.DetectContentType(raw)
 	fi.Content = string(raw)
 	return nil
 }
@@ -104,7 +100,7 @@ func (fi FileInfo) HumanModTime(format string) string {
 }
 
 // Delete handles the delete requests
-func (fi FileInfo) Delete() (int, error) {
+func (fi *FileInfo) Delete() (int, error) {
 	var err error
 
 	// If it's a directory remove all the contents inside
@@ -122,7 +118,7 @@ func (fi FileInfo) Delete() (int, error) {
 }
 
 // Rename function is used tor rename a file or a directory
-func (fi FileInfo) Rename(w http.ResponseWriter, r *http.Request) (int, error) {
+func (fi *FileInfo) Rename(w http.ResponseWriter, r *http.Request) (int, error) {
 	newname := r.Header.Get("Rename-To")
 	if newname == "" {
 		return http.StatusBadRequest, nil
@@ -135,11 +131,12 @@ func (fi FileInfo) Rename(w http.ResponseWriter, r *http.Request) (int, error) {
 		return ErrorToHTTPCode(err), err
 	}
 
+	fi.Path = newpath
 	return http.StatusOK, nil
 }
 
 // ServeAsHTML is used to serve single file pages
-func (fi FileInfo) ServeAsHTML(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+func (fi *FileInfo) ServeAsHTML(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
 	if fi.IsDir {
 		return fi.serveListing(w, r, c)
 	}
@@ -147,10 +144,14 @@ func (fi FileInfo) ServeAsHTML(w http.ResponseWriter, r *http.Request, c *Config
 	return fi.serveSingleFile(w, r, c)
 }
 
-func (fi FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+func (fi *FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
 	err := fi.GetExtendedFileInfo()
 	if err != nil {
 		return ErrorToHTTPCode(err), err
+	}
+
+	if fi.Type == "blob" {
+		return fi.ServeRawFile(w, r, c)
 	}
 
 	page := &Page{
@@ -163,18 +164,10 @@ func (fi FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request, c *Co
 		},
 	}
 
-	templates := []string{"single", "actions", "base"}
-	for _, t := range templates {
-		code, err := page.AddTemplate(t, Asset, nil)
-		if err != nil {
-			return code, err
-		}
-	}
-
-	return page.PrintAsHTML(w)
+	return page.PrintAsHTML(w, "single")
 }
 
-func (fi FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+func (fi *FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
 	var err error
 
 	file, err := c.Root.Open(fi.RootPath)
@@ -226,15 +219,7 @@ func (fi FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *Confi
 		},
 	}
 
-	templates := []string{"listing", "actions", "base"}
-	for _, t := range templates {
-		code, err := page.AddTemplate(t, Asset, nil)
-		if err != nil {
-			return code, err
-		}
-	}
-
-	return page.PrintAsHTML(w)
+	return page.PrintAsHTML(w, "listing")
 }
 
 func (fi FileInfo) loadDirectoryContents(file http.File, c *Config) (*Listing, error) {
@@ -314,5 +299,13 @@ func SimplifyMimeType(name string) string {
 		return "image"
 	}
 
-	return "text"
+	if strings.HasPrefix(name, "text") {
+		return "text"
+	}
+
+	if strings.HasPrefix(name, "application/javascript") {
+		return "text"
+	}
+
+	return "blob"
 }

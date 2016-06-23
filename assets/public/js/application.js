@@ -349,6 +349,18 @@ var localizeDatetime = function (e, index, ar) {
 }
 
 document.addEventListener("DOMContentLoaded", function (event) {
+
+ document.getElementById("logout").addEventListener("click", event => {
+  let request = new XMLHttpRequest();
+  request.open('GET', window.location.pathname, true, "username", "password");
+  request.send();
+  request.onreadystatechange = function () {
+   if (request.readyState == 4) {
+    window.location = "/";
+   }
+  }
+ });
+
  var timeList = Array.prototype.slice.call(document.getElementsByTagName("time"));
  timeList.forEach(localizeDatetime);
 
@@ -375,7 +387,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
  let rename = document.getElementById("rename");
  if (rename) {
-     rename.addEventListener("click", renameEvent);
+  rename.addEventListener("click", renameEvent);
  }
 
  if (document.getElementById("listing")) {
