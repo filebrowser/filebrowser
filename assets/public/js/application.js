@@ -264,7 +264,64 @@ var uploadEvent = function (event) {
 
     let button = document.getElementById("upload-input");
     button.click();
+    button.addEventListener("change", (event) => {
+        event.preventDefault();
 
+        let html = button.changeToLoading();
+        let files = event.target.files;
+
+        let data = new FormData();
+
+        /*
+        event.preventDefault();
+    files = event.target.files;
+
+    $('#loading').fadeIn();
+
+    // Create a formdata object and add the files
+    var data = new FormData();
+    $.each(files, function(key, value) {
+      data.append(key, value);
+    });
+
+    $.ajax({
+      url: window.location.pathname,
+      type: 'POST',
+      data: data,
+      cache: false,
+      dataType: 'json',
+      headers: {
+        'X-Upload': 'true',
+      },
+      processData: false,
+      contentType: false,
+    }).done(function(data) {
+      notification({
+        text: "File(s) uploaded successfully.",
+        type: 'success',
+        timeout: 5000
+      });
+
+      $('#loading').fadeOut();
+
+      $.pjax({
+        url: window.location.pathname,
+        container: '#content'
+      })
+    }).fail(function(data) {
+      $('#loading').fadeOut();
+
+      notification({
+        text: 'Something went wrong.',
+        type: 'error'
+      });
+      console.log(data);
+    });
+
+
+    return false;
+    */
+    });
 
     return false;
 }
