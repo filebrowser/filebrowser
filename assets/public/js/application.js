@@ -348,38 +348,6 @@ var localizeDatetime = function (e, index, ar) {
  e.textContent = d.toLocaleString();
 }
 
-var dragAndDrop = function () {
- let drop = document.getElementById("listing");
-
- if (!drop) return false;
-
- let files = document.querySelectorAll('.item[data-dir="false"]');
- let dirs = document.querySelectorAll('.item[data-dir="true"]');
-
- Array.from(dirs).forEach(dir => {
-     dir.addEventListener("dragenter", event => {
-         dir.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)";
-     }, false);
-
-     dir.addEventListener("dragleave", event => {
-         dir.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.12)";
-     }, false);
- });
-
-
- document.addEventListener("dragover", (event) => {
-  Array.from(files).forEach(file => {
-   file.style.opacity = 0.5;
-  });
- }, false);
-
- document.addEventListener("dragend", (event) => {
-  Array.from(files).forEach(file => {
-   file.style.opacity = 1;
-  });
- }, false);
-}
-
 document.addEventListener("DOMContentLoaded", function (event) {
  var timeList = Array.prototype.slice.call(document.getElementsByTagName("time"));
  timeList.forEach(localizeDatetime);
@@ -403,53 +371,38 @@ document.addEventListener("DOMContentLoaded", function (event) {
   });
  }
  document.getElementById("delete").addEventListener("click", deleteEvent);
- document.getElementById("rename").addEventListener("click", renameEvent);
  document.getElementById("download").addEventListener("click", downloadEvent);
 
- let drop = document.getElementById("listing");
- dragAndDrop();
+ let rename = document.getElementById("rename");
+ if (rename) {
+     rename.addEventListener("click", renameEvent);
+ }
 
- drop.addEventListener("drag", function (event) {
+ if (document.getElementById("listing")) {
+  document.addEventListener("dragover", function (event) {
+   event.preventDefault();
+  }, false);
 
- }, false);
+  document.addEventListener("dragover", (event) => {
+   Array.from(items).forEach(file => {
+    file.style.opacity = 0.5;
+   });
+  }, false);
 
- drop.addEventListener("dragstart", function (event) {
+  document.addEventListener("dragleave", (event) => {
+   Array.from(items).forEach(file => {
+    file.style.opacity = 1;
+   });
+  }, false);
 
-  // store a ref. on the dragged elem
-  //dragged = event.target;
-  // make it half transparent
-  event.target.style.opacity = .5;
- }, false);
+  document.addEventListener("drop", function (event) {
+   event.preventDefault();
+   var dt = event.dataTransfer;
+   var files = dt.files;
 
- drop.addEventListener("dragend", function (event) {
-  // reset the transparency
-  event.target.style.opacity = "";
- }, false);
-
- drop.addEventListener("dragover", function (event) {
-  event.preventDefault();
- }, false);
-
- drop.addEventListener("dragenter", function (event) {
-  // highlight potential drop target when the draggable element enters it
-  //event.target.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important";
- }, false);
-
-
- drop.addEventListener("dragleave", function (event) {
-  // reset background of potential drop target when the draggable element leaves it
-
- }, false);
-
- drop.addEventListener("drop", function (event) {
-  // prevent default action (open as link for some elements)
-  event.preventDefault();
-  var dt = event.dataTransfer;
-  var files = dt.files;
-
-  handleFiles(files);
-
- }, false);
+   handleFiles(files);
+  }, false);
+ }
 
  return false;
 });
