@@ -1,0 +1,12 @@
+language: go
+go:
+- tip
+sudo: false
+install:
+- export GOPATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace:$GOPATH"
+- export PATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace/bin:$PATH"
+- go get github.com/mholt/caddy
+- go get github.com/hacdias/caddy-filemanager
+- go generate
+script:
+- caddydev --output="caddy" --source="." filemanager
