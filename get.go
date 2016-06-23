@@ -2,6 +2,7 @@ package hugo
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -40,14 +41,6 @@ func (h Hugo) GET(w http.ResponseWriter, r *http.Request, filename string) (int,
 		return http.StatusForbidden, err
 	} else if err != nil {
 		return http.StatusInternalServerError, err
-	}
-
-	page := &filemanager.Page{
-		Info: &filemanager.PageInfo{
-			IsDir:  false,
-			Config: &h.FileManager.Configs[0],
-			Name:   strings.Replace(filename, h.Config.Root, "", 1),
-		},
 	}
 
 	// Create a new editor variable and set the extension
@@ -114,9 +107,16 @@ func (h Hugo) GET(w http.ResponseWriter, r *http.Request, filename string) (int,
 
 	var code int
 
-	page.Info.Data = data
+	page := &filemanager.Page{
+		Info: &filemanager.PageInfo{
+			IsDir:  false,
+			Config: &h.FileManager.Configs[0],
+			Name:   data.Name,
+			Data:   data,
+		},
+	}
 
-	templates := []string{"frontmatter", "editor"}
+	templates := []string{"options", "editor"}
 	for _, t := range templates {
 		code, err = page.AddTemplate(t, Asset, functions)
 		if err != nil {
@@ -132,7 +132,9 @@ func (h Hugo) GET(w http.ResponseWriter, r *http.Request, filename string) (int,
 		}
 	}
 
-	return page.PrintAsHTML(w)
+	code, err = page.PrintAsHTML(w)
+	fmt.Println(err)
+	return code, err
 }
 
 func hasFrontMatterRune(file []byte) bool {

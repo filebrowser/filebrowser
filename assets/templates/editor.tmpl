@@ -1,61 +1,62 @@
 {{ define "content" }}
-<link rel="stylesheet" href="{{ .BaseURL }}/_hugointernal/css/styles.css">
-<script src="{{ .BaseURL }}/_hugointernal/js/application.js"></script>
+<div class="container editor {{ .Class }}">
+{{ if eq .Class "complete" }}
+<h1>
+<textarea id="site-title">{{ .Name }}</textarea>
+</h1>
 
-<div class="editor container {{ .Class }}">
-  {{ if eq .Class "complete" }}
-  <h1><textarea id="site-title">{{ .Name }}</textarea></h1>
-  {{ end }}
-  <form method="POST" action="">
-    <main>
-      {{ if not (eq .Class "complete") }}
-        <h1 id="site-title">{{ .Name }}</h1>
-      {{ end }}
-
-      {{ if eq .Class "frontmatter-only" }}
-      <div class="frontmatter blocks">
-        {{ template "options" .FrontMatter }}
-        <p class="actions">
-          <button class="add">Add field</button>
-        </p>
-      </div>
-      {{ else if eq .Class "content-only" }}
-      <div class="content">
-        <div id="editor-source" data-mode="{{ .Mode }}"></div>
-        <textarea name="content">{{ .Content }}</textarea>
-      </div>
-      {{ else }}
-      <div class="frontmatter">
-        <div class="blocks">
-        {{ template "options" .FrontMatter}}
-        </div>
-
-        <p class="actions">
-          <button class="add">Add field</button>
-        </p>
-      </div>
-
-      <div class="content">
-        {{ if eq .Mode "markdown" }}
-        <nav>
-          <a id="see-source" class="active"><i class="fa fa-code"></i> Source</a>
-          <a id="see-preview"><i class="fa fa-eye"></i> Preview</a>
-        </nav>
-        {{ end}}
-        <div id="editor-source" data-mode="{{ .Mode }}"></div>
-        <textarea name="content">{{ .Content }}</textarea>
-        <div id="editor-preview"></div>
-      </div>
-      {{ end }}
-
-      <p class="toolbar">
-        <input type="submit" data-type="{{ .Class }}" data-regenerate="false" data-schedule="false"  data-message="{{ if eq .Class "frontmatter-only" }}The fields were put on their way.{{ else if eq .Class "content-only" }}Every byte was saved.{{ else }}Post saved with pomp and circumstance.{{ end }}" value="Save">
-        <span class="right">
-          {{ if and (eq .Class "complete") ( .IsPost ) }}<input type="submit" data-type="{{ .Class }}" data-schedule="true" data-regenerate="false" data-message="Post scheduled."  value="Schedule"> {{ end }}
-          <input type="submit" data-type="{{ .Class }}" data-regenerate="true" data-schedule="false" data-message="{{ if eq .Class "frontmatter-only" }}Saved and regenerated.{{ else if eq .Class "content-only" }}Done. What do you want more?{{ else }}Post published. Go and share it!{{ end }}" class="default" value="Publish">
-        </span>
-      </p>
-    </main>
-  </form>
+<form method="POST" action=".">
+<div class="options">
+{{ template "frontmatter" .FrontMatter }}
+<button id="add-field">Add field</button>
 </div>
+
+<div class="main">
+{{ if eq .Mode "markdown" }}
+<nav>
+<a id="see-source" class="active">
+<i class="fa fa-code"></i>
+Source</a>
+<a id="see-preview">
+<i class="fa fa-eye"></i>
+Preview</a>
+</nav>
+{{ end}}
+
+<div id="editor-source" data-mode="{{ .Mode }}"></div>
+<textarea name="content">{{ .Content }}</textarea>
+<div id="editor-preview"></div>
+</form>
+{{ else if eq .Class "content-only" }}
+<form method="POST" action="">
+<h1 id="site-title">{{ .Name }}</h1>
+
+<div class="main">
+<div id="editor-source" data-mode="{{ .Mode }}"></div>
+<textarea name="content">{{ .Content }}</textarea>
+</div>
+</form>
+{{ else }}
+<form method="POST" action="">
+<h1 id="site-title">{{ .Name }}</h1>
+
+<div class="options">
+{{ template "frontmatter" .FrontMatter }}
+<button id="add-field">Add field</button>
+</div>
+</form>
+{{ end }}
+
+<div id="actions">
+<div>
+<input type="submit" data-type="{{ .Class }}" data-regenerate="false" data-schedule="false" value="Save">
+</div>
+<div>
+{{ if and (eq .Class "complete") ( .IsPost ) }}<input type="submit" data-type="{{ .Class }}" data-schedule="true" data-regenerate="false" value="Schedule">
+{{ end }}
+<input type="submit" data-type="{{ .Class }}" data-regenerate="true" data-schedule="false" class="default" value="Publish">
+</div>
+</div>
+</div>
+
 {{ end }}

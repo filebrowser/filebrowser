@@ -3,7 +3,7 @@
 // assets/public/css/styles.css
 // assets/public/js/application.js
 // assets/templates/editor.tmpl
-// assets/templates/frontmatter.tmpl
+// assets/templates/options.tmpl
 // DO NOT EDIT!
 
 package hugo
@@ -84,10 +84,10 @@ func templatesEditorTmpl() (*asset, error) {
 	return a, err
 }
 
-// templatesFrontmatterTmpl reads file data from disk. It returns an error on failure.
-func templatesFrontmatterTmpl() (*asset, error) {
-	path := "D:\\Code\\Go\\src\\github.com\\hacdias\\caddy-hugo\\assets\\templates\\frontmatter.tmpl"
-	name := "templates/frontmatter.tmpl"
+// templatesOptionsTmpl reads file data from disk. It returns an error on failure.
+func templatesOptionsTmpl() (*asset, error) {
+	path := "D:\\Code\\Go\\src\\github.com\\hacdias\\caddy-hugo\\assets\\templates\\options.tmpl"
+	name := "templates/options.tmpl"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
@@ -157,7 +157,7 @@ var _bindata = map[string]func() (*asset, error){
 	"public/css/styles.css": publicCssStylesCss,
 	"public/js/application.js": publicJsApplicationJs,
 	"templates/editor.tmpl": templatesEditorTmpl,
-	"templates/frontmatter.tmpl": templatesFrontmatterTmpl,
+	"templates/options.tmpl": templatesOptionsTmpl,
 }
 
 // AssetDir returns the file names below a certain
@@ -210,7 +210,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	}},
 	"templates": &bintree{nil, map[string]*bintree{
 		"editor.tmpl": &bintree{templatesEditorTmpl, map[string]*bintree{}},
-		"frontmatter.tmpl": &bintree{templatesFrontmatterTmpl, map[string]*bintree{}},
+		"options.tmpl": &bintree{templatesOptionsTmpl, map[string]*bintree{}},
 	}},
 }}
 
