@@ -259,6 +259,16 @@ var downloadEvent = function (event) {
  return false;
 }
 
+var uploadEvent = function (event) {
+    event.preventDefault();
+
+    let button = document.getElementById("upload-input");
+    button.click();
+
+
+    return false;
+}
+
 var RemoveLastDirectoryPartOf = function (url) {
  var arr = url.split('/');
  arr.pop();
@@ -339,6 +349,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
   handleViewType(document.getCookie("view-list"));
   document.getElementById("view").addEventListener("click", viewEvent)
  };
+ if (document.getElementById("upload")) {
+    document.getElementById("upload").addEventListener("click", uploadEvent);
+ }
  document.getElementById("delete").addEventListener("click", deleteEvent);
  document.getElementById("rename").addEventListener("click", renameEvent);
  document.getElementById("download").addEventListener("click", downloadEvent);
