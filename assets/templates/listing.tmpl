@@ -1,5 +1,5 @@
 {{ define "content" }}
- <div class="listing">
+ <div class="listing" draggable="true">
   <div class="container" id="listing">
    {{- range .Items}}
    <div class="item" id="{{.URL}}">
@@ -30,5 +30,5 @@
   </div>
  </div>
 
- <input style="display:none" type="file" id="upload-input" value="Upload" multiple>
+<input style="display:none" type="file" id="upload-input" onchange="handleFiles(this.files)" value="Upload" multiple>
 {{ end }}

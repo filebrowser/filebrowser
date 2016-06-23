@@ -259,69 +259,28 @@ var downloadEvent = function (event) {
  return false;
 }
 
-var uploadEvent = function (event) {
-    event.preventDefault();
+var handleFiles = function(files) {
+    let button = document.getElementById("upload");
+    let html = button.changeToLoading();
+    let data = new FormData();
 
-    let button = document.getElementById("upload-input");
-    button.click();
-    button.addEventListener("change", (event) => {
-        event.preventDefault();
+    for (let i = 0; i < files.length; i++) {
+        data.append(files[i].name, files[i]);
+    }
 
-        let html = button.changeToLoading();
-        let files = event.target.files;
+    let request = new XMLHttpRequest();
+    request.open('POST', window.location.pathname);
+    request.setRequestHeader("Upload", "true");
+    request.send(data);
+    request.onreadystatechange = function () {
+     if (request.readyState == 4) {
+      if (request.status == 200) {
+          location.reload();
+      }
 
-        let data = new FormData();
-
-        /*
-        event.preventDefault();
-    files = event.target.files;
-
-    $('#loading').fadeIn();
-
-    // Create a formdata object and add the files
-    var data = new FormData();
-    $.each(files, function(key, value) {
-      data.append(key, value);
-    });
-
-    $.ajax({
-      url: window.location.pathname,
-      type: 'POST',
-      data: data,
-      cache: false,
-      dataType: 'json',
-      headers: {
-        'X-Upload': 'true',
-      },
-      processData: false,
-      contentType: false,
-    }).done(function(data) {
-      notification({
-        text: "File(s) uploaded successfully.",
-        type: 'success',
-        timeout: 5000
-      });
-
-      $('#loading').fadeOut();
-
-      $.pjax({
-        url: window.location.pathname,
-        container: '#content'
-      })
-    }).fail(function(data) {
-      $('#loading').fadeOut();
-
-      notification({
-        text: 'Something went wrong.',
-        type: 'error'
-      });
-      console.log(data);
-    });
-
-
-    return false;
-    */
-    });
+      button.changeToDone((request.status != 200), html);
+     }
+    }
 
     return false;
 }
@@ -389,6 +348,8 @@ var localizeDatetime = function (e, index, ar) {
  e.textContent = d.toLocaleString();
 }
 
+
+
 document.addEventListener("DOMContentLoaded", function (event) {
  var timeList = Array.prototype.slice.call(document.getElementsByTagName("time"));
  timeList.forEach(localizeDatetime);
@@ -407,24 +368,67 @@ document.addEventListener("DOMContentLoaded", function (event) {
   document.getElementById("view").addEventListener("click", viewEvent)
  };
  if (document.getElementById("upload")) {
-    document.getElementById("upload").addEventListener("click", uploadEvent);
+     document.getElementById("upload").addEventListener("click", (event) => {
+         document.getElementById("upload-input").click();
+     });
  }
  document.getElementById("delete").addEventListener("click", deleteEvent);
  document.getElementById("rename").addEventListener("click", renameEvent);
  document.getElementById("download").addEventListener("click", downloadEvent);
 
- var drop = document.getElementById("listing");
- drop.addEventListener("dragenter", change, false);
- drop.addEventListener("dragleave",change_back,false);
+ let drop = document.getElementById("listing");
+ /* if (drop) {
+     drop.addEventListener("dragenter", dragenter, false);
+     drop.addEventListener("dragover", dragover, false);
+     drop.addEventListener("dragdrop", drop, false);
+ } */
 
- function change() {
-     console.log("hey")
-   drop.style.backgroundColor = '#000';
- };
+ drop.addEventListener("drag", function( event ) {
 
- function change_back() {
-   drop.style.backgroundColor = 'transparent';
- };
+ }, false);
+
+ drop.addEventListener("dragstart", function( event ) {
+     // store a ref. on the dragged elem
+     dragged = event.target;
+     // make it half transparent
+     event.target.style.opacity = .5;
+ }, false);
+
+ drop.addEventListener("dragend", function( event ) {
+     // reset the transparency
+     event.target.style.opacity = "";
+ }, false);
+
+
+ drop.addEventListener("dragover", function( event ) {
+     event.preventDefault();
+ }, false);
+
+ drop.addEventListener("dragenter", function( event ) {
+     // highlight potential drop target when the draggable element enters it
+
+         event.target.style.background = "purple";
+
+
+ }, false);
+
+ drop.addEventListener("dragleave", function( event ) {
+     // reset background of potential drop target when the draggable element leaves it
+     if ( event.target.className == "dropzone" ) {
+         event.target.style.background = "";
+     }
+
+ }, false);
+
+ drop.addEventListener("drop", function( event ) {
+     // prevent default action (open as link for some elements)
+     event.preventDefault();
+     var dt = event.dataTransfer;
+     var files = dt.files;
+
+     handleFiles(files);
+
+ }, false);
 
  return false;
 });
