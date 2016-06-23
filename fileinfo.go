@@ -27,6 +27,7 @@ type FileInfo struct {
 	Mode     os.FileMode
 	Mimetype string
 	Content  string
+	Raw      []byte
 	Type     string
 }
 
@@ -85,6 +86,7 @@ func (fi *FileInfo) Read() error {
 	}
 	fi.Mimetype = http.DetectContentType(raw)
 	fi.Content = string(raw)
+	fi.Raw = raw
 	return nil
 }
 
@@ -162,6 +164,17 @@ func (fi *FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request, c *C
 			Data:   fi,
 			Config: c,
 		},
+	}
+
+	if CanBeEdited(fi.Name) {
+		editor, err := fi.GetEditor()
+
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		page.Info.Data = editor
+		return page.PrintAsHTML(w, "frontmatter", "editor")
 	}
 
 	return page.PrintAsHTML(w, "single")

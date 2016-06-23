@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/hacdias/caddy-filemanager/variables"
 )
 
 // Page contains the informations and functions needed to show the page
@@ -73,6 +75,13 @@ func (p PageInfo) PreviousLink() string {
 
 // PrintAsHTML formats the page in HTML and executes the template
 func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, error) {
+	// Create the functions map, then the template, check for erros and
+	// execute the template if there aren't errors
+	functions := template.FuncMap{
+		"SplitCapitalize": variables.SplitCapitalize,
+		"Defined":         variables.Defined,
+	}
+
 	templates = append(templates, "actions", "base")
 	var tpl *template.Template
 
@@ -90,7 +99,7 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 		// If it's the first iteration, creates a new template and add the
 		// functions map
 		if i == 0 {
-			tpl, err = template.New(t).Parse(string(page))
+			tpl, err = template.New(t).Funcs(functions).Parse(string(page))
 		} else {
 			tpl, err = tpl.Parse(string(page))
 		}

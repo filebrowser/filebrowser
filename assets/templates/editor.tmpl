@@ -1,0 +1,23 @@
+{{ define "content" }}
+<div class="editor container {{ .Class }}">
+    <form method="POST" action="./">
+        {{ if or (eq .Class "frontmatter-only") (eq .Class "complete") }}
+        <div class="frontmatter">
+            {{ template "blocks" .FrontMatter }}
+            <button class="add">Add field</button>
+        </div>
+        {{ end }}
+
+        {{ if or (eq .Class "content-only") (eq .Class "complete") }}
+        <div class="content">
+          <div id="editor" data-mode="{{ .Mode }}"></div>
+          <textarea name="content">{{ .Content }}</textarea>
+        </div>
+        {{ end }}
+
+        <div>
+            <input type="submit" data-type="{{ .Class }}" value="Save">
+        </div>
+    </form>
+</div>
+{{ end }}
