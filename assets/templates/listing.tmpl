@@ -1,8 +1,8 @@
 {{ define "content" }}
- <div class="listing" draggable="true">
+ <div class="listing">
   <div class="container" id="listing">
    {{- range .Items}}
-   <div class="item" id="{{.URL}}">
+   <div class="item" data-dir="{{- if .IsDir}}true{{ else }}false{{ end }}" id="{{.URL}}" draggable="true">
     <div>
      <a href="{{.URL}}">
       {{- if .IsDir}}

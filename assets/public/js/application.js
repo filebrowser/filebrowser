@@ -259,30 +259,30 @@ var downloadEvent = function (event) {
  return false;
 }
 
-var handleFiles = function(files) {
-    let button = document.getElementById("upload");
-    let html = button.changeToLoading();
-    let data = new FormData();
+var handleFiles = function (files) {
+ let button = document.getElementById("upload");
+ let html = button.changeToLoading();
+ let data = new FormData();
 
-    for (let i = 0; i < files.length; i++) {
-        data.append(files[i].name, files[i]);
-    }
+ for (let i = 0; i < files.length; i++) {
+  data.append(files[i].name, files[i]);
+ }
 
-    let request = new XMLHttpRequest();
-    request.open('POST', window.location.pathname);
-    request.setRequestHeader("Upload", "true");
-    request.send(data);
-    request.onreadystatechange = function () {
-     if (request.readyState == 4) {
-      if (request.status == 200) {
-          location.reload();
-      }
+ let request = new XMLHttpRequest();
+ request.open('POST', window.location.pathname);
+ request.setRequestHeader("Upload", "true");
+ request.send(data);
+ request.onreadystatechange = function () {
+  if (request.readyState == 4) {
+   if (request.status == 200) {
+    location.reload();
+   }
 
-      button.changeToDone((request.status != 200), html);
-     }
-    }
+   button.changeToDone((request.status != 200), html);
+  }
+ }
 
-    return false;
+ return false;
 }
 
 var RemoveLastDirectoryPartOf = function (url) {
@@ -348,7 +348,37 @@ var localizeDatetime = function (e, index, ar) {
  e.textContent = d.toLocaleString();
 }
 
+var dragAndDrop = function () {
+ let drop = document.getElementById("listing");
 
+ if (!drop) return false;
+
+ let files = document.querySelectorAll('.item[data-dir="false"]');
+ let dirs = document.querySelectorAll('.item[data-dir="true"]');
+
+ Array.from(dirs).forEach(dir => {
+     dir.addEventListener("dragenter", event => {
+         dir.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)";
+     }, false);
+
+     dir.addEventListener("dragleave", event => {
+         dir.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.12)";
+     }, false);
+ });
+
+
+ document.addEventListener("dragover", (event) => {
+  Array.from(files).forEach(file => {
+   file.style.opacity = 0.5;
+  });
+ }, false);
+
+ document.addEventListener("dragend", (event) => {
+  Array.from(files).forEach(file => {
+   file.style.opacity = 1;
+  });
+ }, false);
+}
 
 document.addEventListener("DOMContentLoaded", function (event) {
  var timeList = Array.prototype.slice.call(document.getElementsByTagName("time"));
@@ -368,65 +398,56 @@ document.addEventListener("DOMContentLoaded", function (event) {
   document.getElementById("view").addEventListener("click", viewEvent)
  };
  if (document.getElementById("upload")) {
-     document.getElementById("upload").addEventListener("click", (event) => {
-         document.getElementById("upload-input").click();
-     });
+  document.getElementById("upload").addEventListener("click", (event) => {
+   document.getElementById("upload-input").click();
+  });
  }
  document.getElementById("delete").addEventListener("click", deleteEvent);
  document.getElementById("rename").addEventListener("click", renameEvent);
  document.getElementById("download").addEventListener("click", downloadEvent);
 
  let drop = document.getElementById("listing");
- /* if (drop) {
-     drop.addEventListener("dragenter", dragenter, false);
-     drop.addEventListener("dragover", dragover, false);
-     drop.addEventListener("dragdrop", drop, false);
- } */
+ dragAndDrop();
 
- drop.addEventListener("drag", function( event ) {
+ drop.addEventListener("drag", function (event) {
 
  }, false);
 
- drop.addEventListener("dragstart", function( event ) {
-     // store a ref. on the dragged elem
-     dragged = event.target;
-     // make it half transparent
-     event.target.style.opacity = .5;
+ drop.addEventListener("dragstart", function (event) {
+
+  // store a ref. on the dragged elem
+  //dragged = event.target;
+  // make it half transparent
+  event.target.style.opacity = .5;
  }, false);
 
- drop.addEventListener("dragend", function( event ) {
-     // reset the transparency
-     event.target.style.opacity = "";
+ drop.addEventListener("dragend", function (event) {
+  // reset the transparency
+  event.target.style.opacity = "";
+ }, false);
+
+ drop.addEventListener("dragover", function (event) {
+  event.preventDefault();
+ }, false);
+
+ drop.addEventListener("dragenter", function (event) {
+  // highlight potential drop target when the draggable element enters it
+  //event.target.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important";
  }, false);
 
 
- drop.addEventListener("dragover", function( event ) {
-     event.preventDefault();
- }, false);
-
- drop.addEventListener("dragenter", function( event ) {
-     // highlight potential drop target when the draggable element enters it
-
-         event.target.style.background = "purple";
-
-
- }, false);
-
- drop.addEventListener("dragleave", function( event ) {
-     // reset background of potential drop target when the draggable element leaves it
-     if ( event.target.className == "dropzone" ) {
-         event.target.style.background = "";
-     }
+ drop.addEventListener("dragleave", function (event) {
+  // reset background of potential drop target when the draggable element leaves it
 
  }, false);
 
- drop.addEventListener("drop", function( event ) {
-     // prevent default action (open as link for some elements)
-     event.preventDefault();
-     var dt = event.dataTransfer;
-     var files = dt.files;
+ drop.addEventListener("drop", function (event) {
+  // prevent default action (open as link for some elements)
+  event.preventDefault();
+  var dt = event.dataTransfer;
+  var files = dt.files;
 
-     handleFiles(files);
+  handleFiles(files);
 
  }, false);
 
