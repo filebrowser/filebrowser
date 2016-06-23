@@ -6,6 +6,8 @@ install:
 - export GOPATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace:$GOPATH"
 - export PATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace/bin:$PATH"
 - go get github.com/mholt/caddy
+- go get github.com/caddyserver/caddydev
+- go install github.com/caddyserver/caddydev
 - go get github.com/hacdias/caddy-filemanager
 - go generate
 script:

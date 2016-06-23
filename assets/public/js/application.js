@@ -343,17 +343,18 @@ document.addEventListener("DOMContentLoaded", function (event) {
  document.getElementById("rename").addEventListener("click", renameEvent);
  document.getElementById("download").addEventListener("click", downloadEvent);
 
- /* var drop = document.getElementById("listing");
+ var drop = document.getElementById("listing");
  drop.addEventListener("dragenter", change, false);
  drop.addEventListener("dragleave",change_back,false);
 
  function change() {
-   drop.style.backgroundColor = '#EFF2AA';
+     console.log("hey")
+   drop.style.backgroundColor = '#000';
  };
 
  function change_back() {
    drop.style.backgroundColor = 'transparent';
- }; */
+ };
 
  return false;
 });
