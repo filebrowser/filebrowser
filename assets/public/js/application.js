@@ -416,5 +416,15 @@ document.addEventListener("DOMContentLoaded", function (event) {
   }, false);
  }
 
+
+ if (document.getElementById('editor')) {
+     handleEditorPage();
+ }
+
  return false;
 });
+
+var handleEditorPage = function() {
+    
+    return false;
+}

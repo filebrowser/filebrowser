@@ -77,6 +77,14 @@ func (l byName) Swap(i, j int) { l.Items[i], l.Items[j] = l.Items[j], l.Items[i]
 
 // Treat upper and lower case equally
 func (l byName) Less(i, j int) bool {
+	if l.Items[i].IsDir && !l.Items[j].IsDir {
+		return true
+	}
+
+	if !l.Items[i].IsDir && l.Items[j].IsDir {
+		return false
+	}
+
 	return strings.ToLower(l.Items[i].Name) < strings.ToLower(l.Items[j].Name)
 }
 
@@ -126,7 +134,7 @@ func (l Listing) applySort() {
 		case "time":
 			sort.Sort(byTime(l))
 		default:
-			// If not one of the above, do nothing
+			sort.Sort(byName(l))
 			return
 		}
 	}

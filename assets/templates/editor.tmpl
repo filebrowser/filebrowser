@@ -1,5 +1,5 @@
 {{ define "content" }}
-<div class="editor container {{ .Class }}">
+<div id="editor" class="container {{ .Class }}">
     <form method="POST" action="./">
         {{ if or (eq .Class "frontmatter-only") (eq .Class "complete") }}
         <div class="frontmatter">
