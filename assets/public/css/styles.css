@@ -325,6 +325,12 @@ header p i {
  font-size: 1em !important;
  color: rgba(255, 255, 255, .31);
 }
+header #logout {
+    background-color: rgba(0,0,0,0.1);
+    border-radius: 0;
+    margin: -0.5em;
+    padding: .5em;
+}
 header p i {
  vertical-align: middle;
 }
@@ -414,6 +420,7 @@ header form input {
 }
 .action.disabled {
  opacity: 0.2;
+ cursor: not-allowed;
 }
 .action i {
  padding: 0.5em;
@@ -486,13 +493,30 @@ i.spin {
 
 /* EDITOR */
 
+
+#editor .block {
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+    display: block;
+    border-radius: .2em;
+    padding: .5em;
+    margin-bottom: 1em;
+    break-inside: avoid;
+    background-color: #fff;
+}
+
 #editor .frontmatter {
- border: 1px solid #ddd;
- background: #fff;
+ /* border: 1px solid #ddd; */
+ /* background: #fff; */
+ column-count: 3;
+ column-gap: 1em;
+ margin-bottom: 1em;
+ display: flex;
+ flex-direction: column;
 }
 #editor label {
- display: inline-block;
+ display: block;
  width: 19%;
+ font-size: 2em;
 }
 #editor fieldset {
  margin: 0;
@@ -502,4 +526,11 @@ i.spin {
 }
 #editor button {
  display: none;
+}
+#editor textarea[name="content"] {
+    display: none;
+}
+
+#editor h3 {
+    font-size: .8rem;
 }

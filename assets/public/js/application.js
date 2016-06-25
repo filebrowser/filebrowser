@@ -111,6 +111,9 @@ var handleViewType = function (viewList) {
 
 // Handles the open file button event
 var openEvent = function (event) {
+ if (this.classList.contains('disabled')) {
+  return false;
+ }
  if (selectedItems.length) {
   window.open(selectedItems[0] + '?raw=true');
   return false;
@@ -181,6 +184,9 @@ var preventDefault = function (event) {
 
 // Rename file event
 var renameEvent = function (event) {
+ if (this.classList.contains('disabled')) {
+  return false;
+ }
  if (selectedItems.length) {
   Array.from(selectedItems).forEach(link => {
    let item = document.getElementById(link);
@@ -248,6 +254,9 @@ var renameEvent = function (event) {
 
 // Download file event
 var downloadEvent = function (event) {
+ if (this.classList.contains('disabled')) {
+  return false;
+ }
  if (selectedItems.length) {
   Array.from(selectedItems).forEach(item => {
    window.open(item + "?download=true");
@@ -416,15 +425,39 @@ document.addEventListener("DOMContentLoaded", function (event) {
   }, false);
  }
 
-
  if (document.getElementById('editor')) {
-     handleEditorPage();
+  handleEditorPage();
  }
 
  return false;
 });
 
-var handleEditorPage = function() {
-    
-    return false;
+var handleEditorPage = function () {
+    let container = document.getElementById('editor');
+    let kind = container.dataset.kind;
+
+    if (kind != 'frontmatter-only') {
+        let editor = document.getElementById('editor-source');
+        let mode = editor.dataset.mode;
+        let textarea = document.querySelector('textarea[name="content"]');
+        let aceEditor =  ace.edit('editor-source');
+        aceEditor.getSession().setMode("ace/mode/" + mode);
+        aceEditor.getSession().setValue(textarea.value);
+        aceEditor.getSession().on('change', function() {
+          textarea.value = aceEditor.getSession().getValue();
+        });
+        aceEditor.setOptions({
+          wrap: true,
+          maxLines: Infinity,
+          theme: "ace/theme/github",
+          showPrintMargin: false,
+          fontSize: "1em",
+          minLines: 20
+        });
+    }
+
+
+
+
+ return false;
 }

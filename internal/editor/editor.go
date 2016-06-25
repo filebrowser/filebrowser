@@ -1,10 +1,11 @@
-package filemanager
+package editor
 
 import (
 	"bytes"
 	"path/filepath"
 	"strings"
 
+	"github.com/hacdias/caddy-filemanager/internal/file"
 	"github.com/spf13/hugo/parser"
 )
 
@@ -17,10 +18,10 @@ type Editor struct {
 }
 
 // GetEditor gets the editor based on a FileInfo struct
-func (fi FileInfo) GetEditor() (*Editor, error) {
+func (i *file.Info) GetEditor() (*Editor, error) {
 	// Create a new editor variable and set the mode
 	editor := new(Editor)
-	editor.Mode = strings.TrimPrefix(filepath.Ext(fi.Name), ".")
+	editor.Mode = strings.TrimPrefix(filepath.Ext(i.Name), ".")
 
 	switch editor.Mode {
 	case "md", "markdown", "mdown", "mmark":
@@ -41,9 +42,9 @@ func (fi FileInfo) GetEditor() (*Editor, error) {
 	// Handle the content depending on the file extension
 	switch editor.Mode {
 	case "markdown", "asciidoc", "rst":
-		if editor.hasFrontMatterRune(fi.Raw) {
+		if editor.hasFrontMatterRune(i.Raw) {
 			// Starts a new buffer and parses the file using Hugo's functions
-			buffer := bytes.NewBuffer(fi.Raw)
+			buffer := bytes.NewBuffer(i.Raw)
 			page, err = parser.ReadFrom(buffer)
 			if err != nil {
 				return editor, err
@@ -63,10 +64,10 @@ func (fi FileInfo) GetEditor() (*Editor, error) {
 		editor.Class = "frontmatter-only"
 
 		// Checks if the file already has the frontmatter rune and parses it
-		if editor.hasFrontMatterRune(fi.Raw) {
-			editor.FrontMatter, _, err = Pretty(fi.Raw)
+		if editor.hasFrontMatterRune(i.Raw) {
+			editor.FrontMatter, _, err = Pretty(i.Raw)
 		} else {
-			editor.FrontMatter, _, err = Pretty(editor.appendFrontMatterRune(fi.Raw, editor.Mode))
+			editor.FrontMatter, _, err = Pretty(editor.appendFrontMatterRune(i.Raw, editor.Mode))
 		}
 
 		// Check if there were any errors
@@ -76,7 +77,7 @@ func (fi FileInfo) GetEditor() (*Editor, error) {
 	default:
 		// The editor will handle only content
 		editor.Class = "content-only"
-		editor.Content = fi.Content
+		editor.Content = i.Content
 	}
 
 	return editor, nil

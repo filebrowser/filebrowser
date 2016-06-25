@@ -1,4 +1,4 @@
-package filemanager
+package file
 
 import (
 	"net/http"
@@ -16,7 +16,7 @@ type Listing struct {
 	// The full path of the request
 	Path string
 	// The items (files and folders) in the path
-	Items []FileInfo
+	Items []Info
 	// The number of directories in the listing
 	NumDirs int
 	// The number of files (items that aren't directories) in the listing

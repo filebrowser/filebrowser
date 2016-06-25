@@ -1,5 +1,5 @@
 {{ define "content" }}
-<div id="editor" class="container {{ .Class }}">
+<div id="editor" class="container" data-kind="{{ .Class }}">
     <form method="POST" action="./">
         {{ if or (eq .Class "frontmatter-only") (eq .Class "complete") }}
         <div class="frontmatter">
@@ -10,7 +10,7 @@
 
         {{ if or (eq .Class "content-only") (eq .Class "complete") }}
         <div class="content">
-          <div id="editor" data-mode="{{ .Mode }}"></div>
+          <div id="editor-source" data-mode="{{ .Mode }}"></div>
           <textarea name="content">{{ .Content }}</textarea>
         </div>
         {{ end }}

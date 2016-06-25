@@ -1,6 +1,6 @@
 //go:generate go get github.com/jteeuwen/go-bindata
 //go:generate go install github.com/jteeuwen/go-bindata/go-bindata
-//go:generate go-bindata -debug -pkg filemanager -prefix "assets" -o binary.go assets/...
+//go:generate go-bindata -debug -pkg assets -prefix "assets" -o internal/assets/binary.go assets/...
 
 // Package filemanager provides middleware for managing files in a directory
 // when directory path is requested instead of a specific file. Based on browse
@@ -10,31 +10,30 @@ package filemanager
 import (
 	"io"
 	"log"
-	"mime"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 
+	a "github.com/hacdias/caddy-filemanager/internal/assets"
+	"github.com/hacdias/caddy-filemanager/internal/config"
+	"github.com/hacdias/caddy-filemanager/internal/file"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
-
-// AssetsURL is the url of the assets
-const AssetsURL = "/_filemanagerinternal"
 
 // FileManager is an http.Handler that can show a file listing when
 // directories in the given paths are specified.
 type FileManager struct {
 	Next    httpserver.Handler
-	Configs []Config
+	Configs []config.Config
 }
 
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	var (
-		c      *Config
-		fi     *FileInfo
+		c      *config.Config
+		fi     *file.Info
 		code   int
 		err    error
 		assets bool
@@ -43,7 +42,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 	for i := range f.Configs {
 		if httpserver.Path(r.URL.Path).Matches(f.Configs[i].BaseURL) {
 			c = &f.Configs[i]
-			assets = httpserver.Path(r.URL.Path).Matches(c.BaseURL + AssetsURL)
+			assets = httpserver.Path(r.URL.Path).Matches(c.BaseURL + a.BaseURL)
 
 			if r.Method != http.MethodPost && !assets {
 				fi, code, err = GetFileInfo(r.URL, c)
@@ -62,7 +61,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			case http.MethodGet:
 				// Read and show directory or file
 				if assets {
-					return ServeAssets(w, r, c)
+					return a.ServeAssets(w, r, c)
 				}
 
 				if !fi.IsDir {
@@ -113,28 +112,8 @@ func ErrorToHTTPCode(err error) int {
 	}
 }
 
-// ServeAssets provides the needed assets for the front-end
-func ServeAssets(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
-	// gets the filename to be used with Assets function
-	filename := strings.Replace(r.URL.Path, c.BaseURL+AssetsURL, "public", 1)
-	file, err := Asset(filename)
-	if err != nil {
-		return http.StatusNotFound, nil
-	}
-
-	// Get the file extension and its mimetype
-	extension := filepath.Ext(filename)
-	mediatype := mime.TypeByExtension(extension)
-
-	// Write the header with the Content-Type and write the file
-	// content to the buffer
-	w.Header().Set("Content-Type", mediatype)
-	w.Write(file)
-	return 200, nil
-}
-
 // Upload is used to handle the upload requests to the server
-func Upload(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+func Upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	// Parse the multipart form in the request
 	err := r.ParseMultipartForm(100000)
 	if err != nil {
@@ -178,7 +157,7 @@ func Upload(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
 }
 
 // NewFolder makes a new directory
-func NewFolder(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+func NewFolder(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	path := strings.Replace(r.URL.Path, c.BaseURL, c.PathScope, 1)
 	path = filepath.Clean(path)
 	err := os.MkdirAll(path, 0755)

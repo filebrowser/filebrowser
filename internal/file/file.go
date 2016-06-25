@@ -1,4 +1,4 @@
-package filemanager
+package file
 
 import (
 	"fmt"
@@ -12,11 +12,15 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
+	"github.com/hacdias/caddy-filemanager/internal/config"
+	"github.com/hacdias/caddy-filemanager/internal/editor"
+	p "github.com/hacdias/caddy-filemanager/internal/page"
+	"github.com/hacdias/caddy-filemanager/utils/errors"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
-// FileInfo is the information about a particular file or directory
-type FileInfo struct {
+// Info is the information about a particular file or directory
+type Info struct {
 	IsDir    bool
 	Name     string
 	Size     int64
@@ -31,33 +35,33 @@ type FileInfo struct {
 	Type     string
 }
 
-// GetFileInfo gets the file information and, in case of error, returns the
+// GetInfo gets the file information and, in case of error, returns the
 // respective HTTP error code
-func GetFileInfo(url *url.URL, c *Config) (*FileInfo, int, error) {
+func GetInfo(url *url.URL, c *config.Config) (*Info, int, error) {
 	var err error
 
 	rootPath := strings.Replace(url.Path, c.BaseURL, "", 1)
 	rootPath = strings.TrimPrefix(rootPath, "/")
 	rootPath = "/" + rootPath
 
-	path := c.PathScope + rootPath
-	path = strings.Replace(path, "\\", "/", -1)
-	path = filepath.Clean(path)
+	relpath := c.PathScope + rootPath
+	relpath = strings.Replace(relpath, "\\", "/", -1)
+	relpath = filepath.Clean(relpath)
 
-	file := &FileInfo{
+	file := &Info{
 		URL:      url.Path,
 		RootPath: rootPath,
-		Path:     path,
+		Path:     relpath,
 	}
 	f, err := c.Root.Open(rootPath)
 	if err != nil {
-		return file, ErrorToHTTPCode(err), err
+		return file, errors.ToHTTPCode(err), err
 	}
 	defer f.Close()
 
 	info, err := f.Stat()
 	if err != nil {
-		return file, ErrorToHTTPCode(err), err
+		return file, errors.ToHTTPCode(err), err
 	}
 
 	file.IsDir = info.IsDir()
@@ -67,107 +71,107 @@ func GetFileInfo(url *url.URL, c *Config) (*FileInfo, int, error) {
 	return file, 0, nil
 }
 
-// GetExtendedFileInfo is used to get extra parameters for FileInfo struct
-func (fi *FileInfo) GetExtendedFileInfo() error {
-	err := fi.Read()
+// GetExtendedInfo is used to get extra parameters for FileInfo struct
+func (i *Info) GetExtendedInfo() error {
+	err := i.Read()
 	if err != nil {
 		return err
 	}
 
-	fi.Type = SimplifyMimeType(fi.Mimetype)
+	i.Type = SimplifyMimeType(i.Mimetype)
 	return nil
 }
 
 // Read is used to read a file and store its content
-func (fi *FileInfo) Read() error {
-	raw, err := ioutil.ReadFile(fi.Path)
+func (i *Info) Read() error {
+	raw, err := ioutil.ReadFile(i.Path)
 	if err != nil {
 		return err
 	}
-	fi.Mimetype = http.DetectContentType(raw)
-	fi.Content = string(raw)
-	fi.Raw = raw
+	i.Mimetype = http.DetectContentType(raw)
+	i.Content = string(raw)
+	i.Raw = raw
 	return nil
 }
 
 // HumanSize returns the size of the file as a human-readable string
 // in IEC format (i.e. power of 2 or base 1024).
-func (fi FileInfo) HumanSize() string {
-	return humanize.IBytes(uint64(fi.Size))
+func (i Info) HumanSize() string {
+	return humanize.IBytes(uint64(i.Size))
 }
 
 // HumanModTime returns the modified time of the file as a human-readable string.
-func (fi FileInfo) HumanModTime(format string) string {
-	return fi.ModTime.Format(format)
+func (i Info) HumanModTime(format string) string {
+	return i.ModTime.Format(format)
 }
 
 // Delete handles the delete requests
-func (fi *FileInfo) Delete() (int, error) {
+func (i *Info) Delete() (int, error) {
 	var err error
 
 	// If it's a directory remove all the contents inside
-	if fi.IsDir {
-		err = os.RemoveAll(fi.Path)
+	if i.IsDir {
+		err = os.RemoveAll(i.Path)
 	} else {
-		err = os.Remove(fi.Path)
+		err = os.Remove(i.Path)
 	}
 
 	if err != nil {
-		return ErrorToHTTPCode(err), err
+		return errors.ToHTTPCode(err), err
 	}
 
 	return http.StatusOK, nil
 }
 
 // Rename function is used tor rename a file or a directory
-func (fi *FileInfo) Rename(w http.ResponseWriter, r *http.Request) (int, error) {
+func (i *Info) Rename(w http.ResponseWriter, r *http.Request) (int, error) {
 	newname := r.Header.Get("Rename-To")
 	if newname == "" {
 		return http.StatusBadRequest, nil
 	}
 
 	newpath := filepath.Clean(newname)
-	newpath = strings.Replace(fi.Path, fi.Name, newname, 1)
+	newpath = strings.Replace(i.Path, i.Name, newname, 1)
 
-	if err := os.Rename(fi.Path, newpath); err != nil {
-		return ErrorToHTTPCode(err), err
+	if err := os.Rename(i.Path, newpath); err != nil {
+		return errors.ToHTTPCode(err), err
 	}
 
-	fi.Path = newpath
+	i.Path = newpath
 	return http.StatusOK, nil
 }
 
 // ServeAsHTML is used to serve single file pages
-func (fi *FileInfo) ServeAsHTML(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
-	if fi.IsDir {
-		return fi.serveListing(w, r, c)
+func (i *Info) ServeAsHTML(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+	if i.IsDir {
+		return i.serveListing(w, r, c)
 	}
 
-	return fi.serveSingleFile(w, r, c)
+	return i.serveSingleFile(w, r, c)
 }
 
-func (fi *FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
-	err := fi.GetExtendedFileInfo()
+func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+	err := i.GetExtendedInfo()
 	if err != nil {
-		return ErrorToHTTPCode(err), err
+		return errors.ToHTTPCode(err), err
 	}
 
-	if fi.Type == "blob" {
-		return fi.ServeRawFile(w, r, c)
+	if i.Type == "blob" {
+		return i.ServeRawFile(w, r, c)
 	}
 
-	page := &Page{
-		Info: &PageInfo{
-			Name:   fi.Name,
-			Path:   fi.RootPath,
+	page := &p.Page{
+		Info: &p.Info{
+			Name:   i.Name,
+			Path:   i.RootPath,
 			IsDir:  false,
-			Data:   fi,
+			Data:   i,
 			Config: c,
 		},
 	}
 
-	if CanBeEdited(fi.Name) {
-		editor, err := fi.GetEditor()
+	if editor.CanBeEdited(i.Name) {
+		editor, err := i.GetEditor()
 
 		if err != nil {
 			return http.StatusInternalServerError, err
@@ -180,16 +184,16 @@ func (fi *FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request, c *C
 	return page.PrintAsHTML(w, "single")
 }
 
-func (fi *FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	var err error
 
-	file, err := c.Root.Open(fi.RootPath)
+	file, err := c.Root.Open(i.RootPath)
 	if err != nil {
-		return ErrorToHTTPCode(err), err
+		return errors.ToHTTPCode(err), err
 	}
 	defer file.Close()
 
-	listing, err := fi.loadDirectoryContents(file, c)
+	listing, err := i.loadDirectoryContents(file, c)
 	if err != nil {
 		fmt.Println(err)
 		switch {
@@ -222,10 +226,10 @@ func (fi *FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *Conf
 		listing.ItemsLimitedTo = limit
 	}
 
-	page := &Page{
-		Info: &PageInfo{
+	page := &p.Page{
+		Info: &p.Info{
 			Name:   listing.Name,
-			Path:   fi.RootPath,
+			Path:   i.RootPath,
 			IsDir:  true,
 			Config: c,
 			Data:   listing,
@@ -235,19 +239,19 @@ func (fi *FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *Conf
 	return page.PrintAsHTML(w, "listing")
 }
 
-func (fi FileInfo) loadDirectoryContents(file http.File, c *Config) (*Listing, error) {
+func (i Info) loadDirectoryContents(file http.File, c *config.Config) (*Listing, error) {
 	files, err := file.Readdir(-1)
 	if err != nil {
 		return nil, err
 	}
 
-	listing := directoryListing(files, fi.RootPath)
+	listing := directoryListing(files, i.RootPath)
 	return &listing, nil
 }
 
 func directoryListing(files []os.FileInfo, urlPath string) Listing {
 	var (
-		fileinfos           []FileInfo
+		fileinfos           []Info
 		dirCount, fileCount int
 	)
 
@@ -263,7 +267,7 @@ func directoryListing(files []os.FileInfo, urlPath string) Listing {
 
 		url := url.URL{Path: "./" + name} // prepend with "./" to fix paths with ':' in the name
 
-		fileinfos = append(fileinfos, FileInfo{
+		fileinfos = append(fileinfos, Info{
 			IsDir:   f.IsDir(),
 			Name:    f.Name(),
 			Size:    f.Size(),
@@ -283,18 +287,18 @@ func directoryListing(files []os.FileInfo, urlPath string) Listing {
 }
 
 // ServeRawFile serves raw files
-func (fi *FileInfo) ServeRawFile(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
-	err := fi.GetExtendedFileInfo()
+func (i *Info) ServeRawFile(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+	err := i.GetExtendedInfo()
 	if err != nil {
-		return ErrorToHTTPCode(err), err
+		return errors.ToHTTPCode(err), err
 	}
 
-	if fi.Type != "text" {
-		fi.Read()
+	if i.Type != "text" {
+		i.Read()
 	}
 
-	w.Header().Set("Content-Type", fi.Mimetype)
-	w.Write([]byte(fi.Content))
+	w.Header().Set("Content-Type", i.Mimetype)
+	w.Write([]byte(i.Content))
 	return 200, nil
 }
 

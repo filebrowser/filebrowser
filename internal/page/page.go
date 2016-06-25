@@ -1,4 +1,4 @@
-package filemanager
+package page
 
 import (
 	"bytes"
@@ -8,37 +8,36 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/hacdias/caddy-filemanager/variables"
+	"github.com/hacdias/caddy-filemanager/internal/assets"
+	"github.com/hacdias/caddy-filemanager/internal/config"
+	"github.com/hacdias/caddy-filemanager/utils/variables"
 )
 
 // Page contains the informations and functions needed to show the page
 type Page struct {
-	Info *PageInfo
+	*Info
 }
 
-// AssetFunc is an Assets function
-type AssetFunc func(name string) ([]byte, error)
-
-// PageInfo contains the information of a page
-type PageInfo struct {
+// Info contains the information of a page
+type Info struct {
 	Name   string
 	Path   string
 	IsDir  bool
-	Config *Config
+	Config *config.Config
 	Data   interface{}
 }
 
 // BreadcrumbMap returns p.Path where every element is a map
 // of URLs and path segment names.
-func (p PageInfo) BreadcrumbMap() map[string]string {
+func (i Info) BreadcrumbMap() map[string]string {
 	result := map[string]string{}
 
-	if len(p.Path) == 0 {
+	if len(i.Path) == 0 {
 		return result
 	}
 
 	// skip trailing slash
-	lpath := p.Path
+	lpath := i.Path
 	if lpath[len(lpath)-1] == '/' {
 		lpath = lpath[:len(lpath)-1]
 	}
@@ -57,17 +56,17 @@ func (p PageInfo) BreadcrumbMap() map[string]string {
 }
 
 // PreviousLink returns the path of the previous folder
-func (p PageInfo) PreviousLink() string {
-	parts := strings.Split(strings.TrimSuffix(p.Path, "/"), "/")
+func (i Info) PreviousLink() string {
+	parts := strings.Split(strings.TrimSuffix(i.Path, "/"), "/")
 	if len(parts) <= 1 {
 		return ""
 	}
 
 	if parts[len(parts)-2] == "" {
-		if p.Config.BaseURL == "" {
+		if i.Config.BaseURL == "" {
 			return "/"
 		}
-		return p.Config.BaseURL
+		return i.Config.BaseURL
 	}
 
 	return parts[len(parts)-2]
@@ -88,7 +87,7 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 	// For each template, add it to the the tpl variable
 	for i, t := range templates {
 		// Get the template from the assets
-		page, err := Asset("templates/" + t + ".tmpl")
+		page, err := assets.Asset("templates/" + t + ".tmpl")
 
 		// Check if there is some error. If so, the template doesn't exist
 		if err != nil {

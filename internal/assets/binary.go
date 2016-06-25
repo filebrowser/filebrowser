@@ -10,7 +10,7 @@
 // assets/templates/single.tmpl
 // DO NOT EDIT!
 
-package filemanager
+package assets
 
 import (
 	"fmt"

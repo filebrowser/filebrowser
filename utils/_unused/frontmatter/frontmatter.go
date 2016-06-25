@@ -1,4 +1,4 @@
-package filemanager
+package frontmatter
 
 import (
 	"log"
@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/hacdias/caddy-filemanager/variables"
+	"github.com/hacdias/caddy-hugo/tools/variables"
 	"github.com/spf13/cast"
 	"github.com/spf13/hugo/parser"
 )
