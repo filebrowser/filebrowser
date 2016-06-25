@@ -45,7 +45,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			assets = httpserver.Path(r.URL.Path).Matches(c.BaseURL + a.BaseURL)
 
 			if r.Method != http.MethodPost && !assets {
-				fi, code, err = GetFileInfo(r.URL, c)
+				fi, code, err = file.GetInfo(r.URL, c)
 				if err != nil {
 					return code, err
 				}
