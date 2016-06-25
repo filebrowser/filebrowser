@@ -13,7 +13,6 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/hacdias/caddy-filemanager/internal/config"
-	"github.com/hacdias/caddy-filemanager/internal/editor"
 	p "github.com/hacdias/caddy-filemanager/internal/page"
 	"github.com/hacdias/caddy-filemanager/utils/errors"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
@@ -170,7 +169,7 @@ func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config
 		},
 	}
 
-	if editor.CanBeEdited(i.Name) {
+	if CanBeEdited(i.Name) {
 		editor, err := i.GetEditor()
 
 		if err != nil {

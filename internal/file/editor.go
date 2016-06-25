@@ -1,11 +1,11 @@
-package editor
+package file
 
 import (
 	"bytes"
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/caddy-filemanager/internal/file"
+	"github.com/hacdias/caddy-hugo/tools/frontmatter"
 	"github.com/spf13/hugo/parser"
 )
 
@@ -18,7 +18,7 @@ type Editor struct {
 }
 
 // GetEditor gets the editor based on a FileInfo struct
-func (i *file.Info) GetEditor() (*Editor, error) {
+func (i *Info) GetEditor() (*Editor, error) {
 	// Create a new editor variable and set the mode
 	editor := new(Editor)
 	editor.Mode = strings.TrimPrefix(filepath.Ext(i.Name), ".")
@@ -52,12 +52,12 @@ func (i *file.Info) GetEditor() (*Editor, error) {
 
 			// Parses the page content and the frontmatter
 			editor.Content = strings.TrimSpace(string(page.Content()))
-			editor.FrontMatter, _, err = Pretty(page.FrontMatter())
+			editor.FrontMatter, _, err = frontmatter.Pretty(page.FrontMatter())
 			editor.Class = "complete"
 		} else {
 			// The editor will handle only content
 			editor.Class = "content-only"
-			editor.Content = fi.Content
+			editor.Content = i.Content
 		}
 	case "json", "toml", "yaml":
 		// Defines the class and declares an error
@@ -65,9 +65,9 @@ func (i *file.Info) GetEditor() (*Editor, error) {
 
 		// Checks if the file already has the frontmatter rune and parses it
 		if editor.hasFrontMatterRune(i.Raw) {
-			editor.FrontMatter, _, err = Pretty(i.Raw)
+			editor.FrontMatter, _, err = frontmatter.Pretty(i.Raw)
 		} else {
-			editor.FrontMatter, _, err = Pretty(editor.appendFrontMatterRune(i.Raw, editor.Mode))
+			editor.FrontMatter, _, err = frontmatter.Pretty(editor.appendFrontMatterRune(i.Raw, editor.Mode))
 		}
 
 		// Check if there were any errors
