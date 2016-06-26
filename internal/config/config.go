@@ -15,7 +15,7 @@ type Config struct {
 	Root        http.FileSystem
 	BaseURL     string
 	StyleSheet  string // Costum stylesheet
-	HugoEnabled bool   // This must be only used by Hugo plugin
+	HugoEnabled bool   // Enables the Hugo plugin for File Manager
 }
 
 // Parse parses the configuration set by the user so it can

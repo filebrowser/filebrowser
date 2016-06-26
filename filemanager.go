@@ -14,6 +14,7 @@ import (
 	a "github.com/hacdias/caddy-filemanager/internal/assets"
 	"github.com/hacdias/caddy-filemanager/internal/config"
 	"github.com/hacdias/caddy-filemanager/internal/file"
+	"github.com/hacdias/caddy-filemanager/internal/vcs"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
@@ -79,7 +80,11 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				}
 				// Search and git commands
 				if r.Header.Get("Search") == "true" {
-					// TODO: search and git commands
+					// TODO: search commands
+				}
+				// VCS commands
+				if r.Header.Get("Command") != "" {
+					vcs.Handle(w, r, c)
 				}
 				// Creates a new folder
 				// TODO: not implemented on frontend
