@@ -8,12 +8,7 @@
 package filemanager
 
 import (
-	"io"
-	"log"
-	"mime/multipart"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strings"
 
 	a "github.com/hacdias/caddy-filemanager/internal/assets"
@@ -80,9 +75,15 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			case http.MethodPost:
 				// Upload a new file
 				if r.Header.Get("Upload") == "true" {
-					return Upload(w, r, c)
+					return file.Upload(w, r, c)
 				}
-				return NewFolder(w, r, c)
+				// Search and git commands
+				if r.Header.Get("Search") == "true" {
+					// TODO: search and git commands
+				}
+				// Creates a new folder
+				// TODO: not implemented on frontend
+				return file.NewDir(w, r, c)
 			case http.MethodDelete:
 				// Delete a file or a directory
 				return fi.Delete()
@@ -96,80 +97,4 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 	}
 
 	return f.Next.ServeHTTP(w, r)
-}
-
-// ErrorToHTTPCode gets the respective HTTP code for an error
-func ErrorToHTTPCode(err error) int {
-	switch {
-	case os.IsPermission(err):
-		return http.StatusForbidden
-	case os.IsNotExist(err):
-		return http.StatusNotFound
-	case os.IsExist(err):
-		return http.StatusGone
-	default:
-		return http.StatusInternalServerError
-	}
-}
-
-// Upload is used to handle the upload requests to the server
-func Upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
-	// Parse the multipart form in the request
-	err := r.ParseMultipartForm(100000)
-	if err != nil {
-		log.Println(err)
-		return http.StatusInternalServerError, err
-	}
-
-	// For each file header in the multipart form
-	for _, headers := range r.MultipartForm.File {
-		// Handle each file
-		for _, header := range headers {
-			// Open the first file
-			var src multipart.File
-			if src, err = header.Open(); nil != err {
-				return http.StatusInternalServerError, err
-			}
-
-			filename := strings.Replace(r.URL.Path, c.BaseURL, c.PathScope, 1)
-			filename = filename + header.Filename
-			filename = filepath.Clean(filename)
-
-			// Create the file
-			var dst *os.File
-			if dst, err = os.Create(filename); nil != err {
-				if os.IsExist(err) {
-					return http.StatusConflict, err
-				}
-				return http.StatusInternalServerError, err
-			}
-
-			// Copy the file content
-			if _, err = io.Copy(dst, src); nil != err {
-				return http.StatusInternalServerError, err
-			}
-
-			defer dst.Close()
-		}
-	}
-
-	return http.StatusOK, nil
-}
-
-// NewFolder makes a new directory
-func NewFolder(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
-	path := strings.Replace(r.URL.Path, c.BaseURL, c.PathScope, 1)
-	path = filepath.Clean(path)
-	err := os.MkdirAll(path, 0755)
-	if err != nil {
-		switch {
-		case os.IsPermission(err):
-			return http.StatusForbidden, err
-		case os.IsExist(err):
-			return http.StatusConflict, err
-		default:
-			return http.StatusInternalServerError, err
-		}
-	}
-	return http.StatusCreated, nil
 }

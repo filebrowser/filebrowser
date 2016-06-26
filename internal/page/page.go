@@ -57,19 +57,16 @@ func (i Info) BreadcrumbMap() map[string]string {
 
 // PreviousLink returns the path of the previous folder
 func (i Info) PreviousLink() string {
-	parts := strings.Split(strings.TrimSuffix(i.Path, "/"), "/")
-	if len(parts) <= 1 {
+	path := strings.TrimSuffix(i.Path, "/")
+	path = strings.TrimPrefix(path, "/")
+	path = i.Config.BaseURL + "/" + path
+	path = path[0 : len(path)-len(i.Name)]
+
+	if len(path) < len(i.Config.BaseURL+"/") {
 		return ""
 	}
 
-	if parts[len(parts)-2] == "" {
-		if i.Config.BaseURL == "" {
-			return "/"
-		}
-		return i.Config.BaseURL
-	}
-
-	return parts[len(parts)-2]
+	return path
 }
 
 // PrintAsHTML formats the page in HTML and executes the template
