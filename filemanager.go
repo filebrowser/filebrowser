@@ -84,6 +84,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				}
 				// VCS commands
 				if r.Header.Get("Command") != "" {
+					// TODO: not implemented on frontend
 					vcs.Handle(w, r, c)
 				}
 				// Creates a new folder

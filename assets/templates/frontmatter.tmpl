@@ -1,44 +1,55 @@
 {{ define "blocks" }}
-{{ range $key, $value := . }}
+    {{ if .Fields }}<div class="group">{{ end }}
+    {{ range $key, $value := .Fields }}
+        {{ if eq $value.Parent.Type "array" }}
+        <div id="{{ $value.Name }}-{{ $key }}" data-type="array-item">
+            {{ template "value" $value }}
+            <div class="action delete">
+                <i class="material-icons">close</i>
+            </div>
+        </div>
+        {{ else }}
+        <div class="block" id="block-{{ $value.Name }}" data-content="{{ $value.Name }}">
+          <label for="{{ $value.Name }}">{{ SplitCapitalize $value.Title }}</label>
+          {{ template "value" $value }}
+          <div class="action delete">
+              <i class="material-icons">close</i>
+          </div>
+        </div>
+        {{ end }}
+    {{ end }}
+    {{ if .Fields }}</div>{{ end }}
 
-  {{ if or (eq $value.Type "object") (eq $value.Type "array") }}
-  <fieldset id="{{ $value.Name }}" data-type="{{ $value.Type }}">
-    <h3>{{ SplitCapitalize $value.Title }}</h3>
-    <span class="actions">
-      <button class="add">&#43;</button>
-      <button class="delete">&#8722;</button>
-    </span>
-    {{ template "blocks" $value.Content }}
-  </fieldset>
-  {{ else }}
+    {{ range $key, $value := .Arrays }}
+    {{ template "fielset" $value }}
+    {{ end }}
 
-  {{ if not (eq $value.Parent.Type "array") }}
-  <div class="block" id="block-{{ $value.Name }}" data-content="{{ $value.Name }}">
-    <label for="{{ $value.Name }}">{{ SplitCapitalize $value.Title }}</label>
-    <span class="actions">
-      <button class="delete">&#8722;</button>
-    </span>
+    {{ range $key, $value := .Objects }}
+    {{ template "fielset" $value }}
+    {{ end }}
+{{ end }}
 
-  {{ end }}
-
-  {{ if eq $value.Parent.Type "array" }}
-  <div id="{{ $value.Name }}-{{ $key }}" data-type="array-item">
-  {{ end }}
-
-  {{ if eq $value.HTMLType "textarea" }}
-  <textarea class="scroll" name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" data-parent-type="{{ $value.Parent.Type }}">{{ $value.Content }}</textarea>
-  {{ else if eq $value.HTMLType "datetime" }}
-  <input name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" value="{{ $value.Content.Format "2006-01-02T15:04" }}" type="datetime-local" data-parent-type="{{ $value.Parent.Type }}"></input>
-  {{ else }}
-  <input name="{{ $value.Name }}:{{ $value.Type }}" id="{{ $value.Name }}" value="{{ $value.Content }}" type="{{ $value.HTMLType }}" data-parent-type="{{ $value.Parent.Type }}"></input>
-  {{ end }}
-
-  {{ if not (eq $value.Parent.Type "array") }}</div>{{ end }}
-
-  {{ if eq $value.Parent.Type "array" }}
-  <span class="actions"><button class="delete">&#8722;</button></span></div>
-  {{ end }}
-
+{{ define "value" }}
+{{ if eq .HTMLType "textarea" }}
+<textarea class="scroll" name="{{ .Name }}:{{ .Type }}" id="{{.Name }}" data-parent-type="{{ .Parent.Type }}">{{ .Content.Other }}</textarea>
+{{ else if eq .HTMLType "datetime" }}
+<input name="{{ .Name }}:{{ .Type }}" id="{{ .Name }}" value="{{ .Content.Other.Format "2006-01-02T15:04" }}" type="datetime-local" data-parent-type="{{ .Parent.Type }}"></input>
+{{ else }}
+<input name="{{ .Name }}:{{ .Type }}" id="{{ .Name }}" value="{{ .Content.Other }}" type="{{ .HTMLType }}" data-parent-type="{{ .Parent.Type }}"></input>
 {{ end }}
 {{ end }}
+
+
+{{ define "fielset" }}
+<fieldset id="{{ .Name }}" data-type="{{ .Type }}">
+  <h3>{{ SplitCapitalize .Title }}</h3>
+  <div class="action add">
+      <i class="material-icons">add</i>
+  </div>
+  <div class="action delete">
+      <i class="material-icons">close</i>
+  </div>
+ {{ template "blocks" .Content }}
+
+</fieldset>
 {{ end }}

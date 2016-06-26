@@ -100,7 +100,25 @@ button, select {
  text-transform: none
 }
 button, html [type="button"], [type="reset"], [type="submit"] {
- -webkit-appearance: button
+ -webkit-appearance: button;
+ text-decoration: none;
+ color: #fff;
+ background-color: #26a69a;
+ text-align: center;
+ letter-spacing: .5px;
+ transition: .2s ease-out;
+ cursor: pointer;
+ box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+ border: none;
+ border-radius: 2px;
+ display: inline-block;
+ height: 36px;
+ line-height: 36px;
+ outline: 0;
+ padding: 0 2rem;
+ text-transform: uppercase;
+ vertical-align: middle;
+ -webkit-tap-highlight-color: transparent;
 }
 button::-moz-focus-inner, [type="button"]::-moz-focus-inner, [type="reset"]::-moz-focus-inner, [type="submit"]::-moz-focus-inner {
  border-style: none;
@@ -110,9 +128,10 @@ button:-moz-focusring, [type="button"]:-moz-focusring, [type="reset"]:-moz-focus
  outline: 1px dotted ButtonText
 }
 fieldset {
- border: 1px solid #c0c0c0;
- margin: 0 2px;
- padding: 0.35em 0.625em 0.75em
+ border: none;
+ margin: 0;
+ padding: 0;
+ break-inside: avoid;
 }
 legend {
  box-sizing: border-box;
@@ -326,10 +345,10 @@ header p i {
  color: rgba(255, 255, 255, .31);
 }
 header #logout {
-    background-color: rgba(0,0,0,0.1);
-    border-radius: 0;
-    margin: -0.5em -0.5em -0.5em 0;
-    padding: .5em;
+ background-color: rgba(0, 0, 0, 0.1);
+ border-radius: 0;
+ margin: -0.5em -0.5em -0.5em 0;
+ padding: .5em;
 }
 header p i {
  vertical-align: middle;
@@ -430,22 +449,15 @@ header form input {
 .action:hover i {
  background-color: rgba(0, 0, 0, .1);
 }
-
-
 .floating {
-    position: fixed;
-    bottom: 1em;
-    right: 1em;
+ position: fixed;
+ bottom: 1em;
+ right: 1em;
 }
-
 .floating .action {
-    background-color: #68EFAD;
-    color: #306e50;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .12);
-}
-
-#newfolder i {
-    transform: rotate(45deg);
+ background-color: #68EFAD;
+ color: #306e50;
+ box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .12);
 }
 
 /* LISTING */
@@ -510,44 +522,65 @@ i.spin {
 
 /* EDITOR */
 
-
-#editor .block {
-    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
-    display: block;
-    border-radius: .2em;
-    padding: .5em;
-    margin-bottom: 1em;
-    break-inside: avoid;
-    background-color: #fff;
-}
-
 #editor .frontmatter {
- /* border: 1px solid #ddd; */
- /* background: #fff; */
- column-count: 3;
+ column-count: 2;
  column-gap: 1em;
  margin-bottom: 1em;
- display: flex;
- flex-direction: column;
 }
-#editor label {
+#editor .group {
+ box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
  display: block;
- width: 19%;
- font-size: 2em;
+ border-radius: .2em;
+ padding: .5em;
+ margin-bottom: 1em;
+ break-inside: avoid;
+ background-color: #fff;
 }
-#editor fieldset {
+#editor .block {
+ border-bottom: 1px solid #eee;
+ margin-bottom: .5em;
+ padding-bottom: .5em;
+}
+#editor .block:last-child {
+ border: 0;
  margin: 0;
  padding: 0;
- border: 0;
- background-color: rgba(0, 0, 0, .05);
 }
-#editor button {
- display: none;
+#editor .block label {
+ display: block;
+ color: #212121;
+ font-weight: 500;
 }
-#editor textarea[name="content"] {
-    display: none;
-}
-
 #editor h3 {
-    font-size: .8rem;
+ margin: 0 0 .5em;
+ display: inline-block;
+ vertical-align: middle;
+ width: calc(100% - 2.5em);
+}
+#editor .block input, #editor .block .actions {
+ display: inline-block;
+}
+#editor .block input, #editor .block textarea {
+ border: 0;
+ background-color: transparent;
+ overflow: hidden;
+ color: #9E9E9E;
+ resize: none;
+ width: calc(100% - 1.5em);
+}
+#editor .action {
+ border: 0;
+ background-color: transparent;
+ font-size: .8em;
+ margin: 0;
+}
+#editor .delete {
+ color: #E53935;
+}
+#editor i {
+ padding: 0;
+}
+#editor .delete i:hover {
+ color: #B71C1C;
+ background-color: transparent;
 }

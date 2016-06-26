@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/caddy-hugo/tools/frontmatter"
+	"github.com/hacdias/caddy-filemanager/internal/frontmatter"
 	"github.com/spf13/hugo/parser"
 )
 
@@ -14,7 +14,7 @@ type Editor struct {
 	Class       string
 	Mode        string
 	Content     string
-	FrontMatter interface{}
+	FrontMatter *frontmatter.Content
 }
 
 // GetEditor gets the editor based on a FileInfo struct

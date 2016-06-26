@@ -1,14 +1,19 @@
 package frontmatter
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
 	"log"
 	"reflect"
 	"sort"
 	"strings"
 
+	"gopkg.in/yaml.v2"
+
+	"github.com/BurntSushi/toml"
 	"github.com/hacdias/caddy-filemanager/utils/variables"
 	"github.com/spf13/cast"
-	"github.com/spf13/hugo/parser"
 )
 
 const (
@@ -20,42 +25,77 @@ const (
 var mainTitle = ""
 
 // Pretty creates a new FrontMatter object
-func Pretty(content []byte) (interface{}, string, error) {
-	frontType := parser.DetectFrontMatter(rune(content[0]))
-	front, err := frontType.Parse(content)
+func Pretty(content []byte) (*Content, string, error) {
+	mark := rune(content[0])
+	var data interface{}
 
-	if err != nil {
-		return []string{}, mainTitle, err
+	switch mark {
+	case '-':
+		// If it's YAML
+		if err := yaml.Unmarshal(content, &data); err != nil {
+			return &Content{}, "", err
+		}
+	case '+':
+		// If it's TOML
+		content = bytes.Replace(content, []byte("+"), []byte(""), -1)
+		if _, err := toml.Decode(string(content), &data); err != nil {
+			return &Content{}, "", err
+		}
+	case '{', '[':
+		// If it's JSON
+		if err := json.Unmarshal(content, &data); err != nil {
+			return &Content{}, "", err
+		}
+	default:
+		return &Content{}, "", errors.New("Invalid frontmatter type.")
 	}
 
-	object := new(frontmatter)
+	kind := reflect.ValueOf(data).Kind()
+
+	object := new(Block)
 	object.Type = objectType
 	object.Name = mainName
 
-	return rawToPretty(front, object), mainTitle, nil
+	if kind == reflect.Map {
+		object.Type = objectType
+	} else if kind == reflect.Slice || kind == reflect.Array {
+		object.Type = arrayType
+	}
+
+	return rawToPretty(data, object), mainTitle, nil
 }
 
-type frontmatter struct {
+// Content is the block content
+type Content struct {
+	Other   interface{}
+	Fields  []*Block
+	Arrays  []*Block
+	Objects []*Block
+}
+
+// Block is a block
+type Block struct {
 	Name     string
 	Title    string
-	Content  interface{}
 	Type     string
 	HTMLType string
-	Parent   *frontmatter
+	Content  *Content
+	Parent   *Block
 }
 
-func rawToPretty(config interface{}, parent *frontmatter) interface{} {
-	objects := []*frontmatter{}
-	arrays := []*frontmatter{}
-	fields := []*frontmatter{}
+func rawToPretty(config interface{}, parent *Block) *Content {
+	objects := []*Block{}
+	arrays := []*Block{}
+	fields := []*Block{}
 
 	cnf := map[string]interface{}{}
+	kind := reflect.TypeOf(config)
 
-	if reflect.TypeOf(config) == reflect.TypeOf(map[interface{}]interface{}{}) {
+	if kind == reflect.TypeOf(map[interface{}]interface{}{}) {
 		for key, value := range config.(map[interface{}]interface{}) {
 			cnf[key.(string)] = value
 		}
-	} else if reflect.TypeOf(config) == reflect.TypeOf([]interface{}{}) {
+	} else if kind == reflect.TypeOf([]interface{}{}) {
 		for key, value := range config.([]interface{}) {
 			cnf[string(key)] = value
 		}
@@ -77,18 +117,17 @@ func rawToPretty(config interface{}, parent *frontmatter) interface{} {
 		}
 	}
 
-	sort.Sort(sortByTitle(objects))
-	sort.Sort(sortByTitle(arrays))
 	sort.Sort(sortByTitle(fields))
-
-	settings := []*frontmatter{}
-	settings = append(settings, fields...)
-	settings = append(settings, arrays...)
-	settings = append(settings, objects...)
-	return settings
+	sort.Sort(sortByTitle(arrays))
+	sort.Sort(sortByTitle(objects))
+	return &Content{
+		Fields:  fields,
+		Arrays:  arrays,
+		Objects: objects,
+	}
 }
 
-type sortByTitle []*frontmatter
+type sortByTitle []*Block
 
 func (f sortByTitle) Len() int      { return len(f) }
 func (f sortByTitle) Swap(i, j int) { f[i], f[j] = f[j], f[i] }
@@ -96,8 +135,8 @@ func (f sortByTitle) Less(i, j int) bool {
 	return strings.ToLower(f[i].Name) < strings.ToLower(f[j].Name)
 }
 
-func handleObjects(content interface{}, parent *frontmatter, name string) *frontmatter {
-	c := new(frontmatter)
+func handleObjects(content interface{}, parent *Block, name string) *Block {
+	c := new(Block)
 	c.Parent = parent
 	c.Type = objectType
 	c.Title = name
@@ -114,8 +153,8 @@ func handleObjects(content interface{}, parent *frontmatter, name string) *front
 	return c
 }
 
-func handleArrays(content interface{}, parent *frontmatter, name string) *frontmatter {
-	c := new(frontmatter)
+func handleArrays(content interface{}, parent *Block, name string) *Block {
+	c := new(Block)
 	c.Parent = parent
 	c.Type = arrayType
 	c.Title = name
@@ -130,8 +169,8 @@ func handleArrays(content interface{}, parent *frontmatter, name string) *frontm
 	return c
 }
 
-func handleFlatValues(content interface{}, parent *frontmatter, name string) *frontmatter {
-	c := new(frontmatter)
+func handleFlatValues(content interface{}, parent *Block, name string) *Block {
+	c := new(Block)
 	c.Parent = parent
 
 	switch reflect.ValueOf(content).Kind() {
@@ -143,14 +182,14 @@ func handleFlatValues(content interface{}, parent *frontmatter, name string) *fr
 		c.Type = "string"
 	}
 
-	c.Content = content
+	c.Content = &Content{Other: content}
 
 	switch strings.ToLower(name) {
 	case "description":
 		c.HTMLType = "textarea"
 	case "date", "publishdate":
 		c.HTMLType = "datetime"
-		c.Content = cast.ToTime(content)
+		c.Content = &Content{Other: cast.ToTime(content)}
 	default:
 		c.HTMLType = "text"
 	}
