@@ -28,7 +28,7 @@ Instructions:
   4. ```grunt watch```
 3. ```go generate```
 4. ```cd $YOUR_WEBSITE_PATH```
-5. ```caddydev --source $GOPATH/github.com/hacdias/caddy-hugo hugo```
+5. ```caddydev --source $GOPATH/src/github.com/hacdias/caddy-hugo hugo```
 6. Go to ```http://domain:port```
 
 [1]: https://golang.org/dl/
