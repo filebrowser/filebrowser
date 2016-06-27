@@ -106,6 +106,7 @@ button, html [type="button"], [type="reset"], [type="submit"] {
  background-color: #26a69a;
  text-align: center;
  letter-spacing: .5px;
+ -webkit-transition: .2s ease-out;
  transition: .2s ease-out;
  cursor: pointer;
  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
@@ -131,6 +132,8 @@ fieldset {
  border: none;
  margin: 0;
  padding: 0;
+ -webkit-column-break-inside: avoid;
+ page-break-inside: avoid;
  break-inside: avoid;
 }
 legend {
@@ -217,6 +220,7 @@ table {
 }
 tr {
  cursor: pointer;
+ -webkit-transition: 0.1s ease all;
  transition: 0.1s ease all;
  border-bottom: 1px dashed #dadada;
 }
@@ -320,6 +324,7 @@ pre {
  /* Support for Firefox. */
  -moz-osx-font-smoothing: grayscale;
  /* Support for IE. */
+ -webkit-font-feature-settings: 'liga';
  font-feature-settings: 'liga';
 }
 
@@ -397,6 +402,8 @@ header form input {
  position: fixed;
  top: 0;
  left: 0;
+ display: -webkit-box;
+ display: -ms-flexbox;
  display: flex;
  width: 100%;
  padding: 0.5em;
@@ -404,6 +411,8 @@ header form input {
 }
 #toolbar div, header div {
  vertical-align: middle;
+ -webkit-box-flex: 1;
+ -ms-flex-positive: 1;
  flex-grow: 1;
 }
 #toolbar p, header p {
@@ -417,6 +426,7 @@ header form input {
 #toolbar {
  z-index: 1000;
  top: -4em;
+ -webkit-transition: 0.2s ease-in-out all;
  transition: 0.2s ease-in-out all;
  opacity: 0;
  color: #fff;
@@ -433,6 +443,7 @@ header form input {
  display: inline-block;
  margin: 0 0.2em;
  cursor: pointer;
+ -webkit-transition: 0.2s ease all;
  transition: 0.2s ease all;
  border: 0;
  border-radius: 50%;
@@ -443,6 +454,7 @@ header form input {
 }
 .action i {
  padding: 0.5em;
+ -webkit-transition: 0.2s ease-in-out all;
  transition: 0.2s ease-in-out all;
  border-radius: 50%;
 }
@@ -463,23 +475,34 @@ header form input {
 /* LISTING */
 
 #listing {
+ display: -webkit-box;
+ display: -ms-flexbox;
  display: flex;
  padding: 0 0.5em;
+ -ms-flex-wrap: wrap;
  flex-wrap: wrap;
+ -webkit-box-pack: justify;
+ -ms-flex-pack: justify;
  justify-content: space-between;
 }
 #listing.list {
+ -webkit-box-orient: vertical;
+ -webkit-box-direction: normal;
+ -ms-flex-direction: column;
  flex-direction: column;
 }
 #listing .item {
  margin: 0 0.5em 1em;
  padding: 0.5em;
  cursor: pointer;
+ -webkit-transition: 0.2s ease all;
  transition: 0.2s ease all;
  border: 0.2em solid #fff;
  border-radius: 0.2em;
  background-color: #fff;
  box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .12);
+ -webkit-box-flex: 1;
+ -ms-flex-positive: 1;
  flex-grow: 1;
 }
 .item:hover {
@@ -511,7 +534,14 @@ header form input {
 /* ANIMATIONS */
 
 i.spin {
+ -webkit-animation: 1s spin linear infinite;
  animation: 1s spin linear infinite;
+}
+@-webkit-keyframes spin {
+ 100% {
+  -webkit-transform: rotate(-360deg);
+  transform: rotate(-360deg);
+ }
 }
 @keyframes spin {
  100% {
@@ -523,18 +553,27 @@ i.spin {
 /* EDITOR */
 
 #editor .frontmatter {
+ -webkit-column-count: 2;
+ -moz-column-count: 2;
  column-count: 2;
+ -webkit-column-gap: 1em;
+ -moz-column-gap: 1em;
  column-gap: 1em;
  margin-bottom: 1em;
 }
-#editor .group {
+#editor .group, #editor #editor-source {
  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
  display: block;
  border-radius: .2em;
  padding: .5em;
  margin-bottom: 1em;
+ -webkit-column-break-inside: avoid;
+ page-break-inside: avoid;
  break-inside: avoid;
  background-color: #fff;
+ display: inline-block;
+ width: 100%;
+ break-inside: avoid-column;
 }
 #editor .block {
  border-bottom: 1px solid #eee;
@@ -560,7 +599,7 @@ i.spin {
 #editor .block input, #editor .block .actions {
  display: inline-block;
 }
-#editor .block input, #editor .block textarea {
+#editor .block input, #editor .block textarea, #editor fieldset input, #editor fieldset textarea {
  border: 0;
  background-color: transparent;
  overflow: hidden;
@@ -574,13 +613,27 @@ i.spin {
  font-size: .8em;
  margin: 0;
 }
-#editor .delete {
- color: #E53935;
+#editor .delete, #editor .add {
+ color: #ddd;
 }
 #editor i {
  padding: 0;
 }
-#editor .delete i:hover {
- color: #B71C1C;
+#editor .add:hover i {
+ color: #8BC34A;
+}
+#editor .delete:hover i {
+ color: #E53935;
+}
+#editor .add:hover i, #editor .delete:hover i {
  background-color: transparent;
+}
+#editor fieldset> .action {
+ opacity: 0;
+}
+#editor fieldset:hover> .action {
+ opacity: 1;
+}
+#editor textarea[name="content"] {
+ display: none;
 }

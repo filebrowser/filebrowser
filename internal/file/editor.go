@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/caddy-filemanager/internal/frontmatter"
 	"github.com/spf13/hugo/parser"
 )
 
@@ -14,7 +13,7 @@ type Editor struct {
 	Class       string
 	Mode        string
 	Content     string
-	FrontMatter *frontmatter.Content
+	FrontMatter *Content
 }
 
 // GetEditor gets the editor based on a FileInfo struct
@@ -52,7 +51,7 @@ func (i *Info) GetEditor() (*Editor, error) {
 
 			// Parses the page content and the frontmatter
 			editor.Content = strings.TrimSpace(string(page.Content()))
-			editor.FrontMatter, _, err = frontmatter.Pretty(page.FrontMatter())
+			editor.FrontMatter, _, err = Pretty(page.FrontMatter())
 			editor.Class = "complete"
 		} else {
 			// The editor will handle only content
@@ -65,9 +64,9 @@ func (i *Info) GetEditor() (*Editor, error) {
 
 		// Checks if the file already has the frontmatter rune and parses it
 		if editor.hasFrontMatterRune(i.Raw) {
-			editor.FrontMatter, _, err = frontmatter.Pretty(i.Raw)
+			editor.FrontMatter, _, err = Pretty(i.Raw)
 		} else {
-			editor.FrontMatter, _, err = frontmatter.Pretty(editor.appendFrontMatterRune(i.Raw, editor.Mode))
+			editor.FrontMatter, _, err = Pretty(editor.appendFrontMatterRune(i.Raw, editor.Mode))
 		}
 
 		// Check if there were any errors

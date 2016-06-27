@@ -429,8 +429,29 @@ document.addEventListener("DOMContentLoaded", function (event) {
   handleEditorPage();
  }
 
+ textareaAutoGrow();
+
  return false;
 });
+
+var textareaAutoGrow = function() {
+ let autogrow = function() {
+   this.style.height = '5px';
+   this.style.height = this.scrollHeight + 'px';
+ }
+
+ let textareas = document.getElementsByTagName('textarea');
+
+ let addAutoGrow = () => {
+     Array.from(textareas).forEach(textarea => {
+        autogrow.bind(textarea)();
+        textarea.addEventListener('keyup', autogrow);
+     });
+ }
+
+ addAutoGrow();
+ window.addEventListener('resize', addAutoGrow)
+}
 
 var handleEditorPage = function () {
     let container = document.getElementById('editor');

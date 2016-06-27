@@ -9,6 +9,8 @@
         {{ end }}
 
         {{ if or (eq .Class "content-only") (eq .Class "complete") }}
+
+        {{ if (eq .Class "complete")}}<h3>Body</h3>{{ end }}
         <div class="content">
           <div id="editor-source" data-mode="{{ .Mode }}"></div>
           <textarea name="content">{{ .Content }}</textarea>
