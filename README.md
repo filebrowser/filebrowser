@@ -20,7 +20,7 @@ Requirements:
 
 Instructions:
 
-1. ```go get github.com/hacdias/caddy-hugo```
+1. ```go get github.com/hacdias/caddy-hugo``` (ignore the error, see step 3)
 2. ```cd $GOPATH/github.com/hacdias/caddy-hugo```
   1. If you want to modify the CSS/JS:
   2. Change the third comment to  ```//go:generate go-bindata -debug -pkg assets -o assets/assets.go templates/ assets/css/ assets/js/ assets/fonts/```
