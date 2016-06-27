@@ -99,10 +99,10 @@ button, input {
 button, select {
  text-transform: none
 }
-button, html [type="button"], [type="reset"], [type="submit"] {
- -webkit-appearance: button;
+button, .button, html [type="button"], [type="reset"], [type="submit"] {
+ /* -webkit-appearance: button; */
  text-decoration: none;
- color: #fff;
+ color: #fff !important;
  background-color: #26a69a;
  text-align: center;
  letter-spacing: .5px;
@@ -121,11 +121,11 @@ button, html [type="button"], [type="reset"], [type="submit"] {
  vertical-align: middle;
  -webkit-tap-highlight-color: transparent;
 }
-button::-moz-focus-inner, [type="button"]::-moz-focus-inner, [type="reset"]::-moz-focus-inner, [type="submit"]::-moz-focus-inner {
+button::-moz-focus-inner,.button::-moz-focus-inner, . [type="button"]::-moz-focus-inner, [type="reset"]::-moz-focus-inner, [type="submit"]::-moz-focus-inner {
  border-style: none;
  padding: 0
 }
-button:-moz-focusring, [type="button"]:-moz-focusring, [type="reset"]:-moz-focusring, [type="submit"]:-moz-focusring {
+button:-moz-focusring, .button:-moz-focusring,, [type="button"]:-moz-focusring, [type="reset"]:-moz-focusring, [type="submit"]:-moz-focusring {
  outline: 1px dotted ButtonText
 }
 fieldset {
@@ -380,21 +380,21 @@ header form input {
  outline: 0;
  background-color: transparent;
 }
-::-webkit-input-placeholder {
+header form::-webkit-input-placeholder {
  /* WebKit, Blink, Edge */
  color: rgba(255, 255, 255, .5);
 }
-:-moz-placeholder {
+header form:-moz-placeholder {
  opacity: 1;
  /* Mozilla Firefox 4 to 18 */
  color: rgba(255, 255, 255, .5);
 }
-::-moz-placeholder {
+header form::-moz-placeholder {
  opacity: 1;
  /* Mozilla Firefox 19+ */
  color: rgba(255, 255, 255, .5);
 }
-:-ms-input-placeholder {
+header form:-ms-input-placeholder {
  /* Internet Explorer 10-11 */
  color: rgba(255, 255, 255, .5);
 }
@@ -507,20 +507,13 @@ header form input {
  position: relative;
 }
 #listing .item .checkbox {
-
-position: absolute;
-
-top: 0;
-
-right: 0;
-
-border-radius: 50%;
-
-background: #000;
-
-border: 0;
-
--webkit-appearance: initial;
+ position: absolute;
+ top: 0;
+ right: 0;
+ border-radius: 50%;
+ background: #000;
+ border: 0;
+ -webkit-appearance: initial;
 }
 .item:hover {
  box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 1px 2px rgba(0, 0, 0, .24) !important;
@@ -655,17 +648,27 @@ i.spin {
  display: none;
 }
 #editor fieldset fieldset {
-    margin-left: 1em;
+ margin-left: 1em;
 }
 #editor #submit span {
-    vertical-align: middle;
-    transition: 0.2s ease-in-out all;
+ vertical-align: middle;
+ transition: 0.2s ease-in-out all;
 }
 #editor #submit span i {
+ vertical-align: sub;
+ font-size: 1.3rem;
+ margin-right: .2em;
+}
+#editor .group.temp {
+ background-color: #f5f5f5;
+}
+#editor .group.temp label {
+ font-weight: lighter;
+ font-size: .8em;
+ margin-bottom: 1em;
+ color: #7d7d7d;
+}
 
-vertical-align: sub;
-
-font-size: 1.3rem;
-
-margin-right: .2em;
+#editor .group.temp  input {
+    color: #212121;
 }

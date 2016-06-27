@@ -379,6 +379,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
  });
 
  document.getElementById("open").addEventListener("click", openEvent);
+ document.addEventListener('keydown', (event) => {
+     if (event.keyCode == 27) {
+         backEvent(event);
+     }
+ });
  if (document.getElementById("back")) {
   document.getElementById("back").addEventListener("click", backEvent)
  };
@@ -517,9 +522,9 @@ const tempID = "_fm_internal_temporary_id"
 var addFrontMatterItem = function(event) {
     event.preventDefault();
 
-    let newItem = document.getElementById(tempID)
-    if (newItem) {
-        newItem.remove();
+    let temp = document.getElementById(tempID)
+    if (temp) {
+        temp.remove();
     }
 
     let block = this.parentNode;
@@ -536,110 +541,102 @@ var addFrontMatterItem = function(event) {
 
         block.querySelector('.group').insertAdjacentHTML('beforeend', `<div id="${fieldID}-${count}" data-type="array-item">
             <input name="${fieldID}" id="${fieldID}" type="text" data-parent-type="array"></input>
-            <div class="action delete"  data-delete="none">
+            <div class="action delete"  data-delete="${fieldID}-${count}">
                 <i class="material-icons">close</i>
             </div>
         </div>`);
+
+        document.getElementById(`${fieldID}-${count}`).querySelector('input').focus();
+        document.querySelector(`div[data-delete="${fieldID}-${count}"]`).addEventListener('click', deleteFrontMatterItem);
     }
 
+    if (type == "object" || type == "parent") {
+        let template = `<div class="group temp" id="${tempID}">
+        <div class="block" id="${tempID}">
+            <label>Write the field name and then press enter. If you want to create an array or an object, end the name with ":array" or ":object".</label>
+            <input name="${tempID}" type="text" placeholder="Write the field name and press enter.."></input>
+        </div></div>`;
 
+        if (type == "parent") {
+            document.querySelector('div.button.add').insertAdjacentHTML('beforebegin', template);
+        } else {
+            block.querySelector('.delete').insertAdjacentHTML('afterend', template);
+        }
 
-
-    /*
-
-
-    // Main add button, after all blocks
-    if (block.is('div') && block.hasClass("frontmatter")) {
-      block = $('.blocks');
-      blockType = "object";
-    }
-
-    // If the Block is an object
-    if (blockType == "object") {
-      block.append('<div class="block" id="' + defaultID + '"></div>');
-
-      newItem = $("#" + defaultID);
-      newItem.html('<input id="name-' + defaultID + '" placeholder="Write the field name and press enter..."></input>');
-      field = $("#name-" + defaultID);
-
-      // Show a notification with some information for newbies
-      if (!document.cookie.replace(/(?:(?:^|.*;\s*)placeholdertip\s*\=\s*([^;]*).*$)|^.*$/, "$1")) {
-        var date = new Date();
-        date.setDate(date.getDate() + 365);
-        document.cookie = 'placeholdertip=true; expires=' + date.toUTCString + '; path=/';
-
-        notification({
-          text: 'Write the field name and then press enter. If you want to create an array or an object, end the name with ":array" or ":object".',
-          type: 'information'
-        });
-      }
-
-      $(field).keypress(function(event) {
-        // When you press enter within the new name field:
-        if (event.which == 13) {
-          event.preventDefault();
-          // This var should have a value of the type "name[:array, :object]"
-          value = field.val();
-
-          if (value == "") {
-            newItem.remove();
-            return false;
-          }
-
-          elements = value.split(":")
-
-          if (elements.length > 2) {
-            notification({
-              text: "Invalid syntax. It must be 'name[:type]'.",
-              type: 'error'
-            });
-            return false;
-          }
-
-          if (elements.length == 2 && elements[1] != "array" && elements[1] != "object") {
-            notification({
-              text: "Only arrays and objects are allowed.",
-              type: 'error'
-            });
-            return false;
-          }
-
-          field.remove();
-
-          if (typeof blockID === "undefined") {
-            blockID = elements[0];
-          } else {
-            blockID = blockID + '[' + elements[0] + ']';
-          }
-
-          if (elements.length == 1) {
-            newItem.attr('id', 'block-' + blockID);
-            newItem.append('<input name="' + blockID + ':auto" id="' + blockID + '"></input><br>');
-            newItem.prepend('<label for="' + blockID + '">' + value + '</label> <span class="actions"><button class="delete">&#8722;</button></span>');
-          } else {
-            type = "";
-
-            if (elements[1] == "array") {
-              type = "array";
-            } else {
-              type = "object"
+        let temp = document.getElementById(tempID);
+        let input = temp.querySelector('input');
+        input.focus();
+        input.addEventListener('keydown', (event) => {
+            if (event.keyCode == 27) {
+                event.preventDefault();
+                temp.remove();
             }
 
-            template = "<fieldset id=\"${blockID}\" data-type=\"${type}\"> <h3>${elements[0]}</h3> <span class=\"actions\"> <button class=\"add\">&#43;</button> <button class=\"delete\">&#8722;</button> </span> </fieldset>"
-            template = template.replace("${blockID}", blockID);
-            template = template.replace("${elements[0]}", elements[0]);
-            template = template.replace("${type}", type);
-            newItem.after(template);
-            newItem.remove();
-          }
+            if (event.keyCode == 13) {
+                event.preventDefault();
 
-          return false;
-        }
-      });
+                let value = input.value;
+                if (value === '') {
+                    temp.remove();
+                    return true;
+                }
+
+                let name = value.substring(0, value.lastIndexOf(':'));
+                let newtype = value.substring(value.lastIndexOf(':') + 1, value.length);
+                if (newtype !== "" && newtype !== "array" && newtype !== "object") {
+                    name = value;
+                }
+
+                name = name.replace(' ', '_');
+
+                let bid = name;
+                if (id != '') {
+                    bid = id + "." + bid;
+                }
+
+                temp.remove();
+
+                switch (newtype) {
+                    case "array":
+                    case "object":
+                        let template = `<fieldset id="${bid}" data-type="${newtype}">
+                          <h3>${name}</h3>
+                          <div class="action add">
+                              <i class="material-icons">add</i>
+                          </div>
+                          <div class="action delete" data-delete="${bid}">
+                              <i class="material-icons">close</i>
+                          </div>
+                         <div class="group">
+                         </div>
+                        </fieldset>`;
+
+                        if (type == "parent") {
+                            document.querySelector('div.button.add').insertAdjacentHTML('beforebegin', template);
+                        } else {
+                            block.insertAdjacentHTML('beforeend', template);
+                        }
+
+                        document.querySelector(`div[data-delete="${bid}"]`).addEventListener('click', deleteFrontMatterItem);
+                        document.getElementById(bid).querySelector('.action.add').addEventListener('click', addFrontMatterItem);
+                        break;
+                    default:
+                        block.querySelector('.group').insertAdjacentHTML('beforeend', `<div class="block" id="block-${bid}" data-content="${bid}">
+                          <label for="${bid}">${name}</label>
+                          <input name="${bid}" id="${bid}" type="text" data-parent-type="object"></input>
+                          <div class="action delete" data-delete="block-${bid}">
+                              <i class="material-icons">close</i>
+                          </div>
+                        </div>`);
+
+                        document.getElementById(bid).focus();
+                        document.querySelector(`div[data-delete="block-${bid}"]`).addEventListener('click', deleteFrontMatterItem);
+                }
+            }
+        });
     }
 
-    return false;
-    */
+
 
     return false;
 }

@@ -4,7 +4,7 @@
         {{ if or (eq .Class "frontmatter-only") (eq .Class "complete") }}
         <div class="frontmatter" data-type="parent">
             {{ template "blocks" .FrontMatter }}
-            <button class="add">Add field</button>
+            <div class="button add">Add field</div>
         </div>
         {{ end }}
 
