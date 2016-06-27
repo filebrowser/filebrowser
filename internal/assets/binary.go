@@ -2,6 +2,7 @@
 // sources:
 // assets/public/css/styles.css
 // assets/public/js/application.js
+// assets/public/js/form-to-json.js
 // assets/templates/actions.tmpl
 // assets/templates/base.tmpl
 // assets/templates/editor.tmpl
@@ -56,6 +57,24 @@ func publicCssStylesCss() (*asset, error) {
 func publicJsApplicationJs() (*asset, error) {
 	path := "D:\\Code\\Go\\src\\github.com\\hacdias\\caddy-filemanager\\assets\\public\\js\\application.js"
 	name := "public/js/application.js"
+	bytes, err := bindataRead(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// publicJsFormToJsonJs reads file data from disk. It returns an error on failure.
+func publicJsFormToJsonJs() (*asset, error) {
+	path := "D:\\Code\\Go\\src\\github.com\\hacdias\\caddy-filemanager\\assets\\public\\js\\form-to-json.js"
+	name := "public/js/form-to-json.js"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
@@ -232,6 +251,7 @@ func AssetNames() []string {
 var _bindata = map[string]func() (*asset, error){
 	"public/css/styles.css": publicCssStylesCss,
 	"public/js/application.js": publicJsApplicationJs,
+	"public/js/form-to-json.js": publicJsFormToJsonJs,
 	"templates/actions.tmpl": templatesActionsTmpl,
 	"templates/base.tmpl": templatesBaseTmpl,
 	"templates/editor.tmpl": templatesEditorTmpl,
@@ -286,6 +306,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		}},
 		"js": &bintree{nil, map[string]*bintree{
 			"application.js": &bintree{publicJsApplicationJs, map[string]*bintree{}},
+			"form-to-json.js": &bintree{publicJsFormToJsonJs, map[string]*bintree{}},
 		}},
 	}},
 	"templates": &bintree{nil, map[string]*bintree{

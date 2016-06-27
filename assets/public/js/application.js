@@ -455,6 +455,7 @@ var textareaAutoGrow = function() {
 
 var handleEditorPage = function () {
     let container = document.getElementById('editor');
+    let button = document.querySelector('#submit span:first-child');
     let kind = container.dataset.kind;
 
     if (kind != 'frontmatter-only') {
@@ -482,9 +483,28 @@ var handleEditorPage = function () {
         button.addEventListener('click', deleteFrontMatterItem);
     });
 
+    let addFrontMatterItemButtons = document.getElementsByClassName('add');
+    Array.from(addFrontMatterItemButtons).forEach(button => {
+        button.addEventListener('click', addFrontMatterItem);
+    });
 
+    document.querySelector('form').addEventListener('submit', (event) => {
+        event.preventDefault();
 
- return false;
+        let data = form2js(document.querySelector('form'));
+        let html = button.changeToLoading();
+        let request = new XMLHttpRequest();
+        request.open("PUT", window.location);
+        request.setRequestHeader('Kind', kind);
+        request.send(JSON.stringify(data));
+        request.onreadystatechange = function() {
+            if (request.readyState == 4) {
+                button.changeToDone((request.status != 200), html);
+            }
+        }
+    });
+
+    return false;
 }
 
 var deleteFrontMatterItem = function(event) {
@@ -492,29 +512,41 @@ var deleteFrontMatterItem = function(event) {
     document.getElementById(this.dataset.delete).remove();
 }
 
+const tempID = "_fm_internal_temporary_id"
+
 var addFrontMatterItem = function(event) {
-    /*
     event.preventDefault();
-    defaultID = "lorem-ipsum-sin-dolor-amet";
 
-    // Remove if there is an incomplete new item
-    newItem = $("#" + defaultID);
-    if (newItem.length) {
-      newItem.remove();
+    let newItem = document.getElementById(tempID)
+    if (newItem) {
+        newItem.remove();
     }
 
-    block = $(this).parent().parent();
-    blockType = block.data("type");
-    blockID = block.attr("id");
+    let block = this.parentNode;
+    let type = block.dataset.type;
+    let id = block.id;
 
-    // If the Block Type is an array
-    if (blockType == "array") {
-      newID = blockID + "[]";
-      input = blockID;
-      input = input.replace(/\[/, '\\[');
-      input = input.replace(/\]/, '\\]');
-      block.append('<div id="' + newID + '-' + $('#' + input + ' > div').length + '" data-type="array-item"><input name="' + newID + ':auto" id="' + newID + '"></input><span class="actions"> <button class="delete">&#8722;</button></span></div></div>');
+    // If the block is an array
+    if (type === "array") {
+        let fieldID = id + "[]"
+        let input = fieldID
+        let count = block.querySelectorAll('.group > div').length
+        input = input.replace(/\[/, '\\[');
+        input = input.replace(/\]/, '\\]');
+
+        block.querySelector('.group').insertAdjacentHTML('beforeend', `<div id="${fieldID}-${count}" data-type="array-item">
+            <input name="${fieldID}" id="${fieldID}" type="text" data-parent-type="array"></input>
+            <div class="action delete"  data-delete="none">
+                <i class="material-icons">close</i>
+            </div>
+        </div>`);
     }
+
+
+
+
+    /*
+
 
     // Main add button, after all blocks
     if (block.is('div') && block.hasClass("frontmatter")) {
@@ -608,4 +640,6 @@ var addFrontMatterItem = function(event) {
 
     return false;
     */
+
+    return false;
 }

@@ -1,141 +1,349 @@
 /**
-Author: Jhan Mateo
-Date Started: 7/29/2015
-Date Ended: 7/30/2015
-Description: Using native javascript (no js framework), this application will serializes from form data to Json format.
-The MIT License (MIT)
+ * Copyright (c) 2010 Maxim Vasiliev
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @author Maxim Vasiliev
+ * Date: 09.09.2010
+ * Time: 19:02:33
+ */
 
-Copyright (c) 2015 Jhan Mateo
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the Software
-is furnished to do so, subject to the following conditions:
+(function (root, factory)
+{
+	if (typeof exports !== 'undefined' && typeof module !== 'undefined' && module.exports) {
+		// NodeJS
+		module.exports = factory();
+	}
+	else if (typeof define === 'function' && define.amd)
+	{
+		// AMD. Register as an anonymous module.
+		define(factory);
+	}
+	else
+	{
+		// Browser globals
+		root.form2js = factory();
+	}
+}(this, function ()
+{
+	"use strict";
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-**/
+	/**
+	 * Returns form values represented as Javascript object
+	 * "name" attribute defines structure of resulting object
+	 *
+	 * @param rootNode {Element|String} root form element (or it's id) or array of root elements
+	 * @param delimiter {String} structure parts delimiter defaults to '.'
+	 * @param skipEmpty {Boolean} should skip empty text values, defaults to true
+	 * @param nodeCallback {Function} custom function to get node value
+	 * @param useIdIfEmptyName {Boolean} if true value of id attribute of field will be used if name of field is empty
+	 */
+	function form2js(rootNode, delimiter, skipEmpty, nodeCallback, useIdIfEmptyName, getDisabled)
+	{
+		getDisabled = getDisabled ? true : false;
+		if (typeof skipEmpty == 'undefined' || skipEmpty == null) skipEmpty = true;
+		if (typeof delimiter == 'undefined' || delimiter == null) delimiter = '.';
+		if (arguments.length < 5) useIdIfEmptyName = false;
 
-'use strict';
+		rootNode = typeof rootNode == 'string' ? document.getElementById(rootNode) : rootNode;
 
-function formToJson(form){
+		var formValues = [],
+			currNode,
+			i = 0;
 
-	if('form'!==form.nodeName.toLowerCase() && 1!==form.nodeType){
-		console.log('Form error');
-		return false;
+		/* If rootNode is array - combine values */
+		if (rootNode.constructor == Array || (typeof NodeList != "undefined" && rootNode.constructor == NodeList))
+		{
+			while(currNode = rootNode[i++])
+			{
+				formValues = formValues.concat(getFormValues(currNode, nodeCallback, useIdIfEmptyName, getDisabled));
+			}
+		}
+		else
+		{
+			formValues = getFormValues(rootNode, nodeCallback, useIdIfEmptyName, getDisabled);
+		}
+
+		return processNameValues(formValues, skipEmpty, delimiter);
 	}
 
-	var json_data = {}, new_arr_obj=null, index=null, key=null, input_name=null, new_obj=null;
+	/**
+	 * Processes collection of { name: 'name', value: 'value' } objects.
+	 * @param nameValues
+	 * @param skipEmpty if true skips elements with value == '' or value == null
+	 * @param delimiter
+	 */
+	function processNameValues(nameValues, skipEmpty, delimiter)
+	{
+		var result = {},
+			arrays = {},
+			i, j, k, l,
+			value,
+			nameParts,
+			currResult,
+			arrNameFull,
+			arrName,
+			arrIdx,
+			namePart,
+			name,
+			_nameParts;
 
-	for(var i=0,n=form.length; i<n; i++){
+		for (i = 0; i < nameValues.length; i++)
+		{
+			value = nameValues[i].value;
 
-		if(form[i].type!=='submit' || form[i].nodeName.toLowerCase()!=='fieldset' || form[i].nodeName.toLowerCase()!=='reset'){
+			if (skipEmpty && (value === '' || value === null)) continue;
 
-			if(
-				(form[i]!==undefined && form[i]!==null) &&
-				(form[i].type==='checkbox' && form[i].checked) ||
-				(form[i].type==='radio' && form[i].checked) ||
-				(form[i].type==='text' && form[i].value.length>0) ||
-				(form[i].type==='range' && form[i].value.length>0) ||
-				(form[i].type==='select-one' && form[i].options[form[i].selectedIndex].value.length>0) ||
-				(form[i].type==='select-multiple' && form[i].selectedOptions.length>0) ||
-				(form[i].type==='textarea' && form[i].value.length>0) ||
-				(form[i].type==='number' && form[i].value.length>0) ||
-				(form[i].type==='date' && form[i].value.length>0) ||
-				(form[i].type==='color' && form[i].value.length>0) ||
-				(form[i].type==='month' && form[i].value.length>0) ||
-				(form[i].type==='week' && form[i].value.length>0) ||
-				(form[i].type==='time' && form[i].value.length>0) ||
-				(form[i].type==='datetime' && form[i].value.length>0) ||
-				(form[i].type==='datetime-local' && form[i].value.length>0) ||
-				(form[i].type==='email' && form[i].value.length>0) ||
-				(form[i].type==='search' && form[i].value.length>0) ||
-				(form[i].type==='tel' && form[i].value.length>0) ||
-				(form[i].type==='url' && form[i].value.length>0) ||
-				(form[i].type==='image' && form[i].value.length>0) ||
-				(form[i].type==='file' && form[i].value.length>0)
-			){
+			name = nameValues[i].name;
+			_nameParts = name.split(delimiter);
+			nameParts = [];
+			currResult = result;
+			arrNameFull = '';
 
-				/*get the name of the current input*/
-				input_name = form[i].name;
-
-				/*array/object*/
-				if(input_name.match(/\[.*\]/g)){
-
-					if(input_name.match(/\[.+\]/g)){
-
-						/*array object,  Object[][name]*/
-						if(input_name.match(/\[.+\]/g)[0].match(/\[[0-9]\]/)!==null){
-
-							new_arr_obj = input_name.replace(/\[.+\]/g,''); //get object name
-							index = input_name.match(/[0-9]/g)[0]; //get index group
-							key = input_name.match(/\[.+\]/g)[0].replace(/(\[|\]|[0-9])/g,'');
-
-							/*create an array in an object*/
-							if(typeof json_data[new_arr_obj]==='undefined'){
-							 	json_data[new_arr_obj] = [];
-							}
-
-							/*create an object inside array*/
-							if(typeof json_data[new_arr_obj][index]==='undefined'){
-								json_data[new_arr_obj][index] = {};
-							}
-
-							json_data[new_arr_obj][index][key] = form[i].value;
-
-						}else if(input_name.match(/\[.+\]/g)!==null){
-							//to object
-							//Object[name]
-
-							/*get object name*/
-							new_obj = input_name.replace(/\[.+\]/g,'');
-
-							/*set new object*/
-							if(typeof json_data[new_obj]==='undefined'){
-								json_data[new_obj] = {};
-							}
-							/*assign a key name*/
-							key = input_name.match(/\[.+\]/g)[0].replace(/(\[|\])/g,'');
-
-							/*set key and form value*/
-							json_data[new_obj][key] = form[i].value;
-						}else{}
-					}else{
-
-						/*to array, Object[]*/
-						key = input_name.replace(/\[.*\]/g, '');
-
-						if(form[i].type==='select-multiple'){
-							for(var j=0, m=form[i].selectedOptions.length; j<m; j++){
-								if(form[i].selectedOptions[j].value.length>0){
-									if(typeof json_data[key]==='undefined'){
-										json_data[key] = [];
-									}
-									json_data[key].push(form[i].selectedOptions[j].value);
-								}
-							}
-
-						}else{
-							if(typeof json_data[key]==='undefined'){
-								json_data[key] = [];
-							}
-							json_data[key].push(form[i].value);
+			for(j = 0; j < _nameParts.length; j++)
+			{
+				namePart = _nameParts[j].split('][');
+				if (namePart.length > 1)
+				{
+					for(k = 0; k < namePart.length; k++)
+					{
+						if (k == 0)
+						{
+							namePart[k] = namePart[k] + ']';
+						}
+						else if (k == namePart.length - 1)
+						{
+							namePart[k] = '[' + namePart[k];
+						}
+						else
+						{
+							namePart[k] = '[' + namePart[k] + ']';
 						}
 
+						arrIdx = namePart[k].match(/([a-z_]+)?\[([a-z_][a-z0-9_]+?)\]/i);
+						if (arrIdx)
+						{
+							for(l = 1; l < arrIdx.length; l++)
+							{
+								if (arrIdx[l]) nameParts.push(arrIdx[l]);
+							}
+						}
+						else{
+							nameParts.push(namePart[k]);
+						}
 					}
-				}else{
-					/*basic info*/
-					key = form[i].name.replace(/\[.*\]/g, '');
-					json_data[key] = form[i].value;
+				}
+				else
+					nameParts = nameParts.concat(namePart);
+			}
 
+			for (j = 0; j < nameParts.length; j++)
+			{
+				namePart = nameParts[j];
+
+				if (namePart.indexOf('[]') > -1 && j == nameParts.length - 1)
+				{
+					arrName = namePart.substr(0, namePart.indexOf('['));
+					arrNameFull += arrName;
+
+					if (!currResult[arrName]) currResult[arrName] = [];
+					currResult[arrName].push(value);
+				}
+				else if (namePart.indexOf('[') > -1)
+				{
+					arrName = namePart.substr(0, namePart.indexOf('['));
+					arrIdx = namePart.replace(/(^([a-z_]+)?\[)|(\]$)/gi, '');
+
+					/* Unique array name */
+					arrNameFull += '_' + arrName + '_' + arrIdx;
+
+					/*
+					 * Because arrIdx in field name can be not zero-based and step can be
+					 * other than 1, we can't use them in target array directly.
+					 * Instead we're making a hash where key is arrIdx and value is a reference to
+					 * added array element
+					 */
+
+					if (!arrays[arrNameFull]) arrays[arrNameFull] = {};
+					if (arrName != '' && !currResult[arrName]) currResult[arrName] = [];
+
+					if (j == nameParts.length - 1)
+					{
+						if (arrName == '')
+						{
+							currResult.push(value);
+							arrays[arrNameFull][arrIdx] = currResult[currResult.length - 1];
+						}
+						else
+						{
+							currResult[arrName].push(value);
+							arrays[arrNameFull][arrIdx] = currResult[arrName][currResult[arrName].length - 1];
+						}
+					}
+					else
+					{
+						if (!arrays[arrNameFull][arrIdx])
+						{
+							if ((/^[0-9a-z_]+\[?/i).test(nameParts[j+1])) currResult[arrName].push({});
+							else currResult[arrName].push([]);
+
+							arrays[arrNameFull][arrIdx] = currResult[arrName][currResult[arrName].length - 1];
+						}
+					}
+
+					currResult = arrays[arrNameFull][arrIdx];
+				}
+				else
+				{
+					arrNameFull += namePart;
+
+					if (j < nameParts.length - 1) /* Not the last part of name - means object */
+					{
+						if (!currResult[namePart]) currResult[namePart] = {};
+						currResult = currResult[namePart];
+					}
+					else
+					{
+						currResult[namePart] = value;
+					}
 				}
 			}
 		}
-	}//endfor
 
-	document.getElementById('json_result').innerHTML = JSON.stringify(json_data);
-	console.log("Result: ",json_data);
-	return false;
-}//endfunc
+		return result;
+	}
+
+    function getFormValues(rootNode, nodeCallback, useIdIfEmptyName, getDisabled)
+    {
+        var result = extractNodeValues(rootNode, nodeCallback, useIdIfEmptyName, getDisabled);
+        return result.length > 0 ? result : getSubFormValues(rootNode, nodeCallback, useIdIfEmptyName, getDisabled);
+    }
+
+    function getSubFormValues(rootNode, nodeCallback, useIdIfEmptyName, getDisabled)
+	{
+		var result = [],
+			currentNode = rootNode.firstChild;
+
+		while (currentNode)
+		{
+			result = result.concat(extractNodeValues(currentNode, nodeCallback, useIdIfEmptyName, getDisabled));
+			currentNode = currentNode.nextSibling;
+		}
+
+		return result;
+	}
+
+    function extractNodeValues(node, nodeCallback, useIdIfEmptyName, getDisabled) {
+        if (node.disabled && !getDisabled) return [];
+
+        var callbackResult, fieldValue, result, fieldName = getFieldName(node, useIdIfEmptyName);
+
+        callbackResult = nodeCallback && nodeCallback(node);
+
+        if (callbackResult && callbackResult.name) {
+            result = [callbackResult];
+        }
+        else if (fieldName != '' && node.nodeName.match(/INPUT|TEXTAREA/i)) {
+            fieldValue = getFieldValue(node, getDisabled);
+            if (null === fieldValue) {
+                result = [];
+            } else {
+                result = [ { name: fieldName, value: fieldValue} ];
+            }
+        }
+        else if (fieldName != '' && node.nodeName.match(/SELECT/i)) {
+	        fieldValue = getFieldValue(node, getDisabled);
+	        result = [ { name: fieldName.replace(/\[\]$/, ''), value: fieldValue } ];
+        }
+        else {
+            result = getSubFormValues(node, nodeCallback, useIdIfEmptyName, getDisabled);
+        }
+
+        return result;
+    }
+
+	function getFieldName(node, useIdIfEmptyName)
+	{
+		if (node.name && node.name != '') return node.name;
+		else if (useIdIfEmptyName && node.id && node.id != '') return node.id;
+		else return '';
+	}
+
+
+	function getFieldValue(fieldNode, getDisabled)
+	{
+		if (fieldNode.disabled && !getDisabled) return null;
+
+		switch (fieldNode.nodeName) {
+			case 'INPUT':
+			case 'TEXTAREA':
+				switch (fieldNode.type.toLowerCase()) {
+					case 'radio':
+			if (fieldNode.checked && fieldNode.value === "false") return false;
+					case 'checkbox':
+                        if (fieldNode.checked && fieldNode.value === "true") return true;
+                        if (!fieldNode.checked && fieldNode.value === "true") return false;
+			if (fieldNode.checked) return fieldNode.value;
+						break;
+
+					case 'button':
+					case 'reset':
+					case 'submit':
+					case 'image':
+						return '';
+						break;
+
+					default:
+						return fieldNode.value;
+						break;
+				}
+				break;
+
+			case 'SELECT':
+				return getSelectedOptionValue(fieldNode);
+				break;
+
+			default:
+				break;
+		}
+
+		return null;
+	}
+
+	function getSelectedOptionValue(selectNode)
+	{
+		var multiple = selectNode.multiple,
+			result = [],
+			options,
+			i, l;
+
+		if (!multiple) return selectNode.value;
+
+		for (options = selectNode.getElementsByTagName("option"), i = 0, l = options.length; i < l; i++)
+		{
+			if (options[i].selected) result.push(options[i].value);
+		}
+
+		return result;
+	}
+
+	return form2js;
+
+}));

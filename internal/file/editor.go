@@ -78,7 +78,6 @@ func (i *Info) GetEditor() (*Editor, error) {
 		editor.Class = "content-only"
 		editor.Content = i.Content
 	}
-
 	return editor, nil
 }
 

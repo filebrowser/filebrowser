@@ -2,7 +2,7 @@
 <div id="editor" class="container" data-kind="{{ .Class }}">
     <form method="POST" action="./">
         {{ if or (eq .Class "frontmatter-only") (eq .Class "complete") }}
-        <div class="frontmatter">
+        <div class="frontmatter" data-type="parent">
             {{ template "blocks" .FrontMatter }}
             <button class="add">Add field</button>
         </div>
@@ -18,7 +18,8 @@
         {{ end }}
 
         <div>
-            <input type="submit" data-type="{{ .Class }}" value="Save">
+            <button id="submit" type="submit" data-type="{{ .Class }}"><span><i class="material-icons">save</i></span> <span>save</span>
+            </button>
         </div>
     </form>
 </div>

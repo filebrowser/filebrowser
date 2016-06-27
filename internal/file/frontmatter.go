@@ -146,7 +146,7 @@ func handleObjects(content interface{}, parent *Block, name string) *Block {
 	} else if parent.Type == arrayType {
 		c.Name = parent.Name + "[]"
 	} else {
-		c.Name = parent.Name + "[" + c.Title + "]"
+		c.Name = parent.Name + "." + c.Title
 	}
 
 	c.Content = rawToPretty(content, c)
@@ -162,7 +162,7 @@ func handleArrays(content interface{}, parent *Block, name string) *Block {
 	if parent.Name == mainName {
 		c.Name = name
 	} else {
-		c.Name = parent.Name + "[" + name + "]"
+		c.Name = parent.Name + "." + name
 	}
 
 	c.Content = rawToPretty(content, c)
@@ -199,7 +199,7 @@ func handleFlatValues(content interface{}, parent *Block, name string) *Block {
 		c.Title = content.(string)
 	} else if parent.Type == objectType {
 		c.Title = name
-		c.Name = parent.Name + "[" + name + "]"
+		c.Name = parent.Name + "." + name
 
 		if parent.Name == mainName {
 			c.Name = name

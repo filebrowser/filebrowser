@@ -27,12 +27,3 @@ func Run(c *config.Config.Config, force bool) {
 		log.Panic(err)
 	}
 }
-
-func stringInSlice(a string, list []string) (bool, int) {
-	for i, b := range list {
-		if b == a {
-			return true, i
-		}
-	}
-	return false, 0
-}
