@@ -477,8 +477,135 @@ var handleEditorPage = function () {
         });
     }
 
+    let deleteFrontMatterItemButtons = document.getElementsByClassName('delete');
+    Array.from(deleteFrontMatterItemButtons).forEach(button => {
+        button.addEventListener('click', deleteFrontMatterItem);
+    });
 
 
 
  return false;
+}
+
+var deleteFrontMatterItem = function(event) {
+    event.preventDefault();
+    document.getElementById(this.dataset.delete).remove();
+}
+
+var addFrontMatterItem = function(event) {
+    /*
+    event.preventDefault();
+    defaultID = "lorem-ipsum-sin-dolor-amet";
+
+    // Remove if there is an incomplete new item
+    newItem = $("#" + defaultID);
+    if (newItem.length) {
+      newItem.remove();
+    }
+
+    block = $(this).parent().parent();
+    blockType = block.data("type");
+    blockID = block.attr("id");
+
+    // If the Block Type is an array
+    if (blockType == "array") {
+      newID = blockID + "[]";
+      input = blockID;
+      input = input.replace(/\[/, '\\[');
+      input = input.replace(/\]/, '\\]');
+      block.append('<div id="' + newID + '-' + $('#' + input + ' > div').length + '" data-type="array-item"><input name="' + newID + ':auto" id="' + newID + '"></input><span class="actions"> <button class="delete">&#8722;</button></span></div></div>');
+    }
+
+    // Main add button, after all blocks
+    if (block.is('div') && block.hasClass("frontmatter")) {
+      block = $('.blocks');
+      blockType = "object";
+    }
+
+    // If the Block is an object
+    if (blockType == "object") {
+      block.append('<div class="block" id="' + defaultID + '"></div>');
+
+      newItem = $("#" + defaultID);
+      newItem.html('<input id="name-' + defaultID + '" placeholder="Write the field name and press enter..."></input>');
+      field = $("#name-" + defaultID);
+
+      // Show a notification with some information for newbies
+      if (!document.cookie.replace(/(?:(?:^|.*;\s*)placeholdertip\s*\=\s*([^;]*).*$)|^.*$/, "$1")) {
+        var date = new Date();
+        date.setDate(date.getDate() + 365);
+        document.cookie = 'placeholdertip=true; expires=' + date.toUTCString + '; path=/';
+
+        notification({
+          text: 'Write the field name and then press enter. If you want to create an array or an object, end the name with ":array" or ":object".',
+          type: 'information'
+        });
+      }
+
+      $(field).keypress(function(event) {
+        // When you press enter within the new name field:
+        if (event.which == 13) {
+          event.preventDefault();
+          // This var should have a value of the type "name[:array, :object]"
+          value = field.val();
+
+          if (value == "") {
+            newItem.remove();
+            return false;
+          }
+
+          elements = value.split(":")
+
+          if (elements.length > 2) {
+            notification({
+              text: "Invalid syntax. It must be 'name[:type]'.",
+              type: 'error'
+            });
+            return false;
+          }
+
+          if (elements.length == 2 && elements[1] != "array" && elements[1] != "object") {
+            notification({
+              text: "Only arrays and objects are allowed.",
+              type: 'error'
+            });
+            return false;
+          }
+
+          field.remove();
+
+          if (typeof blockID === "undefined") {
+            blockID = elements[0];
+          } else {
+            blockID = blockID + '[' + elements[0] + ']';
+          }
+
+          if (elements.length == 1) {
+            newItem.attr('id', 'block-' + blockID);
+            newItem.append('<input name="' + blockID + ':auto" id="' + blockID + '"></input><br>');
+            newItem.prepend('<label for="' + blockID + '">' + value + '</label> <span class="actions"><button class="delete">&#8722;</button></span>');
+          } else {
+            type = "";
+
+            if (elements[1] == "array") {
+              type = "array";
+            } else {
+              type = "object"
+            }
+
+            template = "<fieldset id=\"${blockID}\" data-type=\"${type}\"> <h3>${elements[0]}</h3> <span class=\"actions\"> <button class=\"add\">&#43;</button> <button class=\"delete\">&#8722;</button> </span> </fieldset>"
+            template = template.replace("${blockID}", blockID);
+            template = template.replace("${elements[0]}", elements[0]);
+            template = template.replace("${type}", type);
+            newItem.after(template);
+            newItem.remove();
+          }
+
+          return false;
+        }
+      });
+    }
+
+    return false;
+    */
 }

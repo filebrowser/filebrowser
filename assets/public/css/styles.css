@@ -637,3 +637,6 @@ i.spin {
 #editor textarea[name="content"] {
  display: none;
 }
+#editor fieldset fieldset {
+    margin-left: 1em;
+}
