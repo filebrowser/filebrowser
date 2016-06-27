@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -18,9 +17,6 @@ import (
 func (i *Info) Update(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	var data map[string]interface{}
 	kind := r.Header.Get("kind")
-
-	// TODO: remove
-	fmt.Println(i.Name)
 
 	if kind == "" {
 		return http.StatusBadRequest, nil

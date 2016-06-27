@@ -621,7 +621,14 @@ var addFrontMatterItem = function(event) {
                         document.getElementById(bid).querySelector('.action.add').addEventListener('click', addFrontMatterItem);
                         break;
                     default:
-                        block.querySelector('.group').insertAdjacentHTML('beforeend', `<div class="block" id="block-${bid}" data-content="${bid}">
+                        let group = block.querySelector('.group');
+
+                        if (group == null) {
+                            block.insertAdjacentHTML('afterbegin', '<div class="group"></div>');
+                            group = block.querySelector('.group');
+                        }
+
+                        group.insertAdjacentHTML('beforeend', `<div class="block" id="block-${bid}" data-content="${bid}">
                           <label for="${bid}">${name}</label>
                           <input name="${bid}" id="${bid}" type="text" data-parent-type="object"></input>
                           <div class="action delete" data-delete="block-${bid}">
