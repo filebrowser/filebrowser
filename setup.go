@@ -5,14 +5,17 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/hacdias/caddy-filemanager"
+	"github.com/hacdias/caddy-filemanager/config"
 	"github.com/hacdias/caddy-hugo/installer"
+	"github.com/hacdias/caddy-hugo/utils/commands"
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
+
+const AssetsURL = "/_hugointernal"
 
 func init() {
 	caddy.RegisterPlugin("hugo", caddy.Plugin{
@@ -25,7 +28,7 @@ func init() {
 // middleware thing.
 func setup(c *caddy.Controller) error {
 	cnf := httpserver.GetConfig(c)
-	conf, _ := ParseHugo(c, cnf.Root)
+	conf, _ := parse(c, cnf.Root)
 
 	// Checks if there is an Hugo website in the path that is provided.
 	// If not, a new website will be created.
@@ -44,7 +47,7 @@ func setup(c *caddy.Controller) error {
 	}
 
 	if create {
-		err := Run(conf.Hugo, []string{"new", "site", conf.Root, "--force"}, ".")
+		err := commands.Run(conf.Hugo, []string{"new", "site", conf.Root, "--force"}, ".")
 		if err != nil {
 			log.Panic(err)
 		}
@@ -59,8 +62,8 @@ func setup(c *caddy.Controller) error {
 			Config: conf,
 			FileManager: &filemanager.FileManager{
 				Next: next,
-				Configs: []filemanager.Config{
-					filemanager.Config{
+				Configs: []config.Config{
+					config.Config{
 						HugoEnabled: true,
 						PathScope:   conf.Root,
 						Root:        http.Dir(conf.Root),
@@ -76,35 +79,27 @@ func setup(c *caddy.Controller) error {
 	return nil
 }
 
-// Config contains the configuration of hugo plugin
+// Config is a configuration for managing a particular hugo website.
 type Config struct {
-	Args    []string // Hugo arguments
-	Git     bool     // Is this site a git repository
-	BaseURL string   // Admin URL to listen on
-	Hugo    string   // Hugo executable path
-	Root    string   // Hugo website path
-	Public  string   // Public content path
-	Styles  string   // Admin stylesheet
+	Public      string   // Public content path
+	Root        string   // Hugo files path
+	Hugo        string   // Hugo executable location
+	Styles      string   // Admin styles path
+	Args        []string // Hugo arguments
+	BaseURL     string   // BaseURL of admin interface
+	FileManager *filemanager.FileManager
 }
 
-// ParseHugo parses the configuration file
-func ParseHugo(c *caddy.Controller, root string) (*Config, error) {
+// Parse parses the configuration set by the user so it can be
+// used by the middleware
+func parse(c *caddy.Controller, root string) (*Config, error) {
 	conf := &Config{
 		Public:  strings.Replace(root, "./", "", -1),
 		BaseURL: "/admin",
 		Root:    "./",
-		Git:     false,
-		Hugo:    installer.GetPath(),
 	}
 
-	stlsbytes, err := Asset("public/css/styles.css")
-
-	if err != nil {
-		return conf, err
-	}
-
-	conf.Styles = string(stlsbytes)
-
+	conf.Hugo = installer.GetPath()
 	for c.Next() {
 		args := c.RemainingArgs()
 
@@ -121,19 +116,17 @@ func ParseHugo(c *caddy.Controller, root string) (*Config, error) {
 				if !c.NextArg() {
 					return conf, c.ArgErr()
 				}
-				stylesheet, err := ioutil.ReadFile(c.Val())
+				tplBytes, err := ioutil.ReadFile(c.Val())
 				if err != nil {
 					return conf, err
 				}
-				conf.Styles += string(stylesheet)
+				conf.Styles = string(tplBytes)
 			case "admin":
 				if !c.NextArg() {
-					return nil, c.ArgErr()
+					return conf, c.ArgErr()
 				}
 				conf.BaseURL = c.Val()
-				// Remove the beginning slash if it exists or not
 				conf.BaseURL = strings.TrimPrefix(conf.BaseURL, "/")
-				// Add a beginning slash to make a
 				conf.BaseURL = "/" + conf.BaseURL
 			default:
 				key := "--" + c.Val()
@@ -146,10 +139,6 @@ func ParseHugo(c *caddy.Controller, root string) (*Config, error) {
 				conf.Args = append(conf.Args, key+"="+value)
 			}
 		}
-	}
-
-	if _, err := os.Stat(filepath.Join(conf.Root, ".git")); err == nil {
-		conf.Git = true
 	}
 
 	return conf, nil
