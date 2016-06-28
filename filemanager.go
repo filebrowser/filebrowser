@@ -9,6 +9,7 @@ package filemanager
 
 import (
 	"io"
+	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -163,9 +164,24 @@ func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, erro
 
 // newDirectory makes a new directory
 func newDirectory(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
-	path := strings.Replace(r.URL.Path, c.BaseURL, c.PathScope, 1)
+	filename := r.Header.Get("Filename")
+
+	if filename == "" {
+		return http.StatusBadRequest, nil
+	}
+
+	path := strings.Replace(r.URL.Path, c.BaseURL, c.PathScope, 1) + filename
 	path = filepath.Clean(path)
-	err := os.MkdirAll(path, 0755)
+	extension := filepath.Ext(path)
+
+	var err error
+
+	if extension == "" {
+		err = os.MkdirAll(path, 0755)
+	} else {
+		err = ioutil.WriteFile(path, []byte(""), 0755)
+	}
+
 	if err != nil {
 		switch {
 		case os.IsPermission(err):

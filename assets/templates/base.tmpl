@@ -54,7 +54,7 @@
      {{ else }}
      {{ template "actions" . }}
     {{ end }}
-    
+
     <div class="action" id="logout">
      <i class="material-icons">exit_to_app</i>
     </div>
@@ -80,14 +80,6 @@
   <main>
    {{ template "content" .Data }}
   </main>
-
-  {{ if .IsDir }}
-   <div class="floating">
-    <div class="action" id="newfolder">
-     <i class="material-icons">add</i>
-    </div>
-   </div>
-  {{ end }}
 
   <footer>
    Served with

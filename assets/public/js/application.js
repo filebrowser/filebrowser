@@ -261,7 +261,7 @@ var handleFiles = function(files) {
     request.onreadystatechange = function() {
         if (request.readyState == 4) {
             if (request.status == 200) {
-                location.reload();
+                history.go(0);
             }
 
             button.changeToDone((request.status != 200), html);
@@ -405,6 +405,39 @@ document.addEventListener('listing', event => {
 
     // Enables rename button
     document.getElementById("rename").addEventListener("click", renameEvent);
+
+    document.getElementById('new').addEventListener('click', event => {
+        let newdir = document.getElementById('newdir');
+        newdir.classList.toggle('enabled');
+        newdir.focus();
+    });
+
+    document.getElementById('newdir').addEventListener('keydown', event => {
+        if (event.keyCode == 27) {
+            document.getElementById('newdir').classList.toggle('enabled');
+            setTimeout(() => {
+                document.getElementById('newdir').value = '';
+            }, 200);
+        }
+
+        if (event.keyCode == 13) {
+            event.preventDefault();
+
+            let button = document.getElementById('new');
+            let html = button.changeToLoading();
+            let request = new XMLHttpRequest();
+            request.open("POST", window.location);
+            request.setRequestHeader('Filename', document.getElementById('newdir').value);
+            request.send();
+            request.onreadystatechange = function() {
+                if (request.readyState == 4) {
+                    button.changeToDone((request.status != 200), html);
+                    history.go(0);
+                }
+            }
+
+        }
+    });
 
     // Drag and Drop
     document.addEventListener("dragover", function(event) {
