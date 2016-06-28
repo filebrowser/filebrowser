@@ -74,8 +74,12 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 		if directory.CanBeEdited(r.URL.Path) && r.Method == http.MethodPut {
 			code, err := h.FileManager.ServeHTTP(w, r)
 
+			if err != nil {
+				return code, err
+			}
+
 			if r.Header.Get("Regenerate") == "true" {
-				go RunHugo(h.Config, false)
+				RunHugo(h.Config, false)
 			}
 
 			if r.Header.Get("Schedule") != "" {
