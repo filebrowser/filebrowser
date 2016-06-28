@@ -1,6 +1,6 @@
 //go:generate go get github.com/jteeuwen/go-bindata
 //go:generate go install github.com/jteeuwen/go-bindata/go-bindata
-//go:generate go-bindata -debug -pkg assets -prefix "assets" -o internal/assets/binary.go assets/...
+//go:generate go-bindata -debug -pkg assets -prefix "assets" -o assets/binary.go assets/...
 
 // Package filemanager provides middleware for managing files in a directory
 // when directory path is requested instead of a specific file. Based on browse
@@ -8,13 +8,19 @@
 package filemanager
 
 import (
+	"io"
+	"log"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 
-	a "github.com/hacdias/caddy-filemanager/internal/assets"
-	"github.com/hacdias/caddy-filemanager/internal/config"
-	"github.com/hacdias/caddy-filemanager/internal/file"
-	"github.com/hacdias/caddy-filemanager/internal/vcs"
+	"github.com/hacdias/caddy-filemanager/assets"
+	"github.com/hacdias/caddy-filemanager/config"
+	"github.com/hacdias/caddy-filemanager/directory"
+	"github.com/hacdias/caddy-filemanager/page"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
@@ -28,20 +34,20 @@ type FileManager struct {
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	var (
-		c      *config.Config
-		fi     *file.Info
-		code   int
-		err    error
-		assets bool
+		c           *config.Config
+		fi          *directory.Info
+		code        int
+		err         error
+		serveAssets bool
 	)
 
 	for i := range f.Configs {
 		if httpserver.Path(r.URL.Path).Matches(f.Configs[i].BaseURL) {
 			c = &f.Configs[i]
-			assets = httpserver.Path(r.URL.Path).Matches(c.BaseURL + a.BaseURL)
+			serveAssets = httpserver.Path(r.URL.Path).Matches(c.BaseURL + assets.BaseURL)
 
-			if r.Method != http.MethodPost && !assets {
-				fi, code, err = file.GetInfo(r.URL, c)
+			if r.Method != http.MethodPost && !serveAssets {
+				fi, code, err = directory.GetInfo(r.URL, c)
 				if err != nil {
 					return code, err
 				}
@@ -56,8 +62,8 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			switch r.Method {
 			case http.MethodGet:
 				// Read and show directory or file
-				if assets {
-					return a.ServeAssets(w, r, c)
+				if serveAssets {
+					return assets.Serve(w, r, c)
 				}
 
 				if !fi.IsDir {
@@ -82,7 +88,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			case http.MethodPost:
 				// Upload a new file
 				if r.Header.Get("Upload") == "true" {
-					return file.Upload(w, r, c)
+					return upload(w, r, c)
 				}
 				// Search and git commands
 				if r.Header.Get("Search") == "true" {
@@ -91,11 +97,11 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				// VCS commands
 				if r.Header.Get("Command") != "" {
 					// TODO: not implemented on frontend
-					vcs.Handle(w, r, c)
+					vcsCommand(w, r, c)
 				}
 				// Creates a new folder
 				// TODO: not implemented on frontend
-				return file.NewDir(w, r, c)
+				return newDirectory(w, r, c)
 			case http.MethodDelete:
 				// Delete a file or a directory
 				return fi.Delete()
@@ -109,4 +115,92 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 	}
 
 	return f.Next.ServeHTTP(w, r)
+}
+
+// upload is used to handle the upload requests to the server
+func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+	// Parse the multipart form in the request
+	err := r.ParseMultipartForm(100000)
+	if err != nil {
+		log.Println(err)
+		return http.StatusInternalServerError, err
+	}
+
+	// For each file header in the multipart form
+	for _, headers := range r.MultipartForm.File {
+		// Handle each file
+		for _, header := range headers {
+			// Open the first file
+			var src multipart.File
+			if src, err = header.Open(); nil != err {
+				return http.StatusInternalServerError, err
+			}
+
+			filename := strings.Replace(r.URL.Path, c.BaseURL, c.PathScope, 1)
+			filename = filename + header.Filename
+			filename = filepath.Clean(filename)
+
+			// Create the file
+			var dst *os.File
+			if dst, err = os.Create(filename); nil != err {
+				if os.IsExist(err) {
+					return http.StatusConflict, err
+				}
+				return http.StatusInternalServerError, err
+			}
+
+			// Copy the file content
+			if _, err = io.Copy(dst, src); nil != err {
+				return http.StatusInternalServerError, err
+			}
+
+			defer dst.Close()
+		}
+	}
+
+	return http.StatusOK, nil
+}
+
+// newDirectory makes a new directory
+func newDirectory(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+	path := strings.Replace(r.URL.Path, c.BaseURL, c.PathScope, 1)
+	path = filepath.Clean(path)
+	err := os.MkdirAll(path, 0755)
+	if err != nil {
+		switch {
+		case os.IsPermission(err):
+			return http.StatusForbidden, err
+		case os.IsExist(err):
+			return http.StatusConflict, err
+		default:
+			return http.StatusInternalServerError, err
+		}
+	}
+	return http.StatusCreated, nil
+}
+
+// vcsCommand handles the requests for VCS related commands: git, svn and mercurial
+func vcsCommand(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+	command := strings.Split(r.Header.Get("command"), " ")
+
+	// Check if the command is for git, mercurial or svn
+	if command[0] != "git" && command[0] != "hg" && command[0] != "svn" {
+		return http.StatusForbidden, nil
+	}
+
+	// Check if the program is talled is installed on the computer
+	if _, err := exec.LookPath(command[0]); err != nil {
+		return http.StatusNotImplemented, nil
+	}
+
+	cmd := exec.Command(command[0], command[1:len(command)]...)
+	cmd.Dir = c.PathScope
+	output, err := cmd.CombinedOutput()
+
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	page := &page.Page{Info: &page.Info{Data: string(output)}}
+	return page.PrintAsJSON(w)
 }

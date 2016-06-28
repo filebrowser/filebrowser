@@ -1,4 +1,4 @@
-package file
+package directory
 
 import (
 	"fmt"
@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/hacdias/caddy-filemanager/internal/config"
-	p "github.com/hacdias/caddy-filemanager/internal/page"
+	"github.com/hacdias/caddy-filemanager/config"
+	p "github.com/hacdias/caddy-filemanager/page"
 	"github.com/hacdias/caddy-filemanager/utils/errors"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )

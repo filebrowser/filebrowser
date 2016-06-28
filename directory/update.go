@@ -1,4 +1,4 @@
-package file
+package directory
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/caddy-filemanager/internal/config"
+	"github.com/hacdias/caddy-filemanager/config"
 	"github.com/spf13/hugo/parser"
 )
 

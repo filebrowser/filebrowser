@@ -110,5 +110,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
   <script src="{{ .Config.BaseURL }}/_filemanagerinternal/js/form2js.js"></script>
   <script src="{{ .Config.BaseURL }}/_filemanagerinternal/js/application.js"></script>
+  {{ if .Config.HugoEnabled }}<script src="{{ .Config.BaseURL }}/_hugointernal/application.js"></script>{{ end }}
  </body>
 </html>

@@ -1,7 +1,7 @@
 package filemanager
 
 import (
-	"github.com/hacdias/caddy-filemanager/internal/config"
+	"github.com/hacdias/caddy-filemanager/config"
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )

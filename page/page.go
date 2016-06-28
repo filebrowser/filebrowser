@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/hacdias/caddy-filemanager/internal/assets"
-	"github.com/hacdias/caddy-filemanager/internal/config"
+	"github.com/hacdias/caddy-filemanager/assets"
+	"github.com/hacdias/caddy-filemanager/config"
 	"github.com/hacdias/caddy-filemanager/utils/variables"
 )
 

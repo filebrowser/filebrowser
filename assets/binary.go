@@ -268,16 +268,16 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	".jsbeautifyrc": Jsbeautifyrc,
-	"public/css/styles.css": publicCssStylesCss,
-	"public/js/application.js": publicJsApplicationJs,
-	"public/js/form2js.js": publicJsForm2jsJs,
-	"templates/actions.tmpl": templatesActionsTmpl,
-	"templates/base.tmpl": templatesBaseTmpl,
-	"templates/editor.tmpl": templatesEditorTmpl,
+	".jsbeautifyrc":              Jsbeautifyrc,
+	"public/css/styles.css":      publicCssStylesCss,
+	"public/js/application.js":   publicJsApplicationJs,
+	"public/js/form2js.js":       publicJsForm2jsJs,
+	"templates/actions.tmpl":     templatesActionsTmpl,
+	"templates/base.tmpl":        templatesBaseTmpl,
+	"templates/editor.tmpl":      templatesEditorTmpl,
 	"templates/frontmatter.tmpl": templatesFrontmatterTmpl,
-	"templates/listing.tmpl": templatesListingTmpl,
-	"templates/single.tmpl": templatesSingleTmpl,
+	"templates/listing.tmpl":     templatesListingTmpl,
+	"templates/single.tmpl":      templatesSingleTmpl,
 }
 
 // AssetDir returns the file names below a certain
@@ -319,6 +319,7 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
+
 var _bintree = &bintree{nil, map[string]*bintree{
 	".jsbeautifyrc": &bintree{Jsbeautifyrc, map[string]*bintree{}},
 	"public": &bintree{nil, map[string]*bintree{
@@ -327,16 +328,16 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		}},
 		"js": &bintree{nil, map[string]*bintree{
 			"application.js": &bintree{publicJsApplicationJs, map[string]*bintree{}},
-			"form2js.js": &bintree{publicJsForm2jsJs, map[string]*bintree{}},
+			"form2js.js":     &bintree{publicJsForm2jsJs, map[string]*bintree{}},
 		}},
 	}},
 	"templates": &bintree{nil, map[string]*bintree{
-		"actions.tmpl": &bintree{templatesActionsTmpl, map[string]*bintree{}},
-		"base.tmpl": &bintree{templatesBaseTmpl, map[string]*bintree{}},
-		"editor.tmpl": &bintree{templatesEditorTmpl, map[string]*bintree{}},
+		"actions.tmpl":     &bintree{templatesActionsTmpl, map[string]*bintree{}},
+		"base.tmpl":        &bintree{templatesBaseTmpl, map[string]*bintree{}},
+		"editor.tmpl":      &bintree{templatesEditorTmpl, map[string]*bintree{}},
 		"frontmatter.tmpl": &bintree{templatesFrontmatterTmpl, map[string]*bintree{}},
-		"listing.tmpl": &bintree{templatesListingTmpl, map[string]*bintree{}},
-		"single.tmpl": &bintree{templatesSingleTmpl, map[string]*bintree{}},
+		"listing.tmpl":     &bintree{templatesListingTmpl, map[string]*bintree{}},
+		"single.tmpl":      &bintree{templatesSingleTmpl, map[string]*bintree{}},
 	}},
 }}
 
@@ -386,4 +387,3 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
-

@@ -6,14 +6,14 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/caddy-filemanager/internal/config"
+	"github.com/hacdias/caddy-filemanager/config"
 )
 
 // BaseURL is the url of the assets
 const BaseURL = "/_filemanagerinternal"
 
-// ServeAssets provides the needed assets for the front-end
-func ServeAssets(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+// Serve provides the needed assets for the front-end
+func Serve(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
 	// gets the filename to be used with Assets function
 	filename := strings.Replace(r.URL.Path, c.BaseURL+BaseURL, "public", 1)
 	file, err := Asset(filename)

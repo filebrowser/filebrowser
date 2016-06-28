@@ -1,4 +1,4 @@
-package file
+package frontmatter
 
 import (
 	"bytes"
