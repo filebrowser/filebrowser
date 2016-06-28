@@ -1,55 +1,60 @@
 {{ define "blocks" }}
-    {{ if .Fields }}<div class="group">{{ end }}
-    {{ range $key, $value := .Fields }}
-        {{ if eq $value.Parent.Type "array" }}
-        <div id="{{ $value.Name }}-{{ $key }}" data-type="array-item">
-            {{ template "value" $value }}
-            <div class="action delete"  data-delete="{{ $value.Name }}-{{ $key }}">
-                <i class="material-icons">close</i>
-            </div>
-        </div>
-        {{ else }}
-        <div class="block" id="block-{{ $value.Name }}" data-content="{{ $value.Name }}">
-          <label for="{{ $value.Name }}">{{ SplitCapitalize $value.Title }}</label>
-          {{ template "value" $value }}
-          <div class="action delete" data-delete="block-{{ $value.Name }}">
-              <i class="material-icons">close</i>
-          </div>
-        </div>
-        {{ end }}
-    {{ end }}
-    {{ if .Fields }}</div>{{ end }}
+ {{ if .Fields }}
+  <div class="group">
+  {{ end }}
+  {{ range $key, $value := .Fields }}
+   {{ if eq $value.Parent.Type "array" }}
+    <div id="{{ $value.Name }}-{{ $key }}" data-type="array-item">
+     {{ template "value" $value }}
+     <div class="action delete" data-delete="{{ $value.Name }}-{{ $key }}">
+      <i class="material-icons">close</i>
+     </div>
+    </div>
+    {{ else }}
+    <div class="block" id="block-{{ $value.Name }}" data-content="{{ $value.Name }}">
+     <label for="{{ $value.Name }}">{{ SplitCapitalize $value.Title }}</label>
+     {{ template "value" $value }}
+     <div class="action delete" data-delete="block-{{ $value.Name }}">
+      <i class="material-icons">close</i>
+     </div>
+    </div>
+   {{ end }}
+  {{ end }}
+  {{ if .Fields }}
+  </div>
+ {{ end }}
 
-    {{ range $key, $value := .Arrays }}
-    {{ template "fielset" $value }}
-    {{ end }}
+ {{ range $key, $value := .Arrays }}
+  {{ template "fielset" $value }}
+ {{ end }}
 
-    {{ range $key, $value := .Objects }}
-    {{ template "fielset" $value }}
-    {{ end }}
+ {{ range $key, $value := .Objects }}
+  {{ template "fielset" $value }}
+ {{ end }}
 
 {{ end }}
 
 {{ define "value" }}
-{{ if eq .HTMLType "textarea" }}
-<textarea class="scroll" name="{{ .Name }}" id="{{.Name }}" data-parent-type="{{ .Parent.Type }}">{{ .Content.Other }}</textarea>
-{{ else if eq .HTMLType "datetime" }}
-<input name="{{ .Name }}" id="{{ .Name }}" value="{{ .Content.Other.Format "2006-01-02T15:04" }}" type="datetime-local" data-parent-type="{{ .Parent.Type }}"></input>
-{{ else }}
-<input name="{{ .Name }}" id="{{ .Name }}" value="{{ .Content.Other }}" type="{{ .HTMLType }}" data-parent-type="{{ .Parent.Type }}"></input>
+ {{ if eq .HTMLType "textarea" }}
+  <textarea class="scroll" name="{{ .Name }}" id="{{.Name }}" data-parent-type="{{ .Parent.Type }}">{{ .Content.Other }}</textarea>
+  {{ else if eq .HTMLType "datetime" }}
+  <input name="{{ .Name }}" id="{{ .Name }}" value="{{ .Content.Other.Format " 2006-01-02T15:04" }}" type="datetime-local" data-parent-type="{{ .Parent.Type }}"></input>
+  {{ else }}
+  <input name="{{ .Name }}" id="{{ .Name }}" value="{{ .Content.Other }}" type="{{ .HTMLType }}" data-parent-type="{{ .Parent.Type }}"></input>
+ {{ end }}
 {{ end }}
-{{ end }}
-
 
 {{ define "fielset" }}
-<fieldset id="{{ .Name }}" data-type="{{ .Type }}">
-  {{ if not (eq .Title "") }}<h3>{{ SplitCapitalize .Title }}</h3>{{ end }}
+ <fieldset id="{{ .Name }}" data-type="{{ .Type }}">
+  {{ if not (eq .Title "") }}
+   <h3>{{ SplitCapitalize .Title }}</h3>
+  {{ end }}
   <div class="action add">
-      <i class="material-icons">add</i>
+   <i class="material-icons">add</i>
   </div>
   <div class="action delete" data-delete="{{ .Name }}">
-      <i class="material-icons">close</i>
+   <i class="material-icons">close</i>
   </div>
- {{ template "blocks" .Content }}
-</fieldset>
+  {{ template "blocks" .Content }}
+ </fieldset>
 {{ end }}

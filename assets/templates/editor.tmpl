@@ -1,26 +1,32 @@
 {{ define "content" }}
-<div id="editor" class="container" data-kind="{{ .Class }}">
-    <form method="POST" action="./">
-        {{ if or (eq .Class "frontmatter-only") (eq .Class "complete") }}
-        <div class="frontmatter" data-type="parent">
-            {{ template "blocks" .FrontMatter }}
-            <div class="button add">Add field</div>
-        </div>
-        {{ end }}
+ <div id="editor" class="container" data-kind="{{ .Class }}">
+  <form method="POST" action="./">
+   {{ if or (eq .Class "frontmatter-only") (eq .Class "complete") }}
+    <div class="frontmatter" data-type="parent">
+     {{ template "blocks" .FrontMatter }}
+     <div class="button add">Add field</div>
+    </div>
+   {{ end }}
 
-        {{ if or (eq .Class "content-only") (eq .Class "complete") }}
+   {{ if or (eq .Class "content-only") (eq .Class "complete") }}
 
-        {{ if (eq .Class "complete")}}<h3>Body</h3>{{ end }}
-        <div class="content">
-          <div id="editor-source" data-mode="{{ .Mode }}"></div>
-          <textarea name="content">{{ .Content }}</textarea>
-        </div>
-        {{ end }}
+    {{ if (eq .Class "complete")}}
+     <h3>Body</h3>
+    {{ end }}
+    <div class="content">
+     <div id="editor-source" data-mode="{{ .Mode }}"></div>
+     <textarea name="content">{{ .Content }}</textarea>
+    </div>
+   {{ end }}
 
-        <div>
-            <button id="submit" type="submit" data-type="{{ .Class }}"><span><i class="material-icons">save</i></span> <span>save</span>
-            </button>
-        </div>
-    </form>
-</div>
+   <div>
+    <button id="submit" type="submit" data-type="{{ .Class }}">
+     <span>
+      <i class="material-icons">save</i>
+     </span>
+     <span>save</span>
+    </button>
+   </div>
+  </form>
+ </div>
 {{ end }}
