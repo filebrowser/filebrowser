@@ -15,6 +15,8 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-filemanager"
+	"github.com/hacdias/caddy-filemanager/assets"
+	"github.com/hacdias/caddy-filemanager/directory"
 	"github.com/hacdias/caddy-filemanager/utils/variables"
 	"github.com/hacdias/caddy-hugo/utils/commands"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
@@ -27,10 +29,60 @@ type Hugo struct {
 	FileManager *filemanager.FileManager
 }
 
+// ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
+	// If the site matches the baseURL
 	if httpserver.Path(r.URL.Path).Matches(h.Config.BaseURL) {
+		// Serve the hugo assets
 		if httpserver.Path(r.URL.Path).Matches(h.Config.BaseURL + AssetsURL) {
+			return serveAssets(w, r, h.Config)
+		}
 
+		// Serve the filemanager assets
+		if httpserver.Path(r.URL.Path).Matches(h.Config.BaseURL + assets.BaseURL) {
+			return h.FileManager.ServeHTTP(w, r)
+		}
+
+		// If the url matches exactly with /{admin}/settings/ serve that page
+		// page variable isn't used here to avoid people using URLs like
+		// "/{admin}/settings/something".
+		if r.URL.Path == h.Config.BaseURL+"/settings/" || r.URL.Path == h.Config.BaseURL+"/settings" {
+			var frontmatter string
+			var err error
+
+			if _, err = os.Stat(h.Config.Root + "config.yaml"); err == nil {
+				frontmatter = "yaml"
+			}
+
+			if _, err = os.Stat(h.Config.Root + "config.json"); err == nil {
+				frontmatter = "json"
+			}
+
+			if _, err = os.Stat(h.Config.Root + "config.toml"); err == nil {
+				frontmatter = "toml"
+			}
+
+			http.Redirect(w, r, h.Config.BaseURL+"/config."+frontmatter, http.StatusTemporaryRedirect)
+			return 0, nil
+		}
+
+		if r.Method == http.MethodPost && r.Header.Get("archetype") != "" {
+
+			return 0, nil
+		}
+
+		if directory.CanBeEdited(r.URL.Path) && r.Method == http.MethodPut {
+			code, err := h.FileManager.ServeHTTP(w, r)
+
+			if r.Header.Get("Regenerate") == "true" {
+				go RunHugo(h.Config, false)
+			}
+
+			if r.Header.Get("Schedule") != "" {
+
+			}
+
+			return code, err
 		}
 
 		return h.FileManager.ServeHTTP(w, r)
