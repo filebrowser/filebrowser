@@ -348,6 +348,34 @@ var handleViewType = function(viewList) {
     return false;
 }
 
+// Handles the new directory event
+var newDirEvent = function(event) {
+    if (event.keyCode == 27) {
+        document.getElementById('newdir').classList.toggle('enabled');
+        setTimeout(() => {
+            document.getElementById('newdir').value = '';
+        }, 200);
+    }
+
+    if (event.keyCode == 13) {
+        event.preventDefault();
+
+        let button = document.getElementById('new');
+        let html = button.changeToLoading();
+        let request = new XMLHttpRequest();
+        request.open("POST", window.location);
+        request.setRequestHeader('Filename', document.getElementById('newdir').value);
+        request.send();
+        request.onreadystatechange = function() {
+            if (request.readyState == 4) {
+                button.changeToDone((request.status != 200), html);
+                history.go(0);
+            }
+        }
+
+    }
+}
+
 // Handles the event when there is change on selected elements
 document.addEventListener("changed-selected", function(event) {
     var toolbar = document.getElementById("toolbar");
@@ -412,32 +440,7 @@ document.addEventListener('listing', event => {
         newdir.focus();
     });
 
-    document.getElementById('newdir').addEventListener('keydown', event => {
-        if (event.keyCode == 27) {
-            document.getElementById('newdir').classList.toggle('enabled');
-            setTimeout(() => {
-                document.getElementById('newdir').value = '';
-            }, 200);
-        }
-
-        if (event.keyCode == 13) {
-            event.preventDefault();
-
-            let button = document.getElementById('new');
-            let html = button.changeToLoading();
-            let request = new XMLHttpRequest();
-            request.open("POST", window.location);
-            request.setRequestHeader('Filename', document.getElementById('newdir').value);
-            request.send();
-            request.onreadystatechange = function() {
-                if (request.readyState == 4) {
-                    button.changeToDone((request.status != 200), html);
-                    history.go(0);
-                }
-            }
-
-        }
-    });
+    document.getElementById('newdir').addEventListener('keydown', newDirEvent);
 
     // Drag and Drop
     document.addEventListener("dragover", function(event) {
