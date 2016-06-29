@@ -44,6 +44,14 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				}
 				cfg.PathScope = c.Val()
 				cfg.PathScope = strings.TrimSuffix(cfg.PathScope, "/")
+			case "frontmatter":
+				if !c.NextArg() {
+					return configs, c.ArgErr()
+				}
+				cfg.FrontMatter = c.Val()
+				if cfg.FrontMatter != "yaml" && cfg.FrontMatter != "json" && cfg.FrontMatter != "toml" {
+					return configs, c.Err("frontmatter type not supported")
+				}
 			case "on":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
