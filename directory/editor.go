@@ -42,7 +42,7 @@ func (i *Info) GetEditor() (*Editor, error) {
 	// Handle the content depending on the file extension
 	switch editor.Mode {
 	case "markdown", "asciidoc", "rst":
-		if editor.hasFrontMatterRune(i.Raw) {
+		if HasFrontMatterRune(i.Raw) {
 			// Starts a new buffer and parses the file using Hugo's functions
 			buffer := bytes.NewBuffer(i.Raw)
 			page, err = parser.ReadFrom(buffer)
@@ -64,10 +64,10 @@ func (i *Info) GetEditor() (*Editor, error) {
 		editor.Class = "frontmatter-only"
 
 		// Checks if the file already has the frontmatter rune and parses it
-		if editor.hasFrontMatterRune(i.Raw) {
+		if HasFrontMatterRune(i.Raw) {
 			editor.FrontMatter, _, err = frontmatter.Pretty(i.Raw)
 		} else {
-			editor.FrontMatter, _, err = frontmatter.Pretty(editor.appendFrontMatterRune(i.Raw, editor.Mode))
+			editor.FrontMatter, _, err = frontmatter.Pretty(AppendFrontMatterRune(i.Raw, editor.Mode))
 		}
 
 		// Check if there were any errors
@@ -82,13 +82,15 @@ func (i *Info) GetEditor() (*Editor, error) {
 	return editor, nil
 }
 
-func (e Editor) hasFrontMatterRune(file []byte) bool {
+// HasFrontMatterRune checks if the file has the frontmatter rune
+func HasFrontMatterRune(file []byte) bool {
 	return strings.HasPrefix(string(file), "---") ||
 		strings.HasPrefix(string(file), "+++") ||
 		strings.HasPrefix(string(file), "{")
 }
 
-func (e Editor) appendFrontMatterRune(frontmatter []byte, language string) []byte {
+// AppendFrontMatterRune appends the frontmatter rune to a file
+func AppendFrontMatterRune(frontmatter []byte, language string) []byte {
 	switch language {
 	case "yaml":
 		return []byte("---\n" + string(frontmatter) + "\n---")

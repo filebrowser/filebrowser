@@ -64,7 +64,22 @@ func (i *Info) Update(w http.ResponseWriter, r *http.Request, c *config.Config) 
 
 func parseFrontMatterOnlyFile(data interface{}, filename string) ([]byte, int, error) {
 	frontmatter := strings.TrimPrefix(filepath.Ext(filename), ".")
-	return parseFrontMatter(data, frontmatter)
+	f, code, err := parseFrontMatter(data, frontmatter)
+	fString := string(f)
+
+	// If it's toml or yaml, strip frontmatter identifier
+	if frontmatter == "toml" {
+		fString = strings.TrimSuffix(fString, "+++\n")
+		fString = strings.TrimPrefix(fString, "+++\n")
+	}
+
+	if frontmatter == "yaml" {
+		fString = strings.TrimSuffix(fString, "---\n")
+		fString = strings.TrimPrefix(fString, "---\n")
+	}
+
+	f = []byte(fString)
+	return f, code, err
 }
 
 func parseFrontMatter(data interface{}, frontmatter string) ([]byte, int, error) {
@@ -82,20 +97,6 @@ func parseFrontMatter(data interface{}, frontmatter string) ([]byte, int, error)
 	}
 
 	f, err := parser.InterfaceToFrontMatter(data, mark)
-	fString := string(f)
-
-	// If it's toml or yaml, strip frontmatter identifier
-	if frontmatter == "toml" {
-		fString = strings.TrimSuffix(fString, "+++\n")
-		fString = strings.TrimPrefix(fString, "+++\n")
-	}
-
-	if frontmatter == "yaml" {
-		fString = strings.TrimSuffix(fString, "---\n")
-		fString = strings.TrimPrefix(fString, "---\n")
-	}
-
-	f = []byte(fString)
 
 	if err != nil {
 		return []byte{}, http.StatusInternalServerError, err

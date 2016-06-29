@@ -26,28 +26,10 @@ var mainTitle = ""
 
 // Pretty creates a new FrontMatter object
 func Pretty(content []byte) (*Content, string, error) {
-	mark := rune(content[0])
-	var data interface{}
+	data, err := Unmarshal(content)
 
-	switch mark {
-	case '-':
-		// If it's YAML
-		if err := yaml.Unmarshal(content, &data); err != nil {
-			return &Content{}, "", err
-		}
-	case '+':
-		// If it's TOML
-		content = bytes.Replace(content, []byte("+"), []byte(""), -1)
-		if _, err := toml.Decode(string(content), &data); err != nil {
-			return &Content{}, "", err
-		}
-	case '{', '[':
-		// If it's JSON
-		if err := json.Unmarshal(content, &data); err != nil {
-			return &Content{}, "", err
-		}
-	default:
-		return &Content{}, "", errors.New("Invalid frontmatter type.")
+	if err != nil {
+		return &Content{}, "", err
 	}
 
 	kind := reflect.ValueOf(data).Kind()
@@ -63,6 +45,35 @@ func Pretty(content []byte) (*Content, string, error) {
 	}
 
 	return rawToPretty(data, object), mainTitle, nil
+}
+
+// Unmarshal returns the data of the frontmatter
+func Unmarshal(content []byte) (interface{}, error) {
+	mark := rune(content[0])
+	var data interface{}
+
+	switch mark {
+	case '-':
+		// If it's YAML
+		if err := yaml.Unmarshal(content, &data); err != nil {
+			return nil, err
+		}
+	case '+':
+		// If it's TOML
+		content = bytes.Replace(content, []byte("+"), []byte(""), -1)
+		if _, err := toml.Decode(string(content), &data); err != nil {
+			return nil, err
+		}
+	case '{', '[':
+		// If it's JSON
+		if err := json.Unmarshal(content, &data); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, errors.New("Invalid frontmatter type.")
+	}
+
+	return data, nil
 }
 
 // Content is the block content
