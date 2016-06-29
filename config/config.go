@@ -35,7 +35,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 	}
 
 	for c.Next() {
-		var cfg = Config{PathScope: ".", BaseURL: "", FrontMatter: "json", HugoEnabled: false}
+		var cfg = Config{PathScope: ".", BaseURL: "", FrontMatter: "yaml", HugoEnabled: false}
 		for c.NextBlock() {
 			switch c.Val() {
 			case "show":
