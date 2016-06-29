@@ -7,12 +7,14 @@
 package hugo
 
 import (
+	"io/ioutil"
 	"log"
 	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/hacdias/caddy-filemanager"
 	"github.com/hacdias/caddy-filemanager/assets"
@@ -20,6 +22,8 @@ import (
 	"github.com/hacdias/caddy-filemanager/utils/variables"
 	"github.com/hacdias/caddy-hugo/utils/commands"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
+	"github.com/robfig/cron"
+	"github.com/spf13/cast"
 )
 
 // Hugo is hugo
@@ -133,6 +137,54 @@ func RunHugo(c *Config, force bool) {
 // Schedule schedules a post to be published later
 func Schedule(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
 	// TODO: this
+
+	t := cast.ToTime(r.Header.Get("Date"))
+
+	scheduler := cron.New()
+	scheduler.AddFunc(t.In(time.Now().Location()).Format("05 04 15 02 01 *"), func() {
+		filename := r.URL.Path
+		filename = strings.Replace(filename, c.BaseURL, c.Root, 1)
+		filename = filepath.Clean(filename)
+
+		raw, err := ioutil.ReadFile(filename)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+	})
+	scheduler.Start()
+
+	/*
+		// Set draft to false
+		data.Content["draft"] = false
+
+		// Converts the frontmatter in JSON
+		jsonFrontmatter, err := json.Marshal(data.Content)
+
+		if err != nil {
+			return
+		}
+
+		// Indents the json
+		frontMatterBuffer := new(bytes.Buffer)
+		json.Indent(frontMatterBuffer, jsonFrontmatter, "", "  ")
+
+		// Generates the final file
+		f := new(bytes.Buffer)
+		f.Write(frontMatterBuffer.Bytes())
+		f.Write([]byte(mainContent))
+		file := f.Bytes()
+
+		// Write the file
+		if err = ioutil.WriteFile(filename, file, 0666); err != nil {
+			return
+		}
+
+		go hugo.Run(c, false)
+
+
+	*/
 	return http.StatusOK, nil
 }
 

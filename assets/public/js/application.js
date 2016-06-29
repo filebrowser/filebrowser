@@ -61,7 +61,7 @@ document.addEventListener('editor', event => {
 	 </button>
 	 </div>`);
 
-    if (document.getElementById('date') || document.getElementById('publishdate')) {
+    if ((document.getElementById('date') || document.getElementById('publishdate')) && document.getElementById('editor').dataset.kind == "complete") {
         document.querySelector('#editor .right').insertAdjacentHTML('afterbegin', ` <button id="schedule">
 			  <span>
 				 <i class="material-icons">alarm</i>
@@ -71,11 +71,32 @@ document.addEventListener('editor', event => {
 
         document.getElementById('schedule').addEventListener('click', event => {
             event.preventDefault();
+
+            let date = document.getElementById('date').value;
+            if (document.getElementById('publishDate')) {
+                date = document.getElementById('publishDate').value;
+            }
+
+            let container = document.getElementById('editor');
+            let kind = container.dataset.kind;
+            let button = document.querySelector('#schedule span:first-child');
+
+            let data = form2js(document.querySelector('form'));
+            let html = button.changeToLoading();
+            let request = new XMLHttpRequest();
+            request.open("PUT", window.location);
+            request.setRequestHeader('Kind', kind);
+            request.setRequestHeader('Schedule', date);
+            request.send(JSON.stringify(data));
+            request.onreadystatechange = function() {
+                if (request.readyState == 4) {
+                    button.changeToDone((request.status != 200), html);
+                }
+            }
         });
     }
 
     document.getElementById('publish').addEventListener('click', event => {
-        console.log("Hey")
         event.preventDefault();
 
         if (document.getElementById('draft')) {
