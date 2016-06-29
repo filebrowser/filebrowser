@@ -14,7 +14,7 @@ import (
 	"regexp"
 	"runtime"
 
-	"github.com/hacdias/caddy-hugo/tools/files"
+	"github.com/hacdias/caddy-hugo/utils/files"
 	"github.com/mitchellh/go-homedir"
 	"github.com/pivotal-golang/archiver/extractor"
 )

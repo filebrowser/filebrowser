@@ -1,135 +1,157 @@
 //go:generate go get github.com/jteeuwen/go-bindata
 //go:generate go install github.com/jteeuwen/go-bindata/go-bindata
-//go:generate go-bindata -debug -prefix assets/dist -pkg assets -o routes/assets/assets.go assets/dist/...
+//go:generate go-bindata -debug -pkg hugo -prefix "assets" -o binary.go assets/...
 
 // Package hugo makes the bridge between the static website generator Hugo
 // and the webserver Caddy, also providing an administrative user interface.
 package hugo
 
 import (
+	"log"
 	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/caddy-hugo/config"
-	"github.com/hacdias/caddy-hugo/routes/assets"
-	"github.com/hacdias/caddy-hugo/routes/browse"
-	"github.com/hacdias/caddy-hugo/routes/editor"
-	"github.com/hacdias/caddy-hugo/routes/errors"
-	"github.com/hacdias/caddy-hugo/routes/git"
-	"github.com/hacdias/caddy-hugo/tools/server"
+	"github.com/hacdias/caddy-filemanager"
+	"github.com/hacdias/caddy-filemanager/assets"
+	"github.com/hacdias/caddy-filemanager/directory"
+	"github.com/hacdias/caddy-filemanager/utils/variables"
+	"github.com/hacdias/caddy-hugo/utils/commands"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
-// Hugo contais the next middleware to be run and the configuration
-// of the current one.
+// Hugo is hugo
 type Hugo struct {
-	Next   httpserver.Handler
-	Config *config.Config
+	Next        httpserver.Handler
+	Config      *Config
+	FileManager *filemanager.FileManager
 }
 
-// ServeHTTP is the main function of the whole plugin that routes every single
-// request to its function.
+// ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
-	// Only handle /{admin} path
-	if httpserver.Path(r.URL.Path).Matches(h.Config.Admin) {
-		var err error
-		var page string
-		code := 404
-
-		// If the length of the components string is less than one, the variable
-		// page will always be "admin"
-		if len(server.ParseURLComponents(r)) > 1 {
-			page = server.ParseURLComponents(r)[1]
-		} else {
-			page = server.ParseURLComponents(r)[0]
+	// If the site matches the baseURL
+	if httpserver.Path(r.URL.Path).Matches(h.Config.BaseURL) {
+		// Serve the hugo assets
+		if httpserver.Path(r.URL.Path).Matches(h.Config.BaseURL + AssetsURL) {
+			return serveAssets(w, r, h.Config)
 		}
 
-		// If the page isn't "assets" neither "edit", it should always put a
-		// trailing slash in the path
-		if page != "assets" && page != "edit" {
-			if r.URL.Path[len(r.URL.Path)-1] != '/' {
-				http.Redirect(w, r, r.URL.Path+"/", http.StatusTemporaryRedirect)
-				return 0, nil
-			}
-		}
-
-		// If the current page is only "/{admin}/", redirect to "/{admin}/browse/content/"
-		if r.URL.Path == h.Config.Admin+"/" {
-			http.Redirect(w, r, h.Config.Admin+"/browse/content/", http.StatusTemporaryRedirect)
-			return 0, nil
+		// Serve the filemanager assets
+		if httpserver.Path(r.URL.Path).Matches(h.Config.BaseURL + assets.BaseURL) {
+			return h.FileManager.ServeHTTP(w, r)
 		}
 
 		// If the url matches exactly with /{admin}/settings/ serve that page
 		// page variable isn't used here to avoid people using URLs like
 		// "/{admin}/settings/something".
-		if r.URL.Path == h.Config.Admin+"/settings/" {
+		if r.URL.Path == h.Config.BaseURL+"/settings/" || r.URL.Path == h.Config.BaseURL+"/settings" {
 			var frontmatter string
+			var err error
 
-			if _, err = os.Stat(h.Config.Path + "config.yaml"); err == nil {
+			if _, err = os.Stat(h.Config.Root + "config.yaml"); err == nil {
 				frontmatter = "yaml"
 			}
 
-			if _, err = os.Stat(h.Config.Path + "config.json"); err == nil {
+			if _, err = os.Stat(h.Config.Root + "config.json"); err == nil {
 				frontmatter = "json"
 			}
 
-			if _, err = os.Stat(h.Config.Path + "config.toml"); err == nil {
+			if _, err = os.Stat(h.Config.Root + "config.toml"); err == nil {
 				frontmatter = "toml"
 			}
 
-			http.Redirect(w, r, h.Config.Admin+"/edit/config."+frontmatter, http.StatusTemporaryRedirect)
+			http.Redirect(w, r, h.Config.BaseURL+"/config."+frontmatter, http.StatusTemporaryRedirect)
 			return 0, nil
 		}
 
-		// Serve the static assets
-		if page == "assets" {
-			code, err = serveAssets(w, r, h.Config)
+		if r.Method == http.MethodPost && r.Header.Get("archetype") != "" {
+			filename := r.Header.Get("Filename")
+			archetype := r.Header.Get("archetype")
+
+			if !strings.HasSuffix(filename, ".md") && !strings.HasSuffix(filename, ".markdown") {
+				return h.FileManager.ServeHTTP(w, r)
+			}
+
+			filename = strings.Replace(r.URL.Path, h.Config.BaseURL+"/content/", "", 1) + filename
+			filename = filepath.Clean(filename)
+
+			args := []string{"new", filename, "--kind", archetype}
+
+			if err := commands.Run(h.Config.Hugo, args, h.Config.Root); err != nil {
+				return http.StatusInternalServerError, err
+			}
+
+			return http.StatusOK, nil
 		}
 
-		// Browse page
-		if page == "browse" {
-			code, err = browse.ServeHTTP(w, r, h.Config)
+		if directory.CanBeEdited(r.URL.Path) && r.Method == http.MethodPut {
+			code, err := h.FileManager.ServeHTTP(w, r)
+
+			if err != nil {
+				return code, err
+			}
+
+			if r.Header.Get("Regenerate") == "true" {
+				RunHugo(h.Config, false)
+			}
+
+			if r.Header.Get("Schedule") != "" {
+				code, err = Schedule(w, r, h.Config)
+			}
+
+			return code, err
 		}
 
-		// Edit page
-		if page == "edit" {
-			code, err = editor.ServeHTTP(w, r, h.Config)
-		}
-
-		// Git API
-		if page == "git" {
-			code, err = git.ServeHTTP(w, r, h.Config)
-		}
-
-		if code != 0 && code != 200 {
-			code, err = errors.ServeHTTP(w, r, code, err)
-		}
-
-		return code, err
+		return h.FileManager.ServeHTTP(w, r)
 	}
 
 	return h.Next.ServeHTTP(w, r)
 }
 
-// serveAssets handles the /{admin}/assets requests
-func serveAssets(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
-	filename := strings.Replace(r.URL.Path, c.Admin+"/assets", "public", 1)
-	file, err := assets.Asset(filename)
+// RunHugo is used to run the static website generator
+func RunHugo(c *Config, force bool) {
+	os.RemoveAll(c.Root + "public")
 
-	if err != nil {
-		return 404, nil
+	// Prevent running if watching is enabled
+	if b, pos := variables.StringInSlice("--watch", c.Args); b && !force {
+		if len(c.Args) > pos && c.Args[pos+1] != "false" {
+			return
+		}
+
+		if len(c.Args) == pos+1 {
+			return
+		}
 	}
 
-	// Get the file extension ant its mime type
+	if err := commands.Run(c.Hugo, c.Args, c.Root); err != nil {
+		log.Panic(err)
+	}
+}
+
+// Schedule schedules a post to be published later
+func Schedule(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+	// TODO: this
+	return http.StatusOK, nil
+}
+
+// serveAssets provides the needed assets for the front-end
+func serveAssets(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+	// gets the filename to be used with Assets function
+	filename := strings.Replace(r.URL.Path, c.BaseURL+AssetsURL, "public", 1)
+	file, err := Asset(filename)
+	if err != nil {
+		return http.StatusNotFound, nil
+	}
+
+	// Get the file extension and its mimetype
 	extension := filepath.Ext(filename)
-	mime := mime.TypeByExtension(extension)
+	mediatype := mime.TypeByExtension(extension)
 
 	// Write the header with the Content-Type and write the file
 	// content to the buffer
-	w.Header().Set("Content-Type", mime)
+	w.Header().Set("Content-Type", mediatype)
 	w.Write(file)
 	return 200, nil
 }

@@ -8,6 +8,8 @@
 [Hugo](http://gohugo.io/) is an easy to use and fast command line static website generator, while [Caddy](http://caddyserver.com) is a lightweight, fast, general-purpose, cross-platform HTTP/2 web server with automatic HTTPS. This extension is able to bring a web interface to Caddy to manage Hugo generated websites. This plugin provides you an web interface to manage your websites made with Hugo.
 
 **If you're not developer go to the [documentation](https://caddyserver.com/docs/hugo)**.
+<<<<<<< HEAD
+=======
 
 ## Build from source
 
@@ -35,3 +37,4 @@ Instructions:
 [2]: https://github.com/caddyserver/caddydev
 [3]: https://github.com/jteeuwen/go-bindata
 [4]: https://nodejs.org
+>>>>>>> master
