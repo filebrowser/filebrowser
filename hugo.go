@@ -67,8 +67,23 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 		}
 
 		if r.Method == http.MethodPost && r.Header.Get("archetype") != "" {
-			// TODO: this
-			return 0, nil
+			filename := r.Header.Get("Filename")
+			archetype := r.Header.Get("archetype")
+
+			if !strings.HasSuffix(filename, ".md") && !strings.HasSuffix(filename, ".markdown") {
+				return h.FileManager.ServeHTTP(w, r)
+			}
+
+			filename = strings.Replace(r.URL.Path, h.Config.BaseURL+"/content/", "", 1) + filename
+			filename = filepath.Clean(filename)
+
+			args := []string{"new", filename, "--kind", archetype}
+
+			if err := commands.Run(h.Config.Hugo, args, h.Config.Root); err != nil {
+				return http.StatusInternalServerError, err
+			}
+
+			return http.StatusOK, nil
 		}
 
 		if directory.CanBeEdited(r.URL.Path) && r.Method == http.MethodPut {
