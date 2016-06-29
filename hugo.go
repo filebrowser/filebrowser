@@ -67,7 +67,7 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 		}
 
 		if r.Method == http.MethodPost && r.Header.Get("archetype") != "" {
-
+			// TODO: this
 			return 0, nil
 		}
 
@@ -83,7 +83,7 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 			}
 
 			if r.Header.Get("Schedule") != "" {
-
+				code, err = Schedule(w, r, h.Config)
 			}
 
 			return code, err
@@ -113,6 +113,12 @@ func RunHugo(c *Config, force bool) {
 	if err := commands.Run(c.Hugo, c.Args, c.Root); err != nil {
 		log.Panic(err)
 	}
+}
+
+// Schedule schedules a post to be published later
+func Schedule(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
+	// TODO: this
+	return http.StatusOK, nil
 }
 
 // serveAssets provides the needed assets for the front-end
