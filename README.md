@@ -8,8 +8,9 @@ This package is a plugin for Caddy server that provides an online file manager (
 
 ```
 filemanager {
-  show    path
-  on      url
-  styles  filepath
+  show          path
+  on            url
+  styles        filepath
+  frontmatter   type
 }
 ```
