@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -44,7 +45,7 @@ func (i *Info) Update(w http.ResponseWriter, r *http.Request, c *config.Config) 
 		mainContent = strings.TrimSpace(mainContent)
 		file = []byte(mainContent)
 	case "complete":
-		if file, code, err = parseCompleteFile(data, i.Name); err != nil {
+		if file, code, err = parseCompleteFile(data, i.Name, c.FrontMatter); err != nil {
 			return http.StatusInternalServerError, err
 		}
 	default:
@@ -63,6 +64,10 @@ func (i *Info) Update(w http.ResponseWriter, r *http.Request, c *config.Config) 
 
 func parseFrontMatterOnlyFile(data interface{}, filename string) ([]byte, int, error) {
 	frontmatter := strings.TrimPrefix(filepath.Ext(filename), ".")
+	return parseFrontMatter(data, frontmatter)
+}
+
+func parseFrontMatter(data interface{}, frontmatter string) ([]byte, int, error) {
 	var mark rune
 
 	switch frontmatter {
@@ -99,32 +104,32 @@ func parseFrontMatterOnlyFile(data interface{}, filename string) ([]byte, int, e
 	return f, http.StatusOK, nil
 }
 
-func parseCompleteFile(data map[string]interface{}, filename string) ([]byte, int, error) {
-	// The main content of the file
-	mainContent := data["content"].(string)
-	mainContent = "\n\n" + strings.TrimSpace(mainContent) + "\n"
+func parseCompleteFile(data map[string]interface{}, filename string, frontmatter string) ([]byte, int, error) {
+	mainContent := ""
 
-	// Removes the main content from the rest of the frontmatter
-	delete(data, "content")
+	if _, ok := data["content"]; ok {
+		// The main content of the file
+		mainContent = data["content"].(string)
+		mainContent = "\n\n" + strings.TrimSpace(mainContent) + "\n"
+
+		// Removes the main content from the rest of the frontmatter
+		delete(data, "content")
+	}
 
 	if _, ok := data["date"]; ok {
 		data["date"] = data["date"].(string) + ":00"
 	}
 
-	// Converts the frontmatter in JSON
-	jsonFrontmatter, err := json.Marshal(data)
+	front, code, err := parseFrontMatter(data, frontmatter)
 
 	if err != nil {
-		return []byte{}, http.StatusInternalServerError, err
+		fmt.Println(frontmatter)
+		return []byte{}, code, err
 	}
-
-	// Indents the json
-	frontMatterBuffer := new(bytes.Buffer)
-	json.Indent(frontMatterBuffer, jsonFrontmatter, "", "  ")
 
 	// Generates the final file
 	f := new(bytes.Buffer)
-	f.Write(frontMatterBuffer.Bytes())
+	f.Write(front)
 	f.Write([]byte(mainContent))
 	return f.Bytes(), http.StatusOK, nil
 }

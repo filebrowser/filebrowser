@@ -15,6 +15,7 @@ type Config struct {
 	Root        http.FileSystem
 	BaseURL     string
 	StyleSheet  string // Costum stylesheet
+	FrontMatter string // Default frontmatter to save files in
 	HugoEnabled bool   // Enables the Hugo plugin for File Manager
 }
 
@@ -34,7 +35,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 	}
 
 	for c.Next() {
-		var cfg = Config{PathScope: ".", BaseURL: "", HugoEnabled: false}
+		var cfg = Config{PathScope: ".", BaseURL: "", FrontMatter: "json", HugoEnabled: false}
 		for c.NextBlock() {
 			switch c.Val() {
 			case "show":
