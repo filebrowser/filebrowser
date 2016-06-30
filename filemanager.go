@@ -98,7 +98,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				// VCS commands
 				if r.Header.Get("Command") != "" {
 					// TODO: not implemented on frontend
-					vcsCommand(w, r, c)
+					return vcsCommand(w, r, c)
 				}
 				// Creates a new folder
 				// TODO: not implemented on frontend
@@ -209,8 +209,11 @@ func vcsCommand(w http.ResponseWriter, r *http.Request, c *config.Config) (int, 
 		return http.StatusNotImplemented, nil
 	}
 
+	path := strings.Replace(r.URL.Path, c.BaseURL, c.PathScope, 1)
+	path = filepath.Clean(path)
+
 	cmd := exec.Command(command[0], command[1:len(command)]...)
-	cmd.Dir = c.PathScope
+	cmd.Dir = path
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {

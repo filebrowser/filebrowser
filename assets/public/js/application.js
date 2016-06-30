@@ -403,6 +403,50 @@ document.addEventListener("changed-selected", function(event) {
     return false;
 });
 
+var searchEvent = function(event) {
+    let value = this.value;
+    let box = document.querySelector('#search div');
+
+    if (value.length == 0) {
+        box.innerHTML = "Write your git, mercurial or svn command and press enter.";
+        return;
+    }
+
+    let pieces = value.split(' ');
+
+    if (pieces[0] != "git" && pieces[0] != "hg" && pieces[0] != "svn") {
+        box.innerHTML = "Command not supported."
+        return;
+    }
+
+    box.innerHTML = "Press enter to continue."
+
+    if (event.keyCode == 13) {
+        let request = new XMLHttpRequest();
+        request.open('POST', window.location);
+        request.setRequestHeader('Command', value);
+        request.send();
+        request.onreadystatechange = function() {
+            if (request.readyState == 4) {
+                if (request.status == 501) {
+                    box.innerHTML = "Command not implemented."
+                }
+
+                if (request.status == 500) {
+                    box.innerHTML = "Something went wrong."
+                }
+
+                if (request.status == 200) {
+                    let text = request.responseText;
+                    text = text.substring(1, text.length - 1);
+                    text = text.replace('\\n', "\n");
+                    box.innerHTML = text;
+                }
+            }
+        }
+    }
+}
+
 document.addEventListener('listing', event => {
     // Handle date times
     let timeList = document.getElementsByTagName("time");
@@ -425,6 +469,17 @@ document.addEventListener('listing', event => {
             backEvent(event);
         }
     });
+
+    document.querySelector('#search input').addEventListener('focus', event => {
+        document.getElementById('search').classList.add('active');
+    });
+
+    document.querySelector('#search input').addEventListener('blur', event => {
+        document.getElementById('search').classList.remove('active');
+        document.querySelector('#search input').value = '';
+    });
+
+    document.querySelector('#search input').addEventListener('keyup', searchEvent);
 
     // Enables upload button
     document.getElementById("upload").addEventListener("click", (event) => {

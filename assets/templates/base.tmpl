@@ -39,12 +39,13 @@
 
    <div>
     {{ if .IsDir}}
-     <!--
-     <form>
-        <i class="material-icons">search</i>
-        <input type="text" placeholder="Search or command">
-    </form>
-    -->
+
+    <div id="search">
+        <i class="material-icons">storage</i>
+        <input type="text" placeholder="Execute a command...">
+        <div>Write your git, mercurial or svn command and press enter.</div>
+    </div>
+
      <div class="action" id="view">
       <i class="material-icons">view_headline</i>
      </div>
