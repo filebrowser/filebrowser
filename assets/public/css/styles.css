@@ -555,24 +555,30 @@ header #search div {
     opacity: 0;
 }
 
-header #search ::-webkit-input-placeholder {
+header #search.active div i {
+    color: #ccc;
+    display: block;
+    text-align: center;
+}
+
+header #search::-webkit-input-placeholder {
     /* WebKit, Blink, Edge */
     color: rgba(255, 255, 255, .5);
 }
 
-header #search :-moz-placeholder {
+header #search:-moz-placeholder {
     opacity: 1;
     /* Mozilla Firefox 4 to 18 */
     color: rgba(255, 255, 255, .5);
 }
 
-header #search ::-moz-placeholder {
+header #search::-moz-placeholder {
     opacity: 1;
     /* Mozilla Firefox 19+ */
     color: rgba(255, 255, 255, .5);
 }
 
-header #search :-ms-input-placeholder {
+header #search:-ms-input-placeholder {
     /* Internet Explorer 10-11 */
     color: rgba(255, 255, 255, .5);
 }

@@ -171,6 +171,23 @@ var RemoveLastDirectoryPartOf = function(url) {
  *                             *
  * * * * * * * * * * * * * * * */
 
+var reloadListing = function() {
+    let request = new XMLHttpRequest();
+    request.open('GET', window.location);
+    request.setRequestHeader('Minimal', 'true');
+    request.send();
+    request.onreadystatechange = function() {
+        if (request.readyState == 4) {
+            if (request.status == 200) {
+                document.querySelector('body main').innerHTML = request.responseText;
+                // Handle date times
+                let timeList = document.getElementsByTagName("time");
+                Array.from(timeList).forEach(localizeDatetime);
+            }
+        }
+    }
+}
+
 // Rename file event
 var renameEvent = function(event) {
     if (this.classList.contains('disabled') || !selectedItems.length) {
@@ -261,7 +278,7 @@ var handleFiles = function(files) {
     request.onreadystatechange = function() {
         if (request.readyState == 4) {
             if (request.status == 200) {
-                history.go(0);
+                reloadListing();
             }
 
             button.changeToDone((request.status != 200), html);
@@ -370,7 +387,7 @@ var newDirEvent = function(event) {
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
                 button.changeToDone((request.status != 200), html);
-                history.go(0);
+                reloadListing();
             }
         }
 
@@ -422,6 +439,8 @@ var searchEvent = function(event) {
     box.innerHTML = "Press enter to continue."
 
     if (event.keyCode == 13) {
+        box.innerHTML = '<i class="material-icons spin">autorenew</i>';
+
         let request = new XMLHttpRequest();
         request.open('POST', window.location);
         request.setRequestHeader('Command', value);
@@ -441,6 +460,7 @@ var searchEvent = function(event) {
                     text = text.substring(1, text.length - 1);
                     text = text.replace('\\n', "\n");
                     box.innerHTML = text;
+                    reloadListing();
                 }
             }
         }

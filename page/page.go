@@ -16,6 +16,7 @@ import (
 // Page contains the informations and functions needed to show the page
 type Page struct {
 	*Info
+	Minimal bool
 }
 
 // Info contains the information of a page
@@ -78,7 +79,12 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 		"Defined":         variables.Defined,
 	}
 
-	templates = append(templates, "actions", "base")
+	if p.Minimal {
+		templates = append(templates, "actions", "minimal")
+	} else {
+		templates = append(templates, "actions", "base")
+	}
+
 	var tpl *template.Template
 
 	// For each template, add it to the the tpl variable

@@ -235,6 +235,10 @@ func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Co
 		},
 	}
 
+	if r.Header.Get("Minimal") == "true" {
+		page.Minimal = true
+	}
+
 	return page.PrintAsHTML(w, "listing")
 }
 
