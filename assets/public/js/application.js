@@ -511,8 +511,12 @@ document.addEventListener('listing', event => {
 
     document.getElementById('new').addEventListener('click', event => {
         let newdir = document.getElementById('newdir');
-        newdir.classList.toggle('enabled');
+        newdir.classList.add('enabled');
         newdir.focus();
+    });
+
+    document.getElementById('newdir').addEventListener('blur', event => {
+        document.getElementById('newdir').classList.remove('enabled');
     });
 
     document.getElementById('newdir').addEventListener('keydown', newDirEvent);
