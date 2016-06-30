@@ -7,23 +7,26 @@
 package hugo
 
 import (
+	"bytes"
 	"io/ioutil"
 	"log"
 	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"time"
 
 	"github.com/hacdias/caddy-filemanager"
 	"github.com/hacdias/caddy-filemanager/assets"
 	"github.com/hacdias/caddy-filemanager/directory"
+	"github.com/hacdias/caddy-filemanager/frontmatter"
 	"github.com/hacdias/caddy-filemanager/utils/variables"
 	"github.com/hacdias/caddy-hugo/utils/commands"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 	"github.com/robfig/cron"
-	"github.com/spf13/cast"
+	"github.com/spf13/hugo/parser"
 )
 
 // Hugo is hugo
@@ -102,7 +105,7 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 			}
 
 			if r.Header.Get("Schedule") != "" {
-				code, err = Schedule(w, r, h.Config)
+				code, err = h.Schedule(w, r)
 			}
 
 			return code, err
@@ -135,15 +138,17 @@ func RunHugo(c *Config, force bool) {
 }
 
 // Schedule schedules a post to be published later
-func Schedule(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
-	// TODO: this
+func (h Hugo) Schedule(w http.ResponseWriter, r *http.Request) (int, error) {
+	t, err := time.Parse("2006-01-02T15:04", r.Header.Get("Schedule"))
 
-	t := cast.ToTime(r.Header.Get("Date"))
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
 
 	scheduler := cron.New()
-	scheduler.AddFunc(t.In(time.Now().Location()).Format("05 04 15 02 01 *"), func() {
+	scheduler.AddFunc(t.Format("05 04 15 02 01 *"), func() {
 		filename := r.URL.Path
-		filename = strings.Replace(filename, c.BaseURL, c.Root, 1)
+		filename = strings.Replace(filename, h.Config.BaseURL, h.Config.Root, 1)
 		filename = filepath.Clean(filename)
 
 		raw, err := ioutil.ReadFile(filename)
@@ -152,39 +157,52 @@ func Schedule(w http.ResponseWriter, r *http.Request, c *Config) (int, error) {
 			return
 		}
 
-	})
-	scheduler.Start()
-
-	/*
-		// Set draft to false
-		data.Content["draft"] = false
-
-		// Converts the frontmatter in JSON
-		jsonFrontmatter, err := json.Marshal(data.Content)
+		buffer := bytes.NewBuffer(raw)
+		page, err := parser.ReadFrom(buffer)
 
 		if err != nil {
+			log.Println(err)
 			return
 		}
 
-		// Indents the json
-		frontMatterBuffer := new(bytes.Buffer)
-		json.Indent(frontMatterBuffer, jsonFrontmatter, "", "  ")
+		content := strings.TrimSpace(string(page.Content()))
+		front, err := frontmatter.Unmarshal(page.FrontMatter())
 
-		// Generates the final file
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		kind := reflect.TypeOf(front)
+
+		if kind == reflect.TypeOf(map[interface{}]interface{}{}) {
+			delete(front.(map[interface{}]interface{}), "draft")
+			delete(front.(map[interface{}]interface{}), "Draft")
+		} else {
+			delete(front.(map[string]interface{}), "draft")
+			delete(front.(map[string]interface{}), "Draft")
+		}
+
+		fm, _, err := directory.ParseFrontMatter(front, h.FileManager.Configs[0].FrontMatter)
+
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
 		f := new(bytes.Buffer)
-		f.Write(frontMatterBuffer.Bytes())
-		f.Write([]byte(mainContent))
+		f.Write(fm)
+		f.Write([]byte(content))
 		file := f.Bytes()
 
-		// Write the file
 		if err = ioutil.WriteFile(filename, file, 0666); err != nil {
 			return
 		}
 
-		go hugo.Run(c, false)
+		RunHugo(h.Config, false)
+	})
+	scheduler.Start()
 
-
-	*/
 	return http.StatusOK, nil
 }
 
