@@ -59,7 +59,7 @@ Element.prototype.changeToDone = function(error, html) {
         this.innerHTML = html;
         this.style.opacity = 1;
 
-        if (selectedItems.length == 0) {
+        if (selectedItems.length == 0 && document.getElementById('listing')) {
             document.sendCostumEvent('changed-selected');
         }
     }
@@ -380,7 +380,6 @@ var newDirEvent = function(event) {
 document.addEventListener("changed-selected", function(event) {
     var toolbar = document.getElementById("toolbar");
     var selectedNumber = selectedItems.length;
-
     document.getElementById("selected-number").innerHTML = selectedNumber;
 
     if (selectedNumber) {
