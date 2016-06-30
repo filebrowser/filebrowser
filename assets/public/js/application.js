@@ -286,14 +286,15 @@ var backEvent = function(event) {
 
 // Handles the click event
 var itemClickEvent = function(event) {
-    var url = this.getElementsByTagName('a')[0].getAttribute('href');
+    var url = this.dataset.href;
+    var el = document.getElementById(url);
 
     if (selectedItems.length != 0) event.preventDefault();
     if (selectedItems.indexOf(url) == -1) {
-        this.classList.add('selected');
+        el.classList.add('selected');
         selectedItems.push(url);
     } else {
-        this.classList.remove('selected');
+        el.classList.remove('selected');
         selectedItems.removeElement(url);
     }
 
@@ -412,7 +413,7 @@ document.addEventListener('listing', event => {
     document.getElementById("view").addEventListener("click", viewEvent);
 
     // Add event to items
-    let items = document.getElementsByClassName('item');
+    let items = document.getElementsByClassName('checkbox');
     Array.from(items).forEach(link => {
         link.addEventListener('click', itemClickEvent);
     });

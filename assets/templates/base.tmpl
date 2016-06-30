@@ -20,7 +20,7 @@
     {{ if ne $lnk ""}}
      <a href="{{ $lnk }}">
      {{ end }}
-     <div class="action{{ if eq $lnk " "}} disabled{{ end }}" id="prev">
+     <div class="action{{ if eq $lnk ""}} disabled{{ end }}" id="prev">
       <i class="material-icons">subdirectory_arrow_left</i>
      </div>
      {{ if ne $lnk ""}}
@@ -28,7 +28,7 @@
     {{ end }}
 
     <p>
-     <a href="{{ if eq .Config.BaseURL " " }}/{{ else }}{{ .Config.BaseURL }}{{ end }}">
+     <a href="{{ if eq .Config.BaseURL "" }}/{{ else }}{{ .Config.BaseURL }}{{ end }}">
       {{ if .Config.HugoEnabled }}Hugo{{ else }}File Manager{{ end }}
      </a>
      {{ if ne .Name "/"}}

@@ -693,14 +693,28 @@ header div:nth-child(2) {
     position: relative;
 }
 
+#listing .item:hover .checkbox {
+    opacity: 1;
+}
+
 #listing .item .checkbox {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: -.9em;
+    right: -.9em;
     border-radius: 50%;
-    background: #000;
+    background: #fff;
     border: 0;
     -webkit-appearance: initial;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .12);
+    line-height: 0;
+    padding: .4em;
+    transition: .2s ease all;
+    opacity: 0;
+}
+
+#listing .checkbox i {
+    font-size: 1em;
+    margin: 0;
 }
 
 .item:hover {
