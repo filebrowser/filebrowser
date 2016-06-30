@@ -1,6 +1,6 @@
 //go:generate go get github.com/jteeuwen/go-bindata
 //go:generate go install github.com/jteeuwen/go-bindata/go-bindata
-//go:generate go-bindata -debug -pkg hugo -prefix "assets" -o binary.go assets/...
+//go:generate go-bindata -pkg hugo -prefix "assets" -o binary.go assets/...
 
 // Package hugo makes the bridge between the static website generator Hugo
 // and the webserver Caddy, also providing an administrative user interface.
