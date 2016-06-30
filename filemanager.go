@@ -97,11 +97,9 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				}
 				// VCS commands
 				if r.Header.Get("Command") != "" {
-					// TODO: not implemented on frontend
 					return vcsCommand(w, r, c)
 				}
 				// Creates a new folder
-				// TODO: not implemented on frontend
 				return newDirectory(w, r, c)
 			case http.MethodDelete:
 				// Delete a file or a directory
