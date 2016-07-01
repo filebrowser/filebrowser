@@ -27,6 +27,10 @@
      </a>
     {{ end }}
 
+    <div class="action" id="open-nav">
+        <i class="material-icons">menu</i>
+    </div>
+
     <p>
      <a href="{{ if eq .Config.BaseURL "" }}/{{ else }}{{ .Config.BaseURL }}{{ end }}">
       {{ if .Config.HugoEnabled }}Hugo{{ else }}File Manager{{ end }}
@@ -38,27 +42,7 @@
    </div>
 
    <div>
-    {{ if .IsDir}}
-
-    <div id="search">
-        <i class="material-icons">storage</i>
-        <input type="text" placeholder="Execute a command...">
-        <div>Write your git, mercurial or svn command and press enter.</div>
-    </div>
-
-     <div class="action" id="view">
-      <i class="material-icons">view_headline</i>
-     </div>
-     <div class="action" id="upload">
-      <i class="material-icons">file_upload</i>
-     </div>
-     {{ else }}
-     {{ template "actions" . }}
-    {{ end }}
-
-    <div class="action" id="logout">
-     <i class="material-icons">exit_to_app</i>
-    </div>
+       {{ template "buttons" . }}
    </div>
   </header>
 

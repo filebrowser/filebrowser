@@ -357,11 +357,11 @@ var handleViewType = function(viewList) {
 
     if (viewList == "true") {
         listing.classList.add('list');
-        button.innerHTML = '<i class="material-icons">view_module</i>';
+        button.innerHTML = '<i class="material-icons">view_module</i> <span>Switch view</span>';
         return false;
     }
 
-    button.innerHTML = '<i class="material-icons">view_list</i>';
+    button.innerHTML = '<i class="material-icons">view_list</i> <span>Switch view</span>';
     listing.classList.remove('list');
     return false;
 }
@@ -766,6 +766,7 @@ document.addEventListener("editor", (event) => {
  *           BOOTSTRAP         *
  *                             *
  * * * * * * * * * * * * * * * */
+
 document.addEventListener("DOMContentLoaded", function(event) {
     // Add event to logout button
     document.getElementById("logout").addEventListener("click", event => {
@@ -783,6 +784,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
     document.getElementById("open").addEventListener("click", openEvent);
     document.getElementById("delete").addEventListener("click", deleteEvent);
     document.getElementById("download").addEventListener("click", downloadEvent);
+    document.getElementById("open-nav").addEventListener("click", event => {
+        let sidebar = document.querySelector("header > div:nth-child(2)").classList.toggle("active");
+    });
 
     if (document.getElementById('listing')) {
         document.sendCostumEvent('listing');

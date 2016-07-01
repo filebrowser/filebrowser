@@ -8,6 +8,7 @@
 // assets/public/js/form2js.js
 // assets/templates/actions.tmpl
 // assets/templates/base.tmpl
+// assets/templates/buttons.tmpl
 // assets/templates/editor.tmpl
 // assets/templates/frontmatter.tmpl
 // assets/templates/listing.tmpl
@@ -183,6 +184,24 @@ func templatesBaseTmpl() (*asset, error) {
 	return a, err
 }
 
+// templatesButtonsTmpl reads file data from disk. It returns an error on failure.
+func templatesButtonsTmpl() (*asset, error) {
+	path := "D:\\Code\\Go\\src\\github.com\\hacdias\\caddy-filemanager\\assets\\templates\\buttons.tmpl"
+	name := "templates/buttons.tmpl"
+	bytes, err := bindataRead(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // templatesEditorTmpl reads file data from disk. It returns an error on failure.
 func templatesEditorTmpl() (*asset, error) {
 	path := "D:\\Code\\Go\\src\\github.com\\hacdias\\caddy-filemanager\\assets\\templates\\editor.tmpl"
@@ -333,6 +352,7 @@ var _bindata = map[string]func() (*asset, error){
 	"public/js/form2js.js": publicJsForm2jsJs,
 	"templates/actions.tmpl": templatesActionsTmpl,
 	"templates/base.tmpl": templatesBaseTmpl,
+	"templates/buttons.tmpl": templatesButtonsTmpl,
 	"templates/editor.tmpl": templatesEditorTmpl,
 	"templates/frontmatter.tmpl": templatesFrontmatterTmpl,
 	"templates/listing.tmpl": templatesListingTmpl,
@@ -395,6 +415,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"templates": &bintree{nil, map[string]*bintree{
 		"actions.tmpl": &bintree{templatesActionsTmpl, map[string]*bintree{}},
 		"base.tmpl": &bintree{templatesBaseTmpl, map[string]*bintree{}},
+		"buttons.tmpl": &bintree{templatesButtonsTmpl, map[string]*bintree{}},
 		"editor.tmpl": &bintree{templatesEditorTmpl, map[string]*bintree{}},
 		"frontmatter.tmpl": &bintree{templatesFrontmatterTmpl, map[string]*bintree{}},
 		"listing.tmpl": &bintree{templatesListingTmpl, map[string]*bintree{}},
