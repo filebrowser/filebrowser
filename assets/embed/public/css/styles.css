@@ -593,6 +593,7 @@ header {
     width: 100%;
     padding: 0.5em;
     color: #fff;
+    max-height: 4em;
 }
 
 #toolbar div,
@@ -1036,11 +1037,11 @@ i.spin {
         height: auto;
         background-color: transparent;
         color: #212121;
-        padding: 0;
         border-bottom: 1px solid #eee;
         border-radius: 0;
         display: block;
         width: 100%;
+        padding: .5em 0;
         text-align: left;
     }
     header #search input {
@@ -1050,7 +1051,7 @@ i.spin {
         min-width: 0;
     }
     header #search i {
-        color: #212121;
+        color: #6f6f6f;
         display: inline-block;
         padding: .5em;
         margin: 0;
@@ -1060,13 +1061,17 @@ i.spin {
     }
     header> div:nth-child(2) .action {
         border-radius: 0 !important;
-        padding: 0 !important;
+        padding: .5em 0 !important;
         margin: 0 !important;
         text-align: left;
         background-color: transparent !important;
     }
     header> div:nth-child(2) #prev {
         border-radius: 50% !important;
+        padding: 0 !important;
+    }
+    header> div:nth-child(2) #prev i {
+        color: #fff;
     }
     header> div:nth-child(2) .action:hover {
         background-color: rgba(0, 0, 0, .1) !important;
@@ -1076,6 +1081,7 @@ i.spin {
     }
     header> div:nth-child(2) .action i {
         border-radius: 0;
+        color: #6f6f6f;
     }
     header> div:nth-child(2) .action span {}
     header> div:nth-child(2) .action i,
@@ -1089,6 +1095,9 @@ i.spin {
     header> div:first-child p a,
     header> div:first-child p i {
         display: none !important;
+    }
+    header> div:first-child p {
+        font-size: 1em;
     }
     #editor .frontmatter {
         column-count: 1;
