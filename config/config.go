@@ -16,6 +16,7 @@ type Config struct {
 	Root        http.FileSystem
 	BaseURL     string
 	AbsoluteURL string
+	AddrPath    string
 	StyleSheet  string // Costum stylesheet
 	FrontMatter string // Default frontmatter to save files in
 	HugoEnabled bool   // Enables the Hugo plugin for File Manager
@@ -77,7 +78,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		caddyConf := httpserver.GetConfig(c)
 		cfg.AbsoluteURL = caddyConf.Addr.Path + "/" + cfg.BaseURL
 		cfg.AbsoluteURL = strings.Replace(cfg.AbsoluteURL, "//", "/", -1)
-
+		cfg.AddrPath = strings.TrimSuffix(caddyConf.Addr.Path, "/")
 		cfg.Root = http.Dir(cfg.PathScope)
 		if err := appendConfig(cfg); err != nil {
 			return configs, err

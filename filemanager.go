@@ -54,7 +54,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				}
 
 				if fi.IsDir && !strings.HasSuffix(r.URL.Path, "/") {
-					http.Redirect(w, r, r.URL.Path+"/", http.StatusTemporaryRedirect)
+					http.Redirect(w, r, c.AddrPath+r.URL.Path+"/", http.StatusTemporaryRedirect)
 					return 0, nil
 				}
 			}
