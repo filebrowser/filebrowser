@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" href="{{ .Config.BaseURL }}/_filemanagerinternal/css/styles.css">
+  <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_filemanagerinternal/css/styles.css">
 
   {{ if ne .Config.StyleSheet "" }}
    <style>
@@ -32,7 +32,7 @@
     </div>
 
     <p>
-     <a href="{{ if eq .Config.BaseURL "" }}/{{ else }}{{ .Config.BaseURL }}{{ end }}">
+     <a href="{{ if eq .Config.AbsoluteURL "" }}/{{ else }}{{ .Config.AbsoluteURL }}{{ end }}">
       {{ if .Config.HugoEnabled }}Hugo{{ else }}File Manager{{ end }}
      </a>
      {{ if ne .Name "/"}}
@@ -55,7 +55,7 @@
            {{ end }}
 
            <p>
-            <a href="{{ if eq .Config.BaseURL "" }}/{{ else }}{{ .Config.BaseURL }}{{ end }}">
+            <a href="{{ if eq .Config.AbsoluteURL "" }}/{{ else }}{{ .Config.AbsoluteURL }}{{ end }}">
              {{ if .Config.HugoEnabled }}Hugo{{ else }}File Manager{{ end }}
             </a>
             </p>
@@ -117,8 +117,8 @@
 
   <!-- SCRIPTS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
-  <script src="{{ .Config.BaseURL }}/_filemanagerinternal/js/form2js.js"></script>
-  <script src="{{ .Config.BaseURL }}/_filemanagerinternal/js/application.js"></script>
-  {{ if .Config.HugoEnabled }}<script src="{{ .Config.BaseURL }}/_hugointernal/js/application.js"></script>{{ end }}
+  <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/form2js.js"></script>
+  <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/application.js"></script>
+  {{ if .Config.HugoEnabled }}<script src="{{ .Config.AbsoluteURL }}/_hugointernal/js/application.js"></script>{{ end }}
  </body>
 </html>

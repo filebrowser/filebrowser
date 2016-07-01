@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/mholt/caddy"
+	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
 // Config is a configuration for browsing in a particualr path.
@@ -14,6 +15,7 @@ type Config struct {
 	PathScope   string
 	Root        http.FileSystem
 	BaseURL     string
+	AbsoluteURL string
 	StyleSheet  string // Costum stylesheet
 	FrontMatter string // Default frontmatter to save files in
 	HugoEnabled bool   // Enables the Hugo plugin for File Manager
@@ -71,6 +73,10 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				cfg.StyleSheet = string(tplBytes)
 			}
 		}
+
+		caddyConf := httpserver.GetConfig(c)
+		cfg.AbsoluteURL = caddyConf.Addr.Path + "/" + cfg.BaseURL
+		cfg.AbsoluteURL = strings.Replace(cfg.AbsoluteURL, "//", "/", -1)
 
 		cfg.Root = http.Dir(cfg.PathScope)
 		if err := appendConfig(cfg); err != nil {
