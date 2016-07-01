@@ -34,7 +34,7 @@ func setup(c *caddy.Controller) error {
 	cnf := httpserver.GetConfig(c)
 	conf, _ := parse(c, cnf.Root)
 
-	format := "config.toml"
+	format := "toml"
 
 	// Checks if there is an Hugo website in the path that is provided.
 	// If not, a new website will be created.
