@@ -477,8 +477,8 @@ document.addEventListener('listing', event => {
     document.getElementById("view").addEventListener("click", viewEvent);
 
     // Add event to items
-    let items = document.getElementsByClassName('checkbox');
-    Array.from(items).forEach(link => {
+    let checkboxes = document.getElementsByClassName('checkbox');
+    Array.from(checkboxes).forEach(link => {
         link.addEventListener('click', itemClickEvent);
     });
 
@@ -522,6 +522,7 @@ document.addEventListener('listing', event => {
     document.getElementById('newdir').addEventListener('keydown', newDirEvent);
 
     // Drag and Drop
+    let items = document.getElementsByClassName('item');
     document.addEventListener("dragover", function(event) {
         event.preventDefault();
     }, false);
