@@ -42,8 +42,48 @@
    </div>
 
    <div>
-       {{ template "buttons" . }}
+       <div class="only-side">
+           {{ $lnk := .PreviousLink }}
+           {{ if ne $lnk ""}}
+            <a href="{{ $lnk }}">
+            {{ end }}
+            <div class="action{{ if eq $lnk ""}} disabled{{ end }}" id="prev">
+             <i class="material-icons">subdirectory_arrow_left</i>
+            </div>
+            {{ if ne $lnk ""}}
+            </a>
+           {{ end }}
+
+           <p>
+            <a href="{{ if eq .Config.BaseURL "" }}/{{ else }}{{ .Config.BaseURL }}{{ end }}">
+             {{ if .Config.HugoEnabled }}Hugo{{ else }}File Manager{{ end }}
+            </a>
+            </p>
+       </div>
+
+       {{ if .IsDir}}
+
+       <div id="search">
+           <i class="material-icons">storage</i>
+           <input type="text" placeholder="Execute a command...">
+           <div>Write your git, mercurial or svn command and press enter.</div>
+       </div>
+
+        <div class="action" id="view">
+         <i class="material-icons">view_headline</i> <span>Switch view</span>
+        </div>
+        <div class="action" id="upload">
+         <i class="material-icons">file_upload</i> <span>Upload</span>
+        </div>
+        {{ else }}
+        {{ template "actions" . }}
+       {{ end }}
+
+       <div class="action" id="logout">
+        <i class="material-icons">exit_to_app</i> <span>Logout</span>
+       </div>
    </div>
+   <div id="overlay"></div>
   </header>
 
   {{ if .IsDir }}

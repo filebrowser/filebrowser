@@ -82,7 +82,7 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 	if p.Minimal {
 		templates = append(templates, "actions", "minimal")
 	} else {
-		templates = append(templates, "buttons", "actions", "base")
+		templates = append(templates, "actions", "base")
 	}
 
 	var tpl *template.Template

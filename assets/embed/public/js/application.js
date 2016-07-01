@@ -785,7 +785,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
     document.getElementById("delete").addEventListener("click", deleteEvent);
     document.getElementById("download").addEventListener("click", downloadEvent);
     document.getElementById("open-nav").addEventListener("click", event => {
-        let sidebar = document.querySelector("header > div:nth-child(2)").classList.toggle("active");
+        document.querySelector("header > div:nth-child(2)").classList.toggle("active");
+    });
+    document.getElementById("overlay").addEventListener("click", event => {
+        document.querySelector("header > div:nth-child(2)").classList.toggle("active");
     });
 
     if (document.getElementById('listing')) {
