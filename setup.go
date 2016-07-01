@@ -97,6 +97,7 @@ func setup(c *caddy.Controller) error {
 						Root:        http.Dir(conf.Root),
 						BaseURL:     conf.BaseURL,
 						AbsoluteURL: strings.Replace(cnf.Addr.Path+"/"+conf.BaseURL, "//", "/", -1),
+						AddrPath:    strings.TrimSuffix(cnf.Addr.Path, "/"),
 						StyleSheet:  conf.Styles,
 					},
 				},
