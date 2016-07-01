@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	"github.com/hacdias/caddy-filemanager"
@@ -76,8 +77,17 @@ func setup(c *caddy.Controller) error {
 		log.Panic(err)
 	}
 
-	if val, ok := f.(map[string]interface{})["metaDataFormat"]; ok {
-		format = val.(string)
+	kind := reflect.TypeOf(f)
+
+	if kind == reflect.TypeOf(map[interface{}]interface{}{}) {
+		if val, ok := f.(map[interface{}]interface{})["metaDataFormat"]; ok {
+			format = val.(string)
+		}
+
+	} else {
+		if val, ok := f.(map[string]interface{})["metaDataFormat"]; ok {
+			format = val.(string)
+		}
 	}
 
 	// Generates the Hugo website for the first time the plugin is activated.
