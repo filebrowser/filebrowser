@@ -96,6 +96,7 @@ func setup(c *caddy.Controller) error {
 						FrontMatter: format,
 						Root:        http.Dir(conf.Root),
 						BaseURL:     conf.BaseURL,
+						AbsoluteURL: strings.Replace(cnf.Addr.Path+"/"+conf.BaseURL, "//", "/", -1),
 						StyleSheet:  conf.Styles,
 					},
 				},
