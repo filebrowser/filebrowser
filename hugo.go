@@ -69,7 +69,7 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 				frontmatter = "toml"
 			}
 
-			http.Redirect(w, r, h.Config.BaseURL+"/config."+frontmatter, http.StatusTemporaryRedirect)
+			http.Redirect(w, r, h.FileManager.Configs[0].AbsoluteURL+"/config."+frontmatter, http.StatusTemporaryRedirect)
 			return 0, nil
 		}
 

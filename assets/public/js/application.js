@@ -1,7 +1,8 @@
 'use strict';
 
 document.addEventListener('DOMContentLoaded', event => {
-    document.getElementById('logout').insertAdjacentHTML('beforebegin', `<a href="/admin/settings/">
+    let link = document.querySelector('header > div:first-child a:first-child').getAttribute('href') + "/settings/"
+    document.getElementById('logout').insertAdjacentHTML('beforebegin', `<a href="${link}">
       <div class="action">
        <i class="material-icons">settings</i>
       </div>
