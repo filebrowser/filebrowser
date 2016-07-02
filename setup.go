@@ -1,6 +1,7 @@
 package hugo
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -59,7 +60,7 @@ func setup(c *caddy.Controller) error {
 	if create {
 		err := commands.Run(conf.Hugo, []string{"new", "site", conf.Root, "--force"}, ".")
 		if err != nil {
-			log.Panic(err)
+			log.Fatal(err)
 		}
 	}
 
@@ -67,26 +68,28 @@ func setup(c *caddy.Controller) error {
 	bytes, err := ioutil.ReadFile(filepath.Clean(conf.Root + "/config." + format))
 
 	if err != nil {
-		log.Panic(err)
-	}
-
-	bytes = directory.AppendFrontMatterRune(bytes, format)
-	f, err := frontmatter.Unmarshal(bytes)
-
-	if err != nil {
-		log.Panic(err)
-	}
-
-	kind := reflect.TypeOf(f)
-
-	if kind == reflect.TypeOf(map[interface{}]interface{}{}) {
-		if val, ok := f.(map[interface{}]interface{})["metaDataFormat"]; ok {
-			format = val.(string)
-		}
-
+		log.Println(err)
+		fmt.Printf("Can't get the default frontmatter from the configuration. %s will be used.\n", format)
 	} else {
-		if val, ok := f.(map[string]interface{})["metaDataFormat"]; ok {
-			format = val.(string)
+		bytes = directory.AppendFrontMatterRune(bytes, format)
+		f, err := frontmatter.Unmarshal(bytes)
+
+		if err != nil {
+			log.Println(err)
+			fmt.Printf("Can't get the default frontmatter from the configuration. %s will be used.\n", format)
+		} else {
+			kind := reflect.TypeOf(f)
+
+			if kind == reflect.TypeOf(map[interface{}]interface{}{}) {
+				if val, ok := f.(map[interface{}]interface{})["metaDataFormat"]; ok {
+					format = val.(string)
+				}
+
+			} else {
+				if val, ok := f.(map[string]interface{})["metaDataFormat"]; ok {
+					format = val.(string)
+				}
+			}
 		}
 	}
 

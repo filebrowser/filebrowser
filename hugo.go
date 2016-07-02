@@ -133,7 +133,7 @@ func RunHugo(c *Config, force bool) {
 	}
 
 	if err := commands.Run(c.Hugo, c.Args, c.Root); err != nil {
-		log.Panic(err)
+		log.Println(err)
 	}
 }
 
