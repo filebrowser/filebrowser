@@ -31,12 +31,15 @@ func GetPath() string {
 	initializeVariables()
 
 	var err error
+	found := false
 
 	// Check if Hugo is already on $PATH
 	if hugo, err = exec.LookPath("hugo"); err == nil {
 		if checkVersion() {
 			return hugo
 		}
+
+		found = true
 	}
 
 	// Check if Hugo is on $HOME/.caddy/bin
@@ -44,9 +47,15 @@ func GetPath() string {
 		if checkVersion() {
 			return hugo
 		}
+
+		found = true
 	}
 
-	fmt.Println("Unable to find Hugo on your computer.")
+	if found {
+		fmt.Println("We will update your hugo to the newest version.")
+	} else {
+		fmt.Println("Unable to find Hugo on your computer.")
+	}
 
 	// Create the neccessary folders
 	os.MkdirAll(caddy, 0774)
@@ -64,7 +73,7 @@ func GetPath() string {
 
 	// Unzip or Ungzip the file
 	switch runtime.GOOS {
-	case "darwin", "windows":
+	case "windows":
 		zp := extractor.NewZip()
 		err = zp.Extract(tempfile, temp)
 	default:
