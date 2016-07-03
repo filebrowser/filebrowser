@@ -76,8 +76,9 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		}
 
 		caddyConf := httpserver.GetConfig(c)
-		cfg.AbsoluteURL = caddyConf.Addr.Path + "/" + cfg.BaseURL
+		cfg.AbsoluteURL = strings.TrimSuffix(caddyConf.Addr.Path, "/") + "/" + cfg.BaseURL
 		cfg.AbsoluteURL = strings.Replace(cfg.AbsoluteURL, "//", "/", -1)
+		cfg.AbsoluteURL = strings.TrimSuffix(cfg.AbsoluteURL, "/")
 		cfg.AddrPath = strings.TrimSuffix(caddyConf.Addr.Path, "/")
 		cfg.Root = http.Dir(cfg.PathScope)
 		if err := appendConfig(cfg); err != nil {
