@@ -8,7 +8,6 @@
 package filemanager
 
 import (
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -75,8 +74,8 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					return assets.Serve(w, r, c)
 				}
 
+				// Generate anti security token
 				c.GenerateToken()
-				fmt.Println(c.Token)
 
 				if !fi.IsDir {
 					query := r.URL.Query()
