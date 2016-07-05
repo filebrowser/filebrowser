@@ -2,6 +2,7 @@
 
 const tempID = "_fm_internal_temporary_id"
 var selectedItems = [];
+var token = "";
 
 /* * * * * * * * * * * * * * * *
  *                             *
@@ -115,6 +116,7 @@ var deleteEvent = function(event) {
             let request = new XMLHttpRequest();
 
             request.open('DELETE', link);
+            request.setRequestHeader('Token', token);
             request.send();
             request.onreadystatechange = function() {
                 if (request.readyState == 4) {
@@ -165,6 +167,11 @@ var RemoveLastDirectoryPartOf = function(url) {
     return (arr.join('/'));
 }
 
+// Get the current token
+var updateToken = function() {
+    token = document.getElementById("token").innerHTML;
+}
+
 /* * * * * * * * * * * * * * * *
  *                             *
  *  LISTING SPECIFIC FUNCTIONS  *
@@ -175,6 +182,7 @@ var reloadListing = function() {
     let request = new XMLHttpRequest();
     request.open('GET', window.location);
     request.setRequestHeader('Minimal', 'true');
+    request.setRequestHeader('Token', token);
     request.send();
     request.onreadystatechange = function() {
         if (request.readyState == 4) {
@@ -186,6 +194,7 @@ var reloadListing = function() {
             }
         }
     }
+    updateToken();
 }
 
 // Rename file event
@@ -217,6 +226,7 @@ var renameEvent = function(event) {
                 let request = new XMLHttpRequest();
                 request.open('PATCH', link);
                 request.setRequestHeader('Rename-To', newName);
+                request.setRequestHeader('Token', token);
                 request.send();
                 request.onreadystatechange = function() {
                     if (request.readyState == 4) {
@@ -274,6 +284,7 @@ var handleFiles = function(files) {
     let request = new XMLHttpRequest();
     request.open('POST', window.location.pathname);
     request.setRequestHeader("Upload", "true");
+    request.setRequestHeader('Token', token);
     request.send(data);
     request.onreadystatechange = function() {
         if (request.readyState == 4) {
@@ -382,6 +393,7 @@ var newDirEvent = function(event) {
         let html = button.changeToLoading();
         let request = new XMLHttpRequest();
         request.open("POST", window.location);
+        request.setRequestHeader('Token', token);
         request.setRequestHeader('Filename', document.getElementById('newdir').value);
         request.send();
         request.onreadystatechange = function() {
@@ -444,6 +456,7 @@ var searchEvent = function(event) {
         let request = new XMLHttpRequest();
         request.open('POST', window.location);
         request.setRequestHeader('Command', value);
+        request.setRequestHeader('Token', token);
         request.send();
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
@@ -751,6 +764,7 @@ document.addEventListener("editor", (event) => {
         let request = new XMLHttpRequest();
         request.open("PUT", window.location);
         request.setRequestHeader('Kind', kind);
+        request.setRequestHeader('Token', token);
         request.send(JSON.stringify(data));
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
@@ -780,6 +794,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
             }
         }
     });
+
+    // Updates the token
+    updateToken();
 
     // Enables open, delete and download buttons
     document.getElementById("open").addEventListener("click", openEvent);

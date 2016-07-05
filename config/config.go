@@ -17,6 +17,7 @@ type Config struct {
 	BaseURL     string
 	AbsoluteURL string
 	AddrPath    string
+	Token       string // Anti CSRF token
 	StyleSheet  string // Costum stylesheet
 	FrontMatter string // Default frontmatter to save files in
 	HugoEnabled bool   // Enables the Hugo plugin for File Manager

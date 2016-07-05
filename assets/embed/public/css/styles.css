@@ -420,6 +420,10 @@ pre {
     box-sizing: border-box;
 }
 
+#token {
+    display: none;
+}
+
 
 /* MATERIAL ICONS */
 

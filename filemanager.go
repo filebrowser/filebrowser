@@ -8,6 +8,7 @@
 package filemanager
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -59,6 +60,13 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				}
 			}
 
+			// Secure agains CSRF attacks
+			if r.Method != http.MethodGet {
+				if !c.CheckToken(r) {
+					return http.StatusForbidden, nil
+				}
+			}
+
 			// Route the request depending on the HTTP Method
 			switch r.Method {
 			case http.MethodGet:
@@ -66,6 +74,9 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				if serveAssets {
 					return assets.Serve(w, r, c)
 				}
+
+				c.GenerateToken()
+				fmt.Println(c.Token)
 
 				if !fi.IsDir {
 					query := r.URL.Query()
