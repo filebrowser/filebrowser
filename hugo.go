@@ -74,6 +74,10 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 		}
 
 		if r.Method == http.MethodPost && r.Header.Get("archetype") != "" {
+			if !h.FileManager.Configs[0].CheckToken(r) {
+				return http.StatusForbidden, nil
+			}
+
 			filename := r.Header.Get("Filename")
 			archetype := r.Header.Get("archetype")
 
@@ -94,6 +98,7 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 		}
 
 		if directory.CanBeEdited(r.URL.Path) && r.Method == http.MethodPut {
+			// NOTE: File Manager already checks the security token
 			code, err := h.FileManager.ServeHTTP(w, r)
 
 			if err != nil {
