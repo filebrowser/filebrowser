@@ -191,6 +191,12 @@ var reloadListing = function() {
                 // Handle date times
                 let timeList = document.getElementsByTagName("time");
                 Array.from(timeList).forEach(localizeDatetime);
+
+                // Add action to checkboxes
+                let checkboxes = document.getElementsByClassName('checkbox');
+                Array.from(checkboxes).forEach(link => {
+                    link.addEventListener('click', itemClickEvent);
+                });
             }
         }
     }
