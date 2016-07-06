@@ -618,15 +618,42 @@ var addFrontMatterItem = function(event) {
         input = input.replace(/\[/, '\\[');
         input = input.replace(/\]/, '\\]');
 
-        block.querySelector('.group').insertAdjacentHTML('beforeend', `<div id="${fieldID}-${count}" data-type="array-item">
-            <input name="${fieldID}" id="${fieldID}" type="text" data-parent-type="array"></input>
-            <div class="action delete"  data-delete="${fieldID}-${count}">
-                <i class="material-icons">close</i>
-            </div>
-        </div>`);
+        let fieldsets = block.getElementsByTagName("fieldset");
 
-        document.getElementById(`${fieldID}-${count}`).querySelector('input').focus();
-        document.querySelector(`div[data-delete="${fieldID}-${count}"]`).addEventListener('click', deleteFrontMatterItem);
+        if (fieldsets.length > 0) {
+            let newtype = fieldsets[0].dataset.type;
+            let bid = id + "[" + fieldsets.length + "]";
+            let name = fieldsets.length;
+
+            let template = `<fieldset id="${bid}" data-type="${newtype}">
+              <h3>${name}</h3>
+              <div class="action add">
+                  <i class="material-icons">add</i>
+              </div>
+              <div class="action delete" data-delete="${bid}">
+                  <i class="material-icons">close</i>
+              </div>
+             <div class="group">
+             </div>
+            </fieldset>`;
+
+            block.insertAdjacentHTML('beforeend', template);
+
+            document.querySelector(`div[data-delete="${bid}"]`).addEventListener('click', deleteFrontMatterItem);
+            document.getElementById(bid).querySelector('.action.add').addEventListener('click', addFrontMatterItem);
+        } else {
+            block.querySelector('.group').insertAdjacentHTML('beforeend', `<div id="${fieldID}-${count}" data-type="array-item">
+                <input name="${fieldID}" id="${fieldID}" type="text" data-parent-type="array"></input>
+                <div class="action delete"  data-delete="${fieldID}-${count}">
+                    <i class="material-icons">close</i>
+                </div>
+            </div>`);
+
+            document.getElementById(`${fieldID}-${count}`).querySelector('input').focus();
+            document.querySelector(`div[data-delete="${fieldID}-${count}"]`).addEventListener('click', deleteFrontMatterItem);
+        }
+
+
     }
 
     if (type == "object" || type == "parent") {
