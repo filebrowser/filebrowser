@@ -7,6 +7,7 @@ import (
 	"log"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -102,15 +103,24 @@ func rawToPretty(config interface{}, parent *Block) *Content {
 	cnf := map[string]interface{}{}
 	kind := reflect.TypeOf(config)
 
-	if kind == reflect.TypeOf(map[interface{}]interface{}{}) {
+	switch kind {
+	case reflect.TypeOf(map[interface{}]interface{}{}):
 		for key, value := range config.(map[interface{}]interface{}) {
 			cnf[key.(string)] = value
 		}
-	} else if kind == reflect.TypeOf([]interface{}{}) {
-		for key, value := range config.([]interface{}) {
-			cnf[string(key)] = value
+	case reflect.TypeOf([]map[string]interface{}{}):
+		for index, value := range config.([]map[string]interface{}) {
+			cnf[strconv.Itoa(index)] = value
 		}
-	} else {
+	case reflect.TypeOf([]map[interface{}]interface{}{}):
+		for index, value := range config.([]map[interface{}]interface{}) {
+			cnf[strconv.Itoa(index)] = value
+		}
+	case reflect.TypeOf([]interface{}{}):
+		for index, value := range config.([]interface{}) {
+			cnf[strconv.Itoa(index)] = value
+		}
+	default:
 		cnf = config.(map[string]interface{})
 	}
 
@@ -123,7 +133,6 @@ func rawToPretty(config interface{}, parent *Block) *Content {
 			if name == "title" && parent.Name == mainName {
 				mainTitle = element.(string)
 			}
-
 			fields = append(fields, handleFlatValues(element, parent, name))
 		}
 	}
@@ -155,7 +164,7 @@ func handleObjects(content interface{}, parent *Block, name string) *Block {
 	if parent.Name == mainName {
 		c.Name = c.Title
 	} else if parent.Type == arrayType {
-		c.Name = parent.Name + "[]"
+		c.Name = parent.Name + "[" + name + "]"
 	} else {
 		c.Name = parent.Name + "." + c.Title
 	}
