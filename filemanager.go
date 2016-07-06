@@ -21,6 +21,7 @@ import (
 	"github.com/hacdias/caddy-filemanager/assets"
 	"github.com/hacdias/caddy-filemanager/config"
 	"github.com/hacdias/caddy-filemanager/directory"
+	"github.com/hacdias/caddy-filemanager/errors"
 	"github.com/hacdias/caddy-filemanager/page"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
@@ -50,6 +51,9 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			if r.Method != http.MethodPost && !serveAssets {
 				fi, code, err = directory.GetInfo(r.URL, c)
 				if err != nil {
+					if r.Method == http.MethodGet {
+						return errors.PrintHTML(w, code, err)
+					}
 					return code, err
 				}
 
@@ -89,7 +93,11 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					}
 				}
 
-				return fi.ServeAsHTML(w, r, c)
+				code, err := fi.ServeAsHTML(w, r, c)
+				if err != nil {
+					return errors.PrintHTML(w, code, err)
+				}
+				return code, err
 			case http.MethodPut:
 				if fi.IsDir {
 					return http.StatusNotAcceptable, nil
