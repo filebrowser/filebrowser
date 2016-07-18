@@ -75,8 +75,7 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 	// Create the functions map, then the template, check for erros and
 	// execute the template if there aren't errors
 	functions := template.FuncMap{
-		"SplitCapitalize": variables.SplitCapitalize,
-		"Defined":         variables.Defined,
+		"Defined": variables.Defined,
 	}
 
 	if p.Minimal {

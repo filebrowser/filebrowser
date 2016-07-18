@@ -12,7 +12,7 @@
     </div>
     {{ else }}
     <div class="block" id="block-{{ $value.Name }}" data-content="{{ $value.Name }}">
-     <label for="{{ $value.Name }}">{{ SplitCapitalize $value.Title }}</label>
+     <label for="{{ $value.Name }}">{{ $value.Title }}</label>
      {{ template "value" $value }}
      <div class="action delete" data-delete="block-{{ $value.Name }}">
       <i class="material-icons">close</i>
@@ -47,7 +47,7 @@
 {{ define "fielset" }}
  <fieldset id="{{ .Name }}" data-type="{{ .Type }}">
   {{ if not (eq .Title "") }}
-   <h3>{{ SplitCapitalize .Title }}</h3>
+   <h3>{{ .Title }}</h3>
   {{ end }}
   <div class="action add">
    <i class="material-icons">add</i>
