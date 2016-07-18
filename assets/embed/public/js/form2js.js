@@ -231,8 +231,8 @@
 	}
 
     function convertValue(value) {
-        if value == "true" return true;
-        if value == "false" return false;
+        if (value == "true") return true;
+        if (value == "false") return false;
         if (!isNaN(value)) return parseInt(value);
         return value;
     }
