@@ -31,12 +31,13 @@ func GetPath() string {
 	initializeVariables()
 
 	var err error
+	var hugoPath string
 	found := false
 
 	// Check if Hugo is already on $PATH
-	if hugo, err = exec.LookPath("hugo"); err == nil {
+	if hugoPath, err = exec.LookPath("hugo"); err == nil {
 		if checkVersion() {
-			return hugo
+			return hugoPath
 		}
 
 		found = true
@@ -100,6 +101,7 @@ func GetPath() string {
 
 	// Copy the file
 	fmt.Print("Moving Hugo executable... ")
+
 	err = files.CopyFile(exetorename, hugo)
 	if err != nil {
 		fmt.Println(err)
