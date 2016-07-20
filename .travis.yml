@@ -17,6 +17,9 @@ install:
 - go install github.com/caddyserver/caddydev
 - go install github.com/mitchellh/gox
 - go generate
+- cd $GOPATH/github.com/hacdias/caddy-filemanager
+- go generate
+- cd $GOPATH/github.com/hacdias/caddy-hugo
 script:
 - caddydev --output="caddy" --source="." hugo
 - go test ./...
