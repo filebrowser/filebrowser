@@ -13,10 +13,8 @@ install:
 - go get github.com/robfig/cron
 - go get github.com/mitchellh/go-homedir
 - go get github.com/caddyserver/caddydev
-- go get github.com/caddyserver/caddyext
 - go get github.com/pivotal-golang/archiver/extractor
 - go install github.com/caddyserver/caddydev
-- go install github.com/caddyserver/caddyext
 - go install github.com/mitchellh/gox
 - go generate
 script:
