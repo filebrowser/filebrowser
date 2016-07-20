@@ -19,7 +19,7 @@ install:
 - go generate
 - cd $GOPATH/github.com/hacdias/caddy-filemanager
 - go generate
-- cd $GOPATH/github.com/hacdias/caddy-hugo
+- cd ${TRAVIS_BUILD_DIR}
 script:
 - caddydev --output="caddy" --source="." hugo
 - go test ./...
