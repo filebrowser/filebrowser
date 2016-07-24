@@ -14,7 +14,6 @@ install:
 - go get gopkg.in/yaml.v2
 - go get github.com/hashicorp/go-syslog
 - go install github.com/caddyserver/caddydev
-- go get github.com/hacdias/caddy-filemanager
 - go generate
 script:
 - caddydev --output="caddy" --source="." filemanager
