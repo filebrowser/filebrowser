@@ -162,7 +162,7 @@ func initializeVariables() {
 }
 
 func checkVersion() bool {
-	out, _ := exec.Command("hugo", "version").Output()
+	out, _ := exec.Command(hugo, "version").Output()
 
 	r := regexp.MustCompile(`v\d\.\d{2}`)
 	v := r.FindStringSubmatch(string(out))[0]
