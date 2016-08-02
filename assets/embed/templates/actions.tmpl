@@ -1,16 +1,16 @@
 {{ define "actions" }}
  <div class="action" id="open">
-  <i class="material-icons">open_in_new</i> <span>See raw</span>
+  <i class="material-icons" title="See raw">open_in_new</i> <span>See raw</span>
  </div>
  {{ if .IsDir }}
   <div class="action" id="rename">
-   <i class="material-icons">mode_edit</i>
+   <i class="material-icons" title="Edit">mode_edit</i>
   </div>
  {{ end }}
  <div class="action" id="download">
-  <i class="material-icons">file_download</i> <span>Download</span>
+  <i class="material-icons" title="Download">file_download</i> <span>Download</span>
  </div>
  <div class="action" id="delete">
-  <i class="material-icons">delete</i> <span>Delete</span>
+  <i class="material-icons" title="Delete">delete</i> <span>Delete</span>
  </div>
 {{ end }}
