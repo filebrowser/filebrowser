@@ -21,14 +21,14 @@
      <a href="{{ $lnk }}">
      {{ end }}
      <div class="action{{ if eq $lnk ""}} disabled{{ end }}" id="prev">
-      <i class="material-icons">subdirectory_arrow_left</i>
+      <i class="material-icons" title="Previous">subdirectory_arrow_left</i>
      </div>
      {{ if ne $lnk ""}}
      </a>
     {{ end }}
 
     <div class="action" id="open-nav">
-        <i class="material-icons">menu</i>
+        <i class="material-icons" title="Menu">menu</i>
     </div>
 
     <p>
@@ -48,7 +48,7 @@
             <a href="{{ $lnk }}">
             {{ end }}
             <div class="action{{ if eq $lnk ""}} disabled{{ end }}" id="prev">
-             <i class="material-icons">subdirectory_arrow_left</i>
+             <i class="material-icons" title="Previous">subdirectory_arrow_left</i>
             </div>
             {{ if ne $lnk ""}}
             </a>
@@ -64,23 +64,23 @@
        {{ if .IsDir}}
 
        <div id="search">
-           <i class="material-icons">storage</i>
+           <i class="material-icons" title="Storage">storage</i>
            <input type="text" placeholder="Execute a command...">
            <div>Write your git, mercurial or svn command and press enter.</div>
        </div>
 
         <div class="action" id="view">
-         <i class="material-icons">view_headline</i> <span>Switch view</span>
+         <i class="material-icons" title="Switch view">view_headline</i> <span>Switch view</span>
         </div>
         <div class="action" id="upload">
-         <i class="material-icons">file_upload</i> <span>Upload</span>
+         <i class="material-icons" title="Upload">file_upload</i> <span>Upload</span>
         </div>
         {{ else }}
         {{ template "actions" . }}
        {{ end }}
 
        <div class="action" id="logout">
-        <i class="material-icons">exit_to_app</i> <span>Logout</span>
+        <i class="material-icons" title="Logout">exit_to_app</i> <span>Logout</span>
        </div>
    </div>
    <div id="overlay"></div>
@@ -90,7 +90,7 @@
    <div id="toolbar">
     <div>
      <div class="action" id="back">
-      <i class="material-icons">arrow_back</i>
+      <i class="material-icons" title="Back">arrow_back</i>
      </div>
      <p>
       <span id="selected-number">0</span>
