@@ -16,9 +16,6 @@ install:
 - go get github.com/pivotal-golang/archiver/extractor
 - go install github.com/caddyserver/caddydev
 - go install github.com/mitchellh/gox
-- go generate
-- cd $GOPATH/github.com/hacdias/caddy-filemanager
-- go generate
 - cd ${TRAVIS_BUILD_DIR}
 script:
 - caddydev --output="caddy" --source="." hugo
