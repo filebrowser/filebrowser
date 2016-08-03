@@ -76,6 +76,9 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 	// execute the template if there aren't errors
 	functions := template.FuncMap{
 		"Defined": variables.Defined,
+		"Safe": func(s string) template.HTML {
+			return template.HTML(s)
+		},
 	}
 
 	if p.Minimal {

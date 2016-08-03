@@ -9,7 +9,7 @@
 
   {{ if ne .Config.StyleSheet "" }}
    <style>
-    {{.Config.StyleSheet}}
+    {{ Safe .Config.StyleSheet }}
    </style>
   {{ end }}
  </head>
