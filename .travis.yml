@@ -8,6 +8,7 @@ install:
 - go get github.com/mitchellh/gox
 - go get github.com/mholt/caddy
 - go get github.com/hashicorp/go-syslog
+- go get github.com/spf13/hugo
 - go get github.com/jimstudt/http-authentication/basic
 - go get github.com/spf13/hugo
 - go get github.com/robfig/cron
