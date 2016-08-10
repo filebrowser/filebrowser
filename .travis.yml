@@ -8,7 +8,10 @@ install:
 - go generate
 - cd ${TRAVIS_BUILD_DIR}
 - go generate
-- go get ./...
+- go get -u -v $(go list -f '{{join .Imports "\n"}}' ./... | sort | uniq | grep -v caddy-hugo)
+- go get -u -v github.com/mholt/caddy/caddyhttp
+- go get -u -v github.com/caddyserver/caddydev
+- go install github.com/caddyserver/caddydev
 script:
 - caddydev --output="caddy" --source="." hugo
 - go test ./...
