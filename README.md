@@ -14,3 +14,7 @@ filemanager {
   frontmatter   type
 }
 ```
+
+## NOTE FOR DEVELOPERS
+
+You need to run `go generate` on `$GOPATH/src/github.com/hacdias/caddy-filemanager` before building any binary. Otherwise, you will receive an `undefined: Asset` error.
