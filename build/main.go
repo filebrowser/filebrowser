@@ -10,6 +10,10 @@ import (
 )
 
 func main() {
+	if len(os.Getenv("TRAVIS")) > 0 || len(os.Getenv("CI")) > 0 {
+		return
+	}
+
 	goPath := os.Getenv("GOPATH")
 	hugoPath := filepath.Join(goPath, "src/github.com/spf13/hugo")
 
