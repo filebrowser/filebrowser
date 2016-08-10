@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -34,6 +35,8 @@ func main() {
 	// Build hugo binary
 	pluginPath := filepath.Join(goPath, "src/github.com/hacdias/caddy-hugo")
 	run("go", []string{"build", "-o", "assets/hugo", "github.com/spf13/hugo"}, pluginPath)
+
+	updateVersion(pluginPath, tag)
 }
 
 func run(command string, args []string, path string) string {
@@ -61,4 +64,27 @@ func exists(path string) (bool, error) {
 	}
 
 	return true, err
+}
+
+func updateVersion(path string, version string) {
+	path = filepath.Join(path, "installer.go")
+
+	input, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	lines := strings.Split(string(input), "\n")
+
+	for i, line := range lines {
+		if strings.Contains(line, "const version") {
+			lines[i] = "const version = \"" + version + "\""
+		}
+	}
+
+	output := strings.Join(lines, "\n")
+	err = ioutil.WriteFile(path, []byte(output), 0644)
+	if err != nil {
+		log.Fatalln(err)
+	}
 }

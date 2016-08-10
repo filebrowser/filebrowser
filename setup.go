@@ -14,7 +14,6 @@ import (
 	"github.com/hacdias/caddy-filemanager/config"
 	"github.com/hacdias/caddy-filemanager/directory"
 	"github.com/hacdias/caddy-filemanager/frontmatter"
-	"github.com/hacdias/caddy-hugo/installer"
 	"github.com/hacdias/caddy-hugo/utils/commands"
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
@@ -142,7 +141,7 @@ func parse(c *caddy.Controller, root string) (*Config, error) {
 		Root:    "./",
 	}
 
-	conf.Hugo = installer.GetPath()
+	conf.Hugo = getPath()
 	for c.Next() {
 		args := c.RemainingArgs()
 
