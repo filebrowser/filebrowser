@@ -3,20 +3,12 @@ go:
 - tip
 sudo: false
 install:
-- go get github.com/mitchellh/gox
-- go get github.com/mholt/caddy
-- go get github.com/hashicorp/go-syslog
-- go get github.com/spf13/hugo
-- go get github.com/jimstudt/http-authentication/basic
-- go get github.com/spf13/hugo
-- go get github.com/robfig/cron
-- go get github.com/mitchellh/go-homedir
-- go get github.com/caddyserver/caddydev
-- go get github.com/pivotal-golang/archiver/extractor
-- go install github.com/caddyserver/caddydev
-- go install github.com/mitchellh/gox
-- cd ${TRAVIS_BUILD_DIR}
-script:
+- go get github.com/hacdias/caddy-filemanager
+- cd $GOPATH/src/github.com/hacdias/caddy-filemanager
 - go generate
+- cd ${TRAVIS_BUILD_DIR}
+- go generate
+- go get ./...
+script:
 - caddydev --output="caddy" --source="." hugo
 - go test ./...
