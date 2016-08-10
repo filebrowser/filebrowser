@@ -4,7 +4,7 @@ go:
 sudo: false
 matrix:
   allow_failures:
-    - install: go get github.com/hacdias/caddy-filemanager
+    - install: go
 install:
 - go get github.com/hacdias/caddy-filemanager
 - cd $GOPATH/src/github.com/hacdias/caddy-filemanager
