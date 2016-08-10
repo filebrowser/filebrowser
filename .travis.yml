@@ -5,8 +5,8 @@ sudo: false
 install:
 - go generate
 - go get -u -v $(go list -f '{{join .Imports "\n"}}' ./... | sort | uniq | grep -v caddy-filemanager)
-- go get -u -v github.com/mholt/caddy
-- go get -u github.com/caddyserver/caddydev
+- go get -u -v github.com/mholt/caddy/caddyhttp
+- go get -u -v github.com/caddyserver/caddydev
 - go install github.com/caddyserver/caddydev
 script:
 - caddydev --output="caddy" --source="." filemanager
