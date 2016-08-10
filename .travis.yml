@@ -3,17 +3,9 @@ go:
 - tip
 sudo: false
 install:
-- export GOPATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace:$GOPATH"
-- export PATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace/bin:$PATH"
-- go get github.com/mholt/caddy
-- go get -u github.com/caddyserver/buildsrv
+- go generate
+- go get -u -t ./...
 - go get -u github.com/caddyserver/caddydev
-- go get github.com/BurntSushi/toml
-- go get github.com/gorilla/websocket
-- go get github.com/jimstudt/http-authentication/basic
-- go get gopkg.in/yaml.v2
-- go get github.com/hashicorp/go-syslog
 - go install github.com/caddyserver/caddydev
 script:
-- go generate
 - caddydev --output="caddy" --source="." filemanager
