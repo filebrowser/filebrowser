@@ -18,5 +18,6 @@ install:
 - go install github.com/mitchellh/gox
 - cd ${TRAVIS_BUILD_DIR}
 script:
+- go generate
 - caddydev --output="caddy" --source="." hugo
 - go test ./...
