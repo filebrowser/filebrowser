@@ -1,6 +1,7 @@
 package directory
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -225,6 +226,16 @@ func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Co
 		listing.ItemsLimitedTo = limit
 	}
 
+	if strings.Contains(r.Header.Get("Accept"), "application/json") {
+		marsh, err := json.Marshal(listing)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		return w.Write(marsh)
+	}
+
 	page := &p.Page{
 		Info: &p.Info{
 			Name:   listing.Name,
@@ -237,10 +248,6 @@ func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Co
 
 	if r.Header.Get("Minimal") == "true" {
 		page.Minimal = true
-	}
-
-	if strings.Contains(r.Header.Get("Accept"), "application/json") {
-		return page.PrintAsJSON(w)
 	}
 
 	return page.PrintAsHTML(w, "listing")
