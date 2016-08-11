@@ -239,6 +239,10 @@ func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Co
 		page.Minimal = true
 	}
 
+	if strings.Contains(r.Header.Get("Accept"), "application/json") {
+		return page.PrintAsJSON(w)
+	}
+
 	return page.PrintAsHTML(w, "listing")
 }
 

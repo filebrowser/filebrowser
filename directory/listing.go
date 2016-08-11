@@ -26,8 +26,8 @@ type Listing struct {
 	// And which order
 	Order string
 	// If ≠0 then Items have been limited to that many elements
-	ItemsLimitedTo int
-	httpserver.Context
+	ItemsLimitedTo     int
+	httpserver.Context `json:"-"`
 }
 
 // handleSortOrder gets and stores for a Listing the 'sort' and 'order',
