@@ -227,7 +227,7 @@ func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Co
 	}
 
 	if strings.Contains(r.Header.Get("Accept"), "application/json") {
-		marsh, err := json.Marshal(listing)
+		marsh, err := json.Marshal(listing.Items)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
