@@ -134,5 +134,9 @@ func (p Page) PrintAsJSON(w http.ResponseWriter) (int, error) {
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	return w.Write(marsh)
+	if _, err := w.Write(marsh); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return http.StatusOK, nil
 }

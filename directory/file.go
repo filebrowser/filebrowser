@@ -233,7 +233,11 @@ func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Co
 		}
 
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		return w.Write(marsh)
+		if _, err := w.Write(marsh); err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		return http.StatusOK, nil
 	}
 
 	page := &p.Page{
