@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/mholt/caddy"
@@ -21,6 +22,10 @@ type Config struct {
 	StyleSheet  string // Costum stylesheet
 	FrontMatter string // Default frontmatter to save files in
 	HugoEnabled bool   // Enables the Hugo plugin for File Manager
+
+	AllowNew      bool
+	AllowEdit     bool
+	AllowCommands bool
 }
 
 // Parse parses the configuration set by the user so it can
@@ -37,6 +42,8 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		configs = append(configs, cfg)
 		return nil
 	}
+
+	var err error
 
 	for c.Next() {
 		var cfg = Config{PathScope: ".", BaseURL: "", FrontMatter: "yaml", HugoEnabled: false}
@@ -68,11 +75,36 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
-				tplBytes, err := ioutil.ReadFile(c.Val())
+				var tplBytes []byte
+				tplBytes, err = ioutil.ReadFile(c.Val())
 				if err != nil {
 					return configs, err
 				}
 				cfg.StyleSheet = string(tplBytes)
+			case "allow_new":
+				if !c.NextArg() {
+					return configs, c.ArgErr()
+				}
+				cfg.AllowNew, err = strconv.ParseBool(c.Val())
+				if err != nil {
+					return configs, err
+				}
+			case "allow_edit":
+				if !c.NextArg() {
+					return configs, c.ArgErr()
+				}
+				cfg.AllowEdit, err = strconv.ParseBool(c.Val())
+				if err != nil {
+					return configs, err
+				}
+			case "allow_comands":
+				if !c.NextArg() {
+					return configs, c.ArgErr()
+				}
+				cfg.AllowCommands, err = strconv.ParseBool(c.Val())
+				if err != nil {
+					return configs, err
+				}
 			}
 		}
 
