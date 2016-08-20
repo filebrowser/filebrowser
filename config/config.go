@@ -19,7 +19,6 @@ type Config struct {
 	AbsoluteURL string
 	AddrPath    string
 	Token       string // Anti CSRF token
-	FrontMatter string // Default frontmatter to save files in
 	HugoEnabled bool   // Enables the Hugo plugin for File Manager
 	Users       map[string]*UserConfig
 }
@@ -59,38 +58,44 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 	}
 
 	var err error
+	var cCfg *UserConfig
+	var baseURL string
 
 	for c.Next() {
-		var cfg = Config{}
+		var cfg = Config{UserConfig: &UserConfig{}}
 		cfg.PathScope = "."
-		cfg.BaseURL = ""
 		cfg.FrontMatter = "yaml"
 		cfg.HugoEnabled = false
+		cfg.Users = map[string]*UserConfig{}
+
+		baseURL = ""
+		cCfg = cfg.UserConfig
 
 		for c.NextBlock() {
+
 			switch c.Val() {
-			case "show":
-				if !c.NextArg() {
-					return configs, c.ArgErr()
-				}
-				cfg.PathScope = c.Val()
-				cfg.PathScope = strings.TrimSuffix(cfg.PathScope, "/")
-			case "frontmatter":
-				if !c.NextArg() {
-					return configs, c.ArgErr()
-				}
-				cfg.FrontMatter = c.Val()
-				if cfg.FrontMatter != "yaml" && cfg.FrontMatter != "json" && cfg.FrontMatter != "toml" {
-					return configs, c.Err("frontmatter type not supported")
-				}
+			// GLOBAL ONLY OPTIONS
 			case "on":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
-				cfg.BaseURL = c.Val()
-				cfg.BaseURL = strings.TrimPrefix(cfg.BaseURL, "/")
-				cfg.BaseURL = strings.TrimSuffix(cfg.BaseURL, "/")
-				cfg.BaseURL = "/" + cfg.BaseURL
+				baseURL = c.Val()
+			// USER SPECIFIC OR GLOBAL
+			case "frontmatter":
+				if !c.NextArg() {
+					return configs, c.ArgErr()
+				}
+				cCfg.FrontMatter = c.Val()
+				if cCfg.FrontMatter != "yaml" && cCfg.FrontMatter != "json" && cCfg.FrontMatter != "toml" {
+					return configs, c.Err("frontmatter type not supported")
+				}
+			case "show":
+				if !c.NextArg() {
+					return configs, c.ArgErr()
+				}
+				cCfg.PathScope = c.Val()
+				cCfg.PathScope = strings.TrimSuffix(cCfg.PathScope, "/")
+				cCfg.Root = http.Dir(cCfg.PathScope)
 			case "styles":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
@@ -100,12 +105,12 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				if err != nil {
 					return configs, err
 				}
-				cfg.StyleSheet = string(tplBytes)
+				cCfg.StyleSheet = string(tplBytes)
 			case "allow_new":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
-				cfg.AllowNew, err = strconv.ParseBool(c.Val())
+				cCfg.AllowNew, err = strconv.ParseBool(c.Val())
 				if err != nil {
 					return configs, err
 				}
@@ -113,7 +118,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
-				cfg.AllowEdit, err = strconv.ParseBool(c.Val())
+				cCfg.AllowEdit, err = strconv.ParseBool(c.Val())
 				if err != nil {
 					return configs, err
 				}
@@ -121,19 +126,35 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
-				cfg.AllowCommands, err = strconv.ParseBool(c.Val())
+				cCfg.AllowCommands, err = strconv.ParseBool(c.Val())
 				if err != nil {
 					return configs, err
 				}
+			// NEW USER BLOCK?
+			default:
+				val := c.Val()
+				// Checks if it's a new user
+				if !strings.HasSuffix(val, ":") {
+					fmt.Println("Unknown option " + val)
+				}
+
+				// Get the username, sets the current user, and initializes it
+				val = strings.TrimSuffix(val, ":")
+				cfg.Users[val] = &UserConfig{}
+				cCfg = cfg.Users[val]
 			}
 		}
+
+		cfg.BaseURL = baseURL
+		cfg.BaseURL = strings.TrimPrefix(cfg.BaseURL, "/")
+		cfg.BaseURL = strings.TrimSuffix(cfg.BaseURL, "/")
+		cfg.BaseURL = "/" + cfg.BaseURL
 
 		caddyConf := httpserver.GetConfig(c)
 		cfg.AbsoluteURL = strings.TrimSuffix(caddyConf.Addr.Path, "/") + "/" + cfg.BaseURL
 		cfg.AbsoluteURL = strings.Replace(cfg.AbsoluteURL, "//", "/", -1)
 		cfg.AbsoluteURL = strings.TrimSuffix(cfg.AbsoluteURL, "/")
 		cfg.AddrPath = strings.TrimSuffix(caddyConf.Addr.Path, "/")
-		cfg.Root = http.Dir(cfg.PathScope)
 		if err := appendConfig(cfg); err != nil {
 			return configs, err
 		}
