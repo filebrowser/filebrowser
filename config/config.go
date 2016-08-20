@@ -21,6 +21,7 @@ type Config struct {
 	Token       string // Anti CSRF token
 	FrontMatter string // Default frontmatter to save files in
 	HugoEnabled bool   // Enables the Hugo plugin for File Manager
+	Users       map[string]*UserConfig
 }
 
 // UserConfig contains the configuration for each user
