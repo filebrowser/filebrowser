@@ -17,6 +17,10 @@ filemanager {
   allow_new         [true|false]
   allow_edit        [true|false]
   allow_commands    [true|false]
+  allow
+  allow_r
+  block
+  block_r
 }
 ```
 
