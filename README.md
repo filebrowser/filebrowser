@@ -21,6 +21,7 @@ filemanager {
   allow_r
   block
   block_r
+  
 }
 ```
 
