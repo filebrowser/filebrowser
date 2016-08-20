@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -13,19 +14,32 @@ import (
 
 // Config is a configuration for browsing in a particualr path.
 type Config struct {
-	PathScope   string
-	Root        http.FileSystem
+	*UserConfig
 	BaseURL     string
 	AbsoluteURL string
 	AddrPath    string
 	Token       string // Anti CSRF token
-	StyleSheet  string // Costum stylesheet
 	FrontMatter string // Default frontmatter to save files in
 	HugoEnabled bool   // Enables the Hugo plugin for File Manager
+}
 
-	AllowNew      bool
-	AllowEdit     bool
-	AllowCommands bool
+// UserConfig contains the configuration for each user
+type UserConfig struct {
+	PathScope   string
+	Root        http.FileSystem
+	StyleSheet  string // Costum stylesheet
+	FrontMatter string // Default frontmatter to save files in
+	AllowNew    bool   // Can create files and folders
+	AllowEdit   bool   // Can edit/rename files
+
+	Allow      []string         // Allowed browse directories/files
+	AllowRegex []*regexp.Regexp // Regex of the previous
+	Block      []string         // Blocked browse directories/files
+	BlockRegex []*regexp.Regexp // Regex of the previous
+
+	AllowCommands   bool     // Can execute commands
+	AllowedCommands []string // Allowed commands
+	BlockedCommands []string // Blocked Commands
 }
 
 // Parse parses the configuration set by the user so it can
@@ -46,7 +60,12 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 	var err error
 
 	for c.Next() {
-		var cfg = Config{PathScope: ".", BaseURL: "", FrontMatter: "yaml", HugoEnabled: false}
+		var cfg = Config{}
+		cfg.PathScope = "."
+		cfg.BaseURL = ""
+		cfg.FrontMatter = "yaml"
+		cfg.HugoEnabled = false
+
 		for c.NextBlock() {
 			switch c.Val() {
 			case "show":
