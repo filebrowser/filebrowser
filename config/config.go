@@ -78,15 +78,12 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		cCfg = cfg.UserConfig
 
 		for c.NextBlock() {
-
 			switch c.Val() {
-			// GLOBAL ONLY OPTIONS
 			case "on":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
 				baseURL = c.Val()
-			// USER SPECIFIC OR GLOBAL
 			case "frontmatter":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
@@ -240,10 +237,6 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		if err := appendConfig(cfg); err != nil {
 			return configs, err
 		}
-
-		fmt.Println(cfg.UserConfig)
-		fmt.Println(cfg.Users["user1"])
-		fmt.Println(cfg.Users["user2"])
 	}
 
 	return configs, nil
