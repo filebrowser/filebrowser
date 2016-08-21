@@ -1,6 +1,6 @@
 'use strict';
 
-const tempID = "_fm_internal_temporary_id"
+var tempID = "_fm_internal_temporary_id"
 var selectedItems = [];
 var token = "";
 
