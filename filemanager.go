@@ -136,7 +136,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 						return http.StatusUnauthorized, nil
 					}
 
-					return vcsCommand(w, r, c)
+					return command(w, r, c, user)
 				}
 				// Creates a new folder
 				return newDirectory(w, r, c)
@@ -240,12 +240,20 @@ func newDirectory(w http.ResponseWriter, r *http.Request, c *config.Config) (int
 	return http.StatusCreated, nil
 }
 
-// vcsCommand handles the requests for VCS related commands: git, svn and mercurial
-func vcsCommand(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+// command handles the requests for VCS related commands: git, svn and mercurial
+func command(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.UserConfig) (int, error) {
 	command := strings.Split(r.Header.Get("command"), " ")
 
-	// Check if the command is for git, mercurial or svn
-	if command[0] != "git" && command[0] != "hg" && command[0] != "svn" {
+	// Check if the command is allowed
+	mayContinue := false
+
+	for _, cmd := range u.Commands {
+		if cmd == command[0] {
+			mayContinue = true
+		}
+	}
+
+	if !mayContinue {
 		return http.StatusForbidden, nil
 	}
 

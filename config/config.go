@@ -26,16 +26,20 @@ type Config struct {
 
 // UserConfig contains the configuration for each user
 type UserConfig struct {
-	PathScope     string          // Path the user have access
-	Root          http.FileSystem // The virtual file system the user have access
-	StyleSheet    string          // Costum stylesheet
-	FrontMatter   string          // Default frontmatter to save files in
+	PathScope     string          `json:"-"` // Path the user have access
+	Root          http.FileSystem `json:"-"` // The virtual file system the user have access
+	StyleSheet    string          `json:"-"` // Costum stylesheet
+	FrontMatter   string          `json:"-"` // Default frontmatter to save files in
 	AllowNew      bool            // Can create files and folders
 	AllowEdit     bool            // Can edit/rename files
 	AllowCommands bool            // Can execute commands
 	Commands      []string        // Available Commands
-	Rules         []*Rule         // Access rules
+	Rules         []*Rule         `json:"-"` // Access rules
 }
+
+// TODO: USE USER StyleSheet
+// TODO: USE USER FRONTMATTER
+// TODO: USE USER ROOT
 
 // Rule is a dissalow/allow rule
 type Rule struct {
@@ -100,6 +104,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				}
 				cCfg.PathScope = c.Val()
 				cCfg.PathScope = strings.TrimSuffix(cCfg.PathScope, "/")
+				cCfg.Root = http.Dir(cCfg.PathScope)
 			case "styles":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
@@ -200,8 +205,6 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				})
 			// NEW USER BLOCK?
 			default:
-				cCfg.Root = http.Dir(cCfg.PathScope)
-
 				val := c.Val()
 				// Checks if it's a new user
 				if !strings.HasSuffix(val, ":") {
