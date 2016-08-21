@@ -4,6 +4,8 @@
 [![community](https://img.shields.io/badge/community-forum-ff69b4.svg?style=flat-square)](https://forum.caddyserver.com)
 [![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/hacdias/caddy-filemanager)
 
+# THIS CODE IS UNSTABLE ATM
+
 This package is a plugin for Caddy server that provides an online file manager (based on browse middleware) that is able to: rename files, delete files and upload files. Some new features that can be implemented in the future can be seen at [issues](https://github.com/hacdias/caddy-filemanager/issues).
 
 ```
