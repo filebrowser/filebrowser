@@ -41,7 +41,19 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 		code        int
 		err         error
 		serveAssets bool
+		user        *config.UserConfig
 	)
+
+	// Set the current User
+	username, _, ok := r.BasicAuth()
+
+	if !ok {
+		user = c.UserConfig
+	}
+
+	if _, ok := c.Users[username]; ok {
+		user = c.Users[username]
+	}
 
 	for i := range f.Configs {
 		if httpserver.Path(r.URL.Path).Matches(f.Configs[i].BaseURL) {
@@ -102,11 +114,20 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				if fi.IsDir {
 					return http.StatusNotAcceptable, nil
 				}
+
+				if !user.AllowEdit {
+					return http.StatusUnauthorized, nil
+				}
+
 				// Update a file
 				return fi.Update(w, r, c)
 			case http.MethodPost:
 				// Upload a new file
 				if r.Header.Get("Upload") == "true" {
+					if !user.AllowNew {
+						return http.StatusUnauthorized, nil
+					}
+
 					return upload(w, r, c)
 				}
 				// Search and git commands
@@ -115,14 +136,26 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				}
 				// VCS commands
 				if r.Header.Get("Command") != "" {
+					if !user.AllowCommands {
+						return http.StatusUnauthorized, nil
+					}
+
 					return vcsCommand(w, r, c)
 				}
 				// Creates a new folder
 				return newDirectory(w, r, c)
 			case http.MethodDelete:
+				if !user.AllowEdit {
+					return http.StatusUnauthorized, nil
+				}
+
 				// Delete a file or a directory
 				return fi.Delete()
 			case http.MethodPatch:
+				if !user.AllowEdit {
+					return http.StatusUnauthorized, nil
+				}
+
 				// Rename a file or directory
 				return fi.Rename(w, r)
 			default:

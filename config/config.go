@@ -21,6 +21,7 @@ type Config struct {
 	Token       string // Anti CSRF token
 	HugoEnabled bool   // Enables the Hugo plugin for File Manager
 	Users       map[string]*UserConfig
+	CurrentUser *UserConfig
 }
 
 // UserConfig contains the configuration for each user
