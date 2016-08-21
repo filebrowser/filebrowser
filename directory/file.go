@@ -142,15 +142,15 @@ func (i *Info) Rename(w http.ResponseWriter, r *http.Request) (int, error) {
 }
 
 // ServeAsHTML is used to serve single file pages
-func (i *Info) ServeAsHTML(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+func (i *Info) ServeAsHTML(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.UserConfig) (int, error) {
 	if i.IsDir {
-		return i.serveListing(w, r, c)
+		return i.serveListing(w, r, c, u)
 	}
 
-	return i.serveSingleFile(w, r, c)
+	return i.serveSingleFile(w, r, c, u)
 }
 
-func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.UserConfig) (int, error) {
 	err := i.GetExtendedInfo()
 	if err != nil {
 		return errors.ToHTTPCode(err), err
@@ -166,6 +166,7 @@ func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config
 			Path:   i.RootPath,
 			IsDir:  false,
 			Data:   i,
+			User:   u,
 			Config: c,
 		},
 	}
@@ -184,7 +185,7 @@ func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config
 	return page.PrintAsHTML(w, "single")
 }
 
-func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.UserConfig) (int, error) {
 	var err error
 
 	file, err := c.Root.Open(i.RootPath)
@@ -245,6 +246,7 @@ func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Co
 			Name:   listing.Name,
 			Path:   i.RootPath,
 			IsDir:  true,
+			User:   u,
 			Config: c,
 			Data:   listing,
 		},

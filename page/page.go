@@ -24,6 +24,7 @@ type Info struct {
 	Name   string
 	Path   string
 	IsDir  bool
+	User   *config.UserConfig
 	Config *config.Config
 	Data   interface{}
 }

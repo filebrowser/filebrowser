@@ -44,21 +44,17 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 		user        *config.UserConfig
 	)
 
-	// Set the current User
-	username, _, ok := r.BasicAuth()
-
-	if !ok {
-		user = c.UserConfig
-	}
-
-	if _, ok := c.Users[username]; ok {
-		user = c.Users[username]
-	}
-
 	for i := range f.Configs {
 		if httpserver.Path(r.URL.Path).Matches(f.Configs[i].BaseURL) {
 			c = &f.Configs[i]
 			serveAssets = httpserver.Path(r.URL.Path).Matches(c.BaseURL + assets.BaseURL)
+
+			// Set the current User
+			username, _, _ := r.BasicAuth()
+
+			if _, ok := c.Users[username]; ok {
+				user = c.Users[username]
+			}
 
 			if r.Method != http.MethodPost && !serveAssets {
 				fi, code, err = directory.GetInfo(r.URL, c)
@@ -105,7 +101,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					}
 				}
 
-				code, err := fi.ServeAsHTML(w, r, c)
+				code, err := fi.ServeAsHTML(w, r, c, user)
 				if err != nil {
 					return errors.PrintHTML(w, code, err)
 				}

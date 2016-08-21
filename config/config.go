@@ -67,6 +67,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 	for c.Next() {
 		var cfg = Config{UserConfig: &UserConfig{}}
 		cfg.PathScope = "."
+		cfg.BaseURL = ""
 		cfg.FrontMatter = "yaml"
 		cfg.HugoEnabled = false
 		cfg.Users = map[string]*UserConfig{}
@@ -99,7 +100,6 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				}
 				cCfg.PathScope = c.Val()
 				cCfg.PathScope = strings.TrimSuffix(cCfg.PathScope, "/")
-				cCfg.Root = http.Dir(cCfg.PathScope)
 			case "styles":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
@@ -200,6 +200,8 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				})
 			// NEW USER BLOCK?
 			default:
+				cCfg.Root = http.Dir(cCfg.PathScope)
+
 				val := c.Val()
 				// Checks if it's a new user
 				if !strings.HasSuffix(val, ":") {
@@ -230,6 +232,8 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		cfg.BaseURL = strings.TrimSuffix(cfg.BaseURL, "/")
 		cfg.BaseURL = "/" + cfg.BaseURL
 
+		cfg.Root = http.Dir(cfg.PathScope)
+
 		caddyConf := httpserver.GetConfig(c)
 		cfg.AbsoluteURL = strings.TrimSuffix(caddyConf.Addr.Path, "/") + "/" + cfg.BaseURL
 		cfg.AbsoluteURL = strings.Replace(cfg.AbsoluteURL, "//", "/", -1)
@@ -238,6 +242,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		if err := appendConfig(cfg); err != nil {
 			return configs, err
 		}
+
 	}
 
 	return configs, nil

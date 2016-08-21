@@ -10,7 +10,7 @@ import (
 )
 
 // BaseURL is the url of the assets
-const BaseURL = "/_filemanagerinternal"
+const BaseURL = "_filemanagerinternal"
 
 // Serve provides the needed assets for the front-end
 func Serve(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
