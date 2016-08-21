@@ -25,15 +25,15 @@ type Config struct {
 
 // UserConfig contains the configuration for each user
 type UserConfig struct {
-	PathScope     string
-	Root          http.FileSystem
-	StyleSheet    string   // Costum stylesheet
-	FrontMatter   string   // Default frontmatter to save files in
-	AllowNew      bool     // Can create files and folders
-	AllowEdit     bool     // Can edit/rename files
-	AllowCommands bool     // Can execute commands
-	Commands      []string // Available Commands
-	Rules         []*Rule  // Access rules
+	PathScope     string          // Path the user have access
+	Root          http.FileSystem // The virtual file system the user have access
+	StyleSheet    string          // Costum stylesheet
+	FrontMatter   string          // Default frontmatter to save files in
+	AllowNew      bool            // Can create files and folders
+	AllowEdit     bool            // Can edit/rename files
+	AllowCommands bool            // Can execute commands
+	Commands      []string        // Available Commands
+	Rules         []*Rule         // Access rules
 }
 
 // Rule is a dissalow/allow rule
@@ -69,6 +69,10 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		cfg.FrontMatter = "yaml"
 		cfg.HugoEnabled = false
 		cfg.Users = map[string]*UserConfig{}
+		cfg.AllowCommands = true
+		cfg.AllowEdit = true
+		cfg.AllowNew = true
+		cfg.Commands = []string{"git", "svn", "hg"}
 
 		baseURL = ""
 		cCfg = cfg.UserConfig
@@ -124,7 +128,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				if err != nil {
 					return configs, err
 				}
-			case "allow_comands":
+			case "allow_commands":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
@@ -132,6 +136,70 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				if err != nil {
 					return configs, err
 				}
+			case "allow_command":
+				if !c.NextArg() {
+					return configs, c.ArgErr()
+				}
+
+				cCfg.Commands = append(cCfg.Commands, c.Val())
+			case "block_command":
+				if !c.NextArg() {
+					return configs, c.ArgErr()
+				}
+
+				index := 0
+
+				for i, val := range cCfg.Commands {
+					if val == c.Val() {
+						index = i
+					}
+				}
+
+				cCfg.Commands = append(cCfg.Commands[:index], cCfg.Commands[index+1:]...)
+			case "allow":
+				if !c.NextArg() {
+					return configs, c.ArgErr()
+				}
+
+				cCfg.Rules = append(cCfg.Rules, &Rule{
+					Regex:  false,
+					Allow:  true,
+					Path:   c.Val(),
+					Rexexp: nil,
+				})
+			case "allow_r":
+				if !c.NextArg() {
+					return configs, c.ArgErr()
+				}
+
+				cCfg.Rules = append(cCfg.Rules, &Rule{
+					Regex:  true,
+					Allow:  true,
+					Path:   "",
+					Rexexp: regexp.MustCompile(c.Val()),
+				})
+			case "block":
+				if !c.NextArg() {
+					return configs, c.ArgErr()
+				}
+
+				cCfg.Rules = append(cCfg.Rules, &Rule{
+					Regex:  false,
+					Allow:  false,
+					Path:   c.Val(),
+					Rexexp: nil,
+				})
+			case "block_r":
+				if !c.NextArg() {
+					return configs, c.ArgErr()
+				}
+
+				cCfg.Rules = append(cCfg.Rules, &Rule{
+					Regex:  true,
+					Allow:  false,
+					Path:   "",
+					Rexexp: regexp.MustCompile(c.Val()),
+				})
 			// NEW USER BLOCK?
 			default:
 				val := c.Val()
@@ -143,10 +211,22 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				// Get the username, sets the current user, and initializes it
 				val = strings.TrimSuffix(val, ":")
 				cfg.Users[val] = &UserConfig{}
+
+				// Initialize the new user
 				cCfg = cfg.Users[val]
+				cCfg.AllowCommands = cfg.AllowCommands
+				cCfg.AllowEdit = cfg.AllowEdit
+				cCfg.AllowNew = cfg.AllowEdit
+				cCfg.Commands = cfg.Commands
+				cCfg.FrontMatter = cfg.FrontMatter
+				cCfg.PathScope = cfg.PathScope
+				cCfg.Root = cfg.Root
+				cCfg.Rules = cfg.Rules
+				cCfg.StyleSheet = cfg.StyleSheet
 			}
 		}
 
+		// Set global base url
 		cfg.BaseURL = baseURL
 		cfg.BaseURL = strings.TrimPrefix(cfg.BaseURL, "/")
 		cfg.BaseURL = strings.TrimSuffix(cfg.BaseURL, "/")
@@ -160,6 +240,10 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		if err := appendConfig(cfg); err != nil {
 			return configs, err
 		}
+
+		fmt.Println(cfg.UserConfig)
+		fmt.Println(cfg.Users["user1"])
+		fmt.Println(cfg.Users["user2"])
 	}
 
 	return configs, nil
