@@ -70,7 +70,8 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 
 	for c.Next() {
 		var cfg = Config{UserConfig: &UserConfig{}}
-		cfg.PathScope = "./"
+		cfg.PathScope = "."
+		cfg.Root = http.Dir(cfg.PathScope)
 		cfg.BaseURL = ""
 		cfg.FrontMatter = "yaml"
 		cfg.HugoEnabled = false
@@ -234,8 +235,6 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		cfg.BaseURL = strings.TrimPrefix(cfg.BaseURL, "/")
 		cfg.BaseURL = strings.TrimSuffix(cfg.BaseURL, "/")
 		cfg.BaseURL = "/" + cfg.BaseURL
-
-		cfg.Root = http.Dir(cfg.PathScope)
 
 		caddyConf := httpserver.GetConfig(c)
 		cfg.AbsoluteURL = strings.TrimSuffix(caddyConf.Addr.Path, "/") + "/" + cfg.BaseURL

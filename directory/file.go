@@ -37,14 +37,14 @@ type Info struct {
 
 // GetInfo gets the file information and, in case of error, returns the
 // respective HTTP error code
-func GetInfo(url *url.URL, c *config.Config) (*Info, int, error) {
+func GetInfo(url *url.URL, c *config.Config, u *config.UserConfig) (*Info, int, error) {
 	var err error
 
 	rootPath := strings.Replace(url.Path, c.BaseURL, "", 1)
 	rootPath = strings.TrimPrefix(rootPath, "/")
 	rootPath = "/" + rootPath
 
-	relpath := c.PathScope + rootPath
+	relpath := u.PathScope + rootPath
 	relpath = strings.Replace(relpath, "\\", "/", -1)
 	relpath = filepath.Clean(relpath)
 
@@ -53,7 +53,7 @@ func GetInfo(url *url.URL, c *config.Config) (*Info, int, error) {
 		RootPath: rootPath,
 		Path:     relpath,
 	}
-	f, err := c.Root.Open(rootPath)
+	f, err := u.Root.Open(rootPath)
 	if err != nil {
 		return file, errors.ToHTTPCode(err), err
 	}
@@ -188,7 +188,7 @@ func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config
 func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.UserConfig) (int, error) {
 	var err error
 
-	file, err := c.Root.Open(i.RootPath)
+	file, err := u.Root.Open(i.RootPath)
 	if err != nil {
 		return errors.ToHTTPCode(err), err
 	}

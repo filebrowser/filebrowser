@@ -57,7 +57,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			}
 
 			if r.Method != http.MethodPost && !serveAssets {
-				fi, code, err = directory.GetInfo(r.URL, c)
+				fi, code, err = directory.GetInfo(r.URL, c, user)
 				if err != nil {
 					if r.Method == http.MethodGet {
 						return errors.PrintHTML(w, code, err)
