@@ -80,6 +80,10 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 		"CSS": func(s string) template.CSS {
 			return template.CSS(s)
 		},
+		"Marshal": func(v interface{}) template.JS {
+			a, _ := json.Marshal(v)
+			return template.JS(a)
+		},
 	}
 
 	if p.Minimal {

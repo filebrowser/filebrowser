@@ -443,13 +443,20 @@ var searchEvent = function(event) {
     let box = document.querySelector('#search div');
 
     if (value.length == 0) {
-        box.innerHTML = "Write your git, mercurial or svn command and press enter.";
+        box.innerHTML = "Write one of yours suported commands: " + user.Commands.join(", ") + ".";
         return;
     }
 
     let pieces = value.split(' ');
+    let supported = false;
 
-    if (pieces[0] != "git" && pieces[0] != "hg" && pieces[0] != "svn") {
+    user.Commands.forEach(function(cmd) {
+        if (cmd == pieces[0]) {
+            supported = true;
+        }
+    });
+
+    if (!supported) {
         box.innerHTML = "Command not supported."
         return;
     }
@@ -509,7 +516,7 @@ document.addEventListener('listing', event => {
         }
     });
 
-    if (document.getElementById('search')) {
+    if (user.AllowCommands) {
         document.querySelector('#search input').addEventListener('focus', event => {
             document.getElementById('search').classList.add('active');
         });
@@ -519,31 +526,27 @@ document.addEventListener('listing', event => {
             document.querySelector('#search input').value = '';
         });
 
+        document.querySelector('#search div').innerHTML = "Write one of yours suported commands: " + user.Commands.join(", ") + ".";
         document.querySelector('#search input').addEventListener('keyup', searchEvent);
     }
 
-    if (document.getElementById("upload")) {
+    if (user.AllowEdit) {
+        // Enables rename button
+        document.getElementById("rename").addEventListener("click", renameEvent);
+    }
+
+    if (user.AllowNew) {
         // Enables upload button
         document.getElementById("upload").addEventListener("click", (event) => {
             document.getElementById("upload-input").click();
         });
 
-    }
-
-    if (document.getElementById("rename")) {
-        // Enables rename button
-        document.getElementById("rename").addEventListener("click", renameEvent);
-    }
-
-    if (document.getElementById('new')) {
         document.getElementById('new').addEventListener('click', event => {
             let newdir = document.getElementById('newdir');
             newdir.classList.add('enabled');
             newdir.focus();
         });
-    }
 
-    if (document.getElementById('newdir')) {
         document.getElementById('newdir').addEventListener('blur', event => {
             document.getElementById('newdir').classList.remove('enabled');
         });
@@ -845,7 +848,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     // Enables open, delete and download buttons
     document.getElementById("open").addEventListener("click", openEvent);
 
-    if (document.getElementById("delete")) {
+    if (user.AllowEdit) {
         document.getElementById("delete").addEventListener("click", deleteEvent);
     }
 
