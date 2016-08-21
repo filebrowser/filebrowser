@@ -1,5 +1,5 @@
 {{ define "content" }}
-
+{{ with .Data}}
  <main class="container">
   {{ if eq .Type "image" }}
    <img src="{{ .URL }}?raw=true">
@@ -11,5 +11,5 @@
    <pre>{{ .Content }}</pre>
   {{ end }}
  </main>
-
+{{ end }}
 {{ end }}

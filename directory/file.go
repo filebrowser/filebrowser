@@ -171,7 +171,7 @@ func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config
 		},
 	}
 
-	if CanBeEdited(i.Name) {
+	if CanBeEdited(i.Name) && u.AllowEdit {
 		editor, err := i.GetEditor()
 
 		if err != nil {

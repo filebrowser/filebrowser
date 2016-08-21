@@ -509,62 +509,73 @@ document.addEventListener('listing', event => {
         }
     });
 
-    document.querySelector('#search input').addEventListener('focus', event => {
-        document.getElementById('search').classList.add('active');
-    });
-
-    document.querySelector('#search input').addEventListener('blur', event => {
-        document.getElementById('search').classList.remove('active');
-        document.querySelector('#search input').value = '';
-    });
-
-    document.querySelector('#search input').addEventListener('keyup', searchEvent);
-
-    // Enables upload button
-    document.getElementById("upload").addEventListener("click", (event) => {
-        document.getElementById("upload-input").click();
-    });
-
-    // Enables rename button
-    document.getElementById("rename").addEventListener("click", renameEvent);
-
-    document.getElementById('new').addEventListener('click', event => {
-        let newdir = document.getElementById('newdir');
-        newdir.classList.add('enabled');
-        newdir.focus();
-    });
-
-    document.getElementById('newdir').addEventListener('blur', event => {
-        document.getElementById('newdir').classList.remove('enabled');
-    });
-
-    document.getElementById('newdir').addEventListener('keydown', newDirEvent);
-
-    // Drag and Drop
-    let items = document.getElementsByClassName('item');
-    document.addEventListener("dragover", function(event) {
-        event.preventDefault();
-    }, false);
-
-    document.addEventListener("dragover", (event) => {
-        Array.from(items).forEach(file => {
-            file.style.opacity = 0.5;
+    if (document.getElementById('search')) {
+        document.querySelector('#search input').addEventListener('focus', event => {
+            document.getElementById('search').classList.add('active');
         });
-    }, false);
 
-    document.addEventListener("dragleave", (event) => {
-        Array.from(items).forEach(file => {
-            file.style.opacity = 1;
+        document.querySelector('#search input').addEventListener('blur', event => {
+            document.getElementById('search').classList.remove('active');
+            document.querySelector('#search input').value = '';
         });
-    }, false);
 
-    document.addEventListener("drop", function(event) {
-        event.preventDefault();
-        var dt = event.dataTransfer;
-        var files = dt.files;
+        document.querySelector('#search input').addEventListener('keyup', searchEvent);
+    }
 
-        handleFiles(files);
-    }, false);
+    if (document.getElementById("upload")) {
+        // Enables upload button
+        document.getElementById("upload").addEventListener("click", (event) => {
+            document.getElementById("upload-input").click();
+        });
+
+    }
+
+    if (document.getElementById("rename")) {
+        // Enables rename button
+        document.getElementById("rename").addEventListener("click", renameEvent);
+    }
+
+    if (document.getElementById('new')) {
+        document.getElementById('new').addEventListener('click', event => {
+            let newdir = document.getElementById('newdir');
+            newdir.classList.add('enabled');
+            newdir.focus();
+        });
+    }
+
+    if (document.getElementById('newdir')) {
+        document.getElementById('newdir').addEventListener('blur', event => {
+            document.getElementById('newdir').classList.remove('enabled');
+        });
+
+        document.getElementById('newdir').addEventListener('keydown', newDirEvent);
+
+        // Drag and Drop
+        let items = document.getElementsByClassName('item');
+        document.addEventListener("dragover", function(event) {
+            event.preventDefault();
+        }, false);
+
+        document.addEventListener("dragover", (event) => {
+            Array.from(items).forEach(file => {
+                file.style.opacity = 0.5;
+            });
+        }, false);
+
+        document.addEventListener("dragleave", (event) => {
+            Array.from(items).forEach(file => {
+                file.style.opacity = 1;
+            });
+        }, false);
+
+        document.addEventListener("drop", function(event) {
+            event.preventDefault();
+            var dt = event.dataTransfer;
+            var files = dt.files;
+
+            handleFiles(files);
+        }, false);
+    }
 });
 
 /* * * * * * * * * * * * * * * *
@@ -833,7 +844,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     // Enables open, delete and download buttons
     document.getElementById("open").addEventListener("click", openEvent);
-    document.getElementById("delete").addEventListener("click", deleteEvent);
+
+    if (document.getElementById("delete")) {
+        document.getElementById("delete").addEventListener("click", deleteEvent);
+    }
+
     document.getElementById("download").addEventListener("click", downloadEvent);
     document.getElementById("open-nav").addEventListener("click", event => {
         document.querySelector("header > div:nth-child(2)").classList.toggle("active");

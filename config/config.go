@@ -66,7 +66,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 
 	for c.Next() {
 		var cfg = Config{UserConfig: &UserConfig{}}
-		cfg.PathScope = "."
+		cfg.PathScope = "./"
 		cfg.BaseURL = ""
 		cfg.FrontMatter = "yaml"
 		cfg.HugoEnabled = false

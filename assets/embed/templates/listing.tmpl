@@ -1,42 +1,46 @@
 {{ define "content" }}
- <div class="listing">
-  <div class="container" id="listing">
-   {{- range .Items}}
-   <div class="item" data-dir="{{- if .IsDir}}true{{ else }}false{{ end }}" id="{{.URL}}">
-    <div>
-     <a href="{{.URL}}">
-      {{- if .IsDir}}
-      <i class="material-icons">folder</i>
-      {{- else}}
-      <i class="material-icons">insert_drive_file</i>
-      {{- end}}
-     </a>
-    </div>
-    <div>
-     <a href="{{.URL}}">
-      <span class="name">{{.Name}}</span>
-      {{- if .IsDir}}
-      <p data-order="-1">&mdash;</p>
-      {{- else}}
-      <p data-order="{{.Size}}">{{.HumanSize}}</p>
-      {{- end}}
-      <p>
-       <time datetime="{{.HumanModTime " 2006-01-02T15:04:05Z"}}">{{.HumanModTime "01/02/2006 03:04:05 PM -07:00"}}</time>
-      </p>
-     </a>
-    </div>
-    <span class="checkbox" data-href="{{.URL}}"><i class="material-icons">check</i></div>
+{{ with .Data }}
+<div class="listing">
+    <div class="container" id="listing">
+    {{- range .Items}}
+        <div class="item" data-dir="{{- if .IsDir}}true{{ else }}false{{ end }}" id="{{.URL}}">
+            <div>
+                <a href="{{.URL}}">
+                    {{- if .IsDir}}
+                    <i class="material-icons">folder</i>
+                    {{- else}}
+                    <i class="material-icons">insert_drive_file</i>
+                    {{- end}}
+                </a>
+            </div>
+            <div>
+                <a href="{{.URL}}">
+                    <span class="name">{{.Name}}</span>
+                    {{- if .IsDir}}
+                    <p data-order="-1">&mdash;</p>
+                    {{- else}}
+                    <p data-order="{{.Size}}">{{.HumanSize}}</p>
+                    {{- end}}
+                    <p>
+                    <time datetime="{{.HumanModTime " 2006-01-02T15:04:05Z"}}">{{.HumanModTime "01/02/2006 03:04:05 PM -07:00"}}</time>
+                    </p>
+                </a>
+            </div>
+            <span class="checkbox" data-href="{{.URL}}"><i class="material-icons">check</i>
+        </div>
     {{- end}}
-   </div>
-  </div>
+    </div>
+</div>
 
-  <input style="display:none" type="file" id="upload-input" onchange="handleFiles(this.files)" value="Upload" multiple>
+<input style="display:none" type="file" id="upload-input" onchange="handleFiles(this.files)" value="Upload" multiple>
+{{ end }}
 
+{{ if .User.AllowNew }}
 <input id="newdir" type="text" placeholder="Name...">
-
-  <div class="floating">
-   <div class="action" id="new">
-    <i class="material-icons" title="New">add</i>
-   </div>
-  </div>
- {{ end }}
+<div class="floating">
+    <div class="action" id="new">
+        <i class="material-icons" title="New">add</i>
+    </div>
+</div>
+{{ end }}
+{{ end }}

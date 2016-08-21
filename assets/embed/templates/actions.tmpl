@@ -2,7 +2,7 @@
  <div class="action" id="open">
   <i class="material-icons" title="See raw">open_in_new</i> <span>See raw</span>
  </div>
- {{ if .IsDir }}
+ {{ if and .IsDir .User.AllowEdit }}
   <div class="action" id="rename">
    <i class="material-icons" title="Edit">mode_edit</i>
   </div>
@@ -10,7 +10,9 @@
  <div class="action" id="download">
   <i class="material-icons" title="Download">file_download</i> <span>Download</span>
  </div>
+ {{ if .User.AllowEdit }}
  <div class="action" id="delete">
   <i class="material-icons" title="Delete">delete</i> <span>Delete</span>
  </div>
+ {{ end }}
 {{ end }}

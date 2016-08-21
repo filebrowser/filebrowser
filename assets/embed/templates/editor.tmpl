@@ -1,4 +1,5 @@
 {{ define "content" }}
+{{ with .Data }}
  <div id="editor" class="container" data-kind="{{ .Class }}">
   <form method="POST" action="./">
    {{ if or (eq .Class "frontmatter-only") (eq .Class "complete") }}
@@ -29,4 +30,5 @@
    </div>
   </form>
  </div>
+{{ end }}
 {{ end }}

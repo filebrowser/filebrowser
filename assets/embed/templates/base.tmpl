@@ -63,18 +63,22 @@
 
        {{ if .IsDir}}
 
+       {{ if .User.AllowCommands }}
        <div id="search">
            <i class="material-icons" title="Storage">storage</i>
            <input type="text" placeholder="Execute a command...">
            <div>Write your git, mercurial or svn command and press enter.</div>
        </div>
+       {{ end }}
 
         <div class="action" id="view">
          <i class="material-icons" title="Switch view">view_headline</i> <span>Switch view</span>
         </div>
+        {{ if .User.AllowNew }}
         <div class="action" id="upload">
          <i class="material-icons" title="Upload">file_upload</i> <span>Upload</span>
         </div>
+        {{ end }}
         {{ else }}
         {{ template "actions" . }}
        {{ end }}
@@ -103,7 +107,7 @@
   {{ end }}
 
   <main>
-   {{ template "content" .Data }}
+   {{ template "content" . }}
    <span id="token">{{ .Config.Token }}</span>
   </main>
 
