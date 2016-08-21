@@ -170,6 +170,17 @@ func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config
 		},
 	}
 
+	// Set the current User
+	user, _, ok := r.BasicAuth()
+
+	if !ok {
+		page.Info.User = c.UserConfig
+	}
+
+	if _, ok := c.Users[user]; ok {
+		page.Info.User = c.Users[user]
+	}
+
 	if CanBeEdited(i.Name) {
 		editor, err := i.GetEditor()
 
@@ -248,6 +259,17 @@ func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Co
 			Config: c,
 			Data:   listing,
 		},
+	}
+
+	// Set the current User
+	user, _, ok := r.BasicAuth()
+
+	if !ok {
+		page.Info.User = c.UserConfig
+	}
+
+	if _, ok := c.Users[user]; ok {
+		page.Info.User = c.Users[user]
 	}
 
 	if r.Header.Get("Minimal") == "true" {
