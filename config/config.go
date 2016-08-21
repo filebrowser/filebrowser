@@ -25,21 +25,23 @@ type Config struct {
 
 // UserConfig contains the configuration for each user
 type UserConfig struct {
-	PathScope   string
-	Root        http.FileSystem
-	StyleSheet  string // Costum stylesheet
-	FrontMatter string // Default frontmatter to save files in
-	AllowNew    bool   // Can create files and folders
-	AllowEdit   bool   // Can edit/rename files
+	PathScope     string
+	Root          http.FileSystem
+	StyleSheet    string   // Costum stylesheet
+	FrontMatter   string   // Default frontmatter to save files in
+	AllowNew      bool     // Can create files and folders
+	AllowEdit     bool     // Can edit/rename files
+	AllowCommands bool     // Can execute commands
+	Commands      []string // Available Commands
+	Rules         []*Rule  // Access rules
+}
 
-	Allow      []string         // Allowed browse directories/files
-	AllowRegex []*regexp.Regexp // Regex of the previous
-	Block      []string         // Blocked browse directories/files
-	BlockRegex []*regexp.Regexp // Regex of the previous
-
-	AllowCommands   bool     // Can execute commands
-	AllowedCommands []string // Allowed commands
-	BlockedCommands []string // Blocked Commands
+// Rule is a dissalow/allow rule
+type Rule struct {
+	Regex  bool
+	Allow  bool
+	Path   string
+	Rexexp *regexp.Regexp
 }
 
 // Parse parses the configuration set by the user so it can
