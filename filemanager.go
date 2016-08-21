@@ -116,7 +116,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				}
 
 				// Update a file
-				return fi.Update(w, r, c)
+				return fi.Update(w, r, c, user)
 			case http.MethodPost:
 				// Upload a new file
 				if r.Header.Get("Upload") == "true" {

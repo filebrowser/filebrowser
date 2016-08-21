@@ -37,9 +37,7 @@ type UserConfig struct {
 	Rules         []*Rule         `json:"-"` // Access rules
 }
 
-// TODO: USE USER StyleSheet
-// TODO: USE USER FRONTMATTER
-// TODO: USE USER ROOT
+// REVIEW: USE USER ROOT
 
 // Rule is a dissalow/allow rule
 type Rule struct {

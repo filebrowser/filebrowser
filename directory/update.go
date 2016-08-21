@@ -15,7 +15,7 @@ import (
 )
 
 // Update is used to update a file that was edited
-func (i *Info) Update(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
+func (i *Info) Update(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.UserConfig) (int, error) {
 	var data map[string]interface{}
 	kind := r.Header.Get("kind")
 
@@ -45,7 +45,7 @@ func (i *Info) Update(w http.ResponseWriter, r *http.Request, c *config.Config) 
 		mainContent = strings.TrimSpace(mainContent)
 		file = []byte(mainContent)
 	case "complete":
-		if file, code, err = ParseCompleteFile(data, i.Name, c.FrontMatter); err != nil {
+		if file, code, err = ParseCompleteFile(data, i.Name, u.FrontMatter); err != nil {
 			return http.StatusInternalServerError, err
 		}
 	default:
