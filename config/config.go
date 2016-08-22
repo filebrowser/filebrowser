@@ -35,7 +35,11 @@ type Rule struct {
 // Parse parses the configuration set by the user so it can
 // be used by the middleware
 func Parse(c *caddy.Controller) ([]Config, error) {
-	var configs []Config
+	var (
+		configs []Config
+		err     error
+		user    *User
+	)
 
 	appendConfig := func(cfg Config) error {
 		for _, c := range configs {
@@ -47,12 +51,9 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		return nil
 	}
 
-	var err error
-	var cCfg *User
-	var baseURL string
-
 	for c.Next() {
-		var cfg = Config{User: &User{}}
+		// Initialize the configuration with the default settings
+		cfg := Config{User: &User{}}
 		cfg.PathScope = "."
 		cfg.Root = http.Dir(cfg.PathScope)
 		cfg.BaseURL = ""
@@ -69,8 +70,8 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 			Regexp: regexp.MustCompile("\\/\\..+"),
 		}}
 
-		baseURL = ""
-		cCfg = cfg.User
+		// Set the first user, the global user
+		user = cfg.User
 
 		for c.NextBlock() {
 			switch c.Val() {
@@ -78,37 +79,42 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
-				baseURL = c.Val()
+
+				cfg.BaseURL = c.Val()
 			case "frontmatter":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
-				cCfg.FrontMatter = c.Val()
-				if cCfg.FrontMatter != "yaml" && cCfg.FrontMatter != "json" && cCfg.FrontMatter != "toml" {
+
+				user.FrontMatter = c.Val()
+				if user.FrontMatter != "yaml" && user.FrontMatter != "json" && user.FrontMatter != "toml" {
 					return configs, c.Err("frontmatter type not supported")
 				}
 			case "show":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
-				cCfg.PathScope = c.Val()
-				cCfg.PathScope = strings.TrimSuffix(cCfg.PathScope, "/")
-				cCfg.Root = http.Dir(cCfg.PathScope)
+
+				user.PathScope = c.Val()
+				user.PathScope = strings.TrimSuffix(user.PathScope, "/")
+				user.Root = http.Dir(user.PathScope)
 			case "styles":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
+
 				var tplBytes []byte
 				tplBytes, err = ioutil.ReadFile(c.Val())
 				if err != nil {
 					return configs, err
 				}
-				cCfg.StyleSheet = string(tplBytes)
+				user.StyleSheet = string(tplBytes)
 			case "allow_new":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
-				cCfg.AllowNew, err = strconv.ParseBool(c.Val())
+
+				user.AllowNew, err = strconv.ParseBool(c.Val())
 				if err != nil {
 					return configs, err
 				}
@@ -116,7 +122,8 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
-				cCfg.AllowEdit, err = strconv.ParseBool(c.Val())
+
+				user.AllowEdit, err = strconv.ParseBool(c.Val())
 				if err != nil {
 					return configs, err
 				}
@@ -124,7 +131,8 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
-				cCfg.AllowCommands, err = strconv.ParseBool(c.Val())
+
+				user.AllowCommands, err = strconv.ParseBool(c.Val())
 				if err != nil {
 					return configs, err
 				}
@@ -133,7 +141,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 					return configs, c.ArgErr()
 				}
 
-				cCfg.Commands = append(cCfg.Commands, c.Val())
+				user.Commands = append(user.Commands, c.Val())
 			case "block_command":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
@@ -141,76 +149,42 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 
 				index := 0
 
-				for i, val := range cCfg.Commands {
+				for i, val := range user.Commands {
 					if val == c.Val() {
 						index = i
 					}
 				}
 
-				cCfg.Commands = append(cCfg.Commands[:index], cCfg.Commands[index+1:]...)
-			case "allow":
+				user.Commands = append(user.Commands[:index], user.Commands[index+1:]...)
+			case "allow", "allow_r", "block", "block_r":
+				ruleType := c.Val()
+
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
 
-				if c.Val() == "dotfiles" {
-					cCfg.Rules = append(cCfg.Rules, &Rule{
-						Regex:  true,
-						Allow:  true,
-						Regexp: regexp.MustCompile("\\/\\..+"),
-					})
+				if c.Val() == "dotfiles" && !strings.HasSuffix(ruleType, "_r") {
+					ruleType += "_r"
+				}
+
+				rule := &Rule{
+					Allow: ruleType == "allow" || ruleType == "allow_r",
+					Regex: ruleType == "allow_r" || ruleType == "block_r",
+				}
+
+				if rule.Regex && c.Val() == "dotfiles" {
+					rule.Regexp = regexp.MustCompile("\\/\\..+")
+				} else if rule.Regex {
+					rule.Regexp = regexp.MustCompile(c.Val())
 				} else {
-					cCfg.Rules = append(cCfg.Rules, &Rule{
-						Regex:  false,
-						Allow:  true,
-						Path:   c.Val(),
-						Regexp: nil,
-					})
-				}
-			case "allow_r":
-				if !c.NextArg() {
-					return configs, c.ArgErr()
+					rule.Path = c.Val()
 				}
 
-				cCfg.Rules = append(cCfg.Rules, &Rule{
-					Regex:  true,
-					Allow:  true,
-					Path:   "",
-					Regexp: regexp.MustCompile(c.Val()),
-				})
-			case "block":
-				if !c.NextArg() {
-					return configs, c.ArgErr()
-				}
-
-				if c.Val() == "dotfiles" {
-					cCfg.Rules = append(cCfg.Rules, &Rule{
-						Regex:  true,
-						Allow:  false,
-						Regexp: regexp.MustCompile("\\/\\..+"),
-					})
-				} else {
-					cCfg.Rules = append(cCfg.Rules, &Rule{
-						Regex:  false,
-						Allow:  false,
-						Path:   c.Val(),
-						Regexp: nil,
-					})
-				}
-			case "block_r":
-				if !c.NextArg() {
-					return configs, c.ArgErr()
-				}
-
-				cCfg.Rules = append(cCfg.Rules, &Rule{
-					Regex:  true,
-					Allow:  false,
-					Path:   "",
-					Regexp: regexp.MustCompile(c.Val()),
-				})
+				user.Rules = append(user.Rules, rule)
 			// NEW USER BLOCK?
 			default:
 				val := c.Val()
+
 				// Checks if it's a new user
 				if !strings.HasSuffix(val, ":") {
 					fmt.Println("Unknown option " + val)
@@ -221,21 +195,19 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				cfg.Users[val] = &User{}
 
 				// Initialize the new user
-				cCfg = cfg.Users[val]
-				cCfg.AllowCommands = cfg.AllowCommands
-				cCfg.AllowEdit = cfg.AllowEdit
-				cCfg.AllowNew = cfg.AllowEdit
-				cCfg.Commands = cfg.Commands
-				cCfg.FrontMatter = cfg.FrontMatter
-				cCfg.PathScope = cfg.PathScope
-				cCfg.Root = cfg.Root
-				cCfg.Rules = cfg.Rules
-				cCfg.StyleSheet = cfg.StyleSheet
+				user = cfg.Users[val]
+				user.AllowCommands = cfg.AllowCommands
+				user.AllowEdit = cfg.AllowEdit
+				user.AllowNew = cfg.AllowEdit
+				user.Commands = cfg.Commands
+				user.FrontMatter = cfg.FrontMatter
+				user.PathScope = cfg.PathScope
+				user.Root = cfg.Root
+				user.Rules = cfg.Rules
+				user.StyleSheet = cfg.StyleSheet
 			}
 		}
 
-		// Set global base url
-		cfg.BaseURL = baseURL
 		cfg.BaseURL = strings.TrimPrefix(cfg.BaseURL, "/")
 		cfg.BaseURL = strings.TrimSuffix(cfg.BaseURL, "/")
 		cfg.BaseURL = "/" + cfg.BaseURL
@@ -248,7 +220,6 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		if err := appendConfig(cfg); err != nil {
 			return configs, err
 		}
-
 	}
 
 	return configs, nil

@@ -50,13 +50,16 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			c = &f.Configs[i]
 			serveAssets = httpserver.Path(r.URL.Path).Matches(c.BaseURL + assets.BaseURL)
 
-			// Set the current User
+			// Set the current user.
 			username, _, _ := r.BasicAuth()
 
 			if _, ok := c.Users[username]; ok {
 				user = c.Users[username]
+			} else {
+				user = c.User
 			}
 
+			// Checks if the user has permission to access the current directory.
 			if !user.Allowed(r.URL.Path) {
 				if r.Method == http.MethodGet {
 					return errors.PrintHTML(w, http.StatusForbidden, e.New("You don't have permission to access this page."))
@@ -65,7 +68,10 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				return http.StatusForbidden, nil
 			}
 
+			// If this request is neither to server assets, nor to upload/create
+			// a new file or directory.
 			if r.Method != http.MethodPost && !serveAssets {
+				// Gets the information of the directory/file
 				fi, code, err = directory.GetInfo(r.URL, c, user)
 				if err != nil {
 					if r.Method == http.MethodGet {
@@ -74,28 +80,30 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					return code, err
 				}
 
+				// If it's a dir and the path doesn't end with a trailing slash,
+				// redirect the user.
 				if fi.IsDir && !strings.HasSuffix(r.URL.Path, "/") {
 					http.Redirect(w, r, c.AddrPath+r.URL.Path+"/", http.StatusTemporaryRedirect)
 					return 0, nil
 				}
 			}
 
-			// Secure agains CSRF attacks
+			// Security measures against CSRF attacks.
 			if r.Method != http.MethodGet {
 				if !c.CheckToken(r) {
 					return http.StatusForbidden, nil
 				}
 			}
 
-			// Route the request depending on the HTTP Method
+			// Route the request depending on the HTTP Method.
 			switch r.Method {
 			case http.MethodGet:
-				// Read and show directory or file
+				// Read and show directory or file.
 				if serveAssets {
 					return assets.Serve(w, r, c)
 				}
 
-				// Generate anti security token
+				// Generate anti security token.
 				c.GenerateToken()
 
 				if !fi.IsDir {
@@ -124,10 +132,10 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					return http.StatusUnauthorized, nil
 				}
 
-				// Update a file
+				// Update a file.
 				return fi.Update(w, r, c, user)
 			case http.MethodPost:
-				// Upload a new file
+				// Upload a new file.
 				if r.Header.Get("Upload") == "true" {
 					if !user.AllowNew {
 						return http.StatusUnauthorized, nil
@@ -135,11 +143,13 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 					return upload(w, r, c)
 				}
-				// Search and git commands
+
+				// Search and git commands.
 				if r.Header.Get("Search") == "true" {
-					// TODO: search commands
+					// TODO: search commands.
 				}
-				// VCS commands
+
+				// VCS commands.
 				if r.Header.Get("Command") != "" {
 					if !user.AllowCommands {
 						return http.StatusUnauthorized, nil
@@ -147,7 +157,8 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 					return command(w, r, c, user)
 				}
-				// Creates a new folder
+
+				// Creates a new folder.
 				return newDirectory(w, r, c)
 			case http.MethodDelete:
 				if !user.AllowEdit {

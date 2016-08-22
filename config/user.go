@@ -18,9 +18,7 @@ type User struct {
 	Rules         []*Rule         `json:"-"` // Access rules
 }
 
-// REVIEW: USE USER ROOT
-
-// Allowed is
+// Allowed checks if the user has permission to access a directory/file
 func (u User) Allowed(url string) bool {
 	var rule *Rule
 	i := len(u.Rules) - 1
