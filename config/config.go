@@ -14,37 +14,22 @@ import (
 
 // Config is a configuration for browsing in a particualr path.
 type Config struct {
-	*UserConfig
+	*User
 	BaseURL     string
 	AbsoluteURL string
 	AddrPath    string
 	Token       string // Anti CSRF token
 	HugoEnabled bool   // Enables the Hugo plugin for File Manager
-	Users       map[string]*UserConfig
-	CurrentUser *UserConfig
+	Users       map[string]*User
+	CurrentUser *User
 }
-
-// UserConfig contains the configuration for each user
-type UserConfig struct {
-	PathScope     string          `json:"-"` // Path the user have access
-	Root          http.FileSystem `json:"-"` // The virtual file system the user have access
-	StyleSheet    string          `json:"-"` // Costum stylesheet
-	FrontMatter   string          `json:"-"` // Default frontmatter to save files in
-	AllowNew      bool            // Can create files and folders
-	AllowEdit     bool            // Can edit/rename files
-	AllowCommands bool            // Can execute commands
-	Commands      []string        // Available Commands
-	Rules         []*Rule         `json:"-"` // Access rules
-}
-
-// REVIEW: USE USER ROOT
 
 // Rule is a dissalow/allow rule
 type Rule struct {
 	Regex  bool
 	Allow  bool
 	Path   string
-	Rexexp *regexp.Regexp
+	Regexp *regexp.Regexp
 }
 
 // Parse parses the configuration set by the user so it can
@@ -63,24 +48,29 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 	}
 
 	var err error
-	var cCfg *UserConfig
+	var cCfg *User
 	var baseURL string
 
 	for c.Next() {
-		var cfg = Config{UserConfig: &UserConfig{}}
+		var cfg = Config{User: &User{}}
 		cfg.PathScope = "."
 		cfg.Root = http.Dir(cfg.PathScope)
 		cfg.BaseURL = ""
 		cfg.FrontMatter = "yaml"
 		cfg.HugoEnabled = false
-		cfg.Users = map[string]*UserConfig{}
+		cfg.Users = map[string]*User{}
 		cfg.AllowCommands = true
 		cfg.AllowEdit = true
 		cfg.AllowNew = true
 		cfg.Commands = []string{"git", "svn", "hg"}
+		cfg.Rules = []*Rule{&Rule{
+			Regex:  true,
+			Allow:  false,
+			Regexp: regexp.MustCompile("\\/\\..+"),
+		}}
 
 		baseURL = ""
-		cCfg = cfg.UserConfig
+		cCfg = cfg.User
 
 		for c.NextBlock() {
 			switch c.Val() {
@@ -167,7 +157,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 					Regex:  false,
 					Allow:  true,
 					Path:   c.Val(),
-					Rexexp: nil,
+					Regexp: nil,
 				})
 			case "allow_r":
 				if !c.NextArg() {
@@ -178,7 +168,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 					Regex:  true,
 					Allow:  true,
 					Path:   "",
-					Rexexp: regexp.MustCompile(c.Val()),
+					Regexp: regexp.MustCompile(c.Val()),
 				})
 			case "block":
 				if !c.NextArg() {
@@ -189,7 +179,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 					Regex:  false,
 					Allow:  false,
 					Path:   c.Val(),
-					Rexexp: nil,
+					Regexp: nil,
 				})
 			case "block_r":
 				if !c.NextArg() {
@@ -200,7 +190,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 					Regex:  true,
 					Allow:  false,
 					Path:   "",
-					Rexexp: regexp.MustCompile(c.Val()),
+					Regexp: regexp.MustCompile(c.Val()),
 				})
 			// NEW USER BLOCK?
 			default:
@@ -212,7 +202,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 
 				// Get the username, sets the current user, and initializes it
 				val = strings.TrimSuffix(val, ":")
-				cfg.Users[val] = &UserConfig{}
+				cfg.Users[val] = &User{}
 
 				// Initialize the new user
 				cCfg = cfg.Users[val]

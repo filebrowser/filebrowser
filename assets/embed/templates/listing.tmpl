@@ -3,6 +3,7 @@
 <div class="listing">
     <div class="container" id="listing">
     {{- range .Items}}
+        {{ if .UserAllowed }}
         <div class="item" data-dir="{{- if .IsDir}}true{{ else }}false{{ end }}" id="{{.URL}}">
             <div>
                 <a href="{{.URL}}">
@@ -28,6 +29,7 @@
             </div>
             <span class="checkbox" data-href="{{.URL}}"><i class="material-icons">check</i>
         </div>
+        {{ end }}
     {{- end}}
     </div>
 </div>

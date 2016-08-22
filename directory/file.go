@@ -21,23 +21,24 @@ import (
 
 // Info is the information about a particular file or directory
 type Info struct {
-	IsDir    bool
-	Name     string
-	Size     int64
-	URL      string
-	Path     string // The relative Path of the file/directory relative to Caddyfile.
-	RootPath string // The Path of the file/directory on http.FileSystem.
-	ModTime  time.Time
-	Mode     os.FileMode
-	Mimetype string
-	Content  string
-	Raw      []byte
-	Type     string
+	IsDir       bool
+	Name        string
+	Size        int64
+	URL         string
+	Path        string // The relative Path of the file/directory relative to Caddyfile.
+	RootPath    string // The Path of the file/directory on http.FileSystem.
+	ModTime     time.Time
+	Mode        os.FileMode
+	Mimetype    string
+	Content     string
+	Raw         []byte
+	Type        string
+	UserAllowed bool // Indicates if the user has permissions to open this directory
 }
 
 // GetInfo gets the file information and, in case of error, returns the
 // respective HTTP error code
-func GetInfo(url *url.URL, c *config.Config, u *config.UserConfig) (*Info, int, error) {
+func GetInfo(url *url.URL, c *config.Config, u *config.User) (*Info, int, error) {
 	var err error
 
 	rootPath := strings.Replace(url.Path, c.BaseURL, "", 1)
@@ -142,7 +143,7 @@ func (i *Info) Rename(w http.ResponseWriter, r *http.Request) (int, error) {
 }
 
 // ServeAsHTML is used to serve single file pages
-func (i *Info) ServeAsHTML(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.UserConfig) (int, error) {
+func (i *Info) ServeAsHTML(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
 	if i.IsDir {
 		return i.serveListing(w, r, c, u)
 	}
@@ -150,7 +151,7 @@ func (i *Info) ServeAsHTML(w http.ResponseWriter, r *http.Request, c *config.Con
 	return i.serveSingleFile(w, r, c, u)
 }
 
-func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.UserConfig) (int, error) {
+func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
 	err := i.GetExtendedInfo()
 	if err != nil {
 		return errors.ToHTTPCode(err), err
@@ -185,7 +186,7 @@ func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config
 	return page.PrintAsHTML(w, "single")
 }
 
-func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.UserConfig) (int, error) {
+func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
 	var err error
 
 	file, err := u.Root.Open(i.RootPath)
@@ -194,7 +195,7 @@ func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Co
 	}
 	defer file.Close()
 
-	listing, err := i.loadDirectoryContents(file, c)
+	listing, err := i.loadDirectoryContents(file, r.URL.Path, u)
 	if err != nil {
 		fmt.Println(err)
 		switch {
@@ -259,17 +260,17 @@ func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Co
 	return page.PrintAsHTML(w, "listing")
 }
 
-func (i Info) loadDirectoryContents(file http.File, c *config.Config) (*Listing, error) {
+func (i Info) loadDirectoryContents(file http.File, path string, u *config.User) (*Listing, error) {
 	files, err := file.Readdir(-1)
 	if err != nil {
 		return nil, err
 	}
 
-	listing := directoryListing(files, i.RootPath)
+	listing := directoryListing(files, i.RootPath, path, u)
 	return &listing, nil
 }
 
-func directoryListing(files []os.FileInfo, urlPath string) Listing {
+func directoryListing(files []os.FileInfo, urlPath string, basePath string, u *config.User) Listing {
 	var (
 		fileinfos           []Info
 		dirCount, fileCount int
@@ -285,15 +286,16 @@ func directoryListing(files []os.FileInfo, urlPath string) Listing {
 			fileCount++
 		}
 
-		url := url.URL{Path: "./" + name} // prepend with "./" to fix paths with ':' in the name
-
+		// Absolute URL
+		url := url.URL{Path: basePath + name}
 		fileinfos = append(fileinfos, Info{
-			IsDir:   f.IsDir(),
-			Name:    f.Name(),
-			Size:    f.Size(),
-			URL:     url.String(),
-			ModTime: f.ModTime().UTC(),
-			Mode:    f.Mode(),
+			IsDir:       f.IsDir(),
+			Name:        f.Name(),
+			Size:        f.Size(),
+			URL:         url.String(),
+			ModTime:     f.ModTime().UTC(),
+			Mode:        f.Mode(),
+			UserAllowed: u.Allowed(url.String()),
 		})
 	}
 

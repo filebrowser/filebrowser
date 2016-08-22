@@ -8,6 +8,7 @@
 package filemanager
 
 import (
+	e "errors"
 	"io"
 	"io/ioutil"
 	"log"
@@ -41,7 +42,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 		code        int
 		err         error
 		serveAssets bool
-		user        *config.UserConfig
+		user        *config.User
 	)
 
 	for i := range f.Configs {
@@ -54,6 +55,14 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 			if _, ok := c.Users[username]; ok {
 				user = c.Users[username]
+			}
+
+			if !user.Allowed(r.URL.Path) {
+				if r.Method == http.MethodGet {
+					return errors.PrintHTML(w, http.StatusForbidden, e.New("You don't have permission to access this page."))
+				}
+
+				return http.StatusForbidden, nil
 			}
 
 			if r.Method != http.MethodPost && !serveAssets {
@@ -241,7 +250,7 @@ func newDirectory(w http.ResponseWriter, r *http.Request, c *config.Config) (int
 }
 
 // command handles the requests for VCS related commands: git, svn and mercurial
-func command(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.UserConfig) (int, error) {
+func command(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
 	command := strings.Split(r.Header.Get("command"), " ")
 
 	// Check if the command is allowed

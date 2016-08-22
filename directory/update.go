@@ -15,7 +15,7 @@ import (
 )
 
 // Update is used to update a file that was edited
-func (i *Info) Update(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.UserConfig) (int, error) {
+func (i *Info) Update(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
 	var data map[string]interface{}
 	kind := r.Header.Get("kind")
 
