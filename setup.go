@@ -104,13 +104,15 @@ func setup(c *caddy.Controller) error {
 				Configs: []config.Config{
 					config.Config{
 						HugoEnabled: true,
-						PathScope:   conf.Root,
-						FrontMatter: format,
-						Root:        http.Dir(conf.Root),
+						User: &config.User{
+							PathScope:   conf.Root,
+							FrontMatter: format,
+							Root:        http.Dir(conf.Root),
+							StyleSheet:  conf.Styles,
+						},
 						BaseURL:     conf.BaseURL,
 						AbsoluteURL: strings.Replace(cnf.Addr.Path+"/"+conf.BaseURL, "//", "/", -1),
 						AddrPath:    strings.TrimSuffix(cnf.Addr.Path, "/"),
-						StyleSheet:  conf.Styles,
 					},
 				},
 			},

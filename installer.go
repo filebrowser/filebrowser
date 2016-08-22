@@ -14,7 +14,7 @@ import (
 )
 
 // This is automatically set on `go generate`
-const version = "UNDEFINED"
+const version = "v0.16"
 
 // GetPath retrives the Hugo path for the user or install it if it's not found
 func getPath() string {
