@@ -153,12 +153,20 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 					return configs, c.ArgErr()
 				}
 
-				cCfg.Rules = append(cCfg.Rules, &Rule{
-					Regex:  false,
-					Allow:  true,
-					Path:   c.Val(),
-					Regexp: nil,
-				})
+				if c.Val() == "dotfiles" {
+					cCfg.Rules = append(cCfg.Rules, &Rule{
+						Regex:  true,
+						Allow:  true,
+						Regexp: regexp.MustCompile("\\/\\..+"),
+					})
+				} else {
+					cCfg.Rules = append(cCfg.Rules, &Rule{
+						Regex:  false,
+						Allow:  true,
+						Path:   c.Val(),
+						Regexp: nil,
+					})
+				}
 			case "allow_r":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
@@ -175,12 +183,20 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 					return configs, c.ArgErr()
 				}
 
-				cCfg.Rules = append(cCfg.Rules, &Rule{
-					Regex:  false,
-					Allow:  false,
-					Path:   c.Val(),
-					Regexp: nil,
-				})
+				if c.Val() == "dotfiles" {
+					cCfg.Rules = append(cCfg.Rules, &Rule{
+						Regex:  true,
+						Allow:  false,
+						Regexp: regexp.MustCompile("\\/\\..+"),
+					})
+				} else {
+					cCfg.Rules = append(cCfg.Rules, &Rule{
+						Regex:  false,
+						Allow:  false,
+						Path:   c.Val(),
+						Regexp: nil,
+					})
+				}
 			case "block_r":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
