@@ -8,14 +8,25 @@
 
 This package is a plugin for Caddy server that provides an online file manager (based on browse middleware) that is able to: rename files, delete files and upload files. Some new features that can be implemented in the future can be seen at [issues](https://github.com/hacdias/caddy-filemanager/issues).
 
+### Syntax
+
 ```
-filemanager {
-  show          path
-  on            url
-  styles        filepath
-  frontmatter   type
+filemanager url {
+  show              path
+  styles            filepath
+  frontmatter       type
+  allow_new         [true|false]
+  allow_edit        [true|false]
+  allow_commands    [true|false]
+  allow_command     command
+  block_command     command
+  allow             [path|dotfiles]
+  allow_r           path regex
+  block             [path|dotfiles]
+  block_r           path regex
 }
 ```
+
 
 ## NOTE FOR DEVELOPERS
 

@@ -70,12 +70,20 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 			Regexp: regexp.MustCompile("\\/\\..+"),
 		}}
 
+		// Get the baseURL
+		args := c.RemainingArgs()
+
+		if len(args) > 0 {
+			cfg.BaseURL = args[0]
+		}
+
 		// Set the first user, the global user
 		user = cfg.User
 
 		for c.NextBlock() {
 			switch c.Val() {
 			case "on":
+				// NOTE: DEPRECATED
 				if !c.NextArg() {
 					return configs, c.ArgErr()
 				}
@@ -211,6 +219,10 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		cfg.BaseURL = strings.TrimPrefix(cfg.BaseURL, "/")
 		cfg.BaseURL = strings.TrimSuffix(cfg.BaseURL, "/")
 		cfg.BaseURL = "/" + cfg.BaseURL
+
+		if cfg.BaseURL == "/" {
+			cfg.BaseURL = ""
+		}
 
 		caddyConf := httpserver.GetConfig(c)
 		cfg.AbsoluteURL = strings.TrimSuffix(caddyConf.Addr.Path, "/") + "/" + cfg.BaseURL
