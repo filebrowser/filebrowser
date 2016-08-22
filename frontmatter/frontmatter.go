@@ -193,10 +193,10 @@ func handleFlatValues(content interface{}, parent *Block, name string) *Block {
 	c := new(Block)
 	c.Parent = parent
 
-	switch reflect.ValueOf(content).Kind() {
-	case reflect.Bool:
+	switch content.(type) {
+	case bool:
 		c.Type = "boolean"
-	case reflect.Int, reflect.Float32, reflect.Float64:
+	case int, float32, float64:
 		c.Type = "number"
 	default:
 		c.Type = "string"
