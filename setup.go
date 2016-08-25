@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -143,8 +144,8 @@ func parse(c *caddy.Controller, root string) (*Config, error) {
 		Root:    "./",
 	}
 
-	if hugo, err = exec.LookPath("hugo"); err == nil {
-		conf.Hugo = hugo;
+	if hugo, err := exec.LookPath("hugo"); err == nil {
+		conf.Hugo = hugo
 	} else {
 		fmt.Println("It seems that you don't have 'hugo' on your PATH.\nAborting...")
 		os.Exit(0)
