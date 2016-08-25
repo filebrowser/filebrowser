@@ -1,4 +1,3 @@
-//go:generate go run build/main.go
 //go:generate go get github.com/jteeuwen/go-bindata
 //go:generate go install github.com/jteeuwen/go-bindata/go-bindata
 //go:generate go-bindata -nomemcopy -pkg hugo -prefix "assets" -o binary.go assets/...

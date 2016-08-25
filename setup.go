@@ -143,7 +143,13 @@ func parse(c *caddy.Controller, root string) (*Config, error) {
 		Root:    "./",
 	}
 
-	conf.Hugo = getPath()
+	if hugo, err = exec.LookPath("hugo"); err == nil {
+		conf.Hugo = hugo;
+	} else {
+		fmt.Println("It seems that you don't have 'hugo' on your PATH.\nAborting...")
+		os.Exit(0)
+	}
+
 	for c.Next() {
 		args := c.RemainingArgs()
 
