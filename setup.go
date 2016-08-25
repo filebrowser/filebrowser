@@ -1,6 +1,7 @@
 package hugo
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -147,8 +148,8 @@ func parse(c *caddy.Controller, root string) (*Config, error) {
 	if hugo, err := exec.LookPath("hugo"); err == nil {
 		conf.Hugo = hugo
 	} else {
-		fmt.Println("It seems that you don't have 'hugo' on your PATH.\nAborting...")
-		os.Exit(0)
+		fmt.Println("It seems that you don't have 'hugo' on your PATH.")
+		return conf, errors.New("It seems that you don't have 'hugo' on your PATH.")
 	}
 
 	for c.Next() {
