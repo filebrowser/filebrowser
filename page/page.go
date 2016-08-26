@@ -46,6 +46,10 @@ func (i Info) BreadcrumbMap() map[string]string {
 
 	parts := strings.Split(lpath, "/")
 	for i, part := range parts {
+		if i == len(parts)-1 {
+			continue
+		}
+
 		if i == 0 && part == "" {
 			// Leading slash (root)
 			result["/"] = "/"

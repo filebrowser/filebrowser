@@ -17,26 +17,33 @@
   <header>
    <div>
     {{ $lnk := .PreviousLink }}
-    {{ if ne $lnk ""}}
-     <a href="{{ $lnk }}">
-     {{ end }}
+
      <div class="action{{ if eq $lnk ""}} disabled{{ end }}" id="prev">
+         {{ if ne $lnk ""}}
+          <a href="{{ $lnk }}">
+          {{ end }}
       <i class="material-icons" title="Previous">subdirectory_arrow_left</i>
-     </div>
+      {{ if ne $lnk ""}}
+      </a>
+      {{ end }}
+
+    </div>
+
      {{ if ne $lnk ""}}
-     </a>
-    {{ end }}
+     <ul class="prev-links">
+     {{ range $link, $name := .BreadcrumbMap }}
+        <a href="{{ $link }}"><li>{{ $name }}</li></a>
+     {{ end }}
+     </ul>
+     {{ end }}
 
     <div class="action" id="open-nav">
         <i class="material-icons" title="Menu">menu</i>
     </div>
 
     <p>
-     <a href="{{ if eq .Config.AbsoluteURL "" }}/{{ else }}{{ .Config.AbsoluteURL }}{{ end }}">
-      {{ if .Config.HugoEnabled }}Hugo{{ else }}File Manager{{ end }}
-     </a>
      {{ if ne .Name "/"}}
-      <i class="material-icons">chevron_right</i>{{ .Name }}
+      {{ .Name }}
      </p>
     {{ end }}
    </div>
@@ -50,6 +57,7 @@
             <div class="action{{ if eq $lnk ""}} disabled{{ end }}" id="prev">
              <i class="material-icons" title="Previous">subdirectory_arrow_left</i>
             </div>
+
             {{ if ne $lnk ""}}
             </a>
            {{ end }}
