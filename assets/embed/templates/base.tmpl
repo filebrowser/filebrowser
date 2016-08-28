@@ -1,3 +1,5 @@
+{{ $absURL := .Config.AbsoluteURL }}
+
 <!DOCTYPE html>
 <html>
  <head>
@@ -32,7 +34,7 @@
      {{ if ne $lnk ""}}
      <ul class="prev-links">
      {{ range $link, $name := .BreadcrumbMap }}
-        <a href="{{ $link }}"><li>{{ $name }}</li></a>
+        <a href="{{ $absURL }}{{ $link }}"><li>{{ $name }}</li></a>
      {{ end }}
      </ul>
      {{ end }}
