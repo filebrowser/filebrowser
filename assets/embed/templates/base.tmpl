@@ -66,7 +66,7 @@
 
            <p>
             <a href="{{ if eq .Config.AbsoluteURL "" }}/{{ else }}{{ .Config.AbsoluteURL }}{{ end }}">
-             {{ if .Config.HugoEnabled }}Hugo{{ else }}File Manager{{ end }}
+             File Manager
             </a>
             </p>
        </div>
@@ -126,8 +126,6 @@
    <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a>
    and
    <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.
-   {{ if .Config.HugoEnabled }}With a flavour of
-    <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">Hugo</a>.{{ end }}
   </footer>
 
   <!-- SCRIPTS -->
