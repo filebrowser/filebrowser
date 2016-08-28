@@ -128,12 +128,6 @@ func parse(c *caddy.Controller, root string) (*Config, *filemanager.FileManager,
 
 				cfg.Args = append(cfg.Args, "--"+values[0]+"="+value)
 			default:
-				if c.Val() == "show" {
-					fmt.Println("Option 'show' is not allowed here.")
-					c.NextArg()
-					continue
-				}
-
 				line := "\n\t" + c.Val()
 
 				if c.NextArg() {
