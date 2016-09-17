@@ -802,10 +802,8 @@ document.addEventListener("editor", (event) => {
     Array.from(addFrontMatterItemButtons).forEach(button => {
         button.addEventListener('click', addFrontMatterItem);
     });
-
-    document.querySelector('form').addEventListener('submit', (event) => {
-        event.preventDefault();
-
+    
+    let saveContent = function() {
         let data = form2js(document.querySelector('form'));
         let html = button.changeToLoading();
         let request = new XMLHttpRequest();
@@ -818,7 +816,23 @@ document.addEventListener("editor", (event) => {
                 button.changeToDone((request.status != 200), html);
             }
         }
+    }
+
+    document.querySelector('form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        saveContent();
     });
+    
+    window.addEventListener('keydown', (event) => {
+        if (event.ctrlKey || event.metaKey) {
+            switch (String.fromCharCode(event.which).toLowerCase()) {
+            case 's':
+                event.preventDefault();
+                saveContent();
+                break;
+            }
+        }
+    }
 
     return false;
 });
