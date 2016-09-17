@@ -802,7 +802,7 @@ document.addEventListener("editor", (event) => {
     Array.from(addFrontMatterItemButtons).forEach(button => {
         button.addEventListener('click', addFrontMatterItem);
     });
-    
+
     let saveContent = function() {
         let data = form2js(document.querySelector('form'));
         let html = button.changeToLoading();
@@ -822,17 +822,17 @@ document.addEventListener("editor", (event) => {
         event.preventDefault();
         saveContent();
     });
-    
+
     window.addEventListener('keydown', (event) => {
         if (event.ctrlKey || event.metaKey) {
             switch (String.fromCharCode(event.which).toLowerCase()) {
-            case 's':
-                event.preventDefault();
-                saveContent();
-                break;
+                case 's':
+                    event.preventDefault();
+                    saveContent();
+                    break;
             }
         }
-    }
+    });
 
     return false;
 });
