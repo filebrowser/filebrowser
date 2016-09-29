@@ -58,7 +58,7 @@ Element.prototype.changeToDone = function(error, html) {
 
     let thirdStep = () => {
         this.innerHTML = html;
-        this.style.opacity = 1;
+        this.style.opacity = null;
 
         if (selectedItems.length == 0 && document.getElementById('listing')) {
             document.sendCostumEvent('changed-selected');
@@ -178,7 +178,7 @@ var updateToken = function() {
  *                             *
  * * * * * * * * * * * * * * * */
 
-var reloadListing = function() {
+var reloadListing = function(callback) {
     let request = new XMLHttpRequest();
     request.open('GET', window.location);
     request.setRequestHeader('Minimal', 'true');
@@ -197,6 +197,10 @@ var reloadListing = function() {
                 Array.from(checkboxes).forEach(link => {
                     link.addEventListener('click', itemClickEvent);
                 });
+
+                if (typeof callback == 'function') {
+                    callback();
+                }
             }
         }
     }
@@ -239,10 +243,15 @@ var renameEvent = function(event) {
                         if (request.status != 200) {
                             span.innerHTML = name;
                         } else {
-                            let newLink = link.replace(name, newName);
-                            item.id = newLink;
-                            selectedItems.replaceElement(link, newLink);
-                            span.innerHTML = newName;
+                            let newLink = encodeURI(link.replace(name, newName));
+                            console.log(newLink)
+                            reloadListing(() => {
+                                let newLink = encodeURI(link.replace(name, newName));
+                                selectedItems = [newLink];
+                                document.getElementById(newLink).classList.add("selected")
+                                var event = new CustomEvent('changed-selected');
+                                document.dispatchEvent(event);
+                            });
                         }
 
                         document.getElementById('rename').changeToDone((request.status != 200), html);
