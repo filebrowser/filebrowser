@@ -198,13 +198,14 @@ var reloadListing = function(callback) {
                     link.addEventListener('click', itemClickEvent);
                 });
 
+                updateToken();
+
                 if (typeof callback == 'function') {
                     callback();
                 }
             }
         }
     }
-    updateToken();
 }
 
 // Rename file event
@@ -383,13 +384,27 @@ var handleViewType = function(viewList) {
 
     if (viewList == "true") {
         listing.classList.add('list');
-        button.innerHTML = '<i class="material-icons">view_module</i> <span>Switch view</span>';
+        button.innerHTML = '<i class="material-icons" title="Switch View">view_module</i> <span>Switch view</span>';
         return false;
     }
 
-    button.innerHTML = '<i class="material-icons">view_list</i> <span>Switch view</span>';
+    button.innerHTML = '<i class="material-icons" title="Switch View">view_list</i> <span>Switch view</span>';
     listing.classList.remove('list');
     return false;
+}
+
+var addNewDirEvents = function() {
+    document.getElementById('new').addEventListener('click', event => {
+        let newdir = document.getElementById('newdir');
+        newdir.classList.add('enabled');
+        newdir.focus();
+    });
+
+    document.getElementById('newdir').addEventListener('blur', event => {
+        document.getElementById('newdir').classList.remove('enabled');
+    });
+
+    document.getElementById('newdir').addEventListener('keydown', newDirEvent);
 }
 
 // Handles the new directory event
@@ -414,11 +429,14 @@ var newDirEvent = function(event) {
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
                 button.changeToDone((request.status != 200), html);
-                reloadListing();
+                reloadListing(() => {
+                    addNewDirEvents();
+                });
             }
         }
-
     }
+
+    return false;
 }
 
 // Handles the event when there is change on selected elements
@@ -550,17 +568,7 @@ document.addEventListener('listing', event => {
             document.getElementById("upload-input").click();
         });
 
-        document.getElementById('new').addEventListener('click', event => {
-            let newdir = document.getElementById('newdir');
-            newdir.classList.add('enabled');
-            newdir.focus();
-        });
-
-        document.getElementById('newdir').addEventListener('blur', event => {
-            document.getElementById('newdir').classList.remove('enabled');
-        });
-
-        document.getElementById('newdir').addEventListener('keydown', newDirEvent);
+        addNewDirEvents();
 
         // Drag and Drop
         let items = document.getElementsByClassName('item');

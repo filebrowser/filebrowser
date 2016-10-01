@@ -242,9 +242,9 @@ func newDirectory(w http.ResponseWriter, r *http.Request, c *config.Config) (int
 	var err error
 
 	if extension == "" {
-		err = os.MkdirAll(path, 0755)
+		err = os.MkdirAll(path, 0775)
 	} else {
-		err = ioutil.WriteFile(path, []byte(""), 0755)
+		err = ioutil.WriteFile(path, []byte(""), 0775)
 	}
 
 	if err != nil {

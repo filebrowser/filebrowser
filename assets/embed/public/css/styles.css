@@ -617,6 +617,7 @@ header div {
     -webkit-box-flex: 1;
     -ms-flex-positive: 1;
     flex-grow: 1;
+    position: relative;
 }
 
 #toolbar p,
@@ -674,7 +675,7 @@ header .only-side {
     display: none;
 }
 
-header #prev:hover + .prev-links,
+header #prev:hover+.prev-links,
 header .prev-links:hover {
     display: flex;
 }
@@ -685,6 +686,8 @@ header .prev-links:hover {
 
 header .prev-links {
     position: absolute;
+    top: 0;
+    left: 0;
     color: #7d7d7d;
     list-style: none;
     margin: 0;
@@ -693,8 +696,9 @@ header .prev-links {
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
     border-radius: .2em;
     flex-direction: column-reverse;
-    left: 1.5em;
     display: none;
+    transition: .2s ease all;
+    min-width: 12em;
 }
 
 header .prev-links a {
@@ -705,13 +709,13 @@ header .prev-links a {
 
 header .prev-links a:first-child {
     border: 0;
-    border-bottom-right-radius: .5em;
-    border-bottom-left-radius: .5em;
+    border-bottom-right-radius: .2em;
+    border-bottom-left-radius: .2em;
 }
 
 header .prev-links a:last-child {
-    border-top-right-radius: .5em;
-    border-top-left-radius: .5em;
+    border-top-right-radius: .2em;
+    border-top-left-radius: .2em;
 }
 
 header .prev-links a:hover {
@@ -1005,11 +1009,11 @@ i.spin {
     background-color: transparent;
 }
 
-#editor fieldset> .action {
+#editor fieldset>.action {
     opacity: 0;
 }
 
-#editor fieldset:hover> .action {
+#editor fieldset:hover>.action {
     opacity: 1;
 }
 
@@ -1065,14 +1069,14 @@ i.spin {
         color: #fff;
         max-height: 4em;
     }
-    header> div:first-child #prev {
+    header>div:first-child #prev {
         display: none;
     }
     header #open-nav {
         display: inline-block;
     }
     /* SIDEBAR */
-    header> div:nth-child(2) {
+    header>div:nth-child(2) {
         position: fixed;
         top: 0;
         z-index: 999999;
@@ -1085,10 +1089,10 @@ i.spin {
         left: -100%;
         transition: .2s ease-in-out all;
     }
-    header> div:nth-child(2).active {
+    header>div:nth-child(2).active {
         left: 0;
     }
-    header> div:nth-child(2).active+ #overlay {
+    header>div:nth-child(2).active+#overlay {
         opacity: 1;
         visibility: visible;
     }
@@ -1115,47 +1119,47 @@ i.spin {
         padding: .5em;
         margin: 0;
     }
-    header> div:nth-child(2)> div {
+    header>div:nth-child(2)>div {
         display: block;
     }
-    header> div:nth-child(2) .action {
+    header>div:nth-child(2) .action {
         border-radius: 0 !important;
         padding: .5em 0 !important;
         margin: 0 !important;
         text-align: left;
         background-color: transparent !important;
     }
-    header> div:nth-child(2) #prev {
+    header>div:nth-child(2) #prev {
         border-radius: 50% !important;
         padding: 0 !important;
     }
-    header> div:nth-child(2) #prev i {
+    header>div:nth-child(2) #prev i {
         color: #fff;
     }
-    header> div:nth-child(2) .action:hover {
+    header>div:nth-child(2) .action:hover {
         background-color: rgba(0, 0, 0, .1) !important;
     }
-    header> div:nth-child(2) .action:hover i {
+    header>div:nth-child(2) .action:hover i {
         background-color: transparent;
     }
-    header> div:nth-child(2) .action i {
+    header>div:nth-child(2) .action i {
         border-radius: 0;
         color: #6f6f6f;
     }
-    header> div:nth-child(2) .action span {}
-    header> div:nth-child(2) .action i,
-    header> div:nth-child(2) .action span {
+    header>div:nth-child(2) .action span {}
+    header>div:nth-child(2) .action i,
+    header>div:nth-child(2) .action span {
         vertical-align: middle;
         display: inline-block;
     }
 }
 
 @media screen and (max-width: 700px) {
-    header> div:first-child p a,
-    header> div:first-child p i {
+    header>div:first-child p a,
+    header>div:first-child p i {
         display: none !important;
     }
-    header> div:first-child p {
+    header>div:first-child p {
         font-size: 1em;
     }
     #editor .frontmatter {
