@@ -1,7 +1,7 @@
 'use strict';
 
 document.addEventListener('DOMContentLoaded', event => {
-    document.querySelector('footer').innerHTML += 'With a flavour of <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">Hugo</a>.';
+    document.querySelector('footer').innerHTML += 'With a flavour of <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-hugo">Hugo</a>.';
     document.querySelector('.only-side > p > a').innerHTML = "Hugo";
 
     let link = document.querySelector('.only-side > p a:first-child').getAttribute('href') + "/settings/"
