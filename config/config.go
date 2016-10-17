@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 
+	"golang.org/x/net/webdav"
+
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
@@ -15,13 +17,16 @@ import (
 // Config is a configuration for browsing in a particualr path.
 type Config struct {
 	*User
-	BaseURL     string
-	AbsoluteURL string
-	AddrPath    string
-	Token       string // Anti CSRF token
-	HugoEnabled bool   // Enables the Hugo plugin for File Manager
-	Users       map[string]*User
-	CurrentUser *User
+	BaseURL       string
+	AbsoluteURL   string
+	AddrPath      string
+	Token         string // Anti CSRF token
+	HugoEnabled   bool   // Enables the Hugo plugin for File Manager
+	Users         map[string]*User
+	WebDav        bool
+	WebDavURL     string
+	WebDavHandler *webdav.Handler
+	CurrentUser   *User
 }
 
 // Rule is a dissalow/allow rule
@@ -77,6 +82,14 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 			cfg.BaseURL = args[0]
 		}
 
+		cfg.BaseURL = strings.TrimPrefix(cfg.BaseURL, "/")
+		cfg.BaseURL = strings.TrimSuffix(cfg.BaseURL, "/")
+		cfg.BaseURL = "/" + cfg.BaseURL
+
+		if cfg.BaseURL == "/" {
+			cfg.BaseURL = ""
+		}
+
 		// Set the first user, the global user
 		user = cfg.User
 
@@ -91,6 +104,26 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				if user.FrontMatter != "yaml" && user.FrontMatter != "json" && user.FrontMatter != "toml" {
 					return configs, c.Err("frontmatter type not supported")
 				}
+			case "webdav":
+				cfg.WebDav = true
+
+				prefix := "webdav"
+				if c.NextArg() {
+					prefix = c.Val()
+				}
+
+				prefix = strings.TrimPrefix(prefix, "/")
+				prefix = strings.TrimSuffix(prefix, "/")
+				prefix = cfg.BaseURL + "/" + prefix
+
+				cfg.WebDavURL = prefix
+				cfg.WebDavHandler = &webdav.Handler{
+					Prefix:     prefix,
+					FileSystem: webdav.Dir(cfg.PathScope),
+					LockSystem: webdav.NewMemLS(),
+				}
+
+				// TODO
 			case "show":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
@@ -207,14 +240,6 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				user.Rules = cfg.Rules
 				user.StyleSheet = cfg.StyleSheet
 			}
-		}
-
-		cfg.BaseURL = strings.TrimPrefix(cfg.BaseURL, "/")
-		cfg.BaseURL = strings.TrimSuffix(cfg.BaseURL, "/")
-		cfg.BaseURL = "/" + cfg.BaseURL
-
-		if cfg.BaseURL == "/" {
-			cfg.BaseURL = ""
 		}
 
 		caddyConf := httpserver.GetConfig(c)

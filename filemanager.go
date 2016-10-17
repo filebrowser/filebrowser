@@ -49,14 +49,17 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 		if httpserver.Path(r.URL.Path).Matches(f.Configs[i].BaseURL) {
 			c = &f.Configs[i]
 			serveAssets = httpserver.Path(r.URL.Path).Matches(c.BaseURL + assets.BaseURL)
-
-			// Set the current user.
 			username, _, _ := r.BasicAuth()
 
 			if _, ok := c.Users[username]; ok {
 				user = c.Users[username]
 			} else {
 				user = c.User
+			}
+
+			if c.WebDav && strings.HasPrefix(r.URL.Path, c.WebDavURL) {
+				c.WebDavHandler.ServeHTTP(w, r)
+				return 0, nil
 			}
 
 			// Checks if the user has permission to access the current directory.
