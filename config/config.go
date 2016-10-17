@@ -82,13 +82,6 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 
 		for c.NextBlock() {
 			switch c.Val() {
-			case "on":
-				// NOTE: DEPRECATED
-				if !c.NextArg() {
-					return configs, c.ArgErr()
-				}
-
-				cfg.BaseURL = c.Val()
 			case "frontmatter":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
