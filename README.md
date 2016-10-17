@@ -11,6 +11,7 @@ This package is a plugin for Caddy server that provides an online file manager (
 ```
 filemanager url {
   show              path
+  webdav            [path]
   styles            filepath
   frontmatter       type
   allow_new         [true|false]
