@@ -58,6 +58,23 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			}
 
 			if c.WebDav && strings.HasPrefix(r.URL.Path, c.WebDavURL) {
+				url := strings.TrimPrefix(r.URL.Path, c.WebDavURL)
+
+				if !user.Allowed(url) {
+					return http.StatusForbidden, nil
+				}
+
+				switch r.Method {
+				case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
+					if !user.AllowEdit {
+						return http.StatusForbidden, nil
+					}
+				case "MKCOL", "COPY":
+					if !user.AllowNew {
+						return http.StatusForbidden, nil
+					}
+				}
+
 				c.WebDavHandler.ServeHTTP(w, r)
 				return 0, nil
 			}

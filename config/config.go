@@ -122,8 +122,6 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 					FileSystem: webdav.Dir(cfg.PathScope),
 					LockSystem: webdav.NewMemLS(),
 				}
-
-				// TODO
 			case "show":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
