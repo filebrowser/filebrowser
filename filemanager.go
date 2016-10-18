@@ -16,9 +16,7 @@ import (
 
 	"github.com/hacdias/caddy-filemanager/assets"
 	"github.com/hacdias/caddy-filemanager/config"
-	"github.com/hacdias/caddy-filemanager/directory"
 	"github.com/hacdias/caddy-filemanager/errors"
-	"github.com/hacdias/caddy-filemanager/page"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
@@ -33,7 +31,7 @@ type FileManager struct {
 func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	var (
 		c    *config.Config
-		fi   *directory.Info
+		fi   *FileInfo
 		code int
 		err  error
 		user *config.User
@@ -78,7 +76,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					}
 				}
 
-				c.WebDavHandler.ServeHTTP(w, r)
+				c.Handler.ServeHTTP(w, r)
 				return 0, nil
 			}
 
@@ -96,7 +94,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 			if r.Method == http.MethodGet {
 				// Gets the information of the directory/file
-				fi, code, err = directory.GetInfo(r.URL, c, user)
+				fi, code, err = GetInfo(r.URL, c, user)
 				if err != nil {
 					if r.Method == http.MethodGet {
 						return errors.PrintHTML(w, code, err)
@@ -106,7 +104,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 				// If it's a dir and the path doesn't end with a trailing slash,
 				// redirect the user.
-				if fi.IsDir && !strings.HasSuffix(r.URL.Path, "/") {
+				if fi.IsDir() && !strings.HasSuffix(r.URL.Path, "/") {
 					http.Redirect(w, r, c.AddrPath+r.URL.Path+"/", http.StatusTemporaryRedirect)
 					return 0, nil
 				}
@@ -114,23 +112,23 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				// Generate anti security token.
 				c.GenerateToken()
 
-				if !fi.IsDir {
+				if !fi.IsDir() {
 					query := r.URL.Query()
 					if val, ok := query["raw"]; ok && val[0] == "true" {
 						r.URL.Path = strings.Replace(r.URL.Path, c.BaseURL, c.WebDavURL, 1)
-						c.WebDavHandler.ServeHTTP(w, r)
+						c.Handler.ServeHTTP(w, r)
 						return 0, nil
 					}
 
 					if val, ok := query["download"]; ok && val[0] == "true" {
-						w.Header().Set("Content-Disposition", "attachment; filename="+fi.Name)
+						w.Header().Set("Content-Disposition", "attachment; filename="+fi.Name())
 						r.URL.Path = strings.Replace(r.URL.Path, c.BaseURL, c.WebDavURL, 1)
-						c.WebDavHandler.ServeHTTP(w, r)
+						c.Handler.ServeHTTP(w, r)
 						return 0, nil
 					}
 				}
 
-				code, err := fi.ServeAsHTML(w, r, c, user)
+				code, err := fi.ServeHTTP(w, r, c, user)
 				if err != nil {
 					return errors.PrintHTML(w, code, err)
 				}
@@ -189,7 +187,7 @@ func command(w http.ResponseWriter, r *http.Request, c *config.Config, u *config
 		return http.StatusNotImplemented, nil
 	}
 
-	path := strings.Replace(r.URL.Path, c.BaseURL, c.PathScope, 1)
+	path := strings.Replace(r.URL.Path, c.BaseURL, c.Scope, 1)
 	path = filepath.Clean(path)
 
 	cmd := exec.Command(command[0], command[1:len(command)]...)
@@ -200,6 +198,6 @@ func command(w http.ResponseWriter, r *http.Request, c *config.Config, u *config
 		return http.StatusInternalServerError, err
 	}
 
-	page := &page.Page{Info: &page.Info{Data: string(output)}}
-	return page.PrintAsJSON(w)
+	p := &page{pageInfo: &pageInfo{Data: string(output)}}
+	return p.PrintAsJSON(w)
 }

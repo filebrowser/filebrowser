@@ -1,4 +1,4 @@
-package page
+package filemanager
 
 import (
 	"bytes"
@@ -13,14 +13,14 @@ import (
 	"github.com/hacdias/caddy-filemanager/utils/variables"
 )
 
-// Page contains the informations and functions needed to show the page
-type Page struct {
-	*Info
+// page contains the informations and functions needed to show the page
+type page struct {
+	*pageInfo
 	Minimal bool
 }
 
-// Info contains the information of a page
-type Info struct {
+// pageInfo contains the information of a page
+type pageInfo struct {
 	Name   string
 	Path   string
 	IsDir  bool
@@ -31,7 +31,7 @@ type Info struct {
 
 // BreadcrumbMap returns p.Path where every element is a map
 // of URLs and path segment names.
-func (i Info) BreadcrumbMap() map[string]string {
+func (i pageInfo) BreadcrumbMap() map[string]string {
 	result := map[string]string{}
 
 	if len(i.Path) == 0 {
@@ -62,7 +62,7 @@ func (i Info) BreadcrumbMap() map[string]string {
 }
 
 // PreviousLink returns the path of the previous folder
-func (i Info) PreviousLink() string {
+func (i pageInfo) PreviousLink() string {
 	path := strings.TrimSuffix(i.Path, "/")
 	path = strings.TrimPrefix(path, "/")
 	path = i.Config.AbsoluteURL + "/" + path
@@ -76,7 +76,7 @@ func (i Info) PreviousLink() string {
 }
 
 // PrintAsHTML formats the page in HTML and executes the template
-func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, error) {
+func (p page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, error) {
 	// Create the functions map, then the template, check for erros and
 	// execute the template if there aren't errors
 	functions := template.FuncMap{
@@ -124,7 +124,7 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 	}
 
 	buf := &bytes.Buffer{}
-	err := tpl.Execute(buf, p.Info)
+	err := tpl.Execute(buf, p.pageInfo)
 
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -136,8 +136,8 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 }
 
 // PrintAsJSON prints the current page infromation in JSON
-func (p Page) PrintAsJSON(w http.ResponseWriter) (int, error) {
-	marsh, err := json.Marshal(p.Info.Data)
+func (p page) PrintAsJSON(w http.ResponseWriter) (int, error) {
+	marsh, err := json.Marshal(p.pageInfo.Data)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}

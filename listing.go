@@ -1,11 +1,18 @@
-package directory
+package filemanager
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"net/url"
+	"os"
+	"path"
 	"sort"
 	"strconv"
 	"strings"
 
+	"github.com/hacdias/caddy-filemanager/config"
+	"github.com/hacdias/caddy-filemanager/utils/errors"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
@@ -16,7 +23,7 @@ type Listing struct {
 	// The full path of the request
 	Path string
 	// The items (files and folders) in the path
-	Items []Info
+	Items []FileInfo
 	// The number of directories in the listing
 	NumDirs int
 	// The number of files (items that aren't directories) in the listing
@@ -77,15 +84,15 @@ func (l byName) Swap(i, j int) { l.Items[i], l.Items[j] = l.Items[j], l.Items[i]
 
 // Treat upper and lower case equally
 func (l byName) Less(i, j int) bool {
-	if l.Items[i].IsDir && !l.Items[j].IsDir {
+	if l.Items[i].IsDir() && !l.Items[j].IsDir() {
 		return true
 	}
 
-	if !l.Items[i].IsDir && l.Items[j].IsDir {
+	if !l.Items[i].IsDir() && l.Items[j].IsDir() {
 		return false
 	}
 
-	return strings.ToLower(l.Items[i].Name) < strings.ToLower(l.Items[j].Name)
+	return strings.ToLower(l.Items[i].Name()) < strings.ToLower(l.Items[j].Name())
 }
 
 // By Size
@@ -94,11 +101,11 @@ func (l bySize) Swap(i, j int) { l.Items[i], l.Items[j] = l.Items[j], l.Items[i]
 
 const directoryOffset = -1 << 31 // = math.MinInt32
 func (l bySize) Less(i, j int) bool {
-	iSize, jSize := l.Items[i].Size, l.Items[j].Size
-	if l.Items[i].IsDir {
+	iSize, jSize := l.Items[i].Size(), l.Items[j].Size()
+	if l.Items[i].IsDir() {
 		iSize = directoryOffset + iSize
 	}
-	if l.Items[j].IsDir {
+	if l.Items[j].IsDir() {
 		jSize = directoryOffset + jSize
 	}
 	return iSize < jSize
@@ -107,7 +114,7 @@ func (l bySize) Less(i, j int) bool {
 // By Time
 func (l byTime) Len() int           { return len(l.Items) }
 func (l byTime) Swap(i, j int)      { l.Items[i], l.Items[j] = l.Items[j], l.Items[i] }
-func (l byTime) Less(i, j int) bool { return l.Items[i].ModTime.Before(l.Items[j].ModTime) }
+func (l byTime) Less(i, j int) bool { return l.Items[i].ModTime().Before(l.Items[j].ModTime()) }
 
 // Add sorting method to "Listing"
 // it will apply what's in ".Sort" and ".Order"
@@ -137,5 +144,123 @@ func (l Listing) applySort() {
 			sort.Sort(byName(l))
 			return
 		}
+	}
+}
+
+func (i *FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
+	var err error
+
+	file, err := u.FileSystem.OpenFile(i.VirtualPath, os.O_RDONLY, 0)
+	if err != nil {
+		return errors.ToHTTPCode(err), err
+	}
+	defer file.Close()
+
+	listing, err := i.loadDirectoryContents(file, r.URL.Path, u)
+	if err != nil {
+		fmt.Println(err)
+		switch {
+		case os.IsPermission(err):
+			return http.StatusForbidden, err
+		case os.IsExist(err):
+			return http.StatusGone, err
+		default:
+			return http.StatusInternalServerError, err
+		}
+	}
+
+	listing.Context = httpserver.Context{
+		Root: http.Dir(u.Scope),
+		Req:  r,
+		URL:  r.URL,
+	}
+
+	// Copy the query values into the Listing struct
+	var limit int
+	listing.Sort, listing.Order, limit, err = handleSortOrder(w, r, c.Scope)
+	if err != nil {
+		return http.StatusBadRequest, err
+	}
+
+	listing.applySort()
+
+	if limit > 0 && limit <= len(listing.Items) {
+		listing.Items = listing.Items[:limit]
+		listing.ItemsLimitedTo = limit
+	}
+
+	if strings.Contains(r.Header.Get("Accept"), "application/json") {
+		marsh, err := json.Marshal(listing.Items)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		if _, err := w.Write(marsh); err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		return http.StatusOK, nil
+	}
+
+	page := &page{
+		pageInfo: &pageInfo{
+			Name:   listing.Name,
+			Path:   i.VirtualPath,
+			IsDir:  true,
+			User:   u,
+			Config: c,
+			Data:   listing,
+		},
+	}
+
+	if r.Header.Get("Minimal") == "true" {
+		page.Minimal = true
+	}
+
+	return page.PrintAsHTML(w, "listing")
+}
+
+func (i FileInfo) loadDirectoryContents(file http.File, path string, u *config.User) (*Listing, error) {
+	files, err := file.Readdir(-1)
+	if err != nil {
+		return nil, err
+	}
+
+	listing := directoryListing(files, i.VirtualPath, path, u)
+	return &listing, nil
+}
+
+func directoryListing(files []os.FileInfo, urlPath string, basePath string, u *config.User) Listing {
+	var (
+		fileinfos           []FileInfo
+		dirCount, fileCount int
+	)
+
+	for _, f := range files {
+		name := f.Name()
+
+		if f.IsDir() {
+			name += "/"
+			dirCount++
+		} else {
+			fileCount++
+		}
+
+		// Absolute URL
+		url := url.URL{Path: basePath + name}
+		fileinfos = append(fileinfos, FileInfo{
+			FileInfo:    f,
+			URL:         url.String(),
+			UserAllowed: u.Allowed(url.String()),
+		})
+	}
+
+	return Listing{
+		Name:     path.Base(urlPath),
+		Path:     urlPath,
+		Items:    fileinfos,
+		NumDirs:  dirCount,
+		NumFiles: fileCount,
 	}
 }

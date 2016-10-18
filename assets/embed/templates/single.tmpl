@@ -8,7 +8,7 @@
    {{ else if eq .Type "video" }}
 
    {{ else}}
-   <pre>{{ .Content }}</pre>
+   <pre>{{ .StringifyContent }}</pre>
   {{ end }}
  </main>
 {{ end }}

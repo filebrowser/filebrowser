@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
@@ -17,16 +16,14 @@ import (
 // Config is a configuration for browsing in a particualr path.
 type Config struct {
 	*User
-	BaseURL       string
-	AbsoluteURL   string
-	AddrPath      string
-	Token         string // Anti CSRF token
-	HugoEnabled   bool   // Enables the Hugo plugin for File Manager
-	Users         map[string]*User
-	WebDav        bool
-	WebDavURL     string
-	WebDavHandler *webdav.Handler
-	CurrentUser   *User
+	BaseURL     string
+	AbsoluteURL string
+	AddrPath    string
+	Token       string // Anti CSRF token
+	HugoEnabled bool   // Enables the Hugo plugin for File Manager
+	Users       map[string]*User
+	WebDavURL   string
+	CurrentUser *User
 }
 
 // Rule is a dissalow/allow rule
@@ -48,8 +45,8 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 
 	appendConfig := func(cfg Config) error {
 		for _, c := range configs {
-			if c.PathScope == cfg.PathScope {
-				return fmt.Errorf("duplicate file managing config for %s", c.PathScope)
+			if c.Scope == cfg.Scope {
+				return fmt.Errorf("duplicate file managing config for %s", c.Scope)
 			}
 		}
 		configs = append(configs, cfg)
@@ -59,8 +56,8 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 	for c.Next() {
 		// Initialize the configuration with the default settings
 		cfg := Config{User: &User{}}
-		cfg.PathScope = "."
-		cfg.Root = http.Dir(cfg.PathScope)
+		cfg.Scope = "."
+		cfg.FileSystem = webdav.Dir(cfg.Scope)
 		cfg.BaseURL = ""
 		cfg.FrontMatter = "yaml"
 		cfg.HugoEnabled = false
@@ -69,7 +66,6 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		cfg.AllowEdit = true
 		cfg.AllowNew = true
 		cfg.Commands = []string{"git", "svn", "hg"}
-		cfg.WebDav = true
 		cfg.Rules = []*Rule{&Rule{
 			Regex:  true,
 			Allow:  false,
@@ -121,9 +117,9 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 					return configs, c.ArgErr()
 				}
 
-				user.PathScope = c.Val()
-				user.PathScope = strings.TrimSuffix(user.PathScope, "/")
-				user.Root = http.Dir(user.PathScope)
+				user.Scope = c.Val()
+				user.Scope = strings.TrimSuffix(user.Scope, "/")
+				user.FileSystem = webdav.Dir(user.Scope)
 			case "styles":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
@@ -227,16 +223,16 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				user.AllowNew = cfg.AllowEdit
 				user.Commands = cfg.Commands
 				user.FrontMatter = cfg.FrontMatter
-				user.PathScope = cfg.PathScope
-				user.Root = cfg.Root
+				user.Scope = cfg.Scope
+				user.FileSystem = cfg.FileSystem
 				user.Rules = cfg.Rules
 				user.StyleSheet = cfg.StyleSheet
 			}
 		}
 
-		cfg.WebDavHandler = &webdav.Handler{
+		cfg.Handler = &webdav.Handler{
 			Prefix:     cfg.WebDavURL,
-			FileSystem: webdav.Dir(cfg.PathScope),
+			FileSystem: cfg.FileSystem,
 			LockSystem: webdav.NewMemLS(),
 		}
 

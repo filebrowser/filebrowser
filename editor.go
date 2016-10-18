@@ -1,4 +1,4 @@
-package directory
+package filemanager
 
 import (
 	"bytes"
@@ -18,10 +18,10 @@ type Editor struct {
 }
 
 // GetEditor gets the editor based on a FileInfo struct
-func (i *Info) GetEditor() (*Editor, error) {
+func (i *FileInfo) GetEditor() (*Editor, error) {
 	// Create a new editor variable and set the mode
 	editor := new(Editor)
-	editor.Mode = strings.TrimPrefix(filepath.Ext(i.Name), ".")
+	editor.Mode = strings.TrimPrefix(filepath.Ext(i.Name()), ".")
 
 	switch editor.Mode {
 	case "md", "markdown", "mdown", "mmark":
@@ -42,20 +42,20 @@ func (i *Info) GetEditor() (*Editor, error) {
 	// Handle the content depending on the file extension
 	switch editor.Mode {
 	case "markdown", "asciidoc", "rst":
-		if !HasFrontMatterRune(i.Raw) {
+		if !hasFrontMatterRune(i.Content) {
 			editor.Class = "content-only"
-			editor.Content = i.Content
+			editor.Content = i.StringifyContent()
 			break
 		}
 
 		// Starts a new buffer and parses the file using Hugo's functions
-		buffer := bytes.NewBuffer(i.Raw)
+		buffer := bytes.NewBuffer(i.Content)
 		page, err = parser.ReadFrom(buffer)
 		editor.Class = "complete"
 
 		if err != nil {
 			editor.Class = "content-only"
-			editor.Content = i.Content
+			editor.Content = i.StringifyContent()
 			break
 		}
 
@@ -67,35 +67,35 @@ func (i *Info) GetEditor() (*Editor, error) {
 		editor.Class = "frontmatter-only"
 
 		// Checks if the file already has the frontmatter rune and parses it
-		if HasFrontMatterRune(i.Raw) {
-			editor.FrontMatter, _, err = frontmatter.Pretty(i.Raw)
+		if hasFrontMatterRune(i.Content) {
+			editor.FrontMatter, _, err = frontmatter.Pretty(i.Content)
 		} else {
-			editor.FrontMatter, _, err = frontmatter.Pretty(AppendFrontMatterRune(i.Raw, editor.Mode))
+			editor.FrontMatter, _, err = frontmatter.Pretty(appendFrontMatterRune(i.Content, editor.Mode))
 		}
 
 		// Check if there were any errors
 		if err != nil {
 			editor.Class = "content-only"
-			editor.Content = i.Content
+			editor.Content = i.StringifyContent()
 			break
 		}
 	default:
 		editor.Class = "content-only"
-		editor.Content = i.Content
+		editor.Content = i.StringifyContent()
 	}
 
 	return editor, nil
 }
 
-// HasFrontMatterRune checks if the file has the frontmatter rune
-func HasFrontMatterRune(file []byte) bool {
+// hasFrontMatterRune checks if the file has the frontmatter rune
+func hasFrontMatterRune(file []byte) bool {
 	return strings.HasPrefix(string(file), "---") ||
 		strings.HasPrefix(string(file), "+++") ||
 		strings.HasPrefix(string(file), "{")
 }
 
-// AppendFrontMatterRune appends the frontmatter rune to a file
-func AppendFrontMatterRune(frontmatter []byte, language string) []byte {
+// appendFrontMatterRune appends the frontmatter rune to a file
+func appendFrontMatterRune(frontmatter []byte, language string) []byte {
 	switch language {
 	case "yaml":
 		return []byte("---\n" + string(frontmatter) + "\n---")
@@ -108,8 +108,8 @@ func AppendFrontMatterRune(frontmatter []byte, language string) []byte {
 	return frontmatter
 }
 
-// CanBeEdited checks if the extension of a file is supported by the editor
-func CanBeEdited(filename string) bool {
+// canBeEdited checks if the extension of a file is supported by the editor
+func canBeEdited(filename string) bool {
 	extensions := [...]string{
 		"md", "markdown", "mdown", "mmark",
 		"asciidoc", "adoc", "ad",

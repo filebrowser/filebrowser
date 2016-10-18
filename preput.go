@@ -1,4 +1,4 @@
-package directory
+package filemanager
 
 import (
 	"bytes"
@@ -15,7 +15,7 @@ import (
 )
 
 // Update is used to update a file that was edited
-func (i *Info) Update(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
+func (i *FileInfo) Update(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
 	var (
 		data      map[string]interface{}
 		file      []byte
@@ -38,7 +38,7 @@ func (i *Info) Update(w http.ResponseWriter, r *http.Request, c *config.Config, 
 
 	switch kind {
 	case "frontmatter-only":
-		if file, code, err = ParseFrontMatterOnlyFile(data, i.Name); err != nil {
+		if file, code, err = parseFrontMatterOnlyFile(data, i.Name()); err != nil {
 			return http.StatusInternalServerError, err
 		}
 	case "content-only":
@@ -46,7 +46,7 @@ func (i *Info) Update(w http.ResponseWriter, r *http.Request, c *config.Config, 
 		mainContent = strings.TrimSpace(mainContent)
 		file = []byte(mainContent)
 	case "complete":
-		if file, code, err = ParseCompleteFile(data, i.Name, u.FrontMatter); err != nil {
+		if file, code, err = parseCompleteFile(data, i.Name(), u.FrontMatter); err != nil {
 			return http.StatusInternalServerError, err
 		}
 	default:
@@ -58,10 +58,10 @@ func (i *Info) Update(w http.ResponseWriter, r *http.Request, c *config.Config, 
 	return code, nil
 }
 
-// ParseFrontMatterOnlyFile parses a frontmatter only file
-func ParseFrontMatterOnlyFile(data interface{}, filename string) ([]byte, int, error) {
+// parseFrontMatterOnlyFile parses a frontmatter only file
+func parseFrontMatterOnlyFile(data interface{}, filename string) ([]byte, int, error) {
 	frontmatter := strings.TrimPrefix(filepath.Ext(filename), ".")
-	f, code, err := ParseFrontMatter(data, frontmatter)
+	f, code, err := parseFrontMatter(data, frontmatter)
 	fString := string(f)
 
 	// If it's toml or yaml, strip frontmatter identifier
@@ -79,8 +79,8 @@ func ParseFrontMatterOnlyFile(data interface{}, filename string) ([]byte, int, e
 	return f, code, err
 }
 
-// ParseFrontMatter is the frontmatter parser
-func ParseFrontMatter(data interface{}, frontmatter string) ([]byte, int, error) {
+// parseFrontMatter is the frontmatter parser
+func parseFrontMatter(data interface{}, frontmatter string) ([]byte, int, error) {
 	var mark rune
 
 	switch frontmatter {
@@ -103,8 +103,8 @@ func ParseFrontMatter(data interface{}, frontmatter string) ([]byte, int, error)
 	return f, http.StatusOK, nil
 }
 
-// ParseCompleteFile parses a complete file
-func ParseCompleteFile(data map[string]interface{}, filename string, frontmatter string) ([]byte, int, error) {
+// parseCompleteFile parses a complete file
+func parseCompleteFile(data map[string]interface{}, filename string, frontmatter string) ([]byte, int, error) {
 	mainContent := ""
 
 	if _, ok := data["content"]; ok {
@@ -120,7 +120,7 @@ func ParseCompleteFile(data map[string]interface{}, filename string, frontmatter
 		data["date"] = data["date"].(string) + ":00"
 	}
 
-	front, code, err := ParseFrontMatter(data, frontmatter)
+	front, code, err := parseFrontMatter(data, frontmatter)
 
 	if err != nil {
 		fmt.Println(frontmatter)
