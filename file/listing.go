@@ -1,4 +1,4 @@
-package filemanager
+package file
 
 import (
 	"encoding/json"
@@ -25,7 +25,7 @@ type Listing struct {
 	// The full path of the request
 	Path string
 	// The items (files and folders) in the path
-	Items []FileInfo
+	Items []Info
 	// The number of directories in the listing
 	NumDirs int
 	// The number of files (items that aren't directories) in the listing
@@ -149,7 +149,7 @@ func (l Listing) applySort() {
 	}
 }
 
-func (i *FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
+func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
 	var err error
 
 	file, err := u.FileSystem.OpenFile(i.VirtualPath, os.O_RDONLY, 0)
@@ -223,7 +223,7 @@ func (i *FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *confi
 	return page.PrintAsHTML(w, "listing")
 }
 
-func (i FileInfo) loadDirectoryContents(file http.File, path string, u *config.User) (*Listing, error) {
+func (i Info) loadDirectoryContents(file http.File, path string, u *config.User) (*Listing, error) {
 	files, err := file.Readdir(-1)
 	if err != nil {
 		return nil, err
@@ -235,7 +235,7 @@ func (i FileInfo) loadDirectoryContents(file http.File, path string, u *config.U
 
 func directoryListing(files []os.FileInfo, urlPath string, basePath string, u *config.User) Listing {
 	var (
-		fileinfos           []FileInfo
+		fileinfos           []Info
 		dirCount, fileCount int
 	)
 
@@ -251,7 +251,7 @@ func directoryListing(files []os.FileInfo, urlPath string, basePath string, u *c
 
 		// Absolute URL
 		url := url.URL{Path: basePath + name}
-		fileinfos = append(fileinfos, FileInfo{
+		fileinfos = append(fileinfos, Info{
 			FileInfo:    f,
 			URL:         url.String(),
 			UserAllowed: u.Allowed(url.String()),

@@ -1,4 +1,4 @@
-package filemanager
+package file
 
 import (
 	"io/ioutil"
@@ -11,10 +11,11 @@ import (
 	humanize "github.com/dustin/go-humanize"
 	"github.com/hacdias/caddy-filemanager/config"
 	"github.com/hacdias/caddy-filemanager/page"
+	"github.com/hacdias/caddy-filemanager/utils"
 )
 
-// FileInfo contains the information about a particular file or directory
-type FileInfo struct {
+// Info contains the information about a particular file or directory
+type Info struct {
 	os.FileInfo
 	URL         string
 	Path        string // Relative path to Caddyfile
@@ -27,10 +28,10 @@ type FileInfo struct {
 
 // GetInfo gets the file information and, in case of error, returns the
 // respective HTTP error code
-func GetInfo(url *url.URL, c *config.Config, u *config.User) (*FileInfo, int, error) {
+func GetInfo(url *url.URL, c *config.Config, u *config.User) (*Info, int, error) {
 	var err error
 
-	i := &FileInfo{URL: url.Path}
+	i := &Info{URL: url.Path}
 	i.VirtualPath = strings.Replace(url.Path, c.BaseURL, "", 1)
 	i.VirtualPath = strings.TrimPrefix(i.VirtualPath, "/")
 	i.VirtualPath = "/" + i.VirtualPath
@@ -41,50 +42,40 @@ func GetInfo(url *url.URL, c *config.Config, u *config.User) (*FileInfo, int, er
 
 	i.FileInfo, err = os.Stat(i.Path)
 	if err != nil {
-		code := http.StatusInternalServerError
-
-		switch {
-		case os.IsPermission(err):
-			code = http.StatusForbidden
-		case os.IsNotExist(err):
-			code = http.StatusGone
-		case os.IsExist(err):
-			code = http.StatusGone
-		}
-
-		return i, code, err
+		return i, utils.ErrorToHTTPCode(err, false), err
 	}
 
 	return i, 0, nil
 }
 
-func (i *FileInfo) Read() error {
+func (i *Info) Read() error {
 	var err error
 	i.Content, err = ioutil.ReadFile(i.Path)
 	if err != nil {
 		return err
 	}
 	i.Mimetype = http.DetectContentType(i.Content)
-	i.Type = SimplifyMimeType(i.Mimetype)
+	i.Type = simplifyMediaType(i.Mimetype)
 	return nil
 }
 
-func (i FileInfo) StringifyContent() string {
+// StringifyContent returns the string version of Raw
+func (i Info) StringifyContent() string {
 	return string(i.Content)
 }
 
 // HumanSize returns the size of the file as a human-readable string
 // in IEC format (i.e. power of 2 or base 1024).
-func (i FileInfo) HumanSize() string {
+func (i Info) HumanSize() string {
 	return humanize.IBytes(uint64(i.Size()))
 }
 
 // HumanModTime returns the modified time of the file as a human-readable string.
-func (i FileInfo) HumanModTime(format string) string {
+func (i Info) HumanModTime(format string) string {
 	return i.ModTime().Format(format)
 }
 
-func (i *FileInfo) ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
+func (i *Info) ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
 	if i.IsDir() {
 		return i.serveListing(w, r, c, u)
 	}
@@ -92,7 +83,7 @@ func (i *FileInfo) ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.C
 	return i.serveSingleFile(w, r, c, u)
 }
 
-func (i *FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
+func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
 	err := i.Read()
 	if err != nil {
 		code := http.StatusInternalServerError
@@ -129,7 +120,7 @@ func (i *FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request, c *co
 		},
 	}
 
-	if (canBeEdited(i.Name()) || i.Type == "text") && u.AllowEdit {
+	if i.CanBeEdited() && u.AllowEdit {
 		p.Data, err = i.GetEditor()
 		if err != nil {
 			return http.StatusInternalServerError, err
@@ -141,7 +132,7 @@ func (i *FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request, c *co
 	return p.PrintAsHTML(w, "single")
 }
 
-func SimplifyMimeType(name string) string {
+func simplifyMediaType(name string) string {
 	if strings.HasPrefix(name, "video") {
 		return "video"
 	}

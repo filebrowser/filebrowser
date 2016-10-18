@@ -11,11 +11,12 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-filemanager/config"
+	"github.com/hacdias/caddy-filemanager/file"
 	"github.com/spf13/hugo/parser"
 )
 
-// Update is used to update a file that was edited
-func (i *FileInfo) Update(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
+// processPUT is used to update a file that was edited
+func processPUT(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User, i *file.Info) (int, error) {
 	var (
 		data      map[string]interface{}
 		file      []byte

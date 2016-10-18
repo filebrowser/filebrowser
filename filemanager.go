@@ -16,7 +16,7 @@ import (
 
 	"github.com/hacdias/caddy-filemanager/assets"
 	"github.com/hacdias/caddy-filemanager/config"
-	"github.com/hacdias/caddy-filemanager/errors"
+	"github.com/hacdias/caddy-filemanager/file"
 	"github.com/hacdias/caddy-filemanager/page"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
@@ -32,7 +32,7 @@ type FileManager struct {
 func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	var (
 		c    *config.Config
-		fi   *FileInfo
+		fi   *file.Info
 		code int
 		err  error
 		user *config.User
@@ -71,7 +71,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				}
 
 				if r.Method == http.MethodPut {
-					_, err = fi.Update(w, r, c, user)
+					_, err = processPUT(w, r, c, user, fi)
 					if err != nil {
 						return http.StatusInternalServerError, err
 					}
@@ -83,7 +83,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 			if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.BaseURL)) {
 				if r.Method == http.MethodGet {
-					return errors.PrintHTML(
+					return page.PrintErrorHTML(
 						w,
 						http.StatusForbidden,
 						e.New("You don't have permission to access this page."),
@@ -95,10 +95,10 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 			if r.Method == http.MethodGet {
 				// Gets the information of the directory/file
-				fi, code, err = GetInfo(r.URL, c, user)
+				fi, code, err = file.GetInfo(r.URL, c, user)
 				if err != nil {
 					if r.Method == http.MethodGet {
-						return errors.PrintHTML(w, code, err)
+						return page.PrintErrorHTML(w, code, err)
 					}
 					return code, err
 				}
@@ -131,7 +131,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 				code, err := fi.ServeHTTP(w, r, c, user)
 				if err != nil {
-					return errors.PrintHTML(w, code, err)
+					return page.PrintErrorHTML(w, code, err)
 				}
 				return code, err
 			}
