@@ -56,13 +56,24 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				user = c.User
 			}
 
-			if strings.HasPrefix(r.URL.Path, c.WebDavURL) {
-				url := strings.TrimPrefix(r.URL.Path, c.WebDavURL)
-
-				if !user.Allowed(url) {
-					return http.StatusForbidden, nil
+			// TODO: make allow and block rules relative to baseurl and webdav
+			// Checks if the user has permission to access the current directory.
+			if !user.Allowed(r.URL.Path) {
+				if r.Method == http.MethodGet {
+					return errors.PrintHTML(w, http.StatusForbidden, e.New("You don't have permission to access this page."))
 				}
 
+				return http.StatusForbidden, nil
+			}
+
+			// Security measures against CSRF attacks.
+			if r.Method != http.MethodGet {
+				if !c.CheckToken(r) {
+					return http.StatusForbidden, nil
+				}
+			}
+
+			if strings.HasPrefix(r.URL.Path, c.WebDavURL) {
 				switch r.Method {
 				case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
 					if !user.AllowEdit {
@@ -85,18 +96,11 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				return 0, nil
 			}
 
-			// Checks if the user has permission to access the current directory.
-			if !user.Allowed(r.URL.Path) {
-				if r.Method == http.MethodGet {
-					return errors.PrintHTML(w, http.StatusForbidden, e.New("You don't have permission to access this page."))
-				}
-
-				return http.StatusForbidden, nil
+			if r.Method == http.MethodGet && serveAssets {
+				return assets.Serve(w, r, c)
 			}
 
-			// If this request is neither to server assets, nor to upload/create
-			// a new file or directory.
-			if r.Method != http.MethodPost && !serveAssets {
+			if r.Method == http.MethodGet {
 				// Gets the information of the directory/file
 				fi, code, err = directory.GetInfo(r.URL, c, user)
 				if err != nil {
@@ -112,20 +116,6 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					http.Redirect(w, r, c.AddrPath+r.URL.Path+"/", http.StatusTemporaryRedirect)
 					return 0, nil
 				}
-			}
-
-			// Security measures against CSRF attacks.
-			if r.Method != http.MethodGet {
-				if !c.CheckToken(r) {
-					return http.StatusForbidden, nil
-				}
-			}
-
-			if r.Method == http.MethodGet {
-				// Read and show directory or file.
-				if serveAssets {
-					return assets.Serve(w, r, c)
-				}
 
 				// Generate anti security token.
 				c.GenerateToken()
@@ -133,18 +123,17 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				if !fi.IsDir {
 					query := r.URL.Query()
 					if val, ok := query["raw"]; ok && val[0] == "true" {
-						// TODO: change URL to webdav and continue as webdav
-						return fi.ServeRawFile(w, r, c)
+						r.URL.Path = strings.Replace(r.URL.Path, c.BaseURL, c.WebDavURL, 1)
+						c.WebDavHandler.ServeHTTP(w, r)
+						return 0, nil
 					}
 
 					if val, ok := query["download"]; ok && val[0] == "true" {
 						w.Header().Set("Content-Disposition", "attachment; filename="+fi.Name)
-						// TODO: change URL to webdav and continue as webdav
-						return fi.ServeRawFile(w, r, c)
-
+						r.URL.Path = strings.Replace(r.URL.Path, c.BaseURL, c.WebDavURL, 1)
+						c.WebDavHandler.ServeHTTP(w, r)
+						return 0, nil
 					}
-
-					// c.WebDavHandler.ServeHTTP(w, r)
 				}
 
 				code, err := fi.ServeAsHTML(w, r, c, user)

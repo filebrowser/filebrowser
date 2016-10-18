@@ -122,7 +122,8 @@ func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config
 	}
 
 	if i.Type == "blob" {
-		return i.ServeRawFile(w, r, c)
+		http.Redirect(w, r, c.AddrPath+r.URL.Path+"?download=true", http.StatusTemporaryRedirect)
+		return 0, nil
 	}
 
 	page := &p.Page{
@@ -272,22 +273,6 @@ func directoryListing(files []os.FileInfo, urlPath string, basePath string, u *c
 		NumDirs:  dirCount,
 		NumFiles: fileCount,
 	}
-}
-
-// ServeRawFile serves raw files
-func (i *Info) ServeRawFile(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
-	err := i.GetExtendedInfo()
-	if err != nil {
-		return errors.ToHTTPCode(err), err
-	}
-
-	if i.Type != "text" {
-		i.Read()
-	}
-
-	w.Header().Set("Content-Type", i.Mimetype)
-	w.Write([]byte(i.Content))
-	return 200, nil
 }
 
 // SimplifyMimeType returns the base type of a file
