@@ -430,13 +430,12 @@ var newDirEvent = function(event) {
         let button = document.getElementById('new');
         let html = button.changeToLoading();
         let request = new XMLHttpRequest();
-        request.open("POST", window.location);
+        request.open("MKCOL", toWebDavURL(window.location.pathname + document.getElementById('newdir').value + "/"));
         request.setRequestHeader('Token', token);
-        request.setRequestHeader('Filename', document.getElementById('newdir').value);
         request.send();
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
-                button.changeToDone((request.status != 200), html);
+                button.changeToDone((request.status != 201), html);
                 reloadListing(() => {
                     addNewDirEvents();
                 });

@@ -10,7 +10,6 @@ package filemanager
 import (
 	e "errors"
 	"io"
-	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -179,8 +178,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					return command(w, r, c, user)
 				}
 
-				// Creates a new folder.
-				return newDirectory(w, r, c)
+				fallthrough
 			default:
 				return http.StatusNotImplemented, nil
 			}
@@ -232,39 +230,6 @@ func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, erro
 	}
 
 	return http.StatusOK, nil
-}
-
-// newDirectory makes a new directory
-func newDirectory(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
-	filename := r.Header.Get("Filename")
-
-	if filename == "" {
-		return http.StatusBadRequest, nil
-	}
-
-	path := strings.Replace(r.URL.Path, c.BaseURL, c.PathScope, 1) + filename
-	path = filepath.Clean(path)
-	extension := filepath.Ext(path)
-
-	var err error
-
-	if extension == "" {
-		err = os.MkdirAll(path, 0775)
-	} else {
-		err = ioutil.WriteFile(path, []byte(""), 0775)
-	}
-
-	if err != nil {
-		switch {
-		case os.IsPermission(err):
-			return http.StatusForbidden, err
-		case os.IsExist(err):
-			return http.StatusConflict, err
-		default:
-			return http.StatusInternalServerError, err
-		}
-	}
-	return http.StatusCreated, nil
 }
 
 // command handles the requests for VCS related commands: git, svn and mercurial
