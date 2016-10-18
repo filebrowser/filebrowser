@@ -10,6 +10,7 @@ import (
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/hacdias/caddy-filemanager/config"
+	"github.com/hacdias/caddy-filemanager/page"
 )
 
 // FileInfo contains the information about a particular file or directory
@@ -117,8 +118,8 @@ func (i *FileInfo) serveSingleFile(w http.ResponseWriter, r *http.Request, c *co
 		return 0, nil
 	}
 
-	p := &page{
-		pageInfo: &pageInfo{
+	p := &page.Page{
+		Info: &page.Info{
 			Name:   i.Name(),
 			Path:   i.VirtualPath,
 			IsDir:  false,

@@ -12,7 +12,9 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-filemanager/config"
-	"github.com/hacdias/caddy-filemanager/utils/errors"
+	"github.com/hacdias/caddy-filemanager/page"
+	"github.com/hacdias/caddy-filemanager/utils"
+
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
@@ -152,7 +154,7 @@ func (i *FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *confi
 
 	file, err := u.FileSystem.OpenFile(i.VirtualPath, os.O_RDONLY, 0)
 	if err != nil {
-		return errors.ToHTTPCode(err), err
+		return utils.ErrorToHTTPCode(err, true), err
 	}
 	defer file.Close()
 
@@ -203,8 +205,8 @@ func (i *FileInfo) serveListing(w http.ResponseWriter, r *http.Request, c *confi
 		return http.StatusOK, nil
 	}
 
-	page := &page{
-		pageInfo: &pageInfo{
+	page := &page.Page{
+		Info: &page.Info{
 			Name:   listing.Name,
 			Path:   i.VirtualPath,
 			IsDir:  true,

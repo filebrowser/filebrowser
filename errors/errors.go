@@ -32,6 +32,9 @@ const template = `<!DOCTYPE html>
         color: #eee;
         font-weight: bold;
     }
+	p {
+		line-height: 1.3;
+	}
     </style>
 </head>
 

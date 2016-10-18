@@ -17,6 +17,7 @@ import (
 	"github.com/hacdias/caddy-filemanager/assets"
 	"github.com/hacdias/caddy-filemanager/config"
 	"github.com/hacdias/caddy-filemanager/errors"
+	"github.com/hacdias/caddy-filemanager/page"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
@@ -198,6 +199,6 @@ func command(w http.ResponseWriter, r *http.Request, c *config.Config, u *config
 		return http.StatusInternalServerError, err
 	}
 
-	p := &page{pageInfo: &pageInfo{Data: string(output)}}
+	p := &page.Page{Info: &page.Info{Data: string(output)}}
 	return p.PrintAsJSON(w)
 }

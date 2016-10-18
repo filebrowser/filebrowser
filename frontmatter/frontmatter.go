@@ -13,7 +13,8 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/BurntSushi/toml"
-	"github.com/hacdias/caddy-filemanager/utils/variables"
+	"github.com/hacdias/caddy-filemanager/utils"
+
 	"github.com/spf13/cast"
 )
 
@@ -125,9 +126,9 @@ func rawToPretty(config interface{}, parent *Block) *Content {
 	}
 
 	for name, element := range cnf {
-		if variables.IsMap(element) {
+		if utils.IsMap(element) {
 			objects = append(objects, handleObjects(element, parent, name))
-		} else if variables.IsSlice(element) {
+		} else if utils.IsSlice(element) {
 			arrays = append(arrays, handleArrays(element, parent, name))
 		} else {
 			if name == "title" && parent.Name == mainName {

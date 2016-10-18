@@ -1,4 +1,5 @@
-package filemanager
+// Package page is used to render the HTML to the end user
+package page
 
 import (
 	"bytes"
@@ -10,17 +11,17 @@ import (
 
 	"github.com/hacdias/caddy-filemanager/assets"
 	"github.com/hacdias/caddy-filemanager/config"
-	"github.com/hacdias/caddy-filemanager/utils/variables"
+	"github.com/hacdias/caddy-filemanager/utils"
 )
 
-// page contains the informations and functions needed to show the page
-type page struct {
-	*pageInfo
+// Page contains the informations and functions needed to show the Page
+type Page struct {
+	*Info
 	Minimal bool
 }
 
-// pageInfo contains the information of a page
-type pageInfo struct {
+// Info contains the information of a Page
+type Info struct {
 	Name   string
 	Path   string
 	IsDir  bool
@@ -31,7 +32,7 @@ type pageInfo struct {
 
 // BreadcrumbMap returns p.Path where every element is a map
 // of URLs and path segment names.
-func (i pageInfo) BreadcrumbMap() map[string]string {
+func (i Info) BreadcrumbMap() map[string]string {
 	result := map[string]string{}
 
 	if len(i.Path) == 0 {
@@ -62,7 +63,7 @@ func (i pageInfo) BreadcrumbMap() map[string]string {
 }
 
 // PreviousLink returns the path of the previous folder
-func (i pageInfo) PreviousLink() string {
+func (i Info) PreviousLink() string {
 	path := strings.TrimSuffix(i.Path, "/")
 	path = strings.TrimPrefix(path, "/")
 	path = i.Config.AbsoluteURL + "/" + path
@@ -76,11 +77,11 @@ func (i pageInfo) PreviousLink() string {
 }
 
 // PrintAsHTML formats the page in HTML and executes the template
-func (p page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, error) {
+func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, error) {
 	// Create the functions map, then the template, check for erros and
 	// execute the template if there aren't errors
 	functions := template.FuncMap{
-		"Defined": variables.Defined,
+		"Defined": utils.Defined,
 		"CSS": func(s string) template.CSS {
 			return template.CSS(s)
 		},
@@ -101,7 +102,7 @@ func (p page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 	// For each template, add it to the the tpl variable
 	for i, t := range templates {
 		// Get the template from the assets
-		page, err := assets.Asset("templates/" + t + ".tmpl")
+		Page, err := assets.Asset("templates/" + t + ".tmpl")
 
 		// Check if there is some error. If so, the template doesn't exist
 		if err != nil {
@@ -112,9 +113,9 @@ func (p page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 		// If it's the first iteration, creates a new template and add the
 		// functions map
 		if i == 0 {
-			tpl, err = template.New(t).Funcs(functions).Parse(string(page))
+			tpl, err = template.New(t).Funcs(functions).Parse(string(Page))
 		} else {
-			tpl, err = tpl.Parse(string(page))
+			tpl, err = tpl.Parse(string(Page))
 		}
 
 		if err != nil {
@@ -124,7 +125,7 @@ func (p page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 	}
 
 	buf := &bytes.Buffer{}
-	err := tpl.Execute(buf, p.pageInfo)
+	err := tpl.Execute(buf, p.Info)
 
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -135,9 +136,9 @@ func (p page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 	return http.StatusOK, nil
 }
 
-// PrintAsJSON prints the current page infromation in JSON
-func (p page) PrintAsJSON(w http.ResponseWriter) (int, error) {
-	marsh, err := json.Marshal(p.pageInfo.Data)
+// PrintAsJSON prints the current Page infromation in JSON
+func (p Page) PrintAsJSON(w http.ResponseWriter) (int, error) {
+	marsh, err := json.Marshal(p.Info.Data)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
