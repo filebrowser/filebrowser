@@ -431,7 +431,9 @@ var newDirEvent = function(event) {
         let button = document.getElementById('new');
         let html = button.changeToLoading();
         let request = new XMLHttpRequest();
-        request.open("MKCOL", toWebDavURL(window.location.pathname + document.getElementById('newdir').value + "/"));
+        let name = document.getElementById('newdir').value;
+
+        request.open((name.endsWith("/") ? "MKCOL" : "PUT"), toWebDavURL(window.location.pathname + name));
         request.setRequestHeader('Token', token);
         request.send();
         request.onreadystatechange = function() {

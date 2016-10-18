@@ -56,31 +56,30 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				user = c.User
 			}
 
-			if c.WebDav && strings.HasPrefix(r.URL.Path, c.WebDavURL) {
+			if strings.HasPrefix(r.URL.Path, c.WebDavURL) {
+				url := strings.TrimPrefix(r.URL.Path, c.WebDavURL)
+
+				if !user.Allowed(url) {
+					return http.StatusForbidden, nil
+				}
+
+				switch r.Method {
+				case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
+					if !user.AllowEdit {
+						return http.StatusForbidden, nil
+					}
+				case "MKCOL", "COPY":
+					if !user.AllowNew {
+						return http.StatusForbidden, nil
+					}
+				}
+
 				if r.Method == http.MethodPut {
 					_, err = fi.Update(w, r, c, user)
 					if err != nil {
 						return http.StatusInternalServerError, err
 					}
 				}
-
-				//url := strings.TrimPrefix(r.URL.Path, c.WebDavURL)
-
-				/*
-					if !user.Allowed(url) {
-						return http.StatusForbidden, nil
-					}
-
-					switch r.Method {
-					case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
-						if !user.AllowEdit {
-							return http.StatusForbidden, nil
-						}
-					case "MKCOL", "COPY":
-						if !user.AllowNew {
-							return http.StatusForbidden, nil
-						}
-					} */
 
 				c.WebDavHandler.ServeHTTP(w, r)
 				return 0, nil
@@ -122,9 +121,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				}
 			}
 
-			// Route the request depending on the HTTP Method.
-			switch r.Method {
-			case http.MethodGet:
+			if r.Method == http.MethodGet {
 				// Read and show directory or file.
 				if serveAssets {
 					return assets.Serve(w, r, c)
@@ -136,13 +133,18 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				if !fi.IsDir {
 					query := r.URL.Query()
 					if val, ok := query["raw"]; ok && val[0] == "true" {
+						// TODO: change URL to webdav and continue as webdav
 						return fi.ServeRawFile(w, r, c)
 					}
 
 					if val, ok := query["download"]; ok && val[0] == "true" {
 						w.Header().Set("Content-Disposition", "attachment; filename="+fi.Name)
+						// TODO: change URL to webdav and continue as webdav
 						return fi.ServeRawFile(w, r, c)
+
 					}
+
+					// c.WebDavHandler.ServeHTTP(w, r)
 				}
 
 				code, err := fi.ServeAsHTML(w, r, c, user)
@@ -150,7 +152,9 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					return errors.PrintHTML(w, code, err)
 				}
 				return code, err
-			case http.MethodPost:
+			}
+
+			if r.Method == http.MethodPost {
 				// Upload a new file.
 				if r.Header.Get("Upload") == "true" {
 					if !user.AllowNew {
@@ -173,11 +177,9 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 					return command(w, r, c, user)
 				}
-
-				fallthrough
-			default:
-				return http.StatusNotImplemented, nil
 			}
+
+			return http.StatusNotImplemented, nil
 		}
 	}
 

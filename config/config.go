@@ -69,6 +69,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		cfg.AllowEdit = true
 		cfg.AllowNew = true
 		cfg.Commands = []string{"git", "svn", "hg"}
+		cfg.WebDav = true
 		cfg.Rules = []*Rule{&Rule{
 			Regex:  true,
 			Allow:  false,
@@ -85,6 +86,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		cfg.BaseURL = strings.TrimPrefix(cfg.BaseURL, "/")
 		cfg.BaseURL = strings.TrimSuffix(cfg.BaseURL, "/")
 		cfg.BaseURL = "/" + cfg.BaseURL
+		cfg.WebDavURL = cfg.BaseURL + "webdav"
 
 		if cfg.BaseURL == "/" {
 			cfg.BaseURL = ""
@@ -105,23 +107,15 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 					return configs, c.Err("frontmatter type not supported")
 				}
 			case "webdav":
-				cfg.WebDav = true
-
-				prefix := "webdav"
-				if c.NextArg() {
-					prefix = c.Val()
+				if !c.NextArg() {
+					return configs, c.ArgErr()
 				}
 
+				prefix := c.Val()
 				prefix = strings.TrimPrefix(prefix, "/")
 				prefix = strings.TrimSuffix(prefix, "/")
 				prefix = cfg.BaseURL + "/" + prefix
-
 				cfg.WebDavURL = prefix
-				cfg.WebDavHandler = &webdav.Handler{
-					Prefix:     prefix,
-					FileSystem: webdav.Dir(cfg.PathScope),
-					LockSystem: webdav.NewMemLS(),
-				}
 			case "show":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
@@ -238,6 +232,12 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				user.Rules = cfg.Rules
 				user.StyleSheet = cfg.StyleSheet
 			}
+		}
+
+		cfg.WebDavHandler = &webdav.Handler{
+			Prefix:     cfg.WebDavURL,
+			FileSystem: webdav.Dir(cfg.PathScope),
+			LockSystem: webdav.NewMemLS(),
 		}
 
 		caddyConf := httpserver.GetConfig(c)
