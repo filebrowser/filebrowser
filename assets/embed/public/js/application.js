@@ -86,6 +86,11 @@ Element.prototype.changeToDone = function(error, html) {
     return false;
 }
 
+var toWebDavURL = function(url) {
+    url = url.replace("/", "/webdav/")
+    return window.location.origin + url
+}
+
 // Handles the open file button event
 var openEvent = function(event) {
     if (this.classList.contains('disabled')) {
@@ -115,12 +120,12 @@ var deleteEvent = function(event) {
             let html = document.getElementById("delete").changeToLoading();
             let request = new XMLHttpRequest();
 
-            request.open('DELETE', link);
+            request.open('DELETE', toWebDavURL(link));
             request.setRequestHeader('Token', token);
             request.send();
             request.onreadystatechange = function() {
                 if (request.readyState == 4) {
-                    if (request.status == 200) {
+                    if (request.status == 204) {
                         if (single) {
                             window.location.pathname = RemoveLastDirectoryPartOf(window.location.pathname);
                         } else {
@@ -128,7 +133,7 @@ var deleteEvent = function(event) {
                             selectedItems.removeElement(link);
                         }
                     }
-                    document.getElementById('delete').changeToDone((request.status != 200), html);
+                    document.getElementById('delete').changeToDone((request.status != 204), html);
                 }
             }
         });
@@ -233,19 +238,22 @@ var renameEvent = function(event) {
         let keyDownEvent = (event) => {
             if (event.keyCode == 13) {
                 let newName = span.innerHTML;
+                let newLink = toWebDavURL(link).replace(name, newName)
                 let html = document.getElementById('rename').changeToLoading();
                 let request = new XMLHttpRequest();
-                request.open('PATCH', link);
-                request.setRequestHeader('Rename-To', newName);
+                request.open('MOVE', toWebDavURL(link));
+                request.setRequestHeader('Destination', newLink);
                 request.setRequestHeader('Token', token);
                 request.send();
                 request.onreadystatechange = function() {
+                    // TODO: redirect if it's moved to another folder
+
                     if (request.readyState == 4) {
-                        if (request.status != 200) {
+                        if (request.status != 201 && request.status != 204) {
                             span.innerHTML = name;
                         } else {
                             let newLink = encodeURI(link.replace(name, newName));
-                            console.log(newLink)
+                            console.log(request.body)
                             reloadListing(() => {
                                 let newLink = encodeURI(link.replace(name, newName));
                                 selectedItems = [newLink];
@@ -255,7 +263,7 @@ var renameEvent = function(event) {
                             });
                         }
 
-                        document.getElementById('rename').changeToDone((request.status != 200), html);
+                        document.getElementById('rename').changeToDone((request.status != 201 && request.status != 204), html);
                     }
                 }
             }

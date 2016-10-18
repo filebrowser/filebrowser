@@ -58,22 +58,23 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			}
 
 			if c.WebDav && strings.HasPrefix(r.URL.Path, c.WebDavURL) {
-				url := strings.TrimPrefix(r.URL.Path, c.WebDavURL)
+				//url := strings.TrimPrefix(r.URL.Path, c.WebDavURL)
 
-				if !user.Allowed(url) {
-					return http.StatusForbidden, nil
-				}
-
-				switch r.Method {
-				case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
-					if !user.AllowEdit {
+				/*
+					if !user.Allowed(url) {
 						return http.StatusForbidden, nil
 					}
-				case "MKCOL", "COPY":
-					if !user.AllowNew {
-						return http.StatusForbidden, nil
-					}
-				}
+
+					switch r.Method {
+					case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
+						if !user.AllowEdit {
+							return http.StatusForbidden, nil
+						}
+					case "MKCOL", "COPY":
+						if !user.AllowNew {
+							return http.StatusForbidden, nil
+						}
+					} */
 
 				c.WebDavHandler.ServeHTTP(w, r)
 				return 0, nil
@@ -149,7 +150,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				}
 
 				if !user.AllowEdit {
-					return http.StatusUnauthorized, nil
+					return http.StatusForbidden, nil
 				}
 
 				// Update a file.
@@ -180,20 +181,6 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 				// Creates a new folder.
 				return newDirectory(w, r, c)
-			case http.MethodDelete:
-				if !user.AllowEdit {
-					return http.StatusUnauthorized, nil
-				}
-
-				// Delete a file or a directory
-				return fi.Delete()
-			case http.MethodPatch:
-				if !user.AllowEdit {
-					return http.StatusUnauthorized, nil
-				}
-
-				// Rename a file or directory
-				return fi.Rename(w, r)
 			default:
 				return http.StatusNotImplemented, nil
 			}

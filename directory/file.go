@@ -106,42 +106,6 @@ func (i Info) HumanModTime(format string) string {
 	return i.ModTime.Format(format)
 }
 
-// Delete handles the delete requests
-func (i *Info) Delete() (int, error) {
-	var err error
-
-	// If it's a directory remove all the contents inside
-	if i.IsDir {
-		err = os.RemoveAll(i.Path)
-	} else {
-		err = os.Remove(i.Path)
-	}
-
-	if err != nil {
-		return errors.ToHTTPCode(err), err
-	}
-
-	return http.StatusOK, nil
-}
-
-// Rename function is used tor rename a file or a directory
-func (i *Info) Rename(w http.ResponseWriter, r *http.Request) (int, error) {
-	newname := r.Header.Get("Rename-To")
-	if newname == "" {
-		return http.StatusBadRequest, nil
-	}
-
-	newpath := filepath.Clean(newname)
-	newpath = strings.Replace(i.Path, i.Name, newname, 1)
-
-	if err := os.Rename(i.Path, newpath); err != nil {
-		return errors.ToHTTPCode(err), err
-	}
-
-	i.Path = newpath
-	return http.StatusOK, nil
-}
-
 // ServeAsHTML is used to serve single file pages
 func (i *Info) ServeAsHTML(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
 	if i.IsDir {
