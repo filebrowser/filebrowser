@@ -144,6 +144,8 @@ func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config
 		}
 
 		page.Info.Data = editor
+
+		// TODO: if serve Single File finds an error while parsing, show the raw content to edit instead of giving 500
 		return page.PrintAsHTML(w, "frontmatter", "editor")
 	}
 

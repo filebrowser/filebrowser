@@ -417,6 +417,7 @@ var addNewDirEvents = function() {
 
 // Handles the new directory event
 var newDirEvent = function(event) {
+    // TODO: create new dir button and new file button
     if (event.keyCode == 27) {
         document.getElementById('newdir').classList.toggle('enabled');
         setTimeout(() => {
@@ -831,13 +832,13 @@ document.addEventListener("editor", (event) => {
         let data = form2js(document.querySelector('form'));
         let html = button.changeToLoading();
         let request = new XMLHttpRequest();
-        request.open("PUT", window.location);
+        request.open("PUT", toWebDavURL(window.location.pathname));
         request.setRequestHeader('Kind', kind);
         request.setRequestHeader('Token', token);
         request.send(JSON.stringify(data));
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
-                button.changeToDone((request.status != 200), html);
+                button.changeToDone((request.status != 201), html);
             }
         }
     }

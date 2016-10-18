@@ -57,6 +57,13 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			}
 
 			if c.WebDav && strings.HasPrefix(r.URL.Path, c.WebDavURL) {
+				if r.Method == http.MethodPut {
+					_, err = fi.Update(w, r, c, user)
+					if err != nil {
+						return http.StatusInternalServerError, err
+					}
+				}
+
 				//url := strings.TrimPrefix(r.URL.Path, c.WebDavURL)
 
 				/*
@@ -143,17 +150,6 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					return errors.PrintHTML(w, code, err)
 				}
 				return code, err
-			case http.MethodPut:
-				if fi.IsDir {
-					return http.StatusNotAcceptable, nil
-				}
-
-				if !user.AllowEdit {
-					return http.StatusForbidden, nil
-				}
-
-				// Update a file.
-				return fi.Update(w, r, c, user)
 			case http.MethodPost:
 				// Upload a new file.
 				if r.Header.Get("Upload") == "true" {
@@ -166,7 +162,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 				// Search and git commands.
 				if r.Header.Get("Search") == "true" {
-					// TODO: search commands.
+					// TODO: search commands. USE PROPFIND?
 				}
 
 				// VCS commands.
