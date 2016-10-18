@@ -8,12 +8,8 @@
 package filemanager
 
 import (
-	e "errors"
-	"io"
-	"log"
-	"mime/multipart"
+	"fmt"
 	"net/http"
-	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -58,7 +54,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 			// TODO: make allow and block rules relative to baseurl and webdav
 			// Checks if the user has permission to access the current directory.
-			if !user.Allowed(r.URL.Path) {
+			/*if !user.Allowed(r.URL.Path) {
 				if r.Method == http.MethodGet {
 					return errors.PrintHTML(w, http.StatusForbidden, e.New("You don't have permission to access this page."))
 				}
@@ -66,14 +62,17 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				return http.StatusForbidden, nil
 			}
 
+			// TODO: How to exclude web dav clients? :/
 			// Security measures against CSRF attacks.
 			if r.Method != http.MethodGet {
 				if !c.CheckToken(r) {
 					return http.StatusForbidden, nil
 				}
-			}
+			} */
 
 			if strings.HasPrefix(r.URL.Path, c.WebDavURL) {
+				fmt.Println("e")
+
 				switch r.Method {
 				case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
 					if !user.AllowEdit {
@@ -144,19 +143,11 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			}
 
 			if r.Method == http.MethodPost {
-				// Upload a new file.
-				if r.Header.Get("Upload") == "true" {
-					if !user.AllowNew {
-						return http.StatusUnauthorized, nil
-					}
-
-					return upload(w, r, c)
-				}
-
+				/* TODO: search commands. USE PROPFIND?
 				// Search and git commands.
 				if r.Header.Get("Search") == "true" {
-					// TODO: search commands. USE PROPFIND?
-				}
+
+				} */
 
 				// VCS commands.
 				if r.Header.Get("Command") != "" {
@@ -173,50 +164,6 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 	}
 
 	return f.Next.ServeHTTP(w, r)
-}
-
-// upload is used to handle the upload requests to the server
-func upload(w http.ResponseWriter, r *http.Request, c *config.Config) (int, error) {
-	// Parse the multipart form in the request
-	err := r.ParseMultipartForm(100000)
-	if err != nil {
-		log.Println(err)
-		return http.StatusInternalServerError, err
-	}
-
-	// For each file header in the multipart form
-	for _, headers := range r.MultipartForm.File {
-		// Handle each file
-		for _, header := range headers {
-			// Open the first file
-			var src multipart.File
-			if src, err = header.Open(); nil != err {
-				return http.StatusInternalServerError, err
-			}
-
-			filename := strings.Replace(r.URL.Path, c.BaseURL, c.PathScope, 1)
-			filename = filename + header.Filename
-			filename = filepath.Clean(filename)
-
-			// Create the file
-			var dst *os.File
-			if dst, err = os.Create(filename); nil != err {
-				if os.IsExist(err) {
-					return http.StatusConflict, err
-				}
-				return http.StatusInternalServerError, err
-			}
-
-			// Copy the file content
-			if _, err = io.Copy(dst, src); nil != err {
-				return http.StatusInternalServerError, err
-			}
-
-			defer dst.Close()
-		}
-	}
-
-	return http.StatusOK, nil
 }
 
 // command handles the requests for VCS related commands: git, svn and mercurial

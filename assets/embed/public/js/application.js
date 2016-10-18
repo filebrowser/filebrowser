@@ -299,26 +299,24 @@ var renameEvent = function(event) {
 var handleFiles = function(files) {
     let button = document.getElementById("upload");
     let html = button.changeToLoading();
-    let data = new FormData();
 
     for (let i = 0; i < files.length; i++) {
-        data.append(files[i].name, files[i]);
-    }
+        let request = new XMLHttpRequest();
+        request.open('PUT', toWebDavURL(window.location.pathname + files[i].name));
+        request.setRequestHeader('Token', token);
+        request.send(files[i]);
+        request.onreadystatechange = function() {
+            if (request.readyState == 4) {
+                if (request.status == 201) {
+                    reloadListing();
+                }
 
-    let request = new XMLHttpRequest();
-    request.open('POST', window.location.pathname);
-    request.setRequestHeader("Upload", "true");
-    request.setRequestHeader('Token', token);
-    request.send(data);
-    request.onreadystatechange = function() {
-        if (request.readyState == 4) {
-            if (request.status == 200) {
-                reloadListing();
+                button.changeToDone((request.status != 201), html);
             }
-
-            button.changeToDone((request.status != 200), html);
         }
     }
+
+
 
     return false;
 }
