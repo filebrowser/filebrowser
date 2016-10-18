@@ -8,7 +8,7 @@
 package filemanager
 
 import (
-	"fmt"
+	e "errors"
 	"net/http"
 	"os/exec"
 	"path/filepath"
@@ -32,18 +32,21 @@ type FileManager struct {
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	var (
-		c           *config.Config
-		fi          *directory.Info
-		code        int
-		err         error
-		serveAssets bool
-		user        *config.User
+		c    *config.Config
+		fi   *directory.Info
+		code int
+		err  error
+		user *config.User
 	)
 
 	for i := range f.Configs {
 		if httpserver.Path(r.URL.Path).Matches(f.Configs[i].BaseURL) {
 			c = &f.Configs[i]
-			serveAssets = httpserver.Path(r.URL.Path).Matches(c.BaseURL + assets.BaseURL)
+
+			if r.Method == http.MethodGet && httpserver.Path(r.URL.Path).Matches(c.BaseURL+assets.BaseURL) {
+				return assets.Serve(w, r, c)
+			}
+
 			username, _, _ := r.BasicAuth()
 
 			if _, ok := c.Users[username]; ok {
@@ -52,26 +55,10 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				user = c.User
 			}
 
-			// TODO: make allow and block rules relative to baseurl and webdav
-			// Checks if the user has permission to access the current directory.
-			/*if !user.Allowed(r.URL.Path) {
-				if r.Method == http.MethodGet {
-					return errors.PrintHTML(w, http.StatusForbidden, e.New("You don't have permission to access this page."))
-				}
-
-				return http.StatusForbidden, nil
-			}
-
-			// TODO: How to exclude web dav clients? :/
-			// Security measures against CSRF attacks.
-			if r.Method != http.MethodGet {
-				if !c.CheckToken(r) {
+			if strings.HasPrefix(r.URL.Path, c.WebDavURL) {
+				if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.WebDavURL)) {
 					return http.StatusForbidden, nil
 				}
-			} */
-
-			if strings.HasPrefix(r.URL.Path, c.WebDavURL) {
-				fmt.Println("e")
 
 				switch r.Method {
 				case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
@@ -95,8 +82,16 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				return 0, nil
 			}
 
-			if r.Method == http.MethodGet && serveAssets {
-				return assets.Serve(w, r, c)
+			if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.BaseURL)) {
+				if r.Method == http.MethodGet {
+					return errors.PrintHTML(
+						w,
+						http.StatusForbidden,
+						e.New("You don't have permission to access this page."),
+					)
+				}
+
+				return http.StatusForbidden, nil
 			}
 
 			if r.Method == http.MethodGet {
@@ -143,6 +138,12 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			}
 
 			if r.Method == http.MethodPost {
+				// TODO: How to exclude web dav clients? :/
+				// Security measures against CSRF attacks.
+				if !c.CheckToken(r) {
+					return http.StatusForbidden, nil
+				}
+
 				/* TODO: search commands. USE PROPFIND?
 				// Search and git commands.
 				if r.Header.Get("Search") == "true" {

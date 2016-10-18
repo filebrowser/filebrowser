@@ -1,5 +1,7 @@
 'use strict';
 
+// TODO: way to get the webdav url
+
 var tempID = "_fm_internal_temporary_id"
 var selectedItems = [];
 var token = "";
@@ -315,8 +317,6 @@ var handleFiles = function(files) {
             }
         }
     }
-
-
 
     return false;
 }

@@ -16,54 +16,45 @@ import (
 
 // Update is used to update a file that was edited
 func (i *Info) Update(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
-	// TODO: review this
+	var (
+		data      map[string]interface{}
+		file      []byte
+		code      int
+		err       error
+		kind      string
+		rawBuffer = new(bytes.Buffer)
+	)
 
-	var data map[string]interface{}
-	kind := r.Header.Get("kind")
-
-	var file []byte
-	var code int
-
-	rawBuffer := new(bytes.Buffer)
+	kind = r.Header.Get("kind")
 	rawBuffer.ReadFrom(r.Body)
 
-	if kind == "" {
-		file = rawBuffer.Bytes()
-	} else {
-		err := json.Unmarshal(rawBuffer.Bytes(), &data)
+	if kind != "" {
+		err = json.Unmarshal(rawBuffer.Bytes(), &data)
 
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
-
-		switch kind {
-		case "frontmatter-only":
-			if file, code, err = ParseFrontMatterOnlyFile(data, i.Name); err != nil {
-				return http.StatusInternalServerError, err
-			}
-		case "content-only":
-			mainContent := data["content"].(string)
-			mainContent = strings.TrimSpace(mainContent)
-			file = []byte(mainContent)
-		case "complete":
-			if file, code, err = ParseCompleteFile(data, i.Name, u.FrontMatter); err != nil {
-				return http.StatusInternalServerError, err
-			}
-		default:
-			return http.StatusBadRequest, nil
-		}
 	}
 
-	// Overwrite the Body
+	switch kind {
+	case "frontmatter-only":
+		if file, code, err = ParseFrontMatterOnlyFile(data, i.Name); err != nil {
+			return http.StatusInternalServerError, err
+		}
+	case "content-only":
+		mainContent := data["content"].(string)
+		mainContent = strings.TrimSpace(mainContent)
+		file = []byte(mainContent)
+	case "complete":
+		if file, code, err = ParseCompleteFile(data, i.Name, u.FrontMatter); err != nil {
+			return http.StatusInternalServerError, err
+		}
+	default:
+		file = rawBuffer.Bytes()
+	}
+
+	// Overwrite the request Body
 	r.Body = ioutil.NopCloser(bytes.NewReader(file))
-
-	// Write the file
-	// err = ioutil.WriteFile(i.Path, file, 0666)
-
-	//if err != nil {
-	//return http.StatusInternalServerError, err
-	//	}
-
 	return code, nil
 }
 

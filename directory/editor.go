@@ -42,23 +42,26 @@ func (i *Info) GetEditor() (*Editor, error) {
 	// Handle the content depending on the file extension
 	switch editor.Mode {
 	case "markdown", "asciidoc", "rst":
-		if HasFrontMatterRune(i.Raw) {
-			// Starts a new buffer and parses the file using Hugo's functions
-			buffer := bytes.NewBuffer(i.Raw)
-			page, err = parser.ReadFrom(buffer)
-			if err != nil {
-				return editor, err
-			}
-
-			// Parses the page content and the frontmatter
-			editor.Content = strings.TrimSpace(string(page.Content()))
-			editor.FrontMatter, _, err = frontmatter.Pretty(page.FrontMatter())
-			editor.Class = "complete"
-		} else {
-			// The editor will handle only content
+		if !HasFrontMatterRune(i.Raw) {
 			editor.Class = "content-only"
 			editor.Content = i.Content
+			break
 		}
+
+		// Starts a new buffer and parses the file using Hugo's functions
+		buffer := bytes.NewBuffer(i.Raw)
+		page, err = parser.ReadFrom(buffer)
+		editor.Class = "complete"
+
+		if err != nil {
+			editor.Class = "content-only"
+			editor.Content = i.Content
+			break
+		}
+
+		// Parses the page content and the frontmatter
+		editor.Content = strings.TrimSpace(string(page.Content()))
+		editor.FrontMatter, _, err = frontmatter.Pretty(page.FrontMatter())
 	case "json", "toml", "yaml":
 		// Defines the class and declares an error
 		editor.Class = "frontmatter-only"
@@ -72,13 +75,15 @@ func (i *Info) GetEditor() (*Editor, error) {
 
 		// Check if there were any errors
 		if err != nil {
-			return editor, err
+			editor.Class = "content-only"
+			editor.Content = i.Content
+			break
 		}
 	default:
-		// The editor will handle only content
 		editor.Class = "content-only"
 		editor.Content = i.Content
 	}
+
 	return editor, nil
 }
 
