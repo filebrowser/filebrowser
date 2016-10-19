@@ -2,7 +2,6 @@ package file
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
 	"os"
@@ -40,23 +39,18 @@ type Listing struct {
 func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
 	var err error
 
+	// Gets the directory information using the Virtual File System of
+	// the user configuration
 	file, err := u.FileSystem.OpenFile(i.VirtualPath, os.O_RDONLY, 0)
 	if err != nil {
 		return utils.ErrorToHTTPCode(err, true), err
 	}
 	defer file.Close()
 
+	// Loads the content of the directory
 	listing, err := i.loadDirectoryContents(file, r.URL.Path, u)
 	if err != nil {
-		fmt.Println(err)
-		switch {
-		case os.IsPermission(err):
-			return http.StatusForbidden, err
-		case os.IsExist(err):
-			return http.StatusGone, err
-		default:
-			return http.StatusInternalServerError, err
-		}
+		return utils.ErrorToHTTPCode(err, true), err
 	}
 
 	listing.Context = httpserver.Context{
@@ -111,17 +105,12 @@ func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Co
 	return page.PrintAsHTML(w, "listing")
 }
 
-func (i Info) loadDirectoryContents(file http.File, path string, u *config.User) (*Listing, error) {
+func (i Info) loadDirectoryContents(file http.File, basePath string, u *config.User) (*Listing, error) {
 	files, err := file.Readdir(-1)
 	if err != nil {
 		return nil, err
 	}
 
-	listing := directoryListing(files, i.VirtualPath, path, u)
-	return &listing, nil
-}
-
-func directoryListing(files []os.FileInfo, urlPath string, basePath string, u *config.User) Listing {
 	var (
 		fileinfos           []Info
 		dirCount, fileCount int
@@ -146,11 +135,11 @@ func directoryListing(files []os.FileInfo, urlPath string, basePath string, u *c
 		})
 	}
 
-	return Listing{
-		Name:     path.Base(urlPath),
-		Path:     urlPath,
+	return &Listing{
+		Name:     path.Base(i.VirtualPath),
+		Path:     i.VirtualPath,
 		Items:    fileinfos,
 		NumDirs:  dirCount,
 		NumFiles: fileCount,
-	}
+	}, nil
 }
