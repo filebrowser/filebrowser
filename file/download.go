@@ -5,15 +5,19 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/mholt/archiver"
 )
 
+// DownloadAs creates an archieve in one of the supported formats (zip, tar,
+// tar.gz or tar.bz2) and sends it to be downloaded.
 func (i *Info) DownloadAs(w http.ResponseWriter, query string) (int, error) {
 	var (
 		extension string
 		temp      string
 		err       error
+		tempfile  string
 	)
 
 	temp, err = ioutil.TempDir("", "")
@@ -21,15 +25,18 @@ func (i *Info) DownloadAs(w http.ResponseWriter, query string) (int, error) {
 		return http.StatusInternalServerError, err
 	}
 
+	defer os.RemoveAll(temp)
+	tempfile = filepath.Join(temp, "temp")
+
 	switch query {
 	case "zip":
-		extension, err = ".zip", archiver.Zip.Make(temp+"/temp", []string{i.Path})
+		extension, err = ".zip", archiver.Zip.Make(tempfile, []string{i.Path})
 	case "tar":
-		extension, err = ".tar", archiver.Tar.Make(temp+"/temp", []string{i.Path})
+		extension, err = ".tar", archiver.Tar.Make(tempfile, []string{i.Path})
 	case "targz":
-		extension, err = ".tar.gz", archiver.TarGz.Make(temp+"/temp", []string{i.Path})
+		extension, err = ".tar.gz", archiver.TarGz.Make(tempfile, []string{i.Path})
 	case "tarbz2":
-		extension, err = ".tar.bz2", archiver.TarBz2.Make(temp+"/temp", []string{i.Path})
+		extension, err = ".tar.bz2", archiver.TarBz2.Make(tempfile, []string{i.Path})
 	default:
 		return http.StatusNotImplemented, nil
 	}
