@@ -687,19 +687,29 @@ header .prev-links:hover {
 
 header .prev-links {
     position: absolute;
-    top: 0;
+    top: 4em;
     left: 0;
     color: #7d7d7d;
     list-style: none;
     margin: 0;
     padding: 0;
     background: #fff;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
     border-radius: .2em;
     flex-direction: column-reverse;
     display: none;
     transition: .2s ease all;
     min-width: 12em;
+}
+
+header .prev-links:before {
+    top: -16px;
+    left: 1em;
+    right: auto;
+    border: 8px solid transparent;
+    border-bottom-color: #68efad;
+    content: '';
+    position: absolute;
 }
 
 header .prev-links a {
