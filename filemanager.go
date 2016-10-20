@@ -126,6 +126,12 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			// Generate anti security token.
 			c.GenerateToken()
 
+			if fi.IsDir() {
+				if val, ok := r.URL.Query()["download"]; ok && val[0] != "" {
+					return fi.DownloadAs(w, val[0])
+				}
+			}
+
 			if !fi.IsDir() {
 				query := r.URL.Query()
 				webdav := false
