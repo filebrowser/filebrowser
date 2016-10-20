@@ -566,6 +566,7 @@ header p i {
     transition: .1s ease all;
     visibility: hidden;
     opacity: 0;
+    word-wrap: break-word;
 }
 
 #search.active div i,
