@@ -129,8 +129,8 @@
   </footer>
 
   <!-- SCRIPTS -->
-  <!-- User Data and Permissions -->
-  <script>var user = JSON.parse('{{ Marshal .User }}');</script>
+  <!-- User Data and Permissions; WebDavURL -->
+  <script>var user = JSON.parse('{{ Marshal .User }}'), webdavURL = "{{.Config.WebDavURL}}", baseURL = "{{.Config.BaseURL}}";</script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
   <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/form2js.js"></script>
   <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/application.js"></script>

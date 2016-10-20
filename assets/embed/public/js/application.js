@@ -89,7 +89,7 @@ Element.prototype.changeToDone = function(error, html) {
 }
 
 var toWebDavURL = function(url) {
-    url = url.replace("/", "/webdav/")
+    url = url.replace(baseURL + "/", webdavURL + "/");
     return window.location.origin + url
 }
 
