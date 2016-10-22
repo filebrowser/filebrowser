@@ -2,6 +2,7 @@ package file
 
 import (
 	"io/ioutil"
+	"mime"
 	"net/http"
 	"net/url"
 	"os"
@@ -50,25 +51,27 @@ func GetInfo(url *url.URL, c *config.Config, u *config.User) (*Info, int, error)
 // RetrieveFileType obtains the mimetype and a simplified internal Type
 // using the first 512 bytes from the file.
 func (i *Info) RetrieveFileType() error {
-	file, err := os.Open(i.Path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
+	i.Mimetype = mime.TypeByExtension(filepath.Ext(i.Name()))
 
-	p := make([]byte, 512)
-	_, err = file.Read(p)
-	if err != nil {
-		return err
+	if i.Mimetype == "" {
+		err := i.Read()
+		if err != nil {
+			return err
+		}
+
+		i.Mimetype = http.DetectContentType(i.Content)
 	}
 
-	i.Mimetype = http.DetectContentType(p)
 	i.Type = simplifyMediaType(i.Mimetype)
 	return nil
 }
 
 // Reads the file.
 func (i *Info) Read() error {
+	if len(i.Content) != 0 {
+		return nil
+	}
+
 	var err error
 	i.Content, err = ioutil.ReadFile(i.Path)
 	if err != nil {
