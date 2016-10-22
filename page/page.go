@@ -11,7 +11,7 @@ import (
 
 	"github.com/hacdias/caddy-filemanager/assets"
 	"github.com/hacdias/caddy-filemanager/config"
-	"github.com/hacdias/caddy-filemanager/utils"
+	"github.com/hacdias/caddy-filemanager/utils/variables"
 )
 
 // Page contains the informations and functions needed to show the Page
@@ -81,7 +81,7 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 	// Create the functions map, then the template, check for erros and
 	// execute the template if there aren't errors
 	functions := template.FuncMap{
-		"Defined": utils.Defined,
+		"Defined": variables.Defined,
 		"CSS": func(s string) template.CSS {
 			return template.CSS(s)
 		},

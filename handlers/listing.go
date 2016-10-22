@@ -9,7 +9,7 @@ import (
 	"github.com/hacdias/caddy-filemanager/config"
 	"github.com/hacdias/caddy-filemanager/file"
 	"github.com/hacdias/caddy-filemanager/page"
-	"github.com/hacdias/caddy-filemanager/utils"
+	"github.com/hacdias/caddy-filemanager/utils/errors"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
@@ -20,7 +20,7 @@ func ServeListing(w http.ResponseWriter, r *http.Request, c *config.Config, u *c
 	// Loads the content of the directory
 	listing, err := file.GetListing(u, i.VirtualPath, r.URL.Path)
 	if err != nil {
-		return utils.ErrorToHTTPCode(err, true), err
+		return errors.ErrorToHTTPCode(err, true), err
 	}
 
 	listing.Context = httpserver.Context{

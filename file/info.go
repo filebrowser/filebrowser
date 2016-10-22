@@ -10,7 +10,7 @@ import (
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/hacdias/caddy-filemanager/config"
-	"github.com/hacdias/caddy-filemanager/utils"
+	"github.com/hacdias/caddy-filemanager/utils/errors"
 )
 
 // Info contains the information about a particular file or directory
@@ -41,7 +41,7 @@ func GetInfo(url *url.URL, c *config.Config, u *config.User) (*Info, int, error)
 
 	i.FileInfo, err = os.Stat(i.Path)
 	if err != nil {
-		return i, utils.ErrorToHTTPCode(err, false), err
+		return i, errors.ErrorToHTTPCode(err, false), err
 	}
 
 	return i, 0, nil
@@ -72,6 +72,32 @@ func (i Info) HumanSize() string {
 // HumanModTime returns the modified time of the file as a human-readable string.
 func (i Info) HumanModTime(format string) string {
 	return i.ModTime().Format(format)
+}
+
+// CanBeEdited checks if the extension of a file is supported by the editor
+func (i Info) CanBeEdited() bool {
+	if i.Type == "text" {
+		return true
+	}
+
+	extensions := [...]string{
+		"md", "markdown", "mdown", "mmark",
+		"asciidoc", "adoc", "ad",
+		"rst",
+		".json", ".toml", ".yaml",
+		".css", ".sass", ".scss",
+		".js",
+		".html",
+		".txt",
+	}
+
+	for _, extension := range extensions {
+		if strings.HasSuffix(i.Name(), extension) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func simplifyMediaType(name string) string {

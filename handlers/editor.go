@@ -1,10 +1,11 @@
-package file
+package handlers
 
 import (
 	"bytes"
 	"path/filepath"
 	"strings"
 
+	"github.com/hacdias/caddy-filemanager/file"
 	"github.com/hacdias/caddy-filemanager/frontmatter"
 	"github.com/spf13/hugo/parser"
 )
@@ -18,7 +19,7 @@ type Editor struct {
 }
 
 // GetEditor gets the editor based on a FileInfo struct
-func (i *Info) GetEditor() (*Editor, error) {
+func GetEditor(i *file.Info) (*Editor, error) {
 	// Create a new editor variable and set the mode
 	editor := new(Editor)
 	editor.Mode = strings.TrimPrefix(filepath.Ext(i.Name()), ".")
@@ -80,30 +81,4 @@ func (i *Info) GetEditor() (*Editor, error) {
 	}
 
 	return editor, nil
-}
-
-// CanBeEdited checks if the extension of a file is supported by the editor
-func (i Info) CanBeEdited() bool {
-	if i.Type == "text" {
-		return true
-	}
-
-	extensions := [...]string{
-		"md", "markdown", "mdown", "mmark",
-		"asciidoc", "adoc", "ad",
-		"rst",
-		".json", ".toml", ".yaml",
-		".css", ".sass", ".scss",
-		".js",
-		".html",
-		".txt",
-	}
-
-	for _, extension := range extensions {
-		if strings.HasSuffix(i.Name(), extension) {
-			return true
-		}
-	}
-
-	return false
 }

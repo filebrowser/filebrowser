@@ -6,7 +6,7 @@ import (
 	"github.com/hacdias/caddy-filemanager/config"
 	"github.com/hacdias/caddy-filemanager/file"
 	"github.com/hacdias/caddy-filemanager/page"
-	"github.com/hacdias/caddy-filemanager/utils"
+	"github.com/hacdias/caddy-filemanager/utils/errors"
 )
 
 // ServeSingle serves a single file in an editor (if it is editable), shows the
@@ -14,7 +14,7 @@ import (
 func ServeSingle(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User, i *file.Info) (int, error) {
 	err := i.Read()
 	if err != nil {
-		return utils.ErrorToHTTPCode(err, true), err
+		return errors.ErrorToHTTPCode(err, true), err
 	}
 
 	p := &page.Page{
@@ -29,7 +29,7 @@ func ServeSingle(w http.ResponseWriter, r *http.Request, c *config.Config, u *co
 	}
 
 	if i.CanBeEdited() && u.AllowEdit {
-		p.Data, err = i.GetEditor()
+		p.Data, err = GetEditor(i)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
