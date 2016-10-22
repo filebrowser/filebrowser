@@ -12,9 +12,16 @@ import (
 // ServeSingle serves a single file in an editor (if it is editable), shows the
 // plain file, or downloads it if it can't be shown.
 func ServeSingle(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User, i *file.Info) (int, error) {
-	err := i.Read()
-	if err != nil {
+	var err error
+
+	if err = i.RetrieveFileType(); err != nil {
 		return errors.ErrorToHTTPCode(err, true), err
+	}
+
+	if i.Type == "text" {
+		if err = i.Read(); err != nil {
+			return errors.ErrorToHTTPCode(err, true), err
+		}
 	}
 
 	p := &page.Page{

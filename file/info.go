@@ -16,7 +16,6 @@ import (
 // Info contains the information about a particular file or directory
 type Info struct {
 	os.FileInfo
-	File        *os.File
 	URL         string
 	Path        string // Relative path to Caddyfile
 	VirtualPath string // Relative path to u.FileSystem
@@ -40,36 +39,41 @@ func GetInfo(url *url.URL, c *config.Config, u *config.User) (*Info, int, error)
 	i.Path = strings.Replace(i.Path, "\\", "/", -1)
 	i.Path = filepath.Clean(i.Path)
 
-	i.File, err = os.Open(i.Path)
-	if err != nil {
-		return i, errors.ErrorToHTTPCode(err, false), err
-	}
-
-	i.FileInfo, err = i.File.Stat()
+	i.FileInfo, err = os.Stat(i.Path)
 	if err != nil {
 		return i, errors.ErrorToHTTPCode(err, true), err
 	}
 
-	p := make([]byte, 512)
-	_, err = i.File.Read(p)
+	return i, 0, nil
+}
+
+// RetrieveFileType obtains the mimetype and a simplified internal Type
+// using the first 512 bytes from the file.
+func (i *Info) RetrieveFileType() error {
+	file, err := os.Open(i.Path)
 	if err != nil {
-		return i, errors.ErrorToHTTPCode(err, false), err
+		return err
+	}
+	defer file.Close()
+
+	p := make([]byte, 512)
+	_, err = file.Read(p)
+	if err != nil {
+		return err
 	}
 
 	i.Mimetype = http.DetectContentType(p)
 	i.Type = simplifyMediaType(i.Mimetype)
-	return i, 0, nil
+	return nil
 }
 
+// Reads the file.
 func (i *Info) Read() error {
 	var err error
 	i.Content, err = ioutil.ReadFile(i.Path)
 	if err != nil {
 		return err
 	}
-
-	i.Mimetype = http.DetectContentType(i.Content)
-	i.Type = simplifyMediaType(i.Mimetype)
 	return nil
 }
 
