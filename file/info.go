@@ -16,6 +16,7 @@ import (
 // Info contains the information about a particular file or directory
 type Info struct {
 	os.FileInfo
+	File        *os.File
 	URL         string
 	Path        string // Relative path to Caddyfile
 	VirtualPath string // Relative path to u.FileSystem
@@ -39,11 +40,24 @@ func GetInfo(url *url.URL, c *config.Config, u *config.User) (*Info, int, error)
 	i.Path = strings.Replace(i.Path, "\\", "/", -1)
 	i.Path = filepath.Clean(i.Path)
 
-	i.FileInfo, err = os.Stat(i.Path)
+	i.File, err = os.Open(i.Path)
 	if err != nil {
 		return i, errors.ErrorToHTTPCode(err, false), err
 	}
 
+	i.FileInfo, err = i.File.Stat()
+	if err != nil {
+		return i, errors.ErrorToHTTPCode(err, true), err
+	}
+
+	p := make([]byte, 512)
+	_, err = i.File.Read(p)
+	if err != nil {
+		return i, errors.ErrorToHTTPCode(err, false), err
+	}
+
+	i.Mimetype = http.DetectContentType(p)
+	i.Type = simplifyMediaType(i.Mimetype)
 	return i, 0, nil
 }
 
@@ -53,6 +67,7 @@ func (i *Info) Read() error {
 	if err != nil {
 		return err
 	}
+
 	i.Mimetype = http.DetectContentType(i.Content)
 	i.Type = simplifyMediaType(i.Mimetype)
 	return nil
