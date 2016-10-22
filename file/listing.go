@@ -131,7 +131,7 @@ func (i Info) loadDirectoryContents(file http.File, basePath string, u *config.U
 		fileinfos = append(fileinfos, Info{
 			FileInfo:    f,
 			URL:         url.String(),
-			UserAllowed: u.Allowed(url.String()),
+			UserAllowed: u.Allowed(i.VirtualPath),
 		})
 	}
 
