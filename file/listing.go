@@ -1,16 +1,13 @@
 package file
 
 import (
-	"encoding/json"
-	"net/http"
 	"net/url"
 	"os"
 	"path"
+	"sort"
 	"strings"
 
 	"github.com/hacdias/caddy-filemanager/config"
-	"github.com/hacdias/caddy-filemanager/page"
-	"github.com/hacdias/caddy-filemanager/utils"
 
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
@@ -19,7 +16,7 @@ import (
 type Listing struct {
 	// The name of the directory (the last element of the path)
 	Name string
-	// The full path of the request
+	// The full path of the request relatively to a File System
 	Path string
 	// The items (files and folders) in the path
 	Items []Info
@@ -36,76 +33,17 @@ type Listing struct {
 	httpserver.Context `json:"-"`
 }
 
-func (i *Info) serveListing(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
-	var err error
-
+// GetListing gets the information about a specific directory and its files.
+func GetListing(u *config.User, filePath string, baseURL string) (*Listing, error) {
 	// Gets the directory information using the Virtual File System of
-	// the user configuration
-	file, err := u.FileSystem.OpenFile(i.VirtualPath, os.O_RDONLY, 0)
+	// the user configuration.
+	file, err := u.FileSystem.OpenFile(filePath, os.O_RDONLY, 0)
 	if err != nil {
-		return utils.ErrorToHTTPCode(err, true), err
+		return nil, err
 	}
 	defer file.Close()
 
-	// Loads the content of the directory
-	listing, err := i.loadDirectoryContents(file, r.URL.Path, u)
-	if err != nil {
-		return utils.ErrorToHTTPCode(err, true), err
-	}
-
-	listing.Context = httpserver.Context{
-		Root: http.Dir(u.Scope),
-		Req:  r,
-		URL:  r.URL,
-	}
-
-	// Copy the query values into the Listing struct
-	var limit int
-	listing.Sort, listing.Order, limit, err = handleSortOrder(w, r, c.Scope)
-	if err != nil {
-		return http.StatusBadRequest, err
-	}
-
-	listing.applySort()
-
-	if limit > 0 && limit <= len(listing.Items) {
-		listing.Items = listing.Items[:limit]
-		listing.ItemsLimitedTo = limit
-	}
-
-	if strings.Contains(r.Header.Get("Accept"), "application/json") {
-		marsh, err := json.Marshal(listing.Items)
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		if _, err := w.Write(marsh); err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		return http.StatusOK, nil
-	}
-
-	page := &page.Page{
-		Info: &page.Info{
-			Name:   listing.Name,
-			Path:   i.VirtualPath,
-			IsDir:  true,
-			User:   u,
-			Config: c,
-			Data:   listing,
-		},
-	}
-
-	if r.Header.Get("Minimal") == "true" {
-		page.Minimal = true
-	}
-
-	return page.PrintAsHTML(w, "listing")
-}
-
-func (i Info) loadDirectoryContents(file http.File, basePath string, u *config.User) (*Listing, error) {
+	// Reads the directory and gets the information about the files.
 	files, err := file.Readdir(-1)
 	if err != nil {
 		return nil, err
@@ -127,19 +65,108 @@ func (i Info) loadDirectoryContents(file http.File, basePath string, u *config.U
 		}
 
 		// Absolute URL
-		url := url.URL{Path: basePath + name}
+		url := url.URL{Path: baseURL + name}
 		fileinfos = append(fileinfos, Info{
 			FileInfo:    f,
 			URL:         url.String(),
-			UserAllowed: u.Allowed(i.VirtualPath),
+			UserAllowed: u.Allowed(filePath),
 		})
 	}
 
 	return &Listing{
-		Name:     path.Base(i.VirtualPath),
-		Path:     i.VirtualPath,
+		Name:     path.Base(filePath),
+		Path:     filePath,
 		Items:    fileinfos,
 		NumDirs:  dirCount,
 		NumFiles: fileCount,
 	}, nil
+}
+
+// ApplySort applies the sort order using .Order and .Sort
+func (l Listing) ApplySort() {
+	// Check '.Order' to know how to sort
+	if l.Order == "desc" {
+		switch l.Sort {
+		case "name":
+			sort.Sort(sort.Reverse(byName(l)))
+		case "size":
+			sort.Sort(sort.Reverse(bySize(l)))
+		case "time":
+			sort.Sort(sort.Reverse(byTime(l)))
+		default:
+			// If not one of the above, do nothing
+			return
+		}
+	} else { // If we had more Orderings we could add them here
+		switch l.Sort {
+		case "name":
+			sort.Sort(byName(l))
+		case "size":
+			sort.Sort(bySize(l))
+		case "time":
+			sort.Sort(byTime(l))
+		default:
+			sort.Sort(byName(l))
+			return
+		}
+	}
+}
+
+// Implement sorting for Listing
+type byName Listing
+type bySize Listing
+type byTime Listing
+
+// By Name
+func (l byName) Len() int {
+	return len(l.Items)
+}
+
+func (l byName) Swap(i, j int) {
+	l.Items[i], l.Items[j] = l.Items[j], l.Items[i]
+}
+
+// Treat upper and lower case equally
+func (l byName) Less(i, j int) bool {
+	if l.Items[i].IsDir() && !l.Items[j].IsDir() {
+		return true
+	}
+
+	if !l.Items[i].IsDir() && l.Items[j].IsDir() {
+		return false
+	}
+
+	return strings.ToLower(l.Items[i].Name()) < strings.ToLower(l.Items[j].Name())
+}
+
+// By Size
+func (l bySize) Len() int {
+	return len(l.Items)
+}
+
+func (l bySize) Swap(i, j int) {
+	l.Items[i], l.Items[j] = l.Items[j], l.Items[i]
+}
+
+const directoryOffset = -1 << 31 // = math.MinInt32
+func (l bySize) Less(i, j int) bool {
+	iSize, jSize := l.Items[i].Size(), l.Items[j].Size()
+	if l.Items[i].IsDir() {
+		iSize = directoryOffset + iSize
+	}
+	if l.Items[j].IsDir() {
+		jSize = directoryOffset + jSize
+	}
+	return iSize < jSize
+}
+
+// By Time
+func (l byTime) Len() int {
+	return len(l.Items)
+}
+func (l byTime) Swap(i, j int) {
+	l.Items[i], l.Items[j] = l.Items[j], l.Items[i]
+}
+func (l byTime) Less(i, j int) bool {
+	return l.Items[i].ModTime().Before(l.Items[j].ModTime())
 }

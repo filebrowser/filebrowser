@@ -16,7 +16,13 @@ import (
 )
 
 // processPUT is used to update a file that was edited
-func processPUT(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User, i *file.Info) (int, error) {
+func processPUT(
+	w http.ResponseWriter,
+	r *http.Request,
+	c *config.Config,
+	u *config.User,
+	i *file.Info,
+) (int, error) {
 	var (
 		data      map[string]interface{}
 		file      []byte

@@ -10,13 +10,12 @@ package filemanager
 import (
 	e "errors"
 	"net/http"
-	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"github.com/hacdias/caddy-filemanager/assets"
 	"github.com/hacdias/caddy-filemanager/config"
 	"github.com/hacdias/caddy-filemanager/file"
+	"github.com/hacdias/caddy-filemanager/handlers"
 	"github.com/hacdias/caddy-filemanager/page"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
@@ -126,36 +125,22 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			// Generate anti security token.
 			c.GenerateToken()
 
-			if fi.IsDir() {
-				if val, ok := r.URL.Query()["download"]; ok && val[0] != "" {
-					return fi.DownloadAs(w, val[0])
-				}
+			switch {
+			case r.URL.Query().Get("download") != "":
+				code, err = handlers.Download(w, r, c, fi)
+			case r.URL.Query().Get("raw") == "true" && !fi.IsDir():
+				http.ServeFile(w, r, fi.Path)
+				code, err = 0, nil
+			case fi.IsDir():
+				code, err = handlers.ServeListing(w, r, c, user, fi)
+			default:
+				code, err = handlers.ServeSingle(w, r, c, user, fi)
 			}
 
-			if !fi.IsDir() {
-				query := r.URL.Query()
-				webdav := false
-
-				if val, ok := query["raw"]; ok && val[0] == "true" {
-					webdav = true
-				}
-
-				if val, ok := query["download"]; ok && val[0] == "true" {
-					w.Header().Set("Content-Disposition", "attachment; filename="+fi.Name())
-					webdav = true
-				}
-
-				if webdav {
-					r.URL.Path = strings.Replace(r.URL.Path, c.BaseURL, c.WebDavURL, 1)
-					c.Handler.ServeHTTP(w, r)
-					return 0, nil
-				}
-			}
-
-			code, err := fi.ServeHTTP(w, r, c, user)
 			if err != nil {
-				return page.PrintErrorHTML(w, code, err)
+				code, err = page.PrintErrorHTML(w, code, err)
 			}
+
 			return code, err
 		}
 
@@ -172,7 +157,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					return http.StatusUnauthorized, nil
 				}
 
-				return command(w, r, c, user)
+				return handlers.Command(w, r, c, user)
 			}
 		}
 
@@ -181,41 +166,4 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 	}
 
 	return f.Next.ServeHTTP(w, r)
-}
-
-// command handles the requests for VCS related commands: git, svn and mercurial
-func command(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
-	command := strings.Split(r.Header.Get("command"), " ")
-
-	// Check if the command is allowed
-	mayContinue := false
-
-	for _, cmd := range u.Commands {
-		if cmd == command[0] {
-			mayContinue = true
-		}
-	}
-
-	if !mayContinue {
-		return http.StatusForbidden, nil
-	}
-
-	// Check if the program is talled is installed on the computer
-	if _, err := exec.LookPath(command[0]); err != nil {
-		return http.StatusNotImplemented, nil
-	}
-
-	path := strings.Replace(r.URL.Path, c.BaseURL, c.Scope, 1)
-	path = filepath.Clean(path)
-
-	cmd := exec.Command(command[0], command[1:len(command)]...)
-	cmd.Dir = path
-	output, err := cmd.CombinedOutput()
-
-	if err != nil {
-		return http.StatusInternalServerError, err
-	}
-
-	p := &page.Page{Info: &page.Info{Data: string(output)}}
-	return p.PrintAsJSON(w)
 }

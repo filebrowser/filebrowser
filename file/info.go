@@ -10,7 +10,6 @@ import (
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/hacdias/caddy-filemanager/config"
-	"github.com/hacdias/caddy-filemanager/page"
 	"github.com/hacdias/caddy-filemanager/utils"
 )
 
@@ -73,63 +72,6 @@ func (i Info) HumanSize() string {
 // HumanModTime returns the modified time of the file as a human-readable string.
 func (i Info) HumanModTime(format string) string {
 	return i.ModTime().Format(format)
-}
-
-func (i *Info) ServeHTTP(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
-	if i.IsDir() {
-		return i.serveListing(w, r, c, u)
-	}
-
-	return i.serveSingleFile(w, r, c, u)
-}
-
-func (i *Info) serveSingleFile(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
-	err := i.Read()
-	if err != nil {
-		code := http.StatusInternalServerError
-
-		switch {
-		case os.IsPermission(err):
-			code = http.StatusForbidden
-		case os.IsNotExist(err):
-			code = http.StatusGone
-		case os.IsExist(err):
-			code = http.StatusGone
-		}
-
-		return code, err
-	}
-
-	if i.Type == "blob" {
-		http.Redirect(
-			w, r,
-			c.AddrPath+r.URL.Path+"?download=true",
-			http.StatusTemporaryRedirect,
-		)
-		return 0, nil
-	}
-
-	p := &page.Page{
-		Info: &page.Info{
-			Name:   i.Name(),
-			Path:   i.VirtualPath,
-			IsDir:  false,
-			Data:   i,
-			User:   u,
-			Config: c,
-		},
-	}
-
-	if i.CanBeEdited() && u.AllowEdit {
-		p.Data, err = i.GetEditor()
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		return p.PrintAsHTML(w, "frontmatter", "editor")
-	}
-
-	return p.PrintAsHTML(w, "single")
 }
 
 func simplifyMediaType(name string) string {
