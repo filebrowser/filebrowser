@@ -43,6 +43,10 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			return f.Next.ServeHTTP(w, r)
 		}
 
+		w.Header().Set("x-frame-options", "SAMEORIGIN")
+		w.Header().Set("x-content-type", "nosniff")
+		w.Header().Set("x-xss-protection", "1; mode=block")
+
 		c = &f.Configs[i]
 
 		// Checks if the URL matches the Assets URL. Returns the asset if the
@@ -65,6 +69,10 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 		// Checks if the request URL is for the WebDav server
 		if strings.HasPrefix(r.URL.Path, c.WebDavURL) {
+			//	if !c.CheckToken(r) {
+			//	return http.StatusForbidden, nil
+			//	}
+
 			// Checks for user permissions relatively to this PATH
 			if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.WebDavURL)) {
 				return http.StatusForbidden, nil
@@ -105,6 +113,36 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 		}
 
 		if r.Method == http.MethodGet {
+			// Generate anti security token.
+			/* c.GenerateToken()
+
+			http.SetCookie(w, &http.Cookie{
+				Name:     "token",
+				Value:    c.Token,
+				Path:     "/",
+				HttpOnly: true,
+			})
+
+			co, err := r.Cookie("token")
+			fmt.Println(co.Value) */
+
+			/* Name  string
+			   Value string
+
+			   Path       string    // optional
+			   Domain     string    // optional
+			   Expires    time.Time // optional
+			   RawExpires string    // for reading cookies only
+
+			   // MaxAge=0 means no 'Max-Age' attribute specified.
+			   // MaxAge<0 means delete cookie now, equivalently 'Max-Age: 0'
+			   // MaxAge>0 means Max-Age attribute present and given in seconds
+			   MaxAge   int
+			   Secure   bool
+			   HttpOnly bool
+			   Raw      string
+			   Unparsed []string // Raw text of unparsed attribute-value pairs*/
+
 			// Gets the information of the directory/file
 			fi, code, err = file.GetInfo(r.URL, c, user)
 			if err != nil {
@@ -120,9 +158,6 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				http.Redirect(w, r, c.AddrPath+r.URL.Path+"/", http.StatusTemporaryRedirect)
 				return 0, nil
 			}
-
-			// Generate anti security token.
-			c.GenerateToken()
 
 			switch {
 			case r.URL.Query().Get("download") != "":
@@ -146,9 +181,9 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 		if r.Method == http.MethodPost {
 			// TODO: This anti CSCF measure is not being applied to requests
 			// to the WebDav URL namespace. Anyone has ideas?
-			if !c.CheckToken(r) {
-				return http.StatusForbidden, nil
-			}
+			//	if !c.CheckToken(r) {
+			//	return http.StatusForbidden, nil
+			//	}
 
 			// VCS commands.
 			if r.Header.Get("Command") != "" {
