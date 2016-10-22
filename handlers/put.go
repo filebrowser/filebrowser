@@ -1,4 +1,4 @@
-package filemanager
+package handlers
 
 import (
 	"bytes"
@@ -15,19 +15,17 @@ import (
 	"github.com/spf13/hugo/parser"
 )
 
-// processPUT is used to update a file that was edited
-func processPUT(
+// PreProccessPUT is used to update a file that was edited
+func PreProccessPUT(
 	w http.ResponseWriter,
 	r *http.Request,
 	c *config.Config,
 	u *config.User,
 	i *file.Info,
-) (int, error) {
+) (err error) {
 	var (
 		data      map[string]interface{}
 		file      []byte
-		code      int
-		err       error
 		kind      string
 		rawBuffer = new(bytes.Buffer)
 	)
@@ -39,22 +37,22 @@ func processPUT(
 		err = json.Unmarshal(rawBuffer.Bytes(), &data)
 
 		if err != nil {
-			return http.StatusInternalServerError, err
+			return
 		}
 	}
 
 	switch kind {
 	case "frontmatter-only":
-		if file, code, err = parseFrontMatterOnlyFile(data, i.Name()); err != nil {
-			return http.StatusInternalServerError, err
+		if file, err = parseFrontMatterOnlyFile(data, i.Name()); err != nil {
+			return
 		}
 	case "content-only":
 		mainContent := data["content"].(string)
 		mainContent = strings.TrimSpace(mainContent)
 		file = []byte(mainContent)
 	case "complete":
-		if file, code, err = parseCompleteFile(data, i.Name(), u.FrontMatter); err != nil {
-			return http.StatusInternalServerError, err
+		if file, err = parseCompleteFile(data, i.Name(), u.FrontMatter); err != nil {
+			return
 		}
 	default:
 		file = rawBuffer.Bytes()
@@ -62,13 +60,13 @@ func processPUT(
 
 	// Overwrite the request Body
 	r.Body = ioutil.NopCloser(bytes.NewReader(file))
-	return code, nil
+	return
 }
 
 // parseFrontMatterOnlyFile parses a frontmatter only file
-func parseFrontMatterOnlyFile(data interface{}, filename string) ([]byte, int, error) {
+func parseFrontMatterOnlyFile(data interface{}, filename string) ([]byte, error) {
 	frontmatter := strings.TrimPrefix(filepath.Ext(filename), ".")
-	f, code, err := parseFrontMatter(data, frontmatter)
+	f, err := parseFrontMatter(data, frontmatter)
 	fString := string(f)
 
 	// If it's toml or yaml, strip frontmatter identifier
@@ -83,11 +81,11 @@ func parseFrontMatterOnlyFile(data interface{}, filename string) ([]byte, int, e
 	}
 
 	f = []byte(fString)
-	return f, code, err
+	return f, err
 }
 
 // parseFrontMatter is the frontmatter parser
-func parseFrontMatter(data interface{}, frontmatter string) ([]byte, int, error) {
+func parseFrontMatter(data interface{}, frontmatter string) ([]byte, error) {
 	var mark rune
 
 	switch frontmatter {
@@ -98,20 +96,20 @@ func parseFrontMatter(data interface{}, frontmatter string) ([]byte, int, error)
 	case "yaml":
 		mark = rune('-')
 	default:
-		return []byte{}, http.StatusBadRequest, errors.New("Can't define the frontmatter.")
+		return []byte{}, errors.New("Can't define the frontmatter.")
 	}
 
 	f, err := parser.InterfaceToFrontMatter(data, mark)
 
 	if err != nil {
-		return []byte{}, http.StatusInternalServerError, err
+		return []byte{}, err
 	}
 
-	return f, http.StatusOK, nil
+	return f, nil
 }
 
 // parseCompleteFile parses a complete file
-func parseCompleteFile(data map[string]interface{}, filename string, frontmatter string) ([]byte, int, error) {
+func parseCompleteFile(data map[string]interface{}, filename string, frontmatter string) ([]byte, error) {
 	mainContent := ""
 
 	if _, ok := data["content"]; ok {
@@ -127,16 +125,16 @@ func parseCompleteFile(data map[string]interface{}, filename string, frontmatter
 		data["date"] = data["date"].(string) + ":00"
 	}
 
-	front, code, err := parseFrontMatter(data, frontmatter)
+	front, err := parseFrontMatter(data, frontmatter)
 
 	if err != nil {
 		fmt.Println(frontmatter)
-		return []byte{}, code, err
+		return []byte{}, err
 	}
 
 	// Generates the final file
 	f := new(bytes.Buffer)
 	f.Write(front)
 	f.Write([]byte(mainContent))
-	return f.Bytes(), http.StatusOK, nil
+	return f.Bytes(), nil
 }
