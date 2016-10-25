@@ -1,139 +1,126 @@
-{{ $absURL := .Config.AbsoluteURL }}
-
 <!DOCTYPE html>
 <html>
- <head>
-  <title>{{.Name}}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href='https://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_filemanagerinternal/css/styles.css">
-
-  {{ if ne .User.StyleSheet "" }}
-   <style>
-    {{ CSS .User.StyleSheet }}
-   </style>
-  {{ end }}
- </head>
- <body>
-  <header>
-   <div>
-    {{ $lnk := .PreviousLink }}
-
-     <div class="action{{ if eq $lnk ""}} disabled{{ end }}" id="prev">
-         {{ if ne $lnk ""}}
-          <a href="{{ $lnk }}">
-          {{ end }}
-      <i class="material-icons" title="Previous">subdirectory_arrow_left</i>
-      {{ if ne $lnk ""}}
-      </a>
-      {{ end }}
-
-    </div>
-
-     {{ if ne $lnk ""}}
-     <ul class="prev-links">
-     {{ range $link, $name := .BreadcrumbMap }}
-        <a href="{{ $absURL }}{{ $link }}"><li>{{ $name }}</li></a>
-     {{ end }}
-     </ul>
-     {{ end }}
-
-    <div class="action" id="open-nav">
-        <i class="material-icons" title="Menu">menu</i>
-    </div>
-
-    <p>
-     {{ if ne .Name "/"}}
-      {{ .Name }}
-     </p>
+{{ $absURL := .Config.AbsoluteURL }}
+<head>
+    <title>{{.Name}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_filemanagerinternal/css/styles.css">
+    {{ if ne .User.StyleSheet "" }}
+    <style>{{ CSS .User.StyleSheet }}</style>
     {{ end }}
-   </div>
-
-   <div>
-       <div class="only-side">
-           {{ $lnk := .PreviousLink }}
-           {{ if ne $lnk ""}}
-            <a href="{{ $lnk }}">
-            {{ end }}
+</head>
+<body>
+    <header>
+        <div>
+            {{ $lnk := .PreviousLink }}
             <div class="action{{ if eq $lnk ""}} disabled{{ end }}" id="prev">
-             <i class="material-icons" title="Previous">subdirectory_arrow_left</i>
+                {{ if ne $lnk ""}}<a href="{{ $lnk }}">{{ end }}
+                    <i class="material-icons" title="Previous">subdirectory_arrow_left</i>
+                {{ if ne $lnk ""}}</a>{{ end }}
+
+                {{ if ne $lnk ""}}
+                    <ul class="prev-links">
+                    {{ range $link, $name := .BreadcrumbMap }}<a href="{{ $absURL }}{{ $link }}"><li>{{ $name }}</li></a>{{ end }}
+                    </ul>
+                {{ end }}
             </div>
 
-            {{ if ne $lnk ""}}
-            </a>
-           {{ end }}
+            <div class="action" id="open-nav">
+                <i class="material-icons" title="Menu">menu</i>
+            </div>
 
-           <p>
-            <a href="{{ if eq .Config.AbsoluteURL "" }}/{{ else }}{{ .Config.AbsoluteURL }}{{ end }}">
-             File Manager
-            </a>
-            </p>
-       </div>
-
-       {{ if .IsDir}}
-
-       {{ if .User.AllowCommands }}
-       <div id="search">
-           <i class="material-icons" title="Storage">storage</i>
-           <input type="text" placeholder="Execute a command...">
-           <div>Write your git, mercurial or svn command and press enter.</div>
-       </div>
-       {{ end }}
-
-        <div class="action" id="view">
-         <i class="material-icons" title="Switch view">view_headline</i> <span>Switch view</span>
+            {{ if ne .Name "/"}}<p>{{ .Name }}</p>{{ end }}
         </div>
-        {{ if .User.AllowNew }}
-        <div class="action" id="upload">
-         <i class="material-icons" title="Upload">file_upload</i> <span>Upload</span>
+
+        <div>
+            <div class="only-side">
+                {{ $lnk := .PreviousLink }}
+                {{ if ne $lnk ""}}<a href="{{ $lnk }}">{{ end }}
+                    <div class="action{{ if eq $lnk ""}} disabled{{ end }}" id="prev">
+                        <i class="material-icons" title="Previous">subdirectory_arrow_left</i>
+                    </div>
+                {{ if ne $lnk ""}}</a>{{ end }}
+
+                <p><a href="{{ if eq .Config.AbsoluteURL "" }}/{{ else }}{{ .Config.AbsoluteURL }}{{ end }}">File Manager</a></p>
+            </div>
+
+            {{ if .IsDir}}
+                {{ if .User.AllowCommands }}
+                <div id="search">
+                    <i class="material-icons" title="Storage">storage</i>
+                    <input type="text" placeholder="Execute a command...">
+                    <div>Write your git, mercurial or svn command and press enter.</div>
+                </div>
+                {{ end }}
+
+                <div class="action" id="view">
+                    <i class="material-icons" title="Switch view">view_headline</i> <span>Switch view</span>
+                </div>
+
+                {{ if .User.AllowNew }}
+                <div class="action" id="upload">
+                    <i class="material-icons" title="Upload">file_upload</i> <span>Upload</span>
+                </div>
+                {{ end }}
+
+                <div class="action">
+                    <a href="?download=true">
+                        <i class="material-icons" title="Download">file_download</i> <span>Download</span>
+                    </a>
+                    <ul class="prev-links">
+                        <a href="?download=tarbz2"><li>tar.bz2</li></a>
+                        <a href="?download=targz"><li>tar.gz</li></a>
+                        <a href="?download=tar"><li>tar</li></a>
+                        <a href="?download=zip"><li>zip</li></a>
+                    </ul>
+                </div>
+            {{ else }}
+            {{ template "actions" . }}
+            {{ end }}
+
+            <div class="action" id="logout">
+                <i class="material-icons" title="Logout">exit_to_app</i> <span>Logout</span>
+            </div>
         </div>
-        {{ end }}
-        {{ else }}
-        {{ template "actions" . }}
-       {{ end }}
+        <div id="overlay"></div>
+    </header>
 
-       <div class="action" id="logout">
-        <i class="material-icons" title="Logout">exit_to_app</i> <span>Logout</span>
-       </div>
-   </div>
-   <div id="overlay"></div>
-  </header>
-
-  {{ if .IsDir }}
-   <div id="toolbar">
+    {{ if .IsDir }}
+    <div id="toolbar">
     <div>
-     <div class="action" id="back">
-      <i class="material-icons" title="Back">arrow_back</i>
-     </div>
-     <p>
-      <span id="selected-number">0</span>
-      selected.</p>
+    <div class="action" id="back">
+    <i class="material-icons" title="Back">arrow_back</i>
+    </div>
+    <p>
+    <span id="selected-number">0</span>
+    selected.</p>
     </div>
     <div>
-     {{ template "actions" . }}
+    {{ template "actions" . }}
     </div>
-   </div>
-  {{ end }}
+    </div>
+    {{ end }}
 
-  <main>
-   {{ template "content" . }}
-   <span id="token">{{ .Config.Token }}</span>
-  </main>
+    <main>
+    {{ template "content" . }}
+    <span id="token">{{ .Config.Token }}</span>
+    </main>
 
-  <footer>
-   Served with
-   <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a>
-   and
-   <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.
-  </footer>
+    <footer>
+    Served with
+    <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a>
+    and
+    <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.
+    </footer>
 
-  <!-- SCRIPTS -->
-  <!-- User Data and Permissions; WebDavURL -->
-  <script>var user = JSON.parse('{{ Marshal .User }}'), webdavURL = "{{.Config.WebDavURL}}", baseURL = "{{.Config.BaseURL}}";</script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
-  <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/form2js.js"></script>
-  <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/application.js"></script>
-  {{ if .Config.HugoEnabled }}<script src="{{ .Config.AbsoluteURL }}/_hugointernal/js/application.js"></script>{{ end }}
- </body>
+    <!-- SCRIPTS -->
+    <!-- User Data and Permissions; WebDavURL -->
+    <script>var user = JSON.parse('{{ Marshal .User }}'), webdavURL = "{{.Config.WebDavURL}}", baseURL = "{{.Config.BaseURL}}";</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/form2js.js"></script>
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/application.js"></script>
+    {{ if .Config.HugoEnabled }}<script src="{{ .Config.AbsoluteURL }}/_hugointernal/js/application.js"></script>{{ end }}
+</body>
 </html>

@@ -151,22 +151,6 @@ var preventDefault = function(event) {
     event.preventDefault();
 }
 
-// Download file event
-var downloadEvent = function(event) {
-    if (this.classList.contains('disabled')) {
-        return false;
-    }
-    if (selectedItems.length) {
-        Array.from(selectedItems).forEach(item => {
-            window.open(item + "?download=true");
-        });
-        return false;
-    }
-
-    window.open(window.location + "?download=true");
-    return false;
-}
-
 // Remove the last directory of an url
 var RemoveLastDirectoryPartOf = function(url) {
     var arr = url.split('/');
@@ -466,12 +450,30 @@ document.addEventListener("changed-selected", function(event) {
             document.getElementById("rename").classList.remove("disabled");
         }
 
+        redefineDownloadURLs();
+
         return false;
     }
 
     toolbar.classList.remove("enabled");
     return false;
 });
+
+var redefineDownloadURLs = function() {
+    let files = "";
+
+    for (let i = 0; i < selectedItems.length; i++) {
+        files += selectedItems[i].replace(window.location.pathname, "") + ",";
+    }
+
+    files = files.substring(0, files.length - 1);
+    files = encodeURIComponent(files);
+
+    let links = document.querySelectorAll("#download ul a");
+    Array.from(links).forEach(link => {
+        link.href = "?download=" + link.dataset.format + "&files=" + files;
+    });
+}
 
 var searchEvent = function(event) {
     let value = this.value;
@@ -891,7 +893,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         document.getElementById("delete").addEventListener("click", deleteEvent);
     }
 
-    document.getElementById("download").addEventListener("click", downloadEvent);
     document.getElementById("open-nav").addEventListener("click", event => {
         document.querySelector("header > div:nth-child(2)").classList.toggle("active");
     });
