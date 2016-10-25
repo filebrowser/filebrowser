@@ -473,8 +473,8 @@ header {
     z-index: 999;
     padding: 1.7em 0;
     background-color: #2196f3;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.075);
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0,0,0,0.075);
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 
 header h1 {
@@ -1185,5 +1185,11 @@ i.spin {
     #editor .frontmatter {
         column-count: 1;
         column-gap: 0;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    #toolbar p {
+        display: none;
     }
 }
