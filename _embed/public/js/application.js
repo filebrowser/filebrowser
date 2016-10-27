@@ -1,5 +1,7 @@
 'use strict';
 
+// TODO: way to get the webdav url
+
 var tempID = "_fm_internal_temporary_id"
 var selectedItems = [];
 var token = "";
@@ -87,7 +89,7 @@ Element.prototype.changeToDone = function(error, html) {
 }
 
 var toWebDavURL = function(url) {
-    url = url.replace("/", "/webdav/")
+    url = url.replace(baseURL + "/", webdavURL + "/");
     return window.location.origin + url
 }
 
@@ -147,22 +149,6 @@ var deleteEvent = function(event) {
 // Prevent Default event
 var preventDefault = function(event) {
     event.preventDefault();
-}
-
-// Download file event
-var downloadEvent = function(event) {
-    if (this.classList.contains('disabled')) {
-        return false;
-    }
-    if (selectedItems.length) {
-        Array.from(selectedItems).forEach(item => {
-            window.open(item + "?download=true");
-        });
-        return false;
-    }
-
-    window.open(window.location + "?download=true");
-    return false;
 }
 
 // Remove the last directory of an url
@@ -299,24 +285,20 @@ var renameEvent = function(event) {
 var handleFiles = function(files) {
     let button = document.getElementById("upload");
     let html = button.changeToLoading();
-    let data = new FormData();
 
     for (let i = 0; i < files.length; i++) {
-        data.append(files[i].name, files[i]);
-    }
+        let request = new XMLHttpRequest();
+        request.open('PUT', toWebDavURL(window.location.pathname + files[i].name));
+        request.setRequestHeader('Token', token);
+        request.send(files[i]);
+        request.onreadystatechange = function() {
+            if (request.readyState == 4) {
+                if (request.status == 201) {
+                    reloadListing();
+                }
 
-    let request = new XMLHttpRequest();
-    request.open('POST', window.location.pathname);
-    request.setRequestHeader("Upload", "true");
-    request.setRequestHeader('Token', token);
-    request.send(data);
-    request.onreadystatechange = function() {
-        if (request.readyState == 4) {
-            if (request.status == 200) {
-                reloadListing();
+                button.changeToDone((request.status != 201), html);
             }
-
-            button.changeToDone((request.status != 200), html);
         }
     }
 
@@ -417,6 +399,7 @@ var addNewDirEvents = function() {
 
 // Handles the new directory event
 var newDirEvent = function(event) {
+    // TODO: create new dir button and new file button
     if (event.keyCode == 27) {
         document.getElementById('newdir').classList.toggle('enabled');
         setTimeout(() => {
@@ -430,13 +413,14 @@ var newDirEvent = function(event) {
         let button = document.getElementById('new');
         let html = button.changeToLoading();
         let request = new XMLHttpRequest();
-        request.open("POST", window.location);
+        let name = document.getElementById('newdir').value;
+
+        request.open((name.endsWith("/") ? "MKCOL" : "PUT"), toWebDavURL(window.location.pathname + name));
         request.setRequestHeader('Token', token);
-        request.setRequestHeader('Filename', document.getElementById('newdir').value);
         request.send();
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
-                button.changeToDone((request.status != 200), html);
+                button.changeToDone((request.status != 201), html);
                 reloadListing(() => {
                     addNewDirEvents();
                 });
@@ -466,12 +450,30 @@ document.addEventListener("changed-selected", function(event) {
             document.getElementById("rename").classList.remove("disabled");
         }
 
+        redefineDownloadURLs();
+
         return false;
     }
 
     toolbar.classList.remove("enabled");
     return false;
 });
+
+var redefineDownloadURLs = function() {
+    let files = "";
+
+    for (let i = 0; i < selectedItems.length; i++) {
+        files += selectedItems[i].replace(window.location.pathname, "") + ",";
+    }
+
+    files = files.substring(0, files.length - 1);
+    files = encodeURIComponent(files);
+
+    let links = document.querySelectorAll("#download ul a");
+    Array.from(links).forEach(link => {
+        link.href = "?download=" + link.dataset.format + "&files=" + files;
+    });
+}
 
 var searchEvent = function(event) {
     let value = this.value;
@@ -832,13 +834,13 @@ document.addEventListener("editor", (event) => {
         let data = form2js(document.querySelector('form'));
         let html = button.changeToLoading();
         let request = new XMLHttpRequest();
-        request.open("PUT", window.location);
+        request.open("PUT", toWebDavURL(window.location.pathname));
         request.setRequestHeader('Kind', kind);
         request.setRequestHeader('Token', token);
         request.send(JSON.stringify(data));
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
-                button.changeToDone((request.status != 200), html);
+                button.changeToDone((request.status != 201), html);
             }
         }
     }
@@ -891,7 +893,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         document.getElementById("delete").addEventListener("click", deleteEvent);
     }
 
-    document.getElementById("download").addEventListener("click", downloadEvent);
     document.getElementById("open-nav").addEventListener("click", event => {
         document.querySelector("header > div:nth-child(2)").classList.toggle("active");
     });

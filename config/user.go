@@ -1,21 +1,23 @@
 package config
 
 import (
-	"net/http"
 	"strings"
+
+	"golang.org/x/net/webdav"
 )
 
 // User contains the configuration for each user
 type User struct {
-	PathScope     string          `json:"-"` // Path the user have access
-	Root          http.FileSystem `json:"-"` // The virtual file system the user have access
-	StyleSheet    string          `json:"-"` // Costum stylesheet
-	FrontMatter   string          `json:"-"` // Default frontmatter to save files in
-	AllowNew      bool            // Can create files and folders
-	AllowEdit     bool            // Can edit/rename files
-	AllowCommands bool            // Can execute commands
-	Commands      []string        // Available Commands
-	Rules         []*Rule         `json:"-"` // Access rules
+	Scope         string            `json:"-"` // Path the user have access
+	FileSystem    webdav.FileSystem `json:"-"` // The virtual file system the user have access
+	Handler       *webdav.Handler   `json:"-"` // The WebDav HTTP Handler
+	StyleSheet    string            `json:"-"` // Costum stylesheet
+	FrontMatter   string            `json:"-"` // Default frontmatter to save files in
+	AllowNew      bool              // Can create files and folders
+	AllowEdit     bool              // Can edit/rename files
+	AllowCommands bool              // Can execute commands
+	Commands      []string          // Available Commands
+	Rules         []*Rule           `json:"-"` // Access rules
 }
 
 // Allowed checks if the user has permission to access a directory/file

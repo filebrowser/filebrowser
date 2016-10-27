@@ -1,4 +1,4 @@
-package errors
+package page
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-const template = `<!DOCTYPE html>
+const errTemplate = `<!DOCTYPE html>
 <html>
 <head>
     <title>TITLE</title>
@@ -32,6 +32,9 @@ const template = `<!DOCTYPE html>
         color: #eee;
         font-weight: bold;
     }
+	p {
+		line-height: 1.3;
+	}
     </style>
 </head>
 
@@ -45,9 +48,9 @@ const template = `<!DOCTYPE html>
     </div>
 </html>`
 
-// PrintHTML prints the error page
-func PrintHTML(w http.ResponseWriter, code int, err error) (int, error) {
-	tpl := template
+// PrintErrorHTML prints the error page
+func PrintErrorHTML(w http.ResponseWriter, code int, err error) (int, error) {
+	tpl := errTemplate
 	tpl = strings.Replace(tpl, "TITLE", strconv.Itoa(code)+" "+http.StatusText(code), -1)
 	tpl = strings.Replace(tpl, "CODE", err.Error(), -1)
 

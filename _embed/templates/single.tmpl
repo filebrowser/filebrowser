@@ -1,0 +1,21 @@
+{{ define "content" }}
+{{ with .Data}}
+ <main class="container">
+  {{ if eq .Type "image" }}
+   <img src="{{ .URL }}?raw=true">
+   {{ else if eq .Type "audio" }}
+   <audio src="{{ .URL }}?raw=true"></audio>
+   {{ else if eq .Type "video" }}
+   <video src="{{ .URL }}?raw=true" controls>
+      Sorry, your browser doesn't support embedded videos,
+      but don't worry, you can <a href="?download=true">download it</a>
+      and watch it with your favorite video player!
+    </video>
+   {{ else if eq .Type "blob" }}
+   <a href="?download=true">Download</a>
+   {{ else}}
+   <pre>{{ .StringifyContent }}</pre>
+  {{ end }}
+ </main>
+{{ end }}
+{{ end }}

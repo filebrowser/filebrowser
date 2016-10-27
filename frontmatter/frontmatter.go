@@ -14,6 +14,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/hacdias/caddy-filemanager/utils/variables"
+
 	"github.com/spf13/cast"
 )
 

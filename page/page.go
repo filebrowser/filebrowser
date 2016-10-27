@@ -1,3 +1,4 @@
+// Package page is used to render the HTML to the end user
 package page
 
 import (
@@ -13,13 +14,13 @@ import (
 	"github.com/hacdias/caddy-filemanager/utils/variables"
 )
 
-// Page contains the informations and functions needed to show the page
+// Page contains the informations and functions needed to show the Page
 type Page struct {
 	*Info
 	Minimal bool
 }
 
-// Info contains the information of a page
+// Info contains the information of a Page
 type Info struct {
 	Name   string
 	Path   string
@@ -101,7 +102,7 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 	// For each template, add it to the the tpl variable
 	for i, t := range templates {
 		// Get the template from the assets
-		page, err := assets.Asset("templates/" + t + ".tmpl")
+		Page, err := assets.Asset("templates/" + t + ".tmpl")
 
 		// Check if there is some error. If so, the template doesn't exist
 		if err != nil {
@@ -112,9 +113,9 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 		// If it's the first iteration, creates a new template and add the
 		// functions map
 		if i == 0 {
-			tpl, err = template.New(t).Funcs(functions).Parse(string(page))
+			tpl, err = template.New(t).Funcs(functions).Parse(string(Page))
 		} else {
-			tpl, err = tpl.Parse(string(page))
+			tpl, err = tpl.Parse(string(Page))
 		}
 
 		if err != nil {
@@ -135,7 +136,7 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 	return http.StatusOK, nil
 }
 
-// PrintAsJSON prints the current page infromation in JSON
+// PrintAsJSON prints the current Page infromation in JSON
 func (p Page) PrintAsJSON(w http.ResponseWriter) (int, error) {
 	marsh, err := json.Marshal(p.Info.Data)
 	if err != nil {
