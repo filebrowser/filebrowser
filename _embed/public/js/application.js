@@ -480,7 +480,7 @@ var searchEvent = function(event) {
     let box = document.querySelector('#search div');
 
     if (value.length == 0) {
-        box.innerHTML = "Write one of yours suported commands: " + user.Commands.join(", ") + ".";
+        box.innerHTML = "Write one of your supported commands: " + user.Commands.join(", ") + ".";
         return;
     }
 
