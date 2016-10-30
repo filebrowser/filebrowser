@@ -42,7 +42,7 @@ func GetInfo(url *url.URL, c *config.Config, u *config.User) (*Info, int, error)
 
 	i.FileInfo, err = os.Stat(i.Path)
 	if err != nil {
-		return i, errors.ErrorToHTTPCode(err, true), err
+		return i, errors.ErrorToHTTPCode(err, false), err
 	}
 
 	return i, 0, nil

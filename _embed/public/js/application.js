@@ -503,29 +503,18 @@ var searchEvent = function(event) {
     if (event.keyCode == 13) {
         box.innerHTML = '<i class="material-icons spin">autorenew</i>';
 
-        let request = new XMLHttpRequest();
-        request.open('POST', window.location);
-        request.setRequestHeader('Command', value);
-        request.setRequestHeader('Token', token);
-        request.send();
-        request.onreadystatechange = function() {
-            if (request.readyState == 4) {
-                if (request.status == 501) {
-                    box.innerHTML = "Command not implemented."
-                }
+        var conn = new WebSocket('ws://' + window.location.host + window.location.pathname + '?command=true');
+        conn.onopen = function() {
+            conn.send(value);
+        };
 
-                if (request.status == 500) {
-                    box.innerHTML = "Something went wrong."
-                }
+        conn.onmessage = function(event) {
+            box.innerHTML = event.data
+            box.scrollTop = box.scrollHeight;
+        }
 
-                if (request.status == 200) {
-                    let text = request.responseText;
-                    text = text.substring(1, text.length - 1);
-                    text = text.replace('\\n', "\n");
-                    box.innerHTML = text;
-                    reloadListing();
-                }
-            }
+        conn.onclose = function(event) {
+            reloadListing();
         }
     }
 }
@@ -554,13 +543,28 @@ document.addEventListener('listing', event => {
     });
 
     if (user.AllowCommands) {
+        let hover = false, focus = false;
+
         document.querySelector('#search input').addEventListener('focus', event => {
+            focus = true;
+            document.getElementById('search').classList.add('active');
+        });
+
+        document.querySelector('#search div').addEventListener('mouseover', event => {
+            hover = true;
             document.getElementById('search').classList.add('active');
         });
 
         document.querySelector('#search input').addEventListener('blur', event => {
+            focus = false;
+            if (hover) return;
             document.getElementById('search').classList.remove('active');
-            document.querySelector('#search input').value = '';
+        });
+
+        document.querySelector('#search').addEventListener('mouseleave', event => {
+            hover = false;
+            if (focus) return;
+            document.getElementById('search').classList.remove('active');
         });
 
         document.querySelector('#search div').innerHTML = "Write one of yours suported commands: " + user.Commands.join(", ") + ".";

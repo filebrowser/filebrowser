@@ -67,6 +67,16 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			user = c.User
 		}
 
+		if r.URL.Query().Get("command") != "" {
+			return handlers.Command(w, r, c, user)
+		}
+
+		// TODO: This anti CSCF measure is not being applied to requests
+		// to the WebDav URL namespace. Anyone has ideas?
+		//	if !c.CheckToken(r) {
+		//	return http.StatusForbidden, nil
+		//	}
+
 		// Checks if the request URL is for the WebDav server
 		if strings.HasPrefix(r.URL.Path, c.WebDavURL) {
 			//	if !c.CheckToken(r) {
@@ -126,23 +136,6 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			co, err := r.Cookie("token")
 			fmt.Println(co.Value) */
 
-			/* Name  string
-			   Value string
-
-			   Path       string    // optional
-			   Domain     string    // optional
-			   Expires    time.Time // optional
-			   RawExpires string    // for reading cookies only
-
-			   // MaxAge=0 means no 'Max-Age' attribute specified.
-			   // MaxAge<0 means delete cookie now, equivalently 'Max-Age: 0'
-			   // MaxAge>0 means Max-Age attribute present and given in seconds
-			   MaxAge   int
-			   Secure   bool
-			   HttpOnly bool
-			   Raw      string
-			   Unparsed []string // Raw text of unparsed attribute-value pairs*/
-
 			// Gets the information of the directory/file
 			fi, code, err = file.GetInfo(r.URL, c, user)
 			if err != nil {
@@ -176,23 +169,6 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			}
 
 			return code, err
-		}
-
-		if r.Method == http.MethodPost {
-			// TODO: This anti CSCF measure is not being applied to requests
-			// to the WebDav URL namespace. Anyone has ideas?
-			//	if !c.CheckToken(r) {
-			//	return http.StatusForbidden, nil
-			//	}
-
-			// VCS commands.
-			if r.Header.Get("Command") != "" {
-				if !user.AllowCommands {
-					return http.StatusUnauthorized, nil
-				}
-
-				return handlers.Command(w, r, c, user)
-			}
 		}
 
 		return http.StatusNotImplemented, nil

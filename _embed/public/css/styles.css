@@ -473,8 +473,8 @@ header {
     z-index: 999;
     padding: 1.7em 0;
     background-color: #2196f3;
-    border-bottom: 1px solid rgba(0,0,0,0.075);
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.075);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
 header h1 {
@@ -548,7 +548,7 @@ header p i {
     min-width: 20em;
     border: 0;
     outline: 0;
-    color: #fff;
+    color: rgba(255, 255, 255, 0.72);
     background-color: transparent;
 }
 
@@ -574,14 +574,22 @@ header p i {
     transition: .1s ease all;
     visibility: hidden;
     opacity: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 50vh;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
     word-wrap: break-word;
 }
 
 #search.active div i,
 #sidebar #search.active div i {
     color: #ccc;
-    display: block;
     text-align: center;
+    margin: 0 auto;
+    display: table;
 }
 
 #search::-webkit-input-placeholder {
