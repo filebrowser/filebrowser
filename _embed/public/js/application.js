@@ -113,7 +113,7 @@ var deleteEvent = function(event) {
     let single = false;
 
     if (!selectedItems.length) {
-        selectedItems = [window.location];
+        selectedItems = [window.location.pathname];
         single = true;
     }
 
