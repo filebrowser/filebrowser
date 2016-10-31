@@ -13,7 +13,7 @@ import (
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
-// Config is a configuration for browsing in a particualr path.
+// Config is a configuration for browsing in a particular path.
 type Config struct {
 	*User
 	BaseURL     string
@@ -66,7 +66,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		cfg.AllowEdit = true
 		cfg.AllowNew = true
 		cfg.Commands = []string{"git", "svn", "hg"}
-		cfg.Rules = []*Rule{&Rule{
+		cfg.Rules = []*Rule{{
 			Regex:  true,
 			Allow:  false,
 			Regexp: regexp.MustCompile("\\/\\..+"),

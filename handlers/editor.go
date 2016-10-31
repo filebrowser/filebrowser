@@ -70,7 +70,10 @@ func GetEditor(i *file.Info) (*Editor, error) {
 				// Parses the page content and the frontmatter
 				editor.Content = strings.TrimSpace(string(page.Content()))
 				editor.FrontMatter, _, err = frontmatter.Pretty(page.FrontMatter())
-				break
+
+				if err == nil {
+					break
+				}
 			}
 		}
 

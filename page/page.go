@@ -133,7 +133,7 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	_, err = buf.WriteTo(w)
-	return http.StatusOK, nil
+	return http.StatusOK, err
 }
 
 // PrintAsJSON prints the current Page infromation in JSON
