@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// ErrorToHTTPCode converts errors to HTTP Status Code.
 func ErrorToHTTPCode(err error, gone bool) int {
 	switch {
 	case os.IsPermission(err):
