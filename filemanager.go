@@ -67,10 +67,6 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			user = c.User
 		}
 
-		if r.URL.Query().Get("command") != "" {
-			return handlers.Command(w, r, c, user)
-		}
-
 		// Checks if the request URL is for the WebDav server
 		if strings.HasPrefix(r.URL.Path, c.WebDavURL) {
 			// Checks for user permissions relatively to this PATH
@@ -110,6 +106,14 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			}
 
 			return http.StatusForbidden, nil
+		}
+
+		if r.URL.Query().Get("search") != "" {
+			return handlers.Search(w, r, c, user)
+		}
+
+		if r.URL.Query().Get("command") != "" {
+			return handlers.Command(w, r, c, user)
 		}
 
 		if r.Method == http.MethodGet {

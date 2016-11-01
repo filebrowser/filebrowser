@@ -466,10 +466,12 @@ var redefineDownloadURLs = function() {
 
 var searchEvent = function(event) {
     let value = this.value;
-    let box = document.querySelector('#search div');
+    let search = document.getElementById('search');
+    let scrollable = document.querySelector('#search > div');
+    let box = document.querySelector('#search > div div');
 
     if (value.length == 0) {
-        box.innerHTML = "Write one of your supported commands: " + user.Commands.join(", ") + ".";
+        box.innerHTML = "Search or use one of your supported commands: " + user.Commands.join(", ") + ".";
         return;
     }
 
@@ -483,27 +485,47 @@ var searchEvent = function(event) {
     });
 
     if (!supported) {
-        box.innerHTML = "Command not supported."
-        return;
+        box.innerHTML = "Press enter to search."
+    } else {
+        box.innerHTML = "Press enter to execute."
     }
 
-    box.innerHTML = "Press enter to continue."
-
     if (event.keyCode == 13) {
-        box.innerHTML = '<i class="material-icons spin">autorenew</i>';
+        box.innerHTML = '';
+        search.classList.add('ongoing');
 
-        var conn = new WebSocket('ws://' + window.location.host + window.location.pathname + '?command=true');
-        conn.onopen = function() {
-            conn.send(value);
-        };
+        if (supported) {
+            var conn = new WebSocket('ws://' + window.location.host + window.location.pathname + '?command=true');
+            conn.onopen = function() {
+                conn.send(value);
+            };
 
-        conn.onmessage = function(event) {
-            box.innerHTML = event.data
-            box.scrollTop = box.scrollHeight;
-        }
+            conn.onmessage = function(event) {
+                box.innerHTML = event.data;
+                scrollable.scrollTop = scrollable.scrollHeight;
+            }
 
-        conn.onclose = function(event) {
-            reloadListing();
+            conn.onclose = function(event) {
+                search.classList.remove('ongoing');
+                reloadListing();
+            }
+        } else {
+            box.innerHTML = '<ul></ul>';
+            let ul = box.querySelector('ul');
+
+            var conn = new WebSocket('ws://' + window.location.host + window.location.pathname + '?search=true');
+            conn.onopen = function() {
+                conn.send(value);
+            };
+
+            conn.onmessage = function(event) {
+                ul.innerHTML += '<li><a href="' + event.data + '">' + event.data + '</a></li>';
+                scrollable.scrollTop = scrollable.scrollHeight;
+            }
+
+            conn.onclose = function(event) {
+                search.classList.remove('ongoing');
+            }
         }
     }
 }
@@ -557,7 +579,7 @@ document.addEventListener('listing', event => {
             document.getElementById('search').classList.remove('active');
         });
 
-        document.querySelector('#search div').innerHTML = "Write one of yours suported commands: " + user.Commands.join(", ") + ".";
+        document.querySelector('#search > div div').innerHTML = "Search or use one of yours suported commands: " + user.Commands.join(", ") + ".";
         document.querySelector('#search input').addEventListener('keyup', searchEvent);
     }
 

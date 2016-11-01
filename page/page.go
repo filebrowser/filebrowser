@@ -139,7 +139,7 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 
 // PrintAsJSON prints the current Page infromation in JSON
 func (p Page) PrintAsJSON(w http.ResponseWriter) (int, error) {
-	marsh, err := json.Marshal(p.Info.Data)
+	marsh, err := json.MarshalIndent(p.Info.Data, "", "    ")
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}

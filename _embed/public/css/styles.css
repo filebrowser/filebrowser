@@ -558,7 +558,17 @@ header p i {
     top: 100%;
 }
 
-#search div {
+#search ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+#search li {
+    margin-bottom: .5em;
+}
+
+#search>div {
     position: absolute;
     top: 0;
     width: 100%;
@@ -577,11 +587,26 @@ header p i {
     overflow-x: hidden;
     overflow-y: auto;
     max-height: 50vh;
+}
+
+#search>div div {
     white-space: pre-wrap;
     white-space: -moz-pre-wrap;
     white-space: -pre-wrap;
     white-space: -o-pre-wrap;
     word-wrap: break-word;
+}
+
+#search>div p {
+    width: 100%;
+    text-align: center;
+    display: none;
+    margin: 0;
+    max-width: none;
+}
+
+#search.ongoing p {
+    display: block;
 }
 
 #search.active div i,
