@@ -1164,7 +1164,7 @@ i.spin {
         color: #212121;
         display: inline-block;
         width: auto;
-        min-width: 0;
+        min-width: 16em;
     }
     header #search i {
         color: #6f6f6f;

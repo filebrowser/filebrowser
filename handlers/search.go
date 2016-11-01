@@ -10,6 +10,7 @@ import (
 	"github.com/hacdias/caddy-filemanager/config"
 )
 
+// Search ...
 func Search(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.User) (int, error) {
 	// Upgrades the connection to a websocket and checks for errors.
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -18,11 +19,14 @@ func Search(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.
 	}
 	defer conn.Close()
 
-	var search string
+	var (
+		search  string
+		message []byte
+	)
 
 	// Starts an infinite loop until a valid command is captured.
 	for {
-		_, message, err := conn.ReadMessage()
+		_, message, err = conn.ReadMessage()
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -41,9 +45,11 @@ func Search(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.
 	scope = filepath.Clean(scope)
 
 	err = filepath.Walk(scope, func(path string, f os.FileInfo, err error) error {
-		// TODO: check user permissions?
-
 		if strings.Contains(path, search) {
+			if !u.Allowed(path) {
+				return nil
+			}
+
 			path = strings.TrimPrefix(path, scope)
 			path = strings.Replace(path, "\\", "/", -1)
 			path = strings.TrimPrefix(path, "/")
