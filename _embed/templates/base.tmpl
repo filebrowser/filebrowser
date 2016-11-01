@@ -4,6 +4,7 @@
 <head>
     <title>{{.Name}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="token" content="{{ .Token  }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_filemanagerinternal/css/styles.css">
@@ -104,8 +105,8 @@
     {{ end }}
 
     <main>
+
     {{ template "content" . }}
-    <span id="token">{{ .Config.Token }}</span>
     </main>
 
     <footer>

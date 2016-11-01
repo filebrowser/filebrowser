@@ -71,18 +71,8 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			return handlers.Command(w, r, c, user)
 		}
 
-		// TODO: This anti CSCF measure is not being applied to requests
-		// to the WebDav URL namespace. Anyone has ideas?
-		//	if !c.CheckToken(r) {
-		//	return http.StatusForbidden, nil
-		//	}
-
 		// Checks if the request URL is for the WebDav server
 		if strings.HasPrefix(r.URL.Path, c.WebDavURL) {
-			//	if !c.CheckToken(r) {
-			//	return http.StatusForbidden, nil
-			//	}
-
 			// Checks for user permissions relatively to this PATH
 			if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.WebDavURL)) {
 				return http.StatusForbidden, nil
@@ -123,19 +113,6 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 		}
 
 		if r.Method == http.MethodGet {
-			// Generate anti security token.
-			/* c.GenerateToken()
-
-			http.SetCookie(w, &http.Cookie{
-				Name:     "token",
-				Value:    c.Token,
-				Path:     "/",
-				HttpOnly: true,
-			})
-
-			co, err := r.Cookie("token")
-			fmt.Println(co.Value) */
-
 			// Gets the information of the directory/file
 			fi, code, err = file.GetInfo(r.URL, c, user)
 			if err != nil {

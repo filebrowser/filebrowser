@@ -1,10 +1,7 @@
 'use strict';
 
-// TODO: way to get the webdav url
-
 var tempID = "_fm_internal_temporary_id"
 var selectedItems = [];
-var token = "";
 
 /* * * * * * * * * * * * * * * *
  *                             *
@@ -123,7 +120,7 @@ var deleteEvent = function(event) {
             let request = new XMLHttpRequest();
 
             request.open('DELETE', toWebDavURL(link));
-            request.setRequestHeader('Token', token);
+
             request.send();
             request.onreadystatechange = function() {
                 if (request.readyState == 4) {
@@ -158,11 +155,6 @@ var RemoveLastDirectoryPartOf = function(url) {
     return (arr.join('/'));
 }
 
-// Get the current token
-var updateToken = function() {
-    token = document.getElementById("token").innerHTML;
-}
-
 /* * * * * * * * * * * * * * * *
  *                             *
  *  LISTING SPECIFIC FUNCTIONS  *
@@ -173,7 +165,6 @@ var reloadListing = function(callback) {
     let request = new XMLHttpRequest();
     request.open('GET', window.location);
     request.setRequestHeader('Minimal', 'true');
-    request.setRequestHeader('Token', token);
     request.send();
     request.onreadystatechange = function() {
         if (request.readyState == 4) {
@@ -188,8 +179,6 @@ var reloadListing = function(callback) {
                 Array.from(checkboxes).forEach(link => {
                     link.addEventListener('click', itemClickEvent);
                 });
-
-                updateToken();
 
                 if (typeof callback == 'function') {
                     callback();
@@ -229,7 +218,7 @@ var renameEvent = function(event) {
                 let request = new XMLHttpRequest();
                 request.open('MOVE', toWebDavURL(link));
                 request.setRequestHeader('Destination', newLink);
-                request.setRequestHeader('Token', token);
+
                 request.send();
                 request.onreadystatechange = function() {
                     // TODO: redirect if it's moved to another folder
@@ -289,7 +278,7 @@ var handleFiles = function(files) {
     for (let i = 0; i < files.length; i++) {
         let request = new XMLHttpRequest();
         request.open('PUT', toWebDavURL(window.location.pathname + files[i].name));
-        request.setRequestHeader('Token', token);
+
         request.send(files[i]);
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
@@ -416,7 +405,7 @@ var newDirEvent = function(event) {
         let name = document.getElementById('newdir').value;
 
         request.open((name.endsWith("/") ? "MKCOL" : "PUT"), toWebDavURL(window.location.pathname + name));
-        request.setRequestHeader('Token', token);
+
         request.send();
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
@@ -543,7 +532,8 @@ document.addEventListener('listing', event => {
     });
 
     if (user.AllowCommands) {
-        let hover = false, focus = false;
+        let hover = false,
+            focus = false;
 
         document.querySelector('#search input').addEventListener('focus', event => {
             focus = true;
@@ -840,7 +830,7 @@ document.addEventListener("editor", (event) => {
         let request = new XMLHttpRequest();
         request.open("PUT", toWebDavURL(window.location.pathname));
         request.setRequestHeader('Kind', kind);
-        request.setRequestHeader('Token', token);
+
         request.send(JSON.stringify(data));
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
@@ -886,9 +876,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
             }
         }
     });
-
-    // Updates the token
-    updateToken();
 
     // Enables open, delete and download buttons
     document.getElementById("open").addEventListener("click", openEvent);

@@ -28,6 +28,7 @@ type Info struct {
 	User   *config.User
 	Config *config.Config
 	Data   interface{}
+	Token  string
 }
 
 // BreadcrumbMap returns p.Path where every element is a map
