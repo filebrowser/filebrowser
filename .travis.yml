@@ -10,4 +10,5 @@ install:
 - go install github.com/caddyserver/caddydev
 script:
 - sed -i 's/\_ \"github.com\/mholt\/caddy\/caddyhttp\"/\_ \"github.com\/mholt\/caddy\/caddyhttp\"\n\_ \"github.com\/hacdias\/caddy-filemanager\"/g' $GOPATH/src/github.com/mholt/caddy/caddy/caddymain/run.go
+- cat $GOPATH/src/github.com/mholt/caddy/caddy/caddymain/run.go
 - go build github.com/mholt/caddy
