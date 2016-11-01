@@ -35,6 +35,8 @@ func GetEditor(i *file.Info) (*Editor, error) {
 		editor.Mode = "html"
 	case "js":
 		editor.Mode = "javascript"
+	case "go":
+		editor.Mode = "golang"
 	}
 
 	var page parser.Page
