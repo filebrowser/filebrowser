@@ -9,4 +9,5 @@ install:
 - go get -u -v github.com/caddyserver/caddydev
 - go install github.com/caddyserver/caddydev
 script:
-- caddydev --output="caddy" --source="." filemanager
+- sed -i 's/\_ \"github.com\/mholt\/caddy\/caddyhttp\"/\_ \"github.com\/mholt\/caddy\/caddyhttp\"\n\_ \"github.com\/hacdias\/caddy-filemanager\"/g' $GOPATH/src/github.com/mholt/caddy/caddy/caddymain/run.go
+- go build github.com/mholt/caddy
