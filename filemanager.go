@@ -26,7 +26,7 @@ type FileManager struct {
 	Next    httpserver.Handler
 	Configs []config.Config
 }
-
+asas
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	var (
