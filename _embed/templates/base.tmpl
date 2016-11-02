@@ -93,31 +93,23 @@
 
     {{ if .IsDir }}
     <div id="toolbar">
-    <div>
-    <div class="action" id="back">
-    <i class="material-icons" title="Back">arrow_back</i>
-    </div>
-    <p>
-    <span id="selected-number">0</span>
-    selected.</p>
-    </div>
-    <div>
-    {{ template "actions" . }}
-    </div>
+        <div>
+            <div class="action" id="back">
+                <i class="material-icons" title="Back">arrow_back</i>
+            </div>
+            <p><span id="selected-number">0</span> selected.</p>
+        </div>
+        <div>
+        {{ template "actions" . }}
+        </div>
     </div>
     {{ end }}
 
     <main>
-
-    {{ template "content" . }}
+        {{ template "content" . }}
     </main>
 
-    <footer>
-    Served with
-    <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a>
-    and
-    <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.
-    </footer>
+    <footer>Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a> and <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
 
     <!-- SCRIPTS -->
     <!-- User Data and Permissions; WebDavURL -->

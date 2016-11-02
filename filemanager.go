@@ -43,10 +43,6 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			return f.Next.ServeHTTP(w, r)
 		}
 
-		w.Header().Set("x-frame-options", "SAMEORIGIN")
-		w.Header().Set("x-content-type", "nosniff")
-		w.Header().Set("x-xss-protection", "1; mode=block")
-
 		c = &f.Configs[i]
 
 		// Checks if the URL matches the Assets URL. Returns the asset if the
@@ -95,6 +91,10 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			c.Handler.ServeHTTP(w, r)
 			return 0, nil
 		}
+
+		w.Header().Set("x-frame-options", "SAMEORIGIN")
+		w.Header().Set("x-content-type", "nosniff")
+		w.Header().Set("x-xss-protection", "1; mode=block")
 
 		// Checks if the User is allowed to access this file
 		if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.BaseURL)) {
