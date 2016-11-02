@@ -1,6 +1,7 @@
 package file
 
 import (
+	"context"
 	"net/url"
 	"os"
 	"path"
@@ -37,7 +38,7 @@ type Listing struct {
 func GetListing(u *config.User, filePath string, baseURL string) (*Listing, error) {
 	// Gets the directory information using the Virtual File System of
 	// the user configuration.
-	file, err := u.FileSystem.OpenFile(filePath, os.O_RDONLY, 0)
+	file, err := u.FileSystem.OpenFile(context.TODO(), filePath, os.O_RDONLY, 0)
 	if err != nil {
 		return nil, err
 	}
