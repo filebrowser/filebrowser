@@ -103,14 +103,19 @@ func (i Info) CanBeEdited() bool {
 	}
 
 	extensions := [...]string{
-		"md", "markdown", "mdown", "mmark",
-		"asciidoc", "adoc", "ad",
-		"rst",
-		".json", ".toml", ".yaml",
+		".md", ".markdown", ".mdown", ".mmark",
+		".asciidoc", ".adoc", ".ad",
+		".rst",
+		".json", ".toml", ".yaml", ".csv", ".xml", ".rss", ".conf", ".ini",
+		".tex", ".sty"
 		".css", ".sass", ".scss",
 		".js",
 		".html",
-		".txt",
+		".txt", ".rtf",
+		".sh", ".bash", ".ps1", ".bat", ".cmd",
+		".php", ".pl", ".py", 
+		"Caddyfile",
+		".c", ".cc" ".h" ".hh" ".cpp" ".hpp" ".f90" ".f" ".bas" ".d" ".ada" ".nim" ".cr" ".java" ".cs" ".vala" ".vapi",
 	}
 
 	for _, extension := range extensions {
