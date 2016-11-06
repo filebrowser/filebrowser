@@ -64,7 +64,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 		}
 
 		// Checks if the request URL is for the WebDav server
-		if strings.HasPrefix(r.URL.Path, c.WebDavURL) {
+		if httpserver.Path(r.URL.Path).Matches(c.WebDavURL) {
 			// Checks for user permissions relatively to this PATH
 			if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.WebDavURL)) {
 				return http.StatusForbidden, nil

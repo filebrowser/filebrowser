@@ -26,6 +26,10 @@ type Config struct {
 	CurrentUser *User
 }
 
+func (c Config) FullWebDavURL() string {
+	return c.AbsoluteURL + c.WebDavURL
+}
+
 // Rule is a dissalow/allow rule
 type Rule struct {
 	Regex  bool
@@ -82,7 +86,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		cfg.BaseURL = strings.TrimPrefix(cfg.BaseURL, "/")
 		cfg.BaseURL = strings.TrimSuffix(cfg.BaseURL, "/")
 		cfg.BaseURL = "/" + cfg.BaseURL
-		cfg.WebDavURL = cfg.BaseURL + "webdav"
+		cfg.WebDavURL = "webdav"
 
 		if cfg.BaseURL == "/" {
 			cfg.BaseURL = ""
@@ -230,17 +234,18 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 			}
 		}
 
+		caddyConf := httpserver.GetConfig(c)
+		cfg.AbsoluteURL = strings.TrimSuffix(caddyConf.Addr.Path, "/") + "/" + cfg.BaseURL
+		cfg.AbsoluteURL = strings.Replace(cfg.AbsoluteURL, "//", "/", -1)
+		cfg.AbsoluteURL = strings.TrimSuffix(cfg.AbsoluteURL, "/")
+		cfg.AddrPath = strings.TrimSuffix(caddyConf.Addr.Path, "/")
+		cfg.WebDavURL = "/" + strings.TrimPrefix(cfg.WebDavURL, "/")
 		cfg.Handler = &webdav.Handler{
 			Prefix:     cfg.WebDavURL,
 			FileSystem: cfg.FileSystem,
 			LockSystem: webdav.NewMemLS(),
 		}
 
-		caddyConf := httpserver.GetConfig(c)
-		cfg.AbsoluteURL = strings.TrimSuffix(caddyConf.Addr.Path, "/") + "/" + cfg.BaseURL
-		cfg.AbsoluteURL = strings.Replace(cfg.AbsoluteURL, "//", "/", -1)
-		cfg.AbsoluteURL = strings.TrimSuffix(cfg.AbsoluteURL, "/")
-		cfg.AddrPath = strings.TrimSuffix(caddyConf.Addr.Path, "/")
 		if err := appendConfig(cfg); err != nil {
 			return configs, err
 		}
