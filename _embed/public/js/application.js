@@ -579,7 +579,7 @@ document.addEventListener('listing', event => {
             document.getElementById('search').classList.remove('active');
         });
 
-        document.querySelector('#search > div div').innerHTML = "Search or use one of yours suported commands: " + user.Commands.join(", ") + ".";
+        document.querySelector('#search > div div').innerHTML = "Search or use one of your supported commands: " + user.Commands.join(", ") + ".";
         document.querySelector('#search input').addEventListener('keyup', searchEvent);
     }
 
