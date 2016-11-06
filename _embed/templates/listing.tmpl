@@ -4,7 +4,7 @@
     <div class="container" id="listing">
     {{- range .Items}}
         {{ if .UserAllowed }}
-        <div class="item" data-dir="{{- if .IsDir}}true{{ else }}false{{ end }}" id="{{.URL}}">
+        <div ondragstart="itemDragStart(event)" {{ if .IsDir}}ondragover="itemDragOver(event)" ondrop="itemDrop(event)"{{ end }} draggable="true" class="item" data-dir="{{- if .IsDir}}true{{ else }}false{{ end }}" id="{{.URL}}">
             <div>
                 <a href="{{.URL}}">
                     {{- if .IsDir}}

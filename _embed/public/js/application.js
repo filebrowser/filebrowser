@@ -200,84 +200,83 @@ var renameEvent = function(event) {
         location.refresh();
     }
 
-    Array.from(selectedItems).forEach(link => {
-        let item = document.getElementById(link);
-        let span = item.getElementsByTagName('span')[0];
-        let name = span.innerHTML;
+    let link = selectedItems[0];
+    let item = document.getElementById(link);
+    let span = item.getElementsByTagName('span')[0];
+    let name = span.innerHTML;
 
-        item.addEventListener('click', preventDefault);
-        item.removeEventListener('click', itemClickEvent);
-        span.setAttribute('contenteditable', 'true');
-        span.focus();
+    item.addEventListener('click', preventDefault);
+    item.removeEventListener('click', itemClickEvent);
+    span.setAttribute('contenteditable', 'true');
+    span.focus();
 
-        let keyDownEvent = (event) => {
-            if (event.keyCode == 13) {
-                let newName = span.innerHTML;
-                let newLink = toWebDavURL(link).replace(name, newName)
-                let html = document.getElementById('rename').changeToLoading();
-                let request = new XMLHttpRequest();
-                request.open('MOVE', toWebDavURL(link));
-                request.setRequestHeader('Destination', newLink);
+    let keyDownEvent = (event) => {
+        if (event.keyCode == 13) {
+            let newName = span.innerHTML;
+            let newLink = toWebDavURL(link).replace(name, newName)
+            let html = document.getElementById('rename').changeToLoading();
+            let request = new XMLHttpRequest();
+            request.open('MOVE', toWebDavURL(link));
+            request.setRequestHeader('Destination', newLink);
 
-                request.send();
-                request.onreadystatechange = function() {
-                    // TODO: redirect if it's moved to another folder
+            request.send();
+            request.onreadystatechange = function() {
+                // TODO: redirect if it's moved to another folder
 
-                    if (request.readyState == 4) {
-                        if (request.status != 201 && request.status != 204) {
-                            span.innerHTML = name;
-                        } else {
+                if (request.readyState == 4) {
+                    if (request.status != 201 && request.status != 204) {
+                        span.innerHTML = name;
+                    } else {
+                        let newLink = encodeURI(link.replace(name, newName));
+                        console.log(request.body)
+                        reloadListing(() => {
                             let newLink = encodeURI(link.replace(name, newName));
-                            console.log(request.body)
-                            reloadListing(() => {
-                                let newLink = encodeURI(link.replace(name, newName));
-                                selectedItems = [newLink];
-                                document.getElementById(newLink).classList.add("selected")
-                                var event = new CustomEvent('changed-selected');
-                                document.dispatchEvent(event);
-                            });
-                        }
-
-                        document.getElementById('rename').changeToDone((request.status != 201 && request.status != 204), html);
+                            selectedItems = [newLink];
+                            document.getElementById(newLink).classList.add("selected")
+                            var event = new CustomEvent('changed-selected');
+                            document.dispatchEvent(event);
+                        });
                     }
+
+                    document.getElementById('rename').changeToDone((request.status != 201 && request.status != 204), html);
                 }
             }
-
-            if (event.KeyCode == 27) {
-                span.innerHTML = name;
-            }
-
-            if (event.keyCode == 13 || event.keyCode == 27) {
-                span.setAttribute('contenteditable', 'false');
-                span.removeEventListener('keydown', keyDownEvent);
-                item.removeEventListener('click', preventDefault);
-                item.addEventListener('click', itemClickEvent);
-                event.preventDefault();
-            }
-
-            return false;
         }
 
-        span.addEventListener('keydown', keyDownEvent);
-        span.addEventListener('blur', (event) => {
+        if (event.KeyCode == 27) {
             span.innerHTML = name;
+        }
+
+        if (event.keyCode == 13 || event.keyCode == 27) {
             span.setAttribute('contenteditable', 'false');
             span.removeEventListener('keydown', keyDownEvent);
             item.removeEventListener('click', preventDefault);
-        });
+            item.addEventListener('click', itemClickEvent);
+            event.preventDefault();
+        }
+
+        return false;
+    }
+
+    span.addEventListener('keydown', keyDownEvent);
+    span.addEventListener('blur', (event) => {
+        span.innerHTML = name;
+        span.setAttribute('contenteditable', 'false');
+        span.removeEventListener('keydown', keyDownEvent);
+        item.removeEventListener('click', preventDefault);
     });
 
     return false;
 }
 
 // Upload files
-var handleFiles = function(files) {
+var handleFiles = function(files, base) {
     let button = document.getElementById("upload");
     let html = button.changeToLoading();
 
     for (let i = 0; i < files.length; i++) {
         let request = new XMLHttpRequest();
-        request.open('PUT', toWebDavURL(window.location.pathname + files[i].name));
+        request.open('PUT', toWebDavURL(window.location.pathname + base + files[i].name));
 
         request.send(files[i]);
         request.onreadystatechange = function() {
@@ -602,13 +601,13 @@ document.addEventListener('listing', event => {
             event.preventDefault();
         }, false);
 
-        document.addEventListener("dragover", (event) => {
+        document.addEventListener("dragenter", (event) => {
             Array.from(items).forEach(file => {
                 file.style.opacity = 0.5;
             });
         }, false);
 
-        document.addEventListener("dragleave", (event) => {
+        document.addEventListener("dragend", (event) => {
             Array.from(items).forEach(file => {
                 file.style.opacity = 1;
             });
@@ -619,10 +618,87 @@ document.addEventListener('listing', event => {
             var dt = event.dataTransfer;
             var files = dt.files;
 
-            handleFiles(files);
+            let el = event.target;
+
+            for (let i = 0; i < 5; i++) {
+                if (el != null && !el.classList.contains('item')) {
+                    el = el.parentElement;
+                }
+            }
+
+            if (files.length > 0) {
+                if (el != null && el.classList.contains('item') && el.dataset.dir == "true") {
+                    handleFiles(files, el.querySelector('.name').innerHTML + "/");
+                    return;
+                }
+
+                handleFiles(files, "");
+            } else {
+                Array.from(items).forEach(file => {
+                    file.style.opacity = 1;
+                });
+            }
+
         }, false);
     }
 });
+
+function itemDragStart(event) {
+    let el = event.target;
+
+    for (let i = 0; i < 5; i++) {
+        if (!el.classList.contains('item')) {
+            el = el.parentElement;
+        }
+    }
+
+    event.dataTransfer.setData("id", el.id);
+    event.dataTransfer.setData("name", el.querySelector('.name').innerHTML);
+}
+
+function itemDragOver(event) {
+    event.preventDefault();
+    let el = event.target;
+
+    for (let i = 0; i < 5; i++) {
+        if (!el.classList.contains('item')) {
+            el = el.parentElement;
+        }
+    }
+
+    el.style.opacity = 1;
+}
+
+function itemDrop(e) {
+    e.preventDefault();
+
+    let el = e.target, id = e.dataTransfer.getData("id"), name = e.dataTransfer.getData("name");
+    if (id == "" || name == "") return;
+
+    for (let i = 0; i < 5; i++) {
+        if (!el.classList.contains('item')) {
+            el = el.parentElement;
+        }
+    }
+
+    if (el.id === id) return;
+
+    let oldLink = toWebDavURL(id);
+    let newLink = toWebDavURL(el.id + name);
+
+    let request = new XMLHttpRequest();
+    request.open('MOVE', oldLink);
+    request.setRequestHeader('Destination', newLink);
+    request.send();
+    request.onreadystatechange = function() {
+        if (request.readyState == 4) {
+            if (request.status == 201 || request.status == 204) {
+                reloadListing();
+            }
+        }
+    }
+}
+
 
 /* * * * * * * * * * * * * * * *
  *                             *
