@@ -43,7 +43,7 @@ func PreProccessPUT(
 
 	switch kind {
 	case "frontmatter-only":
-		if file, err = parseFrontMatterOnlyFile(data, i.Name()); err != nil {
+		if file, err = ParseFrontMatterOnlyFile(data, i.Name()); err != nil {
 			return
 		}
 	case "content-only":
@@ -51,7 +51,7 @@ func PreProccessPUT(
 		mainContent = strings.TrimSpace(mainContent)
 		file = []byte(mainContent)
 	case "complete":
-		if file, err = parseCompleteFile(data, i.Name(), u.FrontMatter); err != nil {
+		if file, err = ParseCompleteFile(data, i.Name(), u.FrontMatter); err != nil {
 			return
 		}
 	default:
@@ -63,10 +63,10 @@ func PreProccessPUT(
 	return
 }
 
-// parseFrontMatterOnlyFile parses a frontmatter only file
-func parseFrontMatterOnlyFile(data interface{}, filename string) ([]byte, error) {
+// ParseFrontMatterOnlyFile parses a frontmatter only file
+func ParseFrontMatterOnlyFile(data interface{}, filename string) ([]byte, error) {
 	frontmatter := strings.TrimPrefix(filepath.Ext(filename), ".")
-	f, err := parseFrontMatter(data, frontmatter)
+	f, err := ParseFrontMatter(data, frontmatter)
 	fString := string(f)
 
 	// If it's toml or yaml, strip frontmatter identifier
@@ -84,8 +84,8 @@ func parseFrontMatterOnlyFile(data interface{}, filename string) ([]byte, error)
 	return f, err
 }
 
-// parseFrontMatter is the frontmatter parser
-func parseFrontMatter(data interface{}, frontmatter string) ([]byte, error) {
+// ParseFrontMatter is the frontmatter parser
+func ParseFrontMatter(data interface{}, frontmatter string) ([]byte, error) {
 	var mark rune
 
 	switch frontmatter {
@@ -108,8 +108,8 @@ func parseFrontMatter(data interface{}, frontmatter string) ([]byte, error) {
 	return f, nil
 }
 
-// parseCompleteFile parses a complete file
-func parseCompleteFile(data map[string]interface{}, filename string, frontmatter string) ([]byte, error) {
+// ParseCompleteFile parses a complete file
+func ParseCompleteFile(data map[string]interface{}, filename string, frontmatter string) ([]byte, error) {
 	mainContent := ""
 
 	if _, ok := data["content"]; ok {
@@ -125,7 +125,7 @@ func parseCompleteFile(data map[string]interface{}, filename string, frontmatter
 		data["date"] = data["date"].(string) + ":00"
 	}
 
-	front, err := parseFrontMatter(data, frontmatter)
+	front, err := ParseFrontMatter(data, frontmatter)
 
 	if err != nil {
 		fmt.Println(frontmatter)
