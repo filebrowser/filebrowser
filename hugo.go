@@ -20,8 +20,8 @@ import (
 
 	"github.com/hacdias/caddy-filemanager"
 	"github.com/hacdias/caddy-filemanager/assets"
-	"github.com/hacdias/caddy-filemanager/directory"
 	"github.com/hacdias/caddy-filemanager/frontmatter"
+	"github.com/hacdias/caddy-filemanager/handlers"
 	"github.com/hacdias/caddy-filemanager/utils/variables"
 	"github.com/hacdias/caddy-hugo/utils/commands"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
@@ -69,15 +69,11 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 				frontmatter = "toml"
 			}
 
-			http.Redirect(w, r, h.FileManager.Configs[0].AbsoluteURL+"/config."+frontmatter, http.StatusTemporaryRedirect)
+			http.Redirect(w, r, h.FileManager.Configs[0].AbsoluteURL()+"/config."+frontmatter, http.StatusTemporaryRedirect)
 			return 0, nil
 		}
 
 		if r.Method == http.MethodPost && r.Header.Get("archetype") != "" {
-			if !h.FileManager.Configs[0].CheckToken(r) {
-				return http.StatusForbidden, nil
-			}
-
 			filename := r.Header.Get("Filename")
 			archetype := r.Header.Get("archetype")
 
@@ -97,8 +93,7 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 			return http.StatusOK, nil
 		}
 
-		if directory.CanBeEdited(r.URL.Path) && r.Method == http.MethodPut {
-			// NOTE: File Manager already checks the security token
+		if canBeEdited(r.URL.Path) && r.Method == http.MethodPut {
 			code, err := h.FileManager.ServeHTTP(w, r)
 
 			if err != nil {
@@ -188,7 +183,7 @@ func (h Hugo) Schedule(w http.ResponseWriter, r *http.Request) (int, error) {
 			delete(front.(map[string]interface{}), "Draft")
 		}
 
-		fm, _, err := directory.ParseFrontMatter(front, h.FileManager.Configs[0].FrontMatter)
+		fm, err := handlers.ParseFrontMatter(front, h.FileManager.Configs[0].FrontMatter)
 
 		if err != nil {
 			log.Println(err)
@@ -209,6 +204,33 @@ func (h Hugo) Schedule(w http.ResponseWriter, r *http.Request) (int, error) {
 	scheduler.Start()
 
 	return http.StatusOK, nil
+}
+
+func canBeEdited(name string) bool {
+	extensions := [...]string{
+		".md", ".markdown", ".mdown", ".mmark",
+		".asciidoc", ".adoc", ".ad",
+		".rst",
+		".json", ".toml", ".yaml", ".csv", ".xml", ".rss", ".conf", ".ini",
+		".tex", ".sty",
+		".css", ".sass", ".scss",
+		".js",
+		".html",
+		".txt", ".rtf",
+		".sh", ".bash", ".ps1", ".bat", ".cmd",
+		".php", ".pl", ".py",
+		"Caddyfile",
+		".c", ".cc", ".h", ".hh", ".cpp", ".hpp", ".f90",
+		".f", ".bas", ".d", ".ada", ".nim", ".cr", ".java", ".cs", ".vala", ".vapi",
+	}
+
+	for _, extension := range extensions {
+		if strings.HasSuffix(name, extension) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // serveAssets provides the needed assets for the front-end

@@ -13,7 +13,6 @@ import (
 
 	"github.com/hacdias/caddy-filemanager"
 	"github.com/hacdias/caddy-filemanager/config"
-	"github.com/hacdias/caddy-filemanager/directory"
 	"github.com/hacdias/caddy-filemanager/frontmatter"
 	"github.com/hacdias/caddy-hugo/utils/commands"
 	"github.com/mholt/caddy"
@@ -200,7 +199,7 @@ func getFrontMatter(conf *Config) string {
 		log.Println(err)
 		fmt.Printf("Can't get the default frontmatter from the configuration. %s will be used.\n", format)
 	} else {
-		bytes = directory.AppendFrontMatterRune(bytes, format)
+		bytes = frontmatter.AppendRune(bytes, format)
 		f, err := frontmatter.Unmarshal(bytes)
 
 		if err != nil {
