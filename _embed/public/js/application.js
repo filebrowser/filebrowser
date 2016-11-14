@@ -924,6 +924,15 @@ document.addEventListener("editor", (event) => {
 
     let saveContent = function() {
         let data = form2js(document.querySelector('form'));
+
+        if (typeof data.content === "undefined") {
+            data.content = "";
+        }
+
+        if (typeof data.content === "number") {
+            data.content = data.content.toString();
+        }
+
         let html = button.changeToLoading();
         let request = new XMLHttpRequest();
         request.open("PUT", toWebDavURL(window.location.pathname));
