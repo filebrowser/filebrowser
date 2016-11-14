@@ -67,10 +67,10 @@ func (i Info) BreadcrumbMap() map[string]string {
 func (i Info) PreviousLink() string {
 	path := strings.TrimSuffix(i.Path, "/")
 	path = strings.TrimPrefix(path, "/")
-	path = i.Config.AbsoluteURL + "/" + path
+	path = i.Config.AbsoluteURL() + "/" + path
 	path = path[0 : len(path)-len(i.Name)]
 
-	if len(path) < len(i.Config.AbsoluteURL+"/") {
+	if len(path) < len(i.Config.AbsoluteURL()+"/") {
 		return ""
 	}
 

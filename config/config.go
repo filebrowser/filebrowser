@@ -16,8 +16,8 @@ import (
 // Config is a configuration for browsing in a particular path.
 type Config struct {
 	*User
+	PrefixURL   string
 	BaseURL     string
-	AbsoluteURL string
 	AddrPath    string
 	Token       string // Anti CSRF token
 	HugoEnabled bool   // Enables the Hugo plugin for File Manager
@@ -26,8 +26,8 @@ type Config struct {
 	CurrentUser *User
 }
 
-func (c Config) FullWebDavURL() string {
-	return c.AbsoluteURL + c.WebDavURL
+func (c Config) AbsoluteURL() string {
+	return c.PrefixURL + c.BaseURL
 }
 
 // Rule is a dissalow/allow rule
@@ -235,13 +235,12 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		}
 
 		caddyConf := httpserver.GetConfig(c)
-		cfg.AbsoluteURL = strings.TrimSuffix(caddyConf.Addr.Path, "/") + "/" + cfg.BaseURL
-		cfg.AbsoluteURL = strings.Replace(cfg.AbsoluteURL, "//", "/", -1)
-		cfg.AbsoluteURL = strings.TrimSuffix(cfg.AbsoluteURL, "/")
+
+		cfg.PrefixURL = strings.TrimSuffix(caddyConf.Addr.Path, "/")
 		cfg.AddrPath = strings.TrimSuffix(caddyConf.Addr.Path, "/")
 		cfg.WebDavURL = "/" + strings.TrimPrefix(cfg.WebDavURL, "/")
 		cfg.Handler = &webdav.Handler{
-			Prefix:     cfg.WebDavURL,
+			Prefix:     cfg.BaseURL + cfg.WebDavURL,
 			FileSystem: cfg.FileSystem,
 			LockSystem: webdav.NewMemLS(),
 		}

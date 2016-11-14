@@ -18,7 +18,7 @@ func ServeListing(w http.ResponseWriter, r *http.Request, c *config.Config, u *c
 	var err error
 
 	// Loads the content of the directory
-	listing, err := file.GetListing(u, i.VirtualPath, c.AbsoluteURL+r.URL.Path)
+	listing, err := file.GetListing(u, i.VirtualPath, c.PrefixURL+r.URL.Path)
 	if err != nil {
 		return errors.ErrorToHTTPCode(err, true), err
 	}

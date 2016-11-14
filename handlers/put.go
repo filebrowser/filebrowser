@@ -24,8 +24,8 @@ func PreProccessPUT(
 	i *file.Info,
 ) (err error) {
 	var (
-		data      map[string]interface{}
-		file      []byte
+		data      = map[string]interface{}{}
+		file      = []byte{}
 		kind      string
 		rawBuffer = new(bytes.Buffer)
 	)
@@ -43,7 +43,7 @@ func PreProccessPUT(
 
 	switch kind {
 	case "frontmatter-only":
-		if file, err = ParseFrontMatterOnlyFile(data, i.Name()); err != nil {
+		if file, err = ParseFrontMatterOnlyFile(data, i.FileInfo.Name()); err != nil {
 			return
 		}
 	case "content-only":
