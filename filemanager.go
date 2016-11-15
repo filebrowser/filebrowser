@@ -10,7 +10,6 @@ package filemanager
 import (
 	e "errors"
 	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/hacdias/caddy-filemanager/assets"
@@ -84,18 +83,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 			// Preprocess the PUT request if it's the case
 			if r.Method == http.MethodPut {
-				var urlp *url.URL
-				urlp, err = url.Parse(strings.Replace(r.URL.String(), c.WebDavURL, "", 1))
-				if err != nil {
-					return code, err
-				}
-
-				fi, code, err = file.GetInfo(urlp, c, user)
-				if err != nil {
-					return code, err
-				}
-
-				if handlers.PreProccessPUT(w, r, c, user, fi) != nil {
+				if handlers.PreProccessPUT(w, r, c, user) != nil {
 					return http.StatusInternalServerError, err
 				}
 			}

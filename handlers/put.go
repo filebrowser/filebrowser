@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/hacdias/caddy-filemanager/config"
-	"github.com/hacdias/caddy-filemanager/file"
 	"github.com/spf13/hugo/parser"
 )
 
@@ -21,7 +20,6 @@ func PreProccessPUT(
 	r *http.Request,
 	c *config.Config,
 	u *config.User,
-	i *file.Info,
 ) (err error) {
 	var (
 		data      = map[string]interface{}{}
@@ -43,7 +41,7 @@ func PreProccessPUT(
 
 	switch kind {
 	case "frontmatter-only":
-		if file, err = ParseFrontMatterOnlyFile(data, i.FileInfo.Name()); err != nil {
+		if file, err = ParseFrontMatterOnlyFile(data, r.URL.Path); err != nil {
 			return
 		}
 	case "content-only":
@@ -51,7 +49,7 @@ func PreProccessPUT(
 		mainContent = strings.TrimSpace(mainContent)
 		file = []byte(mainContent)
 	case "complete":
-		if file, err = ParseCompleteFile(data, i.Name(), u.FrontMatter); err != nil {
+		if file, err = ParseCompleteFile(data, r.URL.Path, u.FrontMatter); err != nil {
 			return
 		}
 	default:
