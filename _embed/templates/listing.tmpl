@@ -34,7 +34,7 @@
     </div>
 </div>
 
-<input style="display:none" type="file" id="upload-input" onchange="handleFiles(this.files)" value="Upload" multiple>
+<input style="display:none" type="file" id="upload-input" onchange="handleFiles(this.files, '')" value="Upload" multiple>
 {{ end }}
 
 {{ if .User.AllowNew }}
