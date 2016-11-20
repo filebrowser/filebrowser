@@ -180,6 +180,8 @@ var reloadListing = function(callback) {
                     link.addEventListener('click', itemClickEvent);
                 });
 
+                addNewDirEvents();
+
                 if (typeof callback == 'function') {
                     callback();
                 }
