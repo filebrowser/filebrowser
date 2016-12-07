@@ -40,7 +40,6 @@ document.addEventListener('listing', event => {
                 let request = new XMLHttpRequest();
                 request.open("POST", window.location);
                 request.setRequestHeader('Filename', name);
-                request.setRequestHeader('Token', token);
                 request.setRequestHeader('Archetype', archetype);
                 request.send();
                 request.onreadystatechange = function() {
@@ -91,7 +90,6 @@ document.addEventListener('editor', event => {
             let request = new XMLHttpRequest();
             request.open("PUT", window.location);
             request.setRequestHeader('Kind', kind);
-            request.setRequestHeader('Token', token);
             request.setRequestHeader('Schedule', date);
             request.send(JSON.stringify(data));
             request.onreadystatechange = function() {

@@ -94,6 +94,8 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 		}
 
 		if canBeEdited(r.URL.Path) && r.Method == http.MethodPut {
+			r.URL.Path = strings.Replace(r.URL.Path, h.FileManager.Configs[0].BaseURL, h.FileManager.Configs[0].WebDavURL, -1)
+
 			code, err := h.FileManager.ServeHTTP(w, r)
 
 			if err != nil {
@@ -148,7 +150,7 @@ func (h Hugo) Schedule(w http.ResponseWriter, r *http.Request) (int, error) {
 	scheduler := cron.New()
 	scheduler.AddFunc(t.Format("05 04 15 02 01 *"), func() {
 		filename := r.URL.Path
-		filename = strings.Replace(filename, h.Config.BaseURL, h.Config.Root, 1)
+		filename = strings.Replace(filename, h.FileManager.Configs[0].WebDavURL, h.Config.Root, 1)
 		filename = filepath.Clean(filename)
 
 		raw, err := ioutil.ReadFile(filename)
