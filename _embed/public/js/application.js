@@ -927,7 +927,7 @@ document.addEventListener("editor", (event) => {
     let saveContent = function() {
         let data = form2js(document.querySelector('form'));
 
-        if (typeof data.content === "undefined") {
+        if (typeof data.content === "undefined" && kind != 'frontmatter-only') {
             data.content = "";
         }
 
