@@ -94,8 +94,6 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 		}
 
 		if canBeEdited(r.URL.Path) && r.Method == http.MethodPut {
-			r.URL.Path = strings.Replace(r.URL.Path, h.FileManager.Configs[0].BaseURL, h.FileManager.Configs[0].WebDavURL, -1)
-
 			code, err := h.FileManager.ServeHTTP(w, r)
 
 			if err != nil {
