@@ -115,7 +115,6 @@ document.addEventListener('editor', event => {
         let request = new XMLHttpRequest();
         request.open("PUT", window.location);
         request.setRequestHeader('Kind', kind);
-        request.setRequestHeader('Token', token);
         request.setRequestHeader('Regenerate', "true");
         request.send(JSON.stringify(data));
         request.onreadystatechange = function() {
