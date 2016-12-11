@@ -73,7 +73,7 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 			return 0, nil
 		}
 
-		if r.Method == http.MethodPost && r.Header.Get("archetype") != "" {
+		if r.Method == http.MethodPut && r.Header.Get("archetype") != "" {
 			filename := r.Header.Get("Filename")
 			archetype := r.Header.Get("archetype")
 
@@ -81,7 +81,7 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 				return h.FileManager.ServeHTTP(w, r)
 			}
 
-			filename = strings.Replace(r.URL.Path, h.Config.BaseURL+"/content/", "", 1) + filename
+			filename = strings.Replace(r.URL.Path, h.Config.BaseURL+h.Config.WebDavURL+"/content/", "", 1)
 			filename = filepath.Clean(filename)
 
 			args := []string{"new", filename, "--kind", archetype}
@@ -90,7 +90,7 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 				return http.StatusInternalServerError, err
 			}
 
-			return http.StatusOK, nil
+			return http.StatusCreated, nil
 		}
 
 		if canBeEdited(r.URL.Path) && r.Method == http.MethodPut {

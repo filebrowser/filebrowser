@@ -62,12 +62,13 @@ func setup(c *caddy.Controller) error {
 
 // Config is a configuration for managing a particular hugo website.
 type Config struct {
-	Public  string   // Public content path
-	Root    string   // Hugo files path
-	Hugo    string   // Hugo executable location
-	Styles  string   // Admin styles path
-	Args    []string // Hugo arguments
-	BaseURL string   // BaseURL of admin interface
+	Public    string   // Public content path
+	Root      string   // Hugo files path
+	Hugo      string   // Hugo executable location
+	Styles    string   // Admin styles path
+	Args      []string // Hugo arguments
+	BaseURL   string   // BaseURL of admin interface
+	WebDavURL string
 }
 
 // Parse parses the configuration set by the user so it can be
@@ -151,6 +152,8 @@ func parse(c *caddy.Controller, root string) (*Config, *filemanager.FileManager,
 	fm.Configs[0].HugoEnabled = true
 
 	format := getFrontMatter(cfg)
+
+	cfg.WebDavURL = fm.Configs[0].WebDavURL
 
 	for _, user := range fm.Configs[0].Users {
 		user.FrontMatter = format

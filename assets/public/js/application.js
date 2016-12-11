@@ -39,16 +39,19 @@ document.addEventListener('listing', event => {
                 let button = document.getElementById('new');
                 let html = button.changeToLoading();
                 let request = new XMLHttpRequest();
-                request.open("POST", window.location);
+                request.open("PUT", toWebDavURL(window.location.pathname + name));
                 request.setRequestHeader('Filename', name);
                 request.setRequestHeader('Archetype', archetype);
                 request.send();
                 request.onreadystatechange = function() {
                     if (request.readyState == 4) {
-                        button.changeToDone((request.status != 200), html);
-                        if (request.status == 200) {
-                            window.location = window.location.pathname + name;
+                        if (request.status != 200 && request.status != 201) {
+                            button.changeToDone(true, html);
+                            return;
                         }
+                            
+                        button.changeToDone(false, html);
+                        window.location = window.location.pathname + name;
                     }
                 }
             }
