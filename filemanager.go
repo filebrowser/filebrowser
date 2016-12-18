@@ -83,12 +83,20 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 			// Preprocess the PUT request if it's the case
 			if r.Method == http.MethodPut {
+				if err = c.BeforeSave(r, c, user); err != nil {
+					return http.StatusInternalServerError, err
+				}
+
 				if handlers.PreProccessPUT(w, r, c, user) != nil {
 					return http.StatusInternalServerError, err
 				}
 			}
 
 			c.Handler.ServeHTTP(w, r)
+			if err = c.AfterSave(r, c, user); err != nil {
+				return http.StatusInternalServerError, err
+			}
+
 			return 0, nil
 		}
 

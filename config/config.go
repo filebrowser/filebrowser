@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
@@ -23,9 +24,11 @@ type Config struct {
 	HugoEnabled bool   // Enables the Hugo plugin for File Manager
 	Users       map[string]*User
 	WebDavURL   string
-	CurrentUser *User
+	BeforeSave  commandRunner
+	AfterSave   commandRunner
 }
 
+// AbsoluteURL ...
 func (c Config) AbsoluteURL() string {
 	return c.PrefixURL + c.BaseURL
 }
@@ -70,6 +73,8 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		cfg.AllowEdit = true
 		cfg.AllowNew = true
 		cfg.Commands = []string{"git", "svn", "hg"}
+		cfg.BeforeSave = func(r *http.Request, c *Config, u *User) error { return nil }
+		cfg.AfterSave = func(r *http.Request, c *Config, u *User) error { return nil }
 		cfg.Rules = []*Rule{{
 			Regex:  true,
 			Allow:  false,
@@ -105,6 +110,14 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				user.FrontMatter = c.Val()
 				if user.FrontMatter != "yaml" && user.FrontMatter != "json" && user.FrontMatter != "toml" {
 					return configs, c.Err("frontmatter type not supported")
+				}
+			case "before_save":
+				if cfg.BeforeSave, err = CommandRunner(c); err != nil {
+					return configs, err
+				}
+			case "after_save":
+				if cfg.AfterSave, err = CommandRunner(c); err != nil {
+					return configs, err
 				}
 			case "webdav":
 				if !c.NextArg() {
