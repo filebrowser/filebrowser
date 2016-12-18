@@ -11,10 +11,11 @@ import (
 	"github.com/mholt/caddy"
 )
 
-type commandRunner func(r *http.Request, c *Config, u *User) error
+// CommandFunc ...
+type CommandFunc func(r *http.Request, c *Config, u *User) error
 
 // CommandRunner ...
-func CommandRunner(c *caddy.Controller) (commandRunner, error) {
+func CommandRunner(c *caddy.Controller) (CommandFunc, error) {
 	fn := func(r *http.Request, c *Config, u *User) error { return nil }
 
 	args := c.RemainingArgs()

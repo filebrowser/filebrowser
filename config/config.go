@@ -24,8 +24,8 @@ type Config struct {
 	HugoEnabled bool   // Enables the Hugo plugin for File Manager
 	Users       map[string]*User
 	WebDavURL   string
-	BeforeSave  commandRunner
-	AfterSave   commandRunner
+	BeforeSave  CommandFunc
+	AfterSave   CommandFunc
 }
 
 // AbsoluteURL ...
