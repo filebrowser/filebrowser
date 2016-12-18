@@ -101,7 +101,23 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 			}
 
 			if r.Header.Get("Regenerate") == "true" {
+				if err = h.Config.BeforePublish(
+					r,
+					&h.FileManager.Configs[0],
+					h.FileManager.Configs[0].User,
+				); err != nil {
+					return http.StatusInternalServerError, err
+				}
+
 				RunHugo(h.Config, false)
+
+				if err = h.Config.AfterPublish(
+					r,
+					&h.FileManager.Configs[0],
+					h.FileManager.Configs[0].User,
+				); err != nil {
+					return http.StatusInternalServerError, err
+				}
 			}
 
 			if r.Header.Get("Schedule") != "" {
