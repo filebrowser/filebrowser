@@ -114,7 +114,7 @@
     <!-- SCRIPTS -->
     <!-- User Data and Permissions; WebDavURL -->
     <script>var user = JSON.parse('{{ Marshal .User }}'), webdavURL = "{{.Config.AbsoluteURL}}{{.Config.WebDavURL}}", baseURL = "{{.Config.AbsoluteURL}}";</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/ace/ace.js"></script>
     <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/form2js.js"></script>
     <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/application.js"></script>
     {{ if .Config.HugoEnabled }}<script src="{{ .Config.AbsoluteURL }}/_hugointernal/js/application.js"></script>{{ end }}
