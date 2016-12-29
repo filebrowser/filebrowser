@@ -77,7 +77,12 @@ func Download(w http.ResponseWriter, r *http.Request, c *config.Config, i *file.
 		return http.StatusInternalServerError, err
 	}
 
-	w.Header().Set("Content-Disposition", "attachment; filename="+i.Name()+extension)
+	name := i.Name()
+	if name == "" {
+		name = "download"
+	}
+
+	w.Header().Set("Content-Disposition", "attachment; filename="+name+extension)
 	io.Copy(w, file)
 	return http.StatusOK, nil
 }
