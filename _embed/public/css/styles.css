@@ -1066,6 +1066,7 @@ header .action span {
 .item i {
     font-size: 4em;
     margin-right: 0.1em;
+    vertical-align: bottom;
 }
 
 .item a,
