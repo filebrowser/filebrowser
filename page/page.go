@@ -3,6 +3,7 @@ package page
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"html/template"
 	"log"
@@ -90,12 +91,15 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 			a, _ := json.Marshal(v)
 			return template.JS(a)
 		},
+		"EncodeBase64": func(s string) string {
+			return base64.StdEncoding.EncodeToString([]byte(s))
+		},
 	}
 
 	if p.Minimal {
-		templates = append(templates, "actions", "minimal")
+		templates = append(templates, "minimal")
 	} else {
-		templates = append(templates, "actions", "base")
+		templates = append(templates, "base")
 	}
 
 	var tpl *template.Template
