@@ -173,14 +173,10 @@ var reloadListing = function(callback) {
                 // Handle date times
                 let timeList = document.getElementsByTagName("time");
                 Array.from(timeList).forEach(localizeDatetime);
-
-                // Add action to checkboxes
-                let checkboxes = document.getElementsByClassName('checkbox');
-                Array.from(checkboxes).forEach(link => {
-                    link.addEventListener('click', itemClickEvent);
-                });
-
+                
                 addNewDirEvents();
+                
+                document.getElementById("listing").style.opacity = 1;
 
                 if (typeof callback == 'function') {
                     callback();
@@ -207,8 +203,6 @@ var renameEvent = function(event) {
     let span = item.getElementsByTagName('span')[0];
     let name = span.innerHTML;
 
-    item.addEventListener('click', preventDefault);
-    item.removeEventListener('click', itemClickEvent);
     span.setAttribute('contenteditable', 'true');
     span.focus();
 
@@ -252,8 +246,6 @@ var renameEvent = function(event) {
         if (event.keyCode == 13 || event.keyCode == 27) {
             span.setAttribute('contenteditable', 'false');
             span.removeEventListener('keydown', keyDownEvent);
-            item.removeEventListener('click', preventDefault);
-            item.addEventListener('click', itemClickEvent);
             event.preventDefault();
         }
 
@@ -299,28 +291,9 @@ var handleFiles = function(files, base) {
 var backEvent = function(event) {
     var items = document.getElementsByClassName('item');
     Array.from(items).forEach(link => {
-        link.classList.remove('selected');
+        link.setAttribute("aria-selected", false);
     });
     selectedItems = [];
-
-    var event = new CustomEvent('changed-selected');
-    document.dispatchEvent(event);
-    return false;
-}
-
-// Handles the click event
-var itemClickEvent = function(event) {
-    var url = this.dataset.href;
-    var el = document.getElementById(url);
-
-    if (selectedItems.length != 0) event.preventDefault();
-    if (selectedItems.indexOf(url) == -1) {
-        el.classList.add('selected');
-        selectedItems.push(url);
-    } else {
-        el.classList.remove('selected');
-        selectedItems.removeElement(url);
-    }
 
     var event = new CustomEvent('changed-selected');
     document.dispatchEvent(event);
@@ -540,12 +513,6 @@ document.addEventListener('listing', event => {
     handleViewType(document.getCookie("view-list"));
     document.getElementById("view").addEventListener("click", viewEvent);
 
-    // Add event to items
-    let checkboxes = document.getElementsByClassName('checkbox');
-    Array.from(checkboxes).forEach(link => {
-        link.addEventListener('click', itemClickEvent);
-    });
-
     // Add event to back button and executes back event on ESC
     document.getElementById("back").addEventListener("click", backEvent)
     document.addEventListener('keydown', (event) => {
@@ -709,6 +676,29 @@ function itemDrop(e) {
             }
         }
     }
+}
+
+
+function openItem(event) {
+    window.location = event.currentTarget.dataset.url;
+}
+
+function selectItem(event) {
+    let el = event.currentTarget,
+        url = el.dataset.url;
+    
+    if (selectedItems.length != 0) event.preventDefault();
+    if (selectedItems.indexOf(url) == -1) {
+        el.setAttribute("aria-selected", true);
+        selectedItems.push(url);
+    } else {
+        el.setAttribute("aria-selected", false);
+        selectedItems.removeElement(url);
+    }
+
+    var event = new CustomEvent('changed-selected');
+    document.dispatchEvent(event);
+    return false;
 }
 
 
@@ -1020,3 +1010,35 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     return false;
 });
+
+
+(function() {
+    let columns = Math.floor(document.getElementById('listing').offsetWidth / 300);    
+    var header = getCSSRule('#listing .item');
+    header.style.width = `calc(${100/columns}% - 1em)`;
+    
+    document.getElementById("listing").style.opacity = 1;
+}());
+
+
+window.addEventListener("resize", () => {
+    let columns = Math.floor(document.getElementById('listing').offsetWidth / 300);    
+    var itens = getCSSRule('#listing .item');
+    itens.style.width = `calc(${100/columns}% - 1em)`;
+});
+
+
+function getCSSRule(ruleName) {
+    ruleName = ruleName.toLowerCase();
+    var result = null;
+    var find = Array.prototype.find;
+
+    find.call(document.styleSheets, styleSheet => {
+        result = find.call(styleSheet.cssRules, cssRule => {
+            return cssRule instanceof CSSStyleRule 
+                && cssRule.selectorText.toLowerCase() == ruleName;
+        });
+        return result != null;
+    });
+    return result;
+}

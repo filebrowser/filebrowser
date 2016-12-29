@@ -9,6 +9,13 @@
     {{ if ne .User.StyleSheet "" }}
     <style>{{ CSS .User.StyleSheet }}</style>
     {{ end }}
+    
+    <!-- SCRIPTS -->
+    <!-- User Data and Permissions; WebDavURL -->
+    <script>var user = JSON.parse('{{ Marshal .User }}'), webdavURL = "{{.Config.AbsoluteURL}}{{.Config.WebDavURL}}", baseURL = "{{.Config.AbsoluteURL}}";</script>
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/ace/ace.js" defer></script>
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/form2js.js" defer></script>
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/application.js" defer></script>
 </head>
 <body>
     <header>
@@ -109,12 +116,6 @@
 
     <footer>Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a> and <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
 
-    <!-- SCRIPTS -->
-    <!-- User Data and Permissions; WebDavURL -->
-    <script>var user = JSON.parse('{{ Marshal .User }}'), webdavURL = "{{.Config.AbsoluteURL}}{{.Config.WebDavURL}}", baseURL = "{{.Config.AbsoluteURL}}";</script>
-    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/ace/ace.js"></script>
-    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/form2js.js"></script>
-    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/application.js"></script>
-    {{ if .Config.HugoEnabled }}<script src="{{ .Config.AbsoluteURL }}/_hugointernal/js/application.js"></script>{{ end }}
+
 </body>
 </html>
