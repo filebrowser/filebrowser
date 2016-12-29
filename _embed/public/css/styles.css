@@ -674,6 +674,7 @@ header p i {
 #search i {
     margin-right: 0.3em;
     color: rgba(255, 255, 255, .5);
+    user-select: none;
 }
 
 #search input {
