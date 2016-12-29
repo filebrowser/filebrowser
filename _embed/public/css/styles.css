@@ -979,17 +979,14 @@ header .action span {
 /* LISTING */
 
 #listing {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
     padding: 0;
-    -ms-flex-wrap: wrap;
     flex-wrap: wrap;
-    -webkit-box-pack: justify;
-    -ms-flex-pack: justify;
-    justify-content: space-between;
+    justify-content: flex-start;;
     max-width: calc(100% - 2.2em);
     width: 100%;
+    opacity: 0;
+    transition: .1s ease all;
 }
 
 #listing.list {
@@ -1005,62 +1002,30 @@ header .action span {
 }
 
 #listing .item {
-    margin: 0 0 1em;
+    margin: .5em;
     padding: 0.5em;
-    cursor: pointer;
-    -webkit-transition: 0.2s ease all;
-    transition: 0.2s ease all;
-    border: 0.2em solid #fff;
+    transition: 0.2s ease border;
     border-radius: 0.2em;
     background-color: #fff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .12);
-    -webkit-box-flex: 1;
-    -ms-flex-positive: 1;
     position: relative;
-    width: calc(33% - .5em);
+    width: calc(33% - 1em);
     display: flex;
     flex-wrap: nowrap;
-}
-
-#listing .item:hover .checkbox {
-    opacity: 1;
-}
-
-#listing .item .checkbox {
-    position: absolute;
-    top: -.9em;
-    right: -.9em;
-    border-radius: 50%;
-    background: #fff;
-    border: 0;
-    -webkit-appearance: initial;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .12);
-    line-height: 0;
-    padding: .4em;
-    transition: .2s ease all;
-    opacity: 0;
-}
-
-#listing .checkbox i {
-    font-size: 1em;
-    margin: 0;
+    color: #6f6f6f;
 }
 
 .item:hover {
     box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 1px 2px rgba(0, 0, 0, .24) !important;
 }
 
-.item.selected {
-    border-color: #6f6f6f !important;
-}
-
-.item div {
-    /* display: block; */
-    /* vertical-align: middle; */
+.item[aria-selected=true] {
+    background: #2196f3 !important;
+    color: #fff !important;
 }
 
 .item div:first-of-type {
-    width: 5vw;
+    width: 5em;
 }
 
 .item div:last-of-type {
@@ -1073,7 +1038,6 @@ header .action span {
 .item p {
     font-size: 0.9em;
     margin: 0;
-    color: #4e4e4e;
 }
 
 .item span {
@@ -1081,14 +1045,9 @@ header .action span {
 }
 
 .item i {
-    font-size: 4vw;
+    font-size: 4em;
     margin-right: 0.1em;
     vertical-align: bottom;
-}
-
-.item a,
-.item a:hover {
-    color: #6f6f6f;
 }
 
 
