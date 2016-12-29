@@ -112,7 +112,7 @@ var openEvent = function(event) {
     }
 
     if (selectedItems.length) {
-        window.open(selectedItems[0] + '?raw=true');
+        window.open(document.getElementById(selectedItems[0]).dataset.url + '?raw=true');
         return false;
     }
 
@@ -692,6 +692,8 @@ function selectItem(event) {
 
     if (selectedItems.length != 0) event.preventDefault();
     if (selectedItems.indexOf(el.id) == -1) {
+        if (!event.ctrlKey) backEvent(event);
+        
         el.setAttribute("aria-selected", true);
         selectedItems.push(el.id);
     } else {
