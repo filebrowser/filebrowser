@@ -555,39 +555,41 @@ document.addEventListener('listing', event => {
     });
 
     if (user.AllowCommands) {
-        let hover = false,
+        let search = document.getElementById("search"),
+            searchInput = search.querySelector("input"),
+            searchDiv = search.querySelector("div"),
+            hover = false,
             focus = false;
 
-        document.querySelector('#search input').addEventListener('focus', event => {
+        searchInput.addEventListener('focus', event => {
             focus = true;
-            document.getElementById('search').classList.add('active');
+            search.classList.add('active');
         });
 
-        document.querySelector('#search div').addEventListener('mouseover', event => {
+        searchDiv.addEventListener('mouseover', event => {
             hover = true;
-            document.getElementById('search').classList.add('active');
+            search.classList.add('active');
         });
 
-        document.querySelector('#search input').addEventListener('blur', event => {
+        searchInput.addEventListener('blur', event => {
             focus = false;
             if (hover) return;
-            document.getElementById('search').classList.remove('active');
+            search.classList.remove('active');
         });
 
-        document.querySelector('#search').addEventListener('mouseleave', event => {
+        search.addEventListener('mouseleave', event => {
             hover = false;
             if (focus) return;
-            document.getElementById('search').classList.remove('active');
+            search.classList.remove('active');
+        });
+
+        search.addEventListener("click", event => {
+            search.classList.add("active");
+            search.querySelector("input").focus();
         });
 
         document.querySelector('#search > div div').innerHTML = "Search or use one of your supported commands: " + user.Commands.join(", ") + ".";
         document.querySelector('#search input').addEventListener('keyup', searchEvent);
-
-        document.querySelector("#search").addEventListener("click", event => {
-          if(event.target.classList.contains("active")) return;
-          event.target.classList.add("active");
-          document.querySelector("#search input").focus();
-        });
     }
 
     if (user.AllowEdit) {
@@ -680,7 +682,9 @@ function itemDragOver(event) {
 function itemDrop(e) {
     e.preventDefault();
 
-    let el = e.target, id = e.dataTransfer.getData("id"), name = e.dataTransfer.getData("name");
+    let el = e.target,
+        id = e.dataTransfer.getData("id"),
+        name = e.dataTransfer.getData("name");
     if (id == "" || name == "") return;
 
     for (let i = 0; i < 5; i++) {
