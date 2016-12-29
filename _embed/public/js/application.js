@@ -584,7 +584,7 @@ document.addEventListener('listing', event => {
         document.querySelector('#search input').addEventListener('keyup', searchEvent);
 
         document.querySelector("#search").addEventListener("click", event => {
-          if(event.target.classList.contains("active") || event.target.classList.contains("material-icons")) return;
+          if(event.target.classList.contains("active")) return;
           event.target.classList.add("active");
           document.querySelector("#search input").focus();
         });
