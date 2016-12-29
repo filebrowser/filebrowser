@@ -170,14 +170,9 @@ var reloadListing = function(callback) {
         if (request.readyState == 4) {
             if (request.status == 200) {
                 document.querySelector('body main').innerHTML = request.responseText;
-                // Handle date times
-                let timeList = document.getElementsByTagName("time");
-                Array.from(timeList).forEach(localizeDatetime);
-                
                 addNewDirEvents();
-                
                 document.getElementById("listing").style.opacity = 1;
-
+                
                 if (typeof callback == 'function') {
                     callback();
                 }
@@ -298,21 +293,6 @@ var backEvent = function(event) {
     var event = new CustomEvent('changed-selected');
     document.dispatchEvent(event);
     return false;
-}
-
-// Handles the datetimes present on the document
-var localizeDatetime = function(e, index, ar) {
-    if (e.textContent === undefined) {
-        return;
-    }
-    var d = new Date(e.getAttribute('datetime'));
-    if (isNaN(d)) {
-        d = new Date(e.textContent);
-        if (isNaN(d)) {
-            return;
-        }
-    }
-    e.textContent = d.toLocaleString();
 }
 
 // Toggles the view mode
@@ -505,10 +485,6 @@ var searchEvent = function(event) {
 }
 
 document.addEventListener('listing', event => {
-    // Handle date times
-    let timeList = document.getElementsByTagName("time");
-    Array.from(timeList).forEach(localizeDatetime);
-
     // Handles the current view mode and adds the event to the button
     handleViewType(document.getCookie("view-list"));
     document.getElementById("view").addEventListener("click", viewEvent);
@@ -686,7 +662,7 @@ function openItem(event) {
 function selectItem(event) {
     let el = event.currentTarget,
         url = el.dataset.url;
-    
+
     if (selectedItems.length != 0) event.preventDefault();
     if (selectedItems.indexOf(url) == -1) {
         el.setAttribute("aria-selected", true);
@@ -1013,16 +989,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 
 (function() {
-    let columns = Math.floor(document.getElementById('listing').offsetWidth / 300);    
+    let columns = Math.floor(document.getElementById('listing').offsetWidth / 300);
     var header = getCSSRule('#listing .item');
     header.style.width = `calc(${100/columns}% - 1em)`;
-    
+
     document.getElementById("listing").style.opacity = 1;
 }());
 
 
 window.addEventListener("resize", () => {
-    let columns = Math.floor(document.getElementById('listing').offsetWidth / 300);    
+    let columns = Math.floor(document.getElementById('listing').offsetWidth / 300);
     var itens = getCSSRule('#listing .item');
     itens.style.width = `calc(${100/columns}% - 1em)`;
 });
@@ -1035,8 +1011,8 @@ function getCSSRule(ruleName) {
 
     find.call(document.styleSheets, styleSheet => {
         result = find.call(styleSheet.cssRules, cssRule => {
-            return cssRule instanceof CSSStyleRule 
-                && cssRule.selectorText.toLowerCase() == ruleName;
+            return cssRule instanceof CSSStyleRule &&
+                cssRule.selectorText.toLowerCase() == ruleName;
         });
         return result != null;
     });

@@ -5,14 +5,14 @@
     {{- range .Items}}
         {{ if .UserAllowed }}
         <div ondragstart="itemDragStart(event)" 
-        {{ if .IsDir}}ondragover="itemDragOver(event)" ondrop="itemDrop(event)"{{ end }} 
-        draggable="true" 
-        class="item" 
-        onclick="selectItem(event)"
-        ondblclick="openItem(event)"
-        data-dir="{{ .IsDir }}" 
-        data-url="{{ .URL }}"
-        id="{{.URL}}">
+            {{ if .IsDir}}ondragover="itemDragOver(event)" ondrop="itemDrop(event)"{{ end }} 
+            draggable="true" 
+            class="item" 
+            onclick="selectItem(event)"
+            ondblclick="openItem(event)"
+            data-dir="{{ .IsDir }}" 
+            data-url="{{ .URL }}"
+            id="{{.URL}}">
             <div>
                 {{- if .IsDir}}
                 <i class="material-icons">folder</i>
@@ -28,7 +28,7 @@
                 <p data-order="{{.Size}}">{{.HumanSize}}</p>
                 {{- end}}
                 <p>
-                <time datetime="{{.HumanModTime " 2006-01-02T15:04:05Z"}}">{{.HumanModTime "01/02/2006 03:04:05 PM -07:00"}}</time>
+                <time datetime="{{.HumanModTime "2006-01-02T15:04:05Z"}}">{{.HumanModTime "2 Jan 2006 03:04 PM"}}</time>
                 </p>
             </div>
         </div>
