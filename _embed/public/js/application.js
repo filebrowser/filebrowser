@@ -85,6 +85,21 @@ Element.prototype.changeToDone = function(error, html) {
     return false;
 }
 
+function getCSSRule(ruleName) {
+    ruleName = ruleName.toLowerCase();
+    var result = null;
+    var find = Array.prototype.find;
+
+    find.call(document.styleSheets, styleSheet => {
+        result = find.call(styleSheet.cssRules, cssRule => {
+            return cssRule instanceof CSSStyleRule &&
+                cssRule.selectorText.toLowerCase() == ruleName;
+        });
+        return result != null;
+    });
+    return result;
+}
+
 var toWebDavURL = function(url) {
     url = url.replace(baseURL + "/", webdavURL + "/");
     return window.location.origin + url
@@ -171,8 +186,7 @@ var reloadListing = function(callback) {
             if (request.status == 200) {
                 document.querySelector('body main').innerHTML = request.responseText;
                 addNewDirEvents();
-                document.getElementById("listing").style.opacity = 1;
-                
+
                 if (typeof callback == 'function') {
                     callback();
                 }
@@ -193,23 +207,24 @@ var renameEvent = function(event) {
         location.refresh();
     }
 
-    let link = selectedItems[0];
-    let item = document.getElementById(link);
-    let span = item.getElementsByTagName('span')[0];
-    let name = span.innerHTML;
+    let item = document.getElementById(selectedItems[0]),
+        link = item.dataset.url,
+        span = item.getElementsByTagName('span')[0],
+        name = span.innerHTML;
 
     span.setAttribute('contenteditable', 'true');
     span.focus();
 
     let keyDownEvent = (event) => {
         if (event.keyCode == 13) {
-            let newName = span.innerHTML;
-            let newLink = toWebDavURL(link).replace(name, newName)
-            let html = document.getElementById('rename').changeToLoading();
-            let request = new XMLHttpRequest();
+            let newName = span.innerHTML,
+                newLink = RemoveLastDirectoryPartOf(toWebDavURL(link)) + newName,
+                html = document.getElementById('rename').changeToLoading(),
+                request = new XMLHttpRequest();
+
             request.open('MOVE', toWebDavURL(link));
             request.setRequestHeader('Destination', newLink);
-
+            request.setRequestHeader('Content-type', 'text/plain; charset=utf-8');
             request.send();
             request.onreadystatechange = function() {
                 // TODO: redirect if it's moved to another folder
@@ -221,11 +236,10 @@ var renameEvent = function(event) {
                         let newLink = encodeURI(link.replace(name, newName));
                         console.log(request.body)
                         reloadListing(() => {
-                            let newLink = encodeURI(link.replace(name, newName));
-                            selectedItems = [newLink];
-                            document.getElementById(newLink).classList.add("selected")
-                            var event = new CustomEvent('changed-selected');
-                            document.dispatchEvent(event);
+                            newName = btoa(newName);
+                            selectedItems = [newName];
+                            document.getElementById(newName).setAttribute("aria-selected", true);
+                            document.sendCostumEvent('changed-selected');
                         });
                     }
 
@@ -376,12 +390,13 @@ var newDirEvent = function(event) {
 
 // Handles the event when there is change on selected elements
 document.addEventListener("changed-selected", function(event) {
-    var toolbar = document.getElementById("toolbar");
-    var selectedNumber = selectedItems.length;
-    document.getElementById("selected-number").innerHTML = selectedNumber;
+    redefineDownloadURLs();
+
+    let selectedNumber = selectedItems.length,
+        fileAction = document.getElementById("file-only");
 
     if (selectedNumber) {
-        toolbar.classList.add("enabled");
+        fileAction.classList.remove("disabled");
 
         if (selectedNumber > 1) {
             document.getElementById("open").classList.add("disabled");
@@ -393,12 +408,10 @@ document.addEventListener("changed-selected", function(event) {
             document.getElementById("rename").classList.remove("disabled");
         }
 
-        redefineDownloadURLs();
-
         return false;
     }
 
-    toolbar.classList.remove("enabled");
+    fileAction.classList.add("disabled");
     return false;
 });
 
@@ -406,7 +419,8 @@ var redefineDownloadURLs = function() {
     let files = "";
 
     for (let i = 0; i < selectedItems.length; i++) {
-        files += selectedItems[i].replace(window.location.pathname, "") + ",";
+        let url = document.getElementById(selectedItems[i]).dataset.url;
+        files += url.replace(window.location.pathname, "") + ",";
     }
 
     files = files.substring(0, files.length - 1);
@@ -484,13 +498,26 @@ var searchEvent = function(event) {
     }
 }
 
+
+
 document.addEventListener('listing', event => {
     // Handles the current view mode and adds the event to the button
     handleViewType(document.getCookie("view-list"));
     document.getElementById("view").addEventListener("click", viewEvent);
 
+    let updateColumns = () => {
+        let columns = Math.floor(document.getElementById('listing').offsetWidth / 300),
+            itens = getCSSRule('#listing .item');
+
+        itens.style.width = `calc(${100/columns}% - 1em)`;
+    }
+
+    updateColumns();
+    window.addEventListener("resize", () => {
+        updateColumns();
+    });
+
     // Add event to back button and executes back event on ESC
-    document.getElementById("back").addEventListener("click", backEvent)
     document.addEventListener('keydown', (event) => {
         if (event.keyCode == 27) {
             backEvent(event);
@@ -628,6 +655,7 @@ function itemDrop(e) {
     let el = e.target,
         id = e.dataTransfer.getData("id"),
         name = e.dataTransfer.getData("name");
+
     if (id == "" || name == "") return;
 
     for (let i = 0; i < 5; i++) {
@@ -638,10 +666,10 @@ function itemDrop(e) {
 
     if (el.id === id) return;
 
-    let oldLink = toWebDavURL(id);
-    let newLink = toWebDavURL(el.id + name);
+    let oldLink = toWebDavURL(document.getElementById(id).dataset.url),
+        newLink = toWebDavURL(el.dataset.url + name),
+        request = new XMLHttpRequest();
 
-    let request = new XMLHttpRequest();
     request.open('MOVE', oldLink);
     request.setRequestHeader('Destination', newLink);
     request.send();
@@ -660,20 +688,18 @@ function openItem(event) {
 }
 
 function selectItem(event) {
-    let el = event.currentTarget,
-        url = el.dataset.url;
+    let el = event.currentTarget;
 
     if (selectedItems.length != 0) event.preventDefault();
-    if (selectedItems.indexOf(url) == -1) {
+    if (selectedItems.indexOf(el.id) == -1) {
         el.setAttribute("aria-selected", true);
-        selectedItems.push(url);
+        selectedItems.push(el.id);
     } else {
         el.setAttribute("aria-selected", false);
-        selectedItems.removeElement(url);
+        selectedItems.removeElement(el.id);
     }
 
-    var event = new CustomEvent('changed-selected');
-    document.dispatchEvent(event);
+    document.sendCostumEvent("changed-selected");
     return false;
 }
 
@@ -969,13 +995,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         document.getElementById("delete").addEventListener("click", deleteEvent);
     }
 
-    document.getElementById("open-nav").addEventListener("click", event => {
-        document.querySelector("header > div:nth-child(2)").classList.toggle("active");
-    });
-    document.getElementById("overlay").addEventListener("click", event => {
-        document.querySelector("header > div:nth-child(2)").classList.toggle("active");
-    });
-
     if (document.getElementById('listing')) {
         document.sendCostumEvent('listing');
     }
@@ -986,35 +1005,3 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     return false;
 });
-
-
-(function() {
-    let columns = Math.floor(document.getElementById('listing').offsetWidth / 300);
-    var header = getCSSRule('#listing .item');
-    header.style.width = `calc(${100/columns}% - 1em)`;
-
-    document.getElementById("listing").style.opacity = 1;
-}());
-
-
-window.addEventListener("resize", () => {
-    let columns = Math.floor(document.getElementById('listing').offsetWidth / 300);
-    var itens = getCSSRule('#listing .item');
-    itens.style.width = `calc(${100/columns}% - 1em)`;
-});
-
-
-function getCSSRule(ruleName) {
-    ruleName = ruleName.toLowerCase();
-    var result = null;
-    var find = Array.prototype.find;
-
-    find.call(document.styleSheets, styleSheet => {
-        result = find.call(styleSheet.cssRules, cssRule => {
-            return cssRule instanceof CSSStyleRule &&
-                cssRule.selectorText.toLowerCase() == ruleName;
-        });
-        return result != null;
-    });
-    return result;
-}

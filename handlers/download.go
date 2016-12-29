@@ -4,6 +4,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -29,6 +30,12 @@ func Download(w http.ResponseWriter, r *http.Request, c *config.Config, i *file.
 
 	if len(names) != 0 {
 		for _, name := range names {
+			name, err := url.QueryUnescape(name)
+
+			if err != nil {
+				return http.StatusInternalServerError, err
+			}
+
 			files = append(files, filepath.Join(i.Path, name))
 		}
 
@@ -78,7 +85,7 @@ func Download(w http.ResponseWriter, r *http.Request, c *config.Config, i *file.
 	}
 
 	name := i.Name()
-	if name == "" {
+	if name == "." || name == "" {
 		name = "download"
 	}
 

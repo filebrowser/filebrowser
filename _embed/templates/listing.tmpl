@@ -12,7 +12,7 @@
             ondblclick="openItem(event)"
             data-dir="{{ .IsDir }}" 
             data-url="{{ .URL }}"
-            id="{{.URL}}">
+            id="{{ EncodeBase64 .Name }}">
             <div>
                 {{- if .IsDir}}
                 <i class="material-icons">folder</i>

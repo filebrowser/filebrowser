@@ -4,6 +4,7 @@
 <head>
     <title>{{.Name}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
     <meta name="token" content="{{ .Token  }}">
     <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_filemanagerinternal/css/styles.css">
     {{ if ne .User.StyleSheet "" }}
@@ -19,103 +20,96 @@
 </head>
 <body>
     <header>
+        <!-- TOP BAR -->
         <div>
-            {{ $lnk := .PreviousLink }}
-            <div class="action{{ if eq $lnk ""}} disabled{{ end }}" id="prev">
-                {{ if ne $lnk ""}}<a href="{{ $lnk }}">{{ end }}
-                    <i class="material-icons" title="Previous">subdirectory_arrow_left</i>
-                {{ if ne $lnk ""}}</a>{{ end }}
-
-                {{ if ne $lnk ""}}
-                    <ul class="prev-links">
-                    {{ range $link, $name := .BreadcrumbMap }}<a href="{{ $absURL }}{{ $link }}"><li>{{ $name }}</li></a>{{ end }}
-                    </ul>
-                {{ end }}
+            <div><p>File Manager</p></div>
+            {{ if .User.AllowCommands }}
+            <div id="search">
+                <i class="material-icons" title="Storage">storage</i>
+                <input type="text" placeholder="Search or execute a command...">
+                <div>
+                    <div>Write your git, mercurial or svn command and press enter.</div>
+                    <p><i class="material-icons spin">autorenew</i></p>
+                </div>
             </div>
-
-            <div class="action" id="open-nav">
-                <i class="material-icons" title="Menu">menu</i>
-            </div>
-
-            {{ if ne .Name "/"}}<p>{{ .Name }}</p>{{ end }}
-        </div>
-
-        <div>
-            <div class="only-side">
-                {{ $lnk := .PreviousLink }}
-                {{ if ne $lnk ""}}<a href="{{ $lnk }}">{{ end }}
-                    <div class="action{{ if eq $lnk ""}} disabled{{ end }}" id="prev">
-                        <i class="material-icons" title="Previous">subdirectory_arrow_left</i>
-                    </div>
-                {{ if ne $lnk ""}}</a>{{ end }}
-
-                <p><a href="{{ if eq .Config.AbsoluteURL "" }}/{{ else }}{{ .Config.AbsoluteURL }}{{ end }}">File Manager</a></p>
-            </div>
-
-            {{ if .IsDir}}
-                {{ if .User.AllowCommands }}
-                <div id="search">
-                    <i class="material-icons" title="Storage">storage</i>
-                    <input type="text" placeholder="Search or execute a command...">
-                    <div>
-                        <div>Write your git, mercurial or svn command and press enter.</div>
-                        <p><i class="material-icons spin">autorenew</i></p>
-                    </div>
-                </div>
-                {{ end }}
-
-                <div class="action" id="view">
-                    <i class="material-icons" title="Switch view">view_headline</i> <span>Switch view</span>
-                </div>
-
-                {{ if .User.AllowNew }}
-                <div class="action" id="upload">
-                    <i class="material-icons" title="Upload">file_upload</i> <span>Upload</span>
-                </div>
-                {{ end }}
-
-                <div class="action">
-                    <a href="?download=true">
-                        <i class="material-icons" title="Download">file_download</i> <span>Download</span>
-                    </a>
-                    <ul class="prev-links">
-                        <a href="?download=tarbz2"><li>tar.bz2</li></a>
-                        <a href="?download=targz"><li>tar.gz</li></a>
-                        <a href="?download=tar"><li>tar</li></a>
-                        <a href="?download=zip"><li>zip</li></a>
-                    </ul>
-                </div>
-            {{ else }}
-            {{ template "actions" . }}
             {{ end }}
 
             <div class="action" id="logout">
                 <i class="material-icons" title="Logout">exit_to_app</i> <span>Logout</span>
             </div>
         </div>
-        <div id="overlay"></div>
-    </header>
-
-    {{ if .IsDir }}
-    <div id="toolbar">
+        
+        <!-- BOTTOM BAR -->
         <div>
-            <div class="action" id="back">
-                <i class="material-icons" title="Back">arrow_back</i>
+            <div>
+                {{ $lnk := .PreviousLink }}
+                <div class="action{{ if eq $lnk ""}} disabled{{ end }}" id="prev">
+                    {{ if ne $lnk ""}}<a href="{{ $lnk }}">{{ end }}
+                        <i class="material-icons" title="Previous">subdirectory_arrow_left</i>
+                    {{ if ne $lnk ""}}</a>{{ end }}
+    
+                    {{ if ne $lnk ""}}
+                        <ul class="prev-links">
+                        {{ range $link, $name := .BreadcrumbMap }}<a href="{{ $absURL }}{{ $link }}"><li>{{ $name }}</li></a>{{ end }}
+                        </ul>
+                    {{ end }}
+                </div>
+                
+                {{ if ne .Name "/"}}<p>{{ .Name }}</p>{{ end }}
             </div>
-            <p><span id="selected-number">0</span> selected.</p>
+            
+            <!-- ACTIONS -->
+            <div class="actions">
+                <div id="file-only" {{ if .IsDir }}class="disabled"{{ end }}>
+                    <div class="action" id="open">
+                        <i class="material-icons" title="See raw">open_in_new</i> <span>See raw</span>
+                    </div>
+                    {{ if and .IsDir .User.AllowEdit }}
+                    <div class="action" id="rename">
+                        <i class="material-icons" title="Edit">mode_edit</i>
+                    </div>
+                    {{ end }}
+                
+                    {{ if .User.AllowEdit }}
+                    <div class="action" id="delete">
+                        <i class="material-icons" title="Delete">delete</i> <span>Delete</span>
+                    </div>
+                    {{ end }}
+                </div>
+                
+                {{ if and (.User.AllowNew) (.IsDir) }}
+                <div class="action" id="upload">
+                    <i class="material-icons" title="Upload">file_upload</i> <span>Upload</span>
+                </div>
+                {{ end }}
+                
+                <div class="action" id="download">
+                    <a href="?download=true">
+                        <i class="material-icons" title="Download">file_download</i> <span>Download</span>
+                    </a>
+                    {{ if .IsDir }}
+                    <ul class="prev-links">
+                        <a data-format="tarbz2" href="?download=tarbz2"><li>tar.bz2</li></a>
+                        <a data-format="targz" href="?download=targz"><li>tar.gz</li></a>
+                        <a data-format="tar" href="?download=tar"><li>tar</li></a>
+                        <a data-format="zip" href="?download=zip"><li>zip</li></a>
+                    </ul>
+                    {{ end }}
+                </div>
+                
+                {{ if .IsDir }}
+                <div class="action" id="view">
+                    <i class="material-icons" title="Switch view">view_headline</i> <span>Switch view</span>
+                </div>
+                {{ end }}
+            </div>
         </div>
-        <div>
-        {{ template "actions" . }}
-        </div>
-    </div>
-    {{ end }}
+    </header>    
 
     <main>
         {{ template "content" . }}
     </main>
 
     <footer>Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a> and <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
-
-
 </body>
 </html>

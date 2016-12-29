@@ -4,7 +4,7 @@
   {{ if eq .Type "image" }}
    <img src="{{ .URL }}?raw=true">
    {{ else if eq .Type "audio" }}
-   <audio src="{{ .URL }}?raw=true"></audio>
+   <audio src="{{ .URL }}?raw=true" controls></audio>
    {{ else if eq .Type "video" }}
    <video src="{{ .URL }}?raw=true" controls>
       Sorry, your browser doesn't support embedded videos,
