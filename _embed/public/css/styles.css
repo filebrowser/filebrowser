@@ -976,21 +976,20 @@ header .action span {
 }
 
 
-/* SIDEBAR */
-
-
 /* LISTING */
 
 #listing {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
-    padding: 0 0.5em;
+    padding: 0;
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
     -webkit-box-pack: justify;
     -ms-flex-pack: justify;
     justify-content: space-between;
+    max-width: calc(100% - 2.2em);
+    width: 100%;
 }
 
 #listing.list {
@@ -1000,8 +999,13 @@ header .action span {
     flex-direction: column;
 }
 
+#listing.list .item {
+    width: 100%;
+    margin: 0 0 1em;
+}
+
 #listing .item {
-    margin: 0 0.5em 1em;
+    margin: 0 0 1em;
     padding: 0.5em;
     cursor: pointer;
     -webkit-transition: 0.2s ease all;
@@ -1012,8 +1016,10 @@ header .action span {
     box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .12);
     -webkit-box-flex: 1;
     -ms-flex-positive: 1;
-    flex-grow: 1;
     position: relative;
+    width: calc(33% - .5em);
+    display: flex;
+    flex-wrap: nowrap;
 }
 
 #listing .item:hover .checkbox {
@@ -1049,8 +1055,19 @@ header .action span {
 }
 
 .item div {
-    display: inline-block;
-    vertical-align: middle;
+    /* display: block; */
+    /* vertical-align: middle; */
+}
+
+.item div:first-of-type {
+    width: 5vw;
+}
+
+.item div:last-of-type {
+    width: calc(100% - 5vw);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .item p {
@@ -1064,7 +1081,7 @@ header .action span {
 }
 
 .item i {
-    font-size: 4em;
+    font-size: 4vw;
     margin-right: 0.1em;
     vertical-align: bottom;
 }
@@ -1341,6 +1358,12 @@ i.spin {
     }
 }
 
+@media screen and (max-width: 800px) {
+    #listing .item {
+        width: calc(50% - 1em);
+    }
+}
+
 @media screen and (max-width: 700px) {
     header>div:first-child p a,
     header>div:first-child p i {
@@ -1352,6 +1375,13 @@ i.spin {
     #editor .frontmatter {
         column-count: 1;
         column-gap: 0;
+    }
+}
+
+@media screen and (max-width: 650px) {
+    #listing .item {
+        width: 100%;
+        margin: 0 0 1em;
     }
 }
 
