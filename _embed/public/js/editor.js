@@ -41,18 +41,17 @@ function addFrontMatterItem(event) {
         let fieldID = id + "[]",
             input = fieldID,
             count = block.querySelectorAll('.group > div').length;
-            
+
         input = input.replace(/\[/, '\\[');
         input = input.replace(/\]/, '\\]');
 
         let fieldsets = block.getElementsByTagName("fieldset");
 
         if (fieldsets.length > 0) {
-            let newtype = fieldsets[0].dataset.type;
-            let bid = id + "[" + fieldsets.length + "]";
-            let name = fieldsets.length;
-
-            let template = `<fieldset id="${bid}" data-type="${newtype}">
+            let newtype = fieldsets[0].dataset.type,
+                bid = id + "[" + fieldsets.length + "]",
+                name = fieldsets.length,
+                template = `<fieldset id="${bid}" data-type="${newtype}">
               <h3>${name}</h3>
               <div class="action add">
                   <i class="material-icons">add</i>
@@ -94,8 +93,8 @@ function addFrontMatterItem(event) {
             block.querySelector('.delete').insertAdjacentHTML('afterend', template);
         }
 
-        let temp = document.getElementById(tempID);
-        let input = temp.querySelector('input');
+        let temp = document.getElementById(tempID),
+            input = temp.querySelector('input');
         input.focus();
         input.addEventListener('keydown', (event) => {
             if (event.keyCode == 27) {
@@ -112,8 +111,8 @@ function addFrontMatterItem(event) {
                     return true;
                 }
 
-                let name = value.substring(0, value.lastIndexOf(':'));
-                let newtype = value.substring(value.lastIndexOf(':') + 1, value.length);
+                let name = value.substring(0, value.lastIndexOf(':')),
+                    newtype = value.substring(value.lastIndexOf(':') + 1, value.length);
                 if (newtype !== "" && newtype !== "array" && newtype !== "object") {
                     name = value;
                 }
@@ -180,15 +179,15 @@ function addFrontMatterItem(event) {
 document.addEventListener("DOMContentLoaded", (event) => {
     textareaAutoGrow();
 
-    let container = document.getElementById('editor');
-    let button = document.querySelector('#submit span:first-child');
-    let kind = container.dataset.kind;
+    let container = document.getElementById('editor'),
+        button = document.querySelector('#submit span:first-child'),
+        kind = container.dataset.kind;
 
     if (kind != 'frontmatter-only') {
-        let editor = document.getElementById('editor-source');
-        let mode = editor.dataset.mode;
-        let textarea = document.querySelector('textarea[name="content"]');
-        let aceEditor = ace.edit('editor-source');
+        let editor = document.getElementById('editor-source'),
+            mode = editor.dataset.mode,
+            textarea = document.querySelector('textarea[name="content"]'),
+            aceEditor = ace.edit('editor-source');
         aceEditor.getSession().setMode("ace/mode/" + mode);
         aceEditor.getSession().setValue(textarea.value);
         aceEditor.getSession().on('change', function() {
@@ -225,11 +224,11 @@ document.addEventListener("DOMContentLoaded", (event) => {
             data.content = data.content.toString();
         }
 
-        let html = button.changeToLoading();
-        let request = new XMLHttpRequest();
+        let html = button.changeToLoading(),
+            request = new XMLHttpRequest();
+
         request.open("PUT", toWebDavURL(window.location.pathname));
         request.setRequestHeader('Kind', kind);
-
         request.send(JSON.stringify(data));
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
