@@ -115,6 +115,15 @@
 
     <main>
         {{ template "content" . }}
+        
+        {{ if and (.User.AllowNew) (.IsDir) }}
+        <input id="newdir" type="text" placeholder="Name. End with a trailing slash to create a dir.">
+        <div class="floating">
+            <div class="action" id="new">
+                <i class="material-icons" title="New file or directory. End name with a trailing slash to create a directory.">add</i>
+            </div>
+        </div>
+        {{ end }}
     </main>
 
     <footer>Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a> and <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
