@@ -1,7 +1,8 @@
 'use strict';
 
 var tempID = "_fm_internal_temporary_id",
-    buttons = {};
+    buttons = {},
+    selectedItems = [];
 
 // Removes an element, if exists, from an array
 Array.prototype.removeElement = function(element) {
