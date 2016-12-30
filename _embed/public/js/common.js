@@ -61,7 +61,7 @@ Element.prototype.changeToDone = function(error, html) {
     let firstStep = () => {
         this.innerHTML = '<i class="material-icons">done</i>';
         if (error) {
-          this.innerHTML = '<i class="material-icons">close</i>';
+            this.innerHTML = '<i class="material-icons">close</i>';
         }
 
         this.style.opacity = 1;
@@ -151,7 +151,7 @@ function deleteEvent(event) {
         let request = new XMLHttpRequest(),
             html = buttons.delete.changeToLoading(),
             el, url;
-            
+
         if (single) {
             url = window.location.pathname;
         } else {
@@ -174,7 +174,7 @@ function deleteEvent(event) {
                 buttons.delete.changeToDone(request.status != 204, html);
             }
         }
-        
+
         request.send();
     });
 
@@ -219,9 +219,9 @@ function searchEvent(event) {
     if (event.keyCode == 13) {
         box.innerHTML = '';
         search.classList.add('ongoing');
-        
+
         let url = window.location.host + window.location.pathname;
-        
+
         if (document.getElementById("editor")) {
             url = removeLastDirectoryPartOf(url);
         }

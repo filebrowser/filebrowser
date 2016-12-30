@@ -9,7 +9,6 @@ var reloadListing = function(callback) {
         if (request.readyState == 4) {
             if (request.status == 200) {
                 document.querySelector('body main').innerHTML = request.responseText;
-                addNewDirEvents();
 
                 if (typeof callback == 'function') {
                     callback();
@@ -120,16 +119,15 @@ var handleFiles = function(files, base) {
     return false;
 }
 
-// Handles the back button event
-var backEvent = function(event) {
+function unselectAll() {
     var items = document.getElementsByClassName('item');
     Array.from(items).forEach(link => {
         link.setAttribute("aria-selected", false);
     });
+    
     selectedItems = [];
-
-    var event = new CustomEvent('changed-selected');
-    document.dispatchEvent(event);
+    
+    document.sendCostumEvent('changed-selected');
     return false;
 }
 
@@ -164,20 +162,6 @@ var handleViewType = function(viewList) {
     return false;
 }
 
-var addNewDirEvents = function() {
-    document.getElementById('new').addEventListener('click', event => {
-        let newdir = document.getElementById('newdir');
-        newdir.classList.add('enabled');
-        newdir.focus();
-    });
-
-    document.getElementById('newdir').addEventListener('blur', event => {
-        document.getElementById('newdir').classList.remove('enabled');
-    });
-
-    document.getElementById('newdir').addEventListener('keydown', newDirEvent);
-}
-
 // Handles the new directory event
 var newDirEvent = function(event) {
     // TODO: create new dir button and new file button
@@ -202,9 +186,7 @@ var newDirEvent = function(event) {
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
                 button.changeToDone((request.status != 201), html);
-                reloadListing(() => {
-                    addNewDirEvents();
-                });
+                reloadListing();
             }
         }
     }
@@ -277,11 +259,9 @@ document.addEventListener('DOMContentLoaded', event => {
     // Add event to back button and executes back event on ESC
     document.addEventListener('keydown', (event) => {
         if (event.keyCode == 27) {
-            backEvent(event);
+            unselectAll();
         }
     });
-
-
 
     if (user.AllowEdit) {
         // Enables rename button
@@ -294,7 +274,17 @@ document.addEventListener('DOMContentLoaded', event => {
             document.getElementById("upload-input").click();
         });
 
-        addNewDirEvents();
+        document.getElementById('new').addEventListener('click', event => {
+            let newdir = document.getElementById('newdir');
+            newdir.classList.add('enabled');
+            newdir.focus();
+        });
+    
+        document.getElementById('newdir').addEventListener('blur', event => {
+            document.getElementById('newdir').classList.remove('enabled');
+        });
+    
+        document.getElementById('newdir').addEventListener('keydown', newDirEvent);
 
         // Drag and Drop
         let items = document.getElementsByClassName('item');
@@ -403,16 +393,16 @@ function itemDrop(e) {
     }
 }
 
-function openItem(event) {
+function openItemEvent(event) {
     window.location = event.currentTarget.dataset.url;
 }
 
-function selectItem(event) {
+function selectItemEvent(event) {
     let el = event.currentTarget;
 
     if (selectedItems.length != 0) event.preventDefault();
     if (selectedItems.indexOf(el.id) == -1) {
-        if (!event.ctrlKey) backEvent(event);
+        if (!event.ctrlKey) unselectAll();
 
         el.setAttribute("aria-selected", true);
         selectedItems.push(el.id);

@@ -8,8 +8,8 @@
             {{ if .IsDir}}ondragover="itemDragOver(event)" ondrop="itemDrop(event)"{{ end }} 
             draggable="true" 
             class="item" 
-            onclick="selectItem(event)"
-            ondblclick="openItem(event)"
+            onclick="selectItemEvent(event)"
+            ondblclick="openItemEvent(event)"
             data-dir="{{ .IsDir }}" 
             data-url="{{ .URL }}"
             id="{{ EncodeBase64 .Name }}">
@@ -38,14 +38,5 @@
 </div>
 
 <input style="display:none" type="file" id="upload-input" onchange="handleFiles(this.files, '')" value="Upload" multiple>
-{{ end }}
-
-{{ if .User.AllowNew }}
-<input id="newdir" type="text" placeholder="Name. End with a trailing slash to create a dir.">
-<div class="floating">
-    <div class="action" id="new">
-        <i class="material-icons" title="New file or directory. End name with a trailing slash to create a directory.">add</i>
-    </div>
-</div>
 {{ end }}
 {{ end }}
