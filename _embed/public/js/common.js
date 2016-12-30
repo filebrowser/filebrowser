@@ -185,7 +185,7 @@ function resetSearchText() {
     let box = document.querySelector('#search > div div');
 
     if (user.AllowCommands) {
-        box.innerHTML = `Search or use one of your supported commands: ${user.Commands.join(", ")} `;
+        box.innerHTML = `Search or use one of your supported commands: ${user.Commands.join(", ")}.`;
     } else {
         box.innerHTML = "Type and press enter to search.";
     }
@@ -323,6 +323,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
     if (user.AllowEdit) {
         buttons.delete.addEventListener("click", deleteEvent);
     }
+    
+    document.getElementById("breadcrumbs-button").addEventListener("click", event => {
+        event.currentTarget.classList.toggle("active");
+        document.getElementById("breadcrumbs").classList.toggle("active");
+    });
 
     setupSearch();
     return false;

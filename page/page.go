@@ -32,10 +32,16 @@ type Info struct {
 	Token  string
 }
 
+// BreadcrumbMapItem ...
+type BreadcrumbMapItem struct {
+	Name string
+	URL  string
+}
+
 // BreadcrumbMap returns p.Path where every element is a map
 // of URLs and path segment names.
-func (i Info) BreadcrumbMap() map[string]string {
-	result := map[string]string{}
+func (i Info) BreadcrumbMap() []BreadcrumbMapItem {
+	result := []BreadcrumbMapItem{}
 
 	if len(i.Path) == 0 {
 		return result
@@ -54,11 +60,17 @@ func (i Info) BreadcrumbMap() map[string]string {
 		}
 
 		if i == 0 && part == "" {
-			// Leading slash (root)
-			result["/"] = "/"
+			result = append([]BreadcrumbMapItem{{
+				Name: "/",
+				URL:  "/",
+			}}, result...)
 			continue
 		}
-		result[strings.Join(parts[:i+1], "/")] = part
+
+		result = append([]BreadcrumbMapItem{{
+			Name: part,
+			URL:  strings.Join(parts[:i+1], "/"),
+		}}, result...)
 	}
 
 	return result
