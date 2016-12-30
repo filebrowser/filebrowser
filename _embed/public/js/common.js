@@ -1,7 +1,8 @@
 'use strict';
 
 var tempID = "_fm_internal_temporary_id",
-    buttons = {};
+    buttons = {},
+    selectedItems = [];
 
 // Removes an element, if exists, from an array
 Array.prototype.removeElement = function(element) {
@@ -142,15 +143,21 @@ function deleteEvent(event) {
     let single = false;
 
     if (!selectedItems.length) {
-        selectedItems = [window.location.pathname];
+        selectedItems = ["placeholder"];
         single = true;
     }
 
     Array.from(selectedItems).forEach(id => {
         let request = new XMLHttpRequest(),
             html = buttons.delete.changeToLoading(),
-            el = document.getElementById(id),
+            el, url;
+            
+        if (single) {
+            url = window.location.pathname;
+        } else {
+            el = document.getElementById(id);
             url = el.dataset.url;
+        }
 
         request.open('DELETE', toWebDavURL(url));
         request.onreadystatechange = function() {

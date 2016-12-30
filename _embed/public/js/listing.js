@@ -1,7 +1,5 @@
 'use strict';
 
-var selectedItems = [];
-
 var reloadListing = function(callback) {
     let request = new XMLHttpRequest();
     request.open('GET', window.location);
