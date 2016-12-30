@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <meta name="token" content="{{ .Token  }}">
+    <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_filemanagerinternal/css/normalize.css">
+    <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_filemanagerinternal/css/fonts.css">
     <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_filemanagerinternal/css/styles.css">
-    {{ if ne .User.StyleSheet "" }}
+    {{- if ne .User.StyleSheet "" -}}
     <style>{{ CSS .User.StyleSheet }}</style>
-    {{ end }}
+    {{- end -}}
     
     <!-- SCRIPTS -->
     <!-- User Data and Permissions; WebDavURL -->
@@ -19,18 +21,18 @@
         baseURL = "{{.Config.AbsoluteURL}}";
     </script>
     <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/common.js" defer></script>
-    {{ if .IsDir }}
+    {{- if .IsDir }}
     <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/listing.js" defer></script>
-    {{ else }}
+    {{- else }}
     <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/vendor/ace/ace.js" defer></script>
     <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/vendor/form2js.js" defer></script>
     <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/editor.js" defer></script>
-    {{ end }}
+    {{- end }}
 </head>
 <body>
     <header>
         <!-- TOP BAR -->
-        <div>
+        <div id="top-bar">
             <div><p>File Manager</p></div>
             <div id="search">
                 <i class="material-icons" title="Search">search</i>
@@ -42,12 +44,12 @@
             </div>
 
             <div class="action" id="logout">
-                <i class="material-icons" title="Logout">exit_to_app</i> <span>Logout</span>
+                <i class="material-icons" title="Logout">exit_to_app</i>
             </div>
         </div>
         
         <!-- BOTTOM BAR -->
-        <div>
+        <div id="bottom-bar">
             <div>
                 {{ if ne .Name "/"}}
                 <p id="breadcrumbs-button">Previous</p>
@@ -66,7 +68,7 @@
             <div class="actions">
                 <div id="file-only" {{ if .IsDir }}class="disabled"{{ end }}>
                     <div class="action" id="open">
-                        <i class="material-icons" title="See raw">open_in_new</i> <span>See raw</span>
+                        <i class="material-icons" title="See raw">open_in_new</i>
                     </div>
                     {{ if and .IsDir .User.AllowEdit }}
                     <div class="action" id="rename">
@@ -103,7 +105,11 @@
                 
                 {{ if .IsDir }}
                 <div class="action" id="view">
-                    <i class="material-icons" title="Switch view">view_headline</i> <span>Switch view</span>
+                    {{ if eq .Display "mosaic" }}
+                        <a href="?display=list"><i class="material-icons" title="Switch View">view_list</i></a>
+                    {{ else }} 
+                        <a href="?display=mosaic"><i class="material-icons" title="Switch View">view_module</i></a>
+                    {{ end }}
                 </div>
                 {{ end }}
             </div>

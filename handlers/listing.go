@@ -57,15 +57,35 @@ func ServeListing(w http.ResponseWriter, r *http.Request, c *config.Config, u *c
 		return http.StatusOK, nil
 	}
 
+	displayMode := r.URL.Query().Get("display")
+
+	if displayMode == "" {
+		if displayCookie, err := r.Cookie("display"); err == nil {
+			displayMode = displayCookie.Value
+		}
+	}
+
+	if displayMode == "" || (displayMode != "mosaic" && displayMode != "list") {
+		displayMode = "mosaic"
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:   "display",
+		Value:  displayMode,
+		Path:   c.BaseURL,
+		Secure: r.TLS != nil,
+	})
+
 	page := &page.Page{
 		Minimal: r.Header.Get("Minimal") == "true",
 		Info: &page.Info{
-			Name:   listing.Name,
-			Path:   i.VirtualPath,
-			IsDir:  true,
-			User:   u,
-			Config: c,
-			Data:   listing,
+			Name:    listing.Name,
+			Path:    i.VirtualPath,
+			IsDir:   true,
+			User:    u,
+			Config:  c,
+			Display: displayMode,
+			Data:    listing,
 		},
 	}
 

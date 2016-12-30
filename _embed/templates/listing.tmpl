@@ -1,41 +1,59 @@
 {{ define "content" }}
-{{ with .Data }}
-<div class="listing">
-    <div class="container" id="listing">
-        <div>
-            <div class="item header">
-                <div>
-                    
-                </div>
-                <div>
-                    <span class="name">Name</span>
-                    <p>Size</p>
-                    <p>Modified time</p>
-                </div>
+<div class="container {{ .Display }}" id="listing">
+{{- with .Data -}}
+    <div>
+        <div class="item header">
+            <div></div>
+            <div>
+                <p class="name{{ if eq .Sort "name" }} active{{ end }}"><span>Name</span>
+                    {{- if eq .Sort "name" -}}
+                    {{- if eq .Order "asc" -}}
+                        <a href="?sort=name&order=desc"><i class="material-icons">arrow_downward</i></a>
+                    {{- else -}}
+                        <a href="?sort=name&order=asc"><i class="material-icons">arrow_upward</i></a>
+                    {{- end -}}
+                    {{- else -}}
+                    <a href="?sort=name&order=desc"><i class="material-icons">arrow_downward</i></a>
+                    {{- end -}}
+                </p>
+                <p class="size{{ if eq .Sort "size" }} active{{ end }}"><span>File Size</span>
+                    {{- if eq .Sort "size" -}}
+                    {{- if eq .Order "asc" -}}
+                        <a href="?sort=size&order=desc"><i class="material-icons">arrow_downward</i></a>
+                    {{- else -}}
+                        <a href="?sort=size&order=asc"><i class="material-icons">arrow_upward</i></a>
+                    {{- end -}}
+                    {{- else -}}
+                    <a href="?sort=size&order=desc"><i class="material-icons">arrow_downward</i></a>
+                    {{- end -}}
+                </p>
+                <p class="modified">Last modified</p>
             </div>
         </div>
-        <h2>Folders</h2>
-        <div>
-        {{- range .Items}}
-            {{ if and (.UserAllowed) (.IsDir) }}
-            {{ template "item" .}}
-            {{ end }}
-        {{- end}}
-        </div>
-        <h2>Files</h2>
-        <div>
-        {{- range .Items}}
-            {{ if and (.UserAllowed) (not .IsDir) }}
-            {{ template "item" .}}
-            {{ end }}
-        {{- end}}
-        </div>
+    </div>
+    
+    <h2>Folders</h2>
+    <div>
+    {{- range .Items }}
+        {{- if and (.UserAllowed) (.IsDir) }}
+        {{ template "item" .}}
+        {{- end }}
+    {{- end }}
+    </div>
+    
+    <h2>Files</h2>
+    <div>
+    {{- range .Items }}
+        {{- if and (.UserAllowed) (not .IsDir) }}
+        {{ template "item" .}}
+        {{- end }}
+    {{- end }}
     </div>
 </div>
 
 <input style="display:none" type="file" id="upload-input" onchange="handleFiles(this.files, '')" value="Upload" multiple>
-{{ end }}
-{{ end }}
+{{- end -}}
+{{- end -}}
 
 {{ define "item" }}
 <div ondragstart="itemDragStart(event)" 
@@ -63,13 +81,13 @@
         {{- end}}
     </div>
     <div>
-        <span class="name">{{.Name}}</span>
+        <p class="name">{{.Name}}</p>
         {{- if .IsDir}}
-        <p data-order="-1">&mdash;</p>
+        <p class="size" data-order="-1">&mdash;</p>
         {{- else}}
-        <p data-order="{{.Size}}">{{.HumanSize}}</p>
+        <p class="size" data-order="{{.Size}}">{{.HumanSize}}</p>
         {{- end}}
-        <p>
+        <p class="modified">
         <time datetime="{{.HumanModTime "2006-01-02T15:04:05Z"}}">{{.HumanModTime "2 Jan 2006 03:04 PM"}}</time>
         </p>
     </div>

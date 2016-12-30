@@ -23,13 +23,14 @@ type Page struct {
 
 // Info contains the information of a Page
 type Info struct {
-	Name   string
-	Path   string
-	IsDir  bool
-	User   *config.User
-	Config *config.Config
-	Data   interface{}
-	Token  string
+	Name    string
+	Path    string
+	IsDir   bool
+	User    *config.User
+	Config  *config.Config
+	Data    interface{}
+	Display string
+	Token   string
 }
 
 // BreadcrumbMapItem ...
