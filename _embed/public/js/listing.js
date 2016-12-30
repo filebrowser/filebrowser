@@ -32,7 +32,7 @@ var renameEvent = function(event) {
 
     let item = document.getElementById(selectedItems[0]),
         link = item.dataset.url,
-        span = item.getElementsByTagName('span')[0],
+        span = item.querySelector('.name'),
         name = span.innerHTML;
 
     span.setAttribute('contenteditable', 'true');
@@ -130,37 +130,6 @@ function unselectAll() {
     return false;
 }
 
-// Toggles the view mode
-var viewEvent = function(event) {
-    let cookie = document.getCookie('view-list'),
-        listing = document.getElementById('listing');
-
-    if (cookie != 'true') {
-        document.cookie = 'view-list=true';
-    } else {
-        document.cookie = 'view-list=false';
-    }
-
-    handleViewType(document.getCookie('view-list'));
-    return false;
-}
-
-// Handles the view mode change
-var handleViewType = function(viewList) {
-    let listing = document.getElementById('listing'),
-        button = document.getElementById('view');
-
-    if (viewList == "true") {
-        listing.classList.add('list');
-        button.innerHTML = '<i class="material-icons" title="Switch View">view_module</i> <span>Switch view</span>';
-        return false;
-    }
-
-    button.innerHTML = '<i class="material-icons" title="Switch View">view_list</i> <span>Switch view</span>';
-    listing.classList.remove('list');
-    return false;
-}
-
 // Handles the new directory event
 var newDirEvent = function(event) {
     // TODO: create new dir button and new file button
@@ -239,13 +208,9 @@ var redefineDownloadURLs = function() {
 
 
 document.addEventListener('DOMContentLoaded', event => {
-    // Handles the current view mode and adds the event to the button
-    handleViewType(document.getCookie("view-list"));
-    document.getElementById("view").addEventListener("click", viewEvent);
-
     let updateColumns = () => {
         let columns = Math.floor(document.getElementById('listing').offsetWidth / 300),
-            itens = getCSSRule('#listing .item');
+            itens = getCSSRule('#listing.mosaic .item');
 
         itens.style.width = `calc(${100/columns}% - 1em)`;
     }
