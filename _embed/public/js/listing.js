@@ -98,8 +98,8 @@ var renameEvent = function(event) {
 
 // Upload files
 var handleFiles = function(files, base) {
-    let button = document.getElementById("upload");
-    let html = button.changeToLoading();
+    let button = document.getElementById("upload"),
+        html = button.changeToLoading();
 
     for (let i = 0; i < files.length; i++) {
         let request = new XMLHttpRequest();
@@ -135,8 +135,8 @@ var backEvent = function(event) {
 
 // Toggles the view mode
 var viewEvent = function(event) {
-    let cookie = document.getCookie('view-list');
-    let listing = document.getElementById('listing');
+    let cookie = document.getCookie('view-list'),
+        listing = document.getElementById('listing');
 
     if (cookie != 'true') {
         document.cookie = 'view-list=true';
@@ -150,8 +150,8 @@ var viewEvent = function(event) {
 
 // Handles the view mode change
 var handleViewType = function(viewList) {
-    let listing = document.getElementById('listing');
-    let button = document.getElementById('view');
+    let listing = document.getElementById('listing'),
+        button = document.getElementById('view');
 
     if (viewList == "true") {
         listing.classList.add('list');
@@ -191,10 +191,10 @@ var newDirEvent = function(event) {
     if (event.keyCode == 13) {
         event.preventDefault();
 
-        let button = document.getElementById('new');
-        let html = button.changeToLoading();
-        let request = new XMLHttpRequest();
-        let name = document.getElementById('newdir').value;
+        let button = document.getElementById('new'),
+            html = button.changeToLoading(),
+            request = new XMLHttpRequest(),
+            name = document.getElementById('newdir').value;
 
         request.open((name.endsWith("/") ? "MKCOL" : "PUT"), toWebDavURL(window.location.pathname + name));
 
@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', event => {
         }
     });
 
-    
+
 
     if (user.AllowEdit) {
         // Enables rename button
