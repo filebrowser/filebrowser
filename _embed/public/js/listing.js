@@ -403,7 +403,6 @@ function itemDrop(e) {
     }
 }
 
-
 function openItem(event) {
     window.location = event.currentTarget.dataset.url;
 }
