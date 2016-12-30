@@ -167,7 +167,8 @@ function deleteEvent(event) {
                 buttons.delete.changeToDone(request.status != 204, html);
             }
         }
-        r.send();
+        
+        request.send();
     });
 
     return false;
@@ -211,9 +212,15 @@ function searchEvent(event) {
     if (event.keyCode == 13) {
         box.innerHTML = '';
         search.classList.add('ongoing');
+        
+        let url = window.location.host + window.location.pathname;
+        
+        if (document.getElementById("editor")) {
+            url = removeLastDirectoryPartOf(url);
+        }
 
         if (supported && user.AllowCommands) {
-            let conn = new WebSocket('ws://' + window.location.host + window.location.pathname + '?command=true');
+            let conn = new WebSocket(`ws://${url}?command=true`);
 
             conn.onopen = function() {
                 conn.send(value);
@@ -235,7 +242,7 @@ function searchEvent(event) {
         box.innerHTML = '<ul></ul>';
 
         let ul = box.querySelector('ul'),
-            conn = new WebSocket('ws://' + window.location.host + window.location.pathname + '?search=true');
+            conn = new WebSocket(`ws://${url}?search=true`);
 
         conn.onopen = function() {
             conn.send(value);
