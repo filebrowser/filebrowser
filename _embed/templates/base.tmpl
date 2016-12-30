@@ -32,16 +32,14 @@
         <!-- TOP BAR -->
         <div>
             <div><p>File Manager</p></div>
-            {{ if .User.AllowCommands }}
             <div id="search">
                 <i class="material-icons" title="Storage">storage</i>
                 <input type="text" placeholder="Search or execute a command...">
                 <div>
-                    <div>Write your git, mercurial or svn command and press enter.</div>
+                    <div>Loading...</div>
                     <p><i class="material-icons spin">autorenew</i></p>
                 </div>
             </div>
-            {{ end }}
 
             <div class="action" id="logout">
                 <i class="material-icons" title="Logout">exit_to_app</i> <span>Logout</span>
