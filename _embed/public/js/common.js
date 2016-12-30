@@ -6,17 +6,13 @@ var tempID = "_fm_internal_temporary_id",
 // Removes an element, if exists, from an array
 Array.prototype.removeElement = function(element) {
     var i = this.indexOf(element);
-    if (i != -1) {
-        this.splice(i, 1);
-    }
+    if (i != -1) this.splice(i, 1);
 }
 
 // Replaces an element inside an array by another
-Array.prototype.replaceElement = function(begin, end) {
-    var i = this.indexOf(begin);
-    if (i != -1) {
-        this[i] = end;
-    }
+Array.prototype.replaceElement = function(oldElement, newElement) {
+    var i = this.indexOf(oldElement);
+    if (i != -1) this[i] = newElement;
 }
 
 // Sends a costum event to itself
@@ -32,8 +28,8 @@ Document.prototype.getCookie = function(name) {
 
 // Changes a button to the loading animation
 Element.prototype.changeToLoading = function() {
-    let element = this;
-    let originalText = element.innerHTML;
+    let element = this,
+        originalText = element.innerHTML;
 
     element.style.opacity = 0;
 
@@ -53,9 +49,7 @@ Element.prototype.changeToDone = function(error, html) {
         this.innerHTML = html;
         this.style.opacity = null;
 
-        if (selectedItems.length == 0 && document.getElementById('listing')) {
-            document.sendCostumEvent('changed-selected');
-        }
+        if (selectedItems.length == 0 && document.getElementById('listing')) document.sendCostumEvent('changed-selected');
     }
 
     let secondStep = () => {
@@ -64,10 +58,9 @@ Element.prototype.changeToDone = function(error, html) {
     }
 
     let firstStep = () => {
+        this.innerHTML = '<i class="material-icons">done</i>';
         if (error) {
-            this.innerHTML = '<i class="material-icons">close</i>';
-        } else {
-            this.innerHTML = '<i class="material-icons">done</i>';
+          this.innerHTML = '<i class="material-icons">close</i>';
         }
 
         this.style.opacity = 1;
@@ -81,8 +74,8 @@ Element.prototype.changeToDone = function(error, html) {
 
 function getCSSRule(ruleName) {
     ruleName = ruleName.toLowerCase();
-    var result = null;
-    var find = Array.prototype.find;
+    var result = null,
+        find = Array.prototype.find;
 
     find.call(document.styleSheets, styleSheet => {
         result = find.call(styleSheet.cssRules, cssRule => {
