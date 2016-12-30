@@ -13,10 +13,19 @@
     
     <!-- SCRIPTS -->
     <!-- User Data and Permissions; WebDavURL -->
-    <script>var user = JSON.parse('{{ Marshal .User }}'), webdavURL = "{{.Config.AbsoluteURL}}{{.Config.WebDavURL}}", baseURL = "{{.Config.AbsoluteURL}}";</script>
-    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/ace/ace.js" defer></script>
-    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/form2js.js" defer></script>
-    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/application.js" defer></script>
+    <script>
+    var user = JSON.parse('{{ Marshal .User }}'), 
+        webdavURL = "{{.Config.AbsoluteURL}}{{.Config.WebDavURL}}", 
+        baseURL = "{{.Config.AbsoluteURL}}";
+    </script>
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/common.js" defer></script>
+    {{ if .IsDir }}
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/listing.js" defer></script>
+    {{ else }}
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/vendor/ace/ace.js" defer></script>
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/vendor/form2js.js" defer></script>
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/editor.js" defer></script>
+    {{ end }}
 </head>
 <body>
     <header>
