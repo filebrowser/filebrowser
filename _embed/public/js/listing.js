@@ -259,7 +259,7 @@ var redefineDownloadURLs = function() {
 }
 
 
-document.addEventListener('listing', event => {
+document.addEventListener('DOMContentLoaded', event => {
     // Handles the current view mode and adds the event to the button
     handleViewType(document.getCookie("view-list"));
     document.getElementById("view").addEventListener("click", viewEvent);
@@ -283,43 +283,7 @@ document.addEventListener('listing', event => {
         }
     });
 
-    if (user.AllowCommands) {
-        let search = document.getElementById("search"),
-            searchInput = search.querySelector("input"),
-            searchDiv = search.querySelector("div"),
-            hover = false,
-            focus = false;
-
-        searchInput.addEventListener('focus', event => {
-            focus = true;
-            search.classList.add('active');
-        });
-
-        searchDiv.addEventListener('mouseover', event => {
-            hover = true;
-            search.classList.add('active');
-        });
-
-        searchInput.addEventListener('blur', event => {
-            focus = false;
-            if (hover) return;
-            search.classList.remove('active');
-        });
-
-        search.addEventListener('mouseleave', event => {
-            hover = false;
-            if (focus) return;
-            search.classList.remove('active');
-        });
-
-        search.addEventListener("click", event => {
-            search.classList.add("active");
-            search.querySelector("input").focus();
-        });
-
-        document.querySelector('#search > div div').innerHTML = "Search or use one of your supported commands: " + user.Commands.join(", ") + ".";
-        document.querySelector('#search input').addEventListener('keyup', searchEvent);
-    }
+    
 
     if (user.AllowEdit) {
         // Enables rename button

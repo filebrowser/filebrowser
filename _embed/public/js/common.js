@@ -180,19 +180,28 @@ function deleteEvent(event) {
     return false;
 }
 
-var searchEvent = function(event) {
-    let value = this.value,
-        search = document.getElementById('search'),
-        scrollable = document.querySelector('#search > div'),
-        box = document.querySelector('#search > div div');
+function resetSearchText() {
+    let box = document.querySelector('#search > div div');
 
-    if (value.length == 0) {
-        box.innerHTML = "Search or use one of your supported commands: " + user.Commands.join(", ") + ".";
+    if (user.AllowCommands) {
+        box.innerHTML = `Search or use one of your supported commands: ${user.Commands.join(", ")} `;
+    } else {
+        box.innerHTML = "Type and press enter to search.";
+    }
+}
+
+function searchEvent(event) {
+    if (this.value.length == 0) {
+        resetSearchText();
         return;
     }
 
-    let pieces = value.split(' ');
-    let supported = false;
+    let value = this.value,
+        search = document.getElementById('search'),
+        scrollable = document.querySelector('#search > div'),
+        box = document.querySelector('#search > div div'),
+        pieces = value.split(' '),
+        supported = false;
 
     user.Commands.forEach(function(cmd) {
         if (cmd == pieces[0]) {
@@ -200,7 +209,7 @@ var searchEvent = function(event) {
         }
     });
 
-    if (!supported) {
+    if (!supported || !user.AllowCommands) {
         box.innerHTML = "Press enter to search."
     } else {
         box.innerHTML = "Press enter to execute."
@@ -210,8 +219,9 @@ var searchEvent = function(event) {
         box.innerHTML = '';
         search.classList.add('ongoing');
 
-        if (supported) {
-            var conn = new WebSocket('ws://' + window.location.host + window.location.pathname + '?command=true');
+        if (supported && user.AllowCommands) {
+            let conn = new WebSocket('ws://' + window.location.host + window.location.pathname + '?command=true');
+
             conn.onopen = function() {
                 conn.send(value);
             };
@@ -225,25 +235,67 @@ var searchEvent = function(event) {
                 search.classList.remove('ongoing');
                 reloadListing();
             }
-        } else {
-            box.innerHTML = '<ul></ul>';
-            let ul = box.querySelector('ul');
 
-            var conn = new WebSocket('ws://' + window.location.host + window.location.pathname + '?search=true');
-            conn.onopen = function() {
-                conn.send(value);
-            };
+            return;
+        }
 
-            conn.onmessage = function(event) {
-                ul.innerHTML += '<li><a href="' + event.data + '">' + event.data + '</a></li>';
-                scrollable.scrollTop = scrollable.scrollHeight;
-            }
+        box.innerHTML = '<ul></ul>';
 
-            conn.onclose = function(event) {
-                search.classList.remove('ongoing');
-            }
+        let ul = box.querySelector('ul'),
+            conn = new WebSocket('ws://' + window.location.host + window.location.pathname + '?search=true');
+
+        conn.onopen = function() {
+            conn.send(value);
+        };
+
+        conn.onmessage = function(event) {
+            ul.innerHTML += '<li><a href="' + event.data + '">' + event.data + '</a></li>';
+            scrollable.scrollTop = scrollable.scrollHeight;
+        }
+
+        conn.onclose = function(event) {
+            search.classList.remove('ongoing');
         }
     }
+}
+
+function setupSearch() {
+    let search = document.getElementById("search"),
+        searchInput = search.querySelector("input"),
+        searchDiv = search.querySelector("div"),
+        hover = false,
+        focus = false;
+
+    resetSearchText();
+
+    searchInput.addEventListener('focus', event => {
+        focus = true;
+        search.classList.add('active');
+    });
+
+    searchDiv.addEventListener('mouseover', event => {
+        hover = true;
+        search.classList.add('active');
+    });
+
+    searchInput.addEventListener('blur', event => {
+        focus = false;
+        if (hover) return;
+        search.classList.remove('active');
+    });
+
+    search.addEventListener('mouseleave', event => {
+        hover = false;
+        if (focus) return;
+        search.classList.remove('active');
+    });
+
+    search.addEventListener("click", event => {
+        search.classList.add("active");
+        search.querySelector("input").focus();
+    });
+
+    searchInput.addEventListener('keyup', searchEvent);
 }
 
 /* * * * * * * * * * * * * * * *
@@ -265,5 +317,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         buttons.delete.addEventListener("click", deleteEvent);
     }
 
+    setupSearch();
     return false;
 });
