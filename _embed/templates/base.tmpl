@@ -33,7 +33,7 @@
         <div>
             <div><p>File Manager</p></div>
             <div id="search">
-                <i class="material-icons" title="Storage">storage</i>
+                <i class="material-icons" title="Search">search</i>
                 <input type="text" placeholder="Search or execute a command...">
                 <div>
                     <div>Loading...</div>
@@ -49,20 +49,17 @@
         <!-- BOTTOM BAR -->
         <div>
             <div>
-                {{ $lnk := .PreviousLink }}
-                <div class="action{{ if eq $lnk ""}} disabled{{ end }}" id="prev">
-                    {{ if ne $lnk ""}}<a href="{{ $lnk }}">{{ end }}
-                        <i class="material-icons" title="Previous">subdirectory_arrow_left</i>
-                    {{ if ne $lnk ""}}</a>{{ end }}
-    
-                    {{ if ne $lnk ""}}
-                        <ul class="prev-links">
-                        {{ range $link, $name := .BreadcrumbMap }}<a href="{{ $absURL }}{{ $link }}"><li>{{ $name }}</li></a>{{ end }}
-                        </ul>
-                    {{ end }}
-                </div>
+                {{ if ne .Name "/"}}
+                <p id="breadcrumbs-button">Previous</p>
+                <ul id="breadcrumbs">
+                {{ range $item := .BreadcrumbMap }}
+                <a href="{{ $absURL }}{{ $item.URL }}"><li>{{ $item.Name }}</li></a>
+                {{ end }}
+                </ul><i class="material-icons">keyboard_arrow_right</i>
                 
-                {{ if ne .Name "/"}}<p>{{ .Name }}</p>{{ end }}
+                {{ end }}
+                
+                <p id="current-file">{{ if ne .Name "/"}}{{ .Name }}{{ else }}Root{{ end }}</p>
             </div>
             
             <!-- ACTIONS -->

@@ -67,11 +67,15 @@ func GetListing(u *config.User, filePath string, baseURL string) (*Listing, erro
 
 		// Absolute URL
 		url := url.URL{Path: baseURL + name}
-		fileinfos = append(fileinfos, Info{
+
+		i := Info{
 			FileInfo:    f,
 			URL:         url.String(),
-			UserAllowed: u.Allowed(filePath),
-		})
+			UserAllowed: u.Allowed("/" + name),
+		}
+		i.RetrieveFileType()
+
+		fileinfos = append(fileinfos, i)
 	}
 
 	return &Listing{

@@ -2,41 +2,76 @@
 {{ with .Data }}
 <div class="listing">
     <div class="container" id="listing">
-    {{- range .Items}}
-        {{ if .UserAllowed }}
-        <div ondragstart="itemDragStart(event)" 
-            {{ if .IsDir}}ondragover="itemDragOver(event)" ondrop="itemDrop(event)"{{ end }} 
-            draggable="true" 
-            class="item" 
-            onclick="selectItemEvent(event)"
-            ondblclick="openItemEvent(event)"
-            data-dir="{{ .IsDir }}" 
-            data-url="{{ .URL }}"
-            id="{{ EncodeBase64 .Name }}">
-            <div>
-                {{- if .IsDir}}
-                <i class="material-icons">folder</i>
-                {{- else}}
-                <i class="material-icons">insert_drive_file</i>
-                {{- end}}
-            </div>
-            <div>
-                <span class="name">{{.Name}}</span>
-                {{- if .IsDir}}
-                <p data-order="-1">&mdash;</p>
-                {{- else}}
-                <p data-order="{{.Size}}">{{.HumanSize}}</p>
-                {{- end}}
-                <p>
-                <time datetime="{{.HumanModTime "2006-01-02T15:04:05Z"}}">{{.HumanModTime "2 Jan 2006 03:04 PM"}}</time>
-                </p>
+        <div>
+            <div class="item header">
+                <div>
+                    
+                </div>
+                <div>
+                    <span class="name">Name</span>
+                    <p>Size</p>
+                    <p>Modified time</p>
+                </div>
             </div>
         </div>
-        {{ end }}
-    {{- end}}
+        <h2>Folders</h2>
+        <div>
+        {{- range .Items}}
+            {{ if and (.UserAllowed) (.IsDir) }}
+            {{ template "item" .}}
+            {{ end }}
+        {{- end}}
+        </div>
+        <h2>Files</h2>
+        <div>
+        {{- range .Items}}
+            {{ if and (.UserAllowed) (not .IsDir) }}
+            {{ template "item" .}}
+            {{ end }}
+        {{- end}}
+        </div>
     </div>
 </div>
 
 <input style="display:none" type="file" id="upload-input" onchange="handleFiles(this.files, '')" value="Upload" multiple>
 {{ end }}
+{{ end }}
+
+{{ define "item" }}
+<div ondragstart="itemDragStart(event)" 
+    {{ if .IsDir}}ondragover="itemDragOver(event)" ondrop="itemDrop(event)"{{ end }} 
+    draggable="true" 
+    class="item" 
+    onclick="selectItemEvent(event)"
+    ondblclick="openItemEvent(event)"
+    data-dir="{{ .IsDir }}" 
+    data-url="{{ .URL }}"
+    id="{{ EncodeBase64 .Name }}">
+    <div>
+        {{- if .IsDir}}
+        <i class="material-icons">folder</i>
+        {{- else}}
+        {{ if eq .Type "image" }}
+        <i class="material-icons">insert_photo</i>
+        {{ else if eq .Type "audio" }}
+        <i class="material-icons">volume_up</i>
+        {{ else if eq .Type "video" }}
+        <i class="material-icons">movie</i>
+        {{ else }}
+        <i class="material-icons">insert_drive_file</i>
+        {{ end }}
+        {{- end}}
+    </div>
+    <div>
+        <span class="name">{{.Name}}</span>
+        {{- if .IsDir}}
+        <p data-order="-1">&mdash;</p>
+        {{- else}}
+        <p data-order="{{.Size}}">{{.HumanSize}}</p>
+        {{- end}}
+        <p>
+        <time datetime="{{.HumanModTime "2006-01-02T15:04:05Z"}}">{{.HumanModTime "2 Jan 2006 03:04 PM"}}</time>
+        </p>
+    </div>
+</div>
 {{ end }}

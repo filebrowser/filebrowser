@@ -41,13 +41,12 @@ var renameEvent = function(event) {
     let keyDownEvent = (event) => {
         if (event.keyCode == 13) {
             let newName = span.innerHTML,
-                newLink = removeLastDirectoryPartOf(toWebDavURL(link)) + newName,
+                newLink = removeLastDirectoryPartOf(toWebDavURL(link)) + "/" + newName,
                 html = document.getElementById('rename').changeToLoading(),
                 request = new XMLHttpRequest();
 
             request.open('MOVE', toWebDavURL(link));
             request.setRequestHeader('Destination', newLink);
-            request.setRequestHeader('Content-type', 'text/plain; charset=utf-8');
             request.send();
             request.onreadystatechange = function() {
                 // TODO: redirect if it's moved to another folder

@@ -31,7 +31,7 @@ func ServeListing(w http.ResponseWriter, r *http.Request, c *config.Config, u *c
 
 	// Copy the query values into the Listing struct
 	var limit int
-	listing.Sort, listing.Order, limit, err = handleSortOrder(w, r, c.Scope)
+	listing.Sort, listing.Order, limit, err = handleSortOrder(w, r, c.BaseURL)
 	if err != nil {
 		return http.StatusBadRequest, err
 	}
