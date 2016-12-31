@@ -1,5 +1,7 @@
 'use strict';
 
+var templates = [];
+
 function textareaAutoGrow() {
     let autogrow = function() {
         this.style.height = '5px';
@@ -26,7 +28,7 @@ function deleteFrontMatterItem(event) {
 
 function addFrontMatterItem(event) {
     event.preventDefault();
-
+    let clone;
     let temp = document.getElementById(tempID)
     if (temp) {
         temp.remove();
@@ -50,47 +52,38 @@ function addFrontMatterItem(event) {
         if (fieldsets.length > 0) {
             let newtype = fieldsets[0].dataset.type,
                 bid = id + "[" + fieldsets.length + "]",
-                name = fieldsets.length,
-                template = `<fieldset id="${bid}" data-type="${newtype}">
-              <h3>${name}</h3>
-              <div class="action add">
-                  <i class="material-icons">add</i>
-              </div>
-              <div class="action delete" data-delete="${bid}">
-                  <i class="material-icons">close</i>
-              </div>
-             <div class="group">
-             </div>
-            </fieldset>`;
-
-            block.insertAdjacentHTML('beforeend', template);
-
-            document.querySelector(`div[data-delete="${bid}"]`).addEventListener('click', deleteFrontMatterItem);
-            document.getElementById(bid).querySelector('.action.add').addEventListener('click', addFrontMatterItem);
+                name = fieldsets.length;
+            
+            clone = document.importNode(templates.base.content, true);
+            clone.querySelector('fieldset').id = bid;
+            clone.querySelector('fieldset').dataset.type = newtype;
+            clone.querySelector('h3').innerHTML = name;
+            clone.querySelector('.delete').dataset.delete = bid;
+            clone.querySelector('.delete').addEventListener('click', deleteFrontMatterItem);
+            clone.querySelector('.add').addEventListener('click', addFrontMatterItem);
+            block.appendChild(clone);
         } else {
-            block.querySelector('.group').insertAdjacentHTML('beforeend', `<div id="${fieldID}-${count}" data-type="array-item">
-                <input name="${fieldID}" id="${fieldID}" type="text" data-parent-type="array"></input>
-                <div class="action delete"  data-delete="${fieldID}-${count}">
-                    <i class="material-icons">close</i>
-                </div>
-            </div>`);
-
+            clone = document.importNode(templates.arrayItem.content, true);
+            clone.querySelector('[data-type="array-item"]').id = `${fieldID}-${count}`;
+            clone.querySelector('input').name = fieldID;
+            clone.querySelector('input').id = fieldID;
+            clone.querySelector('div.action').dataset.delete = `${fieldID}-${count}`;
+            clone.querySelector('div.action').addEventListener('click', deleteFrontMatterItem);
+            block.querySelector('.group').appendChild(clone)
             document.getElementById(`${fieldID}-${count}`).querySelector('input').focus();
-            document.querySelector(`div[data-delete="${fieldID}-${count}"]`).addEventListener('click', deleteFrontMatterItem);
         }
     }
 
-    if (type == "object" || type == "parent") {
-        let template = `<div class="group temp" id="${tempID}">
-        <div class="block" id="${tempID}">
-            <label>Write the field name and then press enter. If you want to create an array or an object, end the name with ":array" or ":object".</label>
-            <input name="${tempID}" type="text" placeholder="Write the field name and press enter.."></input>
-        </div></div>`;
+    if (type == "object" || type == "parent") {    
+        clone = document.importNode(templates.temporary.content, true);
+        clone.querySelector('.group').id = tempID;
+        clone.querySelector('.block').id = tempID;
+        clone.querySelector('input').name = tempID;
 
         if (type == "parent") {
-            document.querySelector('div.button.add').insertAdjacentHTML('beforebegin', template);
+            document.querySelector('.frontmatter').insertBefore(clone, document.querySelector('div.button.add'));
         } else {
-            block.querySelector('.delete').insertAdjacentHTML('afterend', template);
+            block.insertBefore(clone, block.querySelector('.group'));
         }
 
         let temp = document.getElementById(tempID),
@@ -128,27 +121,21 @@ function addFrontMatterItem(event) {
 
                 switch (newtype) {
                     case "array":
-                    case "object":
-                        let template = `<fieldset id="${bid}" data-type="${newtype}">
-                          <h3>${name}</h3>
-                          <div class="action add">
-                              <i class="material-icons">add</i>
-                          </div>
-                          <div class="action delete" data-delete="${bid}">
-                              <i class="material-icons">close</i>
-                          </div>
-                         <div class="group">
-                         </div>
-                        </fieldset>`;
+                    case "object":                    
+                        clone = document.importNode(templates.base.content, true);
+                        clone.querySelector('fieldset').id = bid;
+                        clone.querySelector('fieldset').dataset.type = newtype;
+                        clone.querySelector('h3').innerHTML = name;
+                        clone.querySelector('.delete').dataset.delete = bid;
+                        clone.querySelector('.delete').addEventListener('click', deleteFrontMatterItem);
+                        clone.querySelector('.add').addEventListener('click', addFrontMatterItem);
 
                         if (type == "parent") {
-                            document.querySelector('div.button.add').insertAdjacentHTML('beforebegin', template);
+                            document.querySelector('.frontmatter').insertBefore(clone, document.querySelector('div.button.add'));
                         } else {
-                            block.insertAdjacentHTML('beforeend', template);
+                            block.appendChild(clone);
                         }
-
-                        document.querySelector(`div[data-delete="${bid}"]`).addEventListener('click', deleteFrontMatterItem);
-                        document.getElementById(bid).querySelector('.action.add').addEventListener('click', addFrontMatterItem);
+                        
                         break;
                     default:
                         let group = block.querySelector('.group');
@@ -157,17 +144,19 @@ function addFrontMatterItem(event) {
                             block.insertAdjacentHTML('afterbegin', '<div class="group"></div>');
                             group = block.querySelector('.group');
                         }
-
-                        group.insertAdjacentHTML('beforeend', `<div class="block" id="block-${bid}" data-content="${bid}">
-                          <label for="${bid}">${name}</label>
-                          <input name="${bid}" id="${bid}" type="text" data-parent-type="object"></input>
-                          <div class="action delete" data-delete="block-${bid}">
-                              <i class="material-icons">close</i>
-                          </div>
-                        </div>`);
-
+                        
+                        clone = document.importNode(templates.objectItem.content, true);
+                        clone.querySelector('.block').id = `block-${bid}`;
+                        clone.querySelector('.block').dataset.content = bid;
+                        clone.querySelector('label').for = bid;
+                        clone.querySelector('label').innerHTML = name;
+                        clone.querySelector('input').name = bid;
+                        clone.querySelector('input').id = bid;
+                        clone.querySelector('.action').dataset.delete = `block-${bid}`;
+                        clone.querySelector('.action').addEventListener('click', deleteFrontMatterItem);
+                
+                        group.appendChild(clone)
                         document.getElementById(bid).focus();
-                        document.querySelector(`div[data-delete="block-${bid}"]`).addEventListener('click', deleteFrontMatterItem);
                 }
             }
         });
@@ -178,6 +167,12 @@ function addFrontMatterItem(event) {
 
 document.addEventListener("DOMContentLoaded", (event) => {
     textareaAutoGrow();
+    
+    templates.array = document.getElementById("array-template");
+    templates.arrayItem = document.getElementById("array-item-template");
+    templates.base = document.getElementById('base-template');
+    templates.objectItem = document.getElementById("object-item-template");
+    templates.temporary = document.getElementById('temporary-template');
 
     let container = document.getElementById('editor'),
         button = document.querySelector('#submit span:first-child'),
