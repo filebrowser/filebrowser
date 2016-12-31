@@ -108,7 +108,9 @@ var removeLastDirectoryPartOf = function(url) {
  *                             *
  * * * * * * * * * * * * * * * */
 function closePrompt(event) {
-    let prompt = document.querySelector('.prompt:not(.help)');
+    let prompt = document.querySelector('.prompt');
+    
+    if (!prompt) return;
 
     event.preventDefault();
     document.querySelector('.overlay').classList.remove('active');
@@ -214,7 +216,13 @@ function deleteEvent(event) {
 
     let clone = document.importNode(templates.question.content, true);
     clone.querySelector('h3').innerHTML = 'Delete files';
-    clone.querySelector('p').innerHTML = `Are you sure you want to delete ${selectedItems.length} file(s)?`;
+    
+    if (single) {
+        clone.querySelector('p').innerHTML = `Are you sure you want to delete this file/folder?`;   
+    } else {
+        clone.querySelector('p').innerHTML = `Are you sure you want to delete ${selectedItems.length} file(s)?`;        
+    }
+    
     clone.querySelector('input').remove();
     clone.querySelector('.ok').innerHTML = 'Delete';
     clone.querySelector('form').addEventListener('submit', deleteSelected(single));
@@ -350,17 +358,34 @@ function setupSearch() {
     searchInput.addEventListener('keyup', searchEvent);
 }
 
-function closeHelp() {
+function closeHelp(event) {
+    event.preventDefault();
+    
     document.querySelector('.help').classList.remove('active');
     document.querySelector('.overlay').classList.remove('active');
 }
 
-document.addEventListener('keydown', (event) => {
+function openHelp(event) {
+    closePrompt(event);
+    
+    document.querySelector('.help').classList.add('active');
+    document.querySelector('.overlay').classList.add('active');
+}
+
+window.addEventListener('keydown', (event) => {
+    if (event.keyCode == 27) { 
+        if (document.querySelector('.help.active')) {
+            closeHelp(event);
+        }
+    }
+    
+    if (event.keyCode == 46) {
+        deleteEvent(event);
+    }
+    
     if (event.keyCode == 112) {
         event.preventDefault();
-        
-        document.querySelector('.help').classList.add('active');
-        document.querySelector('.overlay').classList.add('active');
+        openHelp(event);
     }
 });
 
@@ -395,6 +420,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     document.querySelector('.overlay').addEventListener('click', event => {
+        if (document.querySelector('.help.active')) {
+            closeHelp(event);
+            return;
+        }
+        
         closePrompt(event);
     })
 

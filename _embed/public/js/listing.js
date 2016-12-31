@@ -217,7 +217,12 @@ listing.handleSelectionChange = function(event) {
         }
 
         if (selectedNumber == 1) {
-            buttons.open.classList.remove("disabled");
+            if (document.getElementById(selectedItems[0]).dataset.dir == "true") {
+                buttons.open.classList.add("disabled");
+            } else {
+                buttons.open.classList.remove("disabled");
+            }
+            
             buttons.rename.classList.remove("disabled");
         }
 
@@ -310,17 +315,27 @@ listing.updateColumns = function(event) {
 }
 
 // Keydown events
-document.addEventListener('keydown', (event) => {
+window.addEventListener('keydown', (event) => {
     if (event.keyCode == 27) {
         listing.unselectAll();
 
         if (document.querySelectorAll('.prompt').length) {
             closePrompt(event);
         }
+        
     }
 
     if (event.keyCode == 113) {
         listing.rename();
+    }
+    
+    if (event.ctrlKey || event.metaKey) {
+        console.log("hey")
+        switch (String.fromCharCode(event.which).toLowerCase()) {
+            case 's':
+                event.preventDefault();
+                window.location = "?download=true"
+        }
     }
 });
 
@@ -334,6 +349,7 @@ document.addEventListener('DOMContentLoaded', event => {
     buttons.rename = document.getElementById("rename");
     buttons.upload = document.getElementById("upload");
     buttons.new = document.getElementById('new');
+    buttons.download = document.getElementById('download');
 
     if (user.AllowEdit) {
         buttons.rename.addEventListener("click", listing.rename);
