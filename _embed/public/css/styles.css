@@ -858,13 +858,15 @@ header .actions {
  *            PROMPT           *
  * * * * * * * * * * * * * * * */
 
-.overlay, .prompt {
+.overlay,
+.prompt {
     opacity: 0;
     z-index: -1;
-    transition: .1s ease all;
+    transition: .1s ease opacity, z-index;
 }
 
-.overlay.active, .prompt.active {
+.overlay.active,
+.prompt.active {
     z-index: 9999999;
     opacity: 1;
 }
@@ -874,8 +876,12 @@ header .actions {
     position: fixed;
     top: 0;
     left: 0;
+    height: 0;
+    width: 0;
+}
+
+.overlay.active {
     height: 100%;
-    z-index: -1;
     width: 100%;
 }
 
