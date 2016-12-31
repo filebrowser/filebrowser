@@ -859,14 +859,16 @@ header .actions {
  * * * * * * * * * * * * * * * */
 
 .overlay,
-.prompt {
+.prompt,
+.help {
     opacity: 0;
     z-index: -1;
     transition: .1s ease opacity, z-index;
 }
 
 .overlay.active,
-.prompt.active {
+.prompt.active,
+.help.active {
     z-index: 9999999;
     opacity: 1;
 }
@@ -885,7 +887,8 @@ header .actions {
     width: 100%;
 }
 
-.prompt {
+.prompt,
+.help {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -899,13 +902,15 @@ header .actions {
     width: 95%;
 }
 
-.prompt h3 {
+.prompt h3,
+.help h3 {
     margin: 0;
     font-weight: 500;
     font-size: 1.5em;
 }
 
-.prompt p {
+.prompt p,
+.help p {
     font-size: .9em;
     color: rgba(0, 0, 0, 0.8);
     margin: .5em 0 1em;
@@ -918,7 +923,8 @@ header .actions {
     padding: .3em;
 }
 
-.prompt div {
+.prompt div,
+.help div {
     margin-top: 1em;
     display: flex;
     justify-content: flex-start;
@@ -932,6 +938,26 @@ header .actions {
 
 .prompt .cancel:hover {
     background-color: #e9eaeb;
+}
+
+
+/* * * * * * * * * * * * * * * *
+ *             HELP            *
+ * * * * * * * * * * * * * * * */
+
+.help {
+    max-width: 24em;
+    visibility: hidden;
+}
+
+.help.active {
+    visibility: visible;
+}
+
+.help ul{
+    padding: 0;
+    margin: 0;
+    list-style: none;
 }
 
 
