@@ -32,6 +32,7 @@
         </div>
     </div>
     
+    {{- if not (eq .NumDirs 0)}}
     <h2>Folders</h2>
     <div>
     {{- range .Items }}
@@ -40,7 +41,9 @@
         {{- end }}
     {{- end }}
     </div>
-    
+    {{- end }}
+        
+    {{- if not (eq .NumFiles 0)}}
     <h2>Files</h2>
     <div>
     {{- range .Items }}
@@ -49,6 +52,7 @@
         {{- end }}
     {{- end }}
     </div>
+    {{- end }}
 </div>
 
 <input style="display:none" type="file" id="upload-input" onchange="handleFiles(this.files, '')" value="Upload" multiple>
@@ -56,12 +60,12 @@
 {{- end -}}
 
 {{ define "item" }}
-<div ondragstart="itemDragStart(event)" 
-    {{ if .IsDir}}ondragover="itemDragOver(event)" ondrop="itemDrop(event)"{{ end }} 
+<div ondragstart="listing.itemDragStart(event)" 
+    {{ if .IsDir}}ondragover="listing.itemDragOver(event)" ondrop="listing.itemDrop(event)"{{ end }} 
     draggable="true" 
     class="item" 
-    onclick="selectItemEvent(event)"
-    ondblclick="openItemEvent(event)"
+    onclick="listing.selectItem(event)"
+    ondblclick="listing.openItem(event)"
     data-dir="{{ .IsDir }}" 
     data-url="{{ .URL }}"
     id="{{ EncodeBase64 .Name }}">

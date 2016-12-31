@@ -31,7 +31,6 @@
 </head>
 <body>
     <header>
-        <!-- TOP BAR -->
         <div id="top-bar">
             <div><p>File Manager</p></div>
             <div id="search">
@@ -48,86 +47,124 @@
             </div>
         </div>
         
-        <!-- BOTTOM BAR -->
         <div id="bottom-bar">
             <div>
-                {{ if ne .Name "/"}}
+                {{- if ne .Name "/"}}
                 <p id="breadcrumbs-button">Previous</p>
                 <ul id="breadcrumbs">
-                {{ range $item := .BreadcrumbMap }}
+                {{- range $item := .BreadcrumbMap }}
                 <a href="{{ $absURL }}{{ $item.URL }}"><li>{{ $item.Name }}</li></a>
-                {{ end }}
+                {{- end }}
                 </ul><i class="material-icons">keyboard_arrow_right</i>
-                
-                {{ end }}
-                
+                {{- end }}
                 <p id="current-file">{{ if ne .Name "/"}}{{ .Name }}{{ else }}Root{{ end }}</p>
             </div>
             
-            <!-- ACTIONS -->
             <div class="actions">
                 <div id="file-only" {{ if .IsDir }}class="disabled"{{ end }}>
+                    {{- if and (not .IsDir) (.User.AllowEdit) }}
+                    {{- if .Editor}}
+                    {{- if eq .Data.Mode "markdown" }}
+                    <div class="action" id="preview" onclick="notImplemented(event);">
+                        <i class="material-icons">remove_red_eye</i>
+                    </div>
+                    {{- end }}
+                    {{- end }}
+                    
+                    <div class="action" id="save">
+                        <i class="material-icons" title="Save">save</i>
+                    </div>
+                    {{- end }}
+                    
                     <div class="action" id="open">
                         <i class="material-icons" title="See raw">open_in_new</i>
                     </div>
-                    {{ if and .IsDir .User.AllowEdit }}
+                    
+                    {{- if and .IsDir .User.AllowEdit }}
                     <div class="action" id="rename">
                         <i class="material-icons" title="Edit">mode_edit</i>
                     </div>
-                    {{ end }}
+                    {{- end }}
                 
-                    {{ if .User.AllowEdit }}
+                    {{- if .User.AllowEdit }}
                     <div class="action" id="delete">
                         <i class="material-icons" title="Delete">delete</i> <span>Delete</span>
                     </div>
-                    {{ end }}
+                    {{- end }}
                 </div>
                 
-                {{ if and (.User.AllowNew) (.IsDir) }}
+                {{- if .IsDir }}
+                <div class="action" id="view">
+                    {{- if eq .Display "mosaic" }}
+                        <a href="?display=list"><i class="material-icons" title="Switch View">view_list</i></a>
+                    {{- else }} 
+                        <a href="?display=mosaic"><i class="material-icons" title="Switch View">view_module</i></a>
+                    {{- end }}
+                </div>
+                {{- end }}
+                
+                {{- if and (.User.AllowNew) (.IsDir) }}
                 <div class="action" id="upload">
                     <i class="material-icons" title="Upload">file_upload</i> <span>Upload</span>
                 </div>
-                {{ end }}
+                {{- end }}
                 
                 <div class="action" id="download">
                     <a href="?download=true">
                         <i class="material-icons" title="Download">file_download</i> <span>Download</span>
                     </a>
-                    {{ if .IsDir }}
+                    {{- if .IsDir }}
                     <ul class="prev-links">
                         <a data-format="tarbz2" href="?download=tarbz2"><li>tar.bz2</li></a>
                         <a data-format="targz" href="?download=targz"><li>tar.gz</li></a>
                         <a data-format="tar" href="?download=tar"><li>tar</li></a>
                         <a data-format="zip" href="?download=zip"><li>zip</li></a>
                     </ul>
-                    {{ end }}
+                    {{- end }}
                 </div>
                 
-                {{ if .IsDir }}
-                <div class="action" id="view">
-                    {{ if eq .Display "mosaic" }}
-                        <a href="?display=list"><i class="material-icons" title="Switch View">view_list</i></a>
-                    {{ else }} 
-                        <a href="?display=mosaic"><i class="material-icons" title="Switch View">view_module</i></a>
-                    {{ end }}
+                <div class="action" id="info" onclick="notImplemented(event);">
+                    <i class="material-icons" title="Info">info</i>
                 </div>
-                {{ end }}
             </div>
         </div>
     </header>    
 
     <main>
-        {{ template "content" . }}
-        
-        {{ if and (.User.AllowNew) (.IsDir) }}
-        <input id="newdir" type="text" placeholder="Name. End with a trailing slash to create a dir.">
-        <div class="floating">
-            <div class="action" id="new">
-                <i class="material-icons" title="New file or directory. End name with a trailing slash to create a directory.">add</i>
+        {{- template "content" . }}
+    </main>
+    
+    <div class="overlay"></div>
+    
+    {{- if and (.User.AllowNew) (.IsDir) }}
+    <div class="floating">
+        <div class="action" id="new">
+            <i class="material-icons" title="New file or directory">add</i>
+        </div>
+    </div>
+    {{- end }}
+    
+    <template id="question-template">
+        <form class="prompt">
+            <h3></h3>
+            <p></p>
+            <input autofocus type="text">
+            <div>
+                <button type="submit" default class="ok">OK</button>
+                <button class="cancel" onclick="closePrompt(event);">Cancel</button>
+            </div>
+        </form>
+    </template>
+    
+    <template id="info-template">
+        <div class="prompt">
+            <h3></h3>
+            <p></p>
+            <div>
+                <button type="submit" onclick="closePrompt(event);" class="ok">OK</button>
             </div>
         </div>
-        {{ end }}
-    </main>
+    </template>
 
     <footer>Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a> and <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
 </body>

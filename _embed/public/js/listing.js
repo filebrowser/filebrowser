@@ -1,6 +1,8 @@
 'use strict';
 
-var reloadListing = function(callback) {
+var listing = {};
+
+listing.reload = function(callback) {
     let request = new XMLHttpRequest();
     request.open('GET', window.location);
     request.setRequestHeader('Minimal', 'true');
@@ -18,9 +20,94 @@ var reloadListing = function(callback) {
     }
 }
 
-// Rename file event
-var renameEvent = function(event) {
-    if (this.classList.contains('disabled') || !selectedItems.length) {
+listing.itemDragStart = function(event) {
+    let el = event.target;
+
+    for (let i = 0; i < 5; i++) {
+        if (!el.classList.contains('item')) {
+            el = el.parentElement;
+        }
+    }
+
+    event.dataTransfer.setData("id", el.id);
+    event.dataTransfer.setData("name", el.querySelector('.name').innerHTML);
+}
+
+listing.itemDragOver = function(event) {
+    event.preventDefault();
+    let el = event.target;
+
+    for (let i = 0; i < 5; i++) {
+        if (!el.classList.contains('item')) {
+            el = el.parentElement;
+        }
+    }
+
+    el.style.opacity = 1;
+}
+
+listing.itemDrop = function(e) {
+    e.preventDefault();
+
+    let el = e.target,
+        id = e.dataTransfer.getData("id"),
+        name = e.dataTransfer.getData("name");
+
+    if (id == "" || name == "") return;
+
+    for (let i = 0; i < 5; i++) {
+        if (!el.classList.contains('item')) {
+            el = el.parentElement;
+        }
+    }
+
+    if (el.id === id) return;
+
+    let oldLink = toWebDavURL(document.getElementById(id).dataset.url),
+        newLink = toWebDavURL(el.dataset.url + name),
+        request = new XMLHttpRequest();
+
+    request.open('MOVE', oldLink);
+    request.setRequestHeader('Destination', newLink);
+    request.send();
+    request.onreadystatechange = function() {
+        if (request.readyState == 4) {
+            if (request.status == 201 || request.status == 204) {
+                listing.reload();
+            }
+        }
+    }
+}
+
+listing.documentDrop = function(event) {
+    event.preventDefault();
+    let dt = event.dataTransfer,
+        files = dt.files,
+        el = event.target,
+        items = document.getElementsByClassName('item');
+
+    for (let i = 0; i < 5; i++) {
+        if (el != null && !el.classList.contains('item')) {
+            el = el.parentElement;
+        }
+    }
+
+    if (files.length > 0) {
+        if (el != null && el.classList.contains('item') && el.dataset.dir == "true") {
+            listing.handleFiles(files, el.querySelector('.name').innerHTML + "/");
+            return;
+        }
+
+        listing.handleFiles(files, "");
+    } else {
+        Array.from(items).forEach(file => {
+            file.style.opacity = 1;
+        });
+    }
+}
+
+listing.rename = function(event) {
+    if (event.currentTarget.classList.contains('disabled') || !selectedItems.length) {
         return false;
     }
 
@@ -49,23 +136,20 @@ var renameEvent = function(event) {
             request.setRequestHeader('Destination', newLink);
             request.send();
             request.onreadystatechange = function() {
-                // TODO: redirect if it's moved to another folder
-
                 if (request.readyState == 4) {
                     if (request.status != 201 && request.status != 204) {
                         span.innerHTML = name;
                     } else {
                         let newLink = encodeURI(link.replace(name, newName));
-                        console.log(request.body)
-                        reloadListing(() => {
+                        listing.reload(() => {
                             newName = btoa(newName);
                             selectedItems = [newName];
                             document.getElementById(newName).setAttribute("aria-selected", true);
-                            document.sendCostumEvent('changed-selected');
+                            listing.handleSelectionChange();
                         });
                     }
 
-                    document.getElementById('rename').changeToDone((request.status != 201 && request.status != 204), html);
+                    buttons.rename.changeToDone((request.status != 201 && request.status != 204), html);
                 }
             }
         }
@@ -94,8 +178,7 @@ var renameEvent = function(event) {
     return false;
 }
 
-// Upload files
-var handleFiles = function(files, base) {
+listing.handleFiles = function(files, base) {
     let button = document.getElementById("upload"),
         html = button.changeToLoading();
 
@@ -107,7 +190,7 @@ var handleFiles = function(files, base) {
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
                 if (request.status == 201) {
-                    reloadListing();
+                    listing.reload();
                 }
 
                 button.changeToDone((request.status != 201), html);
@@ -118,53 +201,20 @@ var handleFiles = function(files, base) {
     return false;
 }
 
-function unselectAll() {
-    var items = document.getElementsByClassName('item');
+listing.unselectAll = function() {
+    let items = document.getElementsByClassName('item');
     Array.from(items).forEach(link => {
         link.setAttribute("aria-selected", false);
     });
-    
+
     selectedItems = [];
-    
-    document.sendCostumEvent('changed-selected');
+
+    listing.handleSelectionChange();
     return false;
 }
 
-// Handles the new directory event
-var newDirEvent = function(event) {
-    // TODO: create new dir button and new file button
-    if (event.keyCode == 27) {
-        document.getElementById('newdir').classList.toggle('enabled');
-        setTimeout(() => {
-            document.getElementById('newdir').value = '';
-        }, 200);
-    }
-
-    if (event.keyCode == 13) {
-        event.preventDefault();
-
-        let button = document.getElementById('new'),
-            html = button.changeToLoading(),
-            request = new XMLHttpRequest(),
-            name = document.getElementById('newdir').value;
-
-        request.open((name.endsWith("/") ? "MKCOL" : "PUT"), toWebDavURL(window.location.pathname + name));
-
-        request.send();
-        request.onreadystatechange = function() {
-            if (request.readyState == 4) {
-                button.changeToDone((request.status != 201), html);
-                reloadListing();
-            }
-        }
-    }
-
-    return false;
-}
-
-// Handles the event when there is change on selected elements
-document.addEventListener("changed-selected", function(event) {
-    redefineDownloadURLs();
+listing.handleSelectionChange = function(event) {
+    listing.redefineDownloadURLs();
 
     let selectedNumber = selectedItems.length,
         fileAction = document.getElementById("file-only");
@@ -173,13 +223,13 @@ document.addEventListener("changed-selected", function(event) {
         fileAction.classList.remove("disabled");
 
         if (selectedNumber > 1) {
-            document.getElementById("open").classList.add("disabled");
-            document.getElementById("rename").classList.add("disabled");
+            buttons.open.classList.add("disabled");
+            buttons.rename.classList.add("disabled");
         }
 
         if (selectedNumber == 1) {
-            document.getElementById("open").classList.remove("disabled");
-            document.getElementById("rename").classList.remove("disabled");
+            buttons.open.classList.remove("disabled");
+            buttons.rename.classList.remove("disabled");
         }
 
         return false;
@@ -187,9 +237,9 @@ document.addEventListener("changed-selected", function(event) {
 
     fileAction.classList.add("disabled");
     return false;
-});
+}
 
-var redefineDownloadURLs = function() {
+listing.redefineDownloadURLs = function() {
     let files = "";
 
     for (let i = 0; i < selectedItems.length; i++) {
@@ -206,49 +256,98 @@ var redefineDownloadURLs = function() {
     });
 }
 
+listing.openItem = function(event) {
+    window.location = event.currentTarget.dataset.url;
+}
 
-document.addEventListener('DOMContentLoaded', event => {
-    let updateColumns = () => {
-        let columns = Math.floor(document.getElementById('listing').offsetWidth / 300),
-            itens = getCSSRule('#listing.mosaic .item');
+listing.selectItem = function(event) {
+    let el = event.currentTarget;
 
-        itens.style.width = `calc(${100/columns}% - 1em)`;
+    if (selectedItems.length != 0) event.preventDefault();
+    if (selectedItems.indexOf(el.id) == -1) {
+        if (!event.ctrlKey) listing.unselectAll();
+
+        el.setAttribute("aria-selected", true);
+        selectedItems.push(el.id);
+    } else {
+        el.setAttribute("aria-selected", false);
+        selectedItems.removeElement(el.id);
     }
 
-    updateColumns();
-    window.addEventListener("resize", () => {
-        updateColumns();
-    });
+    listing.handleSelectionChange();
+    return false;
+}
 
-    // Add event to back button and executes back event on ESC
-    document.addEventListener('keydown', (event) => {
-        if (event.keyCode == 27) {
-            unselectAll();
+listing.newFileButton = function(event) {
+    event.preventDefault();
+
+    let clone = document.importNode(templates.question.content, true);
+    clone.querySelector('h3').innerHTML = 'New file';
+    clone.querySelector('p').innerHTML = 'End with a trailing slash to create a dir.';
+    clone.querySelector('.ok').innerHTML = 'Create';
+    clone.querySelector('form').addEventListener('submit', listing.newFilePrompt);
+
+    document.querySelector('body').appendChild(clone)
+    document.querySelector('.overlay').classList.add('active');
+    document.querySelector('.prompt').classList.add('active');
+}
+
+listing.newFilePrompt = function(event) {
+    event.preventDefault();
+
+    let button = document.getElementById('new'),
+        html = button.changeToLoading(),
+        request = new XMLHttpRequest(),
+        name = event.currentTarget.querySelector('input').value;
+
+    request.open((name.endsWith("/") ? "MKCOL" : "PUT"), toWebDavURL(window.location.pathname + name));
+    request.send();
+    request.onreadystatechange = function() {
+        if (request.readyState == 4) {
+            button.changeToDone((request.status != 201), html);
+            listing.reload();
         }
-    });
+    }
+
+    closePrompt(event);
+    return false;
+}
+
+listing.updateColumns = function(event) {
+    let columns = Math.floor(document.getElementById('listing').offsetWidth / 300),
+        items = getCSSRule('#listing.mosaic .item');
+
+    items.style.width = `calc(${100/columns}% - 1em)`;
+}
+
+// Keydown events
+document.addEventListener('keydown', (event) => {
+    if (event.keyCode == 27) {
+        listing.unselectAll();
+    }
+});
+
+window.addEventListener("resize", () => {
+    listing.updateColumns();
+});
+
+document.addEventListener('DOMContentLoaded', event => {
+    listing.updateColumns();
+
+    buttons.rename = document.getElementById("rename");
+    buttons.upload = document.getElementById("upload");
+    buttons.new = document.getElementById('new');
 
     if (user.AllowEdit) {
-        // Enables rename button
-        document.getElementById("rename").addEventListener("click", renameEvent);
+        buttons.rename.addEventListener("click", listing.rename);
     }
 
     if (user.AllowNew) {
-        // Enables upload button
-        document.getElementById("upload").addEventListener("click", (event) => {
+        buttons.upload.addEventListener("click", (event) => {
             document.getElementById("upload-input").click();
         });
 
-        document.getElementById('new').addEventListener('click', event => {
-            let newdir = document.getElementById('newdir');
-            newdir.classList.add('enabled');
-            newdir.focus();
-        });
-    
-        document.getElementById('newdir').addEventListener('blur', event => {
-            document.getElementById('newdir').classList.remove('enabled');
-        });
-    
-        document.getElementById('newdir').addEventListener('keydown', newDirEvent);
+        buttons.new.addEventListener('click', listing.newFileButton);
 
         // Drag and Drop
         let items = document.getElementsByClassName('item');
@@ -268,113 +367,6 @@ document.addEventListener('DOMContentLoaded', event => {
             });
         }, false);
 
-        document.addEventListener("drop", function(event) {
-            event.preventDefault();
-            var dt = event.dataTransfer;
-            var files = dt.files;
-
-            let el = event.target;
-
-            for (let i = 0; i < 5; i++) {
-                if (el != null && !el.classList.contains('item')) {
-                    el = el.parentElement;
-                }
-            }
-
-            if (files.length > 0) {
-                if (el != null && el.classList.contains('item') && el.dataset.dir == "true") {
-                    handleFiles(files, el.querySelector('.name').innerHTML + "/");
-                    return;
-                }
-
-                handleFiles(files, "");
-            } else {
-                Array.from(items).forEach(file => {
-                    file.style.opacity = 1;
-                });
-            }
-
-        }, false);
+        document.addEventListener("drop", listing.documentDrop, false);
     }
 });
-
-function itemDragStart(event) {
-    let el = event.target;
-
-    for (let i = 0; i < 5; i++) {
-        if (!el.classList.contains('item')) {
-            el = el.parentElement;
-        }
-    }
-
-    event.dataTransfer.setData("id", el.id);
-    event.dataTransfer.setData("name", el.querySelector('.name').innerHTML);
-}
-
-function itemDragOver(event) {
-    event.preventDefault();
-    let el = event.target;
-
-    for (let i = 0; i < 5; i++) {
-        if (!el.classList.contains('item')) {
-            el = el.parentElement;
-        }
-    }
-
-    el.style.opacity = 1;
-}
-
-function itemDrop(e) {
-    e.preventDefault();
-
-    let el = e.target,
-        id = e.dataTransfer.getData("id"),
-        name = e.dataTransfer.getData("name");
-
-    if (id == "" || name == "") return;
-
-    for (let i = 0; i < 5; i++) {
-        if (!el.classList.contains('item')) {
-            el = el.parentElement;
-        }
-    }
-
-    if (el.id === id) return;
-
-    let oldLink = toWebDavURL(document.getElementById(id).dataset.url),
-        newLink = toWebDavURL(el.dataset.url + name),
-        request = new XMLHttpRequest();
-
-    request.open('MOVE', oldLink);
-    request.setRequestHeader('Destination', newLink);
-    request.send();
-    request.onreadystatechange = function() {
-        if (request.readyState == 4) {
-            if (request.status == 201 || request.status == 204) {
-                reloadListing();
-            }
-        }
-    }
-}
-
-function openItemEvent(event) {
-    window.location = event.currentTarget.dataset.url;
-}
-
-function selectItemEvent(event) {
-    let el = event.currentTarget;
-
-    if (selectedItems.length != 0) event.preventDefault();
-    if (selectedItems.indexOf(el.id) == -1) {
-        if (!event.ctrlKey) unselectAll();
-
-        el.setAttribute("aria-selected", true);
-        selectedItems.push(el.id);
-    } else {
-        el.setAttribute("aria-selected", false);
-        selectedItems.removeElement(el.id);
-    }
-
-    document.sendCostumEvent("changed-selected");
-    return false;
-}
