@@ -108,7 +108,7 @@ var removeLastDirectoryPartOf = function(url) {
  *                             *
  * * * * * * * * * * * * * * * */
 function closePrompt(event) {
-    let prompt = document.querySelector('.prompt');
+    let prompt = document.querySelector('.prompt:not(.help)');
 
     event.preventDefault();
     document.querySelector('.overlay').classList.remove('active');
@@ -349,6 +349,20 @@ function setupSearch() {
 
     searchInput.addEventListener('keyup', searchEvent);
 }
+
+function closeHelp() {
+    document.querySelector('.help').classList.remove('active');
+    document.querySelector('.overlay').classList.remove('active');
+}
+
+document.addEventListener('keydown', (event) => {
+    if (event.keyCode == 112) {
+        event.preventDefault();
+        
+        document.querySelector('.help').classList.add('active');
+        document.querySelector('.overlay').classList.add('active');
+    }
+});
 
 /* * * * * * * * * * * * * * * *
  *                             *
