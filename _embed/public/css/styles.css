@@ -861,7 +861,7 @@ header .actions {
 .overlay, .prompt {
     opacity: 0;
     z-index: -1;
-    transition: .1s ease opacity;
+    transition: .1s ease all;
 }
 
 .overlay.active, .prompt.active {
