@@ -1,34 +1,87 @@
 {{ define "content" }}
 {{ with .Data }}
- <div id="editor" class="container" data-kind="{{ .Class }}">
-  <form method="POST" action="./">
-   {{ if or (eq .Class "frontmatter-only") (eq .Class "complete") }}
-    <div class="frontmatter" data-type="parent">
-     {{ template "blocks" .FrontMatter }}
-     <div class="button add">Add field</div>
-    </div>
-   {{ end }}
-
-   {{ if or (eq .Class "content-only") (eq .Class "complete") }}
-
-    {{ if (eq .Class "complete")}}
-     <h3>Body</h3>
-    {{ end }}
-    <div class="content">
-     <div id="editor-source" data-mode="{{ .Mode }}"></div>
-     <textarea name="content">{{ .Content }}</textarea>
-    </div>
-   {{ end }}
-
-   <div>
-    <button id="submit" type="submit" data-type="{{ .Class }}">
-     <span>
-      <i class="material-icons" title="Save">save</i>
-     </span>
-     <span>save</span>
-    </button>
-   </div>
-  </form>
- </div>
+<div id="editor" class="container" data-kind="{{ .Class }}">
+<form method="POST" action="./">
+{{ if or (eq .Class "frontmatter-only") (eq .Class "complete") }}
+<div class="frontmatter" data-type="parent">
+{{ template "blocks" .FrontMatter }}
+<div class="button add">Add field</div>
+</div>
 {{ end }}
+
+{{ if or (eq .Class "content-only") (eq .Class "complete") }}
+
+{{ if (eq .Class "complete")}}
+<h3>Body</h3>
+{{ end }}
+<div class="content">
+<div id="editor-source" data-mode="{{ .Mode }}"></div>
+<textarea name="content">{{ .Content }}</textarea>
+</div>
+{{ end }}
+
+<div>
+<button id="submit" type="submit" data-type="{{ .Class }}">
+<span>
+<i class="material-icons" title="Save">save</i>
+</span>
+<span>save</span>
+</button>
+</div>
+</form>
+</div>
+{{ end }}
+
+<template id="temporary-template">
+    <div class="group temp" id="">
+    <div class="block" id="">
+        <label>Write the field name and then press enter. If you want to create an array or an object, end the name with ":array" or ":object".</label>
+        <input name="" type="text" placeholder="Write the field name and press enter.."></input>
+    </div></div>
+</template>
+
+<template id="base-template">
+    <fieldset id="" data-type="">
+        <h3></h3>
+        <div class="action add">
+            <i class="material-icons">add</i>
+        </div>
+        <div class="action delete" data-delete="">
+            <i class="material-icons">close</i>
+        </div>
+        <div class="group"></div>
+    </fieldset>
+</template>
+
+<template id="object-item-template">
+    <div class="block" id="block-${bid}" data-content="${bid}">
+        <label for="${bid}">${name}</label>
+        <input name="${bid}" id="${bid}" type="text" data-parent-type="object"></input>
+        <div class="action delete" data-delete="block-${bid}">
+            <i class="material-icons">close</i>
+        </div>
+    </div>
+</template>
+
+<template id="array-template">
+    <fieldset id="" data-type="">
+        <h3></h3>
+        <div class="action add">
+            <i class="material-icons">add</i>
+        </div>
+        <div class="action delete" data-delete="">
+            <i class="material-icons">close</i>
+        </div>
+        <div class="group"></div>
+    </fieldset>
+</template>
+
+<template id="array-item-template">
+    <div id="" data-type="array-item">
+        <input name="" id="" type="text" data-parent-type="array"></input>
+        <div class="action delete" data-delete="">
+            <i class="material-icons">close</i>
+        </div>
+    </div>
+</template>
 {{ end }}
