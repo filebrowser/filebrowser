@@ -4,6 +4,7 @@ var listing = {};
 
 listing.reload = function(callback) {
     let request = new XMLHttpRequest();
+
     request.open('GET', window.location);
     request.setRequestHeader('Minimal', 'true');
     request.send();
@@ -107,73 +108,61 @@ listing.documentDrop = function(event) {
 }
 
 listing.rename = function(event) {
-    if (event.currentTarget.classList.contains('disabled') || !selectedItems.length) {
+    if (!selectedItems.length || selectedItems.length > 1) {
         return false;
     }
 
-    // This mustn't happen
-    if (selectedItems.length > 1) {
-        alert("Something went wrong. Please refresh the page.");
-        location.refresh();
+    let item = document.getElementById(selectedItems[0]);
+
+    if (item.classList.contains('disabled')) {
+        return false;
     }
 
-    let item = document.getElementById(selectedItems[0]),
-        link = item.dataset.url,
-        span = item.querySelector('.name'),
-        name = span.innerHTML;
+    let link = item.dataset.url,
+        name = item.querySelector('.name').innerHTML;
 
-    span.setAttribute('contenteditable', 'true');
-    span.focus();
+    let submit = (event) => {
+        event.preventDefault();
 
-    let keyDownEvent = (event) => {
-        if (event.keyCode == 13) {
-            let newName = span.innerHTML,
-                newLink = removeLastDirectoryPartOf(toWebDavURL(link)) + "/" + newName,
-                html = document.getElementById('rename').changeToLoading(),
-                request = new XMLHttpRequest();
+        let newName = event.currentTarget.querySelector('input').value,
+            newLink = removeLastDirectoryPartOf(toWebDavURL(link)) + "/" + newName,
+            html = buttons.rename.changeToLoading(),
+            request = new XMLHttpRequest();
 
-            request.open('MOVE', toWebDavURL(link));
-            request.setRequestHeader('Destination', newLink);
-            request.send();
-            request.onreadystatechange = function() {
-                if (request.readyState == 4) {
-                    if (request.status != 201 && request.status != 204) {
-                        span.innerHTML = name;
-                    } else {
-                        let newLink = encodeURI(link.replace(name, newName));
-                        listing.reload(() => {
-                            newName = btoa(newName);
-                            selectedItems = [newName];
-                            document.getElementById(newName).setAttribute("aria-selected", true);
-                            listing.handleSelectionChange();
-                        });
-                    }
+        request.open('MOVE', toWebDavURL(link));
+        request.setRequestHeader('Destination', newLink);
+        request.send();
+        request.onreadystatechange = function() {
+            if (request.readyState == 4) {
+                if (request.status != 201 && request.status != 204) {
+                    span.innerHTML = name;
+                } else {
+                    closePrompt(event);
 
-                    buttons.rename.changeToDone((request.status != 201 && request.status != 204), html);
+                    listing.reload(() => {
+                        newName = btoa(newName);
+                        selectedItems = [newName];
+                        document.getElementById(newName).setAttribute("aria-selected", true);
+                        listing.handleSelectionChange();
+                    });
                 }
+
+                buttons.rename.changeToDone((request.status != 201 && request.status != 204), html);
             }
         }
 
-        if (event.KeyCode == 27) {
-            span.innerHTML = name;
-        }
-
-        if (event.keyCode == 13 || event.keyCode == 27) {
-            span.setAttribute('contenteditable', 'false');
-            span.removeEventListener('keydown', keyDownEvent);
-            event.preventDefault();
-        }
-
         return false;
     }
 
-    span.addEventListener('keydown', keyDownEvent);
-    span.addEventListener('blur', (event) => {
-        span.innerHTML = name;
-        span.setAttribute('contenteditable', 'false');
-        span.removeEventListener('keydown', keyDownEvent);
-        item.removeEventListener('click', preventDefault);
-    });
+    let clone = document.importNode(templates.question.content, true);
+    clone.querySelector('h3').innerHTML = 'Rename';
+    clone.querySelector('input').value = name;
+    clone.querySelector('.ok').innerHTML = 'Rename';
+    clone.querySelector('form').addEventListener('submit', submit);
+
+    document.querySelector('body').appendChild(clone)
+    document.querySelector('.overlay').classList.add('active');
+    document.querySelector('.prompt').classList.add('active');
 
     return false;
 }
@@ -324,6 +313,14 @@ listing.updateColumns = function(event) {
 document.addEventListener('keydown', (event) => {
     if (event.keyCode == 27) {
         listing.unselectAll();
+
+        if (document.querySelectorAll('.prompt').length) {
+            closePrompt(event);
+        }
+    }
+
+    if (event.keyCode == 113) {
+        listing.rename();
     }
 });
 

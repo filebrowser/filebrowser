@@ -360,6 +360,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     buttons.logout = document.getElementById("logout");
     buttons.open = document.getElementById("open");
     buttons.delete = document.getElementById("delete");
+    buttons.breadcrumbs = document.getElementById("breadcrumbs-button");
 
     // Attach event listeners
     buttons.logout.addEventListener("click", logoutEvent);
@@ -372,10 +373,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
         buttons.delete.addEventListener("click", deleteEvent);
     }
 
-    document.getElementById("breadcrumbs-button").addEventListener("click", event => {
-        event.currentTarget.classList.toggle("active");
-        document.getElementById("breadcrumbs").classList.toggle("active");
-    });
+    if (buttons.breadcrumbs) {
+        buttons.breadcrumbs.addEventListener("click", event => {
+            event.currentTarget.classList.toggle("active");
+            document.getElementById("breadcrumbs").classList.toggle("active");
+        });
+    }
+
+    document.querySelector('.overlay').addEventListener('click', event => {
+        closePrompt(event);
+    })
 
     setupSearch();
     return false;

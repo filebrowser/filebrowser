@@ -8,9 +8,9 @@
                 <p class="name{{ if eq .Sort "name" }} active{{ end }}"><span>Name</span>
                     {{- if eq .Sort "name" -}}
                     {{- if eq .Order "asc" -}}
-                        <a href="?sort=name&order=desc"><i class="material-icons">arrow_downward</i></a>
+                    <a href="?sort=name&order=desc"><i class="material-icons">arrow_downward</i></a>
                     {{- else -}}
-                        <a href="?sort=name&order=asc"><i class="material-icons">arrow_upward</i></a>
+                    <a href="?sort=name&order=asc"><i class="material-icons">arrow_upward</i></a>
                     {{- end -}}
                     {{- else -}}
                     <a href="?sort=name&order=desc"><i class="material-icons">arrow_downward</i></a>
@@ -19,9 +19,9 @@
                 <p class="size{{ if eq .Sort "size" }} active{{ end }}"><span>File Size</span>
                     {{- if eq .Sort "size" -}}
                     {{- if eq .Order "asc" -}}
-                        <a href="?sort=size&order=desc"><i class="material-icons">arrow_downward</i></a>
+                    <a href="?sort=size&order=desc"><i class="material-icons">arrow_downward</i></a>
                     {{- else -}}
-                        <a href="?sort=size&order=asc"><i class="material-icons">arrow_upward</i></a>
+                    <a href="?sort=size&order=asc"><i class="material-icons">arrow_upward</i></a>
                     {{- end -}}
                     {{- else -}}
                     <a href="?sort=size&order=desc"><i class="material-icons">arrow_downward</i></a>
