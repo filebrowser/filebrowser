@@ -13,8 +13,6 @@
     <style>{{ CSS .User.StyleSheet }}</style>
     {{- end -}}
     
-    <!-- SCRIPTS -->
-    <!-- User Data and Permissions; WebDavURL -->
     <script>
     var user = JSON.parse('{{ Marshal .User }}'), 
         webdavURL = "{{.Config.AbsoluteURL}}{{.Config.WebDavURL}}", 
@@ -165,6 +163,26 @@
             </div>
         </div>
     </template>
+    
+    <!-- TODO: open this with F1; enabke everythings -->
+    <div class="help">
+        <h3>Help</h3>
+        <p>
+            <ul>
+                <li>F1 - This information!</li>
+                <li>F2 - Rename file</li>
+                <li>Double click to open a file or directory</li>
+                <li>Click to select file or directory</li>
+                <li>CTRL + Click to select multiple files or directories</li>
+                <li>DEL to delete a file or directory</li>
+                <li>ESC to clear selection and/or close the prompt</li>
+                <li>CTRL + S to save a file or download the directory where you are</li>
+            </ul>
+        </p>
+        <div>
+            <button type="submit" onclick="closeHelp(event);" class="ok">OK</button>
+        </div>
+    </div>
 
     <footer>Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a> and <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
 </body>
