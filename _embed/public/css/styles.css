@@ -35,6 +35,24 @@ pre {
     word-wrap: break-word;
 }
 
+button {
+    border: 0;
+    padding: .5em 1em;
+    margin-left: .5em;
+    border-radius: .1em;
+    background-color;
+    cursor: pointer;
+    background: #2196f3;
+    color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+    transition: .1s ease all;
+}
+
+button:hover {
+    background-color: #1E88E5;
+}
+
 .container {
     width: 95%;
     max-width: 960px;
@@ -541,7 +559,7 @@ header .actions {
     vertical-align: middle;
 }
 
-#bottom-bar div:first-child>i {
+#bottom-bar>div:first-child>i {
     margin-right: .3em;
 }
 
@@ -833,6 +851,81 @@ header .actions {
 
 #listing.list .item.header .active {
     font-weight: bold;
+}
+
+
+/* * * * * * * * * * * * * * * *
+ *            PROMPT           *
+ * * * * * * * * * * * * * * * */
+
+.overlay, .prompt {
+    opacity: 0;
+    z-index: -1;
+    transition: .1s ease opacity;
+}
+
+.overlay.active, .prompt.active {
+    z-index: 9999999;
+    opacity: 1;
+}
+
+.overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: -1;
+    width: 100%;
+}
+
+.prompt {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 99999999;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.075);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    padding: 2em;
+    max-width: 25em;
+    width: 95%;
+}
+
+.prompt h3 {
+    margin: 0;
+    font-weight: 500;
+    font-size: 1.5em;
+}
+
+.prompt p {
+    font-size: .9em;
+    color: rgba(0, 0, 0, 0.8);
+    margin: .5em 0 1em;
+}
+
+.prompt input {
+    width: 100%;
+    border: 1px solid #dadada;
+    line-height: 1;
+    padding: .3em;
+}
+
+.prompt div {
+    margin-top: 1em;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row-reverse;
+}
+
+.prompt .cancel {
+    background-color: #ECEFF1;
+    color: #37474F;
+}
+
+.prompt .cancel:hover {
+    background-color: #e9eaeb;
 }
 
 

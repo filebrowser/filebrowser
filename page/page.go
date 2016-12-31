@@ -29,6 +29,7 @@ type Info struct {
 	User    *config.User
 	Config  *config.Config
 	Data    interface{}
+	Editor  bool
 	Display string
 	Token   string
 }

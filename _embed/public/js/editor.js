@@ -1,7 +1,5 @@
 'use strict';
 
-var templates = [];
-
 function textareaAutoGrow() {
     let autogrow = function() {
         this.style.height = '5px';
@@ -26,140 +24,133 @@ function deleteFrontMatterItem(event) {
     document.getElementById(this.dataset.delete).remove();
 }
 
-function addFrontMatterItem(event) {
-    event.preventDefault();
-    let clone;
-    let temp = document.getElementById(tempID)
-    if (temp) {
-        temp.remove();
+function makeFromBaseTemplate(id, type, name, parent) {
+    let clone = document.importNode(templates.base.content, true);
+    clone.querySelector('fieldset').id = id;
+    clone.querySelector('fieldset').dataset.type = type;
+    clone.querySelector('h3').innerHTML = name;
+    clone.querySelector('.delete').dataset.delete = id;
+    clone.querySelector('.delete').addEventListener('click', deleteFrontMatterItem);
+    clone.querySelector('.add').addEventListener('click', addFrontMatterItem);
+
+    if (parent.classList.contains("frontmatter")) {
+        parent.insertBefore(clone, document.querySelector('div.button.add'));
+        return
     }
 
-    let block = this.parentNode,
-        type = block.dataset.type,
-        id = block.id;
+    parent.appendChild(clone);
+}
+
+function makeFromArrayItemTemplate(id, number, parent) {
+    let clone = document.importNode(templates.arrayItem.content, true);
+    clone.querySelector('[data-type="array-item"]').id = `${id}-${number}`;
+    clone.querySelector('input').name = id;
+    clone.querySelector('input').id = id;
+    clone.querySelector('div.action').dataset.delete = `${id}-${number}`;
+    clone.querySelector('div.action').addEventListener('click', deleteFrontMatterItem);
+    parent.querySelector('.group').appendChild(clone)
+    document.getElementById(`${id}-${number}`).querySelector('input').focus();
+}
+
+function makeFromObjectItemTemplate(id, name, parent) {
+    let clone = document.importNode(templates.objectItem.content, true);
+    clone.querySelector('.block').id = `block-${id}`;
+    clone.querySelector('.block').dataset.content = id;
+    clone.querySelector('label').for = id;
+    clone.querySelector('label').innerHTML = name;
+    clone.querySelector('input').name = id;
+    clone.querySelector('input').id = id;
+    clone.querySelector('.action').dataset.delete = `block-${id}`;
+    clone.querySelector('.action').addEventListener('click', deleteFrontMatterItem);
+
+    parent.appendChild(clone)
+    document.getElementById(id).focus();
+}
+
+function addFrontMatterItemPrompt(parent) {
+    return function(event) {
+        event.preventDefault();
+
+        let value = event.currentTarget.querySelector('input').value;
+        if (value === '') {
+            return true;
+        }
+
+        closePrompt(event);
+
+        let name = value.substring(0, value.lastIndexOf(':')),
+            type = value.substring(value.lastIndexOf(':') + 1, value.length);
+
+        if (type !== "" && type !== "array" && type !== "object") {
+            name = value;
+        }
+
+        name = name.replace(' ', '_');
+
+        let id = name;
+
+        if (parent.id != '') {
+            id = parent.id + "." + id;
+        }
+
+        if (type == "array" || type == "object") {
+            if (parent.dataset.type == "parent") {
+                makeFromBaseTemplate(bid, newtype, name, document.querySelector('.frontmatter'));
+                return;
+            }
+
+            makeFromBaseTemplate(bid, newtype, name, block);
+            return;
+        }
+
+        let group = parent.querySelector('.group');
+
+        if (group == null) {
+            parent.insertAdjacentHTML('afterbegin', '<div class="group"></div>');
+            group = parent.querySelector('.group');
+        }
+
+        makeFromObjectItemTemplate(id, name, group);
+    }
+}
+
+function addFrontMatterItem(event) {
+    event.preventDefault();
+
+    let parent = event.currentTarget.parentNode,
+        type = parent.dataset.type;
 
     // If the block is an array
     if (type === "array") {
-        let fieldID = id + "[]",
-            input = fieldID,
-            count = block.querySelectorAll('.group > div').length;
-
-        input = input.replace(/\[/, '\\[');
-        input = input.replace(/\]/, '\\]');
-
-        let fieldsets = block.getElementsByTagName("fieldset");
+        let id = parent.id + "[]",
+            count = parent.querySelectorAll('.group > div').length,
+            fieldsets = parent.getElementsByTagName("fieldset");
 
         if (fieldsets.length > 0) {
-            let newtype = fieldsets[0].dataset.type,
-                bid = id + "[" + fieldsets.length + "]",
-                name = fieldsets.length;
-            
-            clone = document.importNode(templates.base.content, true);
-            clone.querySelector('fieldset').id = bid;
-            clone.querySelector('fieldset').dataset.type = newtype;
-            clone.querySelector('h3').innerHTML = name;
-            clone.querySelector('.delete').dataset.delete = bid;
-            clone.querySelector('.delete').addEventListener('click', deleteFrontMatterItem);
-            clone.querySelector('.add').addEventListener('click', addFrontMatterItem);
-            block.appendChild(clone);
+            let itemType = fieldsets[0].dataset.type,
+                itemID = parent.id + "[" + fieldsets.length + "]",
+                itemName = fieldsets.length;
+
+            makeFromBaseTemplate(itemID, itemType, itemName, parent);
         } else {
-            clone = document.importNode(templates.arrayItem.content, true);
-            clone.querySelector('[data-type="array-item"]').id = `${fieldID}-${count}`;
-            clone.querySelector('input').name = fieldID;
-            clone.querySelector('input').id = fieldID;
-            clone.querySelector('div.action').dataset.delete = `${fieldID}-${count}`;
-            clone.querySelector('div.action').addEventListener('click', deleteFrontMatterItem);
-            block.querySelector('.group').appendChild(clone)
-            document.getElementById(`${fieldID}-${count}`).querySelector('input').focus();
+            makeFromArrayItemTemplate(id, count, parent);
         }
+
+        return;
     }
 
-    if (type == "object" || type == "parent") {    
-        clone = document.importNode(templates.temporary.content, true);
-        clone.querySelector('.group').id = tempID;
-        clone.querySelector('.block').id = tempID;
-        clone.querySelector('input').name = tempID;
+    if (type == "object" || type == "parent") {
+        let clone = document.importNode(templates.question.content, true);
+        clone.querySelector('form').id = tempID;
+        clone.querySelector('h3').innerHTML = 'New field';
+        clone.querySelector('p').innerHTML = 'Write the field name and then press enter. If you want to create an array or an object, end the name with <code>:array</code> or <code>:object.</code>';
+        clone.querySelector('.ok').innerHTML = 'Create';
+        clone.querySelector('form').addEventListener('submit', addFrontMatterItemPrompt(parent));
+        clone.querySelector('form').classList.add('active')
+        document.querySelector('body').appendChild(clone);
 
-        if (type == "parent") {
-            document.querySelector('.frontmatter').insertBefore(clone, document.querySelector('div.button.add'));
-        } else {
-            block.insertBefore(clone, block.querySelector('.group'));
-        }
-
-        let temp = document.getElementById(tempID),
-            input = temp.querySelector('input');
-        input.focus();
-        input.addEventListener('keydown', (event) => {
-            if (event.keyCode == 27) {
-                event.preventDefault();
-                temp.remove();
-            }
-
-            if (event.keyCode == 13) {
-                event.preventDefault();
-
-                let value = input.value;
-                if (value === '') {
-                    temp.remove();
-                    return true;
-                }
-
-                let name = value.substring(0, value.lastIndexOf(':')),
-                    newtype = value.substring(value.lastIndexOf(':') + 1, value.length);
-                if (newtype !== "" && newtype !== "array" && newtype !== "object") {
-                    name = value;
-                }
-
-                name = name.replace(' ', '_');
-
-                let bid = name;
-                if (id != '') {
-                    bid = id + "." + bid;
-                }
-
-                temp.remove();
-
-                switch (newtype) {
-                    case "array":
-                    case "object":                    
-                        clone = document.importNode(templates.base.content, true);
-                        clone.querySelector('fieldset').id = bid;
-                        clone.querySelector('fieldset').dataset.type = newtype;
-                        clone.querySelector('h3').innerHTML = name;
-                        clone.querySelector('.delete').dataset.delete = bid;
-                        clone.querySelector('.delete').addEventListener('click', deleteFrontMatterItem);
-                        clone.querySelector('.add').addEventListener('click', addFrontMatterItem);
-
-                        if (type == "parent") {
-                            document.querySelector('.frontmatter').insertBefore(clone, document.querySelector('div.button.add'));
-                        } else {
-                            block.appendChild(clone);
-                        }
-                        
-                        break;
-                    default:
-                        let group = block.querySelector('.group');
-
-                        if (group == null) {
-                            block.insertAdjacentHTML('afterbegin', '<div class="group"></div>');
-                            group = block.querySelector('.group');
-                        }
-                        
-                        clone = document.importNode(templates.objectItem.content, true);
-                        clone.querySelector('.block').id = `block-${bid}`;
-                        clone.querySelector('.block').dataset.content = bid;
-                        clone.querySelector('label').for = bid;
-                        clone.querySelector('label').innerHTML = name;
-                        clone.querySelector('input').name = bid;
-                        clone.querySelector('input').id = bid;
-                        clone.querySelector('.action').dataset.delete = `block-${bid}`;
-                        clone.querySelector('.action').addEventListener('click', deleteFrontMatterItem);
-                
-                        group.appendChild(clone)
-                        document.getElementById(bid).focus();
-                }
-            }
-        });
+        document.querySelector('.overlay').classList.add('active');
+        document.getElementById(tempID).classList.add('active');
     }
 
     return false;
@@ -167,15 +158,14 @@ function addFrontMatterItem(event) {
 
 document.addEventListener("DOMContentLoaded", (event) => {
     textareaAutoGrow();
-    
-    templates.array = document.getElementById("array-template");
+
     templates.arrayItem = document.getElementById("array-item-template");
     templates.base = document.getElementById('base-template');
     templates.objectItem = document.getElementById("object-item-template");
     templates.temporary = document.getElementById('temporary-template');
 
     let container = document.getElementById('editor'),
-        button = document.querySelector('#submit span:first-child'),
+        button = document.querySelector('#save'),
         kind = container.dataset.kind;
 
     if (kind != 'frontmatter-only') {
@@ -231,6 +221,11 @@ document.addEventListener("DOMContentLoaded", (event) => {
             }
         }
     }
+
+    document.querySelector('#save').addEventListener('click', event => {
+        event.preventDefault();
+        saveContent();
+    });
 
     document.querySelector('form').addEventListener('submit', (event) => {
         event.preventDefault();

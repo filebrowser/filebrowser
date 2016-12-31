@@ -2,6 +2,7 @@
 
 var tempID = "_fm_internal_temporary_id",
     buttons = {},
+    templates = {},
     selectedItems = [];
 
 // Removes an element, if exists, from an array
@@ -95,7 +96,9 @@ function toWebDavURL(url) {
 // Remove the last directory of an url
 var removeLastDirectoryPartOf = function(url) {
     var arr = url.split('/');
-    arr.pop();
+    if (arr.pop() === "") {
+        arr.pop();
+    }
     return (arr.join('/'));
 }
 
@@ -104,6 +107,29 @@ var removeLastDirectoryPartOf = function(url) {
  *            EVENTS           *
  *                             *
  * * * * * * * * * * * * * * * */
+function closePrompt(event) {
+    let prompt = document.querySelector('.prompt');
+
+    event.preventDefault();
+    document.querySelector('.overlay').classList.remove('active');
+    prompt.classList.remove('active');
+
+    setTimeout(() => {
+        prompt.remove();
+    }, 100);
+}
+
+function notImplemented(event) {
+    event.preventDefault();
+
+    let clone = document.importNode(templates.info.content, true);
+    clone.querySelector('h3').innerHTML = 'Not implemented';
+    clone.querySelector('p').innerHTML = "Sorry, but this feature wasn't implemented yet.";
+
+    document.querySelector('body').appendChild(clone)
+    document.querySelector('.overlay').classList.add('active');
+    document.querySelector('.prompt').classList.add('active');
+}
 
 // Prevent Default event
 var preventDefault = function(event) {
@@ -138,6 +164,45 @@ function openEvent(event) {
     return false;
 }
 
+function deleteSelected(single) {
+    return function(event) {
+        event.preventDefault();
+
+        Array.from(selectedItems).forEach(id => {
+            let request = new XMLHttpRequest(),
+                html = buttons.delete.changeToLoading(),
+                el, url;
+
+            if (single) {
+                url = window.location.pathname;
+            } else {
+                el = document.getElementById(id);
+                url = el.dataset.url;
+            }
+
+            request.open('DELETE', toWebDavURL(url));
+            request.onreadystatechange = function() {
+                if (request.readyState == 4) {
+                    if (request.status == 204) {
+                        if (single) {
+                            window.location.pathname = removeLastDirectoryPartOf(window.location.pathname);
+                        } else {
+                            el.remove();
+                            selectedItems.removeElement(id);
+                        }
+                    }
+
+                    buttons.delete.changeToDone(request.status != 204, html);
+                }
+            }
+
+            request.send();
+        });
+
+        closePrompt(event);
+    }
+}
+
 // Handles the delete button event
 function deleteEvent(event) {
     let single = false;
@@ -147,36 +212,16 @@ function deleteEvent(event) {
         single = true;
     }
 
-    Array.from(selectedItems).forEach(id => {
-        let request = new XMLHttpRequest(),
-            html = buttons.delete.changeToLoading(),
-            el, url;
+    let clone = document.importNode(templates.question.content, true);
+    clone.querySelector('h3').innerHTML = 'Delete files';
+    clone.querySelector('p').innerHTML = `Are you sure you want to delete ${selectedItems.length} file(s)?`;
+    clone.querySelector('input').remove();
+    clone.querySelector('.ok').innerHTML = 'Delete';
+    clone.querySelector('form').addEventListener('submit', deleteSelected(single));
 
-        if (single) {
-            url = window.location.pathname;
-        } else {
-            el = document.getElementById(id);
-            url = el.dataset.url;
-        }
-
-        request.open('DELETE', toWebDavURL(url));
-        request.onreadystatechange = function() {
-            if (request.readyState == 4) {
-                if (request.status == 204) {
-                    if (single) {
-                        window.location.pathname = removeLastDirectoryPartOf(window.location.pathname);
-                    } else {
-                        el.remove();
-                        selectedItems.removeElement(id);
-                    }
-                }
-
-                buttons.delete.changeToDone(request.status != 204, html);
-            }
-        }
-
-        request.send();
-    });
+    document.querySelector('body').appendChild(clone)
+    document.querySelector('.overlay').classList.add('active');
+    document.querySelector('.prompt').classList.add('active');
 
     return false;
 }
@@ -320,10 +365,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
     buttons.logout.addEventListener("click", logoutEvent);
     buttons.open.addEventListener("click", openEvent);
 
+    templates.question = document.querySelector('#question-template');
+    templates.info = document.querySelector('#info-template');
+
     if (user.AllowEdit) {
         buttons.delete.addEventListener("click", deleteEvent);
     }
-    
+
     document.getElementById("breadcrumbs-button").addEventListener("click", event => {
         event.currentTarget.classList.toggle("active");
         document.getElementById("breadcrumbs").classList.toggle("active");
