@@ -36,7 +36,7 @@
     <h2>Folders</h2>
     <div>
     {{- range .Items }}
-        {{- if and (.UserAllowed) (.IsDir) }}
+        {{- if (.IsDir) }}
         {{ template "item" .}}
         {{- end }}
     {{- end }}
@@ -47,7 +47,7 @@
     <h2>Files</h2>
     <div>
     {{- range .Items }}
-        {{- if and (.UserAllowed) (not .IsDir) }}
+        {{- if (not .IsDir) }}
         {{ template "item" .}}
         {{- end }}
     {{- end }}
@@ -55,7 +55,7 @@
     {{- end }}
 </div>
 
-<input style="display:none" type="file" id="upload-input" onchange="handleFiles(this.files, '')" value="Upload" multiple>
+<input style="display:none" type="file" id="upload-input" onchange="listing.handleFiles(this.files, '')" value="Upload" multiple>
 {{- end -}}
 {{- end -}}
 

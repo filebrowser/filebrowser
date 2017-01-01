@@ -53,6 +53,10 @@ button:hover {
     background-color: #1E88E5;
 }
 
+.mobile-only {
+    display: none !important;
+}
+
 .container {
     width: 95%;
     max-width: 960px;
@@ -366,6 +370,7 @@ header>div {
     display: flex;
     width: 100%;
     padding: 0.5em 0.5em 0.5em 1em;
+    align-items: center;
 }
 
 header p {
@@ -387,18 +392,32 @@ header>div div {
     vertical-align: middle;
     position: relative;
     text-overflow: ellipsis;
-    overflow: hidden;
+    /* overflow: hidden; */
     white-space: nowrap;
 }
 
 header .actions {
-    margin-left: auto;
+    /* margin-left: auto; */
 }
 
 #logout {
     border-radius: 0;
     margin-left: auto;
     padding: .15em;
+}
+
+#click-overlay {
+    display: none;
+    position: fixed;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+#click-overlay.active {
+    display: block;
 }
 
 
@@ -559,13 +578,21 @@ header .actions {
     height: 3.8em;
 }
 
-#bottom-bar div:first-child>* {
+#bottom-bar>div:first-child>* {
     display: inline-block;
     vertical-align: middle;
 }
 
 #bottom-bar>div:first-child>i {
     margin-right: .3em;
+}
+
+#bottom-bar>*:first-child {
+    margin-right: auto;
+}
+
+#more {
+    display: none;
 }
 
 #file-only {
@@ -584,55 +611,79 @@ header .actions {
 
 
 /* * * * * * * * * * * * * * * *
- *          BREADCRUMBS        *
+ *            DROPDOWN         *
  * * * * * * * * * * * * * * * */
 
-#breadcrumbs-button {
-    padding: .4em 0.3em;
-    border-radius: .1em;
-    cursor: pointer;
-    transition: .1s ease all;
-}
-
-#breadcrumbs-button.active,
-#breadcrumbs-button:hover {
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    background: #fff;
-}
-
-#current-file {
-    line-height: 2.7em;
-}
-
-#breadcrumbs {
-    transition: .1s ease all;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-    display: inline-flex;
+.dropdown {
+    position: fixed;
+    top: -100%;
+    right: -100%;
+    visibility: hidden;
+    display: flex;
     flex-direction: column;
-    border-radius: 2px;
+    border-radius: .1em;
     border-top-left-radius: 0;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     background: #fff;
+    z-index: 9999999;
+}
+
+.dropdown.active {
+    right: .5em;
+    top: 4.5em;
+    visibility: visible;
+}
+
+.dropdown .action {
+    padding: .7em;
+}
+
+.dropdown i {
+    padding: 0;
+    vertical-align: middle;
+}
+
+.dropdown span {
+    display: inline-block;
+    margin-left: .5em;
+    font-size: .9em;
+}
+
+
+/* * * * * * * * * * * * * * * *
+ *          BREADCRUMBS        *
+ * * * * * * * * * * * * * * * */
+
+#previous {
+    margin-left: -.5em;
+}
+
+#breadcrumbs {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
     position: absolute;
-    left: 0;
-    top: 2.3em;
+    margin: 0;
+    padding: 0;
     min-width: 7em;
-    z-index: 999;
-    opacity: 0;
-    visibility: hidden;
-    color: #656565;
 }
 
 #breadcrumbs.active {
     opacity: 1;
     visibility: visible;
+    top: 0;
+    left: 0;
+    right: auto;
 }
 
 #breadcrumbs li {
-    line-height: 1.5em;
-    padding: .3em;
+    line-height: 1;
+    padding: .7em;
+    transition: .1s ease all;
+}
+
+#breadcrumbs li:hover {
+    background-color: rgba(0, 0, 0, 0.04);
 }
 
 
@@ -860,6 +911,39 @@ header .actions {
 
 
 /* * * * * * * * * * * * * * * *
+ *  MULTIPLE SELECTION DIALOG  *
+ * * * * * * * * * * * * * * * */
+
+#multiple-selection {
+    position: fixed;
+    bottom: -4em;
+    left: 0;
+    z-index: 99999999;
+    width: 100%;
+    background-color: #2196f3;
+    height: 4em;
+    display: flex !important;
+    padding: 0.5em 0.5em 0.5em 1em;
+    justify-content: space-between;
+    align-items: center;
+    transition: .2s ease all;
+}
+
+#multiple-selection.active {
+    bottom: 0;
+}
+
+#multiple-selection * {
+    margin: 0;
+}
+
+#multiple-selection p,
+#multiple-selection i {
+    color: #fff;
+}
+
+
+/* * * * * * * * * * * * * * * *
  *            PROMPT           *
  * * * * * * * * * * * * * * * */
 
@@ -992,6 +1076,12 @@ footer a:hover {
  * * * * * * * * * * * * * * * */
 
 @media screen and (max-width: 650px) {
+    body {
+        transition: .2s ease padding;
+    }
+    .mobile-only {
+        display: inherit !important;
+    }
     #top-bar>div:nth-child(1) {
         display: none;
     }
@@ -1007,6 +1097,44 @@ footer a:hover {
         display: flex;
         width: calc(100% - 10em);
         padding: .5em;
+    }
+    #main-actions {
+        position: fixed;
+        top: -100%;
+        right: -100%;
+        visibility: hidden;
+        display: flex;
+        flex-direction: column;
+        border-radius: .1em;
+        border-top-left-radius: 0;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        background: #fff;
+        z-index: 9999999;
+    }
+    #main-actions.active {
+        right: .5em;
+        top: 4.5em;
+        visibility: visible;
+    }
+    #main-actions .action {
+        padding: .7em;
+        border-radius: 0;
+    }
+    #main-actions .action:hover {
+        background-color: rgba(0, 0, 0, 0.04);
+    }
+    #main-actions i {
+        padding: 0;
+        vertical-align: middle;
+    }
+    #main-actions .action:hover i {
+        padding: 0;
+        background-color: transparent;
+    }
+    #main-actions span {
+        display: inline-block;
+        margin-left: .5em;
+        font-size: .9em;
     }
 }
 

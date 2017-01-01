@@ -57,6 +57,11 @@ func GetListing(u *config.User, filePath string, baseURL string) (*Listing, erro
 
 	for _, f := range files {
 		name := f.Name()
+		allowed := u.Allowed("/" + name)
+
+		if !allowed {
+			continue
+		}
 
 		if f.IsDir() {
 			name += "/"
@@ -71,7 +76,7 @@ func GetListing(u *config.User, filePath string, baseURL string) (*Listing, erro
 		i := Info{
 			FileInfo:    f,
 			URL:         url.String(),
-			UserAllowed: u.Allowed("/" + name),
+			UserAllowed: allowed,
 		}
 		i.RetrieveFileType()
 

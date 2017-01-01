@@ -3,7 +3,8 @@
 var tempID = "_fm_internal_temporary_id",
     buttons = {},
     templates = {},
-    selectedItems = [];
+    selectedItems = [],
+    overlay, clickOverlay;
 
 // Removes an element, if exists, from an array
 Array.prototype.removeElement = function(element) {
@@ -36,7 +37,8 @@ Element.prototype.changeToLoading = function() {
     element.style.opacity = 0;
 
     setTimeout(function() {
-        element.innerHTML = '<i class="material-icons spin">autorenew</i>';
+        element.classList.add('spin');
+        element.innerHTML = 'autorenew';
         element.style.opacity = 1;
     }, 200);
 
@@ -60,13 +62,9 @@ Element.prototype.changeToDone = function(error, html) {
     }
 
     let firstStep = () => {
-        this.innerHTML = '<i class="material-icons">done</i>';
-        if (error) {
-            this.innerHTML = '<i class="material-icons">close</i>';
-        }
-
+        this.classList.remove('spin');
+        this.innerHTML = error ? 'close' : 'done';
         this.style.opacity = 1;
-
         setTimeout(secondStep, 1000);
     }
 
@@ -109,7 +107,7 @@ var removeLastDirectoryPartOf = function(url) {
  * * * * * * * * * * * * * * * */
 function closePrompt(event) {
     let prompt = document.querySelector('.prompt');
-    
+
     if (!prompt) return;
 
     event.preventDefault();
@@ -123,6 +121,7 @@ function closePrompt(event) {
 
 function notImplemented(event) {
     event.preventDefault();
+    clickOverlay.click();
 
     let clone = document.importNode(templates.info.content, true);
     clone.querySelector('h3').innerHTML = 'Not implemented';
@@ -172,7 +171,7 @@ function deleteSelected(single) {
 
         Array.from(selectedItems).forEach(id => {
             let request = new XMLHttpRequest(),
-                html = buttons.delete.changeToLoading(),
+                html = buttons.delete.querySelector('i').changeToLoading(),
                 el, url;
 
             if (single) {
@@ -194,7 +193,7 @@ function deleteSelected(single) {
                         }
                     }
 
-                    buttons.delete.changeToDone(request.status != 204, html);
+                    buttons.delete.querySelector('i').changeToDone(request.status != 204, html);
                 }
             }
 
@@ -216,13 +215,13 @@ function deleteEvent(event) {
 
     let clone = document.importNode(templates.question.content, true);
     clone.querySelector('h3').innerHTML = 'Delete files';
-    
+
     if (single) {
-        clone.querySelector('p').innerHTML = `Are you sure you want to delete this file/folder?`;   
+        clone.querySelector('p').innerHTML = `Are you sure you want to delete this file/folder?`;
     } else {
-        clone.querySelector('p').innerHTML = `Are you sure you want to delete ${selectedItems.length} file(s)?`;        
+        clone.querySelector('p').innerHTML = `Are you sure you want to delete ${selectedItems.length} file(s)?`;
     }
-    
+
     clone.querySelector('input').remove();
     clone.querySelector('.ok').innerHTML = 'Delete';
     clone.querySelector('form').addEventListener('submit', deleteSelected(single));
@@ -360,29 +359,29 @@ function setupSearch() {
 
 function closeHelp(event) {
     event.preventDefault();
-    
+
     document.querySelector('.help').classList.remove('active');
     document.querySelector('.overlay').classList.remove('active');
 }
 
 function openHelp(event) {
     closePrompt(event);
-    
+
     document.querySelector('.help').classList.add('active');
     document.querySelector('.overlay').classList.add('active');
 }
 
 window.addEventListener('keydown', (event) => {
-    if (event.keyCode == 27) { 
+    if (event.keyCode == 27) {
         if (document.querySelector('.help.active')) {
             closeHelp(event);
         }
     }
-    
+
     if (event.keyCode == 46) {
         deleteEvent(event);
     }
-    
+
     if (event.keyCode == 112) {
         event.preventDefault();
         openHelp(event);
@@ -396,10 +395,13 @@ window.addEventListener('keydown', (event) => {
  * * * * * * * * * * * * * * * */
 
 document.addEventListener("DOMContentLoaded", function(event) {
+    overlay = document.querySelector('.overlay');
+    clickOverlay = document.querySelector('#click-overlay');
+    
     buttons.logout = document.getElementById("logout");
     buttons.open = document.getElementById("open");
     buttons.delete = document.getElementById("delete");
-    buttons.breadcrumbs = document.getElementById("breadcrumbs-button");
+    buttons.previous = document.getElementById("previous");
 
     // Attach event listeners
     buttons.logout.addEventListener("click", logoutEvent);
@@ -412,21 +414,42 @@ document.addEventListener("DOMContentLoaded", function(event) {
         buttons.delete.addEventListener("click", deleteEvent);
     }
 
-    if (buttons.breadcrumbs) {
-        buttons.breadcrumbs.addEventListener("click", event => {
-            event.currentTarget.classList.toggle("active");
+    if (buttons.previous) {
+        buttons.previous.addEventListener("click", event => {
             document.getElementById("breadcrumbs").classList.toggle("active");
+            
+            clickOverlay.classList.add('active');
+            
+            clickOverlay.addEventListener('click', event => {        
+                document.getElementById("breadcrumbs").classList.remove("active");
+                clickOverlay.classList.remove('active');
+            })
         });
     }
 
-    document.querySelector('.overlay').addEventListener('click', event => {
+    overlay.addEventListener('click', event => {
         if (document.querySelector('.help.active')) {
             closeHelp(event);
             return;
         }
-        
+
         closePrompt(event);
     })
+    
+    let mainActions = document.getElementById('main-actions');
+    
+    document.getElementById('more').addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        clickOverlay.classList.add('active');
+        mainActions.classList.add('active');
+        
+        clickOverlay.addEventListener('click', event => {        
+            mainActions.classList.remove('active');
+            clickOverlay.classList.remove('active');
+        })
+    })    
 
     setupSearch();
     return false;
