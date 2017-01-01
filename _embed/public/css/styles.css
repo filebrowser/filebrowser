@@ -386,6 +386,9 @@ header .action span {
 header>div div {
     vertical-align: middle;
     position: relative;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 header .actions {
@@ -421,13 +424,15 @@ header .actions {
 
 #search {
     position: relative;
-    display: inline-block;
+    display: flex;
     height: 100%;
     padding: 0.75em;
     vertical-align: middle;
     border-radius: 0.3em;
     background-color: #f5f5f5;
     transition: .1s ease all;
+    width: 100%;
+    max-width: 25em;
 }
 
 #search.active {
@@ -453,7 +458,7 @@ header .actions {
 }
 
 #search input {
-    min-width: 20em;
+    width: 100%;
     border: 0;
     outline: 0;
     background-color: transparent;
@@ -568,7 +573,7 @@ header .actions {
     border-right: 1px solid rgba(0, 0, 0, 0.075);
     padding-right: .3em;
     margin-right: .3em;
-    transition: .2s ease all;
+    transition: .2s ease opacity, visibility;
     visibility: visible;
 }
 
@@ -948,13 +953,17 @@ header .actions {
 .help {
     max-width: 24em;
     visibility: hidden;
+    top: -100%;
+    left: -100%;
 }
 
 .help.active {
     visibility: visible;
+    top: 50%;
+    left: 50%;
 }
 
-.help ul{
+.help ul {
     padding: 0;
     margin: 0;
     list-style: none;
@@ -975,6 +984,30 @@ footer {
 footer a,
 footer a:hover {
     color: inherit;
+}
+
+
+/* * * * * * * * * * * * * * * *
+ *        MEDIA QUERIES        *
+ * * * * * * * * * * * * * * * */
+
+@media screen and (max-width: 650px) {
+    #top-bar>div:nth-child(1) {
+        display: none;
+    }
+    #file-only {
+        position: fixed;
+        left: 0;
+        top: 4em;
+        background-color: #fafafa;
+        border-right: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.075);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.075);
+        height: 3.8em;
+        display: flex;
+        width: calc(100% - 10em);
+        padding: .5em;
+    }
 }
 
 
