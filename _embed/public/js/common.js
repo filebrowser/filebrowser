@@ -417,9 +417,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     let dropdownButtons = document.querySelectorAll('.action[data-dropdown]')
     Array.from(dropdownButtons).forEach(button => {
         button.addEventListener("click", event => {
-            event.preventDefault();
-            event.stopPropagation();
-
             button.querySelector('ul').classList.toggle("active");
             clickOverlay.classList.add('active');
 
