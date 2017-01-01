@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
             data.content = data.content.toString();
         }
 
-        let html = button.changeToLoading(),
+        let html = button.querySelector('i').changeToLoading(),
             request = new XMLHttpRequest();
 
         request.open("PUT", toWebDavURL(window.location.pathname));
@@ -217,7 +217,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         request.send(JSON.stringify(data));
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
-                button.changeToDone((request.status != 201), html);
+                button.querySelector('i').changeToDone((request.status != 201), html);
             }
         }
     }

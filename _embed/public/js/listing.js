@@ -1,6 +1,8 @@
 'use strict';
 
-var listing = {};
+var listing = {
+    selectMultiple: false
+};
 
 listing.reload = function(callback) {
     let request = new XMLHttpRequest();
@@ -126,7 +128,7 @@ listing.rename = function(event) {
 
         let newName = event.currentTarget.querySelector('input').value,
             newLink = removeLastDirectoryPartOf(toWebDavURL(link)) + "/" + newName,
-            html = buttons.rename.changeToLoading(),
+            html = buttons.rename.querySelector('i').changeToLoading(),
             request = new XMLHttpRequest();
 
         request.open('MOVE', toWebDavURL(link));
@@ -147,7 +149,7 @@ listing.rename = function(event) {
                     });
                 }
 
-                buttons.rename.changeToDone((request.status != 201 && request.status != 204), html);
+                buttons.rename.querySelector('i').changeToDone((request.status != 201 && request.status != 204), html);
             }
         }
 
@@ -169,7 +171,7 @@ listing.rename = function(event) {
 
 listing.handleFiles = function(files, base) {
     let button = document.getElementById("upload"),
-        html = button.changeToLoading();
+        html = button.querySelector('i').changeToLoading();
 
     for (let i = 0; i < files.length; i++) {
         let request = new XMLHttpRequest();
@@ -182,7 +184,7 @@ listing.handleFiles = function(files, base) {
                     listing.reload();
                 }
 
-                button.changeToDone((request.status != 201), html);
+                button.querySelector('i').changeToDone((request.status != 201), html);
             }
         }
     }
@@ -222,7 +224,7 @@ listing.handleSelectionChange = function(event) {
             } else {
                 buttons.open.classList.remove("disabled");
             }
-            
+
             buttons.rename.classList.remove("disabled");
         }
 
@@ -259,7 +261,7 @@ listing.selectItem = function(event) {
 
     if (selectedItems.length != 0) event.preventDefault();
     if (selectedItems.indexOf(el.id) == -1) {
-        if (!event.ctrlKey) listing.unselectAll();
+        if (!event.ctrlKey && !listing.selectMultiple) listing.unselectAll();
 
         el.setAttribute("aria-selected", true);
         selectedItems.push(el.id);
@@ -290,7 +292,7 @@ listing.newFilePrompt = function(event) {
     event.preventDefault();
 
     let button = document.getElementById('new'),
-        html = button.changeToLoading(),
+        html = button.querySelector('i').changeToLoading(),
         request = new XMLHttpRequest(),
         name = event.currentTarget.querySelector('input').value;
 
@@ -298,7 +300,7 @@ listing.newFilePrompt = function(event) {
     request.send();
     request.onreadystatechange = function() {
         if (request.readyState == 4) {
-            button.changeToDone((request.status != 201), html);
+            button.querySelector('i').changeToDone((request.status != 201), html);
             listing.reload();
         }
     }
@@ -322,13 +324,12 @@ window.addEventListener('keydown', (event) => {
         if (document.querySelectorAll('.prompt').length) {
             closePrompt(event);
         }
-        
     }
 
     if (event.keyCode == 113) {
         listing.rename();
     }
-    
+
     if (event.ctrlKey || event.metaKey) {
         console.log("hey")
         switch (String.fromCharCode(event.which).toLowerCase()) {
@@ -351,9 +352,26 @@ document.addEventListener('DOMContentLoaded', event => {
     buttons.new = document.getElementById('new');
     buttons.download = document.getElementById('download');
 
+    document.getElementById('multiple-selection-activate').addEventListener('click', event => {
+        listing.selectMultiple = true;
+        clickOverlay.click();
+        
+        document.getElementById('multiple-selection').classList.add('active');
+        document.querySelector('body').style.paddingBottom = "4em";
+    })
+
+    document.getElementById('multiple-selection-cancel').addEventListener('click', event => {
+        listing.selectMultiple = false;
+
+        document.querySelector('body').style.paddingBottom = "0";
+        document.getElementById('multiple-selection').classList.remove('active');
+    })
+
     if (user.AllowEdit) {
         buttons.rename.addEventListener("click", listing.rename);
     }
+    
+    let items = document.getElementsByClassName('item');
 
     if (user.AllowNew) {
         buttons.upload.addEventListener("click", (event) => {
@@ -363,7 +381,6 @@ document.addEventListener('DOMContentLoaded', event => {
         buttons.new.addEventListener('click', listing.newFileButton);
 
         // Drag and Drop
-        let items = document.getElementsByClassName('item');
         document.addEventListener("dragover", function(event) {
             event.preventDefault();
         }, false);
@@ -382,4 +399,26 @@ document.addEventListener('DOMContentLoaded', event => {
 
         document.addEventListener("drop", listing.documentDrop, false);
     }
+    
+    let touches = {
+        id: '',
+        count: 0
+    };
+    
+    Array.from(items).forEach(file => {
+        file.addEventListener('touchstart', event => {
+            if (touches.id != file.id) {
+                touches.id = file.id;
+                touches.count = 1;
+                
+                return;
+            }
+            
+            touches.count++;
+            
+            if (touches.count > 1) {
+                window.location = file.dataset.url;
+            }
+        });
+    });
 });
