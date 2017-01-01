@@ -397,7 +397,7 @@ window.addEventListener('keydown', (event) => {
 document.addEventListener("DOMContentLoaded", function(event) {
     overlay = document.querySelector('.overlay');
     clickOverlay = document.querySelector('#click-overlay');
-    
+
     buttons.logout = document.getElementById("logout");
     buttons.open = document.getElementById("open");
     buttons.delete = document.getElementById("delete");
@@ -414,18 +414,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
         buttons.delete.addEventListener("click", deleteEvent);
     }
 
-    if (buttons.previous) {
-        buttons.previous.addEventListener("click", event => {
-            document.getElementById("breadcrumbs").classList.toggle("active");
-            
+    let dropdownButtons = document.querySelectorAll('.action[data-dropdown]')
+    Array.from(dropdownButtons).forEach(button => {
+        button.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            button.querySelector('ul').classList.toggle("active");
             clickOverlay.classList.add('active');
-            
-            clickOverlay.addEventListener('click', event => {        
-                document.getElementById("breadcrumbs").classList.remove("active");
+
+            clickOverlay.addEventListener('click', event => {
+                button.querySelector('ul').classList.remove("active");
                 clickOverlay.classList.remove('active');
             })
         });
-    }
+    });
 
     overlay.addEventListener('click', event => {
         if (document.querySelector('.help.active')) {
@@ -435,21 +438,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         closePrompt(event);
     })
-    
+
     let mainActions = document.getElementById('main-actions');
-    
+
     document.getElementById('more').addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();
-        
+
         clickOverlay.classList.add('active');
         mainActions.classList.add('active');
-        
-        clickOverlay.addEventListener('click', event => {        
+
+        clickOverlay.addEventListener('click', event => {
             mainActions.classList.remove('active');
             clickOverlay.classList.remove('active');
         })
-    })    
+    })
 
     setupSearch();
     return false;

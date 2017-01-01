@@ -355,7 +355,7 @@ document.addEventListener('DOMContentLoaded', event => {
     document.getElementById('multiple-selection-activate').addEventListener('click', event => {
         listing.selectMultiple = true;
         clickOverlay.click();
-        
+
         document.getElementById('multiple-selection').classList.add('active');
         document.querySelector('body').style.paddingBottom = "4em";
     })
@@ -370,7 +370,7 @@ document.addEventListener('DOMContentLoaded', event => {
     if (user.AllowEdit) {
         buttons.rename.addEventListener("click", listing.rename);
     }
-    
+
     let items = document.getElementsByClassName('item');
 
     if (user.AllowNew) {
@@ -399,23 +399,27 @@ document.addEventListener('DOMContentLoaded', event => {
 
         document.addEventListener("drop", listing.documentDrop, false);
     }
-    
+
     let touches = {
         id: '',
         count: 0
     };
-    
+
     Array.from(items).forEach(file => {
         file.addEventListener('touchstart', event => {
             if (touches.id != file.id) {
                 touches.id = file.id;
                 touches.count = 1;
                 
+                setTimeout(() => {
+                    touches.count = 0;
+                }, 500)
+
                 return;
             }
-            
+
             touches.count++;
-            
+
             if (touches.count > 1) {
                 window.location = file.dataset.url;
             }
