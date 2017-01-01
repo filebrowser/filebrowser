@@ -251,58 +251,25 @@ i.spin {
     background-color: rgba(0, 0, 0, .1);
 }
 
-.action:hover ul {
-    display: flex;
-}
-
 .action ul {
     position: absolute;
-    top: 3.1em;
-    left: 0;
+    top: 0;
     color: #7d7d7d;
     list-style: none;
     margin: 0;
     padding: 0;
-    background: #fff;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
-    border-radius: .2em;
-    flex-direction: column-reverse;
-    display: none;
-    transition: .2s ease all;
-    min-width: 3em;
-    z-index: 99999;
+    flex-direction: column;
+    display: flex;
 }
 
-.action ul:before {
-    top: -16px;
-    left: 1em;
-    right: auto;
-    border: 8px solid transparent;
-    border-bottom-color: #ffffff;
-    content: '';
-    position: absolute;
+.action ul li {
+    line-height: 1;
+    padding: .7em;
+    transition: .1s ease background-color;
 }
 
-.action ul a {
-    padding: .3em .5em;
-    border-bottom: 1px solid #f5f5f5;
-    transition: .2s ease all;
-    text-align: left;
-}
-
-.action ul a:first-child {
-    border: 0;
-    border-bottom-right-radius: .2em;
-    border-bottom-left-radius: .2em;
-}
-
-.action ul a:last-child {
-    border-top-right-radius: .2em;
-    border-top-left-radius: .2em;
-}
-
-.action ul a:hover {
-    background-color: #f5f5f5;
+.action ul li:hover {
+    background-color: rgba(0, 0, 0, 0.04);
 }
 
 
@@ -609,6 +576,16 @@ header .actions {
     visibility: hidden;
 }
 
+#download ul.active {
+    top: 0;
+    right: 0;
+}
+
+#more ul.active {
+    right: .5em;
+    top: 4.5em;
+}
+
 
 /* * * * * * * * * * * * * * * *
  *            DROPDOWN         *
@@ -629,8 +606,6 @@ header .actions {
 }
 
 .dropdown.active {
-    right: .5em;
-    top: 4.5em;
     visibility: visible;
 }
 
@@ -659,31 +634,13 @@ header .actions {
 }
 
 #breadcrumbs {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    margin: 0;
-    padding: 0;
     min-width: 7em;
 }
 
 #breadcrumbs.active {
-    opacity: 1;
-    visibility: visible;
     top: 0;
     left: 0;
     right: auto;
-}
-
-#breadcrumbs li {
-    line-height: 1;
-    padding: .7em;
-    transition: .1s ease all;
-}
-
-#breadcrumbs li:hover {
-    background-color: rgba(0, 0, 0, 0.04);
 }
 
 

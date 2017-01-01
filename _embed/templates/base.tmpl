@@ -48,16 +48,15 @@
         <div id="bottom-bar">
             <div>
                 {{- if ne .Name "/"}}                
-                <div class="action" id="previous">
+                <div data-dropdown class="action" id="previous">
                     <i class="material-icons">subdirectory_arrow_left</i>
+                    <ul class="dropdown" id="breadcrumbs">
+                    {{- range $item := .BreadcrumbMap }}
+                        <a href="{{ $absURL }}{{ $item.URL }}"><li>{{ $item.Name }}</li></a>
+                    {{- end }}
+                    </ul>
+                    {{- end }}
                 </div>
-
-                <ul class="dropdown" id="breadcrumbs">
-                {{- range $item := .BreadcrumbMap }}
-                <a href="{{ $absURL }}{{ $item.URL }}"><li>{{ $item.Name }}</li></a>
-                {{- end }}
-                </ul>
-                {{- end }}
                 
                 <p>{{ if ne .Name "/"}}{{ .Name }}{{ else }}Root{{ end }}</p>
             </div>
@@ -119,12 +118,10 @@
                 </div>
                 {{- end }}
                 
-                <div class="action" id="download">
-                    <a href="?download=true">
-                        <i class="material-icons" title="Download">file_download</i><span>Download</span>
-                    </a>
+                <div data-dropdown class="action" id="download">
+                    <i class="material-icons" title="Download">file_download</i><span>Download</span>
                     {{- if .IsDir }}
-                    <ul class="prev-links">
+                    <ul class="dropdown" id="download-drop">
                         <a data-format="tarbz2" href="?download=tarbz2"><li>tar.bz2</li></a>
                         <a data-format="targz" href="?download=targz"><li>tar.gz</li></a>
                         <a data-format="tar" href="?download=tar"><li>tar</li></a>
