@@ -1,26 +1,27 @@
 {{ define "content" }}
-{{ with .Data }}
-<div id="editor" class="container" data-kind="{{ .Class }}">
-    <form method="POST" action="./">
-        {{- if or (eq .Class "frontmatter-only") (eq .Class "complete") }}
-        <div class="frontmatter" data-type="parent">
-            {{- template "blocks" .FrontMatter }}
-            <div class="button add">Add field</div>
-        </div>
-        {{- end }}
+{{- with .Data }}
+<form id="editor" {{ if eq .Mode "markdown" }}class="markdown"{{ end }} data-kind="{{ .Class }}">
+    {{- if or (eq .Class "frontmatter-only") (eq .Class "complete") }}
+    {{- if (eq .Class "complete")}}
+    <h2>Metadata</h2>
+    {{- end }}
+    <div class="frontmatter" data-type="parent">
+        {{- template "blocks" .FrontMatter }}
+        <div class="button add">Add field</div>
+    </div>
+    {{- end }}
 
-        {{ if or (eq .Class "content-only") (eq .Class "complete") }}
-            {{ if (eq .Class "complete")}}
-            <h3>Body</h3>
-            {{ end }}
-            <div class="content">
-                <div id="editor-source" data-mode="{{ .Mode }}"></div>
-                <textarea name="content">{{ .Content }}</textarea>
-            </div>
+    {{ if or (eq .Class "content-only") (eq .Class "complete") }}
+        {{ if (eq .Class "complete")}}
+        <h2>Body</h2>
         {{ end }}
-    </form>
-</div>
-{{ end }}
+        <div class="content">
+            <div id="ace" data-mode="{{ .Mode }}"></div>
+            <textarea class="source" name="content">{{ .Content }}</textarea>
+        </div>
+    {{ end }}
+</form>
+{{- end }}
 
 <template id="base-template">
     <fieldset id="" data-type="">
