@@ -726,6 +726,7 @@ header .actions {
     vertical-align: bottom;
 }
 
+#listing h2.message,
 .message {
     text-align: center;
     font-size: 3em;
