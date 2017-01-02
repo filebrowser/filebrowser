@@ -2,7 +2,7 @@
 {{ with .Data}}
  <main class="container">
   {{ if eq .Type "image" }}
-   <img src="{{ .URL }}?raw=true">
+   <center><img src="{{ .URL }}?raw=true"></center>
    {{ else if eq .Type "audio" }}
    <audio src="{{ .URL }}?raw=true" controls></audio>
    {{ else if eq .Type "video" }}
@@ -12,7 +12,7 @@
       and watch it with your favorite video player!
     </video>
    {{ else if eq .Type "blob" }}
-   <a href="?download=true">Download</a>
+   <a href="?download=true"><h2 class="message">Download <i class="material-icons">file_download</i></h2></a>
    {{ else}}
    <pre>{{ .StringifyContent }}</pre>
   {{ end }}
