@@ -125,10 +125,11 @@
                     
                     {{- if .IsDir }}
                     <ul class="dropdown" id="download-drop">
-                        <a data-format="tarbz2" href="?download=tarbz2"><li>tar.bz2</li></a>
-                        <a data-format="targz" href="?download=targz"><li>tar.gz</li></a>
-                        <a data-format="tar" href="?download=tar"><li>tar</li></a>
                         <a data-format="zip" href="?download=zip"><li>zip</li></a>
+                        <a data-format="tar" href="?download=tar"><li>tar</li></a>
+                        <a data-format="targz" href="?download=targz"><li>tar.gz</li></a>
+                        <a data-format="tarbz2" href="?download=tarbz2"><li>tar.bz2</li></a>
+                        <a data-format="tarbz2" href="?download=tarxz"><li>tar.xz</li></a>
                     </ul>
                     {{- end }}
                 </div>

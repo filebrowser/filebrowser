@@ -71,6 +71,8 @@ func Download(w http.ResponseWriter, r *http.Request, c *config.Config, i *file.
 		extension, err = ".tar.gz", archiver.TarGz.Make(tempfile, files)
 	case "tarbz2":
 		extension, err = ".tar.bz2", archiver.TarBz2.Make(tempfile, files)
+	case "tarxz":
+		extension, err = ".tar.xz", archiver.TarXZ.Make(tempfile, files)
 	default:
 		return http.StatusNotImplemented, nil
 	}
