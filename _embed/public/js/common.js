@@ -102,7 +102,7 @@ function getCSSRule(rules) {
                     if (cssRule.selectorText.toLowerCase() == rules[i]) found = true;
                 }
             }
-            
+
             return found;
         });
 
@@ -161,9 +161,7 @@ function logoutEvent(event) {
 }
 
 function openEvent(event) {
-    if (event.currentTarget.classList.contains('disabled')) {
-        return false;
-    }
+    if (event.currentTarget.classList.contains('disabled')) return false;
 
     let link = '?raw=true';
 
@@ -175,6 +173,64 @@ function openEvent(event) {
 
     window.open(link);
     return false;
+}
+
+function selectMoveFolder(event) {
+    if(event.target.getAttribute("aria-selected") === "true") {
+        event.target.setAttribute("aria-selected", false);
+        return;
+    } else {
+        if(document.querySelector(".file-list li[aria-selected=true]")) {
+            document.querySelector(".file-list li[aria-selected=true]").setAttribute("aria-selected", false);
+        }
+        event.target.setAttribute("aria-selected", true);
+        return;
+    }
+}
+
+function moveSelected(event) {
+    event.preventDefault();
+}
+
+function loadNextFolder(event) {
+}
+
+function moveEvent(event) {
+    if(event.currentTarget.classList.contains("disabled")) return;
+
+    let request = new XMLHttpRequest();
+
+    request.open("GET", window.location.pathname, true);
+    request.setRequestHeader("Accept", "application/json");
+    request.send();
+    request.onreadystatechange = function() {
+        if(request.readyState == 4) {
+            if(request.status == 200) {
+                let clone = document.importNode(templates.move.content, true);
+
+                clone.querySelector("p").innerHTML = `Choose new house for your file(s)/folder(s):`;
+
+                for(let f of JSON.parse(request.response)) {
+                    if(f.URL.split("/").length == 3) {
+                        if(selectedItems.includes(btoa(f.URL.split("/")[1]))) continue;
+                        let newNode = document.createElement("li");
+                        newNode.innerHTML = f.URL.split("/")[1];
+                        newNode.setAttribute("aria-selected", false);
+
+                        newNode.addEventListener("dblclick", loadNextFolder);
+                        newNode.addEventListener("click", selectMoveFolder);
+                        newNode.addEventListener("submit", moveSelected);
+
+                        clone.querySelector("div.file-list ul").appendChild(newNode);
+                    }
+                }
+
+                document.body.appendChild(clone);
+                document.querySelector(".overlay").classList.add("active");
+                document.querySelector(".prompt").classList.add("active");
+            }
+        }
+    }
 }
 
 function deleteSelected(single) {
@@ -238,7 +294,7 @@ function deleteEvent(event) {
     clone.querySelector('.ok').innerHTML = 'Delete';
     clone.querySelector('form').addEventListener('submit', deleteSelected(single));
 
-    document.querySelector('body').appendChild(clone)
+    document.body.appendChild(clone);
     document.querySelector('.overlay').classList.add('active');
     document.querySelector('.prompt').classList.add('active');
 
@@ -414,13 +470,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
     buttons.open = document.getElementById("open");
     buttons.delete = document.getElementById("delete");
     buttons.previous = document.getElementById("previous");
+    buttons.move = document.getElementById("move");
 
     // Attach event listeners
     buttons.logout.addEventListener("click", logoutEvent);
     buttons.open.addEventListener("click", openEvent);
+    buttons.move.addEventListener("click", moveEvent);
 
     templates.question = document.querySelector('#question-template');
     templates.info = document.querySelector('#info-template');
+    templates.move = document.querySelector("#move-template");
 
     if (user.AllowEdit) {
         buttons.delete.addEventListener("click", deleteEvent);
