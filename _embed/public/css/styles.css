@@ -564,11 +564,7 @@ header .actions {
 
 #bottom-bar>*:first-child {
     margin-right: auto;
-<<<<<<< HEAD
     max-width: calc(100% - 25em);
-=======
-    max-width: calc(100% - 24em);
->>>>>>> cb77ca979b94519ce5afc5ea25e33cd44732e1d8
     width: 100%;
 }
 
