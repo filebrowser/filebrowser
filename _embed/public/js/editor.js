@@ -4,8 +4,9 @@ var editor = {};
 
 editor.textareaAutoGrow = function() {
     let autogrow = function() {
-        this.style.height = '5px';
-        this.style.height = this.scrollHeight + 'px';
+        console.log(this.style.height)
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
     }
 
     let textareas = document.getElementsByTagName('textarea');
