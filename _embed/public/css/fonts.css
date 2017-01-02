@@ -74,7 +74,7 @@
     font-family: 'Roboto';
     font-style: normal;
     font-weight: 500;
-    src: local('Roboto Medium'), local('Roboto-Medium'), url(roboto/medium-greek-ext.woff22) format('woff2');
+    src: local('Roboto Medium'), local('Roboto-Medium'), url(roboto/medium-greek-ext.woff2) format('woff2');
     unicode-range: U+1F00-1FFF;
 }
 
@@ -129,6 +129,8 @@
     white-space: nowrap;
     word-wrap: normal;
     direction: ltr;
-    -webkit-font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'liga';
 }

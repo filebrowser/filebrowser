@@ -358,9 +358,6 @@ header .action span {
 header>div div {
     vertical-align: middle;
     position: relative;
-    text-overflow: ellipsis;
-    /* overflow: hidden; */
-    white-space: nowrap;
 }
 
 header .actions {
@@ -556,6 +553,15 @@ header .actions {
 
 #bottom-bar>*:first-child {
     margin-right: auto;
+    max-width: calc(100% - 21em);
+    width: 100%;
+}
+
+#bottom-bar p {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: calc(100% - 3em);
+    white-space: nowrap;
 }
 
 #more {
@@ -681,6 +687,7 @@ header .actions {
     color: #6f6f6f;
     transition: .1s ease all;
     align-items: center;
+    cursor: pointer;
 }
 
 #listing .item div:last-of-type {
@@ -706,6 +713,13 @@ header .actions {
     font-size: 4em;
     margin-right: 0.1em;
     vertical-align: bottom;
+}
+
+#listing .message {
+    text-align: center;
+    font-size: 3em;
+    margin: 1em 0;
+    display: block !important;
 }
 
 
@@ -945,7 +959,7 @@ header .actions {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     padding: 2em;
     max-width: 25em;
-    width: 95%;
+    width: 90%;
 }
 
 .prompt h3,
@@ -1006,7 +1020,7 @@ header .actions {
 
 .help ul {
     padding: 0;
-    margin: 0;
+    margin: 1em 0;
     list-style: none;
 }
 
@@ -1042,18 +1056,8 @@ footer a:hover {
     #top-bar>div:nth-child(1) {
         display: none;
     }
-    #file-only {
-        position: fixed;
-        left: 0;
-        top: 4em;
-        background-color: #fafafa;
-        border-right: 0;
-        border-top: 1px solid rgba(0, 0, 0, 0.075);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.075);
-        height: 3.8em;
-        display: flex;
-        width: calc(100% - 10em);
-        padding: .5em;
+    #bottom-bar>*:first-child {
+        max-width: calc(100% - 16em);
     }
     #main-actions {
         position: fixed;
@@ -1092,6 +1096,19 @@ footer a:hover {
         display: inline-block;
         margin-left: .5em;
         font-size: .9em;
+    }
+    #listing.list .item .size,
+    #listing.list .item .modified {
+        display: none;
+    }
+    #listing.list .item .name {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    #bottom-bar p {
+        display: none !important;
     }
 }
 

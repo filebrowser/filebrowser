@@ -72,21 +72,6 @@ Element.prototype.changeToDone = function(error, html) {
     return false;
 }
 
-function getCSSRule(ruleName) {
-    ruleName = ruleName.toLowerCase();
-    var result = null,
-        find = Array.prototype.find;
-
-    find.call(document.styleSheets, styleSheet => {
-        result = find.call(styleSheet.cssRules, cssRule => {
-            return cssRule instanceof CSSStyleRule &&
-                cssRule.selectorText.toLowerCase() == ruleName;
-        });
-        return result != null;
-    });
-    return result;
-}
-
 function toWebDavURL(url) {
     return window.location.origin + url.replace(baseURL + "/", webdavURL + "/");
 }
@@ -98,6 +83,33 @@ var removeLastDirectoryPartOf = function(url) {
         arr.pop();
     }
     return (arr.join('/'));
+}
+
+function getCSSRule(rules) {
+    for (let i = 0; i < rules.length; i++) {
+        rules[i] = rules[i].toLowerCase();
+    }
+
+    var result = null,
+        find = Array.prototype.find;
+
+    find.call(document.styleSheets, styleSheet => {
+        result = find.call(styleSheet.cssRules, cssRule => {
+            let found = false;
+
+            if (cssRule instanceof CSSStyleRule) {
+                for (let i = 0; i < rules.length; i++) {
+                    if (cssRule.selectorText.toLowerCase() == rules[i]) found = true;
+                }
+            }
+            
+            return found;
+        });
+
+        return result != null;
+    });
+
+    return result;
 }
 
 /* * * * * * * * * * * * * * * *
