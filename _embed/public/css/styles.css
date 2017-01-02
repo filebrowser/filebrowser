@@ -60,7 +60,7 @@ button:hover {
 .container {
     width: 95%;
     max-width: 960px;
-    margin: 0 auto;
+    margin: 1em auto 0;
 }
 
 i.spin {
@@ -68,155 +68,73 @@ i.spin {
 }
 
 
-/* EDITOR */
+/* * * * * * * * * * * * * * * *
+ *            EDITOR           *
+ * * * * * * * * * * * * * * * */
 
-#editor .frontmatter {
-    -webkit-column-count: 2;
-    -moz-column-count: 2;
-    column-count: 2;
-    -webkit-column-gap: 1em;
-    -moz-column-gap: 1em;
-    column-gap: 1em;
-    margin-bottom: 1em;
-}
+#editor {}
 
-#editor .group,
-#editor #editor-source {
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
-    display: block;
-    border-radius: .2em;
-    padding: .5em;
-    margin-bottom: 1em;
-    -webkit-column-break-inside: avoid;
-    page-break-inside: avoid;
-    break-inside: avoid;
-    background-color: #fff;
-    display: inline-block;
-    width: 100%;
-    break-inside: avoid-column;
-}
-
-#editor .block {
-    border-bottom: 1px solid #eee;
-    margin-bottom: .5em;
-    padding-bottom: .5em;
-}
-
-#editor .block:last-child {
-    border: 0;
-    margin: 0;
-    padding: 0;
-}
-
-#editor .block label {
-    display: block;
-    color: #212121;
-    font-weight: 500;
-}
-
-#editor h3 {
-    margin: 0 0 .5em;
-    display: inline-block;
-    vertical-align: middle;
-    width: calc(100% - 2.5em);
-}
-
-#editor .block input,
-#editor .block .actions {
-    display: inline-block;
-}
-
-#editor .block input,
-#editor .block textarea,
-#editor fieldset input,
-#editor fieldset textarea {
-    border: 0;
-    background-color: transparent;
-    overflow: hidden;
-    color: #9E9E9E;
-    resize: none;
-    width: calc(100% - 1.5em);
-}
-
-#editor .action {
-    border: 0;
-    background-color: transparent;
-    font-size: .8em;
-    margin: 0;
-}
-
-#editor .delete,
-#editor .add {
-    color: #ddd;
-}
-
-#editor i {
-    padding: 0;
-}
-
-#editor .add:hover i {
-    color: #8BC34A;
-}
-
-#editor .delete:hover i {
-    color: #E53935;
-}
-
-#editor .add:hover i,
-#editor .delete:hover i {
-    background-color: transparent;
-}
-
-#editor fieldset>.action {
-    opacity: 0;
-}
-
-#editor fieldset:hover>.action {
-    opacity: 1;
-}
-
-#editor textarea[name="content"] {
+#editor .source {
     display: none;
 }
 
-#editor fieldset fieldset {
-    margin-left: 1em;
+#editor .content {
+    background: #fff;
+    padding: 1em 0;
 }
 
-#editor button span {
-    vertical-align: middle;
-    transition: 0.2s ease-in-out all;
+#editor #ace,
+#editor h2,
+#editor .frontmatter {
+    width: 95%;
+    max-width: 960px;
+    margin: 1em auto 0;
 }
 
-#editor button span i {
-    vertical-align: sub;
-    font-size: 1.3rem;
-    margin-right: .2em;
+#editor h2 {
+    margin: 1.5em auto 1em;
+    color: rgba(0, 0, 0, 0.3);
+    font-weight: 500;
 }
 
-#editor #publish {
-    background-color: #167169;
+#editor .ace_gutter {
+    background-color: #fff;
 }
 
-#editor .group.temp {
-    background-color: #f5f5f5;
+
+/* * * * * * * * * * * * * * * *
+ *       EDITOR - MARKDOWN     *
+ * * * * * * * * * * * * * * * */
+
+.frontmatter {
+    -moz-column-count: 2;
+    -webkit-column-count: 2;
+    column-count: 2;
 }
 
-#editor .group.temp label {
-    font-weight: lighter;
-    font-size: .8em;
-    margin-bottom: 1em;
-    color: #7d7d7d;
+.frontmatter label {
+    display: block;
 }
 
-#editor .group.temp input {
-    color: #212121;
+.frontmatter label,
+.frontmatter h3 {
+    font-weight: 500;
+    margin: .2em auto;
 }
 
-#editor .right {
-    display: inline-block;
-    text-align: right;
-    float: right;
+fieldset {
+    border: 0;
+    padding: 0;
+}
+
+.frontmatter>fieldset h3,
+.frontmatter>.group h3 {
+    font-size: 1.5em;
+}
+
+fieldset h3,
+.group h3 {
+    font-size: 0.9em;
 }
 
 
@@ -762,9 +680,10 @@ header .actions {
 
 #listing.list {
     flex-direction: column;
-    margin-top: 3.25em;
+    padding-top: 3.25em;
     width: 100%;
     max-width: 100%;
+    margin: 0;
 }
 
 #listing.list .item {

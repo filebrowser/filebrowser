@@ -1,6 +1,8 @@
 'use strict';
 
-function textareaAutoGrow() {
+var editor = {};
+
+editor.textareaAutoGrow = function() {
     let autogrow = function() {
         this.style.height = '5px';
         this.style.height = this.scrollHeight + 'px';
@@ -157,35 +159,40 @@ function addFrontMatterItem(event) {
 }
 
 document.addEventListener("DOMContentLoaded", (event) => {
-    textareaAutoGrow();
+    if (!document.getElementById('editor')) return;
 
+    editor.textareaAutoGrow();
     templates.arrayItem = document.getElementById("array-item-template");
     templates.base = document.getElementById('base-template');
     templates.objectItem = document.getElementById("object-item-template");
     templates.temporary = document.getElementById('temporary-template');
+    buttons.save = document.querySelector('#save');
 
     let container = document.getElementById('editor'),
-        button = document.querySelector('#save'),
         kind = container.dataset.kind;
 
     if (kind != 'frontmatter-only') {
-        let editor = document.getElementById('editor-source'),
+        let editor = document.querySelector('.content #ace'),
             mode = editor.dataset.mode,
             textarea = document.querySelector('textarea[name="content"]'),
-            aceEditor = ace.edit('editor-source');
+            aceEditor = ace.edit('ace'),
+            options = {
+                wrap: true,
+                maxLines: Infinity,
+                theme: "ace/theme/github",
+                showPrintMargin: false,
+                fontSize: "1em",
+                minLines: 20
+            };
+
         aceEditor.getSession().setMode("ace/mode/" + mode);
         aceEditor.getSession().setValue(textarea.value);
         aceEditor.getSession().on('change', function() {
             textarea.value = aceEditor.getSession().getValue();
         });
-        aceEditor.setOptions({
-            wrap: true,
-            maxLines: Infinity,
-            theme: "ace/theme/github",
-            showPrintMargin: false,
-            fontSize: "1em",
-            minLines: 20
-        });
+
+        if (mode == "markdown") options.showGutter = false;
+        aceEditor.setOptions(options);
     }
 
     let deleteFrontMatterItemButtons = document.getElementsByClassName('delete');
@@ -209,7 +216,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
             data.content = data.content.toString();
         }
 
-        let html = button.querySelector('i').changeToLoading(),
+        let html = buttons.save.querySelector('i').changeToLoading(),
             request = new XMLHttpRequest();
 
         request.open("PUT", toWebDavURL(window.location.pathname));
@@ -217,7 +224,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         request.send(JSON.stringify(data));
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
-                button.querySelector('i').changeToDone((request.status != 201), html);
+                buttons.save.querySelector('i').changeToDone((request.status != 201), html);
             }
         }
     }
