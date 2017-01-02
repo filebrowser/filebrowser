@@ -23,6 +23,11 @@ img {
     max-width: 100%;
 }
 
+audio,
+video {
+    width: 100%;
+}
+
 pre {
     padding: 1em;
     border: 1px solid #e6e6e6;
@@ -721,12 +726,19 @@ header .actions {
     vertical-align: bottom;
 }
 
-#listing .message {
+.message {
     text-align: center;
     font-size: 3em;
-    margin: 1em 0;
+    margin: 1em auto;
     display: block !important;
     width: 95%;
+    color: rgba(0, 0, 0, 0.2);
+    font-weight: 500;
+}
+
+.message i {
+    font-size: inherit;
+    vertical-align: middle;
 }
 
 
