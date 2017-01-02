@@ -117,6 +117,7 @@
     src: local('Material Icons'), local('MaterialIcons-Regular'), url(material/icons.woff2) format('woff2');
 }
 
+.prompt .file-list ul li:before,
 .material-icons {
     font-family: 'Material Icons';
     font-weight: normal;
