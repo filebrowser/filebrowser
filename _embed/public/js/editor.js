@@ -98,11 +98,11 @@ function addFrontMatterItemPrompt(parent) {
 
         if (type == "array" || type == "object") {
             if (parent.dataset.type == "parent") {
-                makeFromBaseTemplate(bid, newtype, name, document.querySelector('.frontmatter'));
+                makeFromBaseTemplate(id, type, name, document.querySelector('.frontmatter'));
                 return;
             }
 
-            makeFromBaseTemplate(bid, newtype, name, block);
+            makeFromBaseTemplate(id, type, name, block);
             return;
         }
 

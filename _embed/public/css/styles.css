@@ -153,6 +153,11 @@ i.spin {
     display: inline-block;
 }
 
+.frontmatter fieldset[data-type="object"] {
+    position: relative;
+    margin: 0;
+}
+
 .frontmatter .button {
     background-color: #2196f3;
     color: #fff;
