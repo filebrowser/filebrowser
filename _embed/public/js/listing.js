@@ -14,7 +14,8 @@ listing.reload = function(callback) {
         if (request.readyState == 4) {
             if (request.status == 200) {
                 document.querySelector('body main').innerHTML = request.responseText;
-
+                listing.addDoubleTapEvent();
+                
                 if (typeof callback == 'function') {
                     callback();
                 }
@@ -311,9 +312,40 @@ listing.newFilePrompt = function(event) {
 
 listing.updateColumns = function(event) {
     let columns = Math.floor(document.getElementById('listing').offsetWidth / 300),
-        items = getCSSRule('#listing.mosaic .item');
+        items = getCSSRule(['#listing.mosaic .item', '.mosaic#listing .item']);
 
     items.style.width = `calc(${100/columns}% - 1em)`;
+}
+
+
+listing.addDoubleTapEvent = function() {
+    let items = document.getElementsByClassName('item'),
+        touches = {
+            id: '',
+            count: 0
+        };
+
+    Array.from(items).forEach(file => {
+        file.addEventListener('touchstart', event => {
+            console.log("hey")
+            if (touches.id != file.id) {
+                touches.id = file.id;
+                touches.count = 1;
+
+                setTimeout(() => {
+                    touches.count = 0;
+                }, 500)
+
+                return;
+            }
+
+            touches.count++;
+
+            if (touches.count > 1) {
+                window.location = file.dataset.url;
+            }
+        });
+    });
 }
 
 // Keydown events
@@ -346,6 +378,7 @@ window.addEventListener("resize", () => {
 
 document.addEventListener('DOMContentLoaded', event => {
     listing.updateColumns();
+    listing.addDoubleTapEvent();
 
     buttons.rename = document.getElementById("rename");
     buttons.upload = document.getElementById("upload");
@@ -400,29 +433,5 @@ document.addEventListener('DOMContentLoaded', event => {
         document.addEventListener("drop", listing.documentDrop, false);
     }
 
-    let touches = {
-        id: '',
-        count: 0
-    };
 
-    Array.from(items).forEach(file => {
-        file.addEventListener('touchstart', event => {
-            if (touches.id != file.id) {
-                touches.id = file.id;
-                touches.count = 1;
-                
-                setTimeout(() => {
-                    touches.count = 0;
-                }, 500)
-
-                return;
-            }
-
-            touches.count++;
-
-            if (touches.count > 1) {
-                window.location = file.dataset.url;
-            }
-        });
-    });
 });

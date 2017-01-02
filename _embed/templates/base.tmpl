@@ -58,11 +58,7 @@
                 </div>
                 {{- end }}
                 
-                <p>{{ if ne .Name "/"}}{{ .Name }}{{ else }}Root{{ end }}</p>
-            </div>
-            
-            <div class="action mobile-only" id="more">
-                <i class="material-icons">more_vert</i>
+                {{ if ne .Name "/"}}<p id="current-file">{{ .Name }}</p>{{ end }}
             </div>
             
             <div class="actions{{ if .IsDir }} disabled{{ end }}" id="file-only">
@@ -95,6 +91,10 @@
                     <i class="material-icons" title="Delete">delete</i><span>Delete</span>
                 </div>
                 {{- end }}
+            </div>
+            
+            <div class="action mobile-only" id="more">
+                <i class="material-icons">more_vert</i>
             </div>
             
             <div class="actions" id="main-actions">                
@@ -188,26 +188,22 @@
     <div class="help">
         <h3>Help</h3>
         
-        <p>
-            <ul>
-                <li><strong>F1</strong> - this information</li>
-                <li><strong>F2</strong> - rename file</li>
-                <li><strong>DEL</strong> - delete selected items</li>
-                <li><strong>ESC</strong> - clear selection and/or close the prompt</li>
-                <li><strong>CTRL + S</strong> - save a file or download the directory where you are</li>
-                <li><strong>CTRL + Click</strong> - select multiple files or directories</li>
-                <li><strong>Double click</strong> - open a file or directory</li>
-                <li><strong>Click</strong> - select file or directory</li>
-            </ul>
-        </p>
+        <ul>
+            <li><strong>F1</strong> - this information</li>
+            <li><strong>F2</strong> - rename file</li>
+            <li><strong>DEL</strong> - delete selected items</li>
+            <li><strong>ESC</strong> - clear selection and/or close the prompt</li>
+            <li><strong>CTRL + S</strong> - save a file or download the directory where you are</li>
+            <li><strong>CTRL + Click</strong> - select multiple files or directories</li>
+            <li><strong>Double click</strong> - open a file or directory</li>
+            <li><strong>Click</strong> - select file or directory</li>
+        </ul>
         
         <p>Not available yet</p>
         
-        <p>
-            <ul>
-                <li><strong>Alt + Click</strong> - select a group of files</li>
-            </ul>
-        </p>
+        <ul>
+            <li><strong>Alt + Click</strong> - select a group of files</li>
+        </ul>
         
         <div>
             <button type="submit" onclick="closeHelp(event);" class="ok">OK</button>
