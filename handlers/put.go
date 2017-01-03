@@ -23,7 +23,7 @@ func PreProccessPUT(
 ) (err error) {
 	var (
 		data      = map[string]interface{}{}
-		file      = []byte{}
+		file      []byte
 		kind      string
 		rawBuffer = new(bytes.Buffer)
 	)
