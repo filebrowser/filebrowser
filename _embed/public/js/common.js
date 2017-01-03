@@ -188,11 +188,49 @@ function selectMoveFolder(event) {
     }
 }
 
-function moveSelected(event) {
-    event.preventDefault();
+function loadNextFolder(event) {
+  let request = new XMLHttpRequest(),
+      prompt = document.querySelector("form.prompt.active");
+      prompt.addEventListener("submit", moveSelected);
+
+  request.open("GET", "/" + event.target.innerHTML);
+  request.setRequestHeader("Accept", "application/json");
+  request.send();
+  request.onreadystatechange = function() {
+    if(request.readyState == 4 && request.status == 200) {
+      prompt.querySelector("ul").innerHTML = "";
+      for(let f of JSON.parse(request.response)) {
+        if(f.URL.substr(f.URL.length - 1) == "/") {
+          if(selectedItems.includes(btoa(f.URL.split("/")[1]))) continue;
+          let newNode = document.createElement("li");
+          newNode.innerHTML = (f.URL.replace("/" + event.target.innerHTML, "").split("/").join(""));
+          newNode.setAttribute("aria-selected", false);
+
+          newNode.addEventListener("dblclick", loadNextFolder);
+          newNode.addEventListener("click", selectMoveFolder);
+
+          prompt.querySelector("ul").appendChild(newNode);
+        }
+      }
+    }
+  }
 }
 
-function loadNextFolder(event) {
+function moveSelected(event) {
+  event.preventDefault();
+  let request = new XMLHttpRequest(),
+      oldLink = toWebDavURL(window.location.pathname),
+      newLink = toWebDavURL(event.srcElement.querySelector("li[aria-selected=true]").innerHTML + "/");
+  request.open("MOVE", oldLink);
+  request.setRequestHeader("Destination", newLink);
+  request.send();
+  request.onreadystatechange = function() {
+    if(request.readyState == 4) {
+      if(request.status == 200 || request.status == 204) {
+        window.reload();
+      }
+    }
+  }
 }
 
 function moveEvent(event) {
@@ -206,9 +244,10 @@ function moveEvent(event) {
     request.onreadystatechange = function() {
         if(request.readyState == 4) {
             if(request.status == 200) {
-                let clone = document.importNode(templates.move.content, true);
+                let prompt = document.importNode(templates.move.content, true);
 
-                clone.querySelector("p").innerHTML = `Choose new house for your file(s)/folder(s):`;
+                prompt.querySelector("p").innerHTML = `Choose new house for your file(s)/folder(s):`;
+                prompt.querySelector("form").addEventListener("submit", moveSelected);
 
                 for(let f of JSON.parse(request.response)) {
                     if(f.URL.split("/").length == 3) {
@@ -219,13 +258,12 @@ function moveEvent(event) {
 
                         newNode.addEventListener("dblclick", loadNextFolder);
                         newNode.addEventListener("click", selectMoveFolder);
-                        newNode.addEventListener("submit", moveSelected);
 
-                        clone.querySelector("div.file-list ul").appendChild(newNode);
+                        prompt.querySelector("div.file-list ul").appendChild(newNode);
                     }
                 }
 
-                document.body.appendChild(clone);
+                document.body.appendChild(prompt);
                 document.querySelector(".overlay").classList.add("active");
                 document.querySelector(".prompt").classList.add("active");
             }
