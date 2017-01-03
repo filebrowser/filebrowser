@@ -26,6 +26,9 @@
     <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/vendor/form2js.js" defer></script>
     <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/editor.js" defer></script>
     {{- end }}
+    {{- if .Config.HugoEnabled }}
+    <script src="{{ .Config.AbsoluteURL }}/_hugointernal/js/application.js" defer></script>
+    {{- end }}
 </head>
 <body>
     <header>
