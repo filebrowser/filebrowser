@@ -1,6 +1,7 @@
 'use strict';
 
 var tempID = "_fm_internal_temporary_id",
+  ssl = (location.protocol === 'https:'),
   templates = {},
   selectedItems = [],
   overlay,
@@ -502,8 +503,10 @@ function searchEvent(event) {
       url = removeLastDirectoryPartOf(url);
     }
 
+    let protocol = ssl ? 'wss:' : 'ws';
+
     if(supported && user.AllowCommands) {
-      let conn = new WebSocket(`ws://${url}?command=true`);
+      let conn = new WebSocket(`${protocol}//${url}?command=true`);
 
       conn.onopen = function () {
         conn.send(value);
@@ -516,7 +519,7 @@ function searchEvent(event) {
 
       conn.onclose = function (event) {
         search.classList.remove('ongoing');
-        reloadListing();
+        listing.reload();
       }
 
       return;
@@ -525,7 +528,7 @@ function searchEvent(event) {
     box.innerHTML = '<ul></ul>';
 
     let ul = box.querySelector('ul'),
-      conn = new WebSocket(`ws://${url}?search=true`);
+      conn = new WebSocket(`${protocol}//${url}?search=true`);
 
     conn.onopen = function () {
       conn.send(value);
