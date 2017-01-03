@@ -54,8 +54,8 @@ listing.itemDrop = function(e) {
   e.preventDefault();
 
   let el = e.target,
-    id = e.dataTransfer.getData("id"),
-    name = e.dataTransfer.getData("name");
+  id = e.dataTransfer.getData("id"),
+  name = e.dataTransfer.getData("name");
 
   if (id == "" || name == "") return;
 
@@ -68,19 +68,19 @@ listing.itemDrop = function(e) {
   if (el.id === id) return;
 
   let oldLink = document.getElementById(id).dataset.url,
-    newLink = el.dataset.url + name;
+  newLink = el.dataset.url + name;
 
   webdav.move(oldLink, newLink)
-    .then(() => listing.reload())
-    .catch(e => console.log(e));
+  .then(() => listing.reload())
+  .catch(e => console.log(e));
 }
 
 listing.documentDrop = function(event) {
   event.preventDefault();
   let dt = event.dataTransfer,
-    files = dt.files,
-    el = event.target,
-    items = document.getElementsByClassName('item');
+  files = dt.files,
+  el = event.target,
+  items = document.getElementsByClassName('item');
 
   for (let i = 0; i < 5; i++) {
     if (el != null && !el.classList.contains('item')) {
@@ -114,15 +114,15 @@ listing.rename = function(event) {
   }
 
   let link = item.dataset.url,
-    field = item.querySelector('.name'),
-    name = field.innerHTML;
+  field = item.querySelector('.name'),
+  name = field.innerHTML;
 
   let submit = (event) => {
     event.preventDefault();
 
     let newName = event.currentTarget.querySelector('input').value,
-      newLink = removeLastDirectoryPartOf(link) + "/" + newName,
-      html = buttons.rename.querySelector('i').changeToLoading();
+    newLink = removeLastDirectoryPartOf(link) + "/" + newName,
+    html = buttons.rename.querySelector('i').changeToLoading();
     closePrompt(event);
 
     webdav.move(link, newLink).then(() => {
@@ -159,21 +159,21 @@ listing.rename = function(event) {
 
 listing.handleFiles = function(files, base) {
   let html = buttons.upload.querySelector('i').changeToLoading(),
-    promises = [];
+  promises = [];
 
   for (let file of files) {
     promises.push(webdav.put(window.location.pathname + base + file.name, file));
   }
 
   Promise.all(promises)
-    .then(() => {
-      listing.reload();
-      buttons.upload.querySelector('i').changeToDone(false, html);
-    })
-    .catch(e => {
-      console.log(e);
-      buttons.upload.querySelector('i').changeToDone(true, html);
-    })
+  .then(() => {
+    listing.reload();
+    buttons.upload.querySelector('i').changeToDone(false, html);
+  })
+  .catch(e => {
+    console.log(e);
+    buttons.upload.querySelector('i').changeToDone(true, html);
+  })
 
   return false;
 }
@@ -194,7 +194,7 @@ listing.handleSelectionChange = function(event) {
   listing.redefineDownloadURLs();
 
   let selectedNumber = selectedItems.length,
-    fileAction = document.getElementById("file-only");
+  fileAction = document.getElementById("file-only");
 
   if (selectedNumber) {
     fileAction.classList.remove("disabled");
@@ -278,9 +278,9 @@ listing.newFilePrompt = function(event) {
   event.preventDefault();
 
   let button = document.getElementById('new'),
-    html = button.querySelector('i').changeToLoading(),
-    request = new XMLHttpRequest(),
-    name = event.currentTarget.querySelector('input').value;
+  html = button.querySelector('i').changeToLoading(),
+  request = new XMLHttpRequest(),
+  name = event.currentTarget.querySelector('input').value;
 
   request.open((name.endsWith("/") ? "MKCOL" : "PUT"), toWebDavURL(window.location.pathname + name));
   request.send();
@@ -297,17 +297,17 @@ listing.newFilePrompt = function(event) {
 
 listing.updateColumns = function(event) {
   let columns = Math.floor(document.getElementById('listing').offsetWidth / 300),
-    items = getCSSRule(['#listing.mosaic .item', '.mosaic#listing .item']);
+  items = getCSSRule(['#listing.mosaic .item', '.mosaic#listing .item']);
 
   items.style.width = `calc(${100/columns}% - 1em)`;
 }
 
 listing.addDoubleTapEvent = function() {
   let items = document.getElementsByClassName('item'),
-    touches = {
-      id: '',
-      count: 0
-    };
+  touches = {
+    id: '',
+    count: 0
+  };
 
   Array.from(items).forEach(file => {
     file.addEventListener('touchstart', event => {
@@ -349,8 +349,8 @@ window.addEventListener('keydown', (event) => {
     console.log("hey")
     switch (String.fromCharCode(event.which).toLowerCase()) {
       case 's':
-        event.preventDefault();
-        window.location = "?download=true"
+      event.preventDefault();
+      window.location = "?download=true"
     }
   }
 });
