@@ -2,8 +2,8 @@
 
 var editor = {};
 
-editor.textareaAutoGrow = function() {
-  let autogrow = function() {
+editor.textareaAutoGrow = function () {
+  let autogrow = function () {
     console.log(this.style.height)
     this.style.height = 'auto';
     this.style.height = (this.scrollHeight) + 'px';
@@ -36,7 +36,7 @@ function makeFromBaseTemplate(id, type, name, parent) {
   clone.querySelector('.delete').addEventListener('click', deleteFrontMatterItem);
   clone.querySelector('.add').addEventListener('click', addFrontMatterItem);
 
-  if (parent.classList.contains("frontmatter")) {
+  if(parent.classList.contains("frontmatter")) {
     parent.insertBefore(clone, document.querySelector('div.button.add'));
     return
   }
@@ -71,20 +71,20 @@ function makeFromObjectItemTemplate(id, name, parent) {
 }
 
 function addFrontMatterItemPrompt(parent) {
-  return function(event) {
+  return function (event) {
     event.preventDefault();
 
     let value = event.currentTarget.querySelector('input').value;
-    if (value === '') {
+    if(value === '') {
       return true;
     }
 
     closePrompt(event);
 
     let name = value.substring(0, value.lastIndexOf(':')),
-    type = value.substring(value.lastIndexOf(':') + 1, value.length);
+      type = value.substring(value.lastIndexOf(':') + 1, value.length);
 
-    if (type !== "" && type !== "array" && type !== "object") {
+    if(type !== "" && type !== "array" && type !== "object") {
       name = value;
     }
 
@@ -92,12 +92,12 @@ function addFrontMatterItemPrompt(parent) {
 
     let id = name;
 
-    if (parent.id != '') {
+    if(parent.id != '') {
       id = parent.id + "." + id;
     }
 
-    if (type == "array" || type == "object") {
-      if (parent.dataset.type == "parent") {
+    if(type == "array" || type == "object") {
+      if(parent.dataset.type == "parent") {
         makeFromBaseTemplate(id, type, name, document.querySelector('.frontmatter'));
         return;
       }
@@ -108,7 +108,7 @@ function addFrontMatterItemPrompt(parent) {
 
     let group = parent.querySelector('.group');
 
-    if (group == null) {
+    if(group == null) {
       parent.insertAdjacentHTML('afterbegin', '<div class="group"></div>');
       group = parent.querySelector('.group');
     }
@@ -121,18 +121,18 @@ function addFrontMatterItem(event) {
   event.preventDefault();
 
   let parent = event.currentTarget.parentNode,
-  type = parent.dataset.type;
+    type = parent.dataset.type;
 
   // If the block is an array
-  if (type === "array") {
+  if(type === "array") {
     let id = parent.id + "[]",
-    count = parent.querySelectorAll('.group > div').length,
-    fieldsets = parent.getElementsByTagName("fieldset");
+      count = parent.querySelectorAll('.group > div').length,
+      fieldsets = parent.getElementsByTagName("fieldset");
 
-    if (fieldsets.length > 0) {
+    if(fieldsets.length > 0) {
       let itemType = fieldsets[0].dataset.type,
-      itemID = parent.id + "[" + fieldsets.length + "]",
-      itemName = fieldsets.length;
+        itemID = parent.id + "[" + fieldsets.length + "]",
+        itemName = fieldsets.length;
 
       makeFromBaseTemplate(itemID, itemType, itemName, parent);
     } else {
@@ -142,7 +142,7 @@ function addFrontMatterItem(event) {
     return;
   }
 
-  if (type == "object" || type == "parent") {
+  if(type == "object" || type == "parent") {
     let clone = document.importNode(templates.question.content, true);
     clone.querySelector('form').id = tempID;
     clone.querySelector('h3').innerHTML = 'New field';
@@ -160,7 +160,7 @@ function addFrontMatterItem(event) {
 }
 
 document.addEventListener("DOMContentLoaded", (event) => {
-  if (!document.getElementById('editor')) return;
+  if(!document.getElementById('editor')) return;
 
   editor.textareaAutoGrow();
   templates.arrayItem = document.getElementById("array-item-template");
@@ -170,29 +170,29 @@ document.addEventListener("DOMContentLoaded", (event) => {
   buttons.save = document.querySelector('#save');
 
   let container = document.getElementById('editor'),
-  kind = container.dataset.kind;
+    kind = container.dataset.kind;
 
-  if (kind != 'frontmatter-only') {
+  if(kind != 'frontmatter-only') {
     let editor = document.querySelector('.content #ace'),
-    mode = editor.dataset.mode,
-    textarea = document.querySelector('textarea[name="content"]'),
-    aceEditor = ace.edit('ace'),
-    options = {
-      wrap: true,
-      maxLines: Infinity,
-      theme: "ace/theme/github",
-      showPrintMargin: false,
-      fontSize: "1em",
-      minLines: 20
-    };
+      mode = editor.dataset.mode,
+      textarea = document.querySelector('textarea[name="content"]'),
+      aceEditor = ace.edit('ace'),
+      options = {
+        wrap: true,
+        maxLines: Infinity,
+        theme: "ace/theme/github",
+        showPrintMargin: false,
+        fontSize: "1em",
+        minLines: 20
+      };
 
     aceEditor.getSession().setMode("ace/mode/" + mode);
     aceEditor.getSession().setValue(textarea.value);
-    aceEditor.getSession().on('change', function() {
+    aceEditor.getSession().on('change', function () {
       textarea.value = aceEditor.getSession().getValue();
     });
 
-    if (mode == "markdown") options.showGutter = false;
+    if(mode == "markdown") options.showGutter = false;
     aceEditor.setOptions(options);
   }
 
@@ -206,25 +206,25 @@ document.addEventListener("DOMContentLoaded", (event) => {
     button.addEventListener('click', addFrontMatterItem);
   });
 
-  let saveContent = function() {
+  let saveContent = function () {
     let data = form2js(document.querySelector('form'));
 
-    if (typeof data.content === "undefined" && kind != 'frontmatter-only') {
+    if(typeof data.content === "undefined" && kind != 'frontmatter-only') {
       data.content = "";
     }
 
-    if (typeof data.content === "number") {
+    if(typeof data.content === "number") {
       data.content = data.content.toString();
     }
 
     let html = buttons.save.querySelector('i').changeToLoading(),
-    request = new XMLHttpRequest();
+      request = new XMLHttpRequest();
 
     request.open("PUT", toWebDavURL(window.location.pathname));
     request.setRequestHeader('Kind', kind);
     request.send(JSON.stringify(data));
-    request.onreadystatechange = function() {
-      if (request.readyState == 4) {
+    request.onreadystatechange = function () {
+      if(request.readyState == 4) {
         buttons.save.querySelector('i').changeToDone((request.status != 201), html);
       }
     }
@@ -241,9 +241,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
   });
 
   window.addEventListener('keydown', (event) => {
-    if (event.ctrlKey || event.metaKey) {
-      switch (String.fromCharCode(event.which).toLowerCase()) {
-        case 's':
+    if(event.ctrlKey || event.metaKey) {
+      switch(String.fromCharCode(event.which).toLowerCase()) {
+      case 's':
         event.preventDefault();
         saveContent();
         break;

@@ -4,19 +4,19 @@ var listing = {
   selectMultiple: false
 };
 
-listing.reload = function(callback) {
+listing.reload = function (callback) {
   let request = new XMLHttpRequest();
 
   request.open('GET', window.location);
   request.setRequestHeader('Minimal', 'true');
   request.send();
-  request.onreadystatechange = function() {
-    if (request.readyState == 4) {
-      if (request.status == 200) {
+  request.onreadystatechange = function () {
+    if(request.readyState == 4) {
+      if(request.status == 200) {
         document.querySelector('body main').innerHTML = request.responseText;
         listing.addDoubleTapEvent();
 
-        if (typeof callback == 'function') {
+        if(typeof callback == 'function') {
           callback();
         }
       }
@@ -24,11 +24,11 @@ listing.reload = function(callback) {
   }
 }
 
-listing.itemDragStart = function(event) {
+listing.itemDragStart = function (event) {
   let el = event.target;
 
-  for (let i = 0; i < 5; i++) {
-    if (!el.classList.contains('item')) {
+  for(let i = 0; i < 5; i++) {
+    if(!el.classList.contains('item')) {
       el = el.parentElement;
     }
   }
@@ -37,12 +37,12 @@ listing.itemDragStart = function(event) {
   event.dataTransfer.setData("name", el.querySelector('.name').innerHTML);
 }
 
-listing.itemDragOver = function(event) {
+listing.itemDragOver = function (event) {
   event.preventDefault();
   let el = event.target;
 
-  for (let i = 0; i < 5; i++) {
-    if (!el.classList.contains('item')) {
+  for(let i = 0; i < 5; i++) {
+    if(!el.classList.contains('item')) {
       el = el.parentElement;
     }
   }
@@ -50,46 +50,46 @@ listing.itemDragOver = function(event) {
   el.style.opacity = 1;
 }
 
-listing.itemDrop = function(e) {
+listing.itemDrop = function (e) {
   e.preventDefault();
 
   let el = e.target,
-  id = e.dataTransfer.getData("id"),
-  name = e.dataTransfer.getData("name");
+    id = e.dataTransfer.getData("id"),
+    name = e.dataTransfer.getData("name");
 
-  if (id == "" || name == "") return;
+  if(id == "" || name == "") return;
 
-  for (let i = 0; i < 5; i++) {
-    if (!el.classList.contains('item')) {
+  for(let i = 0; i < 5; i++) {
+    if(!el.classList.contains('item')) {
       el = el.parentElement;
     }
   }
 
-  if (el.id === id) return;
+  if(el.id === id) return;
 
   let oldLink = document.getElementById(id).dataset.url,
-  newLink = el.dataset.url + name;
+    newLink = el.dataset.url + name;
 
   webdav.move(oldLink, newLink)
-  .then(() => listing.reload())
-  .catch(e => console.log(e));
+    .then(() => listing.reload())
+    .catch(e => console.log(e));
 }
 
-listing.documentDrop = function(event) {
+listing.documentDrop = function (event) {
   event.preventDefault();
   let dt = event.dataTransfer,
-  files = dt.files,
-  el = event.target,
-  items = document.getElementsByClassName('item');
+    files = dt.files,
+    el = event.target,
+    items = document.getElementsByClassName('item');
 
-  for (let i = 0; i < 5; i++) {
-    if (el != null && !el.classList.contains('item')) {
+  for(let i = 0; i < 5; i++) {
+    if(el != null && !el.classList.contains('item')) {
       el = el.parentElement;
     }
   }
 
-  if (files.length > 0) {
-    if (el != null && el.classList.contains('item') && el.dataset.dir == "true") {
+  if(files.length > 0) {
+    if(el != null && el.classList.contains('item') && el.dataset.dir == "true") {
       listing.handleFiles(files, el.querySelector('.name').innerHTML + "/");
       return;
     }
@@ -102,27 +102,27 @@ listing.documentDrop = function(event) {
   }
 }
 
-listing.rename = function(event) {
-  if (!selectedItems.length || selectedItems.length > 1) {
+listing.rename = function (event) {
+  if(!selectedItems.length || selectedItems.length > 1) {
     return false;
   }
 
   let item = document.getElementById(selectedItems[0]);
 
-  if (item.classList.contains('disabled')) {
+  if(item.classList.contains('disabled')) {
     return false;
   }
 
   let link = item.dataset.url,
-  field = item.querySelector('.name'),
-  name = field.innerHTML;
+    field = item.querySelector('.name'),
+    name = field.innerHTML;
 
   let submit = (event) => {
     event.preventDefault();
 
     let newName = event.currentTarget.querySelector('input').value,
-    newLink = removeLastDirectoryPartOf(link) + "/" + newName,
-    html = buttons.rename.querySelector('i').changeToLoading();
+      newLink = removeLastDirectoryPartOf(link) + "/" + newName,
+      html = buttons.rename.querySelector('i').changeToLoading();
     closePrompt(event);
 
     webdav.move(link, newLink).then(() => {
@@ -157,28 +157,28 @@ listing.rename = function(event) {
   return false;
 }
 
-listing.handleFiles = function(files, base) {
+listing.handleFiles = function (files, base) {
   let html = buttons.upload.querySelector('i').changeToLoading(),
-  promises = [];
+    promises = [];
 
-  for (let file of files) {
+  for(let file of files) {
     promises.push(webdav.put(window.location.pathname + base + file.name, file));
   }
 
   Promise.all(promises)
-  .then(() => {
-    listing.reload();
-    buttons.upload.querySelector('i').changeToDone(false, html);
-  })
-  .catch(e => {
-    console.log(e);
-    buttons.upload.querySelector('i').changeToDone(true, html);
-  })
+    .then(() => {
+      listing.reload();
+      buttons.upload.querySelector('i').changeToDone(false, html);
+    })
+    .catch(e => {
+      console.log(e);
+      buttons.upload.querySelector('i').changeToDone(true, html);
+    })
 
   return false;
 }
 
-listing.unselectAll = function() {
+listing.unselectAll = function () {
   let items = document.getElementsByClassName('item');
   Array.from(items).forEach(link => {
     link.setAttribute("aria-selected", false);
@@ -190,22 +190,22 @@ listing.unselectAll = function() {
   return false;
 }
 
-listing.handleSelectionChange = function(event) {
+listing.handleSelectionChange = function (event) {
   listing.redefineDownloadURLs();
 
   let selectedNumber = selectedItems.length,
-  fileAction = document.getElementById("file-only");
+    fileAction = document.getElementById("file-only");
 
-  if (selectedNumber) {
+  if(selectedNumber) {
     fileAction.classList.remove("disabled");
 
-    if (selectedNumber > 1) {
+    if(selectedNumber > 1) {
       buttons.open.classList.add("disabled");
       buttons.rename.classList.add("disabled");
     }
 
-    if (selectedNumber == 1) {
-      if (document.getElementById(selectedItems[0]).dataset.dir == "true") {
+    if(selectedNumber == 1) {
+      if(document.getElementById(selectedItems[0]).dataset.dir == "true") {
         buttons.open.classList.add("disabled");
       } else {
         buttons.open.classList.remove("disabled");
@@ -221,10 +221,10 @@ listing.handleSelectionChange = function(event) {
   return false;
 }
 
-listing.redefineDownloadURLs = function() {
+listing.redefineDownloadURLs = function () {
   let files = "";
 
-  for (let i = 0; i < selectedItems.length; i++) {
+  for(let i = 0; i < selectedItems.length; i++) {
     let url = document.getElementById(selectedItems[i]).dataset.url;
     files += url.replace(window.location.pathname, "") + ",";
   }
@@ -238,16 +238,16 @@ listing.redefineDownloadURLs = function() {
   });
 }
 
-listing.openItem = function(event) {
+listing.openItem = function (event) {
   window.location = event.currentTarget.dataset.url;
 }
 
-listing.selectItem = function(event) {
+listing.selectItem = function (event) {
   let el = event.currentTarget;
 
-  if (selectedItems.length != 0) event.preventDefault();
-  if (selectedItems.indexOf(el.id) == -1) {
-    if (!event.ctrlKey && !listing.selectMultiple) listing.unselectAll();
+  if(selectedItems.length != 0) event.preventDefault();
+  if(selectedItems.indexOf(el.id) == -1) {
+    if(!event.ctrlKey && !listing.selectMultiple) listing.unselectAll();
 
     el.setAttribute("aria-selected", true);
     selectedItems.push(el.id);
@@ -260,7 +260,7 @@ listing.selectItem = function(event) {
   return false;
 }
 
-listing.newFileButton = function(event) {
+listing.newFileButton = function (event) {
   event.preventDefault();
 
   let clone = document.importNode(templates.question.content, true);
@@ -274,18 +274,18 @@ listing.newFileButton = function(event) {
   document.querySelector('.prompt').classList.add('active');
 }
 
-listing.newFilePrompt = function(event) {
+listing.newFilePrompt = function (event) {
   event.preventDefault();
 
   let button = document.getElementById('new'),
-  html = button.querySelector('i').changeToLoading(),
-  request = new XMLHttpRequest(),
-  name = event.currentTarget.querySelector('input').value;
+    html = button.querySelector('i').changeToLoading(),
+    request = new XMLHttpRequest(),
+    name = event.currentTarget.querySelector('input').value;
 
   request.open((name.endsWith("/") ? "MKCOL" : "PUT"), toWebDavURL(window.location.pathname + name));
   request.send();
-  request.onreadystatechange = function() {
-    if (request.readyState == 4) {
+  request.onreadystatechange = function () {
+    if(request.readyState == 4) {
       button.querySelector('i').changeToDone((request.status != 201), html);
       listing.reload();
     }
@@ -295,23 +295,23 @@ listing.newFilePrompt = function(event) {
   return false;
 }
 
-listing.updateColumns = function(event) {
+listing.updateColumns = function (event) {
   let columns = Math.floor(document.getElementById('listing').offsetWidth / 300),
-  items = getCSSRule(['#listing.mosaic .item', '.mosaic#listing .item']);
+    items = getCSSRule(['#listing.mosaic .item', '.mosaic#listing .item']);
 
   items.style.width = `calc(${100/columns}% - 1em)`;
 }
 
-listing.addDoubleTapEvent = function() {
+listing.addDoubleTapEvent = function () {
   let items = document.getElementsByClassName('item'),
-  touches = {
-    id: '',
-    count: 0
-  };
+    touches = {
+      id: '',
+      count: 0
+    };
 
   Array.from(items).forEach(file => {
     file.addEventListener('touchstart', event => {
-      if (touches.id != file.id) {
+      if(touches.id != file.id) {
         touches.id = file.id;
         touches.count = 1;
 
@@ -324,7 +324,7 @@ listing.addDoubleTapEvent = function() {
 
       touches.count++;
 
-      if (touches.count > 1) {
+      if(touches.count > 1) {
         window.location = file.dataset.url;
       }
     });
@@ -333,22 +333,22 @@ listing.addDoubleTapEvent = function() {
 
 // Keydown events
 window.addEventListener('keydown', (event) => {
-  if (event.keyCode == 27) {
+  if(event.keyCode == 27) {
     listing.unselectAll();
 
-    if (document.querySelectorAll('.prompt').length) {
+    if(document.querySelectorAll('.prompt').length) {
       closePrompt(event);
     }
   }
 
-  if (event.keyCode == 113) {
+  if(event.keyCode == 113) {
     listing.rename();
   }
 
-  if (event.ctrlKey || event.metaKey) {
+  if(event.ctrlKey || event.metaKey) {
     console.log("hey")
-    switch (String.fromCharCode(event.which).toLowerCase()) {
-      case 's':
+    switch(String.fromCharCode(event.which).toLowerCase()) {
+    case 's':
       event.preventDefault();
       window.location = "?download=true"
     }
@@ -383,13 +383,13 @@ document.addEventListener('DOMContentLoaded', event => {
     document.getElementById('multiple-selection').classList.remove('active');
   })
 
-  if (user.AllowEdit) {
+  if(user.AllowEdit) {
     buttons.rename.addEventListener("click", listing.rename);
   }
 
   let items = document.getElementsByClassName('item');
 
-  if (user.AllowNew) {
+  if(user.AllowNew) {
     buttons.upload.addEventListener("click", (event) => {
       document.getElementById("upload-input").click();
     });
@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', event => {
     buttons.new.addEventListener('click', listing.newFileButton);
 
     // Drag and Drop
-    document.addEventListener("dragover", function(event) {
+    document.addEventListener("dragover", function (event) {
       event.preventDefault();
     }, false);
 
@@ -415,6 +415,5 @@ document.addEventListener('DOMContentLoaded', event => {
 
     document.addEventListener("drop", listing.documentDrop, false);
   }
-
 
 });
