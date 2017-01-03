@@ -79,13 +79,17 @@
                 </div>
                 {{- end }}
 
+                {{- if .IsDir }}
                 <div class="action" id="open">
                     <i class="material-icons" title="See raw">open_in_new</i>
+                    <span>See raw</span>
                 </div>
+                {{- end }}
 
-                {{- if .User.AllowEdit }}
+                {{- if and (.User.AllowEdit) (.IsDir) }}
                 <div class="action" id="move">
                     <i class="material-icons" title="Move">forward</i>
+                    <span>Move file</span>
                 </div>
                 {{- end }}
 
@@ -95,7 +99,7 @@
                 </div>
                 {{- end }}
 
-                {{- if .User.AllowEdit }}
+                {{- if and .User.AllowEdit .IsDir }}
                 <div class="action" id="delete">
                     <i class="material-icons" title="Delete">delete</i><span>Delete</span>
                 </div>
@@ -124,6 +128,26 @@
                 {{- if and (.User.AllowNew) (.IsDir) }}
                 <div class="action" id="upload">
                     <i class="material-icons" title="Upload">file_upload</i><span>Upload</span>
+                </div>
+                {{- end }}
+
+                {{- if not .IsDir }}
+                <div class="action" id="open">
+                    <i class="material-icons" title="See raw">open_in_new</i>
+                    <span>See raw</span>
+                </div>
+                {{- end }}
+
+                {{- if and .User.AllowEdit (not .IsDir) }}
+                <div class="action" id="delete">
+                    <i class="material-icons" title="Delete">delete</i><span>Delete</span>
+                </div>
+                {{- end }}
+
+                {{- if and (.User.AllowEdit) (not .IsDir) }}
+                <div class="action" id="move">
+                    <i class="material-icons" title="Move">forward</i>
+                    <span>Move file</span>
                 </div>
                 {{- end }}
 

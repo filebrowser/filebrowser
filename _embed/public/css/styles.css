@@ -1128,7 +1128,7 @@ footer a:hover {
     display: none;
   }
   #bottom-bar>*:first-child {
-    max-width: calc(100% - 16em);
+    max-width: calc(100% - 16em) !important;
   }
   #main-actions {
     position: fixed;
