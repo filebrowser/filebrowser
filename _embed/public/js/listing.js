@@ -317,7 +317,7 @@ listing.addDoubleTapEvent = function () {
 
         setTimeout(() => {
           touches.count = 0;
-        }, 500)
+        }, 300)
 
         return;
       }
@@ -377,7 +377,7 @@ function loadNextFolder(event) {
     prompt = document.querySelector("form.prompt.active");
 
   prompt.addEventListener("submit", moveSelected);
-
+  console.log(event);
   request.open("GET", event.target.dataset.url);
   request.setRequestHeader("Accept", "application/json");
   request.send();
@@ -388,10 +388,22 @@ function loadNextFolder(event) {
       prompt.querySelector("ul").innerHTML = "";
       prompt.querySelector('code').innerHTML = event.target.dataset.url;
 
+      if(prompt.querySelector('code').innerHTML != baseURL + "/") {
+        let newNode = document.createElement("li");
+        newNode.dataset.url = removeLastDirectoryPartOf(event.target.dataset.url) + "/";
+        newNode.innerHTML = "..";
+        newNode.setAttribute("aria-selected", false);
+        newNode.addEventListener("dblclick", loadNextFolder);
+        newNode.addEventListener("click", selectMoveFolder);
+
+        prompt.querySelector("div.file-list ul").appendChild(newNode);
+      }
+
       if(JSON.parse(request.response) == null) {
         prompt.querySelector("p").innerHTML = `There aren't any folders in this directory.`;
         return;
       }
+
 
       for(let f of JSON.parse(request.response)) {
         if(f.IsDir === true) {
@@ -456,6 +468,17 @@ function moveEvent(event) {
 
         prompt.querySelector("form").addEventListener("submit", moveSelected);
         prompt.querySelector('code').innerHTML = window.location.pathname;
+
+        if(window.location.pathname !== baseURL + "/") {
+          let newNode = document.createElement("li");
+          newNode.dataset.url = removeLastDirectoryPartOf(window.location.pathname) + "/";
+          newNode.innerHTML = "..";
+          newNode.setAttribute("aria-selected", false);
+          newNode.addEventListener("dblclick", loadNextFolder);
+          newNode.addEventListener("click", selectMoveFolder);
+
+          prompt.querySelector("div.file-list ul").appendChild(newNode);
+        }
 
         for(let f of JSON.parse(request.response)) {
           if(f.IsDir === true) {
