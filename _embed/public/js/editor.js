@@ -217,17 +217,20 @@ document.addEventListener("DOMContentLoaded", (event) => {
       data.content = data.content.toString();
     }
 
-    let html = buttons.save.querySelector('i').changeToLoading(),
-      request = new XMLHttpRequest();
+    let request = new XMLHttpRequest();
 
-    request.open("PUT", toWebDavURL(window.location.pathname));
-    request.setRequestHeader('Kind', kind);
-    request.send(JSON.stringify(data));
-    request.onreadystatechange = function () {
-      if(request.readyState == 4) {
-        buttons.save.querySelector('i').changeToDone((request.status != 201), html);
-      }
-    }
+    buttons.setLoading('save')
+
+    webdav.put(window.location.pathname, JSON.stringify(data), {
+        'Kind': kind
+      })
+      .then(() => {
+        buttons.setDone('save')
+      })
+      .catch(e => {
+        console.log(e);
+        buttons.setDone('save', false)
+      })
   }
 
   document.querySelector('#save').addEventListener('click', event => {

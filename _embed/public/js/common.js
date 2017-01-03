@@ -1,12 +1,10 @@
 'use strict';
 
 var tempID = "_fm_internal_temporary_id",
-  buttons = {},
   templates = {},
   selectedItems = [],
   overlay,
-  clickOverlay,
-  webdav = {};
+  clickOverlay;
 
 // Removes an element, if exists, from an array
 Array.prototype.removeElement = function (element) {
@@ -31,56 +29,6 @@ Document.prototype.sendCostumEvent = function (text) {
 Document.prototype.getCookie = function (name) {
   var re = new RegExp("(?:(?:^|.*;\\s*)" + name + "\\s*\\=\\s*([^;]*).*$)|^.*$");
   return document.cookie.replace(re, "$1");
-}
-
-// Changes a button to the loading animation
-Element.prototype.changeToLoading = function () {
-  let element = this,
-    originalText = element.innerHTML;
-
-  element.style.opacity = 0;
-
-  setTimeout(function () {
-    element.classList.add('spin');
-    element.innerHTML = 'autorenew';
-    element.style.opacity = 1;
-  }, 200);
-
-  return originalText;
-}
-
-// Changes an element to done animation
-Element.prototype.changeToDone = function (error, html) {
-  this.style.opacity = 0;
-
-  let thirdStep = () => {
-    this.innerHTML = html;
-    this.style.opacity = null;
-
-    if(selectedItems.length == 0 && document.getElementById('listing'))
-      document.sendCostumEvent('changed-selected');
-  }
-
-  let secondStep = () => {
-    this.style.opacity = 0;
-    setTimeout(thirdStep, 200);
-  }
-
-  let firstStep = () => {
-    this.classList.remove('spin');
-    this.innerHTML = error ?
-      'close' :
-      'done';
-    this.style.opacity = 1;
-    setTimeout(secondStep, 1000);
-  }
-
-  setTimeout(firstStep, 200);
-  return false;
-}
-
-function toWebDavURL(url) {
-  return window.location.origin + url.replace(baseURL + "/", webdavURL + "/");
 }
 
 // Remove the last directory of an url
@@ -122,20 +70,78 @@ function getCSSRule(rules) {
 
 /* * * * * * * * * * * * * * * *
  *                             *
+ *            BUTTONS          *
+ *                             *
+ * * * * * * * * * * * * * * * */
+var buttons = {
+  previousState: {},
+};
+
+buttons.setLoading = function (name) {
+  if(typeof this[name] === 'undefined') return;
+  let i = this[name].querySelector('i');
+
+  this.previousState[name] = i.innerHTML;
+  i.style.opacity = 0;
+
+  setTimeout(function () {
+    i.classList.add('spin');
+    i.innerHTML = 'autorenew';
+    i.style.opacity = 1;
+  }, 200);
+}
+
+// Changes an element to done animation
+buttons.setDone = function (name, success = true) {
+  let i = this[name].querySelector('i');
+
+  i.style.opacity = 0;
+
+  let thirdStep = () => {
+    i.innerHTML = this.previousState[name];
+    i.style.opacity = null;
+
+    if(selectedItems.length == 0 && document.getElementById('listing'))
+      document.sendCostumEvent('changed-selected');
+  }
+
+  let secondStep = () => {
+    i.style.opacity = 0;
+    setTimeout(thirdStep, 200);
+  }
+
+  let firstStep = () => {
+    i.classList.remove('spin');
+    i.innerHTML = success ?
+      'done' :
+      'close';
+    i.style.opacity = 1;
+    setTimeout(secondStep, 1000);
+  }
+
+  setTimeout(firstStep, 200);
+  return false;
+}
+
+/* * * * * * * * * * * * * * * *
+ *                             *
  *            WEBDAV           *
  *                             *
  * * * * * * * * * * * * * * * */
-// TODO: here, we should create an abstraction layer from the webdav.
-// We must create functions that do the requests to the webdav backend.
+var webdav = {};
+
+webdav.convertURL = function (url) {
+  return window.location.origin + url.replace(baseURL + "/", webdavURL + "/");
+}
 
 webdav.move = function (oldLink, newLink) {
   return new Promise((resolve, reject) => {
     let request = new XMLHttpRequest();
-    request.open('MOVE', toWebDavURL(oldLink), true);
-    request.setRequestHeader('Destination', toWebDavURL(newLink));
+    request.open('MOVE', webdav.convertURL(oldLink), true);
+    request.setRequestHeader('Destination', webdav.convertURL(newLink));
     request.onload = () => {
       if(request.status == 201 || request.status == 204) {
-        resolve(request.response);
+        resolve();
       } else {
         reject(request.statusText);
       }
@@ -145,13 +151,18 @@ webdav.move = function (oldLink, newLink) {
   });
 }
 
-webdav.put = function (link, body) {
+webdav.put = function (link, body, headers = {}) {
   return new Promise((resolve, reject) => {
     let request = new XMLHttpRequest();
-    request.open('PUT', toWebDavURL(link), true);
+    request.open('PUT', webdav.convertURL(link), true);
+
+    for(let key in headers) {
+      request.setRequestHeader(key, headers[key]);
+    }
+
     request.onload = () => {
       if(request.status == 201) {
-        resolve(request.response);
+        resolve();
       } else {
         reject(request.statusText);
       }
@@ -159,6 +170,40 @@ webdav.put = function (link, body) {
     request.onerror = () => reject(request.statusText);
     request.send(body);
   });
+}
+
+webdav.delete = function (link) {
+  return new Promise((resolve, reject) => {
+    let request = new XMLHttpRequest();
+    request.open('DELETE', webdav.convertURL(link), true);
+    request.onload = () => {
+      if(request.status == 204) {
+        resolve();
+      } else {
+        reject(request.statusText);
+      }
+    }
+    request.onerror = () => reject(request.statusText);
+    request.send();
+  });
+  request.send();
+}
+
+webdav.new = function (link) {
+  return new Promise((resolve, reject) => {
+    let request = new XMLHttpRequest();
+    request.open((link.endsWith("/") ? "MKCOL" : "PUT"), webdav.convertURL(link), true);
+    request.onload = () => {
+      if(request.status == 201) {
+        resolve();
+      } else {
+        reject(request.statusText);
+      }
+    }
+    request.onerror = () => reject(request.statusText);
+    request.send();
+  });
+  request.send();
 }
 
 /* * * * * * * * * * * * * * * *
@@ -284,20 +329,20 @@ function moveSelected(event) {
   // TODO: this only works for ONE file. What if there are more files selected?
   // TODO: use webdav.rename
 
-  let request = new XMLHttpRequest(),
-    oldLink = toWebDavURL(window.location.pathname),
-    newLink = toWebDavURL(event.srcElement.querySelector("li[aria-selected=true]").innerHTML + "/");
+  /*   let request = new XMLHttpRequest(),
+      oldLink = toWebDavURL(window.location.pathname),
+      newLink = toWebDavURL(event.srcElement.querySelector("li[aria-selected=true]").innerHTML + "/");
 
-  request.open("MOVE", oldLink);
-  request.setRequestHeader("Destination", newLink);
-  request.send();
-  request.onreadystatechange = function () {
-    if(request.readyState == 4) {
-      if(request.status == 200 || request.status == 204) {
-        window.reload();
+    request.open("MOVE", oldLink);
+    request.setRequestHeader("Destination", newLink);
+    request.send();
+    request.onreadystatechange = function () {
+      if(request.readyState == 4) {
+        if(request.status == 200 || request.status == 204) {
+          window.reload();
+        }
       }
-    }
-  }
+    } */
 }
 
 function moveEvent(event) {
@@ -345,44 +390,41 @@ function moveEvent(event) {
   }
 }
 
-function deleteSelected(single) {
-  return function (event) {
-    event.preventDefault();
+function deleteOnSingleFile() {
+  closePrompt(event);
+  buttons.setLoading('delete');
 
-    Array.from(selectedItems).forEach(id => {
-      let request = new XMLHttpRequest(),
-        html = buttons.delete.querySelector('i').changeToLoading(),
-        el,
-        url;
+  let promises = [];
 
-      if(single) {
-        url = window.location.pathname;
-      } else {
-        el = document.getElementById(id);
-        url = el.dataset.url;
-      }
+  webdav.delete(window.location.pathname)
+    .then(() => {
+      window.location.pathname = removeLastDirectoryPartOf(window.location.pathname);
+    })
+    .catch(e => {
+      buttons.setDone('delete', false);
+      console.log(e)
+    })
+}
 
-      request.open('DELETE', toWebDavURL(url));
-      request.onreadystatechange = function () {
-        if(request.readyState == 4) {
-          if(request.status == 204) {
-            if(single) {
-              window.location.pathname = removeLastDirectoryPartOf(window.location.pathname);
-            } else {
-              el.remove();
-              selectedItems.removeElement(id);
-            }
-          }
+function deleteOnListing() {
+  closePrompt(event);
+  buttons.setLoading('delete');
 
-          buttons.delete.querySelector('i').changeToDone(request.status != 204, html);
-        }
-      }
+  let promises = [];
 
-      request.send();
-    });
-
-    closePrompt(event);
+  for(let id of selectedItems) {
+    promises.push(webdav.delete(document.getElementById(id).dataset.url));
   }
+
+  Promise.all(promises)
+    .then(() => {
+      listing.reload();
+      buttons.setDone('delete');
+    })
+    .catch(e => {
+      console.log(e);
+      buttons.setDone('delete', false);
+    })
 }
 
 // Handles the delete button event
@@ -398,14 +440,15 @@ function deleteEvent(event) {
   clone.querySelector('h3').innerHTML = 'Delete files';
 
   if(single) {
+    clone.querySelector('form').addEventListener('submit', deleteOnSingleFile);
     clone.querySelector('p').innerHTML = `Are you sure you want to delete this file/folder?`;
   } else {
+    clone.querySelector('form').addEventListener('submit', deleteOnListing);
     clone.querySelector('p').innerHTML = `Are you sure you want to delete ${selectedItems.length} file(s)?`;
   }
 
   clone.querySelector('input').remove();
   clone.querySelector('.ok').innerHTML = 'Delete';
-  clone.querySelector('form').addEventListener('submit', deleteSelected(single));
 
   document.body.appendChild(clone);
   document.querySelector('.overlay').classList.add('active');
