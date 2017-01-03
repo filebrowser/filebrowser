@@ -121,7 +121,6 @@ function getCSSRule(rules) {
  * * * * * * * * * * * * * * * */
 // TODO: here, we should create an abstraction layer from the webdav. 
 // We must create functions that do the requests to the webdav backend.
-// this functions will contain a 'callback' to be used withing the other function. 
 
 webdav.move = function(oldLink, newLink) {
     return new Promise((resolve, reject) => {
@@ -137,6 +136,22 @@ webdav.move = function(oldLink, newLink) {
         }
         request.onerror = () => reject(request.statusText);
         request.send();
+    });
+}
+
+webdav.put = function(link, body) {
+    return new Promise((resolve, reject) => {
+        let request = new XMLHttpRequest();
+        request.open('PUT', toWebDavURL(link), true);
+        request.onload = () => {
+            if (request.status == 201) {
+                resolve(request.response);
+            } else {
+                reject(request.statusText);
+            }
+        }
+        request.onerror = () => reject(request.statusText);
+        request.send(body);
     });
 }
 

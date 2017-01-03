@@ -15,7 +15,7 @@
     "end_with_newline": false, // End output with newline
     "indent_char": " ", // Indentation character
     "indent_level": 0, // Initial indentation level
-    "indent_size": 4, // Indentation size
+    "indent_size": 2, // Indentation size
     "indent_with_tabs": false, // Indent with tabs, overrides `indent_size` and `indent_char`
     "jslint_happy": false, // If true, then jslint-stricter mode is enforced
     "keep_array_indentation": false, // Preserve array indentation

@@ -1,13 +1,18 @@
 language: go
+
 go:
 - tip
-sudo: false
+
 install:
-- go generate
-- go get -u -v $(go list -f '{{join .Imports "\n"}}' ./... | sort | uniq | grep -v caddy-filemanager)
-- go get -u -v github.com/mholt/caddy/caddyhttp
-- go get -u -v github.com/caddyserver/caddydev
-- go install github.com/caddyserver/caddydev
+  - go generate
+  - go get -u -v $(go list -f '{{join .Imports "\n"}}' ./... | sort | uniq | grep -v caddy-filemanager)
+  - go get -u -v github.com/mholt/caddy/caddyhttp
+  - go get -u -v github.com/caddyserver/caddydev
+  - go install github.com/caddyserver/caddydev
+  - go get github.com/gordonklaus/ineffassign
+
 script:
-- sed -i 's/\_ \"github.com\/mholt\/caddy\/caddyhttp\"/\_ \"github.com\/mholt\/caddy\/caddyhttp\"\n\_ \"github.com\/hacdias\/caddy-filemanager\"/g' $GOPATH/src/github.com/mholt/caddy/caddy/caddymain/run.go
-- go build github.com/mholt/caddy/caddy
+  - sed -i 's/\_ \"github.com\/mholt\/caddy\/caddyhttp\"/\_ \"github.com\/mholt\/caddy\/caddyhttp\"\n\_ \"github.com\/hacdias\/caddy-filemanager\"/g' $GOPATH/src/github.com/mholt/caddy/caddy/caddymain/run.go
+  - go build github.com/mholt/caddy/caddy
+  - diff <(echo -n) <(gofmt -s -d .)
+  - ineffassign .
