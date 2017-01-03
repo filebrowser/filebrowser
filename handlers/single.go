@@ -26,7 +26,7 @@ func ServeSingle(w http.ResponseWriter, r *http.Request, c *config.Config, u *co
 
 	p := &page.Page{
 		Info: &page.Info{
-			Name:   i.Name(),
+			Name:   i.Name,
 			Path:   i.VirtualPath,
 			IsDir:  false,
 			Data:   i,

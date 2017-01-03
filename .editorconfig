@@ -15,7 +15,7 @@ charset = utf-8
 
 # 4 space indentation
 [*.go]
-indent_style = space
+indent_style = tab
 indent_size = 2
 
 # Indentation override for all JS under lib directory

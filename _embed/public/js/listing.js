@@ -15,7 +15,7 @@ listing.reload = function(callback) {
             if (request.status == 200) {
                 document.querySelector('body main').innerHTML = request.responseText;
                 listing.addDoubleTapEvent();
-                
+
                 if (typeof callback == 'function') {
                     callback();
                 }
@@ -128,31 +128,24 @@ listing.rename = function(event) {
         event.preventDefault();
 
         let newName = event.currentTarget.querySelector('input').value,
-            newLink = removeLastDirectoryPartOf(toWebDavURL(link)) + "/" + newName,
-            html = buttons.rename.querySelector('i').changeToLoading(),
-            request = new XMLHttpRequest();
+            newLink = removeLastDirectoryPartOf(link) + "/" + newName,
+            html = buttons.rename.querySelector('i').changeToLoading();
 
-        request.open('MOVE', toWebDavURL(link));
-        request.setRequestHeader('Destination', newLink);
-        request.send();
-        request.onreadystatechange = function() {
-            if (request.readyState == 4) {
-                if (request.status != 201 && request.status != 204) {
-                    span.innerHTML = name;
-                } else {
-                    closePrompt(event);
-
-                    listing.reload(() => {
-                        newName = btoa(newName);
-                        selectedItems = [newName];
-                        document.getElementById(newName).setAttribute("aria-selected", true);
-                        listing.handleSelectionChange();
-                    });
-                }
-
-                buttons.rename.querySelector('i').changeToDone((request.status != 201 && request.status != 204), html);
+        webdav.rename(link, newLink, success => {
+            if (success) {
+                listing.reload(() => {
+                    newName = btoa(newName);
+                    selectedItems = [newName];
+                    document.getElementById(newName).setAttribute("aria-selected", true);
+                    listing.handleSelectionChange();
+                });
+            } else {
+                item.querySelector('.name').innerHTML = name;
             }
-        }
+            
+            closePrompt(event);
+            buttons.rename.querySelector('i').changeToDone(!success, html);
+        });
 
         return false;
     }
@@ -316,7 +309,6 @@ listing.updateColumns = function(event) {
 
     items.style.width = `calc(${100/columns}% - 1em)`;
 }
-
 
 listing.addDoubleTapEvent = function() {
     let items = document.getElementsByClassName('item'),
