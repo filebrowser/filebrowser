@@ -144,13 +144,6 @@
                 </div>
                 {{- end }}
 
-                {{- if and (.User.AllowEdit) (not .IsDir) }}
-                <div class="action" id="move">
-                    <i class="material-icons" title="Move">forward</i>
-                    <span>Move file</span>
-                </div>
-                {{- end }}
-
                 <div {{ if .IsDir }}data-dropdown{{ end }} class="action" id="download">
                     {{- if not .IsDir}}<a href="?download=true">{{ end }}
                     <i class="material-icons" title="Download">file_download</i><span>Download</span>

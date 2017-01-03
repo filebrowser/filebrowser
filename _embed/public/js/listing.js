@@ -358,6 +358,134 @@ window.addEventListener("resize", () => {
   listing.updateColumns();
 });
 
+
+function selectMoveFolder(event) {
+  if(event.target.getAttribute("aria-selected") === "true") {
+    event.target.setAttribute("aria-selected", false);
+    return;
+  } else {
+    if(document.querySelector(".file-list li[aria-selected=true]")) {
+      document.querySelector(".file-list li[aria-selected=true]").setAttribute("aria-selected", false);
+    }
+    event.target.setAttribute("aria-selected", true);
+    return;
+  }
+}
+
+function loadNextFolder(event) {
+  let request = new XMLHttpRequest(),
+    prompt = document.querySelector("form.prompt.active");
+
+  prompt.addEventListener("submit", moveSelected);
+
+  request.open("GET", event.target.dataset.url);
+  request.setRequestHeader("Accept", "application/json");
+  request.send();
+  request.onreadystatechange = function () {
+    if(request.readyState == 4 && request.status == 200) {
+      let dirs = 0;
+
+      prompt.querySelector("ul").innerHTML = "";
+      prompt.querySelector('code').innerHTML = event.target.dataset.url;
+
+      if(JSON.parse(request.response) == null) {
+        prompt.querySelector("p").innerHTML = `There aren't any folders in this directory.`;
+        return;
+      }
+
+      for(let f of JSON.parse(request.response)) {
+        if(f.IsDir === true) {
+          dirs++;
+
+          let newNode = document.createElement("li");
+          newNode.dataset.url = f.URL;
+          newNode.innerHTML = f.Name;
+          newNode.setAttribute("aria-selected", false);
+
+          newNode.addEventListener("dblclick", loadNextFolder);
+          newNode.addEventListener("click", selectMoveFolder);
+
+          prompt.querySelector("div.file-list ul").appendChild(newNode);
+        }
+      }
+
+      if(dirs === 0) {
+        prompt.querySelector("p").innerHTML = `There aren't any folders in this directory.`;
+      }
+    }
+  }
+}
+
+function moveSelected(event) {
+  event.preventDefault();
+
+  let promises = [];
+  buttons.setLoading("move");
+
+  for(let file of selectedItems) {
+    let fileElement = document.getElementById(file),
+        destFolder = event.target.querySelector("p code").innerHTML;
+    if(event.srcElement.querySelector("li[aria-selected=true]") != null) destFolder = event.srcElement.querySelector("li[aria-selected=true]").innerHTML;
+    promises.push(webdav.move(fileElement.dataset.url, "/" + destFolder + "/" + fileElement.querySelector(".name").innerHTML));
+  }
+
+  Promise.all(promises)
+    .then(() => {
+      closePrompt(event);
+      buttons.setDone("move");
+      listing.reload();
+    })
+    .catch(e => {
+      console.log(e);
+    })
+}
+
+function moveEvent(event) {
+  if(event.currentTarget.classList.contains("disabled"))
+    return;
+
+  let request = new XMLHttpRequest();
+  request.open("GET", window.location.pathname, true);
+  request.setRequestHeader("Accept", "application/json");
+  request.send();
+  request.onreadystatechange = function () {
+    if(request.readyState == 4) {
+      if(request.status == 200) {
+        let prompt = document.importNode(templates.move.content, true),
+          dirs = 0;
+
+        prompt.querySelector("form").addEventListener("submit", moveSelected);
+        prompt.querySelector('code').innerHTML = window.location.pathname;
+
+        for(let f of JSON.parse(request.response)) {
+          if(f.IsDir === true) {
+            dirs++;
+
+            let newNode = document.createElement("li");
+            newNode.dataset.url = f.URL;
+            newNode.innerHTML = f.Name;
+            newNode.setAttribute("aria-selected", false);
+
+            newNode.addEventListener("dblclick", loadNextFolder);
+            newNode.addEventListener("click", selectMoveFolder);
+
+            prompt.querySelector("div.file-list ul").appendChild(newNode);
+          }
+        }
+
+        if(dirs === 0) {
+          prompt.querySelector("p").innerHTML = `There aren't any folders in this directory.`;
+        }
+
+        document.body.appendChild(prompt);
+        document.querySelector(".overlay").classList.add("active");
+        document.querySelector(".prompt").classList.add("active");
+      }
+    }
+  }
+}
+
+
 document.addEventListener('DOMContentLoaded', event => {
   listing.updateColumns();
   listing.addDoubleTapEvent();
@@ -366,6 +494,9 @@ document.addEventListener('DOMContentLoaded', event => {
   buttons.upload = document.getElementById("upload");
   buttons.new = document.getElementById('new');
   buttons.download = document.getElementById('download');
+  buttons.move = document.getElementById("move");
+
+  buttons.move.addEventListener("click", moveEvent);
 
   document.getElementById('multiple-selection-activate').addEventListener('click', event => {
     listing.selectMultiple = true;
