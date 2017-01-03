@@ -301,6 +301,11 @@ function loadNextFolder(event) {
       prompt.querySelector("ul").innerHTML = "";
       prompt.querySelector('code').innerHTML = event.target.dataset.url;
 
+      if(JSON.parse(request.response) == null) {
+        prompt.querySelector("p").innerHTML = `There aren't any folders in this directory.`;
+        return;
+      }
+
       for(let f of JSON.parse(request.response)) {
         if(f.IsDir === true) {
           dirs++;
@@ -327,23 +332,25 @@ function loadNextFolder(event) {
 function moveSelected(event) {
   event.preventDefault();
 
-  // TODO: this only works for ONE file. What if there are more files selected?
-  // TODO: use webdav.rename
+  let promises = [];
+  buttons.setLoading("move");
 
-  /*   let request = new XMLHttpRequest(),
-      oldLink = toWebDavURL(window.location.pathname),
-      newLink = toWebDavURL(event.srcElement.querySelector("li[aria-selected=true]").innerHTML + "/");
+  for(let file of selectedItems) {
+    let fileElement = document.getElementById(file),
+        destFolder = event.target.querySelector("p code").innerHTML;
+    if(event.srcElement.querySelector("li[aria-selected=true]") != null) destFolder = event.srcElement.querySelector("li[aria-selected=true]").innerHTML;
+    promises.push(webdav.move(fileElement.dataset.url, "/" + destFolder + "/" + fileElement.querySelector(".name").innerHTML));
+  }
 
-    request.open("MOVE", oldLink);
-    request.setRequestHeader("Destination", newLink);
-    request.send();
-    request.onreadystatechange = function () {
-      if(request.readyState == 4) {
-        if(request.status == 200 || request.status == 204) {
-          window.reload();
-        }
-      }
-    } */
+  Promise.all(promises)
+    .then(() => {
+      closePrompt(event);
+      buttons.setDone("move");
+      listing.reload();
+    })
+    .catch(e => {
+      console.log(e);
+    })
 }
 
 function moveEvent(event) {
