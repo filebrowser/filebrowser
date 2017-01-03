@@ -981,6 +981,8 @@ header .actions {
   padding: 2em;
   max-width: 25em;
   width: 90%;
+  max-height: 95vh;
+  overflow: auto;
 }
 
 .prompt h3,
