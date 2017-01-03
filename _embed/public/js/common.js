@@ -4,7 +4,7 @@ var tempID = "_fm_internal_temporary_id",
     buttons = {},
     templates = {},
     selectedItems = [],
-    overlay, clickOverlay, 
+    overlay, clickOverlay,
     webdav = {};
 
 // Removes an element, if exists, from an array
@@ -122,21 +122,22 @@ function getCSSRule(rules) {
 // TODO: here, we should create an abstraction layer from the webdav. 
 // We must create functions that do the requests to the webdav backend.
 // this functions will contain a 'callback' to be used withing the other function. 
- 
-webdav.rename = function(oldLink, newLink, callback) {
-    let request = new XMLHttpRequest();
 
-    request.open('MOVE', toWebDavURL(oldLink));
-    request.setRequestHeader('Destination', toWebDavURL(newLink));
-    request.send();
-    request.onreadystatechange = function() {
-        if (request.readyState == 4) {
-            if (typeof callback == 'function') {
-                // This callback argument is a 'success'
-                callback(request.status == 201 || request.status == 204);
+webdav.move = function(oldLink, newLink) {
+    return new Promise((resolve, reject) => {
+        let request = new XMLHttpRequest();
+        request.open('MOVE', toWebDavURL(oldLink), true);
+        request.setRequestHeader('Destination', toWebDavURL(newLink));
+        request.onload = () => {
+            if (request.status == 201 || request.status == 204) {
+                resolve(request.response);
+            } else {
+                reject(request.statusText);
             }
         }
-    }
+        request.onerror = () => reject(request.statusText);
+        request.send();
+    });
 }
 
 
@@ -257,7 +258,7 @@ function loadNextFolder(event) {
 
 function moveSelected(event) {
     event.preventDefault();
-    
+
     // TODO: this only works for ONE file. What if there are more files selected?
     // TODO: use webdav.rename
 
