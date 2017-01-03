@@ -130,23 +130,24 @@ listing.rename = function(event) {
         let newName = event.currentTarget.querySelector('input').value,
             newLink = removeLastDirectoryPartOf(link) + "/" + newName,
             html = buttons.rename.querySelector('i').changeToLoading();
+        closePrompt(event);
 
-        webdav.rename(link, newLink, success => {
-            if (success) {
+        webdav.move(link, newLink)
+            .then(data => {
                 listing.reload(() => {
                     newName = btoa(newName);
                     selectedItems = [newName];
                     document.getElementById(newName).setAttribute("aria-selected", true);
                     listing.handleSelectionChange();
                 });
-            } else {
-                item.querySelector('.name').innerHTML = name;
-            }
-            
-            closePrompt(event);
-            buttons.rename.querySelector('i').changeToDone(!success, html);
-        });
 
+                buttons.rename.querySelector('i').changeToDone(false, html);
+            })
+            .catch(error => {
+                item.querySelector('.name').innerHTML = name;
+                buttons.rename.querySelector('i').changeToDone(true, html);
+            });
+            
         return false;
     }
 
