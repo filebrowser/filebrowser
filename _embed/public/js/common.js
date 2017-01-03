@@ -4,7 +4,8 @@ var tempID = "_fm_internal_temporary_id",
     buttons = {},
     templates = {},
     selectedItems = [],
-    overlay, clickOverlay;
+    overlay, clickOverlay, 
+    webdav = {};
 
 // Removes an element, if exists, from an array
 Array.prototype.removeElement = function(element) {
@@ -112,6 +113,33 @@ function getCSSRule(rules) {
     return result;
 }
 
+
+/* * * * * * * * * * * * * * * *
+ *                             *
+ *            WEBDAV           *
+ *                             *
+ * * * * * * * * * * * * * * * */
+// TODO: here, we should create an abstraction layer from the webdav. 
+// We must create functions that do the requests to the webdav backend.
+// this functions will contain a 'callback' to be used withing the other function. 
+ 
+webdav.rename = function(oldLink, newLink, callback) {
+    let request = new XMLHttpRequest();
+
+    request.open('MOVE', toWebDavURL(oldLink));
+    request.setRequestHeader('Destination', toWebDavURL(newLink));
+    request.send();
+    request.onreadystatechange = function() {
+        if (request.readyState == 4) {
+            if (typeof callback == 'function') {
+                // This callback argument is a 'success'
+                callback(request.status == 201 || request.status == 204);
+            }
+        }
+    }
+}
+
+
 /* * * * * * * * * * * * * * * *
  *                             *
  *            EVENTS           *
@@ -176,11 +204,11 @@ function openEvent(event) {
 }
 
 function selectMoveFolder(event) {
-    if(event.target.getAttribute("aria-selected") === "true") {
+    if (event.target.getAttribute("aria-selected") === "true") {
         event.target.setAttribute("aria-selected", false);
         return;
     } else {
-        if(document.querySelector(".file-list li[aria-selected=true]")) {
+        if (document.querySelector(".file-list li[aria-selected=true]")) {
             document.querySelector(".file-list li[aria-selected=true]").setAttribute("aria-selected", false);
         }
         event.target.setAttribute("aria-selected", true);
@@ -189,71 +217,89 @@ function selectMoveFolder(event) {
 }
 
 function loadNextFolder(event) {
-  let request = new XMLHttpRequest(),
-      prompt = document.querySelector("form.prompt.active");
-      prompt.addEventListener("submit", moveSelected);
+    let request = new XMLHttpRequest(),
+        prompt = document.querySelector("form.prompt.active");
 
-  request.open("GET", "/" + event.target.innerHTML);
-  request.setRequestHeader("Accept", "application/json");
-  request.send();
-  request.onreadystatechange = function() {
-    if(request.readyState == 4 && request.status == 200) {
-      prompt.querySelector("ul").innerHTML = "";
-      for(let f of JSON.parse(request.response)) {
-        if(f.URL.substr(f.URL.length - 1) == "/") {
-          if(selectedItems.includes(btoa(f.URL.split("/")[1]))) continue;
-          let newNode = document.createElement("li");
-          newNode.innerHTML = (f.URL.replace("/" + event.target.innerHTML, "").split("/").join(""));
-          newNode.setAttribute("aria-selected", false);
+    prompt.addEventListener("submit", moveSelected);
 
-          newNode.addEventListener("dblclick", loadNextFolder);
-          newNode.addEventListener("click", selectMoveFolder);
+    request.open("GET", event.target.dataset.url);
+    request.setRequestHeader("Accept", "application/json");
+    request.send();
+    request.onreadystatechange = function() {
+        if (request.readyState == 4 && request.status == 200) {
+            let dirs = 0;
 
-          prompt.querySelector("ul").appendChild(newNode);
+            prompt.querySelector("ul").innerHTML = "";
+            prompt.querySelector('code').innerHTML = event.target.dataset.url;
+
+            for (let f of JSON.parse(request.response)) {
+                if (f.IsDir === true) {
+                    dirs++;
+
+                    let newNode = document.createElement("li");
+                    newNode.dataset.url = f.URL;
+                    newNode.innerHTML = f.Name;
+                    newNode.setAttribute("aria-selected", false);
+
+                    newNode.addEventListener("dblclick", loadNextFolder);
+                    newNode.addEventListener("click", selectMoveFolder);
+
+                    prompt.querySelector("div.file-list ul").appendChild(newNode);
+                }
+            }
+
+            if (dirs === 0) {
+                prompt.querySelector("p").innerHTML = `There aren't any folders in this directory.`;
+            }
         }
-      }
     }
-  }
 }
 
 function moveSelected(event) {
-  event.preventDefault();
-  let request = new XMLHttpRequest(),
-      oldLink = toWebDavURL(window.location.pathname),
-      newLink = toWebDavURL(event.srcElement.querySelector("li[aria-selected=true]").innerHTML + "/");
-  request.open("MOVE", oldLink);
-  request.setRequestHeader("Destination", newLink);
-  request.send();
-  request.onreadystatechange = function() {
-    if(request.readyState == 4) {
-      if(request.status == 200 || request.status == 204) {
-        window.reload();
-      }
+    event.preventDefault();
+    
+    // TODO: this only works for ONE file. What if there are more files selected?
+    // TODO: use webdav.rename
+
+    let request = new XMLHttpRequest(),
+        oldLink = toWebDavURL(window.location.pathname),
+        newLink = toWebDavURL(event.srcElement.querySelector("li[aria-selected=true]").innerHTML + "/");
+
+    request.open("MOVE", oldLink);
+    request.setRequestHeader("Destination", newLink);
+    request.send();
+    request.onreadystatechange = function() {
+        if (request.readyState == 4) {
+            if (request.status == 200 || request.status == 204) {
+                window.reload();
+            }
+        }
     }
-  }
 }
 
 function moveEvent(event) {
-    if(event.currentTarget.classList.contains("disabled")) return;
+    if (event.currentTarget.classList.contains("disabled")) return;
 
     let request = new XMLHttpRequest();
-
     request.open("GET", window.location.pathname, true);
     request.setRequestHeader("Accept", "application/json");
     request.send();
     request.onreadystatechange = function() {
-        if(request.readyState == 4) {
-            if(request.status == 200) {
-                let prompt = document.importNode(templates.move.content, true);
+        if (request.readyState == 4) {
+            if (request.status == 200) {
+                let prompt = document.importNode(templates.move.content, true),
+                    dirs = 0;
 
-                prompt.querySelector("p").innerHTML = `Choose new house for your file(s)/folder(s):`;
                 prompt.querySelector("form").addEventListener("submit", moveSelected);
+                prompt.querySelector('code').innerHTML = window.location.pathname;
 
-                for(let f of JSON.parse(request.response)) {
-                    if(f.URL.split("/").length == 3) {
-                        if(selectedItems.includes(btoa(f.URL.split("/")[1]))) continue;
+                for (let f of JSON.parse(request.response)) {
+                    if (f.IsDir === true) {
+                        dirs++;
+
                         let newNode = document.createElement("li");
-                        newNode.innerHTML = f.URL.split("/")[1];
+                        newNode.dataset.url = f.URL;
+                        newNode.innerHTML = f.Name;
                         newNode.setAttribute("aria-selected", false);
 
                         newNode.addEventListener("dblclick", loadNextFolder);
@@ -261,6 +307,10 @@ function moveEvent(event) {
 
                         prompt.querySelector("div.file-list ul").appendChild(newNode);
                     }
+                }
+
+                if (dirs === 0) {
+                    prompt.querySelector("p").innerHTML = `There aren't any folders in this directory.`;
                 }
 
                 document.body.appendChild(prompt);
@@ -423,6 +473,7 @@ function searchEvent(event) {
         }
     }
 }
+
 
 function setupSearch() {
     let search = document.getElementById("search"),

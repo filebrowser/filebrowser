@@ -19,8 +19,8 @@ import (
 func Download(w http.ResponseWriter, r *http.Request, c *config.Config, i *file.Info) (int, error) {
 	query := r.URL.Query().Get("download")
 
-	if !i.IsDir() {
-		w.Header().Set("Content-Disposition", "attachment; filename="+i.Name())
+	if !i.IsDir {
+		w.Header().Set("Content-Disposition", "attachment; filename="+i.Name)
 		http.ServeFile(w, r, i.Path)
 		return 0, nil
 	}
@@ -86,7 +86,7 @@ func Download(w http.ResponseWriter, r *http.Request, c *config.Config, i *file.
 		return http.StatusInternalServerError, err
 	}
 
-	name := i.Name()
+	name := i.Name
 	if name == "." || name == "" {
 		name = "download"
 	}

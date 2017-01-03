@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/hacdias/caddy-filemanager/config"
@@ -16,8 +17,12 @@ import (
 
 // Info contains the information about a particular file or directory
 type Info struct {
-	os.FileInfo
+	Name        string
+	Size        int64
 	URL         string
+	ModTime     time.Time
+	Mode        os.FileMode
+	IsDir       bool
 	Path        string // Relative path to Caddyfile
 	VirtualPath string // Relative path to u.FileSystem
 	Mimetype    string
@@ -40,10 +45,16 @@ func GetInfo(url *url.URL, c *config.Config, u *config.User) (*Info, int, error)
 	i.Path = strings.Replace(i.Path, "\\", "/", -1)
 	i.Path = filepath.Clean(i.Path)
 
-	i.FileInfo, err = os.Stat(i.Path)
+	info, err := os.Stat(i.Path)
 	if err != nil {
 		return i, errors.ErrorToHTTPCode(err, false), err
 	}
+
+	i.Name = info.Name()
+	i.ModTime = info.ModTime()
+	i.Mode = info.Mode()
+	i.IsDir = info.IsDir()
+	i.Size = info.Size()
 
 	return i, 0, nil
 }
@@ -51,7 +62,7 @@ func GetInfo(url *url.URL, c *config.Config, u *config.User) (*Info, int, error)
 // RetrieveFileType obtains the mimetype and a simplified internal Type
 // using the first 512 bytes from the file.
 func (i *Info) RetrieveFileType() error {
-	i.Mimetype = mime.TypeByExtension(filepath.Ext(i.Name()))
+	i.Mimetype = mime.TypeByExtension(filepath.Ext(i.Name))
 
 	if i.Mimetype == "" {
 		err := i.Read()
@@ -88,12 +99,12 @@ func (i Info) StringifyContent() string {
 // HumanSize returns the size of the file as a human-readable string
 // in IEC format (i.e. power of 2 or base 1024).
 func (i Info) HumanSize() string {
-	return humanize.IBytes(uint64(i.Size()))
+	return humanize.IBytes(uint64(i.Size))
 }
 
 // HumanModTime returns the modified time of the file as a human-readable string.
 func (i Info) HumanModTime(format string) string {
-	return i.ModTime().Format(format)
+	return i.ModTime.Format(format)
 }
 
 // CanBeEdited checks if the extension of a file is supported by the editor
@@ -113,14 +124,14 @@ func (i Info) CanBeEdited() bool {
 		".html",
 		".txt", ".rtf",
 		".sh", ".bash", ".ps1", ".bat", ".cmd",
-		".php", ".pl", ".py", 
+		".php", ".pl", ".py",
 		"Caddyfile",
 		".c", ".cc", ".h", ".hh", ".cpp", ".hpp", ".f90",
 		".f", ".bas", ".d", ".ada", ".nim", ".cr", ".java", ".cs", ".vala", ".vapi",
 	}
 
 	for _, extension := range extensions {
-		if strings.HasSuffix(i.Name(), extension) {
+		if strings.HasSuffix(i.Name, extension) {
 			return true
 		}
 	}

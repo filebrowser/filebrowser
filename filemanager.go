@@ -136,7 +136,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 
 			// If it's a dir and the path doesn't end with a trailing slash,
 			// redirect the user.
-			if fi.IsDir() && !strings.HasSuffix(r.URL.Path, "/") {
+			if fi.IsDir && !strings.HasSuffix(r.URL.Path, "/") {
 				http.Redirect(w, r, c.AddrPath+r.URL.Path+"/", http.StatusTemporaryRedirect)
 				return 0, nil
 			}
@@ -144,10 +144,10 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			switch {
 			case r.URL.Query().Get("download") != "":
 				code, err = handlers.Download(w, r, c, fi)
-			case r.URL.Query().Get("raw") == "true" && !fi.IsDir():
+			case r.URL.Query().Get("raw") == "true" && !fi.IsDir:
 				http.ServeFile(w, r, fi.Path)
 				code, err = 0, nil
-			case fi.IsDir():
+			case fi.IsDir:
 				code, err = handlers.ServeListing(w, r, c, user, fi)
 			default:
 				code, err = handlers.ServeSingle(w, r, c, user, fi)

@@ -193,17 +193,20 @@
     </template>
 
     <template id="move-template">
+        <!-- TODO: And the back button? :) -->
         <form class="prompt">
             <h3>Move</h3>
-            <p></p>
-
+            <p>Choose new house for your file(s)/folder(s):</p>
+        
             <div class="file-list">
                 <ul>
                 </ul>
             </div>
+            
+            <p>Currently navigating on: <code></code>.</p>
 
             <div>
-                <button type="submit" autofocus class="ok">OK</button>
+                <button type="submit" autofocus class="ok">Move</button>
                 <button class="cancel" onclick="closePrompt(event);">Cancel</button>
             </div>
         </form>

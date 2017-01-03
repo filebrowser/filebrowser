@@ -22,7 +22,7 @@ type Editor struct {
 func GetEditor(i *file.Info) (*Editor, error) {
 	// Create a new editor variable and set the mode
 	editor := new(Editor)
-	editor.Mode = strings.TrimPrefix(filepath.Ext(i.Name()), ".")
+	editor.Mode = strings.TrimPrefix(filepath.Ext(i.Name), ".")
 
 	switch editor.Mode {
 	case "md", "markdown", "mdown", "mmark":

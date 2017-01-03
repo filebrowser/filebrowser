@@ -74,7 +74,11 @@ func GetListing(u *config.User, filePath string, baseURL string) (*Listing, erro
 		url := url.URL{Path: baseURL + name}
 
 		i := Info{
-			FileInfo:    f,
+			Name:        f.Name(),
+			Size:        f.Size(),
+			ModTime:     f.ModTime(),
+			Mode:        f.Mode(),
+			IsDir:       f.IsDir(),
 			URL:         url.String(),
 			UserAllowed: allowed,
 		}
@@ -138,15 +142,15 @@ func (l byName) Swap(i, j int) {
 
 // Treat upper and lower case equally
 func (l byName) Less(i, j int) bool {
-	if l.Items[i].IsDir() && !l.Items[j].IsDir() {
+	if l.Items[i].IsDir && !l.Items[j].IsDir {
 		return true
 	}
 
-	if !l.Items[i].IsDir() && l.Items[j].IsDir() {
+	if !l.Items[i].IsDir && l.Items[j].IsDir {
 		return false
 	}
 
-	return strings.ToLower(l.Items[i].Name()) < strings.ToLower(l.Items[j].Name())
+	return strings.ToLower(l.Items[i].Name) < strings.ToLower(l.Items[j].Name)
 }
 
 // By Size
@@ -160,11 +164,11 @@ func (l bySize) Swap(i, j int) {
 
 const directoryOffset = -1 << 31 // = math.MinInt32
 func (l bySize) Less(i, j int) bool {
-	iSize, jSize := l.Items[i].Size(), l.Items[j].Size()
-	if l.Items[i].IsDir() {
+	iSize, jSize := l.Items[i].Size, l.Items[j].Size
+	if l.Items[i].IsDir {
 		iSize = directoryOffset + iSize
 	}
-	if l.Items[j].IsDir() {
+	if l.Items[j].IsDir {
 		jSize = directoryOffset + jSize
 	}
 	return iSize < jSize
@@ -178,5 +182,5 @@ func (l byTime) Swap(i, j int) {
 	l.Items[i], l.Items[j] = l.Items[j], l.Items[i]
 }
 func (l byTime) Less(i, j int) bool {
-	return l.Items[i].ModTime().Before(l.Items[j].ModTime())
+	return l.Items[i].ModTime.Before(l.Items[j].ModTime)
 }
