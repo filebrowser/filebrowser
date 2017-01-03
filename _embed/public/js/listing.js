@@ -121,9 +121,10 @@ listing.rename = function (event) {
     event.preventDefault();
 
     let newName = event.currentTarget.querySelector('input').value,
-      newLink = removeLastDirectoryPartOf(link) + "/" + newName,
-      html = buttons.rename.querySelector('i').changeToLoading();
+      newLink = removeLastDirectoryPartOf(link) + "/" + newName;
+
     closePrompt(event);
+    buttons.setLoading('rename');
 
     webdav.move(link, newLink).then(() => {
       listing.reload(() => {
@@ -133,11 +134,10 @@ listing.rename = function (event) {
         listing.handleSelectionChange();
       });
 
-      buttons.rename.querySelector('i').changeToDone(false, html);
+      buttons.setDone('rename');
     }).catch(error => {
       field.innerHTML = name;
-      buttons.rename.querySelector('i').changeToDone(true, html);
-
+      buttons.setDone('rename', false);
       console.log(error);
     });
 
@@ -158,8 +158,9 @@ listing.rename = function (event) {
 }
 
 listing.handleFiles = function (files, base) {
-  let html = buttons.upload.querySelector('i').changeToLoading(),
-    promises = [];
+  buttons.setLoading('upload');
+
+  let promises = [];
 
   for(let file of files) {
     promises.push(webdav.put(window.location.pathname + base + file.name, file));
@@ -168,11 +169,11 @@ listing.handleFiles = function (files, base) {
   Promise.all(promises)
     .then(() => {
       listing.reload();
-      buttons.upload.querySelector('i').changeToDone(false, html);
+      buttons.setDone('upload');
     })
     .catch(e => {
       console.log(e);
-      buttons.upload.querySelector('i').changeToDone(true, html);
+      buttons.setDone('upload', false);
     })
 
   return false;
@@ -276,20 +277,19 @@ listing.newFileButton = function (event) {
 
 listing.newFilePrompt = function (event) {
   event.preventDefault();
+  buttons.setLoading('new');
 
-  let button = document.getElementById('new'),
-    html = button.querySelector('i').changeToLoading(),
-    request = new XMLHttpRequest(),
-    name = event.currentTarget.querySelector('input').value;
+  let name = event.currentTarget.querySelector('input').value;
 
-  request.open((name.endsWith("/") ? "MKCOL" : "PUT"), toWebDavURL(window.location.pathname + name));
-  request.send();
-  request.onreadystatechange = function () {
-    if(request.readyState == 4) {
-      button.querySelector('i').changeToDone((request.status != 201), html);
+  webdav.new(window.location.pathname + name)
+    .then(() => {
+      buttons.setDone('new');
       listing.reload();
-    }
-  }
+    })
+    .catch(e => {
+      console.log(e);
+      buttons.setDone('new', false);
+    });
 
   closePrompt(event);
   return false;
@@ -346,7 +346,6 @@ window.addEventListener('keydown', (event) => {
   }
 
   if(event.ctrlKey || event.metaKey) {
-    console.log("hey")
     switch(String.fromCharCode(event.which).toLowerCase()) {
     case 's':
       event.preventDefault();
