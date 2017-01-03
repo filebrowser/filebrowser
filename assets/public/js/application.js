@@ -1,130 +1,145 @@
 'use strict';
 
 document.addEventListener('DOMContentLoaded', event => {
-    document.querySelector('footer').innerHTML += 'With a flavour of <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-hugo">Hugo</a>.';
-    document.querySelector('.only-side > p > a').innerHTML = "Hugo";
+  document.querySelector('#top-bar > div > p:first-child').innerHTML = 'Hugo for Caddy'
+  document.querySelector('footer').innerHTML += ' With a flavour of <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-hugo">Hugo</a>.';
 
-    let link = document.querySelector('.only-side > p a:first-child').getAttribute('href') + "/settings/"
-    document.getElementById('logout').insertAdjacentHTML('beforebegin', `<a href="${link}">
+  document.querySelector('#bottom-bar>*:first-child').style.maxWidth = "calc(100% - 27em)"
+
+  let link = baseURL + "/settings/"
+
+  document.getElementById('info').insertAdjacentHTML('beforebegin', `<a href="${link}">
       <div class="action">
        <i class="material-icons">settings</i>
        <span>Settings</span>
       </div>
      </a>`);
-});
 
-document.addEventListener('listing', event => {
-    if (window.location.pathname.includes('/content/')) {
-        document.getElementById('newdir').placeholder = "file[:archetype]...";
-        document.getElementById('newdir').removeEventListener('keydown', newDirEvent);
-        document.getElementById('newdir').addEventListener('keydown', event => {
+  if(buttons.new && window.location.pathname === baseURL + "/content/") {
+    buttons.new.removeEventListener('click', listing.newFileButton);
+    buttons.new.addEventListener('click', hugo.newFileButton);
+  }
 
-            if (event.keyCode == 27) {
-                document.getElementById('newdir').classList.toggle('enabled');
-                setTimeout(() => {
-                    document.getElementById('newdir').value = '';
-                }, 200);
-            }
+  if(buttons.save) {
+    let box = document.getElementById('file-only');
 
-            if (event.keyCode == 13) {
-                event.preventDefault();
+    box.insertAdjacentHTML('beforeend', `<div class="action" id="publish">
+           <i class="material-icons">send</i>
+           <span>Publish</span>
+          </div>`);
 
-                let value = document.getElementById('newdir').value;
-                let index = value.lastIndexOf(':');
-                let name = value.substring(0, index);
-                let archetype = value.substring(index + 1, value.length);
-                if (name == "") name = archetype;
-                if (index == -1) archetype = "";
+    buttons.publish = document.getElementById('publish')
+    buttons.publish.addEventListener('click', hugo.publish)
 
-                let button = document.getElementById('new');
-                let html = button.changeToLoading();
-                let request = new XMLHttpRequest();
-                request.open("PUT", toWebDavURL(window.location.pathname + name));
-                request.setRequestHeader('Filename', name);
-                request.setRequestHeader('Archetype', archetype);
-                request.send();
-                request.onreadystatechange = function() {
-                    if (request.readyState == 4) {
-                        if (request.status != 200 && request.status != 201) {
-                            button.changeToDone(true, html);
-                            return;
-                        }
-                            
-                        button.changeToDone(false, html);
-                        window.location = window.location.pathname + name;
-                    }
-                }
-            }
-        });
-    }
-});
+    if((document.getElementById('date') || document.getElementById('publishdate')) &&
+      document.getElementById('editor').dataset.kind == "complete") {
 
-document.addEventListener('editor', event => {
-    let container = document.getElementById('editor'),
-        kind = container.dataset.kind;
+      box.insertAdjacentHTML('beforeend', ` <div class="action" id="schedule">
+             <i class="material-icons">alarm</i>
+             <span>Schedule</span>
+            </div>`);
 
-    document.getElementById('submit').insertAdjacentHTML('afterend', `<div class="right">
-	 <button id="publish">
-		 <span>
-			<i class="material-icons">send</i>
-		 </span>
-		 <span>publish</span>
-	 </button>
-	 </div>`);
-
-    if ((document.getElementById('date') || document.getElementById('publishdate')) && document.getElementById('editor').dataset.kind == "complete") {
-        document.querySelector('#editor .right').insertAdjacentHTML('afterbegin', ` <button id="schedule">
-			  <span>
-				 <i class="material-icons">alarm</i>
-			  </span>
-			  <span>Schedule</span>
-		  </button>`);
-
-        let button = document.querySelector('#schedule span:first-child');
-
-        document.getElementById('schedule').addEventListener('click', event => {
-            event.preventDefault();
-
-            let date = document.getElementById('date').value;
-            if (document.getElementById('publishDate')) {
-                date = document.getElementById('publishDate').value;
-            }
-
-            let data = form2js(document.querySelector('form'));
-            let html = button.changeToLoading();
-            let request = new XMLHttpRequest();
-            request.open("PUT", toWebDavURL(window.location.pathname));
-            request.setRequestHeader('Kind', kind);
-            request.setRequestHeader('Schedule', date);
-            request.send(JSON.stringify(data));
-            request.onreadystatechange = function() {
-                if (request.readyState == 4) {
-                    button.changeToDone((request.status != 200 && request.status != 201), html);
-                }
-            }
-        });
+      buttons.schedule = document.getElementById('schedule')
+      buttons.schedule.addEventListener('click', hugo.schedule)
     }
 
-    document.getElementById('publish').addEventListener('click', event => {
-        event.preventDefault();
+    document.querySelector('#bottom-bar>*:first-child').style.maxWidth = "calc(100% - 30em)"
+  }
+});
 
-        if (document.getElementById('draft')) {
-            document.getElementById('block-draft').remove();
-        }
+var hugo = {};
 
-        let button = document.querySelector('#publish span:first-child'),
-            data = form2js(document.querySelector('form')),
-            html = button.changeToLoading(),
-            request = new XMLHttpRequest();
-            
-        request.open("PUT", toWebDavURL(window.location.pathname));
-        request.setRequestHeader('Kind', kind);
-        request.setRequestHeader('Regenerate', "true");
-        request.send(JSON.stringify(data));
-        request.onreadystatechange = function() {
-            if (request.readyState == 4) {
-                button.changeToDone((request.status != 200 && request.status != 201), html);
-            }
-        }
+hugo.newFileButton = function (event) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  let clone = document.importNode(templates.question.content, true);
+  clone.querySelector('h3').innerHTML = 'New file';
+  clone.querySelector('p').innerHTML = 'End with a trailing slash to create a dir. To use an archetype, use <code>file[:archetype]</code>.';
+  clone.querySelector('.ok').innerHTML = 'Create';
+  clone.querySelector('form').addEventListener('submit', hugo.newFilePrompt);
+
+  document.querySelector('body').appendChild(clone)
+  document.querySelector('.overlay').classList.add('active');
+  document.querySelector('.prompt').classList.add('active');
+}
+
+hugo.newFilePrompt = function (event) {
+  event.preventDefault();
+  buttons.setLoading('new');
+
+  let value = event.currentTarget.querySelector('input').value,
+    index = value.lastIndexOf(':'),
+    name = value.substring(0, index),
+    archetype = value.substring(index + 1, value.length);
+
+  if(name == "") name = archetype;
+  if(index == -1) archetype = "";
+
+  webdav.new(window.location.pathname + name, '', {
+      'Filename': name,
+      'Archetype': archetype
+    })
+    .then(() => {
+      buttons.setDone('new');
+      window.location = window.location.pathname + name;
+    })
+    .catch(e => {
+      console.log(e);
+      buttons.setDone('new', false);
     });
-});
+
+  closePrompt(event);
+  return false;
+}
+
+hugo.publish = function (event) {
+  event.preventDefault();
+
+  if(document.getElementById('draft')) {
+    document.getElementById('block-draft').remove();
+  }
+
+  buttons.setLoading('publish');
+
+  let data = JSON.stringify(form2js(document.querySelector('form'))),
+    headers = {
+      'Kind': document.getElementById('editor').dataset.kind,
+      'Regenerate': 'true'
+    };
+
+  webdav.put(window.location.pathname, data, headers)
+    .then(() => {
+      buttons.setDone('publish');
+    })
+    .catch(e => {
+      console.log(e);
+      buttons.setDone('publish', false)
+    })
+}
+
+hugo.schedule = function (event) {
+  event.preventDefault();
+
+  let date = document.getElementById('date').value;
+  if(document.getElementById('publishDate')) {
+    date = document.getElementById('publishDate').value;
+  }
+
+  buttons.setLoading('publish');
+
+  let data = JSON.stringify(form2js(document.querySelector('form'))),
+    headers = {
+      'Kind': document.getElementById('editor').dataset.kind,
+      'Schedule': 'true'
+    };
+
+  webdav.put(window.location.pathname, data, headers)
+    .then(() => {
+      buttons.setDone('publish');
+    })
+    .catch(e => {
+      console.log(e);
+      buttons.setDone('publish', false)
+    })
+}

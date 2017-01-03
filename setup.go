@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -94,6 +95,8 @@ func parse(c *caddy.Controller, root string) (*Config, *filemanager.FileManager,
 		cfg.Public = strings.Replace(root, "./", "", -1)
 		cfg.BaseURL = "/admin"
 		cfg.Root = "./"
+		cfg.BeforePublish = func(r *http.Request, c *config.Config, u *config.User) error { return nil }
+		cfg.AfterPublish = func(r *http.Request, c *config.Config, u *config.User) error { return nil }
 
 		args := c.RemainingArgs()
 
