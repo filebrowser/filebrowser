@@ -5,20 +5,14 @@ root = true
 
 # Unix-style newlines with a newline ending every file
 [*]
+charset = utf-8
+indent_style = space
+indent_size = 2
 end_of_line = lf
 insert_final_newline = true
-
-# Matches multiple files with brace expansion notation
-# Set default charset
-[*.{js,go}]
-charset = utf-8
+trim_trailing_whitespace = true
 
 # 4 space indentation
 [*.go]
 indent_style = tab
-indent_size = 2
-
-# Indentation override for all JS under lib directory
-[*.js]
-indent_style = space
-indent_size = 2
+indent_size = 4
