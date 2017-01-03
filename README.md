@@ -20,6 +20,8 @@ filemanager url {
   allow_commands    [true|false]
   allow_command     command
   block_command     command
+  before_save       command
+  after_save        command
   allow             [path|dotfiles]
   allow_r           path regex
   block             [path|dotfiles]
