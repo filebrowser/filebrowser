@@ -36,6 +36,10 @@ func Pretty(content []byte) (*Content, string, error) {
 
 	kind := reflect.ValueOf(data).Kind()
 
+	if kind.String() == "invalid" {
+		return &Content{}, "", nil
+	}
+
 	object := new(Block)
 	object.Type = objectType
 	object.Name = mainName
