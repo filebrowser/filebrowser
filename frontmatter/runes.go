@@ -17,7 +17,7 @@ func AppendRune(frontmatter []byte, language string) []byte {
 	case "toml":
 		return []byte("+++\n" + string(frontmatter) + "\n+++")
 	case "json":
-		return frontmatter
+		return []byte("{\n" + string(frontmatter) + "\n}")
 	}
 
 	return frontmatter

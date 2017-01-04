@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -59,6 +60,8 @@ func GetEditor(i *file.Info) (*Editor, error) {
 		if err == nil {
 			break
 		}
+
+		fmt.Println("Hey")
 
 		fallthrough
 	case "markdown", "asciidoc", "rst":
