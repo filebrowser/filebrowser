@@ -358,8 +358,7 @@ window.addEventListener("resize", () => {
   listing.updateColumns();
 });
 
-
-function selectMoveFolder(event) {
+listing.selectMoveFolder = function (event) {
   if(event.target.getAttribute("aria-selected") === "true") {
     event.target.setAttribute("aria-selected", false);
     return;
@@ -372,63 +371,73 @@ function selectMoveFolder(event) {
   }
 }
 
-function loadNextFolder(event) {
-  let request = new XMLHttpRequest(),
-    prompt = document.querySelector("form.prompt.active");
+listing.getJSON = function (link) {
+  return new Promise((resolve, reject) => {
+    let request = new XMLHttpRequest();
+    request.open("GET", link);
+    request.setRequestHeader("Accept", "application/json");
+    request.onload = () => {
+      if(request.status == 200) {
+        resolve(request.responseText);
+      } else {
+        reject(request.statusText);
+      }
+    }
+    request.onerror = () => reject(request.statusText);
+    request.send();
+  });
+}
 
-  prompt.addEventListener("submit", moveSelected);
-  console.log(event);
-  request.open("GET", event.target.dataset.url);
-  request.setRequestHeader("Accept", "application/json");
-  request.send();
-  request.onreadystatechange = function () {
-    if(request.readyState == 4 && request.status == 200) {
+listing.moveMakeItem = function (url, name) {
+  let node = document.createElement("li");
+
+  node.dataset.url = url;
+  node.innerHTML = name;
+  node.setAttribute("aria-selected", false);
+
+  node.addEventListener("dblclick", listing.moveDialogNext);
+  node.addEventListener("click", listing.selectMoveFolder);
+  return node;
+}
+
+listing.moveDialogNext = function (event) {
+  let request = new XMLHttpRequest(),
+    prompt = document.querySelector("form.prompt.active"),
+    list = prompt.querySelector("div.file-list ul");
+
+  prompt.addEventListener("submit", listing.moveSelected);
+
+  listing.getJSON(event.target.dataset.url)
+    .then((data) => {
       let dirs = 0;
 
       prompt.querySelector("ul").innerHTML = "";
       prompt.querySelector('code').innerHTML = event.target.dataset.url;
 
-      if(prompt.querySelector('code').innerHTML != baseURL + "/") {
-        let newNode = document.createElement("li");
-        newNode.dataset.url = removeLastDirectoryPartOf(event.target.dataset.url) + "/";
-        newNode.innerHTML = "..";
-        newNode.setAttribute("aria-selected", false);
-        newNode.addEventListener("dblclick", loadNextFolder);
-        newNode.addEventListener("click", selectMoveFolder);
-
-        prompt.querySelector("div.file-list ul").appendChild(newNode);
+      if(event.target.dataset.url != baseURL + "/") {
+        let node = listing.moveMakeItem(removeLastDirectoryPartOf(event.target.dataset.url) + "/", "..")
+        list.appendChild(node);
       }
 
-      if(JSON.parse(request.response) == null) {
+      if(JSON.parse(data) == null) {
         prompt.querySelector("p").innerHTML = `There aren't any folders in this directory.`;
         return;
       }
 
-
-      for(let f of JSON.parse(request.response)) {
+      for(let f of JSON.parse(data)) {
         if(f.IsDir === true) {
           dirs++;
-
-          let newNode = document.createElement("li");
-          newNode.dataset.url = f.URL;
-          newNode.innerHTML = f.Name;
-          newNode.setAttribute("aria-selected", false);
-
-          newNode.addEventListener("dblclick", loadNextFolder);
-          newNode.addEventListener("click", selectMoveFolder);
-
-          prompt.querySelector("div.file-list ul").appendChild(newNode);
+          list.appendChild(listing.moveMakeItem(f.URL, f.Name));
         }
       }
 
-      if(dirs === 0) {
+      if(dirs === 0)
         prompt.querySelector("p").innerHTML = `There aren't any folders in this directory.`;
-      }
-    }
-  }
+    })
+    .catch(e => console.log(e));
 }
 
-function moveSelected(event) {
+listing.moveSelected = function (event) {
   event.preventDefault();
 
   let promises = [];
@@ -436,9 +445,15 @@ function moveSelected(event) {
 
   for(let file of selectedItems) {
     let fileElement = document.getElementById(file),
-        destFolder = event.target.querySelector("p code").innerHTML;
-    if(event.srcElement.querySelector("li[aria-selected=true]") != null) destFolder = event.srcElement.querySelector("li[aria-selected=true]").innerHTML;
-    promises.push(webdav.move(fileElement.dataset.url, "/" + destFolder + "/" + fileElement.querySelector(".name").innerHTML));
+      destFolder = event.target.querySelector("p code").innerHTML;
+
+    if(event.srcElement.querySelector("li[aria-selected=true]") != null)
+      destFolder = event.srcElement.querySelector("li[aria-selected=true]").innerHTML;
+
+    let destPath = "/" + destFolder + "/" + fileElement.querySelector(".name").innerHTML;
+    destPath = destPath.replace('//', '/');
+
+    promises.push(webdav.move(fileElement.dataset.url, destPath));
   }
 
   Promise.all(promises)
@@ -452,62 +467,40 @@ function moveSelected(event) {
     })
 }
 
-function moveEvent(event) {
+listing.moveEvent = function (event) {
   if(event.currentTarget.classList.contains("disabled"))
     return;
 
-  let request = new XMLHttpRequest();
-  request.open("GET", window.location.pathname, true);
-  request.setRequestHeader("Accept", "application/json");
-  request.send();
-  request.onreadystatechange = function () {
-    if(request.readyState == 4) {
-      if(request.status == 200) {
-        let prompt = document.importNode(templates.move.content, true),
-          dirs = 0;
+  listing.getJSON(window.location.pathname)
+    .then((data) => {
+      let prompt = document.importNode(templates.move.content, true),
+        list = prompt.querySelector("div.file-list ul"),
+        dirs = 0;
 
-        prompt.querySelector("form").addEventListener("submit", moveSelected);
-        prompt.querySelector('code').innerHTML = window.location.pathname;
+      prompt.querySelector("form").addEventListener("submit", listing.moveSelected);
+      prompt.querySelector('code').innerHTML = window.location.pathname;
 
-        if(window.location.pathname !== baseURL + "/") {
-          let newNode = document.createElement("li");
-          newNode.dataset.url = removeLastDirectoryPartOf(window.location.pathname) + "/";
-          newNode.innerHTML = "..";
-          newNode.setAttribute("aria-selected", false);
-          newNode.addEventListener("dblclick", loadNextFolder);
-          newNode.addEventListener("click", selectMoveFolder);
-
-          prompt.querySelector("div.file-list ul").appendChild(newNode);
-        }
-
-        for(let f of JSON.parse(request.response)) {
-          if(f.IsDir === true) {
-            dirs++;
-
-            let newNode = document.createElement("li");
-            newNode.dataset.url = f.URL;
-            newNode.innerHTML = f.Name;
-            newNode.setAttribute("aria-selected", false);
-
-            newNode.addEventListener("dblclick", loadNextFolder);
-            newNode.addEventListener("click", selectMoveFolder);
-
-            prompt.querySelector("div.file-list ul").appendChild(newNode);
-          }
-        }
-
-        if(dirs === 0) {
-          prompt.querySelector("p").innerHTML = `There aren't any folders in this directory.`;
-        }
-
-        document.body.appendChild(prompt);
-        document.querySelector(".overlay").classList.add("active");
-        document.querySelector(".prompt").classList.add("active");
+      if(window.location.pathname !== baseURL + "/") {
+        list.appendChild(listing.moveMakeItem(removeLastDirectoryPartOf(window.location.pathname) + "/", ".."));
       }
-    }
-  }
-}
 
+      for(let f of JSON.parse(data)) {
+        if(f.IsDir === true) {
+          dirs++;
+          list.appendChild(listing.moveMakeItem(f.URL, f.Name));
+        }
+      }
+
+      if(dirs === 0) {
+        prompt.querySelector("p").innerHTML = `There aren't any folders in this directory.`;
+      }
+
+      document.body.appendChild(prompt);
+      document.querySelector(".overlay").classList.add("active");
+      document.querySelector(".prompt").classList.add("active");
+    })
+    .catch(e => console.log(e));
+}
 
 document.addEventListener('DOMContentLoaded', event => {
   listing.updateColumns();
@@ -519,7 +512,7 @@ document.addEventListener('DOMContentLoaded', event => {
   buttons.download = document.getElementById('download');
   buttons.move = document.getElementById("move");
 
-  buttons.move.addEventListener("click", moveEvent);
+  buttons.move.addEventListener("click", listing.moveEvent);
 
   document.getElementById('multiple-selection-activate').addEventListener('click', event => {
     listing.selectMultiple = true;

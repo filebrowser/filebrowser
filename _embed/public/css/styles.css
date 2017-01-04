@@ -981,8 +981,7 @@ header .actions {
   padding: 2em;
   max-width: 25em;
   width: 90%;
-  max-height: 95vh;
-  overflow: auto;
+  max-height: 95%;
 }
 
 .prompt h3,
@@ -1030,6 +1029,8 @@ header .actions {
 
 .prompt .file-list {
   flex-direction: initial;
+  max-height: 50vh;
+  overflow: auto;
 }
 
 .prompt .file-list ul {

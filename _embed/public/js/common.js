@@ -138,6 +138,7 @@ webdav.convertURL = function (url) {
 webdav.move = function (oldLink, newLink) {
   return new Promise((resolve, reject) => {
     let request = new XMLHttpRequest();
+
     request.open('MOVE', webdav.convertURL(oldLink), true);
     request.setRequestHeader('Destination', webdav.convertURL(newLink));
     request.onload = () => {
