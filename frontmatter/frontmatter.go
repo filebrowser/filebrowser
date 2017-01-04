@@ -36,7 +36,7 @@ func Pretty(content []byte) (*Content, string, error) {
 
 	kind := reflect.ValueOf(data).Kind()
 
-	if kind.String() == "invalid" {
+	if kind == reflect.Invalid {
 		return &Content{}, "", nil
 	}
 
