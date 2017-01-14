@@ -2,6 +2,9 @@ language: go
 go:
 - tip
 sudo: false
+matrix:
+  allow_failures:
+    - install: go get -u -v $(go list -f '{{join .Imports "\n"}}' ./... | sort | uniq | grep -v caddy-hugo)
 install:
 - go generate
 - go get -u -v $(go list -f '{{join .Imports "\n"}}' ./... | sort | uniq | grep -v caddy-hugo)
