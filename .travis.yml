@@ -1,16 +1,15 @@
 language: go
+
 go:
 - tip
-sudo: false
-matrix:
-  allow_failures:
-    - install: go get -u -v $(go list -f '{{join .Imports "\n"}}' ./... | sort | uniq | grep -v caddy-hugo)
+
 install:
 - go generate
-- go get -u -v $(go list -f '{{join .Imports "\n"}}' ./... | sort | uniq | grep -v caddy-hugo)
+- go get -u -v $(go list -f '{{join .Imports "\n"}}' ./... | sort | uniq | grep -v caddy-hugo) || true
 - go get -u -v github.com/mholt/caddy/caddyhttp
 - go get -u -v github.com/caddyserver/caddydev
 - go install github.com/caddyserver/caddydev
+
 script:
 - sed -i 's/\_ \"github.com\/mholt\/caddy\/caddyhttp\"/\_ \"github.com\/mholt\/caddy\/caddyhttp\"\n\_ \"github.com\/hacdias\/caddy-hugo\"/g' $GOPATH/src/github.com/mholt/caddy/caddy/caddymain/run.go
 - go build github.com/mholt/caddy/caddy
