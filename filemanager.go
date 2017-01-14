@@ -1,6 +1,6 @@
 //go:generate go get github.com/jteeuwen/go-bindata
 //go:generate go install github.com/jteeuwen/go-bindata
-//go:generate go get github.com/jteeuwen/go-bindata
+//go:generate go get github.com/bountylabs/gitversion
 //go:generate go install github.com/bountylabs/gitversion
 //go:generate go-bindata -pkg assets -prefix "_embed" -o assets/binary.go _embed/...
 //go:generate gitversion -s -o page/version.go -p page
