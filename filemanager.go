@@ -1,6 +1,7 @@
 //go:generate go get github.com/jteeuwen/go-bindata
-//go:generate go install github.com/jteeuwen/go-bindata/go-bindata
+//go:generate go get github.com/bountylabs/gitversion
 //go:generate go-bindata -pkg assets -prefix "_embed" -o assets/binary.go _embed/...
+//go:generate gitversion -o page/version.go -p page
 
 // Package filemanager provides middleware for managing files in a directory
 // when directory path is requested instead of a specific file. Based on browse
