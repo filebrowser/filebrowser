@@ -119,19 +119,14 @@ func parse(c *caddy.Controller, root string) (*Config, *filemanager.FileManager,
 					return cfg, &filemanager.FileManager{}, c.ArgErr()
 				}
 
-				values := strings.Split(c.Val(), " ")
-
-				if len(values) == 0 {
-					return cfg, fm, errors.New("Not enough arguments for 'flag' option.")
-				}
-
+				flag := c.Val()
 				value := "true"
 
-				if len(values) > 1 {
-					value = values[1]
+				if c.NextArg() {
+					value = c.Val()
 				}
 
-				cfg.Args = append(cfg.Args, "--"+values[0]+"="+value)
+				cfg.Args = append(cfg.Args, "--"+flag+"="+value)
 			case "before_publish":
 				if cfg.BeforePublish, err = config.CommandRunner(c); err != nil {
 					return cfg, &filemanager.FileManager{}, err
