@@ -22,6 +22,17 @@ editor.textareaAutoGrow = function () {
   window.addEventListener('resize', addAutoGrow)
 }
 
+editor.toggleSourceEditor = function (event) {
+  event.preventDefault();
+
+  if(document.querySelector('[data-kind="content-only"]')) {
+    window.location = window.location.pathname + "?visual=true"
+    return;
+  }
+
+  window.location = window.location.pathname + "?visual=false"
+}
+
 function deleteFrontMatterItem(event) {
   event.preventDefault();
   document.getElementById(this.dataset.delete).remove();
@@ -163,11 +174,18 @@ document.addEventListener("DOMContentLoaded", (event) => {
   if(!document.getElementById('editor')) return;
 
   editor.textareaAutoGrow();
+
   templates.arrayItem = document.getElementById("array-item-template");
   templates.base = document.getElementById('base-template');
   templates.objectItem = document.getElementById("object-item-template");
   templates.temporary = document.getElementById('temporary-template');
+
   buttons.save = document.querySelector('#save');
+  buttons.editSource = document.querySelector('#edit-source');
+
+  if(buttons.editSource) {
+    buttons.editSource.addEventListener('click', editor.toggleSourceEditor)
+  }
 
   let container = document.getElementById('editor'),
     kind = container.dataset.kind;
