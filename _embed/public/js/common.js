@@ -266,7 +266,7 @@ function openEvent(event) {
   if(selectedItems.length) {
     link = document.getElementById(selectedItems[0]).dataset.url + link;
   } else {
-    link = window.location + link;
+    link = window.location.pathname + link;
   }
 
   window.open(link);

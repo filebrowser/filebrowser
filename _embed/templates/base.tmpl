@@ -67,9 +67,16 @@
             <div class="actions{{ if .IsDir }} disabled{{ end }}" id="file-only">
                 {{- if and (not .IsDir) (.User.AllowEdit) }}
                 {{- if .Editor}}
+
                 {{- if eq .Data.Mode "markdown" }}
                 <div class="action" id="preview" onclick="notImplemented(event);">
-                    <i class="material-icons">remove_red_eye</i>
+                    <i class="material-icons" title="Preview">remove_red_eye</i>
+                </div>
+                {{- end }}
+
+                {{- if eq .Data.Visual true }}
+                <div class="action" id="edit-source">
+                    <i class="material-icons" title="Toggle edit source">code</i>
                 </div>
                 {{- end }}
                 {{- end }}
