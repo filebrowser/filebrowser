@@ -82,6 +82,45 @@ func Unmarshal(content []byte) (interface{}, error) {
 	return data, nil
 }
 
+// Marshal encodes the interface in a specific format
+func Marshal(data interface{}, mark rune) ([]byte, error) {
+	b := new(bytes.Buffer)
+
+	switch mark {
+	case '+':
+		enc := toml.NewEncoder(b)
+		err := enc.Encode(data)
+		if err != nil {
+			return nil, err
+		}
+		return b.Bytes(), nil
+	case '{':
+		by, err := json.MarshalIndent(data, "", "   ")
+		if err != nil {
+			return nil, err
+		}
+		b.Write(by)
+		_, err = b.Write([]byte("\n"))
+		if err != nil {
+			return nil, err
+		}
+		return b.Bytes(), nil
+	case '-':
+		by, err := yaml.Marshal(data)
+		if err != nil {
+			return nil, err
+		}
+		b.Write(by)
+		_, err = b.Write([]byte("..."))
+		if err != nil {
+			return nil, err
+		}
+		return b.Bytes(), nil
+	default:
+		return nil, errors.New("Unsupported Format provided")
+	}
+}
+
 // Content is the block content
 type Content struct {
 	Other   interface{}

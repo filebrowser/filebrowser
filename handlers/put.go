@@ -4,14 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
 	"strings"
 
 	"github.com/hacdias/caddy-filemanager/config"
-	"github.com/spf13/hugo/parser"
+	"github.com/hacdias/caddy-filemanager/frontmatter"
 )
 
 // PreProccessPUT is used to update a file that was edited
@@ -83,27 +82,21 @@ func ParseFrontMatterOnlyFile(data interface{}, filename string) ([]byte, error)
 }
 
 // ParseFrontMatter is the frontmatter parser
-func ParseFrontMatter(data interface{}, frontmatter string) ([]byte, error) {
+func ParseFrontMatter(data interface{}, front string) ([]byte, error) {
 	var mark rune
 
-	switch frontmatter {
+	switch front {
 	case "toml":
-		mark = rune('+')
+		mark = '+'
 	case "json":
-		mark = rune('{')
+		mark = '{'
 	case "yaml":
-		mark = rune('-')
+		mark = '-'
 	default:
-		return []byte{}, errors.New("Can't define the frontmatter.")
+		return nil, errors.New("Unsupported Format provided")
 	}
 
-	f, err := parser.InterfaceToFrontMatter(data, mark)
-
-	if err != nil {
-		return []byte{}, err
-	}
-
-	return f, nil
+	return frontmatter.Marshal(data, mark)
 }
 
 // ParseCompleteFile parses a complete file
@@ -126,7 +119,6 @@ func ParseCompleteFile(data map[string]interface{}, filename string, frontmatter
 	front, err := ParseFrontMatter(data, frontmatter)
 
 	if err != nil {
-		fmt.Println(frontmatter)
 		return []byte{}, err
 	}
 
