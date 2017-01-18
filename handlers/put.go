@@ -52,7 +52,8 @@ func PreProccessPUT(
 		var mark rune
 
 		if v := r.Header.Get("Rune"); v != "" {
-			n, err := strconv.Atoi(v)
+			var n int
+			n, err = strconv.Atoi(v)
 			if err != nil {
 				return err
 			}

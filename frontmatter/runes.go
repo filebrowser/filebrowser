@@ -2,6 +2,7 @@ package frontmatter
 
 import (
 	"bytes"
+	"errors"
 	"strings"
 )
 
@@ -28,28 +29,30 @@ func AppendRune(frontmatter []byte, mark rune) []byte {
 	return frontmatter
 }
 
-func RuneToStringFormat(mark rune) string {
+// RuneToStringFormat converts the rune to a string with the format
+func RuneToStringFormat(mark rune) (string, error) {
 	switch mark {
 	case '-':
-		return "yaml"
+		return "yaml", nil
 	case '+':
-		return "toml"
+		return "toml", nil
 	case '{':
-		return "json"
+		return "json", nil
 	default:
-		return ""
+		return "", errors.New("Unsupported format type.")
 	}
 }
 
-func StringFormatToRune(format string) rune {
+// StringFormatToRune converts the format name to its rune
+func StringFormatToRune(format string) (rune, error) {
 	switch format {
 	case "yaml":
-		return '-'
+		return '-', nil
 	case "toml":
-		return '+'
+		return '+', nil
 	case "json":
-		return '{'
+		return '{', nil
 	default:
-		return '0'
+		return '0', errors.New("Unsupported format type.")
 	}
 }

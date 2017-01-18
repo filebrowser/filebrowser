@@ -14,7 +14,7 @@ import (
 	"github.com/mholt/archiver"
 )
 
-// Download creates an archieve in one of the supported formats (zip, tar,
+// Download creates an archive in one of the supported formats (zip, tar,
 // tar.gz or tar.bz2) and sends it to be downloaded.
 func Download(w http.ResponseWriter, r *http.Request, c *config.Config, i *file.Info) (int, error) {
 	query := r.URL.Query().Get("download")
