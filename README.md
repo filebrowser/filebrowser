@@ -14,7 +14,6 @@ filemanager url {
   show              path
   webdav            [path]
   styles            filepath
-  frontmatter       type
   allow_new         [true|false]
   allow_edit        [true|false]
   allow_commands    [true|false]
