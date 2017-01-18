@@ -29,52 +29,62 @@ func GetEditor(r *http.Request, i *file.Info) (*Editor, error) {
 	var err error
 
 	// Create a new editor variable and set the mode
-	editor := new(Editor)
-	editor.Mode = editorMode(i.Name)
-	editor.Class = editorClass(editor.Mode)
+	e := new(Editor)
+	e.Mode = editorMode(i.Name)
+	e.Class = editorClass(e.Mode)
 
-	if editor.Class == "frontmatter-only" || editor.Class == "complete" {
-		editor.Visual = true
+	if e.Class == "frontmatter-only" || e.Class == "complete" {
+		e.Visual = true
 	}
 
 	if r.URL.Query().Get("visual") == "false" {
-		editor.Class = "content-only"
+		e.Class = "content-only"
 	}
 
-	if editor.Class == "frontmatter-only" {
-		// Checks if the file already has the frontmatter rune and parses it
-		if frontmatter.HasRune(i.Content) {
-			editor.FrontMatter.Content, _, err = frontmatter.Pretty(i.Content)
-		} else {
-			editor.FrontMatter.Rune = frontmatter.StringFormatToRune(editor.Mode)
-			editor.FrontMatter.Content, _, err = frontmatter.Pretty(frontmatter.AppendRune(i.Content, editor.FrontMatter.Rune))
+	hasRune := frontmatter.HasRune(i.Content)
+
+	if e.Class == "frontmatter-only" && !hasRune {
+		e.FrontMatter.Rune, err = frontmatter.StringFormatToRune(e.Mode)
+		if err != nil {
+			goto Error
+		}
+		i.Content = frontmatter.AppendRune(i.Content, e.FrontMatter.Rune)
+	}
+
+	if e.Class == "frontmatter-only" && hasRune {
+		e.FrontMatter.Content, _, err = frontmatter.Pretty(i.Content)
+		if err != nil {
+			goto Error
 		}
 	}
 
-	if editor.Class == "complete" && frontmatter.HasRune(i.Content) {
+	if e.Class == "complete" && hasRune {
 		var page parser.Page
 		// Starts a new buffer and parses the file using Hugo's functions
 		buffer := bytes.NewBuffer(i.Content)
 		page, err = parser.ReadFrom(buffer)
 
-		if err == nil {
-			// Parses the page content and the frontmatter
-			editor.Content = strings.TrimSpace(string(page.Content()))
-			editor.FrontMatter.Rune = rune(i.Content[0])
-			editor.FrontMatter.Content, _, err = frontmatter.Pretty(page.FrontMatter())
+		if err != nil {
+			goto Error
 		}
+
+		// Parses the page content and the frontmatter
+		e.Content = strings.TrimSpace(string(page.Content()))
+		e.FrontMatter.Rune = rune(i.Content[0])
+		e.FrontMatter.Content, _, err = frontmatter.Pretty(page.FrontMatter())
 	}
 
-	if editor.Class == "complete" && !frontmatter.HasRune(i.Content) {
+	if e.Class == "complete" && !hasRune {
 		err = errors.New("Complete but without rune")
 	}
 
-	if editor.Class == "content-only" || err != nil {
-		editor.Class = "content-only"
-		editor.Content = i.StringifyContent()
+Error:
+	if e.Class == "content-only" || err != nil {
+		e.Class = "content-only"
+		e.Content = i.StringifyContent()
 	}
 
-	return editor, nil
+	return e, nil
 }
 
 func editorClass(mode string) string {
