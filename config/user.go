@@ -12,7 +12,6 @@ type User struct {
 	FileSystem    webdav.FileSystem `json:"-"` // The virtual file system the user have access
 	Handler       *webdav.Handler   `json:"-"` // The WebDav HTTP Handler
 	StyleSheet    string            `json:"-"` // Costum stylesheet
-	FrontMatter   string            `json:"-"` // Default frontmatter to save files in
 	AllowNew      bool              // Can create files and folders
 	AllowEdit     bool              // Can edit/rename files
 	AllowCommands bool              // Can execute commands

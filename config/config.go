@@ -66,7 +66,6 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		cfg.Scope = "."
 		cfg.FileSystem = webdav.Dir(cfg.Scope)
 		cfg.BaseURL = ""
-		cfg.FrontMatter = "yaml"
 		cfg.HugoEnabled = false
 		cfg.Users = map[string]*User{}
 		cfg.AllowCommands = true
@@ -102,15 +101,6 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 
 		for c.NextBlock() {
 			switch c.Val() {
-			case "frontmatter":
-				if !c.NextArg() {
-					return configs, c.ArgErr()
-				}
-
-				user.FrontMatter = c.Val()
-				if user.FrontMatter != "yaml" && user.FrontMatter != "json" && user.FrontMatter != "toml" {
-					return configs, c.Err("frontmatter type not supported")
-				}
 			case "before_save":
 				if cfg.BeforeSave, err = CommandRunner(c); err != nil {
 					return configs, err
@@ -239,7 +229,6 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				user.AllowEdit = cfg.AllowEdit
 				user.AllowNew = cfg.AllowEdit
 				user.Commands = cfg.Commands
-				user.FrontMatter = cfg.FrontMatter
 				user.Scope = cfg.Scope
 				user.FileSystem = cfg.FileSystem
 				user.Rules = cfg.Rules

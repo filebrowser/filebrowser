@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/hacdias/caddy-filemanager/config"
@@ -48,7 +49,18 @@ func PreProccessPUT(
 		mainContent = strings.TrimSpace(mainContent)
 		file = []byte(mainContent)
 	case "complete":
-		if file, err = ParseCompleteFile(data, r.URL.Path, u.FrontMatter); err != nil {
+		var mark rune
+
+		if v := r.Header.Get("Rune"); v != "" {
+			n, err := strconv.Atoi(v)
+			if err != nil {
+				return err
+			}
+
+			mark = rune(n)
+		}
+
+		if file, err = ParseCompleteFile(data, r.URL.Path, mark); err != nil {
 			return
 		}
 	default:
@@ -100,7 +112,7 @@ func ParseFrontMatter(data interface{}, front string) ([]byte, error) {
 }
 
 // ParseCompleteFile parses a complete file
-func ParseCompleteFile(data map[string]interface{}, filename string, frontmatter string) ([]byte, error) {
+func ParseCompleteFile(data map[string]interface{}, filename string, mark rune) ([]byte, error) {
 	mainContent := ""
 
 	if _, ok := data["content"]; ok {
@@ -116,11 +128,12 @@ func ParseCompleteFile(data map[string]interface{}, filename string, frontmatter
 		data["date"] = data["date"].(string) + ":00"
 	}
 
-	front, err := ParseFrontMatter(data, frontmatter)
-
+	front, err := frontmatter.Marshal(data, mark)
 	if err != nil {
 		return []byte{}, err
 	}
+
+	front = frontmatter.AppendRune(front, mark)
 
 	// Generates the final file
 	f := new(bytes.Buffer)

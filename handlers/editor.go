@@ -18,7 +18,10 @@ type Editor struct {
 	Mode        string
 	Visual      bool
 	Content     string
-	FrontMatter *frontmatter.Content
+	FrontMatter struct {
+		Content *frontmatter.Content
+		Rune    rune
+	}
 }
 
 // GetEditor gets the editor based on a FileInfo struct
@@ -41,9 +44,10 @@ func GetEditor(r *http.Request, i *file.Info) (*Editor, error) {
 	if editor.Class == "frontmatter-only" {
 		// Checks if the file already has the frontmatter rune and parses it
 		if frontmatter.HasRune(i.Content) {
-			editor.FrontMatter, _, err = frontmatter.Pretty(i.Content)
+			editor.FrontMatter.Content, _, err = frontmatter.Pretty(i.Content)
 		} else {
-			editor.FrontMatter, _, err = frontmatter.Pretty(frontmatter.AppendRune(i.Content, editor.Mode))
+			editor.FrontMatter.Rune = frontmatter.StringFormatToRune(editor.Mode)
+			editor.FrontMatter.Content, _, err = frontmatter.Pretty(frontmatter.AppendRune(i.Content, editor.FrontMatter.Rune))
 		}
 	}
 
@@ -52,12 +56,12 @@ func GetEditor(r *http.Request, i *file.Info) (*Editor, error) {
 		// Starts a new buffer and parses the file using Hugo's functions
 		buffer := bytes.NewBuffer(i.Content)
 		page, err = parser.ReadFrom(buffer)
-		editor.Class = "complete"
 
 		if err == nil {
 			// Parses the page content and the frontmatter
 			editor.Content = strings.TrimSpace(string(page.Content()))
-			editor.FrontMatter, _, err = frontmatter.Pretty(page.FrontMatter())
+			editor.FrontMatter.Rune = rune(i.Content[0])
+			editor.FrontMatter.Content, _, err = frontmatter.Pretty(page.FrontMatter())
 		}
 	}
 

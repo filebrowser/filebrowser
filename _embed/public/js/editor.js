@@ -188,7 +188,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
   }
 
   let container = document.getElementById('editor'),
-    kind = container.dataset.kind;
+    kind = container.dataset.kind,
+    rune = container.dataset.rune;
 
   if(kind != 'frontmatter-only') {
     let editor = document.querySelector('.content #ace'),
@@ -240,7 +241,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
     buttons.setLoading('save')
 
     webdav.put(window.location.pathname, JSON.stringify(data), {
-        'Kind': kind
+        'Kind': kind,
+        'Rune': rune
       })
       .then(() => {
         buttons.setDone('save')
