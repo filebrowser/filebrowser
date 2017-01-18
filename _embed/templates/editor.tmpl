@@ -1,12 +1,12 @@
 {{ define "content" }}
 {{- with .Data }}
-<form id="editor" {{ if eq .Mode "markdown" }}class="markdown"{{ end }} data-kind="{{ .Class }}">
+<form id="editor" {{ if eq .Mode "markdown" }}class="markdown"{{ end }} data-kind="{{ .Class }}" data-rune="{{ if eq .Class "complete" }}{{ .FrontMatter.Rune }}{{ end }}">
     {{- if or (eq .Class "frontmatter-only") (eq .Class "complete") }}
     {{- if (eq .Class "complete")}}
     <h2>Metadata</h2>
     {{- end }}
     <div class="frontmatter" data-type="parent">
-        {{- template "blocks" .FrontMatter }}
+        {{- template "blocks" .FrontMatter.Content }}
         <div class="button add">Add field</div>
     </div>
     {{- end }}
