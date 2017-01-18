@@ -158,14 +158,7 @@ func parse(c *caddy.Controller, root string) (*Config, *filemanager.FileManager,
 
 	fm = &filemanager.FileManager{Configs: fmConfig}
 	fm.Configs[0].HugoEnabled = true
-
-	format := getFrontMatter(cfg)
-
 	cfg.WebDavURL = fm.Configs[0].WebDavURL
-
-	for _, user := range fm.Configs[0].Users {
-		user.FrontMatter = format
-	}
 
 	if err != nil {
 		return cfg, fm, err
@@ -210,7 +203,7 @@ func getFrontMatter(conf *Config) string {
 		log.Println(err)
 		fmt.Printf("Can't get the default frontmatter from the configuration. %s will be used.\n", format)
 	} else {
-		bytes = frontmatter.AppendRune(bytes, format)
+		bytes = frontmatter.AppendRune(bytes, frontmatter.StringFormatToRune(format))
 		f, err := frontmatter.Unmarshal(bytes)
 
 		if err != nil {

@@ -21,7 +21,6 @@ import (
 	"github.com/hacdias/caddy-filemanager"
 	"github.com/hacdias/caddy-filemanager/assets"
 	"github.com/hacdias/caddy-filemanager/frontmatter"
-	"github.com/hacdias/caddy-filemanager/handlers"
 	"github.com/hacdias/caddy-filemanager/utils/variables"
 	"github.com/hacdias/caddy-hugo/utils/commands"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
@@ -161,6 +160,7 @@ func (h Hugo) Schedule(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusInternalServerError, err
 	}
 
+	format := rune(r.Header.Get("Rune")[0])
 	scheduler := cron.New()
 	scheduler.AddFunc(t.Format("05 04 15 02 01 *"), func() {
 		filename := r.URL.Path
@@ -199,7 +199,7 @@ func (h Hugo) Schedule(w http.ResponseWriter, r *http.Request) (int, error) {
 			delete(front.(map[string]interface{}), "Draft")
 		}
 
-		fm, err := handlers.ParseFrontMatter(front, h.FileManager.Configs[0].FrontMatter)
+		fm, err := frontmatter.Marshal(front, format)
 
 		if err != nil {
 			log.Println(err)
