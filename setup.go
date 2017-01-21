@@ -203,7 +203,14 @@ func getFrontMatter(conf *Config) string {
 		log.Println(err)
 		fmt.Printf("Can't get the default frontmatter from the configuration. %s will be used.\n", format)
 	} else {
-		bytes = frontmatter.AppendRune(bytes, frontmatter.StringFormatToRune(format))
+		r, err := frontmatter.StringFormatToRune(format)
+		if err != nil {
+			log.Println(err)
+			fmt.Printf("Can't get the default frontmatter from the configuration. %s will be used.\n", format)
+			return format
+		}
+
+		bytes = frontmatter.AppendRune(bytes, r)
 		f, err := frontmatter.Unmarshal(bytes)
 
 		if err != nil {
