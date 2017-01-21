@@ -36,7 +36,7 @@ type Info struct {
 func GetInfo(url *url.URL, c *config.Config, u *config.User) (*Info, int, error) {
 	var err error
 
-	i := &Info{URL: url.Path}
+	i := &Info{URL: c.PrefixURL + url.Path}
 	i.VirtualPath = strings.Replace(url.Path, c.BaseURL, "", 1)
 	i.VirtualPath = strings.TrimPrefix(i.VirtualPath, "/")
 	i.VirtualPath = "/" + i.VirtualPath
