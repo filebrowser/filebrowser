@@ -16,7 +16,8 @@
     <script>
     var user = JSON.parse('{{ Marshal .User }}'),
         webdavURL = "{{.Config.AbsoluteURL}}{{.Config.WebDavURL}}",
-        baseURL = "{{.Config.AbsoluteURL}}";
+        baseURL = "{{.Config.AbsoluteURL}}",
+        prefixURL = "{{ .Config.PrefixURL }}";
     </script>
     <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/common.js" defer></script>
     {{- if .IsDir }}
