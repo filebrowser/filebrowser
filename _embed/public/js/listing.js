@@ -447,8 +447,9 @@ listing.moveSelected = function (event) {
     let fileElement = document.getElementById(file),
       destFolder = event.target.querySelector("p code").innerHTML;
 
-    if(event.srcElement.querySelector("li[aria-selected=true]") != null)
-      destFolder = event.srcElement.querySelector("li[aria-selected=true]").innerHTML;
+    if(event.currentTarget.querySelector("li[aria-selected=true]") != null) {
+      destFolder = event.currentTarget.querySelector("li[aria-selected=true]").dataset.url;
+    }
 
     let destPath = "/" + destFolder + "/" + fileElement.querySelector(".name").innerHTML;
     destPath = destPath.replace('//', '/');
