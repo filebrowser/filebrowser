@@ -140,7 +140,7 @@ webdav.move = function (oldLink, newLink) {
     let request = new XMLHttpRequest(),
       destination = newLink.replace(baseURL + "/", webdavURL + "/");
 
-    destination = window.location.origin  + destination.substring(prefixURL.length);
+    destination = window.location.origin + destination.substring(prefixURL.length);
 
     request.open('MOVE', webdav.convertURL(oldLink), true);
     request.setRequestHeader('Destination', destination);
@@ -191,7 +191,6 @@ webdav.delete = function (link) {
     request.onerror = () => reject(request.statusText);
     request.send();
   });
-  request.send();
 }
 
 webdav.new = function (link) {
@@ -208,7 +207,6 @@ webdav.new = function (link) {
     request.onerror = () => reject(request.statusText);
     request.send();
   });
-  request.send();
 }
 
 /* * * * * * * * * * * * * * * *
@@ -222,7 +220,10 @@ function closePrompt(event) {
   if(!prompt)
     return;
 
-  event.preventDefault();
+  if(typeof event != 'undefined') {
+    event.preventDefault();
+  }
+
   document.querySelector('.overlay').classList.remove('active');
   prompt.classList.remove('active');
 
@@ -277,7 +278,7 @@ function openEvent(event) {
 }
 
 function deleteOnSingleFile() {
-  closePrompt(event);
+  closePrompt();
   buttons.setLoading('delete');
 
   let promises = [];
@@ -293,7 +294,7 @@ function deleteOnSingleFile() {
 }
 
 function deleteOnListing() {
-  closePrompt(event);
+  closePrompt();
   buttons.setLoading('delete');
 
   let promises = [];
