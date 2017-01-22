@@ -41,7 +41,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 	for i := range f.Configs {
 		// Checks if this Path should be handled by File Manager.
 		if !httpserver.Path(r.URL.Path).Matches(f.Configs[i].BaseURL) {
-			return f.Next.ServeHTTP(w, r)
+			continue
 		}
 
 		c = &f.Configs[i]
