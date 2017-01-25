@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/hacdias/caddy-filemanager/config"
 	"github.com/hacdias/caddy-filemanager/file"
@@ -18,12 +19,6 @@ func ServeSingle(w http.ResponseWriter, r *http.Request, c *config.Config, u *co
 		return errors.ErrorToHTTPCode(err, true), err
 	}
 
-	if i.Type == "text" {
-		if err = i.Read(); err != nil {
-			return errors.ErrorToHTTPCode(err, true), err
-		}
-	}
-
 	p := &page.Page{
 		Info: &page.Info{
 			Name:   i.Name,
@@ -33,6 +28,17 @@ func ServeSingle(w http.ResponseWriter, r *http.Request, c *config.Config, u *co
 			User:   u,
 			Config: c,
 		},
+	}
+
+	// If the request accepts JSON, we send the file information.
+	if strings.Contains(r.Header.Get("Accept"), "application/json") {
+		return p.PrintAsJSON(w)
+	}
+
+	if i.Type == "text" {
+		if err = i.Read(); err != nil {
+			return errors.ErrorToHTTPCode(err, true), err
+		}
 	}
 
 	if i.CanBeEdited() && u.AllowEdit {
