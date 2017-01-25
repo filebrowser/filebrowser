@@ -59,6 +59,23 @@ func GetInfo(url *url.URL, c *config.Config, u *config.User) (*Info, int, error)
 	return i, 0, nil
 }
 
+var textExtensions = [...]string{
+	".md", ".markdown", ".mdown", ".mmark",
+	".asciidoc", ".adoc", ".ad",
+	".rst",
+	".json", ".toml", ".yaml", ".csv", ".xml", ".rss", ".conf", ".ini",
+	".tex", ".sty",
+	".css", ".sass", ".scss",
+	".js",
+	".html",
+	".txt", ".rtf",
+	".sh", ".bash", ".ps1", ".bat", ".cmd",
+	".php", ".pl", ".py",
+	"Caddyfile",
+	".c", ".cc", ".h", ".hh", ".cpp", ".hpp", ".f90",
+	".f", ".bas", ".d", ".ada", ".nim", ".cr", ".java", ".cs", ".vala", ".vapi",
+}
+
 // RetrieveFileType obtains the mimetype and a simplified internal Type
 // using the first 512 bytes from the file.
 func (i *Info) RetrieveFileType() error {
@@ -73,7 +90,41 @@ func (i *Info) RetrieveFileType() error {
 		i.Mimetype = http.DetectContentType(i.Content)
 	}
 
-	i.Type = simplifyMediaType(i.Mimetype)
+	if strings.HasPrefix(i.Mimetype, "video") {
+		i.Type = "video"
+		return nil
+	}
+
+	if strings.HasPrefix(i.Mimetype, "audio") {
+		i.Type = "audio"
+		return nil
+	}
+
+	if strings.HasPrefix(i.Mimetype, "image") {
+		i.Type = "image"
+		return nil
+	}
+
+	if strings.HasPrefix(i.Mimetype, "text") {
+		i.Type = "text"
+		return nil
+	}
+
+	if strings.HasPrefix(i.Mimetype, "application/javascript") {
+		i.Type = "text"
+		return nil
+	}
+
+	// If the type isn't text (and is blob for example), it will check some
+	// common types that are mistaken not to be text.
+	for _, extension := range textExtensions {
+		if strings.HasSuffix(i.Name, extension) {
+			i.Type = "text"
+			return nil
+		}
+	}
+
+	i.Type = "blob"
 	return nil
 }
 
@@ -109,58 +160,5 @@ func (i Info) HumanModTime(format string) string {
 
 // CanBeEdited checks if the extension of a file is supported by the editor
 func (i Info) CanBeEdited() bool {
-	if i.Type == "text" {
-		return true
-	}
-
-	// If the type isn't text (and is blob for example), it will check some
-	// common types that are mistaken not to be text.
-	extensions := [...]string{
-		".md", ".markdown", ".mdown", ".mmark",
-		".asciidoc", ".adoc", ".ad",
-		".rst",
-		".json", ".toml", ".yaml", ".csv", ".xml", ".rss", ".conf", ".ini",
-		".tex", ".sty",
-		".css", ".sass", ".scss",
-		".js",
-		".html",
-		".txt", ".rtf",
-		".sh", ".bash", ".ps1", ".bat", ".cmd",
-		".php", ".pl", ".py",
-		"Caddyfile",
-		".c", ".cc", ".h", ".hh", ".cpp", ".hpp", ".f90",
-		".f", ".bas", ".d", ".ada", ".nim", ".cr", ".java", ".cs", ".vala", ".vapi",
-	}
-
-	for _, extension := range extensions {
-		if strings.HasSuffix(i.Name, extension) {
-			return true
-		}
-	}
-
-	return false
-}
-
-func simplifyMediaType(name string) string {
-	if strings.HasPrefix(name, "video") {
-		return "video"
-	}
-
-	if strings.HasPrefix(name, "audio") {
-		return "audio"
-	}
-
-	if strings.HasPrefix(name, "image") {
-		return "image"
-	}
-
-	if strings.HasPrefix(name, "text") {
-		return "text"
-	}
-
-	if strings.HasPrefix(name, "application/javascript") {
-		return "text"
-	}
-
-	return "blob"
+	return i.Type == "text"
 }
