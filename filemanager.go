@@ -138,7 +138,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			// If it's a dir and the path doesn't end with a trailing slash,
 			// redirect the user.
 			if fi.IsDir && !strings.HasSuffix(r.URL.Path, "/") {
-				http.Redirect(w, r, c.AddrPath+r.URL.Path+"/", http.StatusTemporaryRedirect)
+				http.Redirect(w, r, c.PrefixURL+r.URL.Path+"/", http.StatusTemporaryRedirect)
 				return 0, nil
 			}
 
