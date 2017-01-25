@@ -20,8 +20,7 @@ type Config struct {
 	PrefixURL   string
 	BaseURL     string
 	WebDavURL   string
-	Token       string // Anti CSRF token
-	HugoEnabled bool   // Enables the Hugo plugin for File Manager
+	HugoEnabled bool // Enables the Hugo plugin for File Manager
 	Users       map[string]*User
 	BeforeSave  CommandFunc
 	AfterSave   CommandFunc
