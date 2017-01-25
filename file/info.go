@@ -113,6 +113,8 @@ func (i Info) CanBeEdited() bool {
 		return true
 	}
 
+	// If the type isn't text (and is blob for example), it will check some
+	// common types that are mistaken not to be text.
 	extensions := [...]string{
 		".md", ".markdown", ".mdown", ".mmark",
 		".asciidoc", ".adoc", ".ad",
