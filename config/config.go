@@ -19,11 +19,10 @@ type Config struct {
 	*User
 	PrefixURL   string
 	BaseURL     string
-	AddrPath    string
+	WebDavURL   string
 	Token       string // Anti CSRF token
 	HugoEnabled bool   // Enables the Hugo plugin for File Manager
 	Users       map[string]*User
-	WebDavURL   string
 	BeforeSave  CommandFunc
 	AfterSave   CommandFunc
 }
@@ -239,7 +238,6 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		caddyConf := httpserver.GetConfig(c)
 
 		cfg.PrefixURL = strings.TrimSuffix(caddyConf.Addr.Path, "/")
-		cfg.AddrPath = strings.TrimSuffix(caddyConf.Addr.Path, "/")
 		cfg.WebDavURL = "/" + strings.TrimPrefix(cfg.WebDavURL, "/")
 		cfg.Handler = &webdav.Handler{
 			Prefix:     cfg.BaseURL + cfg.WebDavURL,
