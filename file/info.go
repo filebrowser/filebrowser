@@ -20,6 +20,7 @@ type Info struct {
 	Name        string
 	Size        int64
 	URL         string
+	Extension   string
 	ModTime     time.Time
 	Mode        os.FileMode
 	IsDir       bool
@@ -55,7 +56,7 @@ func GetInfo(url *url.URL, c *config.Config, u *config.User) (*Info, int, error)
 	i.Mode = info.Mode()
 	i.IsDir = info.IsDir()
 	i.Size = info.Size()
-
+	i.Extension = filepath.Ext(i.Name)
 	return i, 0, nil
 }
 
@@ -79,7 +80,7 @@ var textExtensions = [...]string{
 // RetrieveFileType obtains the mimetype and a simplified internal Type
 // using the first 512 bytes from the file.
 func (i *Info) RetrieveFileType() error {
-	i.Mimetype = mime.TypeByExtension(filepath.Ext(i.Name))
+	i.Mimetype = mime.TypeByExtension(i.Extension)
 
 	if i.Mimetype == "" {
 		err := i.Read()
