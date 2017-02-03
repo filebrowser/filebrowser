@@ -72,6 +72,11 @@ i.spin {
   animation: 1s spin linear infinite;
 }
 
+.pdf {
+  width: 100%;
+  height: calc(100vh - 13em);
+}
+
 
 /* * * * * * * * * * * * * * * *
  *            EDITOR           *
