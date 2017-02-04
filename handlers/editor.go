@@ -49,6 +49,7 @@ func GetEditor(r *http.Request, i *file.Info) (*Editor, error) {
 			goto Error
 		}
 		i.Content = frontmatter.AppendRune(i.Content, e.FrontMatter.Rune)
+		hasRune = true
 	}
 
 	if e.Class == "frontmatter-only" && hasRune {
