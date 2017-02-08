@@ -76,7 +76,7 @@ func (i Info) BreadcrumbMap() []BreadcrumbMapItem {
 
 		result = append([]BreadcrumbMapItem{{
 			Name: part,
-			URL:  strings.Join(parts[:i+1], "/"),
+			URL:  strings.Join(parts[:i+1], "/") + "/",
 		}}, result...)
 	}
 
