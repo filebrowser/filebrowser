@@ -43,7 +43,6 @@ func GetInfo(url *url.URL, c *config.Config, u *config.User) (*Info, int, error)
 	i.VirtualPath = "/" + i.VirtualPath
 
 	i.Path = u.Scope + i.VirtualPath
-	i.Path = strings.Replace(i.Path, "\\", "/", -1)
 	i.Path = filepath.Clean(i.Path)
 
 	info, err := os.Stat(i.Path)
