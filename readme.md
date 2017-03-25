@@ -151,3 +151,10 @@ If you want to build Caddy from source with this plugin, you should take the fol
 6. Add the line `_ github.com/hacdias/caddy-filemanager` to the imports section.
 
 Now you only need to build or install Caddy and you're good to go.
+
+**Pre-commit Git Hook**
+
+```
+go generate
+git add -A
+```
