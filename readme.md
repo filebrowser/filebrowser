@@ -158,3 +158,7 @@ Now you only need to build or install Caddy and you're good to go.
 go generate
 git add -A
 ```
+
+### To edit CSS, JS and HTML
+
+(In construction)
