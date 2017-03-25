@@ -1,7 +1,0 @@
-{foreach $foo as $bar}
-  <a href="{$bar.zig}">{$bar.zag}</a>
-  <a href="{$bar.zig2}">{$bar.zag2}</a>
-  <a href="{$bar.zig3}">{$bar.zag3}</a>
-{foreachelse}
-  There were no rows found.
-{/foreach}
