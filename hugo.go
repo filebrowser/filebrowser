@@ -1,4 +1,4 @@
-//go:generate go get github.com/jteeuwen/go-bindata
+//go:generate go get github.com/jteeuwen/go-bindata/go-bindata
 //go:generate go-bindata -nomemcopy -pkg hugo -prefix "assets" -o binary.go assets/...
 
 // Package hugo makes the bridge between the static website generator Hugo
