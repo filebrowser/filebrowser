@@ -1,0 +1,77 @@
+name:                reload
+version:             0.1.0.0
+synopsis:            Initial project template from stack
+Description:
+    The \'cabal\' command-line program simplifies the process of managing
+    Haskell software by automating the fetching, configuration, compilation
+    and installation of Haskell libraries and programs.
+homepage:            https://github.com/jpmoresmau/dbIDE/reload#readme
+license:             BSD3
+license-file:        LICENSE
+author:              JP Moresmau
+maintainer:          jpmoresmau@gmail.com
+copyright:           2016 JP Moresmau
+category:            Web
+build-type:          Simple
+-- extra-source-files:
+cabal-version:       >=1.10
+
+Flag network-uri
+  description:  Get Network.URI from the network-uri package
+  default:      True
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Language.Haskell.Reload
+  build-depends:       base >= 4.7 && < 5
+                     , aeson
+                     , scotty
+                     , wai
+                     , text
+                     , directory
+                     , filepath
+                     , bytestring
+                     , containers
+                     , mime-types
+                     , transformers
+                     , wai-handler-launch
+                     , wai-middleware-static
+                     , wai-extra
+                     , http-types
+  default-language:    Haskell2010
+  other-modules:       Language.Haskell.Reload.FileBrowser
+  ghc-options:         -Wall -O2
+
+executable reload-exe
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -threaded -O2 -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , reload
+  default-language:    Haskell2010
+
+test-suite reload-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base
+                     , reload
+                     , hspec
+                     , hspec-wai
+                     , hspec-wai-json
+                     , aeson
+                     , directory
+                     , filepath
+                     , text
+                     , containers
+                     , unordered-containers
+                     , bytestring
+                     , wai-extra
+  ghc-options:         -threaded -O2 -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
+  other-modules:       Language.Haskell.Reload.FileBrowserSpec
+                       Language.Haskell.ReloadSpec
+
+source-repository head
+  type:     git
+  location: https://github.com/jpmoresmau/dbIDE/reload

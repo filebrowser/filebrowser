@@ -1,0 +1,8 @@
+@create phone
+&pickup phone=$pick up:@ifelse [u(is,u(mode),ICC)]={@pemit %#=You pick up the [fullname(me)].[set(me,PHONER:%#)][set(me,MODE:CIP)][set([u(INCOMING)],CONNECTED:[num(me)])][set(me,CONNECTED:[u(INCOMING)])]%r[showpicture(PICPICKUP)]%rUse '[color(green,black,psay <message>)]' (or '[color(green,black,p <message>)]') to talk into the phone.;@oemit %#=%N picks up the [fullname(me)].},{@pemit %#=You pick up the phone but no one is there. You hear a dialtone and then hang up. [play(u(DIALTONE))];@oemit %#=%N picks up the phone, but no one is on the other end.}
+&ringfun phone=[ifelse(eq(comp([u(%0/ringtone)],off),0),[color(black,cyan,INCOMING CALL FROM %1)],[play([switch([u(%0/ringtone)],1,[u(%0/ringtone1)],2,[u(%0/ringtone2)],3,[u(%0/ringtone3)],4,[u(%0/ringtone4)],5,[u(%0/ringtone5)],6,[u(%0/ringtone6)],7,[u(%0/ringtone7)],8,[u(%0/ringtone8)],9,[u(%0/ringtone9)],custom,[u(%0/customtone)],vibrate,[u(%0/vibrate)])])]
+&ringloop phone=@switch [u(ringstate)]=1,{@emit [setq(q,[u(connecting)])][set(%qq,rangs:0)][set(%qq,mode:WFC)][set(%qq,INCOMING:)];@ifelse [u(%qq/HASVMB)]={@tr me/ROUTEVMB=[u(connecting)];},{@pemit %#=[u(MSGCNC)];}},2,{@pemit %#=The call is connected.[setq(q,[u(CONNECTING)])][set(me,CONNECTED:%qq)][set(%qq,CONNECTED:[num(me)])][set(%qq,MODE:CIP)];@tr me/ciploop;@tr %qq/ciploop;},3,{@emit On [fullname(me)]'s earpiece you hear a ringing sound.[play(u(LINETONE))];@tr me/ringhere;@increment [u(connecting)]/RANGS;@wait 5={@tr me/ringloop};},4,{}
+&ringstate phone=[setq(q,u(connecting))][setq(1,[gt(u(%qq/rangs),sub(u(%qq/rings),1))])][setq(2,[and(u(is,u(%qq/MODE),CIP),u(is,u(%qq/INCOMING),[num(me)]))][setq(3,[u(is,u(%qq/MODE),ICC)])][ifelse(%q1,1,ifelse(%q2,2,ifelse(%q3,3,4)))]
+;comment
+@@(comment)
+say [time()]

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ACE Editor Inside iframe</title>
+  <style type="text/css" media="screen">
+    body, html { 
+        height: 100%;
+        margin:0; padding:0;
+    }    
+    #editor { 
+        padding: 20px; margin: 20px
+        width: 80%; height: 80%;
+    }
+  </style>
+</head>
+<body>
+  <div style="height: 100%"></div>
+  <div><textarea></textarea></div>
+  <iframe id="editor-iframe" src='data:text/html,
+  <pre id="editor" style="height:100%"></pre>
+  <script src="https://ajaxorg.github.io/ace-builds/src/ace.js"></script>
+  <script>
+      var editor = ace.edit("editor");
+      editor.setTheme("ace/theme/twilight");
+      editor.session.setMode("ace/mode/javascript");
+  </script>
+  '></iframe>
+</body>
+</html>

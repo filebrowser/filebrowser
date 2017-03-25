@@ -1,0 +1,52 @@
+/* Mask Syntax Demo */
+
+div > ' Test ~[name]';
+
+define :userProfile {
+	header {
+		h4 > @title;
+		button.close;
+	}
+}
+
+:userProfile {
+	@title > ' Hello ~[: username.toUpperCase()]'
+}
+
+style {
+    html, body {
+        background: url('name.png') 0 0 no-repeat;
+    }
+}
+
+button {
+	event click (e) {
+	    this.textContent = `name ${e.clientX} !`;
+	}
+}
+
+md > """
+
+- div
+- span
+ 
+Hello
+
+[one](http://google.com)
+
+""";
+
+
+header .foo > 'Heading'
+
+button .baz x-signal='click: test' disabled > "
+	Hello,
+	world 
+	\"Buddy\"
+"
+
+var a = {
+    name: `name ${window.innerWidth}`
+};
+
+span .foo > "~[bind: a.name]"
