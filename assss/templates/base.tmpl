@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+{{ $absURL := .Config.AbsoluteURL }}
+<head>
+    <title>{{.Name}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_filemanagerinternal/css/normalize.css">
+    <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_filemanagerinternal/css/fonts.css">
+    <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_filemanagerinternal/css/styles.css">
+    {{- if ne .User.StyleSheet "" -}}
+    <style>{{ CSS .User.StyleSheet }}</style>
+    {{- end -}}
+
+    <script>
+    var user = JSON.parse('{{ Marshal .User }}'),
+        webdavURL = "{{.Config.AbsoluteURL}}{{.Config.WebDavURL}}",
+        baseURL = "{{.Config.AbsoluteURL}}",
+        prefixURL = "{{ .Config.PrefixURL }}";
+    </script>
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/common.js" defer></script>
+    {{- if .IsDir }}
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/listing.js" defer></script>
+    {{- else }}
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/vendor/ace/ace.js" defer></script>
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/vendor/form2js.js" defer></script>
+    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/editor.js" defer></script>
+    {{- end }}
+    {{- if .Config.HugoEnabled }}
+    <script src="{{ .Config.AbsoluteURL }}/_hugointernal/js/application.js" defer></script>
+    {{- end }}
+</head>
+<body>
+    <header>
+        <div id="top-bar">
+            <div><p>File Manager</p></div>
+            <div id="search">
+                <i class="material-icons" title="Search">search</i>
+                <input type="text" placeholder="Search or execute a command...">
+                <div>
+                    <div>Loading...</div>
+                    <p><i class="material-icons spin">autorenew</i></p>
+                </div>
+            </div>
+
+            <div class="action" id="logout">
+                <i class="material-icons" title="Logout">exit_to_app</i>
+            </div>
+        </div>
+
+        <div id="bottom-bar">
+            <div>
+                {{- if ne .Name "/"}}
+                <div data-dropdown class="action" id="previous">
+                    <i class="material-icons">subdirectory_arrow_left</i>
+                    <ul class="dropdown" id="breadcrumbs">
+                    {{- range $item := .BreadcrumbMap }}
+                        <a href="{{ $absURL }}{{ $item.URL }}"><li>{{ $item.Name }}</li></a>
+                    {{- end }}
+                    </ul>
+                </div>
+                {{- end }}
+
+                {{ if ne .Name "/"}}<p id="current-file">{{ .Name }}</p>{{ end }}
+            </div>
+
+            <div class="actions{{ if .IsDir }} disabled{{ end }}" id="file-only">
+                {{- if and (not .IsDir) (.User.AllowEdit) }}
+                {{- if .Editor}}
+
+                {{- if eq .Data.Mode "markdown" }}
+                <div class="action" id="preview" onclick="notImplemented(event);">
+                    <i class="material-icons" title="Preview">remove_red_eye</i>
+                </div>
+                {{- end }}
+
+                {{- if eq .Data.Visual true }}
+                <div class="action" id="edit-source">
+                    <i class="material-icons" title="Toggle edit source">code</i>
+                </div>
+                {{- end }}
+                {{- end }}
+
+                <div class="action" id="save">
+                    <i class="material-icons" title="Save">save</i>
+                </div>
+                {{- end }}
+
+                {{- if .IsDir }}
+                <div class="action" id="open">
+                    <i class="material-icons" title="See raw">open_in_new</i>
+                    <span>See raw</span>
+                </div>
+                {{- end }}
+
+                {{- if and (.User.AllowEdit) (.IsDir) }}
+                <div class="action" id="move">
+                    <i class="material-icons" title="Move">forward</i>
+                    <span>Move file</span>
+                </div>
+                {{- end }}
+
+                {{- if and .IsDir .User.AllowEdit }}
+                <div class="action" id="rename">
+                    <i class="material-icons" title="Edit">mode_edit</i>
+                </div>
+                {{- end }}
+
+                {{- if and .User.AllowEdit .IsDir }}
+                <div class="action" id="delete">
+                    <i class="material-icons" title="Delete">delete</i><span>Delete</span>
+                </div>
+                {{- end }}
+            </div>
+
+            <div class="action mobile-only" id="more">
+                <i class="material-icons">more_vert</i>
+            </div>
+
+            <div class="actions" id="main-actions">
+                {{- if .IsDir }}
+                <div class="action" id="view">
+                    {{- if eq .Display "mosaic" }}
+                        <a href="?display=list"><i class="material-icons" title="Switch View">view_list</i><span>Switch view</span></a>
+                    {{- else }}
+                        <a href="?display=mosaic"><i class="material-icons" title="Switch View">view_module</i><span>Switch view</span></a>
+                    {{- end }}
+                </div>
+
+                <div class="action mobile-only" id="multiple-selection-activate">
+                    <i class="material-icons">check_circle</i><span>Select</span>
+                </div>
+                {{- end }}
+
+                {{- if and (.User.AllowNew) (.IsDir) }}
+                <div class="action" id="upload">
+                    <i class="material-icons" title="Upload">file_upload</i><span>Upload</span>
+                </div>
+                {{- end }}
+
+                {{- if not .IsDir }}
+                <div class="action" id="open">
+                    <i class="material-icons" title="See raw">open_in_new</i>
+                    <span>See raw</span>
+                </div>
+                {{- end }}
+
+                {{- if and .User.AllowEdit (not .IsDir) }}
+                <div class="action" id="delete">
+                    <i class="material-icons" title="Delete">delete</i><span>Delete</span>
+                </div>
+                {{- end }}
+
+                <div {{ if .IsDir }}data-dropdown{{ end }} class="action" id="download">
+                    {{- if not .IsDir}}<a href="?download=true">{{ end }}
+                    <i class="material-icons" title="Download">file_download</i><span>Download</span>
+                    {{- if not .IsDir}}</a>{{ end }}
+
+                    {{- if .IsDir }}
+                    <ul class="dropdown" id="download-drop">
+                        <a data-format="zip" href="?download=zip"><li>zip</li></a>
+                        <a data-format="tar" href="?download=tar"><li>tar</li></a>
+                        <a data-format="targz" href="?download=targz"><li>tar.gz</li></a>
+                        <a data-format="tarbz2" href="?download=tarbz2"><li>tar.bz2</li></a>
+                        <a data-format="tarbz2" href="?download=tarxz"><li>tar.xz</li></a>
+                    </ul>
+                    {{- end }}
+                </div>
+
+                <div class="action" id="info" onclick="notImplemented(event);">
+                    <i class="material-icons" title="Info">info</i><span>Info</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="click-overlay"></div>
+    </header>
+
+    <div id="multiple-selection" class="mobile-only">
+        <p>Multiple selection enabled</p>
+        <div class="action" id="multiple-selection-cancel">
+            <i class="material-icons" title="Clear">clear</i>
+        </div>
+    </div>
+
+    <main>
+        {{- template "content" . }}
+    </main>
+
+    <div class="overlay"></div>
+
+    {{- if and (.User.AllowNew) (.IsDir) }}
+    <div class="floating">
+        <div class="action" id="new">
+            <i class="material-icons" title="New file or directory">add</i>
+        </div>
+    </div>
+    {{- end }}
+
+    <template id="question-template">
+        <form class="prompt">
+            <h3></h3>
+            <p></p>
+            <input autofocus type="text">
+            <div>
+                <button type="submit" autofocus class="ok">OK</button>
+                <button class="cancel" onclick="closePrompt(event);">Cancel</button>
+            </div>
+        </form>
+    </template>
+
+    <template id="info-template">
+        <div class="prompt">
+            <h3></h3>
+            <p></p>
+            <div>
+                <button type="submit" onclick="closePrompt(event);" class="ok">OK</button>
+            </div>
+        </div>
+    </template>
+
+    <template id="move-template">
+        <!-- TODO: And the back button? :) -->
+        <form class="prompt">
+            <h3>Move</h3>
+            <p>Choose new house for your file(s)/folder(s):</p>
+
+            <div class="file-list">
+                <ul>
+                </ul>
+            </div>
+
+            <p>Currently navigating on: <code></code>.</p>
+
+            <div>
+                <button type="submit" autofocus class="ok">Move</button>
+                <button class="cancel" onclick="closePrompt(event);">Cancel</button>
+            </div>
+        </form>
+    </template>
+
+    <div class="help">
+        <h3>Help</h3>
+
+        <ul>
+            <li><strong>F1</strong> - this information</li>
+            <li><strong>F2</strong> - rename file</li>
+            <li><strong>DEL</strong> - delete selected items</li>
+            <li><strong>ESC</strong> - clear selection and/or close the prompt</li>
+            <li><strong>CTRL + S</strong> - save a file or download the directory where you are</li>
+            <li><strong>CTRL + Click</strong> - select multiple files or directories</li>
+            <li><strong>Double click</strong> - open a file or directory</li>
+            <li><strong>Click</strong> - select file or directory</li>
+        </ul>
+
+        <p>Not available yet</p>
+
+        <ul>
+            <li><strong>Alt + Click</strong> - select a group of files</li>
+        </ul>
+
+        <div>
+            <button type="submit" onclick="closeHelp(event);" class="ok">OK</button>
+        </div>
+    </div>
+
+    <footer>Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a> and <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>. Revision {{ .Commit }}.</footer>
+</body>
+</html>
