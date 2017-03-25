@@ -1,0 +1,5 @@
+package page
+
+var GIT_COMMIT_HASH = "b2e921e"
+var CIRCLE_BUILD_NUM = ""
+var GENERATED int64 = 1490467350325140900

@@ -1,0 +1,57 @@
+html {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+body {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif, Tahoma, Verdana, sans-serif;
+    font-size: 12px;
+    background: rgb(14, 98, 165);
+    color: white;
+}
+
+#c9-logo, #ace-logo {
+    padding: 0;
+    border: none;
+}
+
+#editor-container {
+    position: absolute;
+    top:  0px;
+    left: 280px;
+    bottom: 0px;
+    right: 0px;
+    background: white;
+}
+
+#controls {
+    padding: 5px;
+}
+
+#controls td {
+    text-align: right;
+}
+
+#controls td + td {
+    text-align: left;
+}
+.ace_status-indicator {
+    color: gray;
+    position: absolute;
+    right: 0;
+    border-left: 1px solid;
+}
+
+/* .ace_text-input {
+    z-index: 10!important;
+    opacity: 1!important;
+    background: rgb(84, 0, 255)!important;
+    color: rgb(255, 255, 255)!important;
+    width: 10em!important;
+}*/

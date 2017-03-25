@@ -1,0 +1,1 @@
+(title:"foo bar" AND body:"quick fox") OR title:fox

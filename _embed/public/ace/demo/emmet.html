@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ACE Emmet demo</title>
+  <style type="text/css" media="screen">
+    body {
+        overflow: hidden;
+    }
+    
+    #editor { 
+        margin: 0;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+  </style>
+</head>
+<body>
+
+<pre id="editor"></pre>
+
+<!-- load emmet code and snippets compiled for browser -->
+<script src="https://cloud9ide.github.io/emmet-core/emmet.js"></script>
+
+<!-- load ace -->
+<script src="../src/ace.js"></script>
+<!-- load ace emmet extension -->
+<script src="../src/ext-emmet.js"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.session.setMode("ace/mode/html");
+    // enable emmet on the current editor
+    editor.setOption("enableEmmet", true);
+</script>
+
+<script src="./show_own_source.js"></script>
+</body>
+</html>

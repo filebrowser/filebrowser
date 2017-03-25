@@ -1,0 +1,10 @@
+Redirect /linux http://www.linux.org
+Redirect 301 /kernel http://www.linux.org
+
+# comment
+RewriteEngine on
+
+RewriteCond %{HTTP_USER_AGENT} ^Mozilla.*
+RewriteRule ^/$ /homepage.max.html [L]
+
+RewriteRule ^/$ /homepage.std.html [L]
