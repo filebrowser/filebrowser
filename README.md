@@ -8,7 +8,7 @@ filemanager provides WebDAV features and a file managing interface within the sp
 
 It is extremely important for security reasons to cover the path of filemanager with some kind of authentication. You can use, for example, [`basicauth`](https://caddyserver.com/docs/basicauth) directive.
 
-Note that if your goal is to handle large files you might run into troubles due to the defaults of [`timeouts`](https://caddyserver.com/docs/timeouts) plugin. Check its [documentation](https://caddyserver.com/docs/timeouts) to learn more about that plugin. 
+Note that if you are handling large files you might run into troubles due to the defaults of [`timeouts`](https://caddyserver.com/docs/timeouts) plugin. Check its [documentation](https://caddyserver.com/docs/timeouts) to learn more about that plugin. 
 
 ## Get Started
 
