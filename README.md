@@ -16,17 +16,20 @@ Using this plugin, you won't need to have your own computer to edit posts, neith
 
 ```
 hugo [directory] [admin] {
-    clean_public  [true|false]
-    flag_name     [value]
+    clean_public    [true|false]
+    before_publish  command
+    after_publish   command
+    flag            name  [value]
     # other file manager compatible options
 }
 ```
 
 All of the options above are optional.
 
-* **clean_public** sets if the `public` folder should be removed before generating the website again. Default: `true`.
 * **directory** is the folder where the commands are going to be executed. By default, it is the current working directory. Default: `./`.
 * **admin** is the path where you will find your administration interface. Default: `/admin`.
+* **clean_public** sets if the `public` folder should be removed before generating the website again. Default: `true`.
+* **before_publish** and **after_publish** allow you to set a custom command to be executed before publishing and after publishing a post/page. The placeholder `{path}` can be used and it will be replaced by the file path.
 * **name** refers to the Hugo available flags. Please use their long form without `--` in the beginning. If no **value** is set, it will be evaluated as `true`.
 
 In spite of these options, you can also use the [filemanager](/docs/filemanager) so you can have more control about what can be acceded, the permissions of each user, and so on.
