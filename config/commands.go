@@ -36,7 +36,7 @@ func CommandRunner(c *caddy.Controller) (CommandFunc, error) {
 	}
 
 	fn = func(r *http.Request, c *Config, u *User) error {
-		path := strings.Replace(r.URL.Path, c.BaseURL+c.WebDavURL, "", 1)
+		path := strings.Replace(r.URL.Path, c.WebDavURL, "", 1)
 		path = u.Scope + "/" + path
 		path = filepath.Clean(path)
 

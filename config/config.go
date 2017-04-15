@@ -31,6 +31,11 @@ func (c Config) AbsoluteURL() string {
 	return c.PrefixURL + c.BaseURL
 }
 
+// AbsoluteWebdavURL ...
+func (c Config) AbsoluteWebdavURL() string {
+	return c.PrefixURL + c.WebDavURL
+}
+
 // Rule is a dissalow/allow rule
 type Rule struct {
 	Regex  bool
@@ -88,7 +93,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		cfg.BaseURL = strings.TrimPrefix(cfg.BaseURL, "/")
 		cfg.BaseURL = strings.TrimSuffix(cfg.BaseURL, "/")
 		cfg.BaseURL = "/" + cfg.BaseURL
-		cfg.WebDavURL = "webdav"
+		cfg.WebDavURL = ""
 
 		if cfg.BaseURL == "/" {
 			cfg.BaseURL = ""
@@ -234,12 +239,16 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 			}
 		}
 
+		if cfg.WebDavURL == "" {
+			cfg.WebDavURL = "webdav"
+		}
+
 		caddyConf := httpserver.GetConfig(c)
 
 		cfg.PrefixURL = strings.TrimSuffix(caddyConf.Addr.Path, "/")
 		cfg.WebDavURL = "/" + strings.TrimPrefix(cfg.WebDavURL, "/")
 		cfg.Handler = &webdav.Handler{
-			Prefix:     cfg.BaseURL + cfg.WebDavURL,
+			Prefix:     cfg.WebDavURL,
 			FileSystem: cfg.FileSystem,
 			LockSystem: webdav.NewMemLS(),
 		}
