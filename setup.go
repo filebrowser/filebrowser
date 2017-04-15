@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/hacdias/caddy-filemanager"
@@ -70,6 +71,7 @@ type Config struct {
 	Args          []string // Hugo arguments
 	BaseURL       string   // BaseURL of admin interface
 	WebDavURL     string
+	CleanPublic   bool
 	BeforePublish config.CommandFunc
 	AfterPublish  config.CommandFunc
 }
@@ -127,6 +129,16 @@ func parse(c *caddy.Controller, root string) (*Config, *filemanager.FileManager,
 				}
 
 				cfg.Args = append(cfg.Args, "--"+flag+"="+value)
+			case "clean_public":
+				if !c.NextArg() {
+					return cfg, &filemanager.FileManager{}, c.ArgErr()
+				}
+
+				cfg.CleanPublic, err = strconv.ParseBool(c.Val())
+
+				if err != nil {
+					return cfg, &filemanager.FileManager{}, c.ArgErr()
+				}
 			case "before_publish":
 				if cfg.BeforePublish, err = config.CommandRunner(c); err != nil {
 					return cfg, &filemanager.FileManager{}, err

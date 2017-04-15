@@ -133,7 +133,9 @@ func (h Hugo) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 
 // RunHugo is used to run the static website generator
 func RunHugo(c *Config, force bool) {
-	os.RemoveAll(c.Root + "public")
+	if c.CleanPublic {
+		os.RemoveAll(c.Root + "public")
+	}
 
 	// Prevent running if watching is enabled
 	if b, pos := variables.StringInSlice("--watch", c.Args); b && !force {
