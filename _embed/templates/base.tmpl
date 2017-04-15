@@ -14,7 +14,7 @@
 
     <script>
     var user = JSON.parse('{{ Marshal .User }}'),
-        webdavURL = "{{.Config.AbsoluteURL}}{{.Config.WebDavURL}}",
+        webdavURL = "{{.Config.AbsoluteWebdavURL }}",
         baseURL = "{{.Config.AbsoluteURL}}",
         prefixURL = "{{ .Config.PrefixURL }}";
     </script>
