@@ -16,13 +16,15 @@ Using this plugin, you won't need to have your own computer to edit posts, neith
 
 ```
 hugo [directory] [admin] {
-    flag name [value]
+    clean_public  [true|false]
+    flag_name     [value]
     # other file manager compatible options
 }
 ```
 
 All of the options above are optional.
 
+* **clean_public** sets if the `public` folder should be removed before generating the website again. Default: `true`.
 * **directory** is the folder where the commands are going to be executed. By default, it is the current working directory. Default: `./`.
 * **admin** is the path where you will find your administration interface. Default: `/admin`.
 * **name** refers to the Hugo available flags. Please use their long form without `--` in the beginning. If no **value** is set, it will be evaluated as `true`.
