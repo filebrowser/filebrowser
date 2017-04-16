@@ -51,8 +51,8 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			return http.StatusForbidden, nil
 		}
 
-		// Obtains the user
-		username, _, _ := r.BasicAuth()
+		// Obtains the user. See https://github.com/mholt/caddy/blob/master/caddyhttp/basicauth/basicauth.go#L66
+		username, _ := r.Context().Value(httpserver.RemoteUserCtxKey).(string)
 		if _, ok := c.Users[username]; ok {
 			user = c.Users[username]
 		} else {
