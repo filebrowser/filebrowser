@@ -6,6 +6,8 @@ package filemanager
 import (
 	e "errors"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/hacdias/caddy-filemanager/assets"
@@ -67,6 +69,29 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			}
 
 			switch r.Method {
+			case "GET":
+				// Excerpt from RFC4918, section 9.4:
+				//
+				// 		GET, when applied to a collection, may return the contents of an
+				//		"index.html" resource, a human-readable view of the contents of
+				//		the collection, or something else altogether.
+				//
+				// It was decided on https://github.com/hacdias/caddy-filemanager/issues/85
+				// that GET, for collection, will return the same as PROPFIND method.
+				path := strings.Replace(r.URL.Path, c.WebDavURL, "", 1)
+				path = user.Scope + "/" + path
+				path = filepath.Clean(path)
+
+				var i os.FileInfo
+				i, err = os.Stat(path)
+				if err != nil {
+					// Is there any error? WebDav will handle it... no worries.
+					break
+				}
+
+				if i.IsDir() {
+					r.Method = "PROPFIND"
+				}
 			case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
 				if !user.AllowEdit {
 					return http.StatusForbidden, nil
