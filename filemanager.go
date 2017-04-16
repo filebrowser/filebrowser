@@ -15,6 +15,7 @@ import (
 	"github.com/hacdias/caddy-filemanager/file"
 	"github.com/hacdias/caddy-filemanager/handlers"
 	"github.com/hacdias/caddy-filemanager/page"
+	"github.com/hacdias/caddy-filemanager/wrapper"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
@@ -89,9 +90,12 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					break
 				}
 
-				// TODO: since HEAD shouldn't return any body, we should make a wrapper here...
 				if i.IsDir() {
 					r.Method = "PROPFIND"
+
+					if r.Method == "HEAD" {
+						w = wrapper.NewResponseWriterNoBody(w)
+					}
 				}
 			case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
 				if !user.AllowEdit {
