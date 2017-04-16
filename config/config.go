@@ -120,7 +120,6 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 				prefix := c.Val()
 				prefix = strings.TrimPrefix(prefix, "/")
 				prefix = strings.TrimSuffix(prefix, "/")
-				prefix = cfg.BaseURL + "/" + prefix
 				cfg.WebDavURL = prefix
 			case "show":
 				if !c.NextArg() {
@@ -246,7 +245,7 @@ func Parse(c *caddy.Controller) ([]Config, error) {
 		caddyConf := httpserver.GetConfig(c)
 
 		cfg.PrefixURL = strings.TrimSuffix(caddyConf.Addr.Path, "/")
-		cfg.WebDavURL = "/" + strings.TrimPrefix(cfg.WebDavURL, "/")
+		cfg.WebDavURL = cfg.BaseURL + "/" + strings.TrimPrefix(cfg.WebDavURL, "/")
 		cfg.Handler = &webdav.Handler{
 			Prefix:     cfg.WebDavURL,
 			FileSystem: cfg.FileSystem,
