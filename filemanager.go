@@ -77,7 +77,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 				//		the collection, or something else altogether.
 				//
 				// It was decided on https://github.com/hacdias/caddy-filemanager/issues/85
-				// that GET, for collection, will return the same as PROPFIND method.
+				// that GET, for collections, will return the same as PROPFIND method.
 				path := strings.Replace(r.URL.Path, c.WebDavURL, "", 1)
 				path = user.Scope + "/" + path
 				path = filepath.Clean(path)
