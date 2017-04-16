@@ -34,11 +34,6 @@ type Info struct {
 	Token   string
 }
 
-// Commit returns the current build commit
-func (i *Info) Commit() string {
-	return GIT_COMMIT_HASH
-}
-
 // BreadcrumbMapItem ...
 type BreadcrumbMapItem struct {
 	Name string
