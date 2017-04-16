@@ -69,7 +69,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			}
 
 			switch r.Method {
-			case "GET":
+			case "GET", "HEAD":
 				// Excerpt from RFC4918, section 9.4:
 				//
 				// 		GET, when applied to a collection, may return the contents of an
@@ -89,6 +89,7 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 					break
 				}
 
+				// TODO: since HEAD shouldn't return any body, we should make a wrapper here...
 				if i.IsDir() {
 					r.Method = "PROPFIND"
 				}
