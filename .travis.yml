@@ -9,14 +9,6 @@ install:
   - go get github.com/mholt/caddy/caddyhttp
 
 before_script:
-  - mkdir $GOPATH/src/caddy
-  - touch $GOPATH/src/caddy/main.go
-  - echo 'package main
-    import "github.com/mholt/caddy/caddy/caddymain"
-    import "github.com/hacdias/caddy-hugo"
-    func main() {
-    caddymain.Run()
-    }' >> $GOPATH/src/caddy/main.go
-
+  - ./before_script.sh
 script:
   - go build caddy
