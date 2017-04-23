@@ -215,6 +215,14 @@
             <p><strong>Display Name:</strong> <span id="display_name"></span></p>
             <p><strong>Content Length:</strong> <span id="content_length"></span> Bytes</p>
             <p><strong>Last Modified:</strong> <span id="last_modified"></span></p>
+
+            <section class="file-only">
+                <p><strong>MD5:</strong> <code id="md5"><a href="#" onclick="getHash(event, 'md5')">show</a></code></p>
+                <p><strong>SHA1:</strong> <code id="sha1"><a href="#" onclick="getHash(event, 'sha1')">show</a></code></p>
+                <p><strong>SHA256:</strong> <code id="sha256"><a href="#" onclick="getHash(event, 'sha256')">show</a></code></p>
+                <p><strong>SHA512:</strong> <code id="sha512"><a href="#" onclick="getHash(event, 'sha512')">show</a></code></p>
+            </section>
+
             <div>
                 <button type="submit" onclick="closePrompt(event);" class="ok">OK</button>
             </div>

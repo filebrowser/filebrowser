@@ -302,17 +302,40 @@ function openEvent (event) {
   return false
 }
 
+function getHash (event, hash) {
+  event.preventDefault()
+
+  let request = new window.XMLHttpRequest()
+  request.open('GET', `${window.location.pathname}?checksum=${hash}`, true)
+
+  request.onload = () => {
+    if (request.status >= 300) {
+      console.log(request.statusText)
+      return
+    }
+    event.target.parentElement.innerHTML = request.responseText
+  }
+  request.onerror = (e) => console.log(e)
+  request.send()
+}
+
 function infoEvent (event) {
   event.preventDefault()
   if (event.currentTarget.classList.contains('disabled')) {
     return
   }
 
+  let dir = false
   let link
 
   if (selectedItems.length) {
     link = document.getElementById(selectedItems[0]).dataset.url
+    dir = document.getElementById(selectedItems[0]).dataset.dir
   } else {
+    if (document.getElementById('listing') !== null) {
+      dir = true
+    }
+
     link = window.location.pathname
   }
 
@@ -325,6 +348,10 @@ function infoEvent (event) {
       clone.getElementById('display_name').innerHTML = xml.getElementsByTagName('displayname')[0].innerHTML
       clone.getElementById('content_length').innerHTML = xml.getElementsByTagName('getcontentlength')[0].innerHTML
       clone.getElementById('last_modified').innerHTML = xml.getElementsByTagName('getlastmodified')[0].innerHTML
+
+      if (dir === true || dir === 'true') {
+        clone.querySelector('.file-only').style.display = 'none'
+      }
 
       document.querySelector('body').appendChild(clone)
       document.querySelector('.overlay').classList.add('active')
