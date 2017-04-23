@@ -167,7 +167,7 @@
                     {{- end }}
                 </div>
 
-                <div class="action" id="info" onclick="notImplemented(event);">
+                <div class="action" id="info">
                     <i class="material-icons" title="Info">info</i><span>Info</span>
                 </div>
             </div>
@@ -211,6 +211,18 @@
 
     <template id="info-template">
         <div class="prompt">
+            <h3>File Information</h3>
+            <p><strong>Display Name:</strong> <span id="display_name"></span></p>
+            <p><strong>Content Length:</strong> <span id="content_length"></span> Bytes</p>
+            <p><strong>Last Modified:</strong> <span id="last_modified"></span></p>
+            <div>
+                <button type="submit" onclick="closePrompt(event);" class="ok">OK</button>
+            </div>
+        </div>
+    </template>
+
+    <template id="message-template">
+        <div class="prompt">
             <h3></h3>
             <p></p>
             <div>
@@ -220,7 +232,6 @@
     </template>
 
     <template id="move-template">
-        <!-- TODO: And the back button? :) -->
         <form class="prompt">
             <h3>Move</h3>
             <p>Choose new house for your file(s)/folder(s):</p>

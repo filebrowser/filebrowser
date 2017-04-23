@@ -203,6 +203,7 @@ listing.handleSelectionChange = function (event) {
     if (selectedNumber > 1) {
       buttons.open.classList.add('disabled')
       buttons.rename.classList.add('disabled')
+      buttons.info.classList.add('disabled')
     }
 
     if (selectedNumber == 1) {
@@ -212,6 +213,7 @@ listing.handleSelectionChange = function (event) {
         buttons.open.classList.remove('disabled')
       }
 
+      buttons.info.classList.remove('disabled')
       buttons.rename.classList.remove('disabled')
     }
 
