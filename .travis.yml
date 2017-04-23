@@ -11,12 +11,12 @@ install:
 before_script:
   - mkdir $GOPATH/src/caddy
   - touch $GOPATH/src/caddy/main.go
-  - echo "package main
-    import \"github.com/mholt/caddy/caddy/caddymain\
-    import \"github.com/hacdias/caddy-hugo\"
+  - echo 'package main
+    import "github.com/mholt/caddy/caddy/caddymain"
+    import "github.com/hacdias/caddy-hugo"
     func main() {
     caddymain.Run()
-    }" >> $GOPATH/src/caddy/main.go
-    
+    }' >> $GOPATH/src/caddy/main.go
+
 script:
   - go build caddy
