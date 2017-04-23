@@ -173,6 +173,8 @@ func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, err
 			case r.URL.Query().Get("raw") == "true" && !fi.IsDir:
 				http.ServeFile(w, r, fi.Path)
 				code, err = 0, nil
+			case !fi.IsDir && r.URL.Query().Get("checksum") != "":
+				code, err = handlers.Checksum(w, r, c, fi)
 			case fi.IsDir:
 				code, err = handlers.ServeListing(w, r, c, user, fi)
 			default:

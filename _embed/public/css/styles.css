@@ -45,7 +45,6 @@ button {
   padding: .5em 1em;
   margin-left: .5em;
   border-radius: .1em;
-  background-color;
   cursor: pointer;
   background: #2196f3;
   color: #fff;
@@ -374,10 +373,6 @@ header .action span {
 header>div div {
   vertical-align: middle;
   position: relative;
-}
-
-header .actions {
-  /* margin-left: auto; */
 }
 
 #logout {
@@ -1008,6 +1003,10 @@ header .actions {
   border: 1px solid #dadada;
   line-height: 1;
   padding: .3em;
+}
+
+.prompt code {
+  word-wrap: break-word;
 }
 
 .prompt div,
