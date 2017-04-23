@@ -1,29 +1,31 @@
 'use strict'
 
-var tempID = '_fm_internal_temporary_id',
-  ssl = (window.location.protocol === 'https:'),
-  templates = {},
-  selectedItems = [],
-  overlay,
-  clickOverlay
+var tempID = '_fm_internal_temporary_id'
+var ssl = (window.location.protocol === 'https:')
+var templates = {}
+var selectedItems = []
+var overlay
+var clickOverlay
 
 // Removes an element, if exists, from an array
 Array.prototype.removeElement = function (element) {
   var i = this.indexOf(element)
-  if (i !== -1)
+  if (i !== -1) {
     this.splice(i, 1)
+  }
 }
 
 // Replaces an element inside an array by another
 Array.prototype.replaceElement = function (oldElement, newElement) {
   var i = this.indexOf(oldElement)
-  if (i != -1)
+  if (i !== -1) {
     this[i] = newElement
+  }
 }
 
 // Sends a costum event to itself
 Document.prototype.sendCostumEvent = function (text) {
-  this.dispatchEvent(new CustomEvent(text))
+  this.dispatchEvent(new window.CustomEvent(text))
 }
 
 // Gets the content of a cookie
@@ -46,8 +48,8 @@ function getCSSRule (rules) {
     rules[i] = rules[i].toLowerCase()
   }
 
-  var result = null,
-    find = Array.prototype.find
+  let result = null
+  let find = Array.prototype.find
 
   find.call(document.styleSheets, styleSheet => {
     result = find.call(styleSheet.cssRules, cssRule => {
@@ -55,8 +57,9 @@ function getCSSRule (rules) {
 
       if (cssRule instanceof CSSStyleRule) {
         for (let i = 0; i < rules.length; i++) {
-          if (cssRule.selectorText.toLowerCase() == rules[i])
+          if (cssRule.selectorText.toLowerCase() === rules[i]) {
             found = true
+          }
         }
       }
 
@@ -102,8 +105,9 @@ buttons.setDone = function (name, success = true) {
     i.innerHTML = this.previousState[name]
     i.style.opacity = null
 
-    if (selectedItems.length == 0 && document.getElementById('listing'))
+    if (selectedItems.length === 0 && document.getElementById('listing')) {
       document.sendCostumEvent('changed-selected')
+    }
   }
 
   let secondStep = () => {
@@ -113,9 +117,9 @@ buttons.setDone = function (name, success = true) {
 
   let firstStep = () => {
     i.classList.remove('spin')
-    i.innerHTML = success ?
-      'done' :
-      'close'
+    i.innerHTML = success
+      ? 'done'
+      : 'close'
     i.style.opacity = 1
     setTimeout(secondStep, 1000)
   }
@@ -137,15 +141,15 @@ webdav.convertURL = function (url) {
 
 webdav.move = function (oldLink, newLink) {
   return new Promise((resolve, reject) => {
-    let request = new XMLHttpRequest(),
-      destination = newLink.replace(baseURL + '/', webdavURL + '/')
+    let request = new window.XMLHttpRequest()
+    let destination = newLink.replace(baseURL + '/', webdavURL + '/')
 
     destination = window.location.origin + destination.substring(prefixURL.length)
 
     request.open('MOVE', webdav.convertURL(oldLink), true)
     request.setRequestHeader('Destination', destination)
     request.onload = () => {
-      if (request.status == 201 || request.status == 204) {
+      if (request.status === 201 || request.status === 204) {
         resolve()
       } else {
         reject(request.statusText)
@@ -158,7 +162,7 @@ webdav.move = function (oldLink, newLink) {
 
 webdav.put = function (link, body, headers = {}) {
   return new Promise((resolve, reject) => {
-    let request = new XMLHttpRequest()
+    let request = new window.XMLHttpRequest()
     request.open('PUT', webdav.convertURL(link), true)
 
     for (let key in headers) {
@@ -177,12 +181,33 @@ webdav.put = function (link, body, headers = {}) {
   })
 }
 
+webdav.propfind = function (link, body, headers = {}) {
+  return new Promise((resolve, reject) => {
+    let request = new window.XMLHttpRequest()
+    request.open('PROPFIND', webdav.convertURL(link), true)
+
+    for (let key in headers) {
+      request.setRequestHeader(key, headers[key])
+    }
+
+    request.onload = () => {
+      if (request.status < 300) {
+        resolve(request.responseText)
+      } else {
+        reject(request.statusText)
+      }
+    }
+    request.onerror = () => reject(request.statusText)
+    request.send(body)
+  })
+}
+
 webdav.delete = function (link) {
   return new Promise((resolve, reject) => {
-    let request = new XMLHttpRequest()
+    let request = new window.XMLHttpRequest()
     request.open('DELETE', webdav.convertURL(link), true)
     request.onload = () => {
-      if (request.status == 204) {
+      if (request.status === 204) {
         resolve()
       } else {
         reject(request.statusText)
@@ -195,10 +220,10 @@ webdav.delete = function (link) {
 
 webdav.new = function (link) {
   return new Promise((resolve, reject) => {
-    let request = new XMLHttpRequest()
+    let request = new window.XMLHttpRequest()
     request.open((link.endsWith('/') ? 'MKCOL' : 'PUT'), webdav.convertURL(link), true)
     request.onload = () => {
-      if (request.status == 201) {
+      if (request.status === 201) {
         resolve()
       } else {
         reject(request.statusText)
@@ -217,10 +242,9 @@ webdav.new = function (link) {
 function closePrompt (event) {
   let prompt = document.querySelector('.prompt')
 
-  if (!prompt)
-    return
+  if (!prompt) return
 
-  if (typeof event != 'undefined') {
+  if (typeof event !== 'undefined') {
     event.preventDefault()
   }
 
@@ -236,7 +260,7 @@ function notImplemented (event) {
   event.preventDefault()
   clickOverlay.click()
 
-  let clone = document.importNode(templates.info.content, true)
+  let clone = document.importNode(templates.message.content, true)
   clone.querySelector('h3').innerHTML = 'Not implemented'
   clone.querySelector('p').innerHTML = "Sorry, but this feature wasn't implemented yet."
 
@@ -251,19 +275,20 @@ var preventDefault = function (event) {
 }
 
 function logoutEvent (event) {
-  let request = new XMLHttpRequest()
+  let request = new window.XMLHttpRequest()
   request.open('GET', window.location.pathname, true, 'username', 'password')
   request.send()
   request.onreadystatechange = function () {
-    if (request.readyState == 4) {
+    if (request.readyState === 4) {
       window.location = '/'
     }
   }
 }
 
 function openEvent (event) {
-  if (event.currentTarget.classList.contains('disabled'))
+  if (event.currentTarget.classList.contains('disabled')) {
     return false
+  }
 
   let link = '?raw=true'
 
@@ -277,11 +302,43 @@ function openEvent (event) {
   return false
 }
 
+function infoEvent (event) {
+  event.preventDefault()
+  if (event.currentTarget.classList.contains('disabled')) {
+    return
+  }
+
+  let link
+
+  if (selectedItems.length) {
+    link = document.getElementById(selectedItems[0]).dataset.url
+  } else {
+    link = window.location.pathname
+  }
+
+  webdav.propfind(link)
+    .then((text) => {
+      let parser = new window.DOMParser()
+      let xml = parser.parseFromString(text, 'text/xml')
+
+      let clone = document.importNode(templates.info.content, true)
+      clone.getElementById('display_name').innerHTML = xml.getElementsByTagName('displayname')[0].innerHTML
+      clone.getElementById('content_length').innerHTML = xml.getElementsByTagName('getcontentlength')[0].innerHTML
+      clone.getElementById('last_modified').innerHTML = xml.getElementsByTagName('getlastmodified')[0].innerHTML
+
+      document.querySelector('body').appendChild(clone)
+      document.querySelector('.overlay').classList.add('active')
+      document.querySelector('.prompt').classList.add('active')
+    })
+    .catch(e => {
+      buttons.setDone('info', false)
+      console.log(e)
+    })
+}
+
 function deleteOnSingleFile () {
   closePrompt()
   buttons.setLoading('delete')
-
-  let promises = []
 
   webdav.delete(window.location.pathname)
     .then(() => {
@@ -355,7 +412,7 @@ function resetSearchText () {
 }
 
 function searchEvent (event) {
-  if (this.value.length == 0) {
+  if (this.value.length === 0) {
     resetSearchText()
     return
   }
@@ -379,7 +436,7 @@ function searchEvent (event) {
     box.innerHTML = 'Press enter to execute.'
   }
 
-  if (event.keyCode == 13) {
+  if (event.keyCode === 13) {
     box.innerHTML = ''
     search.classList.add('ongoing')
 
@@ -392,7 +449,7 @@ function searchEvent (event) {
     let protocol = ssl ? 'wss:' : 'ws:'
 
     if (supported && user.AllowCommands) {
-      let conn = new WebSocket(`${protocol}//${url}?command=true`)
+      let conn = new window.WebSocket(`${protocol}//${url}?command=true`)
 
       conn.onopen = function () {
         conn.send(value)
@@ -413,8 +470,8 @@ function searchEvent (event) {
 
     box.innerHTML = '<ul></ul>'
 
-    let ul = box.querySelector('ul'),
-      conn = new WebSocket(`${protocol}//${url}?search=true`)
+    let ul = box.querySelector('ul')
+    let conn = new window.WebSocket(`${protocol}//${url}?search=true`)
 
     conn.onopen = function () {
       conn.send(value)
@@ -432,11 +489,11 @@ function searchEvent (event) {
 }
 
 function setupSearch () {
-  let search = document.getElementById('search'),
-    searchInput = search.querySelector('input'),
-    searchDiv = search.querySelector('div'),
-    hover = false,
-    focus = false
+  let search = document.getElementById('search')
+  let searchInput = search.querySelector('input')
+  let searchDiv = search.querySelector('div')
+  let hover = false
+  let focus = false
 
   resetSearchText()
 
@@ -452,15 +509,13 @@ function setupSearch () {
 
   searchInput.addEventListener('blur', event => {
     focus = false
-    if (hover)
-      return
+    if (hover) return
     search.classList.remove('active')
   })
 
   search.addEventListener('mouseleave', event => {
     hover = false
-    if (focus)
-      return
+    if (focus) return
     search.classList.remove('active')
   })
 
@@ -487,17 +542,17 @@ function openHelp (event) {
 }
 
 window.addEventListener('keydown', (event) => {
-  if (event.keyCode == 27) {
+  if (event.keyCode === 27) {
     if (document.querySelector('.help.active')) {
       closeHelp(event)
     }
   }
 
-  if (event.keyCode == 46) {
+  if (event.keyCode === 46) {
     deleteEvent(event)
   }
 
-  if (event.keyCode == 112) {
+  if (event.keyCode === 112) {
     event.preventDefault()
     openHelp(event)
   }
@@ -517,13 +572,16 @@ document.addEventListener('DOMContentLoaded', function (event) {
   buttons.open = document.getElementById('open')
   buttons.delete = document.getElementById('delete')
   buttons.previous = document.getElementById('previous')
+  buttons.info = document.getElementById('info')
 
   // Attach event listeners
   buttons.logout.addEventListener('click', logoutEvent)
   buttons.open.addEventListener('click', openEvent)
+  buttons.info.addEventListener('click', infoEvent)
 
   templates.question = document.querySelector('#question-template')
   templates.info = document.querySelector('#info-template')
+  templates.message = document.querySelector('#message-template')
   templates.move = document.querySelector('#move-template')
 
   if (user.AllowEdit) {
