@@ -6,7 +6,6 @@ go:
 install:
   - go get $(go list -f '{{join .Imports "\n"}}' ./... | sort | uniq | grep -v caddy-hugo) || true
   - go get github.com/mholt/caddy/caddyhttp
-  - go get github.com/caddyserver/caddydev
 
 script:
   - sed -i 's/\_ \"github.com\/mholt\/caddy\/caddyhttp\"/\_ \"github.com\/mholt\/caddy\/caddyhttp\"\n\_ \"github.com\/hacdias\/caddy-hugo\"/g' $GOPATH/src/github.com/mholt/caddy/caddy/caddymain/run.go

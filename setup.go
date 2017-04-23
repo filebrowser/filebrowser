@@ -72,6 +72,7 @@ type Config struct {
 	BaseURL       string   // BaseURL of admin interface
 	WebDavURL     string
 	CleanPublic   bool
+	AllowPublish  bool
 	BeforePublish config.CommandFunc
 	AfterPublish  config.CommandFunc
 }
@@ -118,7 +119,7 @@ func parse(c *caddy.Controller, root string) (*Config, *filemanager.FileManager,
 			switch c.Val() {
 			case "flag":
 				if !c.NextArg() {
-					return cfg, &filemanager.FileManager{}, c.ArgErr()
+					return nil, nil, c.ArgErr()
 				}
 
 				flag := c.Val()
@@ -129,15 +130,24 @@ func parse(c *caddy.Controller, root string) (*Config, *filemanager.FileManager,
 				}
 
 				cfg.Args = append(cfg.Args, "--"+flag+"="+value)
+			case "allow_publish":
+				if !c.NextArg() {
+					return nil, nil, c.ArgErr()
+				}
+
+				cfg.AllowPublish, err = strconv.ParseBool(c.Val())
+				if err != nil {
+					return nil, nil, c.ArgErr()
+				}
 			case "clean_public":
 				if !c.NextArg() {
-					return cfg, &filemanager.FileManager{}, c.ArgErr()
+					return nil, nil, c.ArgErr()
 				}
 
 				cfg.CleanPublic, err = strconv.ParseBool(c.Val())
 
 				if err != nil {
-					return cfg, &filemanager.FileManager{}, c.ArgErr()
+					return nil, nil, c.ArgErr()
 				}
 			case "before_publish":
 				if cfg.BeforePublish, err = config.CommandRunner(c); err != nil {
@@ -165,7 +175,7 @@ func parse(c *caddy.Controller, root string) (*Config, *filemanager.FileManager,
 	fmConfig, err := config.Parse(caddy.NewTestController("http", tokens))
 
 	if err != nil {
-		return cfg, fm, err
+		return nil, nil, err
 	}
 
 	fm = &filemanager.FileManager{Configs: fmConfig}
@@ -173,7 +183,7 @@ func parse(c *caddy.Controller, root string) (*Config, *filemanager.FileManager,
 	cfg.WebDavURL = fm.Configs[0].WebDavURL
 
 	if err != nil {
-		return cfg, fm, err
+		return nil, nil, err
 	}
 
 	return cfg, fm, nil
