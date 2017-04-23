@@ -6,8 +6,6 @@ go:
 install:
   - go get -u -v $(go list -f '{{join .Imports "\n"}}' ./... | sort | uniq | grep -v caddy-filemanager)
   - go get -u -v github.com/mholt/caddy/caddyhttp
-  - go get -u -v github.com/caddyserver/caddydev
-  - go install github.com/caddyserver/caddydev
   - go get github.com/gordonklaus/ineffassign
 
 script:
