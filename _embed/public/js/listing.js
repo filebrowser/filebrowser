@@ -528,8 +528,6 @@ document.addEventListener('DOMContentLoaded', event => {
   buttons.download = document.getElementById('download')
   buttons.move = document.getElementById('move')
 
-  buttons.move.addEventListener('click', listing.moveEvent)
-
   document.getElementById('multiple-selection-activate').addEventListener('click', event => {
     listing.selectMultiple = true
     clickOverlay.click()
@@ -546,6 +544,7 @@ document.addEventListener('DOMContentLoaded', event => {
   })
 
   if (user.AllowEdit) {
+    buttons.move.addEventListener('click', listing.moveEvent)
     buttons.rename.addEventListener('click', listing.rename)
   }
 
