@@ -76,7 +76,7 @@ func Unmarshal(content []byte) (interface{}, error) {
 			return nil, err
 		}
 	default:
-		return nil, errors.New("Invalid frontmatter type.")
+		return nil, errors.New("Invalid frontmatter type")
 	}
 
 	return data, nil
