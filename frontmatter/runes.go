@@ -36,10 +36,10 @@ func RuneToStringFormat(mark rune) (string, error) {
 		return "yaml", nil
 	case '+':
 		return "toml", nil
-	case '{':
+	case '{', '}':
 		return "json", nil
 	default:
-		return "", errors.New("Unsupported format type.")
+		return "", errors.New("Unsupported format type")
 	}
 }
 
@@ -53,6 +53,6 @@ func StringFormatToRune(format string) (rune, error) {
 	case "json":
 		return '{', nil
 	default:
-		return '0', errors.New("Unsupported format type.")
+		return '0', errors.New("Unsupported format type")
 	}
 }
