@@ -1,5 +1,7 @@
 # hugo - a caddy plugin
 
+[![Join the chat at https://gitter.im/hacdias/caddy-hugo](https://badges.gitter.im/hacdias/caddy-hugo.svg)](https://gitter.im/hacdias/caddy-hugo?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build](https://img.shields.io/travis/hacdias/caddy-hugo.svg?style=flat-square)](https://travis-ci.org/hacdias/caddy-hugo)
 [![community](https://img.shields.io/badge/community-forum-ff69b4.svg?style=flat-square)](https://forum.caddyserver.com)
 [![Documentation](https://img.shields.io/badge/caddy-doc-F06292.svg?style=flat-square)](https://caddyserver.com/docs/hugo)
