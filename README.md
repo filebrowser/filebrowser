@@ -1,10 +1,8 @@
 # hugo - a caddy plugin
 
 [![Build](https://img.shields.io/travis/hacdias/caddy-hugo.svg?style=flat-square)](https://travis-ci.org/hacdias/caddy-hugo)
-[![community](https://img.shields.io/badge/community-forum-ff69b4.svg?style=flat-square)](https://forum.caddyserver.com)
-[![Documentation](https://img.shields.io/badge/caddy-doc-F06292.svg?style=flat-square)](https://caddyserver.com/docs/hugo)
-[![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/hacdias/caddy-hugo)
-
+[![community](https://img.shields.io/badge/community-forum-ff69b4.svg?style=flat-square)](https://caddy.community)
+[![Go Report Card](https://goreportcard.com/badge/github.com/hacdias/caddy-hugo?style=flat-square)](https://goreportcard.com/report/hacdias/caddy-hugo)
 
 hugo fills the gap between Hugo and the browser. [Hugo](http://gohugo.io/) is an easy and fast static website generator. This plugin fills the gap between Hugo and the end-user, providing you an web interface to manage the whole website.
 
@@ -47,3 +45,10 @@ root      public           # the folder where Hugo generates the website
 basicauth /admin user pass # protect the admin area using HTTP basic auth
 hugo                       # enable the admin panel
 ```
+
+### Screenshots
+
+![capture](https://cloud.githubusercontent.com/assets/5447088/25630072/b9a95dfa-2f63-11e7-81fe-00bab89e3391.PNG)
+![2](https://cloud.githubusercontent.com/assets/5447088/25630073/b9b00678-2f63-11e7-8f5d-6488c641ed19.PNG)
+![3](https://cloud.githubusercontent.com/assets/5447088/25630074/b9cbe3ca-2f63-11e7-8e53-19a3e553f86b.PNG)
+![4](https://cloud.githubusercontent.com/assets/5447088/25630075/b9cfa320-2f63-11e7-8262-cdd942d4a3b5.PNG)
