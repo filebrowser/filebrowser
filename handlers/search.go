@@ -24,6 +24,8 @@ func Search(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.
 		message []byte
 	)
 
+	caseInsensitive := (r.URL.Query().Get("insensitive") == "true")
+
 	// Starts an infinite loop until a valid command is captured.
 	for {
 		_, message, err = conn.ReadMessage()
@@ -37,6 +39,10 @@ func Search(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.
 		}
 	}
 
+	if caseInsensitive {
+		search = strings.ToLower(search)
+	}
+
 	scope := strings.Replace(r.URL.Path, c.BaseURL, "", 1)
 	scope = strings.TrimPrefix(scope, "/")
 	scope = "/" + scope
@@ -45,6 +51,10 @@ func Search(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.
 	scope = filepath.Clean(scope)
 
 	err = filepath.Walk(scope, func(path string, f os.FileInfo, err error) error {
+		if caseInsensitive {
+			path = strings.ToLower(path)
+		}
+
 		if strings.Contains(path, search) {
 			if !u.Allowed(path) {
 				return nil
