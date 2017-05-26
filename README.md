@@ -4,7 +4,7 @@
 [![community](https://img.shields.io/badge/community-forum-ff69b4.svg?style=flat-square)](https://caddy.community)
 [![Go Report Card](https://goreportcard.com/badge/github.com/hacdias/caddy-hugo?style=flat-square)](https://goreportcard.com/report/hacdias/caddy-hugo)
 
-hugo fills the gap between Hugo and the browser. [Hugo](http://gohugo.io/) is an easy and fast static website generator. This plugin fills the gap between Hugo and the end-user, providing you an web interface to manage the whole website.
+hugo fills the gap between Hugo and the browser. [Hugo](http://gohugo.io/) is an easy and fast static website generator. This plugin fills the gap between Hugo and the end-user, providing you a web interface to manage the whole website.
 
 Using this plugin, you won't need to have your own computer to edit posts, neither regenerate your static website, because you can do all of that just through your browser.
 
