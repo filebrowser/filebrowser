@@ -85,24 +85,29 @@ func Search(w http.ResponseWriter, r *http.Request, c *config.Config, u *config.
 		}
 
 		path = strings.Replace(path, "\\", "/", -1)
+		is := false
 
 		for _, term := range search.Terms {
+			if is {
+				break
+			}
+
 			if strings.Contains(path, term) {
 				if !u.Allowed(path) {
 					return nil
 				}
 
-				path = strings.TrimPrefix(path, scope)
-				path = strings.TrimPrefix(path, "/")
-
-				err = conn.WriteMessage(websocket.TextMessage, []byte(path))
-				if err != nil {
-					return err
-				}
+				is = true
 			}
 		}
 
-		return nil
+		if !is {
+			return nil
+		}
+
+		path = strings.TrimPrefix(path, scope)
+		path = strings.TrimPrefix(path, "/")
+		return conn.WriteMessage(websocket.TextMessage, []byte(path))
 	})
 
 	if err != nil {
