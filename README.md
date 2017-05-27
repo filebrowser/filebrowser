@@ -141,6 +141,28 @@ filemanager /admin {
 }
 ```
 
+## About Search
+
+FileManager allows you to search through your files and it has some options. By default, your search will be something like this:
+
+```
+this are keywords
+```
+
+If you search for that it will look at every file that contains "this", "are" and "keywords" on their name. If you want to search for an exact term, you should surround your search by double quotes:
+
+```
+"this is the name"
+```
+
+That will search for any file that contains "this is the name" on its name. It won't search for each separated term this time.
+
+By default, every search will be case sensitive. Although, you can make a case insensitive search by adding `case:insensitive` to the search terms, like this:
+
+```
+this are keywords case:insensitive
+```
+
 ## Developers
 
 If you want to build Caddy from source with this plugin, you should take the following steps:
