@@ -149,7 +149,7 @@ FileManager allows you to search through your files and it has some options. By 
 this are keywords
 ```
 
-If you search for that it will look at every file that contains "this", "are" and "keywords" on their name. If you want to search for an exact term, you should surround your search by double quotes:
+If you search for that it will look at every file that contains "this", "are" or "keywords" on their name. If you want to search for an exact term, you should surround your search by double quotes:
 
 ```
 "this is the name"
