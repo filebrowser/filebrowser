@@ -220,6 +220,7 @@ listing.handleSelectionChange = function (event) {
     return false
   }
 
+  buttons.info.classList.remove('disabled')
   fileAction.classList.add('disabled')
   return false
 }
