@@ -306,7 +306,15 @@ function getHash (event, hash) {
   event.preventDefault()
 
   let request = new window.XMLHttpRequest()
-  request.open('GET', `${window.location.pathname}?checksum=${hash}`, true)
+  let link
+
+  if (selectedItems.length) {
+    link = document.getElementById(selectedItems[0]).dataset.url
+  } else {
+    link = window.location.pathname
+  }
+
+  request.open('GET', `${link}?checksum=${hash}`, true)
 
   request.onload = () => {
     if (request.status >= 300) {
@@ -339,15 +347,34 @@ function infoEvent (event) {
     link = window.location.pathname
   }
 
+  buttons.setLoading('info', false)
+
   webdav.propfind(link)
     .then((text) => {
       let parser = new window.DOMParser()
       let xml = parser.parseFromString(text, 'text/xml')
-
       let clone = document.importNode(templates.info.content, true)
-      clone.getElementById('display_name').innerHTML = xml.getElementsByTagName('displayname')[0].innerHTML
-      clone.getElementById('content_length').innerHTML = xml.getElementsByTagName('getcontentlength')[0].innerHTML
-      clone.getElementById('last_modified').innerHTML = xml.getElementsByTagName('getlastmodified')[0].innerHTML
+
+      let value = xml.getElementsByTagName('displayname')
+      if (value.length > 0) {
+        clone.getElementById('display_name').innerHTML = value[0].innerHTML
+      } else {
+        clone.getElementById('display_name').innerHTML = xml.getElementsByTagName('D:displayname')[0].innerHTML
+      }
+
+      value = xml.getElementsByTagName('getcontentlength')
+      if (value.length > 0) {
+        clone.getElementById('content_length').innerHTML = value[0].innerHTML
+      } else {
+        clone.getElementById('content_length').innerHTML = xml.getElementsByTagName('D:getcontentlength')[0].innerHTML
+      }
+
+      value = xml.getElementsByTagName('getlastmodified')
+      if (value.length > 0) {
+        clone.getElementById('last_modified').innerHTML = value[0].innerHTML
+      } else {
+        clone.getElementById('last_modified').innerHTML = xml.getElementsByTagName('D:getlastmodified')[0].innerHTML
+      }
 
       if (dir === true || dir === 'true') {
         clone.querySelector('.file-only').style.display = 'none'
@@ -356,6 +383,7 @@ function infoEvent (event) {
       document.querySelector('body').appendChild(clone)
       document.querySelector('.overlay').classList.add('active')
       document.querySelector('.prompt').classList.add('active')
+      buttons.setDone('info', true)
     })
     .catch(e => {
       buttons.setDone('info', false)
