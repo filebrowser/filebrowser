@@ -14,7 +14,7 @@ import (
 
 // download creates an archive in one of the supported formats (zip, tar,
 // tar.gz or tar.bz2) and sends it to be downloaded.
-func (c *Config) download(w http.ResponseWriter, r *http.Request, i *file) (int, error) {
+func (c *FileManager) download(w http.ResponseWriter, r *http.Request, i *fileInfo) (int, error) {
 	query := r.URL.Query().Get("download")
 
 	if !i.IsDir {

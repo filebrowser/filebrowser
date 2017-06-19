@@ -10,8 +10,8 @@ import (
 	"golang.org/x/net/webdav"
 )
 
-// Config is a configuration for browsing in a particular path.
-type Config struct {
+// FileManager is a configuration for browsing in a particular path.
+type FileManager struct {
 	*User
 	PrefixURL  string // A part of the URL that is stripped from the http.Request
 	BaseURL    string // The base URL of FileManager interface
@@ -27,8 +27,8 @@ type Config struct {
 
 // New creates a new FileManager object with the default settings
 // for a certain scope.
-func New(scope string) *Config {
-	cfg := &Config{
+func New(scope string) *FileManager {
+	fm := &FileManager{
 		User: &User{
 			Scope:         scope,
 			FileSystem:    webdav.Dir(scope),
@@ -46,26 +46,26 @@ func New(scope string) *Config {
 		BaseURL:    "",
 		PrefixURL:  "",
 		WebDavURL:  "/webdav",
-		BeforeSave: func(r *http.Request, c *Config, u *User) error { return nil },
-		AfterSave:  func(r *http.Request, c *Config, u *User) error { return nil },
+		BeforeSave: func(r *http.Request, c *FileManager, u *User) error { return nil },
+		AfterSave:  func(r *http.Request, c *FileManager, u *User) error { return nil },
 	}
 
-	cfg.Handler = &webdav.Handler{
-		Prefix:     cfg.WebDavURL,
-		FileSystem: cfg.FileSystem,
+	fm.Handler = &webdav.Handler{
+		Prefix:     fm.WebDavURL,
+		FileSystem: fm.FileSystem,
 		LockSystem: webdav.NewMemLS(),
 	}
 
-	return cfg
+	return fm
 }
 
 // AbsoluteURL ...
-func (c Config) AbsoluteURL() string {
+func (c FileManager) AbsoluteURL() string {
 	return c.PrefixURL + c.BaseURL
 }
 
 // AbsoluteWebdavURL ...
-func (c Config) AbsoluteWebdavURL() string {
+func (c FileManager) AbsoluteWebdavURL() string {
 	return c.PrefixURL + c.WebDavURL
 }
 
@@ -113,4 +113,4 @@ func (u User) Allowed(url string) bool {
 }
 
 // Command is a user-defined command that is executed in some moments.
-type Command func(r *http.Request, c *Config, u *User) error
+type Command func(r *http.Request, c *FileManager, u *User) error

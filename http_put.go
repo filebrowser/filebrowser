@@ -14,7 +14,7 @@ import (
 )
 
 // preProccessPUT is used to update a file that was edited
-func (c *Config) preProccessPUT(w http.ResponseWriter, r *http.Request, u *User) (err error) {
+func (c *FileManager) preProccessPUT(w http.ResponseWriter, r *http.Request, u *User) (err error) {
 	var (
 		data      = map[string]interface{}{}
 		file      []byte
