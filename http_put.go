@@ -1,4 +1,4 @@
-package http
+package filemanager
 
 import (
 	"bytes"
@@ -10,17 +10,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hacdias/filemanager"
 	"github.com/hacdias/filemanager/frontmatter"
 )
 
 // preProccessPUT is used to update a file that was edited
-func preProccessPUT(
-	w http.ResponseWriter,
-	r *http.Request,
-	c *filemanager.Config,
-	u *filemanager.User,
-) (err error) {
+func (c *Config) preProccessPUT(w http.ResponseWriter, r *http.Request, u *User) (err error) {
 	var (
 		data      = map[string]interface{}{}
 		file      []byte

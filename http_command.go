@@ -1,4 +1,4 @@
-package http
+package filemanager
 
 import (
 	"bytes"
@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	fm "github.com/hacdias/filemanager"
 )
 
 var upgrader = websocket.Upgrader{
@@ -23,7 +22,7 @@ var (
 )
 
 // command handles the requests for VCS related commands: git, svn and mercurial
-func command(w http.ResponseWriter, r *http.Request, c *fm.Config, u *fm.User) (int, error) {
+func (c *Config) command(w http.ResponseWriter, r *http.Request, u *User) (int, error) {
 	// Upgrades the connection to a websocket and checks for errors.
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {

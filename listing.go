@@ -18,7 +18,7 @@ type Listing struct {
 	// The full path of the request relatively to a File System
 	Path string
 	// The items (files and folders) in the path
-	Items []FileInfo
+	Items []file
 	// The number of directories in the listing
 	NumDirs int
 	// The number of files (items that aren't directories) in the listing
@@ -49,7 +49,7 @@ func GetListing(u *User, filePath string, baseURL string) (*Listing, error) {
 	}
 
 	var (
-		fileinfos           []FileInfo
+		fileinfos           []*file
 		dirCount, fileCount int
 	)
 
@@ -71,7 +71,7 @@ func GetListing(u *User, filePath string, baseURL string) (*Listing, error) {
 		// Absolute URL
 		url := url.URL{Path: baseURL + name}
 
-		i := FileInfo{
+		i := &file{
 			Name:        f.Name(),
 			Size:        f.Size(),
 			ModTime:     f.ModTime(),

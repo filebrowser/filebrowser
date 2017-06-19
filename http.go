@@ -1,4 +1,4 @@
-package http
+package filemanager
 
 import (
 	"errors"
@@ -7,21 +7,18 @@ import (
 	"path/filepath"
 	"strings"
 
-	fm "github.com/hacdias/filemanager"
-	"github.com/hacdias/filemanager/assets"
-	"github.com/hacdias/filemanager/page"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
 // ServeHTTP starts FileManager.
-func ServeHTTP(w http.ResponseWriter, r *http.Request, c *fm.Config) (int, error) {
+func (c *Config) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	var (
-		fi   *fm.FileInfo
-		user *fm.User
+		fi   *file
+		user *User
 		code int
 		err  error
 	)
-
+	/* TODO: readd this
 	// Checks if the URL matches the Assets URL. Returns the asset if the
 	// method is GET and Status Forbidden otherwise.
 	if strings.HasPrefix(r.URL.Path, c.BaseURL+assets.BaseURL) {
@@ -30,7 +27,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *fm.Config) (int, error
 		}
 
 		return http.StatusForbidden, nil
-	}
+	} */
 
 	// Obtains the user.
 	username, _, _ := r.BasicAuth()
@@ -91,7 +88,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *fm.Config) (int, error
 				return http.StatusInternalServerError, err
 			}
 
-			if preProccessPUT(w, r, c, user) != nil {
+			if c.preProccessPUT(w, r, user) != nil {
 				return http.StatusInternalServerError, err
 			}
 		}
@@ -111,7 +108,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *fm.Config) (int, error
 	// Checks if the User is allowed to access this file
 	if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.BaseURL)) {
 		if r.Method == http.MethodGet {
-			return page.PrintErrorHTML(
+			return printError(
 				w, http.StatusForbidden,
 				errors.New("You don't have permission to access this page"),
 			)
@@ -121,20 +118,20 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *fm.Config) (int, error
 	}
 
 	if r.URL.Query().Get("search") != "" {
-		return search(w, r, c, user)
+		return c.search(w, r, user)
 	}
 
 	if r.URL.Query().Get("command") != "" {
-		return command(w, r, c, user)
+		return c.command(w, r, user)
 	}
 
 	if r.Method == http.MethodGet {
 		// Gets the information of the directory/file
-		fi, err = fm.GetInfo(r.URL, c, user)
+		fi, err = getFile(r.URL, c, user)
 		code = errorToHTTPCode(err, false)
 		if err != nil {
 			if r.Method == http.MethodGet {
-				return page.PrintErrorHTML(w, code, err)
+				return printError(w, code, err)
 			}
 			return code, err
 		}
@@ -148,42 +145,24 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *fm.Config) (int, error
 
 		switch {
 		case r.URL.Query().Get("download") != "":
-			code, err = download(w, r, c, fi)
+			code, err = c.download(w, r, fi)
 		case r.URL.Query().Get("raw") == "true" && !fi.IsDir:
 			http.ServeFile(w, r, fi.Path)
 			code, err = 0, nil
 		case !fi.IsDir && r.URL.Query().Get("checksum") != "":
-			code, err = checksum(w, r, c, fi)
+			code, err = c.checksum(w, r, fi)
 		case fi.IsDir:
-			code, err = serveListing(w, r, c, user, fi)
+			code, err = c.serveListing(w, r, user, fi)
 		default:
-			code, err = serveSingle(w, r, c, user, fi)
+			code, err = c.serveSingle(w, r, user, fi)
 		}
 
 		if err != nil {
-			code, err = page.PrintErrorHTML(w, code, err)
+			code, err = printError(w, code, err)
 		}
 
 		return code, err
 	}
 
 	return http.StatusNotImplemented, nil
-}
-
-// errorToHTTPCode converts errors to HTTP Status Code.
-func errorToHTTPCode(err error, gone bool) int {
-	switch {
-	case os.IsPermission(err):
-		return http.StatusForbidden
-	case os.IsNotExist(err):
-		if !gone {
-			return http.StatusNotFound
-		}
-
-		return http.StatusGone
-	case os.IsExist(err):
-		return http.StatusGone
-	default:
-		return http.StatusInternalServerError
-	}
 }
