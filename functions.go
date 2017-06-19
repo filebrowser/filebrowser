@@ -1,4 +1,4 @@
-package page
+package filemanager
 
 import (
 	"encoding/base64"

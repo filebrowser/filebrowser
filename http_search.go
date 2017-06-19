@@ -1,4 +1,4 @@
-package http
+package filemanager
 
 import (
 	"net/http"
@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/gorilla/websocket"
-	fm "github.com/hacdias/filemanager"
 )
 
 type searchOptions struct {
@@ -44,7 +43,7 @@ func parseSearch(value string) *searchOptions {
 }
 
 // search ...
-func search(w http.ResponseWriter, r *http.Request, c *fm.Config, u *fm.User) (int, error) {
+func (c *Config) search(w http.ResponseWriter, r *http.Request, u *User) (int, error) {
 	// Upgrades the connection to a websocket and checks for errors.
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {

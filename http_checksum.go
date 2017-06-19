@@ -1,4 +1,4 @@
-package http
+package filemanager
 
 import (
 	"crypto/md5"
@@ -6,17 +6,15 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
-	e "errors"
+	"errors"
 	"hash"
 	"io"
 	"net/http"
 	"os"
-
-	fm "github.com/hacdias/filemanager"
 )
 
 // checksum calculates the hash of a filemanager. Supports MD5, SHA1, SHA256 and SHA512.
-func checksum(w http.ResponseWriter, r *http.Request, c *fm.Config, i *fm.FileInfo) (int, error) {
+func (c *Config) checksum(w http.ResponseWriter, r *http.Request, i *file) (int, error) {
 	query := r.URL.Query().Get("checksum")
 
 	file, err := os.Open(i.Path)
@@ -38,7 +36,7 @@ func checksum(w http.ResponseWriter, r *http.Request, c *fm.Config, i *fm.FileIn
 	case "sha512":
 		h = sha512.New()
 	default:
-		return http.StatusBadRequest, e.New("Unknown HASH type")
+		return http.StatusBadRequest, errors.New("Unknown HASH type")
 	}
 
 	_, err = io.Copy(h, file)

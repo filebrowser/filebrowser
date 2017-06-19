@@ -1,4 +1,4 @@
-package http
+package filemanager
 
 import (
 	"encoding/json"
@@ -6,17 +6,15 @@ import (
 	"strconv"
 	"strings"
 
-	fm "github.com/hacdias/filemanager"
-	"github.com/hacdias/filemanager/page"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
 // serveListing presents the user with a listage of a directory folder.
-func serveListing(w http.ResponseWriter, r *http.Request, c *fm.Config, u *fm.User, i *fm.FileInfo) (int, error) {
+func (c *Config) serveListing(w http.ResponseWriter, r *http.Request, u *User, i *file) (int, error) {
 	var err error
 
 	// Loads the content of the directory
-	listing, err := fm.GetListing(u, i.VirtualPath, c.PrefixURL+r.URL.Path)
+	listing, err := GetListing(u, i.VirtualPath, c.PrefixURL+r.URL.Path)
 	if err != nil {
 		return errorToHTTPCode(err, true), err
 	}
@@ -79,9 +77,9 @@ func serveListing(w http.ResponseWriter, r *http.Request, c *fm.Config, u *fm.Us
 		Secure: r.TLS != nil,
 	})
 
-	page := &page.Page{
+	page := &page{
 		Minimal: r.Header.Get("Minimal") == "true",
-		Info: &page.Info{
+		Info: &pageInfo{
 			Name:    listing.Name,
 			Path:    i.VirtualPath,
 			IsDir:   true,
@@ -92,7 +90,7 @@ func serveListing(w http.ResponseWriter, r *http.Request, c *fm.Config, u *fm.Us
 		},
 	}
 
-	return page.PrintAsHTML(w, "listing")
+	return page.PrintHTML(w, "listing")
 }
 
 // handleSortOrder gets and stores for a Listing the 'sort' and 'order',

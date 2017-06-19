@@ -1,4 +1,4 @@
-package http
+package filemanager
 
 import (
 	"bytes"
@@ -7,13 +7,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	fm "github.com/hacdias/filemanager"
 	"github.com/hacdias/filemanager/frontmatter"
 	"github.com/spf13/hugo/parser"
 )
 
-// Editor contains the information for the editor page
-type Editor struct {
+// editor contains the information for the editor page
+type editor struct {
 	Class       string
 	Mode        string
 	Visual      bool
@@ -24,12 +23,12 @@ type Editor struct {
 	}
 }
 
-// getEditor gets the editor based on a FileInfo struct
-func getEditor(r *http.Request, i *fm.FileInfo) (*Editor, error) {
+// newEditor gets the editor based on a FileInfo struct
+func newEditor(r *http.Request, i *file) (*editor, error) {
 	var err error
 
 	// Create a new editor variable and set the mode
-	e := new(Editor)
+	e := new(editor)
 	e.Mode = editorMode(i.Name)
 	e.Class = editorClass(e.Mode)
 

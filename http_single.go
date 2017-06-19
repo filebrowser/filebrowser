@@ -1,24 +1,21 @@
-package http
+package filemanager
 
 import (
 	"net/http"
 	"strings"
-
-	fm "github.com/hacdias/filemanager"
-	"github.com/hacdias/filemanager/page"
 )
 
 // serveSingle serves a single file in an editor (if it is editable), shows the
 // plain file, or downloads it if it can't be shown.
-func serveSingle(w http.ResponseWriter, r *http.Request, c *fm.Config, u *fm.User, i *fm.FileInfo) (int, error) {
+func (c *Config) serveSingle(w http.ResponseWriter, r *http.Request, u *User, i *file) (int, error) {
 	var err error
 
 	if err = i.RetrieveFileType(); err != nil {
 		return errorToHTTPCode(err, true), err
 	}
 
-	p := &page.Page{
-		Info: &page.Info{
+	p := &page{
+		Info: &pageInfo{
 			Name:   i.Name,
 			Path:   i.VirtualPath,
 			IsDir:  false,
@@ -30,7 +27,7 @@ func serveSingle(w http.ResponseWriter, r *http.Request, c *fm.Config, u *fm.Use
 
 	// If the request accepts JSON, we send the file information.
 	if strings.Contains(r.Header.Get("Accept"), "application/json") {
-		return p.PrintAsJSON(w)
+		return p.PrintJSON(w)
 	}
 
 	if i.Type == "text" {
@@ -40,14 +37,14 @@ func serveSingle(w http.ResponseWriter, r *http.Request, c *fm.Config, u *fm.Use
 	}
 
 	if i.CanBeEdited() && u.AllowEdit {
-		p.Data, err = getEditor(r, i)
-		p.Editor = true
+		p.Info.Data, err = newEditor(r, i)
+		p.Info.Editor = true
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
 
-		return p.PrintAsHTML(w, "frontmatter", "editor")
+		return p.PrintHTML(w, "frontmatter", "editor")
 	}
 
-	return p.PrintAsHTML(w, "single")
+	return p.PrintHTML(w, "single")
 }
