@@ -13,7 +13,6 @@ import (
 	"os"
 
 	fm "github.com/hacdias/filemanager"
-	"github.com/hacdias/filemanager/utils"
 )
 
 // checksum calculates the hash of a filemanager. Supports MD5, SHA1, SHA256 and SHA512.
@@ -22,7 +21,7 @@ func checksum(w http.ResponseWriter, r *http.Request, c *fm.Config, i *fm.FileIn
 
 	file, err := os.Open(i.Path)
 	if err != nil {
-		return utils.ErrorToHTTPCode(err, true), err
+		return errorToHTTPCode(err, true), err
 	}
 
 	defer file.Close()

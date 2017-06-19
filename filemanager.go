@@ -5,22 +5,58 @@ import (
 	"regexp"
 	"strings"
 
+	rice "github.com/GeertJohan/go.rice"
+
 	"golang.org/x/net/webdav"
 )
-
-// CommandFunc ...
-type CommandFunc func(r *http.Request, c *Config, u *User) error
 
 // Config is a configuration for browsing in a particular path.
 type Config struct {
 	*User
-	PrefixURL   string
-	BaseURL     string
-	WebDavURL   string
-	HugoEnabled bool // Enables the Hugo plugin for File Manager
-	Users       map[string]*User
-	BeforeSave  CommandFunc
-	AfterSave   CommandFunc
+	PrefixURL  string // A part of the URL that is stripped from the http.Request
+	BaseURL    string // The base URL of FileManager interface
+	WebDavURL  string // The URL of WebDAV
+	Users      map[string]*User
+	BeforeSave Command
+	AfterSave  Command
+	Assets     struct {
+		Templates *rice.Box
+		Static    *rice.Box
+	}
+}
+
+// New creates a new FileManager object with the default settings
+// for a certain scope.
+func New(scope string) *Config {
+	cfg := &Config{
+		User: &User{
+			Scope:         scope,
+			FileSystem:    webdav.Dir(scope),
+			AllowCommands: true,
+			AllowEdit:     true,
+			AllowNew:      true,
+			Commands:      []string{"git", "svn", "hg"},
+			Rules: []*Rule{{
+				Regex:  true,
+				Allow:  false,
+				Regexp: regexp.MustCompile("\\/\\..+"),
+			}},
+		},
+		Users:      map[string]*User{},
+		BaseURL:    "",
+		PrefixURL:  "",
+		WebDavURL:  "/webdav",
+		BeforeSave: func(r *http.Request, c *Config, u *User) error { return nil },
+		AfterSave:  func(r *http.Request, c *Config, u *User) error { return nil },
+	}
+
+	cfg.Handler = &webdav.Handler{
+		Prefix:     cfg.WebDavURL,
+		FileSystem: cfg.FileSystem,
+		LockSystem: webdav.NewMemLS(),
+	}
+
+	return cfg
 }
 
 // AbsoluteURL ...
@@ -47,11 +83,11 @@ type User struct {
 	FileSystem    webdav.FileSystem `json:"-"` // The virtual file system the user have access
 	Handler       *webdav.Handler   `json:"-"` // The WebDav HTTP Handler
 	StyleSheet    string            `json:"-"` // Costum stylesheet
+	Rules         []*Rule           `json:"-"` // Access rules
 	AllowNew      bool              // Can create files and folders
 	AllowEdit     bool              // Can edit/rename files
 	AllowCommands bool              // Can execute commands
 	Commands      []string          // Available Commands
-	Rules         []*Rule           `json:"-"` // Access rules
 }
 
 // Allowed checks if the user has permission to access a directory/file
@@ -75,3 +111,6 @@ func (u User) Allowed(url string) bool {
 
 	return true
 }
+
+// Command is a user-defined command that is executed in some moments.
+type Command func(r *http.Request, c *Config, u *User) error

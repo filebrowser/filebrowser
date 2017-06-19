@@ -1,4 +1,4 @@
-package utils
+package page
 
 import "testing"
 
@@ -29,7 +29,7 @@ var testDefinedCases = []testDefined{
 
 func TestDefined(t *testing.T) {
 	for _, pair := range testDefinedCases {
-		v := Defined(pair.data, pair.field)
+		v := defined(pair.data, pair.field)
 		if v != pair.result {
 			t.Error(
 				"For", pair.data,
