@@ -14,7 +14,7 @@ import (
 )
 
 // checksum calculates the hash of a filemanager. Supports MD5, SHA1, SHA256 and SHA512.
-func (c *Config) checksum(w http.ResponseWriter, r *http.Request, i *file) (int, error) {
+func (c *FileManager) checksum(w http.ResponseWriter, r *http.Request, i *fileInfo) (int, error) {
 	query := r.URL.Query().Get("checksum")
 
 	file, err := os.Open(i.Path)

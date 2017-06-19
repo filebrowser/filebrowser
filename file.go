@@ -13,8 +13,8 @@ import (
 	humanize "github.com/dustin/go-humanize"
 )
 
-// file contains the information about a particular file or directory.
-type file struct {
+// fileInfo contains the information about a particular file or directory.
+type fileInfo struct {
 	Name        string
 	Size        int64
 	URL         string
@@ -30,11 +30,11 @@ type file struct {
 	UserAllowed bool // Indicates if the user has enough permissions
 }
 
-// getFile retrieves the file information and the error, if there is any.
-func getFile(url *url.URL, c *Config, u *User) (*file, error) {
+// getFileInfo retrieves the file information and the error, if there is any.
+func getFileInfo(url *url.URL, c *FileManager, u *User) (*fileInfo, error) {
 	var err error
 
-	i := &file{URL: c.PrefixURL + url.Path}
+	i := &fileInfo{URL: c.PrefixURL + url.Path}
 	i.VirtualPath = strings.Replace(url.Path, c.BaseURL, "", 1)
 	i.VirtualPath = strings.TrimPrefix(i.VirtualPath, "/")
 	i.VirtualPath = "/" + i.VirtualPath
@@ -75,7 +75,7 @@ var textExtensions = [...]string{
 
 // RetrieveFileType obtains the mimetype and a simplified internal Type
 // using the first 512 bytes from the file.
-func (i *file) RetrieveFileType() error {
+func (i fileInfo) RetrieveFileType() error {
 	i.Mimetype = mime.TypeByExtension(i.Extension)
 
 	if i.Mimetype == "" {
@@ -126,7 +126,7 @@ func (i *file) RetrieveFileType() error {
 }
 
 // Reads the file.
-func (i *file) Read() error {
+func (i fileInfo) Read() error {
 	if len(i.Content) != 0 {
 		return nil
 	}
@@ -140,22 +140,22 @@ func (i *file) Read() error {
 }
 
 // StringifyContent returns the string version of Raw
-func (i file) StringifyContent() string {
+func (i fileInfo) StringifyContent() string {
 	return string(i.Content)
 }
 
 // HumanSize returns the size of the file as a human-readable string
 // in IEC format (i.e. power of 2 or base 1024).
-func (i file) HumanSize() string {
+func (i fileInfo) HumanSize() string {
 	return humanize.IBytes(uint64(i.Size))
 }
 
 // HumanModTime returns the modified time of the file as a human-readable string.
-func (i file) HumanModTime(format string) string {
+func (i fileInfo) HumanModTime(format string) string {
 	return i.ModTime.Format(format)
 }
 
 // CanBeEdited checks if the extension of a file is supported by the editor
-func (i file) CanBeEdited() bool {
+func (i fileInfo) CanBeEdited() bool {
 	return i.Type == "text"
 }

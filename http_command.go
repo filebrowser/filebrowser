@@ -22,7 +22,7 @@ var (
 )
 
 // command handles the requests for VCS related commands: git, svn and mercurial
-func (c *Config) command(w http.ResponseWriter, r *http.Request, u *User) (int, error) {
+func (c *FileManager) command(w http.ResponseWriter, r *http.Request, u *User) (int, error) {
 	// Upgrades the connection to a websocket and checks for errors.
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {

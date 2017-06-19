@@ -24,7 +24,7 @@ type editor struct {
 }
 
 // newEditor gets the editor based on a FileInfo struct
-func newEditor(r *http.Request, i *file) (*editor, error) {
+func newEditor(r *http.Request, i *fileInfo) (*editor, error) {
 	var err error
 
 	// Create a new editor variable and set the mode

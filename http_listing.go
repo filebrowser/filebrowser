@@ -10,11 +10,11 @@ import (
 )
 
 // serveListing presents the user with a listage of a directory folder.
-func (c *Config) serveListing(w http.ResponseWriter, r *http.Request, u *User, i *file) (int, error) {
+func (c *FileManager) serveListing(w http.ResponseWriter, r *http.Request, u *User, i *fileInfo) (int, error) {
 	var err error
 
 	// Loads the content of the directory
-	listing, err := GetListing(u, i.VirtualPath, c.PrefixURL+r.URL.Path)
+	listing, err := getListing(u, i.VirtualPath, c.PrefixURL+r.URL.Path)
 	if err != nil {
 		return errorToHTTPCode(err, true), err
 	}

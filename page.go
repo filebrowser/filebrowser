@@ -11,6 +11,15 @@ import (
 	"strings"
 )
 
+// Create the functions map, then the template, check for erros and
+// execute the template if there aren't errors
+var functionMap = template.FuncMap{
+	"Defined":      defined,
+	"CSS":          css,
+	"Marshal":      marshal,
+	"EncodeBase64": encodeBase64,
+}
+
 // page contains the informations and functions needed to show the Page
 type page struct {
 	Info    *pageInfo
@@ -23,7 +32,7 @@ type pageInfo struct {
 	Path    string
 	IsDir   bool
 	User    *User
-	Config  *Config
+	Config  *FileManager
 	Data    interface{}
 	Editor  bool
 	Display string

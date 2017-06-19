@@ -11,9 +11,9 @@ import (
 )
 
 // ServeHTTP starts FileManager.
-func (c *Config) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
+func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	var (
-		fi   *file
+		fi   *fileInfo
 		user *User
 		code int
 		err  error
@@ -127,7 +127,7 @@ func (c *Config) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 
 	if r.Method == http.MethodGet {
 		// Gets the information of the directory/file
-		fi, err = getFile(r.URL, c, user)
+		fi, err = getFileInfo(r.URL, c, user)
 		code = errorToHTTPCode(err, false)
 		if err != nil {
 			if r.Method == http.MethodGet {
