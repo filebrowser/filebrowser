@@ -10,8 +10,6 @@ import (
 	fm "github.com/hacdias/filemanager"
 	"github.com/hacdias/filemanager/assets"
 	"github.com/hacdias/filemanager/page"
-	"github.com/hacdias/filemanager/utils"
-	"github.com/hacdias/filemanager/wrapper"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
@@ -74,7 +72,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *fm.Config) (int, error
 				r.Method = "PROPFIND"
 
 				if r.Method == "HEAD" {
-					w = wrapper.NewResponseWriterNoBody(w)
+					w = NewResponseWriterNoBody(w)
 				}
 			}
 		case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
@@ -133,7 +131,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *fm.Config) (int, error
 	if r.Method == http.MethodGet {
 		// Gets the information of the directory/file
 		fi, err = fm.GetInfo(r.URL, c, user)
-		code = utils.ErrorToHTTPCode(err, false)
+		code = errorToHTTPCode(err, false)
 		if err != nil {
 			if r.Method == http.MethodGet {
 				return page.PrintErrorHTML(w, code, err)
@@ -170,4 +168,22 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, c *fm.Config) (int, error
 	}
 
 	return http.StatusNotImplemented, nil
+}
+
+// errorToHTTPCode converts errors to HTTP Status Code.
+func errorToHTTPCode(err error, gone bool) int {
+	switch {
+	case os.IsPermission(err):
+		return http.StatusForbidden
+	case os.IsNotExist(err):
+		if !gone {
+			return http.StatusNotFound
+		}
+
+		return http.StatusGone
+	case os.IsExist(err):
+		return http.StatusGone
+	default:
+		return http.StatusInternalServerError
+	}
 }

@@ -5,9 +5,9 @@
     <title>{{.Name}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <meta charset="utf-8">
-    <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_filemanagerinternal/css/normalize.css">
-    <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_filemanagerinternal/css/fonts.css">
-    <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_filemanagerinternal/css/styles.css">
+    <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_internal/css/normalize.css">
+    <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_internal/css/fonts.css">
+    <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_internal/css/styles.css">
     {{- if ne .User.StyleSheet "" -}}
     <style>{{ CSS .User.StyleSheet }}</style>
     {{- end -}}
@@ -18,16 +18,13 @@
         baseURL = "{{.Config.AbsoluteURL}}",
         prefixURL = "{{ .Config.PrefixURL }}";
     </script>
-    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/common.js" defer></script>
+    <script src="{{ .Config.AbsoluteURL }}/_internal/js/common.js" defer></script>
     {{- if .IsDir }}
-    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/listing.js" defer></script>
+    <script src="{{ .Config.AbsoluteURL }}/_internal/js/listing.js" defer></script>
     {{- else }}
-    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/ace/src-min/ace.js" defer></script>
-    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/vendor/form2js.js" defer></script>
-    <script src="{{ .Config.AbsoluteURL }}/_filemanagerinternal/js/editor.js" defer></script>
-    {{- end }}
-    {{- if .Config.HugoEnabled }}
-    <script src="{{ .Config.AbsoluteURL }}/_hugointernal/js/application.js" defer></script>
+    <script src="{{ .Config.AbsoluteURL }}/_internal/ace/src-min/ace.js" defer></script>
+    <script src="{{ .Config.AbsoluteURL }}/_internal/js/form2js.js" defer></script>
+    <script src="{{ .Config.AbsoluteURL }}/_internal/js/editor.js" defer></script>
     {{- end }}
 </head>
 <body>

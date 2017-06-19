@@ -6,7 +6,6 @@ import (
 
 	fm "github.com/hacdias/filemanager"
 	"github.com/hacdias/filemanager/page"
-	"github.com/hacdias/filemanager/utils"
 )
 
 // serveSingle serves a single file in an editor (if it is editable), shows the
@@ -15,7 +14,7 @@ func serveSingle(w http.ResponseWriter, r *http.Request, c *fm.Config, u *fm.Use
 	var err error
 
 	if err = i.RetrieveFileType(); err != nil {
-		return utils.ErrorToHTTPCode(err, true), err
+		return errorToHTTPCode(err, true), err
 	}
 
 	p := &page.Page{
@@ -36,7 +35,7 @@ func serveSingle(w http.ResponseWriter, r *http.Request, c *fm.Config, u *fm.Use
 
 	if i.Type == "text" {
 		if err = i.Read(); err != nil {
-			return utils.ErrorToHTTPCode(err, true), err
+			return errorToHTTPCode(err, true), err
 		}
 	}
 

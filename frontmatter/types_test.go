@@ -1,4 +1,4 @@
-package utils
+package frontmatter
 
 import "testing"
 
@@ -20,7 +20,7 @@ var testIsMap = []*interfaceToBool{
 
 func TestIsMap(t *testing.T) {
 	for _, test := range testIsMap {
-		if IsMap(test.Value) != test.Result {
+		if isMap(test.Value) != test.Result {
 			t.Errorf("Incorrect value on IsMap for %v; want: %v; got: %v", test.Value, test.Result, !test.Result)
 		}
 	}
@@ -42,7 +42,7 @@ var testIsSlice = []*interfaceToBool{
 
 func TestIsSlice(t *testing.T) {
 	for _, test := range testIsSlice {
-		if IsSlice(test.Value) != test.Result {
+		if isSlice(test.Value) != test.Result {
 			t.Errorf("Incorrect value on IsSlice for %v; want: %v; got: %v", test.Value, test.Result, !test.Result)
 		}
 	}

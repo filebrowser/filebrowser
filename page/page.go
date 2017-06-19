@@ -3,7 +3,6 @@ package page
 
 import (
 	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"html/template"
 	"log"
@@ -12,7 +11,6 @@ import (
 
 	"github.com/hacdias/filemanager"
 	"github.com/hacdias/filemanager/assets"
-	"github.com/hacdias/filemanager/utils"
 )
 
 // Page contains the informations and functions needed to show the Page
@@ -31,7 +29,6 @@ type Info struct {
 	Data    interface{}
 	Editor  bool
 	Display string
-	Token   string
 }
 
 // BreadcrumbMapItem ...
@@ -94,21 +91,6 @@ func (i Info) PreviousLink() string {
 
 // PrintAsHTML formats the page in HTML and executes the template
 func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, error) {
-	// Create the functions map, then the template, check for erros and
-	// execute the template if there aren't errors
-	functions := template.FuncMap{
-		"Defined": utils.Defined,
-		"CSS": func(s string) template.CSS {
-			return template.CSS(s)
-		},
-		"Marshal": func(v interface{}) template.JS {
-			a, _ := json.Marshal(v)
-			return template.JS(a)
-		},
-		"EncodeBase64": func(s string) string {
-			return base64.StdEncoding.EncodeToString([]byte(s))
-		},
-	}
 
 	if p.Minimal {
 		templates = append(templates, "minimal")
@@ -132,7 +114,7 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 		// If it's the first iteration, creates a new template and add the
 		// functions map
 		if i == 0 {
-			tpl, err = template.New(t).Funcs(functions).Parse(string(Page))
+			tpl, err = template.New(t).Funcs(functionMap).Parse(string(Page))
 		} else {
 			tpl, err = tpl.Parse(string(Page))
 		}
