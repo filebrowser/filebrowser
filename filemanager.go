@@ -28,6 +28,8 @@ type FileManager struct {
 	// a trailing slash.
 	WebDavURL string
 
+	scopes map[string]*scope
+
 	// Users is a map with the different configurations for each user.
 	Users map[string]*User
 
@@ -36,10 +38,16 @@ type FileManager struct {
 	AfterSave  CommandFunc
 }
 
+type scope struct {
+	path       string
+	fileSystem webdav.FileSystem
+	handler    *webdav.Handler
+}
+
 // User contains the configuration for each user.
 type User struct {
 	// scope is the physical path the user has access to.
-	scope string
+	scope *scope
 
 	// fileSystem is the virtual file system the user has access.
 	fileSystem webdav.FileSystem
@@ -153,9 +161,10 @@ func (m *FileManager) SetWebDavURL(url string) {
 	}
 }
 
-func (u *User) SetScope(scope string) {
-	u.scope = strings.TrimSuffix(scope, "/")
-	u.fileSystem = webdav.Dir(u.scope)
+// SetScope updates a user scope and its virtual file system.
+func (m *FileManager) SetScope(scope string, user string) {
+	m.scope = strings.TrimSuffix(scope, "/")
+	m.fileSystem = webdav.Dir(m.scope)
 }
 
 // Allowed checks if the user has permission to access a directory/file.
