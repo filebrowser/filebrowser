@@ -50,8 +50,8 @@ const errTemplate = `<!DOCTYPE html>
     </div>
 </html>`
 
-// PrintErrorHTML prints the error page
-func PrintErrorHTML(w http.ResponseWriter, code int, err error) (int, error) {
+// htmlError prints the error page
+func htmlError(w http.ResponseWriter, code int, err error) (int, error) {
 	tpl := errTemplate
 	tpl = strings.Replace(tpl, "TITLE", strconv.Itoa(code)+" "+http.StatusText(code), -1)
 	tpl = strings.Replace(tpl, "CODE", err.Error(), -1)

@@ -12,84 +12,8 @@ import (
 	"github.com/hacdias/filemanager/variables"
 )
 
-// Page contains the informations and functions needed to show the Page
-type Page struct {
-	*PageInfo
-	Minimal bool
-}
-
-// PageInfo contains the information of a Page
-type PageInfo struct {
-	Name    string
-	Path    string
-	IsDir   bool
-	User    *user
-	Config  *FileManager
-	Data    interface{}
-	Editor  bool
-	Display string
-}
-
-// BreadcrumbMapItem ...
-type BreadcrumbMapItem struct {
-	Name string
-	URL  string
-}
-
-// BreadcrumbMap returns p.Path where every element is a map
-// of URLs and path segment names.
-func (i PageInfo) BreadcrumbMap() []BreadcrumbMapItem {
-	result := []BreadcrumbMapItem{}
-
-	if len(i.Path) == 0 {
-		return result
-	}
-
-	// skip trailing slash
-	lpath := i.Path
-	if lpath[len(lpath)-1] == '/' {
-		lpath = lpath[:len(lpath)-1]
-	}
-
-	parts := strings.Split(lpath, "/")
-	for i, part := range parts {
-		if i == len(parts)-1 {
-			continue
-		}
-
-		if i == 0 && part == "" {
-			result = append([]BreadcrumbMapItem{{
-				Name: "/",
-				URL:  "/",
-			}}, result...)
-			continue
-		}
-
-		result = append([]BreadcrumbMapItem{{
-			Name: part,
-			URL:  strings.Join(parts[:i+1], "/") + "/",
-		}}, result...)
-	}
-
-	return result
-}
-
-// PreviousLink returns the path of the previous folder
-func (i PageInfo) PreviousLink() string {
-	path := strings.TrimSuffix(i.Path, "/")
-	path = strings.TrimPrefix(path, "/")
-	path = i.Config.AbsoluteURL() + "/" + path
-	path = path[0 : len(path)-len(i.Name)]
-
-	if len(path) < len(i.Config.AbsoluteURL()+"/") {
-		return ""
-	}
-
-	return path
-}
-
-// Create the functions map, then the template, check for erros and
-// execute the template if there aren't errors
+// functions contains the non-standard functions that are available
+// to use on the HTML templates.
 var functions = template.FuncMap{
 	"Defined": variables.FieldInStruct,
 	"CSS": func(s string) template.CSS {
@@ -104,9 +28,79 @@ var functions = template.FuncMap{
 	},
 }
 
-// PrintAsHTML formats the page in HTML and executes the template
-func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, error) {
+// page contains the information needed to fill a page template.
+type page struct {
+	Minimal bool
+	Name    string
+	Path    string
+	IsDir   bool
+	User    *user
+	Config  *FileManager
+	Data    interface{}
+	Editor  bool
+	Display string
+}
 
+// breadcrumbItem contains the Name and the URL of a breadcrumb piece.
+type breadcrumbItem struct {
+	Name string
+	URL  string
+}
+
+// BreadcrumbMap returns p.Path where every element is a map
+// of URLs and path segment names.
+func (p page) BreadcrumbMap() []breadcrumbItem {
+	result := []breadcrumbItem{}
+
+	if len(p.Path) == 0 {
+		return result
+	}
+
+	// skip trailing slash
+	lpath := p.Path
+	if lpath[len(lpath)-1] == '/' {
+		lpath = lpath[:len(lpath)-1]
+	}
+
+	parts := strings.Split(lpath, "/")
+	for i, part := range parts {
+		if i == len(parts)-1 {
+			continue
+		}
+
+		if i == 0 && part == "" {
+			result = append([]breadcrumbItem{{
+				Name: "/",
+				URL:  "/",
+			}}, result...)
+			continue
+		}
+
+		result = append([]breadcrumbItem{{
+			Name: part,
+			URL:  strings.Join(parts[:i+1], "/") + "/",
+		}}, result...)
+	}
+
+	return result
+}
+
+// PreviousLink returns the URL of the previous folder.
+func (p page) PreviousLink() string {
+	path := strings.TrimSuffix(p.Path, "/")
+	path = strings.TrimPrefix(path, "/")
+	path = p.Config.AbsoluteURL() + "/" + path
+	path = path[0 : len(path)-len(p.Name)]
+
+	if len(path) < len(p.Config.AbsoluteURL()+"/") {
+		return ""
+	}
+
+	return path
+}
+
+// PrintAsHTML formats the page in HTML and executes the template
+func (p page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, error) {
 	if p.Minimal {
 		templates = append(templates, "minimal")
 	} else {
@@ -141,7 +135,7 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 	}
 
 	buf := &bytes.Buffer{}
-	err := tpl.Execute(buf, p.PageInfo)
+	err := tpl.Execute(buf, p)
 
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -153,8 +147,8 @@ func (p Page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 }
 
 // PrintAsJSON prints the current Page information in JSON
-func (p Page) PrintAsJSON(w http.ResponseWriter) (int, error) {
-	marsh, err := json.MarshalIndent(p.PageInfo.Data, "", "    ")
+func (p page) PrintAsJSON(w http.ResponseWriter) (int, error) {
+	marsh, err := json.MarshalIndent(p.Data, "", "    ")
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
