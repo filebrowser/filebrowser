@@ -4,7 +4,7 @@
 [![community](https://img.shields.io/badge/community-forum-ff69b4.svg?style=flat-square)](https://forum.caddyserver.com)
 [![Go Report Card](https://goreportcard.com/badge/github.com/hacdias/caddy-filemanager?style=flat-square)](https://goreportcard.com/report/hacdias/caddy-filemanager)
 
-filemanager provides WebDAV features and a file managing interface within the specified directory and it can be used to upload, delete, preview, rename and edit your files within that directory.
+filemanager provides WebDAV features and a file managing interface within the specified directory and it can be used to upload, delete, preview, rename and edit your files within that directory. It is an implementation of [hacdias/filemanager](https://github.com/hacdias/filemanager) library.
 
 It is extremely important for security reasons to cover the path of filemanager with some kind of authentication. You can use, for example, [`basicauth`](https://caddyserver.com/docs/basicauth) directive.
 
