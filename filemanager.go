@@ -244,3 +244,8 @@ func (u User) Allowed(url string) bool {
 
 	return true
 }
+
+// Scope returns the user scope.
+func (u User) Scope() string {
+	return u.scope
+}
