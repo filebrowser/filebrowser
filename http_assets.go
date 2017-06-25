@@ -9,7 +9,7 @@ import (
 )
 
 // AssetsURL is the url of the assets
-const AssetsURL = "/_filemanagerinternal"
+const AssetsURL = "/_internal"
 
 // Serve provides the needed assets for the front-end
 func serveAssets(w http.ResponseWriter, r *http.Request, m *FileManager) (int, error) {
@@ -27,8 +27,13 @@ func serveAssets(w http.ResponseWriter, r *http.Request, m *FileManager) (int, e
 		filename = strings.Replace(filename, "/js/", "", 1)
 		file, err = m.Assets.requiredJS.Bytes(filename)
 	case strings.HasPrefix(filename, "/vendor"):
-		filename = strings.Replace(filename, "/vendor/", "", 1)
-		file, err = m.Assets.JS.Bytes(filename)
+		if m.Assets.JS != nil {
+			filename = strings.Replace(filename, "/vendor/", "", 1)
+			file, err = m.Assets.JS.Bytes(filename)
+			break
+		}
+
+		fallthrough
 	default:
 		err = errors.New("not found")
 	}

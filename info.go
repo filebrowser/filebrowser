@@ -77,7 +77,7 @@ var textExtensions = [...]string{
 
 // RetrieveFileType obtains the mimetype and a simplified internal Type
 // using the first 512 bytes from the file.
-func (i FileInfo) RetrieveFileType() error {
+func (i *FileInfo) RetrieveFileType() error {
 	i.Mimetype = mime.TypeByExtension(i.Extension)
 
 	if i.Mimetype == "" {
@@ -128,7 +128,7 @@ func (i FileInfo) RetrieveFileType() error {
 }
 
 // Reads the file.
-func (i FileInfo) Read() error {
+func (i *FileInfo) Read() error {
 	if len(i.content) != 0 {
 		return nil
 	}
