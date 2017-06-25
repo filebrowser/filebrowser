@@ -8,43 +8,43 @@ type hasRuneTest struct {
 }
 
 var testHasRune = []hasRuneTest{
-	hasRuneTest{
+	{
 		File: []byte(`---
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
 Sed auctor libero eget ante fermentum commodo. 
 ---`),
 		Return: true,
 	},
-	hasRuneTest{
+	{
 		File: []byte(`+++
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
 Sed auctor libero eget ante fermentum commodo. 
 +++`),
 		Return: true,
 	},
-	hasRuneTest{
+	{
 		File: []byte(`{
 	"json": "Lorem ipsum dolor sit amet"
 }`),
 		Return: true,
 	},
-	hasRuneTest{
+	{
 		File:   []byte(`+`),
 		Return: false,
 	},
-	hasRuneTest{
+	{
 		File:   []byte(`++`),
 		Return: false,
 	},
-	hasRuneTest{
+	{
 		File:   []byte(`-`),
 		Return: false,
 	},
-	hasRuneTest{
+	{
 		File:   []byte(`--`),
 		Return: false,
 	},
-	hasRuneTest{
+	{
 		File:   []byte(`Lorem ipsum`),
 		Return: false,
 	},
