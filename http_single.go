@@ -43,8 +43,8 @@ func serveSingle(w http.ResponseWriter, r *http.Request, c *FileManager, u *User
 			return http.StatusInternalServerError, err
 		}
 
-		return p.PrintAsHTML(w, c.Assets.Templates, "frontmatter", "editor")
+		return p.PrintAsHTML(w, c, "frontmatter", "editor")
 	}
 
-	return p.PrintAsHTML(w, c.Assets.Templates, "single")
+	return p.PrintAsHTML(w, c, "single")
 }
