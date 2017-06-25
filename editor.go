@@ -11,8 +11,8 @@ import (
 	"github.com/spf13/hugo/parser"
 )
 
-// Editor contains the information for the editor page
-type Editor struct {
+// editor contains the information to fill the editor template.
+type editor struct {
 	Class       string
 	Mode        string
 	Visual      bool
@@ -23,12 +23,12 @@ type Editor struct {
 	}
 }
 
-// GetEditor gets the editor based on a Info struct
-func GetEditor(r *http.Request, i *fileInfo) (*Editor, error) {
+// getEditor gets the editor based on a Info struct
+func (i *fileInfo) getEditor(r *http.Request) (*editor, error) {
 	var err error
 
 	// Create a new editor variable and set the mode
-	e := new(Editor)
+	e := &editor{}
 	e.Mode = editorMode(i.Name)
 	e.Class = editorClass(e.Mode)
 

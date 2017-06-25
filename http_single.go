@@ -15,12 +15,14 @@ func serveSingle(w http.ResponseWriter, r *http.Request, c *FileManager, u *user
 	}
 
 	p := &page{
-		Name:   i.Name,
-		Path:   i.VirtualPath,
-		IsDir:  false,
-		Data:   i,
-		User:   u,
-		Config: c,
+		Name:      i.Name,
+		Path:      i.VirtualPath,
+		IsDir:     false,
+		Data:      i,
+		User:      u,
+		PrefixURL: c.PrefixURL,
+		BaseURL:   c.AbsoluteURL(),
+		WebDavURL: c.AbsoluteWebDavURL(),
 	}
 
 	// If the request accepts JSON, we send the file information.
@@ -41,8 +43,8 @@ func serveSingle(w http.ResponseWriter, r *http.Request, c *FileManager, u *user
 			return http.StatusInternalServerError, err
 		}
 
-		return p.PrintAsHTML(w, "frontmatter", "editor")
+		return p.PrintAsHTML(w, c.Assets.Templates, "frontmatter", "editor")
 	}
 
-	return p.PrintAsHTML(w, "single")
+	return p.PrintAsHTML(w, c.Assets.Templates, "single")
 }

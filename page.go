@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"strings"
 
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/hacdias/filemanager/variables"
 )
 
@@ -30,15 +31,17 @@ var functions = template.FuncMap{
 
 // page contains the information needed to fill a page template.
 type page struct {
-	Minimal bool
-	Name    string
-	Path    string
-	IsDir   bool
-	User    *user
-	Config  *FileManager
-	Data    interface{}
-	Editor  bool
-	Display string
+	minimal   bool
+	Name      string
+	Path      string
+	IsDir     bool
+	User      *user
+	PrefixURL string
+	BaseURL   string
+	WebDavURL string
+	Data      interface{}
+	Editor    bool
+	Display   string
 }
 
 // breadcrumbItem contains the Name and the URL of a breadcrumb piece.
@@ -89,10 +92,10 @@ func (p page) BreadcrumbMap() []breadcrumbItem {
 func (p page) PreviousLink() string {
 	path := strings.TrimSuffix(p.Path, "/")
 	path = strings.TrimPrefix(path, "/")
-	path = p.Config.AbsoluteURL() + "/" + path
+	path = p.BaseURL + "/" + path
 	path = path[0 : len(path)-len(p.Name)]
 
-	if len(path) < len(p.Config.AbsoluteURL()+"/") {
+	if len(path) < len(p.BaseURL+"/") {
 		return ""
 	}
 
@@ -100,8 +103,8 @@ func (p page) PreviousLink() string {
 }
 
 // PrintAsHTML formats the page in HTML and executes the template
-func (p page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, error) {
-	if p.Minimal {
+func (p page) PrintAsHTML(w http.ResponseWriter, box *rice.Box, templates ...string) (int, error) {
+	if p.minimal {
 		templates = append(templates, "minimal")
 	} else {
 		templates = append(templates, "base")
@@ -112,7 +115,7 @@ func (p page) PrintAsHTML(w http.ResponseWriter, templates ...string) (int, erro
 	// For each template, add it to the the tpl variable
 	for i, t := range templates {
 		// Get the template from the assets
-		Page, err := p.Config.Assets.Templates.String(t + ".tmpl")
+		Page, err := box.String(t + ".tmpl")
 
 		// Check if there is some error. If so, the template doesn't exist
 		if err != nil {

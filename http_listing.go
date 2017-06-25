@@ -78,17 +78,19 @@ func serveListing(w http.ResponseWriter, r *http.Request, c *FileManager, u *use
 	})
 
 	p := &page{
-		Minimal: r.Header.Get("Minimal") == "true",
-		Name:    listing.Name,
-		Path:    i.VirtualPath,
-		IsDir:   true,
-		User:    u,
-		Config:  c,
-		Display: displayMode,
-		Data:    listing,
+		minimal:   r.Header.Get("Minimal") == "true",
+		Name:      listing.Name,
+		Path:      i.VirtualPath,
+		IsDir:     true,
+		User:      u,
+		PrefixURL: c.PrefixURL,
+		BaseURL:   c.AbsoluteURL(),
+		WebDavURL: c.AbsoluteWebDavURL(),
+		Display:   displayMode,
+		Data:      listing,
 	}
 
-	return p.PrintAsHTML(w, "listing")
+	return p.PrintAsHTML(w, c.Assets.Templates, "listing")
 }
 
 // handleSortOrder gets and stores for a Listing the 'sort' and 'order',

@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html>
-{{ $absURL := .Config.AbsoluteURL }}
+{{ $absURL := .BaseURL }}
 <head>
     <title>{{.Name}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <meta charset="utf-8">
-    <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_internal/css/normalize.css">
-    <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_internal/css/fonts.css">
-    <link rel="stylesheet" href="{{ .Config.AbsoluteURL }}/_internal/css/styles.css">
+    <link rel="stylesheet" href="{{ .BaseURL }}/_internal/css/normalize.css">
+    <link rel="stylesheet" href="{{ .BaseURL }}/_internal/css/fonts.css">
+    <link rel="stylesheet" href="{{ .BaseURL }}/_internal/css/styles.css">
     {{- if ne .User.StyleSheet "" -}}
     <style>{{ CSS .User.StyleSheet }}</style>
     {{- end -}}
 
     <script>
     var user = JSON.parse('{{ Marshal .User }}'),
-        webdavURL = "{{.Config.AbsoluteWebDavURL }}",
-        baseURL = "{{.Config.AbsoluteURL}}",
-        prefixURL = "{{ .Config.PrefixURL }}";
+        webdavURL = "{{ .WebDavURL }}",
+        baseURL = "{{.BaseURL}}",
+        prefixURL = "{{ .PrefixURL }}";
     </script>
-    <script src="{{ .Config.AbsoluteURL }}/_internal/js/common.js" defer></script>
+    <script src="{{ .BaseURL }}/_internal/js/common.js" defer></script>
     {{- if .IsDir }}
-    <script src="{{ .Config.AbsoluteURL }}/_internal/js/listing.js" defer></script>
+    <script src="{{ .BaseURL }}/_internal/js/listing.js" defer></script>
     {{- else }}
-    <script src="{{ .Config.AbsoluteURL }}/_internal/js/vendor/ace/src-min/ace.js" defer></script>
-    <script src="{{ .Config.AbsoluteURL }}/_internal/js/vendor/form2js.js" defer></script>
-    <script src="{{ .Config.AbsoluteURL }}/_internal/js/editor.js" defer></script>
+    <script src="{{ .BaseURL }}/_internal/js/vendor/ace/src-min/ace.js" defer></script>
+    <script src="{{ .BaseURL }}/_internal/js/vendor/form2js.js" defer></script>
+    <script src="{{ .BaseURL }}/_internal/js/editor.js" defer></script>
     {{- end }}
 </head>
 <body>
