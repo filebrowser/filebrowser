@@ -37,7 +37,7 @@ func getInfo(url *url.URL, c *FileManager, u *user) (*fileInfo, error) {
 	var err error
 
 	i := &fileInfo{URL: c.PrefixURL + url.Path}
-	i.VirtualPath = strings.Replace(url.Path, c.BaseURL, "", 1)
+	i.VirtualPath = strings.Replace(url.Path, c.baseURL, "", 1)
 	i.VirtualPath = strings.TrimPrefix(i.VirtualPath, "/")
 	i.VirtualPath = "/" + i.VirtualPath
 

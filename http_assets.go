@@ -14,7 +14,7 @@ const AssetsURL = "/_internal"
 // Serve provides the needed assets for the front-end
 func serveAssets(w http.ResponseWriter, r *http.Request, m *FileManager) (int, error) {
 	// gets the filename to be used with Assets function
-	filename := strings.Replace(r.URL.Path, m.BaseURL+AssetsURL, "", 1)
+	filename := strings.Replace(r.URL.Path, m.baseURL+AssetsURL, "", 1)
 
 	var file []byte
 	var err error

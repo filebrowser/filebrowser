@@ -17,7 +17,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	m = filemanager.New()
+	m = filemanager.New("D:\\TEST")
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(":8080", nil)
 }

@@ -26,7 +26,7 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 
 	// Checks if the URL matches the Assets URL. Returns the asset if the
 	// method is GET and Status Forbidden otherwise.
-	if matchURL(r.URL.Path, c.BaseURL+AssetsURL) {
+	if matchURL(r.URL.Path, c.baseURL+AssetsURL) {
 		if r.Method == http.MethodGet {
 			return serveAssets(w, r, c)
 		}
@@ -42,9 +42,9 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	// Checks if the request URL is for the WebDav server
-	if matchURL(r.URL.Path, c.WebDavURL) {
+	if matchURL(r.URL.Path, c.webDavURL) {
 		// Checks for user permissions relatively to this PATH
-		if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.WebDavURL)) {
+		if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.webDavURL)) {
 			return http.StatusForbidden, nil
 		}
 
@@ -58,7 +58,7 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 			//
 			// It was decided on https://github.com/hacdias/caddy-filemanager/issues/85
 			// that GET, for collections, will return the same as PROPFIND method.
-			path := strings.Replace(r.URL.Path, c.WebDavURL, "", 1)
+			path := strings.Replace(r.URL.Path, c.webDavURL, "", 1)
 			path = user.scope + "/" + path
 			path = filepath.Clean(path)
 
@@ -110,7 +110,7 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	w.Header().Set("x-xss-protection", "1; mode=block")
 
 	// Checks if the User is allowed to access this file
-	if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.BaseURL)) {
+	if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.baseURL)) {
 		if r.Method == http.MethodGet {
 			return htmlError(
 				w, http.StatusForbidden,

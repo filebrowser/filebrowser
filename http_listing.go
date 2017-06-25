@@ -25,7 +25,7 @@ func serveListing(w http.ResponseWriter, r *http.Request, c *FileManager, u *use
 		URL:  r.URL,
 	}
 
-	cookieScope := c.BaseURL
+	cookieScope := c.baseURL
 	if cookieScope == "" {
 		cookieScope = "/"
 	}
