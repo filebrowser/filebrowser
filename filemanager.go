@@ -22,13 +22,15 @@ type FileManager struct {
 	Assets *assets
 
 	// BaseURL is the path where the GUI will be accessible. It musn't end with
-	// a trailing slash and mustn't contain PrefixURL, if set.
-	baseURL string
+	// a trailing slash and mustn't contain PrefixURL, if set. Despite being
+	// exported, it should only be manipulated using SetBaseURL function.
+	BaseURL string
 
 	// WebDavURL is the path where the WebDAV will be accessible. It can be set to ""
 	// in order to override the GUI and only use the WebDAV. It musn't end with
-	// a trailing slash.
-	webDavURL string
+	// a trailing slash. Despite being exported, it should only be manipulated
+	// using SetWebDavURL function.
+	WebDavURL string
 
 	// PrefixURL is a part of the URL that is trimmed from the http.Request.URL before
 	// it arrives to our handlers. It may be useful when using FileManager as a middleware
@@ -129,13 +131,13 @@ func New(scope string) *FileManager {
 // AbsoluteURL returns the actual URL where
 // File Manager interface can be accessed.
 func (m FileManager) AbsoluteURL() string {
-	return m.PrefixURL + m.baseURL
+	return m.PrefixURL + m.BaseURL
 }
 
 // AbsoluteWebDavURL returns the actual URL
 // where WebDAV can be accessed.
 func (m FileManager) AbsoluteWebDavURL() string {
-	return m.PrefixURL + m.webDavURL
+	return m.PrefixURL + m.WebDavURL
 }
 
 // SetBaseURL updates the BaseURL of a File Manager
@@ -144,7 +146,7 @@ func (m *FileManager) SetBaseURL(url string) {
 	url = strings.TrimPrefix(url, "/")
 	url = strings.TrimSuffix(url, "/")
 	url = "/" + url
-	m.baseURL = strings.TrimSuffix(url, "/")
+	m.BaseURL = strings.TrimSuffix(url, "/")
 }
 
 // SetWebDavURL updates the WebDavURL of a File Manager
@@ -153,11 +155,11 @@ func (m *FileManager) SetWebDavURL(url string) {
 	url = strings.TrimPrefix(url, "/")
 	url = strings.TrimSuffix(url, "/")
 
-	m.webDavURL = m.baseURL + "/" + url
+	m.WebDavURL = m.BaseURL + "/" + url
 
 	// update base user webdav handler
 	m.handler = &webdav.Handler{
-		Prefix:     m.webDavURL,
+		Prefix:     m.WebDavURL,
 		FileSystem: m.fileSystem,
 		LockSystem: webdav.NewMemLS(),
 	}
@@ -166,7 +168,7 @@ func (m *FileManager) SetWebDavURL(url string) {
 	// the new URL
 	for _, u := range m.Users {
 		u.handler = &webdav.Handler{
-			Prefix:     m.webDavURL,
+			Prefix:     m.WebDavURL,
 			FileSystem: u.fileSystem,
 			LockSystem: webdav.NewMemLS(),
 		}
@@ -192,7 +194,7 @@ func (m *FileManager) SetScope(scope string, username string) error {
 	u.fileSystem = webdav.Dir(u.scope)
 
 	u.handler = &webdav.Handler{
-		Prefix:     m.webDavURL,
+		Prefix:     m.WebDavURL,
 		FileSystem: u.fileSystem,
 		LockSystem: webdav.NewMemLS(),
 	}
