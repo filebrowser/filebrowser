@@ -25,7 +25,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 
 	// Checks if the URL matches the Assets URL. Returns the asset if the
 	// method is GET and Status Forbidden otherwise.
-	if matchURL(r.URL.Path, m.baseURL+assetsURL) {
+	if matchURL(r.URL.Path, m.BaseURL+assetsURL) {
 		if r.Method == http.MethodGet {
 			return serveAssets(w, r, m)
 		}
@@ -41,7 +41,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	// Checks if the request URL is for the WebDav server
-	if matchURL(r.URL.Path, m.webDavURL) {
+	if matchURL(r.URL.Path, m.WebDavURL) {
 		return serveWebDAV(w, r, m, u)
 	}
 
@@ -50,7 +50,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	w.Header().Set("x-xss-protection", "1; mode=block")
 
 	// Checks if the User is allowed to access this file
-	if !u.Allowed(strings.TrimPrefix(r.URL.Path, m.baseURL)) {
+	if !u.Allowed(strings.TrimPrefix(r.URL.Path, m.BaseURL)) {
 		if r.Method == http.MethodGet {
 			return htmlError(
 				w, http.StatusForbidden,
@@ -119,7 +119,7 @@ func serveWebDAV(w http.ResponseWriter, r *http.Request, m *FileManager, u *User
 	var err error
 
 	// Checks for user permissions relatively to this path.
-	if !u.Allowed(strings.TrimPrefix(r.URL.Path, m.webDavURL)) {
+	if !u.Allowed(strings.TrimPrefix(r.URL.Path, m.WebDavURL)) {
 		return http.StatusForbidden, nil
 	}
 
@@ -133,7 +133,7 @@ func serveWebDAV(w http.ResponseWriter, r *http.Request, m *FileManager, u *User
 		//
 		// It was decided on https://github.com/hacdias/caddy-filemanager/issues/85
 		// that GET, for collections, will return the same as PROPFIND method.
-		path := strings.Replace(r.URL.Path, m.webDavURL, "", 1)
+		path := strings.Replace(r.URL.Path, m.WebDavURL, "", 1)
 		path = u.scope + "/" + path
 		path = filepath.Clean(path)
 
