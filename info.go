@@ -33,7 +33,7 @@ type FileInfo struct {
 
 // GetInfo gets the file information and, in case of error, returns the
 // respective HTTP error code
-func GetInfo(url *url.URL, c *FileManager, u *User) (*FileInfo, error) {
+func GetInfo(url *url.URL, c *FileManager, u *user) (*FileInfo, error) {
 	var err error
 
 	i := &FileInfo{URL: c.PrefixURL + url.Path}

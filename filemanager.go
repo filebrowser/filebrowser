@@ -1,6 +1,7 @@
 package filemanager
 
 import (
+	"errors"
 	"net/http"
 	"regexp"
 	"strings"
@@ -11,7 +12,7 @@ import (
 
 // FileManager is a file manager instance.
 type FileManager struct {
-	*User
+	*user
 	Assets *assets
 
 	// PrefixURL is a part of the URL that is trimmed from the http.Request.URL before
@@ -28,26 +29,18 @@ type FileManager struct {
 	// a trailing slash.
 	WebDavURL string
 
-	scopes map[string]*scope
-
 	// Users is a map with the different configurations for each user.
-	Users map[string]*User
+	Users map[string]*user
 
 	// TODO: event-based?
 	BeforeSave CommandFunc
 	AfterSave  CommandFunc
 }
 
-type scope struct {
-	path       string
-	fileSystem webdav.FileSystem
-	handler    *webdav.Handler
-}
-
-// User contains the configuration for each user.
-type User struct {
+// user contains the configuration for each user.
+type user struct {
 	// scope is the physical path the user has access to.
-	scope *scope
+	scope string
 
 	// fileSystem is the virtual file system the user has access.
 	fileSystem webdav.FileSystem
@@ -93,12 +86,11 @@ type Rule struct {
 	Regexp *regexp.Regexp
 }
 
-// CommandFunc ...
-type CommandFunc func(r *http.Request, c *FileManager, u *User) error
+type CommandFunc func(r *http.Request, c *FileManager, u *user) error
 
 func New() *FileManager {
 	m := &FileManager{
-		User: &User{
+		user: &user{
 			AllowCommands: true,
 			AllowEdit:     true,
 			AllowNew:      true,
@@ -109,9 +101,9 @@ func New() *FileManager {
 				Regexp: regexp.MustCompile("\\/\\..+"),
 			}},
 		},
-		Users:      map[string]*User{},
-		BeforeSave: func(r *http.Request, c *FileManager, u *User) error { return nil },
-		AfterSave:  func(r *http.Request, c *FileManager, u *User) error { return nil },
+		Users:      map[string]*user{},
+		BeforeSave: func(r *http.Request, c *FileManager, u *user) error { return nil },
+		AfterSave:  func(r *http.Request, c *FileManager, u *user) error { return nil },
 		Assets: &assets{
 			Templates:  rice.MustFindBox("./_assets/templates"),
 			CSS:        rice.MustFindBox("./_assets/css"),
@@ -119,7 +111,7 @@ func New() *FileManager {
 		},
 	}
 
-	m.SetScope(".")
+	m.SetScope(".", "")
 	m.SetBaseURL("/")
 	m.SetWebDavURL("/webdav")
 
@@ -154,21 +146,58 @@ func (m *FileManager) SetWebDavURL(url string) {
 	url = strings.TrimSuffix(url, "/")
 
 	m.WebDavURL = m.BaseURL + "/" + url
-	m.User.handler = &webdav.Handler{
+
+	// update base user webdav handler
+	m.handler = &webdav.Handler{
 		Prefix:     m.WebDavURL,
 		FileSystem: m.fileSystem,
 		LockSystem: webdav.NewMemLS(),
 	}
+
+	// update other users' handlers to match
+	// the new URL
+	for _, u := range m.Users {
+		u.handler = &webdav.Handler{
+			Prefix:     m.WebDavURL,
+			FileSystem: u.fileSystem,
+			LockSystem: webdav.NewMemLS(),
+		}
+	}
 }
 
 // SetScope updates a user scope and its virtual file system.
-func (m *FileManager) SetScope(scope string, user string) {
-	m.scope = strings.TrimSuffix(scope, "/")
-	m.fileSystem = webdav.Dir(m.scope)
+// If the user string is blank, it will change the base scope.
+func (m *FileManager) SetScope(scope string, username string) error {
+	var u *user
+
+	if username == "" {
+		u = m.user
+	} else {
+		var ok bool
+		u, ok = m.Users[username]
+		if !ok {
+			return errors.New("Inexistent user")
+		}
+	}
+
+	u.scope = strings.TrimSuffix(scope, "/")
+	u.fileSystem = webdav.Dir(u.scope)
+
+	u.handler = &webdav.Handler{
+		Prefix:     m.WebDavURL,
+		FileSystem: u.fileSystem,
+		LockSystem: webdav.NewMemLS(),
+	}
+
+	return nil
+}
+
+func (m *FileManager) NewUser(name string) {
+
 }
 
 // Allowed checks if the user has permission to access a directory/file.
-func (u User) Allowed(url string) bool {
+func (u user) Allowed(url string) bool {
 	var rule *Rule
 	i := len(u.Rules) - 1
 
