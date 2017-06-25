@@ -81,6 +81,7 @@ type User struct {
 type assets struct {
 	requiredJS    *rice.Box // JS that is always required to have in order to be usable.
 	baseTemplates *rice.Box
+	baseCSS       *rice.Box
 	Templates     *rice.Box
 	CSS           *rice.Box
 	JS            *rice.Box
@@ -117,7 +118,7 @@ func New(scope string) *FileManager {
 		AfterSave:  func(r *http.Request, m *FileManager, u *User) error { return nil },
 		Assets: &assets{
 			baseTemplates: rice.MustFindBox("./_assets/templates"),
-			CSS:           rice.MustFindBox("./_assets/css"),
+			baseCSS:       rice.MustFindBox("./_assets/css"),
 			requiredJS:    rice.MustFindBox("./_assets/js"),
 		},
 	}
