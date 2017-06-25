@@ -165,24 +165,4 @@ this are keywords case:insensitive
 
 ## Developers
 
-If you want to build Caddy from source with this plugin, you should take the following steps:
-
-1. Download the Caddy source code (`go get github.com/mholt/caddy/caddy`)
-2. Download the File Manager source code (`go get github.com/hacdias/caddy-filemanager`).
-3. Navigate to the directory where File Manager's code is.
-4. Run `go generate`. Otherwise, you will get an `undefined: Asset` error.
-5. Navigate to the directory where Caddy's source code is and open the file `caddy/caddymain/run.go`.
-6. Add the line `_ github.com/hacdias/caddy-filemanager` to the imports section.
-
-Now you only need to build or install Caddy and you're good to go.
-
-**Pre-commit Git Hook**
-
-```
-go generate
-git add -A
-```
-
-### To edit CSS, JS and HTML
-
-(In construction)
+If you are a developer and want to contribute, please go to the [filemanager library repository](https://github.com/hacdias/filemanager) where you can find the base code for this project.
