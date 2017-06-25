@@ -1,7 +1,7 @@
 # filemanager - a caddy plugin
 
 [![Build](https://img.shields.io/travis/hacdias/caddy-filemanager.svg?style=flat-square)](https://travis-ci.org/hacdias/caddy-filemanager)
-[![community](https://img.shields.io/badge/community-forum-ff69b4.svg?style=flat-square)](https://forum.caddyserver.com)
+[![community](https://img.shields.io/badge/community-forum-ff69b4.svg?style=flat-square)](https://caddy.community/)
 [![Go Report Card](https://goreportcard.com/badge/github.com/hacdias/caddy-filemanager?style=flat-square)](https://goreportcard.com/report/hacdias/caddy-filemanager)
 
 filemanager provides WebDAV features and a file managing interface within the specified directory and it can be used to upload, delete, preview, rename and edit your files within that directory. It is an implementation of [hacdias/filemanager](https://github.com/hacdias/filemanager) library.
