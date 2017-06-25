@@ -22,7 +22,15 @@ func serveAssets(w http.ResponseWriter, r *http.Request, m *FileManager) (int, e
 	switch {
 	case strings.HasPrefix(filename, "/css"):
 		filename = strings.Replace(filename, "/css/", "", 1)
-		file, err = m.Assets.CSS.Bytes(filename)
+
+		if m.Assets.CSS != nil {
+			file, err = m.Assets.JS.Bytes(filename)
+			if err == nil {
+				break
+			}
+		}
+
+		file, err = m.Assets.baseCSS.Bytes(filename)
 	case strings.HasPrefix(filename, "/js"):
 		filename = strings.Replace(filename, "/js/", "", 1)
 		file, err = m.Assets.requiredJS.Bytes(filename)
