@@ -86,11 +86,11 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 		for c.NextBlock() {
 			switch c.Val() {
 			case "before_save":
-				if m.BeforeSave, err = CommandRunner(c); err != nil {
+				if m.BeforeSave, err = makeCommand(c); err != nil {
 					return configs, err
 				}
 			case "after_save":
-				if m.AfterSave, err = CommandRunner(c); err != nil {
+				if m.AfterSave, err = makeCommand(c); err != nil {
 					return configs, err
 				}
 			case "webdav":
@@ -211,8 +211,7 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 	return configs, nil
 }
 
-// CommandRunner ...
-func CommandRunner(c *caddy.Controller) (filemanager.Command, error) {
+func makeCommand(c *caddy.Controller) (filemanager.Command, error) {
 	fn := func(r *http.Request, c *filemanager.FileManager, u *filemanager.User) error { return nil }
 
 	args := c.RemainingArgs()
