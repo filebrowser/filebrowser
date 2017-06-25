@@ -8,14 +8,14 @@ type interfaceToBool struct {
 }
 
 var testIsMap = []*interfaceToBool{
-	&interfaceToBool{"teste", false},
-	&interfaceToBool{453478, false},
-	&interfaceToBool{-984512, false},
-	&interfaceToBool{true, false},
-	&interfaceToBool{map[string]bool{}, true},
-	&interfaceToBool{map[int]bool{}, true},
-	&interfaceToBool{map[interface{}]bool{}, true},
-	&interfaceToBool{[]string{}, false},
+	{"teste", false},
+	{453478, false},
+	{-984512, false},
+	{true, false},
+	{map[string]bool{}, true},
+	{map[int]bool{}, true},
+	{map[interface{}]bool{}, true},
+	{[]string{}, false},
 }
 
 func TestIsMap(t *testing.T) {
@@ -27,17 +27,17 @@ func TestIsMap(t *testing.T) {
 }
 
 var testIsSlice = []*interfaceToBool{
-	&interfaceToBool{"teste", false},
-	&interfaceToBool{453478, false},
-	&interfaceToBool{-984512, false},
-	&interfaceToBool{true, false},
-	&interfaceToBool{map[string]bool{}, false},
-	&interfaceToBool{map[int]bool{}, false},
-	&interfaceToBool{map[interface{}]bool{}, false},
-	&interfaceToBool{[]string{}, true},
-	&interfaceToBool{[]int{}, true},
-	&interfaceToBool{[]bool{}, true},
-	&interfaceToBool{[]interface{}{}, true},
+	{"teste", false},
+	{453478, false},
+	{-984512, false},
+	{true, false},
+	{map[string]bool{}, false},
+	{map[int]bool{}, false},
+	{map[interface{}]bool{}, false},
+	{[]string{}, true},
+	{[]int{}, true},
+	{[]bool{}, true},
+	{[]interface{}{}, true},
 }
 
 func TestIsSlice(t *testing.T) {

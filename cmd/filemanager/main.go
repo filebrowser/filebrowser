@@ -7,7 +7,6 @@ import (
 	"github.com/hacdias/filemanager"
 )
 
-
 var m *filemanager.FileManager
 
 func handler(w http.ResponseWriter, r *http.Request) {
