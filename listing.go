@@ -36,7 +36,7 @@ type Listing struct {
 func GetListing(u *User, filePath string, baseURL string) (*Listing, error) {
 	// Gets the directory information using the Virtual File System of
 	// the user configuration.
-	file, err := u.FileSystem.OpenFile(context.TODO(), filePath, os.O_RDONLY, 0)
+	file, err := u.fileSystem.OpenFile(context.TODO(), filePath, os.O_RDONLY, 0)
 	if err != nil {
 		return nil, err
 	}

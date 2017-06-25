@@ -41,7 +41,7 @@ func GetInfo(url *url.URL, c *FileManager, u *User) (*FileInfo, error) {
 	i.VirtualPath = strings.TrimPrefix(i.VirtualPath, "/")
 	i.VirtualPath = "/" + i.VirtualPath
 
-	i.Path = u.Scope + i.VirtualPath
+	i.Path = u.scope + i.VirtualPath
 	i.Path = filepath.Clean(i.Path)
 
 	info, err := os.Stat(i.Path)
