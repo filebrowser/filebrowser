@@ -34,9 +34,6 @@ type fileInfo struct {
 
 	// Indicates the file content type: video, text, image, music or blob.
 	Type string
-
-	// Indicates if the user has enough permissions to edit the file.
-	UserAllowed bool
 }
 
 // getInfo gets the file information and, in case of error, returns the

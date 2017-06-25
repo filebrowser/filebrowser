@@ -11,29 +11,29 @@ import (
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
-// A Listing is the context used to fill out a template.
-type Listing struct {
-	// The name of the directory (the last element of the path)
+// A listing is the context used to fill out a template.
+type listing struct {
+	// The name of the directory (the last element of the path).
 	Name string
-	// The full path of the request relatively to a File System
+	// The full path of the request relatively to a File System.
 	Path string
-	// The items (files and folders) in the path
+	// The items (files and folders) in the path.
 	Items []fileInfo
-	// The number of directories in the listing
+	// The number of directories in the listing.
 	NumDirs int
-	// The number of files (items that aren't directories) in the listing
+	// The number of files (items that aren't directories) in the listing.
 	NumFiles int
-	// Which sorting order is used
+	// Which sorting order is used.
 	Sort string
-	// And which order
+	// And which order.
 	Order string
-	// If ≠0 then Items have been limited to that many elements
+	// If ≠0 then Items have been limited to that many elements.
 	ItemsLimitedTo     int
 	httpserver.Context `json:"-"`
 }
 
-// GetListing gets the information about a specific directory and its files.
-func GetListing(u *user, filePath string, baseURL string) (*Listing, error) {
+// getListing gets the information about a specific directory and its files.
+func getListing(u *user, filePath string, baseURL string) (*listing, error) {
 	// Gets the directory information using the Virtual File System of
 	// the user configuration.
 	file, err := u.fileSystem.OpenFile(context.TODO(), filePath, os.O_RDONLY, 0)
@@ -72,20 +72,19 @@ func GetListing(u *user, filePath string, baseURL string) (*Listing, error) {
 		url := url.URL{Path: baseURL + name}
 
 		i := fileInfo{
-			Name:        f.Name(),
-			Size:        f.Size(),
-			ModTime:     f.ModTime(),
-			Mode:        f.Mode(),
-			IsDir:       f.IsDir(),
-			URL:         url.String(),
-			UserAllowed: allowed,
+			Name:    f.Name(),
+			Size:    f.Size(),
+			ModTime: f.ModTime(),
+			Mode:    f.Mode(),
+			IsDir:   f.IsDir(),
+			URL:     url.String(),
 		}
 		i.RetrieveFileType()
 
 		fileinfos = append(fileinfos, i)
 	}
 
-	return &Listing{
+	return &listing{
 		Name:     path.Base(filePath),
 		Path:     filePath,
 		Items:    fileinfos,
@@ -95,7 +94,7 @@ func GetListing(u *user, filePath string, baseURL string) (*Listing, error) {
 }
 
 // ApplySort applies the sort order using .Order and .Sort
-func (l Listing) ApplySort() {
+func (l listing) ApplySort() {
 	// Check '.Order' to know how to sort
 	if l.Order == "desc" {
 		switch l.Sort {
@@ -124,10 +123,10 @@ func (l Listing) ApplySort() {
 	}
 }
 
-// Implement sorting for Listing
-type byName Listing
-type bySize Listing
-type byTime Listing
+// Implement sorting for listing
+type byName listing
+type bySize listing
+type byTime listing
 
 // By Name
 func (l byName) Len() int {
