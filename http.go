@@ -6,9 +6,14 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
+
+func matchURL(first, second string) bool {
+	first = strings.ToLower(first)
+	second = strings.ToLower(second)
+
+	return strings.HasPrefix(first, second)
+}
 
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
@@ -21,7 +26,7 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 
 	// Checks if the URL matches the Assets URL. Returns the asset if the
 	// method is GET and Status Forbidden otherwise.
-	if httpserver.Path(r.URL.Path).Matches(c.BaseURL + AssetsURL) {
+	if matchURL(r.URL.Path, c.BaseURL+AssetsURL) {
 		if r.Method == http.MethodGet {
 			return serveAssets(w, r, c)
 		}
@@ -37,7 +42,7 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	// Checks if the request URL is for the WebDav server
-	if httpserver.Path(r.URL.Path).Matches(c.WebDavURL) {
+	if matchURL(r.URL.Path, c.WebDavURL) {
 		// Checks for user permissions relatively to this PATH
 		if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.WebDavURL)) {
 			return http.StatusForbidden, nil

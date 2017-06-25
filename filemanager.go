@@ -49,10 +49,10 @@ type User struct {
 
 // Assets are the static and front-end assets, such as JS, CSS and HTML templates.
 type Assets struct {
-	requiredJS rice.Box // JS that is always required to have in order to be usable.
-	Templates  rice.Box
-	CSS        rice.Box
-	JS         rice.Box
+	requiredJS *rice.Box // JS that is always required to have in order to be usable.
+	Templates  *rice.Box
+	CSS        *rice.Box
+	JS         *rice.Box
 }
 
 // Rule is a dissalow/allow rule.
@@ -66,14 +66,63 @@ type Rule struct {
 // CommandFunc ...
 type CommandFunc func(r *http.Request, c *FileManager, u *User) error
 
-// AbsoluteURL ...
+func New() *FileManager {
+	m := &FileManager{
+		User: &User{
+			AllowCommands: true,
+			AllowEdit:     true,
+			AllowNew:      true,
+			Commands:      []string{"git", "svn", "hg"},
+			Rules: []*Rule{{
+				Regex:  true,
+				Allow:  false,
+				Regexp: regexp.MustCompile("\\/\\..+"),
+			}},
+		},
+		Users:      map[string]*User{},
+		BeforeSave: func(r *http.Request, c *FileManager, u *User) error { return nil },
+		AfterSave:  func(r *http.Request, c *FileManager, u *User) error { return nil },
+		Assets: &Assets{
+			Templates:  rice.MustFindBox("./_assets/templates"),
+			CSS:        rice.MustFindBox("./_assets/css"),
+			requiredJS: rice.MustFindBox("./_assets/js"),
+		},
+	}
+
+	m.SetScope(".")
+	m.SetBaseURL("/")
+	m.SetWebDavURL("/webdav")
+
+	return m
+}
+
 func (m FileManager) AbsoluteURL() string {
 	return m.PrefixURL + m.BaseURL
 }
 
-// AbsoluteWebdavURL ...
 func (m FileManager) AbsoluteWebdavURL() string {
 	return m.PrefixURL + m.WebDavURL
+}
+
+func (m *FileManager) SetBaseURL(url string) {
+	url = strings.TrimPrefix(url, "/")
+	url = strings.TrimSuffix(url, "/")
+	url = "/" + url
+	m.BaseURL = strings.TrimSuffix(url, "/")
+}
+
+func (m *FileManager) SetWebDavURL(url string) {
+	m.WebDavURL = m.BaseURL + "/" + strings.TrimPrefix(url, "/")
+	m.User.Handler = &webdav.Handler{
+		Prefix:     m.WebDavURL,
+		FileSystem: m.FileSystem,
+		LockSystem: webdav.NewMemLS(),
+	}
+}
+
+func (u *User) SetScope(scope string) {
+	u.Scope = strings.TrimSuffix(scope, "/")
+	u.FileSystem = webdav.Dir(u.Scope)
 }
 
 // Allowed checks if the user has permission to access a directory/file.
