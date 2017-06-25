@@ -20,7 +20,7 @@ func serveListing(w http.ResponseWriter, r *http.Request, c *FileManager, u *Use
 	}
 
 	listing.Context = httpserver.Context{
-		Root: http.Dir(u.Scope),
+		Root: http.Dir(u.scope),
 		Req:  r,
 		URL:  r.URL,
 	}

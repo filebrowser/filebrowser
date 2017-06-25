@@ -74,7 +74,7 @@ func search(w http.ResponseWriter, r *http.Request, c *FileManager, u *User) (in
 	scope := strings.Replace(r.URL.Path, c.BaseURL, "", 1)
 	scope = strings.TrimPrefix(scope, "/")
 	scope = "/" + scope
-	scope = u.Scope + scope
+	scope = u.scope + scope
 	scope = strings.Replace(scope, "\\", "/", -1)
 	scope = filepath.Clean(scope)
 
