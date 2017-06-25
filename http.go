@@ -18,7 +18,7 @@ func matchURL(first, second string) bool {
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	var (
-		fi   *FileInfo
+		fi   *fileInfo
 		code int
 		err  error
 		user *user
@@ -131,7 +131,7 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 
 	if r.Method == http.MethodGet {
 		// Gets the information of the directory/file
-		fi, err = GetInfo(r.URL, c, user)
+		fi, err = getInfo(r.URL, c, user)
 		if err != nil {
 			if r.Method == http.MethodGet {
 				return htmlError(w, code, err)
