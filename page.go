@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"strings"
 
-	rice "github.com/GeertJohan/go.rice"
 	"github.com/hacdias/filemanager/variables"
 )
 
@@ -103,7 +102,7 @@ func (p page) PreviousLink() string {
 }
 
 // PrintAsHTML formats the page in HTML and executes the template
-func (p page) PrintAsHTML(w http.ResponseWriter, box *rice.Box, templates ...string) (int, error) {
+func (p page) PrintAsHTML(w http.ResponseWriter, m *FileManager, templates ...string) (int, error) {
 	if p.minimal {
 		templates = append(templates, "minimal")
 	} else {
@@ -115,7 +114,7 @@ func (p page) PrintAsHTML(w http.ResponseWriter, box *rice.Box, templates ...str
 	// For each template, add it to the the tpl variable
 	for i, t := range templates {
 		// Get the template from the assets
-		Page, err := box.String(t + ".tmpl")
+		Page, err := getTemplate(m, t+".tmpl")
 
 		// Check if there is some error. If so, the template doesn't exist
 		if err != nil {
@@ -162,4 +161,14 @@ func (p page) PrintAsJSON(w http.ResponseWriter) (int, error) {
 	}
 
 	return http.StatusOK, nil
+}
+
+func getTemplate(m *FileManager, template string) (string, error) {
+	if m.Assets.Templates != nil {
+		if tpl, err := m.Assets.Templates.String(template); err == nil {
+			return tpl, err
+		}
+	}
+
+	return m.Assets.baseTemplates.String(template)
 }

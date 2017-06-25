@@ -79,10 +79,11 @@ type User struct {
 
 // assets are the static and front-end assets, such as JS, CSS and HTML templates.
 type assets struct {
-	requiredJS *rice.Box // JS that is always required to have in order to be usable.
-	Templates  *rice.Box
-	CSS        *rice.Box
-	JS         *rice.Box
+	requiredJS    *rice.Box // JS that is always required to have in order to be usable.
+	baseTemplates *rice.Box
+	Templates     *rice.Box
+	CSS           *rice.Box
+	JS            *rice.Box
 }
 
 // Rule is a dissalow/allow rule.
@@ -115,9 +116,9 @@ func New(scope string) *FileManager {
 		BeforeSave: func(r *http.Request, m *FileManager, u *User) error { return nil },
 		AfterSave:  func(r *http.Request, m *FileManager, u *User) error { return nil },
 		Assets: &assets{
-			Templates:  rice.MustFindBox("./_assets/templates"),
-			CSS:        rice.MustFindBox("./_assets/css"),
-			requiredJS: rice.MustFindBox("./_assets/js"),
+			baseTemplates: rice.MustFindBox("./_assets/templates"),
+			CSS:           rice.MustFindBox("./_assets/css"),
+			requiredJS:    rice.MustFindBox("./_assets/js"),
 		},
 	}
 
