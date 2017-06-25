@@ -75,6 +75,16 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 			name = ""
 		)
 
+		caddyConf := httpserver.GetConfig(c)
+
+		m.PrefixURL = strings.TrimSuffix(caddyConf.Addr.Path, "/")
+		m.Commands = []string{"git", "svn", "hg"}
+		m.Rules = append(m.Rules, &filemanager.Rule{
+			Regex:  true,
+			Allow:  false,
+			Regexp: regexp.MustCompile("\\/\\..+"),
+		})
+
 		// Get the baseURL
 		args := c.RemainingArgs()
 
