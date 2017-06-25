@@ -1,0 +1,13 @@
+language: go
+
+go:
+  - tip
+
+install:
+  - go get -u -v $(go list -f '{{join .Imports "\n"}}' ./... | sort | uniq | grep -v filemanager)
+  - go get -u -v github.com/mholt/caddy/caddyhttp
+  - go get github.com/gordonklaus/ineffassign
+
+script:
+  - go build github.com/hacdias/filemanager 
+  - ineffassign .
