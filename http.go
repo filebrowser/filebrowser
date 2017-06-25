@@ -21,7 +21,7 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 		fi   *FileInfo
 		code int
 		err  error
-		user *User
+		user *user
 	)
 
 	// Checks if the URL matches the Assets URL. Returns the asset if the
@@ -38,7 +38,7 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	if _, ok := c.Users[username]; ok {
 		user = c.Users[username]
 	} else {
-		user = c.User
+		user = c.user
 	}
 
 	// Checks if the request URL is for the WebDav server

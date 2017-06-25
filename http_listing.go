@@ -10,7 +10,7 @@ import (
 )
 
 // serveListing presents the user with a listage of a directory folder.
-func serveListing(w http.ResponseWriter, r *http.Request, c *FileManager, u *User, i *FileInfo) (int, error) {
+func serveListing(w http.ResponseWriter, r *http.Request, c *FileManager, u *user, i *FileInfo) (int, error) {
 	var err error
 
 	// Loads the content of the directory

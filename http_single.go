@@ -7,7 +7,7 @@ import (
 
 // serveSingle serves a single file in an editor (if it is editable), shows the
 // plain file, or downloads it if it can't be shown.
-func serveSingle(w http.ResponseWriter, r *http.Request, c *FileManager, u *User, i *FileInfo) (int, error) {
+func serveSingle(w http.ResponseWriter, r *http.Request, c *FileManager, u *user, i *FileInfo) (int, error) {
 	var err error
 
 	if err = i.RetrieveFileType(); err != nil {

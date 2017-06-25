@@ -23,7 +23,7 @@ type PageInfo struct {
 	Name    string
 	Path    string
 	IsDir   bool
-	User    *User
+	User    *user
 	Config  *FileManager
 	Data    interface{}
 	Editor  bool
