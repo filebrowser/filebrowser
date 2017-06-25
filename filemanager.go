@@ -10,6 +10,11 @@ import (
 	"golang.org/x/net/webdav"
 )
 
+var (
+	// ErrDuplicated occurs when you try to create a user that already exists.
+	ErrDuplicated = errors.New("Duplicated user")
+)
+
 // FileManager is a file manager instance.
 type FileManager struct {
 	*user
@@ -88,7 +93,7 @@ type Rule struct {
 
 type CommandFunc func(r *http.Request, c *FileManager, u *user) error
 
-func New() *FileManager {
+func New(scope string) *FileManager {
 	m := &FileManager{
 		user: &user{
 			AllowCommands: true,
@@ -111,7 +116,7 @@ func New() *FileManager {
 		},
 	}
 
-	m.SetScope(".", "")
+	m.SetScope(scope, "")
 	m.SetBaseURL("/")
 	m.SetWebDavURL("/webdav")
 
@@ -192,8 +197,25 @@ func (m *FileManager) SetScope(scope string, username string) error {
 	return nil
 }
 
-func (m *FileManager) NewUser(name string) {
+// NewUser creates a new user on a File Manager struct
+// which inherits its configuration from the main user.
+func (m *FileManager) NewUser(username string) error {
+	if _, ok := m.Users[username]; ok {
+		return ErrDuplicated
+	}
 
+	m.Users[username] = &user{
+		scope:         m.user.scope,
+		fileSystem:    m.user.fileSystem,
+		handler:       m.user.handler,
+		Rules:         m.user.Rules,
+		AllowNew:      m.user.AllowNew,
+		AllowEdit:     m.user.AllowEdit,
+		AllowCommands: m.user.AllowCommands,
+		Commands:      m.user.Commands,
+	}
+
+	return nil
 }
 
 // Allowed checks if the user has permission to access a directory/file.
