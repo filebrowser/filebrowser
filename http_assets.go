@@ -24,7 +24,7 @@ func serveAssets(w http.ResponseWriter, r *http.Request, m *FileManager) (int, e
 		filename = strings.Replace(filename, "/css/", "", 1)
 
 		if m.Assets.CSS != nil {
-			file, err = m.Assets.JS.Bytes(filename)
+			file, err = m.Assets.CSS.Bytes(filename)
 			if err == nil {
 				break
 			}
