@@ -26,7 +26,7 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 
 	// Checks if the URL matches the Assets URL. Returns the asset if the
 	// method is GET and Status Forbidden otherwise.
-	if matchURL(r.URL.Path, c.baseURL+AssetsURL) {
+	if matchURL(r.URL.Path, c.baseURL+assetsURL) {
 		if r.Method == http.MethodGet {
 			return serveAssets(w, r, c)
 		}

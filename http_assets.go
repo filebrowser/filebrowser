@@ -8,13 +8,13 @@ import (
 	"strings"
 )
 
-// AssetsURL is the url of the assets
-const AssetsURL = "/_internal"
+// assetsURL is the url where static assets are served.
+const assetsURL = "/_internal"
 
 // Serve provides the needed assets for the front-end
 func serveAssets(w http.ResponseWriter, r *http.Request, m *FileManager) (int, error) {
 	// gets the filename to be used with Assets function
-	filename := strings.Replace(r.URL.Path, m.baseURL+AssetsURL, "", 1)
+	filename := strings.Replace(r.URL.Path, m.baseURL+assetsURL, "", 1)
 
 	var file []byte
 	var err error

@@ -15,20 +15,28 @@ import (
 
 // fileInfo contains the information about a particular file or directory.
 type fileInfo struct {
-	Name        string
-	Size        int64
-	URL         string
-	Extension   string
-	ModTime     time.Time
-	Mode        os.FileMode
-	IsDir       bool
-	Path        string // Relative path to Current Working Directory
-	VirtualPath string // Relative path to user's virtual File System
-	Mimetype    string
-	Type        string
-	UserAllowed bool // Indicates if the user has enough permissions
-
+	// Used to store the file's content temporarily.
 	content []byte
+
+	Name      string
+	Size      int64
+	URL       string
+	Extension string
+	ModTime   time.Time
+	Mode      os.FileMode
+	IsDir     bool
+
+	// Absolute path.
+	Path string
+
+	// Relative path to user's virtual File System.
+	VirtualPath string
+
+	// Indicates the file content type: video, text, image, music or blob.
+	Type string
+
+	// Indicates if the user has enough permissions to edit the file.
+	UserAllowed bool
 }
 
 // getInfo gets the file information and, in case of error, returns the
@@ -75,41 +83,44 @@ var textExtensions = [...]string{
 	".f", ".bas", ".d", ".ada", ".nim", ".cr", ".java", ".cs", ".vala", ".vapi",
 }
 
-// RetrieveFileType obtains the mimetype and a simplified internal Type
-// using the first 512 bytes from the file.
+// RetrieveFileType obtains the mimetype and converts it to a simple
+// type nomenclature.
 func (i *fileInfo) RetrieveFileType() error {
-	i.Mimetype = mime.TypeByExtension(i.Extension)
+	// Tries to get the file mimetype using its extension.
+	mimetype := mime.TypeByExtension(i.Extension)
 
-	if i.Mimetype == "" {
+	if mimetype == "" {
 		err := i.Read()
 		if err != nil {
 			return err
 		}
 
-		i.Mimetype = http.DetectContentType(i.content)
+		// Tries to get the file mimetype using its first
+		// 512 bytes.
+		mimetype = http.DetectContentType(i.content)
 	}
 
-	if strings.HasPrefix(i.Mimetype, "video") {
+	if strings.HasPrefix(mimetype, "video") {
 		i.Type = "video"
 		return nil
 	}
 
-	if strings.HasPrefix(i.Mimetype, "audio") {
+	if strings.HasPrefix(mimetype, "audio") {
 		i.Type = "audio"
 		return nil
 	}
 
-	if strings.HasPrefix(i.Mimetype, "image") {
+	if strings.HasPrefix(mimetype, "image") {
 		i.Type = "image"
 		return nil
 	}
 
-	if strings.HasPrefix(i.Mimetype, "text") {
+	if strings.HasPrefix(mimetype, "text") {
 		i.Type = "text"
 		return nil
 	}
 
-	if strings.HasPrefix(i.Mimetype, "application/javascript") {
+	if strings.HasPrefix(mimetype, "application/javascript") {
 		i.Type = "text"
 		return nil
 	}
@@ -141,7 +152,7 @@ func (i *fileInfo) Read() error {
 	return nil
 }
 
-// StringifyContent returns the string version of Raw
+// StringifyContent returns a string with the file content.
 func (i fileInfo) StringifyContent() string {
 	return string(i.content)
 }
