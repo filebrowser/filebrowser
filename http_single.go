@@ -37,7 +37,7 @@ func serveSingle(w http.ResponseWriter, r *http.Request, c *FileManager, u *user
 	}
 
 	if i.CanBeEdited() && u.AllowEdit {
-		p.Data, err = GetEditor(r, i)
+		p.Data, err = getEditor(r, i)
 		p.Editor = true
 		if err != nil {
 			return http.StatusInternalServerError, err
