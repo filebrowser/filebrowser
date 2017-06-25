@@ -18,7 +18,7 @@ func matchURL(first, second string) bool {
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	var (
-		u    *user
+		u    *User
 		code int
 		err  error
 	)
@@ -37,7 +37,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	if _, ok := m.Users[username]; ok {
 		u = m.Users[username]
 	} else {
-		u = m.user
+		u = m.User
 	}
 
 	// Checks if the request URL is for the WebDav server
@@ -115,7 +115,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 }
 
 // serveWebDAV handles the webDAV route of the File Manager.
-func serveWebDAV(w http.ResponseWriter, r *http.Request, m *FileManager, u *user) (int, error) {
+func serveWebDAV(w http.ResponseWriter, r *http.Request, m *FileManager, u *User) (int, error) {
 	var err error
 
 	// Checks for user permissions relatively to this path.

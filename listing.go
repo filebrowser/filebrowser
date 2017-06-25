@@ -33,7 +33,7 @@ type listing struct {
 }
 
 // getListing gets the information about a specific directory and its files.
-func getListing(u *user, filePath string, baseURL string) (*listing, error) {
+func getListing(u *User, filePath string, baseURL string) (*listing, error) {
 	// Gets the directory information using the Virtual File System of
 	// the user configuration.
 	file, err := u.fileSystem.OpenFile(context.TODO(), filePath, os.O_RDONLY, 0)

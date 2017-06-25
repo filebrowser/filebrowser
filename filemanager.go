@@ -15,9 +15,10 @@ var (
 	ErrDuplicated = errors.New("Duplicated user")
 )
 
-// FileManager is a file manager instance.
+// FileManager is a file manager instance. It should be creating using the
+// 'New' function and not directly.
 type FileManager struct {
-	*user
+	*User
 	Assets *assets
 
 	// BaseURL is the path where the GUI will be accessible. It musn't end with
@@ -35,7 +36,7 @@ type FileManager struct {
 	PrefixURL string
 
 	// Users is a map with the different configurations for each user.
-	Users map[string]*user
+	Users map[string]*User
 
 	// BeforeSave is a function that is called before saving a file.
 	BeforeSave Command
@@ -45,10 +46,11 @@ type FileManager struct {
 }
 
 // Command is a command function.
-type Command func(r *http.Request, m *FileManager, u *user) error
+type Command func(r *http.Request, m *FileManager, u *User) error
 
-// user contains the configuration for each user.
-type user struct {
+// User contains the configuration for each user. It should be created
+// using NewUser on a File Manager instance.
+type User struct {
 	// scope is the physical path the user has access to.
 	scope string
 
@@ -100,16 +102,16 @@ type Rule struct {
 // configuration to work.
 func New(scope string) *FileManager {
 	m := &FileManager{
-		user: &user{
+		User: &User{
 			AllowCommands: true,
 			AllowEdit:     true,
 			AllowNew:      true,
 			Commands:      []string{},
 			Rules:         []*Rule{},
 		},
-		Users:      map[string]*user{},
-		BeforeSave: func(r *http.Request, m *FileManager, u *user) error { return nil },
-		AfterSave:  func(r *http.Request, m *FileManager, u *user) error { return nil },
+		Users:      map[string]*User{},
+		BeforeSave: func(r *http.Request, m *FileManager, u *User) error { return nil },
+		AfterSave:  func(r *http.Request, m *FileManager, u *User) error { return nil },
 		Assets: &assets{
 			Templates:  rice.MustFindBox("./_assets/templates"),
 			CSS:        rice.MustFindBox("./_assets/css"),
@@ -174,10 +176,10 @@ func (m *FileManager) SetWebDavURL(url string) {
 // SetScope updates a user scope and its virtual file system.
 // If the user string is blank, it will change the base scope.
 func (m *FileManager) SetScope(scope string, username string) error {
-	var u *user
+	var u *User
 
 	if username == "" {
-		u = m.user
+		u = m.User
 	} else {
 		var ok bool
 		u, ok = m.Users[username]
@@ -205,22 +207,22 @@ func (m *FileManager) NewUser(username string) error {
 		return ErrDuplicated
 	}
 
-	m.Users[username] = &user{
-		scope:         m.user.scope,
-		fileSystem:    m.user.fileSystem,
-		handler:       m.user.handler,
-		Rules:         m.user.Rules,
-		AllowNew:      m.user.AllowNew,
-		AllowEdit:     m.user.AllowEdit,
-		AllowCommands: m.user.AllowCommands,
-		Commands:      m.user.Commands,
+	m.Users[username] = &User{
+		scope:         m.User.scope,
+		fileSystem:    m.User.fileSystem,
+		handler:       m.User.handler,
+		Rules:         m.User.Rules,
+		AllowNew:      m.User.AllowNew,
+		AllowEdit:     m.User.AllowEdit,
+		AllowCommands: m.User.AllowCommands,
+		Commands:      m.User.Commands,
 	}
 
 	return nil
 }
 
 // Allowed checks if the user has permission to access a directory/file.
-func (u user) Allowed(url string) bool {
+func (u User) Allowed(url string) bool {
 	var rule *Rule
 	i := len(u.Rules) - 1
 

@@ -43,7 +43,7 @@ func parseSearch(value string) *searchOptions {
 }
 
 // search searches for a file or directory.
-func search(w http.ResponseWriter, r *http.Request, c *FileManager, u *user) (int, error) {
+func search(w http.ResponseWriter, r *http.Request, c *FileManager, u *User) (int, error) {
 	// Upgrades the connection to a websocket and checks for errors.
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {

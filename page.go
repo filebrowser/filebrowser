@@ -35,7 +35,7 @@ type page struct {
 	Name      string
 	Path      string
 	IsDir     bool
-	User      *user
+	User      *User
 	PrefixURL string
 	BaseURL   string
 	WebDavURL string
