@@ -37,10 +37,15 @@ type FileManager struct {
 	// Users is a map with the different configurations for each user.
 	Users map[string]*user
 
-	// TODO: event-based?
-	BeforeSave CommandFunc
-	AfterSave  CommandFunc
+	// BeforeSave is a function that is called before saving a file.
+	BeforeSave Command
+
+	// AfterSave is a function that is called before saving a file.
+	AfterSave Command
 }
+
+// Command is a command function.
+type Command func(r *http.Request, m *FileManager, u *user) error
 
 // user contains the configuration for each user.
 type user struct {
@@ -91,24 +96,20 @@ type Rule struct {
 	Regexp *regexp.Regexp
 }
 
-type CommandFunc func(r *http.Request, c *FileManager, u *user) error
-
+// New creates a new File Manager instance with the needed
+// configuration to work.
 func New(scope string) *FileManager {
 	m := &FileManager{
 		user: &user{
 			AllowCommands: true,
 			AllowEdit:     true,
 			AllowNew:      true,
-			Commands:      []string{"git", "svn", "hg"},
-			Rules: []*Rule{{
-				Regex:  true,
-				Allow:  false,
-				Regexp: regexp.MustCompile("\\/\\..+"),
-			}},
+			Commands:      []string{},
+			Rules:         []*Rule{},
 		},
 		Users:      map[string]*user{},
-		BeforeSave: func(r *http.Request, c *FileManager, u *user) error { return nil },
-		AfterSave:  func(r *http.Request, c *FileManager, u *user) error { return nil },
+		BeforeSave: func(r *http.Request, m *FileManager, u *user) error { return nil },
+		AfterSave:  func(r *http.Request, m *FileManager, u *user) error { return nil },
 		Assets: &assets{
 			Templates:  rice.MustFindBox("./_assets/templates"),
 			CSS:        rice.MustFindBox("./_assets/css"),

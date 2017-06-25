@@ -16,93 +16,33 @@ func matchURL(first, second string) bool {
 }
 
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
-func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
+func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	var (
-		fi   *fileInfo
+		u    *user
 		code int
 		err  error
-		user *user
 	)
 
 	// Checks if the URL matches the Assets URL. Returns the asset if the
 	// method is GET and Status Forbidden otherwise.
-	if matchURL(r.URL.Path, c.baseURL+assetsURL) {
+	if matchURL(r.URL.Path, m.baseURL+assetsURL) {
 		if r.Method == http.MethodGet {
-			return serveAssets(w, r, c)
+			return serveAssets(w, r, m)
 		}
 
 		return http.StatusForbidden, nil
 	}
 
 	username, _, _ := r.BasicAuth()
-	if _, ok := c.Users[username]; ok {
-		user = c.Users[username]
+	if _, ok := m.Users[username]; ok {
+		u = m.Users[username]
 	} else {
-		user = c.user
+		u = m.user
 	}
 
 	// Checks if the request URL is for the WebDav server
-	if matchURL(r.URL.Path, c.webDavURL) {
-		// Checks for user permissions relatively to this PATH
-		if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.webDavURL)) {
-			return http.StatusForbidden, nil
-		}
-
-		switch r.Method {
-		case "GET", "HEAD":
-			// Excerpt from RFC4918, section 9.4:
-			//
-			// 		GET, when applied to a collection, may return the contents of an
-			//		"index.html" resource, a human-readable view of the contents of
-			//		the collection, or something else altogether.
-			//
-			// It was decided on https://github.com/hacdias/caddy-filemanager/issues/85
-			// that GET, for collections, will return the same as PROPFIND method.
-			path := strings.Replace(r.URL.Path, c.webDavURL, "", 1)
-			path = user.scope + "/" + path
-			path = filepath.Clean(path)
-
-			var i os.FileInfo
-			i, err = os.Stat(path)
-			if err != nil {
-				// Is there any error? WebDav will handle it... no worries.
-				break
-			}
-
-			if i.IsDir() {
-				r.Method = "PROPFIND"
-
-				if r.Method == "HEAD" {
-					w = newResponseWriterNoBody(w)
-				}
-			}
-		case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
-			if !user.AllowEdit {
-				return http.StatusForbidden, nil
-			}
-		case "MKCOL", "COPY":
-			if !user.AllowNew {
-				return http.StatusForbidden, nil
-			}
-		}
-
-		// Preprocess the PUT request if it's the case
-		if r.Method == http.MethodPut {
-			if err = c.BeforeSave(r, c, user); err != nil {
-				return http.StatusInternalServerError, err
-			}
-
-			if put(w, r, c, user) != nil {
-				return http.StatusInternalServerError, err
-			}
-		}
-
-		c.handler.ServeHTTP(w, r)
-		if err = c.AfterSave(r, c, user); err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		return 0, nil
+	if matchURL(r.URL.Path, m.webDavURL) {
+		return serveWebDAV(w, r, m, u)
 	}
 
 	w.Header().Set("x-frame-options", "SAMEORIGIN")
@@ -110,7 +50,7 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	w.Header().Set("x-xss-protection", "1; mode=block")
 
 	// Checks if the User is allowed to access this file
-	if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.baseURL)) {
+	if !u.Allowed(strings.TrimPrefix(r.URL.Path, m.baseURL)) {
 		if r.Method == http.MethodGet {
 			return htmlError(
 				w, http.StatusForbidden,
@@ -122,43 +62,46 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	if r.URL.Query().Get("search") != "" {
-		return search(w, r, c, user)
+		return search(w, r, m, u)
 	}
 
 	if r.URL.Query().Get("command") != "" {
-		return command(w, r, c, user)
+		return command(w, r, m, u)
 	}
 
 	if r.Method == http.MethodGet {
-		// Gets the information of the directory/file
-		fi, err = getInfo(r.URL, c, user)
+		var f *fileInfo
+
+		// Obtains the information of the directory/file.
+		f, err = getInfo(r.URL, m, u)
 		if err != nil {
 			if r.Method == http.MethodGet {
 				return htmlError(w, code, err)
 			}
+
 			code = errorToHTTP(err, false)
 			return code, err
 		}
 
 		// If it's a dir and the path doesn't end with a trailing slash,
 		// redirect the user.
-		if fi.IsDir && !strings.HasSuffix(r.URL.Path, "/") {
-			http.Redirect(w, r, c.PrefixURL+r.URL.Path+"/", http.StatusTemporaryRedirect)
+		if f.IsDir && !strings.HasSuffix(r.URL.Path, "/") {
+			http.Redirect(w, r, m.PrefixURL+r.URL.Path+"/", http.StatusTemporaryRedirect)
 			return 0, nil
 		}
 
 		switch {
 		case r.URL.Query().Get("download") != "":
-			code, err = download(w, r, fi)
-		case r.URL.Query().Get("raw") == "true" && !fi.IsDir:
-			http.ServeFile(w, r, fi.Path)
+			code, err = download(w, r, f)
+		case r.URL.Query().Get("raw") == "true" && !f.IsDir:
+			http.ServeFile(w, r, f.Path)
 			code, err = 0, nil
-		case !fi.IsDir && r.URL.Query().Get("checksum") != "":
-			code, err = checksum(w, r, fi)
-		case fi.IsDir:
-			code, err = serveListing(w, r, c, user, fi)
+		case !f.IsDir && r.URL.Query().Get("checksum") != "":
+			code, err = checksum(w, r, f)
+		case f.IsDir:
+			code, err = serveListing(w, r, m, u, f)
 		default:
-			code, err = serveSingle(w, r, c, user, fi)
+			code, err = serveSingle(w, r, m, u, f)
 		}
 
 		if err != nil {
@@ -169,4 +112,70 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	return http.StatusNotImplemented, nil
+}
+
+// serveWebDAV handles the webDAV route of the File Manager.
+func serveWebDAV(w http.ResponseWriter, r *http.Request, m *FileManager, u *user) (int, error) {
+	var err error
+
+	// Checks for user permissions relatively to this path.
+	if !u.Allowed(strings.TrimPrefix(r.URL.Path, m.webDavURL)) {
+		return http.StatusForbidden, nil
+	}
+
+	switch r.Method {
+	case "GET", "HEAD":
+		// Excerpt from RFC4918, section 9.4:
+		//
+		// 		GET, when applied to a collection, may return the contents of an
+		//		"index.html" resource, a human-readable view of the contents of
+		//		the collection, or something else altogether.
+		//
+		// It was decided on https://github.com/hacdias/caddy-filemanager/issues/85
+		// that GET, for collections, will return the same as PROPFIND method.
+		path := strings.Replace(r.URL.Path, m.webDavURL, "", 1)
+		path = u.scope + "/" + path
+		path = filepath.Clean(path)
+
+		var i os.FileInfo
+		i, err = os.Stat(path)
+		if err != nil {
+			// Is there any error? WebDav will handle it... no worries.
+			break
+		}
+
+		if i.IsDir() {
+			r.Method = "PROPFIND"
+
+			if r.Method == "HEAD" {
+				w = newResponseWriterNoBody(w)
+			}
+		}
+	case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
+		if !u.AllowEdit {
+			return http.StatusForbidden, nil
+		}
+	case "MKCOL", "COPY":
+		if !u.AllowNew {
+			return http.StatusForbidden, nil
+		}
+	}
+
+	// Preprocess the PUT request if it's the case
+	if r.Method == http.MethodPut {
+		if err = m.BeforeSave(r, m, u); err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		if put(w, r, m, u) != nil {
+			return http.StatusInternalServerError, err
+		}
+	}
+
+	m.handler.ServeHTTP(w, r)
+	if err = m.AfterSave(r, m, u); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return 0, nil
 }
