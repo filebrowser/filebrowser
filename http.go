@@ -112,7 +112,7 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	// Checks if the User is allowed to access this file
 	if !user.Allowed(strings.TrimPrefix(r.URL.Path, c.BaseURL)) {
 		if r.Method == http.MethodGet {
-			return PrintErrorHTML(
+			return htmlError(
 				w, http.StatusForbidden,
 				errors.New("You don't have permission to access this page"),
 			)
@@ -134,7 +134,7 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 		fi, err = GetInfo(r.URL, c, user)
 		if err != nil {
 			if r.Method == http.MethodGet {
-				return PrintErrorHTML(w, code, err)
+				return htmlError(w, code, err)
 			}
 			code = errorToHTTP(err, false)
 			return code, err
@@ -162,7 +162,7 @@ func (c *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 		}
 
 		if err != nil {
-			code, err = PrintErrorHTML(w, code, err)
+			code, err = htmlError(w, code, err)
 		}
 
 		return code, err

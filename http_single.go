@@ -14,15 +14,13 @@ func serveSingle(w http.ResponseWriter, r *http.Request, c *FileManager, u *user
 		return errorToHTTP(err, true), err
 	}
 
-	p := &Page{
-		PageInfo: &PageInfo{
-			Name:   i.Name,
-			Path:   i.VirtualPath,
-			IsDir:  false,
-			Data:   i,
-			User:   u,
-			Config: c,
-		},
+	p := &page{
+		Name:   i.Name,
+		Path:   i.VirtualPath,
+		IsDir:  false,
+		Data:   i,
+		User:   u,
+		Config: c,
 	}
 
 	// If the request accepts JSON, we send the file information.
