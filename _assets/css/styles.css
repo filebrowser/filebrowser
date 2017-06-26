@@ -347,27 +347,11 @@ header a:hover {
   color: inherit;
 }
 
-header p i {
-  font-size: 1em !important;
-  color: rgba(255, 255, 255, .31);
-}
-
 header>div {
   display: flex;
   width: 100%;
   padding: 0.5em 0.5em 0.5em 1em;
   align-items: center;
-}
-
-header p {
-  display: inline-block;
-  margin: 0;
-  vertical-align: middle;
-}
-
-header p a,
-header p a:hover {
-  color: inherit;
 }
 
 header .action span {
@@ -432,11 +416,10 @@ main {
   height: 4em;
 }
 
-#top-bar>div:nth-child(1) {
+#top-bar svg  {
+  height: 2.5em;
   margin-right: 1em;
-  font-weight: 500;
-  font-size: 1.5em;
-  line-height: 2;
+  vertical-align: middle;
 }
 
 
@@ -575,9 +558,7 @@ main {
  * * * * * * * * * * * * * * * */
 
 #bottom-bar {
-  background-color: #fafafa;
   border-top: 1px solid rgba(0, 0, 0, 0.075);
-  /* border-bottom: 1px solid rgba(0, 0, 0, 0.075); */
   height: 3.8em;
 }
 
@@ -1160,9 +1141,6 @@ footer a:hover {
   }
   .mobile-only {
     display: inherit !important;
-  }
-  #top-bar>div:nth-child(1) {
-    display: none;
   }
   #bottom-bar>*:first-child {
     max-width: calc(100% - 16em) !important;

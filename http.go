@@ -95,6 +95,9 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 			code, err = download(w, r, f)
 		case !f.IsDir && r.URL.Query().Get("checksum") != "":
 			code, err = checksum(w, r, f)
+		case r.URL.Query().Get("raw") == "true" && !f.IsDir:
+			http.ServeFile(w, r, f.Path)
+			code, err = 0, nil
 		case f.IsDir:
 			code, err = serveListing(w, r, m, u, f)
 		default:

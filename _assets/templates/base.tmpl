@@ -13,11 +13,22 @@
     {{- end -}}
 
     <script>
+    var data = {
+        user: JSON.parse('{{ Marshal .User }}'),
+        webdavURL: "{{ .WebDavURL }}",
+        baseURL: "{{.BaseURL}}",
+        prefixURL:"{{ .PrefixURL }}"
+    }
+    </script>
+
+    <!-- TODO: remove this one after moving the JS to ^^ -->
+    <script>
     var user = JSON.parse('{{ Marshal .User }}'),
         webdavURL = "{{ .WebDavURL }}",
         baseURL = "{{.BaseURL}}",
         prefixURL = "{{ .PrefixURL }}";
     </script>
+
     <script src="{{ .BaseURL }}/_internal/js/common.js" defer></script>
     {{- if .IsDir }}
     <script src="{{ .BaseURL }}/_internal/js/listing.js" defer></script>
@@ -30,7 +41,11 @@
 <body>
     <header>
         <div id="top-bar">
-            <div><p>File Manager</p></div>
+            <svg id="content" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 144">
+                <circle cx="72" cy="72" r="72" fill="#2979ff"/>
+                <circle cx="72" cy="72" r="48" fill="#40c4ff"/>
+                <circle cx="72" cy="72" r="24" fill="#fff"/>
+            </svg>
             <div id="search">
                 <i class="material-icons" title="Search">search</i>
                 <input type="text" aria-label="Write here to search" placeholder="Search or execute a command...">
@@ -40,9 +55,7 @@
                 </div>
             </div>
 
-            <div class="action" id="logout" tabindex="0" role="button" aria-label="Log out">
-                <i class="material-icons" title="Logout">exit_to_app</i>
-            </div>
+          
         </div>
 
         <div id="bottom-bar">
@@ -85,10 +98,14 @@
     </div>
 
     <nav id="sidebar">
-        <a class="action" href="{{ .BaseURL }}">
+        <a class="action" href="{{ .BaseURL }}/">
             <i class="material-icons">folder</i>
             <span>My Files</span>
         </a>
+        <div class="action" id="logout" tabindex="0" role="button" aria-label="Log out">
+            <i class="material-icons" title="Logout">exit_to_app</i>
+            <span>Logout</span>
+        </div>
     </nav>
 
     <main>
@@ -107,6 +124,6 @@
 
     {{ template "templates" . }}
 
-    <footer>Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a> and <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
+    <footer>Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
 </body>
 </html>
