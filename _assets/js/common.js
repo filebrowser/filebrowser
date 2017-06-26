@@ -285,23 +285,6 @@ function logoutEvent (event) {
   }
 }
 
-function openEvent (event) {
-  if (event.currentTarget.classList.contains('disabled')) {
-    return false
-  }
-
-  let link = '?raw=true'
-
-  if (selectedItems.length) {
-    link = document.getElementById(selectedItems[0]).dataset.url + link
-  } else {
-    link = window.location.pathname + link
-  }
-
-  window.open(link)
-  return false
-}
-
 function getHash (event, hash) {
   event.preventDefault()
 
@@ -624,14 +607,12 @@ document.addEventListener('DOMContentLoaded', function (event) {
   clickOverlay = document.querySelector('#click-overlay')
 
   buttons.logout = document.getElementById('logout')
-  buttons.open = document.getElementById('open')
   buttons.delete = document.getElementById('delete')
   buttons.previous = document.getElementById('previous')
   buttons.info = document.getElementById('info')
 
   // Attach event listeners
   buttons.logout.addEventListener('click', logoutEvent)
-  buttons.open.addEventListener('click', openEvent)
   buttons.info.addEventListener('click', infoEvent)
 
   templates.question = document.querySelector('#question-template')
