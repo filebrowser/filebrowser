@@ -6,6 +6,8 @@ It is extremely important for security reasons to cover the path of filemanager 
 
 Note that if you are handling large files you might run into troubles due to the defaults of [`timeouts`](https://caddyserver.com/docs/timeouts) plugin. Check its [documentation](https://caddyserver.com/docs/timeouts) to learn more about that plugin. 
 
+For information about the working of filemanager itself, go to the [main repository](https://github.com/hacdias/filemanager).
+
 ## Get Started
 
 To start using this plugin you just need to go to the [download Caddy page](https://caddyserver.com/download) and choose `filemanager` in the directives section. For further information on how Caddy works refer to [its documentation](https://caddyserver.com/docs).
@@ -136,29 +138,3 @@ filemanager /admin {
     block          /admin/financial
 }
 ```
-
-## About Search
-
-FileManager allows you to search through your files and it has some options. By default, your search will be something like this:
-
-```
-this are keywords
-```
-
-If you search for that it will look at every file that contains "this", "are" or "keywords" on their name. If you want to search for an exact term, you should surround your search by double quotes:
-
-```
-"this is the name"
-```
-
-That will search for any file that contains "this is the name" on its name. It won't search for each separated term this time.
-
-By default, every search will be case sensitive. Although, you can make a case insensitive search by adding `case:insensitive` to the search terms, like this:
-
-```
-this are keywords case:insensitive
-```
-
-## Developers
-
-If you are a developer and want to contribute, please go to the [filemanager library repository](https://github.com/hacdias/filemanager) where you can find the base code for this project.
