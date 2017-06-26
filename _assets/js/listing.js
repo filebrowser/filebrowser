@@ -1,182 +1,175 @@
 'use strict'
 
 var listing = {
-  selectMultiple: false
-}
+  selectMultiple: false,
+  reload: function (callback) {
+    let request = new window.XMLHttpRequest()
 
-listing.reload = function (callback) {
-  let request = new XMLHttpRequest()
+    request.open('GET', window.location)
+    request.setRequestHeader('Minimal', 'true')
+    request.send()
+    request.onreadystatechange = function () {
+      if (request.readyState === 4) {
+        if (request.status === 200) {
+          document.querySelector('body main').innerHTML = request.responseText
+          listing.addDoubleTapEvent()
 
-  request.open('GET', window.location)
-  request.setRequestHeader('Minimal', 'true')
-  request.send()
-  request.onreadystatechange = function () {
-    if (request.readyState === 4) {
-      if (request.status === 200) {
-        document.querySelector('body main').innerHTML = request.responseText
-        listing.addDoubleTapEvent()
-
-        if (typeof callback === 'function') {
-          callback()
+          if (typeof callback === 'function') {
+            callback()
+          }
         }
       }
     }
-  }
-}
+  },
+  itemDragStart: function (event) {
+    let el = event.target
 
-listing.itemDragStart = function (event) {
-  let el = event.target
-
-  for (let i = 0; i < 5; i++) {
-    if (!el.classList.contains('item')) {
-      el = el.parentElement
-    }
-  }
-
-  event.dataTransfer.setData('id', el.id)
-  event.dataTransfer.setData('name', el.querySelector('.name').innerHTML)
-}
-
-listing.itemDragOver = function (event) {
-  event.preventDefault()
-  let el = event.target
-
-  for (let i = 0; i < 5; i++) {
-    if (!el.classList.contains('item')) {
-      el = el.parentElement
-    }
-  }
-
-  el.style.opacity = 1
-}
-
-listing.itemDrop = function (e) {
-  e.preventDefault()
-
-  let el = e.target,
-    id = e.dataTransfer.getData('id'),
-    name = e.dataTransfer.getData('name')
-
-  if (id == '' || name == '') return
-
-  for (let i = 0; i < 5; i++) {
-    if (!el.classList.contains('item')) {
-      el = el.parentElement
-    }
-  }
-
-  if (el.id === id) return
-
-  let oldLink = document.getElementById(id).dataset.url,
-    newLink = el.dataset.url + name
-
-  webdav.move(oldLink, newLink)
-    .then(() => listing.reload())
-    .catch(e => console.log(e))
-}
-
-listing.documentDrop = function (event) {
-  event.preventDefault()
-  let dt = event.dataTransfer,
-    files = dt.files,
-    el = event.target,
-    items = document.getElementsByClassName('item')
-
-  for (let i = 0; i < 5; i++) {
-    if (el != null && !el.classList.contains('item')) {
-      el = el.parentElement
-    }
-  }
-
-  if (files.length > 0) {
-    if (el != null && el.classList.contains('item') && el.dataset.dir == 'true') {
-      listing.handleFiles(files, el.querySelector('.name').innerHTML + '/')
-      return
+    for (let i = 0; i < 5; i++) {
+      if (!el.classList.contains('item')) {
+        el = el.parentElement
+      }
     }
 
-    listing.handleFiles(files, '')
-  } else {
-    Array.from(items).forEach(file => {
-      file.style.opacity = 1
-    })
-  }
-}
-
-listing.rename = function (event) {
-  if (!selectedItems.length || selectedItems.length > 1) {
-    return false
-  }
-
-  let item = document.getElementById(selectedItems[0])
-
-  if (item.classList.contains('disabled')) {
-    return false
-  }
-
-  let link = item.dataset.url,
-    field = item.querySelector('.name'),
-    name = field.innerHTML
-
-  let submit = (event) => {
+    event.dataTransfer.setData('id', el.id)
+    event.dataTransfer.setData('name', el.querySelector('.name').innerHTML)
+  },
+  itemDragOver: function (event) {
     event.preventDefault()
+    let el = event.target
 
-    let newName = event.currentTarget.querySelector('input').value,
-      newLink = removeLastDirectoryPartOf(link) + '/' + newName
+    for (let i = 0; i < 5; i++) {
+      if (!el.classList.contains('item')) {
+        el = el.parentElement
+      }
+    }
 
-    closePrompt(event)
-    buttons.setLoading('rename')
+    el.style.opacity = 1
+  },
+  itemDrop: function (e) {
+    e.preventDefault()
 
-    webdav.move(link, newLink).then(() => {
-      listing.reload(() => {
-        newName = btoa(newName)
-        selectedItems = [newName]
-        document.getElementById(newName).setAttribute('aria-selected', true)
-        listing.handleSelectionChange()
+    let el = e.target,
+      id = e.dataTransfer.getData('id'),
+      name = e.dataTransfer.getData('name')
+
+    if (id == '' || name == '') return
+
+    for (let i = 0; i < 5; i++) {
+      if (!el.classList.contains('item')) {
+        el = el.parentElement
+      }
+    }
+
+    if (el.id === id) return
+
+    let oldLink = document.getElementById(id).dataset.url,
+      newLink = el.dataset.url + name
+
+    webdav.move(oldLink, newLink)
+      .then(() => listing.reload())
+      .catch(e => console.log(e))
+  },
+  documentDrop: function (event) {
+    event.preventDefault()
+    let dt = event.dataTransfer,
+      files = dt.files,
+      el = event.target,
+      items = document.getElementsByClassName('item')
+
+    for (let i = 0; i < 5; i++) {
+      if (el != null && !el.classList.contains('item')) {
+        el = el.parentElement
+      }
+    }
+
+    if (files.length > 0) {
+      if (el != null && el.classList.contains('item') && el.dataset.dir == 'true') {
+        listing.handleFiles(files, el.querySelector('.name').innerHTML + '/')
+        return
+      }
+
+      listing.handleFiles(files, '')
+    } else {
+      Array.from(items).forEach(file => {
+        file.style.opacity = 1
+      })
+    }
+  },
+  rename: function (event) {
+    if (!selectedItems.length || selectedItems.length > 1) {
+      return false
+    }
+
+    let item = document.getElementById(selectedItems[0])
+
+    if (item.classList.contains('disabled')) {
+      return false
+    }
+
+    let link = item.dataset.url
+    let field = item.querySelector('.name')
+    let name = field.innerHTML
+
+    let submit = (event) => {
+      event.preventDefault()
+
+      let newName = event.currentTarget.querySelector('input').value
+      let newLink = removeLastDirectoryPartOf(link) + '/' + newName
+
+      closePrompt(event)
+      buttons.setLoading('rename')
+
+      webdav.move(link, newLink).then(() => {
+        listing.reload(() => {
+          newName = btoa(newName)
+          selectedItems = [newName]
+          document.getElementById(newName).setAttribute('aria-selected', true)
+          listing.handleSelectionChange()
+        })
+
+        buttons.setDone('rename')
+      }).catch(error => {
+        field.innerHTML = name
+        buttons.setDone('rename', false)
+        console.log(error)
       })
 
-      buttons.setDone('rename')
-    }).catch(error => {
-      field.innerHTML = name
-      buttons.setDone('rename', false)
-      console.log(error)
-    })
+      return false
+    }
+
+    let clone = document.importNode(templates.question.content, true)
+    clone.querySelector('h3').innerHTML = 'Rename'
+    clone.querySelector('input').value = name
+    clone.querySelector('.ok').innerHTML = 'Rename'
+    clone.querySelector('form').addEventListener('submit', submit)
+
+    document.querySelector('body').appendChild(clone)
+    document.querySelector('.overlay').classList.add('active')
+    document.querySelector('.prompt').classList.add('active')
+
+    return false
+  },
+  handleFiles: function (files, base) {
+    buttons.setLoading('upload')
+
+    let promises = []
+
+    for (let file of files) {
+      promises.push(webdav.put(window.location.pathname + base + file.name, file))
+    }
+
+    Promise.all(promises)
+      .then(() => {
+        listing.reload()
+        buttons.setDone('upload')
+      })
+      .catch(e => {
+        console.log(e)
+        buttons.setDone('upload', false)
+      })
 
     return false
   }
-
-  let clone = document.importNode(templates.question.content, true)
-  clone.querySelector('h3').innerHTML = 'Rename'
-  clone.querySelector('input').value = name
-  clone.querySelector('.ok').innerHTML = 'Rename'
-  clone.querySelector('form').addEventListener('submit', submit)
-
-  document.querySelector('body').appendChild(clone)
-  document.querySelector('.overlay').classList.add('active')
-  document.querySelector('.prompt').classList.add('active')
-
-  return false
-}
-
-listing.handleFiles = function (files, base) {
-  buttons.setLoading('upload')
-
-  let promises = []
-
-  for (let file of files) {
-    promises.push(webdav.put(window.location.pathname + base + file.name, file))
-  }
-
-  Promise.all(promises)
-    .then(() => {
-      listing.reload()
-      buttons.setDone('upload')
-    })
-    .catch(e => {
-      console.log(e)
-      buttons.setDone('upload', false)
-    })
-
-  return false
 }
 
 listing.unselectAll = function () {
@@ -201,18 +194,11 @@ listing.handleSelectionChange = function (event) {
     fileAction.classList.remove('disabled')
 
     if (selectedNumber > 1) {
-      buttons.open.classList.add('disabled')
       buttons.rename.classList.add('disabled')
       buttons.info.classList.add('disabled')
     }
 
     if (selectedNumber == 1) {
-      if (document.getElementById(selectedItems[0]).dataset.dir == 'true') {
-        buttons.open.classList.add('disabled')
-      } else {
-        buttons.open.classList.remove('disabled')
-      }
-
       buttons.info.classList.remove('disabled')
       buttons.rename.classList.remove('disabled')
     }

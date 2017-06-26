@@ -83,13 +83,6 @@
                 </div>
                 {{- end }}
 
-                {{- if .IsDir }}
-                <div tabindex="0" role="button" aria-label="See raw" class="action" id="open">
-                    <i class="material-icons" title="See raw">open_in_new</i>
-                    <span>See raw</span>
-                </div>
-                {{- end }}
-
                 {{- if and (.User.AllowEdit) (.IsDir) }}
                 <div tabindex="0" role="button" aria-label="Move" class="action" id="move">
                     <i class="material-icons" title="Move">forward</i>
@@ -136,13 +129,6 @@
                 {{- if and (.User.AllowNew) (.IsDir) }}
                 <div tabindex="0" aria-label="Upload" role="button" class="action" id="upload">
                     <i class="material-icons" title="Upload">file_upload</i><span>Upload</span>
-                </div>
-                {{- end }}
-
-                {{- if not .IsDir }}
-                <div tabindex="0" role="button" aria-label="See raw" class="action" id="open">
-                    <i class="material-icons" title="See raw">open_in_new</i>
-                    <span>See raw</span>
                 </div>
                 {{- end }}
 
