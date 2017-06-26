@@ -92,8 +92,8 @@ function addFrontMatterItemPrompt (parent) {
 
     closePrompt(event)
 
-    let name = value.substring(0, value.lastIndexOf(':')),
-      type = value.substring(value.lastIndexOf(':') + 1, value.length)
+    let name = value.substring(0, value.lastIndexOf(':'))
+    let type = value.substring(value.lastIndexOf(':') + 1, value.length)
 
     if (type !== '' && type !== 'array' && type !== 'object') {
       name = value
@@ -131,19 +131,19 @@ function addFrontMatterItemPrompt (parent) {
 function addFrontMatterItem (event) {
   event.preventDefault()
 
-  let parent = event.currentTarget.parentNode,
-    type = parent.dataset.type
+  let parent = event.currentTarget.parentNode
+  let type = parent.dataset.type
 
   // If the block is an array
   if (type === 'array') {
-    let id = parent.id + '[]',
-      count = parent.querySelectorAll('.group > div').length,
-      fieldsets = parent.getElementsByTagName('fieldset')
+    let id = parent.id + '[]'
+    let count = parent.querySelectorAll('.group > div').length
+    let fieldsets = parent.getElementsByTagName('fieldset')
 
     if (fieldsets.length > 0) {
-      let itemType = fieldsets[0].dataset.type,
-        itemID = parent.id + '[' + fieldsets.length + ']',
-        itemName = fieldsets.length
+      let itemType = fieldsets[0].dataset.type
+      let itemID = parent.id + '[' + fieldsets.length + ']'
+      let itemName = fieldsets.length
 
       makeFromBaseTemplate(itemID, itemType, itemName, parent)
     } else {
@@ -153,7 +153,7 @@ function addFrontMatterItem (event) {
     return
   }
 
-  if (type == 'object' || type == 'parent') {
+  if (type === 'object' || type === 'parent') {
     let clone = document.importNode(templates.question.content, true)
     clone.querySelector('form').id = tempID
     clone.querySelector('h3').innerHTML = 'New field'
