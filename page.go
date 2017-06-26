@@ -103,6 +103,7 @@ func (p page) PreviousLink() string {
 
 // PrintAsHTML formats the page in HTML and executes the template
 func (p page) PrintAsHTML(w http.ResponseWriter, m *FileManager, templates ...string) (int, error) {
+	templates = append(templates, "actions")
 	templates = append(templates, "templates")
 
 	if p.minimal {
