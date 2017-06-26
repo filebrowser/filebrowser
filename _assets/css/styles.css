@@ -242,12 +242,16 @@ fieldset h3,
 .action {
   display: inline-block;
   cursor: pointer;
-  -webkit-transition: 0.2s ease all;
   transition: 0.2s ease all;
   border: 0;
   margin: 0;
   color: #546E7A;
   border-radius: 50%;
+  background: transparent;
+  padding: 0;
+  box-shadow: 0 0 0 0;
+  vertical-align: middle;
+  text-align: left;
 }
 
 .action.disabled {
@@ -262,7 +266,7 @@ fieldset h3,
   border-radius: 50%;
 }
 
-.action:hover i {
+.action:hover {
   background-color: rgba(0, 0, 0, .1);
 }
 
@@ -393,6 +397,30 @@ header>div div {
 
 #click-overlay.active {
   display: block;
+}
+
+/* SIDEBAR */
+
+#sidebar {
+  position: fixed;
+  left: 0;
+  width: 20%;
+}
+#sidebar .action {
+  width: 100%;
+  display: block;
+  border-radius: 0;
+  font-size: 1.1em;
+  padding: .5em;
+}
+
+#sidebar .action > * {
+  vertical-align: middle;
+}
+
+main {
+  width: 78%;
+  margin-left: 20%;
 }
 
 
@@ -791,9 +819,9 @@ header>div div {
 #listing.list .item {
   width: 100%;
   margin: 0;
-  border: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   padding: 1em;
+  border-top: 0;
 }
 
 #listing.list h2 {
@@ -840,13 +868,15 @@ header>div div {
 
 #listing.list .item.header {
   display: flex !important;
-  background: #fafafa;
+  background: #f8f8f8;
   position: fixed;
-  width: 100%;
+  width: 78%;
   top: 7.8em;
-  left: 0;
+  left: 20%;
   z-index: 999;
   padding: .85em;
+  border: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 #listing.list .item.header>div:first-child {

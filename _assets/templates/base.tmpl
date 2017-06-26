@@ -62,101 +62,15 @@
             </div>
 
             <div class="actions{{ if .IsDir }} disabled{{ end }}" id="file-only">
-                {{- if and (not .IsDir) (.User.AllowEdit) }}
-                {{- if .Editor}}
-
-                {{- if eq .Data.Mode "markdown" }}
-                <div tabindex="0" role="button" aria-label="Preview" class="action" id="preview" onclick="notImplemented(event);">
-                    <i class="material-icons" title="Preview">remove_red_eye</i>
-                </div>
-                {{- end }}
-
-                {{- if eq .Data.Visual true }}
-                <div tabindex="0" role="button" aria-label="Toggle edit source" class="action" id="edit-source">
-                    <i class="material-icons" title="Toggle edit source">code</i>
-                </div>
-                {{- end }}
-                {{- end }}
-
-                <div tabindex="0" role="button" aria-label="Save" class="action" id="save">
-                    <i class="material-icons" title="Save">save</i>
-                </div>
-                {{- end }}
-
-                {{- if and (.User.AllowEdit) (.IsDir) }}
-                <div tabindex="0" role="button" aria-label="Move" class="action" id="move">
-                    <i class="material-icons" title="Move">forward</i>
-                    <span>Move file</span>
-                </div>
-                {{- end }}
-
-                {{- if and .IsDir .User.AllowEdit }}
-                <div tabindex="0" role="button" aria-label="Edit" class="action" id="rename">
-                    <i class="material-icons" title="Edit">mode_edit</i>
-                </div>
-                {{- end }}
-
-                {{- if and .User.AllowEdit .IsDir }}
-                <div tabindex="0" role="button" aria-label="Delete" class="action" id="delete">
-                    <i class="material-icons" title="Delete">delete</i><span>Delete</span>
-                </div>
-                {{- end }}
+              {{- template "left-side-actions" . -}}
             </div>
 
-            <div tabindex="0" role="button" aria-label="Moew" class="action mobile-only" id="more">
+            <button aria-label="More" class="action mobile-only" id="more">
                 <i class="material-icons">more_vert</i>
-            </div>
+            </button>
 
             <div class="actions" id="main-actions">
-                {{- if .IsDir }}
-                <div role="button" class="action" id="view">
-                    {{- if eq .Display "mosaic" }}
-                        <a tabindex="0" aria-label="Switch to list" title="Switch View" href="?display=list">
-                            <i class="material-icons">view_list</i><span>Switch view</span>
-                        </a>
-                    {{- else }}
-                        <a tabindex="0" aria-label="Switch to Mosaic" title="Switch View" href="?display=mosaic">
-                            <i class="material-icons">view_module</i><span>Switch view</span>
-                        </a>
-                    {{- end }}
-                </div>
-
-                <div tabindex="0" role="button" aria-label="Select multiple" class="action mobile-only" id="multiple-selection-activate">
-                    <i class="material-icons">check_circle</i><span>Select</span>
-                </div>
-                {{- end }}
-
-                {{- if and (.User.AllowNew) (.IsDir) }}
-                <div tabindex="0" aria-label="Upload" role="button" class="action" id="upload">
-                    <i class="material-icons" title="Upload">file_upload</i><span>Upload</span>
-                </div>
-                {{- end }}
-
-                {{- if and .User.AllowEdit (not .IsDir) }}
-                <div tabindex="0" role="button" aria-label="Delete" class="action" id="delete">
-                    <i class="material-icons" title="Delete">delete</i><span>Delete</span>
-                </div>
-                {{- end }}
-
-                <div {{ if .IsDir }}data-dropdown{{ end }} tabindex="0" role="button" aria-label="Download" class="action" id="download">
-                    {{- if not .IsDir}}<a href="?download=true">{{ end }}
-                    <i class="material-icons" title="Download">file_download</i><span>Download</span>
-                    {{- if not .IsDir}}</a>{{ end }}
-
-                    {{- if .IsDir }}
-                    <ul class="dropdown" id="download-drop">
-                        <a tabindex="0" aria-label="Download as Zip" data-format="zip" href="?download=zip"><li>zip</li></a>
-                        <a tabindex="0" aria-label="Download as Tar" data-format="tar" href="?download=tar"><li>tar</li></a>
-                        <a tabindex="0" aria-label="Download as TarGz" data-format="targz" href="?download=targz"><li>tar.gz</li></a>
-                        <a tabindex="0" aria-label="Download as TarBz2" data-format="tarbz2" href="?download=tarbz2"><li>tar.bz2</li></a>
-                        <a tabindex="0" aria-label="Download as TarXz" data-format="tarbz2" href="?download=tarxz"><li>tar.xz</li></a>
-                    </ul>
-                    {{- end }}
-                </div>
-
-                <div tabindex="0" role="button" aria-label="Info" class="action" id="info">
-                    <i class="material-icons" title="Info">info</i><span>Info</span>
-                </div>
+                {{- template "right-side-actions" . -}}
             </div>
         </div>
 
@@ -169,6 +83,13 @@
             <i class="material-icons" title="Clear">clear</i>
         </div>
     </div>
+
+    <nav id="sidebar">
+        <a class="action" href="{{ .BaseURL }}">
+            <i class="material-icons">folder</i>
+            <span>My Files</span>
+        </a>
+    </nav>
 
     <main>
         {{- template "content" . }}
