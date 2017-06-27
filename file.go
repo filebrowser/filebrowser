@@ -41,7 +41,7 @@ type fileInfo struct {
 func getInfo(url *url.URL, c *FileManager, u *User) (*fileInfo, error) {
 	var err error
 
-	i := &fileInfo{URL: c.PrefixURL + url.Path}
+	i := &fileInfo{URL: c.PrefixURL + c.BaseURL + url.Path}
 	i.VirtualPath = strings.Replace(url.Path, c.BaseURL, "", 1)
 	i.VirtualPath = strings.TrimPrefix(i.VirtualPath, "/")
 	i.VirtualPath = "/" + i.VirtualPath

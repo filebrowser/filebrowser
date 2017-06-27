@@ -2,6 +2,7 @@ package filemanager
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
@@ -20,6 +21,8 @@ var (
 type FileManager struct {
 	*User
 	assets *assets
+
+	// TODO: transform BaseURL and PrefixURL in only one. But HOW?
 
 	// BaseURL is the path where the GUI will be accessible. It musn't end with
 	// a trailing slash and mustn't contain PrefixURL, if set. Despite being
@@ -136,7 +139,7 @@ func (m FileManager) AbsoluteURL() string {
 // AbsoluteWebDavURL returns the actual URL
 // where WebDAV can be accessed.
 func (m FileManager) AbsoluteWebDavURL() string {
-	return m.PrefixURL + m.WebDavURL
+	return m.PrefixURL + m.BaseURL + m.WebDavURL
 }
 
 // SetBaseURL updates the BaseURL of a File Manager
@@ -146,6 +149,7 @@ func (m *FileManager) SetBaseURL(url string) {
 	url = strings.TrimSuffix(url, "/")
 	url = "/" + url
 	m.BaseURL = strings.TrimSuffix(url, "/")
+	m.SetWebDavURL(m.WebDavURL)
 }
 
 // SetWebDavURL updates the WebDavURL of a File Manager
@@ -154,7 +158,7 @@ func (m *FileManager) SetWebDavURL(url string) {
 	url = strings.TrimPrefix(url, "/")
 	url = strings.TrimSuffix(url, "/")
 
-	m.WebDavURL = m.BaseURL + "/" + url
+	m.WebDavURL = "/" + url
 
 	// update base user webdav handler
 	m.handler = &webdav.Handler{
@@ -234,9 +238,15 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 		err  error
 	)
 
+	// Remove the base URL from the URL
+	r.URL.Path = strings.TrimPrefix(r.URL.Path, m.BaseURL)
+
+	// TODO: remove this
+	fmt.Printf("Raw: %s\tParsed: %s\n", m.PrefixURL+m.BaseURL+r.URL.Path, r.URL.Path)
+
 	// Checks if the URL matches the Assets URL. Returns the asset if the
 	// method is GET and Status Forbidden otherwise.
-	if matchURL(r.URL.Path, m.BaseURL+assetsURL) {
+	if matchURL(r.URL.Path, assetsURL) {
 		if r.Method == http.MethodGet {
 			return serveAssets(ctx, w, r)
 		}
@@ -251,7 +261,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 		ctx.User = m.User
 	}
 
-	// Checks if the request URL is for the WebDav server
+	// Checks if the request URL is for the WebDav server.
 	if matchURL(r.URL.Path, m.WebDavURL) {
 		return serveWebDAV(ctx, w, r)
 	}
@@ -261,7 +271,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	w.Header().Set("x-xss-protection", "1; mode=block")
 
 	// Checks if the User is allowed to access this file
-	if !ctx.User.Allowed(strings.TrimPrefix(r.URL.Path, m.BaseURL)) {
+	if !ctx.User.Allowed(r.URL.Path) {
 		if r.Method == http.MethodGet {
 			return htmlError(
 				w, http.StatusForbidden,
@@ -294,10 +304,12 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 			return code, err
 		}
 
+		ctx.Info = f
+
 		// If it's a dir and the path doesn't end with a trailing slash,
 		// redirect the user.
 		if f.IsDir && !strings.HasSuffix(r.URL.Path, "/") {
-			http.Redirect(w, r, m.PrefixURL+r.URL.Path+"/", http.StatusTemporaryRedirect)
+			http.Redirect(w, r, m.PrefixURL+m.BaseURL+r.URL.Path+"/", http.StatusTemporaryRedirect)
 			return 0, nil
 		}
 

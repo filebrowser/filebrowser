@@ -14,7 +14,7 @@ func serveListing(ctx *requestContext, w http.ResponseWriter, r *http.Request) (
 	var err error
 
 	// Loads the content of the directory
-	listing, err := getListing(ctx.User, ctx.Info.VirtualPath, ctx.FileManager.PrefixURL+r.URL.Path)
+	listing, err := getListing(ctx.User, ctx.Info.VirtualPath, ctx.FileManager.PrefixURL+ctx.FileManager.BaseURL+r.URL.Path)
 	if err != nil {
 		return errorToHTTP(err, true), err
 	}
