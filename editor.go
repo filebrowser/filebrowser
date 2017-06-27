@@ -87,50 +87,6 @@ Error:
 	return e, nil
 }
 
-// serveSingle serves a single file in an editor (if it is editable), shows the
-// plain file, or downloads it if it can't be shown.
-func serveSingle(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	var err error
-
-	if err = c.fi.RetrieveFileType(); err != nil {
-		return errorToHTTP(err, true), err
-	}
-
-	p := &page{
-		Name:      c.fi.Name,
-		Path:      c.fi.VirtualPath,
-		IsDir:     false,
-		Data:      c.fi,
-		User:      c.us,
-		PrefixURL: c.fm.prefixURL,
-		BaseURL:   c.fm.RootURL(),
-		WebDavURL: c.fm.WebDavURL(),
-	}
-
-	// If the request accepts JSON, we send the file information.
-	if strings.Contains(r.Header.Get("Accept"), "application/json") {
-		return p.PrintAsJSON(w)
-	}
-
-	if c.fi.Type == "text" {
-		if err = c.fi.Read(); err != nil {
-			return errorToHTTP(err, true), err
-		}
-	}
-
-	if c.fi.CanBeEdited() && c.us.AllowEdit {
-		p.Data, err = getEditor(r, c.fi)
-		p.Editor = true
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		return p.PrintAsHTML(w, c.fm.assets.templates, "frontmatter", "editor")
-	}
-
-	return p.PrintAsHTML(w, c.fm.assets.templates, "single")
-}
-
 func editorClass(mode string) string {
 	switch mode {
 	case "json", "toml", "yaml":
