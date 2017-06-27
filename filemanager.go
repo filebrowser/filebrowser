@@ -139,7 +139,7 @@ func (m FileManager) WebDavURL() string {
 
 // SetPrefixURL updates the prefixURL of a File
 // Manager object.
-func (m FileManager) SetPrefixURL(url string) {
+func (m *FileManager) SetPrefixURL(url string) {
 	url = strings.TrimPrefix(url, "/")
 	url = strings.TrimSuffix(url, "/")
 	url = "/" + url
@@ -322,7 +322,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 		case r.URL.Query().Get("download") != "":
 			code, err = download(c, w, r)
 		case !f.IsDir && r.URL.Query().Get("checksum") != "":
-			code, err = checksum(c, w, r)
+			code, err = serveChecksum(c, w, r)
 		case r.URL.Query().Get("raw") == "true" && !f.IsDir:
 			http.ServeFile(w, r, f.Path)
 			code, err = 0, nil
