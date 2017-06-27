@@ -117,7 +117,7 @@ func (p page) PrintAsHTML(w http.ResponseWriter, m *FileManager, templates ...st
 	// For each template, add it to the the tpl variable
 	for i, t := range templates {
 		// Get the template from the assets
-		Page, err := getTemplate(m, t+".tmpl")
+		Page, err := m.assets.templates.String(t + ".tmpl")
 
 		// Check if there is some error. If so, the template doesn't exist
 		if err != nil {
@@ -164,14 +164,4 @@ func (p page) PrintAsJSON(w http.ResponseWriter) (int, error) {
 	}
 
 	return http.StatusOK, nil
-}
-
-func getTemplate(m *FileManager, template string) (string, error) {
-	if m.Assets.Templates != nil {
-		if tpl, err := m.Assets.Templates.String(template); err == nil {
-			return tpl, err
-		}
-	}
-
-	return m.Assets.baseTemplates.String(template)
 }
