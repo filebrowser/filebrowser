@@ -1,6 +1,14 @@
 package filemanager
 
 import (
+	"crypto/md5"
+	"crypto/sha1"
+	"crypto/sha256"
+	"crypto/sha512"
+	"encoding/hex"
+	"errors"
+	"hash"
+	"io"
 	"io/ioutil"
 	"mime"
 	"net/http"
@@ -11,6 +19,10 @@ import (
 	"time"
 
 	humanize "github.com/dustin/go-humanize"
+)
+
+var (
+	errInvalidOption = errors.New("Invalid option")
 )
 
 // fileInfo contains the information about a particular file or directory.
@@ -147,6 +159,37 @@ func (i *fileInfo) Read() error {
 		return err
 	}
 	return nil
+}
+
+func (i fileInfo) Checksum(kind string) (string, error) {
+	file, err := os.Open(i.Path)
+	if err != nil {
+		return "", err
+	}
+
+	defer file.Close()
+
+	var h hash.Hash
+
+	switch kind {
+	case "md5":
+		h = md5.New()
+	case "sha1":
+		h = sha1.New()
+	case "sha256":
+		h = sha256.New()
+	case "sha512":
+		h = sha512.New()
+	default:
+		return "", errInvalidOption
+	}
+
+	_, err = io.Copy(h, file)
+	if err != nil {
+		return "", err
+	}
+
+	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
 // StringifyContent returns a string with the file content.
