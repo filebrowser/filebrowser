@@ -102,9 +102,9 @@ func serveSingle(ctx *requestContext, w http.ResponseWriter, r *http.Request) (i
 		IsDir:     false,
 		Data:      ctx.Info,
 		User:      ctx.User,
-		PrefixURL: ctx.FileManager.PrefixURL,
-		BaseURL:   ctx.FileManager.AbsoluteURL(),
-		WebDavURL: ctx.FileManager.AbsoluteWebDavURL(),
+		PrefixURL: ctx.FileManager.prefixURL,
+		BaseURL:   ctx.FileManager.RootURL(),
+		WebDavURL: ctx.FileManager.WebDavURL(),
 	}
 
 	// If the request accepts JSON, we send the file information.
