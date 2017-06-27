@@ -14,7 +14,7 @@ import (
 )
 
 // put is used to update a file that was edited
-func put(w http.ResponseWriter, r *http.Request, c *FileManager, u *User) (err error) {
+func put(ctx *requestContext, w http.ResponseWriter, r *http.Request) (err error) {
 	var (
 		data      = map[string]interface{}{}
 		file      []byte

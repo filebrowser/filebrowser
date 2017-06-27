@@ -89,22 +89,22 @@ Error:
 
 // serveSingle serves a single file in an editor (if it is editable), shows the
 // plain file, or downloads it if it can't be shown.
-func serveSingle(w http.ResponseWriter, r *http.Request, c *FileManager, u *User, i *fileInfo) (int, error) {
+func serveSingle(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	var err error
 
-	if err = i.RetrieveFileType(); err != nil {
+	if err = ctx.Info.RetrieveFileType(); err != nil {
 		return errorToHTTP(err, true), err
 	}
 
 	p := &page{
-		Name:      i.Name,
-		Path:      i.VirtualPath,
+		Name:      ctx.Info.Name,
+		Path:      ctx.Info.VirtualPath,
 		IsDir:     false,
-		Data:      i,
-		User:      u,
-		PrefixURL: c.PrefixURL,
-		BaseURL:   c.AbsoluteURL(),
-		WebDavURL: c.AbsoluteWebDavURL(),
+		Data:      ctx.Info,
+		User:      ctx.User,
+		PrefixURL: ctx.FileManager.PrefixURL,
+		BaseURL:   ctx.FileManager.AbsoluteURL(),
+		WebDavURL: ctx.FileManager.AbsoluteWebDavURL(),
 	}
 
 	// If the request accepts JSON, we send the file information.
@@ -112,23 +112,23 @@ func serveSingle(w http.ResponseWriter, r *http.Request, c *FileManager, u *User
 		return p.PrintAsJSON(w)
 	}
 
-	if i.Type == "text" {
-		if err = i.Read(); err != nil {
+	if ctx.Info.Type == "text" {
+		if err = ctx.Info.Read(); err != nil {
 			return errorToHTTP(err, true), err
 		}
 	}
 
-	if i.CanBeEdited() && u.AllowEdit {
-		p.Data, err = getEditor(r, i)
+	if ctx.Info.CanBeEdited() && ctx.User.AllowEdit {
+		p.Data, err = getEditor(r, ctx.Info)
 		p.Editor = true
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
 
-		return p.PrintAsHTML(w, c.assets.templates, "frontmatter", "editor")
+		return p.PrintAsHTML(w, ctx.FileManager.assets.templates, "frontmatter", "editor")
 	}
 
-	return p.PrintAsHTML(w, c.assets.templates, "single")
+	return p.PrintAsHTML(w, ctx.FileManager.assets.templates, "single")
 }
 
 func editorClass(mode string) string {
