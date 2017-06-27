@@ -7,8 +7,6 @@ import (
 	"path"
 	"sort"
 	"strings"
-
-	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
 // A listing is the context used to fill out a template.
@@ -28,8 +26,7 @@ type listing struct {
 	// And which order.
 	Order string
 	// If ≠0 then Items have been limited to that many elements.
-	ItemsLimitedTo     int
-	httpserver.Context `json:"-"`
+	ItemsLimitedTo int
 }
 
 // getListing gets the information about a specific directory and its files.

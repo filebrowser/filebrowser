@@ -5,24 +5,16 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-
-	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
 
 // serveListing presents the user with a listage of a directory folder.
 func serveListing(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	var err error
 
-	// Loads the content of the directory
+	// Loads the content of the directory.
 	listing, err := getListing(c.us, c.fi.VirtualPath, c.fm.RootURL()+r.URL.Path)
 	if err != nil {
 		return errorToHTTP(err, true), err
-	}
-
-	listing.Context = httpserver.Context{
-		Root: http.Dir(c.us.scope),
-		Req:  r,
-		URL:  r.URL,
 	}
 
 	cookieScope := c.fm.RootURL()
