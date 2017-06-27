@@ -10,22 +10,22 @@ import (
 )
 
 // serveListing presents the user with a listage of a directory folder.
-func serveListing(w http.ResponseWriter, r *http.Request, c *FileManager, u *User, i *fileInfo) (int, error) {
+func serveListing(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	var err error
 
 	// Loads the content of the directory
-	listing, err := getListing(u, i.VirtualPath, c.PrefixURL+r.URL.Path)
+	listing, err := getListing(ctx.User, ctx.Info.VirtualPath, ctx.FileManager.PrefixURL+r.URL.Path)
 	if err != nil {
 		return errorToHTTP(err, true), err
 	}
 
 	listing.Context = httpserver.Context{
-		Root: http.Dir(u.scope),
+		Root: http.Dir(ctx.User.scope),
 		Req:  r,
 		URL:  r.URL,
 	}
 
-	cookieScope := c.BaseURL
+	cookieScope := ctx.FileManager.BaseURL
 	if cookieScope == "" {
 		cookieScope = "/"
 	}
@@ -80,17 +80,17 @@ func serveListing(w http.ResponseWriter, r *http.Request, c *FileManager, u *Use
 	p := &page{
 		minimal:   r.Header.Get("Minimal") == "true",
 		Name:      listing.Name,
-		Path:      i.VirtualPath,
+		Path:      ctx.Info.VirtualPath,
 		IsDir:     true,
-		User:      u,
-		PrefixURL: c.PrefixURL,
-		BaseURL:   c.AbsoluteURL(),
-		WebDavURL: c.AbsoluteWebDavURL(),
+		User:      ctx.User,
+		PrefixURL: ctx.FileManager.PrefixURL,
+		BaseURL:   ctx.FileManager.AbsoluteURL(),
+		WebDavURL: ctx.FileManager.AbsoluteWebDavURL(),
 		Display:   displayMode,
 		Data:      listing,
 	}
 
-	return p.PrintAsHTML(w, c.assets.templates, "listing")
+	return p.PrintAsHTML(w, ctx.FileManager.assets.templates, "listing")
 }
 
 // handleSortOrder gets and stores for a Listing the 'sort' and 'order',

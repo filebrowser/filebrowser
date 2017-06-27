@@ -6,6 +6,12 @@ import (
 	"strings"
 )
 
+type requestContext struct {
+	User        *User
+	FileManager *FileManager
+	Info        *fileInfo
+}
+
 // responseWriterNoBody is a wrapper used to suprress the body of the response
 // to a request. Mainly used for HEAD requests.
 type responseWriterNoBody struct {

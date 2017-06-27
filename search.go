@@ -43,7 +43,7 @@ func parseSearch(value string) *searchOptions {
 }
 
 // search searches for a file or directory.
-func search(w http.ResponseWriter, r *http.Request, m *FileManager, u *User) (int, error) {
+func search(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Upgrades the connection to a websocket and checks for errors.
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -71,10 +71,10 @@ func search(w http.ResponseWriter, r *http.Request, m *FileManager, u *User) (in
 	}
 
 	search = parseSearch(value)
-	scope := strings.Replace(r.URL.Path, m.BaseURL, "", 1)
+	scope := strings.Replace(r.URL.Path, ctx.FileManager.BaseURL, "", 1)
 	scope = strings.TrimPrefix(scope, "/")
 	scope = "/" + scope
-	scope = u.scope + scope
+	scope = ctx.User.scope + scope
 	scope = strings.Replace(scope, "\\", "/", -1)
 	scope = filepath.Clean(scope)
 
@@ -92,7 +92,7 @@ func search(w http.ResponseWriter, r *http.Request, m *FileManager, u *User) (in
 			}
 
 			if strings.Contains(path, term) {
-				if !u.Allowed(path) {
+				if !ctx.User.Allowed(path) {
 					return nil
 				}
 

@@ -225,7 +225,11 @@ func (m *FileManager) NewUser(username string) error {
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	var (
-		u    *User
+		ctx = &requestContext{
+			FileManager: m,
+			User:        nil,
+			Info:        nil,
+		}
 		code int
 		err  error
 	)
@@ -234,7 +238,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	// method is GET and Status Forbidden otherwise.
 	if matchURL(r.URL.Path, m.BaseURL+assetsURL) {
 		if r.Method == http.MethodGet {
-			return serveAssets(w, r, m)
+			return serveAssets(ctx, w, r)
 		}
 
 		return http.StatusForbidden, nil
@@ -242,14 +246,14 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 
 	username, _, _ := r.BasicAuth()
 	if _, ok := m.Users[username]; ok {
-		u = m.Users[username]
+		ctx.User = m.Users[username]
 	} else {
-		u = m.User
+		ctx.User = m.User
 	}
 
 	// Checks if the request URL is for the WebDav server
 	if matchURL(r.URL.Path, m.WebDavURL) {
-		return serveWebDAV(w, r, m, u)
+		return serveWebDAV(ctx, w, r)
 	}
 
 	w.Header().Set("x-frame-options", "SAMEORIGIN")
@@ -257,7 +261,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	w.Header().Set("x-xss-protection", "1; mode=block")
 
 	// Checks if the User is allowed to access this file
-	if !u.Allowed(strings.TrimPrefix(r.URL.Path, m.BaseURL)) {
+	if !ctx.User.Allowed(strings.TrimPrefix(r.URL.Path, m.BaseURL)) {
 		if r.Method == http.MethodGet {
 			return htmlError(
 				w, http.StatusForbidden,
@@ -269,18 +273,18 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	if r.URL.Query().Get("search") != "" {
-		return search(w, r, m, u)
+		return search(ctx, w, r)
 	}
 
 	if r.URL.Query().Get("command") != "" {
-		return command(w, r, m, u)
+		return command(ctx, w, r)
 	}
 
 	if r.Method == http.MethodGet {
 		var f *fileInfo
 
 		// Obtains the information of the directory/file.
-		f, err = getInfo(r.URL, m, u)
+		f, err = getInfo(r.URL, m, ctx.User)
 		if err != nil {
 			if r.Method == http.MethodGet {
 				return htmlError(w, code, err)
@@ -299,16 +303,16 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 
 		switch {
 		case r.URL.Query().Get("download") != "":
-			code, err = download(w, r, f)
+			code, err = download(ctx, w, r)
 		case !f.IsDir && r.URL.Query().Get("checksum") != "":
-			code, err = checksum(w, r, f)
+			code, err = checksum(ctx, w, r)
 		case r.URL.Query().Get("raw") == "true" && !f.IsDir:
 			http.ServeFile(w, r, f.Path)
 			code, err = 0, nil
 		case f.IsDir:
-			code, err = serveListing(w, r, m, u, f)
+			code, err = serveListing(ctx, w, r)
 		default:
-			code, err = serveSingle(w, r, m, u, f)
+			code, err = serveSingle(ctx, w, r)
 		}
 
 		if err != nil {

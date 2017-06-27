@@ -12,9 +12,9 @@ import (
 const assetsURL = "/_internal"
 
 // Serve provides the needed assets for the front-end
-func serveAssets(w http.ResponseWriter, r *http.Request, m *FileManager) (int, error) {
+func serveAssets(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// gets the filename to be used with Assets function
-	filename := strings.Replace(r.URL.Path, m.BaseURL+assetsURL, "", 1)
+	filename := strings.Replace(r.URL.Path, ctx.FileManager.BaseURL+assetsURL, "", 1)
 
 	var file []byte
 	var err error
@@ -22,10 +22,10 @@ func serveAssets(w http.ResponseWriter, r *http.Request, m *FileManager) (int, e
 	switch {
 	case strings.HasPrefix(filename, "/css"):
 		filename = strings.Replace(filename, "/css/", "", 1)
-		file, err = m.assets.css.Bytes(filename)
+		file, err = ctx.FileManager.assets.css.Bytes(filename)
 	case strings.HasPrefix(filename, "/js"):
 		filename = strings.Replace(filename, "/js/", "", 1)
-		file, err = m.assets.js.Bytes(filename)
+		file, err = ctx.FileManager.assets.js.Bytes(filename)
 	default:
 		err = errors.New("not found")
 	}

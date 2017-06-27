@@ -8,11 +8,11 @@ import (
 )
 
 // serveWebDAV handles the webDAV route of the File Manager.
-func serveWebDAV(w http.ResponseWriter, r *http.Request, m *FileManager, u *User) (int, error) {
+func serveWebDAV(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	var err error
 
 	// Checks for user permissions relatively to this path.
-	if !u.Allowed(strings.TrimPrefix(r.URL.Path, m.WebDavURL)) {
+	if !ctx.User.Allowed(strings.TrimPrefix(r.URL.Path, ctx.FileManager.WebDavURL)) {
 		return http.StatusForbidden, nil
 	}
 
@@ -26,8 +26,8 @@ func serveWebDAV(w http.ResponseWriter, r *http.Request, m *FileManager, u *User
 		//
 		// It was decided on https://github.com/hacdias/caddy-filemanager/issues/85
 		// that GET, for collections, will return the same as PROPFIND method.
-		path := strings.Replace(r.URL.Path, m.WebDavURL, "", 1)
-		path = u.scope + "/" + path
+		path := strings.Replace(r.URL.Path, ctx.FileManager.WebDavURL, "", 1)
+		path = ctx.User.scope + "/" + path
 		path = filepath.Clean(path)
 
 		var i os.FileInfo
@@ -45,28 +45,28 @@ func serveWebDAV(w http.ResponseWriter, r *http.Request, m *FileManager, u *User
 			}
 		}
 	case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
-		if !u.AllowEdit {
+		if !ctx.User.AllowEdit {
 			return http.StatusForbidden, nil
 		}
 	case "MKCOL", "COPY":
-		if !u.AllowNew {
+		if !ctx.User.AllowNew {
 			return http.StatusForbidden, nil
 		}
 	}
 
 	// Preprocess the PUT request if it's the case
 	if r.Method == http.MethodPut {
-		if err = m.BeforeSave(r, m, u); err != nil {
+		if err = ctx.FileManager.BeforeSave(r, ctx.FileManager, ctx.User); err != nil {
 			return http.StatusInternalServerError, err
 		}
 
-		if put(w, r, m, u) != nil {
+		if put(ctx, w, r) != nil {
 			return http.StatusInternalServerError, err
 		}
 	}
 
-	m.handler.ServeHTTP(w, r)
-	if err = m.AfterSave(r, m, u); err != nil {
+	ctx.FileManager.handler.ServeHTTP(w, r)
+	if err = ctx.FileManager.AfterSave(r, ctx.FileManager, ctx.User); err != nil {
 		return http.StatusInternalServerError, err
 	}
 
