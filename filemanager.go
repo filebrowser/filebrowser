@@ -19,7 +19,7 @@ var (
 // 'New' function and not directly.
 type FileManager struct {
 	*User
-	Assets *assets
+	assets *assets
 
 	// BaseURL is the path where the GUI will be accessible. It musn't end with
 	// a trailing slash and mustn't contain PrefixURL, if set. Despite being
@@ -79,12 +79,9 @@ type User struct {
 
 // assets are the static and front-end assets, such as JS, CSS and HTML templates.
 type assets struct {
-	requiredJS    *rice.Box // JS that is always required to have in order to be usable.
-	baseTemplates *rice.Box
-	baseCSS       *rice.Box
-	Templates     *rice.Box
-	CSS           *rice.Box
-	JS            *rice.Box
+	templates *rice.Box
+	css       *rice.Box
+	js        *rice.Box
 }
 
 // Rule is a dissalow/allow rule.
@@ -116,10 +113,10 @@ func New(scope string) *FileManager {
 		Users:      map[string]*User{},
 		BeforeSave: func(r *http.Request, m *FileManager, u *User) error { return nil },
 		AfterSave:  func(r *http.Request, m *FileManager, u *User) error { return nil },
-		Assets: &assets{
-			baseTemplates: rice.MustFindBox("./_assets/templates"),
-			baseCSS:       rice.MustFindBox("./_assets/css"),
-			requiredJS:    rice.MustFindBox("./_assets/js"),
+		assets: &assets{
+			templates: rice.MustFindBox("./_assets/templates"),
+			css:       rice.MustFindBox("./_assets/css"),
+			js:        rice.MustFindBox("./_assets/js"),
 		},
 	}
 
@@ -223,6 +220,105 @@ func (m *FileManager) NewUser(username string) error {
 	}
 
 	return nil
+}
+
+// ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
+func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
+	var (
+		u    *User
+		code int
+		err  error
+	)
+
+	// Checks if the URL matches the Assets URL. Returns the asset if the
+	// method is GET and Status Forbidden otherwise.
+	if matchURL(r.URL.Path, m.BaseURL+assetsURL) {
+		if r.Method == http.MethodGet {
+			return serveAssets(w, r, m)
+		}
+
+		return http.StatusForbidden, nil
+	}
+
+	username, _, _ := r.BasicAuth()
+	if _, ok := m.Users[username]; ok {
+		u = m.Users[username]
+	} else {
+		u = m.User
+	}
+
+	// Checks if the request URL is for the WebDav server
+	if matchURL(r.URL.Path, m.WebDavURL) {
+		return serveWebDAV(w, r, m, u)
+	}
+
+	w.Header().Set("x-frame-options", "SAMEORIGIN")
+	w.Header().Set("x-content-type", "nosniff")
+	w.Header().Set("x-xss-protection", "1; mode=block")
+
+	// Checks if the User is allowed to access this file
+	if !u.Allowed(strings.TrimPrefix(r.URL.Path, m.BaseURL)) {
+		if r.Method == http.MethodGet {
+			return htmlError(
+				w, http.StatusForbidden,
+				errors.New("You don't have permission to access this page"),
+			)
+		}
+
+		return http.StatusForbidden, nil
+	}
+
+	if r.URL.Query().Get("search") != "" {
+		return search(w, r, m, u)
+	}
+
+	if r.URL.Query().Get("command") != "" {
+		return command(w, r, m, u)
+	}
+
+	if r.Method == http.MethodGet {
+		var f *fileInfo
+
+		// Obtains the information of the directory/file.
+		f, err = getInfo(r.URL, m, u)
+		if err != nil {
+			if r.Method == http.MethodGet {
+				return htmlError(w, code, err)
+			}
+
+			code = errorToHTTP(err, false)
+			return code, err
+		}
+
+		// If it's a dir and the path doesn't end with a trailing slash,
+		// redirect the user.
+		if f.IsDir && !strings.HasSuffix(r.URL.Path, "/") {
+			http.Redirect(w, r, m.PrefixURL+r.URL.Path+"/", http.StatusTemporaryRedirect)
+			return 0, nil
+		}
+
+		switch {
+		case r.URL.Query().Get("download") != "":
+			code, err = download(w, r, f)
+		case !f.IsDir && r.URL.Query().Get("checksum") != "":
+			code, err = checksum(w, r, f)
+		case r.URL.Query().Get("raw") == "true" && !f.IsDir:
+			http.ServeFile(w, r, f.Path)
+			code, err = 0, nil
+		case f.IsDir:
+			code, err = serveListing(w, r, m, u, f)
+		default:
+			code, err = serveSingle(w, r, m, u, f)
+		}
+
+		if err != nil {
+			code, err = htmlError(w, code, err)
+		}
+
+		return code, err
+	}
+
+	return http.StatusNotImplemented, nil
 }
 
 // Allowed checks if the user has permission to access a directory/file.
