@@ -90,7 +90,7 @@ func serveListing(w http.ResponseWriter, r *http.Request, c *FileManager, u *Use
 		Data:      listing,
 	}
 
-	return p.PrintAsHTML(w, c, "listing")
+	return p.PrintAsHTML(w, c.assets.templates, "listing")
 }
 
 // handleSortOrder gets and stores for a Listing the 'sort' and 'order',

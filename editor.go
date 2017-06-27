@@ -125,10 +125,10 @@ func serveSingle(w http.ResponseWriter, r *http.Request, c *FileManager, u *User
 			return http.StatusInternalServerError, err
 		}
 
-		return p.PrintAsHTML(w, c, "frontmatter", "editor")
+		return p.PrintAsHTML(w, c.assets.templates, "frontmatter", "editor")
 	}
 
-	return p.PrintAsHTML(w, c, "single")
+	return p.PrintAsHTML(w, c.assets.templates, "single")
 }
 
 func editorClass(mode string) string {
