@@ -1,5 +1,23 @@
+{{ define "info-button" }}
+<button title="Info" aria-label="Info" class="action" id="info">
+    <i class="material-icons">info</i>
+    <span>Info</span>
+</button>
+{{ end }}
+
+{{ define "delete-button" }}
+<button aria-label="Delete"  title="Delete" class="action" id="delete">
+    <i class="material-icons">delete</i>
+    <span>Delete</span>
+</button>
+{{ end }}
+
 {{ define "right-side-actions" }}
-    {{- if .IsDir }}
+    {{ template "info-button" }}
+{{ end }}
+
+{{ define "right" }}
+{{- if not .IsEditor }}
     <a aria-label="Switch View" href="?display={{- if eq .Display "mosaic" }}list{{ else }}mosaic{{ end }}" class="action">
         <i class="material-icons">{{- if eq .Display "mosaic" }}view_list{{ else }}view_module{{ end }}</i>
         <span>Switch view</span>
@@ -11,14 +29,14 @@
     </button>
     {{- end }}
 
-    {{- if and (.User.AllowNew) (.IsDir) }}
+    {{- if and (.User.AllowNew) (not .IsEditor) }}
     <button aria-label="Upload" title="Upload" class="action" id="upload">
         <i class="material-icons">file_upload</i>
         <span>Upload</span>
     </button>
     {{- end }}
 
-    {{- if and .User.AllowEdit (not .IsDir) }}
+    {{- if and .User.AllowEdit (.IsEditor) }}
     <button aria-label="Delete"  title="Delete" class="action" id="delete">
         <i class="material-icons">delete</i>
         <span>Delete</span>
@@ -26,11 +44,11 @@
     {{- end }}
 
     <button {{ if .IsDir }}data-dropdown{{ end }} aria-label="Download" title="Download" class="action" id="download">
-        {{- if not .IsDir}}<a href="?download=true">{{ end }}
+        {{- if .IsEditor}}<a href="?download=true">{{ end }}
         <i class="material-icons">file_download</i><span>Download</span>
-        {{- if not .IsDir}}</a>{{ end }}
+        {{- if .IsEditor}}</a>{{ end }}
 
-        {{- if .IsDir }}
+        {{- if not .IsEditor }}
         <ul class="dropdown" id="download-drop">
             <a tabindex="0" aria-label="Download as Zip" data-format="zip" href="?download=zip"><li>zip</li></a>
             <a tabindex="0" aria-label="Download as Tar" data-format="tar" href="?download=tar"><li>tar</li></a>
@@ -41,14 +59,16 @@
         {{- end }}
     </button>
 
-    <button title="Info" aria-label="Info" class="action" id="info">
-        <i class="material-icons">info</i>
-        <span>Info</span>
-    </button>
-{{ end }}
+    
+{{ end }} 
+
 
 {{ define "left-side-actions" }}
-    {{- if and (not .IsDir) (.User.AllowEdit) }}
+  
+{{ end }}
+
+{{ define "left" }}
+  {{- if and (not .IsDir) (.User.AllowEdit) }}
     {{- if .Editor}}
 
     {{- if eq .Data.Mode "markdown" }}
@@ -64,12 +84,12 @@
     {{- end }}
 
     {{/* end if editor */}}
-    {{- end }}
 
     <button aria-label="Save" class="action" id="save">
         <i class="material-icons" title="Save">save</i>
     </button>
-
+    {{- end }}
+    
     {{/* end if not dir and AllowEdit */}}
     {{- end }}
 
@@ -85,7 +105,7 @@
     </button>
 
     <button aria-label="Delete" class="action" id="delete">
-    <i class="material-icons" title="Delete">delete</i><span>Delete</span>
+        <i class="material-icons" title="Delete">delete</i><span>Delete</span>
     </button>
     {{- end }}
-{{ end }}
+    {{ end }}

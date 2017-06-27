@@ -1,7 +1,10 @@
 'use strict'
 
+var data = (window.data || window.alert('Something is wrong, please refresh!'))
+
+/*
 var tempID = '_fm_internal_temporary_id'
-var ssl = (window.location.protocol === 'https:')
+
 var templates = {}
 var selectedItems = []
 var overlay
@@ -34,14 +37,6 @@ Document.prototype.getCookie = function (name) {
   return document.cookie.replace(re, '$1')
 }
 
-// Remove the last directory of an url
-var removeLastDirectoryPartOf = function (url) {
-  var arr = url.split('/')
-  if (arr.pop() === '') {
-    arr.pop()
-  }
-  return (arr.join('/'))
-}
 
 function getCSSRule (rules) {
   for (let i = 0; i < rules.length; i++) {
@@ -136,15 +131,15 @@ buttons.setDone = function (name, success = true) {
 var webdav = {}
 
 webdav.convertURL = function (url) {
-  return window.location.origin + url.replace(baseURL + '/', webdavURL + '/')
+  return window.location.origin + url.replace(data.baseURL + '/', data.webdavURL + '/')
 }
 
 webdav.move = function (oldLink, newLink) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
-    let destination = newLink.replace(baseURL + '/', webdavURL + '/')
+    let destination = newLink.replace(data.baseURL + '/', data.webdavURL + '/')
 
-    destination = window.location.origin + destination.substring(prefixURL.length)
+    destination = window.location.origin + destination.substring(data.baseURL.length)
 
     request.open('MOVE', webdav.convertURL(oldLink), true)
     request.setRequestHeader('Destination', destination)
@@ -276,7 +271,7 @@ var preventDefault = function (event) {
 
 function logoutEvent (event) {
   let request = new window.XMLHttpRequest()
-  request.open('GET', window.location.pathname, true, 'username', 'password')
+  request.open('GET', window.location.pathname, true, 'data.username', 'password')
   request.send()
   request.onreadystatechange = function () {
     if (request.readyState === 4) {
@@ -439,132 +434,6 @@ function deleteEvent (event) {
   return false
 }
 
-function resetSearchText () {
-  let box = document.querySelector('#search > div div')
-
-  if (user.AllowCommands) {
-    box.innerHTML = `Search or use one of your supported commands: ${user.Commands.join(", ")}.`
-  } else {
-    box.innerHTML = 'Type and press enter to search.'
-  }
-}
-
-function searchEvent (event) {
-  if (this.value.length === 0) {
-    resetSearchText()
-    return
-  }
-
-  let value = this.value,
-    search = document.getElementById('search'),
-    scrollable = document.querySelector('#search > div'),
-    box = document.querySelector('#search > div div'),
-    pieces = value.split(' '),
-    supported = false
-
-  user.Commands.forEach(function (cmd) {
-    if (cmd == pieces[0]) {
-      supported = true
-    }
-  })
-
-  if (!supported || !user.AllowCommands) {
-    box.innerHTML = 'Press enter to search.'
-  } else {
-    box.innerHTML = 'Press enter to execute.'
-  }
-
-  if (event.keyCode === 13) {
-    box.innerHTML = ''
-    search.classList.add('ongoing')
-
-    let url = window.location.host + window.location.pathname
-
-    if (document.getElementById('editor')) {
-      url = removeLastDirectoryPartOf(url)
-    }
-
-    let protocol = ssl ? 'wss:' : 'ws:'
-
-    if (supported && user.AllowCommands) {
-      let conn = new window.WebSocket(`${protocol}//${url}?command=true`)
-
-      conn.onopen = function () {
-        conn.send(value)
-      }
-
-      conn.onmessage = function (event) {
-        box.innerHTML = event.data
-        scrollable.scrollTop = scrollable.scrollHeight
-      }
-
-      conn.onclose = function (event) {
-        search.classList.remove('ongoing')
-        listing.reload()
-      }
-
-      return
-    }
-
-    box.innerHTML = '<ul></ul>'
-
-    let ul = box.querySelector('ul')
-    let conn = new window.WebSocket(`${protocol}//${url}?search=true`)
-
-    conn.onopen = function () {
-      conn.send(value)
-    }
-
-    conn.onmessage = function (event) {
-      ul.innerHTML += '<li><a href="' + event.data + '">' + event.data + '</a></li>'
-      scrollable.scrollTop = scrollable.scrollHeight
-    }
-
-    conn.onclose = function (event) {
-      search.classList.remove('ongoing')
-    }
-  }
-}
-
-function setupSearch () {
-  let search = document.getElementById('search')
-  let searchInput = search.querySelector('input')
-  let searchDiv = search.querySelector('div')
-  let hover = false
-  let focus = false
-
-  resetSearchText()
-
-  searchInput.addEventListener('focus', event => {
-    focus = true
-    search.classList.add('active')
-  })
-
-  searchDiv.addEventListener('mouseover', event => {
-    hover = true
-    search.classList.add('active')
-  })
-
-  searchInput.addEventListener('blur', event => {
-    focus = false
-    if (hover) return
-    search.classList.remove('active')
-  })
-
-  search.addEventListener('mouseleave', event => {
-    hover = false
-    if (focus) return
-    search.classList.remove('active')
-  })
-
-  search.addEventListener('click', event => {
-    search.classList.add('active')
-    search.querySelector('input').focus()
-  })
-
-  searchInput.addEventListener('keyup', searchEvent)
-}
-
 function closeHelp (event) {
   event.preventDefault()
 
@@ -620,7 +489,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
   templates.message = document.querySelector('#message-template')
   templates.move = document.querySelector('#move-template')
 
-  if (user.AllowEdit) {
+  if (data.user.AllowEdit) {
     buttons.delete.addEventListener('click', deleteEvent)
   }
 
