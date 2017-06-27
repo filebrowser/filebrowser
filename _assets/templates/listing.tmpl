@@ -1,5 +1,39 @@
 {{ define "content" }}
-<div class="container {{ .Display }}" id="listing">
+{{ if .Data.Preview }}
+<div id="previewer">
+  <div class="bar">
+    <button class="action" aria-label="Close Preview" id="close">
+      <i class="material-icons">close</i>
+    </button>
+    {{ template "right-side-actions" . }}
+  </div>
+
+  <div class="preview">
+    {{ with .Data.PreviewItem}}
+    {{ if eq .Type "image" }}
+    <img src="{{ .URL }}?raw=true">
+    {{ else if eq .Type "audio" }}
+    <audio src="{{ .URL }}?raw=true" controls></audio>
+    {{ else if eq .Type "video" }}
+    <video src="{{ .URL }}?raw=true" controls>
+    Sorry, your browser doesn't support embedded videos,
+    but don't worry, you can <a href="?download=true">download it</a>
+    and watch it with your favorite video player!
+    </video>
+    {{ else if eq .Extension ".pdf" }}
+    <object class="pdf" data="{{ .URL }}?raw=true"></object>
+    {{ else if eq .Type "blob" }}
+    <a href="?download=true"><h2 class="message">Download <i class="material-icons">file_download</i></h2></a>
+    {{ else }}
+    <pre>{{ .StringifyContent }}</pre>
+    {{ end }}
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+
+<div class="container {{ .Data.Display }}" id="listing">
 {{- with .Data -}}
     <div>
         <div class="item header">

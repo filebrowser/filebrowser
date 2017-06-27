@@ -82,6 +82,8 @@ func search(c *requestContext, w http.ResponseWriter, r *http.Request) (int, err
 			path = strings.ToLower(path)
 		}
 
+		path = strings.TrimPrefix(path, scope)
+		path = strings.TrimPrefix(path, "/")
 		path = strings.Replace(path, "\\", "/", -1)
 		is := false
 
@@ -103,8 +105,6 @@ func search(c *requestContext, w http.ResponseWriter, r *http.Request) (int, err
 			return nil
 		}
 
-		path = strings.TrimPrefix(path, scope)
-		path = strings.TrimPrefix(path, "/")
 		return conn.WriteMessage(websocket.TextMessage, []byte(path))
 	})
 
