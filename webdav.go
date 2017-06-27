@@ -12,7 +12,7 @@ func serveWebDAV(ctx *requestContext, w http.ResponseWriter, r *http.Request) (i
 	var err error
 
 	// Checks for user permissions relatively to this path.
-	if !ctx.User.Allowed(strings.TrimPrefix(r.URL.Path, ctx.FileManager.WebDavURL)) {
+	if !ctx.User.Allowed(strings.TrimPrefix(r.URL.Path, ctx.FileManager.webDavURL)) {
 		return http.StatusForbidden, nil
 	}
 
@@ -26,7 +26,7 @@ func serveWebDAV(ctx *requestContext, w http.ResponseWriter, r *http.Request) (i
 		//
 		// It was decided on https://github.com/hacdias/caddy-filemanager/issues/85
 		// that GET, for collections, will return the same as PROPFIND method.
-		path := strings.Replace(r.URL.Path, ctx.FileManager.WebDavURL, "", 1)
+		path := strings.Replace(r.URL.Path, ctx.FileManager.webDavURL, "", 1)
 		path = ctx.User.scope + "/" + path
 		path = filepath.Clean(path)
 

@@ -2,7 +2,6 @@ package filemanager
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
@@ -22,23 +21,19 @@ type FileManager struct {
 	*User
 	assets *assets
 
-	// TODO: transform BaseURL and PrefixURL in only one. But HOW?
+	// prefixURL is a part of the URL that is already trimmed from the request URL before it
+	// arrives to our handlers. It may be useful when using File Manager as a middleware
+	// such as in caddy-filemanager plugin. It is only useful in certain situations.
+	prefixURL string
 
-	// BaseURL is the path where the GUI will be accessible. It musn't end with
-	// a trailing slash and mustn't contain PrefixURL, if set. Despite being
-	// exported, it should only be manipulated using SetBaseURL function.
-	BaseURL string
+	// baseURL is the path where the GUI will be accessible. It musn't end with
+	// a trailing slash and mustn't contain prefixURL, if set.
+	baseURL string
 
-	// WebDavURL is the path where the WebDAV will be accessible. It can be set to ""
+	// webDavURL is the path where the WebDAV will be accessible. It can be set to ""
 	// in order to override the GUI and only use the WebDAV. It musn't end with
-	// a trailing slash. Despite being exported, it should only be manipulated
-	// using SetWebDavURL function.
-	WebDavURL string
-
-	// PrefixURL is a part of the URL that is trimmed from the http.Request.URL before
-	// it arrives to our handlers. It may be useful when using FileManager as a middleware
-	// such as in caddy-filemanager plugin. It musn't end with a trailing slash.
-	PrefixURL string
+	// a trailing slash.
+	webDavURL string
 
 	// Users is a map with the different configurations for each user.
 	Users map[string]*User
@@ -130,39 +125,47 @@ func New(scope string) *FileManager {
 	return m
 }
 
-// AbsoluteURL returns the actual URL where
+// RootURL returns the actual URL where
 // File Manager interface can be accessed.
-func (m FileManager) AbsoluteURL() string {
-	return m.PrefixURL + m.BaseURL
+func (m FileManager) RootURL() string {
+	return m.prefixURL + m.baseURL
 }
 
-// AbsoluteWebDavURL returns the actual URL
+// WebDavURL returns the actual URL
 // where WebDAV can be accessed.
-func (m FileManager) AbsoluteWebDavURL() string {
-	return m.PrefixURL + m.BaseURL + m.WebDavURL
+func (m FileManager) WebDavURL() string {
+	return m.prefixURL + m.baseURL + m.webDavURL
 }
 
-// SetBaseURL updates the BaseURL of a File Manager
+// SetPrefixURL updates the prefixURL of a File
+// Manager object.
+func (m FileManager) SetPrefixURL(url string) {
+	url = strings.TrimPrefix(url, "/")
+	url = strings.TrimSuffix(url, "/")
+	url = "/" + url
+	m.prefixURL = strings.TrimSuffix(url, "/")
+}
+
+// SetBaseURL updates the baseURL of a File Manager
 // object.
 func (m *FileManager) SetBaseURL(url string) {
 	url = strings.TrimPrefix(url, "/")
 	url = strings.TrimSuffix(url, "/")
 	url = "/" + url
-	m.BaseURL = strings.TrimSuffix(url, "/")
-	m.SetWebDavURL(m.WebDavURL)
+	m.baseURL = strings.TrimSuffix(url, "/")
 }
 
-// SetWebDavURL updates the WebDavURL of a File Manager
+// SetWebDavURL updates the webDavURL of a File Manager
 // object and updates it's main handler.
 func (m *FileManager) SetWebDavURL(url string) {
 	url = strings.TrimPrefix(url, "/")
 	url = strings.TrimSuffix(url, "/")
 
-	m.WebDavURL = "/" + url
+	m.webDavURL = "/" + url
 
 	// update base user webdav handler
 	m.handler = &webdav.Handler{
-		Prefix:     m.WebDavURL,
+		Prefix:     m.webDavURL,
 		FileSystem: m.fileSystem,
 		LockSystem: webdav.NewMemLS(),
 	}
@@ -171,7 +174,7 @@ func (m *FileManager) SetWebDavURL(url string) {
 	// the new URL
 	for _, u := range m.Users {
 		u.handler = &webdav.Handler{
-			Prefix:     m.WebDavURL,
+			Prefix:     m.webDavURL,
 			FileSystem: u.fileSystem,
 			LockSystem: webdav.NewMemLS(),
 		}
@@ -197,7 +200,7 @@ func (m *FileManager) SetScope(scope string, username string) error {
 	u.fileSystem = webdav.Dir(u.scope)
 
 	u.handler = &webdav.Handler{
-		Prefix:     m.WebDavURL,
+		Prefix:     m.webDavURL,
 		FileSystem: u.fileSystem,
 		LockSystem: webdav.NewMemLS(),
 	}
@@ -238,11 +241,8 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 		err  error
 	)
 
-	// Remove the base URL from the URL
-	r.URL.Path = strings.TrimPrefix(r.URL.Path, m.BaseURL)
-
-	// TODO: remove this
-	fmt.Printf("Raw: %s\tParsed: %s\n", m.PrefixURL+m.BaseURL+r.URL.Path, r.URL.Path)
+	// Strip the baseURL from the request URL.
+	r.URL.Path = strings.TrimPrefix(r.URL.Path, m.baseURL)
 
 	// Checks if the URL matches the Assets URL. Returns the asset if the
 	// method is GET and Status Forbidden otherwise.
@@ -262,7 +262,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	// Checks if the request URL is for the WebDav server.
-	if matchURL(r.URL.Path, m.WebDavURL) {
+	if matchURL(r.URL.Path, m.webDavURL) {
 		return serveWebDAV(ctx, w, r)
 	}
 
@@ -309,7 +309,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 		// If it's a dir and the path doesn't end with a trailing slash,
 		// redirect the user.
 		if f.IsDir && !strings.HasSuffix(r.URL.Path, "/") {
-			http.Redirect(w, r, m.PrefixURL+m.BaseURL+r.URL.Path+"/", http.StatusTemporaryRedirect)
+			http.Redirect(w, r, m.RootURL()+r.URL.Path+"/", http.StatusTemporaryRedirect)
 			return 0, nil
 		}
 

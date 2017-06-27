@@ -77,7 +77,7 @@ func command(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int, 
 	}
 
 	// Gets the path and initializes a buffer.
-	path := strings.Replace(r.URL.Path, ctx.FileManager.BaseURL, ctx.User.scope, 1)
+	path := ctx.User.scope + "/" + r.URL.Path
 	path = filepath.Clean(path)
 	buff := new(bytes.Buffer)
 
