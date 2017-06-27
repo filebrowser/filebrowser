@@ -8,11 +8,11 @@ import (
 )
 
 // serveWebDAV handles the webDAV route of the File Manager.
-func serveWebDAV(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func serveWebDAV(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	var err error
 
 	// Checks for user permissions relatively to this path.
-	if !ctx.User.Allowed(strings.TrimPrefix(r.URL.Path, ctx.FileManager.webDavURL)) {
+	if !c.us.Allowed(strings.TrimPrefix(r.URL.Path, c.fm.webDavURL)) {
 		return http.StatusForbidden, nil
 	}
 
@@ -26,8 +26,8 @@ func serveWebDAV(ctx *requestContext, w http.ResponseWriter, r *http.Request) (i
 		//
 		// It was decided on https://github.com/hacdias/caddy-filemanager/issues/85
 		// that GET, for collections, will return the same as PROPFIND method.
-		path := strings.Replace(r.URL.Path, ctx.FileManager.webDavURL, "", 1)
-		path = ctx.User.scope + "/" + path
+		path := strings.Replace(r.URL.Path, c.fm.webDavURL, "", 1)
+		path = c.us.scope + "/" + path
 		path = filepath.Clean(path)
 
 		var i os.FileInfo
@@ -45,28 +45,28 @@ func serveWebDAV(ctx *requestContext, w http.ResponseWriter, r *http.Request) (i
 			}
 		}
 	case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
-		if !ctx.User.AllowEdit {
+		if !c.us.AllowEdit {
 			return http.StatusForbidden, nil
 		}
 	case "MKCOL", "COPY":
-		if !ctx.User.AllowNew {
+		if !c.us.AllowNew {
 			return http.StatusForbidden, nil
 		}
 	}
 
 	// Preprocess the PUT request if it's the case
 	if r.Method == http.MethodPut {
-		if err = ctx.FileManager.BeforeSave(r, ctx.FileManager, ctx.User); err != nil {
+		if err = c.fm.BeforeSave(r, c.fm, c.us); err != nil {
 			return http.StatusInternalServerError, err
 		}
 
-		if put(ctx, w, r) != nil {
+		if put(c, w, r) != nil {
 			return http.StatusInternalServerError, err
 		}
 	}
 
-	ctx.FileManager.handler.ServeHTTP(w, r)
-	if err = ctx.FileManager.AfterSave(r, ctx.FileManager, ctx.User); err != nil {
+	c.fm.handler.ServeHTTP(w, r)
+	if err = c.fm.AfterSave(r, c.fm, c.us); err != nil {
 		return http.StatusInternalServerError, err
 	}
 

@@ -6,10 +6,11 @@ import (
 	"strings"
 )
 
+// requestContext contains the needed information to make handlers work.
 type requestContext struct {
-	User        *User
-	FileManager *FileManager
-	Info        *fileInfo
+	us *User
+	fm *FileManager
+	fi *fileInfo
 }
 
 // responseWriterNoBody is a wrapper used to suprress the body of the response

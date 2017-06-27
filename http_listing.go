@@ -10,22 +10,22 @@ import (
 )
 
 // serveListing presents the user with a listage of a directory folder.
-func serveListing(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func serveListing(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	var err error
 
 	// Loads the content of the directory
-	listing, err := getListing(ctx.User, ctx.Info.VirtualPath, ctx.FileManager.RootURL()+r.URL.Path)
+	listing, err := getListing(c.us, c.fi.VirtualPath, c.fm.RootURL()+r.URL.Path)
 	if err != nil {
 		return errorToHTTP(err, true), err
 	}
 
 	listing.Context = httpserver.Context{
-		Root: http.Dir(ctx.User.scope),
+		Root: http.Dir(c.us.scope),
 		Req:  r,
 		URL:  r.URL,
 	}
 
-	cookieScope := ctx.FileManager.RootURL()
+	cookieScope := c.fm.RootURL()
 	if cookieScope == "" {
 		cookieScope = "/"
 	}
@@ -80,17 +80,17 @@ func serveListing(ctx *requestContext, w http.ResponseWriter, r *http.Request) (
 	p := &page{
 		minimal:   r.Header.Get("Minimal") == "true",
 		Name:      listing.Name,
-		Path:      ctx.Info.VirtualPath,
+		Path:      c.fi.VirtualPath,
 		IsDir:     true,
-		User:      ctx.User,
-		PrefixURL: ctx.FileManager.prefixURL,
-		BaseURL:   ctx.FileManager.RootURL(),
-		WebDavURL: ctx.FileManager.WebDavURL(),
+		User:      c.us,
+		PrefixURL: c.fm.prefixURL,
+		BaseURL:   c.fm.RootURL(),
+		WebDavURL: c.fm.WebDavURL(),
 		Display:   displayMode,
 		Data:      listing,
 	}
 
-	return p.PrintAsHTML(w, ctx.FileManager.assets.templates, "listing")
+	return p.PrintAsHTML(w, c.fm.assets.templates, "listing")
 }
 
 // handleSortOrder gets and stores for a Listing the 'sort' and 'order',

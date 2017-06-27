@@ -14,12 +14,12 @@ import (
 
 // download creates an archive in one of the supported formats (zip, tar,
 // tar.gz or tar.bz2) and sends it to be downloaded.
-func download(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func download(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	query := r.URL.Query().Get("download")
 
-	if !ctx.Info.IsDir {
-		w.Header().Set("Content-Disposition", "attachment; filename="+ctx.Info.Name)
-		http.ServeFile(w, r, ctx.Info.Path)
+	if !c.fi.IsDir {
+		w.Header().Set("Content-Disposition", "attachment; filename="+c.fi.Name)
+		http.ServeFile(w, r, c.fi.Path)
 		return 0, nil
 	}
 
@@ -34,11 +34,11 @@ func download(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int,
 				return http.StatusInternalServerError, err
 			}
 
-			files = append(files, filepath.Join(ctx.Info.Path, name))
+			files = append(files, filepath.Join(c.fi.Path, name))
 		}
 
 	} else {
-		files = append(files, ctx.Info.Path)
+		files = append(files, c.fi.Path)
 	}
 
 	if query == "true" {
@@ -84,7 +84,7 @@ func download(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int,
 		return http.StatusInternalServerError, err
 	}
 
-	name := ctx.Info.Name
+	name := c.fi.Name
 	if name == "." || name == "" {
 		name = "download"
 	}
