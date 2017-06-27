@@ -12,7 +12,7 @@ import (
 const assetsURL = "/_internal"
 
 // Serve provides the needed assets for the front-end
-func serveAssets(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func serveAssets(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// gets the filename to be used with Assets function
 	filename := strings.TrimPrefix(r.URL.Path, assetsURL)
 
@@ -22,10 +22,10 @@ func serveAssets(ctx *requestContext, w http.ResponseWriter, r *http.Request) (i
 	switch {
 	case strings.HasPrefix(filename, "/css"):
 		filename = strings.Replace(filename, "/css/", "", 1)
-		file, err = ctx.FileManager.assets.css.Bytes(filename)
+		file, err = c.fm.assets.css.Bytes(filename)
 	case strings.HasPrefix(filename, "/js"):
 		filename = strings.Replace(filename, "/js/", "", 1)
-		file, err = ctx.FileManager.assets.js.Bytes(filename)
+		file, err = c.fm.assets.js.Bytes(filename)
 	default:
 		err = errors.New("not found")
 	}

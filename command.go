@@ -22,7 +22,7 @@ var (
 )
 
 // command handles the requests for VCS related commands: git, svn and mercurial
-func command(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func command(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Upgrades the connection to a websocket and checks for errors.
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -51,7 +51,7 @@ func command(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int, 
 	// Check if the command is allowed
 	allowed := false
 
-	for _, cmd := range ctx.User.Commands {
+	for _, cmd := range c.us.Commands {
 		if cmd == command[0] {
 			allowed = true
 		}
@@ -77,7 +77,7 @@ func command(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int, 
 	}
 
 	// Gets the path and initializes a buffer.
-	path := ctx.User.scope + "/" + r.URL.Path
+	path := c.us.scope + "/" + r.URL.Path
 	path = filepath.Clean(path)
 	buff := new(bytes.Buffer)
 

@@ -14,10 +14,10 @@ import (
 )
 
 // checksum calculates the hash of a file. Supports MD5, SHA1, SHA256 and SHA512.
-func checksum(ctx *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func checksum(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	query := r.URL.Query().Get("checksum")
 
-	file, err := os.Open(ctx.Info.Path)
+	file, err := os.Open(c.fi.Path)
 	if err != nil {
 		return errorToHTTP(err, true), err
 	}

@@ -232,23 +232,28 @@ func (m *FileManager) NewUser(username string) error {
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	var (
-		ctx = &requestContext{
-			FileManager: m,
-			User:        nil,
-			Info:        nil,
+		c = &requestContext{
+			fm: m,
+			us: nil,
+			fi: nil,
 		}
 		code int
 		err  error
 	)
 
-	// Strip the baseURL from the request URL.
-	r.URL.Path = strings.TrimPrefix(r.URL.Path, m.baseURL)
+	// Checks if the URL contains the baseURL. If so, it strips it. Otherwise,
+	// it throws an error.
+	if p := strings.TrimPrefix(r.URL.Path, m.baseURL); len(p) < len(r.URL.Path) {
+		r.URL.Path = p
+	} else {
+		return http.StatusNotFound, nil
+	}
 
 	// Checks if the URL matches the Assets URL. Returns the asset if the
 	// method is GET and Status Forbidden otherwise.
 	if matchURL(r.URL.Path, assetsURL) {
 		if r.Method == http.MethodGet {
-			return serveAssets(ctx, w, r)
+			return serveAssets(c, w, r)
 		}
 
 		return http.StatusForbidden, nil
@@ -256,14 +261,14 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 
 	username, _, _ := r.BasicAuth()
 	if _, ok := m.Users[username]; ok {
-		ctx.User = m.Users[username]
+		c.us = m.Users[username]
 	} else {
-		ctx.User = m.User
+		c.us = m.User
 	}
 
 	// Checks if the request URL is for the WebDav server.
 	if matchURL(r.URL.Path, m.webDavURL) {
-		return serveWebDAV(ctx, w, r)
+		return serveWebDAV(c, w, r)
 	}
 
 	w.Header().Set("x-frame-options", "SAMEORIGIN")
@@ -271,7 +276,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	w.Header().Set("x-xss-protection", "1; mode=block")
 
 	// Checks if the User is allowed to access this file
-	if !ctx.User.Allowed(r.URL.Path) {
+	if !c.us.Allowed(r.URL.Path) {
 		if r.Method == http.MethodGet {
 			return htmlError(
 				w, http.StatusForbidden,
@@ -283,18 +288,18 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	if r.URL.Query().Get("search") != "" {
-		return search(ctx, w, r)
+		return search(c, w, r)
 	}
 
 	if r.URL.Query().Get("command") != "" {
-		return command(ctx, w, r)
+		return command(c, w, r)
 	}
 
 	if r.Method == http.MethodGet {
 		var f *fileInfo
 
 		// Obtains the information of the directory/file.
-		f, err = getInfo(r.URL, m, ctx.User)
+		f, err = getInfo(r.URL, m, c.us)
 		if err != nil {
 			if r.Method == http.MethodGet {
 				return htmlError(w, code, err)
@@ -304,7 +309,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 			return code, err
 		}
 
-		ctx.Info = f
+		c.fi = f
 
 		// If it's a dir and the path doesn't end with a trailing slash,
 		// redirect the user.
@@ -315,16 +320,16 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, er
 
 		switch {
 		case r.URL.Query().Get("download") != "":
-			code, err = download(ctx, w, r)
+			code, err = download(c, w, r)
 		case !f.IsDir && r.URL.Query().Get("checksum") != "":
-			code, err = checksum(ctx, w, r)
+			code, err = checksum(c, w, r)
 		case r.URL.Query().Get("raw") == "true" && !f.IsDir:
 			http.ServeFile(w, r, f.Path)
 			code, err = 0, nil
 		case f.IsDir:
-			code, err = serveListing(ctx, w, r)
+			code, err = serveListing(c, w, r)
 		default:
-			code, err = serveSingle(ctx, w, r)
+			code, err = serveSingle(c, w, r)
 		}
 
 		if err != nil {
