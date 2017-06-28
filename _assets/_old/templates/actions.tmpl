@@ -1,14 +1,3 @@
-{{ define "info-button" }}
-
-{{ end }}
-
-{{ define "delete-button" }}
-<button aria-label="Delete"  title="Delete" class="action" id="delete">
-    <i class="material-icons">delete</i>
-    <span>Delete</span>
-</button>
-{{ end }}
-
 {{ define "right-side-actions" }}
     {{ template "info-button" }}
 {{ end }}
@@ -33,12 +22,6 @@
     </button>
     {{- end }}
 
-    {{- if and .User.AllowEdit (.IsEditor) }}
-    <button aria-label="Delete"  title="Delete" class="action" id="delete">
-        <i class="material-icons">delete</i>
-        <span>Delete</span>
-    </button>
-    {{- end }}
 
     <button {{ if .IsDir }}data-dropdown{{ end }} aria-label="Download" title="Download" class="action" id="download">
         {{- if .IsEditor}}<a href="?download=true">{{ end }}

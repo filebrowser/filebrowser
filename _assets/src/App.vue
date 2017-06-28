@@ -6,6 +6,7 @@
         <search></search>
       </div>
       <div>
+        <delete-button></delete-button>
         <info-button></info-button>
       </div>
       <!-- <div id="click-overlay"></div> -->
@@ -26,7 +27,6 @@
 
     <preview v-if="req.kind == 'preview'"></preview> 
 
-    
     <!-- TODO: show on listing and allowedit -->
     <div class="floating">
         <div tabindex="0" role="button" class="action" id="new">
@@ -41,7 +41,7 @@
             <i class="material-icons" title="Clear">clear</i>
         </div>
     </div>
-
+    
     <info-prompt v-show="showInfo" :class="{ active: showInfo }"></info-prompt>
     <help v-show="showHelp" :class="{ active: showHelp }"></help>
 
@@ -58,6 +58,7 @@ import Help from './components/Help'
 import Listing from './components/Listing'
 import InfoButton from './components/InfoButton'
 import InfoPrompt from './components/InfoPrompt'
+import DeleteButton from './components/DeleteButton'
 import css from './css.js'
 
 function updateColumnSizes () {
@@ -122,7 +123,7 @@ window.addEventListener('keydown', (event) => {
 
 export default {
   name: 'app',
-  components: { Search, Preview, Listing, InfoButton, InfoPrompt, Help },
+  components: { Search, Preview, Listing, InfoButton, InfoPrompt, Help, DeleteButton },
   mounted: function () {
     updateColumnSizes()
     window.addEventListener('resize', updateColumnSizes)
