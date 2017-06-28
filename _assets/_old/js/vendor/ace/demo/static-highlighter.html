@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Static Code highlighter using Ace</title>
+    <meta name="author" content="Matthew Kastor">
+    <style type="text/css">
+        .code {
+            width: 50%;
+            white-space: pre-wrap;
+            border: solid lightgrey 1px
+        }
+    </style>
+</head>
+<body>
+
+<h2>Client Side Syntax Highlighting</h2>
+
+<p>Syntax highlighting using Ace language modes and themes.</p>
+
+<div class="code" ace-mode="ace/mode/css" ace-theme="ace/theme/chrome" ace-gutter="true">
+.code {
+    width: 50%;
+    white-space: pre-wrap;
+    border: solid lightgrey 1px
+}
+
+</div>
+
+<pre class="code" ace-mode="ace/mode/javascript" ace-theme="ace/theme/twilight">
+function wobble (flam) {
+    return flam.wobbled = true;
+}
+
+</pre>
+
+
+<div class="code" ace-mode="ace/mode/lua" ace-theme="ace/theme/chrome" ace-gutter="true" style="width: 30em;">
+--[[--
+num_args takes in 5.1 byte code and extracts the number of arguments from its function header.
+--]]--
+
+function int(t)
+    return t:byte(1) + t:byte(2) * 0x100 + t:byte(3) * 0x10000 + t:byte(4) * 0x1000000
+end
+
+function num_args(func)
+    local dump = string.dump(func)
+    local offset, cursor = int(dump:sub(13)), offset + 26
+    --Get the params and var flag (whether there's a ... in the param)
+    return dump:sub(cursor):byte(), dump:sub(cursor+1):byte()
+end
+
+</div>
+
+
+<!-- load ace -->
+<script src="../src/ace.js"></script>
+<!-- load ace static_highlight extension -->
+<script src="../src/ext-static_highlight.js"></script>
+<script>
+    var highlight = ace.require("ace/ext/static_highlight")
+    var dom = ace.require("ace/lib/dom")
+    function qsa(sel) {
+        return Array.apply(null, document.querySelectorAll(sel));
+    }
+
+    qsa(".code").forEach(function (codeEl) {
+        highlight(codeEl, {
+            mode: codeEl.getAttribute("ace-mode"),
+            theme: codeEl.getAttribute("ace-theme"),
+            startLineNumber: 1,
+            showGutter: codeEl.getAttribute("ace-gutter"),
+            trim: true
+        }, function (highlighted) {
+            
+        });
+    });
+</script>
+
+</body>
+</html>

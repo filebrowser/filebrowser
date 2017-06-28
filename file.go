@@ -20,8 +20,6 @@ import (
 	"sort"
 	"strings"
 	"time"
-
-	humanize "github.com/dustin/go-humanize"
 )
 
 var (
@@ -52,6 +50,8 @@ type fileInfo struct {
 	VirtualPath string
 	// Indicates the file content type: video, text, image, music or blob.
 	Type string
+	// Stores the content of a text file.
+	Content string
 }
 
 // A listing is the context used to fill out a template.
@@ -73,10 +73,6 @@ type listing struct {
 	// If ≠0 then Items have been limited to that many elements.
 	ItemsLimitedTo int
 	Display        string
-	// Indicates if we're showing a preview in this Listing
-	Preview bool
-	// File to preview if Preview is true
-	PreviewItem *fileInfo
 }
 
 // getInfo gets the file information and, in case of error, returns the
@@ -270,17 +266,6 @@ func (i fileInfo) Checksum(kind string) (string, error) {
 // StringifyContent returns a string with the file content.
 func (i fileInfo) StringifyContent() string {
 	return string(i.content)
-}
-
-// HumanSize returns the size of the file as a human-readable string
-// in IEC format (i.e. power of 2 or base 1024).
-func (i fileInfo) HumanSize() string {
-	return humanize.IBytes(uint64(i.Size))
-}
-
-// HumanModTime returns the modified time of the file as a human-readable string.
-func (i fileInfo) HumanModTime(format string) string {
-	return i.ModTime.Format(format)
 }
 
 // CanBeEdited checks if the extension of a file is supported by the editor

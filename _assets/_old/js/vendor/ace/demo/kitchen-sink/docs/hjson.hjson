@@ -1,0 +1,16 @@
+{
+  # specify rate in requests/second (because comments are helpful!)
+  rate: 1000
+
+  // prefer c-style comments?
+  /* feeling old fashioned? */
+
+  # did you notice that rate doesn't need quotes?
+  hey: look ma, no quotes for strings either!
+
+  # best of all
+  notice: []
+  anything: ?
+
+  # yes, commas are optional!
+}

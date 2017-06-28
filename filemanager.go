@@ -19,7 +19,6 @@ var (
 // 'New' function and not directly.
 type FileManager struct {
 	*User
-	assets *assets
 
 	// prefixURL is a part of the URL that is already trimmed from the request URL before it
 	// arrives to our handlers. It may be useful when using File Manager as a middleware
@@ -43,6 +42,9 @@ type FileManager struct {
 
 	// AfterSave is a function that is called before saving a file.
 	AfterSave Command
+
+	templates *rice.Box
+	static    http.Handler
 }
 
 // Command is a command function.
@@ -75,13 +77,6 @@ type User struct {
 	Commands []string
 }
 
-// assets are the static and front-end assets, such as JS, CSS and HTML templates.
-type assets struct {
-	templates *rice.Box
-	css       *rice.Box
-	js        *rice.Box
-}
-
 // Rule is a dissalow/allow rule.
 type Rule struct {
 	// Regex indicates if this rule uses Regular Expressions or not.
@@ -111,11 +106,8 @@ func New(scope string) *FileManager {
 		Users:      map[string]*User{},
 		BeforeSave: func(r *http.Request, m *FileManager, u *User) error { return nil },
 		AfterSave:  func(r *http.Request, m *FileManager, u *User) error { return nil },
-		assets: &assets{
-			templates: rice.MustFindBox("./_assets/templates"),
-			css:       rice.MustFindBox("./_assets/css"),
-			js:        rice.MustFindBox("./_assets/js"),
-		},
+		static:     http.FileServer(rice.MustFindBox("./_assets/dist_dev/_").HTTPBox()),
+		templates:  rice.MustFindBox("./_assets/dist_dev/templates"),
 	}
 
 	m.SetScope(scope, "")

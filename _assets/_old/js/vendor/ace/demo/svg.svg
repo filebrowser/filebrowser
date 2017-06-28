@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+    <style type="text/css"> #ed { width: 500px; height: 200px }</style>
+    <script xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../src/ace.js"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            ace.edit("ed");
+         };</script>
+    <foreignObject id="fo" width="500px" height="200px">
+        <div xmlns="http://www.w3.org/1999/xhtml" id="ed">Hi!</div>
+    </foreignObject>
+</svg>

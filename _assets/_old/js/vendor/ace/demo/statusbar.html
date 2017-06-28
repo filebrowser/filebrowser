@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>ACE Editor StatusBar Demo</title>
+  <style type="text/css" media="screen">
+    body {
+        overflow: hidden;
+    }
+    
+    #editor { 
+        margin: 0;
+        position: absolute;
+        top: 0;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+    }
+    #statusBar {
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 20px;
+        background-color: rgb(245, 245, 245);
+        color: gray;
+    }
+    .ace_status-indicator {
+        color: gray;
+        position: absolute;
+        right: 0;
+        border-left: 1px solid;
+    }
+  </style>
+</head>
+<body>
+
+<pre id="editor"></pre>
+<div id="statusBar">ace rocks!</div>
+    
+<!-- load ace -->
+<script src="../src/ace.js"></script>
+<!-- load ace statusbar extension -->
+<script src="../src/ext-statusbar.js"></script>
+<script>
+    var editor = ace.edit("editor");
+    var StatusBar = ace.require("ace/ext/statusbar").StatusBar;
+    // create a simple selection status indicator
+    var statusBar = new StatusBar(editor, document.getElementById("statusBar"));
+    editor.setTheme("ace/theme/dawn");
+    editor.session.setMode("ace/mode/html");
+</script>
+
+<script src="./show_own_source.js"></script>
+</body>
+</html>
