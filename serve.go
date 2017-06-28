@@ -3,7 +3,6 @@ package filemanager
 import (
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 func serveDefault(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
@@ -53,13 +52,7 @@ func serveDefault(c *requestContext, w http.ResponseWriter, r *http.Request) (in
 		}
 	}
 
-	// If the request accepts JSON, we send the file information.
-	if strings.Contains(r.Header.Get("Accept"), "application/json") {
-		c.pg.Data = c.fi
-		return c.pg.PrintJSON(w)
-	}
-
-	return c.pg.PrintHTML(w, c.fm.templates)
+	return c.pg.Render(c, w, r)
 }
 
 // serveListing presents the user with a listage of a directory folder.
@@ -98,12 +91,7 @@ func serveListing(c *requestContext, w http.ResponseWriter, r *http.Request) (in
 	listing.Display = displayMode(w, r, cookieScope)
 	c.pg.Data = listing
 
-	// If it's a JSON request, print only the items... in JSON! (such a surprise -_-)
-	if strings.Contains(r.Header.Get("Accept"), "application/json") {
-		return c.pg.PrintJSON(w)
-	}
-
-	return c.pg.PrintHTML(w, c.fm.templates)
+	return c.pg.Render(c, w, r)
 }
 
 // displayMode obtaisn the display mode from URL, or from the
