@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import page from '../page'
+
 // Remove the last directory of an url
 var removeLastDirectoryPartOf = function (url) {
   var arr = url.split('/')
@@ -109,8 +111,7 @@ export default {
 
         conn.onclose = (event) => {
           this.$el.classList.remove('ongoing')
-          // TODO: if is listing!
-          // listing.reload()
+          page.reload()
         }
 
         return
@@ -132,6 +133,7 @@ export default {
 
       conn.onclose = () => {
         this.$el.classList.remove('ongoing')
+        page.reload()
       }
     }
   }
