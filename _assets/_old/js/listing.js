@@ -159,29 +159,6 @@ listing.addDoubleTapEvent = function () {
   })
 }
 
-// Keydown events
-window.addEventListener('keydown', (event) => {
-  if (event.keyCode == 27) {
-    listing.unselectAll()
-
-    if (document.querySelectorAll('.prompt').length) {
-      closePrompt(event)
-    }
-  }
-
-  if (event.keyCode == 113) {
-    listing.rename()
-  }
-
-  if (event.ctrlKey || event.metaKey) {
-    switch (String.fromCharCode(event.which).toLowerCase()) {
-      case 's':
-        event.preventDefault()
-        window.location = '?download=true'
-    }
-  }
-})
-
 listing.selectMoveFolder = function (event) {
   if (event.target.getAttribute('aria-selected') === 'true') {
     event.target.setAttribute('aria-selected', false)

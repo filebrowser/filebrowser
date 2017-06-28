@@ -13,6 +13,7 @@ import (
 
 // editor contains the information to fill the editor template.
 type editor struct {
+	*fileInfo
 	Class       string `json:"class"`
 	Mode        string `json:"mode"`
 	Visual      bool   `json:"visual"`
@@ -28,7 +29,7 @@ func getEditor(r *http.Request, i *fileInfo) (*editor, error) {
 	var err error
 
 	// Create a new editor variable and set the mode
-	e := &editor{}
+	e := &editor{fileInfo: i}
 	e.Mode = editorMode(i.Name)
 	e.Class = editorClass(e.Mode)
 

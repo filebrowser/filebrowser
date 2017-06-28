@@ -11,26 +11,6 @@
     </form>
 </template>
 
-<template id="info-template">
-    <div class="prompt">
-        <h3>File Information</h3>
-        <p><strong>Display Name:</strong> <span id="display_name"></span></p>
-        <p><strong>Size:</strong> <span id="content_length"></span> Bytes</p>
-        <p><strong>Last Modified:</strong> <span id="last_modified"></span></p>
-
-        <section class="file-only">
-            <p><strong>MD5:</strong> <code id="md5"><a href="#" onclick="getHash(event, 'md5')">show</a></code></p>
-            <p><strong>SHA1:</strong> <code id="sha1"><a href="#" onclick="getHash(event, 'sha1')">show</a></code></p>
-            <p><strong>SHA256:</strong> <code id="sha256"><a href="#" onclick="getHash(event, 'sha256')">show</a></code></p>
-            <p><strong>SHA512:</strong> <code id="sha512"><a href="#" onclick="getHash(event, 'sha512')">show</a></code></p>
-        </section>
-
-        <div>
-            <button type="submit" onclick="closePrompt(event);" class="ok">OK</button>
-        </div>
-    </div>
-</template>
-
 <template id="message-template">
     <div class="prompt">
         <h3></h3>
@@ -60,28 +40,5 @@
     </form>
 </template>
 
-<div class="help">
-    <h3>Help</h3>
 
-    <ul>
-        <li><strong>F1</strong> - this information</li>
-        <li><strong>F2</strong> - rename file</li>
-        <li><strong>DEL</strong> - delete selected items</li>
-        <li><strong>ESC</strong> - clear selection and/or close the prompt</li>
-        <li><strong>CTRL + S</strong> - save a file or download the directory where you are</li>
-        <li><strong>CTRL + Click</strong> - select multiple files or directories</li>
-        <li><strong>Double click</strong> - open a file or directory</li>
-        <li><strong>Click</strong> - select file or directory</li>
-    </ul>
-
-    <p>Not available yet</p>
-
-    <ul>
-        <li><strong>Alt + Click</strong> - select a group of files</li>
-    </ul>
-
-    <div>
-        <button type="submit" onclick="closeHelp(event);" class="ok">OK</button>
-    </div>
-</div>
 {{ end }}

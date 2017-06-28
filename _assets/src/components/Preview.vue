@@ -23,17 +23,20 @@
 </template>
 
 <script>
+import page from '../page'
+
 export default {
   name: 'preview',
   data: function () {
-    return window.info.page.data
+    return window.info.req.data
   },
   methods: {
     raw: function () {
       return this.url + '?raw=true'
     },
     back: function (event) {
-      window.history.back()
+      let url = page.removeLastDir(window.location.pathname)
+      page.open(url)
     }
   }
 }

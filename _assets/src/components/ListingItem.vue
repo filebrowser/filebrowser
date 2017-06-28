@@ -33,7 +33,10 @@ import array from '../array.js'
 
 export default {
   name: 'item',
-  props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'selected'],
+  props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index'],
+  data: function () {
+    return window.info.listing
+  },
   methods: {
     icon: function () {
       if (this.isDir) return 'folder'
@@ -97,22 +100,18 @@ export default {
       })
 
       this.selected.length = 0
-
-      // listing.handleSelectionChange()
       return false
     },
     click: function (event) {
-      let el = event.currentTarget
-
       if (this.selected.length !== 0) event.preventDefault()
-      if (this.selected.indexOf(el.id) === -1) {
+      if (this.selected.indexOf(this.index) === -1) {
         if (!event.ctrlKey && !this.multiple) this.unselectAll()
 
-        el.setAttribute('aria-selected', true)
-        this.selected.push(el.id)
+        this.$el.setAttribute('aria-selected', true)
+        this.selected.push(this.index)
       } else {
-        el.setAttribute('aria-selected', false)
-        this.selected = array.remove(this.selected, el.id)
+        this.$el.setAttribute('aria-selected', false)
+        this.selected = array.remove(this.selected, this.index)
       }
 
       // this.handleSelectionChange()

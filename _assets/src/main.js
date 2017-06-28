@@ -6,18 +6,19 @@ import App from './App'
 
 Vue.config.productionTip = false
 
-window.info = (window.info || window.alert('Something is wrong, please refresh!'))
-window.ssl = (window.location.protocol === 'https:')
+var $ = (window.info || window.alert('Something is wrong, please refresh!'))
 
 // TODO: keep this here?
-document.title = window.info.page.name
+document.title = $.req.name
 
 // TODO: keep this here?
 window.addEventListener('popstate', (event) => {
   event.preventDefault()
   event.stopPropagation()
 
-  window.info.page.kind = ''
+  $.req.kind = ''
+  $.listing.selected.length = 0
+  $.listing.selected.multiple = false
 
   let request = new window.XMLHttpRequest()
   request.open('GET', event.state.url, true)
@@ -25,7 +26,7 @@ window.addEventListener('popstate', (event) => {
 
   request.onload = () => {
     if (request.status === 200) {
-      window.info.page = JSON.parse(request.responseText)
+      $.req = JSON.parse(request.responseText)
       document.title = event.state.name
     } else {
       console.log(request.responseText)

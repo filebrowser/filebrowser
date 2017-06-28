@@ -125,95 +125,6 @@ function logoutEvent (event) {
   }
 }
 
-function getHash (event, hash) {
-  event.preventDefault()
-
-  let request = new window.XMLHttpRequest()
-  let link
-
-  if (selectedItems.length) {
-    link = document.getElementById(selectedItems[0]).dataset.url
-  } else {
-    link = window.location.pathname
-  }
-
-  request.open('GET', `${link}?checksum=${hash}`, true)
-
-  request.onload = () => {
-    if (request.status >= 300) {
-      console.log(request.statusText)
-      return
-    }
-    event.target.parentElement.innerHTML = request.responseText
-  }
-  request.onerror = (e) => console.log(e)
-  request.send()
-}
-
-function infoEvent (event) {
-  event.preventDefault()
-  if (event.currentTarget.classList.contains('disabled')) {
-    return
-  }
-
-  let dir = false
-  let link
-
-  if (selectedItems.length) {
-    link = document.getElementById(selectedItems[0]).dataset.url
-    dir = document.getElementById(selectedItems[0]).dataset.dir
-  } else {
-    if (document.getElementById('listing') !== null) {
-      dir = true
-    }
-
-    link = window.location.pathname
-  }
-
-  buttons.setLoading('info', false)
-
-  webdav.propfind(link)
-    .then((text) => {
-      let parser = new window.DOMParser()
-      let xml = parser.parseFromString(text, 'text/xml')
-      let clone = document.importNode(templates.info.content, true)
-
-      let value = xml.getElementsByTagName('displayname')
-      if (value.length > 0) {
-        clone.getElementById('display_name').innerHTML = value[0].innerHTML
-      } else {
-        clone.getElementById('display_name').innerHTML = xml.getElementsByTagName('D:displayname')[0].innerHTML
-      }
-
-      value = xml.getElementsByTagName('getcontentlength')
-      if (value.length > 0) {
-        clone.getElementById('content_length').innerHTML = value[0].innerHTML
-      } else {
-        clone.getElementById('content_length').innerHTML = xml.getElementsByTagName('D:getcontentlength')[0].innerHTML
-      }
-
-      value = xml.getElementsByTagName('getlastmodified')
-      if (value.length > 0) {
-        clone.getElementById('last_modified').innerHTML = value[0].innerHTML
-      } else {
-        clone.getElementById('last_modified').innerHTML = xml.getElementsByTagName('D:getlastmodified')[0].innerHTML
-      }
-
-      if (dir === true || dir === 'true') {
-        clone.querySelector('.file-only').style.display = 'none'
-      }
-
-      document.querySelector('body').appendChild(clone)
-      document.querySelector('.overlay').classList.add('active')
-      document.querySelector('.prompt').classList.add('active')
-      buttons.setDone('info', true)
-    })
-    .catch(e => {
-      buttons.setDone('info', false)
-      console.log(e)
-    })
-}
-
 function deleteOnSingleFile () {
   closePrompt()
   buttons.setLoading('delete')
@@ -279,36 +190,6 @@ function deleteEvent (event) {
   return false
 }
 
-function closeHelp (event) {
-  event.preventDefault()
-
-  document.querySelector('.help').classList.remove('active')
-  document.querySelector('.overlay').classList.remove('active')
-}
-
-function openHelp (event) {
-  closePrompt(event)
-
-  document.querySelector('.help').classList.add('active')
-  document.querySelector('.overlay').classList.add('active')
-}
-
-window.addEventListener('keydown', (event) => {
-  if (event.keyCode === 27) {
-    if (document.querySelector('.help.active')) {
-      closeHelp(event)
-    }
-  }
-
-  if (event.keyCode === 46) {
-    deleteEvent(event)
-  }
-
-  if (event.keyCode === 112) {
-    event.preventDefault()
-    openHelp(event)
-  }
-})
 
 /* * * * * * * * * * * * * * * *
  *                             *
