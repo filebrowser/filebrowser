@@ -21,80 +21,6 @@ var listing = {
       }
     }
   },
-  itemDragStart: function (event) {
-    let el = event.target
-
-    for (let i = 0; i < 5; i++) {
-      if (!el.classList.contains('item')) {
-        el = el.parentElement
-      }
-    }
-
-    event.dataTransfer.setData('id', el.id)
-    event.dataTransfer.setData('name', el.querySelector('.name').innerHTML)
-  },
-  itemDragOver: function (event) {
-    event.preventDefault()
-    let el = event.target
-
-    for (let i = 0; i < 5; i++) {
-      if (!el.classList.contains('item')) {
-        el = el.parentElement
-      }
-    }
-
-    el.style.opacity = 1
-  },
-  itemDrop: function (e) {
-    e.preventDefault()
-
-    let el = e.target,
-      id = e.dataTransfer.getData('id'),
-      name = e.dataTransfer.getData('name')
-
-    if (id == '' || name == '') return
-
-    for (let i = 0; i < 5; i++) {
-      if (!el.classList.contains('item')) {
-        el = el.parentElement
-      }
-    }
-
-    if (el.id === id) return
-
-    let oldLink = document.getElementById(id).dataset.url,
-      newLink = el.dataset.url + name
-
-    webdav.move(oldLink, newLink)
-      .then(() => listing.reload())
-      .catch(e => console.log(e))
-  },
-  documentDrop: function (event) {
-    event.preventDefault()
-    let dt = event.dataTransfer,
-      files = dt.files,
-      el = event.target,
-      items = document.getElementsByClassName('item')
-
-    for (let i = 0; i < 5; i++) {
-      if (el != null && !el.classList.contains('item')) {
-        el = el.parentElement
-      }
-    }
-
-    if (files.length > 0) {
-      if (el != null && el.classList.contains('item') && el.dataset.dir == 'true') {
-        listing.handleFiles(files, el.querySelector('.name').innerHTML + '/')
-        return
-      }
-
-      listing.handleFiles(files, '')
-    } else {
-      Array.from(items).forEach(file => {
-        file.style.opacity = 1
-      })
-    }
-  },
   rename: function (event) {
     if (!selectedItems.length || selectedItems.length > 1) {
       return false
@@ -150,65 +76,7 @@ var listing = {
     return false
   },
   handleFiles: function (files, base) {
-    buttons.setLoading('upload')
-
-    let promises = []
-
-    for (let file of files) {
-      promises.push(webdav.put(window.location.pathname + base + file.name, file))
-    }
-
-    Promise.all(promises)
-      .then(() => {
-        listing.reload()
-        buttons.setDone('upload')
-      })
-      .catch(e => {
-        console.log(e)
-        buttons.setDone('upload', false)
-      })
-
-    return false
   }
-}
-
-listing.unselectAll = function () {
-  let items = document.getElementsByClassName('item')
-  Array.from(items).forEach(link => {
-    link.setAttribute('aria-selected', false)
-  })
-
-  selectedItems = []
-
-  listing.handleSelectionChange()
-  return false
-}
-
-listing.handleSelectionChange = function (event) {
-  listing.redefineDownloadURLs()
-
-  let selectedNumber = selectedItems.length,
-    fileAction = document.getElementById('file-only')
-
-  if (selectedNumber) {
-    fileAction.classList.remove('disabled')
-
-    if (selectedNumber > 1) {
-      buttons.rename.classList.add('disabled')
-      buttons.info.classList.add('disabled')
-    }
-
-    if (selectedNumber == 1) {
-      buttons.info.classList.remove('disabled')
-      buttons.rename.classList.remove('disabled')
-    }
-
-    return false
-  }
-
-  buttons.info.classList.remove('disabled')
-  fileAction.classList.add('disabled')
-  return false
 }
 
 listing.redefineDownloadURLs = function () {
@@ -226,28 +94,6 @@ listing.redefineDownloadURLs = function () {
   Array.from(links).forEach(link => {
     link.href = '?download=' + link.dataset.format + '&files=' + files
   })
-}
-
-listing.openItem = function (event) {
-  window.location = event.currentTarget.dataset.url
-}
-
-listing.selectItem = function (event) {
-  let el = event.currentTarget
-
-  if (selectedItems.length != 0) event.preventDefault()
-  if (selectedItems.indexOf(el.id) == -1) {
-    if (!event.ctrlKey && !listing.selectMultiple) listing.unselectAll()
-
-    el.setAttribute('aria-selected', true)
-    selectedItems.push(el.id)
-  } else {
-    el.setAttribute('aria-selected', false)
-    selectedItems.removeElement(el.id)
-  }
-
-  listing.handleSelectionChange()
-  return false
 }
 
 listing.newFileButton = function (event) {
@@ -282,13 +128,6 @@ listing.newFilePrompt = function (event) {
 
   closePrompt(event)
   return false
-}
-
-listing.updateColumns = function (event) {
-  let columns = Math.floor(document.getElementById('listing').offsetWidth / 300),
-    items = getCSSRule(['#listing.mosaic .item', '.mosaic#listing .item'])
-
-  items.style.width = `calc(${100/columns}% - 1em)`
 }
 
 listing.addDoubleTapEvent = function () {
@@ -341,10 +180,6 @@ window.addEventListener('keydown', (event) => {
         window.location = '?download=true'
     }
   }
-})
-
-window.addEventListener('resize', () => {
-  listing.updateColumns()
 })
 
 listing.selectMoveFolder = function (event) {
@@ -542,25 +377,6 @@ document.addEventListener('DOMContentLoaded', event => {
       document.getElementById('upload-input').click()
     })
 
-    buttons.new.addEventListener('click', listing.newFileButton)
-
-    // Drag and Drop
-    document.addEventListener('dragover', function (event) {
-      event.preventDefault()
-    }, false)
-
-    document.addEventListener('dragenter', (event) => {
-      Array.from(items).forEach(file => {
-        file.style.opacity = 0.5
-      })
-    }, false)
-
-    document.addEventListener('dragend', (event) => {
-      Array.from(items).forEach(file => {
-        file.style.opacity = 1
-      })
-    }, false)
-
-    document.addEventListener('drop', listing.documentDrop, false)
+    buttons.new.addEventListener('click', listing.newFileButton)    
   }
 })

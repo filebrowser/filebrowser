@@ -32,13 +32,12 @@
   </head>
   <body>
     <script>
-    var data = {
+    var info = {
         user: JSON.parse('{{ Marshal .User }}'),
+        page: JSON.parse('{{ Marshal . }}'),
         webdavURL: "{{ .WebDavURL }}",
         baseURL: "{{.BaseURL}}"
     }
-
-    var page = JSON.parse('{{ Marshal . }}')
     </script>
     <div id="app">
       <!-- TODO: loading -->

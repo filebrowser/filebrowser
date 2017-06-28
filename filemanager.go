@@ -69,12 +69,12 @@ type User struct {
 	StyleSheet string `json:"-"`
 
 	// These indicate if the user can perform certain actions.
-	AllowNew      bool // Create files and folders
-	AllowEdit     bool // Edit/rename files
-	AllowCommands bool // Execute commands
+	AllowNew      bool `json:"allowNew"`      // Create files and folders
+	AllowEdit     bool `json:"allowEdit"`     // Edit/rename files
+	AllowCommands bool `json:"allowCommands"` // Execute commands
 
 	// Commands is the list of commands the user can execute.
-	Commands []string
+	Commands []string `json:"commands"`
 }
 
 // Rule is a dissalow/allow rule.

@@ -35,10 +35,10 @@ type page struct {
 	BaseURL   string `json:"-"`
 	WebDavURL string `json:"-"`
 
-	Name string
-	Path string
-	Kind string // listing, editor or preview
-	Data interface{}
+	Name string      `json:"name"`
+	Path string      `json:"path"`
+	Kind string      `json:"kind"` // listing, editor or preview
+	Data interface{} `json:"data"`
 }
 
 // breadcrumbItem contains the Name and the URL of a breadcrumb piece.

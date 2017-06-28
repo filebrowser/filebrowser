@@ -9,21 +9,7 @@ var selectedItems = []
 var overlay
 var clickOverlay
 
-// Removes an element, if exists, from an array
-Array.prototype.removeElement = function (element) {
-  var i = this.indexOf(element)
-  if (i !== -1) {
-    this.splice(i, 1)
-  }
-}
 
-// Replaces an element inside an array by another
-Array.prototype.replaceElement = function (oldElement, newElement) {
-  var i = this.indexOf(oldElement)
-  if (i !== -1) {
-    this[i] = newElement
-  }
-}
 
 // Sends a costum event to itself
 Document.prototype.sendCostumEvent = function (text) {
@@ -37,34 +23,6 @@ Document.prototype.getCookie = function (name) {
 }
 
 
-function getCSSRule (rules) {
-  for (let i = 0; i < rules.length; i++) {
-    rules[i] = rules[i].toLowerCase()
-  }
-
-  let result = null
-  let find = Array.prototype.find
-
-  find.call(document.styleSheets, styleSheet => {
-    result = find.call(styleSheet.cssRules, cssRule => {
-      let found = false
-
-      if (cssRule instanceof CSSStyleRule) {
-        for (let i = 0; i < rules.length; i++) {
-          if (cssRule.selectorText.toLowerCase() === rules[i]) {
-            found = true
-          }
-        }
-      }
-
-      return found
-    })
-
-    return result != null
-  })
-
-  return result
-}
 
 /* * * * * * * * * * * * * * * *
  *                             *
@@ -127,106 +85,7 @@ buttons.setDone = function (name, success = true) {
  *            WEBDAV           *
  *                             *
  * * * * * * * * * * * * * * * */
-var webdav = {}
 
-webdav.convertURL = function (url) {
-  return window.location.origin + url.replace(data.baseURL + '/', data.webdavURL + '/')
-}
-
-webdav.move = function (oldLink, newLink) {
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    let destination = newLink.replace(data.baseURL + '/', data.webdavURL + '/')
-
-    destination = window.location.origin + destination.substring(data.baseURL.length)
-
-    request.open('MOVE', webdav.convertURL(oldLink), true)
-    request.setRequestHeader('Destination', destination)
-    request.onload = () => {
-      if (request.status === 201 || request.status === 204) {
-        resolve()
-      } else {
-        reject(request.statusText)
-      }
-    }
-    request.onerror = () => reject(request.statusText)
-    request.send()
-  })
-}
-
-webdav.put = function (link, body, headers = {}) {
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open('PUT', webdav.convertURL(link), true)
-
-    for (let key in headers) {
-      request.setRequestHeader(key, headers[key])
-    }
-
-    request.onload = () => {
-      if (request.status == 201) {
-        resolve()
-      } else {
-        reject(request.statusText)
-      }
-    }
-    request.onerror = () => reject(request.statusText)
-    request.send(body)
-  })
-}
-
-webdav.propfind = function (link, body, headers = {}) {
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open('PROPFIND', webdav.convertURL(link), true)
-
-    for (let key in headers) {
-      request.setRequestHeader(key, headers[key])
-    }
-
-    request.onload = () => {
-      if (request.status < 300) {
-        resolve(request.responseText)
-      } else {
-        reject(request.statusText)
-      }
-    }
-    request.onerror = () => reject(request.statusText)
-    request.send(body)
-  })
-}
-
-webdav.delete = function (link) {
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open('DELETE', webdav.convertURL(link), true)
-    request.onload = () => {
-      if (request.status === 204) {
-        resolve()
-      } else {
-        reject(request.statusText)
-      }
-    }
-    request.onerror = () => reject(request.statusText)
-    request.send()
-  })
-}
-
-webdav.new = function (link) {
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open((link.endsWith('/') ? 'MKCOL' : 'PUT'), webdav.convertURL(link), true)
-    request.onload = () => {
-      if (request.status === 201) {
-        resolve()
-      } else {
-        reject(request.statusText)
-      }
-    }
-    request.onerror = () => reject(request.statusText)
-    request.send()
-  })
-}
 
 /* * * * * * * * * * * * * * * *
  *                             *
