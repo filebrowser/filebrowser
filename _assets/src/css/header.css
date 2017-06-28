@@ -8,6 +8,7 @@ header {
     left: 0;
     width: 100%;
     padding: 0;
+    display: flex;
 }
 
 header a,
@@ -35,16 +36,51 @@ header>div div {
  *            TOP BAR          *
  * * * * * * * * * * * * * * * */
 
-#top-bar {
+#first-bar {
     height: 4em;
 }
 
-#top-bar img {
+#first-bar img {
     height: 2.5em;
     margin-right: 1em;
     vertical-align: middle;
 }
 
+/* * * * * * * * * * * * * * * *
+ *          BOTTOM BAR         *
+ * * * * * * * * * * * * * * * */
+
+#second-bar {
+    justify-content: flex-end;
+}
+
+#more {
+    display: none;
+}
+
+#file-only {
+    display: inline-block;
+    border-right: 1px solid rgba(0, 0, 0, 0.075);
+    padding-right: .3em;
+    margin-right: .3em;
+    transition: .2s ease opacity, visibility;
+    visibility: visible;
+}
+
+#file-only.disabled {
+    opacity: 0;
+    visibility: hidden;
+}
+
+#download ul.active {
+    top: 0;
+    right: 0;
+}
+
+#more ul.active {
+    right: .5em;
+    top: 4.5em;
+}
 
 /* * * * * * * * * * * * * * * *
  *          SEARCH BAR         *
@@ -173,64 +209,4 @@ header>div div {
 
 #search:-ms-input-placeholder {
     color: rgba(255, 255, 255, .5);
-}
-
-
-/* * * * * * * * * * * * * * * *
- *          BOTTOM BAR         *
- * * * * * * * * * * * * * * * */
-
-#bottom-bar {
-    border-top: 1px solid rgba(0, 0, 0, 0.075);
-    height: 3.8em;
-}
-
-#bottom-bar>div:first-child>* {
-    display: inline-block;
-    vertical-align: middle;
-}
-
-#bottom-bar>div:first-child>i {
-    margin-right: .3em;
-}
-
-#bottom-bar>*:first-child {
-    margin-right: auto;
-    max-width: calc(100% - 25em);
-    width: 100%;
-}
-
-#bottom-bar p {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    width: calc(100% - 3em);
-    white-space: nowrap;
-}
-
-#more {
-    display: none;
-}
-
-#file-only {
-    display: inline-block;
-    border-right: 1px solid rgba(0, 0, 0, 0.075);
-    padding-right: .3em;
-    margin-right: .3em;
-    transition: .2s ease opacity, visibility;
-    visibility: visible;
-}
-
-#file-only.disabled {
-    opacity: 0;
-    visibility: hidden;
-}
-
-#download ul.active {
-    top: 0;
-    right: 0;
-}
-
-#more ul.active {
-    right: .5em;
-    top: 4.5em;
 }

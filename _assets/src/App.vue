@@ -1,14 +1,14 @@
 <template>
   <div id="app">
     <header>
-      <div id="top-bar">
-            <img src="./assets/logo.svg" alt="File Manager">
-            <search></search>
-        </div>
-        <div id="bottom-bar">
-    
-        </div>
-        <div id="click-overlay"></div>
+      <div id="first-bar">
+        <img src="./assets/logo.svg" alt="File Manager">
+        <search></search>
+      </div>
+      <div id="second-bar">
+        <info-button></info-button>
+      </div>
+      <!-- <div id="click-overlay"></div> -->
     </header>
     <nav id="sidebar">
       <a class="action" :href="baseURL + '/'">
@@ -50,6 +50,7 @@
 import Search from './components/Search'
 import Preview from './components/Preview'
 import Listing from './components/Listing'
+import InfoButton from './components/InfoButton'
 import css from './css.js'
 
 function updateColumnSizes () {
@@ -61,7 +62,7 @@ function updateColumnSizes () {
 
 export default {
   name: 'app',
-  components: { Search, Preview, Listing },
+  components: { Search, Preview, Listing, InfoButton },
   mounted: function () {
     updateColumnSizes()
     window.addEventListener('resize', updateColumnSizes)
