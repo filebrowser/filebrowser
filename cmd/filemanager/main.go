@@ -10,16 +10,21 @@ import (
 var m *filemanager.FileManager
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	_, err := m.ServeHTTP(w, r)
+	// TODO: review return codes and return 0 when everything works.
+
+	code, err := m.ServeHTTP(w, r)
 	if err != nil {
 		log.Print(err)
+	}
+
+	if code != 0 {
+		w.WriteHeader(code)
 	}
 }
 
 func main() {
 	m = filemanager.New("D:\\TEST")
 	m.SetBaseURL("/vaca")
-	m.AllowEdit = false
 	m.Commands = []string{"git"}
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(":8080", nil)

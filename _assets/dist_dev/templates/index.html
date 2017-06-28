@@ -21,9 +21,9 @@
     <meta name="msapplication-TileImage" content="{{ .BaseURL }}/_/img/icons/msapplication-icon-144x144.png">
     <meta name="msapplication-TileColor" content="#000000">
     
-    <link rel="preload" href="{{ .BaseURL }}/_/js/app.3746baae0d5525e95c4e.js" as="script">
-    <link rel="preload" href="{{ .BaseURL }}/_/js/vendor.89d687258dcaf46efc29.js" as="script">
-    <link rel="preload" href="{{ .BaseURL }}/_/js/manifest.83ada933c74b4b19b61c.js" as="script">
+    <link rel="preload" href="{{ .BaseURL }}/_/js/vendor.429043e9736e4450f715.js" as="script">
+    <link rel="preload" href="{{ .BaseURL }}/_/js/app.fcde30b3eb6e988cd456.js" as="script">
+    <link rel="preload" href="{{ .BaseURL }}/_/js/manifest.f2713ae24188290498c4.js" as="script">
   
     
     {{- if ne .User.StyleSheet "" -}}
@@ -32,13 +32,12 @@
   </head>
   <body>
     <script>
-    var data = {
+    var info = {
         user: JSON.parse('{{ Marshal .User }}'),
+        page: JSON.parse('{{ Marshal . }}'),
         webdavURL: "{{ .WebDavURL }}",
         baseURL: "{{.BaseURL}}"
     }
-
-    var page = JSON.parse('{{ Marshal . }}')
     </script>
     <div id="app">
       <!-- TODO: loading -->
@@ -61,5 +60,5 @@ self.addEventListener('activate', () => {
     }
   });
 });</script>
-  <script type="text/javascript" src="{{ .BaseURL }}/_/js/manifest.83ada933c74b4b19b61c.js"></script><script type="text/javascript" src="{{ .BaseURL }}/_/js/vendor.89d687258dcaf46efc29.js"></script><script type="text/javascript" src="{{ .BaseURL }}/_/js/app.3746baae0d5525e95c4e.js"></script></body>
+  <script type="text/javascript" src="{{ .BaseURL }}/_/js/manifest.f2713ae24188290498c4.js"></script><script type="text/javascript" src="{{ .BaseURL }}/_/js/vendor.429043e9736e4450f715.js"></script><script type="text/javascript" src="{{ .BaseURL }}/_/js/app.fcde30b3eb6e988cd456.js"></script></body>
 </html>

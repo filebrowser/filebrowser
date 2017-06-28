@@ -16,7 +16,6 @@
 </template>
 
 <script>
-
 // Remove the last directory of an url
 var removeLastDirectoryPartOf = function (url) {
   var arr = url.split('/')
@@ -26,7 +25,7 @@ var removeLastDirectoryPartOf = function (url) {
   return (arr.join('/'))
 }
 
-var data = window.data
+var user = window.info.user
 var ssl = window.ssl
 
 export default {
@@ -48,8 +47,8 @@ export default {
   },
   methods: {
     reset: function () {
-      if (data.user.AllowCommands && data.user.Commands.length > 0) {
-        this.box.innerHTML = `Search or use one of your supported commands: ${data.user.Commands.join(', ')}.`
+      if (user.allowCommands && user.commands.length > 0) {
+        this.box.innerHTML = `Search or use one of your supported commands: ${user.commands.join(', ')}.`
       } else {
         this.box.innerHTML = 'Type and press enter to search.'
       }
@@ -58,8 +57,8 @@ export default {
       let value = this.input.value
       let pieces = value.split(' ')
 
-      for (let i = 0; i < data.user.Commands.length; i++) {
-        if (pieces[0] === data.user.Commands[0]) {
+      for (let i = 0; i < user.commands.length; i++) {
+        if (pieces[0] === user.commands[0]) {
           return true
         }
       }
@@ -78,7 +77,7 @@ export default {
         return
       }
 
-      if (!this.supported() || !data.user.AllowCommands) {
+      if (!this.supported() || !user.allowCommands) {
         this.box.innerHTML = 'Press enter to search.'
       } else {
         this.box.innerHTML = 'Press enter to execute.'
@@ -96,7 +95,7 @@ export default {
 
       let protocol = ssl ? 'wss:' : 'ws:'
 
-      if (this.supported() && data.user.AllowCommands) {
+      if (this.supported() && user.allowCommands) {
         let conn = new window.WebSocket(`${protocol}//${url}?command=true`)
 
         conn.onopen = () => {

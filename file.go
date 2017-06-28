@@ -31,48 +31,48 @@ type fileInfo struct {
 	// Used to store the file's content temporarily.
 	content []byte
 	// The name of the file.
-	Name string
+	Name string `json:"name"`
 	// The Size of the file.
-	Size int64
+	Size int64 `json:"size"`
 	// The absolute URL.
-	URL string
+	URL string `json:"url"`
 	// The extension of the file.
-	Extension string
+	Extension string `json:"extension"`
 	// The last modified time.
-	ModTime time.Time
+	ModTime time.Time `json:"modified"`
 	// The File Mode.
-	Mode os.FileMode
+	Mode os.FileMode `json:"mode"`
 	// Indicates if this file is a directory.
-	IsDir bool
+	IsDir bool `json:"isDir"`
 	// Absolute path.
-	Path string
+	Path string `json:"path"`
 	// Relative path to user's virtual File System.
-	VirtualPath string
+	VirtualPath string `json:"virtualPath"`
 	// Indicates the file content type: video, text, image, music or blob.
-	Type string
+	Type string `json:"type"`
 	// Stores the content of a text file.
-	Content string
+	Content string `json:"content"`
 }
 
 // A listing is the context used to fill out a template.
 type listing struct {
 	// The name of the directory (the last element of the path).
-	Name string
+	Name string `json:"-"`
 	// The full path of the request relatively to a File System.
-	Path string
+	Path string `json:"-"`
 	// The items (files and folders) in the path.
-	Items []fileInfo
+	Items []fileInfo `json:"items"`
 	// The number of directories in the listing.
-	NumDirs int
+	NumDirs int `json:"numDirs"`
 	// The number of files (items that aren't directories) in the listing.
-	NumFiles int
+	NumFiles int `json:"numFiles"`
 	// Which sorting order is used.
-	Sort string
+	Sort string `json:"sort"`
 	// And which order.
-	Order string
+	Order string `json:"order"`
 	// If ≠0 then Items have been limited to that many elements.
-	ItemsLimitedTo int
-	Display        string
+	ItemsLimitedTo int    `json:"ItemsLimitedTo"`
+	Display        string `json:"display"`
 }
 
 // getInfo gets the file information and, in case of error, returns the

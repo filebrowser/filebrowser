@@ -11,7 +11,7 @@
         <div id="click-overlay"></div>
     </header>
     <nav id="sidebar">
-      <a class="action" :href="baseURL()">
+      <a class="action" :href="baseURL + '/'">
         <i class="material-icons">folder</i>
         <span>My Files</span>
       </a>
@@ -21,10 +21,10 @@
       </div>
     </nav>
     <main>
-      <listing v-if="Kind == 'listing'"></listing> 
+      <listing v-if="page.kind == 'listing'"></listing> 
     </main>
 
-    <preview v-if="Kind == 'preview'"></preview> 
+    <preview v-if="page.kind == 'preview'"></preview> 
 
     <div class="overlay"></div>
     <!-- TODO: show on listing and allowedit -->
@@ -50,17 +50,24 @@
 import Search from './components/Search'
 import Preview from './components/Preview'
 import Listing from './components/Listing'
+import css from './css.js'
+
+function updateColumnSizes () {
+  let columns = Math.floor(document.querySelector('main').offsetWidth / 300)
+  let items = css(['#listing.mosaic .item', '.mosaic#listing .item'])
+
+  items.style.width = `calc(${100 / columns}% - 1em)`
+}
 
 export default {
   name: 'app',
   components: { Search, Preview, Listing },
-  data: function () {
-    return window.page
+  mounted: function () {
+    updateColumnSizes()
+    window.addEventListener('resize', updateColumnSizes)
   },
-  methods: {
-    baseURL: function () {
-      return window.data.baseURL + '/'
-    }
+  data: function () {
+    return window.info
   }
 }
 </script>

@@ -95,14 +95,14 @@ func serveListing(c *requestContext, w http.ResponseWriter, r *http.Request) (in
 		listing.ItemsLimitedTo = limit
 	}
 
+	listing.Display = displayMode(w, r, cookieScope)
+	c.pg.Data = listing
+
 	// If it's a JSON request, print only the items... in JSON! (such a surprise -_-)
 	if strings.Contains(r.Header.Get("Accept"), "application/json") {
-		c.pg.Data = listing.Items
 		return c.pg.PrintJSON(w)
 	}
 
-	listing.Display = displayMode(w, r, cookieScope)
-	c.pg.Data = listing
 	return c.pg.PrintHTML(w, c.fm.templates)
 }
 
