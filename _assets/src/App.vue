@@ -65,6 +65,7 @@ export default {
   mounted: function () {
     updateColumnSizes()
     window.addEventListener('resize', updateColumnSizes)
+    window.history.replaceState({ url: window.location.pathname, name: document.title }, document.title, window.location.pathname)
   },
   data: function () {
     return window.info
