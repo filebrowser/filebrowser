@@ -1,7 +1,7 @@
-var info = window.info
+var $ = window.info
 
 function convertURL (url) {
-  return window.location.origin + url.replace(info.baseURL + '/', info.webdavURL + '/')
+  return window.location.origin + url.replace($.baseURL + '/', $.webdavURL + '/')
 }
 
 function move (oldLink, newLink) {
@@ -9,8 +9,8 @@ function move (oldLink, newLink) {
     let request = new window.XMLHttpRequest()
 
     oldLink = convertURL(oldLink)
-    newLink = newLink.replace(info.baseURL + '/', info.webdavURL + '/')
-    newLink = window.location.origin + newLink.substring(info.baseURL.length)
+    newLink = newLink.replace($.baseURL + '/', $.webdavURL + '/')
+    newLink = window.location.origin + newLink.substring($.baseURL.length)
 
     request.open('MOVE', oldLink, true)
     request.setRequestHeader('Destination', newLink)

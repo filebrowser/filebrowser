@@ -15,7 +15,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -56,10 +55,7 @@ type fileInfo struct {
 
 // A listing is the context used to fill out a template.
 type listing struct {
-	// The name of the directory (the last element of the path).
-	Name string `json:"-"`
-	// The full path of the request relatively to a File System.
-	Path string `json:"-"`
+	*fileInfo
 	// The items (files and folders) in the path.
 	Items []fileInfo `json:"items"`
 	// The number of directories in the listing.
@@ -103,7 +99,7 @@ func getInfo(url *url.URL, c *FileManager, u *User) (*fileInfo, error) {
 }
 
 // getListing gets the information about a specific directory and its files.
-func getListing(u *User, filePath string, baseURL string) (*listing, error) {
+func getListing(u *User, filePath string, baseURL string, i *fileInfo) (*listing, error) {
 	// Gets the directory information using the Virtual File System of
 	// the user configuration.
 	file, err := u.fileSystem.OpenFile(context.TODO(), filePath, os.O_RDONLY, 0)
@@ -155,8 +151,7 @@ func getListing(u *User, filePath string, baseURL string) (*listing, error) {
 	}
 
 	return &listing{
-		Name:     path.Base(filePath),
-		Path:     filePath,
+		fileInfo: i,
 		Items:    fileinfos,
 		NumDirs:  dirCount,
 		NumFiles: fileCount,

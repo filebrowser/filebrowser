@@ -33,10 +33,19 @@
   <body>
     <script>
     var info = {
-        user: JSON.parse('{{ Marshal .User }}'),
-        page: JSON.parse('{{ Marshal . }}'),
-        webdavURL: "{{ .WebDavURL }}",
-        baseURL: "{{.BaseURL}}"
+      user: JSON.parse('{{ Marshal .User }}'),
+      req: JSON.parse('{{ Marshal . }}'),
+      webdavURL: "{{ .WebDavURL }}",
+      baseURL: "{{.BaseURL}}",
+      ssl: (window.location.protocol === 'https:'),
+      showInfo: false,
+      showHelp: false,
+      showDelete: false,
+      showRename: false,
+      listing: {
+        selected: [],
+        multiple: false
+      }
     }
     </script>
     <div id="app">

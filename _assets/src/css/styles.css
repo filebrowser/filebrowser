@@ -1,6 +1,7 @@
 @import "./fonts.css";
 @import "./normalize.css";
 @import "./header.css";
+@import "./prompts.css";
 
 body {
     font-family: 'Roboto', sans-serif;
@@ -726,8 +727,7 @@ main {
 #previewer .preview pre,
 #previewer .preview video,
 #previewer .preview img {
-    /* max-height: 80vh; */
-    height: 100%;
+    max-height: 100%;
     margin: 0;
 }
 
@@ -778,162 +778,8 @@ main {
  *            PROMPT           *
  * * * * * * * * * * * * * * * */
 
-.overlay,
-.prompt,
-.help {
-    opacity: 0;
-    z-index: -1;
-    transition: .1s ease opacity, z-index;
-}
-
-.overlay.active,
-.prompt.active,
-.help.active {
-    z-index: 9999999;
-    opacity: 1;
-}
-
-.overlay {
-    background-color: rgba(0, 0, 0, 0.5);
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 0;
-    width: 0;
-}
-
-.overlay.active {
-    height: 100%;
-    width: 100%;
-}
-
-.prompt,
-.help {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 99999999;
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.075);
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    padding: 2em;
-    max-width: 25em;
-    width: 90%;
-    max-height: 95%;
-}
-
-.prompt h3,
-.help h3 {
-    margin: 0;
-    font-weight: 500;
-    font-size: 1.5em;
-}
-
-.prompt p,
-.help p {
-    font-size: .9em;
-    color: rgba(0, 0, 0, 0.8);
-    margin: .5em 0 1em;
-}
-
-.prompt input {
-    width: 100%;
-    border: 1px solid #dadada;
-    line-height: 1;
-    padding: .3em;
-}
-
-.prompt code {
-    word-wrap: break-word;
-}
-
-.prompt div,
-.help div {
-    margin-top: 1em;
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: row-reverse;
-}
-
-.prompt .cancel {
-    background-color: #ECEFF1;
-    color: #37474F;
-}
-
-.prompt .cancel:hover {
-    background-color: #e9eaeb;
-}
 
 
-/* * * * * * * * * * * * * * * *
- *        PROMPT - MOVE        *
- * * * * * * * * * * * * * * * */
-
-.prompt .file-list {
-    flex-direction: initial;
-    max-height: 50vh;
-    overflow: auto;
-}
-
-.prompt .file-list ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-}
-
-.prompt .file-list ul li {
-    width: 100%;
-    user-select: none;
-}
-
-.prompt .file-list ul li[aria-selected=true] {
-    background: #2196f3 !important;
-    color: #fff !important;
-    transition: .1s ease all;
-}
-
-.prompt .file-list ul li:hover {
-    background-color: #e9eaeb;
-    cursor: pointer;
-}
-
-.prompt .file-list ul li:before {
-    content: "folder";
-    color: #6f6f6f;
-    vertical-align: middle;
-    padding: 0 .25em;
-    line-height: 2em;
-}
-
-.prompt .file-list ul li[aria-selected=true]:before {
-    color: white;
-}
-
-
-/* * * * * * * * * * * * * * * *
- *             HELP            *
- * * * * * * * * * * * * * * * */
-
-.help {
-    max-width: 24em;
-    visibility: hidden;
-    top: -100%;
-    left: -100%;
-}
-
-.help.active {
-    visibility: visible;
-    top: 50%;
-    left: 50%;
-}
-
-.help ul {
-    padding: 0;
-    margin: 1em 0;
-    list-style: none;
-}
 
 
 /* * * * * * * * * * * * * * * *

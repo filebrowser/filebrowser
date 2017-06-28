@@ -1,5 +1,10 @@
+var $ = window.info
+
 function open (url, history) {
-  window.info.page.kind = ''
+  // Reset info
+  $.listing.selected.length = 0
+  $.listing.selected.multiple = false
+  $.req.kind = ''
 
   let request = new window.XMLHttpRequest()
   request.open('GET', url, true)
@@ -7,15 +12,15 @@ function open (url, history) {
 
   request.onload = () => {
     if (request.status === 200) {
-      window.info.page = JSON.parse(request.responseText)
+      $.req = JSON.parse(request.responseText)
 
       if (history) {
         window.history.pushState({
-          name: window.info.page.name,
+          name: $.req.name,
           url: url
-        }, window.info.page.name, url)
+        }, $.req.name, url)
 
-        document.title = window.info.page.name
+        document.title = $.req.name
       }
     } else {
       console.log(request.responseText)
@@ -26,11 +31,20 @@ function open (url, history) {
   request.send()
 }
 
+function removeLastDir (url) {
+  var arr = url.split('/')
+  if (arr.pop() === '') {
+    arr.pop()
+  }
+  return (arr.join('/'))
+}
+
 export default {
   reload: () => {
     open(window.location.pathname, false)
   },
   open: (url) => {
     open(url, true)
-  }
+  },
+  removeLastDir: removeLastDir
 }

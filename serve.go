@@ -64,7 +64,7 @@ func serveListing(c *requestContext, w http.ResponseWriter, r *http.Request) (in
 
 	c.pg.Kind = "listing"
 
-	listing, err = getListing(c.us, c.fi.VirtualPath, c.fm.RootURL()+r.URL.Path)
+	listing, err = getListing(c.us, c.fi.VirtualPath, c.fm.RootURL()+r.URL.Path, c.fi)
 	if err != nil {
 		return errorToHTTP(err, true), err
 	}

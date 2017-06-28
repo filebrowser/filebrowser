@@ -16,6 +16,12 @@ header a:hover {
     color: inherit;
 }
 
+header img {
+    height: 2.5em;
+    margin-right: 1em;
+    vertical-align: middle;
+}
+
 header>div {
     display: flex;
     width: 100%;
@@ -32,27 +38,18 @@ header>div div {
     position: relative;
 }
 
-/* * * * * * * * * * * * * * * *
- *            TOP BAR          *
- * * * * * * * * * * * * * * * */
-
-#first-bar {
+header > div:first-child {
     height: 4em;
 }
 
-#first-bar img {
-    height: 2.5em;
-    margin-right: 1em;
-    vertical-align: middle;
+header > div:last-child {
+    justify-content: flex-end;
 }
 
 /* * * * * * * * * * * * * * * *
- *          BOTTOM BAR         *
+ *         MORE??       *
  * * * * * * * * * * * * * * * */
 
-#second-bar {
-    justify-content: flex-end;
-}
 
 #more {
     display: none;
