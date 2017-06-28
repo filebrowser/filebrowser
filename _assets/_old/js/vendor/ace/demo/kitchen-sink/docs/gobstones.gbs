@@ -1,0 +1,19 @@
+program {
+    /*
+     * A gobstons multiline comment
+     * Taken from:
+     * http://www.exploringbinary.com/java-hangs-when-converting-2-2250738585072012e-308/"
+     */
+    sumar(2, 3)
+    }
+    function sumar(a, b) {
+        r := a + b
+    }
+        // unreachable code
+        -- unreachable code
+        # unreachable code
+    procedure hacerAlgo() {
+        Mover(Este)
+        Poner(Rojo)
+        Sacar(Azul)
+    }

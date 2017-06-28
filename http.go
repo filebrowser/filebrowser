@@ -8,7 +8,7 @@ import (
 )
 
 // assetsURL is the url where static assets are served.
-const assetsURL = "/_internal"
+const assetsURL = "/_"
 
 // requestContext contains the needed information to make handlers work.
 type requestContext struct {
@@ -34,9 +34,11 @@ func serveHTTP(c *requestContext, w http.ResponseWriter, r *http.Request) (int, 
 
 	// Checks if the URL matches the Assets URL. Returns the asset if the
 	// method is GET and Status Forbidden otherwise.
-	if matchURL(r.URL.Path, assetsURL) {
+	if matchURL(r.URL.Path, assetsURL+"/") {
 		if r.Method == http.MethodGet {
-			return serveAssets(c, w, r)
+			r.URL.Path = strings.TrimPrefix(r.URL.Path, assetsURL)
+			c.fm.static.ServeHTTP(w, r)
+			return 0, nil
 		}
 
 		return http.StatusForbidden, nil

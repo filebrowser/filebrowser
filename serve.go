@@ -27,12 +27,6 @@ func serveDefault(c *requestContext, w http.ResponseWriter, r *http.Request) (in
 		return errorToHTTP(err, true), err
 	}
 
-	// If the request accepts JSON, we send the file information.
-	if strings.Contains(r.Header.Get("Accept"), "application/json") {
-		c.pg.Data = c.fi
-		return c.pg.PrintJSON(w)
-	}
-
 	// If it is a text file, reads its content.
 	if c.fi.Type == "text" {
 		if err = c.fi.Read(); err != nil {
@@ -43,17 +37,29 @@ func serveDefault(c *requestContext, w http.ResponseWriter, r *http.Request) (in
 	// If it can't be edited or the user isn't allowed to,
 	// serve it as a listing, with a preview of the file.
 	if !c.fi.CanBeEdited() || !c.us.AllowEdit {
-		return serveListing(c, w, r)
+		if c.fi.Type == "text" {
+			c.fi.Content = string(c.fi.content)
+		}
+
+		c.pg.Kind = "preview"
+		c.pg.Data = c.fi
+	} else {
+		// Otherwise, we just bring the editor in!
+		c.pg.Kind = "editor"
+
+		c.pg.Data, err = getEditor(r, c.fi)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
 	}
 
-	// Otherwise, we just bring the editor in!
-	c.pg.IsEditor = true
-	c.pg.Data, err = getEditor(r, c.fi)
-	if err != nil {
-		return http.StatusInternalServerError, err
+	// If the request accepts JSON, we send the file information.
+	if strings.Contains(r.Header.Get("Accept"), "application/json") {
+		c.pg.Data = c.fi
+		return c.pg.PrintJSON(w)
 	}
 
-	return c.pg.PrintHTML(w, c.fm.assets.templates, "frontmatter", "editor")
+	return c.pg.PrintHTML(w, c.fm.templates)
 }
 
 // serveListing presents the user with a listage of a directory folder.
@@ -63,20 +69,9 @@ func serveListing(c *requestContext, w http.ResponseWriter, r *http.Request) (in
 		listing *listing
 	)
 
-	c.pg.minimal = (r.Header.Get("Minimal") == "true")
-	c.pg.IsEditor = false
+	c.pg.Kind = "listing"
 
-	if c.fi.IsDir {
-		// In this case, we are just showing a listing.
-		listing, err = getListing(c.us, c.fi.VirtualPath, c.fm.RootURL()+r.URL.Path)
-	} else {
-		// But in this case we are showing a listing alongside with a preview!
-		vpath := strings.TrimSuffix(c.fi.VirtualPath, c.fi.Name)
-		url := strings.TrimSuffix(r.URL.Path, c.fi.Name)
-
-		listing, err = getListing(c.us, vpath, url)
-	}
-
+	listing, err = getListing(c.us, c.fi.VirtualPath, c.fm.RootURL()+r.URL.Path)
 	if err != nil {
 		return errorToHTTP(err, true), err
 	}
@@ -106,14 +101,9 @@ func serveListing(c *requestContext, w http.ResponseWriter, r *http.Request) (in
 		return c.pg.PrintJSON(w)
 	}
 
-	if !c.fi.IsDir {
-		listing.Preview = true
-		listing.PreviewItem = c.fi
-	}
-
 	listing.Display = displayMode(w, r, cookieScope)
 	c.pg.Data = listing
-	return c.pg.PrintHTML(w, c.fm.assets.templates, "listing")
+	return c.pg.PrintHTML(w, c.fm.templates)
 }
 
 // displayMode obtaisn the display mode from URL, or from the

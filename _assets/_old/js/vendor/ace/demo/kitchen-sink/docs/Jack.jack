@@ -1,0 +1,247 @@
+vars it, p
+
+p = {label, value|
+  print("\n" + label)
+  print(inspect(value))
+}
+-- Create an array from 0 to 15
+p("range", i-collect(range(5)))
+
+-- Create an array from 0 to 15 and break up in chunks of 4
+p("chunked range", i-collect(i-chunk(4, range(16))))
+
+-- Check if all or none items in stream pass test.
+p("all < 60 in range(60)", i-all?({i|i<60}, range(60)))
+p("any < 60 in range(60)", i-any?({i|i>60}, range(60)))
+p("all < 60 in range(70)", i-all?({i|i<60}, range(70)))
+p("any < 60 in range(70)", i-any?({i|i>60}, range(70)))
+
+-- Zip three different collections together
+p("zipped", i-collect(i-zip(
+  range(10),
+  [1,2,3,4,5],
+  i-map({i|i*i}, range(10))
+)))
+
+vars names, person, i, doubles, lengths, cubeRange
+names = ["Thorin", "Dwalin", "Balin", "Bifur", "Bofur", "Bombur", "Oin",
+         "Gloin", "Ori", "Nori", "Dori", "Fili", "Kili", "Bilbo", "Gandalf"]
+
+for name in names {
+  if name != "Bilbo" && name != "Gandalf" {
+    print(name)
+  }
+}
+
+person = {name: "Tim", age: 30}
+for key, value in person {
+  print(key + " = " + value)
+}
+
+i = 0
+while i < 10 {
+  i = i + 1
+  print(i)
+}
+
+print("range")
+for i in range(10) {
+  print(i + 1)
+}
+for i in range(10) {
+  print(10 - i)
+}
+
+-- Dynamic object that gives the first 10 doubles
+doubles = {
+  @len: {| 10 }
+  @get: {key|
+    if key is Integer { key * key }
+  }
+}
+print("#doubles", #doubles)
+
+print("Doubles")
+for k, v in doubles {
+  print([k, v])
+}
+
+-- Dynamic object that has names list as keys and string lenth as values
+lengths = {
+  @keys: {| names }
+  @get: {key|
+    if key is String { #key }
+  }
+}
+
+print ("Lengths")
+for k, v in lengths {
+  print([k, v])
+}
+
+
+cubeRange = {n|
+  vars i, v
+  i = 0
+  {
+    @call: {|
+      v = i
+      i = i + 1
+      if v < n { v * v * v }
+    }
+  }
+}
+
+print("Cubes")
+for k, v in cubeRange(5) {
+  print([k, v])
+}
+print("String")
+for k, v in "Hello World" {
+  print([k, v])
+}
+
+
+print([i for i in range(10)])
+print([i for i in range(20) if i % 3])
+
+
+
+-- Example showing how to do parallel work using split..and
+base = {bootstrap, target-dir|
+  split {
+    copy("res", target-dir)
+  } and {
+    if newer("src/*.less", target-dir + "/style.css") {
+      lessc("src/" + bootstrap + ".less", target-dir + "/style.css")
+    }
+  } and {
+    build("src/" + bootstrap + ".js", target-dir + "/app.js")
+  }
+}
+
+
+vars Dragon, pet
+
+Dragon = {name|
+  vars asleep, stuff-in-belly, stuff-in-intestine,
+       feed, walk, put-to-bed, toss, rock,
+       hungry?, poopy?, passage-of-time
+
+  asleep = false
+  stuff-in-belly     = 10 -- He's full.
+  stuff-in-intestine =  0 -- He doesn't need to go.
+
+  print(name + ' is born.')
+
+  feed = {|
+    print('You feed ' + name + '.')
+    stuff-in-belly = 10
+    passage-of-time()
+  }
+
+  walk = {|
+    print('You walk ' + name + ".")
+    stuff-in-intestine = 0
+    passage-of-time
+  }
+
+  put-to-bed = {|
+    print('You put ' + name + ' to bed.')
+    asleep = true
+    for i in range(3) {
+      if asleep {
+        passage-of-time()
+      }
+      if asleep {
+        print(name + ' snores, filling the room with smoke.')
+      }
+    }
+    if asleep {
+      asleep = false
+      print(name + ' wakes up slowly.')
+    }
+  }
+
+  toss = {|
+    print('You toss ' + name + ' up into the air.')
+    print('He giggles, which singes your eyebrows.')
+    passage-of-time()
+  }
+
+  rock = {|
+    print('You rock ' + name + ' gently.')
+    asleep = true
+    print('He briefly dozes off...')
+    passage-of-time()
+    if asleep {
+      asleep = false
+      print('...but wakes when you stop.')
+    }
+  }
+
+  hungry? = {|
+    stuff-in-belly <= 2
+  }
+
+  poopy? = {|
+    stuff-in-intestine >= 8
+  }
+
+  passage-of-time = {|
+    if stuff-in-belly > 0 {
+      -- Move food from belly to intestine
+      stuff-in-belly     = stuff-in-belly     - 1
+      stuff-in-intestine = stuff-in-intestine + 1
+    } else { -- Our dragon is starving!
+      if asleep {
+        asleep = false
+        print('He wakes up suddenly!')
+      }
+      print(name + ' is starving! In desperation, he ate YOU!')
+      abort "died"
+    }
+
+    if stuff-in-intestine >= 10 {
+      stuff-in-intestine = 0
+      print('Whoops! ' + name + ' had an accident...')
+    }
+
+    if hungry?() {
+      if asleep {
+        asleep = false
+        print('He wakes up suddenly!')
+      }
+      print(name + "'s stomach grumbles...")
+    }
+
+    if poopy?() {
+      if asleep {
+        asleep = false
+        print('He wakes up suddenly!')
+      }
+      print(name + ' does the potty dance...')
+    }
+  }
+
+  -- Export the public interface to this closure object.
+  {
+   feed: feed
+   walk: walk
+   put-to-bed: put-to-bed
+   toss: toss
+   rock: rock
+  }
+
+}
+
+pet = Dragon('Norbert')
+pet.feed()
+pet.toss()
+pet.walk()
+pet.put-to-bed()
+pet.rock()
+pet.put-to-bed()
+pet.put-to-bed()
+pet.put-to-bed()
+pet.put-to-bed()

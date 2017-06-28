@@ -1,0 +1,72 @@
+-- =============================================
+-- Author:		Morgan Yarbrough
+-- Create date: 4/27/2015
+-- Description:	Test procedure that shows off language features.
+-- 				Includes non-standard folding with region comments using either
+-- 				line comments or block comments (both are demonstrated below).
+--				This mode imitates SSMS and it designed to be used with SQL Server theme.
+-- =============================================
+CREATE PROCEDURE dbo.TestProcedure
+	
+--#region parameters
+	@vint INT = 1
+	,@vdate DATE = NULL
+	,@vdatetime DATETIME = DATEADD(dd, 1, GETDATE())
+	,@vvarchar VARCHAR(MAX) = ''
+--#endregion
+
+AS
+BEGIN
+
+	/*#region set statements */
+	SET NOCOUNT ON;
+	SET XACT_ABORT ON;
+	SET QUOTED_IDENTIFIER ON;
+	/*#endregion*/
+	
+	/**
+	 * These comments will produce a fold widget
+	 */
+	
+	-- folding demonstration
+	SET @vint = CASE
+					WHEN @vdate IS NULL
+						THEN 1
+					ELSE 2
+				END
+	
+	-- another folding demonstration
+	IF @vint = 1 
+	BEGIN
+		SET @vvarchar = 'one'
+		SET @vint = DATEDIFF(dd, @vdate, @vdatetime)
+	END
+	
+	-- this mode handles strings properly
+	DECLARE @sql NVARCHAR(4000) = N'SELECT TOP(1) OrderID 
+									FROM Orders
+									WHERE @OrderDate > GETDATE()'
+								
+	-- this mode is aware of built in stored procedures 
+	EXECUTE sp_executesql @sql
+	
+	-- demonstrating some syntax highlighting
+	SELECT Orders.OrderID
+		,Customers.CompanyName
+		,DATEFROMPARTS(YEAR(GETDATE()), 1, 1) AS FirstDayOfYear
+	FROM Orders
+	INNER JOIN Customers
+		ON Orders.CustomerID = Customers.CustomerID
+	WHERE CompanyName NOT LIKE '%something'
+		OR CompanyName IS NULL
+		OR CompanyName IN ('bla', 'nothing')
+		
+	-- this mode includes snippets
+	-- place your cusor at the end of the line below and trigger auto complete (Ctrl+Space)
+	createpr
+	
+	-- SQL Server allows using keywords as object names (not recommended) as long as they are wrapped in brackets
+	DATABASE -- keyword
+	[DATABASE] -- not a keyword
+	
+END

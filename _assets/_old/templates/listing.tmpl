@@ -1,0 +1,17 @@
+{{ define "item" }}
+<div ondragstart="listing.itemDragStart(event)" 
+    {{ if .IsDir}}ondragover="listing.itemDragOver(event)" ondrop="listing.itemDrop(event)"{{ end }} 
+
+    onclick="listing.selectItem(event)"
+    ondblclick="listing.openItem(event)"
+    data-dir="{{ .IsDir }}" 
+    data-url="{{ .URL }}">
+    
+    <div>
+
+        <p class="modified">
+        <time datetime="{{.HumanModTime "2006-01-02T15:04:05Z"}}">{{.HumanModTime "2 Jan 2006 03:04 PM"}}</time>
+        </p>
+    </div>
+</div>
+{{ end }}

@@ -1,0 +1,75 @@
+!!!5
+
+/[if IE]
+  %a{ :href => 'http://www.mozilla.com/en-US/firefox/' }
+    %h1 Get Firefox
+
+-# This is a HAML comment. It will not show in the output HTML
+
+-#
+  This is a HAML multiline comment
+  This won't be displayed
+    Nor will this
+                   Nor will this.
+
+/ This is a HTML comment. It will be rendered as HTML
+
+/
+  %p This doesn't render...
+  %div
+    %h1 Because it's commented out!
+
+.row
+  .col-md-6
+
+  .col-md-6
+
+
+#users.row.green
+  #articles{:style => "border: 5px;"}
+  #lists.list-inline
+
+%div#todos.bg-green{:id => "#{@item.type}_#{@item.number}", :class => '#{@item.type} #{@item.urgency}', :phoney => `asdasdasd`}
+
+/ file: app/views/movies/index.html.haml
+
+%ads:{:bleh => 33}
+%p
+  Date/Time:
+  - now = DateTime.now
+  %strong= now
+   = if now DateTime.parse("December 31, 2006")
+    = "Happy new " + "year!"
+
+%sfd.dfdfg
+#content
+ .title
+   %h1= @title
+   = link_to 'Home', home_url
+
+   #contents
+%div#content
+  %div.articles
+    %div.article.title Blah
+    %div.article.date 2006-11-05
+    %div.article.entry
+      Neil Patrick Harris
+
+%div[@user, :greeting]
+  %bar[290]
+
+/ This is a comment
+
+/ This is another comment with line break above
+
+.row
+  .col-md-6
+  .col-md-6
+
+  .col-md-6
+
+.row
+  .col-md-6
+
+
+  .col-md-6

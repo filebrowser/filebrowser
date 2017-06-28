@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"html/template"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -32,14 +31,14 @@ var functions = template.FuncMap{
 
 // page contains the information needed to fill a page template.
 type page struct {
-	minimal   bool
-	User      *User
-	Name      string
-	Path      string
-	BaseURL   string
-	WebDavURL string
-	IsEditor  bool
-	Data      interface{}
+	User      *User  `json:"-"`
+	BaseURL   string `json:"-"`
+	WebDavURL string `json:"-"`
+
+	Name string
+	Path string
+	Kind string // listing, editor or preview
+	Data interface{}
 }
 
 // breadcrumbItem contains the Name and the URL of a breadcrumb piece.
@@ -102,46 +101,24 @@ func (p page) PreviousLink() string {
 }
 
 // PrintHTML formats the page in HTML and executes the template
-func (p page) PrintHTML(w http.ResponseWriter, box *rice.Box, templates ...string) (int, error) {
-	templates = append(templates, "actions")
-	templates = append(templates, "templates")
-
-	if p.minimal {
-		templates = append(templates, "minimal")
-	} else {
-		templates = append(templates, "base")
-	}
-
+func (p page) PrintHTML(w http.ResponseWriter, box *rice.Box) (int, error) {
 	var tpl *template.Template
 
-	// For each template, add it to the the tpl variable
-	for i, t := range templates {
-		// Get the template from the assets
-		Page, err := box.String(t + ".tmpl")
+	// Get the template from the assets
+	file, err := box.String("index.html")
 
-		// Check if there is some error. If so, the template doesn't exist
-		if err != nil {
-			log.Print(err)
-			return http.StatusInternalServerError, err
-		}
+	// Check if there is some error. If so, the template doesn't exist
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
 
-		// If it's the first iteration, creates a new template and add the
-		// functions map
-		if i == 0 {
-			tpl, err = template.New(t).Funcs(functions).Parse(Page)
-		} else {
-			tpl, err = tpl.Parse(string(Page))
-		}
-
-		if err != nil {
-			log.Print(err)
-			return http.StatusInternalServerError, err
-		}
+	tpl, err = template.New("index").Funcs(functions).Parse(file)
+	if err != nil {
+		return http.StatusInternalServerError, err
 	}
 
 	buf := &bytes.Buffer{}
-	err := tpl.Execute(buf, p)
-
+	err = tpl.Execute(buf, p)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -153,7 +130,7 @@ func (p page) PrintHTML(w http.ResponseWriter, box *rice.Box, templates ...strin
 
 // PrintAsJSON prints the current Page information in JSON
 func (p page) PrintJSON(w http.ResponseWriter) (int, error) {
-	marsh, err := json.MarshalIndent(p.Data, "", "    ")
+	marsh, err := json.MarshalIndent(p, "", "    ")
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}

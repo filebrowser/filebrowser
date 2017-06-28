@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>ACE Editor Modelist Demo</title>
+  <style type="text/css" media="screen">
+    body {
+        overflow: hidden;
+    }
+    
+    #editor { 
+        margin: 0;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+  </style>
+</head>
+<body>
+
+<pre id="editor"></pre>
+    
+<!-- load ace -->
+<script src="../src/ace.js"></script>
+<!-- load ace modelist extension -->
+<script src="../src/ext-modelist.js"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/twilight");
+    (function () {
+        var modelist = ace.require("ace/ext/modelist");
+        // the file path could come from an xmlhttp request, a drop event,
+        // or any other scriptable file loading process.
+        // Extensions could consume the modelist and use it to dynamically
+        // set the editor mode. Webmasters could use it in their scripts
+        // for site specific purposes as well.
+        var filePath = "blahblah/weee/some.js";
+        var mode = modelist.getModeForPath(filePath).mode;
+        console.log(mode);
+        editor.session.setMode(mode);
+    }());
+</script>
+
+<script src="./show_own_source.js"></script>
+</body>
+</html>
