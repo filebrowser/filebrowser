@@ -13,14 +13,14 @@ import (
 
 // editor contains the information to fill the editor template.
 type editor struct {
-	Class       string
-	Mode        string
-	Visual      bool
-	Content     string
+	Class       string `json:"class"`
+	Mode        string `json:"mode"`
+	Visual      bool   `json:"visual"`
+	Content     string `json:"content"`
 	FrontMatter struct {
 		Content *frontmatter.Content
 		Rune    rune
-	}
+	} `json:"frontmatter"`
 }
 
 // getEditor gets the editor based on a Info struct

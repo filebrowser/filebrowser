@@ -91,5 +91,5 @@ func serveDownload(c *requestContext, w http.ResponseWriter, r *http.Request) (i
 
 	w.Header().Set("Content-Disposition", "attachment; filename="+name+extension)
 	io.Copy(w, file)
-	return http.StatusOK, nil
+	return 0, nil
 }

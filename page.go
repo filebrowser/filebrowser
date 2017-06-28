@@ -2,30 +2,22 @@ package filemanager
 
 import (
 	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
-
-	rice "github.com/GeertJohan/go.rice"
-	"github.com/hacdias/filemanager/variables"
 )
 
 // functions contains the non-standard functions that are available
 // to use on the HTML templates.
 var functions = template.FuncMap{
-	"Defined": variables.FieldInStruct,
 	"CSS": func(s string) template.CSS {
 		return template.CSS(s)
 	},
 	"Marshal": func(v interface{}) template.JS {
 		a, _ := json.Marshal(v)
 		return template.JS(a)
-	},
-	"EncodeBase64": func(s string) string {
-		return base64.StdEncoding.EncodeToString([]byte(s))
 	},
 }
 
@@ -100,12 +92,25 @@ func (p page) PreviousLink() string {
 	return path
 }
 
-// PrintHTML formats the page in HTML and executes the template
-func (p page) PrintHTML(w http.ResponseWriter, box *rice.Box) (int, error) {
+func (p page) Render(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	if strings.Contains(r.Header.Get("Accept"), "application/json") {
+		marsh, err := json.MarshalIndent(p, "", "    ")
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		if _, err := w.Write(marsh); err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		return 0, nil
+	}
+
 	var tpl *template.Template
 
 	// Get the template from the assets
-	file, err := box.String("index.html")
+	file, err := c.fm.templates.String("index.html")
 
 	// Check if there is some error. If so, the template doesn't exist
 	if err != nil {
@@ -125,22 +130,12 @@ func (p page) PrintHTML(w http.ResponseWriter, box *rice.Box) (int, error) {
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	_, err = buf.WriteTo(w)
-	return http.StatusOK, err
-}
 
-// PrintAsJSON prints the current Page information in JSON
-func (p page) PrintJSON(w http.ResponseWriter) (int, error) {
-	marsh, err := json.MarshalIndent(p, "", "    ")
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	if _, err := w.Write(marsh); err != nil {
-		return http.StatusInternalServerError, err
-	}
-
-	return http.StatusOK, nil
+	return 0, nil
 }
 
 // htmlError prints the error page

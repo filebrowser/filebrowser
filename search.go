@@ -112,5 +112,5 @@ func search(c *requestContext, w http.ResponseWriter, r *http.Request) (int, err
 		return http.StatusInternalServerError, err
 	}
 
-	return http.StatusOK, nil
+	return 0, nil
 }
