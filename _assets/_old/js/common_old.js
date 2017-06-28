@@ -16,12 +16,6 @@ Document.prototype.sendCostumEvent = function (text) {
   this.dispatchEvent(new window.CustomEvent(text))
 }
 
-// Gets the content of a cookie
-Document.prototype.getCookie = function (name) {
-  var re = new RegExp('(?:(?:^|.*;\\s*)' + name + '\\s*\\=\\s*([^;]*).*$)|^.*$')
-  return document.cookie.replace(re, '$1')
-}
-
 
 
 /* * * * * * * * * * * * * * * *
@@ -79,13 +73,6 @@ buttons.setDone = function (name, success = true) {
   setTimeout(firstStep, 200)
   return false
 }
-
-/* * * * * * * * * * * * * * * *
- *                             *
- *            WEBDAV           *
- *                             *
- * * * * * * * * * * * * * * * */
-
 
 /* * * * * * * * * * * * * * * *
  *                             *
