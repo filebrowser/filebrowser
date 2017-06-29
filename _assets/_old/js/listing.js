@@ -80,37 +80,6 @@ listing.addDoubleTapEvent = function () {
   })
 }
 
-listing.moveSelected = function (event) {
-  event.preventDefault()
-
-  let promises = []
-  buttons.setLoading('move')
-
-  for (let file of selectedItems) {
-    let fileElement = document.getElementById(file),
-      destFolder = event.target.querySelector('p code').innerHTML
-
-    if (event.currentTarget.querySelector('li[aria-selected=true]') != null) {
-      destFolder = event.currentTarget.querySelector('li[aria-selected=true]').dataset.url
-    }
-
-    let destPath = '/' + destFolder + '/' + fileElement.querySelector('.name').innerHTML
-    destPath = destPath.replace('//', '/')
-
-    promises.push(webdav.move(fileElement.dataset.url, destPath))
-  }
-
-  Promise.all(promises)
-    .then(() => {
-      closePrompt(event)
-      buttons.setDone('move')
-      listing.reload()
-    })
-    .catch(e => {
-      console.log(e)
-    })
-}
-
 
 document.addEventListener('DOMContentLoaded', event => {
   listing.updateColumns()
