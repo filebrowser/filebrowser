@@ -1,0 +1,126 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    padding-top: 4em;
+    background-color: #f8f8f8;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+*,
+*:hover,
+*:active,
+*:focus {
+    outline: 0
+}
+
+a {
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+}
+
+audio,
+video {
+    width: 100%;
+}
+
+pre {
+    padding: 1em;
+    border: 1px solid #e6e6e6;
+    border-radius: 0.5em;
+    background-color: #f5f5f5;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+}
+
+button {
+    border: 0;
+    padding: .5em 1em;
+    margin-left: .5em;
+    border-radius: .1em;
+    cursor: pointer;
+    background: #2196f3;
+    color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+    transition: .1s ease all;
+}
+
+button:hover {
+    background-color: #1E88E5;
+}
+
+.mobile-only {
+    display: none !important;
+}
+
+.container {
+    width: 95%;
+    max-width: 960px;
+    margin: 1em auto 0;
+}
+
+i.spin {
+    animation: 1s spin linear infinite;
+}
+
+#app {
+    transition: .2s ease padding;
+}
+
+#app.multiple {
+    padding-bottom: 4em;
+}
+
+nav {
+    width: 16em;
+    position: fixed;
+    top: 4em;
+    left: 0;
+}
+
+nav .action {
+    width: 100%;
+    display: block;
+    border-radius: 0;
+    font-size: 1.1em;
+    padding: .5em;
+}
+
+nav>div {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+nav .action>* {
+    vertical-align: middle;
+}
+
+main {
+    min-height: 1em;
+    margin: 0 1em 0 auto;
+    width: calc(100% - 19em);
+}
+
+@media (max-width: 1024px) {
+    nav {
+        height: 100%;
+        background: #fff;
+        z-index: 9999;
+        border-top: 1px solid rgba(0, 0, 0, 0.075);
+        border-right: 1px solid rgba(0, 0, 0, 0.075);
+        box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+    }
+    main {
+        width: 100%;
+        margin: 0;
+        padding: 0 1em;
+    }
+}
