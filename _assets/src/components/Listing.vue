@@ -58,6 +58,20 @@
         </div>
 
         <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" value="Upload" multiple>
+
+        <!-- TODO: show on listing and allowedit -->
+        <div class="floating">
+        <div tabindex="0" role="button" class="action" id="new">
+        <i class="material-icons" title="New file or directory">add</i>
+        </div>
+        </div>
+
+        <div v-show="multiple" :class="{ active: multiple }" id="multiple-selection">
+          <p>Multiple selection enabled</p>
+          <div @click="cancelMultiple" tabindex="0" role="button" title="Clear" aria-label="Clear" class="action">
+            <i class="material-icons" title="Clear">clear</i>
+          </div>
+        </div>
     </div>
 </template>
 
@@ -65,6 +79,8 @@
 import Item from './ListingItem'
 import webdav from '../webdav.js'
 import page from '../page.js'
+
+var $ = window.info
 
 export default {
   name: 'listing',
@@ -110,6 +126,9 @@ export default {
   methods: {
     base64: function (name) {
       return window.btoa(name)
+    },
+    cancelMultiple: function () {
+      $.multiple = false
     },
     dragEnter: function (event) {
       let items = document.getElementsByClassName('item')

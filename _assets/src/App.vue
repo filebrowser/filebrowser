@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" :class="{ multiple }">
     <header>
       <div>
         <img src="./assets/logo.svg" alt="File Manager">
@@ -31,21 +31,6 @@
     </main>
 
     <preview v-if="req.kind === 'preview'"></preview> 
-
-    <!-- TODO: show on listing and allowedit -->
-    <div class="floating">
-        <div tabindex="0" role="button" class="action" id="new">
-            <i class="material-icons" title="New file or directory">add</i>
-        </div>
-    </div>
-
-    <!-- TODO ??? -->
-     <div id="multiple-selection" class="mobile-only">
-        <p>Multiple selection enabled</p>
-        <div tabindex="0" role="button" class="action" id="multiple-selection-cancel">
-            <i class="material-icons" title="Clear">clear</i>
-        </div>
-    </div>
     
     <rename-prompt v-if="showRename" :class="{ active: showRename }"></rename-prompt>
     <delete-prompt v-if="showDelete" :class="{ active: showDelete }"></delete-prompt>
@@ -170,6 +155,8 @@ export default {
       url: window.location.pathname,
       name: document.title
     }, document.title, window.location.pathname)
+
+    document.getElementById('loading').classList.add('done')
   },
   data: function () {
     return window.info

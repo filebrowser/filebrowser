@@ -82,33 +82,9 @@ listing.addDoubleTapEvent = function () {
 
 
 document.addEventListener('DOMContentLoaded', event => {
-  listing.updateColumns()
   listing.addDoubleTapEvent()
-
-  document.getElementById('multiple-selection-activate').addEventListener('click', event => {
-    listing.selectMultiple = true
-    clickOverlay.click()
-
-    document.getElementById('multiple-selection').classList.add('active')
-    document.querySelector('body').style.paddingBottom = '4em'
-  })
-
-  document.getElementById('multiple-selection-cancel').addEventListener('click', event => {
-    listing.selectMultiple = false
-
-    document.querySelector('body').style.paddingBottom = '0'
-    document.getElementById('multiple-selection').classList.remove('active')
-  })
-
-  if (user.AllowEdit) {
-    buttons.move.addEventListener('click', listing.moveEvent)
-    buttons.rename.addEventListener('click', listing.rename)
-  }
-
-  let items = document.getElementsByClassName('item')
-
+  
   if (user.AllowNew) {
-
     buttons.new.addEventListener('click', listing.newFileButton)    
   }
 })

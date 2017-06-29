@@ -78,6 +78,14 @@ i.spin {
 }
 
 
+#app {
+    transition: .2s ease padding;
+}
+
+#app.multiple {
+    padding-bottom: 4em;
+}
+
 /* * * * * * * * * * * * * * * *
  *            EDITOR           *
  * * * * * * * * * * * * * * * */
@@ -500,37 +508,6 @@ main {
 }
 
 
-/* * * * * * * * * * * * * * * *
- *  MULTIPLE SELECTION DIALOG  *
- * * * * * * * * * * * * * * * */
-
-#multiple-selection {
-    position: fixed;
-    bottom: -4em;
-    left: 0;
-    z-index: 99999999;
-    width: 100%;
-    background-color: #2196f3;
-    height: 4em;
-    display: flex !important;
-    padding: 0.5em 0.5em 0.5em 1em;
-    justify-content: space-between;
-    align-items: center;
-    transition: .2s ease all;
-}
-
-#multiple-selection.active {
-    bottom: 0;
-}
-
-#multiple-selection * {
-    margin: 0;
-}
-
-#multiple-selection p,
-#multiple-selection i {
-    color: #fff;
-}
 
 
 /* * * * * * * * * * * * * * * *
