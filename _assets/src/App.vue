@@ -6,7 +6,12 @@
         <search></search>
       </div>
       <div>
+        <rename-button></rename-button>
+        <move-button></move-button>
         <delete-button></delete-button>
+        <switch-button v-show="req.kind !== 'editor'"></switch-button>
+        <download-button></download-button>
+        <upload-button v-show="showUpload()"></upload-button>
         <info-button></info-button>
       </div>
       <!-- <div id="click-overlay"></div> -->
@@ -22,10 +27,10 @@
       </div>
     </nav>
     <main>
-      <listing v-if="req.kind == 'listing'"></listing> 
+      <listing v-if="req.kind === 'listing'"></listing> 
     </main>
 
-    <preview v-if="req.kind == 'preview'"></preview> 
+    <preview v-if="req.kind === 'preview'"></preview> 
 
     <!-- TODO: show on listing and allowedit -->
     <div class="floating">
@@ -59,6 +64,11 @@ import Listing from './components/Listing'
 import InfoButton from './components/InfoButton'
 import InfoPrompt from './components/InfoPrompt'
 import DeleteButton from './components/DeleteButton'
+import RenameButton from './components/RenameButton'
+import UploadButton from './components/UploadButton'
+import DownloadButton from './components/DownloadButton'
+import SwitchButton from './components/SwitchViewButton'
+import MoveButton from './components/MoveButton'
 import css from './css.js'
 
 function updateColumnSizes () {
@@ -75,6 +85,7 @@ window.addEventListener('keydown', (event) => {
     window.info.showInfo = false
     window.info.showDelete = false
     window.info.showRename = false
+    window.info.showMove = false
 
     // Unselect all files and folders.
     if (window.info.req.kind === 'listing') {
@@ -123,18 +134,38 @@ window.addEventListener('keydown', (event) => {
 
 export default {
   name: 'app',
-  components: { Search, Preview, Listing, InfoButton, InfoPrompt, Help, DeleteButton },
+  components: {
+    Search,
+    Preview,
+    Listing,
+    InfoButton,
+    InfoPrompt,
+    Help,
+    DeleteButton,
+    RenameButton,
+    DownloadButton,
+    UploadButton,
+    SwitchButton,
+    MoveButton
+  },
   mounted: function () {
     updateColumnSizes()
     window.addEventListener('resize', updateColumnSizes)
-    window.history.replaceState({ url: window.location.pathname, name: document.title }, document.title, window.location.pathname)
+    window.history.replaceState({
+      url: window.location.pathname,
+      name: document.title
+    }, document.title, window.location.pathname)
   },
   data: function () {
     return window.info
   },
   methods: {
     showOverlay: function () {
-      return this.showInfo || this.showHelp
+      return this.showInfo || this.showHelp || this.showDelete || this.showRename || this.showMove
+    },
+    showUpload: function () {
+      if (this.req.kind === 'editor') return false
+      return this.user.allowNew
     }
   }
 }

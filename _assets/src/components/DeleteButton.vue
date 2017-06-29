@@ -1,5 +1,5 @@
 <template>
-    <button @click="show" aria-label="Delete"  title="Delete" class="action" id="delete">
+    <button @click="show" aria-label="Delete"  title="Delete" class="action">
         <i class="material-icons">delete</i>
         <span>Delete</span>
     </button>

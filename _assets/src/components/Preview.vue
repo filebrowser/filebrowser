@@ -4,7 +4,11 @@
             <button @click="back" class="action" aria-label="Close Preview" id="close">
                 <i class="material-icons">close</i>
             </button>
-            <!-- TODO: add more buttons -->
+            
+            <rename-button v-if="allowEdit()"></rename-button>
+            <delete-button v-if="allowEdit()"></delete-button>
+            <download-button></download-button>
+            <info-button></info-button>
         </div>
 
         <div class="preview">
@@ -24,9 +28,19 @@
 
 <script>
 import page from '../page'
+import InfoButton from './InfoButton'
+import DeleteButton from './DeleteButton'
+import RenameButton from './RenameButton'
+import DownloadButton from './DownloadButton'
 
 export default {
   name: 'preview',
+  components: {
+    InfoButton,
+    DeleteButton,
+    RenameButton,
+    DownloadButton
+  },
   data: function () {
     return window.info.req.data
   },
@@ -37,6 +51,9 @@ export default {
     back: function (event) {
       let url = page.removeLastDir(window.location.pathname)
       page.open(url)
+    },
+    allowEdit: function (event) {
+      return window.info.user.allowEdit
     }
   }
 }

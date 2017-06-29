@@ -57,9 +57,7 @@
           </item>
         </div>
 
-        <!--
-          <input style="display:none" type="file" id="upload-input" onchange="listing.handleFiles(this.files, '')" value="Upload" multiple>
-          -->
+        <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" value="Upload" multiple>
     </div>
 </template>
 
@@ -154,6 +152,9 @@ export default {
           file.style.opacity = 1
         })
       }
+    },
+    uploadInput: function (event) {
+      this.handleFiles(event.currentTarget.files, '')
     },
     handleFiles: function (files, base) {
       // buttons.setLoading('upload')
