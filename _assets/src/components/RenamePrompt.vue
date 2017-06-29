@@ -4,7 +4,7 @@
     <p>Insert a new name for <code>{{ oldName() }}</code>:</p>
     <input autofocus type="text" @keyup.enter="submit" v-model.trim="name">
     <div>
-      <button @click="submit" type="submit" autofocus>Rename</button>
+      <button @click="submit" type="submit">Rename</button>
       <button @click="cancel" class="cancel">Cancel</button>
     </div>
   </div>
@@ -33,12 +33,12 @@ export default {
         return $.req.data.name
       }
 
-      if ($.listing.selected.length === 0 || $.listing.selected.length > 1) {
+      if ($.selected.length === 0 || $.selected.length > 1) {
         // This shouldn't happen.
         return
       }
 
-      return $.req.data.items[$.listing.selected[0]].name
+      return $.req.data.items[$.selected[0]].name
     },
     submit: function (event) {
       let oldLink = ''
@@ -47,7 +47,7 @@ export default {
       if ($.req.kind !== 'listing') {
         oldLink = $.req.data.url
       } else {
-        oldLink = $.req.data.items[$.listing.selected[0]].url
+        oldLink = $.req.data.items[$.selected[0]].url
       }
 
       newLink = page.removeLastDir(oldLink) + '/' + this.name
@@ -56,6 +56,10 @@ export default {
 
       webdav.move(oldLink, newLink)
         .then(() => {
+          if ($.req.kind !== 'listing') {
+            page.open(newLink)
+            return
+          }
           // TODO: keep selected after reload?
           page.reload()
           // buttons.setDone('rename')

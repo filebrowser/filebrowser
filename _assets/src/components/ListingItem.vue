@@ -31,12 +31,11 @@ import webdav from '../webdav.js'
 import page from '../page.js'
 import array from '../array.js'
 
+var $ = window.info
+
 export default {
   name: 'item',
   props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index'],
-  data: function () {
-    return window.info.listing
-  },
   methods: {
     icon: function () {
       if (this.isDir) return 'folder'
@@ -99,19 +98,19 @@ export default {
         link.setAttribute('aria-selected', false)
       })
 
-      this.selected.length = 0
+      $.selected = []
       return false
     },
     click: function (event) {
-      if (this.selected.length !== 0) event.preventDefault()
-      if (this.selected.indexOf(this.index) === -1) {
-        if (!event.ctrlKey && !this.multiple) this.unselectAll()
+      if ($.selected.length !== 0) event.preventDefault()
+      if ($.selected.indexOf(this.index) === -1) {
+        if (!event.ctrlKey && !$.multiple) this.unselectAll()
 
         this.$el.setAttribute('aria-selected', true)
-        this.selected.push(this.index)
+        $.selected.push(this.index)
       } else {
         this.$el.setAttribute('aria-selected', false)
-        this.selected = array.remove(this.selected, this.index)
+        $.selected = array.remove($.selected, this.index)
       }
 
       // this.handleSelectionChange()

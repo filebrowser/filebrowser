@@ -2,8 +2,8 @@ var $ = window.info
 
 function open (url, history) {
   // Reset info
-  $.listing.selected.length = 0
-  $.listing.selected.multiple = false
+  $.selected = []
+  $.multiple = false
   $.req.kind = ''
 
   let request = new window.XMLHttpRequest()

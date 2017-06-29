@@ -72,44 +72,44 @@
  *        PROMPT - MOVE        *
  * * * * * * * * * * * * * * * */
 
-.prompt .file-list {
-    flex-direction: initial;
+.file-list {
     max-height: 50vh;
     overflow: auto;
-}
-
-.prompt .file-list ul {
     list-style: none;
     margin: 0;
     padding: 0;
     width: 100%;
 }
 
-.prompt .file-list ul li {
+.file-list li {
     width: 100%;
     user-select: none;
+    border-radius: .2em;
+    padding: .3em;
 }
 
-.prompt .file-list ul li[aria-selected=true] {
+.file-list li[aria-selected=true] {
     background: #2196f3 !important;
     color: #fff !important;
     transition: .1s ease all;
 }
 
-.prompt .file-list ul li:hover {
+.file-list li:hover {
     background-color: #e9eaeb;
     cursor: pointer;
 }
 
-.prompt .file-list ul li:before {
+.file-list li:before {
     content: "folder";
     color: #6f6f6f;
     vertical-align: middle;
-    padding: 0 .25em;
-    line-height: 2em;
+    line-height: 1.4;
+    font-family: 'Material Icons';
+    font-size: 1.75em;
+    margin-right: .25em;
 }
 
-.prompt .file-list ul li[aria-selected=true]:before {
+.file-list li[aria-selected=true]:before {
     color: white;
 }
 
