@@ -4,7 +4,7 @@
     <p>Choose new house for your file(s)/folder(s):</p>
 
     <ul class="file-list">
-      <li @click="select" @dblclick="next" v-for="item in items" :data-url="item.url">{{ item.name }}</li>
+      <li @click="select" @dblclick="next" :key="item.name" v-for="item in items" :data-url="item.url">{{ item.name }}</li>
     </ul>
 
     <p>Currently navigating on: <code>{{ current }}</code>.</p>
@@ -18,6 +18,7 @@
 
 <script>
 import page from '../page'
+import webdav from '../webdav'
 
 var $ = window.info
 
@@ -55,11 +56,39 @@ export default {
       $.showMove = false
     },
     move: function (event) {
-      console.log('Move')
+      event.preventDefault()
+
+      let el = event.currentTarget
+      let promises = []
+      let dest = this.current
+      // buttons.setLoading('move')
+
+      let selected = el.querySelector('li[aria-selected=true]')
+      if (selected !== null) {
+        dest = selected.dataset.url
+      }
+
+      for (let item of $.selected) {
+        let from = $.req.data.items[item].url
+        let to = dest + '/' + $.req.data.items[item].name
+        to = to.replace('//', '/')
+
+        promises.push(webdav.move(from, to))
+      }
+
+      $.showMove = false
+
+      Promise.all(promises)
+        .then(() => {
+          // buttons.setDone('move')
+          page.open(dest)
+        })
+        .catch(e => {
+          // buttons.setDone('move', false)
+          console.log(e)
+        })
     },
     next: function (event) {
-      console.log('Next')
-
       let url = event.currentTarget.dataset.url
       this.json(url)
         .then((data) => {

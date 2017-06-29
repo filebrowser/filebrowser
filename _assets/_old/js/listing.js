@@ -80,31 +80,6 @@ listing.addDoubleTapEvent = function () {
   })
 }
 
-listing.moveMakeItem = function (url, name) {
-  let node = document.createElement('li'),
-    count = 0
-
-  node.dataset.url = url
-  node.innerHTML = name
-  node.setAttribute('aria-selected', false)
-
-  node.addEventListener('dblclick', listing.moveDialogNext)
-  node.addEventListener('click', listing.selectMoveFolder)
-  node.addEventListener('touchstart', event => {
-    count++
-
-    setTimeout(() => {
-      count = 0
-    }, 300)
-
-    if (count > 1) {
-      listing.moveDialogNext(event)
-    }
-  })
-
-  return node
-}
-
 listing.moveSelected = function (event) {
   event.preventDefault()
 
