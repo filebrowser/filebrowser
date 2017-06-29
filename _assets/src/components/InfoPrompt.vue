@@ -2,13 +2,13 @@
     <div class="prompt">
         <h3>File Information</h3>
 
-        <p v-show="listing.selected.length > 1">{{ listing.selected.length }} files selected.</p>
+        <p v-show="selected.length > 1">{{ selected.length }} files selected.</p>
 
-        <p v-show="listing.selected.length < 2"><strong>Display Name:</strong> {{ name() }}</p>
+        <p v-show="selected.length < 2"><strong>Display Name:</strong> {{ name() }}</p>
         <p><strong>Size:</strong> <span id="content_length"></span>{{ humanSize() }}</p>
-        <p v-show="listing.selected.length < 2"><strong>Last Modified:</strong> {{ humanTime() }}</p>
+        <p v-show="selected.length < 2"><strong>Last Modified:</strong> {{ humanTime() }}</p>
 
-        <section v-show="dir() && listing.selected.length === 0">
+        <section v-show="dir() && selected.length === 0">
           <p><strong>Number of files:</strong> {{ req.data.numFiles }}</p>
           <p><strong>Number of directories:</strong> {{ req.data.numDirs }}</p>
         </section>
@@ -37,43 +37,43 @@ export default {
   },
   methods: {
     humanSize: function () {
-      if (this.listing.selected.length === 0 || this.req.kind !== 'listing') {
+      if (this.selected.length === 0 || this.req.kind !== 'listing') {
         return filesize(this.req.data.size)
       }
 
       var sum = 0
 
-      for (let i = 0; i < this.listing.selected.length; i++) {
-        sum += this.req.data.items[this.listing.selected[i]].size
+      for (let i = 0; i < this.selected.length; i++) {
+        sum += this.req.data.items[this.selected[i]].size
       }
 
       return filesize(sum)
     },
     humanTime: function () {
-      if (this.listing.selected.length === 0) {
+      if (this.selected.length === 0) {
         return moment(this.req.data.modified).fromNow()
       }
 
-      return moment(this.req.data.items[this.listing.selected[0]]).fromNow()
+      return moment(this.req.data.items[this.selected[0]]).fromNow()
     },
     name: function () {
-      if (this.listing.selected.length === 0) {
+      if (this.selected.length === 0) {
         return this.req.data.name
       }
 
-      return this.req.data.items[this.listing.selected[0]].name
+      return this.req.data.items[this.selected[0]].name
     },
     dir: function () {
-      if (this.listing.selected.length > 1) {
+      if (this.selected.length > 1) {
         // Don't show when multiple selected.
         return true
       }
 
-      if (this.listing.selected.length === 0) {
+      if (this.selected.length === 0) {
         return this.req.data.isDir
       }
 
-      return this.req.data.items[this.listing.selected[0]].isDir
+      return this.req.data.items[this.selected[0]].isDir
     },
     checksum: function (event, hash) {
       event.preventDefault()
@@ -81,8 +81,8 @@ export default {
       let request = new window.XMLHttpRequest()
       let link
 
-      if (this.listing.selected.length) {
-        link = this.req.data.items[this.listing.selected[0]].url
+      if (this.selected.length) {
+        link = this.req.data.items[this.selected[0]].url
       } else {
         link = window.location.pathname
       }

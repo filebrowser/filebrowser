@@ -17,8 +17,8 @@ window.addEventListener('popstate', (event) => {
   event.stopPropagation()
 
   $.req.kind = ''
-  $.listing.selected.length = 0
-  $.listing.selected.multiple = false
+  $.selected = []
+  $.multiple = false
   // TODO: find a better way to do this. Maybe on app.vue?
   window.info.showHelp = false
   window.info.showInfo = false

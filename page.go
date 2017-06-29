@@ -147,7 +147,7 @@ func htmlError(w http.ResponseWriter, code int, err error) (int, error) {
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
-	return http.StatusOK, nil
+	return 0, nil
 }
 
 const errTemplate = `<!DOCTYPE html>

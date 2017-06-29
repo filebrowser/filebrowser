@@ -80,36 +80,6 @@ listing.addDoubleTapEvent = function () {
   })
 }
 
-listing.selectMoveFolder = function (event) {
-  if (event.target.getAttribute('aria-selected') === 'true') {
-    event.target.setAttribute('aria-selected', false)
-    return
-  } else {
-    if (document.querySelector('.file-list li[aria-selected=true]')) {
-      document.querySelector('.file-list li[aria-selected=true]').setAttribute('aria-selected', false)
-    }
-    event.target.setAttribute('aria-selected', true)
-    return
-  }
-}
-
-listing.getJSON = function (link) {
-  return new Promise((resolve, reject) => {
-    let request = new XMLHttpRequest()
-    request.open('GET', link)
-    request.setRequestHeader('Accept', 'application/json')
-    request.onload = () => {
-      if (request.status == 200) {
-        resolve(request.responseText)
-      } else {
-        reject(request.statusText)
-      }
-    }
-    request.onerror = () => reject(request.statusText)
-    request.send()
-  })
-}
-
 listing.moveMakeItem = function (url, name) {
   let node = document.createElement('li'),
     count = 0
@@ -133,43 +103,6 @@ listing.moveMakeItem = function (url, name) {
   })
 
   return node
-}
-
-listing.moveDialogNext = function (event) {
-  let request = new XMLHttpRequest(),
-    prompt = document.querySelector('form.prompt.active'),
-    list = prompt.querySelector('div.file-list ul')
-
-  prompt.addEventListener('submit', listing.moveSelected)
-
-  listing.getJSON(event.target.dataset.url)
-    .then((data) => {
-      let dirs = 0
-
-      prompt.querySelector('ul').innerHTML = ''
-      prompt.querySelector('code').innerHTML = event.target.dataset.url
-
-      if (event.target.dataset.url != baseURL + '/') {
-        let node = listing.moveMakeItem(removeLastDirectoryPartOf(event.target.dataset.url) + '/', '..')
-        list.appendChild(node)
-      }
-
-      if (JSON.parse(data) == null) {
-        prompt.querySelector('p').innerHTML = `There aren't any folders in this directory.`
-        return
-      }
-
-      for (let f of JSON.parse(data)) {
-        if (f.IsDir === true) {
-          dirs++
-          list.appendChild(listing.moveMakeItem(f.URL, f.Name))
-        }
-      }
-
-      if (dirs === 0)
-        prompt.querySelector('p').innerHTML = `There aren't any folders in this directory.`
-    })
-    .catch(e => console.log(e))
 }
 
 listing.moveSelected = function (event) {
@@ -203,40 +136,6 @@ listing.moveSelected = function (event) {
     })
 }
 
-listing.moveEvent = function (event) {
-  if (event.currentTarget.classList.contains('disabled'))
-    return
-
-  listing.getJSON(window.location.pathname)
-    .then((data) => {
-      let prompt = document.importNode(templates.move.content, true),
-        list = prompt.querySelector('div.file-list ul'),
-        dirs = 0
-
-      prompt.querySelector('form').addEventListener('submit', listing.moveSelected)
-      prompt.querySelector('code').innerHTML = window.location.pathname
-
-      if (window.location.pathname !== baseURL + '/') {
-        list.appendChild(listing.moveMakeItem(removeLastDirectoryPartOf(window.location.pathname) + '/', '..'))
-      }
-
-      for (let f of JSON.parse(data)) {
-        if (f.IsDir === true) {
-          dirs++
-          list.appendChild(listing.moveMakeItem(f.URL, f.Name))
-        }
-      }
-
-      if (dirs === 0) {
-        prompt.querySelector('p').innerHTML = `There aren't any folders in this directory.`
-      }
-
-      document.body.appendChild(prompt)
-      document.querySelector('.overlay').classList.add('active')
-      document.querySelector('.prompt').classList.add('active')
-    })
-    .catch(e => console.log(e))
-}
 
 document.addEventListener('DOMContentLoaded', event => {
   listing.updateColumns()
