@@ -26,7 +26,6 @@ export default {
   methods: {
     cancel: function (event) {
       $.showRename = false
-      this.name = ''
     },
     oldName: function () {
       if ($.req.kind !== 'listing') {

@@ -103,11 +103,6 @@ export default {
     },
     close: function () {
       this.showInfo = false
-
-      let checksums = this.$el.querySelectorAll('a')
-      for (let i = 0; i < checksums.length; i++) {
-        checksums[i].innerHTML = 'show'
-      }
     }
   }
 }

@@ -67,7 +67,7 @@ import webdav from '../webdav.js'
 import page from '../page.js'
 
 export default {
-  name: 'preview',
+  name: 'listing',
   data: function () {
     return window.info
   },
