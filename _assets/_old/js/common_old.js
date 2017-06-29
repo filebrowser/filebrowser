@@ -105,72 +105,6 @@ function logoutEvent (event) {
   }
 }
 
-function deleteOnSingleFile () {
-  closePrompt()
-  buttons.setLoading('delete')
-
-  webdav.delete(window.location.pathname)
-    .then(() => {
-      window.location.pathname = removeLastDirectoryPartOf(window.location.pathname)
-    })
-    .catch(e => {
-      buttons.setDone('delete', false)
-      console.log(e)
-    })
-}
-
-function deleteOnListing () {
-  closePrompt()
-  buttons.setLoading('delete')
-
-  let promises = []
-
-  for (let id of selectedItems) {
-    promises.push(webdav.delete(document.getElementById(id).dataset.url))
-  }
-
-  Promise.all(promises)
-    .then(() => {
-      listing.reload()
-      buttons.setDone('delete')
-    })
-    .catch(e => {
-      console.log(e)
-      buttons.setDone('delete', false)
-    })
-}
-
-// Handles the delete button event
-function deleteEvent (event) {
-  let single = false
-
-  if (!selectedItems.length) {
-    selectedItems = ['placeholder']
-    single = true
-  }
-
-  let clone = document.importNode(templates.question.content, true)
-  clone.querySelector('h3').innerHTML = 'Delete files'
-
-  if (single) {
-    clone.querySelector('form').addEventListener('submit', deleteOnSingleFile)
-    clone.querySelector('p').innerHTML = `Are you sure you want to delete this file/folder?`
-  } else {
-    clone.querySelector('form').addEventListener('submit', deleteOnListing)
-    clone.querySelector('p').innerHTML = `Are you sure you want to delete ${selectedItems.length} file(s)?`
-  }
-
-  clone.querySelector('input').remove()
-  clone.querySelector('.ok').innerHTML = 'Delete'
-
-  document.body.appendChild(clone)
-  document.querySelector('.overlay').classList.add('active')
-  document.querySelector('.prompt').classList.add('active')
-
-  return false
-}
-
-
 /* * * * * * * * * * * * * * * *
  *                             *
  *           BOOTSTRAP         *
@@ -208,6 +142,5 @@ document.addEventListener('DOMContentLoaded', function (event) {
     })
   })
 
-  setupSearch()
   return false
 })

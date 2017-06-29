@@ -16,11 +16,11 @@ function open (url, history) {
 
       if (history) {
         window.history.pushState({
-          name: $.req.name,
+          name: $.req.data.name,
           url: url
-        }, $.req.name, url)
+        }, $.req.data.name, url)
 
-        document.title = $.req.name
+        document.title = $.req.data.name
       }
     } else {
       console.log(request.responseText)
