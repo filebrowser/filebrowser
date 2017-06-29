@@ -27,5 +27,5 @@ func main() {
 	m.SetBaseURL("/vaca")
 	m.Commands = []string{"git"}
 	http.HandleFunc("/", handler)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":80", nil)
 }
