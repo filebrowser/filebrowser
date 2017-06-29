@@ -106,8 +106,8 @@ func New(scope string) *FileManager {
 		Users:      map[string]*User{},
 		BeforeSave: func(r *http.Request, m *FileManager, u *User) error { return nil },
 		AfterSave:  func(r *http.Request, m *FileManager, u *User) error { return nil },
-		static:     http.FileServer(rice.MustFindBox("./_assets/dist_build/_").HTTPBox()),
-		templates:  rice.MustFindBox("./_assets/dist_build/templates"),
+		static:     http.FileServer(rice.MustFindBox("./_assets/dist_dev/_").HTTPBox()),
+		templates:  rice.MustFindBox("./_assets/dist_dev/templates"),
 	}
 
 	m.SetScope(scope, "")

@@ -17,20 +17,6 @@ listing.redefineDownloadURLs = function () {
   })
 }
 
-listing.newFileButton = function (event) {
-  event.preventDefault()
-
-  let clone = document.importNode(templates.question.content, true)
-  clone.querySelector('h3').innerHTML = 'New file'
-  clone.querySelector('p').innerHTML = 'End with a trailing slash to create a dir.'
-  clone.querySelector('.ok').innerHTML = 'Create'
-  clone.querySelector('form').addEventListener('submit', listing.newFilePrompt)
-
-  document.querySelector('body').appendChild(clone)
-  document.querySelector('.overlay').classList.add('active')
-  document.querySelector('.prompt').classList.add('active')
-}
-
 listing.newFilePrompt = function (event) {
   event.preventDefault()
   buttons.setLoading('new')

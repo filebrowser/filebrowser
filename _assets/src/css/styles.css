@@ -379,9 +379,8 @@ fieldset h3,
 main {
     width: 78%;
     margin-left: 20%;
+    min-height: 1em;
 }
-
-
 
 
 /* * * * * * * * * * * * * * * *
