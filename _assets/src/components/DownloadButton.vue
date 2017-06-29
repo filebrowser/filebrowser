@@ -2,6 +2,7 @@
     <button @click="download" aria-label="Download" title="Download" class="action">
         <i class="material-icons">file_download</i>
         <span>Download</span>
+        <span v-if="count() > 0" class="counter">{{ count() }}</span>
     </button>
 </template>
 
@@ -11,6 +12,9 @@ var $ = window.info
 export default {
   name: 'download-button',
   methods: {
+    count: function () {
+      return $.selected.length
+    },
     download: function (event) {
       if ($.req.kind !== 'listing') {
         window.location = window.location.pathname + '?download=true'

@@ -1,90 +1,10 @@
 @import "./fonts.css";
 @import "./normalize.css";
+@import "./base.css";
 @import "./header.css";
 @import "./prompts.css";
 @import "./listing.css";
 
-body {
-    font-family: 'Roboto', sans-serif;
-    padding-top: 4em;
-    background-color: #f8f8f8;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-*,
-*:hover,
-*:active,
-*:focus {
-    outline: 0
-}
-
-a {
-    text-decoration: none;
-}
-
-img {
-    max-width: 100%;
-}
-
-audio,
-video {
-    width: 100%;
-}
-
-pre {
-    padding: 1em;
-    border: 1px solid #e6e6e6;
-    border-radius: 0.5em;
-    background-color: #f5f5f5;
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
-    word-wrap: break-word;
-}
-
-button {
-    border: 0;
-    padding: .5em 1em;
-    margin-left: .5em;
-    border-radius: .1em;
-    cursor: pointer;
-    background: #2196f3;
-    color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
-    transition: .1s ease all;
-}
-
-button:hover {
-    background-color: #1E88E5;
-}
-
-.mobile-only {
-    display: none !important;
-}
-
-.container {
-    width: 95%;
-    max-width: 960px;
-    margin: 1em auto 0;
-}
-
-i.spin {
-    animation: 1s spin linear infinite;
-}
-
-
-#app {
-    transition: .2s ease padding;
-}
-
-#app.multiple {
-    padding-bottom: 4em;
-}
 
 /* * * * * * * * * * * * * * * *
  *            EDITOR           *
@@ -261,6 +181,7 @@ fieldset h3,
     box-shadow: 0 0 0 0;
     vertical-align: middle;
     text-align: left;
+    position: relative;
 }
 
 .action.disabled {
@@ -301,45 +222,6 @@ fieldset h3,
 }
 
 
-/* * * * * * * * * * * * * * * *
- *         NEW FILE/DIR        *
- * * * * * * * * * * * * * * * */
-
-.floating {
-    position: fixed;
-    bottom: 1em;
-    right: 1em;
-}
-
-.floating .action {
-    background-color: #2196f3 !important;
-    color: #fff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .12);
-}
-
-#newdir {
-    position: fixed;
-    bottom: 1.3em;
-    right: 5em;
-    transition: .2s ease all;
-    opacity: 0;
-    border: 0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 1px 2px rgba(0, 0, 0, .24);
-    padding: .5em;
-    width: 22em;
-    border-radius: .2em;
-}
-
-#newdir.enabled {
-    opacity: 1;
-}
-
-
-#logout {
-    border-radius: 0;
-    margin-left: auto;
-    padding: .15em;
-}
 
 #click-overlay {
     display: none;
@@ -355,37 +237,25 @@ fieldset h3,
     display: block;
 }
 
+.action .counter {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #2196f3;
+    color: #fff;
+    border-radius: 50%;
+    font-size: .75em;
+    width: 1.5em;
+    height: 1.5em;
+    text-align: center;
+    line-height: 1.25em;
+    border: 2px solid white;
+}
+
 
 /* SIDEBAR */
 
-#sidebar {
-    position: fixed;
-    left: 0;
-    width: 20%;
-}
-
-#sidebar .action {
-    width: 100%;
-    display: block;
-    border-radius: 0;
-    font-size: 1.1em;
-    padding: .5em;
-}
-
-#sidebar > div {
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-#sidebar .action>* {
-    vertical-align: middle;
-}
-
-main {
-    width: 78%;
-    margin-left: 20%;
-    min-height: 1em;
-}
 
 
 /* * * * * * * * * * * * * * * *

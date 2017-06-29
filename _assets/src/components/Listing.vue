@@ -58,14 +58,7 @@
         </div>
 
         <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" value="Upload" multiple>
-
-        <!-- TODO: show on listing and allowedit -->
-        <div class="floating">
-        <div tabindex="0" role="button" class="action" id="new">
-        <i class="material-icons" title="New file or directory">add</i>
-        </div>
-        </div>
-
+        
         <div v-show="multiple" :class="{ active: multiple }" id="multiple-selection">
           <p>Multiple selection enabled</p>
           <div @click="cancelMultiple" tabindex="0" role="button" title="Clear" aria-label="Clear" class="action">
@@ -94,34 +87,6 @@ export default {
     }, false)
 
     document.addEventListener('drop', this.drop, false)
-  },
-  beforeUpdate: function () {
-    /*
-      listing.redefineDownloadURLs()
-
-  let selectedNumber = selectedItems.length,
-    fileAction = document.getElementById('file-only')
-
-  if (selectedNumber) {
-    fileAction.classList.remove('disabled')
-
-    if (selectedNumber > 1) {
-      buttons.rename.classList.add('disabled')
-      buttons.info.classList.add('disabled')
-    }
-
-    if (selectedNumber == 1) {
-      buttons.info.classList.remove('disabled')
-      buttons.rename.classList.remove('disabled')
-    }
-
-    return false
-  }
-
-  buttons.info.classList.remove('disabled')
-  fileAction.classList.add('disabled')
-  */
-    console.log('before upding')
   },
   methods: {
     base64: function (name) {

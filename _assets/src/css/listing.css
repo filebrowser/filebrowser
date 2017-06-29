@@ -165,9 +165,9 @@
     display: flex !important;
     background: #f8f8f8;
     position: fixed;
-    width: 78%;
+    width: calc(100% - 19em);
     top: 4em;
-    left: 20%;
+    right: 1em;
     z-index: 999;
     padding: .85em;
     border: 0;
@@ -180,16 +180,6 @@
 
 #listing.list .item.header .name {
     margin-right: 3em;
-}
-
-#listing.list .header {
-    display: flex;
-    background: #fafafa;
-    position: fixed;
-    width: 100%;
-    top: 7.8em;
-    left: 0;
-    z-index: 999;
 }
 
 #listing.list .header a {
@@ -248,4 +238,12 @@
 #listing #multiple-selection p,
 #listing #multiple-selection i {
     color: #fff;
+}
+
+@media (max-width: 1024px) {
+    #listing.list .item.header {
+        width: calc(100% - 2em);
+        right: 1em;
+        left: 1em;
+    }
 }

@@ -14,9 +14,9 @@
         <upload-button v-show="showUpload()"></upload-button>
         <info-button></info-button>
       </div>
-      <!-- <div id="click-overlay"></div> -->
     </header>
-    <nav id="sidebar">
+
+    <nav>
       <a class="action" :href="baseURL + '/'">
         <i class="material-icons">folder</i>
         <span>My Files</span>
@@ -36,7 +36,9 @@
         <span>Logout</span>
       </button>
     </nav>
+
     <main>
+      <editor v-if="req.kind === 'editor'"></editor>
       <listing v-if="req.kind === 'listing'"></listing> 
       <preview v-if="req.kind === 'preview'"></preview> 
     </main>
@@ -47,8 +49,8 @@
     <delete-prompt v-if="showDelete" :class="{ active: showDelete }"></delete-prompt>
     <info-prompt v-if="showInfo" :class="{ active: showInfo }"></info-prompt>
     <move-prompt v-if="showMove" :class="{ active: showMove }"></move-prompt>
+    
     <help v-show="showHelp" :class="{ active: showHelp }"></help>
-
     <div v-show="showOverlay()" @click="resetPrompts" class="overlay" :class="{ active: showOverlay() }"></div>
 
     <footer>Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
@@ -57,9 +59,10 @@
 
 <script>
 import Search from './components/Search'
-import Preview from './components/Preview'
 import Help from './components/Help'
+import Preview from './components/Preview'
 import Listing from './components/Listing'
+import Editor from './components/Editor'
 import InfoButton from './components/InfoButton'
 import InfoPrompt from './components/InfoPrompt'
 import DeleteButton from './components/DeleteButton'
@@ -198,6 +201,7 @@ export default {
     Search,
     Preview,
     Listing,
+    Editor,
     InfoButton,
     InfoPrompt,
     Help,
