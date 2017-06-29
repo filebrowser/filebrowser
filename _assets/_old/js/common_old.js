@@ -1,15 +1,11 @@
 'use strict'
 
-var data = (window.data || window.alert('Something is wrong, please refresh!'))
-
 var tempID = '_fm_internal_temporary_id'
 
 var templates = {}
 var selectedItems = []
 var overlay
 var clickOverlay
-
-
 
 // Sends a costum event to itself
 Document.prototype.sendCostumEvent = function (text) {

@@ -350,9 +350,6 @@ document.addEventListener('DOMContentLoaded', event => {
   let items = document.getElementsByClassName('item')
 
   if (user.AllowNew) {
-    buttons.upload.addEventListener('click', (event) => {
-      document.getElementById('upload-input').click()
-    })
 
     buttons.new.addEventListener('click', listing.newFileButton)    
   }
