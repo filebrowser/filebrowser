@@ -21,10 +21,20 @@
         <i class="material-icons">folder</i>
         <span>My Files</span>
       </a>
-      <div class="action" id="logout" tabindex="0" role="button" aria-label="Log out">
+      <div v-if="user.allowNew">
+        <button @click="showNewDir = true" aria-label="New directory" title="New directory" class="action">
+          <i class="material-icons">create_new_folder</i>
+          <span>New folder</span>
+        </button>
+        <button @click="showNewFile = true" aria-label="New file" title="New file" class="action">
+          <i class="material-icons">note_add</i>
+          <span>New file</span>
+        </button>
+      </div>
+      <button class="action" id="logout" tabindex="0" role="button" aria-label="Log out">
         <i class="material-icons" title="Logout">exit_to_app</i>
         <span>Logout</span>
-      </div>
+      </button>
     </nav>
     <main>
       <listing v-if="req.kind === 'listing'"></listing> 

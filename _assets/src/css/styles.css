@@ -372,6 +372,11 @@ fieldset h3,
     padding: .5em;
 }
 
+#sidebar > div {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
 #sidebar .action>* {
     vertical-align: middle;
 }
