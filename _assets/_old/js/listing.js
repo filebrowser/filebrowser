@@ -17,26 +17,6 @@ listing.redefineDownloadURLs = function () {
   })
 }
 
-listing.newFilePrompt = function (event) {
-  event.preventDefault()
-  buttons.setLoading('new')
-
-  let name = event.currentTarget.querySelector('input').value
-
-  webdav.new(window.location.pathname + name)
-    .then(() => {
-      buttons.setDone('new')
-      listing.reload()
-    })
-    .catch(e => {
-      console.log(e)
-      buttons.setDone('new', false)
-    })
-
-  closePrompt(event)
-  return false
-}
-
 listing.addDoubleTapEvent = function () {
   let items = document.getElementsByClassName('item'),
     touches = {
