@@ -50,7 +50,7 @@
     <info-prompt v-show="showInfo" :class="{ active: showInfo }"></info-prompt>
     <help v-show="showHelp" :class="{ active: showHelp }"></help>
 
-    <div v-show="showOverlay()" class="overlay" :class="{ active: showOverlay() }"></div>
+    <div v-show="showOverlay()" @click="resetPrompts" class="overlay" :class="{ active: showOverlay() }"></div>
 
     <footer>Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
   </div>
@@ -78,14 +78,18 @@ function updateColumnSizes () {
   items.style.width = `calc(${100 / columns}% - 1em)`
 }
 
+function resetPrompts () {
+  window.info.showHelp = false
+  window.info.showInfo = false
+  window.info.showDelete = false
+  window.info.showRename = false
+  window.info.showMove = false
+}
+
 window.addEventListener('keydown', (event) => {
   // Esc!
   if (event.keyCode === 27) {
-    window.info.showHelp = false
-    window.info.showInfo = false
-    window.info.showDelete = false
-    window.info.showRename = false
-    window.info.showMove = false
+    resetPrompts()
 
     // Unselect all files and folders.
     if (window.info.req.kind === 'listing') {
@@ -166,7 +170,8 @@ export default {
     showUpload: function () {
       if (this.req.kind === 'editor') return false
       return this.user.allowNew
-    }
+    },
+    resetPrompts: resetPrompts
   }
 }
 </script>

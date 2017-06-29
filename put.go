@@ -128,7 +128,7 @@ func parseCompleteFile(data map[string]interface{}, filename string, mark rune) 
 		return []byte{}, err
 	}
 
-	front = frontmatter.AppendRune(front, mark)
+	front = []byte(frontmatter.AppendRune(string(front), mark))
 
 	// Generates the final file
 	f := new(bytes.Buffer)

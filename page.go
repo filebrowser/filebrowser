@@ -26,13 +26,11 @@ type page struct {
 	User      *User  `json:"-"`
 	BaseURL   string `json:"-"`
 	WebDavURL string `json:"-"`
-
-	Name string      `json:"name"`
-	Path string      `json:"path"`
-	Kind string      `json:"kind"` // listing, editor or preview
-	Data interface{} `json:"data"`
+	Kind      string `json:"kind"`
+	Data      *file  `json:"data"`
 }
 
+/*
 // breadcrumbItem contains the Name and the URL of a breadcrumb piece.
 type breadcrumbItem struct {
 	Name string
@@ -90,7 +88,7 @@ func (p page) PreviousLink() string {
 	}
 
 	return path
-}
+} */
 
 func (p page) Render(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	if strings.Contains(r.Header.Get("Accept"), "application/json") {

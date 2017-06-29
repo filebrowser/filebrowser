@@ -1,29 +1,28 @@
 package frontmatter
 
 import (
-	"bytes"
 	"errors"
 	"strings"
 )
 
 // HasRune checks if the file has the frontmatter rune
-func HasRune(file []byte) bool {
-	return strings.HasPrefix(string(file), "---") ||
-		strings.HasPrefix(string(file), "+++") ||
-		strings.HasPrefix(string(file), "{")
+func HasRune(file string) bool {
+	return strings.HasPrefix(file, "---") ||
+		strings.HasPrefix(file, "+++") ||
+		strings.HasPrefix(file, "{")
 }
 
 // AppendRune appends the frontmatter rune to a file
-func AppendRune(frontmatter []byte, mark rune) []byte {
-	frontmatter = bytes.TrimSpace(frontmatter)
+func AppendRune(frontmatter string, mark rune) string {
+	frontmatter = strings.TrimSpace(frontmatter)
 
 	switch mark {
 	case '-':
-		return []byte("---\n" + string(frontmatter) + "\n---")
+		return "---\n" + frontmatter + "\n---"
 	case '+':
-		return []byte("+++\n" + string(frontmatter) + "\n+++")
+		return "+++\n" + frontmatter + "\n+++"
 	case '{':
-		return []byte("{\n" + string(frontmatter) + "\n}")
+		return "{\n" + frontmatter + "\n}"
 	}
 
 	return frontmatter

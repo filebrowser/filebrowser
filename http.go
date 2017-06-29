@@ -15,7 +15,7 @@ const assetsURL = "/_"
 type requestContext struct {
 	us *User
 	fm *FileManager
-	fi *fileInfo
+	fi *file
 	pg *page
 }
 
@@ -82,7 +82,7 @@ func serveHTTP(c *requestContext, w http.ResponseWriter, r *http.Request) (int, 
 	}
 
 	if r.Method == http.MethodGet {
-		var f *fileInfo
+		var f *file
 
 		// Obtains the information of the directory/file.
 		f, err = getInfo(r.URL, c.fm, c.us)

@@ -136,7 +136,7 @@ type Block struct {
 	Type     string
 	HTMLType string
 	Content  *Content
-	Parent   *Block
+	Parent   *Block `json:"-"`
 }
 
 func rawToPretty(config interface{}, parent *Block) *Content {
