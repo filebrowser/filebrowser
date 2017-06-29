@@ -1,6 +1,7 @@
 package filemanager
 
 import (
+	"bytes"
 	"context"
 	"crypto/md5"
 	"crypto/sha1"
@@ -19,16 +20,17 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/hacdias/filemanager/frontmatter"
+	"github.com/spf13/hugo/parser"
 )
 
 var (
 	errInvalidOption = errors.New("Invalid option")
 )
 
-// fileInfo contains the information about a particular file or directory.
-type fileInfo struct {
-	// Used to store the file's content temporarily.
-	content []byte
+// file contains the information about a particular file or directory.
+type file struct {
 	// The name of the file.
 	Name string `json:"name"`
 	// The Size of the file.
@@ -50,14 +52,17 @@ type fileInfo struct {
 	// Indicates the file content type: video, text, image, music or blob.
 	Type string `json:"type"`
 	// Stores the content of a text file.
-	Content string `json:"content"`
+	Content string `json:"content,omitempty"`
+
+	Editor *editor `json:"editor,omitempty"`
+
+	*listing `json:",omitempty"`
 }
 
 // A listing is the context used to fill out a template.
 type listing struct {
-	*fileInfo
 	// The items (files and folders) in the path.
-	Items []fileInfo `json:"items"`
+	Items []file `json:"items"`
 	// The number of directories in the listing.
 	NumDirs int `json:"numDirs"`
 	// The number of files (items that aren't directories) in the listing.
@@ -66,17 +71,30 @@ type listing struct {
 	Sort string `json:"sort"`
 	// And which order.
 	Order string `json:"order"`
-	// If ≠0 then Items have been limited to that many elements.
-	ItemsLimitedTo int    `json:"ItemsLimitedTo"`
-	Display        string `json:"display"`
+	// Displays in mosaic or list.
+	Display string `json:"display"`
+}
+
+// editor contains the information to fill the editor template.
+type editor struct {
+	// Indicates if the content has only frontmatter, only content, or both.
+	Mode string `json:"type"`
+	// File content language.
+	Language string `json:"language"`
+	// This indicates if the editor should be visual or not.
+	Visual      bool `json:"visual"`
+	FrontMatter struct {
+		Content *frontmatter.Content `json:"content"`
+		Rune    rune                 `json:"rune"`
+	} `json:"frontmatter"`
 }
 
 // getInfo gets the file information and, in case of error, returns the
 // respective HTTP error code
-func getInfo(url *url.URL, c *FileManager, u *User) (*fileInfo, error) {
+func getInfo(url *url.URL, c *FileManager, u *User) (*file, error) {
 	var err error
 
-	i := &fileInfo{URL: c.RootURL() + url.Path}
+	i := &file{URL: c.RootURL() + url.Path}
 	i.VirtualPath = url.Path
 	i.VirtualPath = strings.TrimPrefix(i.VirtualPath, "/")
 	i.VirtualPath = "/" + i.VirtualPath
@@ -99,29 +117,31 @@ func getInfo(url *url.URL, c *FileManager, u *User) (*fileInfo, error) {
 }
 
 // getListing gets the information about a specific directory and its files.
-func getListing(u *User, filePath string, baseURL string, i *fileInfo) (*listing, error) {
+func (i *file) getListing(c *requestContext, r *http.Request) error {
+	baseURL := c.fm.RootURL() + r.URL.Path
+
 	// Gets the directory information using the Virtual File System of
 	// the user configuration.
-	file, err := u.fileSystem.OpenFile(context.TODO(), filePath, os.O_RDONLY, 0)
+	f, err := c.us.fileSystem.OpenFile(context.TODO(), c.fi.VirtualPath, os.O_RDONLY, 0)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	defer file.Close()
+	defer f.Close()
 
 	// Reads the directory and gets the information about the files.
-	files, err := file.Readdir(-1)
+	files, err := f.Readdir(-1)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	var (
-		fileinfos           []fileInfo
+		fileinfos           []file
 		dirCount, fileCount int
 	)
 
 	for _, f := range files {
 		name := f.Name()
-		allowed := u.Allowed("/" + name)
+		allowed := c.us.Allowed("/" + name)
 
 		if !allowed {
 			continue
@@ -137,7 +157,7 @@ func getListing(u *User, filePath string, baseURL string, i *fileInfo) (*listing
 		// Absolute URL
 		url := url.URL{Path: baseURL + name}
 
-		i := fileInfo{
+		i := file{
 			Name:    f.Name(),
 			Size:    f.Size(),
 			ModTime: f.ModTime(),
@@ -150,29 +170,101 @@ func getListing(u *User, filePath string, baseURL string, i *fileInfo) (*listing
 		fileinfos = append(fileinfos, i)
 	}
 
-	return &listing{
-		fileInfo: i,
+	i.listing = &listing{
 		Items:    fileinfos,
 		NumDirs:  dirCount,
 		NumFiles: fileCount,
-	}, nil
+	}
+
+	return nil
+}
+
+// getEditor gets the editor based on a Info struct
+func (i *file) getEditor(r *http.Request) error {
+	var err error
+
+	// Create a new editor variable and set the mode
+	e := &editor{
+		Language: editorLanguage(i.Extension),
+	}
+
+	e.Mode = editorMode(e.Language)
+
+	if e.Mode == "frontmatter-only" || e.Mode == "complete" {
+		e.Visual = true
+	}
+
+	if r.URL.Query().Get("visual") == "false" {
+		e.Mode = "content-only"
+	}
+
+	hasRune := frontmatter.HasRune(i.Content)
+
+	if e.Mode == "frontmatter-only" && !hasRune {
+		e.FrontMatter.Rune, err = frontmatter.StringFormatToRune(e.Mode)
+		if err != nil {
+			goto Error
+		}
+		i.Content = frontmatter.AppendRune(i.Content, e.FrontMatter.Rune)
+		hasRune = true
+	}
+
+	if e.Mode == "frontmatter-only" && hasRune {
+		e.FrontMatter.Content, _, err = frontmatter.Pretty([]byte(i.Content))
+		if err != nil {
+			goto Error
+		}
+	}
+
+	if e.Mode == "complete" && hasRune {
+		var page parser.Page
+		content := []byte(i.Content)
+		// Starts a new buffer and parses the file using Hugo's functions
+
+		buffer := bytes.NewBuffer(content)
+		page, err = parser.ReadFrom(buffer)
+
+		if err != nil {
+			goto Error
+		}
+
+		// Parses the page content and the frontmatter
+		i.Content = strings.TrimSpace(string(page.Content()))
+		e.FrontMatter.Rune = rune(content[0])
+		e.FrontMatter.Content, _, err = frontmatter.Pretty(page.FrontMatter())
+	}
+
+	if e.Mode == "complete" && !hasRune {
+		err = errors.New("Complete but without rune")
+	}
+
+Error:
+	if e.Mode == "content-only" || err != nil {
+		e.Mode = "content-only"
+	}
+
+	i.Editor = e
+	return nil
 }
 
 // RetrieveFileType obtains the mimetype and converts it to a simple
 // type nomenclature.
-func (i *fileInfo) RetrieveFileType() error {
+func (i *file) RetrieveFileType() error {
+	var content []byte
+	var err error
+
 	// Tries to get the file mimetype using its extension.
 	mimetype := mime.TypeByExtension(i.Extension)
 
 	if mimetype == "" {
-		err := i.Read()
+		content, err = ioutil.ReadFile(i.Path)
 		if err != nil {
 			return err
 		}
 
 		// Tries to get the file mimetype using its first
 		// 512 bytes.
-		mimetype = http.DetectContentType(i.content)
+		mimetype = http.DetectContentType(content)
 	}
 
 	if strings.HasPrefix(mimetype, "video") {
@@ -192,12 +284,12 @@ func (i *fileInfo) RetrieveFileType() error {
 
 	if strings.HasPrefix(mimetype, "text") {
 		i.Type = "text"
-		return nil
+		goto End
 	}
 
 	if strings.HasPrefix(mimetype, "application/javascript") {
 		i.Type = "text"
-		return nil
+		goto End
 	}
 
 	// If the type isn't text (and is blob for example), it will check some
@@ -210,24 +302,24 @@ func (i *fileInfo) RetrieveFileType() error {
 	}
 
 	i.Type = "blob"
+
+End:
+	// If the file type is text, save its content.
+	if i.Type == "text" {
+		if len(content) == 0 {
+			content, err = ioutil.ReadFile(i.Path)
+			if err != nil {
+				return err
+			}
+		}
+
+		i.Content = string(content)
+	}
+
 	return nil
 }
 
-// Reads the file.
-func (i *fileInfo) Read() error {
-	if len(i.content) != 0 {
-		return nil
-	}
-
-	var err error
-	i.content, err = ioutil.ReadFile(i.Path)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (i fileInfo) Checksum(kind string) (string, error) {
+func (i file) Checksum(kind string) (string, error) {
 	file, err := os.Open(i.Path)
 	if err != nil {
 		return "", err
@@ -258,13 +350,8 @@ func (i fileInfo) Checksum(kind string) (string, error) {
 	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
-// StringifyContent returns a string with the file content.
-func (i fileInfo) StringifyContent() string {
-	return string(i.content)
-}
-
 // CanBeEdited checks if the extension of a file is supported by the editor
-func (i fileInfo) CanBeEdited() bool {
+func (i file) CanBeEdited() bool {
 	return i.Type == "text"
 }
 
@@ -372,4 +459,36 @@ var textExtensions = [...]string{
 	"Caddyfile",
 	".c", ".cc", ".h", ".hh", ".cpp", ".hpp", ".f90",
 	".f", ".bas", ".d", ".ada", ".nim", ".cr", ".java", ".cs", ".vala", ".vapi",
+}
+
+func editorMode(language string) string {
+	switch language {
+	case "json", "toml", "yaml":
+		return "frontmatter-only"
+	case "markdown", "asciidoc", "rst":
+		return "complete"
+	}
+
+	return "content-only"
+}
+
+func editorLanguage(mode string) string {
+	mode = strings.TrimPrefix(".", mode)
+
+	switch mode {
+	case "md", "markdown", "mdown", "mmark":
+		mode = "markdown"
+	case "asciidoc", "adoc", "ad":
+		mode = "asciidoc"
+	case "rst":
+		mode = "rst"
+	case "html", "htm":
+		mode = "html"
+	case "js":
+		mode = "javascript"
+	case "go":
+		mode = "golang"
+	}
+
+	return mode
 }

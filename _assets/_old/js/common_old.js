@@ -75,22 +75,6 @@ buttons.setDone = function (name, success = true) {
  *            EVENTS           *
  *                             *
  * * * * * * * * * * * * * * * */
-function closePrompt (event) {
-  let prompt = document.querySelector('.prompt')
-
-  if (!prompt) return
-
-  if (typeof event !== 'undefined') {
-    event.preventDefault()
-  }
-
-  document.querySelector('.overlay').classList.remove('active')
-  prompt.classList.remove('active')
-
-  setTimeout(() => {
-    prompt.remove()
-  }, 100)
-}
 
 function notImplemented (event) {
   event.preventDefault()
@@ -194,26 +178,7 @@ function deleteEvent (event) {
  * * * * * * * * * * * * * * * */
 
 document.addEventListener('DOMContentLoaded', function (event) {
-  overlay = document.querySelector('.overlay')
-  clickOverlay = document.querySelector('#click-overlay')
 
-  buttons.logout = document.getElementById('logout')
-  buttons.delete = document.getElementById('delete')
-  buttons.previous = document.getElementById('previous')
-  buttons.info = document.getElementById('info')
-
-  // Attach event listeners
-  buttons.logout.addEventListener('click', logoutEvent)
-  buttons.info.addEventListener('click', infoEvent)
-
-  templates.question = document.querySelector('#question-template')
-  templates.info = document.querySelector('#info-template')
-  templates.message = document.querySelector('#message-template')
-  templates.move = document.querySelector('#move-template')
-
-  if (data.user.AllowEdit) {
-    buttons.delete.addEventListener('click', deleteEvent)
-  }
 
   let dropdownButtons = document.querySelectorAll('.action[data-dropdown]')
   Array.from(dropdownButtons).forEach(button => {
@@ -226,15 +191,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
         clickOverlay.classList.remove('active')
       })
     })
-  })
-
-  overlay.addEventListener('click', event => {
-    if (document.querySelector('.help.active')) {
-      closeHelp(event)
-      return
-    }
-
-    closePrompt(event)
   })
 
   let mainActions = document.getElementById('main-actions')

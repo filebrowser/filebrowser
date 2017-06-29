@@ -2,18 +2,17 @@ package filemanager
 
 import (
 	"net/http"
-	"strconv"
 )
 
 func serveDefault(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	var err error
 
+	// Starts building the page.
 	c.pg = &page{
-		Name:      c.fi.Name,
-		Path:      c.fi.VirtualPath,
 		User:      c.us,
 		BaseURL:   c.fm.RootURL(),
 		WebDavURL: c.fm.WebDavURL(),
+		Data:      c.fi,
 	}
 
 	// If it is a dir, go and serve the listing.
@@ -26,27 +25,15 @@ func serveDefault(c *requestContext, w http.ResponseWriter, r *http.Request) (in
 		return errorToHTTP(err, true), err
 	}
 
-	// If it is a text file, reads its content.
-	if c.fi.Type == "text" {
-		if err = c.fi.Read(); err != nil {
-			return errorToHTTP(err, true), err
-		}
-	}
-
 	// If it can't be edited or the user isn't allowed to,
 	// serve it as a listing, with a preview of the file.
 	if !c.fi.CanBeEdited() || !c.us.AllowEdit {
-		if c.fi.Type == "text" {
-			c.fi.Content = string(c.fi.content)
-		}
-
 		c.pg.Kind = "preview"
-		c.pg.Data = c.fi
 	} else {
 		// Otherwise, we just bring the editor in!
 		c.pg.Kind = "editor"
 
-		c.pg.Data, err = getEditor(r, c.fi)
+		err = c.fi.getEditor(r)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -57,17 +44,16 @@ func serveDefault(c *requestContext, w http.ResponseWriter, r *http.Request) (in
 
 // serveListing presents the user with a listage of a directory folder.
 func serveListing(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	var (
-		err     error
-		listing *listing
-	)
+	var err error
 
 	c.pg.Kind = "listing"
 
-	listing, err = getListing(c.us, c.fi.VirtualPath, c.fm.RootURL()+r.URL.Path, c.fi)
+	err = c.fi.getListing(c, r)
 	if err != nil {
 		return errorToHTTP(err, true), err
 	}
+
+	listing := c.fi.listing
 
 	cookieScope := c.fm.RootURL()
 	if cookieScope == "" {
@@ -75,22 +61,14 @@ func serveListing(c *requestContext, w http.ResponseWriter, r *http.Request) (in
 	}
 
 	// Copy the query values into the Listing struct
-	var limit int
-	listing.Sort, listing.Order, limit, err = handleSortOrder(w, r, cookieScope)
+	listing.Sort, listing.Order, err = handleSortOrder(w, r, cookieScope)
 	if err != nil {
 		return http.StatusBadRequest, err
 	}
 
 	listing.ApplySort()
 
-	if limit > 0 && limit <= len(listing.Items) {
-		listing.Items = listing.Items[:limit]
-		listing.ItemsLimitedTo = limit
-	}
-
 	listing.Display = displayMode(w, r, cookieScope)
-	c.pg.Data = listing
-
 	return c.pg.Render(c, w, r)
 }
 
@@ -121,10 +99,9 @@ func displayMode(w http.ResponseWriter, r *http.Request, scope string) string {
 
 // handleSortOrder gets and stores for a Listing the 'sort' and 'order',
 // and reads 'limit' if given. The latter is 0 if not given. Sets cookies.
-func handleSortOrder(w http.ResponseWriter, r *http.Request, scope string) (sort string, order string, limit int, err error) {
+func handleSortOrder(w http.ResponseWriter, r *http.Request, scope string) (sort string, order string, err error) {
 	sort = r.URL.Query().Get("sort")
 	order = r.URL.Query().Get("order")
-	limitQuery := r.URL.Query().Get("limit")
 
 	// If the query 'sort' or 'order' is empty, use defaults or any values
 	// previously saved in Cookies.
@@ -156,14 +133,6 @@ func handleSortOrder(w http.ResponseWriter, r *http.Request, scope string) (sort
 			Path:   scope,
 			Secure: r.TLS != nil,
 		})
-	}
-
-	if limitQuery != "" {
-		limit, err = strconv.Atoi(limitQuery)
-		// If the 'limit' query can't be interpreted as a number, return err.
-		if err != nil {
-			return
-		}
 	}
 
 	return
