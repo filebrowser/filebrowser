@@ -123,7 +123,6 @@ export default {
 
       conn.onclose = () => {
         this.$el.classList.remove('ongoing')
-        page.reload()
       }
     }
   }

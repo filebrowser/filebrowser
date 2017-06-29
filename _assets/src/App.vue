@@ -28,10 +28,11 @@
     </nav>
     <main>
       <listing v-if="req.kind === 'listing'"></listing> 
+      <preview v-if="req.kind === 'preview'"></preview> 
     </main>
-
-    <preview v-if="req.kind === 'preview'"></preview> 
     
+    <new-file-prompt v-if="showNewFile" :class="{ active: showNewFile }"></new-file-prompt>
+    <new-dir-prompt v-if="showNewDir" :class="{ active: showNewDir }"></new-dir-prompt>
     <rename-prompt v-if="showRename" :class="{ active: showRename }"></rename-prompt>
     <delete-prompt v-if="showDelete" :class="{ active: showDelete }"></delete-prompt>
     <info-prompt v-if="showInfo" :class="{ active: showInfo }"></info-prompt>
@@ -60,6 +61,8 @@ import DownloadButton from './components/DownloadButton'
 import SwitchButton from './components/SwitchViewButton'
 import MoveButton from './components/MoveButton'
 import MovePrompt from './components/MovePrompt'
+import NewFilePrompt from './components/NewFilePrompt'
+import NewDirPrompt from './components/NewDirPrompt'
 import css from './css.js'
 
 var $ = window.info
@@ -67,6 +70,8 @@ var $ = window.info
 function updateColumnSizes () {
   let columns = Math.floor(document.querySelector('main').offsetWidth / 300)
   let items = css(['#listing.mosaic .item', '.mosaic#listing .item'])
+
+  if (columns === 0) columns = 1
 
   items.style.width = `calc(${100 / columns}% - 1em)`
 }
@@ -77,9 +82,35 @@ function resetPrompts () {
   $.showDelete = false
   $.showRename = false
   $.showMove = false
+  $.showNewFile = false
+  $.showNewDir = false
 }
 
-window.addEventListener('keydown', (event) => {
+function showRenameButton () {
+  if ($.req.kind === 'listing') {
+    if ($.selected.length === 1) {
+      return $.user.allowEdit
+    }
+
+    return false
+  }
+
+  return $.user.allowEdit
+}
+
+function showDeleteButton () {
+  if ($.req.kind === 'listing') {
+    if ($.selected.length === 0) {
+      return false
+    }
+
+    return $.user.allowEdit
+  }
+
+  return $.user.allowEdit
+}
+
+function keydown (event) {
   // Esc!
   if (event.keyCode === 27) {
     resetPrompts()
@@ -99,7 +130,9 @@ window.addEventListener('keydown', (event) => {
 
   // Del!
   if (event.keyCode === 46) {
-    $.showDelete = true
+    if (showDeleteButton()) {
+      $.showDelete = true
+    }
   }
 
   // F1!
@@ -110,7 +143,9 @@ window.addEventListener('keydown', (event) => {
 
   // F2!
   if (event.keyCode === 113) {
-    $.showRename = true
+    if (showRenameButton()) {
+      $.showRename = true
+    }
   }
 
   // CTRL + S
@@ -127,7 +162,25 @@ window.addEventListener('keydown', (event) => {
         // TODO: save file on editor!
     }
   }
-})
+}
+
+function startup () {
+  updateColumnSizes()
+  window.addEventListener('resize', updateColumnSizes)
+  window.history.replaceState({
+    url: window.location.pathname,
+    name: document.title
+  }, document.title, window.location.pathname)
+
+  window.addEventListener('keydown', keydown)
+
+  let loading = document.getElementById('loading')
+  loading.classList.add('done')
+
+  setTimeout(function () {
+    loading.parentNode.removeChild(loading)
+  }, 1000)
+}
 
 export default {
   name: 'app',
@@ -146,51 +199,32 @@ export default {
     UploadButton,
     SwitchButton,
     MoveButton,
-    MovePrompt
+    MovePrompt,
+    NewFilePrompt,
+    NewDirPrompt
   },
   mounted: function () {
-    updateColumnSizes()
-    window.addEventListener('resize', updateColumnSizes)
-    window.history.replaceState({
-      url: window.location.pathname,
-      name: document.title
-    }, document.title, window.location.pathname)
-
-    document.getElementById('loading').classList.add('done')
+    startup()
   },
   data: function () {
     return window.info
   },
   methods: {
     showOverlay: function () {
-      return this.showInfo || this.showHelp || this.showDelete || this.showRename || this.showMove
+      return $.showInfo ||
+        $.showHelp ||
+        $.showDelete ||
+        $.showRename ||
+        $.showMove ||
+        $.showNewFile ||
+        $.showNewDir
     },
     showUpload: function () {
       if (this.req.kind === 'editor') return false
       return $.user.allowNew
     },
-    showDeleteButton: function () {
-      if (this.req.kind === 'listing') {
-        if (this.selected.length === 0) {
-          return false
-        }
-
-        return $.user.allowEdit
-      }
-
-      return $.user.allowEdit
-    },
-    showRenameButton: function () {
-      if (this.req.kind === 'listing') {
-        if (this.selected.length === 1) {
-          return $.user.allowEdit
-        }
-
-        return false
-      }
-
-      return $.user.allowEdit
-    },
+    showDeleteButton: showDeleteButton,
+    showRenameButton: showRenameButton,
     showMoveButton: function () {
       if (this.req.kind !== 'listing') {
         return false
