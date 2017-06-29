@@ -47,9 +47,9 @@
         </div>
     </div>
     
-    <rename-prompt v-show="showRename" :class="{ active: showRename }"></rename-prompt>
-    <delete-prompt v-show="showDelete" :class="{ active: showDelete }"></delete-prompt>
-    <info-prompt v-show="showInfo" :class="{ active: showInfo }"></info-prompt>
+    <rename-prompt v-if="showRename" :class="{ active: showRename }"></rename-prompt>
+    <delete-prompt v-if="showDelete" :class="{ active: showDelete }"></delete-prompt>
+    <info-prompt v-if="showInfo" :class="{ active: showInfo }"></info-prompt>
     <move-prompt v-if="showMove" :class="{ active: showMove }"></move-prompt>
     <help v-show="showHelp" :class="{ active: showHelp }"></help>
 
