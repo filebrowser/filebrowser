@@ -6,9 +6,9 @@
         <search></search>
       </div>
       <div>
-        <rename-button></rename-button>
-        <move-button></move-button>
-        <delete-button></delete-button>
+        <rename-button v-show="showRenameButton()"></rename-button>
+        <move-button v-show="showDeleteButton()"></move-button>
+        <delete-button v-show="showDeleteButton()"></delete-button>
         <switch-button v-show="req.kind !== 'editor'"></switch-button>
         <download-button></download-button>
         <upload-button v-show="showUpload()"></upload-button>
@@ -47,6 +47,8 @@
         </div>
     </div>
     
+    <rename-prompt v-show="showRename" :class="{ active: showRename }"></rename-prompt>
+    <delete-prompt v-show="showDelete" :class="{ active: showDelete }"></delete-prompt>
     <info-prompt v-show="showInfo" :class="{ active: showInfo }"></info-prompt>
     <help v-show="showHelp" :class="{ active: showHelp }"></help>
 
@@ -64,7 +66,9 @@ import Listing from './components/Listing'
 import InfoButton from './components/InfoButton'
 import InfoPrompt from './components/InfoPrompt'
 import DeleteButton from './components/DeleteButton'
+import DeletePrompt from './components/DeletePrompt'
 import RenameButton from './components/RenameButton'
+import RenamePrompt from './components/RenamePrompt'
 import UploadButton from './components/UploadButton'
 import DownloadButton from './components/DownloadButton'
 import SwitchButton from './components/SwitchViewButton'
@@ -146,7 +150,9 @@ export default {
     InfoPrompt,
     Help,
     DeleteButton,
+    DeletePrompt,
     RenameButton,
+    RenamePrompt,
     DownloadButton,
     UploadButton,
     SwitchButton,
@@ -170,6 +176,28 @@ export default {
     showUpload: function () {
       if (this.req.kind === 'editor') return false
       return this.user.allowNew
+    },
+    showDeleteButton: function () {
+      if (this.req.kind === 'listing') {
+        if (this.listing.selected.length === 0) {
+          return false
+        }
+
+        return this.user.allowEdit
+      }
+
+      return this.user.allowEdit
+    },
+    showRenameButton: function () {
+      if (this.req.kind === 'listing') {
+        if (this.listing.selected.length === 1) {
+          return this.user.allowEdit
+        }
+
+        return false
+      }
+
+      return this.user.allowEdit
     },
     resetPrompts: resetPrompts
   }

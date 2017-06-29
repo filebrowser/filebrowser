@@ -1,84 +1,5 @@
 'use strict'
 
-var listing = {
-  selectMultiple: false,
-  reload: function (callback) {
-    let request = new window.XMLHttpRequest()
-
-    request.open('GET', window.location)
-    request.setRequestHeader('Minimal', 'true')
-    request.send()
-    request.onreadystatechange = function () {
-      if (request.readyState === 4) {
-        if (request.status === 200) {
-          document.querySelector('body main').innerHTML = request.responseText
-          listing.addDoubleTapEvent()
-
-          if (typeof callback === 'function') {
-            callback()
-          }
-        }
-      }
-    }
-  },
-  rename: function (event) {
-    if (!selectedItems.length || selectedItems.length > 1) {
-      return false
-    }
-
-    let item = document.getElementById(selectedItems[0])
-
-    if (item.classList.contains('disabled')) {
-      return false
-    }
-
-    let link = item.dataset.url
-    let field = item.querySelector('.name')
-    let name = field.innerHTML
-
-    let submit = (event) => {
-      event.preventDefault()
-
-      let newName = event.currentTarget.querySelector('input').value
-      let newLink = removeLastDirectoryPartOf(link) + '/' + newName
-
-      closePrompt(event)
-      buttons.setLoading('rename')
-
-      webdav.move(link, newLink).then(() => {
-        listing.reload(() => {
-          newName = btoa(newName)
-          selectedItems = [newName]
-          document.getElementById(newName).setAttribute('aria-selected', true)
-          listing.handleSelectionChange()
-        })
-
-        buttons.setDone('rename')
-      }).catch(error => {
-        field.innerHTML = name
-        buttons.setDone('rename', false)
-        console.log(error)
-      })
-
-      return false
-    }
-
-    let clone = document.importNode(templates.question.content, true)
-    clone.querySelector('h3').innerHTML = 'Rename'
-    clone.querySelector('input').value = name
-    clone.querySelector('.ok').innerHTML = 'Rename'
-    clone.querySelector('form').addEventListener('submit', submit)
-
-    document.querySelector('body').appendChild(clone)
-    document.querySelector('.overlay').classList.add('active')
-    document.querySelector('.prompt').classList.add('active')
-
-    return false
-  },
-  handleFiles: function (files, base) {
-  }
-}
-
 listing.redefineDownloadURLs = function () {
   let files = ''
 
@@ -320,12 +241,6 @@ listing.moveEvent = function (event) {
 document.addEventListener('DOMContentLoaded', event => {
   listing.updateColumns()
   listing.addDoubleTapEvent()
-
-  buttons.rename = document.getElementById('rename')
-  buttons.upload = document.getElementById('upload')
-  buttons.new = document.getElementById('new')
-  buttons.download = document.getElementById('download')
-  buttons.move = document.getElementById('move')
 
   document.getElementById('multiple-selection-activate').addEventListener('click', event => {
     listing.selectMultiple = true

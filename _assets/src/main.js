@@ -8,10 +8,10 @@ Vue.config.productionTip = false
 
 var $ = (window.info || window.alert('Something is wrong, please refresh!'))
 
-// TODO: keep this here?
-document.title = $.req.name
+// TODO: keep this here? Maybe on app.vue?
+document.title = $.req.data.name
 
-// TODO: keep this here?
+// TODO: keep this here? Maybe on app.vue?
 window.addEventListener('popstate', (event) => {
   event.preventDefault()
   event.stopPropagation()
@@ -19,6 +19,12 @@ window.addEventListener('popstate', (event) => {
   $.req.kind = ''
   $.listing.selected.length = 0
   $.listing.selected.multiple = false
+  // TODO: find a better way to do this. Maybe on app.vue?
+  window.info.showHelp = false
+  window.info.showInfo = false
+  window.info.showDelete = false
+  window.info.showRename = false
+  window.info.showMove = false
 
   let request = new window.XMLHttpRequest()
   request.open('GET', event.state.url, true)
