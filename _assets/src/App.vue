@@ -22,11 +22,11 @@
         <span>My Files</span>
       </a>
       <div v-if="user.allowNew">
-        <button @click="showNewDir = true" aria-label="New directory" title="New directory" class="action">
+        <button @click="$store.commit('showNewDir', true)" aria-label="New directory" title="New directory" class="action">
           <i class="material-icons">create_new_folder</i>
           <span>New folder</span>
         </button>
-        <button @click="showNewFile = true" aria-label="New file" title="New file" class="action">
+        <button @click="$store.commit('showNewFile', true)" aria-label="New file" title="New file" class="action">
           <i class="material-icons">note_add</i>
           <span>New file</span>
         </button>
@@ -43,15 +43,14 @@
       <preview v-if="req.kind === 'preview'"></preview> 
     </main>
     
-    <new-file-prompt v-if="showNewFile" :class="{ active: showNewFile }"></new-file-prompt>
-    <new-dir-prompt v-if="showNewDir" :class="{ active: showNewDir }"></new-dir-prompt>
-    <rename-prompt v-if="showRename" :class="{ active: showRename }"></rename-prompt>
-    <delete-prompt v-if="showDelete" :class="{ active: showDelete }"></delete-prompt>
-    <info-prompt v-if="showInfo" :class="{ active: showInfo }"></info-prompt>
-    <move-prompt v-if="showMove" :class="{ active: showMove }"></move-prompt>
-    
-    <help v-show="showHelp" :class="{ active: showHelp }"></help>
-    <div v-show="showOverlay()" @click="resetPrompts" class="overlay" :class="{ active: showOverlay() }"></div>
+    <new-file-prompt v-if="$store.state.showNewFile" :class="{ active: $store.state.showNewFile }"></new-file-prompt>
+    <new-dir-prompt v-if="$store.state.showNewDir" :class="{ active: $store.state.showNewDir }"></new-dir-prompt>
+    <rename-prompt v-if="$store.state.showRename" :class="{ active: $store.state.showRename }"></rename-prompt>
+    <delete-prompt v-if="$store.state.showDelete" :class="{ active: $store.state.showDelete }"></delete-prompt>
+    <info-prompt v-if="$store.state.showInfo" :class="{ active: $store.state.showInfo }"></info-prompt>
+    <move-prompt v-if="$store.state.showMove" :class="{ active: $store.state.showMove }"></move-prompt>
+    <help v-show="$store.state.showHelp" :class="{ active: $store.state.showHelp }"></help>
+    <div v-show="$store.getters.showOverlay" @click="resetPrompts" class="overlay" :class="{ active: $store.getters.showOverlay }"></div>
 
     <footer>Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
   </div>
@@ -89,16 +88,6 @@ function updateColumnSizes () {
   items.style.width = `calc(${100 / columns}% - 1em)`
 }
 
-function resetPrompts () {
-  $.showHelp = false
-  $.showInfo = false
-  $.showDelete = false
-  $.showRename = false
-  $.showMove = false
-  $.showNewFile = false
-  $.showNewDir = false
-}
-
 function showRenameButton () {
   if ($.req.kind === 'listing') {
     if ($.selected.length === 1) {
@@ -121,78 +110,6 @@ function showDeleteButton () {
   }
 
   return $.user.allowEdit
-}
-
-function keydown (event) {
-  // Esc!
-  if (event.keyCode === 27) {
-    resetPrompts()
-
-    // Unselect all files and folders.
-    if ($.req.kind === 'listing') {
-      let items = document.getElementsByClassName('item')
-      Array.from(items).forEach(link => {
-        link.setAttribute('aria-selected', false)
-      })
-
-      $.selected = []
-    }
-
-    return
-  }
-
-  // Del!
-  if (event.keyCode === 46) {
-    if (showDeleteButton()) {
-      $.showDelete = true
-    }
-  }
-
-  // F1!
-  if (event.keyCode === 112) {
-    event.preventDefault()
-    $.showHelp = true
-  }
-
-  // F2!
-  if (event.keyCode === 113) {
-    if (showRenameButton()) {
-      $.showRename = true
-    }
-  }
-
-  // CTRL + S
-  if (event.ctrlKey || event.metaKey) {
-    switch (String.fromCharCode(event.which).toLowerCase()) {
-      case 's':
-        event.preventDefault()
-
-        if ($.req.kind !== 'editor') {
-          window.location = '?download=true'
-          return
-        }
-
-        // TODO: save file on editor!
-    }
-  }
-}
-
-function startup () {
-  updateColumnSizes()
-  window.addEventListener('resize', updateColumnSizes)
-  window.history.replaceState({
-    url: window.location.pathname,
-    name: document.title
-  }, document.title, window.location.pathname)
-
-  window.addEventListener('keydown', keydown)
-
-  let loading = document.getElementById('loading')
-  loading.classList.add('done')
-
-  setTimeout(function () {
-    loading.parentNode.removeChild(loading)
-  }, 1000)
 }
 
 export default {
@@ -218,21 +135,78 @@ export default {
     NewDirPrompt
   },
   mounted: function () {
-    startup()
+    updateColumnSizes()
+    window.addEventListener('resize', updateColumnSizes)
+    window.history.replaceState({
+      url: window.location.pathname,
+      name: document.title
+    }, document.title, window.location.pathname)
+
+    window.addEventListener('keydown', (event) => {
+      // Esc!
+      if (event.keyCode === 27) {
+        this.$store.commit('resetPrompts')
+
+        // Unselect all files and folders.
+        if ($.req.kind === 'listing') {
+          let items = document.getElementsByClassName('item')
+          Array.from(items).forEach(link => {
+            link.setAttribute('aria-selected', false)
+          })
+
+          $.selected = []
+        }
+
+        return
+      }
+
+      // Del!
+      if (event.keyCode === 46) {
+        if (showDeleteButton()) {
+          $.showDelete = true
+        }
+      }
+
+      // F1!
+      if (event.keyCode === 112) {
+        event.preventDefault()
+        $.showHelp = true
+      }
+
+      // F2!
+      if (event.keyCode === 113) {
+        if (showRenameButton()) {
+          $.showRename = true
+        }
+      }
+
+      // CTRL + S
+      if (event.ctrlKey || event.metaKey) {
+        switch (String.fromCharCode(event.which).toLowerCase()) {
+          case 's':
+            event.preventDefault()
+
+            if ($.req.kind !== 'editor') {
+              window.location = '?download=true'
+              return
+            }
+
+            // TODO: save file on editor!
+        }
+      }
+    })
+
+    let loading = document.getElementById('loading')
+    loading.classList.add('done')
+
+    setTimeout(function () {
+      loading.parentNode.removeChild(loading)
+    }, 1000)
   },
   data: function () {
     return window.info
   },
   methods: {
-    showOverlay: function () {
-      return $.showInfo ||
-        $.showHelp ||
-        $.showDelete ||
-        $.showRename ||
-        $.showMove ||
-        $.showNewFile ||
-        $.showNewDir
-    },
     showUpload: function () {
       if (this.req.kind === 'editor') return false
       return $.user.allowNew
@@ -250,7 +224,9 @@ export default {
 
       return false
     },
-    resetPrompts: resetPrompts
+    resetPrompts: function () {
+      this.$store.commit('resetPrompts')
+    }
   }
 }
 </script>

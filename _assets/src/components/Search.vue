@@ -85,7 +85,7 @@ export default {
         url = page.removeLastDir(url)
       }
 
-      let protocol = $.ssl ? 'wss:' : 'ws:'
+      let protocol = this.$store.state.ssl ? 'wss:' : 'ws:'
 
       if (this.supported() && $.user.allowCommands) {
         let conn = new window.WebSocket(`${protocol}//${url}?command=true`)

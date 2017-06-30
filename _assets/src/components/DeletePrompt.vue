@@ -23,10 +23,10 @@ export default {
   },
   methods: {
     cancel: function (event) {
-      $.showDelete = false
+      this.$store.commit('showDelete', false)
     },
     submit: function (event) {
-      $.showDelete = false
+      this.$store.commit('showDelete', false)
       // buttons.setLoading('delete')
 
       if ($.req.kind !== 'listing') {

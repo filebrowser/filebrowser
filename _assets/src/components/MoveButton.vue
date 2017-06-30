@@ -10,7 +10,7 @@ export default {
   name: 'move-button',
   methods: {
     show: function (event) {
-      window.info.showMove = true
+      this.$store.commit('showMove', true)
     }
   }
 }

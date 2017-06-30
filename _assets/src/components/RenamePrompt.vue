@@ -25,7 +25,7 @@ export default {
   },
   methods: {
     cancel: function (event) {
-      $.showRename = false
+      this.$store.commit('showRename', false)
     },
     oldName: function () {
       if ($.req.kind !== 'listing') {
@@ -68,7 +68,7 @@ export default {
         })
 
       this.name = ''
-      $.showRename = false
+      this.$store.commit('showRename', false)
       return
     }
   }

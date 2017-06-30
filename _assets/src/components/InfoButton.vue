@@ -10,7 +10,7 @@ export default {
   name: 'info-button',
   methods: {
     show: function (event) {
-      window.info.showInfo = true
+      this.$store.commit('showInfo', true)
     }
   }
 }

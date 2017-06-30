@@ -10,7 +10,7 @@ export default {
   name: 'delete-button',
   methods: {
     show: function (event) {
-      window.info.showDelete = true
+      this.$store.commit('showDelete', true)
     }
   }
 }
