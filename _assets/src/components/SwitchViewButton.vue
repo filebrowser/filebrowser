@@ -8,15 +8,13 @@
 <script>
 import page from '../page'
 
-var $ = window.info
-
 export default {
   name: 'switch-button',
   methods: {
     change: function (event) {
       let url = window.location.pathname + '?display='
 
-      if ($.req.data.display === 'mosaic') {
+      if (this.$store.state.req.data.display === 'mosaic') {
         url += 'list'
       } else {
         url += 'mosaic'
@@ -25,7 +23,7 @@ export default {
       page.open(url)
     },
     icon: function () {
-      if ($.req.data.display === 'mosaic') return 'view_list'
+      if (this.$store.state.req.data.display === 'mosaic') return 'view_list'
       return 'view_module'
     }
   }

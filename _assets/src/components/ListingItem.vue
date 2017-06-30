@@ -25,18 +25,18 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import filesize from 'filesize'
 import moment from 'moment'
 import webdav from '../webdav.js'
 import page from '../page.js'
-import array from '../array.js'
-
-var $ = window.info
 
 export default {
   name: 'item',
   props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index'],
   methods: {
+    // ...mapGetters('selectedCount'),
+    ...mapMutations('addSelected', 'removeSelected'),
     icon: function () {
       if (this.isDir) return 'folder'
       if (this.type === 'image') return 'insert_photo'
@@ -98,19 +98,21 @@ export default {
         link.setAttribute('aria-selected', false)
       })
 
-      $.selected = []
+      this.$store.commit('resetSelected')
       return false
     },
     click: function (event) {
-      if ($.selected.length !== 0) event.preventDefault()
-      if ($.selected.indexOf(this.index) === -1) {
-        if (!event.ctrlKey && !$.multiple) this.unselectAll()
+      if (this.selectedCount !== 0) event.preventDefault()
+      if (this.$store.state.selected.indexOf(this.index) === -1) {
+        if (!event.ctrlKey && !this.$store.state.multiple) this.unselectAll()
 
         this.$el.setAttribute('aria-selected', true)
-        $.selected.push(this.index)
+        // WORKS: this.$store.commit('addSelected', this.index)
+        this.addSelected(this.index)
       } else {
         this.$el.setAttribute('aria-selected', false)
-        $.selected = array.remove($.selected, this.index)
+        this.removeSelected(this.index)
+        // WORKS: this.$store.commit('removeSelected', this.index)
       }
 
       // this.handleSelectionChange()

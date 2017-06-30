@@ -1,10 +1,9 @@
-var $ = window.info
+import store from './store/store'
 
 function open (url, history) {
   // Reset info
-  $.selected = []
-  $.multiple = false
-  $.req.kind = ''
+  store.commit('resetSelected')
+  store.commit('multiple', false)
 
   let request = new window.XMLHttpRequest()
   request.open('GET', url, true)
@@ -12,15 +11,16 @@ function open (url, history) {
 
   request.onload = () => {
     if (request.status === 200) {
-      $.req = JSON.parse(request.responseText)
+      let req = JSON.parse(request.responseText)
+      store.commit('updateRequest', req)
 
       if (history) {
         window.history.pushState({
-          name: $.req.data.name,
+          name: req.data.name,
           url: url
-        }, $.req.data.name, url)
+        }, req.data.name, url)
 
-        document.title = $.req.data.name
+        document.title = req.data.name
       }
     } else {
       console.log(request.responseText)
