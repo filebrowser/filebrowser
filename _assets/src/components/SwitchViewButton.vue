@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import page from '../page'
+import page from '../utils/page'
 
 export default {
   name: 'switch-button',

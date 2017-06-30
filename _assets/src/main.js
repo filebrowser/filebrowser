@@ -4,10 +4,10 @@ import store from './store/store'
 
 Vue.config.productionTip = false
 
-var $ = (window.info || window.alert('Something is wrong, please refresh!'))
-
-// TODO: keep this here? Maybe on app.vue?
-document.title = $.req.data.name
+if (window.info === undefined || window.info === null) {
+  window.alert('Something is wrong, please refresh!')
+  window.location.reload()
+}
 
 /* eslint-disable no-new */
 new Vue({

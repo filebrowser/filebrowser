@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
 import filesize from 'filesize'
 import moment from 'moment'
 
@@ -35,6 +36,7 @@ export default {
   data: function () {
     return window.info
   },
+  computed: mapState(['req', 'selected']),
   methods: {
     humanSize: function () {
       if (this.selected.length === 0 || this.req.kind !== 'listing') {

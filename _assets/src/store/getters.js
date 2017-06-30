@@ -6,7 +6,8 @@ const getters = {
       state.showRename ||
       state.showMove ||
       state.showNewFile ||
-      state.showNewDir
+      state.showNewDir ||
+      state.showDownload
   },
   selectedCount: state => state.selected.length
 }

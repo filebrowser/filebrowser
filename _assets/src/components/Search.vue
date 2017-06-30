@@ -7,7 +7,7 @@
       v-on:blur="focus = false"
       v-on:keyup="keyup"
       v-on:keyup.enter="submit"
-      aria-label="Write here to search" 
+      aria-label="Write here to search"
       :placeholder="placeholder()">
     <div v-on:mouseover="hover = true">
       <div>
@@ -26,7 +26,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import page from '../page'
+import page from '../utils/page'
 
 export default {
   name: 'search',

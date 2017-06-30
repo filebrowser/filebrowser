@@ -1,4 +1,4 @@
-import store from './store/store'
+import store from '../store/store'
 
 function open (url, history) {
   // Reset info

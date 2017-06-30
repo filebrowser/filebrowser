@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import page from '../page'
-import webdav from '../webdav'
+import page from '../utils/page'
+import webdav from '../utils/webdav'
 
 export default {
   name: 'new-file-prompt',
