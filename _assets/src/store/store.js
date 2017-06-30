@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import mutations from './mutations'
+import getters from './getters'
 
 Vue.use(Vuex)
 
@@ -19,19 +20,6 @@ const state = {
   showMove: false,
   showNewFile: false,
   showNewDir: false
-}
-
-const getters = {
-  showOverlay: state => {
-    return state.showInfo ||
-      state.showHelp ||
-      state.showDelete ||
-      state.showRename ||
-      state.showMove ||
-      state.showNewFile ||
-      state.showNewDir
-  },
-  selectedCount: state => state.selected.length
 }
 
 export default new Vuex.Store({
