@@ -1,3 +1,4 @@
+// TODO: use store
 var $ = window.info
 
 function convertURL (url) {
