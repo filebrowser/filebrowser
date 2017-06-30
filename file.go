@@ -201,7 +201,7 @@ func (i *file) getEditor(r *http.Request) error {
 	hasRune := frontmatter.HasRune(i.Content)
 
 	if e.Mode == "frontmatter-only" && !hasRune {
-		e.FrontMatter.Rune, err = frontmatter.StringFormatToRune(e.Mode)
+		e.FrontMatter.Rune, err = frontmatter.StringFormatToRune(e.Language)
 		if err != nil {
 			goto Error
 		}
@@ -473,11 +473,13 @@ func editorMode(language string) string {
 }
 
 func editorLanguage(mode string) string {
-	mode = strings.TrimPrefix(".", mode)
+	mode = strings.TrimPrefix(mode, ".")
 
 	switch mode {
 	case "md", "markdown", "mdown", "mmark":
 		mode = "markdown"
+	case "yml":
+		mode = "yaml"
 	case "asciidoc", "adoc", "ad":
 		mode = "asciidoc"
 	case "rst":
