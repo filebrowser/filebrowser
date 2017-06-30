@@ -19,7 +19,8 @@ const state = {
   showRename: false,
   showMove: false,
   showNewFile: false,
-  showNewDir: false
+  showNewDir: false,
+  showDownload: false
 }
 
 export default new Vuex.Store({

@@ -4,7 +4,7 @@
             <button @click="back" class="action" aria-label="Close Preview" id="close">
                 <i class="material-icons">close</i>
             </button>
-            
+
             <rename-button v-if="allowEdit()"></rename-button>
             <delete-button v-if="allowEdit()"></delete-button>
             <download-button></download-button>
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import page from '../page'
+import page from '../utils/page'
 import InfoButton from './InfoButton'
 import DeleteButton from './DeleteButton'
 import RenameButton from './RenameButton'

@@ -68,6 +68,7 @@
     background-color: #e9eaeb;
 }
 
+
 /* * * * * * * * * * * * * * * *
  *        PROMPT - MOVE        *
  * * * * * * * * * * * * * * * */
@@ -111,6 +112,22 @@
 
 .file-list li[aria-selected=true]:before {
     color: white;
+}
+
+.prompt#download {
+    max-width: 15em;
+}
+
+.prompt#download button {
+    width: 100%;
+    display: block;
+    margin: 0 0 1em;
+    background-color: #ECEFF1;
+    color: #37474F;
+}
+
+.prompt#download button:last-of-type {
+    margin-bottom: 0;
 }
 
 .help {

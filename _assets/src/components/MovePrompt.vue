@@ -17,8 +17,8 @@
 </template>
 
 <script>
-import page from '../page'
-import webdav from '../webdav'
+import page from '../utils/page'
+import webdav from '../utils/webdav'
 
 var $ = window.info
 

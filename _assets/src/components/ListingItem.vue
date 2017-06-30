@@ -1,5 +1,5 @@
 <template>
-    <div class="item" 
+    <div class="item"
         draggable="true"
         @dragstart="dragStart"
         @dragover="dragOver"
@@ -28,8 +28,8 @@
 import { mapMutations, mapGetters } from 'vuex'
 import filesize from 'filesize'
 import moment from 'moment'
-import webdav from '../webdav.js'
-import page from '../page.js'
+import webdav from '../utils/webdav.js'
+import page from '../utils/page.js'
 
 export default {
   name: 'item',

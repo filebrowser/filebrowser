@@ -1,8 +1,8 @@
 <template>
-    <div id="listing" 
-      :class="req.data.display" 
+    <div id="listing"
+      :class="req.data.display"
       @drop="drop"
-      @dragenter="dragEnter" 
+      @dragenter="dragEnter"
       @dragend="dragEnd">
         <div>
             <div class="item header">
@@ -35,7 +35,7 @@
             v-bind:name="item.name"
             v-bind:isDir="item.isDir"
             v-bind:url="item.url"
-            v-bind:modified="item.modified"  
+            v-bind:modified="item.modified"
             v-bind:type="item.type"
             v-bind:size="item.size">
           </item>
@@ -51,14 +51,14 @@
             v-bind:name="item.name"
             v-bind:isDir="item.isDir"
             v-bind:url="item.url"
-            v-bind:modified="item.modified"  
+            v-bind:modified="item.modified"
             v-bind:type="item.type"
             v-bind:size="item.size">
           </item>
         </div>
 
         <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" value="Upload" multiple>
-        
+
         <div v-show="$store.state.multiple" :class="{ active: $store.state.multiple }" id="multiple-selection">
           <p>Multiple selection enabled</p>
           <div @click="$store.commit('multiple', false)" tabindex="0" role="button" title="Clear" aria-label="Clear" class="action">
@@ -70,8 +70,8 @@
 
 <script>
 import Item from './ListingItem'
-import webdav from '../webdav.js'
-import page from '../page.js'
+import webdav from '../utils/webdav'
+import page from '../utils/page'
 
 export default {
   name: 'listing',

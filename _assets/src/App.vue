@@ -1,5 +1,5 @@
 <template>
-  <div id="app" :class="{ multiple: $store.state.multiple }">
+  <div id="app" :class="{ multiple }">
     <header>
       <div>
         <img src="./assets/logo.svg" alt="File Manager">
@@ -9,7 +9,7 @@
         <rename-button v-show="showRenameButton()"></rename-button>
         <move-button v-show="showMoveButton()"></move-button>
         <delete-button v-show="showDeleteButton()"></delete-button>
-        <switch-button v-show="$store.state.req.kind !== 'editor'"></switch-button>
+        <switch-button v-show="req.kind !== 'editor'"></switch-button>
         <download-button></download-button>
         <upload-button v-show="showUpload()"></upload-button>
         <info-button></info-button>
@@ -17,11 +17,11 @@
     </header>
 
     <nav>
-      <a class="action" :href="$store.state.baseURL + '/'">
+      <a class="action" :href="baseURL + '/'">
         <i class="material-icons">folder</i>
         <span>My Files</span>
       </a>
-      <div v-if="$store.state.user.allowNew">
+      <div v-if="user.allowNew">
         <button @click="$store.commit('showNewDir', true)" aria-label="New directory" title="New directory" class="action">
           <i class="material-icons">create_new_folder</i>
           <span>New folder</span>
@@ -38,18 +38,19 @@
     </nav>
 
     <main>
-      <editor v-if="$store.state.req.kind === 'editor'"></editor>
-      <listing v-if="$store.state.req.kind === 'listing'"></listing> 
-      <preview v-if="$store.state.req.kind === 'preview'"></preview> 
+      <editor v-if="req.kind === 'editor'"></editor>
+      <listing v-if="req.kind === 'listing'"></listing>
+      <preview v-if="req.kind === 'preview'"></preview>
     </main>
-    
-    <new-file-prompt v-if="$store.state.showNewFile" :class="{ active: $store.state.showNewFile }"></new-file-prompt>
-    <new-dir-prompt v-if="$store.state.showNewDir" :class="{ active: $store.state.showNewDir }"></new-dir-prompt>
-    <rename-prompt v-if="$store.state.showRename" :class="{ active: $store.state.showRename }"></rename-prompt>
-    <delete-prompt v-if="$store.state.showDelete" :class="{ active: $store.state.showDelete }"></delete-prompt>
-    <info-prompt v-if="$store.state.showInfo" :class="{ active: $store.state.showInfo }"></info-prompt>
-    <move-prompt v-if="$store.state.showMove" :class="{ active: $store.state.showMove }"></move-prompt>
-    <help v-show="$store.state.showHelp" :class="{ active: $store.state.showHelp }"></help>
+
+    <download-prompt v-if="showDownload" :class="{ active: showDownload }"></download-prompt>
+    <new-file-prompt v-if="showNewFile" :class="{ active: showNewFile }"></new-file-prompt>
+    <new-dir-prompt v-if="showNewDir" :class="{ active: showNewDir }"></new-dir-prompt>
+    <rename-prompt v-if="showRename" :class="{ active: showRename }"></rename-prompt>
+    <delete-prompt v-if="showDelete" :class="{ active: showDelete }"></delete-prompt>
+    <info-prompt v-if="showInfo" :class="{ active: showInfo }"></info-prompt>
+    <move-prompt v-if="showMove" :class="{ active: showMove }"></move-prompt>
+    <help v-show="showHelp" :class="{ active: showHelp }"></help>
     <div v-show="$store.getters.showOverlay" @click="resetPrompts" class="overlay" :class="{ active: $store.getters.showOverlay }"></div>
 
     <footer>Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
@@ -70,12 +71,14 @@ import RenameButton from './components/RenameButton'
 import RenamePrompt from './components/RenamePrompt'
 import UploadButton from './components/UploadButton'
 import DownloadButton from './components/DownloadButton'
+import DownloadPrompt from './components/DownloadPrompt'
 import SwitchButton from './components/SwitchViewButton'
 import MoveButton from './components/MoveButton'
 import MovePrompt from './components/MovePrompt'
 import NewFilePrompt from './components/NewFilePrompt'
 import NewDirPrompt from './components/NewDirPrompt'
-import css from './css.js'
+import css from './utils/css'
+import {mapGetters, mapState} from 'vuex'
 
 function updateColumnSizes () {
   let columns = Math.floor(document.querySelector('main').offsetWidth / 300)
@@ -101,6 +104,7 @@ export default {
     RenameButton,
     RenamePrompt,
     DownloadButton,
+    DownloadPrompt,
     UploadButton,
     SwitchButton,
     MoveButton,
@@ -108,9 +112,28 @@ export default {
     NewFilePrompt,
     NewDirPrompt
   },
+  computed: {
+    ...mapGetters(['selectedCount']),
+    ...mapState([
+      'req',
+      'user',
+      'baseURL',
+      'multiple',
+      'showInfo',
+      'showHelp',
+      'showDelete',
+      'showRename',
+      'showMove',
+      'showNewFile',
+      'showNewDir',
+      'showDownload'
+    ])
+  },
   mounted: function () {
     updateColumnSizes()
     window.addEventListener('resize', updateColumnSizes)
+
+    document.title = this.req.data.name
     window.history.replaceState({
       url: window.location.pathname,
       name: document.title
@@ -148,13 +171,13 @@ export default {
         this.$store.commit('resetPrompts')
 
         // Unselect all files and folders.
-        if (this.$store.state.req.kind === 'listing') {
+        if (this.req.kind === 'listing') {
           let items = document.getElementsByClassName('item')
           Array.from(items).forEach(link => {
             link.setAttribute('aria-selected', false)
           })
 
-          this.$store.selected = []
+          this.$store.commit('resetSelected')
         }
 
         return
@@ -186,7 +209,7 @@ export default {
           case 's':
             event.preventDefault()
 
-            if (this.$store.state.req.kind !== 'editor') {
+            if (this.req.kind !== 'editor') {
               window.location = '?download=true'
               return
             }
@@ -201,42 +224,42 @@ export default {
 
     setTimeout(function () {
       loading.parentNode.removeChild(loading)
-    }, 1000)
+    }, 200)
   },
   methods: {
     showUpload: function () {
-      if (this.$store.state.req.kind === 'editor') return false
-      return this.$store.state.user.allowNew
+      if (this.req.kind === 'editor') return false
+      return this.user.allowNew
     },
     showDeleteButton: function () {
-      if (this.$store.state.req.kind === 'listing') {
-        if (this.$store.getters.selectedCount === 0) {
+      if (this.req.kind === 'listing') {
+        if (this.selectedCount === 0) {
           return false
         }
 
-        return this.$store.state.user.allowEdit
+        return this.user.allowEdit
       }
 
-      return this.$store.state.user.allowEdit
+      return this.user.allowEdit
     },
     showRenameButton: function () {
-      if (this.$store.state.req.kind === 'listing') {
-        if (this.$store.getters.selectedCount === 1) {
-          return this.$store.state.user.allowEdit
+      if (this.req.kind === 'listing') {
+        if (this.selectedCount === 1) {
+          return this.user.allowEdit
         }
 
         return false
       }
 
-      return this.$store.state.user.allowEdit
+      return this.user.allowEdit
     },
     showMoveButton: function () {
-      if (this.$store.state.req.kind !== 'listing') {
+      if (this.req.kind !== 'listing') {
         return false
       }
 
-      if (this.$store.getters.selectedCount > 0) {
-        return this.$store.state.user.allowEdit
+      if (this.selectedCount > 0) {
+        return this.user.allowEdit
       }
 
       return false
