@@ -1,6 +1,8 @@
 <template>
     <form id="editor">
         <h2 v-if="editor.type == 'complete'">Metadata</h2>
+
+        <h2 v-if="editor.type == 'complete'">Body</h2>
     </form>
 </template>
 
