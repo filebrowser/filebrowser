@@ -1,53 +1,79 @@
 <template>
-    <div id="search" v-on:mouseleave="hover = false" v-on:click="click" v-bind:class="{ active: focus || hover }">
-        <i class="material-icons" title="Search">search</i>
-        <input type="text"
-            v-on:focus="focus = true"
-            v-on:blur="focus = false"
-            v-on:keyup="keyup"
-            v-on:keyup.enter="submit"
-            aria-label="Write here to search" 
-            placeholder="Search or execute a command...">
-            <div v-on:mouseover="hover = true">
-        <div>Loading...</div>
-            <p><i class="material-icons spin">autorenew</i></p>
-        </div>
+  <div id="search" v-on:mouseleave="hover = false" v-on:click="click" v-bind:class="{ active: focus || hover, ongoing }">
+    <i class="material-icons" title="Search">search</i>
+    <input type="text"
+      v-model.trim="value"
+      v-on:focus="focus = true"
+      v-on:blur="focus = false"
+      v-on:keyup="keyup"
+      v-on:keyup.enter="submit"
+      aria-label="Write here to search" 
+      :placeholder="placeholder()">
+    <div v-on:mouseover="hover = true">
+      <div>
+        <span v-if="search.length === 0 && commands.length === 0">{{ text() }}</span>
+        <ul v-else-if="search.length > 0">
+          <li v-for="s in search"><a :href="'.' + s">.{{ s }}</a></li>
+        </ul>
+        <ul v-else-if="commands.length > 0">
+          <li v-for="c in commands">{{ c }}</li>
+        </ul>
+      </div>
+      <p><i class="material-icons spin">autorenew</i></p>
     </div>
+  </div>
 </template>
 
 <script>
-import page from '../page'
 import { mapState } from 'vuex'
+import page from '../page'
 
 export default {
   name: 'search',
   data: function () {
     return {
+      value: '',
       hover: false,
       focus: false,
+      ongoing: false,
       scrollable: null,
-      box: null,
-      input: null
+      search: [],
+      commands: []
     }
   },
-  computed: mapState('user'),
+  computed: mapState(['user']),
   mounted: function () {
     this.scrollable = document.querySelector('#search > div')
-    this.box = document.querySelector('#search > div div')
-    this.input = document.querySelector('#search input')
-    this.reset()
   },
   methods: {
-    reset: function () {
+    placeholder: function () {
       if (this.user.allowCommands && this.user.commands.length > 0) {
-        this.box.innerHTML = `Search or use one of your supported commands: ${this.user.commands.join(', ')}.`
+        return 'Search or execute a command...'
+      }
+
+      return 'Search...'
+    },
+    text: function () {
+      if (this.value.length === 0) {
+        if (this.user.allowCommands && this.user.commands.length > 0) {
+          return `Search or use one of your supported commands: ${this.user.commands.join(', ')}.`
+        }
+
+        return 'Type and press enter to search.'
+      }
+
+      if (!this.supported() || !this.user.allowCommands) {
+        return 'Press enter to search.'
       } else {
-        this.box.innerHTML = 'Type and press enter to search.'
+        return 'Press enter to execute.'
       }
     },
+    keyup: function () {
+      this.search.length = 0
+      this.commands.length = 0
+    },
     supported: function () {
-      let value = this.input.value
-      let pieces = value.split(' ')
+      let pieces = this.value.split(' ')
 
       for (let i = 0; i < this.user.commands.length; i++) {
         if (pieces[0] === this.user.commands[0]) {
@@ -61,68 +87,47 @@ export default {
       event.currentTarget.classList.add('active')
       this.$el.querySelector('input').focus()
     },
-    keyup: function (event) {
-      let el = event.currentTarget
-
-      if (el.value.length === 0) {
-        this.reset()
-        return
-      }
-
-      if (!this.supported() || !this.user.allowCommands) {
-        this.box.innerHTML = 'Press enter to search.'
-      } else {
-        this.box.innerHTML = 'Press enter to execute.'
-      }
-    },
     submit: function (event) {
-      this.box.innerHTML = ''
-      this.$el.classList.add('ongoing')
+      this.ongoing = true
+      let uri = window.location.host + window.location.pathname
 
-      let url = window.location.host + window.location.pathname
-
-      if (document.getElementById('editor')) {
-        url = page.removeLastDir(url)
+      if (this.$store.state.req.kind !== 'listing') {
+        uri = page.removeLastDir(uri)
       }
 
-      let protocol = this.$store.state.ssl ? 'wss:' : 'ws:'
+      uri = `${(this.$store.state.ssl ? 'wss:' : 'ws:')}//${uri}`
 
       if (this.supported() && this.user.allowCommands) {
-        let conn = new window.WebSocket(`${protocol}//${url}?command=true`)
+        let conn = new window.WebSocket(`${uri}?command=true`)
 
-        conn.onopen = () => {
-          conn.send(this.input.value)
-        }
+        conn.onopen = () => conn.send(this.value)
 
         conn.onmessage = (event) => {
-          this.box.innerHTML = event.data
+          this.commands.push(event.data)
           this.scrollable.scrollTop = this.scrollable.scrollHeight
         }
 
         conn.onclose = (event) => {
-          this.$el.classList.remove('ongoing')
+          this.ongoing = false
+          this.scrollable.scrollTop = this.scrollable.scrollHeight
           page.reload()
         }
 
         return
       }
 
-      this.box.innerHTML = '<ul></ul>'
+      let conn = new window.WebSocket(`${uri}?search=true`)
 
-      let ul = this.box.querySelector('ul')
-      let conn = new window.WebSocket(`${protocol}//${url}?search=true`)
-
-      conn.onopen = () => {
-        conn.send(this.input.value)
-      }
+      conn.onopen = () => conn.send(this.value)
 
       conn.onmessage = (event) => {
-        ul.innerHTML += `<li><a href=".${event.data}">${event.data}</a></li>`
+        this.search.push(event.data)
         this.scrollable.scrollTop = this.scrollable.scrollHeight
       }
 
       conn.onclose = () => {
-        this.$el.classList.remove('ongoing')
+        this.ongoing = false
+        this.scrollable.scrollTop = this.scrollable.scrollHeight
       }
     }
   }
