@@ -13,7 +13,7 @@ export default {
   name: 'download-button',
   methods: {
     count: function () {
-      return $.selected.length
+      return this.$store.getters.selectedCount
     },
     download: function (event) {
       if ($.req.kind !== 'listing') {

@@ -1,9 +1,14 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import mutations from './mutations'
 
 Vue.use(Vuex)
 
 const state = {
+  user: window.info.user,
+  req: window.info.req,
+  webDavURL: window.info.webdavURL,
+  baseURL: window.info.baseURL,
   ssl: (window.location.protocol === 'https:'),
   selected: [],
   multiple: false,
@@ -25,30 +30,8 @@ const getters = {
       state.showMove ||
       state.showNewFile ||
       state.showNewDir
-  }
-}
-
-const mutations = {
-  showInfo: (state, value) => (state.showInfo = value),
-  showHelp: (state, value) => (state.showHelp = value),
-  showDelete: (state, value) => (state.showDelete = value),
-  showRename: (state, value) => (state.showRename = value),
-  showMove: (state, value) => (state.showMove = value),
-  showNewFile: (state, value) => (state.showNewFile = value),
-  showNewDir: (state, value) => (state.showNewDir = value),
-  resetPrompts: (state) => {
-    state.showHelp = false
-    state.showInfo = false
-    state.showDelete = false
-    state.showRename = false
-    state.showMove = false
-    state.showNewFile = false
-    state.showNewDir = false
   },
-  multiple: (state, value) => (state.multiple = value),
-  resetSelected: (state) => {
-    state.selected.length = 0
-  }
+  selectedCount: state => state.selected.length
 }
 
 export default new Vuex.Store({

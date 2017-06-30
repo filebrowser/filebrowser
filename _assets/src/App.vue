@@ -1,5 +1,5 @@
 <template>
-  <div id="app" :class="{ multiple }">
+  <div id="app" :class="{ multiple: $store.state.multiple }">
     <header>
       <div>
         <img src="./assets/logo.svg" alt="File Manager">
@@ -9,7 +9,7 @@
         <rename-button v-show="showRenameButton()"></rename-button>
         <move-button v-show="showMoveButton()"></move-button>
         <delete-button v-show="showDeleteButton()"></delete-button>
-        <switch-button v-show="req.kind !== 'editor'"></switch-button>
+        <switch-button v-show="$store.state.req.kind !== 'editor'"></switch-button>
         <download-button></download-button>
         <upload-button v-show="showUpload()"></upload-button>
         <info-button></info-button>
@@ -17,11 +17,11 @@
     </header>
 
     <nav>
-      <a class="action" :href="baseURL + '/'">
+      <a class="action" :href="$store.state.baseURL + '/'">
         <i class="material-icons">folder</i>
         <span>My Files</span>
       </a>
-      <div v-if="user.allowNew">
+      <div v-if="$store.state.user.allowNew">
         <button @click="$store.commit('showNewDir', true)" aria-label="New directory" title="New directory" class="action">
           <i class="material-icons">create_new_folder</i>
           <span>New folder</span>
@@ -38,9 +38,9 @@
     </nav>
 
     <main>
-      <editor v-if="req.kind === 'editor'"></editor>
-      <listing v-if="req.kind === 'listing'"></listing> 
-      <preview v-if="req.kind === 'preview'"></preview> 
+      <editor v-if="$store.state.req.kind === 'editor'"></editor>
+      <listing v-if="$store.state.req.kind === 'listing'"></listing> 
+      <preview v-if="$store.state.req.kind === 'preview'"></preview> 
     </main>
     
     <new-file-prompt v-if="$store.state.showNewFile" :class="{ active: $store.state.showNewFile }"></new-file-prompt>
@@ -77,8 +77,6 @@ import NewFilePrompt from './components/NewFilePrompt'
 import NewDirPrompt from './components/NewDirPrompt'
 import css from './css.js'
 
-var $ = window.info
-
 function updateColumnSizes () {
   let columns = Math.floor(document.querySelector('main').offsetWidth / 300)
   let items = css(['#listing.mosaic .item', '.mosaic#listing .item'])
@@ -86,30 +84,6 @@ function updateColumnSizes () {
   if (columns === 0) columns = 1
 
   items.style.width = `calc(${100 / columns}% - 1em)`
-}
-
-function showRenameButton () {
-  if ($.req.kind === 'listing') {
-    if ($.selected.length === 1) {
-      return $.user.allowEdit
-    }
-
-    return false
-  }
-
-  return $.user.allowEdit
-}
-
-function showDeleteButton () {
-  if ($.req.kind === 'listing') {
-    if ($.selected.length === 0) {
-      return false
-    }
-
-    return $.user.allowEdit
-  }
-
-  return $.user.allowEdit
 }
 
 export default {
@@ -142,19 +116,45 @@ export default {
       name: document.title
     }, document.title, window.location.pathname)
 
+    window.addEventListener('popstate', (event) => {
+      event.preventDefault()
+      event.stopPropagation()
+
+      this.$store.commit('multiple', false)
+      this.$store.commit('resetSelected')
+      this.$store.commit('resetPrompts')
+
+      let request = new window.XMLHttpRequest()
+      request.open('GET', event.state.url, true)
+      request.setRequestHeader('Accept', 'application/json')
+
+      request.onload = () => {
+        if (request.status === 200) {
+          let req = JSON.parse(request.responseText)
+          this.$store.commit('updateRequest', req)
+          document.title = event.state.name
+        } else {
+          console.log(request.responseText)
+        }
+      }
+
+      request.onerror = (error) => { console.log(error) }
+      request.send()
+    })
+
     window.addEventListener('keydown', (event) => {
       // Esc!
       if (event.keyCode === 27) {
         this.$store.commit('resetPrompts')
 
         // Unselect all files and folders.
-        if ($.req.kind === 'listing') {
+        if (this.$store.state.req.kind === 'listing') {
           let items = document.getElementsByClassName('item')
           Array.from(items).forEach(link => {
             link.setAttribute('aria-selected', false)
           })
 
-          $.selected = []
+          this.$store.selected = []
         }
 
         return
@@ -162,21 +162,21 @@ export default {
 
       // Del!
       if (event.keyCode === 46) {
-        if (showDeleteButton()) {
-          $.showDelete = true
+        if (this.showDeleteButton()) {
+          this.$store.commit('showDelete', true)
         }
       }
 
       // F1!
       if (event.keyCode === 112) {
         event.preventDefault()
-        $.showHelp = true
+        this.$store.commit('showHelp', true)
       }
 
       // F2!
       if (event.keyCode === 113) {
-        if (showRenameButton()) {
-          $.showRename = true
+        if (this.showRenameButton()) {
+          this.$store.commit('showRename', true)
         }
       }
 
@@ -186,7 +186,7 @@ export default {
           case 's':
             event.preventDefault()
 
-            if ($.req.kind !== 'editor') {
+            if (this.$store.state.req.kind !== 'editor') {
               window.location = '?download=true'
               return
             }
@@ -203,23 +203,40 @@ export default {
       loading.parentNode.removeChild(loading)
     }, 1000)
   },
-  data: function () {
-    return window.info
-  },
   methods: {
     showUpload: function () {
-      if (this.req.kind === 'editor') return false
-      return $.user.allowNew
+      if (this.$store.state.req.kind === 'editor') return false
+      return this.$store.state.user.allowNew
     },
-    showDeleteButton: showDeleteButton,
-    showRenameButton: showRenameButton,
-    showMoveButton: function () {
-      if (this.req.kind !== 'listing') {
+    showDeleteButton: function () {
+      if (this.$store.state.req.kind === 'listing') {
+        if (this.$store.getters.selectedCount === 0) {
+          return false
+        }
+
+        return this.$store.state.user.allowEdit
+      }
+
+      return this.$store.state.user.allowEdit
+    },
+    showRenameButton: function () {
+      if (this.$store.state.req.kind === 'listing') {
+        if (this.$store.getters.selectedCount === 1) {
+          return this.$store.state.user.allowEdit
+        }
+
         return false
       }
 
-      if (this.selected.length > 0) {
-        return $.user.allowEdit
+      return this.$store.state.user.allowEdit
+    },
+    showMoveButton: function () {
+      if (this.$store.state.req.kind !== 'listing') {
+        return false
+      }
+
+      if (this.$store.getters.selectedCount > 0) {
+        return this.$store.state.user.allowEdit
       }
 
       return false

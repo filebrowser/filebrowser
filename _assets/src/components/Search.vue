@@ -17,8 +17,7 @@
 
 <script>
 import page from '../page'
-
-var $ = window.info
+import { mapState } from 'vuex'
 
 export default {
   name: 'search',
@@ -31,6 +30,7 @@ export default {
       input: null
     }
   },
+  computed: mapState('user'),
   mounted: function () {
     this.scrollable = document.querySelector('#search > div')
     this.box = document.querySelector('#search > div div')
@@ -39,8 +39,8 @@ export default {
   },
   methods: {
     reset: function () {
-      if ($.user.allowCommands && $.user.commands.length > 0) {
-        this.box.innerHTML = `Search or use one of your supported commands: ${$.user.commands.join(', ')}.`
+      if (this.user.allowCommands && this.user.commands.length > 0) {
+        this.box.innerHTML = `Search or use one of your supported commands: ${this.user.commands.join(', ')}.`
       } else {
         this.box.innerHTML = 'Type and press enter to search.'
       }
@@ -49,8 +49,8 @@ export default {
       let value = this.input.value
       let pieces = value.split(' ')
 
-      for (let i = 0; i < $.user.commands.length; i++) {
-        if (pieces[0] === $.user.commands[0]) {
+      for (let i = 0; i < this.user.commands.length; i++) {
+        if (pieces[0] === this.user.commands[0]) {
           return true
         }
       }
@@ -69,7 +69,7 @@ export default {
         return
       }
 
-      if (!this.supported() || !$.user.allowCommands) {
+      if (!this.supported() || !this.user.allowCommands) {
         this.box.innerHTML = 'Press enter to search.'
       } else {
         this.box.innerHTML = 'Press enter to execute.'
@@ -87,7 +87,7 @@ export default {
 
       let protocol = this.$store.state.ssl ? 'wss:' : 'ws:'
 
-      if (this.supported() && $.user.allowCommands) {
+      if (this.supported() && this.user.allowCommands) {
         let conn = new window.WebSocket(`${protocol}//${url}?command=true`)
 
         conn.onopen = () => {

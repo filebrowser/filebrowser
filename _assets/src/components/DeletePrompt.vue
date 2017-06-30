@@ -1,8 +1,8 @@
 <template>
   <div class="prompt">
     <h3>Delete files</h3>
-    <p v-show="req.kind !== 'listing'">Are you sure you want to delete this file/folder?</p>
-    <p v-show="req.kind === 'listing'">Are you sure you want to delete {{ selected.length }} file(s)?</p>
+    <p v-show="$store.state.req.kind !== 'listing'">Are you sure you want to delete this file/folder?</p>
+    <p v-show="$store.state.req.kind === 'listing'">Are you sure you want to delete {{ $store.getters.selectedCount }} file(s)?</p>
     <div>
       <button @click="submit" autofocus>Delete</button>
       <button @click="cancel" class="cancel">Cancel</button>
@@ -14,13 +14,8 @@
 import webdav from '../webdav'
 import page from '../page'
 
-var $ = window.info
-
 export default {
   name: 'delete-prompt',
-  data: function () {
-    return window.info
-  },
   methods: {
     cancel: function (event) {
       this.$store.commit('showDelete', false)
@@ -29,7 +24,7 @@ export default {
       this.$store.commit('showDelete', false)
       // buttons.setLoading('delete')
 
-      if ($.req.kind !== 'listing') {
+      if (this.$store.state.req.kind !== 'listing') {
         webdav.trash(window.location.pathname)
           .then(() => {
             // buttons.setDone('delete')
@@ -43,13 +38,13 @@ export default {
         return
       }
 
-      if ($.selected.length === 0) {
+      if (this.$store.getters.selectedCount === 0) {
         // This shouldn't happen...
         return
       }
 
-      if ($.selected.length === 1) {
-        webdav.trash($.req.data.items[$.selected[0]].url)
+      if (this.$store.getters.selectedCount === 1) {
+        webdav.trash(this.$store.state.req.data.items[this.$store.state.selected[0]].url)
           .then(() => {
             // buttons.setDone('delete')
             page.reload()
@@ -65,8 +60,8 @@ export default {
       // More than one item!
       let promises = []
 
-      for (let index of $.selected) {
-        promises.push(webdav.trash($.req.data.items[index].url))
+      for (let index of this.$store.state.selected) {
+        promises.push(webdav.trash(this.$store.state.req.data.items[index].url))
       }
 
       Promise.all(promises)
