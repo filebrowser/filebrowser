@@ -30,9 +30,9 @@ All of the options above are optional.
 * **before_publish** and **after_publish** allow you to set a custom command to be executed before publishing and after publishing a post/page. The placeholder `{path}` can be used and it will be replaced by the file path.
 * **name** refers to the Hugo available flags. Please use their long form without `--` in the beginning. If no **value** is set, it will be evaluated as `true`.
 
-In spite of these options, you can also use the [filemanager](/docs/filemanager) so you can have more control about what can be acceded, the permissions of each user, and so on.
+In spite of these options, you can also use the [filemanager](https://caddyserver.com/docs/http.filemanager) so you can have more control about what can be acceded, the permissions of each user, and so on.
 
-This directive should be used with [root](/docs/root), [basicauth](/docs/basicauth) and [errors](/docs/errors) middleware to have the best experience. See the examples to know more.
+This directive should be used with [root](https://caddyserver.com/docs/root), [basicauth](https://caddyserver.com/docs/basicauth) and [errors](https://caddyserver.com/docs/errors) middleware to have the best experience. See the examples to know more.
 
 ### Examples
 
