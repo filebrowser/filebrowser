@@ -20,19 +20,12 @@
     </ul>
 
     <div>
-      <button type="submit" @click="close" class="ok">OK</button>
+      <button type="submit" @click="$store.commit('showHelp', false)" class="ok">OK</button>
     </div>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'help',
-  methods: {
-    close: function (event) {
-      this.$store.commit('showHelp', false)
-    }
-  }
-}
+export default {name: 'help'}
 </script>
 

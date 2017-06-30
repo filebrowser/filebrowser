@@ -1,32 +1,35 @@
 <template>
-    <div id="previewer">
-        <div class="bar">
-            <button @click="back" class="action" aria-label="Close Preview" id="close">
-                <i class="material-icons">close</i>
-            </button>
+  <div id="previewer">
+    <div class="bar">
+      <button @click="back" class="action" aria-label="Close Preview" id="close">
+        <i class="material-icons">close</i>
+      </button>
 
-            <rename-button v-if="allowEdit()"></rename-button>
-            <delete-button v-if="allowEdit()"></delete-button>
-            <download-button></download-button>
-            <info-button></info-button>
-        </div>
-
-        <div class="preview">
-            <img v-if="type == 'image'" :src="raw()">
-            <audio v-else-if="type == 'audio'" :src="raw()" controls></audio>
-            <video v-else-if="type == 'video'" :src="raw()" controls>
-                Sorry, your browser doesn't support embedded videos,
-                but don't worry, you can <a href="?download=true">download it</a>
-                and watch it with your favorite video player!
-            </video>
-            <object v-else-if="extension == '.pdf'" class="pdf" :data="raw()"></object>
-            <a v-else-if="type == 'blob'" href="?download=true"><h2 class="message">Download <i class="material-icons">file_download</i></h2></a>
-            <pre v-else >{{ content }}</pre>
-        </div>
+      <rename-button v-if="allowEdit()"></rename-button>
+      <delete-button v-if="allowEdit()"></delete-button>
+      <download-button></download-button>
+      <info-button></info-button>
     </div>
+
+    <div class="preview">
+      <img v-if="req.data.type == 'image'" :src="raw()">
+      <audio v-else-if="req.data.type == 'audio'" :src="raw()" controls></audio>
+      <video v-else-if="req.data.type == 'video'" :src="raw()" controls>
+        Sorry, your browser doesn't support embedded videos,
+        but don't worry, you can <a href="?download=true">download it</a>
+        and watch it with your favorite video player!
+      </video>
+      <object v-else-if="req.data.extension == '.pdf'" class="pdf" :data="raw()"></object>
+      <a v-else-if="req.data.type == 'blob'" href="?download=true">
+        <h2 class="message">Download <i class="material-icons">file_download</i></h2>
+      </a>
+      <pre v-else >{{ req.data.content }}</pre>
+    </div>
+  </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import page from '../utils/page'
 import InfoButton from './InfoButton'
 import DeleteButton from './DeleteButton'
@@ -41,19 +44,17 @@ export default {
     RenameButton,
     DownloadButton
   },
-  data: function () {
-    return window.info.req.data
-  },
+  computed: mapState(['req']),
   methods: {
     raw: function () {
-      return this.url + '?raw=true'
+      return this.req.data.url + '?raw=true'
     },
     back: function (event) {
       let url = page.removeLastDir(window.location.pathname)
       page.open(url)
     },
     allowEdit: function (event) {
-      return window.info.user.allowEdit
+      return this.$store.state.user.allowEdit
     }
   }
 }

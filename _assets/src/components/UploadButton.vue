@@ -1,8 +1,8 @@
 <template>
-    <button @click="upload" aria-label="Upload" title="Upload" class="action">
-        <i class="material-icons">file_upload</i>
-        <span>Upload</span>
-    </button>
+  <button @click="upload" aria-label="Upload" title="Upload" class="action">
+    <i class="material-icons">file_upload</i>
+    <span>Upload</span>
+  </button>
 </template>
 
 <script>

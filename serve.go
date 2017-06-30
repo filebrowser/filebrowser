@@ -90,6 +90,7 @@ func displayMode(w http.ResponseWriter, r *http.Request, scope string) string {
 	http.SetCookie(w, &http.Cookie{
 		Name:   "display",
 		Value:  displayMode,
+		MaxAge: 31536000,
 		Path:   scope,
 		Secure: r.TLS != nil,
 	})
@@ -115,6 +116,7 @@ func handleSortOrder(w http.ResponseWriter, r *http.Request, scope string) (sort
 		http.SetCookie(w, &http.Cookie{
 			Name:   "sort",
 			Value:  sort,
+			MaxAge: 31536000,
 			Path:   scope,
 			Secure: r.TLS != nil,
 		})
@@ -130,6 +132,7 @@ func handleSortOrder(w http.ResponseWriter, r *http.Request, scope string) (sort
 		http.SetCookie(w, &http.Cookie{
 			Name:   "order",
 			Value:  order,
+			MaxAge: 31536000,
 			Path:   scope,
 			Secure: r.TLS != nil,
 		})
