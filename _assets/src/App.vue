@@ -13,6 +13,11 @@
         <download-button></download-button>
         <upload-button v-show="showUpload()"></upload-button>
         <info-button></info-button>
+
+        <button v-show="req.kind === 'listing'" @click="$store.commit('multiple', true)" aria-label="Select multiple" class="action">
+          <i class="material-icons">check_circle</i>
+          <span>Select</span>
+        </button>
       </div>
     </header>
 

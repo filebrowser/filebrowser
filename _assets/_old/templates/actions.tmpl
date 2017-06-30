@@ -1,13 +1,4 @@
-{{ define "right" }}
-{{- if not .IsEditor }}
-
-<button aria-label="Select multiple" class="action mobile-only" id="multiple-selection-activate">
-<i class="material-icons">check_circle</i>
-<span>Select</span>
-</button>
-{{- end }}
-
-{{ end }} 
+{{ end }}
 
 {{ define "left" }}
 {{- if and (not .IsDir) (.User.AllowEdit) }}
