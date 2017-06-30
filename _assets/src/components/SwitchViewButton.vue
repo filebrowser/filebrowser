@@ -6,21 +6,18 @@
 </template>
 
 <script>
-import page from '../utils/page'
-
 export default {
   name: 'switch-button',
   methods: {
     change: function (event) {
-      let url = window.location.pathname + '?display='
+      let display = 'mosaic'
 
       if (this.$store.state.req.data.display === 'mosaic') {
-        url += 'list'
-      } else {
-        url += 'mosaic'
+        display = 'list'
       }
 
-      page.open(url)
+      this.$store.commit('listingDisplay', display)
+      document.cookie = `display=${display}; max-age=31536000; path=${this.$store.state.baseURL}`
     },
     icon: function () {
       if (this.$store.state.req.data.display === 'mosaic') return 'view_list'

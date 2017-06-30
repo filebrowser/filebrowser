@@ -1,31 +1,32 @@
 <template>
-    <div class="item"
-        draggable="true"
-        @dragstart="dragStart"
-        @dragover="dragOver"
-        @drop="drop"
-        @click="click"
-        @dblclick="open"
-        :id="base64()">
-        <div>
-            <i class="material-icons">{{ icon() }}</i>
-        </div>
-
-        <div>
-            <p class="name">{{ name }}</p>
-
-            <p v-if="isDir" class="size" data-order="-1">&mdash;</p>
-            <p v-else class="size" :data-order="humanSize()">{{ humanSize() }}</p>
-
-            <p class="modified">
-                <time :datetime="modified">{{ humanTime() }}</time>
-            </p>
-        </div>
+  <div class="item"
+  draggable="true"
+  @dragstart="dragStart"
+  @dragover="dragOver"
+  @drop="drop"
+  @click="click"
+  @dblclick="open"
+  :aria-selected="isSelected()"
+  :id="base64()">
+    <div>
+      <i class="material-icons">{{ icon() }}</i>
     </div>
+
+    <div>
+      <p class="name">{{ name }}</p>
+
+      <p v-if="isDir" class="size" data-order="-1">&mdash;</p>
+      <p v-else class="size" :data-order="humanSize()">{{ humanSize() }}</p>
+
+      <p class="modified">
+        <time :datetime="modified">{{ humanTime() }}</time>
+      </p>
+    </div>
+  </div>
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex'
+import { mapMutations, mapGetters, mapState } from 'vuex'
 import filesize from 'filesize'
 import moment from 'moment'
 import webdav from '../utils/webdav.js'
@@ -34,9 +35,15 @@ import page from '../utils/page.js'
 export default {
   name: 'item',
   props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index'],
+  computed: {
+    ...mapState(['selected', 'req']),
+    ...mapGetters(['selectedCount'])
+  },
   methods: {
-    ...mapGetters(['selectedCount']),
-    ...mapMutations(['addSelected', 'removeSelected']),
+    ...mapMutations(['addSelected', 'removeSelected', 'resetSelected']),
+    isSelected: function () {
+      return (this.selected.indexOf(this.index) !== -1)
+    },
     icon: function () {
       if (this.isDir) return 'folder'
       if (this.type === 'image') return 'insert_photo'
@@ -54,16 +61,9 @@ export default {
       return window.btoa(this.name)
     },
     dragStart: function (event) {
-      let el = event.target
-
-      for (let i = 0; i < 5; i++) {
-        if (!el.classList.contains('item')) {
-          el = el.parentElement
-        }
+      if (this.selectedCount === 0) {
+        this.addSelected(this.index)
       }
-
-      event.dataTransfer.setData('name', el.querySelector('.name').innerHTML)
-      event.dataTransfer.setData('obj-url', this.url)
     },
     dragOver: function (event) {
       if (!this.isDir) return
@@ -83,39 +83,31 @@ export default {
       if (!this.isDir) return
       event.preventDefault()
 
-      let url = event.dataTransfer.getData('obj-url')
-      let name = event.dataTransfer.getData('name')
+      if (this.selectedCount === 0) return
 
-      if (name === '' || url === '' || url === this.url) return
+      let promises = []
 
-      webdav.move(url, this.url + name)
+      for (let i of this.selected) {
+        let url = this.req.data.items[i].url
+        let name = this.req.data.items[i].name
+
+        promises.push(webdav.move(url, this.url + name))
+      }
+
+      Promise.all(promises)
         .then(() => page.reload())
         .catch(error => console.log(error))
-    },
-    unselectAll: function () {
-      let items = document.getElementsByClassName('item')
-      Array.from(items).forEach(link => {
-        link.setAttribute('aria-selected', false)
-      })
-
-      this.$store.commit('resetSelected')
-      return false
     },
     click: function (event) {
       if (this.selectedCount !== 0) event.preventDefault()
       if (this.$store.state.selected.indexOf(this.index) === -1) {
-        if (!event.ctrlKey && !this.$store.state.multiple) this.unselectAll()
+        if (!event.ctrlKey && !this.$store.state.multiple) this.resetSelected()
 
-        this.$el.setAttribute('aria-selected', true)
-        // WORKS: this.$store.commit('addSelected', this.index)
         this.addSelected(this.index)
       } else {
-        this.$el.setAttribute('aria-selected', false)
         this.removeSelected(this.index)
-        // WORKS: this.$store.commit('removeSelected', this.index)
       }
 
-      // this.handleSelectionChange()
       return false
     },
     open: function (event) {

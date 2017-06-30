@@ -11,10 +11,9 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import page from '../utils/page'
 import webdav from '../utils/webdav'
-
-var $ = window.info
 
 export default {
   name: 'rename-prompt',
@@ -23,30 +22,31 @@ export default {
       name: ''
     }
   },
+  computed: mapState(['req', 'selected', 'selectedCount']),
   methods: {
     cancel: function (event) {
       this.$store.commit('showRename', false)
     },
     oldName: function () {
-      if ($.req.kind !== 'listing') {
-        return $.req.data.name
+      if (this.req.kind !== 'listing') {
+        return this.req.data.name
       }
 
-      if ($.selected.length === 0 || $.selected.length > 1) {
+      if (this.selectedCount === 0 || this.selectedCount > 1) {
         // This shouldn't happen.
         return
       }
 
-      return $.req.data.items[$.selected[0]].name
+      return this.req.data.items[this.selected[0]].name
     },
     submit: function (event) {
       let oldLink = ''
       let newLink = ''
 
-      if ($.req.kind !== 'listing') {
-        oldLink = $.req.data.url
+      if (this.req.kind !== 'listing') {
+        oldLink = this.req.data.url
       } else {
-        oldLink = $.req.data.items[$.selected[0]].url
+        oldLink = this.req.data.items[this.selected[0]].url
       }
 
       newLink = page.removeLastDir(oldLink) + '/' + this.name
@@ -55,7 +55,7 @@ export default {
 
       webdav.move(oldLink, newLink)
         .then(() => {
-          if ($.req.kind !== 'listing') {
+          if (this.req.kind !== 'listing') {
             page.open(newLink)
             return
           }
@@ -67,7 +67,6 @@ export default {
           console.log(error)
         })
 
-      this.name = ''
       this.$store.commit('showRename', false)
       return
     }

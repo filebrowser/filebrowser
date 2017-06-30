@@ -11,16 +11,15 @@
 
     <div>
       <button class="ok" @click="move">Move</button>
-      <button class="cancel" @click="cancel">Cancel</button>
+      <button class="cancel" @click="$store.commit('showMove', false)">Cancel</button>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import page from '../utils/page'
 import webdav from '../utils/webdav'
-
-var $ = window.info
 
 export default {
   name: 'move-prompt',
@@ -30,16 +29,17 @@ export default {
       current: window.location.pathname
     }
   },
+  computed: mapState(['req', 'selected', 'baseURL']),
   mounted: function () {
-    if (window.location.pathname !== $.baseURL + '/') {
+    if (window.location.pathname !== this.baseURL + '/') {
       this.items.push({
         name: '..',
         url: page.removeLastDir(window.location.pathname) + '/'
       })
     }
 
-    if ($.req.kind === 'listing') {
-      for (let item of $.req.data.items) {
+    if (this.req.kind === 'listing') {
+      for (let item of this.req.data.items) {
         if (!item.isDir) continue
 
         this.items.push({
@@ -52,9 +52,6 @@ export default {
     }
   },
   methods: {
-    cancel: function (event) {
-      this.$store.commit('showMove', false)
-    },
     move: function (event) {
       event.preventDefault()
 
@@ -68,9 +65,9 @@ export default {
         dest = selected.dataset.url
       }
 
-      for (let item of $.selected) {
-        let from = $.req.data.items[item].url
-        let to = dest + '/' + $.req.data.items[item].name
+      for (let item of this.selected) {
+        let from = this.req.data.items[item].url
+        let to = dest + '/' + this.req.data.items[item].name
         to = to.replace('//', '/')
 
         promises.push(webdav.move(from, to))
@@ -95,7 +92,7 @@ export default {
           this.current = url
           this.items = []
 
-          if (url !== $.baseURL + '/') {
+          if (url !== this.baseURL + '/') {
             this.items.push({
               name: '..',
               url: page.removeLastDir(url) + '/'

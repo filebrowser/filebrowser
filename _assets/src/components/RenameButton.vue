@@ -1,17 +1,10 @@
 <template>
-    <button @click="show" aria-label="Rename" title="Rename" class="action">
-        <i class="material-icons">mode_edit</i>
-        <span>Rename</span>
-    </button>
+  <button @click="$store.commit('showRename', true)" aria-label="Rename" title="Rename" class="action">
+    <i class="material-icons">mode_edit</i>
+    <span>Rename</span>
+  </button>
 </template>
 
 <script>
-export default {
-  name: 'rename-button',
-  methods: {
-    show: function (event) {
-      this.$store.commit('showRename', true)
-    }
-  }
-}
+export default {name: 'rename-button'}
 </script>

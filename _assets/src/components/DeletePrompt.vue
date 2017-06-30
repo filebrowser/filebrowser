@@ -46,21 +46,6 @@ export default {
         return
       }
 
-      if (this.selectedCount === 1) {
-        webdav.trash(this.req.data.items[this.selected[0]].url)
-          .then(() => {
-            // buttons.setDone('delete')
-            page.reload()
-          })
-          .catch(error => {
-            // buttons.setDone('delete', false)
-            console.log(error)
-          })
-
-        return
-      }
-
-      // More than one item!
       let promises = []
 
       for (let index of this.selected) {
@@ -74,6 +59,7 @@ export default {
         })
         .catch(error => {
           console.log(error)
+          page.reload()
           // buttons.setDone('delete', false)
         })
     }

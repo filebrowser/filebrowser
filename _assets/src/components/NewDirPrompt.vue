@@ -5,7 +5,7 @@
     <input autofocus type="text" @keyup.enter="submit" v-model.trim="name">
     <div>
       <button class="ok" @click="submit">Create</button>
-      <button class="cancel" @click="cancel">Cancel</button>
+      <button class="cancel" @click="$store.commit('showNewDir', false)">Cancel</button>
     </div>
   </div>
 </template>
@@ -22,9 +22,6 @@ export default {
     }
   },
   methods: {
-    cancel: function () {
-      this.$store.commit('showNewDir', false)
-    },
     submit: function (event) {
       event.preventDefault()
       if (this.new === '') return

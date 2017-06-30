@@ -27,6 +27,9 @@ const mutations = {
   resetSelected: (state) => {
     state.selected = []
   },
+  listingDisplay: (state, value) => {
+    state.req.data.display = value
+  },
   updateRequest: (state, value) => {
     state.req.kind = value.kind
     state.req.data = value.data
