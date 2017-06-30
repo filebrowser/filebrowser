@@ -53,7 +53,7 @@ export default {
   },
   methods: {
     cancel: function (event) {
-      $.showMove = false
+      this.$store.commit('showMove', false)
     },
     move: function (event) {
       event.preventDefault()
@@ -76,7 +76,7 @@ export default {
         promises.push(webdav.move(from, to))
       }
 
-      $.showMove = false
+      this.$store.commit('showMove', false)
 
       Promise.all(promises)
         .then(() => {

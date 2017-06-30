@@ -10,7 +10,7 @@ export default {
   name: 'rename-button',
   methods: {
     show: function (event) {
-      window.info.showRename = true
+      this.$store.commit('showRename', true)
     }
   }
 }

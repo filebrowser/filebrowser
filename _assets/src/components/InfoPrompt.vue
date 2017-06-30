@@ -102,7 +102,7 @@ export default {
       request.send()
     },
     close: function () {
-      this.showInfo = false
+      this.$store.commit('showInfo', false)
     }
   }
 }

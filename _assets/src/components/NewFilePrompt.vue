@@ -14,8 +14,6 @@
 import page from '../page'
 import webdav from '../webdav'
 
-var $ = window.info
-
 export default {
   name: 'new-file-prompt',
   data: function () {
@@ -25,7 +23,7 @@ export default {
   },
   methods: {
     cancel: function () {
-      $.showNewFile = false
+      this.$store.commit('showNewFile', false)
     },
     submit: function (event) {
       event.preventDefault()
@@ -42,7 +40,7 @@ export default {
           console.log(e)
         })
 
-      $.showNewFile = false
+      this.$store.commit('showNewFile', false)
     }
   }
 }
