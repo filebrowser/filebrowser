@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 import filesize from 'filesize'
 import moment from 'moment'
 import webdav from '../webdav.js'
@@ -35,8 +35,8 @@ export default {
   name: 'item',
   props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index'],
   methods: {
-    // ...mapGetters('selectedCount'),
-    ...mapMutations('addSelected', 'removeSelected'),
+    ...mapGetters(['selectedCount']),
+    ...mapMutations(['addSelected', 'removeSelected']),
     icon: function () {
       if (this.isDir) return 'folder'
       if (this.type === 'image') return 'insert_photo'
