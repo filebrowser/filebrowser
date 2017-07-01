@@ -50,8 +50,7 @@ export default {
       return this.req.data.url + '?raw=true'
     },
     back: function (event) {
-      let url = page.removeLastDir(window.location.pathname)
-      if (url === '') url = '/'
+      let url = page.removeLastDir(window.location.pathname) + '/'
       page.open(url)
     },
     allowEdit: function (event) {

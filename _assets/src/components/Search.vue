@@ -13,7 +13,7 @@
       <div>
         <span v-if="search.length === 0 && commands.length === 0">{{ text() }}</span>
         <ul v-else-if="search.length > 0">
-          <li v-for="s in search"><a :href="'.' + s">.{{ s }}</a></li>
+          <li v-for="s in search"><a :href="'./' + s">./{{ s }}</a></li>
         </ul>
         <ul v-else-if="commands.length > 0">
           <li v-for="c in commands">{{ c }}</li>
@@ -92,7 +92,7 @@ export default {
       let uri = window.location.host + window.location.pathname
 
       if (this.$store.state.req.kind !== 'listing') {
-        uri = page.removeLastDir(uri)
+        uri = page.removeLastDir(uri) + '/'
       }
 
       uri = `${(this.$store.state.ssl ? 'wss:' : 'ws:')}//${uri}`
@@ -121,7 +121,10 @@ export default {
       conn.onopen = () => conn.send(this.value)
 
       conn.onmessage = (event) => {
-        this.search.push(event.data)
+        let url = event.data
+        if (url[0] === '/') url = url.substring(1)
+
+        this.search.push(url)
         this.scrollable.scrollTop = this.scrollable.scrollHeight
       }
 
