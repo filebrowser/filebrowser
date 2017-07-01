@@ -87,7 +87,7 @@ export default {
         let url = this.req.data.items[i].url
         let name = this.req.data.items[i].name
 
-        promises.push(webdav.move(url, this.url + name))
+        promises.push(webdav.move(url, this.url + encodeURIComponent(name)))
       }
 
       Promise.all(promises)

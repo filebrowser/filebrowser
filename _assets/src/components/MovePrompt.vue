@@ -67,7 +67,7 @@ export default {
 
       for (let item of this.selected) {
         let from = this.req.data.items[item].url
-        let to = dest + '/' + this.req.data.items[item].name
+        let to = dest + '/' + encodeURIComponent(this.req.data.items[item].name)
         to = to.replace('//', '/')
 
         promises.push(webdav.move(from, to))
