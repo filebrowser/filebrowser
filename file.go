@@ -1,7 +1,6 @@
 package filemanager
 
 import (
-	"bytes"
 	"context"
 	"crypto/md5"
 	"crypto/sha1"
@@ -22,7 +21,6 @@ import (
 	"time"
 
 	"github.com/hacdias/filemanager/frontmatter"
-	"github.com/spf13/hugo/parser"
 )
 
 var (
@@ -54,9 +52,10 @@ type file struct {
 	// Stores the content of a text file.
 	Content string `json:"content,omitempty"`
 
-	Editor *editor `json:"editor,omitempty"`
-
 	*listing `json:",omitempty"`
+
+	Metadata string `json:"metadata,omitempty"`
+	Language string `json:"language,omitempty"`
 }
 
 // A listing is the context used to fill out a template.
@@ -73,20 +72,6 @@ type listing struct {
 	Order string `json:"order"`
 	// Displays in mosaic or list.
 	Display string `json:"display"`
-}
-
-// editor contains the information to fill the editor template.
-type editor struct {
-	// Indicates if the content has only frontmatter, only content, or both.
-	Mode string `json:"type"`
-	// File content language.
-	Language string `json:"language"`
-	// This indicates if the editor should be visual or not.
-	Visual      bool `json:"visual"`
-	FrontMatter struct {
-		Content *frontmatter.Content `json:"content"`
-		Rune    rune                 `json:"rune"`
-	} `json:"frontmatter"`
 }
 
 // getInfo gets the file information and, in case of error, returns the
@@ -181,69 +166,41 @@ func (i *file) getListing(c *requestContext, r *http.Request) error {
 
 // getEditor gets the editor based on a Info struct
 func (i *file) getEditor(r *http.Request) error {
-	var err error
+	i.Language = editorLanguage(i.Extension)
 
-	// Create a new editor variable and set the mode
-	e := &editor{
-		Language: editorLanguage(i.Extension),
+	// If the editor will hold only content, leave now.
+	if editorMode(i.Language) == "content" {
+		return nil
 	}
 
-	e.Mode = editorMode(e.Language)
-
-	if e.Mode == "frontmatter-only" || e.Mode == "complete" {
-		e.Visual = true
+	// If the file doesn't have any kind of metadata, leave now.
+	if !frontmatter.HasRune(i.Language) {
+		return nil
 	}
 
-	if r.URL.Query().Get("visual") == "false" {
-		e.Mode = "content-only"
-	}
+	/*
+		if e.Mode == "complete" && hasRune {
+			var page parser.Page
+			content := []byte(i.Content)
+			// Starts a new buffer and parses the file using Hugo's functions
 
-	hasRune := frontmatter.HasRune(i.Content)
+			buffer := bytes.NewBuffer(content)
+			page, err = parser.ReadFrom(buffer)
 
-	if e.Mode == "frontmatter-only" && !hasRune {
-		e.FrontMatter.Rune, err = frontmatter.StringFormatToRune(e.Language)
-		if err != nil {
-			goto Error
-		}
-		i.Content = frontmatter.AppendRune(i.Content, e.FrontMatter.Rune)
-		hasRune = true
-	}
+			if err != nil {
+				goto Error
+			}
 
-	if e.Mode == "frontmatter-only" && hasRune {
-		e.FrontMatter.Content, _, err = frontmatter.Pretty([]byte(i.Content))
-		if err != nil {
-			goto Error
-		}
-	}
-
-	if e.Mode == "complete" && hasRune {
-		var page parser.Page
-		content := []byte(i.Content)
-		// Starts a new buffer and parses the file using Hugo's functions
-
-		buffer := bytes.NewBuffer(content)
-		page, err = parser.ReadFrom(buffer)
-
-		if err != nil {
-			goto Error
+			// Parses the page content and the frontmatter
+			i.Content = strings.TrimSpace(string(page.Content()))
+			e.FrontMatter.Rune = rune(content[0])
+			e.FrontMatter.Content, _, err = frontmatter.Pretty(page.FrontMatter())
 		}
 
-		// Parses the page content and the frontmatter
-		i.Content = strings.TrimSpace(string(page.Content()))
-		e.FrontMatter.Rune = rune(content[0])
-		e.FrontMatter.Content, _, err = frontmatter.Pretty(page.FrontMatter())
-	}
+		if e.Mode == "complete" && !hasRune {
+			err = errors.New("Complete but without rune")
+		} */
 
-	if e.Mode == "complete" && !hasRune {
-		err = errors.New("Complete but without rune")
-	}
-
-Error:
-	if e.Mode == "content-only" || err != nil {
-		e.Mode = "content-only"
-	}
-
-	i.Editor = e
 	return nil
 }
 
@@ -463,13 +420,11 @@ var textExtensions = [...]string{
 
 func editorMode(language string) string {
 	switch language {
-	case "json", "toml", "yaml":
-		return "frontmatter-only"
 	case "markdown", "asciidoc", "rst":
-		return "complete"
+		return "content+metadata"
 	}
 
-	return "content-only"
+	return "content"
 }
 
 func editorLanguage(mode string) string {

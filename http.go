@@ -173,20 +173,20 @@ func serveWebDAV(c *requestContext, w http.ResponseWriter, r *http.Request) (int
 		}
 	}
 
-	// Preprocess the PUT request if it's the case
+	// Execute beforeSave if it is a PUT request.
 	if r.Method == http.MethodPut {
 		if err = c.fm.BeforeSave(r, c.fm, c.us); err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		if put(c, w, r) != nil {
 			return http.StatusInternalServerError, err
 		}
 	}
 
 	c.fm.handler.ServeHTTP(w, r)
-	if err = c.fm.AfterSave(r, c.fm, c.us); err != nil {
-		return http.StatusInternalServerError, err
+
+	// Execute afterSave if it is a PUT request.
+	if r.Method == http.MethodPut {
+		if err = c.fm.AfterSave(r, c.fm, c.us); err != nil {
+			return http.StatusInternalServerError, err
+		}
 	}
 
 	return 0, nil
