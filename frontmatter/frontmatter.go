@@ -123,20 +123,20 @@ func Marshal(data interface{}, mark rune) ([]byte, error) {
 
 // Content is the block content
 type Content struct {
-	Other   interface{}
-	Fields  []*Block
-	Arrays  []*Block
-	Objects []*Block
+	Other   interface{} `json:"other"`
+	Fields  []*Block    `json:"fields"`
+	Arrays  []*Block    `json:"arrays"`
+	Objects []*Block    `json:"objects"`
 }
 
 // Block is a block
 type Block struct {
-	Name     string
-	Title    string
-	Type     string
-	HTMLType string
-	Content  *Content
-	Parent   *Block `json:"-"`
+	Name     string   `json:"name"`
+	Title    string   `json:"title"`
+	Type     string   `json:"type"`
+	HTMLType string   `json:"htmlType"`
+	Content  *Content `json:"content"`
+	Parent   *Block   `json:"-"`
 }
 
 func rawToPretty(config interface{}, parent *Block) *Content {

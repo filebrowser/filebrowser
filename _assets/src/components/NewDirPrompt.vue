@@ -26,7 +26,12 @@ export default {
       event.preventDefault()
       if (this.new === '') return
 
-      let url = window.location.pathname + this.name + '/'
+      let url = window.location.pathname
+      if (this.$store.state.req.kind !== 'listing') {
+        url = page.removeLastDir(url) + '/'
+      }
+
+      url += this.name + '/'
       url = url.replace('//', '/')
 
       // buttons.setLoading('newDir')

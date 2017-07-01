@@ -15,7 +15,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hacdias/filemanager"
+	. "github.com/hacdias/filemanager"
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
@@ -27,18 +27,22 @@ func init() {
 	})
 }
 
-// FileManager is an http.Handler that can show a file listing when
-// directories in the given paths are specified.
-type FileManager struct {
+type plugin struct {
 	Next    httpserver.Handler
-	Configs []*filemanager.FileManager
+	Configs []*config
+}
+
+type config struct {
+	*FileManager
+	baseURL   string
+	webDavURL string
 }
 
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
-func (f FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
+func (f plugin) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	for i := range f.Configs {
 		// Checks if this Path should be handled by File Manager.
-		if !httpserver.Path(r.URL.Path).Matches(f.Configs[i].BaseURL) {
+		if !httpserver.Path(r.URL.Path).Matches(f.Configs[i].baseURL) {
 			continue
 		}
 
@@ -56,21 +60,21 @@ func setup(c *caddy.Controller) error {
 	}
 
 	httpserver.GetConfig(c).AddMiddleware(func(next httpserver.Handler) httpserver.Handler {
-		return FileManager{Configs: configs, Next: next}
+		return plugin{Configs: configs, Next: next}
 	})
 
 	return nil
 }
 
-func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
+func parse(c *caddy.Controller) ([]*config, error) {
 	var (
-		configs []*filemanager.FileManager
+		configs []*config
 		err     error
 	)
 
 	for c.Next() {
 		var (
-			m    = filemanager.New(".")
+			m    = &config{FileManager: New(".")}
 			u    = m.User
 			name = ""
 		)
@@ -79,7 +83,7 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 
 		m.SetPrefixURL(strings.TrimSuffix(caddyConf.Addr.Path, "/"))
 		m.Commands = []string{"git", "svn", "hg"}
-		m.Rules = append(m.Rules, &filemanager.Rule{
+		m.Rules = append(m.Rules, &Rule{
 			Regex:  true,
 			Allow:  false,
 			Regexp: regexp.MustCompile("\\/\\..+"),
@@ -89,18 +93,19 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 		args := c.RemainingArgs()
 
 		if len(args) > 0 {
+			m.baseURL = args[0]
+			m.webDavURL = "/webdav"
 			m.SetBaseURL(args[0])
-			m.SetWebDavURL("/webdav")
 		}
 
 		for c.NextBlock() {
 			switch c.Val() {
 			case "before_save":
-				if m.BeforeSave, err = makeCommand(c); err != nil {
+				if m.BeforeSave, err = makeCommand(c, m); err != nil {
 					return configs, err
 				}
 			case "after_save":
-				if m.AfterSave, err = makeCommand(c); err != nil {
+				if m.AfterSave, err = makeCommand(c, m); err != nil {
 					return configs, err
 				}
 			case "webdav":
@@ -108,6 +113,7 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 					return configs, c.ArgErr()
 				}
 
+				m.webDavURL = "c.Val()"
 				m.SetWebDavURL(c.Val())
 			case "show":
 				if !c.NextArg() {
@@ -185,7 +191,7 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 					ruleType += "_r"
 				}
 
-				rule := &filemanager.Rule{
+				rule := &Rule{
 					Allow: ruleType == "allow" || ruleType == "allow_r",
 					Regex: ruleType == "allow_r" || ruleType == "block_r",
 				}
@@ -215,14 +221,16 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 			}
 		}
 
+		m.baseURL = strings.TrimSuffix(m.baseURL, "/")
+		m.webDavURL = strings.TrimSuffix(m.webDavURL, "/")
 		configs = append(configs, m)
 	}
 
 	return configs, nil
 }
 
-func makeCommand(c *caddy.Controller) (filemanager.Command, error) {
-	fn := func(r *http.Request, c *filemanager.FileManager, u *filemanager.User) error { return nil }
+func makeCommand(c *caddy.Controller, m *config) (Command, error) {
+	fn := func(r *http.Request, c *FileManager, u *User) error { return nil }
 
 	args := c.RemainingArgs()
 	if len(args) == 0 {
@@ -241,8 +249,8 @@ func makeCommand(c *caddy.Controller) (filemanager.Command, error) {
 		return fn, c.Err(err.Error())
 	}
 
-	fn = func(r *http.Request, c *filemanager.FileManager, u *filemanager.User) error {
-		path := strings.Replace(r.URL.Path, c.WebDavURL, "", 1)
+	fn = func(r *http.Request, c *FileManager, u *User) error {
+		path := strings.Replace(r.URL.Path, m.baseURL+m.webDavURL, "", 1)
 		path = u.Scope() + "/" + path
 		path = filepath.Clean(path)
 

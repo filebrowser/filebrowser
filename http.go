@@ -27,7 +27,7 @@ func serveHTTP(c *requestContext, w http.ResponseWriter, r *http.Request) (int, 
 
 	// Checks if the URL contains the baseURL. If so, it strips it. Otherwise,
 	// it throws an error.
-	if p := strings.TrimPrefix(r.URL.Path, c.fm.baseURL); len(p) < len(r.URL.Path) {
+	if p := strings.TrimPrefix(r.URL.Path, c.fm.baseURL); len(p) < len(r.URL.Path) || len(c.fm.baseURL) == 0 {
 		r.URL.Path = p
 	} else {
 		return http.StatusNotFound, nil

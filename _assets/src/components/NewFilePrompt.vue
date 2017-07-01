@@ -26,11 +26,19 @@ export default {
       event.preventDefault()
       if (this.new === '') return
 
+      let url = window.location.pathname
+      if (this.$store.state.req.kind !== 'listing') {
+        url = page.removeLastDir(url) + '/'
+      }
+
+      url += this.name
+      url = url.replace('//', '/')
+
       // buttons.setLoading('newFile')
-      webdav.create(window.location.pathname + this.name)
+      webdav.create(url)
         .then(() => {
           // buttons.setDone('newFile')
-          page.open(window.location.pathname + this.name)
+          page.open(url)
         })
         .catch(e => {
           // buttons.setDone('newFile', false)

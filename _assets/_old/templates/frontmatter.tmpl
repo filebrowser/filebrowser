@@ -30,27 +30,3 @@
 
 {{ end }}
 
-{{ define "value" }}
-{{- if eq .HTMLType "textarea" }}
-    <textarea class="scroll" name="{{ .Name }}" id="{{.Name }}" data-parent-type="{{ .Parent.Type }}">{{ .Content.Other }}</textarea>
-{{- else if eq .HTMLType "datetime" }}
-    <input name="{{ .Name }}" id="{{ .Name }}" value="{{ .Content.Other.Format "2006-01-02T15:04" }}" type="datetime-local" data-parent-type="{{ .Parent.Type }}"></input>
-{{- else }}
-    <input name="{{ .Name }}" id="{{ .Name }}" value="{{ .Content.Other }}" type="{{ .HTMLType }}" data-parent-type="{{ .Parent.Type }}"></input>
-{{- end }}
-{{ end }}
-
-{{ define "fielset" }}
-<fieldset id="{{ .Name }}" data-type="{{ .Type }}">
-    {{- if not (eq .Title "") }}
-        <h3>{{ .Name }}</h3>
-    {{- end }}
-    <div class="action add">
-        <i class="material-icons" title="Add">add</i>
-    </div>
-    <div class="action delete" data-delete="{{ .Name }}">
-        <i class="material-icons" title="Close">close</i>
-    </div>
-    {{- template "blocks" .Content }}
-</fieldset>
-{{ end }}

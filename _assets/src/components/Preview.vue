@@ -51,6 +51,7 @@ export default {
     },
     back: function (event) {
       let url = page.removeLastDir(window.location.pathname)
+      if (url === '') url = '/'
       page.open(url)
     },
     allowEdit: function (event) {
