@@ -26,6 +26,7 @@
         <i class="material-icons">folder</i>
         <span>My Files</span>
       </a>
+
       <div v-if="user.allowNew">
         <button @click="$store.commit('showNewDir', true)" aria-label="New directory" title="New directory" class="action">
           <i class="material-icons">create_new_folder</i>
@@ -36,6 +37,14 @@
           <span>New file</span>
         </button>
       </div>
+
+      <div v-for="plugin in plugins">
+        <button v-for="action in plugin.sidebar" @click="action.click" :aria-label="action.name" :title="action.name" class="action">
+          <i class="material-icons">{{ action.icon }}</i>
+          <span>{{ action.name }}</span>
+        </button>
+      </div>
+
       <button class="action" id="logout" tabindex="0" role="button" aria-label="Log out">
         <i class="material-icons" title="Logout">exit_to_app</i>
         <span>Logout</span>
@@ -134,9 +143,18 @@ export default {
       'showDownload'
     ])
   },
+  data: function () {
+    return {
+      plugins: []
+    }
+  },
   mounted: function () {
     updateColumnSizes()
     window.addEventListener('resize', updateColumnSizes)
+
+    if (window.plugins !== undefined || window.plugins !== null) {
+      this.plugins = window.plugins
+    }
 
     document.title = this.req.data.name
     window.history.replaceState({

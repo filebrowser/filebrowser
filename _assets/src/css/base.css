@@ -94,9 +94,9 @@ nav .action {
     padding: .5em;
 }
 
-nav>div {
+nav > .action:last-child,
+nav > div {
     border-top: 1px solid rgba(0, 0, 0, 0.05);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 nav .action>* {

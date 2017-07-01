@@ -42,6 +42,11 @@ module.exports = {
         options: vueLoaderConfig
       },
       {
+        test: /\.css$/,
+        include: /node_modules/,
+        loader: 'style!css'
+      },
+      {
         test: /\.js$/,
         loader: 'babel-loader',
         include: [resolve('src'), resolve('test')]
