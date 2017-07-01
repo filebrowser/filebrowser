@@ -6,8 +6,7 @@
   @drop="drop"
   @click="click"
   @dblclick="open"
-  :aria-selected="isSelected()"
-  :id="base64()">
+  :aria-selected="isSelected()">
     <div>
       <i class="material-icons">{{ icon() }}</i>
     </div>
@@ -56,9 +55,6 @@ export default {
     },
     humanTime: function () {
       return moment(this.modified).fromNow()
-    },
-    base64: function () {
-      return window.btoa(this.name)
     },
     dragStart: function (event) {
       if (this.selectedCount === 0) {
