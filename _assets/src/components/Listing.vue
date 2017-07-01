@@ -85,7 +85,7 @@ export default {
   },
   methods: {
     base64: function (name) {
-      return window.btoa(name)
+      return window.btoa(unescape(encodeURIComponent(name)))
     },
     dragEnter: function (event) {
       let items = document.getElementsByClassName('item')

@@ -49,6 +49,7 @@ export default {
         oldLink = this.req.data.items[this.selected[0]].url
       }
 
+      this.name = encodeURIComponent(this.name)
       newLink = page.removeLastDir(oldLink) + '/' + this.name
 
       // buttons.setLoading('rename')
