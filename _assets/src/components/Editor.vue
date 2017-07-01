@@ -1,10 +1,10 @@
 <template>
     <form id="editor">
-        <h2 v-if="req.data.editor.type == 'complete'">Metadata</h2>
+        <h2 v-if="hasMetadata">Metadata</h2>
 
-        <h2 v-if="req.data.editor.type == 'complete'">Body</h2>
+        <h2 v-if="hasMetadata">Body</h2>
 
-        <div v-if="req.data.editor.type !== 'frontmatter-only'" class="content">
+        <div class="content">
             <div id="ace"></div>
             <textarea id="source" name="content">{{ req.data.content }}</textarea>
         </div>
@@ -16,7 +16,12 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'editor',
-  computed: mapState(['req']),
+  computed: {
+    ...mapState(['req']),
+    hasMetadata: function () {
+      return (this.req.data.metadata !== undefined && this.req.data.metadata !== null)
+    }
+  },
   data: function () {
     return {
       codemirror: null,
