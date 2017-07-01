@@ -36,7 +36,8 @@ function removeLastDir (url) {
   if (arr.pop() === '') {
     arr.pop()
   }
-  return (arr.join('/'))
+
+  return arr.join('/')
 }
 
 export default {

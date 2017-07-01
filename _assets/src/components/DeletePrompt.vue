@@ -31,7 +31,7 @@ export default {
         webdav.trash(window.location.pathname)
           .then(() => {
             // buttons.setDone('delete')
-            page.open(page.removeLastDir(window.location.pathname))
+            page.open(page.removeLastDir(window.location.pathname) + '/')
           })
           .catch(error => {
             // buttons.setDone('delete', false)

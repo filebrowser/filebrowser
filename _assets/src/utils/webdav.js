@@ -48,27 +48,6 @@ function put (link, body, headers = {}) {
   })
 }
 
-function propfind (link, body, headers = {}) {
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open('PROPFIND', convertURL(link), true)
-
-    for (let key in headers) {
-      request.setRequestHeader(key, headers[key])
-    }
-
-    request.onload = () => {
-      if (request.status < 300) {
-        resolve(request.responseText)
-      } else {
-        reject(request.statusText)
-      }
-    }
-    request.onerror = () => reject(request.statusText)
-    request.send(body)
-  })
-}
-
 function trash (link) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
@@ -104,7 +83,6 @@ function create (link) {
 export default {
   create: create,
   trash: trash,
-  propfind: propfind,
   put: put,
   move: move
 }
