@@ -1,6 +1,7 @@
 package filemanager
 
 import (
+	"bytes"
 	"context"
 	"crypto/md5"
 	"crypto/sha1"
@@ -20,7 +21,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hacdias/filemanager/frontmatter"
+	"github.com/spf13/hugo/parser"
 )
 
 var (
@@ -87,7 +88,7 @@ func getInfo(url *url.URL, c *FileManager, u *User) (*file, error) {
 		Path:        filepath.Join(u.Scope, url.Path),
 	}
 
-	info, err := u.fileSystem.Stat(context.TODO(), i.Path)
+	info, err := u.fileSystem.Stat(context.TODO(), url.Path)
 	if err != nil {
 		return i, err
 	}
@@ -165,40 +166,28 @@ func (i *file) getListing(c *requestContext, r *http.Request) error {
 // getEditor gets the editor based on a Info struct
 func (i *file) getEditor() error {
 	i.Language = editorLanguage(i.Extension)
-
 	// If the editor will hold only content, leave now.
 	if editorMode(i.Language) == "content" {
 		return nil
 	}
 
 	// If the file doesn't have any kind of metadata, leave now.
-	if !frontmatter.HasRune(i.Language) {
+	if !hasRune(i.Content) {
 		return nil
 	}
 
-	/*
-		if e.Mode == "complete" && hasRune {
-			var page parser.Page
-			content := []byte(i.Content)
-			// Starts a new buffer and parses the file using Hugo's functions
+	buffer := bytes.NewBuffer([]byte(i.Content))
+	page, err := parser.ReadFrom(buffer)
 
-			buffer := bytes.NewBuffer(content)
-			page, err = parser.ReadFrom(buffer)
+	// If there is an error, just ignore it and return nil.
+	// This way, the file can be served for editing.
+	if err != nil {
 
-			if err != nil {
-				goto Error
-			}
+		return nil
+	}
 
-			// Parses the page content and the frontmatter
-			i.Content = strings.TrimSpace(string(page.Content()))
-			e.FrontMatter.Rune = rune(content[0])
-			e.FrontMatter.Content, _, err = frontmatter.Pretty(page.FrontMatter())
-		}
-
-		if e.Mode == "complete" && !hasRune {
-			err = errors.New("Complete but without rune")
-		} */
-
+	i.Content = strings.TrimSpace(string(page.Content()))
+	i.Metadata = strings.TrimSpace(string(page.FrontMatter()))
 	return nil
 }
 
@@ -414,6 +403,13 @@ var textExtensions = [...]string{
 	"Caddyfile",
 	".c", ".cc", ".h", ".hh", ".cpp", ".hpp", ".f90",
 	".f", ".bas", ".d", ".ada", ".nim", ".cr", ".java", ".cs", ".vala", ".vapi",
+}
+
+// hasRune checks if the file has the frontmatter rune
+func hasRune(file string) bool {
+	return strings.HasPrefix(file, "---") ||
+		strings.HasPrefix(file, "+++") ||
+		strings.HasPrefix(file, "{")
 }
 
 func editorMode(language string) string {
