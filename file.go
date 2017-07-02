@@ -29,6 +29,8 @@ var (
 
 // file contains the information about a particular file or directory.
 type file struct {
+	// Indicates the Kind of view on the front-end (listing, editor or preview).
+	Kind string `json:"kind"`
 	// The name of the file.
 	Name string `json:"name"`
 	// The Size of the file.
@@ -79,15 +81,13 @@ type listing struct {
 func getInfo(url *url.URL, c *FileManager, u *User) (*file, error) {
 	var err error
 
-	i := &file{URL: c.RootURL() + url.Path}
-	i.VirtualPath = url.Path
-	i.VirtualPath = strings.TrimPrefix(i.VirtualPath, "/")
-	i.VirtualPath = "/" + i.VirtualPath
+	i := &file{
+		URL:         c.RootURL() + "/files" + url.Path,
+		VirtualPath: url.Path,
+		Path:        filepath.Join(u.Scope, url.Path),
+	}
 
-	i.Path = u.scope + i.VirtualPath
-	i.Path = filepath.Clean(i.Path)
-
-	info, err := os.Stat(i.Path)
+	info, err := u.fileSystem.Stat(context.TODO(), i.Path)
 	if err != nil {
 		return i, err
 	}
@@ -103,8 +103,6 @@ func getInfo(url *url.URL, c *FileManager, u *User) (*file, error) {
 
 // getListing gets the information about a specific directory and its files.
 func (i *file) getListing(c *requestContext, r *http.Request) error {
-	baseURL := c.fm.RootURL() + r.URL.Path
-
 	// Gets the directory information using the Virtual File System of
 	// the user configuration.
 	f, err := c.us.fileSystem.OpenFile(context.TODO(), c.fi.VirtualPath, os.O_RDONLY, 0)
@@ -140,7 +138,7 @@ func (i *file) getListing(c *requestContext, r *http.Request) error {
 		}
 
 		// Absolute URL
-		url := url.URL{Path: baseURL + name}
+		url := url.URL{Path: i.URL + name}
 
 		i := file{
 			Name:    f.Name(),
@@ -165,7 +163,7 @@ func (i *file) getListing(c *requestContext, r *http.Request) error {
 }
 
 // getEditor gets the editor based on a Info struct
-func (i *file) getEditor(r *http.Request) error {
+func (i *file) getEditor() error {
 	i.Language = editorLanguage(i.Extension)
 
 	// If the editor will hold only content, leave now.
