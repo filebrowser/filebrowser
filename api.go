@@ -79,7 +79,7 @@ func resourceHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 	case http.MethodPut:
 		return putHandler(c, w, r)
 	case http.MethodPost:
-		// Handle renaming
+		return postHandler(c, w, r)
 	}
 
 	/* // Execute beforeSave if it is a PUT request.
@@ -209,6 +209,14 @@ func putHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int,
 	etag := fmt.Sprintf(`"%x%x"`, fi.ModTime().UnixNano(), fi.Size())
 	w.Header().Set("ETag", etag)
 	return http.StatusOK, nil
+}
+
+func postHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	dst := r.Header.Get("Destination")
+	src := r.URL.Path
+	err := c.us.fileSystem.Rename(context.TODO(), src, dst)
+
+	return errorToHTTP(err, true), err
 }
 
 // displayMode obtaisn the display mode from URL, or from the
