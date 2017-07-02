@@ -1,200 +1,98 @@
 package filemanager
 
 import (
-	"errors"
+	"encoding/json"
+	"html/template"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 )
-
-// assetsURL is the url where static assets are served.
-const assetsURL = "/_"
 
 // requestContext contains the needed information to make handlers work.
 type requestContext struct {
 	us *User
 	fm *FileManager
 	fi *file
-	pg *page
 }
 
+// serveHTTP is the main entry point of this HTML application.
 func serveHTTP(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	var (
-		code int
-		err  error
-	)
+	// Checks if the URL contains the baseURL and strips it. Otherwise, it just
+	// returns a 404 error because we're not supposed to be here!
+	p := strings.TrimPrefix(r.URL.Path, c.fm.baseURL)
 
-	// Checks if the URL contains the baseURL. If so, it strips it. Otherwise,
-	// it throws an error.
-	if p := strings.TrimPrefix(r.URL.Path, c.fm.baseURL); len(p) < len(r.URL.Path) || len(c.fm.baseURL) == 0 {
-		r.URL.Path = p
-	} else {
+	if len(p) >= len(r.URL.Path) && c.fm.baseURL != "" {
 		return http.StatusNotFound, nil
 	}
 
-	// Checks if the URL matches the Assets URL. Returns the asset if the
-	// method is GET and Status Forbidden otherwise.
-	if matchURL(r.URL.Path, assetsURL+"/") {
-		if r.Method == http.MethodGet {
-			r.URL.Path = strings.TrimPrefix(r.URL.Path, assetsURL)
-			c.fm.static.ServeHTTP(w, r)
-			return 0, nil
-		}
+	r.URL.Path = p
 
-		return http.StatusForbidden, nil
+	// Check if this request is made to the service worker. If so,
+	// pass it through a template to add the needed variables.
+	if r.URL.Path == "/sw.js" {
+		return renderFile(
+			w,
+			c.fm.assets.MustString(r.URL.Path),
+			"application/javascript",
+			c.fm.RootURL(),
+		)
 	}
 
-	username, _, _ := r.BasicAuth()
-	if _, ok := c.fm.Users[username]; ok {
-		c.us = c.fm.Users[username]
-	} else {
-		c.us = c.fm.User
+	// Checks if this request is made to the static assets folder. If so, and
+	// if it is a GET request, returns with the asset. Otherwise, returns
+	// a status not implemented.
+	if matchURL(r.URL.Path, "/static") {
+		if r.Method != http.MethodGet {
+			return http.StatusNotImplemented, nil
+		}
+
+		return staticHandler(c, w, r)
 	}
 
-	// Checks if the request URL is for the WebDav server.
-	if matchURL(r.URL.Path, c.fm.webDavURL) {
-		return serveWebDAV(c, w, r)
+	// Checks if this request is made to the API and directs to the
+	// API handler if so.
+	if matchURL(r.URL.Path, "/api") {
+		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/api")
+		return serveAPI(c, w, r)
 	}
 
-	w.Header().Set("x-frame-options", "SAMEORIGIN")
-	w.Header().Set("x-content-type", "nosniff")
-	w.Header().Set("x-xss-protection", "1; mode=block")
+	// Checks if this request is made to the base path /files. If so,
+	// shows the index.html page.
+	if matchURL(r.URL.Path, "/files") {
+		w.Header().Set("x-frame-options", "SAMEORIGIN")
+		w.Header().Set("x-content-type", "nosniff")
+		w.Header().Set("x-xss-protection", "1; mode=block")
 
-	// Checks if the User is allowed to access this file
-	if !c.us.Allowed(r.URL.Path) {
-		if r.Method == http.MethodGet {
-			return htmlError(
-				w, http.StatusForbidden,
-				errors.New("You don't have permission to access this page"),
-			)
-		}
-
-		return http.StatusForbidden, nil
+		return renderFile(
+			w,
+			c.fm.assets.MustString("index.html"),
+			"text/html",
+			c.fm.RootURL(),
+		)
 	}
 
-	if r.URL.Query().Get("search") != "" {
-		return search(c, w, r)
-	}
-
-	if r.URL.Query().Get("command") != "" {
-		return command(c, w, r)
-	}
-
-	if r.Method == http.MethodGet {
-		var f *file
-
-		// Obtains the information of the directory/file.
-		f, err = getInfo(r.URL, c.fm, c.us)
-		if err != nil {
-			if r.Method == http.MethodGet {
-				return htmlError(w, code, err)
-			}
-
-			code = errorToHTTP(err, false)
-			return code, err
-		}
-
-		c.fi = f
-
-		// If it's a dir and the path doesn't end with a trailing slash,
-		// redirect the user.
-		if f.IsDir && !strings.HasSuffix(r.URL.Path, "/") {
-			http.Redirect(w, r, c.fm.RootURL()+r.URL.Path+"/", http.StatusTemporaryRedirect)
-			return 0, nil
-		}
-
-		switch {
-		case r.URL.Query().Get("download") != "":
-			code, err = serveDownload(c, w, r)
-		case !f.IsDir && r.URL.Query().Get("checksum") != "":
-			code, err = serveChecksum(c, w, r)
-		case r.URL.Query().Get("raw") == "true" && !f.IsDir:
-			http.ServeFile(w, r, f.Path)
-			code, err = 0, nil
-		default:
-			code, err = serveDefault(c, w, r)
-		}
-
-		if err != nil {
-			code, err = htmlError(w, code, err)
-		}
-
-		return code, err
-	}
-
-	return http.StatusNotImplemented, nil
-}
-
-// serveWebDAV handles the webDAV route of the File Manager.
-func serveWebDAV(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	var err error
-
-	// Checks for user permissions relatively to this path.
-	if !c.us.Allowed(strings.TrimPrefix(r.URL.Path, c.fm.webDavURL)) {
-		return http.StatusForbidden, nil
-	}
-
-	switch r.Method {
-	case "GET", "HEAD":
-		// Excerpt from RFC4918, section 9.4:
-		//
-		// 		GET, when applied to a collection, may return the contents of an
-		//		"index.html" resource, a human-readable view of the contents of
-		//		the collection, or something else altogether.
-		//
-		// It was decided on https://github.com/hacdias/caddy-filemanager/issues/85
-		// that GET, for collections, will return the same as PROPFIND method.
-		path := strings.Replace(r.URL.Path, c.fm.webDavURL, "", 1)
-		path = c.us.scope + "/" + path
-		path = filepath.Clean(path)
-
-		var i os.FileInfo
-		i, err = os.Stat(path)
-		if err != nil {
-			// Is there any error? WebDav will handle it... no worries.
-			break
-		}
-
-		if i.IsDir() {
-			r.Method = "PROPFIND"
-
-			if r.Method == "HEAD" {
-				w = newResponseWriterNoBody(w)
-			}
-		}
-	case "PROPPATCH", "MOVE", "PATCH", "PUT", "DELETE":
-		if !c.us.AllowEdit {
-			return http.StatusForbidden, nil
-		}
-	case "MKCOL", "COPY":
-		if !c.us.AllowNew {
-			return http.StatusForbidden, nil
-		}
-	}
-
-	// Execute beforeSave if it is a PUT request.
-	if r.Method == http.MethodPut {
-		if err = c.fm.BeforeSave(r, c.fm, c.us); err != nil {
-			return http.StatusInternalServerError, err
-		}
-	}
-
-	c.fm.handler.ServeHTTP(w, r)
-
-	// Execute afterSave if it is a PUT request.
-	if r.Method == http.MethodPut {
-		if err = c.fm.AfterSave(r, c.fm, c.us); err != nil {
-			return http.StatusInternalServerError, err
-		}
-	}
-
+	http.Redirect(w, r, c.fm.RootURL()+"/files"+r.URL.Path, http.StatusTemporaryRedirect)
 	return 0, nil
 }
 
+// staticHandler handles the static assets path.
+func staticHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	if r.URL.Path != "/static/manifest.json" {
+		http.FileServer(c.fm.assets.HTTPBox()).ServeHTTP(w, r)
+		return 0, nil
+	}
+
+	return renderFile(
+		w,
+		c.fm.assets.MustString(r.URL.Path),
+		"application/json",
+		c.fm.RootURL(),
+	)
+}
+
 // serveChecksum calculates the hash of a file. Supports MD5, SHA1, SHA256 and SHA512.
-func serveChecksum(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	query := r.URL.Query().Get("checksum")
+func checksumHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	query := r.URL.Query().Get("algo")
 
 	val, err := c.fi.Checksum(query)
 	if err == errInvalidOption {
@@ -207,30 +105,32 @@ func serveChecksum(c *requestContext, w http.ResponseWriter, r *http.Request) (i
 	return 0, nil
 }
 
-// responseWriterNoBody is a wrapper used to suprress the body of the response
-// to a request. Mainly used for HEAD requests.
-type responseWriterNoBody struct {
-	http.ResponseWriter
-}
+// renderFile renders a file using a template with some needed variables.
+func renderFile(w http.ResponseWriter, file string, contentType string, baseURL string) (int, error) {
+	tpl := template.Must(template.New("file").Parse(file))
+	w.Header().Set("Content-Type", contentType+"; charset=utf-8")
 
-// newResponseWriterNoBody creates a new responseWriterNoBody.
-func newResponseWriterNoBody(w http.ResponseWriter) *responseWriterNoBody {
-	return &responseWriterNoBody{w}
-}
+	err := tpl.Execute(w, map[string]string{"BaseURL": baseURL})
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
 
-// Header executes the Header method from the http.ResponseWriter.
-func (w responseWriterNoBody) Header() http.Header {
-	return w.ResponseWriter.Header()
-}
-
-// Write suprresses the body.
-func (w responseWriterNoBody) Write(data []byte) (int, error) {
 	return 0, nil
 }
 
-// WriteHeader writes the header to the http.ResponseWriter.
-func (w responseWriterNoBody) WriteHeader(statusCode int) {
-	w.ResponseWriter.WriteHeader(statusCode)
+// renderJSON prints the JSON version of data to the browser.
+func renderJSON(w http.ResponseWriter, data interface{}) (int, error) {
+	marsh, err := json.Marshal(data)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	if _, err := w.Write(marsh); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return 0, nil
 }
 
 // matchURL checks if the first URL matches the second.
@@ -244,6 +144,8 @@ func matchURL(first, second string) bool {
 // errorToHTTP converts errors to HTTP Status Code.
 func errorToHTTP(err error, gone bool) int {
 	switch {
+	case err == nil:
+		return http.StatusOK
 	case os.IsPermission(err):
 		return http.StatusForbidden
 	case os.IsNotExist(err):

@@ -12,10 +12,10 @@ import (
 	"github.com/mholt/archiver"
 )
 
-// serveDownload creates an archive in one of the supported formats (zip, tar,
+// downloadHandler creates an archive in one of the supported formats (zip, tar,
 // tar.gz or tar.bz2) and sends it to be downloaded.
-func serveDownload(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	query := r.URL.Query().Get("download")
+func downloadHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	query := r.URL.Query().Get("format")
 
 	if !c.fi.IsDir {
 		w.Header().Set("Content-Disposition", "attachment; filename="+c.fi.Name)

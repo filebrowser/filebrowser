@@ -94,7 +94,6 @@ func parse(c *caddy.Controller) ([]*config, error) {
 
 		if len(args) > 0 {
 			m.baseURL = args[0]
-			m.webDavURL = "/webdav"
 			m.SetBaseURL(args[0])
 		}
 
@@ -108,13 +107,6 @@ func parse(c *caddy.Controller) ([]*config, error) {
 				if m.AfterSave, err = makeCommand(c, m); err != nil {
 					return configs, err
 				}
-			case "webdav":
-				if !c.NextArg() {
-					return configs, c.ArgErr()
-				}
-
-				m.webDavURL = "c.Val()"
-				m.SetWebDavURL(c.Val())
 			case "show":
 				if !c.NextArg() {
 					return configs, c.ArgErr()
@@ -251,7 +243,7 @@ func makeCommand(c *caddy.Controller, m *config) (Command, error) {
 
 	fn = func(r *http.Request, c *FileManager, u *User) error {
 		path := strings.Replace(r.URL.Path, m.baseURL+m.webDavURL, "", 1)
-		path = u.Scope() + "/" + path
+		path = u.Scope + "/" + path
 		path = filepath.Clean(path)
 
 		for i := range args {

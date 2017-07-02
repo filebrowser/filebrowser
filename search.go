@@ -73,7 +73,7 @@ func search(c *requestContext, w http.ResponseWriter, r *http.Request) (int, err
 	search = parseSearch(value)
 	scope := strings.TrimPrefix(r.URL.Path, "/")
 	scope = "/" + scope
-	scope = c.us.scope + scope
+	scope = c.us.Scope + scope
 	scope = strings.Replace(scope, "\\", "/", -1)
 	scope = filepath.Clean(scope)
 

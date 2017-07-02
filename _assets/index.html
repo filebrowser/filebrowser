@@ -4,27 +4,28 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="base" content="{{ .BaseURL }}">
   <title>File Manager</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ .BaseURL }}/_/img/icons/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="{{ .BaseURL }}/_/img/icons/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ .BaseURL }}/static/img/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ .BaseURL }}/static/img/icons/favicon-16x16.png">
   <!--[if IE]><link rel="shortcut icon" href="/static/img/icons/favicon.ico"><![endif]-->
   <!-- Add to home screen for Android and modern mobile browsers -->
-  <link rel="manifest" href="{{ .BaseURL }}/_/manifest.json">
-  <meta name="theme-color" content="#4DBA87">
+  <link rel="manifest" href="{{ .BaseURL }}/static/manifest.json">
+  <meta name="theme-color" content="#2979ff">
 
   <!-- Add to home screen for Safari on iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="assets">
-  <link rel="apple-touch-icon" href="{{ .BaseURL }}/_/img/icons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" href="{{ .BaseURL }}/static/img/icons/apple-touch-icon-152x152.png">
   <!-- Add to home screen for Windows -->
-  <meta name="msapplication-TileImage" content="{{ .BaseURL }}/_/img/icons/msapplication-icon-144x144.png">
-  <meta name="msapplication-TileColor" content="#000000">
+  <meta name="msapplication-TileImage" content="{{ .BaseURL }}/static/img/icons/msapplication-icon-144x144.png">
+  <meta name="msapplication-TileColor" content="#2979ff">
 
   <% for (var chunk of webpack.chunks) {
     for (var file of chunk.files) {
       if (file.match(/\.(js|css)$/)) { %>
-      <link rel="<%= chunk.initial?'preload':'prefetch' %>" href="{{ .BaseURL }}/<%= file.replace('static', '') %>" as="<%= file.match(/\.css$/)?'style':'script' %>"><% }}} %>
+      <link rel="<%= chunk.initial?'preload':'prefetch' %>" href="{{ .BaseURL }}/<%= file %>" as="<%= file.match(/\.css$/)?'style':'script' %>"><% }}} %>
 
   <style>
   #loading {
@@ -88,20 +89,8 @@
     }
   }
   </style>
-
-  {{- if ne .User.StyleSheet "" -}}
-    <style>{{ CSS .User.StyleSheet }}</style>
-  {{- end -}}
 </head>
 <body>
-  <script>
-  var info = {
-    user: JSON.parse('{{ Marshal .User }}'),
-    req: JSON.parse('{{ Marshal . }}'),
-    webdavURL: "{{ .WebDavURL }}",
-    baseURL: "{{.BaseURL}}"
-  }
-  </script>
   <div id="app"></div>
 
   <div id="loading">

@@ -29,11 +29,6 @@ type FileManager struct {
 	// a trailing slash and mustn't contain prefixURL, if set.
 	baseURL string
 
-	// webDavURL is the path where the WebDAV will be accessible. It can be set to ""
-	// in order to override the GUI and only use the WebDAV. It musn't end with
-	// a trailing slash.
-	webDavURL string
-
 	// Users is a map with the different configurations for each user.
 	Users map[string]*User
 
@@ -43,8 +38,7 @@ type FileManager struct {
 	// AfterSave is a function that is called before saving a file.
 	AfterSave Command
 
-	templates *rice.Box
-	static    http.Handler
+	assets *rice.Box
 }
 
 // Command is a command function.
@@ -53,14 +47,11 @@ type Command func(r *http.Request, m *FileManager, u *User) error
 // User contains the configuration for each user. It should be created
 // using NewUser on a File Manager instance.
 type User struct {
-	// scope is the physical path the user has access to.
-	scope string
+	// Scope is the physical path the user has access to.
+	Scope string
 
 	// fileSystem is the virtual file system the user has access.
 	fileSystem webdav.FileSystem
-
-	// handler handles incoming requests to the WebDAV backend.
-	handler *webdav.Handler
 
 	// Rules is an array of access and deny rules.
 	Rules []*Rule `json:"-"`
@@ -106,13 +97,11 @@ func New(scope string) *FileManager {
 		Users:      map[string]*User{},
 		BeforeSave: func(r *http.Request, m *FileManager, u *User) error { return nil },
 		AfterSave:  func(r *http.Request, m *FileManager, u *User) error { return nil },
-		static:     http.FileServer(rice.MustFindBox("./_assets/dist_dev/_").HTTPBox()),
-		templates:  rice.MustFindBox("./_assets/dist_dev/templates"),
+		assets:     rice.MustFindBox("./_assets/dist"),
 	}
 
 	m.SetScope(scope, "")
 	m.SetBaseURL("/")
-	m.SetWebDavURL("/webdav")
 
 	return m
 }
@@ -126,7 +115,7 @@ func (m FileManager) RootURL() string {
 // WebDavURL returns the actual URL
 // where WebDAV can be accessed.
 func (m FileManager) WebDavURL() string {
-	return m.prefixURL + m.baseURL + m.webDavURL
+	return m.prefixURL + m.baseURL + "/api/webdav"
 }
 
 // SetPrefixURL updates the prefixURL of a File
@@ -147,32 +136,6 @@ func (m *FileManager) SetBaseURL(url string) {
 	m.baseURL = strings.TrimSuffix(url, "/")
 }
 
-// SetWebDavURL updates the webDavURL of a File Manager
-// object and updates it's main handler.
-func (m *FileManager) SetWebDavURL(url string) {
-	url = strings.TrimPrefix(url, "/")
-	url = strings.TrimSuffix(url, "/")
-
-	m.webDavURL = "/" + url
-
-	// update base user webdav handler
-	m.handler = &webdav.Handler{
-		Prefix:     m.webDavURL,
-		FileSystem: m.fileSystem,
-		LockSystem: webdav.NewMemLS(),
-	}
-
-	// update other users' handlers to match
-	// the new URL
-	for _, u := range m.Users {
-		u.handler = &webdav.Handler{
-			Prefix:     m.webDavURL,
-			FileSystem: u.fileSystem,
-			LockSystem: webdav.NewMemLS(),
-		}
-	}
-}
-
 // SetScope updates a user scope and its virtual file system.
 // If the user string is blank, it will change the base scope.
 func (m *FileManager) SetScope(scope string, username string) error {
@@ -188,14 +151,8 @@ func (m *FileManager) SetScope(scope string, username string) error {
 		}
 	}
 
-	u.scope = strings.TrimSuffix(scope, "/")
-	u.fileSystem = webdav.Dir(u.scope)
-
-	u.handler = &webdav.Handler{
-		Prefix:     m.webDavURL,
-		FileSystem: u.fileSystem,
-		LockSystem: webdav.NewMemLS(),
-	}
+	u.Scope = strings.TrimSuffix(scope, "/")
+	u.fileSystem = webdav.Dir(u.Scope)
 
 	return nil
 }
@@ -208,9 +165,8 @@ func (m *FileManager) NewUser(username string) error {
 	}
 
 	m.Users[username] = &User{
-		scope:         m.User.scope,
 		fileSystem:    m.User.fileSystem,
-		handler:       m.User.handler,
+		Scope:         m.User.Scope,
 		Rules:         m.User.Rules,
 		AllowNew:      m.User.AllowNew,
 		AllowEdit:     m.User.AllowEdit,
@@ -251,9 +207,4 @@ func (u User) Allowed(url string) bool {
 	}
 
 	return true
-}
-
-// Scope returns the user scope.
-func (u User) Scope() string {
-	return u.scope
 }

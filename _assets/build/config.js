@@ -6,10 +6,10 @@ module.exports = {
     env: {
       NODE_ENV: '"production"'
     },
-    index: path.resolve(__dirname, '../dist/templates/index.html'),
+    index: path.resolve(__dirname, '../dist/index.html'),
     assetsRoot: path.resolve(__dirname, '../dist'),
-    assetsSubDirectory: '_',
-    assetsPublicPath: '{{ .BaseURL }}',
+    assetsSubDirectory: 'static',
+    assetsPublicPath: '{{ .BaseURL }}/',
     productionSourceMap: true,
     // Gzip off by default as many popular static hosts such as
     // Surge or Netlify already gzip all static assets for you.
@@ -27,10 +27,10 @@ module.exports = {
     env: {
       NODE_ENV: '"development"'
     },
-    index: path.resolve(__dirname, '../dist_dev/templates/index.html'),
-    assetsRoot: path.resolve(__dirname, '../dist_dev/'),
-    assetsSubDirectory: '_',
-    assetsPublicPath: '{{ .BaseURL }}',
+    index: path.resolve(__dirname, '../dist/index.html'),
+    assetsRoot: path.resolve(__dirname, '../dist/'),
+    assetsSubDirectory: 'static',
+    assetsPublicPath: '{{ .BaseURL }}/',
     produceSourceMap: true
   }
 }
