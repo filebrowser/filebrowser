@@ -141,6 +141,32 @@ function search (url, search, onmessage, onclose) {
   conn.onclose = onclose
 }
 
+function download (format, ...files) {
+  let url = `${store.state.baseURL}/api/download`
+
+  if (files.length === 1) {
+    url += removePrefix(files[0]) + '?'
+  } else {
+    let arg = ''
+
+    for (let file of files) {
+      arg += removePrefix(file) + ','
+    }
+
+    arg = arg.substring(0, arg.length - 1)
+    arg = encodeURIComponent(arg)
+    url += `/?files=${arg}&`
+  }
+
+  url += `token=${store.state.jwt}`
+
+  if (format !== null) {
+    url += `&format=${format}`
+  }
+
+  window.open(url)
+}
+
 export default {
   delete: rm,
   fetch,
@@ -148,5 +174,6 @@ export default {
   move,
   put,
   command,
-  search
+  search,
+  download
 }
