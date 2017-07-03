@@ -85,10 +85,10 @@ func getInfo(url *url.URL, c *FileManager, u *User) (*file, error) {
 	i := &file{
 		URL:         c.RootURL() + "/files" + url.Path,
 		VirtualPath: url.Path,
-		Path:        filepath.Join(u.Scope, url.Path),
+		Path:        filepath.Join(string(u.FileSystem), url.Path),
 	}
 
-	info, err := u.fileSystem.Stat(context.TODO(), url.Path)
+	info, err := u.FileSystem.Stat(context.TODO(), url.Path)
 	if err != nil {
 		return i, err
 	}
@@ -106,7 +106,7 @@ func getInfo(url *url.URL, c *FileManager, u *User) (*file, error) {
 func (i *file) getListing(c *requestContext, r *http.Request) error {
 	// Gets the directory information using the Virtual File System of
 	// the user configuration.
-	f, err := c.us.fileSystem.OpenFile(context.TODO(), c.fi.VirtualPath, os.O_RDONLY, 0)
+	f, err := c.us.FileSystem.OpenFile(context.TODO(), c.fi.VirtualPath, os.O_RDONLY, 0)
 	if err != nil {
 		return err
 	}
