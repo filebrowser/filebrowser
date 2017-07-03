@@ -69,8 +69,7 @@
 <script>
 import {mapState} from 'vuex'
 import Item from './ListingItem'
-import webdav from '@/utils/webdav'
-import page from '@/utils/page'
+import api from '@/utils/api'
 
 export default {
   name: 'listing',
@@ -138,12 +137,12 @@ export default {
       let promises = []
 
       for (let file of files) {
-        promises.push(webdav.put(window.location.pathname + base + file.name, file))
+        promises.push(api.put(this.$route.path + base + file.name, file))
       }
 
       Promise.all(promises)
         .then(() => {
-          page.reload()
+          // page.reload()
           // buttons.setDone('upload')
         })
         .catch(e => {

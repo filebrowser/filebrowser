@@ -30,6 +30,7 @@
 import {mapState, mapGetters} from 'vuex'
 import filesize from 'filesize'
 import moment from 'moment'
+import api from '@/utils/api'
 
 export default {
   name: 'info-prompt',
@@ -80,28 +81,21 @@ export default {
     checksum: function (event, hash) {
       event.preventDefault()
 
-      let request = new window.XMLHttpRequest()
       let link
 
       if (this.selectedCount) {
         link = this.req.items[this.selected[0]].url
       } else {
-        link = window.location.pathname
+        link = this.$route.path
       }
 
-      request.open('GET', `${link}?checksum=${hash}`, true)
-
-      request.onload = () => {
-        if (request.status >= 300) {
-          console.log(request.statusText)
-          return
-        }
-
-        event.target.innerHTML = request.responseText
-      }
-
-      request.onerror = (e) => console.log(e)
-      request.send()
+      api.checksum(link, hash)
+        .then((hash) => {
+          event.target.innerHTML = hash
+        })
+        .catch(error => {
+          console.log(error)
+        })
     }
   }
 }

@@ -18,8 +18,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import page from '@/utils/page'
-import webdav from '@/utils/webdav'
+import url from '@/utils/url'
+import api from '@/utils/api'
 
 export default {
   name: 'move-prompt',
@@ -31,10 +31,10 @@ export default {
   },
   computed: mapState(['req', 'selected', 'baseURL']),
   mounted: function () {
-    if (window.location.pathname !== this.baseURL + '/') {
+    if (this.$route.path !== '/files/') {
       this.items.push({
         name: '..',
-        url: page.removeLastDir(window.location.pathname) + '/'
+        url: url.removeLastDir(this.$route.path) + '/'
       })
     }
 
@@ -70,7 +70,7 @@ export default {
         let to = dest + '/' + encodeURIComponent(this.req.items[item].name)
         to = to.replace('//', '/')
 
-        promises.push(webdav.move(from, to))
+        promises.push(api.move(from, to))
       }
 
       this.$store.commit('showMove', false)
@@ -78,7 +78,7 @@ export default {
       Promise.all(promises)
         .then(() => {
           // buttons.setDone('move')
-          page.open(dest)
+          this.$router.push({page: dest})
         })
         .catch(e => {
           // buttons.setDone('move', false)
@@ -86,16 +86,16 @@ export default {
         })
     },
     next: function (event) {
-      let url = event.currentTarget.dataset.url
-      this.json(url)
+      let uri = event.currentTarget.dataset.url
+      this.json(uri)
         .then((data) => {
-          this.current = url
+          this.current = uri
           this.items = []
 
-          if (url !== this.baseURL + '/') {
+          if (uri !== this.baseURL + '/') {
             this.items.push({
               name: '..',
-              url: page.removeLastDir(url) + '/'
+              url: url.removeLastDir(uri) + '/'
             })
           }
 
@@ -105,7 +105,7 @@ export default {
 
             this.items.push({
               name: item.name,
-              url: item.url
+              url: item.uri
             })
           }
         })

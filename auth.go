@@ -86,16 +86,31 @@ func renewAuthHandler(c *requestContext, w http.ResponseWriter, r *http.Request)
 	return 0, nil
 }
 
+type extractor []string
+
+func (e extractor) ExtractToken(r *http.Request) (string, error) {
+	token, _ := request.AuthorizationHeaderExtractor.ExtractToken(r)
+	if token != "" {
+		return token, nil
+	}
+
+	token, _ = request.ArgumentExtractor{"token"}.ExtractToken(r)
+	if token != "" {
+		return token, nil
+	}
+
+	return "", request.ErrNoTokenInRequest
+}
+
 // validateAuth is used to validate the authentication and returns the
 // User if it is valid.
 func validateAuth(c *requestContext, r *http.Request) (bool, *User) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		return c.fm.key, nil
 	}
-
 	var claims claims
 	token, err := request.ParseFromRequestWithClaims(r,
-		request.AuthorizationHeaderExtractor,
+		extractor{},
 		&claims,
 		keyFunc,
 	)

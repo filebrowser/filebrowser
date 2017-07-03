@@ -12,8 +12,8 @@
 
 <script>
 import {mapGetters, mapMutations, mapState} from 'vuex'
-import webdav from '@/utils/webdav'
-import page from '@/utils/page'
+import api from '@/utils/api'
+import url from '@/utils/url'
 
 export default {
   name: 'delete-prompt',
@@ -28,10 +28,10 @@ export default {
       // buttons.setLoading('delete')
 
       if (this.req.kind !== 'listing') {
-        webdav.trash(window.location.pathname)
+        api.delete(this.$route.path)
           .then(() => {
             // buttons.setDone('delete')
-            page.open(page.removeLastDir(window.location.pathname) + '/')
+            this.$router.push({path: url.removeLastDir(this.$route.path) + '/'})
           })
           .catch(error => {
             // buttons.setDone('delete', false)
@@ -49,17 +49,17 @@ export default {
       let promises = []
 
       for (let index of this.selected) {
-        promises.push(webdav.trash(this.req.items[index].url))
+        promises.push(api.delete(this.req.items[index].url))
       }
 
       Promise.all(promises)
         .then(() => {
-          page.reload()
+          // page.reload()
           // buttons.setDone('delete')
         })
         .catch(error => {
           console.log(error)
-          page.reload()
+          // page.reload()
           // buttons.setDone('delete', false)
         })
     }

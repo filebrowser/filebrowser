@@ -28,8 +28,7 @@
 import { mapMutations, mapGetters, mapState } from 'vuex'
 import filesize from 'filesize'
 import moment from 'moment'
-import webdav from '@/utils/webdav.js'
-import page from '@/utils/page.js'
+import api from '@/utils/api'
 
 export default {
   name: 'item',
@@ -87,11 +86,13 @@ export default {
         let url = this.req.items[i].url
         let name = this.req.items[i].name
 
-        promises.push(webdav.move(url, this.url + encodeURIComponent(name)))
+        promises.push(api.move(url, this.url + encodeURIComponent(name)))
       }
 
       Promise.all(promises)
-        .then(() => page.reload())
+        .then(() => {
+          // page.reload()
+        })
         .catch(error => console.log(error))
     },
     click: function (event) {

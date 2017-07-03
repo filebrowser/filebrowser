@@ -21,7 +21,10 @@ export default {
   },
   methods: {
     download: function (format) {
-      let uri = `${window.location.pathname}?download=${format}`
+      let uri = this.$route.params[0]
+      uri = this.$store.state.baseURL + '/api/download/' + uri
+      uri += `?token=${this.$store.state.jwt}`
+      uri += `&format=${format}`
 
       if (this.selectedCount > 0) {
         let files = ''

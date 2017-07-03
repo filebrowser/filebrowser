@@ -26,6 +26,12 @@ const router = new Router({
       }
     },
     {
+      path: '/',
+      redirect: {
+        path: '/files/'
+      }
+    },
+    {
       path: '/*',
       component: Main,
       meta: {
@@ -33,7 +39,7 @@ const router = new Router({
       },
       children: [
         {
-          path: '/files*',
+          path: '/files/*',
           name: 'Files'
         },
         {
