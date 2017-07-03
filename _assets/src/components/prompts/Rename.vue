@@ -25,7 +25,7 @@ export default {
   computed: mapState(['req', 'selected', 'selectedCount']),
   methods: {
     cancel: function (event) {
-      this.$store.commit('showRename', false)
+      this.$store.commit('closePrompts')
     },
     oldName: function () {
       if (this.req.kind !== 'listing') {
@@ -68,7 +68,7 @@ export default {
           console.log(error)
         })
 
-      this.$store.commit('showRename', false)
+      this.$store.commit('closePrompts')
       return
     }
   }

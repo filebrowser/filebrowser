@@ -5,7 +5,7 @@
     <input autofocus type="text" @keyup.enter="submit" v-model.trim="name">
     <div>
       <button class="ok" @click="submit">Create</button>
-      <button class="cancel" @click="$store.commit('showNewFile', false)">Cancel</button>
+      <button class="cancel" @click="$store.commit('closePrompts')">Cancel</button>
     </div>
   </div>
 </template>
@@ -45,7 +45,7 @@ export default {
           console.log(error)
         })
 
-      this.$store.commit('showNewFile', false)
+      this.$store.commit('closePrompts')
     }
   }
 }

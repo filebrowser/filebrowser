@@ -1,5 +1,5 @@
 <template>
-  <button @click="$store.commit('showMove', true)" aria-label="Move" title="Move" class="action">
+  <button @click="this.$store.commit('showPrompt', 'move')" aria-label="Move" title="Move" class="action">
     <i class="material-icons">forward</i>
     <span>Move file</span>
   </button>

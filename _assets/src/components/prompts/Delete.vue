@@ -22,9 +22,9 @@ export default {
     ...mapState(['req', 'selected'])
   },
   methods: {
-    ...mapMutations(['showDelete']),
+    ...mapMutations(['closePrompts']),
     submit: function (event) {
-      this.showDelete(false)
+      this.closePrompts()
       // buttons.setLoading('delete')
 
       if (this.req.kind !== 'listing') {

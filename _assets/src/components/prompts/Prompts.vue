@@ -21,7 +21,7 @@ import Download from './Download'
 import Move from './Move'
 import NewFile from './NewFile'
 import NewDir from './NewDir'
-import {mapGetters, mapState} from 'vuex'
+import {mapGetters} from 'vuex'
 
 export default {
   name: 'prompts',
@@ -37,9 +37,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'showOverlay'
-    ]),
-    ...mapState([
+      'showOverlay',
       'showInfo',
       'showHelp',
       'showDelete',
@@ -52,7 +50,7 @@ export default {
   },
   methods: {
     resetPrompts () {
-      this.$store.commit('resetPrompts')
+      this.$store.commit('closePrompts')
     }
   }
 }
