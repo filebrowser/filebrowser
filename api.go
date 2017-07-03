@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 )
@@ -212,13 +213,18 @@ func putHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int,
 
 func postHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	dst := r.Header.Get("Destination")
+	dst, err := url.QueryUnescape(dst)
+	if err != nil {
+		return errorToHTTP(err, true), err
+	}
+
 	src := r.URL.Path
 
 	if dst == "/" || src == "/" {
 		return http.StatusForbidden, nil
 	}
 
-	err := c.us.FileSystem.Rename(context.TODO(), src, dst)
+	err = c.us.FileSystem.Rename(context.TODO(), src, dst)
 	return errorToHTTP(err, true), err
 }
 

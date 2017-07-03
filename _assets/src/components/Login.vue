@@ -109,6 +109,8 @@ export default {
   color: #333;
 }
 
+#login input[type="text"]:focus,
+#login input[type="password"]:focus,
 #login input[type="text"]:hover,
 #login input[type="password"]:hover {
   border-color: #9f9f9f;

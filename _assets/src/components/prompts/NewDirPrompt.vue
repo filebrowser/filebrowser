@@ -26,7 +26,7 @@ export default {
       event.preventDefault()
       if (this.new === '') return
 
-      let uri = window.location.pathname
+      let uri = this.$route.path
       if (this.$store.state.req.kind !== 'listing') {
         uri = url.removeLastDir(uri) + '/'
       }
