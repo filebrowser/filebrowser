@@ -1,6 +1,6 @@
 <template>
   <div id="listing"
-    :class="req.data.display"
+    :class="req.display"
     @drop="drop"
     @dragenter="dragEnter"
     @dragend="dragEnd">
@@ -8,13 +8,13 @@
       <div class="item header">
         <div></div>
         <div>
-          <p v-bind:class="{ active: req.data.sort === 'name' }" class="name"><span>Name</span>
-            <a v-if="req.data.sort === 'name' && req.data.order != 'asc'" href="?sort=name&order=asc"><i class="material-icons">arrow_upward</i></a>
+          <p v-bind:class="{ active: req.sort === 'name' }" class="name"><span>Name</span>
+            <a v-if="req.sort === 'name' && req.order != 'asc'" href="?sort=name&order=asc"><i class="material-icons">arrow_upward</i></a>
             <a v-else href="?sort=name&order=desc"><i class="material-icons">arrow_downward</i></a>
           </p>
 
-          <p v-bind:class="{ active: req.data.sort === 'size' }" class="size"><span>Size</span>
-            <a v-if="req.data.sort === 'size' && req.data.order != 'asc'" href="?sort=size&order=asc"><i class="material-icons">arrow_upward</i></a>
+          <p v-bind:class="{ active: req.sort === 'size' }" class="size"><span>Size</span>
+            <a v-if="req.sort === 'size' && req.order != 'asc'" href="?sort=size&order=asc"><i class="material-icons">arrow_upward</i></a>
             <a v-else href="?sort=size&order=desc"><i class="material-icons">arrow_downward</i></a>
           </p>
 
@@ -23,11 +23,11 @@
       </div>
     </div>
 
-    <h2 v-if="(req.data.numDirs + req.data.numFiles) == 0" class="message">It feels lonely here :'(</h2>
+    <h2 v-if="(req.numDirs + req.numFiles) == 0" class="message">It feels lonely here :'(</h2>
 
-    <h2 v-if="req.data.numDirs > 0">Folders</h2>
-    <div v-if="req.data.numDirs > 0">
-      <item v-for="(item, index) in req.data.items"
+    <h2 v-if="req.numDirs > 0">Folders</h2>
+    <div v-if="req.numDirs > 0">
+      <item v-for="(item, index) in req.items"
         v-if="item.isDir"
         :key="base64(item.name)"
         v-bind:index="index"
@@ -40,9 +40,9 @@
       </item>
     </div>
 
-    <h2 v-if="req.data.numFiles > 0">Files</h2>
-    <div v-if="req.data.numFiles > 0">
-      <item v-for="(item, index) in req.data.items"
+    <h2 v-if="req.numFiles > 0">Files</h2>
+    <div v-if="req.numFiles > 0">
+      <item v-for="(item, index) in req.items"
         v-if="!item.isDir"
         :key="base64(item.name)"
         v-bind:index="index"

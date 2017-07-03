@@ -27,7 +27,7 @@ export default {
         let files = ''
 
         for (let i of this.selected) {
-          files += this.req.data.items[i].url.replace(window.location.pathname, '') + ','
+          files += this.req.items[i].url.replace(window.location.pathname, '') + ','
         }
 
         files = files.substring(0, files.length - 1)

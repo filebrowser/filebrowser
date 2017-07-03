@@ -9,8 +9,8 @@
     <p v-show="selected.length < 2"><strong>Last Modified:</strong> {{ humanTime() }}</p>
 
     <section v-show="dir() && selected.length === 0">
-      <p><strong>Number of files:</strong> {{ req.data.numFiles }}</p>
-      <p><strong>Number of directories:</strong> {{ req.data.numDirs }}</p>
+      <p><strong>Number of files:</strong> {{ req.numFiles }}</p>
+      <p><strong>Number of directories:</strong> {{ req.numDirs }}</p>
     </section>
 
     <section v-show="!dir()">
@@ -40,30 +40,30 @@ export default {
   methods: {
     humanSize: function () {
       if (this.selectedCount === 0 || this.req.kind !== 'listing') {
-        return filesize(this.req.data.size)
+        return filesize(this.req.size)
       }
 
       var sum = 0
 
       for (let i = 0; i < this.selectedCount; i++) {
-        sum += this.req.data.items[this.selected[i]].size
+        sum += this.req.items[this.selected[i]].size
       }
 
       return filesize(sum)
     },
     humanTime: function () {
       if (this.selectedCount === 0) {
-        return moment(this.req.data.modified).fromNow()
+        return moment(this.req.modified).fromNow()
       }
 
-      return moment(this.req.data.items[this.selected[0]]).fromNow()
+      return moment(this.req.items[this.selected[0]]).fromNow()
     },
     name: function () {
       if (this.selectedCount === 0) {
-        return this.req.data.name
+        return this.req.name
       }
 
-      return this.req.data.items[this.selected[0]].name
+      return this.req.items[this.selected[0]].name
     },
     dir: function () {
       if (this.selectedCount > 1) {
@@ -72,10 +72,10 @@ export default {
       }
 
       if (this.selectedCount === 0) {
-        return this.req.data.isDir
+        return this.req.isDir
       }
 
-      return this.req.data.items[this.selected[0]].isDir
+      return this.req.items[this.selected[0]].isDir
     },
     checksum: function (event, hash) {
       event.preventDefault()
@@ -84,7 +84,7 @@ export default {
       let link
 
       if (this.selectedCount) {
-        link = this.req.data.items[this.selected[0]].url
+        link = this.req.items[this.selected[0]].url
       } else {
         link = window.location.pathname
       }

@@ -18,6 +18,7 @@ const mutations = {
     state.showDownload = false
   },
   setUser: (state, value) => (state.user = value),
+  setJWT: (state, value) => (state.jwt = value),
   multiple: (state, value) => (state.multiple = value),
   addSelected: (state, value) => (state.selected.push(value)),
   removeSelected: (state, value) => {
@@ -29,11 +30,10 @@ const mutations = {
     state.selected = []
   },
   listingDisplay: (state, value) => {
-    state.req.data.display = value
+    state.req.display = value
   },
   updateRequest: (state, value) => {
-    state.req.kind = value.kind
-    state.req.data = value.data
+    state.req = value
   }
 }
 

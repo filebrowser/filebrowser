@@ -49,7 +49,7 @@ export default {
       let promises = []
 
       for (let index of this.selected) {
-        promises.push(webdav.trash(this.req.data.items[index].url))
+        promises.push(webdav.trash(this.req.items[index].url))
       }
 
       Promise.all(promises)

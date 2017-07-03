@@ -6,7 +6,7 @@
 
         <div class="content">
             <div id="ace"></div>
-            <textarea id="source" name="content">{{ req.data.content }}</textarea>
+            <textarea id="source" name="content">{{ req.content }}</textarea>
         </div>
     </form>
 </template>
@@ -19,7 +19,7 @@ export default {
   computed: {
     ...mapState(['req']),
     hasMetadata: function () {
-      return (this.req.data.metadata !== undefined && this.req.data.metadata !== null)
+      return (this.req.metadata !== undefined && this.req.metadata !== null)
     }
   },
   data: function () {
