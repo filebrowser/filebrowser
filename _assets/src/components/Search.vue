@@ -26,7 +26,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import page from '../utils/page'
+import url from '@/utils/url'
 
 export default {
   name: 'search',
@@ -92,7 +92,7 @@ export default {
       let uri = window.location.host + window.location.pathname
 
       if (this.$store.state.req.kind !== 'listing') {
-        uri = page.removeLastDir(uri) + '/'
+        uri = url.removeLastDir(uri) + '/'
       }
 
       uri = `${(this.$store.state.ssl ? 'wss:' : 'ws:')}//${uri}`
@@ -110,7 +110,7 @@ export default {
         conn.onclose = (event) => {
           this.ongoing = false
           this.scrollable.scrollTop = this.scrollable.scrollHeight
-          page.reload()
+          // page.reload()
         }
 
         return

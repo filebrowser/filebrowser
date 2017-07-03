@@ -16,11 +16,11 @@
       <audio v-else-if="req.type == 'audio'" :src="raw()" controls></audio>
       <video v-else-if="req.type == 'video'" :src="raw()" controls>
         Sorry, your browser doesn't support embedded videos,
-        but don't worry, you can <a href="?download=true">download it</a>
+        but don't worry, you can <a :href="download()">download it</a>
         and watch it with your favorite video player!
       </video>
       <object v-else-if="req.extension == '.pdf'" class="pdf" :data="raw()"></object>
-      <a v-else-if="req.type == 'blob'" href="?download=true">
+      <a v-else-if="req.type == 'blob'" :href="download()">
         <h2 class="message">Download <i class="material-icons">file_download</i></h2>
       </a>
       <pre v-else >{{ req.content }}</pre>
@@ -30,7 +30,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import page from '../utils/page'
+import url from '@/utils/url'
 import InfoButton from './buttons/InfoButton'
 import DeleteButton from './buttons/DeleteButton'
 import RenameButton from './buttons/RenameButton'
@@ -46,12 +46,19 @@ export default {
   },
   computed: mapState(['req']),
   methods: {
+    download: function () {
+      let url = `${this.$store.state.baseURL}/api/download/`
+      url += this.req.url.slice(6)
+      url += `?token=${this.$store.state.jwt}`
+
+      return url
+    },
     raw: function () {
-      return this.req.url + '?raw=true'
+      return `${this.download()}&inline=true`
     },
     back: function (event) {
-      let url = page.removeLastDir(window.location.pathname) + '/'
-      page.open(url)
+      let uri = url.removeLastDir(this.$route.path) + '/'
+      this.$router.push({ path: uri })
     },
     allowEdit: function (event) {
       return this.$store.state.user.allowEdit

@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import page from '@/utils/page'
-import webdav from '@/utils/webdav'
+import url from '@/utils/url'
+import api from '@/utils/api'
 
 export default {
   name: 'new-file-prompt',
@@ -26,23 +26,23 @@ export default {
       event.preventDefault()
       if (this.new === '') return
 
-      let url = window.location.pathname
+      let uri = window.location.pathname
       if (this.$store.state.req.kind !== 'listing') {
-        url = page.removeLastDir(url) + '/'
+        uri = url.removeLastDir(uri) + '/'
       }
 
-      url += this.name
-      url = url.replace('//', '/')
+      uri += this.name
+      uri = uri.replace('//', '/')
 
       // buttons.setLoading('newFile')
-      webdav.create(url)
+      api.put(uri)
         .then(() => {
           // buttons.setDone('newFile')
-          page.open(url)
+          this.$router.push({ path: uri })
         })
-        .catch(e => {
+        .catch(error => {
           // buttons.setDone('newFile', false)
-          console.log(e)
+          console.log(error)
         })
 
       this.$store.commit('showNewFile', false)

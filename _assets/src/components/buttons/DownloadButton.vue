@@ -18,7 +18,10 @@ export default {
   methods: {
     download: function (event) {
       if (this.req.kind !== 'listing') {
-        window.open(`${window.location.pathname}?download=true`)
+        let url = this.$route.params[0]
+        url = this.$store.state.baseURL + '/api/download/' + url
+        url += '?token=' + this.$store.state.jwt
+        window.open(url)
         return
       }
 

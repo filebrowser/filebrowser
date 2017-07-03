@@ -99,6 +99,11 @@ func getInfo(url *url.URL, c *FileManager, u *User) (*file, error) {
 	i.IsDir = info.IsDir()
 	i.Size = info.Size()
 	i.Extension = filepath.Ext(i.Name)
+
+	if i.IsDir && !strings.HasSuffix(i.URL, "/") {
+		i.URL += "/"
+	}
+
 	return i, nil
 }
 

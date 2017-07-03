@@ -6,15 +6,15 @@
         <search></search>
       </div>
       <div>
-        <rename-button v-show="showRenameButton()"></rename-button>
-        <move-button v-show="showMoveButton()"></move-button>
-        <delete-button v-show="showDeleteButton()"></delete-button>
-        <switch-button v-show="req.kind !== 'editor'"></switch-button>
+        <rename-button v-show="!loading && showRenameButton()"></rename-button>
+        <move-button v-show="!loading && showMoveButton()"></move-button>
+        <delete-button v-show="!loading && showDeleteButton()"></delete-button>
+        <switch-button v-show="!loading && req.kind !== 'editor'"></switch-button>
         <download-button></download-button>
-        <upload-button v-show="showUpload()"></upload-button>
+        <upload-button v-show="!loading && showUpload()"></upload-button>
         <info-button></info-button>
 
-        <button v-show="req.kind === 'listing'" @click="$store.commit('multiple', true)" aria-label="Select multiple" class="action">
+        <button v-show="isListing" @click="$store.commit('multiple', true)" aria-label="Select multiple" class="action">
           <i class="material-icons">check_circle</i>
           <span>Select</span>
         </button>
@@ -22,10 +22,10 @@
     </header>
 
     <nav>
-      <a class="action" :href="baseURL + '/'">
+      <router-link class="action" to="/files/">
         <i class="material-icons">folder</i>
         <span>My Files</span>
-      </a>
+      </router-link>
 
       <div v-if="user.allowNew">
         <button @click="$store.commit('showNewDir', true)" aria-label="New directory" title="New directory" class="action">
@@ -45,16 +45,16 @@
         </button>
       </div>
 
-      <button @click="logout" class="action" id="logout" tabindex="0" role="button" aria-label="Log out">
+      <button @click="logout" class="action" id="logout" aria-label="Log out">
         <i class="material-icons" title="Logout">exit_to_app</i>
         <span>Logout</span>
       </button>
     </nav>
 
     <main>
-      <editor v-if="req.kind === 'editor'"></editor>
-      <listing v-if="req.kind === 'listing'"></listing>
-      <preview v-if="req.kind === 'preview'"></preview>
+      <editor v-if="isEditor"></editor>
+      <listing v-if="isListing"></listing>
+      <preview v-if="isPreview"></preview>
     </main>
 
     <download-prompt v-if="showDownload" :class="{ active: showDownload }"></download-prompt>
@@ -65,7 +65,7 @@
     <info-prompt v-if="showInfo" :class="{ active: showInfo }"></info-prompt>
     <move-prompt v-if="showMove" :class="{ active: showMove }"></move-prompt>
     <help v-show="showHelp" :class="{ active: showHelp }"></help>
-    <div v-show="$store.getters.showOverlay" @click="resetPrompts" class="overlay" :class="{ active: $store.getters.showOverlay }"></div>
+    <div v-show="showOverlay" @click="resetPrompts" class="overlay" :class="{ active: showOverlay }"></div>
 
     <footer>Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
   </div>
@@ -129,7 +129,10 @@ export default {
     NewDirPrompt
   },
   computed: {
-    ...mapGetters(['selectedCount']),
+    ...mapGetters([
+      'selectedCount',
+      'showOverlay'
+    ]),
     ...mapState([
       'req',
       'user',
@@ -143,37 +146,28 @@ export default {
       'showNewFile',
       'showNewDir',
       'showDownload'
-    ])
+    ]),
+    isListing () {
+      return this.req.kind === 'listing' && !this.loading
+    },
+    isPreview () {
+      return this.req.kind === 'preview' && !this.loading
+    },
+    isEditor () {
+      return this.req.kind === 'editor' && !this.loading
+    }
   },
   data: function () {
     return {
-      plugins: []
+      plugins: [],
+      loading: true
     }
   },
-  beforeRouteEnter (to, from, next) {
-    api.fetch(to.params[0])
-    .then(() => {
-      next()
-    })
-    .catch(error => {
-      // TODO: 404, 403 and 500!
-      console.log(error)
-      window.alert('Something went wrong. Please reload.')
-    })
+  created () {
+    this.fetchData()
   },
-  beforeRouteUpdate (to, from, next) {
-    this.$store.commit('resetSelected')
-    this.$store.commit('multiple', false)
-
-    api.fetch(to.params[0])
-    .then(() => {
-      next()
-    })
-    .catch(error => {
-      // TODO: 404, 403 and 500!
-      console.log(error)
-      window.alert('Something went wrong. Please reload.')
-    })
+  watch: {
+    '$route': 'fetchData'
   },
   mounted () {
     updateColumnSizes()
@@ -182,38 +176,6 @@ export default {
     if (window.plugins !== undefined || window.plugins !== null) {
       this.plugins = window.plugins
     }
-
-    document.title = this.req.name
-    window.history.replaceState({
-      url: window.location.pathname,
-      name: document.title
-    }, document.title, window.location.pathname)
-
-    /* window.addEventListener('popstate', (event) => {
-      event.preventDefault()
-      event.stopPropagation()
-
-      this.$store.commit('multiple', false)
-      this.$store.commit('resetSelected')
-      this.$store.commit('resetPrompts')
-
-      let request = new window.XMLHttpRequest()
-      request.open('GET', event.state.url, true)
-      request.setRequestHeader('Accept', 'application/json')
-
-      request.onload = () => {
-        if (request.status === 200) {
-          let req = JSON.parse(request.responseText)
-          this.$store.commit('updateRequest', req)
-          document.title = event.state.name
-        } else {
-          console.log(request.responseText)
-        }
-      }
-
-      request.onerror = (error) => { console.log(error) }
-      request.send()
-    }) */
 
     window.addEventListener('keydown', (event) => {
       // Esc!
@@ -270,6 +232,33 @@ export default {
     })
   },
   methods: {
+    fetchData () {
+      this.loading = true
+      // Reset selected items and multiple selection.
+      this.$store.commit('resetSelected')
+      this.$store.commit('multiple', false)
+
+      let url = this.$route.path
+      if (url === '') url = '/'
+      if (url[0] !== '/') url = '/' + url
+
+      console.log('Going to ' + url)
+
+      api.fetch(url)
+      .then((trueURL) => {
+        if (!url.endsWith('/') && trueURL.endsWith('/')) {
+          window.history.replaceState(window.history.state, document.title, window.location.pathname + '/')
+        }
+
+        this.loading = false
+      })
+      .catch(error => {
+        // TODO: 404, 403 and 500!
+        console.log(error)
+
+        this.loading = false
+      })
+    },
     showUpload: function () {
       if (this.req.kind === 'editor') return false
       return this.user.allowNew

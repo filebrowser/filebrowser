@@ -12,8 +12,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import page from '@/utils/page'
-import webdav from '@/utils/webdav'
+import url from '@/utils/url'
+import api from '@/utils/api'
 
 export default {
   name: 'rename-prompt',
@@ -50,19 +50,21 @@ export default {
       }
 
       this.name = encodeURIComponent(this.name)
-      newLink = page.removeLastDir(oldLink) + '/' + this.name
+      newLink = url.removeLastDir(oldLink) + '/' + this.name
 
       // buttons.setLoading('rename')
 
-      webdav.move(oldLink, newLink)
+      api.move(oldLink, newLink)
         .then(() => {
           if (this.req.kind !== 'listing') {
-            page.open(newLink)
+            this.$router.push({ path: newLink })
             return
           }
           // TODO: keep selected after reload?
-          page.reload()
+          // page.reload()
           // buttons.setDone('rename')
+          console.log('reload')
+          this.$router.go({ path: this.$route.path })
         }).catch(error => {
           // buttons.setDone('rename', false)
           console.log(error)
