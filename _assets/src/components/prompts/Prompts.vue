@@ -1,14 +1,15 @@
 <template>
   <div>
-    <help v-show="showHelp" :class="{ active: showHelp }"></help>
-    <download v-if="showDownload" :class="{ active: showDownload }"></download>
-    <new-file v-if="showNewFile" :class="{ active: showNewFile }"></new-file>
-    <new-dir v-if="showNewDir" :class="{ active: showNewDir }"></new-dir>
-    <rename v-if="showRename" :class="{ active: showRename }"></rename>
-    <delete v-if="showDelete" :class="{ active: showDelete }"></delete>
-    <info v-if="showInfo" :class="{ active: showInfo }"></info>
-    <move v-if="showMove" :class="{ active: showMove }"></move>
-    <div v-show="showOverlay" @click="resetPrompts" class="overlay" :class="{ active: showOverlay }"></div>
+    <help v-if="showHelp" ></help>
+    <download v-else-if="showDownload"></download>
+    <new-file v-else-if="showNewFile"></new-file>
+    <new-dir v-else-if="showNewDir"></new-dir>
+    <rename v-else-if="showRename"></rename>
+    <delete v-else-if="showDelete"></delete>
+    <info v-else-if="showInfo"></info>
+    <move v-else-if="showMove"></move>
+
+    <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
   </div>
 </template>
 
@@ -21,7 +22,7 @@ import Download from './Download'
 import Move from './Move'
 import NewFile from './NewFile'
 import NewDir from './NewDir'
-import {mapGetters} from 'vuex'
+import {mapGetters, mapState} from 'vuex'
 
 export default {
   name: 'prompts',
@@ -36,6 +37,7 @@ export default {
     Help
   },
   computed: {
+    ...mapState(['prompt']),
     ...mapGetters([
       'showOverlay',
       'showInfo',
