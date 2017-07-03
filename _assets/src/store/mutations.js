@@ -17,6 +17,7 @@ const mutations = {
     state.showNewDir = false
     state.showDownload = false
   },
+  setReload: (state, value) => (state.reload = value),
   setUser: (state, value) => (state.user = value),
   setJWT: (state, value) => (state.jwt = value),
   multiple: (state, value) => (state.multiple = value),

@@ -110,7 +110,7 @@ export default {
         conn.onclose = (event) => {
           this.ongoing = false
           this.scrollable.scrollTop = this.scrollable.scrollHeight
-          // page.reload()
+          this.$store.commit('setReload', true)
         }
 
         return

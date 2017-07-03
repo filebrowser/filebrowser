@@ -61,10 +61,8 @@ export default {
             return
           }
           // TODO: keep selected after reload?
-          // page.reload()
           // buttons.setDone('rename')
-          console.log('reload')
-          this.$router.go({ path: this.$route.path })
+          this.$store.commit('setReload', true)
         }).catch(error => {
           // buttons.setDone('rename', false)
           console.log(error)
