@@ -77,7 +77,7 @@ func command(c *requestContext, w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	// Gets the path and initializes a buffer.
-	path := c.us.Scope + "/" + r.URL.Path
+	path := string(c.us.FileSystem) + "/" + r.URL.Path
 	path = filepath.Clean(path)
 	buff := new(bytes.Buffer)
 

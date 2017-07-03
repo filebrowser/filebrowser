@@ -25,19 +25,18 @@ func cleanURL(path string) (string, string) {
 }
 
 func serveAPI(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	if r.URL.Path == "/auth" {
-		return getTokenHandler(c, w, r)
+	if r.URL.Path == "/auth/get" {
+		return authHandler(c, w, r)
 	}
 
-	/* valid, user := validAuth(c, r)
+	if r.URL.Path == "/auth/renew" {
+		return renewAuthHandler(c, w, r)
+	}
+
+	valid, _ := validateAuth(c, r)
 	if !valid {
 		return http.StatusForbidden, nil
 	}
-
-	fmt.Println(user)
-	c.us = user */
-
-	c.us = c.fm.User
 
 	var router string
 	router, r.URL.Path = cleanURL(r.URL.Path)
@@ -175,7 +174,7 @@ func deleteHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (i
 	}
 
 	// Remove the file or folder.
-	err := c.us.fileSystem.RemoveAll(context.TODO(), r.URL.Path)
+	err := c.us.FileSystem.RemoveAll(context.TODO(), r.URL.Path)
 	if err != nil {
 		return errorToHTTP(err, true), err
 	}
@@ -185,11 +184,11 @@ func deleteHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (i
 
 func putHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	if strings.HasSuffix(r.URL.Path, "/") {
-		err := c.us.fileSystem.Mkdir(context.TODO(), r.URL.Path, 0666)
+		err := c.us.FileSystem.Mkdir(context.TODO(), r.URL.Path, 0666)
 		return errorToHTTP(err, false), err
 	}
 
-	f, err := c.us.fileSystem.OpenFile(context.TODO(), r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
+	f, err := c.us.FileSystem.OpenFile(context.TODO(), r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	defer f.Close()
 
 	if err != nil {
@@ -214,8 +213,12 @@ func putHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int,
 func postHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	dst := r.Header.Get("Destination")
 	src := r.URL.Path
-	err := c.us.fileSystem.Rename(context.TODO(), src, dst)
 
+	if dst == "/" || src == "/" {
+		return http.StatusForbidden, nil
+	}
+
+	err := c.us.FileSystem.Rename(context.TODO(), src, dst)
 	return errorToHTTP(err, true), err
 }
 

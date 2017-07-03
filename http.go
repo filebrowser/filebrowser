@@ -19,9 +19,9 @@ type requestContext struct {
 func serveHTTP(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Checks if the URL contains the baseURL and strips it. Otherwise, it just
 	// returns a 404 error because we're not supposed to be here!
-	p := strings.TrimPrefix(r.URL.Path, c.fm.baseURL)
+	p := strings.TrimPrefix(r.URL.Path, c.fm.BaseURL)
 
-	if len(p) >= len(r.URL.Path) && c.fm.baseURL != "" {
+	if len(p) >= len(r.URL.Path) && c.fm.BaseURL != "" {
 		return http.StatusNotFound, nil
 	}
 

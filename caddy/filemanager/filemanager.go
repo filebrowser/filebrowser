@@ -4,16 +4,14 @@
 package filemanager
 
 import (
-	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
-	"strconv"
 	"strings"
+
+	"golang.org/x/net/webdav"
 
 	. "github.com/hacdias/filemanager"
 	"github.com/mholt/caddy"
@@ -34,8 +32,7 @@ type plugin struct {
 
 type config struct {
 	*FileManager
-	baseURL   string
-	webDavURL string
+	baseURL string
 }
 
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
@@ -69,152 +66,55 @@ func setup(c *caddy.Controller) error {
 func parse(c *caddy.Controller) ([]*config, error) {
 	var (
 		configs []*config
-		err     error
 	)
 
 	for c.Next() {
-		var (
-			m    = &config{FileManager: New(".")}
-			u    = m.User
-			name = ""
-		)
+		// TODO:
+		// filemanager [baseurl] [baseScope] {
+		//     database	path
+		// }
+
+		baseURL := "/"
+		baseScope := "."
+
+		// Get the baseURL and baseScope
+		args := c.RemainingArgs()
+
+		if len(args) == 1 {
+			baseURL = args[0]
+		}
+
+		if len(args) > 1 {
+			baseScope = args[1]
+		}
+
+		fm, err := New("./this.db", User{
+			Username:      "admin",
+			Password:      "admin",
+			AllowCommands: true,
+			AllowEdit:     true,
+			AllowNew:      true,
+			Commands:      []string{"git", "svn", "hg"},
+			Rules: []*Rule{{
+				Regex:  true,
+				Allow:  false,
+				Regexp: &Regexp{Raw: "\\/\\..+"},
+			}},
+			CSS:        "",
+			FileSystem: webdav.Dir(baseScope),
+		})
+
+		if err != nil {
+			return nil, err
+		}
 
 		caddyConf := httpserver.GetConfig(c)
 
+		m := &config{FileManager: fm}
+		m.SetBaseURL(baseURL)
 		m.SetPrefixURL(strings.TrimSuffix(caddyConf.Addr.Path, "/"))
-		m.Commands = []string{"git", "svn", "hg"}
-		m.Rules = append(m.Rules, &Rule{
-			Regex:  true,
-			Allow:  false,
-			Regexp: regexp.MustCompile("\\/\\..+"),
-		})
+		m.baseURL = strings.TrimSuffix(baseURL, "/")
 
-		// Get the baseURL
-		args := c.RemainingArgs()
-
-		if len(args) > 0 {
-			m.baseURL = args[0]
-			m.SetBaseURL(args[0])
-		}
-
-		for c.NextBlock() {
-			switch c.Val() {
-			case "before_save":
-				if m.BeforeSave, err = makeCommand(c, m); err != nil {
-					return configs, err
-				}
-			case "after_save":
-				if m.AfterSave, err = makeCommand(c, m); err != nil {
-					return configs, err
-				}
-			case "show":
-				if !c.NextArg() {
-					return configs, c.ArgErr()
-				}
-
-				m.SetScope(c.Val(), name)
-			case "styles":
-				if !c.NextArg() {
-					return configs, c.ArgErr()
-				}
-
-				var tplBytes []byte
-				tplBytes, err = ioutil.ReadFile(c.Val())
-				if err != nil {
-					return configs, err
-				}
-
-				u.StyleSheet = string(tplBytes)
-			case "allow_new":
-				if !c.NextArg() {
-					return configs, c.ArgErr()
-				}
-
-				u.AllowNew, err = strconv.ParseBool(c.Val())
-				if err != nil {
-					return configs, err
-				}
-			case "allow_edit":
-				if !c.NextArg() {
-					return configs, c.ArgErr()
-				}
-
-				u.AllowEdit, err = strconv.ParseBool(c.Val())
-				if err != nil {
-					return configs, err
-				}
-			case "allow_commands":
-				if !c.NextArg() {
-					return configs, c.ArgErr()
-				}
-
-				u.AllowCommands, err = strconv.ParseBool(c.Val())
-				if err != nil {
-					return configs, err
-				}
-			case "allow_command":
-				if !c.NextArg() {
-					return configs, c.ArgErr()
-				}
-
-				u.Commands = append(u.Commands, c.Val())
-			case "block_command":
-				if !c.NextArg() {
-					return configs, c.ArgErr()
-				}
-
-				index := 0
-
-				for i, val := range u.Commands {
-					if val == c.Val() {
-						index = i
-					}
-				}
-
-				u.Commands = append(u.Commands[:index], u.Commands[index+1:]...)
-			case "allow", "allow_r", "block", "block_r":
-				ruleType := c.Val()
-
-				if !c.NextArg() {
-					return configs, c.ArgErr()
-				}
-
-				if c.Val() == "dotfiles" && !strings.HasSuffix(ruleType, "_r") {
-					ruleType += "_r"
-				}
-
-				rule := &Rule{
-					Allow: ruleType == "allow" || ruleType == "allow_r",
-					Regex: ruleType == "allow_r" || ruleType == "block_r",
-				}
-
-				if rule.Regex && c.Val() == "dotfiles" {
-					rule.Regexp = regexp.MustCompile("\\/\\..+")
-				} else if rule.Regex {
-					rule.Regexp = regexp.MustCompile(c.Val())
-				} else {
-					rule.Path = c.Val()
-				}
-
-				u.Rules = append(u.Rules, rule)
-			default:
-				// Is it a new user? Is it?
-				val := c.Val()
-
-				// Checks if it's a new user!
-				if !strings.HasSuffix(val, ":") {
-					fmt.Println("Unknown option " + val)
-				}
-
-				// Get the username, sets the current user, and initializes it
-				val = strings.TrimSuffix(val, ":")
-				m.NewUser(val)
-				name = val
-			}
-		}
-
-		m.baseURL = strings.TrimSuffix(m.baseURL, "/")
-		m.webDavURL = strings.TrimSuffix(m.webDavURL, "/")
 		configs = append(configs, m)
 	}
 
@@ -242,8 +142,8 @@ func makeCommand(c *caddy.Controller, m *config) (Command, error) {
 	}
 
 	fn = func(r *http.Request, c *FileManager, u *User) error {
-		path := strings.Replace(r.URL.Path, m.baseURL+m.webDavURL, "", 1)
-		path = u.Scope + "/" + path
+		path := strings.Replace(r.URL.Path, m.baseURL+"/files", "", 1)
+		path = string(u.FileSystem) + "/" + path
 		path = filepath.Clean(path)
 
 		for i := range args {
