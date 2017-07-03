@@ -31,10 +31,10 @@
 <script>
 import { mapState } from 'vuex'
 import page from '../utils/page'
-import InfoButton from './InfoButton'
-import DeleteButton from './DeleteButton'
-import RenameButton from './RenameButton'
-import DownloadButton from './DownloadButton'
+import InfoButton from './buttons/InfoButton'
+import DeleteButton from './buttons/DeleteButton'
+import RenameButton from './buttons/RenameButton'
+import DownloadButton from './buttons/DownloadButton'
 
 export default {
   name: 'preview',

@@ -28,8 +28,8 @@
 import { mapMutations, mapGetters, mapState } from 'vuex'
 import filesize from 'filesize'
 import moment from 'moment'
-import webdav from '../utils/webdav.js'
-import page from '../utils/page.js'
+import webdav from '@/utils/webdav.js'
+import page from '@/utils/page.js'
 
 export default {
   name: 'item',
@@ -107,7 +107,7 @@ export default {
       return false
     },
     open: function (event) {
-      page.open(this.url)
+      this.$router.push({path: this.url})
     }
   }
 }

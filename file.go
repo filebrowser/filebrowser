@@ -83,7 +83,7 @@ func getInfo(url *url.URL, c *FileManager, u *User) (*file, error) {
 	var err error
 
 	i := &file{
-		URL:         c.RootURL() + "/files" + url.Path,
+		URL:         "/files" + url.Path,
 		VirtualPath: url.Path,
 		Path:        filepath.Join(string(u.FileSystem), url.Path),
 	}

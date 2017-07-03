@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/components/Login'
-import Files from '@/components/Files'
 import Main from '@/components/Main'
 import auth from '@/utils/auth.js'
 
@@ -35,8 +34,7 @@ const router = new Router({
       children: [
         {
           path: '/files*',
-          name: 'Files',
-          component: Files
+          name: 'Files'
         },
         {
           path: '/*',
