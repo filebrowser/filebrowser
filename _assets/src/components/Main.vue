@@ -24,7 +24,11 @@
     <sidebar></sidebar>
 
     <main>
-      <div v-if="loading">Loading...</div>
+      <div v-if="loading">
+        <h2 class="message">
+          <span>Loading...</span>
+        </h2>
+      </div>
       <div v-else-if="error">
         <h2 class="message" v-if="error === 404">
           <i class="material-icons">gps_off</i>

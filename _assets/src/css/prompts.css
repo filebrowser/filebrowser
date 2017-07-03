@@ -11,6 +11,7 @@
     width: 90%;
     max-height: 95%;
     z-index: 99999;
+    animation: .1s show forwards;
 }
 
 .overlay {
@@ -21,11 +22,6 @@
     height: 100%;
     width: 100%;
     z-index: 9999;
-}
-
-.overlay.active,
-.prompt.active,
-.help.active {
     animation: .1s show forwards;
 }
 
