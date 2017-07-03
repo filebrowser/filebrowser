@@ -69,8 +69,8 @@
 <script>
 import {mapState} from 'vuex'
 import Item from './ListingItem'
-import webdav from '../utils/webdav'
-import page from '../utils/page'
+import webdav from '@/utils/webdav'
+import page from '@/utils/page'
 
 export default {
   name: 'listing',

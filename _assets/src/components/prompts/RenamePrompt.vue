@@ -12,8 +12,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import page from '../utils/page'
-import webdav from '../utils/webdav'
+import page from '@/utils/page'
+import webdav from '@/utils/webdav'
 
 export default {
   name: 'rename-prompt',

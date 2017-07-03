@@ -12,8 +12,8 @@
 
 <script>
 import {mapGetters, mapMutations, mapState} from 'vuex'
-import webdav from '../utils/webdav'
-import page from '../utils/page'
+import webdav from '@/utils/webdav'
+import page from '@/utils/page'
 
 export default {
   name: 'delete-prompt',

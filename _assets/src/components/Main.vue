@@ -77,20 +77,20 @@ import Help from './Help'
 import Preview from './Preview'
 import Listing from './Listing'
 import Editor from './Editor'
-import InfoButton from './InfoButton'
-import InfoPrompt from './InfoPrompt'
-import DeleteButton from './DeleteButton'
-import DeletePrompt from './DeletePrompt'
-import RenameButton from './RenameButton'
-import RenamePrompt from './RenamePrompt'
-import UploadButton from './UploadButton'
-import DownloadButton from './DownloadButton'
-import DownloadPrompt from './DownloadPrompt'
-import SwitchButton from './SwitchViewButton'
-import MoveButton from './MoveButton'
-import MovePrompt from './MovePrompt'
-import NewFilePrompt from './NewFilePrompt'
-import NewDirPrompt from './NewDirPrompt'
+import InfoButton from './buttons/InfoButton'
+import InfoPrompt from './prompts/InfoPrompt'
+import DeleteButton from './buttons/DeleteButton'
+import DeletePrompt from './prompts/DeletePrompt'
+import RenameButton from './buttons/RenameButton'
+import RenamePrompt from './prompts/RenamePrompt'
+import UploadButton from './buttons/UploadButton'
+import DownloadButton from './buttons/DownloadButton'
+import DownloadPrompt from './prompts/DownloadPrompt'
+import SwitchButton from './buttons/SwitchViewButton'
+import MoveButton from './buttons/MoveButton'
+import MovePrompt from './prompts/MovePrompt'
+import NewFilePrompt from './prompts/NewFilePrompt'
+import NewDirPrompt from './prompts/NewDirPrompt'
 import css from '@/utils/css'
 import auth from '@/utils/auth'
 import api from '@/utils/api'
@@ -162,7 +162,18 @@ export default {
     })
   },
   beforeRouteUpdate (to, from, next) {
-    console.log('hey')
+    this.$store.commit('resetSelected')
+    this.$store.commit('multiple', false)
+
+    api.fetch(to.params[0])
+    .then(() => {
+      next()
+    })
+    .catch(error => {
+      // TODO: 404, 403 and 500!
+      console.log(error)
+      window.alert('Something went wrong. Please reload.')
+    })
   },
   mounted () {
     updateColumnSizes()

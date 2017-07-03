@@ -10,7 +10,6 @@ function fetch (url) {
       if (request.status === 200) {
         let req = JSON.parse(request.responseText)
         store.commit('updateRequest', req)
-        console.log(req)
         document.title = req.name
         resolve()
       } else {
