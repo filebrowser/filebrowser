@@ -16,7 +16,7 @@ import api from '@/utils/api'
 import url from '@/utils/url'
 
 export default {
-  name: 'delete-prompt',
+  name: 'delete',
   computed: {
     ...mapGetters(['selectedCount']),
     ...mapState(['req', 'selected'])

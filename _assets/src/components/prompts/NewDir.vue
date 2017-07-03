@@ -1,11 +1,11 @@
 <template>
   <div class="prompt">
-    <h3>New file</h3>
-    <p>Write the name of the new file.</p>
+    <h3>New directory</h3>
+    <p>Write the name of the new directory.</p>
     <input autofocus type="text" @keyup.enter="submit" v-model.trim="name">
     <div>
       <button class="ok" @click="submit">Create</button>
-      <button class="cancel" @click="$store.commit('showNewFile', false)">Cancel</button>
+      <button class="cancel" @click="$store.commit('showNewDir', false)">Cancel</button>
     </div>
   </div>
 </template>
@@ -15,7 +15,7 @@ import url from '@/utils/url'
 import api from '@/utils/api'
 
 export default {
-  name: 'new-file-prompt',
+  name: 'new-dir',
   data: function () {
     return {
       name: ''
@@ -31,21 +31,21 @@ export default {
         uri = url.removeLastDir(uri) + '/'
       }
 
-      uri += this.name
+      uri += this.name + '/'
       uri = uri.replace('//', '/')
 
-      // buttons.setLoading('newFile')
+      // buttons.setLoading('newDir')
       api.put(uri)
         .then(() => {
-          // buttons.setDone('newFile')
+          // buttons.setDone('newDir')
           this.$router.push({ path: uri })
         })
         .catch(error => {
-          // buttons.setDone('newFile', false)
+          // buttons.setDone('newDir', false)
           console.log(error)
         })
 
-      this.$store.commit('showNewFile', false)
+      this.$store.commit('showNewDir', false)
     }
   }
 }

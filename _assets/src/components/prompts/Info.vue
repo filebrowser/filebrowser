@@ -33,7 +33,7 @@ import moment from 'moment'
 import api from '@/utils/api'
 
 export default {
-  name: 'info-prompt',
+  name: 'info',
   computed: {
     ...mapState(['req', 'selected']),
     ...mapGetters(['selectedCount'])

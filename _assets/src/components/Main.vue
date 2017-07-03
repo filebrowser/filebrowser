@@ -21,51 +21,16 @@
       </div>
     </header>
 
-    <nav>
-      <router-link class="action" to="/files/">
-        <i class="material-icons">folder</i>
-        <span>My Files</span>
-      </router-link>
-
-      <div v-if="user.allowNew">
-        <button @click="$store.commit('showNewDir', true)" aria-label="New directory" title="New directory" class="action">
-          <i class="material-icons">create_new_folder</i>
-          <span>New folder</span>
-        </button>
-        <button @click="$store.commit('showNewFile', true)" aria-label="New file" title="New file" class="action">
-          <i class="material-icons">note_add</i>
-          <span>New file</span>
-        </button>
-      </div>
-
-      <div v-for="plugin in plugins">
-        <button v-for="action in plugin.sidebar" @click="action.click" :aria-label="action.name" :title="action.name" class="action">
-          <i class="material-icons">{{ action.icon }}</i>
-          <span>{{ action.name }}</span>
-        </button>
-      </div>
-
-      <button @click="logout" class="action" id="logout" aria-label="Log out">
-        <i class="material-icons" title="Logout">exit_to_app</i>
-        <span>Logout</span>
-      </button>
-    </nav>
+    <sidebar></sidebar>
 
     <main>
+      <div v-if="loading">Loading...</div>
       <editor v-if="isEditor"></editor>
       <listing v-if="isListing"></listing>
       <preview v-if="isPreview"></preview>
     </main>
 
-    <download-prompt v-if="showDownload" :class="{ active: showDownload }"></download-prompt>
-    <new-file-prompt v-if="showNewFile" :class="{ active: showNewFile }"></new-file-prompt>
-    <new-dir-prompt v-if="showNewDir" :class="{ active: showNewDir }"></new-dir-prompt>
-    <rename-prompt v-if="showRename" :class="{ active: showRename }"></rename-prompt>
-    <delete-prompt v-if="showDelete" :class="{ active: showDelete }"></delete-prompt>
-    <info-prompt v-if="showInfo" :class="{ active: showInfo }"></info-prompt>
-    <move-prompt v-if="showMove" :class="{ active: showMove }"></move-prompt>
-    <help v-show="showHelp" :class="{ active: showHelp }"></help>
-    <div v-show="showOverlay" @click="resetPrompts" class="overlay" :class="{ active: showOverlay }"></div>
+    <prompts></prompts>
 
     <footer>Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
   </div>
@@ -73,26 +38,19 @@
 
 <script>
 import Search from './Search'
-import Help from './Help'
 import Preview from './Preview'
 import Listing from './Listing'
 import Editor from './Editor'
+import Sidebar from './Sidebar'
+import Prompts from './prompts/Prompts'
 import InfoButton from './buttons/InfoButton'
-import InfoPrompt from './prompts/InfoPrompt'
 import DeleteButton from './buttons/DeleteButton'
-import DeletePrompt from './prompts/DeletePrompt'
 import RenameButton from './buttons/RenameButton'
-import RenamePrompt from './prompts/RenamePrompt'
 import UploadButton from './buttons/UploadButton'
 import DownloadButton from './buttons/DownloadButton'
-import DownloadPrompt from './prompts/DownloadPrompt'
 import SwitchButton from './buttons/SwitchViewButton'
 import MoveButton from './buttons/MoveButton'
-import MovePrompt from './prompts/MovePrompt'
-import NewFilePrompt from './prompts/NewFilePrompt'
-import NewDirPrompt from './prompts/NewDirPrompt'
 import css from '@/utils/css'
-import auth from '@/utils/auth'
 import api from '@/utils/api'
 import {mapGetters, mapState} from 'vuex'
 
@@ -112,41 +70,26 @@ export default {
     Preview,
     Listing,
     Editor,
+    Sidebar,
     InfoButton,
-    InfoPrompt,
-    Help,
     DeleteButton,
-    DeletePrompt,
     RenameButton,
-    RenamePrompt,
     DownloadButton,
-    DownloadPrompt,
     UploadButton,
     SwitchButton,
     MoveButton,
-    MovePrompt,
-    NewFilePrompt,
-    NewDirPrompt
+    Prompts
   },
   computed: {
     ...mapGetters([
-      'selectedCount',
-      'showOverlay'
+      'selectedCount'
     ]),
     ...mapState([
       'req',
       'user',
       'reload',
       'baseURL',
-      'multiple',
-      'showInfo',
-      'showHelp',
-      'showDelete',
-      'showRename',
-      'showMove',
-      'showNewFile',
-      'showNewDir',
-      'showDownload'
+      'multiple'
     ]),
     isListing () {
       return this.req.kind === 'listing' && !this.loading
@@ -160,8 +103,8 @@ export default {
   },
   data: function () {
     return {
-      plugins: [],
-      loading: true
+      loading: true,
+      error: ''
     }
   },
   created () {
@@ -177,10 +120,6 @@ export default {
   mounted () {
     updateColumnSizes()
     window.addEventListener('resize', updateColumnSizes)
-
-    if (window.plugins !== undefined || window.plugins !== null) {
-      this.plugins = window.plugins
-    }
 
     window.addEventListener('keydown', (event) => {
       // Esc!
@@ -300,11 +239,7 @@ export default {
       }
 
       return false
-    },
-    resetPrompts: function () {
-      this.$store.commit('resetPrompts')
-    },
-    logout: auth.logout
+    }
   }
 }
 </script>

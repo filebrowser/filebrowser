@@ -22,7 +22,7 @@ import url from '@/utils/url'
 import api from '@/utils/api'
 
 export default {
-  name: 'move-prompt',
+  name: 'move',
   data: function () {
     return {
       items: [],
