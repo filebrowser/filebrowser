@@ -35,6 +35,8 @@ function fetch (url) {
 }
 
 function rm (url) {
+  url = removePrefix(url)
+
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('DELETE', `${store.state.baseURL}/api/resource${url}`, true)
