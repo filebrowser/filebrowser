@@ -6,10 +6,9 @@ import getters from './getters'
 Vue.use(Vuex)
 
 const state = {
-  user: window.info.user,
-  req: window.info.req,
-  webDavURL: window.info.webdavURL,
-  baseURL: window.info.baseURL,
+  user: {},
+  req: {},
+  baseURL: document.querySelector('meta[name="base"]').getAttribute('content'),
   ssl: (window.location.protocol === 'https:'),
   selected: [],
   multiple: false,

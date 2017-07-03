@@ -56,23 +56,17 @@ func serveHTTP(c *requestContext, w http.ResponseWriter, r *http.Request) (int, 
 		return serveAPI(c, w, r)
 	}
 
-	// Checks if this request is made to the base path /files. If so,
-	// shows the index.html page.
-	if matchURL(r.URL.Path, "/files") {
-		w.Header().Set("x-frame-options", "SAMEORIGIN")
-		w.Header().Set("x-content-type", "nosniff")
-		w.Header().Set("x-xss-protection", "1; mode=block")
+	// Any other request should show the index.html file.
+	w.Header().Set("x-frame-options", "SAMEORIGIN")
+	w.Header().Set("x-content-type", "nosniff")
+	w.Header().Set("x-xss-protection", "1; mode=block")
 
-		return renderFile(
-			w,
-			c.fm.assets.MustString("index.html"),
-			"text/html",
-			c.fm.RootURL(),
-		)
-	}
-
-	http.Redirect(w, r, c.fm.RootURL()+"/files"+r.URL.Path, http.StatusTemporaryRedirect)
-	return 0, nil
+	return renderFile(
+		w,
+		c.fm.assets.MustString("index.html"),
+		"text/html",
+		c.fm.RootURL(),
+	)
 }
 
 // staticHandler handles the static assets path.
