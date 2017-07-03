@@ -17,6 +17,7 @@ const mutations = {
     state.showNewDir = false
     state.showDownload = false
   },
+  setUser: (state, value) => (state.user = value),
   multiple: (state, value) => (state.multiple = value),
   addSelected: (state, value) => (state.selected.push(value)),
   removeSelected: (state, value) => {

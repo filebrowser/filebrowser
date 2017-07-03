@@ -1,0 +1,290 @@
+<template>
+  <div :class="{ multiple }">
+    <header>
+      <div>
+        <img src="../assets/logo.svg" alt="File Manager">
+        <search></search>
+      </div>
+      <div>
+        <rename-button v-show="showRenameButton()"></rename-button>
+        <move-button v-show="showMoveButton()"></move-button>
+        <delete-button v-show="showDeleteButton()"></delete-button>
+        <switch-button v-show="req.kind !== 'editor'"></switch-button>
+        <download-button></download-button>
+        <upload-button v-show="showUpload()"></upload-button>
+        <info-button></info-button>
+
+        <button v-show="req.kind === 'listing'" @click="$store.commit('multiple', true)" aria-label="Select multiple" class="action">
+          <i class="material-icons">check_circle</i>
+          <span>Select</span>
+        </button>
+      </div>
+    </header>
+
+    <nav>
+      <a class="action" :href="baseURL + '/'">
+        <i class="material-icons">folder</i>
+        <span>My Files</span>
+      </a>
+
+      <div v-if="user.allowNew">
+        <button @click="$store.commit('showNewDir', true)" aria-label="New directory" title="New directory" class="action">
+          <i class="material-icons">create_new_folder</i>
+          <span>New folder</span>
+        </button>
+        <button @click="$store.commit('showNewFile', true)" aria-label="New file" title="New file" class="action">
+          <i class="material-icons">note_add</i>
+          <span>New file</span>
+        </button>
+      </div>
+
+      <div v-for="plugin in plugins">
+        <button v-for="action in plugin.sidebar" @click="action.click" :aria-label="action.name" :title="action.name" class="action">
+          <i class="material-icons">{{ action.icon }}</i>
+          <span>{{ action.name }}</span>
+        </button>
+      </div>
+
+      <button @click="logout" class="action" id="logout" tabindex="0" role="button" aria-label="Log out">
+        <i class="material-icons" title="Logout">exit_to_app</i>
+        <span>Logout</span>
+      </button>
+    </nav>
+
+    <main>
+      <editor v-if="req.kind === 'editor'"></editor>
+      <listing v-if="req.kind === 'listing'"></listing>
+      <preview v-if="req.kind === 'preview'"></preview>
+    </main>
+
+    <download-prompt v-if="showDownload" :class="{ active: showDownload }"></download-prompt>
+    <new-file-prompt v-if="showNewFile" :class="{ active: showNewFile }"></new-file-prompt>
+    <new-dir-prompt v-if="showNewDir" :class="{ active: showNewDir }"></new-dir-prompt>
+    <rename-prompt v-if="showRename" :class="{ active: showRename }"></rename-prompt>
+    <delete-prompt v-if="showDelete" :class="{ active: showDelete }"></delete-prompt>
+    <info-prompt v-if="showInfo" :class="{ active: showInfo }"></info-prompt>
+    <move-prompt v-if="showMove" :class="{ active: showMove }"></move-prompt>
+    <help v-show="showHelp" :class="{ active: showHelp }"></help>
+    <div v-show="$store.getters.showOverlay" @click="resetPrompts" class="overlay" :class="{ active: $store.getters.showOverlay }"></div>
+
+    <footer>Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
+  </div>
+</template>
+
+<script>
+import Search from './Search'
+import Help from './Help'
+import Preview from './Preview'
+import Listing from './Listing'
+import Editor from './Editor'
+import InfoButton from './InfoButton'
+import InfoPrompt from './InfoPrompt'
+import DeleteButton from './DeleteButton'
+import DeletePrompt from './DeletePrompt'
+import RenameButton from './RenameButton'
+import RenamePrompt from './RenamePrompt'
+import UploadButton from './UploadButton'
+import DownloadButton from './DownloadButton'
+import DownloadPrompt from './DownloadPrompt'
+import SwitchButton from './SwitchViewButton'
+import MoveButton from './MoveButton'
+import MovePrompt from './MovePrompt'
+import NewFilePrompt from './NewFilePrompt'
+import NewDirPrompt from './NewDirPrompt'
+import css from '@/utils/css'
+import auth from '@/utils/auth'
+import {mapGetters, mapState} from 'vuex'
+
+function updateColumnSizes () {
+  let columns = Math.floor(document.querySelector('main').offsetWidth / 300)
+  let items = css(['#listing.mosaic .item', '.mosaic#listing .item'])
+
+  if (columns === 0) columns = 1
+
+  items.style.width = `calc(${100 / columns}% - 1em)`
+}
+
+export default {
+  name: 'main',
+  components: {
+    Search,
+    Preview,
+    Listing,
+    Editor,
+    InfoButton,
+    InfoPrompt,
+    Help,
+    DeleteButton,
+    DeletePrompt,
+    RenameButton,
+    RenamePrompt,
+    DownloadButton,
+    DownloadPrompt,
+    UploadButton,
+    SwitchButton,
+    MoveButton,
+    MovePrompt,
+    NewFilePrompt,
+    NewDirPrompt
+  },
+  computed: {
+    ...mapGetters(['selectedCount']),
+    ...mapState([
+      'req',
+      'user',
+      'baseURL',
+      'multiple',
+      'showInfo',
+      'showHelp',
+      'showDelete',
+      'showRename',
+      'showMove',
+      'showNewFile',
+      'showNewDir',
+      'showDownload'
+    ])
+  },
+  data: function () {
+    return {
+      plugins: []
+    }
+  },
+  mounted: function () {
+    updateColumnSizes()
+    window.addEventListener('resize', updateColumnSizes)
+
+    if (window.plugins !== undefined || window.plugins !== null) {
+      this.plugins = window.plugins
+    }
+
+    document.title = this.req.data.name
+    window.history.replaceState({
+      url: window.location.pathname,
+      name: document.title
+    }, document.title, window.location.pathname)
+
+    /* window.addEventListener('popstate', (event) => {
+      event.preventDefault()
+      event.stopPropagation()
+
+      this.$store.commit('multiple', false)
+      this.$store.commit('resetSelected')
+      this.$store.commit('resetPrompts')
+
+      let request = new window.XMLHttpRequest()
+      request.open('GET', event.state.url, true)
+      request.setRequestHeader('Accept', 'application/json')
+
+      request.onload = () => {
+        if (request.status === 200) {
+          let req = JSON.parse(request.responseText)
+          this.$store.commit('updateRequest', req)
+          document.title = event.state.name
+        } else {
+          console.log(request.responseText)
+        }
+      }
+
+      request.onerror = (error) => { console.log(error) }
+      request.send()
+    }) */
+
+    window.addEventListener('keydown', (event) => {
+      // Esc!
+      if (event.keyCode === 27) {
+        this.$store.commit('resetPrompts')
+
+        // Unselect all files and folders.
+        if (this.req.kind === 'listing') {
+          let items = document.getElementsByClassName('item')
+          Array.from(items).forEach(link => {
+            link.setAttribute('aria-selected', false)
+          })
+
+          this.$store.commit('resetSelected')
+        }
+
+        return
+      }
+
+      // Del!
+      if (event.keyCode === 46) {
+        if (this.showDeleteButton()) {
+          this.$store.commit('showDelete', true)
+        }
+      }
+
+      // F1!
+      if (event.keyCode === 112) {
+        event.preventDefault()
+        this.$store.commit('showHelp', true)
+      }
+
+      // F2!
+      if (event.keyCode === 113) {
+        if (this.showRenameButton()) {
+          this.$store.commit('showRename', true)
+        }
+      }
+
+      // CTRL + S
+      if (event.ctrlKey || event.metaKey) {
+        switch (String.fromCharCode(event.which).toLowerCase()) {
+          case 's':
+            event.preventDefault()
+
+            if (this.req.kind !== 'editor') {
+              window.location = '?download=true'
+              return
+            }
+
+            // TODO: save file on editor!
+        }
+      }
+    })
+  },
+  methods: {
+    showUpload: function () {
+      if (this.req.kind === 'editor') return false
+      return this.user.allowNew
+    },
+    showDeleteButton: function () {
+      if (this.req.kind === 'listing') {
+        if (this.selectedCount === 0) {
+          return false
+        }
+
+        return this.user.allowEdit
+      }
+
+      return this.user.allowEdit
+    },
+    showRenameButton: function () {
+      if (this.req.kind === 'listing') {
+        if (this.selectedCount === 1) {
+          return this.user.allowEdit
+        }
+
+        return false
+      }
+
+      return this.user.allowEdit
+    },
+    showMoveButton: function () {
+      if (this.req.kind !== 'listing') {
+        return false
+      }
+
+      if (this.selectedCount > 0) {
+        return this.user.allowEdit
+      }
+
+      return false
+    },
+    resetPrompts: function () {
+      this.$store.commit('resetPrompts')
+    },
+    logout: auth.logout
+  }
+}
+</script>

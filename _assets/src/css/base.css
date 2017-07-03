@@ -40,6 +40,11 @@ pre {
     word-wrap: break-word;
 }
 
+input, button {
+  outline: 0 !important;
+}
+
+input[type="submit"],
 button {
     border: 0;
     padding: .5em 1em;
@@ -53,6 +58,7 @@ button {
     transition: .1s ease all;
 }
 
+input[type="submit"]:hover,
 button:hover {
     background-color: #1E88E5;
 }
