@@ -119,10 +119,34 @@ function checksum (url, algo) {
   })
 }
 
+function command (url, command, onmessage, onclose) {
+  let protocol = (store.state.ssl ? 'wss:' : 'ws:')
+  url = removePrefix(url)
+  url = `${protocol}//${window.location.hostname}${store.state.baseURL}/api/command${url}?token=${store.state.jwt}`
+
+  let conn = new window.WebSocket(url)
+  conn.onopen = () => conn.send(command)
+  conn.onmessage = onmessage
+  conn.onclose = onclose
+}
+
+function search (url, search, onmessage, onclose) {
+  let protocol = (store.state.ssl ? 'wss:' : 'ws:')
+  url = removePrefix(url)
+  url = `${protocol}//${window.location.hostname}${store.state.baseURL}/api/search${url}?token=${store.state.jwt}`
+
+  let conn = new window.WebSocket(url)
+  conn.onopen = () => conn.send(search)
+  conn.onmessage = onmessage
+  conn.onclose = onclose
+}
+
 export default {
   delete: rm,
   fetch,
   checksum,
   move,
-  put
+  put,
+  command,
+  search
 }
