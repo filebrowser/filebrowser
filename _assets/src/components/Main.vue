@@ -25,14 +25,22 @@
 
     <main>
       <div v-if="loading">Loading...</div>
-      <editor v-if="isEditor"></editor>
-      <listing v-if="isListing"></listing>
-      <preview v-if="isPreview"></preview>
+      <div v-else-if="error">
+        <h2 class="message" v-if="error === 404">
+          <i class="material-icons">gps_off</i>
+          <span>This location can't be reached.</span>
+        </h2>
+        <h2 class="message" v-else-if="error === 403">
+          <i class="material-icons">error</i>
+          <span>You're not welcome here.</span>
+        </h2>
+      </div>
+      <editor v-else-if="isEditor"></editor>
+      <listing v-else-if="isListing"></listing>
+      <preview v-else-if="isPreview"></preview>
     </main>
 
     <prompts></prompts>
-
-    <footer>Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</footer>
   </div>
 </template>
 
@@ -104,7 +112,7 @@ export default {
   data: function () {
     return {
       loading: true,
-      error: ''
+      error: null
     }
   },
   created () {
@@ -178,6 +186,7 @@ export default {
   methods: {
     fetchData () {
       this.loading = true
+      this.error = null
       // Reset selected items and multiple selection.
       this.$store.commit('resetSelected')
       this.$store.commit('multiple', false)
@@ -199,7 +208,7 @@ export default {
       .catch(error => {
         // TODO: 404, 403 and 500!
         console.log(error)
-
+        this.error = error
         this.loading = false
       })
     },
