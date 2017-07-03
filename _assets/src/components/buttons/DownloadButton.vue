@@ -25,7 +25,7 @@ export default {
         return
       }
 
-      this.$store.commit('showDownload', true)
+      this.$store.commit('showPrompt', 'download')
     }
   }
 }

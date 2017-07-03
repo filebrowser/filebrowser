@@ -14,14 +14,7 @@ const state = {
   reload: false,
   selected: [],
   multiple: false,
-  showInfo: false,
-  showHelp: false,
-  showDelete: false,
-  showRename: false,
-  showMove: false,
-  showNewFile: false,
-  showNewDir: false,
-  showDownload: false
+  prompt: null
 }
 
 export default new Vuex.Store({

@@ -1,5 +1,5 @@
 <template>
-  <button title="Info" aria-label="Info" class="action" @click="$store.commit('showInfo', true)">
+  <button title="Info" aria-label="Info" class="action" @click="this.$store.commit('showPrompt', 'info')">
     <i class="material-icons">info</i>
     <span>Info</span>
   </button>

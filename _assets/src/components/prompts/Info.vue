@@ -21,7 +21,7 @@
     </section>
 
     <div>
-      <button type="submit" @click="$store.commit('showInfo', false)" class="ok">OK</button>
+      <button type="submit" @click="$store.commit('closePrompts')" class="ok">OK</button>
     </div>
   </div>
 </template>

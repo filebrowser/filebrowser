@@ -39,6 +39,7 @@ export default {
       }
 
       window.open(uri)
+      this.$store.commit('closePrompts')
     }
   }
 }

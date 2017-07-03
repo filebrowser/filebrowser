@@ -1,14 +1,13 @@
 const getters = {
-  showOverlay: state => {
-    return state.showInfo ||
-      state.showHelp ||
-      state.showDelete ||
-      state.showRename ||
-      state.showMove ||
-      state.showNewFile ||
-      state.showNewDir ||
-      state.showDownload
-  },
+  showInfo: state => (state.prompt === 'info'),
+  showHelp: state => (state.prompt === 'help'),
+  showDelete: state => (state.prompt === 'delete'),
+  showRename: state => (state.prompt === 'rename'),
+  showMove: state => (state.prompt === 'move'),
+  showNewFile: state => (state.prompt === 'newFile'),
+  showNewDir: state => (state.prompt === 'newDir'),
+  showDownload: state => (state.prompt === 'download'),
+  showOverlay: state => (state.prompt !== null),
   selectedCount: state => state.selected.length
 }
 

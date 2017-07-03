@@ -34,6 +34,10 @@
           <i class="material-icons">error</i>
           <span>You're not welcome here.</span>
         </h2>
+        <h2 class="message" v-else>
+          <i class="material-icons">error_outline</i>
+          <span>Something really went wrong.</span>
+        </h2>
       </div>
       <editor v-else-if="isEditor"></editor>
       <listing v-else-if="isListing"></listing>
@@ -132,7 +136,7 @@ export default {
     window.addEventListener('keydown', (event) => {
       // Esc!
       if (event.keyCode === 27) {
-        this.$store.commit('resetPrompts')
+        this.$store.commit('closePrompts')
 
         // Unselect all files and folders.
         if (this.req.kind === 'listing') {
@@ -150,20 +154,20 @@ export default {
       // Del!
       if (event.keyCode === 46) {
         if (this.showDeleteButton()) {
-          this.$store.commit('showDelete', true)
+          this.$store.commit('showPrompt', 'delete')
         }
       }
 
       // F1!
       if (event.keyCode === 112) {
         event.preventDefault()
-        this.$store.commit('showHelp', true)
+        this.$store.commit('showPrompt', 'help')
       }
 
       // F2!
       if (event.keyCode === 113) {
         if (this.showRenameButton()) {
-          this.$store.commit('showRename', true)
+          this.$store.commit('showPrompt', 'rename')
         }
       }
 
@@ -185,11 +189,14 @@ export default {
   },
   methods: {
     fetchData () {
+      // Set loading to true and reset the error.
       this.loading = true
       this.error = null
+
       // Reset selected items and multiple selection.
       this.$store.commit('resetSelected')
       this.$store.commit('multiple', false)
+      this.$store.commit('closePrompts')
 
       let url = this.$route.path
       if (url === '') url = '/'

@@ -1,23 +1,7 @@
 const mutations = {
-  showInfo: (state, value) => (state.showInfo = value),
-  showHelp: (state, value) => (state.showHelp = value),
-  showDelete: (state, value) => (state.showDelete = value),
-  showRename: (state, value) => (state.showRename = value),
-  showMove: (state, value) => (state.showMove = value),
-  showNewFile: (state, value) => (state.showNewFile = value),
-  showNewDir: (state, value) => (state.showNewDir = value),
-  showDownload: (state, value) => (state.showDownload = value),
-  resetPrompts: (state) => {
-    state.showHelp = false
-    state.showInfo = false
-    state.showDelete = false
-    state.showRename = false
-    state.showMove = false
-    state.showNewFile = false
-    state.showNewDir = false
-    state.showDownload = false
-  },
-  setReload: (state, value) => (state.reload = value),
+  closePrompts: (state) => { state.prompt = null },
+  showPrompt: (state, value) => { state.prompt = value },
+  setReload: (state, value) => { state.reload = value },
   setUser: (state, value) => (state.user = value),
   setJWT: (state, value) => (state.jwt = value),
   multiple: (state, value) => (state.multiple = value),
