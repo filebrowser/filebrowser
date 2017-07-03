@@ -59,10 +59,9 @@
     vertical-align: bottom;
 }
 
-#listing h2.message,
 .message {
     text-align: center;
-    font-size: 3em;
+    font-size: 2em;
     margin: 1em auto;
     display: block !important;
     width: 95%;
@@ -71,8 +70,9 @@
 }
 
 .message i {
-    font-size: inherit;
-    vertical-align: middle;
+    font-size: 2.5em;
+    margin-bottom: .2em;
+    display: block;
 }
 
 #listing.mosaic {

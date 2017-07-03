@@ -1,5 +1,11 @@
 <template>
-  <div id="listing"
+  <div v-if="(req.numDirs + req.numFiles) == 0">
+    <h2 class="message">
+      <i class="material-icons">sentiment_dissatisfied</i>
+      <span>It feels lonely here...</span>
+    </h2>
+  </div>
+  <div v-else id="listing"
     :class="req.display"
     @drop="drop"
     @dragenter="dragEnter"
@@ -22,8 +28,6 @@
         </div>
       </div>
     </div>
-
-    <h2 v-if="(req.numDirs + req.numFiles) == 0" class="message">It feels lonely here :'(</h2>
 
     <h2 v-if="req.numDirs > 0">Folders</h2>
     <div v-if="req.numDirs > 0">

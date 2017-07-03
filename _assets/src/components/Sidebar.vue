@@ -1,6 +1,6 @@
 <template>
   <nav>
-    <router-link class="action" to="/files/">
+    <router-link class="action" to="/files/" aria-label="My Files" title="My Files">
       <i class="material-icons">folder</i>
       <span>My Files</span>
     </router-link>
@@ -24,10 +24,19 @@
       </button>
     </div>
 
-    <button @click="logout" class="action" id="logout" aria-label="Log out">
-      <i class="material-icons" title="Logout">exit_to_app</i>
-      <span>Logout</span>
-    </button>
+    <div>
+      <router-link class="action" to="/dashboard" aria-label="Settings" title="Settings">
+        <i class="material-icons">settings_applications</i>
+        <span>Settings</span>
+      </router-link>
+
+      <button @click="logout" class="action" id="logout" aria-label="Log out" title="Logout">
+        <i class="material-icons">exit_to_app</i>
+        <span>Logout</span>
+      </button>
+    </div>
+
+    <p class="credits">Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</p>
   </nav>
 </template>
 

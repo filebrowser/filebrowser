@@ -396,15 +396,14 @@ fieldset h3,
  *            FOOTER           *
  * * * * * * * * * * * * * * * */
 
-footer {
+.credits {
     font-size: 0.6em;
-    margin: 2em 0 2em;
-    text-align: center;
-    color: grey;
+    margin: 3em 2.5em;
+    color: #a5a5a5;
 }
 
-footer a,
-footer a:hover {
+.credits a,
+.credits a:hover {
     color: inherit;
 }
 
