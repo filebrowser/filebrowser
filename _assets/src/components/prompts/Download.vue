@@ -14,7 +14,7 @@
 import {mapGetters, mapState} from 'vuex'
 
 export default {
-  name: 'download-prompt',
+  name: 'download',
   computed: {
     ...mapState(['selected', 'req']),
     ...mapGetters(['selectedCount'])

@@ -16,7 +16,7 @@ import url from '@/utils/url'
 import api from '@/utils/api'
 
 export default {
-  name: 'rename-prompt',
+  name: 'rename',
   data: function () {
     return {
       name: ''
