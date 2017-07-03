@@ -13,7 +13,7 @@
       <div>
         <span v-if="search.length === 0 && commands.length === 0">{{ text() }}</span>
         <ul v-else-if="search.length > 0">
-          <li v-for="s in search"><a :href="'./' + s">./{{ s }}</a></li>
+          <li v-for="s in search"><router-link :to="'./' + s">./{{ s }}</router-link></li>
         </ul>
         <ul v-else-if="commands.length > 0">
           <li v-for="c in commands">{{ c }}</li>
@@ -27,6 +27,7 @@
 <script>
 import { mapState } from 'vuex'
 import url from '@/utils/url'
+import api from '@/utils/api'
 
 export default {
   name: 'search',
@@ -89,49 +90,41 @@ export default {
     },
     submit: function (event) {
       this.ongoing = true
-      let uri = window.location.host + window.location.pathname
 
+      let path = this.$route.path
       if (this.$store.state.req.kind !== 'listing') {
-        uri = url.removeLastDir(uri) + '/'
+        path = url.removeLastDir(path) + '/'
       }
 
-      uri = `${(this.$store.state.ssl ? 'wss:' : 'ws:')}//${uri}`
-
       if (this.supported() && this.user.allowCommands) {
-        let conn = new window.WebSocket(`${uri}?command=true`)
-
-        conn.onopen = () => conn.send(this.value)
-
-        conn.onmessage = (event) => {
-          this.commands.push(event.data)
-          this.scrollable.scrollTop = this.scrollable.scrollHeight
-        }
-
-        conn.onclose = (event) => {
-          this.ongoing = false
-          this.scrollable.scrollTop = this.scrollable.scrollHeight
-          this.$store.commit('setReload', true)
-        }
+        api.command(path, this.value,
+          (event) => {
+            this.commands.push(event.data)
+            this.scrollable.scrollTop = this.scrollable.scrollHeight
+          },
+          (event) => {
+            this.ongoing = false
+            this.scrollable.scrollTop = this.scrollable.scrollHeight
+            this.$store.commit('setReload', true)
+          }
+        )
 
         return
       }
 
-      let conn = new window.WebSocket(`${uri}?search=true`)
+      api.search(path, this.value,
+        (event) => {
+          let url = event.data
+          if (url[0] === '/') url = url.substring(1)
 
-      conn.onopen = () => conn.send(this.value)
-
-      conn.onmessage = (event) => {
-        let url = event.data
-        if (url[0] === '/') url = url.substring(1)
-
-        this.search.push(url)
-        this.scrollable.scrollTop = this.scrollable.scrollHeight
-      }
-
-      conn.onclose = () => {
-        this.ongoing = false
-        this.scrollable.scrollTop = this.scrollable.scrollHeight
-      }
+          this.search.push(url)
+          this.scrollable.scrollTop = this.scrollable.scrollHeight
+        },
+        (event) => {
+          this.ongoing = false
+          this.scrollable.scrollTop = this.scrollable.scrollHeight
+        }
+      )
     }
   }
 }
