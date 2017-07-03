@@ -313,8 +313,6 @@ func (l listing) ApplySort() {
 			sort.Sort(sort.Reverse(byName(l)))
 		case "size":
 			sort.Sort(sort.Reverse(bySize(l)))
-		case "time":
-			sort.Sort(sort.Reverse(byTime(l)))
 		default:
 			// If not one of the above, do nothing
 			return
@@ -325,8 +323,6 @@ func (l listing) ApplySort() {
 			sort.Sort(byName(l))
 		case "size":
 			sort.Sort(bySize(l))
-		case "time":
-			sort.Sort(byTime(l))
 		default:
 			sort.Sort(byName(l))
 			return
@@ -337,7 +333,6 @@ func (l listing) ApplySort() {
 // Implement sorting for listing
 type byName listing
 type bySize listing
-type byTime listing
 
 // By Name
 func (l byName) Len() int {
@@ -380,17 +375,6 @@ func (l bySize) Less(i, j int) bool {
 		jSize = directoryOffset + jSize
 	}
 	return iSize < jSize
-}
-
-// By Time
-func (l byTime) Len() int {
-	return len(l.Items)
-}
-func (l byTime) Swap(i, j int) {
-	l.Items[i], l.Items[j] = l.Items[j], l.Items[i]
-}
-func (l byTime) Less(i, j int) bool {
-	return l.Items[i].ModTime.Before(l.Items[j].ModTime)
 }
 
 var textExtensions = [...]string{

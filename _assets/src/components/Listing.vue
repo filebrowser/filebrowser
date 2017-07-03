@@ -8,14 +8,14 @@
       <div class="item header">
         <div></div>
         <div>
-          <p v-bind:class="{ active: req.sort === 'name' }" class="name"><span>Name</span>
-            <a v-if="req.sort === 'name' && req.order != 'asc'" href="?sort=name&order=asc"><i class="material-icons">arrow_upward</i></a>
-            <a v-else href="?sort=name&order=desc"><i class="material-icons">arrow_downward</i></a>
+          <p :class="{ active: nameSorted }" class="name" @click="sort('name')">
+            <span>Name</span>
+            <i class="material-icons">{{ nameIcon }}</i>
           </p>
 
-          <p v-bind:class="{ active: req.sort === 'size' }" class="size"><span>Size</span>
-            <a v-if="req.sort === 'size' && req.order != 'asc'" href="?sort=size&order=asc"><i class="material-icons">arrow_upward</i></a>
-            <a v-else href="?sort=size&order=desc"><i class="material-icons">arrow_downward</i></a>
+          <p :class="{ active: !nameSorted }" class="size" @click="sort('size')">
+            <span>Size</span>
+            <i class="material-icons">{{ sizeIcon }}</i>
           </p>
 
           <p class="modified">Last modified</p>
@@ -74,7 +74,29 @@ import api from '@/utils/api'
 export default {
   name: 'listing',
   components: { Item },
-  computed: mapState(['req']),
+  computed: {
+    ...mapState(['req']),
+    nameSorted () {
+      return (this.req.sort === 'name')
+    },
+    ascOrdered () {
+      return (this.req.order === 'asc')
+    },
+    nameIcon () {
+      if (this.nameSorted && !this.ascOrdered) {
+        return 'arrow_upward'
+      }
+
+      return 'arrow_downward'
+    },
+    sizeIcon () {
+      if (!this.nameSorted && this.ascOrdered) {
+        return 'arrow_downward'
+      }
+
+      return 'arrow_upward'
+    }
+  },
   mounted: function () {
     document.addEventListener('dragover', function (event) {
       event.preventDefault()
@@ -151,6 +173,23 @@ export default {
         })
 
       return false
+    },
+    sort (sort) {
+      let order = 'desc'
+
+      if (sort === 'name') {
+        if (this.nameIcon === 'arrow_upward') {
+          order = 'asc'
+        }
+      } else {
+        if (this.sizeIcon === 'arrow_upward') {
+          order = 'asc'
+        }
+      }
+
+      document.cookie = `sort=${sort}; max-age=31536000; path=${this.$store.state.baseURL}`
+      document.cookie = `order=${order}; max-age=31536000; path=${this.$store.state.baseURL}`
+      this.$store.commit('setReload', true)
     }
   }
 }
