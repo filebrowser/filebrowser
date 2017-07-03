@@ -268,7 +268,7 @@ func handleSortOrder(w http.ResponseWriter, r *http.Request, scope string) (sort
 		if sortCookie, sortErr := r.Cookie("sort"); sortErr == nil {
 			sort = sortCookie.Value
 		}
-	case "name", "size", "type":
+	case "name", "size":
 		http.SetCookie(w, &http.Cookie{
 			Name:   "sort",
 			Value:  sort,
