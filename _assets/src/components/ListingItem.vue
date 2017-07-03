@@ -91,7 +91,7 @@ export default {
 
       Promise.all(promises)
         .then(() => {
-          // page.reload()
+          this.$store.commit('setReload', true)
         })
         .catch(error => console.log(error))
     },

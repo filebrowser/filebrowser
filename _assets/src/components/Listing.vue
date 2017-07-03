@@ -142,7 +142,7 @@ export default {
 
       Promise.all(promises)
         .then(() => {
-          // page.reload()
+          this.$store.commit('setReload', true)
           // buttons.setDone('upload')
         })
         .catch(e => {

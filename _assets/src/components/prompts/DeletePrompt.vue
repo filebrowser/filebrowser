@@ -54,12 +54,12 @@ export default {
 
       Promise.all(promises)
         .then(() => {
-          // page.reload()
+          this.$store.commit('setReload', true)
           // buttons.setDone('delete')
         })
         .catch(error => {
           console.log(error)
-          // page.reload()
+          this.$store.commit('setReload', true)
           // buttons.setDone('delete', false)
         })
     }

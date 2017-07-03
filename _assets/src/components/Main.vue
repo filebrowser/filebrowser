@@ -136,6 +136,7 @@ export default {
     ...mapState([
       'req',
       'user',
+      'reload',
       'baseURL',
       'multiple',
       'showInfo',
@@ -167,7 +168,11 @@ export default {
     this.fetchData()
   },
   watch: {
-    '$route': 'fetchData'
+    '$route': 'fetchData',
+    'reload': function () {
+      this.$store.commit('setReload', false)
+      this.fetchData()
+    }
   },
   mounted () {
     updateColumnSizes()

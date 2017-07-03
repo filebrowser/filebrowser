@@ -11,6 +11,7 @@ const state = {
   baseURL: document.querySelector('meta[name="base"]').getAttribute('content'),
   ssl: (window.location.protocol === 'https:'),
   jwt: '',
+  reload: false,
   selected: [],
   multiple: false,
   showInfo: false,
