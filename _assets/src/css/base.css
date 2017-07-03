@@ -122,6 +122,11 @@ main {
         border-top: 1px solid rgba(0, 0, 0, 0.075);
         border-right: 1px solid rgba(0, 0, 0, 0.075);
         box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+        transition: .2s ease left;
+        left: -16em;
+    }
+    nav.active {
+        left: 0;
     }
     main {
         width: 100%;

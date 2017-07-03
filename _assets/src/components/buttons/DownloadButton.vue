@@ -8,20 +8,23 @@
 
 <script>
 import {mapGetters, mapState} from 'vuex'
+import api from '@/utils/api'
 
 export default {
   name: 'download-button',
   computed: {
-    ...mapState(['req']),
+    ...mapState(['req', 'selected']),
     ...mapGetters(['selectedCount'])
   },
   methods: {
     download: function (event) {
       if (this.req.kind !== 'listing') {
-        let url = this.$route.params[0]
-        url = this.$store.state.baseURL + '/api/download/' + url
-        url += '?token=' + this.$store.state.jwt
-        window.open(url)
+        api.download(null, this.$route.path)
+        return
+      }
+
+      if (this.selectedCount === 1) {
+        api.download(null, this.req.items[this.selected[0]].url)
         return
       }
 

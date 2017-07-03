@@ -1,5 +1,5 @@
 <template>
-  <nav>
+  <nav :class="{active}">
     <router-link class="action" to="/files/" aria-label="My Files" title="My Files">
       <i class="material-icons">folder</i>
       <span>My Files</span>
@@ -48,7 +48,8 @@ export default {
   name: 'sidebar',
   data: () => {
     return {
-      plugins: []
+      plugins: [],
+      active: false
     }
   },
   computed: mapState(['user']),

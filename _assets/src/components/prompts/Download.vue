@@ -12,6 +12,7 @@
 
 <script>
 import {mapGetters, mapState} from 'vuex'
+import api from '@/utils/api'
 
 export default {
   name: 'download',
@@ -21,24 +22,18 @@ export default {
   },
   methods: {
     download: function (format) {
-      let uri = this.$route.params[0]
-      uri = this.$store.state.baseURL + '/api/download/' + uri
-      uri += `?token=${this.$store.state.jwt}`
-      uri += `&format=${format}`
-
-      if (this.selectedCount > 0) {
-        let files = ''
+      if (this.selectedCount === 0) {
+        api.download(format, this.$route.path)
+      } else {
+        let files = []
 
         for (let i of this.selected) {
-          files += this.req.items[i].url.replace(window.location.pathname, '') + ','
+          files.push(this.req.items[i].url)
         }
 
-        files = files.substring(0, files.length - 1)
-        files = encodeURIComponent(files)
-        uri += `&files=${files}`
+        api.download(format, ...files)
       }
 
-      window.open(uri)
       this.$store.commit('closePrompts')
     }
   }
