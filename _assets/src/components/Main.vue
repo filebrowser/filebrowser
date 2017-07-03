@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ multiple }">
+  <div :class="{ multiple, loading }">
     <header>
       <div>
         <img src="../assets/logo.svg" alt="File Manager">

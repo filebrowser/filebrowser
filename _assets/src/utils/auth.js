@@ -50,7 +50,7 @@ function login (user, password) {
 
 function logout () {
   document.cookie = `auth='nothing'; max-age=0; path=${store.state.baseURL}`
-  router.push({path: 'login'})
+  router.push({path: '/login'})
 }
 
 export default {
