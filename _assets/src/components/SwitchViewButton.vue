@@ -12,7 +12,7 @@ export default {
     change: function (event) {
       let display = 'mosaic'
 
-      if (this.$store.state.req.data.display === 'mosaic') {
+      if (this.$store.state.req.display === 'mosaic') {
         display = 'list'
       }
 
@@ -20,7 +20,7 @@ export default {
       document.cookie = `display=${display}; max-age=31536000; path=${this.$store.state.baseURL}`
     },
     icon: function () {
-      if (this.$store.state.req.data.display === 'mosaic') return 'view_list'
+      if (this.$store.state.req.display === 'mosaic') return 'view_list'
       return 'view_module'
     }
   }

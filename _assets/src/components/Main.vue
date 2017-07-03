@@ -93,6 +93,7 @@ import NewFilePrompt from './NewFilePrompt'
 import NewDirPrompt from './NewDirPrompt'
 import css from '@/utils/css'
 import auth from '@/utils/auth'
+import api from '@/utils/api'
 import {mapGetters, mapState} from 'vuex'
 
 function updateColumnSizes () {
@@ -149,7 +150,21 @@ export default {
       plugins: []
     }
   },
-  mounted: function () {
+  beforeRouteEnter (to, from, next) {
+    api.fetch(to.params[0])
+    .then(() => {
+      next()
+    })
+    .catch(error => {
+      // TODO: 404, 403 and 500!
+      console.log(error)
+      window.alert('Something went wrong. Please reload.')
+    })
+  },
+  beforeRouteUpdate (to, from, next) {
+    console.log('hey')
+  },
+  mounted () {
     updateColumnSizes()
     window.addEventListener('resize', updateColumnSizes)
 
@@ -157,7 +172,7 @@ export default {
       this.plugins = window.plugins
     }
 
-    document.title = this.req.data.name
+    document.title = this.req.name
     window.history.replaceState({
       url: window.location.pathname,
       name: document.title

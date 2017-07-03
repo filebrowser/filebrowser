@@ -39,7 +39,7 @@ export default {
     }
 
     if (this.req.kind === 'listing') {
-      for (let item of this.req.data.items) {
+      for (let item of this.req.items) {
         if (!item.isDir) continue
 
         this.items.push({
@@ -66,8 +66,8 @@ export default {
       }
 
       for (let item of this.selected) {
-        let from = this.req.data.items[item].url
-        let to = dest + '/' + encodeURIComponent(this.req.data.items[item].name)
+        let from = this.req.items[item].url
+        let to = dest + '/' + encodeURIComponent(this.req.items[item].name)
         to = to.replace('//', '/')
 
         promises.push(webdav.move(from, to))
@@ -100,7 +100,7 @@ export default {
           }
 
           let req = JSON.parse(data)
-          for (let item of req.data.items) {
+          for (let item of req.items) {
             if (!item.isDir) continue
 
             this.items.push({

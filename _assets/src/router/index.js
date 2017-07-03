@@ -21,6 +21,7 @@ const router = new Router({
           next({ path: '/files' })
         })
         .catch(() => {
+          document.title = 'Login'
           next()
         })
       }
@@ -33,7 +34,7 @@ const router = new Router({
       },
       children: [
         {
-          path: '/files/*',
+          path: '/files*',
           name: 'Files',
           component: Files
         },

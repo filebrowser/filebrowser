@@ -29,8 +29,8 @@ export default {
       event.stopPropagation()
 
       let redirect = this.$route.query.redirect
-      if (redirect === '') {
-        redirect = this.$store.state.baseURL + '/files/'
+      if (redirect === '' || redirect === undefined || redirect === null) {
+        redirect = '/files/'
       }
 
       auth.login(this.username, this.password)

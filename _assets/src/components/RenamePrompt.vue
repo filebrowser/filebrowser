@@ -29,7 +29,7 @@ export default {
     },
     oldName: function () {
       if (this.req.kind !== 'listing') {
-        return this.req.data.name
+        return this.req.name
       }
 
       if (this.selectedCount === 0 || this.selectedCount > 1) {
@@ -37,16 +37,16 @@ export default {
         return
       }
 
-      return this.req.data.items[this.selected[0]].name
+      return this.req.items[this.selected[0]].name
     },
     submit: function (event) {
       let oldLink = ''
       let newLink = ''
 
       if (this.req.kind !== 'listing') {
-        oldLink = this.req.data.url
+        oldLink = this.req.url
       } else {
-        oldLink = this.req.data.items[this.selected[0]].url
+        oldLink = this.req.items[this.selected[0]].url
       }
 
       this.name = encodeURIComponent(this.name)

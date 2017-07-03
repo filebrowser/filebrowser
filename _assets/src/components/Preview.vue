@@ -12,18 +12,18 @@
     </div>
 
     <div class="preview">
-      <img v-if="req.data.type == 'image'" :src="raw()">
-      <audio v-else-if="req.data.type == 'audio'" :src="raw()" controls></audio>
-      <video v-else-if="req.data.type == 'video'" :src="raw()" controls>
+      <img v-if="req.type == 'image'" :src="raw()">
+      <audio v-else-if="req.type == 'audio'" :src="raw()" controls></audio>
+      <video v-else-if="req.type == 'video'" :src="raw()" controls>
         Sorry, your browser doesn't support embedded videos,
         but don't worry, you can <a href="?download=true">download it</a>
         and watch it with your favorite video player!
       </video>
-      <object v-else-if="req.data.extension == '.pdf'" class="pdf" :data="raw()"></object>
-      <a v-else-if="req.data.type == 'blob'" href="?download=true">
+      <object v-else-if="req.extension == '.pdf'" class="pdf" :data="raw()"></object>
+      <a v-else-if="req.type == 'blob'" href="?download=true">
         <h2 class="message">Download <i class="material-icons">file_download</i></h2>
       </a>
-      <pre v-else >{{ req.data.content }}</pre>
+      <pre v-else >{{ req.content }}</pre>
     </div>
   </div>
 </template>
@@ -47,7 +47,7 @@ export default {
   computed: mapState(['req']),
   methods: {
     raw: function () {
-      return this.req.data.url + '?raw=true'
+      return this.req.url + '?raw=true'
     },
     back: function (event) {
       let url = page.removeLastDir(window.location.pathname) + '/'
