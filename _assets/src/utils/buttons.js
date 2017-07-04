@@ -26,26 +26,11 @@ function done (button, success = true) {
 
   el.style.opacity = 0
 
-  let third = () => {
-    el.innerHTML = el.dataset.icon
-    el.style.opacity = null
-  }
-
-  let second = () => {
-    el.style.opacity = 0
-    setTimeout(third, 200)
-  }
-
-  let first = () => {
+  setTimeout(() => {
     el.classList.remove('spin')
-    el.innerHTML = success
-      ? 'done'
-      : 'close'
+    el.innerHTML = el.dataset.icon
     el.style.opacity = 1
-    setTimeout(second, 200)
-  }
-
-  setTimeout(first, 200)
+  }, 200)
 }
 
 export default {
