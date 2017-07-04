@@ -77,9 +77,11 @@ func resourceHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 	case http.MethodDelete:
 		return deleteHandler(c, w, r)
 	case http.MethodPut:
-		return putHandler(c, w, r)
+		return postPutHandler(c, w, r)
+	case http.MethodPatch:
+		return patchHandler(c, w, r)
 	case http.MethodPost:
-		return postHandler(c, w, r)
+		return postPutHandler(c, w, r)
 	}
 
 	/* // Execute beforeSave if it is a PUT request.
@@ -183,12 +185,30 @@ func deleteHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (i
 	return http.StatusOK, nil
 }
 
-func putHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func postPutHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	// Checks if the current request is for a directory and not a file.
 	if strings.HasSuffix(r.URL.Path, "/") {
+		// If the method is PUT, we return 405 Method not Allowed, because
+		// POST should be used instead.
+		if r.Method == http.MethodPut {
+			return http.StatusMethodNotAllowed, nil
+		}
+
+		// Otherwise we try to create the directory.
 		err := c.us.FileSystem.Mkdir(context.TODO(), r.URL.Path, 0666)
 		return errorToHTTP(err, false), err
 	}
 
+	// If using POST method, we are trying to create a new file so it is not
+	// desirable to override an already existent file. Thus, we check
+	// if the file already exists. If so, we just return a 409 Conflict.
+	if r.Method == http.MethodPost {
+		if _, err := c.us.FileSystem.Stat(context.TODO(), r.URL.Path); err == nil {
+			return http.StatusConflict, nil
+		}
+	}
+
+	// Create/Open the file.
 	f, err := c.us.FileSystem.OpenFile(context.TODO(), r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	defer f.Close()
 
@@ -196,22 +216,25 @@ func putHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int,
 		return errorToHTTP(err, false), err
 	}
 
+	// Copies the new content for the file.
 	_, err = io.Copy(f, r.Body)
 	if err != nil {
 		return errorToHTTP(err, false), err
 	}
 
+	// Gets the info about the file.
 	fi, err := f.Stat()
 	if err != nil {
 		return errorToHTTP(err, false), err
 	}
 
+	// Writes the ETag Header.
 	etag := fmt.Sprintf(`"%x%x"`, fi.ModTime().UnixNano(), fi.Size())
 	w.Header().Set("ETag", etag)
 	return http.StatusOK, nil
 }
 
-func postHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func patchHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	dst := r.Header.Get("Destination")
 	dst, err := url.QueryUnescape(dst)
 	if err != nil {

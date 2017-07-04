@@ -57,6 +57,27 @@ function rm (url) {
   })
 }
 
+function post (url, content = '') {
+  url = removePrefix(url)
+
+  return new Promise((resolve, reject) => {
+    let request = new window.XMLHttpRequest()
+    request.open('POST', `${store.state.baseURL}/api/resource${url}`, true)
+    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+
+    request.onload = () => {
+      if (request.status === 200) {
+        resolve(request.responseText)
+      } else {
+        reject(request.responseText)
+      }
+    }
+
+    request.onerror = (error) => reject(error)
+    request.send(content)
+  })
+}
+
 function put (url, content = '') {
   url = removePrefix(url)
 
@@ -175,6 +196,7 @@ export default {
   checksum,
   move,
   put,
+  post,
   command,
   search,
   download

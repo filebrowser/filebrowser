@@ -34,7 +34,7 @@ export default {
       uri += this.name + '/'
       uri = uri.replace('//', '/')
 
-      api.put(uri)
+      api.post(uri)
         .then(() => {
           this.$router.push({ path: uri })
         })

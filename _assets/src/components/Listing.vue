@@ -164,7 +164,7 @@ export default {
       let promises = []
 
       for (let file of files) {
-        promises.push(api.put(this.$route.path + base + file.name, file))
+        promises.push(api.post(this.$route.path + base + file.name, file))
       }
 
       Promise.all(promises)
