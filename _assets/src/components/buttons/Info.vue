@@ -1,5 +1,5 @@
 <template>
-  <button title="Info" aria-label="Info" class="action" @click="show" id="info-button">
+  <button title="Info" aria-label="Info" class="action" @click="show">
     <i class="material-icons">info</i>
     <span>Info</span>
   </button>
