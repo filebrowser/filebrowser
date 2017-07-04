@@ -5,7 +5,7 @@
     <p v-show="req.kind === 'listing'">Are you sure you want to delete {{ selectedCount }} file(s)?</p>
     <div>
       <button @click="submit" autofocus>Delete</button>
-      <button @click="showDelete(false)" class="cancel">Cancel</button>
+      <button @click="closePrompts" class="cancel">Cancel</button>
     </div>
   </div>
 </template>

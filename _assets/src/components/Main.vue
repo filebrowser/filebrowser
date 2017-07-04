@@ -136,7 +136,6 @@ export default {
   mounted () {
     updateColumnSizes()
     window.addEventListener('resize', updateColumnSizes)
-
     window.addEventListener('keydown', (event) => {
       // Esc!
       if (event.keyCode === 27) {
