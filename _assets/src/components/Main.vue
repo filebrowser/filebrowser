@@ -12,12 +12,12 @@
         <button @click="openSearch" aria-label="Search" title="Search" class="search-button action">
           <i class="material-icons">search</i>
         </button>
-        <rename-button v-show="!loading && showRenameButton()"></rename-button>
-        <move-button v-show="!loading && showMoveButton()"></move-button>
-        <delete-button v-show="!loading && showDeleteButton()"></delete-button>
+        <rename-button v-show="!loading && showRenameButton"></rename-button>
+        <move-button v-show="!loading && showMoveButton"></move-button>
+        <delete-button v-show="!loading && showDeleteButton"></delete-button>
         <switch-button v-show="!loading && req.kind !== 'editor'"></switch-button>
         <download-button></download-button>
-        <upload-button v-show="!loading && showUpload()"></upload-button>
+        <upload-button v-show="!loading && showUpload"></upload-button>
         <info-button></info-button>
 
         <button v-show="isListing" @click="$store.commit('multiple', true)" aria-label="Select multiple" class="action">
@@ -120,6 +120,43 @@ export default {
     },
     isEditor () {
       return this.req.kind === 'editor' && !this.loading
+    },
+    showUpload () {
+      if (this.req.kind === 'editor') return false
+      return this.user.allowNew
+    },
+    showDeleteButton () {
+      if (this.req.kind === 'listing') {
+        if (this.selectedCount === 0) {
+          return false
+        }
+
+        return this.user.allowEdit
+      }
+
+      return this.user.allowEdit
+    },
+    showRenameButton () {
+      if (this.req.kind === 'listing') {
+        if (this.selectedCount === 1) {
+          return this.user.allowEdit
+        }
+
+        return false
+      }
+
+      return this.user.allowEdit
+    },
+    showMoveButton () {
+      if (this.req.kind !== 'listing') {
+        return false
+      }
+
+      if (this.selectedCount > 0) {
+        return this.user.allowEdit
+      }
+
+      return false
     }
   },
   data: function () {
@@ -232,43 +269,6 @@ export default {
     },
     openSearch () {
       this.$store.commit('showHover', 'search')
-    },
-    showUpload: function () {
-      if (this.req.kind === 'editor') return false
-      return this.user.allowNew
-    },
-    showDeleteButton: function () {
-      if (this.req.kind === 'listing') {
-        if (this.selectedCount === 0) {
-          return false
-        }
-
-        return this.user.allowEdit
-      }
-
-      return this.user.allowEdit
-    },
-    showRenameButton: function () {
-      if (this.req.kind === 'listing') {
-        if (this.selectedCount === 1) {
-          return this.user.allowEdit
-        }
-
-        return false
-      }
-
-      return this.user.allowEdit
-    },
-    showMoveButton: function () {
-      if (this.req.kind !== 'listing') {
-        return false
-      }
-
-      if (this.selectedCount > 0) {
-        return this.user.allowEdit
-      }
-
-      return false
     }
   }
 }
