@@ -202,7 +202,7 @@ export default {
 
       // Del!
       if (event.keyCode === 46) {
-        if (this.showDeleteButton()) {
+        if (this.showDeleteButton) {
           this.$store.commit('showHover', 'delete')
         }
       }
@@ -215,7 +215,7 @@ export default {
 
       // F2!
       if (event.keyCode === 113) {
-        if (this.showRenameButton()) {
+        if (this.showRenameButton) {
           this.$store.commit('showHover', 'rename')
         }
       }
