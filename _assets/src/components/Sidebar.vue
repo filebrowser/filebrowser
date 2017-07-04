@@ -18,7 +18,7 @@
     </div>
 
     <div v-for="plugin in plugins">
-      <button v-for="action in plugin.sidebar" @click="action.click" :aria-label="action.name" :title="action.name" class="action">
+      <button v-for="action in plugin.sidebar" @click="action.click" :aria-label="action.name" :title="action.name" :key="action.name" class="action">
         <i class="material-icons">{{ action.icon }}</i>
         <span>{{ action.name }}</span>
       </button>
@@ -48,11 +48,15 @@ export default {
   name: 'sidebar',
   data: () => {
     return {
-      plugins: [],
-      active: false
+      plugins: []
     }
   },
-  computed: mapState(['user']),
+  computed: {
+    ...mapState(['user']),
+    active () {
+      return this.$store.state.show === 'sidebar'
+    }
+  },
   mounted () {
     if (window.plugins !== undefined || window.plugins !== null) {
       this.plugins = window.plugins

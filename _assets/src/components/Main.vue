@@ -2,7 +2,7 @@
   <div :class="{ multiple, loading }">
     <header>
       <div>
-        <button aria-label="Toggle sidebar" title="Toggle sidebar" class="action">
+        <button @click="openSidebar" aria-label="Toggle sidebar" title="Toggle sidebar" class="action">
           <i class="material-icons">menu</i>
         </button>
         <img src="../assets/logo.svg" alt="File Manager">
@@ -226,6 +226,9 @@ export default {
         this.error = error
         this.loading = false
       })
+    },
+    openSidebar () {
+      this.$store.commit('showHover', 'sidebar')
     },
     openSearch () {
       this.$store.commit('showHover', 'search')
