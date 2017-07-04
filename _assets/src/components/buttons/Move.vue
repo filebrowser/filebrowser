@@ -1,5 +1,5 @@
 <template>
-  <button @click="show" aria-label="Move" title="Move" class="action">
+  <button @click="show" aria-label="Move" title="Move" class="action" id="move-button">
     <i class="material-icons">forward</i>
     <span>Move file</span>
   </button>
