@@ -22,7 +22,7 @@ import Download from './Download'
 import Move from './Move'
 import NewFile from './NewFile'
 import NewDir from './NewDir'
-import {mapGetters, mapState} from 'vuex'
+import {mapState} from 'vuex'
 
 export default {
   name: 'prompts',
@@ -38,17 +38,15 @@ export default {
   },
   computed: {
     ...mapState(['prompt']),
-    ...mapGetters([
-      'showOverlay',
-      'showInfo',
-      'showHelp',
-      'showDelete',
-      'showRename',
-      'showMove',
-      'showNewFile',
-      'showNewDir',
-      'showDownload'
-    ])
+    showInfo: function () { return this.prompt === 'info' },
+    showHelp: function () { return this.prompt === 'help' },
+    showDelete: function () { return this.prompt === 'delete' },
+    showRename: function () { return this.prompt === 'rename' },
+    showMove: function () { return this.prompt === 'move' },
+    showNewFile: function () { return this.prompt === 'newFile' },
+    showNewDir: function () { return this.prompt === 'newDir' },
+    showDownload: function () { return this.prompt === 'download' },
+    showOverlay: function () { return this.prompt !== null }
   },
   methods: {
     resetPrompts () {
