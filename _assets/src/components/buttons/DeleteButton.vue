@@ -10,7 +10,7 @@ export default {
   name: 'delete-button',
   methods: {
     show: function (event) {
-      this.$store.commit('showPrompt', 'delete')
+      this.$store.commit('showHover', 'delete')
     }
   }
 }

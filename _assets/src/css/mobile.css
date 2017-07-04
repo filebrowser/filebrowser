@@ -22,6 +22,7 @@
     transition: .2s ease-in-out left;
     left: -14em;
   }
+  header .search-button,
   header>div:first-child>.action {
     display: inherit;
   }
@@ -35,5 +36,11 @@
   main {
     margin: 0 1em;
     width: calc(100% - 2em);
+  }
+  #search {
+    display: none;
+  }
+  #search.active {
+    display: block;
   }
 }

@@ -34,7 +34,7 @@ export default {
         api.download(format, ...files)
       }
 
-      this.$store.commit('closePrompts')
+      this.$store.commit('closeHovers')
     }
   }
 }

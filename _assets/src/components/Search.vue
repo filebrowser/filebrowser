@@ -41,7 +41,6 @@ export default {
   data: function () {
     return {
       value: '',
-      active: false,
       ongoing: false,
       scrollable: null,
       search: [],
@@ -49,7 +48,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user']),
+    ...mapState(['user', 'show']),
+    // Computed property for activeness of search.
+    active () {
+      return (this.show === 'search')
+    },
     // Placeholder value.
     placeholder: function () {
       if (this.user.allowCommands && this.user.commands.length > 0) {
@@ -88,14 +91,14 @@ export default {
     // when it's pressed, it closes the search window.
     window.addEventListener('keydown', (event) => {
       if (event.keyCode === 27) {
-        this.active = false
+        this.$store.commit('closeHovers')
       }
     })
   },
   methods: {
     // Sets the search to active.
     open: function (event) {
-      this.active = true
+      this.$store.commit('showHover', 'search')
     },
     // Closes the search and prevents the event
     // of propagating so it doesn't trigger the
@@ -103,7 +106,7 @@ export default {
     close: function (event) {
       event.stopPropagation()
       event.preventDefault()
-      this.active = false
+      this.$store.commit('closeHovers')
     },
     // Checks if the current input is a supported command.
     supported: function () {
@@ -127,7 +130,6 @@ export default {
         return
       }
 
-      this.active = true
       this.search.length = 0
       this.commands.length = 0
     },

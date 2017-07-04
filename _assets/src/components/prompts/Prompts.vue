@@ -22,7 +22,7 @@ import Download from './Download'
 import Move from './Move'
 import NewFile from './NewFile'
 import NewDir from './NewDir'
-import {mapState} from 'vuex'
+import { mapState } from 'vuex'
 
 export default {
   name: 'prompts',
@@ -37,20 +37,22 @@ export default {
     Help
   },
   computed: {
-    ...mapState(['prompt']),
-    showInfo: function () { return this.prompt === 'info' },
-    showHelp: function () { return this.prompt === 'help' },
-    showDelete: function () { return this.prompt === 'delete' },
-    showRename: function () { return this.prompt === 'rename' },
-    showMove: function () { return this.prompt === 'move' },
-    showNewFile: function () { return this.prompt === 'newFile' },
-    showNewDir: function () { return this.prompt === 'newDir' },
-    showDownload: function () { return this.prompt === 'download' },
-    showOverlay: function () { return this.prompt !== null }
+    ...mapState(['show']),
+    showInfo: function () { return this.show === 'info' },
+    showHelp: function () { return this.show === 'help' },
+    showDelete: function () { return this.show === 'delete' },
+    showRename: function () { return this.show === 'rename' },
+    showMove: function () { return this.show === 'move' },
+    showNewFile: function () { return this.show === 'newFile' },
+    showNewDir: function () { return this.show === 'newDir' },
+    showDownload: function () { return this.show === 'download' },
+    showOverlay: function () {
+      return (this.show !== null && this.show !== 'search')
+    }
   },
   methods: {
     resetPrompts () {
-      this.$store.commit('closePrompts')
+      this.$store.commit('closeHovers')
     }
   }
 }

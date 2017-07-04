@@ -53,6 +53,10 @@ header>div:last-child {
   justify-content: flex-end;
 }
 
+header .search-button {
+  display: none;
+}
+
 
 /* * * * * * * * * * * * * * * *
  *         MORE??       *

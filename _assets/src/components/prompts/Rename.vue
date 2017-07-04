@@ -25,7 +25,7 @@ export default {
   computed: mapState(['req', 'selected', 'selectedCount']),
   methods: {
     cancel: function (event) {
-      this.$store.commit('closePrompts')
+      this.$store.commit('closeHovers')
     },
     oldName: function () {
       if (this.req.kind !== 'listing') {
@@ -68,7 +68,7 @@ export default {
           console.log(error)
         })
 
-      this.$store.commit('closePrompts')
+      this.$store.commit('closeHovers')
       return
     }
   }

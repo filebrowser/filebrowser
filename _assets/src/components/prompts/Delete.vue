@@ -5,7 +5,7 @@
     <p v-show="req.kind === 'listing'">Are you sure you want to delete {{ selectedCount }} file(s)?</p>
     <div>
       <button @click="submit" autofocus>Delete</button>
-      <button @click="closePrompts" class="cancel">Cancel</button>
+      <button @click="closeHovers" class="cancel">Cancel</button>
     </div>
   </div>
 </template>
@@ -22,9 +22,9 @@ export default {
     ...mapState(['req', 'selected'])
   },
   methods: {
-    ...mapMutations(['closePrompts']),
+    ...mapMutations(['closeHovers']),
     submit: function (event) {
-      this.closePrompts()
+      this.closeHovers()
       // buttons.setLoading('delete')
 
       if (this.req.kind !== 'listing') {

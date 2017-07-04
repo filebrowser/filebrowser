@@ -1,6 +1,6 @@
 const mutations = {
-  closePrompts: (state) => { state.prompt = null },
-  showPrompt: (state, value) => { state.prompt = value },
+  closeHovers: state => { state.show = null },
+  showHover: (state, value) => { state.show = value },
   setReload: (state, value) => { state.reload = value },
   setUser: (state, value) => (state.user = value),
   setJWT: (state, value) => (state.jwt = value),

@@ -9,6 +9,9 @@
         <search></search>
       </div>
       <div>
+        <button @click="openSearch" aria-label="Search" title="Search" class="search-button action">
+          <i class="material-icons">search</i>
+        </button>
         <rename-button v-show="!loading && showRenameButton()"></rename-button>
         <move-button v-show="!loading && showMoveButton()"></move-button>
         <delete-button v-show="!loading && showDeleteButton()"></delete-button>
@@ -141,7 +144,7 @@ export default {
     window.addEventListener('keydown', (event) => {
       // Esc!
       if (event.keyCode === 27) {
-        this.$store.commit('closePrompts')
+        this.$store.commit('closeHovers')
 
         // Unselect all files and folders.
         if (this.req.kind === 'listing') {
@@ -159,20 +162,20 @@ export default {
       // Del!
       if (event.keyCode === 46) {
         if (this.showDeleteButton()) {
-          this.$store.commit('showPrompt', 'delete')
+          this.$store.commit('showHover', 'delete')
         }
       }
 
       // F1!
       if (event.keyCode === 112) {
         event.preventDefault()
-        this.$store.commit('showPrompt', 'help')
+        this.$store.commit('showHover', 'help')
       }
 
       // F2!
       if (event.keyCode === 113) {
         if (this.showRenameButton()) {
-          this.$store.commit('showPrompt', 'rename')
+          this.$store.commit('showHover', 'rename')
         }
       }
 
@@ -201,7 +204,7 @@ export default {
       // Reset selected items and multiple selection.
       this.$store.commit('resetSelected')
       this.$store.commit('multiple', false)
-      this.$store.commit('closePrompts')
+      this.$store.commit('closeHovers')
 
       let url = this.$route.path
       if (url === '') url = '/'
@@ -223,6 +226,9 @@ export default {
         this.error = error
         this.loading = false
       })
+    },
+    openSearch () {
+      this.$store.commit('showHover', 'search')
     },
     showUpload: function () {
       if (this.req.kind === 'editor') return false
