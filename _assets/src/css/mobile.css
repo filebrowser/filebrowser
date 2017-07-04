@@ -14,13 +14,16 @@
 @media (max-width: 736px) {
   nav {
     top: 0;
-    z-index: 9999;
+    z-index: 99999;
     background: #fff;
     height: 100%;
     width: 13em;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    transition: .2s ease-in-out left;
+    transition: .1s ease left;
     left: -14em;
+  }
+  nav.active {
+    left: 0;
   }
   header .search-button,
   header>div:first-child>.action {
