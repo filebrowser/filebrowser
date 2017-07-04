@@ -35,7 +35,8 @@ export default {
             this.$router.push({path: url.removeLastDir(this.$route.path) + '/'})
           })
           .catch(error => {
-            buttons.done('delete', false)
+            buttons.done('delete')
+            // TODO: show error in prompt
             console.log(error)
           })
 
@@ -61,7 +62,8 @@ export default {
         .catch(error => {
           console.log(error)
           this.$store.commit('setReload', true)
-          buttons.done('delete', false)
+          buttons.done('delete')
+          // TODO: show error in prompt
         })
     }
   }

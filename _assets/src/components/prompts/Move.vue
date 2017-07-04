@@ -20,6 +20,7 @@
 import { mapState } from 'vuex'
 import url from '@/utils/url'
 import api from '@/utils/api'
+import buttons from '@/utils/buttons'
 
 export default {
   name: 'move',
@@ -81,7 +82,8 @@ export default {
           this.$router.push({page: dest})
         })
         .catch(e => {
-          buttons.done('move', false)
+          buttons.done('move')
+          // TODO: show error in prompt
           console.log(e)
         })
     },

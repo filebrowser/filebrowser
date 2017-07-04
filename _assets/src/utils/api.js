@@ -57,7 +57,7 @@ function rm (url) {
   })
 }
 
-function put (url) {
+function put (url, content = '') {
   url = removePrefix(url)
 
   return new Promise((resolve, reject) => {
@@ -74,7 +74,7 @@ function put (url) {
     }
 
     request.onerror = (error) => reject(error)
-    request.send()
+    request.send(content)
   })
 }
 
