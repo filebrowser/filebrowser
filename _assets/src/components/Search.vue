@@ -1,23 +1,27 @@
 <template>
-  <div id="search" @click="active = true" v-bind:class="{ active , ongoing }">
+  <div id="search" @click="open" v-bind:class="{ active , ongoing }">
     <div id="input">
       <button v-if="active" class="action" @click="close" >
         <i class="material-icons">arrow_back</i>
       </button>
       <i v-else class="material-icons">search</i>
       <input type="text"
-        v-model.trim="value"
         @keyup="keyup"
         @keyup.enter="submit"
+        v-model.trim="value"
         aria-label="Write here to search"
-        :placeholder="placeholder()">
+        :placeholder="placeholder">
     </div>
+
     <div id="result">
       <div>
-        <span v-if="search.length === 0 && commands.length === 0">{{ text() }}</span>
+        <span v-if="search.length === 0 && commands.length === 0">{{ text }}</span>
         <ul v-else-if="search.length > 0">
-          <li v-for="s in search"><router-link :to="'./' + s">./{{ s }}</router-link></li>
+          <li v-for="s in search">
+            <router-link @click.native="close" :to="'./' + s">./{{ s }}</router-link>
+          </li>
         </ul>
+
         <ul v-else-if="commands.length > 0">
           <li v-for="c in commands">{{ c }}</li>
         </ul>
@@ -44,23 +48,9 @@ export default {
       commands: []
     }
   },
-  computed: mapState(['user']),
-  mounted: function () {
-    this.scrollable = document.querySelector('#search #result')
-
-    window.addEventListener('keydown', (event) => {
-      // Esc!
-      if (event.keyCode === 27) {
-        this.active = false
-      }
-    })
-  },
-  methods: {
-    close: function (event) {
-      event.stopPropagation()
-      event.preventDefault()
-      this.active = false
-    },
+  computed: {
+    ...mapState(['user']),
+    // Placeholder value.
     placeholder: function () {
       if (this.user.allowCommands && this.user.commands.length > 0) {
         return 'Search or execute a command...'
@@ -68,6 +58,8 @@ export default {
 
       return 'Search...'
     },
+    // The text that is shown on the results' box while
+    // there is no search result or command output to show.
     text: function () {
       if (this.ongoing) {
         return ''
@@ -86,17 +78,34 @@ export default {
       } else {
         return 'Press enter to execute.'
       }
-    },
-    keyup: function (event) {
+    }
+  },
+  mounted: function () {
+    // Gets the result div which will be scrollable.
+    this.scrollable = document.querySelector('#search #result')
+
+    // Adds the keydown event on window for the ESC key, so
+    // when it's pressed, it closes the search window.
+    window.addEventListener('keydown', (event) => {
       if (event.keyCode === 27) {
         this.active = false
-        return
       }
-
+    })
+  },
+  methods: {
+    // Sets the search to active.
+    open: function (event) {
       this.active = true
-      this.search.length = 0
-      this.commands.length = 0
     },
+    // Closes the search and prevents the event
+    // of propagating so it doesn't trigger the
+    // click event on #search.
+    close: function (event) {
+      event.stopPropagation()
+      event.preventDefault()
+      this.active = false
+    },
+    // Checks if the current input is a supported command.
     supported: function () {
       let pieces = this.value.split(' ')
 
@@ -108,10 +117,21 @@ export default {
 
       return false
     },
-    click: function (event) {
-      event.currentTarget.classList.add('active')
-      this.$el.querySelector('input').focus()
+    // When the user presses a key, if it is ESC
+    // then it will close the search box. Otherwise,
+    // it will set the search box to active and clean
+    // the search results, as well as commands'.
+    keyup: function (event) {
+      if (event.keyCode === 27) {
+        this.close(event)
+        return
+      }
+
+      this.active = true
+      this.search.length = 0
+      this.commands.length = 0
     },
+    // Submits the input to the server and sets ongoing to true.
     submit: function (event) {
       this.ongoing = true
 
@@ -120,6 +140,7 @@ export default {
         path = url.removeLastDir(path) + '/'
       }
 
+      // In case of being a command.
       if (this.supported() && this.user.allowCommands) {
         api.command(path, this.value,
           (event) => {
@@ -136,6 +157,7 @@ export default {
         return
       }
 
+      // In case of being a search.
       api.search(path, this.value,
         (event) => {
           let url = event.data
