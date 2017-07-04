@@ -11,7 +11,7 @@
 
     <div>
       <button class="ok" @click="move">Move</button>
-      <button class="cancel" @click="$store.commit('closePrompts')">Cancel</button>
+      <button class="cancel" @click="$store.commit('closeHovers')">Cancel</button>
     </div>
   </div>
 </template>

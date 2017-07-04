@@ -20,7 +20,7 @@
     </ul>
 
     <div>
-      <button type="submit" @click="$store.commit('closePrompts')" class="ok">OK</button>
+      <button type="submit" @click="$store.commit('closeHovers')" class="ok">OK</button>
     </div>
   </div>
 </template>

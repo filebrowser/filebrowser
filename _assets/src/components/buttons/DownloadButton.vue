@@ -28,7 +28,7 @@ export default {
         return
       }
 
-      this.$store.commit('showPrompt', 'download')
+      this.$store.commit('showHover', 'download')
     }
   }
 }

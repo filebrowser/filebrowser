@@ -6,12 +6,12 @@
     </router-link>
 
     <div v-if="user.allowNew">
-      <button @click="$store.commit('showPrompt', 'newDir')" aria-label="New directory" title="New directory" class="action">
+      <button @click="$store.commit('showHover', 'newDir')" aria-label="New directory" title="New directory" class="action">
         <i class="material-icons">create_new_folder</i>
         <span>New folder</span>
       </button>
 
-      <button @click="$store.commit('showPrompt', 'newFile')" aria-label="New file" title="New file" class="action">
+      <button @click="$store.commit('showHover', 'newFile')" aria-label="New file" title="New file" class="action">
         <i class="material-icons">note_add</i>
         <span>New file</span>
       </button>
@@ -60,7 +60,7 @@ export default {
   },
   methods: {
     help: function () {
-      this.$store.commit('showPrompt', 'help')
+      this.$store.commit('showHover', 'help')
     },
     logout: auth.logout
   }
