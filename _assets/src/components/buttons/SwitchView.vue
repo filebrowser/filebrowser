@@ -1,5 +1,5 @@
 <template>
-  <button @click="change" aria-label="Switch View" title="Switch View" class="action">
+  <button @click="change" aria-label="Switch View" title="Switch View" class="action" id="switch-view-button">
     <i class="material-icons">{{ icon() }}</i>
     <span>Switch view</span>
   </button>
