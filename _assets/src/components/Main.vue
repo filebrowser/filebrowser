@@ -107,7 +107,6 @@ export default {
       'req',
       'user',
       'reload',
-      'baseURL',
       'multiple'
     ]),
     isListing () {
