@@ -34,14 +34,12 @@ export default {
       uri += this.name + '/'
       uri = uri.replace('//', '/')
 
-      // buttons.setLoading('newDir')
       api.put(uri)
         .then(() => {
-          // buttons.setDone('newDir')
           this.$router.push({ path: uri })
         })
         .catch(error => {
-          // buttons.setDone('newDir', false)
+          // TODO: Show error message!
           console.log(error)
         })
 

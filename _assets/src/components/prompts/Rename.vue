@@ -52,8 +52,6 @@ export default {
       this.name = encodeURIComponent(this.name)
       newLink = url.removeLastDir(oldLink) + '/' + this.name
 
-      // buttons.setLoading('rename')
-
       api.move(oldLink, newLink)
         .then(() => {
           if (this.req.kind !== 'listing') {
@@ -61,10 +59,9 @@ export default {
             return
           }
           // TODO: keep selected after reload?
-          // buttons.setDone('rename')
           this.$store.commit('setReload', true)
         }).catch(error => {
-          // buttons.setDone('rename', false)
+          // TODO: show error message
           console.log(error)
         })
 

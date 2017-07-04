@@ -14,6 +14,7 @@
 import {mapGetters, mapMutations, mapState} from 'vuex'
 import api from '@/utils/api'
 import url from '@/utils/url'
+import buttons from '@/utils/buttons'
 
 export default {
   name: 'delete',
@@ -25,16 +26,16 @@ export default {
     ...mapMutations(['closeHovers']),
     submit: function (event) {
       this.closeHovers()
-      // buttons.setLoading('delete')
+      buttons.loading('delete')
 
       if (this.req.kind !== 'listing') {
         api.delete(this.$route.path)
           .then(() => {
-            // buttons.setDone('delete')
+            buttons.done('delete')
             this.$router.push({path: url.removeLastDir(this.$route.path) + '/'})
           })
           .catch(error => {
-            // buttons.setDone('delete', false)
+            buttons.done('delete', false)
             console.log(error)
           })
 
@@ -55,12 +56,12 @@ export default {
       Promise.all(promises)
         .then(() => {
           this.$store.commit('setReload', true)
-          // buttons.setDone('delete')
+          buttons.done('delete')
         })
         .catch(error => {
           console.log(error)
           this.$store.commit('setReload', true)
-          // buttons.setDone('delete', false)
+          buttons.done('delete', false)
         })
     }
   }
