@@ -149,7 +149,7 @@ func errorToHTTP(err error, gone bool) int {
 
 		return http.StatusGone
 	case os.IsExist(err):
-		return http.StatusGone
+		return http.StatusConflict
 	default:
 		return http.StatusInternalServerError
 	}
