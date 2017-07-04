@@ -10,3 +10,23 @@
     width: calc(100% - 13em)
   }
 }
+
+@media (max-width: 736px) {
+  nav {
+    top: 0;
+    z-index: 9999;
+    background: #fff;
+    height: 100%;
+    width: 13em;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+
+  #listing.list .item.header, main {
+    width: calc(100% - 2em);
+  }
+
+  main {
+    margin: 0 1em;
+    width: calc(100% - 2em);
+  }
+}

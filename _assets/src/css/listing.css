@@ -1,8 +1,3 @@
-#listing {
-    max-width: calc(100% - 1.2em);
-    width: 100%;
-}
-
 #listing h2 {
     margin: 0 0 0 0.5em;
     font-size: .9em;
