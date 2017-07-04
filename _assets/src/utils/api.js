@@ -1,5 +1,7 @@
 import store from '../store/store'
 
+const ssl = (window.location.protocol === 'https:')
+
 function removePrefix (url) {
   if (url.startsWith('/files')) {
     return url.slice(6)
@@ -120,7 +122,7 @@ function checksum (url, algo) {
 }
 
 function command (url, command, onmessage, onclose) {
-  let protocol = (store.state.ssl ? 'wss:' : 'ws:')
+  let protocol = (ssl ? 'wss:' : 'ws:')
   url = removePrefix(url)
   url = `${protocol}//${window.location.hostname}${store.state.baseURL}/api/command${url}?token=${store.state.jwt}`
 
@@ -131,7 +133,7 @@ function command (url, command, onmessage, onclose) {
 }
 
 function search (url, search, onmessage, onclose) {
-  let protocol = (store.state.ssl ? 'wss:' : 'ws:')
+  let protocol = (ssl ? 'wss:' : 'ws:')
   url = removePrefix(url)
   url = `${protocol}//${window.location.hostname}${store.state.baseURL}/api/search${url}?token=${store.state.jwt}`
 
