@@ -12,6 +12,10 @@
         <button @click="openSearch" aria-label="Search" title="Search" class="search-button action">
           <i class="material-icons">search</i>
         </button>
+
+        <button v-show="isEditor" aria-label="Save" class="action" id="save">
+          <i class="material-icons" title="Save">save</i>
+        </button>
         <rename-button v-show="!loading && showRenameButton"></rename-button>
         <move-button v-show="!loading && showMoveButton"></move-button>
         <delete-button v-show="!loading && showDeleteButton"></delete-button>
