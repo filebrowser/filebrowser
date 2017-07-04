@@ -43,6 +43,10 @@ const router = new Router({
           name: 'Files'
         },
         {
+          path: '/dashboard',
+          name: 'Dashboard'
+        },
+        {
           path: '/*',
           redirect: {
             name: 'Files'

@@ -185,6 +185,7 @@
 .credits a,
 .credits a:hover {
     color: inherit;
+    cursor: pointer;
 }
 
 
@@ -198,3 +199,5 @@
         transform: rotate(-360deg);
     }
 }
+
+@import './mobile.css';

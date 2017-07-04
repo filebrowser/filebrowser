@@ -36,7 +36,7 @@
       </button>
     </div>
 
-    <p class="credits">Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</p>
+    <p class="credits">Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.<br><a @click="help">Help</a></p>
   </nav>
 </template>
 
@@ -59,6 +59,9 @@ export default {
     }
   },
   methods: {
+    help: function () {
+      this.$store.commit('showPrompt', 'help')
+    },
     logout: auth.logout
   }
 }
