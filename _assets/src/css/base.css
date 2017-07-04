@@ -114,24 +114,3 @@ main {
     margin: 0 1em 0 auto;
     width: calc(100% - 19em);
 }
-
-@media (max-width: 1024px) {
-    nav {
-        height: 100%;
-        background: #fff;
-        z-index: 9999;
-        border-top: 1px solid rgba(0, 0, 0, 0.075);
-        border-right: 1px solid rgba(0, 0, 0, 0.075);
-        box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
-        transition: .2s ease left;
-        left: -16em;
-    }
-    nav.active {
-        left: 0;
-    }
-    main {
-        width: 100%;
-        margin: 0;
-        padding: 0 1em;
-    }
-}

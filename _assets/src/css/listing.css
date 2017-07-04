@@ -239,11 +239,3 @@
 #listing #multiple-selection i {
     color: #fff;
 }
-
-@media (max-width: 1024px) {
-    #listing.list .item.header {
-        width: calc(100% - 2em);
-        right: 1em;
-        left: 1em;
-    }
-}
