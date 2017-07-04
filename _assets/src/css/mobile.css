@@ -1,0 +1,12 @@
+@media (max-width: 1024px) {
+  nav {
+    width: 10em
+  }
+}
+
+@media (max-width: 1024px) {
+  #listing.list .item.header,
+  main {
+    width: calc(100% - 13em)
+  }
+}
