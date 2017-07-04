@@ -2,6 +2,9 @@
   <div :class="{ multiple, loading }">
     <header>
       <div>
+        <button aria-label="Toggle sidebar" title="Toggle sidebar" class="action">
+          <i class="material-icons">menu</i>
+        </button>
         <img src="../assets/logo.svg" alt="File Manager">
         <search></search>
       </div>

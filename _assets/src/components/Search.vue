@@ -1,7 +1,7 @@
 <template>
   <div id="search" @click="open" v-bind:class="{ active , ongoing }">
     <div id="input">
-      <button v-if="active" class="action" @click="close" >
+      <button v-if="active" class="action" @click="close">
         <i class="material-icons">arrow_back</i>
       </button>
       <i v-else class="material-icons">search</i>
