@@ -1,15 +1,18 @@
 <template>
-  <div id="search" v-on:mouseleave="hover = false" v-on:click="click" v-bind:class="{ active: focus || hover, ongoing }">
-    <i class="material-icons" title="Search">search</i>
-    <input type="text"
-      v-model.trim="value"
-      v-on:focus="focus = true"
-      v-on:blur="focus = false"
-      v-on:keyup="keyup"
-      v-on:keyup.enter="submit"
-      aria-label="Write here to search"
-      :placeholder="placeholder()">
-    <div v-on:mouseover="hover = true">
+  <div id="search" @click="active = true" v-bind:class="{ active , ongoing }">
+    <div id="input">
+      <button v-if="active" class="action" @click="close" >
+        <i class="material-icons">arrow_back</i>
+      </button>
+      <i v-else class="material-icons">search</i>
+      <input type="text"
+        v-model.trim="value"
+        @keyup="keyup"
+        @keyup.enter="submit"
+        aria-label="Write here to search"
+        :placeholder="placeholder()">
+    </div>
+    <div id="result">
       <div>
         <span v-if="search.length === 0 && commands.length === 0">{{ text() }}</span>
         <ul v-else-if="search.length > 0">
@@ -34,8 +37,7 @@ export default {
   data: function () {
     return {
       value: '',
-      hover: false,
-      focus: false,
+      active: false,
       ongoing: false,
       scrollable: null,
       search: [],
@@ -44,9 +46,21 @@ export default {
   },
   computed: mapState(['user']),
   mounted: function () {
-    this.scrollable = document.querySelector('#search > div')
+    this.scrollable = document.querySelector('#search #result')
+
+    window.addEventListener('keydown', (event) => {
+      // Esc!
+      if (event.keyCode === 27) {
+        this.active = false
+      }
+    })
   },
   methods: {
+    close: function (event) {
+      event.stopPropagation()
+      event.preventDefault()
+      this.active = false
+    },
     placeholder: function () {
       if (this.user.allowCommands && this.user.commands.length > 0) {
         return 'Search or execute a command...'
@@ -55,6 +69,10 @@ export default {
       return 'Search...'
     },
     text: function () {
+      if (this.ongoing) {
+        return ''
+      }
+
       if (this.value.length === 0) {
         if (this.user.allowCommands && this.user.commands.length > 0) {
           return `Search or use one of your supported commands: ${this.user.commands.join(', ')}.`
@@ -69,7 +87,13 @@ export default {
         return 'Press enter to execute.'
       }
     },
-    keyup: function () {
+    keyup: function (event) {
+      if (event.keyCode === 27) {
+        this.active = false
+        return
+      }
+
+      this.active = true
       this.search.length = 0
       this.commands.length = 0
     },
