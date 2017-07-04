@@ -74,6 +74,7 @@
 import {mapState} from 'vuex'
 import Item from './ListingItem'
 import api from '@/utils/api'
+import buttons from '@/utils/buttons'
 
 export default {
   name: 'listing',
@@ -159,7 +160,7 @@ export default {
     handleFiles: function (files, base) {
       this.resetOpacity()
 
-      // buttons.setLoading('upload')
+      buttons.loading('upload')
       let promises = []
 
       for (let file of files) {
@@ -168,12 +169,12 @@ export default {
 
       Promise.all(promises)
         .then(() => {
+          buttons.done('upload')
           this.$store.commit('setReload', true)
-          // buttons.setDone('upload')
         })
         .catch(e => {
+          buttons.done('upload', false)
           console.log(e)
-          // buttons.setDone('upload', false)
         })
 
       return false

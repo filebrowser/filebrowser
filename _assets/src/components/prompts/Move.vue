@@ -58,7 +58,7 @@ export default {
       let el = event.currentTarget
       let promises = []
       let dest = this.current
-      // buttons.setLoading('move')
+      buttons.loading('move')
 
       let selected = el.querySelector('li[aria-selected=true]')
       if (selected !== null) {
@@ -77,11 +77,11 @@ export default {
 
       Promise.all(promises)
         .then(() => {
-          // buttons.setDone('move')
+          buttons.done('move')
           this.$router.push({page: dest})
         })
         .catch(e => {
-          // buttons.setDone('move', false)
+          buttons.done('move', false)
           console.log(e)
         })
     },
