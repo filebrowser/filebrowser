@@ -171,6 +171,7 @@ export default {
   },
   created () {
     this.fetchData()
+    this.$store.commit('showHover', 'error')
   },
   watch: {
     '$route': 'fetchData',

@@ -8,6 +8,7 @@
     <delete v-else-if="showDelete"></delete>
     <info v-else-if="showInfo"></info>
     <move v-else-if="showMove"></move>
+    <error v-else-if="showError"></error>
 
     <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
   </div>
@@ -20,6 +21,7 @@ import Delete from './Delete'
 import Rename from './Rename'
 import Download from './Download'
 import Move from './Move'
+import Error from './Error'
 import NewFile from './NewFile'
 import NewDir from './NewDir'
 import { mapState } from 'vuex'
@@ -30,6 +32,7 @@ export default {
     Info,
     Delete,
     Rename,
+    Error,
     Download,
     Move,
     NewFile,
@@ -38,6 +41,7 @@ export default {
   },
   computed: {
     ...mapState(['show']),
+    showError: function () { return this.show === 'error' },
     showInfo: function () { return this.show === 'info' },
     showHelp: function () { return this.show === 'help' },
     showDelete: function () { return this.show === 'delete' },

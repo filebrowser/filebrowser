@@ -64,6 +64,22 @@
   background-color: #e9eaeb;
 }
 
+.prompt.error i {
+  color: #F44336;
+  display: block;
+  margin: 0 auto .15em;
+  text-align: center;
+  font-size: 5em;
+}
+
+.prompt.error h3 {
+  text-align: center;
+}
+
+.prompt.error button:not(.cancel) {
+  background-color: #F44336
+}
+
 
 /* * * * * * * * * * * * * * * *
  *        PROMPT - MOVE        *
