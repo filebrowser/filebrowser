@@ -2,8 +2,6 @@ var path = require('path')
 var utils = require('./utils')
 var config = require('./config')
 var vueLoaderConfig = require('./vue-loader.conf')
-var CopyWebpackPlugin = require('copy-webpack-plugin')
-var UglifyJS = require('uglify-js')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -65,25 +63,5 @@ module.exports = {
         }
       }
     ]
-  },
-  plugins: [
-    new CopyWebpackPlugin([
-      {
-        from: path.resolve(__dirname, '../static'),
-        to: config.dev.assetsSubDirectory,
-        ignore: ['.*']
-      },
-      {
-        from: path.resolve(__dirname, '../node_modules/codemirror/mode/*/*'),
-        to: path.join(config.build.assetsSubDirectory, 'js/codemirror/mode/[name]/[name].js'),
-        transform: function (source, path) {
-          let result = UglifyJS.minify(source.toString('utf8'))
-          if (result.error !== undefined) {
-            return source
-          }
-          return result.code
-        }
-      }
-    ])
-  ]
+  }
 }

@@ -10,6 +10,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 var SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
+var UglifyJS = require('uglify-js')
 
 var env = config.build.env
 
@@ -27,6 +28,24 @@ var webpackConfig = merge(baseWebpackConfig, {
     chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
   },
   plugins: [
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, '../static'),
+        to: config.dev.assetsSubDirectory,
+        ignore: ['.*']
+      },
+      {
+        from: path.resolve(__dirname, '../node_modules/codemirror/mode/*/*'),
+        to: path.join(config.build.assetsSubDirectory, 'js/codemirror/mode/[name]/[name].js'),
+        transform: function (source, path) {
+          let result = UglifyJS.minify(source.toString('utf8'))
+          if (result.error !== undefined) {
+            return source
+          }
+          return result.code
+        }
+      }
+    ]),
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
       'process.env': env

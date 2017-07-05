@@ -1,11 +1,11 @@
 // Most of the code from this file comes from:
 // https://github.com/codemirror/CodeMirror/blob/master/addon/mode/loadmode.js
 import * as CodeMirror from 'codemirror'
+import store from '@/store/store'
 
 // Make CodeMirror available globally so the modes' can register themselves.
 window.CodeMirror = CodeMirror
-
-if (!CodeMirror.modeURL) CodeMirror.modeURL = '../mode/%N/%N.js'
+CodeMirror.modeURL = store.state.baseURL + '/static/js/codemirror/mode/%N/%N.js'
 
 var loading = {}
 

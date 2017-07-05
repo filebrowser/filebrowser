@@ -27,18 +27,22 @@ export default {
     }
   },
   mounted: function () {
-    CodeMirror.modeURL = this.$store.state.baseURL + '/static/js/codemirror/mode/%N/%N.js'
-
     this.content = CodeMirror.fromTextArea(document.getElementById('content'), {
       lineNumbers: (this.req.language !== 'markdown'),
-      viewportMargin: Infinity
+      viewportMargin: Infinity,
+      autofocus: true
     })
+
+    CodeMirror.autoLoadMode(this.content, this.req.language)
+
+    // Prevent of going on if there is no metadata.
+    if (!this.hasMetadata) {
+      return
+    }
 
     this.metadata = CodeMirror.fromTextArea(document.getElementById('metadata'), {
       viewportMargin: Infinity
     })
-
-    CodeMirror.autoLoadMode(this.content, this.req.language)
   },
   methods: {
   }
