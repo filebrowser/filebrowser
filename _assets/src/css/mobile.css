@@ -17,10 +17,10 @@
     z-index: 99999;
     background: #fff;
     height: 100%;
-    width: 13em;
+    width: 16em;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     transition: .1s ease left;
-    left: -14em;
+    left: -17em;
   }
   nav.active {
     left: 0;

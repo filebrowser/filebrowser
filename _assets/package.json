@@ -10,6 +10,7 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
+    "codemirror": "^5.27.4",
     "filesize": "^3.5.10",
     "hammerjs": "^2.0.8",
     "moment": "^2.18.1",
