@@ -1,18 +1,16 @@
 <template>
     <form id="editor">
         <h2 v-if="hasMetadata">Metadata</h2>
+        <textarea v-if="hasMetadata" id="metadata">{{ req.metadata }}</textarea>
 
         <h2 v-if="hasMetadata">Body</h2>
-
-        <div class="content">
-            <div id="ace"></div>
-            <textarea id="source" name="content">{{ req.content }}</textarea>
-        </div>
+        <textarea id="content">{{ req.content }}</textarea>
     </form>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import CodeMirror from '@/codemirror'
 
 export default {
   name: 'editor',
@@ -24,14 +22,29 @@ export default {
   },
   data: function () {
     return {
-      codemirror: null,
-      simplemde: null
+      metadata: null,
+      content: null
     }
   },
   mounted: function () {
+    CodeMirror.modeURL = this.$store.state.baseURL + '/static/js/codemirror/mode/%N/%N.js'
 
+    this.content = CodeMirror.fromTextArea(document.getElementById('content'), {
+      lineNumbers: (this.req.language !== 'markdown'),
+      viewportMargin: Infinity
+    })
+
+    this.metadata = CodeMirror.fromTextArea(document.getElementById('metadata'), {
+      viewportMargin: Infinity
+    })
+
+    CodeMirror.autoLoadMode(this.content, this.req.language)
   },
   methods: {
   }
 }
 </script>
+
+<style>
+
+</style>

@@ -171,7 +171,8 @@ export default {
   },
   created () {
     this.fetchData()
-    this.$store.commit('showHover', 'error')
+    // TODO: finish this box
+    // this.$store.commit('showHover', 'error')
   },
   watch: {
     '$route': 'fetchData',
@@ -251,8 +252,6 @@ export default {
       let url = this.$route.path
       if (url === '') url = '/'
       if (url[0] !== '/') url = '/' + url
-
-      console.log('Going to ' + url)
 
       api.fetch(url)
       .then((trueURL) => {
