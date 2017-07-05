@@ -1,9 +1,10 @@
+@import "~normalize.css/normalize.css";
 @import "./fonts.css";
-@import "./normalize.css";
 @import "./base.css";
 @import "./header.css";
 @import "./prompts.css";
 @import "./listing.css";
+@import "./editor.css";
 
 /* * * * * * * * * * * * * * * *
  *            ACTION           *
