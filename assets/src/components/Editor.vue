@@ -1,10 +1,10 @@
 <template>
-    <form id="editor">
+    <form id="editor" :class="req.language">
         <h2 v-if="hasMetadata">Metadata</h2>
-        <textarea v-if="hasMetadata" id="metadata">{{ req.metadata }}</textarea>
+        <textarea v-model="req.metadata" v-if="hasMetadata" id="metadata"></textarea>
 
         <h2 v-if="hasMetadata">Body</h2>
-        <textarea id="content">{{ req.content }}</textarea>
+        <textarea v-model="req.content" id="content"></textarea>
     </form>
 </template>
 
@@ -30,7 +30,9 @@ export default {
     this.content = CodeMirror.fromTextArea(document.getElementById('content'), {
       lineNumbers: (this.req.language !== 'markdown'),
       viewportMargin: Infinity,
-      autofocus: true
+      autofocus: true,
+      theme: (this.req.language === 'markdown') ? 'markdown' : 'ttcn',
+      lineWrapping: (this.req.language === 'markdown')
     })
 
     CodeMirror.autoLoadMode(this.content, this.req.language)
@@ -41,8 +43,22 @@ export default {
     }
 
     this.metadata = CodeMirror.fromTextArea(document.getElementById('metadata'), {
-      viewportMargin: Infinity
+      viewportMargin: Infinity,
+      lineWrapping: true,
+      theme: 'markdown'
     })
+
+    if (this.req.metadata.startsWith('{')) {
+      CodeMirror.autoLoadMode(this.metadata, 'json')
+    }
+
+    if (this.req.metadata.startsWith('---')) {
+      CodeMirror.autoLoadMode(this.metadata, 'yaml')
+    }
+
+    if (this.req.metadata.startsWith('+++')) {
+      CodeMirror.autoLoadMode(this.metadata, 'toml')
+    }
   },
   methods: {
   }

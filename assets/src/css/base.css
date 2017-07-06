@@ -112,6 +112,6 @@ nav .action>* {
 
 main {
   min-height: 1em;
-  margin: 0 1em 0 auto;
+  margin: 0 1em 1em auto;
   width: calc(100% - 19em);
 }
