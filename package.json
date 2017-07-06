@@ -1,12 +1,11 @@
 {
   "name": "filemanager",
   "version": "1.0.0",
-  "description": "A Vue.js project",
   "author": "Henrique Dias <hacdias@gmail.com>",
   "private": true,
   "scripts": {
-    "dev": "node build/dev.js",
-    "build": "node build/build.js",
+    "dev": "node ./assets/build/dev.js",
+    "build": "node ./assets/build/build.js",
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
