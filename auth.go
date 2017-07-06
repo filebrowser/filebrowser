@@ -12,11 +12,6 @@ import (
 	"github.com/dgrijalva/jwt-go/request"
 )
 
-type claims struct {
-	*User
-	jwt.StandardClaims
-}
-
 // authHandler proccesses the authentication for the user.
 func authHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Receive the credentials from the request and unmarshal them.
@@ -41,23 +36,8 @@ func authHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int
 		return http.StatusForbidden, nil
 	}
 
-	claims := claims{
-		c.fm.Users["admin"],
-		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
-			Issuer:    "File Manager",
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	string, err := token.SignedString(c.fm.key)
-
-	if err != nil {
-		return http.StatusInternalServerError, err
-	}
-
-	w.Write([]byte(string))
-	return 0, nil
+	c.us = u
+	return printToken(c, w)
 }
 
 // renewAuthHandler is used when the front-end already has a JWT token
@@ -68,6 +48,25 @@ func renewAuthHandler(c *requestContext, w http.ResponseWriter, r *http.Request)
 		return http.StatusForbidden, nil
 	}
 
+	c.us = u
+	return printToken(c, w)
+}
+
+// claims is the JWT claims.
+type claims struct {
+	User
+	jwt.StandardClaims
+}
+
+// printToken prints the final JWT token to the user.
+func printToken(c *requestContext, w http.ResponseWriter) (int, error) {
+	// Creates a copy of the user and removes it password
+	// hash so it never arrives to the user.
+	u := User{}
+	u = *c.us
+	u.Password = ""
+
+	// Builds the claims.
 	claims := claims{
 		u,
 		jwt.StandardClaims{
@@ -76,12 +75,15 @@ func renewAuthHandler(c *requestContext, w http.ResponseWriter, r *http.Request)
 		},
 	}
 
+	// Creates the token and signs it.
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	string, err := token.SignedString(c.fm.key)
+
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
+	// Writes the token.
 	w.Write([]byte(string))
 	return 0, nil
 }
