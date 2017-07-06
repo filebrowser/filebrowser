@@ -215,7 +215,7 @@ func postPutHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (
 	// if the file already exists. If so, we just return a 409 Conflict.
 	if r.Method == http.MethodPost {
 		if _, err := c.us.FileSystem.Stat(context.TODO(), r.URL.Path); err == nil {
-			return http.StatusConflict, nil
+			return http.StatusConflict, errors.New("There is already a file on that path")
 		}
 	}
 
@@ -504,7 +504,7 @@ func usersPutHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 
 	// If the request body is empty, send a Bad Request status.
 	if r.Body == nil {
-		return http.StatusBadRequest, nil
+		return http.StatusBadRequest, errors.New("The request has an empty body")
 	}
 
 	var u User
@@ -512,7 +512,7 @@ func usersPutHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 	// Parses the user and checks for error.
 	err = json.NewDecoder(r.Body).Decode(&u)
 	if err != nil {
-		return http.StatusBadRequest, nil
+		return http.StatusBadRequest, errors.New("Invalid JSON")
 	}
 
 	if sid == "self" {
