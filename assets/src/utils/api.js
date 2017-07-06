@@ -105,7 +105,7 @@ function move (oldLink, newLink) {
 
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
-    request.open('POST', `${store.state.baseURL}/api/resource${oldLink}`, true)
+    request.open('PATCH', `${store.state.baseURL}/api/resource${oldLink}`, true)
     request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
     request.setRequestHeader('Destination', newLink)
 
@@ -190,6 +190,27 @@ function download (format, ...files) {
   window.open(url)
 }
 
+function getUser (id) {
+  return new Promise((resolve, reject) => {
+    let request = new window.XMLHttpRequest()
+    request.open('GET', `${store.state.baseURL}/api/users/${id}`, true)
+    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+
+    request.onload = () => {
+      switch (request.status) {
+        case 200:
+          resolve(JSON.parse(request.responseText))
+          break
+        default:
+          reject(request.responseText)
+          break
+      }
+    }
+    request.onerror = (error) => reject(error)
+    request.send()
+  })
+}
+
 export default {
   delete: rm,
   fetch,
@@ -199,5 +220,6 @@ export default {
   post,
   command,
   search,
-  download
+  download,
+  getUser
 }

@@ -1,273 +1,34 @@
 <template>
-  <div :class="{ multiple, loading }">
-    <header>
-      <div>
-        <button @click="openSidebar" aria-label="Toggle sidebar" title="Toggle sidebar" class="action">
-          <i class="material-icons">menu</i>
-        </button>
-        <img src="../assets/logo.svg" alt="File Manager">
-        <search></search>
-      </div>
-      <div>
-        <button @click="openSearch" aria-label="Search" title="Search" class="search-button action">
-          <i class="material-icons">search</i>
-        </button>
-
-        <button v-show="isEditor" aria-label="Save" class="action" id="save-button">
-          <i class="material-icons" title="Save">save</i>
-        </button>
-        <rename-button v-show="!loading && showRenameButton"></rename-button>
-        <move-button v-show="!loading && showMoveButton"></move-button>
-        <delete-button v-show="!loading && showDeleteButton"></delete-button>
-        <switch-button v-show="!loading && req.kind !== 'editor'"></switch-button>
-        <download-button></download-button>
-        <upload-button v-show="!loading && showUpload"></upload-button>
-        <info-button></info-button>
-
-        <button v-show="isListing" @click="$store.commit('multiple', true)" aria-label="Select multiple" class="action">
-          <i class="material-icons">check_circle</i>
-          <span>Select</span>
-        </button>
-      </div>
-    </header>
-
+  <div>
+    <site-header></site-header>
     <sidebar></sidebar>
-
     <main>
-      <div v-if="loading">
-        <h2 class="message">
-          <span>Loading...</span>
-        </h2>
-      </div>
-      <div v-else-if="error">
-        <h2 class="message" v-if="error === 404">
-          <i class="material-icons">gps_off</i>
-          <span>This location can't be reached.</span>
-        </h2>
-        <h2 class="message" v-else-if="error === 403">
-          <i class="material-icons">error</i>
-          <span>You're not welcome here.</span>
-        </h2>
-        <h2 class="message" v-else>
-          <i class="material-icons">error_outline</i>
-          <span>Something really went wrong.</span>
-        </h2>
-      </div>
-      <editor v-else-if="isEditor"></editor>
-      <listing v-else-if="isListing"></listing>
-      <preview v-else-if="isPreview"></preview>
+      <router-view></router-view>
     </main>
-
     <prompts></prompts>
   </div>
 </template>
 
 <script>
 import Search from './Search'
-import Preview from './Preview'
-import Listing from './Listing'
-import Editor from './Editor'
 import Sidebar from './Sidebar'
 import Prompts from './prompts/Prompts'
-import InfoButton from './buttons/Info'
-import DeleteButton from './buttons/Delete'
-import RenameButton from './buttons/Rename'
-import UploadButton from './buttons/Upload'
-import DownloadButton from './buttons/Download'
-import SwitchButton from './buttons/SwitchView'
-import MoveButton from './buttons/Move'
-import css from '@/utils/css'
-import api from '@/utils/api'
-import {mapGetters, mapState} from 'vuex'
-
-function updateColumnSizes () {
-  let columns = Math.floor(document.querySelector('main').offsetWidth / 300)
-  let items = css(['#listing.mosaic .item', '.mosaic#listing .item'])
-
-  if (columns === 0) columns = 1
-
-  items.style.width = `calc(${100 / columns}% - 1em)`
-}
+import SiteHeader from './Header'
 
 export default {
   name: 'main',
   components: {
     Search,
-    Preview,
-    Listing,
-    Editor,
     Sidebar,
-    InfoButton,
-    DeleteButton,
-    RenameButton,
-    DownloadButton,
-    UploadButton,
-    SwitchButton,
-    MoveButton,
+    SiteHeader,
     Prompts
   },
-  computed: {
-    ...mapGetters([
-      'selectedCount'
-    ]),
-    ...mapState([
-      'req',
-      'user',
-      'reload',
-      'multiple'
-    ]),
-    isListing () {
-      return this.req.kind === 'listing' && !this.loading
-    },
-    isPreview () {
-      return this.req.kind === 'preview' && !this.loading
-    },
-    isEditor () {
-      return this.req.kind === 'editor' && !this.loading
-    },
-    showUpload () {
-      if (this.req.kind === 'editor') return false
-      return this.user.allowNew
-    },
-    showDeleteButton () {
-      if (this.req.kind === 'listing') {
-        if (this.selectedCount === 0) {
-          return false
-        }
-
-        return this.user.allowEdit
-      }
-
-      return this.user.allowEdit
-    },
-    showRenameButton () {
-      if (this.req.kind === 'listing') {
-        if (this.selectedCount === 1) {
-          return this.user.allowEdit
-        }
-
-        return false
-      }
-
-      return this.user.allowEdit
-    },
-    showMoveButton () {
-      if (this.req.kind !== 'listing') {
-        return false
-      }
-
-      if (this.selectedCount > 0) {
-        return this.user.allowEdit
-      }
-
-      return false
-    }
-  },
-  data: function () {
-    return {
-      loading: true,
-      error: null
-    }
-  },
-  created () {
-    this.fetchData()
-  },
   watch: {
-    '$route': 'fetchData',
-    'reload': function () {
-      this.$store.commit('setReload', false)
-      this.fetchData()
-    }
-  },
-  mounted () {
-    updateColumnSizes()
-    window.addEventListener('resize', updateColumnSizes)
-    window.addEventListener('keydown', this.keyEvent)
-  },
-  methods: {
-    fetchData () {
-      // Set loading to true and reset the error.
-      this.loading = true
-      this.error = null
-
+    '$route': function () {
       // Reset selected items and multiple selection.
       this.$store.commit('resetSelected')
       this.$store.commit('multiple', false)
       this.$store.commit('closeHovers')
-
-      let url = this.$route.path
-      if (url === '') url = '/'
-      if (url[0] !== '/') url = '/' + url
-
-      api.fetch(url)
-      .then((trueURL) => {
-        if (!url.endsWith('/') && trueURL.endsWith('/')) {
-          window.history.replaceState(window.history.state, document.title, window.location.pathname + '/')
-        }
-
-        this.loading = false
-      })
-      .catch(error => {
-        console.log(error)
-        this.error = error
-        this.loading = false
-      })
-    },
-    keyEvent (event) {
-      // Esc!
-      if (event.keyCode === 27) {
-        this.$store.commit('closeHovers')
-
-        if (this.req.kind !== 'listing') {
-          return
-        }
-
-        // If we're on a listing, unselect all files and folders.
-        let items = document.getElementsByClassName('item')
-        Array.from(items).forEach(link => {
-          link.setAttribute('aria-selected', false)
-        })
-
-        this.$store.commit('resetSelected')
-      }
-
-      // Del!
-      if (event.keyCode === 46) {
-        if (this.showDeleteButton && this.req.kind !== 'editor') {
-          this.$store.commit('showHover', 'delete')
-        }
-      }
-
-      // F1!
-      if (event.keyCode === 112) {
-        event.preventDefault()
-        this.$store.commit('showHover', 'help')
-      }
-
-      // F2!
-      if (event.keyCode === 113) {
-        if (this.showRenameButton) {
-          this.$store.commit('showHover', 'rename')
-        }
-      }
-
-      // CTRL + S
-      if (event.ctrlKey || event.metaKey) {
-        if (String.fromCharCode(event.which).toLowerCase() === 's') {
-          event.preventDefault()
-
-          if (this.req.kind !== 'editor') {
-            document.getElementById('download-button').click()
-            return
-          }
-        }
-      }
-    },
-    openSidebar () {
-      this.$store.commit('showHover', 'sidebar')
-    },
-    openSearch () {
-      this.$store.commit('showHover', 'search')
     }
   }
 }

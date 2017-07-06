@@ -85,21 +85,21 @@ type User struct {
 // Rule is a dissalow/allow rule.
 type Rule struct {
 	// Regex indicates if this rule uses Regular Expressions or not.
-	Regex bool
+	Regex bool `json:"regex"`
 
 	// Allow indicates if this is an allow rule. Set 'false' to be a disallow rule.
-	Allow bool
+	Allow bool `json:"allow"`
 
 	// Path is the corresponding URL path for this rule.
-	Path string
+	Path string `json:"path"`
 
 	// Regexp is the regular expression. Only use this when 'Regex' was set to true.
-	Regexp *Regexp
+	Regexp *Regexp `json:"regexp"`
 }
 
 // Regexp is a regular expression wrapper around native regexp.
 type Regexp struct {
-	Raw    string
+	Raw    string `json:"raw"`
 	regexp *regexp.Regexp
 }
 
