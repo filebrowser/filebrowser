@@ -172,10 +172,9 @@ export default {
           buttons.done('upload')
           this.$store.commit('setReload', true)
         })
-        .catch(e => {
+        .catch(error => {
           buttons.done('upload')
-          // TODO: show error in box
-          console.log(e)
+          this.$store.commit('showError', error)
         })
 
       return false

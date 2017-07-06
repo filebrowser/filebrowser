@@ -13,7 +13,8 @@ const state = {
   reload: false,
   selected: [],
   multiple: false,
-  show: null
+  show: null,
+  showMessage: null
 }
 
 export default new Vuex.Store({

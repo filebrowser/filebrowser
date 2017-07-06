@@ -61,8 +61,7 @@ export default {
           // TODO: keep selected after reload?
           this.$store.commit('setReload', true)
         }).catch(error => {
-          // TODO: show error message
-          console.log(error)
+          this.$store.commit('showError', error)
         })
 
       this.$store.commit('closeHovers')

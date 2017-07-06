@@ -81,10 +81,9 @@ export default {
           buttons.done('move')
           this.$router.push({page: dest})
         })
-        .catch(e => {
+        .catch(error => {
           buttons.done('move')
-          // TODO: show error in prompt
-          console.log(e)
+          this.$store.commit('showError', error)
         })
     },
     next: function (event) {

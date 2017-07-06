@@ -59,8 +59,6 @@ func serveAPI(c *requestContext, w http.ResponseWriter, r *http.Request) (int, e
 		}
 	}
 
-	fmt.Println(c.us)
-
 	switch router {
 	case "download":
 		return downloadHandler(c, w, r)
@@ -524,14 +522,12 @@ func usersPutHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 
 		pw, err := hashPassword(u.Password)
 		if err != nil {
-			fmt.Println(err)
 			return http.StatusInternalServerError, err
 		}
 
 		c.us.Password = pw
 		err = c.fm.db.UpdateField(&User{ID: c.us.ID}, "Password", pw)
 		if err != nil {
-			fmt.Println(err)
 			return http.StatusInternalServerError, err
 		}
 

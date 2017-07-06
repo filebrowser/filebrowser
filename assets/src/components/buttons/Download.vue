@@ -1,5 +1,5 @@
 <template>
-  <button @click="download" aria-label="Download" title="Download" class="action">
+  <button @click="download" aria-label="Download" title="Download" id="download-button" class="action">
     <i class="material-icons">file_download</i>
     <span>Download</span>
     <span v-if="selectedCount > 0" class="counter">{{ selectedCount }}</span>

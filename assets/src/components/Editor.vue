@@ -1,16 +1,18 @@
 <template>
     <form id="editor" :class="req.language">
-        <h2 v-if="hasMetadata">Metadata</h2>
-        <textarea v-model="req.metadata" v-if="hasMetadata" id="metadata"></textarea>
+        <div v-if="hasMetadata" id="metadata">
+          <h2>Metadata</h2>
+        </div>
 
         <h2 v-if="hasMetadata">Body</h2>
-        <textarea v-model="req.content" id="content"></textarea>
     </form>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import CodeMirror from '@/utils/codemirror'
+import api from '@/utils/api'
+import buttons from '@/utils/buttons'
 
 export default {
   name: 'editor',
@@ -23,11 +25,22 @@ export default {
   data: function () {
     return {
       metadata: null,
+      metalang: null,
       content: null
     }
   },
+  created () {
+    window.addEventListener('keydown', this.keyEvent)
+    document.getElementById('save-button').addEventListener('click', this.save)
+  },
+  beforeDestroy () {
+    window.removeEventListener('keydown', this.keyEvent)
+    document.getElementById('save-button').removeEventListener('click', this.save)
+  },
   mounted: function () {
-    this.content = CodeMirror.fromTextArea(document.getElementById('content'), {
+    // Set up the main content editor.
+    this.content = CodeMirror(document.getElementById('editor'), {
+      value: this.req.content,
       lineNumbers: (this.req.language !== 'markdown'),
       viewportMargin: Infinity,
       autofocus: true,
@@ -42,25 +55,66 @@ export default {
       return
     }
 
-    this.metadata = CodeMirror.fromTextArea(document.getElementById('metadata'), {
+    this.parseMetadata()
+
+    // Set up metadata editor.
+    this.metadata = CodeMirror(document.getElementById('metadata'), {
+      value: this.req.metadata,
       viewportMargin: Infinity,
       lineWrapping: true,
       theme: 'markdown'
     })
 
-    if (this.req.metadata.startsWith('{')) {
-      CodeMirror.autoLoadMode(this.metadata, 'json')
-    }
-
-    if (this.req.metadata.startsWith('---')) {
-      CodeMirror.autoLoadMode(this.metadata, 'yaml')
-    }
-
-    if (this.req.metadata.startsWith('+++')) {
-      CodeMirror.autoLoadMode(this.metadata, 'toml')
-    }
+    CodeMirror.autoLoadMode(this.metadata, this.metalang)
   },
   methods: {
+    // Saves the content when the user presses CTRL-S.
+    keyEvent (event) {
+      if (!event.ctrlKey && !event.metaKey) {
+        return
+      }
+
+      if (String.fromCharCode(event.which).toLowerCase() !== 's') {
+        return
+      }
+
+      event.preventDefault()
+      this.save()
+    },
+    // Parses the metadata and gets the language in which
+    // it is written.
+    parseMetadata () {
+      if (this.req.metadata.startsWith('{')) {
+        this.metalang = 'json'
+      }
+
+      if (this.req.metadata.startsWith('---')) {
+        this.metalang = 'yaml'
+      }
+
+      if (this.req.metadata.startsWith('+++')) {
+        this.metalang = 'toml'
+      }
+    },
+    // Saves the file.
+    save () {
+      buttons.loading('save')
+      let content = this.content.getValue()
+
+      if (this.hasMetadata) {
+        content = this.metadata.getValue() + '\n\n' + content
+      }
+
+      api.put(this.$route.path, content)
+        .then(() => {
+          buttons.done('save')
+          console.log('Saved!')
+        })
+        .catch(error => {
+          buttons.done('save')
+          console.log(error)
+        })
+    }
   }
 }
 </script>
