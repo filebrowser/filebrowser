@@ -55,7 +55,7 @@ module.exports = merge(baseWebpackConfig, {
           module.resource &&
           /\.js$/.test(module.resource) &&
           module.resource.indexOf(
-            path.join(__dirname, '../node_modules')
+            path.join(__dirname, '../../node_modules')
           ) === 0
         )
       }
@@ -73,7 +73,7 @@ module.exports = merge(baseWebpackConfig, {
         ignore: ['.*']
       },
       {
-        from: path.resolve(__dirname, '../node_modules/codemirror/mode/*/*'),
+        from: path.resolve(__dirname, '../../node_modules/codemirror/mode/*/*'),
         to: path.join(config.assetsSubDirectory, 'js/codemirror/mode/[name]/[name].js')
       }
     ])
