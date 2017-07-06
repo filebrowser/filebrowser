@@ -35,7 +35,7 @@ var webpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       },
       {
-        from: path.resolve(__dirname, '../node_modules/codemirror/mode/*/*'),
+        from: path.resolve(__dirname, '../../node_modules/codemirror/mode/*/*'),
         to: path.join(config.assetsSubDirectory, 'js/codemirror/mode/[name]/[name].js'),
         transform: function (source, path) {
           let result = UglifyJS.minify(source.toString('utf8'))
@@ -96,7 +96,7 @@ var webpackConfig = merge(baseWebpackConfig, {
           module.resource &&
           /\.js$/.test(module.resource) &&
           module.resource.indexOf(
-            path.join(__dirname, '../node_modules')
+            path.join(__dirname, '../../node_modules')
           ) === 0
         )
       }
