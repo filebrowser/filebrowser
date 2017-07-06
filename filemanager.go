@@ -116,7 +116,7 @@ func New(database string, base User) (*FileManager, error) {
 	// map and Assets box.
 	m := &FileManager{
 		Users:  map[string]*User{},
-		assets: rice.MustFindBox("./_assets/dist"),
+		assets: rice.MustFindBox("./assets/dist"),
 	}
 
 	// Tries to open a database on the location provided. This

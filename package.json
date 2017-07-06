@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node ./assets/build/dev.js",
     "build": "node ./assets/build/build.js",
-    "lint": "eslint --ext .js,.vue src"
+    "lint": "eslint --ext .js,.vue assets/src"
   },
   "dependencies": {
     "codemirror": "^5.27.4",
