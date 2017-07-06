@@ -25,7 +25,7 @@
     </div>
 
     <div>
-      <router-link class="action" to="/dashboard" aria-label="Settings" title="Settings">
+      <router-link class="action" to="/settings" aria-label="Settings" title="Settings">
         <i class="material-icons">settings_applications</i>
         <span>Settings</span>
       </router-link>

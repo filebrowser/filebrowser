@@ -16,6 +16,7 @@ const mutations = {
     state.show = 'error'
     state.showMessage = value
   },
+  setLoading: (state, value) => { state.loading = value },
   setReload: (state, value) => { state.reload = value },
   setUser: (state, value) => (state.user = value),
   setJWT: (state, value) => (state.jwt = value),

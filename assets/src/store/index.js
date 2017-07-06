@@ -10,6 +10,7 @@ const state = {
   req: {},
   baseURL: document.querySelector('meta[name="base"]').getAttribute('content'),
   jwt: '',
+  loading: false,
   reload: false,
   selected: [],
   multiple: false,

@@ -3,6 +3,7 @@ body {
   padding-top: 4em;
   background-color: #f8f8f8;
   user-select: none;
+  color: #333;
 }
 
 * {

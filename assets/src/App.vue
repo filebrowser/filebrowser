@@ -6,6 +6,7 @@
 export default {
   name: 'app',
   mounted: function () {
+    // Remove loading animation.
     let loading = document.getElementById('loading')
     loading.classList.add('done')
 

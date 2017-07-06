@@ -2,6 +2,10 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/components/Login'
 import Main from '@/components/Main'
+import Files from '@/components/Files'
+import Users from '@/components/Users'
+import User from '@/components/User'
+import Settings from '@/components/Settings'
 import auth from '@/utils/auth.js'
 
 Vue.use(Router)
@@ -40,11 +44,29 @@ const router = new Router({
       children: [
         {
           path: '/files/*',
-          name: 'Files'
+          name: 'Files',
+          component: Files
         },
         {
-          path: '/dashboard',
-          name: 'Dashboard'
+          path: '/settings',
+          name: 'Settings',
+          component: Settings
+        },
+        {
+          path: '/users',
+          name: 'Users',
+          component: Users
+        },
+        {
+          path: '/users/',
+          redirect: {
+            path: '/users'
+          }
+        },
+        {
+          path: '/users/*',
+          name: 'User',
+          component: User
         },
         {
           path: '/*',
