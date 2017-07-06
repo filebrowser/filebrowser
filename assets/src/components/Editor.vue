@@ -10,7 +10,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import CodeMirror from '@/codemirror'
+import CodeMirror from '@/utils/codemirror'
 
 export default {
   name: 'editor',

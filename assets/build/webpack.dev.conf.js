@@ -20,7 +20,7 @@ module.exports = merge(baseWebpackConfig, {
   },
   devtool: '#cheap-module-eval-source-map',
   output: {
-    path: config.dev.assetsRoot,
+    path: config.assetsRoot,
     filename: utils.assetsPath('js/[name].[chunkhash].js'),
     chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
   },
@@ -38,7 +38,7 @@ module.exports = merge(baseWebpackConfig, {
     // you can customize output by editing /index.html
     // see https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
-      filename: config.dev.index,
+      filename: config.index,
       template: 'assets/index.html',
       inject: true,
       // necessary to consistently work with multiple chunks via CommonsChunkPlugin

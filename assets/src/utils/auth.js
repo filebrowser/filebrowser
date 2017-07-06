@@ -1,5 +1,5 @@
 import cookie from './cookie'
-import store from '@/store/store'
+import store from '@/store'
 import router from '@/router'
 
 function parseToken (token) {
