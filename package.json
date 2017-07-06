@@ -66,6 +66,11 @@
     "node": ">= 4.0.0",
     "npm": ">= 3.0.0"
   },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
   "browserslist": [
     "> 1%",
     "last 2 versions",
