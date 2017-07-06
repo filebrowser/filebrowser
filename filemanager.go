@@ -54,6 +54,9 @@ type User struct {
 	// emptied during JSON marshall.
 	Password string `json:"password"`
 
+	// Tells if this user is an admin.
+	Admin bool `json:"admin"`
+
 	// FileSystem is the virtual file system the user has access.
 	FileSystem webdav.Dir `json:"filesystem"`
 
@@ -103,6 +106,7 @@ var DefaultUser = User{
 	Commands:      []string{},
 	Rules:         []*Rule{},
 	CSS:           "",
+	Admin:         true,
 	FileSystem:    webdav.Dir("."),
 }
 
@@ -160,6 +164,8 @@ func New(database string, base User) (*FileManager, error) {
 			return nil, err
 		}
 
+		// The first user must be an administrator.
+		base.Admin = true
 		base.Password = pw
 
 		// Saves the user to the database.
