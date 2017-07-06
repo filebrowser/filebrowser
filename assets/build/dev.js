@@ -9,7 +9,7 @@ var webpack = require('webpack')
 var config = require('./config')
 var webpackConfig = require('./webpack.dev.conf')
 
-rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), err => {
+rm(path.join(config.assetsRoot, config.assetsSubDirectory), err => {
   if (err) throw err
   webpack(webpackConfig, function (err, stats) {
     if (err) throw err

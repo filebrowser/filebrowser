@@ -39,7 +39,7 @@ module.exports = merge(baseWebpackConfig, {
     // see https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
       filename: config.dev.index,
-      template: 'index.html',
+      template: 'assets/index.html',
       inject: true,
       // necessary to consistently work with multiple chunks via CommonsChunkPlugin
       chunksSortMode: 'dependency',
@@ -69,12 +69,12 @@ module.exports = merge(baseWebpackConfig, {
     new CopyWebpackPlugin([
       {
         from: path.resolve(__dirname, '../static'),
-        to: config.dev.assetsSubDirectory,
+        to: config.assetsSubDirectory,
         ignore: ['.*']
       },
       {
         from: path.resolve(__dirname, '../node_modules/codemirror/mode/*/*'),
-        to: path.join(config.build.assetsSubDirectory, 'js/codemirror/mode/[name]/[name].js')
+        to: path.join(config.assetsSubDirectory, 'js/codemirror/mode/[name]/[name].js')
       }
     ])
   ]

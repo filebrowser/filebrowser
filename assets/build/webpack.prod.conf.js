@@ -23,7 +23,7 @@ var webpackConfig = merge(baseWebpackConfig, {
   },
   devtool: config.build.productionSourceMap ? '#source-map' : false,
   output: {
-    path: config.build.assetsRoot,
+    path: config.assetsRoot,
     filename: utils.assetsPath('js/[name].[chunkhash].js'),
     chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
   },
@@ -31,12 +31,12 @@ var webpackConfig = merge(baseWebpackConfig, {
     new CopyWebpackPlugin([
       {
         from: path.resolve(__dirname, '../static'),
-        to: config.dev.assetsSubDirectory,
+        to: config.assetsSubDirectory,
         ignore: ['.*']
       },
       {
         from: path.resolve(__dirname, '../node_modules/codemirror/mode/*/*'),
-        to: path.join(config.build.assetsSubDirectory, 'js/codemirror/mode/[name]/[name].js'),
+        to: path.join(config.assetsSubDirectory, 'js/codemirror/mode/[name]/[name].js'),
         transform: function (source, path) {
           let result = UglifyJS.minify(source.toString('utf8'))
           if (result.error !== undefined) {
@@ -71,7 +71,7 @@ var webpackConfig = merge(baseWebpackConfig, {
     // you can customize output by editing /index.html
     // see https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
-      filename: config.build.index,
+      filename: config.index,
       template: 'assets/index.html',
       inject: true,
       minify: {
@@ -118,24 +118,6 @@ var webpackConfig = merge(baseWebpackConfig, {
     })
   ]
 })
-
-if (config.build.productionGzip) {
-  var CompressionWebpackPlugin = require('compression-webpack-plugin')
-
-  webpackConfig.plugins.push(
-    new CompressionWebpackPlugin({
-      asset: '[path].gz[query]',
-      algorithm: 'gzip',
-      test: new RegExp(
-        '\\.(' +
-        config.build.productionGzipExtensions.join('|') +
-        ')$'
-      ),
-      threshold: 10240,
-      minRatio: 0.8
-    })
-  )
-}
 
 if (config.build.bundleAnalyzerReport) {
   var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
