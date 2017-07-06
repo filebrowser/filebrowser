@@ -13,7 +13,7 @@
           <i class="material-icons">search</i>
         </button>
 
-        <button v-show="isEditor" aria-label="Save" class="action" id="save">
+        <button v-show="isEditor" aria-label="Save" class="action" id="save-button">
           <i class="material-icons" title="Save">save</i>
         </button>
         <rename-button v-show="!loading && showRenameButton"></rename-button>
@@ -171,8 +171,6 @@ export default {
   },
   created () {
     this.fetchData()
-    // TODO: finish this box
-    // this.$store.commit('showHover', 'error')
   },
   watch: {
     '$route': 'fetchData',
@@ -184,59 +182,7 @@ export default {
   mounted () {
     updateColumnSizes()
     window.addEventListener('resize', updateColumnSizes)
-    window.addEventListener('keydown', (event) => {
-      // Esc!
-      if (event.keyCode === 27) {
-        this.$store.commit('closeHovers')
-
-        // Unselect all files and folders.
-        if (this.req.kind === 'listing') {
-          let items = document.getElementsByClassName('item')
-          Array.from(items).forEach(link => {
-            link.setAttribute('aria-selected', false)
-          })
-
-          this.$store.commit('resetSelected')
-        }
-
-        return
-      }
-
-      // Del!
-      if (event.keyCode === 46) {
-        if (this.showDeleteButton) {
-          this.$store.commit('showHover', 'delete')
-        }
-      }
-
-      // F1!
-      if (event.keyCode === 112) {
-        event.preventDefault()
-        this.$store.commit('showHover', 'help')
-      }
-
-      // F2!
-      if (event.keyCode === 113) {
-        if (this.showRenameButton) {
-          this.$store.commit('showHover', 'rename')
-        }
-      }
-
-      // CTRL + S
-      if (event.ctrlKey || event.metaKey) {
-        switch (String.fromCharCode(event.which).toLowerCase()) {
-          case 's':
-            event.preventDefault()
-
-            if (this.req.kind !== 'editor') {
-              window.location = '?download=true'
-              return
-            }
-
-            // TODO: save file on editor!
-        }
-      }
-    })
+    window.addEventListener('keydown', this.keyEvent)
   },
   methods: {
     fetchData () {
@@ -262,11 +208,60 @@ export default {
         this.loading = false
       })
       .catch(error => {
-        // TODO: 404, 403 and 500!
         console.log(error)
         this.error = error
         this.loading = false
       })
+    },
+    keyEvent (event) {
+      // Esc!
+      if (event.keyCode === 27) {
+        this.$store.commit('closeHovers')
+
+        if (this.req.kind !== 'listing') {
+          return
+        }
+
+        // If we're on a listing, unselect all files and folders.
+        let items = document.getElementsByClassName('item')
+        Array.from(items).forEach(link => {
+          link.setAttribute('aria-selected', false)
+        })
+
+        this.$store.commit('resetSelected')
+      }
+
+      // Del!
+      if (event.keyCode === 46) {
+        if (this.showDeleteButton && this.req.kind !== 'editor') {
+          this.$store.commit('showHover', 'delete')
+        }
+      }
+
+      // F1!
+      if (event.keyCode === 112) {
+        event.preventDefault()
+        this.$store.commit('showHover', 'help')
+      }
+
+      // F2!
+      if (event.keyCode === 113) {
+        if (this.showRenameButton) {
+          this.$store.commit('showHover', 'rename')
+        }
+      }
+
+      // CTRL + S
+      if (event.ctrlKey || event.metaKey) {
+        if (String.fromCharCode(event.which).toLowerCase() === 's') {
+          event.preventDefault()
+
+          if (this.req.kind !== 'editor') {
+            document.getElementById('download-button').click()
+            return
+          }
+        }
+      }
     },
     openSidebar () {
       this.$store.commit('showHover', 'sidebar')

@@ -36,8 +36,7 @@ export default {
           })
           .catch(error => {
             buttons.done('delete')
-            // TODO: show error in prompt
-            console.log(error)
+            this.$store.commit('showError', error)
           })
 
         return
@@ -63,7 +62,7 @@ export default {
           console.log(error)
           this.$store.commit('setReload', true)
           buttons.done('delete')
-          // TODO: show error in prompt
+          this.$store.commit('showError', error)
         })
     }
   }

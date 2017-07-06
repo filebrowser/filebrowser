@@ -1,6 +1,21 @@
 const mutations = {
-  closeHovers: state => { state.show = null },
-  showHover: (state, value) => { state.show = value },
+  closeHovers: state => {
+    state.show = null
+    state.showMessage = null
+  },
+  showHover: (state, value) => {
+    if (typeof value !== 'object') {
+      state.show = value
+      return
+    }
+
+    state.show = value.prompt
+    state.showMessage = value.message
+  },
+  showError: (state, value) => {
+    state.show = 'error'
+    state.showMessage = value
+  },
   setReload: (state, value) => { state.reload = value },
   setUser: (state, value) => (state.user = value),
   setJWT: (state, value) => (state.jwt = value),

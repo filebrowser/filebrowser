@@ -39,8 +39,7 @@ export default {
           this.$router.push({ path: uri })
         })
         .catch(error => {
-          // TODO: Show error message!
-          console.log(error)
+          this.$store.commit('showError', error)
         })
 
       this.$store.commit('closeHovers')

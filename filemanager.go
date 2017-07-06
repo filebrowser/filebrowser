@@ -19,8 +19,14 @@ var (
 // FileManager is a file manager instance. It should be creating using the
 // 'New' function and not directly.
 type FileManager struct {
-	db  *storm.DB
+	// The BoltDB database for this instance.
+	db *storm.DB
+
+	// The key used to sign the JWT tokens.
 	key []byte
+
+	// The static assets.
+	assets *rice.Box
 
 	// PrefixURL is a part of the URL that is already trimmed from the request URL before it
 	// arrives to our handlers. It may be useful when using File Manager as a middleware
@@ -35,7 +41,8 @@ type FileManager struct {
 	// Users is a map with the different configurations for each user.
 	Users map[string]*User
 
-	assets *rice.Box
+	// The plugins that have been plugged in.
+	Plugins []*Plugin
 }
 
 // Command is a command function.
@@ -94,6 +101,12 @@ type Rule struct {
 type Regexp struct {
 	Raw    string
 	regexp *regexp.Regexp
+}
+
+// Plugin is a File Manager plugin.
+type Plugin struct {
+	// The JavaScript that will be injected into the main page.
+	JavaScript string
 }
 
 // DefaultUser is used on New, when no 'base' user is provided.
@@ -208,11 +221,19 @@ func (m *FileManager) SetBaseURL(url string) {
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	// TODO: Handle errors here and make it compatible with http.Handler
-	return serveHTTP(&requestContext{
+	code, err := serveHTTP(&requestContext{
 		fm: m,
 		us: nil,
 		fi: nil,
 	}, w, r)
+
+	if code != 0 && err != nil {
+		w.WriteHeader(code)
+		w.Write([]byte(err.Error()))
+		return 0, nil
+	}
+
+	return code, err
 }
 
 // Allowed checks if the user has permission to access a directory/file.
