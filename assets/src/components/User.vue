@@ -1,12 +1,11 @@
 <template>
-  <div class="dashboard">
-    <h1>User</h1>
+  <form @submit="save" class="dashboard">
+    <h1 v-if="id === 0">New User</h1>
+    <h1 v-else>User {{ username }}</h1>
 
-    <p><label for="username">Username</label><input type="text" v-model="username" name="username"></p>
-    <p><label for="password">Password</label><input type="password" :disabled="passwordBlock" v-model="password" name="password"></p>
-    <p><label for="scope">Scope</label><input type="text" v-model="scope" name="scope"></p>
-
-    <hr>
+    <p><label for="username">Username</label><input type="text" v-model="username" id="username"></p>
+    <p><label for="password">Password</label><input type="password" :placeholder="passwordPlaceholder" v-model="password" id="password"></p>
+    <p><label for="scope">Scope</label><input type="text" v-model="filesystem" id="scope"></p>
 
     <h2>Permissions</h2>
 
@@ -23,9 +22,7 @@
 
     <p class="small">A space separated list with the available commands for this user. Example: <i>git svn hg</i>.</p>
 
-    <input type="text" v-model="commands">
-
-    <hr>
+    <input type="text" v-model.trim="commands">
 
     <h2>Rules</h2>
 
@@ -43,16 +40,14 @@
       <li><code>disallow /Caddyfile</code> - blocks the access to the file named <i>Caddyfile</i> on the root of the scope</li>
     </ul>
 
-    <textarea v-model="rules"></textarea>
+    <textarea v-model.trim="rules"></textarea>
 
-    <hr>
-
-    <h2>CSS</h2>
-
-    <p class="small">Costum user CSS</p>
+    <h2>Costum Stylesheet</h2>
 
     <textarea name="css"></textarea>
-  </div>
+
+    <p><input type="submit" value="Save"></p>
+  </form>
 </template>
 
 <script>
@@ -62,116 +57,153 @@ export default {
   name: 'user',
   data: () => {
     return {
+      id: 0,
       admin: false,
       allowNew: false,
       allowEdit: false,
       allowCommands: false,
-      passwordBlock: true,
       password: '',
       username: '',
-      scope: '',
+      filesystem: '',
       rules: '',
       css: '',
       commands: ''
     }
   },
+  computed: {
+    passwordPlaceholder () {
+      if (this.$route.path === '/users/new') return ''
+      return '(leave blank to avoid changes)'
+    }
+  },
   created () {
-    if (this.$route.path === '/users/new') return
-
-    api.getUser(this.$route.params[0]).then(user => {
-      this.admin = user.admin
-      this.allowCommands = user.allowCommands
-      this.allowNew = user.allowNew
-      this.allowEdit = user.allowEdit
-      this.scope = user.filesystem
-      this.username = user.username
-      this.commands = user.commands.join(' ')
-      this.css = user.css
-
-      for (let rule of user.rules) {
-        if (rule.allow) {
-          this.rules += 'allow '
-        } else {
-          this.rules += 'disallow '
-        }
-
-        if (rule.regex) {
-          this.rules += 'regex ' + rule.regexp.raw
-        } else {
-          this.rules += rule.path
-        }
-
-        this.rules += '\n'
-      }
-    }).catch(error => {
-      console.log(error)
-    })
+    this.fetchData()
   },
   watch: {
+    '$route': 'fetchData',
     admin: function () {
       if (!this.admin) return
       this.allowCommands = true
       this.allowEdit = true
       this.allowNew = true
     }
+  },
+  methods: {
+    fetchData () {
+      if (this.$route.path === '/users/new') return
+
+      api.getUser(this.$route.params[0]).then(user => {
+        this.id = user.ID
+        this.admin = user.admin
+        this.allowCommands = user.allowCommands
+        this.allowNew = user.allowNew
+        this.allowEdit = user.allowEdit
+        this.filesystem = user.filesystem
+        this.username = user.username
+        this.commands = user.commands.join(' ')
+        this.css = user.css
+
+        for (let rule of user.rules) {
+          if (rule.allow) {
+            this.rules += 'allow '
+          } else {
+            this.rules += 'disallow '
+          }
+
+          if (rule.regex) {
+            this.rules += 'regex ' + rule.regexp.raw
+          } else {
+            this.rules += rule.path
+          }
+
+          this.rules += '\n'
+        }
+
+        this.rules = this.rules.trim()
+      }).catch(error => {
+        console.log(error)
+        this.$router.push({ path: '/users/new' })
+      })
+    },
+    save (event) {
+      event.preventDefault()
+      let user = this.parseForm()
+
+      if (this.$route.path === '/users/new') {
+        api.newUser(user).then(location => {
+          this.$router.push({ path: location })
+        }).catch(e => {
+          this.$store.commit('showError', e)
+        })
+
+        return
+      }
+
+      api.updateUser(user).then(location => {
+        this.$router.push({ path: location })
+      }).catch(e => {
+        this.$store.commit('showError', e)
+      })
+    },
+    parseForm () {
+      let user = {
+        ID: this.id,
+        username: this.username,
+        password: this.password,
+        filesystem: this.filesystem,
+        admin: this.admin,
+        allowCommands: this.allowCommands,
+        allowNew: this.allowNew,
+        allowEdit: this.allowEdit,
+        css: this.css,
+        commands: this.commands.split(' '),
+        rules: []
+      }
+
+      let rules = this.rules.split('\n')
+
+      for (let rawRule of rules) {
+        let rule = {
+          allow: true,
+          path: '',
+          regex: false,
+          regexp: {
+            raw: ''
+          }
+        }
+
+        rawRule = rawRule.split(' ')
+
+        // Skip a malformed rule
+        if (rawRule.length < 2) {
+          continue
+        }
+
+        // Skip a malformed rule
+        if (rawRule[0] !== 'allow' && rawRule[0] !== 'disallow') {
+          continue
+        }
+
+        rule.allow = (rawRule[0] === 'allow')
+        rawRule.shift()
+
+        if (rawRule[0] === 'regex') {
+          rule.regex = true
+          rawRule.shift()
+          rule.regexp.raw = rawRule.join(' ')
+        } else {
+          rule.path = rawRule.join(' ')
+        }
+
+        user.rules.push(rule)
+      }
+
+      return user
+    }
   }
 }
 </script>
 
 <style>
-.dashboard {
-  max-width: 600px;
-}
 
-.dashboard textarea,
-.dashboard input[type="text"],
-.dashboard input[type="password"] {
-  padding: .5em 1em;
-  display: block;
-  border: 1px solid #e9e9e9;
-  transition: .2s ease border;
-  color: #333;
-  width: 100%;
-}
-
-.dashboard textarea:focus,
-.dashboard textarea:hover,
-.dashboard input[type="text"]:focus,
-.dashboard input[type="password"]:focus,
-.dashboard input[type="text"]:hover,
-.dashboard input[type="password"]:hover {
-  border-color: #9f9f9f;
-}
-
-.dashboard textarea {
-  font-family: monospace;
-  min-height: 10em;
-  resize: vertical;
-}
-
-.dashboard p label {
-  margin-bottom: .2em;
-  display: block;
-  font-size: .8em
-}
-
-hr {
-    border-bottom: 2px solid rgba(181, 181, 181, 0.5);
-    border-top: 0;
-    border-right: 0;
-    border-left: 0;
-    margin: 1em 0;
-}
-
-li code,
-p code {
-  background: rgba(0, 0, 0, 0.05);
-  padding: .1em;
-  border-radius: .2em;
-}
-
-.small {
-  font-size: .8em;
-  line-height: 1.5;
-}
 </style>

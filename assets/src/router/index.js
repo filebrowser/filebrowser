@@ -7,6 +7,7 @@ import Users from '@/components/Users'
 import User from '@/components/User'
 import Settings from '@/components/Settings'
 import auth from '@/utils/auth.js'
+import store from '@/store'
 
 Vue.use(Router)
 
@@ -55,7 +56,10 @@ const router = new Router({
         {
           path: '/users',
           name: 'Users',
-          component: Users
+          component: Users,
+          meta: {
+            requiresAdmin: true
+          }
         },
         {
           path: '/users/',
@@ -66,7 +70,10 @@ const router = new Router({
         {
           path: '/users/*',
           name: 'User',
-          component: User
+          component: User,
+          meta: {
+            requiresAdmin: true
+          }
         },
         {
           path: '/*',
@@ -85,6 +92,19 @@ router.beforeEach((to, from, next) => {
     // if not, redirect to login page.
     auth.loggedIn()
       .then(() => {
+        if (to.matched.some(record => record.meta.requiresAdmin)) {
+          if (store.state.user.admin) {
+            next()
+            return
+          }
+
+          next({
+            path: '/403'
+          })
+
+          return
+        }
+
         next()
       })
       .catch(e => {
