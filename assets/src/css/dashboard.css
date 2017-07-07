@@ -1,0 +1,121 @@
+.dashboard {
+  max-width: 600px;
+  box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 3px, rgba(0, 0, 0, 0.12) 0px 1px 2px;
+  border-radius: .5em;
+  background: #fff;
+  padding: 1em;
+  margin: 1em 0;
+}
+
+.dashboard a {
+  color: inherit
+}
+
+.dashboard h1 button {
+  font-size: 0.5em;
+  float: right;
+}
+
+.dashboard table {
+  width: 100%;
+}
+
+.dashboard table tr {
+
+}
+
+.dashboard table th {
+  font-weight: 500;
+  color: #757575;
+  text-align: left;
+}
+
+.dashboard table th,
+.dashboard table td {
+  padding: .5em 0;
+}
+
+.dashboard table td {
+
+}
+
+.dashboard table td:last-child {
+  width: 1em
+}
+
+.dashboard > *:first-child {
+  margin-top: 0;
+}
+
+.dashboard > *:last-child {
+  margin-bottom: 0;
+}
+
+form.dashboard input[type="submit"],
+.dashboard form input[type="submit"] {
+  margin-left: auto;
+  display: block;
+}
+
+.dashboard textarea,
+.dashboard input[type="text"],
+.dashboard input[type="password"] {
+  padding: 0;
+  line-height: 1.7;
+  display: block;
+  border: 0;
+  border-bottom: 1px solid #dddddd;
+  transition: .2s ease border;
+  width: 100%;
+}
+
+.dashboard #username,
+.dashboard #password,
+.dashboard #scope {
+  max-width: 18em;
+}
+
+.dashboard textarea:focus,
+.dashboard textarea:hover,
+.dashboard input[type="text"]:focus,
+.dashboard input[type="password"]:focus,
+.dashboard input[type="text"]:hover,
+.dashboard input[type="password"]:hover {
+  border-color: #2979ff;
+}
+
+.dashboard input.red {
+  border-color: red;
+}
+
+.dashboard input.green {
+  border-color: green;
+}
+
+.dashboard textarea {
+  line-height: 1.15;
+  padding: .5em;
+  border: 1px solid #ddd;
+  font-family: monospace;
+  min-height: 10em;
+  resize: vertical;
+}
+
+.dashboard p label {
+  margin-bottom: .2em;
+  display: block;
+  font-size: .8em;
+  font-weight: bold;
+}
+
+li code,
+p code {
+  background: rgba(0, 0, 0, 0.05);
+  padding: .1em;
+  border-radius: .2em;
+}
+
+.small {
+  font-size: .8em;
+  line-height: 1.5;
+}

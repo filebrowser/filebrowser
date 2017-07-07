@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -361,6 +362,10 @@ func usersGetHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 			users = append(users, u)
 		}
 
+		sort.Slice(users, func(i, j int) bool {
+			return users[i].ID < users[j].ID
+		})
+
 		return renderJSON(w, users)
 	}
 
@@ -449,8 +454,8 @@ func usersPostHandler(c *requestContext, w http.ResponseWriter, r *http.Request)
 	c.fm.Users[u.Username] = &u
 
 	// Set the Location header and return.
+	w.Header().Set("Location", "/users/"+strconv.Itoa(u.ID))
 	w.WriteHeader(http.StatusCreated)
-	w.Header().Set("Location", c.fm.RootURL()+"/api/users/"+strconv.Itoa(u.ID))
 	return 0, nil
 }
 
@@ -516,22 +521,32 @@ func usersPutHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 	}
 
 	if sid == "self" {
-		if u.Password == "" {
-			return http.StatusBadRequest, errors.New("Password missing")
+		if u.Password != "" {
+			pw, err := hashPassword(u.Password)
+			if err != nil {
+				return http.StatusInternalServerError, err
+			}
+
+			c.us.Password = pw
+			err = c.fm.db.UpdateField(&User{ID: c.us.ID}, "Password", pw)
+			if err != nil {
+				return http.StatusInternalServerError, err
+			}
+
+			return http.StatusOK, nil
 		}
 
-		pw, err := hashPassword(u.Password)
-		if err != nil {
-			return http.StatusInternalServerError, err
+		if u.CSS != "" {
+			c.us.CSS = u.CSS
+			err = c.fm.db.UpdateField(&User{ID: c.us.ID}, "CSS", u.CSS)
+			if err != nil {
+				return http.StatusInternalServerError, err
+			}
+
+			return http.StatusOK, nil
 		}
 
-		c.us.Password = pw
-		err = c.fm.db.UpdateField(&User{ID: c.us.ID}, "Password", pw)
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		return http.StatusOK, nil
+		return http.StatusBadRequest, errors.New("Password or CSS is missing")
 	}
 
 	// The username and the filesystem cannot be empty.
@@ -555,7 +570,17 @@ func usersPutHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 	}
 
 	u.ID = id
-	u.Password = ouser.Password
+
+	if u.Password == "" {
+		u.Password = ouser.Password
+	} else {
+		pw, err := hashPassword(u.Password)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		u.Password = pw
+	}
 
 	// Updates the whole User struct because we always are supposed
 	// to send a new entire object.
