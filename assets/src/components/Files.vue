@@ -1,17 +1,8 @@
 <template>
   <div v-if="error">
-    <h2 class="message" v-if="error === 404">
-      <i class="material-icons">gps_off</i>
-      <span>This location can't be reached.</span>
-    </h2>
-    <h2 class="message" v-else-if="error === 403">
-      <i class="material-icons">error</i>
-      <span>You're not welcome here.</span>
-    </h2>
-    <h2 class="message" v-else>
-      <i class="material-icons">error_outline</i>
-      <span>Something really went wrong.</span>
-    </h2>
+    <not-found v-if="error === 404"></not-found>
+    <forbidden v-else-if="error === 403"></forbidden>
+    <internal-error v-else></internal-error>
   </div>
   <editor v-else-if="isEditor"></editor>
   <listing :class="{ multiple }" v-else-if="isListing"></listing>
@@ -19,6 +10,9 @@
 </template>
 
 <script>
+import Forbidden from './errors/403'
+import NotFound from './errors/404'
+import InternalError from './errors/500'
 import Preview from './Preview'
 import Listing from './Listing'
 import Editor from './Editor'
@@ -38,6 +32,9 @@ function updateColumnSizes () {
 export default {
   name: 'files',
   components: {
+    Forbidden,
+    NotFound,
+    InternalError,
     Preview,
     Listing,
     Editor
@@ -105,8 +102,14 @@ export default {
         this.setLoading(false)
       })
       .catch(error => {
-        this.error = error
         this.setLoading(false)
+
+        if (typeof error === 'object') {
+          this.error = error.status
+          return
+        }
+
+        this.error = error
       })
     },
     keyEvent (event) {

@@ -13,7 +13,7 @@ function loading (button) {
     el.classList.add('spin')
     el.innerHTML = 'autorenew'
     el.style.opacity = 1
-  }, 200)
+  }, 0)
 }
 
 function done (button, success = true) {
@@ -30,7 +30,7 @@ function done (button, success = true) {
     el.classList.remove('spin')
     el.innerHTML = el.dataset.icon
     el.style.opacity = 1
-  }, 200)
+  }, 0)
 }
 
 export default {
