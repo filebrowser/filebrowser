@@ -123,7 +123,7 @@ export default {
         }
 
         this.rules = this.rules.trim()
-      }).catch(error => {
+      }).catch(() => {
         this.$router.push({ path: '/users/new' })
       })
     },
