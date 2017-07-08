@@ -40,10 +40,14 @@ export default {
   },
   methods: {
     humanSize: function () {
+      // If there are no files selected or this is not a listing
+      // show the human file size of the current request.
       if (this.selectedCount === 0 || this.req.kind !== 'listing') {
         return filesize(this.req.size)
       }
 
+      // Otherwise, sum the sizes of each selected file and returns
+      // its human form.
       var sum = 0
 
       for (let i = 0; i < this.selectedCount; i++) {
@@ -53,17 +57,27 @@ export default {
       return filesize(sum)
     },
     humanTime: function () {
+      // If there are no selected files, return the current request
+      // modified time.
       if (this.selectedCount === 0) {
         return moment(this.req.modified).fromNow()
       }
 
+      // Otherwise return the modified time of the first item
+      // that is selected since this should not appear when
+      // there is more than one file selected.
       return moment(this.req.items[this.selected[0]]).fromNow()
     },
     name: function () {
+      // Return the name of the current opened file if there
+      // are no selected files.
       if (this.selectedCount === 0) {
         return this.req.name
       }
 
+      // Otherwise, just return the name of the selected file.
+      // This field won't show when there is more than one
+      // file selected.
       return this.req.items[this.selected[0]].name
     },
     dir: function () {
@@ -79,6 +93,8 @@ export default {
       return this.req.items[this.selected[0]].isDir
     },
     checksum: function (event, hash) {
+      // Gets the checksum of the current selected or
+      // opened file. Doesn't work for directories.
       event.preventDefault()
 
       let link
@@ -90,12 +106,8 @@ export default {
       }
 
       api.checksum(link, hash)
-        .then((hash) => {
-          event.target.innerHTML = hash
-        })
-        .catch(error => {
-          console.log(error)
-        })
+        .then((hash) => { event.target.innerHTML = hash })
+        .catch(error => { this.$store.commit('showError', error) })
     }
   }
 }

@@ -28,6 +28,7 @@ export default {
       this.$store.commit('closeHovers')
     },
     oldName: function () {
+      // Get the current name of the file we are editing.
       if (this.req.kind !== 'listing') {
         return this.req.name
       }
@@ -58,14 +59,12 @@ export default {
             this.$router.push({ path: newLink })
             return
           }
-          // TODO: keep selected after reload?
           this.$store.commit('setReload', true)
         }).catch(error => {
           this.$store.commit('showError', error)
         })
 
       this.$store.commit('closeHovers')
-      return
     }
   }
 }

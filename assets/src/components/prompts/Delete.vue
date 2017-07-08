@@ -28,11 +28,13 @@ export default {
       this.closeHovers()
       buttons.loading('delete')
 
+      // If we are not on a listing, delete the current
+      // opened file.
       if (this.req.kind !== 'listing') {
         api.delete(this.$route.path)
           .then(() => {
             buttons.done('delete')
-            this.$router.push({path: url.removeLastDir(this.$route.path) + '/'})
+            this.$router.push({ path: url.removeLastDir(this.$route.path) + '/' })
           })
           .catch(error => {
             buttons.done('delete')
@@ -47,6 +49,8 @@ export default {
         return
       }
 
+      // Create the promises array and fill it with
+      // the delete request for every selected file.
       let promises = []
 
       for (let index of this.selected) {
@@ -55,13 +59,12 @@ export default {
 
       Promise.all(promises)
         .then(() => {
-          this.$store.commit('setReload', true)
           buttons.done('delete')
+          this.$store.commit('setReload', true)
         })
         .catch(error => {
-          console.log(error)
-          this.$store.commit('setReload', true)
           buttons.done('delete')
+          this.$store.commit('setReload', true)
           this.$store.commit('showError', error)
         })
     }
