@@ -2,13 +2,13 @@
 
 filemanager provides WebDAV features and a file managing interface within the specified directory and it can be used to upload, delete, preview, rename and edit your files within that directory. It is an implementation of [hacdias/filemanager](https://github.com/hacdias/filemanager) library.
 
-Note that if you are handling large files you might run into troubles due to the defaults of [`timeouts`](https://caddyserver.com/docs/timeouts) plugin. Check its [documentation](https://caddyserver.com/docs/timeouts) to learn more about that plugin.
-
-For information about the working of filemanager itself, go to the [main repository](https://github.com/hacdias/filemanager).
+Note that if you are handling large files you might run into troubles due to the defaults of [`timeouts`](https://caddyserver.com/docs/timeouts) plugin. Check its [documentation](https://caddyserver.com/docs/timeouts) to learn more about that plugin. For information about the working of filemanager itself, go to the [main repository](https://github.com/hacdias/filemanager).
 
 ## Get Started
 
 To start using this plugin you just need to go to the [download Caddy page](https://caddyserver.com/download) and choose `filemanager` in the directives section. For further information on how Caddy works refer to [its documentation](https://caddyserver.com/docs).
+
+The default credentials are `admin` for the user and the password. It is highy recommended to change this after logging in for the first time and to use HTTPS. In the web interface, you can create more users and define their own permissions.
 
 ## Syntax
 
