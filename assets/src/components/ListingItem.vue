@@ -6,6 +6,7 @@
   @drop="drop"
   @click="click"
   @dblclick="open"
+  @touchstart="touchstart"
   :aria-selected="isSelected">
     <div>
       <i class="material-icons">{{ icon }}</i>
@@ -32,6 +33,11 @@ import api from '@/utils/api'
 
 export default {
   name: 'item',
+  data: function () {
+    return {
+      touches: 0
+    }
+  },
   props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index'],
   computed: {
     ...mapState(['selected', 'req']),
@@ -114,6 +120,16 @@ export default {
       }
 
       return false
+    },
+    touchstart (event) {
+      setTimeout(() => {
+        this.touches = 0
+      }, 300)
+
+      this.touches++
+      if (this.touches > 1) {
+        this.open()
+      }
     },
     open: function (event) {
       this.$router.push({path: this.url})
