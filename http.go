@@ -127,6 +127,8 @@ func apiHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int,
 		return resourceHandler(c, w, r)
 	case "users":
 		return usersHandler(c, w, r)
+	case "commands":
+		return commandsHandler(c, w, r)
 	}
 
 	return http.StatusNotFound, nil

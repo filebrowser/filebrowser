@@ -316,6 +316,48 @@ function updateCSS (css) {
   })
 }
 
+function getCommands () {
+  return new Promise((resolve, reject) => {
+    let request = new window.XMLHttpRequest()
+    request.open('GET', `${store.state.baseURL}/api/commands/`, true)
+    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+
+    request.onload = () => {
+      switch (request.status) {
+        case 200:
+          resolve(JSON.parse(request.responseText))
+          break
+        default:
+          reject(request.responseText)
+          break
+      }
+    }
+    request.onerror = (error) => reject(error)
+    request.send()
+  })
+}
+
+function updateCommands (commands) {
+  return new Promise((resolve, reject) => {
+    let request = new window.XMLHttpRequest()
+    request.open('PUT', `${store.state.baseURL}/api/commands/`, true)
+    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+
+    request.onload = () => {
+      switch (request.status) {
+        case 200:
+          resolve()
+          break
+        default:
+          reject(request.responseText)
+          break
+      }
+    }
+    request.onerror = (error) => reject(error)
+    request.send(JSON.stringify(commands))
+  })
+}
+
 export default {
   delete: rm,
   fetch,
@@ -331,5 +373,7 @@ export default {
   updateUser,
   getUsers,
   updatePassword,
-  updateCSS
+  updateCSS,
+  getCommands,
+  updateCommands
 }
