@@ -26,6 +26,7 @@ export default {
       event.preventDefault()
       if (this.new === '') return
 
+      // Build the path of the new file.
       let uri = this.$route.path
       if (this.$store.state.req.kind !== 'listing') {
         uri = url.removeLastDir(uri) + '/'
@@ -34,14 +35,12 @@ export default {
       uri += this.name
       uri = uri.replace('//', '/')
 
+      // Create the new file.
       api.post(uri)
-        .then(() => {
-          this.$router.push({ path: uri })
-        })
-        .catch(error => {
-          this.$store.commit('showError', error)
-        })
+        .then(() => { this.$router.push({ path: uri }) })
+        .catch(error => { this.$store.commit('showError', error) })
 
+      // Close the prompt.
       this.$store.commit('closeHovers')
     }
   }
