@@ -6,7 +6,7 @@
       <li><router-link v-if="user.admin" to="/users">Go to User Management</router-link></li>
     </ul>
 
-    <form @submit="saveHooks">
+    <form @submit="saveCommands">
       <h2>Commands</h2>
 
       <p class="small">Here you can set commands that are executed in the named events. You write one command
@@ -14,10 +14,10 @@
         <code>file</code> will be available with the path of the file.</p>
 
       <h3>Before Save</h3>
-      <textarea v-model="beforeSave"></textarea>
+      <textarea v-model.trim="beforeSave"></textarea>
 
       <h3>After Save</h3>
-      <textarea v-model="afterSave"></textarea>
+      <textarea v-model.trim="afterSave"></textarea>
 
       <p><input type="submit" value="Save"></p>
     </form>
@@ -27,6 +27,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
+import api from '@/utils/api'
 
 export default {
   name: 'settings',
@@ -40,12 +41,29 @@ export default {
     ...mapState([ 'user' ])
   },
   created () {
-    // TODO: fetch current settings here
+    api.getCommands()
+      .then(commands => {
+        this.beforeSave = commands['before_save'].join('\n')
+        this.afterSave = commands['after_save'].join('\n')
+      })
+      .catch(error => { this.showError(error) })
   },
   methods: {
-    ...mapMutations([ 'showSuccess' ]),
-    saveHooks (event) {
+    ...mapMutations([ 'showSuccess', 'showError' ]),
+    saveCommands (event) {
       event.preventDefault()
+
+      let commands = {
+        'before_save': this.beforeSave.split('\n'),
+        'after_save': this.afterSave.split('\n')
+      }
+
+      if (commands['before_save'].length === 1 && commands['before_save'][0] === '') commands['before_save'] = []
+      if (commands['after_save'].length === 1 && commands['after_save'][0] === '') commands['after_save'] = []
+
+      api.updateCommands(commands)
+        .then(() => { this.showSuccess('Commands updated!') })
+        .catch(error => { this.showError(error) })
     }
   }
 }
