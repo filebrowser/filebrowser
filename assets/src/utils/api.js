@@ -277,7 +277,7 @@ function updateUser (user) {
 function updatePassword (password) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
-    request.open('PUT', `${store.state.baseURL}/api/users/self`, true)
+    request.open('PUT', `${store.state.baseURL}/api/users/change-password`, true)
     request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
@@ -298,7 +298,7 @@ function updatePassword (password) {
 function updateCSS (css) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
-    request.open('PUT', `${store.state.baseURL}/api/users/self`, true)
+    request.open('PUT', `${store.state.baseURL}/api/users/change-css`, true)
     request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {

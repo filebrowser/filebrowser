@@ -66,10 +66,6 @@ export default {
   watch: {
     '$route': 'fetchData',
     'reload': function () {
-      this.$store.commit('setReload', false)
-      this.$store.commit('resetSelected')
-      this.$store.commit('multiple', false)
-      this.$store.commit('closeHovers')
       this.fetchData()
     }
   },
@@ -82,6 +78,12 @@ export default {
   methods: {
     ...mapMutations([ 'setLoading' ]),
     fetchData () {
+      // Reset view information.
+      this.$store.commit('setReload', false)
+      this.$store.commit('resetSelected')
+      this.$store.commit('multiple', false)
+      this.$store.commit('closeHovers')
+
       // Set loading to true and reset the error.
       this.setLoading(true)
       this.error = null

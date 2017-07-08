@@ -90,7 +90,10 @@ export default {
   },
   methods: {
     fetchData () {
-      if (this.$route.path === '/users/new') return
+      if (this.$route.path === '/users/new') {
+        this.reset()
+        return
+      }
 
       api.getUser(this.$route.params[0]).then(user => {
         this.id = user.ID
@@ -125,6 +128,19 @@ export default {
         this.$router.push({ path: '/users/new' })
       })
     },
+    reset () {
+      this.id = 0
+      this.admin = false
+      this.allowNew = false
+      this.allowEdit = false
+      this.allowCommands = false
+      this.password = ''
+      this.username = ''
+      this.filesystem = ''
+      this.rules = ''
+      this.css = ''
+      this.commands = ''
+    },
     save (event) {
       event.preventDefault()
       let user = this.parseForm()
@@ -132,6 +148,7 @@ export default {
       if (this.$route.path === '/users/new') {
         api.newUser(user).then(location => {
           this.$router.push({ path: location })
+          this.$store.commit('showSuccess', 'User created!')
         }).catch(e => {
           this.$store.commit('showError', e)
         })
@@ -140,7 +157,7 @@ export default {
       }
 
       api.updateUser(user).then(location => {
-        this.$router.push({ path: location })
+        this.$store.commit('showSuccess', 'User updated!')
       }).catch(e => {
         this.$store.commit('showError', e)
       })

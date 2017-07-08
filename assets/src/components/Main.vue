@@ -3,7 +3,7 @@
     <site-header></site-header>
     <sidebar></sidebar>
     <main>
-      <router-view></router-view>
+      <router-view v-on:css-updated="updateCSS"></router-view>
     </main>
     <prompts></prompts>
   </div>
@@ -23,12 +23,23 @@ export default {
     SiteHeader,
     Prompts
   },
-  watch: {
-    '$route': function () {
-      // Reset selected items and multiple selection.
-      this.$store.commit('resetSelected')
-      this.$store.commit('multiple', false)
-      this.$store.commit('closeHovers')
+  mounted () {
+    this.updateCSS()
+  },
+  methods: {
+    updateCSS () {
+      let css = this.$store.state.user.css
+
+      let style = document.querySelector('style[title="user-css"]')
+      if (style !== undefined && style !== null) {
+        style.parentElement.removeChild(style)
+      }
+
+      style = document.createElement('style')
+      style.title = 'user-css'
+      style.type = 'text/css'
+      style.appendChild(document.createTextNode(css))
+      document.head.appendChild(style)
     }
   }
 }

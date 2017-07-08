@@ -14,17 +14,16 @@ const mutations = {
   },
   showError: (state, value) => {
     state.show = 'error'
-
-    if (typeof value !== 'object') {
-      state.showMessage = value
-      return
-    }
-
-    state.showMessage = value.message
+    state.showMessage = value
+  },
+  showSuccess: (state, value) => {
+    state.show = 'success'
+    state.showMessage = value
   },
   setLoading: (state, value) => { state.loading = value },
   setReload: (state, value) => { state.reload = value },
   setUser: (state, value) => (state.user = value),
+  setUserCSS: (state, value) => (state.user.css = value),
   setJWT: (state, value) => (state.jwt = value),
   multiple: (state, value) => (state.multiple = value),
   addSelected: (state, value) => (state.selected.push(value)),
