@@ -4,7 +4,7 @@
     <p>Choose new house for your file(s)/folder(s):</p>
 
     <ul class="file-list">
-      <li @click="select" @dblclick="next" :key="item.name" v-for="item in items" :data-url="item.url">{{ item.name }}</li>
+      <li @click="select" @dblclick="next" :aria-selected="moveTo == item.url" :key="item.name" v-for="item in items" :data-url="item.url">{{ item.name }}</li>
     </ul>
 
     <p>Currently navigating on: <code>{{ current }}</code>.</p>
@@ -27,45 +27,36 @@ export default {
   data: function () {
     return {
       items: [],
-      current: window.location.pathname
+      current: window.location.pathname,
+      moveTo: null
     }
   },
   computed: mapState(['req', 'selected', 'baseURL']),
-  mounted: function () {
-    if (this.$route.path !== '/files/') {
-      this.items.push({
-        name: '..',
-        url: url.removeLastDir(this.$route.path) + '/'
-      })
-    }
-
+  mounted () {
+    // If we're showing this on a listing,
+    // we can use the current request object
+    // to fill the move options.
     if (this.req.kind === 'listing') {
-      for (let item of this.req.items) {
-        if (!item.isDir) continue
-
-        this.items.push({
-          name: item.name,
-          url: item.url
-        })
-      }
-
+      this.fillOptions(this.req)
       return
     }
+
+    // Otherwise, we must be on a preview or editor
+    // so we fetch the data from the previous directory.
+    api.fetch(url.removeLastDir(this.$rute.path))
+      .then(this.fillOptions)
+      .catch(this.showError)
   },
   methods: {
     move: function (event) {
       event.preventDefault()
 
-      let el = event.currentTarget
+      // Set the destination and create the promises array.
       let promises = []
-      let dest = this.current
+      let dest = (this.moveTo === null) ? this.current : this.moveTo
       buttons.loading('move')
 
-      let selected = el.querySelector('li[aria-selected=true]')
-      if (selected !== null) {
-        dest = selected.dataset.url
-      }
-
+      // Create a new promise for each file.
       for (let item of this.selected) {
         let from = this.req.items[item].url
         let to = dest + '/' + encodeURIComponent(this.req.items[item].name)
@@ -74,75 +65,69 @@ export default {
         promises.push(api.move(from, to))
       }
 
-      this.$store.commit('showMove', false)
-
+      // Execute the promises.
       Promise.all(promises)
         .then(() => {
           buttons.done('move')
-          this.$router.push({page: dest})
+          this.$router.push({ path: dest })
         })
         .catch(error => {
           buttons.done('move')
           this.$store.commit('showError', error)
         })
     },
-    next: function (event) {
-      let uri = event.currentTarget.dataset.url
-      this.json(uri)
-        .then((data) => {
-          this.current = uri
-          this.items = []
+    fillOptions (req) {
+      // Sets the current path and resets
+      // the current items.
+      this.current = req.url
+      this.items = []
 
-          if (uri !== this.baseURL + '/') {
-            this.items.push({
-              name: '..',
-              url: url.removeLastDir(uri) + '/'
-            })
-          }
-
-          let req = JSON.parse(data)
-          for (let item of req.items) {
-            if (!item.isDir) continue
-
-            this.items.push({
-              name: item.name,
-              url: item.uri
-            })
-          }
+      // If the path isn't the root path,
+      // show a button to navigate to the previous
+      // directory.
+      if (req.url !== '/files/') {
+        this.items.push({
+          name: '..',
+          url: url.removeLastDir(req.url) + '/'
         })
-        .catch(e => console.log(e))
+      }
+
+      // If this folder is empty, finish here.
+      if (req.items === null) return
+
+      // Otherwise we add every directory to the
+      // move options.
+      for (let item of req.items) {
+        if (!item.isDir) continue
+
+        this.items.push({
+          name: item.name,
+          url: item.url
+        })
+      }
     },
-    json: function (url) {
-      return new Promise((resolve, reject) => {
-        let request = new XMLHttpRequest()
-        request.open('GET', url)
-        request.setRequestHeader('Accept', 'application/json')
-        request.onload = () => {
-          if (request.status === 200) {
-            resolve(request.responseText)
-          } else {
-            reject(request.statusText)
-          }
-        }
-        request.onerror = () => reject(request.statusText)
-        request.send()
-      })
+    showError (error) {
+      this.$store.commit('showError', error)
+    },
+    next: function (event) {
+      // Retrieves the URL of the directory the user
+      // just clicked in and fill the options with its
+      // content.
+      let uri = event.currentTarget.dataset.url
+
+      api.fetch(uri)
+        .then(this.fillOptions)
+        .catch(this.showError)
     },
     select: function (event) {
-      let el = event.currentTarget
-
-      if (el.getAttribute('aria-selected') === 'true') {
-        el.setAttribute('aria-selected', false)
+      // If the element is already selected, unselect it.
+      if (this.moveTo === event.currentTarget.dataset.url) {
+        this.moveTo = null
         return
       }
 
-      let el2 = this.$el.querySelector('li[aria-selected=true]')
-      if (el2) {
-        el2.setAttribute('aria-selected', false)
-      }
-
-      el.setAttribute('aria-selected', true)
-      return
+      // Otherwise select the element.
+      this.moveTo = event.currentTarget.dataset.url
     }
   }
 }

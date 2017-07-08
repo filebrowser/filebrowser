@@ -21,13 +21,10 @@ function fetch (url) {
     request.onload = () => {
       switch (request.status) {
         case 200:
-          let req = JSON.parse(request.responseText)
-          store.commit('updateRequest', req)
-          document.title = req.name
-          resolve(req.url)
+          resolve(JSON.parse(request.responseText))
           break
         default:
-          reject(request.status)
+          reject(request.responseText)
           break
       }
     }
