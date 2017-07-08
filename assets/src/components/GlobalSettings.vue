@@ -3,7 +3,8 @@
     <h1>Global Settings</h1>
 
     <ul>
-      <li><router-link v-if="user.admin" to="/users">Go to User Management</router-link></li>
+      <li><router-link to="/settings/profile">Go to Profile Settings</router-link></li>
+      <li><router-link to="/users">Go to User Management</router-link></li>
     </ul>
 
     <form @submit="saveCommands">
