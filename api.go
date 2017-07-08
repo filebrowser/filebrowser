@@ -133,7 +133,7 @@ func getHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int,
 	}
 
 	// Tries to get the file type.
-	if err = f.RetrieveFileType(); err != nil {
+	if err = f.RetrieveFileType(true); err != nil {
 		return errorToHTTP(err, true), err
 	}
 
