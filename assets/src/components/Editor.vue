@@ -112,7 +112,6 @@ export default {
       api.put(this.$route.path, content)
         .then(() => {
           buttons.done('save')
-          console.log('Saved!')
         })
         .catch(error => {
           buttons.done('save')

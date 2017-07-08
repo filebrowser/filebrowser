@@ -14,7 +14,13 @@ const mutations = {
   },
   showError: (state, value) => {
     state.show = 'error'
-    state.showMessage = value
+
+    if (typeof value !== 'object') {
+      state.showMessage = value
+      return
+    }
+
+    state.showMessage = value.message
   },
   setLoading: (state, value) => { state.loading = value },
   setReload: (state, value) => { state.reload = value },

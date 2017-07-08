@@ -6,6 +6,9 @@ import Files from '@/components/Files'
 import Users from '@/components/Users'
 import User from '@/components/User'
 import Settings from '@/components/Settings'
+import error403 from '@/components/errors/403'
+import error404 from '@/components/errors/404'
+import error500 from '@/components/errors/500'
 import auth from '@/utils/auth.js'
 import store from '@/store'
 
@@ -52,6 +55,21 @@ const router = new Router({
           path: '/settings',
           name: 'Settings',
           component: Settings
+        },
+        {
+          path: '/403',
+          name: 'Forbidden',
+          component: error403
+        },
+        {
+          path: '/404',
+          name: 'Not Found',
+          component: error404
+        },
+        {
+          path: '/500',
+          name: 'Internal Server Error',
+          component: error500
         },
         {
           path: '/users',
