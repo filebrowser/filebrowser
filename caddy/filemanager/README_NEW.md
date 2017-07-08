@@ -49,5 +49,4 @@ Show the content of `foo` at `/bar`:
 
 ```
 filemanager /bar /show
-}
 ```
