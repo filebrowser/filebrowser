@@ -64,7 +64,7 @@ type file struct {
 // A listing is the context used to fill out a template.
 type listing struct {
 	// The items (files and folders) in the path.
-	Items []file `json:"items"`
+	Items []*file `json:"items"`
 	// The number of directories in the listing.
 	NumDirs int `json:"numDirs"`
 	// The number of files (items that aren't directories) in the listing.
@@ -124,7 +124,7 @@ func (i *file) getListing(c *requestContext, r *http.Request) error {
 	}
 
 	var (
-		fileinfos           []file
+		fileinfos           []*file
 		dirCount, fileCount int
 	)
 
@@ -146,16 +146,19 @@ func (i *file) getListing(c *requestContext, r *http.Request) error {
 		// Absolute URL
 		url := url.URL{Path: i.URL + name}
 
-		i := file{
-			Name:    f.Name(),
-			Size:    f.Size(),
-			ModTime: f.ModTime(),
-			Mode:    f.Mode(),
-			IsDir:   f.IsDir(),
-			URL:     url.String(),
+		i := &file{
+			Name:        f.Name(),
+			Size:        f.Size(),
+			ModTime:     f.ModTime(),
+			Mode:        f.Mode(),
+			IsDir:       f.IsDir(),
+			URL:         url.String(),
+			Extension:   filepath.Ext(name),
+			VirtualPath: filepath.Join(i.VirtualPath, name),
+			Path:        filepath.Join(i.Path, name),
 		}
-		i.RetrieveFileType()
 
+		i.RetrieveFileType(false)
 		fileinfos = append(fileinfos, i)
 	}
 
@@ -198,14 +201,14 @@ func (i *file) getEditor() error {
 
 // RetrieveFileType obtains the mimetype and converts it to a simple
 // type nomenclature.
-func (i *file) RetrieveFileType() error {
+func (i *file) RetrieveFileType(checkContent bool) error {
 	var content []byte
 	var err error
 
 	// Tries to get the file mimetype using its extension.
 	mimetype := mime.TypeByExtension(i.Extension)
 
-	if mimetype == "" {
+	if mimetype == "" && checkContent {
 		content, err = ioutil.ReadFile(i.Path)
 		if err != nil {
 			return err

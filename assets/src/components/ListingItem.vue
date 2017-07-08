@@ -6,9 +6,9 @@
   @drop="drop"
   @click="click"
   @dblclick="open"
-  :aria-selected="isSelected()">
+  :aria-selected="isSelected">
     <div>
-      <i class="material-icons">{{ icon() }}</i>
+      <i class="material-icons">{{ icon }}</i>
     </div>
 
     <div>
@@ -35,20 +35,20 @@ export default {
   props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index'],
   computed: {
     ...mapState(['selected', 'req']),
-    ...mapGetters(['selectedCount'])
-  },
-  methods: {
-    ...mapMutations(['addSelected', 'removeSelected', 'resetSelected']),
-    isSelected: function () {
+    ...mapGetters(['selectedCount']),
+    isSelected () {
       return (this.selected.indexOf(this.index) !== -1)
     },
-    icon: function () {
+    icon () {
       if (this.isDir) return 'folder'
       if (this.type === 'image') return 'insert_photo'
       if (this.type === 'audio') return 'volume_up'
       if (this.type === 'video') return 'movie'
       return 'insert_drive_file'
-    },
+    }
+  },
+  methods: {
+    ...mapMutations(['addSelected', 'removeSelected', 'resetSelected']),
     humanSize: function () {
       return filesize(this.size)
     },
@@ -57,6 +57,12 @@ export default {
     },
     dragStart: function (event) {
       if (this.selectedCount === 0) {
+        this.addSelected(this.index)
+        return
+      }
+
+      if (!this.isSelected) {
+        this.resetSelected()
         this.addSelected(this.index)
       }
     },
