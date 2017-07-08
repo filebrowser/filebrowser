@@ -34,9 +34,8 @@ export default {
   created () {
     api.getUsers().then(users => {
       this.users = users
-      console.log(users)
     }).catch(error => {
-      console.log(error)
+      this.$store.commit('showError', error)
     })
   }
 }

@@ -115,7 +115,7 @@ export default {
         })
         .catch(error => {
           buttons.done('save')
-          console.log(error)
+          this.$store.commit('showError', error)
         })
     }
   }

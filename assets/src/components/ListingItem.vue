@@ -99,7 +99,9 @@ export default {
         .then(() => {
           this.$store.commit('setReload', true)
         })
-        .catch(error => console.log(error))
+        .catch(error => {
+          this.$store.commit('showError', error)
+        })
     },
     click: function (event) {
       if (this.selectedCount !== 0) event.preventDefault()

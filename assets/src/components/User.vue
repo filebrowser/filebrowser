@@ -124,7 +124,6 @@ export default {
 
         this.rules = this.rules.trim()
       }).catch(error => {
-        console.log(error)
         this.$router.push({ path: '/users/new' })
       })
     },
