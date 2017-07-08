@@ -4,7 +4,12 @@
     <p>Choose new house for your file(s)/folder(s):</p>
 
     <ul class="file-list">
-      <li @click="select" @dblclick="next" :aria-selected="moveTo == item.url" :key="item.name" v-for="item in items" :data-url="item.url">{{ item.name }}</li>
+      <li @click="select"
+        @touchstart="touchstart"
+        @dblclick="next"
+        :aria-selected="moveTo == item.url"
+        :key="item.name" v-for="item in items"
+        :data-url="item.url">{{ item.name }}</li>
     </ul>
 
     <p>Currently navigating on: <code>{{ current }}</code>.</p>
@@ -27,6 +32,10 @@ export default {
   data: function () {
     return {
       items: [],
+      touches: {
+        id: '',
+        count: 0
+      },
       current: window.location.pathname,
       moveTo: null
     }
@@ -118,6 +127,31 @@ export default {
       api.fetch(uri)
         .then(this.fillOptions)
         .catch(this.showError)
+    },
+    touchstart (event) {
+      let url = event.currentTarget.dataset.url
+
+      // In 300 milliseconds, we shall reset the count.
+      setTimeout(() => {
+        this.touches.count = 0
+      }, 300)
+
+      // If the element the user is touching
+      // is different from the last one he touched,
+      // reset the count.
+      if (this.touches.id !== url) {
+        this.touches.id = url
+        this.touches.count = 1
+        return
+      }
+
+      this.touches.count++
+
+      // If there is more than one touch already,
+      // open the next screen.
+      if (this.touches.count > 1) {
+        this.next(event)
+      }
     },
     select: function (event) {
       // If the element is already selected, unselect it.
