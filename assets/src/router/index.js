@@ -5,7 +5,8 @@ import Main from '@/components/Main'
 import Files from '@/components/Files'
 import Users from '@/components/Users'
 import User from '@/components/User'
-import Settings from '@/components/Settings'
+import GlobalSettings from '@/components/GlobalSettings'
+import ProfileSettings from '@/components/ProfileSettings'
 import error403 from '@/components/errors/403'
 import error404 from '@/components/errors/404'
 import error500 from '@/components/errors/500'
@@ -54,7 +55,22 @@ const router = new Router({
         {
           path: '/settings',
           name: 'Settings',
-          component: Settings
+          redirect: {
+            path: '/settings/profile'
+          }
+        },
+        {
+          path: '/settings/profile',
+          name: 'Profile Settings',
+          component: ProfileSettings
+        },
+        {
+          path: '/settings/global',
+          name: 'Global Settings',
+          component: GlobalSettings,
+          meta: {
+            requiresAdmin: true
+          }
         },
         {
           path: '/403',

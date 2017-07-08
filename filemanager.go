@@ -2,12 +2,16 @@ package filemanager
 
 import (
 	"errors"
+	"log"
 	"net/http"
+	"os"
+	"os/exec"
 	"regexp"
 	"strings"
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/asdine/storm"
+	"github.com/mholt/caddy"
 	"golang.org/x/net/webdav"
 )
 
@@ -40,6 +44,9 @@ type FileManager struct {
 
 	// Users is a map with the different configurations for each user.
 	Users map[string]*User
+
+	// A map of events to a slice of commands.
+	Commands map[string][]string
 
 	// The plugins that have been plugged in.
 	Plugins []*Plugin
@@ -134,6 +141,10 @@ func New(database string, base User) (*FileManager, error) {
 	m := &FileManager{
 		Users:  map[string]*User{},
 		assets: rice.MustFindBox("./assets/dist"),
+	}
+
+	m.Commands = map[string][]string{
+		"before_save": []string{"cmd /c \"echo %file%\""},
 	}
 
 	// Tries to open a database on the location provided. This
@@ -272,4 +283,45 @@ func (r *Regexp) MatchString(s string) bool {
 	}
 
 	return r.regexp.MatchString(s)
+}
+
+// Runner ...
+func (m FileManager) Runner(event string, path string) error {
+	for _, command := range m.Commands[event] {
+		args := strings.Split(command, " ")
+		nonblock := false
+
+		if len(args) > 1 && args[len(args)-1] == "&" {
+			// Run command in background; non-blocking
+			nonblock = true
+			args = args[:len(args)-1]
+		}
+
+		command, args, err := caddy.SplitCommandAndArgs(strings.Join(args, " "))
+		if err != nil {
+			return err
+		}
+
+		cmd := exec.Command(command, args...)
+		cmd.Env = append(os.Environ(), "file="+path)
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		if nonblock {
+			log.Printf("[INFO] Nonblocking Command:\"%s %s\"", command, strings.Join(args, " "))
+			if err := cmd.Start(); err != nil {
+				return err
+			}
+
+			continue
+		}
+
+		log.Printf("[INFO] Blocking Command:\"%s %s\"", command, strings.Join(args, " "))
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
