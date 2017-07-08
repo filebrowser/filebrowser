@@ -143,10 +143,6 @@ func New(database string, base User) (*FileManager, error) {
 		assets: rice.MustFindBox("./assets/dist"),
 	}
 
-	m.Commands = map[string][]string{
-		"before_save": []string{"cmd /c \"echo %file%\""},
-	}
-
 	// Tries to open a database on the location provided. This
 	// function will automatically create a new one if it doesn't
 	// exist.
@@ -161,6 +157,21 @@ func New(database string, base User) (*FileManager, error) {
 	if err != nil && err == storm.ErrNotFound {
 		m.key = []byte(randomString(64))
 		err = db.Set("config", "key", m.key)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Tries to get the event commands from the database.
+	// If they don't exist, initialize them.
+	err = db.Get("config", "commands", &m.Commands)
+	if err != nil && err == storm.ErrNotFound {
+		m.Commands = map[string][]string{
+			"before_save": []string{},
+			"after_save":  []string{},
+		}
+		err = db.Set("config", "commands", m.Commands)
 	}
 
 	if err != nil {
@@ -285,7 +296,7 @@ func (r *Regexp) MatchString(s string) bool {
 	return r.regexp.MatchString(s)
 }
 
-// Runner ...
+// Runner runs the commands for a certain event type.
 func (m FileManager) Runner(event string, path string) error {
 	for _, command := range m.Commands[event] {
 		args := strings.Split(command, " ")
