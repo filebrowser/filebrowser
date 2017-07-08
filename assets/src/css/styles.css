@@ -34,8 +34,7 @@
 
 .action i {
   padding: 0.4em;
-  -webkit-transition: 0.2s ease-in-out all;
-  transition: 0.2s ease-in-out all;
+  transition: .1s ease-in-out all;
   border-radius: 50%;
 }
 

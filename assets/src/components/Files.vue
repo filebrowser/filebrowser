@@ -7,6 +7,11 @@
   <editor v-else-if="isEditor"></editor>
   <listing :class="{ multiple }" v-else-if="isListing"></listing>
   <preview v-else-if="isPreview"></preview>
+  <div v-else>
+    <h2 class="message">
+      <span>Loading...</span>
+    </h2>
+  </div>
 </template>
 
 <script>
@@ -16,18 +21,8 @@ import InternalError from './errors/500'
 import Preview from './Preview'
 import Listing from './Listing'
 import Editor from './Editor'
-import css from '@/utils/css'
 import api from '@/utils/api'
 import { mapGetters, mapState, mapMutations } from 'vuex'
-
-function updateColumnSizes () {
-  let columns = Math.floor(document.querySelector('main').offsetWidth / 300)
-  let items = css(['#listing.mosaic .item', '.mosaic#listing .item'])
-
-  if (columns === 0) columns = 1
-
-  items.style.width = `calc(${100 / columns}% - 1em)`
-}
 
 export default {
   name: 'files',
@@ -72,13 +67,17 @@ export default {
     '$route': 'fetchData',
     'reload': function () {
       this.$store.commit('setReload', false)
+      this.$store.commit('resetSelected')
+      this.$store.commit('multiple', false)
+      this.$store.commit('closeHovers')
       this.fetchData()
     }
   },
   mounted () {
-    updateColumnSizes()
-    window.addEventListener('resize', updateColumnSizes)
     window.addEventListener('keydown', this.keyEvent)
+  },
+  beforeDestroy () {
+    window.removeEventListener('keydown', this.keyEvent)
   },
   methods: {
     ...mapMutations([ 'setLoading' ]),
@@ -117,17 +116,11 @@ export default {
       if (event.keyCode === 27) {
         this.$store.commit('closeHovers')
 
-        if (this.req.kind !== 'listing') {
-          return
+        // If we're on a listing, unselect all
+        // files and folders.
+        if (this.req.kind === 'listing') {
+          this.$store.commit('resetSelected')
         }
-
-        // If we're on a listing, unselect all files and folders.
-        let items = document.getElementsByClassName('item')
-        Array.from(items).forEach(link => {
-          link.setAttribute('aria-selected', false)
-        })
-
-        this.$store.commit('resetSelected')
       }
 
       // Del!

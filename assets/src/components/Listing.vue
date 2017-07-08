@@ -73,6 +73,7 @@
 <script>
 import {mapState} from 'vuex'
 import Item from './ListingItem'
+import css from '@/utils/css'
 import api from '@/utils/api'
 import buttons from '@/utils/buttons'
 
@@ -103,17 +104,38 @@ export default {
     }
   },
   mounted: function () {
-    document.addEventListener('dragover', function (event) {
-      event.preventDefault()
-    }, false)
+    // Check the columns size for the first time.
+    this.resizeEvent()
 
-    document.addEventListener('drop', this.drop, false)
+    // Add the needed event listeners to the window and document.
+    window.addEventListener('resize', this.resizeEvent)
+    document.addEventListener('dragover', this.preventDefault)
+    document.addEventListener('drop', this.drop)
+  },
+  beforeDestroy () {
+    // Remove event listeners before destroying this page.
+    window.removeEventListener('resize', this.resizeEvent)
+    document.removeEventListener('dragover', this.preventDefault)
+    document.removeEventListener('drop', this.drop)
   },
   methods: {
     base64: function (name) {
       return window.btoa(unescape(encodeURIComponent(name)))
     },
+    preventDefault (event) {
+      // Wrapper around prevent default.
+      event.preventDefault()
+    },
+    resizeEvent () {
+      // Update the columns size based on the window width.
+      let columns = Math.floor(document.querySelector('main').offsetWidth / 300)
+      let items = css(['#listing.mosaic .item', '.mosaic#listing .item'])
+      if (columns === 0) columns = 1
+      items.style.width = `calc(${100 / columns}% - 1em)`
+    },
     dragEnter: function (event) {
+      // When the user starts dragging an item, put every
+      // file on the listing with 50% opacity.
       let items = document.getElementsByClassName('item')
 
       Array.from(items).forEach(file => {
