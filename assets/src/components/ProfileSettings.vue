@@ -1,8 +1,10 @@
 <template>
   <div class="dashboard">
-    <h1>Settings</h1>
+    <h1>Profile Settings</h1>
 
-    <router-link v-if="user.admin" to="/users">Go to User Management</router-link>
+    <ul>
+      <li><router-link v-if="user.admin" to="/settings/global">Go to Global Settings</router-link></li>
+    </ul>
 
     <form @submit="changePassword">
       <h2>Change Password</h2>

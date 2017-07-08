@@ -53,7 +53,7 @@ func serveHTTP(c *requestContext, w http.ResponseWriter, r *http.Request) (int, 
 	// API handler if so.
 	if matchURL(r.URL.Path, "/api") {
 		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/api")
-		return serveAPI(c, w, r)
+		return apiHandler(c, w, r)
 	}
 
 	// Any other request should show the index.html file.
@@ -84,6 +84,54 @@ func staticHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (i
 	)
 }
 
+// apiHandler is the main entry point for the /api endpoint.
+func apiHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	if r.URL.Path == "/auth/get" {
+		return authHandler(c, w, r)
+	}
+
+	if r.URL.Path == "/auth/renew" {
+		return renewAuthHandler(c, w, r)
+	}
+
+	valid, _ := validateAuth(c, r)
+	if !valid {
+		return http.StatusForbidden, nil
+	}
+
+	var router string
+	router, r.URL.Path = cleanURL(r.URL.Path)
+
+	if !c.us.Allowed(r.URL.Path) {
+		return http.StatusForbidden, nil
+	}
+
+	if router == "checksum" || router == "download" {
+		var err error
+		c.fi, err = getInfo(r.URL, c.fm, c.us)
+		if err != nil {
+			return errorToHTTP(err, false), err
+		}
+	}
+
+	switch router {
+	case "download":
+		return downloadHandler(c, w, r)
+	case "checksum":
+		return checksumHandler(c, w, r)
+	case "command":
+		return command(c, w, r)
+	case "search":
+		return search(c, w, r)
+	case "resource":
+		return resourceHandler(c, w, r)
+	case "users":
+		return usersHandler(c, w, r)
+	}
+
+	return http.StatusNotFound, nil
+}
+
 // serveChecksum calculates the hash of a file. Supports MD5, SHA1, SHA256 and SHA512.
 func checksumHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	query := r.URL.Query().Get("algo")
@@ -97,6 +145,23 @@ func checksumHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 
 	w.Write([]byte(val))
 	return 0, nil
+}
+
+// cleanURL splits the path and returns everything that stands
+// before the first slash and everything that goes after.
+func cleanURL(path string) (string, string) {
+	if path == "" {
+		return "", ""
+	}
+
+	path = strings.TrimPrefix(path, "/")
+
+	i := strings.Index(path, "/")
+	if i == -1 {
+		return "", path
+	}
+
+	return path[0:i], path[i:len(path)]
 }
 
 // renderFile renders a file using a template with some needed variables.
