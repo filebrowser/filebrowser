@@ -22,7 +22,7 @@ All of the options above are optional.
 
 + **baseurl** is the URL where you will access the File Manager interface. Defaults to `/`.
 + **scope** is the path, relative or absolute, to the directory you want to browse in. Defaults to `./`.
-+ **path** is the database path where File Manager will store the settings that aren't included in the Caddyfile. By default, the database will be stored on `.caddy` folder and its name will be an hashed combination of the host and the `baseurl`. It is **highly** recommended to set this option. Otherwise, whenever you change the host or the baseurl, your settings will be lost or you will need to point to the previous database.
++ **path** is the database path where the settings that aren't included in the Caddyfile will be stored. By default, the database will be stored on `.caddy` folder and its name will be an hashed combination of the host and the `baseurl`. It is **highly** recommended to set this option. Otherwise, whenever you change the host or the `baseurl`, your settings will be lost or you will need to point to the previous database.
 
 ## Examples
 
