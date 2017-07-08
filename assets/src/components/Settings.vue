@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import api from '@/utils/api'
 
 export default {
@@ -50,6 +50,7 @@ export default {
     this.css = this.user.css
   },
   methods: {
+    ...mapMutations([ 'showSuccess' ]),
     changePassword (event) {
       event.preventDefault()
 
@@ -58,8 +59,7 @@ export default {
       }
 
       api.updatePassword(this.password).then(() => {
-        console.log('Success')
-        // TODO: show success
+        this.showSuccess('Password updated!')
       }).catch(e => {
         this.$store.commit('showError', e)
       })
@@ -68,8 +68,9 @@ export default {
       event.preventDefault()
 
       api.updateCSS(this.css).then(() => {
-        console.log('Success')
-        // TODO: show success
+        this.$store.commit('setUserCSS', this.css)
+        this.$emit('css-updated')
+        this.showSuccess('Styles updated!')
       }).catch(e => {
         this.$store.commit('showError', e)
       })

@@ -72,7 +72,7 @@ func serveAPI(c *requestContext, w http.ResponseWriter, r *http.Request) (int, e
 	case "resource":
 		return resourceHandler(c, w, r)
 	case "users":
-		if !c.us.Admin && !(r.URL.Path == "/self" && r.Method == http.MethodPut) {
+		if !c.us.Admin && !((r.URL.Path == "/change-password" || r.URL.Path == "/change-css") && r.Method == http.MethodPut) {
 			return http.StatusForbidden, nil
 		}
 
@@ -503,7 +503,7 @@ func usersPutHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 	sid = strings.TrimSuffix(sid, "/")
 
 	id, err := strconv.Atoi(sid)
-	if err != nil && sid != "self" {
+	if err != nil && sid != "change-password" && sid != "change-css" {
 		return http.StatusNotFound, err
 	}
 
@@ -520,33 +520,33 @@ func usersPutHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 		return http.StatusBadRequest, errors.New("Invalid JSON")
 	}
 
-	if sid == "self" {
-		if u.Password != "" {
-			pw, err := hashPassword(u.Password)
-			if err != nil {
-				return http.StatusInternalServerError, err
-			}
-
-			c.us.Password = pw
-			err = c.fm.db.UpdateField(&User{ID: c.us.ID}, "Password", pw)
-			if err != nil {
-				return http.StatusInternalServerError, err
-			}
-
-			return http.StatusOK, nil
+	if sid == "change-password" {
+		if u.Password == "" {
+			return http.StatusBadRequest, errors.New("Password cannot be empty")
 		}
 
-		if u.CSS != "" {
-			c.us.CSS = u.CSS
-			err = c.fm.db.UpdateField(&User{ID: c.us.ID}, "CSS", u.CSS)
-			if err != nil {
-				return http.StatusInternalServerError, err
-			}
-
-			return http.StatusOK, nil
+		pw, err := hashPassword(u.Password)
+		if err != nil {
+			return http.StatusInternalServerError, err
 		}
 
-		return http.StatusBadRequest, errors.New("Password or CSS is missing")
+		c.us.Password = pw
+		err = c.fm.db.UpdateField(&User{ID: c.us.ID}, "Password", pw)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		return http.StatusOK, nil
+	}
+
+	if sid == "change-css" {
+		c.us.CSS = u.CSS
+		err = c.fm.db.UpdateField(&User{ID: c.us.ID}, "CSS", u.CSS)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		return http.StatusOK, nil
 	}
 
 	// The username and the filesystem cannot be empty.
