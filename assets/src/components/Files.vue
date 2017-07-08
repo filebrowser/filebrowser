@@ -70,7 +70,6 @@ export default {
   },
   created () {
     this.fetchData()
-    console.log('created')
   },
   watch: {
     '$route': 'fetchData',
@@ -96,16 +95,16 @@ export default {
       if (url[0] !== '/') url = '/' + url
 
       api.fetch(url)
-      .then((trueURL) => {
-        if (!url.endsWith('/') && trueURL.endsWith('/')) {
-          console.log(trueURL)
+      .then((req) => {
+        if (!url.endsWith('/') && req.url.endsWith('/')) {
           window.history.replaceState(window.history.state, document.title, window.location.pathname + '/')
         }
 
+        this.$store.commit('updateRequest', req)
+        document.title = req.name
         this.setLoading(false)
       })
       .catch(error => {
-        console.log(error)
         this.error = error
         this.setLoading(false)
       })
@@ -130,9 +129,13 @@ export default {
 
       // Del!
       if (event.keyCode === 46) {
-        if (this.showDeleteButton && this.req.kind !== 'editor') {
-          this.$store.commit('showHover', 'delete')
-        }
+        if (this.req.kind === 'editor' ||
+          this.$route.name !== 'Files' ||
+          this.loading ||
+          !this.user.allowEdit ||
+          (this.req.kind === 'listing' && this.selectedCount === 0)) return
+
+        this.$store.commit('showHover', 'delete')
       }
 
       // F1!
@@ -143,9 +146,14 @@ export default {
 
       // F2!
       if (event.keyCode === 113) {
-        if (this.showRenameButton) {
-          this.$store.commit('showHover', 'rename')
-        }
+        if (this.req.kind === 'editor' ||
+          this.$route.name !== 'Files' ||
+          this.loading ||
+          !this.user.allowEdit ||
+          (this.req.kind === 'listing' && this.selectedCount === 0) ||
+          (this.req.kind === 'listing' && this.selectedCount > 1)) return
+
+        this.$store.commit('showHover', 'rename')
       }
 
       // CTRL + S

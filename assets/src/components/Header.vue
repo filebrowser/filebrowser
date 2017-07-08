@@ -69,7 +69,7 @@ export default {
       return this.req.kind === 'listing' && !this.loading && this.$route.name === 'Files'
     },
     showSaveButton () {
-      return (this.req.kind === 'editor' && !this.loading) || this.$route.name === 'User'
+      return (this.req.kind === 'editor' && !this.loading)
     },
     showSwitchButton () {
       return this.req.kind === 'listing' && this.$route.name === 'Files' && !this.loading

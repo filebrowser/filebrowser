@@ -38,6 +38,10 @@ export default {
     document.getElementById('save-button').removeEventListener('click', this.save)
   },
   mounted: function () {
+    if (this.req.content === undefined || this.req.content === null) {
+      this.req.content = ''
+    }
+
     // Set up the main content editor.
     this.content = CodeMirror(document.getElementById('editor'), {
       value: this.req.content,
