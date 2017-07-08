@@ -37,8 +37,7 @@ export default {
         .then(() => {
           this.$router.push({ path: redirect })
         })
-        .catch(e => {
-          console.log(e)
+        .catch(() => {
           this.wrong = true
         })
     }
