@@ -4,10 +4,10 @@
 package filemanager
 
 import (
-	"log"
+	"crypto/sha256"
+	"encoding/hex"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -69,13 +69,9 @@ func parse(c *caddy.Controller) ([]*config, error) {
 	)
 
 	for c.Next() {
-		// TODO:
-		// filemanager [baseurl] [baseScope] {
-		//     database	path
-		// }
-
 		baseURL := "/"
 		baseScope := "."
+		database := ""
 
 		// Get the baseURL and baseScope
 		args := c.RemainingArgs()
@@ -88,7 +84,38 @@ func parse(c *caddy.Controller) ([]*config, error) {
 			baseScope = args[1]
 		}
 
-		fm, err := New("./this.db", User{
+		for c.NextBlock() {
+			switch c.Val() {
+			case "database":
+				if !c.NextArg() {
+					return nil, c.ArgErr()
+				}
+
+				database = c.Val()
+			}
+		}
+
+		caddyConf := httpserver.GetConfig(c)
+
+		// If there is no database path on the settings,
+		// store one in .caddy/filemanager/name.db.
+		if database == "" {
+			path := filepath.Join(caddy.AssetsPath(), "filemanager")
+			err := os.MkdirAll(path, 0700)
+			if err != nil {
+				return nil, err
+			}
+
+			// The name of the database is the hashed value of a string composed
+			// by the host, address path and the baseurl of this File Manager
+			// instance.
+			hasher := sha256.New()
+			hasher.Write([]byte(caddyConf.Addr.Host + caddyConf.Addr.Path + baseURL))
+			sha := hex.EncodeToString(hasher.Sum(nil))
+			database = filepath.Join(path, sha+".db")
+		}
+
+		fm, err := New(database, User{
 			Username:      "admin",
 			Password:      "admin",
 			AllowCommands: true,
@@ -108,8 +135,6 @@ func parse(c *caddy.Controller) ([]*config, error) {
 			return nil, err
 		}
 
-		caddyConf := httpserver.GetConfig(c)
-
 		m := &config{FileManager: fm}
 		m.SetBaseURL(baseURL)
 		m.SetPrefixURL(strings.TrimSuffix(caddyConf.Addr.Path, "/"))
@@ -119,50 +144,4 @@ func parse(c *caddy.Controller) ([]*config, error) {
 	}
 
 	return configs, nil
-}
-
-func makeCommand(c *caddy.Controller, m *config) (Command, error) {
-	fn := func(r *http.Request, c *FileManager, u *User) error { return nil }
-
-	args := c.RemainingArgs()
-	if len(args) == 0 {
-		return fn, c.ArgErr()
-	}
-
-	nonblock := false
-	if len(args) > 1 && args[len(args)-1] == "&" {
-		// Run command in background; non-blocking
-		nonblock = true
-		args = args[:len(args)-1]
-	}
-
-	command, args, err := caddy.SplitCommandAndArgs(strings.Join(args, " "))
-	if err != nil {
-		return fn, c.Err(err.Error())
-	}
-
-	fn = func(r *http.Request, c *FileManager, u *User) error {
-		path := strings.Replace(r.URL.Path, m.baseURL+"/files", "", 1)
-		path = string(u.FileSystem) + "/" + path
-		path = filepath.Clean(path)
-
-		for i := range args {
-			args[i] = strings.Replace(args[i], "{path}", path, -1)
-		}
-
-		cmd := exec.Command(command, args...)
-		cmd.Stdin = os.Stdin
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-
-		if nonblock {
-			log.Printf("[INFO] Nonblocking Command:\"%s %s\"", command, strings.Join(args, " "))
-			return cmd.Start()
-		}
-
-		log.Printf("[INFO] Blocking Command:\"%s %s\"", command, strings.Join(args, " "))
-		return cmd.Run()
-	}
-
-	return fn, nil
 }
