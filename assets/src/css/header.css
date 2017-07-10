@@ -11,6 +11,11 @@ header {
   display: flex;
 }
 
+header .overlay {
+  width: 0;
+  height: 0;
+}
+
 header a,
 header a:hover {
   color: inherit;
@@ -45,6 +50,10 @@ header>div div {
   position: relative;
 }
 
+header > div:last-child div {
+  display: flex;
+}
+
 header>div:first-child {
   height: 4em;
 }
@@ -57,43 +66,9 @@ header .search-button {
   display: none;
 }
 
-
-/* * * * * * * * * * * * * * * *
- *         MORE??       *
- * * * * * * * * * * * * * * * */
-
 #more {
   display: none;
 }
-
-#file-only {
-  display: inline-block;
-  border-right: 1px solid rgba(0, 0, 0, 0.075);
-  padding-right: .3em;
-  margin-right: .3em;
-  transition: .2s ease opacity, visibility;
-  visibility: visible;
-}
-
-#file-only.disabled {
-  opacity: 0;
-  visibility: hidden;
-}
-
-#download ul.active {
-  top: 0;
-  right: 0;
-}
-
-#more ul.active {
-  right: .5em;
-  top: 4.5em;
-}
-
-
-/* * * * * * * * * * * * * * * *
- *          SEARCH BAR         *
- * * * * * * * * * * * * * * * */
 
 #search {
   position: relative;

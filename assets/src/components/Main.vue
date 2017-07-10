@@ -23,6 +23,13 @@ export default {
     SiteHeader,
     Prompts
   },
+  watch: {
+    '$route': function () {
+      this.$store.commit('resetSelected')
+      this.$store.commit('multiple', false)
+      if (this.$store.state.show !== 'success') this.$store.commit('closeHovers')
+    }
+  },
   mounted () {
     this.updateCSS()
   },

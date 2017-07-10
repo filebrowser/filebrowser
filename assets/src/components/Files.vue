@@ -1,16 +1,28 @@
 <template>
-  <div v-if="error">
-    <not-found v-if="error === 404"></not-found>
-    <forbidden v-else-if="error === 403"></forbidden>
-    <internal-error v-else></internal-error>
-  </div>
-  <editor v-else-if="isEditor"></editor>
-  <listing :class="{ multiple }" v-else-if="isListing"></listing>
-  <preview v-else-if="isPreview"></preview>
-  <div v-else>
-    <h2 class="message">
-      <span>Loading...</span>
-    </h2>
+  <div>
+    <div id="breadcrumbs">
+      <router-link to="/files/">
+        <i class="material-icons">home</i>
+      </router-link>
+
+      <span v-for="link in breadcrumbs" :key="link.name">
+        <span class="chevron"><i class="material-icons">keyboard_arrow_right</i></span>
+        <router-link :to="link.url">{{ link.name }}</router-link>
+      </span>
+    </div>
+    <div v-if="error">
+      <not-found v-if="error === 404"></not-found>
+      <forbidden v-else-if="error === 403"></forbidden>
+      <internal-error v-else></internal-error>
+    </div>
+    <editor v-else-if="isEditor"></editor>
+    <listing :class="{ multiple }" v-else-if="isListing"></listing>
+    <preview v-else-if="isPreview"></preview>
+    <div v-else>
+      <h2 class="message">
+        <span>Loading...</span>
+      </h2>
+    </div>
   </div>
 </template>
 
@@ -53,6 +65,30 @@ export default {
     },
     isEditor () {
       return this.req.kind === 'editor' && !this.loading
+    },
+    breadcrumbs () {
+      let parts = this.$route.path.split('/')
+
+      if (parts[0] === '') {
+        parts.shift()
+      }
+
+      if (parts[parts.length - 1] === '') {
+        parts.pop()
+      }
+
+      let breadcrumbs = []
+
+      for (let i = 0; i < parts.length; i++) {
+        if (i === 0) {
+          breadcrumbs.push({ name: parts[i], url: '/' + parts[i] + '/' })
+        } else {
+          breadcrumbs.push({ name: parts[i], url: breadcrumbs[i - 1].url + parts[i] + '/' })
+        }
+      }
+
+      breadcrumbs.shift()
+      return breadcrumbs
     }
   },
   data: function () {
