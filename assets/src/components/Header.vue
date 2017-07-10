@@ -15,18 +15,38 @@
       <button v-show="showSaveButton" aria-label="Save" class="action" id="save-button">
         <i class="material-icons" title="Save">save</i>
       </button>
-      <rename-button v-show="showRenameButton"></rename-button>
-      <move-button v-show="showMoveButton"></move-button>
-      <delete-button v-show="showDeleteButton"></delete-button>
-      <switch-button v-show="showSwitchButton"></switch-button>
-      <download-button v-show="showCommonButton"></download-button>
-      <upload-button v-show="showUpload"></upload-button>
-      <info-button v-show="showCommonButton"></info-button>
 
-      <button v-show="showSelectButton" @click="$store.commit('multiple', true)" aria-label="Select multiple" class="action">
-        <i class="material-icons">check_circle</i>
-        <span>Select</span>
+      <button @click="openMore" id="more" aria-label="More" title="More" class="action">
+        <i class="material-icons">more_vert</i>
       </button>
+
+      <!-- Menu that shows on listing AND mobile when there are files selected -->
+      <div id="file-selection" v-if="isMobile && req.kind === 'listing'">
+        <span v-if="selectedCount > 0">{{ selectedCount }} selected</span>
+        <rename-button v-show="showRenameButton"></rename-button>
+        <move-button v-show="showMoveButton"></move-button>
+        <delete-button v-show="showDeleteButton"></delete-button>
+      </div>
+
+      <!-- This buttons are shown on a dropdown on mobile phones -->
+      <div id="dropdown" :class="{ active: showMore }">
+        <div v-if="!isListing || !isMobile">
+          <rename-button v-show="showRenameButton"></rename-button>
+          <move-button v-show="showMoveButton"></move-button>
+          <delete-button v-show="showDeleteButton"></delete-button>
+        </div>
+
+        <switch-button v-show="showSwitchButton"></switch-button>
+        <download-button v-show="showCommonButton"></download-button>
+        <upload-button v-show="showUpload"></upload-button>
+        <info-button v-show="showCommonButton"></info-button>
+
+        <button v-show="showSelectButton" @click="openSelect" aria-label="Select multiple" class="action">
+          <i class="material-icons">check_circle</i>
+          <span>Select</span>
+        </button>
+      </div>
+      <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
     </div>
   </header>
 </template>
@@ -54,6 +74,16 @@ export default {
     SwitchButton,
     MoveButton
   },
+  data: function () {
+    return {
+      width: window.innerWidth
+    }
+  },
+  created () {
+    window.addEventListener('resize', () => {
+      this.width = window.innerWidth
+    })
+  },
   computed: {
     ...mapGetters([
       'selectedCount'
@@ -65,6 +95,12 @@ export default {
       'reload',
       'multiple'
     ]),
+    isMobile () {
+      return this.width <= 736
+    },
+    isListing () {
+      return this.req.kind === 'listing'
+    },
     showSelectButton () {
       return this.req.kind === 'listing' && !this.loading && this.$route.name === 'Files'
     },
@@ -121,14 +157,31 @@ export default {
       }
 
       return false
+    },
+    showMore () {
+      if (this.$route.name !== 'Files' || this.loading) return false
+      return (this.$store.state.show === 'more')
+    },
+    showOverlay () {
+      return (this.$store.state.show === 'more')
     }
   },
   methods: {
     openSidebar () {
       this.$store.commit('showHover', 'sidebar')
     },
+    openMore () {
+      this.$store.commit('showHover', 'more')
+    },
     openSearch () {
       this.$store.commit('showHover', 'search')
+    },
+    openSelect () {
+      this.$store.commit('multiple', true)
+      this.resetPrompts()
+    },
+    resetPrompts () {
+      this.$store.commit('closeHovers')
     }
   }
 }

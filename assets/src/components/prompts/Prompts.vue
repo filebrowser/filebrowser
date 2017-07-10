@@ -55,7 +55,7 @@ export default {
     showNewDir: function () { return this.show === 'newDir' },
     showDownload: function () { return this.show === 'download' },
     showOverlay: function () {
-      return (this.show !== null && this.show !== 'search')
+      return (this.show !== null && this.show !== 'search' && this.show !== 'more')
     }
   },
   methods: {

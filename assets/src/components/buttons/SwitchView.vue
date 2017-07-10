@@ -10,6 +10,9 @@ export default {
   name: 'switch-button',
   methods: {
     change: function (event) {
+      // If we are on mobile we should close the dropdown.
+      this.$store.commit('closeHovers')
+
       let display = 'mosaic'
 
       if (this.$store.state.req.display === 'mosaic') {
