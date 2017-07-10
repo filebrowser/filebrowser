@@ -58,7 +58,7 @@
     display: flex;
     align-items: center;
     background: #fff;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 3px, rgba(0, 0, 0, 0.12) 0px 1px 2px;
     width: 95%;
     max-width: 16em;
   }
@@ -91,6 +91,9 @@
   }
   header img {
     display: none;
+  }
+  #listing {
+    margin-bottom: 5em;
   }
   #listing.list .item.header,
   main {
