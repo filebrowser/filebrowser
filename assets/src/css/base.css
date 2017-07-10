@@ -117,15 +117,16 @@ main {
   width: calc(100% - 19em);
 }
 
+#breadcrumbs {
+  height: 3em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
 #breadcrumbs span,
 #breadcrumbs {
   display: flex;
   align-items: center;
   color: #6f6f6f;
-}
-
-#breadcrumbs .chevron {
-
 }
 
 #breadcrumbs a {
