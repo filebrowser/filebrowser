@@ -8,7 +8,7 @@ Note that if you are handling large files you might run into troubles due to the
 
 To start using this plugin you just need to go to the [download Caddy page](https://caddyserver.com/download) and choose `filemanager` in the directives section. For further information on how Caddy works refer to [its documentation](https://caddyserver.com/docs).
 
-The default credentials are `admin` for the user and the password. It is highy recommended to change this after logging in for the first time and to use HTTPS. In the web interface, you can create more users and define their own permissions.
+The default credentials are `admin` for both the user and the password. It is highy recommended to change them after logging in for the first time and to use HTTPS. You can create more users and define their own permissions using the web interface.
 
 ## Syntax
 
@@ -18,11 +18,11 @@ filemanager [baseurl] [scope] {
 }
 ```
 
-All of the options above are optional.
+`baseurl` is the URL path where you will access File Manager. Defaults to `/`.
 
-+ **baseurl** is the URL where you will access the File Manager interface. Defaults to `/`.
-+ **scope** is the path, relative or absolute, to the directory you want to browse in. Defaults to `./`.
-+ **path** is the database path where the settings that aren't included in the Caddyfile will be stored. By default, the database will be stored on `.caddy` folder and its name will be an hashed combination of the host and the `baseurl`. It is **highly** recommended to set this option. Otherwise, whenever you change the host or the `baseurl`, your settings will be lost or you will need to point to the previous database.
+`scope` is the path, relative or absolute, to the directory you want to browse in. This value will be used for the creation of the first user. Defaults to `./`.
+
+`path` is the database path where the settings will be stored. By default, the database will be stored on `.caddy/filemanager` folder and its name will be an hashed combination of the host and the `baseurl`. If you use a relative path it will be relative to `.caddy/filemanager`. Despite being optional, it is **highly** recommended to set this option in order to keep the settings when you change the `baseurl` and/or the hostname.
 
 ## Examples
 

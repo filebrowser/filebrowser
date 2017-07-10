@@ -4,8 +4,9 @@
 package filemanager
 
 import (
-	"crypto/sha256"
+	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -97,22 +98,31 @@ func parse(c *caddy.Controller) ([]*config, error) {
 
 		caddyConf := httpserver.GetConfig(c)
 
+		path := filepath.Join(caddy.AssetsPath(), "filemanager")
+		err := os.MkdirAll(path, 0700)
+		if err != nil {
+			return nil, err
+		}
+
+		// if there is a database path and it is not absolute,
+		// it will be relative to Caddy folder.
+		if !filepath.IsAbs(database) && database != "" {
+			database = filepath.Join(path, database)
+		}
+
 		// If there is no database path on the settings,
 		// store one in .caddy/filemanager/name.db.
 		if database == "" {
-			path := filepath.Join(caddy.AssetsPath(), "filemanager")
-			err := os.MkdirAll(path, 0700)
-			if err != nil {
-				return nil, err
-			}
-
 			// The name of the database is the hashed value of a string composed
 			// by the host, address path and the baseurl of this File Manager
 			// instance.
-			hasher := sha256.New()
+			hasher := md5.New()
 			hasher.Write([]byte(caddyConf.Addr.Host + caddyConf.Addr.Path + baseURL))
 			sha := hex.EncodeToString(hasher.Sum(nil))
 			database = filepath.Join(path, sha+".db")
+
+			fmt.Println("[WARNING] A database is going to be created for your File Manager instace at " + database +
+				". It is highly recommended that you set the 'database' option to '" + sha + ".db'\n")
 		}
 
 		fm, err := New(database, User{
