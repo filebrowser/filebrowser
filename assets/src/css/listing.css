@@ -24,7 +24,7 @@
   display: flex;
   flex-wrap: nowrap;
   color: #6f6f6f;
-  transition: .1s ease all;
+  transition: .1s ease background, .1s ease opacity;
   align-items: center;
   cursor: pointer;
 }
@@ -161,7 +161,7 @@
   background: #f8f8f8;
   position: fixed;
   width: calc(100% - 19em);
-  top: 4em;
+  top: 7em;
   right: 1em;
   z-index: 999;
   padding: .85em;

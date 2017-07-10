@@ -88,6 +88,15 @@ export default {
       }
 
       breadcrumbs.shift()
+
+      if (breadcrumbs.length > 3) {
+        while (breadcrumbs.length !== 4) {
+          breadcrumbs.shift()
+        }
+
+        breadcrumbs[0].name = '...'
+      }
+
       return breadcrumbs
     }
   },
@@ -107,6 +116,15 @@ export default {
   },
   mounted () {
     window.addEventListener('keydown', this.keyEvent)
+    window.addEventListener('scroll', event => {
+      let top = 112 - window.scrollY
+
+      if (top < 64) {
+        top = 64
+      }
+
+      document.querySelector('#listing.list .item.header').style.top = top + 'px'
+    })
   },
   beforeDestroy () {
     window.removeEventListener('keydown', this.keyEvent)
