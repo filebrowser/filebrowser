@@ -11,6 +11,26 @@
     <error v-else-if="showError"></error>
     <success v-else-if="showSuccess"></success>
 
+    <template v-for="plugin in plugins">
+      <form class="prompt"
+        v-for="prompt in plugin.prompts"
+        :key="prompt.name"
+        v-if="show === prompt.name"
+        @submit="prompt.submit($event, pluginData, $route)">
+        <h3>{{ prompt.title }}</h3>
+        <p>{{ prompt.description }}</p>
+        <input v-for="input in prompt.inputs"
+          :key="input.name"
+          :type="input.type"
+          :name="input.name"
+          :placeholder="input.placeholder">
+        <div>
+          <input type="submit" class="ok" :value="prompt.ok">
+          <button class="cancel" @click="$store.commit('closeHovers')">Cancel</button>
+        </div>
+      </form>
+    </template>
+
     <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
   </div>
 </template>
@@ -27,6 +47,8 @@ import Success from './Success'
 import NewFile from './NewFile'
 import NewDir from './NewDir'
 import { mapState } from 'vuex'
+import buttons from '@/utils/buttons'
+import api from '@/utils/api'
 
 export default {
   name: 'prompts',
@@ -42,8 +64,18 @@ export default {
     NewDir,
     Help
   },
+  data: function () {
+    return {
+      pluginData: {
+        api,
+        buttons,
+        'store': this.$store,
+        'router': this.$router
+      }
+    }
+  },
   computed: {
-    ...mapState(['show']),
+    ...mapState(['show', 'plugins']),
     showError: function () { return this.show === 'error' },
     showSuccess: function () { return this.show === 'success' },
     showInfo: function () { return this.show === 'info' },

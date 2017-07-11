@@ -37,11 +37,12 @@
   margin: .5em 0 1em;
 }
 
-.prompt input {
+.prompt input:not([type="submit"]) {
   width: 100%;
   border: 1px solid #dadada;
   line-height: 1;
   padding: .3em;
+  margin: .3em 0;
 }
 
 .prompt code {

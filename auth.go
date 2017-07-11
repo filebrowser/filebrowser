@@ -13,7 +13,7 @@ import (
 )
 
 // authHandler proccesses the authentication for the user.
-func authHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func authHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Receive the credentials from the request and unmarshal them.
 	var cred User
 	if r.Body == nil {
@@ -26,7 +26,7 @@ func authHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int
 	}
 
 	// Checks if the user exists.
-	u, ok := c.fm.Users[cred.Username]
+	u, ok := c.FM.Users[cred.Username]
 	if !ok {
 		return http.StatusForbidden, nil
 	}
@@ -36,19 +36,19 @@ func authHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int
 		return http.StatusForbidden, nil
 	}
 
-	c.us = u
+	c.User = u
 	return printToken(c, w)
 }
 
 // renewAuthHandler is used when the front-end already has a JWT token
 // and is checking if it is up to date. If so, updates its info.
-func renewAuthHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func renewAuthHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	ok, u := validateAuth(c, r)
 	if !ok {
 		return http.StatusForbidden, nil
 	}
 
-	c.us = u
+	c.User = u
 	return printToken(c, w)
 }
 
@@ -59,11 +59,11 @@ type claims struct {
 }
 
 // printToken prints the final JWT token to the user.
-func printToken(c *requestContext, w http.ResponseWriter) (int, error) {
+func printToken(c *RequestContext, w http.ResponseWriter) (int, error) {
 	// Creates a copy of the user and removes it password
 	// hash so it never arrives to the user.
 	u := User{}
-	u = *c.us
+	u = *c.User
 	u.Password = ""
 
 	// Builds the claims.
@@ -77,7 +77,7 @@ func printToken(c *requestContext, w http.ResponseWriter) (int, error) {
 
 	// Creates the token and signs it.
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	string, err := token.SignedString(c.fm.key)
+	string, err := token.SignedString(c.FM.key)
 
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -106,9 +106,9 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 
 // validateAuth is used to validate the authentication and returns the
 // User if it is valid.
-func validateAuth(c *requestContext, r *http.Request) (bool, *User) {
+func validateAuth(c *RequestContext, r *http.Request) (bool, *User) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
-		return c.fm.key, nil
+		return c.FM.key, nil
 	}
 	var claims claims
 	token, err := request.ParseFromRequestWithClaims(r,
@@ -121,12 +121,12 @@ func validateAuth(c *requestContext, r *http.Request) (bool, *User) {
 		return false, nil
 	}
 
-	u, ok := c.fm.Users[claims.User.Username]
+	u, ok := c.FM.Users[claims.User.Username]
 	if !ok {
 		return false, nil
 	}
 
-	c.us = u
+	c.User = u
 	return true, u
 }
 

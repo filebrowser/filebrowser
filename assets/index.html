@@ -27,6 +27,8 @@
       if (file.match(/\.(js|css)$/)) { %>
       <link rel="<%= chunk.initial?'preload':'prefetch' %>" href="{{ .BaseURL }}/<%= file %>" as="<%= file.match(/\.css$/)?'style':'script' %>"><% }}} %>
 
+  <!-- Plugins info -->
+  <script>{{ range $index, $plugin := .Plugins }}{{ JS $plugin.JavaScript }}{{ end}}</script>
   <style>
   #loading {
     position: fixed;

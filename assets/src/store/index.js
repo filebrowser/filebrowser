@@ -8,6 +8,7 @@ Vue.use(Vuex)
 const state = {
   user: {},
   req: {},
+  plugins: window.plugins || [],
   baseURL: document.querySelector('meta[name="base"]').getAttribute('content'),
   jwt: '',
   loading: false,
