@@ -17,8 +17,8 @@
       </button>
     </div>
 
-    <div v-for="plugin in plugins">
-      <button v-for="action in plugin.sidebar" @click="action.click" :aria-label="action.name" :title="action.name" :key="action.name" class="action">
+    <div v-for="plugin in plugins" :key="plugin.name">
+      <button v-for="action in plugin.sidebar" @click="action.click($event, pluginData, $route)" :aria-label="action.name" :title="action.name" :key="action.name" class="action">
         <i class="material-icons">{{ action.icon }}</i>
         <span>{{ action.name }}</span>
       </button>
@@ -36,30 +36,36 @@
       </button>
     </div>
 
-    <p class="credits">Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.<br><a @click="help">Help</a></p>
+    <p class="credits">
+      <span>Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</span>
+      <span v-for="plugin in plugins" :key="plugin.name" v-html="plugin.credits"><br></span>
+      <span><a @click="help">Help</a></span>
+    </p>
   </nav>
 </template>
 
 <script>
 import {mapState} from 'vuex'
 import auth from '@/utils/auth'
+import buttons from '@/utils/buttons'
+import api from '@/utils/api'
 
 export default {
   name: 'sidebar',
-  data: () => {
+  data: function () {
     return {
-      plugins: []
+      pluginData: {
+        api,
+        buttons,
+        'store': this.$store,
+        'router': this.$router
+      }
     }
   },
   computed: {
-    ...mapState(['user']),
+    ...mapState(['user', 'plugins']),
     active () {
       return this.$store.state.show === 'sidebar'
-    }
-  },
-  mounted () {
-    if (window.plugins !== undefined || window.plugins !== null) {
-      this.plugins = window.plugins
     }
   },
   methods: {

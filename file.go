@@ -108,10 +108,10 @@ func getInfo(url *url.URL, c *FileManager, u *User) (*file, error) {
 }
 
 // getListing gets the information about a specific directory and its files.
-func (i *file) getListing(c *requestContext, r *http.Request) error {
+func (i *file) getListing(c *RequestContext, r *http.Request) error {
 	// Gets the directory information using the Virtual File System of
 	// the user configuration.
-	f, err := c.us.FileSystem.OpenFile(context.TODO(), c.fi.VirtualPath, os.O_RDONLY, 0)
+	f, err := c.User.FileSystem.OpenFile(context.TODO(), c.FI.VirtualPath, os.O_RDONLY, 0)
 	if err != nil {
 		return err
 	}
@@ -130,7 +130,7 @@ func (i *file) getListing(c *requestContext, r *http.Request) error {
 
 	for _, f := range files {
 		name := f.Name()
-		allowed := c.us.Allowed("/" + name)
+		allowed := c.User.Allowed("/" + name)
 
 		if !allowed {
 			continue
@@ -433,12 +433,14 @@ func editorLanguage(mode string) string {
 		mode = "asciidoc"
 	case "rst":
 		mode = "rst"
-	case "html", "htm":
-		mode = "html"
+	case "html", "htm", "xml":
+		mode = "htmlmixed"
 	case "js":
 		mode = "javascript"
 	case "go":
 		mode = "golang"
+	case "":
+		mode = "text"
 	}
 
 	return mode

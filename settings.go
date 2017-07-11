@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func commandsHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func commandsHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	switch r.Method {
 	case http.MethodGet:
 		return commandsGetHandler(c, w, r)
@@ -17,16 +17,16 @@ func commandsHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 	return http.StatusMethodNotAllowed, nil
 }
 
-func commandsGetHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	if !c.us.Admin {
+func commandsGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	if !c.User.Admin {
 		return http.StatusForbidden, nil
 	}
 
-	return renderJSON(w, c.fm.Commands)
+	return renderJSON(w, c.FM.Commands)
 }
 
-func commandsPutHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	if !c.us.Admin {
+func commandsPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	if !c.User.Admin {
 		return http.StatusForbidden, nil
 	}
 
@@ -42,10 +42,10 @@ func commandsPutHandler(c *requestContext, w http.ResponseWriter, r *http.Reques
 		return http.StatusBadRequest, errors.New("Invalid JSON")
 	}
 
-	if err := c.fm.db.Set("config", "commands", commands); err != nil {
+	if err := c.FM.db.Set("config", "commands", commands); err != nil {
 		return http.StatusInternalServerError, err
 	}
 
-	c.fm.Commands = commands
+	c.FM.Commands = commands
 	return http.StatusOK, nil
 }

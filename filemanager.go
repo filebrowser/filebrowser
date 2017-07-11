@@ -49,7 +49,7 @@ type FileManager struct {
 	Commands map[string][]string
 
 	// The plugins that have been plugged in.
-	Plugins []*Plugin
+	Plugins map[string]Plugin
 }
 
 // Command is a command function.
@@ -111,9 +111,13 @@ type Regexp struct {
 }
 
 // Plugin is a File Manager plugin.
-type Plugin struct {
+type Plugin interface {
 	// The JavaScript that will be injected into the main page.
-	JavaScript string
+	JavaScript() string
+	// If the Plugin returns (0, nil), the executation of File Manager will procced as usual.
+	// Otherwise it will stop.
+	BeforeAPI(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
+	AfterAPI(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
 }
 
 // DefaultUser is used on New, when no 'base' user is provided.
@@ -134,13 +138,13 @@ var DefaultUser = User{
 // exists, it will load the users from there. Otherwise, a new user
 // will be created using the 'base' variable. The 'base' User should
 // not have the Password field hashed.
-// TODO: should it ask for a baseURL on New????
 func New(database string, base User) (*FileManager, error) {
 	// Creates a new File Manager instance with the Users
 	// map and Assets box.
 	m := &FileManager{
-		Users:  map[string]*User{},
-		assets: rice.MustFindBox("./assets/dist"),
+		Users:   map[string]*User{},
+		assets:  rice.MustFindBox("./assets/dist"),
+		Plugins: map[string]Plugin{},
 	}
 
 	// Tries to open a database on the location provided. This
@@ -240,13 +244,33 @@ func (m *FileManager) SetBaseURL(url string) {
 	m.BaseURL = strings.TrimSuffix(url, "/")
 }
 
+// RegisterPlugin registers a plugin to a File Manager instance and
+// loads its options from the database.
+func (m *FileManager) RegisterPlugin(name string, plugin Plugin) error {
+	if _, ok := m.Plugins[name]; ok {
+		return errors.New("Plugin already registred")
+	}
+
+	err := m.db.Get("plugins", name, &plugin)
+	if err != nil && err == storm.ErrNotFound {
+		err = m.db.Set("plugins", name, plugin)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	m.Plugins[name] = plugin
+	return nil
+}
+
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	// TODO: Handle errors here and make it compatible with http.Handler
-	code, err := serveHTTP(&requestContext{
-		fm: m,
-		us: nil,
-		fi: nil,
+	code, err := serveHTTP(&RequestContext{
+		FM:   m,
+		User: nil,
+		FI:   nil,
 	}, w, r)
 
 	if code != 0 && err != nil {

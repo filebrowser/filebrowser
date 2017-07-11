@@ -175,6 +175,11 @@
   color: #a5a5a5;
 }
 
+.credits span {
+  display: block;
+  margin: .3em 0;
+}
+
 .credits a,
 .credits a:hover {
   color: inherit;

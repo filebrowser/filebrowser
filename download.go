@@ -14,17 +14,17 @@ import (
 
 // downloadHandler creates an archive in one of the supported formats (zip, tar,
 // tar.gz or tar.bz2) and sends it to be downloaded.
-func downloadHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func downloadHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	query := r.URL.Query().Get("format")
 
-	if !c.fi.IsDir {
+	if !c.FI.IsDir {
 		if r.URL.Query().Get("inline") == "true" {
 			w.Header().Set("Content-Disposition", "inline")
 		} else {
-			w.Header().Set("Content-Disposition", "attachment; filename="+c.fi.Name)
+			w.Header().Set("Content-Disposition", "attachment; filename="+c.FI.Name)
 		}
 
-		http.ServeFile(w, r, c.fi.Path)
+		http.ServeFile(w, r, c.FI.Path)
 		return 0, nil
 	}
 
@@ -39,11 +39,11 @@ func downloadHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 				return http.StatusInternalServerError, err
 			}
 
-			files = append(files, filepath.Join(c.fi.Path, name))
+			files = append(files, filepath.Join(c.FI.Path, name))
 		}
 
 	} else {
-		files = append(files, c.fi.Path)
+		files = append(files, c.FI.Path)
 	}
 
 	if query == "true" {
@@ -89,7 +89,7 @@ func downloadHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 		return http.StatusInternalServerError, err
 	}
 
-	name := c.fi.Name
+	name := c.FI.Name
 	if name == "." || name == "" {
 		name = "download"
 	}

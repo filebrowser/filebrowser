@@ -8,20 +8,22 @@ import (
 	"strings"
 )
 
-// requestContext contains the needed information to make handlers work.
-type requestContext struct {
-	us *User
-	fm *FileManager
-	fi *file
+// RequestContext contains the needed information to make handlers work.
+type RequestContext struct {
+	User *User
+	FM   *FileManager
+	FI   *file
+	// On API handlers, Router is the APi handler we want. TODO: review this
+	Router string
 }
 
 // serveHTTP is the main entry point of this HTML application.
-func serveHTTP(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func serveHTTP(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Checks if the URL contains the baseURL and strips it. Otherwise, it just
 	// returns a 404 error because we're not supposed to be here!
-	p := strings.TrimPrefix(r.URL.Path, c.fm.BaseURL)
+	p := strings.TrimPrefix(r.URL.Path, c.FM.BaseURL)
 
-	if len(p) >= len(r.URL.Path) && c.fm.BaseURL != "" {
+	if len(p) >= len(r.URL.Path) && c.FM.BaseURL != "" {
 		return http.StatusNotFound, nil
 	}
 
@@ -32,9 +34,9 @@ func serveHTTP(c *requestContext, w http.ResponseWriter, r *http.Request) (int, 
 	if r.URL.Path == "/sw.js" {
 		return renderFile(
 			w,
-			c.fm.assets.MustString(r.URL.Path),
+			c.FM.assets.MustString(r.URL.Path),
 			"application/javascript",
-			c.fm.RootURL(),
+			c,
 		)
 	}
 
@@ -63,29 +65,29 @@ func serveHTTP(c *requestContext, w http.ResponseWriter, r *http.Request) (int, 
 
 	return renderFile(
 		w,
-		c.fm.assets.MustString("index.html"),
+		c.FM.assets.MustString("index.html"),
 		"text/html",
-		c.fm.RootURL(),
+		c,
 	)
 }
 
 // staticHandler handles the static assets path.
-func staticHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func staticHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	if r.URL.Path != "/static/manifest.json" {
-		http.FileServer(c.fm.assets.HTTPBox()).ServeHTTP(w, r)
+		http.FileServer(c.FM.assets.HTTPBox()).ServeHTTP(w, r)
 		return 0, nil
 	}
 
 	return renderFile(
 		w,
-		c.fm.assets.MustString(r.URL.Path),
+		c.FM.assets.MustString(r.URL.Path),
 		"application/json",
-		c.fm.RootURL(),
+		c,
 	)
 }
 
 // apiHandler is the main entry point for the /api endpoint.
-func apiHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func apiHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	if r.URL.Path == "/auth/get" {
 		return authHandler(c, w, r)
 	}
@@ -99,46 +101,66 @@ func apiHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int,
 		return http.StatusForbidden, nil
 	}
 
-	var router string
-	router, r.URL.Path = cleanURL(r.URL.Path)
+	c.Router, r.URL.Path = cleanURL(r.URL.Path)
 
-	if !c.us.Allowed(r.URL.Path) {
+	if !c.User.Allowed(r.URL.Path) {
 		return http.StatusForbidden, nil
 	}
 
-	if router == "checksum" || router == "download" {
+	for _, p := range c.FM.Plugins {
+		code, err := p.BeforeAPI(c, w, r)
+		if code != 0 || err != nil {
+			return code, err
+		}
+	}
+
+	if c.Router == "checksum" || c.Router == "download" {
 		var err error
-		c.fi, err = getInfo(r.URL, c.fm, c.us)
+		c.FI, err = getInfo(r.URL, c.FM, c.User)
 		if err != nil {
 			return errorToHTTP(err, false), err
 		}
 	}
 
-	switch router {
+	var code int
+	var err error
+
+	switch c.Router {
 	case "download":
-		return downloadHandler(c, w, r)
+		code, err = downloadHandler(c, w, r)
 	case "checksum":
-		return checksumHandler(c, w, r)
+		code, err = checksumHandler(c, w, r)
 	case "command":
-		return command(c, w, r)
+		code, err = command(c, w, r)
 	case "search":
-		return search(c, w, r)
+		code, err = search(c, w, r)
 	case "resource":
-		return resourceHandler(c, w, r)
+		code, err = resourceHandler(c, w, r)
 	case "users":
-		return usersHandler(c, w, r)
+		code, err = usersHandler(c, w, r)
 	case "commands":
-		return commandsHandler(c, w, r)
+		code, err = commandsHandler(c, w, r)
 	}
 
-	return http.StatusNotFound, nil
+	if code >= 300 || err != nil {
+		return code, err
+	}
+
+	for _, p := range c.FM.Plugins {
+		code, err := p.AfterAPI(c, w, r)
+		if code != 0 || err != nil {
+			return code, err
+		}
+	}
+
+	return code, err
 }
 
 // serveChecksum calculates the hash of a file. Supports MD5, SHA1, SHA256 and SHA512.
-func checksumHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func checksumHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	query := r.URL.Query().Get("algo")
 
-	val, err := c.fi.Checksum(query)
+	val, err := c.FI.Checksum(query)
 	if err == errInvalidOption {
 		return http.StatusBadRequest, err
 	} else if err != nil {
@@ -167,11 +189,20 @@ func cleanURL(path string) (string, string) {
 }
 
 // renderFile renders a file using a template with some needed variables.
-func renderFile(w http.ResponseWriter, file string, contentType string, baseURL string) (int, error) {
-	tpl := template.Must(template.New("file").Parse(file))
+func renderFile(w http.ResponseWriter, file string, contentType string, c *RequestContext) (int, error) {
+	functions := template.FuncMap{
+		"JS": func(s string) template.JS {
+			return template.JS(s)
+		},
+	}
+
+	tpl := template.Must(template.New("file").Funcs(functions).Parse(file))
 	w.Header().Set("Content-Type", contentType+"; charset=utf-8")
 
-	err := tpl.Execute(w, map[string]string{"BaseURL": baseURL})
+	err := tpl.Execute(w, map[string]interface{}{
+		"BaseURL": c.FM.RootURL(),
+		"Plugins": c.FM.Plugins,
+	})
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}

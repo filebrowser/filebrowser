@@ -48,6 +48,7 @@ export default {
       lineNumbers: (this.req.language !== 'markdown'),
       viewportMargin: Infinity,
       autofocus: true,
+      mode: this.req.language,
       theme: (this.req.language === 'markdown') ? 'markdown' : 'ttcn',
       lineWrapping: (this.req.language === 'markdown')
     })
@@ -66,7 +67,8 @@ export default {
       value: this.req.metadata,
       viewportMargin: Infinity,
       lineWrapping: true,
-      theme: 'markdown'
+      theme: 'markdown',
+      mode: this.metalang
     })
 
     CodeMirror.autoLoadMode(this.metadata, this.metalang)

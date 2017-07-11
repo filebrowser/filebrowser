@@ -375,5 +375,6 @@ export default {
   updatePassword,
   updateCSS,
   getCommands,
-  updateCommands
+  updateCommands,
+  removePrefix
 }

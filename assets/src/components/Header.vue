@@ -16,6 +16,20 @@
         <i class="material-icons" title="Save">save</i>
       </button>
 
+      <div v-for="plugin in plugins" :key="plugin.name">
+        <button class="action"
+          v-for="action in plugin.header.visible"
+          v-if="action.if(pluginData, $route)"
+          @click="action.click($event, pluginData, $route)"
+          :aria-label="action.name"
+          :id="action.id"
+          :title="action.name"
+          :key="action.name">
+          <i class="material-icons">{{ action.icon }}</i>
+          <span>{{ action.name }}</span>
+        </button>
+      </div>
+
       <button @click="openMore" id="more" aria-label="More" title="More" class="action">
         <i class="material-icons">more_vert</i>
       </button>
@@ -34,6 +48,20 @@
           <rename-button v-show="showRenameButton"></rename-button>
           <move-button v-show="showMoveButton"></move-button>
           <delete-button v-show="showDeleteButton"></delete-button>
+        </div>
+
+        <div v-for="plugin in plugins" :key="plugin.name">
+          <button class="action"
+            v-for="action in plugin.header.hidden"
+            v-if="action.if(pluginData, $route)"
+            @click="action.click($event, pluginData, $route)"
+            :id="action.id"
+            :aria-label="action.name"
+            :title="action.name"
+            :key="action.name">
+            <i class="material-icons">{{ action.icon }}</i>
+            <span>{{ action.name }}</span>
+          </button>
         </div>
 
         <switch-button v-show="showSwitchButton"></switch-button>
@@ -61,6 +89,8 @@ import DownloadButton from './buttons/Download'
 import SwitchButton from './buttons/SwitchView'
 import MoveButton from './buttons/Move'
 import {mapGetters, mapState} from 'vuex'
+import api from '@/utils/api'
+import buttons from '@/utils/buttons'
 
 export default {
   name: 'main',
@@ -76,7 +106,13 @@ export default {
   },
   data: function () {
     return {
-      width: window.innerWidth
+      width: window.innerWidth,
+      pluginData: {
+        api,
+        buttons,
+        'store': this.$store,
+        'router': this.$router
+      }
     }
   },
   created () {
@@ -93,7 +129,8 @@ export default {
       'user',
       'loading',
       'reload',
-      'multiple'
+      'multiple',
+      'plugins'
     ]),
     isMobile () {
       return this.width <= 736

@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-func resourceHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func resourceHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	switch r.Method {
 	case http.MethodGet:
 		return resourceGetHandler(c, w, r)
@@ -20,8 +20,8 @@ func resourceHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 		return resourceDeleteHandler(c, w, r)
 	case http.MethodPut:
 		// Before save command handler.
-		path := filepath.Join(string(c.us.FileSystem), r.URL.Path)
-		if err := c.fm.Runner("before_save", path); err != nil {
+		path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
+		if err := c.FM.Runner("before_save", path); err != nil {
 			return http.StatusInternalServerError, err
 		}
 
@@ -31,7 +31,7 @@ func resourceHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 		}
 
 		// After save command handler.
-		if err := c.fm.Runner("after_save", path); err != nil {
+		if err := c.FM.Runner("after_save", path); err != nil {
 			return http.StatusInternalServerError, err
 		}
 
@@ -45,9 +45,9 @@ func resourceHandler(c *requestContext, w http.ResponseWriter, r *http.Request) 
 	return http.StatusNotImplemented, nil
 }
 
-func resourceGetHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func resourceGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Obtains the information of the directory/file.
-	f, err := getInfo(r.URL, c.fm, c.us)
+	f, err := getInfo(r.URL, c.FM, c.User)
 	if err != nil {
 		return errorToHTTP(err, false), err
 	}
@@ -60,7 +60,7 @@ func resourceGetHandler(c *requestContext, w http.ResponseWriter, r *http.Reques
 
 	// If it is a dir, go and serve the listing.
 	if f.IsDir {
-		c.fi = f
+		c.FI = f
 		return listingHandler(c, w, r)
 	}
 
@@ -71,7 +71,7 @@ func resourceGetHandler(c *requestContext, w http.ResponseWriter, r *http.Reques
 
 	// If it can't be edited or the user isn't allowed to,
 	// serve it as a listing, with a preview of the file.
-	if !f.CanBeEdited() || !c.us.AllowEdit {
+	if !f.CanBeEdited() || !c.User.AllowEdit {
 		f.Kind = "preview"
 	} else {
 		// Otherwise, we just bring the editor in!
@@ -86,8 +86,8 @@ func resourceGetHandler(c *requestContext, w http.ResponseWriter, r *http.Reques
 	return renderJSON(w, f)
 }
 
-func listingHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	f := c.fi
+func listingHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	f := c.FI
 	f.Kind = "listing"
 
 	err := f.getListing(c, r)
@@ -97,7 +97,7 @@ func listingHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (
 
 	listing := f.listing
 
-	cookieScope := c.fm.RootURL()
+	cookieScope := c.FM.RootURL()
 	if cookieScope == "" {
 		cookieScope = "/"
 	}
@@ -114,14 +114,14 @@ func listingHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (
 	return renderJSON(w, f)
 }
 
-func resourceDeleteHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func resourceDeleteHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Prevent the removal of the root directory.
 	if r.URL.Path == "/" {
 		return http.StatusForbidden, nil
 	}
 
 	// Remove the file or folder.
-	err := c.us.FileSystem.RemoveAll(context.TODO(), r.URL.Path)
+	err := c.User.FileSystem.RemoveAll(context.TODO(), r.URL.Path)
 	if err != nil {
 		return errorToHTTP(err, true), err
 	}
@@ -129,7 +129,7 @@ func resourceDeleteHandler(c *requestContext, w http.ResponseWriter, r *http.Req
 	return http.StatusOK, nil
 }
 
-func resourcePostPutHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func resourcePostPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Checks if the current request is for a directory and not a file.
 	if strings.HasSuffix(r.URL.Path, "/") {
 		// If the method is PUT, we return 405 Method not Allowed, because
@@ -139,7 +139,7 @@ func resourcePostPutHandler(c *requestContext, w http.ResponseWriter, r *http.Re
 		}
 
 		// Otherwise we try to create the directory.
-		err := c.us.FileSystem.Mkdir(context.TODO(), r.URL.Path, 0666)
+		err := c.User.FileSystem.Mkdir(context.TODO(), r.URL.Path, 0666)
 		return errorToHTTP(err, false), err
 	}
 
@@ -147,13 +147,13 @@ func resourcePostPutHandler(c *requestContext, w http.ResponseWriter, r *http.Re
 	// desirable to override an already existent file. Thus, we check
 	// if the file already exists. If so, we just return a 409 Conflict.
 	if r.Method == http.MethodPost {
-		if _, err := c.us.FileSystem.Stat(context.TODO(), r.URL.Path); err == nil {
+		if _, err := c.User.FileSystem.Stat(context.TODO(), r.URL.Path); err == nil {
 			return http.StatusConflict, errors.New("There is already a file on that path")
 		}
 	}
 
 	// Create/Open the file.
-	f, err := c.us.FileSystem.OpenFile(context.TODO(), r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
+	f, err := c.User.FileSystem.OpenFile(context.TODO(), r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	defer f.Close()
 
 	if err != nil {
@@ -178,7 +178,7 @@ func resourcePostPutHandler(c *requestContext, w http.ResponseWriter, r *http.Re
 	return http.StatusOK, nil
 }
 
-func resourcePatchHandler(c *requestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func resourcePatchHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	dst := r.Header.Get("Destination")
 	dst, err := url.QueryUnescape(dst)
 	if err != nil {
@@ -191,7 +191,7 @@ func resourcePatchHandler(c *requestContext, w http.ResponseWriter, r *http.Requ
 		return http.StatusForbidden, nil
 	}
 
-	err = c.us.FileSystem.Rename(context.TODO(), src, dst)
+	err = c.User.FileSystem.Rename(context.TODO(), src, dst)
 	return errorToHTTP(err, true), err
 }
 

@@ -29,6 +29,7 @@
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     transform: scale(0);
     transition: .1s ease-in-out transform;
+    transform-origin: top right;
     z-index: 99999;
   }
   #dropdown > div {
