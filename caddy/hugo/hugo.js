@@ -27,14 +27,36 @@
     })
   }
 
-  let newArchetype = function (data, file, type) {
+  let newArchetype = function (data, url, type) {
+    url = data.api.removePrefix(url)
+
+    return new Promise((resolve, reject) => {
+      let request = new window.XMLHttpRequest()
+      request.open('POST', `${data.store.state.baseURL}/api/hugo${url}`, true)
+      request.setRequestHeader('Authorization', `Bearer ${data.store.state.jwt}`)
+      request.setRequestHeader('Archetype', encodeURIComponent(type))
+
+      request.onload = () => {
+        if (request.status === 200) {
+          resolve(request.getResponseHeader('Location'))
+        } else {
+          reject(request.responseText)
+        }
+      }
+
+      request.onerror = (error) => reject(error)
+      request.send()
+    })
+  }
+
+  let schedule = function (data, file, date) {
     file = data.api.removePrefix(file)
 
     return new Promise((resolve, reject) => {
       let request = new window.XMLHttpRequest()
       request.open('POST', `${data.store.state.baseURL}/api/hugo${file}`, true)
       request.setRequestHeader('Authorization', `Bearer ${data.store.state.jwt}`)
-      request.setRequestHeader('Archetype', encodeURIComponent(type))
+      request.setRequestHeader('Schedule', date)
 
       request.onload = () => {
         if (request.status === 200) {
@@ -93,7 +115,8 @@
               data.store.state.req.metadata !== null)
           },
           click: function (event, data, route) {
-            console.log('Schedule')
+            document.getElementById('save-button').click()
+            data.store.commit('showHover', 'schedule')
           },
           id: 'schedule-button',
           icon: 'alarm',
@@ -145,8 +168,6 @@
         submit: function (event, data, route) {
           event.preventDefault()
 
-          console.log(event)
-
           let file = event.currentTarget.querySelector('[name="file"]').value
           let type = event.currentTarget.querySelector('[name="archetype"]').value
           if (type === '') type = 'default'
@@ -158,6 +179,40 @@
               data.router.push({ path: url })
             })
             .catch(error => {
+              data.store.commit('showError', error)
+            })
+        }
+      },
+      {
+        name: 'schedule',
+        title: 'Schedule',
+        description: 'Pick a date and time to schedule the publication of this post.',
+        inputs: [
+          {
+            type: 'datetime-local',
+            name: 'date',
+            placeholder: 'Date'
+          }
+        ],
+        ok: 'Schedule',
+        submit: function (event, data, route) {
+          event.preventDefault()
+          data.buttons.loading('schedule')
+
+          let date = event.currentTarget.querySelector('[name="date"]').value
+          if (date === '') {
+            data.buttons.done('schedule')
+            data.store.commit('showError', 'The date must not be empty.')
+            return
+          }
+
+          schedule(data, route.path, date)
+            .then(() => {
+              data.buttons.done('schedule')
+              data.store.commit('setReload', true)
+            })
+            .catch((error) => {
+              data.buttons.done('schedule')
               data.store.commit('showError', error)
             })
         }

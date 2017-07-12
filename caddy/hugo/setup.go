@@ -18,7 +18,8 @@ import (
 )
 
 var (
-	errHugoNotFound = errors.New("It seems that tou don't have 'hugo' on your PATH")
+	errHugoNotFound        = errors.New("It seems that tou don't have 'hugo' on your PATH")
+	errUnsupportedFileType = errors.New("The type of the provided file isn't supported for this action")
 )
 
 // setup configures a new FileManager middleware instance.
@@ -125,10 +126,6 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 			Public:      filepath.Join(directory, "public"),
 			Args:        []string{},
 			CleanPublic: true,
-			Commands: map[string][]string{
-				"before_publish": []string{},
-				"after_publish":  []string{},
-			},
 		}
 
 		// Try to find the Hugo executable path.
@@ -137,6 +134,16 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 		}
 
 		err = m.RegisterPlugin("hugo", hugo)
+		if err != nil {
+			return nil, err
+		}
+
+		err = m.RegisterEventType("before_publish")
+		if err != nil {
+			return nil, err
+		}
+
+		err = m.RegisterEventType("after_publish")
 		if err != nil {
 			return nil, err
 		}
