@@ -114,6 +114,7 @@ type Regexp struct {
 type Plugin interface {
 	// The JavaScript that will be injected into the main page.
 	JavaScript() string
+
 	// If the Plugin returns (0, nil), the executation of File Manager will procced as usual.
 	// Otherwise it will stop.
 	BeforeAPI(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
@@ -264,6 +265,17 @@ func (m *FileManager) RegisterPlugin(name string, plugin Plugin) error {
 	return nil
 }
 
+// RegisterEventType registers a new event type which can be triggered using Runner
+// function.
+func (m *FileManager) RegisterEventType(name string) error {
+	if _, ok := m.Commands[name]; ok {
+		return nil
+	}
+
+	m.Commands[name] = []string{}
+	return m.db.Set("config", "commands", m.Commands)
+}
+
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	// TODO: Handle errors here and make it compatible with http.Handler
@@ -322,7 +334,15 @@ func (r *Regexp) MatchString(s string) bool {
 
 // Runner runs the commands for a certain event type.
 func (m FileManager) Runner(event string, path string) error {
-	for _, command := range m.Commands[event] {
+	commands := []string{}
+
+	// Get the commands from the File Manager instance itself.
+	if val, ok := m.Commands[event]; ok {
+		commands = append(commands, val...)
+	}
+
+	// Execute the commands.
+	for _, command := range commands {
 		args := strings.Split(command, " ")
 		nonblock := false
 

@@ -1,7 +1,6 @@
 package hugo
 
 import (
-	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -17,21 +16,18 @@ import (
 
 type hugo struct {
 	// Website root
-	Root string
+	Root string `description:"The relative or absolute path to the place where your website is located."`
 	// Public folder
-	Public string
+	Public string `description:"The relative or absolute path to the public folder."`
 	// Hugo executable path
-	Exe string
+	Exe string `description:"The absolute path to the Hugo executable or the command to execute."`
 	// Hugo arguments
-	Args []string
+	Args []string `description:"The arguments to run when running Hugo"`
 	// Indicates if we should clean public before a new publish.
-	CleanPublic bool
-	// A map of events to a slice of commands.
-	Commands map[string][]string
+	CleanPublic bool `description:"Indicates if the public folder should be cleaned before publishing the website."`
 
-	// AllowPublish
-
-	javascript string
+	// TODO: AllowPublish
+	// TODO: admin interface to cgange options
 }
 
 func (h hugo) BeforeAPI(c *filemanager.RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
@@ -63,45 +59,60 @@ func (h hugo) BeforeAPI(c *filemanager.RequestContext, w http.ResponseWriter, r 
 		return 0, nil
 	}
 
+	// If we are not using HTTP Post, we shall return Method Not Allowed
+	// since we are only working with this method.
 	if r.Method != http.MethodPost {
 		return http.StatusMethodNotAllowed, nil
 	}
 
+	// If we are creating a file built from an archetype.
 	if r.Header.Get("Archetype") != "" {
 		filename := filepath.Join(string(c.User.FileSystem), r.URL.Path)
-		filename = filepath.Clean(filename)
 		filename = strings.TrimPrefix(filename, "/")
 		archetype := r.Header.Get("archetype")
 
-		if !strings.HasSuffix(filename, ".md") && !strings.HasSuffix(filename, ".markdown") {
-			return http.StatusBadRequest, errors.New("Your file must be markdown")
+		ext := filepath.Ext(filename)
+
+		// If the request isn't for a markdown file, we can't
+		// handle it.
+		if ext != ".markdown" && ext != ".md" {
+			return http.StatusBadRequest, errUnsupportedFileType
 		}
 
+		// Tries to create a new file based on this archetype.
 		args := []string{"new", filename, "--kind", archetype}
-
 		if err := Run(h.Exe, args, h.Root); err != nil {
 			return http.StatusInternalServerError, err
 		}
 
+		// Writes the location of the new file to the Header.
 		w.Header().Set("Location", "/files/content/"+filename)
 		return http.StatusCreated, nil
 	}
 
+	// If we are trying to regenerate the website.
 	if r.Header.Get("Regenerate") == "true" {
+		filename := filepath.Join(string(c.User.FileSystem), r.URL.Path)
+		filename = strings.TrimPrefix(filename, "/")
+
 		// Before save command handler.
-		path := filepath.Clean(filepath.Join(string(c.User.FileSystem), r.URL.Path))
-		if err := c.FM.Runner("before_publish", path); err != nil {
+		if err := c.FM.Runner("before_publish", filename); err != nil {
 			return http.StatusInternalServerError, err
 		}
 
-		args := []string{"undraft", path}
-		if err := Run(h.Exe, args, h.Root); err != nil {
-			return http.StatusInternalServerError, err
+		// We only run undraft command if it is a file.
+		if !strings.HasSuffix(filename, "/") {
+			args := []string{"undraft", filename}
+			if err := Run(h.Exe, args, h.Root); err != nil {
+				return http.StatusInternalServerError, err
+			}
 		}
 
+		// Regenerates the file
 		h.run(false)
 
-		if err := c.FM.Runner("before_publish", path); err != nil {
+		// Executed the before publish command.
+		if err := c.FM.Runner("before_publish", filename); err != nil {
 			return http.StatusInternalServerError, err
 		}
 
