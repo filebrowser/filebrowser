@@ -81,9 +81,9 @@ export default {
 
       for (let i = 0; i < parts.length; i++) {
         if (i === 0) {
-          breadcrumbs.push({ name: parts[i], url: '/' + parts[i] + '/' })
+          breadcrumbs.push({ name: decodeURIComponent(parts[i]), url: '/' + parts[i] + '/' })
         } else {
-          breadcrumbs.push({ name: parts[i], url: breadcrumbs[i - 1].url + parts[i] + '/' })
+          breadcrumbs.push({ name: decodeURIComponent(parts[i]), url: breadcrumbs[i - 1].url + parts[i] + '/' })
         }
       }
 

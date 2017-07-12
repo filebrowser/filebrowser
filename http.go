@@ -140,6 +140,8 @@ func apiHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int,
 		code, err = usersHandler(c, w, r)
 	case "commands":
 		code, err = commandsHandler(c, w, r)
+	case "plugins":
+		code, err = pluginsHandler(c, w, r)
 	}
 
 	if code >= 300 || err != nil {

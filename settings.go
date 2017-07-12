@@ -49,3 +49,35 @@ func commandsPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 	c.FM.Commands = commands
 	return http.StatusOK, nil
 }
+
+func pluginsHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	switch r.Method {
+	case http.MethodGet:
+		return pluginsGetHandler(c, w, r)
+	case http.MethodPut:
+		return pluginsPutHandler(c, w, r)
+	}
+
+	return http.StatusMethodNotAllowed, nil
+}
+
+func pluginsGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	if !c.User.Admin {
+		return http.StatusForbidden, nil
+	}
+
+	return renderJSON(w, c.FM.Plugins)
+}
+
+func pluginsPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	if !c.User.Admin {
+		return http.StatusForbidden, nil
+	}
+
+	if r.Body == nil {
+		return http.StatusBadGateway, errors.New("Empty request body")
+	}
+
+	// TODO
+	return http.StatusOK, nil
+}

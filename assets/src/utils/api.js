@@ -358,6 +358,27 @@ function updateCommands (commands) {
   })
 }
 
+function getPlugins () {
+  return new Promise((resolve, reject) => {
+    let request = new window.XMLHttpRequest()
+    request.open('GET', `${store.state.baseURL}/api/plugins/`, true)
+    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+
+    request.onload = () => {
+      switch (request.status) {
+        case 200:
+          resolve(JSON.parse(request.responseText))
+          break
+        default:
+          reject(request.responseText)
+          break
+      }
+    }
+    request.onerror = (error) => reject(error)
+    request.send()
+  })
+}
+
 export default {
   delete: rm,
   fetch,
@@ -376,5 +397,6 @@ export default {
   updateCSS,
   getCommands,
   updateCommands,
-  removePrefix
+  removePrefix,
+  getPlugins
 }
