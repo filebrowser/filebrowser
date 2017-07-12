@@ -278,7 +278,6 @@ func (m *FileManager) RegisterEventType(name string) error {
 
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
-	// TODO: Handle errors here and make it compatible with http.Handler
 	code, err := serveHTTP(&RequestContext{
 		FM:   m,
 		User: nil,

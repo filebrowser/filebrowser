@@ -94,6 +94,7 @@
             regenerate(data, route.path)
               .then(() => {
                 data.buttons.done('publish')
+                data.store.commit('showSuccess', 'Post published!')
                 data.store.commit('setReload', true)
               })
               .catch((error) => {
@@ -209,7 +210,7 @@
           schedule(data, route.path, date)
             .then(() => {
               data.buttons.done('schedule')
-              data.store.commit('setReload', true)
+              data.store.commit('showSuccess', 'Post scheduled!')
             })
             .catch((error) => {
               data.buttons.done('schedule')

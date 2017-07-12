@@ -14,11 +14,10 @@
         per line. If the event is related to files, such as before and after saving, the environment variable
         <code>file</code> will be available with the path of the file.</p>
 
-      <h3>Before Save</h3>
-      <textarea v-model.trim="beforeSave"></textarea>
-
-      <h3>After Save</h3>
-      <textarea v-model.trim="afterSave"></textarea>
+      <template v-for="command in commands">
+        <h3>{{ capitalize(command.name) }}</h3>
+        <textarea v-model.trim="command.value"></textarea>
+      </template>
 
       <p><input type="submit" value="Save"></p>
     </form>
@@ -34,6 +33,7 @@ export default {
   name: 'settings',
   data: function () {
     return {
+      commands: [],
       beforeSave: '',
       afterSave: ''
     }
@@ -44,23 +44,46 @@ export default {
   created () {
     api.getCommands()
       .then(commands => {
-        this.beforeSave = commands['before_save'].join('\n')
-        this.afterSave = commands['after_save'].join('\n')
+        for (let key in commands) {
+          this.commands.push({
+            name: key,
+            value: commands[key].join('\n')
+          })
+        }
+      })
+      .catch(error => { this.showError(error) })
+
+    api.getPlugins()
+      .then(plugins => {
+        console.log(plugins)
       })
       .catch(error => { this.showError(error) })
   },
   methods: {
     ...mapMutations([ 'showSuccess', 'showError' ]),
+    capitalize (name) {
+      let splitted = name.split('_')
+      name = ''
+
+      for (let i = 0; i < splitted.length; i++) {
+        name += splitted[i].charAt(0).toUpperCase() + splitted[i].slice(1) + ' '
+      }
+
+      return name.slice(0, -1)
+    },
     saveCommands (event) {
       event.preventDefault()
 
-      let commands = {
-        'before_save': this.beforeSave.split('\n'),
-        'after_save': this.afterSave.split('\n')
-      }
+      let commands = {}
 
-      if (commands['before_save'].length === 1 && commands['before_save'][0] === '') commands['before_save'] = []
-      if (commands['after_save'].length === 1 && commands['after_save'][0] === '') commands['after_save'] = []
+      for (let command of this.commands) {
+        let value = command.value.split('\n')
+        if (value.length === 1 && value[0] === '') {
+          value = []
+        }
+
+        commands[command.name] = value
+      }
 
       api.updateCommands(commands)
         .then(() => { this.showSuccess('Commands updated!') })

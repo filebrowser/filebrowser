@@ -46,7 +46,7 @@ export default {
     this.content = CodeMirror(document.getElementById('editor'), {
       value: this.req.content,
       lineNumbers: (this.req.language !== 'markdown'),
-      viewportMargin: Infinity,
+      viewportMargin: 500,
       autofocus: true,
       mode: this.req.language,
       theme: (this.req.language === 'markdown') ? 'markdown' : 'ttcn',
