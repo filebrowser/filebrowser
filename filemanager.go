@@ -45,6 +45,9 @@ type FileManager struct {
 	// Users is a map with the different configurations for each user.
 	Users map[string]*User
 
+	// A map with the runtime added permissions for a user.
+	BasePermissions map[string]bool
+
 	// A map of events to a slice of commands.
 	Commands map[string][]string
 
@@ -84,7 +87,7 @@ type User struct {
 	AllowNew      bool            `json:"allowNew"`      // Create files and folders
 	AllowEdit     bool            `json:"allowEdit"`     // Edit/rename files
 	AllowCommands bool            `json:"allowCommands"` // Execute commands
-	Permissions   map[string]bool `json:"permissions"`   // Permissions added by plugins
+	Permissions   map[string]bool `json:""`              // Permissions added by plugins
 
 	// Commands is the list of commands the user can execute.
 	Commands []string `json:"commands"`
@@ -184,6 +187,17 @@ func New(database string, base User) (*FileManager, error) {
 		return nil, err
 	}
 
+	// Tries to get the base permissions from the database.
+	err = db.Get("config", "permissions", &m.BasePermissions)
+	if err != nil && err == storm.ErrNotFound {
+		m.BasePermissions = map[string]bool{}
+		err = db.Set("config", "permissions", m.BasePermissions)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
 	// Tries to fetch the users from the database and if there are
 	// any, add them to the current File Manager instance.
 	var users []User
@@ -275,6 +289,31 @@ func (m *FileManager) RegisterEventType(name string) error {
 
 	m.Commands[name] = []string{}
 	return m.db.Set("config", "commands", m.Commands)
+}
+
+// RegisterPermission registers a new user permission and adds it to every
+// user with it default's 'value'. If the user is an admin, it will
+// be true.
+func (m *FileManager) RegisterPermission(name string, value bool) error {
+	if _, ok := m.BasePermissions[name]; ok {
+		return nil
+	}
+
+	for _, u := range m.Users {
+		if u.Admin {
+			u.Permissions[name] = true
+		} else {
+			u.Permissions[name] = value
+
+		}
+
+		err := m.db.Save(u)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
