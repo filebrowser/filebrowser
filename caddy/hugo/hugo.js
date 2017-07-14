@@ -82,8 +82,8 @@
               !data.store.state.loading &&
               data.store.state.req.metadata !== undefined &&
               data.store.state.req.metadata !== null &&
-              data.store.state.user.allowEdit)
-            // TODO: add allowPublish
+              data.store.state.user.allowEdit &
+              data.store.state.user.permissions.allowPublish)
           },
           click: function (event, data, route) {
             event.preventDefault()
@@ -113,7 +113,8 @@
             return (data.store.state.req.kind === 'editor' &&
               !data.store.state.loading &&
               data.store.state.req.metadata !== undefined &&
-              data.store.state.req.metadata !== null)
+              data.store.state.req.metadata !== null &&
+              data.store.state.user.permissions.allowPublish)
           },
           click: function (event, data, route) {
             document.getElementById('save-button').click()

@@ -26,7 +26,6 @@ type hugo struct {
 	// Indicates if we should clean public before a new publish.
 	CleanPublic bool `description:"Indicates if the public folder should be cleaned before publishing the website."`
 
-	// TODO: AllowPublish
 	// TODO: admin interface to cgange options
 }
 
@@ -67,6 +66,10 @@ func (h hugo) BeforeAPI(c *filemanager.RequestContext, w http.ResponseWriter, r 
 
 	// If we are creating a file built from an archetype.
 	if r.Header.Get("Archetype") != "" {
+		if !c.User.AllowNew {
+			return http.StatusForbidden, nil
+		}
+
 		filename := filepath.Join(string(c.User.FileSystem), r.URL.Path)
 		filename = strings.TrimPrefix(filename, "/")
 		archetype := r.Header.Get("archetype")
@@ -92,6 +95,10 @@ func (h hugo) BeforeAPI(c *filemanager.RequestContext, w http.ResponseWriter, r 
 
 	// If we are trying to regenerate the website.
 	if r.Header.Get("Regenerate") == "true" {
+		if !c.User.Permissions["allowPublish"] {
+			return http.StatusForbidden, nil
+		}
+
 		filename := filepath.Join(string(c.User.FileSystem), r.URL.Path)
 		filename = strings.TrimPrefix(filename, "/")
 
@@ -120,6 +127,10 @@ func (h hugo) BeforeAPI(c *filemanager.RequestContext, w http.ResponseWriter, r 
 	}
 
 	if r.Header.Get("Schedule") != "" {
+		if !c.User.Permissions["allowPublish"] {
+			return http.StatusForbidden, nil
+		}
+
 		return h.schedule(c, w, r)
 	}
 
