@@ -81,9 +81,10 @@ type User struct {
 	CSS string `json:"css"`
 
 	// These indicate if the user can perform certain actions.
-	AllowNew      bool `json:"allowNew"`      // Create files and folders
-	AllowEdit     bool `json:"allowEdit"`     // Edit/rename files
-	AllowCommands bool `json:"allowCommands"` // Execute commands
+	AllowNew      bool            `json:"allowNew"`      // Create files and folders
+	AllowEdit     bool            `json:"allowEdit"`     // Edit/rename files
+	AllowCommands bool            `json:"allowCommands"` // Execute commands
+	Permissions   map[string]bool `json:"permissions"`   // Permissions added by plugins
 
 	// Commands is the list of commands the user can execute.
 	Commands []string `json:"commands"`

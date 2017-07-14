@@ -116,7 +116,7 @@ func listingHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (
 
 func resourceDeleteHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Prevent the removal of the root directory.
-	if r.URL.Path == "/" {
+	if r.URL.Path == "/" || !c.User.AllowEdit {
 		return http.StatusForbidden, nil
 	}
 
@@ -130,6 +130,14 @@ func resourceDeleteHandler(c *RequestContext, w http.ResponseWriter, r *http.Req
 }
 
 func resourcePostPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	if !c.User.AllowNew && r.Method == http.MethodPost {
+		return http.StatusForbidden, nil
+	}
+
+	if !c.User.AllowEdit && r.Method == http.MethodPut {
+		return http.StatusForbidden, nil
+	}
+
 	// Checks if the current request is for a directory and not a file.
 	if strings.HasSuffix(r.URL.Path, "/") {
 		// If the method is PUT, we return 405 Method not Allowed, because
@@ -179,6 +187,10 @@ func resourcePostPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Re
 }
 
 func resourcePatchHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	if !c.User.AllowEdit {
+		return http.StatusForbidden, nil
+	}
+
 	dst := r.Header.Get("Destination")
 	dst, err := url.QueryUnescape(dst)
 	if err != nil {
