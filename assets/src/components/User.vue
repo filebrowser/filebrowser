@@ -17,6 +17,9 @@
     <p><input type="checkbox" :disabled="admin" v-model="allowNew"> Create new files and directories</p>
     <p><input type="checkbox" :disabled="admin" v-model="allowEdit"> Edit, rename and delete files or directories.</p>
     <p><input type="checkbox" :disabled="admin" v-model="allowCommands"> Execute commands</p>
+    <p v-for="(value, key) in permissions" :key="key">
+      <input type="checkbox" :disabled="admin" v-model="permissions[key]"> {{ capitalize(key) }}
+    </p>
 
     <h3>Commands</h3>
 
@@ -62,6 +65,7 @@ export default {
       allowNew: false,
       allowEdit: false,
       allowCommands: false,
+      permissions: {},
       password: '',
       username: '',
       filesystem: '',
@@ -86,16 +90,20 @@ export default {
       this.allowCommands = true
       this.allowEdit = true
       this.allowNew = true
+      for (let key in this.permissions) {
+        this.permissions[key] = true
+      }
     }
   },
   methods: {
     fetchData () {
+      let user = this.$route.params[0]
+
       if (this.$route.path === '/users/new') {
-        this.reset()
-        return
+        user = 'base'
       }
 
-      api.getUser(this.$route.params[0]).then(user => {
+      api.getUser(user).then(user => {
         this.id = user.ID
         this.admin = user.admin
         this.allowCommands = user.allowCommands
@@ -105,6 +113,7 @@ export default {
         this.username = user.username
         this.commands = user.commands.join(' ')
         this.css = user.css
+        this.permissions = user.permissions
 
         for (let rule of user.rules) {
           if (rule.allow) {
@@ -127,11 +136,22 @@ export default {
         this.$router.push({ path: '/users/new' })
       })
     },
+    capitalize (name) {
+      let splitted = name.split(/(?=[A-Z])/)
+      name = ''
+
+      for (let i = 0; i < splitted.length; i++) {
+        name += splitted[i].charAt(0).toUpperCase() + splitted[i].slice(1) + ' '
+      }
+
+      return name.slice(0, -1)
+    },
     reset () {
       this.id = 0
       this.admin = false
       this.allowNew = false
       this.allowEdit = false
+      this.permissins = {}
       this.allowCommands = false
       this.password = ''
       this.username = ''
@@ -171,6 +191,7 @@ export default {
         allowCommands: this.allowCommands,
         allowNew: this.allowNew,
         allowEdit: this.allowEdit,
+        permissions: this.permissions,
         css: this.css,
         commands: this.commands.split(' '),
         rules: []

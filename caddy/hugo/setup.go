@@ -106,6 +106,7 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 			AllowCommands: true,
 			AllowEdit:     true,
 			AllowNew:      true,
+			Permissions:   map[string]bool{},
 			Commands:      []string{"git", "svn", "hg"},
 			Rules: []*filemanager.Rule{{
 				Regex:  true,
@@ -144,6 +145,11 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 		}
 
 		err = m.RegisterEventType("after_publish")
+		if err != nil {
+			return nil, err
+		}
+
+		err = m.RegisterPermission("allowPublish", true)
 		if err != nil {
 			return nil, err
 		}

@@ -42,11 +42,11 @@ type FileManager struct {
 	// edited directly. Use SetBaseURL.
 	BaseURL string
 
+	// The Default User needed to build the New User page.
+	DefaultUser *User
+
 	// Users is a map with the different configurations for each user.
 	Users map[string]*User
-
-	// A map with the runtime added permissions for a user.
-	BasePermissions map[string]bool
 
 	// A map of events to a slice of commands.
 	Commands map[string][]string
@@ -87,7 +87,7 @@ type User struct {
 	AllowNew      bool            `json:"allowNew"`      // Create files and folders
 	AllowEdit     bool            `json:"allowEdit"`     // Edit/rename files
 	AllowCommands bool            `json:"allowCommands"` // Execute commands
-	Permissions   map[string]bool `json:""`              // Permissions added by plugins
+	Permissions   map[string]bool `json:"permissions"`   // Permissions added by plugins
 
 	// Commands is the list of commands the user can execute.
 	Commands []string `json:"commands"`
@@ -132,6 +132,7 @@ var DefaultUser = User{
 	AllowCommands: true,
 	AllowEdit:     true,
 	AllowNew:      true,
+	Permissions:   map[string]bool{},
 	Commands:      []string{},
 	Rules:         []*Rule{},
 	CSS:           "",
@@ -187,17 +188,6 @@ func New(database string, base User) (*FileManager, error) {
 		return nil, err
 	}
 
-	// Tries to get the base permissions from the database.
-	err = db.Get("config", "permissions", &m.BasePermissions)
-	if err != nil && err == storm.ErrNotFound {
-		m.BasePermissions = map[string]bool{}
-		err = db.Set("config", "permissions", m.BasePermissions)
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
 	// Tries to fetch the users from the database and if there are
 	// any, add them to the current File Manager instance.
 	var users []User
@@ -233,6 +223,9 @@ func New(database string, base User) (*FileManager, error) {
 
 	// Attaches db to this File Manager instance.
 	m.db = db
+	base.Username = ""
+	base.Password = ""
+	m.DefaultUser = &base
 	return m, nil
 }
 
@@ -295,11 +288,17 @@ func (m *FileManager) RegisterEventType(name string) error {
 // user with it default's 'value'. If the user is an admin, it will
 // be true.
 func (m *FileManager) RegisterPermission(name string, value bool) error {
-	if _, ok := m.BasePermissions[name]; ok {
+	if _, ok := m.DefaultUser.Permissions[name]; ok {
 		return nil
 	}
 
+	m.DefaultUser.Permissions[name] = value
+
 	for _, u := range m.Users {
+		if u.Permissions == nil {
+			u.Permissions = map[string]bool{}
+		}
+
 		if u.Admin {
 			u.Permissions[name] = true
 		} else {
