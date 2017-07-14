@@ -292,11 +292,17 @@ func (m *FileManager) RegisterPermission(name string, value bool) error {
 		return nil
 	}
 
+	// Add the default value for this permission on the default user.
 	m.DefaultUser.Permissions[name] = value
 
 	for _, u := range m.Users {
 		if u.Permissions == nil {
 			u.Permissions = map[string]bool{}
+		}
+
+		// Bypass the user if it is already defined.
+		if _, ok := u.Permissions[name]; ok {
+			continue
 		}
 
 		if u.Admin {
