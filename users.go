@@ -52,6 +52,10 @@ func usersGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 		return renderJSON(w, users)
 	}
 
+	if r.URL.Path == "/base" {
+		return renderJSON(w, c.FM.DefaultUser)
+	}
+
 	// Otherwise we just want one, specific, user.
 	sid := strings.TrimPrefix(r.URL.Path, "/")
 	sid = strings.TrimSuffix(sid, "/")
@@ -275,6 +279,10 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 		}
 
 		u.Password = pw
+	}
+
+	if u.Permissions == nil {
+		u.Permissions = c.FM.DefaultUser.Permissions
 	}
 
 	// Updates the whole User struct because we always are supposed
