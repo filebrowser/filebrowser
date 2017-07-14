@@ -296,20 +296,17 @@ func (m *FileManager) RegisterPermission(name string, value bool) error {
 	m.DefaultUser.Permissions[name] = value
 
 	for _, u := range m.Users {
-		if u.Permissions == nil {
-			u.Permissions = map[string]bool{}
-		}
-
 		// Bypass the user if it is already defined.
 		if _, ok := u.Permissions[name]; ok {
 			continue
 		}
 
+		if u.Permissions == nil {
+			u.Permissions = m.DefaultUser.Permissions
+		}
+
 		if u.Admin {
 			u.Permissions[name] = true
-		} else {
-			u.Permissions[name] = value
-
 		}
 
 		err := m.db.Save(u)
