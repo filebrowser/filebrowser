@@ -379,6 +379,27 @@ function getPlugins () {
   })
 }
 
+function updatePlugins (data) {
+  return new Promise((resolve, reject) => {
+    let request = new window.XMLHttpRequest()
+    request.open('PUT', `${store.state.baseURL}/api/plugins/`, true)
+    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+
+    request.onload = () => {
+      switch (request.status) {
+        case 200:
+          resolve()
+          break
+        default:
+          reject(request.responseText)
+          break
+      }
+    }
+    request.onerror = (error) => reject(error)
+    request.send(JSON.stringify(data))
+  })
+}
+
 export default {
   delete: rm,
   fetch,
@@ -398,5 +419,6 @@ export default {
   getCommands,
   updateCommands,
   removePrefix,
-  getPlugins
+  getPlugins,
+  updatePlugins
 }

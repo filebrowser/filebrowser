@@ -7,6 +7,21 @@
       <li><router-link to="/users">Go to User Management</router-link></li>
     </ul>
 
+    <form @submit="savePlugin">
+      <template v-for="plugin in plugins">
+        <h2>{{ capitalize(plugin.name) }}</h2>
+
+        <p v-for="field in plugin.fields" :key="field.name">
+          <label v-if="field.type !== 'checkbox'">{{ field.name }}</label>
+          <input v-if="field.type === 'text'" type="text" v-model.trim="field.value">
+          <input v-else-if="field.type === 'checkbox'" type="checkbox" v-model.trim="field.value">
+          <template v-if="field.type === 'checkbox'">{{ capitalize(field.name, 'caps') }}</template>
+        </p>
+      </template>
+
+      <p><input type="submit" value="Save"></p>
+    </form>
+
     <form @submit="saveCommands">
       <h2>Commands</h2>
 
@@ -34,8 +49,7 @@ export default {
   data: function () {
     return {
       commands: [],
-      beforeSave: '',
-      afterSave: ''
+      plugins: []
     }
   },
   computed: {
@@ -56,13 +70,55 @@ export default {
     api.getPlugins()
       .then(plugins => {
         console.log(plugins)
+        let plugin = {}
+
+        for (let key in plugins) {
+          plugin.name = key
+          plugin.fields = []
+
+          for (let field in plugins[key]) {
+            let value = plugins[key][field]
+
+            if (Array.isArray(value)) {
+              plugin.fields.push({
+                name: field,
+                type: 'text',
+                original: 'array',
+                value: value.join(' ')
+              })
+
+              continue
+            }
+
+            switch (typeof value) {
+              case 'boolean':
+                plugin.fields.push({
+                  name: field,
+                  type: 'checkbox',
+                  original: 'boolean',
+                  value: value
+                })
+                break
+              default:
+                plugin.fields.push({
+                  name: field,
+                  type: 'text',
+                  original: 'text',
+                  value: value
+                })
+            }
+          }
+
+          this.plugins.push(plugin)
+        }
       })
       .catch(error => { this.showError(error) })
   },
   methods: {
     ...mapMutations([ 'showSuccess', 'showError' ]),
-    capitalize (name) {
-      let splitted = name.split('_')
+    capitalize (name, where = '_') {
+      if (where === 'caps') where = /(?=[A-Z])/
+      let splitted = name.split(where)
       name = ''
 
       for (let i = 0; i < splitted.length; i++) {
@@ -87,6 +143,35 @@ export default {
 
       api.updateCommands(commands)
         .then(() => { this.showSuccess('Commands updated!') })
+        .catch(error => { this.showError(error) })
+    },
+    savePlugin (event) {
+      event.preventDefault()
+      let plugins = {}
+
+      for (let plugin of this.plugins) {
+        let p = {}
+
+        for (let field of plugin.fields) {
+          p[field.name] = field.value
+
+          if (field.original === 'array') {
+            let val = field.value.split(' ')
+            if (val[0] === '') {
+              val.shift()
+            }
+
+            p[field.name] = val
+          }
+        }
+
+        plugins[plugin.name] = p
+      }
+
+      console.log(plugins)
+
+      api.updatePlugins(plugins)
+        .then(() => { this.showSuccess('Plugins settings updated!') })
         .catch(error => { this.showError(error) })
     }
   }

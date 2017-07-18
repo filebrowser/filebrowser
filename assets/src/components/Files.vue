@@ -117,7 +117,7 @@ export default {
   mounted () {
     window.addEventListener('keydown', this.keyEvent)
     window.addEventListener('scroll', event => {
-      if (this.req.kind !== 'listing') return
+      if (this.req.kind !== 'listing' || this.$store.state.req.display === 'mosaic') return
 
       let top = 112 - window.scrollY
 
