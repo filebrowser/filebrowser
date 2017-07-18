@@ -43,6 +43,7 @@ When you set a relative path, such as `xxxxxxxxxx.db`, it will always be relativ
 Manage the current working directory's Hugo website at `/admin`.
 
 ```
+root public
 hugo {
   database myinstance.db
 }
@@ -51,6 +52,7 @@ hugo {
 Manage the Hugo website located at `/var/www/mysite` at `/admin`.
 
 ```
+root /var/www/mysite/public
 hugo /var/www/mysite {
   database myinstance.db
 }
@@ -59,6 +61,7 @@ hugo /var/www/mysite {
 Manage the Hugo website located at `/var/www/mysite` at `/private`.
 
 ```
+root /var/www/mysite/public
 hugo /var/www/mysite /private {
   database myinstance.db
 }
