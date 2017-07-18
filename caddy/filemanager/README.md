@@ -2,6 +2,8 @@
 
 filemanager provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its own directory. It is an implementation of [hacdias/filemanager][1] library.
 
+> Notice: if you are searching for WebDAV features, I'll release a new caddy plugin soon dedicated to that functionality. It will be released when Caddy 0.10.5 is launched.
+
 ## Get Started
 
 To start using this plugin you just need to go to the [download Caddy page][3] and choose `http.filemanager` in the directives section. For further information on how Caddy works refer to [its documentation][4].

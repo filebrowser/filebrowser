@@ -40,7 +40,7 @@ When you set a relative path, such as `xxxxxxxxxx.db`, it will always be relativ
 
 ## Examples
 
-Manage the current working directory's Hugo website at `/admin`.
+Manage the current working directory's Hugo website at `/admin` and display the ```public``` folder to the user.
 
 ```
 root public
@@ -49,7 +49,7 @@ hugo {
 }
 ```
 
-Manage the Hugo website located at `/var/www/mysite` at `/admin`.
+Manage the Hugo website located at `/var/www/mysite` at `/admin` and display the ```public``` folder to the user.
 
 ```
 root /var/www/mysite/public
@@ -58,7 +58,7 @@ hugo /var/www/mysite {
 }
 ```
 
-Manage the Hugo website located at `/var/www/mysite` at `/private`.
+Manage the Hugo website located at `/var/www/mysite` at `/private` and display the ```public``` folder to the user.
 
 ```
 root /var/www/mysite/public
