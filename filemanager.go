@@ -223,9 +223,12 @@ func New(database string, base User) (*FileManager, error) {
 
 	// Attaches db to this File Manager instance.
 	m.db = db
-	base.Username = ""
-	base.Password = ""
-	m.DefaultUser = &base
+
+	// Create the default user, making a copy of the base.
+	u := base
+	u.Username = ""
+	u.Password = ""
+	m.DefaultUser = &u
 	return m, nil
 }
 
