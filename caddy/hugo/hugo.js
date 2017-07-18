@@ -143,14 +143,14 @@
         },
         icon: 'merge_type',
         name: 'Hugo new'
-      },
+      }/*,
       {
         click: function (event, data, route) {
           console.log('evt')
         },
         icon: 'remove_red_eye',
         name: 'Preview'
-      }
+      }*/
     ],
     prompts: [
       {

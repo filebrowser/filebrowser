@@ -26,7 +26,7 @@
           :placeholder="input.placeholder">
         <div>
           <input type="submit" class="ok" :value="prompt.ok">
-          <button class="cancel" @click="$store.commit('closeHovers')">Cancel</button>
+          <button class="cancel" @click.prevent="$store.commit('closeHovers')">Cancel</button>
         </div>
       </form>
     </template>
