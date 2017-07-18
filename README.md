@@ -6,6 +6,12 @@
 
 filemanager provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its own directory. It can be used as a standalone app or as a middleware.
 
+# Getting started
+
+This is a library so it can be used on your own applications as a middleware or as a standalone app (examples are going to be added in the future).
+
+The easiest way to get started is using this with Caddy web server. You just need to download Caddy from its [official website](https://caddyserver.com/download) with `http.filemanager` plugin enabled. For more information about the plugin itself, please refer to its [documentation](https://caddyserver.com/docs/http.filemanager).
+
 # Features
 
 Easy login system.
@@ -26,6 +32,9 @@ On the settings page, a regular user can set its own custom CSS to personalize t
 
 We also allow the users to search in the directories and execute commands if allowed.
 
+## Users
+
+![6](https://user-images.githubusercontent.com/5447088/28339269-7a6bab5c-6c03-11e7-9e58-64ead58fc95a.png)
 
 ## Search
 
