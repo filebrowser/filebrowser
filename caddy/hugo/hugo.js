@@ -131,8 +131,8 @@
         click: function (event, data, route) {
           data.router.push({ path: '/files/settings' })
         },
-        icon: 'settings_applications',
-        name: 'Settings'
+        icon: 'settings',
+        name: 'Hugo settings'
       },
       {
         click: function (event, data, route) {
