@@ -1,140 +1,80 @@
 # filemanager - a caddy plugin
 
-filemanager provides WebDAV features and a file managing interface within the specified directory and it can be used to upload, delete, preview, rename and edit your files within that directory. It is an implementation of [hacdias/filemanager](https://github.com/hacdias/filemanager) library.
-
-It is extremely important for security reasons to cover the path of filemanager with some kind of authentication. You can use, for example, [`basicauth`](https://caddyserver.com/docs/basicauth) directive.
-
-Note that if you are handling large files you might run into troubles due to the defaults of [`timeouts`](https://caddyserver.com/docs/timeouts) plugin. Check its [documentation](https://caddyserver.com/docs/timeouts) to learn more about that plugin. 
-
-For information about the working of filemanager itself, go to the [main repository](https://github.com/hacdias/filemanager).
+filemanager provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its own directory. It is an implementation of [hacdias/filemanager][1] library.
 
 ## Get Started
 
-To start using this plugin you just need to go to the [download Caddy page](https://caddyserver.com/download) and choose `filemanager` in the directives section. For further information on how Caddy works refer to [its documentation](https://caddyserver.com/docs).
+To start using this plugin you just need to go to the [download Caddy page][3] and choose `http.filemanager` in the directives section. For further information on how Caddy works refer to [its documentation][4].
 
-If you want to build it from source, consult our [developers section](#developers).
+The default credentials are `admin` for both the user and the password. It is highy recommended to change them after logging in for the first time and to use HTTPS. You can create more users and define their own permissions using the web interface.
+
+For information about the working of filemanager itself, go to the [main repository](https://github.com/hacdias/filemanager).
 
 ## Syntax
 
 ```
-filemanager [baseurl] {
-    show           directory
-    webdav         [path]
-    styles         filepath
-    allow_new      [true|false]
-    allow_edit     [true|false]
-    allow_commands [true|false]
-    allow_command  command
-    block_command  command
-    before_save    command
-    after_save     command
-    allow          [url|dotfiles]
-    allow_r        regex
-    block          [url|dotfiles]
-    block_r        regex
+filemanager [baseurl] [scope] {
+    database  path
 }
 ```
 
-All of the options above are optional.
++ `baseurl` is the URL path where you will access File Manager. Defaults to `/`.
++ `scope` is the path, relative or absolute, to the directory you want to browse in. This value will be used for the creation of the first user. Defaults to `./`.
++ `path` is the database path where the settings will be stored. By default, the settings will be stored on [`.caddy`][5] folder.
 
-+ **baseurl** is the URL where you will access the File Manager interface. Defaults to `/`.
-+ **show** is the path, relative or absolute, to the directory you want to browse in. Defaults to `./`.
-+ **webdav** is the path that will be appended to baseurl in which the [WebDAV](https://en.wikipedia.org/wiki/WebDAV) will be accessible. Defaults to `/webdav`.
-+ **styles** is the relative or absolute path to the stylesheet file. This file doesn't need to be accessible from the web.
-+ **allow_new** is the permission to create new files and directories. Defaults to `true`.
-+ **allow_edit** is the permission to edit, rename and delete files or directories. Defaults to `true`.
-+ **allow_commands** is the permission to execute commands. Defaults to `true`.
-+ **allow_command** and **block_command** gives, or denies, permission to execute a certain command through the admin interface. By default `git`, `svn` and `hg` are enabled.
-+ **before_save** and **after_save** allow you to set a custom command to be executed before saving and after saving a file. The placeholder `{path}` can be used and it will be replaced by the file path.
-+ **allow** and **block** can be used to allow or deny the access to specific files or directories using their URL. You can use the magic word `dotfiles` to allow or block the access to dot-files. The blocked files won't show in the admin interface. By default, `block dotfiles` is activated.
-+ **allow_r** and **block_r** and variations of the previous options but you are able to use regular expressions with them. These regular expressions are used to match the URL, **not** the internal file path.
+## Database
 
+By default the database will be stored on [`.caddy`][5] directory, in a sub-directory called `filemanager`. Each file name is an hash of the combination of the host and the base URL.
 
-So, by **default** we have:
+If you don't set a database path, you will receive a warning like this:
 
-```
-filemanager / {
-    show           ./
-    webdav         /webdav
-    allow_new      true
-    allow_edit     true
-    allow_commands true
-    allow_command  git
-    allow_command  svn
-    allow_command  hg
-    block          dotfiles
-}
-```
+> [WARNING] A database is going to be created for your File Manager instace at ~/.caddy/filemanager/xxx.db. It is highly recommended that you set the 'database' option to 'xxx.db'
 
-As already mentioned, this extension should be used with [`basicauth`](https://caddyserver.com/docs/basicauth). If you do that, you will also be able to set permissions for different users using the following syntax:
+Why? If you don't set a database path and you change the host or the base URL, your settings will be reseted. So it is *highly* recommended to set this option.
 
-```
-filemanager {
-    # You set the global configurations here and
-    # all the users will inherit them.
-    user1:
-    # Here you can set specific settings for the 'user1'.
-    # They will override the global ones for this specific user.
-}
-```
+When you set a relative path, such as `xxxxxxxxxx.db`, it will always be relative to `.caddy/filemanager` directory. Although, you may also use an absolute path if you wish to store the database in other place.
 
 ## Examples
 
 Show the directory where Caddy is being executed at the root of the domain:
 
 ```
-filemanager
-```
-
-Use only WebDAV:
-
-```
 filemanager {
-    webdav /
+  database myinstance.db
 }
 ```
+
 
 Show the content of `foo` at the root of the domain:
 
 ```
-filemanager {
-    show foo/
+filemanager / ./foo {
+  database myinstance.db
 }
 ```
 
 Show the directory where Caddy is being executed at `/filemanager`:
 
 ```
-filemanager /filemanager
+filemanager /filemanager {
+  database myinstance.db
+}
 ```
 
 Show the content of `foo` at `/bar`:
 
 ```
-filemanager /bar{
-    show   foo/
+filemanager /bar /show {
+  database myinstance.db
 }
 ```
 
-Now, a bit more complicated example. You have three users: an administrator, a manager and an editor. The administrator can do everything and has access to the commands `rm` and `mv` because he is a geeky. The manager, doesn't have access to commands, but can create and edit files. The editor can **only** edit files. He can't even create new ones, because he will only edit the files after the manager creates them for him. Both the editor and the manager won't have access to the financial folder. We would have:
+## Known Issues
 
-```
-basicauth /admin admin pass
-basicauth /admin manager pass
-basicauth /admin editor pass
+If you are having troubles **handling large files** you might need to check out the [`timeouts`][2] plugin, which can be used to change the default HTTP Timeouts.
 
-filemanager /admin {
-    show           ./
-    allow_commands false
-    admin:
-    allow_commands true
-    allow_command  rm
-    allow_command  mv
-    allow          dotfiles
-    manager:
-    block          /admin/financial
-    editor:
-    allow_new      false
-    block          /admin/financial
-}
-```
+[1]:https://github.com/hacdias/filemanager
+[2]:https://caddyserver.com/docs/timeouts
+[3]:https://caddyserver.com/download
+[4]:https://caddyserver.com/docs
+[5]:https://caddyserver.com/docs/automatic-https#dot-caddy
