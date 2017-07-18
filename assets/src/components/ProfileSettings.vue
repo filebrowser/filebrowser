@@ -2,8 +2,8 @@
   <div class="dashboard">
     <h1>Profile Settings</h1>
 
-    <ul>
-      <li><router-link v-if="user.admin" to="/settings/global">Go to Global Settings</router-link></li>
+    <ul v-if="user.admin">
+      <li><router-link to="/settings/global">Go to Global Settings</router-link></li>
     </ul>
 
     <form @submit="changePassword">
