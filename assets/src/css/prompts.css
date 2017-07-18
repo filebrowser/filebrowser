@@ -1,0 +1,179 @@
+.prompt {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.075);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  padding: 2em;
+  max-width: 25em;
+  width: 90%;
+  max-height: 95%;
+  z-index: 99999;
+  animation: .1s show forwards;
+}
+
+.overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 9999;
+  animation: .1s show forwards;
+}
+
+.prompt h3 {
+  margin: 0;
+  font-weight: 500;
+  font-size: 1.5em;
+}
+
+.prompt p {
+  font-size: .9em;
+  color: rgba(0, 0, 0, 0.8);
+  margin: .5em 0 1em;
+}
+
+.prompt input:not([type="submit"]) {
+  width: 100%;
+  border: 1px solid #dadada;
+  line-height: 1;
+  padding: .3em;
+  margin: .3em 0;
+}
+
+.prompt code {
+  word-wrap: break-word;
+}
+
+.prompt div {
+  margin-top: 1em;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row-reverse;
+}
+
+.prompt .cancel {
+  background-color: #ECEFF1;
+  color: #37474F;
+}
+
+.prompt .cancel:hover {
+  background-color: #e9eaeb;
+}
+
+.prompt.success i,
+.prompt.error i {
+  color: #F44336;
+  display: block;
+  margin: 0 auto .15em;
+  text-align: center;
+  font-size: 5em;
+}
+
+.prompt.success h3,
+.prompt.error h3 {
+  text-align: center;
+}
+
+.prompt.error button:not(.cancel) {
+  background-color: #F44336
+}
+
+.prompt.success i {
+  color: #8BC34A;
+}
+
+.prompt.success button {
+  background-color: #8BC34A;
+}
+
+
+/* * * * * * * * * * * * * * * *
+ *        PROMPT - MOVE        *
+ * * * * * * * * * * * * * * * */
+
+.file-list {
+  max-height: 50vh;
+  overflow: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.file-list li {
+  width: 100%;
+  user-select: none;
+  border-radius: .2em;
+  padding: .3em;
+}
+
+.file-list li[aria-selected=true] {
+  background: #2196f3 !important;
+  color: #fff !important;
+  transition: .1s ease all;
+}
+
+.file-list li:hover {
+  background-color: #e9eaeb;
+  cursor: pointer;
+}
+
+.file-list li:before {
+  content: "folder";
+  color: #6f6f6f;
+  vertical-align: middle;
+  line-height: 1.4;
+  font-family: 'Material Icons';
+  font-size: 1.75em;
+  margin-right: .25em;
+}
+
+.file-list li[aria-selected=true]:before {
+  color: white;
+}
+
+.prompt#download {
+  max-width: 15em;
+}
+
+.prompt#download button {
+  width: 100%;
+  display: block;
+  margin: 0 0 1em;
+  background-color: #ECEFF1;
+  color: #37474F;
+}
+
+.prompt#download button:last-of-type {
+  margin-bottom: 0;
+}
+
+.help {
+  max-width: 24em;
+}
+
+.help ul {
+  padding: 0;
+  margin: 1em 0;
+  list-style: none;
+}
+
+@keyframes show {
+  0% {
+    display: none;
+    opacity: 0;
+  }
+  1% {
+    display: block;
+    opacity: 0;
+  }
+  100% {
+    display: block;
+    opacity: 1;
+  }
+}
