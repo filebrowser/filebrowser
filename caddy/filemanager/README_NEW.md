@@ -28,7 +28,7 @@ By default the database will be stored on [`.caddy`][5] directory, in a sub-dire
 
 If you don't set a database path, you will receive a warning like this:
 
-> [WARNING] A database is going to be created for your File Manager instace at C:\Users\xxxxx\.caddy\filemanager\xxxxxxxxxx.db. It is highly recommended that you set the 'database' option to 'xxxxxxxxxx.db'
+> [WARNING] A database is going to be created for your File Manager instace at ~/.caddy/filemanager/xxx.db. It is highly recommended that you set the 'database' option to 'xxx.db'
 
 Why? If you don't set a database path and you change the host or the base URL, your settings will be reseted. So it is *highly* recommended to set this option.
 
