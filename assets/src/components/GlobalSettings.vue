@@ -7,7 +7,7 @@
       <li><router-link to="/users">Go to User Management</router-link></li>
     </ul>
 
-    <form @submit="savePlugin">
+    <form @submit="savePlugin" v-if="plugins.length > 0">
       <template v-for="plugin in plugins">
         <h2>{{ capitalize(plugin.name) }}</h2>
 
