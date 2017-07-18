@@ -80,13 +80,13 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 		}
 
 		// if there is a database path and it is not absolute,
-		// it will be relative to Caddy folder.
+		// it will be relative to ".caddy" folder.
 		if !filepath.IsAbs(database) && database != "" {
 			database = filepath.Join(path, database)
 		}
 
 		// If there is no database path on the settings,
-		// store one in .caddy/hugo/name.db.
+		// store one in .caddy/hugo/{name}.db.
 		if database == "" {
 			// The name of the database is the hashed value of a string composed
 			// by the host, address path and the baseurl of this File Manager

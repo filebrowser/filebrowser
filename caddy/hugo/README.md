@@ -12,11 +12,7 @@ Using this plugin, you won't need to have your own computer to edit posts, neith
 
 ```
 hugo [directory] [admin] {
-    clean_public    [true|false]
-    before_publish  command
-    after_publish   command
-    flag            name  [value]
-    # other file manager compatible options
+    database  path
 }
 ```
 

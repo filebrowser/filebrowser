@@ -138,6 +138,9 @@
         click: function (event, data, route) {
           data.store.commit('showHover', 'new-archetype')
         },
+        if: function (data, route) {
+          return data.store.state.user.allowNew
+        },
         icon: 'merge_type',
         name: 'Hugo new'
       },
