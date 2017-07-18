@@ -101,6 +101,9 @@ nav .action {
   border-radius: 0;
   font-size: 1.1em;
   padding: .5em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 nav>div {

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+
+	"github.com/mitchellh/mapstructure"
 )
 
 func commandsHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
@@ -78,6 +80,25 @@ func pluginsPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request
 		return http.StatusBadGateway, errors.New("Empty request body")
 	}
 
-	// TODO
+	var raw map[string]map[string]interface{}
+
+	// Parses the user and checks for error.
+	err := json.NewDecoder(r.Body).Decode(&raw)
+	if err != nil {
+		return http.StatusBadRequest, err
+	}
+
+	for name, plugin := range raw {
+		err = mapstructure.Decode(plugin, c.FM.Plugins[name])
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		err = c.FM.db.Set("plugins", name, c.FM.Plugins[name])
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+	}
+
 	return http.StatusOK, nil
 }

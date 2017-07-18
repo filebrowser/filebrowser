@@ -132,7 +132,7 @@
           data.router.push({ path: '/files/settings' })
         },
         icon: 'settings',
-        name: 'Hugo settings'
+        name: 'Hugo Settings'
       },
       {
         click: function (event, data, route) {
@@ -142,15 +142,15 @@
           return data.store.state.user.allowNew
         },
         icon: 'merge_type',
-        name: 'Hugo new'
-      }/*,
+        name: 'Hugo New'
+      } /* ,
       {
         click: function (event, data, route) {
           console.log('evt')
         },
         icon: 'remove_red_eye',
         name: 'Preview'
-      }*/
+      } */
     ],
     prompts: [
       {
