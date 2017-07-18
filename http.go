@@ -34,7 +34,7 @@ func serveHTTP(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, 
 	if r.URL.Path == "/sw.js" {
 		return renderFile(
 			w,
-			c.FM.assets.MustString(r.URL.Path),
+			c.FM.assets.MustString("sw.js"),
 			"application/javascript",
 			c,
 		)
@@ -80,7 +80,7 @@ func staticHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (i
 
 	return renderFile(
 		w,
-		c.FM.assets.MustString(r.URL.Path),
+		c.FM.assets.MustString("static/manifest.json"),
 		"application/json",
 		c,
 	)
