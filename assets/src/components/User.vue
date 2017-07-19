@@ -45,7 +45,7 @@
 
     <textarea v-model.trim="rules"></textarea>
 
-    <h2>Costum Stylesheet</h2>
+    <h2>Custom Stylesheet</h2>
 
     <textarea name="css"></textarea>
 
