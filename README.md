@@ -41,7 +41,9 @@ We also allow the users to search in the directories and execute commands if all
 
 ## Users
 
-![6](https://user-images.githubusercontent.com/5447088/28339269-7a6bab5c-6c03-11e7-9e58-64ead58fc95a.png)
+We support multiple users and each user can have its own scope and custom stylesheet. The administrator is able to choose which permissions should be given to the users, as well as the commands they can execute. Each user also have a set of rules, in which he can be prevented or allowed to access some directories (regular expressions included!).
+
+![Users](https://user-images.githubusercontent.com/5447088/28339269-7a6bab5c-6c03-11e7-9e58-64ead58fc95a.png)
 
 ## Search
 
