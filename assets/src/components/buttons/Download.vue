@@ -26,7 +26,7 @@ export default {
 
       // If we are on a listing and there is one element selected,
       // download it.
-      if (this.selectedCount === 1) {
+      if (this.selectedCount === 1 && !this.req.items[this.selected[0]].isDir) {
         api.download(null, this.req.items[this.selected[0]].url)
         return
       }
