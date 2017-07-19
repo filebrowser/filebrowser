@@ -12,6 +12,7 @@ filemanager provides a file managing interface within a specified directory and 
 + [Features](#features)
   - [Users](#users)
   - [Search](#search)
++ [Contributing](#contributing)
 
 # Getting started
 
@@ -66,3 +67,15 @@ By default, every search will be case sensitive. Although, you can make a case i
 ```
 this are keywords case:insensitive
 ```
+
+# Contributing
+
+If you want to contribute or want to build the code from source, you will need to have NodeJS and Go installed on your computer. You should start by doing the following:
+
+```
+go get github.com/hacdias/filemanager
+```
+
+Then, you should navigate to `$GOPATH/src/github.com/hacdias/filemanager` and execute `npm install`. You can start the live build of static assets with the command `npm start dev`.
+
+If you are using this as a Caddy plugin, you should use its [official instructions for plugins](https://github.com/mholt/caddy/wiki/Extending-Caddy#2-plug-in-your-plugin) and import `github.com/hacdias/filemanager/caddy/filemanager`.
