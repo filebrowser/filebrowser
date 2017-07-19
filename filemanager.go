@@ -178,8 +178,8 @@ func New(database string, base User) (*FileManager, error) {
 	err = db.Get("config", "commands", &m.Commands)
 	if err != nil && err == storm.ErrNotFound {
 		m.Commands = map[string][]string{
-			"before_save": []string{},
-			"after_save":  []string{},
+			"before_save": {},
+			"after_save":  {},
 		}
 		err = db.Set("config", "commands", m.Commands)
 	}
