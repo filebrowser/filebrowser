@@ -49,12 +49,11 @@ export default {
     download: function () {
       let url = `${this.$store.state.baseURL}/api/download`
       url += this.req.url.slice(6)
-      url += `?token=${this.$store.state.jwt}`
 
       return url
     },
     raw: function () {
-      return `${this.download()}&inline=true`
+      return `${this.download()}?&inline=true`
     },
     back: function (event) {
       let uri = url.removeLastDir(this.$route.path) + '/'

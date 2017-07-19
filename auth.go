@@ -96,12 +96,12 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 		return token, nil
 	}
 
-	token, _ = request.ArgumentExtractor{"token"}.ExtractToken(r)
-	if token != "" {
-		return token, nil
+	cookie, err := r.Cookie("auth")
+	if err != nil {
+		return "", request.ErrNoTokenInRequest
 	}
 
-	return "", request.ErrNoTokenInRequest
+	return cookie.Value, nil
 }
 
 // validateAuth is used to validate the authentication and returns the

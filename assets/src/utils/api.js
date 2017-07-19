@@ -145,7 +145,7 @@ function checksum (url, algo) {
 function command (url, command, onmessage, onclose) {
   let protocol = (ssl ? 'wss:' : 'ws:')
   url = removePrefix(url)
-  url = `${protocol}//${window.location.hostname}${store.state.baseURL}/api/command${url}?token=${store.state.jwt}`
+  url = `${protocol}//${window.location.hostname}${store.state.baseURL}/api/command${url}`
 
   let conn = new window.WebSocket(url)
   conn.onopen = () => conn.send(command)
@@ -156,7 +156,7 @@ function command (url, command, onmessage, onclose) {
 function search (url, search, onmessage, onclose) {
   let protocol = (ssl ? 'wss:' : 'ws:')
   url = removePrefix(url)
-  url = `${protocol}//${window.location.hostname}${store.state.baseURL}/api/search${url}?token=${store.state.jwt}`
+  url = `${protocol}//${window.location.hostname}${store.state.baseURL}/api/search${url}`
 
   let conn = new window.WebSocket(url)
   conn.onopen = () => conn.send(search)
@@ -180,8 +180,6 @@ function download (format, ...files) {
     arg = encodeURIComponent(arg)
     url += `/?files=${arg}&`
   }
-
-  url += `token=${store.state.jwt}`
 
   if (format !== null) {
     url += `&format=${format}`
