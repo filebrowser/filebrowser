@@ -77,7 +77,7 @@ func parse(c *caddy.Controller) ([]*config, error) {
 		// Get the baseURL and baseScope
 		args := c.RemainingArgs()
 
-		if len(args) == 1 {
+		if len(args) >= 1 {
 			baseURL = args[0]
 		}
 
