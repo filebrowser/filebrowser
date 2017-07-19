@@ -47,7 +47,7 @@ export default {
   computed: mapState(['req']),
   methods: {
     download: function () {
-      let url = `${this.$store.state.baseURL}/api/download/`
+      let url = `${this.$store.state.baseURL}/api/download`
       url += this.req.url.slice(6)
       url += `?token=${this.$store.state.jwt}`
 
