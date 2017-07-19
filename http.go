@@ -187,7 +187,7 @@ func cleanURL(path string) (string, string) {
 		return "", path
 	}
 
-	return path[0:i], path[i:len(path)]
+	return path[0:i], path[i:]
 }
 
 // renderFile renders a file using a template with some needed variables.
