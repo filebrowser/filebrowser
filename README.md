@@ -79,3 +79,5 @@ go get github.com/hacdias/filemanager
 Then, you should navigate to `$GOPATH/src/github.com/hacdias/filemanager` and execute `npm install`. You can start the live build of static assets with the command `npm start dev`.
 
 If you are using this as a Caddy plugin, you should use its [official instructions for plugins](https://github.com/mholt/caddy/wiki/Extending-Caddy#2-plug-in-your-plugin) and import `github.com/hacdias/filemanager/caddy/filemanager`.
+
+Before pulling, and if you made any change on assets folder, you must run the `build.sh` script on the root of this repository.
