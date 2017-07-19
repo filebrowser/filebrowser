@@ -6,6 +6,13 @@
 
 filemanager provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its own directory. It can be used as a standalone app or as a middleware.
 
+# Table of contents
+
++ [Getting started](#getting-started)
++ [Features](#features)
+  - [Users](#users)
+  - [Search](#search)
+
 # Getting started
 
 This is a library so it can be used on your own applications as a middleware or as a standalone app (examples are going to be added in the future).
