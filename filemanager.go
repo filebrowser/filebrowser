@@ -80,7 +80,7 @@ type User struct {
 	// Rules is an array of access and deny rules.
 	Rules []*Rule `json:"rules"`
 
-	// Costum styles for this user.
+	// Custom styles for this user.
 	CSS string `json:"css"`
 
 	// These indicate if the user can perform certain actions.

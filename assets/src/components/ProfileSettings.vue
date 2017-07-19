@@ -14,7 +14,7 @@
     </form>
 
     <form @submit="updateCSS">
-      <h2>Costum Stylesheet</h2>
+      <h2>Custom Stylesheet</h2>
       <textarea v-model="css" name="css"></textarea>
       <p><input type="submit" value="Update"></p>
     </form>
