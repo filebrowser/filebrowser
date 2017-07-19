@@ -263,8 +263,15 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 		u.Commands = []string{}
 	}
 
-	ouser, ok := c.FM.Users[u.Username]
-	if !ok {
+	var ouser *User
+	for _, user := range c.FM.Users {
+		if user.ID == id {
+			ouser = user
+			break
+		}
+	}
+
+	if ouser == nil {
 		return http.StatusNotFound, nil
 	}
 
@@ -290,6 +297,12 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	err = c.FM.db.Save(&u)
 	if err != nil {
 		return http.StatusInternalServerError, err
+	}
+
+	// If the user changed the username, delete the old user
+	// from the in-memory user map.
+	if ouser.Username != u.Username {
+		delete(c.FM.Users, ouser.Username)
 	}
 
 	c.FM.Users[u.Username] = &u
