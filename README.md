@@ -9,6 +9,8 @@ filemanager provides a file managing interface within a specified directory and 
 # Table of contents
 
 + [Getting started](#getting-started)
+  - [Caddy](#caddy)
+  - [Standalone](#standalone)
 + [Features](#features)
   - [Users](#users)
   - [Search](#search)
@@ -29,6 +31,10 @@ The easiest way to get started is using this with Caddy web server. You just nee
 
 ## Standalone
 
+You can use filemanager as a standalone executable. You just need to download it from the [releases page](https://github.com/hacdias/filemanager/releases), where you can find multiple releases. The 'latest' always corresponds to the latest commit made to the master branch so it might not be stable.
+
+You can either use flags or a JSON configuration file, which should have the following appearance:
+
 ```json
 {
   "port": 80,
@@ -42,6 +48,27 @@ The easiest way to get started is using this with Caddy web server. You just nee
     "svn"
   ]
 }
+```
+
+The `scope`, `allowCommands`, `allowEdit`, `allowNew` and `commands` options are the defaults for new users. To set a configuration file, you will need to pass the path with a flag, like this: `filemanager --config=/path/to/config.json`. 
+
+Otherwise, you may not want to use a configuration file, which can be done using the following flags:
+
+```
+-allow-commands
+      Default allow commands option (default true)
+-allow-edit
+      Default allow edit option (default true)
+-allow-new
+      Default allow new option (default true)
+-commands string
+      Space separated commands available for new users (default "git svn hg")
+-database string
+      Database path (default "./filemanager.db")
+-port string
+      HTTP Port (default "80")
+-scope string
+      Defualt scope for new users (default ".")
 ```
 
 # Features
