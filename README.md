@@ -18,12 +18,31 @@ filemanager provides a file managing interface within a specified directory and 
 
 This is a library so it can be used on your own applications as a middleware or as a standalone app (examples are going to be added in the future).
 
-The easiest way to get started is using this with Caddy web server. You just need to download Caddy from its [official website](https://caddyserver.com/download) with `http.filemanager` plugin enabled. For more information about the plugin itself, please refer to its [documentation](https://caddyserver.com/docs/http.filemanager).
-
 Once you have everything deployed, the default credentials to login to the filemanager are:
 
 **Username:** `admin`
 **Password:** `admin`
+
+## Caddy
+
+The easiest way to get started is using this with Caddy web server. You just need to download Caddy from its [official website](https://caddyserver.com/download) with `http.filemanager` plugin enabled. For more information about the plugin itself, please refer to its [documentation](https://caddyserver.com/docs/http.filemanager).
+
+## Standalone
+
+```json
+{
+  "port": 80,
+  "database": "/path/to/database.db",
+  "scope": "/path/to/my/files",
+  "allowCommands": true,
+  "allowEdit": true,
+  "allowNew": true,
+  "commands": [
+    "git",
+    "svn"
+  ]
+}
+```
 
 # Features
 

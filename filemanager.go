@@ -322,20 +322,32 @@ func (m *FileManager) RegisterPermission(name string, value bool) error {
 }
 
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
-func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
+// Compatible with http.Handler.
+func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	code, err := serveHTTP(&RequestContext{
 		FM:   m,
 		User: nil,
 		FI:   nil,
 	}, w, r)
 
-	if code != 0 && err != nil {
+	if code != 0 {
 		w.WriteHeader(code)
-		w.Write([]byte(err.Error()))
-		return 0, nil
-	}
 
-	return code, err
+		if err != nil {
+			w.Write([]byte(err.Error()))
+		} else {
+			w.Write([]byte(http.StatusText(code)))
+		}
+	}
+}
+
+// ServeWithErrorHTTP returns the code and error of the request.
+func (m *FileManager) ServeWithErrorHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
+	return serveHTTP(&RequestContext{
+		FM:   m,
+		User: nil,
+		FI:   nil,
+	}, w, r)
 }
 
 // Allowed checks if the user has permission to access a directory/file.
