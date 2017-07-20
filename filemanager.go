@@ -228,6 +228,8 @@ func New(database string, base User) (*FileManager, error) {
 	m.db = db
 
 	// Create the default user, making a copy of the base.
+	base.Username = ""
+	base.Password = ""
 	m.DefaultUser = &base
 	return m, nil
 }
