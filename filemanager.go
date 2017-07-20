@@ -372,13 +372,6 @@ func (u User) Allowed(url string) bool {
 	return true
 }
 
-// SetScope updates a user scope and its virtual file system.
-// If the user string is blank, it will change the base scope.
-func (u *User) SetScope(scope string) {
-	scope = strings.TrimSuffix(scope, "/")
-	u.FileSystem = webdav.Dir(scope)
-}
-
 // MatchString checks if this string matches the regular expression.
 func (r *Regexp) MatchString(s string) bool {
 	if r.regexp == nil {
