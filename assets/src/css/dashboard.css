@@ -39,6 +39,7 @@
   margin-top: 0;
 }
 
+.dashboard form > p:last-child,
 form.dashboard > p:last-child {
   text-align: right
 }
@@ -82,11 +83,11 @@ form.dashboard > p:last-child {
   border-color: green;
 }
 
-.dashboard input[type="submit"].cancel {
+.dashboard button.delete {
   background: #F44336;
 }
 
-.dashboard input[type="submit"].cancel:hover {
+.dashboard button.delete:hover {
   background: #D32F2F;
 }
 
