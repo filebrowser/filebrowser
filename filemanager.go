@@ -127,8 +127,6 @@ type Plugin interface {
 
 // DefaultUser is used on New, when no 'base' user is provided.
 var DefaultUser = User{
-	Username:      "admin",
-	Password:      "admin",
 	AllowCommands: true,
 	AllowEdit:     true,
 	AllowNew:      true,
@@ -203,32 +201,34 @@ func New(database string, base User) (*FileManager, error) {
 	// If there are no users in the database, it creates a new one
 	// based on 'base' User that must be provided by the function caller.
 	if len(users) == 0 {
+		u := base
+		u.Username = "admin"
+
 		// Hashes the password.
-		pw, err := hashPassword(base.Password)
+		u.Password, err = hashPassword("admin")
 		if err != nil {
 			return nil, err
 		}
 
 		// The first user must be an administrator.
-		base.Admin = true
-		base.Password = pw
+		u.Admin = true
+		u.AllowCommands = true
+		u.AllowNew = true
+		u.AllowEdit = true
 
 		// Saves the user to the database.
-		if err := db.Save(&base); err != nil {
+		if err := db.Save(&u); err != nil {
 			return nil, err
 		}
 
-		m.Users[base.Username] = &base
+		m.Users[u.Username] = &u
 	}
 
 	// Attaches db to this File Manager instance.
 	m.db = db
 
 	// Create the default user, making a copy of the base.
-	u := base
-	u.Username = ""
-	u.Password = ""
-	m.DefaultUser = &u
+	m.DefaultUser = &base
 	return m, nil
 }
 
