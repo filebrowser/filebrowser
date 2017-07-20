@@ -18,6 +18,7 @@ script:
   - go build -o binary github.com/mholt/caddy/caddy
   - go build github.com/hacdias/filemanager
   - ineffassign .
+  - mkdir dist
   - gox -output "dist/{{.OS}}-{{.Arch}}-{{.Dir}}"
   - ls dist/
   - ghr --username hacdias --token $GITHUB_TOKEN --replace --prerelease --debug latest dist/
