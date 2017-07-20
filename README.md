@@ -20,6 +20,11 @@ This is a library so it can be used on your own applications as a middleware or 
 
 The easiest way to get started is using this with Caddy web server. You just need to download Caddy from its [official website](https://caddyserver.com/download) with `http.filemanager` plugin enabled. For more information about the plugin itself, please refer to its [documentation](https://caddyserver.com/docs/http.filemanager).
 
+Once you have everything deployed, the default credentials to login to the filemanager are:
+
+**Username:** `admin`
+**Password:** `admin`
+
 # Features
 
 Easy login system.
