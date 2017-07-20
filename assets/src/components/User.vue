@@ -59,7 +59,7 @@
     </div>
 
     <p>
-      <input v-if="id !== 0" type="submit" @click.prevent="deletePrompt" class="cancel" value="Delete">
+      <button v-if="id !== 0" @click.prevent="deletePrompt" type="button" class="delete">Delete</button>
       <input type="submit" value="Save">
     </p>
   </form>
