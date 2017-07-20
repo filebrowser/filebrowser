@@ -272,6 +272,27 @@ function updateUser (user) {
   })
 }
 
+function deleteUser (id) {
+  return new Promise((resolve, reject) => {
+    let request = new window.XMLHttpRequest()
+    request.open('DELETE', `${store.state.baseURL}/api/users/${id}`, true)
+    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+
+    request.onload = () => {
+      switch (request.status) {
+        case 200:
+          resolve()
+          break
+        default:
+          reject(request.responseText)
+          break
+      }
+    }
+    request.onerror = (error) => reject(error)
+    request.send()
+  })
+}
+
 function updatePassword (password) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
@@ -418,5 +439,6 @@ export default {
   updateCommands,
   removePrefix,
   getPlugins,
-  updatePlugins
+  updatePlugins,
+  deleteUser
 }
