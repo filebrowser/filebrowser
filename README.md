@@ -18,7 +18,7 @@ filemanager provides a file managing interface within a specified directory and 
 
 # Getting started
 
-This is a library so it can be used on your own applications as a middleware or as a standalone app (examples are going to be added in the future).
+This is a library that can be used on your own applications as a middleware (see the [documentation](http://godoc.org/github.com/hacdias/filemanager)), as a plugin to Caddy web server or as a standalone app.
 
 Once you have everything deployed, the default credentials to login to the filemanager are:
 
