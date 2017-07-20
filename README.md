@@ -75,19 +75,19 @@ Otherwise, you may not want to use a configuration file, which can be done using
 
 Easy login system.
 
-![Login Page](https://user-images.githubusercontent.com/5447088/28327862-931bb42a-6bdc-11e7-8157-93fa54945f3c.png)
+![Login Page](https://user-images.githubusercontent.com/5447088/28432382-975493dc-6d7f-11e7-9190-23f8037159dc.jpg)
 
 Listings of your files, available in two styles: mosaic and list. You can delete, move, rename, upload and create new files, as well as directories. Single files can be downloaded directly, and multiple files as *.zip*, *.tar*, *.tar.gz*, *.tar.bz2* or *.tar.xz*.
 
-![Mosaic Listing](https://user-images.githubusercontent.com/5447088/28327863-931fe414-6bdc-11e7-91fb-49b5f15a829f.png)
+![Mosaic Listing](https://user-images.githubusercontent.com/5447088/28432384-9771bb4c-6d7f-11e7-8564-3a9bd6a3ce3a.jpg)
 
 File Manager editor is powered by [Codemirror](https://codemirror.net/) and if you're working with markdown files with metadata, both parts will be separated from each other so you can focus on the content.
 
-![Markdown Editor](https://user-images.githubusercontent.com/5447088/28327865-933abc3a-6bdc-11e7-8f80-f206cf5cdf0b.png)
+![Markdown Editor](https://user-images.githubusercontent.com/5447088/28432383-9756fdac-6d7f-11e7-8e58-fec49470d15f.jpg)
 
 On the settings page, a regular user can set its own custom CSS to personalize the experience and change its password. For admins, they can manage the permissions of each user, set commands which can be executed when certain events are triggered (such as before saving and after saving) and change plugin's settings.
 
-![Settings](https://user-images.githubusercontent.com/5447088/28327864-9325d716-6bdc-11e7-9de2-78953e6efdbe.png)
+![Settings](https://user-images.githubusercontent.com/5447088/28432385-9776ec66-6d7f-11e7-90a5-891bacd4d02f.jpg)
 
 We also allow the users to search in the directories and execute commands if allowed.
 
@@ -95,7 +95,7 @@ We also allow the users to search in the directories and execute commands if all
 
 We support multiple users and each user can have its own scope and custom stylesheet. The administrator is able to choose which permissions should be given to the users, as well as the commands they can execute. Each user also have a set of rules, in which he can be prevented or allowed to access some directories (regular expressions included!).
 
-![Users](https://user-images.githubusercontent.com/5447088/28339269-7a6bab5c-6c03-11e7-9e58-64ead58fc95a.png)
+![Users](https://user-images.githubusercontent.com/5447088/28432386-977f388a-6d7f-11e7-9006-87d16f05f1f8.jpg)
 
 ## Search
 
