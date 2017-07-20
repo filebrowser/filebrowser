@@ -101,8 +101,6 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 		}
 
 		m, err := filemanager.New(database, filemanager.User{
-			Username:      "admin",
-			Password:      "admin",
 			AllowCommands: true,
 			AllowEdit:     true,
 			AllowNew:      true,

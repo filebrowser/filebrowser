@@ -6,7 +6,24 @@ you'll need to create a filemanager instance:
 	m, err := filemanager.New(database, user)
 
 Where 'user' contains the default options for new users. You can just
-use 'filemanager.DefaultUser'
+use 'filemanager.DefaultUser' or create yourself a default user:
+
+	m, err := filemanager.New(database, filemanager.User{
+		Admin: 		   false,
+		AllowCommands: false,
+		AllowEdit:     true,
+		AllowNew:      true,
+		Commands:      []string{
+			"git",
+		},
+		Rules:         []*filemanager.Rule{},
+		CSS:           "",
+		FileSystem:    webdav.Dir("/path/to/files"),
+	})
+
+The credentials for the first user are always 'admin' for both the user and
+the password, and they can be changed later through the settings. The first
+user is always an Admin and has all of the permissions set to 'true'.
 
 Then, you should set the Prefix URL and the Base URL, using the following
 functions:
