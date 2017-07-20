@@ -18,6 +18,7 @@ script:
   - go build -o binary github.com/mholt/caddy/caddy
   - go build github.com/hacdias/filemanager
   - ineffassign .
+  - cd cmd/filemanager
   - mkdir dist
   - gox -output "dist/{{.OS}}-{{.Arch}}-{{.Dir}}"
   - ls dist/
