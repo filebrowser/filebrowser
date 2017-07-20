@@ -56,8 +56,6 @@ func main() {
 	}
 
 	fm, err := filemanager.New(database, filemanager.User{
-		Username:      "admin",
-		Password:      "admin",
 		AllowCommands: allowCommands,
 		AllowEdit:     allowEdit,
 		AllowNew:      allowNew,
