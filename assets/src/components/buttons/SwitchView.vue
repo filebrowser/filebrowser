@@ -20,7 +20,9 @@ export default {
       }
 
       this.$store.commit('listingDisplay', display)
-      document.cookie = `display=${display}; max-age=31536000; path=${this.$store.state.baseURL}`
+      let path = this.$store.state.baseURL
+      if (path === '') path = '/'
+      document.cookie = `display=${display}; max-age=31536000; path=${path}`
     },
     icon: function () {
       if (this.$store.state.req.display === 'mosaic') return 'view_list'
