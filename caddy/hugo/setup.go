@@ -170,7 +170,7 @@ func (p plugin) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 			continue
 		}
 
-		return p.Configs[i].ServeHTTP(w, r)
+		return p.Configs[i].ServeWithErrorHTTP(w, r)
 	}
 
 	return p.Next.ServeHTTP(w, r)
