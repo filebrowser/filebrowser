@@ -3,13 +3,21 @@ language: go
 go:
   - tip
 
+env:
+  - "PATH=/home/travis/gopath/bin:$PATH"
+
 install:
   - go get -u -v $(go list -f '{{join .Imports "\n"}}' ./... | sort | uniq | grep -v filemanager)
   - go get -u -v github.com/mholt/caddy/caddyhttp
   - go get github.com/gordonklaus/ineffassign
+  - go get github.com/mitchellh/gox
+  - go get github.com/tcnksm/ghr
 
 script:
   - sed -i 's/\_ \"github.com\/mholt\/caddy\/caddyhttp\"/\_ \"github.com\/mholt\/caddy\/caddyhttp\"\n\_ \"github.com\/hacdias\/filemanager\/caddy\/filemanager\"/g' $GOPATH/src/github.com/mholt/caddy/caddy/caddymain/run.go
   - go build -o binary github.com/mholt/caddy/caddy
   - go build github.com/hacdias/filemanager
   - ineffassign .
+  - gox -output "dist/{{.OS}}-{{.Arch}}-{{.Dir}}"
+  - ls dist/
+  - ghr --username hacdias --token $GITHUB_TOKEN --replace --prerelease --debug latest dist/
