@@ -214,8 +214,10 @@ export default {
         }
       }
 
-      document.cookie = `sort=${sort}; max-age=31536000; path=${this.$store.state.baseURL}`
-      document.cookie = `order=${order}; max-age=31536000; path=${this.$store.state.baseURL}`
+      let path = this.$store.state.baseURL
+      if (path === '') path = '/'
+      document.cookie = `sort=${sort}; max-age=31536000; path=${path}`
+      document.cookie = `order=${order}; max-age=31536000; path=${path}`
       this.$store.commit('setReload', true)
     }
   }

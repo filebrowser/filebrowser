@@ -3,7 +3,9 @@ import store from '@/store'
 import router from '@/router'
 
 function parseToken (token) {
-  document.cookie = `auth=${token}; max-age=86400; path=${store.state.baseURL}`
+  let path = store.state.baseURL
+  if (path === '') path = '/'
+  document.cookie = `auth=${token}; max-age=86400; path=${path}`
   let res = token.split('.')
   let user = JSON.parse(window.atob(res[1]))
   store.commit('setJWT', token)
@@ -49,7 +51,9 @@ function login (user, password) {
 }
 
 function logout () {
-  document.cookie = `auth='nothing'; max-age=0; path=${store.state.baseURL}`
+  let path = store.state.baseURL
+  if (path === '') path = '/'
+  document.cookie = `auth='nothing'; max-age=0; path=${path}`
   router.push({path: '/login'})
 }
 
