@@ -20,10 +20,6 @@
   width: 100%;
 }
 
-.dashboard table tr {
-
-}
-
 .dashboard table th {
   font-weight: 500;
   color: #757575;
@@ -35,10 +31,6 @@
   padding: .5em 0;
 }
 
-.dashboard table td {
-
-}
-
 .dashboard table td:last-child {
   width: 1em
 }
@@ -47,14 +39,12 @@
   margin-top: 0;
 }
 
-.dashboard > *:last-child {
-  margin-bottom: 0;
+form.dashboard > p:last-child {
+  text-align: right
 }
 
-form.dashboard input[type="submit"],
-.dashboard form input[type="submit"] {
-  margin-left: auto;
-  display: block;
+.dashboard > *:last-child {
+  margin-bottom: 0;
 }
 
 .dashboard textarea,
@@ -90,6 +80,14 @@ form.dashboard input[type="submit"],
 
 .dashboard input.green {
   border-color: green;
+}
+
+.dashboard input[type="submit"].cancel {
+  background: #F44336;
+}
+
+.dashboard input[type="submit"].cancel:hover {
+  background: #D32F2F;
 }
 
 .dashboard textarea {

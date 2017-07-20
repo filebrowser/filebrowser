@@ -49,11 +49,24 @@
 
     <textarea name="css"></textarea>
 
-    <p><input type="submit" value="Save"></p>
+    <div v-if="$store.state.show === 'deleteUser'" class="prompt">
+      <h3>Delete User</h3>
+      <p>Are you sure you want to delete this user?</p>
+      <div>
+        <button @click="deleteUser" autofocus>Delete</button>
+        <button @click="closeHovers" class="cancel">Cancel</button>
+      </div>
+    </div>
+
+    <p>
+      <input v-if="id !== 0" type="submit" @click.prevent="deletePrompt" class="cancel" value="Delete">
+      <input type="submit" value="Save">
+    </p>
   </form>
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import api from '@/utils/api'
 
 export default {
@@ -96,6 +109,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['closeHovers']),
     fetchData () {
       let user = this.$route.params[0]
 
@@ -159,6 +173,19 @@ export default {
       this.rules = ''
       this.css = ''
       this.commands = ''
+    },
+    deletePrompt (event) {
+      this.$store.commit('showHover', 'deleteUser')
+    },
+    deleteUser (event) {
+      event.preventDefault()
+
+      api.deleteUser(this.id).then(location => {
+        this.$router.push({ path: '/users' })
+        this.$store.commit('showSuccess', 'User deleted!')
+      }).catch(e => {
+        this.$store.commit('showError', e)
+      })
     },
     save (event) {
       event.preventDefault()
