@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"math/rand"
 	"net/http"
+	"strings"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -92,7 +93,11 @@ type extractor []string
 
 func (e extractor) ExtractToken(r *http.Request) (string, error) {
 	token, _ := request.AuthorizationHeaderExtractor.ExtractToken(r)
-	if token != "" {
+
+	// Checks if the token isn't empty and if it contains three dots.
+	// The former prevents incompatibility with URLs that previously
+	// used basic auth.
+	if token != "" && strings.Count(token, ".") == 3 {
 		return token, nil
 	}
 
