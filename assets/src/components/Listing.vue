@@ -4,6 +4,7 @@
       <i class="material-icons">sentiment_dissatisfied</i>
       <span>It feels lonely here...</span>
     </h2>
+    <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" value="Upload" multiple>
   </div>
   <div v-else id="listing"
     :class="req.display"
