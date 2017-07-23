@@ -162,11 +162,10 @@ func resourcePostPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Re
 
 	// Create/Open the file.
 	f, err := c.User.FileSystem.OpenFile(context.TODO(), r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
-	defer f.Close()
-
 	if err != nil {
 		return errorToHTTP(err, false), err
 	}
+	defer f.Close()
 
 	// Copies the new content for the file.
 	_, err = io.Copy(f, r.Body)
