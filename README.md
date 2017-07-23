@@ -15,6 +15,7 @@ filemanager provides a file managing interface within a specified directory and 
   - [Users](#users)
   - [Search](#search)
 + [Contributing](#contributing)
++ [Donate](#donate)
 
 # Getting started
 
@@ -132,3 +133,7 @@ Then, you should navigate to `$GOPATH/src/github.com/hacdias/filemanager` and ex
 If you are using this as a Caddy plugin, you should use its [official instructions for plugins](https://github.com/mholt/caddy/wiki/Extending-Caddy#2-plug-in-your-plugin) and import `github.com/hacdias/filemanager/caddy/filemanager`.
 
 Before pulling, and if you made any change on assets folder, you must run the `build.sh` script on the root of this repository.
+
+# Donate
+
+Enjoying this project? You can [donate to its creator](https://henriquedias.com/donate/). He will appreciate.
