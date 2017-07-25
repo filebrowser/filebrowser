@@ -10,8 +10,13 @@ var config = require('./config')
 var webpackConfig = require('./webpack.dev.conf')
 var fs = require('fs')
 
-fs.unlinkSync('./rice-box.go')
-fs.unlinkSync('./caddy/hugo/rice-box.go')
+if (fs.existsSync('./rice-box.go')) {
+  fs.unlinkSync('./rice-box.go')
+}
+
+if (fs.existsSync('./caddy/hugo/rice-box.go')) {
+  fs.unlinkSync('./caddy/hugo/rice-box.go')
+}
 
 rm(path.join(config.assetsRoot, config.assetsSubDirectory), err => {
   if (err) throw err
