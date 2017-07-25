@@ -111,7 +111,7 @@
   width: 100%;
   text-align: right;
   display: flex;
-  padding: 0.5em 0.5em 0.5em 1em;
+  padding: 0.5em;
   height: 3.7em;
 }
 
@@ -157,6 +157,21 @@
 
 #previewer h2.message {
   color: rgba(255, 255, 255, 0.5)
+}
+
+#previewer>button {
+  margin: 0;
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#previewer>button:first-of-type {
+  left: 0.5em;
+}
+
+#previewer>button:last-of-type {
+  right: 0.5em;
 }
 
 

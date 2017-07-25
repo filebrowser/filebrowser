@@ -11,6 +11,9 @@
       <info-button></info-button>
     </div>
 
+    <button class="action" @click="prev" v-show="hasPrevious"><i class="material-icons">chevron_left</i></button>
+    <button class="action" @click="next" v-show="hasNext"><i class="material-icons">chevron_right</i></button>
+
     <div class="preview">
       <img v-if="req.type == 'image'" :src="raw()">
       <audio v-else-if="req.type == 'audio'" :src="raw()" controls></audio>
@@ -31,6 +34,7 @@
 <script>
 import { mapState } from 'vuex'
 import url from '@/utils/url'
+import api from '@/utils/api'
 import InfoButton from './buttons/Info'
 import DeleteButton from './buttons/Delete'
 import RenameButton from './buttons/Rename'
@@ -44,22 +48,86 @@ export default {
     RenameButton,
     DownloadButton
   },
-  computed: mapState(['req']),
+  data: function () {
+    return {
+      previousLink: '',
+      nextLink: '',
+      listing: null
+    }
+  },
+  computed: {
+    ...mapState(['req', 'oldReq']),
+    hasPrevious () {
+      return (this.previousLink !== '')
+    },
+    hasNext () {
+      return (this.nextLink !== '')
+    }
+  },
+  mounted () {
+    window.addEventListener('keyup', this.key)
+    api.fetch(url.removeLastDir(this.$route.path))
+      .then(req => {
+        this.listing = req
+        this.updateLinks()
+      })
+      .catch(error => { console.log(error) })
+  },
+  beforeDestroy () {
+    window.removeEventListener('keyup', this.key)
+  },
   methods: {
-    download: function () {
+    download () {
       let url = `${this.$store.state.baseURL}/api/download`
       url += this.req.url.slice(6)
 
       return url
     },
-    raw: function () {
+    raw () {
       return `${this.download()}?&inline=true`
     },
-    back: function (event) {
+    back (event) {
       let uri = url.removeLastDir(this.$route.path) + '/'
       this.$router.push({ path: uri })
     },
-    allowEdit: function (event) {
+    prev () {
+      this.$router.push({ path: this.previousLink })
+    },
+    next () {
+      this.$router.push({ path: this.nextLink })
+    },
+    key (event) {
+      event.preventDefault()
+
+      if (event.which === 13 || event.which === 39) { // right arrow
+        if (this.hasNext) this.next()
+      } else if (event.which === 37) { // left arrow
+        if (this.hasPrevious) this.prev()
+      }
+    },
+    updateLinks () {
+      let pos = null
+
+      for (let i = 0; i < this.listing.items.length; i++) {
+        if (this.listing.items[i].name === this.req.name) {
+          pos = i
+          break
+        }
+      }
+
+      if (pos === null) {
+        return
+      }
+
+      if (pos !== 0) {
+        this.previousLink = this.listing.items[pos - 1].url
+      }
+
+      if (pos !== this.listing.items.length - 1) {
+        this.nextLink = this.listing.items[pos + 1].url
+      }
+    },
+    allowEdit (event) {
       return this.$store.state.user.allowEdit
     }
   }
