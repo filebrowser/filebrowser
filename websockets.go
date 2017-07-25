@@ -2,10 +2,12 @@ package filemanager
 
 import (
 	"bytes"
+	"mime"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -135,14 +137,50 @@ func command(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, er
 	return 0, nil
 }
 
+var (
+	typeRegexp = regexp.MustCompile(`type:(\w+)`)
+)
+
+type condition func(path string) bool
+
 type searchOptions struct {
 	CaseInsensitive bool
+	Conditions      []condition
 	Terms           []string
+}
+
+func extensionCondition(extension string) condition {
+	return func(path string) bool {
+		return filepath.Ext(path) == "."+extension
+	}
+}
+
+func imageCondition(path string) bool {
+	extension := filepath.Ext(path)
+	mimetype := mime.TypeByExtension(extension)
+
+	return strings.HasPrefix(mimetype, "image")
+}
+
+func audioCondition(path string) bool {
+	extension := filepath.Ext(path)
+	mimetype := mime.TypeByExtension(extension)
+
+	return strings.HasPrefix(mimetype, "audio")
+}
+
+func videoCondition(path string) bool {
+	extension := filepath.Ext(path)
+	mimetype := mime.TypeByExtension(extension)
+
+	return strings.HasPrefix(mimetype, "video")
 }
 
 func parseSearch(value string) *searchOptions {
 	opts := &searchOptions{
 		CaseInsensitive: strings.Contains(value, "case:insensitive"),
+		Conditions:      []condition{},
+		Terms:           []string{},
 	}
 
 	// removes the options from the value
@@ -150,8 +188,39 @@ func parseSearch(value string) *searchOptions {
 	value = strings.Replace(value, "case:sensitive", "", -1)
 	value = strings.TrimSpace(value)
 
+	types := typeRegexp.FindAllStringSubmatch(value, -1)
+	for _, t := range types {
+		if len(t) == 1 {
+			continue
+		}
+
+		switch t[1] {
+		case "image":
+			opts.Conditions = append(opts.Conditions, imageCondition)
+		case "audio", "music":
+			opts.Conditions = append(opts.Conditions, audioCondition)
+		case "video":
+			opts.Conditions = append(opts.Conditions, videoCondition)
+		default:
+			opts.Conditions = append(opts.Conditions, extensionCondition(t[1]))
+		}
+	}
+
+	if len(types) > 0 {
+		// Remove the fields from the search value.
+		value = typeRegexp.ReplaceAllString(value, "")
+	}
+
+	// If it's canse insensitive, put everything in lowercase.
 	if opts.CaseInsensitive {
 		value = strings.ToLower(value)
+	}
+
+	// Remove the spaces from the search value.
+	value = strings.TrimSpace(value)
+
+	if value == "" {
+		return opts
 	}
 
 	// if the value starts with " and finishes what that character, we will
@@ -211,24 +280,45 @@ func search(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, err
 		path = strings.TrimPrefix(path, scope)
 		path = strings.TrimPrefix(path, "/")
 		path = strings.Replace(path, "\\", "/", -1)
-		is := false
 
-		for _, term := range search.Terms {
-			if is {
-				break
+		// Only execute if there are conditions to meet.
+		if len(search.Conditions) > 0 {
+			match := false
+
+			for _, t := range search.Conditions {
+				if t(path) {
+					match = true
+					break
+				}
 			}
 
-			if strings.Contains(path, term) {
-				if !c.User.Allowed(path) {
-					return nil
-				}
-
-				is = true
+			// If doesn't meet the condition, go to the next.
+			if !match {
+				return nil
 			}
 		}
 
-		if !is {
-			return nil
+		if len(search.Terms) > 0 {
+			is := false
+
+			// Checks if matches the terms and if it is allowed.
+			for _, term := range search.Terms {
+				if is {
+					break
+				}
+
+				if strings.Contains(path, term) {
+					if !c.User.Allowed(path) {
+						return nil
+					}
+
+					is = true
+				}
+			}
+
+			if !is {
+				return nil
+			}
 		}
 
 		return conn.WriteMessage(websocket.TextMessage, []byte(path))
