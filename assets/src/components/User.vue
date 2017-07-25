@@ -1,53 +1,60 @@
 <template>
-  <form @submit="save" class="dashboard">
-    <h1 v-if="id === 0">New User</h1>
-    <h1 v-else>User {{ username }}</h1>
+  <div>
+    <form @submit="save" class="dashboard">
+      <h1 v-if="id === 0">New User</h1>
+      <h1 v-else>User {{ username }}</h1>
 
-    <p><label for="username">Username</label><input type="text" v-model="username" id="username"></p>
-    <p><label for="password">Password</label><input type="password" :placeholder="passwordPlaceholder" v-model="password" id="password"></p>
-    <p><label for="scope">Scope</label><input type="text" v-model="filesystem" id="scope"></p>
+      <p><label for="username">Username</label><input type="text" v-model="username" id="username"></p>
+      <p><label for="password">Password</label><input type="password" :placeholder="passwordPlaceholder" v-model="password" id="password"></p>
+      <p><label for="scope">Scope</label><input type="text" v-model="filesystem" id="scope"></p>
 
-    <h2>Permissions</h2>
+      <h2>Permissions</h2>
 
-    <p class="small">You can set the user to be an administrator or choose the permissions individually.
-      If you select "Administrator", all of the other options will be automatically checked.
-      The management of users remains a privilege of an administrator.</p>
+      <p class="small">You can set the user to be an administrator or choose the permissions individually.
+        If you select "Administrator", all of the other options will be automatically checked.
+        The management of users remains a privilege of an administrator.</p>
 
-    <p><input type="checkbox" v-model="admin"> Administrator</p>
-    <p><input type="checkbox" :disabled="admin" v-model="allowNew"> Create new files and directories</p>
-    <p><input type="checkbox" :disabled="admin" v-model="allowEdit"> Edit, rename and delete files or directories.</p>
-    <p><input type="checkbox" :disabled="admin" v-model="allowCommands"> Execute commands</p>
-    <p v-for="(value, key) in permissions" :key="key">
-      <input type="checkbox" :disabled="admin" v-model="permissions[key]"> {{ capitalize(key) }}
-    </p>
+      <p><input type="checkbox" v-model="admin"> Administrator</p>
+      <p><input type="checkbox" :disabled="admin" v-model="allowNew"> Create new files and directories</p>
+      <p><input type="checkbox" :disabled="admin" v-model="allowEdit"> Edit, rename and delete files or directories.</p>
+      <p><input type="checkbox" :disabled="admin" v-model="allowCommands"> Execute commands</p>
+      <p v-for="(value, key) in permissions" :key="key">
+        <input type="checkbox" :disabled="admin" v-model="permissions[key]"> {{ capitalize(key) }}
+      </p>
 
-    <h3>Commands</h3>
+      <h3>Commands</h3>
 
-    <p class="small">A space separated list with the available commands for this user. Example: <i>git svn hg</i>.</p>
+      <p class="small">A space separated list with the available commands for this user. Example: <i>git svn hg</i>.</p>
 
-    <input type="text" v-model.trim="commands">
+      <input type="text" v-model.trim="commands">
 
-    <h2>Rules</h2>
+      <h2>Rules</h2>
 
-    <p class="small">Here you can define a set of allow and disallow rules for this specific user. The blocked files won't
-      show up in the listings and they won't be accessible to the user. We support regex and paths relative to
-      the user's scope.</p>
+      <p class="small">Here you can define a set of allow and disallow rules for this specific user. The blocked files won't
+        show up in the listings and they won't be accessible to the user. We support regex and paths relative to
+        the user's scope.</p>
 
-    <p class="small">Each rule goes in one different line and must start with the keyword <code>allow</code> or <code>disallow</code>.
-      Then you should write <code>regex</code> if you are using a regular expression and then the expression or the path.</p>
+      <p class="small">Each rule goes in one different line and must start with the keyword <code>allow</code> or <code>disallow</code>.
+        Then you should write <code>regex</code> if you are using a regular expression and then the expression or the path.</p>
 
-    <p class="small"><strong>Examples</strong></p>
+      <p class="small"><strong>Examples</strong></p>
 
-    <ul class="small">
-      <li><code>disallow regex \\/\\..+</code> - prevents the access to any dot file (such as .git, .gitignore) in every folder.</li>
-      <li><code>disallow /Caddyfile</code> - blocks the access to the file named <i>Caddyfile</i> on the root of the scope</li>
-    </ul>
+      <ul class="small">
+        <li><code>disallow regex \\/\\..+</code> - prevents the access to any dot file (such as .git, .gitignore) in every folder.</li>
+        <li><code>disallow /Caddyfile</code> - blocks the access to the file named <i>Caddyfile</i> on the root of the scope</li>
+      </ul>
 
-    <textarea v-model.trim="rules"></textarea>
+      <textarea v-model.trim="rules"></textarea>
 
-    <h2>Custom Stylesheet</h2>
+      <h2>Custom Stylesheet</h2>
 
-    <textarea name="css"></textarea>
+      <textarea name="css"></textarea>
+
+      <p>
+        <button v-if="id !== 0" @click.prevent="deletePrompt" type="button" class="delete">Delete</button>
+        <input type="submit" value="Save">
+      </p>
+    </form>
 
     <div v-if="$store.state.show === 'deleteUser'" class="prompt">
       <h3>Delete User</h3>
@@ -57,12 +64,7 @@
         <button @click="closeHovers" class="cancel">Cancel</button>
       </div>
     </div>
-
-    <p>
-      <button v-if="id !== 0" @click.prevent="deletePrompt" type="button" class="delete">Delete</button>
-      <input type="submit" value="Save">
-    </p>
-  </form>
+  </div>
 </template>
 
 <script>
