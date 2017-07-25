@@ -37,7 +37,7 @@ func init() {
 	// define dirs
 	dir1 := &embedded.EmbeddedDir{
 		Filename:   ``,
-		DirModTime: time.Unix(1500991408, 0),
+		DirModTime: time.Unix(1501000775, 0),
 		ChildFiles: []*embedded.EmbeddedFile{
 			file2, // README.md
 			file3, // hugo.go
@@ -54,7 +54,7 @@ func init() {
 	// register embeddedBox
 	embedded.RegisterEmbeddedBox(`./`, &embedded.EmbeddedBox{
 		Name: `./`,
-		Time: time.Unix(1500991408, 0),
+		Time: time.Unix(1501000775, 0),
 		Dirs: map[string]*embedded.EmbeddedDir{
 			"": dir1,
 		},
