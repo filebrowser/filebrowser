@@ -19,7 +19,7 @@ install:
 
 script:
   - gometalinter --disable-all -E vet -E gofmt -E misspell -E ineffassign -E goimports -E deadcode --exclude="rice-box.go" --tests ./...
-  - go test ./... -timeout 30s -tags
+  - go test ./... -timeout 30s
 
 after_script:
   - cd cmd/filemanager
