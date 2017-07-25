@@ -18,7 +18,7 @@ install:
   - go get github.com/tsenart/deadcode
 
 script:
-  - gometalinter --disable-all -E vet -E gofmt -E misspell -E ineffassign -E goimports -E deadcode --tests ./...
+  - gometalinter --disable-all -E vet -E gofmt -E misspell -E ineffassign -E goimports -E deadcode --exclude="rice-box.go" --tests ./...
   - go test ./... -timeout 30s -tags
 
 after_script:

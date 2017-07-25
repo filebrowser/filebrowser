@@ -41,7 +41,7 @@ func init() {
 	flag.StringVar(&config, "config", "", "JSON configuration file")
 	flag.StringVar(&port, "port", "80", "HTTP Port")
 	flag.StringVar(&database, "database", "./filemanager.db", "Database path")
-	flag.StringVar(&scope, "scope", ".", "Defualt scope for new users")
+	flag.StringVar(&scope, "scope", ".", "Default scope for new users")
 	flag.StringVar(&commands, "commands", "git svn hg", "Space separated commands available for new users")
 	flag.BoolVar(&allowCommands, "allow-commands", true, "Default allow commands option")
 	flag.BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option")
