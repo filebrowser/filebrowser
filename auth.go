@@ -1,8 +1,8 @@
 package filemanager
 
 import (
+	"crypto/rand"
 	"encoding/json"
-	"math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -147,15 +147,17 @@ func checkPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
-const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-
-// randomString creates a string with a defined length using the above charset.
-func randomString(length int) string {
-	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
-
-	b := make([]byte, length)
-	for i := range b {
-		b[i] = charset[seededRand.Intn(len(charset))]
+// generateRandomBytes returns securely generated random bytes.
+// It will return an error if the system's secure random
+// number generator fails to function correctly, in which
+// case the caller should not continue.
+func generateRandomBytes(n int) ([]byte, error) {
+	b := make([]byte, n)
+	_, err := rand.Read(b)
+	// Note that err == nil only if we read len(b) bytes.
+	if err != nil {
+		return nil, err
 	}
-	return string(b)
+
+	return b, nil
 }

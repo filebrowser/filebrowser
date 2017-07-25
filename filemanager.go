@@ -163,7 +163,13 @@ func New(database string, base User) (*FileManager, error) {
 	// If it doesn't exist, create a new one of 256 bits.
 	err = db.Get("config", "key", &m.key)
 	if err != nil && err == storm.ErrNotFound {
-		m.key = []byte(randomString(64))
+		var bytes []byte
+		bytes, err = generateRandomBytes(64)
+		if err != nil {
+			return nil, err
+		}
+
+		m.key = bytes
 		err = db.Set("config", "key", m.key)
 	}
 
