@@ -58,8 +58,7 @@ type FileManager struct {
 // Command is a command function.
 type Command func(r *http.Request, m *FileManager, u *User) error
 
-// User contains the configuration for each user. It should be created
-// using NewUser on a File Manager instance.
+// User contains the configuration for each user.
 type User struct {
 	// ID is the required primary key with auto increment0
 	ID int `storm:"id,increment"`
@@ -347,15 +346,6 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(http.StatusText(code)))
 		}
 	}
-}
-
-// ServeWithErrorHTTP returns the code and error of the request.
-func (m *FileManager) ServeWithErrorHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
-	return serveHTTP(&RequestContext{
-		FM:   m,
-		User: nil,
-		FI:   nil,
-	}, w, r)
 }
 
 // Allowed checks if the user has permission to access a directory/file.

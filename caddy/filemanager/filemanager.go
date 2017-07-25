@@ -44,7 +44,8 @@ func (f plugin) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 			continue
 		}
 
-		return f.Configs[i].ServeWithErrorHTTP(w, r)
+		f.Configs[i].ServeHTTP(w, r)
+		return 0, nil
 	}
 
 	return f.Next.ServeHTTP(w, r)

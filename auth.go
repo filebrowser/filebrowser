@@ -94,10 +94,10 @@ type extractor []string
 func (e extractor) ExtractToken(r *http.Request) (string, error) {
 	token, _ := request.AuthorizationHeaderExtractor.ExtractToken(r)
 
-	// Checks if the token isn't empty and if it contains three dots.
+	// Checks if the token isn't empty and if it contains two dots.
 	// The former prevents incompatibility with URLs that previously
 	// used basic auth.
-	if token != "" && strings.Count(token, ".") == 3 {
+	if token != "" && strings.Count(token, ".") == 2 {
 		return token, nil
 	}
 
