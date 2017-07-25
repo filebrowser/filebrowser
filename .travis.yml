@@ -7,15 +7,21 @@ env:
   - "PATH=/home/travis/gopath/bin:$PATH"
 
 install:
-  - go get -u -v $(go list -f '{{join .Imports "\n"}}' ./... | sort | uniq | grep -v filemanager)
-  - go get -u -v github.com/mholt/caddy/caddyhttp
-  - go get github.com/gordonklaus/ineffassign
+  - go get ./...
   - go get github.com/mitchellh/gox
   - go get github.com/tcnksm/ghr
+  # Install gometalinter and certain linters
+  - go get github.com/alecthomas/gometalinter
+  - go get github.com/client9/misspell/cmd/misspell
+  - go get github.com/gordonklaus/ineffassign
+  - go get golang.org/x/tools/cmd/goimports
+  - go get github.com/tsenart/deadcode
 
 script:
-  - ineffassign .
+  - gometalinter --disable-all -E vet -E gofmt -E misspell -E ineffassign -E goimports -E deadcode --tests ./...
   - go test ./... -timeout 30s -tags
+
+after_script:
   - cd cmd/filemanager
   - mkdir dist
   - gox -output "dist/{{.OS}}-{{.Arch}}-{{.Dir}}"
