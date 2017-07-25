@@ -109,12 +109,14 @@ export default {
     this.resizeEvent()
 
     // Add the needed event listeners to the window and document.
+    window.addEventListener('keydown', this.keyEvent)
     window.addEventListener('resize', this.resizeEvent)
     document.addEventListener('dragover', this.preventDefault)
     document.addEventListener('drop', this.drop)
   },
   beforeDestroy () {
     // Remove event listeners before destroying this page.
+    window.removeEventListener('keydown', this.keyEvent)
     window.removeEventListener('resize', this.resizeEvent)
     document.removeEventListener('dragover', this.preventDefault)
     document.removeEventListener('drop', this.drop)
@@ -122,6 +124,18 @@ export default {
   methods: {
     base64: function (name) {
       return window.btoa(unescape(encodeURIComponent(name)))
+    },
+    keyEvent (event) {
+      if (!event.ctrlKey && !event.metaKey) {
+        return
+      }
+
+      if (String.fromCharCode(event.which).toLowerCase() !== 'f') {
+        return
+      }
+
+      event.preventDefault()
+      this.$store.commit('showHover', 'search')
     },
     preventDefault (event) {
       // Wrapper around prevent default.

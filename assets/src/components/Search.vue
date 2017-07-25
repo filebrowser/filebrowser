@@ -8,6 +8,8 @@
       <input type="text"
         @keyup="keyup"
         @keyup.enter="submit"
+        ref="input"
+        :autofocus="active"
         v-model.trim="value"
         aria-label="Write here to search"
         :placeholder="placeholder">
@@ -41,18 +43,32 @@ export default {
   data: function () {
     return {
       value: '',
+      active: false,
       ongoing: false,
       scrollable: null,
       search: [],
       commands: []
     }
   },
+  watch: {
+    show (val, old) {
+      this.active = (val === 'search')
+
+      // If the hover was search and now it's something else
+      // we should blur the input.
+      if (old === 'search' && val !== 'search') {
+        this.$refs.input.blur()
+      }
+
+      // If we are starting to show the search box, we should
+      // focus the input.
+      if (val === 'search') {
+        this.$refs.input.focus()
+      }
+    }
+  },
   computed: {
     ...mapState(['user', 'show']),
-    // Computed property for activeness of search.
-    active () {
-      return (this.show === 'search')
-    },
     // Placeholder value.
     placeholder: function () {
       if (this.user.allowCommands && this.user.commands.length > 0) {
