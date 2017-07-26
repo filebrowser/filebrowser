@@ -11,7 +11,23 @@ import (
 	"github.com/asdine/storm"
 )
 
+// usersHandler is the entry point of the users API. It's just a router
+// to send the request to its
 func usersHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	if r.URL.Path == "/change-password" {
+		return usersUpdatePassword(c, w, r)
+	}
+
+	if r.URL.Path == "/change-css" {
+		return usersUpdateCSS(c, w, r)
+	}
+
+	// If the user is admin and the HTTP Method is not
+	// PUT, then we return forbidden.
+	if !c.User.Admin {
+		return http.StatusForbidden, nil
+	}
+
 	switch r.Method {
 	case http.MethodGet:
 		return usersGetHandler(c, w, r)
@@ -26,20 +42,54 @@ func usersHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (in
 	return http.StatusNotImplemented, nil
 }
 
-// usersGetHandler is used to handle the GET requests for /api/users. It can print a list
-// of users or a specific user. The password hash is always removed before being sent to the
-// client.
-func usersGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	if !c.User.Admin {
-		return http.StatusForbidden, nil
+// getUserID returns the id from the user which is present
+// in the request url. If the url is invalid and doesn't
+// contain a valid ID, it returns an error.
+func getUserID(r *http.Request) (int, error) {
+	// Obtains the ID in string from the URL and converts
+	// it into an integer.
+	sid := strings.TrimPrefix(r.URL.Path, "/")
+	sid = strings.TrimSuffix(sid, "/")
+	id, err := strconv.Atoi(sid)
+	if err != nil {
+		return http.StatusBadRequest, err
 	}
 
-	// If the request is a list of users.
+	return id, nil
+}
+
+// getUser returns the user which is present in the request
+// body. If the body is empty or the JSON is invalid, it
+// returns an error.
+func getUser(r *http.Request) (*User, error) {
+	if r.Body == nil {
+		return nil, errEmptyRequest
+	}
+
+	var u *User
+
+	err := json.NewDecoder(r.Body).Decode(u)
+	if err != nil {
+		return nil, err
+	}
+
+	return u, nil
+}
+
+func usersGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	// Request for the default user data.
+	if r.URL.Path == "/base" {
+		return renderJSON(w, c.FM.DefaultUser)
+	}
+
+	// Request for the listing of users.
 	if r.URL.Path == "/" {
 		users := []User{}
 
 		for _, user := range c.FM.Users {
-			// Copies the user and removes the password.
+			// Copies the user info and removes its
+			// password so it won't be sent to the
+			// front-end.
 			u := *user
 			u.Password = ""
 			users = append(users, u)
@@ -52,17 +102,9 @@ func usersGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 		return renderJSON(w, users)
 	}
 
-	if r.URL.Path == "/base" {
-		return renderJSON(w, c.FM.DefaultUser)
-	}
-
-	// Otherwise we just want one, specific, user.
-	sid := strings.TrimPrefix(r.URL.Path, "/")
-	sid = strings.TrimSuffix(sid, "/")
-
-	id, err := strconv.Atoi(sid)
+	id, err := getUserID(r)
 	if err != nil {
-		return http.StatusNotFound, err
+		return http.StatusInternalServerError, err
 	}
 
 	// Searches for the user and prints the one who matches.
@@ -76,36 +118,23 @@ func usersGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 		return renderJSON(w, u)
 	}
 
-	// If there aren't any matches, return Not Found.
-	return http.StatusNotFound, nil
+	// If there aren't any matches, return not found.
+	return http.StatusNotFound, errUserNotExist
 }
 
 func usersPostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	if !c.User.Admin {
-		return http.StatusForbidden, nil
-	}
-
-	// New users should be created on /api/users.
 	if r.URL.Path != "/" {
 		return http.StatusMethodNotAllowed, nil
 	}
 
-	// If the request body is empty, send a Bad Request status.
-	if r.Body == nil {
-		return http.StatusBadRequest, nil
-	}
-
-	var u User
-
-	// Parses the user and checks for error.
-	err := json.NewDecoder(r.Body).Decode(&u)
+	u, err := getUser(r)
 	if err != nil {
-		return http.StatusBadRequest, nil
+		return http.StatusBadRequest, err
 	}
 
-	// The username and the password cannot be empty.
+	// The username, password and scope cannot be empty.
 	if u.Username == "" || u.Password == "" || u.FileSystem == "" {
-		return http.StatusBadRequest, errors.New("Username, password or scope are empty")
+		return http.StatusBadRequest, errors.New("username, password or scope is empty")
 	}
 
 	// Initialize rules if they're not initialized.
@@ -134,7 +163,7 @@ func usersPostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request)
 	// Saves the user to the database.
 	err = c.FM.db.Save(&u)
 	if err == storm.ErrAlreadyExists {
-		return http.StatusConflict, err
+		return http.StatusConflict, errUserExist
 	}
 
 	if err != nil {
@@ -142,7 +171,7 @@ func usersPostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request)
 	}
 
 	// Saves the user to the memory.
-	c.FM.Users[u.Username] = &u
+	c.FM.Users[u.Username] = u
 
 	// Set the Location header and return.
 	w.Header().Set("Location", "/users/"+strconv.Itoa(u.ID))
@@ -151,101 +180,97 @@ func usersPostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request)
 }
 
 func usersDeleteHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	if !c.User.Admin {
-		return http.StatusForbidden, nil
-	}
-
-	// New users should be created on /api/users.
 	if r.URL.Path == "/" {
 		return http.StatusMethodNotAllowed, nil
 	}
 
-	// Otherwise we just want one, specific, user.
-	sid := strings.TrimPrefix(r.URL.Path, "/")
-	sid = strings.TrimSuffix(sid, "/")
-
-	id, err := strconv.Atoi(sid)
+	id, err := getUserID(r)
 	if err != nil {
-		return http.StatusNotFound, err
+		return http.StatusInternalServerError, err
 	}
 
+	// Deletes the user from the database.
 	err = c.FM.db.DeleteStruct(&User{ID: id})
 	if err == storm.ErrNotFound {
-		return http.StatusNotFound, err
+		return http.StatusNotFound, errUserNotExist
 	}
 
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
+	// Delete the user from the in-memory users map.
 	for _, user := range c.FM.Users {
 		if user.ID == id {
 			delete(c.FM.Users, user.Username)
+			break
 		}
 	}
 
 	return http.StatusOK, nil
 }
 
-func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	if !c.User.Admin && !(r.URL.Path == "/change-password" || r.URL.Path == "/change-css") {
-		return http.StatusForbidden, nil
+func usersUpdatePassword(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	if r.Method != http.MethodPut {
+		return http.StatusMethodNotAllowed, nil
 	}
 
+	u, err := getUser(r)
+	if err != nil {
+		return http.StatusBadRequest, err
+	}
+
+	if u.Password == "" {
+		return http.StatusBadRequest, errEmptyPassword
+	}
+
+	pw, err := hashPassword(u.Password)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	c.User.Password = pw
+	err = c.FM.db.UpdateField(&User{ID: c.User.ID}, "Password", pw)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return http.StatusOK, nil
+}
+
+func usersUpdateCSS(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	if r.Method != http.MethodPut {
+		return http.StatusMethodNotAllowed, nil
+	}
+
+	u, err := getUser(r)
+	if err != nil {
+		return http.StatusBadRequest, err
+	}
+
+	c.User.CSS = u.CSS
+	err = c.FM.db.UpdateField(&User{ID: c.User.ID}, "CSS", u.CSS)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return http.StatusOK, nil
+}
+
+func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// New users should be created on /api/users.
 	if r.URL.Path == "/" {
 		return http.StatusMethodNotAllowed, nil
 	}
 
-	// Otherwise we just want one, specific, user.
-	sid := strings.TrimPrefix(r.URL.Path, "/")
-	sid = strings.TrimSuffix(sid, "/")
-
-	id, err := strconv.Atoi(sid)
-	if err != nil && sid != "change-password" && sid != "change-css" {
-		return http.StatusNotFound, err
-	}
-
-	// If the request body is empty, send a Bad Request status.
-	if r.Body == nil {
-		return http.StatusBadRequest, errors.New("The request has an empty body")
-	}
-
-	var u User
-
-	// Parses the user and checks for error.
-	err = json.NewDecoder(r.Body).Decode(&u)
+	id, err := getUserID(r)
 	if err != nil {
-		return http.StatusBadRequest, errors.New("Invalid JSON")
+		return http.StatusInternalServerError, err
 	}
 
-	if sid == "change-password" {
-		if u.Password == "" {
-			return http.StatusBadRequest, errors.New("Password cannot be empty")
-		}
-
-		pw, err := hashPassword(u.Password)
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		c.User.Password = pw
-		err = c.FM.db.UpdateField(&User{ID: c.User.ID}, "Password", pw)
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		return http.StatusOK, nil
-	}
-
-	if sid == "change-css" {
-		c.User.CSS = u.CSS
-		err = c.FM.db.UpdateField(&User{ID: c.User.ID}, "CSS", u.CSS)
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		return http.StatusOK, nil
+	u, err := getUser(r)
+	if err != nil {
+		return http.StatusBadRequest, err
 	}
 
 	// The username and the filesystem cannot be empty.
@@ -305,6 +330,6 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 		delete(c.FM.Users, ouser.Username)
 	}
 
-	c.FM.Users[u.Username] = &u
+	c.FM.Users[u.Username] = u
 	return http.StatusOK, nil
 }
