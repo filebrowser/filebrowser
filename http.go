@@ -13,7 +13,7 @@ type RequestContext struct {
 	User *User
 	FM   *FileManager
 	FI   *file
-	// On API handlers, Router is the APi handler we want. TODO: review this
+	// On API handlers, Router is the APi handler we want.
 	Router string
 }
 
