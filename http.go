@@ -101,7 +101,7 @@ func apiHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int,
 		return http.StatusForbidden, nil
 	}
 
-	c.Router, r.URL.Path = cleanURL(r.URL.Path)
+	c.Router, r.URL.Path = splitURL(r.URL.Path)
 
 	if !c.User.Allowed(r.URL.Path) {
 		return http.StatusForbidden, nil
@@ -175,9 +175,9 @@ func checksumHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	return 0, nil
 }
 
-// cleanURL splits the path and returns everything that stands
+// splitURL splits the path and returns everything that stands
 // before the first slash and everything that goes after.
-func cleanURL(path string) (string, string) {
+func splitURL(path string) (string, string) {
 	if path == "" {
 		return "", ""
 	}
