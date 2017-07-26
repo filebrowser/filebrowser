@@ -7,7 +7,7 @@ FROM golang:alpine
 WORKDIR /go/src/github.com/hacdias/filemanager
 COPY . /go/src/github.com/hacdias/filemanager
 COPY --from=0 /src/app/assets/dist /go/src/github.com/hacdias/filemanager/assets/dist
-RUN apk add --no-cache git && go get -u github.com/golang/dep/cmd/dep
+RUN apk add --no-cache git && go get -u github.com/golang/dep/cmd/dep && go get github.com/GeertJohan/go.rice/rice
 
 RUN dep ensure -update && rice embed-go && cd ./caddy/hugo && rice embed-go
 RUN cd /go/src/github.com/hacdias/filemanager/cmd/filemanager && go build
