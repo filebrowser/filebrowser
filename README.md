@@ -53,11 +53,13 @@ You can either use flags or a JSON configuration file, which should have the fol
 }
 ```
 
-The `scope`, `allowCommands`, `allowEdit`, `allowNew` and `commands` options are the defaults for new users. To set a configuration file, you will need to pass the path with a flag, like this: `filemanager --config=/path/to/config.json`. 
+The `scope`, `allowCommands`, `allowEdit`, `allowNew` and `commands` options are the defaults for new users. To set a configuration file, you will need to pass the path with a flag, like this: `filemanager --config=/path/to/config.json`.
 
 Otherwise, you may not want to use a configuration file, which can be done using the following flags:
 
 ```
+-address string
+      Address to listen to (default is all of them)
 -allow-commands
       Default allow commands option (default true)
 -allow-edit
@@ -69,9 +71,9 @@ Otherwise, you may not want to use a configuration file, which can be done using
 -database string
       Database path (default "./filemanager.db")
 -port string
-      HTTP Port (default "80")
+      HTTP Port (default is random)
 -scope string
-      Defualt scope for new users (default ".")
+      Default scope for new users (default ".")
 ```
 
 # Features

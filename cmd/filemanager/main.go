@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
@@ -27,6 +28,7 @@ type confFile struct {
 }
 
 var (
+	addr          string
 	config        string
 	database      string
 	scope         string
@@ -39,7 +41,8 @@ var (
 
 func init() {
 	flag.StringVar(&config, "config", "", "JSON configuration file")
-	flag.StringVar(&port, "port", "8080", "HTTP Port")
+	flag.StringVar(&port, "port", "0", "HTTP Port (default is random)")
+	flag.StringVar(&addr, "address", "", "Address to listen to (default is all of them)")
 	flag.StringVar(&database, "database", "./filemanager.db", "Database path")
 	flag.StringVar(&scope, "scope", ".", "Default scope for new users")
 	flag.StringVar(&commands, "commands", "git svn hg", "Space separated commands available for new users")
@@ -72,8 +75,13 @@ func main() {
 	fm.SetBaseURL("/")
 	fm.SetPrefixURL("/")
 
-	fmt.Println("Starting filemanager on *:" + port)
-	if err := http.ListenAndServe(":"+port, fm); err != nil {
+	listener, err := net.Listen("tcp", addr+":"+port)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Listening on", listener.Addr().String())
+	if err := http.Serve(listener, fm); err != nil {
 		panic(err)
 	}
 }
