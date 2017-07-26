@@ -52,14 +52,14 @@ func resourceHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 }
 
 func resourceGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	// Obtains the information of the directory/file.
+	// Gets the information of the directory/file.
 	f, err := getInfo(r.URL, c.FM, c.User)
 	if err != nil {
 		return errorToHTTP(err, false), err
 	}
 
 	// If it's a dir and the path doesn't end with a trailing slash,
-	// redirect the user.
+	// add a trailing slash to the path.
 	if f.IsDir && !strings.HasSuffix(r.URL.Path, "/") {
 		r.URL.Path = r.URL.Path + "/"
 	}
@@ -71,22 +71,23 @@ func resourceGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 	}
 
 	// Tries to get the file type.
-	if err = f.RetrieveFileType(true); err != nil {
+	if err = f.GetFileType(true); err != nil {
 		return errorToHTTP(err, true), err
 	}
 
-	// If it can't be edited or the user isn't allowed to,
-	// serve it as a listing, with a preview of the file.
+	// Serve a preview if the file can't be edited or the
+	// user has no permission to edit this file. Otherwise,
+	// just serve the editor.
 	if !f.CanBeEdited() || !c.User.AllowEdit {
 		f.Kind = "preview"
-	} else {
-		// Otherwise, we just bring the editor in!
-		f.Kind = "editor"
+		return renderJSON(w, f)
+	}
 
-		err = f.getEditor()
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
+	f.Kind = "editor"
+
+	// Tries to get the editor data.
+	if err = f.getEditor(); err != nil {
+		return http.StatusInternalServerError, err
 	}
 
 	return renderJSON(w, f)
@@ -96,21 +97,24 @@ func listingHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (
 	f := c.FI
 	f.Kind = "listing"
 
-	err := f.getListing(c, r)
-	if err != nil {
+	// Tries to get the listing data.
+	if err := f.getListing(c, r); err != nil {
 		return errorToHTTP(err, true), err
 	}
 
 	listing := f.listing
 
+	// Defines the cookie scope.
 	cookieScope := c.FM.RootURL()
 	if cookieScope == "" {
 		cookieScope = "/"
 	}
 
 	// Copy the query values into the Listing struct
-	listing.Sort, listing.Order, err = handleSortOrder(w, r, cookieScope)
-	if err != nil {
+	if sort, order, err := handleSortOrder(w, r, cookieScope); err == nil {
+		listing.Sort = sort
+		listing.Order = order
+	} else {
 		return http.StatusBadRequest, err
 	}
 
@@ -191,6 +195,7 @@ func resourcePostPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Re
 	return http.StatusOK, nil
 }
 
+// resourcePatchHandler is the entry point for resource handler.
 func resourcePatchHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	if !c.User.AllowEdit {
 		return http.StatusForbidden, nil
@@ -212,21 +217,21 @@ func resourcePatchHandler(c *RequestContext, w http.ResponseWriter, r *http.Requ
 	return errorToHTTP(err, true), err
 }
 
-// displayMode obtaisn the display mode from URL, or from the
-// cookie.
+// displayMode obtains the display mode from the Cookie.
 func displayMode(w http.ResponseWriter, r *http.Request, scope string) string {
-	displayMode := r.URL.Query().Get("display")
+	var displayMode string
 
-	if displayMode == "" {
-		if displayCookie, err := r.Cookie("display"); err == nil {
-			displayMode = displayCookie.Value
-		}
+	// Checks the cookie.
+	if displayCookie, err := r.Cookie("display"); err == nil {
+		displayMode = displayCookie.Value
 	}
 
+	// If it's invalid, set it to mosaic, which is the default.
 	if displayMode == "" || (displayMode != "mosaic" && displayMode != "list") {
 		displayMode = "mosaic"
 	}
 
+	// Set the cookie.
 	http.SetCookie(w, &http.Cookie{
 		Name:   "display",
 		Value:  displayMode,
