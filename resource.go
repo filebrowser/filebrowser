@@ -1,7 +1,6 @@
 package filemanager
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -10,15 +9,16 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/hacdias/filemanager/dir"
 )
 
-// DISCLAIMER: this doesn't sanitize the target path so some may think
-// that path trasversal would be possible and the user could change files
-// outside of their scope. The User.FileSystem variable is of type webdav.Dir
-// which does those checks so this package doesn't need to do them.
-// https://github.com/golang/net/blob/master/webdav/file.go#L68
-
 func resourceHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	r.URL.Path = dir.SlashClean(r.URL.Path)
+	if !c.User.Allowed(r.URL.Path) {
+		return http.StatusForbidden, nil
+	}
+
 	switch r.Method {
 	case http.MethodGet:
 		return resourceGetHandler(c, w, r)
@@ -131,7 +131,7 @@ func resourceDeleteHandler(c *RequestContext, w http.ResponseWriter, r *http.Req
 	}
 
 	// Remove the file or folder.
-	err := c.User.FileSystem.RemoveAll(context.TODO(), r.URL.Path)
+	err := c.User.FileSystem.RemoveAll(r.URL.Path)
 	if err != nil {
 		return errorToHTTP(err, true), err
 	}
@@ -157,7 +157,7 @@ func resourcePostPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Re
 		}
 
 		// Otherwise we try to create the directory.
-		err := c.User.FileSystem.Mkdir(context.TODO(), r.URL.Path, 0666)
+		err := c.User.FileSystem.Mkdir(r.URL.Path, 0666)
 		return errorToHTTP(err, false), err
 	}
 
@@ -165,13 +165,13 @@ func resourcePostPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Re
 	// desirable to override an already existent file. Thus, we check
 	// if the file already exists. If so, we just return a 409 Conflict.
 	if r.Method == http.MethodPost {
-		if _, err := c.User.FileSystem.Stat(context.TODO(), r.URL.Path); err == nil {
+		if _, err := c.User.FileSystem.Stat(r.URL.Path); err == nil {
 			return http.StatusConflict, errors.New("There is already a file on that path")
 		}
 	}
 
 	// Create/Open the file.
-	f, err := c.User.FileSystem.OpenFile(context.TODO(), r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
+	f, err := c.User.FileSystem.OpenFile(r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		return errorToHTTP(err, false), err
 	}
@@ -202,6 +202,7 @@ func resourcePatchHandler(c *RequestContext, w http.ResponseWriter, r *http.Requ
 	}
 
 	dst := r.Header.Get("Destination")
+	action := r.Header.Get("Action")
 	dst, err := url.QueryUnescape(dst)
 	if err != nil {
 		return errorToHTTP(err, true), err
@@ -213,7 +214,12 @@ func resourcePatchHandler(c *RequestContext, w http.ResponseWriter, r *http.Requ
 		return http.StatusForbidden, nil
 	}
 
-	err = c.User.FileSystem.Rename(context.TODO(), src, dst)
+	if action == "copy" {
+		err = c.User.FileSystem.Copy(src, dst)
+	} else {
+		err = c.User.FileSystem.Rename(src, dst)
+	}
+
 	return errorToHTTP(err, true), err
 }
 
