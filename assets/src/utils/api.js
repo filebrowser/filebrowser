@@ -99,27 +99,45 @@ function put (url, content = '') {
   })
 }
 
-function move (oldLink, newLink) {
-  oldLink = removePrefix(oldLink)
-  newLink = removePrefix(newLink)
+function moveCopy (items, copy = false) {
+  let promises = []
 
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open('PATCH', `${store.state.baseURL}/api/resource${oldLink}`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
-    request.setRequestHeader('Destination', newLink)
+  for (let item of items) {
+    let from = removePrefix(item.from)
+    let to = removePrefix(item.to)
 
-    request.onload = () => {
-      if (request.status === 200) {
-        resolve(request.responseText)
-      } else {
-        reject(request.responseText)
+    promises.push(new Promise((resolve, reject) => {
+      let request = new window.XMLHttpRequest()
+      request.open('PATCH', `${store.state.baseURL}/api/resource${from}`, true)
+      request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+      request.setRequestHeader('Destination', to)
+
+      if (copy) {
+        request.setRequestHeader('Action', 'copy')
       }
-    }
 
-    request.onerror = (error) => reject(error)
-    request.send()
-  })
+      request.onload = () => {
+        if (request.status === 200) {
+          resolve(request.responseText)
+        } else {
+          reject(request.responseText)
+        }
+      }
+
+      request.onerror = (error) => reject(error)
+      request.send()
+    }))
+  }
+
+  return Promise.all(promises)
+}
+
+function move (items) {
+  return moveCopy(items)
+}
+
+function copy (items) {
+  return moveCopy(items, true)
 }
 
 function checksum (url, algo) {
@@ -425,6 +443,7 @@ export default {
   checksum,
   move,
   put,
+  copy,
   post,
   command,
   search,

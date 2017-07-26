@@ -40,6 +40,14 @@ const mutations = {
   },
   updateRequest: (state, value) => {
     state.req = value
+  },
+  updateClipboard: (state, value) => {
+    state.clipboard.key = value.key
+    state.clipboard.items = value.items
+  },
+  resetClipboard: (state) => {
+    state.clipboard.key = ''
+    state.clipboard.items = []
   }
 }
 

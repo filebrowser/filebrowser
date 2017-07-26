@@ -82,7 +82,7 @@ export default {
   name: 'listing',
   components: { Item },
   computed: {
-    ...mapState(['req']),
+    ...mapState(['req', 'selected']),
     nameSorted () {
       return (this.req.sort === 'name')
     },
@@ -130,16 +130,68 @@ export default {
         return
       }
 
-      if (String.fromCharCode(event.which).toLowerCase() !== 'f') {
-        return
-      }
+      let key = String.fromCharCode(event.which).toLowerCase()
 
-      event.preventDefault()
-      this.$store.commit('showHover', 'search')
+      switch (key) {
+        case 'f':
+          event.preventDefault()
+          this.$store.commit('showHover', 'search')
+          break
+        case 'c':
+        case 'x':
+          this.copyCut(event, key)
+          break
+        case 'v':
+          this.paste(event)
+          break
+      }
     },
     preventDefault (event) {
       // Wrapper around prevent default.
       event.preventDefault()
+    },
+    copyCut (event, key) {
+      event.preventDefault()
+      let items = []
+
+      for (let i of this.selected) {
+        items.push({
+          from: this.req.items[i].url,
+          name: encodeURIComponent(this.req.items[i].name)
+        })
+      }
+
+      this.$store.commit('updateClipboard', {
+        key: key,
+        items: items
+      })
+    },
+    paste (event) {
+      event.preventDefault()
+
+      let items = []
+
+      for (let item of this.$store.state.clipboard.items) {
+        items.push({
+          from: item.from,
+          to: this.$route.path + item.name
+        })
+      }
+
+      if (this.$store.state.clipboard.key === 'x') {
+        api.move(items).then(() => {
+          this.$store.commit('setReload', true)
+        }).catch(error => {
+          this.$store.commit('showError', error)
+        })
+        return
+      }
+
+      api.copy(items).then(() => {
+        this.$store.commit('setReload', true)
+      }).catch(error => {
+        this.$store.commit('showError', error)
+      })
     },
     resizeEvent () {
       // Update the columns size based on the window width.

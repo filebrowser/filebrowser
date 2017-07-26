@@ -1,12 +1,12 @@
 <template>
   <div class="prompt">
-    <h3>Move</h3>
-    <p>Choose new house for your file(s)/folder(s):</p>
+    <h3>Copy</h3>
+    <p>Choose the place to copy your files:</p>
 
     <file-list @update:selected="val => dest = val"></file-list>
 
     <div>
-      <button class="ok" @click="move">Move</button>
+      <button class="ok" @click="copy">Copy</button>
       <button class="cancel" @click="$store.commit('closeHovers')">Cancel</button>
     </div>
   </div>
@@ -19,7 +19,7 @@ import api from '@/utils/api'
 import buttons from '@/utils/buttons'
 
 export default {
-  name: 'move',
+  name: 'copy',
   components: { FileList },
   data: function () {
     return {
@@ -29,9 +29,9 @@ export default {
   },
   computed: mapState(['req', 'selected']),
   methods: {
-    move: function (event) {
+    copy: function (event) {
       event.preventDefault()
-      buttons.loading('move')
+      buttons.loading('copy')
       let items = []
 
       // Create a new promise for each file.
@@ -43,17 +43,15 @@ export default {
       }
 
       // Execute the promises.
-      api.move(items)
+      api.copy(items)
         .then(() => {
-          buttons.done('move')
+          buttons.done('copy')
           this.$router.push({ path: this.dest })
         })
         .catch(error => {
-          buttons.done('move')
+          buttons.done('copy')
           this.$store.commit('showError', error)
         })
-
-      event.preventDefault()
     }
   }
 }

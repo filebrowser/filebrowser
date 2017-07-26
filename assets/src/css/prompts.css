@@ -49,7 +49,7 @@
   word-wrap: break-word;
 }
 
-.prompt div {
+.prompt div:last-of-type {
   margin-top: 1em;
   display: flex;
   justify-content: flex-start;

@@ -92,16 +92,16 @@ export default {
 
       if (this.selectedCount === 0) return
 
-      let promises = []
+      let items = []
 
       for (let i of this.selected) {
-        let url = this.req.items[i].url
-        let name = this.req.items[i].name
-
-        promises.push(api.move(url, this.url + encodeURIComponent(name)))
+        items.push({
+          from: this.req.items[i].url,
+          to: this.url + encodeURIComponent(this.req.items[i].name)
+        })
       }
 
-      Promise.all(promises)
+      api.move(items)
         .then(() => {
           this.$store.commit('setReload', true)
         })

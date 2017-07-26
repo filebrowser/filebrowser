@@ -53,7 +53,7 @@ export default {
       this.name = encodeURIComponent(this.name)
       newLink = url.removeLastDir(oldLink) + '/' + this.name
 
-      api.move(oldLink, newLink)
+      api.move([{ from: oldLink, to: newLink }])
         .then(() => {
           if (this.req.kind !== 'listing') {
             this.$router.push({ path: newLink })
