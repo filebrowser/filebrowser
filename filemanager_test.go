@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"golang.org/x/net/webdav"
+	"github.com/hacdias/filemanager/dir"
 )
 
 type test struct {
@@ -28,13 +28,13 @@ func newTest(t *testing.T) *test {
 	scope := filepath.Join(temp, "scope")
 	database := filepath.Join(temp, "database.db")
 
-	err = copyDir("./testdata", scope)
+	err = dir.CopyDir("./testdata", scope)
 	if err != nil {
 		t.Fatalf("Error copying the test data: %v", err)
 	}
 
 	user := DefaultUser
-	user.FileSystem = webdav.Dir(scope)
+	user.FileSystem = dir.Dir(scope)
 
 	fm, err := New(database, user)
 
