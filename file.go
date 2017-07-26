@@ -159,7 +159,7 @@ func (i *file) getListing(c *RequestContext, r *http.Request) error {
 			Path:        filepath.Join(i.Path, name),
 		}
 
-		i.RetrieveFileType(false)
+		i.GetFileType(false)
 		fileinfos = append(fileinfos, i)
 	}
 
@@ -200,9 +200,9 @@ func (i *file) getEditor() error {
 	return nil
 }
 
-// RetrieveFileType obtains the mimetype and converts it to a simple
+// GetFileType obtains the mimetype and converts it to a simple
 // type nomenclature.
-func (i *file) RetrieveFileType(checkContent bool) error {
+func (i *file) GetFileType(checkContent bool) error {
 	var content []byte
 	var err error
 
