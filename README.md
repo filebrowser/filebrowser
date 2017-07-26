@@ -41,6 +41,7 @@ You can either use flags or a JSON configuration file, which should have the fol
 ```json
 {
   "port": 80,
+  "address": "127.0.0.1",
   "database": "/path/to/database.db",
   "scope": "/path/to/my/files",
   "allowCommands": true,

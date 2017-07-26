@@ -19,6 +19,7 @@ import (
 type confFile struct {
 	Database      string   `json:"database"`
 	Scope         string   `json:"scope"`
+	Address       string   `json:"address"`
 	Commands      []string `json:"commands"`
 	Port          int      `json:"port"`
 	AllowCommands bool     `json:"allowCommands"`
@@ -99,6 +100,7 @@ func loadConfig() {
 
 	database = conf.Database
 	scope = conf.Scope
+	addr = conf.Address
 	commands = strings.Join(conf.Commands, " ")
 	port = strconv.Itoa(conf.Port)
 	allowNew = conf.AllowNew
