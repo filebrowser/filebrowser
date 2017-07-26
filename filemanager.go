@@ -16,8 +16,10 @@ import (
 )
 
 var (
-	// ErrDuplicated occurs when you try to create a user that already exists.
-	ErrDuplicated = errors.New("Duplicated user")
+	errUserExist     = errors.New("user already exists")
+	errUserNotExist  = errors.New("user does not exist")
+	errEmptyRequest  = errors.New("request body is empty")
+	errEmptyPassword = errors.New("password is empty")
 )
 
 // FileManager is a file manager instance. It should be creating using the
