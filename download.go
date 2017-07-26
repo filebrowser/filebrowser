@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/hacdias/filemanager/dir"
 	"github.com/mholt/archiver"
 )
 
@@ -17,6 +18,8 @@ import (
 func downloadHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	query := r.URL.Query().Get("format")
 
+	// If the file isn't a directory, serve it using http.ServeFile. We display it
+	// inline if it is requested.
 	if !c.FI.IsDir {
 		if r.URL.Query().Get("inline") == "true" {
 			w.Header().Set("Content-Disposition", "inline")
@@ -31,21 +34,25 @@ func downloadHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	files := []string{}
 	names := strings.Split(r.URL.Query().Get("files"), ",")
 
+	// If there are files in the query, sanitize their names.
+	// Otherwise, just append the current path.
 	if len(names) != 0 {
 		for _, name := range names {
+			// Unescape the name.
 			name, err := url.QueryUnescape(name)
-
 			if err != nil {
 				return http.StatusInternalServerError, err
 			}
 
+			// Clean the slashes.
+			name = dir.SlashClean(name)
 			files = append(files, filepath.Join(c.FI.Path, name))
 		}
-
 	} else {
 		files = append(files, c.FI.Path)
 	}
 
+	// If the format is true, just set it to "zip".
 	if query == "true" {
 		query = "zip"
 	}
@@ -57,12 +64,13 @@ func downloadHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 		tempfile  string
 	)
 
+	// Create a temporary directory.
 	temp, err = ioutil.TempDir("", "")
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
-
 	defer os.RemoveAll(temp)
+
 	tempfile = filepath.Join(temp, "temp")
 
 	switch query {
@@ -84,17 +92,21 @@ func downloadHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 		return http.StatusInternalServerError, err
 	}
 
-	file, err := os.Open(temp + "/temp")
-	if err != nil {
-		return http.StatusInternalServerError, err
-	}
-
+	// Defines the file name.
 	name := c.FI.Name
 	if name == "." || name == "" {
 		name = "download"
 	}
+	name += extension
 
-	w.Header().Set("Content-Disposition", "attachment; filename="+name+extension)
-	io.Copy(w, file)
-	return 0, nil
+	// Opens the file so it can be downloaded.
+	file, err := os.Open(temp + "/temp")
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+	defer file.Close()
+
+	w.Header().Set("Content-Disposition", "attachment; filename="+name)
+	_, err = io.Copy(w, file)
+	return 0, err
 }
