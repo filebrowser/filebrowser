@@ -20,8 +20,6 @@ install:
 script:
   - gometalinter --disable-all -E vet -E gofmt -E misspell -E ineffassign -E goimports -E deadcode --exclude="rice-box.go" --tests ./...
   - go test ./... -timeout 30s
-
-after_script:
   - cd cmd/filemanager
   - mkdir dist
   - gox -output "dist/{{.OS}}-{{.Arch}}-{{.Dir}}"
@@ -32,7 +30,7 @@ deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
   file_glob: true
-  file: dist/*
+  file: cmd/filemanager/dist/*
   skip_cleanup: true
   on:
     tags: true
