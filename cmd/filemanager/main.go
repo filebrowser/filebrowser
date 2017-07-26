@@ -11,8 +11,7 @@ import (
 	"strings"
 
 	"github.com/hacdias/filemanager"
-
-	"golang.org/x/net/webdav"
+	"github.com/hacdias/filemanager/dir"
 )
 
 // confFile contains the configuration file for this File Manager instance.
@@ -65,7 +64,7 @@ func main() {
 		Commands:      strings.Split(strings.TrimSpace(commands), " "),
 		Rules:         []*filemanager.Rule{},
 		CSS:           "",
-		FileSystem:    webdav.Dir(scope),
+		FileSystem:    dir.Dir(scope),
 	})
 
 	if err != nil {

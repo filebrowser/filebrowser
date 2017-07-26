@@ -12,9 +12,9 @@ import (
 	"strings"
 
 	"github.com/hacdias/filemanager"
+	"github.com/hacdias/filemanager/dir"
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
-	"golang.org/x/net/webdav"
 )
 
 var (
@@ -112,7 +112,7 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 				Regexp: &filemanager.Regexp{Raw: "\\/\\..+"},
 			}},
 			CSS:        "",
-			FileSystem: webdav.Dir(directory),
+			FileSystem: dir.Dir(directory),
 		})
 
 		if err != nil {

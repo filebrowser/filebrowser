@@ -2,14 +2,12 @@ package filemanager
 
 import (
 	"bytes"
-	"context"
 	"crypto/md5"
 	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"hash"
 	"io"
 	"io/ioutil"
@@ -89,7 +87,7 @@ func getInfo(url *url.URL, c *FileManager, u *User) (*file, error) {
 		Path:        filepath.Join(string(u.FileSystem), url.Path),
 	}
 
-	info, err := u.FileSystem.Stat(context.TODO(), url.Path)
+	info, err := u.FileSystem.Stat(url.Path)
 	if err != nil {
 		return i, err
 	}
@@ -112,7 +110,7 @@ func getInfo(url *url.URL, c *FileManager, u *User) (*file, error) {
 func (i *file) getListing(c *RequestContext, r *http.Request) error {
 	// Gets the directory information using the Virtual File System of
 	// the user configuration.
-	f, err := c.User.FileSystem.OpenFile(context.TODO(), c.FI.VirtualPath, os.O_RDONLY, 0)
+	f, err := c.User.FileSystem.OpenFile(c.FI.VirtualPath, os.O_RDONLY, 0)
 	if err != nil {
 		return err
 	}
@@ -445,72 +443,4 @@ func editorLanguage(mode string) string {
 	}
 
 	return mode
-}
-
-func copyFile(source string, dest string) (err error) {
-	sourcefile, err := os.Open(source)
-	if err != nil {
-		return err
-	}
-
-	defer sourcefile.Close()
-
-	destfile, err := os.Create(dest)
-	if err != nil {
-		return err
-	}
-
-	defer destfile.Close()
-
-	_, err = io.Copy(destfile, sourcefile)
-	if err == nil {
-		sourceinfo, err := os.Stat(source)
-		if err != nil {
-			err = os.Chmod(dest, sourceinfo.Mode())
-			if err != nil {
-				return err
-			}
-		}
-
-	}
-
-	return
-}
-
-func copyDir(source string, dest string) (err error) {
-	// get properties of source dir
-	sourceinfo, err := os.Stat(source)
-	if err != nil {
-		return err
-	}
-
-	// create dest dir
-	err = os.MkdirAll(dest, sourceinfo.Mode())
-	if err != nil {
-		return err
-	}
-
-	directory, _ := os.Open(source)
-	objects, err := directory.Readdir(-1)
-
-	for _, obj := range objects {
-		sourcefilepointer := source + "/" + obj.Name()
-		destinationfilepointer := dest + "/" + obj.Name()
-
-		if obj.IsDir() {
-			// create sub-directories - recursively
-			err = copyDir(sourcefilepointer, destinationfilepointer)
-			if err != nil {
-				fmt.Println(err)
-			}
-		} else {
-			// perform copy
-			err = copyFile(sourcefilepointer, destinationfilepointer)
-			if err != nil {
-				fmt.Println(err)
-			}
-		}
-	}
-
-	return
 }
