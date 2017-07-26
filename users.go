@@ -66,7 +66,7 @@ func getUser(r *http.Request) (*User, error) {
 		return nil, errEmptyRequest
 	}
 
-	var u *User
+	u := &User{}
 
 	err := json.NewDecoder(r.Body).Decode(u)
 	if err != nil {
@@ -161,7 +161,7 @@ func usersPostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request)
 	u.Password = pw
 
 	// Saves the user to the database.
-	err = c.FM.db.Save(&u)
+	err = c.FM.db.Save(u)
 	if err == storm.ErrAlreadyExists {
 		return http.StatusConflict, errUserExist
 	}
@@ -319,7 +319,7 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 
 	// Updates the whole User struct because we always are supposed
 	// to send a new entire object.
-	err = c.FM.db.Save(&u)
+	err = c.FM.db.Save(u)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
