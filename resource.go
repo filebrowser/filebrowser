@@ -12,6 +12,12 @@ import (
 	"strings"
 )
 
+// DISCLAIMER: this doesn't sanitize the target path so some may think
+// that path trasversal would be possible and the user could change files
+// outside of their scope. The User.FileSystem variable is of type webdav.Dir
+// which does those checks so this package doesn't need to do them.
+// https://github.com/golang/net/blob/master/webdav/file.go#L68
+
 func resourceHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	switch r.Method {
 	case http.MethodGet:
