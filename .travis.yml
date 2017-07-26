@@ -30,7 +30,7 @@ deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
   file_glob: true
-  file: cmd/filemanager/dist/*
+  file: dist/*
   skip_cleanup: true
   on:
     tags: true
