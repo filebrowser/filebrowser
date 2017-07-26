@@ -109,7 +109,11 @@ func (d Dir) Copy(src, dst string) error {
 		return os.ErrInvalid
 	}
 
-	info, err := d.Stat(src)
+	if dst == src {
+		return os.ErrInvalid
+	}
+
+	info, err := os.Stat(src)
 	if err != nil {
 		return err
 	}

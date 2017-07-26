@@ -9,6 +9,10 @@ const state = {
   user: {},
   req: {},
   plugins: window.plugins || [],
+  clipboard: {
+    key: '',
+    items: []
+  },
   baseURL: document.querySelector('meta[name="base"]').getAttribute('content'),
   jwt: '',
   loading: false,

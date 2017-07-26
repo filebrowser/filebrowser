@@ -38,6 +38,7 @@
       <div id="file-selection" v-if="isMobile && req.kind === 'listing'">
         <span v-if="selectedCount > 0">{{ selectedCount }} selected</span>
         <rename-button v-show="showRenameButton"></rename-button>
+        <copy-button v-show="showMoveButton"></copy-button>
         <move-button v-show="showMoveButton"></move-button>
         <delete-button v-show="showDeleteButton"></delete-button>
       </div>
@@ -46,6 +47,7 @@
       <div id="dropdown" :class="{ active: showMore }">
         <div v-if="!isListing || !isMobile">
           <rename-button v-show="showRenameButton"></rename-button>
+          <copy-button v-show="showMoveButton"></copy-button>
           <move-button v-show="showMoveButton"></move-button>
           <delete-button v-show="showDeleteButton"></delete-button>
         </div>
@@ -88,6 +90,7 @@ import UploadButton from './buttons/Upload'
 import DownloadButton from './buttons/Download'
 import SwitchButton from './buttons/SwitchView'
 import MoveButton from './buttons/Move'
+import CopyButton from './buttons/Copy'
 import {mapGetters, mapState} from 'vuex'
 import api from '@/utils/api'
 import buttons from '@/utils/buttons'
@@ -100,6 +103,7 @@ export default {
     DeleteButton,
     RenameButton,
     DownloadButton,
+    CopyButton,
     UploadButton,
     SwitchButton,
     MoveButton

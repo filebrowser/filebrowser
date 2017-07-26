@@ -82,7 +82,7 @@ func getInfo(url *url.URL, c *FileManager, u *User) (*file, error) {
 	var err error
 
 	i := &file{
-		URL:         "/files" + url.Path,
+		URL:         "/files" + url.String(),
 		VirtualPath: url.Path,
 		Path:        filepath.Join(string(u.FileSystem), url.Path),
 	}
@@ -127,6 +127,11 @@ func (i *file) getListing(c *RequestContext, r *http.Request) error {
 		dirCount, fileCount int
 	)
 
+	baseurl, err := url.PathUnescape(i.URL)
+	if err != nil {
+		return err
+	}
+
 	for _, f := range files {
 		name := f.Name()
 		allowed := c.User.Allowed("/" + name)
@@ -143,7 +148,7 @@ func (i *file) getListing(c *RequestContext, r *http.Request) error {
 		}
 
 		// Absolute URL
-		url := url.URL{Path: i.URL + name}
+		url := url.URL{Path: baseurl + name}
 
 		i := &file{
 			Name:        f.Name(),

@@ -3,16 +3,7 @@
     <h3>Move</h3>
     <p>Choose new house for your file(s)/folder(s):</p>
 
-    <ul class="file-list">
-      <li @click="select"
-        @touchstart="touchstart"
-        @dblclick="next"
-        :aria-selected="moveTo == item.url"
-        :key="item.name" v-for="item in items"
-        :data-url="item.url">{{ item.name }}</li>
-    </ul>
-
-    <p>Currently navigating on: <code>{{ current }}</code>.</p>
+    <file-list @update:selected="val => dest = val"></file-list>
 
     <div>
       <button class="ok" @click="move">Move</button>
@@ -23,145 +14,46 @@
 
 <script>
 import { mapState } from 'vuex'
-import url from '@/utils/url'
+import FileList from './FileList'
 import api from '@/utils/api'
 import buttons from '@/utils/buttons'
 
 export default {
   name: 'move',
+  components: { FileList },
   data: function () {
     return {
-      items: [],
-      touches: {
-        id: '',
-        count: 0
-      },
       current: window.location.pathname,
-      moveTo: null
+      dest: null
     }
   },
-  computed: mapState(['req', 'selected', 'baseURL']),
-  mounted () {
-    // If we're showing this on a listing,
-    // we can use the current request object
-    // to fill the move options.
-    if (this.req.kind === 'listing') {
-      this.fillOptions(this.req)
-      return
-    }
-
-    // Otherwise, we must be on a preview or editor
-    // so we fetch the data from the previous directory.
-    api.fetch(url.removeLastDir(this.$rute.path))
-      .then(this.fillOptions)
-      .catch(this.showError)
-  },
+  computed: mapState(['req', 'selected']),
   methods: {
     move: function (event) {
       event.preventDefault()
-
-      // Set the destination and create the promises array.
-      let promises = []
-      let dest = (this.moveTo === null) ? this.current : this.moveTo
       buttons.loading('move')
+      let items = []
 
       // Create a new promise for each file.
       for (let item of this.selected) {
-        let from = this.req.items[item].url
-        let to = dest + '/' + encodeURIComponent(this.req.items[item].name)
-        to = to.replace('//', '/')
-
-        promises.push(api.move(from, to))
+        items.push({
+          from: this.req.items[item].url,
+          to: this.dest + encodeURIComponent(this.req.items[item].name)
+        })
       }
 
       // Execute the promises.
-      Promise.all(promises)
+      api.move(items)
         .then(() => {
           buttons.done('move')
-          this.$router.push({ path: dest })
+          this.$router.push({ path: this.dest })
         })
         .catch(error => {
           buttons.done('move')
           this.$store.commit('showError', error)
         })
-    },
-    fillOptions (req) {
-      // Sets the current path and resets
-      // the current items.
-      this.current = req.url
-      this.items = []
 
-      // If the path isn't the root path,
-      // show a button to navigate to the previous
-      // directory.
-      if (req.url !== '/files/') {
-        this.items.push({
-          name: '..',
-          url: url.removeLastDir(req.url) + '/'
-        })
-      }
-
-      // If this folder is empty, finish here.
-      if (req.items === null) return
-
-      // Otherwise we add every directory to the
-      // move options.
-      for (let item of req.items) {
-        if (!item.isDir) continue
-
-        this.items.push({
-          name: item.name,
-          url: item.url
-        })
-      }
-    },
-    showError (error) {
-      this.$store.commit('showError', error)
-    },
-    next: function (event) {
-      // Retrieves the URL of the directory the user
-      // just clicked in and fill the options with its
-      // content.
-      let uri = event.currentTarget.dataset.url
-
-      api.fetch(uri)
-        .then(this.fillOptions)
-        .catch(this.showError)
-    },
-    touchstart (event) {
-      let url = event.currentTarget.dataset.url
-
-      // In 300 milliseconds, we shall reset the count.
-      setTimeout(() => {
-        this.touches.count = 0
-      }, 300)
-
-      // If the element the user is touching
-      // is different from the last one he touched,
-      // reset the count.
-      if (this.touches.id !== url) {
-        this.touches.id = url
-        this.touches.count = 1
-        return
-      }
-
-      this.touches.count++
-
-      // If there is more than one touch already,
-      // open the next screen.
-      if (this.touches.count > 1) {
-        this.next(event)
-      }
-    },
-    select: function (event) {
-      // If the element is already selected, unselect it.
-      if (this.moveTo === event.currentTarget.dataset.url) {
-        this.moveTo = null
-        return
-      }
-
-      // Otherwise select the element.
-      this.moveTo = event.currentTarget.dataset.url
+      event.preventDefault()
     }
   }
 }

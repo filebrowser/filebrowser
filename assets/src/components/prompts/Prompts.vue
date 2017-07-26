@@ -8,6 +8,7 @@
     <delete v-else-if="showDelete"></delete>
     <info v-else-if="showInfo"></info>
     <move v-else-if="showMove"></move>
+    <copy v-else-if="showCopy"></copy>
     <error v-else-if="showError"></error>
     <success v-else-if="showSuccess"></success>
 
@@ -42,6 +43,7 @@ import Delete from './Delete'
 import Rename from './Rename'
 import Download from './Download'
 import Move from './Move'
+import Copy from './Copy'
 import Error from './Error'
 import Success from './Success'
 import NewFile from './NewFile'
@@ -60,6 +62,7 @@ export default {
     Download,
     Success,
     Move,
+    Copy,
     NewFile,
     NewDir,
     Help
@@ -83,6 +86,7 @@ export default {
     showDelete: function () { return this.show === 'delete' },
     showRename: function () { return this.show === 'rename' },
     showMove: function () { return this.show === 'move' },
+    showCopy: function () { return this.show === 'copy' },
     showNewFile: function () { return this.show === 'newFile' },
     showNewDir: function () { return this.show === 'newDir' },
     showDownload: function () { return this.show === 'download' },

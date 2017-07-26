@@ -13,11 +13,18 @@ import (
 	"github.com/hacdias/filemanager/dir"
 )
 
-func resourceHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	r.URL.Path = dir.SlashClean(r.URL.Path)
-	if !c.User.Allowed(r.URL.Path) {
-		return http.StatusForbidden, nil
+// sanitizeURL sanitizes the URL to prevent path transversal
+// using dir.SlashClean and adds the trailing slash bar.
+func sanitizeURL(url string) string {
+	path := dir.SlashClean(url)
+	if strings.HasSuffix(url, "/") && path != "/" {
+		return path + "/"
 	}
+	return path
+}
+
+func resourceHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	r.URL.Path = sanitizeURL(r.URL.Path)
 
 	switch r.Method {
 	case http.MethodGet:
