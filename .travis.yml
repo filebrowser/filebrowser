@@ -9,7 +9,6 @@ env:
 install:
   - go get ./...
   - go get github.com/mitchellh/gox
-  - go get github.com/tcnksm/ghr
   # Install gometalinter and certain linters
   - go get github.com/alecthomas/gometalinter
   - go get github.com/client9/misspell/cmd/misspell
@@ -27,15 +26,10 @@ before_deploy:
   - gox -output "dist/{{.OS}}-{{.Arch}}-{{.Dir}}"
 
 deploy:
-  - provider: releases
-    api_key: $GITHUB_TOKEN
-    file_glob: true
-    file: dist/*
-    skip_cleanup: true
-    on:
-      tags: true
-  - provider: script
-    skip_cleanup: true
-    script: ghr --username hacdias --token $GITHUB_TOKEN --replace --prerelease --debug latest dist/
-    on:
-      branch: master
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file_glob: true
+  file: dist/*
+  skip_cleanup: true
+  on:
+    tags: true

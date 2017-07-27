@@ -34,7 +34,7 @@ The easiest way to get started is using this with Caddy web server. You just nee
 
 ## Standalone
 
-You can use filemanager as a standalone executable. You just need to download it from the [releases page](https://github.com/hacdias/filemanager/releases), where you can find multiple releases. The 'latest' always corresponds to the latest commit made to the master branch so it might not be stable.
+You can use filemanager as a standalone executable. You just need to download it from the [releases page](https://github.com/hacdias/filemanager/releases), where you can find multiple releases.
 
 You can either use flags or a JSON configuration file, which should have the following appearance:
 
@@ -76,6 +76,10 @@ Otherwise, you may not want to use a configuration file, which can be done using
 -scope string
       Default scope for new users (default ".")
 ```
+
+## Docker
+
+(TODO)
 
 # Features
 
