@@ -163,7 +163,7 @@ function checksum (url, algo) {
 function command (url, command, onmessage, onclose) {
   let protocol = (ssl ? 'wss:' : 'ws:')
   url = removePrefix(url)
-  url = `${protocol}//${window.location.hostname}${store.state.baseURL}/api/command${url}`
+  url = `${protocol}//${window.location.host}${store.state.baseURL}/api/command${url}`
 
   let conn = new window.WebSocket(url)
   conn.onopen = () => conn.send(command)
@@ -174,7 +174,7 @@ function command (url, command, onmessage, onclose) {
 function search (url, search, onmessage, onclose) {
   let protocol = (ssl ? 'wss:' : 'ws:')
   url = removePrefix(url)
-  url = `${protocol}//${window.location.hostname}${store.state.baseURL}/api/search${url}`
+  url = `${protocol}//${window.location.host}${store.state.baseURL}/api/search${url}`
 
   let conn = new window.WebSocket(url)
   conn.onopen = () => conn.send(search)
