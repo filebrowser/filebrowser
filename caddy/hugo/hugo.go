@@ -110,7 +110,7 @@ func (h hugo) BeforeAPI(c *filemanager.RequestContext, w http.ResponseWriter, r 
 		// We only run undraft command if it is a file.
 		if !strings.HasSuffix(filename, "/") {
 			args := []string{"undraft", filename}
-			if err := Run(h.Exe, args, h.Root); err != nil {
+			if err := Run(h.Exe, args, h.Root); err != nil && !strings.Contains(err.Error(), "not a Draft") {
 				return http.StatusInternalServerError, err
 			}
 		}
