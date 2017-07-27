@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	. "github.com/hacdias/filemanager"
-	"github.com/hacdias/filemanager/dir"
+	"github.com/hacdias/fileutils"
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
@@ -136,7 +136,7 @@ func parse(c *caddy.Controller) ([]*config, error) {
 				Regexp: &Regexp{Raw: "\\/\\..+"},
 			}},
 			CSS:        "",
-			FileSystem: dir.Dir(baseScope),
+			FileSystem: fileutils.Dir(baseScope),
 		})
 
 		if err != nil {

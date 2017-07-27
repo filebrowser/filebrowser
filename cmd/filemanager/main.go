@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/hacdias/filemanager"
-	"github.com/hacdias/filemanager/dir"
+	"github.com/hacdias/fileutils"
 )
 
 // confFile contains the configuration file for this File Manager instance.
@@ -65,7 +65,7 @@ func main() {
 		Commands:      strings.Split(strings.TrimSpace(commands), " "),
 		Rules:         []*filemanager.Rule{},
 		CSS:           "",
-		FileSystem:    dir.Dir(scope),
+		FileSystem:    fileutils.Dir(scope),
 	})
 
 	if err != nil {

@@ -10,13 +10,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/filemanager/dir"
+	"github.com/hacdias/fileutils"
 )
 
 // sanitizeURL sanitizes the URL to prevent path transversal
-// using dir.SlashClean and adds the trailing slash bar.
+// using fileutils.SlashClean and adds the trailing slash bar.
 func sanitizeURL(url string) string {
-	path := dir.SlashClean(url)
+	path := fileutils.SlashClean(url)
 	if strings.HasSuffix(url, "/") && path != "/" {
 		return path + "/"
 	}

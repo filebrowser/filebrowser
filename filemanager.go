@@ -11,7 +11,7 @@ import (
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/asdine/storm"
-	"github.com/hacdias/filemanager/dir"
+	"github.com/hacdias/fileutils"
 	"github.com/mholt/caddy"
 )
 
@@ -76,7 +76,7 @@ type User struct {
 	Admin bool `json:"admin"`
 
 	// FileSystem is the virtual file system the user has access.
-	FileSystem dir.Dir `json:"filesystem"`
+	FileSystem fileutils.Dir `json:"filesystem"`
 
 	// Rules is an array of access and deny rules.
 	Rules []*Rule `json:"rules"`
@@ -136,7 +136,7 @@ var DefaultUser = User{
 	Rules:         []*Rule{},
 	CSS:           "",
 	Admin:         true,
-	FileSystem:    dir.Dir("."),
+	FileSystem:    fileutils.Dir("."),
 }
 
 // New creates a new File Manager instance. If 'database' file already
