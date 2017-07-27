@@ -37,7 +37,7 @@
     </div>
 
     <p class="credits">
-      <span>Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/caddy-filemanager">File Manager</a>.</span>
+      <span>Served with <a rel="noopener noreferrer" href="https://github.com/hacdias/filemanager">File Manager</a>.</span>
       <span v-for="plugin in plugins" :key="plugin.name" v-html="plugin.credits"><br></span>
       <span><a @click="help">Help</a></span>
     </p>
