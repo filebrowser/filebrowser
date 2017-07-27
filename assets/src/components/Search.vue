@@ -47,7 +47,8 @@ export default {
       ongoing: false,
       scrollable: null,
       search: [],
-      commands: []
+      commands: [],
+      reload: false
     }
   },
   watch: {
@@ -57,12 +58,17 @@ export default {
       // If the hover was search and now it's something else
       // we should blur the input.
       if (old === 'search' && val !== 'search') {
+        if (this.reload) {
+          this.$store.commit('setReload', true)
+        }
+
         this.$refs.input.blur()
       }
 
       // If we are starting to show the search box, we should
       // focus the input.
       if (val === 'search') {
+        this.reload = false
         this.$refs.input.focus()
       }
     }
@@ -166,9 +172,9 @@ export default {
             this.scrollable.scrollTop = this.scrollable.scrollHeight
           },
           (event) => {
+            this.reload = true
             this.ongoing = false
             this.scrollable.scrollTop = this.scrollable.scrollHeight
-            this.$store.commit('setReload', true)
           }
         )
 
