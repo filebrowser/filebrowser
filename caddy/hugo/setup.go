@@ -52,7 +52,7 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 		// Get the baseURL and baseScope
 		args := c.RemainingArgs()
 
-		if len(args) == 1 {
+		if len(args) >= 1 {
 			directory = args[0]
 		}
 
