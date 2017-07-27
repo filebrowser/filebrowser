@@ -1,0 +1,10 @@
+{
+  "port": 80,
+  "address": "",
+  "database": "/etc/database.db",
+  "scope": "/srv",
+  "allowCommands": true,
+  "allowEdit": true,
+  "allowNew": true,
+  "commands": []
+}
