@@ -20,17 +20,21 @@ install:
 script:
   - gometalinter --disable-all -E vet -E gofmt -E misspell -E ineffassign -E goimports -E deadcode --exclude="rice-box.go" --tests ./...
   - go test ./... -timeout 30s
+
+before_deploy:
   - cd cmd/filemanager
   - mkdir dist
   - gox -output "dist/{{.OS}}-{{.Arch}}-{{.Dir}}"
-  - ls dist/
-  - ghr --username hacdias --token $GITHUB_TOKEN --replace --prerelease --debug latest dist/
 
 deploy:
-  provider: releases
-  api_key: $GITHUB_TOKEN
-  file_glob: true
-  file: dist/*
-  skip_cleanup: true
-  on:
-    tags: true
+  - provider: releases
+    api_key: $GITHUB_TOKEN
+    file_glob: true
+    file: dist/*
+    skip_cleanup: true
+    on:
+      tags: true
+  - provider: script
+    script: ghr --username hacdias --token $GITHUB_TOKEN --replace --prerelease --debug latest dist/
+    on:
+      branch: master
