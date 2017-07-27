@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/hacdias/filemanager/dir"
+	"github.com/hacdias/fileutils"
 )
 
 type test struct {
@@ -28,13 +28,13 @@ func newTest(t *testing.T) *test {
 	scope := filepath.Join(temp, "scope")
 	database := filepath.Join(temp, "database.db")
 
-	err = dir.CopyDir("./testdata", scope)
+	err = fileutils.CopyDir("./testdata", scope)
 	if err != nil {
 		t.Fatalf("Error copying the test data: %v", err)
 	}
 
 	user := DefaultUser
-	user.FileSystem = dir.Dir(scope)
+	user.FileSystem = fileutils.Dir(scope)
 
 	fm, err := New(database, user)
 

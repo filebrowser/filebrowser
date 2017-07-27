@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/filemanager/dir"
+	"github.com/hacdias/fileutils"
 	"github.com/mholt/archiver"
 )
 
@@ -45,7 +45,7 @@ func downloadHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 			}
 
 			// Clean the slashes.
-			name = dir.SlashClean(name)
+			name = fileutils.SlashClean(name)
 			files = append(files, filepath.Join(c.FI.Path, name))
 		}
 	} else {
