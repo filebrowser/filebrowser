@@ -71,7 +71,6 @@ func (h hugo) BeforeAPI(c *filemanager.RequestContext, w http.ResponseWriter, r 
 		}
 
 		filename := filepath.Join(string(c.User.FileSystem), r.URL.Path)
-		filename = strings.TrimPrefix(filename, "/")
 		archetype := r.Header.Get("archetype")
 
 		ext := filepath.Ext(filename)
@@ -100,7 +99,6 @@ func (h hugo) BeforeAPI(c *filemanager.RequestContext, w http.ResponseWriter, r 
 		}
 
 		filename := filepath.Join(string(c.User.FileSystem), r.URL.Path)
-		filename = strings.TrimPrefix(filename, "/")
 
 		// Before save command handler.
 		if err := c.FM.Runner("before_publish", filename); err != nil {
