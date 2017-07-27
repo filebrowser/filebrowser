@@ -127,17 +127,18 @@ this are keywords case:insensitive
 
 # Contributing
 
-If you want to contribute or want to build the code from source, you will need to have NodeJS and Go installed on your computer. You should start by doing the following:
+If you want to contribute or want to build the code from source, you will need to have the most recent version of Go and, if you want to change the static assets (JS, CSS, ...), Node.js installed on your computer. To start developing, you just need to do the following:
 
-```
-go get github.com/hacdias/filemanager
-```
+1. `go get github.com/hacdias/filemanager`
+2. `cd $GOPATH/src/github.com/hacdias/filemanager`
+3. `npm install`
+4. `npm start dev` - regenerates the static assets automatically
+5. `go install gihthub.com/hacdias/filemanager/cmd/filemanager`
+6. Execute `$GOPATH/bin/filemanager`
 
-Then, you should navigate to `$GOPATH/src/github.com/hacdias/filemanager` and execute `npm install`. You can start the live build of static assets with the command `npm start dev`.
+The steps 3 and 4 are only required **if you want to develop the front-end**. Otherwise, you can ignore them. Before pulling, if you made any change on assets folder, you must run the `build.sh` script on the root of this repository.
 
 If you are using this as a Caddy plugin, you should use its [official instructions for plugins](https://github.com/mholt/caddy/wiki/Extending-Caddy#2-plug-in-your-plugin) and import `github.com/hacdias/filemanager/caddy/filemanager`.
-
-Before pulling, and if you made any change on assets folder, you must run the `build.sh` script on the root of this repository.
 
 # Donate
 
