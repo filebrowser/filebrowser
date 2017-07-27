@@ -35,6 +35,7 @@ deploy:
     on:
       tags: true
   - provider: script
+    skip_cleanup: true
     script: ghr --username hacdias --token $GITHUB_TOKEN --replace --prerelease --debug latest dist/
     on:
       branch: master
