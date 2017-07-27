@@ -129,7 +129,7 @@ export default {
       let pieces = this.value.split(' ')
 
       for (let i = 0; i < this.user.commands.length; i++) {
-        if (pieces[0] === this.user.commands[0]) {
+        if (pieces[0] === this.user.commands[i]) {
           return true
         }
       }
