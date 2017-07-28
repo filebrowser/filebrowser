@@ -16,7 +16,7 @@ filemanager provides a file managing interface within a specified directory and 
 + [Features](#features)
   - [Users](#users)
   - [Search](#search)
-+ [Contributing](https://github.com/hacdias/filemanager/blob/master/CONTRIBUTING.md)
++ [Contributing](#contributing)
 + [Donate](#donate)
 
 # Getting started
@@ -178,6 +178,10 @@ By default, every search will be case sensitive. Although, you can make a case i
 ```
 this are keywords case:insensitive
 ```
+
+# Contributing
+
+The contributing guidelines can be found [here](https://github.com/hacdias/filemanager/blob/master/CONTRIBUTING.md).
 
 # Donate
 
