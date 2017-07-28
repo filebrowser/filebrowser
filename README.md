@@ -79,7 +79,57 @@ Otherwise, you may not want to use a configuration file, which can be done using
 
 ## Docker
 
-(TODO)
+File Manager is also on [Docker Hub](https://hub.docker.com/r/hacdias/filemanager/) so you can just `docker pull hacdias/filemanager`.
+
+
+### Paths in the container
+
+- Config: `/etc/config.json`
+- Database: `/etc/database.db`
+- Base scope: `/srv`
+
+### Default config.json
+
+```json
+{
+  "port": 80,
+  "address": "",
+  "database": "/etc/database.db",
+  "scope": "/srv",
+  "allowCommands": true,
+  "allowEdit": true,
+  "allowNew": true,
+  "commands": []
+}
+```
+
+### Usage
+
+If the user wants to use the `config.json` file:
+
+```shell
+docker run \
+    -v /path/to/sites/root:/srv \
+    -v /path/to/config.json:/etc/config.json \
+    -v /path/to/database.db:/etc/database.db \
+    -p 80:80 \
+    hacdias/filemanager
+```
+
+If the user doesn't use the `config.json` file:
+
+```shell
+docker run \
+    -v /path/to/sites/root:/srv \
+    -v /path/to/database.db:/etc/database.db \
+    -p 80:80 \
+    hacdias/filemanager
+    --port 80
+    --database /etc/database.db
+    --scope /srv
+    --other-flag other-value
+```
+
 
 # Features
 
