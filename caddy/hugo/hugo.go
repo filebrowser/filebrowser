@@ -10,7 +10,7 @@ import (
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/hacdias/filemanager"
-	"github.com/hacdias/filemanager/variables"
+	"github.com/hacdias/varutils"
 	"github.com/robfig/cron"
 )
 
@@ -140,7 +140,7 @@ func (h hugo) AfterAPI(c *filemanager.RequestContext, w http.ResponseWriter, r *
 }
 
 func (h hugo) JavaScript() string {
-	return rice.MustFindBox("./").MustString("hugo.js")
+	return rice.MustFindBox("./assets/").MustString("hugo.js")
 }
 
 // run runs Hugo with the define arguments.
@@ -151,7 +151,7 @@ func (h hugo) run(force bool) {
 	}
 
 	// Prevent running if watching is enabled
-	if b, pos := variables.StringInSlice("--watch", h.Args); b && !force {
+	if b, pos := varutils.StringInSlice("--watch", h.Args); b && !force {
 		if len(h.Args) > pos && h.Args[pos+1] != "false" {
 			return
 		}
