@@ -133,5 +133,14 @@ main {
 }
 
 #breadcrumbs a {
-  color: inherit
+  color: inherit;
+  transition: .1s ease-in;
+}
+
+#breadcrumbs a:hover {
+  background-color: rgba(0,0,0, 0.1);
+}
+
+#breadcrumbs span a {
+  padding: .2em;
 }
