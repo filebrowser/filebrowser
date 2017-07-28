@@ -79,7 +79,57 @@ Otherwise, you may not want to use a configuration file, which can be done using
 
 ## Docker
 
-(TODO)
+File Manager is also on [Docker Hub](https://hub.docker.com/r/hacdias/filemanager/) so you can just `docker pull hacdias/filemanager`.
+
+
+### Paths in the container
+
+- Config: `/etc/config.json`
+- Database: `/etc/database.db`
+- Base scope: `/srv`
+
+### Default config.json
+
+```json
+{
+  "port": 80,
+  "address": "",
+  "database": "/etc/database.db",
+  "scope": "/srv",
+  "allowCommands": true,
+  "allowEdit": true,
+  "allowNew": true,
+  "commands": []
+}
+```
+
+### Usage
+
+If the user wants to use the `config.json` file:
+
+```shell
+docker run \
+    -v /path/to/sites/root:/srv \
+    -v /path/to/config.json:/etc/config.json \
+    -v /path/to/database.db:/etc/database.db \
+    -p 80:80 \
+    hacdias/filemanager
+```
+
+If the user doesn't use the `config.json` file:
+
+```shell
+docker run \
+    -v /path/to/sites/root:/srv \
+    -v /path/to/database.db:/etc/database.db \
+    -p 80:80 \
+    hacdias/filemanager
+    --port 80
+    --database /etc/database.db
+    --scope /srv
+    --other-flag other-value
+```
+
 
 # Features
 
@@ -140,7 +190,7 @@ If you want to contribute or want to build the code from source, you will need t
 5. `go install gihthub.com/hacdias/filemanager/cmd/filemanager`
 6. Execute `$GOPATH/bin/filemanager`
 
-The steps 3 and 4 are only required **if you want to develop the front-end**. Otherwise, you can ignore them. Before pulling, if you made any change on assets folder, you must run the `build.sh` script on the root of this repository.
+The steps 3 and 4 are only required **if you want to develop the front-end**. Otherwise, you can ignore them. Before pulling, if you made any change on assets folder, you must run the `build.sh` script on the root of this repository. Also ensure that you have [go.rice](https://github.com/GeertJohan/go.rice) tool installed on your computer.
 
 If you are using this as a Caddy plugin, you should use its [official instructions for plugins](https://github.com/mholt/caddy/wiki/Extending-Caddy#2-plug-in-your-plugin) and import `github.com/hacdias/filemanager/caddy/filemanager`.
 
