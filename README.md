@@ -186,8 +186,8 @@ If you want to contribute or want to build the code from source, you will need t
 1. `go get github.com/hacdias/filemanager`
 2. `cd $GOPATH/src/github.com/hacdias/filemanager`
 3. `npm install`
-4. `npm start dev` - regenerates the static assets automatically
-5. `go install gihthub.com/hacdias/filemanager/cmd/filemanager`
+4. `npm run dev` - regenerates the static assets automatically
+5. `go install github.com/hacdias/filemanager/cmd/filemanager`
 6. Execute `$GOPATH/bin/filemanager`
 
 The steps 3 and 4 are only required **if you want to develop the front-end**. Otherwise, you can ignore them. Before pulling, if you made any change on assets folder, you must run the `build.sh` script on the root of this repository.
