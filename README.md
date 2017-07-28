@@ -11,8 +11,6 @@ filemanager provides a file managing interface within a specified directory and 
 # Table of contents
 
 + [Getting started](#getting-started)
-  - [Caddy](#caddy)
-  - [Standalone](#standalone)
 + [Features](#features)
   - [Users](#users)
   - [Search](#search)
@@ -21,115 +19,7 @@ filemanager provides a file managing interface within a specified directory and 
 
 # Getting started
 
-This is a library that can be used on your own applications as a middleware (see the [documentation](http://godoc.org/github.com/hacdias/filemanager)), as a plugin to Caddy web server or as a standalone app.
-
-Once you have everything deployed, the default credentials to login to the filemanager are:
-
-**Username:** `admin`
-**Password:** `admin`
-
-## Caddy
-
-The easiest way to get started is using this with Caddy web server. You just need to download Caddy from its [official website](https://caddyserver.com/download) with `http.filemanager` plugin enabled. For more information about the plugin itself, please refer to its [documentation](https://caddyserver.com/docs/http.filemanager).
-
-## Standalone
-
-You can use filemanager as a standalone executable. You just need to download it from the [releases page](https://github.com/hacdias/filemanager/releases), where you can find multiple releases.
-
-You can either use flags or a JSON configuration file, which should have the following appearance:
-
-```json
-{
-  "port": 80,
-  "address": "127.0.0.1",
-  "database": "/path/to/database.db",
-  "scope": "/path/to/my/files",
-  "allowCommands": true,
-  "allowEdit": true,
-  "allowNew": true,
-  "commands": [
-    "git",
-    "svn"
-  ]
-}
-```
-
-The `scope`, `allowCommands`, `allowEdit`, `allowNew` and `commands` options are the defaults for new users. To set a configuration file, you will need to pass the path with a flag, like this: `filemanager --config=/path/to/config.json`.
-
-Otherwise, you may not want to use a configuration file, which can be done using the following flags:
-
-```
--address string
-      Address to listen to (default is all of them)
--allow-commands
-      Default allow commands option (default true)
--allow-edit
-      Default allow edit option (default true)
--allow-new
-      Default allow new option (default true)
--commands string
-      Space separated commands available for new users (default "git svn hg")
--database string
-      Database path (default "./filemanager.db")
--port string
-      HTTP Port (default is random)
--scope string
-      Default scope for new users (default ".")
-```
-
-## Docker
-
-File Manager is also on [Docker Hub](https://hub.docker.com/r/hacdias/filemanager/) so you can just `docker pull hacdias/filemanager`.
-
-
-### Paths in the container
-
-- Config: `/etc/config.json`
-- Database: `/etc/database.db`
-- Base scope: `/srv`
-
-### Default config.json
-
-```json
-{
-  "port": 80,
-  "address": "",
-  "database": "/etc/database.db",
-  "scope": "/srv",
-  "allowCommands": true,
-  "allowEdit": true,
-  "allowNew": true,
-  "commands": []
-}
-```
-
-### Usage
-
-If the user wants to use the `config.json` file:
-
-```shell
-docker run \
-    -v /path/to/sites/root:/srv \
-    -v /path/to/config.json:/etc/config.json \
-    -v /path/to/database.db:/etc/database.db \
-    -p 80:80 \
-    hacdias/filemanager
-```
-
-If the user doesn't use the `config.json` file:
-
-```shell
-docker run \
-    -v /path/to/sites/root:/srv \
-    -v /path/to/database.db:/etc/database.db \
-    -p 80:80 \
-    hacdias/filemanager
-    --port 80
-    --database /etc/database.db
-    --scope /srv
-    --other-flag other-value
-```
-
+You can find the Getting Started guide on the [documentation](https://henriquedias.com/filemanager/getting-started/).
 
 # Features
 
