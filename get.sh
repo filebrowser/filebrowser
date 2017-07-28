@@ -9,7 +9,7 @@
 #   This script installs File Manager to your path.
 #   Usage:
 #
-#   $ curl https://hacdias.github.io/filemanager/get.sh | bash
+#   $ curl -fsSL https://hacdias.github.io/filemanager/get.sh | bash
 #    or
 #   $ wget -qO- https://hacdias.github.io/filemanager/get.sh | bash
 #
