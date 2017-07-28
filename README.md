@@ -140,7 +140,7 @@ If you want to contribute or want to build the code from source, you will need t
 5. `go install gihthub.com/hacdias/filemanager/cmd/filemanager`
 6. Execute `$GOPATH/bin/filemanager`
 
-The steps 3 and 4 are only required **if you want to develop the front-end**. Otherwise, you can ignore them. Before pulling, if you made any change on assets folder, you must run the `build.sh` script on the root of this repository.
+The steps 3 and 4 are only required **if you want to develop the front-end**. Otherwise, you can ignore them. Before pulling, if you made any change on assets folder, you must run the `build.sh` script on the root of this repository. Also ensure that you have [go.rice](https://github.com/GeertJohan/go.rice) tool installed on your computer.
 
 If you are using this as a Caddy plugin, you should use its [official instructions for plugins](https://github.com/mholt/caddy/wiki/Extending-Caddy#2-plug-in-your-plugin) and import `github.com/hacdias/filemanager/caddy/filemanager`.
 
