@@ -385,7 +385,6 @@ func (l bySize) Swap(i, j int) {
 	l.Items[i], l.Items[j] = l.Items[j], l.Items[i]
 }
 
-
 const directoryOffset = -1 << 31 // = math.MinInt32
 func (l bySize) Less(i, j int) bool {
 	iSize, jSize := l.Items[i].Size, l.Items[j].Size
@@ -397,7 +396,6 @@ func (l bySize) Less(i, j int) bool {
 	}
 	return iSize < jSize
 }
-
 
 // By Modified
 func (l byModified) Len() int {
