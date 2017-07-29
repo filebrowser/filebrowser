@@ -11,5 +11,5 @@ npm run build
 
 # Embed the assets using rice
 rice embed-go
-cd ./caddy/hugo
+cd ./plugins
 rice embed-go
