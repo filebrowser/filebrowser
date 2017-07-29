@@ -18,6 +18,8 @@ import (
 
 // setup configures a new FileManager middleware instance.
 func setup(c *caddy.Controller) error {
+	plugins.RegisterHugo()
+
 	configs, err := parse(c)
 	if err != nil {
 		return err
