@@ -1,0 +1,21 @@
+build:
+  main: cmd/filemanager/main.go
+  binary: filemanager
+  goos:
+    - darwin
+    - linux
+    - windows
+    - freebsd
+    - netbsd
+    - openbsd
+  goarch:
+    - amd64
+    - 386
+    - arm
+    - arm64
+archive:
+  name_template: "{{.Os}}-{{.Arch}}-{{ .ProjectName }}"
+  format: tar.gz
+  format_overrides:
+    - goos: windows
+      format: zip
