@@ -14,7 +14,6 @@ env:
 
 install:
   - go get ./...
-  - go get github.com/mitchellh/gox
   # Install gometalinter and certain linters
   - go get github.com/alecthomas/gometalinter
   - go get github.com/client9/misspell/cmd/misspell
@@ -26,16 +25,5 @@ script:
   - gometalinter --disable-all -E vet -E gofmt -E misspell -E ineffassign -E goimports -E deadcode --exclude="rice-box.go" --tests ./...
   - go test ./... -timeout 30s
 
-before_deploy:
-  - cd cmd/filemanager
-  - mkdir dist
-  - gox -output "dist/{{.OS}}-{{.Arch}}-{{.Dir}}"
-
-deploy:
-  provider: releases
-  api_key: $GITHUB_TOKEN
-  file_glob: true
-  file: dist/*
-  skip_cleanup: true
-  on:
-    tags: true
+after_success:
+  - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
