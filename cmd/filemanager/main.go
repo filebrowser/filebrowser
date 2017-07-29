@@ -35,7 +35,7 @@ var (
 )
 
 func init() {
-	flag.StringVarP(&config, "config", "c", "", "JSON configuration file")
+	flag.StringVarP(&config, "config", "c", "", "Configuration file")
 	flag.IntVarP(&port, "port", "p", 0, "HTTP Port (default is random)")
 	flag.StringVarP(&addr, "address", "a", "", "Address to listen to (default is all of them)")
 	flag.StringVarP(&database, "database", "d", "./filemanager.db", "Database file")
@@ -81,7 +81,16 @@ func main() {
 
 	// Add a configuration file if set.
 	if config != "" {
-		viper.SetConfigName(strings.TrimSuffix(config, filepath.Ext(config)))
+		ext := filepath.Ext(config)
+		dir := filepath.Dir(config)
+		config = strings.TrimSuffix(config, ext)
+
+		if dir != "" {
+			viper.AddConfigPath(dir)
+			config = strings.TrimPrefix(config, dir)
+		}
+
+		viper.SetConfigName(config)
 	}
 
 	// Read configuration from a file if exists.
