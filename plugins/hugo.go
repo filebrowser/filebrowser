@@ -16,7 +16,12 @@ import (
 	"github.com/robfig/cron"
 )
 
-func init() {
+var (
+	ErrHugoNotFound        = errors.New("It seems that tou don't have 'hugo' on your PATH")
+	ErrUnsupportedFileType = errors.New("The type of the provided file isn't supported for this action")
+)
+
+func RegisterHugo() {
 	filemanager.RegisterPlugin("hugo", filemanager.Plugin{
 		JavaScript:    rice.MustFindBox("./assets/").MustString("hugo.js"),
 		CommandEvents: []string{"before_publish", "after_publish"},
@@ -29,11 +34,6 @@ func init() {
 		Handler: &hugo{},
 	})
 }
-
-var (
-	ErrHugoNotFound        = errors.New("It seems that tou don't have 'hugo' on your PATH")
-	ErrUnsupportedFileType = errors.New("The type of the provided file isn't supported for this action")
-)
 
 // Hugo is a hugo (https://gohugo.io) plugin.
 type Hugo struct {
