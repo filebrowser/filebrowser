@@ -387,6 +387,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			log.Print(err)
 			w.Write([]byte(err.Error()))
 		} else {
+			log.Print(code)
 			w.Write([]byte(http.StatusText(code)))
 		}
 	}
