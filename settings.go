@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"reflect"
 
 	"github.com/mitchellh/mapstructure"
 )
@@ -63,12 +64,33 @@ func pluginsHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (
 	return http.StatusMethodNotAllowed, nil
 }
 
+type pluginOption struct {
+	Variable string      `json:"variable"`
+	Name     string      `json:"name"`
+	Value    interface{} `json:"value"`
+}
+
 func pluginsGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	if !c.User.Admin {
 		return http.StatusForbidden, nil
 	}
 
-	return renderJSON(w, c.FM.Plugins)
+	plugins := map[string][]pluginOption{}
+
+	for name, p := range c.FM.Plugins {
+		plugins[name] = []pluginOption{}
+
+		t := reflect.TypeOf(p).Elem()
+		for i := 0; i < t.NumField(); i++ {
+			plugins[name] = append(plugins[name], pluginOption{
+				Variable: t.Field(i).Name,
+				Name:     t.Field(i).Tag.Get("name"),
+				Value:    reflect.ValueOf(p).Elem().FieldByName(t.Field(i).Name).Interface(),
+			})
+		}
+	}
+
+	return renderJSON(w, plugins)
 }
 
 func pluginsPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
