@@ -10,20 +10,14 @@ import (
 	"strings"
 	"time"
 
-	rice "github.com/GeertJohan/go.rice"
 	"github.com/hacdias/filemanager"
 	"github.com/hacdias/varutils"
 	"github.com/robfig/cron"
 )
 
-var (
-	ErrHugoNotFound        = errors.New("It seems that tou don't have 'hugo' on your PATH")
-	ErrUnsupportedFileType = errors.New("The type of the provided file isn't supported for this action")
-)
-
-func RegisterHugo() {
+func init() {
 	filemanager.RegisterPlugin("hugo", filemanager.Plugin{
-		JavaScript:    rice.MustFindBox("./assets/").MustString("hugo.js"),
+		JavaScript:    hugoJavaScript,
 		CommandEvents: []string{"before_publish", "after_publish"},
 		Permissions: []filemanager.Permission{
 			{
@@ -34,6 +28,11 @@ func RegisterHugo() {
 		Handler: &hugo{},
 	})
 }
+
+var (
+	ErrHugoNotFound        = errors.New("It seems that tou don't have 'hugo' on your PATH")
+	ErrUnsupportedFileType = errors.New("The type of the provided file isn't supported for this action")
+)
 
 // Hugo is a hugo (https://gohugo.io) plugin.
 type Hugo struct {
@@ -49,6 +48,7 @@ type Hugo struct {
 	CleanPublic bool `name:"Clean Public"`
 }
 
+// Find finds the hugo executable in the path.
 func (h *Hugo) Find() error {
 	var err error
 	if h.Exe, err = exec.LookPath("hugo"); err != nil {
