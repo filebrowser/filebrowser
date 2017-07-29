@@ -1,6 +1,7 @@
-package hugo
+package plugins
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -14,7 +15,13 @@ import (
 	"github.com/robfig/cron"
 )
 
-type hugo struct {
+var (
+	ErrHugoNotFound        = errors.New("It seems that tou don't have 'hugo' on your PATH")
+	ErrUnsupportedFileType = errors.New("The type of the provided file isn't supported for this action")
+)
+
+// Hugo is a hugo (https://gohugo.io) plugin.
+type Hugo struct {
 	// Website root
 	Root string `description:"The relative or absolute path to the place where your website is located."`
 	// Public folder
@@ -25,11 +32,9 @@ type hugo struct {
 	Args []string `description:"The arguments to run when running Hugo"`
 	// Indicates if we should clean public before a new publish.
 	CleanPublic bool `description:"Indicates if the public folder should be cleaned before publishing the website."`
-
-	// TODO: admin interface to cgange options
 }
 
-func (h hugo) BeforeAPI(c *filemanager.RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func (h Hugo) BeforeAPI(c *filemanager.RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// If we are using the 'magic url' for the settings, we should redirect the
 	// request for the acutual path.
 	if r.URL.Path == "/settings/" || r.URL.Path == "/settings" {
@@ -49,7 +54,6 @@ func (h hugo) BeforeAPI(c *filemanager.RequestContext, w http.ResponseWriter, r 
 		}
 
 		r.URL.Path = "/config." + frontmatter
-		return 0, nil
 	}
 
 	// From here on, we only care about 'hugo' router so we can bypass
@@ -78,7 +82,7 @@ func (h hugo) BeforeAPI(c *filemanager.RequestContext, w http.ResponseWriter, r 
 		// If the request isn't for a markdown file, we can't
 		// handle it.
 		if ext != ".markdown" && ext != ".md" {
-			return http.StatusBadRequest, errUnsupportedFileType
+			return http.StatusBadRequest, ErrUnsupportedFileType
 		}
 
 		// Tries to create a new file based on this archetype.
@@ -106,11 +110,11 @@ func (h hugo) BeforeAPI(c *filemanager.RequestContext, w http.ResponseWriter, r 
 		}
 
 		// We only run undraft command if it is a file.
-		if !strings.HasSuffix(filename, "/") {
-			args := []string{"undraft", filename}
-			if err := Run(h.Exe, args, h.Root); err != nil && !strings.Contains(err.Error(), "not a Draft") {
+		if strings.HasSuffix(filename, ".md") && strings.HasSuffix(filename, ".markdown") {
+			if err := h.undraft(filename); err != nil {
 				return http.StatusInternalServerError, err
 			}
+
 		}
 
 		// Regenerates the file
@@ -135,16 +139,16 @@ func (h hugo) BeforeAPI(c *filemanager.RequestContext, w http.ResponseWriter, r 
 	return http.StatusNotFound, nil
 }
 
-func (h hugo) AfterAPI(c *filemanager.RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func (h Hugo) AfterAPI(c *filemanager.RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	return 0, nil
 }
 
-func (h hugo) JavaScript() string {
+func (h Hugo) JavaScript() string {
 	return rice.MustFindBox("./assets/").MustString("hugo.js")
 }
 
 // run runs Hugo with the define arguments.
-func (h hugo) run(force bool) {
+func (h Hugo) run(force bool) {
 	// If the CleanPublic option is enabled, clean it.
 	if h.CleanPublic {
 		os.RemoveAll(h.Public)
@@ -167,7 +171,7 @@ func (h hugo) run(force bool) {
 }
 
 // schedule schedules a post to be published later.
-func (h hugo) schedule(c *filemanager.RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func (h Hugo) schedule(c *filemanager.RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	t, err := time.Parse("2006-01-02T15:04", r.Header.Get("Schedule"))
 	path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
 	path = filepath.Clean(path)
@@ -178,8 +182,7 @@ func (h hugo) schedule(c *filemanager.RequestContext, w http.ResponseWriter, r *
 
 	scheduler := cron.New()
 	scheduler.AddFunc(t.Format("05 04 15 02 01 *"), func() {
-		args := []string{"undraft", path}
-		if err := Run(h.Exe, args, h.Root); err != nil {
+		if err := h.undraft(path); err != nil {
 			log.Printf(err.Error())
 			return
 		}
@@ -189,4 +192,13 @@ func (h hugo) schedule(c *filemanager.RequestContext, w http.ResponseWriter, r *
 
 	scheduler.Start()
 	return http.StatusOK, nil
+}
+
+func (h Hugo) undraft(file string) error {
+	args := []string{"undraft", file}
+	if err := Run(h.Exe, args, h.Root); err != nil && !strings.Contains(err.Error(), "not a Draft") {
+		return err
+	}
+
+	return nil
 }
