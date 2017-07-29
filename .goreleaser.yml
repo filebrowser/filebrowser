@@ -13,6 +13,11 @@ build:
     - 386
     - arm
     - arm64
+  ignore:
+    - goos: openbsd
+      goarch: arm
+      goarm: 6
+
 archive:
   name_template: "{{.Os}}-{{.Arch}}-{{ .ProjectName }}"
   format: tar.gz
