@@ -328,6 +328,8 @@ func (l listing) ApplySort() {
 			sort.Sort(sort.Reverse(byName(l)))
 		case "size":
 			sort.Sort(sort.Reverse(bySize(l)))
+		case "modified":
+			sort.Sort(sort.Reverse(byModified(l)))
 		default:
 			// If not one of the above, do nothing
 			return
@@ -338,6 +340,8 @@ func (l listing) ApplySort() {
 			sort.Sort(byName(l))
 		case "size":
 			sort.Sort(bySize(l))
+		case "modified":
+			sort.Sort(byModified(l))
 		default:
 			sort.Sort(byName(l))
 			return
@@ -348,6 +352,7 @@ func (l listing) ApplySort() {
 // Implement sorting for listing
 type byName listing
 type bySize listing
+type byModified listing
 
 // By Name
 func (l byName) Len() int {
@@ -390,6 +395,20 @@ func (l bySize) Less(i, j int) bool {
 		jSize = directoryOffset + jSize
 	}
 	return iSize < jSize
+}
+
+// By Modified
+func (l byModified) Len() int {
+	return len(l.Items)
+}
+
+func (l byModified) Swap(i, j int) {
+	l.Items[i], l.Items[j] = l.Items[j], l.Items[i]
+}
+
+func (l byModified) Less(i, j int) bool {
+	iModified, jModified := l.Items[i].ModTime, l.Items[j].ModTime
+	return iModified.Sub(jModified) < 0
 }
 
 var textExtensions = [...]string{

@@ -20,12 +20,14 @@
             <i class="material-icons">{{ nameIcon }}</i>
           </p>
 
-          <p :class="{ active: !nameSorted }" class="size" @click="sort('size')">
+          <p :class="{ active: sizeSorted }" class="size" @click="sort('size')">
             <span>Size</span>
             <i class="material-icons">{{ sizeIcon }}</i>
           </p>
-
-          <p class="modified">Last modified</p>
+          <p :class="{ active: modifiedSorted }" class="modified" @click="sort('modified')">
+            <span>Last modified</span>
+            <i class="material-icons">{{ modifiedIcon }}</i>
+          </p>
         </div>
       </div>
     </div>
@@ -86,6 +88,12 @@ export default {
     nameSorted () {
       return (this.req.sort === 'name')
     },
+    sizeSorted () {
+      return (this.req.sort === 'size')
+    },
+    modifiedSorted () {
+      return (this.req.sort === 'modified')
+    },
     ascOrdered () {
       return (this.req.order === 'asc')
     },
@@ -97,7 +105,14 @@ export default {
       return 'arrow_downward'
     },
     sizeIcon () {
-      if (!this.nameSorted && this.ascOrdered) {
+      if (this.sizeSorted && this.ascOrdered) {
+        return 'arrow_downward'
+      }
+
+      return 'arrow_upward'
+    },
+    modifiedIcon () {
+      if (this.modifiedSorted && this.ascOrdered) {
         return 'arrow_downward'
       }
 
@@ -275,8 +290,12 @@ export default {
         if (this.nameIcon === 'arrow_upward') {
           order = 'asc'
         }
-      } else {
+      } else if (sort === 'size') {
         if (this.sizeIcon === 'arrow_upward') {
+          order = 'asc'
+        }
+      } else if (sort === 'modified') {
+        if (this.modifiedIcon === 'arrow_upward') {
           order = 'asc'
         }
       }
