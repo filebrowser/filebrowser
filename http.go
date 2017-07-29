@@ -107,8 +107,8 @@ func apiHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int,
 		return http.StatusForbidden, nil
 	}
 
-	for _, p := range c.FM.Plugins {
-		code, err := p.BeforeAPI(c, w, r)
+	for p := range c.FM.Plugins {
+		code, err := plugins[p].Handler.Before(c, w, r)
 		if code != 0 || err != nil {
 			return code, err
 		}
@@ -150,8 +150,8 @@ func apiHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int,
 		return code, err
 	}
 
-	for _, p := range c.FM.Plugins {
-		code, err := p.AfterAPI(c, w, r)
+	for p := range c.FM.Plugins {
+		code, err := plugins[p].Handler.After(c, w, r)
 		if code != 0 || err != nil {
 			return code, err
 		}
@@ -194,18 +194,17 @@ func splitURL(path string) (string, string) {
 
 // renderFile renders a file using a template with some needed variables.
 func renderFile(w http.ResponseWriter, file string, contentType string, c *RequestContext) (int, error) {
-	functions := template.FuncMap{
-		"JS": func(s string) template.JS {
-			return template.JS(s)
-		},
-	}
-
-	tpl := template.Must(template.New("file").Funcs(functions).Parse(file))
+	tpl := template.Must(template.New("file").Parse(file))
 	w.Header().Set("Content-Type", contentType+"; charset=utf-8")
 
+	var javascript = ""
+	for name := range c.FM.Plugins {
+		javascript += plugins[name].JavaScript + "\n"
+	}
+
 	err := tpl.Execute(w, map[string]interface{}{
-		"BaseURL": c.FM.RootURL(),
-		"Plugins": c.FM.Plugins,
+		"BaseURL":    c.FM.RootURL(),
+		"JavaScript": template.JS(javascript),
 	})
 	if err != nil {
 		return http.StatusInternalServerError, err
