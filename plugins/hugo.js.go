@@ -1,4 +1,6 @@
-'use strict';
+package plugins
+
+const hugoJavaScript = `'use strict';
 
 (function () {
   if (window.plugins === undefined || window.plugins === null) {
@@ -10,8 +12,8 @@
 
     return new Promise((resolve, reject) => {
       let request = new window.XMLHttpRequest()
-      request.open('POST', `${data.store.state.baseURL}/api/hugo${url}`, true)
-      request.setRequestHeader('Authorization', `Bearer ${data.store.state.jwt}`)
+      request.open('POST', data.store.state.baseURL + "/api/hugo" + url, true)
+      request.setRequestHeader('Authorization', "Bearer " + data.store.state.jwt)
       request.setRequestHeader('Regenerate', 'true')
 
       request.onload = () => {
@@ -32,8 +34,8 @@
 
     return new Promise((resolve, reject) => {
       let request = new window.XMLHttpRequest()
-      request.open('POST', `${data.store.state.baseURL}/api/hugo${url}`, true)
-      request.setRequestHeader('Authorization', `Bearer ${data.store.state.jwt}`)
+      request.open('POST', data.store.state.baseURL + "/api/hugo" + url, true)
+      request.setRequestHeader('Authorization',"Bearer " + data.store.state.jwt)
       request.setRequestHeader('Archetype', encodeURIComponent(type))
 
       request.onload = () => {
@@ -54,8 +56,8 @@
 
     return new Promise((resolve, reject) => {
       let request = new window.XMLHttpRequest()
-      request.open('POST', `${data.store.state.baseURL}/api/hugo${file}`, true)
-      request.setRequestHeader('Authorization', `Bearer ${data.store.state.jwt}`)
+      request.open('POST', data.store.state.baseURL + "/api/hugo" + file, true)
+      request.setRequestHeader('Authorization', "Bearer " + data.store.state.jwt)
       request.setRequestHeader('Schedule', date)
 
       request.onload = () => {
@@ -222,4 +224,4 @@
       }
     ]
   })
-})()
+})()`

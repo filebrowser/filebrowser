@@ -76,8 +76,6 @@ func setupViper() {
 }
 
 func main() {
-	plugins.RegisterHugo()
-
 	setupViper()
 	flag.Parse()
 
