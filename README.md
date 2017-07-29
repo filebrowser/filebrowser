@@ -19,7 +19,7 @@ filemanager provides a file managing interface within a specified directory and 
 
 # Getting started
 
-You can find the Getting Started guide on the [documentation](https://henriquedias.com/filemanager/getting-started/).
+You can find the Getting Started guide on the [documentation](https://henriquedias.com/filemanager/quick-start/).
 
 # Features
 
