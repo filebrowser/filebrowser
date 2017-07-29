@@ -20,6 +20,7 @@ var (
 	errUserNotExist  = errors.New("user does not exist")
 	errEmptyRequest  = errors.New("request body is empty")
 	errEmptyPassword = errors.New("password is empty")
+	plugins          = map[string]Plugin{}
 )
 
 // FileManager is a file manager instance. It should be creating using the
@@ -53,8 +54,8 @@ type FileManager struct {
 	// A map of events to a slice of commands.
 	Commands map[string][]string
 
-	// The plugins that have been plugged in.
-	Plugins map[string]Plugin
+	// The options of the plugins that have been plugged into this instance.
+	Plugins map[string]interface{}
 }
 
 // Command is a command function.
@@ -115,15 +116,32 @@ type Regexp struct {
 	regexp *regexp.Regexp
 }
 
-// Plugin is a File Manager plugin.
-type Plugin interface {
-	// The JavaScript that will be injected into the main page.
-	JavaScript() string
+type Plugin struct {
+	JavaScript    string
+	CommandEvents []string
+	Permissions   []Permission
+	Handler       PluginHandler
+	Options       interface{}
+}
 
+type Permission struct {
+	Name  string
+	Value bool
+}
+
+type PluginHandler interface {
 	// If the Plugin returns (0, nil), the executation of File Manager will procced as usual.
 	// Otherwise it will stop.
-	BeforeAPI(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
-	AfterAPI(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
+	Before(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
+	After(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
+}
+
+func RegisterPlugin(name string, plugin Plugin) {
+	if _, ok := plugins[name]; ok {
+		panic(name + " plugin is already registred")
+	}
+
+	plugins[name] = plugin
 }
 
 // DefaultUser is used on New, when no 'base' user is provided.
@@ -148,8 +166,8 @@ func New(database string, base User) (*FileManager, error) {
 	// map and Assets box.
 	m := &FileManager{
 		Users:   map[string]*User{},
+		Plugins: map[string]interface{}{},
 		assets:  rice.MustFindBox("./assets/dist"),
-		Plugins: map[string]Plugin{},
 	}
 
 	// Tries to open a database on the location provided. This
@@ -265,41 +283,59 @@ func (m *FileManager) SetBaseURL(url string) {
 	m.BaseURL = strings.TrimSuffix(url, "/")
 }
 
-// RegisterPlugin registers a plugin to a File Manager instance and
+// ActivatePlugin activates a plugin to a File Manager instance and
 // loads its options from the database.
-func (m *FileManager) RegisterPlugin(name string, plugin Plugin) error {
+func (m *FileManager) ActivatePlugin(name string, options interface{}) error {
+	var plugin Plugin
+
+	if p, ok := plugins[name]; !ok {
+		plugin = p
+		return errors.New(name + " plugin is not registred")
+	}
+
 	if _, ok := m.Plugins[name]; ok {
-		return errors.New("Plugin already registred")
+		return errors.New(name + " plugin is already activated")
 	}
 
 	err := m.db.Get("plugins", name, &plugin)
 	if err != nil && err == storm.ErrNotFound {
-		err = m.db.Set("plugins", name, plugin)
+		err = m.db.Set("plugin", name, plugin)
 	}
 
 	if err != nil {
 		return err
 	}
 
-	m.Plugins[name] = plugin
+	// Register the command event hooks.
+	for _, evt := range plugin.CommandEvents {
+		if _, ok := m.Commands[evt]; ok {
+			continue
+		}
+
+		m.Commands[evt] = []string{}
+	}
+
+	err = m.db.Set("config", "commands", m.Commands)
+	if err != nil {
+		return err
+	}
+
+	// Register the user permissions.
+	for _, perm := range plugin.Permissions {
+		err = m.registerPermission(perm.Name, perm.Value)
+		if err != nil {
+			return err
+		}
+	}
+
+	m.Plugins[name] = options
 	return nil
 }
 
-// RegisterEventType registers a new event type which can be triggered using Runner
-// function.
-func (m *FileManager) RegisterEventType(name string) error {
-	if _, ok := m.Commands[name]; ok {
-		return nil
-	}
-
-	m.Commands[name] = []string{}
-	return m.db.Set("config", "commands", m.Commands)
-}
-
-// RegisterPermission registers a new user permission and adds it to every
+// registerPermission registers a new user permission and adds it to every
 // user with it default's 'value'. If the user is an admin, it will
 // be true.
-func (m *FileManager) RegisterPermission(name string, value bool) error {
+func (m *FileManager) registerPermission(name string, value bool) error {
 	if _, ok := m.DefaultUser.Permissions[name]; ok {
 		return nil
 	}

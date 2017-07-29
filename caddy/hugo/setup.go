@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -123,26 +122,12 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 		}
 
 		// Try to find the Hugo executable path.
-		if hugo.Exe, err = exec.LookPath("hugo"); err != nil {
-			return nil, plugins.ErrHugoNotFound
-		}
-
-		err = m.RegisterPlugin("hugo", hugo)
-		if err != nil {
+		if err = hugo.Find(); err != nil {
 			return nil, err
 		}
 
-		err = m.RegisterEventType("before_publish")
-		if err != nil {
-			return nil, err
-		}
-
-		err = m.RegisterEventType("after_publish")
-		if err != nil {
-			return nil, err
-		}
-
-		err = m.RegisterPermission("allowPublish", true)
+		// Attaches Hugo plugin to this file manager instance.
+		err = m.ActivatePlugin("hugo", hugo)
 		if err != nil {
 			return nil, err
 		}
