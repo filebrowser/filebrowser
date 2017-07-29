@@ -14,7 +14,7 @@ build:
     - arm
     - arm64
   ignore:
-    - goos: openbsd
+    - goos: freebsd
       goarch: arm
       goarm: 6
 
