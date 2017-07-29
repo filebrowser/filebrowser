@@ -84,7 +84,6 @@ func printToken(c *RequestContext, w http.ResponseWriter) (int, error) {
 		return http.StatusInternalServerError, err
 	}
 
-
 	// Writes the token.
 	w.Header().Set("Content-Type", "cty")
 	w.Write([]byte(string))
