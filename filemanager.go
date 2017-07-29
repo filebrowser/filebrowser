@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"reflect"
 	"regexp"
 	"strings"
 
@@ -286,6 +287,10 @@ func (m *FileManager) SetBaseURL(url string) {
 // ActivatePlugin activates a plugin to a File Manager instance and
 // loads its options from the database.
 func (m *FileManager) ActivatePlugin(name string, options interface{}) error {
+	if reflect.TypeOf(options).Kind() != reflect.Ptr {
+		return errors.New("options should be a pointer to interface, not interface")
+	}
+
 	var plugin Plugin
 
 	if p, ok := plugins[name]; !ok {
@@ -379,6 +384,7 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(code)
 
 		if err != nil {
+			log.Print(err)
 			w.Write([]byte(err.Error()))
 		} else {
 			w.Write([]byte(http.StatusText(code)))
