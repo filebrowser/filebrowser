@@ -12,6 +12,8 @@ import (
 
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 
+	"github.com/hacdias/filemanager/plugins"
+
 	"github.com/hacdias/filemanager"
 	"github.com/hacdias/fileutils"
 	flag "github.com/spf13/pflag"
@@ -25,6 +27,7 @@ var (
 	scope         string
 	commands      string
 	logfile       string
+	plugin        string
 	port          int
 	allowCommands bool
 	allowEdit     bool
@@ -42,6 +45,7 @@ func init() {
 	flag.BoolVar(&allowCommands, "allow-commands", true, "Default allow commands option for new users")
 	flag.BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option for new users")
 	flag.BoolVar(&allowNew, "allow-new", true, "Default allow new option for new users")
+	flag.StringVar(&plugin, "plugin", "", "Plugin you want to enable")
 }
 
 func setupViper() {
@@ -54,6 +58,7 @@ func setupViper() {
 	viper.SetDefault("AllowCommmands", true)
 	viper.SetDefault("AllowEdit", true)
 	viper.SetDefault("AllowNew", true)
+	viper.SetDefault("Plugin", "")
 
 	viper.BindPFlag("Port", flag.Lookup("port"))
 	viper.BindPFlag("Address", flag.Lookup("address"))
@@ -64,6 +69,7 @@ func setupViper() {
 	viper.BindPFlag("AllowCommands", flag.Lookup("allow-commands"))
 	viper.BindPFlag("AllowEdit", flag.Lookup("allow-edit"))
 	viper.BindPFlag("AlowNew", flag.Lookup("allow-new"))
+	viper.BindPFlag("Plugin", flag.Lookup("plugin"))
 
 	viper.SetConfigName("filemanager")
 	viper.AddConfigPath(".")
@@ -116,6 +122,25 @@ func main() {
 
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if viper.GetString("Plugin") == "hugo" {
+		// Initialize the default settings for Hugo.
+		hugo := &plugins.Hugo{
+			Root:        viper.GetString("Scope"),
+			Public:      filepath.Join(viper.GetString("Scope"), "public"),
+			Args:        []string{},
+			CleanPublic: true,
+		}
+
+		// Try to find the Hugo executable path.
+		if err = hugo.Find(); err != nil {
+			log.Fatal(err)
+		}
+
+		if err = fm.ActivatePlugin("hugo", hugo); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	// Builds the address and a listener.
