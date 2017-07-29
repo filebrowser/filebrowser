@@ -11,7 +11,7 @@
       <template v-for="plugin in plugins">
         <h2>{{ capitalize(plugin.name) }}</h2>
 
-        <p v-for="field in plugin.fields" :key="field.name">
+        <p v-for="field in plugin.fields" :key="field.variable">
           <label v-if="field.type !== 'checkbox'">{{ field.name }}</label>
           <input v-if="field.type === 'text'" type="text" v-model.trim="field.value">
           <input v-else-if="field.type === 'checkbox'" type="checkbox" v-model.trim="field.value">
@@ -69,47 +69,8 @@ export default {
 
     api.getPlugins()
       .then(plugins => {
-        console.log(plugins)
-        let plugin = {}
-
         for (let key in plugins) {
-          plugin.name = key
-          plugin.fields = []
-
-          for (let field in plugins[key]) {
-            let value = plugins[key][field]
-
-            if (Array.isArray(value)) {
-              plugin.fields.push({
-                name: field,
-                type: 'text',
-                original: 'array',
-                value: value.join(' ')
-              })
-
-              continue
-            }
-
-            switch (typeof value) {
-              case 'boolean':
-                plugin.fields.push({
-                  name: field,
-                  type: 'checkbox',
-                  original: 'boolean',
-                  value: value
-                })
-                break
-              default:
-                plugin.fields.push({
-                  name: field,
-                  type: 'text',
-                  original: 'text',
-                  value: value
-                })
-            }
-          }
-
-          this.plugins.push(plugin)
+          this.plugins.push(this.parsePlugin(key, plugins[key]))
         }
       })
       .catch(error => { this.showError(error) })
@@ -153,7 +114,7 @@ export default {
         let p = {}
 
         for (let field of plugin.fields) {
-          p[field.name] = field.value
+          p[field.variable] = field.value
 
           if (field.original === 'array') {
             let val = field.value.split(' ')
@@ -161,7 +122,7 @@ export default {
               val.shift()
             }
 
-            p[field.name] = val
+            p[field.variable] = val
           }
         }
 
@@ -173,6 +134,43 @@ export default {
       api.updatePlugins(plugins)
         .then(() => { this.showSuccess('Plugins settings updated!') })
         .catch(error => { this.showError(error) })
+    },
+    parsePlugin (name, plugin) {
+      let obj = {
+        name: name,
+        fields: []
+      }
+
+      for (let option of plugin) {
+        let value = option.value
+
+        let field = {
+          name: option.name,
+          variable: option.variable,
+          type: 'text',
+          original: 'text',
+          value: value
+        }
+
+        if (Array.isArray(value)) {
+          field.original = 'array'
+          field.value = value.join(' ')
+
+          obj.fields.push(field)
+          continue
+        }
+
+        switch (typeof value) {
+          case 'boolean':
+            field.type = 'checkbox'
+            field.original = 'boolean'
+            break
+        }
+
+        obj.fields.push(field)
+      }
+
+      return obj
     }
   }
 }

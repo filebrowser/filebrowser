@@ -38,15 +38,15 @@ var (
 // Hugo is a hugo (https://gohugo.io) plugin.
 type Hugo struct {
 	// Website root
-	Root string `description:"The relative or absolute path to the place where your website is located."`
+	Root string `name:"Website Root"`
 	// Public folder
-	Public string `description:"The relative or absolute path to the public folder."`
+	Public string `name:"Public Directory"`
 	// Hugo executable path
-	Exe string `description:"The absolute path to the Hugo executable or the command to execute."`
+	Exe string `name:"Hugo Executable"`
 	// Hugo arguments
-	Args []string `description:"The arguments to run when running Hugo"`
+	Args []string `name:"Hugo Arguments"`
 	// Indicates if we should clean public before a new publish.
-	CleanPublic bool `description:"Indicates if the public folder should be cleaned before publishing the website."`
+	CleanPublic bool `name:"Clean Public"`
 }
 
 func (h *Hugo) Find() error {
