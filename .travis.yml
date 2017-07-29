@@ -1,7 +1,13 @@
 language: go
 
 go:
+  - 1.8.3
   - tip
+
+matrix:
+  allow_failures:
+    - go: tip
+  fast_finish: true
 
 env:
   - "PATH=/home/travis/gopath/bin:$PATH"
