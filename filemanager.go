@@ -440,8 +440,9 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			log.Print(err)
 			w.Write([]byte(err.Error()))
 		} else {
-			log.Print(code)
-			w.Write([]byte(http.StatusText(code)))
+			txt := http.StatusText(code)
+			log.Printf("%v: %v %v\n", r.URL.Path, code, txt)
+			w.Write([]byte(txt))
 		}
 	}
 }

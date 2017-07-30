@@ -32,6 +32,8 @@ var (
 	allowCommands bool
 	allowEdit     bool
 	allowNew      bool
+	showVer       bool
+	version       = "master"
 )
 
 func init() {
@@ -46,6 +48,7 @@ func init() {
 	flag.BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option for new users")
 	flag.BoolVar(&allowNew, "allow-new", true, "Default allow new option for new users")
 	flag.StringVar(&plugin, "plugin", "", "Plugin you want to enable")
+	flag.BoolVarP(&showVer, "version", "v", false, "Show version")
 }
 
 func setupViper() {
@@ -78,6 +81,11 @@ func setupViper() {
 func main() {
 	setupViper()
 	flag.Parse()
+
+	if showVer {
+		fmt.Println("filemanager version", version)
+		os.Exit(0)
+	}
 
 	// Add a configuration file if set.
 	if config != "" {
