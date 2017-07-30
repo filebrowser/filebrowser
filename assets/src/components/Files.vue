@@ -131,6 +131,9 @@ export default {
   beforeDestroy () {
     window.removeEventListener('keydown', this.keyEvent)
   },
+  destroyed () {
+    this.$store.commit('updateRequest', {})
+  },
   methods: {
     ...mapMutations([ 'setLoading' ]),
     fetchData () {
