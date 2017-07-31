@@ -24,10 +24,7 @@ function fetch (url) {
           resolve(JSON.parse(request.responseText))
           break
         default:
-          reject({
-            message: request.responseText,
-            status: request.status
-          })
+          reject(new Error(request.status))
           break
       }
     }

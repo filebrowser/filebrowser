@@ -25,13 +25,13 @@ const router = new Router({
       component: Login,
       beforeEnter: function (to, from, next) {
         auth.loggedIn()
-        .then(() => {
-          next({ path: '/files' })
-        })
-        .catch(() => {
-          document.title = 'Login'
-          next()
-        })
+          .then(() => {
+            next({ path: '/files' })
+          })
+          .catch(() => {
+            document.title = 'Login'
+            next()
+          })
       }
     },
     {

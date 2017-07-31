@@ -152,25 +152,19 @@ export default {
       if (url[0] !== '/') url = '/' + url
 
       api.fetch(url)
-      .then((req) => {
-        if (!url.endsWith('/') && req.url.endsWith('/')) {
-          window.history.replaceState(window.history.state, document.title, window.location.pathname + '/')
-        }
+        .then((req) => {
+          if (!url.endsWith('/') && req.url.endsWith('/')) {
+            window.history.replaceState(window.history.state, document.title, window.location.pathname + '/')
+          }
 
-        this.$store.commit('updateRequest', req)
-        document.title = req.name
-        this.setLoading(false)
-      })
-      .catch(error => {
-        this.setLoading(false)
-
-        if (typeof error === 'object') {
-          this.error = error.status
-          return
-        }
-
-        this.error = error
-      })
+          this.$store.commit('updateRequest', req)
+          document.title = req.name
+          this.setLoading(false)
+        })
+        .catch(error => {
+          this.setLoading(false)
+          this.error = error
+        })
     },
     keyEvent (event) {
       // Esc!
@@ -220,7 +214,6 @@ export default {
 
           if (this.req.kind !== 'editor') {
             document.getElementById('download-button').click()
-            return
           }
         }
       }
