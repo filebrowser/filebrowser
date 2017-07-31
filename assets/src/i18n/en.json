@@ -4,5 +4,17 @@
     "username": "Username",
     "password": "Password",
     "submit": "Login"
+  },
+  "buttons": {
+    "copy": "Copy",
+    "copyFile": "Copy file",
+    "delete": "Delete",
+    "download": "Download",
+    "info": "Info",
+    "move": "Move",
+    "moveFile": "Move file",
+    "rename": "Rename",
+    "switchView": "Swicth view",
+    "upload": "Upload"
   }
 }

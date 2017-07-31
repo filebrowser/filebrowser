@@ -4,5 +4,9 @@
     "username": "Nome de utilizador",
     "password": "Palavra-passe",
     "submit": "Entrar"
+  },
+  "buttons": {
+    "copy": "Copiar",
+    "copyFile": "Copiar ficheiro"
   }
 }

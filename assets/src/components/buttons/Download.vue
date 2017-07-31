@@ -1,7 +1,7 @@
 <template>
-  <button @click="download" aria-label="Download" title="Download" id="download-button" class="action">
+  <button @click="download" :aria-label="$t('buttons.download')" :title="$t('buttons.download')" id="download-button" class="action">
     <i class="material-icons">file_download</i>
-    <span>Download</span>
+    <span>{{ $t('buttons.download') }}</span>
     <span v-if="selectedCount > 0" class="counter">{{ selectedCount }}</span>
   </button>
 </template>

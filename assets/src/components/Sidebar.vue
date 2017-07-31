@@ -65,7 +65,6 @@ export default {
   computed: {
     ...mapState(['user', 'plugins']),
     active () {
-      console.log(this.$i18n)
       return this.$store.state.show === 'sidebar'
     }
   },

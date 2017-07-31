@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Login from '@/components/Login'
+import Login from '@/views/Login'
 import Main from '@/components/Main'
 import Files from '@/components/files/Files'
 import Users from '@/components/settings/Users'
