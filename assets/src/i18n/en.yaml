@@ -1,0 +1,141 @@
+login:
+  wrongCredentials: Wrong credentials
+  username: Username
+  password: Password
+  submit: Login
+buttons:
+  copy: Copy
+  copyFile: Copy file
+  delete: Delete
+  download: Download
+  info: Info
+  move: Move
+  moveFile: Move file
+  rename: Rename
+  switchView: Swicth view
+  toggleSidebar: Toggle sidebar
+  more: More
+  upload: Upload
+  cancel: Cancel
+  create: Create
+  close: Close
+  reportIssue: Report Issue
+  update: Update
+  save: Save
+  new: New
+  ok: OK
+  search: Search
+  selectMultiple: Select multiple
+  select: Select
+errors:
+  forbidden: You're not welcome here.
+  notFound: This location can't be reached.
+  internal: Something really went wrong.
+files:
+  metadata: Metadata
+  body: Body
+  loading: Loading...
+  home: Home
+  lonely: It feels lonely here...
+  name: Name
+  size: Size
+  lastModified: Last modified
+  clear: Clear
+  multipleSelectionEnabled: Multiple selection enabled
+  closePreview: Close preview
+sidebar:
+  myFiles: My files
+  newFolder: New folder
+  newFile: New file
+  settings: Settings
+  logout: Logout
+  servedWith: Served with
+  help: Help
+prompts:
+  copy: Copy
+  copyMessage: 'Choose the place to copy your files:'
+  deleteTitle: Delete files
+  deleteMessageSingle: Are you sure you want to delete this file/folder?
+  deleteMessageMultiple: Are you sure you want to delete {count} file(s)?
+  newFile: New file
+  newFileMessage: Write the name of the new file.
+  newDir: New directory
+  newDirMessage: Write the name of the new directory.
+  move: Move
+  moveMessage: 'Choose new house for your file(s)/folder(s):'
+  rename: Rename
+  renameMessage: Insert a new name for
+  download: Download files
+  downloadMessage: Choose the format you want to download.
+  error: Something went wrong
+  currentlyNavigating: 'Currently navigating on:'
+  fileInfo: File information
+  filesSelected: "{count} files selected."
+  displayName: 'Display Name:'
+  size: Size
+  lastModified: Last Modified
+  numberFiles: Number of files
+  numberDirs: Number of directories
+help:
+  help: Help
+  f1: this information
+  f2: rename file
+  del: delete selected items
+  esc: clear selection and/or close the prompt
+  ctrl:
+    s: save a file or download the directory where you are
+    f: opens search
+    click: select multiple files or directories
+  click: select file or directory
+  doubleClick: open a file or directory
+settings:
+  globalSettings: Global Settings
+  profileSettings: Profile Settings
+  userManagement: User Management
+  goTo: Go to
+  commands: Commands
+  commandsHelp: Here you can set commands that are executed in the named events. You
+    write one command per line. If the event is related to files, such as before and
+    after saving, the environment variable "file" will be available with the path
+    of the file.
+  commandsUpdated: Commands updated!
+  pluginsUpdated: Plugins settings updated!
+  changePassword: Change Password
+  newPassword: Your new password
+  newPasswordConfirm: Confirm your new password
+  customStylesheet: Custom Stylesheet
+  newUser: New User
+  user: User
+  users: Users
+  username: Username
+  password: Password
+  scope: Scope
+  admin: Admin
+  permissions: Permissions
+  permissionsHelp: >
+    You can set the user to be an administrator or choose the permissions
+    individually. If you select "Administrator", all of the other options will be
+    automatically checked. The management of users remains a privilege of an administrator.
+  administrator: Administrator
+  allowNew: Create new files and directories
+  allowEdit: Edit, rename and delete files or directories.
+  allowCommands: Execute commands
+  userCommands: Commands
+  userCommandsHelp: 'A space separated list with the available commands for this user. Example:'
+  rules: Rules
+  rulesHelp1: >
+    Here you can define a set of allow and disallow rules for this specific
+    user. The blocked files won't show up in the listings and they won't be accessible
+    to the user. We support regex and paths relative to the user's scope.
+  rulesHelp2: Each rule goes in one different line and must start with the keyword
+    {0} or {1}. Then you should write {2} if you are using a regular expression and
+    then the expression or the path.
+  examples: Examples
+  ruleExample1: >
+    prevents the access to any dot file (such as .git, .gitignore) in
+    every folder.
+  ruleExample2: blocks the access to the file named Caddyfile on the root of the scope.
+  avoidChanges: "(leave blank to avoid changes)"
+  userDeleted: User deleted!
+  userCreated: User created!
+  userUpdated: User updated!

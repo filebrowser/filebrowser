@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
-import en from './en.json'
-import pt from './pt.json'
+import en from './en.yaml'
+import pt from './pt.yaml'
 
 Vue.use(VueI18n)
 

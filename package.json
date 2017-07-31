@@ -63,7 +63,8 @@
     "webpack-bundle-analyzer": "^2.2.1",
     "webpack-dev-middleware": "^1.10.0",
     "webpack-hot-middleware": "^2.18.0",
-    "webpack-merge": "^4.1.0"
+    "webpack-merge": "^4.1.0",
+    "yml-loader": "^2.1.0"
   },
   "engines": {
     "node": ">= 4.0.0",
