@@ -61,7 +61,7 @@ export default {
       }
 
       api.updatePassword(this.password).then(() => {
-        this.showSuccess('Password updated!')
+        this.showSuccess(this.$t('settings.passwordUpdated'))
       }).catch(e => {
         this.$store.commit('showError', e)
       })
@@ -72,7 +72,7 @@ export default {
       api.updateCSS(this.css).then(() => {
         this.$store.commit('setUserCSS', this.css)
         this.$emit('css-updated')
-        this.showSuccess('Styles updated!')
+        this.showSuccess(this.$t('settings.stylesUpdated'))
       }).catch(e => {
         this.$store.commit('showError', e)
       })

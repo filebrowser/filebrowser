@@ -11,7 +11,9 @@ buttons:
   move: Move
   moveFile: Move file
   new: New
+  next: Next
   ok: OK
+  previous: Previous
   rename: Rename
   reportIssue: Report Issue
   save: Save
@@ -27,6 +29,8 @@ errors:
   internal: Something really went wrong.
   notFound: This location can't be reached.
 files:
+  folders: Folders
+  files: Files
   body: Body
   clear: Clear
   closePreview: Close preview
@@ -103,6 +107,7 @@ settings:
   newPasswordConfirm: Confirm your new password
   newUser: New User
   password: Password
+  passwordUpdated: Password updated!
   permissions: Permissions
   permissionsHelp: >
     'You can set the user to be an administrator or choose the permissions
@@ -124,6 +129,7 @@ settings:
     {0} or {1}. Then you should write {2} if you are using a regular expression and
     then the expression or the path.
   scope: Scope
+  stylesUpdated: Styles updated!
   user: User
   userCommands: Commands
   userCommandsHelp:
@@ -143,3 +149,11 @@ sidebar:
   newFolder: New folder
   servedWith: Served with
   settings: Settings
+search:
+  writeToSearch: Write here to search
+  searchOrCommand: Search or execute a command...
+  searchOrSupportedCommand: 'Search or use one of your supported commands:'
+  search: Search...
+  type: Type and press enter to search.
+  pressToSearch: Press enter to search.
+  pressToExecute: Press enter to execute.

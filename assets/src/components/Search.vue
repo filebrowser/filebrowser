@@ -1,7 +1,7 @@
 <template>
   <div id="search" @click="open" v-bind:class="{ active , ongoing }">
     <div id="input">
-      <button v-if="active" class="action" @click="close">
+      <button v-if="active" class="action" @click="close" :aria-label="$t('buttons.close')" :title="$t('buttons.close')">
         <i class="material-icons">arrow_back</i>
       </button>
       <i v-else class="material-icons">search</i>
@@ -11,7 +11,7 @@
         ref="input"
         :autofocus="active"
         v-model.trim="value"
-        aria-label="Write here to search"
+        :aria-label="$t('search.writeToSearch')"
         :placeholder="placeholder">
     </div>
 
@@ -78,10 +78,10 @@ export default {
     // Placeholder value.
     placeholder: function () {
       if (this.user.allowCommands && this.user.commands.length > 0) {
-        return 'Search or execute a command...'
+        return this.$t('search.searchOrCommand')
       }
 
-      return 'Search...'
+      return this.$t('search.search')
     },
     // The text that is shown on the results' box while
     // there is no search result or command output to show.
@@ -92,16 +92,16 @@ export default {
 
       if (this.value.length === 0) {
         if (this.user.allowCommands && this.user.commands.length > 0) {
-          return `Search or use one of your supported commands: ${this.user.commands.join(', ')}.`
+          return `${this.$t('search.searchOrSupportedCommand')} ${this.user.commands.join(', ')}.`
         }
 
-        return 'Type and press enter to search.'
+        this.$t('search.type')
       }
 
       if (!this.supported() || !this.user.allowCommands) {
-        return 'Press enter to search.'
+        return this.$t('search.pressToSearch')
       } else {
-        return 'Press enter to execute.'
+        return this.$t('search.pressToExecute')
       }
     }
   },

@@ -11,8 +11,12 @@
       <info-button></info-button>
     </div>
 
-    <button class="action" @click="prev" v-show="hasPrevious"><i class="material-icons">chevron_left</i></button>
-    <button class="action" @click="next" v-show="hasNext"><i class="material-icons">chevron_right</i></button>
+    <button class="action" @click="prev" v-show="hasPrevious" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
+      <i class="material-icons">chevron_left</i>
+    </button>
+    <button class="action" @click="next" v-show="hasNext" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
+      <i class="material-icons">chevron_right</i>
+    </button>
 
     <div class="preview">
       <img v-if="req.type == 'image'" :src="raw()">

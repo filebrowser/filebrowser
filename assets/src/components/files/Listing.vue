@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <h2 v-if="req.numDirs > 0">Folders</h2>
+    <h2 v-if="req.numDirs > 0">{{ $t('files.folders') }}</h2>
     <div v-if="req.numDirs > 0">
       <item v-for="(item, index) in req.items"
         v-if="item.isDir"
@@ -47,7 +47,7 @@
       </item>
     </div>
 
-    <h2 v-if="req.numFiles > 0">Files</h2>
+    <h2 v-if="req.numFiles > 0">{{ $t('files.files') }}</h2>
     <div v-if="req.numFiles > 0">
       <item v-for="(item, index) in req.items"
         v-if="!item.isDir"
@@ -67,7 +67,7 @@
     <div v-show="$store.state.multiple" :class="{ active: $store.state.multiple }" id="multiple-selection">
     <p>{{ $t('files.multipleSelectionEnabled') }}</p>
       <div @click="$store.commit('multiple', false)" tabindex="0" role="button" :title="$t('files.clear')" :aria-label="$t('files.clear')" class="action">
-        <i class="material-icons" title="Clear">clear</i>
+        <i class="material-icons">clear</i>
       </div>
     </div>
   </div>
