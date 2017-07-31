@@ -1,0 +1,8 @@
+{
+  "login": {
+    "wrongCredentials": "Credenciais erradas",
+    "username": "Nome de utilizador",
+    "password": "Palavra-passe",
+    "submit": "Entrar"
+  }
+}

@@ -14,7 +14,7 @@
         <td>{{ user.username }}</td>
         <td><i v-if="user.admin" class="material-icons">done</i><i v-else class="material-icons">close</i></td>
         <td>{{ user.filesystem }}</td>
-        <td><router-link :to="'/users/' + user.ID"><i class="material-icons">mode_edit</i></router-link></td>
+        <td><router-link :to="'/settigns/users/' + user.ID"><i class="material-icons">mode_edit</i></router-link></td>
       </tr>
 
     </table>

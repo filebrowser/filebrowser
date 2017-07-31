@@ -4,7 +4,7 @@
 
     <ul>
       <li><router-link to="/settings/profile">Go to Profile Settings</router-link></li>
-      <li><router-link to="/users">Go to User Management</router-link></li>
+      <li><router-link to="/settings/users">Go to User Management</router-link></li>
     </ul>
 
     <form @submit="savePlugin" v-if="plugins.length > 0">

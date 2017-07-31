@@ -3,10 +3,10 @@
     <form @submit="submit">
       <img src="../assets/logo.svg" alt="File Manager">
       <h1>File Manager</h1>
-      <div v-if="wrong" class="wrong">Wrong credentials</div>
-      <input type="text" v-model="username" placeholder="Username">
-      <input type="password" v-model="password" placeholder="Password">
-      <input type="submit" value="Login">
+      <div v-if="wrong" class="wrong">{{ $t("login.wrongCredentials") }}</div>
+      <input type="text" v-model="username" :placeholder="$t('login.username')">
+      <input type="password" v-model="password" :placeholder="$t('login.password')">
+      <input type="submit" :value="$t('login.submit')">
     </form>
   </div>
 </template>

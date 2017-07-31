@@ -2,7 +2,7 @@
   <nav :class="{active}">
     <router-link class="action" to="/files/" aria-label="My Files" title="My Files">
       <i class="material-icons">folder</i>
-      <span>My Files</span>
+      <span>{{ $t('My Files') }}</span>
     </router-link>
 
     <div v-if="user.allowNew">
@@ -65,6 +65,7 @@ export default {
   computed: {
     ...mapState(['user', 'plugins']),
     active () {
+      console.log(this.$i18n)
       return this.$store.state.show === 'sidebar'
     }
   },

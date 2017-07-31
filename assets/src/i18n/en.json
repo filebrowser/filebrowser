@@ -1,0 +1,8 @@
+{
+  "login": {
+    "wrongCredentials": "Wrong credentials",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Login"
+  }
+}
