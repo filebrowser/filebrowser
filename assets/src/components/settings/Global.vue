@@ -1,10 +1,10 @@
 <template>
   <div class="dashboard">
-    <h1>Global Settings</h1>
+    <h1>{{ $t('settings.globalSettings') }}</h1>
 
     <ul>
-      <li><router-link to="/settings/profile">Go to Profile Settings</router-link></li>
-      <li><router-link to="/settings/users">Go to User Management</router-link></li>
+      <li><router-link to="/settings/profile">{{ $t('settings.goTo') }} {{ $t('settings.profileSettings') }}</router-link></li>
+      <li><router-link to="/settings/users">{{ $t('settings.goTo') }} {{ $t('settings.userManagement') }}</router-link></li>
     </ul>
 
     <form @submit="savePlugin" v-if="plugins.length > 0">
@@ -23,11 +23,9 @@
     </form>
 
     <form @submit="saveCommands">
-      <h2>Commands</h2>
+      <h2>{{ $t('settings.commands') }}</h2>
 
-      <p class="small">Here you can set commands that are executed in the named events. You write one command
-        per line. If the event is related to files, such as before and after saving, the environment variable
-        <code>file</code> will be available with the path of the file.</p>
+      <p class="small">{{ $t('settings.commandsHelp') }}</p>
 
       <template v-for="command in commands">
         <h3>{{ capitalize(command.name) }}</h3>
@@ -103,7 +101,7 @@ export default {
       }
 
       api.updateCommands(commands)
-        .then(() => { this.showSuccess('Commands updated!') })
+        .then(() => { this.showSuccess(this.$t('settings.commandsUpdated')) })
         .catch(error => { this.showError(error) })
     },
     savePlugin (event) {
@@ -132,7 +130,7 @@ export default {
       console.log(plugins)
 
       api.updatePlugins(plugins)
-        .then(() => { this.showSuccess('Plugins settings updated!') })
+        .then(() => { this.showSuccess(this.$t('settings.pluginsUpdated')) })
         .catch(error => { this.showError(error) })
     },
     parsePlugin (name, plugin) {

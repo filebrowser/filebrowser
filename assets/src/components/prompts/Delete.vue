@@ -5,7 +5,10 @@
     <p v-show="req.kind === 'listing'">{{ $t('prompts.deleteMessageMultiple', { count: selectedCount}) }}</p>
     <div>
       <button @click="submit" autofocus>{{ $t('buttons.delete') }}</button>
-      <button @click="closeHovers" class="cancel">{{ $t('buttons.cancel') }}</button>
+      <button class="cancel"
+        @click="$store.commit('closeHovers')"
+        :aria-label="$t('buttons.cancel')"
+        :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
     </div>
   </div>
 </template>

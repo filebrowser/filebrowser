@@ -6,7 +6,10 @@
     <input autofocus type="text" @keyup.enter="submit" v-model.trim="name">
     <div>
       <button @click="submit" type="submit">{{ $t('buttons.rename') }}</button>
-      <button @click="cancel" class="cancel">{{ $t('buttons.cancel') }}</button>
+      <button class="cancel"
+        @click="$store.commit('closeHovers')"
+        :aria-label="$t('buttons.cancel')"
+        :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
     </div>
   </div>
 </template>

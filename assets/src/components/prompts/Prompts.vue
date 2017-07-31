@@ -27,7 +27,10 @@
           :placeholder="input.placeholder">
         <div>
           <input type="submit" class="ok" :value="prompt.ok">
-          <button class="cancel" @click.prevent="$store.commit('closeHovers')">{{ $t('buttons.cancel') }}</button>
+          <button class="cancel"
+            @click="$store.commit('closeHovers')"
+            :aria-label="$t('buttons.cancel')"
+            :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
         </div>
       </form>
     </template>

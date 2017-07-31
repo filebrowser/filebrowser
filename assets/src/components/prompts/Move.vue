@@ -7,7 +7,10 @@
 
     <div>
       <button class="ok" @click="move">{{ $t('buttons.move') }}</button>
-      <button class="cancel" @click="$store.commit('closeHovers')">{{ $t('buttons.cancel') }}</button>
+      <button class="cancel"
+        @click="$store.commit('closeHovers')"
+        :aria-label="$t('buttons.cancel')"
+        :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
     </div>
   </div>
 </template>

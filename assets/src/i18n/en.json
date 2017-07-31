@@ -18,7 +18,11 @@
     "upload": "Upload",
     "cancel": "Cancel",
     "create": "Create",
+    "close": "Close",
     "reportIssue": "Report Issue",
+    "update": "Update",
+    "save": "Save",
+    "new": "New",
     "ok": "OK"
   },
   "errors": {
@@ -38,6 +42,15 @@
     "clear": "Clear",
     "multipleSelectionEnabled": "Multiple selection enabled",
     "closePreview": "Close preview"
+  },
+  "sidebar": {
+    "myFiles": "My files",
+    "newFolder": "New folder",
+    "newFile": "New file",
+    "settings": "Settings",
+    "logout": "Logout",
+    "servedWith": "Served with",
+    "help": "Help"
   },
   "prompts": {
     "copy": "Copy",
@@ -78,5 +91,44 @@
     },
     "click": "select file or directory",
     "doubleClick": "open a file or directory"
+  },
+  "settings": {
+    "globalSettings": "Global Settings",
+    "profileSettings": "Profile Settings",
+    "userManagement": "User Management",
+    "goTo": "Go to",
+    "commands": "Commands",
+    "commandsHelp": "Here you can set commands that are executed in the named events. You write one command per line. If the event is related to files, such as before and after saving, the environment variable \"file\" will be available with the path of the file.",
+    "commandsUpdated": "Commands updated!",
+    "pluginsUpdated": "Plugins settings updated!",
+    "changePassword": "Change Password",
+    "newPassword": "Your new password",
+    "newPasswordConfirm": "Confirm your new password",
+    "customStylesheet": "Custom Stylesheet",
+    "newUser": "New User",
+    "user": "User",
+    "users": "Users",
+    "username": "Username",
+    "password": "Password",
+    "scope": "Scope",
+    "admin": "Admin",
+    "permissions": "Permissions",
+    "permissionsHelp": "You can set the user to be an administrator or choose the permissions individually. If you select \"Administrator\", all of the other options will be automatically checked. The management of users remains a privilege of an administrator.",
+    "administrator": "Administrator",
+    "allowNew": "Create new files and directories",
+    "allowEdit": "Edit, rename and delete files or directories.",
+    "allowCommands": "Execute commands",
+    "userCommands": "Commands",
+    "userCommandsHelp": "A space separated list with the available commands for this user. Example:",
+    "rules": "Rules",
+    "rulesHelp1": "Here you can define a set of allow and disallow rules for this specific user. The blocked files won't show up in the listings and they won't be accessible to the user. We support regex and paths relative to the user's scope.",
+    "rulesHelp2": "Each rule goes in one different line and must start with the keyword {0} or {1}. Then you should write {2} if you are using a regular expression and then the expression or the path.",
+    "examples": "Examples",
+    "ruleExample1": "prevents the access to any dot file (such as .git, .gitignore) in every folder.",
+    "ruleExample2": "blocks the access to the file named Caddyfile on the root of the scope.",
+    "avoidChanges": "(leave blank to avoid changes)",
+    "userDeleted": "User deleted!",
+    "userCreated": "User created!",
+    "userUpdated": "User updated!"
   }
 }

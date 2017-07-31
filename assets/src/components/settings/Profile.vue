@@ -1,22 +1,22 @@
 <template>
   <div class="dashboard">
-    <h1>Profile Settings</h1>
+    <h1>{{ $t('settings.profileSettings') }}</h1>
 
     <ul v-if="user.admin">
-      <li><router-link to="/settings/global">Go to Global Settings</router-link></li>
+      <li><router-link to="/settings/global">{{ $t('settings.goTo') }} {{ $t('settings.globalSettings') }}</router-link></li>
     </ul>
 
     <form @submit="changePassword">
-      <h2>Change Password</h2>
-      <p><input :class="passwordClass" type="password" placeholder="Your new password" v-model="password" name="password"></p>
-      <p><input :class="passwordClass" type="password" placeholder="Confirm your new password" v-model="passwordConf" name="password"></p>
-      <p><input type="submit" value="Change Password"></p>
+      <h2>{{ $t('settings.changePassword') }}</h2>
+      <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPassword')" v-model="password" name="password"></p>
+      <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPasswordConfirm')" v-model="passwordConf" name="password"></p>
+      <p><input type="submit" :value="$t('buttons.update')"></p>
     </form>
 
     <form @submit="updateCSS">
-      <h2>Custom Stylesheet</h2>
+      <h2>{{ $t('settings.changePassword') }}</h2>
       <textarea v-model="css" name="css"></textarea>
-      <p><input type="submit" value="Update"></p>
+      <p><input type="submit" :value="$t('buttons.update')"></p>
     </form>
   </div>
 </template>
