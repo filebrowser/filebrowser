@@ -1,19 +1,19 @@
 <template>
   <header>
     <div>
-      <button @click="openSidebar" aria-label="Toggle sidebar" title="Toggle sidebar" class="action">
+      <button @click="openSidebar" :aria-label="$t('buttons.toggleSidebar')" :title="$t('buttons.toggleSidebar')" class="action">
         <i class="material-icons">menu</i>
       </button>
       <img src="../assets/logo.svg" alt="File Manager">
       <search></search>
     </div>
     <div>
-      <button @click="openSearch" aria-label="Search" title="Search" class="search-button action">
+      <button @click="openSearch" :aria-label="$t('buttons.search')" :title="$t('buttons.search')" class="search-button action">
         <i class="material-icons">search</i>
       </button>
 
-      <button v-show="showSaveButton" aria-label="Save" class="action" id="save-button">
-        <i class="material-icons" title="Save">save</i>
+      <button v-show="showSaveButton" :aria-label="$t('buttons.save')" :title="$t('buttons.save')" class="action" id="save-button">
+        <i class="material-icons">save</i>
       </button>
 
       <div v-for="plugin in plugins" :key="plugin.name">
@@ -30,7 +30,7 @@
         </button>
       </div>
 
-      <button @click="openMore" id="more" aria-label="More" title="More" class="action">
+      <button @click="openMore" id="more" :aria-label="$t('buttons.more')" :title="$t('buttons.more')" class="action">
         <i class="material-icons">more_vert</i>
       </button>
 
@@ -71,9 +71,9 @@
         <upload-button v-show="showUpload"></upload-button>
         <info-button v-show="showCommonButton"></info-button>
 
-        <button v-show="showSelectButton" @click="openSelect" aria-label="Select multiple" class="action">
+        <button v-show="showSelectButton" @click="openSelect" :aria-label="$t('buttons.selectMultiple')" :title="$t('buttons.selectMultiple')" class="action">
           <i class="material-icons">check_circle</i>
-          <span>Select</span>
+          <span>{{ $t('buttons.select') }}</span>
         </button>
       </div>
       <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>

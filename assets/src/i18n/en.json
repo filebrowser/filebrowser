@@ -15,6 +15,8 @@
     "moveFile": "Move file",
     "rename": "Rename",
     "switchView": "Swicth view",
+    "toggleSidebar": "Toggle sidebar",
+    "more": "More",
     "upload": "Upload",
     "cancel": "Cancel",
     "create": "Create",
@@ -23,7 +25,10 @@
     "update": "Update",
     "save": "Save",
     "new": "New",
-    "ok": "OK"
+    "ok": "OK",
+    "search": "Search",
+    "selectMultiple": "Select multiple",
+    "select": "Select"
   },
   "errors": {
     "forbidden": "You're not welcome here.",
