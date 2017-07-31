@@ -1,26 +1,20 @@
 <template>
   <div class="prompt help">
-    <h3>Help</h3>
+    <h3>{{ $t('help.help') }}</h3>
 
     <ul>
-      <li><strong>F1</strong> - this information</li>
-      <li><strong>F2</strong> - rename file</li>
-      <li><strong>DEL</strong> - delete selected items</li>
-      <li><strong>ESC</strong> - clear selection and/or close the prompt</li>
-      <li><strong>CTRL + S</strong> - save a file or download the directory where you are</li>
-      <li><strong>CTRL + Click</strong> - select multiple files or directories</li>
-      <li><strong>Double click</strong> - open a file or directory</li>
-      <li><strong>Click</strong> - select file or directory</li>
-    </ul>
-
-    <p>Not available yet</p>
-
-    <ul>
-      <li><strong>Alt + Click</strong> - select a group of files</li>
+      <li><strong>F1</strong> - {{ $t('help.f1') }}</li>
+      <li><strong>F2</strong> - {{ $t('help.f2') }}</li>
+      <li><strong>DEL</strong> - {{ $t('help.del') }}</li>
+      <li><strong>ESC</strong> - {{ $t('help.esc') }}</li>
+      <li><strong>CTRL + S</strong> - {{ $t('help.ctrl.s') }}</li>
+      <li><strong>CTRL + Click</strong> - {{ $t('help.ctrl.click') }}</li>
+      <li><strong>Click</strong> - {{ $t('help.click') }}</li>
+      <li><strong>Double click</strong> - {{ $t('help.doubleClick') }}</li>
     </ul>
 
     <div>
-      <button type="submit" @click="$store.commit('closeHovers')" class="ok">OK</button>
+      <button type="submit" @click="$store.commit('closeHovers')" class="ok">{{ $t('buttons.ok') }}</button>
     </div>
   </div>
 </template>

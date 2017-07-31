@@ -3,7 +3,7 @@
     <i class="material-icons">done</i>
     <h3>{{ $store.state.showMessage }}</h3>
     <div>
-      <button @click="close" autofocus>OK</button>
+      <button @click="close" autofocus>{{ $t('buttons.ok') }}</button>
     </div>
   </div>
 </template>

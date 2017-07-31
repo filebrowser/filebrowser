@@ -15,7 +15,11 @@
     "moveFile": "Move file",
     "rename": "Rename",
     "switchView": "Swicth view",
-    "upload": "Upload"
+    "upload": "Upload",
+    "cancel": "Cancel",
+    "create": "Create",
+    "reportIssue": "Report Issue",
+    "ok": "OK"
   },
   "errors": {
     "forbidden": "You're not welcome here.",
@@ -34,5 +38,45 @@
     "clear": "Clear",
     "multipleSelectionEnabled": "Multiple selection enabled",
     "closePreview": "Close preview"
+  },
+  "prompts": {
+    "copy": "Copy",
+    "copyMessage": "Choose the place to copy your files:",
+    "deleteTitle": "Delete files",
+    "deleteMessageSingle": "Are you sure you want to delete this file/folder?",
+    "deleteMessageMultiple": "Are you sure you want to delete {count} file(s)?",
+    "newFile": "New file",
+    "newFileMessage": "Write the name of the new file.",
+    "newDir": "New directory",
+    "newDirMessage": "Write the name of the new directory.",
+    "move": "Move",
+    "moveMessage": "Choose new house for your file(s)/folder(s):",
+    "rename": "Rename",
+    "renameMessage": "Insert a new name for",
+    "download": "Download files",
+    "downloadMessage": "Choose the format you want to download.",
+    "error": "Something went wrong",
+    "currentlyNavigating": "Currently navigating on:",
+    "fileInfo": "File information",
+    "filesSelected": "{count} files selected.",
+    "displayName": "Display Name:",
+    "size": "Size",
+    "lastModified": "Last Modified",
+    "numberFiles": "Number of files",
+    "numberDirs": "Number of directories"
+  },
+  "help": {
+    "help": "Help",
+    "f1": "this information",
+    "f2": "rename file",
+    "del": "delete selected items",
+    "esc": "clear selection and/or close the prompt",
+    "ctrl": {
+      "s": "save a file or download the directory where you are",
+      "f": "opens search",
+      "click": "select multiple files or directories"
+    },
+    "click": "select file or directory",
+    "doubleClick": "open a file or directory"
   }
 }

@@ -1,11 +1,11 @@
 <template>
   <div class="prompt">
-    <h3>New file</h3>
-    <p>Write the name of the new file.</p>
+    <h3>{{ $t('prompts.newFile') }}</h3>
+    <p>{{ $t('prompts.newFileMessage') }}</p>
     <input autofocus type="text" @keyup.enter="submit" v-model.trim="name">
     <div>
-      <button class="ok" @click="submit">Create</button>
-      <button class="cancel" @click="$store.commit('closeHovers')">Cancel</button>
+      <button class="ok" @click="submit">{{ $t('buttons.create') }}</button>
+      <button class="cancel" @click="$store.commit('closeHovers')">{{ $t('buttons.cancel') }}</button>
     </div>
   </div>
 </template>

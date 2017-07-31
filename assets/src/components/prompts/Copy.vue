@@ -1,13 +1,13 @@
 <template>
   <div class="prompt">
-    <h3>Copy</h3>
-    <p>Choose the place to copy your files:</p>
+    <h3>{{ $t('prompts.copy') }}</h3>
+    <p>{{ $t('prompts.copyMessage') }}</p>
 
     <file-list @update:selected="val => dest = val"></file-list>
 
     <div>
-      <button class="ok" @click="copy">Copy</button>
-      <button class="cancel" @click="$store.commit('closeHovers')">Cancel</button>
+      <button class="ok" @click="copy">{{ $t('buttons.copy') }}</button>
+      <button class="cancel" @click="$store.commit('closeHovers')">{{ $t('buttons.cancel') }}</button>
     </div>
   </div>
 </template>

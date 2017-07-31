@@ -1,16 +1,16 @@
 <template>
   <div class="prompt">
-    <h3>File Information</h3>
+    <h3>{{ $t('prompts.fileInfo') }}</h3>
 
-    <p v-show="selected.length > 1">{{ selected.length }} files selected.</p>
+    <p v-show="selected.length > 1">{{ $t('prompts.filesSelected', { count: selected.length }) }}</p>
 
-    <p v-show="selected.length < 2"><strong>Display Name:</strong> {{ name() }}</p>
-    <p><strong>Size:</strong> <span id="content_length"></span>{{ humanSize() }}</p>
-    <p v-show="selected.length < 2"><strong>Last Modified:</strong> {{ humanTime() }}</p>
+    <p v-show="selected.length < 2"><strong>{{ $t('prompts.displayName') }}</strong> {{ name() }}</p>
+    <p><strong>{{ $t('prompts.size') }}:</strong> <span id="content_length"></span>{{ humanSize() }}</p>
+    <p v-show="selected.length < 2"><strong>{{ $t('prompts.lastModified') }}:</strong> {{ humanTime() }}</p>
 
     <section v-show="dir() && selected.length === 0">
-      <p><strong>Number of files:</strong> {{ req.numFiles }}</p>
-      <p><strong>Number of directories:</strong> {{ req.numDirs }}</p>
+      <p><strong>{{ $t('prompts.numberFiles') }}:</strong> {{ req.numFiles }}</p>
+      <p><strong>{{ $t('prompts.numberDirs') }}:</strong> {{ req.numDirs }}</p>
     </section>
 
     <section v-show="!dir()">
@@ -21,7 +21,7 @@
     </section>
 
     <div>
-      <button type="submit" @click="$store.commit('closeHovers')" class="ok">OK</button>
+      <button type="submit" @click="$store.commit('closeHovers')" class="ok">{{ $t('buttons.ok') }}</button>
     </div>
   </div>
 </template>

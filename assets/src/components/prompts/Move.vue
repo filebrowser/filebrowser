@@ -1,13 +1,13 @@
 <template>
   <div class="prompt">
-    <h3>Move</h3>
-    <p>Choose new house for your file(s)/folder(s):</p>
+    <h3>{{ $t('prompts.move') }}</h3>
+    <p>{{ $t('prompts.moveMessage') }}</p>
 
     <file-list @update:selected="val => dest = val"></file-list>
 
     <div>
-      <button class="ok" @click="move">Move</button>
-      <button class="cancel" @click="$store.commit('closeHovers')">Cancel</button>
+      <button class="ok" @click="move">{{ $t('buttons.move') }}</button>
+      <button class="cancel" @click="$store.commit('closeHovers')">{{ $t('buttons.cancel') }}</button>
     </div>
   </div>
 </template>

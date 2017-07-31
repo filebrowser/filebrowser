@@ -1,11 +1,11 @@
 <template>
   <div class="prompt">
-    <h3>Delete files</h3>
-    <p v-show="req.kind !== 'listing'">Are you sure you want to delete this file/folder?</p>
-    <p v-show="req.kind === 'listing'">Are you sure you want to delete {{ selectedCount }} file(s)?</p>
+    <h3>{{ $t('prompts.deleteTitle') }}</h3>
+    <p v-show="req.kind !== 'listing'">{{ $t('prompts.deleteMessageSingle') }}</p>
+    <p v-show="req.kind === 'listing'">{{ $t('prompts.deleteMessageMultiple', { count: selectedCount}) }}</p>
     <div>
-      <button @click="submit" autofocus>Delete</button>
-      <button @click="closeHovers" class="cancel">Cancel</button>
+      <button @click="submit" autofocus>{{ $t('buttons.delete') }}</button>
+      <button @click="closeHovers" class="cancel">{{ $t('buttons.cancel') }}</button>
     </div>
   </div>
 </template>

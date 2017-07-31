@@ -1,7 +1,7 @@
 <template>
   <div id="previewer">
     <div class="bar">
-      <button @click="back" class="action" :title="$t('files.closePreview')" :aria-label="$('files.closePreview')" id="close">
+      <button @click="back" class="action" :title="$t('files.closePreview')" :aria-label="$t('files.closePreview')" id="close">
         <i class="material-icons">close</i>
       </button>
 
