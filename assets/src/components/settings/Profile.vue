@@ -6,7 +6,7 @@
       <li><router-link to="/settings/global">{{ $t('settings.goTo') }} {{ $t('settings.globalSettings') }}</router-link></li>
     </ul>
 
-    <form @submit="changePassword">
+    <form @submit="updatePassword">
       <h2>{{ $t('settings.changePassword') }}</h2>
       <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPassword')" v-model="password" name="password"></p>
       <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPasswordConfirm')" v-model="passwordConf" name="password"></p>
@@ -14,7 +14,7 @@
     </form>
 
     <form @submit="updateCSS">
-      <h2>{{ $t('settings.changePassword') }}</h2>
+      <h2>{{ $t('settings.customStylesheet') }}</h2>
       <textarea v-model="css" name="css"></textarea>
       <p><input type="submit" :value="$t('buttons.update')"></p>
     </form>
@@ -23,7 +23,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import api from '@/utils/api'
+import { updateUser } from '@/utils/api'
 
 export default {
   name: 'settings',
@@ -53,14 +53,19 @@ export default {
   },
   methods: {
     ...mapMutations([ 'showSuccess' ]),
-    changePassword (event) {
+    updatePassword (event) {
       event.preventDefault()
 
       if (this.password !== this.passwordConf) {
         return
       }
 
-      api.updatePassword(this.password).then(() => {
+      let user = {
+        ID: this.$store.state.user.ID,
+        password: this.password
+      }
+
+      updateUser(user, 'password').then(location => {
         this.showSuccess(this.$t('settings.passwordUpdated'))
       }).catch(e => {
         this.$store.commit('showError', e)
@@ -69,7 +74,12 @@ export default {
     updateCSS (event) {
       event.preventDefault()
 
-      api.updateCSS(this.css).then(() => {
+      let user = {
+        ID: this.$store.state.user.ID,
+        css: this.css
+      }
+
+      updateUser(user, 'css').then(location => {
         this.$store.commit('setUserCSS', this.css)
         this.$emit('css-updated')
         this.showSuccess(this.$t('settings.stylesUpdated'))

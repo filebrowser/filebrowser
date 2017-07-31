@@ -70,11 +70,15 @@ import (
 )
 
 var (
-	errUserExist     = errors.New("user already exists")
-	errUserNotExist  = errors.New("user does not exist")
-	errEmptyRequest  = errors.New("request body is empty")
-	errEmptyPassword = errors.New("password is empty")
-	plugins          = map[string]Plugin{}
+	errUserExist          = errors.New("user already exists")
+	errUserNotExist       = errors.New("user does not exist")
+	errEmptyRequest       = errors.New("request body is empty")
+	errEmptyPassword      = errors.New("password is empty")
+	errEmptyUsername      = errors.New("username is empty")
+	errEmptyScope         = errors.New("scope is empty")
+	errWrongDataType      = errors.New("wrong data type")
+	errInvalidUpdateField = errors.New("invalid field to update")
+	plugins               = map[string]Plugin{}
 )
 
 // FileManager is a file manager instance. It should be creating using the

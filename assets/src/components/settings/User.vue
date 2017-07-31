@@ -68,7 +68,7 @@
 
 <script>
 import { mapMutations } from 'vuex'
-import api from '@/utils/api'
+import { getUser, newUser, updateUser, deleteUser } from '@/utils/api'
 
 export default {
   name: 'user',
@@ -118,7 +118,7 @@ export default {
         user = 'base'
       }
 
-      api.getUser(user).then(user => {
+      getUser(user).then(user => {
         this.id = user.ID
         this.admin = user.admin
         this.allowCommands = user.allowCommands
@@ -181,7 +181,7 @@ export default {
     deleteUser (event) {
       event.preventDefault()
 
-      api.deleteUser(this.id).then(location => {
+      deleteUser(this.id).then(location => {
         this.$router.push({ path: '/users' })
         this.$store.commit('showSuccess', this.$t('settings.userDeleted'))
       }).catch(e => {
@@ -193,7 +193,7 @@ export default {
       let user = this.parseForm()
 
       if (this.$route.path === '/settings/users/new') {
-        api.newUser(user).then(location => {
+        newUser(user).then(location => {
           this.$router.push({ path: location })
           this.$store.commit('showSuccess', this.$t('settings.userCreated'))
         }).catch(e => {
@@ -203,7 +203,7 @@ export default {
         return
       }
 
-      api.updateUser(user).then(location => {
+      updateUser(user).then(location => {
         this.$store.commit('showSuccess', this.$t('settings.userUpdated'))
       }).catch(e => {
         this.$store.commit('showError', e)
