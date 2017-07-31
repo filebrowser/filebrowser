@@ -2,7 +2,7 @@
   <div>
     <h2 class="message">
       <i class="material-icons">error_outline</i>
-      <span>Something really went wrong.</span>
+      <span>{{ $t('errors.internal') }}</span>
     </h2>
   </div>
 </template>

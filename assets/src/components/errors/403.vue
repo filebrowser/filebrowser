@@ -2,7 +2,7 @@
   <div>
     <h2 class="message">
       <i class="material-icons">error</i>
-      <span>You're not welcome here.</span>
+      <span>{{ $t('errors.forbidden') }}</span>
     </h2>
   </div>
 </template>

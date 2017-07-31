@@ -16,5 +16,10 @@
     "rename": "Rename",
     "switchView": "Swicth view",
     "upload": "Upload"
+  },
+  "errors": {
+    "forbidden": "You're not welcome here.",
+    "notFound": "This location can't be reached.",
+    "internal": "Something really went wrong."
   }
 }

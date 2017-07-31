@@ -11,8 +11,8 @@
       </span>
     </div>
     <div v-if="error">
-      <not-found v-if="error === 404"></not-found>
-      <forbidden v-else-if="error === 403"></forbidden>
+      <not-found v-if="error.message === '404'"></not-found>
+      <forbidden v-else-if="error.message === '403'"></forbidden>
       <internal-error v-else></internal-error>
     </div>
     <editor v-else-if="isEditor"></editor>
