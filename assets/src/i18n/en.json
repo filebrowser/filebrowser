@@ -21,5 +21,18 @@
     "forbidden": "You're not welcome here.",
     "notFound": "This location can't be reached.",
     "internal": "Something really went wrong."
+  },
+  "files": {
+    "metadata": "Metadata",
+    "body": "Body",
+    "loading": "Loading...",
+    "home": "Home",
+    "lonely": "It feels lonely here...",
+    "name": "Name",
+    "size": "Size",
+    "lastModified": "Last modified",
+    "clear": "Clear",
+    "multipleSelectionEnabled": "Multiple selection enabled",
+    "closePreview": "Close preview"
   }
 }

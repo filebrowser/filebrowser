@@ -1,7 +1,7 @@
 <template>
   <div id="previewer">
     <div class="bar">
-      <button @click="back" class="action" aria-label="Close Preview" id="close">
+      <button @click="back" class="action" :title="$t('files.closePreview')" :aria-label="$('files.closePreview')" id="close">
         <i class="material-icons">close</i>
       </button>
 
@@ -24,7 +24,7 @@
       </video>
       <object v-else-if="req.extension == '.pdf'" class="pdf" :data="raw()"></object>
       <a v-else-if="req.type == 'blob'" :href="download()">
-        <h2 class="message">Download <i class="material-icons">file_download</i></h2>
+        <h2 class="message">{{ $t('buttons.download') }} <i class="material-icons">file_download</i></h2>
       </a>
       <pre v-else >{{ req.content }}</pre>
     </div>

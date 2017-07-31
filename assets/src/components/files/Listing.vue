@@ -2,9 +2,9 @@
   <div v-if="(req.numDirs + req.numFiles) == 0">
     <h2 class="message">
       <i class="material-icons">sentiment_dissatisfied</i>
-      <span>It feels lonely here...</span>
+      <span>{{ $t('files.lonely') }}</span>
     </h2>
-    <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" value="Upload" multiple>
+    <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" multiple>
   </div>
   <div v-else id="listing"
     :class="req.display"
@@ -16,16 +16,16 @@
         <div></div>
         <div>
           <p :class="{ active: nameSorted }" class="name" @click="sort('name')">
-            <span>Name</span>
+            <span>{{ $t('files.name') }}</span>
             <i class="material-icons">{{ nameIcon }}</i>
           </p>
 
           <p :class="{ active: sizeSorted }" class="size" @click="sort('size')">
-            <span>Size</span>
+            <span>{{ $t('files.size') }}</span>
             <i class="material-icons">{{ sizeIcon }}</i>
           </p>
           <p :class="{ active: modifiedSorted }" class="modified" @click="sort('modified')">
-            <span>Last modified</span>
+            <span>{{ $t('files.lastModified') }}</span>
             <i class="material-icons">{{ modifiedIcon }}</i>
           </p>
         </div>
@@ -62,11 +62,11 @@
       </item>
     </div>
 
-    <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" value="Upload" multiple>
+    <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" multiple>
 
     <div v-show="$store.state.multiple" :class="{ active: $store.state.multiple }" id="multiple-selection">
-    <p>Multiple selection enabled</p>
-      <div @click="$store.commit('multiple', false)" tabindex="0" role="button" title="Clear" aria-label="Clear" class="action">
+    <p>{{ $t('files.multipleSelectionEnabled') }}</p>
+      <div @click="$store.commit('multiple', false)" tabindex="0" role="button" :title="$t('files.clear')" :aria-label="$t('files.clear')" class="action">
         <i class="material-icons" title="Clear">clear</i>
       </div>
     </div>

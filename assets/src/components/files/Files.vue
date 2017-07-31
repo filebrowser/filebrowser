@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="breadcrumbs">
-      <router-link to="/files/">
+      <router-link to="/files/" :aria-label="$t('files.home')" :title="$t('files.home')">
         <i class="material-icons">home</i>
       </router-link>
 
@@ -20,7 +20,7 @@
     <preview v-else-if="isPreview"></preview>
     <div v-else>
       <h2 class="message">
-        <span>Loading...</span>
+        <span>{{ $t('files.loading') }}</span>
       </h2>
     </div>
   </div>
