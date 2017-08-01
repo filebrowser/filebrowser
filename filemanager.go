@@ -437,17 +437,19 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		FI:   nil,
 	}, w, r)
 
-	if code != 0 {
+	if code >= 400 {
 		w.WriteHeader(code)
 
-		if err != nil {
-			log.Print(err)
-			w.Write([]byte(err.Error()))
-		} else {
+		if err == nil {
 			txt := http.StatusText(code)
 			log.Printf("%v: %v %v\n", r.URL.Path, code, txt)
 			w.Write([]byte(txt))
 		}
+	}
+
+	if err != nil {
+		log.Print(err)
+		w.Write([]byte(err.Error()))
 	}
 }
 
