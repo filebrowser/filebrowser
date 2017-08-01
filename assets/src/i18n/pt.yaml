@@ -83,6 +83,7 @@ prompts:
   numberFiles: Número de ficheiros
   rename: Renomear
   renameMessage: Insira um novo nome para
+  show: Mostrar
   size: Tamanho
 sidebar:
   help: Ajuda

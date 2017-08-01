@@ -14,10 +14,10 @@
     </section>
 
     <section v-show="!dir()">
-      <p><strong>MD5:</strong> <code><a @click="checksum($event, 'md5')">show</a></code></p>
-      <p><strong>SHA1:</strong> <code><a @click="checksum($event, 'sha1')">show</a></code></p>
-      <p><strong>SHA256:</strong> <code><a @click="checksum($event, 'sha256')">show</a></code></p>
-      <p><strong>SHA512:</strong> <code><a @click="checksum($event, 'sha512')">show</a></code></p>
+      <p><strong>MD5:</strong> <code><a @click="checksum($event, 'md5')">{{ $t('prompts.show') }}</a></code></p>
+      <p><strong>SHA1:</strong> <code><a @click="checksum($event, 'sha1')">{{ $t('prompts.show') }}</a></code></p>
+      <p><strong>SHA256:</strong> <code><a @click="checksum($event, 'sha256')">{{ $t('prompts.show') }}</a></code></p>
+      <p><strong>SHA512:</strong> <code><a @click="checksum($event, 'sha512')">{{ $t('prompts.show') }}</a></code></p>
     </section>
 
     <div>

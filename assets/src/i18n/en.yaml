@@ -83,6 +83,7 @@ prompts:
   numberFiles: Number of files
   rename: Rename
   renameMessage: Insert a new name for
+  show: Show
   size: Size
 settings:
   admin: Admin

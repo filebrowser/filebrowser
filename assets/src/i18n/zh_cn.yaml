@@ -83,6 +83,7 @@ prompts:
   numberFiles: 文件数
   rename: 重命名
   renameMessage: '请输入新名称, 旧名称是:'
+  show: 揭示
   size: 大小
 settings:
   admin: 管理员
