@@ -104,6 +104,7 @@ settings:
   examples: Exemplos
   globalSettings: Configurações Globais
   goTo: Ir para
+  language: Linguagem
   newPassword: Nova palavra-passe
   newPasswordConfirm: Confirme a nova palavra-passe
   newUser: Novo Utilizador
@@ -159,3 +160,7 @@ search:
   type: Escreva e prima enter para pesquisar.
   pressToSearch: Prima enter para pesquisar.
   pressToExecute: Prima enter para executar.
+languages:
+  en: Inglês
+  pt: Português
+  zhCN: Chinês (Simplificado)

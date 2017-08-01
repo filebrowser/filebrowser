@@ -1,3 +1,5 @@
+import i18n from '@/i18n'
+
 const mutations = {
   closeHovers: state => {
     state.show = null
@@ -22,7 +24,10 @@ const mutations = {
   },
   setLoading: (state, value) => { state.loading = value },
   setReload: (state, value) => { state.reload = value },
-  setUser: (state, value) => (state.user = value),
+  setUser: (state, value) => {
+    i18n.locale = value.locale
+    state.user = value
+  },
   setUserCSS: (state, value) => (state.user.css = value),
   setJWT: (state, value) => (state.jwt = value),
   multiple: (state, value) => (state.multiple = value),

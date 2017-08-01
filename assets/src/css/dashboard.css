@@ -48,6 +48,7 @@ form.dashboard > p:last-child {
   margin-bottom: 0;
 }
 
+.dashboard select,
 .dashboard textarea,
 .dashboard input[type="text"],
 .dashboard input[type="password"] {
@@ -60,10 +61,16 @@ form.dashboard > p:last-child {
   width: 100%;
 }
 
+.dashboard #locale,
 .dashboard #username,
 .dashboard #password,
 .dashboard #scope {
   max-width: 18em;
+}
+
+.dashboard #locale {
+  border: 1px solid #dddddd;
+  margin-top: .5em;
 }
 
 .dashboard textarea:focus,
