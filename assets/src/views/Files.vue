@@ -27,9 +27,9 @@
 </template>
 
 <script>
-import Forbidden from '@/components/errors/403'
-import NotFound from '@/components/errors/404'
-import InternalError from '@/components/errors/500'
+import Forbidden from './errors/403'
+import NotFound from './errors/404'
+import InternalError from './errors/500'
 import Preview from '@/components/files/Preview'
 import Listing from '@/components/files/Listing'
 import Editor from '@/components/files/Editor'

@@ -143,6 +143,9 @@ type User struct {
 	// Custom styles for this user.
 	CSS string `json:"css"`
 
+	// Locale is the language of the user.
+	Locale string `json:"locale"`
+
 	// These indicate if the user can perform certain actions.
 	AllowNew      bool            `json:"allowNew"`      // Create files and folders
 	AllowEdit     bool            `json:"allowEdit"`     // Edit/rename files
@@ -212,6 +215,7 @@ var DefaultUser = User{
 	Rules:         []*Rule{},
 	CSS:           "",
 	Admin:         true,
+	Locale:        "en",
 	FileSystem:    fileutils.Dir("."),
 }
 
