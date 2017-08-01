@@ -82,7 +82,7 @@ const router = new Router({
           component: error500
         },
         {
-          path: '/settings/users',
+          path: '/users',
           name: 'Users',
           component: Users,
           meta: {
@@ -90,7 +90,7 @@ const router = new Router({
           }
         },
         {
-          path: '/settings/users/*',
+          path: '/users/*',
           name: 'User',
           component: User,
           meta: {

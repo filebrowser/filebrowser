@@ -90,7 +90,7 @@ export default {
   },
   computed: {
     passwordPlaceholder () {
-      if (this.$route.path === '/settings/users/new') return ''
+      if (this.$route.path === '/users/new') return ''
       return this.$t('settings.avoidChanges')
     }
   },
@@ -114,7 +114,7 @@ export default {
     fetchData () {
       let user = this.$route.params[0]
 
-      if (this.$route.path === '/settings/users/new') {
+      if (this.$route.path === '/users/new') {
         user = 'base'
       }
 
@@ -148,7 +148,7 @@ export default {
 
         this.rules = this.rules.trim()
       }).catch(() => {
-        this.$router.push({ path: '/settings/users/new' })
+        this.$router.push({ path: '/users/new' })
       })
     },
     capitalize (name) {
@@ -192,7 +192,7 @@ export default {
       event.preventDefault()
       let user = this.parseForm()
 
-      if (this.$route.path === '/settings/users/new') {
+      if (this.$route.path === '/users/new') {
         newUser(user).then(location => {
           this.$router.push({ path: location })
           this.$store.commit('showSuccess', this.$t('settings.userCreated'))

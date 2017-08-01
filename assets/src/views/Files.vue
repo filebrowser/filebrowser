@@ -116,20 +116,11 @@ export default {
   },
   mounted () {
     window.addEventListener('keydown', this.keyEvent)
-    window.addEventListener('scroll', event => {
-      if (this.req.kind !== 'listing' || this.$store.state.req.display === 'mosaic') return
-
-      let top = 112 - window.scrollY
-
-      if (top < 64) {
-        top = 64
-      }
-
-      document.querySelector('#listing.list .item.header').style.top = top + 'px'
-    })
+    window.addEventListener('scroll', this.scroll)
   },
   beforeDestroy () {
     window.removeEventListener('keydown', this.keyEvent)
+    window.removeEventListener('scroll', this.scroll)
   },
   destroyed () {
     this.$store.commit('updateRequest', {})
@@ -217,6 +208,17 @@ export default {
           }
         }
       }
+    },
+    scroll (event) {
+      if (this.req.kind !== 'listing' || this.$store.state.req.display === 'mosaic') return
+
+      let top = 112 - window.scrollY
+
+      if (top < 64) {
+        top = 64
+      }
+
+      document.querySelector('#listing.list .item.header').style.top = top + 'px'
     },
     openSidebar () {
       this.$store.commit('showHover', 'sidebar')

@@ -4,7 +4,7 @@
 
     <ul>
       <li><router-link to="/settings/profile">{{ $t('settings.goTo') }} {{ $t('settings.profileSettings') }}</router-link></li>
-      <li><router-link to="/settings/users">{{ $t('settings.goTo') }} {{ $t('settings.userManagement') }}</router-link></li>
+      <li><router-link to="/users">{{ $t('settings.goTo') }} {{ $t('settings.userManagement') }}</router-link></li>
     </ul>
 
     <form @submit="savePlugin" v-if="plugins.length > 0">

@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard">
-    <h1>{{ $t('settings.users') }} <router-link to="/settings/users/new"><button>{{ $t('buttons.new') }}</button></router-link></h1>
+    <h1>{{ $t('settings.users') }} <router-link to="/users/new"><button>{{ $t('buttons.new') }}</button></router-link></h1>
 
     <table>
       <tr>
@@ -14,7 +14,7 @@
         <td>{{ user.username }}</td>
         <td><i v-if="user.admin" class="material-icons">done</i><i v-else class="material-icons">close</i></td>
         <td>{{ user.filesystem }}</td>
-        <td><router-link :to="'/settings/users/' + user.ID"><i class="material-icons">mode_edit</i></router-link></td>
+        <td><router-link :to="'/users/' + user.ID"><i class="material-icons">mode_edit</i></router-link></td>
       </tr>
 
     </table>
