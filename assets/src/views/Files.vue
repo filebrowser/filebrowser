@@ -30,9 +30,9 @@
 import Forbidden from '@/components/errors/403'
 import NotFound from '@/components/errors/404'
 import InternalError from '@/components/errors/500'
-import Preview from './Preview'
-import Listing from './Listing'
-import Editor from './Editor'
+import Preview from '@/components/files/Preview'
+import Listing from '@/components/files/Listing'
+import Editor from '@/components/files/Editor'
 import api from '@/utils/api'
 import { mapGetters, mapState, mapMutations } from 'vuex'
 

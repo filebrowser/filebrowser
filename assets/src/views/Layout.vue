@@ -10,13 +10,13 @@
 </template>
 
 <script>
-import Search from './Search'
-import Sidebar from './Sidebar'
-import Prompts from './prompts/Prompts'
-import SiteHeader from './Header'
+import Search from '@/components/Search'
+import Sidebar from '@/components/Sidebar'
+import Prompts from '@/components/prompts/Prompts'
+import SiteHeader from '@/components/Header'
 
 export default {
-  name: 'main',
+  name: 'layout',
   components: {
     Search,
     Sidebar,

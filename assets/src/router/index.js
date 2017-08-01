@@ -1,12 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/views/Login'
-import Main from '@/components/Main'
-import Files from '@/components/files/Files'
-import Users from '@/components/settings/Users'
-import User from '@/components/settings/User'
-import GlobalSettings from '@/components/settings/Global'
-import ProfileSettings from '@/components/settings/Profile'
+import Layout from '@/views/Layout'
+import Files from '@/views/Files'
+import Users from '@/views/Users'
+import User from '@/views/User'
+import GlobalSettings from '@/views/GlobalSettings'
+import ProfileSettings from '@/views/ProfileSettings'
 import error403 from '@/components/errors/403'
 import error404 from '@/components/errors/404'
 import error500 from '@/components/errors/500'
@@ -35,14 +35,8 @@ const router = new Router({
       }
     },
     {
-      path: '/',
-      redirect: {
-        path: '/files/'
-      }
-    },
-    {
       path: '/*',
-      component: Main,
+      component: Layout,
       meta: {
         requiresAuth: true
       },
