@@ -314,7 +314,11 @@ export function newUser (user) {
       }
     }
     request.onerror = (error) => reject(error)
-    request.send(JSON.stringify(user))
+    request.send(JSON.stringify({
+      what: 'user',
+      which: 'new',
+      data: user
+    }))
   })
 }
 

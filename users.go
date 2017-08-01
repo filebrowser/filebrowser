@@ -197,7 +197,7 @@ func usersPostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request)
 	c.FM.Users[u.Username] = u
 
 	// Set the Location header and return.
-	w.Header().Set("Location", "/users/"+strconv.Itoa(u.ID))
+	w.Header().Set("Location", "/settings/users/"+strconv.Itoa(u.ID))
 	w.WriteHeader(http.StatusCreated)
 	return 0, nil
 }
