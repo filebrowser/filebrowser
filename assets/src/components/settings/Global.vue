@@ -40,7 +40,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import api from '@/utils/api'
+import { getSettings, updateSettings } from '@/utils/api'
 
 export default {
   name: 'settings',
@@ -54,21 +54,17 @@ export default {
     ...mapState([ 'user' ])
   },
   created () {
-    api.getCommands()
-      .then(commands => {
-        for (let key in commands) {
+    getSettings()
+      .then(settings => {
+        for (let key in settings.plugins) {
+          this.plugins.push(this.parsePlugin(key, settings.plugins[key]))
+        }
+
+        for (let key in settings.commands) {
           this.commands.push({
             name: key,
-            value: commands[key].join('\n')
+            value: settings.commands[key].join('\n')
           })
-        }
-      })
-      .catch(error => { this.showError(error) })
-
-    api.getPlugins()
-      .then(plugins => {
-        for (let key in plugins) {
-          this.plugins.push(this.parsePlugin(key, plugins[key]))
         }
       })
       .catch(error => { this.showError(error) })
@@ -100,7 +96,7 @@ export default {
         commands[command.name] = value
       }
 
-      api.updateCommands(commands)
+      updateSettings(commands, 'commands')
         .then(() => { this.showSuccess(this.$t('settings.commandsUpdated')) })
         .catch(error => { this.showError(error) })
     },
@@ -127,9 +123,7 @@ export default {
         plugins[plugin.name] = p
       }
 
-      console.log(plugins)
-
-      api.updatePlugins(plugins)
+      updateSettings(plugins, 'plugins')
         .then(() => { this.showSuccess(this.$t('settings.pluginsUpdated')) })
         .catch(error => { this.showError(error) })
     },

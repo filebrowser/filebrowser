@@ -203,10 +203,10 @@ export function download (format, ...files) {
   window.open(url)
 }
 
-export function getCommands () {
+export function getSettings () {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
-    request.open('GET', `${store.state.baseURL}/api/commands/`, true)
+    request.open('GET', `${store.state.baseURL}/api/settings/`, true)
     request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
@@ -224,10 +224,18 @@ export function getCommands () {
   })
 }
 
-export function updateCommands (commands) {
+export function updateSettings (param, which) {
   return new Promise((resolve, reject) => {
+    let data = {
+      what: 'settings',
+      which: which,
+      data: {}
+    }
+
+    data.data[which] = param
+
     let request = new window.XMLHttpRequest()
-    request.open('PUT', `${store.state.baseURL}/api/commands/`, true)
+    request.open('PUT', `${store.state.baseURL}/api/settings/`, true)
     request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
@@ -240,49 +248,7 @@ export function updateCommands (commands) {
           break
       }
     }
-    request.onerror = (error) => reject(error)
-    request.send(JSON.stringify(commands))
-  })
-}
-
-export function getPlugins () {
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open('GET', `${store.state.baseURL}/api/plugins/`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
-
-    request.onload = () => {
-      switch (request.status) {
-        case 200:
-          resolve(JSON.parse(request.responseText))
-          break
-        default:
-          reject(request.responseText)
-          break
-      }
-    }
-    request.onerror = (error) => reject(error)
-    request.send()
-  })
-}
-
-export function updatePlugins (data) {
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open('PUT', `${store.state.baseURL}/api/plugins/`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
-
-    request.onload = () => {
-      switch (request.status) {
-        case 200:
-          resolve()
-          break
-        default:
-          reject(request.responseText)
-          break
-      }
-    }
-    request.onerror = (error) => reject(error)
+    request.onerror = (error) => { reject(error) }
     request.send(JSON.stringify(data))
   })
 }
@@ -411,10 +377,8 @@ export default {
   search,
   download,
   // other things
-  getCommands,
-  updateCommands,
-  getPlugins,
-  updatePlugins,
+  getSettings,
+  updateSettings,
   // User things
   newUser,
   getUser,

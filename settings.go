@@ -16,11 +16,6 @@ type modifySettingsRequest struct {
 	} `json:"data"`
 }
 
-type settingsGetRequest struct {
-	Commands map[string][]string       `json:"commands"`
-	Plugins  map[string][]pluginOption `json:"plugins"`
-}
-
 type pluginOption struct {
 	Variable string      `json:"variable"`
 	Name     string      `json:"name"`
@@ -49,7 +44,7 @@ func parsePutSettingsRequest(r *http.Request) (*modifySettingsRequest, error) {
 }
 
 func settingsHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	if r.URL.Path != "" {
+	if r.URL.Path != "" && r.URL.Path != "/" {
 		return http.StatusNotFound, nil
 	}
 
@@ -61,6 +56,11 @@ func settingsHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	}
 
 	return http.StatusMethodNotAllowed, nil
+}
+
+type settingsGetRequest struct {
+	Commands map[string][]string       `json:"commands"`
+	Plugins  map[string][]pluginOption `json:"plugins"`
 }
 
 func settingsGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
@@ -98,7 +98,7 @@ func settingsPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		return http.StatusBadRequest, err
 	}
-
+	// Update the commands.
 	if mod.Which == "commands" {
 		if err := c.FM.db.Set("config", "commands", mod.Data.Commands); err != nil {
 			return http.StatusInternalServerError, err
@@ -108,6 +108,7 @@ func settingsPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 		return http.StatusOK, nil
 	}
 
+	// Update the plugins.
 	if mod.Which == "plugins" {
 		for name, plugin := range mod.Data.Plugins {
 			err = mapstructure.Decode(plugin, c.FM.Plugins[name])

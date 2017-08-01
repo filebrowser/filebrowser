@@ -71,7 +71,7 @@ prompts:
   downloadMessage: 请选择要下载的压缩格式.
   error: 出了一点问题...
   fileInfo: 文件信息
-  filesSelected: "选择 {count} 个文件."
+  filesSelected: '选择 {count} 个文件.'
   lastModified: 最后修改
   move: 移动
   moveMessage: '请选择欲移动至的目录:'
@@ -82,7 +82,7 @@ prompts:
   numberDirs: 目录数
   numberFiles: 文件数
   rename: 重命名
-  renameMessage: 请输入新名称, 旧名称是:
+  renameMessage: '请输入新名称, 旧名称是:'
   size: 大小
 settings:
   admin: 管理员
@@ -90,12 +90,13 @@ settings:
   allowCommands: 执行命令(Linux 代码)
   allowEdit: 编辑、重命名或删除文件/目录.
   allowNew: 创建新文件和目录.
-  avoidChanges: "(留空以避免更改)"
+  avoidChanges: '(留空以避免更改)'
   changePassword: 更改密码
   commands: 命令(linux 代码)
-  commandsHelp: Here you can set commands that are executed in the named events. 
-	每行一条命令.  If the event is related to files, such as before and after saving, 
-	the environment variable "file" will be available with the path of the file.
+  commandsHelp: >
+    'Here you can set commands that are executed in the named events.
+    每行一条命令. If the event is related to files, such as before and after saving,
+    the environment variable "file" will be available with the path of the file.'
   commandsUpdated: 命令更新!
   customStylesheet: 自定义样式表
   examples: 例子
@@ -108,19 +109,20 @@ settings:
   passwordUpdated: 密码更新!
   permissions: 权限
   permissionsHelp: >
-	'您可以将该用户设置为管理员 或单独选择各项权限. 如果选择 "管理员(Administrator)" , 
-	将自动检查所有其他选项, 并且该用户可以管理其他用户.'
+    '您可以将该用户设置为管理员 或单独选择各项权限. 如果选择 "管理员(Administrator)" ,
+    将自动检查所有其他选项, 并且该用户可以管理其他用户.'
   pluginsUpdated: 插件设置更新!
   profileSettings: 配置文件设置
   ruleExample1: >
-	'阻止用户访问每个文件夹下任何以 . 开头的文件(隐藏文件, 例如: .git, .gitignore).'
+    '阻止用户访问每个文件夹下任何以 . 开头的文件(隐藏文件, 例如: .git, .gitignore).'
   ruleExample2: 阻止用户访问其目录范围内任何名为 Caddyfile 的文件/文件夹.
   rules: 规则
   rulesHelp1: >
-	'这里您可以为特定用户制定一组允许或不允许的规则, 
-	阻止的文件将不会显示到列表中, 用户将无法访问, 支持相对于用户的范围.'
-  rulesHelp2: 每行一条规则, 必须以关键词 {0} 或 {1} 开头. 如果使用正则表达式, 
-	然后使用表达式或路径, 则需要在第二列单词加入 {2} .
+    '这里您可以为特定用户制定一组允许或不允许的规则,
+    阻止的文件将不会显示到列表中, 用户将无法访问, 支持相对于用户的范围.'
+  rulesHelp2: >
+    每行一条规则, 必须以关键词 {0} 或 {1} 开头. 如果使用正则表达式,
+    然后使用表达式或路径, 则需要在第二列单词加入 {2} .
   scope: 目录范围
   stylesUpdated: 样式更新!
   user: 用户
