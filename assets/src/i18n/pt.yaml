@@ -1,5 +1,5 @@
 buttons:
-  cancel: Cancel
+  cancel: Cancelar
   close: Fechar
   copy: Copiar
   copyFile: Copiar ficheiro
@@ -42,3 +42,61 @@ files:
   multipleSelectionEnabled: Seleção múltipla ativada
   name: Nome
   size: Tamanho
+help:
+  click: selecionar pasta ou ficheiro
+  ctrl:
+    click: selecionar várias pastas e ficheiros
+    f: pesquisar
+    s: guardar um ficheiro ou descarregar a pasta em que estás a navegar
+  del: eliminar os ficheiros selecionados
+  doubleClick: abrir pasta ou ficheiro
+  esc: limpar seleção e/ou fechar menu
+  f1: esta informação
+  f2: renomear ficheiro
+  help: Ajuda
+login:
+  password: Palavra-passe
+  submit: Login
+  username: Nome de utilizador
+  wrongCredentials: Dados errados
+prompts:
+  copy: Copiar
+  copyMessage: 'Escolhe um lugar para copiar os ficheiros:'
+  currentlyNavigating: 'A navegar em:'
+  deleteMessageMultiple: Deseja eliminar {count} ficheiro(s)?
+  deleteMessageSingle: Deseja eliminar esta pasta/ficheiro?
+  deleteTitle: Eliminar ficheiros
+  displayName: 'Nome:'
+  download: Descarregar ficheiros
+  downloadMessage: Escolha o formato do ficheiro.
+  error: Algo correu mal
+  fileInfo: Informação do ficheiro
+  filesSelected: "{count} ficheiros selecionados."
+  lastModified: Última Modificação
+  move: Mover
+  moveMessage: 'Escolha uma nova casa para os seus ficheiros:'
+  newDir: Nova pasta
+  newDirMessage: Escreva o nome da nova pasta.
+  newFile: Novo ficheiro
+  newFileMessage: Escreva o nome do novo ficheiro.
+  numberDirs: Número de pastas
+  numberFiles: Número de ficheiros
+  rename: Renomear
+  renameMessage: Insira um novo nome para
+  size: Tamanho
+sidebar:
+  help: Ajuda
+  logout: Sair
+  myFiles: Ficheiros
+  newFile: Novo ficheiro
+  newFolder: Nova pasta
+  servedWith: Servido com
+  settings: Configurações
+search:
+  writeToSearch: Escreva aqui para pesquisar
+  searchOrCommand: Pesquise ou execute um comando...
+  searchOrSupportedCommand: 'Pesquise ou utilize um dos seus comandos:'
+  search: Pesquise...
+  type: Escreva e prima enter para pesquisar.
+  pressToSearch: Prima enter para pesquisar.
+  pressToExecute: Prima enter para executar.
