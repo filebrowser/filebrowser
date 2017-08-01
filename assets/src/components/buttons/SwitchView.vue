@@ -1,7 +1,7 @@
 <template>
-  <button @click="change" aria-label="Switch View" title="Switch View" class="action" id="switch-view-button">
+  <button @click="change" :aria-label="$t('buttons.switchView')" :title="$t('buttons.switchView')" class="action" id="switch-view-button">
     <i class="material-icons">{{ icon() }}</i>
-    <span>Switch view</span>
+    <span>{{ $t('buttons.switchView') }}</span>
   </button>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
-  <button @click="show" aria-label="Move" title="Move" class="action" id="move-button">
+  <button @click="show" :aria-label="$t('buttons.move')" :title="$t('buttons.move')" class="action" id="move-button">
     <i class="material-icons">forward</i>
-    <span>Move file</span>
+    <span>{{ $t('buttons.moveFile') }}</span>
   </button>
 </template>
 

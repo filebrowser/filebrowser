@@ -28,6 +28,7 @@ var (
 	commands      string
 	logfile       string
 	plugin        string
+	locale        string
 	port          int
 	allowCommands bool
 	allowEdit     bool
@@ -47,6 +48,7 @@ func init() {
 	flag.BoolVar(&allowCommands, "allow-commands", true, "Default allow commands option for new users")
 	flag.BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option for new users")
 	flag.BoolVar(&allowNew, "allow-new", true, "Default allow new option for new users")
+	flag.StringVar(&locale, "locale", "en", "Default locale for new users")
 	flag.StringVar(&plugin, "plugin", "", "Plugin you want to enable")
 	flag.BoolVarP(&showVer, "version", "v", false, "Show version")
 }
@@ -62,6 +64,7 @@ func setupViper() {
 	viper.SetDefault("AllowEdit", true)
 	viper.SetDefault("AllowNew", true)
 	viper.SetDefault("Plugin", "")
+	viper.SetDefault("Locale", "en")
 
 	viper.BindPFlag("Port", flag.Lookup("port"))
 	viper.BindPFlag("Address", flag.Lookup("address"))
@@ -72,6 +75,7 @@ func setupViper() {
 	viper.BindPFlag("AllowCommands", flag.Lookup("allow-commands"))
 	viper.BindPFlag("AllowEdit", flag.Lookup("allow-edit"))
 	viper.BindPFlag("AlowNew", flag.Lookup("allow-new"))
+	viper.BindPFlag("Locale", flag.Lookup("locale"))
 	viper.BindPFlag("Plugin", flag.Lookup("plugin"))
 
 	viper.SetConfigName("filemanager")
@@ -133,6 +137,7 @@ func main() {
 		AllowNew:      viper.GetBool("AllowNew"),
 		Commands:      viper.GetStringSlice("Commands"),
 		Rules:         []*filemanager.Rule{},
+		Locale:        viper.GetString("Locale"),
 		CSS:           "",
 		FileSystem:    fileutils.Dir(viper.GetString("Scope")),
 	})

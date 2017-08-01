@@ -34,7 +34,7 @@ func resourceHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	case http.MethodPut:
 		// Before save command handler.
 		path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
-		if err := c.FM.Runner("before_save", path); err != nil {
+		if err := c.Runner("before_save", path); err != nil {
 			return http.StatusInternalServerError, err
 		}
 
@@ -44,7 +44,7 @@ func resourceHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 		}
 
 		// After save command handler.
-		if err := c.FM.Runner("after_save", path); err != nil {
+		if err := c.Runner("after_save", path); err != nil {
 			return http.StatusInternalServerError, err
 		}
 
@@ -60,7 +60,7 @@ func resourceHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 
 func resourceGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Gets the information of the directory/file.
-	f, err := getInfo(r.URL, c.FM, c.User)
+	f, err := getInfo(r.URL, c.FileManager, c.User)
 	if err != nil {
 		return errorToHTTP(err, false), err
 	}
@@ -73,7 +73,7 @@ func resourceGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 
 	// If it is a dir, go and serve the listing.
 	if f.IsDir {
-		c.FI = f
+		c.File = f
 		return listingHandler(c, w, r)
 	}
 
@@ -101,7 +101,7 @@ func resourceGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 }
 
 func listingHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	f := c.FI
+	f := c.File
 	f.Kind = "listing"
 
 	// Tries to get the listing data.
@@ -112,7 +112,7 @@ func listingHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (
 	listing := f.listing
 
 	// Defines the cookie scope.
-	cookieScope := c.FM.RootURL()
+	cookieScope := c.RootURL()
 	if cookieScope == "" {
 		cookieScope = "/"
 	}

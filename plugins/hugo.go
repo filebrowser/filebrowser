@@ -117,7 +117,7 @@ func (h Hugo) undraft(file string) error {
 type hugo struct{}
 
 func (h hugo) Before(c *filemanager.RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	o := c.FM.Plugins["hugo"].(*Hugo)
+	o := c.Plugins["hugo"].(*Hugo)
 
 	// If we are using the 'magic url' for the settings, we should redirect the
 	// request for the acutual path.
@@ -189,7 +189,7 @@ func (h hugo) Before(c *filemanager.RequestContext, w http.ResponseWriter, r *ht
 		filename := filepath.Join(string(c.User.FileSystem), r.URL.Path)
 
 		// Before save command handler.
-		if err := c.FM.Runner("before_publish", filename); err != nil {
+		if err := c.Runner("before_publish", filename); err != nil {
 			return http.StatusInternalServerError, err
 		}
 
@@ -205,7 +205,7 @@ func (h hugo) Before(c *filemanager.RequestContext, w http.ResponseWriter, r *ht
 		o.run(false)
 
 		// Executed the before publish command.
-		if err := c.FM.Runner("before_publish", filename); err != nil {
+		if err := c.Runner("before_publish", filename); err != nil {
 			return http.StatusInternalServerError, err
 		}
 

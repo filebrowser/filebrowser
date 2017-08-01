@@ -1,11 +1,11 @@
 <template>
   <div class="prompt error">
     <i class="material-icons">error_outline</i>
-    <h3>Something went wrong</h3>
+    <h3>{{ $t('prompts.error') }}</h3>
     <pre>{{ $store.state.showMessage }}</pre>
     <div>
-      <button @click="close" autofocus>Close</button>
-      <button @click="reportIssue" class="cancel">Report Issue</button>
+      <button @click="close" autofocus>{{ $t('buttons.close') }}</button>
+      <button @click="reportIssue" class="cancel">{{ $t('buttons.reportIssue') }}</button>
     </div>
   </div>
 </template>

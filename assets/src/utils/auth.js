@@ -23,10 +23,10 @@ function loggedIn () {
         parseToken(request.responseText)
         resolve()
       } else {
-        reject()
+        reject(new Error(request.responseText))
       }
     }
-    request.onerror = () => reject()
+    request.onerror = () => reject(new Error('Could not finish the request'))
     request.send()
   })
 }
@@ -45,7 +45,7 @@ function login (user, password) {
         reject(request.responseText)
       }
     }
-    request.onerror = () => reject()
+    request.onerror = () => reject(new Error('Could not finish the request'))
     request.send(JSON.stringify(data))
   })
 }
