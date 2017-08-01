@@ -1,21 +1,27 @@
 <template>
   <div class="dashboard">
-    <h1>{{ $t('settings.profileSettings') }}</h1>
-
-    <ul v-if="user.admin">
-      <li><router-link to="/settings/global">{{ $t('settings.goTo') }} {{ $t('settings.globalSettings') }}</router-link></li>
+    <ul id="nav" v-if="user.admin">
+      <li>
+        <router-link to="/settings/global">
+          {{ $t('settings.globalSettings') }} <i class="material-icons">keyboard_arrow_right</i>
+        </router-link>
+      </li>
     </ul>
 
-    <form @submit="updatePassword">
-      <h2>{{ $t('settings.changePassword') }}</h2>
-      <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPassword')" v-model="password" name="password"></p>
-      <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPasswordConfirm')" v-model="passwordConf" name="password"></p>
+    <h1>{{ $t('settings.profileSettings') }}</h1>
+
+    <form @submit="updateSettings">
+      <h3>{{ $t('settings.language') }}</h3>
+      <p><languages id="locale" :selected.sync="locale"></languages></p>
+      <h3>{{ $t('settings.customStylesheet') }}</h3>
+      <textarea v-model="css" name="css"></textarea>
       <p><input type="submit" :value="$t('buttons.update')"></p>
     </form>
 
-    <form @submit="updateCSS">
-      <h2>{{ $t('settings.customStylesheet') }}</h2>
-      <textarea v-model="css" name="css"></textarea>
+    <form @submit="updatePassword">
+      <h3>{{ $t('settings.changePassword') }}</h3>
+      <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPassword')" v-model="password" name="password"></p>
+      <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPasswordConfirm')" v-model="passwordConf" name="password"></p>
       <p><input type="submit" :value="$t('buttons.update')"></p>
     </form>
   </div>
@@ -24,14 +30,19 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import { updateUser } from '@/utils/api'
+import Languages from '@/components/Languages'
 
 export default {
   name: 'settings',
+  components: {
+    Languages
+  },
   data: function () {
     return {
       password: '',
       passwordConf: '',
-      css: ''
+      css: '',
+      locale: ''
     }
   },
   computed: {
@@ -50,6 +61,7 @@ export default {
   },
   created () {
     this.css = this.user.css
+    this.locale = this.user.locale
   },
   methods: {
     ...mapMutations([ 'showSuccess' ]),
@@ -71,18 +83,17 @@ export default {
         this.$store.commit('showError', e)
       })
     },
-    updateCSS (event) {
+    updateSettings (event) {
       event.preventDefault()
 
-      let user = {
-        ID: this.$store.state.user.ID,
-        css: this.css
-      }
+      let user = {...this.$store.state.user}
+      user.css = this.css
+      user.locale = this.locale
 
-      updateUser(user, 'css').then(location => {
-        this.$store.commit('setUserCSS', this.css)
+      updateUser(user, 'partial').then(location => {
+        this.$store.commit('setUser', user)
         this.$emit('css-updated')
-        this.showSuccess(this.$t('settings.stylesUpdated'))
+        this.showSuccess(this.$t('settings.settingsUpdated'))
       }).catch(e => {
         this.$store.commit('showError', e)
       })

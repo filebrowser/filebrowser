@@ -103,7 +103,6 @@ settings:
   customStylesheet: Estilos Personalizados
   examples: Exemplos
   globalSettings: Configurações Globais
-  goTo: Ir para
   language: Linguagem
   newPassword: Nova palavra-passe
   newPasswordConfirm: Confirme a nova palavra-passe
@@ -132,7 +131,7 @@ settings:
     caso queira utilizar uma expressão regular. Depois, escreva o caminho do ficheiro/pasta
     ou a expressão regular.
   scope: Base
-  stylesUpdated: Estilos atualizados!
+  settingsUpdated: Configurações atualizadas!
   user: Utilizador
   userCommands: Comandos
   userCommandsHelp:

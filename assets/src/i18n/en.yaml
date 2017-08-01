@@ -103,7 +103,6 @@ settings:
   customStylesheet: Custom Stylesheet
   examples: Examples
   globalSettings: Global Settings
-  goTo: Go to
   language: Language
   newPassword: Your new password
   newPasswordConfirm: Confirm your new password
@@ -131,7 +130,7 @@ settings:
     {0} or {1}. Then you should write {2} if you are using a regular expression and
     then the expression or the path.
   scope: Scope
-  stylesUpdated: Styles updated!
+  settingsUpdated: Settings updated!
   user: User
   userCommands: Commands
   userCommandsHelp:

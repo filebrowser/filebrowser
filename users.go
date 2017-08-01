@@ -256,10 +256,16 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 		return http.StatusBadRequest, err
 	}
 
-	// Updates the CSS.
-	if which == "css" {
+	// Updates the CSS and locale.
+	if which == "partial" {
 		c.User.CSS = u.CSS
+		c.User.Locale = u.Locale
 		err = c.FM.db.UpdateField(&User{ID: c.User.ID}, "CSS", u.CSS)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		err = c.FM.db.UpdateField(&User{ID: c.User.ID}, "Locale", u.Locale)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}

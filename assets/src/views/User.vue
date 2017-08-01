@@ -7,6 +7,10 @@
       <p><label for="username">{{ $t('settings.username') }}</label><input type="text" v-model="username" id="username"></p>
       <p><label for="password">{{ $t('settings.password') }}</label><input type="password" :placeholder="passwordPlaceholder" v-model="password" id="password"></p>
       <p><label for="scope">{{ $t('settings.scope') }}</label><input type="text" v-model="filesystem" id="scope"></p>
+      <p>
+        <label for="locale">{{ $t('settings.language') }}</label>
+        <languages id="locale" :selected.sync="locale"></languages>
+      </p>
 
       <h2>{{ $t('settings.permissions') }}</h2>
       <p class="small">{{ $t('settings.permissionsHelp') }}</p>
@@ -69,9 +73,11 @@
 <script>
 import { mapMutations } from 'vuex'
 import { getUser, newUser, updateUser, deleteUser } from '@/utils/api'
+import Languages from '@/components/Languages'
 
 export default {
   name: 'user',
+  components: { Languages },
   data: () => {
     return {
       id: 0,
@@ -84,6 +90,7 @@ export default {
       username: '',
       filesystem: '',
       rules: '',
+      locale: '',
       css: '',
       commands: ''
     }
@@ -129,6 +136,7 @@ export default {
         this.commands = user.commands.join(' ')
         this.css = user.css
         this.permissions = user.permissions
+        this.locale = user.locale
 
         for (let rule of user.rules) {
           if (rule.allow) {
@@ -172,6 +180,7 @@ export default {
       this.username = ''
       this.filesystem = ''
       this.rules = ''
+      this.locale = ''
       this.css = ''
       this.commands = ''
     },
@@ -204,6 +213,10 @@ export default {
       }
 
       updateUser(user).then(location => {
+        if (user.ID === this.$store.state.user.ID) {
+          this.$store.commit('setUser', user)
+        }
+
         this.$store.commit('showSuccess', this.$t('settings.userUpdated'))
       }).catch(e => {
         this.$store.commit('showError', e)
@@ -221,6 +234,7 @@ export default {
         allowEdit: this.allowEdit,
         permissions: this.permissions,
         css: this.css,
+        locale: this.locale,
         commands: this.commands.split(' '),
         rules: []
       }

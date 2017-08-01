@@ -1,11 +1,19 @@
 <template>
   <div class="dashboard">
-    <h1>{{ $t('settings.globalSettings') }}</h1>
-
-    <ul>
-      <li><router-link to="/settings/profile">{{ $t('settings.goTo') }} {{ $t('settings.profileSettings') }}</router-link></li>
-      <li><router-link to="/users">{{ $t('settings.goTo') }} {{ $t('settings.userManagement') }}</router-link></li>
+    <ul id="nav">
+      <li>
+        <router-link to="/settings/profile">
+          <i class="material-icons">keyboard_arrow_left</i> {{ $t('settings.profileSettings') }}
+        </router-link>
+      </li>
+      <li>
+        <router-link to="/users">
+          {{ $t('settings.userManagement') }} <i class="material-icons">keyboard_arrow_right</i>
+        </router-link>
+      </li>
     </ul>
+
+    <h1>{{ $t('settings.globalSettings') }}</h1>
 
     <form @submit="savePlugin" v-if="plugins.length > 0">
       <template v-for="plugin in plugins">

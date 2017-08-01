@@ -102,7 +102,6 @@ settings:
   customStylesheet: 自定义样式表
   examples: 例子
   globalSettings: 全局设置
-  goTo: 转到
   newPassword: 您的新密码
   newPasswordConfirm: 重输一遍新密码
   newUser: 新建用户
@@ -125,7 +124,6 @@ settings:
     每行一条规则, 必须以关键词 {0} 或 {1} 开头. 如果使用正则表达式,
     然后使用表达式或路径, 则需要在第二列单词加入 {2} .
   scope: 目录范围
-  stylesUpdated: 样式更新!
   user: 用户
   userCommands: 用户命令(Linux 代码)
   userCommandsHelp: '一个以空格分割的列表, 用于指定该用户可以执行的命令(Linux 代码), 例如:'
