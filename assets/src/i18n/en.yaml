@@ -111,9 +111,9 @@ settings:
   passwordUpdated: Password updated!
   permissions: Permissions
   permissionsHelp: >
-    'You can set the user to be an administrator or choose the permissions
+    You can set the user to be an administrator or choose the permissions
     individually. If you select "Administrator", all of the other options will be
-    automatically checked. The management of users remains a privilege of an administrator.'
+    automatically checked. The management of users remains a privilege of an administrator.
   pluginsUpdated: Plugins settings updated!
   profileSettings: Profile Settings
   ruleExample1: >
