@@ -1,8 +1,44 @@
-login:
-  wrongCredentials: Credenciais erradas
-  username: Nome de utilizador
-  password: Palavra-passe
-  submit: Entrar
 buttons:
+  cancel: Cancel
+  close: Fechar
   copy: Copiar
   copyFile: Copiar ficheiro
+  create: Criar
+  delete: Eliminar
+  download: Descarregar
+  info: Info
+  more: Mais
+  move: Mover
+  moveFile: Mover ficheiro
+  new: Novo
+  next: Próximo
+  ok: OK
+  previous: Anterior
+  rename: Renomear
+  reportIssue: Reportar Erro
+  save: Guardar
+  search: Pesquisar
+  select: Selecionar
+  selectMultiple: Selecionar múltiplos
+  switchView: Alterar modo de visão
+  toggleSidebar: Alternar barra lateral
+  update: Atualizar
+  upload: Enviar
+errors:
+  forbidden: Tu não és bem-vindo aqui.
+  internal: Algo correu bastante mal.
+  notFound: Não conseguimos chegar a esta localização.
+files:
+  folders: Pastas
+  files: Ficheiros
+  body: Corpo
+  clear: Limpar
+  closePreview: Fechar pré-visualização
+  home: Início
+  lastModified: Última modificação
+  loading: A carregar...
+  lonely: Sinto-me sozinho...
+  metadata: Metadados
+  multipleSelectionEnabled: Seleção múltipla ativada
+  name: Nome
+  size: Tamanho

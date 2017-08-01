@@ -7,9 +7,9 @@ import Users from '@/views/Users'
 import User from '@/views/User'
 import GlobalSettings from '@/views/GlobalSettings'
 import ProfileSettings from '@/views/ProfileSettings'
-import error403 from '@/components/errors/403'
-import error404 from '@/components/errors/404'
-import error500 from '@/components/errors/500'
+import Error403 from '@/views/errors/403'
+import Error404 from '@/views/errors/404'
+import Error500 from '@/views/errors/500'
 import auth from '@/utils/auth.js'
 import store from '@/store'
 
@@ -69,17 +69,17 @@ const router = new Router({
         {
           path: '/403',
           name: 'Forbidden',
-          component: error403
+          component: Error403
         },
         {
           path: '/404',
           name: 'Not Found',
-          component: error404
+          component: Error404
         },
         {
           path: '/500',
           name: 'Internal Server Error',
-          component: error500
+          component: Error500
         },
         {
           path: '/users',
