@@ -7,7 +7,7 @@ import zhCN from './zh_cn.yaml'
 Vue.use(VueI18n)
 
 export default new VueI18n({
-  locale: 'en',
+  locale: 'zh_cn',
   fallbackLocale: 'en',
   messages: {
     'en': en,

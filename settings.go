@@ -2,66 +2,23 @@ package filemanager
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"reflect"
 
 	"github.com/mitchellh/mapstructure"
 )
 
-func commandsHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	switch r.Method {
-	case http.MethodGet:
-		return commandsGetHandler(c, w, r)
-	case http.MethodPut:
-		return commandsPutHandler(c, w, r)
-	}
-
-	return http.StatusMethodNotAllowed, nil
+type modifySettingsRequest struct {
+	*modifyRequest
+	Data struct {
+		Commands map[string][]string               `json:"commands"`
+		Plugins  map[string]map[string]interface{} `json:"plugins"`
+	} `json:"data"`
 }
 
-func commandsGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	if !c.User.Admin {
-		return http.StatusForbidden, nil
-	}
-
-	return renderJSON(w, c.FM.Commands)
-}
-
-func commandsPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	if !c.User.Admin {
-		return http.StatusForbidden, nil
-	}
-
-	if r.Body == nil {
-		return http.StatusBadGateway, errors.New("Empty request body")
-	}
-
-	var commands map[string][]string
-
-	// Parses the user and checks for error.
-	err := json.NewDecoder(r.Body).Decode(&commands)
-	if err != nil {
-		return http.StatusBadRequest, errors.New("Invalid JSON")
-	}
-
-	if err := c.FM.db.Set("config", "commands", commands); err != nil {
-		return http.StatusInternalServerError, err
-	}
-
-	c.FM.Commands = commands
-	return http.StatusOK, nil
-}
-
-func pluginsHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	switch r.Method {
-	case http.MethodGet:
-		return pluginsGetHandler(c, w, r)
-	case http.MethodPut:
-		return pluginsPutHandler(c, w, r)
-	}
-
-	return http.StatusMethodNotAllowed, nil
+type settingsGetRequest struct {
+	Commands map[string][]string       `json:"commands"`
+	Plugins  map[string][]pluginOption `json:"plugins"`
 }
 
 type pluginOption struct {
@@ -70,19 +27,58 @@ type pluginOption struct {
 	Value    interface{} `json:"value"`
 }
 
-func pluginsGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func parsePutSettingsRequest(r *http.Request) (*modifySettingsRequest, error) {
+	// Checks if the request body is empty.
+	if r.Body == nil {
+		return nil, errEmptyRequest
+	}
+
+	// Parses the request body and checks if it's well formed.
+	mod := &modifySettingsRequest{}
+	err := json.NewDecoder(r.Body).Decode(mod)
+	if err != nil {
+		return nil, err
+	}
+
+	// Checks if the request type is right.
+	if mod.What != "settings" {
+		return nil, errWrongDataType
+	}
+
+	return mod, nil
+}
+
+func settingsHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	if r.URL.Path != "" {
+		return http.StatusNotFound, nil
+	}
+
+	switch r.Method {
+	case http.MethodGet:
+		return settingsGetHandler(c, w, r)
+	case http.MethodPut:
+		return settingsPutHandler(c, w, r)
+	}
+
+	return http.StatusMethodNotAllowed, nil
+}
+
+func settingsGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	if !c.User.Admin {
 		return http.StatusForbidden, nil
 	}
 
-	plugins := map[string][]pluginOption{}
+	result := &settingsGetRequest{
+		Commands: c.FM.Commands,
+		Plugins:  map[string][]pluginOption{},
+	}
 
 	for name, p := range c.FM.Plugins {
-		plugins[name] = []pluginOption{}
+		result.Plugins[name] = []pluginOption{}
 
 		t := reflect.TypeOf(p).Elem()
 		for i := 0; i < t.NumField(); i++ {
-			plugins[name] = append(plugins[name], pluginOption{
+			result.Plugins[name] = append(result.Plugins[name], pluginOption{
 				Variable: t.Field(i).Name,
 				Name:     t.Field(i).Tag.Get("name"),
 				Value:    reflect.ValueOf(p).Elem().FieldByName(t.Field(i).Name).Interface(),
@@ -90,37 +86,43 @@ func pluginsGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	return renderJSON(w, plugins)
+	return renderJSON(w, result)
 }
 
-func pluginsPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func settingsPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	if !c.User.Admin {
 		return http.StatusForbidden, nil
 	}
 
-	if r.Body == nil {
-		return http.StatusBadGateway, errors.New("Empty request body")
-	}
-
-	var raw map[string]map[string]interface{}
-
-	// Parses the user and checks for error.
-	err := json.NewDecoder(r.Body).Decode(&raw)
+	mod, err := parsePutSettingsRequest(r)
 	if err != nil {
 		return http.StatusBadRequest, err
 	}
 
-	for name, plugin := range raw {
-		err = mapstructure.Decode(plugin, c.FM.Plugins[name])
-		if err != nil {
+	if mod.Which == "commands" {
+		if err := c.FM.db.Set("config", "commands", mod.Data.Commands); err != nil {
 			return http.StatusInternalServerError, err
 		}
 
-		err = c.FM.db.Set("plugins", name, c.FM.Plugins[name])
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
+		c.FM.Commands = mod.Data.Commands
+		return http.StatusOK, nil
 	}
 
-	return http.StatusOK, nil
+	if mod.Which == "plugins" {
+		for name, plugin := range mod.Data.Plugins {
+			err = mapstructure.Decode(plugin, c.FM.Plugins[name])
+			if err != nil {
+				return http.StatusInternalServerError, err
+			}
+
+			err = c.FM.db.Set("plugins", name, c.FM.Plugins[name])
+			if err != nil {
+				return http.StatusInternalServerError, err
+			}
+		}
+
+		return http.StatusOK, nil
+	}
+
+	return http.StatusMethodNotAllowed, nil
 }

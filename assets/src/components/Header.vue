@@ -92,7 +92,7 @@ import SwitchButton from './buttons/SwitchView'
 import MoveButton from './buttons/Move'
 import CopyButton from './buttons/Copy'
 import {mapGetters, mapState} from 'vuex'
-import api from '@/utils/api'
+import * as api from '@/utils/api'
 import buttons from '@/utils/buttons'
 
 export default {
