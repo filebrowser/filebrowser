@@ -110,7 +110,7 @@ func getInfo(url *url.URL, c *FileManager, u *User) (*file, error) {
 func (i *file) getListing(c *RequestContext, r *http.Request) error {
 	// Gets the directory information using the Virtual File System of
 	// the user configuration.
-	f, err := c.User.FileSystem.OpenFile(c.FI.VirtualPath, os.O_RDONLY, 0)
+	f, err := c.User.FileSystem.OpenFile(c.File.VirtualPath, os.O_RDONLY, 0)
 	if err != nil {
 		return err
 	}

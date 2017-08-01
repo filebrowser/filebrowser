@@ -2,7 +2,7 @@ import store from '@/store'
 
 const ssl = (window.location.protocol === 'https:')
 
-function removePrefix (url) {
+export function removePrefix (url) {
   if (url.startsWith('/files')) {
     return url.slice(6)
   }
@@ -10,7 +10,7 @@ function removePrefix (url) {
   return url
 }
 
-function fetch (url) {
+export function fetch (url) {
   url = removePrefix(url)
 
   return new Promise((resolve, reject) => {
@@ -24,10 +24,7 @@ function fetch (url) {
           resolve(JSON.parse(request.responseText))
           break
         default:
-          reject({
-            message: request.responseText,
-            status: request.status
-          })
+          reject(new Error(request.status))
           break
       }
     }
@@ -36,7 +33,7 @@ function fetch (url) {
   })
 }
 
-function rm (url) {
+export function rm (url) {
   url = removePrefix(url)
 
   return new Promise((resolve, reject) => {
@@ -57,7 +54,7 @@ function rm (url) {
   })
 }
 
-function post (url, content = '') {
+export function post (url, content = '') {
   url = removePrefix(url)
 
   return new Promise((resolve, reject) => {
@@ -78,7 +75,7 @@ function post (url, content = '') {
   })
 }
 
-function put (url, content = '') {
+export function put (url, content = '') {
   url = removePrefix(url)
 
   return new Promise((resolve, reject) => {
@@ -132,15 +129,15 @@ function moveCopy (items, copy = false) {
   return Promise.all(promises)
 }
 
-function move (items) {
+export function move (items) {
   return moveCopy(items)
 }
 
-function copy (items) {
+export function copy (items) {
   return moveCopy(items, true)
 }
 
-function checksum (url, algo) {
+export function checksum (url, algo) {
   url = removePrefix(url)
 
   return new Promise((resolve, reject) => {
@@ -160,7 +157,7 @@ function checksum (url, algo) {
   })
 }
 
-function command (url, command, onmessage, onclose) {
+export function command (url, command, onmessage, onclose) {
   let protocol = (ssl ? 'wss:' : 'ws:')
   url = removePrefix(url)
   url = `${protocol}//${window.location.host}${store.state.baseURL}/api/command${url}`
@@ -171,7 +168,7 @@ function command (url, command, onmessage, onclose) {
   conn.onclose = onclose
 }
 
-function search (url, search, onmessage, onclose) {
+export function search (url, search, onmessage, onclose) {
   let protocol = (ssl ? 'wss:' : 'ws:')
   url = removePrefix(url)
   url = `${protocol}//${window.location.host}${store.state.baseURL}/api/search${url}`
@@ -182,7 +179,7 @@ function search (url, search, onmessage, onclose) {
   conn.onclose = onclose
 }
 
-function download (format, ...files) {
+export function download (format, ...files) {
   let url = `${store.state.baseURL}/api/download`
 
   if (files.length === 1) {
@@ -206,7 +203,59 @@ function download (format, ...files) {
   window.open(url)
 }
 
-function getUsers () {
+export function getSettings () {
+  return new Promise((resolve, reject) => {
+    let request = new window.XMLHttpRequest()
+    request.open('GET', `${store.state.baseURL}/api/settings/`, true)
+    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+
+    request.onload = () => {
+      switch (request.status) {
+        case 200:
+          resolve(JSON.parse(request.responseText))
+          break
+        default:
+          reject(request.responseText)
+          break
+      }
+    }
+    request.onerror = (error) => reject(error)
+    request.send()
+  })
+}
+
+export function updateSettings (param, which) {
+  return new Promise((resolve, reject) => {
+    let data = {
+      what: 'settings',
+      which: which,
+      data: {}
+    }
+
+    data.data[which] = param
+
+    let request = new window.XMLHttpRequest()
+    request.open('PUT', `${store.state.baseURL}/api/settings/`, true)
+    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+
+    request.onload = () => {
+      switch (request.status) {
+        case 200:
+          resolve()
+          break
+        default:
+          reject(request.responseText)
+          break
+      }
+    }
+    request.onerror = (error) => { reject(error) }
+    request.send(JSON.stringify(data))
+  })
+}
+
+// USERS
+
+export function getUsers () {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('GET', `${store.state.baseURL}/api/users/`, true)
@@ -227,7 +276,7 @@ function getUsers () {
   })
 }
 
-function getUser (id) {
+export function getUser (id) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('GET', `${store.state.baseURL}/api/users/${id}`, true)
@@ -248,7 +297,7 @@ function getUser (id) {
   })
 }
 
-function newUser (user) {
+export function newUser (user) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('POST', `${store.state.baseURL}/api/users/`, true)
@@ -265,11 +314,15 @@ function newUser (user) {
       }
     }
     request.onerror = (error) => reject(error)
-    request.send(JSON.stringify(user))
+    request.send(JSON.stringify({
+      what: 'user',
+      which: 'new',
+      data: user
+    }))
   })
 }
 
-function updateUser (user) {
+export function updateUser (user, which) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('PUT', `${store.state.baseURL}/api/users/${user.ID}`, true)
@@ -286,11 +339,15 @@ function updateUser (user) {
       }
     }
     request.onerror = (error) => reject(error)
-    request.send(JSON.stringify(user))
+    request.send(JSON.stringify({
+      what: 'user',
+      which: (typeof which === 'string') ? which : 'all',
+      data: user
+    }))
   })
 }
 
-function deleteUser (id) {
+export function deleteUser (id) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('DELETE', `${store.state.baseURL}/api/users/${id}`, true)
@@ -311,133 +368,8 @@ function deleteUser (id) {
   })
 }
 
-function updatePassword (password) {
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open('PUT', `${store.state.baseURL}/api/users/change-password`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
-
-    request.onload = () => {
-      switch (request.status) {
-        case 200:
-          resolve()
-          break
-        default:
-          reject(request.responseText)
-          break
-      }
-    }
-    request.onerror = (error) => reject(error)
-    request.send(JSON.stringify({ 'password': password }))
-  })
-}
-
-function updateCSS (css) {
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open('PUT', `${store.state.baseURL}/api/users/change-css`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
-
-    request.onload = () => {
-      switch (request.status) {
-        case 200:
-          resolve()
-          break
-        default:
-          reject(request.responseText)
-          break
-      }
-    }
-    request.onerror = (error) => reject(error)
-    request.send(JSON.stringify({ 'css': css }))
-  })
-}
-
-function getCommands () {
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open('GET', `${store.state.baseURL}/api/commands/`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
-
-    request.onload = () => {
-      switch (request.status) {
-        case 200:
-          resolve(JSON.parse(request.responseText))
-          break
-        default:
-          reject(request.responseText)
-          break
-      }
-    }
-    request.onerror = (error) => reject(error)
-    request.send()
-  })
-}
-
-function updateCommands (commands) {
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open('PUT', `${store.state.baseURL}/api/commands/`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
-
-    request.onload = () => {
-      switch (request.status) {
-        case 200:
-          resolve()
-          break
-        default:
-          reject(request.responseText)
-          break
-      }
-    }
-    request.onerror = (error) => reject(error)
-    request.send(JSON.stringify(commands))
-  })
-}
-
-function getPlugins () {
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open('GET', `${store.state.baseURL}/api/plugins/`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
-
-    request.onload = () => {
-      switch (request.status) {
-        case 200:
-          resolve(JSON.parse(request.responseText))
-          break
-        default:
-          reject(request.responseText)
-          break
-      }
-    }
-    request.onerror = (error) => reject(error)
-    request.send()
-  })
-}
-
-function updatePlugins (data) {
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open('PUT', `${store.state.baseURL}/api/plugins/`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
-
-    request.onload = () => {
-      switch (request.status) {
-        case 200:
-          resolve()
-          break
-        default:
-          reject(request.responseText)
-          break
-      }
-    }
-    request.onerror = (error) => reject(error)
-    request.send(JSON.stringify(data))
-  })
-}
-
 export default {
+  removePrefix,
   delete: rm,
   fetch,
   checksum,
@@ -448,16 +380,13 @@ export default {
   command,
   search,
   download,
-  getUser,
+  // other things
+  getSettings,
+  updateSettings,
+  // User things
   newUser,
-  updateUser,
+  getUser,
   getUsers,
-  updatePassword,
-  updateCSS,
-  getCommands,
-  updateCommands,
-  removePrefix,
-  getPlugins,
-  updatePlugins,
+  updateUser,
   deleteUser
 }

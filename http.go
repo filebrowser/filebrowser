@@ -10,9 +10,9 @@ import (
 
 // RequestContext contains the needed information to make handlers work.
 type RequestContext struct {
+	*FileManager
 	User *User
-	FM   *FileManager
-	FI   *file
+	File *file
 	// On API handlers, Router is the APi handler we want.
 	Router string
 }
@@ -21,9 +21,9 @@ type RequestContext struct {
 func serveHTTP(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Checks if the URL contains the baseURL and strips it. Otherwise, it just
 	// returns a 404 error because we're not supposed to be here!
-	p := strings.TrimPrefix(r.URL.Path, c.FM.BaseURL)
+	p := strings.TrimPrefix(r.URL.Path, c.BaseURL)
 
-	if len(p) >= len(r.URL.Path) && c.FM.BaseURL != "" {
+	if len(p) >= len(r.URL.Path) && c.BaseURL != "" {
 		return http.StatusNotFound, nil
 	}
 
@@ -34,7 +34,7 @@ func serveHTTP(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, 
 	if r.URL.Path == "/sw.js" {
 		return renderFile(
 			w,
-			c.FM.assets.MustString("sw.js"),
+			c.assets.MustString("sw.js"),
 			"application/javascript",
 			c,
 		)
@@ -65,7 +65,7 @@ func serveHTTP(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, 
 
 	return renderFile(
 		w,
-		c.FM.assets.MustString("index.html"),
+		c.assets.MustString("index.html"),
 		"text/html",
 		c,
 	)
@@ -74,13 +74,13 @@ func serveHTTP(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, 
 // staticHandler handles the static assets path.
 func staticHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	if r.URL.Path != "/static/manifest.json" {
-		http.FileServer(c.FM.assets.HTTPBox()).ServeHTTP(w, r)
+		http.FileServer(c.assets.HTTPBox()).ServeHTTP(w, r)
 		return 0, nil
 	}
 
 	return renderFile(
 		w,
-		c.FM.assets.MustString("static/manifest.json"),
+		c.assets.MustString("static/manifest.json"),
 		"application/json",
 		c,
 	)
@@ -107,7 +107,7 @@ func apiHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int,
 		return http.StatusForbidden, nil
 	}
 
-	for p := range c.FM.Plugins {
+	for p := range c.Plugins {
 		code, err := plugins[p].Handler.Before(c, w, r)
 		if code != 0 || err != nil {
 			return code, err
@@ -116,7 +116,7 @@ func apiHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int,
 
 	if c.Router == "checksum" || c.Router == "download" {
 		var err error
-		c.FI, err = getInfo(r.URL, c.FM, c.User)
+		c.File, err = getInfo(r.URL, c.FileManager, c.User)
 		if err != nil {
 			return errorToHTTP(err, false), err
 		}
@@ -138,10 +138,8 @@ func apiHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int,
 		code, err = resourceHandler(c, w, r)
 	case "users":
 		code, err = usersHandler(c, w, r)
-	case "commands":
-		code, err = commandsHandler(c, w, r)
-	case "plugins":
-		code, err = pluginsHandler(c, w, r)
+	case "settings":
+		code, err = settingsHandler(c, w, r)
 	default:
 		code = http.StatusNotFound
 	}
@@ -150,7 +148,7 @@ func apiHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int,
 		return code, err
 	}
 
-	for p := range c.FM.Plugins {
+	for p := range c.Plugins {
 		code, err := plugins[p].Handler.After(c, w, r)
 		if code != 0 || err != nil {
 			return code, err
@@ -164,7 +162,7 @@ func apiHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int,
 func checksumHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	query := r.URL.Query().Get("algo")
 
-	val, err := c.FI.Checksum(query)
+	val, err := c.File.Checksum(query)
 	if err == errInvalidOption {
 		return http.StatusBadRequest, err
 	} else if err != nil {
@@ -198,12 +196,12 @@ func renderFile(w http.ResponseWriter, file string, contentType string, c *Reque
 	w.Header().Set("Content-Type", contentType+"; charset=utf-8")
 
 	var javascript = ""
-	for name := range c.FM.Plugins {
+	for name := range c.Plugins {
 		javascript += plugins[name].JavaScript + "\n"
 	}
 
 	err := tpl.Execute(w, map[string]interface{}{
-		"BaseURL":    c.FM.RootURL(),
+		"BaseURL":    c.RootURL(),
 		"JavaScript": template.JS(javascript),
 	})
 	if err != nil {

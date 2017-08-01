@@ -1,11 +1,19 @@
 <template>
   <div class="dashboard">
-    <h1>Global Settings</h1>
-
-    <ul>
-      <li><router-link to="/settings/profile">Go to Profile Settings</router-link></li>
-      <li><router-link to="/users">Go to User Management</router-link></li>
+    <ul id="nav">
+      <li>
+        <router-link to="/settings/profile">
+          <i class="material-icons">keyboard_arrow_left</i> {{ $t('settings.profileSettings') }}
+        </router-link>
+      </li>
+      <li>
+        <router-link to="/users">
+          {{ $t('settings.userManagement') }} <i class="material-icons">keyboard_arrow_right</i>
+        </router-link>
+      </li>
     </ul>
+
+    <h1>{{ $t('settings.globalSettings') }}</h1>
 
     <form @submit="savePlugin" v-if="plugins.length > 0">
       <template v-for="plugin in plugins">
@@ -23,11 +31,9 @@
     </form>
 
     <form @submit="saveCommands">
-      <h2>Commands</h2>
+      <h2>{{ $t('settings.commands') }}</h2>
 
-      <p class="small">Here you can set commands that are executed in the named events. You write one command
-        per line. If the event is related to files, such as before and after saving, the environment variable
-        <code>file</code> will be available with the path of the file.</p>
+      <p class="small">{{ $t('settings.commandsHelp') }}</p>
 
       <template v-for="command in commands">
         <h3>{{ capitalize(command.name) }}</h3>
@@ -42,7 +48,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import api from '@/utils/api'
+import { getSettings, updateSettings } from '@/utils/api'
 
 export default {
   name: 'settings',
@@ -56,21 +62,17 @@ export default {
     ...mapState([ 'user' ])
   },
   created () {
-    api.getCommands()
-      .then(commands => {
-        for (let key in commands) {
+    getSettings()
+      .then(settings => {
+        for (let key in settings.plugins) {
+          this.plugins.push(this.parsePlugin(key, settings.plugins[key]))
+        }
+
+        for (let key in settings.commands) {
           this.commands.push({
             name: key,
-            value: commands[key].join('\n')
+            value: settings.commands[key].join('\n')
           })
-        }
-      })
-      .catch(error => { this.showError(error) })
-
-    api.getPlugins()
-      .then(plugins => {
-        for (let key in plugins) {
-          this.plugins.push(this.parsePlugin(key, plugins[key]))
         }
       })
       .catch(error => { this.showError(error) })
@@ -102,8 +104,8 @@ export default {
         commands[command.name] = value
       }
 
-      api.updateCommands(commands)
-        .then(() => { this.showSuccess('Commands updated!') })
+      updateSettings(commands, 'commands')
+        .then(() => { this.showSuccess(this.$t('settings.commandsUpdated')) })
         .catch(error => { this.showError(error) })
     },
     savePlugin (event) {
@@ -129,10 +131,8 @@ export default {
         plugins[plugin.name] = p
       }
 
-      console.log(plugins)
-
-      api.updatePlugins(plugins)
-        .then(() => { this.showSuccess('Plugins settings updated!') })
+      updateSettings(plugins, 'plugins')
+        .then(() => { this.showSuccess(this.$t('settings.pluginsUpdated')) })
         .catch(error => { this.showError(error) })
     },
     parsePlugin (name, plugin) {

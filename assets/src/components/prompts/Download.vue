@@ -1,7 +1,8 @@
 <template>
   <div class="prompt" id="download">
-    <h3>Download files</h3>
-    <p>Choose the format you want to download.</p>
+    <h3>{{ $t('prompts.download') }}</h3>
+    <p>{{ $t('prompts.downloadMessage') }}</p>
+
     <button @click="download('zip')" autofocus>zip</button>
     <button @click="download('tar')" autofocus>tar</button>
     <button @click="download('targz')" autofocus>tar.gz</button>

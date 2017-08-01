@@ -1,7 +1,7 @@
 <template>
   <div id="previewer">
     <div class="bar">
-      <button @click="back" class="action" aria-label="Close Preview" id="close">
+      <button @click="back" class="action" :title="$t('files.closePreview')" :aria-label="$t('files.closePreview')" id="close">
         <i class="material-icons">close</i>
       </button>
 
@@ -11,8 +11,12 @@
       <info-button></info-button>
     </div>
 
-    <button class="action" @click="prev" v-show="hasPrevious"><i class="material-icons">chevron_left</i></button>
-    <button class="action" @click="next" v-show="hasNext"><i class="material-icons">chevron_right</i></button>
+    <button class="action" @click="prev" v-show="hasPrevious" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
+      <i class="material-icons">chevron_left</i>
+    </button>
+    <button class="action" @click="next" v-show="hasNext" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
+      <i class="material-icons">chevron_right</i>
+    </button>
 
     <div class="preview">
       <img v-if="req.type == 'image'" :src="raw()">
@@ -24,7 +28,7 @@
       </video>
       <object v-else-if="req.extension == '.pdf'" class="pdf" :data="raw()"></object>
       <a v-else-if="req.type == 'blob'" :href="download()">
-        <h2 class="message">Download <i class="material-icons">file_download</i></h2>
+        <h2 class="message">{{ $t('buttons.download') }} <i class="material-icons">file_download</i></h2>
       </a>
       <pre v-else >{{ req.content }}</pre>
     </div>
@@ -35,10 +39,10 @@
 import { mapState } from 'vuex'
 import url from '@/utils/url'
 import api from '@/utils/api'
-import InfoButton from './buttons/Info'
-import DeleteButton from './buttons/Delete'
-import RenameButton from './buttons/Rename'
-import DownloadButton from './buttons/Download'
+import InfoButton from '@/components/buttons/Info'
+import DeleteButton from '@/components/buttons/Delete'
+import RenameButton from '@/components/buttons/Rename'
+import DownloadButton from '@/components/buttons/Download'
 
 export default {
   name: 'preview',

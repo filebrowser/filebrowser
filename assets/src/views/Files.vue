@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="breadcrumbs">
-      <router-link to="/files/">
+      <router-link to="/files/" :aria-label="$t('files.home')" :title="$t('files.home')">
         <i class="material-icons">home</i>
       </router-link>
 
@@ -11,8 +11,8 @@
       </span>
     </div>
     <div v-if="error">
-      <not-found v-if="error === 404"></not-found>
-      <forbidden v-else-if="error === 403"></forbidden>
+      <not-found v-if="error.message === '404'"></not-found>
+      <forbidden v-else-if="error.message === '403'"></forbidden>
       <internal-error v-else></internal-error>
     </div>
     <editor v-else-if="isEditor"></editor>
@@ -20,7 +20,7 @@
     <preview v-else-if="isPreview"></preview>
     <div v-else>
       <h2 class="message">
-        <span>Loading...</span>
+        <span>{{ $t('files.loading') }}</span>
       </h2>
     </div>
   </div>
@@ -30,9 +30,9 @@
 import Forbidden from './errors/403'
 import NotFound from './errors/404'
 import InternalError from './errors/500'
-import Preview from './Preview'
-import Listing from './Listing'
-import Editor from './Editor'
+import Preview from '@/components/files/Preview'
+import Listing from '@/components/files/Listing'
+import Editor from '@/components/files/Editor'
 import api from '@/utils/api'
 import { mapGetters, mapState, mapMutations } from 'vuex'
 
@@ -116,20 +116,11 @@ export default {
   },
   mounted () {
     window.addEventListener('keydown', this.keyEvent)
-    window.addEventListener('scroll', event => {
-      if (this.req.kind !== 'listing' || this.$store.state.req.display === 'mosaic') return
-
-      let top = 112 - window.scrollY
-
-      if (top < 64) {
-        top = 64
-      }
-
-      document.querySelector('#listing.list .item.header').style.top = top + 'px'
-    })
+    window.addEventListener('scroll', this.scroll)
   },
   beforeDestroy () {
     window.removeEventListener('keydown', this.keyEvent)
+    window.removeEventListener('scroll', this.scroll)
   },
   destroyed () {
     this.$store.commit('updateRequest', {})
@@ -152,25 +143,19 @@ export default {
       if (url[0] !== '/') url = '/' + url
 
       api.fetch(url)
-      .then((req) => {
-        if (!url.endsWith('/') && req.url.endsWith('/')) {
-          window.history.replaceState(window.history.state, document.title, window.location.pathname + '/')
-        }
+        .then((req) => {
+          if (!url.endsWith('/') && req.url.endsWith('/')) {
+            window.history.replaceState(window.history.state, document.title, window.location.pathname + '/')
+          }
 
-        this.$store.commit('updateRequest', req)
-        document.title = req.name
-        this.setLoading(false)
-      })
-      .catch(error => {
-        this.setLoading(false)
-
-        if (typeof error === 'object') {
-          this.error = error.status
-          return
-        }
-
-        this.error = error
-      })
+          this.$store.commit('updateRequest', req)
+          document.title = req.name
+          this.setLoading(false)
+        })
+        .catch(error => {
+          this.setLoading(false)
+          this.error = error
+        })
     },
     keyEvent (event) {
       // Esc!
@@ -220,10 +205,20 @@ export default {
 
           if (this.req.kind !== 'editor') {
             document.getElementById('download-button').click()
-            return
           }
         }
       }
+    },
+    scroll (event) {
+      if (this.req.kind !== 'listing' || this.$store.state.req.display === 'mosaic') return
+
+      let top = 112 - window.scrollY
+
+      if (top < 64) {
+        top = 64
+      }
+
+      document.querySelector('#listing.list .item.header').style.top = top + 'px'
     },
     openSidebar () {
       this.$store.commit('showHover', 'sidebar')

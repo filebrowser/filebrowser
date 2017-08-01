@@ -70,11 +70,15 @@ import (
 )
 
 var (
-	errUserExist     = errors.New("user already exists")
-	errUserNotExist  = errors.New("user does not exist")
-	errEmptyRequest  = errors.New("request body is empty")
-	errEmptyPassword = errors.New("password is empty")
-	plugins          = map[string]Plugin{}
+	errUserExist          = errors.New("user already exists")
+	errUserNotExist       = errors.New("user does not exist")
+	errEmptyRequest       = errors.New("request body is empty")
+	errEmptyPassword      = errors.New("password is empty")
+	errEmptyUsername      = errors.New("username is empty")
+	errEmptyScope         = errors.New("scope is empty")
+	errWrongDataType      = errors.New("wrong data type")
+	errInvalidUpdateField = errors.New("invalid field to update")
+	plugins               = map[string]Plugin{}
 )
 
 // FileManager is a file manager instance. It should be creating using the
@@ -138,6 +142,9 @@ type User struct {
 
 	// Custom styles for this user.
 	CSS string `json:"css"`
+
+	// Locale is the language of the user.
+	Locale string `json:"locale"`
 
 	// These indicate if the user can perform certain actions.
 	AllowNew      bool            `json:"allowNew"`      // Create files and folders
@@ -208,6 +215,7 @@ var DefaultUser = User{
 	Rules:         []*Rule{},
 	CSS:           "",
 	Admin:         true,
+	Locale:        "en",
 	FileSystem:    fileutils.Dir("."),
 }
 
@@ -428,22 +436,24 @@ func (m *FileManager) registerPermission(name string, value bool) error {
 // Compatible with http.Handler.
 func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	code, err := serveHTTP(&RequestContext{
-		FM:   m,
-		User: nil,
-		FI:   nil,
+		FileManager: m,
+		User:        nil,
+		File:        nil,
 	}, w, r)
 
-	if code != 0 {
+	if code >= 400 {
 		w.WriteHeader(code)
 
-		if err != nil {
-			log.Print(err)
-			w.Write([]byte(err.Error()))
-		} else {
+		if err == nil {
 			txt := http.StatusText(code)
 			log.Printf("%v: %v %v\n", r.URL.Path, code, txt)
 			w.Write([]byte(txt))
 		}
+	}
+
+	if err != nil {
+		log.Print(err)
+		w.Write([]byte(err.Error()))
 	}
 }
 

@@ -9,7 +9,7 @@
         :data-url="item.url">{{ item.name }}</li>
     </ul>
 
-    <p>Currently navigating on: <code>{{ nav }}</code>.</p>
+    <p>{{ $t('prompts.currentlyNavigating') }} <code>{{ nav }}</code>.</p>
   </div>
 </template>
 

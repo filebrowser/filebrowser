@@ -1,58 +1,56 @@
 <template>
   <div>
     <form @submit="save" class="dashboard">
-      <h1 v-if="id === 0">New User</h1>
-      <h1 v-else>User {{ username }}</h1>
+      <h1 v-if="id === 0">{{ $t('settings.newUser') }}</h1>
+      <h1 v-else>{{ $t('settings.user') }} {{ username }}</h1>
 
-      <p><label for="username">Username</label><input type="text" v-model="username" id="username"></p>
-      <p><label for="password">Password</label><input type="password" :placeholder="passwordPlaceholder" v-model="password" id="password"></p>
-      <p><label for="scope">Scope</label><input type="text" v-model="filesystem" id="scope"></p>
+      <p><label for="username">{{ $t('settings.username') }}</label><input type="text" v-model="username" id="username"></p>
+      <p><label for="password">{{ $t('settings.password') }}</label><input type="password" :placeholder="passwordPlaceholder" v-model="password" id="password"></p>
+      <p><label for="scope">{{ $t('settings.scope') }}</label><input type="text" v-model="filesystem" id="scope"></p>
+      <p>
+        <label for="locale">{{ $t('settings.language') }}</label>
+        <languages id="locale" :selected.sync="locale"></languages>
+      </p>
 
-      <h2>Permissions</h2>
+      <h2>{{ $t('settings.permissions') }}</h2>
+      <p class="small">{{ $t('settings.permissionsHelp') }}</p>
 
-      <p class="small">You can set the user to be an administrator or choose the permissions individually.
-        If you select "Administrator", all of the other options will be automatically checked.
-        The management of users remains a privilege of an administrator.</p>
-
-      <p><input type="checkbox" v-model="admin"> Administrator</p>
-      <p><input type="checkbox" :disabled="admin" v-model="allowNew"> Create new files and directories</p>
-      <p><input type="checkbox" :disabled="admin" v-model="allowEdit"> Edit, rename and delete files or directories.</p>
-      <p><input type="checkbox" :disabled="admin" v-model="allowCommands"> Execute commands</p>
+      <p><input type="checkbox" v-model="admin"> {{ $t('settings.administrator') }}</p>
+      <p><input type="checkbox" :disabled="admin" v-model="allowNew"> {{ $t('settings.allowNew') }}</p>
+      <p><input type="checkbox" :disabled="admin" v-model="allowEdit"> {{ $t('settings.allowEdit') }}</p>
+      <p><input type="checkbox" :disabled="admin" v-model="allowCommands"> {{ $t('settings.allowCommands') }}</p>
       <p v-for="(value, key) in permissions" :key="key">
         <input type="checkbox" :disabled="admin" v-model="permissions[key]"> {{ capitalize(key) }}
       </p>
 
-      <h3>Commands</h3>
-
-      <p class="small">A space separated list with the available commands for this user. Example: <i>git svn hg</i>.</p>
-
+      <h3>{{ $t('settings.userCommands') }}</h3>
+      <p class="small">{{ $t('settings.userCommandsHelp') }} <i>git svn hg</i>.</p>
       <input type="text" v-model.trim="commands">
 
-      <h2>Rules</h2>
+      <h2>{{ $t('settings.rules') }}</h2>
 
-      <p class="small">Here you can define a set of allow and disallow rules for this specific user. The blocked files won't
-        show up in the listings and they won't be accessible to the user. We support regex and paths relative to
-        the user's scope.</p>
+      <p class="small">{{ $t('settings.rulesHelp1') }}</p>
 
-      <p class="small">Each rule goes in one different line and must start with the keyword <code>allow</code> or <code>disallow</code>.
-        Then you should write <code>regex</code> if you are using a regular expression and then the expression or the path.</p>
+      <i18n path="settings.rulesHelp2" tag="p" class="small">
+        <code>allow</code><code>disallow</code><code>regex</code>
+      </i18n>
 
-      <p class="small"><strong>Examples</strong></p>
+      <p class="small"><strong>{{ $t('settings.examples') }}</strong></p>
 
       <ul class="small">
-        <li><code>disallow regex \\/\\..+</code> - prevents the access to any dot file (such as .git, .gitignore) in every folder.</li>
-        <li><code>disallow /Caddyfile</code> - blocks the access to the file named <i>Caddyfile</i> on the root of the scope</li>
+        <li><code>disallow regex \\/\\..+</code> - {{ $t('settings.ruleExample1') }}</li>
+        <li><code>disallow /Caddyfile</code> - {{ $t('settings.ruleExample2') }}</li>
       </ul>
 
       <textarea v-model.trim="rules"></textarea>
 
-      <h2>Custom Stylesheet</h2>
+      <h2>{{ $t('settings.customStylesheet') }}</h2>
 
       <textarea name="css"></textarea>
 
       <p>
-        <button v-if="id !== 0" @click.prevent="deletePrompt" type="button" class="delete">Delete</button>
-        <input type="submit" value="Save">
+        <button v-if="id !== 0" @click.prevent="deletePrompt" type="button" class="delete" :aria-label="$t('buttons.delete')" :title="$t('buttons.delete')">{{ $t('buttons.delete') }}</button>
+        <input type="submit" :value="$t('buttons.save')">
       </p>
     </form>
 
@@ -60,8 +58,13 @@
       <h3>Delete User</h3>
       <p>Are you sure you want to delete this user?</p>
       <div>
-        <button @click="deleteUser" autofocus>Delete</button>
-        <button @click="closeHovers" class="cancel">Cancel</button>
+        <button @click="deleteUser" autofocus>{{ $t('buttons.delete') }}</button>
+        <button class="cancel"
+          @click="closeHovers"
+          :aria-label="$t('buttons.cancel')"
+          :title="$t('buttons.cancel')">
+          {{ $t('buttons.cancel') }}
+        </button>
       </div>
     </div>
   </div>
@@ -69,10 +72,12 @@
 
 <script>
 import { mapMutations } from 'vuex'
-import api from '@/utils/api'
+import { getUser, newUser, updateUser, deleteUser } from '@/utils/api'
+import Languages from '@/components/Languages'
 
 export default {
   name: 'user',
+  components: { Languages },
   data: () => {
     return {
       id: 0,
@@ -85,6 +90,7 @@ export default {
       username: '',
       filesystem: '',
       rules: '',
+      locale: '',
       css: '',
       commands: ''
     }
@@ -92,7 +98,7 @@ export default {
   computed: {
     passwordPlaceholder () {
       if (this.$route.path === '/users/new') return ''
-      return '(leave blank to avoid changes)'
+      return this.$t('settings.avoidChanges')
     }
   },
   created () {
@@ -119,7 +125,7 @@ export default {
         user = 'base'
       }
 
-      api.getUser(user).then(user => {
+      getUser(user).then(user => {
         this.id = user.ID
         this.admin = user.admin
         this.allowCommands = user.allowCommands
@@ -130,6 +136,7 @@ export default {
         this.commands = user.commands.join(' ')
         this.css = user.css
         this.permissions = user.permissions
+        this.locale = user.locale
 
         for (let rule of user.rules) {
           if (rule.allow) {
@@ -173,6 +180,7 @@ export default {
       this.username = ''
       this.filesystem = ''
       this.rules = ''
+      this.locale = ''
       this.css = ''
       this.commands = ''
     },
@@ -182,9 +190,9 @@ export default {
     deleteUser (event) {
       event.preventDefault()
 
-      api.deleteUser(this.id).then(location => {
+      deleteUser(this.id).then(location => {
         this.$router.push({ path: '/users' })
-        this.$store.commit('showSuccess', 'User deleted!')
+        this.$store.commit('showSuccess', this.$t('settings.userDeleted'))
       }).catch(e => {
         this.$store.commit('showError', e)
       })
@@ -194,9 +202,9 @@ export default {
       let user = this.parseForm()
 
       if (this.$route.path === '/users/new') {
-        api.newUser(user).then(location => {
+        newUser(user).then(location => {
           this.$router.push({ path: location })
-          this.$store.commit('showSuccess', 'User created!')
+          this.$store.commit('showSuccess', this.$t('settings.userCreated'))
         }).catch(e => {
           this.$store.commit('showError', e)
         })
@@ -204,8 +212,12 @@ export default {
         return
       }
 
-      api.updateUser(user).then(location => {
-        this.$store.commit('showSuccess', 'User updated!')
+      updateUser(user).then(location => {
+        if (user.ID === this.$store.state.user.ID) {
+          this.$store.commit('setUser', user)
+        }
+
+        this.$store.commit('showSuccess', this.$t('settings.userUpdated'))
       }).catch(e => {
         this.$store.commit('showError', e)
       })
@@ -222,6 +234,7 @@ export default {
         allowEdit: this.allowEdit,
         permissions: this.permissions,
         css: this.css,
+        locale: this.locale,
         commands: this.commands.split(' '),
         rules: []
       }
@@ -269,7 +282,3 @@ export default {
   }
 }
 </script>
-
-<style>
-
-</style>

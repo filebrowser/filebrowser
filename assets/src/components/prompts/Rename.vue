@@ -1,11 +1,15 @@
 <template>
   <div class="prompt">
-    <h3>Rename</h3>
-    <p>Insert a new name for <code>{{ oldName() }}</code>:</p>
+    <h3>{{ $t('prompts.rename') }}</h3>
+    <p>{{ $t('prompts.renameMessage') }} <code>{{ oldName() }}</code>:</p>
+
     <input autofocus type="text" @keyup.enter="submit" v-model.trim="name">
     <div>
-      <button @click="submit" type="submit">Rename</button>
-      <button @click="cancel" class="cancel">Cancel</button>
+      <button @click="submit" type="submit">{{ $t('buttons.rename') }}</button>
+      <button class="cancel"
+        @click="$store.commit('closeHovers')"
+        :aria-label="$t('buttons.cancel')"
+        :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
     </div>
   </div>
 </template>

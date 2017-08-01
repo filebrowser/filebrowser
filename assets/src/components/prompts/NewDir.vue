@@ -1,11 +1,14 @@
 <template>
   <div class="prompt">
-    <h3>New directory</h3>
-    <p>Write the name of the new directory.</p>
+    <h3>{{ $t('prompts.newDir') }}</h3>
+    <p>{{ $t('prompts.newDirMessage') }}</p>
     <input autofocus type="text" @keyup.enter="submit" v-model.trim="name">
     <div>
-      <button class="ok" @click="submit">Create</button>
-      <button class="cancel" @click="$store.commit('closeHovers')">Cancel</button>
+      <button class="ok" @click="submit">{{ $t('buttons.create') }}</button>
+      <button class="cancel"
+        @click="$store.commit('closeHovers')"
+        :aria-label="$t('buttons.cancel')"
+        :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
     </div>
   </div>
 </template>

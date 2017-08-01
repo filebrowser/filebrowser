@@ -1,10 +1,10 @@
 <template>
     <form id="editor" :class="req.language">
         <div v-if="hasMetadata" id="metadata">
-          <h2>Metadata</h2>
+          <h2>{{ $t('files.metadata') }}</h2>
         </div>
 
-        <h2 v-if="hasMetadata">Body</h2>
+        <h2 v-if="hasMetadata">{{ $t('files.body') }}</h2>
     </form>
 </template>
 
@@ -123,7 +123,3 @@ export default {
   }
 }
 </script>
-
-<style>
-
-</style>

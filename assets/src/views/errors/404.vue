@@ -2,7 +2,7 @@
   <div>
     <h2 class="message">
       <i class="material-icons">gps_off</i>
-      <span>This location can't be reached.</span>
+      <span>{{ $t('errors.notFound') }}</span>
     </h2>
   </div>
 </template>

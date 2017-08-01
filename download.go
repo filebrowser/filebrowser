@@ -20,14 +20,14 @@ func downloadHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 
 	// If the file isn't a directory, serve it using http.ServeFile. We display it
 	// inline if it is requested.
-	if !c.FI.IsDir {
+	if !c.File.IsDir {
 		if r.URL.Query().Get("inline") == "true" {
 			w.Header().Set("Content-Disposition", "inline")
 		} else {
-			w.Header().Set("Content-Disposition", "attachment; filename="+c.FI.Name)
+			w.Header().Set("Content-Disposition", "attachment; filename="+c.File.Name)
 		}
 
-		http.ServeFile(w, r, c.FI.Path)
+		http.ServeFile(w, r, c.File.Path)
 		return 0, nil
 	}
 
@@ -46,10 +46,10 @@ func downloadHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 
 			// Clean the slashes.
 			name = fileutils.SlashClean(name)
-			files = append(files, filepath.Join(c.FI.Path, name))
+			files = append(files, filepath.Join(c.File.Path, name))
 		}
 	} else {
-		files = append(files, c.FI.Path)
+		files = append(files, c.File.Path)
 	}
 
 	// If the format is true, just set it to "zip".
@@ -93,7 +93,7 @@ func downloadHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Defines the file name.
-	name := c.FI.Name
+	name := c.File.Name
 	if name == "." || name == "" {
 		name = "download"
 	}

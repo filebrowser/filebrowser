@@ -27,7 +27,7 @@ func authHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int
 	}
 
 	// Checks if the user exists.
-	u, ok := c.FM.Users[cred.Username]
+	u, ok := c.Users[cred.Username]
 	if !ok {
 		return http.StatusForbidden, nil
 	}
@@ -78,7 +78,7 @@ func printToken(c *RequestContext, w http.ResponseWriter) (int, error) {
 
 	// Creates the token and signs it.
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	string, err := token.SignedString(c.FM.key)
+	string, err := token.SignedString(c.key)
 
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -114,7 +114,7 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 // User if it is valid.
 func validateAuth(c *RequestContext, r *http.Request) (bool, *User) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
-		return c.FM.key, nil
+		return c.key, nil
 	}
 	var claims claims
 	token, err := request.ParseFromRequestWithClaims(r,
@@ -127,7 +127,7 @@ func validateAuth(c *RequestContext, r *http.Request) (bool, *User) {
 		return false, nil
 	}
 
-	u, ok := c.FM.Users[claims.User.Username]
+	u, ok := c.Users[claims.User.Username]
 	if !ok {
 		return false, nil
 	}

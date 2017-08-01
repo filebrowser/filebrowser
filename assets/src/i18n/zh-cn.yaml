@@ -1,0 +1,151 @@
+buttons:
+  cancel: 取消
+  close: 关闭
+  copy: 复制
+  copyFile: 复制文件
+  create: 创建
+  delete: 删除
+  download: 下载
+  info: 信息
+  more: 更多
+  move: 移动
+  moveFile: 移动文件
+  new: 新
+  next: 下一步
+  ok: 确定
+  previous: 以前
+  rename: 重命名
+  reportIssue: 报告问题
+  save: 保存
+  search: 搜索
+  select: 选择
+  selectMultiple: 选择多个
+  switchView: 切换显示方式
+  toggleSidebar: 切换侧边栏
+  update: 更新
+  upload: 上传
+errors:
+  forbidden: 你被禁止访问.
+  internal: 内部出现麻烦了.
+  notFound: 找不到文件.
+files:
+  folders: 文件夹
+  files: 文件
+  body: Body
+  clear: 清理
+  closePreview: 关闭预览
+  home: 主页
+  lastModified: 最后修改
+  loading: 加载中...
+  lonely: 这里没有任何文件...
+  metadata: 元数据
+  multipleSelectionEnabled: 启用多选模式(现在可以选择多个文件/文件夹)
+  name: 名称
+  size: 大小
+help:
+  click: 选择文件或目录
+  ctrl:
+    click: 选择多个文件或目录
+    f: 打开搜索框
+    s: 保存文件或下载文件夹
+  del: 删除 所选文件/文件夹
+  doubleClick: 打开文件或目录
+  esc: 清除 当前所有选择 或 关闭提示信息
+  f1: 显示 当前帮助信息
+  f2: 重命名 文件/文件夹
+  help: 帮助
+login:
+  password: 密码
+  submit: 登录
+  username: 用户名
+  wrongCredentials: 账号或密码错误
+prompts:
+  copy: 复制
+  copyMessage: '请选择欲复制至的目录:'
+  currentlyNavigating: '目前正在浏览:'
+  deleteMessageMultiple: 你确定要删除这 {count} 个文件吗?
+  deleteMessageSingle: 你确定要删除这个文件/文件夹吗?
+  deleteTitle: 删除文件
+  displayName: '名称:'
+  download: 下载文件
+  downloadMessage: 请选择要下载的压缩格式.
+  error: 出了一点问题...
+  fileInfo: 文件信息
+  filesSelected: '选择 {count} 个文件.'
+  lastModified: 最后修改
+  move: 移动
+  moveMessage: '请选择欲移动至的目录:'
+  newDir: 新建目录
+  newDirMessage: 请输入新建目录的名称.
+  newFile: 新建文件
+  newFileMessage: 请输入新建文件的名称.
+  numberDirs: 目录数
+  numberFiles: 文件数
+  rename: 重命名
+  renameMessage: '请输入新名称, 旧名称是:'
+  show: 揭示
+  size: 大小
+settings:
+  admin: 管理员
+  administrator: 管理员
+  allowCommands: 执行命令(Linux 代码)
+  allowEdit: 编辑、重命名或删除文件/目录.
+  allowNew: 创建新文件和目录.
+  avoidChanges: '(留空以避免更改)'
+  changePassword: 更改密码
+  commands: 命令(linux 代码)
+  commandsHelp: >
+    'Here you can set commands that are executed in the named events.
+    每行一条命令. If the event is related to files, such as before and after saving,
+    the environment variable "file" will be available with the path of the file.'
+  commandsUpdated: 命令更新!
+  customStylesheet: 自定义样式表
+  examples: 例子
+  globalSettings: 全局设置
+  newPassword: 您的新密码
+  newPasswordConfirm: 重输一遍新密码
+  newUser: 新建用户
+  password: 密码
+  passwordUpdated: 密码更新!
+  permissions: 权限
+  permissionsHelp: >
+    '您可以将该用户设置为管理员 或单独选择各项权限. 如果选择 "管理员(Administrator)" ,
+    将自动检查所有其他选项, 并且该用户可以管理其他用户.'
+  pluginsUpdated: 插件设置更新!
+  profileSettings: 配置文件设置
+  ruleExample1: >
+    '阻止用户访问每个文件夹下任何以 . 开头的文件(隐藏文件, 例如: .git, .gitignore).'
+  ruleExample2: 阻止用户访问其目录范围内任何名为 Caddyfile 的文件/文件夹.
+  rules: 规则
+  rulesHelp1: >
+    '这里您可以为特定用户制定一组允许或不允许的规则,
+    阻止的文件将不会显示到列表中, 用户将无法访问, 支持相对于用户的范围.'
+  rulesHelp2: >
+    每行一条规则, 必须以关键词 {0} 或 {1} 开头. 如果使用正则表达式,
+    然后使用表达式或路径, 则需要在第二列单词加入 {2} .
+  scope: 目录范围
+  user: 用户
+  userCommands: 用户命令(Linux 代码)
+  userCommandsHelp: '一个以空格分割的列表, 用于指定该用户可以执行的命令(Linux 代码), 例如:'
+  userCreated: 用户创建!
+  userDeleted: 用户删除!
+  userManagement: 用户管理
+  username: 用户名
+  users: 用户
+  userUpdated: 用户更新!
+sidebar:
+  help: 帮助
+  logout: 注销
+  myFiles: 我的文件
+  newFile: 新建文件
+  newFolder: 新建文件夹
+  servedWith: 服务提供
+  settings: 设置
+search:
+  writeToSearch: 请输入要搜索的内容
+  searchOrCommand: 搜索或者执行命令(Linux 代码)...
+  searchOrSupportedCommand: '搜索或使用您支持使用的命令(一次只能执行一个命令):'
+  search: 搜索...
+  type: 键入并按 Enter 键(回车)进行搜索.
+  pressToSearch: 按 Enter 键(回车)进行搜索.
+  pressToExecute: 按 Enter 键(回车)执行.

@@ -1,12 +1,12 @@
 <template>
   <div class="dashboard">
-    <h1>Users <router-link to="/users/new"><button>New</button></router-link></h1>
+    <h1>{{ $t('settings.users') }} <router-link to="/users/new"><button>{{ $t('buttons.new') }}</button></router-link></h1>
 
     <table>
       <tr>
-        <th>Username</th>
-        <th>Admin</th>
-        <th>Scope</th>
+        <th>{{ $t('settings.username') }}</th>
+        <th>{{ $t('settings.admin') }}</th>
+        <th>{{ $t('settings.scope') }}</th>
         <th></th>
       </tr>
 
