@@ -69,11 +69,11 @@ func settingsGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 	}
 
 	result := &settingsGetRequest{
-		Commands: c.FM.Commands,
+		Commands: c.Commands,
 		Plugins:  map[string][]pluginOption{},
 	}
 
-	for name, p := range c.FM.Plugins {
+	for name, p := range c.Plugins {
 		result.Plugins[name] = []pluginOption{}
 
 		t := reflect.TypeOf(p).Elem()
@@ -100,23 +100,23 @@ func settingsPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 	}
 	// Update the commands.
 	if mod.Which == "commands" {
-		if err := c.FM.db.Set("config", "commands", mod.Data.Commands); err != nil {
+		if err := c.db.Set("config", "commands", mod.Data.Commands); err != nil {
 			return http.StatusInternalServerError, err
 		}
 
-		c.FM.Commands = mod.Data.Commands
+		c.Commands = mod.Data.Commands
 		return http.StatusOK, nil
 	}
 
 	// Update the plugins.
 	if mod.Which == "plugins" {
 		for name, plugin := range mod.Data.Plugins {
-			err = mapstructure.Decode(plugin, c.FM.Plugins[name])
+			err = mapstructure.Decode(plugin, c.Plugins[name])
 			if err != nil {
 				return http.StatusInternalServerError, err
 			}
 
-			err = c.FM.db.Set("plugins", name, c.FM.Plugins[name])
+			err = c.db.Set("plugins", name, c.Plugins[name])
 			if err != nil {
 				return http.StatusInternalServerError, err
 			}

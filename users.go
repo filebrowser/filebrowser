@@ -87,14 +87,14 @@ func getUser(r *http.Request) (*User, string, error) {
 func usersGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Request for the default user data.
 	if r.URL.Path == "/base" {
-		return renderJSON(w, c.FM.DefaultUser)
+		return renderJSON(w, c.DefaultUser)
 	}
 
 	// Request for the listing of users.
 	if r.URL.Path == "/" {
 		users := []User{}
 
-		for _, user := range c.FM.Users {
+		for _, user := range c.Users {
 			// Copies the user info and removes its
 			// password so it won't be sent to the
 			// front-end.
@@ -116,7 +116,7 @@ func usersGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Searches for the user and prints the one who matches.
-	for _, user := range c.FM.Users {
+	for _, user := range c.Users {
 		if user.ID != id {
 			continue
 		}
@@ -184,7 +184,7 @@ func usersPostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request)
 	u.Password = pw
 
 	// Saves the user to the database.
-	err = c.FM.db.Save(u)
+	err = c.db.Save(u)
 	if err == storm.ErrAlreadyExists {
 		return http.StatusConflict, errUserExist
 	}
@@ -194,7 +194,7 @@ func usersPostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request)
 	}
 
 	// Saves the user to the memory.
-	c.FM.Users[u.Username] = u
+	c.Users[u.Username] = u
 
 	// Set the Location header and return.
 	w.Header().Set("Location", "/users/"+strconv.Itoa(u.ID))
@@ -213,7 +213,7 @@ func usersDeleteHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 	}
 
 	// Deletes the user from the database.
-	err = c.FM.db.DeleteStruct(&User{ID: id})
+	err = c.db.DeleteStruct(&User{ID: id})
 	if err == storm.ErrNotFound {
 		return http.StatusNotFound, errUserNotExist
 	}
@@ -223,9 +223,9 @@ func usersDeleteHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 	}
 
 	// Delete the user from the in-memory users map.
-	for _, user := range c.FM.Users {
+	for _, user := range c.Users {
 		if user.ID == id {
-			delete(c.FM.Users, user.Username)
+			delete(c.Users, user.Username)
 			break
 		}
 	}
@@ -260,12 +260,12 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	if which == "partial" {
 		c.User.CSS = u.CSS
 		c.User.Locale = u.Locale
-		err = c.FM.db.UpdateField(&User{ID: c.User.ID}, "CSS", u.CSS)
+		err = c.db.UpdateField(&User{ID: c.User.ID}, "CSS", u.CSS)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
 
-		err = c.FM.db.UpdateField(&User{ID: c.User.ID}, "Locale", u.Locale)
+		err = c.db.UpdateField(&User{ID: c.User.ID}, "Locale", u.Locale)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -285,7 +285,7 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 		}
 
 		c.User.Password = pw
-		err = c.FM.db.UpdateField(&User{ID: c.User.ID}, "Password", pw)
+		err = c.db.UpdateField(&User{ID: c.User.ID}, "Password", pw)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -320,7 +320,7 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 
 	// Gets the current saved user from the in-memory map.
 	var suser *User
-	for _, user := range c.FM.Users {
+	for _, user := range c.Users {
 		if user.ID == id {
 			suser = user
 			break
@@ -346,12 +346,12 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 
 	// Default permissions if current are nil.
 	if u.Permissions == nil {
-		u.Permissions = c.FM.DefaultUser.Permissions
+		u.Permissions = c.DefaultUser.Permissions
 	}
 
 	// Updates the whole User struct because we always are supposed
 	// to send a new entire object.
-	err = c.FM.db.Save(u)
+	err = c.db.Save(u)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -359,9 +359,9 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	// If the user changed the username, delete the old user
 	// from the in-memory user map.
 	if suser.Username != u.Username {
-		delete(c.FM.Users, suser.Username)
+		delete(c.Users, suser.Username)
 	}
 
-	c.FM.Users[u.Username] = u
+	c.Users[u.Username] = u
 	return http.StatusOK, nil
 }

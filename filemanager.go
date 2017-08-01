@@ -436,9 +436,9 @@ func (m *FileManager) registerPermission(name string, value bool) error {
 // Compatible with http.Handler.
 func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	code, err := serveHTTP(&RequestContext{
-		FM:   m,
-		User: nil,
-		FI:   nil,
+		FileManager: m,
+		User:        nil,
+		File:        nil,
 	}, w, r)
 
 	if code >= 400 {
