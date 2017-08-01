@@ -88,17 +88,11 @@ const router = new Router({
           component: error500
         },
         {
-          path: '/users',
+          path: '/settings/users',
           name: 'Users',
           component: Users,
           meta: {
             requiresAdmin: true
-          }
-        },
-        {
-          path: '/settings/users/',
-          redirect: {
-            path: '/users'
           }
         },
         {
