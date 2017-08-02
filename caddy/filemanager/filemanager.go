@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	. "github.com/hacdias/filemanager"
@@ -73,6 +74,7 @@ func parse(c *caddy.Controller) ([]*config, error) {
 		baseURL := "/"
 		baseScope := "."
 		database := ""
+		noAuth := false
 
 		// Get the baseURL and baseScope
 		args := c.RemainingArgs()
@@ -93,6 +95,17 @@ func parse(c *caddy.Controller) ([]*config, error) {
 				}
 
 				database = c.Val()
+			case "no_auth":
+				if !c.NextArg() {
+					noAuth = true
+					continue
+				}
+
+				var err error
+				noAuth, err = strconv.ParseBool(c.Val())
+				if err != nil {
+					return nil, err
+				}
 			}
 		}
 
@@ -143,6 +156,7 @@ func parse(c *caddy.Controller) ([]*config, error) {
 			return nil, err
 		}
 
+		fm.NoAuth = noAuth
 		m := &config{FileManager: fm}
 		m.SetBaseURL(baseURL)
 		m.SetPrefixURL(strings.TrimSuffix(caddyConf.Addr.Path, "/"))
