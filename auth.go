@@ -15,6 +15,11 @@ import (
 
 // authHandler proccesses the authentication for the user.
 func authHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	// NoAuth instances shouldn't call this method.
+	if c.NoAuth {
+		return 0, nil
+	}
+
 	// Receive the credentials from the request and unmarshal them.
 	var cred User
 	if r.Body == nil {
@@ -56,6 +61,7 @@ func renewAuthHandler(c *RequestContext, w http.ResponseWriter, r *http.Request)
 // claims is the JWT claims.
 type claims struct {
 	User
+	NoAuth bool `json:"noAuth"`
 	jwt.StandardClaims
 }
 
@@ -70,6 +76,7 @@ func printToken(c *RequestContext, w http.ResponseWriter) (int, error) {
 	// Builds the claims.
 	claims := claims{
 		u,
+		c.NoAuth,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 			Issuer:    "File Manager",
@@ -78,7 +85,7 @@ func printToken(c *RequestContext, w http.ResponseWriter) (int, error) {
 
 	// Creates the token and signs it.
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	string, err := token.SignedString(c.key)
+	signed, err := token.SignedString(c.key)
 
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -86,7 +93,7 @@ func printToken(c *RequestContext, w http.ResponseWriter) (int, error) {
 
 	// Writes the token.
 	w.Header().Set("Content-Type", "cty")
-	w.Write([]byte(string))
+	w.Write([]byte(signed))
 	return 0, nil
 }
 
@@ -113,6 +120,11 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 // validateAuth is used to validate the authentication and returns the
 // User if it is valid.
 func validateAuth(c *RequestContext, r *http.Request) (bool, *User) {
+	if c.NoAuth {
+		c.User = c.DefaultUser
+		return true, c.User
+	}
+
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		return c.key, nil
 	}

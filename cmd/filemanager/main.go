@@ -30,6 +30,7 @@ var (
 	plugin        string
 	locale        string
 	port          int
+	noAuth        bool
 	allowCommands bool
 	allowEdit     bool
 	allowNew      bool
@@ -48,6 +49,7 @@ func init() {
 	flag.BoolVar(&allowCommands, "allow-commands", true, "Default allow commands option for new users")
 	flag.BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option for new users")
 	flag.BoolVar(&allowNew, "allow-new", true, "Default allow new option for new users")
+	flag.BoolVar(&noAuth, "no-auth", false, "Disables authentication")
 	flag.StringVar(&locale, "locale", "en", "Default locale for new users")
 	flag.StringVar(&plugin, "plugin", "", "Plugin you want to enable")
 	flag.BoolVarP(&showVer, "version", "v", false, "Show version")
@@ -65,6 +67,7 @@ func setupViper() {
 	viper.SetDefault("AllowNew", true)
 	viper.SetDefault("Plugin", "")
 	viper.SetDefault("Locale", "en")
+	viper.SetDefault("NoAuth", false)
 
 	viper.BindPFlag("Port", flag.Lookup("port"))
 	viper.BindPFlag("Address", flag.Lookup("address"))
@@ -77,6 +80,7 @@ func setupViper() {
 	viper.BindPFlag("AlowNew", flag.Lookup("allow-new"))
 	viper.BindPFlag("Locale", flag.Lookup("locale"))
 	viper.BindPFlag("Plugin", flag.Lookup("plugin"))
+	viper.BindPFlag("NoAuth", flag.Lookup("no-auth"))
 
 	viper.SetConfigName("filemanager")
 	viper.AddConfigPath(".")
@@ -141,6 +145,10 @@ func main() {
 		CSS:           "",
 		FileSystem:    fileutils.Dir(viper.GetString("Scope")),
 	})
+
+	if viper.GetBool("NoAuth") {
+		fm.NoAuth = true
+	}
 
 	if err != nil {
 		log.Fatal(err)
