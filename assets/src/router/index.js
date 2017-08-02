@@ -98,6 +98,12 @@ const router = new Router({
           }
         },
         {
+          path: '/files',
+          redirect: {
+            path: '/files/'
+          }
+        },
+        {
           path: '/*',
           redirect: {
             name: 'Files'
