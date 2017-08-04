@@ -87,10 +87,13 @@ func setupViper() {
 }
 
 func printVersion() {
+	version = strings.TrimSpace(version)
+
 	if version == "" {
 		fmt.Println("filemanager is at an untracked version")
 	} else {
-		fmt.Println("filemanager", version)
+		version = strings.TrimPrefix(version, "v")
+		fmt.Println("filemanager version", version)
 	}
 
 	os.Exit(0)
