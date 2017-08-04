@@ -2,6 +2,7 @@ package filemanager
 
 import (
 	"bytes"
+	"encoding/json"
 	"mime"
 	"net/http"
 	"os"
@@ -321,7 +322,12 @@ func search(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, err
 			}
 		}
 
-		return conn.WriteMessage(websocket.TextMessage, []byte(path))
+		response, _ := json.Marshal(map[string]interface{}{
+			"dir":  f.IsDir(),
+			"path": path,
+		})
+
+		return conn.WriteMessage(websocket.TextMessage, response)
 	})
 
 	if err != nil {

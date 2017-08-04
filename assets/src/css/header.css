@@ -177,9 +177,22 @@ header .search-button {
 
 #search.active #result i {
   color: #ccc;
+}
+
+#search.active #result > p > i {
   text-align: center;
   margin: 0 auto;
   display: table;
+}
+
+#search.active #result ul li a {
+  display: flex;
+  align-items: center;
+  padding: .3em 0;
+}
+
+#search.active #result ul li a i {
+  margin-right: .3em;
 }
 
 #search::-webkit-input-placeholder {
