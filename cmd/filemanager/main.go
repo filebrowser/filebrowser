@@ -86,13 +86,22 @@ func setupViper() {
 	viper.AddConfigPath(".")
 }
 
+func printVersion() {
+	if version == "" {
+		fmt.Println("filemanager is at an untracked version")
+	} else {
+		fmt.Println("filemanager", version)
+	}
+
+	os.Exit(0)
+}
+
 func main() {
 	setupViper()
 	flag.Parse()
 
 	if showVer {
-		fmt.Println("filemanager version", version)
-		os.Exit(0)
+		printVersion()
 	}
 
 	// Add a configuration file if set.
