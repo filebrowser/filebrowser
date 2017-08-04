@@ -15,7 +15,11 @@
     </ul>
 
     <div>
-      <button type="submit" @click="$store.commit('closeHovers')" class="ok">{{ $t('buttons.ok') }}</button>
+      <button type="submit"
+        @click="$store.commit('closeHovers')"
+        class="ok"
+        :aria-label="$t('buttons.ok')"
+        :title="$t('buttons.ok')">{{ $t('buttons.ok') }}</button>
     </div>
   </div>
 </template>

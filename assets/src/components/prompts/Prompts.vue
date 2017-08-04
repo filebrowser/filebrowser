@@ -26,7 +26,10 @@
           :name="input.name"
           :placeholder="input.placeholder">
         <div>
-          <input type="submit" class="ok" :value="prompt.ok">
+          <input type="submit" class="ok"
+          :aria-label="prompt.ok"
+          :title="prompt.ok"
+          :value="prompt.ok">
           <button class="cancel"
             @click="$store.commit('closeHovers')"
             :aria-label="$t('buttons.cancel')"

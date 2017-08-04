@@ -42,6 +42,9 @@ files:
   multipleSelectionEnabled: Seleção múltipla ativada
   name: Nome
   size: Tamanho
+  sortByName: Ordenar pelo nome
+  sortBySize: Ordenar pelo tamanho
+  sortByLastModified: Ordenar pela última modificação
 help:
   click: selecionar pasta ou ficheiro
   ctrl:
