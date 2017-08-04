@@ -4,7 +4,10 @@
     <p>{{ $t('prompts.newFileMessage') }}</p>
     <input autofocus type="text" @keyup.enter="submit" v-model.trim="name">
     <div>
-      <button class="ok" @click="submit">{{ $t('buttons.create') }}</button>
+      <button class="ok"
+        @click="submit"
+        :aria-label="$t('buttons.create')"
+        :title="$t('buttons.create')">{{ $t('buttons.create') }}</button>
       <button class="cancel"
         @click="$store.commit('closeHovers')"
         :aria-label="$t('buttons.cancel')"

@@ -6,7 +6,10 @@
     <file-list @update:selected="val => dest = val"></file-list>
 
     <div>
-      <button class="ok" @click="copy">{{ $t('buttons.copy') }}</button>
+      <button class="ok"
+        @click="copy"
+        :aria-label="$t('buttons.copy')"
+        :title="$t('buttons.copy')">{{ $t('buttons.copy') }}</button>
       <button class="cancel"
         @click="$store.commit('closeHovers')"
         :aria-label="$t('buttons.cancel')"

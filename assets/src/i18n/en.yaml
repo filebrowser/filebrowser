@@ -42,6 +42,9 @@ files:
   multipleSelectionEnabled: Multiple selection enabled
   name: Name
   size: Size
+  sortByName: Sort by name
+  sortBySize: Sort by size
+  sortByLastModified: Sort by last modified
 help:
   click: select file or directory
   ctrl:

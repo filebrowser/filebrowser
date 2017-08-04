@@ -4,6 +4,9 @@
       <li @click="select"
         @touchstart="touchstart"
         @dblclick="next"
+        role="button"
+        tabindex="0"
+        :aria-label="item.name"
         :aria-selected="selected == item.url"
         :key="item.name" v-for="item in items"
         :data-url="item.url">{{ item.name }}</li>

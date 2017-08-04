@@ -1,5 +1,7 @@
 <template>
   <div class="item"
+  role="button"
+  tabindex="0"
   draggable="true"
   @dragstart="dragStart"
   @dragover="dragOver"
@@ -7,6 +9,7 @@
   @click="click"
   @dblclick="open"
   @touchstart="touchstart"
+  :aria-label="name"
   :aria-selected="isSelected">
     <div>
       <i class="material-icons">{{ icon }}</i>
