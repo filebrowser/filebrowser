@@ -20,7 +20,11 @@
         <span v-if="search.length === 0 && commands.length === 0">{{ text }}</span>
         <ul v-else-if="search.length > 0">
           <li v-for="s in search">
-            <router-link @click.native="close" :to="'./' + s">./{{ s }}</router-link>
+            <router-link @click.native="close" :to="'./' + s.path">
+              <i v-if="s.dir" class="material-icons">folder</i>
+              <i v-else class="material-icons">insert_drive_file</i>
+              <span>./{{ s.path }}</span>
+            </router-link>
           </li>
         </ul>
 
@@ -184,10 +188,12 @@ export default {
       // In case of being a search.
       api.search(path, this.value,
         (event) => {
-          let url = event.data
-          if (url[0] === '/') url = url.substring(1)
+          let response = JSON.parse(event.data)
+          if (response.path[0] === '/') {
+            response.path = response.path.substring(1)
+          }
 
-          this.search.push(url)
+          this.search.push(response)
           this.scrollable.scrollTop = this.scrollable.scrollHeight
         },
         (event) => {
