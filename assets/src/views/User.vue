@@ -1,6 +1,15 @@
 <template>
   <div>
     <form @submit="save" class="dashboard">
+      <ul id="nav">
+        <li>
+          <router-link to="/users">
+            <i class="material-icons">keyboard_arrow_left</i> {{ $t('settings.userManagement') }}
+          </router-link>
+        </li>
+        <li></li>
+      </ul>
+
       <h1 v-if="id === 0">{{ $t('settings.newUser') }}</h1>
       <h1 v-else>{{ $t('settings.user') }} {{ username }}</h1>
 
