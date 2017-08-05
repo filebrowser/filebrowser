@@ -1,5 +1,14 @@
 <template>
   <div class="dashboard">
+    <ul id="nav">
+      <li>
+        <router-link to="/settings/global">
+          <i class="material-icons">keyboard_arrow_left</i> {{ $t('settings.globalSettings') }}
+        </router-link>
+      </li>
+      <li></li>
+    </ul>
+
     <h1>{{ $t('settings.users') }} <router-link to="/users/new"><button>{{ $t('buttons.new') }}</button></router-link></h1>
 
     <table>
