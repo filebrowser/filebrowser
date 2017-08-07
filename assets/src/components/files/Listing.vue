@@ -8,7 +8,6 @@
   </div>
   <div v-else id="listing"
     :class="req.display"
-    @drop="drop"
     @dragenter="dragEnter"
     @dragend="dragEnd">
     <div>
@@ -230,7 +229,7 @@ export default {
       if (columns === 0) columns = 1
       items.style.width = `calc(${100 / columns}% - 1em)`
     },
-    dragEnter: function (event) {
+    dragEnter (event) {
       // When the user starts dragging an item, put every
       // file on the listing with 50% opacity.
       let items = document.getElementsByClassName('item')
@@ -239,15 +238,18 @@ export default {
         file.style.opacity = 0.5
       })
     },
-    dragEnd: function (event) {
+    dragEnd (event) {
       this.resetOpacity()
     },
     drop: function (event) {
       event.preventDefault()
+      this.resetOpacity()
 
       let dt = event.dataTransfer
       let files = dt.files
       let el = event.target
+
+      if (files.length <= 0) return
 
       for (let i = 0; i < 5; i++) {
         if (el !== null && !el.classList.contains('item')) {
@@ -255,35 +257,66 @@ export default {
         }
       }
 
-      if (files.length > 0) {
-        if (el !== null && el.classList.contains('item') && el.dataset.dir === 'true') {
-          this.handleFiles(files, el.querySelector('.name').innerHTML + '/')
-          return
-        }
-
-        this.handleFiles(files, '')
-      } else {
-        this.resetOpacity()
+      let base = ''
+      if (el !== null && el.classList.contains('item') && el.dataset.dir === 'true') {
+        base = el.querySelector('.name').innerHTML + '/'
       }
+
+      if (base !== '') {
+        api.fetch(this.$route.path + base)
+          .then(req => {
+            this.checkConflict(files, req.items, base)
+          })
+          .catch(error => { console.log(error) })
+
+        return
+      }
+
+      this.checkConflict(files, this.req.items, base)
     },
-    uploadInput: function (event) {
-      this.handleFiles(event.currentTarget.files, '')
+    checkConflict (files, items, base) {
+      let conflict = false
+      for (let i = 0; i < files.length; i++) {
+        let res = items.findIndex(function hasConflict (element) {
+          return (element.name === this)
+        }, files[i].name)
+
+        if (res >= 0) {
+          conflict = true
+          break
+        }
+      }
+
+      if (!conflict) {
+        this.handleFiles(files, base)
+        return
+      }
+
+      this.$store.commit('showHover', {
+        prompt: 'replace',
+        confirm: (event) => {
+          event.preventDefault()
+          this.$store.commit('closeHovers')
+          this.handleFiles(files, base, true)
+        }
+      })
     },
-    resetOpacity: function () {
+    uploadInput (event) {
+      this.checkConflict(event.currentTarget.files, this.req.items, '')
+    },
+    resetOpacity () {
       let items = document.getElementsByClassName('item')
 
       Array.from(items).forEach(file => {
         file.style.opacity = 1
       })
     },
-    handleFiles: function (files, base) {
-      this.resetOpacity()
-
+    handleFiles (files, base, overwrite = false) {
       buttons.loading('upload')
       let promises = []
 
       for (let file of files) {
-        promises.push(api.post(this.$route.path + base + file.name, file))
+        promises.push(api.post(this.$route.path + base + file.name, file, overwrite))
       }
 
       Promise.all(promises)

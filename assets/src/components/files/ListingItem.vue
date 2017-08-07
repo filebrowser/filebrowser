@@ -9,6 +9,7 @@
   @click="click"
   @dblclick="open"
   @touchstart="touchstart"
+  :data-dir="isDir"
   :aria-label="name"
   :aria-selected="isSelected">
     <div>
