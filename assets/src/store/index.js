@@ -20,7 +20,8 @@ const state = {
   selected: [],
   multiple: false,
   show: null,
-  showMessage: null
+  showMessage: null,
+  showConfirm: null
 }
 
 export default new Vuex.Store({

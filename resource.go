@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -155,6 +156,12 @@ func resourcePostPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Re
 		return http.StatusForbidden, nil
 	}
 
+	// Discard any invalid upload before returning to avoid connection
+	// reset error.
+	defer func() {
+		io.Copy(ioutil.Discard, r.Body)
+	}()
+
 	// Checks if the current request is for a directory and not a file.
 	if strings.HasSuffix(r.URL.Path, "/") {
 		// If the method is PUT, we return 405 Method not Allowed, because
@@ -171,7 +178,7 @@ func resourcePostPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Re
 	// If using POST method, we are trying to create a new file so it is not
 	// desirable to override an already existent file. Thus, we check
 	// if the file already exists. If so, we just return a 409 Conflict.
-	if r.Method == http.MethodPost {
+	if r.Method == http.MethodPost && r.Header.Get("Action") != "override" {
 		if _, err := c.User.FileSystem.Stat(r.URL.Path); err == nil {
 			return http.StatusConflict, errors.New("There is already a file on that path")
 		}

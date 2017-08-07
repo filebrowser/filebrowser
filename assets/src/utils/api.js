@@ -4,9 +4,11 @@ const ssl = (window.location.protocol === 'https:')
 
 export function removePrefix (url) {
   if (url.startsWith('/files')) {
-    return url.slice(6)
+    url = url.slice(6)
   }
 
+  if (url === '') url = '/'
+  if (url[0] !== '/') url = '/' + url
   return url
 }
 
@@ -54,7 +56,7 @@ export function rm (url) {
   })
 }
 
-export function post (url, content = '') {
+export function post (url, content = '', overwrite = false) {
   url = removePrefix(url)
 
   return new Promise((resolve, reject) => {
@@ -62,15 +64,23 @@ export function post (url, content = '') {
     request.open('POST', `${store.state.baseURL}/api/resource${url}`, true)
     request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
+    if (overwrite) {
+      request.setRequestHeader('Action', `override`)
+    }
+
     request.onload = () => {
       if (request.status === 200) {
         resolve(request.responseText)
+      } else if (request.status === 409) {
+        reject(request.status)
       } else {
         reject(request.responseText)
       }
     }
 
-    request.onerror = (error) => reject(error)
+    request.onerror = (error) => {
+      reject(error)
+    }
     request.send(content)
   })
 }

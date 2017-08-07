@@ -13,6 +13,7 @@ const mutations = {
 
     state.show = value.prompt
     state.showMessage = value.message
+    state.showConfirm = value.confirm
   },
   showError: (state, value) => {
     state.show = 'error'

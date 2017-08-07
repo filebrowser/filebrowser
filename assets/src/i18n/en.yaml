@@ -13,6 +13,7 @@ buttons:
   new: New
   next: Next
   ok: OK
+  replace: Replace
   previous: Previous
   rename: Rename
   reportIssue: Report Issue
@@ -84,6 +85,10 @@ prompts:
   newFileMessage: Write the name of the new file.
   numberDirs: Number of directories
   numberFiles: Number of files
+  replace: Replace
+  replaceMessage: >
+    One of the files you're trying to upload is conflicting because of its name.
+    Do you wish to replace the existing one?
   rename: Rename
   renameMessage: Insert a new name for
   show: Show

@@ -15,6 +15,7 @@ buttons:
   ok: OK
   previous: Anterior
   rename: Renomear
+  replace: Substituir
   reportIssue: Reportar Erro
   save: Guardar
   search: Pesquisar
@@ -86,6 +87,10 @@ prompts:
   numberFiles: Número de ficheiros
   rename: Renomear
   renameMessage: Insira um novo nome para
+  replace: Substituir
+  replaceMessage: >
+    Já existe um ficheiro com nome igual a um dos que está a tentar enviar. Deseja
+    substituir?
   show: Mostrar
   size: Tamanho
 settings:
