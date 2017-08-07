@@ -13,6 +13,7 @@ buttons:
   new: 新
   next: 下一步
   ok: 确定
+  replace: 替换
   previous: 以前
   rename: 重命名
   reportIssue: 报告问题
@@ -84,6 +85,10 @@ prompts:
   newFileMessage: 请输入新建文件的名称.
   numberDirs: 目录数
   numberFiles: 文件数
+  replace: 替换
+  replaceMessage: >
+    您尝试上传的其中一个文件, 存着名称冲突情况(同名文件).
+    是否替换现有的同名文件?
   rename: 重命名
   renameMessage: '请输入新名称, 旧名称是:'
   show: 揭示
