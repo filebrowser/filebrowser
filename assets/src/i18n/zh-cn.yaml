@@ -42,6 +42,9 @@ files:
   multipleSelectionEnabled: 启用多选模式(现在可以选择多个文件/文件夹)
   name: 名称
   size: 大小
+  sortByName: 按名称排序
+  sortBySize: 按大小排序
+  sortByLastModified: 按最后修改时间排序
 help:
   click: 选择文件或目录
   ctrl:
