@@ -17,7 +17,49 @@
 
     <div id="result">
       <div>
-        <span v-if="search.length === 0 && commands.length === 0">{{ text }}</span>
+        <template v-if="search.length === 0 && commands.length === 0">
+          <p>{{ text }}</p>
+
+          <template v-if="value.length === 0">
+            <div class="boxes">
+              <h3>{{ $t('search.types') }}</h3>
+              <div>
+                <div tabindex="0"
+                  role="button"
+                  @click="init('type:image')"
+                  :aria-label="$t('search.images')">
+                  <i class="material-icons">insert_photo</i>
+                  <p>{{ $t('search.images') }}</p>
+                </div>
+
+                <div tabindex="0"
+                  role="button"
+                  @click="init('type:audio')"
+                  :aria-label="$t('search.music')">
+                  <i class="material-icons">volume_up</i>
+                  <p>{{ $t('search.music') }}</p>
+                </div>
+
+                <div tabindex="0"
+                  role="button"
+                  @click="init('type:video')"
+                  :aria-label="$t('search.video')">
+                  <i class="material-icons">movie</i>
+                  <p>{{ $t('search.video') }}</p>
+                </div>
+
+                <div tabindex="0"
+                  role="button"
+                  @click="init('type:pdf')"
+                  :aria-label="$t('search.pdf')">
+                  <i class="material-icons">picture_as_pdf</i>
+                  <p>{{ $t('search.pdf') }}</p>
+                </div>
+              </div>
+            </div>
+          </template>
+
+        </template>
         <ul v-else-if="search.length > 0">
           <li v-for="s in search">
             <router-link @click.native="close" :to="'./' + s.path">
@@ -28,11 +70,11 @@
           </li>
         </ul>
 
-        <ul v-else-if="commands.length > 0">
-          <li v-for="c in commands">{{ c }}</li>
-        </ul>
+        <pre v-else-if="commands.length > 0">
+          <template v-for="c in commands">{{ c }}</template>
+        </pre>
       </div>
-      <p><i class="material-icons spin">autorenew</i></p>
+      <p id="renew"><i class="material-icons spin">autorenew</i></p>
     </div>
   </div>
 </template>
@@ -66,6 +108,8 @@ export default {
           this.$store.commit('setReload', true)
         }
 
+        document.body.style.overflow = 'auto'
+        this.reset()
         this.$refs.input.blur()
       }
 
@@ -74,6 +118,7 @@ export default {
       if (val === 'search') {
         this.reload = false
         this.$refs.input.focus()
+        document.body.style.overflow = 'hidden'
       }
     }
   },
@@ -123,19 +168,19 @@ export default {
   },
   methods: {
     // Sets the search to active.
-    open: function (event) {
+    open (event) {
       this.$store.commit('showHover', 'search')
     },
     // Closes the search and prevents the event
     // of propagating so it doesn't trigger the
     // click event on #search.
-    close: function (event) {
+    close (event) {
       event.stopPropagation()
       event.preventDefault()
       this.$store.commit('closeHovers')
     },
     // Checks if the current input is a supported command.
-    supported: function () {
+    supported () {
       let pieces = this.value.split(' ')
 
       for (let i = 0; i < this.user.commands.length; i++) {
@@ -146,11 +191,24 @@ export default {
 
       return false
     },
+    // Initializes the search with a default value.
+    init (string) {
+      this.value = string + ' '
+      this.$refs.input.focus()
+    },
+    // Resets the search box value.
+    reset () {
+      this.value = ''
+      this.active = false
+      this.ongoing = false
+      this.search = []
+      this.commands = []
+    },
     // When the user presses a key, if it is ESC
     // then it will close the search box. Otherwise,
     // it will set the search box to active and clean
     // the search results, as well as commands'.
-    keyup: function (event) {
+    keyup (event) {
       if (event.keyCode === 27) {
         this.close(event)
         return
@@ -160,7 +218,7 @@ export default {
       this.commands.length = 0
     },
     // Submits the input to the server and sets ongoing to true.
-    submit: function (event) {
+    submit (event) {
       this.ongoing = true
 
       let path = this.$route.path

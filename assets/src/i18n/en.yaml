@@ -159,13 +159,18 @@ sidebar:
   servedWith: Served with
   settings: Settings
 search:
-  writeToSearch: Write here to search
+  images: Images
+  music: Music
+  pdf: PDF
+  pressToExecute: Press enter to execute.
+  pressToSearch: Press enter to search.
+  search: Search...
   searchOrCommand: Search or execute a command...
   searchOrSupportedCommand: 'Search or use one of your supported commands:'
-  search: Search...
   type: Type and press enter to search.
-  pressToSearch: Press enter to search.
-  pressToExecute: Press enter to execute.
+  types: Types
+  video: Video
+  writeToSearch: Write here to search
 languages:
   en: English
   pt: Portuguese

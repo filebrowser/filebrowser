@@ -50,7 +50,7 @@ header>div div {
   position: relative;
 }
 
-header > div:last-child div {
+header>div:last-child div {
   display: flex;
 }
 
@@ -129,15 +129,19 @@ header .search-button {
 #search #result {
   visibility: visible;
   max-height: none;
-  background-color: #fff;
+  background-color: #f8f8f8;
   text-align: left;
-  color: #ccc;
   padding: 0;
+  color: rgba(0, 0, 0, 0.6);
   height: 0;
   transition: .1s ease height, .1s ease padding;
   overflow-x: hidden;
   overflow-y: auto;
   z-index: 1;
+}
+
+#search #result>div>*:first-child {
+  margin-top: 0;
 }
 
 #search.active #result {
@@ -155,15 +159,12 @@ header .search-button {
   margin-bottom: .5em;
 }
 
-#search #result div {
-  white-space: pre-wrap;
-  white-space: -moz-pre-wrap;
-  white-space: -pre-wrap;
-  white-space: -o-pre-wrap;
-  word-wrap: break-word;
+#search #result>div {
+  max-width: 45em;
+  margin: 0 auto;
 }
 
-#search #result p {
+#search #result #renew {
   width: 100%;
   text-align: center;
   display: none;
@@ -171,7 +172,7 @@ header .search-button {
   max-width: none;
 }
 
-#search.ongoing #result p {
+#search.ongoing #result #renew {
   display: block;
 }
 
@@ -179,7 +180,7 @@ header .search-button {
   color: #ccc;
 }
 
-#search.active #result > p > i {
+#search.active #result>p>i {
   text-align: center;
   margin: 0 auto;
   display: table;
@@ -211,4 +212,48 @@ header .search-button {
 
 #search:-ms-input-placeholder {
   color: rgba(255, 255, 255, .5);
+}
+
+#search .boxes {
+  border: 1px solid rgba(0, 0, 0, 0.075);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  margin: 1em 0;
+}
+
+#search .boxes h3 {
+  margin: 0;
+  font-weight: 500;
+  font-size: 1em;
+  color: #212121;
+  padding: .5em;
+}
+
+#search .boxes>div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-right: -1em;
+  margin-bottom: -1em;
+}
+
+#search .boxes>div>div {
+  background: #2196F3;
+  color: #fff;
+  text-align: center;
+  width: 10em;
+  padding: 1em;
+  cursor: pointer;
+  margin-bottom: 1em;
+  margin-right: 1em;
+  flex-grow: 1;
+}
+
+#search .boxes p {
+  margin: 1em 0 0;
+}
+
+#search .boxes i {
+  color: #fff !important;
+  font-size: 3.5em;
 }
