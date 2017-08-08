@@ -108,6 +108,7 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 		}
 
 		m, err := filemanager.New(database, filemanager.User{
+			Locale:        "en",
 			AllowCommands: true,
 			AllowEdit:     true,
 			AllowNew:      true,

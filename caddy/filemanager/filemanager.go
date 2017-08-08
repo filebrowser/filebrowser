@@ -139,6 +139,7 @@ func parse(c *caddy.Controller) ([]*config, error) {
 		}
 
 		fm, err := New(database, User{
+			Locale:        "en",
 			AllowCommands: true,
 			AllowEdit:     true,
 			AllowNew:      true,

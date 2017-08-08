@@ -143,14 +143,14 @@ const hugoJavaScript = `'use strict';
         },
         icon: 'merge_type',
         name: 'Hugo New'
-      } /* ,
+      },
       {
         click: function (event, data, route) {
-          console.log('evt')
+          window.open(data.store.state.baseURL + '/preview/')
         },
         icon: 'remove_red_eye',
         name: 'Preview'
-      } */
+      }
     ],
     prompts: [
       {
