@@ -160,11 +160,16 @@ sidebar:
   servedWith: Servido com
   settings: Configurações
 search:
+  images: Imagens
+  music: Música
+  pdf: PDF
   writeToSearch: Escreva aqui para pesquisar
   searchOrCommand: Pesquise ou execute um comando...
   searchOrSupportedCommand: 'Pesquise ou utilize um dos seus comandos:'
   search: Pesquise...
   type: Escreva e prima enter para pesquisar.
+  types: Tipos
+  video: Vídeos
   pressToSearch: Prima enter para pesquisar.
   pressToExecute: Prima enter para executar.
 languages:
