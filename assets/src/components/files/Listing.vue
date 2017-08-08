@@ -275,6 +275,10 @@ export default {
       this.checkConflict(files, this.req.items, base)
     },
     checkConflict (files, items, base) {
+      if (typeof items === 'undefined' || items === null) {
+        items = []
+      }
+
       let conflict = false
       for (let i = 0; i < files.length; i++) {
         let res = items.findIndex(function hasConflict (element) {
