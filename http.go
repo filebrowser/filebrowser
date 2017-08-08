@@ -58,6 +58,30 @@ func serveHTTP(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, 
 		return apiHandler(c, w, r)
 	}
 
+	// Checks if any plugin has an handler for this URL.
+	for p := range c.Plugins {
+		var h PluginHandler
+
+		for path, handler := range plugins[p].Handlers {
+			if strings.HasPrefix(r.URL.Path, path) {
+				h = handler
+				r.URL.Path = strings.TrimPrefix(r.URL.Path, path)
+				break
+			}
+		}
+
+		if h == nil {
+			continue
+		}
+
+		valid, _ := validateAuth(c, r)
+		if !valid {
+			return http.StatusForbidden, nil
+		}
+
+		return h(c, w, r)
+	}
+
 	// Any other request should show the index.html file.
 	w.Header().Set("x-frame-options", "SAMEORIGIN")
 	w.Header().Set("x-content-type", "nosniff")
@@ -108,7 +132,11 @@ func apiHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int,
 	}
 
 	for p := range c.Plugins {
-		code, err := plugins[p].Handler.Before(c, w, r)
+		if plugins[p].BeforeAPI == nil {
+			continue
+		}
+
+		code, err := plugins[p].BeforeAPI(c, w, r)
 		if code != 0 || err != nil {
 			return code, err
 		}
@@ -149,7 +177,11 @@ func apiHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int,
 	}
 
 	for p := range c.Plugins {
-		code, err := plugins[p].Handler.After(c, w, r)
+		if plugins[p].AfterAPI == nil {
+			continue
+		}
+
+		code, err := plugins[p].AfterAPI(c, w, r)
 		if code != 0 || err != nil {
 			return code, err
 		}

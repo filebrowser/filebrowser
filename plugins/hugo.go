@@ -2,6 +2,7 @@ package plugins
 
 import (
 	"errors"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -19,13 +20,16 @@ func init() {
 	filemanager.RegisterPlugin("hugo", filemanager.Plugin{
 		JavaScript:    hugoJavaScript,
 		CommandEvents: []string{"before_publish", "after_publish"},
+		BeforeAPI:     beforeAPI,
+		Handlers: map[string]filemanager.PluginHandler{
+			"/preview": previewHandler,
+		},
 		Permissions: []filemanager.Permission{
 			{
 				Name:  "allowPublish",
 				Value: true,
 			},
 		},
-		Handler: &hugo{},
 	})
 }
 
@@ -46,6 +50,8 @@ type Hugo struct {
 	Args []string `name:"Hugo Arguments"`
 	// Indicates if we should clean public before a new publish.
 	CleanPublic bool `name:"Clean Public"`
+	// previewPath is the temporary path for a preview
+	previewPath string
 }
 
 // Find finds the hugo executable in the path.
@@ -114,9 +120,7 @@ func (h Hugo) undraft(file string) error {
 	return nil
 }
 
-type hugo struct{}
-
-func (h hugo) Before(c *filemanager.RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func beforeAPI(c *filemanager.RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	o := c.Plugins["hugo"].(*Hugo)
 
 	// If we are using the 'magic url' for the settings, we should redirect the
@@ -223,6 +227,32 @@ func (h hugo) Before(c *filemanager.RequestContext, w http.ResponseWriter, r *ht
 	return http.StatusNotFound, nil
 }
 
-func (h hugo) After(c *filemanager.RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func previewHandler(c *filemanager.RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	h := c.Plugins["hugo"].(*Hugo)
+
+	// Get a new temporary path if there is none.
+	if h.previewPath == "" {
+		path, err := ioutil.TempDir("", "")
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		h.previewPath = path
+	}
+
+	// Build the arguments to execute Hugo: change the base URL,
+	// build the drafts and update the destination.
+	args := h.Args
+	args = append(args, "--baseURL", c.RootURL()+"/preview/")
+	args = append(args, "--buildDrafts")
+	args = append(args, "--destination", h.previewPath)
+
+	// Builds the preview.
+	if err := Run(h.Exe, args, h.Root); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	// Serves the temporary path with the preview.
+	http.FileServer(http.Dir(h.previewPath)).ServeHTTP(w, r)
 	return 0, nil
 }

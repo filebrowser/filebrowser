@@ -175,6 +175,8 @@ type Rule struct {
 	Regexp *Regexp `json:"regexp"`
 }
 
+type PluginHandler func(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
+
 // Regexp is a regular expression wrapper around native regexp.
 type Regexp struct {
 	Raw    string `json:"raw"`
@@ -185,20 +187,15 @@ type Plugin struct {
 	JavaScript    string
 	CommandEvents []string
 	Permissions   []Permission
-	Handler       PluginHandler
 	Options       interface{}
+	Handlers      map[string]PluginHandler `json:"-"`
+	BeforeAPI     PluginHandler `json:"-"`
+	AfterAPI      PluginHandler `json:"-"`
 }
 
 type Permission struct {
 	Name  string
 	Value bool
-}
-
-type PluginHandler interface {
-	// If the Plugin returns (0, nil), the executation of File Manager will procced as usual.
-	// Otherwise it will stop.
-	Before(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
-	After(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
 }
 
 func RegisterPlugin(name string, plugin Plugin) {
