@@ -20,7 +20,9 @@ buttons:
   save: Save
   search: Search
   select: Select
+  publish: Publish
   selectMultiple: Select multiple
+  schedule: Schedule
   switchView: Swicth view
   toggleSidebar: Toggle sidebar
   update: Update
@@ -93,12 +95,16 @@ prompts:
   renameMessage: Insert a new name for
   show: Show
   size: Size
+  schedule: Schedule
+  scheduleMessage: Pick a date and time to schedule the publication of this post.
+  newArchetype: Create a new post based on an archetype. Your file will be created on content folder.
 settings:
   admin: Admin
   administrator: Administrator
   allowCommands: Execute commands
-  allowEdit: Edit, rename and delete files or directories.
+  allowEdit: Edit, rename and delete files or directories
   allowNew: Create new files and directories
+  allowPublish: Publish new posts and pages
   avoidChanges: "(leave blank to avoid changes)"
   changePassword: Change Password
   commands: Commands
@@ -122,7 +128,6 @@ settings:
     You can set the user to be an administrator or choose the permissions
     individually. If you select "Administrator", all of the other options will be
     automatically checked. The management of users remains a privilege of an administrator.
-  pluginsUpdated: Plugins settings updated!
   profileSettings: Profile Settings
   ruleExample1: >
     'prevents the access to any dot file (such as .git, .gitignore) in
@@ -158,6 +163,9 @@ sidebar:
   newFolder: New folder
   servedWith: Served with
   settings: Settings
+  siteSettings: Site Settings
+  hugoNew: Hugo New
+  preview: Preview
 search:
   images: Images
   music: Music

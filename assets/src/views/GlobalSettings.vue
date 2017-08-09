@@ -15,17 +15,15 @@
 
     <h1>{{ $t('settings.globalSettings') }}</h1>
 
-    <form @submit="savePlugin" v-if="plugins.length > 0">
-      <template v-for="plugin in plugins">
-        <h2>{{ capitalize(plugin.name) }}</h2>
+    <form @submit="saveStaticGen" v-if="$store.state.staticGen.length > 0">
+      <h2>{{ capitalize($store.state.staticGen) }}</h2>
 
-        <p v-for="field in plugin.fields" :key="field.variable">
-          <label v-if="field.type !== 'checkbox'">{{ field.name }}</label>
-          <input v-if="field.type === 'text'" type="text" v-model.trim="field.value">
-          <input v-else-if="field.type === 'checkbox'" type="checkbox" v-model.trim="field.value">
-          <template v-if="field.type === 'checkbox'">{{ capitalize(field.name, 'caps') }}</template>
-        </p>
-      </template>
+      <p v-for="field in staticGen" :key="field.variable">
+        <label v-if="field.type !== 'checkbox'">{{ field.name }}</label>
+        <input v-if="field.type === 'text'" type="text" v-model.trim="field.value">
+        <input v-else-if="field.type === 'checkbox'" type="checkbox" v-model.trim="field.value">
+        <template v-if="field.type === 'checkbox'">{{ capitalize(field.name, 'caps') }}</template>
+      </p>
 
       <p><input type="submit" value="Save"></p>
     </form>
@@ -55,7 +53,7 @@ export default {
   data: function () {
     return {
       commands: [],
-      plugins: []
+      staticGen: []
     }
   },
   computed: {
@@ -64,8 +62,8 @@ export default {
   created () {
     getSettings()
       .then(settings => {
-        for (let key in settings.plugins) {
-          this.plugins.push(this.parsePlugin(key, settings.plugins[key]))
+        if (this.$store.state.staticGen.length > 0) {
+          this.parseStaticGen(settings.staticGen)
         }
 
         for (let key in settings.commands) {
@@ -108,40 +106,29 @@ export default {
         .then(() => { this.showSuccess(this.$t('settings.commandsUpdated')) })
         .catch(error => { this.showError(error) })
     },
-    savePlugin (event) {
+    saveStaticGen (event) {
       event.preventDefault()
-      let plugins = {}
+      let staticGen = {}
 
-      for (let plugin of this.plugins) {
-        let p = {}
+      for (let field of this.staticGen) {
+        staticGen[field.variable] = field.value
 
-        for (let field of plugin.fields) {
-          p[field.variable] = field.value
-
-          if (field.original === 'array') {
-            let val = field.value.split(' ')
-            if (val[0] === '') {
-              val.shift()
-            }
-
-            p[field.variable] = val
+        if (field.original === 'array') {
+          let val = field.value.split(' ')
+          if (val[0] === '') {
+            val.shift()
           }
-        }
 
-        plugins[plugin.name] = p
+          staticGen[field.variable] = val
+        }
       }
 
-      updateSettings(plugins, 'plugins')
-        .then(() => { this.showSuccess(this.$t('settings.pluginsUpdated')) })
+      updateSettings(staticGen, 'staticGen')
+        .then(() => { this.showSuccess(this.$t('settings.settingsUpdated')) })
         .catch(error => { this.showError(error) })
     },
-    parsePlugin (name, plugin) {
-      let obj = {
-        name: name,
-        fields: []
-      }
-
-      for (let option of plugin) {
+    parseStaticGen (staticgen) {
+      for (let option of staticgen) {
         let value = option.value
 
         let field = {
@@ -156,7 +143,7 @@ export default {
           field.original = 'array'
           field.value = value.join(' ')
 
-          obj.fields.push(field)
+          this.staticGen.push(field)
           continue
         }
 
@@ -167,10 +154,8 @@ export default {
             break
         }
 
-        obj.fields.push(field)
+        this.staticGen.push(field)
       }
-
-      return obj
     }
   }
 }

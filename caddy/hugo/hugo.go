@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/hacdias/filemanager"
-	"github.com/hacdias/filemanager/plugins"
 	"github.com/hacdias/fileutils"
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
@@ -112,7 +111,6 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 			AllowCommands: true,
 			AllowEdit:     true,
 			AllowNew:      true,
-			Permissions:   map[string]bool{},
 			Commands:      []string{"git", "svn", "hg"},
 			Rules: []*filemanager.Rule{{
 				Regex:  true,
@@ -128,20 +126,15 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 		}
 
 		// Initialize the default settings for Hugo.
-		hugo := &plugins.Hugo{
+		hugo := &filemanager.Hugo{
 			Root:        directory,
 			Public:      filepath.Join(directory, "public"),
 			Args:        []string{},
 			CleanPublic: true,
 		}
 
-		// Try to find the Hugo executable path.
-		if err = hugo.Find(); err != nil {
-			return nil, err
-		}
-
 		// Attaches Hugo plugin to this file manager instance.
-		err = m.ActivatePlugin("hugo", hugo)
+		err = m.EnableStaticGen(hugo)
 		if err != nil {
 			return nil, err
 		}

@@ -12,8 +12,6 @@ import (
 
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 
-	"github.com/hacdias/filemanager/plugins"
-
 	"github.com/hacdias/filemanager"
 	"github.com/hacdias/fileutils"
 	flag "github.com/spf13/pflag"
@@ -27,7 +25,7 @@ var (
 	scope         string
 	commands      string
 	logfile       string
-	plugin        string
+	staticgen     string
 	locale        string
 	port          int
 	noAuth        bool
@@ -51,7 +49,7 @@ func init() {
 	flag.BoolVar(&allowNew, "allow-new", true, "Default allow new option for new users")
 	flag.BoolVar(&noAuth, "no-auth", false, "Disables authentication")
 	flag.StringVar(&locale, "locale", "en", "Default locale for new users")
-	flag.StringVar(&plugin, "plugin", "", "Plugin you want to enable")
+	flag.StringVar(&staticgen, "staticgen", "", "Static Generator you want to enable")
 	flag.BoolVarP(&showVer, "version", "v", false, "Show version")
 }
 
@@ -65,7 +63,7 @@ func setupViper() {
 	viper.SetDefault("AllowCommmands", true)
 	viper.SetDefault("AllowEdit", true)
 	viper.SetDefault("AllowNew", true)
-	viper.SetDefault("Plugin", "")
+	viper.SetDefault("StaticGen", "")
 	viper.SetDefault("Locale", "en")
 	viper.SetDefault("NoAuth", false)
 
@@ -79,7 +77,7 @@ func setupViper() {
 	viper.BindPFlag("AllowEdit", flag.Lookup("allow-edit"))
 	viper.BindPFlag("AlowNew", flag.Lookup("allow-new"))
 	viper.BindPFlag("Locale", flag.Lookup("locale"))
-	viper.BindPFlag("Plugin", flag.Lookup("plugin"))
+	viper.BindPFlag("StaticGen", flag.Lookup("staticgen"))
 	viper.BindPFlag("NoAuth", flag.Lookup("no-auth"))
 
 	viper.SetConfigName("filemanager")
@@ -166,21 +164,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if viper.GetString("Plugin") == "hugo" {
+	if viper.GetString("StaticGen") == "hugo" {
 		// Initialize the default settings for Hugo.
-		hugo := &plugins.Hugo{
+		hugo := &filemanager.Hugo{
 			Root:        viper.GetString("Scope"),
 			Public:      filepath.Join(viper.GetString("Scope"), "public"),
 			Args:        []string{},
 			CleanPublic: true,
 		}
 
-		// Try to find the Hugo executable path.
-		if err = hugo.Find(); err != nil {
-			log.Fatal(err)
-		}
-
-		if err = fm.ActivatePlugin("hugo", hugo); err != nil {
+		if err = fm.EnableStaticGen(hugo); err != nil {
 			log.Fatal(err)
 		}
 	}
