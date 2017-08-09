@@ -1,6 +1,7 @@
 package filemanager
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"reflect"
@@ -11,12 +12,12 @@ import (
 type modifySettingsRequest struct {
 	*modifyRequest
 	Data struct {
-		Commands map[string][]string               `json:"commands"`
-		Plugins  map[string]map[string]interface{} `json:"plugins"`
+		Commands  map[string][]string    `json:"commands"`
+		StaticGen map[string]interface{} `json:"staticGen"`
 	} `json:"data"`
 }
 
-type pluginOption struct {
+type option struct {
 	Variable string      `json:"variable"`
 	Name     string      `json:"name"`
 	Value    interface{} `json:"value"`
@@ -59,8 +60,8 @@ func settingsHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 }
 
 type settingsGetRequest struct {
-	Commands map[string][]string       `json:"commands"`
-	Plugins  map[string][]pluginOption `json:"plugins"`
+	Commands  map[string][]string `json:"commands"`
+	StaticGen []option            `json:"staticGen"`
 }
 
 func settingsGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
@@ -69,19 +70,22 @@ func settingsGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 	}
 
 	result := &settingsGetRequest{
-		Commands: c.Commands,
-		Plugins:  map[string][]pluginOption{},
+		Commands:  c.Commands,
+		StaticGen: []option{},
 	}
 
-	for name, p := range c.Plugins {
-		result.Plugins[name] = []pluginOption{}
+	if c.StaticGen != nil {
+		t := reflect.TypeOf(c.StaticGen).Elem()
 
-		t := reflect.TypeOf(p).Elem()
 		for i := 0; i < t.NumField(); i++ {
-			result.Plugins[name] = append(result.Plugins[name], pluginOption{
+			if t.Field(i).Name[0] == bytes.ToLower([]byte{t.Field(i).Name[0]})[0] {
+				continue
+			}
+
+			result.StaticGen = append(result.StaticGen, option{
 				Variable: t.Field(i).Name,
 				Name:     t.Field(i).Tag.Get("name"),
-				Value:    reflect.ValueOf(p).Elem().FieldByName(t.Field(i).Name).Interface(),
+				Value:    reflect.ValueOf(c.StaticGen).Elem().FieldByName(t.Field(i).Name).Interface(),
 			})
 		}
 	}
@@ -108,18 +112,16 @@ func settingsPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 		return http.StatusOK, nil
 	}
 
-	// Update the plugins.
-	if mod.Which == "plugins" {
-		for name, plugin := range mod.Data.Plugins {
-			err = mapstructure.Decode(plugin, c.Plugins[name])
-			if err != nil {
-				return http.StatusInternalServerError, err
-			}
+	// Update the static generator options.
+	if mod.Which == "staticGen" {
+		err = mapstructure.Decode(mod.Data.StaticGen, c.StaticGen)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
 
-			err = c.db.Set("plugins", name, c.Plugins[name])
-			if err != nil {
-				return http.StatusInternalServerError, err
-			}
+		err = c.db.Set("staticgen", c.staticgen, c.StaticGen)
+		if err != nil {
+			return http.StatusInternalServerError, err
 		}
 
 		return http.StatusOK, nil

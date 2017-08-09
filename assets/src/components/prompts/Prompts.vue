@@ -12,33 +12,8 @@
     <error v-else-if="showError"></error>
     <success v-else-if="showSuccess"></success>
     <replace v-else-if="showReplace"></replace>
-
-    <template v-for="plugin in plugins">
-      <form class="prompt"
-        v-for="prompt in plugin.prompts"
-        :key="prompt.name"
-        v-if="show === prompt.name"
-        @submit="prompt.submit($event, pluginData, $route)">
-        <h3>{{ prompt.title }}</h3>
-        <p>{{ prompt.description }}</p>
-        <input v-for="input in prompt.inputs"
-          :key="input.name"
-          :type="input.type"
-          :name="input.name"
-          :placeholder="input.placeholder">
-        <div>
-          <input type="submit" class="ok"
-          :aria-label="prompt.ok"
-          :title="prompt.ok"
-          :value="prompt.ok">
-          <button class="cancel"
-            @click="$store.commit('closeHovers')"
-            :aria-label="$t('buttons.cancel')"
-            :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
-        </div>
-      </form>
-    </template>
-
+    <schedule v-else-if="show === 'schedule'"></schedule>
+    <new-archetype v-else-if="show === 'new-archetype'"></new-archetype>
     <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
   </div>
 </template>
@@ -55,7 +30,9 @@ import Error from './Error'
 import Success from './Success'
 import NewFile from './NewFile'
 import NewDir from './NewDir'
+import NewArchetype from './NewArchetype'
 import Replace from './Replace'
+import Schedule from './Schedule'
 import { mapState } from 'vuex'
 import buttons from '@/utils/buttons'
 import api from '@/utils/api'
@@ -65,6 +42,8 @@ export default {
   components: {
     Info,
     Delete,
+    NewArchetype,
+    Schedule,
     Rename,
     Error,
     Download,

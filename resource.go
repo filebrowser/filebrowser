@@ -203,10 +203,38 @@ func resourcePostPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Re
 		return errorToHTTP(err, false), err
 	}
 
+	// Check if this instance has a Static Generator and handles publishing
+	// or scheduling if it's the case.
+	if c.StaticGen != nil {
+		code, err := resourcePublishSchedule(c, w, r)
+		if code != 0 {
+			return code, err
+		}
+	}
+
 	// Writes the ETag Header.
 	etag := fmt.Sprintf(`"%x%x"`, fi.ModTime().UnixNano(), fi.Size())
 	w.Header().Set("ETag", etag)
 	return http.StatusOK, nil
+}
+
+func resourcePublishSchedule(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	publish := r.Header.Get("Publish")
+	schedule := r.Header.Get("Schedule")
+
+	if publish != "true" && schedule == "" {
+		return 0, nil
+	}
+
+	if !c.User.AllowPublish {
+		return http.StatusForbidden, nil
+	}
+
+	if publish == "true" {
+		return c.StaticGen.Publish(c, w, r)
+	}
+
+	return c.StaticGen.Schedule(c, w, r)
 }
 
 // resourcePatchHandler is the entry point for resource handler.

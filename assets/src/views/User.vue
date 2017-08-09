@@ -28,9 +28,7 @@
       <p><input type="checkbox" :disabled="admin" v-model="allowNew"> {{ $t('settings.allowNew') }}</p>
       <p><input type="checkbox" :disabled="admin" v-model="allowEdit"> {{ $t('settings.allowEdit') }}</p>
       <p><input type="checkbox" :disabled="admin" v-model="allowCommands"> {{ $t('settings.allowCommands') }}</p>
-      <p v-for="(value, key) in permissions" :key="key">
-        <input type="checkbox" :disabled="admin" v-model="permissions[key]"> {{ capitalize(key) }}
-      </p>
+      <p v-show="$store.state.staticGen.length"><input type="checkbox" :disabled="admin" v-model="allowPublish"> {{ $t('settings.allowPublish') }}</p>
 
       <h3>{{ $t('settings.userCommands') }}</h3>
       <p class="small">{{ $t('settings.userCommandsHelp') }} <i>git svn hg</i>.</p>
@@ -94,6 +92,7 @@ export default {
       allowNew: false,
       allowEdit: false,
       allowCommands: false,
+      allowPublish: false,
       permissions: {},
       password: '',
       username: '',
@@ -120,6 +119,7 @@ export default {
       this.allowCommands = true
       this.allowEdit = true
       this.allowNew = true
+      this.allowPublish = true
       for (let key in this.permissions) {
         this.permissions[key] = true
       }
@@ -140,6 +140,7 @@ export default {
         this.allowCommands = user.allowCommands
         this.allowNew = user.allowNew
         this.allowEdit = user.allowEdit
+        this.allowPublish = user.allowPublish
         this.filesystem = user.filesystem
         this.username = user.username
         this.commands = user.commands.join(' ')
@@ -183,6 +184,7 @@ export default {
       this.admin = false
       this.allowNew = false
       this.allowEdit = false
+      this.allowPublish = false
       this.permissins = {}
       this.allowCommands = false
       this.password = ''
@@ -241,6 +243,7 @@ export default {
         allowCommands: this.allowCommands,
         allowNew: this.allowNew,
         allowEdit: this.allowEdit,
+        allowPublish: this.allowPublish,
         permissions: this.permissions,
         css: this.css,
         locale: this.locale,

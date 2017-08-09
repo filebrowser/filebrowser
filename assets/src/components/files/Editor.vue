@@ -17,7 +17,7 @@ import buttons from '@/utils/buttons'
 export default {
   name: 'editor',
   computed: {
-    ...mapState(['req']),
+    ...mapState(['req', 'schedule']),
     hasMetadata: function () {
       return (this.req.metadata !== undefined && this.req.metadata !== null)
     }
@@ -32,10 +32,20 @@ export default {
   created () {
     window.addEventListener('keydown', this.keyEvent)
     document.getElementById('save-button').addEventListener('click', this.save)
+
+    let publish = document.getElementById('publish-button')
+    if (publish !== null) {
+      publish.addEventListener('click', this.publish)
+    }
   },
   beforeDestroy () {
     window.removeEventListener('keydown', this.keyEvent)
     document.getElementById('save-button').removeEventListener('click', this.save)
+
+    let publish = document.getElementById('publish-button')
+    if (publish !== null) {
+      publish.removeEventListener('click', this.publish)
+    }
   },
   mounted: function () {
     if (this.req.content === undefined || this.req.content === null) {
@@ -102,22 +112,30 @@ export default {
         this.metalang = 'toml'
       }
     },
+    // Publishes the file.
+    publish (event) {
+      this.save(event, true)
+    },
     // Saves the file.
-    save () {
-      buttons.loading('save')
+    save (event, regenerate = false) {
+      let button = regenerate ? 'publish' : 'save'
+      if (this.schedule !== '') button = 'schedule'
       let content = this.content.getValue()
+      buttons.loading(button)
 
       if (this.hasMetadata) {
         content = this.metadata.getValue() + '\n\n' + content
       }
 
-      api.put(this.$route.path, content)
+      api.put(this.$route.path, content, regenerate, this.schedule)
         .then(() => {
-          buttons.done('save')
+          buttons.done(button)
+          this.$store.commit('setSchedule', '')
         })
         .catch(error => {
-          buttons.done('save')
+          buttons.done(button)
           this.$store.commit('showError', error)
+          this.$store.commit('setSchedule', '')
         })
     }
   }

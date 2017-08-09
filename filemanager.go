@@ -78,7 +78,6 @@ var (
 	errEmptyScope         = errors.New("scope is empty")
 	errWrongDataType      = errors.New("wrong data type")
 	errInvalidUpdateField = errors.New("invalid field to update")
-	plugins               = map[string]Plugin{}
 )
 
 // FileManager is a file manager instance. It should be creating using the
@@ -107,6 +106,11 @@ type FileManager struct {
 	// there will only exist one user, called "admin".
 	NoAuth bool
 
+	// staticgen is the name of the current static website generator.
+	staticgen string
+	// StaticGen is the static websit generator handler.
+	StaticGen StaticGen
+
 	// The Default User needed to build the New User page.
 	DefaultUser *User
 
@@ -115,9 +119,15 @@ type FileManager struct {
 
 	// A map of events to a slice of commands.
 	Commands map[string][]string
+}
 
-	// The options of the plugins that have been plugged into this instance.
-	Plugins map[string]interface{}
+type StaticGen interface {
+	SettingsPath() string
+
+	Hook(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
+	Preview(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
+	Publish(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
+	Schedule(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
 }
 
 // Command is a command function.
@@ -151,10 +161,10 @@ type User struct {
 	Locale string `json:"locale"`
 
 	// These indicate if the user can perform certain actions.
-	AllowNew      bool            `json:"allowNew"`      // Create files and folders
-	AllowEdit     bool            `json:"allowEdit"`     // Edit/rename files
-	AllowCommands bool            `json:"allowCommands"` // Execute commands
-	Permissions   map[string]bool `json:"permissions"`   // Permissions added by plugins
+	AllowNew      bool `json:"allowNew"`      // Create files and folders
+	AllowEdit     bool `json:"allowEdit"`     // Edit/rename files
+	AllowCommands bool `json:"allowCommands"` // Execute commands
+	AllowPublish  bool `json:"allowPublish"`  // Publish content (to use with static gen)
 
 	// Commands is the list of commands the user can execute.
 	Commands []string `json:"commands"`
@@ -175,35 +185,10 @@ type Rule struct {
 	Regexp *Regexp `json:"regexp"`
 }
 
-type PluginHandler func(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
-
 // Regexp is a regular expression wrapper around native regexp.
 type Regexp struct {
 	Raw    string `json:"raw"`
 	regexp *regexp.Regexp
-}
-
-type Plugin struct {
-	JavaScript    string
-	CommandEvents []string
-	Permissions   []Permission
-	Options       interface{}
-	Handlers      map[string]PluginHandler `json:"-"`
-	BeforeAPI     PluginHandler `json:"-"`
-	AfterAPI      PluginHandler `json:"-"`
-}
-
-type Permission struct {
-	Name  string
-	Value bool
-}
-
-func RegisterPlugin(name string, plugin Plugin) {
-	if _, ok := plugins[name]; ok {
-		panic(name + " plugin is already registred")
-	}
-
-	plugins[name] = plugin
 }
 
 // DefaultUser is used on New, when no 'base' user is provided.
@@ -211,7 +196,7 @@ var DefaultUser = User{
 	AllowCommands: true,
 	AllowEdit:     true,
 	AllowNew:      true,
-	Permissions:   map[string]bool{},
+	AllowPublish:  true,
 	Commands:      []string{},
 	Rules:         []*Rule{},
 	CSS:           "",
@@ -228,9 +213,8 @@ func New(database string, base User) (*FileManager, error) {
 	// Creates a new File Manager instance with the Users
 	// map and Assets box.
 	m := &FileManager{
-		Users:   map[string]*User{},
-		Plugins: map[string]interface{}{},
-		assets:  rice.MustFindBox("./assets/dist"),
+		Users:  map[string]*User{},
+		assets: rice.MustFindBox("./assets/dist"),
 	}
 
 	// Tries to open a database on the location provided. This
@@ -264,8 +248,10 @@ func New(database string, base User) (*FileManager, error) {
 	err = db.Get("config", "commands", &m.Commands)
 	if err != nil && err == storm.ErrNotFound {
 		m.Commands = map[string][]string{
-			"before_save": {},
-			"after_save":  {},
+			"before_save":    {},
+			"after_save":     {},
+			"before_publish": {},
+			"after_publish":  {},
 		}
 		err = db.Set("config", "commands", m.Commands)
 	}
@@ -346,95 +332,7 @@ func (m *FileManager) SetBaseURL(url string) {
 	m.BaseURL = strings.TrimSuffix(url, "/")
 }
 
-// ActivatePlugin activates a plugin to a File Manager instance and
-// loads its options from the database.
-func (m *FileManager) ActivatePlugin(name string, options interface{}) error {
-	if reflect.TypeOf(options).Kind() != reflect.Ptr {
-		return errors.New("options should be a pointer to interface, not interface")
-	}
-
-	var plugin Plugin
-
-	if p, ok := plugins[name]; !ok {
-		plugin = p
-		return errors.New(name + " plugin is not registred")
-	}
-
-	if _, ok := m.Plugins[name]; ok {
-		return errors.New(name + " plugin is already activated")
-	}
-
-	err := m.db.Get("plugins", name, &plugin)
-	if err != nil && err == storm.ErrNotFound {
-		err = m.db.Set("plugin", name, plugin)
-	}
-
-	if err != nil {
-		return err
-	}
-
-	// Register the command event hooks.
-	for _, evt := range plugin.CommandEvents {
-		if _, ok := m.Commands[evt]; ok {
-			continue
-		}
-
-		m.Commands[evt] = []string{}
-	}
-
-	err = m.db.Set("config", "commands", m.Commands)
-	if err != nil {
-		return err
-	}
-
-	// Register the user permissions.
-	for _, perm := range plugin.Permissions {
-		err = m.registerPermission(perm.Name, perm.Value)
-		if err != nil {
-			return err
-		}
-	}
-
-	m.Plugins[name] = options
-	return nil
-}
-
-// registerPermission registers a new user permission and adds it to every
-// user with it default's 'value'. If the user is an admin, it will
-// be true.
-func (m *FileManager) registerPermission(name string, value bool) error {
-	if _, ok := m.DefaultUser.Permissions[name]; ok {
-		return nil
-	}
-
-	// Add the default value for this permission on the default user.
-	m.DefaultUser.Permissions[name] = value
-
-	for _, u := range m.Users {
-		// Bypass the user if it is already defined.
-		if _, ok := u.Permissions[name]; ok {
-			continue
-		}
-
-		if u.Permissions == nil {
-			u.Permissions = m.DefaultUser.Permissions
-		}
-
-		if u.Admin {
-			u.Permissions[name] = true
-		}
-
-		err := m.db.Save(u)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
-// Compatible with http.Handler.
+// ServeHTTP handles the request.
 func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	code, err := serveHTTP(&RequestContext{
 		FileManager: m,
@@ -456,6 +354,34 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		w.Write([]byte(err.Error()))
 	}
+}
+
+func (m *FileManager) EnableStaticGen(data StaticGen) error {
+	if reflect.TypeOf(data).Kind() != reflect.Ptr {
+		return errors.New("data should be a pointer to interface, not interface")
+	}
+
+	if h, ok := data.(*Hugo); ok {
+		return m.enableHugo(h)
+	}
+
+	return errors.New("unknown static website generator")
+}
+
+func (m *FileManager) enableHugo(hugo *Hugo) error {
+	if err := hugo.find(); err != nil {
+		return err
+	}
+
+	m.staticgen = "hugo"
+	m.StaticGen = hugo
+
+	err := m.db.Get("staticgen", "hugo", hugo)
+	if err != nil && err == storm.ErrNotFound {
+		err = m.db.Set("staticgen", "hugo", *hugo)
+	}
+
+	return nil
 }
 
 // Allowed checks if the user has permission to access a directory/file.

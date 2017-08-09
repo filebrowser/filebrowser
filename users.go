@@ -344,10 +344,7 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 		u.Password = suser.Password
 	}
 
-	// Default permissions if current are nil.
-	if u.Permissions == nil {
-		u.Permissions = c.DefaultUser.Permissions
-	}
+
 
 	// Updates the whole User struct because we always are supposed
 	// to send a new entire object.

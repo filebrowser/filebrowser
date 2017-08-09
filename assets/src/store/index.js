@@ -8,13 +8,14 @@ Vue.use(Vuex)
 const state = {
   user: {},
   req: {},
-  plugins: window.plugins || [],
   clipboard: {
     key: '',
     items: []
   },
+  staticGen: document.querySelector('meta[name="staticgen"]').getAttribute('content'),
   baseURL: document.querySelector('meta[name="base"]').getAttribute('content'),
   jwt: '',
+  schedule: '',
   loading: false,
   reload: false,
   selected: [],

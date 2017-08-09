@@ -17,10 +17,32 @@
       </button>
     </div>
 
-    <div v-for="plugin in plugins" :key="plugin.name">
-      <button v-for="action in plugin.sidebar" @click="action.click($event, pluginData, $route)" :aria-label="action.name" :title="action.name" :key="action.name" class="action">
-        <i class="material-icons">{{ action.icon }}</i>
-        <span>{{ action.name }}</span>
+    <div v-if="staticGen.length > 0">
+      <router-link to="/files/settings"
+        :aria-label="$t('sidebar.siteSettings')"
+        :title="$t('sidebar.siteSettings')"
+        class="action">
+        <i class="material-icons">settings</i>
+        <span>{{ $t('sidebar.siteSettings') }}</span>
+      </router-link>
+
+      <template v-if="staticGen === 'hugo'">
+        <button class="action"
+          :aria-label="$t('sidebar.hugoNew')"
+          :title="$t('sidebar.hugoNew')"
+          v-if="user.allowNew"
+          @click="$store.commit('showHover', 'new-archetype')">
+          <i class="material-icons">merge_type</i>
+          <span>{{ $t('sidebar.hugoNew') }}</span>
+        </button>
+      </template>
+
+      <button class="action"
+        :aria-label="$t('sidebar.preview')"
+        :title="$t('sidebar.preview')"
+        @click="preview">
+        <i class="material-icons">remove_red_eye</i>
+        <span>{{ $t('sidebar.preview') }}</span>
       </button>
     </div>
 
@@ -38,7 +60,6 @@
 
     <p class="credits">
       <span>{{ $t('sidebar.servedWith') }} <a rel="noopener noreferrer" href="https://github.com/hacdias/filemanager">File Manager</a>.</span>
-      <span v-for="plugin in plugins" :key="plugin.name" v-html="plugin.credits"><br></span>
       <span><a @click="help">{{ $t('sidebar.help') }}</a></span>
     </p>
   </nav>
@@ -47,30 +68,21 @@
 <script>
 import {mapState} from 'vuex'
 import auth from '@/utils/auth'
-import buttons from '@/utils/buttons'
-import api from '@/utils/api'
 
 export default {
   name: 'sidebar',
-  data: function () {
-    return {
-      pluginData: {
-        api,
-        buttons,
-        'store': this.$store,
-        'router': this.$router
-      }
-    }
-  },
   computed: {
-    ...mapState(['user', 'plugins']),
+    ...mapState(['user', 'staticGen']),
     active () {
       return this.$store.state.show === 'sidebar'
     }
   },
   methods: {
-    help: function () {
+    help () {
       this.$store.commit('showHover', 'help')
+    },
+    preview () {
+      window.open(this.$store.state.baseURL + '/preview/')
     },
     logout: auth.logout
   }

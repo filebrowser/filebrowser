@@ -85,13 +85,18 @@ export function post (url, content = '', overwrite = false) {
   })
 }
 
-export function put (url, content = '') {
+export function put (url, content = '', publish = false, date = '') {
   url = removePrefix(url)
 
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('PUT', `${store.state.baseURL}/api/resource${url}`, true)
     request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    request.setRequestHeader('Publish', publish)
+
+    if (date !== '') {
+      request.setRequestHeader('Schedule', date)
+    }
 
     request.onload = () => {
       if (request.status === 200) {

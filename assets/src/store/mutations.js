@@ -32,6 +32,9 @@ const mutations = {
   setJWT: (state, value) => (state.jwt = value),
   multiple: (state, value) => (state.multiple = value),
   addSelected: (state, value) => (state.selected.push(value)),
+  addPlugin: (state, value) => {
+    state.plugins.push(value)
+  },
   removeSelected: (state, value) => {
     let i = state.selected.indexOf(value)
     if (i === -1) return
@@ -53,6 +56,9 @@ const mutations = {
   resetClipboard: (state) => {
     state.clipboard.key = ''
     state.clipboard.items = []
+  },
+  setSchedule: (state, value) => {
+    state.schedule = value
   }
 }
 

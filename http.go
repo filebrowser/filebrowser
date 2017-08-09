@@ -58,28 +58,11 @@ func serveHTTP(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, 
 		return apiHandler(c, w, r)
 	}
 
-	// Checks if any plugin has an handler for this URL.
-	for p := range c.Plugins {
-		var h PluginHandler
-
-		for path, handler := range plugins[p].Handlers {
-			if strings.HasPrefix(r.URL.Path, path) {
-				h = handler
-				r.URL.Path = strings.TrimPrefix(r.URL.Path, path)
-				break
-			}
-		}
-
-		if h == nil {
-			continue
-		}
-
-		valid, _ := validateAuth(c, r)
-		if !valid {
-			return http.StatusForbidden, nil
-		}
-
-		return h(c, w, r)
+	// If it is a request to the preview and a static website generator is
+	// active, build the preview.
+	if strings.HasPrefix(r.URL.Path, "/preview") && c.StaticGen != nil {
+		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/preview")
+		return c.StaticGen.Preview(c, w, r)
 	}
 
 	// Any other request should show the index.html file.
@@ -131,12 +114,15 @@ func apiHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int,
 		return http.StatusForbidden, nil
 	}
 
-	for p := range c.Plugins {
-		if plugins[p].BeforeAPI == nil {
-			continue
+	if c.StaticGen != nil {
+		// If we are using the 'magic url' for the settings,
+		// we should redirect the request for the acutual path.
+		if r.URL.Path == "/settings" {
+			r.URL.Path = c.StaticGen.SettingsPath()
 		}
 
-		code, err := plugins[p].BeforeAPI(c, w, r)
+		// Executes the Static website generator hook.
+		code, err := c.StaticGen.Hook(c, w, r)
 		if code != 0 || err != nil {
 			return code, err
 		}
@@ -170,21 +156,6 @@ func apiHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int,
 		code, err = settingsHandler(c, w, r)
 	default:
 		code = http.StatusNotFound
-	}
-
-	if code >= 300 || err != nil {
-		return code, err
-	}
-
-	for p := range c.Plugins {
-		if plugins[p].AfterAPI == nil {
-			continue
-		}
-
-		code, err := plugins[p].AfterAPI(c, w, r)
-		if code != 0 || err != nil {
-			return code, err
-		}
 	}
 
 	return code, err
@@ -227,14 +198,9 @@ func renderFile(w http.ResponseWriter, file string, contentType string, c *Reque
 	tpl := template.Must(template.New("file").Parse(file))
 	w.Header().Set("Content-Type", contentType+"; charset=utf-8")
 
-	var javascript = ""
-	for name := range c.Plugins {
-		javascript += plugins[name].JavaScript + "\n"
-	}
-
 	err := tpl.Execute(w, map[string]interface{}{
-		"BaseURL":    c.RootURL(),
-		"JavaScript": template.JS(javascript),
+		"BaseURL":   c.RootURL(),
+		"StaticGen": c.staticgen,
 	})
 	if err != nil {
 		return http.StatusInternalServerError, err

@@ -16,19 +16,11 @@
         <i class="material-icons">save</i>
       </button>
 
-      <div v-for="plugin in plugins" :key="plugin.name">
-        <button class="action"
-          v-for="action in plugin.header.visible"
-          v-if="action.if(pluginData, $route)"
-          @click="action.click($event, pluginData, $route)"
-          :aria-label="action.name"
-          :id="action.id"
-          :title="action.name"
-          :key="action.name">
-          <i class="material-icons">{{ action.icon }}</i>
-          <span>{{ action.name }}</span>
+      <template v-if="staticGen.length > 0">
+        <button v-show="showPublishButton" :aria-label="$t('buttons.publish')" :title="$t('buttons.publish')" class="action" id="publish-button">
+          <i class="material-icons">send</i>
         </button>
-      </div>
+      </template>
 
       <button @click="openMore" id="more" :aria-label="$t('buttons.more')" :title="$t('buttons.more')" class="action">
         <i class="material-icons">more_vert</i>
@@ -52,19 +44,9 @@
           <delete-button v-show="showDeleteButton"></delete-button>
         </div>
 
-        <div v-for="plugin in plugins" :key="plugin.name">
-          <button class="action"
-            v-for="action in plugin.header.hidden"
-            v-if="action.if(pluginData, $route)"
-            @click="action.click($event, pluginData, $route)"
-            :id="action.id"
-            :aria-label="action.name"
-            :title="action.name"
-            :key="action.name">
-            <i class="material-icons">{{ action.icon }}</i>
-            <span>{{ action.name }}</span>
-          </button>
-        </div>
+        <template v-if="staticGen.length > 0">
+          <schedule-button v-show="showPublishButton"></schedule-button>
+        </template>
 
         <switch-button v-show="showSwitchButton"></switch-button>
         <download-button v-show="showCommonButton"></download-button>
@@ -91,6 +73,7 @@ import DownloadButton from './buttons/Download'
 import SwitchButton from './buttons/SwitchView'
 import MoveButton from './buttons/Move'
 import CopyButton from './buttons/Copy'
+import ScheduleButton from './buttons/Schedule'
 import {mapGetters, mapState} from 'vuex'
 import * as api from '@/utils/api'
 import buttons from '@/utils/buttons'
@@ -106,7 +89,8 @@ export default {
     CopyButton,
     UploadButton,
     SwitchButton,
-    MoveButton
+    MoveButton,
+    ScheduleButton
   },
   data: function () {
     return {
@@ -134,7 +118,7 @@ export default {
       'loading',
       'reload',
       'multiple',
-      'plugins'
+      'staticGen'
     ]),
     isMobile () {
       return this.width <= 736
@@ -147,6 +131,9 @@ export default {
     },
     showSaveButton () {
       return (this.req.kind === 'editor' && !this.loading)
+    },
+    showPublishButton () {
+      return (this.req.kind === 'editor' && !this.loading && this.user.allowPublish)
     },
     showSwitchButton () {
       return this.req.kind === 'listing' && this.$route.name === 'Files' && !this.loading
