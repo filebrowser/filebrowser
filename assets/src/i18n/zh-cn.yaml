@@ -152,13 +152,18 @@ sidebar:
   servedWith: 服务提供
   settings: 设置
 search:
-  writeToSearch: 请输入要搜索的内容
+  images: 图像
+  music: 音乐
+  pdf: PDF
+  pressToExecute: 按 Enter 键(回车)执行.
+  pressToSearch: 按 Enter 键(回车)进行搜索.
+  search: 搜索...
   searchOrCommand: 搜索或者执行命令(Linux 代码)...
   searchOrSupportedCommand: '搜索或使用您支持使用的命令(一次只能执行一个命令):'
-  search: 搜索...
   type: 键入并按 Enter 键(回车)进行搜索.
-  pressToSearch: 按 Enter 键(回车)进行搜索.
-  pressToExecute: 按 Enter 键(回车)执行.
+  types: 类型
+  video: 视频
+  writeToSearch: 请输入要搜索的内容
 languages:
   en: English
   pt: Portuguese
