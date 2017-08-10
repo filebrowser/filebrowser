@@ -289,6 +289,7 @@ func New(database string, base User) (*FileManager, error) {
 		u.AllowCommands = true
 		u.AllowNew = true
 		u.AllowEdit = true
+		u.AllowPublish = true
 
 		// Saves the user to the database.
 		if err := db.Save(&u); err != nil {
@@ -365,20 +366,48 @@ func (m *FileManager) EnableStaticGen(data StaticGen) error {
 		return m.enableHugo(h)
 	}
 
+	if j, ok := data.(*Jekyll); ok {
+		return m.enableJekyll(j)
+	}
+
 	return errors.New("unknown static website generator")
 }
 
-func (m *FileManager) enableHugo(hugo *Hugo) error {
-	if err := hugo.find(); err != nil {
+func (m *FileManager) enableHugo(h *Hugo) error {
+	if err := h.find(); err != nil {
 		return err
 	}
 
 	m.staticgen = "hugo"
-	m.StaticGen = hugo
+	m.StaticGen = h
 
-	err := m.db.Get("staticgen", "hugo", hugo)
+	err := m.db.Get("staticgen", "hugo", h)
 	if err != nil && err == storm.ErrNotFound {
-		err = m.db.Set("staticgen", "hugo", *hugo)
+		err = m.db.Set("staticgen", "hugo", *h)
+	}
+
+	return nil
+}
+
+func (m *FileManager) enableJekyll(j *Jekyll) error {
+	if err := j.find(); err != nil {
+		return err
+	}
+
+	if len(j.Args) == 0 {
+		j.Args = []string{"build"}
+	}
+
+	if j.Args[0] != "build" {
+		j.Args = append([]string{"build"}, j.Args...)
+	}
+
+	m.staticgen = "jekyll"
+	m.StaticGen = j
+
+	err := m.db.Get("staticgen", "jekyll", j)
+	if err != nil && err == storm.ErrNotFound {
+		err = m.db.Set("staticgen", "jekyll", *j)
 	}
 
 	return nil

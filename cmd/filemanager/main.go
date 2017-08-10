@@ -32,6 +32,7 @@ var (
 	allowCommands bool
 	allowEdit     bool
 	allowNew      bool
+	allowPublish  bool
 	showVer       bool
 	version       = "master"
 )
@@ -46,6 +47,7 @@ func init() {
 	flag.StringVar(&commands, "commands", "git svn hg", "Default commands option for new users")
 	flag.BoolVar(&allowCommands, "allow-commands", true, "Default allow commands option for new users")
 	flag.BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option for new users")
+	flag.BoolVar(&allowPublish, "allow-publish", true, "Default allow publish option for new users")
 	flag.BoolVar(&allowNew, "allow-new", true, "Default allow new option for new users")
 	flag.BoolVar(&noAuth, "no-auth", false, "Disables authentication")
 	flag.StringVar(&locale, "locale", "en", "Default locale for new users")
@@ -63,6 +65,7 @@ func setupViper() {
 	viper.SetDefault("AllowCommmands", true)
 	viper.SetDefault("AllowEdit", true)
 	viper.SetDefault("AllowNew", true)
+	viper.SetDefault("AllowPublish", true)
 	viper.SetDefault("StaticGen", "")
 	viper.SetDefault("Locale", "en")
 	viper.SetDefault("NoAuth", false)
@@ -76,6 +79,7 @@ func setupViper() {
 	viper.BindPFlag("AllowCommands", flag.Lookup("allow-commands"))
 	viper.BindPFlag("AllowEdit", flag.Lookup("allow-edit"))
 	viper.BindPFlag("AlowNew", flag.Lookup("allow-new"))
+	viper.BindPFlag("AllowPublish", flag.Lookup("allow-publish"))
 	viper.BindPFlag("Locale", flag.Lookup("locale"))
 	viper.BindPFlag("StaticGen", flag.Lookup("staticgen"))
 	viper.BindPFlag("NoAuth", flag.Lookup("no-auth"))
@@ -149,6 +153,7 @@ func main() {
 		AllowCommands: viper.GetBool("AllowCommands"),
 		AllowEdit:     viper.GetBool("AllowEdit"),
 		AllowNew:      viper.GetBool("AllowNew"),
+		AllowPublish:  viper.GetBool("AllowPublish"),
 		Commands:      viper.GetStringSlice("Commands"),
 		Rules:         []*filemanager.Rule{},
 		Locale:        viper.GetString("Locale"),
@@ -164,8 +169,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if viper.GetString("StaticGen") == "hugo" {
-		// Initialize the default settings for Hugo.
+	switch viper.GetString("StaticGen") {
+	case "hugo":
 		hugo := &filemanager.Hugo{
 			Root:        viper.GetString("Scope"),
 			Public:      filepath.Join(viper.GetString("Scope"), "public"),
@@ -174,6 +179,17 @@ func main() {
 		}
 
 		if err = fm.EnableStaticGen(hugo); err != nil {
+			log.Fatal(err)
+		}
+	case "jekyll":
+		jekyll := &filemanager.Jekyll{
+			Root:        viper.GetString("Scope"),
+			Public:      filepath.Join(viper.GetString("Scope"), "_site"),
+			Args:        []string{"build"},
+			CleanPublic: true,
+		}
+
+		if err = fm.EnableStaticGen(jekyll); err != nil {
 			log.Fatal(err)
 		}
 	}

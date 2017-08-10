@@ -1,4 +1,4 @@
-package hugo
+package jekyll
 
 import (
 	"crypto/md5"
@@ -36,7 +36,7 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 	)
 
 	for c.Next() {
-		// hugo [directory] [admin] {
+		// jekyll [directory] [admin] {
 		// 		database path
 		// }
 		directory := "."
@@ -79,7 +79,7 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 
 		caddyConf := httpserver.GetConfig(c)
 
-		path := filepath.Join(caddy.AssetsPath(), "hugo")
+		path := filepath.Join(caddy.AssetsPath(), "jekyll")
 		err := os.MkdirAll(path, 0700)
 		if err != nil {
 			return nil, err
@@ -92,7 +92,7 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 		}
 
 		// If there is no database path on the settings,
-		// store one in .caddy/hugo/{name}.db.
+		// store one in .caddy/jekyll/{name}.db.
 		if database == "" {
 			// The name of the database is the hashed value of a string composed
 			// by the host, address path and the baseurl of this File Manager
@@ -102,7 +102,7 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 			sha := hex.EncodeToString(hasher.Sum(nil))
 			database = filepath.Join(path, sha+".db")
 
-			fmt.Println("[WARNING] A database is going to be created for your Hugo instace at " + database +
+			fmt.Println("[WARNING] A database is going to be created for your Jekyll instace at " + database +
 				". It is highly recommended that you set the 'database' option to '" + sha + ".db'\n")
 		}
 
@@ -126,16 +126,16 @@ func parse(c *caddy.Controller) ([]*filemanager.FileManager, error) {
 			return nil, err
 		}
 
-		// Initialize the default settings for Hugo.
-		hugo := &filemanager.Hugo{
+		// Initialize the default settings for Jekyll.
+		jekyll := &filemanager.Jekyll{
 			Root:        directory,
-			Public:      filepath.Join(directory, "public"),
+			Public:      filepath.Join(directory, "_site"),
 			Args:        []string{},
 			CleanPublic: true,
 		}
 
 		// Attaches Hugo plugin to this file manager instance.
-		err = m.EnableStaticGen(hugo)
+		err = m.EnableStaticGen(jekyll)
 		if err != nil {
 			return nil, err
 		}
@@ -165,7 +165,7 @@ func (p plugin) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 }
 
 func init() {
-	caddy.RegisterPlugin("hugo", caddy.Plugin{
+	caddy.RegisterPlugin("jekyll", caddy.Plugin{
 		ServerType: "http",
 		Action:     setup,
 	})
