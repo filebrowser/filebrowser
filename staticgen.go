@@ -16,8 +16,6 @@ import (
 )
 
 var (
-	// ErrHugoNotFound ...
-	ErrHugoNotFound = errors.New("It seems that tou don't have 'hugo' on your PATH")
 	// ErrUnsupportedFileType ...
 	ErrUnsupportedFileType = errors.New("The type of the provided file isn't supported for this action")
 )
@@ -119,7 +117,6 @@ func (h Hugo) Publish(c *RequestContext, w http.ResponseWriter, r *http.Request)
 		if err := h.undraft(filename); err != nil {
 			return http.StatusInternalServerError, err
 		}
-
 	}
 
 	// Regenerates the file
@@ -219,7 +216,138 @@ func (h Hugo) undraft(file string) error {
 func (h *Hugo) find() error {
 	var err error
 	if h.Exe, err = exec.LookPath("hugo"); err != nil {
-		return ErrHugoNotFound
+		return err
+	}
+
+	return nil
+}
+
+// Jekyll is the Jekyll static website generator.
+type Jekyll struct {
+	// Website root
+	Root string `name:"Website Root"`
+	// Public folder
+	Public string `name:"Public Directory"`
+	// Jekyll executable path
+	Exe string `name:"Executable"`
+	// Jekyll arguments
+	Args []string `name:"Arguments"`
+	// Indicates if we should clean public before a new publish.
+	CleanPublic bool `name:"Clean Public"`
+	// previewPath is the temporary path for a preview
+	previewPath string
+}
+
+// SettingsPath retrieves the correct settings path.
+func (j Jekyll) SettingsPath() string {
+	return "/_config.yml"
+}
+
+// Hook is the pre-api handler.
+func (j Jekyll) Hook(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	return 0, nil
+}
+
+// Publish publishes a post.
+func (j Jekyll) Publish(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	filename := filepath.Join(string(c.User.FileSystem), r.URL.Path)
+
+	// Before save command handler.
+	if err := c.Runner("before_publish", filename); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	// We only run undraft command if it is a file.
+	if err := j.undraft(filename); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	// Regenerates the file
+	j.run()
+
+	// Executed the before publish command.
+	if err := c.Runner("before_publish", filename); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return 0, nil
+}
+
+// Schedule schedules a post.
+func (j Jekyll) Schedule(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	t, err := time.Parse("2006-01-02T15:04", r.Header.Get("Schedule"))
+	path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
+	path = filepath.Clean(path)
+
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	scheduler := cron.New()
+	scheduler.AddFunc(t.Format("05 04 15 02 01 *"), func() {
+		if err := j.undraft(path); err != nil {
+			log.Printf(err.Error())
+		}
+
+		j.run()
+	})
+
+	scheduler.Start()
+	return http.StatusOK, nil
+}
+
+// Preview handles the preview path.
+func (j *Jekyll) Preview(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	// Get a new temporary path if there is none.
+	if j.previewPath == "" {
+		path, err := ioutil.TempDir("", "")
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		j.previewPath = path
+	}
+
+	// Build the arguments to execute Hugo: change the base URL,
+	// build the drafts and update the destination.
+	args := j.Args
+	args = append(args, "--baseurl", c.RootURL()+"/preview/")
+	args = append(args, "--drafts")
+	args = append(args, "--destination", j.previewPath)
+
+	// Builds the preview.
+	if err := runCommand(j.Exe, args, j.Root); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	// Serves the temporary path with the preview.
+	http.FileServer(http.Dir(j.previewPath)).ServeHTTP(w, r)
+	return 0, nil
+}
+
+func (j Jekyll) run() {
+	// If the CleanPublic option is enabled, clean it.
+	if j.CleanPublic {
+		os.RemoveAll(j.Public)
+	}
+
+	if err := runCommand(j.Exe, j.Args, j.Root); err != nil {
+		log.Println(err)
+	}
+}
+
+func (j Jekyll) undraft(file string) error {
+	if !strings.Contains(file, "_drafts") {
+		return nil
+	}
+
+	return os.Rename(file, strings.Replace(file, "_drafts", "_posts", 1))
+}
+
+func (j *Jekyll) find() error {
+	var err error
+	if j.Exe, err = exec.LookPath("jekyll"); err != nil {
+		return err
 	}
 
 	return nil

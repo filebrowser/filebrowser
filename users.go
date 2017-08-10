@@ -221,6 +221,7 @@ func checkFS(path string) (int, error) {
 			return http.StatusInternalServerError, err
 		}
 
+		return 0, nil
 	}
 
 	if !info.IsDir() {
