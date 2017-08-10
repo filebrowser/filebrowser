@@ -5,13 +5,16 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/hacdias/fileutils"
+	"github.com/robfig/cron"
 )
 
 // sanitizeURL sanitizes the URL to prevent path transversal
@@ -231,10 +234,45 @@ func resourcePublishSchedule(c *RequestContext, w http.ResponseWriter, r *http.R
 	}
 
 	if publish == "true" {
-		return c.StaticGen.Publish(c, w, r)
+		return resourcePublish(c, w, r)
 	}
 
-	return c.StaticGen.Schedule(c, w, r)
+	t, err := time.Parse("2006-01-02T15:04", schedule)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	scheduler := cron.New()
+	scheduler.AddFunc(t.Format("05 04 15 02 01 *"), func() {
+		_, err := resourcePublish(c, w, r)
+		if err != nil {
+			log.Print(err)
+		}
+	})
+
+	scheduler.Start()
+	return http.StatusOK, nil
+}
+
+func resourcePublish(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
+
+	// Before save command handler.
+	if err := c.Runner("before_publish", path); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	code, err := c.StaticGen.Publish(c, w, r)
+	if err != nil {
+		return code, err
+	}
+
+	// Executed the before publish command.
+	if err := c.Runner("before_publish", path); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return code, nil
 }
 
 // resourcePatchHandler is the entry point for resource handler.

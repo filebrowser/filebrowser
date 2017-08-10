@@ -121,15 +121,6 @@ type FileManager struct {
 	Commands map[string][]string
 }
 
-type StaticGen interface {
-	SettingsPath() string
-
-	Hook(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
-	Preview(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
-	Publish(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
-	Schedule(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
-}
-
 // Command is a command function.
 type Command func(r *http.Request, m *FileManager, u *User) error
 
@@ -357,6 +348,8 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// EnableStaticGen attaches a static generator to the current File Manager
+// instance.
 func (m *FileManager) EnableStaticGen(data StaticGen) error {
 	if reflect.TypeOf(data).Kind() != reflect.Ptr {
 		return errors.New("data should be a pointer to interface, not interface")
