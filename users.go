@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -175,6 +176,11 @@ func usersPostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request)
 		u.ID = 0
 	}
 
+	// Checks if the scope exists.
+	if code, err := checkFS(string(u.FileSystem)); err != nil {
+		return code, err
+	}
+
 	// Hashes the password.
 	pw, err := hashPassword(u.Password)
 	if err != nil {
@@ -199,6 +205,28 @@ func usersPostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request)
 	// Set the Location header and return.
 	w.Header().Set("Location", "/users/"+strconv.Itoa(u.ID))
 	w.WriteHeader(http.StatusCreated)
+	return 0, nil
+}
+
+func checkFS(path string) (int, error) {
+	info, err := os.Stat(path)
+
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return http.StatusInternalServerError, err
+		}
+
+		err = os.MkdirAll(path, 0666)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+	}
+
+	if !info.IsDir() {
+		return http.StatusBadRequest, errors.New("Scope is not a dir")
+	}
+
 	return 0, nil
 }
 
@@ -308,6 +336,11 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 		return http.StatusBadRequest, errEmptyScope
 	}
 
+	// Checks if the scope exists.
+	if code, err := checkFS(string(u.FileSystem)); err != nil {
+		return code, err
+	}
+
 	// Initialize rules if they're not initialized.
 	if u.Rules == nil {
 		u.Rules = []*Rule{}
@@ -343,8 +376,6 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	} else {
 		u.Password = suser.Password
 	}
-
-
 
 	// Updates the whole User struct because we always are supposed
 	// to send a new entire object.
