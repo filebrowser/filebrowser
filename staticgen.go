@@ -9,16 +9,22 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/hacdias/varutils"
-	"github.com/robfig/cron"
 )
 
 var (
-	// ErrUnsupportedFileType ...
-	ErrUnsupportedFileType = errors.New("The type of the provided file isn't supported for this action")
+	errUnsupportedFileType = errors.New("The type of the provided file isn't supported for this action")
 )
+
+// StaticGen is a static website generator.
+type StaticGen interface {
+	SettingsPath() string
+
+	Hook(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
+	Preview(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
+	Publish(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
+}
 
 // Hugo is the Hugo static website generator.
 type Hugo struct {
@@ -89,7 +95,7 @@ func (h Hugo) Hook(c *RequestContext, w http.ResponseWriter, r *http.Request) (i
 	// If the request isn't for a markdown file, we can't
 	// handle it.
 	if ext != ".markdown" && ext != ".md" {
-		return http.StatusBadRequest, ErrUnsupportedFileType
+		return http.StatusBadRequest, errUnsupportedFileType
 	}
 
 	// Tries to create a new file based on this archetype.
@@ -107,11 +113,6 @@ func (h Hugo) Hook(c *RequestContext, w http.ResponseWriter, r *http.Request) (i
 func (h Hugo) Publish(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	filename := filepath.Join(string(c.User.FileSystem), r.URL.Path)
 
-	// Before save command handler.
-	if err := c.Runner("before_publish", filename); err != nil {
-		return http.StatusInternalServerError, err
-	}
-
 	// We only run undraft command if it is a file.
 	if strings.HasSuffix(filename, ".md") && strings.HasSuffix(filename, ".markdown") {
 		if err := h.undraft(filename); err != nil {
@@ -122,35 +123,7 @@ func (h Hugo) Publish(c *RequestContext, w http.ResponseWriter, r *http.Request)
 	// Regenerates the file
 	h.run(false)
 
-	// Executed the before publish command.
-	if err := c.Runner("before_publish", filename); err != nil {
-		return http.StatusInternalServerError, err
-	}
-
 	return 0, nil
-}
-
-// Schedule schedules a post.
-func (h Hugo) Schedule(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	t, err := time.Parse("2006-01-02T15:04", r.Header.Get("Schedule"))
-	path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
-	path = filepath.Clean(path)
-
-	if err != nil {
-		return http.StatusInternalServerError, err
-	}
-
-	scheduler := cron.New()
-	scheduler.AddFunc(t.Format("05 04 15 02 01 *"), func() {
-		if err := h.undraft(path); err != nil {
-			log.Printf(err.Error())
-		}
-
-		h.run(false)
-	})
-
-	scheduler.Start()
-	return http.StatusOK, nil
 }
 
 // Preview handles the preview path.
@@ -252,11 +225,6 @@ func (j Jekyll) Hook(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 func (j Jekyll) Publish(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
 	filename := filepath.Join(string(c.User.FileSystem), r.URL.Path)
 
-	// Before save command handler.
-	if err := c.Runner("before_publish", filename); err != nil {
-		return http.StatusInternalServerError, err
-	}
-
 	// We only run undraft command if it is a file.
 	if err := j.undraft(filename); err != nil {
 		return http.StatusInternalServerError, err
@@ -265,35 +233,7 @@ func (j Jekyll) Publish(c *RequestContext, w http.ResponseWriter, r *http.Reques
 	// Regenerates the file
 	j.run()
 
-	// Executed the before publish command.
-	if err := c.Runner("before_publish", filename); err != nil {
-		return http.StatusInternalServerError, err
-	}
-
 	return 0, nil
-}
-
-// Schedule schedules a post.
-func (j Jekyll) Schedule(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	t, err := time.Parse("2006-01-02T15:04", r.Header.Get("Schedule"))
-	path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
-	path = filepath.Clean(path)
-
-	if err != nil {
-		return http.StatusInternalServerError, err
-	}
-
-	scheduler := cron.New()
-	scheduler.AddFunc(t.Format("05 04 15 02 01 *"), func() {
-		if err := j.undraft(path); err != nil {
-			log.Printf(err.Error())
-		}
-
-		j.run()
-	})
-
-	scheduler.Start()
-	return http.StatusOK, nil
 }
 
 // Preview handles the preview path.
