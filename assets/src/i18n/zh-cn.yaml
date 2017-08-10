@@ -20,7 +20,9 @@ buttons:
   save: 保存
   search: 搜索
   select: 选择
+  publish: 发布
   selectMultiple: 选择多个
+  schedule: 计划
   switchView: 切换显示方式
   toggleSidebar: 切换侧边栏
   update: 更新
@@ -93,19 +95,22 @@ prompts:
   renameMessage: '请输入新名称, 旧名称是:'
   show: 揭示
   size: 大小
+  schedule: 计划
+  scheduleMessage: 选择一个日期发布这篇帖子.
+  newArchetype: 创建一个基于原型的新帖子. 您的文件将在内容文件夹中创建.
 settings:
   admin: 管理员
   administrator: 管理员
   allowCommands: 执行命令(Linux 代码)
-  allowEdit: 编辑、重命名或删除文件/目录.
-  allowNew: 创建新文件和目录.
+  allowEdit: 编辑、重命名或删除文件/目录
+  allowNew: 创建新文件和目录
+  allowPublish: 发布新的帖子和页面
   avoidChanges: '(留空以避免更改)'
   changePassword: 更改密码
   commands: 命令(linux 代码)
   commandsHelp: >
-    'Here you can set commands that are executed in the named events.
-    每行一条命令. If the event is related to files, such as before and after saving,
-    the environment variable "file" will be available with the path of the file.'
+    '在这里，您可以设置在命名事件中执行的命令.每行一条命令.
+    如果事件与文件相关, 比如保存前后的文件, 环境变量"file"将在文件的路径中可用.'
   commandsUpdated: 命令更新!
   customStylesheet: 自定义样式表
   examples: 例子
@@ -150,6 +155,9 @@ sidebar:
   newFolder: 新建文件夹
   servedWith: 服务提供
   settings: 设置
+  siteSettings: 网站设置
+  hugoNew: Hugo New
+  preview: 预览
 search:
   images: 图像
   music: 音乐
