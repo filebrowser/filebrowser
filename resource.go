@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/hacdias/fileutils"
-	"github.com/robfig/cron"
 )
 
 // sanitizeURL sanitizes the URL to prevent path transversal
@@ -174,7 +173,7 @@ func resourcePostPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Re
 		}
 
 		// Otherwise we try to create the directory.
-		err := c.User.FileSystem.Mkdir(r.URL.Path, 0666)
+		err := c.User.FileSystem.Mkdir(r.URL.Path, 0776)
 		return errorToHTTP(err, false), err
 	}
 
@@ -188,7 +187,7 @@ func resourcePostPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Re
 	}
 
 	// Create/Open the file.
-	f, err := c.User.FileSystem.OpenFile(r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
+	f, err := c.User.FileSystem.OpenFile(r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0776)
 	if err != nil {
 		return errorToHTTP(err, false), err
 	}
@@ -242,15 +241,13 @@ func resourcePublishSchedule(c *RequestContext, w http.ResponseWriter, r *http.R
 		return http.StatusInternalServerError, err
 	}
 
-	scheduler := cron.New()
-	scheduler.AddFunc(t.Format("05 04 15 02 01 *"), func() {
+	c.cron.AddFunc(t.Format("05 04 15 02 01 *"), func() {
 		_, err := resourcePublish(c, w, r)
 		if err != nil {
 			log.Print(err)
 		}
 	})
 
-	scheduler.Start()
 	return http.StatusOK, nil
 }
 

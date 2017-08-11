@@ -62,11 +62,13 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
+	"time"
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/asdine/storm"
 	"github.com/hacdias/fileutils"
 	"github.com/mholt/caddy"
+	"github.com/robfig/cron"
 )
 
 var (
@@ -91,6 +93,9 @@ type FileManager struct {
 
 	// The static assets.
 	assets *rice.Box
+
+	// Job cron.
+	cron *cron.Cron
 
 	// PrefixURL is a part of the URL that is already trimmed from the request URL before it
 	// arrives to our handlers. It may be useful when using File Manager as a middleware
@@ -205,6 +210,7 @@ func New(database string, base User) (*FileManager, error) {
 	// map and Assets box.
 	m := &FileManager{
 		Users:  map[string]*User{},
+		cron:   cron.New(),
 		assets: rice.MustFindBox("./assets/dist"),
 	}
 
@@ -297,6 +303,10 @@ func New(database string, base User) (*FileManager, error) {
 	base.Username = ""
 	base.Password = ""
 	m.DefaultUser = &base
+
+	m.cron.AddFunc("@hourly", m.shareCleaner)
+	m.cron.Start()
+
 	return m, nil
 }
 
@@ -404,6 +414,29 @@ func (m *FileManager) enableJekyll(j *Jekyll) error {
 	}
 
 	return nil
+}
+
+// shareCleaner removes sharing links that are no longer active.
+// This function is set to run periodically.
+func (m FileManager) shareCleaner() {
+	var links []shareLink
+
+	// Get all links.
+	err := m.db.All(&links)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	// Find the expired ones.
+	for i := range links {
+		if links[i].Expires && links[i].ExpireDate.Before(time.Now()) {
+			err = m.db.DeleteStruct(&links[i])
+			if err != nil {
+				log.Print(err)
+			}
+		}
+	}
 }
 
 // Allowed checks if the user has permission to access a directory/file.

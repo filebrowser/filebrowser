@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import api from '@/utils/api'
+import * as api from '@/utils/api'
 
 export default {
   name: 'users',

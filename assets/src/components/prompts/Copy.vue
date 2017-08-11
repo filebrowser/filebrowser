@@ -21,7 +21,7 @@
 <script>
 import { mapState } from 'vuex'
 import FileList from './FileList'
-import api from '@/utils/api'
+import * as api from '@/utils/api'
 import buttons from '@/utils/buttons'
 
 export default {
@@ -51,7 +51,7 @@ export default {
       // Execute the promises.
       api.copy(items)
         .then(() => {
-          buttons.done('copy')
+          buttons.success('copy')
           this.$router.push({ path: this.dest })
         })
         .catch(error => {

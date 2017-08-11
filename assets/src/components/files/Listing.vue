@@ -91,7 +91,7 @@
 import {mapState} from 'vuex'
 import Item from './ListingItem'
 import css from '@/utils/css'
-import api from '@/utils/api'
+import * as api from '@/utils/api'
 import buttons from '@/utils/buttons'
 
 export default {
@@ -325,7 +325,7 @@ export default {
 
       Promise.all(promises)
         .then(() => {
-          buttons.done('upload')
+          buttons.success('upload')
           this.$store.commit('setReload', true)
         })
         .catch(error => {

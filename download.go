@@ -53,7 +53,7 @@ func downloadHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	}
 
 	// If the format is true, just set it to "zip".
-	if query == "true" {
+	if query == "true" || query == "" {
 		query = "zip"
 	}
 

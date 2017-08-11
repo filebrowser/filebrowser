@@ -17,7 +17,7 @@
 
 <script>
 import {mapGetters, mapMutations, mapState} from 'vuex'
-import api from '@/utils/api'
+import { remove } from '@/utils/api'
 import url from '@/utils/url'
 import buttons from '@/utils/buttons'
 
@@ -36,9 +36,9 @@ export default {
       // If we are not on a listing, delete the current
       // opened file.
       if (this.req.kind !== 'listing') {
-        api.delete(this.$route.path)
+        remove(this.$route.path)
           .then(() => {
-            buttons.done('delete')
+            buttons.success('delete')
             this.$router.push({ path: url.removeLastDir(this.$route.path) + '/' })
           })
           .catch(error => {
@@ -59,12 +59,12 @@ export default {
       let promises = []
 
       for (let index of this.selected) {
-        promises.push(api.delete(this.req.items[index].url))
+        promises.push(remove(this.req.items[index].url))
       }
 
       Promise.all(promises)
         .then(() => {
-          buttons.done('delete')
+          buttons.success('delete')
           this.$store.commit('setReload', true)
         })
         .catch(error => {

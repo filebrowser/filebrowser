@@ -14,6 +14,7 @@
     <replace v-else-if="showReplace"></replace>
     <schedule v-else-if="show === 'schedule'"></schedule>
     <new-archetype v-else-if="show === 'new-archetype'"></new-archetype>
+    <share v-else-if="show === 'share'"></share>
     <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
   </div>
 </template>
@@ -33,9 +34,10 @@ import NewDir from './NewDir'
 import NewArchetype from './NewArchetype'
 import Replace from './Replace'
 import Schedule from './Schedule'
+import Share from './Share'
 import { mapState } from 'vuex'
 import buttons from '@/utils/buttons'
-import api from '@/utils/api'
+import * as api from '@/utils/api'
 
 export default {
   name: 'prompts',
@@ -50,6 +52,7 @@ export default {
     Success,
     Move,
     Copy,
+    Share,
     NewFile,
     NewDir,
     Help,

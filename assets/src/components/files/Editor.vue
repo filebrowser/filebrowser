@@ -11,7 +11,7 @@
 <script>
 import { mapState } from 'vuex'
 import CodeMirror from '@/utils/codemirror'
-import api from '@/utils/api'
+import * as api from '@/utils/api'
 import buttons from '@/utils/buttons'
 
 export default {
@@ -129,7 +129,7 @@ export default {
 
       api.put(this.$route.path, content, regenerate, this.schedule)
         .then(() => {
-          buttons.done(button)
+          buttons.success(button)
           this.$store.commit('setSchedule', '')
         })
         .catch(error => {

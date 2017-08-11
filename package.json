@@ -9,6 +9,7 @@
     "lint": "eslint --ext .js,.vue assets/src"
   },
   "dependencies": {
+    "clipboard": "^1.7.1",
     "codemirror": "^5.27.4",
     "filesize": "^3.5.10",
     "moment": "^2.18.1",

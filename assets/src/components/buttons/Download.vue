@@ -8,7 +8,7 @@
 
 <script>
 import {mapGetters, mapState} from 'vuex'
-import api from '@/utils/api'
+import * as api from '@/utils/api'
 
 export default {
   name: 'download-button',
