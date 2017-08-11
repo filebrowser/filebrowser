@@ -34,7 +34,7 @@
 import {mapState, mapGetters} from 'vuex'
 import filesize from 'filesize'
 import moment from 'moment'
-import api from '@/utils/api'
+import * as api from '@/utils/api'
 
 export default {
   name: 'info',

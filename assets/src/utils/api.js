@@ -35,7 +35,7 @@ export function fetch (url) {
   })
 }
 
-export function rm (url) {
+export function remove (url) {
   url = removePrefix(url)
 
   return new Promise((resolve, reject) => {
@@ -383,25 +383,69 @@ export function deleteUser (id) {
   })
 }
 
-export default {
-  removePrefix,
-  delete: rm,
-  fetch,
-  checksum,
-  move,
-  put,
-  copy,
-  post,
-  command,
-  search,
-  download,
-  // other things
-  getSettings,
-  updateSettings,
-  // User things
-  newUser,
-  getUser,
-  getUsers,
-  updateUser,
-  deleteUser
+// SHARE
+
+export function getShare (url) {
+  url = removePrefix(url)
+
+  return new Promise((resolve, reject) => {
+    let request = new window.XMLHttpRequest()
+    request.open('GET', `${store.state.baseURL}/api/share${url}`, true)
+    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+
+    request.onload = () => {
+      if (request.status === 200) {
+        resolve(JSON.parse(request.responseText))
+      } else {
+        reject(request.status)
+      }
+    }
+
+    request.onerror = (error) => reject(error)
+    request.send()
+  })
+}
+
+export function deleteShare (hash) {
+  return new Promise((resolve, reject) => {
+    let request = new window.XMLHttpRequest()
+    request.open('DELETE', `${store.state.baseURL}/api/share/${hash}`, true)
+    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+
+    request.onload = () => {
+      if (request.status === 200) {
+        resolve()
+      } else {
+        reject(request.status)
+      }
+    }
+
+    request.onerror = (error) => reject(error)
+    request.send()
+  })
+}
+
+export function share (url, expires = '', unit = 'hours') {
+  url = removePrefix(url)
+  url = `${store.state.baseURL}/api/share${url}`
+  if (expires !== '') {
+    url += `?expires=${expires}&unit=${unit}`
+  }
+
+  return new Promise((resolve, reject) => {
+    let request = new window.XMLHttpRequest()
+    request.open('POST', url, true)
+    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+
+    request.onload = () => {
+      if (request.status === 200) {
+        resolve(JSON.parse(request.responseText))
+      } else {
+        reject(request.responseStatus)
+      }
+    }
+
+    request.onerror = (error) => reject(error)
+    request.send()
+  })
 }

@@ -16,7 +16,7 @@ function loading (button) {
   }, 100)
 }
 
-function done (button, success = true) {
+function done (button) {
   let el = document.querySelector(`#${button}-button > i`)
 
   if (el === undefined || el === null) {
@@ -33,7 +33,34 @@ function done (button, success = true) {
   }, 100)
 }
 
+function success (button) {
+  let el = document.querySelector(`#${button}-button > i`)
+
+  if (el === undefined || el === null) {
+    console.log('Error getting button ' + button)
+    return
+  }
+
+  el.style.opacity = 0
+
+  setTimeout(() => {
+    el.classList.remove('spin')
+    el.innerHTML = 'done'
+    el.style.opacity = 1
+
+    setTimeout(() => {
+      el.style.opacity = 0
+
+      setTimeout(() => {
+        el.innerHTML = el.dataset.icon
+        el.style.opacity = 1
+      }, 100)
+    }, 500)
+  }, 100)
+}
+
 export default {
   loading,
-  done
+  done,
+  success
 }

@@ -1,8 +1,10 @@
+permanent: Permanente
 buttons:
   cancel: Cancelar
   close: Fechar
   copy: Copiar
   copyFile: Copiar ficheiro
+  copyToClipboard: Copiar
   create: Criar
   delete: Eliminar
   download: Descarregar
@@ -19,6 +21,7 @@ buttons:
   replace: Substituir
   reportIssue: Reportar Erro
   save: Guardar
+  share: Partilhar
   schedule: Agendar
   search: Pesquisar
   select: Selecionar
@@ -27,6 +30,7 @@ buttons:
   toggleSidebar: Alternar barra lateral
   update: Atualizar
   upload: Enviar
+  permalink: Obter link permanente
 errors:
   forbidden: Tu não és bem-vindo aqui.
   internal: Algo correu bastante mal.
@@ -186,3 +190,9 @@ sidebar:
   servedWith: Servido com
   settings: Configurações
   siteSettings: Configurações do Site
+time:
+  unit: Unidades de Tempo
+  seconds: Segundos
+  minutes: Minutos
+  hours: Horas
+  days: Dias

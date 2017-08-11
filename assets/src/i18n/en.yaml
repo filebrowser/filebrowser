@@ -1,8 +1,10 @@
+permanent: Permanent
 buttons:
   cancel: Cancel
   close: Close
   copy: Copy
   copyFile: Copy file
+  copyToClipboard: Copy to clipboard
   create: Create
   delete: Delete
   download: Download
@@ -20,6 +22,7 @@ buttons:
   save: Save
   search: Search
   select: Select
+  share: Share
   publish: Publish
   selectMultiple: Select multiple
   schedule: Schedule
@@ -27,6 +30,7 @@ buttons:
   toggleSidebar: Toggle sidebar
   update: Update
   upload: Upload
+  permalink: Get Permanent Link
 errors:
   forbidden: You're not welcome here.
   internal: Something really went wrong.
@@ -183,3 +187,9 @@ languages:
   en: English
   pt: Portuguese
   zhCN: Chinese (Simplified)
+time:
+  unit: Time Unit
+  seconds: Seconds
+  minutes: Minutes
+  hours: Hours
+  days: Days

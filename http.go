@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/asdine/storm"
 )
 
 // RequestContext contains the needed information to make handlers work.
@@ -33,10 +36,9 @@ func serveHTTP(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, 
 	// pass it through a template to add the needed variables.
 	if r.URL.Path == "/sw.js" {
 		return renderFile(
-			w,
+			c, w,
 			c.assets.MustString("sw.js"),
 			"application/javascript",
-			c,
 		)
 	}
 
@@ -65,16 +67,20 @@ func serveHTTP(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, 
 		return c.StaticGen.Preview(c, w, r)
 	}
 
+	if strings.HasPrefix(r.URL.Path, "/share/") && c.StaticGen != nil {
+		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/share/")
+		return sharePage(c, w, r)
+	}
+
 	// Any other request should show the index.html file.
 	w.Header().Set("x-frame-options", "SAMEORIGIN")
 	w.Header().Set("x-content-type", "nosniff")
 	w.Header().Set("x-xss-protection", "1; mode=block")
 
 	return renderFile(
-		w,
+		c, w,
 		c.assets.MustString("index.html"),
 		"text/html",
-		c,
 	)
 }
 
@@ -86,10 +92,9 @@ func staticHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (i
 	}
 
 	return renderFile(
-		w,
+		c, w,
 		c.assets.MustString("static/manifest.json"),
 		"application/json",
-		c,
 	)
 }
 
@@ -154,6 +159,8 @@ func apiHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int,
 		code, err = usersHandler(c, w, r)
 	case "settings":
 		code, err = settingsHandler(c, w, r)
+	case "share":
+		code, err = shareHandler(c, w, r)
 	default:
 		code = http.StatusNotFound
 	}
@@ -194,7 +201,7 @@ func splitURL(path string) (string, string) {
 }
 
 // renderFile renders a file using a template with some needed variables.
-func renderFile(w http.ResponseWriter, file string, contentType string, c *RequestContext) (int, error) {
+func renderFile(c *RequestContext, w http.ResponseWriter, file string, contentType string) (int, error) {
 	tpl := template.Must(template.New("file").Parse(file))
 	w.Header().Set("Content-Type", contentType+"; charset=utf-8")
 
@@ -207,6 +214,66 @@ func renderFile(w http.ResponseWriter, file string, contentType string, c *Reque
 	}
 
 	return 0, nil
+}
+
+func sharePage(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+	var s shareLink
+	err := c.db.One("Hash", r.URL.Path, &s)
+	if err == storm.ErrNotFound {
+		return renderFile(
+			c, w,
+			c.assets.MustString("static/share/404.html"),
+			"text/html",
+		)
+	}
+
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	if s.Expires && s.ExpireDate.Before(time.Now()) {
+		c.db.DeleteStruct(&s)
+		return renderFile(
+			c, w,
+			c.assets.MustString("static/share/404.html"),
+			"text/html",
+		)
+	}
+
+	r.URL.Path = s.Path
+
+	info, err := os.Stat(s.Path)
+	if err != nil {
+		return errorToHTTP(err, false), err
+	}
+
+	c.File = &file{
+		Path:    s.Path,
+		Name:    info.Name(),
+		ModTime: info.ModTime(),
+		Mode:    info.Mode(),
+		IsDir:   info.IsDir(),
+		Size:    info.Size(),
+	}
+
+	dl := r.URL.Query().Get("dl")
+
+	if dl == "" || dl == "0" {
+		tpl := template.Must(template.New("file").Parse(c.assets.MustString("static/share/index.html")))
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+		err := tpl.Execute(w, map[string]interface{}{
+			"BaseURL": c.RootURL(),
+			"File":    c.File,
+		})
+
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+		return 0, nil
+	}
+
+	return downloadHandler(c, w, r)
 }
 
 // renderJSON prints the JSON version of data to the browser.

@@ -33,7 +33,7 @@ import InternalError from './errors/500'
 import Preview from '@/components/files/Preview'
 import Listing from '@/components/files/Listing'
 import Editor from '@/components/files/Editor'
-import api from '@/utils/api'
+import * as api from '@/utils/api'
 import { mapGetters, mapState, mapMutations } from 'vuex'
 
 export default {

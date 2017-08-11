@@ -177,3 +177,32 @@
     opacity: 1;
   }
 }
+
+.prompt#share ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.prompt#share ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.prompt#share ul li a {
+  color: #2196F3;
+  cursor: pointer;
+  margin-right: auto;
+}
+
+.prompt#share ul li .action i {
+  font-size: 1em;
+}
+
+.prompt#share ul li input,
+.prompt#share ul li select {
+  padding: .2em;
+  margin-right: .5em;
+  border: 1px solid #dadada;
+}

@@ -19,7 +19,7 @@
 <script>
 import { mapState } from 'vuex'
 import url from '@/utils/url'
-import api from '@/utils/api'
+import * as api from '@/utils/api'
 
 export default {
   name: 'file-list',

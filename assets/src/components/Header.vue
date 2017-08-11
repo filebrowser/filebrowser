@@ -29,6 +29,7 @@
       <!-- Menu that shows on listing AND mobile when there are files selected -->
       <div id="file-selection" v-if="isMobile && req.kind === 'listing'">
         <span v-if="selectedCount > 0">{{ selectedCount }} selected</span>
+        <share-button v-show="showRenameButton"></share-button>
         <rename-button v-show="showRenameButton"></rename-button>
         <copy-button v-show="showMoveButton"></copy-button>
         <move-button v-show="showMoveButton"></move-button>
@@ -38,6 +39,7 @@
       <!-- This buttons are shown on a dropdown on mobile phones -->
       <div id="dropdown" :class="{ active: showMore }">
         <div v-if="!isListing || !isMobile">
+          <share-button v-show="showRenameButton"></share-button>
           <rename-button v-show="showRenameButton"></rename-button>
           <copy-button v-show="showMoveButton"></copy-button>
           <move-button v-show="showMoveButton"></move-button>
@@ -74,6 +76,7 @@ import SwitchButton from './buttons/SwitchView'
 import MoveButton from './buttons/Move'
 import CopyButton from './buttons/Copy'
 import ScheduleButton from './buttons/Schedule'
+import ShareButton from './buttons/Share'
 import {mapGetters, mapState} from 'vuex'
 import * as api from '@/utils/api'
 import buttons from '@/utils/buttons'
@@ -84,6 +87,7 @@ export default {
     Search,
     InfoButton,
     DeleteButton,
+    ShareButton,
     RenameButton,
     DownloadButton,
     CopyButton,

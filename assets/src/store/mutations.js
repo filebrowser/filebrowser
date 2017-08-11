@@ -1,4 +1,5 @@
 import i18n from '@/i18n'
+import moment from 'moment'
 
 const mutations = {
   closeHovers: state => {
@@ -26,6 +27,7 @@ const mutations = {
   setLoading: (state, value) => { state.loading = value },
   setReload: (state, value) => { state.reload = value },
   setUser: (state, value) => {
+    moment.locale(value.locale)
     i18n.locale = value.locale
     state.user = value
   },
