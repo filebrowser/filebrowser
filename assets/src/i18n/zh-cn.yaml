@@ -1,8 +1,10 @@
+permanent: 永久
 buttons:
   cancel: 取消
   close: 关闭
   copy: 复制
   copyFile: 复制文件
+  copyToClipboard: 复制到剪贴板
   create: 创建
   delete: 删除
   download: 下载
@@ -20,6 +22,7 @@ buttons:
   save: 保存
   search: 搜索
   select: 选择
+  share: 分享
   publish: 发布
   selectMultiple: 选择多个
   schedule: 计划
@@ -27,6 +30,7 @@ buttons:
   toggleSidebar: 切换侧边栏
   update: 更新
   upload: 上传
+  permalink: 获取永久链接
 errors:
   forbidden: 你被禁止访问.
   internal: 内部出现麻烦了.
@@ -175,3 +179,9 @@ languages:
   en: English
   pt: Portuguese
   zhCN: Chinese (Simplified)
+time:
+  unit: 时间单位
+  seconds: 秒
+  minutes: 分钟
+  hours: 小时
+  days: 天
