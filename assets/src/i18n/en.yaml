@@ -185,8 +185,9 @@ search:
   writeToSearch: Write here to search
 languages:
   en: English
-  pt: Portuguese
-  zhCN: Chinese (Simplified)
+  pt: Português
+  ja: 日本語
+  zhCN: 中文 (简体)
 time:
   unit: Time Unit
   seconds: Seconds
