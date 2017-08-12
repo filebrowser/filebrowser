@@ -13,10 +13,10 @@ buttons:
   move: 移动
   moveFile: 移动文件
   new: 新
-  next: 下一页
+  next: 下一个
   ok: 确定
   replace: 替换
-  previous: 上一页
+  previous: 上一个
   rename: 重命名
   reportIssue: 报告问题
   save: 保存
@@ -139,7 +139,7 @@ settings:
   rules: 规则
   rulesHelp1: "\
     您可以为该用户制定一组黑名单或白名单式的规则，\
-    被屏蔽的文件将不会显示在列表中, 用户也无权限访问,\
+    被屏蔽的文件将不会显示在列表中，用户也无权限访问,\
     支持相对于目录范围的路径。"
   rulesHelp2: "\
     每行一条规则，且必须以关键词 {0} 或 {1} 开头。\
@@ -177,7 +177,7 @@ search:
   search: 搜索...
   searchOrCommand: 搜索或者执行命令(Linux 代码)...
   searchOrSupportedCommand: 搜索或使用您可以使用的命令(一次只能执行一个命令)：
-  type: 键入并按回车键进行搜索.
+  type: 键入并按回车键进行搜索。
   types: 类型
   video: 视频
   writeToSearch: 请输入要搜索的内容
@@ -186,6 +186,7 @@ languages:
   pt: Português
   ja: 日本語
   zhCN: 中文 (简体)
+  zhTW: 中文 (繁體)
 time:
   unit: 时间单位
   seconds: 秒

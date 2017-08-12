@@ -188,6 +188,7 @@ languages:
   pt: Português
   ja: 日本語
   zhCN: 中文 (简体)
+  zhTW: 中文 (繁體)
 time:
   unit: Time Unit
   seconds: Seconds
