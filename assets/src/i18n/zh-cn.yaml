@@ -182,9 +182,9 @@ search:
   writeToSearch: 请输入要搜索的内容
 languages:
   en: English
-  pt: Portuguese
-  ja: Japanese
-  zhCN: Chinese (Simplified)
+  pt: Português
+  ja: 日本語
+  zhCN: 中文 (简体)
 time:
   unit: 时间单位
   seconds: 秒

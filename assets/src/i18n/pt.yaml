@@ -65,10 +65,10 @@ help:
   f2: renomear ficheiro
   help: Ajuda
 languages:
-  en: Inglês
+  en: English
   pt: Português
-  ja: Japanese
-  zhCN: Chinês (Simplificado)
+  ja: 日本語
+  zhCN: 中文 (简体)
 login:
   password: Palavra-passe
   submit: Login

@@ -182,9 +182,9 @@ search:
   writeToSearch: ここにキーワードを入力してください
 languages:
   en: English
-  pt: Portuguese
-  jp: Japanese
-  zhCN: Chinese (Simplified)
+  pt: Português
+  ja: 日本語
+  zhCN: 中文 (简体)
 time:
   unit: 時間単位
   seconds: 秒
