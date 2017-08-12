@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import en from './en.yaml'
 import pt from './pt.yaml'
+import ja from './ja.yaml'
 import zhCN from './zh-cn.yaml'
 
 Vue.use(VueI18n)
@@ -12,6 +13,7 @@ const i18n = new VueI18n({
   messages: {
     'en': en,
     'pt': pt,
+    'ja': ja,
     'zh-cn': zhCN
   }
 })

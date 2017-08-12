@@ -186,6 +186,7 @@ search:
 languages:
   en: English
   pt: Portuguese
+  ja: Japanese
   zhCN: Chinese (Simplified)
 time:
   unit: Time Unit

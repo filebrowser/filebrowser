@@ -67,6 +67,7 @@ help:
 languages:
   en: Inglês
   pt: Português
+  ja: Japanese
   zhCN: Chinês (Simplificado)
 login:
   password: Palavra-passe
