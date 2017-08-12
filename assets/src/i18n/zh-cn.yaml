@@ -92,9 +92,9 @@ prompts:
   numberDirs: 目录数
   numberFiles: 文件数
   replace: 替换
-  replaceMessage: >
-    您尝试上传的文件中有一个与现有文件的名称存在冲突。
-    是否替换现有的同名文件？
+  replaceMessage: "\
+    您尝试上传的文件中有一个与现有文件的名称存在冲突。\
+    是否替换现有的同名文件？"
   rename: 重命名
   renameMessage: 请输入新名称，旧名称为：
   show: 揭示
@@ -112,10 +112,10 @@ settings:
   avoidChanges: '(留空以避免更改)'
   changePassword: 更改密码
   commands: 命令(linux 代码)
-  commandsHelp: >
-    在这里，您可以设置在指定事件中执行的命令，一行一条。
-    若事件与文件相关，如“在保存文件前”，
-    则文件的路径会被赋值给环境变量 "file"。
+  commandsHelp: "\
+    在这里，您可以设置在指定事件下执行的命令，一行一条。\
+    若事件与文件相关，如“在保存文件前”，\
+    则文件的路径会被赋值给环境变量 \"file\"。"
   commandsUpdated: 命令已更新！
   customStylesheet: 自定义样式表
   examples: 例子
@@ -127,29 +127,30 @@ settings:
   password: 密码
   passwordUpdated: 密码已更新！
   permissions: 权限
-  permissionsHelp: >
-    '您可以将该用户设置为管理员，也可以单独选择各项权限。
-    如果选择了"管理员(Administrator)"，则其他的选项会被自动勾上，
-    同时该用户可以管理其他用户。'
+  permissionsHelp: "\
+    您可以将该用户设置为管理员，也可以单独选择各项权限。\
+    如果选择了“管理员”，则其他的选项会被自动勾上，\
+    同时该用户可以管理其他用户。"
   profileSettings: 配置文件设置
-  ruleExample1: >
-    '阻止用户访问所有文件夹下任何以 . 开头的文件(隐藏文件, 例如: .git, .gitignore)。'
+  ruleExample1: "\
+    阻止用户访问所有文件夹下任何以 . 开头的文件\
+    (隐藏文件, 例如: .git, .gitignore)。"
   ruleExample2: 阻止用户访问其目录范围的根目录下名为 Caddyfile 的文件。
   rules: 规则
-  rulesHelp1: >
-    '您可以为该用户制定一组黑名单或白名单式的规则，
-    被屏蔽的文件将不会显示在列表中, 用户也无权限访问,
-    支持相对于目录范围的路径。'
-  rulesHelp2: >
-    每行一条规则，且必须以关键词 {0} 或 {1} 开头。
-    如要使用正则表达式，请在加上 {2} 之后再附上表达式或路径。
+  rulesHelp1: "\
+    您可以为该用户制定一组黑名单或白名单式的规则，\
+    被屏蔽的文件将不会显示在列表中, 用户也无权限访问,\
+    支持相对于目录范围的路径。"
+  rulesHelp2: "\
+    每行一条规则，且必须以关键词 {0} 或 {1} 开头。\
+    如要使用正则表达式，请在加上 {2} 之后再附上表达式或路径。"
   scope: 目录范围
   settingsUpdated: 设置已更新！
   user: 用户
   userCommands: 用户命令(Linux 代码)
-  userCommandsHelp: >
-    指定该用户可以执行的命令(Linux 代码)，用空格分隔。
-    例：
+  userCommandsHelp: "\
+    指定该用户可以执行的命令(Linux 代码)，用空格分隔。\
+    例如："
   userCreated: 用户已创建！
   userDeleted: 用户已删除！
   userManagement: 用户管理
