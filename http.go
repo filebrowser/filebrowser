@@ -67,7 +67,7 @@ func serveHTTP(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, 
 		return c.StaticGen.Preview(c, w, r)
 	}
 
-	if strings.HasPrefix(r.URL.Path, "/share/") && c.StaticGen != nil {
+	if strings.HasPrefix(r.URL.Path, "/share/") {
 		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/share/")
 		return sharePage(c, w, r)
 	}
