@@ -4,17 +4,10 @@
 package filemanager
 
 import (
-	"crypto/md5"
-	"encoding/hex"
-	"fmt"
 	"net/http"
-	"os"
-	"path/filepath"
-	"strconv"
-	"strings"
 
-	. "github.com/hacdias/filemanager"
-	"github.com/hacdias/fileutils"
+	"github.com/hacdias/filemanager"
+	"github.com/hacdias/filemanager/caddy/parser"
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
@@ -28,19 +21,14 @@ func init() {
 
 type plugin struct {
 	Next    httpserver.Handler
-	Configs []*config
-}
-
-type config struct {
-	*FileManager
-	baseURL string
+	Configs []*filemanager.FileManager
 }
 
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
 func (f plugin) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	for i := range f.Configs {
 		// Checks if this Path should be handled by File Manager.
-		if !httpserver.Path(r.URL.Path).Matches(f.Configs[i].baseURL) {
+		if !httpserver.Path(r.URL.Path).Matches(f.Configs[i].BaseURL) {
 			continue
 		}
 
@@ -53,7 +41,7 @@ func (f plugin) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 
 // setup configures a new FileManager middleware instance.
 func setup(c *caddy.Controller) error {
-	configs, err := parse(c)
+	configs, err := parser.Parse(c, "")
 	if err != nil {
 		return err
 	}
@@ -63,108 +51,4 @@ func setup(c *caddy.Controller) error {
 	})
 
 	return nil
-}
-
-func parse(c *caddy.Controller) ([]*config, error) {
-	var (
-		configs []*config
-	)
-
-	for c.Next() {
-		baseURL := "/"
-		baseScope := "."
-		database := ""
-		noAuth := false
-
-		// Get the baseURL and baseScope
-		args := c.RemainingArgs()
-
-		if len(args) >= 1 {
-			baseURL = args[0]
-		}
-
-		if len(args) > 1 {
-			baseScope = args[1]
-		}
-
-		for c.NextBlock() {
-			switch c.Val() {
-			case "database":
-				if !c.NextArg() {
-					return nil, c.ArgErr()
-				}
-
-				database = c.Val()
-			case "no_auth":
-				if !c.NextArg() {
-					noAuth = true
-					continue
-				}
-
-				var err error
-				noAuth, err = strconv.ParseBool(c.Val())
-				if err != nil {
-					return nil, err
-				}
-			}
-		}
-
-		caddyConf := httpserver.GetConfig(c)
-
-		path := filepath.Join(caddy.AssetsPath(), "filemanager")
-		err := os.MkdirAll(path, 0700)
-		if err != nil {
-			return nil, err
-		}
-
-		// if there is a database path and it is not absolute,
-		// it will be relative to Caddy folder.
-		if !filepath.IsAbs(database) && database != "" {
-			database = filepath.Join(path, database)
-		}
-
-		// If there is no database path on the settings,
-		// store one in .caddy/filemanager/name.db.
-		if database == "" {
-			// The name of the database is the hashed value of a string composed
-			// by the host, address path and the baseurl of this File Manager
-			// instance.
-			hasher := md5.New()
-			hasher.Write([]byte(caddyConf.Addr.Host + caddyConf.Addr.Path + baseURL))
-			sha := hex.EncodeToString(hasher.Sum(nil))
-			database = filepath.Join(path, sha+".db")
-
-			fmt.Println("[WARNING] A database is going to be created for your File Manager instace at " + database +
-				". It is highly recommended that you set the 'database' option to '" + sha + ".db'\n")
-		}
-
-		fm, err := New(database, User{
-			Locale:        "en",
-			AllowCommands: true,
-			AllowEdit:     true,
-			AllowNew:      true,
-			Commands:      []string{"git", "svn", "hg"},
-			Rules: []*Rule{{
-				Regex:  true,
-				Allow:  false,
-				Regexp: &Regexp{Raw: "\\/\\..+"},
-			}},
-			CSS:        "",
-			FileSystem: fileutils.Dir(baseScope),
-		})
-
-		if err != nil {
-			return nil, err
-		}
-
-		fm.NoAuth = noAuth
-		m := &config{FileManager: fm}
-		m.SetBaseURL(baseURL)
-		m.SetPrefixURL(strings.TrimSuffix(caddyConf.Addr.Path, "/"))
-		m.baseURL = strings.TrimSuffix(baseURL, "/")
-
-		configs = append(configs, m)
-	}
-
-	return configs, nil
 }
