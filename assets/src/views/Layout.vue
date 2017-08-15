@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div id="progress">
+      <div v-bind:style="{ width: $store.state.progress + '%' }"></div>
+    </div>
     <site-header></site-header>
     <sidebar></sidebar>
     <main>

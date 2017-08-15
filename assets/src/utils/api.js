@@ -56,13 +56,17 @@ export function remove (url) {
   })
 }
 
-export function post (url, content = '', overwrite = false) {
+export function post (url, content = '', overwrite = false, onupload) {
   url = removePrefix(url)
 
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('POST', `${store.state.baseURL}/api/resource${url}`, true)
     request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+
+    if (typeof onupload === 'function') {
+      request.upload.onprogress = onupload
+    }
 
     if (overwrite) {
       request.setRequestHeader('Action', `override`)

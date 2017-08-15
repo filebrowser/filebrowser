@@ -318,18 +318,36 @@ export default {
     handleFiles (files, base, overwrite = false) {
       buttons.loading('upload')
       let promises = []
+      let progress = new Array(files.length).fill(0)
 
-      for (let file of files) {
-        promises.push(api.post(this.$route.path + base + file.name, file, overwrite))
+      let onupload = (id) => (event) => {
+        progress[id] = (event.loaded / event.total) * 100
+
+        let sum = 0
+        for (let i = 0; i < progress.length; i++) {
+          sum += progress[i]
+        }
+
+        this.$store.commit('setProgress', Math.ceil(sum / progress.length))
+      }
+
+      for (let i = 0; i < files.length; i++) {
+        let file = files[i]
+        promises.push(api.post(this.$route.path + base + file.name, file, overwrite, onupload(i)))
+      }
+
+      let finish = () => {
+        buttons.success('upload')
+        this.$store.commit('setProgress', 0)
       }
 
       Promise.all(promises)
         .then(() => {
-          buttons.success('upload')
+          finish()
           this.$store.commit('setReload', true)
         })
         .catch(error => {
-          buttons.done('upload')
+          finish()
           this.$store.commit('showError', error)
         })
 
