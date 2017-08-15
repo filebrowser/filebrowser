@@ -145,3 +145,19 @@ main {
 #breadcrumbs span a {
   padding: .2em;
 }
+
+#progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  z-index: 9999999999;
+}
+
+#progress div {
+  height: 100%;
+  background-color: #40c4ff;
+  width: 0;
+  transition: .2s ease width;
+}
