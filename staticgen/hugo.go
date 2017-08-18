@@ -1,4 +1,4 @@
-package filemanager
+package staticgen
 
 import (
 	"errors"
@@ -10,21 +10,13 @@ import (
 	"path/filepath"
 	"strings"
 
+	fm "github.com/hacdias/filemanager"
 	"github.com/hacdias/varutils"
 )
 
 var (
 	errUnsupportedFileType = errors.New("The type of the provided file isn't supported for this action")
 )
-
-// StaticGen is a static website generator.
-type StaticGen interface {
-	SettingsPath() string
-
-	Hook(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
-	Preview(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
-	Publish(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error)
-}
 
 // Hugo is the Hugo static website generator.
 type Hugo struct {
@@ -66,8 +58,13 @@ func (h Hugo) SettingsPath() string {
 	return "/config." + frontmatter
 }
 
+// Name is the plugin's name.
+func (h Hugo) Name() string {
+	return "hugo"
+}
+
 // Hook is the pre-api handler.
-func (h Hugo) Hook(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func (h Hugo) Hook(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// If we are not using HTTP Post, we shall return Method Not Allowed
 	// since we are only working with this method.
 	if r.Method != http.MethodPost {
@@ -110,7 +107,7 @@ func (h Hugo) Hook(c *RequestContext, w http.ResponseWriter, r *http.Request) (i
 }
 
 // Publish publishes a post.
-func (h Hugo) Publish(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func (h Hugo) Publish(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	filename := filepath.Join(string(c.User.FileSystem), r.URL.Path)
 
 	// We only run undraft command if it is a file.
@@ -127,7 +124,7 @@ func (h Hugo) Publish(c *RequestContext, w http.ResponseWriter, r *http.Request)
 }
 
 // Preview handles the preview path.
-func (h *Hugo) Preview(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func (h *Hugo) Preview(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Get a new temporary path if there is none.
 	if h.previewPath == "" {
 		path, err := ioutil.TempDir("", "")
@@ -186,121 +183,11 @@ func (h Hugo) undraft(file string) error {
 	return nil
 }
 
-func (h *Hugo) find() error {
+// Setup sets up the plugin.
+func (h *Hugo) Setup() error {
 	var err error
 	if h.Exe, err = exec.LookPath("hugo"); err != nil {
 		return err
-	}
-
-	return nil
-}
-
-// Jekyll is the Jekyll static website generator.
-type Jekyll struct {
-	// Website root
-	Root string `name:"Website Root"`
-	// Public folder
-	Public string `name:"Public Directory"`
-	// Jekyll executable path
-	Exe string `name:"Executable"`
-	// Jekyll arguments
-	Args []string `name:"Arguments"`
-	// Indicates if we should clean public before a new publish.
-	CleanPublic bool `name:"Clean Public"`
-	// previewPath is the temporary path for a preview
-	previewPath string
-}
-
-// SettingsPath retrieves the correct settings path.
-func (j Jekyll) SettingsPath() string {
-	return "/_config.yml"
-}
-
-// Hook is the pre-api handler.
-func (j Jekyll) Hook(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	return 0, nil
-}
-
-// Publish publishes a post.
-func (j Jekyll) Publish(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	filename := filepath.Join(string(c.User.FileSystem), r.URL.Path)
-
-	// We only run undraft command if it is a file.
-	if err := j.undraft(filename); err != nil {
-		return http.StatusInternalServerError, err
-	}
-
-	// Regenerates the file
-	j.run()
-
-	return 0, nil
-}
-
-// Preview handles the preview path.
-func (j *Jekyll) Preview(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	// Get a new temporary path if there is none.
-	if j.previewPath == "" {
-		path, err := ioutil.TempDir("", "")
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		j.previewPath = path
-	}
-
-	// Build the arguments to execute Hugo: change the base URL,
-	// build the drafts and update the destination.
-	args := j.Args
-	args = append(args, "--baseurl", c.RootURL()+"/preview/")
-	args = append(args, "--drafts")
-	args = append(args, "--destination", j.previewPath)
-
-	// Builds the preview.
-	if err := runCommand(j.Exe, args, j.Root); err != nil {
-		return http.StatusInternalServerError, err
-	}
-
-	// Serves the temporary path with the preview.
-	http.FileServer(http.Dir(j.previewPath)).ServeHTTP(w, r)
-	return 0, nil
-}
-
-func (j Jekyll) run() {
-	// If the CleanPublic option is enabled, clean it.
-	if j.CleanPublic {
-		os.RemoveAll(j.Public)
-	}
-
-	if err := runCommand(j.Exe, j.Args, j.Root); err != nil {
-		log.Println(err)
-	}
-}
-
-func (j Jekyll) undraft(file string) error {
-	if !strings.Contains(file, "_drafts") {
-		return nil
-	}
-
-	return os.Rename(file, strings.Replace(file, "_drafts", "_posts", 1))
-}
-
-func (j *Jekyll) find() error {
-	var err error
-	if j.Exe, err = exec.LookPath("jekyll"); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// runCommand executes an external command
-func runCommand(command string, args []string, path string) error {
-	cmd := exec.Command(command, args...)
-	cmd.Dir = path
-	out, err := cmd.CombinedOutput()
-
-	if err != nil {
-		return errors.New(string(out))
 	}
 
 	return nil

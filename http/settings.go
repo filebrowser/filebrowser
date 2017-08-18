@@ -1,4 +1,4 @@
-package filemanager
+package http
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"reflect"
 
+	fm "github.com/hacdias/filemanager"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -44,7 +45,7 @@ func parsePutSettingsRequest(r *http.Request) (*modifySettingsRequest, error) {
 	return mod, nil
 }
 
-func settingsHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func settingsHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	if r.URL.Path != "" && r.URL.Path != "/" {
 		return http.StatusNotFound, nil
 	}
@@ -64,7 +65,7 @@ type settingsGetRequest struct {
 	StaticGen []option            `json:"staticGen"`
 }
 
-func settingsGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func settingsGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	if !c.User.Admin {
 		return http.StatusForbidden, nil
 	}
@@ -93,7 +94,7 @@ func settingsGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 	return renderJSON(w, result)
 }
 
-func settingsPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func settingsPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	if !c.User.Admin {
 		return http.StatusForbidden, nil
 	}

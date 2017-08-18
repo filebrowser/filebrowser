@@ -1,4 +1,4 @@
-package filemanager
+package http
 
 import (
 	"encoding/hex"
@@ -10,6 +10,7 @@ import (
 
 	"github.com/asdine/storm"
 	"github.com/asdine/storm/q"
+	fm "github.com/hacdias/filemanager"
 )
 
 type shareLink struct {
@@ -19,7 +20,7 @@ type shareLink struct {
 	ExpireDate time.Time `json:"expireDate"`
 }
 
-func shareHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func shareHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	r.URL.Path = sanitizeURL(r.URL.Path)
 
 	switch r.Method {
@@ -34,7 +35,7 @@ func shareHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (in
 	return http.StatusNotImplemented, nil
 }
 
-func shareGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func shareGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	var (
 		s    []*shareLink
 		path = filepath.Join(string(c.User.FileSystem), r.URL.Path)
@@ -59,7 +60,7 @@ func shareGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	return renderJSON(w, s)
 }
 
-func sharePostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func sharePostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
 
 	var s shareLink
@@ -116,7 +117,7 @@ func sharePostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request)
 	return renderJSON(w, s)
 }
 
-func shareDeleteHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func shareDeleteHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	var s shareLink
 
 	err := c.db.One("Hash", strings.TrimPrefix(r.URL.Path, "/"), &s)

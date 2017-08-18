@@ -1,4 +1,4 @@
-package filemanager
+package http
 
 import (
 	"encoding/json"
@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/asdine/storm"
+	fm "github.com/hacdias/filemanager"
 )
 
 type modifyRequest struct {
@@ -19,12 +20,12 @@ type modifyRequest struct {
 
 type modifyUserRequest struct {
 	*modifyRequest
-	Data *User `json:"data"`
+	Data *fm.User `json:"data"`
 }
 
 // usersHandler is the entry point of the users API. It's just a router
 // to send the request to its
-func usersHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func usersHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// If the user isn't admin and isn't making a PUT
 	// request, then return forbidden.
 	if !c.User.Admin && r.Method != http.MethodPut {
@@ -64,7 +65,7 @@ func getUserID(r *http.Request) (int, error) {
 // getUser returns the user which is present in the request
 // body. If the body is empty or the JSON is invalid, it
 // returns an error.
-func getUser(r *http.Request) (*User, string, error) {
+func getUser(r *http.Request) (*fm.User, string, error) {
 	// Checks if the request body is empty.
 	if r.Body == nil {
 		return nil, "", errEmptyRequest
@@ -85,7 +86,7 @@ func getUser(r *http.Request) (*User, string, error) {
 	return mod.Data, mod.Which, nil
 }
 
-func usersGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func usersGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Request for the default user data.
 	if r.URL.Path == "/base" {
 		return renderJSON(w, c.DefaultUser)
@@ -131,7 +132,7 @@ func usersGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	return http.StatusNotFound, errUserNotExist
 }
 
-func usersPostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func usersPostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	if r.URL.Path != "/" {
 		return http.StatusMethodNotAllowed, nil
 	}
@@ -231,7 +232,7 @@ func checkFS(path string) (int, error) {
 	return 0, nil
 }
 
-func usersDeleteHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func usersDeleteHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	if r.URL.Path == "/" {
 		return http.StatusMethodNotAllowed, nil
 	}
@@ -262,7 +263,7 @@ func usersDeleteHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 	return http.StatusOK, nil
 }
 
-func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func usersPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// New users should be created on /api/users.
 	if r.URL.Path == "/" {
 		return http.StatusMethodNotAllowed, nil

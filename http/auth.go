@@ -1,4 +1,4 @@
-package filemanager
+package http
 
 import (
 	"crypto/rand"
@@ -11,17 +11,18 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
+	fm "github.com/hacdias/filemanager"
 )
 
 // authHandler proccesses the authentication for the user.
-func authHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func authHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// NoAuth instances shouldn't call this method.
 	if c.NoAuth {
 		return 0, nil
 	}
 
 	// Receive the credentials from the request and unmarshal them.
-	var cred User
+	var cred fm.User
 	if r.Body == nil {
 		return http.StatusForbidden, nil
 	}
@@ -48,7 +49,7 @@ func authHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int
 
 // renewAuthHandler is used when the front-end already has a JWT token
 // and is checking if it is up to date. If so, updates its info.
-func renewAuthHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func renewAuthHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	ok, u := validateAuth(c, r)
 	if !ok {
 		return http.StatusForbidden, nil
@@ -60,16 +61,16 @@ func renewAuthHandler(c *RequestContext, w http.ResponseWriter, r *http.Request)
 
 // claims is the JWT claims.
 type claims struct {
-	User
+	fm.User
 	NoAuth bool `json:"noAuth"`
 	jwt.StandardClaims
 }
 
 // printToken prints the final JWT token to the user.
-func printToken(c *RequestContext, w http.ResponseWriter) (int, error) {
+func printToken(c *fm.Context, w http.ResponseWriter) (int, error) {
 	// Creates a copy of the user and removes it password
 	// hash so it never arrives to the user.
-	u := User{}
+	u := fm.User{}
 	u = *c.User
 	u.Password = ""
 
@@ -119,7 +120,7 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 
 // validateAuth is used to validate the authentication and returns the
 // User if it is valid.
-func validateAuth(c *RequestContext, r *http.Request) (bool, *User) {
+func validateAuth(c *fm.Context, r *http.Request) (bool, *fm.User) {
 	if c.NoAuth {
 		c.User = c.DefaultUser
 		return true, c.User

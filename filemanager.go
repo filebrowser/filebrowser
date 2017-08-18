@@ -60,26 +60,12 @@ import (
 	"os"
 	"os/exec"
 	"reflect"
-	"regexp"
 	"strings"
-	"time"
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/asdine/storm"
-	"github.com/hacdias/fileutils"
 	"github.com/mholt/caddy"
 	"github.com/robfig/cron"
-)
-
-var (
-	errUserExist          = errors.New("user already exists")
-	errUserNotExist       = errors.New("user does not exist")
-	errEmptyRequest       = errors.New("request body is empty")
-	errEmptyPassword      = errors.New("password is empty")
-	errEmptyUsername      = errors.New("username is empty")
-	errEmptyScope         = errors.New("scope is empty")
-	errWrongDataType      = errors.New("wrong data type")
-	errInvalidUpdateField = errors.New("invalid field to update")
 )
 
 // FileManager is a file manager instance. It should be creating using the
@@ -111,8 +97,6 @@ type FileManager struct {
 	// there will only exist one user, called "admin".
 	NoAuth bool
 
-	// staticgen is the name of the current static website generator.
-	staticgen string
 	// StaticGen is the static websit generator handler.
 	StaticGen StaticGen
 
@@ -124,82 +108,18 @@ type FileManager struct {
 
 	// A map of events to a slice of commands.
 	Commands map[string][]string
+
+	Store *Store
+}
+
+type Store struct {
+	Users *UsersStore
 }
 
 // Command is a command function.
 type Command func(r *http.Request, m *FileManager, u *User) error
 
-// User contains the configuration for each user.
-type User struct {
-	// ID is the required primary key with auto increment0
-	ID int `storm:"id,increment"`
-
-	// Username is the user username used to login.
-	Username string `json:"username" storm:"index,unique"`
-
-	// The hashed password. This never reaches the front-end because it's temporarily
-	// emptied during JSON marshall.
-	Password string `json:"password"`
-
-	// Tells if this user is an admin.
-	Admin bool `json:"admin"`
-
-	// FileSystem is the virtual file system the user has access.
-	FileSystem fileutils.Dir `json:"filesystem"`
-
-	// Rules is an array of access and deny rules.
-	Rules []*Rule `json:"rules"`
-
-	// Custom styles for this user.
-	CSS string `json:"css"`
-
-	// Locale is the language of the user.
-	Locale string `json:"locale"`
-
-	// These indicate if the user can perform certain actions.
-	AllowNew      bool `json:"allowNew"`      // Create files and folders
-	AllowEdit     bool `json:"allowEdit"`     // Edit/rename files
-	AllowCommands bool `json:"allowCommands"` // Execute commands
-	AllowPublish  bool `json:"allowPublish"`  // Publish content (to use with static gen)
-
-	// Commands is the list of commands the user can execute.
-	Commands []string `json:"commands"`
-}
-
-// Rule is a dissalow/allow rule.
-type Rule struct {
-	// Regex indicates if this rule uses Regular Expressions or not.
-	Regex bool `json:"regex"`
-
-	// Allow indicates if this is an allow rule. Set 'false' to be a disallow rule.
-	Allow bool `json:"allow"`
-
-	// Path is the corresponding URL path for this rule.
-	Path string `json:"path"`
-
-	// Regexp is the regular expression. Only use this when 'Regex' was set to true.
-	Regexp *Regexp `json:"regexp"`
-}
-
-// Regexp is a regular expression wrapper around native regexp.
-type Regexp struct {
-	Raw    string `json:"raw"`
-	regexp *regexp.Regexp
-}
-
-// DefaultUser is used on New, when no 'base' user is provided.
-var DefaultUser = User{
-	AllowCommands: true,
-	AllowEdit:     true,
-	AllowNew:      true,
-	AllowPublish:  true,
-	Commands:      []string{},
-	Rules:         []*Rule{},
-	CSS:           "",
-	Admin:         true,
-	Locale:        "en",
-	FileSystem:    fileutils.Dir("."),
-}
+/*
 
 // New creates a new File Manager instance. If 'database' file already
 // exists, it will load the users from there. Otherwise, a new user
@@ -308,7 +228,7 @@ func New(database string, base User) (*FileManager, error) {
 	m.cron.Start()
 
 	return m, nil
-}
+} */
 
 // RootURL returns the actual URL where
 // File Manager interface can be accessed.
@@ -336,7 +256,7 @@ func (m *FileManager) SetBaseURL(url string) {
 
 // ServeHTTP handles the request.
 func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	code, err := serveHTTP(&RequestContext{
+	/* code, err := serveHTTP(&RequestContext{
 		FileManager: m,
 		User:        nil,
 		File:        nil,
@@ -355,66 +275,32 @@ func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Print(err)
 		w.Write([]byte(err.Error()))
-	}
+	} */
 }
 
-// EnableStaticGen attaches a static generator to the current File Manager
-// instance.
-func (m *FileManager) EnableStaticGen(data StaticGen) error {
-	if reflect.TypeOf(data).Kind() != reflect.Ptr {
+// Attach attaches a static generator to the current File Manager.
+func (m *FileManager) Attach(s StaticGen) error {
+	if reflect.TypeOf(s).Kind() != reflect.Ptr {
 		return errors.New("data should be a pointer to interface, not interface")
 	}
 
-	if h, ok := data.(*Hugo); ok {
-		return m.enableHugo(h)
-	}
-
-	if j, ok := data.(*Jekyll); ok {
-		return m.enableJekyll(j)
-	}
-
-	return errors.New("unknown static website generator")
-}
-
-func (m *FileManager) enableHugo(h *Hugo) error {
-	if err := h.find(); err != nil {
+	err := s.Setup()
+	if err != nil {
 		return err
 	}
 
-	m.staticgen = "hugo"
-	m.StaticGen = h
+	m.StaticGen = s
 
-	err := m.db.Get("staticgen", "hugo", h)
+	// TODO: Save...
+	/* 	err := m.db.Get("staticgen", "hugo", h)
 	if err != nil && err == storm.ErrNotFound {
 		err = m.db.Set("staticgen", "hugo", *h)
 	}
-
+	*/
 	return nil
 }
 
-func (m *FileManager) enableJekyll(j *Jekyll) error {
-	if err := j.find(); err != nil {
-		return err
-	}
-
-	if len(j.Args) == 0 {
-		j.Args = []string{"build"}
-	}
-
-	if j.Args[0] != "build" {
-		j.Args = append([]string{"build"}, j.Args...)
-	}
-
-	m.staticgen = "jekyll"
-	m.StaticGen = j
-
-	err := m.db.Get("staticgen", "jekyll", j)
-	if err != nil && err == storm.ErrNotFound {
-		err = m.db.Set("staticgen", "jekyll", *j)
-	}
-
-	return nil
-}
+/*
 
 // shareCleaner removes sharing links that are no longer active.
 // This function is set to run periodically.
@@ -437,38 +323,7 @@ func (m FileManager) shareCleaner() {
 			}
 		}
 	}
-}
-
-// Allowed checks if the user has permission to access a directory/file.
-func (u User) Allowed(url string) bool {
-	var rule *Rule
-	i := len(u.Rules) - 1
-
-	for i >= 0 {
-		rule = u.Rules[i]
-
-		if rule.Regex {
-			if rule.Regexp.MatchString(url) {
-				return rule.Allow
-			}
-		} else if strings.HasPrefix(url, rule.Path) {
-			return rule.Allow
-		}
-
-		i--
-	}
-
-	return true
-}
-
-// MatchString checks if this string matches the regular expression.
-func (r *Regexp) MatchString(s string) bool {
-	if r.regexp == nil {
-		r.regexp = regexp.MustCompile(r.Raw)
-	}
-
-	return r.regexp.MatchString(s)
-}
+} */
 
 // Runner runs the commands for a certain event type.
 func (m FileManager) Runner(event string, path string) error {

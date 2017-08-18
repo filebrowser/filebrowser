@@ -1,4 +1,4 @@
-package filemanager
+package http
 
 import (
 	"io"
@@ -9,13 +9,14 @@ import (
 	"path/filepath"
 	"strings"
 
+	fm "github.com/hacdias/filemanager"
 	"github.com/hacdias/fileutils"
 	"github.com/mholt/archiver"
 )
 
 // downloadHandler creates an archive in one of the supported formats (zip, tar,
 // tar.gz or tar.bz2) and sends it to be downloaded.
-func downloadHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func downloadHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	query := r.URL.Query().Get("format")
 
 	// If the file isn't a directory, serve it using http.ServeFile. We display it

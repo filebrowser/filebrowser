@@ -1,4 +1,4 @@
-package filemanager
+package http
 
 import (
 	"bytes"
@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	fm "github.com/hacdias/filemanager"
 )
 
 var upgrader = websocket.Upgrader{
@@ -26,7 +27,7 @@ var (
 )
 
 // command handles the requests for VCS related commands: git, svn and mercurial
-func command(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func command(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Upgrades the connection to a websocket and checks for errors.
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -239,7 +240,7 @@ func parseSearch(value string) *searchOptions {
 }
 
 // search searches for a file or directory.
-func search(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func search(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Upgrades the connection to a websocket and checks for errors.
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {

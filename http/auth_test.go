@@ -1,4 +1,4 @@
-package filemanager
+package http
 
 import (
 	"net/http"
