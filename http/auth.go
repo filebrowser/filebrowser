@@ -1,13 +1,10 @@
 package http
 
 import (
-	"crypto/rand"
 	"encoding/json"
 	"net/http"
 	"strings"
 	"time"
-
-	"golang.org/x/crypto/bcrypt"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
@@ -33,13 +30,13 @@ func authHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	// Checks if the user exists.
-	u, ok := c.Users[cred.Username]
-	if !ok {
+	u, err := c.Store.Users.Get(cred.ID)
+	if err != nil {
 		return http.StatusForbidden, nil
 	}
 
 	// Checks if the password is correct.
-	if !checkPasswordHash(cred.Password, u.Password) {
+	if !fm.CheckPasswordHash(cred.Password, u.Password) {
 		return http.StatusForbidden, nil
 	}
 
@@ -86,7 +83,7 @@ func printToken(c *fm.Context, w http.ResponseWriter) (int, error) {
 
 	// Creates the token and signs it.
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signed, err := token.SignedString(c.key)
+	signed, err := token.SignedString(c.Key)
 
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -127,7 +124,7 @@ func validateAuth(c *fm.Context, r *http.Request) (bool, *fm.User) {
 	}
 
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
-		return c.key, nil
+		return c.Key, nil
 	}
 	var claims claims
 	token, err := request.ParseFromRequestWithClaims(r,
@@ -140,38 +137,11 @@ func validateAuth(c *fm.Context, r *http.Request) (bool, *fm.User) {
 		return false, nil
 	}
 
-	u, ok := c.Users[claims.User.Username]
-	if !ok {
+	u, err := c.Store.Users.Get(claims.User.ID)
+	if err != nil {
 		return false, nil
 	}
 
 	c.User = u
 	return true, u
-}
-
-// hashPassword generates an hash from a password using bcrypt.
-func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	return string(bytes), err
-}
-
-// checkPasswordHash compares a password with an hash to check if they match.
-func checkPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
-}
-
-// generateRandomBytes returns securely generated random bytes.
-// It will return an error if the system's secure random
-// number generator fails to function correctly, in which
-// case the caller should not continue.
-func generateRandomBytes(n int) ([]byte, error) {
-	b := make([]byte, n)
-	_, err := rand.Read(b)
-	// Note that err == nil only if we read len(b) bytes.
-	if err != nil {
-		return nil, err
-	}
-
-	return b, nil
 }

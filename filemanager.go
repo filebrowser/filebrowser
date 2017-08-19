@@ -61,6 +61,7 @@ import (
 	"os/exec"
 	"reflect"
 	"strings"
+	"time"
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/asdine/storm"
@@ -71,17 +72,14 @@ import (
 // FileManager is a file manager instance. It should be creating using the
 // 'New' function and not directly.
 type FileManager struct {
-	// The BoltDB database for this instance.
-	db *storm.DB
+	// Job cron.
+	Cron *cron.Cron
 
 	// The key used to sign the JWT tokens.
-	key []byte
+	Key []byte
 
 	// The static assets.
-	assets *rice.Box
-
-	// Job cron.
-	cron *cron.Cron
+	Assets *rice.Box
 
 	// PrefixURL is a part of the URL that is already trimmed from the request URL before it
 	// arrives to our handlers. It may be useful when using File Manager as a middleware
@@ -103,66 +101,42 @@ type FileManager struct {
 	// The Default User needed to build the New User page.
 	DefaultUser *User
 
-	// Users is a map with the different configurations for each user.
-	Users map[string]*User
-
 	// A map of events to a slice of commands.
 	Commands map[string][]string
 
 	Store *Store
 }
 
-type Store struct {
-	Users *UsersStore
-}
-
 // Command is a command function.
 type Command func(r *http.Request, m *FileManager, u *User) error
 
-/*
-
-// New creates a new File Manager instance. If 'database' file already
-// exists, it will load the users from there. Otherwise, a new user
-// will be created using the 'base' variable. The 'base' User should
-// not have the Password field hashed.
-func New(database string, base User) (*FileManager, error) {
+func (m *FileManager) Load() error {
 	// Creates a new File Manager instance with the Users
 	// map and Assets box.
-	m := &FileManager{
-		Users:  map[string]*User{},
-		cron:   cron.New(),
-		assets: rice.MustFindBox("./assets/dist"),
-	}
-
-	// Tries to open a database on the location provided. This
-	// function will automatically create a new one if it doesn't
-	// exist.
-	db, err := storm.Open(database)
-	if err != nil {
-		return nil, err
-	}
+	m.Assets = rice.MustFindBox("./assets/dist")
+	m.Cron = cron.New()
 
 	// Tries to get the encryption key from the database.
 	// If it doesn't exist, create a new one of 256 bits.
-	err = db.Get("config", "key", &m.key)
-	if err != nil && err == storm.ErrNotFound {
+	err := m.Store.Config.Get("key", &m.Key)
+	if err != nil && err == ErrNotExist {
 		var bytes []byte
-		bytes, err = generateRandomBytes(64)
+		bytes, err = GenerateRandomBytes(64)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
-		m.key = bytes
-		err = db.Set("config", "key", m.key)
+		m.Key = bytes
+		err = m.Store.Config.Save("key", m.Key)
 	}
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// Tries to get the event commands from the database.
 	// If they don't exist, initialize them.
-	err = db.Get("config", "commands", &m.Commands)
+	err = m.Store.Config.Get("commands", &m.Commands)
 	if err != nil && err == storm.ErrNotFound {
 		m.Commands = map[string][]string{
 			"before_save":    {},
@@ -170,35 +144,29 @@ func New(database string, base User) (*FileManager, error) {
 			"before_publish": {},
 			"after_publish":  {},
 		}
-		err = db.Set("config", "commands", m.Commands)
+		err = m.Store.Config.Save("commands", m.Commands)
 	}
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	// Tries to fetch the users from the database and if there are
-	// any, add them to the current File Manager instance.
-	var users []User
-	err = db.All(&users)
+	// Tries to fetch the users from the database.
+	users, err := m.Store.Users.Gets()
 	if err != nil {
-		return nil, err
-	}
-
-	for i := range users {
-		m.Users[users[i].Username] = &users[i]
+		return err
 	}
 
 	// If there are no users in the database, it creates a new one
 	// based on 'base' User that must be provided by the function caller.
 	if len(users) == 0 {
-		u := base
+		u := *m.DefaultUser
 		u.Username = "admin"
 
 		// Hashes the password.
-		u.Password, err = hashPassword("admin")
+		u.Password, err = HashPassword("admin")
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		// The first user must be an administrator.
@@ -209,26 +177,19 @@ func New(database string, base User) (*FileManager, error) {
 		u.AllowPublish = true
 
 		// Saves the user to the database.
-		if err := db.Save(&u); err != nil {
-			return nil, err
+		if err := m.Store.Users.Save(&u); err != nil {
+			return err
 		}
-
-		m.Users[u.Username] = &u
 	}
 
-	// Attaches db to this File Manager instance.
-	m.db = db
+	m.DefaultUser.Username = ""
+	m.DefaultUser.Password = ""
 
-	// Create the default user, making a copy of the base.
-	base.Username = ""
-	base.Password = ""
-	m.DefaultUser = &base
+	m.Cron.AddFunc("@hourly", m.ShareCleaner)
+	m.Cron.Start()
 
-	m.cron.AddFunc("@hourly", m.shareCleaner)
-	m.cron.Start()
-
-	return m, nil
-} */
+	return nil
+}
 
 // RootURL returns the actual URL where
 // File Manager interface can be accessed.
@@ -291,24 +252,19 @@ func (m *FileManager) Attach(s StaticGen) error {
 
 	m.StaticGen = s
 
-	// TODO: Save...
-	/* 	err := m.db.Get("staticgen", "hugo", h)
-	if err != nil && err == storm.ErrNotFound {
-		err = m.db.Set("staticgen", "hugo", *h)
+	err = m.Store.Config.Get("staticgen_"+s.Name(), s)
+	if err == ErrNotExist {
+		return m.Store.Config.Save("staticgen_"+s.Name(), s)
 	}
-	*/
-	return nil
+
+	return err
 }
 
-/*
-
-// shareCleaner removes sharing links that are no longer active.
+// ShareCleaner removes sharing links that are no longer active.
 // This function is set to run periodically.
-func (m FileManager) shareCleaner() {
-	var links []shareLink
-
+func (m FileManager) ShareCleaner() {
 	// Get all links.
-	err := m.db.All(&links)
+	links, err := m.Store.Share.Gets()
 	if err != nil {
 		log.Print(err)
 		return
@@ -317,13 +273,13 @@ func (m FileManager) shareCleaner() {
 	// Find the expired ones.
 	for i := range links {
 		if links[i].Expires && links[i].ExpireDate.Before(time.Now()) {
-			err = m.db.DeleteStruct(&links[i])
+			err = m.Store.Share.Delete(links[i].Hash)
 			if err != nil {
 				log.Print(err)
 			}
 		}
 	}
-} */
+}
 
 // Runner runs the commands for a certain event type.
 func (m FileManager) Runner(event string, path string) error {

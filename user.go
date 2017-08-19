@@ -1,10 +1,26 @@
 package filemanager
 
 import (
+	"crypto/rand"
+	"errors"
 	"regexp"
 	"strings"
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/hacdias/fileutils"
+)
+
+var (
+	ErrExist              = errors.New("the resource already exists")
+	ErrNotExist           = errors.New("the resource does not exist")
+	ErrEmptyRequest       = errors.New("request body is empty")
+	ErrEmptyPassword      = errors.New("password is empty")
+	ErrEmptyUsername      = errors.New("username is empty")
+	ErrEmptyScope         = errors.New("scope is empty")
+	ErrWrongDataType      = errors.New("wrong data type")
+	ErrInvalidUpdateField = errors.New("invalid field to update")
 )
 
 // DefaultUser is used on New, when no 'base' user is provided.
@@ -110,10 +126,24 @@ func (r *Regexp) MatchString(s string) bool {
 	return r.regexp.MatchString(s)
 }
 
+type ShareLink struct {
+	Hash       string    `json:"hash" storm:"id,index"`
+	Path       string    `json:"path" storm:"index"`
+	Expires    bool      `json:"expires"`
+	ExpireDate time.Time `json:"expireDate"`
+}
+
+type Store struct {
+	Users  UsersStore
+	Config ConfigStore
+	Share  ShareStore
+}
+
 type UsersStore interface {
 	Get(id int) (*User, error)
 	Gets() ([]*User, error)
-	Save(u *User, fields ...string) error
+	Save(u *User) error
+	Update(u *User, fields ...string) error
 	Delete(id int) error
 }
 
@@ -123,6 +153,36 @@ type ConfigStore interface {
 }
 
 type ShareStore interface {
-	Get(hash string)
-	Save()
+	Get(hash string) (*ShareLink, error)
+	GetByPath(path string) ([]*ShareLink, error)
+	Gets() ([]*ShareLink, error)
+	Save(s *ShareLink) error
+	Delete(hash string) error
+}
+
+// HashPassword generates an hash from a password using bcrypt.
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
+}
+
+// CheckPasswordHash compares a password with an hash to check if they match.
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
+// GenerateRandomBytes returns securely generated random bytes.
+// It will return an fm.Error if the system's secure random
+// number generator fails to function correctly, in which
+// case the caller should not continue.
+func GenerateRandomBytes(n int) ([]byte, error) {
+	b := make([]byte, n)
+	_, err := rand.Read(b)
+	// Note that err == nil only if we read len(b) bytes.
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
 }
