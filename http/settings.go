@@ -27,7 +27,7 @@ type option struct {
 func parsePutSettingsRequest(r *http.Request) (*modifySettingsRequest, error) {
 	// Checks if the request body is empty.
 	if r.Body == nil {
-		return nil, errEmptyRequest
+		return nil, fm.ErrEmptyRequest
 	}
 
 	// Parses the request body and checks if it's well formed.
@@ -39,7 +39,7 @@ func parsePutSettingsRequest(r *http.Request) (*modifySettingsRequest, error) {
 
 	// Checks if the request type is right.
 	if mod.What != "settings" {
-		return nil, errWrongDataType
+		return nil, fm.ErrWrongDataType
 	}
 
 	return mod, nil
@@ -103,9 +103,10 @@ func settingsPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (
 	if err != nil {
 		return http.StatusBadRequest, err
 	}
+
 	// Update the commands.
 	if mod.Which == "commands" {
-		if err := c.db.Set("config", "commands", mod.Data.Commands); err != nil {
+		if err := c.Store.Config.Save("commands", mod.Data.Commands); err != nil {
 			return http.StatusInternalServerError, err
 		}
 
@@ -120,7 +121,7 @@ func settingsPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (
 			return http.StatusInternalServerError, err
 		}
 
-		err = c.db.Set("staticgen", c.staticgen, c.StaticGen)
+		err = c.Store.Config.Save("staticgen_"+c.StaticGen.Name(), c.StaticGen)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}

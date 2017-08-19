@@ -45,7 +45,7 @@ func TestRenewHandler(t *testing.T) {
 	// First, we have to make an auth request to get the user authenticated,
 	r, err := http.NewRequest("POST", "/api/auth/get", strings.NewReader(defaultCredentials))
 	if err != nil {
-		t.Fatal(err)
+		t.Fatal(fm.Err)
 	}
 
 	w := httptest.NewRecorder()
@@ -60,7 +60,7 @@ func TestRenewHandler(t *testing.T) {
 	// Test renew authorization via Authorization Header.
 	r, err = http.NewRequest("GET", "/api/auth/renew", nil)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatal(fm.Err)
 	}
 
 	r.Header.Set("Authorization", "Bearer "+token)
@@ -74,7 +74,7 @@ func TestRenewHandler(t *testing.T) {
 	// Test renew authorization via cookie field.
 	r, err = http.NewRequest("GET", "/api/auth/renew", nil)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatal(fm.Err)
 	}
 
 	r.AddCookie(&http.Cookie{

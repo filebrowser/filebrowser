@@ -64,9 +64,9 @@ func resourceHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 
 func resourceGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Gets the information of the directory/file.
-	f, err := getInfo(r.URL, c.FileManager, c.User)
+	f, err := fm.GetInfo(r.URL, c.FileManager, c.User)
 	if err != nil {
-		return errorToHTTP(err, false), err
+		return ErrorToHTTP(err, false), err
 	}
 
 	// If it's a dir and the path doesn't end with a trailing slash,
@@ -83,7 +83,7 @@ func resourceGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (
 
 	// Tries to get the file type.
 	if err = f.GetFileType(true); err != nil {
-		return errorToHTTP(err, true), err
+		return ErrorToHTTP(err, true), err
 	}
 
 	// Serve a preview if the file can't be edited or the
@@ -97,7 +97,7 @@ func resourceGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (
 	f.Kind = "editor"
 
 	// Tries to get the editor data.
-	if err = f.getEditor(); err != nil {
+	if err = f.GetEditor(); err != nil {
 		return http.StatusInternalServerError, err
 	}
 
@@ -109,11 +109,11 @@ func listingHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int,
 	f.Kind = "listing"
 
 	// Tries to get the listing data.
-	if err := f.getListing(c, r); err != nil {
-		return errorToHTTP(err, true), err
+	if err := f.GetListing(c.User, r); err != nil {
+		return ErrorToHTTP(err, true), err
 	}
 
-	listing := f.listing
+	listing := f.Listing
 
 	// Defines the cookie scope.
 	cookieScope := c.RootURL()
@@ -144,7 +144,7 @@ func resourceDeleteHandler(c *fm.Context, w http.ResponseWriter, r *http.Request
 	// Remove the file or folder.
 	err := c.User.FileSystem.RemoveAll(r.URL.Path)
 	if err != nil {
-		return errorToHTTP(err, true), err
+		return ErrorToHTTP(err, true), err
 	}
 
 	return http.StatusOK, nil
@@ -160,7 +160,7 @@ func resourcePostPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Reques
 	}
 
 	// Discard any invalid upload before returning to avoid connection
-	// reset error.
+	// reset fm.Error.
 	defer func() {
 		io.Copy(ioutil.Discard, r.Body)
 	}()
@@ -175,13 +175,13 @@ func resourcePostPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Reques
 
 		// Otherwise we try to create the directory.
 		err := c.User.FileSystem.Mkdir(r.URL.Path, 0776)
-		return errorToHTTP(err, false), err
+		return ErrorToHTTP(err, false), err
 	}
 
 	// If using POST method, we are trying to create a new file so it is not
-	// desirable to override an already existent file. Thus, we check
+	// desirable to ovfm.Erride an already existent file. Thus, we check
 	// if the file already exists. If so, we just return a 409 Conflict.
-	if r.Method == http.MethodPost && r.Header.Get("Action") != "override" {
+	if r.Method == http.MethodPost && r.Header.Get("Action") != "ovfm.Erride" {
 		if _, err := c.User.FileSystem.Stat(r.URL.Path); err == nil {
 			return http.StatusConflict, errors.New("There is already a file on that path")
 		}
@@ -190,20 +190,20 @@ func resourcePostPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Reques
 	// Create/Open the file.
 	f, err := c.User.FileSystem.OpenFile(r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0776)
 	if err != nil {
-		return errorToHTTP(err, false), err
+		return ErrorToHTTP(err, false), err
 	}
 	defer f.Close()
 
 	// Copies the new content for the file.
 	_, err = io.Copy(f, r.Body)
 	if err != nil {
-		return errorToHTTP(err, false), err
+		return ErrorToHTTP(err, false), err
 	}
 
 	// Gets the info about the file.
 	fi, err := f.Stat()
 	if err != nil {
-		return errorToHTTP(err, false), err
+		return ErrorToHTTP(err, false), err
 	}
 
 	// Check if this instance has a Static Generator and handles publishing
@@ -242,7 +242,7 @@ func resourcePublishSchedule(c *fm.Context, w http.ResponseWriter, r *http.Reque
 		return http.StatusInternalServerError, err
 	}
 
-	c.cron.AddFunc(t.Format("05 04 15 02 01 *"), func() {
+	c.Cron.AddFunc(t.Format("05 04 15 02 01 *"), func() {
 		_, err := resourcePublish(c, w, r)
 		if err != nil {
 			log.Print(err)
@@ -283,7 +283,7 @@ func resourcePatchHandler(c *fm.Context, w http.ResponseWriter, r *http.Request)
 	action := r.Header.Get("Action")
 	dst, err := url.QueryUnescape(dst)
 	if err != nil {
-		return errorToHTTP(err, true), err
+		return ErrorToHTTP(err, true), err
 	}
 
 	src := r.URL.Path
@@ -298,7 +298,7 @@ func resourcePatchHandler(c *fm.Context, w http.ResponseWriter, r *http.Request)
 		err = c.User.FileSystem.Rename(src, dst)
 	}
 
-	return errorToHTTP(err, true), err
+	return ErrorToHTTP(err, true), err
 }
 
 // displayMode obtains the display mode from the Cookie.

@@ -2,7 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"errors"
 	"html/template"
 	"net/http"
 	"os"
@@ -13,21 +12,10 @@ import (
 	fm "github.com/hacdias/filemanager"
 )
 
-var (
-	errUserExist          = errors.New("user already exists")
-	errUserNotExist       = errors.New("user does not exist")
-	errEmptyRequest       = errors.New("request body is empty")
-	errEmptyPassword      = errors.New("password is empty")
-	errEmptyUsername      = errors.New("username is empty")
-	errEmptyScope         = errors.New("scope is empty")
-	errWrongDataType      = errors.New("wrong data type")
-	errInvalidUpdateField = errors.New("invalid field to update")
-)
-
 // ServeHTTP is the main entry point of this HTML application.
 func ServeHTTP(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Checks if the URL contains the baseURL and strips it. Otherwise, it just
-	// returns a 404 error because we're not supposed to be here!
+	// returns a 404 fm.Error because we're not supposed to be here!
 	p := strings.TrimPrefix(r.URL.Path, c.BaseURL)
 
 	if len(p) >= len(r.URL.Path) && c.BaseURL != "" {
@@ -41,7 +29,7 @@ func ServeHTTP(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, erro
 	if r.URL.Path == "/sw.js" {
 		return renderFile(
 			c, w,
-			c.assets.MustString("sw.js"),
+			c.Assets.MustString("sw.js"),
 			"application/javascript",
 		)
 	}
@@ -83,7 +71,7 @@ func ServeHTTP(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, erro
 
 	return renderFile(
 		c, w,
-		c.assets.MustString("index.html"),
+		c.Assets.MustString("index.html"),
 		"text/html",
 	)
 }
@@ -91,13 +79,13 @@ func ServeHTTP(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, erro
 // staticHandler handles the static assets path.
 func staticHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	if r.URL.Path != "/static/manifest.json" {
-		http.FileServer(c.assets.HTTPBox()).ServeHTTP(w, r)
+		http.FileServer(c.Assets.HTTPBox()).ServeHTTP(w, r)
 		return 0, nil
 	}
 
 	return renderFile(
 		c, w,
-		c.assets.MustString("static/manifest.json"),
+		c.Assets.MustString("static/manifest.json"),
 		"application/json",
 	)
 }
@@ -141,7 +129,7 @@ func apiHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, err
 		var err error
 		c.File, err = fm.GetInfo(r.URL, c.FileManager, c.User)
 		if err != nil {
-			return errorToHTTP(err, false), err
+			return ErrorToHTTP(err, false), err
 		}
 	}
 
@@ -177,7 +165,7 @@ func checksumHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 	query := r.URL.Query().Get("algo")
 
 	val, err := c.File.Checksum(query)
-	if err == errInvalidOption {
+	if err == fm.ErrInvalidOption {
 		return http.StatusBadRequest, err
 	} else if err != nil {
 		return http.StatusInternalServerError, err
@@ -211,7 +199,7 @@ func renderFile(c *fm.Context, w http.ResponseWriter, file string, contentType s
 
 	err := tpl.Execute(w, map[string]interface{}{
 		"BaseURL":   c.RootURL(),
-		"StaticGen": c.staticgen,
+		"StaticGen": c.StaticGen.Name(),
 	})
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -221,12 +209,11 @@ func renderFile(c *fm.Context, w http.ResponseWriter, file string, contentType s
 }
 
 func sharePage(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
-	var s shareLink
-	err := c.db.One("Hash", r.URL.Path, &s)
+	s, err := c.Store.Share.Get(r.URL.Path)
 	if err == storm.ErrNotFound {
 		return renderFile(
 			c, w,
-			c.assets.MustString("static/share/404.html"),
+			c.Assets.MustString("static/share/404.html"),
 			"text/html",
 		)
 	}
@@ -236,10 +223,10 @@ func sharePage(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, erro
 	}
 
 	if s.Expires && s.ExpireDate.Before(time.Now()) {
-		c.db.DeleteStruct(&s)
+		c.Store.Share.Delete(s.Hash)
 		return renderFile(
 			c, w,
-			c.assets.MustString("static/share/404.html"),
+			c.Assets.MustString("static/share/404.html"),
 			"text/html",
 		)
 	}
@@ -248,10 +235,10 @@ func sharePage(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, erro
 
 	info, err := os.Stat(s.Path)
 	if err != nil {
-		return errorToHTTP(err, false), err
+		return ErrorToHTTP(err, false), err
 	}
 
-	c.File = &file{
+	c.File = &fm.File{
 		Path:    s.Path,
 		Name:    info.Name(),
 		ModTime: info.ModTime(),
@@ -263,7 +250,7 @@ func sharePage(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, erro
 	dl := r.URL.Query().Get("dl")
 
 	if dl == "" || dl == "0" {
-		tpl := template.Must(template.New("file").Parse(c.assets.MustString("static/share/index.html")))
+		tpl := template.Must(template.New("file").Parse(c.Assets.MustString("static/share/index.html")))
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 		err := tpl.Execute(w, map[string]interface{}{
@@ -303,8 +290,8 @@ func matchURL(first, second string) bool {
 	return strings.HasPrefix(first, second)
 }
 
-// errorToHTTP converts errors to HTTP Status Code.
-func errorToHTTP(err error, gone bool) int {
+// ErrorToHTTP converts errors to HTTP Status Code.
+func ErrorToHTTP(err error, gone bool) int {
 	switch {
 	case err == nil:
 		return http.StatusOK

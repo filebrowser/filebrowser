@@ -24,12 +24,12 @@ import (
 )
 
 var (
-	errInvalidOption = errors.New("Invalid option")
+	ErrInvalidOption = errors.New("Invalid option")
 )
 
 // File contains the information about a particular file or directory.
 type File struct {
-	// Indicates the Kind of view on the front-end (listing, editor or preview).
+	// Indicates the Kind of view on the front-end (Listing, editor or preview).
 	Kind string `json:"kind"`
 	// The name of the file.
 	Name string `json:"name"`
@@ -54,19 +54,19 @@ type File struct {
 	// Stores the content of a text file.
 	Content string `json:"content,omitempty"`
 
-	*listing `json:",omitempty"`
+	*Listing `json:",omitempty"`
 
 	Metadata string `json:"metadata,omitempty"`
 	Language string `json:"language,omitempty"`
 }
 
-// A listing is the context used to fill out a template.
-type listing struct {
+// A Listing is the context used to fill out a template.
+type Listing struct {
 	// The items (files and folders) in the path.
 	Items []*File `json:"items"`
-	// The number of directories in the listing.
+	// The number of directories in the Listing.
 	NumDirs int `json:"numDirs"`
-	// The number of files (items that aren't directories) in the listing.
+	// The number of files (items that aren't directories) in the Listing.
 	NumFiles int `json:"numFiles"`
 	// Which sorting order is used.
 	Sort string `json:"sort"`
@@ -166,7 +166,7 @@ func (i *File) GetListing(u *User, r *http.Request) error {
 		fileinfos = append(fileinfos, i)
 	}
 
-	i.listing = &listing{
+	i.Listing = &Listing{
 		Items:    fileinfos,
 		NumDirs:  dirCount,
 		NumFiles: fileCount,
@@ -304,7 +304,7 @@ func (i File) Checksum(algo string) (string, error) {
 	case "sha512":
 		h = sha512.New()
 	default:
-		return "", errInvalidOption
+		return "", ErrInvalidOption
 	}
 
 	_, err = io.Copy(h, file)
@@ -321,7 +321,7 @@ func (i File) CanBeEdited() bool {
 }
 
 // ApplySort applies the sort order using .Order and .Sort
-func (l listing) ApplySort() {
+func (l Listing) ApplySort() {
 	// Check '.Order' to know how to sort
 	if l.Order == "desc" {
 		switch l.Sort {
@@ -350,10 +350,10 @@ func (l listing) ApplySort() {
 	}
 }
 
-// Implement sorting for listing
-type byName listing
-type bySize listing
-type byModified listing
+// Implement sorting for Listing
+type byName Listing
+type bySize Listing
+type byModified Listing
 
 // By Name
 func (l byName) Len() int {
