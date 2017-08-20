@@ -89,7 +89,7 @@ var (
 // FileManager is a file manager instance. It should be creating using the
 // 'New' function and not directly.
 type FileManager struct {
-	// Job cron.
+	// Cron job to manage schedulings.
 	Cron *cron.Cron
 
 	// The key used to sign the JWT tokens.
@@ -97,6 +97,10 @@ type FileManager struct {
 
 	// The static assets.
 	Assets *rice.Box
+
+	// The Store is used to manage users, shareable links and
+	// other stuff that is saved on the database.
+	Store *Store
 
 	// PrefixURL is a part of the URL that is already trimmed from the request URL before it
 	// arrives to our handlers. It may be useful when using File Manager as a middleware
@@ -121,14 +125,20 @@ type FileManager struct {
 	// A map of events to a slice of commands.
 	Commands map[string][]string
 
-	Store *Store
+	// NewFS should build a new file system for a given path.
+	NewFS FSBuilder
 }
 
 // Command is a command function.
 type Command func(r *http.Request, m *FileManager, u *User) error
 
-// Load loads the configuration from the database.
-func (m *FileManager) Load() error {
+// FSBuilder is the File System Builder.
+type FSBuilder func(scope string) FileSystem
+
+// Setup loads the configuration from the database and configures
+// the Assets and the Cron job. It must always be run after
+// creating a File Manager object.
+func (m *FileManager) Setup() error {
 	// Creates a new File Manager instance with the Users
 	// map and Assets box.
 	m.Assets = rice.MustFindBox("./assets/dist")
@@ -170,7 +180,7 @@ func (m *FileManager) Load() error {
 	}
 
 	// Tries to fetch the users from the database.
-	users, err := m.Store.Users.Gets()
+	users, err := m.Store.Users.Gets(m.NewFS)
 	if err != nil {
 		return err
 	}
@@ -353,8 +363,11 @@ type User struct {
 	// Tells if this user is an admin.
 	Admin bool `json:"admin"`
 
+	// Scope is the path the user has access to.
+	Scope string `json:"filesystem"`
+
 	// FileSystem is the virtual file system the user has access.
-	FileSystem fileutils.Dir `json:"filesystem"`
+	FileSystem FileSystem `json:"-"`
 
 	// Rules is an array of access and deny rules.
 	Rules []*Rule `json:"rules"`
@@ -445,8 +458,8 @@ type Store struct {
 
 // UsersStore is the interface to manage users.
 type UsersStore interface {
-	Get(id int) (*User, error)
-	Gets() ([]*User, error)
+	Get(id int, builder FSBuilder) (*User, error)
+	Gets(builder FSBuilder) ([]*User, error)
 	Save(u *User) error
 	Update(u *User, fields ...string) error
 	Delete(id int) error
@@ -477,6 +490,16 @@ type StaticGen interface {
 	Hook(c *Context, w http.ResponseWriter, r *http.Request) (int, error)
 	Preview(c *Context, w http.ResponseWriter, r *http.Request) (int, error)
 	Publish(c *Context, w http.ResponseWriter, r *http.Request) (int, error)
+}
+
+// FileSystem is the interface to work with the file system.
+type FileSystem interface {
+	Mkdir(name string, perm os.FileMode) error
+	OpenFile(name string, flag int, perm os.FileMode) (*os.File, error)
+	RemoveAll(name string) error
+	Rename(oldName, newName string) error
+	Stat(name string) (os.FileInfo, error)
+	Copy(src, dst string) error
 }
 
 // Context contains the needed information to make handlers work.

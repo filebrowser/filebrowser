@@ -37,7 +37,7 @@ func resourceHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 		return resourceDeleteHandler(c, w, r)
 	case http.MethodPut:
 		// Before save command handler.
-		path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
+		path := filepath.Join(c.User.Scope, r.URL.Path)
 		if err := c.Runner("before_save", path); err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -253,7 +253,7 @@ func resourcePublishSchedule(c *fm.Context, w http.ResponseWriter, r *http.Reque
 }
 
 func resourcePublish(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
-	path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
+	path := filepath.Join(c.User.Scope, r.URL.Path)
 
 	// Before save command handler.
 	if err := c.Runner("before_publish", path); err != nil {

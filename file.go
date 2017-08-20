@@ -79,7 +79,7 @@ func GetInfo(url *url.URL, c *FileManager, u *User) (*File, error) {
 	i := &File{
 		URL:         "/files" + url.String(),
 		VirtualPath: url.Path,
-		Path:        filepath.Join(string(u.FileSystem), url.Path),
+		Path:        filepath.Join(u.Scope, url.Path),
 	}
 
 	info, err := u.FileSystem.Stat(url.Path)

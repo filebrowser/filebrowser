@@ -30,7 +30,7 @@ func authHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	// Checks if the user exists.
-	u, err := c.Store.Users.Get(cred.ID)
+	u, err := c.Store.Users.Get(cred.ID, c.NewFS)
 	if err != nil {
 		return http.StatusForbidden, nil
 	}
@@ -137,7 +137,7 @@ func validateAuth(c *fm.Context, r *http.Request) (bool, *fm.User) {
 		return false, nil
 	}
 
-	u, err := c.Store.Users.Get(claims.User.ID)
+	u, err := c.Store.Users.Get(claims.User.ID, c.NewFS)
 	if err != nil {
 		return false, nil
 	}

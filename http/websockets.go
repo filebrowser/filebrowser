@@ -82,7 +82,7 @@ func command(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error)
 	}
 
 	// Gets the path and initializes a buffer.
-	path := string(c.User.FileSystem) + "/" + r.URL.Path
+	path := c.User.Scope + "/" + r.URL.Path
 	path = filepath.Clean(path)
 	buff := new(bytes.Buffer)
 
@@ -270,7 +270,7 @@ func search(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) 
 	search = parseSearch(value)
 	scope := strings.TrimPrefix(r.URL.Path, "/")
 	scope = "/" + scope
-	scope = string(c.User.FileSystem) + scope
+	scope = c.User.Scope + scope
 	scope = strings.Replace(scope, "\\", "/", -1)
 	scope = filepath.Clean(scope)
 
