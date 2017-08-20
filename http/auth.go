@@ -30,7 +30,7 @@ func authHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	// Checks if the user exists.
-	u, err := c.Store.Users.Get(cred.ID, c.NewFS)
+	u, err := c.Store.Users.GetByUsername(cred.Username, c.NewFS)
 	if err != nil {
 		return http.StatusForbidden, nil
 	}
