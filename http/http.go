@@ -224,10 +224,14 @@ func renderFile(c *fm.Context, w http.ResponseWriter, file string, contentType s
 	tpl := template.Must(template.New("file").Parse(file))
 	w.Header().Set("Content-Type", contentType+"; charset=utf-8")
 
-	err := tpl.Execute(w, map[string]interface{}{
-		"BaseURL":   c.RootURL(),
-		"StaticGen": c.StaticGen.Name(),
-	})
+	data := map[string]interface{}{"BaseURL": c.RootURL()}
+
+	if c.StaticGen != nil {
+		data["StaticGen"] = c.StaticGen.Name()
+	}
+
+	err := tpl.Execute(w, data)
+
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
