@@ -2,6 +2,7 @@ package bolt
 
 import (
 	"github.com/asdine/storm"
+	"github.com/asdine/storm/q"
 	fm "github.com/hacdias/filemanager"
 )
 
@@ -12,6 +13,16 @@ type ShareStore struct {
 func (s ShareStore) Get(hash string) (*fm.ShareLink, error) {
 	var v *fm.ShareLink
 	err := s.DB.One("Hash", hash, &v)
+	if err == storm.ErrNotFound {
+		return v, fm.ErrNotExist
+	}
+
+	return v, err
+}
+
+func (s ShareStore) GetPermanent(path string) (*fm.ShareLink, error) {
+	var v *fm.ShareLink
+	err := s.DB.Select(q.Eq("Path", path), q.Eq("Expires", false)).First(&v)
 	if err == storm.ErrNotFound {
 		return v, fm.ErrNotExist
 	}

@@ -461,6 +461,7 @@ type ConfigStore interface {
 // ShareStore is the interface to manage share links.
 type ShareStore interface {
 	Get(hash string) (*ShareLink, error)
+	GetPermanent(path string) (*ShareLink, error)
 	GetByPath(path string) ([]*ShareLink, error)
 	Gets() ([]*ShareLink, error)
 	Save(s *ShareLink) error
