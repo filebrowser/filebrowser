@@ -7,10 +7,12 @@ import (
 	fm "github.com/hacdias/filemanager"
 )
 
+// UsersStore is a users store.
 type UsersStore struct {
 	DB *storm.DB
 }
 
+// Get gets a user with a certain id from the database.
 func (u UsersStore) Get(id int, builder fm.FSBuilder) (*fm.User, error) {
 	var us *fm.User
 	err := u.DB.One("ID", id, us)
@@ -26,6 +28,7 @@ func (u UsersStore) Get(id int, builder fm.FSBuilder) (*fm.User, error) {
 	return us, nil
 }
 
+// Gets gets all the users from the database.
 func (u UsersStore) Gets(builder fm.FSBuilder) ([]*fm.User, error) {
 	var us []*fm.User
 	err := u.DB.All(us)
@@ -40,6 +43,7 @@ func (u UsersStore) Gets(builder fm.FSBuilder) ([]*fm.User, error) {
 	return us, err
 }
 
+// Updates the whole user object or only certain fields.
 func (u UsersStore) Update(us *fm.User, fields ...string) error {
 	if len(fields) == 0 {
 		return u.Save(us)
@@ -55,10 +59,12 @@ func (u UsersStore) Update(us *fm.User, fields ...string) error {
 	return nil
 }
 
+// Save saves a user to the database.
 func (u UsersStore) Save(us *fm.User) error {
 	return u.DB.Save(us)
 }
 
+// Delete deletes a user from the database.
 func (u UsersStore) Delete(id int) error {
 	return u.DB.DeleteStruct(&fm.User{ID: id})
 }
