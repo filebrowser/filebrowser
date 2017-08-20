@@ -45,7 +45,7 @@ func (j Jekyll) Hook(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 
 // Publish publishes a post.
 func (j Jekyll) Publish(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
-	filename := filepath.Join(string(c.User.FileSystem), r.URL.Path)
+	filename := filepath.Join(c.User.Scope, r.URL.Path)
 
 	// We only run undraft command if it is a file.
 	if err := j.undraft(filename); err != nil {
