@@ -7,7 +7,6 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
-	"errors"
 	"hash"
 	"io"
 	"io/ioutil"
@@ -21,10 +20,6 @@ import (
 	"time"
 
 	"github.com/gohugoio/hugo/parser"
-)
-
-var (
-	ErrInvalidOption = errors.New("Invalid option")
 )
 
 // File contains the information about a particular file or directory.

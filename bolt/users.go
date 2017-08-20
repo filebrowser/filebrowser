@@ -15,7 +15,7 @@ func (u UsersStore) Get(id int) (*fm.User, error) {
 	var us *fm.User
 	err := u.DB.One("ID", id, us)
 	if err == storm.ErrNotFound {
-		return nil, fm.ErrUserNotExist
+		return nil, fm.ErrNotExist
 	}
 
 	if err != nil {

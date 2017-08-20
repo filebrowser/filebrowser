@@ -12,16 +12,24 @@ type ShareStore struct {
 func (s ShareStore) Get(hash string) (*fm.ShareLink, error) {
 	var v *fm.ShareLink
 	err := s.DB.One("Hash", hash, &v)
+	if err == storm.ErrNotFound {
+		return v, fm.ErrNotExist
+	}
+
 	return v, err
 }
 
 func (s ShareStore) GetByPath(hash string) ([]*fm.ShareLink, error) {
 	var v []*fm.ShareLink
 	err := s.DB.Find("Path", hash, &v)
+	if err == storm.ErrNotFound {
+		return v, fm.ErrNotExist
+	}
+
 	return v, err
 }
 
-func (s ShareStore) Gets(hash string) ([]*fm.ShareLink, error) {
+func (s ShareStore) Gets() ([]*fm.ShareLink, error) {
 	var v []*fm.ShareLink
 	err := s.DB.All(&v)
 	return v, err
