@@ -20,6 +20,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+var databases = map[string]*storm.DB{}
+
 // Parse ...
 func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, error) {
 	var (
@@ -190,7 +192,14 @@ func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, erro
 		u.Scope = scope
 		u.FileSystem = fileutils.Dir(scope)
 
-		db, err := storm.Open(database)
+		var db *storm.DB
+		if stored, ok := databases[database]; ok {
+			db = stored
+		} else {
+			db, err = storm.Open(database)
+			databases[database] = db
+		}
+
 		if err != nil {
 			return nil, err
 		}
