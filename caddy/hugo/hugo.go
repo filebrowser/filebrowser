@@ -5,6 +5,7 @@ import (
 
 	"github.com/hacdias/filemanager"
 	"github.com/hacdias/filemanager/caddy/parser"
+	h "github.com/hacdias/filemanager/http"
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
@@ -29,7 +30,7 @@ func (f plugin) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 			continue
 		}
 
-		f.Configs[i].ServeHTTP(w, r)
+		h.Handler(f.Configs[i]).ServeHTTP(w, r)
 		return 0, nil
 	}
 
