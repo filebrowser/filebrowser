@@ -28,6 +28,11 @@ type Jekyll struct {
 	previewPath string
 }
 
+// Name is the plugin's name.
+func (j Jekyll) Name() string {
+	return "jekyll"
+}
+
 // SettingsPath retrieves the correct settings path.
 func (j Jekyll) SettingsPath() string {
 	return "/_config.yml"

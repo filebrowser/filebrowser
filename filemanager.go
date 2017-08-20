@@ -54,19 +54,36 @@
 package filemanager
 
 import (
+	"crypto/rand"
 	"errors"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
 	"reflect"
+	"regexp"
 	"strings"
 	"time"
 
+	"golang.org/x/crypto/bcrypt"
+
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/asdine/storm"
+	"github.com/hacdias/fileutils"
 	"github.com/mholt/caddy"
 	"github.com/robfig/cron"
+)
+
+var (
+	ErrExist              = errors.New("the resource already exists")
+	ErrNotExist           = errors.New("the resource does not exist")
+	ErrEmptyRequest       = errors.New("request body is empty")
+	ErrEmptyPassword      = errors.New("password is empty")
+	ErrEmptyUsername      = errors.New("username is empty")
+	ErrEmptyScope         = errors.New("scope is empty")
+	ErrWrongDataType      = errors.New("wrong data type")
+	ErrInvalidUpdateField = errors.New("invalid field to update")
+	ErrInvalidOption      = errors.New("Invalid option")
 )
 
 // FileManager is a file manager instance. It should be creating using the
@@ -110,6 +127,7 @@ type FileManager struct {
 // Command is a command function.
 type Command func(r *http.Request, m *FileManager, u *User) error
 
+// Load loads the configuration from the database.
 func (m *FileManager) Load() error {
 	// Creates a new File Manager instance with the Users
 	// map and Assets box.
@@ -215,30 +233,6 @@ func (m *FileManager) SetBaseURL(url string) {
 	m.BaseURL = strings.TrimSuffix(url, "/")
 }
 
-// ServeHTTP handles the request.
-func (m *FileManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	/* code, err := serveHTTP(&RequestContext{
-		FileManager: m,
-		User:        nil,
-		File:        nil,
-	}, w, r)
-
-	if code >= 400 {
-		w.WriteHeader(code)
-
-		if err == nil {
-			txt := http.StatusText(code)
-			log.Printf("%v: %v %v\n", r.URL.Path, code, txt)
-			w.Write([]byte(txt))
-		}
-	}
-
-	if err != nil {
-		log.Print(err)
-		w.Write([]byte(err.Error()))
-	} */
-}
-
 // Attach attaches a static generator to the current File Manager.
 func (m *FileManager) Attach(s StaticGen) error {
 	if reflect.TypeOf(s).Kind() != reflect.Ptr {
@@ -328,4 +322,194 @@ func (m FileManager) Runner(event string, path string) error {
 	}
 
 	return nil
+}
+
+// DefaultUser is used on New, when no 'base' user is provided.
+var DefaultUser = User{
+	AllowCommands: true,
+	AllowEdit:     true,
+	AllowNew:      true,
+	AllowPublish:  true,
+	Commands:      []string{},
+	Rules:         []*Rule{},
+	CSS:           "",
+	Admin:         true,
+	Locale:        "en",
+	FileSystem:    fileutils.Dir("."),
+}
+
+// User contains the configuration for each user.
+type User struct {
+	// ID is the required primary key with auto increment0
+	ID int `storm:"id,increment"`
+
+	// Username is the user username used to login.
+	Username string `json:"username" storm:"index,unique"`
+
+	// The hashed password. This never reaches the front-end because it's temporarily
+	// emptied during JSON marshall.
+	Password string `json:"password"`
+
+	// Tells if this user is an admin.
+	Admin bool `json:"admin"`
+
+	// FileSystem is the virtual file system the user has access.
+	FileSystem fileutils.Dir `json:"filesystem"`
+
+	// Rules is an array of access and deny rules.
+	Rules []*Rule `json:"rules"`
+
+	// Custom styles for this user.
+	CSS string `json:"css"`
+
+	// Locale is the language of the user.
+	Locale string `json:"locale"`
+
+	// These indicate if the user can perform certain actions.
+	AllowNew      bool `json:"allowNew"`      // Create files and folders
+	AllowEdit     bool `json:"allowEdit"`     // Edit/rename files
+	AllowCommands bool `json:"allowCommands"` // Execute commands
+	AllowPublish  bool `json:"allowPublish"`  // Publish content (to use with static gen)
+
+	// Commands is the list of commands the user can execute.
+	Commands []string `json:"commands"`
+}
+
+// Allowed checks if the user has permission to access a directory/file.
+func (u User) Allowed(url string) bool {
+	var rule *Rule
+	i := len(u.Rules) - 1
+
+	for i >= 0 {
+		rule = u.Rules[i]
+
+		if rule.Regex {
+			if rule.Regexp.MatchString(url) {
+				return rule.Allow
+			}
+		} else if strings.HasPrefix(url, rule.Path) {
+			return rule.Allow
+		}
+
+		i--
+	}
+
+	return true
+}
+
+// Rule is a dissalow/allow rule.
+type Rule struct {
+	// Regex indicates if this rule uses Regular Expressions or not.
+	Regex bool `json:"regex"`
+
+	// Allow indicates if this is an allow rule. Set 'false' to be a disallow rule.
+	Allow bool `json:"allow"`
+
+	// Path is the corresponding URL path for this rule.
+	Path string `json:"path"`
+
+	// Regexp is the regular expression. Only use this when 'Regex' was set to true.
+	Regexp *Regexp `json:"regexp"`
+}
+
+// Regexp is a regular expression wrapper around native regexp.
+type Regexp struct {
+	Raw    string `json:"raw"`
+	regexp *regexp.Regexp
+}
+
+// MatchString checks if this string matches the regular expression.
+func (r *Regexp) MatchString(s string) bool {
+	if r.regexp == nil {
+		r.regexp = regexp.MustCompile(r.Raw)
+	}
+
+	return r.regexp.MatchString(s)
+}
+
+// ShareLink is the information needed to build a shareable link.
+type ShareLink struct {
+	Hash       string    `json:"hash" storm:"id,index"`
+	Path       string    `json:"path" storm:"index"`
+	Expires    bool      `json:"expires"`
+	ExpireDate time.Time `json:"expireDate"`
+}
+
+// Store is a collection of the stores needed to get
+// and save information.
+type Store struct {
+	Users  UsersStore
+	Config ConfigStore
+	Share  ShareStore
+}
+
+// UsersStore is the interface to manage users.
+type UsersStore interface {
+	Get(id int) (*User, error)
+	Gets() ([]*User, error)
+	Save(u *User) error
+	Update(u *User, fields ...string) error
+	Delete(id int) error
+}
+
+// ConfigStore is the interface to manage configuration.
+type ConfigStore interface {
+	Get(name string, to interface{}) error
+	Save(name string, from interface{}) error
+}
+
+// ShareStore is the interface to manage share links.
+type ShareStore interface {
+	Get(hash string) (*ShareLink, error)
+	GetByPath(path string) ([]*ShareLink, error)
+	Gets() ([]*ShareLink, error)
+	Save(s *ShareLink) error
+	Delete(hash string) error
+}
+
+// StaticGen is a static website generator.
+type StaticGen interface {
+	SettingsPath() string
+	Name() string
+	Setup() error
+
+	Hook(c *Context, w http.ResponseWriter, r *http.Request) (int, error)
+	Preview(c *Context, w http.ResponseWriter, r *http.Request) (int, error)
+	Publish(c *Context, w http.ResponseWriter, r *http.Request) (int, error)
+}
+
+// Context contains the needed information to make handlers work.
+type Context struct {
+	*FileManager
+	User *User
+	File *File
+	// On API handlers, Router is the APi handler we want.
+	Router string
+}
+
+// HashPassword generates an hash from a password using bcrypt.
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
+}
+
+// CheckPasswordHash compares a password with an hash to check if they match.
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
+// GenerateRandomBytes returns securely generated random bytes.
+// It will return an fm.Error if the system's secure random
+// number generator fails to function correctly, in which
+// case the caller should not continue.
+func GenerateRandomBytes(n int) ([]byte, error) {
+	b := make([]byte, n)
+	_, err := rand.Read(b)
+	// Note that err == nil only if we read len(b) bytes.
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
 }

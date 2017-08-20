@@ -2,6 +2,7 @@ package bolt
 
 import (
 	"github.com/asdine/storm"
+	fm "github.com/hacdias/filemanager"
 )
 
 type ConfigStore struct {
@@ -9,7 +10,12 @@ type ConfigStore struct {
 }
 
 func (c ConfigStore) Get(name string, to interface{}) error {
-	return c.DB.Get("config", name, to)
+	err := c.DB.Get("config", name, to)
+	if err == storm.ErrNotFound {
+		return fm.ErrNotExist
+	}
+
+	return err
 }
 
 func (c ConfigStore) Save(name string, from interface{}) error {

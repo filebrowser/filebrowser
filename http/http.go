@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"html/template"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -12,8 +13,34 @@ import (
 	fm "github.com/hacdias/filemanager"
 )
 
-// ServeHTTP is the main entry point of this HTML application.
-func ServeHTTP(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+// ServeHTTP returns a function compatible with http.HandleFunc.
+func ServeHTTP(m *fm.FileManager) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		code, err := serve(&fm.Context{
+			FileManager: m,
+			User:        nil,
+			File:        nil,
+		}, w, r)
+
+		if code >= 400 {
+			w.WriteHeader(code)
+
+			if err == nil {
+				txt := http.StatusText(code)
+				log.Printf("%v: %v %v\n", r.URL.Path, code, txt)
+				w.Write([]byte(txt))
+			}
+		}
+
+		if err != nil {
+			log.Print(err)
+			w.Write([]byte(err.Error()))
+		}
+	})
+}
+
+// serve is the main entry point of this HTML application.
+func serve(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Checks if the URL contains the baseURL and strips it. Otherwise, it just
 	// returns a 404 fm.Error because we're not supposed to be here!
 	p := strings.TrimPrefix(r.URL.Path, c.BaseURL)
