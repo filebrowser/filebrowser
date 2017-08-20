@@ -210,6 +210,11 @@ func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, erro
 			},
 		}
 
+		err = m.Setup()
+		if err != nil {
+			return nil, err
+		}
+
 		switch plugin {
 		case "hugo":
 			// Initialize the default settings for Hugo.

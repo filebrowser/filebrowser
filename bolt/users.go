@@ -14,8 +14,8 @@ type UsersStore struct {
 
 // Get gets a user with a certain id from the database.
 func (u UsersStore) Get(id int, builder fm.FSBuilder) (*fm.User, error) {
-	var us *fm.User
-	err := u.DB.One("ID", id, us)
+	var us fm.User
+	err := u.DB.One("ID", id, &us)
 	if err == storm.ErrNotFound {
 		return nil, fm.ErrNotExist
 	}
@@ -25,13 +25,33 @@ func (u UsersStore) Get(id int, builder fm.FSBuilder) (*fm.User, error) {
 	}
 
 	us.FileSystem = builder(us.Scope)
-	return us, nil
+	return &us, nil
+}
+
+// GetByUsername gets a user with a certain username from the database.
+func (u UsersStore) GetByUsername(username string, builder fm.FSBuilder) (*fm.User, error) {
+	var us fm.User
+	err := u.DB.One("Username", username, &us)
+	if err == storm.ErrNotFound {
+		return nil, fm.ErrNotExist
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	us.FileSystem = builder(us.Scope)
+	return &us, nil
 }
 
 // Gets gets all the users from the database.
 func (u UsersStore) Gets(builder fm.FSBuilder) ([]*fm.User, error) {
 	var us []*fm.User
-	err := u.DB.All(us)
+	err := u.DB.All(&us)
+	if err == storm.ErrNotFound {
+		return nil, fm.ErrNotExist
+	}
+
 	if err != nil {
 		return us, err
 	}
@@ -43,7 +63,7 @@ func (u UsersStore) Gets(builder fm.FSBuilder) ([]*fm.User, error) {
 	return us, err
 }
 
-// Updates the whole user object or only certain fields.
+// Update updates the whole user object or only certain fields.
 func (u UsersStore) Update(us *fm.User, fields ...string) error {
 	if len(fields) == 0 {
 		return u.Save(us)

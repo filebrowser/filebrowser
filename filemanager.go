@@ -68,7 +68,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	rice "github.com/GeertJohan/go.rice"
-	"github.com/asdine/storm"
 	"github.com/hacdias/fileutils"
 	"github.com/mholt/caddy"
 	"github.com/robfig/cron"
@@ -165,7 +164,7 @@ func (m *FileManager) Setup() error {
 	// Tries to get the event commands from the database.
 	// If they don't exist, initialize them.
 	err = m.Store.Config.Get("commands", &m.Commands)
-	if err != nil && err == storm.ErrNotFound {
+	if err != nil && err == ErrNotExist {
 		m.Commands = map[string][]string{
 			"before_save":    {},
 			"after_save":     {},
@@ -181,7 +180,7 @@ func (m *FileManager) Setup() error {
 
 	// Tries to fetch the users from the database.
 	users, err := m.Store.Users.Gets(m.NewFS)
-	if err != nil {
+	if err != nil && err != ErrNotExist {
 		return err
 	}
 
@@ -460,6 +459,7 @@ type Store struct {
 // UsersStore is the interface to manage users.
 type UsersStore interface {
 	Get(id int, builder FSBuilder) (*User, error)
+	GetByUsername(username string, builder FSBuilder) (*User, error)
 	Gets(builder FSBuilder) ([]*User, error)
 	Save(u *User) error
 	Update(u *User, fields ...string) error
