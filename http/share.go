@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/asdine/storm"
-	"github.com/asdine/storm/q"
 	fm "github.com/hacdias/filemanager"
 )
 
@@ -52,12 +51,13 @@ func shareGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 func sharePostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
 
-	var s fm.ShareLink
+	var s *fm.ShareLink
 	expire := r.URL.Query().Get("expires")
 	unit := r.URL.Query().Get("unit")
 
 	if expire == "" {
-		err := c.db.Select(q.Eq("Path", path), q.Eq("Expires", false)).First(&s)
+		var err error
+		s, err = c.Store.Share.GetPermanent(path)
 		if err == nil {
 			w.Write([]byte(c.RootURL() + "/share/" + s.Hash))
 			return 0, nil
@@ -71,7 +71,7 @@ func sharePostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (in
 
 	str := hex.EncodeToString(bytes)
 
-	s = fm.ShareLink{
+	s = &fm.ShareLink{
 		Path:    path,
 		Hash:    str,
 		Expires: expire != "",
@@ -98,7 +98,7 @@ func sharePostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (in
 		s.ExpireDate = time.Now().Add(add)
 	}
 
-	if err := c.Store.Share.Save(&s); err != nil {
+	if err := c.Store.Share.Save(s); err != nil {
 		return http.StatusInternalServerError, err
 	}
 

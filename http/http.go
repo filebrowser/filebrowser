@@ -13,8 +13,8 @@ import (
 	fm "github.com/hacdias/filemanager"
 )
 
-// ServeHTTP returns a function compatible with http.HandleFunc.
-func ServeHTTP(m *fm.FileManager) http.Handler {
+// Handler returns a function compatible with http.HandleFunc.
+func Handler(m *fm.FileManager) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		code, err := serve(&fm.Context{
 			FileManager: m,
@@ -235,6 +235,7 @@ func renderFile(c *fm.Context, w http.ResponseWriter, file string, contentType s
 	return 0, nil
 }
 
+// sharePage build the share page.
 func sharePage(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	s, err := c.Store.Share.Get(r.URL.Path)
 	if err == storm.ErrNotFound {
