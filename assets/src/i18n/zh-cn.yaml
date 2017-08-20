@@ -183,6 +183,7 @@ search:
   writeToSearch: 请输入要搜索的内容
 languages:
   en: English
+  fr: Français
   pt: Português
   ja: 日本語
   zhCN: 中文 (简体)
