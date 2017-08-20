@@ -64,7 +64,7 @@ func getUserID(r *http.Request) (int, error) {
 // getUser returns the user which is present in the request
 // body. If the body is empty or the JSON is invalid, it
 // returns an fm.Error.
-func getUser(r *http.Request) (*fm.User, string, error) {
+func getUser(c *fm.Context, r *http.Request) (*fm.User, string, error) {
 	// Checks if the request body is empty.
 	if r.Body == nil {
 		return nil, "", fm.ErrEmptyRequest
@@ -82,6 +82,7 @@ func getUser(r *http.Request) (*fm.User, string, error) {
 		return nil, "", fm.ErrWrongDataType
 	}
 
+	mod.Data.FileSystem = c.NewFS(mod.Data.Scope)
 	return mod.Data, mod.Which, nil
 }
 
@@ -93,7 +94,7 @@ func usersGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 
 	// Request for the listing of users.
 	if r.URL.Path == "/" {
-		users, err := c.Store.Users.Gets()
+		users, err := c.Store.Users.Gets(c.NewFS)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -116,7 +117,7 @@ func usersGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 		return http.StatusInternalServerError, err
 	}
 
-	u, err := c.Store.Users.Get(id)
+	u, err := c.Store.Users.Get(id, c.NewFS)
 	if err == fm.ErrExist {
 		return http.StatusNotFound, err
 	}
@@ -134,7 +135,7 @@ func usersPostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (in
 		return http.StatusMethodNotAllowed, nil
 	}
 
-	u, _, err := getUser(r)
+	u, _, err := getUser(c, r)
 	if err != nil {
 		return http.StatusBadRequest, err
 	}
@@ -144,19 +145,14 @@ func usersPostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (in
 		return http.StatusBadRequest, fm.ErrEmptyUsername
 	}
 
-	// Checks if filesystem isn't empty.
-	if u.FileSystem == "" {
+	// Checks if scope isn't empty.
+	if u.Scope == "" {
 		return http.StatusBadRequest, fm.ErrEmptyScope
 	}
 
 	// Checks if password isn't empty.
 	if u.Password == "" {
 		return http.StatusBadRequest, fm.ErrEmptyPassword
-	}
-
-	// The username, password and scope cannot be empty.
-	if u.Username == "" || u.Password == "" || u.FileSystem == "" {
-		return http.StatusBadRequest, errors.New("username, password or scope is empty")
 	}
 
 	// Initialize rules if they're not initialized.
@@ -175,7 +171,7 @@ func usersPostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (in
 	}
 
 	// Checks if the scope exists.
-	if code, err := checkFS(string(u.FileSystem)); err != nil {
+	if code, err := checkFS(u.Scope); err != nil {
 		return code, err
 	}
 
@@ -267,7 +263,7 @@ func usersPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 	}
 
 	// Gets the user from the request body.
-	u, which, err := getUser(r)
+	u, which, err := getUser(c, r)
 	if err != nil {
 		return http.StatusBadRequest, err
 	}
@@ -315,12 +311,12 @@ func usersPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 	}
 
 	// Checks if filesystem isn't empty.
-	if u.FileSystem == "" {
+	if u.Scope == "" {
 		return http.StatusBadRequest, fm.ErrEmptyScope
 	}
 
 	// Checks if the scope exists.
-	if code, err := checkFS(string(u.FileSystem)); err != nil {
+	if code, err := checkFS(u.Scope); err != nil {
 		return code, err
 	}
 
@@ -335,7 +331,7 @@ func usersPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 	}
 
 	// Gets the current saved user from the in-memory map.
-	suser, err := c.Store.Users.Get(id)
+	suser, err := c.Store.Users.Get(id, c.NewFS)
 	if err == fm.ErrNotExist {
 		return http.StatusNotFound, nil
 	}

@@ -28,7 +28,7 @@ func shareHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, e
 }
 
 func shareGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
-	path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
+	path := filepath.Join(c.User.Scope, r.URL.Path)
 	s, err := c.Store.Share.GetByPath(path)
 	if err == storm.ErrNotFound {
 		return http.StatusNotFound, nil
@@ -49,7 +49,7 @@ func shareGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 }
 
 func sharePostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
-	path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
+	path := filepath.Join(c.User.Scope, r.URL.Path)
 
 	var s *fm.ShareLink
 	expire := r.URL.Query().Get("expires")

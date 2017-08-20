@@ -11,7 +11,7 @@ type UsersStore struct {
 	DB *storm.DB
 }
 
-func (u UsersStore) Get(id int) (*fm.User, error) {
+func (u UsersStore) Get(id int, builder fm.FSBuilder) (*fm.User, error) {
 	var us *fm.User
 	err := u.DB.One("ID", id, us)
 	if err == storm.ErrNotFound {
@@ -22,12 +22,21 @@ func (u UsersStore) Get(id int) (*fm.User, error) {
 		return nil, err
 	}
 
-	return &fm.User{}, nil
+	us.FileSystem = builder(us.Scope)
+	return us, nil
 }
 
-func (u UsersStore) Gets() ([]*fm.User, error) {
+func (u UsersStore) Gets(builder fm.FSBuilder) ([]*fm.User, error) {
 	var us []*fm.User
 	err := u.DB.All(us)
+	if err != nil {
+		return us, err
+	}
+
+	for _, user := range us {
+		user.FileSystem = builder(user.Scope)
+	}
+
 	return us, err
 }
 
