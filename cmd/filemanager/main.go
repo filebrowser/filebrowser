@@ -201,7 +201,7 @@ func handler() http.Handler {
 		},
 	}
 
-	err = fm.Load()
+	err = fm.Setup()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -231,5 +231,5 @@ func handler() http.Handler {
 		}
 	}
 
-	return h.ServeHTTP(fm)
+	return h.Handler(fm)
 }

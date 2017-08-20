@@ -345,6 +345,7 @@ var DefaultUser = User{
 	CSS:           "",
 	Admin:         true,
 	Locale:        "en",
+	Scope:         ".",
 	FileSystem:    fileutils.Dir("."),
 }
 
