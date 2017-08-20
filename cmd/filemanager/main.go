@@ -188,12 +188,16 @@ func handler() http.Handler {
 			Rules:         []*filemanager.Rule{},
 			Locale:        viper.GetString("Locale"),
 			CSS:           "",
+			Scope:         viper.GetString("Scope"),
 			FileSystem:    fileutils.Dir(viper.GetString("Scope")),
 		},
 		Store: &filemanager.Store{
 			Config: bolt.ConfigStore{DB: db},
 			Users:  bolt.UsersStore{DB: db},
 			Share:  bolt.ShareStore{DB: db},
+		},
+		NewFS: func(scope string) filemanager.FileSystem {
+			return fileutils.Dir(scope)
 		},
 	}
 

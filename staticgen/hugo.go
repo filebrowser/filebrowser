@@ -84,7 +84,7 @@ func (h Hugo) Hook(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, 
 		return http.StatusForbidden, nil
 	}
 
-	filename := filepath.Join(string(c.User.FileSystem), r.URL.Path)
+	filename := filepath.Join(c.User.Scope, r.URL.Path)
 	archetype := r.Header.Get("archetype")
 
 	ext := filepath.Ext(filename)
@@ -108,7 +108,7 @@ func (h Hugo) Hook(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, 
 
 // Publish publishes a post.
 func (h Hugo) Publish(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
-	filename := filepath.Join(string(c.User.FileSystem), r.URL.Path)
+	filename := filepath.Join(c.User.Scope, r.URL.Path)
 
 	// We only run undraft command if it is a file.
 	if strings.HasSuffix(filename, ".md") && strings.HasSuffix(filename, ".markdown") {
