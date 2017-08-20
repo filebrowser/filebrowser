@@ -7,7 +7,6 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
-	"errors"
 	"hash"
 	"io"
 	"io/ioutil"
@@ -23,13 +22,9 @@ import (
 	"github.com/gohugoio/hugo/parser"
 )
 
-var (
-	errInvalidOption = errors.New("Invalid option")
-)
-
-// file contains the information about a particular file or directory.
-type file struct {
-	// Indicates the Kind of view on the front-end (listing, editor or preview).
+// File contains the information about a particular file or directory.
+type File struct {
+	// Indicates the Kind of view on the front-end (Listing, editor or preview).
 	Kind string `json:"kind"`
 	// The name of the file.
 	Name string `json:"name"`
@@ -54,19 +49,19 @@ type file struct {
 	// Stores the content of a text file.
 	Content string `json:"content,omitempty"`
 
-	*listing `json:",omitempty"`
+	*Listing `json:",omitempty"`
 
 	Metadata string `json:"metadata,omitempty"`
 	Language string `json:"language,omitempty"`
 }
 
-// A listing is the context used to fill out a template.
-type listing struct {
+// A Listing is the context used to fill out a template.
+type Listing struct {
 	// The items (files and folders) in the path.
-	Items []*file `json:"items"`
-	// The number of directories in the listing.
+	Items []*File `json:"items"`
+	// The number of directories in the Listing.
 	NumDirs int `json:"numDirs"`
-	// The number of files (items that aren't directories) in the listing.
+	// The number of files (items that aren't directories) in the Listing.
 	NumFiles int `json:"numFiles"`
 	// Which sorting order is used.
 	Sort string `json:"sort"`
@@ -76,15 +71,15 @@ type listing struct {
 	Display string `json:"display"`
 }
 
-// getInfo gets the file information and, in case of error, returns the
+// GetInfo gets the file information and, in case of error, returns the
 // respective HTTP error code
-func getInfo(url *url.URL, c *FileManager, u *User) (*file, error) {
+func GetInfo(url *url.URL, c *FileManager, u *User) (*File, error) {
 	var err error
 
-	i := &file{
+	i := &File{
 		URL:         "/files" + url.String(),
 		VirtualPath: url.Path,
-		Path:        filepath.Join(string(u.FileSystem), url.Path),
+		Path:        filepath.Join(u.Scope, url.Path),
 	}
 
 	info, err := u.FileSystem.Stat(url.Path)
@@ -106,11 +101,11 @@ func getInfo(url *url.URL, c *FileManager, u *User) (*file, error) {
 	return i, nil
 }
 
-// getListing gets the information about a specific directory and its files.
-func (i *file) getListing(c *RequestContext, r *http.Request) error {
+// GetListing gets the information about a specific directory and its files.
+func (i *File) GetListing(u *User, r *http.Request) error {
 	// Gets the directory information using the Virtual File System of
 	// the user configuration.
-	f, err := c.User.FileSystem.OpenFile(c.File.VirtualPath, os.O_RDONLY, 0)
+	f, err := u.FileSystem.OpenFile(i.VirtualPath, os.O_RDONLY, 0)
 	if err != nil {
 		return err
 	}
@@ -123,7 +118,7 @@ func (i *file) getListing(c *RequestContext, r *http.Request) error {
 	}
 
 	var (
-		fileinfos           []*file
+		fileinfos           []*File
 		dirCount, fileCount int
 	)
 
@@ -134,7 +129,7 @@ func (i *file) getListing(c *RequestContext, r *http.Request) error {
 
 	for _, f := range files {
 		name := f.Name()
-		allowed := c.User.Allowed("/" + name)
+		allowed := u.Allowed("/" + name)
 
 		if !allowed {
 			continue
@@ -150,7 +145,7 @@ func (i *file) getListing(c *RequestContext, r *http.Request) error {
 		// Absolute URL
 		url := url.URL{Path: baseurl + name}
 
-		i := &file{
+		i := &File{
 			Name:        f.Name(),
 			Size:        f.Size(),
 			ModTime:     f.ModTime(),
@@ -166,7 +161,7 @@ func (i *file) getListing(c *RequestContext, r *http.Request) error {
 		fileinfos = append(fileinfos, i)
 	}
 
-	i.listing = &listing{
+	i.Listing = &Listing{
 		Items:    fileinfos,
 		NumDirs:  dirCount,
 		NumFiles: fileCount,
@@ -175,8 +170,8 @@ func (i *file) getListing(c *RequestContext, r *http.Request) error {
 	return nil
 }
 
-// getEditor gets the editor based on a Info struct
-func (i *file) getEditor() error {
+// GetEditor gets the editor based on a Info struct
+func (i *File) GetEditor() error {
 	i.Language = editorLanguage(i.Extension)
 	// If the editor will hold only content, leave now.
 	if editorMode(i.Language) == "content" {
@@ -205,7 +200,7 @@ func (i *file) getEditor() error {
 
 // GetFileType obtains the mimetype and converts it to a simple
 // type nomenclature.
-func (i *file) GetFileType(checkContent bool) error {
+func (i *File) GetFileType(checkContent bool) error {
 	var content []byte
 	var err error
 
@@ -283,7 +278,8 @@ End:
 	return nil
 }
 
-func (i file) Checksum(kind string) (string, error) {
+// Checksum retrieves the checksum of a file.
+func (i File) Checksum(algo string) (string, error) {
 	file, err := os.Open(i.Path)
 	if err != nil {
 		return "", err
@@ -293,7 +289,7 @@ func (i file) Checksum(kind string) (string, error) {
 
 	var h hash.Hash
 
-	switch kind {
+	switch algo {
 	case "md5":
 		h = md5.New()
 	case "sha1":
@@ -303,7 +299,7 @@ func (i file) Checksum(kind string) (string, error) {
 	case "sha512":
 		h = sha512.New()
 	default:
-		return "", errInvalidOption
+		return "", ErrInvalidOption
 	}
 
 	_, err = io.Copy(h, file)
@@ -315,12 +311,12 @@ func (i file) Checksum(kind string) (string, error) {
 }
 
 // CanBeEdited checks if the extension of a file is supported by the editor
-func (i file) CanBeEdited() bool {
+func (i File) CanBeEdited() bool {
 	return i.Type == "text"
 }
 
 // ApplySort applies the sort order using .Order and .Sort
-func (l listing) ApplySort() {
+func (l Listing) ApplySort() {
 	// Check '.Order' to know how to sort
 	if l.Order == "desc" {
 		switch l.Sort {
@@ -349,10 +345,10 @@ func (l listing) ApplySort() {
 	}
 }
 
-// Implement sorting for listing
-type byName listing
-type bySize listing
-type byModified listing
+// Implement sorting for Listing
+type byName Listing
+type bySize Listing
+type byModified Listing
 
 // By Name
 func (l byName) Len() int {

@@ -1,4 +1,4 @@
-package filemanager
+package http
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/asdine/storm"
+	fm "github.com/hacdias/filemanager"
 )
 
 type modifyRequest struct {
@@ -19,12 +19,12 @@ type modifyRequest struct {
 
 type modifyUserRequest struct {
 	*modifyRequest
-	Data *User `json:"data"`
+	Data *fm.User `json:"data"`
 }
 
 // usersHandler is the entry point of the users API. It's just a router
 // to send the request to its
-func usersHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func usersHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// If the user isn't admin and isn't making a PUT
 	// request, then return forbidden.
 	if !c.User.Admin && r.Method != http.MethodPut {
@@ -47,7 +47,7 @@ func usersHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (in
 
 // getUserID returns the id from the user which is present
 // in the request url. If the url is invalid and doesn't
-// contain a valid ID, it returns an error.
+// contain a valid ID, it returns an fm.Error.
 func getUserID(r *http.Request) (int, error) {
 	// Obtains the ID in string from the URL and converts
 	// it into an integer.
@@ -63,11 +63,11 @@ func getUserID(r *http.Request) (int, error) {
 
 // getUser returns the user which is present in the request
 // body. If the body is empty or the JSON is invalid, it
-// returns an error.
-func getUser(r *http.Request) (*User, string, error) {
+// returns an fm.Error.
+func getUser(c *fm.Context, r *http.Request) (*fm.User, string, error) {
 	// Checks if the request body is empty.
 	if r.Body == nil {
-		return nil, "", errEmptyRequest
+		return nil, "", fm.ErrEmptyRequest
 	}
 
 	// Parses the request body and checks if it's well formed.
@@ -79,13 +79,14 @@ func getUser(r *http.Request) (*User, string, error) {
 
 	// Checks if the request type is right.
 	if mod.What != "user" {
-		return nil, "", errWrongDataType
+		return nil, "", fm.ErrWrongDataType
 	}
 
+	mod.Data.FileSystem = c.NewFS(mod.Data.Scope)
 	return mod.Data, mod.Which, nil
 }
 
-func usersGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func usersGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Request for the default user data.
 	if r.URL.Path == "/base" {
 		return renderJSON(w, c.DefaultUser)
@@ -93,15 +94,15 @@ func usersGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 
 	// Request for the listing of users.
 	if r.URL.Path == "/" {
-		users := []User{}
+		users, err := c.Store.Users.Gets(c.NewFS)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
 
-		for _, user := range c.Users {
-			// Copies the user info and removes its
-			// password so it won't be sent to the
-			// front-end.
-			u := *user
+		for _, u := range users {
+			// Removes the user password so it won't
+			// be sent to the front-end.
 			u.Password = ""
-			users = append(users, u)
 		}
 
 		sort.Slice(users, func(i, j int) bool {
@@ -116,54 +117,47 @@ func usersGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 		return http.StatusInternalServerError, err
 	}
 
-	// Searches for the user and prints the one who matches.
-	for _, user := range c.Users {
-		if user.ID != id {
-			continue
-		}
-
-		u := *user
-		u.Password = ""
-		return renderJSON(w, u)
+	u, err := c.Store.Users.Get(id, c.NewFS)
+	if err == fm.ErrExist {
+		return http.StatusNotFound, err
 	}
 
-	// If there aren't any matches, return not found.
-	return http.StatusNotFound, errUserNotExist
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	u.Password = ""
+	return renderJSON(w, u)
 }
 
-func usersPostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func usersPostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	if r.URL.Path != "/" {
 		return http.StatusMethodNotAllowed, nil
 	}
 
-	u, _, err := getUser(r)
+	u, _, err := getUser(c, r)
 	if err != nil {
 		return http.StatusBadRequest, err
 	}
 
 	// Checks if username isn't empty.
 	if u.Username == "" {
-		return http.StatusBadRequest, errEmptyUsername
+		return http.StatusBadRequest, fm.ErrEmptyUsername
 	}
 
-	// Checks if filesystem isn't empty.
-	if u.FileSystem == "" {
-		return http.StatusBadRequest, errEmptyScope
+	// Checks if scope isn't empty.
+	if u.Scope == "" {
+		return http.StatusBadRequest, fm.ErrEmptyScope
 	}
 
 	// Checks if password isn't empty.
 	if u.Password == "" {
-		return http.StatusBadRequest, errEmptyPassword
-	}
-
-	// The username, password and scope cannot be empty.
-	if u.Username == "" || u.Password == "" || u.FileSystem == "" {
-		return http.StatusBadRequest, errors.New("username, password or scope is empty")
+		return http.StatusBadRequest, fm.ErrEmptyPassword
 	}
 
 	// Initialize rules if they're not initialized.
 	if u.Rules == nil {
-		u.Rules = []*Rule{}
+		u.Rules = []*fm.Rule{}
 	}
 
 	// Initialize commands if not initialized.
@@ -177,12 +171,12 @@ func usersPostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request)
 	}
 
 	// Checks if the scope exists.
-	if code, err := checkFS(string(u.FileSystem)); err != nil {
+	if code, err := checkFS(u.Scope); err != nil {
 		return code, err
 	}
 
 	// Hashes the password.
-	pw, err := hashPassword(u.Password)
+	pw, err := fm.HashPassword(u.Password)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -190,17 +184,14 @@ func usersPostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request)
 	u.Password = pw
 
 	// Saves the user to the database.
-	err = c.db.Save(u)
-	if err == storm.ErrAlreadyExists {
-		return http.StatusConflict, errUserExist
+	err = c.Store.Users.Save(u)
+	if err == fm.ErrExist {
+		return http.StatusConflict, err
 	}
 
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
-
-	// Saves the user to the memory.
-	c.Users[u.Username] = u
 
 	// Set the Location header and return.
 	w.Header().Set("Location", "/users/"+strconv.Itoa(u.ID))
@@ -231,7 +222,7 @@ func checkFS(path string) (int, error) {
 	return 0, nil
 }
 
-func usersDeleteHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func usersDeleteHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	if r.URL.Path == "/" {
 		return http.StatusMethodNotAllowed, nil
 	}
@@ -242,27 +233,19 @@ func usersDeleteHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 	}
 
 	// Deletes the user from the database.
-	err = c.db.DeleteStruct(&User{ID: id})
-	if err == storm.ErrNotFound {
-		return http.StatusNotFound, errUserNotExist
+	err = c.Store.Users.Delete(id)
+	if err == fm.ErrNotExist {
+		return http.StatusNotFound, fm.ErrNotExist
 	}
 
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
-	// Delete the user from the in-memory users map.
-	for _, user := range c.Users {
-		if user.ID == id {
-			delete(c.Users, user.Username)
-			break
-		}
-	}
-
 	return http.StatusOK, nil
 }
 
-func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func usersPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// New users should be created on /api/users.
 	if r.URL.Path == "/" {
 		return http.StatusMethodNotAllowed, nil
@@ -280,7 +263,7 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Gets the user from the request body.
-	u, which, err := getUser(r)
+	u, which, err := getUser(c, r)
 	if err != nil {
 		return http.StatusBadRequest, err
 	}
@@ -289,12 +272,8 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	if which == "partial" {
 		c.User.CSS = u.CSS
 		c.User.Locale = u.Locale
-		err = c.db.UpdateField(&User{ID: c.User.ID}, "CSS", u.CSS)
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
 
-		err = c.db.UpdateField(&User{ID: c.User.ID}, "Locale", u.Locale)
+		err = c.Store.Users.Update(c.User, "CSS", "Locale")
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -305,16 +284,15 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	// Updates the Password.
 	if which == "password" {
 		if u.Password == "" {
-			return http.StatusBadRequest, errEmptyPassword
+			return http.StatusBadRequest, fm.ErrEmptyPassword
 		}
 
-		pw, err := hashPassword(u.Password)
+		c.User.Password, err = fm.HashPassword(u.Password)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
 
-		c.User.Password = pw
-		err = c.db.UpdateField(&User{ID: c.User.ID}, "Password", pw)
+		err = c.Store.Users.Update(c.User, "Password")
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -324,27 +302,27 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 
 	// If can only be all.
 	if which != "all" {
-		return http.StatusBadRequest, errInvalidUpdateField
+		return http.StatusBadRequest, fm.ErrInvalidUpdateField
 	}
 
 	// Checks if username isn't empty.
 	if u.Username == "" {
-		return http.StatusBadRequest, errEmptyUsername
+		return http.StatusBadRequest, fm.ErrEmptyUsername
 	}
 
 	// Checks if filesystem isn't empty.
-	if u.FileSystem == "" {
-		return http.StatusBadRequest, errEmptyScope
+	if u.Scope == "" {
+		return http.StatusBadRequest, fm.ErrEmptyScope
 	}
 
 	// Checks if the scope exists.
-	if code, err := checkFS(string(u.FileSystem)); err != nil {
+	if code, err := checkFS(u.Scope); err != nil {
 		return code, err
 	}
 
 	// Initialize rules if they're not initialized.
 	if u.Rules == nil {
-		u.Rules = []*Rule{}
+		u.Rules = []*fm.Rule{}
 	}
 
 	// Initialize commands if not initialized.
@@ -353,22 +331,20 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Gets the current saved user from the in-memory map.
-	var suser *User
-	for _, user := range c.Users {
-		if user.ID == id {
-			suser = user
-			break
-		}
-	}
-	if suser == nil {
+	suser, err := c.Store.Users.Get(id, c.NewFS)
+	if err == fm.ErrNotExist {
 		return http.StatusNotFound, nil
+	}
+
+	if err != nil {
+		return http.StatusInternalServerError, err
 	}
 
 	u.ID = id
 
 	// Changes the password if the request wants it.
 	if u.Password != "" {
-		pw, err := hashPassword(u.Password)
+		pw, err := fm.HashPassword(u.Password)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -380,17 +356,10 @@ func usersPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 
 	// Updates the whole User struct because we always are supposed
 	// to send a new entire object.
-	err = c.db.Save(u)
+	err = c.Store.Users.Update(u)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
-	// If the user changed the username, delete the old user
-	// from the in-memory user map.
-	if suser.Username != u.Username {
-		delete(c.Users, suser.Username)
-	}
-
-	c.Users[u.Username] = u
 	return http.StatusOK, nil
 }

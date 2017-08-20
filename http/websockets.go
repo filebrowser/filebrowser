@@ -1,4 +1,4 @@
-package filemanager
+package http
 
 import (
 	"bytes"
@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	fm "github.com/hacdias/filemanager"
 )
 
 var upgrader = websocket.Upgrader{
@@ -26,8 +27,8 @@ var (
 )
 
 // command handles the requests for VCS related commands: git, svn and mercurial
-func command(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	// Upgrades the connection to a websocket and checks for errors.
+func command(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+	// Upgrades the connection to a websocket and checks for fm.Errors.
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return 0, err
@@ -81,7 +82,7 @@ func command(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	// Gets the path and initializes a buffer.
-	path := string(c.User.FileSystem) + "/" + r.URL.Path
+	path := c.User.Scope + "/" + r.URL.Path
 	path = filepath.Clean(path)
 	buff := new(bytes.Buffer)
 
@@ -91,7 +92,7 @@ func command(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, er
 	cmd.Stderr = buff
 	cmd.Stdout = buff
 
-	// Starts the command and checks for errors.
+	// Starts the command and checks for fm.Errors.
 	err = cmd.Start()
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -239,8 +240,8 @@ func parseSearch(value string) *searchOptions {
 }
 
 // search searches for a file or directory.
-func search(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	// Upgrades the connection to a websocket and checks for errors.
+func search(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+	// Upgrades the connection to a websocket and checks for fm.Errors.
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return 0, err
@@ -269,7 +270,7 @@ func search(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, err
 	search = parseSearch(value)
 	scope := strings.TrimPrefix(r.URL.Path, "/")
 	scope = "/" + scope
-	scope = string(c.User.FileSystem) + scope
+	scope = c.User.Scope + scope
 	scope = strings.Replace(scope, "\\", "/", -1)
 	scope = filepath.Clean(scope)
 

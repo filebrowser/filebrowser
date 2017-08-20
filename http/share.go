@@ -1,4 +1,4 @@
-package filemanager
+package http
 
 import (
 	"encoding/hex"
@@ -9,17 +9,10 @@ import (
 	"time"
 
 	"github.com/asdine/storm"
-	"github.com/asdine/storm/q"
+	fm "github.com/hacdias/filemanager"
 )
 
-type shareLink struct {
-	Hash       string    `json:"hash" storm:"id,index"`
-	Path       string    `json:"path" storm:"index"`
-	Expires    bool      `json:"expires"`
-	ExpireDate time.Time `json:"expireDate"`
-}
-
-func shareHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
+func shareHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	r.URL.Path = sanitizeURL(r.URL.Path)
 
 	switch r.Method {
@@ -34,13 +27,9 @@ func shareHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (in
 	return http.StatusNotImplemented, nil
 }
 
-func shareGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	var (
-		s    []*shareLink
-		path = filepath.Join(string(c.User.FileSystem), r.URL.Path)
-	)
-
-	err := c.db.Find("Path", path, &s)
+func shareGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+	path := filepath.Join(c.User.Scope, r.URL.Path)
+	s, err := c.Store.Share.GetByPath(path)
 	if err == storm.ErrNotFound {
 		return http.StatusNotFound, nil
 	}
@@ -51,7 +40,7 @@ func shareGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 
 	for i, link := range s {
 		if link.Expires && link.ExpireDate.Before(time.Now()) {
-			c.db.DeleteStruct(&shareLink{Hash: link.Hash})
+			c.Store.Share.Delete(link.Hash)
 			s = append(s[:i], s[i+1:]...)
 		}
 	}
@@ -59,29 +48,30 @@ func shareGetHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	return renderJSON(w, s)
 }
 
-func sharePostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
+func sharePostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+	path := filepath.Join(c.User.Scope, r.URL.Path)
 
-	var s shareLink
+	var s *fm.ShareLink
 	expire := r.URL.Query().Get("expires")
 	unit := r.URL.Query().Get("unit")
 
 	if expire == "" {
-		err := c.db.Select(q.Eq("Path", path), q.Eq("Expires", false)).First(&s)
+		var err error
+		s, err = c.Store.Share.GetPermanent(path)
 		if err == nil {
 			w.Write([]byte(c.RootURL() + "/share/" + s.Hash))
 			return 0, nil
 		}
 	}
 
-	bytes, err := generateRandomBytes(32)
+	bytes, err := fm.GenerateRandomBytes(32)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
 	str := hex.EncodeToString(bytes)
 
-	s = shareLink{
+	s = &fm.ShareLink{
 		Path:    path,
 		Hash:    str,
 		Expires: expire != "",
@@ -108,18 +98,15 @@ func sharePostHandler(c *RequestContext, w http.ResponseWriter, r *http.Request)
 		s.ExpireDate = time.Now().Add(add)
 	}
 
-	err = c.db.Save(&s)
-	if err != nil {
+	if err := c.Store.Share.Save(s); err != nil {
 		return http.StatusInternalServerError, err
 	}
 
 	return renderJSON(w, s)
 }
 
-func shareDeleteHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	var s shareLink
-
-	err := c.db.One("Hash", strings.TrimPrefix(r.URL.Path, "/"), &s)
+func shareDeleteHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+	s, err := c.Store.Share.Get(strings.TrimPrefix(r.URL.Path, "/"))
 	if err == storm.ErrNotFound {
 		return http.StatusNotFound, nil
 	}
@@ -128,7 +115,7 @@ func shareDeleteHandler(c *RequestContext, w http.ResponseWriter, r *http.Reques
 		return http.StatusInternalServerError, err
 	}
 
-	err = c.db.DeleteStruct(&s)
+	err = c.Store.Share.Delete(s.Hash)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
