@@ -13,24 +13,24 @@ type ShareStore struct {
 
 // Get gets a Share Link from an hash.
 func (s ShareStore) Get(hash string) (*fm.ShareLink, error) {
-	var v *fm.ShareLink
+	var v fm.ShareLink
 	err := s.DB.One("Hash", hash, &v)
 	if err == storm.ErrNotFound {
-		return v, fm.ErrNotExist
+		return nil, fm.ErrNotExist
 	}
 
-	return v, err
+	return &v, err
 }
 
 // GetPermanent gets the permanent link from a path.
 func (s ShareStore) GetPermanent(path string) (*fm.ShareLink, error) {
-	var v *fm.ShareLink
+	var v fm.ShareLink
 	err := s.DB.Select(q.Eq("Path", path), q.Eq("Expires", false)).First(&v)
 	if err == storm.ErrNotFound {
-		return v, fm.ErrNotExist
+		return nil, fm.ErrNotExist
 	}
 
-	return v, err
+	return &v, err
 }
 
 // GetByPath gets all the links for a specific path.
@@ -48,6 +48,10 @@ func (s ShareStore) GetByPath(hash string) ([]*fm.ShareLink, error) {
 func (s ShareStore) Gets() ([]*fm.ShareLink, error) {
 	var v []*fm.ShareLink
 	err := s.DB.All(&v)
+	if err == storm.ErrNotFound {
+		return v, fm.ErrNotExist
+	}
+
 	return v, err
 }
 

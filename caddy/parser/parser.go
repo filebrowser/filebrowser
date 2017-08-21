@@ -17,7 +17,6 @@ import (
 	"github.com/hacdias/fileutils"
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
-	"github.com/spf13/viper"
 )
 
 var databases = map[string]*storm.DB{}
@@ -205,7 +204,7 @@ func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, erro
 		}
 
 		m := &filemanager.FileManager{
-			NoAuth:      viper.GetBool("NoAuth"),
+			NoAuth:      noAuth,
 			BaseURL:     "",
 			PrefixURL:   "",
 			DefaultUser: u,

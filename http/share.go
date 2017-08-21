@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/asdine/storm"
 	fm "github.com/hacdias/filemanager"
 )
 
@@ -30,7 +29,7 @@ func shareHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, e
 func shareGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	path := filepath.Join(c.User.Scope, r.URL.Path)
 	s, err := c.Store.Share.GetByPath(path)
-	if err == storm.ErrNotFound {
+	if err == fm.ErrNotExist {
 		return http.StatusNotFound, nil
 	}
 
@@ -107,7 +106,7 @@ func sharePostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (in
 
 func shareDeleteHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	s, err := c.Store.Share.Get(strings.TrimPrefix(r.URL.Path, "/"))
-	if err == storm.ErrNotFound {
+	if err == fm.ErrNotExist {
 		return http.StatusNotFound, nil
 	}
 
