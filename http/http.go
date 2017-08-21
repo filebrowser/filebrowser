@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/asdine/storm"
 	fm "github.com/hacdias/filemanager"
 )
 
@@ -242,7 +241,7 @@ func renderFile(c *fm.Context, w http.ResponseWriter, file string, contentType s
 // sharePage build the share page.
 func sharePage(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	s, err := c.Store.Share.Get(r.URL.Path)
-	if err == storm.ErrNotFound {
+	if err == fm.ErrNotExist {
 		return renderFile(
 			c, w,
 			c.Assets.MustString("static/share/404.html"),
