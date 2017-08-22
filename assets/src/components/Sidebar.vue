@@ -46,7 +46,7 @@
       </button>
     </div>
 
-    <div v-if="!$store.state.user.noAuth">
+    <div v-if="!$store.state.noAuth">
       <router-link class="action" to="/settings" :aria-label="$t('sidebar.settings')" :title="$t('sidebar.settings')">
         <i class="material-icons">settings_applications</i>
         <span>{{ $t('sidebar.settings') }}</span>
