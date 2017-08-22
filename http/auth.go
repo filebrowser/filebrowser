@@ -59,7 +59,6 @@ func renewAuthHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (in
 // claims is the JWT claims.
 type claims struct {
 	fm.User
-	NoAuth bool `json:"noAuth"`
 	jwt.StandardClaims
 }
 
@@ -74,7 +73,6 @@ func printToken(c *fm.Context, w http.ResponseWriter) (int, error) {
 	// Builds the claims.
 	claims := claims{
 		u,
-		c.NoAuth,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 			Issuer:    "File Manager",

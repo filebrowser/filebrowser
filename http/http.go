@@ -223,7 +223,10 @@ func renderFile(c *fm.Context, w http.ResponseWriter, file string, contentType s
 	tpl := template.Must(template.New("file").Parse(file))
 	w.Header().Set("Content-Type", contentType+"; charset=utf-8")
 
-	data := map[string]interface{}{"BaseURL": c.RootURL()}
+	data := map[string]interface{}{
+		"BaseURL": c.RootURL(),
+		"NoAuth":  c.NoAuth,
+	}
 
 	if c.StaticGen != nil {
 		data["StaticGen"] = c.StaticGen.Name()

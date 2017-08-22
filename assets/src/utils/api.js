@@ -18,7 +18,7 @@ export function fetch (url) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('GET', `${store.state.baseURL}/api/resource${url}`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
       switch (request.status) {
@@ -41,7 +41,7 @@ export function remove (url) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('DELETE', `${store.state.baseURL}/api/resource${url}`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
       if (request.status === 200) {
@@ -62,7 +62,7 @@ export function post (url, content = '', overwrite = false, onupload) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('POST', `${store.state.baseURL}/api/resource${url}`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     if (typeof onupload === 'function') {
       request.upload.onprogress = onupload
@@ -95,7 +95,7 @@ export function put (url, content = '', publish = false, date = '') {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('PUT', `${store.state.baseURL}/api/resource${url}`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
     request.setRequestHeader('Publish', publish)
 
     if (date !== '') {
@@ -125,7 +125,7 @@ function moveCopy (items, copy = false) {
     promises.push(new Promise((resolve, reject) => {
       let request = new window.XMLHttpRequest()
       request.open('PATCH', `${store.state.baseURL}/api/resource${from}`, true)
-      request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+      if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
       request.setRequestHeader('Destination', to)
 
       if (copy) {
@@ -162,7 +162,7 @@ export function checksum (url, algo) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('GET', `${store.state.baseURL}/api/checksum${url}?algo=${algo}`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
       if (request.status === 200) {
@@ -226,7 +226,7 @@ export function getSettings () {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('GET', `${store.state.baseURL}/api/settings/`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
       switch (request.status) {
@@ -255,7 +255,7 @@ export function updateSettings (param, which) {
 
     let request = new window.XMLHttpRequest()
     request.open('PUT', `${store.state.baseURL}/api/settings/`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
       switch (request.status) {
@@ -278,7 +278,7 @@ export function getUsers () {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('GET', `${store.state.baseURL}/api/users/`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
       switch (request.status) {
@@ -299,7 +299,7 @@ export function getUser (id) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('GET', `${store.state.baseURL}/api/users/${id}`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
       switch (request.status) {
@@ -320,7 +320,7 @@ export function newUser (user) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('POST', `${store.state.baseURL}/api/users/`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
       switch (request.status) {
@@ -345,7 +345,7 @@ export function updateUser (user, which) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('PUT', `${store.state.baseURL}/api/users/${user.ID}`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
       switch (request.status) {
@@ -370,7 +370,7 @@ export function deleteUser (id) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('DELETE', `${store.state.baseURL}/api/users/${id}`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
       switch (request.status) {
@@ -395,7 +395,7 @@ export function getShare (url) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('GET', `${store.state.baseURL}/api/share${url}`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
       if (request.status === 200) {
@@ -414,7 +414,7 @@ export function deleteShare (hash) {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('DELETE', `${store.state.baseURL}/api/share/${hash}`, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
       if (request.status === 200) {
@@ -439,7 +439,7 @@ export function share (url, expires = '', unit = 'hours') {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('POST', url, true)
-    request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
 
     request.onload = () => {
       if (request.status === 200) {
