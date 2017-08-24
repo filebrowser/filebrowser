@@ -115,15 +115,20 @@ export default {
     },
     click: function (event) {
       if (this.selectedCount !== 0) event.preventDefault()
-      if (this.$store.state.selected.indexOf(this.index) === -1) {
-        if (!event.ctrlKey && !this.$store.state.multiple) this.resetSelected()
-
-        this.addSelected(this.index)
-      } else {
+      if (this.$store.state.selected.indexOf(this.index) !== -1) {
         this.removeSelected(this.index)
+        return
       }
 
-      return false
+      if (event.shiftKey && this.selected.length === 1) {
+        let fi = (this.index > this.selected[0]) ? this.selected[0] : this.index
+        let la = (this.index > this.selected[0]) ? this.index : this.selected[0]
+        for (; fi <= la; fi++) this.addSelected(fi)
+        return
+      }
+
+      if (!event.ctrlKey && !this.$store.state.multiple) this.resetSelected()
+      this.addSelected(this.index)
     },
     touchstart (event) {
       setTimeout(() => {
