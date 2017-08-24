@@ -263,7 +263,7 @@ export default {
           .then(req => {
             this.checkConflict(files, req.items, base)
           })
-          .catch(error => { console.log(error) })
+          .catch(this.$showError)
 
         return
       }

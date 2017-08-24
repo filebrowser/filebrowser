@@ -18,7 +18,7 @@
       <p><input type="submit" :value="$t('buttons.update')"></p>
     </form>
 
-    <form @submit="updatePassword">
+    <form v-if="!user.lockPassword" @submit="updatePassword">
       <h3>{{ $t('settings.changePassword') }}</h3>
       <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPassword')" v-model="password" name="password"></p>
       <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPasswordConfirm')" v-model="passwordConf" name="password"></p>

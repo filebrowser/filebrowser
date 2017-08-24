@@ -286,6 +286,7 @@ var DefaultUser = User{
 	AllowEdit:     true,
 	AllowNew:      true,
 	AllowPublish:  true,
+	LockPassword:  false,
 	Commands:      []string{},
 	Rules:         []*Rule{},
 	CSS:           "",
@@ -324,6 +325,9 @@ type User struct {
 
 	// Locale is the language of the user.
 	Locale string `json:"locale"`
+
+	// Prevents the user to change its password.
+	LockPassword bool `json:"lockPassword"`
 
 	// These indicate if the user can perform certain actions.
 	AllowNew      bool `json:"allowNew"`      // Create files and folders
