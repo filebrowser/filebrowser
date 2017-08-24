@@ -160,7 +160,7 @@ func resourcePostPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Reques
 	}
 
 	// Discard any invalid upload before returning to avoid connection
-	// reset fm.Error.
+	// reset error.
 	defer func() {
 		io.Copy(ioutil.Discard, r.Body)
 	}()
@@ -179,9 +179,9 @@ func resourcePostPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Reques
 	}
 
 	// If using POST method, we are trying to create a new file so it is not
-	// desirable to ovfm.Erride an already existent file. Thus, we check
+	// desirable to override an already existent file. Thus, we check
 	// if the file already exists. If so, we just return a 409 Conflict.
-	if r.Method == http.MethodPost && r.Header.Get("Action") != "ovfm.Erride" {
+	if r.Method == http.MethodPost && r.Header.Get("Action") != "override" {
 		if _, err := c.User.FileSystem.Stat(r.URL.Path); err == nil {
 			return http.StatusConflict, errors.New("There is already a file on that path")
 		}
