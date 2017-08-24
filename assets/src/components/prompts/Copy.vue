@@ -56,7 +56,7 @@ export default {
         })
         .catch(error => {
           buttons.done('copy')
-          this.$store.commit('showError', error)
+          this.$showError(error)
         })
     }
   }

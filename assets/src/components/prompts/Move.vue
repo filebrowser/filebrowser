@@ -56,7 +56,7 @@ export default {
         })
         .catch(error => {
           buttons.done('move')
-          this.$store.commit('showError', error)
+          this.$showError(error)
         })
 
       event.preventDefault()

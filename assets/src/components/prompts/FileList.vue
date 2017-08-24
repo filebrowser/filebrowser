@@ -53,7 +53,7 @@ export default {
     // so we fetch the data from the previous directory.
     api.fetch(url.removeLastDir(this.$route.path))
       .then(this.fillOptions)
-      .catch(this.showError)
+      .catch(this.$showError)
   },
   methods: {
     fillOptions (req) {
@@ -96,7 +96,7 @@ export default {
 
       api.fetch(uri)
         .then(this.fillOptions)
-        .catch(this.showError)
+        .catch(this.$showError)
     },
     touchstart (event) {
       let url = event.currentTarget.dataset.url

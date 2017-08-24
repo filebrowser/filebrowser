@@ -210,17 +210,13 @@ export default {
       if (this.$store.state.clipboard.key === 'x') {
         api.move(items).then(() => {
           this.$store.commit('setReload', true)
-        }).catch(error => {
-          this.$store.commit('showError', error)
-        })
+        }).catch(this.$showError)
         return
       }
 
       api.copy(items).then(() => {
         this.$store.commit('setReload', true)
-      }).catch(error => {
-        this.$store.commit('showError', error)
-      })
+      }).catch(this.$showError)
     },
     resizeEvent () {
       // Update the columns size based on the window width.
@@ -348,7 +344,7 @@ export default {
         })
         .catch(error => {
           finish()
-          this.$store.commit('showError', error)
+          this.$showError(error)
         })
 
       return false

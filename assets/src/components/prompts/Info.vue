@@ -111,7 +111,7 @@ export default {
 
       api.checksum(link, hash)
         .then((hash) => { event.target.innerHTML = hash })
-        .catch(error => { this.$store.commit('showError', error) })
+        .catch(this.$showError)
     }
   }
 }

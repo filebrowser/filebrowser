@@ -31,6 +31,8 @@ buttons:
   update: Atualizar
   upload: Enviar
   permalink: Obter link permanente
+success:
+  linkCopied: Link copiado!
 errors:
   forbidden: Tu não és bem-vindo aqui.
   internal: Algo correu bastante mal.

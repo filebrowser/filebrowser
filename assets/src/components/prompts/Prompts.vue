@@ -9,8 +9,6 @@
     <info v-else-if="showInfo"></info>
     <move v-else-if="showMove"></move>
     <copy v-else-if="showCopy"></copy>
-    <error v-else-if="showError"></error>
-    <success v-else-if="showSuccess"></success>
     <replace v-else-if="showReplace"></replace>
     <schedule v-else-if="show === 'schedule'"></schedule>
     <new-archetype v-else-if="show === 'new-archetype'"></new-archetype>
@@ -27,8 +25,6 @@ import Rename from './Rename'
 import Download from './Download'
 import Move from './Move'
 import Copy from './Copy'
-import Error from './Error'
-import Success from './Success'
 import NewFile from './NewFile'
 import NewDir from './NewDir'
 import NewArchetype from './NewArchetype'
@@ -47,9 +43,7 @@ export default {
     NewArchetype,
     Schedule,
     Rename,
-    Error,
     Download,
-    Success,
     Move,
     Copy,
     Share,
@@ -70,8 +64,6 @@ export default {
   },
   computed: {
     ...mapState(['show', 'plugins']),
-    showError: function () { return this.show === 'error' },
-    showSuccess: function () { return this.show === 'success' },
     showInfo: function () { return this.show === 'info' },
     showHelp: function () { return this.show === 'help' },
     showDelete: function () { return this.show === 'delete' },
