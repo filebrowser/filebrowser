@@ -124,6 +124,7 @@ settings:
   examples: Examples
   globalSettings: Global Settings
   language: Language
+  lockPassword: Prevent the user from changing the password
   newPassword: Your new password
   newPasswordConfirm: Confirm your new password
   newUser: New User

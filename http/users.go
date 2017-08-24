@@ -287,6 +287,10 @@ func usersPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 			return http.StatusBadRequest, fm.ErrEmptyPassword
 		}
 
+		if id == c.User.ID && c.User.LockPassword {
+			return http.StatusForbidden, nil
+		}
+
 		c.User.Password, err = fm.HashPassword(u.Password)
 		if err != nil {
 			return http.StatusInternalServerError, err

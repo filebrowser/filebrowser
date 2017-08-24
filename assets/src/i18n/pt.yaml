@@ -145,6 +145,7 @@ settings:
   examples: Exemplos
   globalSettings: Configurações Globais
   language: Linguagem
+  lockPassword: Não permitir que o utilizador altere a palavra-passe
   newPassword: Nova palavra-passe
   newPasswordConfirm: Confirme a nova palavra-passe
   newUser: Novo Utilizador

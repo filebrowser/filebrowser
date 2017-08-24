@@ -75,7 +75,7 @@ export default {
         this.listing = req
         this.updateLinks()
       })
-      .catch(error => { console.log(error) })
+      .catch(this.$showError)
   },
   beforeDestroy () {
     window.removeEventListener('keyup', this.key)
