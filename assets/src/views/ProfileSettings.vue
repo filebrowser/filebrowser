@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState } from 'vuex'
 import { updateUser } from '@/utils/api'
 import Languages from '@/components/Languages'
 
@@ -64,7 +64,6 @@ export default {
     this.locale = this.user.locale
   },
   methods: {
-    ...mapMutations([ 'showSuccess' ]),
     updatePassword (event) {
       event.preventDefault()
 
@@ -78,9 +77,9 @@ export default {
       }
 
       updateUser(user, 'password').then(location => {
-        this.showSuccess(this.$t('settings.passwordUpdated'))
+        this.$showSuccess(this.$t('settings.passwordUpdated'))
       }).catch(e => {
-        this.$store.commit('showError', e)
+        this.$showError(e)
       })
     },
     updateSettings (event) {
@@ -93,9 +92,9 @@ export default {
       updateUser(user, 'partial').then(location => {
         this.$store.commit('setUser', user)
         this.$emit('css-updated')
-        this.showSuccess(this.$t('settings.settingsUpdated'))
+        this.$showSuccess(this.$t('settings.settingsUpdated'))
       }).catch(e => {
-        this.$store.commit('showError', e)
+        this.$showError(e)
       })
     }
   }

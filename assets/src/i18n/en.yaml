@@ -31,6 +31,8 @@ buttons:
   update: Update
   upload: Upload
   permalink: Get Permanent Link
+success:
+  linkCopied: Link copied!
 errors:
   forbidden: You're not welcome here.
   internal: Something really went wrong.

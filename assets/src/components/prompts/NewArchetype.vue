@@ -37,9 +37,7 @@ export default {
         .then((url) => {
           this.$router.push({ path: url })
         })
-        .catch(error => {
-          this.$store.commit('showError', error)
-        })
+        .catch(this.$showError)
     },
     new (url, type) {
       url = removePrefix(url)

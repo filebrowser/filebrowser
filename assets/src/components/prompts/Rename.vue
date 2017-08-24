@@ -68,7 +68,7 @@ export default {
           }
           this.$store.commit('setReload', true)
         }).catch(error => {
-          this.$store.commit('showError', error)
+          this.$showError(error)
         })
 
       this.$store.commit('closeHovers')

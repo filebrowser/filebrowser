@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState } from 'vuex'
 import { getSettings, updateSettings } from '@/utils/api'
 
 export default {
@@ -73,10 +73,9 @@ export default {
           })
         }
       })
-      .catch(error => { this.showError(error) })
+      .catch(error => { this.$showError(error) })
   },
   methods: {
-    ...mapMutations([ 'showSuccess', 'showError' ]),
     capitalize (name, where = '_') {
       if (where === 'caps') where = /(?=[A-Z])/
       let splitted = name.split(where)
@@ -103,8 +102,8 @@ export default {
       }
 
       updateSettings(commands, 'commands')
-        .then(() => { this.showSuccess(this.$t('settings.commandsUpdated')) })
-        .catch(error => { this.showError(error) })
+        .then(() => { this.$showSuccess(this.$t('settings.commandsUpdated')) })
+        .catch(error => { this.$showError(error) })
     },
     saveStaticGen (event) {
       event.preventDefault()
@@ -124,8 +123,8 @@ export default {
       }
 
       updateSettings(staticGen, 'staticGen')
-        .then(() => { this.showSuccess(this.$t('settings.settingsUpdated')) })
-        .catch(error => { this.showError(error) })
+        .then(() => { this.$showSuccess(this.$t('settings.settingsUpdated')) })
+        .catch(error => { this.$showError(error) })
     },
     parseStaticGen (staticgen) {
       for (let option of staticgen) {

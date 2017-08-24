@@ -203,9 +203,9 @@ export default {
 
       deleteUser(this.id).then(location => {
         this.$router.push({ path: '/users' })
-        this.$store.commit('showSuccess', this.$t('settings.userDeleted'))
+        this.$showSuccess(this.$t('settings.userDeleted'))
       }).catch(e => {
-        this.$store.commit('showError', e)
+        this.$showError(e)
       })
     },
     save (event) {
@@ -215,9 +215,9 @@ export default {
       if (this.$route.path === '/users/new') {
         newUser(user).then(location => {
           this.$router.push({ path: location })
-          this.$store.commit('showSuccess', this.$t('settings.userCreated'))
+          this.$showSuccess(this.$t('settings.userCreated'))
         }).catch(e => {
-          this.$store.commit('showError', e)
+          this.$showError(e)
         })
 
         return
@@ -228,9 +228,9 @@ export default {
           this.$store.commit('setUser', user)
         }
 
-        this.$store.commit('showSuccess', this.$t('settings.userUpdated'))
+        this.$showSuccess(this.$t('settings.userUpdated'))
       }).catch(e => {
-        this.$store.commit('showError', e)
+        this.$showError(e)
       })
     },
     parseForm () {
