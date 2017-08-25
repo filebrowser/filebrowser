@@ -31,6 +31,8 @@ buttons:
   update: 更新
   upload: 上傳
   permalink: 獲取永久連結
+success:
+  linkCopied: 連結已複製！
 errors:
   forbidden: 你被禁止訪問。
   internal: 內部出現麻煩了。

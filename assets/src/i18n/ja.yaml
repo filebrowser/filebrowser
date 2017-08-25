@@ -31,6 +31,8 @@ buttons:
   update: 更新
   upload: アップロード
   permalink: 固定リンク
+success:
+  linkCopied: リンクがコピーされました！
 errors:
   forbidden: アクセスが拒否されました。
   internal: 内部エラーが発生しました。
