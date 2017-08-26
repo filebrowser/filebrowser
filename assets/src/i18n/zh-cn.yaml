@@ -123,6 +123,7 @@ settings:
   examples: 例子
   globalSettings: 全局设置
   language: 语言
+  lockPassowrd: 禁止用户修改密码
   newPassword: 您的新密码
   newPasswordConfirm: 重输一遍新密码
   newUser: 新建用户
