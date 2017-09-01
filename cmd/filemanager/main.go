@@ -50,7 +50,7 @@ func init() {
 	flag.StringVarP(&database, "database", "d", "./filemanager.db", "Database file")
 	flag.StringVarP(&logfile, "log", "l", "stdout", "Errors logger; can use 'stdout', 'stderr' or file")
 	flag.StringVarP(&scope, "scope", "s", ".", "Default scope option for new users")
-	flag.StringVarP(&baseurl, "baseurl", "", "Base URL")
+	flag.StringVarP(&baseurl, "baseurl", "b", "", "Base URL")
 	flag.StringVar(&commands, "commands", "git svn hg", "Default commands option for new users")
 	flag.BoolVar(&allowCommands, "allow-commands", true, "Default allow commands option for new users")
 	flag.BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option for new users")
