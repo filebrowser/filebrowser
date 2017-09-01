@@ -53,7 +53,7 @@ func init() {
 	flag.StringVarP(&scope, "scope", "s", ".", "Default scope option for new users")
 	flag.StringVarP(&baseurl, "baseurl", "b", "", "Base URL")
 	flag.StringVar(&commands, "commands", "git svn hg", "Default commands option for new users")
-	flag.StringVarP(&prefixurl, "prefixurl", "p", "", "Prefix URL")
+	flag.StringVar(&prefixurl, "prefixurl", "", "Prefix URL")
 	flag.BoolVar(&allowCommands, "allow-commands", true, "Default allow commands option for new users")
 	flag.BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option for new users")
 	flag.BoolVar(&allowPublish, "allow-publish", true, "Default allow publish option for new users")
