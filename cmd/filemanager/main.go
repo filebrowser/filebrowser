@@ -33,6 +33,7 @@ var (
 	staticg       string
 	locale        string
 	baseurl       string
+	prefixurl     string
 	port          int
 	noAuth        bool
 	allowCommands bool
@@ -52,6 +53,7 @@ func init() {
 	flag.StringVarP(&scope, "scope", "s", ".", "Default scope option for new users")
 	flag.StringVarP(&baseurl, "baseurl", "b", "", "Base URL")
 	flag.StringVar(&commands, "commands", "git svn hg", "Default commands option for new users")
+	flag.StringVarP(&prefixurl, "prefixurl", "p", "", "Prefix URL")
 	flag.BoolVar(&allowCommands, "allow-commands", true, "Default allow commands option for new users")
 	flag.BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option for new users")
 	flag.BoolVar(&allowPublish, "allow-publish", true, "Default allow publish option for new users")
@@ -77,6 +79,7 @@ func setupViper() {
 	viper.SetDefault("Locale", "en")
 	viper.SetDefault("NoAuth", false)
 	viper.SetDefault("BaseURL", "")
+	viper.SetDefault("PrefixURL", "")
 
 	viper.BindPFlag("Port", flag.Lookup("port"))
 	viper.BindPFlag("Address", flag.Lookup("address"))
@@ -92,6 +95,7 @@ func setupViper() {
 	viper.BindPFlag("StaticGen", flag.Lookup("staticgen"))
 	viper.BindPFlag("NoAuth", flag.Lookup("no-auth"))
 	viper.BindPFlag("BaseURL", flag.Lookup("baseurl"))
+	viper.BindPFlag("PrefixURL", flag.Lookup("prefixurl"))
 
 	viper.SetConfigName("filemanager")
 	viper.AddConfigPath(".")
@@ -182,7 +186,7 @@ func handler() http.Handler {
 	fm := &filemanager.FileManager{
 		NoAuth:    viper.GetBool("NoAuth"),
 		BaseURL:   viper.GetString("BaseURL"),
-		PrefixURL: "",
+		PrefixURL: viper.GetString("PrefixURL"),
 		DefaultUser: &filemanager.User{
 			AllowCommands: viper.GetBool("AllowCommands"),
 			AllowEdit:     viper.GetBool("AllowEdit"),
