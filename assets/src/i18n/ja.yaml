@@ -31,6 +31,8 @@ buttons:
   update: 更新
   upload: アップロード
   permalink: 固定リンク
+success:
+  linkCopied: リンクがコピーされました！
 errors:
   forbidden: アクセスが拒否されました。
   internal: 内部エラーが発生しました。
@@ -122,6 +124,7 @@ settings:
   examples: 例
   globalSettings: グローバル設定
   language: 言語
+  lockPassowrd: 新しいパスワードを変更に禁止
   newPassword: 新しいパスワード
   newPasswordConfirm: 新しいパスワードを確認します
   newUser: 新しいユーザー

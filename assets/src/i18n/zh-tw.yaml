@@ -31,6 +31,8 @@ buttons:
   update: 更新
   upload: 上傳
   permalink: 獲取永久連結
+success:
+  linkCopied: 連結已複製！
 errors:
   forbidden: 你被禁止訪問。
   internal: 內部出現麻煩了。
@@ -121,6 +123,7 @@ settings:
   examples: 例子
   globalSettings: 全域設定
   language: 語言
+  lockPassword: 禁止用戶修改密碼
   newPassword: 您的新密碼
   newPasswordConfirm: 重輸一遍新密碼
   newUser: 建立用戶
