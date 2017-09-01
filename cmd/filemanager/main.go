@@ -32,6 +32,7 @@ var (
 	logfile       string
 	staticg       string
 	locale        string
+	baseurl       string
 	port          int
 	noAuth        bool
 	allowCommands bool
@@ -49,6 +50,7 @@ func init() {
 	flag.StringVarP(&database, "database", "d", "./filemanager.db", "Database file")
 	flag.StringVarP(&logfile, "log", "l", "stdout", "Errors logger; can use 'stdout', 'stderr' or file")
 	flag.StringVarP(&scope, "scope", "s", ".", "Default scope option for new users")
+	flag.StringVarP(&baseurl, "baseurl", "", "Base URL")
 	flag.StringVar(&commands, "commands", "git svn hg", "Default commands option for new users")
 	flag.BoolVar(&allowCommands, "allow-commands", true, "Default allow commands option for new users")
 	flag.BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option for new users")
@@ -74,6 +76,7 @@ func setupViper() {
 	viper.SetDefault("StaticGen", "")
 	viper.SetDefault("Locale", "en")
 	viper.SetDefault("NoAuth", false)
+	viper.SetDefault("BaseURL", "")
 
 	viper.BindPFlag("Port", flag.Lookup("port"))
 	viper.BindPFlag("Address", flag.Lookup("address"))
@@ -88,6 +91,7 @@ func setupViper() {
 	viper.BindPFlag("Locale", flag.Lookup("locale"))
 	viper.BindPFlag("StaticGen", flag.Lookup("staticgen"))
 	viper.BindPFlag("NoAuth", flag.Lookup("no-auth"))
+	viper.BindPFlag("BaseURL", flag.Lookup("baseurl"))
 
 	viper.SetConfigName("filemanager")
 	viper.AddConfigPath(".")
@@ -177,7 +181,7 @@ func handler() http.Handler {
 
 	fm := &filemanager.FileManager{
 		NoAuth:    viper.GetBool("NoAuth"),
-		BaseURL:   "",
+		BaseURL:   viper.GetString("BaseURL"),
 		PrefixURL: "",
 		DefaultUser: &filemanager.User{
 			AllowCommands: viper.GetBool("AllowCommands"),
