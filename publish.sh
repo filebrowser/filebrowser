@@ -18,7 +18,7 @@ git push --tags
 echo "Commiting untracked version notice..."
 sed -i "s|$1|(untracked)|g" filemanager.go
 git add -A
-git commit -m "untracked version `date`"
+git commit -m "[ci skip] auto: setting untracked version"
 git push
 
 echo "Done!"

@@ -166,7 +166,6 @@ sidebar:
   myFiles: 我的檔案
   newFile: 建立檔案
   newFolder: 建立資料夾
-  servedWith: '服務提供者:'
   settings: 設定
   siteSettings: 網站設定
   hugoNew: Hugo New
