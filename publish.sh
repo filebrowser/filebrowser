@@ -1,10 +1,10 @@
 #!/bin/bash
 
-echo "Releasing version $1"
-sed -i "s|(untracked version)|$1|g" filemanager.go
-
 echo "Building assets"
 ./build.sh
+
+echo "Updating version number to $1..."
+sed -i "s|(untracked)|$1|g" filemanager.go
 
 echo "Commiting..."
 git add -A
@@ -16,7 +16,7 @@ git tag "v$1"
 git push --tags
 
 echo "Commiting untracked version notice..."
-sed -i "s|$1|(untracked version)|g" filemanager.go
+sed -i "s|$1|(untracked)|g" filemanager.go
 git add -A
 git commit -m "untracked version `date`"
 git push

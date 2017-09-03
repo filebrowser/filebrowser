@@ -15,6 +15,7 @@ const state = {
   staticGen: document.querySelector('meta[name="staticgen"]').getAttribute('content'),
   baseURL: document.querySelector('meta[name="base"]').getAttribute('content'),
   noAuth: (document.querySelector('meta[name="noauth"]').getAttribute('content') === 'true'),
+  version: document.querySelector('meta[name="version"]').getAttribute('content'),
   jwt: '',
   progress: 0,
   schedule: '',

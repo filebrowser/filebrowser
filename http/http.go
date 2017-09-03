@@ -228,6 +228,7 @@ func renderFile(c *fm.Context, w http.ResponseWriter, file string) (int, error) 
 	data := map[string]interface{}{
 		"BaseURL": c.RootURL(),
 		"NoAuth":  c.NoAuth,
+		"Version": fm.Version,
 	}
 
 	if c.StaticGen != nil {
