@@ -21,7 +21,7 @@ import (
 )
 
 // Version is the current File Manager version.
-const Version = "(untracked version)"
+const Version = "(untracked)"
 
 var (
 	ErrExist              = errors.New("the resource already exists")
