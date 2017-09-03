@@ -44,6 +44,10 @@ func shareGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 		}
 	}
 
+	if len(s) == 0 {
+		return http.StatusNotFound, nil
+	}
+
 	return renderJSON(w, s)
 }
 

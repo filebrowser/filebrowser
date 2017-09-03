@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -53,11 +54,7 @@ func serve(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Check if this request is made to the service worker. If so,
 	// pass it through a template to add the needed variables.
 	if r.URL.Path == "/sw.js" {
-		return renderFile(
-			c, w,
-			c.Assets.MustString("sw.js"),
-			"application/javascript",
-		)
+		return renderFile(c, w, "sw.js")
 	}
 
 	// Checks if this request is made to the static assets folder. If so, and
@@ -95,11 +92,7 @@ func serve(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	w.Header().Set("x-content-type", "nosniff")
 	w.Header().Set("x-xss-protection", "1; mode=block")
 
-	return renderFile(
-		c, w,
-		c.Assets.MustString("index.html"),
-		"text/html",
-	)
+	return renderFile(c, w, "index.html")
 }
 
 // staticHandler handles the static assets path.
@@ -109,11 +102,7 @@ func staticHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, 
 		return 0, nil
 	}
 
-	return renderFile(
-		c, w,
-		c.Assets.MustString("static/manifest.json"),
-		"application/json",
-	)
+	return renderFile(c, w, "static/manifest.json")
 }
 
 // apiHandler is the main entry point for the /api endpoint.
@@ -219,8 +208,21 @@ func splitURL(path string) (string, string) {
 }
 
 // renderFile renders a file using a template with some needed variables.
-func renderFile(c *fm.Context, w http.ResponseWriter, file string, contentType string) (int, error) {
-	tpl := template.Must(template.New("file").Parse(file))
+func renderFile(c *fm.Context, w http.ResponseWriter, file string) (int, error) {
+	tpl := template.Must(template.New("file").Parse(c.Assets.MustString(file)))
+
+	var contentType string
+	switch filepath.Ext(file) {
+	case ".html":
+		contentType = "text/html"
+	case ".js":
+		contentType = "application/javascript"
+	case ".json":
+		contentType = "application/json"
+	default:
+		contentType = "text"
+	}
+
 	w.Header().Set("Content-Type", contentType+"; charset=utf-8")
 
 	data := map[string]interface{}{
@@ -245,11 +247,8 @@ func renderFile(c *fm.Context, w http.ResponseWriter, file string, contentType s
 func sharePage(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	s, err := c.Store.Share.Get(r.URL.Path)
 	if err == fm.ErrNotExist {
-		return renderFile(
-			c, w,
-			c.Assets.MustString("static/share/404.html"),
-			"text/html",
-		)
+		w.WriteHeader(http.StatusNotFound)
+		return renderFile(c, w, "static/share/404.html")
 	}
 
 	if err != nil {
@@ -258,11 +257,8 @@ func sharePage(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, erro
 
 	if s.Expires && s.ExpireDate.Before(time.Now()) {
 		c.Store.Share.Delete(s.Hash)
-		return renderFile(
-			c, w,
-			c.Assets.MustString("static/share/404.html"),
-			"text/html",
-		)
+		w.WriteHeader(http.StatusNotFound)
+		return renderFile(c, w, "static/share/404.html")
 	}
 
 	r.URL.Path = s.Path
