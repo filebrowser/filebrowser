@@ -1,12 +1,9 @@
 <template>
   <div class="dashboard">
     <ul id="nav">
-      <li>
-        <router-link to="/settings/global">
-          <i class="material-icons">keyboard_arrow_left</i> {{ $t('settings.globalSettings') }}
-        </router-link>
-      </li>
-      <li></li>
+      <li><router-link to="/settings/profile">{{ $t('settings.profileSettings') }}</router-link></li>
+      <li><router-link to="/settings/global">{{ $t('settings.globalSettings') }}</router-link></li>
+      <li class="active"><router-link to="/users">{{ $t('settings.userManagement') }}</router-link></li>
     </ul>
 
     <h1>{{ $t('settings.users') }} <router-link to="/users/new"><button>{{ $t('buttons.new') }}</button></router-link></h1>
@@ -19,7 +16,7 @@
         <th></th>
       </tr>
 
-      <tr v-for="user in users">
+      <tr v-for="user in users" :key="user.id">
         <td>{{ user.username }}</td>
         <td><i v-if="user.admin" class="material-icons">done</i><i v-else class="material-icons">close</i></td>
         <td>{{ user.filesystem }}</td>
