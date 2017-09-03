@@ -2,12 +2,9 @@
   <div>
     <form @submit="save" class="dashboard">
       <ul id="nav">
-        <li>
-          <router-link to="/users">
-            <i class="material-icons">keyboard_arrow_left</i> {{ $t('settings.userManagement') }}
-          </router-link>
-        </li>
-        <li></li>
+        <li><router-link to="/settings/profile">{{ $t('settings.profileSettings') }}</router-link></li>
+        <li><router-link to="/settings/global">{{ $t('settings.globalSettings') }}</router-link></li>
+        <li><router-link to="/users">{{ $t('settings.userManagement') }}</router-link></li>
       </ul>
 
       <h1 v-if="id === 0">{{ $t('settings.newUser') }}</h1>
