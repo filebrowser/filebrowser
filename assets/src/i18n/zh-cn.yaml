@@ -166,7 +166,6 @@ sidebar:
   myFiles: 我的文件
   newFile: 新建文件
   newFolder: 新建文件夹
-  servedWith: '服务提供者:'
   settings: 设置
   siteSettings: 网站设置
   hugoNew: Hugo New
