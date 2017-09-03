@@ -41,7 +41,6 @@ var (
 	allowNew      bool
 	allowPublish  bool
 	showVer       bool
-	version       = "master"
 )
 
 func init() {
@@ -102,15 +101,7 @@ func setupViper() {
 }
 
 func printVersion() {
-	version = strings.TrimSpace(version)
-
-	if version == "" {
-		fmt.Println("filemanager is at an untracked version")
-	} else {
-		version = strings.TrimPrefix(version, "v")
-		fmt.Println("filemanager version", version)
-	}
-
+	fmt.Println("filemanager version", filemanager.Version)
 	os.Exit(0)
 }
 
