@@ -20,6 +20,9 @@ import (
 	"github.com/robfig/cron"
 )
 
+// Version is the current File Manager version.
+const Version = "(untracked version)"
+
 var (
 	ErrExist              = errors.New("the resource already exists")
 	ErrNotExist           = errors.New("the resource does not exist")
