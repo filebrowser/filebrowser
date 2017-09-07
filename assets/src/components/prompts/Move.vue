@@ -1,19 +1,22 @@
 <template>
-  <div class="prompt">
-    <h3>{{ $t('prompts.move') }}</h3>
-    <p>{{ $t('prompts.moveMessage') }}</p>
+  <div class="card floating">
+    <div class="card-title">
+      <h2>{{ $t('prompts.move') }}</h2>
+    </div>
 
-    <file-list @update:selected="val => dest = val"></file-list>
+    <div class="card-content">
+      <file-list @update:selected="val => dest = val"></file-list>
+    </div>
 
-    <div>
-      <button class="ok"
-        @click="move"
-        :aria-label="$t('buttons.move')"
-        :title="$t('buttons.move')">{{ $t('buttons.move') }}</button>
-      <button class="cancel"
+    <div class="card-action">
+      <button class="flat cancel"
         @click="$store.commit('closeHovers')"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
+      <button class="flat"
+        @click="move"
+        :aria-label="$t('buttons.move')"
+        :title="$t('buttons.move')">{{ $t('buttons.move') }}</button>
     </div>
   </div>
 </template>

@@ -1,51 +1,55 @@
 <template>
-  <div class="prompt" id="share">
-    <h3>{{ $t('buttons.share') }}</h3>
-    <p></p>
-    <ul>
-      <li v-if="!hasPermanent">
-        <a @click="getPermalink" :aria-label="$t('buttons.permalink')">{{ $t('buttons.permalink') }}</a>
-      </li>
+  <div class="card floating" id="share">
+    <div class="card-title">
+      <h2>{{ $t('buttons.share') }}</h2>
+    </div>
 
-      <li v-for="link in links" :key="link.hash">
-        <a :href="buildLink(link.hash)" target="_blank">
-          <template v-if="link.expires">{{ humanTime(link.expireDate) }}</template>
-          <template v-else>{{ $t('permanent') }}</template>
-        </a>
+    <div class="card-content">
+      <ul>
+        <li v-if="!hasPermanent">
+          <a @click="getPermalink" :aria-label="$t('buttons.permalink')">{{ $t('buttons.permalink') }}</a>
+        </li>
 
-        <button class="action"
-          @click="deleteLink($event, link)"
-          :aria-label="$t('buttons.delete')"
-          :title="$t('buttons.delete')"><i class="material-icons">delete</i></button>
+        <li v-for="link in links" :key="link.hash">
+          <a :href="buildLink(link.hash)" target="_blank">
+            <template v-if="link.expires">{{ humanTime(link.expireDate) }}</template>
+            <template v-else>{{ $t('permanent') }}</template>
+          </a>
 
-        <button class="action copy-clipboard"
-          :data-clipboard-text="buildLink(link.hash)"
-          :aria-label="$t('buttons.copyToClipboard')"
-          :title="$t('buttons.copyToClipboard')"><i class="material-icons">content_paste</i></button>
-      </li>
+          <button class="action"
+            @click="deleteLink($event, link)"
+            :aria-label="$t('buttons.delete')"
+            :title="$t('buttons.delete')"><i class="material-icons">delete</i></button>
 
-      <li>
-        <input autofocus
-          type="number"
-          max="2147483647"
-          min="0"
-          @keyup.enter="submit"
-          v-model.trim="time">
-        <select v-model="unit" :aria-label="$t('time.unit')">
-          <option value="seconds">{{ $t('time.seconds') }}</option>
-          <option value="minutes">{{ $t('time.minutes') }}</option>
-          <option value="hours">{{ $t('time.hours') }}</option>
-          <option value="days">{{ $t('time.days') }}</option>
-        </select>
-        <button class="action"
-          @click="submit"
-          :aria-label="$t('buttons.create')"
-          :title="$t('buttons.create')"><i class="material-icons">add</i></button>
-      </li>
-    </ul>
+          <button class="action copy-clipboard"
+            :data-clipboard-text="buildLink(link.hash)"
+            :aria-label="$t('buttons.copyToClipboard')"
+            :title="$t('buttons.copyToClipboard')"><i class="material-icons">content_paste</i></button>
+        </li>
 
-    <div>
-      <button class="cancel"
+        <li>
+          <input autofocus
+            type="number"
+            max="2147483647"
+            min="0"
+            @keyup.enter="submit"
+            v-model.trim="time">
+          <select v-model="unit" :aria-label="$t('time.unit')">
+            <option value="seconds">{{ $t('time.seconds') }}</option>
+            <option value="minutes">{{ $t('time.minutes') }}</option>
+            <option value="hours">{{ $t('time.hours') }}</option>
+            <option value="days">{{ $t('time.days') }}</option>
+          </select>
+          <button class="action"
+            @click="submit"
+            :aria-label="$t('buttons.create')"
+            :title="$t('buttons.create')"><i class="material-icons">add</i></button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="card-action">
+      <button class="flat"
         @click="$store.commit('closeHovers')"
         :aria-label="$t('buttons.close')"
         :title="$t('buttons.close')">{{ $t('buttons.close') }}</button>

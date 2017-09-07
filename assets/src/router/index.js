@@ -3,10 +3,11 @@ import Router from 'vue-router'
 import Login from '@/views/Login'
 import Layout from '@/views/Layout'
 import Files from '@/views/Files'
-import Users from '@/views/Users'
-import User from '@/views/User'
-import GlobalSettings from '@/views/GlobalSettings'
-import ProfileSettings from '@/views/ProfileSettings'
+import Users from '@/views/Settings/Users'
+import User from '@/views/Settings/User'
+import Settings from '@/views/Settings'
+import GlobalSettings from '@/views/settings/Global'
+import ProfileSettings from '@/views/settings/Profile'
 import Error403 from '@/views/errors/403'
 import Error404 from '@/views/errors/404'
 import Error500 from '@/views/errors/500'
@@ -49,22 +50,45 @@ const router = new Router({
         {
           path: '/settings',
           name: 'Settings',
-          redirect: {
-            path: '/settings/profile'
-          }
-        },
-        {
-          path: '/settings/profile',
-          name: 'Profile Settings',
-          component: ProfileSettings
-        },
-        {
-          path: '/settings/global',
-          name: 'Global Settings',
-          component: GlobalSettings,
-          meta: {
-            requiresAdmin: true
-          }
+          component: Settings,
+          children: [
+            {
+              path: '/settings',
+              name: 'Settings',
+              redirect: {
+                path: '/settings/profile'
+              }
+            },
+            {
+              path: '/settings/profile',
+              name: 'Profile Settings',
+              component: ProfileSettings
+            },
+            {
+              path: '/settings/global',
+              name: 'Global Settings',
+              component: GlobalSettings,
+              meta: {
+                requiresAdmin: true
+              }
+            },
+            {
+              path: '/settings/users',
+              name: 'Users',
+              component: Users,
+              meta: {
+                requiresAdmin: true
+              }
+            },
+            {
+              path: '/settings/users/*',
+              name: 'User',
+              component: User,
+              meta: {
+                requiresAdmin: true
+              }
+            }
+          ]
         },
         {
           path: '/403',
@@ -80,22 +104,6 @@ const router = new Router({
           path: '/500',
           name: 'Internal Server Error',
           component: Error500
-        },
-        {
-          path: '/users',
-          name: 'Users',
-          component: Users,
-          meta: {
-            requiresAdmin: true
-          }
-        },
-        {
-          path: '/users/*',
-          name: 'User',
-          component: User,
-          meta: {
-            requiresAdmin: true
-          }
         },
         {
           path: '/files',

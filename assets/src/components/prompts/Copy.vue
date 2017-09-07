@@ -1,19 +1,23 @@
 <template>
-  <div class="prompt">
-    <h3>{{ $t('prompts.copy') }}</h3>
-    <p>{{ $t('prompts.copyMessage') }}</p>
+  <div class="card floating">
+    <div class="card-title">
+      <h2>{{ $t('prompts.copy') }}</h2>
+    </div>
 
-    <file-list @update:selected="val => dest = val"></file-list>
+    <div class="card-content">
+      <p>{{ $t('prompts.copyMessage') }}</p>
+      <file-list @update:selected="val => dest = val"></file-list>
+    </div>
 
-    <div>
-      <button class="ok"
-        @click="copy"
-        :aria-label="$t('buttons.copy')"
-        :title="$t('buttons.copy')">{{ $t('buttons.copy') }}</button>
-      <button class="cancel"
+    <div class="card-action">
+      <button class="cancel flat"
         @click="$store.commit('closeHovers')"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
+      <button class="flat"
+        @click="copy"
+        :aria-label="$t('buttons.copy')"
+        :title="$t('buttons.copy')">{{ $t('buttons.copy') }}</button>
     </div>
   </div>
 </template>

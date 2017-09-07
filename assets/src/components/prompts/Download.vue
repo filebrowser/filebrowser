@@ -1,13 +1,18 @@
 <template>
-  <div class="prompt" id="download">
-    <h3>{{ $t('prompts.download') }}</h3>
-    <p>{{ $t('prompts.downloadMessage') }}</p>
+  <div class="card floating" id="download">
+    <div class="card-title">
+      <h2>{{ $t('prompts.download') }}</h2>
+    </div>
 
-    <button @click="download('zip')" autofocus>zip</button>
-    <button @click="download('tar')" autofocus>tar</button>
-    <button @click="download('targz')" autofocus>tar.gz</button>
-    <button @click="download('tarbz2')" autofocus>tar.bz2</button>
-    <button @click="download('tarxz')" autofocus>tar.xz</button>
+    <div class="card-content">
+      <p>{{ $t('prompts.downloadMessage') }}</p>
+
+      <button class="block cancel" @click="download('zip')" autofocus>zip</button>
+      <button class="block cancel" @click="download('tar')" autofocus>tar</button>
+      <button class="block cancel" @click="download('targz')" autofocus>tar.gz</button>
+      <button class="block cancel" @click="download('tarbz2')" autofocus>tar.bz2</button>
+      <button class="block cancel" @click="download('tarxz')" autofocus>tar.xz</button>
+    </div>
   </div>
 </template>
 

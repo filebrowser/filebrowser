@@ -26,7 +26,6 @@ Vue.prototype.$showSuccess = function (message) {
 }
 
 Vue.prototype.$showError = function (error) {
-  // TODO: add btns: close and report issue
   let n = new Noty(Object.assign({}, notyDefault, {
     text: error,
     type: 'error',

@@ -1,29 +1,33 @@
 <template>
-  <div class="prompt">
-    <h3>{{ $t('prompts.fileInfo') }}</h3>
+  <div class="card floating">
+    <div class="card-title">
+      <h2>{{ $t('prompts.fileInfo') }}</h2>
+    </div>
 
-    <p v-show="selected.length > 1">{{ $t('prompts.filesSelected', { count: selected.length }) }}</p>
+    <div class="card-content">
+      <p v-if="selected.length > 1">{{ $t('prompts.filesSelected', { count: selected.length }) }}</p>
 
-    <p v-show="selected.length < 2"><strong>{{ $t('prompts.displayName') }}</strong> {{ name() }}</p>
-    <p><strong>{{ $t('prompts.size') }}:</strong> <span id="content_length"></span>{{ humanSize() }}</p>
-    <p v-show="selected.length < 2"><strong>{{ $t('prompts.lastModified') }}:</strong> {{ humanTime() }}</p>
+      <p v-if="selected.length < 2"><strong>{{ $t('prompts.displayName') }}</strong> {{ name() }}</p>
+      <p><strong>{{ $t('prompts.size') }}:</strong> <span id="content_length"></span>{{ humanSize() }}</p>
+      <p v-if="selected.length < 2"><strong>{{ $t('prompts.lastModified') }}:</strong> {{ humanTime() }}</p>
 
-    <section v-show="dir() && selected.length === 0">
-      <p><strong>{{ $t('prompts.numberFiles') }}:</strong> {{ req.numFiles }}</p>
-      <p><strong>{{ $t('prompts.numberDirs') }}:</strong> {{ req.numDirs }}</p>
-    </section>
+      <template v-if="dir() && selected.length === 0">
+        <p><strong>{{ $t('prompts.numberFiles') }}:</strong> {{ req.numFiles }}</p>
+        <p><strong>{{ $t('prompts.numberDirs') }}:</strong> {{ req.numDirs }}</p>
+      </template>
 
-    <section v-show="!dir()">
-      <p><strong>MD5:</strong> <code><a @click="checksum($event, 'md5')">{{ $t('prompts.show') }}</a></code></p>
-      <p><strong>SHA1:</strong> <code><a @click="checksum($event, 'sha1')">{{ $t('prompts.show') }}</a></code></p>
-      <p><strong>SHA256:</strong> <code><a @click="checksum($event, 'sha256')">{{ $t('prompts.show') }}</a></code></p>
-      <p><strong>SHA512:</strong> <code><a @click="checksum($event, 'sha512')">{{ $t('prompts.show') }}</a></code></p>
-    </section>
+      <template v-if="!dir()">
+        <p><strong>MD5:</strong> <code><a @click="checksum($event, 'md5')">{{ $t('prompts.show') }}</a></code></p>
+        <p><strong>SHA1:</strong> <code><a @click="checksum($event, 'sha1')">{{ $t('prompts.show') }}</a></code></p>
+        <p><strong>SHA256:</strong> <code><a @click="checksum($event, 'sha256')">{{ $t('prompts.show') }}</a></code></p>
+        <p><strong>SHA512:</strong> <code><a @click="checksum($event, 'sha512')">{{ $t('prompts.show') }}</a></code></p>
+      </template>
+    </div>
 
-    <div>
+    <div class="card-action">
       <button type="submit"
         @click="$store.commit('closeHovers')"
-        class="ok"
+        class="flat"
         :aria-label="$t('buttons.ok')"
         :title="$t('buttons.ok')">{{ $t('buttons.ok') }}</button>
     </div>

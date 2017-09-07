@@ -24,6 +24,7 @@
   <!-- Add to home screen for Windows -->
   <meta name="msapplication-TileImage" content="{{ .BaseURL }}/static/img/icons/msapplication-icon-144x144.png">
   <meta name="msapplication-TileColor" content="#2979ff">
+
   <% for (var chunk of webpack.chunks) {
     for (var file of chunk.files) {
       if (file.match(/\.(js|css)$/)) { %>
