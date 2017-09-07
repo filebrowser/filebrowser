@@ -34,6 +34,7 @@ var (
 	locale        string
 	baseurl       string
 	prefixurl     string
+	viewMode      string
 	port          int
 	noAuth        bool
 	allowCommands bool
@@ -53,6 +54,7 @@ func init() {
 	flag.StringVarP(&baseurl, "baseurl", "b", "", "Base URL")
 	flag.StringVar(&commands, "commands", "git svn hg", "Default commands option for new users")
 	flag.StringVar(&prefixurl, "prefixurl", "", "Prefix URL")
+	flag.StringVar(&viewMode, "view-mode", "mosaic", "Default view mode for new users")
 	flag.BoolVar(&allowCommands, "allow-commands", true, "Default allow commands option for new users")
 	flag.BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option for new users")
 	flag.BoolVar(&allowPublish, "allow-publish", true, "Default allow publish option for new users")
@@ -79,6 +81,7 @@ func setupViper() {
 	viper.SetDefault("NoAuth", false)
 	viper.SetDefault("BaseURL", "")
 	viper.SetDefault("PrefixURL", "")
+	viper.SetDefault("ViewMode", "mosaic")
 
 	viper.BindPFlag("Port", flag.Lookup("port"))
 	viper.BindPFlag("Address", flag.Lookup("address"))
@@ -95,6 +98,7 @@ func setupViper() {
 	viper.BindPFlag("NoAuth", flag.Lookup("no-auth"))
 	viper.BindPFlag("BaseURL", flag.Lookup("baseurl"))
 	viper.BindPFlag("PrefixURL", flag.Lookup("prefixurl"))
+	viper.BindPFlag("ViewMode", flag.Lookup("view-mode"))
 
 	viper.SetConfigName("filemanager")
 	viper.AddConfigPath(".")
@@ -189,6 +193,7 @@ func handler() http.Handler {
 			CSS:           "",
 			Scope:         viper.GetString("Scope"),
 			FileSystem:    fileutils.Dir(viper.GetString("Scope")),
+			ViewMode:      viper.GetString("ViewMode"),
 		},
 		Store: &filemanager.Store{
 			Config: bolt.ConfigStore{DB: db},
