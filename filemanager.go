@@ -55,6 +55,7 @@ package filemanager
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -249,6 +250,8 @@ func New(database string, base User) (*FileManager, error) {
 			"after_save":     {},
 			"before_publish": {},
 			"after_publish":  {},
+			"after_copy":     {},
+			"after_rename":   {},
 		}
 		err = db.Set("config", "commands", m.Commands)
 	}
@@ -471,7 +474,7 @@ func (r *Regexp) MatchString(s string) bool {
 }
 
 // Runner runs the commands for a certain event type.
-func (m FileManager) Runner(event string, path string) error {
+func (m FileManager) Runner(event string, path string, destination string, user *User) error {
 	commands := []string{}
 
 	// Get the commands from the File Manager instance itself.
@@ -496,7 +499,15 @@ func (m FileManager) Runner(event string, path string) error {
 		}
 
 		cmd := exec.Command(command, args...)
-		cmd.Env = append(os.Environ(), "file="+path)
+		cmd.Env = append(os.Environ(), fmt.Sprintf("FILE=%s", path))
+		cmd.Env = append(cmd.Env, fmt.Sprintf("ROOT=%s", user.FileSystem))
+		cmd.Env = append(cmd.Env, fmt.Sprintf("TRIGGER=%s", event))
+		cmd.Env = append(cmd.Env, fmt.Sprintf("USERNAME=%s", user.Username))
+
+		if destination != "" {
+			cmd.Env = append(cmd.Env, fmt.Sprintf("DESTINATION=%s", destination))
+		}
+
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr

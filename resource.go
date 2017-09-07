@@ -37,7 +37,7 @@ func resourceHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	case http.MethodPut:
 		// Before save command handler.
 		path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
-		if err := c.Runner("before_save", path); err != nil {
+		if err := c.Runner("before_save", path, "", c.User); err != nil {
 			return http.StatusInternalServerError, err
 		}
 
@@ -47,7 +47,7 @@ func resourceHandler(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 		}
 
 		// After save command handler.
-		if err := c.Runner("after_save", path); err != nil {
+		if err := c.Runner("after_save", path, "", c.User); err != nil {
 			return http.StatusInternalServerError, err
 		}
 
@@ -255,7 +255,7 @@ func resourcePublish(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	path := filepath.Join(string(c.User.FileSystem), r.URL.Path)
 
 	// Before save command handler.
-	if err := c.Runner("before_publish", path); err != nil {
+	if err := c.Runner("before_publish", path, "", c.User); err != nil {
 		return http.StatusInternalServerError, err
 	}
 
@@ -265,7 +265,7 @@ func resourcePublish(c *RequestContext, w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Executed the before publish command.
-	if err := c.Runner("before_publish", path); err != nil {
+	if err := c.Runner("before_publish", path, "", c.User); err != nil {
 		return http.StatusInternalServerError, err
 	}
 
@@ -293,8 +293,16 @@ func resourcePatchHandler(c *RequestContext, w http.ResponseWriter, r *http.Requ
 
 	if action == "copy" {
 		err = c.User.FileSystem.Copy(src, dst)
+
+		if err := c.Runner("after_copy", src, dst, c.User); err != nil {
+			return http.StatusInternalServerError, err
+		}
 	} else {
 		err = c.User.FileSystem.Rename(src, dst)
+
+		if err := c.Runner("after_rename", src, dst, c.User); err != nil {
+			return http.StatusInternalServerError, err
+		}
 	}
 
 	return errorToHTTP(err, true), err
