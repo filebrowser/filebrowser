@@ -67,8 +67,6 @@ type Listing struct {
 	Sort string `json:"sort"`
 	// And which order.
 	Order string `json:"order"`
-	// Displays in mosaic or list.
-	Display string `json:"display"`
 }
 
 // GetInfo gets the file information and, in case of error, returns the

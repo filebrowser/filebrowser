@@ -7,7 +7,7 @@
     <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" multiple>
   </div>
   <div v-else id="listing"
-    :class="req.display"
+    :class="user.viewMode"
     @dragenter="dragEnter"
     @dragend="dragEnd">
     <div>
@@ -98,7 +98,7 @@ export default {
   name: 'listing',
   components: { Item },
   computed: {
-    ...mapState(['req', 'selected']),
+    ...mapState(['req', 'selected', 'user']),
     nameSorted () {
       return (this.req.sort === 'name')
     },

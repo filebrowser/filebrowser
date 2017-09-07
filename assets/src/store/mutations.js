@@ -45,8 +45,12 @@ const mutations = {
   resetSelected: (state) => {
     state.selected = []
   },
-  listingDisplay: (state, value) => {
-    state.req.display = value
+  updateUser: (state, value) => {
+    if (typeof value !== 'object') return
+
+    for (let field in value) {
+      state.user[field] = value[field]
+    }
   },
   updateRequest: (state, value) => {
     state.req = value

@@ -130,8 +130,6 @@ func listingHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int,
 	}
 
 	listing.ApplySort()
-	listing.Display = displayMode(w, r, cookieScope)
-
 	return renderJSON(w, f)
 }
 
@@ -299,32 +297,6 @@ func resourcePatchHandler(c *fm.Context, w http.ResponseWriter, r *http.Request)
 	}
 
 	return ErrorToHTTP(err, true), err
-}
-
-// displayMode obtains the display mode from the Cookie.
-func displayMode(w http.ResponseWriter, r *http.Request, scope string) string {
-	var displayMode string
-
-	// Checks the cookie.
-	if displayCookie, err := r.Cookie("display"); err == nil {
-		displayMode = displayCookie.Value
-	}
-
-	// If it's invalid, set it to mosaic, which is the default.
-	if displayMode == "" || (displayMode != "mosaic" && displayMode != "list") {
-		displayMode = "mosaic"
-	}
-
-	// Set the cookie.
-	http.SetCookie(w, &http.Cookie{
-		Name:   "display",
-		Value:  displayMode,
-		MaxAge: 31536000,
-		Path:   scope,
-		Secure: r.TLS != nil,
-	})
-
-	return displayMode
 }
 
 // handleSortOrder gets and stores for a Listing the 'sort' and 'order',
