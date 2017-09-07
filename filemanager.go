@@ -121,9 +121,13 @@ func (m *FileManager) Setup() error {
 			"after_save":     {},
 			"before_publish": {},
 			"after_publish":  {},
+			"before_copy":    {},
 			"after_copy":     {},
+			"before_rename":  {},
 			"after_rename":   {},
+			"before_upload":  {},
 			"after_upload":   {},
+			"before_delete":  {},
 			"after_delete":   {},
 		}
 		err = m.Store.Config.Save("commands", m.Commands)

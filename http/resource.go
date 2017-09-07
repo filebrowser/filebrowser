@@ -139,13 +139,18 @@ func resourceDeleteHandler(c *fm.Context, w http.ResponseWriter, r *http.Request
 		return http.StatusForbidden, nil
 	}
 
+	// Fire the before trigger.
+	if err := c.Runner("before_delete", r.URL.Path, "", c.User); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
 	// Remove the file or folder.
 	err := c.User.FileSystem.RemoveAll(r.URL.Path)
 	if err != nil {
 		return ErrorToHTTP(err, true), err
 	}
 
-	// Fire the trigger
+	// Fire the after trigger.
 	if err := c.Runner("after_delete", r.URL.Path, "", c.User); err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -190,6 +195,11 @@ func resourcePostPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Reques
 		}
 	}
 
+	// Fire the before trigger.
+	if err := c.Runner("before_upload", r.URL.Path, "", c.User); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
 	// Create/Open the file.
 	f, err := c.User.FileSystem.OpenFile(r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0776)
 	if err != nil {
@@ -222,7 +232,7 @@ func resourcePostPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Reques
 	etag := fmt.Sprintf(`"%x%x"`, fi.ModTime().UnixNano(), fi.Size())
 	w.Header().Set("ETag", etag)
 
-	// Fire the trigger
+	// Fire the after trigger.
 	if err := c.Runner("after_upload", r.URL.Path, "", c.User); err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -302,14 +312,28 @@ func resourcePatchHandler(c *fm.Context, w http.ResponseWriter, r *http.Request)
 	}
 
 	if action == "copy" {
+		// Fire the after trigger.
+		if err := c.Runner("before_copy", src, dst, c.User); err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		// Copy the file.
 		err = c.User.FileSystem.Copy(src, dst)
 
+		// Fire the after trigger.
 		if err := c.Runner("after_copy", src, dst, c.User); err != nil {
 			return http.StatusInternalServerError, err
 		}
 	} else {
+		// Fire the after trigger.
+		if err := c.Runner("before_rename", src, dst, c.User); err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		// Rename the file.
 		err = c.User.FileSystem.Rename(src, dst)
 
+		// Fire the after trigger.
 		if err := c.Runner("after_rename", src, dst, c.User); err != nil {
 			return http.StatusInternalServerError, err
 		}
