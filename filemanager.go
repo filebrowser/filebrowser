@@ -3,6 +3,7 @@ package filemanager
 import (
 	"crypto/rand"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -120,6 +121,14 @@ func (m *FileManager) Setup() error {
 			"after_save":     {},
 			"before_publish": {},
 			"after_publish":  {},
+			"before_copy":    {},
+			"after_copy":     {},
+			"before_rename":  {},
+			"after_rename":   {},
+			"before_upload":  {},
+			"after_upload":   {},
+			"before_delete":  {},
+			"after_delete":   {},
 		}
 		err = m.Store.Config.Save("commands", m.Commands)
 	}
@@ -235,7 +244,7 @@ func (m FileManager) ShareCleaner() {
 }
 
 // Runner runs the commands for a certain event type.
-func (m FileManager) Runner(event string, path string) error {
+func (m FileManager) Runner(event string, path string, destination string, user *User) error {
 	commands := []string{}
 
 	// Get the commands from the File Manager instance itself.
@@ -260,7 +269,15 @@ func (m FileManager) Runner(event string, path string) error {
 		}
 
 		cmd := exec.Command(command, args...)
-		cmd.Env = append(os.Environ(), "file="+path)
+		cmd.Env = append(os.Environ(), fmt.Sprintf("FILE=%s", path))
+		cmd.Env = append(cmd.Env, fmt.Sprintf("ROOT=%s", string(user.Scope)))
+		cmd.Env = append(cmd.Env, fmt.Sprintf("TRIGGER=%s", event))
+		cmd.Env = append(cmd.Env, fmt.Sprintf("USERNAME=%s", user.Username))
+
+		if destination != "" {
+			cmd.Env = append(cmd.Env, fmt.Sprintf("DESTINATION=%s", destination))
+		}
+
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
