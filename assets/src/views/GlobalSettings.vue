@@ -1,16 +1,9 @@
 <template>
   <div class="dashboard">
     <ul id="nav">
-      <li>
-        <router-link to="/settings/profile">
-          <i class="material-icons">keyboard_arrow_left</i> {{ $t('settings.profileSettings') }}
-        </router-link>
-      </li>
-      <li>
-        <router-link to="/users">
-          {{ $t('settings.userManagement') }} <i class="material-icons">keyboard_arrow_right</i>
-        </router-link>
-      </li>
+      <li><router-link to="/settings/profile">{{ $t('settings.profileSettings') }}</router-link></li>
+      <li class="active"><router-link to="/settings/global">{{ $t('settings.globalSettings') }}</router-link></li>
+      <li><router-link to="/users">{{ $t('settings.userManagement') }}</router-link></li>
     </ul>
 
     <h1>{{ $t('settings.globalSettings') }}</h1>
@@ -45,7 +38,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState } from 'vuex'
 import { getSettings, updateSettings } from '@/utils/api'
 
 export default {
@@ -73,10 +66,9 @@ export default {
           })
         }
       })
-      .catch(error => { this.showError(error) })
+      .catch(error => { this.$showError(error) })
   },
   methods: {
-    ...mapMutations([ 'showSuccess', 'showError' ]),
     capitalize (name, where = '_') {
       if (where === 'caps') where = /(?=[A-Z])/
       let splitted = name.split(where)
@@ -103,8 +95,8 @@ export default {
       }
 
       updateSettings(commands, 'commands')
-        .then(() => { this.showSuccess(this.$t('settings.commandsUpdated')) })
-        .catch(error => { this.showError(error) })
+        .then(() => { this.$showSuccess(this.$t('settings.commandsUpdated')) })
+        .catch(error => { this.$showError(error) })
     },
     saveStaticGen (event) {
       event.preventDefault()
@@ -124,8 +116,8 @@ export default {
       }
 
       updateSettings(staticGen, 'staticGen')
-        .then(() => { this.showSuccess(this.$t('settings.settingsUpdated')) })
-        .catch(error => { this.showError(error) })
+        .then(() => { this.$showSuccess(this.$t('settings.settingsUpdated')) })
+        .catch(error => { this.$showError(error) })
     },
     parseStaticGen (staticgen) {
       for (let option of staticgen) {

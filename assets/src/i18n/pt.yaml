@@ -31,6 +31,8 @@ buttons:
   update: Atualizar
   upload: Enviar
   permalink: Obter link permanente
+success:
+  linkCopied: Link copiado!
 errors:
   forbidden: Tu não és bem-vindo aqui.
   internal: Algo correu bastante mal.
@@ -66,6 +68,7 @@ help:
   help: Ajuda
 languages:
   en: English
+  fr: Français
   pt: Português
   ja: 日本語
   zhCN: 中文 (简体)
@@ -142,6 +145,7 @@ settings:
   examples: Exemplos
   globalSettings: Configurações Globais
   language: Linguagem
+  lockPassword: Não permitir que o utilizador altere a palavra-passe
   newPassword: Nova palavra-passe
   newPasswordConfirm: Confirme a nova palavra-passe
   newUser: Novo Utilizador
@@ -189,7 +193,6 @@ sidebar:
   newFile: Novo ficheiro
   newFolder: Nova pasta
   preview: Pré-visualizar
-  servedWith: Servido com
   settings: Configurações
   siteSettings: Configurações do Site
 time:

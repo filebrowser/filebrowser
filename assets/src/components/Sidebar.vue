@@ -46,7 +46,7 @@
       </button>
     </div>
 
-    <div v-if="!$store.state.user.noAuth">
+    <div v-if="!$store.state.noAuth">
       <router-link class="action" to="/settings" :aria-label="$t('sidebar.settings')" :title="$t('sidebar.settings')">
         <i class="material-icons">settings_applications</i>
         <span>{{ $t('sidebar.settings') }}</span>
@@ -59,7 +59,7 @@
     </div>
 
     <p class="credits">
-      <span>{{ $t('sidebar.servedWith') }} <a rel="noopener noreferrer" href="https://github.com/hacdias/filemanager">File Manager</a>.</span>
+      <span><a rel="noopener noreferrer" href="https://github.com/hacdias/filemanager">File Manager</a> v{{ version }}</span>
       <span><a @click="help">{{ $t('sidebar.help') }}</a></span>
     </p>
   </nav>
@@ -72,7 +72,7 @@ import auth from '@/utils/auth'
 export default {
   name: 'sidebar',
   computed: {
-    ...mapState(['user', 'staticGen']),
+    ...mapState(['user', 'staticGen', 'version']),
     active () {
       return this.$store.state.show === 'sidebar'
     }

@@ -1,4 +1,5 @@
 @import "~normalize.css/normalize.css";
+@import "~noty/lib/noty.css";
 @import "./fonts.css";
 @import "./base.css";
 @import "./header.css";
@@ -180,6 +181,17 @@
  *            PROMPT           *
  * * * * * * * * * * * * * * * */
 
+.noty_buttons {
+  text-align: right;
+  padding: 0 10px 10px !important;
+}
+
+.noty_buttons button {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 0 0 0;
+  font-size: 14px;
+}
 
 /* * * * * * * * * * * * * * * *
  *            FOOTER           *

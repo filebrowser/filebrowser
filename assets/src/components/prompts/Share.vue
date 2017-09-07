@@ -18,7 +18,7 @@
           :aria-label="$t('buttons.delete')"
           :title="$t('buttons.delete')"><i class="material-icons">delete</i></button>
 
-        <button class="action copy"
+        <button class="action copy-clipboard"
           :data-clipboard-text="buildLink(link.hash)"
           :aria-label="$t('buttons.copyToClipboard')"
           :title="$t('buttons.copyToClipboard')"><i class="material-icons">content_paste</i></button>
@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState } from 'vuex'
 import { getShare, deleteShare, share } from '@/utils/api'
 import moment from 'moment'
 import Clipboard from 'clipboard'
@@ -101,20 +101,25 @@ export default {
       })
       .catch(error => {
         if (error === 404) return
-        this.showError(error)
+        this.$showError(error)
       })
   },
   mounted () {
-    this.clip = new Clipboard('.copy')
+    this.clip = new Clipboard('.copy-clipboard')
+    this.clip.on('success', (e) => {
+      this.$showSuccess(this.$t('success.linkCopied'))
+    })
+  },
+  beforeDestroy () {
+    this.clip.destroy()
   },
   methods: {
-    ...mapMutations([ 'showError' ]),
     submit: function (event) {
       if (!this.time) return
 
       share(this.url, this.time, this.unit)
         .then(result => { this.links.push(result); this.sort() })
-        .catch(error => { this.showError(error) })
+        .catch(this.$showError)
     },
     getPermalink (event) {
       share(this.url)
@@ -123,7 +128,7 @@ export default {
           this.sort()
           this.hasPermanent = true
         })
-        .catch(error => { this.showError(error) })
+        .catch(this.$showError)
     },
     deleteLink (event, link) {
       event.preventDefault()
@@ -132,7 +137,7 @@ export default {
           if (!link.expires) this.hasPermanent = false
           this.links = this.links.filter(item => item.hash !== link.hash)
         })
-        .catch(error => { this.showError(error) })
+        .catch(this.$showError)
     },
     humanTime (time) {
       return moment(time).fromNow()

@@ -7,7 +7,7 @@
     <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" multiple>
   </div>
   <div v-else id="listing"
-    :class="req.display"
+    :class="user.viewMode"
     @dragenter="dragEnter"
     @dragend="dragEnd">
     <div>
@@ -98,7 +98,7 @@ export default {
   name: 'listing',
   components: { Item },
   computed: {
-    ...mapState(['req', 'selected']),
+    ...mapState(['req', 'selected', 'user']),
     nameSorted () {
       return (this.req.sort === 'name')
     },
@@ -210,17 +210,13 @@ export default {
       if (this.$store.state.clipboard.key === 'x') {
         api.move(items).then(() => {
           this.$store.commit('setReload', true)
-        }).catch(error => {
-          this.$store.commit('showError', error)
-        })
+        }).catch(this.$showError)
         return
       }
 
       api.copy(items).then(() => {
         this.$store.commit('setReload', true)
-      }).catch(error => {
-        this.$store.commit('showError', error)
-      })
+      }).catch(this.$showError)
     },
     resizeEvent () {
       // Update the columns size based on the window width.
@@ -267,7 +263,7 @@ export default {
           .then(req => {
             this.checkConflict(files, req.items, base)
           })
-          .catch(error => { console.log(error) })
+          .catch(this.$showError)
 
         return
       }
@@ -348,7 +344,7 @@ export default {
         })
         .catch(error => {
           finish()
-          this.$store.commit('showError', error)
+          this.$showError(error)
         })
 
       return false

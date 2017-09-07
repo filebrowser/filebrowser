@@ -16,7 +16,7 @@ function loggedIn () {
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('GET', `${store.state.baseURL}/api/auth/renew`, true)
-    request.setRequestHeader('Authorization', `Bearer ${cookie('auth')}`)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${cookie('auth')}`)
 
     request.onload = () => {
       if (request.status === 200) {

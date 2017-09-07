@@ -10,9 +10,14 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/asdine/storm"
+
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 
 	"github.com/hacdias/filemanager"
+	"github.com/hacdias/filemanager/bolt"
+	h "github.com/hacdias/filemanager/http"
+	"github.com/hacdias/filemanager/staticgen"
 	"github.com/hacdias/fileutils"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -25,8 +30,11 @@ var (
 	scope         string
 	commands      string
 	logfile       string
-	staticgen     string
+	staticg       string
 	locale        string
+	baseurl       string
+	prefixurl     string
+	viewMode      string
 	port          int
 	noAuth        bool
 	allowCommands bool
@@ -34,7 +42,6 @@ var (
 	allowNew      bool
 	allowPublish  bool
 	showVer       bool
-	version       = "master"
 )
 
 func init() {
@@ -44,14 +51,17 @@ func init() {
 	flag.StringVarP(&database, "database", "d", "./filemanager.db", "Database file")
 	flag.StringVarP(&logfile, "log", "l", "stdout", "Errors logger; can use 'stdout', 'stderr' or file")
 	flag.StringVarP(&scope, "scope", "s", ".", "Default scope option for new users")
+	flag.StringVarP(&baseurl, "baseurl", "b", "", "Base URL")
 	flag.StringVar(&commands, "commands", "git svn hg", "Default commands option for new users")
+	flag.StringVar(&prefixurl, "prefixurl", "", "Prefix URL")
+	flag.StringVar(&viewMode, "view-mode", "mosaic", "Default view mode for new users")
 	flag.BoolVar(&allowCommands, "allow-commands", true, "Default allow commands option for new users")
 	flag.BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option for new users")
 	flag.BoolVar(&allowPublish, "allow-publish", true, "Default allow publish option for new users")
 	flag.BoolVar(&allowNew, "allow-new", true, "Default allow new option for new users")
 	flag.BoolVar(&noAuth, "no-auth", false, "Disables authentication")
 	flag.StringVar(&locale, "locale", "en", "Default locale for new users")
-	flag.StringVar(&staticgen, "staticgen", "", "Static Generator you want to enable")
+	flag.StringVar(&staticg, "staticgen", "", "Static Generator you want to enable")
 	flag.BoolVarP(&showVer, "version", "v", false, "Show version")
 }
 
@@ -69,6 +79,9 @@ func setupViper() {
 	viper.SetDefault("StaticGen", "")
 	viper.SetDefault("Locale", "en")
 	viper.SetDefault("NoAuth", false)
+	viper.SetDefault("BaseURL", "")
+	viper.SetDefault("PrefixURL", "")
+	viper.SetDefault("ViewMode", "mosaic")
 
 	viper.BindPFlag("Port", flag.Lookup("port"))
 	viper.BindPFlag("Address", flag.Lookup("address"))
@@ -83,21 +96,16 @@ func setupViper() {
 	viper.BindPFlag("Locale", flag.Lookup("locale"))
 	viper.BindPFlag("StaticGen", flag.Lookup("staticgen"))
 	viper.BindPFlag("NoAuth", flag.Lookup("no-auth"))
+	viper.BindPFlag("BaseURL", flag.Lookup("baseurl"))
+	viper.BindPFlag("PrefixURL", flag.Lookup("prefixurl"))
+	viper.BindPFlag("ViewMode", flag.Lookup("view-mode"))
 
 	viper.SetConfigName("filemanager")
 	viper.AddConfigPath(".")
 }
 
 func printVersion() {
-	version = strings.TrimSpace(version)
-
-	if version == "" {
-		fmt.Println("filemanager is at an untracked version")
-	} else {
-		version = strings.TrimPrefix(version, "v")
-		fmt.Println("filemanager version", version)
-	}
-
+	fmt.Println("filemanager version", filemanager.Version)
 	os.Exit(0)
 }
 
@@ -148,52 +156,6 @@ func main() {
 		})
 	}
 
-	// Create a File Manager instance.
-	fm, err := filemanager.New(viper.GetString("Database"), filemanager.User{
-		AllowCommands: viper.GetBool("AllowCommands"),
-		AllowEdit:     viper.GetBool("AllowEdit"),
-		AllowNew:      viper.GetBool("AllowNew"),
-		AllowPublish:  viper.GetBool("AllowPublish"),
-		Commands:      viper.GetStringSlice("Commands"),
-		Rules:         []*filemanager.Rule{},
-		Locale:        viper.GetString("Locale"),
-		CSS:           "",
-		FileSystem:    fileutils.Dir(viper.GetString("Scope")),
-	})
-
-	if viper.GetBool("NoAuth") {
-		fm.NoAuth = true
-	}
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	switch viper.GetString("StaticGen") {
-	case "hugo":
-		hugo := &filemanager.Hugo{
-			Root:        viper.GetString("Scope"),
-			Public:      filepath.Join(viper.GetString("Scope"), "public"),
-			Args:        []string{},
-			CleanPublic: true,
-		}
-
-		if err = fm.EnableStaticGen(hugo); err != nil {
-			log.Fatal(err)
-		}
-	case "jekyll":
-		jekyll := &filemanager.Jekyll{
-			Root:        viper.GetString("Scope"),
-			Public:      filepath.Join(viper.GetString("Scope"), "_site"),
-			Args:        []string{"build"},
-			CleanPublic: true,
-		}
-
-		if err = fm.EnableStaticGen(jekyll); err != nil {
-			log.Fatal(err)
-		}
-	}
-
 	// Builds the address and a listener.
 	laddr := viper.GetString("Address") + ":" + viper.GetString("Port")
 	listener, err := net.Listen("tcp", laddr)
@@ -205,7 +167,73 @@ func main() {
 	fmt.Println("Listening on", listener.Addr().String())
 
 	// Starts the server.
-	if err := http.Serve(listener, fm); err != nil {
+	if err := http.Serve(listener, handler()); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func handler() http.Handler {
+	db, err := storm.Open(viper.GetString("Database"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fm := &filemanager.FileManager{
+		NoAuth:    viper.GetBool("NoAuth"),
+		BaseURL:   viper.GetString("BaseURL"),
+		PrefixURL: viper.GetString("PrefixURL"),
+		DefaultUser: &filemanager.User{
+			AllowCommands: viper.GetBool("AllowCommands"),
+			AllowEdit:     viper.GetBool("AllowEdit"),
+			AllowNew:      viper.GetBool("AllowNew"),
+			AllowPublish:  viper.GetBool("AllowPublish"),
+			Commands:      viper.GetStringSlice("Commands"),
+			Rules:         []*filemanager.Rule{},
+			Locale:        viper.GetString("Locale"),
+			CSS:           "",
+			Scope:         viper.GetString("Scope"),
+			FileSystem:    fileutils.Dir(viper.GetString("Scope")),
+			ViewMode:      viper.GetString("ViewMode"),
+		},
+		Store: &filemanager.Store{
+			Config: bolt.ConfigStore{DB: db},
+			Users:  bolt.UsersStore{DB: db},
+			Share:  bolt.ShareStore{DB: db},
+		},
+		NewFS: func(scope string) filemanager.FileSystem {
+			return fileutils.Dir(scope)
+		},
+	}
+
+	err = fm.Setup()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	switch viper.GetString("StaticGen") {
+	case "hugo":
+		hugo := &staticgen.Hugo{
+			Root:        viper.GetString("Scope"),
+			Public:      filepath.Join(viper.GetString("Scope"), "public"),
+			Args:        []string{},
+			CleanPublic: true,
+		}
+
+		if err = fm.Attach(hugo); err != nil {
+			log.Fatal(err)
+		}
+	case "jekyll":
+		jekyll := &staticgen.Jekyll{
+			Root:        viper.GetString("Scope"),
+			Public:      filepath.Join(viper.GetString("Scope"), "_site"),
+			Args:        []string{"build"},
+			CleanPublic: true,
+		}
+
+		if err = fm.Attach(jekyll); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	return h.Handler(fm)
 }

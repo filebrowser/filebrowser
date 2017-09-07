@@ -4,7 +4,7 @@ buttons:
   close: 關閉
   copy: 複製
   copyFile: 複製檔案
-  copyToClipboard: 複製到剪貼板
+  copyToClipboard: 複製到剪貼簿
   create: 建立
   delete: 刪除
   download: 下載
@@ -31,8 +31,10 @@ buttons:
   update: 更新
   upload: 上傳
   permalink: 獲取永久連結
+success:
+  linkCopied: 連結已複製！
 errors:
-  forbidden: 你被禁止訪問。
+  forbidden: 你被禁止存取。
   internal: 內部出現麻煩了。
   notFound: 找不到檔案。
 files:
@@ -45,7 +47,7 @@ files:
   lastModified: 最後修改
   loading: 讀取中...
   lonely: 這裡沒有任何檔案...
-  metadata: 中繼資料
+  metadata: 詮釋資料
   multipleSelectionEnabled: 多選模式已開啟
   name: 名稱
   size: 大小
@@ -100,15 +102,15 @@ prompts:
   show: 顯示
   size: 大小
   schedule: 計畫
-  scheduleMessage: 請選擇發佈這篇帖子的日期。
-  newArchetype: 建立一個基於原型的新帖子。您的檔案將會建立在內容資料夾中。
+  scheduleMessage: 請選擇發佈這篇貼文的日期。
+  newArchetype: 建立一個基於原型的新貼文。您的檔案將會建立在內容資料夾中。
 settings:
   admin: 管理員
   administrator: 管理員
   allowCommands: 執行命令
   allowEdit: 編輯、重命名或刪除檔案/目錄
   allowNew: 創建新檔案和目錄
-  allowPublish: 發佈新的帖子與頁面
+  allowPublish: 發佈新的貼文與頁面
   avoidChanges: '(留空以避免更改)'
   changePassword: 更改密碼
   commands: 命令
@@ -118,52 +120,52 @@ settings:
     則檔案的路徑會被賦值給環境變數 \"file\"。"
   commandsUpdated: 命令已更新！
   customStylesheet: 自定義樣式表
-  examples: 例子
+  examples: 範例
   globalSettings: 全域設定
   language: 語言
+  lockPassword: 禁止使用者修改密碼
   newPassword: 您的新密碼
   newPasswordConfirm: 重輸一遍新密碼
-  newUser: 建立用戶
+  newUser: 建立使用者
   password: 密碼
   passwordUpdated: 密碼已更新！
   permissions: 權限
   permissionsHelp: "\
-    您可以將該用戶設置為管理員，也可以單獨選擇各項權限。\
+    您可以將該使用者設置為管理員，也可以單獨選擇各項權限。\
     如果選擇了“管理員”，則其他的選項會被自動勾上，\
-    同時該用戶可以管理其他用戶。"
+    同時該使用者可以管理其他使用者。"
   profileSettings: 設定檔設定
   ruleExample1: "\
-    封鎖用戶訪問所有資料夾下任何以 . 開頭的檔案\
+    封鎖使用者存取所有資料夾下任何以 . 開頭的檔案\
     (隱藏文件, 例如: .git, .gitignore)。"
-  ruleExample2: 封鎖用戶訪問其目錄範圍的根目錄下名為 Caddyfile 的檔案。
+  ruleExample2: 封鎖使用者存取其目錄範圍的根目錄下名為 Caddyfile 的檔案。
   rules: 規則
   rulesHelp1: "\
-    您可以為該用戶製定一組黑名單或白名單式的規則，\
-    被屏蔽的檔案將不會顯示在清單中，用戶也無權限訪問,\
+    您可以為該使用者製定一組黑名單或白名單式的規則，\
+    被屏蔽的檔案將不會顯示在清單中，使用者也無權限存取,\
     支持相對於目錄範圍的路徑。"
   rulesHelp2: "\
     每行一條規則，且必須以關鍵字 {0} 或 {1} 開頭。\
     如要使用規則運算式，請在加上 {2} 之後再附上運算式或路徑。"
   scope: 目錄範圍
   settingsUpdated: 設定已更新！
-  user: 用戶
-  userCommands: 用戶命令
+  user: 使用者
+  userCommands: 使用者命令
   userCommandsHelp: "\
-    指定該用戶可以執行的命令，用空格分隔。\
+    指定該使用者可以執行的命令，用空格分隔。\
     例如："
-  userCreated: 用戶已建立！
-  userDeleted: 用戶已刪除！
-  userManagement: 用戶管理
-  username: 用戶名
-  users: 用戶
-  userUpdated: 用戶已更新！
+  userCreated: 使用者已建立！
+  userDeleted: 使用者已刪除！
+  userManagement: 使用者管理
+  username: 使用者名稱
+  users: 使用者
+  userUpdated: 使用者已更新！
 sidebar:
   help: 幫助
   logout: 登出
   myFiles: 我的檔案
   newFile: 建立檔案
   newFolder: 建立資料夾
-  servedWith: '服務提供者:'
   settings: 設定
   siteSettings: 網站設定
   hugoNew: Hugo New
@@ -183,9 +185,11 @@ search:
   writeToSearch: 請輸入要搜尋的內容
 languages:
   en: English
+  fr: Français
   pt: Português
   ja: 日本語
   zhCN: 中文 (简体)
+  zhTW: 中文 (繁體)
 time:
   unit: 時間單位
   seconds: 秒

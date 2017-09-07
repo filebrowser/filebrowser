@@ -43,7 +43,7 @@ export default {
 
       api.post(uri)
         .then(() => { this.$router.push({ path: uri }) })
-        .catch(error => { this.$store.commit('showError', error) })
+        .catch(this.$showError)
 
       // Close the prompt
       this.$store.commit('closeHovers')

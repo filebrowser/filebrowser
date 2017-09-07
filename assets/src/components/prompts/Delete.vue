@@ -43,7 +43,7 @@ export default {
           })
           .catch(error => {
             buttons.done('delete')
-            this.$store.commit('showError', error)
+            this.$showError(error)
           })
 
         return
@@ -70,7 +70,7 @@ export default {
         .catch(error => {
           buttons.done('delete')
           this.$store.commit('setReload', true)
-          this.$store.commit('showError', error)
+          this.$showError(error)
         })
     }
   }

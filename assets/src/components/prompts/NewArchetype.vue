@@ -37,9 +37,7 @@ export default {
         .then((url) => {
           this.$router.push({ path: url })
         })
-        .catch(error => {
-          this.$store.commit('showError', error)
-        })
+        .catch(this.$showError)
     },
     new (url, type) {
       url = removePrefix(url)
@@ -47,7 +45,7 @@ export default {
       return new Promise((resolve, reject) => {
         let request = new window.XMLHttpRequest()
         request.open('POST', `${this.$store.state.baseURL}/api/resource${url}`, true)
-        request.setRequestHeader('Authorization', `Bearer ${this.$store.state.jwt}`)
+        if (!this.$store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${this.$store.state.jwt}`)
         request.setRequestHeader('Archetype', encodeURIComponent(type))
 
         request.onload = () => {

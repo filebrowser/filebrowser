@@ -1,32 +1,35 @@
 <template>
   <button @click="change" :aria-label="$t('buttons.switchView')" :title="$t('buttons.switchView')" class="action" id="switch-view-button">
-    <i class="material-icons">{{ icon() }}</i>
+    <i class="material-icons">{{ icon }}</i>
     <span>{{ $t('buttons.switchView') }}</span>
   </button>
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex'
+import { updateUser } from '@/utils/api'
+
 export default {
   name: 'switch-button',
+  computed: {
+    ...mapState(['user']),
+    icon: function () {
+      if (this.user.viewMode === 'mosaic') return 'view_list'
+      return 'view_module'
+    }
+  },
   methods: {
+    ...mapMutations(['updateUser']),
     change: function (event) {
       // If we are on mobile we should close the dropdown.
       this.$store.commit('closeHovers')
 
-      let display = 'mosaic'
+      let user = {...this.user}
+      user.viewMode = (this.icon === 'view_list') ? 'list' : 'mosaic'
 
-      if (this.$store.state.req.display === 'mosaic') {
-        display = 'list'
-      }
-
-      this.$store.commit('listingDisplay', display)
-      let path = this.$store.state.baseURL
-      if (path === '') path = '/'
-      document.cookie = `display=${display}; max-age=31536000; path=${path}`
-    },
-    icon: function () {
-      if (this.$store.state.req.display === 'mosaic') return 'view_list'
-      return 'view_module'
+      updateUser(user, 'partial').then(() => {
+        this.updateUser({ viewMode: user.viewMode })
+      }).catch(this.$showError)
     }
   }
 }

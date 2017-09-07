@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <meta name="base" content="{{ .BaseURL }}">
   <meta name="staticgen" content="{{ .StaticGen }}">
+  <meta name="noauth" content="{{ .NoAuth }}">
+  <meta name="version" content="{{ .Version }}">
   <title>File Manager</title>
   <link rel="icon" type="image/png" sizes="32x32" href="{{ .BaseURL }}/static/img/icons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ .BaseURL }}/static/img/icons/favicon-16x16.png">
@@ -22,7 +24,7 @@
   <!-- Add to home screen for Windows -->
   <meta name="msapplication-TileImage" content="{{ .BaseURL }}/static/img/icons/msapplication-icon-144x144.png">
   <meta name="msapplication-TileColor" content="#2979ff">
-  <% for (var chunk of webpack.compilation.chunks) {
+  <% for (var chunk of webpack.chunks) {
     for (var file of chunk.files) {
       if (file.match(/\.(js|css)$/)) { %>
       <link rel="preload" href="{{ .BaseURL }}/<%= file %>" as="<%= file.match(/\.css$/)?'style':'script' %>"><% }}} %>

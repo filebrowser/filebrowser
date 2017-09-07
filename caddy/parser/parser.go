@@ -10,11 +10,16 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/asdine/storm"
 	"github.com/hacdias/filemanager"
+	"github.com/hacdias/filemanager/bolt"
+	"github.com/hacdias/filemanager/staticgen"
 	"github.com/hacdias/fileutils"
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 )
+
+var databases = map[string]*storm.DB{}
 
 // Parse ...
 func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, error) {
@@ -24,7 +29,7 @@ func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, erro
 	)
 
 	for c.Next() {
-		u := filemanager.User{
+		u := &filemanager.User{
 			Locale:        "en",
 			AllowCommands: true,
 			AllowEdit:     true,
@@ -141,6 +146,15 @@ func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, erro
 				}
 
 				u.CSS = string(css)
+			case "view_mode":
+				if !c.NextArg() {
+					return nil, c.ArgErr()
+				}
+
+				u.ViewMode = c.Val()
+				if u.ViewMode != "mosaic" && u.ViewMode != "list" {
+					return nil, c.ArgErr()
+				}
 			case "no_auth":
 				if !c.NextArg() {
 					noAuth = true
@@ -183,13 +197,45 @@ func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, erro
 				". It is highly recommended that you set the 'database' option to '" + sha + ".db'\n")
 		}
 
+		u.Scope = scope
 		u.FileSystem = fileutils.Dir(scope)
-		m, err := filemanager.New(database, u)
+
+		var db *storm.DB
+		if stored, ok := databases[database]; ok {
+			db = stored
+		} else {
+			db, err = storm.Open(database)
+			databases[database] = db
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		m := &filemanager.FileManager{
+			NoAuth:      noAuth,
+			BaseURL:     "",
+			PrefixURL:   "",
+			DefaultUser: u,
+			Store: &filemanager.Store{
+				Config: bolt.ConfigStore{DB: db},
+				Users:  bolt.UsersStore{DB: db},
+				Share:  bolt.ShareStore{DB: db},
+			},
+			NewFS: func(scope string) filemanager.FileSystem {
+				return fileutils.Dir(scope)
+			},
+		}
+
+		err = m.Setup()
+		if err != nil {
+			return nil, err
+		}
 
 		switch plugin {
 		case "hugo":
 			// Initialize the default settings for Hugo.
-			hugo := &filemanager.Hugo{
+			hugo := &staticgen.Hugo{
 				Root:        scope,
 				Public:      filepath.Join(scope, "public"),
 				Args:        []string{},
@@ -197,13 +243,13 @@ func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, erro
 			}
 
 			// Attaches Hugo plugin to this file manager instance.
-			err = m.EnableStaticGen(hugo)
+			err = m.Attach(hugo)
 			if err != nil {
 				return nil, err
 			}
 		case "jekyll":
 			// Initialize the default settings for Jekyll.
-			jekyll := &filemanager.Jekyll{
+			jekyll := &staticgen.Jekyll{
 				Root:        scope,
 				Public:      filepath.Join(scope, "_site"),
 				Args:        []string{},
@@ -211,7 +257,7 @@ func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, erro
 			}
 
 			// Attaches Hugo plugin to this file manager instance.
-			err = m.EnableStaticGen(jekyll)
+			err = m.Attach(jekyll)
 			if err != nil {
 				return nil, err
 			}

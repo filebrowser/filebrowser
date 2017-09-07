@@ -206,3 +206,24 @@
   margin-right: .5em;
   border: 1px solid #dadada;
 }
+
+.prompt#share .action.copy-clipboard::after {
+  content: 'Copied!';
+  position: absolute;
+  left: -25%;
+  width: 150%;
+  font-size: .6em;
+  text-align: center;
+  background: #44a6f5;
+  color: #fff;
+  padding: .5em .2em;
+  border-radius: .4em;
+  top: -2em;
+  transition: .1s ease opacity;
+  opacity: 0;
+}
+
+.prompt#share .action.copy-clipboard.active::after {
+  opacity: 1;
+}
+

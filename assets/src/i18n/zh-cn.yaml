@@ -31,6 +31,8 @@ buttons:
   update: 更新
   upload: 上传
   permalink: 获取永久链接
+success:
+  linkCopied: 链接已复制！
 errors:
   forbidden: 你被禁止访问。
   internal: 内部出现麻烦了。
@@ -121,6 +123,7 @@ settings:
   examples: 例子
   globalSettings: 全局设置
   language: 语言
+  lockPassowrd: 禁止用户修改密码
   newPassword: 您的新密码
   newPasswordConfirm: 重输一遍新密码
   newUser: 新建用户
@@ -163,7 +166,6 @@ sidebar:
   myFiles: 我的文件
   newFile: 新建文件
   newFolder: 新建文件夹
-  servedWith: '服务提供者:'
   settings: 设置
   siteSettings: 网站设置
   hugoNew: Hugo New
@@ -183,6 +185,7 @@ search:
   writeToSearch: 请输入要搜索的内容
 languages:
   en: English
+  fr: Français
   pt: Português
   ja: 日本語
   zhCN: 中文 (简体)

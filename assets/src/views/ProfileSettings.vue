@@ -1,11 +1,9 @@
 <template>
   <div class="dashboard">
     <ul id="nav" v-if="user.admin">
-      <li>
-        <router-link to="/settings/global">
-          {{ $t('settings.globalSettings') }} <i class="material-icons">keyboard_arrow_right</i>
-        </router-link>
-      </li>
+      <li class="active"><router-link to="/settings/profile">{{ $t('settings.profileSettings') }}</router-link></li>
+      <li><router-link to="/settings/global">{{ $t('settings.globalSettings') }}</router-link></li>
+      <li><router-link to="/users">{{ $t('settings.userManagement') }}</router-link></li>
     </ul>
 
     <h1>{{ $t('settings.profileSettings') }}</h1>
@@ -18,7 +16,7 @@
       <p><input type="submit" :value="$t('buttons.update')"></p>
     </form>
 
-    <form @submit="updatePassword">
+    <form v-if="!user.lockPassword" @submit="updatePassword">
       <h3>{{ $t('settings.changePassword') }}</h3>
       <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPassword')" v-model="password" name="password"></p>
       <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPasswordConfirm')" v-model="passwordConf" name="password"></p>
@@ -28,7 +26,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState } from 'vuex'
 import { updateUser } from '@/utils/api'
 import Languages from '@/components/Languages'
 
@@ -64,7 +62,6 @@ export default {
     this.locale = this.user.locale
   },
   methods: {
-    ...mapMutations([ 'showSuccess' ]),
     updatePassword (event) {
       event.preventDefault()
 
@@ -78,9 +75,9 @@ export default {
       }
 
       updateUser(user, 'password').then(location => {
-        this.showSuccess(this.$t('settings.passwordUpdated'))
+        this.$showSuccess(this.$t('settings.passwordUpdated'))
       }).catch(e => {
-        this.$store.commit('showError', e)
+        this.$showError(e)
       })
     },
     updateSettings (event) {
@@ -93,9 +90,9 @@ export default {
       updateUser(user, 'partial').then(location => {
         this.$store.commit('setUser', user)
         this.$emit('css-updated')
-        this.showSuccess(this.$t('settings.settingsUpdated'))
+        this.$showSuccess(this.$t('settings.settingsUpdated'))
       }).catch(e => {
-        this.$store.commit('showError', e)
+        this.$showError(e)
       })
     }
   }

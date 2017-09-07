@@ -131,18 +131,21 @@ p code {
   display: flex;
   color: rgb(84, 110, 122);
   font-weight: 500;
-  padding: 0 0 1em;
   margin: 0 0 1em;
   font-size: .8em;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  text-align: center;
+  justify-content: space-between;
+  padding: 0;
 }
 
 .dashboard #nav li {
   width: 100%;
+  padding: 0 0 1em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.dashboard #nav li:last-child {
-  text-align: right
+.dashboard #nav li.active {
+  border-color: #2196f3
 }
 
 .dashboard #nav i {

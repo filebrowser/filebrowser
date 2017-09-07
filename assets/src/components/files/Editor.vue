@@ -134,7 +134,7 @@ export default {
         })
         .catch(error => {
           buttons.done(button)
-          this.$store.commit('showError', error)
+          this.$showError(error)
           this.$store.commit('setSchedule', '')
         })
     }

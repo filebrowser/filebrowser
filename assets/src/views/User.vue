@@ -2,12 +2,9 @@
   <div>
     <form @submit="save" class="dashboard">
       <ul id="nav">
-        <li>
-          <router-link to="/users">
-            <i class="material-icons">keyboard_arrow_left</i> {{ $t('settings.userManagement') }}
-          </router-link>
-        </li>
-        <li></li>
+        <li><router-link to="/settings/profile">{{ $t('settings.profileSettings') }}</router-link></li>
+        <li><router-link to="/settings/global">{{ $t('settings.globalSettings') }}</router-link></li>
+        <li><router-link to="/users">{{ $t('settings.userManagement') }}</router-link></li>
       </ul>
 
       <h1 v-if="id === 0">{{ $t('settings.newUser') }}</h1>
@@ -20,6 +17,8 @@
         <label for="locale">{{ $t('settings.language') }}</label>
         <languages id="locale" :selected.sync="locale"></languages>
       </p>
+
+      <p><input type="checkbox" :disabled="admin" v-model="lockPassword"> {{ $t('settings.lockPassword') }}</p>
 
       <h2>{{ $t('settings.permissions') }}</h2>
       <p class="small">{{ $t('settings.permissionsHelp') }}</p>
@@ -93,6 +92,7 @@ export default {
       allowEdit: false,
       allowCommands: false,
       allowPublish: false,
+      lockPassword: false,
       permissions: {},
       password: '',
       username: '',
@@ -120,6 +120,7 @@ export default {
       this.allowEdit = true
       this.allowNew = true
       this.allowPublish = true
+      this.lockPassword = false
       for (let key in this.permissions) {
         this.permissions[key] = true
       }
@@ -141,6 +142,7 @@ export default {
         this.allowNew = user.allowNew
         this.allowEdit = user.allowEdit
         this.allowPublish = user.allowPublish
+        this.lockPassword = user.lockPassword
         this.filesystem = user.filesystem
         this.username = user.username
         this.commands = user.commands.join(' ')
@@ -187,6 +189,7 @@ export default {
       this.allowPublish = false
       this.permissins = {}
       this.allowCommands = false
+      this.lockPassword = false
       this.password = ''
       this.username = ''
       this.filesystem = ''
@@ -203,9 +206,9 @@ export default {
 
       deleteUser(this.id).then(location => {
         this.$router.push({ path: '/users' })
-        this.$store.commit('showSuccess', this.$t('settings.userDeleted'))
+        this.$showSuccess(this.$t('settings.userDeleted'))
       }).catch(e => {
-        this.$store.commit('showError', e)
+        this.$showError(e)
       })
     },
     save (event) {
@@ -215,9 +218,9 @@ export default {
       if (this.$route.path === '/users/new') {
         newUser(user).then(location => {
           this.$router.push({ path: location })
-          this.$store.commit('showSuccess', this.$t('settings.userCreated'))
+          this.$showSuccess(this.$t('settings.userCreated'))
         }).catch(e => {
-          this.$store.commit('showError', e)
+          this.$showError(e)
         })
 
         return
@@ -228,9 +231,9 @@ export default {
           this.$store.commit('setUser', user)
         }
 
-        this.$store.commit('showSuccess', this.$t('settings.userUpdated'))
+        this.$showSuccess(this.$t('settings.userUpdated'))
       }).catch(e => {
-        this.$store.commit('showError', e)
+        this.$showError(e)
       })
     },
     parseForm () {
@@ -238,6 +241,7 @@ export default {
         ID: this.id,
         username: this.username,
         password: this.password,
+        lockPassword: this.lockPassword,
         filesystem: this.filesystem,
         admin: this.admin,
         allowCommands: this.allowCommands,

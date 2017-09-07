@@ -26,11 +26,13 @@ buttons:
   publish: Publish
   selectMultiple: Select multiple
   schedule: Schedule
-  switchView: Swicth view
+  switchView: Switch view
   toggleSidebar: Toggle sidebar
   update: Update
   upload: Upload
   permalink: Get Permanent Link
+success:
+  linkCopied: Link copied!
 errors:
   forbidden: You're not welcome here.
   internal: Something really went wrong.
@@ -122,6 +124,7 @@ settings:
   examples: Examples
   globalSettings: Global Settings
   language: Language
+  lockPassword: Prevent the user from changing the password
   newPassword: Your new password
   newPasswordConfirm: Confirm your new password
   newUser: New User
@@ -165,7 +168,6 @@ sidebar:
   myFiles: My files
   newFile: New file
   newFolder: New folder
-  servedWith: Served with
   settings: Settings
   siteSettings: Site Settings
   hugoNew: Hugo New
@@ -185,6 +187,7 @@ search:
   writeToSearch: Write here to search
 languages:
   en: English
+  fr: Français
   pt: Português
   ja: 日本語
   zhCN: 中文 (简体)
