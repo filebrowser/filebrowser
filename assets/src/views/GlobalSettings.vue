@@ -21,6 +21,12 @@
       <p><input type="submit" value="Save"></p>
     </form>
 
+    <form @submit="saveCSS">
+      <h2>{{ $t('settings.customStylesheet') }}</h2>
+      <textarea v-model="css"></textarea>
+      <p><input type="submit" value="Save"></p>
+    </form>
+
     <form @submit="saveCommands">
       <h2>{{ $t('settings.commands') }}</h2>
 
@@ -46,7 +52,8 @@ export default {
   data: function () {
     return {
       commands: [],
-      staticGen: []
+      staticGen: [],
+      css: ''
     }
   },
   computed: {
@@ -65,8 +72,10 @@ export default {
             value: settings.commands[key].join('\n')
           })
         }
+
+        this.css = settings.css
       })
-      .catch(error => { this.$showError(error) })
+      .catch(this.$showError)
   },
   methods: {
     capitalize (name, where = '_') {
@@ -96,7 +105,19 @@ export default {
 
       updateSettings(commands, 'commands')
         .then(() => { this.$showSuccess(this.$t('settings.commandsUpdated')) })
-        .catch(error => { this.$showError(error) })
+        .catch(this.$showError)
+    },
+    saveCSS (event) {
+      event.preventDefault()
+
+      updateSettings(this.css, 'css')
+        .then(() => {
+          this.$showSuccess(this.$t('settings.settingsUpdated'))
+          let style = document.querySelector('style[title="global-css"]')
+          style.innerHTML = ''
+          style.appendChild(document.createTextNode(this.css))
+        })
+        .catch(this.$showError)
     },
     saveStaticGen (event) {
       event.preventDefault()
@@ -117,7 +138,7 @@ export default {
 
       updateSettings(staticGen, 'staticGen')
         .then(() => { this.$showSuccess(this.$t('settings.settingsUpdated')) })
-        .catch(error => { this.$showError(error) })
+        .catch(this.$showError)
     },
     parseStaticGen (staticgen) {
       for (let option of staticgen) {

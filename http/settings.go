@@ -13,6 +13,7 @@ import (
 type modifySettingsRequest struct {
 	*modifyRequest
 	Data struct {
+		CSS       string                 `json:"css"`
 		Commands  map[string][]string    `json:"commands"`
 		StaticGen map[string]interface{} `json:"staticGen"`
 	} `json:"data"`
@@ -61,6 +62,7 @@ func settingsHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 }
 
 type settingsGetRequest struct {
+	CSS       string              `json:"css"`
 	Commands  map[string][]string `json:"commands"`
 	StaticGen []option            `json:"staticGen"`
 }
@@ -73,6 +75,7 @@ func settingsGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (
 	result := &settingsGetRequest{
 		Commands:  c.Commands,
 		StaticGen: []option{},
+		CSS:       c.CSS,
 	}
 
 	if c.StaticGen != nil {
@@ -111,6 +114,16 @@ func settingsPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (
 		}
 
 		c.Commands = mod.Data.Commands
+		return http.StatusOK, nil
+	}
+
+	// Update the global CSS.
+	if mod.Which == "css" {
+		if err := c.Store.Config.Save("css", mod.Data.CSS); err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		c.CSS = mod.Data.CSS
 		return http.StatusOK, nil
 	}
 
