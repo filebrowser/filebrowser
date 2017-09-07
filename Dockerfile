@@ -7,16 +7,16 @@ RUN apk add --no-cache git
 RUN go get ./...
 
 WORKDIR /go/src/github.com/hacdias/filemanager/cmd/filemanager
-RUN go build -ldflags "-X main.version=$(git tag -l --points-at HEAD)"
+RUN CGO_ENABLED=0 go build -a -ldflags "-X main.version=$(git tag -l --points-at HEAD)"
 RUN mv filemanager /go/bin/filemanager
 
-FROM alpine:latest
-COPY --from=0 /go/bin/filemanager /usr/local/bin/filemanager
+FROM scratch
+COPY --from=0 /go/bin/filemanager /filemanager
 
 VOLUME /srv
 EXPOSE 80
 
-COPY Docker.json /etc/config.json
+COPY Docker.json /config.json
 
-ENTRYPOINT ["/usr/local/bin/filemanager"]
-CMD ["--config", "/etc/config.json"]
+ENTRYPOINT ["/filemanager"]
+CMD ["--config", "/config.json"]
