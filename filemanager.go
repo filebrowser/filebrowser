@@ -266,7 +266,7 @@ func (m FileManager) Runner(event string, path string, destination string, user 
 
 		cmd := exec.Command(command, args...)
 		cmd.Env = append(os.Environ(), fmt.Sprintf("FILE=%s", path))
-		cmd.Env = append(cmd.Env, fmt.Sprintf("ROOT=%s", user.FileSystem))
+		cmd.Env = append(cmd.Env, fmt.Sprintf("ROOT=%s", string(user.Scope)))
 		cmd.Env = append(cmd.Env, fmt.Sprintf("TRIGGER=%s", event))
 		cmd.Env = append(cmd.Env, fmt.Sprintf("USERNAME=%s", user.Username))
 
