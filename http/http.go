@@ -229,6 +229,7 @@ func renderFile(c *fm.Context, w http.ResponseWriter, file string) (int, error) 
 		"BaseURL": c.RootURL(),
 		"NoAuth":  c.NoAuth,
 		"Version": fm.Version,
+		"CSS":     template.CSS(c.CSS),
 	}
 
 	if c.StaticGen != nil {

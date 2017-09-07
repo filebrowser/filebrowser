@@ -74,6 +74,9 @@ type FileManager struct {
 	// A map of events to a slice of commands.
 	Commands map[string][]string
 
+	// Global stylesheet.
+	CSS string
+
 	// NewFS should build a new file system for a given path.
 	NewFS FSBuilder
 }
@@ -105,6 +108,16 @@ func (m *FileManager) Setup() error {
 
 		m.Key = bytes
 		err = m.Store.Config.Save("key", m.Key)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	// Get the global CSS.
+	err = m.Store.Config.Get("css", &m.CSS)
+	if err != nil && err == ErrNotExist {
+		err = m.Store.Config.Save("css", "")
 	}
 
 	if err != nil {
