@@ -115,7 +115,7 @@ settings:
   commandsHelp: >
     Ici vous pouvez définir des commandes qui seront exécutées lors de l'évènement correspondant.
     Vous devez indiquer une commande par ligne. Si l'évènement est en rapport avec des fichiers,
-    par exemple avant et après enregistrement, la variable d'environement "file" sera disponible
+    par exemple avant et après enregistrement, la variable d'environement "FILE" sera disponible
     et contiendra le chemin d'accès vers le fichier.
   commandsUpdated: Commandes mises à jour !
   customStylesheet: Feuille de style personnalisée

@@ -117,7 +117,7 @@ settings:
   commandsHelp: "\
     在這裡，您可以設定在指定事件下執行的命令，一行一條。\
     若事件與檔案相關，如“在保存檔案前”，\
-    則檔案的路徑會被賦值給環境變數 \"file\"。"
+    則檔案的路徑會被賦值給環境變數 \"FILE\"。"
   commandsUpdated: 命令已更新！
   customStylesheet: 自定義樣式表
   examples: 範例

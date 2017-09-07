@@ -25,6 +25,8 @@
   <meta name="msapplication-TileImage" content="{{ .BaseURL }}/static/img/icons/msapplication-icon-144x144.png">
   <meta name="msapplication-TileColor" content="#2979ff">
 
+  <script>CSS = "{{ .CSS }}"</script>
+
   <% for (var chunk of webpack.chunks) {
     for (var file of chunk.files) {
       if (file.match(/\.(js|css)$/)) { %>
@@ -92,7 +94,6 @@
     }
   }
   </style>
-  <style title="global-css" type="text/css">{{ .CSS }}</style>
 </head>
 <body>
   <div id="app"></div>

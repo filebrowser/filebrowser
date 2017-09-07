@@ -40,10 +40,17 @@
 
       <div class="card-content">
         <p class="small">{{ $t('settings.commandsHelp') }}</p>
-        <template v-for="command in commands">
-          <h3>{{ capitalize(command.name) }}</h3>
-          <textarea v-model.trim="command.value"></textarea>
-        </template>
+
+        <div v-for="command in commands" :key="command.name" class="collapsible">
+          <input :id="command.name" type="checkbox">
+          <label :for="command.name">
+            <p>{{ capitalize(command.name) }}</p>
+            <i class="material-icons">arrow_drop_down</i>
+          </label>
+          <div class="collapse">
+            <textarea v-model.trim="command.value"></textarea>
+          </div>
+        </div>
       </div>
 
       <div class="card-action">
@@ -73,6 +80,7 @@ export default {
   created () {
     getSettings()
       .then(settings => {
+        console.log(settings)
         if (this.$store.state.staticGen.length > 0) {
           this.parseStaticGen(settings.staticGen)
         }
@@ -120,9 +128,8 @@ export default {
       updateSettings(this.css, 'css')
         .then(() => {
           this.$showSuccess(this.$t('settings.settingsUpdated'))
-          let style = document.querySelector('style[title="global-css"]')
-          style.innerHTML = ''
-          style.appendChild(document.createTextNode(this.css))
+          this.$store.commit('setCSS', this.css)
+          this.$emit('css')
         })
         .catch(this.$showError)
     },

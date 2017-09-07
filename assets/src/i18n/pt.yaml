@@ -139,7 +139,7 @@ settings:
     Pode definir um conjunto de comandos a executar em determiandos eventos.
     Deve escrever um comando por linha. Se o evento estiver relacionado com ficheiros,
     como antes e depois de guardar, irá existir uma variável de ambiente denominada
-    "file" com o caminho do ficheiro.
+    "FILE" com o caminho do ficheiro.
   commandsUpdated: Comandos atualizados!
   customStylesheet: Estilos Personalizados
   examples: Exemplos

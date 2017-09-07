@@ -159,7 +159,7 @@
 
 #listing.list .item.header {
   display: flex !important;
-  background: #f8f8f8;
+  background: #fafafa;
   position: fixed;
   width: calc(100% - 19em);
   top: 7em;

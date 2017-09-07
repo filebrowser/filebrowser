@@ -6,7 +6,7 @@
       <li :class="{ active: $route.path === '/settings/users' }"><router-link to="/settings/users">{{ $t('settings.userManagement') }}</router-link></li>
     </ul>
 
-    <router-view></router-view>
+    <router-view @css="$emit('css')"></router-view>
   </div>
 </template>
 
