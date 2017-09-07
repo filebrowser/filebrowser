@@ -82,6 +82,21 @@ type FileManager struct {
 	NewFS FSBuilder
 }
 
+var commandEvents = []string{
+	"before_save",
+	"after_save",
+	"before_publish",
+	"after_publish",
+	"before_copy",
+	"after_copy",
+	"before_rename",
+	"after_rename",
+	"before_upload",
+	"after_upload",
+	"before_delete",
+	"after_delete",
+}
+
 // Command is a command function.
 type Command func(r *http.Request, m *FileManager, u *User) error
 
@@ -130,24 +145,24 @@ func (m *FileManager) Setup() error {
 	err = m.Store.Config.Get("commands", &m.Commands)
 
 	if err == nil {
-		// ADD handlers to commands if dont exist
+		// Add hypothetically new command handlers.
+		for _, command := range commandEvents {
+			if _, ok := m.Commands[command]; ok {
+				continue
+			}
+
+			m.Commands[command] = []string{}
+		}
 	}
 
 	if err != nil && err == ErrNotExist {
-		m.Commands = map[string][]string{
-			"before_save":    {},
-			"after_save":     {},
-			"before_publish": {},
-			"after_publish":  {},
-			"before_copy":    {},
-			"after_copy":     {},
-			"before_rename":  {},
-			"after_rename":   {},
-			"before_upload":  {},
-			"after_upload":   {},
-			"before_delete":  {},
-			"after_delete":   {},
+		m.Commands = map[string][]string{}
+
+		// Initialize the command handlers.
+		for _, command := range commandEvents {
+			m.Commands[command] = []string{}
 		}
+
 		err = m.Store.Config.Save("commands", m.Commands)
 	}
 

@@ -386,7 +386,8 @@ table tr>*:last-child {
 }
 
 .collapsible > label i {
-  transition: .2s ease transform
+  transition: .2s ease transform;
+  user-select: none;
 }
 
 .collapsible .collapse {
