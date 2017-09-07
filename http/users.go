@@ -272,8 +272,9 @@ func usersPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 	if which == "partial" {
 		c.User.CSS = u.CSS
 		c.User.Locale = u.Locale
+		c.User.ViewMode = u.ViewMode
 
-		err = c.Store.Users.Update(c.User, "CSS", "Locale")
+		err = c.Store.Users.Update(c.User, "CSS", "Locale", "ViewMode")
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}

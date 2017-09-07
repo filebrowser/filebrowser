@@ -297,6 +297,7 @@ var DefaultUser = User{
 	Locale:        "en",
 	Scope:         ".",
 	FileSystem:    fileutils.Dir("."),
+	ViewMode:      "mosaic",
 }
 
 // User contains the configuration for each user.
@@ -340,6 +341,9 @@ type User struct {
 
 	// Commands is the list of commands the user can execute.
 	Commands []string `json:"commands"`
+
+	// User view mode for files and folders.
+	ViewMode string `json:"viewMode"`
 }
 
 // Allowed checks if the user has permission to access a directory/file.
