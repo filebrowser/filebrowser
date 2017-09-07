@@ -98,7 +98,7 @@ export default {
 
       updateUser(user, 'partial').then(location => {
         this.$store.commit('setUser', user)
-        this.$emit('css-updated')
+        this.$emit('css')
         this.$showSuccess(this.$t('settings.settingsUpdated'))
       }).catch(e => {
         this.$showError(e)

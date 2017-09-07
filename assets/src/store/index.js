@@ -12,6 +12,11 @@ const state = {
     key: '',
     items: []
   },
+  css: (() => {
+    let css = window.CSS
+    window.CSS = null
+    return css
+  })(),
   staticGen: document.querySelector('meta[name="staticgen"]').getAttribute('content'),
   baseURL: document.querySelector('meta[name="base"]').getAttribute('content'),
   noAuth: (document.querySelector('meta[name="noauth"]').getAttribute('content') === 'true'),

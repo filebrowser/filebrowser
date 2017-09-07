@@ -117,7 +117,7 @@ settings:
   commandsHelp: >
     Here you can set commands that are executed in the named events. You
     write one command per line. If the event is related to files, such as before and
-    after saving, the environment variable "file" will be available with the path
+    after saving, the environment variable "FILE" will be available with the path
     of the file.
   commandsUpdated: Commands updated!
   customStylesheet: Custom Stylesheet

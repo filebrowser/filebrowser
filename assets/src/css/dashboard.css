@@ -94,7 +94,7 @@ p code {
 .dashboard #nav li {
   width: 100%;
   padding: 0 0 1em;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
 }
 
 .dashboard #nav li.active {
@@ -357,4 +357,63 @@ table tr>*:last-child {
     display: block;
     opacity: 1;
   }
+}
+
+.collapsible {
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.collapsible:last-of-type {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.collapsible > input {
+  display: none;
+}
+
+.collapsible > label {
+  padding: 1em 0;
+  cursor: pointer;
+  border-right: 0;
+  border-left: 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.collapsible > label * {
+  margin: 0;
+  color: rgba(0,0,0,0.57);
+}
+
+.collapsible > label i {
+  transition: .2s ease transform
+}
+
+.collapsible .collapse {
+  max-height: 0;
+  overflow: hidden;
+  transition: .2s ease all;
+}
+
+.collapsible > input:checked ~ .collapse {
+  padding-top: 1em;
+  padding-bottom: 1em;
+  max-height: 20em;
+}
+
+.collapsible > input:checked ~ label i {
+  transform: rotate(180deg)
+}
+
+.card .collapsible {
+  width: calc(100% + 2em);
+  margin: 0 -1em;
+}
+
+.card .collapsible > label {
+  padding: 1em;
+}
+
+.card .collapsible .collapse {
+  padding: 0 1em;
 }

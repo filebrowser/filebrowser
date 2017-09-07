@@ -128,6 +128,11 @@ func (m *FileManager) Setup() error {
 	// Tries to get the event commands from the database.
 	// If they don't exist, initialize them.
 	err = m.Store.Config.Get("commands", &m.Commands)
+
+	if err == nil {
+		// ADD handlers to commands if dont exist
+	}
+
 	if err != nil && err == ErrNotExist {
 		m.Commands = map[string][]string{
 			"before_save":    {},

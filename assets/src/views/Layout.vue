@@ -6,7 +6,7 @@
     <site-header></site-header>
     <sidebar></sidebar>
     <main>
-      <router-view v-on:css-updated="updateCSS"></router-view>
+      <router-view @css="$emit('update:css')"></router-view>
     </main>
     <prompts></prompts>
   </div>
@@ -34,23 +34,10 @@ export default {
     }
   },
   mounted () {
-    this.updateCSS()
+    this.$emit('update:css')
   },
-  methods: {
-    updateCSS () {
-      let css = this.$store.state.user.css
-
-      let style = document.querySelector('style[title="user-css"]')
-      if (style !== undefined && style !== null) {
-        style.parentElement.removeChild(style)
-      }
-
-      style = document.createElement('style')
-      style.title = 'user-css'
-      style.type = 'text/css'
-      style.appendChild(document.createTextNode(css))
-      document.head.appendChild(style)
-    }
+  beforeDestroy () {
+    this.$emit('clean:css')
   }
 }
 </script>
