@@ -25,7 +25,7 @@ func downloadHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 		if r.URL.Query().Get("inline") == "true" {
 			w.Header().Set("Content-Disposition", "inline")
 		} else {
-			w.Header().Set("Content-Disposition", "attachment; filename="+c.File.Name)
+			w.Header().Set("Content-Disposition", "attachment; filename=\""+c.File.Name+"\"")
 		}
 
 		http.ServeFile(w, r, c.File.Path)
@@ -107,7 +107,7 @@ func downloadHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 	}
 	defer file.Close()
 
-	w.Header().Set("Content-Disposition", "attachment; filename="+name)
+	w.Header().Set("Content-Disposition", "attachment; filename=\""+name+"\"")
 	_, err = io.Copy(w, file)
 	return 0, err
 }
