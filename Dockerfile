@@ -7,7 +7,7 @@ RUN apk add --no-cache git
 RUN go get ./...
 
 WORKDIR /go/src/github.com/hacdias/filemanager/cmd/filemanager
-RUN CGO_ENABLED=0 go build -a -ldflags "-X main.version=$(git tag -l --points-at HEAD)"
+RUN CGO_ENABLED=0 go build -a
 RUN mv filemanager /go/bin/filemanager
 
 FROM scratch
