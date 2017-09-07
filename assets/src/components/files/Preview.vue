@@ -20,8 +20,8 @@
 
     <div class="preview">
       <img v-if="req.type == 'image'" :src="raw()">
-      <audio v-else-if="req.type == 'audio'" :src="raw()" controls></audio>
-      <video v-else-if="req.type == 'video'" :src="raw()" controls>
+      <audio v-else-if="req.type == 'audio'" :src="raw()" autoplay controls></audio>
+      <video v-else-if="req.type == 'video'" :src="raw()" autoplay controls>
         Sorry, your browser doesn't support embedded videos,
         but don't worry, you can <a :href="download()">download it</a>
         and watch it with your favorite video player!
