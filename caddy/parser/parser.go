@@ -146,6 +146,15 @@ func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, erro
 				}
 
 				u.CSS = string(css)
+			case "view_mode":
+				if !c.NextArg() {
+					return nil, c.ArgErr()
+				}
+
+				u.ViewMode = c.Val()
+				if u.ViewMode != "mosaic" && u.ViewMode != "list" {
+					return nil, c.ArgErr()
+				}
 			case "no_auth":
 				if !c.NextArg() {
 					noAuth = true
