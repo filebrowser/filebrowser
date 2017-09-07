@@ -1,75 +1,80 @@
 <template>
   <div>
-    <form @submit="save" class="dashboard">
-      <ul id="nav">
-        <li><router-link to="/settings/profile">{{ $t('settings.profileSettings') }}</router-link></li>
-        <li><router-link to="/settings/global">{{ $t('settings.globalSettings') }}</router-link></li>
-        <li><router-link to="/users">{{ $t('settings.userManagement') }}</router-link></li>
-      </ul>
+    <form @submit="save" class="card">
+      <div class="card-title">
+        <h2 v-if="id === 0">{{ $t('settings.newUser') }}</h2>
+        <h2 v-else>{{ $t('settings.user') }} {{ username }}</h2>
+      </div>
 
-      <h1 v-if="id === 0">{{ $t('settings.newUser') }}</h1>
-      <h1 v-else>{{ $t('settings.user') }} {{ username }}</h1>
+      <div class="card-content">
 
-      <p><label for="username">{{ $t('settings.username') }}</label><input type="text" v-model="username" id="username"></p>
-      <p><label for="password">{{ $t('settings.password') }}</label><input type="password" :placeholder="passwordPlaceholder" v-model="password" id="password"></p>
-      <p><label for="scope">{{ $t('settings.scope') }}</label><input type="text" v-model="filesystem" id="scope"></p>
-      <p>
-        <label for="locale">{{ $t('settings.language') }}</label>
-        <languages id="locale" :selected.sync="locale"></languages>
-      </p>
+        <p><label for="username">{{ $t('settings.username') }}</label><input type="text" v-model="username" id="username"></p>
+        <p><label for="password">{{ $t('settings.password') }}</label><input type="password" :placeholder="passwordPlaceholder" v-model="password" id="password"></p>
+        <p><label for="scope">{{ $t('settings.scope') }}</label><input type="text" v-model="filesystem" id="scope"></p>
+        <p>
+          <label for="locale">{{ $t('settings.language') }}</label>
+          <languages id="locale" :selected.sync="locale"></languages>
+        </p>
 
-      <p><input type="checkbox" :disabled="admin" v-model="lockPassword"> {{ $t('settings.lockPassword') }}</p>
+        <p><input type="checkbox" :disabled="admin" v-model="lockPassword"> {{ $t('settings.lockPassword') }}</p>
 
-      <h2>{{ $t('settings.permissions') }}</h2>
-      <p class="small">{{ $t('settings.permissionsHelp') }}</p>
+        <h3>{{ $t('settings.permissions') }}</h3>
+        <p class="small">{{ $t('settings.permissionsHelp') }}</p>
 
-      <p><input type="checkbox" v-model="admin"> {{ $t('settings.administrator') }}</p>
-      <p><input type="checkbox" :disabled="admin" v-model="allowNew"> {{ $t('settings.allowNew') }}</p>
-      <p><input type="checkbox" :disabled="admin" v-model="allowEdit"> {{ $t('settings.allowEdit') }}</p>
-      <p><input type="checkbox" :disabled="admin" v-model="allowCommands"> {{ $t('settings.allowCommands') }}</p>
-      <p v-show="$store.state.staticGen.length"><input type="checkbox" :disabled="admin" v-model="allowPublish"> {{ $t('settings.allowPublish') }}</p>
+        <p><input type="checkbox" v-model="admin"> {{ $t('settings.administrator') }}</p>
+        <p><input type="checkbox" :disabled="admin" v-model="allowNew"> {{ $t('settings.allowNew') }}</p>
+        <p><input type="checkbox" :disabled="admin" v-model="allowEdit"> {{ $t('settings.allowEdit') }}</p>
+        <p><input type="checkbox" :disabled="admin" v-model="allowCommands"> {{ $t('settings.allowCommands') }}</p>
+        <p v-show="$store.state.staticGen.length"><input type="checkbox" :disabled="admin" v-model="allowPublish"> {{ $t('settings.allowPublish') }}</p>
 
-      <h3>{{ $t('settings.userCommands') }}</h3>
-      <p class="small">{{ $t('settings.userCommandsHelp') }} <i>git svn hg</i>.</p>
-      <input type="text" v-model.trim="commands">
+        <h3>{{ $t('settings.userCommands') }}</h3>
+        <p class="small">{{ $t('settings.userCommandsHelp') }} <i>git svn hg</i>.</p>
+        <input type="text" v-model.trim="commands">
 
-      <h2>{{ $t('settings.rules') }}</h2>
+        <h3>{{ $t('settings.rules') }}</h3>
 
-      <p class="small">{{ $t('settings.rulesHelp1') }}</p>
+        <p class="small">{{ $t('settings.rulesHelp1') }}</p>
 
-      <i18n path="settings.rulesHelp2" tag="p" class="small">
-        <code>allow</code><code>disallow</code><code>regex</code>
-      </i18n>
+        <i18n path="settings.rulesHelp2" tag="p" class="small">
+          <code>allow</code><code>disallow</code><code>regex</code>
+        </i18n>
 
-      <p class="small"><strong>{{ $t('settings.examples') }}</strong></p>
+        <p class="small"><strong>{{ $t('settings.examples') }}</strong></p>
 
-      <ul class="small">
-        <li><code>disallow regex \\/\\..+</code> - {{ $t('settings.ruleExample1') }}</li>
-        <li><code>disallow /Caddyfile</code> - {{ $t('settings.ruleExample2') }}</li>
-      </ul>
+        <ul class="small">
+          <li><code>disallow regex \\/\\..+</code> - {{ $t('settings.ruleExample1') }}</li>
+          <li><code>disallow /Caddyfile</code> - {{ $t('settings.ruleExample2') }}</li>
+        </ul>
 
-      <textarea v-model.trim="rules"></textarea>
+        <textarea v-model.trim="rules"></textarea>
 
-      <h2>{{ $t('settings.customStylesheet') }}</h2>
+        <h3>{{ $t('settings.customStylesheet') }}</h3>
 
-      <textarea name="css"></textarea>
+        <textarea name="css"></textarea>
+      </div>
 
-      <p>
-        <button v-if="id !== 0" @click.prevent="deletePrompt" type="button" class="delete" :aria-label="$t('buttons.delete')" :title="$t('buttons.delete')">{{ $t('buttons.delete') }}</button>
-        <input type="submit" :value="$t('buttons.save')">
-      </p>
+      <div class="card-action">
+        <button v-if="id !== 0" @click.prevent="deletePrompt" type="button" class="flat delete" :aria-label="$t('buttons.delete')" :title="$t('buttons.delete')">{{ $t('buttons.delete') }}</button>
+        <input class="flat" type="submit" :value="$t('buttons.save')">
+      </div>
     </form>
 
-    <div v-if="$store.state.show === 'deleteUser'" class="prompt">
-      <h3>Delete User</h3>
-      <p>Are you sure you want to delete this user?</p>
-      <div>
-        <button @click="deleteUser" autofocus>{{ $t('buttons.delete') }}</button>
-        <button class="cancel"
+    <div v-if="$store.state.show === 'deleteUser'" class="card floating">
+      <div class="card-content">
+        <p>Are you sure you want to delete this user?</p>
+      </div>
+
+      <div class="card-action">
+        <button class="cancel flat"
           @click="closeHovers"
+          autofocus
           :aria-label="$t('buttons.cancel')"
           :title="$t('buttons.cancel')">
           {{ $t('buttons.cancel') }}
+        </button>
+        <button class="flat"
+          @click="deleteUser">
+          {{ $t('buttons.delete') }}
         </button>
       </div>
     </div>
@@ -105,7 +110,7 @@ export default {
   },
   computed: {
     passwordPlaceholder () {
-      if (this.$route.path === '/users/new') return ''
+      if (this.$route.path === '/settings/users/new') return ''
       return this.$t('settings.avoidChanges')
     }
   },
@@ -131,7 +136,7 @@ export default {
     fetchData () {
       let user = this.$route.params[0]
 
-      if (this.$route.path === '/users/new') {
+      if (this.$route.path === '/settings/users/new') {
         user = 'base'
       }
 
@@ -168,7 +173,7 @@ export default {
 
         this.rules = this.rules.trim()
       }).catch(() => {
-        this.$router.push({ path: '/users/new' })
+        this.$router.push({ path: '/settings/users/new' })
       })
     },
     capitalize (name) {
@@ -205,7 +210,7 @@ export default {
       event.preventDefault()
 
       deleteUser(this.id).then(location => {
-        this.$router.push({ path: '/users' })
+        this.$router.push({ path: '/settings/users' })
         this.$showSuccess(this.$t('settings.userDeleted'))
       }).catch(e => {
         this.$showError(e)
@@ -215,7 +220,7 @@ export default {
       event.preventDefault()
       let user = this.parseForm()
 
-      if (this.$route.path === '/users/new') {
+      if (this.$route.path === '/settings/users/new') {
         newUser(user).then(location => {
           this.$router.push({ path: location })
           this.$showSuccess(this.$t('settings.userCreated'))

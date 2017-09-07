@@ -1,26 +1,35 @@
 <template>
   <div class="dashboard">
-    <ul id="nav" v-if="user.admin">
-      <li class="active"><router-link to="/settings/profile">{{ $t('settings.profileSettings') }}</router-link></li>
-      <li><router-link to="/settings/global">{{ $t('settings.globalSettings') }}</router-link></li>
-      <li><router-link to="/users">{{ $t('settings.userManagement') }}</router-link></li>
-    </ul>
+     <form class="card" @submit="updateSettings">
+      <div class="card-title">
+        <h2>{{ $t('settings.profileSettings') }}</h2>
+      </div>
 
-    <h1>{{ $t('settings.profileSettings') }}</h1>
+      <div class="card-content">
+        <h3>{{ $t('settings.language') }}</h3>
+        <p><languages id="locale" :selected.sync="locale"></languages></p>
+        <h3>{{ $t('settings.customStylesheet') }}</h3>
+        <textarea v-model="css" name="css"></textarea>
+      </div>
 
-    <form @submit="updateSettings">
-      <h3>{{ $t('settings.language') }}</h3>
-      <p><languages id="locale" :selected.sync="locale"></languages></p>
-      <h3>{{ $t('settings.customStylesheet') }}</h3>
-      <textarea v-model="css" name="css"></textarea>
-      <p><input type="submit" :value="$t('buttons.update')"></p>
+      <div class="card-action">
+        <input class="flat" type="submit" :value="$t('buttons.update')">
+      </div>
     </form>
 
-    <form v-if="!user.lockPassword" @submit="updatePassword">
-      <h3>{{ $t('settings.changePassword') }}</h3>
-      <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPassword')" v-model="password" name="password"></p>
-      <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPasswordConfirm')" v-model="passwordConf" name="password"></p>
-      <p><input type="submit" :value="$t('buttons.update')"></p>
+    <form class="card" v-if="!user.lockPassword" @submit="updatePassword">
+      <div class="card-title">
+        <h2>{{ $t('settings.changePassword') }}</h2>
+      </div>
+
+      <div class="card-content">
+        <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPassword')" v-model="password" name="password"></p>
+        <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPasswordConfirm')" v-model="passwordConf" name="password"></p>
+      </div>
+
+      <div class="card-action">
+        <input class="flat" type="submit" :value="$t('buttons.update')">
+      </div>
     </form>
   </div>
 </template>

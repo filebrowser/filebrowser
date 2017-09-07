@@ -1,8 +1,8 @@
 body {
   font-family: 'Roboto', sans-serif;
   padding-top: 4em;
-  background-color: #f8f8f8;
-  color: #212121;
+  background-color: #fafafa;
+  color: #333333;
 }
 
 * {
@@ -63,6 +63,53 @@ button {
 input[type="submit"]:hover,
 button:hover {
   background-color: #1E88E5;
+}
+
+input[type="submit"].block,
+button.block {
+  display: block;
+  width: 100%;
+  margin: 0 0 1em;
+}
+
+button.delete {
+  background: #F44336;
+}
+
+button.delete:hover {
+  background: #D32F2F;
+}
+
+button.cancel {
+  background-color: #ECEFF1;
+  color: #37474F;
+}
+
+button.cancel:hover {
+  background-color: #e9eaeb;
+}
+
+button.flat,
+input[type="submit"].flat {
+  color: #1E88E5;
+  background: transparent;
+  box-shadow: 0 0 0;
+  border: 0;
+  margin-left: 0;
+  text-transform: uppercase;
+}
+
+button.flat:hover,
+input[type="submit"].flat:hover {
+  background: rgba(0,0,0,0.05)
+}
+
+button.flat.delete {
+  color: #F44336;
+}
+
+button.flat.cancel {
+  color: #ccc;
 }
 
 .mobile-only {

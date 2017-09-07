@@ -1,16 +1,18 @@
 <template>
-  <div class="prompt">
-    <h3>{{ $t('prompts.deleteTitle') }}</h3>
-    <p v-show="req.kind !== 'listing'">{{ $t('prompts.deleteMessageSingle') }}</p>
-    <p v-show="req.kind === 'listing'">{{ $t('prompts.deleteMessageMultiple', { count: selectedCount}) }}</p>
-    <div>
-      <button @click="submit"
-        :aria-label="$t('buttons.delete')"
-        :title="$t('buttons.delete')">{{ $t('buttons.delete') }}</button>
-      <button class="cancel"
-        @click="$store.commit('closeHovers')"
+  <div class="card floating">
+    <div class="card-content">
+      <p v-if="req.kind !== 'listing'">{{ $t('prompts.deleteMessageSingle') }}</p>
+      <p v-else>{{ $t('prompts.deleteMessageMultiple', { count: selectedCount}) }}</p>
+    </div>
+    <div class="card-action">
+      <button @click="$store.commit('closeHovers')"
+        class="flat cancel"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
+      <button @click="submit"
+        class="flat"
+        :aria-label="$t('buttons.delete')"
+        :title="$t('buttons.delete')">{{ $t('buttons.delete') }}</button>
     </div>
   </div>
 </template>

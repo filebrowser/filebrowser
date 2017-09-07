@@ -1,17 +1,23 @@
 <template>
-  <div class="prompt">
-    <h3>{{ $t('prompts.newDir') }}</h3>
-    <p>{{ $t('prompts.newDirMessage') }}</p>
-    <input autofocus type="text" @keyup.enter="submit" v-model.trim="name">
-    <div>
-      <button class="ok"
-        :aria-label="$t('buttons.create')"
-        :title="$t('buttons.create')"
-        @click="submit">{{ $t('buttons.create') }}</button>
-      <button class="cancel"
+  <div class="card floating">
+    <div class="card-title">
+      <h2>{{ $t('prompts.newDir') }}</h2>
+    </div>
+
+    <div class="card-content">
+      <p>{{ $t('prompts.newDirMessage') }}</p>
+      <input autofocus type="text" @keyup.enter="submit" v-model.trim="name">
+    </div>
+
+    <div class="card-action">
+      <button class="cancel flat"
         @click="$store.commit('closeHovers')"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
+      <button class="flat"
+        :aria-label="$t('buttons.create')"
+        :title="$t('buttons.create')"
+        @click="submit">{{ $t('buttons.create') }}</button>
     </div>
   </div>
 </template>

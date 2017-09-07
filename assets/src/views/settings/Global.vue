@@ -1,43 +1,54 @@
 <template>
   <div class="dashboard">
-    <ul id="nav">
-      <li><router-link to="/settings/profile">{{ $t('settings.profileSettings') }}</router-link></li>
-      <li class="active"><router-link to="/settings/global">{{ $t('settings.globalSettings') }}</router-link></li>
-      <li><router-link to="/users">{{ $t('settings.userManagement') }}</router-link></li>
-    </ul>
+    <form class="card" @submit.prevent="saveStaticGen">
+      <div class="card-title">
+        <h2>{{ capitalize($store.state.staticGen) }}</h2>
+      </div>
 
-    <h1>{{ $t('settings.globalSettings') }}</h1>
+      <div class="card-content">
+        <p v-for="field in staticGen" :key="field.variable">
+          <label v-if="field.type !== 'checkbox'">{{ field.name }}</label>
+          <input v-if="field.type === 'text'" type="text" v-model.trim="field.value">
+          <input v-else-if="field.type === 'checkbox'" type="checkbox" v-model.trim="field.value">
+          <template v-if="field.type === 'checkbox'">{{ capitalize(field.name, 'caps') }}</template>
+        </p>
+      </div>
 
-    <form @submit="saveStaticGen" v-if="$store.state.staticGen.length > 0">
-      <h2>{{ capitalize($store.state.staticGen) }}</h2>
-
-      <p v-for="field in staticGen" :key="field.variable">
-        <label v-if="field.type !== 'checkbox'">{{ field.name }}</label>
-        <input v-if="field.type === 'text'" type="text" v-model.trim="field.value">
-        <input v-else-if="field.type === 'checkbox'" type="checkbox" v-model.trim="field.value">
-        <template v-if="field.type === 'checkbox'">{{ capitalize(field.name, 'caps') }}</template>
-      </p>
-
-      <p><input type="submit" value="Save"></p>
+      <div class="card-action">
+        <input class="flat" type="submit" :value="$t('buttons.update')">
+      </div>
     </form>
 
-    <form @submit="saveCSS">
-      <h2>{{ $t('settings.customStylesheet') }}</h2>
-      <textarea v-model="css"></textarea>
-      <p><input type="submit" value="Save"></p>
+    <form class="card" @submit.prevent="saveCSS">
+      <div class="card-title">
+        <h2>{{ $t('settings.customStylesheet') }}</h2>
+      </div>
+
+      <div class="card-content">
+        <textarea v-model="css"></textarea>
+      </div>
+
+      <div class="card-action">
+        <input class="flat" type="submit" :value="$t('buttons.update')">
+      </div>
     </form>
 
-    <form @submit="saveCommands">
-      <h2>{{ $t('settings.commands') }}</h2>
+    <form class="card" @submit.prevent="saveCommands">
+      <div class="card-title">
+        <h2>{{ $t('settings.commands') }}</h2>
+      </div>
 
-      <p class="small">{{ $t('settings.commandsHelp') }}</p>
+      <div class="card-content">
+        <p class="small">{{ $t('settings.commandsHelp') }}</p>
+        <template v-for="command in commands">
+          <h3>{{ capitalize(command.name) }}</h3>
+          <textarea v-model.trim="command.value"></textarea>
+        </template>
+      </div>
 
-      <template v-for="command in commands">
-        <h3>{{ capitalize(command.name) }}</h3>
-        <textarea v-model.trim="command.value"></textarea>
-      </template>
-
-      <p><input type="submit" value="Save"></p>
+      <div class="card-action">
+        <input class="flat" type="submit" :value="$t('buttons.update')">
+      </div>
     </form>
 
   </div>
@@ -90,8 +101,6 @@ export default {
       return name.slice(0, -1)
     },
     saveCommands (event) {
-      event.preventDefault()
-
       let commands = {}
 
       for (let command of this.commands) {
@@ -108,8 +117,6 @@ export default {
         .catch(this.$showError)
     },
     saveCSS (event) {
-      event.preventDefault()
-
       updateSettings(this.css, 'css')
         .then(() => {
           this.$showSuccess(this.$t('settings.settingsUpdated'))
@@ -120,7 +127,6 @@ export default {
         .catch(this.$showError)
     },
     saveStaticGen (event) {
-      event.preventDefault()
       let staticGen = {}
 
       for (let field of this.staticGen) {
