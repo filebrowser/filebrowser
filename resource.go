@@ -146,6 +146,11 @@ func resourceDeleteHandler(c *RequestContext, w http.ResponseWriter, r *http.Req
 		return errorToHTTP(err, true), err
 	}
 
+	// Fire the trigger
+	if err := c.Runner("after_delete", r.URL.Path, "", c.User); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
 	return http.StatusOK, nil
 }
 
@@ -217,6 +222,12 @@ func resourcePostPutHandler(c *RequestContext, w http.ResponseWriter, r *http.Re
 	// Writes the ETag Header.
 	etag := fmt.Sprintf(`"%x%x"`, fi.ModTime().UnixNano(), fi.Size())
 	w.Header().Set("ETag", etag)
+
+	// Fire the trigger
+	if err := c.Runner("after_upload", r.URL.Path, "", c.User); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
 	return http.StatusOK, nil
 }
 

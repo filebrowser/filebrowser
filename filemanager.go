@@ -252,6 +252,8 @@ func New(database string, base User) (*FileManager, error) {
 			"after_publish":  {},
 			"after_copy":     {},
 			"after_rename":   {},
+			"after_upload":   {},
+			"after_delete":   {},
 		}
 		err = db.Set("config", "commands", m.Commands)
 	}
