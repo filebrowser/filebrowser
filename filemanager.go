@@ -201,6 +201,14 @@ func (m *FileManager) Setup() error {
 		}
 	}
 
+	// TODO: remove this after 1.5
+	for _, user := range users {
+		if user.ViewMode != "list" && user.ViewMode != "mosaic" {
+			user.ViewMode = "list"
+			m.Store.Users.Update(user, "ViewMode")
+		}
+	}
+
 	m.DefaultUser.Username = ""
 	m.DefaultUser.Password = ""
 
