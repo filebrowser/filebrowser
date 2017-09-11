@@ -268,6 +268,13 @@ func usersPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 		return http.StatusBadRequest, err
 	}
 
+	// If we're updating the default user. Only for NoAuth
+	// implementations. Used to change the viewMode.
+	if id == 0 && c.NoAuth {
+		c.DefaultUser.ViewMode = u.ViewMode
+		return http.StatusOK, nil
+	}
+
 	// Updates the CSS and locale.
 	if which == "partial" {
 		c.User.CSS = u.CSS

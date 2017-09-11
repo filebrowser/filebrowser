@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard">
-    <form class="card" @submit.prevent="saveStaticGen">
+    <form class="card" v-if="staticGen.length" @submit.prevent="saveStaticGen">
       <div class="card-title">
         <h2>{{ capitalize($store.state.staticGen) }}</h2>
       </div>
@@ -80,7 +80,6 @@ export default {
   created () {
     getSettings()
       .then(settings => {
-        console.log(settings)
         if (this.$store.state.staticGen.length > 0) {
           this.parseStaticGen(settings.staticGen)
         }
