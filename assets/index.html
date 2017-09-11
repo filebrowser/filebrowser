@@ -8,6 +8,7 @@
   <meta name="staticgen" content="{{ .StaticGen }}">
   <meta name="noauth" content="{{ .NoAuth }}">
   <meta name="version" content="{{ .Version }}">
+  <meta name="recaptcha" content="{{ .ReCaptchaKey }}">
   <title>File Manager</title>
   <link rel="icon" type="image/png" sizes="32x32" href="{{ .BaseURL }}/static/img/icons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ .BaseURL }}/static/img/icons/favicon-16x16.png">
@@ -26,6 +27,10 @@
   <meta name="msapplication-TileColor" content="#2979ff">
 
   <script>CSS = "{{ .CSS }}"</script>
+
+  {{ if .ReCaptcha -}}
+    <script src='https://www.google.com/recaptcha/api.js?render=explicit'></script>
+  {{ end }}
 
   <% for (var chunk of webpack.chunks) {
     for (var file of chunk.files) {

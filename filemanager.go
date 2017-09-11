@@ -66,6 +66,10 @@ type FileManager struct {
 	// there will only exist one user, called "admin".
 	NoAuth bool
 
+	// ReCaptcha Site key and secret.
+	ReCaptchaKey    string
+	ReCaptchaSecret string
+
 	// StaticGen is the static websit generator handler.
 	StaticGen StaticGen
 

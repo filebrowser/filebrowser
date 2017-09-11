@@ -17,6 +17,7 @@ const state = {
     window.CSS = null
     return css
   })(),
+  recaptcha: document.querySelector('meta[name="recaptcha"]').getAttribute('content'),
   staticGen: document.querySelector('meta[name="staticgen"]').getAttribute('content'),
   baseURL: document.querySelector('meta[name="base"]').getAttribute('content'),
   noAuth: (document.querySelector('meta[name="noauth"]').getAttribute('content') === 'true'),
