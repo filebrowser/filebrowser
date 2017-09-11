@@ -24,24 +24,26 @@ import (
 )
 
 var (
-	addr          string
-	config        string
-	database      string
-	scope         string
-	commands      string
-	logfile       string
-	staticg       string
-	locale        string
-	baseurl       string
-	prefixurl     string
-	viewMode      string
-	port          int
-	noAuth        bool
-	allowCommands bool
-	allowEdit     bool
-	allowNew      bool
-	allowPublish  bool
-	showVer       bool
+	addr            string
+	config          string
+	database        string
+	scope           string
+	commands        string
+	logfile         string
+	staticg         string
+	locale          string
+	baseurl         string
+	prefixurl       string
+	viewMode        string
+	recaptchakey    string
+	recaptchasecret string
+	port            int
+	noAuth          bool
+	allowCommands   bool
+	allowEdit       bool
+	allowNew        bool
+	allowPublish    bool
+	showVer         bool
 )
 
 func init() {
@@ -55,6 +57,8 @@ func init() {
 	flag.StringVar(&commands, "commands", "git svn hg", "Default commands option for new users")
 	flag.StringVar(&prefixurl, "prefixurl", "", "Prefix URL")
 	flag.StringVar(&viewMode, "view-mode", "mosaic", "Default view mode for new users")
+	flag.StringVar(&recaptchakey, "recaptcha-key", "", "ReCaptcha site key")
+	flag.StringVar(&recaptchasecret, "recaptcha-secret", "", "ReCaptcha secret")
 	flag.BoolVar(&allowCommands, "allow-commands", true, "Default allow commands option for new users")
 	flag.BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option for new users")
 	flag.BoolVar(&allowPublish, "allow-publish", true, "Default allow publish option for new users")
@@ -82,6 +86,8 @@ func setupViper() {
 	viper.SetDefault("BaseURL", "")
 	viper.SetDefault("PrefixURL", "")
 	viper.SetDefault("ViewMode", "mosaic")
+	viper.SetDefault("ReCaptchaKey", "")
+	viper.SetDefault("ReCaptchaSecret", "")
 
 	viper.BindPFlag("Port", flag.Lookup("port"))
 	viper.BindPFlag("Address", flag.Lookup("address"))
@@ -99,6 +105,8 @@ func setupViper() {
 	viper.BindPFlag("BaseURL", flag.Lookup("baseurl"))
 	viper.BindPFlag("PrefixURL", flag.Lookup("prefixurl"))
 	viper.BindPFlag("ViewMode", flag.Lookup("view-mode"))
+	viper.BindPFlag("ReCaptchaKey", flag.Lookup("recaptcha-key"))
+	viper.BindPFlag("ReCaptchaSecret", flag.Lookup("recaptcha-secret"))
 
 	viper.SetConfigName("filemanager")
 	viper.AddConfigPath(".")
@@ -179,9 +187,11 @@ func handler() http.Handler {
 	}
 
 	fm := &filemanager.FileManager{
-		NoAuth:    viper.GetBool("NoAuth"),
-		BaseURL:   viper.GetString("BaseURL"),
-		PrefixURL: viper.GetString("PrefixURL"),
+		NoAuth:          viper.GetBool("NoAuth"),
+		BaseURL:         viper.GetString("BaseURL"),
+		PrefixURL:       viper.GetString("PrefixURL"),
+		ReCaptchaKey:    viper.GetString("ReCaptchaKey"),
+		ReCaptchaSecret: viper.GetString("ReCaptchaSecret"),
 		DefaultUser: &filemanager.User{
 			AllowCommands: viper.GetBool("AllowCommands"),
 			AllowEdit:     viper.GetBool("AllowEdit"),
