@@ -31,7 +31,7 @@ Vue.prototype.$showError = function (error) {
     type: 'error',
     timeout: null,
     buttons: [
-      Noty.button(i18n.t('buttons.reportIssue'), 'cancel', function () {
+      Noty.button(i18n.t('buttons.reportIssue'), '', function () {
         window.open('https://github.com/hacdias/filemanager/issues/new')
       }),
       Noty.button(i18n.t('buttons.close'), '', function () {
