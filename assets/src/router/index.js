@@ -51,14 +51,10 @@ const router = new Router({
           path: '/settings',
           name: 'Settings',
           component: Settings,
+          redirect: {
+            path: '/settings/profile'
+          },
           children: [
-            {
-              path: '/settings',
-              name: 'Settings',
-              redirect: {
-                path: '/settings/profile'
-              }
-            },
             {
               path: '/settings/profile',
               name: 'Profile Settings',

@@ -29,6 +29,14 @@
   width: 90%;
 }
 
+#login.recaptcha form {
+  min-width: 304px;
+}
+
+#login #recaptcha {
+  margin: .5em 0 0;
+}
+
 #login input {
   width: 100%;
   width: 100%;

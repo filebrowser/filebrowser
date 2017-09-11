@@ -48,6 +48,8 @@ func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, erro
 		scope := "."
 		database := ""
 		noAuth := false
+		reCaptchaKey := ""
+		reCaptchaSecret := ""
 
 		if plugin != "" {
 			baseURL = "/admin"
@@ -155,6 +157,18 @@ func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, erro
 				if u.ViewMode != "mosaic" && u.ViewMode != "list" {
 					return nil, c.ArgErr()
 				}
+			case "recaptcha_key":
+				if !c.NextArg() {
+					return nil, c.ArgErr()
+				}
+
+				reCaptchaKey = c.Val()
+			case "recaptcha_secret":
+				if !c.NextArg() {
+					return nil, c.ArgErr()
+				}
+
+				reCaptchaSecret = c.Val()
 			case "no_auth":
 				if !c.NextArg() {
 					noAuth = true
@@ -213,10 +227,12 @@ func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, erro
 		}
 
 		m := &filemanager.FileManager{
-			NoAuth:      noAuth,
-			BaseURL:     "",
-			PrefixURL:   "",
-			DefaultUser: u,
+			NoAuth:          noAuth,
+			BaseURL:         "",
+			PrefixURL:       "",
+			ReCaptchaKey:    reCaptchaKey,
+			ReCaptchaSecret: reCaptchaSecret,
+			DefaultUser:     u,
 			Store: &filemanager.Store{
 				Config: bolt.ConfigStore{DB: db},
 				Users:  bolt.UsersStore{DB: db},

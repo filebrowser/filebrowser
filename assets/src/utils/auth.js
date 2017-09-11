@@ -31,8 +31,8 @@ function loggedIn () {
   })
 }
 
-function login (user, password) {
-  let data = {username: user, password: password}
+function login (user, password, captcha) {
+  let data = {username: user, password: password, recaptcha: captcha}
   return new Promise((resolve, reject) => {
     let request = new window.XMLHttpRequest()
     request.open('POST', `${store.state.baseURL}/api/auth/get`, true)

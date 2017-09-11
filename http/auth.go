@@ -1,8 +1,11 @@
 package http
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -10,6 +13,45 @@ import (
 	"github.com/dgrijalva/jwt-go/request"
 	fm "github.com/hacdias/filemanager"
 )
+
+type cred struct {
+	Password  string `json:"password"`
+	Username  string `json:"username"`
+	Recaptcha string `json:"recaptcha"`
+}
+
+// recaptcha checks the recaptcha code.
+func recaptcha(secret string, response string) (bool, error) {
+	api := "https://www.google.com/recaptcha/api/siteverify"
+
+	body := url.Values{}
+	body.Set("secret", secret)
+	body.Add("response", response)
+
+	client := &http.Client{}
+	resp, err := client.Post(api, "application/x-www-form-urlencoded", bytes.NewBufferString(body.Encode()))
+	if err != nil {
+		return false, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return false, nil
+	}
+
+	var data struct {
+		Success     bool        `json:"success"`
+		ChallengeTS time.Time   `json:"challenge_ts"`
+		Hostname    string      `json:"hostname"`
+		ErrorCodes  interface{} `json:"error-codes"`
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&data)
+	if err != nil {
+		return false, err
+	}
+
+	return data.Success, nil
+}
 
 // authHandler proccesses the authentication for the user.
 func authHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
@@ -19,7 +61,7 @@ func authHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	// Receive the credentials from the request and unmarshal them.
-	var cred fm.User
+	var cred cred
 	if r.Body == nil {
 		return http.StatusForbidden, nil
 	}
@@ -27,6 +69,19 @@ func authHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, er
 	err := json.NewDecoder(r.Body).Decode(&cred)
 	if err != nil {
 		return http.StatusForbidden, nil
+	}
+
+	// If ReCaptcha is enabled, check the code.
+	if len(c.ReCaptchaSecret) > 0 {
+		ok, err := recaptcha(c.ReCaptchaSecret, cred.Recaptcha)
+		if err != nil {
+			fmt.Println(err)
+			return http.StatusForbidden, err
+		}
+
+		if !ok {
+			return http.StatusForbidden, nil
+		}
 	}
 
 	// Checks if the user exists.

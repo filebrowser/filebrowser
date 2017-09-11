@@ -1,22 +1,48 @@
 <template>
-  <router-view @update:css="updateCSS" @clean:css="cleanCSS"></router-view>
+  <router-view :dependencies="loaded" @update:css="updateCSS" @clean:css="cleanCSS"></router-view>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'app',
+  computed: mapState(['recaptcha']),
+  data () {
+    return {
+      loaded: false
+    }
+  },
   mounted () {
-    // Remove loading animation.
-    let loading = document.getElementById('loading')
-    loading.classList.add('done')
+    if (this.recaptcha.length === 0) {
+      this.unload()
+      return
+    }
 
-    setTimeout(function () {
-      loading.parentNode.removeChild(loading)
-    }, 200)
+    let check = () => {
+      if (typeof window.grecaptcha === 'undefined') {
+        setTimeout(check, 100)
+        return
+      }
 
-    this.updateCSS()
+      this.unload()
+    }
+
+    check()
   },
   methods: {
+    unload () {
+      this.loaded = true
+      // Remove loading animation.
+      let loading = document.getElementById('loading')
+      loading.classList.add('done')
+
+      setTimeout(function () {
+        loading.parentNode.removeChild(loading)
+      }, 200)
+
+      this.updateCSS()
+    },
     updateCSS (global = false) {
       let css = this.$store.state.css
 
