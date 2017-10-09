@@ -85,7 +85,7 @@ func setupViper() {
 	viper.SetDefault("NoAuth", false)
 	viper.SetDefault("BaseURL", "")
 	viper.SetDefault("PrefixURL", "")
-	viper.SetDefault("ViewMode", "mosaic")
+	viper.SetDefault("ViewMode", filemanager.MosaicViewMode)
 	viper.SetDefault("ReCaptchaKey", "")
 	viper.SetDefault("ReCaptchaSecret", "")
 

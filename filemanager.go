@@ -22,7 +22,13 @@ import (
 )
 
 // Version is the current File Manager version.
-const Version = "(untracked)"
+const (
+	// Version is the current File Manager version.
+	Version = "(untracked)"
+
+	ListViewMode   = "list"
+	MosaicViewMode = "mosaic"
+)
 
 var (
 	ErrExist              = errors.New("the resource already exists")
@@ -207,8 +213,8 @@ func (m *FileManager) Setup() error {
 
 	// TODO: remove this after 1.5
 	for _, user := range users {
-		if user.ViewMode != "list" && user.ViewMode != "mosaic" {
-			user.ViewMode = "list"
+		if user.ViewMode != ListViewMode && user.ViewMode != MosaicViewMode {
+			user.ViewMode = ListViewMode
 			m.Store.Users.Update(user, "ViewMode")
 		}
 	}

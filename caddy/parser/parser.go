@@ -154,7 +154,7 @@ func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, erro
 				}
 
 				u.ViewMode = c.Val()
-				if u.ViewMode != "mosaic" && u.ViewMode != "list" {
+				if u.ViewMode != filemanager.MosaicViewMode && u.ViewMode != filemanager.ListViewMode {
 					return nil, c.ArgErr()
 				}
 			case "recaptcha_key":
