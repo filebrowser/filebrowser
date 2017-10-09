@@ -182,6 +182,7 @@ func usersPostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (in
 	}
 
 	u.Password = pw
+	u.ViewMode = fm.MosaicViewMode
 
 	// Saves the user to the database.
 	err = c.Store.Users.Save(u)
