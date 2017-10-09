@@ -54,6 +54,9 @@ const router = new Router({
           redirect: {
             path: '/settings/profile'
           },
+          meta: {
+            disableOnNoAuth: true
+          },
           children: [
             {
               path: '/settings/profile',
@@ -127,16 +130,17 @@ router.beforeEach((to, from, next) => {
     auth.loggedIn()
       .then(() => {
         if (to.matched.some(record => record.meta.requiresAdmin)) {
-          if (store.state.user.admin) {
-            next()
+          if (!store.state.user.admin) {
+            next({ path: '/403' })
             return
           }
+        }
 
-          next({
-            path: '/403'
-          })
-
-          return
+        if (to.matched.some(record => record.meta.disableOnNoAuth)) {
+          if (store.state.noAuth) {
+            next({ path: '/403' })
+            return
+          }
         }
 
         next()
