@@ -25,16 +25,13 @@ func Handler(m *fm.FileManager) http.Handler {
 		if code >= 400 {
 			w.WriteHeader(code)
 
-			if err == nil {
-				txt := http.StatusText(code)
-				log.Printf("%v: %v %v\n", r.URL.Path, code, txt)
-				w.Write([]byte(txt))
-			}
+			txt := http.StatusText(code)
+			log.Printf("%v: %v %v\n", r.URL.Path, code, txt)
+			w.Write([]byte(txt + "\n"))
 		}
 
 		if err != nil {
 			log.Print(err)
-			w.Write([]byte(err.Error()))
 		}
 	})
 }
