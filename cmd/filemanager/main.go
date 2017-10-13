@@ -64,7 +64,7 @@ func init() {
 	flag.BoolVar(&allowPublish, "allow-publish", true, "Default allow publish option for new users")
 	flag.BoolVar(&allowNew, "allow-new", true, "Default allow new option for new users")
 	flag.BoolVar(&noAuth, "no-auth", false, "Disables authentication")
-	flag.StringVar(&locale, "locale", "en", "Default locale for new users")
+	flag.StringVar(&locale, "locale", "", "Default locale for new users, set it empty to enable auto detect from browser")
 	flag.StringVar(&staticg, "staticgen", "", "Static Generator you want to enable")
 	flag.BoolVarP(&showVer, "version", "v", false, "Show version")
 }
@@ -81,7 +81,7 @@ func setupViper() {
 	viper.SetDefault("AllowNew", true)
 	viper.SetDefault("AllowPublish", true)
 	viper.SetDefault("StaticGen", "")
-	viper.SetDefault("Locale", "en")
+	viper.SetDefault("Locale", "")
 	viper.SetDefault("NoAuth", false)
 	viper.SetDefault("BaseURL", "")
 	viper.SetDefault("PrefixURL", "")
