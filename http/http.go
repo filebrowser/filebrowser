@@ -270,6 +270,7 @@ func sharePage(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, erro
 
 	info, err := os.Stat(s.Path)
 	if err != nil {
+		c.Store.Share.Delete(s.Hash)
 		return ErrorToHTTP(err, false), err
 	}
 
