@@ -207,7 +207,7 @@ func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, erro
 			sha := hex.EncodeToString(hasher.Sum(nil))
 			database = filepath.Join(path, sha+".db")
 
-			fmt.Println("[WARNING] A database is going to be created for your File Manager instace at " + database +
+			fmt.Println("[WARNING] A database is going to be created for your File Manager instance at " + database +
 				". It is highly recommended that you set the 'database' option to '" + sha + ".db'\n")
 		}
 
