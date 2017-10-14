@@ -25,16 +25,13 @@ func Handler(m *fm.FileManager) http.Handler {
 		if code >= 400 {
 			w.WriteHeader(code)
 
-			if err == nil {
-				txt := http.StatusText(code)
-				log.Printf("%v: %v %v\n", r.URL.Path, code, txt)
-				w.Write([]byte(txt))
-			}
+			txt := http.StatusText(code)
+			log.Printf("%v: %v %v\n", r.URL.Path, code, txt)
+			w.Write([]byte(txt + "\n"))
 		}
 
 		if err != nil {
 			log.Print(err)
-			w.Write([]byte(err.Error()))
 		}
 	})
 }
@@ -270,6 +267,7 @@ func sharePage(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, erro
 
 	info, err := os.Stat(s.Path)
 	if err != nil {
+		c.Store.Share.Delete(s.Hash)
 		return ErrorToHTTP(err, false), err
 	}
 
