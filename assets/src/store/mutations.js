@@ -29,25 +29,25 @@ const mutations = {
   setUser: (state, value) => {
     let locale = (value.locale || navigator.language || navigator.browserLangugae).toLowerCase()
     switch (true) {
-      case /en.*/i.test(locale):
+      case /^en.*/i.test(locale):
         locale = 'en'
         break
-      case /fr.*/i.test(locale):
+      case /^fr.*/i.test(locale):
         locale = 'fr'
         break
-      case /pt.*/i.test(locale):
+      case /^pt.*/i.test(locale):
         locale = 'pr'
         break
-      case /ja.*/i.test(locale):
+      case /^ja.*/i.test(locale):
         locale = 'ja'
         break
-      case /zh_CN/i.test(locale):
+      case /^zh-CN/i.test(locale):
         locale = 'zh-cn'
         break
-      case /zh_TW/i.test(locale):
+      case /^zh-TW/i.test(locale):
         locale = 'zh-tw'
         break
-      case /zh.*/i.test(locale):
+      case /^zh.*/i.test(locale):
         locale = 'zh-cn'
         break
       default:
