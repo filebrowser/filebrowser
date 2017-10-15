@@ -1,4 +1,4 @@
-import i18n from '@/i18n'
+import * as i18n from '@/i18n'
 import moment from 'moment'
 
 const mutations = {
@@ -27,34 +27,14 @@ const mutations = {
   setLoading: (state, value) => { state.loading = value },
   setReload: (state, value) => { state.reload = value },
   setUser: (state, value) => {
-    let locale = (value.locale || navigator.language || navigator.browserLangugae).toLowerCase()
-    switch (true) {
-      case /^en.*/i.test(locale):
-        locale = 'en'
-        break
-      case /^fr.*/i.test(locale):
-        locale = 'fr'
-        break
-      case /^pt.*/i.test(locale):
-        locale = 'pr'
-        break
-      case /^ja.*/i.test(locale):
-        locale = 'ja'
-        break
-      case /^zh-CN/i.test(locale):
-        locale = 'zh-cn'
-        break
-      case /^zh-TW/i.test(locale):
-        locale = 'zh-tw'
-        break
-      case /^zh.*/i.test(locale):
-        locale = 'zh-cn'
-        break
-      default:
-        locale = 'en'
+    let locale = value.locale
+
+    if (locale === '') {
+      locale = i18n.detectLocale()
     }
+
     moment.locale(locale)
-    i18n.locale = locale
+    i18n.default.locale = locale
     state.user = value
   },
   setCSS: (state, value) => (state.css = value),
