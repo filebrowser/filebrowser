@@ -36,8 +36,6 @@ switch (true) {
     locale = 'en'
 }
 
-console.log(locale)
-
 const i18n = new VueI18n({
   locale: locale,
   fallbackLocale: 'en',
