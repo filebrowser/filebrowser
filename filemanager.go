@@ -362,7 +362,7 @@ var DefaultUser = User{
 	Rules:         []*Rule{},
 	CSS:           "",
 	Admin:         true,
-	Locale:        "en",
+	Locale:        "",
 	Scope:         ".",
 	FileSystem:    fileutils.Dir("."),
 	ViewMode:      "mosaic",
