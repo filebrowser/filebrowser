@@ -196,6 +196,10 @@ export default {
       })
     },
     paste (event) {
+      if (event.target.tagName.toLowerCase() === 'input') {
+        return
+      }
+
       event.preventDefault()
 
       let items = []
