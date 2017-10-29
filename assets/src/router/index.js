@@ -11,7 +11,7 @@ import ProfileSettings from '@/views/settings/Profile'
 import Error403 from '@/views/errors/403'
 import Error404 from '@/views/errors/404'
 import Error500 from '@/views/errors/500'
-import auth from '@/utils/auth.js'
+import auth from '@/utils/auth'
 import store from '@/store'
 
 Vue.use(Router)

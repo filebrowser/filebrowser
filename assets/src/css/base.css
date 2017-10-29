@@ -112,6 +112,11 @@ button.flat.cancel {
   color: #ccc;
 }
 
+button.flat[disabled] {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
 .mobile-only {
   display: none !important;
 }

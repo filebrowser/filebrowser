@@ -15,6 +15,7 @@
         :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
       <button class="flat"
         @click="move"
+        :disabled="$route.path === dest"
         :aria-label="$t('buttons.move')"
         :title="$t('buttons.move')">{{ $t('buttons.move') }}</button>
     </div>
