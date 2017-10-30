@@ -418,6 +418,7 @@ var textExtensions = [...]string{
 	".sh", ".bash", ".ps1", ".bat", ".cmd",
 	".php", ".pl", ".py",
 	"Caddyfile",
+	".htaccess",
 	".c", ".cc", ".h", ".hh", ".cpp", ".hpp", ".f90",
 	".f", ".bas", ".d", ".ada", ".nim", ".cr", ".java", ".cs", ".vala", ".vapi",
 }
