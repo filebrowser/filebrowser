@@ -12,7 +12,7 @@ import (
 
 	"github.com/asdine/storm"
 
-	lumberjack "gopkg.in/natefinch/lumberjack.v2"
+	"gopkg.in/natefinch/lumberjack.v2"
 
 	"github.com/hacdias/filemanager"
 	"github.com/hacdias/filemanager/bolt"
