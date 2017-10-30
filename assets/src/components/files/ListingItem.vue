@@ -119,9 +119,21 @@ export default {
       }
 
       if (event.shiftKey && this.selected.length === 1) {
-        let fi = (this.index > this.selected[0]) ? this.selected[0] : this.index
-        let la = (this.index > this.selected[0]) ? this.index : this.selected[0]
-        for (; fi <= la; fi++) this.addSelected(fi)
+        let fi = 0
+        let la = 0
+
+        if (this.index > this.selected[0]) {
+          fi = this.selected[0] + 1
+          la = this.index
+        } else {
+          fi = this.index
+          la = this.selected[0] - 1
+        }
+
+        for (; fi <= la; fi++) {
+          this.addSelected(fi)
+        }
+
         return
       }
 
