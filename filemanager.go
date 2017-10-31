@@ -39,7 +39,7 @@ var (
 	ErrEmptyScope         = errors.New("scope is empty")
 	ErrWrongDataType      = errors.New("wrong data type")
 	ErrInvalidUpdateField = errors.New("invalid field to update")
-	ErrInvalidOption      = errors.New("Invalid option")
+	ErrInvalidOption      = errors.New("invalid option")
 )
 
 // FileManager is a file manager instance. It should be creating using the
