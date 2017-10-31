@@ -7,10 +7,21 @@
       </div>
 
       <div class="card-content">
+        <p>
+          <label for="username">{{ $t('settings.username') }}</label>
+          <input type="text" v-model="username" id="username">
+        </p>
 
-        <p><label for="username">{{ $t('settings.username') }}</label><input type="text" v-model="username" id="username"></p>
-        <p><label for="password">{{ $t('settings.password') }}</label><input type="password" :placeholder="passwordPlaceholder" v-model="password" id="password"></p>
-        <p><label for="scope">{{ $t('settings.scope') }}</label><input type="text" v-model="filesystem" id="scope"></p>
+        <p>
+          <label for="password">{{ $t('settings.password') }}</label>
+          <input type="password" :placeholder="passwordPlaceholder" v-model="password" id="password">
+        </p>
+
+        <p>
+          <label for="scope">{{ $t('settings.scope') }}</label>
+          <input type="text" v-model="filesystem" id="scope">
+        </p>
+
         <p>
           <label for="locale">{{ $t('settings.language') }}</label>
           <languages id="locale" :selected.sync="locale"></languages>
@@ -91,6 +102,7 @@ export default {
   components: { Languages },
   data: () => {
     return {
+      originalUser: null,
       id: 0,
       admin: false,
       allowNew: false,
@@ -141,6 +153,7 @@ export default {
       }
 
       getUser(user).then(user => {
+        this.originalUser = user
         this.id = user.ID
         this.admin = user.admin
         this.allowCommands = user.allowCommands
@@ -242,23 +255,21 @@ export default {
       })
     },
     parseForm () {
-      let user = {
-        ID: this.id,
-        username: this.username,
-        password: this.password,
-        lockPassword: this.lockPassword,
-        filesystem: this.filesystem,
-        admin: this.admin,
-        allowCommands: this.allowCommands,
-        allowNew: this.allowNew,
-        allowEdit: this.allowEdit,
-        allowPublish: this.allowPublish,
-        permissions: this.permissions,
-        css: this.css,
-        locale: this.locale,
-        commands: this.commands.split(' '),
-        rules: []
-      }
+      let user = this.originalUser
+      user.username = this.username
+      user.password = this.password
+      user.lockPassword = this.lockPassword
+      user.filesystem = this.filesystem
+      user.admin = this.admin
+      user.allowCommands = this.allowCommands
+      user.allowNew = this.allowNew
+      user.allowEdit = this.allowEdit
+      user.allowPublish = this.allowPublish
+      user.permissions = this.permissions
+      user.css = this.css
+      user.locale = this.locale
+      user.commands = this.commands.split(' ')
+      user.rules = []
 
       let rules = this.rules.split('\n')
 

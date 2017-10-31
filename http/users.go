@@ -160,6 +160,11 @@ func usersPostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (in
 		u.Rules = []*fm.Rule{}
 	}
 
+	// If the view mode is empty, initialize with the default one.
+	if u.ViewMode == "" {
+		u.ViewMode = c.DefaultUser.ViewMode
+	}
+
 	// Initialize commands if not initialized.
 	if u.Commands == nil {
 		u.Commands = []string{}

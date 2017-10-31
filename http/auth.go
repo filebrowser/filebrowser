@@ -1,7 +1,6 @@
 package http
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -14,22 +13,23 @@ import (
 	fm "github.com/hacdias/filemanager"
 )
 
+const reCaptchaAPI = "https://www.google.com/recaptcha/api/siteverify"
+
 type cred struct {
 	Password  string `json:"password"`
 	Username  string `json:"username"`
-	Recaptcha string `json:"recaptcha"`
+	ReCaptcha string `json:"recaptcha"`
 }
 
-// recaptcha checks the recaptcha code.
-func recaptcha(secret string, response string) (bool, error) {
-	api := "https://www.google.com/recaptcha/api/siteverify"
-
+// reCaptcha checks the reCaptcha code.
+func reCaptcha(secret string, response string) (bool, error) {
 	body := url.Values{}
 	body.Set("secret", secret)
 	body.Add("response", response)
 
 	client := &http.Client{}
-	resp, err := client.Post(api, "application/x-www-form-urlencoded", bytes.NewBufferString(body.Encode()))
+
+	resp, err := client.Post(reCaptchaAPI, "application/x-www-form-urlencoded", strings.NewReader(body.Encode()))
 	if err != nil {
 		return false, err
 	}
@@ -73,7 +73,7 @@ func authHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, er
 
 	// If ReCaptcha is enabled, check the code.
 	if len(c.ReCaptchaSecret) > 0 {
-		ok, err := recaptcha(c.ReCaptchaSecret, cred.Recaptcha)
+		ok, err := reCaptcha(c.ReCaptchaSecret, cred.ReCaptcha)
 		if err != nil {
 			fmt.Println(err)
 			return http.StatusForbidden, err
@@ -179,6 +179,7 @@ func validateAuth(c *fm.Context, r *http.Request) (bool, *fm.User) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		return c.Key, nil
 	}
+
 	var claims claims
 	token, err := request.ParseFromRequestWithClaims(r,
 		extractor{},

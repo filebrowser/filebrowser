@@ -17,21 +17,13 @@ import (
 // downloadHandler creates an archive in one of the supported formats (zip, tar,
 // tar.gz or tar.bz2) and sends it to be downloaded.
 func downloadHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
-	query := r.URL.Query().Get("format")
-
 	// If the file isn't a directory, serve it using http.ServeFile. We display it
 	// inline if it is requested.
 	if !c.File.IsDir {
-		if r.URL.Query().Get("inline") == "true" {
-			w.Header().Set("Content-Disposition", "inline")
-		} else {
-			w.Header().Set("Content-Disposition", "attachment; filename=\""+c.File.Name+"\"")
-		}
-
-		http.ServeFile(w, r, c.File.Path)
-		return 0, nil
+		return downloadFileHandler(c, w, r)
 	}
 
+	query := r.URL.Query().Get("format")
 	files := []string{}
 	names := strings.Split(r.URL.Query().Get("files"), ",")
 
@@ -110,4 +102,15 @@ func downloadHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 	w.Header().Set("Content-Disposition", "attachment; filename=\""+name+"\"")
 	_, err = io.Copy(w, file)
 	return 0, err
+}
+
+func downloadFileHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+	if r.URL.Query().Get("inline") == "true" {
+		w.Header().Set("Content-Disposition", "inline")
+	} else {
+		w.Header().Set("Content-Disposition", "attachment; filename=\""+c.File.Name+"\"")
+	}
+
+	http.ServeFile(w, r, c.File.Path)
+	return 0, nil
 }
