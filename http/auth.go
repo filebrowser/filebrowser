@@ -53,7 +53,7 @@ func reCaptcha(secret string, response string) (bool, error) {
 	return data.Success, nil
 }
 
-// authHandler proccesses the authentication for the user.
+// authHandler processes the authentication for the user.
 func authHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// NoAuth instances shouldn't call this method.
 	if c.NoAuth {
