@@ -21,7 +21,6 @@ import (
 	"github.com/robfig/cron"
 )
 
-// Version is the current File Manager version.
 const (
 	// Version is the current File Manager version.
 	Version = "(untracked)"
