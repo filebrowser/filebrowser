@@ -108,7 +108,7 @@ func downloadFileHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) 
 	if r.URL.Query().Get("inline") == "true" {
 		w.Header().Set("Content-Disposition", "inline")
 	} else {
-		w.Header().Set("Content-Disposition", "attachment; filename=\""+c.File.Name+"\"")
+		w.Header().Set("Content-Disposition", `attachment; filename="`+c.File.Name+`"`)
 	}
 
 	http.ServeFile(w, r, c.File.Path)
