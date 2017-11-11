@@ -13,7 +13,7 @@ RUN mv filemanager /go/bin/filemanager
 FROM scratch
 COPY --from=0 /go/bin/filemanager /filemanager
 
-RUN mkdir /tmp
+RUN mkdir -p /tmp
 VOLUME /srv
 EXPOSE 80
 
