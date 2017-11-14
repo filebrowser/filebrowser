@@ -133,6 +133,16 @@ func (i *File) GetListing(u *User, r *http.Request) error {
 			continue
 		}
 
+		if strings.HasPrefix(f.Mode().String(), "L") {
+			// It's a symbolic link
+			// The FileInfo from Readdir treats symbolic link as a file only.
+			info, err := os.Stat(f.Name())
+			if err != nil {
+				return err
+			}
+			f = info
+		}
+
 		if f.IsDir() {
 			name += "/"
 			dirCount++
