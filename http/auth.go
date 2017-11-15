@@ -75,7 +75,6 @@ func authHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, er
 	if len(c.ReCaptchaSecret) > 0 {
 		ok, err := reCaptcha(c.ReCaptchaSecret, cred.ReCaptcha)
 		if err != nil {
-			fmt.Println(err)
 			return http.StatusForbidden, err
 		}
 
