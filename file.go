@@ -419,6 +419,7 @@ var textExtensions = [...]string{
 	".md", ".markdown", ".mdown", ".mmark",
 	".asciidoc", ".adoc", ".ad",
 	".rst",
+	".tml", ".yml",
 	".json", ".toml", ".yaml", ".csv", ".xml", ".rss", ".conf", ".ini",
 	".tex", ".sty",
 	".css", ".sass", ".scss",
