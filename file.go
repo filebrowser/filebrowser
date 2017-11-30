@@ -197,7 +197,6 @@ func (i *File) GetEditor() error {
 	// If there is an error, just ignore it and return nil.
 	// This way, the file can be served for editing.
 	if err != nil {
-
 		return nil
 	}
 
