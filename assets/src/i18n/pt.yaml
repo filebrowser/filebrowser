@@ -73,6 +73,7 @@ languages:
   ja: 日本語
   zhCN: 中文 (简体)
   zhTW: 中文 (繁體)
+  es: Español
 login:
   password: Palavra-passe
   submit: Login
