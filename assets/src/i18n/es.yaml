@@ -115,10 +115,10 @@ settings:
   changePassword: Cambiar contraseña
   commands: Comandos
   commandsHelp: >
-  	Aquí puedes crear comandos que serán ejecutados en los eventos. Debes
-  	escribir un comando por linea. Si el evento está relacionado con archivos, como
-  	por ejemplo, antes y después de guardar, la variable de entorno "FILE" estará 
-  	disponible en la ruta del archivo.
+    Aquí puedes crear comandos que serán ejecutados en los eventos. Debes
+    escribir un comando por linea. Si el evento está relacionado con archivos, como
+    por ejemplo, antes y después de guardar, la variable de entorno "FILE" estará 
+    disponible en la ruta del archivo.
   commandsUpdated: ¡Comandos actualizados!
   customStylesheet: Modificar hoja de estilos
   examples: Ejemplos
@@ -132,30 +132,30 @@ settings:
   passwordUpdated: ¡Contraseña actualizada!
   permissions: Permisos
   permissionsHelp: >
-  	Puedes nombrar al usuario como administrador o elegir los permisos
-  	individualmente. Si seleccionas "Administrador", todas las otras opciones
-  	serán activadas automáticamente. La administración de usuarios es un privilegio de administrador.
+      Puedes nombrar al usuario como administrador o elegir los permisos
+      individualmente. Si seleccionas "Administrador", todas las otras opciones
+      serán activadas automáticamente. La administración de usuarios es un privilegio de administrador.
   profileSettings: Ajustes del perfil
   ruleExample1: >
-  	previene el acceso a una extensión de archivo (Como .git) en
-  	cada carpeta.
+      previene el acceso a una extensión de archivo (Como .git) en
+      cada carpeta.
   ruleExample2: bloquea el acceso al archivo llamado Caddyfile en la carpeta raíz.
   rules: Reglas
   rulesHelp1: >
-    Aquí puedes definir un conjunto de reglas de permisos para este usuario
-    específico. Los archivos bloqueados no se mostrarán en las listas y no serán accesibles
-    por el usuario. Puedes utilizar regex y rutas relativas a la raíz del usuario.
+      Aquí puedes definir un conjunto de reglas de permisos para este usuario
+      específico. Los archivos bloqueados no se mostrarán en las listas y no serán accesibles
+      por el usuario. Puedes utilizar regex y rutas relativas a la raíz del usuario.
   rulesHelp2: >
-  	Cada regla va en una línea diferente, y debe comenzar con la palabra clave
-  	{0} or {1}. Entonces, debes escribir {2} si estás usando una expresión regular (REGEX) y
-  	luego la expresión o la ruta.
+      Cada regla va en una línea diferente, y debe comenzar con la palabra clave
+      {0} or {1}. Entonces, debes escribir {2} si estás usando una expresión regular (REGEX) y
+      luego la expresión o la ruta.
   scope: Raíz
   settingsUpdated: ¡Ajustes actualizados!
   user: Usuario
   userCommands: Comandos
   userCommandsHelp: >
-  	Una lista separada por espacios con los comandos permitidos para este usuario.
-  	Ejemplo:
+      Una lista separada por espacios con los comandos permitidos para este usuario.
+      Ejemplo:
   userCreated: ¡Usuario creado!
   userDeleted: ¡Usuario eliminado!
   userManagement: Administración de usuarios
