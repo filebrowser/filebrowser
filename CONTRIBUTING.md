@@ -2,7 +2,7 @@
 
 If you want to contribute or want to build the code from source, you will need to have the most recent version of Go and, if you want to change the static assets (JS, CSS, ...), Node.js installed on your computer. To start developing, you just need to do the following:
 
-1. `go get github.com/hacdias/filemanager`
+1. `go get github.com/hacdias/filemanager/cmd/filemanager`
 2. `cd $GOPATH/src/github.com/hacdias/filemanager`
 3. `npm install`
 4. `npm run dev` - regenerates the static assets automatically
