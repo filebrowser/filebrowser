@@ -84,7 +84,8 @@ func (h Hugo) Hook(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, 
 		return http.StatusForbidden, nil
 	}
 
-	filename := filepath.Join(c.User.Scope, r.URL.Path)
+	filename := filepath.Clean(r.URL.Path)
+	filename = strings.TrimPrefix(filename, string(filepath.Separator))
 	archetype := r.Header.Get("archetype")
 
 	ext := filepath.Ext(filename)
