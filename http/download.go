@@ -111,6 +111,17 @@ func downloadFileHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) 
 		w.Header().Set("Content-Disposition", `attachment; filename="`+c.File.Name+`"`)
 	}
 
-	http.ServeFile(w, r, c.File.Path)
+	file, err := os.Open(c.File.Path)
+	defer file.Close()
+
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	_, err = io.Copy(w, file)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
 	return 0, nil
 }
