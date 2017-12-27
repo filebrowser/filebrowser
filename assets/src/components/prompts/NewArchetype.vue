@@ -48,6 +48,10 @@ export default {
     new (url, type) {
       url = removePrefix(url)
 
+      if (!url.endsWith('.md') && !url.endsWith('.markdown')) {
+        url += '.markdown'
+      }
+
       return new Promise((resolve, reject) => {
         let request = new window.XMLHttpRequest()
         request.open('POST', `${this.$store.state.baseURL}/api/resource${url}`, true)
