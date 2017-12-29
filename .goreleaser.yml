@@ -8,11 +8,18 @@ build:
     - freebsd
     - netbsd
     - openbsd
+    - dragonfly
+    - plan9
+    - solaris
   goarch:
     - amd64
     - 386
     - arm
     - arm64
+    - mips
+    - mips64
+    - mipsle
+    - mips64le
   ignore:
     - goos: openbsd
       goarch: arm
