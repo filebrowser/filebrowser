@@ -37,6 +37,7 @@ func Parse(c *caddy.Controller, plugin string) ([]*filemanager.FileManager, erro
 			AllowPublish:  true,
 			Commands:      []string{"git", "svn", "hg"},
 			CSS:           "",
+			ViewMode:      "mosaic",
 			Rules: []*filemanager.Rule{{
 				Regex:  true,
 				Allow:  false,
