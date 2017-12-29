@@ -9,7 +9,6 @@ build:
     - netbsd
     - openbsd
     - dragonfly
-    - plan9
     - solaris
   goarch:
     - amd64
