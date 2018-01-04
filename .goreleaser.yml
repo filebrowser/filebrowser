@@ -26,6 +26,8 @@ build:
     - goos: freebsd
       goarch: arm
       goarm: 6
+    - goos: linux
+      goarch: arm64
 
 archive:
   name_template: "{{.Os}}-{{.Arch}}-{{ .ProjectName }}"
