@@ -1,14 +1,14 @@
 import cookie from './cookie'
 import store from '@/store'
 import router from '@/router'
+import { Base64 } from 'js-base64'
 
 function parseToken (token) {
   let path = store.state.baseURL
   if (path === '') path = '/'
   document.cookie = `auth=${token}; max-age=86400; path=${path}`
   let res = token.split('.')
-  let user = JSON.parse(window.atob(res[1]))
-
+  let user = JSON.parse(Base64.decode(res[1]))
   if (!user.commands) {
     user.commands = []
   }

@@ -12,6 +12,7 @@
     "clipboard": "^1.7.1",
     "codemirror": "^5.31.0",
     "filesize": "^3.5.11",
+    "js-base64": "^2.4.0",
     "moment": "^2.19.2",
     "normalize.css": "^7.0.0",
     "noty": "^3.1.3",
