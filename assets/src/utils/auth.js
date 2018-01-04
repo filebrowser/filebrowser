@@ -8,6 +8,11 @@ function parseToken (token) {
   document.cookie = `auth=${token}; max-age=86400; path=${path}`
   let res = token.split('.')
   let user = JSON.parse(window.atob(res[1]))
+
+  if (!user.commands) {
+    user.commands = []
+  }
+
   store.commit('setJWT', token)
   store.commit('setUser', user)
 }
