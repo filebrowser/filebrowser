@@ -163,10 +163,13 @@ export default {
         this.lockPassword = user.lockPassword
         this.filesystem = user.filesystem
         this.username = user.username
-        this.commands = user.commands.join(' ')
         this.css = user.css
         this.permissions = user.permissions
         this.locale = user.locale
+
+        if (user.commands) {
+          this.commands = user.commands.join(' ')
+        }
 
         for (let rule of user.rules) {
           if (rule.allow) {
