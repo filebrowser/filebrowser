@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Install rice tool if not present
 if ! [ -x "$(command -v rice)" ]; then
