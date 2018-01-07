@@ -53,7 +53,7 @@
         <p class="small"><strong>{{ $t('settings.examples') }}</strong></p>
 
         <ul class="small">
-          <li><code>disallow regex \\/\\..+</code> - {{ $t('settings.ruleExample1') }}</li>
+          <li><code>disallow regex [\\\/]\..+</code> - {{ $t('settings.ruleExample1') }}</li>
           <li><code>disallow /Caddyfile</code> - {{ $t('settings.ruleExample2') }}</li>
         </ul>
 
