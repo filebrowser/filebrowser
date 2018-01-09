@@ -73,7 +73,3 @@ this are keywords case:insensitive
 # Contributing
 
 The contributing guidelines can be found [here](https://github.com/hacdias/filemanager/blob/master/CONTRIBUTING.md).
-
-# Donate
-
-Enjoying this project? You can [donate to its creator](https://henriquedias.com/donate/). He will appreciate.
