@@ -99,18 +99,12 @@ func downloadHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 	}
 	defer file.Close()
 
-	w.Header().Set("Content-Disposition", "attachment; filename=\""+name+"\"")
+	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.QueryEscape(name))
 	_, err = io.Copy(w, file)
 	return 0, err
 }
 
 func downloadFileHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
-	if r.URL.Query().Get("inline") == "true" {
-		w.Header().Set("Content-Disposition", "inline")
-	} else {
-		w.Header().Set("Content-Disposition", `attachment; filename="`+c.File.Name+`"`)
-	}
-
 	file, err := os.Open(c.File.Path)
 	defer file.Close()
 
@@ -118,10 +112,25 @@ func downloadFileHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) 
 		return http.StatusInternalServerError, err
 	}
 
-	_, err = io.Copy(w, file)
+	if r.URL.Query().Get("inline") == "true" {
+		w.Header().Set("Content-Disposition", "inline")
+
+		_, err = io.Copy(w, file)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		return 0, nil
+	}
+
+	stat, err := file.Stat()
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
+
+	// As per RFC6266 section 4.3
+	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.QueryEscape(c.File.Name))
+	http.ServeContent(w, r, stat.Name(), stat.ModTime(), file)
 
 	return 0, nil
 }
