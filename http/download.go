@@ -1,7 +1,6 @@
 package http
 
 import (
-	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -86,24 +85,18 @@ func downloadFileHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) 
 		return http.StatusInternalServerError, err
 	}
 
-	if r.URL.Query().Get("inline") == "true" {
-		w.Header().Set("Content-Disposition", "inline")
-
-		_, err = io.Copy(w, file)
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		return 0, nil
-	}
-
 	stat, err := file.Stat()
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
-	// As per RFC6266 section 4.3
-	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.QueryEscape(c.File.Name))
+	if r.URL.Query().Get("inline") == "true" {
+		w.Header().Set("Content-Disposition", "inline")
+	} else {
+		// As per RFC6266 section 4.3
+		w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.QueryEscape(c.File.Name))
+	}
+
 	http.ServeContent(w, r, stat.Name(), stat.ModTime(), file)
 
 	return 0, nil
