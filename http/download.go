@@ -2,7 +2,6 @@ package http
 
 import (
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -45,62 +44,37 @@ func downloadHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 		files = append(files, c.File.Path)
 	}
 
-	// If the format is true, just set it to "zip".
-	if query == "true" || query == "" {
-		query = "zip"
-	}
-
 	var (
 		extension string
-		temp      string
-		err       error
-		tempfile  string
+		ar        archiver.Archiver
 	)
 
-	// Create a temporary directory.
-	temp, err = ioutil.TempDir("", "")
-	if err != nil {
-		return http.StatusInternalServerError, err
-	}
-	defer os.RemoveAll(temp)
-
-	tempfile = filepath.Join(temp, "temp")
-
 	switch query {
-	case "zip":
-		extension, err = ".zip", archiver.Zip.Make(tempfile, files)
+	// If the format is true, just set it to "zip".
+	case "zip", "true", "":
+		extension, ar = ".zip", archiver.Zip
 	case "tar":
-		extension, err = ".tar", archiver.Tar.Make(tempfile, files)
+		extension, ar = ".tar", archiver.Tar
 	case "targz":
-		extension, err = ".tar.gz", archiver.TarGz.Make(tempfile, files)
+		extension, ar = ".tar.gz", archiver.TarGz
 	case "tarbz2":
-		extension, err = ".tar.bz2", archiver.TarBz2.Make(tempfile, files)
+		extension, ar = ".tar.bz2", archiver.TarBz2
 	case "tarxz":
-		extension, err = ".tar.xz", archiver.TarXZ.Make(tempfile, files)
+		extension, ar = ".tar.xz", archiver.TarXZ
 	default:
 		return http.StatusNotImplemented, nil
-	}
-
-	if err != nil {
-		return http.StatusInternalServerError, err
 	}
 
 	// Defines the file name.
 	name := c.File.Name
 	if name == "." || name == "" {
-		name = "download"
+		name = "archive"
 	}
 	name += extension
 
-	// Opens the file so it can be downloaded.
-	file, err := os.Open(temp + "/temp")
-	if err != nil {
-		return http.StatusInternalServerError, err
-	}
-	defer file.Close()
-
 	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.QueryEscape(name))
-	_, err = io.Copy(w, file)
+	err := ar.Write(w, files)
+
 	return 0, err
 }
 
