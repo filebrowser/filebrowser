@@ -38,10 +38,7 @@ func reCaptcha(secret string, response string) (bool, error) {
 	}
 
 	var data struct {
-		Success     bool        `json:"success"`
-		ChallengeTS time.Time   `json:"challenge_ts"`
-		Hostname    string      `json:"hostname"`
-		ErrorCodes  interface{} `json:"error-codes"`
+		Success bool `json:"success"`
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&data)
