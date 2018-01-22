@@ -223,13 +223,12 @@ func renderFile(c *fm.Context, w http.ResponseWriter, file string) (int, error) 
 	w.Header().Set("Content-Type", contentType+"; charset=utf-8")
 
 	data := map[string]interface{}{
-		"BaseURL":         c.RootURL(),
-		"NoAuth":          c.NoAuth,
-		"Version":         fm.Version,
-		"CSS":             template.CSS(c.CSS),
-		"ReCaptcha":       c.ReCaptchaKey != "" && c.ReCaptchaSecret != "",
-		"ReCaptchaKey":    c.ReCaptchaKey,
-		"ReCaptchaSecret": c.ReCaptchaSecret,
+		"BaseURL":      c.RootURL(),
+		"NoAuth":       c.NoAuth,
+		"Version":      fm.Version,
+		"CSS":          template.CSS(c.CSS),
+		"ReCaptcha":    c.ReCaptchaKey != "" && c.ReCaptchaSecret != "",
+		"ReCaptchaKey": c.ReCaptchaKey,
 	}
 
 	if c.StaticGen != nil {
