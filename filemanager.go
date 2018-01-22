@@ -23,7 +23,7 @@ import (
 
 const (
 	// Version is the current File Manager version.
-	Version = "v1.4.6"
+	Version = "(untracked)"
 
 	ListViewMode   = "list"
 	MosaicViewMode = "mosaic"
