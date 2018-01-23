@@ -71,7 +71,7 @@ func downloadHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 	}
 	name += extension
 
-	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.QueryEscape(name))
+	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))
 	err := ar.Write(w, files)
 
 	return 0, err
@@ -94,7 +94,7 @@ func downloadFileHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) 
 		w.Header().Set("Content-Disposition", "inline")
 	} else {
 		// As per RFC6266 section 4.3
-		w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.QueryEscape(c.File.Name))
+		w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(c.File.Name))
 	}
 
 	http.ServeContent(w, r, stat.Name(), stat.ModTime(), file)
