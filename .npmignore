@@ -3,4 +3,4 @@ static/
 src/
 .circleci/
 build/
-index.html
+/index.html
