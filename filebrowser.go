@@ -1,4 +1,4 @@
-package filemanager
+package filebrowser
 
 import (
 	"crypto/rand"
@@ -41,9 +41,9 @@ var (
 	ErrInvalidOption      = errors.New("invalid option")
 )
 
-// FileManager is a file manager instance. It should be creating using the
+// FileBrowser is a file manager instance. It should be creating using the
 // 'New' function and not directly.
-type FileManager struct {
+type FileBrowser struct {
 	// Cron job to manage schedulings.
 	Cron *cron.Cron
 

@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	fm "github.com/hacdias/filemanager"
+	fm "github.com/filebrowser/filebrowser"
 )
 
 func shareHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {

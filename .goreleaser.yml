@@ -1,6 +1,6 @@
 build:
-  main: cmd/filemanager/main.go
-  binary: filemanager
+  main: cmd/filebrowser/main.go
+  binary: filebrowser
   goos:
     - darwin
     - linux

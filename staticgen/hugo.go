@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	fm "github.com/hacdias/filemanager"
+	fm "github.com/filebrowser/filebrowser"
 	"github.com/hacdias/varutils"
 )
 

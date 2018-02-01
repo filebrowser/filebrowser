@@ -1,4 +1,4 @@
-package filemanager
+package filebrowser
 
 import (
 	"bytes"
@@ -71,7 +71,7 @@ type Listing struct {
 
 // GetInfo gets the file information and, in case of error, returns the
 // respective HTTP error code
-func GetInfo(url *url.URL, c *FileManager, u *User) (*File, error) {
+func GetInfo(url *url.URL, c *FileBrowser, u *User) (*File, error) {
 	var err error
 
 	i := &File{

@@ -10,14 +10,14 @@ import (
 	"strings"
 	"time"
 
-	fm "github.com/hacdias/filemanager"
+	fm "github.com/filebrowser/filebrowser"
 )
 
 // Handler returns a function compatible with http.HandleFunc.
-func Handler(m *fm.FileManager) http.Handler {
+func Handler(m *fm.FileBrowser) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		code, err := serve(&fm.Context{
-			FileManager: m,
+			FileBrowser: m,
 			User:        nil,
 			File:        nil,
 		}, w, r)
@@ -139,7 +139,7 @@ func apiHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, err
 
 	if c.Router == "checksum" || c.Router == "download" {
 		var err error
-		c.File, err = fm.GetInfo(r.URL, c.FileManager, c.User)
+		c.File, err = fm.GetInfo(r.URL, c.FileBrowser, c.User)
 		if err != nil {
 			return ErrorToHTTP(err, false), err
 		}

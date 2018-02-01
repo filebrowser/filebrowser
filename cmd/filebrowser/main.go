@@ -14,10 +14,10 @@ import (
 
 	"gopkg.in/natefinch/lumberjack.v2"
 
-	"github.com/hacdias/filemanager"
-	"github.com/hacdias/filemanager/bolt"
-	h "github.com/hacdias/filemanager/http"
-	"github.com/hacdias/filemanager/staticgen"
+	"github.com/filebrowser/filebrowser"
+	"github.com/filebrowser/filebrowser/bolt"
+	h "github.com/filebrowser/filebrowser/http"
+	"github.com/filebrowser/filebrowser/staticgen"
 	"github.com/hacdias/fileutils"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
