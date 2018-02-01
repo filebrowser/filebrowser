@@ -11,7 +11,6 @@ jobs:
       - run:
           name: Install Dependencies
           run: |
-            go get ./...
             go get github.com/alecthomas/gometalinter
             /go/bin/gometalinter --install
 
