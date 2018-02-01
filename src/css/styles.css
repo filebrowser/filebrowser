@@ -1,5 +1,6 @@
 @import "~normalize.css/normalize.css";
 @import "~noty/lib/noty.css";
+@import "~noty/lib/themes/mint.css";
 @import "./fonts.css";
 @import "./base.css";
 @import "./header.css";
