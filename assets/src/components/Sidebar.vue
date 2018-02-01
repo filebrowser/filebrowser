@@ -59,7 +59,7 @@
     </div>
 
     <p class="credits">
-      <span><a rel="noopener noreferrer" href="https://github.com/hacdias/filemanager">File Browser</a> v{{ version }}</span>
+      <span><a rel="noopener noreferrer" href="https://github.com/filebrowser/filebrowser">File Browser</a> v{{ version }}</span>
       <span><a @click="help">{{ $t('sidebar.help') }}</a></span>
     </p>
   </nav>
