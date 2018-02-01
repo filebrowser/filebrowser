@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.9
+
+    working_directory: /go/src/github.com/filebrowser/filebrowser
+
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          run: |
+            go get ./...
+            go get github.com/alecthomas/gometalinter
+            /go/bin/gometalinter --install
+
+      - run:
+          name: Run linting
+          command: gometalinter --disable-all -E gofmt -E misspell -E ineffassign -E goimports -E deadcode --exclude="rice-box.go" --tests ./...
