@@ -1,19 +1,63 @@
 version: 2
 jobs:
-  build:
+  linting:
     docker:
       - image: circleci/golang:1.9
-
     working_directory: /go/src/github.com/filebrowser/filebrowser
-
     steps:
       - checkout
       - run:
           name: Install Dependencies
           command: |
+            cd cmd/filebrowser && go get ./... && cd ../..
             go get github.com/alecthomas/gometalinter
-            /go/bin/gometalinter --install
-
+            gometalinter --install
       - run:
           name: Run linting
-          command: gometalinter --disable-all -E gofmt -E misspell -E ineffassign -E goimports -E deadcode --exclude="rice-box.go" --tests ./...
+          command: |
+            gometalinter --exclude="rice-box.go" \
+              -D goconst \
+              -D gocyclo \
+              -D vetshadow \
+              -D errcheck \
+              -D golint \
+              -D gas
+  build:
+    docker:
+      - image: circleci/golang:1.9
+    working_directory: /go/src/github.com/filebrowser/filebrowser
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            cd cmd/filebrowser
+            go get ./...
+      - run:
+          name: Building
+          command: go build
+  deploy:
+    docker:
+      - image: circleci/golang:1.9
+    working_directory: /go/src/github.com/filebrowser/filebrowser
+    steps:
+      - checkout
+      - run:
+          name: Deploy
+          command: curl -sL https://git.io/goreleaser | bash
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - linting
+      - build
+      - deploy:
+          requires:
+            - linting
+            - build
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
+            branches:
+              ignore: /.*/
