@@ -24,7 +24,7 @@ buttons:
   select: Auswählen
   share: Teilen
   publish: Veröffentlichen
-  selectMultiple: Mehrfach Auswahl
+  selectMultiple: Mehrfachauswahl
   schedule: Planung
   switchView: Ansicht wechseln
   toggleSidebar: Seitenleiste anzeigen
@@ -88,16 +88,15 @@ prompts:
   move: Verschieben
   moveMessage: 'Choose new house for your file(s)/folder(s):'
   newDir: Neuer Ordner
-  newDirMessage: Schreiben Sie den Namen des neuen Ordners.
+  newDirMessage: Geben Sie den Namen des neuen Ordners an.
   newFile: Neue Datei
-  newFileMessage: Schreiben Sie den Namen der neuen Datei.
+  newFileMessage: Geben Sie den Namen der neuen Datei an.
   numberDirs: Anzahl der Ordner
   numberFiles: Anzahl der Dateien
   replace: Ersetzen 
   replaceMessage: >
     Eine der Datei mit dem gleichen Namen, wie die Sie hochladen wollen, 
-    existiert bereits. 
-    Soll die vorhandene Datei ersetzt werden ?
+    existiert bereits. Soll die vorhandene Datei ersetzt werden ?
   rename: Umbenennen
   renameMessage: Fügen Sie einen Namen ein für 
   show: Anzeigen
@@ -116,9 +115,9 @@ settings:
   changePassword: Ändere das Passwort
   commands: Befehle
   commandsHelp: >
-    Hier können Befehle benannt werden, die bei den bennanten Ereignissen ausgeführt werden.
+    Hier können Befehle benannt werden, die bei Ereignissen ausgeführt werden.
     Man schreibt einen Befehl pro Zeile. Wenn ein Befehl einen Dateinamen benötigt, wie vor oder 
-    nach dem Speichern, wird die Umgebungsvariable "FILE" mit dem Pfad der Datei verfügbar.
+    nach dem Speichern, ist die Umgebungsvariable "FILE" mit dem Pfad der Datei verfügbar.
   commandsUpdated: Befehle aktualisiert!
   customStylesheet: Individuelles Stylesheet
   examples: Beispiele
