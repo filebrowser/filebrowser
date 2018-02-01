@@ -1,0 +1,184 @@
+@import "~codemirror/lib/codemirror.css";
+@import "~codemirror/theme/ttcn.css";
+#editor {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+#editor .CodeMirror {
+  box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 3px, rgba(0, 0, 0, 0.12) 0px 1px 2px;
+  margin: 2em 0;
+  border-radius: .5em;
+}
+
+#editor h2 {
+  color: rgba(0, 0, 0, 0.3);
+  font-weight: 500;
+}
+
+.CodeMirror {
+  height: auto;
+}
+
+.markdown .CodeMirror {
+  padding: .75em;
+}
+
+.cm-s-markdown .CodeMirror-gutter {
+  border-right: 1px solid #eff3f5;
+  padding-right: 5px;
+  margin-right: 15px;
+  min-width: 2.5em;
+  padding-bottom: 30px;
+}
+
+.cm-s-markdown .CodeMirror-cursor {
+  border-right: 2px solid #667880;
+}
+
+.cm-s-markdown .CodeMirror-lines {
+  margin: 0;
+}
+
+.cm-s-markdown {
+  color: #3D494E;
+}
+
+.cm-s-markdown span.cm-header {
+  color: #3D494E;
+  font-weight: bold;
+}
+
+.cm-s-markdown span.cm-variable-2 {
+  color: #3D494E;
+}
+
+.cm-s-markdown span.cm-meta {
+  color: #516066;
+}
+
+.cm-s-markdown span.cm-hr {
+  color: #516066;
+}
+
+.cm-s-markdown span.cm-comment {
+  color: #868f93;
+}
+
+.cm-s-markdown span.cm-qualifier {
+  color: #868f93;
+}
+
+.cm-s-markdown span.cm-number {
+  color: #197987;
+}
+
+.cm-s-markdown span.cm-variable {
+  color: #197987;
+}
+
+.cm-s-markdown span.cm-builtin {
+  color: #197987;
+}
+
+.cm-s-markdown span.cm-link {
+  color: #197987;
+  text-decoration: underline;
+}
+
+.cm-s-markdown span.cm-tag {
+  color: #197987;
+}
+
+.cm-s-markdown span.cm-string {
+  color: #48abb9;
+}
+
+.cm-s-markdown span.cm-string-2 {
+  color: #48abb9;
+}
+
+.cm-s-markdown span.cm-quote {
+  color: #48abb9;
+}
+
+.cm-s-markdown span.cm-atom {
+  color: #48abb9;
+}
+
+.cm-s-markdown span.cm-property {
+  color: #82a367;
+}
+
+.cm-s-markdown span.cm-operator {
+  color: #82a367;
+}
+
+.cm-s-markdown span.cm-variable-3 {
+  color: #82a367;
+}
+
+.cm-s-markdown span.cm-attribute {
+  color: #90bb74;
+}
+
+.cm-s-markdown span.cm-def {
+  color: #90bb74;
+}
+
+.cm-s-markdown span.cm-keyword {
+  color: #ec6c45;
+}
+
+.cm-s-markdown span.cm-bracket {
+  color: #ec6c45;
+}
+
+.cm-s-markdown span.cm-error {
+  color: #e45346;
+}
+
+.cm-s-markdown span.cm-em {
+  font-style: italic;
+}
+
+.cm-s-markdown span.cm-strong {
+  font-weight: bold;
+}
+
+.cm-s-markdown .cm-header-1 {
+  font-size: 200%;
+  line-height: 200%;
+}
+
+.cm-s-markdown .cm-header-2 {
+  font-size: 160%;
+  line-height: 160%;
+}
+
+.cm-s-markdown .cm-header-3 {
+  font-size: 125%;
+  line-height: 125%;
+}
+
+.cm-s-markdown .cm-header-4 {
+  font-size: 110%;
+  line-height: 110%;
+}
+
+.cm-s-markdown .cm-comment {
+  background: rgba(0, 0, 0, .05);
+  border-radius: 2px;
+}
+
+.cm-s-markdown .cm-link {
+  color: #7f8c8d;
+}
+
+.cm-s-markdown .cm-url {
+  color: #aab2b3;
+}
+
+.cm-s-markdown .cm-strikethrough {
+  text-decoration: line-through;
+}

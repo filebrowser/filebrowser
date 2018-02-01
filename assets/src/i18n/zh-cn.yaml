@@ -1,0 +1,199 @@
+permanent: 永久
+buttons:
+  cancel: 取消
+  close: 关闭
+  copy: 复制
+  copyFile: 复制文件
+  copyToClipboard: 复制到剪贴板
+  create: 创建
+  delete: 删除
+  download: 下载
+  info: 信息
+  more: 更多
+  move: 移动
+  moveFile: 移动文件
+  new: 新
+  next: 下一个
+  ok: 确定
+  replace: 替换
+  previous: 上一个
+  rename: 重命名
+  reportIssue: 报告问题
+  save: 保存
+  search: 搜索
+  select: 选择
+  share: 分享
+  publish: 发布
+  selectMultiple: 选择多个
+  schedule: 计划
+  switchView: 切换显示方式
+  toggleSidebar: 切换侧边栏
+  update: 更新
+  upload: 上传
+  permalink: 获取永久链接
+success:
+  linkCopied: 链接已复制！
+errors:
+  forbidden: 你被禁止访问。
+  internal: 内部出现麻烦了。
+  notFound: 找不到文件。
+files:
+  folders: 文件夹
+  files: 文件
+  body: Body
+  clear: 清空
+  closePreview: 关闭预览
+  home: 主页
+  lastModified: 最后修改
+  loading: 加载中...
+  lonely: 这里没有任何文件...
+  metadata: 元数据
+  multipleSelectionEnabled: 多选模式已开启
+  name: 名称
+  size: 大小
+  sortByName: 按名称排序
+  sortBySize: 按大小排序
+  sortByLastModified: 按最后修改时间排序
+help:
+  click: 选择文件或目录
+  ctrl:
+    click: 选择多个文件或目录
+    f: 打开搜索框
+    s: 保存文件或下载当前文件夹
+  del: 删除所选的文件/文件夹
+  doubleClick: 打开文件/文件夹
+  esc: 清除已选项或关闭提示信息
+  f1: 显示该帮助信息
+  f2: 重命名文件/文件夹
+  help: 帮助
+login:
+  password: 密码
+  submit: 登录
+  username: 用户名
+  wrongCredentials: 用户名或密码错误
+prompts:
+  copy: 复制
+  copyMessage: 请选择欲复制至的目录：
+  currentlyNavigating: 当前目录：
+  deleteMessageMultiple: 你确定要删除这 {count} 个文件吗?
+  deleteMessageSingle: 你确定要删除这个文件/文件夹吗?
+  deleteTitle: 删除文件
+  displayName: 名称：
+  download: 下载文件
+  downloadMessage: 请选择要下载的压缩格式。
+  error: 出了一点问题...
+  fileInfo: 文件信息
+  filesSelected: 已选择 {count} 个文件。
+  lastModified: 最后修改
+  move: 移动
+  moveMessage: 请选择欲移动至的目录：
+  newDir: 新建目录
+  newDirMessage: 请输入新目录的名称。
+  newFile: 新建文件
+  newFileMessage: 请输入新文件的名称。
+  numberDirs: 目录数
+  numberFiles: 文件数
+  replace: 替换
+  replaceMessage: "\
+    您尝试上传的文件中有一个与现有文件的名称存在冲突。\
+    是否替换现有的同名文件？"
+  rename: 重命名
+  renameMessage: 请输入新名称，旧名称为：
+  show: 揭示
+  size: 大小
+  schedule: 计划
+  scheduleMessage: 请选择发布这篇帖子的日期。
+  newArchetype: 创建一个基于原型的新帖子。您的文件将会创建在内容文件夹中。
+settings:
+  admin: 管理员
+  administrator: 管理员
+  allowCommands: 执行命令(Linux 代码)
+  allowEdit: 编辑、重命名或删除文件/目录
+  allowNew: 创建新文件和目录
+  allowPublish: 发布新的帖子与页面
+  avoidChanges: '(留空以避免更改)'
+  changePassword: 更改密码
+  commands: 命令(linux 代码)
+  commandsHelp: "\
+    在这里，您可以设置在指定事件下执行的命令，一行一条。\
+    若事件与文件相关，如“在保存文件前”，\
+    则文件的路径会被赋值给环境变量 \"FILE\"。"
+  commandsUpdated: 命令已更新！
+  customStylesheet: 自定义样式表
+  examples: 例子
+  globalSettings: 全局设置
+  language: 语言
+  lockPassword: 禁止用户修改密码
+  newPassword: 您的新密码
+  newPasswordConfirm: 重输一遍新密码
+  newUser: 新建用户
+  password: 密码
+  passwordUpdated: 密码已更新！
+  permissions: 权限
+  permissionsHelp: "\
+    您可以将该用户设置为管理员，也可以单独选择各项权限。\
+    如果选择了“管理员”，则其他的选项会被自动勾上，\
+    同时该用户可以管理其他用户。"
+  profileSettings: 个人设置
+  ruleExample1: "\
+    阻止用户访问所有文件夹下任何以 . 开头的文件\
+    (隐藏文件, 例如: .git, .gitignore)。"
+  ruleExample2: 阻止用户访问其目录范围的根目录下名为 Caddyfile 的文件。
+  rules: 规则
+  rulesHelp1: "\
+    您可以为该用户制定一组黑名单或白名单式的规则，\
+    被屏蔽的文件将不会显示在列表中，用户也无权限访问,\
+    支持相对于目录范围的路径。"
+  rulesHelp2: "\
+    每行一条规则，且必须以关键词 {0} 或 {1} 开头。\
+    如要使用正则表达式，请在加上 {2} 之后再附上表达式或路径。"
+  scope: 目录范围
+  settingsUpdated: 设置已更新！
+  user: 用户
+  userCommands: 用户命令(Linux 代码)
+  userCommandsHelp: "\
+    指定该用户可以执行的命令(Linux 代码)，用空格分隔。\
+    例如："
+  userCreated: 用户已创建！
+  userDeleted: 用户已删除！
+  userManagement: 用户管理
+  username: 用户名
+  users: 用户
+  userUpdated: 用户已更新！
+sidebar:
+  help: 帮助
+  logout: 登出
+  myFiles: 我的文件
+  newFile: 新建文件
+  newFolder: 新建文件夹
+  settings: 设置
+  siteSettings: 网站设置
+  hugoNew: Hugo New
+  preview: 预览
+search:
+  images: 图像
+  music: 音乐
+  pdf: PDF
+  pressToExecute: 按回车键执行。
+  pressToSearch: 按回车键搜索。
+  search: 搜索...
+  searchOrCommand: 搜索或者执行命令(Linux 代码)...
+  searchOrSupportedCommand: 搜索或使用您可以使用的命令(一次只能执行一个命令)：
+  type: 键入并按回车键进行搜索。
+  types: 类型
+  video: 视频
+  writeToSearch: 请输入要搜索的内容
+languages:
+  en: English
+  fr: Français
+  pt: Português
+  ja: 日本語
+  zhCN: 中文 (简体)
+  zhTW: 中文 (繁體)
+  es: Español
+time:
+  unit: 时间单位
+  seconds: 秒
+  minutes: 分钟
+  hours: 小时
+  days: 天

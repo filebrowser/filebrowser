@@ -1,0 +1,420 @@
+.dashboard {
+  max-width: 600px;
+  margin: 1em 0;
+}
+
+a {
+  color: inherit
+}
+
+select,
+textarea,
+input[type="text"],
+input[type="password"] {
+  padding: 0.5em 0;
+  line-height: 1;
+  display: block;
+  border: 0;
+  border-bottom: 1px solid #dddddd;
+  transition: .2s ease border;
+  width: 100%;
+  background: transparent;
+}
+
+textarea {
+  line-height: 1.15;
+  padding: .5em;
+  border: 1px solid #ddd;
+  font-family: monospace;
+  min-height: 10em;
+  resize: none;
+  border-radius: 2px;
+}
+
+.dashboard #locale,
+.dashboard #username,
+.dashboard #password,
+.dashboard #scope {
+  max-width: 18em;
+}
+
+.dashboard #locale {
+  margin-top: .5em;
+}
+
+textarea:focus,
+textarea:hover,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="text"]:hover,
+input[type="password"]:hover {
+  border-color: #2979ff;
+}
+
+input.red {
+  border-color: red;
+}
+
+input.green {
+  border-color: green;
+}
+
+.dashboard p label {
+  margin-bottom: .2em;
+  display: block;
+  font-size: .8em;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.57);
+}
+
+li code,
+p code {
+  background: rgba(0, 0, 0, 0.05);
+  padding: .1em;
+  border-radius: .2em;
+}
+
+.small {
+  font-size: .8em;
+  line-height: 1.5;
+}
+
+.dashboard #nav {
+  list-style: none;
+  display: flex;
+  color: rgb(84, 110, 122);
+  font-weight: 500;
+  margin: 0 0 1em;
+  font-size: .8em;
+  text-align: center;
+  justify-content: space-between;
+  padding: 0;
+}
+
+.dashboard #nav li {
+  width: 100%;
+  padding: 0 0 1em;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.dashboard #nav li.active {
+  border-color: #2196f3
+}
+
+.dashboard #nav i {
+  font-size: 1em;
+  vertical-align: middle;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table tr {
+  border-bottom: 1px solid #ccc;
+}
+
+table tr:last-child {
+  border: 0;
+}
+
+table th {
+  font-weight: 500;
+  color: #757575;
+  text-align: left;
+}
+
+table th,
+table td {
+  padding: .5em 0;
+}
+
+table td.small {
+  width: 1em;
+}
+
+table tr>*:first-child {
+  padding-left: 1em;
+}
+
+table tr>*:last-child {
+  padding-right: 1em;
+}
+
+.card {
+  position: relative;
+  margin: .5rem 0 1rem 0;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+}
+
+.card.floating {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 99999;
+  max-width: 25em;
+  width: 90%;
+  max-height: 95%;
+  z-index: 99999;
+  animation: .1s show forwards;
+}
+
+.card>*>*:first-child {
+  margin-top: 0;
+}
+
+.card>*>*:last-child {
+  margin-bottom: 0;
+}
+
+.card .card-title {
+  padding: 1.5em 1em 1em;
+  display: flex;
+}
+
+.card .card-title>*:first-child {
+  margin-right: auto;
+}
+
+.card>div {
+  padding: 1em 1em;
+}
+
+.card>div:first-child {
+  padding-top: 1.5em;
+}
+
+.card>div:last-child {
+  padding-bottom: 1.5em;
+}
+
+.card .card-title * {
+  margin: 0;
+}
+
+.card .card-action {
+  text-align: right;
+}
+
+.card .card-content.full {
+  padding-bottom: 0;
+}
+
+.card h2 {
+  font-weight: 500;
+}
+
+.card h3 {
+  color: rgba(0, 0, 0, 0.53);
+  font-size: 1em;
+  font-weight: 500;
+  margin: 2em 0 1em;
+}
+
+.card-content table {
+  margin: 0 -1em;
+  width: calc(100% + 2em);
+}
+
+.card code {
+  word-wrap: break-word;
+}
+
+.card#download {
+  max-width: 15em;
+}
+
+.card#share ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.card#share ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card#share ul li a {
+  color: #2196F3;
+  cursor: pointer;
+  margin-right: auto;
+}
+
+.card#share ul li .action i {
+  font-size: 1em;
+}
+
+.card#share ul li input,
+.card#share ul li select {
+  padding: .2em;
+  margin-right: .5em;
+  border: 1px solid #dadada;
+}
+
+.card#share .action.copy-clipboard::after {
+  content: 'Copied!';
+  position: absolute;
+  left: -25%;
+  width: 150%;
+  font-size: .6em;
+  text-align: center;
+  background: #44a6f5;
+  color: #fff;
+  padding: .5em .2em;
+  border-radius: .4em;
+  top: -2em;
+  transition: .1s ease opacity;
+  opacity: 0;
+}
+
+.card#share .action.copy-clipboard.active::after {
+  opacity: 1;
+}
+
+.overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 9999;
+  animation: .1s show forwards;
+}
+
+
+/* * * * * * * * * * * * * * * *
+ *        PROMPT - MOVE        *
+ * * * * * * * * * * * * * * * */
+
+.file-list {
+  max-height: 50vh;
+  overflow: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.file-list li {
+  width: 100%;
+  user-select: none;
+  border-radius: .2em;
+  padding: .3em;
+}
+
+.file-list li[aria-selected=true] {
+  background: #2196f3 !important;
+  color: #fff !important;
+  transition: .1s ease all;
+}
+
+.file-list li:hover {
+  background-color: #e9eaeb;
+  cursor: pointer;
+}
+
+.file-list li:before {
+  content: "folder";
+  color: #6f6f6f;
+  vertical-align: middle;
+  line-height: 1.4;
+  font-family: 'Material Icons';
+  font-size: 1.75em;
+  margin-right: .25em;
+}
+
+.file-list li[aria-selected=true]:before {
+  color: white;
+}
+
+.help {
+  max-width: 24em;
+}
+
+.help ul {
+  padding: 0;
+  margin: 1em 0;
+  list-style: none;
+}
+
+@keyframes show {
+  0% {
+    display: none;
+    opacity: 0;
+  }
+  1% {
+    display: block;
+    opacity: 0;
+  }
+  100% {
+    display: block;
+    opacity: 1;
+  }
+}
+
+.collapsible {
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.collapsible:last-of-type {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.collapsible > input {
+  display: none;
+}
+
+.collapsible > label {
+  padding: 1em 0;
+  cursor: pointer;
+  border-right: 0;
+  border-left: 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.collapsible > label * {
+  margin: 0;
+  color: rgba(0,0,0,0.57);
+}
+
+.collapsible > label i {
+  transition: .2s ease transform;
+  user-select: none;
+}
+
+.collapsible .collapse {
+  max-height: 0;
+  overflow: hidden;
+  transition: .2s ease all;
+}
+
+.collapsible > input:checked ~ .collapse {
+  padding-top: 1em;
+  padding-bottom: 1em;
+  max-height: 20em;
+}
+
+.collapsible > input:checked ~ label i {
+  transform: rotate(180deg)
+}
+
+.card .collapsible {
+  width: calc(100% + 2em);
+  margin: 0 -1em;
+}
+
+.card .collapsible > label {
+  padding: 1em;
+}
+
+.card .collapsible .collapse {
+  padding: 0 1em;
+}
