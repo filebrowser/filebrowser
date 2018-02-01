@@ -8,7 +8,7 @@ fi
 
 # Clean the dist folder and build the assets
 rm -rf node_modules
-npm
+npm install
 
 # Embed the assets using rice
 rice embed-go
