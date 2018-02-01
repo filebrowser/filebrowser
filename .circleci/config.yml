@@ -10,7 +10,7 @@ jobs:
       - checkout
       - run:
           name: Install Dependencies
-          run: |
+          command: |
             go get github.com/alecthomas/gometalinter
             /go/bin/gometalinter --install
 
