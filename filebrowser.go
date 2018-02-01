@@ -118,7 +118,7 @@ type FSBuilder func(scope string) FileSystem
 func (m *FileBrowser) Setup() error {
 	// Creates a new File Manager instance with the Users
 	// map and Assets box.
-	m.Assets = rice.MustFindBox("./assets/dist")
+	m.Assets = rice.MustFindBox("./node_modules/filebrowser-frontend/dist")
 	m.Cron = cron.New()
 
 	// Tries to get the encryption key from the database.
