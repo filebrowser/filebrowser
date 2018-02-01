@@ -2,7 +2,7 @@ package bolt
 
 import (
 	"github.com/asdine/storm"
-	fm "github.com/hacdias/filemanager"
+	fm "github.com/filebrowser/filebrowser"
 )
 
 // ConfigStore is a configuration store.

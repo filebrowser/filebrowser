@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	fm "github.com/hacdias/filemanager"
+	fm "github.com/filebrowser/filebrowser"
 )
 
 var upgrader = websocket.Upgrader{

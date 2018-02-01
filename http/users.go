@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	fm "github.com/hacdias/filemanager"
+	fm "github.com/filebrowser/filebrowser"
 )
 
 type modifyRequest struct {

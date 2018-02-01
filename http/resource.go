@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	fm "github.com/hacdias/filemanager"
+	fm "github.com/filebrowser/filebrowser"
 	"github.com/hacdias/fileutils"
 )
 
@@ -64,7 +64,7 @@ func resourceHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 
 func resourceGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Gets the information of the directory/file.
-	f, err := fm.GetInfo(r.URL, c.FileManager, c.User)
+	f, err := fm.GetInfo(r.URL, c.FileBrowser, c.User)
 	if err != nil {
 		return ErrorToHTTP(err, false), err
 	}
