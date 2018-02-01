@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"reflect"
 
-	fm "github.com/hacdias/filemanager"
+	fm "github.com/filebrowser/filebrowser"
 	"github.com/mitchellh/mapstructure"
 )
 

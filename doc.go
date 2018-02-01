@@ -1,20 +1,20 @@
 /*
-Package filemanager provides a web interface to access your files
+Package filebrowser provides a web interface to access your files
 wherever you are. To use this package as a middleware for your app,
 you'll need to import both File Manager and File Manager HTTP packages.
 
 	import (
-		fm "github.com/hacdias/filemanager"
-		h "github.com/hacdias/filemanager/http"
+		fm "github.com/filebrowser/filebrowser"
+		h "github.com/filebrowser/filebrowser/http"
 	)
 
-Then, you should create a new FileManager object with your options. In this
+Then, you should create a new FileBrowser object with your options. In this
 case, I'm using BoltDB (via Storm package) as a Store. So, you'll also need
-to import "github.com/hacdias/filemanager/bolt".
+to import "github.com/filebrowser/filebrowser/bolt".
 
 	db, _ := storm.Open("bolt.db")
 
-	m := &fm.FileManager{
+	m := &fm.FileBrowser{
 		NoAuth: false,
 		DefaultUser: &fm.User{
 			AllowCommands: true,
@@ -70,4 +70,4 @@ One simple implementation for this, at port 80, in the root of the domain, would
 
 		http.ListenAndServe(":80", h.Handler(m))
 */
-package filemanager
+package filebrowser
