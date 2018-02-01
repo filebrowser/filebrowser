@@ -118,7 +118,7 @@ type FSBuilder func(scope string) FileSystem
 func (m *FileBrowser) Setup() error {
 	// Creates a new File Manager instance with the Users
 	// map and Assets box.
-	m.Assets = rice.MustFindBox("./assets/dist")
+	m.Assets = rice.MustFindBox("./node_modules/filebrowser-frontend/dist")
 	m.Cron = cron.New()
 
 	// Tries to get the encryption key from the database.
@@ -207,14 +207,6 @@ func (m *FileBrowser) Setup() error {
 		// Saves the user to the database.
 		if err := m.Store.Users.Save(&u); err != nil {
 			return err
-		}
-	}
-
-	// TODO: remove this after 1.5
-	for _, user := range users {
-		if user.ViewMode != ListViewMode && user.ViewMode != MosaicViewMode {
-			user.ViewMode = ListViewMode
-			m.Store.Users.Update(user, "ViewMode")
 		}
 	}
 
@@ -320,7 +312,7 @@ func (m FileBrowser) Runner(event string, path string, destination string, user 
 
 		cmd := exec.Command(command, args...)
 		cmd.Env = append(os.Environ(), fmt.Sprintf("FILE=%s", path))
-		cmd.Env = append(cmd.Env, fmt.Sprintf("ROOT=%s", string(user.Scope)))
+		cmd.Env = append(cmd.Env, fmt.Sprintf("ROOT=%s", user.Scope))
 		cmd.Env = append(cmd.Env, fmt.Sprintf("TRIGGER=%s", event))
 		cmd.Env = append(cmd.Env, fmt.Sprintf("USERNAME=%s", user.Username))
 
@@ -372,42 +364,42 @@ type User struct {
 	// ID is the required primary key with auto increment0
 	ID int `storm:"id,increment"`
 
-	// Username is the user username used to login.
-	Username string `json:"username" storm:"index,unique"`
+	// Tells if this user is an admin.
+	Admin bool `json:"admin"`
+
+	// These indicate if the user can perform certain actions.
+	AllowCommands bool `json:"allowCommands"` // Execute commands
+	AllowEdit     bool `json:"allowEdit"`     // Edit/rename files
+	AllowNew      bool `json:"allowNew"`      // Create files and folders
+	AllowPublish  bool `json:"allowPublish"`  // Publish content (to use with static gen)
+
+	// Prevents the user to change its password.
+	LockPassword bool `json:"lockPassword"`
+
+	// Commands is the list of commands the user can execute.
+	Commands []string `json:"commands"`
+
+	// Custom styles for this user.
+	CSS string `json:"css"`
+
+	// FileSystem is the virtual file system the user has access.
+	FileSystem FileSystem `json:"-"`
+
+	// Locale is the language of the user.
+	Locale string `json:"locale"`
 
 	// The hashed password. This never reaches the front-end because it's temporarily
 	// emptied during JSON marshall.
 	Password string `json:"password"`
 
-	// Tells if this user is an admin.
-	Admin bool `json:"admin"`
+	// Rules is an array of access and deny rules.
+	Rules []*Rule `json:"rules"`
 
 	// Scope is the path the user has access to.
 	Scope string `json:"filesystem"`
 
-	// FileSystem is the virtual file system the user has access.
-	FileSystem FileSystem `json:"-"`
-
-	// Rules is an array of access and deny rules.
-	Rules []*Rule `json:"rules"`
-
-	// Custom styles for this user.
-	CSS string `json:"css"`
-
-	// Locale is the language of the user.
-	Locale string `json:"locale"`
-
-	// Prevents the user to change its password.
-	LockPassword bool `json:"lockPassword"`
-
-	// These indicate if the user can perform certain actions.
-	AllowNew      bool `json:"allowNew"`      // Create files and folders
-	AllowEdit     bool `json:"allowEdit"`     // Edit/rename files
-	AllowCommands bool `json:"allowCommands"` // Execute commands
-	AllowPublish  bool `json:"allowPublish"`  // Publish content (to use with static gen)
-
-	// Commands is the list of commands the user can execute.
-	Commands []string `json:"commands"`
+	// Username is the user username used to login.
+	Username string `json:"username" storm:"index,unique"`
 
 	// User view mode for files and folders.
 	ViewMode string `json:"viewMode"`

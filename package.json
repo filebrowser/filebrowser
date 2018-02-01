@@ -1,86 +1,8 @@
 {
   "name": "filebrowser",
-  "version": "1.0.0",
-  "author": "Henrique Dias <hacdias@gmail.com>",
+  "author": "File Browser contributors",
   "private": true,
-  "scripts": {
-    "dev": "node ./assets/build/dev.js",
-    "build": "node ./assets/build/build.js",
-    "lint": "eslint --ext .js,.vue assets/src"
-  },
   "dependencies": {
-    "clipboard": "^1.7.1",
-    "codemirror": "^5.31.0",
-    "filesize": "^3.5.11",
-    "js-base64": "^2.4.0",
-    "moment": "^2.19.2",
-    "normalize.css": "^7.0.0",
-    "noty": "^3.1.4",
-    "vue": "^2.5.8",
-    "vue-i18n": "^7.3.4",
-    "vue-router": "^3.0.1",
-    "vuex": "^3.0.1"
-  },
-  "devDependencies": {
-    "autoprefixer": "^7.1.6",
-    "babel-core": "^6.26.0",
-    "babel-eslint": "^8.0.2",
-    "babel-loader": "^7.1.2",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-stage-2": "^6.24.1",
-    "babel-register": "^6.26.0",
-    "chalk": "^2.3.0",
-    "connect-history-api-fallback": "^1.5.0",
-    "copy-webpack-plugin": "^4.2.1",
-    "css-loader": "^0.28.7",
-    "eslint": "^4.15.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-friendly-formatter": "^3.0.0",
-    "eslint-loader": "^1.9.0",
-    "eslint-plugin-html": "^4.0.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-node": "^5.2.1",
-    "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "eventsource-polyfill": "^0.9.6",
-    "express": "^4.16.2",
-    "extract-text-webpack-plugin": "^3.0.2",
-    "file-loader": "^1.1.5",
-    "friendly-errors-webpack-plugin": "^1.6.1",
-    "html-webpack-plugin": "^2.30.1",
-    "http-proxy-middleware": "^0.17.4",
-    "opn": "^5.1.0",
-    "optimize-css-assets-webpack-plugin": "^3.2.0",
-    "ora": "^1.3.0",
-    "rimraf": "^2.6.2",
-    "semver": "^5.4.1",
-    "shelljs": "^0.7.8",
-    "sw-precache-webpack-plugin": "^0.11.4",
-    "uglify-js": "^3.1.10",
-    "url-loader": "^0.6.2",
-    "vue-loader": "^13.5.0",
-    "vue-style-loader": "^3.0.3",
-    "vue-template-compiler": "^2.5.8",
-    "webpack": "^3.8.1",
-    "webpack-bundle-analyzer": "^2.9.1",
-    "webpack-dev-middleware": "^2.0.4",
-    "webpack-hot-middleware": "^2.20.0",
-    "webpack-merge": "^4.1.1",
-    "yml-loader": "^2.1.0"
-  },
-  "engines": {
-    "node": ">= 4.0.0",
-    "npm": ">= 3.0.0"
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ]
+    "filebrowser-frontend": "^1.0.2"
+  }
 }
