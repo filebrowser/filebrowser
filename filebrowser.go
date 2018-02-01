@@ -107,7 +107,7 @@ var commandEvents = []string{
 }
 
 // Command is a command function.
-type Command func(r *http.Request, m *FileManager, u *User) error
+type Command func(r *http.Request, m *FileBrowser, u *User) error
 
 // FSBuilder is the File System Builder.
 type FSBuilder func(scope string) FileSystem
@@ -115,7 +115,7 @@ type FSBuilder func(scope string) FileSystem
 // Setup loads the configuration from the database and configures
 // the Assets and the Cron job. It must always be run after
 // creating a File Manager object.
-func (m *FileManager) Setup() error {
+func (m *FileBrowser) Setup() error {
 	// Creates a new File Manager instance with the Users
 	// map and Assets box.
 	m.Assets = rice.MustFindBox("./assets/dist")
@@ -229,13 +229,13 @@ func (m *FileManager) Setup() error {
 
 // RootURL returns the actual URL where
 // File Manager interface can be accessed.
-func (m FileManager) RootURL() string {
+func (m FileBrowser) RootURL() string {
 	return m.PrefixURL + m.BaseURL
 }
 
 // SetPrefixURL updates the prefixURL of a File
 // Manager object.
-func (m *FileManager) SetPrefixURL(url string) {
+func (m *FileBrowser) SetPrefixURL(url string) {
 	url = strings.TrimPrefix(url, "/")
 	url = strings.TrimSuffix(url, "/")
 	url = "/" + url
@@ -244,7 +244,7 @@ func (m *FileManager) SetPrefixURL(url string) {
 
 // SetBaseURL updates the baseURL of a File Manager
 // object.
-func (m *FileManager) SetBaseURL(url string) {
+func (m *FileBrowser) SetBaseURL(url string) {
 	url = strings.TrimPrefix(url, "/")
 	url = strings.TrimSuffix(url, "/")
 	url = "/" + url
@@ -252,7 +252,7 @@ func (m *FileManager) SetBaseURL(url string) {
 }
 
 // Attach attaches a static generator to the current File Manager.
-func (m *FileManager) Attach(s StaticGen) error {
+func (m *FileBrowser) Attach(s StaticGen) error {
 	if reflect.TypeOf(s).Kind() != reflect.Ptr {
 		return errors.New("data should be a pointer to interface, not interface")
 	}
@@ -274,7 +274,7 @@ func (m *FileManager) Attach(s StaticGen) error {
 
 // ShareCleaner removes sharing links that are no longer active.
 // This function is set to run periodically.
-func (m FileManager) ShareCleaner() {
+func (m FileBrowser) ShareCleaner() {
 	// Get all links.
 	links, err := m.Store.Share.Gets()
 	if err != nil {
@@ -294,7 +294,7 @@ func (m FileManager) ShareCleaner() {
 }
 
 // Runner runs the commands for a certain event type.
-func (m FileManager) Runner(event string, path string, destination string, user *User) error {
+func (m FileBrowser) Runner(event string, path string, destination string, user *User) error {
 	commands := []string{}
 
 	// Get the commands from the File Manager instance itself.
@@ -530,7 +530,7 @@ type FileSystem interface {
 
 // Context contains the needed information to make handlers work.
 type Context struct {
-	*FileManager
+	*FileBrowser
 	User *User
 	File *File
 	// On API handlers, Router is the APi handler we want.

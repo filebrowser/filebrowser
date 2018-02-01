@@ -50,7 +50,7 @@ func init() {
 	flag.StringVarP(&config, "config", "c", "", "Configuration file")
 	flag.IntVarP(&port, "port", "p", 0, "HTTP Port (default is random)")
 	flag.StringVarP(&addr, "address", "a", "", "Address to listen to (default is all of them)")
-	flag.StringVarP(&database, "database", "d", "./filemanager.db", "Database file")
+	flag.StringVarP(&database, "database", "d", "./filebrowser.db", "Database file")
 	flag.StringVarP(&logfile, "log", "l", "stdout", "Errors logger; can use 'stdout', 'stderr' or file")
 	flag.StringVarP(&scope, "scope", "s", ".", "Default scope option for new users")
 	flag.StringVarP(&baseurl, "baseurl", "b", "", "Base URL")
@@ -72,7 +72,7 @@ func init() {
 func setupViper() {
 	viper.SetDefault("Address", "")
 	viper.SetDefault("Port", "0")
-	viper.SetDefault("Database", "./filemanager.db")
+	viper.SetDefault("Database", "./filebrowser.db")
 	viper.SetDefault("Scope", ".")
 	viper.SetDefault("Logger", "stdout")
 	viper.SetDefault("Commands", []string{"git", "svn", "hg"})
@@ -85,7 +85,7 @@ func setupViper() {
 	viper.SetDefault("NoAuth", false)
 	viper.SetDefault("BaseURL", "")
 	viper.SetDefault("PrefixURL", "")
-	viper.SetDefault("ViewMode", filemanager.MosaicViewMode)
+	viper.SetDefault("ViewMode", filebrowser.MosaicViewMode)
 	viper.SetDefault("ReCaptchaKey", "")
 	viper.SetDefault("ReCaptchaSecret", "")
 
@@ -108,12 +108,12 @@ func setupViper() {
 	viper.BindPFlag("ReCaptchaKey", flag.Lookup("recaptcha-key"))
 	viper.BindPFlag("ReCaptchaSecret", flag.Lookup("recaptcha-secret"))
 
-	viper.SetConfigName("filemanager")
+	viper.SetConfigName("filebrowser")
 	viper.AddConfigPath(".")
 }
 
 func printVersion() {
-	fmt.Println("filemanager version", filemanager.Version)
+	fmt.Println("filebrowser version", filebrowser.Version)
 	os.Exit(0)
 }
 
@@ -186,31 +186,31 @@ func handler() http.Handler {
 		log.Fatal(err)
 	}
 
-	fm := &filemanager.FileManager{
+	fm := &filebrowser.FileBrowser{
 		NoAuth:          viper.GetBool("NoAuth"),
 		BaseURL:         viper.GetString("BaseURL"),
 		PrefixURL:       viper.GetString("PrefixURL"),
 		ReCaptchaKey:    viper.GetString("ReCaptchaKey"),
 		ReCaptchaSecret: viper.GetString("ReCaptchaSecret"),
-		DefaultUser: &filemanager.User{
+		DefaultUser: &filebrowser.User{
 			AllowCommands: viper.GetBool("AllowCommands"),
 			AllowEdit:     viper.GetBool("AllowEdit"),
 			AllowNew:      viper.GetBool("AllowNew"),
 			AllowPublish:  viper.GetBool("AllowPublish"),
 			Commands:      viper.GetStringSlice("Commands"),
-			Rules:         []*filemanager.Rule{},
+			Rules:         []*filebrowser.Rule{},
 			Locale:        viper.GetString("Locale"),
 			CSS:           "",
 			Scope:         viper.GetString("Scope"),
 			FileSystem:    fileutils.Dir(viper.GetString("Scope")),
 			ViewMode:      viper.GetString("ViewMode"),
 		},
-		Store: &filemanager.Store{
+		Store: &filebrowser.Store{
 			Config: bolt.ConfigStore{DB: db},
 			Users:  bolt.UsersStore{DB: db},
 			Share:  bolt.ShareStore{DB: db},
 		},
-		NewFS: func(scope string) filemanager.FileSystem {
+		NewFS: func(scope string) filebrowser.FileSystem {
 			return fileutils.Dir(scope)
 		},
 	}

@@ -2,12 +2,12 @@
 
 # filebrowser
 
-[![Build](https://img.shields.io/travis/hacdias/filemanager.svg?style=flat-square)](https://travis-ci.org/hacdias/filemanager)
-[![Go Report Card](https://goreportcard.com/badge/github.com/filebrowser/filebrowser?style=flat-square)](https://goreportcard.com/report/hacdias/filemanager)
+[![Build](https://img.shields.io/travis/filebrowser/filebrowser.svg?style=flat-square)](https://travis-ci.org/filebrowser/filebrowser)
+[![Go Report Card](https://goreportcard.com/badge/github.com/filebrowser/filebrowser?style=flat-square)](https://goreportcard.com/report/github.com/filebrowser/filebrowser)
 [![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/filebrowser/filebrowser)
-[![Version](https://img.shields.io/github/release/hacdias/filemanager.svg?style=flat-square)](https://github.com/filebrowser/filebrowser/releases/latest)
+[![Version](https://img.shields.io/github/release/filebrowser/filebrowser.svg?style=flat-square)](https://github.com/filebrowser/filebrowser/releases/latest)
 
-filemanager provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its own directory. It can be used as a standalone app or as a middleware.
+filebrowser provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its own directory. It can be used as a standalone app or as a middleware.
 
 # Table of contents
 
@@ -20,7 +20,7 @@ filemanager provides a file managing interface within a specified directory and 
 
 # Getting started
 
-You can find the Getting Started guide on the [documentation](https://henriquedias.com/filemanager/quick-start/).
+You can find the Getting Started guide on the [documentation](https://filebrowser.github.io/quick-start/).
 
 # Features
 
@@ -50,7 +50,7 @@ We support multiple users and each user can have its own scope and custom styles
 
 ## Search
 
-FileManager allows you to search through your files and it has some options. By default, your search will be something like this:
+File Browser allows you to search through your files and it has some options. By default, your search will be something like this:
 
 ```
 this are keywords
