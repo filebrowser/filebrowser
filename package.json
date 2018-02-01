@@ -1,14 +1,14 @@
 {
-  "name": "filebrowser-vue",
+  "name": "filebrowser-frontend",
   "version": "1.0.0",
   "author": "File Browser contributors",
   "contributors": [
     "Henrique Dias <hacdias@gmail.com>"
   ],
   "scripts": {
-    "dev": "node ./assets/build/dev.js",
-    "build": "node ./assets/build/build.js",
-    "lint": "eslint --ext .js,.vue assets/src"
+    "dev": "node ./build/dev.js",
+    "build": "node ./build/build.js",
+    "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
     "clipboard": "^1.7.1",
@@ -70,10 +70,6 @@
     "webpack-hot-middleware": "^2.20.0",
     "webpack-merge": "^4.1.1",
     "yml-loader": "^2.1.0"
-  },
-  "engines": {
-    "node": ">= 4.0.0",
-    "npm": ">= 3.0.0"
   },
   "postcss": {
     "plugins": {

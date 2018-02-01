@@ -1,5 +1,3 @@
-require('./check-versions')()
-
 process.env.NODE_ENV = 'development'
 
 var rm = require('rimraf')
