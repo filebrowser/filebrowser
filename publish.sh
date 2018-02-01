@@ -6,14 +6,10 @@ echo "Building assets"
 
 echo "Updating version number to $1..."
 sed -i "s|(untracked)|$1|g" filebrowser.go
-
-echo "Commiting..."
 git add -A
 git commit -m "chore: version $1"
-git push
-
-echo "Creating the tag..."
 git tag "v$1"
+git push
 git push --tags
 
 echo "Commiting untracked version notice..."
