@@ -18,7 +18,7 @@ type modifyRequest struct {
 }
 
 type modifyUserRequest struct {
-	*modifyRequest
+	modifyRequest
 	Data *fm.User `json:"data"`
 }
 
