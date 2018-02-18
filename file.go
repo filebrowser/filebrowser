@@ -134,13 +134,12 @@ func (i *File) GetListing(u *User, r *http.Request) error {
 		}
 
 		if strings.HasPrefix(f.Mode().String(), "L") {
-			// It's a symbolic link
-			// The FileInfo from Readdir treats symbolic link as a file only.
+			// It's a symbolic link. We try to follow it. If it doesn't work,
+			// we stay with the link information instead if the target's.
 			info, err := os.Stat(f.Name())
-			if err != nil {
-				return err
+			if err == nil {
+				f = info
 			}
-			f = info
 		}
 
 		if f.IsDir() {
