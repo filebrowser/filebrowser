@@ -2,7 +2,7 @@ version: 2
 jobs:
   linting:
     docker:
-      - image: circleci/golang:1.9
+      - image: circleci/golang:1.10
     working_directory: /go/src/github.com/filebrowser/filebrowser
     steps:
       - checkout
@@ -16,6 +16,7 @@ jobs:
           name: Run linting
           command: |
             gometalinter --exclude="rice-box.go" \
+              --deadline=300s \
               -D goconst \
               -D gocyclo \
               -D vetshadow \
@@ -24,7 +25,7 @@ jobs:
               -D gas
   build:
     docker:
-      - image: circleci/golang:1.9
+      - image: circleci/golang:1.10
     working_directory: /go/src/github.com/filebrowser/filebrowser
     steps:
       - checkout
@@ -38,7 +39,7 @@ jobs:
           command: go build
   deploy:
     docker:
-      - image: circleci/golang:1.9
+      - image: circleci/golang:1.10
     working_directory: /go/src/github.com/filebrowser/filebrowser
     steps:
       - checkout
