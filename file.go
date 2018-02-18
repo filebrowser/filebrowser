@@ -247,37 +247,17 @@ func (i *File) GetFileType(checkContent bool) error {
 		return nil
 	}
 
-	if strings.HasPrefix(mimetype, "text") {
-		i.Type = "text"
-		goto End
-	}
+	i.Type = "text"
 
-	if strings.HasPrefix(mimetype, "application/javascript") {
-		i.Type = "text"
-		goto End
-	}
-
-	// If the type isn't text (and is blob for example), it will check some
-	// common types that are mistaken not to be text.
-	if isInTextExtensions(i.Name) {
-		i.Type = "text"
-	} else {
-		i.Type = "blob"
-	}
-
-End:
 	// If the file type is text, save its content.
-	if i.Type == "text" {
-		if len(content) == 0 {
-			content, err = ioutil.ReadFile(i.Path)
-			if err != nil {
-				return err
-			}
+	if len(content) == 0 {
+		content, err = ioutil.ReadFile(i.Path)
+		if err != nil {
+			return err
 		}
-
-		i.Content = string(content)
 	}
 
+	i.Content = string(content)
 	return nil
 }
 
@@ -408,40 +388,6 @@ func (l byModified) Swap(i, j int) {
 func (l byModified) Less(i, j int) bool {
 	iModified, jModified := l.Items[i].ModTime, l.Items[j].ModTime
 	return iModified.Sub(jModified) < 0
-}
-
-// textExtensions is the sorted list of text extensions which
-// can be edited.
-var textExtensions = []string{
-	".ad", ".ada", ".adoc", ".asciidoc",
-	".bas", ".bash", ".bat",
-	".c", ".cc", ".cmd", ".conf", ".cpp", ".cr", ".cs", ".css", ".csv",
-	".d",
-	".f", ".f90",
-	".h", ".hh", ".hpp", ".htaccess", ".html",
-	".ini",
-	".java", ".js", ".json",
-	".markdown", ".md", ".mdown", ".mmark",
-	".nim",
-	".php", ".pl", ".ps1", ".py",
-	".rss", ".rst", ".rtf",
-	".sass", ".scss", ".sh", ".sty",
-	".tex", ".tml", ".toml", ".txt",
-	".vala", ".vapi",
-	".xml",
-	".yaml", ".yml",
-	"Caddyfile",
-}
-
-// isInTextExtensions checks if a file can be edited by its extensions.
-func isInTextExtensions(name string) bool {
-	search := filepath.Ext(name)
-	if search == "" {
-		search = name
-	}
-
-	i := sort.SearchStrings(textExtensions, search)
-	return i < len(textExtensions) && textExtensions[i] == search
 }
 
 // hasRune checks if the file has the frontmatter rune
