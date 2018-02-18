@@ -11,7 +11,7 @@ import (
 )
 
 type modifySettingsRequest struct {
-	*modifyRequest
+	modifyRequest
 	Data struct {
 		CSS       string                 `json:"css"`
 		Commands  map[string][]string    `json:"commands"`
