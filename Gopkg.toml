@@ -58,6 +58,10 @@
   name = "gopkg.in/natefinch/lumberjack.v2"
   version = "2.1.0"
 
+[[override]]
+  name = "github.com/russross/blackfriday"
+  version = "^1.0.0"
+
 [prune]
   go-tests = true
   unused-packages = true
