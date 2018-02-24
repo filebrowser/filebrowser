@@ -259,8 +259,8 @@
 [[projects]]
   name = "github.com/russross/blackfriday"
   packages = ["."]
-  revision = "cadec560ec52d93835bf2f15bd794700d3a2473b"
-  version = "v2.0.0"
+  revision = "4048872b16cc0fc2c5fd9eacf0ed2c2fedaa0c8c"
+  version = "v1.5"
 
 [[projects]]
   branch = "master"
@@ -401,6 +401,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "99a79ab40efa3e4ccecd4a1af5f2a050ae22993e55a254842997b9d3b8185aa7"
+  inputs-digest = "32a6f873600dd8c2a8d47c6c077e0e7b8eae85fb09f4d96918a89320f5adba61"
   solver-name = "gps-cdcl"
   solver-version = 1
