@@ -12,6 +12,9 @@
 }
 
 @media (max-width: 736px) {
+  body {
+    padding-bottom: 5em;
+  }
   #more {
     display: inherit
   }
