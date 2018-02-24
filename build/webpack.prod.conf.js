@@ -84,8 +84,16 @@ var webpackConfig = merge(baseWebpackConfig, {
       },
       // necessary to consistently work with multiple chunks via CommonsChunkPlugin
       chunksSortMode: 'dependency',
-      serviceWorkerLoader: `<script>${fs.readFileSync(path.join(__dirname,
-        './service-worker-prod.js'), 'utf-8')}</script>`
+      serviceWorkerLoader: (() => {
+        let sw = fs.readFileSync(path.join(__dirname, './service-worker-prod.js'), 'utf-8')
+
+        let result = UglifyJS.minify(sw)
+        if (result.error == null) {
+          sw = result.code
+        }
+
+        return '<script>' + sw + '</script>'
+      })()
     }),
     // split vendor js into its own file
     new webpack.optimize.CommonsChunkPlugin({
