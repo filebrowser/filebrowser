@@ -112,6 +112,12 @@
   version = "v0.36.1"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/golang/snappy"
+  packages = ["."]
+  revision = "553a641470496b2327abcac10b36396bd98e45c9"
+
+[[projects]]
   name = "github.com/gorilla/websocket"
   packages = ["."]
   revision = "ea4d1f681babbce9545c9c5f3d5194a789c89f5b"
@@ -211,8 +217,7 @@
 [[projects]]
   name = "github.com/mholt/archiver"
   packages = ["."]
-  revision = "cdc68dd1f170b8dfc1a0d2231b5bb0967ed67006"
-  version = "v2.0"
+  revision = "26cf5bb32d07aa4e8d0de15f56ce516f4641d7df"
 
 [[projects]]
   name = "github.com/mholt/caddy"
@@ -249,6 +254,18 @@
   packages = ["."]
   revision = "acdc4509485b587f5e675510c4f2c63e90ff68a8"
   version = "v1.1.0"
+
+[[projects]]
+  name = "github.com/pierrec/lz4"
+  packages = ["."]
+  revision = "2fcda4cb7018ce05a25959d2fe08c83e3329f169"
+  version = "v1.1"
+
+[[projects]]
+  name = "github.com/pierrec/xxHash"
+  packages = ["xxHash32"]
+  revision = "f051bb7f1d1aaf1b5a665d74fb6b0217712c69f7"
+  version = "v0.1.1"
 
 [[projects]]
   name = "github.com/robfig/cron"
@@ -401,6 +418,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "32a6f873600dd8c2a8d47c6c077e0e7b8eae85fb09f4d96918a89320f5adba61"
+  inputs-digest = "1f68bed4490068370884abaa296aa651c27b3f2e0d0451a1ab567f059d44f820"
   solver-name = "gps-cdcl"
   solver-version = 1
