@@ -9,7 +9,9 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
-            cd cmd/filebrowser && go get ./... && cd ../..
+            curl -sL -o $GOPATH/bin/dep https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64
+            chmod +x $GOPATH/bin/dep
+            dep ensure -v
             go get github.com/alecthomas/gometalinter
             gometalinter --install
       - run:
@@ -32,11 +34,12 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
-            cd cmd/filebrowser
-            go get ./...
+            curl -sL -o $GOPATH/bin/dep https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64
+            chmod +x $GOPATH/bin/dep
+            dep ensure -v
       - run:
           name: Building
-          command: go build
+          command: go build github.com/filebrowser/filebrowser/cmd/filebrowser
   deploy:
     docker:
       - image: circleci/golang:1.10
@@ -46,9 +49,9 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
-            cd cmd/filebrowser
-            go get ./...
-            cd ../..
+            curl -sL -o $GOPATH/bin/dep https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64
+            chmod +x $GOPATH/bin/dep
+            dep ensure -v
       - run:
           name: Deploy
           command: curl -sL https://git.io/goreleaser | bash
