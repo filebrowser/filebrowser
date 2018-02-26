@@ -12,7 +12,7 @@ import (
 	fm "github.com/filebrowser/filebrowser"
 )
 
-const reCaptchaAPI = "https://www.google.com/recaptcha/api/siteverify"
+const reCaptchaAPI = "/recaptcha/api/siteverify"
 
 type cred struct {
 	Password  string `json:"password"`
@@ -21,14 +21,14 @@ type cred struct {
 }
 
 // reCaptcha checks the reCaptcha code.
-func reCaptcha(secret string, response string) (bool, error) {
+func reCaptcha(host, secret, response string) (bool, error) {
 	body := url.Values{}
 	body.Set("secret", secret)
 	body.Add("response", response)
 
 	client := &http.Client{}
 
-	resp, err := client.Post(reCaptchaAPI, "application/x-www-form-urlencoded", strings.NewReader(body.Encode()))
+	resp, err := client.Post(host+reCaptchaAPI, "application/x-www-form-urlencoded", strings.NewReader(body.Encode()))
 	if err != nil {
 		return false, err
 	}
@@ -69,7 +69,7 @@ func authHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, er
 
 	// If ReCaptcha is enabled, check the code.
 	if len(c.ReCaptchaSecret) > 0 {
-		ok, err := reCaptcha(c.ReCaptchaSecret, cred.ReCaptcha)
+		ok, err := reCaptcha(c.ReCaptchaHost, c.ReCaptchaSecret, cred.ReCaptcha)
 		if err != nil {
 			return http.StatusForbidden, err
 		}
