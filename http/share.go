@@ -1,7 +1,7 @@
 package http
 
 import (
-	"encoding/hex"
+	"encoding/base64"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -67,12 +67,12 @@ func sharePostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (in
 		}
 	}
 
-	bytes, err := fm.GenerateRandomBytes(32)
+	bytes, err := fm.GenerateRandomBytes(6)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
-	str := hex.EncodeToString(bytes)
+	str := base64.URLEncoding.EncodeToString(bytes)
 
 	s = &fm.ShareLink{
 		Path:    path,
