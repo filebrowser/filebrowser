@@ -71,7 +71,8 @@ type FileBrowser struct {
 	// there will only exist one user, called "admin".
 	NoAuth bool
 
-	// ReCaptcha Site key and secret.
+	// ReCaptcha host, key and secret.
+	ReCaptchaHost   string
 	ReCaptchaKey    string
 	ReCaptchaSecret string
 
