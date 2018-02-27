@@ -49,6 +49,7 @@ func Parse(c *caddy.Controller, plugin string) ([]*filebrowser.FileBrowser, erro
 		scope := "."
 		database := ""
 		noAuth := false
+		alterRecaptcha := false
 		reCaptchaKey := ""
 		reCaptchaSecret := ""
 
@@ -158,6 +159,16 @@ func Parse(c *caddy.Controller, plugin string) ([]*filebrowser.FileBrowser, erro
 				if u.ViewMode != filebrowser.MosaicViewMode && u.ViewMode != filebrowser.ListViewMode {
 					return nil, c.ArgErr()
 				}
+			case "alternative_recaptcha":
+				if !c.NextArg() {
+					alterRecaptcha = true
+					continue
+				}
+
+				alterRecaptcha, err = strconv.ParseBool(c.Val())
+				if err != nil {
+					return nil, err
+				}
 			case "recaptcha_key":
 				if !c.NextArg() {
 					return nil, c.ArgErr()
@@ -227,10 +238,16 @@ func Parse(c *caddy.Controller, plugin string) ([]*filebrowser.FileBrowser, erro
 			return nil, err
 		}
 
+		recaptchaHost := "https://www.google.com"
+		if alterRecaptcha {
+			recaptchaHost = "https://recaptcha.net"
+		}
+
 		m := &filebrowser.FileBrowser{
 			NoAuth:          noAuth,
 			BaseURL:         "",
 			PrefixURL:       "",
+			ReCaptchaHost:   recaptchaHost,
 			ReCaptchaKey:    reCaptchaKey,
 			ReCaptchaSecret: reCaptchaSecret,
 			DefaultUser:     u,
