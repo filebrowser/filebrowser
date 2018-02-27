@@ -34,7 +34,7 @@
   <script>CSS = "{{ .CSS }}"</script>
 
   {{ if .ReCaptcha -}}
-    <script src='https://www.google.com/recaptcha/api.js?render=explicit'></script>
+    <script src="{{ .ReCaptchaHost }}/recaptcha/api.js?render=explicit"></script>
   {{ end }}
 
   <% for (var chunk of webpack.chunks) {
