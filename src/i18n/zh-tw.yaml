@@ -35,7 +35,7 @@ success:
   linkCopied: 連結已複製！
 errors:
   forbidden: 你被禁止存取。
-  internal: 內部出現麻煩了。
+  internal: 伺服器出了點問題。
   notFound: 找不到檔案。
 files:
   folders: 資料夾
