@@ -3,6 +3,6 @@
   "author": "File Browser contributors",
   "private": true,
   "dependencies": {
-    "filebrowser-frontend": "1.0.4"
+    "filebrowser-frontend": "1.2.0"
   }
 }
