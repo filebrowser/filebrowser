@@ -15,6 +15,14 @@ build:
     - 386
     - arm
     - arm64
+    - mips
+    - mips64
+    - mipsle
+    - mips64le
+  goarm:
+    - 5
+    - 6
+    - 7
   ignore:
     - goos: openbsd
       goarch: arm
