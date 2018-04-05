@@ -100,7 +100,7 @@ func setupViper() {
 	viper.BindPFlag("Commands", flag.Lookup("commands"))
 	viper.BindPFlag("AllowCommands", flag.Lookup("allow-commands"))
 	viper.BindPFlag("AllowEdit", flag.Lookup("allow-edit"))
-	viper.BindPFlag("AlowNew", flag.Lookup("allow-new"))
+	viper.BindPFlag("AllowNew", flag.Lookup("allow-new"))
 	viper.BindPFlag("AllowPublish", flag.Lookup("allow-publish"))
 	viper.BindPFlag("Locale", flag.Lookup("locale"))
 	viper.BindPFlag("StaticGen", flag.Lookup("staticgen"))
