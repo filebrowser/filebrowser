@@ -21,5 +21,4 @@ EXPOSE 80
 
 COPY Docker.json /config.json
 
-ENTRYPOINT ["/filebrowser"]
-CMD ["--config", "/config.json"]
+ENTRYPOINT ["/filebrowser", "--config", "/config.json"]
