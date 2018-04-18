@@ -125,7 +125,7 @@ func printToken(c *fm.Context, w http.ResponseWriter) (int, error) {
 		u,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
-			Issuer:    "File Manager",
+			Issuer:    "File Browser",
 		},
 	}
 
