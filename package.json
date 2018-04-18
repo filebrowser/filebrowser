@@ -1,8 +1,0 @@
-{
-  "name": "filebrowser",
-  "author": "File Browser contributors",
-  "private": true,
-  "dependencies": {
-    "filebrowser-frontend": "1.6.0"
-  }
-}
