@@ -1,4 +1,5 @@
 #!/bin/sh
+
 set -e
 
 cd $(dirname $0)
@@ -15,6 +16,8 @@ yarn install
 yarn build
 
 cd ..
+
+dep ensure -vendor-only
 
 # Install rice tool if not present
 if ! [ -x "$(command -v rice)" ]; then

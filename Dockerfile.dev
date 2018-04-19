@@ -1,0 +1,13 @@
+FROM golang:alpine
+
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
+  sed -i -e "s/v[0-9]\.[0-9]/edge/g" /etc/apk/repositories  && \
+  apk add -U --no-cache yarn git curl dos2unix && \
+  go get github.com/GeertJohan/go.rice/rice && \
+  curl -fsSL -o /usr/local/bin/dep $( \
+    curl -s https://api.github.com/repos/golang/dep/releases/latest \
+    | grep "browser_download_url.*linux-amd64\"" \
+    | cut -d : -f 2,3 \
+    | tr -d \" \
+  ) && \
+  chmod +x /usr/local/bin/dep
