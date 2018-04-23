@@ -125,7 +125,7 @@ export default {
   computed: {
     ...mapState(['user', 'show']),
     // Placeholder value.
-    placeholder: function () {
+    placeholder () {
       if (this.user.allowCommands && this.user.commands.length > 0) {
         return this.$t('search.searchOrCommand')
       }
@@ -134,7 +134,7 @@ export default {
     },
     // The text that is shown on the results' box while
     // there is no search result or command output to show.
-    text: function () {
+    text () {
       if (this.ongoing) {
         return ''
       }
@@ -144,17 +144,27 @@ export default {
           return `${this.$t('search.searchOrSupportedCommand')} ${this.user.commands.join(', ')}.`
         }
 
-        this.$t('search.type')
+        this.$t('search.typeSearch')
       }
 
-      if (!this.supported() || !this.user.allowCommands) {
+      if (!(this.value[0] === '$') || !this.user.allowCommands) {
         return this.$t('search.pressToSearch')
       } else {
+        if (this.command.length === 0) {
+          return this.$t('search.typeCommand')
+        }
+        if (!this.supported()) {
+          return this.$t('search.notSupportedCommand')
+        }
         return this.$t('search.pressToExecute')
       }
+    },
+    // The command, without the leading symbol ('$') with or without a following space (' ')
+    command () {
+      return this.value[1] === ' ' ? this.value.slice(2) : this.value.slice(1)
     }
   },
-  mounted: function () {
+  mounted () {
     // Gets the result div which will be scrollable.
     this.scrollable = document.querySelector('#search #result')
 
@@ -181,14 +191,15 @@ export default {
     },
     // Checks if the current input is a supported command.
     supported () {
-      let pieces = this.value.split(' ')
-
-      for (let i = 0; i < this.user.commands.length; i++) {
-        if (pieces[0] === this.user.commands[i]) {
-          return true
+      let cmd = this.command.split(' ')[0]
+      let cl = this.user.commands.length
+      if (cl !== 0) {
+        for (let i = 0; i < cl; i++) {
+          if (cmd.match(this.user.commands[i])) {
+            return true
+          }
         }
       }
-
       return false
     },
     // Initializes the search with a default value.
@@ -227,19 +238,22 @@ export default {
       }
 
       // In case of being a command.
-      if (this.supported() && this.user.allowCommands) {
-        api.command(path, this.value,
-          (event) => {
-            this.commands.push(event.data)
-            this.scrollable.scrollTop = this.scrollable.scrollHeight
-          },
-          (event) => {
-            this.reload = true
-            this.ongoing = false
-            this.scrollable.scrollTop = this.scrollable.scrollHeight
-          }
-        )
-
+      if (this.value[0] === '$') {
+        if (this.supported() && this.user.allowCommands) {
+          api.command(path, this.command,
+            (event) => {
+              this.commands.push(event.data)
+              this.scrollable.scrollTop = this.scrollable.scrollHeight
+            },
+            (event) => {
+              this.reload = true
+              this.ongoing = false
+              this.scrollable.scrollTop = this.scrollable.scrollHeight
+            }
+          )
+          return
+        }
+        this.ongoing = false
         return
       }
 
