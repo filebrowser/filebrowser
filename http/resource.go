@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	fm "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser"
 	"github.com/hacdias/fileutils"
 )
 
@@ -27,7 +27,7 @@ func sanitizeURL(url string) string {
 	return path
 }
 
-func resourceHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func resourceHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	r.URL.Path = sanitizeURL(r.URL.Path)
 
 	switch r.Method {
@@ -62,9 +62,9 @@ func resourceHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 	return http.StatusNotImplemented, nil
 }
 
-func resourceGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func resourceGetHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Gets the information of the directory/file.
-	f, err := fm.GetInfo(r.URL, c.FileBrowser, c.User)
+	f, err := fb.GetInfo(r.URL, c.FileBrowser, c.User)
 	if err != nil {
 		return ErrorToHTTP(err, false), err
 	}
@@ -104,7 +104,7 @@ func resourceGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (
 	return renderJSON(w, f)
 }
 
-func listingHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func listingHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	f := c.File
 	f.Kind = "listing"
 
@@ -133,7 +133,7 @@ func listingHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int,
 	return renderJSON(w, f)
 }
 
-func resourceDeleteHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func resourceDeleteHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Prevent the removal of the root directory.
 	if r.URL.Path == "/" || !c.User.AllowEdit {
 		return http.StatusForbidden, nil
@@ -158,7 +158,7 @@ func resourceDeleteHandler(c *fm.Context, w http.ResponseWriter, r *http.Request
 	return http.StatusOK, nil
 }
 
-func resourcePostPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func resourcePostPutHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	if !c.User.AllowNew && r.Method == http.MethodPost {
 		return http.StatusForbidden, nil
 	}
@@ -240,7 +240,7 @@ func resourcePostPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Reques
 	return http.StatusOK, nil
 }
 
-func resourcePublishSchedule(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func resourcePublishSchedule(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	publish := r.Header.Get("Publish")
 	schedule := r.Header.Get("Schedule")
 
@@ -271,7 +271,7 @@ func resourcePublishSchedule(c *fm.Context, w http.ResponseWriter, r *http.Reque
 	return http.StatusOK, nil
 }
 
-func resourcePublish(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func resourcePublish(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	path := filepath.Join(c.User.Scope, r.URL.Path)
 
 	// Before save command handler.
@@ -293,7 +293,7 @@ func resourcePublish(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 }
 
 // resourcePatchHandler is the entry point for resource handler.
-func resourcePatchHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func resourcePatchHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	if !c.User.AllowEdit {
 		return http.StatusForbidden, nil
 	}

@@ -7,14 +7,14 @@ import (
 	"path/filepath"
 	"strings"
 
-	fm "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser"
 	"github.com/hacdias/fileutils"
 	"github.com/mholt/archiver"
 )
 
 // downloadHandler creates an archive in one of the supported formats (zip, tar,
 // tar.gz or tar.bz2) and sends it to be downloaded.
-func downloadHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func downloadHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// If the file isn't a directory, serve it using http.ServeFile. We display it
 	// inline if it is requested.
 	if !c.File.IsDir {
@@ -77,7 +77,7 @@ func downloadHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 	return 0, err
 }
 
-func downloadFileHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func downloadFileHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	file, err := os.Open(c.File.Path)
 	defer file.Close()
 

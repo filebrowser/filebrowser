@@ -2,7 +2,7 @@ package bolt
 
 import (
 	"github.com/asdine/storm"
-	fm "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser"
 )
 
 // ConfigStore is a configuration store.
@@ -14,7 +14,7 @@ type ConfigStore struct {
 func (c ConfigStore) Get(name string, to interface{}) error {
 	err := c.DB.Get("config", name, to)
 	if err == storm.ErrNotFound {
-		return fm.ErrNotExist
+		return fb.ErrNotExist
 	}
 
 	return err

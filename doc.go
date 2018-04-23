@@ -1,7 +1,7 @@
 /*
 Package filebrowser provides a web interface to access your files
 wherever you are. To use this package as a middleware for your app,
-you'll need to import both File Manager and File Manager HTTP packages.
+you'll need to import both File Browser and File Browser HTTP packages.
 
 	import (
 		fm "github.com/filebrowser/filebrowser"
@@ -49,11 +49,11 @@ functions:
 		m.SetPrefixURL("/")
 
 The Prefix URL is a part of the path that is already stripped from the
-r.URL.Path variable before the request arrives to File Manager's handler.
+r.URL.Path variable before the request arrives to File Browser's handler.
 This is a function that will rarely be used. You can see one example on Caddy
 filemanager plugin.
 
-The Base URL is the URL path where you want File Manager to be available in. If
+The Base URL is the URL path where you want File Browser to be available in. If
 you want to be available at the root path, you should call:
 
 		m.SetBaseURL("/")
@@ -62,7 +62,7 @@ But if you want to access it at '/admin', you would call:
 
 		m.SetBaseURL("/admin")
 
-Now, that you already have a File Manager instance created, you just need to
+Now, that you already have a File Browser instance created, you just need to
 add it to your handlers using m.ServeHTTP which is compatible to http.Handler.
 We also have a m.ServeWithErrorsHTTP that returns the status code and an error.
 

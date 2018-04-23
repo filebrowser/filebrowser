@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	fm "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser"
 )
 
 type modifyRequest struct {
@@ -19,12 +19,12 @@ type modifyRequest struct {
 
 type modifyUserRequest struct {
 	modifyRequest
-	Data *fm.User `json:"data"`
+	Data *fb.User `json:"data"`
 }
 
 // usersHandler is the entry point of the users API. It's just a router
 // to send the request to its
-func usersHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func usersHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// If the user isn't admin and isn't making a PUT
 	// request, then return forbidden.
 	if !c.User.Admin && r.Method != http.MethodPut {
@@ -47,7 +47,7 @@ func usersHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, e
 
 // getUserID returns the id from the user which is present
 // in the request url. If the url is invalid and doesn't
-// contain a valid ID, it returns an fm.Error.
+// contain a valid ID, it returns an fb.Error.
 func getUserID(r *http.Request) (int, error) {
 	// Obtains the ID in string from the URL and converts
 	// it into an integer.
@@ -63,11 +63,11 @@ func getUserID(r *http.Request) (int, error) {
 
 // getUser returns the user which is present in the request
 // body. If the body is empty or the JSON is invalid, it
-// returns an fm.Error.
-func getUser(c *fm.Context, r *http.Request) (*fm.User, string, error) {
+// returns an fb.Error.
+func getUser(c *fb.Context, r *http.Request) (*fb.User, string, error) {
 	// Checks if the request body is empty.
 	if r.Body == nil {
-		return nil, "", fm.ErrEmptyRequest
+		return nil, "", fb.ErrEmptyRequest
 	}
 
 	// Parses the request body and checks if it's well formed.
@@ -79,14 +79,14 @@ func getUser(c *fm.Context, r *http.Request) (*fm.User, string, error) {
 
 	// Checks if the request type is right.
 	if mod.What != "user" {
-		return nil, "", fm.ErrWrongDataType
+		return nil, "", fb.ErrWrongDataType
 	}
 
 	mod.Data.FileSystem = c.NewFS(mod.Data.Scope)
 	return mod.Data, mod.Which, nil
 }
 
-func usersGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func usersGetHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Request for the default user data.
 	if r.URL.Path == "/base" {
 		return renderJSON(w, c.DefaultUser)
@@ -118,7 +118,7 @@ func usersGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 	}
 
 	u, err := c.Store.Users.Get(id, c.NewFS)
-	if err == fm.ErrExist {
+	if err == fb.ErrExist {
 		return http.StatusNotFound, err
 	}
 
@@ -130,7 +130,7 @@ func usersGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 	return renderJSON(w, u)
 }
 
-func usersPostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func usersPostHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	if r.URL.Path != "/" {
 		return http.StatusMethodNotAllowed, nil
 	}
@@ -142,22 +142,22 @@ func usersPostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (in
 
 	// Checks if username isn't empty.
 	if u.Username == "" {
-		return http.StatusBadRequest, fm.ErrEmptyUsername
+		return http.StatusBadRequest, fb.ErrEmptyUsername
 	}
 
 	// Checks if scope isn't empty.
 	if u.Scope == "" {
-		return http.StatusBadRequest, fm.ErrEmptyScope
+		return http.StatusBadRequest, fb.ErrEmptyScope
 	}
 
 	// Checks if password isn't empty.
 	if u.Password == "" {
-		return http.StatusBadRequest, fm.ErrEmptyPassword
+		return http.StatusBadRequest, fb.ErrEmptyPassword
 	}
 
 	// Initialize rules if they're not initialized.
 	if u.Rules == nil {
-		u.Rules = []*fm.Rule{}
+		u.Rules = []*fb.Rule{}
 	}
 
 	// If the view mode is empty, initialize with the default one.
@@ -181,17 +181,17 @@ func usersPostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (in
 	}
 
 	// Hashes the password.
-	pw, err := fm.HashPassword(u.Password)
+	pw, err := fb.HashPassword(u.Password)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
 	u.Password = pw
-	u.ViewMode = fm.MosaicViewMode
+	u.ViewMode = fb.MosaicViewMode
 
 	// Saves the user to the database.
 	err = c.Store.Users.Save(u)
-	if err == fm.ErrExist {
+	if err == fb.ErrExist {
 		return http.StatusConflict, err
 	}
 
@@ -228,7 +228,7 @@ func checkFS(path string) (int, error) {
 	return 0, nil
 }
 
-func usersDeleteHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func usersDeleteHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	if r.URL.Path == "/" {
 		return http.StatusMethodNotAllowed, nil
 	}
@@ -240,8 +240,8 @@ func usersDeleteHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (
 
 	// Deletes the user from the database.
 	err = c.Store.Users.Delete(id)
-	if err == fm.ErrNotExist {
-		return http.StatusNotFound, fm.ErrNotExist
+	if err == fb.ErrNotExist {
+		return http.StatusNotFound, fb.ErrNotExist
 	}
 
 	if err != nil {
@@ -251,7 +251,7 @@ func usersDeleteHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (
 	return http.StatusOK, nil
 }
 
-func usersPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func usersPutHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// New users should be created on /api/users.
 	if r.URL.Path == "/" {
 		return http.StatusMethodNotAllowed, nil
@@ -298,14 +298,14 @@ func usersPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 	// Updates the Password.
 	if which == "password" {
 		if u.Password == "" {
-			return http.StatusBadRequest, fm.ErrEmptyPassword
+			return http.StatusBadRequest, fb.ErrEmptyPassword
 		}
 
 		if id == c.User.ID && c.User.LockPassword {
 			return http.StatusForbidden, nil
 		}
 
-		c.User.Password, err = fm.HashPassword(u.Password)
+		c.User.Password, err = fb.HashPassword(u.Password)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -320,17 +320,17 @@ func usersPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 
 	// If can only be all.
 	if which != "all" {
-		return http.StatusBadRequest, fm.ErrInvalidUpdateField
+		return http.StatusBadRequest, fb.ErrInvalidUpdateField
 	}
 
 	// Checks if username isn't empty.
 	if u.Username == "" {
-		return http.StatusBadRequest, fm.ErrEmptyUsername
+		return http.StatusBadRequest, fb.ErrEmptyUsername
 	}
 
 	// Checks if filesystem isn't empty.
 	if u.Scope == "" {
-		return http.StatusBadRequest, fm.ErrEmptyScope
+		return http.StatusBadRequest, fb.ErrEmptyScope
 	}
 
 	// Checks if the scope exists.
@@ -340,7 +340,7 @@ func usersPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 
 	// Initialize rules if they're not initialized.
 	if u.Rules == nil {
-		u.Rules = []*fm.Rule{}
+		u.Rules = []*fb.Rule{}
 	}
 
 	// Initialize commands if not initialized.
@@ -350,7 +350,7 @@ func usersPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 
 	// Gets the current saved user from the in-memory map.
 	suser, err := c.Store.Users.Get(id, c.NewFS)
-	if err == fm.ErrNotExist {
+	if err == fb.ErrNotExist {
 		return http.StatusNotFound, nil
 	}
 
@@ -362,7 +362,7 @@ func usersPutHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 
 	// Changes the password if the request wants it.
 	if u.Password != "" {
-		pw, err := fm.HashPassword(u.Password)
+		pw, err := fb.HashPassword(u.Password)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}

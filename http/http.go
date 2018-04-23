@@ -10,13 +10,13 @@ import (
 	"strings"
 	"time"
 
-	fm "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser"
 )
 
 // Handler returns a function compatible with http.HandleFunc.
-func Handler(m *fm.FileBrowser) http.Handler {
+func Handler(m *fb.FileBrowser) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		code, err := serve(&fm.Context{
+		code, err := serve(&fb.Context{
 			FileBrowser: m,
 			User:        nil,
 			File:        nil,
@@ -37,9 +37,9 @@ func Handler(m *fm.FileBrowser) http.Handler {
 }
 
 // serve is the main entry point of this HTML application.
-func serve(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func serve(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Checks if the URL contains the baseURL and strips it. Otherwise, it just
-	// returns a 404 fm.Error because we're not supposed to be here!
+	// returns a 404 fb.Error because we're not supposed to be here!
 	p := strings.TrimPrefix(r.URL.Path, c.BaseURL)
 
 	if len(p) >= len(r.URL.Path) && c.BaseURL != "" {
@@ -93,7 +93,7 @@ func serve(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 }
 
 // staticHandler handles the static assets path.
-func staticHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func staticHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	if r.URL.Path != "/static/manifest.json" {
 		http.FileServer(c.Assets.HTTPBox()).ServeHTTP(w, r)
 		return 0, nil
@@ -103,7 +103,7 @@ func staticHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, 
 }
 
 // apiHandler is the main entry point for the /api endpoint.
-func apiHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func apiHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	if r.URL.Path == "/auth/get" {
 		return authHandler(c, w, r)
 	}
@@ -139,7 +139,7 @@ func apiHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, err
 
 	if c.Router == "checksum" || c.Router == "download" {
 		var err error
-		c.File, err = fm.GetInfo(r.URL, c.FileBrowser, c.User)
+		c.File, err = fb.GetInfo(r.URL, c.FileBrowser, c.User)
 		if err != nil {
 			return ErrorToHTTP(err, false), err
 		}
@@ -173,11 +173,11 @@ func apiHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, err
 }
 
 // serveChecksum calculates the hash of a file. Supports MD5, SHA1, SHA256 and SHA512.
-func checksumHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func checksumHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	query := r.URL.Query().Get("algo")
 
 	val, err := c.File.Checksum(query)
-	if err == fm.ErrInvalidOption {
+	if err == fb.ErrInvalidOption {
 		return http.StatusBadRequest, err
 	} else if err != nil {
 		return http.StatusInternalServerError, err
@@ -205,7 +205,7 @@ func splitURL(path string) (string, string) {
 }
 
 // renderFile renders a file using a template with some needed variables.
-func renderFile(c *fm.Context, w http.ResponseWriter, file string) (int, error) {
+func renderFile(c *fb.Context, w http.ResponseWriter, file string) (int, error) {
 	tpl := template.Must(template.New("file").Parse(c.Assets.MustString(file)))
 
 	var contentType string
@@ -225,7 +225,7 @@ func renderFile(c *fm.Context, w http.ResponseWriter, file string) (int, error) 
 	data := map[string]interface{}{
 		"BaseURL":       c.RootURL(),
 		"NoAuth":        c.NoAuth,
-		"Version":       fm.Version,
+		"Version":       fb.Version,
 		"CSS":           template.CSS(c.CSS),
 		"ReCaptcha":     c.ReCaptchaKey != "" && c.ReCaptchaSecret != "",
 		"ReCaptchaHost": c.ReCaptchaHost,
@@ -246,9 +246,9 @@ func renderFile(c *fm.Context, w http.ResponseWriter, file string) (int, error) 
 }
 
 // sharePage build the share page.
-func sharePage(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func sharePage(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	s, err := c.Store.Share.Get(r.URL.Path)
-	if err == fm.ErrNotExist {
+	if err == fb.ErrNotExist {
 		w.WriteHeader(http.StatusNotFound)
 		return renderFile(c, w, "static/share/404.html")
 	}
@@ -271,7 +271,7 @@ func sharePage(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, erro
 		return ErrorToHTTP(err, false), err
 	}
 
-	c.File = &fm.File{
+	c.File = &fb.File{
 		Path:    s.Path,
 		Name:    info.Name(),
 		ModTime: info.ModTime(),
