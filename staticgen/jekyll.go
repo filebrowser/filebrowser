@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	fm "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser"
 )
 
 // Jekyll is the Jekyll static website generator.
@@ -39,12 +39,12 @@ func (j Jekyll) SettingsPath() string {
 }
 
 // Hook is the pre-api handler.
-func (j Jekyll) Hook(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func (j Jekyll) Hook(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	return 0, nil
 }
 
 // Publish publishes a post.
-func (j Jekyll) Publish(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func (j Jekyll) Publish(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	filename := filepath.Join(c.User.Scope, r.URL.Path)
 
 	// We only run undraft command if it is a file.
@@ -59,7 +59,7 @@ func (j Jekyll) Publish(c *fm.Context, w http.ResponseWriter, r *http.Request) (
 }
 
 // Preview handles the preview path.
-func (j *Jekyll) Preview(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func (j *Jekyll) Preview(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	// Get a new temporary path if there is none.
 	if j.previewPath == "" {
 		path, err := ioutil.TempDir("", "")
