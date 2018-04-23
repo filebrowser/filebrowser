@@ -57,13 +57,14 @@ func command(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error)
 	allowed := false
 
 	for _, cmd := range c.User.Commands {
-		if cmd == command[0] {
+		if regexp.MustCompile(cmd).MatchString(command[0]) {
 			allowed = true
+			break
 		}
 	}
 
 	if !allowed {
-		err = conn.WriteMessage(websocket.BinaryMessage, cmdNotAllowed)
+		err = conn.WriteMessage(websocket.TextMessage, cmdNotAllowed)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -71,9 +72,9 @@ func command(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error)
 		return 0, nil
 	}
 
-	// Check if the program is talled is installed on the computer.
+	// Check if the program is installed on the computer.
 	if _, err = exec.LookPath(command[0]); err != nil {
-		err = conn.WriteMessage(websocket.BinaryMessage, cmdNotImplemented)
+		err = conn.WriteMessage(websocket.TextMessage, cmdNotImplemented)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
