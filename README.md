@@ -32,7 +32,7 @@ Listings of your files, available in two styles: mosaic and list. You can delete
 
 ![Mosaic Listing](https://user-images.githubusercontent.com/5447088/28432384-9771bb4c-6d7f-11e7-8564-3a9bd6a3ce3a.jpg)
 
-File Manager editor is powered by [Codemirror](https://codemirror.net/) and if you're working with markdown files with metadata, both parts will be separated from each other so you can focus on the content.
+File Browser editor is powered by [Codemirror](https://codemirror.net/) and if you're working with markdown files with metadata, both parts will be separated from each other so you can focus on the content.
 
 ![Markdown Editor](https://user-images.githubusercontent.com/5447088/28432383-9756fdac-6d7f-11e7-8e58-fec49470d15f.jpg)
 

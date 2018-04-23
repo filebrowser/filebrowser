@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	fm "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser"
 	"github.com/gorilla/websocket"
 )
 
@@ -27,8 +27,8 @@ var (
 )
 
 // command handles the requests for VCS related commands: git, svn and mercurial
-func command(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
-	// Upgrades the connection to a websocket and checks for fm.Errors.
+func command(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+	// Upgrades the connection to a websocket and checks for fb.Errors.
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return 0, err
@@ -93,7 +93,7 @@ func command(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error)
 	cmd.Stderr = buff
 	cmd.Stdout = buff
 
-	// Starts the command and checks for fm.Errors.
+	// Starts the command and checks for fb.Errors.
 	err = cmd.Start()
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -241,8 +241,8 @@ func parseSearch(value string) *searchOptions {
 }
 
 // search searches for a file or directory.
-func search(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
-	// Upgrades the connection to a websocket and checks for fm.Errors.
+func search(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+	// Upgrades the connection to a websocket and checks for fb.Errors.
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return 0, err

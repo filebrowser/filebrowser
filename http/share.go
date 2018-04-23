@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
-	fm "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser"
 )
 
-func shareHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func shareHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	r.URL.Path = sanitizeURL(r.URL.Path)
 
 	switch r.Method {
@@ -26,10 +26,10 @@ func shareHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, e
 	return http.StatusNotImplemented, nil
 }
 
-func shareGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func shareGetHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	path := filepath.Join(c.User.Scope, r.URL.Path)
 	s, err := c.Store.Share.GetByPath(path)
-	if err == fm.ErrNotExist {
+	if err == fb.ErrNotExist {
 		return http.StatusNotFound, nil
 	}
 
@@ -51,10 +51,10 @@ func shareGetHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int
 	return renderJSON(w, s)
 }
 
-func sharePostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func sharePostHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	path := filepath.Join(c.User.Scope, r.URL.Path)
 
-	var s *fm.ShareLink
+	var s *fb.ShareLink
 	expire := r.URL.Query().Get("expires")
 	unit := r.URL.Query().Get("unit")
 
@@ -67,14 +67,14 @@ func sharePostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (in
 		}
 	}
 
-	bytes, err := fm.GenerateRandomBytes(6)
+	bytes, err := fb.GenerateRandomBytes(6)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
 	str := base64.URLEncoding.EncodeToString(bytes)
 
-	s = &fm.ShareLink{
+	s = &fb.ShareLink{
 		Path:    path,
 		Hash:    str,
 		Expires: expire != "",
@@ -108,9 +108,9 @@ func sharePostHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (in
 	return renderJSON(w, s)
 }
 
-func shareDeleteHandler(c *fm.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func shareDeleteHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	s, err := c.Store.Share.Get(strings.TrimPrefix(r.URL.Path, "/"))
-	if err == fm.ErrNotExist {
+	if err == fb.ErrNotExist {
 		return http.StatusNotFound, nil
 	}
 

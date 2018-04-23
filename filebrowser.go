@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	// Version is the current File Manager version.
+	// Version is the current File Browser version.
 	Version = "(untracked)"
 
 	ListViewMode   = "list"
@@ -58,7 +58,7 @@ type FileBrowser struct {
 	Store *Store
 
 	// PrefixURL is a part of the URL that is already trimmed from the request URL before it
-	// arrives to our handlers. It may be useful when using File Manager as a middleware
+	// arrives to our handlers. It may be useful when using File Browser as a middleware
 	// such as in caddy-filemanager plugin. It is only useful in certain situations.
 	PrefixURL string
 
@@ -115,9 +115,9 @@ type FSBuilder func(scope string) FileSystem
 
 // Setup loads the configuration from the database and configures
 // the Assets and the Cron job. It must always be run after
-// creating a File Manager object.
+// creating a File Browser object.
 func (m *FileBrowser) Setup() error {
-	// Creates a new File Manager instance with the Users
+	// Creates a new File Browser instance with the Users
 	// map and Assets box.
 	m.Assets = rice.MustFindBox("./node_modules/filebrowser-frontend/dist")
 	m.Cron = cron.New()
@@ -221,7 +221,7 @@ func (m *FileBrowser) Setup() error {
 }
 
 // RootURL returns the actual URL where
-// File Manager interface can be accessed.
+// File Browser interface can be accessed.
 func (m FileBrowser) RootURL() string {
 	return m.PrefixURL + m.BaseURL
 }
@@ -235,7 +235,7 @@ func (m *FileBrowser) SetPrefixURL(url string) {
 	m.PrefixURL = strings.TrimSuffix(url, "/")
 }
 
-// SetBaseURL updates the baseURL of a File Manager
+// SetBaseURL updates the baseURL of a File Browser
 // object.
 func (m *FileBrowser) SetBaseURL(url string) {
 	url = strings.TrimPrefix(url, "/")
@@ -244,7 +244,7 @@ func (m *FileBrowser) SetBaseURL(url string) {
 	m.BaseURL = strings.TrimSuffix(url, "/")
 }
 
-// Attach attaches a static generator to the current File Manager.
+// Attach attaches a static generator to the current File Browser.
 func (m *FileBrowser) Attach(s StaticGen) error {
 	if reflect.TypeOf(s).Kind() != reflect.Ptr {
 		return errors.New("data should be a pointer to interface, not interface")
@@ -290,7 +290,7 @@ func (m FileBrowser) ShareCleaner() {
 func (m FileBrowser) Runner(event string, path string, destination string, user *User) error {
 	commands := []string{}
 
-	// Get the commands from the File Manager instance itself.
+	// Get the commands from the File Browser instance itself.
 	if val, ok := m.Commands[event]; ok {
 		commands = append(commands, val...)
 	}
