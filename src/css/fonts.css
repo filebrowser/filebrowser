@@ -114,7 +114,11 @@
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
-  src: local('Material Icons'), local('MaterialIcons-Regular'), url(../assets/fonts/material/icons.woff2) format('woff2');
+  src: url(../assets/fonts/material/icons.eot);
+  src: local('Material Icons'),
+    local('MaterialIcons-Regular'),
+    url(../assets/fonts/material/icons.woff2) format('woff2'),
+    url(../assets/fonts/material/icons.ttf) format('truetype');
 }
 
 .prompt .file-list ul li:before,
