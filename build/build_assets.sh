@@ -2,7 +2,7 @@
 
 set -e
 
-cd $(dirname $0)
+cd $(dirname $0)/..
 
 # Clean the dist folder and build the assets
 cd frontend
@@ -12,8 +12,6 @@ fi;
 yarn install
 yarn build
 cd ..
-
-dep ensure -vendor-only
 
 # Install rice tool if not present
 if ! [ -x "$(command -v rice)" ]; then

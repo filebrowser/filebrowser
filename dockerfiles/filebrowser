@@ -1,0 +1,10 @@
+FROM scratch
+
+VOLUME /tmp
+VOLUME /srv
+EXPOSE 80
+
+COPY filebrowser /filebrowser
+COPY Docker.json /config.json
+
+ENTRYPOINT ["/filebrowser", "--config", "/config.json"]
