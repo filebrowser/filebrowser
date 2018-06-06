@@ -1,8 +1,10 @@
 #!/bin/bash
 set -e
 
+cd $(dirname $0)
+
 echo "Building assets"
-./build.sh
+./build/build_assets.sh
 
 echo "Updating version number to $1..."
 sed -i "s|(untracked)|$1|g" filebrowser.go
