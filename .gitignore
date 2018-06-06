@@ -1,5 +1,4 @@
 .DS_Store
-frontend/
 */dist/*
 *.db
 *.db.lock
