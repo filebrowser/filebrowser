@@ -1,0 +1,23 @@
+os: linux
+services: docker
+language: minimal
+install: skip
+addons:
+  apt:
+    packages:
+    - docker-ce
+script:
+  - USE_DOCKER="true" ./build/build_all.sh
+  - "./build/build_img.sh"
+deploy:
+  provider: script
+  skip_cleanup: true
+  script:
+    - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin && docker push filebrowser/filebrowser && docker logout
+  on:
+    repo: 1138-4EB/filebrowser
+    branch: master
+env:
+  global:
+  - secure: YtxLrM3z2A/wDh5yLXrMXgsMRr+c7v5auS/2SpNxra0E6fcFKNPtk2g6JB4JfpFRp6feeuwtT61b16OdHjNVcwtZPLEdM1o7nUaLd+UxxKYlXwMSl+Hqaclx5KbBwlVCU3BKJjPVY/RujjSgOGG7C9b40E8YBssVIxyM51qV+u4C7Odu99ZC42OnFG8n+SsdP2xdI7BFw5qJTmNAgnns4QEAiZi++YMtsYmoo828mNpYX093N1VeW81JHeHo82Xwifpeij2fxuOkGAf2JMOuYrH+Mn+jgAiSUGkNRKhaA5do3ov6tSiCWZtQjrAIFk56knXaeeIO+ysryJ+BO9w2qquI1IYktpIemZjjoz24qKeUY0suxPdEe7cH17/P6n2LHUyXiUyUpjRX2bFqo6kfAoMc6oPqgOWu8Ls5GwuEHqCwsZXTVy4ZqNYiAIgk85lUecm9uy+Ubtu4bCdJpDlkC9jGow4Wn/6lHNxsuGWfBR1P94WtC+qmrZf/xje3A5xKATtZtLrfc0tLdsH5VYDyIZ4WYWOIrCemayjXK3RJxN+qQDxaPWPG0cmHAxPslUyHE1eDxy1hCkCZx82Qjr1dX8Xx5tO4SoBayV9pmJo4+IyEb711NQyYrA/EdDswMmrVJNLBY+yDK6umkMlcIuRkVQanOydgRrusbKuQoAGOQRE=
+  - secure: d+4aM/IGqszna5Yv7M+6wWmdzafSkPH5qJtvd5Jac6QUxMhDIzIN+br+Sf2PNougZso7EsaFHlZQKatSmCM+DsVy2Ke5DB82icTsMyBzano8GF+eYm9BJUhgOk933ygsDKRFvfaiwAPjGgyFDwLAc4CPc/Lly/mqs4wyyekFgTWvIF+AG9GaigCkQB14Ud70BJ0PBCGh82lqKSY32r7ti/G5uNrD5DFIOpUmoq9NWeX7tAvWi6iWWCdndmAnT7aRpb7oprgMTm4Jc7CguJvz2pKh6a2ncY29nuvr0DNEfXRGiGKAZAck852ad/pwSa04Uwi1j5arFAZuRgtldhksFQPWZM4s7SP9e6LpSWU4+QyuXY5R1Rs5KtdREd3J27z2RmFm0m5vMkUTGMMHvw+qOrITVovWKme+ptOKytpIVgoxmzA/Y2/aS0JxN78nuLfX5v24+yDQ1aIxtjTzQufkGyFPMqwDPV0ZO5/Ez0FP1lPWd5cRrL77ako1sTVje4Up08VwcmJueJH2Xv7YfmvYR0w/VMymEliKpDsTJ6A7/o+Y2gyi6mwTjg7q/6aXTBoxVH/3LFABJeBQWqhIaDTdk5xjutEGUKyUMoHjW6fqTvoErLRfwz8dSh1GBtLNz7AqVd2v7tnVzo0iFPIlyqvhUiHQX7M0+lPOz0hQ581VlHw=
