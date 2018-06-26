@@ -16,5 +16,5 @@
   "start_url": "{{ .BaseURL }}/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#2979ff"
+  "theme_color": "#455a64"
 }
