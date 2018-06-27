@@ -3,6 +3,7 @@ import VueI18n from 'vue-i18n'
 import en from './en.yaml'
 import fr from './fr.yaml'
 import pt from './pt.yaml'
+import ptBR from './pt-br.yaml'
 import ja from './ja.yaml'
 import zhCN from './zh-cn.yaml'
 import zhTW from './zh-tw.yaml'
@@ -22,6 +23,9 @@ export function detectLocale () {
       break
     case /^pt.*/i.test(locale):
       locale = 'pt'
+      break
+    case /^pt-BR.*/i.test(locale):
+      locale = 'pt-br'
       break
     case /^ja.*/i.test(locale):
       locale = 'ja'
@@ -55,6 +59,7 @@ const i18n = new VueI18n({
     'en': en,
     'fr': fr,
     'pt': pt,
+    'pt-br': ptBR,
     'ja': ja,
     'zh-cn': zhCN,
     'zh-tw': zhTW,

@@ -3,15 +3,15 @@ buttons:
   cancel: Cancelar
   close: Fechar
   copy: Copiar
-  copyFile: Copiar ficheiro
+  copyFile: Copiar arquivo
   copyToClipboard: Copiar
   create: Criar
   delete: Eliminar
-  download: Descarregar
+  download: Baixar
   info: Info
   more: Mais
   move: Mover
-  moveFile: Mover ficheiro
+  moveFile: Mover arquivo
   new: Novo
   next: Próximo
   ok: OK
@@ -20,8 +20,8 @@ buttons:
   rename: Renomear
   replace: Substituir
   reportIssue: Reportar Erro
-  save: Guardar
-  share: Partilhar
+  save: Salvar
+  share: Compartilhar
   schedule: Agendar
   search: Pesquisar
   select: Selecionar
@@ -34,18 +34,18 @@ buttons:
 success:
   linkCopied: Link copiado!
 errors:
-  forbidden: Tu não és bem-vindo aqui.
-  internal: Algo correu bastante mal.
+  forbidden: Você não é bem-vindo aqui.
+  internal: Algo de ruim ocorreu.
   notFound: Não conseguimos chegar a esta localização.
 files:
   body: Corpo
   clear: Limpar
   closePreview: Fechar pré-visualização
-  files: Ficheiros
+  files: Arquivos
   folders: Pastas
   home: Início
   lastModified: Última modificação
-  loading: A carregar...
+  loading: Carregando...
   lonely: Sinto-me sozinho...
   metadata: Metadados
   multipleSelectionEnabled: Seleção múltipla ativada
@@ -55,16 +55,16 @@ files:
   sortByName: Ordenar pelo nome
   sortBySize: Ordenar pelo tamanho
 help:
-  click: selecionar pasta ou ficheiro
+  click: selecionar pasta ou arquivo
   ctrl:
-    click: selecionar várias pastas e ficheiros
+    click: selecionar várias pastas e arquivos
     f: pesquisar
-    s: guardar um ficheiro ou descarregar a pasta em que estás a navegar
-  del: eliminar os ficheiros selecionados
-  doubleClick: abrir pasta ou ficheiro
+    s: salvar um arquivo ou baixar a pasta que você está
+  del: eliminar os arquivos selecionados
+  doubleClick: abrir pasta ou arquivo
   esc: limpar seleção e/ou fechar menu
   f1: esta informação
-  f2: renomear ficheiro
+  f2: renomear arquivo
   help: Ajuda
 languages:
   en: English
@@ -76,39 +76,39 @@ languages:
   zhTW: 中文 (繁體)
   es: Español
 login:
-  password: Palavra-passe
+  password: Senha
   submit: Login
-  username: Nome de utilizador
+  username: Nome do usuário
   wrongCredentials: Dados errados
 prompts:
   copy: Copiar
-  copyMessage: 'Escolhe um lugar para copiar os ficheiros:'
-  currentlyNavigating: 'A navegar em:'
-  deleteMessageMultiple: Deseja eliminar {count} ficheiro(s)?
-  deleteMessageSingle: Deseja eliminar esta pasta/ficheiro?
-  deleteTitle: Eliminar ficheiros
+  copyMessage: 'Escolhe um lugar para copiar os arquivos:'
+  currentlyNavigating: 'Navegando em:'
+  deleteMessageMultiple: Deseja eliminar {count} arquivo(s)?
+  deleteMessageSingle: Deseja eliminar esta pasta/arquivo?
+  deleteTitle: Eliminar arquivos
   displayName: 'Nome:'
-  download: Descarregar ficheiros
-  downloadMessage: Escolha o formato do ficheiro.
-  error: Algo correu mal
-  fileInfo: Informação do ficheiro
-  filesSelected: "{count} ficheiros selecionados."
+  download: Baixar arquivos
+  downloadMessage: Escolha o formato do arquivo.
+  error: Algo de ruim ocorreu
+  fileInfo: Informação do arquivo
+  filesSelected: "{count} arquivos selecionados."
   lastModified: Última Modificação
   move: Mover
-  moveMessage: 'Escolha uma nova casa para os seus ficheiros:'
-  newArchetype: Criar um novo post baseado num "archetype". O seu ficheiro será criado
+  moveMessage: 'Escolha uma nova casa para os seus arquivos:'
+  newArchetype: Criar um novo post baseado num "archetype". O seu arquivo será criado
     na pasta "content".
   newDir: Nova pasta
   newDirMessage: Escreva o nome da nova pasta.
-  newFile: Novo ficheiro
-  newFileMessage: Escreva o nome do novo ficheiro.
+  newFile: Novo arquivo
+  newFileMessage: Escreva o nome do novo arquivo.
   numberDirs: Número de pastas
-  numberFiles: Número de ficheiros
+  numberFiles: Número de arquivos
   rename: Renomear
   renameMessage: Insira um novo nome para
   replace: Substituir
   replaceMessage: >
-    Já existe um ficheiro com nome igual a um dos que está a tentar
+    Já existe um arquivo com nome igual a um dos que está tentando
     enviar. Deseja substituir?
   schedule: Agendar
   scheduleMessage: Escolha uma data para publicar este post.
@@ -118,12 +118,12 @@ search:
   images: Imagens
   music: Música
   pdf: PDF
-  pressToExecute: Prima enter para executar.
-  pressToSearch: Prima enter para pesquisar.
+  pressToExecute: Pressione enter para executar.
+  pressToSearch: Pressione enter para pesquisar.
   search: Pesquise...
   searchOrCommand: Pesquise ou execute um comando...
   searchOrSupportedCommand: 'Pesquise ou utilize um dos seus comandos:'
-  type: Escreva e prima enter para pesquisar.
+  type: Escreva e pressione enter para pesquisar.
   types: Tipos
   video: Vídeos
   writeToSearch: Escreva aqui para pesquisar
@@ -131,68 +131,68 @@ settings:
   admin: Admin
   administrator: Administrador
   allowCommands: Executar comandos
-  allowEdit: Editar, renomear e eliminar ficheiros ou pastas
-  allowNew: Criar novos ficheiros e pastas
+  allowEdit: Editar, renomear e eliminar arquivos ou pastas
+  allowNew: Criar novos arquivos e pastas
   allowPublish: Publicar novas páginas e conteúdos
   avoidChanges: "(deixe em branco para manter)"
-  changePassword: Alterar Password
+  changePassword: Alterar Senha
   commands: Comandos
   commandsHelp: >
     Pode definir um conjunto de comandos a executar em determiandos eventos.
-    Deve escrever um comando por linha. Se o evento estiver relacionado com ficheiros,
-    como antes e depois de guardar, irá existir uma variável de ambiente denominada
-    "FILE" com o caminho do ficheiro.
+    Deve escrever um comando por linha. Se o evento estiver relacionado com arquivos,
+    como antes e depois de salvar, irá existir uma variável de ambiente denominada
+    "FILE" com o caminho do arquivo.
   commandsUpdated: Comandos atualizados!
   customStylesheet: Estilos Personalizados
   examples: Exemplos
   globalSettings: Configurações Globais
   language: Linguagem
-  lockPassword: Não permitir que o utilizador altere a palavra-passe
-  newPassword: Nova palavra-passe
-  newPasswordConfirm: Confirme a nova palavra-passe
-  newUser: Novo Utilizador
-  password: Palavra-passe
-  passwordUpdated: Palavra-passe atualizada!
+  lockPassword: Não permitir que o usuário altere a senha
+  newPassword: Nova senha
+  newPasswordConfirm: Confirme a nova senha
+  newUser: Novo Usuário
+  password: Senha
+  passwordUpdated: Senha atualizada!
   permissions: Permissões
   permissionsHelp: >
-    Pode definir o utilizador como administrador ou escolher as permissões
+    Pode definir o usuário como administrador ou escolher as permissões
     manualmente. Se selecionar a opção "Administrador", todas as outras opções serão
-    automaticamente selecionadas. A gestão dos utilizadores é um privilégio restringido
+    automaticamente selecionadas. A gestão dos usuários é um privilégio restringido
     aos administradores.
-  profileSettings: Configurações do Utilizador
+  profileSettings: Configurações do Usuário
   ruleExample1: >
     previne o acesso a qualquer "dotfile" (como .git, .gitignore) em
     qualquer pasta
-  ruleExample2: bloqueia o acesso ao ficheiro chamado Caddyfile.
+  ruleExample2: bloqueia o acesso ao arquivo chamado Caddyfile.
   rules: Regras
   rulesHelp1: >
     Aqui pode definir um conjunto de regras para permitir ou bloquear o
-    acesso do utilizador a determinados ficheiros ou pastas. Os ficheiros bloqueados
+    acesso do utilizador a determinados arquivos ou pastas. Os arquivos bloqueados
     não irão aparecer durante a navegação. Suportamos expressões regulares e os caminhos
-    dos ficheiros devem ser relativos à base do utilizador.
+    dos arquivos devem ser relativos à base do usuário.
   rulesHelp2: >
     Cada regra deve ser colocada numa linha diferente e deve começar com
     as palavras {0} (permite) ou {1} (bloqueia). Deve escrever, logo de seguida, {2},
-    caso queira utilizar uma expressão regular. Depois, escreva o caminho do ficheiro/pasta
+    caso queira utilizar uma expressão regular. Depois, escreva o caminho do arquivo/pasta
     ou a expressão regular.
   scope: Base
   settingsUpdated: Configurações atualizadas!
-  user: Utilizador
+  user: Usuário
   userCommands: Comandos
   userCommandsHelp: 'Uma lista, separada com espaços, de comandos disponíveis para
-    este utilizados. Exemplo:'
-  userCreated: Utilizador criado!
-  userDeleted: Utilizador eliminado!
-  userManagement: Gestão de Utilizadores
-  username: Nome de utilizador
-  users: Utilizadores
-  userUpdated: Utilizador atualizado!
+    este usuário. Exemplo:'
+  userCreated: Usuário criado!
+  userDeleted: Usuário eliminado!
+  userManagement: Gestão de Usuários
+  username: Nome do usuário
+  users: Usuários
+  userUpdated: Usuário atualizado!
 sidebar:
   help: Ajuda
   hugoNew: Hugo New
   logout: Sair
-  myFiles: Ficheiros
-  newFile: Novo ficheiro
+  myFiles: Arquivos
+  newFile: Novo arquivo
   newFolder: Nova pasta
   preview: Pré-visualizar
   settings: Configurações
