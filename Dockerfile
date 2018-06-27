@@ -12,7 +12,7 @@ WORKDIR /go/src/github.com/filebrowser/filebrowser/cmd/filebrowser
 RUN CGO_ENABLED=0 go build -a
 RUN mv filebrowser /go/bin/filebrowser
 
-FROM ubuntu
+FROM scratch
 COPY --from=0 /go/bin/filebrowser /filebrowser
 
 VOLUME /tmp
