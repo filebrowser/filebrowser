@@ -9,6 +9,7 @@ import zhCN from './zh-cn.yaml'
 import zhTW from './zh-tw.yaml'
 import es from './es.yaml'
 import de from './de.yaml'
+import ru from './ru.yaml'
 
 Vue.use(VueI18n)
 
@@ -45,6 +46,9 @@ export function detectLocale () {
     case /^de.*/i.test(locale):
       locale = 'de'
       break
+    case /^ru.*/i.test(locale):
+      locale = 'ru'
+      break
     default:
       locale = 'en'
   }
@@ -64,7 +68,8 @@ const i18n = new VueI18n({
     'zh-cn': zhCN,
     'zh-tw': zhTW,
     'es': es,
-    'de': de
+    'de': de,
+    'ru': ru
   }
 })
 

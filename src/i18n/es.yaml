@@ -195,6 +195,7 @@ languages:
   zhCN: 中文 (简体)
   zhTW: 中文 (繁體)
   de: Deutsch
+  ru: Русский
 time:
   unit: Unidad
   seconds: Segundos

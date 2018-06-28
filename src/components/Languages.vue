@@ -8,6 +8,7 @@
     <option value="zh-tw">{{ $t('languages.zhTW') }}</option>
     <option value="es">{{ $t('languages.es') }}</option>
     <option value="de">{{ $t('languages.de') }}</option>
+    <option value="ru">{{ $t('languages.ru') }}</option>
   </select>
 </template>
 

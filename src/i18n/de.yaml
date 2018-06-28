@@ -192,6 +192,7 @@ languages:
   zhTW: 中文 (繁體)
   es: Español
   de: Deutsch
+  ru: Русский
 time:
   unit: Zeiteinheit
   seconds: Sekunden
