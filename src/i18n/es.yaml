@@ -187,6 +187,7 @@ search:
   writeToSearch: Escribe aquí para buscar
 languages:
   en: English
+  it: Italiano
   fr: Français
   pt: Português
   ptBR: Português (Brasil)

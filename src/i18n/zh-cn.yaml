@@ -185,6 +185,7 @@ search:
   writeToSearch: 请输入要搜索的内容
 languages:
   en: English
+  it: Italiano
   fr: Français
   pt: Português
   ptBR: Português (Brasil)

@@ -68,6 +68,7 @@ help:
   help: Ajuda
 languages:
   en: English
+  it: Italiano
   fr: Français
   pt: Português
   ptBR: Português (Brasil)

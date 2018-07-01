@@ -1,6 +1,7 @@
 <template>
   <select v-on:change="change" :value="selected">
     <option value="en">{{ $t('languages.en') }}</option>
+    <option value="it">{{ $t('languages.it') }}</option>
     <option value="fr">{{ $t('languages.fr') }}</option>
     <option value="pt">{{ $t('languages.pt') }}</option>
     <option value="pt-br">{{ $t('languages.ptBR') }}</option>

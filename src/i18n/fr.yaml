@@ -180,6 +180,7 @@ search:
   writeToSearch: Ecrivez ici pour lancer une recherche
 languages:
   en: English
+  it: Italiano
   fr: Français
   pt: Português
   ptBR: Português (Brasil)

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import en from './en.yaml'
+import it from './it.yaml'
 import fr from './fr.yaml'
 import pt from './pt.yaml'
 import ptBR from './pt-br.yaml'
@@ -18,6 +19,9 @@ export function detectLocale () {
   switch (true) {
     case /^en.*/i.test(locale):
       locale = 'en'
+      break
+    case /^it.*/i.test(locale):
+      locale = 'it'
       break
     case /^fr.*/i.test(locale):
       locale = 'fr'
@@ -61,6 +65,7 @@ const i18n = new VueI18n({
   fallbackLocale: 'en',
   messages: {
     'en': en,
+    'it': it,
     'fr': fr,
     'pt': pt,
     'pt-br': ptBR,
