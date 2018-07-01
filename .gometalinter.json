@@ -1,0 +1,38 @@
+{
+  "Enable": [
+      "deadcode",
+      "gotype",
+      "gotypex",
+      "ineffassign",
+      "interfacer",
+      "maligned",
+      "megacheck",
+      "structcheck",
+      "unconvert",
+      "varcheck",
+      "vet"
+    ],
+  "Disable": [
+      "dupl",
+      "errcheck",
+      "gas",
+      "gochecknoglobals",
+      "gochecknoinits",
+      "goconst",
+      "gocyclo",
+      "gofmt",
+      "goimports",
+      "golint",
+      "gosimple",
+      "lll",
+      "misspell",
+      "nakedret",
+      "safesql",
+      "staticcheck",
+      "test",
+      "testify",
+      "unparam",
+      "unused",
+      "vetshadow"
+    ]
+}
