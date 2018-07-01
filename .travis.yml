@@ -6,18 +6,52 @@ addons:
   apt:
     packages:
     - docker-ce
-script:
-  - USE_DOCKER="true" ./build/build_all.sh
-  - "./build/build_img.sh"
-deploy:
-  provider: script
-  skip_cleanup: true
-  script:
-    - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin && docker push filebrowser/filebrowser && docker logout
-  on:
-    repo: 1138-4EB/filebrowser
-    branch: master
 env:
   global:
+  - USE_DOCKER="true"
+  - WDIR=/go/src/github.com/filebrowser/filebrowser
   - secure: YtxLrM3z2A/wDh5yLXrMXgsMRr+c7v5auS/2SpNxra0E6fcFKNPtk2g6JB4JfpFRp6feeuwtT61b16OdHjNVcwtZPLEdM1o7nUaLd+UxxKYlXwMSl+Hqaclx5KbBwlVCU3BKJjPVY/RujjSgOGG7C9b40E8YBssVIxyM51qV+u4C7Odu99ZC42OnFG8n+SsdP2xdI7BFw5qJTmNAgnns4QEAiZi++YMtsYmoo828mNpYX093N1VeW81JHeHo82Xwifpeij2fxuOkGAf2JMOuYrH+Mn+jgAiSUGkNRKhaA5do3ov6tSiCWZtQjrAIFk56knXaeeIO+ysryJ+BO9w2qquI1IYktpIemZjjoz24qKeUY0suxPdEe7cH17/P6n2LHUyXiUyUpjRX2bFqo6kfAoMc6oPqgOWu8Ls5GwuEHqCwsZXTVy4ZqNYiAIgk85lUecm9uy+Ubtu4bCdJpDlkC9jGow4Wn/6lHNxsuGWfBR1P94WtC+qmrZf/xje3A5xKATtZtLrfc0tLdsH5VYDyIZ4WYWOIrCemayjXK3RJxN+qQDxaPWPG0cmHAxPslUyHE1eDxy1hCkCZx82Qjr1dX8Xx5tO4SoBayV9pmJo4+IyEb711NQyYrA/EdDswMmrVJNLBY+yDK6umkMlcIuRkVQanOydgRrusbKuQoAGOQRE=
   - secure: d+4aM/IGqszna5Yv7M+6wWmdzafSkPH5qJtvd5Jac6QUxMhDIzIN+br+Sf2PNougZso7EsaFHlZQKatSmCM+DsVy2Ke5DB82icTsMyBzano8GF+eYm9BJUhgOk933ygsDKRFvfaiwAPjGgyFDwLAc4CPc/Lly/mqs4wyyekFgTWvIF+AG9GaigCkQB14Ud70BJ0PBCGh82lqKSY32r7ti/G5uNrD5DFIOpUmoq9NWeX7tAvWi6iWWCdndmAnT7aRpb7oprgMTm4Jc7CguJvz2pKh6a2ncY29nuvr0DNEfXRGiGKAZAck852ad/pwSa04Uwi1j5arFAZuRgtldhksFQPWZM4s7SP9e6LpSWU4+QyuXY5R1Rs5KtdREd3J27z2RmFm0m5vMkUTGMMHvw+qOrITVovWKme+ptOKytpIVgoxmzA/Y2/aS0JxN78nuLfX5v24+yDQ1aIxtjTzQufkGyFPMqwDPV0ZO5/Ez0FP1lPWd5cRrL77ako1sTVje4Up08VwcmJueJH2Xv7YfmvYR0w/VMymEliKpDsTJ6A7/o+Y2gyi6mwTjg7q/6aXTBoxVH/3LFABJeBQWqhIaDTdk5xjutEGUKyUMoHjW6fqTvoErLRfwz8dSh1GBtLNz7AqVd2v7tnVzo0iFPIlyqvhUiHQX7M0+lPOz0hQ581VlHw=
+stages:
+- lint
+- test
+- release
+cache:
+  directories:
+    - vendor
+    - rice-box.go
+jobs:
+  include:
+  - stage: lint
+    script: "./build/run_gometalinter.sh"
+  - stage: test
+    script: "./build/build_all.sh"
+    deploy:
+      provider: script
+      skip_cleanup: true
+      script:
+      - cp dockerfiles/filebrowser Dockerfile
+      - docker build -t filebrowser/filebrowser .
+      - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+      - docker push filebrowser/filebrowser
+      - docker logout
+      on:
+        tags: false
+        repo: 1138-4EB/filebrowser
+        branch: master
+  - stage: release
+    script:
+      - cp dockerfiles/filebrowser Dockerfile
+      - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+      - docker run --rm -itv $(pwd):$WDIR filebrowser/dev goreleaser
+      - docker logout
+    if: tag IS present
+    deploy:
+      provider: releases
+      api_key:
+        secure: fEJu6vcxplTZ3ZR/fALLBp4mPWViIba4aeoiwNVJ9zqKmiZ5KG0pRqTMyevt8JUlR9yW0QNAfzkpd+wCqBHVWKIOy9Sy1Ocp3D0TY23ZAV29qKWwON9alBPqs6X6v6FiO0JFf5tARd+bpTmB3gFEUL1AGJ/UADv15fjwTERWlueloP6jmUCTCZEaTxkwrWxM8eBcMb3RlQykVKCMAZ5lGILWEKvJ8eBA7eP6GQtscCyS4tud+UWUb60VAufSPFv5K99dapm/1EXTTjgbtiY/zPP6FigR2RN/F6U0IUeEZbmftWcuDsp6lG4qInfwB1wK22F62KV193h8kgFDd8fB3hZuBVqBMtCxhuDFUFpULo2nAK8yyJP4/nc8SejHTxgFmIMhnUxLcE0om0E6bD6dFGNON08Bb/DheIvTzJSl44x6BomC/6xKKUp/GI6jGIxhV7YuWSJB4V3/5kG2ePbjEn/L+9BLY6L0kY7eea31xpSdDk881p0NOCN0lrD8RcDFf9qBtVhsh/RG2nbloC9mJI1iLTX/JRK4Rg1FROtsOE7PWPy3DbDB1rEweea2qahIbThbvfYbIhCYi0Oly6aeSJYfphQFY/hyNNrZZmWCq9gejVZelLDiYEV8Zkorhn4i/hPQ13nkVn1Rbd8jacoM1i3M4S4hkhjzlBIB+N2qudE=
+      file: "dist/*.tar.gz"
+      file_glob: true
+      on:
+        repo: 1138-4EB/filebrowser
+        all_branches: true
