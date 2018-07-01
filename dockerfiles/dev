@@ -1,13 +1,25 @@
+FROM golang:alpine AS base
+
+RUN apk add -U --no-cache git && \
+  go get github.com/alecthomas/gometalinter && \
+  gometalinter --install
+
 FROM golang:alpine
+
+WORKDIR /go/src/github.com/filebrowser/filebrowser
+
+COPY --from=base /go/bin /go/bin
 
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
   sed -i -e "s/v[0-9]\.[0-9]/edge/g" /etc/apk/repositories  && \
   apk add -U --no-cache yarn git curl dos2unix && \
   go get github.com/GeertJohan/go.rice/rice && \
-  curl -fsSL -o /usr/local/bin/dep $( \
+  curl -fsSL -o /go/bin/dep $( \
     curl -s https://api.github.com/repos/golang/dep/releases/latest \
     | grep "browser_download_url.*linux-amd64\"" \
     | cut -d : -f 2,3 \
     | tr -d \" \
   ) && \
-  chmod +x /usr/local/bin/dep
+  chmod +x /go/bin/dep && \
+  curl -sL https://git.io/goreleaser -o /go/bin/goreleaser && \
+  chmod +x /go/bin/goreleaser
