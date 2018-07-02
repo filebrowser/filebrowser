@@ -22,4 +22,6 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/reposit
   ) && \
   chmod +x /go/bin/dep && \
   curl -sL https://git.io/goreleaser -o /go/bin/goreleaser && \
-  chmod +x /go/bin/goreleaser
+  chmod +x /go/bin/goreleaser && \
+  curl -fsSL https://download.docker.com/linux/static/edge/x86_64/docker-18.05.0-ce.tgz | tar xvz --strip-components=1 docker/docker -C /usr/local/bin && \
+  chmod +x /usr/local/bin/docker
