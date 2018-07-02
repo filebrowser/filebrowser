@@ -43,7 +43,7 @@ jobs:
     script:
       - cp dockerfiles/filebrowser Dockerfile
       - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-      - docker run --rm -itv $(pwd):$WDIR filebrowser/dev goreleaser
+      - docker run --rm -itv $(pwd):$WDIR -v /var/run/docker.sock:/var/run/docker.sock filebrowser/dev goreleaser
       - docker logout
     if: tag IS present
     deploy:
