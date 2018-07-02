@@ -1,4 +1,8 @@
+project_name: filebrowser
+
 build:
+  env:
+    - CGO_ENABLED=0 
   main: cmd/filebrowser/main.go
   binary: filebrowser
   goos:
@@ -40,3 +44,16 @@ archive:
 
 release:
   disable: true
+
+dockers:
+  -
+    goos: linux
+    goarch: amd64
+    goarm: ''
+    image: filebrowser/filebrowser
+    skip_push: true
+    tag_templates:
+      - "{{ .Tag }}"
+      - latest
+    extra_files:
+      - Docker.json
