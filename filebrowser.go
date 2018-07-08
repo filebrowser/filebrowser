@@ -556,3 +556,13 @@ func GenerateRandomBytes(n int) ([]byte, error) {
 
 	return b, nil
 }
+
+type Branding struct {
+	Name          string
+	ExternalLinks bool
+}
+
+var DefaultBranding = Branding{
+	Name:          "File Browser",
+	ExternalLinks: true,
+}
