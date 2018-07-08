@@ -38,11 +38,7 @@ func Parse(c *caddy.Controller, plugin string) ([]*filebrowser.FileBrowser, erro
 			Commands:      []string{"git", "svn", "hg"},
 			CSS:           "",
 			ViewMode:      "mosaic",
-			Rules: []*filebrowser.Rule{{
-				Regex:  true,
-				Allow:  false,
-				Regexp: &filebrowser.Regexp{Raw: "\\/\\..+"},
-			}},
+			Rules:         []*filebrowser.Rule{},
 		}
 
 		baseURL := "/"
