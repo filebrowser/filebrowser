@@ -11,6 +11,7 @@
     <option value="es">{{ $t('languages.es') }}</option>
     <option value="de">{{ $t('languages.de') }}</option>
     <option value="ru">{{ $t('languages.ru') }}</option>
+    <option value="pl">{{ $t('languages.pl') }}</option>
   </select>
 </template>
 

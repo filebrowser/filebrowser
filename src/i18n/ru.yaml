@@ -197,6 +197,7 @@ languages:
   es: Español
   de: Deutsch
   ru: Русский
+  pl: Polski
 time:
   unit: Единица времени
   seconds: Секунды

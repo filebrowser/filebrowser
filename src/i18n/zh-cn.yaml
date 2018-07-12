@@ -195,6 +195,7 @@ languages:
   es: Español
   de: Deutsch
   ru: Русский
+  pl: Polski
 time:
   unit: 时间单位
   seconds: 秒
