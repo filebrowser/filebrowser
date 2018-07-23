@@ -48,10 +48,10 @@
 
     <h2 v-if="req.numDirs > 0">{{ $t('files.folders') }}</h2>
     <div v-if="req.numDirs > 0">
-      <item v-for="(item, index) in req.items"
+      <item v-for="(item) in dirs"
         v-if="item.isDir"
         :key="base64(item.name)"
-        v-bind:index="index"
+        v-bind:index="item.index"
         v-bind:name="item.name"
         v-bind:isDir="item.isDir"
         v-bind:url="item.url"
@@ -63,10 +63,10 @@
 
     <h2 v-if="req.numFiles > 0">{{ $t('files.files') }}</h2>
     <div v-if="req.numFiles > 0">
-      <item v-for="(item, index) in req.items"
+      <item v-for="(item) in files"
         v-if="!item.isDir"
         :key="base64(item.name)"
-        v-bind:index="index"
+        v-bind:index="item.index"
         v-bind:name="item.name"
         v-bind:isDir="item.isDir"
         v-bind:url="item.url"
@@ -97,6 +97,11 @@ import buttons from '@/utils/buttons'
 export default {
   name: 'listing',
   components: { Item },
+  data: function () {
+    return {
+      show: 50
+    }
+  },
   computed: {
     ...mapState(['req', 'selected', 'user']),
     nameSorted () {
@@ -110,6 +115,32 @@ export default {
     },
     ascOrdered () {
       return (this.req.order === 'asc')
+    },
+    items () {
+      const dirs = []
+      const files = []
+
+      this.req.items.forEach((item, index) => {
+        item.index = index
+
+        if (item.isDir) {
+          dirs.push(item)
+        } else {
+          files.push(item)
+        }
+      })
+
+      return { dirs, files }
+    },
+    dirs () {
+      return this.items.dirs.slice(0, this.show)
+    },
+    files () {
+      let show = this.show - this.items.dirs.length
+
+      if (show < 0) show = 0
+
+      return this.items.files.slice(0, show)
     },
     nameIcon () {
       if (this.nameSorted && !this.ascOrdered) {
@@ -140,6 +171,7 @@ export default {
     // Add the needed event listeners to the window and document.
     window.addEventListener('keydown', this.keyEvent)
     window.addEventListener('resize', this.resizeEvent)
+    window.addEventListener('scroll', this.scrollEvent)
     document.addEventListener('dragover', this.preventDefault)
     document.addEventListener('drop', this.drop)
   },
@@ -147,6 +179,7 @@ export default {
     // Remove event listeners before destroying this page.
     window.removeEventListener('keydown', this.keyEvent)
     window.removeEventListener('resize', this.resizeEvent)
+    window.removeEventListener('scroll', this.scrollEvent)
     document.removeEventListener('dragover', this.preventDefault)
     document.removeEventListener('drop', this.drop)
   },
@@ -228,6 +261,11 @@ export default {
       let items = css(['#listing.mosaic .item', '.mosaic#listing .item'])
       if (columns === 0) columns = 1
       items.style.width = `calc(${100 / columns}% - 1em)`
+    },
+    scrollEvent () {
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        this.show += 50
+      }
     },
     dragEnter (event) {
       // When the user starts dragging an item, put every

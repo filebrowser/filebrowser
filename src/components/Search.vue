@@ -61,7 +61,7 @@
 
         </template>
         <ul v-else-if="search.length > 0">
-          <li v-for="s in search">
+          <li v-for="s in results">
             <router-link @click.native="close" :to="'./' + s.path">
               <i v-if="s.dir" class="material-icons">folder</i>
               <i v-else class="material-icons">insert_drive_file</i>
@@ -94,7 +94,8 @@ export default {
       scrollable: null,
       search: [],
       commands: [],
-      reload: false
+      reload: false,
+      resultsCount: 50
     }
   },
   watch: {
@@ -162,6 +163,9 @@ export default {
     // The command, without the leading symbol ('$') with or without a following space (' ')
     command () {
       return this.value[1] === ' ' ? this.value.slice(2) : this.value.slice(1)
+    },
+    results () {
+      return this.search.slice(0, this.resultsCount)
     }
   },
   mounted () {
@@ -173,6 +177,12 @@ export default {
     window.addEventListener('keydown', (event) => {
       if (event.keyCode === 27) {
         this.$store.commit('closeHovers')
+      }
+    })
+
+    this.scrollable.addEventListener('scroll', (event) => {
+      if (this.scrollable.scrollTop === (this.scrollable.scrollHeight - this.scrollable.offsetHeight)) {
+        this.resultsCount += 50
       }
     })
   },
@@ -212,6 +222,7 @@ export default {
       this.value = ''
       this.active = false
       this.ongoing = false
+      this.resultsCount = 50
       this.search = []
       this.commands = []
     },
@@ -257,6 +268,8 @@ export default {
         return
       }
 
+      let results = []
+
       // In case of being a search.
       api.search(path, this.value,
         (event) => {
@@ -265,12 +278,11 @@ export default {
             response.path = response.path.substring(1)
           }
 
-          this.search.push(response)
-          this.scrollable.scrollTop = this.scrollable.scrollHeight
+          results.push(response)
         },
         (event) => {
           this.ongoing = false
-          this.scrollable.scrollTop = this.scrollable.scrollHeight
+          this.search = results
         }
       )
     }
