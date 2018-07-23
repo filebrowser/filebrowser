@@ -147,9 +147,9 @@ var (
 type condition func(path string) bool
 
 type searchOptions struct {
-	CaseInsensitive bool
-	Conditions      []condition
-	Terms           []string
+	CaseSensitive bool
+	Conditions    []condition
+	Terms         []string
 }
 
 func extensionCondition(extension string) condition {
@@ -181,9 +181,9 @@ func videoCondition(path string) bool {
 
 func parseSearch(value string) *searchOptions {
 	opts := &searchOptions{
-		CaseInsensitive: strings.Contains(value, "case:insensitive"),
-		Conditions:      []condition{},
-		Terms:           []string{},
+		CaseSensitive: strings.Contains(value, "case:sensitive"),
+		Conditions:    []condition{},
+		Terms:         []string{},
 	}
 
 	// removes the options from the value
@@ -215,7 +215,7 @@ func parseSearch(value string) *searchOptions {
 	}
 
 	// If it's canse insensitive, put everything in lowercase.
-	if opts.CaseInsensitive {
+	if !opts.CaseSensitive {
 		value = strings.ToLower(value)
 	}
 
@@ -276,7 +276,7 @@ func search(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) 
 	scope = filepath.Clean(scope)
 
 	err = filepath.Walk(scope, func(path string, f os.FileInfo, err error) error {
-		if search.CaseInsensitive {
+		if !search.CaseSensitive {
 			path = strings.ToLower(path)
 		}
 
