@@ -137,7 +137,7 @@ func apiHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, err
 		}
 	}
 
-	if c.Router == "checksum" || c.Router == "download" {
+	if c.Router == "checksum" || c.Router == "download" || c.Router == "subtitle" || c.Router == "subtitles" {
 		var err error
 		c.File, err = fb.GetInfo(r.URL, c.FileBrowser, c.User)
 		if err != nil {
@@ -165,6 +165,10 @@ func apiHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, err
 		code, err = settingsHandler(c, w, r)
 	case "share":
 		code, err = shareHandler(c, w, r)
+	case "subtitles":
+                code, err = subtitlesHandler(c, w, r)
+	case "subtitle":
+                code, err = subtitleHandler(c, w, r)
 	default:
 		code = http.StatusNotFound
 	}
