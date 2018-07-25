@@ -166,9 +166,9 @@ func apiHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, err
 	case "share":
 		code, err = shareHandler(c, w, r)
 	case "subtitles":
-                code, err = subtitlesHandler(c, w, r)
+		code, err = subtitlesHandler(c, w, r)
 	case "subtitle":
-                code, err = subtitleHandler(c, w, r)
+		code, err = subtitleHandler(c, w, r)
 	default:
 		code = http.StatusNotFound
 	}
