@@ -22,6 +22,7 @@
       <img v-if="req.type == 'image'" :src="raw()">
       <audio v-else-if="req.type == 'audio'" :src="raw()" autoplay controls></audio>
       <video v-else-if="req.type == 'video'" :src="raw()" autoplay controls>
+        <track v-for="(sub, index) in subtitles" :kind="sub.kind" :src="'/api/subtitle/' + sub.src" :label="sub.label" :default="index === 0">
         Sorry, your browser doesn't support embedded videos,
         but don't worry, you can <a :href="download()">download it</a>
         and watch it with your favorite video player!
@@ -56,7 +57,8 @@ export default {
     return {
       previousLink: '',
       nextLink: '',
-      listing: null
+      listing: null,
+      subtitles: []
     }
   },
   computed: {
@@ -76,6 +78,13 @@ export default {
         this.updateLinks()
       })
       .catch(this.$showError)
+    if (this.req.type === 'audio' || this.req.type === 'video') {
+      api.subtitles(this.req.url.slice(6))
+        .then(req => {
+          this.subtitles = req
+        })
+        .catch(this.$showError)
+    }
   },
   beforeDestroy () {
     window.removeEventListener('keyup', this.key)

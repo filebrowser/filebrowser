@@ -453,3 +453,26 @@ export function share (url, expires = '', unit = 'hours') {
     request.send()
   })
 }
+
+export function subtitles (url) {
+  url = removePrefix(url)
+
+  return new Promise((resolve, reject) => {
+    let request = new window.XMLHttpRequest()
+    request.open('GET', `${store.state.baseURL}/api/subtitles${url}`, true)
+    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${store.state.jwt}`)
+
+    request.onload = () => {
+      switch (request.status) {
+        case 200:
+          resolve(JSON.parse(request.responseText))
+          break
+        default:
+          reject(new Error(request.status))
+          break
+      }
+    }
+    request.onerror = (error) => reject(error)
+    request.send()
+  })
+}
