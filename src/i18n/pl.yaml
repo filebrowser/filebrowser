@@ -22,7 +22,7 @@ buttons:
   save: Zapisz
   search: Szukaj
   select: Wybierz
-  share: Share
+  share: Udostępnij
   publish: Opublikuj
   selectMultiple: Zaznacz wiele
   schedule: Grafik
@@ -46,7 +46,7 @@ files:
   home: Home
   lastModified: Ostatnio modyfikowane
   loading: Ładowanie...
-  lonely: It feels lonely here...
+  lonely: Smutno gdy tak pusto...
   metadata: Metadata
   multipleSelectionEnabled: Multiple selection enabled
   name: Nazwa
@@ -61,7 +61,7 @@ help:
     f: otwórz wyszukiwarkę
     s: pobierz aktywny plik lub folder
   del: usuń zaznaczone
-  doubleClick: otówrz plik lub folder
+  doubleClick: otwórz plik lub folder
   esc: wyczyść zaznaczenie i/lub zamknij okno z powiadomieniem
   f1: ta informacja
   f2: zmień nazwę pliku
@@ -69,11 +69,11 @@ help:
 login:
   password: Hasło
   submit: Login
-  username: Nazwa użutkownika
+  username: Nazwa użytkownika
   wrongCredentials: Błędne dane logowania
 prompts:
   copy: Kopiuj
-  copyMessage: 'Wybierz lokalizację gdzie mają być skopiowane Twoje pliki'
+  copyMessage: 'Wybierz lokalizację do której mają być skopiowane wybrane pliki'
   currentlyNavigating: 'Currently navigating on:'
   deleteMessageMultiple: Czy jesteś pewien że chcesz usunąć {count} plik(ów)?
   deleteMessageSingle: Czy jesteś pewien, że chcesz usunąć ten plik/folder?
@@ -124,12 +124,12 @@ settings:
   examples: Przykłady
   globalSettings: Ustawienia Globalne
   language: Język
-  lockPassword: Zalokuj użytkownikowi możliwość zmiany hasła
+  lockPassword: Zablokuj użytkownikowi możliwość zmiany hasła
   newPassword: Twoje nowe hasło
   newPasswordConfirm: Potwierdź swoje hasło
   newUser: Nowy Użytkownik
   password: Hasło
-  passwordUpdated: Hazło zostało zapisane!
+  passwordUpdated: Hasło zostało zapisane!
   permissions: Uprawnienia
   permissionsHelp: >
     You can set the user to be an administrator or choose the permissions
@@ -150,7 +150,7 @@ settings:
     {0} or {1}. Then you should write {2} if you are using a regular expression and
     then the expression or the path.
   scope: Scope
-  settingsUpdated: SUprawnienia Zapisane!
+  settingsUpdated: Uprawnienia Zapisane!
   user: Użytkownik
   userCommands: Polecenia
   userCommandsHelp: >
@@ -164,7 +164,7 @@ settings:
   userUpdated: Użytkownik zapisany!
 sidebar:
   help: Pomoc
-  logout: Wylouj
+  logout: Wyloguj
   myFiles: Moje pliki
   newFile: Nowy plik
   newFolder: Nowy folder
@@ -175,10 +175,10 @@ sidebar:
 search:
   images: Zdjęcia
   music: Muzyka
-  notSupportedCommand: Polecenie nie dozwolone.
+  notSupportedCommand: Polecenie niedozwolone.
   pdf: PDF
   pressToExecute: Naciśniej Enter aby wykonać.
-  pressToSearch: Naciśnij Eneter aby wyszukać.
+  pressToSearch: Naciśnij Enter aby wyszukać.
   search: Szukaj...
   searchOrCommand: Szukaj lub wykonaj polecenie...
   searchOrSupportedCommand: 'Szukaj lub wpisz ''$'' i wybierz jedno z dostęnych poleceń:'
