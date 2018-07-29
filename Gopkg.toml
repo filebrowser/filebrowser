@@ -61,6 +61,10 @@
   name = "gopkg.in/natefinch/lumberjack.v2"
   version = "2.1.0"
 
+[[constraint]]
+  branch = "master"
+  name = "github.com/maruel/natural"
+
 [[override]]
   name = "github.com/russross/blackfriday"
   version = "^1.0.0"
