@@ -68,10 +68,10 @@ If you search for that it will look at every file that contains "this", "are" or
 
 That will search for any file that contains "this is the name" on its name. It won't search for each separated term this time.
 
-By default, every search will be case sensitive. Although, you can make a case insensitive search by adding `case:insensitive` to the search terms, like this:
+By default, every search will be case insensitive. Although, you can make a case sensitive search by adding `case:sensitive` to the search terms, like this:
 
 ```
-this are keywords case:insensitive
+this are keywords case:sensitive
 ```
 
 # Contributing
