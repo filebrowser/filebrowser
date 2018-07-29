@@ -25,35 +25,13 @@
               <h3>{{ $t('search.types') }}</h3>
               <div>
                 <div tabindex="0"
+                  v-for="(v,k) in boxes"
+                  :key="k"
                   role="button"
-                  @click="init('type:image')"
-                  :aria-label="$t('search.images')">
-                  <i class="material-icons">insert_photo</i>
-                  <p>{{ $t('search.images') }}</p>
-                </div>
-
-                <div tabindex="0"
-                  role="button"
-                  @click="init('type:audio')"
-                  :aria-label="$t('search.music')">
-                  <i class="material-icons">volume_up</i>
-                  <p>{{ $t('search.music') }}</p>
-                </div>
-
-                <div tabindex="0"
-                  role="button"
-                  @click="init('type:video')"
-                  :aria-label="$t('search.video')">
-                  <i class="material-icons">movie</i>
-                  <p>{{ $t('search.video') }}</p>
-                </div>
-
-                <div tabindex="0"
-                  role="button"
-                  @click="init('type:pdf')"
-                  :aria-label="$t('search.pdf')">
-                  <i class="material-icons">picture_as_pdf</i>
-                  <p>{{ $t('search.pdf') }}</p>
+                  @click="init('type:'+k)"
+                  :aria-label="$t('search.'+v.label)">
+                  <i class="material-icons">{{v.icon}}</i>
+                  <p>{{ $t('search.'+v.label) }}</p>
                 </div>
               </div>
             </div>
@@ -61,7 +39,7 @@
 
         </template>
         <ul v-else-if="search.length > 0">
-          <li v-for="s in results">
+          <li v-for="(s,k) in results" :key="k">
             <router-link @click.native="close" :to="'./' + s.path">
               <i v-if="s.dir" class="material-icons">folder</i>
               <i v-else class="material-icons">insert_drive_file</i>
@@ -84,6 +62,13 @@ import { mapState } from 'vuex'
 import url from '@/utils/url'
 import * as api from '@/utils/api'
 
+var boxes = {
+  image: { label: 'images', icon: 'insert_photo' },
+  audio: { label: 'music', icon: 'volume_up' },
+  video: { label: 'video', icon: 'movie' },
+  pdf: { label: 'pdf', icon: 'picture_as_pdf' }
+}
+
 export default {
   name: 'search',
   data: function () {
@@ -95,7 +80,8 @@ export default {
       search: [],
       commands: [],
       reload: false,
-      resultsCount: 50
+      resultsCount: 50,
+      boxes: boxes
     }
   },
   watch: {
