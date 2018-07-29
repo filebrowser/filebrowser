@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/gohugoio/hugo/parser"
+	"github.com/maruel/natural"
 )
 
 // File contains the information about a particular file or directory.
@@ -266,7 +267,7 @@ func (i *File) GetFileType(checkContent bool) error {
 	}
 
 End:
-	// If the file type is text, save its content.
+// If the file type is text, save its content.
 	if i.Type == "text" {
 		if len(content) == 0 {
 			content, err = ioutil.ReadFile(i.Path)
@@ -372,7 +373,7 @@ func (l byName) Less(i, j int) bool {
 		return false
 	}
 
-	return strings.ToLower(l.Items[i].Name) < strings.ToLower(l.Items[j].Name)
+	return natural.Less(l.Items[i].Name, l.Items[j].Name)
 }
 
 // By Size

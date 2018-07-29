@@ -215,6 +215,12 @@
   version = "v1.7.6"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/maruel/natural"
+  packages = ["."]
+  revision = "dbcb3e2e8cf10eb839718ba666ef1e21b1c8b847"
+
+[[projects]]
   name = "github.com/mholt/archiver"
   packages = ["."]
   revision = "26cf5bb32d07aa4e8d0de15f56ce516f4641d7df"
