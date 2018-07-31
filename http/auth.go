@@ -51,31 +51,33 @@ func reCaptcha(host, secret, response string) (bool, error) {
 
 // authHandler processes the authentication for the user.
 func authHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
-	// NoAuth instances shouldn't call this method.
 	if c.NoAuth {
+		// NoAuth instances shouldn't call this method.
 		return 0, nil
-	}
+	} else if c.AuthMethod == "proxy" {
+		// Receive the Username from the Header.
+		cred.Username = r.Header.Get(c.LoginHeader)
+	} else {
+		// Receive the credentials from the request and unmarshal them.
+		if r.Body == nil {
+			return http.StatusForbidden, nil
+		}
 
-	// Receive the credentials from the request and unmarshal them.
-	var cred cred
-	if r.Body == nil {
-		return http.StatusForbidden, nil
-	}
-
-	err := json.NewDecoder(r.Body).Decode(&cred)
-	if err != nil {
-		return http.StatusForbidden, nil
-	}
-
-	// If ReCaptcha is enabled, check the code.
-	if len(c.ReCaptchaSecret) > 0 {
-		ok, err := reCaptcha(c.ReCaptchaHost, c.ReCaptchaSecret, cred.ReCaptcha)
+		err := json.NewDecoder(r.Body).Decode(&cred)
 		if err != nil {
 			return http.StatusForbidden, err
 		}
 
-		if !ok {
-			return http.StatusForbidden, nil
+		// If ReCaptcha is enabled, check the code.
+		if len(c.ReCaptchaSecret) > 0 {
+			ok, err := reCaptcha(c.ReCaptchaHost, c.ReCaptchaSecret, cred.ReCaptcha)
+			if err != nil {
+				return http.StatusForbidden, err
+			}
+
+			if !ok {
+				return http.StatusForbidden, nil
+			}
 		}
 	}
 
@@ -85,9 +87,11 @@ func authHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, er
 		return http.StatusForbidden, nil
 	}
 
-	// Checks if the password is correct.
-	if !fb.CheckPasswordHash(cred.Password, u.Password) {
-		return http.StatusForbidden, nil
+	if c.AuthMethod != "proxy" {
+		// Checks if the password is correct.
+		if !fb.CheckPasswordHash(cred.Password, u.Password) {
+			return http.StatusForbidden, nil
+		}
 	}
 
 	c.User = u
@@ -171,6 +175,16 @@ func validateAuth(c *fb.Context, r *http.Request) (bool, *fb.User) {
 		return true, c.User
 	}
 
+	// If proxy auth is used do not verify the JWT token if the header is provided.
+	if c.AuthMethod == "proxy" {
+	        u, err := c.Store.Users.GetByUsername(r.Header.Get(c.LoginHeader), c.NewFS)
+	        if err != nil {
+        		return false, nil
+		}
+		c.User = u;
+		return true, c.User
+	}
+
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		return c.Key, nil
 	}
@@ -194,3 +208,4 @@ func validateAuth(c *fb.Context, r *http.Request) (bool, *fb.User) {
 	c.User = u
 	return true, u
 }
+

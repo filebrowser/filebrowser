@@ -71,6 +71,14 @@ type FileBrowser struct {
 	// there will only exist one user, called "admin".
 	NoAuth bool
 
+	// Define if either, the common authentication mechansim or 'proxy' authentication should be used. 
+	// 'proxy' authentication enables a mechanism that authenticates a user based on forwarded
+	// headers.
+	AuthMethod string
+
+	// When 'AuthMethod' is set to 'proxy' the header configured below is used to identify the user.
+	LoginHeader string
+
 	// ReCaptcha host, key and secret.
 	ReCaptchaHost   string
 	ReCaptchaKey    string
