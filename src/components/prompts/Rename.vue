@@ -35,6 +35,9 @@ export default {
       name: ''
     }
   },
+  created () {
+    this.name = this.oldName()
+  },
   computed: mapState(['req', 'selected', 'selectedCount']),
   methods: {
     cancel: function (event) {
