@@ -71,7 +71,7 @@ type FileBrowser struct {
 	// there will only exist one user, called "admin".
 	NoAuth bool
 
-	// Define if either, the common authentication mechansim or 'proxy' authentication should be used. 
+	// Define if either, the common authentication mechansim or 'proxy' authentication should be used.
 	// 'proxy' authentication enables a mechanism that authenticates a user based on forwarded
 	// headers.
 	AuthMethod string

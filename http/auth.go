@@ -177,11 +177,11 @@ func validateAuth(c *fb.Context, r *http.Request) (bool, *fb.User) {
 
 	// If proxy auth is used do not verify the JWT token if the header is provided.
 	if c.AuthMethod == "proxy" {
-	        u, err := c.Store.Users.GetByUsername(r.Header.Get(c.LoginHeader), c.NewFS)
-	        if err != nil {
-        		return false, nil
+		u, err := c.Store.Users.GetByUsername(r.Header.Get(c.LoginHeader), c.NewFS)
+		if err != nil {
+			return false, nil
 		}
-		c.User = u;
+		c.User = u
 		return true, c.User
 	}
 
@@ -208,4 +208,3 @@ func validateAuth(c *fb.Context, r *http.Request) (bool, *fb.User) {
 	c.User = u
 	return true, u
 }
-
