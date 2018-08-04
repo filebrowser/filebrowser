@@ -24,7 +24,8 @@ jobs:
               -D vetshadow \
               -D errcheck \
               -D golint \
-              -D gas
+              -D gas \
+              -D gosec
   build:
     docker:
       - image: circleci/golang:1.10
