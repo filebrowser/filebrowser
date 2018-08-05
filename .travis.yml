@@ -37,7 +37,7 @@ jobs:
       - docker logout
       on:
         tags: false
-        repo: 1138-4EB/filebrowser
+        repo: filebrowser/filebrowser
         branch: master
   - stage: release
     script:
@@ -53,5 +53,5 @@ jobs:
       file: "dist/*.tar.gz"
       file_glob: true
       on:
-        repo: 1138-4EB/filebrowser
+        repo: filebrowser/filebrowser
         all_branches: true
