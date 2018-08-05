@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"time"
 
@@ -25,6 +26,22 @@ var (
 	cmdNotImplemented = []byte("Command not implemented.")
 	cmdNotAllowed     = []byte("Command not allowed.")
 )
+
+var commandShell []string
+
+func init() {
+	if runtime.GOOS != "windows" {
+		path, err := exec.LookPath("bash")
+
+		if err != nil {
+			path, err = exec.LookPath("sh")
+		}
+
+		if err != nil {
+			commandShell = []string{path, "-c"}
+		}
+	}
+}
 
 // command handles the requests for VCS related commands: git, svn and mercurial
 func command(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
@@ -86,6 +103,10 @@ func command(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error)
 	path := c.User.Scope + "/" + r.URL.Path
 	path = filepath.Clean(path)
 	buff := new(bytes.Buffer)
+
+	if len(commandShell) == 0 {
+		command = append(commandShell, command...)
+	}
 
 	// Sets up the command executation.
 	cmd := exec.Command(command[0], command[1:]...)
