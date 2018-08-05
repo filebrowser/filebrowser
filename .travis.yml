@@ -6,14 +6,15 @@ addons:
   apt:
     packages:
     - docker-ce
+    - pass
 env:
   global:
   - USE_DOCKER="true"
   - WDIR=/go/src/github.com/filebrowser/filebrowser
 stages:
-- lint
-- test
-- release
+  - lint
+  - test
+  - release
 cache:
   directories:
     - vendor
@@ -30,7 +31,7 @@ jobs:
       script:
       - cp dockerfiles/filebrowser Dockerfile
       - docker build -t filebrowser/filebrowser .
-      - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+      - ./build/docker_login.sh
       - docker push filebrowser/filebrowser
       - docker logout
       on:
@@ -40,7 +41,7 @@ jobs:
   - stage: release
     script:
       - cp dockerfiles/filebrowser Dockerfile
-      - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+      - ./build/docker_login.sh
       - docker run --rm -itv $(pwd):$WDIR -v /var/run/docker.sock:/var/run/docker.sock filebrowser/dev goreleaser
       - docker logout
     if: tag IS present
