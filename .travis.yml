@@ -49,7 +49,7 @@ jobs:
       provider: releases
       api_key:
         secure: fEJu6vcxplTZ3ZR/fALLBp4mPWViIba4aeoiwNVJ9zqKmiZ5KG0pRqTMyevt8JUlR9yW0QNAfzkpd+wCqBHVWKIOy9Sy1Ocp3D0TY23ZAV29qKWwON9alBPqs6X6v6FiO0JFf5tARd+bpTmB3gFEUL1AGJ/UADv15fjwTERWlueloP6jmUCTCZEaTxkwrWxM8eBcMb3RlQykVKCMAZ5lGILWEKvJ8eBA7eP6GQtscCyS4tud+UWUb60VAufSPFv5K99dapm/1EXTTjgbtiY/zPP6FigR2RN/F6U0IUeEZbmftWcuDsp6lG4qInfwB1wK22F62KV193h8kgFDd8fB3hZuBVqBMtCxhuDFUFpULo2nAK8yyJP4/nc8SejHTxgFmIMhnUxLcE0om0E6bD6dFGNON08Bb/DheIvTzJSl44x6BomC/6xKKUp/GI6jGIxhV7YuWSJB4V3/5kG2ePbjEn/L+9BLY6L0kY7eea31xpSdDk881p0NOCN0lrD8RcDFf9qBtVhsh/RG2nbloC9mJI1iLTX/JRK4Rg1FROtsOE7PWPy3DbDB1rEweea2qahIbThbvfYbIhCYi0Oly6aeSJYfphQFY/hyNNrZZmWCq9gejVZelLDiYEV8Zkorhn4i/hPQ13nkVn1Rbd8jacoM1i3M4S4hkhjzlBIB+N2qudE=
-      file: "dist/*.tar.gz"
+      file: "dist/*.*"
       file_glob: true
       on:
         repo: filebrowser/filebrowser
