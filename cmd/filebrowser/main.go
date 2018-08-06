@@ -2,6 +2,14 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser"
 	"github.com/filebrowser/filebrowser/bolt"
@@ -11,13 +19,7 @@ import (
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"io/ioutil"
-	"log"
-	"net"
-	"net/http"
-	"os"
-	"path/filepath"
-	"strings")
+)
 
 var (
 	addr            string
@@ -53,70 +55,85 @@ func init() {
 	flag.StringVarP(&addr, "address", "a", "", "Address to listen to (default is all of them)")
 	flag.StringVarP(&database, "database", "d", "./filebrowser.db", "Database file")
 	flag.StringVarP(&logfile, "log", "l", "stdout", "Errors logger; can use 'stdout', 'stderr' or file")
-	flag.StringVarP(&scope, "scope", "s", ".", "Default scope option for new users")
 	flag.StringVarP(&baseurl, "baseurl", "b", "", "Base URL")
-	flag.StringVar(&commands, "commands", "git svn hg", "Default commands option for new users")
 	flag.StringVar(&prefixurl, "prefixurl", "", "Prefix URL")
-	flag.StringVar(&viewMode, "view-mode", "mosaic", "Default view mode for new users")
-	flag.StringVar(&recaptchakey, "recaptcha-key", "", "ReCaptcha site key")
-	flag.StringVar(&recaptchasecret, "recaptcha-secret", "", "ReCaptcha secret")
-	flag.BoolVar(&allowCommands, "allow-commands", true, "Default allow commands option for new users")
-	flag.BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option for new users")
-	flag.BoolVar(&allowPublish, "allow-publish", true, "Default allow publish option for new users")
-	flag.StringVar(&auth.method, "auth.method", "default", "Switch between 'none', 'default' and 'proxy' authentication.")
-	flag.StringVar(&auth.loginHeader, "auth.loginHeader", "X-Forwarded-User", "The header name used for proxy authentication.")
-	flag.BoolVar(&allowNew, "allow-new", true, "Default allow new option for new users")
-	flag.BoolVar(&noAuth, "no-auth", false, "Disables authentication")
-	flag.BoolVar(&alterRecaptcha, "alternative-recaptcha", false, "Use recaptcha.net for serving and handling, useful in China")
-	flag.StringVar(&locale, "locale", "", "Default locale for new users, set it empty to enable auto detect from browser")
 	flag.StringVar(&staticg, "staticgen", "", "Static Generator you want to enable")
 	flag.BoolVarP(&showVer, "version", "v", false, "Show version")
+
+	// User default values
+	flag.StringVar(&commands, "defaults.commands", "git svn hg", "Default commands option for new users")
+	flag.StringVarP(&scope, "defaults.scope", "s", ".", "Default scope option for new users")
+	flag.StringVar(&viewMode, "defaults.viewMode", "mosaic", "Default view mode for new users")
+	flag.BoolVar(&allowCommands, "defaults.allowCommands", true, "Default allow commands option for new users")
+	flag.BoolVar(&allowEdit, "defaults.allowEdit", true, "Default allow edit option for new users")
+	flag.BoolVar(&allowPublish, "defaults.allowPublish", true, "Default allow publish option for new users")
+	flag.BoolVar(&allowNew, "defaults.allowNew", true, "Default allow new option for new users")
+	flag.StringVar(&locale, "defaults.locale", "", "Default locale for new users, set it empty to enable auto detect from browser")
+
+	// Recaptcha settings
+	flag.BoolVar(&alterRecaptcha, "recaptcha.alternative", false, "Use recaptcha.net for serving and handling, useful in China")
+	flag.StringVar(&recaptchakey, "recaptcha.key", "", "ReCaptcha site key")
+	flag.StringVar(&recaptchasecret, "recaptcha.secret", "", "ReCaptcha secret")
+
+	// Auth settings
+	flag.BoolVar(&noAuth, "noAuth", false, "Disables authentication")
+	flag.StringVar(&auth.method, "auth.method", "default", "Switch between 'none', 'default' and 'proxy' authentication.")
+	flag.StringVar(&auth.loginHeader, "auth.loginHeader", "X-Forwarded-User", "The header name used for proxy authentication.")
 }
 
 func setupViper() {
-	viper.SetDefault("Address", "")
 	viper.SetDefault("Port", "0")
+	viper.SetDefault("Address", "")
 	viper.SetDefault("Database", "./filebrowser.db")
-	viper.SetDefault("Scope", ".")
 	viper.SetDefault("Logger", "stdout")
-	viper.SetDefault("Commands", []string{"git", "svn", "hg"})
-	viper.SetDefault("AllowCommmands", true)
-	viper.SetDefault("AllowEdit", true)
-	viper.SetDefault("AllowNew", true)
-	viper.SetDefault("AllowPublish", true)
-	viper.SetDefault("StaticGen", "")
-	viper.SetDefault("Locale", "")
-	viper.SetDefault("AuthMethod", "default")
-	viper.SetDefault("LoginHeader", "X-Fowarded-User")
-	viper.SetDefault("NoAuth", false)
 	viper.SetDefault("BaseURL", "")
 	viper.SetDefault("PrefixURL", "")
-	viper.SetDefault("ViewMode", filebrowser.MosaicViewMode)
-	viper.SetDefault("AlternativeRecaptcha", false)
-	viper.SetDefault("ReCaptchaKey", "")
-	viper.SetDefault("ReCaptchaSecret", "")
+	viper.SetDefault("StaticGen", "")
+	viper.SetDefault("NoAuth", false)
 
 	viper.BindPFlag("Port", flag.Lookup("port"))
 	viper.BindPFlag("Address", flag.Lookup("address"))
 	viper.BindPFlag("Database", flag.Lookup("database"))
-	viper.BindPFlag("Scope", flag.Lookup("scope"))
 	viper.BindPFlag("Logger", flag.Lookup("log"))
-	viper.BindPFlag("Commands", flag.Lookup("commands"))
-	viper.BindPFlag("AllowCommands", flag.Lookup("allow-commands"))
-	viper.BindPFlag("AllowEdit", flag.Lookup("allow-edit"))
-	viper.BindPFlag("AllowNew", flag.Lookup("allow-new"))
-	viper.BindPFlag("AllowPublish", flag.Lookup("allow-publish"))
-	viper.BindPFlag("Locale", flag.Lookup("locale"))
-	viper.BindPFlag("StaticGen", flag.Lookup("staticgen"))
-	viper.BindPFlag("AuthMethod", flag.Lookup("auth.method"))
-	viper.BindPFlag("LoginHeader", flag.Lookup("auth.loginHeader"))
-	viper.BindPFlag("NoAuth", flag.Lookup("no-auth"))
 	viper.BindPFlag("BaseURL", flag.Lookup("baseurl"))
 	viper.BindPFlag("PrefixURL", flag.Lookup("prefixurl"))
-	viper.BindPFlag("ViewMode", flag.Lookup("view-mode"))
-	viper.BindPFlag("AlternativeRecaptcha", flag.Lookup("alternative-recaptcha"))
-	viper.BindPFlag("ReCaptchaKey", flag.Lookup("recaptcha-key"))
-	viper.BindPFlag("ReCaptchaSecret", flag.Lookup("recaptcha-secret"))
+	viper.BindPFlag("StaticGen", flag.Lookup("staticgen"))
+	viper.BindPFlag("NoAuth", flag.Lookup("no-auth"))
+
+	// User default values
+	viper.SetDefault("Defaults.Scope", ".")
+	viper.SetDefault("Defaults.Commands", []string{"git", "svn", "hg"})
+	viper.SetDefault("Defaults.ViewMode", filebrowser.MosaicViewMode)
+	viper.SetDefault("Defaults.AllowCommmands", true)
+	viper.SetDefault("Defaults.AllowEdit", true)
+	viper.SetDefault("Defaults.AllowNew", true)
+	viper.SetDefault("Defaults.AllowPublish", true)
+	viper.SetDefault("Defaults.Locale", "")
+
+	viper.BindPFlag("Defaults.Scope", flag.Lookup("defaults.scope"))
+	viper.BindPFlag("Defaults.Commands", flag.Lookup("defaults.commands"))
+	viper.BindPFlag("Defaults.ViewMode", flag.Lookup("defaults.viewMode"))
+	viper.BindPFlag("Defaults.AllowCommands", flag.Lookup("defaults.allowCommands"))
+	viper.BindPFlag("Defaults.AllowEdit", flag.Lookup("defaults.allowEdit"))
+	viper.BindPFlag("Defaults.AllowNew", flag.Lookup("defaults.allowNew"))
+	viper.BindPFlag("Defaults.AllowPublish", flag.Lookup("defaults.allowPublish"))
+	viper.BindPFlag("Defaults.Locale", flag.Lookup("defaults.locale"))
+
+	// Recaptcha settings
+	viper.SetDefault("Recaptcha.Alternative", false)
+	viper.SetDefault("Recaptcha.Key", "")
+	viper.SetDefault("Recaptcha.Secret", "")
+
+	viper.BindPFlag("Recaptcha.Alternative", flag.Lookup("recaptcha.alternative"))
+	viper.BindPFlag("Recaptcha.Key", flag.Lookup("recaptcha.key"))
+	viper.BindPFlag("Recaptcha.Secret", flag.Lookup("recaptcha.secret"))
+
+	// Auth settings
+	viper.SetDefault("AuthMethod", "default")
+	viper.SetDefault("LoginHeader", "X-Fowarded-User")
+
+	viper.BindPFlag("AuthMethod", flag.Lookup("auth.method"))
+	viper.BindPFlag("LoginHeader", flag.Lookup("auth.loginHeader"))
 
 	viper.SetConfigName("filebrowser")
 	viper.AddConfigPath(".")
@@ -209,31 +226,33 @@ func handler() http.Handler {
 	}
 
 	recaptchaHost := "https://www.google.com"
-	if viper.GetBool("AlternativeRecaptcha") {
+	if viper.GetBool("Recaptcha.Alternative") {
 		recaptchaHost = "https://recaptcha.net"
 	}
 
 	fm := &filebrowser.FileBrowser{
-		AuthMethod:      viper.GetString("AuthMethod"),
-		LoginHeader:     viper.GetString("LoginHeader"),
-		NoAuth:          viper.GetBool("NoAuth"),
-		BaseURL:         viper.GetString("BaseURL"),
-		PrefixURL:       viper.GetString("PrefixURL"),
-		ReCaptchaHost:   recaptchaHost,
-		ReCaptchaKey:    viper.GetString("ReCaptchaKey"),
-		ReCaptchaSecret: viper.GetString("ReCaptchaSecret"),
+		AuthMethod:  viper.GetString("AuthMethod"),
+		LoginHeader: viper.GetString("LoginHeader"),
+		NoAuth:      viper.GetBool("NoAuth"),
+		BaseURL:     viper.GetString("BaseURL"),
+		PrefixURL:   viper.GetString("PrefixURL"),
+		ReCaptcha: &filebrowser.ReCaptcha{
+			Host:   recaptchaHost,
+			Key:    viper.GetString("Recaptcha.Key"),
+			Secret: viper.GetString("Recaptcha.Secret"),
+		},
 		DefaultUser: &filebrowser.User{
-			AllowCommands: viper.GetBool("AllowCommands"),
-			AllowEdit:     viper.GetBool("AllowEdit"),
-			AllowNew:      viper.GetBool("AllowNew"),
-			AllowPublish:  viper.GetBool("AllowPublish"),
-			Commands:      viper.GetStringSlice("Commands"),
+			AllowCommands: viper.GetBool("Defaults.AllowCommands"),
+			AllowEdit:     viper.GetBool("Defaults.AllowEdit"),
+			AllowNew:      viper.GetBool("Defaults.AllowNew"),
+			AllowPublish:  viper.GetBool("Defaults.AllowPublish"),
+			Commands:      viper.GetStringSlice("Defaults.Commands"),
 			Rules:         []*filebrowser.Rule{},
-			Locale:        viper.GetString("Locale"),
+			Locale:        viper.GetString("Defaults.Locale"),
 			CSS:           "",
-			Scope:         viper.GetString("Scope"),
-			FileSystem:    fileutils.Dir(viper.GetString("Scope")),
-			ViewMode:      viper.GetString("ViewMode"),
+			Scope:         viper.GetString("Defaults.Scope"),
+			FileSystem:    fileutils.Dir(viper.GetString("Defaults.Scope")),
+			ViewMode:      viper.GetString("Defaults.ViewMode"),
 		},
 		Store: &filebrowser.Store{
 			Config: bolt.ConfigStore{DB: db},

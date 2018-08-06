@@ -80,8 +80,8 @@ func authHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	// If ReCaptcha is enabled, check the code.
-	if len(c.ReCaptchaSecret) > 0 {
-		ok, err := reCaptcha(c.ReCaptchaHost, c.ReCaptchaSecret, cred.ReCaptcha)
+	if len(c.ReCaptcha.Secret) > 0 {
+		ok, err := reCaptcha(c.ReCaptcha.Host, c.ReCaptcha.Secret, cred.ReCaptcha)
 		if err != nil {
 			return http.StatusForbidden, err
 		}

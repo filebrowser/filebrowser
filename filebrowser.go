@@ -41,6 +41,13 @@ var (
 	ErrInvalidOption      = errors.New("invalid option")
 )
 
+// ReCaptcha settings.
+type ReCaptcha struct {
+	Host   string
+	Key    string
+	Secret string
+}
+
 // FileBrowser is a file manager instance. It should be creating using the
 // 'New' function and not directly.
 type FileBrowser struct {
@@ -82,9 +89,7 @@ type FileBrowser struct {
 	LoginHeader string
 
 	// ReCaptcha host, key and secret.
-	ReCaptchaHost   string
-	ReCaptchaKey    string
-	ReCaptchaSecret string
+	ReCaptcha *ReCaptcha
 
 	// StaticGen is the static websit generator handler.
 	StaticGen StaticGen
