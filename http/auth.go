@@ -54,30 +54,40 @@ func authHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, er
 	if c.NoAuth {
 		// NoAuth instances shouldn't call this method.
 		return 0, nil
-	} else if c.AuthMethod == "proxy" {
-		// Receive the Username from the Header.
-		cred.Username = r.Header.Get(c.LoginHeader)
-	} else {
-		// Receive the credentials from the request and unmarshal them.
-		if r.Body == nil {
+	}
+
+	if c.AuthMethod == "proxy" {
+		// Receive the Username from the Header and check if it exists.
+		u, err := c.Store.Users.GetByUsername(r.Header.Get(c.LoginHeader), c.NewFS)
+		if err != nil {
 			return http.StatusForbidden, nil
 		}
 
-		err := json.NewDecoder(r.Body).Decode(&cred)
+		c.User = u
+		return printToken(c, w)
+	}
+
+	// Receive the credentials from the request and unmarshal them.
+	var cred cred
+
+	if r.Body == nil {
+		return http.StatusForbidden, nil
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&cred)
+	if err != nil {
+		return http.StatusForbidden, err
+	}
+
+	// If ReCaptcha is enabled, check the code.
+	if len(c.ReCaptchaSecret) > 0 {
+		ok, err := reCaptcha(c.ReCaptchaHost, c.ReCaptchaSecret, cred.ReCaptcha)
 		if err != nil {
 			return http.StatusForbidden, err
 		}
 
-		// If ReCaptcha is enabled, check the code.
-		if len(c.ReCaptchaSecret) > 0 {
-			ok, err := reCaptcha(c.ReCaptchaHost, c.ReCaptchaSecret, cred.ReCaptcha)
-			if err != nil {
-				return http.StatusForbidden, err
-			}
-
-			if !ok {
-				return http.StatusForbidden, nil
-			}
+		if !ok {
+			return http.StatusForbidden, nil
 		}
 	}
 
@@ -87,11 +97,9 @@ func authHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, er
 		return http.StatusForbidden, nil
 	}
 
-	if c.AuthMethod != "proxy" {
-		// Checks if the password is correct.
-		if !fb.CheckPasswordHash(cred.Password, u.Password) {
-			return http.StatusForbidden, nil
-		}
+	// Checks if the password is correct.
+	if !fb.CheckPasswordHash(cred.Password, u.Password) {
+		return http.StatusForbidden, nil
 	}
 
 	c.User = u
