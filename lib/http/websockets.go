@@ -104,7 +104,7 @@ func command(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error)
 	path = filepath.Clean(path)
 	buff := new(bytes.Buffer)
 
-	if len(commandShell) == 0 {
+	if len(commandShell) != 0 {
 		command = append(commandShell, command...)
 	}
 
