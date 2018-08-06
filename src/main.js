@@ -43,6 +43,12 @@ Vue.prototype.$showError = function (error) {
   n.show()
 }
 
+Vue.directive('focus', {
+  inserted: function (el) {
+    el.focus()
+  }
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

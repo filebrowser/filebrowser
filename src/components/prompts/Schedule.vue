@@ -6,7 +6,7 @@
 
     <div class="card-content">
       <p>{{ $t('prompts.scheduleMessage') }}</p>
-      <input autofocus type="datetime-local" v-model="date">
+      <input v-focus type="datetime-local" v-model="date">
     </div>
 
     <div class="card-action">

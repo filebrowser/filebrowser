@@ -78,7 +78,7 @@
       <div class="card-action">
         <button class="cancel flat"
           @click="closeHovers"
-          autofocus
+          v-focus
           :aria-label="$t('buttons.cancel')"
           :title="$t('buttons.cancel')">
           {{ $t('buttons.cancel') }}

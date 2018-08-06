@@ -28,7 +28,7 @@
         </li>
 
         <li>
-          <input autofocus
+          <input v-focus
             type="number"
             max="2147483647"
             min="0"

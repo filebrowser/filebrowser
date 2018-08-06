@@ -6,7 +6,7 @@
 
     <div class="card-content">
       <p>{{ $t('prompts.newArchetype') }}</p>
-      <input autofocus type="text" @keyup.enter="submit" v-model.trim="name">
+      <input v-focus type="text" @keyup.enter="submit" v-model.trim="name">
       <input type="text" @keyup.enter="submit" v-model.trim="archetype">
     </div>
 
