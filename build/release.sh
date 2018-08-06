@@ -21,8 +21,7 @@ echo "> Checking matching $semver in frontend submodule"
 cd frontend
 git fetch --all
 
-trash=$(git tag | grep "$semver")
-if [ $? -ne 0 ]; then
+if [ $(git tag | grep "$semver" | wc -l) -eq 0 ]; then
   echo "Tag $semver does not exist in submodule 'frontend'. Tag it and run this script again."
   exit 1
 fi
