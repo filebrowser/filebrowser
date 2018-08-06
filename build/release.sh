@@ -19,6 +19,7 @@ fi
 echo "> Checking matching $semver in frontend submodule"
 
 cd frontend
+git fetch --all
 
 trash=$(git tag | grep "$semver")
 if [ $? -ne 0 ]; then
