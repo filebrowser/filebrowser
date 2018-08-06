@@ -38,13 +38,13 @@ func Serve() {
 	}
 
 	// Validate the provided config before moving forward
-	if viper.GetString("AuthMethod") != "none" && viper.GetString("AuthMethod") != "default" && viper.GetString("AuthMethod") != "proxy" {
+	if viper.GetString("Auth.Method") != "none" && viper.GetString("Auth.Method") != "default" && viper.GetString("Auth.Method") != "proxy" {
 		log.Fatal("The property 'auth.method' needs to be set to 'default' or 'proxy'.")
 	}
 
-	if viper.GetString("AuthMethod") == "proxy" {
-		if viper.GetString("LoginHeader") == "" {
-			log.Fatal("The 'loginHeader' needs to be specified when 'proxy' authentication is used.")
+	if viper.GetString("Auth.Method") == "proxy" {
+		if viper.GetString("Auth.Header") == "" {
+			log.Fatal("The 'auth.header' needs to be specified when 'proxy' authentication is used.")
 		}
 		log.Println("[WARN] Filebrowser authentication is configured to 'proxy' authentication. This can cause a huge security issue if the infrastructure is not configured correctly.")
 	}
@@ -71,32 +71,28 @@ func handler() http.Handler {
 		log.Fatal(err)
 	}
 
-	recaptchaHost := "https://www.google.com"
-	if viper.GetBool("AlternativeRecaptcha") {
-		recaptchaHost = "https://recaptcha.net"
-	}
-
 	fm := &filebrowser.FileBrowser{
-		AuthMethod:      viper.GetString("AuthMethod"),
-		LoginHeader:     viper.GetString("LoginHeader"),
-		NoAuth:          viper.GetBool("NoAuth"),
-		BaseURL:         viper.GetString("BaseURL"),
-		PrefixURL:       viper.GetString("PrefixURL"),
-		ReCaptchaHost:   recaptchaHost,
-		ReCaptchaKey:    viper.GetString("ReCaptchaKey"),
-		ReCaptchaSecret: viper.GetString("ReCaptchaSecret"),
+		Auth: &filebrowser.Auth{
+			Method: viper.GetString("Auth.Method"),
+			Header: viper.GetString("Auth.Header"),
+		},
+		ReCaptcha: &filebrowser.ReCaptcha{
+			Host:   viper.GetString("Recaptcha.Host"),
+			Key:    viper.GetString("Recaptcha.Key"),
+			Secret: viper.GetString("Recaptcha.Secret"),
+		},
 		DefaultUser: &filebrowser.User{
-			AllowCommands: viper.GetBool("AllowCommands"),
-			AllowEdit:     viper.GetBool("AllowEdit"),
-			AllowNew:      viper.GetBool("AllowNew"),
-			AllowPublish:  viper.GetBool("AllowPublish"),
-			Commands:      viper.GetStringSlice("Commands"),
+			AllowCommands: viper.GetBool("Defaults.AllowCommands"),
+			AllowEdit:     viper.GetBool("Defaults.AllowEdit"),
+			AllowNew:      viper.GetBool("Defaults.AllowNew"),
+			AllowPublish:  viper.GetBool("Defaults.AllowPublish"),
+			Commands:      viper.GetStringSlice("Defaults.Commands"),
 			Rules:         []*filebrowser.Rule{},
-			Locale:        viper.GetString("Locale"),
+			Locale:        viper.GetString("Defaults.Locale"),
 			CSS:           "",
-			Scope:         viper.GetString("Scope"),
-			FileSystem:    fileutils.Dir(viper.GetString("Scope")),
-			ViewMode:      viper.GetString("ViewMode"),
+			Scope:         viper.GetString("Defaults.Scope"),
+			FileSystem:    fileutils.Dir(viper.GetString("Defaults.Scope")),
+			ViewMode:      viper.GetString("Defaults.ViewMode"),
 		},
 		Store: &filebrowser.Store{
 			Config: bolt.ConfigStore{DB: db},
@@ -107,6 +103,9 @@ func handler() http.Handler {
 			return fileutils.Dir(scope)
 		},
 	}
+
+	fm.SetBaseURL(viper.GetString("BaseURL"))
+	fm.SetPrefixURL(viper.GetString("PrefixURL"))
 
 	err = fm.Setup()
 	if err != nil {

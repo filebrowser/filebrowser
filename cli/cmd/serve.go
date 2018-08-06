@@ -25,30 +25,31 @@ to quickly create a Cobra application.`,
 }
 
 var (
-	addr            string
-	database        string
-	scope           string
-	commands        string
-	logfile         string
-	staticg         string
-	locale          string
-	baseurl         string
-	prefixurl       string
-	viewMode        string
-	recaptchakey    string
-	recaptchasecret string
-	port            int
-	auth            struct {
-		method      string
-		loginHeader string
+	addr      string
+	database  string
+	scope     string
+	commands  string
+	logfile   string
+	staticg   string
+	locale    string
+	baseurl   string
+	prefixurl string
+	viewMode  string
+	port      int
+	recaptcha struct {
+		host   string
+		key    string
+		secret string
 	}
-	noAuth         bool
-	allowCommands  bool
-	allowEdit      bool
-	allowNew       bool
-	allowPublish   bool
-	showVer        bool
-	alterRecaptcha bool
+	auth struct {
+		method string
+		header string
+	}
+	allowCommands bool
+	allowEdit     bool
+	allowNew      bool
+	allowPublish  bool
+	showVer       bool
 )
 
 func init() {
@@ -58,66 +59,77 @@ func init() {
 	serveCmd.PersistentFlags().StringVarP(&addr, "address", "a", "", "Address to listen to (default is all of them)")
 	serveCmd.PersistentFlags().StringVarP(&database, "database", "d", "./filebrowser.db", "Database file")
 	serveCmd.PersistentFlags().StringVarP(&logfile, "log", "l", "stdout", "Errors logger; can use 'stdout', 'stderr' or file")
-	serveCmd.PersistentFlags().StringVarP(&scope, "scope", "s", ".", "Default scope option for new users")
 	serveCmd.PersistentFlags().StringVarP(&baseurl, "baseurl", "b", "", "Base URL")
-	serveCmd.PersistentFlags().StringVar(&commands, "commands", "git svn hg", "Default commands option for new users")
 	serveCmd.PersistentFlags().StringVar(&prefixurl, "prefixurl", "", "Prefix URL")
-	serveCmd.PersistentFlags().StringVar(&viewMode, "view-mode", "mosaic", "Default view mode for new users")
-	serveCmd.PersistentFlags().StringVar(&recaptchakey, "recaptcha-key", "", "ReCaptcha site key")
-	serveCmd.PersistentFlags().StringVar(&recaptchasecret, "recaptcha-secret", "", "ReCaptcha secret")
-	serveCmd.PersistentFlags().BoolVar(&allowCommands, "allow-commands", true, "Default allow commands option for new users")
-	serveCmd.PersistentFlags().BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option for new users")
-	serveCmd.PersistentFlags().BoolVar(&allowPublish, "allow-publish", true, "Default allow publish option for new users")
-	serveCmd.PersistentFlags().StringVar(&auth.method, "auth.method", "default", "Switch between 'none', 'default' and 'proxy' authentication.")
-	serveCmd.PersistentFlags().StringVar(&auth.loginHeader, "auth.loginHeader", "X-Forwarded-User", "The header name used for proxy authentication.")
-	serveCmd.PersistentFlags().BoolVar(&allowNew, "allow-new", true, "Default allow new option for new users")
-	serveCmd.PersistentFlags().BoolVar(&noAuth, "no-auth", false, "Disables authentication")
-	serveCmd.PersistentFlags().BoolVar(&alterRecaptcha, "alternative-recaptcha", false, "Use recaptcha.net for serving and handling, useful in China")
-	serveCmd.PersistentFlags().StringVar(&locale, "locale", "", "Default locale for new users, set it empty to enable auto detect from browser")
 	serveCmd.PersistentFlags().StringVar(&staticg, "staticgen", "", "Static Generator you want to enable")
-	serveCmd.PersistentFlags().BoolVarP(&showVer, "version", "v", false, "Show version")
 
-	viper.SetDefault("Address", "")
+	// User default values
+	serveCmd.PersistentFlags().StringVar(&commands, "defaults.commands", "git svn hg", "Default commands option for new users")
+	serveCmd.PersistentFlags().StringVarP(&scope, "defaults.scope", "s", ".", "Default scope option for new users")
+	serveCmd.PersistentFlags().StringVar(&viewMode, "defaults.viewMode", "mosaic", "Default view mode for new users")
+	serveCmd.PersistentFlags().BoolVar(&allowCommands, "defaults.allowCommands", true, "Default allow commands option for new users")
+	serveCmd.PersistentFlags().BoolVar(&allowEdit, "defaults.allowEdit", true, "Default allow edit option for new users")
+	serveCmd.PersistentFlags().BoolVar(&allowPublish, "defaults.allowPublish", true, "Default allow publish option for new users")
+	serveCmd.PersistentFlags().BoolVar(&allowNew, "defaults.allowNew", true, "Default allow new option for new users")
+	serveCmd.PersistentFlags().StringVar(&locale, "defaults.locale", "", "Default locale for new users, set it empty to enable auto detect from browser")
+
+	// Recaptcha settings
+	serveCmd.PersistentFlags().StringVar(&recaptcha.host, "recaptcha.host", "https://www.google.com", "Use another host for ReCAPTCHA. recaptcha.net might be useful in China")
+	serveCmd.PersistentFlags().StringVar(&recaptcha.key, "recaptcha.key", "", "ReCaptcha site key")
+	serveCmd.PersistentFlags().StringVar(&recaptcha.secret, "recaptcha.secret", "", "ReCaptcha secret")
+
+	// Auth settings
+	serveCmd.PersistentFlags().StringVar(&auth.method, "auth.method", "default", "Switch between 'none', 'default' and 'proxy' authentication")
+	serveCmd.PersistentFlags().StringVar(&auth.header, "auth.header", "X-Forwarded-User", "The header name used for proxy authentication")
+
 	viper.SetDefault("Port", "0")
+	viper.SetDefault("Address", "")
 	viper.SetDefault("Database", "./filebrowser.db")
-	viper.SetDefault("Scope", ".")
 	viper.SetDefault("Logger", "stdout")
-	viper.SetDefault("Commands", []string{"git", "svn", "hg"})
-	viper.SetDefault("AllowCommmands", true)
-	viper.SetDefault("AllowEdit", true)
-	viper.SetDefault("AllowNew", true)
-	viper.SetDefault("AllowPublish", true)
-	viper.SetDefault("StaticGen", "")
-	viper.SetDefault("Locale", "")
-	viper.SetDefault("AuthMethod", "default")
-	viper.SetDefault("LoginHeader", "X-Fowarded-User")
-	viper.SetDefault("NoAuth", false)
 	viper.SetDefault("BaseURL", "")
 	viper.SetDefault("PrefixURL", "")
-	viper.SetDefault("ViewMode", filebrowser.MosaicViewMode)
-	viper.SetDefault("AlternativeRecaptcha", false)
-	viper.SetDefault("ReCaptchaKey", "")
-	viper.SetDefault("ReCaptchaSecret", "")
+	viper.SetDefault("StaticGen", "")
 
 	viper.BindPFlag("Port", serveCmd.PersistentFlags().Lookup("port"))
 	viper.BindPFlag("Address", serveCmd.PersistentFlags().Lookup("address"))
 	viper.BindPFlag("Database", serveCmd.PersistentFlags().Lookup("database"))
-	viper.BindPFlag("Scope", serveCmd.PersistentFlags().Lookup("scope"))
 	viper.BindPFlag("Logger", serveCmd.PersistentFlags().Lookup("log"))
-	viper.BindPFlag("Commands", serveCmd.PersistentFlags().Lookup("commands"))
-	viper.BindPFlag("AllowCommands", serveCmd.PersistentFlags().Lookup("allow-commands"))
-	viper.BindPFlag("AllowEdit", serveCmd.PersistentFlags().Lookup("allow-edit"))
-	viper.BindPFlag("AllowNew", serveCmd.PersistentFlags().Lookup("allow-new"))
-	viper.BindPFlag("AllowPublish", serveCmd.PersistentFlags().Lookup("allow-publish"))
-	viper.BindPFlag("Locale", serveCmd.PersistentFlags().Lookup("locale"))
-	viper.BindPFlag("StaticGen", serveCmd.PersistentFlags().Lookup("staticgen"))
-	viper.BindPFlag("AuthMethod", serveCmd.PersistentFlags().Lookup("auth.method"))
-	viper.BindPFlag("LoginHeader", serveCmd.PersistentFlags().Lookup("auth.loginHeader"))
-	viper.BindPFlag("NoAuth", serveCmd.PersistentFlags().Lookup("no-auth"))
 	viper.BindPFlag("BaseURL", serveCmd.PersistentFlags().Lookup("baseurl"))
 	viper.BindPFlag("PrefixURL", serveCmd.PersistentFlags().Lookup("prefixurl"))
-	viper.BindPFlag("ViewMode", serveCmd.PersistentFlags().Lookup("view-mode"))
-	viper.BindPFlag("AlternativeRecaptcha", serveCmd.PersistentFlags().Lookup("alternative-recaptcha"))
-	viper.BindPFlag("ReCaptchaKey", serveCmd.PersistentFlags().Lookup("recaptcha-key"))
-	viper.BindPFlag("ReCaptchaSecret", serveCmd.PersistentFlags().Lookup("recaptcha-secret"))
+	viper.BindPFlag("StaticGen", serveCmd.PersistentFlags().Lookup("staticgen"))
+
+	// User default values
+	viper.SetDefault("Defaults.Scope", ".")
+	viper.SetDefault("Defaults.Commands", []string{"git", "svn", "hg"})
+	viper.SetDefault("Defaults.ViewMode", filebrowser.MosaicViewMode)
+	viper.SetDefault("Defaults.AllowCommmands", true)
+	viper.SetDefault("Defaults.AllowEdit", true)
+	viper.SetDefault("Defaults.AllowNew", true)
+	viper.SetDefault("Defaults.AllowPublish", true)
+	viper.SetDefault("Defaults.Locale", "")
+
+	viper.BindPFlag("Defaults.Scope", serveCmd.PersistentFlags().Lookup("defaults.scope"))
+	viper.BindPFlag("Defaults.Commands", serveCmd.PersistentFlags().Lookup("defaults.commands"))
+	viper.BindPFlag("Defaults.ViewMode", serveCmd.PersistentFlags().Lookup("defaults.viewMode"))
+	viper.BindPFlag("Defaults.AllowCommands", serveCmd.PersistentFlags().Lookup("defaults.allowCommands"))
+	viper.BindPFlag("Defaults.AllowEdit", serveCmd.PersistentFlags().Lookup("defaults.allowEdit"))
+	viper.BindPFlag("Defaults.AllowNew", serveCmd.PersistentFlags().Lookup("defaults.allowNew"))
+	viper.BindPFlag("Defaults.AllowPublish", serveCmd.PersistentFlags().Lookup("defaults.allowPublish"))
+	viper.BindPFlag("Defaults.Locale", serveCmd.PersistentFlags().Lookup("defaults.locale"))
+
+	// Recaptcha settings
+	viper.SetDefault("Recaptcha.Host", "https://www.google.com")
+	viper.SetDefault("Recaptcha.Key", "")
+	viper.SetDefault("Recaptcha.Secret", "")
+
+	viper.BindPFlag("Recaptcha.Host", serveCmd.PersistentFlags().Lookup("recaptcha.host"))
+	viper.BindPFlag("Recaptcha.Key", serveCmd.PersistentFlags().Lookup("recaptcha.key"))
+	viper.BindPFlag("Recaptcha.Secret", serveCmd.PersistentFlags().Lookup("recaptcha.secret"))
+
+	// Auth settings
+	viper.SetDefault("Auth.Method", "default")
+	viper.SetDefault("Auth.Header", "X-Fowarded-User")
+
+	viper.BindPFlag("Auth.Method", serveCmd.PersistentFlags().Lookup("auth.method"))
+	viper.BindPFlag("Auth.Header", serveCmd.PersistentFlags().Lookup("auth.header"))
 }

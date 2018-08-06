@@ -228,12 +228,12 @@ func renderFile(c *fb.Context, w http.ResponseWriter, file string) (int, error) 
 
 	data := map[string]interface{}{
 		"BaseURL":       c.RootURL(),
-		"NoAuth":        c.NoAuth,
+		"NoAuth":        c.Auth.Method == "none",
 		"Version":       fb.Version,
 		"CSS":           template.CSS(c.CSS),
-		"ReCaptcha":     c.ReCaptchaKey != "" && c.ReCaptchaSecret != "",
-		"ReCaptchaHost": c.ReCaptchaHost,
-		"ReCaptchaKey":  c.ReCaptchaKey,
+		"ReCaptcha":     c.ReCaptcha.Key != "" && c.ReCaptcha.Secret != "",
+		"ReCaptchaHost": c.ReCaptcha.Host,
+		"ReCaptchaKey":  c.ReCaptcha.Key,
 	}
 
 	if c.StaticGen != nil {
