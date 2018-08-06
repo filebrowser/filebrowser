@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 cd $(dirname $0)
 
 COMMIT_SHA="$(git rev-parse --verify HEAD | cut -c1-8)"
