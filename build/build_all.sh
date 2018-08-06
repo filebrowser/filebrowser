@@ -2,6 +2,10 @@
 
 cd $(dirname $0)/..
 
+if [ -d "rice-box.go" ]; then
+  rm -rf rice-box.go
+fi
+
 if [ "$USE_DOCKER" != "" ]; then
   if [ -d "frontend/dist" ]; then
     rm -rf frontend/dist
