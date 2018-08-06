@@ -44,6 +44,7 @@ jobs:
       - ./build/docker_login.sh
       - docker run --rm -itv $(pwd):$WDIR -v /var/run/docker.sock:/var/run/docker.sock filebrowser/dev goreleaser
       - docker logout
+      - ./build/push_ricebox.sh
     if: tag IS present
     deploy:
       provider: releases
