@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 cd $(dirname $0)/..
 
 if [ -d "rice-box.go" ]; then
