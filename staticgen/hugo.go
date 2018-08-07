@@ -187,9 +187,6 @@ func (h Hugo) undraft(file string) error {
 // Setup sets up the plugin.
 func (h *Hugo) Setup() error {
 	var err error
-	if h.Exe, err = exec.LookPath("hugo"); err != nil {
-		return err
-	}
-
-	return nil
+	h.Exe, err = exec.LookPath("hugo")
+	return err
 }

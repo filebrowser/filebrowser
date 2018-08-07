@@ -79,11 +79,10 @@ func downloadHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int
 
 func downloadFileHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
 	file, err := os.Open(c.File.Path)
-	defer file.Close()
-
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
+	defer file.Close()
 
 	stat, err := file.Stat()
 	if err != nil {
