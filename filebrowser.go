@@ -15,7 +15,8 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/GeertJohan/go.rice"	"github.com/hacdias/fileutils"
+	"github.com/GeertJohan/go.rice"
+	"github.com/hacdias/fileutils"
 	"github.com/mholt/caddy"
 	"github.com/robfig/cron"
 )
