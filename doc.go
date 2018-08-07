@@ -17,7 +17,7 @@ to import "github.com/filebrowser/filebrowser/bolt".
 	m := &fm.FileBrowser{
 		NoAuth: false,
 		Auth: {
-			Type: "default",
+			Method: "default",
 			LoginHeader: "X-Fowarded-User"
 		},
 		DefaultUser: &fm.User{
