@@ -2,12 +2,13 @@ package http
 
 import (
 	"bytes"
-	fb "github.com/filebrowser/filebrowser"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
+
+	fb "github.com/filebrowser/filebrowser"
 )
 
 func subtitlesHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
@@ -36,11 +37,10 @@ func subtitleHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int
 	}
 
 	file, err := os.Open(c.File.Path)
-	defer file.Close()
-
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
+	defer file.Close()
 
 	stat, err := file.Stat()
 	if err != nil {
