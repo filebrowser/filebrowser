@@ -4,7 +4,7 @@ set -e
 
 cd $(dirname $0)/..
 
-dolint='gometalinter --exclude="rice-box.go" --deadline=300s'
+dolint='gometalinter --exclude="rice-box.go" --deadline=300s ./...'
 
 if [ "$USE_DOCKER" != "" ]; then
   docker run --rm -itv $(pwd):/src filebrowser/dev sh -c "\
