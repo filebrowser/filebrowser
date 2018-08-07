@@ -28,14 +28,13 @@ jobs:
     deploy:
       provider: script
       skip_cleanup: true
-      script: ./build/build_img.sh && ./build/docker_login.sh && docker push filebrowser/filebrowser && docker logout
+      script: docker build -t filebrowser/filebrowser . && ./build/docker_login.sh && docker push filebrowser/filebrowser && docker logout
       on:
         tags: false
         repo: filebrowser/filebrowser
         branch: master
   - stage: release
     script:
-      - cp dockerfiles/filebrowser Dockerfile
       - ./build/docker_login.sh
       - docker run --rm -itv $(pwd):$WDIR -v /var/run/docker.sock:/var/run/docker.sock filebrowser/dev goreleaser
       - docker logout
