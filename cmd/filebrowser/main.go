@@ -2,18 +2,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"log"
-	"net"
-	"net/http"
-	"os"
-	"path/filepath"
-	"strings"
-
 	"github.com/asdine/storm"
-
-	"gopkg.in/natefinch/lumberjack.v2"
-
 	"github.com/filebrowser/filebrowser"
 	"github.com/filebrowser/filebrowser/bolt"
 	h "github.com/filebrowser/filebrowser/http"
@@ -21,7 +10,14 @@ import (
 	"github.com/hacdias/fileutils"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
-)
+	"gopkg.in/natefinch/lumberjack.v2"
+	"io/ioutil"
+	"log"
+	"net"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings")
 
 var (
 	addr            string
@@ -38,13 +34,17 @@ var (
 	recaptchakey    string
 	recaptchasecret string
 	port            int
-	noAuth          bool
-	allowCommands   bool
-	allowEdit       bool
-	allowNew        bool
-	allowPublish    bool
-	showVer         bool
-	alterRecaptcha  bool
+	auth            struct {
+		method      string
+		loginHeader string
+	}
+	noAuth         bool
+	allowCommands  bool
+	allowEdit      bool
+	allowNew       bool
+	allowPublish   bool
+	showVer        bool
+	alterRecaptcha bool
 )
 
 func init() {
@@ -63,6 +63,8 @@ func init() {
 	flag.BoolVar(&allowCommands, "allow-commands", true, "Default allow commands option for new users")
 	flag.BoolVar(&allowEdit, "allow-edit", true, "Default allow edit option for new users")
 	flag.BoolVar(&allowPublish, "allow-publish", true, "Default allow publish option for new users")
+	flag.StringVar(&auth.method, "auth.method", "default", "Switch between 'none', 'default' and 'proxy' authentication.")
+	flag.StringVar(&auth.loginHeader, "auth.loginHeader", "X-Forwarded-User", "The header name used for proxy authentication.")
 	flag.BoolVar(&allowNew, "allow-new", true, "Default allow new option for new users")
 	flag.BoolVar(&noAuth, "no-auth", false, "Disables authentication")
 	flag.BoolVar(&alterRecaptcha, "alternative-recaptcha", false, "Use recaptcha.net for serving and handling, useful in China")
@@ -84,6 +86,8 @@ func setupViper() {
 	viper.SetDefault("AllowPublish", true)
 	viper.SetDefault("StaticGen", "")
 	viper.SetDefault("Locale", "")
+	viper.SetDefault("AuthMethod", "default")
+	viper.SetDefault("LoginHeader", "X-Fowarded-User")
 	viper.SetDefault("NoAuth", false)
 	viper.SetDefault("BaseURL", "")
 	viper.SetDefault("PrefixURL", "")
@@ -104,6 +108,8 @@ func setupViper() {
 	viper.BindPFlag("AllowPublish", flag.Lookup("allow-publish"))
 	viper.BindPFlag("Locale", flag.Lookup("locale"))
 	viper.BindPFlag("StaticGen", flag.Lookup("staticgen"))
+	viper.BindPFlag("AuthMethod", flag.Lookup("auth.method"))
+	viper.BindPFlag("LoginHeader", flag.Lookup("auth.loginHeader"))
 	viper.BindPFlag("NoAuth", flag.Lookup("no-auth"))
 	viper.BindPFlag("BaseURL", flag.Lookup("baseurl"))
 	viper.BindPFlag("PrefixURL", flag.Lookup("prefixurl"))
@@ -168,6 +174,18 @@ func main() {
 		})
 	}
 
+	// Validate the provided config before moving forward
+	if viper.GetString("AuthMethod") != "none" && viper.GetString("AuthMethod") != "default" && viper.GetString("AuthMethod") != "proxy" {
+		log.Fatal("The property 'auth.method' needs to be set to 'default' or 'proxy'.")
+	}
+
+	if viper.GetString("AuthMethod") == "proxy" {
+		if viper.GetString("LoginHeader") == "" {
+			log.Fatal("The 'loginHeader' needs to be specified when 'proxy' authentication is used.")
+		}
+		log.Println("[WARN] Filebrowser authentication is configured to 'proxy' authentication. This can cause a huge security issue if the infrastructure is not configured correctly.")
+	}
+
 	// Builds the address and a listener.
 	laddr := viper.GetString("Address") + ":" + viper.GetString("Port")
 	listener, err := net.Listen("tcp", laddr)
@@ -196,6 +214,8 @@ func handler() http.Handler {
 	}
 
 	fm := &filebrowser.FileBrowser{
+		AuthMethod:      viper.GetString("AuthMethod"),
+		LoginHeader:     viper.GetString("LoginHeader"),
 		NoAuth:          viper.GetBool("NoAuth"),
 		BaseURL:         viper.GetString("BaseURL"),
 		PrefixURL:       viper.GetString("PrefixURL"),

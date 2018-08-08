@@ -71,6 +71,16 @@ type FileBrowser struct {
 	// there will only exist one user, called "admin".
 	NoAuth bool
 
+	// Define if which of the following authentication mechansims should be used:
+	// - 'default', which requires a user and a password.
+	// - 'proxy', which requires a valid user and the user name has to be provided through an
+	//   http header.
+	// - 'none', which allows anyone to access the filebrowser instance.
+	AuthMethod string
+
+	// When 'AuthMethod' is set to 'proxy' the header configured below is used to identify the user.
+	LoginHeader string
+
 	// ReCaptcha host, key and secret.
 	ReCaptchaHost   string
 	ReCaptchaKey    string
