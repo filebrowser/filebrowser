@@ -48,6 +48,18 @@ type ReCaptcha struct {
 	Secret string
 }
 
+// Auth settings.
+type Auth struct {
+	// Define if which of the following authentication mechansims should be used:
+	// - 'default', which requires a user and a password.
+	// - 'proxy', which requires a valid user and the user name has to be provided through an
+	//   http header.
+	// - 'none', which allows anyone to access the filebrowser instance.
+	Method string
+	// If 'Method' is set to 'proxy' the header configured below is used to identify the user.
+	Header string
+}
+
 // FileBrowser is a file manager instance. It should be creating using the
 // 'New' function and not directly.
 type FileBrowser struct {
@@ -74,19 +86,8 @@ type FileBrowser struct {
 	// edited directly. Use SetBaseURL.
 	BaseURL string
 
-	// NoAuth disables the authentication. When the authentication is disabled,
-	// there will only exist one user, called "admin".
-	NoAuth bool
-
-	// Define if which of the following authentication mechansims should be used:
-	// - 'default', which requires a user and a password.
-	// - 'proxy', which requires a valid user and the user name has to be provided through an
-	//   http header.
-	// - 'none', which allows anyone to access the filebrowser instance.
-	AuthMethod string
-
-	// When 'AuthMethod' is set to 'proxy' the header configured below is used to identify the user.
-	LoginHeader string
+	// Authentication configuration.
+	Auth *Auth
 
 	// ReCaptcha host, key and secret.
 	ReCaptcha *ReCaptcha

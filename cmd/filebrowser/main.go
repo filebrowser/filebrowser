@@ -37,10 +37,9 @@ var (
 	recaptchasecret string
 	port            int
 	auth            struct {
-		method      string
-		loginHeader string
+		method string
+		header string
 	}
-	noAuth         bool
 	allowCommands  bool
 	allowEdit      bool
 	allowNew       bool
@@ -76,9 +75,8 @@ func init() {
 	flag.StringVar(&recaptchasecret, "recaptcha.secret", "", "ReCaptcha secret")
 
 	// Auth settings
-	flag.BoolVar(&noAuth, "noAuth", false, "Disables authentication")
-	flag.StringVar(&auth.method, "auth.method", "default", "Switch between 'none', 'default' and 'proxy' authentication.")
-	flag.StringVar(&auth.loginHeader, "auth.loginHeader", "X-Forwarded-User", "The header name used for proxy authentication.")
+	flag.StringVar(&auth.method, "auth.method", "default", "Switch between 'none', 'default' and 'proxy' authentication")
+	flag.StringVar(&auth.header, "auth.header", "X-Forwarded-User", "The header name used for proxy authentication")
 }
 
 func setupViper() {
@@ -89,7 +87,6 @@ func setupViper() {
 	viper.SetDefault("BaseURL", "")
 	viper.SetDefault("PrefixURL", "")
 	viper.SetDefault("StaticGen", "")
-	viper.SetDefault("NoAuth", false)
 
 	viper.BindPFlag("Port", flag.Lookup("port"))
 	viper.BindPFlag("Address", flag.Lookup("address"))
@@ -98,7 +95,6 @@ func setupViper() {
 	viper.BindPFlag("BaseURL", flag.Lookup("baseurl"))
 	viper.BindPFlag("PrefixURL", flag.Lookup("prefixurl"))
 	viper.BindPFlag("StaticGen", flag.Lookup("staticgen"))
-	viper.BindPFlag("NoAuth", flag.Lookup("no-auth"))
 
 	// User default values
 	viper.SetDefault("Defaults.Scope", ".")
@@ -129,11 +125,11 @@ func setupViper() {
 	viper.BindPFlag("Recaptcha.Secret", flag.Lookup("recaptcha.secret"))
 
 	// Auth settings
-	viper.SetDefault("AuthMethod", "default")
-	viper.SetDefault("LoginHeader", "X-Fowarded-User")
+	viper.SetDefault("Auth.Method", "default")
+	viper.SetDefault("Auth.Header", "X-Fowarded-User")
 
-	viper.BindPFlag("AuthMethod", flag.Lookup("auth.method"))
-	viper.BindPFlag("LoginHeader", flag.Lookup("auth.loginHeader"))
+	viper.BindPFlag("Auth.Method", flag.Lookup("auth.method"))
+	viper.BindPFlag("Auth.Header", flag.Lookup("auth.header"))
 
 	viper.SetConfigName("filebrowser")
 	viper.AddConfigPath(".")
@@ -192,13 +188,13 @@ func main() {
 	}
 
 	// Validate the provided config before moving forward
-	if viper.GetString("AuthMethod") != "none" && viper.GetString("AuthMethod") != "default" && viper.GetString("AuthMethod") != "proxy" {
+	if viper.GetString("Auth.Method") != "none" && viper.GetString("Auth.Method") != "default" && viper.GetString("Auth.Method") != "proxy" {
 		log.Fatal("The property 'auth.method' needs to be set to 'default' or 'proxy'.")
 	}
 
-	if viper.GetString("AuthMethod") == "proxy" {
-		if viper.GetString("LoginHeader") == "" {
-			log.Fatal("The 'loginHeader' needs to be specified when 'proxy' authentication is used.")
+	if viper.GetString("Auth.Method") == "proxy" {
+		if viper.GetString("Auth.Header") == "" {
+			log.Fatal("The 'auth.header' needs to be specified when 'proxy' authentication is used.")
 		}
 		log.Println("[WARN] Filebrowser authentication is configured to 'proxy' authentication. This can cause a huge security issue if the infrastructure is not configured correctly.")
 	}
@@ -231,11 +227,10 @@ func handler() http.Handler {
 	}
 
 	fm := &filebrowser.FileBrowser{
-		AuthMethod:  viper.GetString("AuthMethod"),
-		LoginHeader: viper.GetString("LoginHeader"),
-		NoAuth:      viper.GetBool("NoAuth"),
-		BaseURL:     viper.GetString("BaseURL"),
-		PrefixURL:   viper.GetString("PrefixURL"),
+		Auth: &filebrowser.Auth{
+			Method: viper.GetString("Auth.Method"),
+			Header: viper.GetString("Auth.Header"),
+		},
 		ReCaptcha: &filebrowser.ReCaptcha{
 			Host:   recaptchaHost,
 			Key:    viper.GetString("Recaptcha.Key"),
@@ -263,6 +258,9 @@ func handler() http.Handler {
 			return fileutils.Dir(scope)
 		},
 	}
+
+	fm.SetBaseURL(viper.GetString("BaseURL"))
+	fm.SetPrefixURL(viper.GetString("PrefixURL"))
 
 	err = fm.Setup()
 	if err != nil {
