@@ -22,30 +22,32 @@ import (
 )
 
 var (
-	addr            string
-	config          string
-	database        string
-	scope           string
-	commands        string
-	logfile         string
-	staticg         string
-	locale          string
-	baseurl         string
-	prefixurl       string
-	viewMode        string
-	recaptchakey    string
-	recaptchasecret string
-	port            int
-	auth            struct {
+	addr      string
+	config    string
+	database  string
+	scope     string
+	commands  string
+	logfile   string
+	staticg   string
+	locale    string
+	baseurl   string
+	prefixurl string
+	viewMode  string
+	port      int
+	recaptcha struct {
+		host   string
+		key    string
+		secret string
+	}
+	auth struct {
 		method string
 		header string
 	}
-	allowCommands  bool
-	allowEdit      bool
-	allowNew       bool
-	allowPublish   bool
-	showVer        bool
-	alterRecaptcha bool
+	allowCommands bool
+	allowEdit     bool
+	allowNew      bool
+	allowPublish  bool
+	showVer       bool
 )
 
 func init() {
@@ -70,9 +72,9 @@ func init() {
 	flag.StringVar(&locale, "defaults.locale", "", "Default locale for new users, set it empty to enable auto detect from browser")
 
 	// Recaptcha settings
-	flag.BoolVar(&alterRecaptcha, "recaptcha.alternative", false, "Use recaptcha.net for serving and handling, useful in China")
-	flag.StringVar(&recaptchakey, "recaptcha.key", "", "ReCaptcha site key")
-	flag.StringVar(&recaptchasecret, "recaptcha.secret", "", "ReCaptcha secret")
+	flag.StringVar(&recaptcha.host, "recaptcha.host", "https://www.google.com", "Use another host for ReCAPTCHA. recaptcha.net might be useful in China")
+	flag.StringVar(&recaptcha.key, "recaptcha.key", "", "ReCaptcha site key")
+	flag.StringVar(&recaptcha.secret, "recaptcha.secret", "", "ReCaptcha secret")
 
 	// Auth settings
 	flag.StringVar(&auth.method, "auth.method", "default", "Switch between 'none', 'default' and 'proxy' authentication")
@@ -116,11 +118,11 @@ func setupViper() {
 	viper.BindPFlag("Defaults.Locale", flag.Lookup("defaults.locale"))
 
 	// Recaptcha settings
-	viper.SetDefault("Recaptcha.Alternative", false)
+	viper.SetDefault("Recaptcha.Host", "https://www.google.com")
 	viper.SetDefault("Recaptcha.Key", "")
 	viper.SetDefault("Recaptcha.Secret", "")
 
-	viper.BindPFlag("Recaptcha.Alternative", flag.Lookup("recaptcha.alternative"))
+	viper.BindPFlag("Recaptcha.Host", flag.Lookup("recaptcha.host"))
 	viper.BindPFlag("Recaptcha.Key", flag.Lookup("recaptcha.key"))
 	viper.BindPFlag("Recaptcha.Secret", flag.Lookup("recaptcha.secret"))
 
@@ -221,18 +223,13 @@ func handler() http.Handler {
 		log.Fatal(err)
 	}
 
-	recaptchaHost := "https://www.google.com"
-	if viper.GetBool("Recaptcha.Alternative") {
-		recaptchaHost = "https://recaptcha.net"
-	}
-
 	fm := &filebrowser.FileBrowser{
 		Auth: &filebrowser.Auth{
 			Method: viper.GetString("Auth.Method"),
 			Header: viper.GetString("Auth.Header"),
 		},
 		ReCaptcha: &filebrowser.ReCaptcha{
-			Host:   recaptchaHost,
+			Host:   viper.GetString("Recaptcha.Host"),
 			Key:    viper.GetString("Recaptcha.Key"),
 			Secret: viper.GetString("Recaptcha.Secret"),
 		},
