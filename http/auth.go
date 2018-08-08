@@ -51,20 +51,32 @@ func reCaptcha(host, secret, response string) (bool, error) {
 
 // authHandler processes the authentication for the user.
 func authHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
-	// NoAuth instances shouldn't call this method.
 	if c.NoAuth {
+		// NoAuth instances shouldn't call this method.
 		return 0, nil
+	}
+
+	if c.AuthMethod == "proxy" {
+		// Receive the Username from the Header and check if it exists.
+		u, err := c.Store.Users.GetByUsername(r.Header.Get(c.LoginHeader), c.NewFS)
+		if err != nil {
+			return http.StatusForbidden, nil
+		}
+
+		c.User = u
+		return printToken(c, w)
 	}
 
 	// Receive the credentials from the request and unmarshal them.
 	var cred cred
+
 	if r.Body == nil {
 		return http.StatusForbidden, nil
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&cred)
 	if err != nil {
-		return http.StatusForbidden, nil
+		return http.StatusForbidden, err
 	}
 
 	// If ReCaptcha is enabled, check the code.
@@ -168,6 +180,16 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 func validateAuth(c *fb.Context, r *http.Request) (bool, *fb.User) {
 	if c.NoAuth {
 		c.User = c.DefaultUser
+		return true, c.User
+	}
+
+	// If proxy auth is used do not verify the JWT token if the header is provided.
+	if c.AuthMethod == "proxy" {
+		u, err := c.Store.Users.GetByUsername(r.Header.Get(c.LoginHeader), c.NewFS)
+		if err != nil {
+			return false, nil
+		}
+		c.User = u
 		return true, c.User
 	}
 
