@@ -120,6 +120,9 @@ func setupViper() {
 
 	viper.SetConfigName("filebrowser")
 	viper.AddConfigPath(".")
+
+	viper.SetEnvPrefix("FB")
+	viper.AutomaticEnv()
 }
 
 func printVersion() {
