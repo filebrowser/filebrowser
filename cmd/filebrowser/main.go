@@ -2,6 +2,14 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser"
 	"github.com/filebrowser/filebrowser/bolt"
@@ -10,14 +18,7 @@ import (
 	"github.com/hacdias/fileutils"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"gopkg.in/natefinch/lumberjack.v2"
-	"io/ioutil"
-	"log"
-	"net"
-	"net/http"
-	"os"
-	"path/filepath"
-	"strings")
+)
 
 var (
 	addr            string
@@ -117,6 +118,10 @@ func setupViper() {
 	viper.BindPFlag("AlternativeRecaptcha", flag.Lookup("alternative-recaptcha"))
 	viper.BindPFlag("ReCaptchaKey", flag.Lookup("recaptcha-key"))
 	viper.BindPFlag("ReCaptchaSecret", flag.Lookup("recaptcha-secret"))
+
+	viper.SetEnvPrefix("FB")
+	viper.AutomaticEnv()
+
 }
 
 func printVersion() {
@@ -155,7 +160,7 @@ func main() {
 		printVersion()
 	}
 
-	initConfig();
+	initConfig()
 
 	// Set up process log before anything bad happens.
 	switch viper.GetString("Logger") {
