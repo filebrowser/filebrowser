@@ -117,9 +117,6 @@ func setupViper() {
 	viper.BindPFlag("AlternativeRecaptcha", flag.Lookup("alternative-recaptcha"))
 	viper.BindPFlag("ReCaptchaKey", flag.Lookup("recaptcha-key"))
 	viper.BindPFlag("ReCaptchaSecret", flag.Lookup("recaptcha-secret"))
-
-	viper.SetConfigName("filebrowser")
-	viper.AddConfigPath(".")
 }
 
 func printVersion() {
@@ -137,16 +134,15 @@ func main() {
 
 	// Add a configuration file if set.
 	if config != "" {
-		ext := filepath.Ext(config)
-		dir := filepath.Dir(config)
-		config = strings.TrimSuffix(config, ext)
-
-		if dir != "" {
+		cfg := strings.TrimSuffix(config, filepath.Ext(config))
+		if dir := filepath.Dir(cfg); dir != "" {
 			viper.AddConfigPath(dir)
-			config = strings.TrimPrefix(config, dir)
+			cfg = strings.TrimPrefix(cfg, dir)
 		}
-
-		viper.SetConfigName(config)
+		viper.SetConfigName(cfg)
+	} else {
+		viper.SetConfigName("filebrowser")
+		viper.AddConfigPath(".")
 	}
 
 	// Read configuration from a file if exists.
