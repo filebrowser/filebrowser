@@ -124,14 +124,7 @@ func printVersion() {
 	os.Exit(0)
 }
 
-func main() {
-	setupViper()
-	flag.Parse()
-
-	if showVer {
-		printVersion()
-	}
-
+func initConfig() {
 	// Add a configuration file if set.
 	if config != "" {
 		cfg := strings.TrimSuffix(config, filepath.Ext(config))
@@ -152,6 +145,17 @@ func main() {
 			panic(err)
 		}
 	}
+}
+
+func main() {
+	setupViper()
+	flag.Parse()
+
+	if showVer {
+		printVersion()
+	}
+
+	initConfig();
 
 	// Set up process log before anything bad happens.
 	switch viper.GetString("Logger") {
