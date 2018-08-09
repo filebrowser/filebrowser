@@ -14,7 +14,7 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "filebrowser",
-	Version: "someversion",
+	Version: "(untracked)",
 	Short: "A stylish web-based file manager",
 	Long: `File Browser is static binary composed of a golang backend
 and a Vue.js frontend to create, edit, copy, move, download your files
@@ -37,6 +37,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	rootCmd.SetVersionTemplate("File Browser {{printf \"version %s\" .Version}}\n")
 
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.cli.yaml)")
 
