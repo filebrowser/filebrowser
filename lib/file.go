@@ -1,4 +1,4 @@
-package filebrowser
+package lib
 
 import (
 	"bytes"

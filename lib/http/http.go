@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	fb "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser/lib"
 )
 
 // Handler returns a function compatible with http.HandleFunc.
