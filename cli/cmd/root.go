@@ -15,20 +15,18 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "filebrowser",
 	Version: "(untracked)",
+	Aliases: []string{"serve"},
 	Short: "A stylish web-based file manager",
 	Long: `File Browser is static binary composed of a golang backend
 and a Vue.js frontend to create, edit, copy, move, download your files
 easily, everywhere, every time.`,
-/*
-	Run: func(cmd *cobra.Command, args []string) {
-		serveCmd.Run(cmd, args)
-	},
-*/
+//	Run: func(cmd *cobra.Command, args []string) {},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	checkRootAlias()
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

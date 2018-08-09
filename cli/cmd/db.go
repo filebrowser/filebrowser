@@ -9,6 +9,8 @@ import (
 // dbCmd represents the db command
 var dbCmd = &cobra.Command{
 	Use:   "db",
+	Version: rootCmd.Version,
+	Aliases: []string{"database"},
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
