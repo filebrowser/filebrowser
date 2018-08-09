@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -e
-
 cd $(dirname $0)/..
 
 if [ -d "rice-box.go" ]; then
@@ -17,10 +15,17 @@ if [ "$USE_DOCKER" != "" ]; then
     WDIR="/go/src/github.com/filebrowser/filebrowser"
   fi;
 
+  if [ "$(command -v git)" != "" ]; then
+    COMMIT_SHA="$(git rev-parse HEAD | cut -c1-8)"
+  else
+    COMMIT_SHA="untracked"
+  fi
+
   $(command -v winpty) docker run -it \
     --name filebrowser-tmp \
     -v /$(pwd):/src:z \
     -w /${WDIR} \
+    -e COMMIT_SHA=$COMMIT_SHA \
     filebrowser/dev \
     sh -c "\
       cp -r //src/* /$WDIR && \
@@ -42,6 +47,7 @@ if [ "$USE_DOCKER" != "" ]; then
   fi
   docker rm -f filebrowser-tmp
 else
+  set -e
   ./build/build_assets.sh
   ./build/build.sh
 fi
