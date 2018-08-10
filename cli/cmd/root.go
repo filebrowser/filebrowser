@@ -37,19 +37,12 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.SetVersionTemplate("File Browser {{printf \"version %s\" .Version}}\n")
 
-	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.cli.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (defaults are './.filebrowser[ext]', '$HOME/.filebrowser[ext]' or '/etc/filebrowser/.filebrowser[ext]')")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
+	if cfgFile == "" {
 		// Find home directory.
 		home, err := homedir.Dir()
 		if err != nil {
@@ -60,6 +53,9 @@ func initConfig() {
 		viper.AddConfigPath(home)
 		viper.AddConfigPath("/etc/filebrowser/")
 		viper.SetConfigName(".filebrowser")
+	} else {
+		// Use config file from the flag.
+		viper.SetConfigFile(cfgFile)
 	}
 
 	viper.SetEnvPrefix("FB")
@@ -73,19 +69,3 @@ func initConfig() {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
 }
-
-/*
-	// Add a configuration file if set.
-	if config != "" {
-		ext := filepath.Ext(config)
-		dir := filepath.Dir(config)
-		config = strings.TrimSuffix(config, ext)
-
-		if dir != "" {
-			viper.AddConfigPath(dir)
-			config = strings.TrimPrefix(config, dir)
-		}
-
-		viper.SetConfigName(config)
-	}
-*/
