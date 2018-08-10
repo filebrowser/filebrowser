@@ -24,74 +24,36 @@ to quickly create a Cobra application.`,
 	Args: cobra.NoArgs,
 }
 
-var (
-	addr      string
-	database  string
-	scope     string
-	commands  string
-	logfile   string
-	staticg   string
-	locale    string
-	baseurl   string
-	prefixurl string
-	viewMode  string
-	port      int
-	recaptcha struct {
-		host   string
-		key    string
-		secret string
-	}
-	auth struct {
-		method string
-		header string
-	}
-	allowCommands bool
-	allowEdit     bool
-	allowNew      bool
-	allowPublish  bool
-	showVer       bool
-)
-
 func init() {
 	rootCmd.AddCommand(serveCmd)
 
 	f := serveCmd.PersistentFlags()
 	l := f.Lookup
 
-	f.IntVarP(&port, "port", "p", 0, "HTTP Port (default is random)")
-	f.StringVarP(&addr, "address", "a", "", "Address to listen to (default is all of them)")
-	f.StringVarP(&database, "database", "d", "./filebrowser.db", "Database file")
-	f.StringVarP(&logfile, "log", "l", "stdout", "Errors logger; can use 'stdout', 'stderr' or file")
-	f.StringVarP(&baseurl, "baseurl", "b", "", "Base URL")
-	f.StringVar(&prefixurl, "prefixurl", "", "Prefix URL")
-	f.StringVar(&staticg, "staticgen", "", "Static Generator you want to enable")
+	// Global settings
+	port := 0
+	addr := ""
+	database := "./filebrowser.db"
+	logfile := "stdout"
+	baseurl := ""
+	prefixurl := ""
+	staticg := ""
 
-	// User default values
-	f.StringVar(&commands, "defaults.commands", "git svn hg", "Default commands option for new users")
-	f.StringVarP(&scope, "defaults.scope", "s", ".", "Default scope option for new users")
-	f.StringVar(&viewMode, "defaults.viewMode", "mosaic", "Default view mode for new users")
-	f.BoolVar(&allowCommands, "defaults.allowCommands", true, "Default allow commands option for new users")
-	f.BoolVar(&allowEdit, "defaults.allowEdit", true, "Default allow edit option for new users")
-	f.BoolVar(&allowPublish, "defaults.allowPublish", true, "Default allow publish option for new users")
-	f.BoolVar(&allowNew, "defaults.allowNew", true, "Default allow new option for new users")
-	f.StringVar(&locale, "defaults.locale", "", "Default locale for new users, set it empty to enable auto detect from browser")
+	f.IntP("port", "p", port, "HTTP Port (default is random)")
+	f.StringP("address", "a", addr, "Address to listen to (default is all of them)")
+	f.StringP("database", "d", database, "Database file")
+	f.StringP("log", "l", logfile, "Errors logger; can use 'stdout', 'stderr' or file")
+	f.StringP("baseurl", "b", baseurl, "Base URL")
+	f.String("prefixurl", prefixurl, "Prefix URL")
+	f.String("staticgen", staticg, "Static Generator you want to enable")
 
-	// Recaptcha settings
-	f.StringVar(&recaptcha.host, "recaptcha.host", "https://www.google.com", "Use another host for ReCAPTCHA. recaptcha.net might be useful in China")
-	f.StringVar(&recaptcha.key, "recaptcha.key", "", "ReCaptcha site key")
-	f.StringVar(&recaptcha.secret, "recaptcha.secret", "", "ReCaptcha secret")
-
-	// Auth settings
-	f.StringVar(&auth.method, "auth.method", "default", "Switch between 'none', 'default' and 'proxy' authentication")
-	f.StringVar(&auth.header, "auth.header", "X-Forwarded-User", "The header name used for proxy authentication")
-
-	v.SetDefault("Port", "0")
-	v.SetDefault("Address", "")
-	v.SetDefault("Database", "./filebrowser.db")
-	v.SetDefault("Logger", "stdout")
-	v.SetDefault("BaseURL", "")
-	v.SetDefault("PrefixURL", "")
-	v.SetDefault("StaticGen", "")
+	v.SetDefault("Port", port)
+	v.SetDefault("Address", addr)
+	v.SetDefault("Database", database)
+	v.SetDefault("Logger", logfile)
+	v.SetDefault("BaseURL", baseurl)
+	v.SetDefault("PrefixURL", prefixurl)
+	v.SetDefault("StaticGen", staticg)
 
 	v.BindPFlag("Port", l("port"))
 	v.BindPFlag("Address", l("address"))
@@ -101,15 +63,44 @@ func init() {
 	v.BindPFlag("PrefixURL", l("prefixurl"))
 	v.BindPFlag("StaticGen", l("staticgen"))
 
-	// User default values
-	v.SetDefault("Defaults.Scope", ".")
+	// User default settings
+	var defaults = struct {
+		commands string
+		scope string
+		viewMode string
+		allowCommands bool
+		allowEdit bool
+		allowNew bool
+		allowPublish bool
+		locale string
+	}{
+		"git svn hg",
+		".",
+		filebrowser.MosaicViewMode,
+		true,
+		true,
+		true,
+		true,
+		"",
+	}
+
+	f.String("defaults.commands", defaults.commands, "Default commands option for new users")
+	f.StringP("defaults.scope", "s", defaults.scope, "Default scope option for new users")
+	f.String("defaults.viewMode", defaults.viewMode, "Default view mode for new users")
+	f.Bool("defaults.allowCommands", defaults.allowCommands, "Default allow commands option for new users")
+	f.Bool("defaults.allowEdit", defaults.allowEdit, "Default allow edit option for new users")
+	f.Bool("defaults.allowNew", defaults.allowNew, "Default allow new option for new users")
+	f.Bool("defaults.allowPublish", defaults.allowPublish, "Default allow publish option for new users")
+	f.String("defaults.locale", defaults.locale, "Default locale for new users, set it empty to enable auto detect from browser")
+
+	v.SetDefault("Defaults.Scope", defaults.scope)
 	v.SetDefault("Defaults.Commands", []string{"git", "svn", "hg"})
-	v.SetDefault("Defaults.ViewMode", filebrowser.MosaicViewMode)
-	v.SetDefault("Defaults.AllowCommmands", true)
-	v.SetDefault("Defaults.AllowEdit", true)
-	v.SetDefault("Defaults.AllowNew", true)
-	v.SetDefault("Defaults.AllowPublish", true)
-	v.SetDefault("Defaults.Locale", "")
+	v.SetDefault("Defaults.ViewMode", defaults.viewMode)
+	v.SetDefault("Defaults.AllowCommmands", defaults.allowCommands)
+	v.SetDefault("Defaults.AllowEdit", defaults.allowEdit)
+	v.SetDefault("Defaults.AllowNew", defaults.allowNew)
+	v.SetDefault("Defaults.AllowPublish", defaults.allowPublish)
+	v.SetDefault("Defaults.Locale", defaults.locale)
 
 	v.BindPFlag("Defaults.Scope", l("defaults.scope"))
 	v.BindPFlag("Defaults.Commands", l("defaults.commands"))
@@ -121,17 +112,42 @@ func init() {
 	v.BindPFlag("Defaults.Locale", l("defaults.locale"))
 
 	// Recaptcha settings
-	v.SetDefault("Recaptcha.Host", "https://www.google.com")
-	v.SetDefault("Recaptcha.Key", "")
-	v.SetDefault("Recaptcha.Secret", "")
+	var recaptcha = struct {
+		host   string
+		key    string
+		secret string
+	}{
+		"https://www.google.com",
+		"",
+		"",
+	}
+
+	f.String("recaptcha.host", recaptcha.host, "Use another host for ReCAPTCHA. recaptcha.net might be useful in China")
+	f.String("recaptcha.key", recaptcha.key, "ReCaptcha site key")
+	f.String("recaptcha.secret", recaptcha.secret, "ReCaptcha secret")
+
+	v.SetDefault("Recaptcha.Host", recaptcha.host)
+	v.SetDefault("Recaptcha.Key", recaptcha.key)
+	v.SetDefault("Recaptcha.Secret", recaptcha.secret)
 
 	v.BindPFlag("Recaptcha.Host", l("recaptcha.host"))
 	v.BindPFlag("Recaptcha.Key", l("recaptcha.key"))
 	v.BindPFlag("Recaptcha.Secret", l("recaptcha.secret"))
 
 	// Auth settings
-	v.SetDefault("Auth.Method", "default")
-	v.SetDefault("Auth.Header", "X-Fowarded-User")
+	var auth = struct {
+		method string
+		header string
+	}{
+		"default",
+		"X-Forwarded-User",
+	}
+
+	f.String("auth.method", auth.method, "Switch between 'none', 'default' and 'proxy' authentication")
+	f.String("auth.header", auth.header, "The header name used for proxy authentication")
+
+	v.SetDefault("Auth.Method", auth.method)
+	v.SetDefault("Auth.Header", auth.header)
 
 	v.BindPFlag("Auth.Method", l("auth.method"))
 	v.BindPFlag("Auth.Header", l("auth.header"))

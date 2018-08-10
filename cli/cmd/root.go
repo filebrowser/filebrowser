@@ -3,10 +3,11 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	v "github.com/spf13/viper"
 )
 
 var cfgFile string
@@ -49,23 +50,24 @@ func initConfig() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		viper.AddConfigPath(".")
-		viper.AddConfigPath(home)
-		viper.AddConfigPath("/etc/filebrowser/")
-		viper.SetConfigName(".filebrowser")
+		v.AddConfigPath(".")
+		v.AddConfigPath(home)
+		v.AddConfigPath("/etc/filebrowser/")
+		v.SetConfigName(".filebrowser")
 	} else {
 		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
+		v.SetConfigFile(cfgFile)
 	}
 
-	viper.SetEnvPrefix("FB")
-	viper.AutomaticEnv()
+	v.SetEnvPrefix("FB")
+	v.AutomaticEnv()
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigParseError); ok {
+	if err := v.ReadInConfig(); err != nil {
+		if _, ok := err.(v.ConfigParseError); ok {
 			panic(err)
 		}
 	} else {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		fmt.Println("Using config file:", v.ConfigFileUsed())
 	}
 }

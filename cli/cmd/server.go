@@ -19,7 +19,7 @@ import (
 
 func Serve() {
 	// Set up process log before anything bad happens.
-	switch viper.GetString("Logger") {
+	switch l := viper.GetString("Logger"); l {
 	case "stdout":
 		log.SetOutput(os.Stdout)
 	case "stderr":
@@ -28,7 +28,7 @@ func Serve() {
 		log.SetOutput(ioutil.Discard)
 	default:
 		log.SetOutput(&lumberjack.Logger{
-			Filename:   logfile,
+			Filename:   l,
 			MaxSize:    100,
 			MaxAge:     14,
 			MaxBackups: 10,
