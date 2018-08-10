@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/viper"
 	"github.com/asdine/storm"
 	filebrowser "github.com/filebrowser/filebrowser/lib"
@@ -38,15 +36,25 @@ func Serve() {
 	}
 
 	// Validate the provided config before moving forward
-	if viper.GetString("Auth.Method") != "none" && viper.GetString("Auth.Method") != "default" && viper.GetString("Auth.Method") != "proxy" {
-		log.Fatal("The property 'auth.method' needs to be set to 'default' or 'proxy'.")
-	}
+	{
+		// Map of valid authentication methods, containing a boolean value to indicate the need of Auth.Header
+		validMethods := make(map[string]bool)
+		validMethods["none"] = false
+		validMethods["default"] = false
+		validMethods["proxy"] = true
 
-	if viper.GetString("Auth.Method") == "proxy" {
-		if viper.GetString("Auth.Header") == "" {
-			log.Fatal("The 'auth.header' needs to be specified when 'proxy' authentication is used.")
+		m := viper.GetString("Auth.Method")
+		b, ok := validMethods[m]
+		if !ok {
+			log.Fatal("The property 'auth.method' needs to be set to 'none', 'default' or 'proxy'.")
 		}
-		log.Println("[WARN] Filebrowser authentication is configured to 'proxy' authentication. This can cause a huge security issue if the infrastructure is not configured correctly.")
+
+		if b {
+			if viper.GetString("Auth.Header") == "" {
+				log.Fatal("The 'auth.header' needs to be specified when '", m,"' authentication is used.")
+			}
+			log.Println("[WARN] Filebrowser authentication is configured to '", m,"' authentication. This can cause a huge security issue if the infrastructure is not configured correctly.")
+		}
 	}
 
 	// Builds the address and a listener.
@@ -57,7 +65,7 @@ func Serve() {
 	}
 
 	// Tell the user the port in which is listening.
-	fmt.Println("Listening on", listener.Addr().String())
+	log.Println("Listening on", listener.Addr().String())
 
 	// Starts the server.
 	if err := http.Serve(listener, handler()); err != nil {
@@ -71,7 +79,7 @@ func handler() http.Handler {
 		log.Fatal(err)
 	}
 
-	fm := &filebrowser.FileBrowser{
+	fb := &filebrowser.FileBrowser{
 		Auth: &filebrowser.Auth{
 			Method: viper.GetString("Auth.Method"),
 			Header: viper.GetString("Auth.Header"),
@@ -104,10 +112,10 @@ func handler() http.Handler {
 		},
 	}
 
-	fm.SetBaseURL(viper.GetString("BaseURL"))
-	fm.SetPrefixURL(viper.GetString("PrefixURL"))
+	fb.SetBaseURL(viper.GetString("BaseURL"))
+	fb.SetPrefixURL(viper.GetString("PrefixURL"))
 
-	err = fm.Setup()
+	err = fb.Setup()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -121,7 +129,7 @@ func handler() http.Handler {
 			CleanPublic: true,
 		}
 
-		if err = fm.Attach(hugo); err != nil {
+		if err = fb.Attach(hugo); err != nil {
 			log.Fatal(err)
 		}
 	case "jekyll":
@@ -132,10 +140,10 @@ func handler() http.Handler {
 			CleanPublic: true,
 		}
 
-		if err = fm.Attach(jekyll); err != nil {
+		if err = fb.Attach(jekyll); err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	return h.Handler(fm)
+	return h.Handler(fb)
 }
