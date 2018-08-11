@@ -20,7 +20,7 @@ import (
 
 func Serve() {
 	// Set up process log before anything bad happens.
-	switch l := viper.GetString("Logger"); l {
+	switch l := viper.GetString("log"); l {
 	case "stdout":
 		log.SetOutput(os.Stdout)
 	case "stderr":
@@ -44,14 +44,14 @@ func Serve() {
 		validMethods["default"] = false
 		validMethods["proxy"] = true
 
-		m := viper.GetString("Auth.Method")
+		m := viper.GetString("auth.method")
 		b, ok := validMethods[m]
 		if !ok {
 			log.Fatal("The property 'auth.method' needs to be set to 'none', 'default' or 'proxy'.")
 		}
 
 		if b {
-			if viper.GetString("Auth.Header") == "" {
+			if viper.GetString("auth.header") == "" {
 				log.Fatal("The 'auth.header' needs to be specified when '", m, "' authentication is used.")
 			}
 			log.Println("[WARN] Filebrowser authentication is configured to '", m, "' authentication. This can cause a huge security issue if the infrastructure is not configured correctly.")
@@ -59,7 +59,7 @@ func Serve() {
 	}
 
 	// Builds the address and a listener.
-	laddr := viper.GetString("Address") + ":" + viper.GetString("Port")
+	laddr := viper.GetString("address") + ":" + viper.GetString("port")
 	listener, err := net.Listen("tcp", laddr)
 	if err != nil {
 		log.Fatal(err)
@@ -75,33 +75,33 @@ func Serve() {
 }
 
 func handler() http.Handler {
-	db, err := storm.Open(viper.GetString("Database"))
+	db, err := storm.Open(viper.GetString("database"))
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	fb := &filebrowser.FileBrowser{
 		Auth: &filebrowser.Auth{
-			Method: viper.GetString("Auth.Method"),
-			Header: viper.GetString("Auth.Header"),
+			Method: viper.GetString("auth.method"),
+			Header: viper.GetString("auth.header"),
 		},
 		ReCaptcha: &filebrowser.ReCaptcha{
-			Host:   viper.GetString("Recaptcha.Host"),
-			Key:    viper.GetString("Recaptcha.Key"),
-			Secret: viper.GetString("Recaptcha.Secret"),
+			Host:   viper.GetString("recaptcha.host"),
+			Key:    viper.GetString("recaptcha.key"),
+			Secret: viper.GetString("recaptcha.secret"),
 		},
 		DefaultUser: &filebrowser.User{
-			AllowCommands: viper.GetBool("Defaults.AllowCommands"),
-			AllowEdit:     viper.GetBool("Defaults.AllowEdit"),
-			AllowNew:      viper.GetBool("Defaults.AllowNew"),
-			AllowPublish:  viper.GetBool("Defaults.AllowPublish"),
-			Commands:      viper.GetStringSlice("Defaults.Commands"),
+			AllowCommands: viper.GetBool("defaults.allowCommands"),
+			AllowEdit:     viper.GetBool("defaults.allowEdit"),
+			AllowNew:      viper.GetBool("defaults.allowNew"),
+			AllowPublish:  viper.GetBool("defaults.allowPublish"),
+			Commands:      viper.GetStringSlice("defaults.commands"),
 			Rules:         []*filebrowser.Rule{},
-			Locale:        viper.GetString("Defaults.Locale"),
+			Locale:        viper.GetString("defaults.locale"),
 			CSS:           "",
-			Scope:         viper.GetString("Defaults.Scope"),
-			FileSystem:    fileutils.Dir(viper.GetString("Defaults.Scope")),
-			ViewMode:      viper.GetString("Defaults.ViewMode"),
+			Scope:         viper.GetString("defaults.scope"),
+			FileSystem:    fileutils.Dir(viper.GetString("defaults.scope")),
+			ViewMode:      viper.GetString("defaults.viewMode"),
 		},
 		Store: &filebrowser.Store{
 			Config: bolt.ConfigStore{DB: db},
@@ -113,15 +113,15 @@ func handler() http.Handler {
 		},
 	}
 
-	fb.SetBaseURL(viper.GetString("BaseURL"))
-	fb.SetPrefixURL(viper.GetString("PrefixURL"))
+	fb.SetBaseURL(viper.GetString("baseurl"))
+	fb.SetPrefixURL(viper.GetString("prefixurl"))
 
 	err = fb.Setup()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	switch viper.GetString("StaticGen") {
+	switch viper.GetString("staticgen") {
 	case "hugo":
 		hugo := &staticgen.Hugo{
 			Root:        viper.GetString("Scope"),

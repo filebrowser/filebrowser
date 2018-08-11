@@ -1,8 +1,7 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
+	"log"
 	"strings"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -29,8 +28,7 @@ easily, everywhere, every time.`,
 func Execute() {
 	checkRootAlias()
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		panic(err)
 	}
 }
 
@@ -47,8 +45,7 @@ func initConfig() {
 		// Find home directory.
 		home, err := homedir.Dir()
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			panic(err)
 		}
 		v.AddConfigPath(".")
 		v.AddConfigPath(home)
@@ -68,6 +65,6 @@ func initConfig() {
 			panic(err)
 		}
 	} else {
-		fmt.Println("Using config file:", v.ConfigFileUsed())
+		log.Println("Using config file:", v.ConfigFileUsed())
 	}
 }

@@ -227,7 +227,7 @@ func renderFile(c *fb.Context, w http.ResponseWriter, file string) (int, error) 
 	w.Header().Set("Content-Type", contentType+"; charset=utf-8")
 
 	data := map[string]interface{}{
-		"BaseURL":       c.RootURL(),
+		"baseurl":       c.RootURL(),
 		"NoAuth":        c.Auth.Method == "none",
 		"Version":       fb.Version,
 		"CSS":           template.CSS(c.CSS),
@@ -237,7 +237,7 @@ func renderFile(c *fb.Context, w http.ResponseWriter, file string) (int, error) 
 	}
 
 	if c.StaticGen != nil {
-		data["StaticGen"] = c.StaticGen.Name()
+		data["staticgen"] = c.StaticGen.Name()
 	}
 
 	err := tpl.Execute(w, data)
@@ -291,7 +291,7 @@ func sharePage(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, erro
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 		err := tpl.Execute(w, map[string]interface{}{
-			"BaseURL": c.RootURL(),
+			"baseurl": c.RootURL(),
 			"File":    c.File,
 		})
 

@@ -29,7 +29,6 @@ func init() {
 	rootCmd.AddCommand(serveCmd)
 
 	f := serveCmd.PersistentFlags()
-	l := f.Lookup
 
 	// Global settings
 	port := 0
@@ -48,21 +47,13 @@ func init() {
 	f.String("prefixurl", prefixurl, "Prefix URL")
 	f.String("staticgen", staticg, "Static Generator you want to enable")
 
-	v.SetDefault("Port", port)
-	v.SetDefault("Address", addr)
-	v.SetDefault("Database", database)
-	v.SetDefault("Logger", logfile)
-	v.SetDefault("BaseURL", baseurl)
-	v.SetDefault("PrefixURL", prefixurl)
-	v.SetDefault("StaticGen", staticg)
-
-	v.BindPFlag("Port", l("port"))
-	v.BindPFlag("Address", l("address"))
-	v.BindPFlag("Database", l("database"))
-	v.BindPFlag("Logger", l("log"))
-	v.BindPFlag("BaseURL", l("baseurl"))
-	v.BindPFlag("PrefixURL", l("prefixurl"))
-	v.BindPFlag("StaticGen", l("staticgen"))
+	v.SetDefault("port", port)
+	v.SetDefault("address", addr)
+	v.SetDefault("database", database)
+	v.SetDefault("log", logfile)
+	v.SetDefault("baseurl", baseurl)
+	v.SetDefault("prefixurl", prefixurl)
+	v.SetDefault("staticgen", staticg)
 
 	// User default settings
 	var defaults = struct {
@@ -94,23 +85,14 @@ func init() {
 	f.Bool("defaults.allowPublish", defaults.allowPublish, "Default allow publish option for new users")
 	f.String("defaults.locale", defaults.locale, "Default locale for new users, set it empty to enable auto detect from browser")
 
-	v.SetDefault("Defaults.Scope", defaults.scope)
-	v.SetDefault("Defaults.Commands", []string{"git", "svn", "hg"})
-	v.SetDefault("Defaults.ViewMode", defaults.viewMode)
-	v.SetDefault("Defaults.AllowCommmands", defaults.allowCommands)
-	v.SetDefault("Defaults.AllowEdit", defaults.allowEdit)
-	v.SetDefault("Defaults.AllowNew", defaults.allowNew)
-	v.SetDefault("Defaults.AllowPublish", defaults.allowPublish)
-	v.SetDefault("Defaults.Locale", defaults.locale)
-
-	v.BindPFlag("Defaults.Scope", l("defaults.scope"))
-	v.BindPFlag("Defaults.Commands", l("defaults.commands"))
-	v.BindPFlag("Defaults.ViewMode", l("defaults.viewMode"))
-	v.BindPFlag("Defaults.AllowCommands", l("defaults.allowCommands"))
-	v.BindPFlag("Defaults.AllowEdit", l("defaults.allowEdit"))
-	v.BindPFlag("Defaults.AllowNew", l("defaults.allowNew"))
-	v.BindPFlag("Defaults.AllowPublish", l("defaults.allowPublish"))
-	v.BindPFlag("Defaults.Locale", l("defaults.locale"))
+	v.SetDefault("defaults.scope", defaults.scope)
+	v.SetDefault("defaults.commands", []string{"git", "svn", "hg"})
+	v.SetDefault("defaults.viewMode", defaults.viewMode)
+	v.SetDefault("defaults.allowCommands", defaults.allowCommands)
+	v.SetDefault("defaults.allowEdit", defaults.allowEdit)
+	v.SetDefault("defaults.allowNew", defaults.allowNew)
+	v.SetDefault("defaults.allowPublish", defaults.allowPublish)
+	v.SetDefault("defaults.locale", defaults.locale)
 
 	// Recaptcha settings
 	var recaptcha = struct {
@@ -127,13 +109,9 @@ func init() {
 	f.String("recaptcha.key", recaptcha.key, "ReCaptcha site key")
 	f.String("recaptcha.secret", recaptcha.secret, "ReCaptcha secret")
 
-	v.SetDefault("Recaptcha.Host", recaptcha.host)
-	v.SetDefault("Recaptcha.Key", recaptcha.key)
-	v.SetDefault("Recaptcha.Secret", recaptcha.secret)
-
-	v.BindPFlag("Recaptcha.Host", l("recaptcha.host"))
-	v.BindPFlag("Recaptcha.Key", l("recaptcha.key"))
-	v.BindPFlag("Recaptcha.Secret", l("recaptcha.secret"))
+	v.SetDefault("recaptcha.host", recaptcha.host)
+	v.SetDefault("recaptcha.key", recaptcha.key)
+	v.SetDefault("recaptcha.secret", recaptcha.secret)
 
 	// Auth settings
 	var auth = struct {
@@ -147,11 +125,13 @@ func init() {
 	f.String("auth.method", auth.method, "Switch between 'none', 'default' and 'proxy' authentication")
 	f.String("auth.header", auth.header, "The header name used for proxy authentication")
 
-	v.SetDefault("Auth.Method", auth.method)
-	v.SetDefault("Auth.Header", auth.header)
+	v.SetDefault("auth.method", auth.method)
+	v.SetDefault("auth.header", auth.header)
 
-	v.BindPFlag("Auth.Method", l("auth.method"))
-	v.BindPFlag("Auth.Header", l("auth.header"))
+	// Bind the full flag set to the configuration
+	if err := v.BindPFlags(f); err != nil {
+		panic(err)
+	}
 
 	// Deprecated flags
 	Deprecated(f, "no-auth", false, "Disables authentication", "use --auth.method='none' instead")
