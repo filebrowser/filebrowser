@@ -3,6 +3,7 @@ package cmd
 import (
 	filebrowser "github.com/filebrowser/filebrowser/lib"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	v "github.com/spf13/viper"
 )
 
@@ -151,4 +152,28 @@ func init() {
 
 	v.BindPFlag("Auth.Method", l("auth.method"))
 	v.BindPFlag("Auth.Header", l("auth.header"))
+
+	// Deprecated flags
+	Deprecated(f, "no-auth", false, "Disables authentication", "use --auth.method='none' instead")
+	Deprecated(f, "alternative-recaptcha", false, "Use recaptcha.net for serving and handling, useful in China", "use --recaptcha.host instead")
+	Deprecated(f, "recaptcha-key", "", "ReCaptcha site key", "use --recaptcha.key instead")
+	Deprecated(f, "recaptcha-secret", "", "ReCaptcha secret", "use --recaptcha.secret instead")
+	Deprecated(f, "scope", ".", "Default scope option for new users", "use --defaults.scope instead")
+	Deprecated(f, "commands", "git svn hg", "Default commands option for new users", "use --defaults.commands instead")
+	Deprecated(f, "view-mode", "mosaic", "Default view mode for new users", "use --defaults.viewMode instead")
+	Deprecated(f, "locale", "", "Default locale for new users, set it empty to enable auto detect from browser", "use --defaults.locale instead")
+	Deprecated(f, "allow-commands", true, "Default allow commands option for new users", "use --defaults.allowCommands instead")
+	Deprecated(f, "allow-edit", true, "Default allow edit option for new users", "use --defaults.allowEdit instead")
+	Deprecated(f, "allow-publish", true, "Default allow publish option for new users", "use --defaults.allowPublish instead")
+	Deprecated(f, "allow-new", true, "Default allow new option for new users", "use --defaults.allowNew instead")
+}
+
+func Deprecated(f *pflag.FlagSet, k string, i interface{}, u, m string) {
+	switch v := i.(type) {
+	case bool:
+		f.Bool(k, v, u)
+	case string:
+		f.String(k, v, u)
+	}
+	f.MarkDeprecated(k, m)
 }
