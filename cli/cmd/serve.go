@@ -3,7 +3,6 @@ package cmd
 import (
 	filebrowser "github.com/filebrowser/filebrowser/lib"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	v "github.com/spf13/viper"
 )
 
@@ -30,103 +29,71 @@ func init() {
 
 	f := serveCmd.PersistentFlags()
 
+	flag := func(k string, i interface{}, u string) {
+		switch y := i.(type) {
+		case bool:
+			f.Bool(k, y, u)
+		case int:
+			f.Int(k, y, u)
+		case string:
+			f.String(k, y, u)
+		}
+		v.SetDefault(k, i)
+	}
+
+	flagP := func(k, p string, i interface{}, u string) {
+		switch y := i.(type) {
+		case bool:
+			f.BoolP(k, p, y, u)
+		case int:
+			f.IntP(k, p, y, u)
+		case string:
+			f.StringP(k, p, y, u)
+		}
+		v.SetDefault(k, i)
+	}
+
+	deprecated := func(k string, i interface{}, u, m string) {
+		switch y := i.(type) {
+		case bool:
+			f.Bool(k, y, u)
+		case int:
+			f.Int(k, y, u)
+		case string:
+			f.String(k, y, u)
+		}
+		f.MarkDeprecated(k, m)
+	}
+
 	// Global settings
-	port := 0
-	addr := ""
-	database := "./filebrowser.db"
-	logfile := "stdout"
-	baseurl := ""
-	prefixurl := ""
-	staticg := ""
-
-	f.IntP("port", "p", port, "HTTP Port (default is random)")
-	f.StringP("address", "a", addr, "Address to listen to (default is all of them)")
-	f.StringP("database", "d", database, "Database file")
-	f.StringP("log", "l", logfile, "Errors logger; can use 'stdout', 'stderr' or file")
-	f.StringP("baseurl", "b", baseurl, "Base URL")
-	f.String("prefixurl", prefixurl, "Prefix URL")
-	f.String("staticgen", staticg, "Static Generator you want to enable")
-
-	v.SetDefault("port", port)
-	v.SetDefault("address", addr)
-	v.SetDefault("database", database)
-	v.SetDefault("log", logfile)
-	v.SetDefault("baseurl", baseurl)
-	v.SetDefault("prefixurl", prefixurl)
-	v.SetDefault("staticgen", staticg)
+	flagP("port", "p", 0, "HTTP Port (default is random)")
+	flagP("address", "a", "", "Address to listen to (default is all of them)")
+	flagP("database", "d", "./filebrowser.db", "Database file")
+	flagP("log", "l", "stdout", "Errors logger; can use 'stdout', 'stderr' or file")
+	flagP("baseurl", "b", "", "Base URL")
+	flag("prefixurl", "", "Prefix URL")
+	flag("staticgen", "", "Static Generator you want to enable")
 
 	// User default settings
-	var defaults = struct {
-		commands      string
-		scope         string
-		viewMode      string
-		allowCommands bool
-		allowEdit     bool
-		allowNew      bool
-		allowPublish  bool
-		locale        string
-	}{
-		"git svn hg",
-		".",
-		filebrowser.MosaicViewMode,
-		true,
-		true,
-		true,
-		true,
-		"",
-	}
-
-	f.String("defaults.commands", defaults.commands, "Default commands option for new users")
-	f.StringP("defaults.scope", "s", defaults.scope, "Default scope option for new users")
-	f.String("defaults.viewMode", defaults.viewMode, "Default view mode for new users")
-	f.Bool("defaults.allowCommands", defaults.allowCommands, "Default allow commands option for new users")
-	f.Bool("defaults.allowEdit", defaults.allowEdit, "Default allow edit option for new users")
-	f.Bool("defaults.allowNew", defaults.allowNew, "Default allow new option for new users")
-	f.Bool("defaults.allowPublish", defaults.allowPublish, "Default allow publish option for new users")
-	f.String("defaults.locale", defaults.locale, "Default locale for new users, set it empty to enable auto detect from browser")
-
-	v.SetDefault("defaults.scope", defaults.scope)
+	f.String("defaults.commands", "git svn hg", "Default commands option for new users")
 	v.SetDefault("defaults.commands", []string{"git", "svn", "hg"})
-	v.SetDefault("defaults.viewMode", defaults.viewMode)
-	v.SetDefault("defaults.allowCommands", defaults.allowCommands)
-	v.SetDefault("defaults.allowEdit", defaults.allowEdit)
-	v.SetDefault("defaults.allowNew", defaults.allowNew)
-	v.SetDefault("defaults.allowPublish", defaults.allowPublish)
-	v.SetDefault("defaults.locale", defaults.locale)
+
+	flagP("defaults.scope", "s", ".", "Default scope option for new users")
+	flag("defaults.viewMode", filebrowser.MosaicViewMode, "Default view mode for new users")
+	flag("defaults.allowCommands", true, "Default allow commands option for new users")
+	flag("defaults.allowEdit", true, "Default allow edit option for new users")
+	flag("defaults.allowNew", true, "Default allow new option for new users")
+	flag("defaults.allowPublish", true, "Default allow publish option for new users")
+	flag("defaults.locale", "", "Default locale for new users, set it empty to enable auto detect from browser")
 
 	// Recaptcha settings
-	var recaptcha = struct {
-		host   string
-		key    string
-		secret string
-	}{
-		"https://www.google.com",
-		"",
-		"",
-	}
-
-	f.String("recaptcha.host", recaptcha.host, "Use another host for ReCAPTCHA. recaptcha.net might be useful in China")
-	f.String("recaptcha.key", recaptcha.key, "ReCaptcha site key")
-	f.String("recaptcha.secret", recaptcha.secret, "ReCaptcha secret")
-
-	v.SetDefault("recaptcha.host", recaptcha.host)
-	v.SetDefault("recaptcha.key", recaptcha.key)
-	v.SetDefault("recaptcha.secret", recaptcha.secret)
+	flag("recaptcha.host", "https://www.google.com", "Use another host for ReCAPTCHA. recaptcha.net might be useful in China")
+	flag("recaptcha.key", "", "ReCaptcha site key")
+	flag("recaptcha.secret", "", "ReCaptcha secret")
 
 	// Auth settings
-	var auth = struct {
-		method string
-		header string
-	}{
-		"default",
-		"X-Forwarded-User",
-	}
-
-	f.String("auth.method", auth.method, "Switch between 'none', 'default' and 'proxy' authentication")
-	f.String("auth.header", auth.header, "The header name used for proxy authentication")
-
-	v.SetDefault("auth.method", auth.method)
-	v.SetDefault("auth.header", auth.header)
+	flag("auth.method", "default", "Switch between 'none', 'default' and 'proxy' authentication")
+	flag("auth.header", "X-Forwarded-User", "The header name used for proxy authentication")
 
 	// Bind the full flag set to the configuration
 	if err := v.BindPFlags(f); err != nil {
@@ -134,26 +101,16 @@ func init() {
 	}
 
 	// Deprecated flags
-	Deprecated(f, "no-auth", false, "Disables authentication", "use --auth.method='none' instead")
-	Deprecated(f, "alternative-recaptcha", false, "Use recaptcha.net for serving and handling, useful in China", "use --recaptcha.host instead")
-	Deprecated(f, "recaptcha-key", "", "ReCaptcha site key", "use --recaptcha.key instead")
-	Deprecated(f, "recaptcha-secret", "", "ReCaptcha secret", "use --recaptcha.secret instead")
-	Deprecated(f, "scope", ".", "Default scope option for new users", "use --defaults.scope instead")
-	Deprecated(f, "commands", "git svn hg", "Default commands option for new users", "use --defaults.commands instead")
-	Deprecated(f, "view-mode", "mosaic", "Default view mode for new users", "use --defaults.viewMode instead")
-	Deprecated(f, "locale", "", "Default locale for new users, set it empty to enable auto detect from browser", "use --defaults.locale instead")
-	Deprecated(f, "allow-commands", true, "Default allow commands option for new users", "use --defaults.allowCommands instead")
-	Deprecated(f, "allow-edit", true, "Default allow edit option for new users", "use --defaults.allowEdit instead")
-	Deprecated(f, "allow-publish", true, "Default allow publish option for new users", "use --defaults.allowPublish instead")
-	Deprecated(f, "allow-new", true, "Default allow new option for new users", "use --defaults.allowNew instead")
-}
-
-func Deprecated(f *pflag.FlagSet, k string, i interface{}, u, m string) {
-	switch v := i.(type) {
-	case bool:
-		f.Bool(k, v, u)
-	case string:
-		f.String(k, v, u)
-	}
-	f.MarkDeprecated(k, m)
+	deprecated("no-auth", false, "Disables authentication", "use --auth.method='none' instead")
+	deprecated("alternative-recaptcha", false, "Use recaptcha.net for serving and handling, useful in China", "use --recaptcha.host instead")
+	deprecated("recaptcha-key", "", "ReCaptcha site key", "use --recaptcha.key instead")
+	deprecated("recaptcha-secret", "", "ReCaptcha secret", "use --recaptcha.secret instead")
+	deprecated("scope", ".", "Default scope option for new users", "use --defaults.scope instead")
+	deprecated("commands", "git svn hg", "Default commands option for new users", "use --defaults.commands instead")
+	deprecated("view-mode", "mosaic", "Default view mode for new users", "use --defaults.viewMode instead")
+	deprecated("locale", "", "Default locale for new users, set it empty to enable auto detect from browser", "use --defaults.locale instead")
+	deprecated("allow-commands", true, "Default allow commands option for new users", "use --defaults.allowCommands instead")
+	deprecated("allow-edit", true, "Default allow edit option for new users", "use --defaults.allowEdit instead")
+	deprecated("allow-publish", true, "Default allow publish option for new users", "use --defaults.allowPublish instead")
+	deprecated("allow-new", true, "Default allow new option for new users", "use --defaults.allowNew instead")
 }
