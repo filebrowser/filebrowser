@@ -1,20 +1,21 @@
 package cmd
 
 import (
-	"github.com/spf13/viper"
-	"github.com/asdine/storm"
-	filebrowser "github.com/filebrowser/filebrowser/lib"
-	"github.com/filebrowser/filebrowser/lib/bolt"
-	h "github.com/filebrowser/filebrowser/lib/http"
-	"github.com/filebrowser/filebrowser/lib/staticgen"
-	"github.com/hacdias/fileutils"
-	"gopkg.in/natefinch/lumberjack.v2"
 	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/asdine/storm"
+	filebrowser "github.com/filebrowser/filebrowser/lib"
+	"github.com/filebrowser/filebrowser/lib/bolt"
+	h "github.com/filebrowser/filebrowser/lib/http"
+	"github.com/filebrowser/filebrowser/lib/staticgen"
+	"github.com/hacdias/fileutils"
+	"github.com/spf13/viper"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func Serve() {
@@ -51,9 +52,9 @@ func Serve() {
 
 		if b {
 			if viper.GetString("Auth.Header") == "" {
-				log.Fatal("The 'auth.header' needs to be specified when '", m,"' authentication is used.")
+				log.Fatal("The 'auth.header' needs to be specified when '", m, "' authentication is used.")
 			}
-			log.Println("[WARN] Filebrowser authentication is configured to '", m,"' authentication. This can cause a huge security issue if the infrastructure is not configured correctly.")
+			log.Println("[WARN] Filebrowser authentication is configured to '", m, "' authentication. This can cause a huge security issue if the infrastructure is not configured correctly.")
 		}
 	}
 

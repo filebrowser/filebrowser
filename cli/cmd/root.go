@@ -14,14 +14,14 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "filebrowser",
+	Use:     "filebrowser",
 	Version: "(untracked)",
 	Aliases: []string{"serve"},
-	Short: "A stylish web-based file manager",
+	Short:   "A stylish web-based file manager",
 	Long: `File Browser is static binary composed of a golang backend
 and a Vue.js frontend to create, edit, copy, move, download your files
 easily, everywhere, every time.`,
-//	Run: func(cmd *cobra.Command, args []string) {},
+	//	Run: func(cmd *cobra.Command, args []string) {},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

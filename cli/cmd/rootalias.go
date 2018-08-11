@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"os"
 	"log"
+	"os"
 )
 
 // checkRootAlias compares the first argument provided in the CLI with a list of

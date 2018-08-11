@@ -1,17 +1,17 @@
 package cmd
 
 import (
+	filebrowser "github.com/filebrowser/filebrowser/lib"
 	"github.com/spf13/cobra"
 	v "github.com/spf13/viper"
-	filebrowser "github.com/filebrowser/filebrowser/lib"
 )
 
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
-	Use:   "serve",
+	Use:     "serve",
 	Version: rootCmd.Version,
 	Aliases: []string{"server"},
-	Short: "A brief description of your command",
+	Short:   "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -65,14 +65,14 @@ func init() {
 
 	// User default settings
 	var defaults = struct {
-		commands string
-		scope string
-		viewMode string
+		commands      string
+		scope         string
+		viewMode      string
 		allowCommands bool
-		allowEdit bool
-		allowNew bool
-		allowPublish bool
-		locale string
+		allowEdit     bool
+		allowNew      bool
+		allowPublish  bool
+		locale        string
 	}{
 		"git svn hg",
 		".",
