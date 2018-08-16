@@ -13,6 +13,8 @@ git clone git@github.com:filebrowser/caddy caddy
 cd caddy
 cp ../../rice-box.go assets/
 git checkout -b update-rice-box origin/master
+git config --local user.name "Filebrowser Bot"
+git config --local user.email "FilebrowserBot@users.noreply.github.com"
 git commit -am "update rice-box $COMMIT_SHA"
 
 if [ $(git tag | grep "$TRAVIS_TAG" | wc -l) -ne 0 ]; then
