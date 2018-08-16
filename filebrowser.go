@@ -23,7 +23,7 @@ import (
 
 const (
 	// Version is the current File Browser version.
-	Version = "(untracked)"
+	Version = "v1.10.0"
 
 	ListViewMode   = "list"
 	MosaicViewMode = "mosaic"
