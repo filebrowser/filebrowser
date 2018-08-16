@@ -35,9 +35,7 @@ jobs:
         branch: master
   - stage: release
     script:
-      - ./build/docker_login.sh
-      - docker run --rm -itv $(pwd):$WDIR -v /var/run/docker.sock:/var/run/docker.sock filebrowser/dev goreleaser
-      - docker logout
+      - docker run --rm -itv $(pwd):$WDIR -v /var/run/docker.sock:/var/run/docker.sock filebrowser/dev sh -c "./build/docker_login.sh && goreleaser; docker logout"
       - ./build/push_ricebox.sh
     if: tag IS present
     deploy:
@@ -48,4 +46,5 @@ jobs:
       file_glob: true
       on:
         repo: filebrowser/filebrowser
-        branch: master
+        all_branches: true
+        tags: true

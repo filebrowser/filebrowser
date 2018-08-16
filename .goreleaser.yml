@@ -51,7 +51,7 @@ dockers:
     goarch: amd64
     goarm: ''
     image: filebrowser/filebrowser
-    skip_push: true
+    skip_push: false
     tag_templates:
       - "{{ .Tag }}"
       - latest
