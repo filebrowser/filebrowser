@@ -117,14 +117,34 @@ func setupViper() {
 	viper.BindPFlag("AlternativeRecaptcha", flag.Lookup("alternative-recaptcha"))
 	viper.BindPFlag("ReCaptchaKey", flag.Lookup("recaptcha-key"))
 	viper.BindPFlag("ReCaptchaSecret", flag.Lookup("recaptcha-secret"))
-
-	viper.SetConfigName("filebrowser")
-	viper.AddConfigPath(".")
 }
 
 func printVersion() {
 	fmt.Println("filebrowser version", filebrowser.Version)
 	os.Exit(0)
+}
+
+func initConfig() {
+	// Add a configuration file if set.
+	if config != "" {
+		cfg := strings.TrimSuffix(config, filepath.Ext(config))
+		if dir := filepath.Dir(cfg); dir != "" {
+			viper.AddConfigPath(dir)
+			cfg = strings.TrimPrefix(cfg, dir)
+		}
+		viper.SetConfigName(cfg)
+	} else {
+		viper.SetConfigName("filebrowser")
+		viper.AddConfigPath(".")
+	}
+
+	// Read configuration from a file if exists.
+	err := viper.ReadInConfig()
+	if err != nil {
+		if _, ok := err.(viper.ConfigParseError); ok {
+			panic(err)
+		}
+	}
 }
 
 func main() {
@@ -135,27 +155,7 @@ func main() {
 		printVersion()
 	}
 
-	// Add a configuration file if set.
-	if config != "" {
-		ext := filepath.Ext(config)
-		dir := filepath.Dir(config)
-		config = strings.TrimSuffix(config, ext)
-
-		if dir != "" {
-			viper.AddConfigPath(dir)
-			config = strings.TrimPrefix(config, dir)
-		}
-
-		viper.SetConfigName(config)
-	}
-
-	// Read configuration from a file if exists.
-	err := viper.ReadInConfig()
-	if err != nil {
-		if _, ok := err.(viper.ConfigParseError); ok {
-			panic(err)
-		}
-	}
+	initConfig();
 
 	// Set up process log before anything bad happens.
 	switch viper.GetString("Logger") {
