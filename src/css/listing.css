@@ -212,6 +212,16 @@
   font-weight: bold;
 }
 
+@keyframes slidein {
+  from {
+    bottom: -4em;
+  }
+
+  to {
+    bottom: 0;
+  }
+}
+
 #listing #multiple-selection {
   position: fixed;
   bottom: -4em;
@@ -220,7 +230,7 @@
   width: 100%;
   background-color: #2196f3;
   height: 4em;
-  display: flex !important;
+  display: none;
   padding: 0.5em 0.5em 0.5em 1em;
   justify-content: space-between;
   align-items: center;
@@ -228,7 +238,8 @@
 }
 
 #listing #multiple-selection.active {
-  bottom: 0;
+  animation: slidein 0.2s forwards;
+  display: flex;
 }
 
 #listing #multiple-selection p,
