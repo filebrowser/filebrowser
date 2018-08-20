@@ -37,7 +37,7 @@ func init() {
 			path, err = exec.LookPath("sh")
 		}
 
-		if err != nil {
+		if err == nil {
 			commandShell = []string{path, "-c"}
 		}
 	}
@@ -105,7 +105,7 @@ func command(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error)
 	buff := new(bytes.Buffer)
 
 	if len(commandShell) != 0 {
-		command = append(commandShell, command...)
+		command = append(commandShell, strings.Join(command, " "))
 	}
 
 	// Sets up the command executation.
