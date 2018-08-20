@@ -3,11 +3,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:af3215cd158218c92f0706bb32f67b0ce3d37da4c4d135e7ed5e2dc36a90fca5"
+  digest = "1:9f3b30d9f8e0d7040f729b82dcbc8f0dead820a133b3147ce355fc451f32d761"
   name = "github.com/BurntSushi/toml"
   packages = ["."]
   pruneopts = "UT"
-  revision = "a368813c5e648fee92e5f6c30e3944ff9d5e8895"
+  revision = "3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005"
 
 [[projects]]
   branch = "master"
@@ -86,6 +86,19 @@
   revision = "cc9eb1d7ad760af14e8f918698f745e80377af4f"
 
 [[projects]]
+  branch = "feat/use-cobra"
+  digest = "1:fbcec030a49eda4de3df0b74adba0c98616cdd7591de04ecec75d348cf1b7c0c"
+  name = "github.com/filebrowser/filebrowser"
+  packages = [
+    "lib",
+    "lib/bolt",
+    "lib/http",
+    "lib/staticgen",
+  ]
+  pruneopts = "UT"
+  revision = "49748d85004e38d1f0be069f749eedafb1edd312"
+
+[[projects]]
   branch = "master"
   digest = "1:50a46ab1d5edbbdd55125b4d37f1bf503d0807c26461f9ad7b358d6006641d09"
   name = "github.com/flynn/go-shlex"
@@ -161,6 +174,14 @@
   revision = "ef8a98b0bbce4a65b5aa4c368430a80ddc533168"
 
 [[projects]]
+  digest = "1:870d441fe217b8e689d7949fef6e43efbc787e50f200cb1e70dbca9204a1d6be"
+  name = "github.com/inconshreveable/mousetrap"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+  version = "v1.0"
+
+[[projects]]
   branch = "master"
   digest = "1:caf6db28595425c0e0f2301a00257d11712f65c1878e12cffc42f6b9a9cf3f23"
   name = "github.com/kardianos/osext"
@@ -201,6 +222,14 @@
   pruneopts = "UT"
   revision = "2922d09bef3c504dde66bc12f7441668fcef6a20"
   version = "v0.10.14"
+
+[[projects]]
+  branch = "master"
+  digest = "1:c7354463195544b1ab3c1f1fadb41430947f5d28dfbf2cdbd38268c5717a5a03"
+  name = "github.com/mitchellh/go-homedir"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "58046073cbffe2f25d425fe1331102f55cf719de"
 
 [[projects]]
   branch = "master"
@@ -246,12 +275,12 @@
   version = "v1.1"
 
 [[projects]]
-  digest = "1:8bc629776d035c003c7814d4369521afe67fdb8efc4b5f66540d29343b98cf23"
+  digest = "1:39c2113f3a89585666e6f973650cff186b2d06deb4aa202c88addb87b0a201db"
   name = "github.com/russross/blackfriday"
   packages = ["."]
   pruneopts = "UT"
-  revision = "55d61fa8aa702f59229e6cff85793c22e580eaf5"
-  version = "v1.5.1"
+  revision = "cadec560ec52d93835bf2f15bd794700d3a2473b"
+  version = "v2.0.0"
 
 [[projects]]
   branch = "master"
@@ -281,20 +310,28 @@
   version = "v1.2.0"
 
 [[projects]]
+  digest = "1:645cabccbb4fa8aab25a956cbcbdf6a6845ca736b2c64e197ca7cbb9d210b939"
+  name = "github.com/spf13/cobra"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ef82de70bb3f60c65fb8eebacbb2d122ef517385"
+  version = "v0.0.3"
+
+[[projects]]
   branch = "master"
-  digest = "1:080e5f630945ad754f4b920e60b4d3095ba0237ebf88dc462eb28002932e3805"
+  digest = "1:8a020f916b23ff574845789daee6818daf8d25a4852419aae3f0b12378ba432a"
   name = "github.com/spf13/jwalterweatherman"
   packages = ["."]
   pruneopts = "UT"
-  revision = "7c0cea34c8ece3fbeb2b27ab9b59511d360fb394"
+  revision = "14d3d4c518341bea657dd8a226f5121c0ff8c9f2"
 
 [[projects]]
-  digest = "1:9424f440bba8f7508b69414634aef3b2b3a877e522d8a4624692412805407bb7"
+  digest = "1:dab83a1bbc7ad3d7a6ba1a1cc1760f25ac38cdf7d96a5cdd55cd915a4f5ceaf9"
   name = "github.com/spf13/pflag"
   packages = ["."]
   pruneopts = "UT"
-  revision = "583c0c0531f06d5278b7d917446061adc344b5cd"
-  version = "v1.0.1"
+  revision = "9a97c102cda95a86cec2345a6f09f55a939babf5"
+  version = "v1.0.2"
 
 [[projects]]
   digest = "1:4fc8a61287ccfb4286e1ca5ad2ce3b0b301d746053bf44ac38cf34e40ae10372"
@@ -326,15 +363,15 @@
     "blowfish",
   ]
   pruneopts = "UT"
-  revision = "de0752318171da717af4ce24d0a2e8626afaeb11"
+  revision = "aabede6cba87e37f413b3e60ebfc214f8eeca1b0"
 
 [[projects]]
   branch = "master"
-  digest = "1:76b5ca88193bf744f729c2fde12151b24364ffaca3fd092069d9ca2ea6e1f999"
+  digest = "1:05662433b3a13c921587a6e622b5722072edff83211efd1cd79eeaeedfd83f07"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "904bdc257025c7b3f43c19360ad3ab85783fad78"
+  revision = "1c9583448a9c3aa0f9a6a5241bf73c0bd8aafded"
 
 [[projects]]
   digest = "1:8029e9743749d4be5bc9f7d42ea1659471767860f0cdc34d37c3111bd308a295"
@@ -371,24 +408,15 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/GeertJohan/go.rice",
-    "github.com/GeertJohan/go.rice/embedded",
     "github.com/asdine/storm",
-    "github.com/asdine/storm/q",
-    "github.com/dgrijalva/jwt-go",
-    "github.com/dgrijalva/jwt-go/request",
-    "github.com/gohugoio/hugo/parser",
-    "github.com/gorilla/websocket",
+    "github.com/filebrowser/filebrowser/lib",
+    "github.com/filebrowser/filebrowser/lib/bolt",
+    "github.com/filebrowser/filebrowser/lib/http",
+    "github.com/filebrowser/filebrowser/lib/staticgen",
     "github.com/hacdias/fileutils",
-    "github.com/hacdias/varutils",
-    "github.com/maruel/natural",
-    "github.com/mholt/archiver",
-    "github.com/mholt/caddy",
-    "github.com/mitchellh/mapstructure",
-    "github.com/robfig/cron",
-    "github.com/spf13/pflag",
+    "github.com/mitchellh/go-homedir",
+    "github.com/spf13/cobra",
     "github.com/spf13/viper",
-    "golang.org/x/crypto/bcrypt",
     "gopkg.in/natefinch/lumberjack.v2",
   ]
   solver-name = "gps-cdcl"
