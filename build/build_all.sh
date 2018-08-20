@@ -2,8 +2,8 @@
 
 cd $(dirname $0)/..
 
-if [ -d "rice-box.go" ]; then
-  rm -rf rice-box.go
+if [ -f lib/"rice-box.go" ]; then
+  rm -rf lib/rice-box.go
 fi
 
 if [ "$USE_DOCKER" != "" ]; then
@@ -41,9 +41,10 @@ if [ "$USE_DOCKER" != "" ]; then
     for d in "dist/" "node_modules/"; do
       docker cp filebrowser-tmp:/$WDIR/frontend/$d frontend
     done
-    for d in "vendor/" "rice-box.go" "filebrowser"; do
-      docker cp filebrowser-tmp:/$WDIR/$d ./
+    for d in "vendor/" "filebrowser"; do
+      docker cp filebrowser-tmp:/$WDIR/cli/$d ./cli/
     done
+    docker cp filebrowser-tmp:/$WDIR/lib/rice-box.go ./lib/rice-box.go
   fi
   docker rm -f filebrowser-tmp
 else
