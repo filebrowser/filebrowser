@@ -17,8 +17,13 @@ var rootCmd = &cobra.Command{
 	Version: "(untracked)",
 	Aliases: []string{"serve"},
 	Short:   "A stylish web-based file manager",
-	Long: `File Browser is static binary composed of a golang backend
-and a Vue.js frontend to create, edit, copy, move, download your files
+	Long: `Command 'serve' is the default. Filebrowser is started
+with the provided envvars, flags and/or config file. For example:
+
+filebrowser -c config.json -p 80 -s ./srv
+
+File Browser is a static binary composed of a golang backend and
+a Vue.js frontend to create, edit, copy, move, download your files
 easily, everywhere, every time.`,
 	//	Run: func(cmd *cobra.Command, args []string) {},
 }
