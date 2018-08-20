@@ -17,7 +17,6 @@ stages:
   - release
 cache:
   directories:
-    - vendor
     - lib/rice-box.go
 jobs:
   include:

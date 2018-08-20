@@ -4,7 +4,7 @@ set -e
 
 cd $(dirname $0)/../cli
 
-dep ensure -vendor-only
+go get -v ./...
 
 if [ "$COMMIT_SHA" != "" ]; then
   echo "Set version to ($COMMIT_SHA)"
