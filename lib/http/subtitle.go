@@ -8,19 +8,19 @@ import (
 	"path/filepath"
 	"regexp"
 
-	fb "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser/lib"
 )
 
 func subtitlesHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
-	files, err := ReadDir(filepath.Dir(c.File.Path))
+	files, err := readDir(filepath.Dir(c.File.Path))
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
-	var subtitles = make([]map[string]string, 0)
+	subtitles := make([]map[string]string, 0)
 	for _, file := range files {
 		ext := filepath.Ext(file.Name())
 		if ext == ".vtt" || ext == ".srt" {
-			var sub map[string]string = make(map[string]string)
+			sub := make(map[string]string)
 			sub["src"] = filepath.Dir(c.File.Path) + "/" + file.Name()
 			sub["kind"] = "subtitles"
 			sub["label"] = file.Name()
@@ -31,7 +31,7 @@ func subtitlesHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (in
 }
 
 func subtitleHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
-	str, err := CleanSubtitle(c.File.Path)
+	str, err := cleanSubtitle(c.File.Path)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -55,7 +55,7 @@ func subtitleHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int
 
 }
 
-func CleanSubtitle(filename string) (string, error) {
+func cleanSubtitle(filename string) (string, error) {
 	b, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return "", err
@@ -69,7 +69,7 @@ func CleanSubtitle(filename string) (string, error) {
 	return str, err
 }
 
-func ReadDir(dirname string) ([]os.FileInfo, error) {
+func readDir(dirname string) ([]os.FileInfo, error) {
 	f, err := os.Open(dirname)
 	if err != nil {
 		return nil, err

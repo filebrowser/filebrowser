@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	fb "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser/lib"
 )
 
 type modifyRequest struct {
@@ -276,7 +276,7 @@ func usersPutHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int
 
 	// If we're updating the default user. Only for NoAuth
 	// implementations. Used to change the viewMode.
-	if id == 0 && c.NoAuth {
+	if id == 0 && c.Auth.Method == "none" {
 		c.DefaultUser.ViewMode = u.ViewMode
 		return http.StatusOK, nil
 	}

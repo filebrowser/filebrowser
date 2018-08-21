@@ -74,4 +74,4 @@ One simple implementation for this, at port 80, in the root of the domain, would
 
 		http.ListenAndServe(":80", h.Handler(m))
 */
-package filebrowser
+package lib

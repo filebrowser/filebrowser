@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	fb "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser/lib"
 )
 
 func shareHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {

@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	fb "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser/lib"
 	"github.com/hacdias/varutils"
 )
 

@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	fb "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser/lib"
 )
 
 // Jekyll is the Jekyll static website generator.
