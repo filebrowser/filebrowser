@@ -4,7 +4,7 @@ import (
 	"reflect"
 
 	"github.com/asdine/storm"
-	fm "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser/lib"
 )
 
 // UsersStore is a users store.
@@ -13,11 +13,11 @@ type UsersStore struct {
 }
 
 // Get gets a user with a certain id from the database.
-func (u UsersStore) Get(id int, builder fm.FSBuilder) (*fm.User, error) {
-	var us fm.User
+func (u UsersStore) Get(id int, builder fb.FSBuilder) (*fb.User, error) {
+	var us fb.User
 	err := u.DB.One("ID", id, &us)
 	if err == storm.ErrNotFound {
-		return nil, fm.ErrNotExist
+		return nil, fb.ErrNotExist
 	}
 
 	if err != nil {
@@ -29,11 +29,11 @@ func (u UsersStore) Get(id int, builder fm.FSBuilder) (*fm.User, error) {
 }
 
 // GetByUsername gets a user with a certain username from the database.
-func (u UsersStore) GetByUsername(username string, builder fm.FSBuilder) (*fm.User, error) {
-	var us fm.User
+func (u UsersStore) GetByUsername(username string, builder fb.FSBuilder) (*fb.User, error) {
+	var us fb.User
 	err := u.DB.One("Username", username, &us)
 	if err == storm.ErrNotFound {
-		return nil, fm.ErrNotExist
+		return nil, fb.ErrNotExist
 	}
 
 	if err != nil {
@@ -45,11 +45,11 @@ func (u UsersStore) GetByUsername(username string, builder fm.FSBuilder) (*fm.Us
 }
 
 // Gets gets all the users from the database.
-func (u UsersStore) Gets(builder fm.FSBuilder) ([]*fm.User, error) {
-	var us []*fm.User
+func (u UsersStore) Gets(builder fb.FSBuilder) ([]*fb.User, error) {
+	var us []*fb.User
 	err := u.DB.All(&us)
 	if err == storm.ErrNotFound {
-		return nil, fm.ErrNotExist
+		return nil, fb.ErrNotExist
 	}
 
 	if err != nil {
@@ -64,7 +64,7 @@ func (u UsersStore) Gets(builder fm.FSBuilder) ([]*fm.User, error) {
 }
 
 // Update updates the whole user object or only certain fields.
-func (u UsersStore) Update(us *fm.User, fields ...string) error {
+func (u UsersStore) Update(us *fb.User, fields ...string) error {
 	if len(fields) == 0 {
 		return u.Save(us)
 	}
@@ -80,11 +80,11 @@ func (u UsersStore) Update(us *fm.User, fields ...string) error {
 }
 
 // Save saves a user to the database.
-func (u UsersStore) Save(us *fm.User) error {
+func (u UsersStore) Save(us *fb.User) error {
 	return u.DB.Save(us)
 }
 
 // Delete deletes a user from the database.
 func (u UsersStore) Delete(id int) error {
-	return u.DB.DeleteStruct(&fm.User{ID: id})
+	return u.DB.DeleteStruct(&fb.User{ID: id})
 }

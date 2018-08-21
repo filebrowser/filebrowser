@@ -1,4 +1,4 @@
-package filebrowser
+package lib
 
 import (
 	"crypto/rand"
@@ -15,7 +15,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/GeertJohan/go.rice"
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/hacdias/fileutils"
 	"github.com/mholt/caddy"
 	"github.com/robfig/cron"
@@ -40,6 +40,25 @@ var (
 	ErrInvalidUpdateField = errors.New("invalid field to update")
 	ErrInvalidOption      = errors.New("invalid option")
 )
+
+// ReCaptcha settings.
+type ReCaptcha struct {
+	Host   string
+	Key    string
+	Secret string
+}
+
+// Auth settings.
+type Auth struct {
+	// Define if which of the following authentication mechansims should be used:
+	// - 'default', which requires a user and a password.
+	// - 'proxy', which requires a valid user and the user name has to be provided through an
+	//   http header.
+	// - 'none', which allows anyone to access the filebrowser instance.
+	Method string
+	// If 'Method' is set to 'proxy' the header configured below is used to identify the user.
+	Header string
+}
 
 // FileBrowser is a file manager instance. It should be creating using the
 // 'New' function and not directly.
@@ -67,24 +86,11 @@ type FileBrowser struct {
 	// edited directly. Use SetBaseURL.
 	BaseURL string
 
-	// NoAuth disables the authentication. When the authentication is disabled,
-	// there will only exist one user, called "admin".
-	NoAuth bool
-
-	// Define if which of the following authentication mechansims should be used:
-	// - 'default', which requires a user and a password.
-	// - 'proxy', which requires a valid user and the user name has to be provided through an
-	//   http header.
-	// - 'none', which allows anyone to access the filebrowser instance.
-	AuthMethod string
-
-	// When 'AuthMethod' is set to 'proxy' the header configured below is used to identify the user.
-	LoginHeader string
+	// Authentication configuration.
+	Auth *Auth
 
 	// ReCaptcha host, key and secret.
-	ReCaptchaHost   string
-	ReCaptchaKey    string
-	ReCaptchaSecret string
+	ReCaptcha *ReCaptcha
 
 	// StaticGen is the static websit generator handler.
 	StaticGen StaticGen
@@ -129,7 +135,7 @@ type FSBuilder func(scope string) FileSystem
 func (m *FileBrowser) Setup() error {
 	// Creates a new File Browser instance with the Users
 	// map and Assets box.
-	m.Assets = rice.MustFindBox("./frontend/dist")
+	m.Assets = rice.MustFindBox("../frontend/dist")
 	m.Cron = cron.New()
 
 	// Tries to get the encryption key from the database.

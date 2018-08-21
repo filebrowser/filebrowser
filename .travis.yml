@@ -17,8 +17,7 @@ stages:
   - release
 cache:
   directories:
-    - vendor
-    - rice-box.go
+    - lib/rice-box.go
 jobs:
   include:
   - stage: lint

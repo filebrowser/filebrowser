@@ -9,7 +9,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
-	fb "github.com/filebrowser/filebrowser"
+	fb "github.com/filebrowser/filebrowser/lib"
 )
 
 const reCaptchaAPI = "/recaptcha/api/siteverify"
@@ -51,14 +51,14 @@ func reCaptcha(host, secret, response string) (bool, error) {
 
 // authHandler processes the authentication for the user.
 func authHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) {
-	if c.NoAuth {
+	if c.Auth.Method == "none" {
 		// NoAuth instances shouldn't call this method.
 		return 0, nil
 	}
 
-	if c.AuthMethod == "proxy" {
+	if c.Auth.Method == "proxy" {
 		// Receive the Username from the Header and check if it exists.
-		u, err := c.Store.Users.GetByUsername(r.Header.Get(c.LoginHeader), c.NewFS)
+		u, err := c.Store.Users.GetByUsername(r.Header.Get(c.Auth.Header), c.NewFS)
 		if err != nil {
 			return http.StatusForbidden, nil
 		}
@@ -80,8 +80,8 @@ func authHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	// If ReCaptcha is enabled, check the code.
-	if len(c.ReCaptchaSecret) > 0 {
-		ok, err := reCaptcha(c.ReCaptchaHost, c.ReCaptchaSecret, cred.ReCaptcha)
+	if len(c.ReCaptcha.Secret) > 0 {
+		ok, err := reCaptcha(c.ReCaptcha.Host, c.ReCaptcha.Secret, cred.ReCaptcha)
 		if err != nil {
 			return http.StatusForbidden, err
 		}
@@ -178,14 +178,14 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 // validateAuth is used to validate the authentication and returns the
 // User if it is valid.
 func validateAuth(c *fb.Context, r *http.Request) (bool, *fb.User) {
-	if c.NoAuth {
+	if c.Auth.Method == "none" {
 		c.User = c.DefaultUser
 		return true, c.User
 	}
 
 	// If proxy auth is used do not verify the JWT token if the header is provided.
-	if c.AuthMethod == "proxy" {
-		u, err := c.Store.Users.GetByUsername(r.Header.Get(c.LoginHeader), c.NewFS)
+	if c.Auth.Method == "proxy" {
+		u, err := c.Store.Users.GetByUsername(r.Header.Get(c.Auth.Header), c.NewFS)
 		if err != nil {
 			return false, nil
 		}
