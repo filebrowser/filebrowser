@@ -48,9 +48,7 @@
           </li>
         </ul>
 
-        <pre v-else-if="commands.length > 0">
-          <template v-for="c in commands">{{ c }}</template>
-        </pre>
+        <pre v-else-if="commands.length > 0"><template v-for="c in commands">{{ c }}</template></pre>
       </div>
       <p id="renew"><i class="material-icons spin">autorenew</i></p>
     </div>
