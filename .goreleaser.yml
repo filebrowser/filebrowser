@@ -2,8 +2,8 @@ project_name: filebrowser
 
 build:
   env:
-    - CGO_ENABLED=0 
-  main: cmd/filebrowser/main.go
+    - CGO_ENABLED=0
+  main: cli/main.go
   binary: filebrowser
   goos:
     - darwin
