@@ -7,6 +7,6 @@ VOLUME /srv
 EXPOSE 80
 
 COPY filebrowser /filebrowser
-COPY Docker.json /config.json
+COPY Docker.json /.filebrowser.json
 
-ENTRYPOINT ["/filebrowser", "--config", "/config.json"]
+ENTRYPOINT ["/filebrowser"]
