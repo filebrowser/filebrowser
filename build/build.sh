@@ -11,7 +11,7 @@ if [ "$COMMIT_SHA" != "" ]; then
   sed -i.bak "s|(untracked)|($COMMIT_SHA)|g" ../lib/filebrowser.go
 fi
 
-echo "Build cmd/filebrowser"
+echo "Build CLI"
 CGO_ENABLED=0 go build -a -o filebrowser
 
 if [ "$COMMIT_SHA" != "" ]; then
