@@ -276,13 +276,19 @@ func search(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) 
 	scope = filepath.Clean(scope)
 
 	err = filepath.Walk(scope, func(path string, f os.FileInfo, err error) error {
-		if !search.CaseSensitive {
-			path = strings.ToLower(path)
-		}
-
+		var (
+			originalPath string
+		)
+		
 		path = strings.TrimPrefix(path, scope)
 		path = strings.TrimPrefix(path, "/")
 		path = strings.Replace(path, "\\", "/", -1)
+
+		originalPath = path
+
+		if !search.CaseSensitive {
+			path = strings.ToLower(path)
+		}
 
 		// Only execute if there are conditions to meet.
 		if len(search.Conditions) > 0 {
@@ -326,7 +332,7 @@ func search(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) 
 
 		response, _ := json.Marshal(map[string]interface{}{
 			"dir":  f.IsDir(),
-			"path": path,
+			"path": originalPath,
 		})
 
 		return conn.WriteMessage(websocket.TextMessage, response)
