@@ -4,6 +4,7 @@ import (
 	"log"
 	"strings"
 
+	fb "github.com/filebrowser/filebrowser/lib"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	v "github.com/spf13/viper"
@@ -14,7 +15,7 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:     "filebrowser",
-	Version: "(untracked)",
+	Version: fb.Version,
 	Aliases: []string{"serve"},
 	Short:   "A stylish web-based file manager",
 	Long: `Command 'serve' is the default. Filebrowser is started
