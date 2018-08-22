@@ -23,4 +23,6 @@ var versionCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(versionCmd)
+	serveCmd.AddCommand(versionCmd)
+	dbCmd.AddCommand(versionCmd)
 }
