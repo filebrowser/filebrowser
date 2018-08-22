@@ -279,7 +279,7 @@ func search(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) 
 		var (
 			originalPath string
 		)
-		
+
 		path = strings.TrimPrefix(path, scope)
 		path = strings.TrimPrefix(path, "/")
 		path = strings.Replace(path, "\\", "/", -1)
