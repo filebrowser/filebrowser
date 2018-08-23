@@ -15,7 +15,7 @@ import (
 	"github.com/filebrowser/filebrowser/lib/staticgen"
 	"github.com/hacdias/fileutils"
 	"github.com/spf13/viper"
-	"gopkg.in/natefinch/lumberjack.v2"
+	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 )
 
 func Serve() {
