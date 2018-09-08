@@ -1,6 +1,8 @@
-**In Q2 2018, this project was renamed from `filemanager` to `filebrowser`, a new GitHub organization was created and the main repo was moved from [hacdias/filemanager](https://github.com/hacdias/filemanager) to [filebrowser/filebrowser](https://github.com/filebrowser/filebrowser). Old refs will work, because permanent redirects are set up. However, we suggest every contributor to update the remote URLs in their local clones. See [Changing a remote's URL](https://help.github.com/articles/changing-a-remote-s-url/).**
+ℹ INFO: **This project is not under active development ATM. A small group of developers keeps the project alive, but due to lack of time, we can't continue adding new features or doing deep changes. Please read #532 for more info!**
 
-**Moreover, the previously unique repo was split into multiple pieces: frontend, logo, caddy... At the same time, the official docker image was changed to [`filebrowser/filebrowser`](https://hub.docker.com/r/filebrowser/filebrowser/). Users are encouraged to check their sources and update them accordingly.**
+ℹ INFO: in Q2 2018, this project was renamed from `filemanager` to `filebrowser`, and the main repo was moved from [hacdias/filemanager](https://github.com/hacdias/filemanager) to [filebrowser/filebrowser](https://github.com/filebrowser/filebrowser). At the same time, the official docker image was changed to [`filebrowser/filebrowser`](https://hub.docker.com/r/filebrowser/filebrowser/). Users are encouraged to check their sources and update them accordingly.
+
+---
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/filebrowser/logo/master/banner.png" width="550"/>
