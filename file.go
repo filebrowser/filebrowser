@@ -222,14 +222,14 @@ func (i *File) GetFileType(checkContent bool) error {
 
 		// Only the first 512 bytes are used to sniff the content type.
 		buffer := make([]byte, 512)
-		_, err = file.Read(buffer)
+		n, err := file.Read(buffer)
 		if err != nil && err != io.EOF {
 			return err
 		}
 
 		// Tries to get the file mimetype using its first
 		// 512 bytes.
-		mimetype = http.DetectContentType(buffer)
+		mimetype = http.DetectContentType(buffer[:n])
 	}
 
 	if strings.HasPrefix(mimetype, "video") {
