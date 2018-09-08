@@ -1,6 +1,6 @@
-### ⚠🛑 WARNING 🛑⚠
+ℹ INFO: **This project is not under active development ATM. A small group of developers keeps the project alive, but due to lack of time, we can't continue adding new features or doing deep changes. Please read #532 for more info!**
 
-This project is not under active development. A small set of developers will try to maintain the project, but due to lack of time, we can't continue developing it actively. Please read #532 for more info!
+ℹ INFO: in Q2 2018, this project was renamed from `filemanager` to `filebrowser`, and the main repo was moved from [hacdias/filemanager](https://github.com/hacdias/filemanager) to [filebrowser/filebrowser](https://github.com/filebrowser/filebrowser). At the same time, the official docker image was changed to [`filebrowser/filebrowser`](https://hub.docker.com/r/filebrowser/filebrowser/). Users are encouraged to check their sources and update them accordingly.
 
 ---
 
