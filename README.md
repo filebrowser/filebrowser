@@ -2,6 +2,8 @@
 
 This project is not under active development. A small set of developers will try to maintain the project, but due to lack of time, we can't continue developing it actively. Please read #532 for more info!
 
+---
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/filebrowser/logo/master/banner.png" width="550"/>
 </p>
