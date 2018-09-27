@@ -1,0 +1,14 @@
+Short Description:
+Filebrowser provides a file managing interface within a specified directory.
+
+Long Description:
+ℹ INFO: This project is not currently under active development. A small group of developers keep the project alive. Due to lack of time we can't continue adding new features or doing deep changes. Please read GitHub issue #532 for more info!
+
+ℹ INFO: In Q2 2018 this project was renamed from filemanager to filebrowser. The main repo was moved from hacdias/filemanager to filebrowser/filebrowser. At the same time, the official docker image was changed to filebrowser/filebrowser. Please update your docker images with this new image and only pull from this location. 
+
+Filebrowser provides a file managing interface within a specified directory on your host. It can be used to upload, delete, preview, rename and edit your files. Filebrowser allows the creation of multiple users and each user can have their own directory. THis app can be deployed as either a standalone app or as a middleware application.
+
+Please see https://filebrowser.github.io/ for installation instructions and additional documentation. 
+
+Logo:
+I'm assuming we can use one of the .png files from the logo repo? 
