@@ -201,6 +201,7 @@ languages:
   de: Deutsch
   ru: Русский
   pl: Polski
+  ko: 한국어
 time:
   unit: Unità di tempo
   seconds: Secondi

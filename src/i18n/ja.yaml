@@ -198,6 +198,7 @@ languages:
   de: Deutsch
   ru: Русский
   pl: Polski
+  ko: 한국어
 time:
   unit: 時間単位
   seconds: 秒

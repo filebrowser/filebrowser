@@ -12,6 +12,7 @@ import es from './es.yaml'
 import de from './de.yaml'
 import ru from './ru.yaml'
 import pl from './pl.yaml'
+import ko from './ko.yaml'
 
 Vue.use(VueI18n)
 
@@ -57,6 +58,9 @@ export function detectLocale () {
     case /^pl.*/i.test(locale):
       locale = 'pl'
       break
+    case /^ko.*/i.test(locale):
+      locale = 'ko'
+      break
     default:
       locale = 'en'
   }
@@ -79,7 +83,8 @@ const i18n = new VueI18n({
     'es': es,
     'de': de,
     'ru': ru,
-    'pl': pl
+    'pl': pl,
+    'ko': ko
   }
 })
 

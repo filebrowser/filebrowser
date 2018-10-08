@@ -195,6 +195,7 @@ languages:
   de: Deutsch
   ru: Русский
   pl: Polski
+  ko: 한국어
 time:
   unit: Zeiteinheit
   seconds: Sekunden
