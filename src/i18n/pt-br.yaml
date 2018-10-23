@@ -6,20 +6,20 @@ buttons:
   copyFile: Copiar arquivo
   copyToClipboard: Copiar
   create: Criar
-  delete: Eliminar
+  delete: Deletar
   download: Baixar
-  info: Info
+  info: Informações
   more: Mais
   move: Mover
   moveFile: Mover arquivo
   new: Novo
   next: Próximo
-  ok: OK
+  ok: Ok
   previous: Anterior
   publish: Publicar
   rename: Renomear
   replace: Substituir
-  reportIssue: Reportar Erro
+  reportIssue: Reportar erro
   save: Salvar
   share: Compartilhar
   schedule: Agendar
@@ -34,9 +34,9 @@ buttons:
 success:
   linkCopied: Link copiado!
 errors:
-  forbidden: Você não é bem-vindo aqui.
-  internal: Algo de ruim ocorreu.
-  notFound: Não conseguimos chegar a esta localização.
+  forbidden: Ops! Você não pode acessar aqui.
+  internal: Ops! Algum erro ocorreu.
+  notFound: Ops! Nada foi encontrado.
 files:
   body: Corpo
   clear: Limpar
@@ -45,8 +45,8 @@ files:
   folders: Pastas
   home: Início
   lastModified: Última modificação
-  loading: Carregando...
-  lonely: Sinto-me sozinho...
+  loading: Carregando. Aguarde, por favor.
+  lonely: Não existe nada aqui.
   metadata: Metadados
   multipleSelectionEnabled: Seleção múltipla ativada
   name: Nome
@@ -60,10 +60,10 @@ help:
     click: selecionar várias pastas e arquivos
     f: pesquisar
     s: salvar um arquivo ou baixar a pasta que você está
-  del: eliminar os arquivos selecionados
+  del: deletar os arquivos selecionados
   doubleClick: abrir pasta ou arquivo
   esc: limpar seleção e/ou fechar menu
-  f1: esta informação
+  f1: está informação
   f2: renomear arquivo
   help: Ajuda
 languages:
@@ -82,23 +82,23 @@ login:
   password: Senha
   submit: Login
   username: Nome do usuário
-  wrongCredentials: Dados errados
+  wrongCredentials: Ops! Dados incorretos.
 prompts:
   copy: Copiar
-  copyMessage: 'Escolhe um lugar para copiar os arquivos:'
+  copyMessage: 'Escolha um lugar para copiar os arquivos:'
   currentlyNavigating: 'Navegando em:'
-  deleteMessageMultiple: Deseja eliminar {count} arquivo(s)?
-  deleteMessageSingle: Deseja eliminar esta pasta/arquivo?
-  deleteTitle: Eliminar arquivos
+  deleteMessageMultiple: Deseja deletar {count} arquivo(s)?
+  deleteMessageSingle: Deseja deletar está pasta/arquivo?
+  deleteTitle: Deletar arquivos
   displayName: 'Nome:'
   download: Baixar arquivos
   downloadMessage: Escolha o formato do arquivo.
   error: Algo de ruim ocorreu
   fileInfo: Informação do arquivo
   filesSelected: "{count} arquivos selecionados."
-  lastModified: Última Modificação
+  lastModified: Última modificação
   move: Mover
-  moveMessage: 'Escolha uma nova casa para os seus arquivos:'
+  moveMessage: 'Escolha uma nova pasta para os seus arquivos:'
   newArchetype: Criar um novo post baseado num "archetype". O seu arquivo será criado
     na pasta "content".
   newDir: Nova pasta
@@ -134,11 +134,11 @@ settings:
   admin: Admin
   administrator: Administrador
   allowCommands: Executar comandos
-  allowEdit: Editar, renomear e eliminar arquivos ou pastas
+  allowEdit: Editar, renomear e deletar arquivos ou pastas
   allowNew: Criar novos arquivos e pastas
   allowPublish: Publicar novas páginas e conteúdos
   avoidChanges: "(deixe em branco para manter)"
-  changePassword: Alterar Senha
+  changePassword: Alterar senha
   commands: Comandos
   commandsHelp: >
     Pode definir um conjunto de comandos a executar em determiandos eventos.
@@ -146,14 +146,14 @@ settings:
     como antes e depois de salvar, irá existir uma variável de ambiente denominada
     "FILE" com o caminho do arquivo.
   commandsUpdated: Comandos atualizados!
-  customStylesheet: Estilos Personalizados
+  customStylesheet: Estilos personalizados
   examples: Exemplos
-  globalSettings: Configurações Globais
+  globalSettings: Configurações globais
   language: Linguagem
   lockPassword: Não permitir que o usuário altere a senha
   newPassword: Nova senha
   newPasswordConfirm: Confirme a nova senha
-  newUser: Novo Usuário
+  newUser: Novo usuário
   password: Senha
   passwordUpdated: Senha atualizada!
   permissions: Permissões
@@ -162,7 +162,7 @@ settings:
     manualmente. Se selecionar a opção "Administrador", todas as outras opções serão
     automaticamente selecionadas. A gestão dos usuários é um privilégio restringido
     aos administradores.
-  profileSettings: Configurações do Usuário
+  profileSettings: Configurações do usuário
   ruleExample1: >
     previne o acesso a qualquer "dotfile" (como .git, .gitignore) em
     qualquer pasta
@@ -186,7 +186,7 @@ settings:
     este usuário. Exemplo:'
   userCreated: Usuário criado!
   userDeleted: Usuário eliminado!
-  userManagement: Gestão de Usuários
+  userManagement: Gestão de usuários
   username: Nome do usuário
   users: Usuários
   userUpdated: Usuário atualizado!
@@ -199,7 +199,7 @@ sidebar:
   newFolder: Nova pasta
   preview: Pré-visualizar
   settings: Configurações
-  siteSettings: Configurações do Site
+  siteSettings: Configurações do site
 time:
   unit: Unidades de Tempo
   seconds: Segundos
