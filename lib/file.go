@@ -268,7 +268,7 @@ func (i *File) GetFileType(checkContent bool) error {
 
 End:
 	// If the file type is text, save its content.
-	if i.Type == "text" && i.Size < 10240 { // Avoiding files that are too large causes browsers to crash
+	if i.Type == "text" && i.Size <= 10240 { // Avoiding files that are too large causes browsers to crash
 		if len(content) == 0 {
 			content, err = ioutil.ReadFile(i.Path)
 			if err != nil {
