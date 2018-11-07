@@ -190,10 +190,20 @@ func (m *FileBrowser) Setup() error {
 	// based on 'base' User that must be provided by the function caller.
 	if len(users) == 0 {
 		u := *m.DefaultUser
-		u.Username = "admin"
+
+		username := "admin"
+        if envUsername := os.Getenv("DEFAULT_USER"); envUsername != "" {
+            username = envUsername
+        }
+		u.Username = username
+
+		password := "admin"
+        if envPassword := os.Getenv("DEFAULT_PASSWORD"); envPassword != "" {
+            password = envPassword
+        }
 
 		// Hashes the password.
-		u.Password, err = HashPassword("admin")
+		u.Password, err = HashPassword(password)
 		if err != nil {
 			return err
 		}
