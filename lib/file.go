@@ -233,7 +233,7 @@ func (i *File) GetFileType(checkContent bool) error {
 		mimetype = http.DetectContentType(buffer[:n])
 	}
 
-	if strings.HasPrefix(mimetype, "video") {
+	if strings.HasPrefix(mimetype, "video") || strings.HasSuffix(mimetype, "octet-stream") {
 		i.Type = "video"
 		return nil
 	}
