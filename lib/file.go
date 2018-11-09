@@ -233,7 +233,7 @@ func (i *File) GetFileType(checkContent bool) error {
 		mimetype = http.DetectContentType(buffer[:n])
 	}
 
-	if strings.HasPrefix(mimetype, "video") || strings.HasSuffix(mimetype, "octet-stream") {
+	if strings.HasPrefix(mimetype, "video") || isVideoExtension(i.Extension) {
 		i.Type = "video"
 		return nil
 	}
@@ -280,6 +280,17 @@ End:
 	}
 
 	return nil
+}
+func isVideoExtension(ext string) (res bool) {
+	res = false
+	ext = strings.ToUpper(strings.Replace(ext, ".", "", -1))
+	for _, v := range []string{"3GP", "3G2", "ASF", "WMA", "WMV", "AVI", "DIVX", "F4V", "EVO", "FLV", "MKV", "MK3D", "MKA", "MKS", "WEBM", "MCF", "MP4", "MPG", "MPEG", "M2P", "PS", "TS", "M2TS", "MXF", "OGG", "MOV", "QT", "RMVB", "VOB"} {
+		if strings.EqualFold(ext, v) {
+			res = true
+			break
+		}
+	}
+	return res
 }
 
 // Checksum retrieves the checksum of a file.
