@@ -95,12 +95,6 @@ func resourceGetHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (
 	}
 
 	f.Kind = "editor"
-
-	// Tries to get the editor data.
-	if err = f.GetEditor(); err != nil {
-		return http.StatusInternalServerError, err
-	}
-
 	return renderJSON(w, f)
 }
 

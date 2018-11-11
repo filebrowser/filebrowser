@@ -45,21 +45,21 @@ func downloadHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int
 
 	var (
 		extension string
-		ar        archiver.Archiver
+		ar        archiver.Writer
 	)
 
 	switch query {
 	// If the format is true, just set it to "zip".
 	case "zip", "true", "":
-		extension, ar = ".zip", archiver.Zip
+		extension, ar = ".zip", &archiver.Zip{}
 	case "tar":
-		extension, ar = ".tar", archiver.Tar
+		extension, ar = ".tar", &archiver.Tar{}
 	case "targz":
-		extension, ar = ".tar.gz", archiver.TarGz
+		extension, ar = ".tar.gz", &archiver.TarGz{}
 	case "tarbz2":
-		extension, ar = ".tar.bz2", archiver.TarBz2
+		extension, ar = ".tar.bz2", &archiver.TarBz2{}
 	case "tarxz":
-		extension, ar = ".tar.xz", archiver.TarXZ
+		extension, ar = ".tar.xz", &archiver.TarXz{}
 	default:
 		return http.StatusNotImplemented, nil
 	}
@@ -72,7 +72,34 @@ func downloadHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int
 	name += extension
 
 	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))
-	err := ar.Write(w, files)
+
+	err := ar.Create(w)
+	if err != nil {
+		return 0, err
+	}
+	defer ar.Close()
+
+	for _, f := range files {
+		file, err := os.Open(f)
+		if err != nil {
+			return 0, err
+		}
+
+		info, err := file.Stat()
+		if err != nil {
+			return 0, err
+		}
+
+		// ... open file and get the name for it within the archive ...
+		err = ar.Write(archiver.File{
+			FileInfo:   info,
+			ReadCloser: file,
+		})
+
+		if err != nil {
+			return 0, err
+		}
+	}
 
 	return 0, err
 }

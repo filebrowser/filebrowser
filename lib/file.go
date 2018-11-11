@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"bytes"
 	"crypto/md5"
 	"crypto/sha1"
 	"crypto/sha256"
@@ -19,7 +18,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gohugoio/hugo/parser"
 	"github.com/maruel/natural"
 )
 
@@ -175,33 +173,6 @@ func (i *File) GetListing(u *User, r *http.Request) error {
 		NumFiles: fileCount,
 	}
 
-	return nil
-}
-
-// GetEditor gets the editor based on a Info struct
-func (i *File) GetEditor() error {
-	i.Language = editorLanguage(i.Extension)
-	// If the editor will hold only content, leave now.
-	if editorMode(i.Language) == "content" {
-		return nil
-	}
-
-	// If the file doesn't have any kind of metadata, leave now.
-	if !hasRune(i.Content) {
-		return nil
-	}
-
-	buffer := bytes.NewBuffer([]byte(i.Content))
-	page, err := parser.ReadFrom(buffer)
-
-	// If there is an error, just ignore it and return nil.
-	// This way, the file can be served for editing.
-	if err != nil {
-		return nil
-	}
-
-	i.Content = strings.TrimSpace(string(page.Content()))
-	i.Metadata = strings.TrimSpace(string(page.FrontMatter()))
 	return nil
 }
 
