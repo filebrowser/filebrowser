@@ -185,6 +185,7 @@ search:
   video: 비디오
   writeToSearch: 검색하고 싶은것을 적어주세요
 languages:
+  ar: العربية
   en: English
   it: Italiano
   fr: Français

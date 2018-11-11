@@ -186,6 +186,7 @@ search:
   video: Vídeo
   writeToSearch: Escribe aquí para buscar
 languages:
+  ar: العربية
   en: English
   it: Italiano
   fr: Français

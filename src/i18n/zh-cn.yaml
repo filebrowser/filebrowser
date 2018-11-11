@@ -184,6 +184,7 @@ search:
   video: 视频
   writeToSearch: 请输入要搜索的内容
 languages:
+  ar: العربية
   en: English
   it: Italiano
   fr: Français

@@ -179,6 +179,7 @@ search:
   video: Video
   writeToSearch: Ecrivez ici pour lancer une recherche
 languages:
+  ar: العربية
   en: English
   it: Italiano
   fr: Français

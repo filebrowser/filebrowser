@@ -183,6 +183,7 @@ search:
   video: Video
   writeToSearch: Hier schreiben zum Suchen
 languages:
+  ar: العربية
   en: English
   it: Italiano
   fr: Français

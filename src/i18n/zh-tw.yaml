@@ -184,6 +184,7 @@ search:
   video: 影片
   writeToSearch: 請輸入要搜尋的內容
 languages:
+  ar: العربية
   en: English
   it: Italiano
   fr: Français

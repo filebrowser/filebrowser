@@ -187,6 +187,7 @@ search:
   video: Видео
   writeToSearch: Введи текст для поиска
 languages:
+  ar: العربية
   en: English
   it: Italiano
   fr: Français

@@ -67,6 +67,7 @@ help:
   f2: renomear arquivo
   help: Ajuda
 languages:
+  ar: العربية
   en: English
   it: Italiano
   fr: Français
