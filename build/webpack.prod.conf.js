@@ -119,7 +119,7 @@ var webpackConfig = merge(baseWebpackConfig, {
     new SWPrecacheWebpackPlugin({
       cacheId: 'File Browser',
       filename: 'sw.js',
-      replacePrefix: '{{ .BaseURL }}/',
+      replacePrefix: '{{ .baseurl }}/',
       staticFileGlobs: ['dist/**/*.{js,html,css}'],
       minify: true,
       stripPrefix: 'dist/'
