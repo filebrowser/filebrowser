@@ -23,6 +23,10 @@ import (
 	"github.com/maruel/natural"
 )
 
+// The size of the loaded text can be rendered in the browser. Avoiding files that are too large causes browsers to crash.
+// Currently set to 10MB, 10 * 1024 * 1024 = 10485760 byte
+const textExtensionsRenderMaxSize int = 10485760
+
 // File contains the information about a particular file or directory.
 type File struct {
 	// Indicates the Kind of view on the front-end (Listing, editor or preview).
@@ -268,7 +272,7 @@ func (i *File) GetFileType(checkContent bool) error {
 
 End:
 	// If the file type is text, save its content.
-	if i.Type == "text" && i.Size <= 10240 { // Avoiding files that are too large causes browsers to crash
+	if i.Type == "text" && i.Size <= textExtensionsRenderMaxSize { // Avoiding files that are too large causes browsers to crash
 		if len(content) == 0 {
 			content, err = ioutil.ReadFile(i.Path)
 			if err != nil {
