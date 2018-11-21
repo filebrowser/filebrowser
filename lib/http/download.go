@@ -30,7 +30,7 @@ func downloadHandler(c *fb.Context, w http.ResponseWriter, r *http.Request) (int
 	if len(names) != 0 {
 		for _, name := range names {
 			// Unescape the name.
-			name, err := url.QueryUnescape(name)
+			name, err := url.QueryUnescape(strings.Replace(name, "+", "%2B", -1))
 			if err != nil {
 				return http.StatusInternalServerError, err
 			}
