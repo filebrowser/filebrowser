@@ -144,6 +144,7 @@ export default {
 
       api.fetch(url)
         .then((req) => {
+          if (this.$store.state.baseURL + req.url !== window.location.pathname) return
           if (!url.endsWith('/') && req.url.endsWith('/')) {
             window.history.replaceState(window.history.state, document.title, window.location.pathname + '/')
           }
