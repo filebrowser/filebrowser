@@ -329,6 +329,9 @@ func search(c *fb.Context, w http.ResponseWriter, r *http.Request) (int, error) 
 				return nil
 			}
 		}
+		if f.IsDir() {
+			originalPath = originalPath + "/"
+		}
 
 		response, _ := json.Marshal(map[string]interface{}{
 			"dir":  f.IsDir(),
