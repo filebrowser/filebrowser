@@ -178,7 +178,7 @@ search:
   pressToSearch: 按回车键搜索。
   search: 搜索...
   searchOrCommand: 搜索或者执行命令(Linux 代码)...
-  searchOrSupportedCommand: 搜索或使用您可以使用的命令(一次只能执行一个命令)：
+  searchOrSupportedCommand: 搜索或加入"$"前缀以使用其中一个您可以使用的命令：
   type: 键入并按回车键进行搜索。
   types: 类型
   video: 视频
