@@ -7,9 +7,10 @@ cd $(dirname $0)/..
 dolint='gometalinter --exclude="rice-box.go" --exclude="vendor" --deadline=300s ./...'
 
 if [ "$USE_DOCKER" != "" ]; then
-  docker run --rm -itv $(pwd):/src filebrowser/dev sh -c "\
-    cp -r /src/. ./ && cd cli && go get -v ./... && \
-    CGO_ENABLED=0 $dolint"
+  $(command -v winpty) docker run --rm -itv /$(pwd)://go/src/github.com/filebrowser/filebrowser -w //go/src/github.com/filebrowser/filebrowser filebrowser/dev:mod sh -c "\
+    GO111MODULE=on go get -v ./... && \
+    GO111MODULE=on go mod vendor && \
+    GO111MODULE=off $dolint"
 else
   $dolint
 fi
