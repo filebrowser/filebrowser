@@ -22,7 +22,7 @@ if [ "$USE_DOCKER" != "" ]; then
     -v /$(pwd):/src:z \
     -w //src \
     -e COMMIT_SHA=$COMMIT_SHA \
-    filebrowser/dev:mod \
+    filebrowser/dev \
     sh -c "\
       cd build && \
       dos2unix build_assets.sh && \
