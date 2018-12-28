@@ -43,7 +43,7 @@ func (e *Env) getHandlers() (http.Handler, http.Handler) {
 
 	index := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
-			httpErr(w, http.StatusNotFound, nil)
+			httpErr(w, r, http.StatusNotFound, nil)
 			return
 		}
 
@@ -54,7 +54,7 @@ func (e *Env) getHandlers() (http.Handler, http.Handler) {
 		err := index.Execute(w, data)
 
 		if err != nil {
-			httpErr(w, http.StatusInternalServerError, err)
+			httpErr(w, r, http.StatusInternalServerError, err)
 		}
 	})
 
@@ -69,7 +69,7 @@ func (e *Env) getHandlers() (http.Handler, http.Handler) {
 		err := index.Execute(w, data)
 
 		if err != nil {
-			httpErr(w, http.StatusInternalServerError, err)
+			httpErr(w, r, http.StatusInternalServerError, err)
 		}
 	}))
 
@@ -111,24 +111,24 @@ func Handler(e *Env) http.Handler {
 	return r
 }
 
-func httpErr(w http.ResponseWriter, status int, err error) {
+func httpErr(w http.ResponseWriter, r *http.Request, status int, err error) {
 	txt := http.StatusText(status)
-	if err != nil {
-		log.Printf("%v", err)
+	if err != nil || status >= 400 {
+		log.Printf("%s: %v %s %v", r.URL.Path, status, r.RemoteAddr, err)
 	}
 	http.Error(w, strconv.Itoa(status)+" "+txt, status)
 }
 
-func renderJSON(w http.ResponseWriter, data interface{}) {
+func renderJSON(w http.ResponseWriter, r *http.Request, data interface{}) {
 	marsh, err := json.Marshal(data)
 	if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	if _, err := w.Write(marsh); err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 	}
 }
 
@@ -136,12 +136,12 @@ func (e *Env) getUser(w http.ResponseWriter, r *http.Request) (*types.User, bool
 	id := r.Context().Value(keyUserID).(uint)
 	user, err := e.Store.Users.Get(id)
 	if err == types.ErrNotExist {
-		httpErr(w, http.StatusForbidden, nil)
+		httpErr(w, r, http.StatusForbidden, nil)
 		return nil, false
 	}
 
 	if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 		return nil, false
 	}
 

@@ -25,13 +25,13 @@ func (e *Env) usersGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !user.Perm.Admin {
-		httpErr(w, http.StatusForbidden, nil)
+		httpErr(w, r, http.StatusForbidden, nil)
 		return
 	}
 
 	users, err := e.Store.Users.Gets()
 	if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -43,7 +43,7 @@ func (e *Env) usersGetHandler(w http.ResponseWriter, r *http.Request) {
 		return users[i].ID < users[j].ID
 	})
 
-	renderJSON(w, users)
+	renderJSON(w, r, users)
 }
 
 func (e *Env) userSelfOrAdmin(w http.ResponseWriter, r *http.Request) (*types.User, uint, bool) {
@@ -54,12 +54,12 @@ func (e *Env) userSelfOrAdmin(w http.ResponseWriter, r *http.Request) (*types.Us
 
 	id, err := getUserID(r)
 	if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 		return nil, 0, false
 	}
 
 	if user.ID != id && !user.Perm.Admin {
-		httpErr(w, http.StatusForbidden, nil)
+		httpErr(w, r, http.StatusForbidden, nil)
 		return nil, 0, false
 	}
 
@@ -74,17 +74,17 @@ func (e *Env) userGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	u, err := e.Store.Users.Get(id)
 	if err == types.ErrNotExist {
-		httpErr(w, http.StatusNotFound, nil)
+		httpErr(w, r, http.StatusNotFound, nil)
 		return
 	}
 
 	if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
 	u.Password = ""
-	renderJSON(w, u)
+	renderJSON(w, r, u)
 }
 
 func (e *Env) userDeleteHandler(w http.ResponseWriter, r *http.Request) {
@@ -95,12 +95,12 @@ func (e *Env) userDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := e.Store.Users.Delete(id)
 	if err == types.ErrNotExist {
-		httpErr(w, http.StatusNotFound, nil)
+		httpErr(w, r, http.StatusNotFound, nil)
 		return
 	}
 
 	if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 	}
 }
 

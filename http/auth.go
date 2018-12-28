@@ -15,11 +15,11 @@ import (
 func (e *Env) loginHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := e.Auther.Auth(r)
 	if err == types.ErrNoPermission {
-		httpErr(w, http.StatusForbidden, nil)
+		httpErr(w, r, http.StatusForbidden, nil)
 	} else if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 	} else {
-		e.printToken(w, user)
+		e.printToken(w, r, user)
 	}
 }
 
@@ -30,24 +30,24 @@ type signupBody struct {
 
 func (e *Env) signupHandler(w http.ResponseWriter, r *http.Request) {
 	if !e.Settings.Signup {
-		httpErr(w, http.StatusForbidden, nil)
+		httpErr(w, r, http.StatusForbidden, nil)
 		return
 	}
 
 	if r.Body == nil {
-		httpErr(w, http.StatusBadRequest, nil)
+		httpErr(w, r, http.StatusBadRequest, nil)
 		return
 	}
 
 	info := &signupBody{}
 	err := json.NewDecoder(r.Body).Decode(info)
 	if err != nil {
-		httpErr(w, http.StatusBadRequest, nil)
+		httpErr(w, r, http.StatusBadRequest, nil)
 		return
 	}
 
 	if info.Password == "" || info.Username == "" {
-		httpErr(w, http.StatusBadRequest, nil)
+		httpErr(w, r, http.StatusBadRequest, nil)
 		return
 	}
 
@@ -61,21 +61,21 @@ func (e *Env) signupHandler(w http.ResponseWriter, r *http.Request) {
 
 	pwd, err := types.HashPwd(info.Password)
 	if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
 	user.Password = pwd
 	err = e.Store.Users.Save(user)
 	if err == types.ErrExist {
-		httpErr(w, http.StatusConflict, nil)
+		httpErr(w, r, http.StatusConflict, nil)
 		return
 	} else if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
-	httpErr(w, http.StatusOK, nil)
+	httpErr(w, r, http.StatusOK, nil)
 }
 
 type userInfo struct {
@@ -125,7 +125,7 @@ func (e *Env) auth(next http.HandlerFunc) http.HandlerFunc {
 		token, err := request.ParseFromRequestWithClaims(r, &extractor{}, &tk, keyFunc)
 
 		if err != nil || !token.Valid {
-			httpErr(w, http.StatusForbidden, nil)
+			httpErr(w, r, http.StatusForbidden, nil)
 			return
 		}
 
@@ -133,7 +133,7 @@ func (e *Env) auth(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (e *Env) printToken(w http.ResponseWriter, user *types.User) {
+func (e *Env) printToken(w http.ResponseWriter, r *http.Request, user *types.User) {
 	claims := &authToken{
 		User: userInfo{
 			ID:       user.ID,
@@ -151,7 +151,7 @@ func (e *Env) printToken(w http.ResponseWriter, user *types.User) {
 	signed, err := token.SignedString(e.Settings.Key)
 
 	if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 	} else {
 		w.Header().Set("Content-Type", "cty")
 		w.Write([]byte(signed))

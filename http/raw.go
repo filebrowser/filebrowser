@@ -66,13 +66,13 @@ func (e *Env) rawHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !user.Perm.Download {
-		httpErr(w, http.StatusForbidden, nil)
+		httpErr(w, r, http.StatusForbidden, nil)
 		return
 	}
 
 	file, err := types.NewFileInfo(user, path)
 	if err != nil {
-		httpErr(w, httpFsErr(err), err)
+		httpErr(w, r, httpFsErr(err), err)
 		return
 	}
 
@@ -83,13 +83,13 @@ func (e *Env) rawHandler(w http.ResponseWriter, r *http.Request) {
 
 	filenames, err := parseQueryFiles(r, file, user)
 	if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
 	extension, ar, err := parseQueryAlgorithm(r)
 	if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -102,7 +102,7 @@ func (e *Env) rawHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = ar.Create(w)
 	if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
 	defer ar.Close()
@@ -110,21 +110,21 @@ func (e *Env) rawHandler(w http.ResponseWriter, r *http.Request) {
 	for _, fname := range filenames {
 		info, err := user.Fs.Stat(fname)
 		if err != nil {
-			httpErr(w, http.StatusInternalServerError, err)
+			httpErr(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		// get file's name for the inside of the archive
 		internalName, err := archiver.NameInArchive(info, fname, fname)
 		if err != nil {
-			httpErr(w, http.StatusInternalServerError, err)
+			httpErr(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		// open the file
 		file, err := user.Fs.Open(fname)
 		if err != nil {
-			httpErr(w, http.StatusInternalServerError, err)
+			httpErr(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -138,7 +138,7 @@ func (e *Env) rawHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		file.Close()
 		if err != nil {
-			httpErr(w, http.StatusInternalServerError, err)
+			httpErr(w, r, http.StatusInternalServerError, err)
 			return
 		}
 	}
@@ -147,7 +147,7 @@ func (e *Env) rawHandler(w http.ResponseWriter, r *http.Request) {
 func fileHandler(w http.ResponseWriter, r *http.Request, file *types.File, user *types.User) {
 	fd, err := user.Fs.Open(file.Path)
 	if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
 	defer fd.Close()

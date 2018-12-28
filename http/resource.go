@@ -42,7 +42,7 @@ func (e *Env) getResourceData(w http.ResponseWriter, r *http.Request, prefix str
 	}
 
 	if !user.IsAllowed(path) {
-		httpErr(w, http.StatusForbidden, nil)
+		httpErr(w, r, http.StatusForbidden, nil)
 		return "", nil, false
 	}
 
@@ -57,7 +57,7 @@ func (e *Env) resourceGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	file, err := types.NewFileInfo(user, path)
 	if err != nil {
-		httpErr(w, httpFsErr(err), err)
+		httpErr(w, r, httpFsErr(err), err)
 		return
 	}
 
@@ -68,11 +68,11 @@ func (e *Env) resourceGetHandler(w http.ResponseWriter, r *http.Request) {
 			file.Listing.Sort = sort
 			file.Listing.Order = order
 		} else {
-			httpErr(w, http.StatusBadRequest, err)
+			httpErr(w, r, http.StatusBadRequest, err)
 			return
 		}
 		file.Listing.ApplySort()
-		renderJSON(w, file)
+		renderJSON(w, r, file)
 		return
 	}
 
@@ -87,10 +87,10 @@ func (e *Env) resourceGetHandler(w http.ResponseWriter, r *http.Request) {
 	if checksum := r.URL.Query().Get("checksum"); checksum != "" {
 		err = file.Checksum(checksum)
 		if err == types.ErrInvalidOption {
-			httpErr(w, http.StatusBadRequest, nil)
+			httpErr(w, r, http.StatusBadRequest, nil)
 			return
 		} else if err != nil {
-			httpErr(w, http.StatusInternalServerError, err)
+			httpErr(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -98,7 +98,7 @@ func (e *Env) resourceGetHandler(w http.ResponseWriter, r *http.Request) {
 		file.Content = ""
 	}
 
-	renderJSON(w, file)
+	renderJSON(w, r, file)
 }
 
 func (e *Env) resourceDeleteHandler(w http.ResponseWriter, r *http.Request) {
@@ -108,7 +108,7 @@ func (e *Env) resourceDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if path == "/" || !user.Perm.Delete {
-		httpErr(w, http.StatusForbidden, nil)
+		httpErr(w, r, http.StatusForbidden, nil)
 		return
 	}
 
@@ -117,7 +117,7 @@ func (e *Env) resourceDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}, "delete", path, "", user)
 
 	if err != nil {
-		httpErr(w, httpFsErr(err), err)
+		httpErr(w, r, httpFsErr(err), err)
 		return
 	}
 
@@ -131,12 +131,12 @@ func (e *Env) resourcePostPutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !user.Perm.Create && r.Method == http.MethodPost {
-		httpErr(w, http.StatusForbidden, nil)
+		httpErr(w, r, http.StatusForbidden, nil)
 		return
 	}
 
 	if !user.Perm.Modify && r.Method == http.MethodPut {
-		httpErr(w, http.StatusForbidden, nil)
+		httpErr(w, r, http.StatusForbidden, nil)
 		return
 	}
 
@@ -147,10 +147,10 @@ func (e *Env) resourcePostPutHandler(w http.ResponseWriter, r *http.Request) {
 	// For directories, only allow POST for creation.
 	if strings.HasSuffix(r.URL.Path, "/") {
 		if r.Method == http.MethodPut {
-			httpErr(w, http.StatusMethodNotAllowed, nil)
+			httpErr(w, r, http.StatusMethodNotAllowed, nil)
 		} else {
 			err := user.Fs.MkdirAll(path, 0775)
-			httpErr(w, httpFsErr(err), err)
+			httpErr(w, r, httpFsErr(err), err)
 		}
 
 		return
@@ -158,7 +158,7 @@ func (e *Env) resourcePostPutHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost && r.URL.Query().Get("override") != "true" {
 		if _, err := user.Fs.Stat(path); err == nil {
-			httpErr(w, http.StatusConflict, nil)
+			httpErr(w, r, http.StatusConflict, nil)
 			return
 		}
 	}
@@ -187,11 +187,11 @@ func (e *Env) resourcePostPutHandler(w http.ResponseWriter, r *http.Request) {
 	}, "upload", path, "", user)
 
 	if err != nil {
-		httpErr(w, httpFsErr(err), err)
+		httpErr(w, r, httpFsErr(err), err)
 		return
 	}
 
-	httpErr(w, http.StatusOK, nil)
+	httpErr(w, r, http.StatusOK, nil)
 }
 
 func (e *Env) resourcePatchHandler(w http.ResponseWriter, r *http.Request) {
@@ -205,26 +205,26 @@ func (e *Env) resourcePatchHandler(w http.ResponseWriter, r *http.Request) {
 	dst, err := url.QueryUnescape(dst)
 
 	if err != nil {
-		httpErr(w, httpFsErr(err), err)
+		httpErr(w, r, httpFsErr(err), err)
 		return
 	}
 
 	if dst == "/" || src == "/" {
-		httpErr(w, http.StatusForbidden, nil)
+		httpErr(w, r, http.StatusForbidden, nil)
 		return
 	}
 
 	switch action {
 	case "copy":
 		if !user.Perm.Create {
-			httpErr(w, http.StatusForbidden, nil)
+			httpErr(w, r, http.StatusForbidden, nil)
 			return
 		}
 	case "rename":
 	default:
 		action = "rename"
 		if !user.Perm.Rename {
-			httpErr(w, http.StatusForbidden, nil)
+			httpErr(w, r, http.StatusForbidden, nil)
 			return
 		}
 	}
@@ -238,7 +238,7 @@ func (e *Env) resourcePatchHandler(w http.ResponseWriter, r *http.Request) {
 		return user.Fs.Rename(src, dst)
 	}, "action", src, dst, user)
 
-	httpErr(w, httpFsErr(err), err)
+	httpErr(w, r, httpFsErr(err), err)
 }
 
 func handleSortOrder(w http.ResponseWriter, r *http.Request, scope string) (sort string, order string, err error) {

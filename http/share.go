@@ -21,7 +21,7 @@ func (e *Env) getShareData(w http.ResponseWriter, r *http.Request, prefix string
 	}
 
 	if !user.Perm.Share {
-		httpErr(w, http.StatusForbidden, nil)
+		httpErr(w, r, http.StatusForbidden, nil)
 		return "", false
 	}
 
@@ -36,12 +36,12 @@ func (e *Env) shareGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	s, err := e.Store.Share.GetByPath(path)
 	if err == types.ErrNotExist {
-		renderJSON(w, []*types.ShareLink{})
+		renderJSON(w, r, []*types.ShareLink{})
 		return
 	}
 
 	if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -52,7 +52,7 @@ func (e *Env) shareGetHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	renderJSON(w, s)
+	renderJSON(w, r, s)
 }
 
 func (e *Env) shareDeleteHandler(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +62,7 @@ func (e *Env) shareDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !user.Perm.Share {
-		httpErr(w, http.StatusForbidden, nil)
+		httpErr(w, r, http.StatusForbidden, nil)
 		return
 	}
 
@@ -75,7 +75,7 @@ func (e *Env) shareDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := e.Store.Share.Delete(hash)
 	if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
 }
@@ -102,7 +102,7 @@ func (e *Env) sharePostHandler(w http.ResponseWriter, r *http.Request) {
 	bytes := make([]byte, 6)
 	_, err := rand.Read(bytes)
 	if err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -117,7 +117,7 @@ func (e *Env) sharePostHandler(w http.ResponseWriter, r *http.Request) {
 	if expire != "" {
 		num, err := strconv.Atoi(expire)
 		if err != nil {
-			httpErr(w, http.StatusInternalServerError, err)
+			httpErr(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -137,9 +137,9 @@ func (e *Env) sharePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := e.Store.Share.Save(s); err != nil {
-		httpErr(w, http.StatusInternalServerError, err)
+		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
-	renderJSON(w, s)
+	renderJSON(w, r, s)
 }
