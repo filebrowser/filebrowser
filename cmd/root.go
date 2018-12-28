@@ -97,7 +97,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version number",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("File Browser Version (UNTRACKED)")
+		fmt.Println("File Browser Version " + types.Version)
 	},
 }
 
