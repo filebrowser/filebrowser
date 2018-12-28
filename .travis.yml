@@ -12,17 +12,17 @@ env:
   - USE_DOCKER="true"
 stages:
   - lint
-  - test
+  - build
   - release
 cache:
   directories:
-    - lib/rice-box.go
+    - http/rice-box.go
 jobs:
   include:
   - stage: lint
-    script: "./build/run_gometalinter.sh"
-  - stage: test
-    script: "./build/build_all.sh"
+    script: ./build/run_gometalinter.sh
+  - stage: build
+    script: ./build/build_all.sh
     deploy:
       provider: script
       skip_cleanup: true

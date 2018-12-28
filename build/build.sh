@@ -2,13 +2,13 @@
 
 set -e
 
-cd $(dirname $0)/../cli
+cd $(dirname $0)/..
 
 go get -v ./...
 
 if [ "$COMMIT_SHA" != "" ]; then
   echo "Set version to ($COMMIT_SHA)"
-  sed -i.bak "s|(untracked)|($COMMIT_SHA)|g" ../lib/filebrowser.go
+  sed -i.bak "s|(untracked)|($COMMIT_SHA)|g" ../filebrowser.go
 fi
 
 echo "Build CLI"
@@ -16,5 +16,5 @@ go build -a -o filebrowser
 
 if [ "$COMMIT_SHA" != "" ]; then
   echo "Reset version to (untracked)"
-  sed -i "s|($COMMIT_SHA)|(untracked)|g" ../lib/filebrowser.go
+  sed -i "s|($COMMIT_SHA)|(untracked)|g" ../filebrowser.go
 fi

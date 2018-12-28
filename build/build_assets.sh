@@ -19,5 +19,5 @@ if ! [ -x "$(command -v rice)" ]; then
 fi
 
 # Embed the assets using rice
-cd lib
+cd http
 rice embed-go

@@ -2,8 +2,8 @@
 
 cd $(dirname $0)/..
 
-if [ -d lib/"rice-box.go" ]; then
-  rm -rf lib/rice-box.go
+if [ -d http/"rice-box.go" ]; then
+  rm -rf http/rice-box.go
 fi
 
 if [ "$USE_DOCKER" != "" ]; then
@@ -36,8 +36,8 @@ if [ "$USE_DOCKER" != "" ]; then
     for d in "dist/" "node_modules/"; do
       docker cp filebrowser-tmp://src/frontend/$d frontend
     done
-    docker cp filebrowser-tmp://src/cli/filebrowser ./filebrowser
-    docker cp filebrowser-tmp://src/lib/rice-box.go ./lib/rice-box.go
+    docker cp filebrowser-tmp://src/filebrowser ./filebrowser
+    docker cp filebrowser-tmp://src/http/rice-box.go ./http/rice-box.go
   else
     echo "BUILD FAILED!"
   fi
