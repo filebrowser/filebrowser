@@ -28,7 +28,7 @@ type Env struct {
 }
 
 func (e *Env) getHandlers() (http.Handler, http.Handler) {
-	box := rice.MustFindBox("../../frontend/dist")
+	box := rice.MustFindBox("../frontend/dist")
 	handler := http.FileServer(box.HTTPBox())
 
 	baseURL := strings.TrimSuffix(e.Settings.BaseURL, "/")
@@ -38,6 +38,7 @@ func (e *Env) getHandlers() (http.Handler, http.Handler) {
 	data := map[string]interface{}{
 		"BaseURL":   baseURL,
 		"StaticURL": staticURL,
+		"Signup":    e.Settings.Signup,
 	}
 
 	index := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
