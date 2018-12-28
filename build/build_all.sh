@@ -25,8 +25,6 @@ if [ "$USE_DOCKER" != "" ]; then
     filebrowser/dev \
     sh -c "\
       cd build && \
-      dos2unix build_assets.sh && \
-      dos2unix build.sh && \
       ./build_assets.sh && \
       ./build.sh \
     "
