@@ -8,6 +8,8 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/filebrowser/filebrowser/auth"
+
 	"github.com/GeertJohan/go.rice"
 	"github.com/filebrowser/filebrowser/types"
 	"github.com/gorilla/mux"
@@ -37,8 +39,17 @@ func (e *Env) getHandlers() (http.Handler, http.Handler) {
 	// TODO: baseurl must always not have the trailing slash
 	data := map[string]interface{}{
 		"BaseURL":   baseURL,
+		"Version":   types.Version,
 		"StaticURL": staticURL,
 		"Signup":    e.Settings.Signup,
+		"ReCaptcha": false,
+	}
+
+	if e.Settings.AuthMethod == auth.MethodJSONAuth {
+		auther := e.Auther.(auth.JSONAuth)
+		data["ReCaptcha"] = auther.ReCaptcha.Key != "" && auther.ReCaptcha.Secret != ""
+		data["ReCaptchaHost"] = auther.ReCaptcha.Host
+		data["ReCaptchaKey"] = auther.ReCaptcha.Key
 	}
 
 	index := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
