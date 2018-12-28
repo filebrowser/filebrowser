@@ -46,10 +46,13 @@ func (e *Env) getHandlers() (http.Handler, http.Handler) {
 	}
 
 	if e.Settings.AuthMethod == auth.MethodJSONAuth {
-		auther := e.Auther.(auth.JSONAuth)
-		data["ReCaptcha"] = auther.ReCaptcha.Key != "" && auther.ReCaptcha.Secret != ""
-		data["ReCaptchaHost"] = auther.ReCaptcha.Host
-		data["ReCaptchaKey"] = auther.ReCaptcha.Key
+		auther := e.Auther.(*auth.JSONAuth)
+
+		if auther.ReCaptcha != nil {
+			data["ReCaptcha"] = auther.ReCaptcha.Key != "" && auther.ReCaptcha.Secret != ""
+			data["ReCaptchaHost"] = auther.ReCaptcha.Host
+			data["ReCaptchaKey"] = auther.ReCaptcha.Key
+		}
 	}
 
 	index := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
