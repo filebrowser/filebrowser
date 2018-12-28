@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -26,6 +27,8 @@ func init() {
 	rootCmd.Flags().StringP("address", "a", "127.0.0.1", "address to listen on")
 	rootCmd.Flags().StringP("log", "l", "stderr", "log output")
 	rootCmd.Flags().IntP("port", "p", 0, "port to listen on")
+	rootCmd.Flags().StringP("cert", "c", "", "tls certificate")
+	rootCmd.Flags().StringP("key", "k", "", "tls key")
 	rootCmd.AddCommand(versionCmd)
 }
 
@@ -81,10 +84,21 @@ listening on loalhost on a random port. Use the flags to change it.`,
 		port, err := cmd.Flags().GetInt("port")
 		checkErr(err)
 
-		listener, err := net.Listen("tcp", addr+":"+strconv.Itoa(port))
-		if err != nil {
-			log.Fatal(err)
+		cert := mustGetString(cmd, "cert")
+		key := mustGetString(cmd, "key")
+
+		var listener net.Listener
+
+		if cert != "" && key != "" {
+			cer, err := tls.LoadX509KeyPair(cert, key)
+			checkErr(err)
+			config := &tls.Config{Certificates: []tls.Certificate{cer}}
+			listener, err = tls.Listen("tcp", addr+":"+strconv.Itoa(port), config)
+		} else {
+			listener, err = net.Listen("tcp", addr+":"+strconv.Itoa(port))
 		}
+
+		checkErr(err)
 
 		log.Println("Listening on", listener.Addr().String())
 		if err := http.Serve(listener, fhttp.Handler(env)); err != nil {
