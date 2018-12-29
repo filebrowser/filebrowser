@@ -62,15 +62,7 @@ func (e *Env) resourceGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if file.IsDir {
-		scope := "/"
-
-		if sort, order, err := handleSortOrder(w, r, scope); err == nil {
-			file.Listing.Sort = sort
-			file.Listing.Order = order
-		} else {
-			httpErr(w, r, http.StatusBadRequest, err)
-			return
-		}
+		file.Listing.Sorting = user.Sorting
 		file.Listing.ApplySort()
 		renderJSON(w, r, file)
 		return
@@ -239,43 +231,4 @@ func (e *Env) resourcePatchHandler(w http.ResponseWriter, r *http.Request) {
 	}, "action", src, dst, user)
 
 	httpErr(w, r, httpFsErr(err), err)
-}
-
-func handleSortOrder(w http.ResponseWriter, r *http.Request, scope string) (sort string, order string, err error) {
-	sort = r.URL.Query().Get("sort")
-	order = r.URL.Query().Get("order")
-
-	switch sort {
-	case "":
-		sort = "name"
-		if sortCookie, sortErr := r.Cookie("sort"); sortErr == nil {
-			sort = sortCookie.Value
-		}
-	case "name", "size":
-		http.SetCookie(w, &http.Cookie{
-			Name:   "sort",
-			Value:  sort,
-			MaxAge: 31536000,
-			Path:   scope,
-			Secure: r.TLS != nil,
-		})
-	}
-
-	switch order {
-	case "":
-		order = "asc"
-		if orderCookie, orderErr := r.Cookie("order"); orderErr == nil {
-			order = orderCookie.Value
-		}
-	case "asc", "desc":
-		http.SetCookie(w, &http.Cookie{
-			Name:   "order",
-			Value:  order,
-			MaxAge: 31536000,
-			Path:   scope,
-			Secure: r.TLS != nil,
-		})
-	}
-
-	return
 }

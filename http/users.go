@@ -1,9 +1,11 @@
 package http
 
 import (
+	"encoding/json"
 	"net/http"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/filebrowser/filebrowser/types"
 	"github.com/gorilla/mux"
@@ -16,6 +18,32 @@ func getUserID(r *http.Request) (uint, error) {
 		return 0, err
 	}
 	return uint(i), err
+}
+
+type modifyUserRequest struct {
+	modifyRequest
+	Data *types.User `json:"data"`
+}
+
+func getUser(w http.ResponseWriter, r *http.Request) (*modifyUserRequest, bool) {
+	if r.Body == nil {
+		httpErr(w, r, http.StatusBadRequest, nil)
+		return nil, false
+	}
+
+	req := &modifyUserRequest{}
+	err := json.NewDecoder(r.Body).Decode(req)
+	if err != nil {
+		httpErr(w, r, http.StatusBadRequest, err)
+		return nil, false
+	}
+
+	if req.What != "user" {
+		httpErr(w, r, http.StatusBadRequest, nil)
+		return nil, false
+	}
+
+	return req, true
 }
 
 func (e *Env) usersGetHandler(w http.ResponseWriter, r *http.Request) {
@@ -109,5 +137,69 @@ func (e *Env) userPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (e *Env) userPutHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO: fill me
+	sessionUser, modifiedID, ok := e.userSelfOrAdmin(w, r)
+	if !ok {
+		return
+	}
+
+	req, ok := getUser(w, r)
+	if !ok {
+		return
+	}
+
+	if req.Data.ID != modifiedID {
+		httpErr(w, r, http.StatusBadRequest, nil)
+		return
+	}
+
+	var err error
+
+	if len(req.Which) == 1 && req.Which[0] == "all" {
+		if !sessionUser.Perm.Admin {
+			httpErr(w, r, http.StatusForbidden, nil)
+			return
+		}
+
+		if req.Data.Password != "" {
+			req.Data.Password, err = types.HashPwd(req.Data.Password)
+		} else {
+			var suser *types.User
+			suser, err = e.Store.Users.Get(modifiedID)
+			req.Data.Password = suser.Password
+		}
+
+		if err != nil {
+			httpErr(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		req.Which = []string{}
+	}
+
+	for k, v := range req.Which {
+		if v == "password" {
+			if !sessionUser.Perm.Admin && sessionUser.LockPassword {
+				httpErr(w, r, http.StatusForbidden, nil)
+				return
+			}
+
+			req.Data.Password, err = types.HashPwd(req.Data.Password)
+			if err != nil {
+				httpErr(w, r, http.StatusInternalServerError, err)
+				return
+			}
+		}
+
+		if !sessionUser.Perm.Admin && (v == "scope" || v == "perm" || v == "username") {
+			httpErr(w, r, http.StatusForbidden, nil)
+			return
+		}
+
+		req.Which[k] = strings.Title(v)
+	}
+
+	err = e.Store.Users.Update(req.Data, req.Which...)
+	if err != nil {
+		httpErr(w, r, http.StatusInternalServerError, err)
+	}
 }

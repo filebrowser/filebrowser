@@ -79,10 +79,11 @@ func (e *Env) signupHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type userInfo struct {
-	ID       uint              `json:"id"`
-	Locale   string            `json:"locale"`
-	ViewMode types.ViewMode    `json:"viewMode"`
-	Perm     types.Permissions `json:"perm"`
+	ID           uint              `json:"id"`
+	Locale       string            `json:"locale"`
+	ViewMode     types.ViewMode    `json:"viewMode"`
+	Perm         types.Permissions `json:"perm"`
+	LockPassword bool              `json:"lockPassword"`
 }
 
 type authToken struct {
@@ -136,10 +137,11 @@ func (e *Env) auth(next http.HandlerFunc) http.HandlerFunc {
 func (e *Env) printToken(w http.ResponseWriter, r *http.Request, user *types.User) {
 	claims := &authToken{
 		User: userInfo{
-			ID:       user.ID,
-			Locale:   user.Locale,
-			ViewMode: user.ViewMode,
-			Perm:     user.Perm,
+			ID:           user.ID,
+			Locale:       user.Locale,
+			ViewMode:     user.ViewMode,
+			Perm:         user.Perm,
+			LockPassword: user.LockPassword,
 		},
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),

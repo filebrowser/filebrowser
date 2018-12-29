@@ -1,8 +1,6 @@
 package types
 
 import (
-	"strings"
-
 	"github.com/spf13/afero"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -30,15 +28,17 @@ type Permissions struct {
 
 // User describes a user.
 type User struct {
-	ID       uint        `storm:"id,increment" json:"id"`
-	Username string      `storm:"unique" json:"username"`
-	Password string      `json:"password"`
-	Scope    string      `json:"scope"`
-	Locale   string      `json:"locale"`
-	ViewMode ViewMode    `json:"viewMode"`
-	Perm     Permissions `json:"perm"`
-	Fs       afero.Fs    `json:"-"`
-	Rules    []Rule      `json:"rules"`
+	ID           uint        `storm:"id,increment" json:"id"`
+	Username     string      `storm:"unique" json:"username"`
+	Password     string      `json:"password"`
+	Scope        string      `json:"scope"`
+	Locale       string      `json:"locale"`
+	LockPassword bool        `json:"lockPassword"` // TODO: add to cli
+	ViewMode     ViewMode    `json:"viewMode"`
+	Perm         Permissions `json:"perm"`
+	Sorting      Sorting     `json:"sorting"` // TODO: add to cli
+	Fs           afero.Fs    `json:"-"`
+	Rules        []Rule      `json:"rules"`
 }
 
 // BuildFs builds the FileSystem property of the user,
@@ -51,24 +51,7 @@ func (u *User) BuildFs() {
 
 // IsAllowed checks if an user is allowed to go to a certain path.
 func (u User) IsAllowed(url string) bool {
-	var rule *Rule
-	i := len(u.Rules) - 1
-
-	for i >= 0 {
-		rule = &u.Rules[i]
-
-		if rule.Regex {
-			if rule.Regexp.MatchString(url) {
-				return rule.Allow
-			}
-		} else if strings.HasPrefix(url, rule.Path) {
-			return rule.Allow
-		}
-
-		i--
-	}
-
-	return true
+	return isAllowed(url, u.Rules)
 }
 
 // HashPwd hashes a password.

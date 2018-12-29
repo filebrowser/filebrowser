@@ -11,15 +11,14 @@ type Listing struct {
 	Items    []*File `json:"items"`
 	NumDirs  int     `json:"numDirs"`
 	NumFiles int     `json:"numFiles"`
-	Sort     string  `json:"sort"`
-	Order    string  `json:"order"`
+	Sorting  Sorting `json:"sorting"`
 }
 
 // ApplySort applies the sort order using .Order and .Sort
 func (l Listing) ApplySort() {
 	// Check '.Order' to know how to sort
-	if l.Order == "desc" {
-		switch l.Sort {
+	if !l.Sorting.Asc {
+		switch l.Sorting.By {
 		case "name":
 			sort.Sort(sort.Reverse(byName(l)))
 		case "size":
@@ -31,7 +30,7 @@ func (l Listing) ApplySort() {
 			return
 		}
 	} else { // If we had more Orderings we could add them here
-		switch l.Sort {
+		switch l.Sorting.By {
 		case "name":
 			sort.Sort(byName(l))
 		case "size":
