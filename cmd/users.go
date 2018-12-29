@@ -73,6 +73,8 @@ func addUserFlags(cmd *cobra.Command) {
 	cmd.Flags().Bool("perm.delete", true, "delete perm for users")
 	cmd.Flags().Bool("perm.share", true, "share perm for users")
 	cmd.Flags().Bool("perm.download", true, "download perm for users")
+	cmd.Flags().String("sorting.by", "name", "sorting mode (name, size or modified)")
+	cmd.Flags().Bool("sorting.asc", false, "sorting by ascending order")
 	cmd.Flags().Bool("lockPassword", false, "lock password")
 	cmd.Flags().String("scope", "", "scope for users")
 	cmd.Flags().String("locale", "en", "locale for users")
@@ -116,6 +118,10 @@ func getUserDefaults(cmd *cobra.Command, defaults *types.UserDefaults, all bool)
 			commands, err := cmd.Flags().GetStringSlice("perm.commands")
 			checkErr(err)
 			defaults.Perm.Commands = commands
+		case "sorting.by":
+			defaults.Sorting.By = mustGetString(cmd, "sorting.by")
+		case "sorting.asc":
+			defaults.Sorting.Asc = mustGetBool(cmd, "sorting.asc")
 		}
 	}
 

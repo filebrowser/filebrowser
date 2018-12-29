@@ -20,7 +20,7 @@ var usersUpdateCmd = &cobra.Command{
 	Short: "Updates an existing user",
 	Long: `Updates an existing user. Set the flags for the
 options you want to change.`,
-	Args:  usernameOrIDRequired,
+	Args: usernameOrIDRequired,
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
@@ -46,12 +46,14 @@ options you want to change.`,
 			Locale:   user.Locale,
 			ViewMode: user.ViewMode,
 			Perm:     user.Perm,
+			Sorting:  user.Sorting,
 		}
 		getUserDefaults(cmd, &defaults, false)
 		user.Scope = defaults.Scope
 		user.Locale = defaults.Locale
 		user.ViewMode = defaults.ViewMode
 		user.Perm = defaults.Perm
+		user.Sorting = defaults.Sorting
 		user.LockPassword = mustGetBool(cmd, "lockPassword")
 
 		if user.Username != username && username != "" {

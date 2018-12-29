@@ -43,6 +43,7 @@ var usersNewCmd = &cobra.Command{
 			Locale:       settings.Defaults.Locale,
 			ViewMode:     settings.Defaults.ViewMode,
 			Perm:         settings.Defaults.Perm,
+			Sorting:      settings.Defaults.Sorting,
 		}
 
 		err = ust.Save(user)

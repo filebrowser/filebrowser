@@ -38,6 +38,6 @@ type UserDefaults struct {
 	Scope    string      `json:"scope"`
 	Locale   string      `json:"locale"`
 	ViewMode ViewMode    `json:"viewMode"`
-	Sorting  Sorting     `json:"sorting"` // TODO: add to cli
+	Sorting  Sorting     `json:"sorting"`
 	Perm     Permissions `json:"perm"`
 }
