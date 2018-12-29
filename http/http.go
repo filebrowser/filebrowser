@@ -5,12 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
-	"text/template"
 
-	"github.com/filebrowser/filebrowser/auth"
-
-	"github.com/GeertJohan/go.rice"
 	"github.com/filebrowser/filebrowser/types"
 	"github.com/gorilla/mux"
 )
@@ -29,72 +24,11 @@ type Env struct {
 	Store    *types.Store
 }
 
-func (e *Env) getHandlers() (http.Handler, http.Handler) {
-	box := rice.MustFindBox("../frontend/dist")
-	handler := http.FileServer(box.HTTPBox())
-
-	baseURL := strings.TrimSuffix(e.Settings.BaseURL, "/")
-	staticURL := strings.TrimPrefix(baseURL+"/static", "/")
-
-	// TODO: baseurl must always not have the trailing slash
-	data := map[string]interface{}{
-		"BaseURL":   baseURL,
-		"Version":   types.Version,
-		"StaticURL": staticURL,
-		"Signup":    e.Settings.Signup,
-		"ReCaptcha": false,
-	}
-
-	if e.Settings.AuthMethod == auth.MethodJSONAuth {
-		auther := e.Auther.(*auth.JSONAuth)
-
-		if auther.ReCaptcha != nil {
-			data["ReCaptcha"] = auther.ReCaptcha.Key != "" && auther.ReCaptcha.Secret != ""
-			data["ReCaptchaHost"] = auther.ReCaptcha.Host
-			data["ReCaptchaKey"] = auther.ReCaptcha.Key
-		}
-	}
-
-	index := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			httpErr(w, r, http.StatusNotFound, nil)
-			return
-		}
-
-		w.Header().Set("x-frame-options", "SAMEORIGIN")
-		w.Header().Set("x-xss-protection", "1; mode=block")
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		index := template.Must(template.New("index").Delims("[{[", "]}]").Parse(box.MustString("/index.html")))
-		err := index.Execute(w, data)
-
-		if err != nil {
-			httpErr(w, r, http.StatusInternalServerError, err)
-		}
-	})
-
-	static := http.StripPrefix("/static", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !strings.HasSuffix(r.URL.Path, ".js") {
-			handler.ServeHTTP(w, r)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
-		index := template.Must(template.New("index").Delims("[{[", "]}]").Parse(box.MustString(r.URL.Path)))
-		err := index.Execute(w, data)
-
-		if err != nil {
-			httpErr(w, r, http.StatusInternalServerError, err)
-		}
-	}))
-
-	return index, static
-}
-
 // Handler ...
 func Handler(e *Env) http.Handler {
 	r := mux.NewRouter()
 
-	index, static := e.getHandlers()
+	index, static := e.getStaticHandlers()
 
 	r.PathPrefix("/static").Handler(static)
 	r.NotFoundHandler = index
