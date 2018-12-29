@@ -94,11 +94,11 @@ listening on loalhost on a random port. Use the flags to change it.`,
 			checkErr(err)
 			config := &tls.Config{Certificates: []tls.Certificate{cer}}
 			listener, err = tls.Listen("tcp", addr+":"+strconv.Itoa(port), config)
+			checkErr(err)
 		} else {
 			listener, err = net.Listen("tcp", addr+":"+strconv.Itoa(port))
+			checkErr(err)
 		}
-
-		checkErr(err)
 
 		log.Println("Listening on", listener.Addr().String())
 		if err := http.Serve(listener, fhttp.Handler(env)); err != nil {
