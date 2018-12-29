@@ -33,7 +33,7 @@ type User struct {
 	Password     string      `json:"password"`
 	Scope        string      `json:"scope"`
 	Locale       string      `json:"locale"`
-	LockPassword bool        `json:"lockPassword"` // TODO: add to cli
+	LockPassword bool        `json:"lockPassword"`
 	ViewMode     ViewMode    `json:"viewMode"`
 	Perm         Permissions `json:"perm"`
 	Sorting      Sorting     `json:"sorting"` // TODO: add to cli

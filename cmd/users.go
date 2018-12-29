@@ -28,10 +28,10 @@ var usersCmd = &cobra.Command{
 
 func printUsers(users []*types.User) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "ID\tUsername\tScope\tLocale\tV. Mode\tAdmin\tExecute\tCreate\tRename\tModify\tDelete\tShare\tDownload")
+	fmt.Fprintln(w, "ID\tUsername\tScope\tLocale\tV. Mode\tAdmin\tExecute\tCreate\tRename\tModify\tDelete\tShare\tDownload\tPwd Lock")
 
 	for _, user := range users {
-		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t\n",
+		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t\n",
 			user.ID,
 			user.Username,
 			user.Scope,
@@ -45,6 +45,7 @@ func printUsers(users []*types.User) {
 			user.Perm.Delete,
 			user.Perm.Share,
 			user.Perm.Download,
+			user.LockPassword,
 		)
 	}
 
@@ -72,6 +73,7 @@ func addUserFlags(cmd *cobra.Command) {
 	cmd.Flags().Bool("perm.delete", true, "delete perm for users")
 	cmd.Flags().Bool("perm.share", true, "share perm for users")
 	cmd.Flags().Bool("perm.download", true, "download perm for users")
+	cmd.Flags().Bool("lockPassword", false, "lock password")
 	cmd.Flags().String("scope", "", "scope for users")
 	cmd.Flags().String("locale", "en", "locale for users")
 	cmd.Flags().String("viewMode", string(types.ListViewMode), "view mode for users")

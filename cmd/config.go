@@ -35,13 +35,13 @@ func addConfigFlags(cmd *cobra.Command) {
 	cmd.Flags().String("auth.method", string(auth.MethodJSONAuth), "authentication type")
 	cmd.Flags().String("auth.header", "", "HTTP header for auth.method=proxy")
 
-	cmd.Flags().String("recaptcha.host", "https://www.google.com", "Use another host for ReCAPTCHA. recaptcha.net might be useful in China")
+	cmd.Flags().String("recaptcha.host", "https://www.google.com", "use another host for ReCAPTCHA. recaptcha.net might be useful in China")
 	cmd.Flags().String("recaptcha.key", "", "ReCaptcha site key")
 	cmd.Flags().String("recaptcha.secret", "", "ReCaptcha secret")
 
-	cmd.Flags().String("branding.name", "", "Replace 'File Browser' by this name")
-	cmd.Flags().String("branding.files", "", "Path to directory with images and custom styles")
-	cmd.Flags().Bool("branding.disableExternal", false, "Disable external links such as GitHub links")
+	cmd.Flags().String("branding.name", "", "replace 'File Browser' by this name")
+	cmd.Flags().String("branding.files", "", "path to directory with images and custom styles")
+	cmd.Flags().Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 }
 
 func getAuthentication(cmd *cobra.Command) (types.AuthMethod, types.Auther) {

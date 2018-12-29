@@ -27,8 +27,8 @@ options you want to change.`,
 		st := storage.UsersStore{DB: db}
 
 		id, _ := cmd.Flags().GetUint("id")
-		username, _ := cmd.Flags().GetString("username")
-		password, _ := cmd.Flags().GetString("password")
+		username := mustGetString(cmd, "username")
+		password := mustGetString(cmd, "password")
 
 		var user *types.User
 		var err error
@@ -52,6 +52,7 @@ options you want to change.`,
 		user.Locale = defaults.Locale
 		user.ViewMode = defaults.ViewMode
 		user.Perm = defaults.Perm
+		user.LockPassword = mustGetBool(cmd, "lockPassword")
 
 		if user.Username != username && username != "" {
 			user.Username = username

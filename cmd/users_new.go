@@ -31,18 +31,18 @@ var usersNewCmd = &cobra.Command{
 		checkErr(err)
 		getUserDefaults(cmd, &settings.Defaults, false)
 
-		username, _ := cmd.Flags().GetString("username")
 		password, _ := cmd.Flags().GetString("password")
 		password, err = types.HashPwd(password)
 		checkErr(err)
 
 		user := &types.User{
-			Username: username,
-			Password: password,
-			Scope:    settings.Defaults.Scope,
-			Locale:   settings.Defaults.Locale,
-			ViewMode: settings.Defaults.ViewMode,
-			Perm:     settings.Defaults.Perm,
+			Username:     mustGetString(cmd, "username"),
+			Password:     password,
+			LockPassword: mustGetBool(cmd, "lockPassword"),
+			Scope:        settings.Defaults.Scope,
+			Locale:       settings.Defaults.Locale,
+			ViewMode:     settings.Defaults.ViewMode,
+			Perm:         settings.Defaults.Perm,
 		}
 
 		err = ust.Save(user)
