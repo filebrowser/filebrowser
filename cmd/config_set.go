@@ -28,12 +28,19 @@ you want to change.`,
 
 		auth := false
 		cmd.Flags().Visit(func(flag *pflag.Flag) {
-			if flag.Name == "baseURL" {
+			switch flag.Name {
+			case "baseURL":
 				s.BaseURL = mustGetString(cmd, "baseURL")
-			} else if flag.Name == "signup" {
+			case "signup":
 				s.Signup = mustGetBool(cmd, "signup")
-			} else if flag.Name == "auth.method" {
+			case "auth.method":
 				auth = true
+			case "branding.name":
+				s.Branding.Name = mustGetString(cmd, "branding.name")
+			case "branding.disableExternal":
+				s.Branding.DisableExternal = mustGetBool(cmd, "branding.disableExternal")
+			case "branding.files":
+				s.Branding.Files = mustGetString(cmd, "branding.files")
 			}
 		})
 

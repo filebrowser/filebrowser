@@ -10,6 +10,14 @@ type Settings struct {
 	Signup     bool         `json:"signup"`
 	Defaults   UserDefaults `json:"defaults"`
 	AuthMethod AuthMethod   `json:"authMethod"`
+	Branding   Branding     `json:"Branding"`
+}
+
+// Branding contains the branding settings of the app.
+type Branding struct {
+	Name            string `json:"name"`
+	DisableExternal bool   `json:"disableExternal"`
+	Files           string `json:"string"`
 }
 
 // UserDefaults is a type that holds the default values

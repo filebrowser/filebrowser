@@ -38,6 +38,10 @@ func addConfigFlags(cmd *cobra.Command) {
 	cmd.Flags().String("recaptcha.host", "https://www.google.com", "Use another host for ReCAPTCHA. recaptcha.net might be useful in China")
 	cmd.Flags().String("recaptcha.key", "", "ReCaptcha site key")
 	cmd.Flags().String("recaptcha.secret", "", "ReCaptcha secret")
+
+	cmd.Flags().String("branding.name", "", "Replace 'File Browser' by this name")
+	cmd.Flags().String("branding.files", "", "Path to directory with images and custom styles")
+	cmd.Flags().Bool("branding.disableExternal", false, "Disable external links such as GitHub links")
 }
 
 func getAuthentication(cmd *cobra.Command) (types.AuthMethod, types.Auther) {
@@ -87,6 +91,10 @@ func printSettings(s *types.Settings, auther types.Auther) {
 	fmt.Fprintf(w, "\nBase URL:\t%s\n", s.BaseURL)
 	fmt.Fprintf(w, "Sign up:\t%t\n", s.Signup)
 	fmt.Fprintf(w, "Auth method:\t%s\n", s.AuthMethod)
+	fmt.Fprintln(w, "\nBranding:")
+	fmt.Fprintf(w, "\tName:\t%s\n", s.Branding.Name)
+	fmt.Fprintf(w, "\tFiles override:\t%s\n", s.Branding.Files)
+	fmt.Fprintf(w, "\tDisable external links:\t%t\n", s.Branding.DisableExternal)
 	fmt.Fprintln(w, "\nDefaults:")
 	fmt.Fprintf(w, "\tScope:\t%s\n", s.Defaults.Scope)
 	fmt.Fprintf(w, "\tLocale:\t%s\n", s.Defaults.Locale)

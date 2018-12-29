@@ -1,7 +1,11 @@
 package http
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"text/template"
 
@@ -16,14 +20,32 @@ func (e *Env) getStaticHandlers() (http.Handler, http.Handler) {
 
 	baseURL := strings.TrimSuffix(e.Settings.BaseURL, "/")
 	staticURL := strings.TrimPrefix(baseURL+"/static", "/")
+	cssFile := ""
 
 	// TODO: baseurl must always not have the trailing slash
 	data := map[string]interface{}{
-		"BaseURL":   baseURL,
-		"Version":   types.Version,
-		"StaticURL": staticURL,
-		"Signup":    e.Settings.Signup,
-		"ReCaptcha": false,
+		"Name":            e.Settings.Branding.Name,
+		"DisableExternal": e.Settings.Branding.DisableExternal,
+		"BaseURL":         baseURL,
+		"Version":         types.Version,
+		"StaticURL":       staticURL,
+		"Signup":          e.Settings.Signup,
+		"CSS":             false,
+		"ReCaptcha":       false,
+	}
+
+	if e.Settings.Branding.Files != "" {
+		path := filepath.Join(e.Settings.Branding.Files, "custom.css")
+		_, err := os.Stat(path)
+
+		if err != nil && !os.IsNotExist(err) {
+			log.Printf("couldn't load custom styles: %v", err)
+		}
+
+		if err == nil {
+			cssFile = path
+			data["CSS"] = true
+		}
 	}
 
 	if e.Settings.AuthMethod == auth.MethodJSONAuth {
@@ -35,6 +57,9 @@ func (e *Env) getStaticHandlers() (http.Handler, http.Handler) {
 			data["ReCaptchaKey"] = auther.ReCaptcha.Key
 		}
 	}
+
+	b, _ := json.MarshalIndent(data, "", "  ")
+	data["Json"] = string(b)
 
 	handleWithData := func(w http.ResponseWriter, r *http.Request, file string, contentType string) {
 		w.Header().Set("Content-Type", contentType)
@@ -58,13 +83,26 @@ func (e *Env) getStaticHandlers() (http.Handler, http.Handler) {
 		handleWithData(w, r, "index.html", "text/html; charset=utf-8")
 	})
 
-	static := http.StripPrefix("/static", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	static := http.StripPrefix("/static/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if e.Settings.Branding.Files != "" {
+			if strings.HasPrefix(r.URL.Path, "img/") {
+				path := filepath.Join(e.Settings.Branding.Files, r.URL.Path)
+				if _, err := os.Stat(path); err == nil {
+					http.ServeFile(w, r, path)
+					return
+				}
+			} else if r.URL.Path == "custom.css" && cssFile != "" {
+				http.ServeFile(w, r, cssFile)
+				return
+			}
+		}
+
 		if !strings.HasSuffix(r.URL.Path, ".js") {
 			handler.ServeHTTP(w, r)
 			return
 		}
 
-		handleWithData(w, r, strings.TrimPrefix(r.URL.Path, "/"), "application/javascript; charset=utf-8")
+		handleWithData(w, r, r.URL.Path, "application/javascript; charset=utf-8")
 	}))
 
 	return index, static
