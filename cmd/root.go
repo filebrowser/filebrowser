@@ -68,7 +68,7 @@ listening on loalhost on a random port. Use the flags to change it.`,
 		env := &fhttp.Env{
 			Store: &types.Store{
 				Users:  bolt.UsersStore{DB: db},
-				Config: bolt.ConfigStore{DB: db},
+				Config: bolt.ConfigStore{DB: db, Users: bolt.UsersStore{DB: db}},
 				Share:  bolt.ShareStore{DB: db},
 			},
 		}

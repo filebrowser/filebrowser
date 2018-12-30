@@ -14,7 +14,7 @@ import (
 	"github.com/filebrowser/filebrowser/types"
 )
 
-func (e *Env) getStaticData () map[string]interface{} {
+func (e *Env) getStaticData() map[string]interface{} {
 	baseURL := strings.TrimSuffix(e.Settings.BaseURL, "/")
 	staticURL := strings.TrimPrefix(baseURL+"/static", "/")
 
@@ -26,6 +26,7 @@ func (e *Env) getStaticData () map[string]interface{} {
 		"Version":         types.Version,
 		"StaticURL":       staticURL,
 		"Signup":          e.Settings.Signup,
+		"NoAuth":          e.Settings.AuthMethod == auth.MethodNoAuth,
 		"CSS":             false,
 		"ReCaptcha":       false,
 	}
@@ -62,7 +63,6 @@ func (e *Env) getStaticData () map[string]interface{} {
 func (e *Env) getStaticHandlers() (http.Handler, http.Handler) {
 	box := rice.MustFindBox("../frontend/dist")
 	handler := http.FileServer(box.HTTPBox())
-
 
 	handleWithData := func(w http.ResponseWriter, r *http.Request, file string, contentType string) {
 		w.Header().Set("Content-Type", contentType)

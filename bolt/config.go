@@ -9,6 +9,7 @@ import (
 // ConfigStore is a configuration store.
 type ConfigStore struct {
 	DB *storm.DB
+	Users types.UsersStore
 }
 
 // Get gets a configuration from the database to an interface.
@@ -68,7 +69,7 @@ func (c ConfigStore) GetAuther(t types.AuthMethod) (types.Auther, error) {
 	}
 
 	if t == auth.MethodNoAuth {
-		auther := auth.NoAuth{}
+		auther := auth.NoAuth{Store: c.Users}
 		if err := c.Get("auther", &auther); err != nil {
 			return nil, err
 		}
