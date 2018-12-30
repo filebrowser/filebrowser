@@ -14,6 +14,7 @@ var (
 	ErrWrongDataType      = errors.New("wrong data type")
 	ErrInvalidUpdateField = errors.New("invalid field to update")
 	ErrInvalidOption      = errors.New("invalid option")
+	ErrPathIsRel          = errors.New("path is relative")
 	ErrNoPermission       = errors.New("permission denied")
 	ErrInvalidAuthMethod  = errors.New("invalid auth method")
 )

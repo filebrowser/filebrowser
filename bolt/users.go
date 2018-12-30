@@ -22,7 +22,6 @@ func (st UsersStore) Get(id uint) (*types.User, error) {
 		return nil, err
 	}
 
-	user.BuildFs()
 	return user, nil
 }
 
@@ -37,7 +36,6 @@ func (st UsersStore) GetByUsername(username string) (*types.User, error) {
 		return nil, err
 	}
 
-	user.BuildFs()
 	return user, nil
 }
 
@@ -50,10 +48,6 @@ func (st UsersStore) Gets() ([]*types.User, error) {
 
 	if err != nil {
 		return users, err
-	}
-
-	for _, user := range users {
-		user.BuildFs()
 	}
 
 	return users, err

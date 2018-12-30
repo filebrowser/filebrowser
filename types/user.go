@@ -1,6 +1,8 @@
 package types
 
 import (
+	"path/filepath"
+
 	"github.com/spf13/afero"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -41,12 +43,59 @@ type User struct {
 	Rules        []Rule      `json:"rules"`
 }
 
-// BuildFs builds the FileSystem property of the user,
-// which is the only one that can't be directly stored.
-func (u *User) BuildFs() {
+var checkableFields = []string{
+	"Username",
+	"Password",
+	"Scope",
+	"ViewMode",
+	"Commands",
+	"Sorting",
+	"Rules",
+}
+
+func (u *User) clean(fields ...string) error {
+	if len(fields) == 0 {
+		fields = checkableFields
+	}
+
+	for _, field := range fields {
+		switch field {
+		case "Username":
+			if u.Username == "" {
+				return ErrEmptyUsername
+			}
+		case "Password":
+			if u.Password == "" {
+				return ErrEmptyPassword
+			}
+		case "Scope":
+			if !filepath.IsAbs(u.Scope) {
+				return ErrPathIsRel
+			}
+		case "ViewMode":
+			if u.ViewMode == "" {
+				u.ViewMode = ListViewMode
+			}
+		case "Commands":
+			if u.Commands == nil {
+				u.Commands = []string{}
+			}
+		case "Sorting":
+			if u.Sorting.By == "" {
+				u.Sorting.By = "name"
+			}
+		case "Rules":
+			if u.Rules == nil {
+				u.Rules = []Rule{}
+			}
+		}
+	}
+
 	if u.Fs == nil {
 		u.Fs = afero.NewBasePathFs(afero.NewOsFs(), u.Scope)
 	}
+
+	return nil
 }
 
 // IsAllowed checks if an user is allowed to go to a certain path.

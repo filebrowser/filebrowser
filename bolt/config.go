@@ -8,8 +8,8 @@ import (
 
 // ConfigStore is a configuration store.
 type ConfigStore struct {
-	DB *storm.DB
-	Users types.UsersStore
+	DB    *storm.DB
+	Users *types.UsersVerify
 }
 
 // Get gets a configuration from the database to an interface.
@@ -45,7 +45,7 @@ func (c ConfigStore) GetRunner() (*types.Runner, error) {
 }
 
 // SaveRunner is an helper method to set the runner object
-func (c ConfigStore) SaveRunner (r *types.Runner) error {
+func (c ConfigStore) SaveRunner(r *types.Runner) error {
 	return c.Save("runner", r)
 }
 
@@ -56,7 +56,7 @@ func (c ConfigStore) GetAuther(t types.AuthMethod) (types.Auther, error) {
 		if err := c.Get("auther", &auther); err != nil {
 			return nil, err
 		}
-		auther.Store = &UsersStore{DB: c.DB}
+		auther.Store = &types.UsersVerify{Store: &UsersStore{DB: c.DB}}
 		return &auther, nil
 	}
 

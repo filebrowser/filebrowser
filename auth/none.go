@@ -11,7 +11,7 @@ const MethodNoAuth types.AuthMethod = "noauth"
 
 // NoAuth is no auth implementation of auther.
 type NoAuth struct {
-	Store types.UsersStore `json:"-"`
+	Store *types.UsersVerify `json:"-"`
 }
 
 // Auth uses authenticates user 1.
