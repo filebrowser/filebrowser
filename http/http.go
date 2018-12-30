@@ -63,6 +63,8 @@ func Handler(e *Env) http.Handler {
 	api.HandleFunc("/settings", e.auth(e.settingsPutHandler)).Methods("PUT")
 
 	api.PathPrefix("/raw").HandlerFunc(e.auth(e.rawHandler)).Methods("GET")
+	api.PathPrefix("/commands").HandlerFunc(e.auth(e.commandsHandler))
+	api.PathPrefix("/search").HandlerFunc(e.auth(e.searchHandler))
 
 	return r
 }
