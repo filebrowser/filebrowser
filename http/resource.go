@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/filebrowser/filebrowser/fileutils"
 	"github.com/filebrowser/filebrowser/types"
 )
 
@@ -223,8 +224,7 @@ func (e *Env) resourcePatchHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = e.Runner.Run(func() error {
 		if action == "copy" {
-			// TODO: err = user.FileSystem.Copy(src, dst)
-			return nil
+			return fileutils.Copy(user.Fs, src, dst)
 		}
 
 		return user.Fs.Rename(src, dst)
