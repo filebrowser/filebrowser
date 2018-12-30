@@ -14,13 +14,9 @@ import (
 	"github.com/filebrowser/filebrowser/types"
 )
 
-func (e *Env) getStaticHandlers() (http.Handler, http.Handler) {
-	box := rice.MustFindBox("../frontend/dist")
-	handler := http.FileServer(box.HTTPBox())
-
+func (e *Env) getStaticData () map[string]interface{} {
 	baseURL := strings.TrimSuffix(e.Settings.BaseURL, "/")
 	staticURL := strings.TrimPrefix(baseURL+"/static", "/")
-	cssFile := ""
 
 	// TODO: baseurl must always not have the trailing slash
 	data := map[string]interface{}{
@@ -43,7 +39,6 @@ func (e *Env) getStaticHandlers() (http.Handler, http.Handler) {
 		}
 
 		if err == nil {
-			cssFile = path
 			data["CSS"] = true
 		}
 	}
@@ -61,10 +56,18 @@ func (e *Env) getStaticHandlers() (http.Handler, http.Handler) {
 	b, _ := json.MarshalIndent(data, "", "  ")
 	data["Json"] = string(b)
 
+	return data
+}
+
+func (e *Env) getStaticHandlers() (http.Handler, http.Handler) {
+	box := rice.MustFindBox("../frontend/dist")
+	handler := http.FileServer(box.HTTPBox())
+
+
 	handleWithData := func(w http.ResponseWriter, r *http.Request, file string, contentType string) {
 		w.Header().Set("Content-Type", contentType)
 		index := template.Must(template.New("index").Delims("[{[", "]}]").Parse(box.MustString(file)))
-		err := index.Execute(w, data)
+		err := index.Execute(w, e.getStaticData())
 
 		if err != nil {
 			httpErr(w, r, http.StatusInternalServerError, err)
@@ -91,8 +94,8 @@ func (e *Env) getStaticHandlers() (http.Handler, http.Handler) {
 					http.ServeFile(w, r, path)
 					return
 				}
-			} else if r.URL.Path == "custom.css" && cssFile != "" {
-				http.ServeFile(w, r, cssFile)
+			} else if r.URL.Path == "custom.css" && e.Settings.Branding.Files != "" {
+				http.ServeFile(w, r, filepath.Join(e.Settings.Branding.Files, "custom.css"))
 				return
 			}
 		}

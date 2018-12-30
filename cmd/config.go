@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/filebrowser/filebrowser/auth"
@@ -99,6 +100,7 @@ func printSettings(s *types.Settings, auther types.Auther) {
 	fmt.Fprintf(w, "\tScope:\t%s\n", s.Defaults.Scope)
 	fmt.Fprintf(w, "\tLocale:\t%s\n", s.Defaults.Locale)
 	fmt.Fprintf(w, "\tView mode:\t%s\n", s.Defaults.ViewMode)
+	fmt.Fprintf(w, "\tCommands:\t%s\n", strings.Join(s.Defaults.Commands, " "))
 	fmt.Fprintf(w, "\tSorting:\n")
 	fmt.Fprintf(w, "\t\tBy:\t%s\n", s.Defaults.Sorting.By)
 	fmt.Fprintf(w, "\t\tAsc:\t%t\n", s.Defaults.Sorting.Asc)

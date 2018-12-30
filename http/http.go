@@ -59,6 +59,9 @@ func Handler(e *Env) http.Handler {
 	api.PathPrefix("/share").HandlerFunc(e.auth(e.sharePostHandler)).Methods("POST")
 	api.PathPrefix("/share").HandlerFunc(e.auth(e.shareDeleteHandler)).Methods("DELETE")
 
+	api.HandleFunc("/settings", e.auth(e.settingsGetHandler)).Methods("GET")
+	api.HandleFunc("/settings", e.auth(e.settingsPutHandler)).Methods("PUT")
+
 	api.PathPrefix("/raw").HandlerFunc(e.auth(e.rawHandler)).Methods("GET")
 
 	return r
@@ -95,6 +98,20 @@ func (e *Env) getUser(w http.ResponseWriter, r *http.Request) (*types.User, bool
 
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
+		return nil, false
+	}
+
+	return user, true
+}
+
+func (e *Env) getAdminUser(w http.ResponseWriter, r *http.Request) (*types.User, bool) {
+	user, ok := e.getUser(w, r)
+	if !ok {
+		return nil, false
+	}
+
+	if !user.Perm.Admin {
+		httpErr(w, r, http.StatusForbidden, nil)
 		return nil, false
 	}
 

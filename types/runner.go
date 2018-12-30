@@ -15,8 +15,6 @@ import (
 var DefaultEvents = []string{
 	"before_save",
 	"after_save",
-	"before_publish",
-	"after_publish",
 	"before_copy",
 	"after_copy",
 	"before_rename",
@@ -55,6 +53,10 @@ func (r Runner) do(event string, path string, destination string, user *User) er
 	}
 
 	for _, command := range commands {
+		if command == "" {
+			continue
+		}
+
 		args := strings.Split(command, " ")
 		nonblock := false
 

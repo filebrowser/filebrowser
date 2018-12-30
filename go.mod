@@ -22,6 +22,7 @@ require (
 	github.com/hacdias/fileutils v0.0.0-20171121222743-76b1c6ab9067
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jessevdk/go-flags v1.4.0 // indirect
+	github.com/jinzhu/copier v0.0.0-20180308034124-7e38e58719c3
 	github.com/kardianos/osext v0.0.0-20170510131534-ae77be60afb1 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/maruel/natural v0.0.0-20180416170133-dbcb3e2e8cf1

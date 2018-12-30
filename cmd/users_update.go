@@ -47,12 +47,14 @@ options you want to change.`,
 			ViewMode: user.ViewMode,
 			Perm:     user.Perm,
 			Sorting:  user.Sorting,
+			Commands: user.Commands,
 		}
 		getUserDefaults(cmd, &defaults, false)
 		user.Scope = defaults.Scope
 		user.Locale = defaults.Locale
 		user.ViewMode = defaults.ViewMode
 		user.Perm = defaults.Perm
+		user.Commands = defaults.Commands
 		user.Sorting = defaults.Sorting
 		user.LockPassword = mustGetBool(cmd, "lockPassword")
 

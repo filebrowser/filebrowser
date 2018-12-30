@@ -16,7 +16,7 @@ type Rule struct {
 // Regexp is a wrapper to the native regexp type where we
 // save the raw expression.
 type Regexp struct {
-	Raw    string
+	Raw    string `json:"raw"`
 	regexp *regexp.Regexp
 }
 

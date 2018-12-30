@@ -66,7 +66,6 @@ func usernameOrIDRequired(cmd *cobra.Command, args []string) error {
 func addUserFlags(cmd *cobra.Command) {
 	cmd.Flags().Bool("perm.admin", false, "admin perm for users")
 	cmd.Flags().Bool("perm.execute", true, "execute perm for users")
-	cmd.Flags().StringSlice("perm.commands", nil, "a list of the commands a user can execute")
 	cmd.Flags().Bool("perm.create", true, "create perm for users")
 	cmd.Flags().Bool("perm.rename", true, "rename perm for users")
 	cmd.Flags().Bool("perm.modify", true, "modify perm for users")
@@ -76,6 +75,7 @@ func addUserFlags(cmd *cobra.Command) {
 	cmd.Flags().String("sorting.by", "name", "sorting mode (name, size or modified)")
 	cmd.Flags().Bool("sorting.asc", false, "sorting by ascending order")
 	cmd.Flags().Bool("lockPassword", false, "lock password")
+	cmd.Flags().StringSlice("commands", nil, "a list of the commands a user can execute")
 	cmd.Flags().String("scope", "", "scope for users")
 	cmd.Flags().String("locale", "en", "locale for users")
 	cmd.Flags().String("viewMode", string(types.ListViewMode), "view mode for users")
@@ -114,10 +114,10 @@ func getUserDefaults(cmd *cobra.Command, defaults *types.UserDefaults, all bool)
 			defaults.Perm.Share = mustGetBool(cmd, "perm.share")
 		case "perm.download":
 			defaults.Perm.Download = mustGetBool(cmd, "perm.download")
-		case "perm.commands":
-			commands, err := cmd.Flags().GetStringSlice("perm.commands")
+		case "commands":
+			commands, err := cmd.Flags().GetStringSlice("commands")
 			checkErr(err)
-			defaults.Perm.Commands = commands
+			defaults.Commands = commands
 		case "sorting.by":
 			defaults.Sorting.By = mustGetString(cmd, "sorting.by")
 		case "sorting.asc":

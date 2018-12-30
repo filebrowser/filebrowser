@@ -40,4 +40,5 @@ type UserDefaults struct {
 	ViewMode ViewMode    `json:"viewMode"`
 	Sorting  Sorting     `json:"sorting"`
 	Perm     Permissions `json:"perm"`
+	Commands []string    `json:"commands"`
 }

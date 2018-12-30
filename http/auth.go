@@ -56,6 +56,7 @@ func (e *Env) signupHandler(w http.ResponseWriter, r *http.Request) {
 		Locale:   e.Settings.Defaults.Locale,
 		Perm:     e.Settings.Defaults.Perm,
 		ViewMode: e.Settings.Defaults.ViewMode,
+		Commands: e.Settings.Defaults.Commands,
 		Scope:    e.Settings.Defaults.Scope,
 	}
 

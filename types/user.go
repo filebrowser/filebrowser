@@ -15,15 +15,14 @@ const (
 
 // Permissions describe a user's permissions.
 type Permissions struct {
-	Admin    bool     `json:"admin"`
-	Execute  bool     `json:"execute"`
-	Create   bool     `json:"create"`
-	Rename   bool     `json:"rename"`
-	Modify   bool     `json:"edit"`
-	Delete   bool     `json:"delete"`
-	Share    bool     `json:"share"`
-	Download bool     `json:"download"`
-	Commands []string `json:"commands"`
+	Admin    bool `json:"admin"`
+	Execute  bool `json:"execute"`
+	Create   bool `json:"create"`
+	Rename   bool `json:"rename"`
+	Modify   bool `json:"edit"`
+	Delete   bool `json:"delete"`
+	Share    bool `json:"share"`
+	Download bool `json:"download"`
 }
 
 // User describes a user.
@@ -36,6 +35,7 @@ type User struct {
 	LockPassword bool        `json:"lockPassword"`
 	ViewMode     ViewMode    `json:"viewMode"`
 	Perm         Permissions `json:"perm"`
+	Commands     []string    `json:"commands"`
 	Sorting      Sorting     `json:"sorting"`
 	Fs           afero.Fs    `json:"-"`
 	Rules        []Rule      `json:"rules"`

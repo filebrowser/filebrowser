@@ -228,7 +228,7 @@ func (e *Env) resourcePatchHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		return user.Fs.Rename(src, dst)
-	}, "action", src, dst, user)
+	}, action, src, dst, user)
 
 	httpErr(w, r, httpFsErr(err), err)
 }
