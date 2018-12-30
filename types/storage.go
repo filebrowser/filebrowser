@@ -7,6 +7,8 @@ type Store struct {
 	Share  ShareStore
 }
 
+// TODO: wrappers to verify
+
 // UsersStore is used to manage users relativey to a data storage.
 type UsersStore interface {
 	Get(id uint) (*User, error)

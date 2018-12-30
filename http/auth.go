@@ -84,6 +84,7 @@ type userInfo struct {
 	Locale       string            `json:"locale"`
 	ViewMode     types.ViewMode    `json:"viewMode"`
 	Perm         types.Permissions `json:"perm"`
+	Commands     []string          `json:"commands"`
 	LockPassword bool              `json:"lockPassword"`
 }
 
@@ -143,6 +144,7 @@ func (e *Env) printToken(w http.ResponseWriter, r *http.Request, user *types.Use
 			ViewMode:     user.ViewMode,
 			Perm:         user.Perm,
 			LockPassword: user.LockPassword,
+			Commands:     user.Commands,
 		},
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
