@@ -44,13 +44,13 @@ Although this is the fastest way to run File Browser, we recommend you to take a
 
 If you're running a Linux distribution or macOS, you can use our special script - made by [Kyle Frost](https://www.kylefrost.me/) - to download the latest version of File Browser and install it on `/usr/local/bin`.
 
-```shell
+```bash
 curl -fsSL https://filebrowser.github.io/get.sh | bash
 ```
 
 If you're on Windows, you can use PowerShell to install File Browser too. You should run the command as administrator because it needs perissions to add the executable to the PATH:
 
-```shell
+```bash
 iwr -useb https://filebrowser.github.io/get.ps1 | iex
 ```
 
@@ -58,7 +58,21 @@ iwr -useb https://filebrowser.github.io/get.ps1 | iex
 
 # Usage
 
+- Add info for recommended way to install.
+- Add info about custom branding.
+- Add info about command runner.
+- Add info about 
+
 # Command line interface
+
+The command line interface is very extensive and you can use it to modify settings, modify users or even have a generator of File Browser installations. The main subcommands available are:
+
+- `cmds` to manage the command runner.
+- `config` to manage the configuration of the installation.
+- `users` to manage your users.
+- `init` is an alias to `config init`.
+
+All commands have the `--help` (shorthand `-h`) flag available and we invite you to explore all the commands for your own use.
 
 # Contributing
 
