@@ -36,7 +36,7 @@ type User struct {
 	LockPassword bool        `json:"lockPassword"`
 	ViewMode     ViewMode    `json:"viewMode"`
 	Perm         Permissions `json:"perm"`
-	Sorting      Sorting     `json:"sorting"` // TODO: add to cli
+	Sorting      Sorting     `json:"sorting"`
 	Fs           afero.Fs    `json:"-"`
 	Rules        []Rule      `json:"rules"`
 }
