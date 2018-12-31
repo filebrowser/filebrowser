@@ -199,6 +199,7 @@ build () {
     echo "2nd phase"
 
     if [ $exitcode -eq 0 ]; then
+      ls -l $REPO
       for d in "dist/" "node_modules/"; do
         docker cp filebrowser-tmp://src/frontend/$d frontend
       done
