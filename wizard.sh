@@ -20,7 +20,8 @@ debugInfo () {
 }
 
 dockerLogin () {
-  gpg --batch --gen-key <<-EOF
+  if [ "$CI" == "true" ]; then
+    gpg --batch --gen-key <<-EOF
 %echo Generating a standard key
 Key-Type: DSA
 Key-Length: 1024
@@ -34,20 +35,34 @@ Expire-Date: 0
 %echo done
 EOF
 
-  key=$(gpg --no-auto-check-trustdb --list-secret-keys | grep ^sec | cut -d/ -f2 | cut -d" " -f1)
-  pass init $key
+    key=$(gpg --no-auto-check-trustdb --list-secret-keys | grep ^sec | cut -d/ -f2 | cut -d" " -f1)
+    pass init $key
 
-  if [ "$(command -v docker-credential-pass)" = "" ]; then
-    docker run --rm -itv /usr/local/bin:/src filebrowser/dev sh -c "cp /go/bin/docker-credential-pass /src"
+    if [ "$(command -v docker-credential-pass)" = "" ]; then
+      docker run --rm -itv /usr/local/bin:/src filebrowser/dev sh -c "cp /go/bin/docker-credential-pass /src"
+    fi
+
+    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+  else
+    docker login
   fi
-
-  echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 }
 
 dockerPushLatest () {
   docker build -t filebrowser/filebrowser .
   dockerLogin
   docker push filebrowser/filebrowser
+  docker logout
+}
+
+dockerPushTag () {
+  dockerLogin
+
+  for tag in `echo $(docker images filebrowser/filebrowser* | awk -F ' ' '{print $1 ":" $2}') | cut -d ' ' -f2-`; do
+    if [ "$tag" = "REPOSITORY:TAG" ]; then break; fi
+    docker push $tag
+  done
+
   docker logout
 }
 
