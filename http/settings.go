@@ -44,6 +44,9 @@ func (e *Env) settingsPutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	e.mux.Lock()
+	defer e.mux.Unlock()
+
 	runner := &types.Runner{Commands: req.Commands}
 	err = e.Store.Config.SaveRunner(runner)
 	if err != nil {
@@ -68,7 +71,6 @@ func (e *Env) settingsPutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: env locks
 	e.Runner = runner
 	e.Settings = settings
 }

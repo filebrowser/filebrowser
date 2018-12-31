@@ -133,7 +133,41 @@ func (e *Env) userDeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (e *Env) userPostHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO: fill me
+	_, ok := e.getAdminUser(w,r)
+	if !ok {
+		return
+	}
+
+	req, ok := getUser(w, r)
+	if !ok {
+		return
+	}
+
+	if len(req.Which) != 0 {
+		httpErr(w, r, http.StatusBadRequest, nil)
+		return
+	}
+
+	if req.Data.Password == "" {
+		httpErr(w, r, http.StatusBadRequest, types.ErrEmptyPassword)
+		return
+	}
+
+	var err error
+	req.Data.Password, err = types.HashPwd(req.Data.Password)
+	if err != nil {
+		httpErr(w, r, http.StatusInternalServerError, err)
+		return
+	}
+
+	err = e.Store.Users.Save(req.Data)
+	if err != nil {
+		httpErr(w, r, http.StatusInternalServerError, err)
+		return
+	}
+
+	w.Header().Set("Location", "/settings/users/"+strconv.FormatUint(uint64(req.Data.ID), 10))
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (e *Env) userPutHandler(w http.ResponseWriter, r *http.Request) {

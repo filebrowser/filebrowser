@@ -7,8 +7,6 @@ type Store struct {
 	Share  ShareStore
 }
 
-// TODO: wrappers to verify
-
 // ConfigStore is used to manage configurations relativey to a data storage.
 type ConfigStore interface {
 	Get(name string, to interface{}) error

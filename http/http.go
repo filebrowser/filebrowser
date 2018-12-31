@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"sync"
 
 	"github.com/filebrowser/filebrowser/types"
 	"github.com/gorilla/mux"
@@ -21,12 +22,13 @@ type modifyRequest struct {
 	Which []string `json:"which"` // Answer to: which fields?
 }
 
-// Env ...
+// Env contains the required info for FB to run.
 type Env struct {
 	Auther   types.Auther
 	Runner   *types.Runner
 	Settings *types.Settings
 	Store    *types.Store
+	mux      sync.Mutex // settings mutex for Auther, Runner and Settings changes.
 }
 
 // Handler ...

@@ -218,7 +218,6 @@ var (
 
 // DetectSubtitles fills the subtitles field if the file
 // is a movie.
-// TODO: detect multiple languages, like FILENAME.LANG.VTT
 func (f *File) DetectSubtitles() {
 	f.Subtitles = []string{}
 	ext := filepath.Ext(f.Path)
