@@ -224,7 +224,7 @@ release () {
     exit 1
   fi
 
-  semver=$(grep -P '^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)' <<< "$1")
+  semver=$(echo "$1" | grep -P '^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)')
 
   if [ $? -ne 0 ]; then
     echo "Not valid semver format. See semver.org"
