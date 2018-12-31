@@ -100,7 +100,7 @@ buildBinary () {
   go get -v ./...
   updateVersion $untracked "($COMMIT_SHA)"
   echo "Build CLI"
-  go build -a -o filebrowser
+  CGO_ENABLED=0 go build -a -o filebrowser
   updateVersion "($COMMIT_SHA)" $untracked
 }
 
