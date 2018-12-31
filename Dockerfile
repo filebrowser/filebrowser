@@ -8,4 +8,4 @@ EXPOSE 80
 
 COPY filebrowser /filebrowser
 
-ENTRYPOINT ["/filebrowser"]
+ENTRYPOINT ["/filebrowser -p 80 -d /database.db"]
