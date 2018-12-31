@@ -22,7 +22,7 @@ jobs:
   - stage: lint
     script: ./wizard.sh -l
   - stage: build
-    script: ./wizard.sh -b
+    script: ./wizard.sh -db
     deploy:
       provider: script
       skip_cleanup: true
