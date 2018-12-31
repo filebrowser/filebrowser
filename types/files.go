@@ -18,11 +18,6 @@ import (
 	"github.com/spf13/afero"
 )
 
-const (
-	// Version is the current File Browser version.
-	Version = "(untracked)"
-)
-
 // File describes a file.
 type File struct {
 	*Listing
