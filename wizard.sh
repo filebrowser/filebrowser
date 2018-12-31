@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 set -e
 
@@ -20,7 +20,7 @@ debugInfo () {
 }
 
 dockerLogin () {
-  if [ "$CI" == "true" ]; then
+  if [ "$CI" = "true" ]; then
     gpg --batch --gen-key <<-EOF
 %echo Generating a standard key
 Key-Type: DSA
@@ -47,7 +47,7 @@ EOF
 }
 
 dockerLogout () {
-  if [ "$CI" == "true" ]; then
+  if [ "$CI" = "true" ]; then
     docker logout
   fi
 }
@@ -297,24 +297,24 @@ while getopts "pdlbr:" o; do
 done
 shift $((OPTIND-1))
 
-if [ "$DEBUG" == "true" ]; then
+if [ "$DEBUG" = "true" ]; then
   debugInfo
 fi
 
-if [ "$LINT" == "true" ]; then
+if [ "$LINT" = "true" ]; then
   lint
 fi
 
-if [ "$BUILD" == "true" ]; then
+if [ "$BUILD" = "true" ]; then
   build
 fi
 
-if [ "$PUSH_LATEST" == "true" ]; then
+if [ "$PUSH_LATEST" = "true" ]; then
   dockerPushLatest
 fi
 
 if [ "$RELEASE" != "" ]; then
-  if [ "$CI" == "true" ]; then
+  if [ "$CI" = "true" ]; then
     ciRelease
   else
     release $RELEASE
