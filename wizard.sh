@@ -43,8 +43,12 @@ EOF
     fi
 
     echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-  else
-    docker login
+  fi
+}
+
+dockerLogout () {
+  if [ "$CI" == "true" ]; then
+    docker logout
   fi
 }
 
@@ -52,7 +56,7 @@ dockerPushLatest () {
   docker build -t filebrowser/filebrowser .
   dockerLogin
   docker push filebrowser/filebrowser
-  docker logout
+  dockerLogout
 }
 
 dockerPushTag () {
@@ -63,7 +67,7 @@ dockerPushTag () {
     docker push $tag
   done
 
-  docker logout
+  dockerLogout
 }
 
 installRice () {
