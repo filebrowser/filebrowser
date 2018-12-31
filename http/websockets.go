@@ -16,10 +16,11 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
+/* 
 var (
 	cmdNotImplemented = []byte("Command not implemented.")
 	cmdNotAllowed     = []byte("Command not allowed.")
-)
+) */
 
 func (e *Env) commandsHandler(w http.ResponseWriter, r *http.Request) {
 	/* user, ok := e.getUser(w, r)
