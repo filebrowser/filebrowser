@@ -10,19 +10,12 @@ import (
 	"github.com/mholt/caddy"
 )
 
-// DefaultEvents are the default events that can trigger commands.
-// See Settings.Commands.
-var DefaultEvents = []string{
-	"before_save",
-	"after_save",
-	"before_copy",
-	"after_copy",
-	"before_rename",
-	"after_rename",
-	"before_upload",
-	"after_upload",
-	"before_delete",
-	"after_delete",
+var defaultEvents = []string{
+	"save",
+	"copy",
+	"rename",
+	"upload",
+	"delete",
 }
 
 // Runner runs certain commands.

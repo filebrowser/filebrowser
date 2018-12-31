@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"crypto/tls"
-	"fmt"
+	"errors"
 	"io/ioutil"
 	"log"
 	"net"
@@ -10,9 +10,11 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/filebrowser/filebrowser/auth"
 	"github.com/filebrowser/filebrowser/bolt"
-	fhttp "github.com/filebrowser/filebrowser/http"
 	"github.com/filebrowser/filebrowser/types"
+
+	fhttp "github.com/filebrowser/filebrowser/http"
 	"github.com/spf13/cobra"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 )
@@ -29,7 +31,7 @@ func init() {
 	rootCmd.Flags().IntP("port", "p", 0, "port to listen on")
 	rootCmd.Flags().StringP("cert", "c", "", "tls certificate")
 	rootCmd.Flags().StringP("key", "k", "", "tls key")
-	rootCmd.AddCommand(versionCmd)
+	rootCmd.Flags().StringP("scope", "s", "", "scope for users")
 }
 
 var rootCmd = &cobra.Command{
@@ -45,34 +47,18 @@ See 'filebrowser help config init' for more information.
 This command is used to start up the server. By default it starts
 listening on loalhost on a random port. Use the flags to change it.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		switch l := mustGetString(cmd, "log"); l {
-		case "stdout":
-			log.SetOutput(os.Stdout)
-		case "stderr":
-			log.SetOutput(os.Stderr)
-		case "":
-			log.SetOutput(ioutil.Discard)
-		default:
-			log.SetOutput(&lumberjack.Logger{
-				Filename:   l,
-				MaxSize:    100,
-				MaxAge:     14,
-				MaxBackups: 10,
-			})
+		setupLogger(cmd)
+
+		if _, err := os.Stat(databasePath); os.IsNotExist(err) {
+			quickSetup(cmd)
 		}
 
 		var err error
 		db := getDB()
 		defer db.Close()
 
-		usersStore := &types.UsersVerify{Store: bolt.UsersStore{DB: db}}
-
 		env := &fhttp.Env{
-			Store: &types.Store{
-				Users:  usersStore,
-				Config: bolt.ConfigStore{DB: db, Users: usersStore},
-				Share:  bolt.ShareStore{DB: db},
-			},
+			Store: getStore(db),
 		}
 
 		env.Settings, err = env.Store.Config.GetSettings()
@@ -82,45 +68,101 @@ listening on loalhost on a random port. Use the flags to change it.`,
 		env.Runner, err = env.Store.Config.GetRunner()
 		checkErr(err)
 
-		addr := mustGetString(cmd, "address")
-		port, err := cmd.Flags().GetInt("port")
+		startServer(cmd, env)
+	},
+}
+
+func setupLogger(cmd *cobra.Command) {
+	switch l := mustGetString(cmd, "log"); l {
+	case "stdout":
+		log.SetOutput(os.Stdout)
+	case "stderr":
+		log.SetOutput(os.Stderr)
+	case "":
+		log.SetOutput(ioutil.Discard)
+	default:
+		log.SetOutput(&lumberjack.Logger{
+			Filename:   l,
+			MaxSize:    100,
+			MaxAge:     14,
+			MaxBackups: 10,
+		})
+	}
+}
+
+func quickSetup(cmd *cobra.Command) {
+	scope := mustGetString(cmd, "scope")
+	if scope == "" {
+		panic(errors.New("scope flag must be set for quick setup"))
+	}
+
+	settings := &types.Settings{
+		Key:        generateRandomBytes(64),
+		BaseURL:    "",
+		Signup:     false,
+		AuthMethod: auth.MethodJSONAuth,
+		Defaults: types.UserDefaults{
+			Scope:  scope,
+			Locale: "en",
+			Perm: types.Permissions{
+				Admin:    false,
+				Execute:  true,
+				Create:   true,
+				Rename:   true,
+				Modify:   true,
+				Delete:   true,
+				Share:    true,
+				Download: true,
+			},
+		},
+	}
+
+	password, err := types.HashPwd("admin")
+	checkErr(err)
+
+	user := &types.User{
+		Username:     "admin",
+		Password:     password,
+		LockPassword: false,
+	}
+
+	user.ApplyDefaults(settings.Defaults)
+	user.Perm.Admin = true
+
+	db, err := bolt.Open(databasePath)
+	checkErr(err)
+	defer db.Close()
+
+	saveConfig(db, settings, &types.Runner{}, &auth.JSONAuth{})
+
+	st := getStore(db)
+	err = st.Users.Save(user)
+	checkErr(err)
+}
+
+func startServer(cmd *cobra.Command, env *fhttp.Env) {
+	addr := mustGetString(cmd, "address")
+	port, err := cmd.Flags().GetInt("port")
+	checkErr(err)
+
+	cert := mustGetString(cmd, "cert")
+	key := mustGetString(cmd, "key")
+
+	var listener net.Listener
+
+	if cert != "" && key != "" {
+		cer, err := tls.LoadX509KeyPair(cert, key)
 		checkErr(err)
+		config := &tls.Config{Certificates: []tls.Certificate{cer}}
+		listener, err = tls.Listen("tcp", addr+":"+strconv.Itoa(port), config)
+		checkErr(err)
+	} else {
+		listener, err = net.Listen("tcp", addr+":"+strconv.Itoa(port))
+		checkErr(err)
+	}
 
-		cert := mustGetString(cmd, "cert")
-		key := mustGetString(cmd, "key")
-
-		var listener net.Listener
-
-		if cert != "" && key != "" {
-			cer, err := tls.LoadX509KeyPair(cert, key)
-			checkErr(err)
-			config := &tls.Config{Certificates: []tls.Certificate{cer}}
-			listener, err = tls.Listen("tcp", addr+":"+strconv.Itoa(port), config)
-			checkErr(err)
-		} else {
-			listener, err = net.Listen("tcp", addr+":"+strconv.Itoa(port))
-			checkErr(err)
-		}
-
-		log.Println("Listening on", listener.Addr().String())
-		if err := http.Serve(listener, fhttp.Handler(env)); err != nil {
-			log.Fatal(err)
-		}
-	},
-}
-
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Print the version number",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("File Browser Version " + types.Version)
-	},
-}
-
-// Execute executes the commands.
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+	log.Println("Listening on", listener.Addr().String())
+	if err := http.Serve(listener, fhttp.Handler(env)); err != nil {
+		log.Fatal(err)
 	}
 }

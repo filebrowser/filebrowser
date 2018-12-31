@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/filebrowser/filebrowser/bolt"
 	"github.com/filebrowser/filebrowser/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -22,8 +21,8 @@ you want to change.`,
 		db := getDB()
 		defer db.Close()
 
-		st := bolt.ConfigStore{DB: db}
-		s, err := st.GetSettings()
+		st := getStore(db)
+		s, err := st.Config.GetSettings()
 		checkErr(err)
 
 		auth := false
@@ -49,14 +48,14 @@ you want to change.`,
 		var auther types.Auther
 		if auth {
 			s.AuthMethod, auther = getAuthentication(cmd)
-			err = st.SaveAuther(auther)
+			err = st.Config.SaveAuther(auther)
 			checkErr(err)
 		} else {
-			auther, err = st.GetAuther(s.AuthMethod)
+			auther, err = st.Config.GetAuther(s.AuthMethod)
 			checkErr(err)
 		}
 
-		err = st.SaveSettings(s)
+		err = st.Config.SaveSettings(s)
 		checkErr(err)
 		printSettings(s, auther)
 	},

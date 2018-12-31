@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/filebrowser/filebrowser/bolt"
 	"github.com/spf13/cobra"
 )
 
@@ -18,8 +17,8 @@ var cmdsLsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
-		st := bolt.ConfigStore{DB: db}
-		r, err := st.GetRunner()
+		st := getStore(db)
+		r, err := st.Config.GetRunner()
 		checkErr(err)
 		evt := mustGetString(cmd, "event")
 

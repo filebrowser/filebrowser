@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	storage "github.com/filebrowser/filebrowser/bolt"
 	"github.com/filebrowser/filebrowser/types"
 	"github.com/spf13/cobra"
 )
@@ -31,7 +30,7 @@ var usersLsCmd = &cobra.Command{
 var findUsers = func(cmd *cobra.Command, args []string) {
 	db := getDB()
 	defer db.Close()
-	st := storage.UsersStore{DB: db}
+	st := getStore(db)
 
 	username, _ := cmd.Flags().GetString("username")
 	id, _ := cmd.Flags().GetUint("id")
@@ -41,11 +40,11 @@ var findUsers = func(cmd *cobra.Command, args []string) {
 	var user *types.User
 
 	if username != "" {
-		user, err = st.GetByUsername(username)
+		user, err = st.Users.GetByUsername(username)
 	} else if id != 0 {
-		user, err = st.Get(id)
+		user, err = st.Users.Get(id)
 	} else {
-		users, err = st.Gets()
+		users, err = st.Users.Gets()
 	}
 
 	checkErr(err)

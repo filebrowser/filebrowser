@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/filebrowser/filebrowser/bolt"
 	"github.com/spf13/cobra"
 )
 
@@ -17,10 +16,10 @@ var configCatCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
-		st := bolt.ConfigStore{DB: db}
-		s, err := st.GetSettings()
+		st := getStore(db)
+		s, err := st.Config.GetSettings()
 		checkErr(err)
-		auther, err := st.GetAuther(s.AuthMethod)
+		auther, err := st.Config.GetAuther(s.AuthMethod)
 		checkErr(err)
 		printSettings(s, auther)
 	},

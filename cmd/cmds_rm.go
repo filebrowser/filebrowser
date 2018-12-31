@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/filebrowser/filebrowser/bolt"
 	"github.com/spf13/cobra"
 )
 
@@ -21,8 +20,8 @@ var cmdsRmCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
-		st := bolt.ConfigStore{DB: db}
-		r, err := st.GetRunner()
+		st := getStore(db)
+		r, err := st.Config.GetRunner()
 		checkErr(err)
 
 		evt := mustGetString(cmd, "event")
@@ -30,7 +29,7 @@ var cmdsRmCmd = &cobra.Command{
 		checkErr(err)
 
 		r.Commands[evt] = append(r.Commands[evt][:i], r.Commands[evt][i+1:]...)
-		err = st.SaveRunner(r)
+		err = st.Config.SaveRunner(r)
 		checkErr(err)
 		printEvents(r.Commands)
 	},

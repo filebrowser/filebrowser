@@ -17,4 +17,5 @@ var (
 	ErrPathIsRel          = errors.New("path is relative")
 	ErrNoPermission       = errors.New("permission denied")
 	ErrInvalidAuthMethod  = errors.New("invalid auth method")
+	ErrEmptyKey           = errors.New("empty key")
 )

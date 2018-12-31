@@ -7,6 +7,7 @@ import (
 
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/bolt"
+	"github.com/filebrowser/filebrowser/types"
 	"github.com/spf13/cobra"
 )
 
@@ -36,6 +37,27 @@ func getDB() *storm.DB {
 	db, err := bolt.Open(databasePath)
 	checkErr(err)
 	return db
+}
+
+func getStore(db *storm.DB) *types.Store {
+	usersStore := &types.UsersVerify{
+		Store: bolt.UsersStore{
+			DB: db,
+		},
+	}
+
+	configSore := &types.ConfigVerify{
+		Store: bolt.ConfigStore{
+			DB:    db,
+			Users: usersStore,
+		},
+	}
+
+	return &types.Store{
+		Users:  usersStore,
+		Config: configSore,
+		Share:  bolt.ShareStore{DB: db},
+	}
 }
 
 func generateRandomBytes(n int) []byte {

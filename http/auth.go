@@ -53,12 +53,9 @@ func (e *Env) signupHandler(w http.ResponseWriter, r *http.Request) {
 
 	user := &types.User{
 		Username: info.Username,
-		Locale:   e.Settings.Defaults.Locale,
-		Perm:     e.Settings.Defaults.Perm,
-		ViewMode: e.Settings.Defaults.ViewMode,
-		Commands: e.Settings.Defaults.Commands,
-		Scope:    e.Settings.Defaults.Scope,
 	}
+
+	user.ApplyDefaults(e.Settings.Defaults)
 
 	pwd, err := types.HashPwd(info.Password)
 	if err != nil {

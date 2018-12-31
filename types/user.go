@@ -99,8 +99,18 @@ func (u *User) clean(fields ...string) error {
 }
 
 // IsAllowed checks if an user is allowed to go to a certain path.
-func (u User) IsAllowed(url string) bool {
+func (u *User) IsAllowed(url string) bool {
 	return isAllowed(url, u.Rules)
+}
+
+// ApplyDefaults applies defaults to a user.
+func (u *User) ApplyDefaults(defaults UserDefaults) {
+	u.Scope = defaults.Scope
+	u.Locale = defaults.Locale
+	u.ViewMode = defaults.ViewMode
+	u.Perm = defaults.Perm
+	u.Sorting = defaults.Sorting
+	u.Commands = defaults.Commands
 }
 
 // HashPwd hashes a password.

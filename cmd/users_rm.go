@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 
-	storage "github.com/filebrowser/filebrowser/bolt"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +20,7 @@ var usersRmCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
-		st := storage.UsersStore{DB: db}
+		st := getStore(db)
 
 		username, _ := cmd.Flags().GetString("username")
 		id, _ := cmd.Flags().GetUint("id")
@@ -29,9 +28,9 @@ var usersRmCmd = &cobra.Command{
 		var err error
 
 		if username != "" {
-			err = st.DeleteByUsername(username)
+			err = st.Users.DeleteByUsername(username)
 		} else {
-			err = st.Delete(id)
+			err = st.Users.Delete(id)
 		}
 
 		checkErr(err)

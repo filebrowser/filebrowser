@@ -15,14 +15,12 @@ import (
 )
 
 func (e *Env) getStaticData() map[string]interface{} {
-	baseURL := strings.TrimSuffix(e.Settings.BaseURL, "/")
-	staticURL := strings.TrimPrefix(baseURL+"/static", "/")
+	staticURL := strings.TrimPrefix(e.Settings.BaseURL+"/static", "/")
 
-	// TODO: baseurl must always not have the trailing slash
 	data := map[string]interface{}{
 		"Name":            e.Settings.Branding.Name,
 		"DisableExternal": e.Settings.Branding.DisableExternal,
-		"BaseURL":         baseURL,
+		"BaseURL":         e.Settings.BaseURL,
 		"Version":         types.Version,
 		"StaticURL":       staticURL,
 		"Signup":          e.Settings.Signup,

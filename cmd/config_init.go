@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/bolt"
 	"github.com/filebrowser/filebrowser/types"
 	"github.com/spf13/cobra"
@@ -26,50 +27,49 @@ this options can be changed in the future with the command
 to the defaults when creating new users and you don't
 override the options.`,
 	Args: cobra.NoArgs,
-	Run:  initDatabase,
-}
+	Run: func(cmd *cobra.Command, args []string) {
+		if _, err := os.Stat(databasePath); err == nil {
+			panic(errors.New(databasePath + " already exists"))
+		}
 
-func initDatabase(cmd *cobra.Command, args []string) {
-	if _, err := os.Stat(databasePath); err == nil {
-		panic(errors.New(databasePath + " already exists"))
-	}
+		defaults := types.UserDefaults{}
+		getUserDefaults(cmd, &defaults, true)
+		authMethod, auther := getAuthentication(cmd)
 
-	defaults := types.UserDefaults{}
-	getUserDefaults(cmd, &defaults, true)
-	authMethod, auther := getAuthentication(cmd)
+		settings := &types.Settings{
+			Key:        generateRandomBytes(64), // 256 bits
+			BaseURL:    mustGetString(cmd, "baseURL"),
+			Signup:     mustGetBool(cmd, "signup"),
+			Defaults:   defaults,
+			AuthMethod: authMethod,
+			Branding: types.Branding{
+				Name:            mustGetString(cmd, "branding.name"),
+				DisableExternal: mustGetBool(cmd, "branding.disableExternal"),
+				Files:           mustGetString(cmd, "branding.files"),
+			},
+		}
 
-	settings := &types.Settings{
-		Key:        generateRandomBytes(64), // 256 bits
-		BaseURL:    mustGetString(cmd, "baseURL"),
-		Signup:     mustGetBool(cmd, "signup"),
-		Defaults:   defaults,
-		AuthMethod: authMethod,
-	}
+		db, err := bolt.Open(databasePath)
+		checkErr(err)
+		defer db.Close()
 
-	runner := &types.Runner{
-		Commands: map[string][]string{},
-	}
+		saveConfig(db, settings, &types.Runner{}, auther)
 
-	for _, event := range types.DefaultEvents {
-		runner.Commands[event] = []string{}
-	}
-
-	db, err := bolt.Open(databasePath)
-	checkErr(err)
-	defer db.Close()
-
-	st := bolt.ConfigStore{DB: db}
-	err = st.SaveSettings(settings)
-	checkErr(err)
-	err = st.SaveRunner(runner)
-	checkErr(err)
-	err = st.SaveAuther(auther)
-	checkErr(err)
-
-	fmt.Printf(`
+		fmt.Printf(`
 Congratulations! You've set up your database to use with File Browser.
 Now add your first user via 'filebrowser users new' and then you just
 need to call the main command to boot up the server.
 `)
-	printSettings(settings, auther)
+		printSettings(settings, auther)
+	},
+}
+
+func saveConfig(db *storm.DB, s *types.Settings, r *types.Runner, a types.Auther) {
+	st := getStore(db)
+	err := st.Config.SaveSettings(s)
+	checkErr(err)
+	err = st.Config.SaveRunner(r)
+	checkErr(err)
+	err = st.Config.SaveAuther(a)
+	checkErr(err)
 }

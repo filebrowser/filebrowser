@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	storage "github.com/filebrowser/filebrowser/bolt"
 	"github.com/filebrowser/filebrowser/types"
 	"github.com/spf13/cobra"
 )
@@ -24,7 +23,7 @@ options you want to change.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
-		st := storage.UsersStore{DB: db}
+		st := getStore(db)
 
 		id, _ := cmd.Flags().GetUint("id")
 		username := mustGetString(cmd, "username")
@@ -34,9 +33,9 @@ options you want to change.`,
 		var err error
 
 		if id != 0 {
-			user, err = st.Get(id)
+			user, err = st.Users.Get(id)
 		} else {
-			user, err = st.GetByUsername(username)
+			user, err = st.Users.GetByUsername(username)
 		}
 
 		checkErr(err)
@@ -67,7 +66,7 @@ options you want to change.`,
 			checkErr(err)
 		}
 
-		err = st.Update(user)
+		err = st.Users.Update(user)
 		checkErr(err)
 		printUsers([]*types.User{user})
 	},
