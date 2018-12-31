@@ -2,6 +2,8 @@
 
 set -e
 
+echo $0
+
 cd $(dirname $0)/..
 
 echo "> Checking semver format"
