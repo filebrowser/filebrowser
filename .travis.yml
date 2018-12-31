@@ -20,22 +20,19 @@ cache:
 jobs:
   include:
   - stage: lint
-    script: ./build/run_gometalinter.sh
+    script: ./wizard.sh -l
   - stage: build
-    script: ./build/build_all.sh
+    script: ./wizard.sh -b
     deploy:
       provider: script
       skip_cleanup: true
-      script: docker build -t filebrowser/filebrowser . && ./build/docker_login.sh && docker push filebrowser/filebrowser && docker logout
+      script: ./wizard.sh -p
       on:
         tags: false
         repo: filebrowser/filebrowser
         branch: master
   - stage: release
-    script:
-      - docker run --rm -itv $(pwd):/go/src/github.com/filebrowser/filebrowser -v /var/run/docker.sock:/var/run/docker.sock filebrowser/dev goreleaser
-      - ./build/push_images.sh
-      - ./build/push_ricebox.sh
+    script: ./wizard.sh -r
     if: tag IS present
     deploy:
       provider: releases
