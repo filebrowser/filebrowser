@@ -194,6 +194,9 @@ build () {
       filebrowser/dev \
       sh -c "dos2unix wizard.sh && ./wizard.sh -b"
     exitcode=$?
+    
+    # TODO: remove echo
+    echo "2nd phase"
 
     if [ $exitcode -eq 0 ]; then
       for d in "dist/" "node_modules/"; do
