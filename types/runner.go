@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/mholt/caddy"
+	"github.com/spf13/afero"
 )
 
 var defaultEvents = []string{
@@ -25,6 +26,7 @@ type Runner struct {
 
 // Run runs the hooks for the before and after event.
 func (r Runner) Run(fn func() error, event string, path string, dst string, u *User) error {
+	path = afero.FullBaseFsPath(u.Fs.(*afero.BasePathFs), path)
 	err := r.do("before_"+event, path, dst, u)
 	if err != nil {
 		return err
