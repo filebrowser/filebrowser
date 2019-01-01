@@ -186,29 +186,13 @@ build () {
       COMMIT_SHA="untracked"
     fi
 
-    $(command -v winpty) docker run -it \
-      --name filebrowser-tmp \
+    $(command -v winpty) docker run --rm -it \
       -v /$(pwd):/src:z \
       -w //src \
       -e COMMIT_SHA=$COMMIT_SHA \
       filebrowser/dev \
       sh -c "dos2unix wizard.sh && ./wizard.sh -b"
-    exitcode=$?
-    
-    # TODO: remove echo
-    echo "2nd phase"
 
-    if [ $exitcode -eq 0 ]; then
-      ls -l $REPO
-      for d in "dist/" "node_modules/"; do
-        docker cp filebrowser-tmp://src/frontend/$d frontend
-      done
-      docker cp filebrowser-tmp://src/filebrowser ./filebrowser
-      docker cp filebrowser-tmp://src/http/rice-box.go ./http/rice-box.go
-    else
-      echo "BUILD FAILED!"
-    fi
-    docker rm -f filebrowser-tmp
   else
     buildAssets
     buildBinary
