@@ -19,6 +19,7 @@ import (
 	"github.com/hacdias/fileutils"
 	"github.com/mholt/caddy"
 	"github.com/robfig/cron"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -205,14 +206,18 @@ func (m *FileBrowser) Setup() error {
 	// If there are no users in the database, it creates a new one
 	// based on 'base' User that must be provided by the function caller.
 	if len(users) == 0 {
-		u := *m.DefaultUser
-		u.Username = "admin"
+		viper.SetDefault("DEFAULT_USERNAME", "admin")
 
 		// Hashes the password.
-		u.Password, err = HashPassword("admin")
+		defaultPassword, err := HashPassword("admin")
 		if err != nil {
 			return err
 		}
+		viper.SetDefault("DEFAULT_PASSWORD_HASH", defaultPassword)
+
+		u := *m.DefaultUser
+		u.Username = viper.GetString("DEFAULT_USERNAME")
+		u.Password = viper.GetString("DEFAULT_PASSWORD_HASH")
 
 		// The first user must be an administrator.
 		u.Admin = true
