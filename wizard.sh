@@ -84,8 +84,10 @@ buildAssets () {
     rm -rf dist/*
   fi;
 
+  set +e
   yarn install
   yarn build
+  set -e
 
   cd $REPO/http
   rice embed-go
@@ -187,11 +189,13 @@ build () {
     fi
 
     $(command -v winpty) docker run --rm -it \
+      -u "$(id -u)" \
       -v /$(pwd):/src:z \
       -w //src \
       -e COMMIT_SHA=$COMMIT_SHA \
+      -e XDG_CACHE_HOME="//tmp/.cache" \
       filebrowser/dev \
-      sh -c "dos2unix wizard.sh && ./wizard.sh -b"
+      sh -c "./wizard.sh -b"
 
   else
     buildAssets
