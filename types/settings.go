@@ -29,7 +29,7 @@ type Sorting struct {
 type Branding struct {
 	Name            string `json:"name"`
 	DisableExternal bool   `json:"disableExternal"`
-	Files           string `json:"string"`
+	Files           string `json:"files"`
 }
 
 // UserDefaults is a type that holds the default values
