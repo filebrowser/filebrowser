@@ -209,7 +209,7 @@ func (m *FileBrowser) Setup() error {
 		viper.SetDefault("DEFAULT_USERNAME", "admin")
 
 		// Hashes the password.
-		defaultPassword, err = HashPassword("admin")
+		defaultPassword, err := HashPassword("admin")
 		if err != nil {
 			return err
 		}
