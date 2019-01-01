@@ -10,70 +10,18 @@
 
 filebrowser provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its own directory. It can be used as a standalone app or as a middleware.
 
-# Table of contents
+## Features
 
-+ [Quick Start](#quick-start)
-+ [Features](#features)
-+ [Installation](#installation)
-  - [One-step script](#one-step-script)
-  - [Docker](#docker)
-+ [Usage](#usage)
-+ [Command line interface](#command-line-interface)
-+ [Contributing](#contributing)
+Please refer to our docs at [docs.filebrowser.xyz/features](https://docs.filebrowser.xyz/features)
 
-# Quick Start
+## Install
 
-The fastest way for beginners to start using File Browser is by following the instructions bellow. Although, there are [other ways](#installation) to install/use it.
+Please refer to our docs at [docs.filebrowser.xyz](https://docs.filebrowser.xyz/).
 
-- [Download File Browser](https://github.com/filebrowser/filebrowser/releases).
-- Put the binary in your PATH.
-- Run `filebrowser -s /path/to/your/files`.
+## Usage
 
-Done! It will tell you the address in which File Browser is running. You only need to open it and use the following credentials (you should change them!):
+Please refer to our docs at [docs.filebrowser.xyz/usage](https://docs.filebrowser.xyz/usage).
 
-- Username: ```admin```
-- Password: ```admin```
+## Contributing
 
-Although this is the fastest way to run File Browser, we recommend you to take a look at its [usage](#usage) as it contains more information about what you can do.
-
-# Features
-
-# Installation
-
-## One-step script
-
-If you're running a Linux distribution or macOS, you can use our special script - made by [Kyle Frost](https://www.kylefrost.me/) - to download the latest version of File Browser and install it on `/usr/local/bin`.
-
-```bash
-curl -fsSL https://filebrowser.github.io/get.sh | bash
-```
-
-If you're on Windows, you can use PowerShell to install File Browser too. You should run the command as administrator because it needs perissions to add the executable to the PATH:
-
-```bash
-iwr -useb https://filebrowser.github.io/get.ps1 | iex
-```
-
-## Docker
-
-# Usage
-
-- Add info for recommended way to install.
-- Add info about custom branding.
-- Add info about command runner.
-- Add info about 
-
-# Command line interface
-
-The command line interface is very extensive and you can use it to modify settings, modify users or even have a generator of File Browser installations. The main subcommands available are:
-
-- `cmds` to manage the command runner.
-- `config` to manage the configuration of the installation.
-- `users` to manage your users.
-- `init` is an alias to `config init`.
-
-All commands have the `--help` (shorthand `-h`) flag available and we invite you to explore all the commands for your own use.
-
-# Contributing
-
-The contributing guidelines can be found [here](https://github.com/filebrowser/community).
+Please refer to our docs at [docs.filebrowser.xyz/contributing](https://docs.filebrowser.xyz/contributing).
