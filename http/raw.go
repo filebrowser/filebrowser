@@ -22,7 +22,7 @@ func parseQueryFiles(r *http.Request, f *types.File, u *types.User) ([]string, e
 		files = append(files, f.Path)
 	} else {
 		for _, name := range names {
-			name, err := url.QueryUnescape(name)
+			name, err := url.QueryUnescape(strings.Replace(name, "+", "%2B", -1))
 			if err != nil {
 				return nil, err
 			}
@@ -51,7 +51,7 @@ func parseQueryAlgorithm(r *http.Request) (string, archiver.Writer, error) {
 	case "tarxz":
 		return ".tar.xz", archiver.NewTarXz(), nil
 	case "tarlz4":
-			return ".tar.lz4", archiver.NewTarLz4(), nil
+		return ".tar.lz4", archiver.NewTarLz4(), nil
 	case "tarsz":
 		return ".tar.sz", archiver.NewTarSz(), nil
 	default:
