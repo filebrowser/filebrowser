@@ -112,16 +112,13 @@ buildBinary () {
 
 lint () {
   cd $REPO
-  dolint='gometalinter --exclude="rice-box.go" --exclude="vendor" --deadline=300s ./...'
-  WDIR="/go/src/github.com/filebrowser/filebrowser"
 
   if [ "$USE_DOCKER" != "" ]; then
-    $(command -v winpty) docker run --rm -itv "/$(pwd):/$WDIR" -w "/$WDIR" filebrowser/dev sh -c "\
-      GO111MODULE=on go get -v ./... && \
-      GO111MODULE=on go mod vendor && \
-      GO111MODULE=off $dolint"
+    $(command -v winpty) docker run --rm -itv "/$(pwd)://src" -w "//src" filebrowser/dev sh -c "\
+      go get -v ./... && \
+      golangci-lint run -v"
   else
-    $dolint
+    golangci-lint run -v
   fi
 }
 
