@@ -1,12 +1,16 @@
 package http
 
 import (
+	"bufio"
 	"encoding/json"
+	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/filebrowser/filebrowser/search"
+	"github.com/spf13/afero"
 
 	"github.com/gorilla/websocket"
 )
@@ -16,14 +20,13 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-/* 
 var (
 	cmdNotImplemented = []byte("Command not implemented.")
 	cmdNotAllowed     = []byte("Command not allowed.")
-) */
+)
 
 func (e *Env) commandsHandler(w http.ResponseWriter, r *http.Request) {
-	/* user, ok := e.getUser(w, r)
+	user, ok := e.getUser(w, r)
 	if !ok {
 		return
 	}
@@ -35,114 +38,68 @@ func (e *Env) commandsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	var (
-		message []byte
-		command []string
-	)
+	var command []string
 
-	// Starts an infinite loop until a valid command is captured.
 	for {
-		_, message, err = conn.ReadMessage()
+		_, msg, err := conn.ReadMessage()
 		if err != nil {
-			httpErr(w, r, http.StatusInternalServerError, err)
+			wsErr(conn, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		command = strings.Split(string(message), " ")
+		command = strings.Split(string(msg), " ")
 		if len(command) != 0 {
 			break
 		}
 	}
 
-	allowed := false
-
-	for _, cmd := range user.Commands {
-		if regexp.MustCompile(cmd).MatchString(command[0]) {
-			allowed = true
-			break
-		}
-	}
-
-	if !allowed {
-		err = conn.WriteMessage(websocket.TextMessage, cmdNotAllowed)
+	if !user.CanExecute(command[0]) {
+		err := conn.WriteMessage(websocket.TextMessage, cmdNotAllowed)
 		if err != nil {
-			httpErr(w, r, http.StatusInternalServerError, err)
-			return
+			wsErr(conn, r, http.StatusInternalServerError, err)
 		}
 
 		return
 	}
 
-	// Check if the program is installed on the computer.
-	if _, err = exec.LookPath(command[0]); err != nil {
-		err = conn.WriteMessage(websocket.TextMessage, cmdNotImplemented)
+	if _, err := exec.LookPath(command[0]); err != nil {
+		err := conn.WriteMessage(websocket.TextMessage, cmdNotImplemented)
 		if err != nil {
-			httpErr(w, r, http.StatusInternalServerError, err)
-			return
-		} else {
-			httpErr
+			wsErr(conn, r, http.StatusInternalServerError, err)
 		}
 
-		return http.StatusNotImplemented, nil
+		return
 	}
 
-	// Gets the path and initializes a buffer.
-	path := c.User.Scope + "/" + r.URL.Path
-	path = filepath.Clean(path)
-	buff := new(bytes.Buffer)
-
-	// Sets up the command executation.
+	path := strings.TrimPrefix(r.URL.Path, "/api/command")
+	dir := afero.FullBaseFsPath(user.Fs.(*afero.BasePathFs), path)
 	cmd := exec.Command(command[0], command[1:]...)
-	cmd.Dir = path
-	cmd.Stderr = buff
-	cmd.Stdout = buff
+	cmd.Dir = dir
 
-	// Starts the command and checks for fb.Errors.
-	err = cmd.Start()
+	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		return http.StatusInternalServerError, err
+		wsErr(conn, r, http.StatusInternalServerError, err)
+		return
+	}
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		wsErr(conn, r, http.StatusInternalServerError, err)
+		return
 	}
 
-	// Set a 'done' variable to check whetever the command has already finished
-	// running or not. This verification is done using a goroutine that uses the
-	// method .Wait() from the command.
-	done := false
-	go func() {
-		err = cmd.Wait()
-		done = true
-	}()
-
-	// Function to print the current information on the buffer to the connection.
-	print := func() error {
-		by := buff.Bytes()
-		if len(by) > 0 {
-			err = conn.WriteMessage(websocket.TextMessage, by)
-			if err != nil {
-				return err
-			}
-		}
-
-		return nil
+	if err := cmd.Start(); err != nil {
+		wsErr(conn, r, http.StatusInternalServerError, err)
+		return
 	}
 
-	// While the command hasn't finished running, continue sending the output
-	// to the client in intervals of 100 milliseconds.
-	for !done {
-		if err = print(); err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		time.Sleep(100 * time.Millisecond)
+	s := bufio.NewScanner(io.MultiReader(stdout, stderr))
+	for s.Scan() {
+		conn.WriteMessage(websocket.TextMessage, s.Bytes())
 	}
 
-	// After the command is done executing, send the output one more time to the
-	// browser to make sure it gets the latest information.
-	if err = print(); err != nil {
-		return http.StatusInternalServerError, err
+	if err := cmd.Wait(); err != nil {
+		wsErr(conn, r, http.StatusInternalServerError, err)
 	}
-
-	return 0, nil */
-
 }
 
 func (e *Env) searchHandler(w http.ResponseWriter, r *http.Request) {

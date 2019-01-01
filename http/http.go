@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
+	"time"
 
+	"github.com/gorilla/websocket"
 	"github.com/filebrowser/filebrowser/types"
 	"github.com/gorilla/mux"
 )
@@ -65,7 +67,7 @@ func Handler(e *Env) http.Handler {
 	api.HandleFunc("/settings", e.auth(e.settingsPutHandler)).Methods("PUT")
 
 	api.PathPrefix("/raw").HandlerFunc(e.auth(e.rawHandler)).Methods("GET")
-	api.PathPrefix("/commands").HandlerFunc(e.auth(e.commandsHandler))
+	api.PathPrefix("/command").HandlerFunc(e.auth(e.commandsHandler))
 	api.PathPrefix("/search").HandlerFunc(e.auth(e.searchHandler))
 
 	return r
@@ -77,6 +79,14 @@ func httpErr(w http.ResponseWriter, r *http.Request, status int, err error) {
 		log.Printf("%s: %v %s %v", r.URL.Path, status, r.RemoteAddr, err)
 	}
 	http.Error(w, strconv.Itoa(status)+" "+txt, status)
+}
+
+func wsErr(ws *websocket.Conn, r *http.Request, status int, err error) {
+	txt := http.StatusText(status)
+	if err != nil || status >= 400 {
+		log.Printf("%s: %v %s %v", r.URL.Path, status, r.RemoteAddr, err)
+	}
+	ws.WriteControl(websocket.CloseInternalServerErr, []byte(txt), time.Now().Add(10*time.Second))
 }
 
 func renderJSON(w http.ResponseWriter, r *http.Request, data interface{}) {

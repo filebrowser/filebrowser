@@ -2,6 +2,7 @@ package types
 
 import (
 	"path/filepath"
+	"regexp"
 
 	"github.com/spf13/afero"
 	"golang.org/x/crypto/bcrypt"
@@ -101,6 +102,21 @@ func (u *User) clean(fields ...string) error {
 // IsAllowed checks if an user is allowed to go to a certain path.
 func (u *User) IsAllowed(url string) bool {
 	return isAllowed(url, u.Rules)
+}
+
+// CanExecute checks if an user can execute a specific command.
+func (u *User) CanExecute(command string) bool {
+	if !u.Perm.Execute {
+		return false
+	}
+
+	for _, cmd := range u.Commands {
+		if regexp.MustCompile(cmd).MatchString(command) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // ApplyDefaults applies defaults to a user.
