@@ -67,7 +67,7 @@ func (r Runner) do(event string, path string, destination string, user *User) er
 
 		cmd := exec.Command(command, args...)
 		cmd.Env = append(os.Environ(), fmt.Sprintf("FILE=%s", path))
-		cmd.Env = append(cmd.Env, fmt.Sprintf("ROOT=%s", user.Scope))
+		cmd.Env = append(cmd.Env, fmt.Sprintf("SCOPE=%s", user.Scope))
 		cmd.Env = append(cmd.Env, fmt.Sprintf("TRIGGER=%s", event))
 		cmd.Env = append(cmd.Env, fmt.Sprintf("USERNAME=%s", user.Username))
 
