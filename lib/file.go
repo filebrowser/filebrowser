@@ -25,7 +25,7 @@ import (
 
 // The size of the loaded text can be rendered in the browser. Avoiding files that are too large causes browsers to crash.
 // Currently set to 10MB, 10 * 1024 * 1024 = 10485760 byte
-const textExtensionsRenderMaxSize int = 10485760
+const textExtensionsRenderMaxSize int64 = 10485760
 
 // File contains the information about a particular file or directory.
 type File struct {
