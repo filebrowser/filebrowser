@@ -87,6 +87,7 @@ buildAssets () {
   yarn install
   yarn build
 
+  echo "Run rice"
   cd $REPO/http
   rice embed-go
 }
@@ -110,16 +111,13 @@ buildBinary () {
 
 lint () {
   cd $REPO
-  dolint='gometalinter --exclude="rice-box.go" --exclude="vendor" --deadline=300s ./...'
-  WDIR="/go/src/github.com/filebrowser/filebrowser"
 
   if [ "$USE_DOCKER" != "" ]; then
-    $(command -v winpty) docker run --rm -itv "/$(pwd):/$WDIR" -w "/$WDIR" filebrowser/dev sh -c "\
-      GO111MODULE=on go get -v ./... && \
-      GO111MODULE=on go mod vendor && \
-      GO111MODULE=off $dolint"
+    $(command -v winpty) docker run --rm -itv "/$(pwd)://src" -w "//src" filebrowser/dev sh -c "\
+      go get -v ./... && \
+      golangci-lint run -v"
   else
-    $dolint
+    golangci-lint run -v
   fi
 }
 
@@ -180,6 +178,10 @@ build () {
       rm -rf frontend/dist
     fi;
 
+    if [ -f "http/rice-box.go" ]; then
+      rm -f http/rice-box.go
+    fi;
+
     if [ "$(command -v git)" != "" ]; then
       COMMIT_SHA="$(git rev-parse HEAD | cut -c1-8)"
     else
@@ -187,11 +189,14 @@ build () {
     fi
 
     $(command -v winpty) docker run --rm -it \
+      -u "$(id -u)" \
       -v /$(pwd):/src:z \
       -w //src \
       -e COMMIT_SHA=$COMMIT_SHA \
+      -e HOME="//tmp" \
+      -e GOPATH=//tmp/gopath \
       filebrowser/dev \
-      sh -c "dos2unix wizard.sh && ./wizard.sh -b"
+      sh -c "./wizard.sh -b"
 
   else
     buildAssets
