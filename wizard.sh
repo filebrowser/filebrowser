@@ -190,6 +190,7 @@ build () {
       -v /$(pwd):/src:z \
       -w //src \
       -e COMMIT_SHA=$COMMIT_SHA \
+      -e GOPATH=//tmp/gopath \
       -e XDG_CACHE_HOME="//tmp/.cache" \
       filebrowser/dev \
       sh -c "./wizard.sh -b"
