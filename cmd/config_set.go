@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"strings"
+
 	"github.com/filebrowser/filebrowser/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -34,6 +36,8 @@ you want to change.`,
 				s.Signup = mustGetBool(cmd, "signup")
 			case "auth.method":
 				auth = true
+			case "shell":
+				s.Shell = strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " ")
 			case "branding.name":
 				s.Branding.Name = mustGetString(cmd, "branding.name")
 			case "branding.disableExternal":

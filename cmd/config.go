@@ -13,8 +13,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
-
 func init() {
 	rootCmd.AddCommand(configCmd)
 }
@@ -34,6 +32,7 @@ func addConfigFlags(cmd *cobra.Command) {
 	addUserFlags(cmd)
 	cmd.Flags().StringP("baseURL", "b", "/", "base url of this installation")
 	cmd.Flags().BoolP("signup", "s", false, "allow users to signup")
+	cmd.Flags().String("shell", "", "shell command to which other commands should be appended")
 
 	cmd.Flags().String("auth.method", string(auth.MethodJSONAuth), "authentication type")
 	cmd.Flags().String("auth.header", "", "HTTP header for auth.method=proxy")
@@ -94,6 +93,7 @@ func printSettings(s *types.Settings, auther types.Auther) {
 	fmt.Fprintf(w, "\nBase URL:\t%s\n", s.BaseURL)
 	fmt.Fprintf(w, "Sign up:\t%t\n", s.Signup)
 	fmt.Fprintf(w, "Auth method:\t%s\n", s.AuthMethod)
+	fmt.Fprintf(w, "Shell:\t%s\t", strings.Join(s.Shell, " "))
 	fmt.Fprintln(w, "\nBranding:")
 	fmt.Fprintf(w, "\tName:\t%s\n", s.Branding.Name)
 	fmt.Fprintf(w, "\tFiles override:\t%s\n", s.Branding.Files)

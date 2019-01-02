@@ -12,7 +12,7 @@ type Settings struct {
 	AuthMethod AuthMethod          `json:"authMethod"`
 	Branding   Branding            `json:"branding"`
 	Commands   map[string][]string `json:"commands"`
-	Shell      []string            `json:"shell"` // TODO add to cli
+	Shell      []string            `json:"shell"`
 	Rules      []Rule              `json:"rules"` // TODO: use this add to cli
 }
 

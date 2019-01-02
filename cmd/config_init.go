@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/bolt"
@@ -40,6 +41,7 @@ override the options.`,
 			Key:        generateRandomBytes(64), // 256 bits
 			BaseURL:    mustGetString(cmd, "baseURL"),
 			Signup:     mustGetBool(cmd, "signup"),
+			Shell:      strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " "),
 			Defaults:   defaults,
 			AuthMethod: authMethod,
 			Branding: types.Branding{
