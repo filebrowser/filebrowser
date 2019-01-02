@@ -29,6 +29,9 @@ type signupBody struct {
 }
 
 func (e *Env) signupHandler(w http.ResponseWriter, r *http.Request) {
+	e.mux.RLock()
+	defer e.mux.RUnlock()
+
 	if !e.Settings.Signup {
 		httpErr(w, r, http.StatusForbidden, nil)
 		return

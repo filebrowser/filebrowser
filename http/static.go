@@ -15,6 +15,9 @@ import (
 )
 
 func (e *Env) getStaticData() map[string]interface{} {
+	e.mux.RLock()
+	defer e.mux.RUnlock()
+
 	staticURL := strings.TrimPrefix(e.Settings.BaseURL+"/static", "/")
 
 	data := map[string]interface{}{
@@ -85,6 +88,9 @@ func (e *Env) getStaticHandlers() (http.Handler, http.Handler) {
 	})
 
 	static := http.StripPrefix("/static/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		e.mux.RLock()
+		defer e.mux.RUnlock()
+
 		if e.Settings.Branding.Files != "" {
 			if strings.HasPrefix(r.URL.Path, "img/") {
 				path := filepath.Join(e.Settings.Branding.Files, r.URL.Path)

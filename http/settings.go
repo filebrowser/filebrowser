@@ -23,6 +23,9 @@ func (e *Env) settingsGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	e.mux.RLock()
+	defer e.mux.RUnlock()
+
 	data := &settingsData{
 		Signup:   e.Settings.Signup,
 		Defaults: e.Settings.Defaults,

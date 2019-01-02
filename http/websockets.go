@@ -61,7 +61,10 @@ func (e *Env) commandsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	e.mux.RLock()
 	command, err := e.Settings.ParseCommand(raw)
+	e.mux.RUnlock()
+
 	if err != nil {
 		err := conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		if err != nil {

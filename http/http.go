@@ -29,7 +29,7 @@ type Env struct {
 	Auther   types.Auther
 	Settings *types.Settings
 	Store    *types.Store
-	mux      sync.Mutex // settings mutex for Auther, Runner and Settings changes.
+	mux      sync.RWMutex // settings mutex for Settings changes.
 }
 
 // Handler ...
