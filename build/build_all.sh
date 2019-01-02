@@ -17,8 +17,7 @@ if [ "$USE_DOCKER" != "" ]; then
     COMMIT_SHA="untracked"
   fi
 
-  $(command -v winpty) docker run -it \
-    --name filebrowser-tmp \
+  $(command -v winpty) docker run --rm -it \
     -v /$(pwd):/src:z \
     -w //src \
     -e COMMIT_SHA=$COMMIT_SHA \
@@ -30,18 +29,6 @@ if [ "$USE_DOCKER" != "" ]; then
       ./build_assets.sh && \
       ./build.sh \
     "
-  exitcode=$?
-
-  if [ $exitcode -eq 0 ]; then
-    for d in "dist/" "node_modules/"; do
-      docker cp filebrowser-tmp://src/frontend/$d frontend
-    done
-    docker cp filebrowser-tmp://src/cli/filebrowser ./filebrowser
-    docker cp filebrowser-tmp://src/lib/rice-box.go ./lib/rice-box.go
-  else
-    echo "BUILD FAILED!"
-  fi
-  docker rm -f filebrowser-tmp
 else
   set -e
   ./build/build_assets.sh
