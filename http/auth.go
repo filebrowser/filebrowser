@@ -129,8 +129,22 @@ func (e *Env) auth(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
+		if !tk.VerifyExpiresAt(time.Now().Add(time.Hour).Unix(), true) {
+			// TODO: chek if user info was modified
+			w.Header().Add("X-Renew-Token", "true")
+		}
+
 		nextWithUser(w, r, tk.User.ID)
 	}
+}
+
+func (e *Env) renew(w http.ResponseWriter, r *http.Request) {
+	user, ok := e.getUser(w, r)
+	if !ok {
+		return
+	}
+
+	e.printToken(w, r, user)
 }
 
 func (e *Env) printToken(w http.ResponseWriter, r *http.Request, user *types.User) {
@@ -144,7 +158,7 @@ func (e *Env) printToken(w http.ResponseWriter, r *http.Request, user *types.Use
 			Commands:     user.Commands,
 		},
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+			ExpiresAt: time.Now().Add(time.Hour * 2).Unix(),
 			Issuer:    "File Browser",
 		},
 	}

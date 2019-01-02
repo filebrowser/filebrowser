@@ -45,6 +45,7 @@ func Handler(e *Env) http.Handler {
 	api := r.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/login", e.loginHandler)
 	api.HandleFunc("/signup", e.signupHandler)
+	api.HandleFunc("/renew", e.auth(e.renew))
 
 	users := api.PathPrefix("/users").Subrouter()
 	users.HandleFunc("", e.auth(e.usersGetHandler)).Methods("GET")
