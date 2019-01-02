@@ -20,7 +20,7 @@ cache:
 jobs:
   include:
   - stage: lint
-    script: "./build/run_gometalinter.sh"
+    script: "./build/run_linters.sh"
   - stage: test
     script: "./build/build_all.sh"
     deploy:
