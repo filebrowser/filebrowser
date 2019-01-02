@@ -18,16 +18,16 @@ var cmdsLsCmd = &cobra.Command{
 		db := getDB()
 		defer db.Close()
 		st := getStore(db)
-		r, err := st.Config.GetRunner()
+		s, err := st.Config.GetSettings()
 		checkErr(err)
 		evt := mustGetString(cmd, "event")
 
 		if evt == "" {
-			printEvents(r.Commands)
+			printEvents(s.Commands)
 		} else {
 			show := map[string][]string{}
-			show["before_"+evt] = r.Commands["before_"+evt]
-			show["after_"+evt] = r.Commands["after_"+evt]
+			show["before_"+evt] = s.Commands["before_"+evt]
+			show["after_"+evt] = s.Commands["after_"+evt]
 			printEvents(show)
 		}
 	},

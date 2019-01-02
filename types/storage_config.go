@@ -6,8 +6,6 @@ import "strings"
 type ConfigStore interface {
 	GetSettings() (*Settings, error)
 	SaveSettings(*Settings) error
-	SaveRunner(*Runner) error
-	GetRunner() (*Runner, error)
 	GetAuther(AuthMethod) (Auther, error)
 	SaveAuther(Auther) error
 }
@@ -46,31 +44,25 @@ func (v ConfigVerify) SaveSettings(s *Settings) error {
 		s.Rules = []Rule{}
 	}
 
-	return v.Store.SaveSettings(s)
-}
+	if s.Shell == nil {
+		s.Shell = []string{}
+	}
 
-// GetRunner wraps a ConfigStore.GetRunner
-func (v ConfigVerify) GetRunner() (*Runner, error) {
-	return v.Store.GetRunner()
-}
-
-// SaveRunner wraps a ConfigStore.SaveRunner
-func (v ConfigVerify) SaveRunner(r *Runner) error {
-	if r.Commands == nil {
-		r.Commands = map[string][]string{}
+	if s.Commands == nil {
+		s.Commands = map[string][]string{}
 	}
 
 	for _, event := range defaultEvents {
-		if _, ok := r.Commands["before_"+event]; !ok {
-			r.Commands["before_"+event] = []string{}
+		if _, ok := s.Commands["before_"+event]; !ok {
+			s.Commands["before_"+event] = []string{}
 		}
 
-		if _, ok := r.Commands["after_"+event]; !ok {
-			r.Commands["after_"+event] = []string{}
+		if _, ok := s.Commands["after_"+event]; !ok {
+			s.Commands["after_"+event] = []string{}
 		}
 	}
 
-	return v.Store.SaveRunner(r)
+	return v.Store.SaveSettings(s)
 }
 
 // GetAuther wraps a ConfigStore.GetAuther

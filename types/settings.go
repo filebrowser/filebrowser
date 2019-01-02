@@ -5,13 +5,15 @@ type AuthMethod string
 
 // Settings contain the main settings of the application.
 type Settings struct {
-	Key        []byte       `json:"key"`
-	BaseURL    string       `json:"baseURL"`
-	Signup     bool         `json:"signup"`
-	Defaults   UserDefaults `json:"defaults"`
-	AuthMethod AuthMethod   `json:"authMethod"`
-	Branding   Branding     `json:"branding"`
-	Rules      []Rule       `json:"rules"` // TODO: use this add to cli
+	Key        []byte              `json:"key"`
+	BaseURL    string              `json:"baseURL"`
+	Signup     bool                `json:"signup"`
+	Defaults   UserDefaults        `json:"defaults"`
+	AuthMethod AuthMethod          `json:"authMethod"`
+	Branding   Branding            `json:"branding"`
+	Commands   map[string][]string `json:"commands"`
+	Shell      []string            `json:"shell"` // TODO add to cli
+	Rules      []Rule              `json:"rules"` // TODO: use this add to cli
 }
 
 // IsAllowed matches the rules against the url.

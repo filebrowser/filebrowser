@@ -105,7 +105,7 @@ func (e *Env) resourceDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := e.Runner.Run(func() error {
+	err := e.Settings.Run(func() error {
 		return user.Fs.RemoveAll(path)
 	}, "delete", path, "", user)
 
@@ -156,7 +156,7 @@ func (e *Env) resourcePostPutHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err := e.Runner.Run(func() error {
+	err := e.Settings.Run(func() error {
 		file, err := user.Fs.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
 		if err != nil {
 			return err
@@ -222,7 +222,7 @@ func (e *Env) resourcePatchHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = e.Runner.Run(func() error {
+	err = e.Settings.Run(func() error {
 		if action == "copy" {
 			return fileutils.Copy(user.Fs, src, dst)
 		}

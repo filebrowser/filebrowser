@@ -38,17 +38,6 @@ func (c ConfigStore) SaveSettings(s *types.Settings) error {
 	return c.Save("settings", s)
 }
 
-// GetRunner is an helper method to get a runner object.
-func (c ConfigStore) GetRunner() (*types.Runner, error) {
-	runner := &types.Runner{}
-	return runner, c.Get("runner", runner)
-}
-
-// SaveRunner is an helper method to set the runner object
-func (c ConfigStore) SaveRunner(r *types.Runner) error {
-	return c.Save("runner", r)
-}
-
 // GetAuther is an helper method to get an auther object.
 func (c ConfigStore) GetAuther(t types.AuthMethod) (types.Auther, error) {
 	if t == auth.MethodJSONAuth {

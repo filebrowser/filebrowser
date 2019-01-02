@@ -21,15 +21,15 @@ var cmdsAddCmd = &cobra.Command{
 		db := getDB()
 		defer db.Close()
 		st := getStore(db)
-		r, err := st.Config.GetRunner()
+		s, err := st.Config.GetSettings()
 		checkErr(err)
 
 		evt := mustGetString(cmd, "event")
 		command := mustGetString(cmd, "command")
 
-		r.Commands[evt] = append(r.Commands[evt], command)
-		err = st.Config.SaveRunner(r)
+		s.Commands[evt] = append(s.Commands[evt], command)
+		err = st.Config.SaveSettings(s)
 		checkErr(err)
-		printEvents(r.Commands)
+		printEvents(s.Commands)
 	},
 }

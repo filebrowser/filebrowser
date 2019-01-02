@@ -38,7 +38,7 @@ func (e *Env) commandsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	var command []string
+	var raw string
 
 	for {
 		_, msg, err := conn.ReadMessage()
@@ -47,13 +47,13 @@ func (e *Env) commandsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		command = strings.Split(string(msg), " ")
-		if len(command) != 0 {
+		raw = strings.TrimSpace(string(msg))
+		if raw != "" {
 			break
 		}
 	}
 
-	if !user.CanExecute(command[0]) {
+	if !user.CanExecute(strings.Split(raw, " ")[0]) {
 		err := conn.WriteMessage(websocket.TextMessage, cmdNotAllowed)
 		if err != nil {
 			wsErr(conn, r, http.StatusInternalServerError, err)
@@ -62,15 +62,7 @@ func (e *Env) commandsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := exec.LookPath(command[0]); err != nil {
-		err := conn.WriteMessage(websocket.TextMessage, cmdNotImplemented)
-		if err != nil {
-			wsErr(conn, r, http.StatusInternalServerError, err)
-		}
-
-		return
-	}
-
+	command, err := e.Settings.ParseCommand(raw)
 	path := strings.TrimPrefix(r.URL.Path, "/api/command")
 	dir := afero.FullBaseFsPath(user.Fs.(*afero.BasePathFs), path)
 	cmd := exec.Command(command[0], command[1:]...)
@@ -81,6 +73,7 @@ func (e *Env) commandsHandler(w http.ResponseWriter, r *http.Request) {
 		wsErr(conn, r, http.StatusInternalServerError, err)
 		return
 	}
+	
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		wsErr(conn, r, http.StatusInternalServerError, err)

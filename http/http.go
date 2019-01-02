@@ -27,7 +27,6 @@ type modifyRequest struct {
 // Env contains the required info for FB to run.
 type Env struct {
 	Auther   types.Auther
-	Runner   *types.Runner
 	Settings *types.Settings
 	Store    *types.Store
 	mux      sync.Mutex // settings mutex for Auther, Runner and Settings changes.

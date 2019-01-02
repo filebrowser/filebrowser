@@ -53,7 +53,7 @@ override the options.`,
 		checkErr(err)
 		defer db.Close()
 
-		saveConfig(db, settings, &types.Runner{}, auther)
+		saveConfig(db, settings, auther)
 
 		fmt.Printf(`
 Congratulations! You've set up your database to use with File Browser.
@@ -64,11 +64,9 @@ need to call the main command to boot up the server.
 	},
 }
 
-func saveConfig(db *storm.DB, s *types.Settings, r *types.Runner, a types.Auther) {
+func saveConfig(db *storm.DB, s *types.Settings, a types.Auther) {
 	st := getStore(db)
 	err := st.Config.SaveSettings(s)
-	checkErr(err)
-	err = st.Config.SaveRunner(r)
 	checkErr(err)
 	err = st.Config.SaveAuther(a)
 	checkErr(err)

@@ -13,6 +13,7 @@ type settingsData struct {
 	Defaults types.UserDefaults  `json:"defaults"`
 	Rules    []types.Rule        `json:"rules"`
 	Branding types.Branding      `json:"branding"`
+	Shell    []string            `json:"shell"`
 	Commands map[string][]string `json:"commands"`
 }
 
@@ -27,7 +28,8 @@ func (e *Env) settingsGetHandler(w http.ResponseWriter, r *http.Request) {
 		Defaults: e.Settings.Defaults,
 		Rules:    e.Settings.Rules,
 		Branding: e.Settings.Branding,
-		Commands: e.Runner.Commands,
+		Shell:    e.Settings.Shell,
+		Commands: e.Settings.Commands,
 	}
 
 	renderJSON(w, r, data)
@@ -49,13 +51,6 @@ func (e *Env) settingsPutHandler(w http.ResponseWriter, r *http.Request) {
 	e.mux.Lock()
 	defer e.mux.Unlock()
 
-	runner := &types.Runner{Commands: req.Commands}
-	err = e.Store.Config.SaveRunner(runner)
-	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
-	}
-
 	settings := &types.Settings{}
 	err = copier.Copy(settings, e.Settings)
 	if err != nil {
@@ -67,6 +62,8 @@ func (e *Env) settingsPutHandler(w http.ResponseWriter, r *http.Request) {
 	settings.Defaults = req.Defaults
 	settings.Rules = req.Rules
 	settings.Branding = req.Branding
+	settings.Shell = req.Shell
+	settings.Commands = req.Commands
 
 	err = e.Store.Config.SaveSettings(settings)
 	if err != nil {
@@ -74,6 +71,5 @@ func (e *Env) settingsPutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	e.Runner = runner
 	e.Settings = settings
 }

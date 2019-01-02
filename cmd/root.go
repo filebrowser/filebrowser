@@ -65,8 +65,6 @@ listening on loalhost on a random port. Use the flags to change it.`,
 		checkErr(err)
 		env.Auther, err = env.Store.Config.GetAuther(env.Settings.AuthMethod)
 		checkErr(err)
-		env.Runner, err = env.Store.Config.GetRunner()
-		checkErr(err)
 
 		startServer(cmd, env)
 	},
@@ -133,7 +131,7 @@ func quickSetup(cmd *cobra.Command) {
 	checkErr(err)
 	defer db.Close()
 
-	saveConfig(db, settings, &types.Runner{}, &auth.JSONAuth{})
+	saveConfig(db, settings, &auth.JSONAuth{})
 
 	st := getStore(db)
 	err = st.Users.Save(user)

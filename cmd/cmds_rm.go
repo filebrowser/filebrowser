@@ -21,16 +21,16 @@ var cmdsRmCmd = &cobra.Command{
 		db := getDB()
 		defer db.Close()
 		st := getStore(db)
-		r, err := st.Config.GetRunner()
+		s, err := st.Config.GetSettings()
 		checkErr(err)
 
 		evt := mustGetString(cmd, "event")
 		i, err := cmd.Flags().GetUint("index")
 		checkErr(err)
 
-		r.Commands[evt] = append(r.Commands[evt][:i], r.Commands[evt][i+1:]...)
-		err = st.Config.SaveRunner(r)
+		s.Commands[evt] = append(s.Commands[evt][:i], s.Commands[evt][i+1:]...)
+		err = st.Config.SaveSettings(s)
 		checkErr(err)
-		printEvents(r.Commands)
+		printEvents(s.Commands)
 	},
 }
