@@ -84,10 +84,8 @@ buildAssets () {
     rm -rf dist/*
   fi;
 
-  set +e
   yarn install
   yarn build
-  set -e
 
   cd $REPO/http
   rice embed-go
@@ -190,8 +188,8 @@ build () {
       -v /$(pwd):/src:z \
       -w //src \
       -e COMMIT_SHA=$COMMIT_SHA \
+      -e HOME="//tmp" \
       -e GOPATH=//tmp/gopath \
-      -e XDG_CACHE_HOME="//tmp/.cache" \
       filebrowser/dev \
       sh -c "./wizard.sh -b"
 
