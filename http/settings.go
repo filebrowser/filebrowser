@@ -74,5 +74,6 @@ func (e *Env) settingsPutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO: do not replace settings, but change fields
 	e.Settings = settings
 }

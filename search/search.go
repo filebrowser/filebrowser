@@ -13,6 +13,9 @@ type searchOptions struct {
 	Terms         []string
 }
 
+// TODO: create filtering afero backend
+// used filepath.SkipDir to skip
+
 // Search searches for a query in a fs.
 func Search(fs afero.Fs, scope string, query string, found func(path string, f os.FileInfo) error) error {
 	search := parseSearch(query)
