@@ -87,6 +87,7 @@ buildAssets () {
   yarn install
   yarn build
 
+  echo "Run rice"
   cd $REPO/http
   rice embed-go
 }
@@ -175,6 +176,10 @@ build () {
   if [ "$USE_DOCKER" != "" ]; then
     if [ -d "frontend/dist" ]; then
       rm -rf frontend/dist
+    fi;
+
+    if [ -f "http/rice-box.go" ]; then
+      rm -f http/rice-box.go
     fi;
 
     if [ "$(command -v git)" != "" ]; then
