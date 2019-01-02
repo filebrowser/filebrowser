@@ -27,7 +27,8 @@ if [ "$USE_DOCKER" != "" ]; then
       dos2unix build_assets.sh && \
       dos2unix build.sh && \
       ./build_assets.sh && \
-      ./build.sh \
+      ./build.sh &&
+      mv ../cli/filebrowser ../ \
     "
 else
   set -e
