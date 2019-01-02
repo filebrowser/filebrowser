@@ -21,8 +21,7 @@ var upgrader = websocket.Upgrader{
 }
 
 var (
-	cmdNotImplemented = []byte("Command not implemented.")
-	cmdNotAllowed     = []byte("Command not allowed.")
+	cmdNotAllowed = []byte("Command not allowed.")
 )
 
 func (e *Env) commandsHandler(w http.ResponseWriter, r *http.Request) {
@@ -63,6 +62,15 @@ func (e *Env) commandsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	command, err := e.Settings.ParseCommand(raw)
+	if err != nil {
+		err := conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+		if err != nil {
+			wsErr(conn, r, http.StatusInternalServerError, err)
+		}
+
+		return
+	}
+
 	path := strings.TrimPrefix(r.URL.Path, "/api/command")
 	dir := afero.FullBaseFsPath(user.Fs.(*afero.BasePathFs), path)
 	cmd := exec.Command(command[0], command[1:]...)
@@ -73,7 +81,7 @@ func (e *Env) commandsHandler(w http.ResponseWriter, r *http.Request) {
 		wsErr(conn, r, http.StatusInternalServerError, err)
 		return
 	}
-	
+
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		wsErr(conn, r, http.StatusInternalServerError, err)
