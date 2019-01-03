@@ -2,6 +2,7 @@ package types
 
 import (
 	"os"
+	"path"
 	"syscall"
 	"time"
 
@@ -14,12 +15,22 @@ type userFs struct {
 	settings *Settings
 }
 
+type userFile struct {
+	f    afero.File
+	path string
+	fs   *userFs
+}
+
 func (u *userFs) isAllowed(name string) bool {
 	if !isAllowed(name, u.user.Rules) {
 		return false
 	}
 
 	return isAllowed(name, u.settings.Rules)
+}
+
+func (u *userFs) FullPath(path string) string {
+	return afero.FullBaseFsPath(u.source.(*afero.BasePathFs), path)
 }
 
 func (u *userFs) Chtimes(name string, a, m time.Time) error {
@@ -99,7 +110,8 @@ func (u *userFs) Open(name string) (afero.File, error) {
 		return nil, syscall.ENOENT
 	}
 
-	return u.source.Open(name)
+	f, err := u.source.Open(name)
+	return &userFile{fs: u, path: name, f: f}, err
 }
 
 func (u *userFs) Mkdir(name string, perm os.FileMode) error {
@@ -136,4 +148,75 @@ func (u *userFs) Create(name string) (afero.File, error) {
 	}
 
 	return u.source.Create(name)
+}
+
+func (f *userFile) Close() error {
+	return f.f.Close()
+}
+
+func (f *userFile) Read(s []byte) (int, error) {
+	return f.f.Read(s)
+}
+
+func (f *userFile) ReadAt(s []byte, o int64) (int, error) {
+	return f.f.ReadAt(s, o)
+}
+
+func (f *userFile) Seek(o int64, w int) (int64, error) {
+	return f.f.Seek(o, w)
+}
+
+func (f *userFile) Write(s []byte) (int, error) {
+	return f.f.Write(s)
+}
+
+func (f *userFile) WriteAt(s []byte, o int64) (int, error) {
+	return f.f.WriteAt(s, o)
+}
+
+func (f *userFile) Name() string {
+	return f.f.Name()
+}
+
+func (f *userFile) Readdir(c int) (fi []os.FileInfo, err error) {
+	var rfi []os.FileInfo
+	rfi, err = f.f.Readdir(c)
+	if err != nil {
+		return nil, err
+	}
+	for _, i := range rfi {
+		if f.fs.isAllowed(path.Join(f.path, i.Name())) {
+			fi = append(fi, i)
+		}
+	}
+	return fi, nil
+}
+
+func (f *userFile) Readdirnames(c int) (n []string, err error) {
+	fi, err := f.Readdir(c)
+	if err != nil {
+		return nil, err
+	}
+	for _, s := range fi {
+		if f.fs.isAllowed(s.Name()) {
+			n = append(n, s.Name())
+		}
+	}
+	return n, nil
+}
+
+func (f *userFile) Stat() (os.FileInfo, error) {
+	return f.f.Stat()
+}
+
+func (f *userFile) Sync() error {
+	return f.f.Sync()
+}
+
+func (f *userFile) Truncate(s int64) error {
+	return f.f.Truncate(s)
+}
+
+func (f *userFile) WriteString(s string) (int, error) {
+	return f.f.WriteString(s)
 }

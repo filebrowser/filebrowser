@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/filebrowser/filebrowser/search"
-	"github.com/spf13/afero"
 
 	"github.com/gorilla/websocket"
 )
@@ -75,7 +74,7 @@ func (e *Env) commandsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	path := strings.TrimPrefix(r.URL.Path, "/api/command")
-	dir := afero.FullBaseFsPath(user.Fs.(*afero.BasePathFs), path)
+	dir := user.FullPath(path)
 	cmd := exec.Command(command[0], command[1:]...)
 	cmd.Dir = dir
 

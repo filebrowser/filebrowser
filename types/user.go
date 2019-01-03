@@ -22,7 +22,7 @@ type Permissions struct {
 	Execute  bool `json:"execute"`
 	Create   bool `json:"create"`
 	Rename   bool `json:"rename"`
-	Modify   bool `json:"edit"`
+	Modify   bool `json:"modify"`
 	Delete   bool `json:"delete"`
 	Share    bool `json:"share"`
 	Download bool `json:"download"`
@@ -101,6 +101,11 @@ func (u *User) clean(settings *Settings, fields ...string) error {
 	}
 
 	return nil
+}
+
+// FullPath gets the full path for a user's relative path.
+func (u *User) FullPath(path string) string {
+	return u.Fs.(*userFs).FullPath(path)
 }
 
 // CanExecute checks if an user can execute a specific command.

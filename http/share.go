@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/filebrowser/filebrowser/types"
-	"github.com/spf13/afero"
 )
 
 const apiSharePrefix = "/api/share"
@@ -25,7 +24,7 @@ func (e *Env) getShareData(w http.ResponseWriter, r *http.Request, prefix string
 		return "", false
 	}
 
-	return afero.FullBaseFsPath(user.Fs.(*afero.BasePathFs), relPath), ok
+	return user.FullPath(relPath), ok
 }
 
 func (e *Env) shareGetHandler(w http.ResponseWriter, r *http.Request) {

@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/mholt/caddy"
-	"github.com/spf13/afero"
 )
 
 var defaultEvents = []string{
@@ -21,8 +20,8 @@ var defaultEvents = []string{
 
 // Run runs the hooks for the before and after event.
 func (s *Settings) Run(fn func() error, evt, path, dst string, user *User) error {
-	path = afero.FullBaseFsPath(user.Fs.(*afero.BasePathFs), path)
-	dst = afero.FullBaseFsPath(user.Fs.(*afero.BasePathFs), dst)
+	path = user.FullPath(path)
+	dst = user.FullPath(dst)
 
 	if val, ok := s.Commands["before_"+evt]; ok {
 		for _, command := range val {
