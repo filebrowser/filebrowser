@@ -8,12 +8,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gorilla/websocket"
 	"github.com/filebrowser/filebrowser/types"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 )
 
 type key int
+
 
 const (
 	keyUserID key = iota
@@ -28,7 +29,7 @@ type modifyRequest struct {
 type Env struct {
 	Auther   types.Auther
 	Settings *types.Settings
-	Store    *types.Store
+	Store    *types.Storage
 	mux      sync.RWMutex // settings mutex for Settings changes.
 }
 
@@ -104,7 +105,7 @@ func renderJSON(w http.ResponseWriter, r *http.Request, data interface{}) {
 
 func (e *Env) getUser(w http.ResponseWriter, r *http.Request) (*types.User, bool) {
 	id := r.Context().Value(keyUserID).(uint)
-	user, err := e.Store.Users.Get(id)
+	user, err := e.Store.GetUser(id)
 	if err == types.ErrNotExist {
 		httpErr(w, r, http.StatusForbidden, nil)
 		return nil, false

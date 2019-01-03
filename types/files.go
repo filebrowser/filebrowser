@@ -35,8 +35,8 @@ type File struct {
 	Checksums map[string]string `json:"checksums,omitempty"`
 }
 
-// NewFileInfo generates a new file info from a user and a path.
-func NewFileInfo(u *User, path string) (*File, error) {
+// NewFile generates a new file info from a user and a path.
+func NewFile(u *User, path string) (*File, error) {
 	f := &File{
 		Path: path,
 	}
@@ -119,10 +119,6 @@ func (f *File) getDirInfo() error {
 	for _, i := range files {
 		name := i.Name()
 		path := filepath.Join(f.Path, name)
-
-		if !f.user.IsAllowed(path) {
-			continue
-		}
 
 		if strings.HasPrefix(i.Mode().String(), "L") {
 			// It's a symbolic link. We try to follow it. If it doesn't work,

@@ -67,7 +67,7 @@ func (e *Env) signupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user.Password = pwd
-	err = e.Store.Users.Save(user)
+	err = e.Store.SaveUser(user)
 	if err == types.ErrExist {
 		httpErr(w, r, http.StatusConflict, nil)
 		return
@@ -133,7 +133,7 @@ func (e *Env) auth(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		if !tk.VerifyExpiresAt(time.Now().Add(time.Hour).Unix(), true) {
-			// TODO: chek if user info was modified
+			// TODO: chek if user info was modified use timestap
 			w.Header().Add("X-Renew-Token", "true")
 		}
 

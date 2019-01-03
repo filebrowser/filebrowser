@@ -2,8 +2,10 @@ package types
 
 import "net/http"
 
-// Auther is the interface each authentication method must
-// implement.
+// Auther is the authentication interface.
 type Auther interface {
-	Auth(r *http.Request) (*User, error)
+	// Auth is called to authenticate a request.
+	Auth(*http.Request) (*User, error)
+	// SetStorage gives the Auther the storage.
+	SetStorage(*Storage)
 }

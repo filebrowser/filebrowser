@@ -28,9 +28,9 @@ var usersRmCmd = &cobra.Command{
 		var err error
 
 		if username != "" {
-			err = st.Users.DeleteByUsername(username)
+			err = st.DeleteUser(username)
 		} else {
-			err = st.Users.Delete(id)
+			err = st.DeleteUser(id)
 		}
 
 		checkErr(err)

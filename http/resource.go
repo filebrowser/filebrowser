@@ -42,10 +42,10 @@ func (e *Env) getResourceData(w http.ResponseWriter, r *http.Request, prefix str
 		path = "/"
 	}
 
-	if !user.IsAllowed(path) {
+	/* TODO if !user.IsAllowed(path) {
 		httpErr(w, r, http.StatusForbidden, nil)
 		return "", nil, false
-	}
+	} */
 
 	return path, user, true
 }
@@ -56,7 +56,7 @@ func (e *Env) resourceGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	file, err := types.NewFileInfo(user, path)
+	file, err := types.NewFile(user, path)
 	if err != nil {
 		httpErr(w, r, httpFsErr(err), err)
 		return

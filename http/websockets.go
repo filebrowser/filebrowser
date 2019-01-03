@@ -139,10 +139,6 @@ func (e *Env) searchHandler(w http.ResponseWriter, r *http.Request) {
 
 	scope := strings.TrimPrefix(r.URL.Path, "/api/search")
 	err = search.Search(user.Fs, scope, value, func(path string, f os.FileInfo) error {
-		if !user.IsAllowed(path) {
-			return nil
-		}
-
 		response, _ := json.Marshal(map[string]interface{}{
 			"dir":  f.IsDir(),
 			"path": path,

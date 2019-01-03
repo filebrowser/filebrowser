@@ -34,7 +34,7 @@ func (e *Env) shareGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s, err := e.Store.Share.GetByPath(path)
+	s, err := e.Store.GetLinksByPath(path)
 	if err == types.ErrNotExist {
 		renderJSON(w, r, []*types.ShareLink{})
 		return
@@ -47,7 +47,7 @@ func (e *Env) shareGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	for i, link := range s {
 		if link.Expires && link.ExpireDate.Before(time.Now()) {
-			e.Store.Share.Delete(link.Hash)
+			e.Store.DeleteLink(link.Hash)
 			s = append(s[:i], s[i+1:]...)
 		}
 	}
@@ -73,7 +73,7 @@ func (e *Env) shareDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := e.Store.Share.Delete(hash)
+	err := e.Store.DeleteLink(hash)
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
 		return
@@ -92,7 +92,7 @@ func (e *Env) sharePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	if expire == "" {
 		var err error
-		s, err = e.Store.Share.GetPermanent(path)
+		s, err = e.Store.GetLinkPermanent(path)
 		if err == nil {
 			w.Write([]byte(e.Settings.BaseURL + "/share/" + s.Hash))
 			return
@@ -136,7 +136,7 @@ func (e *Env) sharePostHandler(w http.ResponseWriter, r *http.Request) {
 		s.ExpireDate = time.Now().Add(add)
 	}
 
-	if err := e.Store.Share.Save(s); err != nil {
+	if err := e.Store.SaveLink(s); err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}

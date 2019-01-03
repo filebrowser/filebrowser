@@ -18,7 +18,7 @@ var cmdsLsCmd = &cobra.Command{
 		db := getDB()
 		defer db.Close()
 		st := getStore(db)
-		s, err := st.Config.GetSettings()
+		s, err := st.GetSettings()
 		checkErr(err)
 		evt := mustGetString(cmd, "event")
 

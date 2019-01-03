@@ -7,11 +7,7 @@ import (
 	"github.com/filebrowser/filebrowser/types"
 )
 
-type UsersStore struct {
-	DB *storm.DB
-}
-
-func (st UsersStore) Get(id uint) (*types.User, error) {
+func (st Backend) GetUserByID(id uint) (*types.User, error) {
 	user := &types.User{}
 	err := st.DB.One("ID", id, user)
 	if err == storm.ErrNotFound {
@@ -25,7 +21,7 @@ func (st UsersStore) Get(id uint) (*types.User, error) {
 	return user, nil
 }
 
-func (st UsersStore) GetByUsername(username string) (*types.User, error) {
+func (st Backend) GetUserByUsername(username string) (*types.User, error) {
 	user := &types.User{}
 	err := st.DB.One("Username", username, user)
 	if err == storm.ErrNotFound {
@@ -39,7 +35,7 @@ func (st UsersStore) GetByUsername(username string) (*types.User, error) {
 	return user, nil
 }
 
-func (st UsersStore) Gets() ([]*types.User, error) {
+func (st Backend) GetUsers() ([]*types.User, error) {
 	users := []*types.User{}
 	err := st.DB.All(&users)
 	if err == storm.ErrNotFound {
@@ -53,9 +49,9 @@ func (st UsersStore) Gets() ([]*types.User, error) {
 	return users, err
 }
 
-func (st UsersStore) Update(user *types.User, fields ...string) error {
+func (st Backend) UpdateUser(user *types.User, fields ...string) error {
 	if len(fields) == 0 {
-		return st.Save(user)
+		return st.SaveUser(user)
 	}
 
 	for _, field := range fields {
@@ -68,7 +64,7 @@ func (st UsersStore) Update(user *types.User, fields ...string) error {
 	return nil
 }
 
-func (st UsersStore) Save(user *types.User) error {
+func (st Backend) SaveUser(user *types.User) error {
 	err := st.DB.Save(user)
 	if err == storm.ErrAlreadyExists {
 		return types.ErrExist
@@ -76,12 +72,12 @@ func (st UsersStore) Save(user *types.User) error {
 	return err
 }
 
-func (st UsersStore) Delete(id uint) error {
+func (st Backend) DeleteUserByID(id uint) error {
 	return st.DB.DeleteStruct(&types.User{ID: id})
 }
 
-func (st UsersStore) DeleteByUsername(username string) error {
-	user, err := st.GetByUsername(username)
+func (st Backend) DeleteUserByUsername(username string) error {
+	user, err := st.GetUserByUsername(username)
 	if err != nil {
 		return err
 	}

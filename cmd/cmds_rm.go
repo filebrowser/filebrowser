@@ -21,7 +21,7 @@ var cmdsRmCmd = &cobra.Command{
 		db := getDB()
 		defer db.Close()
 		st := getStore(db)
-		s, err := st.Config.GetSettings()
+		s, err := st.GetSettings()
 		checkErr(err)
 
 		evt := mustGetString(cmd, "event")
@@ -29,7 +29,7 @@ var cmdsRmCmd = &cobra.Command{
 		checkErr(err)
 
 		s.Commands[evt] = append(s.Commands[evt][:i], s.Commands[evt][i+1:]...)
-		err = st.Config.SaveSettings(s)
+		err = st.SaveSettings(s)
 		checkErr(err)
 		printEvents(s.Commands)
 	},

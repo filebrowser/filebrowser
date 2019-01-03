@@ -54,7 +54,7 @@ var checkableFields = []string{
 	"Rules",
 }
 
-func (u *User) clean(fields ...string) error {
+func (u *User) clean(settings *Settings, fields ...string) error {
 	if len(fields) == 0 {
 		fields = checkableFields
 	}
@@ -93,15 +93,14 @@ func (u *User) clean(fields ...string) error {
 	}
 
 	if u.Fs == nil {
-		u.Fs = afero.NewBasePathFs(afero.NewOsFs(), u.Scope)
+		u.Fs = &userFs{
+			user:     u,
+			settings: settings,
+			source:   afero.NewBasePathFs(afero.NewOsFs(), u.Scope),
+		}
 	}
 
 	return nil
-}
-
-// IsAllowed checks if an user is allowed to go to a certain path.
-func (u *User) IsAllowed(url string) bool {
-	return isAllowed(url, u.Rules)
 }
 
 // CanExecute checks if an user can execute a specific command.

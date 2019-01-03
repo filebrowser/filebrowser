@@ -24,7 +24,7 @@ you want to change.`,
 		defer db.Close()
 
 		st := getStore(db)
-		s, err := st.Config.GetSettings()
+		s, err := st.GetSettings()
 		checkErr(err)
 
 		auth := false
@@ -52,14 +52,14 @@ you want to change.`,
 		var auther types.Auther
 		if auth {
 			s.AuthMethod, auther = getAuthentication(cmd)
-			err = st.Config.SaveAuther(auther)
+			err = st.SaveAuther(auther)
 			checkErr(err)
 		} else {
-			auther, err = st.Config.GetAuther(s.AuthMethod)
+			auther, err = st.GetAuther(s.AuthMethod)
 			checkErr(err)
 		}
 
-		err = st.Config.SaveSettings(s)
+		err = st.SaveSettings(s)
 		checkErr(err)
 		printSettings(s, auther)
 	},

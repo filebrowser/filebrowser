@@ -68,7 +68,7 @@ func (e *Env) settingsPutHandler(w http.ResponseWriter, r *http.Request) {
 	settings.Shell = req.Shell
 	settings.Commands = req.Commands
 
-	err = e.Store.Config.SaveSettings(settings)
+	err = e.Store.SaveSettings(settings)
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
 		return

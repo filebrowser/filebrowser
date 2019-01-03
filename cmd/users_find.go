@@ -40,11 +40,11 @@ var findUsers = func(cmd *cobra.Command, args []string) {
 	var user *types.User
 
 	if username != "" {
-		user, err = st.Users.GetByUsername(username)
+		user, err = st.GetUser(username)
 	} else if id != 0 {
-		user, err = st.Users.Get(id)
+		user, err = st.GetUser(id)
 	} else {
-		users, err = st.Users.Gets()
+		users, err = st.GetUsers()
 	}
 
 	checkErr(err)

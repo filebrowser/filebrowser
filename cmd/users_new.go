@@ -25,7 +25,7 @@ var usersNewCmd = &cobra.Command{
 		defer db.Close()
 		st := getStore(db)
 
-		settings, err := st.Config.GetSettings()
+		settings, err := st.GetSettings()
 		checkErr(err)
 		getUserDefaults(cmd, &settings.Defaults, false)
 
@@ -41,7 +41,7 @@ var usersNewCmd = &cobra.Command{
 
 		user.ApplyDefaults(settings.Defaults)
 
-		err = st.Users.Save(user)
+		err = st.SaveUser(user)
 		checkErr(err)
 		printUsers([]*types.User{user})
 	},

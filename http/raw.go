@@ -28,9 +28,6 @@ func parseQueryFiles(r *http.Request, f *types.File, u *types.User) ([]string, e
 			}
 
 			name = fileutils.SlashClean(name)
-			if !u.IsAllowed(name) {
-				continue
-			}
 			files = append(files, filepath.Join(f.Path, name))
 		}
 	}
@@ -70,7 +67,7 @@ func (e *Env) rawHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	file, err := types.NewFileInfo(user, path)
+	file, err := types.NewFile(user, path)
 	if err != nil {
 		httpErr(w, r, httpFsErr(err), err)
 		return

@@ -10,8 +10,8 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/auth"
-	"github.com/filebrowser/filebrowser/bolt"
 	"github.com/filebrowser/filebrowser/types"
 
 	fhttp "github.com/filebrowser/filebrowser/http"
@@ -61,9 +61,9 @@ listening on loalhost on a random port. Use the flags to change it.`,
 			Store: getStore(db),
 		}
 
-		env.Settings, err = env.Store.Config.GetSettings()
+		env.Settings, err = env.Store.GetSettings()
 		checkErr(err)
-		env.Auther, err = env.Store.Config.GetAuther(env.Settings.AuthMethod)
+		env.Auther, err = env.Store.GetAuther(env.Settings.AuthMethod)
 		checkErr(err)
 
 		startServer(cmd, env)
@@ -127,14 +127,14 @@ func quickSetup(cmd *cobra.Command) {
 	user.ApplyDefaults(settings.Defaults)
 	user.Perm.Admin = true
 
-	db, err := bolt.Open(databasePath)
+	db, err := storm.Open(databasePath)
 	checkErr(err)
 	defer db.Close()
 
 	saveConfig(db, settings, &auth.JSONAuth{})
 
 	st := getStore(db)
-	err = st.Users.Save(user)
+	err = st.SaveUser(user)
 	checkErr(err)
 }
 

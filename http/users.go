@@ -57,7 +57,7 @@ func (e *Env) usersGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	users, err := e.Store.Users.Gets()
+	users, err := e.Store.GetUsers()
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
 		return
@@ -100,7 +100,7 @@ func (e *Env) userGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, err := e.Store.Users.Get(id)
+	u, err := e.Store.GetUser(id)
 	if err == types.ErrNotExist {
 		httpErr(w, r, http.StatusNotFound, nil)
 		return
@@ -121,7 +121,7 @@ func (e *Env) userDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := e.Store.Users.Delete(id)
+	err := e.Store.DeleteUser(id)
 	if err == types.ErrNotExist {
 		httpErr(w, r, http.StatusNotFound, nil)
 		return
@@ -160,7 +160,7 @@ func (e *Env) userPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = e.Store.Users.Save(req.Data)
+	err = e.Store.SaveUser(req.Data)
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
 		return
@@ -198,7 +198,7 @@ func (e *Env) userPutHandler(w http.ResponseWriter, r *http.Request) {
 			req.Data.Password, err = types.HashPwd(req.Data.Password)
 		} else {
 			var suser *types.User
-			suser, err = e.Store.Users.Get(modifiedID)
+			suser, err = e.Store.GetUser(modifiedID)
 			req.Data.Password = suser.Password
 		}
 
@@ -232,7 +232,7 @@ func (e *Env) userPutHandler(w http.ResponseWriter, r *http.Request) {
 		req.Which[k] = strings.Title(v)
 	}
 
-	err = e.Store.Users.Update(req.Data, req.Which...)
+	err = e.Store.UpdateUser(req.Data, req.Which...)
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
 	}

@@ -16,11 +16,6 @@ type Settings struct {
 	Rules      []Rule              `json:"rules"` // TODO: use this add to cli
 }
 
-// IsAllowed matches the rules against the url.
-func (e Settings) IsAllowed(url string) bool {
-	return isAllowed(url, e.Rules)
-}
-
 // Sorting contains a sorting order.
 type Sorting struct {
 	By  string `json:"by"`

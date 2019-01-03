@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/asdine/storm"
-	"github.com/filebrowser/filebrowser/bolt"
 	"github.com/filebrowser/filebrowser/types"
 	"github.com/spf13/cobra"
 )
@@ -51,7 +50,7 @@ override the options.`,
 			},
 		}
 
-		db, err := bolt.Open(databasePath)
+		db, err := storm.Open(databasePath)
 		checkErr(err)
 		defer db.Close()
 
@@ -68,8 +67,8 @@ need to call the main command to boot up the server.
 
 func saveConfig(db *storm.DB, s *types.Settings, a types.Auther) {
 	st := getStore(db)
-	err := st.Config.SaveSettings(s)
+	err := st.SaveSettings(s)
 	checkErr(err)
-	err = st.Config.SaveAuther(a)
+	err = st.SaveAuther(a)
 	checkErr(err)
 }

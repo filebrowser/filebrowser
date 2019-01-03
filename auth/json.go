@@ -18,14 +18,14 @@ type jsonCred struct {
 	ReCaptcha string `json:"recaptcha"`
 }
 
-// JSONAuth is a json implementaion of an auther.
+// JSONAuth is a json implementaion of an Auther.
 type JSONAuth struct {
 	ReCaptcha *ReCaptcha
-	Store     *types.UsersVerify `json:"-"`
+	store     *types.Storage
 }
 
 // Auth authenticates the user via a json in content body.
-func (a JSONAuth) Auth(r *http.Request) (*types.User, error) {
+func (a *JSONAuth) Auth(r *http.Request) (*types.User, error) {
 	var cred jsonCred
 
 	if r.Body == nil {
@@ -50,12 +50,17 @@ func (a JSONAuth) Auth(r *http.Request) (*types.User, error) {
 		}
 	}
 
-	u, err := a.Store.GetByUsername(cred.Username)
+	u, err := a.store.GetUser(cred.Username)
 	if err != nil || !types.CheckPwd(cred.Password, u.Password) {
 		return nil, types.ErrNoPermission
 	}
 
 	return u, nil
+}
+
+// SetStorage attaches the storage information to the auther.
+func (a *JSONAuth) SetStorage(s *types.Storage) {
+	a.store = s
 }
 
 const reCaptchaAPI = "/recaptcha/api/siteverify"

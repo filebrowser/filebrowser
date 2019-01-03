@@ -34,30 +34,13 @@ func getDB() *storm.DB {
 		panic(errors.New(databasePath + " does not exist. Please run 'filebrowser init' first."))
 	}
 
-	db, err := bolt.Open(databasePath)
+	db, err := storm.Open(databasePath)
 	checkErr(err)
 	return db
 }
 
-func getStore(db *storm.DB) *types.Store {
-	usersStore := &types.UsersVerify{
-		Store: bolt.UsersStore{
-			DB: db,
-		},
-	}
-
-	configSore := &types.ConfigVerify{
-		Store: bolt.ConfigStore{
-			DB:    db,
-			Users: usersStore,
-		},
-	}
-
-	return &types.Store{
-		Users:  usersStore,
-		Config: configSore,
-		Share:  bolt.ShareStore{DB: db},
-	}
+func getStore(db *storm.DB) *types.Storage {
+	return types.NewStorage(&bolt.Backend{DB: db})
 }
 
 func generateRandomBytes(n int) []byte {

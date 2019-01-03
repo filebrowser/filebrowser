@@ -33,9 +33,9 @@ options you want to change.`,
 		var err error
 
 		if id != 0 {
-			user, err = st.Users.Get(id)
+			user, err = st.GetUser(id)
 		} else {
-			user, err = st.Users.GetByUsername(username)
+			user, err = st.GetUser(username)
 		}
 
 		checkErr(err)
@@ -66,7 +66,7 @@ options you want to change.`,
 			checkErr(err)
 		}
 
-		err = st.Users.Update(user)
+		err = st.UpdateUser(user)
 		checkErr(err)
 		printUsers([]*types.User{user})
 	},

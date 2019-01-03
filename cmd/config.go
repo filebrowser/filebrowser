@@ -55,15 +55,15 @@ func getAuthentication(cmd *cobra.Command) (types.AuthMethod, types.Auther) {
 		if header == "" {
 			panic(errors.New("you must set the flag 'auth.header' for method 'proxy'"))
 		}
-		auther = auth.ProxyAuth{Header: header}
+		auther = &auth.ProxyAuth{Header: header}
 	}
 
 	if method == auth.MethodNoAuth {
-		auther = auth.NoAuth{}
+		auther = &auth.NoAuth{}
 	}
 
 	if method == auth.MethodJSONAuth {
-		jsonAuth := auth.JSONAuth{}
+		jsonAuth := &auth.JSONAuth{}
 
 		host := mustGetString(cmd, "recaptcha.host")
 		key := mustGetString(cmd, "recaptcha.key")

@@ -17,9 +17,9 @@ var configCatCmd = &cobra.Command{
 		db := getDB()
 		defer db.Close()
 		st := getStore(db)
-		s, err := st.Config.GetSettings()
+		s, err := st.GetSettings()
 		checkErr(err)
-		auther, err := st.Config.GetAuther(s.AuthMethod)
+		auther, err := st.GetAuther(s.AuthMethod)
 		checkErr(err)
 		printSettings(s, auther)
 	},
