@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/filebrowser/filebrowser/types"
@@ -14,7 +13,6 @@ import (
 )
 
 type key int
-
 
 const (
 	keyUserID key = iota
@@ -27,10 +25,8 @@ type modifyRequest struct {
 
 // Env contains the required info for FB to run.
 type Env struct {
-	Auther   types.Auther
-	Settings *types.Settings
-	Store    *types.Storage
-	mux      sync.RWMutex // settings mutex for Settings changes.
+	*types.FileBrowser
+	Auther types.Auther
 }
 
 // Handler ...
@@ -105,7 +101,7 @@ func renderJSON(w http.ResponseWriter, r *http.Request, data interface{}) {
 
 func (e *Env) getUser(w http.ResponseWriter, r *http.Request) (*types.User, bool) {
 	id := r.Context().Value(keyUserID).(uint)
-	user, err := e.Store.GetUser(id)
+	user, err := e.GetUser(id)
 	if err == types.ErrNotExist {
 		httpErr(w, r, http.StatusForbidden, nil)
 		return nil, false

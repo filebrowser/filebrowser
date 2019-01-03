@@ -20,15 +20,14 @@ var cmdsAddCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
-		st := getStore(db)
-		s, err := st.GetSettings()
-		checkErr(err)
+		st := getFileBrowser(db)
+		s := st.GetSettings()
 
 		evt := mustGetString(cmd, "event")
 		command := mustGetString(cmd, "command")
 
 		s.Commands[evt] = append(s.Commands[evt], command)
-		err = st.SaveSettings(s)
+		err := st.SaveSettings(s)
 		checkErr(err)
 		printEvents(s.Commands)
 	},

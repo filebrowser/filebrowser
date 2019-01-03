@@ -67,7 +67,7 @@ func (e *Env) rawHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	file, err := types.NewFile(user, path)
+	file, err := e.NewFile(path, user)
 	if err != nil {
 		httpErr(w, r, httpFsErr(err), err)
 		return

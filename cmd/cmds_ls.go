@@ -17,9 +17,8 @@ var cmdsLsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
-		st := getStore(db)
-		s, err := st.GetSettings()
-		checkErr(err)
+		st := getFileBrowser(db)
+		s := st.GetSettings()
 		evt := mustGetString(cmd, "event")
 
 		if evt == "" {

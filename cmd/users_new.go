@@ -23,14 +23,13 @@ var usersNewCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
-		st := getStore(db)
+		st := getFileBrowser(db)
 
-		settings, err := st.GetSettings()
-		checkErr(err)
+		settings := st.GetSettings()
 		getUserDefaults(cmd, &settings.Defaults, false)
 
 		password, _ := cmd.Flags().GetString("password")
-		password, err = types.HashPwd(password)
+		password, err := types.HashPwd(password)
 		checkErr(err)
 
 		user := &types.User{
@@ -39,8 +38,7 @@ var usersNewCmd = &cobra.Command{
 			LockPassword: mustGetBool(cmd, "lockPassword"),
 		}
 
-		user.ApplyDefaults(settings.Defaults)
-
+		st.ApplyDefaults(user)
 		err = st.SaveUser(user)
 		checkErr(err)
 		printUsers([]*types.User{user})

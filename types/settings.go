@@ -1,8 +1,5 @@
 package types
 
-// AuthMethod is an authentication method.
-type AuthMethod string
-
 // Settings contain the main settings of the application.
 type Settings struct {
 	Key        []byte              `json:"key"`

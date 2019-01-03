@@ -23,9 +23,8 @@ you want to change.`,
 		db := getDB()
 		defer db.Close()
 
-		st := getStore(db)
-		s, err := st.GetSettings()
-		checkErr(err)
+		st := getFileBrowser(db)
+		s := st.GetSettings()
 
 		auth := false
 		cmd.Flags().Visit(func(flag *pflag.Flag) {
@@ -50,6 +49,7 @@ you want to change.`,
 		getUserDefaults(cmd, &s.Defaults, false)
 
 		var auther types.Auther
+		var err error
 		if auth {
 			s.AuthMethod, auther = getAuthentication(cmd)
 			err = st.SaveAuther(auther)

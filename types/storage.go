@@ -24,21 +24,10 @@ type StorageBackend interface {
 	DeleteLink(hash string) error
 }
 
-// Storage implements Storage interface and verifies
-// the data before getting in and out the database.
-type Storage struct {
-	src StorageBackend
-}
-
-// NewStorage creates a Storage from a StorageBackend.
-func NewStorage(src StorageBackend) *Storage {
-	return &Storage{src: src}
-}
-
 // GetUser allows you to get a user by its name or username. The provided
 // id must be a string for username lookup or a uint for id lookup. If id
 // is neither, a ErrInvalidDataType will be returned.
-func (v *Storage) GetUser(id interface{}) (*User, error) {
+func (f *FileBrowser) GetUser(id interface{}) (*User, error) {
 	var (
 		user *User
 		err  error
@@ -46,9 +35,9 @@ func (v *Storage) GetUser(id interface{}) (*User, error) {
 
 	switch id.(type) {
 	case string:
-		user, err = v.src.GetUserByUsername(id.(string))
+		user, err = f.storage.GetUserByUsername(id.(string))
 	case uint:
-		user, err = v.src.GetUserByID(id.(uint))
+		user, err = f.storage.GetUserByID(id.(uint))
 	default:
 		return nil, ErrInvalidDataType
 	}
@@ -57,72 +46,52 @@ func (v *Storage) GetUser(id interface{}) (*User, error) {
 		return nil, err
 	}
 
-	settings, err := v.GetSettings()
-	if err != nil {
-		return nil, err
-	}
-
-	user.clean(settings)
+	user.clean()
 	return user, err
 }
 
 // GetUsers gets a list of all users.
-func (v *Storage) GetUsers() ([]*User, error) {
-	users, err := v.src.GetUsers()
-	if err != nil {
-		return nil, err
-	}
-
-	settings, err := v.GetSettings()
+func (f *FileBrowser) GetUsers() ([]*User, error) {
+	users, err := f.storage.GetUsers()
 	if err != nil {
 		return nil, err
 	}
 
 	for _, user := range users {
-		user.clean(settings)
+		user.clean()
 	}
 
 	return users, err
 }
 
 // UpdateUser updates a user in the database.
-func (v *Storage) UpdateUser(user *User, fields ...string) error {
-	settings, err := v.GetSettings()
+func (f *FileBrowser) UpdateUser(user *User, fields ...string) error {
+	err := user.clean(fields...)
 	if err != nil {
 		return err
 	}
 
-	err = user.clean(settings, fields...)
-	if err != nil {
-		return err
-	}
-
-	return v.src.UpdateUser(user, fields...)
+	return f.storage.UpdateUser(user, fields...)
 }
 
 // SaveUser saves the user in a storage.
-func (v *Storage) SaveUser(user *User) error {
-	settings, err := v.GetSettings()
-	if err != nil {
+func (f *FileBrowser) SaveUser(user *User) error {
+	if err := user.clean(); err != nil {
 		return err
 	}
 
-	if err := user.clean(settings); err != nil {
-		return err
-	}
-
-	return v.src.SaveUser(user)
+	return f.storage.SaveUser(user)
 }
 
 // DeleteUser allows you to delete a user by its name or username. The provided
 // id must be a string for username lookup or a uint for id lookup. If id
 // is neither, a ErrInvalidDataType will be returned.
-func (v *Storage) DeleteUser(id interface{}) (err error) {
+func (f *FileBrowser) DeleteUser(id interface{}) (err error) {
 	switch id.(type) {
 	case string:
-		err = v.src.DeleteUserByUsername(id.(string))
+		err = f.storage.DeleteUserByUsername(id.(string))
 	case uint:
-		err = v.src.DeleteUserByID(id.(uint))
+		err = f.storage.DeleteUserByID(id.(uint))
 	default:
 		err = ErrInvalidDataType
 	}
@@ -130,13 +99,11 @@ func (v *Storage) DeleteUser(id interface{}) (err error) {
 	return
 }
 
-// GetSettings wraps a ConfigStore.GetSettings
-func (v *Storage) GetSettings() (*Settings, error) {
-	return v.src.GetSettings()
+func (f *FileBrowser) GetSettings() *Settings {
+	return f.settings
 }
 
-// SaveSettings wraps a ConfigStore.SaveSettings
-func (v *Storage) SaveSettings(s *Settings) error {
+func (f *FileBrowser) SaveSettings(s *Settings) error {
 	s.BaseURL = strings.TrimSuffix(s.BaseURL, "/")
 
 	if len(s.Key) == 0 {
@@ -177,46 +144,54 @@ func (v *Storage) SaveSettings(s *Settings) error {
 		}
 	}
 
-	return v.src.SaveSettings(s)
+	err := f.storage.SaveSettings(s)
+	if err != nil {
+		return err
+	}
+
+	f.mux.Lock()
+	f.settings = s
+	f.mux.Unlock()
+	return nil
 }
 
-// GetAuther wraps a ConfigStore.GetAuther
-func (v *Storage) GetAuther(t AuthMethod) (Auther, error) {
-	auther, err := v.src.GetAuther(t)
+// GetAuther wraps a Storage.GetAuther
+func (f *FileBrowser) GetAuther(t AuthMethod) (Auther, error) {
+	auther, err := f.storage.GetAuther(t)
 	if err != nil {
 		return nil, err
 	}
 
-	auther.SetStorage(v)
+	auther.SetInstance(f)
 	return auther, nil
 }
 
-// SaveAuther wraps a ConfigStore.SaveAuther
-func (v *Storage) SaveAuther(a Auther) error {
-	return v.src.SaveAuther(a)
+// SaveAuther wraps a Storage.SaveAuther
+func (f *FileBrowser) SaveAuther(a Auther) error {
+	return f.storage.SaveAuther(a)
 }
 
 // GetLinkByHash wraps a Storage.GetLinkByHash.
-func (v *Storage) GetLinkByHash(hash string) (*ShareLink, error) {
-	return v.src.GetLinkByHash(hash)
+func (f *FileBrowser) GetLinkByHash(hash string) (*ShareLink, error) {
+	return f.storage.GetLinkByHash(hash)
 }
 
 // GetLinkPermanent wraps a Storage.GetLinkPermanent
-func (v *Storage) GetLinkPermanent(path string) (*ShareLink, error) {
-	return v.src.GetLinkPermanent(path)
+func (f *FileBrowser) GetLinkPermanent(path string) (*ShareLink, error) {
+	return f.storage.GetLinkPermanent(path)
 }
 
 // GetLinksByPath wraps a Storage.GetLinksByPath
-func (v *Storage) GetLinksByPath(path string) ([]*ShareLink, error) {
-	return v.src.GetLinksByPath(path)
+func (f *FileBrowser) GetLinksByPath(path string) ([]*ShareLink, error) {
+	return f.storage.GetLinksByPath(path)
 }
 
 // SaveLink wraps a Storage.SaveLink
-func (v *Storage) SaveLink(s *ShareLink) error {
-	return v.src.SaveLink(s)
+func (f *FileBrowser) SaveLink(s *ShareLink) error {
+	return f.storage.SaveLink(s)
 }
 
 // DeleteLink wraps a Storage.DeleteLink
-func (v *Storage) DeleteLink(hash string) error {
-	return v.src.DeleteLink(hash)
+func (f *FileBrowser) DeleteLink(hash string) error {
+	return f.storage.DeleteLink(hash)
 }

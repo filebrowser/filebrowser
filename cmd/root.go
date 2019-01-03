@@ -56,16 +56,10 @@ listening on loalhost on a random port. Use the flags to change it.`,
 		var err error
 		db := getDB()
 		defer db.Close()
-
-		env := &fhttp.Env{
-			Store: getStore(db),
-		}
-
-		env.Settings, err = env.Store.GetSettings()
+		fb := getFileBrowser(db)
+		env := &fhttp.Env{FileBrowser: fb}
+		env.Auther, err = env.GetAuther(env.GetSettings().AuthMethod)
 		checkErr(err)
-		env.Auther, err = env.Store.GetAuther(env.Settings.AuthMethod)
-		checkErr(err)
-
 		startServer(cmd, env)
 	},
 }
@@ -94,27 +88,36 @@ func quickSetup(cmd *cobra.Command) {
 		panic(errors.New("scope flag must be set for quick setup"))
 	}
 
-	settings := &types.Settings{
-		Key:        generateRandomBytes(64),
-		BaseURL:    "",
-		Signup:     false,
-		AuthMethod: auth.MethodJSONAuth,
-		Defaults: types.UserDefaults{
-			Scope:  scope,
-			Locale: "en",
-			Perm: types.Permissions{
-				Admin:    false,
-				Execute:  true,
-				Create:   true,
-				Rename:   true,
-				Modify:   true,
-				Delete:   true,
-				Share:    true,
-				Download: true,
-			},
+	db, err := storm.Open(databasePath)
+	checkErr(err)
+	defer db.Close()
+	fb := getFileBrowser(db)
+
+	settings := fb.GetSettings()
+	settings.BaseURL = ""
+	settings.Signup = false
+	settings.AuthMethod = auth.MethodJSONAuth
+	settings.Defaults = types.UserDefaults{
+		Scope:  scope,
+		Locale: "en",
+		Perm: types.Permissions{
+			Admin:    false,
+			Execute:  true,
+			Create:   true,
+			Rename:   true,
+			Modify:   true,
+			Delete:   true,
+			Share:    true,
+			Download: true,
 		},
 	}
 
+	err = fb.SaveSettings(settings)
+	checkErr(err)
+	
+	err = fb.SaveAuther(&auth.JSONAuth{})
+	checkErr(err)
+	
 	password, err := types.HashPwd("admin")
 	checkErr(err)
 
@@ -124,17 +127,10 @@ func quickSetup(cmd *cobra.Command) {
 		LockPassword: false,
 	}
 
-	user.ApplyDefaults(settings.Defaults)
+	fb.ApplyDefaults(user)
 	user.Perm.Admin = true
 
-	db, err := storm.Open(databasePath)
-	checkErr(err)
-	defer db.Close()
-
-	saveConfig(db, settings, &auth.JSONAuth{})
-
-	st := getStore(db)
-	err = st.SaveUser(user)
+	err = fb.SaveUser(user)
 	checkErr(err)
 }
 

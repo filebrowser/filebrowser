@@ -12,6 +12,7 @@ import (
 	"github.com/filebrowser/filebrowser/types"
 )
 
+
 func (e *Env) loginHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := e.Auther.Auth(r)
 	if err == types.ErrNoPermission {
@@ -29,13 +30,16 @@ type signupBody struct {
 }
 
 func (e *Env) signupHandler(w http.ResponseWriter, r *http.Request) {
-	e.mux.RLock()
-	defer e.mux.RUnlock()
+	e.RLockSettings()
+	defer e.RUnlockSettings()
 
-	if !e.Settings.Signup {
+	settings := e.GetSettings()
+	
+	if !settings.Signup {
 		httpErr(w, r, http.StatusForbidden, nil)
 		return
 	}
+
 
 	if r.Body == nil {
 		httpErr(w, r, http.StatusBadRequest, nil)
@@ -58,7 +62,7 @@ func (e *Env) signupHandler(w http.ResponseWriter, r *http.Request) {
 		Username: info.Username,
 	}
 
-	user.ApplyDefaults(e.Settings.Defaults)
+	e.ApplyDefaults(user)
 
 	pwd, err := types.HashPwd(info.Password)
 	if err != nil {
@@ -67,7 +71,7 @@ func (e *Env) signupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user.Password = pwd
-	err = e.Store.SaveUser(user)
+	err = e.SaveUser(user)
 	if err == types.ErrExist {
 		httpErr(w, r, http.StatusConflict, nil)
 		return
@@ -115,7 +119,7 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 
 func (e *Env) auth(next http.HandlerFunc) http.HandlerFunc {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
-		return e.Settings.Key, nil
+		return e.GetSettings().Key, nil
 	}
 
 	nextWithUser := func(w http.ResponseWriter, r *http.Request, id uint) {
@@ -167,7 +171,7 @@ func (e *Env) printToken(w http.ResponseWriter, r *http.Request, user *types.Use
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signed, err := token.SignedString(e.Settings.Key)
+	signed, err := token.SignedString(e.GetSettings().Key)
 
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)

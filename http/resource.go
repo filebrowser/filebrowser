@@ -42,11 +42,6 @@ func (e *Env) getResourceData(w http.ResponseWriter, r *http.Request, prefix str
 		path = "/"
 	}
 
-	/* TODO if !user.IsAllowed(path) {
-		httpErr(w, r, http.StatusForbidden, nil)
-		return "", nil, false
-	} */
-
 	return path, user, true
 }
 
@@ -56,7 +51,7 @@ func (e *Env) resourceGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	file, err := types.NewFile(user, path)
+	file, err := e.NewFile(path, user)
 	if err != nil {
 		httpErr(w, r, httpFsErr(err), err)
 		return
@@ -69,16 +64,13 @@ func (e *Env) resourceGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if file.Type == "video" {
-		file.DetectSubtitles()
-	}
-
 	if !user.Perm.Modify && file.Type == "text" {
+		// TODO: move to detet file type
 		file.Type = "textImmutable"
 	}
 
 	if checksum := r.URL.Query().Get("checksum"); checksum != "" {
-		err = file.Checksum(checksum)
+		err = e.Checksum(file,user, checksum)
 		if err == types.ErrInvalidOption {
 			httpErr(w, r, http.StatusBadRequest, nil)
 			return
@@ -105,7 +97,7 @@ func (e *Env) resourceDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := e.Settings.Run(func() error {
+	err := e.RunHook(func() error {
 		return user.Fs.RemoveAll(path)
 	}, "delete", path, "", user)
 
@@ -156,7 +148,7 @@ func (e *Env) resourcePostPutHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err := e.Settings.Run(func() error {
+	err := e.RunHook(func() error {
 		file, err := user.Fs.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
 		if err != nil {
 			return err
@@ -222,7 +214,7 @@ func (e *Env) resourcePatchHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = e.Settings.Run(func() error {
+	err = e.RunHook(func() error {
 		if action == "copy" {
 			return fileutils.Copy(user.Fs, src, dst)
 		}

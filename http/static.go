@@ -15,25 +15,27 @@ import (
 )
 
 func (e *Env) getStaticData() map[string]interface{} {
-	e.mux.RLock()
-	defer e.mux.RUnlock()
+	e.RLockSettings()
+	defer e.RUnlockSettings()
 
-	staticURL := strings.TrimPrefix(e.Settings.BaseURL+"/static", "/")
+	settings := e.GetSettings()
+
+	staticURL := strings.TrimPrefix(settings.BaseURL+"/static", "/")
 
 	data := map[string]interface{}{
-		"Name":            e.Settings.Branding.Name,
-		"DisableExternal": e.Settings.Branding.DisableExternal,
-		"BaseURL":         e.Settings.BaseURL,
+		"Name":            settings.Branding.Name,
+		"DisableExternal": settings.Branding.DisableExternal,
+		"BaseURL":         settings.BaseURL,
 		"Version":         types.Version,
 		"StaticURL":       staticURL,
-		"Signup":          e.Settings.Signup,
-		"NoAuth":          e.Settings.AuthMethod == auth.MethodNoAuth,
+		"Signup":          settings.Signup,
+		"NoAuth":          settings.AuthMethod == auth.MethodNoAuth,
 		"CSS":             false,
 		"ReCaptcha":       false,
 	}
 
-	if e.Settings.Branding.Files != "" {
-		path := filepath.Join(e.Settings.Branding.Files, "custom.css")
+	if settings.Branding.Files != "" {
+		path := filepath.Join(settings.Branding.Files, "custom.css")
 		_, err := os.Stat(path)
 
 		if err != nil && !os.IsNotExist(err) {
@@ -45,7 +47,7 @@ func (e *Env) getStaticData() map[string]interface{} {
 		}
 	}
 
-	if e.Settings.AuthMethod == auth.MethodJSONAuth {
+	if settings.AuthMethod == auth.MethodJSONAuth {
 		auther := e.Auther.(*auth.JSONAuth)
 
 		if auther.ReCaptcha != nil {
@@ -88,18 +90,18 @@ func (e *Env) getStaticHandlers() (http.Handler, http.Handler) {
 	})
 
 	static := http.StripPrefix("/static/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		e.mux.RLock()
-		defer e.mux.RUnlock()
+		e.RLockSettings()
+		defer e.RUnlockSettings()
 
-		if e.Settings.Branding.Files != "" {
+		if e.GetSettings().Branding.Files != "" {
 			if strings.HasPrefix(r.URL.Path, "img/") {
-				path := filepath.Join(e.Settings.Branding.Files, r.URL.Path)
+				path := filepath.Join(e.GetSettings().Branding.Files, r.URL.Path)
 				if _, err := os.Stat(path); err == nil {
 					http.ServeFile(w, r, path)
 					return
 				}
-			} else if r.URL.Path == "custom.css" && e.Settings.Branding.Files != "" {
-				http.ServeFile(w, r, filepath.Join(e.Settings.Branding.Files, "custom.css"))
+			} else if r.URL.Path == "custom.css" && e.GetSettings().Branding.Files != "" {
+				http.ServeFile(w, r, filepath.Join(e.GetSettings().Branding.Files, "custom.css"))
 				return
 			}
 		}

@@ -30,7 +30,7 @@ var usersLsCmd = &cobra.Command{
 var findUsers = func(cmd *cobra.Command, args []string) {
 	db := getDB()
 	defer db.Close()
-	st := getStore(db)
+	st := getFileBrowser(db)
 
 	username, _ := cmd.Flags().GetString("username")
 	id, _ := cmd.Flags().GetUint("id")

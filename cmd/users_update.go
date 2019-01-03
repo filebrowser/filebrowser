@@ -23,7 +23,7 @@ options you want to change.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
-		st := getStore(db)
+		st := getFileBrowser(db)
 
 		id, _ := cmd.Flags().GetUint("id")
 		username := mustGetString(cmd, "username")

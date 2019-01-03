@@ -5,7 +5,6 @@ import (
 	"regexp"
 
 	"github.com/spf13/afero"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // ViewMode describes a view mode.
@@ -54,7 +53,7 @@ var checkableFields = []string{
 	"Rules",
 }
 
-func (u *User) clean(settings *Settings, fields ...string) error {
+func (u *User) clean(fields ...string) error {
 	if len(fields) == 0 {
 		fields = checkableFields
 	}
@@ -93,11 +92,7 @@ func (u *User) clean(settings *Settings, fields ...string) error {
 	}
 
 	if u.Fs == nil {
-		u.Fs = &userFs{
-			user:     u,
-			settings: settings,
-			source:   afero.NewBasePathFs(afero.NewOsFs(), u.Scope),
-		}
+		u.Fs = afero.NewBasePathFs(afero.NewOsFs(), u.Scope)
 	}
 
 	return nil
@@ -105,7 +100,7 @@ func (u *User) clean(settings *Settings, fields ...string) error {
 
 // FullPath gets the full path for a user's relative path.
 func (u *User) FullPath(path string) string {
-	return u.Fs.(*userFs).FullPath(path)
+	return afero.FullBaseFsPath(u.Fs.(*afero.BasePathFs), path)
 }
 
 // CanExecute checks if an user can execute a specific command.
@@ -121,26 +116,4 @@ func (u *User) CanExecute(command string) bool {
 	}
 
 	return false
-}
-
-// ApplyDefaults applies defaults to a user.
-func (u *User) ApplyDefaults(defaults UserDefaults) {
-	u.Scope = defaults.Scope
-	u.Locale = defaults.Locale
-	u.ViewMode = defaults.ViewMode
-	u.Perm = defaults.Perm
-	u.Sorting = defaults.Sorting
-	u.Commands = defaults.Commands
-}
-
-// HashPwd hashes a password.
-func HashPwd(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	return string(bytes), err
-}
-
-// CheckPwd checks if a password is correct.
-func CheckPwd(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
 }

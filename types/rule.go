@@ -13,6 +13,15 @@ type Rule struct {
 	Regexp *Regexp `json:"regexp"`
 }
 
+// Matches matches a path against a rule.
+func (r *Rule) Matches(path string) bool {
+	if r.Regex {
+		return r.Regexp.MatchString(path)
+	}
+
+	return strings.HasPrefix(path, r.Path)
+}
+
 // Regexp is a wrapper to the native regexp type where we
 // save the raw expression.
 type Regexp struct {
@@ -27,18 +36,4 @@ func (r *Regexp) MatchString(s string) bool {
 	}
 
 	return r.regexp.MatchString(s)
-}
-
-func isAllowed(path string, rules []Rule) bool {
-	for _, rule := range rules {
-		if rule.Regex {
-			if rule.Regexp.MatchString(path) {
-				return rule.Allow
-			}
-		} else if strings.HasPrefix(path, rule.Path) {
-			return rule.Allow
-		}
-	}
-
-	return true
 }

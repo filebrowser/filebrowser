@@ -4,6 +4,7 @@ github.com/DataDog/zstd v1.3.4 h1:LAGHkXuvC6yky+C2CUG2tD7w8QlrUwpue8XwIh0X4AY=
 github.com/DataDog/zstd v1.3.4/go.mod h1:1jcaCB/ufaK+sKp1NBhlGmpz41jOoPQ35bpF36t7BBo=
 github.com/GeertJohan/go.rice v0.0.0-20170420135705-c02ca9a983da h1:UVU3a9pRUyLdnBtn60WjRl0s4SEyJc2ChCY56OAR6wI=
 github.com/GeertJohan/go.rice v0.0.0-20170420135705-c02ca9a983da/go.mod h1:DgrzXonpdQbfN3uYaGz1EG4Sbhyum/MMIn6Cphlh2bw=
+github.com/NaturalNode/natural v1.0.9 h1:ry8vPQSJc+SvewawAOTzjeZNbYD7AQzmNddCuwqJk4c=
 github.com/Sereal/Sereal v0.0.0-20180905114147-563b78806e28 h1:KjLSBawWQq6I0p9VRX8RtHIuttTYvUCGfMgNoBBFxYs=
 github.com/Sereal/Sereal v0.0.0-20180905114147-563b78806e28/go.mod h1:D0JMgToj/WdxCgd30Kc1UcA9E+WdZoJqeVOuYW7iTBM=
 github.com/asdine/storm v2.1.2+incompatible h1:dczuIkyqwY2LrtXPz8ixMrU/OFgZp71kbKTHGrXYt/Q=

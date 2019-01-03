@@ -23,16 +23,16 @@ func (e *Env) settingsGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	e.mux.RLock()
-	defer e.mux.RUnlock()
+	e.RLockSettings()
+	defer e.RUnlockSettings()
 
 	data := &settingsData{
-		Signup:   e.Settings.Signup,
-		Defaults: e.Settings.Defaults,
-		Rules:    e.Settings.Rules,
-		Branding: e.Settings.Branding,
-		Shell:    e.Settings.Shell,
-		Commands: e.Settings.Commands,
+		Signup:   e.GetSettings().Signup,
+		Defaults: e.GetSettings().Defaults,
+		Rules:    e.GetSettings().Rules,
+		Branding: e.GetSettings().Branding,
+		Shell:    e.GetSettings().Shell,
+		Commands: e.GetSettings().Commands,
 	}
 
 	renderJSON(w, r, data)
@@ -51,11 +51,11 @@ func (e *Env) settingsPutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	e.mux.Lock()
-	defer e.mux.Unlock()
-
+	e.RLockSettings()
 	settings := &types.Settings{}
-	err = copier.Copy(settings, e.Settings)
+	err = copier.Copy(settings, e.GetSettings())
+	e.RUnlockSettings()
+
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
 		return
@@ -68,12 +68,8 @@ func (e *Env) settingsPutHandler(w http.ResponseWriter, r *http.Request) {
 	settings.Shell = req.Shell
 	settings.Commands = req.Commands
 
-	err = e.Store.SaveSettings(settings)
+	err = e.SaveSettings(settings)
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
-		return
 	}
-
-	// TODO: do not replace settings, but change fields
-	e.Settings = settings
 }

@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"crypto/rand"
 	"errors"
 	"os"
 
@@ -39,14 +38,8 @@ func getDB() *storm.DB {
 	return db
 }
 
-func getStore(db *storm.DB) *types.Storage {
-	return types.NewStorage(&bolt.Backend{DB: db})
-}
-
-func generateRandomBytes(n int) []byte {
-	b := make([]byte, n)
-	_, err := rand.Read(b)
-	// Note that err == nil only if we read len(b) bytes.
+func getFileBrowser(db *storm.DB) *types.FileBrowser {
+	fb, err := types.NewFileBrowser(&bolt.Backend{DB: db})
 	checkErr(err)
-	return b
+	return fb
 }

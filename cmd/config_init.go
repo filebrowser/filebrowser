@@ -36,25 +36,27 @@ override the options.`,
 		getUserDefaults(cmd, &defaults, true)
 		authMethod, auther := getAuthentication(cmd)
 
-		settings := &types.Settings{
-			Key:        generateRandomBytes(64), // 256 bits
-			BaseURL:    mustGetString(cmd, "baseURL"),
-			Signup:     mustGetBool(cmd, "signup"),
-			Shell:      strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " "),
-			Defaults:   defaults,
-			AuthMethod: authMethod,
-			Branding: types.Branding{
-				Name:            mustGetString(cmd, "branding.name"),
-				DisableExternal: mustGetBool(cmd, "branding.disableExternal"),
-				Files:           mustGetString(cmd, "branding.files"),
-			},
-		}
-
 		db, err := storm.Open(databasePath)
 		checkErr(err)
 		defer db.Close()
+		st := getFileBrowser(db)
+		settings := st.GetSettings()
 
-		saveConfig(db, settings, auther)
+		settings.BaseURL = mustGetString(cmd, "baseURL")
+		settings.Signup = mustGetBool(cmd, "signup")
+		settings.Shell = strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " ")
+		settings.Defaults = defaults
+		settings.AuthMethod = authMethod
+		settings.Branding = types.Branding{
+			Name:            mustGetString(cmd, "branding.name"),
+			DisableExternal: mustGetBool(cmd, "branding.disableExternal"),
+			Files:           mustGetString(cmd, "branding.files"),
+		}
+
+		err = st.SaveSettings(settings)
+		checkErr(err)
+		err = st.SaveAuther(auther)
+		checkErr(err)
 
 		fmt.Printf(`
 Congratulations! You've set up your database to use with File Browser.
@@ -63,12 +65,4 @@ need to call the main command to boot up the server.
 `)
 		printSettings(settings, auther)
 	},
-}
-
-func saveConfig(db *storm.DB, s *types.Settings, a types.Auther) {
-	st := getStore(db)
-	err := st.SaveSettings(s)
-	checkErr(err)
-	err = st.SaveAuther(a)
-	checkErr(err)
 }
