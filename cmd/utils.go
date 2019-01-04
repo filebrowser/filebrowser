@@ -6,7 +6,7 @@ import (
 
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/bolt"
-	"github.com/filebrowser/filebrowser/lib"
+	
 	"github.com/spf13/cobra"
 )
 

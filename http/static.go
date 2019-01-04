@@ -11,7 +11,6 @@ import (
 
 	"github.com/GeertJohan/go.rice"
 	"github.com/filebrowser/filebrowser/auth"
-	"github.com/filebrowser/filebrowser/lib"
 )
 
 func (e *env) getStaticData() map[string]interface{} {

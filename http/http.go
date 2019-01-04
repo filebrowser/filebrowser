@@ -7,7 +7,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/filebrowser/filebrowser/lib"
+	"github.com/filebrowser/filebrowser/auth"
+	"github.com/filebrowser/filebrowser/storage"
+	"github.com/filebrowser/filebrowser/errors"
+	"github.com/filebrowser/filebrowser/users"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 )
@@ -24,22 +27,19 @@ type modifyRequest struct {
 }
 
 type env struct {
-	*lib.FileBrowser
-	Auther lib.Auther
+	*storage.Storage
+	auther auth.Auther
 }
 
 // NewHandler builds an HTTP handler on the top of a File Browser instance.
-func NewHandler(fb *lib.FileBrowser) (http.Handler, error) {
-	authMethod := fb.GetSettings().AuthMethod
+func NewHandler(storage *storage.Storage) (http.Handler, error) {
+	/* authMethod := fb.GetSettings().AuthMethod
 	auther, err := fb.GetAuther(authMethod)
 	if err != nil {
 		return nil, err
-	}
+	} */
 
-	e := &env{
-		FileBrowser: fb,
-		Auther: auther,
-	}
+	e := &env{}
 
 	r := mux.NewRouter()
 
@@ -109,10 +109,10 @@ func renderJSON(w http.ResponseWriter, r *http.Request, data interface{}) {
 	}
 }
 
-func (e *env) getUser(w http.ResponseWriter, r *http.Request) (*lib.User, bool) {
+func (e *env) getUser(w http.ResponseWriter, r *http.Request) (*users.User, bool) {
 	id := r.Context().Value(keyUserID).(uint)
-	user, err := e.GetUser(id)
-	if err == lib.ErrNotExist {
+	user, err := e.Users.Get(id)
+	if err == errors.ErrNotExist {
 		httpErr(w, r, http.StatusForbidden, nil)
 		return nil, false
 	}
@@ -125,7 +125,7 @@ func (e *env) getUser(w http.ResponseWriter, r *http.Request) (*lib.User, bool) 
 	return user, true
 }
 
-func (e *env) getAdminUser(w http.ResponseWriter, r *http.Request) (*lib.User, bool) {
+func (e *env) getAdminUser(w http.ResponseWriter, r *http.Request) (*users.User, bool) {
 	user, ok := e.getUser(w, r)
 	if !ok {
 		return nil, false

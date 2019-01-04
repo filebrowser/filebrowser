@@ -1,9 +1,12 @@
-package lib
+package users
 
 import (
+	"github.com/filebrowser/filebrowser/errors"
 	"path/filepath"
 	"regexp"
 
+	"github.com/filebrowser/filebrowser/files"
+	"github.com/filebrowser/filebrowser/rules"
 	"github.com/spf13/afero"
 )
 
@@ -15,32 +18,25 @@ const (
 	MosaicViewMode ViewMode = "mosaic"
 )
 
-// Permissions describe a user's permissions.
-type Permissions struct {
-	Admin    bool `json:"admin"`
-	Execute  bool `json:"execute"`
-	Create   bool `json:"create"`
-	Rename   bool `json:"rename"`
-	Modify   bool `json:"modify"`
-	Delete   bool `json:"delete"`
-	Share    bool `json:"share"`
-	Download bool `json:"download"`
-}
-
 // User describes a user.
 type User struct {
-	ID           uint        `storm:"id,increment" json:"id"`
-	Username     string      `storm:"unique" json:"username"`
-	Password     string      `json:"password"`
-	Scope        string      `json:"scope"`
-	Locale       string      `json:"locale"`
-	LockPassword bool        `json:"lockPassword"`
-	ViewMode     ViewMode    `json:"viewMode"`
-	Perm         Permissions `json:"perm"`
-	Commands     []string    `json:"commands"`
-	Sorting      Sorting     `json:"sorting"`
-	Fs           afero.Fs    `json:"-"`
-	Rules        []Rule      `json:"rules"`
+	ID           uint          `storm:"id,increment" json:"id"`
+	Username     string        `storm:"unique" json:"username"`
+	Password     string        `json:"password"`
+	Scope        string        `json:"scope"`
+	Locale       string        `json:"locale"`
+	LockPassword bool          `json:"lockPassword"`
+	ViewMode     ViewMode      `json:"viewMode"`
+	Perm         Permissions   `json:"perm"`
+	Commands     []string      `json:"commands"`
+	Sorting      files.Sorting `json:"sorting"`
+	Fs           afero.Fs      `json:"-"`
+	Rules        []rules.Rule  `json:"rules"`
+}
+
+// GetRules implements rules.Provider.
+func (u *User) GetRules() []rules.Rule {
+	return u.Rules
 }
 
 var checkableFields = []string{
@@ -53,7 +49,9 @@ var checkableFields = []string{
 	"Rules",
 }
 
-func (u *User) clean(fields ...string) error {
+// Clean cleans up a user and verifies if all its fields
+// are alright to be saved.
+func (u *User) Clean(fields ...string) error {
 	if len(fields) == 0 {
 		fields = checkableFields
 	}
@@ -62,15 +60,15 @@ func (u *User) clean(fields ...string) error {
 		switch field {
 		case "Username":
 			if u.Username == "" {
-				return ErrEmptyUsername
+				return errors.ErrEmptyUsername
 			}
 		case "Password":
 			if u.Password == "" {
-				return ErrEmptyPassword
+				return errors.ErrEmptyPassword
 			}
 		case "Scope":
 			if !filepath.IsAbs(u.Scope) {
-				return ErrPathIsRel
+				return errors.ErrScopeIsRelative
 			}
 		case "ViewMode":
 			if u.ViewMode == "" {
@@ -86,7 +84,7 @@ func (u *User) clean(fields ...string) error {
 			}
 		case "Rules":
 			if u.Rules == nil {
-				u.Rules = []Rule{}
+				u.Rules = []rules.Rule{}
 			}
 		}
 	}

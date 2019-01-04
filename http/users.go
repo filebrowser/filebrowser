@@ -7,7 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/filebrowser/filebrowser/lib"
+	
+	"github.com/filebrowser/filebrowser/users"
 	"github.com/gorilla/mux"
 )
 
@@ -22,7 +23,7 @@ func getUserID(r *http.Request) (uint, error) {
 
 type modifyUserRequest struct {
 	modifyRequest
-	Data *lib.User `json:"data"`
+	Data *users.User `json:"data"`
 }
 
 func getUser(w http.ResponseWriter, r *http.Request) (*modifyUserRequest, bool) {
@@ -74,7 +75,7 @@ func (e *env) usersGetHandler(w http.ResponseWriter, r *http.Request) {
 	renderJSON(w, r, users)
 }
 
-func (e *env) userSelfOrAdmin(w http.ResponseWriter, r *http.Request) (*lib.User, uint, bool) {
+func (e *env) userSelfOrAdmin(w http.ResponseWriter, r *http.Request) (*users.User, uint, bool) {
 	user, ok := e.getUser(w, r)
 	if !ok {
 		return nil, 0, false
@@ -133,7 +134,7 @@ func (e *env) userDeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (e *env) userPostHandler(w http.ResponseWriter, r *http.Request) {
-	_, ok := e.getAdminUser(w,r)
+	_, ok := e.getAdminUser(w, r)
 	if !ok {
 		return
 	}
@@ -197,7 +198,7 @@ func (e *env) userPutHandler(w http.ResponseWriter, r *http.Request) {
 		if req.Data.Password != "" {
 			req.Data.Password, err = lib.HashPwd(req.Data.Password)
 		} else {
-			var suser *lib.User
+			var suser *users.User
 			suser, err = e.GetUser(modifiedID)
 			req.Data.Password = suser.Password
 		}

@@ -3,23 +3,24 @@ package auth
 import (
 	"net/http"
 
-	"github.com/filebrowser/filebrowser/lib"
+	"github.com/filebrowser/filebrowser/settings"
+	"github.com/filebrowser/filebrowser/users"
 )
 
 // MethodNoAuth is used to identify no auth.
-const MethodNoAuth lib.AuthMethod = "noauth"
+const MethodNoAuth settings.AuthMethod = "noauth"
 
 // NoAuth is no auth implementation of auther.
 type NoAuth struct {
-	instance *lib.FileBrowser
+	storage *users.Storage
 }
 
 // Auth uses authenticates user 1.
-func (a *NoAuth) Auth(r *http.Request) (*lib.User, error) {
-	return a.instance.GetUser(1)
+func (a *NoAuth) Auth(r *http.Request) (*users.User, error) {
+	return a.storage.Get(1)
 }
 
-// SetInstance attaches the instance to the auther.
-func (a *NoAuth) SetInstance(i *lib.FileBrowser) {
-	a.instance = i
+// SetStorage attaches the storage to the auther.
+func (a *NoAuth) SetStorage(s *users.Storage) {
+	a.storage = s
 }

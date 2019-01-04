@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/filebrowser/filebrowser/lib"
+	
 	"github.com/spf13/cobra"
 )
 

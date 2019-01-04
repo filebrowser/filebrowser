@@ -6,7 +6,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/filebrowser/filebrowser/lib"
+	
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )

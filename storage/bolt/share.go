@@ -3,7 +3,7 @@ package bolt
 import (
 	"github.com/asdine/storm"
 	"github.com/asdine/storm/q"
-	"github.com/filebrowser/filebrowser/lib"
+	
 )
 
 func (s Backend) GetLinkByHash(hash string) (*lib.ShareLink, error) {

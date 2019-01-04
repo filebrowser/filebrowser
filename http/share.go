@@ -8,7 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/filebrowser/filebrowser/lib"
+	"github.com/filebrowser/filebrowser/errors"
+	"github.com/filebrowser/filebrowser/share"
 )
 
 const apiSharePrefix = "/api/share"
@@ -33,9 +34,9 @@ func (e *env) shareGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s, err := e.GetLinksByPath(path)
-	if err == lib.ErrNotExist {
-		renderJSON(w, r, []*lib.ShareLink{})
+	s, err := e.Share.Gets(path)
+	if err == errors.ErrNotExist {
+		renderJSON(w, r, []*share.Link{})
 		return
 	}
 
@@ -46,7 +47,7 @@ func (e *env) shareGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	for i, link := range s {
 		if link.Expires && link.ExpireDate.Before(time.Now()) {
-			e.DeleteLink(link.Hash)
+			e.Share.Delete(link.Hash)
 			s = append(s[:i], s[i+1:]...)
 		}
 	}
@@ -72,7 +73,7 @@ func (e *env) shareDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := e.DeleteLink(hash)
+	err := e.Share.Delete(hash)
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
 		return

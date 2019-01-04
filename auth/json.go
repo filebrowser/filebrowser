@@ -4,13 +4,15 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 
-	"github.com/filebrowser/filebrowser/lib"
+	"github.com/filebrowser/filebrowser/settings"
+	"github.com/filebrowser/filebrowser/users"
 )
 
 // MethodJSONAuth is used to identify json auth.
-const MethodJSONAuth lib.AuthMethod = "json"
+const MethodJSONAuth settings.AuthMethod = "json"
 
 type jsonCred struct {
 	Password  string `json:"password"`
@@ -21,20 +23,20 @@ type jsonCred struct {
 // JSONAuth is a json implementaion of an Auther.
 type JSONAuth struct {
 	ReCaptcha *ReCaptcha
-	instance  *lib.FileBrowser
+	storage   *users.Storage
 }
 
 // Auth authenticates the user via a json in content body.
-func (a *JSONAuth) Auth(r *http.Request) (*lib.User, error) {
+func (a *JSONAuth) Auth(r *http.Request) (*users.User, error) {
 	var cred jsonCred
 
 	if r.Body == nil {
-		return nil, lib.ErrNoPermission
+		return nil, os.ErrPermission
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&cred)
 	if err != nil {
-		return nil, lib.ErrNoPermission
+		return nil, os.ErrPermission
 	}
 
 	// If ReCaptcha is enabled, check the code.
@@ -46,21 +48,21 @@ func (a *JSONAuth) Auth(r *http.Request) (*lib.User, error) {
 		}
 
 		if !ok {
-			return nil, lib.ErrNoPermission
+			return nil, os.ErrPermission
 		}
 	}
 
-	u, err := a.instance.GetUser(cred.Username)
-	if err != nil || !lib.CheckPwd(cred.Password, u.Password) {
-		return nil, lib.ErrNoPermission
+	u, err := a.storage.Get(cred.Username)
+	if err != nil || !users.CheckPwd(cred.Password, u.Password) {
+		return nil, os.ErrPermission
 	}
 
 	return u, nil
 }
 
-// SetInstance attaches the instance to the auther.
-func (a *JSONAuth) SetInstance(i *lib.FileBrowser) {
-	a.instance = i
+// SetStorage attaches the storage to the auther.
+func (a *JSONAuth) SetStorage(s *users.Storage) {
+	a.storage = s
 }
 
 const reCaptchaAPI = "/recaptcha/api/siteverify"

@@ -9,7 +9,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/filebrowser/filebrowser/auth"
-	"github.com/filebrowser/filebrowser/lib"
+	
 	"github.com/spf13/cobra"
 )
 

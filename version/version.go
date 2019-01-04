@@ -1,4 +1,4 @@
-package lib
+package version
 
 const (
 	// Version is the current File Browser version.

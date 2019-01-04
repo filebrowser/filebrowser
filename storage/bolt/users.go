@@ -4,7 +4,7 @@ import (
 	"reflect"
 
 	"github.com/asdine/storm"
-	"github.com/filebrowser/filebrowser/lib"
+	
 )
 
 func (st Backend) GetUserByID(id uint) (*lib.User, error) {

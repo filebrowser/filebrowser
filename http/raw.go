@@ -7,14 +7,15 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/filebrowser/filebrowser/lib"
+	"github.com/filebrowser/filebrowser/files"
+	"github.com/filebrowser/filebrowser/users"
 	"github.com/hacdias/fileutils"
 	"github.com/mholt/archiver"
 )
 
 const apiRawPrefix = "/api/raw"
 
-func parseQueryFiles(r *http.Request, f *lib.File, u *lib.User) ([]string, error) {
+func parseQueryFiles(r *http.Request, f *files.FileInfo, u *users.User) ([]string, error) {
 	files := []string{}
 	names := strings.Split(r.URL.Query().Get("files"), ",")
 
@@ -66,6 +67,8 @@ func (e *env) rawHandler(w http.ResponseWriter, r *http.Request) {
 		httpErr(w, r, http.StatusForbidden, nil)
 		return
 	}
+
+	files.NewFileInfo(user.Fs, path, user.Perm.Modify)
 
 	file, err := e.NewFile(path, user)
 	if err != nil {
@@ -141,7 +144,7 @@ func (e *env) rawHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func fileHandler(w http.ResponseWriter, r *http.Request, file *lib.File, user *lib.User) {
+func fileHandler(w http.ResponseWriter, r *http.Request, file *files.File, user *users.User) {
 	fd, err := user.Fs.Open(file.Path)
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)

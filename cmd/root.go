@@ -12,7 +12,7 @@ import (
 
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/auth"
-	"github.com/filebrowser/filebrowser/lib"
+	
 
 	fbhttp "github.com/filebrowser/filebrowser/http"
 	"github.com/spf13/cobra"

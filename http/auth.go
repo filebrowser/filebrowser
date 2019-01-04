@@ -4,18 +4,19 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
-	"github.com/filebrowser/filebrowser/lib"
+	"github.com/filebrowser/filebrowser/errors"
+	"github.com/filebrowser/filebrowser/users"
 )
 
-
 func (e *env) loginHandler(w http.ResponseWriter, r *http.Request) {
-	user, err := e.Auther.Auth(r)
-	if err == lib.ErrNoPermission {
+	user, err := e.auther.Auth(r)
+	if err == os.ErrPermission {
 		httpErr(w, r, http.StatusForbidden, nil)
 	} else if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
@@ -30,16 +31,16 @@ type signupBody struct {
 }
 
 func (e *env) signupHandler(w http.ResponseWriter, r *http.Request) {
-	e.RLockSettings()
-	defer e.RUnlockSettings()
+	settings, err := e.Settings.Get()
+	if err != nil {
+		httpErr(w, r, http.StatusInternalServerError, err)
+		return
+	}
 
-	settings := e.GetSettings()
-	
 	if !settings.Signup {
 		httpErr(w, r, http.StatusForbidden, nil)
 		return
 	}
-
 
 	if r.Body == nil {
 		httpErr(w, r, http.StatusBadRequest, nil)
@@ -47,7 +48,7 @@ func (e *env) signupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	info := &signupBody{}
-	err := json.NewDecoder(r.Body).Decode(info)
+	err = json.NewDecoder(r.Body).Decode(info)
 	if err != nil {
 		httpErr(w, r, http.StatusBadRequest, nil)
 		return
@@ -58,21 +59,21 @@ func (e *env) signupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := &lib.User{
+	user := &users.User{
 		Username: info.Username,
 	}
 
-	e.ApplyDefaults(user)
+	settings.Defaults.Apply(user)
 
-	pwd, err := lib.HashPwd(info.Password)
+	pwd, err := users.HashPwd(info.Password)
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
 	user.Password = pwd
-	err = e.SaveUser(user)
-	if err == lib.ErrExist {
+	err = e.Users.Save(user)
+	if err == errors.ErrExist {
 		httpErr(w, r, http.StatusConflict, nil)
 		return
 	} else if err != nil {
@@ -86,8 +87,8 @@ func (e *env) signupHandler(w http.ResponseWriter, r *http.Request) {
 type userInfo struct {
 	ID           uint              `json:"id"`
 	Locale       string            `json:"locale"`
-	ViewMode     lib.ViewMode    `json:"viewMode"`
-	Perm         lib.Permissions `json:"perm"`
+	ViewMode     users.ViewMode    `json:"viewMode"`
+	Perm         users.Permissions `json:"perm"`
 	Commands     []string          `json:"commands"`
 	LockPassword bool              `json:"lockPassword"`
 }
@@ -119,7 +120,12 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 
 func (e *env) auth(next http.HandlerFunc) http.HandlerFunc {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
-		return e.GetSettings().Key, nil
+		settings, err := e.Settings.Get()
+		if err != nil {
+			return nil, err
+		}
+
+		return settings.Key, nil
 	}
 
 	nextWithUser := func(w http.ResponseWriter, r *http.Request, id uint) {
@@ -154,7 +160,7 @@ func (e *env) renew(w http.ResponseWriter, r *http.Request) {
 	e.printToken(w, r, user)
 }
 
-func (e *env) printToken(w http.ResponseWriter, r *http.Request, user *lib.User) {
+func (e *env) printToken(w http.ResponseWriter, r *http.Request, user *users.User) {
 	claims := &authToken{
 		User: userInfo{
 			ID:           user.ID,
@@ -171,7 +177,14 @@ func (e *env) printToken(w http.ResponseWriter, r *http.Request, user *lib.User)
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signed, err := token.SignedString(e.GetSettings().Key)
+
+	settings, err := e.Settings.Get()
+	if err != nil {
+		httpErr(w, r, http.StatusInternalServerError, err)
+		return
+	}
+
+	signed, err := token.SignedString(settings.Key)
 
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)

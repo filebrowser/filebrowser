@@ -3,7 +3,7 @@ package bolt
 import (
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/auth"
-	"github.com/filebrowser/filebrowser/lib"
+	
 )
 
 func (b Backend) get(name string, to interface{}) error {
@@ -19,12 +19,12 @@ func (b Backend) save(name string, from interface{}) error {
 	return b.DB.Set("config", name, from)
 }
 
-func (b Backend) GetSettings() (*lib.Settings, error) {
-	settings := &lib.Settings{}
+func (b Backend) GetSettings() (*settings.Settings, error) {
+	settings := &settings.Settings{}
 	return settings, b.get("settings", settings)
 }
 
-func (b Backend) SaveSettings(s *lib.Settings) error {
+func (b Backend) SaveSettings(s *settings.Settings) error {
 	return b.save("settings", s)
 }
 

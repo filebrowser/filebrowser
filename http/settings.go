@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/filebrowser/filebrowser/lib"
-	"github.com/jinzhu/copier"
+	"github.com/filebrowser/filebrowser/rules"
+	"github.com/filebrowser/filebrowser/settings"
 )
 
 type settingsData struct {
-	Signup   bool                `json:"signup"`
-	Defaults lib.UserDefaults  `json:"defaults"`
-	Rules    []lib.Rule        `json:"rules"`
-	Branding lib.Branding      `json:"branding"`
-	Shell    []string            `json:"shell"`
-	Commands map[string][]string `json:"commands"`
+	Signup   bool                  `json:"signup"`
+	Defaults settings.UserDefaults `json:"defaults"`
+	Rules    []rules.Rule          `json:"rules"`
+	Branding settings.Branding     `json:"branding"`
+	Shell    []string              `json:"shell"`
+	Commands map[string][]string   `json:"commands"`
 }
 
 func (e *env) settingsGetHandler(w http.ResponseWriter, r *http.Request) {
@@ -23,16 +23,19 @@ func (e *env) settingsGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	e.RLockSettings()
-	defer e.RUnlockSettings()
+	settings, err := e.Settings.Get()
+	if err != nil {
+		httpErr(w, r, http.StatusInternalServerError, err)
+		return
+	}
 
 	data := &settingsData{
-		Signup:   e.GetSettings().Signup,
-		Defaults: e.GetSettings().Defaults,
-		Rules:    e.GetSettings().Rules,
-		Branding: e.GetSettings().Branding,
-		Shell:    e.GetSettings().Shell,
-		Commands: e.GetSettings().Commands,
+		Signup:   settings.Signup,
+		Defaults: settings.Defaults,
+		Rules:    settings.Rules,
+		Branding: settings.Branding,
+		Shell:    settings.Shell,
+		Commands: settings.Commands,
 	}
 
 	renderJSON(w, r, data)
@@ -51,10 +54,11 @@ func (e *env) settingsPutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	e.RLockSettings()
-	settings := &lib.Settings{}
-	err = copier.Copy(settings, e.GetSettings())
-	e.RUnlockSettings()
+	settings, err := e.Settings.Get()
+	if err != nil {
+		httpErr(w, r, http.StatusInternalServerError, err)
+		return
+	}
 
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
@@ -68,7 +72,7 @@ func (e *env) settingsPutHandler(w http.ResponseWriter, r *http.Request) {
 	settings.Shell = req.Shell
 	settings.Commands = req.Commands
 
-	err = e.SaveSettings(settings)
+	err = e.Settings.Save(settings)
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
 	}

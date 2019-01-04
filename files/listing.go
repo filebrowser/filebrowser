@@ -1,35 +1,17 @@
-package lib
+package files
 
 import (
-	"os"
 	"sort"
-	"time"
 
 	"github.com/maruel/natural"
 )
 
-// File describes a file.
-type File struct {
-	*Listing
-	Path      string            `json:"path"`
-	Name      string            `json:"name"`
-	Size      int64             `json:"size"`
-	Extension string            `json:"extension"`
-	ModTime   time.Time         `json:"modified"`
-	Mode      os.FileMode       `json:"mode"`
-	IsDir     bool              `json:"isDir"`
-	Type      string            `json:"type"`
-	Subtitles []string          `json:"subtitles,omitempty"`
-	Content   string            `json:"content,omitempty"`
-	Checksums map[string]string `json:"checksums,omitempty"`
-}
-
 // Listing is a collection of files.
 type Listing struct {
-	Items    []*File `json:"items"`
-	NumDirs  int     `json:"numDirs"`
-	NumFiles int     `json:"numFiles"`
-	Sorting  Sorting `json:"sorting"`
+	Items    []*FileInfo `json:"items"`
+	NumDirs  int         `json:"numDirs"`
+	NumFiles int         `json:"numFiles"`
+	Sorting  Sorting     `json:"sorting"`
 }
 
 // ApplySort applies the sort order using .Order and .Sort

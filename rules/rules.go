@@ -1,9 +1,14 @@
-package lib
+package rules
 
 import (
 	"regexp"
 	"strings"
 )
+
+// Checker is a Rules checker.
+type Checker interface {
+	Check(path string) bool
+}
 
 // Rule is a allow/disallow rule.
 type Rule struct {

@@ -1,9 +1,9 @@
-package lib
+package share
 
 import "time"
 
-// ShareLink is the information needed to build a shareable link.
-type ShareLink struct {
+// Link is the information needed to build a shareable link.
+type Link struct {
 	Hash       string    `json:"hash" storm:"id,index"`
 	Path       string    `json:"path" storm:"index"`
 	Expires    bool      `json:"expires"`

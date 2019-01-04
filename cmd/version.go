@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/filebrowser/filebrowser/lib"
+	
 	"github.com/spf13/cobra"
 )
 
