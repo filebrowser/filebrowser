@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	
+	"github.com/filebrowser/filebrowser/users"
 	"github.com/spf13/cobra"
 )
 
@@ -23,24 +23,25 @@ var usersNewCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
-		st := getFileBrowser(db)
+		st := getStorage(db)
 
-		settings := st.GetSettings()
-		getUserDefaults(cmd, &settings.Defaults, false)
+		s, err := st.Settings.Get()
+		checkErr(err)
+		getUserDefaults(cmd, &s.Defaults, false)
 
 		password, _ := cmd.Flags().GetString("password")
-		password, err := lib.HashPwd(password)
+		password, err = users.HashPwd(password)
 		checkErr(err)
 
-		user := &lib.User{
+		user := &users.User{
 			Username:     mustGetString(cmd, "username"),
 			Password:     password,
 			LockPassword: mustGetBool(cmd, "lockPassword"),
 		}
 
-		st.ApplyDefaults(user)
-		err = st.SaveUser(user)
+		s.Defaults.Apply(user)
+		err = st.Users.Save(user)
 		checkErr(err)
-		printUsers([]*lib.User{user})
+		printUsers([]*users.User{user})
 	},
 }

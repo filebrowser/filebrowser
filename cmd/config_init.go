@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/asdine/storm"
-	
+	"github.com/filebrowser/filebrowser/settings"
 	"github.com/spf13/cobra"
 )
 
@@ -32,30 +32,31 @@ override the options.`,
 			panic(errors.New(databasePath + " already exists"))
 		}
 
-		defaults := lib.UserDefaults{}
+		defaults := settings.UserDefaults{}
 		getUserDefaults(cmd, &defaults, true)
 		authMethod, auther := getAuthentication(cmd)
 
 		db, err := storm.Open(databasePath)
 		checkErr(err)
 		defer db.Close()
-		st := getFileBrowser(db)
-		settings := st.GetSettings()
+		st := getStorage(db)
+		s, err := st.Settings.Get()
+		checkErr(err)
 
-		settings.BaseURL = mustGetString(cmd, "baseURL")
-		settings.Signup = mustGetBool(cmd, "signup")
-		settings.Shell = strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " ")
-		settings.Defaults = defaults
-		settings.AuthMethod = authMethod
-		settings.Branding = lib.Branding{
+		s.BaseURL = mustGetString(cmd, "baseURL")
+		s.Signup = mustGetBool(cmd, "signup")
+		s.Shell = strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " ")
+		s.Defaults = defaults
+		s.AuthMethod = authMethod
+		s.Branding = settings.Branding{
 			Name:            mustGetString(cmd, "branding.name"),
 			DisableExternal: mustGetBool(cmd, "branding.disableExternal"),
 			Files:           mustGetString(cmd, "branding.files"),
 		}
 
-		err = st.SaveSettings(settings)
+		err = st.Settings.Save(s)
 		checkErr(err)
-		err = st.SaveAuther(auther)
+		err = st.Auth.Save(auther)
 		checkErr(err)
 
 		fmt.Printf(`
@@ -63,6 +64,6 @@ Congratulations! You've set up your database to use with File Browser.
 Now add your first user via 'filebrowser users new' and then you just
 need to call the main command to boot up the server.
 `)
-		printSettings(settings, auther)
+		printSettings(s, auther)
 	},
 }

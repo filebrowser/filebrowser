@@ -20,15 +20,16 @@ var cmdsRmCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
-		st := getFileBrowser(db)
-		s := st.GetSettings()
+		st := getStorage(db)
+		s, err := st.Settings.Get()
+		checkErr(err)
 
 		evt := mustGetString(cmd, "event")
 		i, err := cmd.Flags().GetUint("index")
 		checkErr(err)
 
 		s.Commands[evt] = append(s.Commands[evt][:i], s.Commands[evt][i+1:]...)
-		err = st.SaveSettings(s)
+		err = st.Settings.Save(s)
 		checkErr(err)
 		printEvents(s.Commands)
 	},

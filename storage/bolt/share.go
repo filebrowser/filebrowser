@@ -3,43 +3,48 @@ package bolt
 import (
 	"github.com/asdine/storm"
 	"github.com/asdine/storm/q"
-	
+	"github.com/filebrowser/filebrowser/errors"
+	"github.com/filebrowser/filebrowser/share"
 )
 
-func (s Backend) GetLinkByHash(hash string) (*lib.ShareLink, error) {
-	var v lib.ShareLink
-	err := s.DB.One("Hash", hash, &v)
+type shareBackend struct {
+	db *storm.DB
+}
+
+func (s shareBackend) GetByHash(hash string) (*share.Link, error) {
+	var v share.Link
+	err := s.db.One("Hash", hash, &v)
 	if err == storm.ErrNotFound {
-		return nil, lib.ErrNotExist
+		return nil, errors.ErrNotExist
 	}
 
 	return &v, err
 }
 
-func (s Backend) GetLinkPermanent(path string) (*lib.ShareLink, error) {
-	var v lib.ShareLink
-	err := s.DB.Select(q.Eq("Path", path), q.Eq("Expires", false)).First(&v)
+func (s shareBackend) GetPermanent(path string) (*share.Link, error) {
+	var v share.Link
+	err := s.db.Select(q.Eq("Path", path), q.Eq("Expires", false)).First(&v)
 	if err == storm.ErrNotFound {
-		return nil, lib.ErrNotExist
+		return nil, errors.ErrNotExist
 	}
 
 	return &v, err
 }
 
-func (s Backend) GetLinksByPath(hash string) ([]*lib.ShareLink, error) {
-	var v []*lib.ShareLink
-	err := s.DB.Find("Path", hash, &v)
+func (s shareBackend) Gets(hash string) ([]*share.Link, error) {
+	var v []*share.Link
+	err := s.db.Find("Path", hash, &v)
 	if err == storm.ErrNotFound {
-		return v, lib.ErrNotExist
+		return v, errors.ErrNotExist
 	}
 
 	return v, err
 }
 
-func (s Backend) SaveLink(l *lib.ShareLink) error {
-	return s.DB.Save(l)
+func (s shareBackend) Save(l *share.Link) error {
+	return s.db.Save(l)
 }
 
-func (s Backend) DeleteLink(hash string) error {
-	return s.DB.DeleteStruct(&lib.ShareLink{Hash: hash})
+func (s shareBackend) Delete(hash string) error {
+	return s.db.DeleteStruct(&share.Link{Hash: hash})
 }

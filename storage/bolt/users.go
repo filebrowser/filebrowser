@@ -4,14 +4,19 @@ import (
 	"reflect"
 
 	"github.com/asdine/storm"
-	
+	"github.com/filebrowser/filebrowser/errors"
+	"github.com/filebrowser/filebrowser/users"
 )
 
-func (st Backend) GetUserByID(id uint) (*lib.User, error) {
-	user := &lib.User{}
-	err := st.DB.One("ID", id, user)
+type usersBackend struct {
+	db *storm.DB
+}
+
+func (st usersBackend) GetByID(id uint) (*users.User, error) {
+	user := &users.User{}
+	err := st.db.One("ID", id, user)
 	if err == storm.ErrNotFound {
-		return nil, lib.ErrNotExist
+		return nil, errors.ErrNotExist
 	}
 
 	if err != nil {
@@ -21,11 +26,11 @@ func (st Backend) GetUserByID(id uint) (*lib.User, error) {
 	return user, nil
 }
 
-func (st Backend) GetUserByUsername(username string) (*lib.User, error) {
-	user := &lib.User{}
-	err := st.DB.One("Username", username, user)
+func (st usersBackend) GetByUsername(username string) (*users.User, error) {
+	user := &users.User{}
+	err := st.db.One("Username", username, user)
 	if err == storm.ErrNotFound {
-		return nil, lib.ErrNotExist
+		return nil, errors.ErrNotExist
 	}
 
 	if err != nil {
@@ -35,11 +40,11 @@ func (st Backend) GetUserByUsername(username string) (*lib.User, error) {
 	return user, nil
 }
 
-func (st Backend) GetUsers() ([]*lib.User, error) {
-	users := []*lib.User{}
-	err := st.DB.All(&users)
+func (st usersBackend) Gets() ([]*users.User, error) {
+	users := []*users.User{}
+	err := st.db.All(&users)
 	if err == storm.ErrNotFound {
-		return nil, lib.ErrNotExist
+		return nil, errors.ErrNotExist
 	}
 
 	if err != nil {
@@ -49,14 +54,14 @@ func (st Backend) GetUsers() ([]*lib.User, error) {
 	return users, err
 }
 
-func (st Backend) UpdateUser(user *lib.User, fields ...string) error {
+func (st usersBackend) Update(user *users.User, fields ...string) error {
 	if len(fields) == 0 {
-		return st.SaveUser(user)
+		return st.Save(user)
 	}
 
 	for _, field := range fields {
 		val := reflect.ValueOf(user).Elem().FieldByName(field).Interface()
-		if err := st.DB.UpdateField(user, field, val); err != nil {
+		if err := st.db.UpdateField(user, field, val); err != nil {
 			return err
 		}
 	}
@@ -64,23 +69,23 @@ func (st Backend) UpdateUser(user *lib.User, fields ...string) error {
 	return nil
 }
 
-func (st Backend) SaveUser(user *lib.User) error {
-	err := st.DB.Save(user)
+func (st usersBackend) Save(user *users.User) error {
+	err := st.db.Save(user)
 	if err == storm.ErrAlreadyExists {
-		return lib.ErrExist
+		return errors.ErrExist
 	}
 	return err
 }
 
-func (st Backend) DeleteUserByID(id uint) error {
-	return st.DB.DeleteStruct(&lib.User{ID: id})
+func (st usersBackend) DeleteByID(id uint) error {
+	return st.db.DeleteStruct(&users.User{ID: id})
 }
 
-func (st Backend) DeleteUserByUsername(username string) error {
-	user, err := st.GetUserByUsername(username)
+func (st usersBackend) DeleteByUsername(username string) error {
+	user, err := st.GetByUsername(username)
 	if err != nil {
 		return err
 	}
 
-	return st.DB.DeleteStruct(user)
+	return st.db.DeleteStruct(user)
 }

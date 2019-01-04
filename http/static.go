@@ -1,40 +1,39 @@
 package http
 
-/*
 import (
 	"encoding/json"
+	"text/template"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/GeertJohan/go.rice"
 	"github.com/filebrowser/filebrowser/auth"
 	"github.com/filebrowser/filebrowser/storage"
 	"github.com/filebrowser/filebrowser/version"
 )
 
-func getStaticData(storage *storage.Storage) (map[string]interface{}, error) {
-	settings, err := storage.Settings.Get()
-	if err != nil {
-		return nil, err
-	}
+func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, box *rice.Box, file, contentType string) (int, error) {
+	w.Header().Set("Content-Type", contentType)
 
-	staticURL := strings.TrimPrefix(settings.BaseURL+"/static", "/")
+	staticURL := strings.TrimPrefix(d.settings.BaseURL+"/static", "/")
 
 	data := map[string]interface{}{
-		"Name":            settings.Branding.Name,
-		"DisableExternal": settings.Branding.DisableExternal,
-		"BaseURL":         settings.BaseURL,
+		"Name":            d.settings.Branding.Name,
+		"DisableExternal": d.settings.Branding.DisableExternal,
+		"BaseURL":         d.settings.BaseURL,
 		"Version":         version.Version,
 		"StaticURL":       staticURL,
-		"Signup":          settings.Signup,
-		"NoAuth":          settings.AuthMethod == auth.MethodNoAuth,
+		"Signup":          d.settings.Signup,
+		"NoAuth":          d.settings.AuthMethod == auth.MethodNoAuth,
 		"CSS":             false,
 		"ReCaptcha":       false,
 	}
 
-	if settings.Branding.Files != "" {
-		path := filepath.Join(settings.Branding.Files, "custom.css")
+	if d.settings.Branding.Files != "" {
+		path := filepath.Join(d.settings.Branding.Files, "custom.css")
 		_, err := os.Stat(path)
 
 		if err != nil && !os.IsNotExist(err) {
@@ -46,10 +45,10 @@ func getStaticData(storage *storage.Storage) (map[string]interface{}, error) {
 		}
 	}
 
-	if settings.AuthMethod == auth.MethodJSONAuth {
-		raw, err := storage.Auth.Get()
+	if d.settings.AuthMethod == auth.MethodJSONAuth {
+		raw, err := d.store.Auth.Get(d.settings.AuthMethod)
 		if err != nil {
-			return nil, err
+			return http.StatusInternalServerError, err
 		}
 
 		auther := raw.(*auth.JSONAuth)
@@ -61,68 +60,62 @@ func getStaticData(storage *storage.Storage) (map[string]interface{}, error) {
 		}
 	}
 
-	b, _ := json.MarshalIndent(data, "", "  ")
+	b, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
 	data["Json"] = string(b)
-	return data, nil
+
+	index := template.Must(template.New("index").Delims("[{[", "]}]").Parse(box.MustString(file)))
+	err = index.Execute(w, data)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return 0, nil
 }
 
-func getStaticHandlers(storage *storage.Storage) (http.Handler, http.Handler, error) {
+func getStaticHandlers(storage *storage.Storage) (http.Handler, http.Handler) {
 	box := rice.MustFindBox("../frontend/dist")
 	handler := http.FileServer(box.HTTPBox())
 
-	handleWithData := func(w http.ResponseWriter, r *http.Request, file string, contentType string) {
-		w.Header().Set("Content-Type", contentType)
-		index := template.Must(template.New("index").Delims("[{[", "]}]").Parse(box.MustString(file)))
-		data, err := getStaticData(storage)
-		if err != nil {
-
-		}
-
-		err := index.Execute(w, e.getStaticData())
-
-		if err != nil {
-			httpErr(w, r, http.StatusInternalServerError, err)
-		}
-	}
-
-	index := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	index := handle(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if r.Method != http.MethodGet {
-			httpErr(w, r, http.StatusNotFound, nil)
-			return
+			return http.StatusNotFound, nil
 		}
 
 		w.Header().Set("x-frame-options", "SAMEORIGIN")
 		w.Header().Set("x-xss-protection", "1; mode=block")
 
-		handleWithData(w, r, "index.html", "text/html; charset=utf-8")
-	})
+		return handleWithStaticData(w, r, d, box, "index.html", "text/html; charset=utf-8")
+	}, "", storage)
 
-	static := http.StripPrefix("/static/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		e.RLockSettings()
-		defer e.RUnlockSettings()
+	static := handle(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if r.Method != http.MethodGet {
+			return http.StatusNotFound, nil
+		}
 
-		if e.GetSettings().Branding.Files != "" {
+		if d.settings.Branding.Files != "" {
 			if strings.HasPrefix(r.URL.Path, "img/") {
-				path := filepath.Join(e.GetSettings().Branding.Files, r.URL.Path)
+				path := filepath.Join(d.settings.Branding.Files, r.URL.Path)
 				if _, err := os.Stat(path); err == nil {
 					http.ServeFile(w, r, path)
-					return
+					return 0, nil
 				}
-			} else if r.URL.Path == "custom.css" && e.GetSettings().Branding.Files != "" {
-				http.ServeFile(w, r, filepath.Join(e.GetSettings().Branding.Files, "custom.css"))
-				return
+			} else if r.URL.Path == "custom.css" && d.settings.Branding.Files != "" {
+				http.ServeFile(w, r, filepath.Join(d.settings.Branding.Files, "custom.css"))
+				return 0, nil
 			}
 		}
 
 		if !strings.HasSuffix(r.URL.Path, ".js") {
 			handler.ServeHTTP(w, r)
-			return
+			return 0, nil
 		}
 
-		handleWithData(w, r, r.URL.Path, "application/javascript; charset=utf-8")
-	}))
+		return handleWithStaticData(w, r, d, box, r.URL.Path, "application/javascript; charset=utf-8")
+	}, "/static/", storage)
 
 	return index, static
 }
-
-*/

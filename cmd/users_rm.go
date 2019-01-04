@@ -20,7 +20,7 @@ var usersRmCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
-		st := getFileBrowser(db)
+		st := getStorage(db)
 
 		username, _ := cmd.Flags().GetString("username")
 		id, _ := cmd.Flags().GetUint("id")
@@ -28,9 +28,9 @@ var usersRmCmd = &cobra.Command{
 		var err error
 
 		if username != "" {
-			err = st.DeleteUser(username)
+			err = st.Users.Delete(username)
 		} else {
-			err = st.DeleteUser(id)
+			err = st.Users.Delete(id)
 		}
 
 		checkErr(err)

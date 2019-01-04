@@ -3,7 +3,7 @@ package cmd
 import (
 	"strings"
 
-	
+	"github.com/filebrowser/filebrowser/auth"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -23,10 +23,11 @@ you want to change.`,
 		db := getDB()
 		defer db.Close()
 
-		st := getFileBrowser(db)
-		s := st.GetSettings()
+		st := getStorage(db)
+		s, err := st.Settings.Get()
+		checkErr(err)
 
-		auth := false
+		hasAuth := false
 		cmd.Flags().Visit(func(flag *pflag.Flag) {
 			switch flag.Name {
 			case "baseURL":
@@ -34,7 +35,7 @@ you want to change.`,
 			case "signup":
 				s.Signup = mustGetBool(cmd, "signup")
 			case "auth.method":
-				auth = true
+				hasAuth = true
 			case "shell":
 				s.Shell = strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " ")
 			case "branding.name":
@@ -48,18 +49,17 @@ you want to change.`,
 
 		getUserDefaults(cmd, &s.Defaults, false)
 
-		var auther lib.Auther
-		var err error
-		if auth {
+		var auther auth.Auther
+		if hasAuth {
 			s.AuthMethod, auther = getAuthentication(cmd)
-			err = st.SaveAuther(auther)
+			err = st.Auth.Save(auther)
 			checkErr(err)
 		} else {
-			auther, err = st.GetAuther(s.AuthMethod)
+			auther, err = st.Auth.Get(s.AuthMethod)
 			checkErr(err)
 		}
 
-		err = st.SaveSettings(s)
+		err = st.Settings.Save(s)
 		checkErr(err)
 		printSettings(s, auther)
 	},

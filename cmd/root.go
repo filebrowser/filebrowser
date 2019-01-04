@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"crypto/rand"
 	"crypto/tls"
 	"errors"
 	"io/ioutil"
@@ -12,7 +13,8 @@ import (
 
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/auth"
-	
+	"github.com/filebrowser/filebrowser/settings"
+	"github.com/filebrowser/filebrowser/users"
 
 	fbhttp "github.com/filebrowser/filebrowser/http"
 	"github.com/spf13/cobra"
@@ -56,9 +58,10 @@ listening on loalhost on a random port. Use the flags to change it.`,
 		var err error
 		db := getDB()
 		defer db.Close()
-		fb := getFileBrowser(db)
 
-		handler, err := fbhttp.NewHandler(fb)
+		st := getStorage(db)
+
+		handler, err := fbhttp.NewHandler(st)
 		checkErr(err)
 		startServer(cmd, handler)
 	},
@@ -91,46 +94,48 @@ func quickSetup(cmd *cobra.Command) {
 	db, err := storm.Open(databasePath)
 	checkErr(err)
 	defer db.Close()
-	fb := getFileBrowser(db)
 
-	settings := fb.GetSettings()
-	settings.BaseURL = ""
-	settings.Signup = false
-	settings.AuthMethod = auth.MethodJSONAuth
-	settings.Defaults = lib.UserDefaults{
-		Scope:  scope,
-		Locale: "en",
-		Perm: lib.Permissions{
-			Admin:    false,
-			Execute:  true,
-			Create:   true,
-			Rename:   true,
-			Modify:   true,
-			Delete:   true,
-			Share:    true,
-			Download: true,
+	set := &settings.Settings{
+		BaseURL:    "",
+		Signup:     false,
+		AuthMethod: auth.MethodJSONAuth,
+		Defaults: settings.UserDefaults{
+			Scope:  scope,
+			Locale: "en",
+			Perm: users.Permissions{
+				Admin:    false,
+				Execute:  true,
+				Create:   true,
+				Rename:   true,
+				Modify:   true,
+				Delete:   true,
+				Share:    true,
+				Download: true,
+			},
 		},
 	}
 
-	err = fb.SaveSettings(settings)
-	checkErr(err)
-	
-	err = fb.SaveAuther(&auth.JSONAuth{})
-	checkErr(err)
-	
-	password, err := lib.HashPwd("admin")
+	st := getStorage(db)
+
+	err = st.Settings.Save(set)
 	checkErr(err)
 
-	user := &lib.User{
+	err = st.Auth.Save(&auth.JSONAuth{})
+	checkErr(err)
+
+	password, err := users.HashPwd("admin")
+	checkErr(err)
+
+	user := &users.User{
 		Username:     "admin",
 		Password:     password,
 		LockPassword: false,
 	}
 
-	fb.ApplyDefaults(user)
+	set.Defaults.Apply(user)
 	user.Perm.Admin = true
 
-	err = fb.SaveUser(user)
+	err = st.Users.Save(user)
 	checkErr(err)
 }
 
@@ -159,4 +164,12 @@ func startServer(cmd *cobra.Command, handler http.Handler) {
 	if err := http.Serve(listener, handler); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func generateRandomBytes(n int) []byte {
+	b := make([]byte, n)
+	_, err := rand.Read(b)
+	checkErr(err)
+	// Note that err == nil only if we read len(b) bytes.
+	return b
 }

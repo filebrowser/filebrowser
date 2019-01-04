@@ -15,10 +15,10 @@ type modifyRequest struct {
 func NewHandler(storage *storage.Storage) (http.Handler, error) {
 	r := mux.NewRouter()
 
-	/* index, static := e.getStaticHandlers()
+	index, static := getStaticHandlers(storage)
 
 	r.PathPrefix("/static").Handler(static)
-	r.NotFoundHandler = index */
+	r.NotFoundHandler = index
 
 	api := r.PathPrefix("/api").Subrouter()
 
@@ -26,12 +26,12 @@ func NewHandler(storage *storage.Storage) (http.Handler, error) {
 	api.Handle("/signup", handle(signupHandler, "", storage))
 	api.Handle("/renew", handle(renewHandler, "", storage))
 
-	/*  users := api.PathPrefix("/users").Subrouter()
-	users.HandleFunc("", e.auth(e.usersGetHandler)).Methods("GET")
-	users.HandleFunc("", e.auth(e.userPostHandler)).Methods("POST")
-	users.HandleFunc("/{id:[0-9]+}", e.auth(e.userPutHandler)).Methods("PUT")
-	users.HandleFunc("/{id:[0-9]+}", e.auth(e.userGetHandler)).Methods("GET")
-	users.HandleFunc("/{id:[0-9]+}", e.auth(e.userDeleteHandler)).Methods("DELETE") */
+	users := api.PathPrefix("/users").Subrouter()
+	users.Handle("", handle(usersGetHandler, "", storage)).Methods("GET")
+	users.Handle("", handle(userPostHandler, "", storage)).Methods("POST")
+	users.Handle("/{id:[0-9]+}", handle(userPutHandler, "", storage)).Methods("PUT")
+	users.Handle("/{id:[0-9]+}", handle(userGetHandler, "", storage)).Methods("GET")
+	users.Handle("/{id:[0-9]+}", handle(userDeleteHandler, "", storage)).Methods("DELETE")
 
 	api.PathPrefix("/resources").Handler(handle(resourceGetHandler, "/api/resources", storage)).Methods("GET")
 	api.PathPrefix("/resources").Handler(handle(resourceDeleteHandler, "/api/resources", storage)).Methods("DELETE")
@@ -46,8 +46,8 @@ func NewHandler(storage *storage.Storage) (http.Handler, error) {
 	api.Handle("/settings", handle(settingsGetHandler, "", storage)).Methods("GET")
 	api.Handle("/settings", handle(settingsPutHandler, "", storage)).Methods("PUT")
 
-	/* api.PathPrefix("/raw").HandlerFunc(e.auth(e.rawHandler)).Methods("GET")
-	api.PathPrefix("/command").HandlerFunc(e.auth(e.commandsHandler))
+	api.PathPrefix("/raw").Handler(handle(rawHandler, "/api/raw", storage)).Methods("GET")
+	/*  api.PathPrefix("/command").HandlerFunc(e.auth(e.commandsHandler))
 	api.PathPrefix("/search").HandlerFunc(e.auth(e.searchHandler)) */
 
 	return r, nil

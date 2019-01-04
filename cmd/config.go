@@ -2,14 +2,15 @@ package cmd
 
 import (
 	"encoding/json"
-	"errors"
+	nerrors "errors"
 	"fmt"
 	"os"
 	"strings"
 	"text/tabwriter"
 
 	"github.com/filebrowser/filebrowser/auth"
-	
+	"github.com/filebrowser/filebrowser/settings"
+	"github.com/filebrowser/filebrowser/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -46,14 +47,14 @@ func addConfigFlags(cmd *cobra.Command) {
 	cmd.Flags().Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 }
 
-func getAuthentication(cmd *cobra.Command) (lib.AuthMethod, lib.Auther) {
-	method := lib.AuthMethod(mustGetString(cmd, "auth.method"))
+func getAuthentication(cmd *cobra.Command) (settings.AuthMethod, auth.Auther) {
+	method := settings.AuthMethod(mustGetString(cmd, "auth.method"))
 
-	var auther lib.Auther
+	var auther auth.Auther
 	if method == auth.MethodProxyAuth {
 		header := mustGetString(cmd, "auth.header")
 		if header == "" {
-			panic(errors.New("you must set the flag 'auth.header' for method 'proxy'"))
+			panic(nerrors.New("you must set the flag 'auth.header' for method 'proxy'"))
 		}
 		auther = &auth.ProxyAuth{Header: header}
 	}
@@ -81,13 +82,13 @@ func getAuthentication(cmd *cobra.Command) (lib.AuthMethod, lib.Auther) {
 	}
 
 	if auther == nil {
-		panic(lib.ErrInvalidAuthMethod)
+		panic(errors.ErrInvalidAuthMethod)
 	}
 
 	return method, auther
 }
 
-func printSettings(s *lib.Settings, auther lib.Auther) {
+func printSettings(s *settings.Settings, auther auth.Auther) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 
 	fmt.Fprintf(w, "\nBase URL:\t%s\n", s.BaseURL)

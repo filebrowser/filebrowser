@@ -1,7 +1,17 @@
 package http
 
-/*
-const apiRawPrefix = "/api/raw"
+import (
+	"errors"
+	"net/http"
+	"net/url"
+	"path/filepath"
+	"strings"
+
+	"github.com/filebrowser/filebrowser/files"
+	"github.com/filebrowser/filebrowser/users"
+	"github.com/hacdias/fileutils"
+	"github.com/mholt/archiver"
+)
 
 func parseQueryFiles(r *http.Request, f *files.FileInfo, u *users.User) ([]string, error) {
 	files := []string{}
@@ -45,38 +55,77 @@ func parseQueryAlgorithm(r *http.Request) (string, archiver.Writer, error) {
 	}
 }
 
-func (e *env) rawHandler(w http.ResponseWriter, r *http.Request) {
-	path, user, ok := e.getResourceData(w, r, apiRawPrefix)
-	if !ok {
-		return
+var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	if !d.user.Perm.Download {
+		return http.StatusAccepted, nil
 	}
 
-	if !user.Perm.Download {
-		httpErr(w, r, http.StatusForbidden, nil)
-		return
-	}
-
-	file, err := files.NewFileInfo(user.Fs, path, user.Perm.Modify)
+	file, err := files.NewFileInfo(d.user.Fs, r.URL.Path, d.user.Perm.Modify, d)
 	if err != nil {
-		httpErr(w, r, httpFsErr(err), err)
-		return
+		return errToStatus(err), err
 	}
 
 	if !file.IsDir {
-		fileHandler(w, r, file, user)
-		return
+		return rawFileHandler(w, r, file)
 	}
 
-	filenames, err := parseQueryFiles(r, file, user)
+	return rawDirHandler(w, r, d, file)
+})
+
+func addFile(ar archiver.Writer, d *data, path string) error {
+	if !d.Check(path) {
+		return nil
+	}
+
+	info, err := d.user.Fs.Stat(path)
 	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
+		return err
+	}
+
+	// open the file
+	file, err := d.user.Fs.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	err = ar.Write(archiver.File{
+		FileInfo: archiver.FileInfo{
+			FileInfo:   info,
+			CustomName: path,
+		},
+		ReadCloser: file,
+	})
+	if err != nil {
+		return err
+	}
+
+	if info.IsDir() {
+		names, err := file.Readdirnames(0)
+		if err != nil {
+			return err
+		}
+
+		for _, name := range names {
+			err = addFile(ar, d, filepath.Join(path, name))
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.FileInfo) (int, error) {
+	filenames, err := parseQueryFiles(r, file, d.user)
+	if err != nil {
+		return http.StatusInternalServerError, err
 	}
 
 	extension, ar, err := parseQueryAlgorithm(r)
 	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
+		return http.StatusInternalServerError, err
 	}
 
 	name := file.Name
@@ -88,53 +137,24 @@ func (e *env) rawHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = ar.Create(w)
 	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
+		return http.StatusInternalServerError, err
 	}
 	defer ar.Close()
 
 	for _, fname := range filenames {
-		info, err := user.Fs.Stat(fname)
+		err = addFile(ar, d, fname)
 		if err != nil {
-			httpErr(w, r, http.StatusInternalServerError, err)
-			return
-		}
-
-		// get file's name for the inside of the archive
-		internalName, err := archiver.NameInArchive(info, fname, fname)
-		if err != nil {
-			httpErr(w, r, http.StatusInternalServerError, err)
-			return
-		}
-
-		// open the file
-		file, err := user.Fs.Open(fname)
-		if err != nil {
-			httpErr(w, r, http.StatusInternalServerError, err)
-			return
-		}
-
-		// write it to the archive
-		err = ar.Write(archiver.File{
-			FileInfo: archiver.FileInfo{
-				FileInfo:   info,
-				CustomName: internalName,
-			},
-			ReadCloser: file,
-		})
-		file.Close()
-		if err != nil {
-			httpErr(w, r, http.StatusInternalServerError, err)
-			return
+			return http.StatusInternalServerError, err
 		}
 	}
+
+	return 0, nil
 }
 
-func fileHandler(w http.ResponseWriter, r *http.Request, file *files.File, user *users.User) {
-	fd, err := user.Fs.Open(file.Path)
+func rawFileHandler(w http.ResponseWriter, r *http.Request, file *files.FileInfo) (int, error) {
+	fd, err := file.Fs.Open(file.Path)
 	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
+		return http.StatusInternalServerError, err
 	}
 	defer fd.Close()
 
@@ -146,4 +166,5 @@ func fileHandler(w http.ResponseWriter, r *http.Request, file *files.File, user 
 	}
 
 	http.ServeContent(w, r, file.Name, file.ModTime, fd)
-} */
+	return 0, nil
+}

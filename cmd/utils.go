@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/asdine/storm"
-	"github.com/filebrowser/filebrowser/bolt"
-	
+	"github.com/filebrowser/filebrowser/storage"
+	"github.com/filebrowser/filebrowser/storage/bolt"
 	"github.com/spf13/cobra"
 )
 
@@ -38,8 +38,6 @@ func getDB() *storm.DB {
 	return db
 }
 
-func getFileBrowser(db *storm.DB) *lib.FileBrowser {
-	fb, err := lib.NewFileBrowser(&bolt.Backend{DB: db})
-	checkErr(err)
-	return fb
+func getStorage(db *storm.DB) *storage.Storage {
+	return bolt.NewStorage(db)
 }

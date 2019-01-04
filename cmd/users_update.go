@@ -1,7 +1,8 @@
 package cmd
 
 import (
-	
+	"github.com/filebrowser/filebrowser/settings"
+	"github.com/filebrowser/filebrowser/users"
 	"github.com/spf13/cobra"
 )
 
@@ -23,24 +24,24 @@ options you want to change.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
-		st := getFileBrowser(db)
+		st := getStorage(db)
 
 		id, _ := cmd.Flags().GetUint("id")
 		username := mustGetString(cmd, "username")
 		password := mustGetString(cmd, "password")
 
-		var user *lib.User
+		var user *users.User
 		var err error
 
 		if id != 0 {
-			user, err = st.GetUser(id)
+			user, err = st.Users.Get(id)
 		} else {
-			user, err = st.GetUser(username)
+			user, err = st.Users.Get(username)
 		}
 
 		checkErr(err)
 
-		defaults := lib.UserDefaults{
+		defaults := settings.UserDefaults{
 			Scope:    user.Scope,
 			Locale:   user.Locale,
 			ViewMode: user.ViewMode,
@@ -62,12 +63,12 @@ options you want to change.`,
 		}
 
 		if password != "" {
-			user.Password, err = lib.HashPwd(password)
+			user.Password, err = users.HashPwd(password)
 			checkErr(err)
 		}
 
-		err = st.UpdateUser(user)
+		err = st.Users.Update(user)
 		checkErr(err)
-		printUsers([]*lib.User{user})
+		printUsers([]*users.User{user})
 	},
 }

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/filebrowser/filebrowser/errors"
 	"github.com/filebrowser/filebrowser/users"
@@ -64,15 +65,15 @@ var usersGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
-	
+
 	for _, u := range users {
 		u.Password = ""
 	}
-	
+
 	sort.Slice(users, func(i, j int) bool {
 		return users[i].ID < users[j].ID
 	})
-	
+
 	return renderJSON(w, r, users)
 })
 
@@ -81,7 +82,7 @@ var userGetHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 	if err == errors.ErrNotExist {
 		return http.StatusNotFound, err
 	}
-	
+
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -95,85 +96,63 @@ var userDeleteHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Requ
 	if err == errors.ErrNotExist {
 		return http.StatusNotFound, err
 	}
-	
+
 	return http.StatusOK, nil
 })
 
-/*
-
-func (e *env) userPostHandler(w http.ResponseWriter, r *http.Request) {
-	_, ok := e.getAdminUser(w, r)
-	if !ok {
-		return
-	}
-
-	req, ok := getUser(w, r)
-	if !ok {
-		return
+var userPostHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	req, err := getUser(w, r)
+	if err != nil {
+		return http.StatusBadRequest, err
 	}
 
 	if len(req.Which) != 0 {
-		httpErr(w, r, http.StatusBadRequest, nil)
-		return
+		return http.StatusBadRequest, nil
 	}
 
 	if req.Data.Password == "" {
-		httpErr(w, r, http.StatusBadRequest, lib.ErrEmptyPassword)
-		return
+		return http.StatusBadRequest, errors.ErrEmptyPassword
 	}
 
-	var err error
-	req.Data.Password, err = lib.HashPwd(req.Data.Password)
+	req.Data.Password, err = users.HashPwd(req.Data.Password)
 	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
+		return http.StatusInternalServerError, err
 	}
 
-	err = e.SaveUser(req.Data)
+	err = d.store.Users.Save(req.Data)
 	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
+		return http.StatusInternalServerError, err
 	}
 
 	w.Header().Set("Location", "/settings/users/"+strconv.FormatUint(uint64(req.Data.ID), 10))
-	w.WriteHeader(http.StatusCreated)
-}
+	return http.StatusCreated, nil
+})
 
-func (e *env) userPutHandler(w http.ResponseWriter, r *http.Request) {
-	sessionUser, modifiedID, ok := e.userSelfOrAdmin(w, r)
-	if !ok {
-		return
+var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	req, err := getUser(w, r)
+	if err != nil {
+		return http.StatusBadRequest, err
 	}
 
-	req, ok := getUser(w, r)
-	if !ok {
-		return
+	if req.Data.ID != d.raw.(uint) {
+		return http.StatusBadRequest, nil
 	}
-
-	if req.Data.ID != modifiedID {
-		httpErr(w, r, http.StatusBadRequest, nil)
-		return
-	}
-
-	var err error
 
 	if len(req.Which) == 1 && req.Which[0] == "all" {
-		if !sessionUser.Perm.Admin {
-			httpErr(w, r, http.StatusForbidden, nil)
-			return
+		if !d.user.Perm.Admin {
+			return http.StatusForbidden, err
 		}
 
 		if req.Data.Password != "" {
-			req.Data.Password, err = lib.HashPwd(req.Data.Password)
+			req.Data.Password, err = users.HashPwd(req.Data.Password)
 		} else {
 			var suser *users.User
-			suser, err = e.GetUser(modifiedID)
+			suser, err = d.store.Users.Get(d.raw.(uint))
 			req.Data.Password = suser.Password
 		}
 
 		if err != nil {
-			httpErr(w, r, http.StatusInternalServerError, err)
-			return
+			return http.StatusInternalServerError, err
 		}
 
 		req.Which = []string{}
@@ -181,28 +160,27 @@ func (e *env) userPutHandler(w http.ResponseWriter, r *http.Request) {
 
 	for k, v := range req.Which {
 		if v == "password" {
-			if !sessionUser.Perm.Admin && sessionUser.LockPassword {
-				httpErr(w, r, http.StatusForbidden, nil)
-				return
+			if !d.user.Perm.Admin && d.user.LockPassword {
+				return http.StatusForbidden, nil
 			}
 
-			req.Data.Password, err = lib.HashPwd(req.Data.Password)
+			req.Data.Password, err = users.HashPwd(req.Data.Password)
 			if err != nil {
-				httpErr(w, r, http.StatusInternalServerError, err)
-				return
+				return http.StatusInternalServerError, err
 			}
 		}
 
-		if !sessionUser.Perm.Admin && (v == "scope" || v == "perm" || v == "username") {
-			httpErr(w, r, http.StatusForbidden, nil)
-			return
+		if !d.user.Perm.Admin && (v == "scope" || v == "perm" || v == "username") {
+			return http.StatusForbidden, nil
 		}
 
 		req.Which[k] = strings.Title(v)
 	}
 
-	err = e.UpdateUser(req.Data, req.Which...)
+	err = d.store.Users.Update(req.Data, req.Which...)
 	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
+		return http.StatusInternalServerError, err
 	}
-} */
+
+	return http.StatusOK, nil
+})
