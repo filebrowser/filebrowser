@@ -97,7 +97,7 @@ updateVersion () {
   to=$2
 
   echo "Updating version from \"$from\" to \"$to\""
-  sed -i.bak "s|$from|$to|g" $REPO/lib/version.go
+  sed -i.bak "s|$from|$to|g" $REPO/version/version.go
 }
 
 buildBinary () {
