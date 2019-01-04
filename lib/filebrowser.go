@@ -350,6 +350,10 @@ func (f *FileBrowser) detectType(file *File, user *User) error {
 		file.Content = string(content)
 	}
 
+	if !user.Perm.Modify && file.Type == "text" {
+		file.Type = "textImmutable"
+	}
+
 	return nil
 }
 

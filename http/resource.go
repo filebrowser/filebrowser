@@ -64,11 +64,6 @@ func (e *env) resourceGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !user.Perm.Modify && file.Type == "text" {
-		// TODO: move to detet file type
-		file.Type = "textImmutable"
-	}
-
 	if checksum := r.URL.Query().Get("checksum"); checksum != "" {
 		err = e.Checksum(file,user, checksum)
 		if err == lib.ErrInvalidOption {
