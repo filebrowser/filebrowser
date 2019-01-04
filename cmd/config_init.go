@@ -40,18 +40,18 @@ override the options.`,
 		checkErr(err)
 		defer db.Close()
 		st := getStorage(db)
-		s, err := st.Settings.Get()
-		checkErr(err)
-
-		s.BaseURL = mustGetString(cmd, "baseURL")
-		s.Signup = mustGetBool(cmd, "signup")
-		s.Shell = strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " ")
-		s.Defaults = defaults
-		s.AuthMethod = authMethod
-		s.Branding = settings.Branding{
-			Name:            mustGetString(cmd, "branding.name"),
-			DisableExternal: mustGetBool(cmd, "branding.disableExternal"),
-			Files:           mustGetString(cmd, "branding.files"),
+		s := &settings.Settings{
+			Key:        generateRandomBytes(64), // 256 bit
+			BaseURL:    mustGetString(cmd, "baseURL"),
+			Signup:     mustGetBool(cmd, "signup"),
+			Shell:      strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " "),
+			AuthMethod: authMethod,
+			Branding: settings.Branding{
+				Name:            mustGetString(cmd, "branding.name"),
+				DisableExternal: mustGetBool(cmd, "branding.disableExternal"),
+				Files:           mustGetString(cmd, "branding.files"),
+			},
+			Defaults: defaults,
 		}
 
 		err = st.Settings.Save(s)
