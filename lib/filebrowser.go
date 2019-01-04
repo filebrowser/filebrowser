@@ -31,22 +31,21 @@ var defaultEvents = []string{
 	"delete",
 }
 
+// FileBrowser represents a File Browser instance which must
+// be created through NewFileBrowser.
 type FileBrowser struct {
 	settings *Settings
 	storage  StorageBackend
 	mux      sync.RWMutex
 }
 
-func (f *FileBrowser) RLockSettings() {
-	f.mux.RLock()
-}
-
-func (f *FileBrowser) RUnlockSettings() {
-	f.mux.RUnlock()
-}
-
+// NewFileBrowser creates a new File Browser instance from a
+// storage backend. If that backend doesn't contain settings
+// on it (returns ErrNotExist), then we generate a new key
+// and base settings.
 func NewFileBrowser(backend StorageBackend) (*FileBrowser, error) {
 	settings, err := backend.GetSettings()
+
 	if err == ErrNotExist {
 		var key []byte
 		key, err = generateRandomBytes(64)
@@ -56,7 +55,6 @@ func NewFileBrowser(backend StorageBackend) (*FileBrowser, error) {
 		}
 
 		settings = &Settings{Key: key}
-
 		err = backend.SaveSettings(settings)
 	}
 
@@ -68,6 +66,16 @@ func NewFileBrowser(backend StorageBackend) (*FileBrowser, error) {
 		settings: settings,
 		storage:  backend,
 	}, nil
+}
+
+// RLockSettings locks the settings for reading.
+func (f *FileBrowser) RLockSettings() {
+	f.mux.RLock()
+}
+
+// RUnlockSettings unlocks the settings for reading.
+func (f *FileBrowser) RUnlockSettings() {
+	f.mux.RUnlock()
 }
 
 // RulesCheck matches a path against the user rules and the
@@ -122,7 +130,9 @@ func (f *FileBrowser) RunHook(fn func() error, evt, path, dst string, user *User
 	return nil
 }
 
-// ParseCommand parses the command taking in account
+// ParseCommand parses the command taking in account if the current
+// instance uses a shell to run the commands or just calls the binary
+// directyly.
 func (f *FileBrowser) ParseCommand(raw string) ([]string, error) {
 	f.RLockSettings()
 	defer f.RUnlockSettings()
@@ -149,18 +159,21 @@ func (f *FileBrowser) ParseCommand(raw string) ([]string, error) {
 	return command, nil
 }
 
-// ApplyDefaults applies defaults to a user.
+// ApplyDefaults applies the default options to a user.
 func (f *FileBrowser) ApplyDefaults(u *User) {
-	f.mux.RLock()
+	f.RLockSettings()
 	u.Scope = f.settings.Defaults.Scope
 	u.Locale = f.settings.Defaults.Locale
 	u.ViewMode = f.settings.Defaults.ViewMode
 	u.Perm = f.settings.Defaults.Perm
 	u.Sorting = f.settings.Defaults.Sorting
 	u.Commands = f.settings.Defaults.Commands
-	f.mux.RUnlock()
+	f.RUnlockSettings()
 }
 
+// NewFile creates a File object from a path and a given user. This File
+// object will be automatically filled depending on if it is a directory
+// or a file. If it's a video file, it will also detect any subtitles.
 func (f *FileBrowser) NewFile(path string, user *User) (*File, error) {
 	if !f.RulesCheck(user, path) {
 		return nil, os.ErrPermission
@@ -197,6 +210,8 @@ func (f *FileBrowser) NewFile(path string, user *User) (*File, error) {
 	return file, err
 }
 
+// Checksum checksums a given File for a given User, using a specific
+// algorithm. The checksums data is saved on File object.
 func (f *FileBrowser) Checksum(file *File, user *User, algo string) error {
 	if file.IsDir {
 		return ErrIsDirectory

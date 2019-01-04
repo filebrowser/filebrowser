@@ -99,10 +99,12 @@ func (f *FileBrowser) DeleteUser(id interface{}) (err error) {
 	return
 }
 
+// GetSettings returns the settings for the current instance.
 func (f *FileBrowser) GetSettings() *Settings {
 	return f.settings
 }
 
+// SaveSettings saves the settings for the current instance.
 func (f *FileBrowser) SaveSettings(s *Settings) error {
 	s.BaseURL = strings.TrimSuffix(s.BaseURL, "/")
 
@@ -155,7 +157,7 @@ func (f *FileBrowser) SaveSettings(s *Settings) error {
 	return nil
 }
 
-// GetAuther wraps a Storage.GetAuther
+// GetAuther wraps a StorageBackend.GetAuther and calls SetInstance on the auther.
 func (f *FileBrowser) GetAuther(t AuthMethod) (Auther, error) {
 	auther, err := f.storage.GetAuther(t)
 	if err != nil {
@@ -166,32 +168,32 @@ func (f *FileBrowser) GetAuther(t AuthMethod) (Auther, error) {
 	return auther, nil
 }
 
-// SaveAuther wraps a Storage.SaveAuther
+// SaveAuther wraps a StorageBackend.SaveAuther.
 func (f *FileBrowser) SaveAuther(a Auther) error {
 	return f.storage.SaveAuther(a)
 }
 
-// GetLinkByHash wraps a Storage.GetLinkByHash.
+// GetLinkByHash wraps a StorageBackend.GetLinkByHash.
 func (f *FileBrowser) GetLinkByHash(hash string) (*ShareLink, error) {
 	return f.storage.GetLinkByHash(hash)
 }
 
-// GetLinkPermanent wraps a Storage.GetLinkPermanent
+// GetLinkPermanent wraps a StorageBackend.GetLinkPermanent
 func (f *FileBrowser) GetLinkPermanent(path string) (*ShareLink, error) {
 	return f.storage.GetLinkPermanent(path)
 }
 
-// GetLinksByPath wraps a Storage.GetLinksByPath
+// GetLinksByPath wraps a StorageBackend.GetLinksByPath
 func (f *FileBrowser) GetLinksByPath(path string) ([]*ShareLink, error) {
 	return f.storage.GetLinksByPath(path)
 }
 
-// SaveLink wraps a Storage.SaveLink
+// SaveLink wraps a StorageBackend.SaveLink
 func (f *FileBrowser) SaveLink(s *ShareLink) error {
 	return f.storage.SaveLink(s)
 }
 
-// DeleteLink wraps a Storage.DeleteLink
+// DeleteLink wraps a StorageBackend.DeleteLink
 func (f *FileBrowser) DeleteLink(hash string) error {
 	return f.storage.DeleteLink(hash)
 }
