@@ -23,14 +23,24 @@ type modifyRequest struct {
 	Which []string `json:"which"` // Answer to: which fields?
 }
 
-// Env contains the required info for FB to run.
-type Env struct {
+type env struct {
 	*lib.FileBrowser
 	Auther lib.Auther
 }
 
-// Handler ...
-func Handler(e *Env) http.Handler {
+// NewHandler builds an HTTP handler on the top of a File Browser instance.
+func NewHandler(fb *lib.FileBrowser) (http.Handler, error) {
+	authMethod := fb.GetSettings().AuthMethod
+	auther, err := fb.GetAuther(authMethod)
+	if err != nil {
+		return nil, err
+	}
+
+	e := &env{
+		FileBrowser: fb,
+		Auther: auther,
+	}
+
 	r := mux.NewRouter()
 
 	index, static := e.getStaticHandlers()
@@ -67,7 +77,7 @@ func Handler(e *Env) http.Handler {
 	api.PathPrefix("/command").HandlerFunc(e.auth(e.commandsHandler))
 	api.PathPrefix("/search").HandlerFunc(e.auth(e.searchHandler))
 
-	return r
+	return r, nil
 }
 
 func httpErr(w http.ResponseWriter, r *http.Request, status int, err error) {
@@ -99,7 +109,7 @@ func renderJSON(w http.ResponseWriter, r *http.Request, data interface{}) {
 	}
 }
 
-func (e *Env) getUser(w http.ResponseWriter, r *http.Request) (*lib.User, bool) {
+func (e *env) getUser(w http.ResponseWriter, r *http.Request) (*lib.User, bool) {
 	id := r.Context().Value(keyUserID).(uint)
 	user, err := e.GetUser(id)
 	if err == lib.ErrNotExist {
@@ -115,7 +125,7 @@ func (e *Env) getUser(w http.ResponseWriter, r *http.Request) (*lib.User, bool) 
 	return user, true
 }
 
-func (e *Env) getAdminUser(w http.ResponseWriter, r *http.Request) (*lib.User, bool) {
+func (e *env) getAdminUser(w http.ResponseWriter, r *http.Request) (*lib.User, bool) {
 	user, ok := e.getUser(w, r)
 	if !ok {
 		return nil, false

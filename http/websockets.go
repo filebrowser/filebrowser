@@ -23,7 +23,7 @@ var (
 	cmdNotAllowed = []byte("Command not allowed.")
 )
 
-func (e *Env) commandsHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) commandsHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := e.getUser(w, r)
 	if !ok {
 		return
@@ -102,7 +102,7 @@ func (e *Env) commandsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (e *Env) searchHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) searchHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := e.getUser(w, r)
 	if !ok {
 		return

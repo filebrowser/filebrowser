@@ -14,7 +14,7 @@ import (
 	"github.com/filebrowser/filebrowser/auth"
 	"github.com/filebrowser/filebrowser/lib"
 
-	fhttp "github.com/filebrowser/filebrowser/http"
+	fbhttp "github.com/filebrowser/filebrowser/http"
 	"github.com/spf13/cobra"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 )
@@ -57,10 +57,10 @@ listening on loalhost on a random port. Use the flags to change it.`,
 		db := getDB()
 		defer db.Close()
 		fb := getFileBrowser(db)
-		env := &fhttp.Env{FileBrowser: fb}
-		env.Auther, err = env.GetAuther(env.GetSettings().AuthMethod)
+
+		handler, err := fbhttp.NewHandler(fb)
 		checkErr(err)
-		startServer(cmd, env)
+		startServer(cmd, handler)
 	},
 }
 
@@ -134,7 +134,7 @@ func quickSetup(cmd *cobra.Command) {
 	checkErr(err)
 }
 
-func startServer(cmd *cobra.Command, env *fhttp.Env) {
+func startServer(cmd *cobra.Command, handler http.Handler) {
 	addr := mustGetString(cmd, "address")
 	port, err := cmd.Flags().GetInt("port")
 	checkErr(err)
@@ -156,7 +156,7 @@ func startServer(cmd *cobra.Command, env *fhttp.Env) {
 	}
 
 	log.Println("Listening on", listener.Addr().String())
-	if err := http.Serve(listener, fhttp.Handler(env)); err != nil {
+	if err := http.Serve(listener, handler); err != nil {
 		log.Fatal(err)
 	}
 }

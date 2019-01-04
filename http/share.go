@@ -13,7 +13,7 @@ import (
 
 const apiSharePrefix = "/api/share"
 
-func (e *Env) getShareData(w http.ResponseWriter, r *http.Request, prefix string) (string, bool) {
+func (e *env) getShareData(w http.ResponseWriter, r *http.Request, prefix string) (string, bool) {
 	relPath, user, ok := e.getResourceData(w, r, apiSharePrefix)
 	if !ok {
 		return "", false
@@ -27,7 +27,7 @@ func (e *Env) getShareData(w http.ResponseWriter, r *http.Request, prefix string
 	return user.FullPath(relPath), ok
 }
 
-func (e *Env) shareGetHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) shareGetHandler(w http.ResponseWriter, r *http.Request) {
 	path, ok := e.getShareData(w, r, apiSharePrefix)
 	if !ok {
 		return
@@ -54,7 +54,7 @@ func (e *Env) shareGetHandler(w http.ResponseWriter, r *http.Request) {
 	renderJSON(w, r, s)
 }
 
-func (e *Env) shareDeleteHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) shareDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := e.getUser(w, r)
 	if !ok {
 		return
@@ -79,7 +79,7 @@ func (e *Env) shareDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (e *Env) sharePostHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) sharePostHandler(w http.ResponseWriter, r *http.Request) {
 	path, ok := e.getShareData(w, r, apiSharePrefix)
 	if !ok {
 		return

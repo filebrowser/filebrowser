@@ -17,7 +17,7 @@ type settingsData struct {
 	Commands map[string][]string `json:"commands"`
 }
 
-func (e *Env) settingsGetHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) settingsGetHandler(w http.ResponseWriter, r *http.Request) {
 	_, ok := e.getAdminUser(w, r)
 	if !ok {
 		return
@@ -38,7 +38,7 @@ func (e *Env) settingsGetHandler(w http.ResponseWriter, r *http.Request) {
 	renderJSON(w, r, data)
 }
 
-func (e *Env) settingsPutHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) settingsPutHandler(w http.ResponseWriter, r *http.Request) {
 	_, ok := e.getAdminUser(w, r)
 	if !ok {
 		return

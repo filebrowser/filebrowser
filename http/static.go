@@ -14,7 +14,7 @@ import (
 	"github.com/filebrowser/filebrowser/lib"
 )
 
-func (e *Env) getStaticData() map[string]interface{} {
+func (e *env) getStaticData() map[string]interface{} {
 	e.RLockSettings()
 	defer e.RUnlockSettings()
 
@@ -63,7 +63,7 @@ func (e *Env) getStaticData() map[string]interface{} {
 	return data
 }
 
-func (e *Env) getStaticHandlers() (http.Handler, http.Handler) {
+func (e *env) getStaticHandlers() (http.Handler, http.Handler) {
 	box := rice.MustFindBox("../frontend/dist")
 	handler := http.FileServer(box.HTTPBox())
 

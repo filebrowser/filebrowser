@@ -46,7 +46,7 @@ func getUser(w http.ResponseWriter, r *http.Request) (*modifyUserRequest, bool) 
 	return req, true
 }
 
-func (e *Env) usersGetHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) usersGetHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := e.getUser(w, r)
 	if !ok {
 		return
@@ -74,7 +74,7 @@ func (e *Env) usersGetHandler(w http.ResponseWriter, r *http.Request) {
 	renderJSON(w, r, users)
 }
 
-func (e *Env) userSelfOrAdmin(w http.ResponseWriter, r *http.Request) (*lib.User, uint, bool) {
+func (e *env) userSelfOrAdmin(w http.ResponseWriter, r *http.Request) (*lib.User, uint, bool) {
 	user, ok := e.getUser(w, r)
 	if !ok {
 		return nil, 0, false
@@ -94,7 +94,7 @@ func (e *Env) userSelfOrAdmin(w http.ResponseWriter, r *http.Request) (*lib.User
 	return user, id, true
 }
 
-func (e *Env) userGetHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) userGetHandler(w http.ResponseWriter, r *http.Request) {
 	_, id, ok := e.userSelfOrAdmin(w, r)
 	if !ok {
 		return
@@ -115,7 +115,7 @@ func (e *Env) userGetHandler(w http.ResponseWriter, r *http.Request) {
 	renderJSON(w, r, u)
 }
 
-func (e *Env) userDeleteHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) userDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	_, id, ok := e.userSelfOrAdmin(w, r)
 	if !ok {
 		return
@@ -132,7 +132,7 @@ func (e *Env) userDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (e *Env) userPostHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) userPostHandler(w http.ResponseWriter, r *http.Request) {
 	_, ok := e.getAdminUser(w,r)
 	if !ok {
 		return
@@ -170,7 +170,7 @@ func (e *Env) userPostHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func (e *Env) userPutHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) userPutHandler(w http.ResponseWriter, r *http.Request) {
 	sessionUser, modifiedID, ok := e.userSelfOrAdmin(w, r)
 	if !ok {
 		return

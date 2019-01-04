@@ -56,7 +56,7 @@ func parseQueryAlgorithm(r *http.Request) (string, archiver.Writer, error) {
 	}
 }
 
-func (e *Env) rawHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) rawHandler(w http.ResponseWriter, r *http.Request) {
 	path, user, ok := e.getResourceData(w, r, apiRawPrefix)
 	if !ok {
 		return

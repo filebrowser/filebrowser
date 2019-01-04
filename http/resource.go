@@ -30,7 +30,7 @@ func httpFsErr(err error) int {
 	}
 }
 
-func (e *Env) getResourceData(w http.ResponseWriter, r *http.Request, prefix string) (string, *lib.User, bool) {
+func (e *env) getResourceData(w http.ResponseWriter, r *http.Request, prefix string) (string, *lib.User, bool) {
 	user, ok := e.getUser(w, r)
 	if !ok {
 		return "", nil, ok
@@ -45,7 +45,7 @@ func (e *Env) getResourceData(w http.ResponseWriter, r *http.Request, prefix str
 	return path, user, true
 }
 
-func (e *Env) resourceGetHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) resourceGetHandler(w http.ResponseWriter, r *http.Request) {
 	path, user, ok := e.getResourceData(w, r, apiResourcePrefix)
 	if !ok {
 		return
@@ -86,7 +86,7 @@ func (e *Env) resourceGetHandler(w http.ResponseWriter, r *http.Request) {
 	renderJSON(w, r, file)
 }
 
-func (e *Env) resourceDeleteHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) resourceDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	path, user, ok := e.getResourceData(w, r, apiResourcePrefix)
 	if !ok {
 		return
@@ -109,7 +109,7 @@ func (e *Env) resourceDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (e *Env) resourcePostPutHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) resourcePostPutHandler(w http.ResponseWriter, r *http.Request) {
 	path, user, ok := e.getResourceData(w, r, apiResourcePrefix)
 	if !ok {
 		return
@@ -179,7 +179,7 @@ func (e *Env) resourcePostPutHandler(w http.ResponseWriter, r *http.Request) {
 	httpErr(w, r, http.StatusOK, nil)
 }
 
-func (e *Env) resourcePatchHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) resourcePatchHandler(w http.ResponseWriter, r *http.Request) {
 	src, user, ok := e.getResourceData(w, r, apiResourcePrefix)
 	if !ok {
 		return

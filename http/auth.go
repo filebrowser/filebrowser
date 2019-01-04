@@ -13,7 +13,7 @@ import (
 )
 
 
-func (e *Env) loginHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) loginHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := e.Auther.Auth(r)
 	if err == lib.ErrNoPermission {
 		httpErr(w, r, http.StatusForbidden, nil)
@@ -29,7 +29,7 @@ type signupBody struct {
 	Password string `json:"password"`
 }
 
-func (e *Env) signupHandler(w http.ResponseWriter, r *http.Request) {
+func (e *env) signupHandler(w http.ResponseWriter, r *http.Request) {
 	e.RLockSettings()
 	defer e.RUnlockSettings()
 
@@ -117,7 +117,7 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 	return auth, nil
 }
 
-func (e *Env) auth(next http.HandlerFunc) http.HandlerFunc {
+func (e *env) auth(next http.HandlerFunc) http.HandlerFunc {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		return e.GetSettings().Key, nil
 	}
@@ -145,7 +145,7 @@ func (e *Env) auth(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (e *Env) renew(w http.ResponseWriter, r *http.Request) {
+func (e *env) renew(w http.ResponseWriter, r *http.Request) {
 	user, ok := e.getUser(w, r)
 	if !ok {
 		return
@@ -154,7 +154,7 @@ func (e *Env) renew(w http.ResponseWriter, r *http.Request) {
 	e.printToken(w, r, user)
 }
 
-func (e *Env) printToken(w http.ResponseWriter, r *http.Request, user *lib.User) {
+func (e *env) printToken(w http.ResponseWriter, r *http.Request, user *lib.User) {
 	claims := &authToken{
 		User: userInfo{
 			ID:           user.ID,
