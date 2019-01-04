@@ -205,7 +205,7 @@ func (i *FileInfo) readListing(checker rules.Checker) error {
 		if strings.HasPrefix(f.Mode().String(), "L") {
 			// It's a symbolic link. We try to follow it. If it doesn't work,
 			// we stay with the link information instead if the target's.
-			info, err := os.Stat(name)
+			info, err := i.Fs.Stat(path)
 			if err == nil {
 				f = info
 			}
