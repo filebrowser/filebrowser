@@ -47,25 +47,10 @@ func NewHandler(storage *storage.Storage) (http.Handler, error) {
 	api.Handle("/settings", handle(settingsPutHandler, "", storage)).Methods("PUT")
 
 	api.PathPrefix("/raw").Handler(handle(rawHandler, "/api/raw", storage)).Methods("GET")
-	/*  api.PathPrefix("/command").HandlerFunc(e.auth(e.commandsHandler))
-	api.PathPrefix("/search").HandlerFunc(e.auth(e.searchHandler)) */
+	api.PathPrefix("/command").Handler(handle(commandsHandler, "/api/command", storage)).Methods("GET")
+	api.PathPrefix("/search").Handler(handle(searchHandler, "/api/search", storage)).Methods("GET")
 
 	return r, nil
 }
 
 
-/*
-type key int
-
-
-
-
-
-func wsErr(ws *websocket.Conn, r *http.Request, status int, err error) {
-	txt := http.StatusText(status)
-	if err != nil || status >= 400 {
-		log.Printf("%s: %v %s %v", r.URL.Path, status, r.RemoteAddr, err)
-	}
-	ws.WriteControl(websocket.CloseInternalServerErr, []byte(txt), time.Now().Add(10*time.Second))
-}
-*/

@@ -4,6 +4,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/filebrowser/filebrowser/rules"
 	"github.com/spf13/afero"
 )
 
@@ -13,13 +14,15 @@ type searchOptions struct {
 	Terms         []string
 }
 
-// TODO: move to FIle Browser and also check for IsAllowed
-
 // Search searches for a query in a fs.
-func Search(fs afero.Fs, scope string, query string, found func(path string, f os.FileInfo) error) error {
+func Search(fs afero.Fs, scope, query string, checker rules.Checker, found func(path string, f os.FileInfo) error) error {
 	search := parseSearch(query)
 
 	return afero.Walk(fs, scope, func(path string, f os.FileInfo, err error) error {
+		if !checker.Check(path) {
+			return nil
+		}
+
 		path = strings.TrimPrefix(path, "/")
 		path = strings.Replace(path, "\\", "/", -1)
 

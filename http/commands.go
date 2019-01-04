@@ -1,6 +1,18 @@
 package http
 
-/*
+import (
+	"bufio"
+	"io"
+	"log"
+	"net/http"
+	"os/exec"
+	"strings"
+	"time"
+
+	"github.com/filebrowser/filebrowser/runner"
+	"github.com/gorilla/websocket"
+)
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -10,16 +22,18 @@ var (
 	cmdNotAllowed = []byte("Command not allowed.")
 )
 
-func (e *env) commandsHandler(w http.ResponseWriter, r *http.Request) {
-	user, ok := e.getUser(w, r)
-	if !ok {
-		return
+func wsErr(ws *websocket.Conn, r *http.Request, status int, err error) {
+	txt := http.StatusText(status)
+	if err != nil || status >= 400 {
+		log.Printf("%s: %v %s %v", r.URL.Path, status, r.RemoteAddr, err)
 	}
+	ws.WriteControl(websocket.CloseInternalServerErr, []byte(txt), time.Now().Add(10*time.Second))
+}
 
+var commandsHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
+		return http.StatusInternalServerError, err
 	}
 	defer conn.Close()
 
@@ -29,7 +43,7 @@ func (e *env) commandsHandler(w http.ResponseWriter, r *http.Request) {
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
 			wsErr(conn, r, http.StatusInternalServerError, err)
-			return
+			return 0, nil
 		}
 
 		raw = strings.TrimSpace(string(msg))
@@ -38,45 +52,43 @@ func (e *env) commandsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if !user.CanExecute(strings.Split(raw, " ")[0]) {
+	if !d.user.CanExecute(strings.Split(raw, " ")[0]) {
 		err := conn.WriteMessage(websocket.TextMessage, cmdNotAllowed)
 		if err != nil {
 			wsErr(conn, r, http.StatusInternalServerError, err)
 		}
 
-		return
+		return 0, nil
 	}
 
-	command, err := e.ParseCommand(raw)
+	command, err := runner.ParseCommand(d.settings, raw)
 	if err != nil {
 		err := conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		if err != nil {
 			wsErr(conn, r, http.StatusInternalServerError, err)
 		}
 
-		return
+		return 0, nil
 	}
 
-	path := strings.TrimPrefix(r.URL.Path, "/api/command")
-	dir := user.FullPath(path)
 	cmd := exec.Command(command[0], command[1:]...)
-	cmd.Dir = dir
+	cmd.Dir = d.user.FullPath(r.URL.Path)
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		wsErr(conn, r, http.StatusInternalServerError, err)
-		return
+		return 0, nil
 	}
 
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		wsErr(conn, r, http.StatusInternalServerError, err)
-		return
+		return 0, nil
 	}
 
 	if err := cmd.Start(); err != nil {
 		wsErr(conn, r, http.StatusInternalServerError, err)
-		return
+		return 0, nil
 	}
 
 	s := bufio.NewScanner(io.MultiReader(stdout, stderr))
@@ -87,51 +99,6 @@ func (e *env) commandsHandler(w http.ResponseWriter, r *http.Request) {
 	if err := cmd.Wait(); err != nil {
 		wsErr(conn, r, http.StatusInternalServerError, err)
 	}
-}
 
-func (e *env) searchHandler(w http.ResponseWriter, r *http.Request) {
-	user, ok := e.getUser(w, r)
-	if !ok {
-		return
-	}
-
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
-	}
-	defer conn.Close()
-
-	var (
-		value   string
-		message []byte
-	)
-
-	for {
-		_, message, err = conn.ReadMessage()
-		if err != nil {
-			httpErr(w, r, http.StatusInternalServerError, err)
-			return
-		}
-
-		if len(message) != 0 {
-			value = string(message)
-			break
-		}
-	}
-
-	scope := strings.TrimPrefix(r.URL.Path, "/api/search")
-	err = search.Search(user.Fs, scope, value, func(path string, f os.FileInfo) error {
-		response, _ := json.Marshal(map[string]interface{}{
-			"dir":  f.IsDir(),
-			"path": path,
-		})
-
-		return conn.WriteMessage(websocket.TextMessage, response)
-	})
-
-	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
-	}
-} */
+	return 0, nil
+})
