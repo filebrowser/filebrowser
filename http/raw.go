@@ -1,18 +1,6 @@
 package http
 
-import (
-	"errors"
-	"net/http"
-	"net/url"
-	"path/filepath"
-	"strings"
-
-	"github.com/filebrowser/filebrowser/files"
-	"github.com/filebrowser/filebrowser/users"
-	"github.com/hacdias/fileutils"
-	"github.com/mholt/archiver"
-)
-
+/*
 const apiRawPrefix = "/api/raw"
 
 func parseQueryFiles(r *http.Request, f *files.FileInfo, u *users.User) ([]string, error) {
@@ -68,9 +56,7 @@ func (e *env) rawHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files.NewFileInfo(user.Fs, path, user.Perm.Modify)
-
-	file, err := e.NewFile(path, user)
+	file, err := files.NewFileInfo(user.Fs, path, user.Perm.Modify)
 	if err != nil {
 		httpErr(w, r, httpFsErr(err), err)
 		return
@@ -160,4 +146,4 @@ func fileHandler(w http.ResponseWriter, r *http.Request, file *files.File, user 
 	}
 
 	http.ServeContent(w, r, file.Name, file.ModTime, fd)
-}
+} */

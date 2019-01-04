@@ -8,6 +8,7 @@ var (
 	ErrNotExist        = errors.New("the resource does not exist")
 	ErrEmptyPassword   = errors.New("password is empty")
 	ErrEmptyUsername   = errors.New("username is empty")
+	ErrEmptyRequest    = errors.New("empty request")
 	ErrScopeIsRelative = errors.New("scope is a relative path")
 	ErrInvalidDataType = errors.New("invalid data type")
 	ErrIsDirectory     = errors.New("file is directory")

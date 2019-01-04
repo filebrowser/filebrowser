@@ -1,19 +1,6 @@
 package http
 
-import (
-	"bufio"
-	"encoding/json"
-	"io"
-	"net/http"
-	"os"
-	"os/exec"
-	"strings"
-
-	"github.com/filebrowser/filebrowser/search"
-
-	"github.com/gorilla/websocket"
-)
-
+/*
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -147,4 +134,4 @@ func (e *env) searchHandler(w http.ResponseWriter, r *http.Request) {
 		httpErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
-}
+} */

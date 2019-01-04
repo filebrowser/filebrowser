@@ -5,12 +5,16 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
-	"strings"
 
-	
+	"github.com/filebrowser/filebrowser/errors"
 	"github.com/filebrowser/filebrowser/users"
 	"github.com/gorilla/mux"
 )
+
+type modifyUserRequest struct {
+	modifyRequest
+	Data *users.User `json:"data"`
+}
 
 func getUserID(r *http.Request) (uint, error) {
 	vars := mux.Vars(r)
@@ -21,117 +25,81 @@ func getUserID(r *http.Request) (uint, error) {
 	return uint(i), err
 }
 
-type modifyUserRequest struct {
-	modifyRequest
-	Data *users.User `json:"data"`
-}
-
-func getUser(w http.ResponseWriter, r *http.Request) (*modifyUserRequest, bool) {
+func getUser(w http.ResponseWriter, r *http.Request) (*modifyUserRequest, error) {
 	if r.Body == nil {
-		httpErr(w, r, http.StatusBadRequest, nil)
-		return nil, false
+		return nil, errors.ErrEmptyRequest
 	}
 
 	req := &modifyUserRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
-		httpErr(w, r, http.StatusBadRequest, err)
-		return nil, false
+		return nil, err
 	}
 
 	if req.What != "user" {
-		httpErr(w, r, http.StatusBadRequest, nil)
-		return nil, false
+		return nil, errors.ErrInvalidDataType
 	}
 
-	return req, true
+	return req, nil
 }
 
-func (e *env) usersGetHandler(w http.ResponseWriter, r *http.Request) {
-	user, ok := e.getUser(w, r)
-	if !ok {
-		return
-	}
+func withSelfOrAdmin(fn handleFunc) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		id, err := getUserID(r)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
 
-	if !user.Perm.Admin {
-		httpErr(w, r, http.StatusForbidden, nil)
-		return
-	}
+		if d.user.ID != id && !d.user.Perm.Admin {
+			return http.StatusForbidden, nil
+		}
 
-	users, err := e.GetUsers()
+		d.raw = id
+		return fn(w, r, d)
+	})
+}
+
+var usersGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	users, err := d.store.Users.Gets()
 	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
+		return http.StatusInternalServerError, err
 	}
-
+	
 	for _, u := range users {
 		u.Password = ""
 	}
-
+	
 	sort.Slice(users, func(i, j int) bool {
 		return users[i].ID < users[j].ID
 	})
+	
+	return renderJSON(w, r, users)
+})
 
-	renderJSON(w, r, users)
-}
-
-func (e *env) userSelfOrAdmin(w http.ResponseWriter, r *http.Request) (*users.User, uint, bool) {
-	user, ok := e.getUser(w, r)
-	if !ok {
-		return nil, 0, false
+var userGetHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	u, err := d.store.Users.Get(d.raw.(uint))
+	if err == errors.ErrNotExist {
+		return http.StatusNotFound, err
 	}
-
-	id, err := getUserID(r)
+	
 	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return nil, 0, false
-	}
-
-	if user.ID != id && !user.Perm.Admin {
-		httpErr(w, r, http.StatusForbidden, nil)
-		return nil, 0, false
-	}
-
-	return user, id, true
-}
-
-func (e *env) userGetHandler(w http.ResponseWriter, r *http.Request) {
-	_, id, ok := e.userSelfOrAdmin(w, r)
-	if !ok {
-		return
-	}
-
-	u, err := e.GetUser(id)
-	if err == lib.ErrNotExist {
-		httpErr(w, r, http.StatusNotFound, nil)
-		return
-	}
-
-	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
+		return http.StatusInternalServerError, err
 	}
 
 	u.Password = ""
-	renderJSON(w, r, u)
-}
+	return renderJSON(w, r, u)
+})
 
-func (e *env) userDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	_, id, ok := e.userSelfOrAdmin(w, r)
-	if !ok {
-		return
+var userDeleteHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	err := d.store.Users.Delete(d.raw.(uint))
+	if err == errors.ErrNotExist {
+		return http.StatusNotFound, err
 	}
+	
+	return http.StatusOK, nil
+})
 
-	err := e.DeleteUser(id)
-	if err == lib.ErrNotExist {
-		httpErr(w, r, http.StatusNotFound, nil)
-		return
-	}
-
-	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-	}
-}
+/*
 
 func (e *env) userPostHandler(w http.ResponseWriter, r *http.Request) {
 	_, ok := e.getAdminUser(w, r)
@@ -237,4 +205,4 @@ func (e *env) userPutHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
 	}
-}
+} */

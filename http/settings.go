@@ -17,63 +17,33 @@ type settingsData struct {
 	Commands map[string][]string   `json:"commands"`
 }
 
-func (e *env) settingsGetHandler(w http.ResponseWriter, r *http.Request) {
-	_, ok := e.getAdminUser(w, r)
-	if !ok {
-		return
-	}
-
-	settings, err := e.Settings.Get()
-	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
-	}
-
+var settingsGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	data := &settingsData{
-		Signup:   settings.Signup,
-		Defaults: settings.Defaults,
-		Rules:    settings.Rules,
-		Branding: settings.Branding,
-		Shell:    settings.Shell,
-		Commands: settings.Commands,
+		Signup:   d.settings.Signup,
+		Defaults: d.settings.Defaults,
+		Rules:    d.settings.Rules,
+		Branding: d.settings.Branding,
+		Shell:    d.settings.Shell,
+		Commands: d.settings.Commands,
 	}
 
-	renderJSON(w, r, data)
-}
+	return renderJSON(w, r, data)
+})
 
-func (e *env) settingsPutHandler(w http.ResponseWriter, r *http.Request) {
-	_, ok := e.getAdminUser(w, r)
-	if !ok {
-		return
-	}
-
+var settingsPutHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	req := &settingsData{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
-		httpErr(w, r, http.StatusBadRequest, err)
-		return
+		return http.StatusBadRequest, err
 	}
 
-	settings, err := e.Settings.Get()
-	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
-	}
+	d.settings.Signup = req.Signup
+	d.settings.Defaults = req.Defaults
+	d.settings.Rules = req.Rules
+	d.settings.Branding = req.Branding
+	d.settings.Shell = req.Shell
+	d.settings.Commands = req.Commands
 
-	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
-	}
-
-	settings.Signup = req.Signup
-	settings.Defaults = req.Defaults
-	settings.Rules = req.Rules
-	settings.Branding = req.Branding
-	settings.Shell = req.Shell
-	settings.Commands = req.Commands
-
-	err = e.Settings.Save(settings)
-	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-	}
-}
+	err = d.store.Settings.Save(d.settings)
+	return errToStatus(err), err
+})

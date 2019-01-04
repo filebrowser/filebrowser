@@ -12,104 +12,72 @@ import (
 	"github.com/filebrowser/filebrowser/share"
 )
 
-const apiSharePrefix = "/api/share"
+func withPermShare(fn handleFunc) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if !d.user.Perm.Share {
+			return http.StatusForbidden, nil
+		}
 
-func (e *env) getShareData(w http.ResponseWriter, r *http.Request, prefix string) (string, bool) {
-	relPath, user, ok := e.getResourceData(w, r, apiSharePrefix)
-	if !ok {
-		return "", false
-	}
-
-	if !user.Perm.Share {
-		httpErr(w, r, http.StatusForbidden, nil)
-		return "", false
-	}
-
-	return user.FullPath(relPath), ok
+		return fn(w, r, d)
+	})
 }
 
-func (e *env) shareGetHandler(w http.ResponseWriter, r *http.Request) {
-	path, ok := e.getShareData(w, r, apiSharePrefix)
-	if !ok {
-		return
-	}
-
-	s, err := e.Share.Gets(path)
+var shareGetHandler = withPermShare(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	s, err := d.store.Share.Gets(r.URL.Path)
 	if err == errors.ErrNotExist {
-		renderJSON(w, r, []*share.Link{})
-		return
+		return renderJSON(w, r, []*share.Link{})
 	}
 
 	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
+		return http.StatusInternalServerError, err
 	}
 
 	for i, link := range s {
 		if link.Expires && link.ExpireDate.Before(time.Now()) {
-			e.Share.Delete(link.Hash)
+			d.store.Share.Delete(link.Hash)
 			s = append(s[:i], s[i+1:]...)
 		}
 	}
 
-	renderJSON(w, r, s)
-}
+	return renderJSON(w, r, s)
+})
 
-func (e *env) shareDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	user, ok := e.getUser(w, r)
-	if !ok {
-		return
-	}
-
-	if !user.Perm.Share {
-		httpErr(w, r, http.StatusForbidden, nil)
-		return
-	}
-
-	hash := strings.TrimPrefix(r.URL.Path, apiSharePrefix)
-	hash = strings.TrimSuffix(hash, "/")
+var shareDeleteHandler = withPermShare(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	hash := strings.TrimSuffix(r.URL.Path, "/")
 	hash = strings.TrimPrefix(hash, "/")
+
 	if hash == "" {
-		return
+		return http.StatusBadRequest, nil
 	}
 
-	err := e.Share.Delete(hash)
-	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
-	}
-}
+	err := d.store.Share.Delete(hash)
+	return errToStatus(err), err
+})
 
-func (e *env) sharePostHandler(w http.ResponseWriter, r *http.Request) {
-	path, ok := e.getShareData(w, r, apiSharePrefix)
-	if !ok {
-		return
-	}
-
-	var s *lib.ShareLink
+var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	var s *share.Link
 	expire := r.URL.Query().Get("expires")
 	unit := r.URL.Query().Get("unit")
 
 	if expire == "" {
 		var err error
-		s, err = e.GetLinkPermanent(path)
+		s, err = d.store.Share.GetPermanent(r.URL.Path)
 		if err == nil {
-			w.Write([]byte(e.GetSettings().BaseURL + "/share/" + s.Hash))
-			return
+			w.Write([]byte(d.settings.BaseURL + "/share/" + s.Hash))
+			return 0, nil
 		}
 	}
 
 	bytes := make([]byte, 6)
 	_, err := rand.Read(bytes)
 	if err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
+		return http.StatusInternalServerError, err
 	}
 
 	str := base64.URLEncoding.EncodeToString(bytes)
 
-	s = &lib.ShareLink{
-		Path:    path,
+	s = &share.Link{
+		Path:    r.URL.Path,
 		Hash:    str,
 		Expires: expire != "",
 	}
@@ -117,8 +85,7 @@ func (e *env) sharePostHandler(w http.ResponseWriter, r *http.Request) {
 	if expire != "" {
 		num, err := strconv.Atoi(expire)
 		if err != nil {
-			httpErr(w, r, http.StatusInternalServerError, err)
-			return
+			return http.StatusInternalServerError, err
 		}
 
 		var add time.Duration
@@ -136,10 +103,9 @@ func (e *env) sharePostHandler(w http.ResponseWriter, r *http.Request) {
 		s.ExpireDate = time.Now().Add(add)
 	}
 
-	if err := e.SaveLink(s); err != nil {
-		httpErr(w, r, http.StatusInternalServerError, err)
-		return
+	if err := d.store.Share.Save(s); err != nil {
+		return http.StatusInternalServerError, err
 	}
 
-	renderJSON(w, r, s)
-}
+	return renderJSON(w, r, s)
+})

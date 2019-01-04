@@ -9,116 +9,64 @@ import (
 	"os"
 	"strings"
 
+	"github.com/filebrowser/filebrowser/files"
+
+	"github.com/filebrowser/filebrowser/errors"
 	"github.com/filebrowser/filebrowser/fileutils"
-	
-	"github.com/filebrowser/filebrowser/users"
 )
 
-const apiResourcePrefix = "/api/resources"
+// TODO: trim path
 
-func httpFsErr(err error) int {
-	switch {
-	case err == nil:
-		return http.StatusOK
-	case os.IsPermission(err):
-		return http.StatusForbidden
-	case os.IsNotExist(err):
-		return http.StatusNotFound
-	case os.IsExist(err):
-		return http.StatusConflict
-	default:
-		return http.StatusInternalServerError
-	}
-}
-
-func (e *env) getResourceData(w http.ResponseWriter, r *http.Request, prefix string) (string, *users.User, bool) {
-	user, ok := e.getUser(w, r)
-	if !ok {
-		return "", nil, ok
-	}
-
-	path := strings.TrimPrefix(r.URL.Path, prefix)
-	path = strings.TrimSuffix(path, "/")
-	if path == "" {
-		path = "/"
-	}
-
-	return path, user, true
-}
-
-func (e *env) resourceGetHandler(w http.ResponseWriter, r *http.Request) {
-	path, user, ok := e.getResourceData(w, r, apiResourcePrefix)
-	if !ok {
-		return
-	}
-
-	file, err := e.NewFile(path, user)
+var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	file, err := files.NewFileInfo(d.user.Fs, r.URL.Path, d.user.Perm.Modify, d)
 	if err != nil {
-		httpErr(w, r, httpFsErr(err), err)
-		return
+		return errToStatus(err), err
 	}
 
 	if file.IsDir {
-		file.Listing.Sorting = user.Sorting
+		file.Listing.Sorting = d.user.Sorting
 		file.Listing.ApplySort()
-		renderJSON(w, r, file)
-		return
+		return renderJSON(w, r, file)
 	}
 
 	if checksum := r.URL.Query().Get("checksum"); checksum != "" {
-		err = e.Checksum(file, user, checksum)
-		if err == lib.ErrInvalidOption {
-			httpErr(w, r, http.StatusBadRequest, nil)
-			return
+		err := file.Checksum(checksum)
+		if err == errors.ErrInvalidOption {
+			return http.StatusBadRequest, nil
 		} else if err != nil {
-			httpErr(w, r, http.StatusInternalServerError, err)
-			return
+			return http.StatusInternalServerError, err
 		}
 
 		// do not waste bandwidth if we just want the checksum
 		file.Content = ""
 	}
 
-	renderJSON(w, r, file)
-}
+	return renderJSON(w, r, file)
+})
 
-func (e *env) resourceDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	path, user, ok := e.getResourceData(w, r, apiResourcePrefix)
-	if !ok {
-		return
+var resourceDeleteHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	if r.URL.Path == "/" || !d.user.Perm.Delete {
+		return http.StatusForbidden, nil
 	}
 
-	if path == "/" || !user.Perm.Delete {
-		httpErr(w, r, http.StatusForbidden, nil)
-		return
-	}
-
-	err := e.RunHook(func() error {
-		return user.Fs.RemoveAll(path)
-	}, "delete", path, "", user)
+	err := d.RunHook(func() error {
+		return d.user.Fs.RemoveAll(r.URL.Path)
+	}, "delete", r.URL.Path, "", d.user)
 
 	if err != nil {
-		httpErr(w, r, httpFsErr(err), err)
-		return
+		return errToStatus(err), err
 	}
 
-	w.WriteHeader(http.StatusOK)
-}
+	return http.StatusOK, nil
+})
 
-func (e *env) resourcePostPutHandler(w http.ResponseWriter, r *http.Request) {
-	path, user, ok := e.getResourceData(w, r, apiResourcePrefix)
-	if !ok {
-		return
+var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	if !d.user.Perm.Create && r.Method == http.MethodPost {
+		return http.StatusForbidden, nil
 	}
 
-	if !user.Perm.Create && r.Method == http.MethodPost {
-		httpErr(w, r, http.StatusForbidden, nil)
-		return
-	}
-
-	if !user.Perm.Modify && r.Method == http.MethodPut {
-		httpErr(w, r, http.StatusForbidden, nil)
-		return
+	if !d.user.Perm.Modify && r.Method == http.MethodPut {
+		return http.StatusForbidden, nil
 	}
 
 	defer func() {
@@ -128,24 +76,21 @@ func (e *env) resourcePostPutHandler(w http.ResponseWriter, r *http.Request) {
 	// For directories, only allow POST for creation.
 	if strings.HasSuffix(r.URL.Path, "/") {
 		if r.Method == http.MethodPut {
-			httpErr(w, r, http.StatusMethodNotAllowed, nil)
-		} else {
-			err := user.Fs.MkdirAll(path, 0775)
-			httpErr(w, r, httpFsErr(err), err)
+			return http.StatusMethodNotAllowed, nil
 		}
 
-		return
+		err := d.user.Fs.MkdirAll(r.URL.Path, 0775)
+		return errToStatus(err), err
 	}
 
 	if r.Method == http.MethodPost && r.URL.Query().Get("override") != "true" {
-		if _, err := user.Fs.Stat(path); err == nil {
-			httpErr(w, r, http.StatusConflict, nil)
-			return
+		if _, err := d.user.Fs.Stat(r.URL.Path); err == nil {
+			return http.StatusConflict, nil
 		}
 	}
 
-	err := e.RunHook(func() error {
-		file, err := user.Fs.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
+	err := d.RunHook(func() error {
+		file, err := d.user.Fs.OpenFile(r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
 		if err != nil {
 			return err
 		}
@@ -165,58 +110,45 @@ func (e *env) resourcePostPutHandler(w http.ResponseWriter, r *http.Request) {
 		etag := fmt.Sprintf(`"%x%x"`, info.ModTime().UnixNano(), info.Size())
 		w.Header().Set("ETag", etag)
 		return nil
-	}, "upload", path, "", user)
+	}, "upload", r.URL.Path, "", d.user)
 
-	if err != nil {
-		httpErr(w, r, httpFsErr(err), err)
-		return
-	}
+	return errToStatus(err), err
+})
 
-	httpErr(w, r, http.StatusOK, nil)
-}
-
-func (e *env) resourcePatchHandler(w http.ResponseWriter, r *http.Request) {
-	src, user, ok := e.getResourceData(w, r, apiResourcePrefix)
-	if !ok {
-		return
-	}
-
+var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	src := r.URL.Path
 	dst := r.URL.Query().Get("destination")
 	action := r.URL.Query().Get("action")
 	dst, err := url.QueryUnescape(dst)
 
 	if err != nil {
-		httpErr(w, r, httpFsErr(err), err)
-		return
+		return errToStatus(err), err
 	}
 
 	if dst == "/" || src == "/" {
-		httpErr(w, r, http.StatusForbidden, nil)
-		return
+		return http.StatusForbidden, nil
 	}
 
 	switch action {
 	case "copy":
-		if !user.Perm.Create {
-			httpErr(w, r, http.StatusForbidden, nil)
-			return
+		if !d.user.Perm.Create {
+			return http.StatusForbidden, nil
 		}
 	case "rename":
 	default:
 		action = "rename"
-		if !user.Perm.Rename {
-			httpErr(w, r, http.StatusForbidden, nil)
-			return
+		if !d.user.Perm.Rename {
+			return http.StatusForbidden, nil
 		}
 	}
 
-	err = e.RunHook(func() error {
+	err = d.RunHook(func() error {
 		if action == "copy" {
-			return fileutils.Copy(user.Fs, src, dst)
+			return fileutils.Copy(d.user.Fs, src, dst)
 		}
 
-		return user.Fs.Rename(src, dst)
-	}, action, src, dst, user)
+		return d.user.Fs.Rename(src, dst)
+	}, action, src, dst, d.user)
 
-	httpErr(w, r, httpFsErr(err), err)
-}
+	return errToStatus(err), err
+})
