@@ -68,6 +68,9 @@ func withUser(fn handleFunc) handleFunc {
 		}
 
 		d.user, err = d.store.Users.Get(tk.User.ID)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
 		return fn(w, r, d)
 	}
 }

@@ -96,6 +96,7 @@ func quickSetup(cmd *cobra.Command) {
 	defer db.Close()
 
 	set := &settings.Settings{
+		Key:        generateRandomBytes(64), // 256 bit
 		BaseURL:    "",
 		Signup:     false,
 		AuthMethod: auth.MethodJSONAuth,
