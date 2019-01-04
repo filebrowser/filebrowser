@@ -11,7 +11,7 @@ import (
 
 	"github.com/GeertJohan/go.rice"
 	"github.com/filebrowser/filebrowser/auth"
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 )
 
 func (e *Env) getStaticData() map[string]interface{} {
@@ -26,7 +26,7 @@ func (e *Env) getStaticData() map[string]interface{} {
 		"Name":            settings.Branding.Name,
 		"DisableExternal": settings.Branding.DisableExternal,
 		"BaseURL":         settings.BaseURL,
-		"Version":         types.Version,
+		"Version":         lib.Version,
 		"StaticURL":       staticURL,
 		"Signup":          settings.Signup,
 		"NoAuth":          settings.AuthMethod == auth.MethodNoAuth,

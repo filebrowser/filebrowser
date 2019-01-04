@@ -3,7 +3,7 @@ package cmd
 import (
 	"strings"
 
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -48,7 +48,7 @@ you want to change.`,
 
 		getUserDefaults(cmd, &s.Defaults, false)
 
-		var auther types.Auther
+		var auther lib.Auther
 		var err error
 		if auth {
 			s.AuthMethod, auther = getAuthentication(cmd)

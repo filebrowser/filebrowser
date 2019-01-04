@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/filebrowser/filebrowser/fileutils"
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 )
 
 const apiResourcePrefix = "/api/resources"
@@ -30,7 +30,7 @@ func httpFsErr(err error) int {
 	}
 }
 
-func (e *Env) getResourceData(w http.ResponseWriter, r *http.Request, prefix string) (string, *types.User, bool) {
+func (e *Env) getResourceData(w http.ResponseWriter, r *http.Request, prefix string) (string, *lib.User, bool) {
 	user, ok := e.getUser(w, r)
 	if !ok {
 		return "", nil, ok
@@ -71,7 +71,7 @@ func (e *Env) resourceGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	if checksum := r.URL.Query().Get("checksum"); checksum != "" {
 		err = e.Checksum(file,user, checksum)
-		if err == types.ErrInvalidOption {
+		if err == lib.ErrInvalidOption {
 			httpErr(w, r, http.StatusBadRequest, nil)
 			return
 		} else if err != nil {

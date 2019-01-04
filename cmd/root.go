@@ -12,7 +12,7 @@ import (
 
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/auth"
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 
 	fhttp "github.com/filebrowser/filebrowser/http"
 	"github.com/spf13/cobra"
@@ -97,10 +97,10 @@ func quickSetup(cmd *cobra.Command) {
 	settings.BaseURL = ""
 	settings.Signup = false
 	settings.AuthMethod = auth.MethodJSONAuth
-	settings.Defaults = types.UserDefaults{
+	settings.Defaults = lib.UserDefaults{
 		Scope:  scope,
 		Locale: "en",
-		Perm: types.Permissions{
+		Perm: lib.Permissions{
 			Admin:    false,
 			Execute:  true,
 			Create:   true,
@@ -118,10 +118,10 @@ func quickSetup(cmd *cobra.Command) {
 	err = fb.SaveAuther(&auth.JSONAuth{})
 	checkErr(err)
 	
-	password, err := types.HashPwd("admin")
+	password, err := lib.HashPwd("admin")
 	checkErr(err)
 
-	user := &types.User{
+	user := &lib.User{
 		Username:     "admin",
 		Password:     password,
 		LockPassword: false,

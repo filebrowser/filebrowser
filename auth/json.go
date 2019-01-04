@@ -6,11 +6,11 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 )
 
 // MethodJSONAuth is used to identify json auth.
-const MethodJSONAuth types.AuthMethod = "json"
+const MethodJSONAuth lib.AuthMethod = "json"
 
 type jsonCred struct {
 	Password  string `json:"password"`
@@ -21,20 +21,20 @@ type jsonCred struct {
 // JSONAuth is a json implementaion of an Auther.
 type JSONAuth struct {
 	ReCaptcha *ReCaptcha
-	instance  *types.FileBrowser
+	instance  *lib.FileBrowser
 }
 
 // Auth authenticates the user via a json in content body.
-func (a *JSONAuth) Auth(r *http.Request) (*types.User, error) {
+func (a *JSONAuth) Auth(r *http.Request) (*lib.User, error) {
 	var cred jsonCred
 
 	if r.Body == nil {
-		return nil, types.ErrNoPermission
+		return nil, lib.ErrNoPermission
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&cred)
 	if err != nil {
-		return nil, types.ErrNoPermission
+		return nil, lib.ErrNoPermission
 	}
 
 	// If ReCaptcha is enabled, check the code.
@@ -46,20 +46,20 @@ func (a *JSONAuth) Auth(r *http.Request) (*types.User, error) {
 		}
 
 		if !ok {
-			return nil, types.ErrNoPermission
+			return nil, lib.ErrNoPermission
 		}
 	}
 
 	u, err := a.instance.GetUser(cred.Username)
-	if err != nil || !types.CheckPwd(cred.Password, u.Password) {
-		return nil, types.ErrNoPermission
+	if err != nil || !lib.CheckPwd(cred.Password, u.Password) {
+		return nil, lib.ErrNoPermission
 	}
 
 	return u, nil
 }
 
 // SetInstance attaches the instance to the auther.
-func (a *JSONAuth) SetInstance(i *types.FileBrowser) {
+func (a *JSONAuth) SetInstance(i *lib.FileBrowser) {
 	a.instance = i
 }
 

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 )
@@ -25,8 +25,8 @@ type modifyRequest struct {
 
 // Env contains the required info for FB to run.
 type Env struct {
-	*types.FileBrowser
-	Auther types.Auther
+	*lib.FileBrowser
+	Auther lib.Auther
 }
 
 // Handler ...
@@ -99,10 +99,10 @@ func renderJSON(w http.ResponseWriter, r *http.Request, data interface{}) {
 	}
 }
 
-func (e *Env) getUser(w http.ResponseWriter, r *http.Request) (*types.User, bool) {
+func (e *Env) getUser(w http.ResponseWriter, r *http.Request) (*lib.User, bool) {
 	id := r.Context().Value(keyUserID).(uint)
 	user, err := e.GetUser(id)
-	if err == types.ErrNotExist {
+	if err == lib.ErrNotExist {
 		httpErr(w, r, http.StatusForbidden, nil)
 		return nil, false
 	}
@@ -115,7 +115,7 @@ func (e *Env) getUser(w http.ResponseWriter, r *http.Request) (*types.User, bool
 	return user, true
 }
 
-func (e *Env) getAdminUser(w http.ResponseWriter, r *http.Request) (*types.User, bool) {
+func (e *Env) getAdminUser(w http.ResponseWriter, r *http.Request) (*lib.User, bool) {
 	user, ok := e.getUser(w, r)
 	if !ok {
 		return nil, false

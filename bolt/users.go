@@ -4,14 +4,14 @@ import (
 	"reflect"
 
 	"github.com/asdine/storm"
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 )
 
-func (st Backend) GetUserByID(id uint) (*types.User, error) {
-	user := &types.User{}
+func (st Backend) GetUserByID(id uint) (*lib.User, error) {
+	user := &lib.User{}
 	err := st.DB.One("ID", id, user)
 	if err == storm.ErrNotFound {
-		return nil, types.ErrNotExist
+		return nil, lib.ErrNotExist
 	}
 
 	if err != nil {
@@ -21,11 +21,11 @@ func (st Backend) GetUserByID(id uint) (*types.User, error) {
 	return user, nil
 }
 
-func (st Backend) GetUserByUsername(username string) (*types.User, error) {
-	user := &types.User{}
+func (st Backend) GetUserByUsername(username string) (*lib.User, error) {
+	user := &lib.User{}
 	err := st.DB.One("Username", username, user)
 	if err == storm.ErrNotFound {
-		return nil, types.ErrNotExist
+		return nil, lib.ErrNotExist
 	}
 
 	if err != nil {
@@ -35,11 +35,11 @@ func (st Backend) GetUserByUsername(username string) (*types.User, error) {
 	return user, nil
 }
 
-func (st Backend) GetUsers() ([]*types.User, error) {
-	users := []*types.User{}
+func (st Backend) GetUsers() ([]*lib.User, error) {
+	users := []*lib.User{}
 	err := st.DB.All(&users)
 	if err == storm.ErrNotFound {
-		return nil, types.ErrNotExist
+		return nil, lib.ErrNotExist
 	}
 
 	if err != nil {
@@ -49,7 +49,7 @@ func (st Backend) GetUsers() ([]*types.User, error) {
 	return users, err
 }
 
-func (st Backend) UpdateUser(user *types.User, fields ...string) error {
+func (st Backend) UpdateUser(user *lib.User, fields ...string) error {
 	if len(fields) == 0 {
 		return st.SaveUser(user)
 	}
@@ -64,16 +64,16 @@ func (st Backend) UpdateUser(user *types.User, fields ...string) error {
 	return nil
 }
 
-func (st Backend) SaveUser(user *types.User) error {
+func (st Backend) SaveUser(user *lib.User) error {
 	err := st.DB.Save(user)
 	if err == storm.ErrAlreadyExists {
-		return types.ErrExist
+		return lib.ErrExist
 	}
 	return err
 }
 
 func (st Backend) DeleteUserByID(id uint) error {
-	return st.DB.DeleteStruct(&types.User{ID: id})
+	return st.DB.DeleteStruct(&lib.User{ID: id})
 }
 
 func (st Backend) DeleteUserByUsername(username string) error {

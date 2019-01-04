@@ -9,7 +9,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/filebrowser/filebrowser/auth"
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 	"github.com/spf13/cobra"
 )
 
@@ -46,10 +46,10 @@ func addConfigFlags(cmd *cobra.Command) {
 	cmd.Flags().Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 }
 
-func getAuthentication(cmd *cobra.Command) (types.AuthMethod, types.Auther) {
-	method := types.AuthMethod(mustGetString(cmd, "auth.method"))
+func getAuthentication(cmd *cobra.Command) (lib.AuthMethod, lib.Auther) {
+	method := lib.AuthMethod(mustGetString(cmd, "auth.method"))
 
-	var auther types.Auther
+	var auther lib.Auther
 	if method == auth.MethodProxyAuth {
 		header := mustGetString(cmd, "auth.header")
 		if header == "" {
@@ -81,13 +81,13 @@ func getAuthentication(cmd *cobra.Command) (types.AuthMethod, types.Auther) {
 	}
 
 	if auther == nil {
-		panic(types.ErrInvalidAuthMethod)
+		panic(lib.ErrInvalidAuthMethod)
 	}
 
 	return method, auther
 }
 
-func printSettings(s *types.Settings, auther types.Auther) {
+func printSettings(s *lib.Settings, auther lib.Auther) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 
 	fmt.Fprintf(w, "\nBase URL:\t%s\n", s.BaseURL)

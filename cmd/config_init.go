@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/asdine/storm"
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 	"github.com/spf13/cobra"
 )
 
@@ -32,7 +32,7 @@ override the options.`,
 			panic(errors.New(databasePath + " already exists"))
 		}
 
-		defaults := types.UserDefaults{}
+		defaults := lib.UserDefaults{}
 		getUserDefaults(cmd, &defaults, true)
 		authMethod, auther := getAuthentication(cmd)
 
@@ -47,7 +47,7 @@ override the options.`,
 		settings.Shell = strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " ")
 		settings.Defaults = defaults
 		settings.AuthMethod = authMethod
-		settings.Branding = types.Branding{
+		settings.Branding = lib.Branding{
 			Name:            mustGetString(cmd, "branding.name"),
 			DisableExternal: mustGetBool(cmd, "branding.disableExternal"),
 			Files:           mustGetString(cmd, "branding.files"),

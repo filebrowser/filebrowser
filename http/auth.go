@@ -9,13 +9,13 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 )
 
 
 func (e *Env) loginHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := e.Auther.Auth(r)
-	if err == types.ErrNoPermission {
+	if err == lib.ErrNoPermission {
 		httpErr(w, r, http.StatusForbidden, nil)
 	} else if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
@@ -58,13 +58,13 @@ func (e *Env) signupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := &types.User{
+	user := &lib.User{
 		Username: info.Username,
 	}
 
 	e.ApplyDefaults(user)
 
-	pwd, err := types.HashPwd(info.Password)
+	pwd, err := lib.HashPwd(info.Password)
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
 		return
@@ -72,7 +72,7 @@ func (e *Env) signupHandler(w http.ResponseWriter, r *http.Request) {
 
 	user.Password = pwd
 	err = e.SaveUser(user)
-	if err == types.ErrExist {
+	if err == lib.ErrExist {
 		httpErr(w, r, http.StatusConflict, nil)
 		return
 	} else if err != nil {
@@ -86,8 +86,8 @@ func (e *Env) signupHandler(w http.ResponseWriter, r *http.Request) {
 type userInfo struct {
 	ID           uint              `json:"id"`
 	Locale       string            `json:"locale"`
-	ViewMode     types.ViewMode    `json:"viewMode"`
-	Perm         types.Permissions `json:"perm"`
+	ViewMode     lib.ViewMode    `json:"viewMode"`
+	Perm         lib.Permissions `json:"perm"`
 	Commands     []string          `json:"commands"`
 	LockPassword bool              `json:"lockPassword"`
 }
@@ -154,7 +154,7 @@ func (e *Env) renew(w http.ResponseWriter, r *http.Request) {
 	e.printToken(w, r, user)
 }
 
-func (e *Env) printToken(w http.ResponseWriter, r *http.Request, user *types.User) {
+func (e *Env) printToken(w http.ResponseWriter, r *http.Request, user *lib.User) {
 	claims := &authToken{
 		User: userInfo{
 			ID:           user.ID,

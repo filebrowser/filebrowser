@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 	"github.com/gorilla/mux"
 )
 
@@ -22,7 +22,7 @@ func getUserID(r *http.Request) (uint, error) {
 
 type modifyUserRequest struct {
 	modifyRequest
-	Data *types.User `json:"data"`
+	Data *lib.User `json:"data"`
 }
 
 func getUser(w http.ResponseWriter, r *http.Request) (*modifyUserRequest, bool) {
@@ -74,7 +74,7 @@ func (e *Env) usersGetHandler(w http.ResponseWriter, r *http.Request) {
 	renderJSON(w, r, users)
 }
 
-func (e *Env) userSelfOrAdmin(w http.ResponseWriter, r *http.Request) (*types.User, uint, bool) {
+func (e *Env) userSelfOrAdmin(w http.ResponseWriter, r *http.Request) (*lib.User, uint, bool) {
 	user, ok := e.getUser(w, r)
 	if !ok {
 		return nil, 0, false
@@ -101,7 +101,7 @@ func (e *Env) userGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	u, err := e.GetUser(id)
-	if err == types.ErrNotExist {
+	if err == lib.ErrNotExist {
 		httpErr(w, r, http.StatusNotFound, nil)
 		return
 	}
@@ -122,7 +122,7 @@ func (e *Env) userDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := e.DeleteUser(id)
-	if err == types.ErrNotExist {
+	if err == lib.ErrNotExist {
 		httpErr(w, r, http.StatusNotFound, nil)
 		return
 	}
@@ -149,12 +149,12 @@ func (e *Env) userPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if req.Data.Password == "" {
-		httpErr(w, r, http.StatusBadRequest, types.ErrEmptyPassword)
+		httpErr(w, r, http.StatusBadRequest, lib.ErrEmptyPassword)
 		return
 	}
 
 	var err error
-	req.Data.Password, err = types.HashPwd(req.Data.Password)
+	req.Data.Password, err = lib.HashPwd(req.Data.Password)
 	if err != nil {
 		httpErr(w, r, http.StatusInternalServerError, err)
 		return
@@ -195,9 +195,9 @@ func (e *Env) userPutHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if req.Data.Password != "" {
-			req.Data.Password, err = types.HashPwd(req.Data.Password)
+			req.Data.Password, err = lib.HashPwd(req.Data.Password)
 		} else {
-			var suser *types.User
+			var suser *lib.User
 			suser, err = e.GetUser(modifiedID)
 			req.Data.Password = suser.Password
 		}
@@ -217,7 +217,7 @@ func (e *Env) userPutHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			req.Data.Password, err = types.HashPwd(req.Data.Password)
+			req.Data.Password, err = lib.HashPwd(req.Data.Password)
 			if err != nil {
 				httpErr(w, r, http.StatusInternalServerError, err)
 				return

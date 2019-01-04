@@ -1,4 +1,4 @@
-package types
+package lib
 
 // Settings contain the main settings of the application.
 type Settings struct {

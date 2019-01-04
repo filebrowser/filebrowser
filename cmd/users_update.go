@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 	"github.com/spf13/cobra"
 )
 
@@ -29,7 +29,7 @@ options you want to change.`,
 		username := mustGetString(cmd, "username")
 		password := mustGetString(cmd, "password")
 
-		var user *types.User
+		var user *lib.User
 		var err error
 
 		if id != 0 {
@@ -40,7 +40,7 @@ options you want to change.`,
 
 		checkErr(err)
 
-		defaults := types.UserDefaults{
+		defaults := lib.UserDefaults{
 			Scope:    user.Scope,
 			Locale:   user.Locale,
 			ViewMode: user.ViewMode,
@@ -62,12 +62,12 @@ options you want to change.`,
 		}
 
 		if password != "" {
-			user.Password, err = types.HashPwd(password)
+			user.Password, err = lib.HashPwd(password)
 			checkErr(err)
 		}
 
 		err = st.UpdateUser(user)
 		checkErr(err)
-		printUsers([]*types.User{user})
+		printUsers([]*lib.User{user})
 	},
 }

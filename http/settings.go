@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 	"github.com/jinzhu/copier"
 )
 
 type settingsData struct {
 	Signup   bool                `json:"signup"`
-	Defaults types.UserDefaults  `json:"defaults"`
-	Rules    []types.Rule        `json:"rules"`
-	Branding types.Branding      `json:"branding"`
+	Defaults lib.UserDefaults  `json:"defaults"`
+	Rules    []lib.Rule        `json:"rules"`
+	Branding lib.Branding      `json:"branding"`
 	Shell    []string            `json:"shell"`
 	Commands map[string][]string `json:"commands"`
 }
@@ -52,7 +52,7 @@ func (e *Env) settingsPutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	e.RLockSettings()
-	settings := &types.Settings{}
+	settings := &lib.Settings{}
 	err = copier.Copy(settings, e.GetSettings())
 	e.RUnlockSettings()
 

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 	"github.com/spf13/cobra"
 )
 
@@ -29,10 +29,10 @@ var usersNewCmd = &cobra.Command{
 		getUserDefaults(cmd, &settings.Defaults, false)
 
 		password, _ := cmd.Flags().GetString("password")
-		password, err := types.HashPwd(password)
+		password, err := lib.HashPwd(password)
 		checkErr(err)
 
-		user := &types.User{
+		user := &lib.User{
 			Username:     mustGetString(cmd, "username"),
 			Password:     password,
 			LockPassword: mustGetBool(cmd, "lockPassword"),
@@ -41,6 +41,6 @@ var usersNewCmd = &cobra.Command{
 		st.ApplyDefaults(user)
 		err = st.SaveUser(user)
 		checkErr(err)
-		printUsers([]*types.User{user})
+		printUsers([]*lib.User{user})
 	},
 }

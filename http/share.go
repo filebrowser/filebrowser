@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 )
 
 const apiSharePrefix = "/api/share"
@@ -34,8 +34,8 @@ func (e *Env) shareGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s, err := e.GetLinksByPath(path)
-	if err == types.ErrNotExist {
-		renderJSON(w, r, []*types.ShareLink{})
+	if err == lib.ErrNotExist {
+		renderJSON(w, r, []*lib.ShareLink{})
 		return
 	}
 
@@ -85,7 +85,7 @@ func (e *Env) sharePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var s *types.ShareLink
+	var s *lib.ShareLink
 	expire := r.URL.Query().Get("expires")
 	unit := r.URL.Query().Get("unit")
 
@@ -107,7 +107,7 @@ func (e *Env) sharePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	str := base64.URLEncoding.EncodeToString(bytes)
 
-	s = &types.ShareLink{
+	s = &lib.ShareLink{
 		Path:    path,
 		Hash:    str,
 		Expires: expire != "",

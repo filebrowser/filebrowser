@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 	"github.com/spf13/cobra"
 )
 
@@ -36,8 +36,8 @@ var findUsers = func(cmd *cobra.Command, args []string) {
 	id, _ := cmd.Flags().GetUint("id")
 
 	var err error
-	var users []*types.User
-	var user *types.User
+	var users []*lib.User
+	var user *lib.User
 
 	if username != "" {
 		user, err = st.GetUser(username)
@@ -50,7 +50,7 @@ var findUsers = func(cmd *cobra.Command, args []string) {
 	checkErr(err)
 
 	if user != nil {
-		users = []*types.User{user}
+		users = []*lib.User{user}
 	}
 
 	printUsers(users)

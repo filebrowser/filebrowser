@@ -6,7 +6,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/filebrowser/filebrowser/types"
+	"github.com/filebrowser/filebrowser/lib"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -26,7 +26,7 @@ var usersCmd = &cobra.Command{
 	},
 }
 
-func printUsers(users []*types.User) {
+func printUsers(users []*lib.User) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 	fmt.Fprintln(w, "ID\tUsername\tScope\tLocale\tV. Mode\tAdmin\tExecute\tCreate\tRename\tModify\tDelete\tShare\tDownload\tPwd Lock")
 
@@ -78,18 +78,18 @@ func addUserFlags(cmd *cobra.Command) {
 	cmd.Flags().StringSlice("commands", nil, "a list of the commands a user can execute")
 	cmd.Flags().String("scope", "", "scope for users")
 	cmd.Flags().String("locale", "en", "locale for users")
-	cmd.Flags().String("viewMode", string(types.ListViewMode), "view mode for users")
+	cmd.Flags().String("viewMode", string(lib.ListViewMode), "view mode for users")
 }
 
-func getViewMode(cmd *cobra.Command) types.ViewMode {
-	viewMode := types.ViewMode(mustGetString(cmd, "viewMode"))
-	if viewMode != types.ListViewMode && viewMode != types.MosaicViewMode {
-		checkErr(errors.New("view mode must be \"" + string(types.ListViewMode) + "\" or \"" + string(types.MosaicViewMode) + "\""))
+func getViewMode(cmd *cobra.Command) lib.ViewMode {
+	viewMode := lib.ViewMode(mustGetString(cmd, "viewMode"))
+	if viewMode != lib.ListViewMode && viewMode != lib.MosaicViewMode {
+		checkErr(errors.New("view mode must be \"" + string(lib.ListViewMode) + "\" or \"" + string(lib.MosaicViewMode) + "\""))
 	}
 	return viewMode
 }
 
-func getUserDefaults(cmd *cobra.Command, defaults *types.UserDefaults, all bool) {
+func getUserDefaults(cmd *cobra.Command, defaults *lib.UserDefaults, all bool) {
 	visit := func(flag *pflag.Flag) {
 		switch flag.Name {
 		case "scope":
