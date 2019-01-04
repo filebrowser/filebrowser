@@ -7,6 +7,7 @@ VOLUME /srv
 EXPOSE 80
 
 COPY filebrowser /filebrowser
+COPY docker-entrypoint.sh /entrypoint.sh
 
-ENTRYPOINT [ "/filebrowser", "-d /database.db" ]
-CMD [ "-p 80" ]
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD [ "run" ]
