@@ -1,6 +1,9 @@
 package users
 
 import (
+	"sync"
+	"time"
+
 	"github.com/filebrowser/filebrowser/errors"
 )
 
@@ -17,12 +20,17 @@ type StorageBackend interface {
 
 // Storage is a users storage.
 type Storage struct {
-	back StorageBackend
+	back    StorageBackend
+	updated map[uint]int64
+	mux     sync.RWMutex
 }
 
 // NewStorage creates a users storage from a backend.
 func NewStorage(back StorageBackend) *Storage {
-	return &Storage{back: back}
+	return &Storage{
+		back:    back,
+		updated: map[uint]int64{},
+	}
 }
 
 // Get allows you to get a user by its name or username. The provided
@@ -72,7 +80,15 @@ func (s *Storage) Update(user *User, fields ...string) error {
 		return err
 	}
 
-	return s.back.Update(user, fields...)
+	err = s.back.Update(user, fields...)
+	if err != nil {
+		return err
+	}
+
+	s.mux.Lock()
+	s.updated[user.ID] = time.Now().Unix()
+	s.mux.Unlock()
+	return nil
 }
 
 // Save saves the user in a storage.
@@ -98,4 +114,14 @@ func (s *Storage) Delete(id interface{}) (err error) {
 	}
 
 	return
+}
+
+// LastUpdate gets the timestamp for the last update of an user.
+func (s *Storage) LastUpdate(id uint) int64 {
+	s.mux.RLock()
+	defer s.mux.RUnlock()
+	if val, ok := s.updated[id]; ok {
+		return val
+	}
+	return 0
 }

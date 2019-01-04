@@ -60,8 +60,10 @@ func withUser(fn handleFunc) handleFunc {
 			return http.StatusForbidden, nil
 		}
 
-		if !tk.VerifyExpiresAt(time.Now().Add(time.Hour).Unix(), true) {
-			// TODO: chek if user info was modified use timestap
+		expired := !tk.VerifyExpiresAt(time.Now().Add(time.Hour).Unix(), true)
+		updated := d.store.Users.LastUpdate(tk.User.ID) > tk.IssuedAt
+
+		if expired || updated {
 			w.Header().Add("X-Renew-Token", "true")
 		}
 
@@ -157,6 +159,7 @@ func printToken(w http.ResponseWriter, r *http.Request, d *data, user *users.Use
 			Commands:     user.Commands,
 		},
 		StandardClaims: jwt.StandardClaims{
+			IssuedAt:  time.Now().Unix(),
 			ExpiresAt: time.Now().Add(time.Hour * 2).Unix(),
 			Issuer:    "File Browser",
 		},
