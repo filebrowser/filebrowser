@@ -49,7 +49,7 @@ func NewHandler(storage *storage.Storage) (http.Handler, error) {
 	api.PathPrefix("/raw").Handler(handle(rawHandler, "/api/raw", storage)).Methods("GET")
 	api.PathPrefix("/command").Handler(handle(commandsHandler, "/api/command", storage)).Methods("GET")
 	api.PathPrefix("/search").Handler(handle(searchHandler, "/api/search", storage)).Methods("GET")
-	
+
 	public := api.PathPrefix("/public").Subrouter()
 	public.PathPrefix("/dl").Handler(handle(publicDlHandler, "/api/public/dl/", storage)).Methods("GET")
 	public.PathPrefix("/share").Handler(handle(publicShareHandler, "/api/public/share/", storage)).Methods("GET")

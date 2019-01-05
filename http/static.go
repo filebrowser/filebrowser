@@ -2,12 +2,12 @@ package http
 
 import (
 	"encoding/json"
-	"text/template"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
 
 	"github.com/GeertJohan/go.rice"
 	"github.com/filebrowser/filebrowser/v2/auth"

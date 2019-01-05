@@ -20,12 +20,12 @@ func init() {
 var rulesCmd = &cobra.Command{
 	Use:   "rules",
 	Short: "Rules management utility",
-	Long:  `On each subcommand you'll have available at least two flags:
+	Long: `On each subcommand you'll have available at least two flags:
 "username" and "id". You must either set only one of them
 or none. If you set one of them, the command will apply to
 an user, otherwise it will be applied to the global set or
 rules.`,
-	Args:  cobra.NoArgs,
+	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 		os.Exit(0)

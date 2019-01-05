@@ -10,8 +10,8 @@ import (
 // Storage is a storage powered by a Backend whih makes the neccessary
 // verifications when fetching and saving data to ensure consistency.
 type Storage struct {
-	Users *users.Storage
-	Share *share.Storage
-	Auth *auth.Storage
+	Users    *users.Storage
+	Share    *share.Storage
+	Auth     *auth.Storage
 	Settings *settings.Storage
 }

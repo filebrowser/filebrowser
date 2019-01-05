@@ -1,4 +1,3 @@
-//go:generate cd http && rice embed-go
 package main
 
 import (

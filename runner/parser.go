@@ -3,8 +3,8 @@ package runner
 import (
 	"os/exec"
 
-	"github.com/mholt/caddy"
 	"github.com/filebrowser/filebrowser/v2/settings"
+	"github.com/mholt/caddy"
 )
 
 // ParseCommand parses the command taking in account if the current
