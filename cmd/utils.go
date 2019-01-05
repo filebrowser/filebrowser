@@ -34,6 +34,12 @@ func mustGetInt(cmd *cobra.Command, flag string) int {
 	return b
 }
 
+func mustGetUint(cmd *cobra.Command, flag string) uint {
+	b, err := cmd.Flags().GetUint(flag)
+	checkErr(err)
+	return b
+}
+
 func getDB() *storm.DB {
 	if _, err := os.Stat(databasePath); err != nil {
 		panic(errors.New(databasePath + " does not exist. Please run 'filebrowser init' first."))
