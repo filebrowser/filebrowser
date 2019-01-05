@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -60,7 +61,13 @@ var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) 
 		return http.StatusAccepted, nil
 	}
 
-	file, err := files.NewFileInfo(d.user.Fs, r.URL.Path, d.user.Perm.Modify, d)
+	file, err := files.NewFileInfo(files.FileOptions{
+		Fs:      d.user.Fs,
+		Path:    r.URL.Path,
+		Modify:  d.user.Perm.Modify,
+		Expand:  false,
+		Checker: d,
+	})
 	if err != nil {
 		return errToStatus(err), err
 	}
@@ -73,6 +80,9 @@ var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) 
 })
 
 func addFile(ar archiver.Writer, d *data, path string) error {
+	// Checks are always done with paths with "/" as path separator.
+	path = strings.Replace(path, "\\", "/", -1)
+	fmt.Println(path)
 	if !d.Check(path) {
 		return nil
 	}
@@ -82,7 +92,6 @@ func addFile(ar archiver.Writer, d *data, path string) error {
 		return err
 	}
 
-	// open the file
 	file, err := d.user.Fs.Open(path)
 	if err != nil {
 		return err
@@ -92,7 +101,7 @@ func addFile(ar archiver.Writer, d *data, path string) error {
 	err = ar.Write(archiver.File{
 		FileInfo: archiver.FileInfo{
 			FileInfo:   info,
-			CustomName: path,
+			CustomName: strings.TrimPrefix(path, "/"),
 		},
 		ReadCloser: file,
 	})

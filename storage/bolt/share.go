@@ -21,19 +21,19 @@ func (s shareBackend) GetByHash(hash string) (*share.Link, error) {
 	return &v, err
 }
 
-func (s shareBackend) GetPermanent(path string) (*share.Link, error) {
+func (s shareBackend) GetPermanent(path string, id uint) (*share.Link, error) {
 	var v share.Link
-	err := s.db.Select(q.Eq("Path", path), q.Eq("Expires", false)).First(&v)
+	err := s.db.Select(q.Eq("Path", path), q.Eq("Expire", 0), q.Eq("UserID", id)).First(&v)
 	if err == storm.ErrNotFound {
 		return nil, errors.ErrNotExist
 	}
-
+	
 	return &v, err
 }
 
-func (s shareBackend) Gets(hash string) ([]*share.Link, error) {
+func (s shareBackend) Gets(path string, id uint) ([]*share.Link, error) {
 	var v []*share.Link
-	err := s.db.Find("Path", hash, &v)
+	err := s.db.Select(q.Eq("Path", path), q.Eq("UserID", id)).Find(&v)
 	if err == storm.ErrNotFound {
 		return v, errors.ErrNotExist
 	}

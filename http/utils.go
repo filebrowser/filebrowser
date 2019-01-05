@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+
+	"github.com/filebrowser/filebrowser/errors"
 )
 
 func renderJSON(w http.ResponseWriter, r *http.Request, data interface{}) (int, error) {
@@ -27,9 +29,9 @@ func errToStatus(err error) int {
 		return http.StatusOK
 	case os.IsPermission(err):
 		return http.StatusForbidden
-	case os.IsNotExist(err):
+	case os.IsNotExist(err), err == errors.ErrNotExist:
 		return http.StatusNotFound
-	case os.IsExist(err):
+	case os.IsExist(err), err == errors.ErrExist:
 		return http.StatusConflict
 	default:
 		return http.StatusInternalServerError

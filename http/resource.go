@@ -16,7 +16,13 @@ import (
 )
 
 var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	file, err := files.NewFileInfo(d.user.Fs, r.URL.Path, d.user.Perm.Modify, d)
+	file, err := files.NewFileInfo(files.FileOptions{
+		Fs: d.user.Fs,
+		Path: r.URL.Path,
+		Modify: d.user.Perm.Modify,
+		Expand: true,
+		Checker: d,
+	})
 	if err != nil {
 		return errToStatus(err), err
 	}

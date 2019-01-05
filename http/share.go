@@ -22,21 +22,14 @@ func withPermShare(fn handleFunc) handleFunc {
 	})
 }
 
-var shareGetHandler = withPermShare(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	s, err := d.store.Share.Gets(r.URL.Path)
+var shareGetsHandler = withPermShare(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	s, err := d.store.Share.Gets(r.URL.Path, d.user.ID)
 	if err == errors.ErrNotExist {
 		return renderJSON(w, r, []*share.Link{})
 	}
 
 	if err != nil {
 		return http.StatusInternalServerError, err
-	}
-
-	for i, link := range s {
-		if link.Expires && link.ExpireDate.Before(time.Now()) {
-			d.store.Share.Delete(link.Hash)
-			s = append(s[:i], s[i+1:]...)
-		}
 	}
 
 	return renderJSON(w, r, s)
@@ -56,12 +49,12 @@ var shareDeleteHandler = withPermShare(func(w http.ResponseWriter, r *http.Reque
 
 var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	var s *share.Link
-	expire := r.URL.Query().Get("expires")
+	rawExpire := r.URL.Query().Get("expires")
 	unit := r.URL.Query().Get("unit")
 
-	if expire == "" {
+	if rawExpire == "" {
 		var err error
-		s, err = d.store.Share.GetPermanent(r.URL.Path)
+		s, err = d.store.Share.GetPermanent(r.URL.Path, d.user.ID)
 		if err == nil {
 			w.Write([]byte(d.settings.BaseURL + "/share/" + s.Hash))
 			return 0, nil
@@ -76,14 +69,10 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 
 	str := base64.URLEncoding.EncodeToString(bytes)
 
-	s = &share.Link{
-		Path:    r.URL.Path,
-		Hash:    str,
-		Expires: expire != "",
-	}
+	var expire int64 = 0
 
-	if expire != "" {
-		num, err := strconv.Atoi(expire)
+	if rawExpire != "" {
+		num, err := strconv.Atoi(rawExpire)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -100,7 +89,14 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 			add = time.Hour * time.Duration(num)
 		}
 
-		s.ExpireDate = time.Now().Add(add)
+		expire = time.Now().Add(add).Unix()
+	}
+
+	s = &share.Link{
+		Path:   r.URL.Path,
+		Hash:   str,
+		Expire: expire,
+		UserID: d.user.ID,
 	}
 
 	if err := d.store.Share.Save(s); err != nil {

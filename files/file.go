@@ -38,22 +38,31 @@ type FileInfo struct {
 	Checksums map[string]string `json:"checksums,omitempty"`
 }
 
+// FileOptions are the options when getting a file info.
+type FileOptions struct {
+	Fs      afero.Fs
+	Path    string
+	Modify  bool
+	Expand  bool
+	Checker rules.Checker
+}
+
 // NewFileInfo creates a File object from a path and a given user. This File
 // object will be automatically filled depending on if it is a directory
 // or a file. If it's a video file, it will also detect any subtitles.
-func NewFileInfo(fs afero.Fs, path string, modify bool, checker rules.Checker) (*FileInfo, error) {
-	if !checker.Check(path) {
+func NewFileInfo(opts FileOptions) (*FileInfo, error) {
+	if !opts.Checker.Check(opts.Path) {
 		return nil, os.ErrPermission
 	}
 
-	info, err := fs.Stat(path)
+	info, err := opts.Fs.Stat(opts.Path)
 	if err != nil {
 		return nil, err
 	}
 
 	file := &FileInfo{
-		Fs:        fs,
-		Path:      path,
+		Fs:        opts.Fs,
+		Path:      opts.Path,
 		Name:      info.Name(),
 		ModTime:   info.ModTime(),
 		Mode:      info.Mode(),
@@ -62,13 +71,15 @@ func NewFileInfo(fs afero.Fs, path string, modify bool, checker rules.Checker) (
 		Extension: filepath.Ext(info.Name()),
 	}
 
-	if file.IsDir {
-		return file, file.readListing(checker)
-	}
+	if opts.Expand {
+		if file.IsDir {
+			return file, file.readListing(opts.Checker)
+		}
 
-	err = file.detectType(modify)
-	if err != nil {
-		return nil, err
+		err = file.detectType(opts.Modify)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return file, err
