@@ -49,7 +49,6 @@
     <h2 v-if="req.numDirs > 0">{{ $t('files.folders') }}</h2>
     <div v-if="req.numDirs > 0">
       <item v-for="(item) in dirs"
-        v-if="item.isDir"
         :key="base64(item.name)"
         v-bind:index="item.index"
         v-bind:name="item.name"
@@ -64,7 +63,6 @@
     <h2 v-if="req.numFiles > 0">{{ $t('files.files') }}</h2>
     <div v-if="req.numFiles > 0">
       <item v-for="(item) in files"
-        v-if="!item.isDir"
         :key="base64(item.name)"
         v-bind:index="item.index"
         v-bind:name="item.name"
@@ -88,10 +86,10 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import Item from './ListingItem'
 import css from '@/utils/css'
-import * as api from '@/utils/api'
+import { users, files as api } from '@/api'
 import buttons from '@/utils/buttons'
 
 export default {
@@ -105,24 +103,22 @@ export default {
   computed: {
     ...mapState(['req', 'selected', 'user']),
     nameSorted () {
-      return (this.req.sort === 'name')
+      return (this.req.sorting.by === 'name')
     },
     sizeSorted () {
-      return (this.req.sort === 'size')
+      return (this.req.sorting.by === 'size')
     },
     modifiedSorted () {
-      return (this.req.sort === 'modified')
+      return (this.req.sorting.by === 'modified')
     },
     ascOrdered () {
-      return (this.req.order === 'asc')
+      return this.req.sorting.asc
     },
     items () {
       const dirs = []
       const files = []
 
-      this.req.items.forEach((item, index) => {
-        item.index = index
-
+      this.req.items.forEach((item) => {
         if (item.isDir) {
           dirs.push(item)
         } else {
@@ -184,6 +180,7 @@ export default {
     document.removeEventListener('drop', this.drop)
   },
   methods: {
+    ...mapMutations([ 'updateUser' ]),
     base64: function (name) {
       return window.btoa(unescape(encodeURIComponent(name)))
     },
@@ -213,7 +210,10 @@ export default {
       event.preventDefault()
     },
     copyCut (event, key) {
-      event.preventDefault()
+      if (event.target.tagName.toLowerCase() === 'input') {
+        return
+      }
+
       let items = []
 
       for (let i of this.selected) {
@@ -221,6 +221,10 @@ export default {
           from: this.req.items[i].url,
           name: encodeURIComponent(this.req.items[i].name)
         })
+      }
+
+      if (items.length == 0) {
+        return
       }
 
       this.$store.commit('updateClipboard', {
@@ -233,15 +237,21 @@ export default {
         return
       }
 
-      event.preventDefault()
-
       let items = []
 
       for (let item of this.$store.state.clipboard.items) {
-        items.push({
-          from: item.from,
-          to: this.$route.path + item.name
-        })
+        const from = item.from.endsWith('/') ? item.from.slice(0, -1) : item.from
+        const to = this.$route.path + item.name
+
+        if (from === to) {
+          return
+        }
+
+        items.push({ from, to })
+      }
+
+      if (items.length === 0) {
+        return
       }
 
       if (this.$store.state.clipboard.key === 'x') {
@@ -267,7 +277,7 @@ export default {
         this.show += 50
       }
     },
-    dragEnter (event) {
+    dragEnter () {
       // When the user starts dragging an item, put every
       // file on the listing with 50% opacity.
       let items = document.getElementsByClassName('item')
@@ -276,7 +286,7 @@ export default {
         file.style.opacity = 0.5
       })
     },
-    dragEnd (event) {
+    dragEnd () {
       this.resetOpacity()
     },
     drop: function (event) {
@@ -391,27 +401,29 @@ export default {
 
       return false
     },
-    sort (sort) {
-      let order = 'desc'
+    async sort (by) {
+      let asc = false
 
-      if (sort === 'name') {
+      if (by === 'name') {
         if (this.nameIcon === 'arrow_upward') {
-          order = 'asc'
+          asc = true
         }
-      } else if (sort === 'size') {
+      } else if (by === 'size') {
         if (this.sizeIcon === 'arrow_upward') {
-          order = 'asc'
+          asc = true
         }
-      } else if (sort === 'modified') {
+      } else if (by === 'modified') {
         if (this.modifiedIcon === 'arrow_upward') {
-          order = 'asc'
+          asc = true
         }
       }
 
-      let path = this.$store.state.baseURL
-      if (path === '') path = '/'
-      document.cookie = `sort=${sort}; max-age=31536000; path=${path}`
-      document.cookie = `order=${order}; max-age=31536000; path=${path}`
+      try {
+        await users.update({ id: this.user.id, sorting: { by, asc } }, ['sorting'])
+      } catch (e) {
+        this.$showError(e)
+      }
+
       this.$store.commit('setReload', true)
     }
   }

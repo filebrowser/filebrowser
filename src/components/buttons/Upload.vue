@@ -9,7 +9,7 @@
 export default {
   name: 'upload-button',
   methods: {
-    upload: function (event) {
+    upload: function () {
       document.getElementById('upload-input').click()
     }
   }

@@ -10,8 +10,6 @@
     <move v-else-if="showMove"></move>
     <copy v-else-if="showCopy"></copy>
     <replace v-else-if="showReplace"></replace>
-    <schedule v-else-if="show === 'schedule'"></schedule>
-    <new-archetype v-else-if="show === 'new-archetype'"></new-archetype>
     <share v-else-if="show === 'share'"></share>
     <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
   </div>
@@ -27,21 +25,16 @@ import Move from './Move'
 import Copy from './Copy'
 import NewFile from './NewFile'
 import NewDir from './NewDir'
-import NewArchetype from './NewArchetype'
 import Replace from './Replace'
-import Schedule from './Schedule'
 import Share from './Share'
 import { mapState } from 'vuex'
 import buttons from '@/utils/buttons'
-import * as api from '@/utils/api'
 
 export default {
   name: 'prompts',
   components: {
     Info,
     Delete,
-    NewArchetype,
-    Schedule,
     Rename,
     Download,
     Move,
@@ -55,7 +48,6 @@ export default {
   data: function () {
     return {
       pluginData: {
-        api,
         buttons,
         'store': this.$store,
         'router': this.$router

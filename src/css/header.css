@@ -238,7 +238,7 @@ header .search-button {
 }
 
 #search .boxes>div>div {
-  background: #2196F3;
+  background: var(--blue);
   color: #fff;
   text-align: center;
   width: 10em;

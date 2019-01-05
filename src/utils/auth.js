@@ -1,69 +1,92 @@
-import cookie from './cookie'
 import store from '@/store'
 import router from '@/router'
 import { Base64 } from 'js-base64'
+import { baseURL } from '@/utils/constants'
 
-function parseToken (token) {
-  let path = store.state.baseURL
-  if (path === '') path = '/'
-  document.cookie = `auth=${token}; max-age=86400; path=${path}`
-  let res = token.split('.')
-  let user = JSON.parse(Base64.decode(res[1]))
-  if (!user.commands) {
-    user.commands = []
+export function parseToken (token) {
+  const parts = token.split('.')
+
+  if (parts.length !== 3) {
+    throw new Error('token malformed')
   }
 
+  const data = JSON.parse(Base64.decode(parts[1]))
+
+  if (Math.round(new Date().getTime() / 1000) > data.exp) {
+    throw new Error('token expired')
+  }
+
+  localStorage.setItem('jwt', token)
   store.commit('setJWT', token)
-  store.commit('setUser', user)
+  store.commit('setUser', data.user)
 }
 
-function loggedIn () {
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open('GET', `${store.state.baseURL}/api/auth/renew`, true)
-    if (!store.state.noAuth) request.setRequestHeader('Authorization', `Bearer ${cookie('auth')}`)
-
-    request.onload = () => {
-      if (request.status === 200) {
-        parseToken(request.responseText)
-        resolve()
-      } else {
-        reject(new Error(request.responseText))
-      }
+export async function validateLogin () {
+  try {
+    if (localStorage.getItem('jwt')) {
+      await renew(localStorage.getItem('jwt'))
     }
-    request.onerror = () => reject(new Error('Could not finish the request'))
-    request.send()
-  })
+  } catch (_) {
+    console.warn('Invalid JWT token in storage') // eslint-disable-line
+  }
 }
 
-function login (user, password, captcha) {
-  let data = {username: user, password: password, recaptcha: captcha}
-  return new Promise((resolve, reject) => {
-    let request = new window.XMLHttpRequest()
-    request.open('POST', `${store.state.baseURL}/api/auth/get`, true)
+export async function login (username, password, recaptcha) {
+  const data = { username, password, recaptcha }
 
-    request.onload = () => {
-      if (request.status === 200) {
-        parseToken(request.responseText)
-        resolve()
-      } else {
-        reject(request.responseText)
-      }
+  const res = await fetch(`${baseURL}/api/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+
+  const body = await res.text()
+
+  if (res.status === 200) {
+    parseToken(body)
+  } else {
+    throw new Error(body)
+  }
+}
+
+export async function renew (jwt) {
+  const res = await fetch(`${baseURL}/api/renew`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${jwt}`,
     }
-    request.onerror = () => reject(new Error('Could not finish the request'))
-    request.send(JSON.stringify(data))
   })
+
+  const body = await res.text()
+
+  if (res.status === 200) {
+    parseToken(body)
+  } else {
+    throw new Error(body)
+  }
 }
 
-function logout () {
-  let path = store.state.baseURL
-  if (path === '') path = '/'
-  document.cookie = `auth='nothing'; max-age=0; path=${path}`
+export async function signup (username, password) {
+  const data = { username, password }
+
+  const res = await fetch(`${baseURL}/api/signup`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+
+  if (res.status !== 200) {
+    throw new Error(res.status)
+  }
+}
+
+export function logout () {
+  store.commit('setJWT', '')
+  store.commit('setUser', null)
+  localStorage.setItem('jwt', null)
   router.push({path: '/login'})
-}
-
-export default {
-  loggedIn: loggedIn,
-  login: login,
-  logout: logout
 }

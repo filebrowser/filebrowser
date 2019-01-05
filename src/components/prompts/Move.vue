@@ -9,11 +9,11 @@
     </div>
 
     <div class="card-action">
-      <button class="flat cancel"
+      <button class="button button--flat button--grey"
         @click="$store.commit('closeHovers')"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
-      <button class="flat"
+      <button class="button button--flat"
         @click="move"
         :disabled="$route.path === dest"
         :aria-label="$t('buttons.move')"
@@ -25,7 +25,7 @@
 <script>
 import { mapState } from 'vuex'
 import FileList from './FileList'
-import * as api from '@/utils/api'
+import { files as api } from '@/api'
 import buttons from '@/utils/buttons'
 
 export default {
@@ -39,12 +39,11 @@ export default {
   },
   computed: mapState(['req', 'selected']),
   methods: {
-    move: function (event) {
+    move: async function (event) {
       event.preventDefault()
       buttons.loading('move')
       let items = []
 
-      // Create a new promise for each file.
       for (let item of this.selected) {
         items.push({
           from: this.req.items[item].url,
@@ -52,16 +51,14 @@ export default {
         })
       }
 
-      // Execute the promises.
-      api.move(items)
-        .then(() => {
-          buttons.success('move')
-          this.$router.push({ path: this.dest })
-        })
-        .catch(error => {
-          buttons.done('move')
-          this.$showError(error)
-        })
+      try {
+        api.move(items)
+        buttons.success('move')
+        this.$router.push({ path: this.dest })
+      } catch (e) {
+        buttons.done('move')
+        this.$showError(e)
+      }
 
       event.preventDefault()
     }

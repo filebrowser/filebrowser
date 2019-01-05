@@ -1,49 +1,55 @@
 <template>
-  <div id="login" :class="{ recaptcha: recaptcha.length > 0 }">
+  <div id="login" :class="{ recaptcha: recaptcha }">
     <form @submit="submit">
-      <img src="../assets/logo.svg" alt="File Browser">
-      <h1>File Browser</h1>
-      <div v-if="wrong" class="wrong">{{ $t("login.wrongCredentials") }}</div>
-      <input type="text" v-model="username" :placeholder="$t('login.username')">
-      <input type="password" v-model="password" :placeholder="$t('login.password')">
-      <div v-if="recaptcha.length" id="recaptcha"></div>
-      <input type="submit" :value="$t('login.submit')">
+      <img :src="logoURL" alt="File Browser">
+      <h1>{{ name }}</h1>
+      <div v-if="error !== ''" class="wrong">{{ error }}</div>
+
+      <input class="input input--block" type="text" v-model="username" :placeholder="$t('login.username')">
+      <input class="input input--block" type="password" v-model="password" :placeholder="$t('login.password')">
+      <input class="input input--block" v-if="createMode" type="password" v-model="passwordConfirm" :placeholder="$t('login.passwordConfirm')" />
+
+      <div v-if="recaptcha" id="recaptcha"></div>
+      <input class="button button--block" type="submit" :value="createMode ? $t('login.signup') : $t('login.submit')">
+
+      <p @click="toggleMode" v-if="signup">{{ createMode ? $t('login.loginInstead') : $t('login.createAnAccount') }}</p>
     </form>
   </div>
 </template>
 
 <script>
-import auth from '@/utils/auth'
-import { mapState } from 'vuex'
+import * as auth from '@/utils/auth'
+import { name, logoURL, recaptcha, recaptchaKey, signup } from '@/utils/constants'
 
 export default {
   name: 'login',
-  props: ['dependencies'],
-  computed: mapState(['recaptcha']),
+  computed: {
+    signup: () => signup,
+    name: () => name,
+    logoURL: () => logoURL
+  },
   data: function () {
     return {
-      wrong: false,
+      createMode: false,
+      error: '',
       username: '',
-      password: ''
+      password: '',
+      recaptcha: recaptcha,
+      passwordConfirm: ''
     }
   },
   mounted () {
-    if (this.dependencies) this.setup()
-  },
-  watch: {
-    dependencies: function (val) {
-      if (val) this.setup()
-    }
+    if (!recaptcha) return
+
+    window.grecaptcha.render('recaptcha', {
+      sitekey: recaptchaKey
+    })
   },
   methods: {
-    setup () {
-      if (this.recaptcha.length === 0) return
-
-      window.grecaptcha.render('recaptcha', {
-        sitekey: this.recaptcha
-      })
+    toggleMode () {
+      this.createMode = !this.createMode
     },
-    submit (event) {
+    async submit (event) {
       event.preventDefault()
       event.stopPropagation()
 
@@ -53,18 +59,36 @@ export default {
       }
 
       let captcha = ''
-      if (this.recaptcha.length > 0) {
+      if (recaptcha) {
         captcha = window.grecaptcha.getResponse()
 
         if (captcha === '') {
-          this.wrong = true
+          this.error = this.$t('login.wrongCredentials')
           return
         }
       }
 
-      auth.login(this.username, this.password, captcha)
-        .then(() => { this.$router.push({ path: redirect }) })
-        .catch(() => { this.wrong = true })
+      if (this.createMode) {
+        if (this.password !== this.passwordConfirm) {
+          this.error = this.$t('login.passwordsDontMatch')
+          return
+        }
+      }
+
+      try {
+        if (this.createMode) {
+          await auth.signup(this.username, this.password)
+        }
+
+        await auth.login(this.username, this.password, captcha)
+        this.$router.push({ path: redirect })
+      } catch (e) {
+        if (e.message == 409) {
+          this.error = this.$t('login.usernameTaken')
+        } else {
+          this.error = this.$t('login.wrongCredentials')
+        }
+      }
     }
   }
 }

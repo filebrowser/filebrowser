@@ -33,8 +33,12 @@ import InternalError from './errors/500'
 import Preview from '@/components/files/Preview'
 import Listing from '@/components/files/Listing'
 import Editor from '@/components/files/Editor'
-import * as api from '@/utils/api'
+import { files as api } from '@/api'
 import { mapGetters, mapState, mapMutations } from 'vuex'
+
+function clean (path) {
+  return path.endsWith('/') ? path.slice(0, -1) : path
+}
 
 export default {
   name: 'files',
@@ -48,7 +52,10 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'selectedCount'
+      'selectedCount',
+      'isListing',
+      'isEditor',
+      'isFiles'
     ]),
     ...mapState([
       'req',
@@ -57,14 +64,8 @@ export default {
       'multiple',
       'loading'
     ]),
-    isListing () {
-      return this.req.kind === 'listing' && !this.loading
-    },
     isPreview () {
-      return this.req.kind === 'preview' && !this.loading
-    },
-    isEditor () {
-      return this.req.kind === 'editor' && !this.loading
+      return !this.loading && !this.isListing && !this.isEditor
     },
     breadcrumbs () {
       let parts = this.$route.path.split('/')
@@ -127,7 +128,7 @@ export default {
   },
   methods: {
     ...mapMutations([ 'setLoading' ]),
-    fetchData () {
+    async fetchData () {
       // Reset view information.
       this.$store.commit('setReload', false)
       this.$store.commit('resetSelected')
@@ -142,21 +143,20 @@ export default {
       if (url === '') url = '/'
       if (url[0] !== '/') url = '/' + url
 
-      api.fetch(url)
-        .then((req) => {
-          if (this.$store.state.baseURL + req.url !== window.location.pathname) return
-          if (!url.endsWith('/') && req.url.endsWith('/')) {
-            window.history.replaceState(window.history.state, document.title, window.location.pathname + '/')
-          }
+      try {
+        const res = await api.fetch(url)
 
-          this.$store.commit('updateRequest', req)
-          document.title = req.name
-          this.setLoading(false)
-        })
-        .catch(error => {
-          this.setLoading(false)
-          this.error = error
-        })
+        if (clean(res.path) !== clean(`/${this.$route.params.pathMatch}`)) {
+          return
+        }
+
+        this.$store.commit('updateRequest', res)
+        document.title = res.name
+      } catch (e) {
+        this.error = e
+      } finally {
+        this.setLoading(false)
+      }
     },
     keyEvent (event) {
       // Esc!
@@ -165,18 +165,18 @@ export default {
 
         // If we're on a listing, unselect all
         // files and folders.
-        if (this.req.kind === 'listing') {
+        if (this.isListing) {
           this.$store.commit('resetSelected')
         }
       }
 
       // Del!
       if (event.keyCode === 46) {
-        if (this.req.kind === 'editor' ||
-          this.$route.name !== 'Files' ||
+        if (this.isEditor ||
+          !this.isFiles ||
           this.loading ||
-          !this.user.allowEdit ||
-          (this.req.kind === 'listing' && this.selectedCount === 0)) return
+          !this.user.perm.delete ||
+          (this.isListing && this.selectedCount === 0)) return
 
         this.$store.commit('showHover', 'delete')
       }
@@ -189,18 +189,20 @@ export default {
 
       // F2!
       if (event.keyCode === 113) {
-        if (this.req.kind === 'editor' ||
-          this.$route.name !== 'Files' ||
+        if (this.isEditor ||
+          !this.isFiles ||
           this.loading ||
-          !this.user.allowEdit ||
-          (this.req.kind === 'listing' && this.selectedCount === 0) ||
-          (this.req.kind === 'listing' && this.selectedCount > 1)) return
+          !this.user.perm.rename ||
+          (this.isListing && this.selectedCount === 0) ||
+          (this.isListing && this.selectedCount > 1)) return
 
         this.$store.commit('showHover', 'rename')
       }
 
       // CTRL + S
       if (event.ctrlKey || event.metaKey) {
+        if (this.isEditor) return
+
         if (String.fromCharCode(event.which).toLowerCase() === 's') {
           event.preventDefault()
 
@@ -210,7 +212,7 @@ export default {
         }
       }
     },
-    scroll (event) {
+    scroll () {
       if (this.req.kind !== 'listing' || this.$store.state.user.viewMode === 'mosaic') return
 
       let top = 112 - window.scrollY

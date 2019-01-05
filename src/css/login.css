@@ -37,14 +37,8 @@
   margin: .5em 0 0;
 }
 
-#login input {
-  width: 100%;
-  width: 100%;
-  margin: .5em 0 0;
-}
-
 #login .wrong {
-  background: #F44336;
+  background: var(--red);
   color: #fff;
   padding: .5em;
   text-align: center;
@@ -60,17 +54,12 @@
   }
 }
 
-#login input[type="text"],
-#login input[type="password"] {
-  padding: .5em 1em;
-  border: 1px solid #e9e9e9;
-  transition: .2s ease border;
-  color: #333;
-}
-
-#login input[type="text"]:focus,
-#login input[type="password"]:focus,
-#login input[type="text"]:hover,
-#login input[type="password"]:hover {
-  border-color: #9f9f9f;
+#login p {
+  cursor: pointer;
+  text-align: right;
+  color: var(--blue);
+  text-transform: lowercase;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin: .5rem 0;
 }

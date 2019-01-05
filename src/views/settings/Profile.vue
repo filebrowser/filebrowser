@@ -7,13 +7,11 @@
 
       <div class="card-content">
         <h3>{{ $t('settings.language') }}</h3>
-        <p><languages id="locale" :selected.sync="locale"></languages></p>
-        <h3>{{ $t('settings.customStylesheet') }}</h3>
-        <textarea v-model="css" name="css"></textarea>
+        <languages class="input input--block" :locale.sync="locale"></languages>
       </div>
 
       <div class="card-action">
-        <input class="flat" type="submit" :value="$t('buttons.update')">
+        <input class="button button--flat" type="submit" :value="$t('buttons.update')">
       </div>
     </form>
 
@@ -23,21 +21,21 @@
       </div>
 
       <div class="card-content">
-        <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPassword')" v-model="password" name="password"></p>
-        <p><input :class="passwordClass" type="password" :placeholder="$t('settings.newPasswordConfirm')" v-model="passwordConf" name="password"></p>
+        <input :class="passwordClass" type="password" :placeholder="$t('settings.newPassword')" v-model="password" name="password">
+        <input :class="passwordClass" type="password" :placeholder="$t('settings.newPasswordConfirm')" v-model="passwordConf" name="password">
       </div>
 
       <div class="card-action">
-        <input class="flat" type="submit" :value="$t('buttons.update')">
+        <input class="button button--flat" type="submit" :value="$t('buttons.update')">
       </div>
     </form>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { updateUser } from '@/utils/api'
-import Languages from '@/components/Languages'
+import { mapState, mapMutations } from 'vuex'
+import { users as api } from '@/api'
+import Languages from '@/components/settings/Languages'
 
 export default {
   name: 'settings',
@@ -48,61 +46,57 @@ export default {
     return {
       password: '',
       passwordConf: '',
-      css: '',
       locale: ''
     }
   },
   computed: {
     ...mapState([ 'user' ]),
     passwordClass () {
+      const baseClass = 'input input--block'
+
       if (this.password === '' && this.passwordConf === '') {
-        return ''
+        return baseClass
       }
 
       if (this.password === this.passwordConf) {
-        return 'green'
+        return `${baseClass} input--green`
       }
 
-      return 'red'
+      return `${baseClass} input--red`
     }
   },
   created () {
-    this.css = this.user.css
     this.locale = this.user.locale
   },
   methods: {
-    updatePassword (event) {
+    ...mapMutations([ 'updateUser' ]),
+    async updatePassword (event) {
       event.preventDefault()
 
-      if (this.password !== this.passwordConf) {
+      if (this.password !== this.passwordConf || this.password === '') {
         return
       }
 
-      let user = {
-        ID: this.$store.state.user.ID,
-        password: this.password
-      }
-
-      updateUser(user, 'password').then(location => {
+      try {
+        const data = { id: this.user.id, password: this.password }
+        await api.update(data, ['password'])
+        this.updateUser(data)
         this.$showSuccess(this.$t('settings.passwordUpdated'))
-      }).catch(e => {
+      } catch (e) {
         this.$showError(e)
-      })
+      }
     },
-    updateSettings (event) {
+    async updateSettings (event) {
       event.preventDefault()
 
-      let user = {...this.$store.state.user}
-      user.css = this.css
-      user.locale = this.locale
-
-      updateUser(user, 'partial').then(location => {
-        this.$store.commit('setUser', user)
-        this.$emit('css')
+      try {
+        const data = { id: this.user.id, locale: this.locale }
+        await api.update(data, ['locale'])
+        this.updateUser(data)
         this.$showSuccess(this.$t('settings.settingsUpdated'))
-      }).catch(e => {
+      } catch (e) {
         this.$showError(e)
-      })
+      }
     }
   }
 }

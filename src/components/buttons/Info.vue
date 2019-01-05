@@ -9,7 +9,7 @@
 export default {
   name: 'info-button',
   methods: {
-    show: function (event) {
+    show: function () {
       this.$store.commit('showHover', 'info')
     }
   }

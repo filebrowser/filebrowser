@@ -12,7 +12,7 @@
 
         <li v-for="link in links" :key="link.hash">
           <a :href="buildLink(link.hash)" target="_blank">
-            <template v-if="link.expires">{{ humanTime(link.expireDate) }}</template>
+            <template v-if="link.expire !== 0">{{ humanTime(link.expire) }}</template>
             <template v-else>{{ $t('permanent') }}</template>
           </a>
 
@@ -49,7 +49,7 @@
     </div>
 
     <div class="card-action">
-      <button class="flat"
+      <button class="button button--flat"
         @click="$store.commit('closeHovers')"
         :aria-label="$t('buttons.close')"
         :title="$t('buttons.close')">{{ $t('buttons.close') }}</button>
@@ -58,8 +58,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { getShare, deleteShare, share } from '@/utils/api'
+import { mapState, mapGetters } from 'vuex'
+import { share as api } from '@/api'
+import { baseURL } from '@/utils/constants'
 import moment from 'moment'
 import Clipboard from 'clipboard'
 
@@ -75,10 +76,10 @@ export default {
     }
   },
   computed: {
-    ...mapState([ 'baseURL', 'req', 'selected', 'selectedCount' ]),
+    ...mapState([ 'req', 'selected', 'selectedCount' ]),
+    ...mapGetters([ 'isListing' ]),
     url () {
-      // Get the current name of the file we are editing.
-      if (this.req.kind !== 'listing') {
+      if (!this.isListing) {
         return this.$route.path
       }
 
@@ -90,27 +91,25 @@ export default {
       return this.req.items[this.selected[0]].url
     }
   },
-  beforeMount () {
-    getShare(this.url)
-      .then(links => {
-        this.links = links
-        this.sort()
+  async beforeMount () {
+    try {
+      const links = await api.get(this.url)
+      this.links = links
+      this.sort()
 
-        for (let link of this.links) {
-          if (!link.expires) {
-            this.hasPermanent = true
-            break
-          }
+      for (let link of this.links) {
+        if (link.expire === 0) {
+          this.hasPermanent = true
+          break
         }
-      })
-      .catch(error => {
-        if (error === 404) return
-        this.$showError(error)
-      })
+      }
+    } catch (e) {
+      this.$showError(e)
+    }
   },
   mounted () {
     this.clip = new Clipboard('.copy-clipboard')
-    this.clip.on('success', (e) => {
+    this.clip.on('success', () => {
       this.$showSuccess(this.$t('success.linkCopied'))
     })
   },
@@ -118,42 +117,48 @@ export default {
     this.clip.destroy()
   },
   methods: {
-    submit: function (event) {
+    submit: async function () {
       if (!this.time) return
 
-      share(this.url, this.time, this.unit)
-        .then(result => { this.links.push(result); this.sort() })
-        .catch(this.$showError)
+      try {
+        const res = await api.create(this.url, this.time, this.unit)
+        this.links.push(res)
+        this.sort()
+      } catch (e) {
+        this.$showError(e)
+      }
     },
-    getPermalink (event) {
-      share(this.url)
-        .then(result => {
-          this.links.push(result)
-          this.sort()
-          this.hasPermanent = true
-        })
-        .catch(this.$showError)
+    getPermalink: async function () {
+      try {
+        const res = await api.create(this.url)
+        this.links.push(res)
+        this.sort()
+        this.hasPermanent = true
+      } catch (e) {
+        this.$showError(e)
+      }
     },
-    deleteLink (event, link) {
+    deleteLink: async function (event, link) {
       event.preventDefault()
-      deleteShare(link.hash)
-        .then(() => {
-          if (!link.expires) this.hasPermanent = false
-          this.links = this.links.filter(item => item.hash !== link.hash)
-        })
-        .catch(this.$showError)
+       try {
+        await api.remove(link.hash)
+        if (link.expire === 0) this.hasPermanent = false
+        this.links = this.links.filter(item => item.hash !== link.hash)
+      } catch (e) {
+        this.$showError(e)
+      }
     },
     humanTime (time) {
-      return moment(time).fromNow()
+      return moment(time * 1000).fromNow()
     },
     buildLink (hash) {
-      return `${window.location.origin}${this.baseURL}/share/${hash}`
+      return `${window.location.origin}${baseURL}/share/${hash}`
     },
     sort () {
       this.links = this.links.sort((a, b) => {
-        if (!a.expires) return -1
-        if (!b.expires) return 1
-        return new Date(a.expireDate) - new Date(b.expireDate)
+        if (a.expire === 0) return -1
+        if (b.expire === 0) return 1
+        return new Date(a.expire) - new Date(b.expire)
       })
     }
   }

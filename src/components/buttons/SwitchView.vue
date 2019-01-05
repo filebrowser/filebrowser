@@ -7,7 +7,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import { updateUser } from '@/utils/api'
+import { users as api } from '@/api'
 
 export default {
   name: 'switch-button',
@@ -19,17 +19,21 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['updateUser']),
-    change: function (event) {
-      // If we are on mobile we should close the dropdown.
-      this.$store.commit('closeHovers')
+    ...mapMutations([ 'updateUser', 'closeHovers' ]),
+    change: async function () {
+      this.closeHovers()
 
-      let user = {...this.user}
-      user.viewMode = (this.icon === 'view_list') ? 'list' : 'mosaic'
+      const data = {
+        id: this.user.id,
+        viewMode: (this.icon === 'view_list') ? 'list' : 'mosaic'
+      }
 
-      updateUser(user, 'partial').then(() => {
-        this.updateUser({ viewMode: user.viewMode })
-      }).catch(this.$showError)
+      try {
+        await api.update(data, ['viewMode'])
+        this.updateUser(data)
+      } catch (e) {
+        this.$showError(e)
+      }
     }
   }
 }

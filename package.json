@@ -1,75 +1,50 @@
 {
   "name": "filebrowser-frontend",
-  "version": "1.5.0",
-  "author": "File Browser contributors",
-  "contributors": [
-    "Henrique Dias <hacdias@gmail.com>"
-  ],
+  "version": "2.0.0",
+  "private": true,
   "scripts": {
-    "dev": "node ./build/dev.js",
-    "build": "node ./build/build.js",
-    "lint": "eslint --ext .js,.vue src"
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "watch": "vue-cli-service build --watch",
+    "lint": "vue-cli-service lint --fix"
   },
   "dependencies": {
-    "clipboard": "^2.0.0",
-    "codemirror": "^5.36.0",
-    "filesize": "^3.6.1",
-    "js-base64": "^2.4.3",
-    "moment": "^2.22.0",
-    "normalize.css": "^8.0.0",
+    "ace-builds": "^1.4.2",
+    "clipboard": "^2.0.4",
+    "js-base64": "^2.5.0",
+    "lodash.clonedeep": "^4.5.0",
+    "material-design-icons": "^3.0.1",
+    "moment": "^2.23.0",
+    "normalize.css": "^8.0.1",
     "noty": "^3.2.0-beta",
-    "vue": "^2.5.16",
-    "vue-i18n": "^7.6.0",
-    "vue-router": "^3.0.1",
-    "vuex": "^3.0.1"
+    "vue": "^2.5.21",
+    "vue-i18n": "^8.7.0",
+    "vue-router": "^3.0.2",
+    "vuex": "^3.0.1",
+    "vuex-router-sync": "^5.0.0"
   },
   "devDependencies": {
-    "autoprefixer": "^8.2.0",
-    "babel-core": "^6.26.0",
-    "babel-eslint": "^8.2.2",
-    "babel-loader": "^7.1.4",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-stage-2": "^6.24.1",
-    "babel-register": "^6.26.0",
-    "chalk": "^2.3.2",
-    "connect-history-api-fallback": "^1.5.0",
-    "copy-webpack-plugin": "^4.5.1",
-    "css-loader": "^0.28.11",
-    "eslint": "^4.19.1",
-    "eslint-config-standard": "^11.0.0",
-    "eslint-friendly-formatter": "^4.0.0",
-    "eslint-loader": "^2.0.0",
-    "eslint-plugin-html": "^4.0.2",
-    "eslint-plugin-import": "^2.10.0",
-    "eslint-plugin-node": "^6.0.1",
-    "eslint-plugin-promise": "^3.7.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "eventsource-polyfill": "^0.9.6",
-    "express": "^4.16.3",
-    "extract-text-webpack-plugin": "^3.0.2",
-    "file-loader": "^1.1.11",
-    "friendly-errors-webpack-plugin": "^1.6.1",
-    "html-webpack-plugin": "^2.30.1",
-    "http-proxy-middleware": "^0.18.0",
-    "opn": "^5.3.0",
-    "optimize-css-assets-webpack-plugin": "^3.2.0",
-    "ora": "^2.0.0",
-    "rimraf": "^2.6.2",
-    "semver": "^5.5.0",
-    "shelljs": "^0.8.1",
-    "sw-precache-webpack-plugin": "^0.11.5",
-    "uglify-js": "^3.1.10",
-    "url-loader": "^1.0.1",
-    "vue-loader": "^14.2.2",
-    "vue-style-loader": "^4.1.0",
-    "vue-template-compiler": "^2.5.16",
-    "webpack": "^3.8.1",
-    "webpack-bundle-analyzer": "^2.11.1",
-    "webpack-dev-middleware": "^2.0.4",
-    "webpack-hot-middleware": "^2.21.2",
-    "webpack-merge": "^4.1.2",
-    "yml-loader": "^2.1.0"
+    "@vue/cli-plugin-babel": "^3.2.2",
+    "@vue/cli-plugin-eslint": "^3.2.2",
+    "@vue/cli-service": "^3.2.3",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.12.0",
+    "eslint-plugin-vue": "^5.1.0",
+    "vue-template-compiler": "^2.5.21"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {},
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
   },
   "postcss": {
     "plugins": {

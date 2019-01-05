@@ -33,7 +33,7 @@
 import { mapMutations, mapGetters, mapState } from 'vuex'
 import filesize from 'filesize'
 import moment from 'moment'
-import * as api from '@/utils/api'
+import { files as api } from '@/api'
 
 export default {
   name: 'item',
@@ -65,7 +65,7 @@ export default {
     humanTime: function () {
       return moment(this.modified).fromNow()
     },
-    dragStart: function (event) {
+    dragStart: function () {
       if (this.selectedCount === 0) {
         this.addSelected(this.index)
         return
@@ -140,7 +140,7 @@ export default {
       if (!event.ctrlKey && !this.$store.state.multiple) this.resetSelected()
       this.addSelected(this.index)
     },
-    touchstart (event) {
+    touchstart () {
       setTimeout(() => {
         this.touches = 0
       }, 300)
@@ -150,7 +150,7 @@ export default {
         this.open()
       }
     },
-    open: function (event) {
+    open: function () {
       this.$router.push({path: this.url})
     }
   }

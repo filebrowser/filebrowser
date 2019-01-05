@@ -9,7 +9,7 @@
 export default {
   name: 'rename-button',
   methods: {
-    show: function (event) {
+    show: function () {
       this.$store.commit('showHover', 'rename')
     }
   }

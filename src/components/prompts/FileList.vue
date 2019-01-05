@@ -19,7 +19,7 @@
 <script>
 import { mapState } from 'vuex'
 import url from '@/utils/url'
-import * as api from '@/utils/api'
+import { files } from '@/api'
 
 export default {
   name: 'file-list',
@@ -35,7 +35,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['req']),
+    ...mapState([ 'req' ]),
     nav () {
       return decodeURIComponent(this.current)
     }
@@ -51,7 +51,7 @@ export default {
 
     // Otherwise, we must be on a preview or editor
     // so we fetch the data from the previous directory.
-    api.fetch(url.removeLastDir(this.$route.path))
+    files.fetch(url.removeLastDir(this.$route.path))
       .then(this.fillOptions)
       .catch(this.$showError)
   },
@@ -94,7 +94,7 @@ export default {
       // content.
       let uri = event.currentTarget.dataset.url
 
-      api.fetch(uri)
+      files.fetch(uri)
         .then(this.fillOptions)
         .catch(this.$showError)
     },

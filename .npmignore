@@ -1,6 +1,0 @@
-.*
-static/
-src/
-.circleci/
-build/
-/index.html

@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Login from '@/views/Login'
 import Layout from '@/views/Layout'
 import Files from '@/views/Files'
+import Share from '@/views/Share'
 import Users from '@/views/settings/Users'
 import User from '@/views/settings/User'
 import Settings from '@/views/Settings'
@@ -11,41 +12,44 @@ import ProfileSettings from '@/views/settings/Profile'
 import Error403 from '@/views/errors/403'
 import Error404 from '@/views/errors/404'
 import Error500 from '@/views/errors/500'
-import auth from '@/utils/auth'
 import store from '@/store'
+import { baseURL } from '@/utils/constants'
 
 Vue.use(Router)
 
 const router = new Router({
-  base: document.querySelector('meta[name="base"]').getAttribute('content'),
+  base: baseURL,
   mode: 'history',
   routes: [
     {
       path: '/login',
       name: 'Login',
       component: Login,
-      beforeEnter: function (to, from, next) {
-        auth.loggedIn()
-          .then(() => {
-            next({ path: '/files' })
-          })
-          .catch(() => {
-            document.title = 'Login'
-            next()
-          })
+      beforeEnter: (to, from, next) => {
+        if (store.getters.isLogged) {
+          return next({ path: '/files' })
+        }
+
+        document.title = 'Login'
+        next()
       }
     },
     {
       path: '/*',
       component: Layout,
-      meta: {
-        requiresAuth: true
-      },
       children: [
+        {
+          path: '/share/*',
+          name: 'Share',
+          component: Share
+        },
         {
           path: '/files/*',
           name: 'Files',
-          component: Files
+          component: Files,
+          meta: {
+            requiresAuth: true
+          }
         },
         {
           path: '/settings',
@@ -55,7 +59,7 @@ const router = new Router({
             path: '/settings/profile'
           },
           meta: {
-            disableOnNoAuth: true
+            requiresAuth: true
           },
           children: [
             {
@@ -112,9 +116,7 @@ const router = new Router({
         },
         {
           path: '/*',
-          redirect: {
-            name: 'Files'
-          }
+          redirect: to => `/files${to.path}`
         }
       ]
     }
@@ -125,34 +127,21 @@ router.beforeEach((to, from, next) => {
   document.title = to.name
 
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    // this route requires auth, check if logged in
-    // if not, redirect to login page.
-    auth.loggedIn()
-      .then(() => {
-        if (to.matched.some(record => record.meta.requiresAdmin)) {
-          if (!store.state.user.admin) {
-            next({ path: '/403' })
-            return
-          }
-        }
-
-        if (to.matched.some(record => record.meta.disableOnNoAuth)) {
-          if (store.state.noAuth) {
-            next({ path: '/403' })
-            return
-          }
-        }
-
-        next()
-      })
-      .catch(e => {
-        next({
-          path: '/login',
-          query: { redirect: to.fullPath }
-        })
+    if (!store.getters.isLogged) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
       })
 
-    return
+      return
+    }
+
+    if (to.matched.some(record => record.meta.requiresAdmin)) {
+      if (!store.state.user.perm.admin) {
+        next({ path: '/403' })
+        return
+      }
+    }
   }
 
   next()

@@ -9,7 +9,7 @@
 export default {
   name: 'share-button',
   methods: {
-    show (event) {
+    show () {
       this.$store.commit('showHover', 'share')
     }
   }

@@ -120,7 +120,7 @@
 }
 
 #listing .item[aria-selected=true] {
-  background: #2196f3 !important;
+  background: var(--blue) !important;
   color: #fff !important;
 }
 
@@ -228,7 +228,7 @@
   left: 0;
   z-index: 99999;
   width: 100%;
-  background-color: #2196f3;
+  background-color: var(--blue);
   height: 4em;
   display: none;
   padding: 0.5em 0.5em 0.5em 1em;

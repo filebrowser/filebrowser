@@ -7,58 +7,6 @@ a {
   color: inherit
 }
 
-select,
-textarea,
-input[type="text"],
-input[type="password"] {
-  padding: 0.5em 0;
-  line-height: 1;
-  display: block;
-  border: 0;
-  border-bottom: 1px solid #dddddd;
-  transition: .2s ease border;
-  width: 100%;
-  background: transparent;
-}
-
-textarea {
-  line-height: 1.15;
-  padding: .5em;
-  border: 1px solid #ddd;
-  font-family: monospace;
-  min-height: 10em;
-  resize: none;
-  border-radius: 2px;
-}
-
-.dashboard #locale,
-.dashboard #username,
-.dashboard #password,
-.dashboard #scope {
-  max-width: 18em;
-}
-
-.dashboard #locale {
-  margin-top: .5em;
-}
-
-textarea:focus,
-textarea:hover,
-input[type="text"]:focus,
-input[type="password"]:focus,
-input[type="text"]:hover,
-input[type="password"]:hover {
-  border-color: #2979ff;
-}
-
-input.red {
-  border-color: red;
-}
-
-input.green {
-  border-color: green;
-}
-
 .dashboard p label {
   margin-bottom: .2em;
   display: block;
@@ -98,7 +46,7 @@ p code {
 }
 
 .dashboard #nav li.active {
-  border-color: #2196f3
+  border-color: var(--blue)
 }
 
 .dashboard #nav i {
@@ -241,7 +189,7 @@ table tr>*:last-child {
 }
 
 .card#share ul li a {
-  color: #2196F3;
+  color: var(--blue);
   cursor: pointer;
   margin-right: auto;
 }
@@ -310,7 +258,7 @@ table tr>*:last-child {
 }
 
 .file-list li[aria-selected=true] {
-  background: #2196f3 !important;
+  background: var(--blue) !important;
   color: #fff !important;
   transition: .1s ease all;
 }

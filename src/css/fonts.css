@@ -110,32 +110,4 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 
-@font-face {
-  font-family: 'Material Icons';
-  font-style: normal;
-  font-weight: 400;
-  src: url(../assets/fonts/material/icons.eot);
-  src: local('Material Icons'),
-    local('MaterialIcons-Regular'),
-    url(../assets/fonts/material/icons.woff2) format('woff2'),
-    url(../assets/fonts/material/icons.ttf) format('truetype');
-}
-
-.prompt .file-list ul li:before,
-.material-icons {
-  font-family: 'Material Icons';
-  font-weight: normal;
-  font-style: normal;
-  font-size: 24px;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: 'liga';
-}
+@import "~material-design-icons/iconfont/material-icons.css";

@@ -1,18 +1,20 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
-import en from './en.yaml'
-import it from './it.yaml'
-import fr from './fr.yaml'
-import pt from './pt.yaml'
-import ptBR from './pt-br.yaml'
-import ja from './ja.yaml'
-import zhCN from './zh-cn.yaml'
-import zhTW from './zh-tw.yaml'
-import es from './es.yaml'
-import de from './de.yaml'
-import ru from './ru.yaml'
-import pl from './pl.yaml'
-import ko from './ko.yaml'
+
+import ar from './ar.json'
+import de from './de.json'
+import en from './en.json'
+import es from './es.json'
+import fr from './fr.json'
+import it from './it.json'
+import ja from './ja.json'
+import pl from './pl.json'
+import ko from './ko.json'
+import pt from './pt.json'
+import ptBR from './pt-br.json'
+import ru from './ru.json'
+import zhCN from './zh-cn.json'
+import zhTW from './zh-tw.json'
 
 Vue.use(VueI18n)
 
@@ -72,19 +74,20 @@ const i18n = new VueI18n({
   locale: detectLocale(),
   fallbackLocale: 'en',
   messages: {
-    'en': en,
-    'it': it,
-    'fr': fr,
-    'pt': pt,
-    'pt-br': ptBR,
-    'ja': ja,
-    'zh-cn': zhCN,
-    'zh-tw': zhTW,
-    'es': es,
+    'ar': ar,
     'de': de,
-    'ru': ru,
+    'en': en,
+    'es': es,
+    'fr': fr,
+    'it': it,
+    'ja': ja,
+    'ko': ko,
     'pl': pl,
-    'ko': ko
+    'pt-br': ptBR,
+    'pt': pt,
+    'ru': ru,
+    'zh-cn': zhCN,
+    'zh-tw': zhTW
   }
 })
 

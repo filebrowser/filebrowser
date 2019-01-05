@@ -1,13 +1,21 @@
 @import "~normalize.css/normalize.css";
 @import "~noty/lib/noty.css";
 @import "~noty/lib/themes/mint.css";
+@import "./_variables.css";
+@import "./_buttons.css";
+@import "./_inputs.css";
+@import "./_shell.css";
+@import "./_share.css";
 @import "./fonts.css";
 @import "./base.css";
 @import "./header.css";
 @import "./listing.css";
-@import "./editor.css";
 @import "./dashboard.css";
 @import "./login.css";
+
+.link {
+  color: var(--blue);
+}
 
 /* * * * * * * * * * * * * * * *
  *            ACTION           *
@@ -84,7 +92,7 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  background: #2196f3;
+  background: var(--blue);
   color: #fff;
   border-radius: 50%;
   font-size: .75em;
@@ -203,7 +211,7 @@
   color: #a5a5a5;
 }
 
-.credits span {
+.credits > span {
   display: block;
   margin: .3em 0;
 }
@@ -224,6 +232,38 @@
     -webkit-transform: rotate(-360deg);
     transform: rotate(-360deg);
   }
+}
+
+/* * * * * * * * * * * * * * * *
+ *         SETTINGS RULES      *
+ * * * * * * * * * * * * * * * */
+
+.rules > div {
+  display: flex;
+  align-items: center;
+  margin: .5rem 0;
+}
+
+.rules input[type="checkbox"] {
+  margin-right: .2rem;
+}
+
+.rules input[type="text"] {
+  border: 1px solid#ddd;
+  padding: .2rem;
+}
+
+.rules label {
+  margin-right: .5rem;
+}
+
+.rules button {
+  margin-left: auto;
+}
+
+.rules button.delete {
+  padding: .2rem .5rem;
+  margin-left: .5rem;
 }
 
 @import './mobile.css';

@@ -6,6 +6,9 @@ const mutations = {
     state.show = null
     state.showMessage = null
   },
+  toggleShell: (state) => {
+    state.showShell = !state.showShell
+  },
   showHover: (state, value) => {
     if (typeof value !== 'object') {
       state.show = value
@@ -27,6 +30,11 @@ const mutations = {
   setLoading: (state, value) => { state.loading = value },
   setReload: (state, value) => { state.reload = value },
   setUser: (state, value) => {
+    if (value === null) {
+      state.user = null
+      return
+    }
+
     let locale = value.locale
 
     if (locale === '') {
@@ -37,7 +45,6 @@ const mutations = {
     i18n.default.locale = locale
     state.user = value
   },
-  setCSS: (state, value) => (state.css = value),
   setJWT: (state, value) => (state.jwt = value),
   multiple: (state, value) => (state.multiple = value),
   addSelected: (state, value) => (state.selected.push(value)),
@@ -56,10 +63,16 @@ const mutations = {
     if (typeof value !== 'object') return
 
     for (let field in value) {
+      if (field === 'locale') {
+        moment.locale(value[field])
+        i18n.default.locale = value[field]
+      }
+
       state.user[field] = value[field]
     }
   },
   updateRequest: (state, value) => {
+    state.oldReq = state.req
     state.req = value
   },
   updateClipboard: (state, value) => {
@@ -69,9 +82,6 @@ const mutations = {
   resetClipboard: (state) => {
     state.clipboard.key = ''
     state.clipboard.items = []
-  },
-  setSchedule: (state, value) => {
-    state.schedule = value
   },
   setProgress: (state, value) => {
     state.progress = value
