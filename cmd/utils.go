@@ -28,6 +28,12 @@ func mustGetBool(cmd *cobra.Command, flag string) bool {
 	return b
 }
 
+func mustGetInt(cmd *cobra.Command, flag string) int {
+	b, err := cmd.Flags().GetInt(flag)
+	checkErr(err)
+	return b
+}
+
 func getDB() *storm.DB {
 	if _, err := os.Stat(databasePath); err != nil {
 		panic(errors.New(databasePath + " does not exist. Please run 'filebrowser init' first."))

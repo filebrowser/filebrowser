@@ -31,19 +31,29 @@ you want to change.`,
 		cmd.Flags().Visit(func(flag *pflag.Flag) {
 			switch flag.Name {
 			case "baseURL":
-				s.BaseURL = mustGetString(cmd, "baseURL")
+				s.BaseURL = mustGetString(cmd, flag.Name)
 			case "signup":
-				s.Signup = mustGetBool(cmd, "signup")
+				s.Signup = mustGetBool(cmd, flag.Name)
 			case "auth.method":
 				hasAuth = true
 			case "shell":
-				s.Shell = strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " ")
+				s.Shell = strings.Split(strings.TrimSpace(mustGetString(cmd, flag.Name)), " ")
 			case "branding.name":
-				s.Branding.Name = mustGetString(cmd, "branding.name")
+				s.Branding.Name = mustGetString(cmd, flag.Name)
 			case "branding.disableExternal":
-				s.Branding.DisableExternal = mustGetBool(cmd, "branding.disableExternal")
+				s.Branding.DisableExternal = mustGetBool(cmd, flag.Name)
 			case "branding.files":
-				s.Branding.Files = mustGetString(cmd, "branding.files")
+				s.Branding.Files = mustGetString(cmd, flag.Name)
+			case "log":
+				s.Log = mustGetString(cmd, flag.Name)
+			case "address":
+				s.Server.Address = mustGetString(cmd, flag.Name)
+			case "port":
+				s.Server.Port = mustGetInt(cmd, flag.Name)
+			case "tls.cert":
+				s.Server.TLSCert = mustGetString(cmd, flag.Name)
+			case "tls.key":
+				s.Server.TLSKey = mustGetString(cmd, flag.Name)
 			}
 		})
 
