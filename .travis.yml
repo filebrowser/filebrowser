@@ -12,30 +12,27 @@ env:
   - USE_DOCKER="true"
 stages:
   - lint
-  - test
+  - build
   - release
 cache:
   directories:
-    - lib/rice-box.go
+    - http/rice-box.go
 jobs:
   include:
   - stage: lint
-    script: "./build/run_linters.sh"
-  - stage: test
-    script: "./build/build_all.sh"
+    script: ./wizard.sh -l
+  - stage: build
+    script: ./wizard.sh -b
     deploy:
       provider: script
       skip_cleanup: true
-      script: docker build -t filebrowser/filebrowser . && ./build/docker_login.sh && docker push filebrowser/filebrowser && docker logout
+      script: ./wizard.sh -p
       on:
         tags: false
         repo: filebrowser/filebrowser
         branch: master
   - stage: release
-    script:
-      - docker run --rm -itv $(pwd):/src -w /src -v /var/run/docker.sock:/var/run/docker.sock filebrowser/dev sh -c "go get ./... && goreleaser"
-      - ./build/push_images.sh
-      - ./build/push_ricebox.sh
+    script: ./wizard.sh -r
     if: tag IS present
     deploy:
       provider: releases

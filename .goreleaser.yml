@@ -55,5 +55,3 @@ dockers:
     tag_templates:
       - "{{ .Tag }}"
       - latest
-    extra_files:
-      - Docker.json
