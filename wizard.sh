@@ -159,8 +159,15 @@ pushRicebox () {
 }
 
 ciRelease () {
-  docker run --rm -itv $(pwd):/go/src/github.com/filebrowser/filebrowser \
-    -v /var/run/docker.sock:/var/run/docker.sock filebrowser/dev goreleaser
+  docker run --rm -t \
+    -v $(pwd):/src \
+    -w /src \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    filebrowser/dev \
+    sh -c "\
+      go get ./... && \
+      goreleaser \
+    "
 
   dockerPushTag
   pushRicebox
