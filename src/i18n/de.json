@@ -1,6 +1,7 @@
 {
   "permanent": "Permanent",
   "buttons": {
+    "shell": "Toggle shell",
     "cancel": "Abbrechen",
     "close": "Schließen",
     "copy": "Kopieren",
@@ -37,7 +38,7 @@
     "linkCopied": "Verweis wurde kopiert !"
   },
   "errors": {
-    "forbidden": "Sie verfügen nicht über die nötigen Rechte!",
+    "forbidden": "You don't have permissions to access this.",
     "internal": "Etwas ist schief gelaufen.",
     "notFound": "Dieser Ort kann nicht angezeigt werden."
   },
@@ -167,14 +168,15 @@
     "insertRegex": "Insert regex expression",
     "insertPath": "Insert the path",
     "userUpdated": "Benutzer aktualisiert!",
-    "generalSettings": "General settings",
     "userDefaults": "User default settings",
     "defaultUserDescription": "This are the default settings for new users.",
+    "executeOnShell": "Execute on shell",
+    "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you want to run them on a shell instead (such as Bash or PowerShell), you can define it here with the  required arguments and flags. If set, the command you execute will be appended as an argument. This apply to both user commands and event hooks.",
     "perm": {
       "create": "Create files and directories",
       "delete": "Delete files and directories",
       "download": "Download",
-      "edit": "Edit files",
+      "modify": "Edit files",
       "execute": "Execute commands",
       "rename": "Rename or move files and directories",
       "share": "Share files"
@@ -182,6 +184,8 @@
   },
   "sidebar": {
     "help": "Hilfe",
+    "login": "Login",
+    "signup": "Signup",
     "logout": "Logout",
     "myFiles": "Meine Dateien",
     "newFile": "Neue Datei",
@@ -194,18 +198,12 @@
   "search": {
     "images": "Bilder",
     "music": "Musik",
-    "notSupportedCommand": "This is a not supported command.",
     "pdf": "PDF",
-    "pressToExecute": "Drücken Sie Enter zum Ausführen.",
-    "pressToSearch": "Drücken Sie Enter zum Suchen.",
-    "search": "Suche...",
-    "searchOrCommand": "Suche oder führe Befehl aus...",
-    "searchOrSupportedCommand": "Suche oder nutze eines Ihrer verfügbaren Befehle:",
-    "typeCommand": "Type and press enter to execute.",
-    "typeSearch": "Type and press enter to search.",
     "types": "Typen",
     "video": "Video",
-    "writeToSearch": "Hier schreiben zum Suchen"
+    "search": "Suche...",
+    "typeToSearch": "Type to search...",
+    "pressToSearch": "Press enter to search..."
   },
   "languages": {
     "ar": "العربية",
@@ -229,5 +227,9 @@
     "minutes": "Minuten",
     "hours": "Stunden",
     "days": "Tage"
+  },
+  "download": {
+    "downloadFile": "Download File",
+    "downloadFolder": "Download Folder"
   }
 }

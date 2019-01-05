@@ -1,6 +1,7 @@
 {
   "permanent": "Permanente",
   "buttons": {
+    "shell": "Toggle shell",
     "cancel": "Annulla",
     "close": "Chiudi",
     "copy": "Copia",
@@ -37,7 +38,7 @@
     "linkCopied": "Link copiato!"
   },
   "errors": {
-    "forbidden": "Spiecente, sembra che tu non abbia i permessi per accedere a questa pagina.",
+    "forbidden": "You don't have permissions to access this.",
     "internal": "Qualcosa è andato veramente male.",
     "notFound": "Questo percorso non può essere raggiunto."
   },
@@ -167,14 +168,15 @@
     "insertRegex": "Insert regex expression",
     "insertPath": "Insert the path",
     "userUpdated": "Utente aggiornato!",
-    "generalSettings": "General settings",
     "userDefaults": "User default settings",
     "defaultUserDescription": "This are the default settings for new users.",
+    "executeOnShell": "Execute on shell",
+    "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you want to run them on a shell instead (such as Bash or PowerShell), you can define it here with the  required arguments and flags. If set, the command you execute will be appended as an argument. This apply to both user commands and event hooks.",
     "perm": {
       "create": "Create files and directories",
       "delete": "Delete files and directories",
       "download": "Download",
-      "edit": "Edit files",
+      "modify": "Edit files",
       "execute": "Execute commands",
       "rename": "Rename or move files and directories",
       "share": "Share files"
@@ -182,6 +184,8 @@
   },
   "sidebar": {
     "help": "Aiuto",
+    "login": "Login",
+    "signup": "Signup",
     "logout": "Esci",
     "myFiles": "I miei file",
     "newFile": "Nuovo file",
@@ -194,18 +198,12 @@
   "search": {
     "images": "Immagini",
     "music": "Musica",
-    "notSupportedCommand": "Questo no nè un comando supportato.",
     "pdf": "PDF",
-    "pressToExecute": "Premi invio per eseguire.",
-    "pressToSearch": "Permi invio per cercare.",
-    "search": "Cerca...",
-    "searchOrCommand": "Cerca o esegui un comando...",
-    "searchOrSupportedCommand": "Cerca o anteponi '$' e usa uno dei comandi supportati:",
-    "typeCommand": "Scrivi e premi invio per eseguire.",
-    "typeSearch": "Scrivi e premi invio per cercare.",
     "types": "Tipi",
     "video": "Video",
-    "writeToSearch": "Scrivi qui per cercare"
+    "search": "Cerca...",
+    "typeToSearch": "Type to search...",
+    "pressToSearch": "Press enter to search..."
   },
   "languages": {
     "ar": "العربية",
@@ -229,5 +227,9 @@
     "minutes": "Minuti",
     "hours": "Ore",
     "days": "Giorni"
+  },
+  "download": {
+    "downloadFile": "Download File",
+    "downloadFolder": "Download Folder"
   }
 }

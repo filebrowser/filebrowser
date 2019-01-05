@@ -1,6 +1,7 @@
 {
   "permanent": "دائم",
   "buttons": {
+    "shell": "Toggle shell",
     "cancel": "إلغاء",
     "close": "إغلاق",
     "copy": "نسخ",
@@ -37,7 +38,7 @@
     "linkCopied": "تم نسخ الملف"
   },
   "errors": {
-    "forbidden": "أنت غير مرحب بك هنا!.",
+    "forbidden": "You don't have permissions to access this.",
     "internal": "لقد حدث خطأ ما.",
     "notFound": "لا يمكن الوصول لهذا المحتوى."
   },
@@ -167,14 +168,15 @@
     "insertRegex": "Insert regex expression",
     "insertPath": "Insert the path",
     "userUpdated": "تم تعديل المستخدم",
-    "generalSettings": "General settings",
     "userDefaults": "User default settings",
     "defaultUserDescription": "This are the default settings for new users.",
+    "executeOnShell": "Execute on shell",
+    "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you want to run them on a shell instead (such as Bash or PowerShell), you can define it here with the  required arguments and flags. If set, the command you execute will be appended as an argument. This apply to both user commands and event hooks.",
     "perm": {
       "create": "Create files and directories",
       "delete": "Delete files and directories",
       "download": "Download",
-      "edit": "Edit files",
+      "modify": "Edit files",
       "execute": "Execute commands",
       "rename": "Rename or move files and directories",
       "share": "Share files"
@@ -182,6 +184,8 @@
   },
   "sidebar": {
     "help": "مساعدة",
+    "login": "Login",
+    "signup": "Signup",
     "logout": "تسجيل خروج",
     "myFiles": "ملفاتي",
     "newFile": "ملف جديد",
@@ -194,18 +198,12 @@
   "search": {
     "images": "الصور",
     "music": "الموسيقى",
-    "notSupportedCommand": "هذا الأمر غير متاح.",
     "pdf": "PDF",
-    "pressToExecute": "إغضط زر Enter للتنفيذ.",
-    "pressToSearch": "إضغط زر Enter للبحث.",
-    "search": "البحث...",
-    "searchOrCommand": "إبحث او قم بتنفيذ أمر...",
-    "searchOrSupportedCommand": "إبحث او قم باضافة بادئة '$' واستخدم واحد من الاوامر الخاصة بك:",
-    "typeCommand": "أكتب واضغط Enter للتنفيذ.",
-    "typeSearch": "أكتب واضغط Enter للبحث.",
     "types": "الأنواع",
     "video": "فيديوهات",
-    "writeToSearch": "أكتب هنا للبحث"
+    "search": "البحث...",
+    "typeToSearch": "Type to search...",
+    "pressToSearch": "Press enter to search..."
   },
   "languages": {
     "ar": "العربية",
@@ -229,5 +227,9 @@
     "minutes": "دقائق",
     "hours": "ساعات",
     "days": "أيام"
+  },
+  "download": {
+    "downloadFile": "Download File",
+    "downloadFolder": "Download Folder"
   }
 }

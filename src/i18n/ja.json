@@ -1,6 +1,7 @@
 {
   "permanent": "永久",
   "buttons": {
+    "shell": "Toggle shell",
     "cancel": "キャンセル",
     "close": "閉じる",
     "copy": "コピー",
@@ -37,7 +38,7 @@
     "linkCopied": "リンクがコピーされました！"
   },
   "errors": {
-    "forbidden": "アクセスが拒否されました。",
+    "forbidden": "You don't have permissions to access this.",
     "internal": "内部エラーが発生しました。",
     "notFound": "リソースが見つからなりませんでした。"
   },
@@ -167,14 +168,15 @@
     "insertRegex": "Insert regex expression",
     "insertPath": "Insert the path",
     "userUpdated": "ユーザーは更新されました！",
-    "generalSettings": "General settings",
     "userDefaults": "User default settings",
     "defaultUserDescription": "This are the default settings for new users.",
+    "executeOnShell": "Execute on shell",
+    "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you want to run them on a shell instead (such as Bash or PowerShell), you can define it here with the  required arguments and flags. If set, the command you execute will be appended as an argument. This apply to both user commands and event hooks.",
     "perm": {
       "create": "Create files and directories",
       "delete": "Delete files and directories",
       "download": "Download",
-      "edit": "Edit files",
+      "modify": "Edit files",
       "execute": "Execute commands",
       "rename": "Rename or move files and directories",
       "share": "Share files"
@@ -182,6 +184,8 @@
   },
   "sidebar": {
     "help": "ヘルプ",
+    "login": "Login",
+    "signup": "Signup",
     "logout": "ログアウト",
     "myFiles": "私のファイル",
     "newFile": "新しいファイルを作成",
@@ -194,18 +198,12 @@
   "search": {
     "images": "画像",
     "music": "音楽",
-    "notSupportedCommand": "This is a not supported command.",
     "pdf": "PDF",
-    "pressToExecute": "Enter を押して実行します。",
-    "pressToSearch": "Enter を押して検索します。",
-    "search": "検索...",
-    "searchOrCommand": "コマンドを検索または実行します。",
-    "searchOrSupportedCommand": "サポートしているコマンドを検索または実行します：",
-    "typeCommand": "Type and press enter to execute.",
-    "typeSearch": "Type and press enter to search.",
     "types": "種類",
     "video": "ビデオ",
-    "writeToSearch": "ここにキーワードを入力してください"
+    "search": "検索...",
+    "typeToSearch": "Type to search...",
+    "pressToSearch": "Press enter to search..."
   },
   "languages": {
     "ar": "العربية",
@@ -229,5 +227,9 @@
     "minutes": "分",
     "hours": "時間",
     "days": "日"
+  },
+  "download": {
+    "downloadFile": "Download File",
+    "downloadFolder": "Download Folder"
   }
 }

@@ -1,6 +1,7 @@
 {
   "permanent": "Permanente",
   "buttons": {
+    "shell": "Toggle shell",
     "cancel": "Cancelar",
     "close": "Cerrar",
     "copy": "Copiar",
@@ -37,7 +38,7 @@
     "linkCopied": "¡Link copiado!"
   },
   "errors": {
-    "forbidden": "No eres bienvenido aquí.",
+    "forbidden": "You don't have permissions to access this.",
     "internal": "La verdad es que algo ha ido mal.",
     "notFound": "No se puede acceder a este lugar."
   },
@@ -75,11 +76,11 @@
   },
   "login": {
     "password": "Contraseña",
-    "passwordConfirm": "Password Confirmation",
+    "passwordConfirm": "Confirmación de contraseña",
     "submit": "Iniciar sesión",
-    "createAnAccount": "Create an account",
+    "createAnAccount": "Crear una cuenta",
     "loginInstead": "Already have an account",
-    "passwordsDontMatch": "Passwords don't match",
+    "passwordsDontMatch": "Las contraseñas no coinciden",
     "usernameTaken": "Username already taken",
     "signup": "Signup",
     "username": "Usuario",
@@ -120,9 +121,9 @@
   "settings": {
     "instanceName": "Instance name",
     "brandingDirectoryPath": "Branding directory path",
-    "documentation": "documentation",
+    "documentation": "documentación",
     "branding": "Branding",
-    "disableExternalLinks": "Disable external links (except documentation)",
+    "disableExternalLinks": "Deshabilitar enlaces externos (excepto documentación)",
     "brandingHelp": "You can costumize how your File Browser instance looks and feels by changing its name, replacing the logo, adding custom styles and even disable external links to GitHub.\nFor more information about custom branding, please check out the {0}.",
     "admin": "Admin",
     "administrator": "Administrador",
@@ -132,7 +133,7 @@
     "allowPublish": "Publicar nuevos posts y páginas",
     "avoidChanges": "(dejar en blanco para evitar cambios)",
     "changePassword": "Cambiar contraseña",
-    "commandRunner": "Command runner",
+    "commandRunner": "Executor de comandos",
     "commandRunnerHelp": "Here you can set commands that are executed in the named events. You must write one per line. The environment variables {0} and {1} will be available, being {0} relative to {1}. For more information about this feature and the available environment variables, please read the {2}.",
     "commandsUpdated": "¡Comandos actualizados!",
     "customStylesheet": "Modificar hoja de estilos",
@@ -163,25 +164,28 @@
     "username": "Usuario",
     "users": "Usuarios",
     "globalRules": "This is a global set of allow and disallow rules. They apply to every user. You can define specific rules on each user's settings to override this ones.",
-    "allowSignup": "Allow users to signup",
+    "allowSignup": "Permitir registro de usuarios",
     "insertRegex": "Insert regex expression",
-    "insertPath": "Insert the path",
+    "insertPath": "Introduce la ruta",
     "userUpdated": "¡Usuario actualizado!",
-    "generalSettings": "General settings",
-    "userDefaults": "User default settings",
+    "userDefaults": "Configuración de usuario por defecto",
     "defaultUserDescription": "This are the default settings for new users.",
+    "executeOnShell": "Execute on shell",
+    "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you want to run them on a shell instead (such as Bash or PowerShell), you can define it here with the  required arguments and flags. If set, the command you execute will be appended as an argument. This apply to both user commands and event hooks.",
     "perm": {
-      "create": "Create files and directories",
-      "delete": "Delete files and directories",
-      "download": "Download",
-      "edit": "Edit files",
-      "execute": "Execute commands",
+      "create": "Crear ficheros y directorios",
+      "delete": "Eliminar ficheros y directorios",
+      "download": "Descargar",
+      "modify": "Edit files",
+      "execute": "Executar comandos",
       "rename": "Rename or move files and directories",
-      "share": "Share files"
+      "share": "Compartir ficheros"
     }
   },
   "sidebar": {
     "help": "Ayuda",
+    "login": "Login",
+    "signup": "Signup",
     "logout": "Cerrar sesión",
     "myFiles": "Mis archivos",
     "newFile": "Nuevo archivo",
@@ -194,18 +198,12 @@
   "search": {
     "images": "Images",
     "music": "Música",
-    "notSupportedCommand": "This is a not supported command.",
     "pdf": "PDF",
-    "pressToExecute": "Presiona enter para ejecutar.",
-    "pressToSearch": "Presiona enter para buscar.",
-    "search": "Buscar...",
-    "searchOrCommand": "Buscar o ejecutar un comando...",
-    "searchOrSupportedCommand": "Buscar o ejecutar uno de los comandos soportados:",
-    "typeCommand": "Type and press enter to execute.",
-    "typeSearch": "Type and press enter to search.",
     "types": "Tipos",
     "video": "Vídeo",
-    "writeToSearch": "Escribe aquí para buscar"
+    "search": "Buscar...",
+    "typeToSearch": "Type to search...",
+    "pressToSearch": "Press enter to search..."
   },
   "languages": {
     "ar": "العربية",
@@ -229,5 +227,9 @@
     "minutes": "Minutos",
     "hours": "Horas",
     "days": "Días"
+  },
+  "download": {
+    "downloadFile": "Download File",
+    "downloadFolder": "Download Folder"
   }
 }

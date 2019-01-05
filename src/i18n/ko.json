@@ -1,6 +1,7 @@
 {
   "permanent": "영구적인",
   "buttons": {
+    "shell": "Toggle shell",
     "cancel": "취소",
     "close": "닫기",
     "copy": "복사",
@@ -37,7 +38,7 @@
     "linkCopied": "링크가 복사되었습니다!"
   },
   "errors": {
-    "forbidden": "허가되지 않은 접속입니다!",
+    "forbidden": "You don't have permissions to access this.",
     "internal": "먼가 오류가 있네요?!",
     "notFound": "해당 경로를 찾을 수 없습니다."
   },
@@ -167,14 +168,15 @@
     "insertRegex": "Insert regex expression",
     "insertPath": "Insert the path",
     "userUpdated": "유저 정보 업데이트 완료!",
-    "generalSettings": "General settings",
     "userDefaults": "User default settings",
     "defaultUserDescription": "This are the default settings for new users.",
+    "executeOnShell": "Execute on shell",
+    "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you want to run them on a shell instead (such as Bash or PowerShell), you can define it here with the  required arguments and flags. If set, the command you execute will be appended as an argument. This apply to both user commands and event hooks.",
     "perm": {
       "create": "Create files and directories",
       "delete": "Delete files and directories",
       "download": "Download",
-      "edit": "Edit files",
+      "modify": "Edit files",
       "execute": "Execute commands",
       "rename": "Rename or move files and directories",
       "share": "Share files"
@@ -182,6 +184,8 @@
   },
   "sidebar": {
     "help": "도움(Help)",
+    "login": "Login",
+    "signup": "Signup",
     "logout": "로그아웃",
     "myFiles": "내 파일들",
     "newFile": "새로운 파일",
@@ -194,18 +198,12 @@
   "search": {
     "images": "이미지",
     "music": "음악",
-    "notSupportedCommand": "지원 되지 않은 커맨드입니다.",
     "pdf": "PDF",
-    "pressToExecute": "엔터를 누르시면 실행합니다.",
-    "pressToSearch": "엔터를 누르시면 검색됩니다.",
-    "search": "검색...",
-    "searchOrCommand": "커맨드를 검색하거나 실행합니다...",
-    "searchOrSupportedCommand": "검색하거나 '$'를 앞에 붙여 지원되는 커맨드들을 사용해보세요:",
-    "typeCommand": "엔터를 누르시면 실행합니다.",
-    "typeSearch": "엔터를 누르시면 검색됩니다.",
     "types": "Types",
     "video": "비디오",
-    "writeToSearch": "검색하고 싶은것을 적어주세요"
+    "search": "검색...",
+    "typeToSearch": "Type to search...",
+    "pressToSearch": "Press enter to search..."
   },
   "languages": {
     "ar": "العربية",
@@ -229,5 +227,9 @@
     "minutes": "분",
     "hours": "시",
     "days": "일"
+  },
+  "download": {
+    "downloadFile": "Download File",
+    "downloadFolder": "Download Folder"
   }
 }
