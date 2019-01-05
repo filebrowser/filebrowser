@@ -7,6 +7,7 @@ require (
 	github.com/Sereal/Sereal v0.0.0-20180905114147-563b78806e28 // indirect
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/boltdb/bolt v1.3.1 // indirect
+	github.com/cpuguy83/go-md2man v1.0.8 // indirect
 	github.com/daaku/go.zipexe v0.0.0-20150329023125-a5fe2436ffcb // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -28,6 +29,7 @@ require (
 	github.com/pelletier/go-toml v1.2.0
 	github.com/pierrec/lz4 v2.0.5+incompatible // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/russross/blackfriday v1.5.1 // indirect
 	github.com/spf13/afero v1.1.2
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.3

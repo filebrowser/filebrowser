@@ -1,14 +1,12 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
+	"log"
 )
 
 // Execute executes the commands.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }
