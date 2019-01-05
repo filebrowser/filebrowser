@@ -91,8 +91,8 @@ func generateMarkdown(cmd *cobra.Command, w io.Writer) {
 		long = short
 	}
 
+	buf.WriteString("---\ndescription: " + short + "\n---\n\n")
 	buf.WriteString("# " + name + "\n\n")
-	buf.WriteString(short + "\n\n")
 	buf.WriteString("## Synopsis\n\n")
 	buf.WriteString(long + "\n\n")
 
@@ -122,7 +122,7 @@ func printOptions(buf *bytes.Buffer, cmd *cobra.Command, name string) {
 	parentFlags := cmd.InheritedFlags()
 	parentFlags.SetOutput(buf)
 	if parentFlags.HasAvailableFlags() {
-		buf.WriteString("## Options inherited from parent commands\n\n```\n")
+		buf.WriteString("### Inherited\n\n```\n")
 		parentFlags.PrintDefaults()
 		buf.WriteString("```\n")
 	}
