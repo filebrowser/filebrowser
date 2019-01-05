@@ -33,7 +33,7 @@ jobs:
         branch: master
   - stage: release
     script:
-      - docker run --rm -itv $(pwd):/go/src/github.com/filebrowser/filebrowser -v /var/run/docker.sock:/var/run/docker.sock filebrowser/dev goreleaser
+      - docker run --rm -itv $(pwd):/src -w /src -v /var/run/docker.sock:/var/run/docker.sock filebrowser/dev sh -c "go get ./... && goreleaser"
       - ./build/push_images.sh
       - ./build/push_ricebox.sh
     if: tag IS present
