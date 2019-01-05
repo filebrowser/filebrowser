@@ -27,7 +27,7 @@ func (s shareBackend) GetPermanent(path string, id uint) (*share.Link, error) {
 	if err == storm.ErrNotFound {
 		return nil, errors.ErrNotExist
 	}
-	
+
 	return &v, err
 }
 

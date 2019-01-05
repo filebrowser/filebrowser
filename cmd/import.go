@@ -16,10 +16,10 @@ func init() {
 var importCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Imports an old configuration",
-	Long:  `Imports an old configuration. This command DOES NOT
+	Long: `Imports an old configuration. This command DOES NOT
 import share links because they are incompatible with
 this version.`,
-	Args:  cobra.NoArgs,
+	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		oldDB := mustGetString(cmd, "old.database")
 		oldConf := mustGetString(cmd, "old.config")
