@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/filebrowser/filebrowser/files"
-	"github.com/filebrowser/filebrowser/users"
+	"github.com/filebrowser/filebrowser/v2/files"
+	"github.com/filebrowser/filebrowser/v2/users"
 	"github.com/hacdias/fileutils"
 	"github.com/mholt/archiver"
 )

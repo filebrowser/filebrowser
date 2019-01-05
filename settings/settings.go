@@ -1,6 +1,6 @@
 package settings
 
-import "github.com/filebrowser/filebrowser/rules"
+import "github.com/filebrowser/filebrowser/v2/rules"
 
 // AuthMethod describes an authentication method.
 type AuthMethod string

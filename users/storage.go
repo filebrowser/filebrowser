@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/filebrowser/filebrowser/errors"
+	"github.com/filebrowser/filebrowser/v2/errors"
 )
 
 // StorageBackend is the interface to implement for a users storage.

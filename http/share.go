@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/filebrowser/filebrowser/errors"
-	"github.com/filebrowser/filebrowser/share"
+	"github.com/filebrowser/filebrowser/v2/errors"
+	"github.com/filebrowser/filebrowser/v2/share"
 )
 
 func withPermShare(fn handleFunc) handleFunc {

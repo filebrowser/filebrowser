@@ -1,12 +1,12 @@
 package users
 
 import (
-	"github.com/filebrowser/filebrowser/errors"
+	"github.com/filebrowser/filebrowser/v2/errors"
 	"path/filepath"
 	"regexp"
 
-	"github.com/filebrowser/filebrowser/files"
-	"github.com/filebrowser/filebrowser/rules"
+	"github.com/filebrowser/filebrowser/v2/files"
+	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/spf13/afero"
 )
 

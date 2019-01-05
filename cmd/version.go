@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/filebrowser/filebrowser/version"
+	"github.com/filebrowser/filebrowser/v2/version"
 	"github.com/spf13/cobra"
 )
 

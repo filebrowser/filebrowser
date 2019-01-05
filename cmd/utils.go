@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/asdine/storm"
-	"github.com/filebrowser/filebrowser/storage"
-	"github.com/filebrowser/filebrowser/storage/bolt"
+	"github.com/filebrowser/filebrowser/v2/storage"
+	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 	"github.com/spf13/cobra"
 )
 

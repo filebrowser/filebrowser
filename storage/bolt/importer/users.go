@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 
 	"github.com/asdine/storm"
-	"github.com/filebrowser/filebrowser/rules"
-	"github.com/filebrowser/filebrowser/storage"
-	"github.com/filebrowser/filebrowser/users"
+	"github.com/filebrowser/filebrowser/v2/rules"
+	"github.com/filebrowser/filebrowser/v2/storage"
+	"github.com/filebrowser/filebrowser/v2/users"
 	"go.etcd.io/bbolt"
 )
 

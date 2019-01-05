@@ -3,7 +3,7 @@ package http
 import (
 	"net/http"
 
-	"github.com/filebrowser/filebrowser/files"
+	"github.com/filebrowser/filebrowser/v2/files"
 )
 
 var withHashFile = func(fn handleFunc) handleFunc {

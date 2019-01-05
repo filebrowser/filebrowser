@@ -16,8 +16,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/filebrowser/filebrowser/errors"
-	"github.com/filebrowser/filebrowser/rules"
+	"github.com/filebrowser/filebrowser/v2/errors"
+	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/spf13/afero"
 )
 

@@ -2,7 +2,7 @@ package bolt
 
 import (
 	"github.com/asdine/storm"
-	"github.com/filebrowser/filebrowser/errors"
+	"github.com/filebrowser/filebrowser/v2/errors"
 )
 
 func get(db *storm.DB, name string, to interface{}) error {

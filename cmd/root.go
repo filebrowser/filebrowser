@@ -12,12 +12,12 @@ import (
 	"strconv"
 
 	"github.com/asdine/storm"
-	"github.com/filebrowser/filebrowser/auth"
-	"github.com/filebrowser/filebrowser/settings"
-	"github.com/filebrowser/filebrowser/storage"
-	"github.com/filebrowser/filebrowser/users"
+	"github.com/filebrowser/filebrowser/v2/auth"
+	"github.com/filebrowser/filebrowser/v2/settings"
+	"github.com/filebrowser/filebrowser/v2/storage"
+	"github.com/filebrowser/filebrowser/v2/users"
 
-	fbhttp "github.com/filebrowser/filebrowser/http"
+	fbhttp "github.com/filebrowser/filebrowser/v2/http"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"

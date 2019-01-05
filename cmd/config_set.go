@@ -3,7 +3,7 @@ package cmd
 import (
 	"strings"
 
-	"github.com/filebrowser/filebrowser/auth"
+	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
