@@ -17,7 +17,7 @@ type Settings struct {
 	Branding   Branding            `json:"branding"`
 	Commands   map[string][]string `json:"commands"`
 	Shell      []string            `json:"shell"`
-	Rules      []rules.Rule        `json:"rules"` // TODO: use this add to cli
+	Rules      []rules.Rule        `json:"rules"`
 }
 
 // Server settings.
