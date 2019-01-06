@@ -64,22 +64,22 @@ func usernameOrIDRequired(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func addUserFlags(cmd *cobra.Command) {
-	cmd.Flags().Bool("perm.admin", false, "admin perm for users")
-	cmd.Flags().Bool("perm.execute", true, "execute perm for users")
-	cmd.Flags().Bool("perm.create", true, "create perm for users")
-	cmd.Flags().Bool("perm.rename", true, "rename perm for users")
-	cmd.Flags().Bool("perm.modify", true, "modify perm for users")
-	cmd.Flags().Bool("perm.delete", true, "delete perm for users")
-	cmd.Flags().Bool("perm.share", true, "share perm for users")
-	cmd.Flags().Bool("perm.download", true, "download perm for users")
-	cmd.Flags().String("sorting.by", "name", "sorting mode (name, size or modified)")
-	cmd.Flags().Bool("sorting.asc", false, "sorting by ascending order")
-	cmd.Flags().Bool("lockPassword", false, "lock password")
-	cmd.Flags().StringSlice("commands", nil, "a list of the commands a user can execute")
-	cmd.Flags().String("scope", "", "scope for users")
-	cmd.Flags().String("locale", "en", "locale for users")
-	cmd.Flags().String("viewMode", string(users.ListViewMode), "view mode for users")
+func addUserFlags(cmd *cobra.Command, prepend string) {
+	cmd.Flags().Bool(prepend+"perm.admin", false, "admin perm for users")
+	cmd.Flags().Bool(prepend+"perm.execute", true, "execute perm for users")
+	cmd.Flags().Bool(prepend+"perm.create", true, "create perm for users")
+	cmd.Flags().Bool(prepend+"perm.rename", true, "rename perm for users")
+	cmd.Flags().Bool(prepend+"perm.modify", true, "modify perm for users")
+	cmd.Flags().Bool(prepend+"perm.delete", true, "delete perm for users")
+	cmd.Flags().Bool(prepend+"perm.share", true, "share perm for users")
+	cmd.Flags().Bool(prepend+"perm.download", true, "download perm for users")
+	cmd.Flags().String(prepend+"sorting.by", "name", "sorting mode (name, size or modified)")
+	cmd.Flags().Bool(prepend+"sorting.asc", false, "sorting by ascending order")
+	cmd.Flags().Bool(prepend+"lockPassword", false, "lock password")
+	cmd.Flags().StringSlice(prepend+"commands", nil, "a list of the commands a user can execute")
+	cmd.Flags().String(prepend+"scope", "", "scope for users")
+	cmd.Flags().String(prepend+"locale", "en", "locale for users")
+	cmd.Flags().String(prepend+"viewMode", string(users.ListViewMode), "view mode for users")
 }
 
 func getViewMode(cmd *cobra.Command) users.ViewMode {
@@ -90,39 +90,39 @@ func getViewMode(cmd *cobra.Command) users.ViewMode {
 	return viewMode
 }
 
-func getUserDefaults(cmd *cobra.Command, defaults *settings.UserDefaults, all bool) {
+func getUserDefaults(cmd *cobra.Command, defaults *settings.UserDefaults, prepend string, all bool) {
 	visit := func(flag *pflag.Flag) {
 		switch flag.Name {
-		case "scope":
-			defaults.Scope = mustGetString(cmd, "scope")
-		case "locale":
-			defaults.Locale = mustGetString(cmd, "locale")
-		case "viewMode":
+		case prepend+"scope":
+			defaults.Scope = mustGetString(cmd, flag.Name)
+		case prepend+"locale":
+			defaults.Locale = mustGetString(cmd, flag.Name)
+		case prepend+"viewMode":
 			defaults.ViewMode = getViewMode(cmd)
-		case "perm.admin":
-			defaults.Perm.Admin = mustGetBool(cmd, "perm.admin")
-		case "perm.execute":
-			defaults.Perm.Execute = mustGetBool(cmd, "perm.execute")
-		case "perm.create":
-			defaults.Perm.Create = mustGetBool(cmd, "perm.create")
-		case "perm.rename":
-			defaults.Perm.Rename = mustGetBool(cmd, "perm.rename")
-		case "perm.modify":
-			defaults.Perm.Modify = mustGetBool(cmd, "perm.modify")
-		case "perm.delete":
-			defaults.Perm.Delete = mustGetBool(cmd, "perm.delete")
-		case "perm.share":
-			defaults.Perm.Share = mustGetBool(cmd, "perm.share")
-		case "perm.download":
-			defaults.Perm.Download = mustGetBool(cmd, "perm.download")
-		case "commands":
-			commands, err := cmd.Flags().GetStringSlice("commands")
+		case prepend+"perm.admin":
+			defaults.Perm.Admin = mustGetBool(cmd, flag.Name)
+		case prepend+"perm.execute":
+			defaults.Perm.Execute = mustGetBool(cmd, flag.Name)
+		case prepend+"perm.create":
+			defaults.Perm.Create = mustGetBool(cmd, flag.Name)
+		case prepend+"perm.rename":
+			defaults.Perm.Rename = mustGetBool(cmd, flag.Name)
+		case prepend+"perm.modify":
+			defaults.Perm.Modify = mustGetBool(cmd, flag.Name)
+		case prepend+"perm.delete":
+			defaults.Perm.Delete = mustGetBool(cmd, flag.Name)
+		case prepend+"perm.share":
+			defaults.Perm.Share = mustGetBool(cmd, flag.Name)
+		case prepend+"perm.download":
+			defaults.Perm.Download = mustGetBool(cmd, flag.Name)
+		case prepend+"commands":
+			commands, err := cmd.Flags().GetStringSlice(flag.Name)
 			checkErr(err)
 			defaults.Commands = commands
-		case "sorting.by":
-			defaults.Sorting.By = mustGetString(cmd, "sorting.by")
-		case "sorting.asc":
-			defaults.Sorting.Asc = mustGetBool(cmd, "sorting.asc")
+		case prepend+"sorting.by":
+			defaults.Sorting.By = mustGetString(cmd, flag.Name)
+		case prepend+"sorting.asc":
+			defaults.Sorting.Asc = mustGetBool(cmd, flag.Name)
 		}
 	}
 

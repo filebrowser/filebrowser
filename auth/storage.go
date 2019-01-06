@@ -22,15 +22,9 @@ func NewStorage(back StorageBackend, users *users.Storage) *Storage {
 	return &Storage{back: back, users: users}
 }
 
-// Get wraps a StorageBackend.Get and calls SetStorage on the auther.
+// Get wraps a StorageBackend.Get.
 func (s *Storage) Get(t settings.AuthMethod) (Auther, error) {
-	auther, err := s.back.Get(t)
-	if err != nil {
-		return nil, err
-	}
-
-	auther.SetStorage(s.users)
-	return auther, nil
+	return s.back.Get(t)
 }
 
 // Save wraps a StorageBackend.Save.

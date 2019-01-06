@@ -12,7 +12,7 @@ func init() {
 	usersUpdateCmd.Flags().UintP("id", "i", 0, "id of the user")
 	usersUpdateCmd.Flags().StringP("username", "u", "", "user to change or new username if flag 'id' is set")
 	usersUpdateCmd.Flags().StringP("password", "p", "", "new password")
-	addUserFlags(usersUpdateCmd)
+	addUserFlags(usersUpdateCmd, "")
 }
 
 var usersUpdateCmd = &cobra.Command{
@@ -26,17 +26,19 @@ options you want to change.`,
 		defer db.Close()
 		st := getStorage(db)
 
+		set, err := st.Settings.Get()
+		checkErr(err)
+
 		id, _ := cmd.Flags().GetUint("id")
 		username := mustGetString(cmd, "username")
 		password := mustGetString(cmd, "password")
 
 		var user *users.User
-		var err error
 
 		if id != 0 {
-			user, err = st.Users.Get(id)
+			user, err = st.Users.Get(set.Scope, id)
 		} else {
-			user, err = st.Users.Get(username)
+			user, err = st.Users.Get(set.Scope, username)
 		}
 
 		checkErr(err)
@@ -49,7 +51,7 @@ options you want to change.`,
 			Sorting:  user.Sorting,
 			Commands: user.Commands,
 		}
-		getUserDefaults(cmd, &defaults, false)
+		getUserDefaults(cmd, &defaults, "", false)
 		user.Scope = defaults.Scope
 		user.Locale = defaults.Locale
 		user.ViewMode = defaults.ViewMode

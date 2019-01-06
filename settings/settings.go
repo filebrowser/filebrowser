@@ -10,6 +10,7 @@ type Settings struct {
 	Key        []byte              `json:"key"`
 	BaseURL    string              `json:"baseURL"`
 	Log        string              `json:"log"`
+	Scope      string              `json:"scope"`
 	Server     Server              `json:"server"`
 	Signup     bool                `json:"signup"`
 	Defaults   UserDefaults        `json:"defaults"`

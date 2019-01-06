@@ -8,7 +8,7 @@ import (
 func init() {
 	usersCmd.AddCommand(usersNewCmd)
 
-	addUserFlags(usersNewCmd)
+	addUserFlags(usersNewCmd, "")
 	usersNewCmd.Flags().StringP("username", "u", "", "new users's username")
 	usersNewCmd.Flags().StringP("password", "p", "", "new user's password")
 	usersNewCmd.MarkFlagRequired("username")
@@ -27,7 +27,7 @@ var usersNewCmd = &cobra.Command{
 
 		s, err := st.Settings.Get()
 		checkErr(err)
-		getUserDefaults(cmd, &s.Defaults, false)
+		getUserDefaults(cmd, &s.Defaults, "", false)
 
 		password, _ := cmd.Flags().GetString("password")
 		password, err = users.HashPwd(password)

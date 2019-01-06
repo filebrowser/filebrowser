@@ -30,10 +30,11 @@ var configCmd = &cobra.Command{
 }
 
 func addConfigFlags(cmd *cobra.Command) {
-	addUserFlags(cmd)
+	addUserFlags(cmd, "defaults.")
 	cmd.Flags().StringP("baseURL", "b", "/", "base url of this installation")
 	cmd.Flags().BoolP("signup", "s", false, "allow users to signup")
 	cmd.Flags().String("shell", "", "shell command to which other commands should be appended")
+	cmd.Flags().String("scope", "", "scope to prepend to a user's scope when it is relative (default is current working directory)")
 
 	cmd.Flags().StringP("address", "a", "127.0.0.1", "default address to listen to")
 	cmd.Flags().StringP("log", "l", "stderr", "log output")
@@ -102,6 +103,7 @@ func printSettings(s *settings.Settings, auther auth.Auther) {
 	fmt.Fprintf(w, "Auth method:\t%s\n", s.AuthMethod)
 	fmt.Fprintf(w, "Shell:\t%s\t\n", strings.Join(s.Shell, " "))
 	fmt.Fprintf(w, "Log:\t%s\t\n", s.Log)
+	fmt.Fprintf(w, "Scope:\t%s\t\n", s.Scope)
 	fmt.Fprintln(w, "\nServer:")
 	fmt.Fprintf(w, "\tAddress:\t%s\n", s.Server.Address)
 	fmt.Fprintf(w, "\tPort:\t%d\n", s.Server.Port)

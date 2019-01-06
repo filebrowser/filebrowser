@@ -3,7 +3,6 @@ package cmd
 import (
 	"crypto/rand"
 	"crypto/tls"
-	"errors"
 	"io/ioutil"
 	"log"
 	"net"
@@ -35,7 +34,7 @@ func init() {
 	rootCmd.Flags().IntP("port", "p", 0, "port to listen on (default comes from database)")
 	rootCmd.Flags().StringP("cert", "c", "", "tls certificate (default comes from database)")
 	rootCmd.Flags().StringP("key", "k", "", "tls key (default comes from database)")
-	rootCmd.Flags().StringP("scope", "s", "", "scope for users")
+	rootCmd.Flags().StringP("scope", "s", "", "scope to prepend to a user's scope when it is relative (default comes from database)")
 }
 
 var rootCmd = &cobra.Command{
@@ -103,9 +102,11 @@ func serverVisitAndReplace(cmd *cobra.Command, s *settings.Settings) {
 }
 
 func quickSetup(cmd *cobra.Command) {
+	var err error
 	scope := mustGetString(cmd, "scope")
 	if scope == "" {
-		panic(errors.New("scope flag must be set for quick setup"))
+		scope, err = os.Getwd()
+		checkErr(err)
 	}
 
 	db, err := storm.Open(databasePath)
@@ -115,6 +116,7 @@ func quickSetup(cmd *cobra.Command) {
 	set := &settings.Settings{
 		Key:        generateRandomBytes(64), // 256 bit
 		BaseURL:    "",
+		Scope:      scope,
 		Log:        "stderr",
 		Signup:     false,
 		AuthMethod: auth.MethodJSONAuth,
@@ -125,7 +127,7 @@ func quickSetup(cmd *cobra.Command) {
 			TLSKey:  mustGetString(cmd, "key"),
 		},
 		Defaults: settings.UserDefaults{
-			Scope:  scope,
+			Scope:  ".",
 			Locale: "en",
 			Perm: users.Permissions{
 				Admin:    false,
@@ -168,6 +170,13 @@ func quickSetup(cmd *cobra.Command) {
 func startServer(cmd *cobra.Command, st *storage.Storage) {
 	settings, err := st.Settings.Get()
 	checkErr(err)
+
+	scope := mustGetString(cmd, "scope")
+	if scope != "" {
+		settings.Scope = scope
+		err = st.Settings.Save(settings)
+		checkErr(err)		
+	}
 
 	serverVisitAndReplace(cmd, settings)
 	setupLogger(settings)

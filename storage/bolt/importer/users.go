@@ -3,7 +3,7 @@ package importer
 import (
 	"encoding/json"
 	"fmt"
-	"path/filepath"
+	"os"
 
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/v2/rules"
@@ -52,7 +52,6 @@ func readOldUsers(db *storm.DB) ([]*oldUser, error) {
 }
 
 func convertUsersToNew(old []*oldUser) ([]*users.User, error) {
-	var err error
 	list := []*users.User{}
 
 	for _, oldUser := range old {
@@ -82,12 +81,12 @@ func convertUsersToNew(old []*oldUser) ([]*users.User, error) {
 			user.Rules = append(user.Rules, *rule)
 		}
 
-		user.Scope, err = filepath.Abs(user.Scope)
+		baseScope, err := os.Getwd()
 		if err != nil {
 			return nil, err
 		}
 
-		err = user.Clean()
+		err = user.Clean(baseScope)
 		if err != nil {
 			return nil, err
 		}

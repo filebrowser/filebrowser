@@ -15,7 +15,6 @@ func init() {
 	configCmd.AddCommand(configInitCmd)
 	rootCmd.AddCommand(configInitCmd)
 	addConfigFlags(configInitCmd)
-	configInitCmd.MarkFlagRequired("scope")
 }
 
 var configInitCmd = &cobra.Command{
@@ -33,8 +32,15 @@ override the options.`,
 		}
 
 		defaults := settings.UserDefaults{}
-		getUserDefaults(cmd, &defaults, true)
+		getUserDefaults(cmd, &defaults, "defaults.", true)
 		authMethod, auther := getAuthentication(cmd)
+
+		var err error
+		scope := mustGetString(cmd, "scope")
+		if scope == "" {
+			scope, err = os.Getwd()
+			checkErr(err)
+		}
 
 		db, err := storm.Open(databasePath)
 		checkErr(err)
@@ -45,6 +51,7 @@ override the options.`,
 			BaseURL:    mustGetString(cmd, "baseURL"),
 			Log:        mustGetString(cmd, "log"),
 			Signup:     mustGetBool(cmd, "signup"),
+			Scope:      scope,
 			Shell:      strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " "),
 			AuthMethod: authMethod,
 			Defaults:   defaults,
