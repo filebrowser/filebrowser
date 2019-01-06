@@ -15,8 +15,9 @@ func init() {
 }
 
 var upgradeCmd = &cobra.Command{
-	Use:   "upgrade",
-	Short: "Upgrades an old configuration",
+	Use:     "upgrade",
+	Version: rootCmd.Version,
+	Short:   "Upgrades an old configuration",
 	Long: `Upgrades an old configuration. This command DOES NOT
 import share links because they are incompatible with
 this version.`,

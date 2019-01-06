@@ -19,10 +19,11 @@ func init() {
 }
 
 var configCmd = &cobra.Command{
-	Use:   "config",
-	Short: "Configuration management utility",
-	Long:  `Configuration management utility.`,
-	Args:  cobra.NoArgs,
+	Use:     "config",
+	Version: rootCmd.Version,
+	Short:   "Configuration management utility",
+	Long:    `Configuration management utility.`,
+	Args:    cobra.NoArgs,
 }
 
 func addConfigFlags(cmd *cobra.Command) {
