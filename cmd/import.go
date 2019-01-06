@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/filebrowser/filebrowser/v2/storage/bolt/importer"
 	"github.com/spf13/cobra"
+	v "github.com/spf13/viper"
 )
 
 func init() {
@@ -24,7 +25,7 @@ this version.`,
 		oldDB := mustGetString(cmd, "old.database")
 		oldConf := mustGetString(cmd, "old.config")
 
-		err := importer.Import(oldDB, oldConf, databasePath)
+		err := importer.Import(oldDB, oldConf, v.GetString("database"))
 		checkErr(err)
 	},
 }
