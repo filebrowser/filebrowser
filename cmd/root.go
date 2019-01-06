@@ -29,7 +29,7 @@ func init() {
 
 	rootCmd.Flags().StringP("address", "a", "127.0.0.1", "address to listen on")
 	rootCmd.Flags().StringP("log", "l", "stdout", "log output")
-	rootCmd.Flags().IntP("port", "p", 80, "port to listen on")
+	rootCmd.Flags().IntP("port", "p", 8080, "port to listen on")
 	rootCmd.Flags().StringP("cert", "c", "", "tls certificate")
 	rootCmd.Flags().StringP("key", "k", "", "tls key")
 	rootCmd.Flags().StringP("scope", "s", "", "root scope to which user's scope are relative too")
