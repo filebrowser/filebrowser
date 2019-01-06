@@ -9,9 +9,7 @@ type AuthMethod string
 type Settings struct {
 	Key        []byte              `json:"key"`
 	BaseURL    string              `json:"baseURL"`
-	Log        string              `json:"log"`
 	Scope      string              `json:"scope"`
-	Server     Server              `json:"server"`
 	Signup     bool                `json:"signup"`
 	Defaults   UserDefaults        `json:"defaults"`
 	AuthMethod AuthMethod          `json:"authMethod"`
@@ -19,14 +17,6 @@ type Settings struct {
 	Commands   map[string][]string `json:"commands"`
 	Shell      []string            `json:"shell"`
 	Rules      []rules.Rule        `json:"rules"`
-}
-
-// Server settings.
-type Server struct {
-	Port    int    `json:"port"`
-	Address string `json:"address"`
-	TLSCert string `json:"tlsCert"`
-	TLSKey  string `json:"tlsKey"`
 }
 
 // GetRules implements rules.Provider.

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"crypto/rand"
+	"path/filepath"
 	"crypto/tls"
 	"io/ioutil"
 	"log"
@@ -13,12 +13,10 @@ import (
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/settings"
-	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/users"
 
 	fbhttp "github.com/filebrowser/filebrowser/v2/http"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 )
 
@@ -29,12 +27,12 @@ var (
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&databasePath, "database", "d", "./filebrowser.db", "path to the database")
 
-	rootCmd.Flags().StringP("address", "a", "", "address to listen on (default comes from database)")
-	rootCmd.Flags().StringP("log", "l", "", "log output (default comes from database)")
-	rootCmd.Flags().IntP("port", "p", 0, "port to listen on (default comes from database)")
-	rootCmd.Flags().StringP("cert", "c", "", "tls certificate (default comes from database)")
-	rootCmd.Flags().StringP("key", "k", "", "tls key (default comes from database)")
-	rootCmd.Flags().StringP("scope", "s", "", "scope to prepend to a user's scope when it is relative (default comes from database)")
+	rootCmd.Flags().StringP("address", "a", "127.0.0.1", "address to listen on")
+	rootCmd.Flags().StringP("log", "l", "stdout", "log output")
+	rootCmd.Flags().IntP("port", "p", 80, "port to listen on")
+	rootCmd.Flags().StringP("cert", "c", "", "tls certificate")
+	rootCmd.Flags().StringP("key", "k", "", "tls key")
+	rootCmd.Flags().StringP("scope", "s", ".", "scope to prepend to a user's scope when it is relative")
 }
 
 var rootCmd = &cobra.Command{
@@ -45,29 +43,12 @@ manage your user and all the configurations without accessing the
 web interface.
 
 If you've never run File Browser, you will need to create the database.
-See 'filebrowser help config init' for more information.
-
-This command is used to start up the server. By default it starts listening
-on localhost on a random port unless specified otherwise in the database or
-via flags.
-
-Use the available flags to override the database/default options. These flags
-values won't be persisted to the database. To persist configuration to the database
-use the command 'filebrowser config set'.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		if _, err := os.Stat(databasePath); os.IsNotExist(err) {
-			quickSetup(cmd)
-		}
-
-		db := getDB()
-		defer db.Close()
-		st := getStorage(db)
-		startServer(cmd, st)
-	},
+See 'filebrowser help config init' for more information.`,
+	Run: serveAndListen,
 }
 
-func setupLogger(s *settings.Settings) {
-	switch s.Log {
+func serveAndListen(cmd *cobra.Command, args []string) {
+	switch logMethod := mustGetString(cmd, "log"); logMethod {
 	case "stdout":
 		log.SetOutput(os.Stdout)
 	case "stderr":
@@ -76,29 +57,58 @@ func setupLogger(s *settings.Settings) {
 		log.SetOutput(ioutil.Discard)
 	default:
 		log.SetOutput(&lumberjack.Logger{
-			Filename:   s.Log,
+			Filename:   logMethod,
 			MaxSize:    100,
 			MaxAge:     14,
 			MaxBackups: 10,
 		})
 	}
-}
 
-func serverVisitAndReplace(cmd *cobra.Command, s *settings.Settings) {
-	cmd.Flags().Visit(func(flag *pflag.Flag) {
-		switch flag.Name {
-		case "log":
-			s.Log = mustGetString(cmd, flag.Name)
-		case "address":
-			s.Server.Address = mustGetString(cmd, flag.Name)
-		case "port":
-			s.Server.Port = mustGetInt(cmd, flag.Name)
-		case "cert":
-			s.Server.TLSCert = mustGetString(cmd, flag.Name)
-		case "key":
-			s.Server.TLSKey = mustGetString(cmd, flag.Name)
-		}
-	})
+	if _, err := os.Stat(databasePath); os.IsNotExist(err) {
+		quickSetup(cmd)
+	}
+
+	db := getDB()
+	defer db.Close()
+	st := getStorage(db)
+
+	port := mustGetInt(cmd, "port")
+	address := mustGetString(cmd, "address")
+	cert := mustGetString(cmd, "cert")
+	key := mustGetString(cmd, "key")
+	scope := mustGetString(cmd, "scope")
+
+	if scope != "." {
+		var err error
+		scope, err = filepath.Abs(scope)
+		checkErr(err)
+		settings, err := st.Settings.Get()
+		checkErr(err)
+		settings.Scope = scope
+		err = st.Settings.Save(settings)
+		checkErr(err)		
+	}
+
+	handler, err := fbhttp.NewHandler(st)
+	checkErr(err)
+
+	var listener net.Listener
+
+	if key != "" && cert != "" {
+		cer, err := tls.LoadX509KeyPair(cert, key)
+		checkErr(err)
+		config := &tls.Config{Certificates: []tls.Certificate{cer}}
+		listener, err = tls.Listen("tcp", address+":"+strconv.Itoa(port), config)
+		checkErr(err)
+	} else {
+		listener, err = net.Listen("tcp", address+":"+strconv.Itoa(port))
+		checkErr(err)
+	}
+
+	log.Println("Listening on", listener.Addr().String())
+	if err := http.Serve(listener, handler); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func quickSetup(cmd *cobra.Command) {
@@ -116,16 +126,8 @@ func quickSetup(cmd *cobra.Command) {
 	set := &settings.Settings{
 		Key:        generateRandomBytes(64), // 256 bit
 		BaseURL:    "",
-		Scope:      scope,
-		Log:        "stderr",
 		Signup:     false,
 		AuthMethod: auth.MethodJSONAuth,
-		Server: settings.Server{
-			Port:    0,
-			Address: "127.0.0.1",
-			TLSCert: mustGetString(cmd, "cert"),
-			TLSKey:  mustGetString(cmd, "key"),
-		},
 		Defaults: settings.UserDefaults{
 			Scope:  ".",
 			Locale: "en",
@@ -142,7 +144,6 @@ func quickSetup(cmd *cobra.Command) {
 		},
 	}
 
-	serverVisitAndReplace(cmd, set)
 	st := getStorage(db)
 
 	err = st.Settings.Save(set)
@@ -165,48 +166,4 @@ func quickSetup(cmd *cobra.Command) {
 
 	err = st.Users.Save(user)
 	checkErr(err)
-}
-
-func startServer(cmd *cobra.Command, st *storage.Storage) {
-	settings, err := st.Settings.Get()
-	checkErr(err)
-
-	scope := mustGetString(cmd, "scope")
-	if scope != "" {
-		settings.Scope = scope
-		err = st.Settings.Save(settings)
-		checkErr(err)		
-	}
-
-	serverVisitAndReplace(cmd, settings)
-	setupLogger(settings)
-
-	handler, err := fbhttp.NewHandler(st)
-	checkErr(err)
-
-	var listener net.Listener
-
-	if settings.Server.TLSKey != "" && settings.Server.TLSCert != "" {
-		cer, err := tls.LoadX509KeyPair(settings.Server.TLSCert, settings.Server.TLSKey)
-		checkErr(err)
-		config := &tls.Config{Certificates: []tls.Certificate{cer}}
-		listener, err = tls.Listen("tcp", settings.Server.Address+":"+strconv.Itoa(settings.Server.Port), config)
-		checkErr(err)
-	} else {
-		listener, err = net.Listen("tcp", settings.Server.Address+":"+strconv.Itoa(settings.Server.Port))
-		checkErr(err)
-	}
-
-	log.Println("Listening on", listener.Addr().String())
-	if err := http.Serve(listener, handler); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func generateRandomBytes(n int) []byte {
-	b := make([]byte, n)
-	_, err := rand.Read(b)
-	checkErr(err)
-	// Note that err == nil only if we read len(b) bytes.
-	return b
 }

@@ -85,9 +85,7 @@ func getStaticHandlers(storage *storage.Storage) (http.Handler, http.Handler) {
 			return http.StatusNotFound, nil
 		}
 
-		w.Header().Set("x-frame-options", "SAMEORIGIN")
 		w.Header().Set("x-xss-protection", "1; mode=block")
-
 		return handleWithStaticData(w, r, d, box, "index.html", "text/html; charset=utf-8")
 	}, "", storage)
 
