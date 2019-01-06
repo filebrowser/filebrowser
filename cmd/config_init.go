@@ -9,6 +9,7 @@ import (
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/spf13/cobra"
+	v "github.com/spf13/viper"
 )
 
 func init() {
@@ -28,6 +29,7 @@ to the defaults when creating new users and you don't
 override the options.`,
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
+		databasePath := v.GetString("database")
 		if _, err := os.Stat(databasePath); err == nil {
 			panic(errors.New(databasePath + " already exists"))
 		}
