@@ -109,13 +109,6 @@ func serveAndListen(cmd *cobra.Command, args []string) {
 }
 
 func quickSetup(cmd *cobra.Command) {
-	var err error
-	scope := mustGetString(cmd, "scope")
-	if scope == "" {
-		scope, err = os.Getwd()
-		checkErr(err)
-	}
-
 	db, err := storm.Open(databasePath)
 	checkErr(err)
 	defer db.Close()
