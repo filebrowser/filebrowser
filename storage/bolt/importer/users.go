@@ -3,7 +3,6 @@ package importer
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/v2/rules"
@@ -81,12 +80,7 @@ func convertUsersToNew(old []*oldUser) ([]*users.User, error) {
 			user.Rules = append(user.Rules, *rule)
 		}
 
-		baseScope, err := os.Getwd()
-		if err != nil {
-			return nil, err
-		}
-
-		err = user.Clean(baseScope)
+		err := user.Clean("")
 		if err != nil {
 			return nil, err
 		}
