@@ -14,8 +14,7 @@ const MethodProxyAuth settings.AuthMethod = "proxy"
 
 // ProxyAuth is a proxy implementation of an auther.
 type ProxyAuth struct {
-	Header  string
-	storage *users.Storage
+	Header string
 }
 
 // Auth authenticates the user via an HTTP header.
