@@ -2,12 +2,12 @@ package cmd
 
 import (
 	"crypto/tls"
-	"errors"
 	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/asdine/storm"
@@ -32,7 +32,7 @@ func init() {
 	rootCmd.Flags().IntP("port", "p", 8080, "port to listen on")
 	rootCmd.Flags().StringP("cert", "c", "", "tls certificate")
 	rootCmd.Flags().StringP("key", "k", "", "tls key")
-	rootCmd.Flags().StringP("scope", "s", "", "root scope to which user's scope are relative too")
+	rootCmd.Flags().StringP("scope", "s", ".", "scope to prepend to a user's scope when it is relative")
 }
 
 var rootCmd = &cobra.Command{
@@ -76,6 +76,15 @@ func serveAndListen(cmd *cobra.Command, args []string) {
 	address := mustGetString(cmd, "address")
 	cert := mustGetString(cmd, "cert")
 	key := mustGetString(cmd, "key")
+	scope := mustGetString(cmd, "scope")
+
+	scope, err := filepath.Abs(scope)
+	checkErr(err)
+	settings, err := st.Settings.Get()
+	checkErr(err)
+	settings.Scope = scope
+	err = st.Settings.Save(settings)
+	checkErr(err)
 
 	handler, err := fbhttp.NewHandler(st)
 	checkErr(err)
@@ -100,11 +109,6 @@ func serveAndListen(cmd *cobra.Command, args []string) {
 }
 
 func quickSetup(cmd *cobra.Command) {
-	scope := mustGetString(cmd, "scope")
-	if scope == "" {
-		panic(errors.New("scope flag must be set for quick setup"))
-	}
-
 	db, err := storm.Open(databasePath)
 	checkErr(err)
 	defer db.Close()
@@ -115,7 +119,7 @@ func quickSetup(cmd *cobra.Command) {
 		Signup:     false,
 		AuthMethod: auth.MethodJSONAuth,
 		Defaults: settings.UserDefaults{
-			Scope:  scope,
+			Scope:  ".",
 			Locale: "en",
 			Perm: users.Permissions{
 				Admin:    false,
