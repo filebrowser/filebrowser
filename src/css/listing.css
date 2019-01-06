@@ -101,7 +101,6 @@
 
 #listing.list {
   flex-direction: column;
-  padding-top: 3.25em;
   width: 100%;
   max-width: 100%;
   margin: 0;
@@ -160,10 +159,6 @@
 #listing.list .item.header {
   display: flex !important;
   background: #fafafa;
-  position: fixed;
-  width: calc(100% - 19em);
-  top: 7em;
-  right: 1em;
   z-index: 999;
   padding: .85em;
   border: 0;
