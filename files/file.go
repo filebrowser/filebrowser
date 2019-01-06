@@ -76,7 +76,7 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 			return file, file.readListing(opts.Checker)
 		}
 
-		err = file.detectType(opts.Modify)
+		err = file.detectType(opts.Modify, true)
 		if err != nil {
 			return nil, err
 		}
@@ -126,7 +126,7 @@ func (i *FileInfo) Checksum(algo string) error {
 	return nil
 }
 
-func (i *FileInfo) detectType(modify bool) error {
+func (i *FileInfo) detectType(modify, saveContent bool) error {
 	reader, err := i.Fs.Open(i.Path)
 	if err != nil {
 		return err
@@ -160,17 +160,20 @@ func (i *FileInfo) detectType(modify bool) error {
 		return nil
 	default:
 		i.Type = "text"
-		afs := &afero.Afero{Fs: i.Fs}
-		content, err := afs.ReadFile(i.Path)
-		if err != nil {
-			return err
-		}
 
 		if !modify {
 			i.Type = "textImmutable"
 		}
 
-		i.Content = string(content)
+		if saveContent {
+			afs := &afero.Afero{Fs: i.Fs}
+			content, err := afs.ReadFile(i.Path)
+			if err != nil {
+				return err
+			}
+
+			i.Content = string(content)
+		}
 	}
 
 	return nil
@@ -238,7 +241,7 @@ func (i *FileInfo) readListing(checker rules.Checker) error {
 		} else {
 			listing.NumFiles++
 
-			err := file.detectType(true)
+			err := file.detectType(true, false)
 			if err != nil {
 				return err
 			}
