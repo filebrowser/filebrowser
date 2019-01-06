@@ -9,6 +9,7 @@ import (
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/spf13/cobra"
+	v "github.com/spf13/viper"
 )
 
 func init() {
@@ -27,6 +28,7 @@ to the defaults when creating new users and you don't
 override the options.`,
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
+		databasePath := v.GetString("database")
 		if _, err := os.Stat(databasePath); err == nil {
 			panic(errors.New(databasePath + " already exists"))
 		}
@@ -41,7 +43,6 @@ override the options.`,
 		st := getStorage(db)
 		s := &settings.Settings{
 			Key:        generateRandomBytes(64), // 256 bit
-			BaseURL:    mustGetString(cmd, "baseURL"),
 			Signup:     mustGetBool(cmd, "signup"),
 			Shell:      strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " "),
 			AuthMethod: authMethod,

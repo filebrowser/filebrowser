@@ -83,9 +83,17 @@ func printRules(rules []rules.Rule, id interface{}) {
 	for id, rule := range rules {
 		fmt.Printf("(%d) ", id)
 		if rule.Regex {
-			fmt.Printf("Allow: %t\tRegex: %s\n", rule.Allow, rule.Regexp.Raw)
+			if rule.Allow {
+				fmt.Printf("Allow Regex: \t%s\n", rule.Regexp.Raw)
+			} else {
+				fmt.Printf("Disallow Regex: \t%s\n", rule.Regexp.Raw)
+			}
 		} else {
-			fmt.Printf("Allow: %t\tPath: %s\n", rule.Allow, rule.Path)
+			if rule.Allow {
+				fmt.Printf("Allow Path: \t%s\n", rule.Path)
+			} else {
+				fmt.Printf("Disallow Path: \t%s\n", rule.Path)
+			}
 		}
 	}
 }

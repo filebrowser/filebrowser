@@ -9,18 +9,17 @@ import (
 func init() {
 	usersCmd.AddCommand(usersUpdateCmd)
 
-	usersUpdateCmd.Flags().UintP("id", "i", 0, "id of the user")
-	usersUpdateCmd.Flags().StringP("username", "u", "", "user to change or new username if flag 'id' is set")
 	usersUpdateCmd.Flags().StringP("password", "p", "", "new password")
+	usersUpdateCmd.Flags().StringP("username", "u", "", "new username")
 	addUserFlags(usersUpdateCmd)
 }
 
 var usersUpdateCmd = &cobra.Command{
-	Use:   "update",
+	Use:   "update <id|username>",
 	Short: "Updates an existing user",
 	Long: `Updates an existing user. Set the flags for the
 options you want to change.`,
-	Args: usernameOrIDRequired,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
@@ -29,9 +28,9 @@ options you want to change.`,
 		set, err := st.Settings.Get()
 		checkErr(err)
 
-		id, _ := cmd.Flags().GetUint("id")
-		username := mustGetString(cmd, "username")
+		username, id := parseUsernameOrID(args[0])
 		password := mustGetString(cmd, "password")
+		newUsername := mustGetString(cmd, "username")
 
 		var user *users.User
 
@@ -60,8 +59,8 @@ options you want to change.`,
 		user.Sorting = defaults.Sorting
 		user.LockPassword = mustGetBool(cmd, "lockPassword")
 
-		if user.Username != username && username != "" {
-			user.Username = username
+		if newUsername != "" {
+			user.Username = newUsername
 		}
 
 		if password != "" {

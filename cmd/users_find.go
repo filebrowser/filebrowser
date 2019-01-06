@@ -8,15 +8,13 @@ import (
 func init() {
 	usersCmd.AddCommand(usersFindCmd)
 	usersCmd.AddCommand(usersLsCmd)
-	usersFindCmd.Flags().StringP("username", "u", "", "username to find")
-	usersFindCmd.Flags().UintP("id", "i", 0, "id to find")
 }
 
 var usersFindCmd = &cobra.Command{
-	Use:   "find",
+	Use:   "find <id|username>",
 	Short: "Find a user by username or id",
 	Long:  `Find a user by username or id. If no flag is set, all users will be printed.`,
-	Args:  cobra.NoArgs,
+	Args:  cobra.ExactArgs(1),
 	Run:   findUsers,
 }
 
@@ -32,28 +30,25 @@ var findUsers = func(cmd *cobra.Command, args []string) {
 	defer db.Close()
 	st := getStorage(db)
 
-	settings, err := st.Settings.Get()
-	checkErr(err)
+	var (
+		list []*users.User
+		user *users.User
+		err  error
+	)
 
-	username, _ := cmd.Flags().GetString("username")
-	id, _ := cmd.Flags().GetUint("id")
+	if len(args) == 1 {
+		username, id := parseUsernameOrID(args[0])
+		if username != "" {
+			user, err = st.Users.Get("", username)
+		} else {
+			user, err = st.Users.Get("", id)
+		}
 
-	var list []*users.User
-	var user *users.User
-
-	if username != "" {
-		user, err = st.Users.Get(settings.Scope, username)
-	} else if id != 0 {
-		user, err = st.Users.Get(settings.Scope, id)
-	} else {
-		list, err = st.Users.Gets(settings.Scope)
-	}
-
-	checkErr(err)
-
-	if user != nil {
 		list = []*users.User{user}
+	} else {
+		list, err = st.Users.Gets("")
 	}
 
+	checkErr(err)
 	printUsers(list)
 }
