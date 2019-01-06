@@ -35,12 +35,6 @@ func addConfigFlags(cmd *cobra.Command) {
 	cmd.Flags().BoolP("signup", "s", false, "allow users to signup")
 	cmd.Flags().String("shell", "", "shell command to which other commands should be appended")
 
-	cmd.Flags().StringP("address", "a", "127.0.0.1", "default address to listen to")
-	cmd.Flags().StringP("log", "l", "stderr", "log output")
-	cmd.Flags().IntP("port", "p", 0, "default port to listen to")
-	cmd.Flags().String("tls.cert", "", "tls certificate path")
-	cmd.Flags().String("tls.key", "", "tls key path")
-
 	cmd.Flags().String("auth.method", string(auth.MethodJSONAuth), "authentication type")
 	cmd.Flags().String("auth.header", "", "HTTP header for auth.method=proxy")
 
@@ -101,12 +95,6 @@ func printSettings(s *settings.Settings, auther auth.Auther) {
 	fmt.Fprintf(w, "Sign up:\t%t\n", s.Signup)
 	fmt.Fprintf(w, "Auth method:\t%s\n", s.AuthMethod)
 	fmt.Fprintf(w, "Shell:\t%s\t\n", strings.Join(s.Shell, " "))
-	fmt.Fprintf(w, "Log:\t%s\t\n", s.Log)
-	fmt.Fprintln(w, "\nServer:")
-	fmt.Fprintf(w, "\tAddress:\t%s\n", s.Server.Address)
-	fmt.Fprintf(w, "\tPort:\t%d\n", s.Server.Port)
-	fmt.Fprintf(w, "\tTLS Cert:\t%s\n", s.Server.TLSCert)
-	fmt.Fprintf(w, "\tTLS Key:\t%s\n", s.Server.TLSKey)
 	fmt.Fprintln(w, "\nBranding:")
 	fmt.Fprintf(w, "\tName:\t%s\n", s.Branding.Name)
 	fmt.Fprintf(w, "\tFiles override:\t%s\n", s.Branding.Files)

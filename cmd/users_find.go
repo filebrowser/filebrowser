@@ -32,19 +32,21 @@ var findUsers = func(cmd *cobra.Command, args []string) {
 	defer db.Close()
 	st := getStorage(db)
 
+	settings, err := st.Settings.Get()
+	checkErr(err)
+
 	username, _ := cmd.Flags().GetString("username")
 	id, _ := cmd.Flags().GetUint("id")
 
-	var err error
 	var list []*users.User
 	var user *users.User
 
 	if username != "" {
-		user, err = st.Users.Get(username)
+		user, err = st.Users.Get(settings.Scope, username)
 	} else if id != 0 {
-		user, err = st.Users.Get(id)
+		user, err = st.Users.Get(settings.Scope, id)
 	} else {
-		list, err = st.Users.Gets()
+		list, err = st.Users.Gets(settings.Scope)
 	}
 
 	checkErr(err)

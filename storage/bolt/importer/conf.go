@@ -111,7 +111,6 @@ func importConf(db *storm.DB, path string, sto *storage.Storage) error {
 	s := &settings.Settings{
 		Key:     key,
 		BaseURL: cfg.BaseURL,
-		Log:     cfg.Log,
 		Signup:  false,
 		Defaults: settings.UserDefaults{
 			Scope:    cfg.Defaults.Scope,
@@ -128,10 +127,6 @@ func importConf(db *storm.DB, path string, sto *storage.Storage) error {
 				Share:    true,
 				Download: true,
 			},
-		},
-		Server: settings.Server{
-			Address: cfg.Address,
-			Port:    cfg.Port,
 		},
 	}
 
