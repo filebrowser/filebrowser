@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"hash"
 	"io"
+	"log"
 	"mime"
 	"net/http"
 	"os"
@@ -127,16 +128,24 @@ func (i *FileInfo) Checksum(algo string) error {
 }
 
 func (i *FileInfo) detectType(modify, saveContent bool) error {
+	// failing to detect the type should not return error.
+	// imagine the situation where a file in a dir with thousands
+	// of files couldn't be opened: we'd have immediately
+	// a 500 even though it doesn't matter. So we just log it.
 	reader, err := i.Fs.Open(i.Path)
 	if err != nil {
-		return err
+		log.Print(err)
+		i.Type = "blob"
+		return nil
 	}
 	defer reader.Close()
 
 	buffer := make([]byte, 512)
 	n, err := reader.Read(buffer)
 	if err != nil && err != io.EOF {
-		return err
+		log.Print(err)
+		i.Type = "blob"
+		return nil
 	}
 
 	mimetype := mime.TypeByExtension(i.Extension)
