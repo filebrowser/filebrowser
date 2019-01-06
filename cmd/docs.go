@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/spf13/pflag"
 	"github.com/spf13/cobra"
 )
 
@@ -110,20 +111,29 @@ func generateMarkdown(cmd *cobra.Command, w io.Writer) {
 	checkErr(err)
 }
 
+func generateFlagsTable(fs *pflag.FlagSet, buf *bytes.Buffer) {
+	buf.WriteString("| Name | Shorthand | Usage |\n")
+	buf.WriteString("|------|-----------|-------|\n")
+
+	fs.VisitAll(func(f *pflag.Flag) {
+		buf.WriteString("|" + f.Name + "|" + f.Shorthand + "|" + f.Usage + "|\n")
+	})
+}
+
 func printOptions(buf *bytes.Buffer, cmd *cobra.Command, name string) {
 	flags := cmd.NonInheritedFlags()
 	flags.SetOutput(buf)
 	if flags.HasAvailableFlags() {
-		buf.WriteString("## Options\n\n```\n")
-		flags.PrintDefaults()
-		buf.WriteString("```\n\n")
+		buf.WriteString("## Options\n\n")
+		generateFlagsTable(flags, buf)
+		buf.WriteString("\n")
 	}
 
 	parentFlags := cmd.InheritedFlags()
 	parentFlags.SetOutput(buf)
 	if parentFlags.HasAvailableFlags() {
-		buf.WriteString("### Inherited\n\n```\n")
-		parentFlags.PrintDefaults()
-		buf.WriteString("```\n")
+		buf.WriteString("### Inherited\n\n")
+		generateFlagsTable(parentFlags, buf)
+		buf.WriteString("\n")
 	}
 }
