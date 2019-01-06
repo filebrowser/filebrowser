@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"text/tabwriter"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -53,15 +54,12 @@ func printUsers(users []*users.User) {
 	w.Flush()
 }
 
-func usernameOrIDRequired(cmd *cobra.Command, args []string) error {
-	username, _ := cmd.Flags().GetString("username")
-	id, _ := cmd.Flags().GetUint("id")
-
-	if username == "" && id == 0 {
-		return errors.New("'username' of 'id' flag required")
+func parseUsernameOrID(arg string) (string, uint) {
+	id, err := strconv.ParseUint(arg, 10, 0)
+	if err != nil {
+		return arg, 0
 	}
-
-	return nil
+	return "", uint(id)
 }
 
 func addUserFlags(cmd *cobra.Command) {

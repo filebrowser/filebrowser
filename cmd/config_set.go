@@ -30,8 +30,6 @@ you want to change.`,
 		hasAuth := false
 		cmd.Flags().Visit(func(flag *pflag.Flag) {
 			switch flag.Name {
-			case "baseURL":
-				s.BaseURL = mustGetString(cmd, flag.Name)
 			case "signup":
 				s.Signup = mustGetBool(cmd, flag.Name)
 			case "auth.method":

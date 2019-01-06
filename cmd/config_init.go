@@ -43,7 +43,6 @@ override the options.`,
 		st := getStorage(db)
 		s := &settings.Settings{
 			Key:        generateRandomBytes(64), // 256 bit
-			BaseURL:    mustGetString(cmd, "baseURL"),
 			Signup:     mustGetBool(cmd, "signup"),
 			Shell:      strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " "),
 			AuthMethod: authMethod,
