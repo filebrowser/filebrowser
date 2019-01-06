@@ -8,7 +8,33 @@ import (
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+	v "github.com/spf13/viper"
 )
+
+func vaddP(f *pflag.FlagSet, k, p string, i interface{}, u string) {
+	switch y := i.(type) {
+	case bool:
+		f.BoolP(k, p, y, u)
+	case int:
+		f.IntP(k, p, y, u)
+	case string:
+		f.StringP(k, p, y, u)
+	}
+	v.SetDefault(k, i)
+}
+
+func vadd(f *pflag.FlagSet, k string, i interface{}, u string) {
+	switch y := i.(type) {
+	case bool:
+		f.Bool(k, y, u)
+	case int:
+		f.Int(k, y, u)
+	case string:
+		f.String(k, y, u)
+	}
+	v.SetDefault(k, i)
+}
 
 func checkErr(err error) {
 	if err != nil {
@@ -41,6 +67,7 @@ func mustGetUint(cmd *cobra.Command, flag string) uint {
 }
 
 func getDB() *storm.DB {
+	databasePath := v.GetString("database")
 	if _, err := os.Stat(databasePath); err != nil {
 		panic(errors.New(databasePath + " does not exist. Please run 'filebrowser init' first."))
 	}
