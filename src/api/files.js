@@ -116,9 +116,9 @@ function moveCopy (items, copy = false) {
   let promises = []
 
   for (let item of items) {
-    let from = removePrefix(item.from)
-    let to = encodeURIComponent(removePrefix(item.to))
-    let url = `${from}?action=${copy ? 'copy' : 'rename'}&destination=${to}`
+    const from = removePrefix(item.from)
+    const to = encodeURIComponent(removePrefix(item.to))
+    const url = `${from}?action=${copy ? 'copy' : 'rename'}&destination=${to}`
     promises.push(resourceAction(url, 'PATCH'))
   }
 

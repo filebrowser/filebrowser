@@ -68,7 +68,6 @@ export default {
         oldLink = this.req.items[this.selected[0]].url
       }
 
-      this.name = encodeURIComponent(this.name)
       newLink = url.removeLastDir(oldLink) + '/' + this.name
 
       try {

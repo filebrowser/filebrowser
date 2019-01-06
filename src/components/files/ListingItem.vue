@@ -55,6 +55,17 @@ export default {
       if (this.type === 'audio') return 'volume_up'
       if (this.type === 'video') return 'movie'
       return 'insert_drive_file'
+    },
+    canDrop () {
+      if (!this.isDir) return false
+
+      for (let i of this.selected) {
+        if (this.req.items[i].url === this.url) {
+          return false
+        }
+      }
+
+      return true
     }
   },
   methods: {
@@ -77,7 +88,7 @@ export default {
       }
     },
     dragOver: function (event) {
-      if (!this.isDir) return
+      if (!this.canDrop) return
 
       event.preventDefault()
       let el = event.target
@@ -91,7 +102,7 @@ export default {
       el.style.opacity = 1
     },
     drop: function (event) {
-      if (!this.isDir) return
+      if (!this.canDrop) return
       event.preventDefault()
 
       if (this.selectedCount === 0) return
@@ -101,7 +112,7 @@ export default {
       for (let i of this.selected) {
         items.push({
           from: this.req.items[i].url,
-          to: this.url + encodeURIComponent(this.req.items[i].name)
+          to: this.url + this.req.items[i].name
         })
       }
 

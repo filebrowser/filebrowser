@@ -242,11 +242,6 @@ export default {
       for (let item of this.$store.state.clipboard.items) {
         const from = item.from.endsWith('/') ? item.from.slice(0, -1) : item.from
         const to = this.$route.path + item.name
-
-        if (from === to) {
-          return
-        }
-
         items.push({ from, to })
       }
 
