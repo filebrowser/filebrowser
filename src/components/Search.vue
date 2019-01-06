@@ -23,7 +23,7 @@
       >
     </div>
 
-    <div id="result">
+    <div id="result" ref="result">
       <div>
         <template v-if="isEmpty">
           <p>{{ text }}</p>
@@ -47,8 +47,8 @@
             </div>
           </template>
         </template>
-        <ul v-else-if="results.length > 0">
-          <li v-for="(s,k) in results" :key="k">
+        <ul v-show="results.length > 0">
+          <li v-for="(s,k) in filteredResults" :key="k">
             <router-link @click.native="close" :to="'./' + s.path">
               <i v-if="s.dir" class="material-icons">folder</i>
               <i v-else class="material-icons">insert_drive_file</i>
@@ -68,8 +68,6 @@
 import { mapState, mapGetters, mapMutations } from "vuex"
 import url from "@/utils/url"
 import { search } from "@/api"
-
-// TODO: show fifty at the tie
 
 var boxes = {
   image: { label: "images", icon: "insert_photo" },
@@ -92,7 +90,7 @@ export default {
     }
   },
   watch: {
-    show(val, old) {
+    show (val, old) {
       this.active = val === "search"
 
       if (old === "search" && !this.active) {
@@ -102,11 +100,18 @@ export default {
 
         document.body.style.overflow = "auto"
         this.reset()
+        this.value = ''
+        this.active = false
         this.$refs.input.blur()
       } else if (this.active) {
         this.reload = false
         this.$refs.input.focus()
         document.body.style.overflow = "hidden"
+      }
+    },
+    value () {
+      if (this.results.length) {
+        this.reset()
       }
     }
   },
@@ -125,12 +130,21 @@ export default {
       }
 
       return this.value === '' ? this.$t("search.typeToSearch") : this.$t("search.pressToSearch")
+    },
+    filteredResults () {
+      return this.results.slice(0, this.resultsCount)
     }
   },
   mounted() {
     window.addEventListener("keydown", event => {
       if (event.keyCode === 27) {
         this.closeHovers()
+      }
+    })
+
+    this.$refs.result.addEventListener('scroll', event => {
+      if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 100) {
+        this.resultsCount += 50
       }
     })
   },
@@ -157,8 +171,6 @@ export default {
       this.$refs.input.focus()
     },
     reset () {
-      this.value = ''
-      this.active = false
       this.ongoing = false
       this.resultsCount = 50
       this.results = []
@@ -176,6 +188,7 @@ export default {
       }
 
       this.ongoing = true
+
 
       this.results = await search(path, this.value)
       this.ongoing = false
