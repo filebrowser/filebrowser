@@ -1,9 +1,10 @@
 package users
 
 import (
-	"github.com/filebrowser/filebrowser/v2/errors"
 	"path/filepath"
 	"regexp"
+
+	"github.com/filebrowser/filebrowser/v2/errors"
 
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/rules"
@@ -51,7 +52,7 @@ var checkableFields = []string{
 
 // Clean cleans up a user and verifies if all its fields
 // are alright to be saved.
-func (u *User) Clean(fields ...string) error {
+func (u *User) Clean(baseScope string, fields ...string) error {
 	if len(fields) == 0 {
 		fields = checkableFields
 	}
@@ -65,10 +66,6 @@ func (u *User) Clean(fields ...string) error {
 		case "Password":
 			if u.Password == "" {
 				return errors.ErrEmptyPassword
-			}
-		case "Scope":
-			if !filepath.IsAbs(u.Scope) {
-				return errors.ErrScopeIsRelative
 			}
 		case "ViewMode":
 			if u.ViewMode == "" {
@@ -90,7 +87,13 @@ func (u *User) Clean(fields ...string) error {
 	}
 
 	if u.Fs == nil {
-		u.Fs = afero.NewBasePathFs(afero.NewOsFs(), u.Scope)
+		scope := u.Scope
+
+		if !filepath.IsAbs(scope) {
+			scope = filepath.Join(baseScope, scope)
+		}
+
+		u.Fs = afero.NewBasePathFs(afero.NewOsFs(), scope)
 	}
 
 	return nil

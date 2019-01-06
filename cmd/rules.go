@@ -39,7 +39,7 @@ func runRules(cmd *cobra.Command, users func(*users.User, *storage.Storage), glo
 
 	id := getUserIdentifier(cmd)
 	if id != nil {
-		user, err := st.Users.Get(id)
+		user, err := st.Users.Get("", id)
 		checkErr(err)
 
 		if users != nil {

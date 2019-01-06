@@ -36,7 +36,7 @@ func NewStorage(back StorageBackend) *Storage {
 // Get allows you to get a user by its name or username. The provided
 // id must be a string for username lookup or a uint for id lookup. If id
 // is neither, a ErrInvalidDataType will be returned.
-func (s *Storage) Get(id interface{}) (*User, error) {
+func (s *Storage) Get(baseScope string, id interface{}) (*User, error) {
 	var (
 		user *User
 		err  error
@@ -55,19 +55,19 @@ func (s *Storage) Get(id interface{}) (*User, error) {
 		return nil, err
 	}
 
-	user.Clean()
+	user.Clean(baseScope)
 	return user, err
 }
 
 // Gets gets a list of all users.
-func (s *Storage) Gets() ([]*User, error) {
+func (s *Storage) Gets(baseScope string) ([]*User, error) {
 	users, err := s.back.Gets()
 	if err != nil {
 		return nil, err
 	}
 
 	for _, user := range users {
-		user.Clean()
+		user.Clean(baseScope)
 	}
 
 	return users, err
@@ -75,7 +75,7 @@ func (s *Storage) Gets() ([]*User, error) {
 
 // Update updates a user in the database.
 func (s *Storage) Update(user *User, fields ...string) error {
-	err := user.Clean(fields...)
+	err := user.Clean("", fields...)
 	if err != nil {
 		return err
 	}
@@ -93,7 +93,7 @@ func (s *Storage) Update(user *User, fields ...string) error {
 
 // Save saves the user in a storage.
 func (s *Storage) Save(user *User) error {
-	if err := user.Clean(); err != nil {
+	if err := user.Clean(""); err != nil {
 		return err
 	}
 

@@ -15,7 +15,6 @@ func init() {
 	configCmd.AddCommand(configInitCmd)
 	rootCmd.AddCommand(configInitCmd)
 	addConfigFlags(configInitCmd)
-	configInitCmd.MarkFlagRequired("scope")
 }
 
 var configInitCmd = &cobra.Command{

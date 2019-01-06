@@ -77,7 +77,7 @@ func addUserFlags(cmd *cobra.Command) {
 	cmd.Flags().Bool("sorting.asc", false, "sorting by ascending order")
 	cmd.Flags().Bool("lockPassword", false, "lock password")
 	cmd.Flags().StringSlice("commands", nil, "a list of the commands a user can execute")
-	cmd.Flags().String("scope", "", "scope for users")
+	cmd.Flags().String("scope", ".", "scope for users")
 	cmd.Flags().String("locale", "en", "locale for users")
 	cmd.Flags().String("viewMode", string(users.ListViewMode), "view mode for users")
 }
