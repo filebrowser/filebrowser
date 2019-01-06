@@ -94,35 +94,35 @@ func getUserDefaults(cmd *cobra.Command, defaults *settings.UserDefaults, all bo
 	visit := func(flag *pflag.Flag) {
 		switch flag.Name {
 		case "scope":
-			defaults.Scope = mustGetString(cmd, "scope")
+			defaults.Scope = mustGetString(cmd, flag.Name)
 		case "locale":
-			defaults.Locale = mustGetString(cmd, "locale")
+			defaults.Locale = mustGetString(cmd, flag.Name)
 		case "viewMode":
 			defaults.ViewMode = getViewMode(cmd)
 		case "perm.admin":
-			defaults.Perm.Admin = mustGetBool(cmd, "perm.admin")
+			defaults.Perm.Admin = mustGetBool(cmd, flag.Name)
 		case "perm.execute":
-			defaults.Perm.Execute = mustGetBool(cmd, "perm.execute")
+			defaults.Perm.Execute = mustGetBool(cmd, flag.Name)
 		case "perm.create":
-			defaults.Perm.Create = mustGetBool(cmd, "perm.create")
+			defaults.Perm.Create = mustGetBool(cmd, flag.Name)
 		case "perm.rename":
-			defaults.Perm.Rename = mustGetBool(cmd, "perm.rename")
+			defaults.Perm.Rename = mustGetBool(cmd, flag.Name)
 		case "perm.modify":
-			defaults.Perm.Modify = mustGetBool(cmd, "perm.modify")
+			defaults.Perm.Modify = mustGetBool(cmd, flag.Name)
 		case "perm.delete":
-			defaults.Perm.Delete = mustGetBool(cmd, "perm.delete")
+			defaults.Perm.Delete = mustGetBool(cmd, flag.Name)
 		case "perm.share":
-			defaults.Perm.Share = mustGetBool(cmd, "perm.share")
+			defaults.Perm.Share = mustGetBool(cmd, flag.Name)
 		case "perm.download":
-			defaults.Perm.Download = mustGetBool(cmd, "perm.download")
+			defaults.Perm.Download = mustGetBool(cmd, flag.Name)
 		case "commands":
-			commands, err := cmd.Flags().GetStringSlice("commands")
+			commands, err := cmd.Flags().GetStringSlice(flag.Name)
 			checkErr(err)
 			defaults.Commands = commands
 		case "sorting.by":
-			defaults.Sorting.By = mustGetString(cmd, "sorting.by")
+			defaults.Sorting.By = mustGetString(cmd, flag.Name)
 		case "sorting.asc":
-			defaults.Sorting.Asc = mustGetBool(cmd, "sorting.asc")
+			defaults.Sorting.Asc = mustGetBool(cmd, flag.Name)
 		}
 	}
 
