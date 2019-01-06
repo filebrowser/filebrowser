@@ -26,8 +26,10 @@ options you want to change.`,
 		password := mustGetString(flags, "password")
 		newUsername := mustGetString(flags, "username")
 
-		var err error
-		var user *users.User
+		var (
+			err  error
+			user *users.User
+		)
 
 		if id != 0 {
 			user, err = d.store.Users.Get("", id)

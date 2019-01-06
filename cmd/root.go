@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"crypto/tls"
-	"errors"
 	"io/ioutil"
 	"log"
 	"net"
@@ -92,8 +91,8 @@ func mustGetStringViperFlag(flags *pflag.FlagSet, key string) string {
 
 var rootCmd = &cobra.Command{
 	Use:     "filebrowser",
-	Short:   "A stylish web-based file browser",
 	Version: version.Version,
+	Short:   "A stylish web-based file browser",
 	Long: `File Browser CLI lets you create the database to use with File Browser,
 manage your users and all the configurations without acessing the
 web interface.
@@ -129,7 +128,11 @@ set FB_DATABASE.
 Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstraped and a new
 user created with the credentials from options "username" and "password".`,
+
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+
+		log.Println(cfgFile)
+
 		if !d.hadDB {
 			quickSetup(cmd.Flags(), d)
 		}
@@ -141,21 +144,22 @@ user created with the credentials from options "username" and "password".`,
 		checkErr(err)
 		server.Root = root
 
-		handler, err := fbhttp.NewHandler(d.store, server)
-		checkErr(err)
+		adr := server.Address + ":" + server.Port
 
 		var listener net.Listener
 
 		if server.TLSKey != "" && server.TLSCert != "" {
 			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey)
 			checkErr(err)
-			config := &tls.Config{Certificates: []tls.Certificate{cer}}
-			listener, err = tls.Listen("tcp", server.Address+":"+server.Port, config)
+			listener, err = tls.Listen("tcp", adr, &tls.Config{Certificates: []tls.Certificate{cer}})
 			checkErr(err)
 		} else {
-			listener, err = net.Listen("tcp", server.Address+":"+server.Port)
+			listener, err = net.Listen("tcp", adr)
 			checkErr(err)
 		}
+
+		handler, err := fbhttp.NewHandler(d.store, server)
+		checkErr(err)
 
 		log.Println("Listening on", listener.Addr().String())
 		if err := http.Serve(listener, handler); err != nil {
@@ -267,7 +271,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	}
 
 	if username == "" || password == "" {
-		checkErr(errors.New("username and password cannot be empty during quick setup"))
+		log.Fatal("username and password cannot be empty during quick setup")
 	}
 
 	user := &users.User{
@@ -303,7 +307,9 @@ func initConfig() {
 		if _, ok := err.(v.ConfigParseError); ok {
 			panic(err)
 		}
-		// TODO: log.Println("No config file provided")
+		cfgFile = "No config file used"
+	} else {
+		cfgFile = "Using config file: " + v.ConfigFileUsed()
 	}
-	// else TODO: log.Println("Using config file:", v.ConfigFileUsed())
+
 }

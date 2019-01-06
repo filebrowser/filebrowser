@@ -13,8 +13,8 @@ import (
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
-	"github.com/pelletier/go-toml"
-	"gopkg.in/yaml.v2"
+	toml "github.com/pelletier/go-toml"
+	yaml "gopkg.in/yaml.v2"
 )
 
 type oldDefs struct {
@@ -33,7 +33,7 @@ type oldAuth struct {
 }
 
 type oldConf struct {
-	Port      string     `json:"port" yaml:"port" toml:"port"`
+	Port      string  `json:"port" yaml:"port" toml:"port"`
 	BaseURL   string  `json:"baseURL" yaml:"baseURL" toml:"baseURL"`
 	Log       string  `json:"log" yaml:"log" toml:"log"`
 	Address   string  `json:"address" yaml:"address" toml:"address"`
@@ -118,8 +118,8 @@ func importConf(db *storm.DB, path string, sto *storage.Storage) error {
 	}
 
 	s := &settings.Settings{
-		Key:     key,
-		Signup:  false,
+		Key:    key,
+		Signup: false,
 		Defaults: settings.UserDefaults{
 			Scope:    cfg.Defaults.Scope,
 			Commands: cfg.Defaults.Commands,
@@ -139,10 +139,10 @@ func importConf(db *storm.DB, path string, sto *storage.Storage) error {
 	}
 
 	server := &settings.Server{
-		BaseURL : cfg.BaseURL,
-		Port : cfg.Port,
-		Address : cfg.Address,
-		Log : cfg.Log,
+		BaseURL: cfg.BaseURL,
+		Port:    cfg.Port,
+		Address: cfg.Address,
+		Log:     cfg.Log,
 	}
 
 	var auther auth.Auther

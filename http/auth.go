@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/users"
