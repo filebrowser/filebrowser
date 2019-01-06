@@ -44,16 +44,6 @@ you want to change.`,
 				s.Branding.DisableExternal = mustGetBool(cmd, flag.Name)
 			case "branding.files":
 				s.Branding.Files = mustGetString(cmd, flag.Name)
-			case "log":
-				s.Log = mustGetString(cmd, flag.Name)
-			case "address":
-				s.Server.Address = mustGetString(cmd, flag.Name)
-			case "port":
-				s.Server.Port = mustGetInt(cmd, flag.Name)
-			case "tls.cert":
-				s.Server.TLSCert = mustGetString(cmd, flag.Name)
-			case "tls.key":
-				s.Server.TLSKey = mustGetString(cmd, flag.Name)
 			}
 		})
 
