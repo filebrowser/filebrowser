@@ -43,7 +43,7 @@ func init() {
 	vaddP(f, "scope", "s", ".", "scope to prepend to a user's scope when it is relative")
 	vaddP(f, "baseurl", "b", "", "base url")
 	vadd(f, "username", "admin", "username for the first user when using quick config")
-	vadd(f, "password", "admin", "password for the first user when using quick config")
+	vadd(f, "password", "", "hashed password for the first user when using quick config (default \"admin\")")
 
 	if err := v.BindPFlags(f); err != nil {
 		panic(err)
@@ -197,12 +197,15 @@ func quickSetup(cmd *cobra.Command) {
 
 	username := v.GetString("username")
 	password := v.GetString("password")
+
+	if password == "" {
+		password, err = users.HashPwd("admin")
+		checkErr(err)
+	}
+
 	if username == "" || password == "" {
 		checkErr(errors.New("username and password cannot be empty during quick setup"))
 	}
-
-	password, err = users.HashPwd(password)
-	checkErr(err)
 
 	user := &users.User{
 		Username:     username,
