@@ -16,7 +16,6 @@ func init() {
 	configCmd.AddCommand(configInitCmd)
 	rootCmd.AddCommand(configInitCmd)
 	addConfigFlags(configInitCmd)
-	configInitCmd.MarkFlagRequired("scope")
 }
 
 var configInitCmd = &cobra.Command{
@@ -45,17 +44,10 @@ override the options.`,
 		s := &settings.Settings{
 			Key:        generateRandomBytes(64), // 256 bit
 			BaseURL:    mustGetString(cmd, "baseURL"),
-			Log:        mustGetString(cmd, "log"),
 			Signup:     mustGetBool(cmd, "signup"),
 			Shell:      strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " "),
 			AuthMethod: authMethod,
 			Defaults:   defaults,
-			Server: settings.Server{
-				Address: mustGetString(cmd, "address"),
-				Port:    mustGetInt(cmd, "port"),
-				TLSCert: mustGetString(cmd, "tls.cert"),
-				TLSKey:  mustGetString(cmd, "tls.key"),
-			},
 			Branding: settings.Branding{
 				Name:            mustGetString(cmd, "branding.name"),
 				DisableExternal: mustGetBool(cmd, "branding.disableExternal"),

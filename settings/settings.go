@@ -9,23 +9,14 @@ type AuthMethod string
 type Settings struct {
 	Key        []byte              `json:"key"`
 	BaseURL    string              `json:"baseURL"`
-	Log        string              `json:"log"`
-	Server     Server              `json:"server"`
+	Scope      string              `json:"scope"`
 	Signup     bool                `json:"signup"`
 	Defaults   UserDefaults        `json:"defaults"`
 	AuthMethod AuthMethod          `json:"authMethod"`
 	Branding   Branding            `json:"branding"`
 	Commands   map[string][]string `json:"commands"`
 	Shell      []string            `json:"shell"`
-	Rules      []rules.Rule        `json:"rules"` // TODO: use this add to cli
-}
-
-// Server settings.
-type Server struct {
-	Port    int    `json:"port"`
-	Address string `json:"address"`
-	TLSCert string `json:"tlsCert"`
-	TLSKey  string `json:"tlsKey"`
+	Rules      []rules.Rule        `json:"rules"`
 }
 
 // GetRules implements rules.Provider.

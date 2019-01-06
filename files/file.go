@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"hash"
 	"io"
+	"log"
 	"mime"
 	"net/http"
 	"os"
@@ -76,7 +77,7 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 			return file, file.readListing(opts.Checker)
 		}
 
-		err = file.detectType(opts.Modify)
+		err = file.detectType(opts.Modify, true)
 		if err != nil {
 			return nil, err
 		}
@@ -126,17 +127,25 @@ func (i *FileInfo) Checksum(algo string) error {
 	return nil
 }
 
-func (i *FileInfo) detectType(modify bool) error {
+func (i *FileInfo) detectType(modify, saveContent bool) error {
+	// failing to detect the type should not return error.
+	// imagine the situation where a file in a dir with thousands
+	// of files couldn't be opened: we'd have immediately
+	// a 500 even though it doesn't matter. So we just log it.
 	reader, err := i.Fs.Open(i.Path)
 	if err != nil {
-		return err
+		log.Print(err)
+		i.Type = "blob"
+		return nil
 	}
 	defer reader.Close()
 
 	buffer := make([]byte, 512)
 	n, err := reader.Read(buffer)
 	if err != nil && err != io.EOF {
-		return err
+		log.Print(err)
+		i.Type = "blob"
+		return nil
 	}
 
 	mimetype := mime.TypeByExtension(i.Extension)
@@ -160,17 +169,20 @@ func (i *FileInfo) detectType(modify bool) error {
 		return nil
 	default:
 		i.Type = "text"
-		afs := &afero.Afero{Fs: i.Fs}
-		content, err := afs.ReadFile(i.Path)
-		if err != nil {
-			return err
-		}
 
 		if !modify {
 			i.Type = "textImmutable"
 		}
 
-		i.Content = string(content)
+		if saveContent {
+			afs := &afero.Afero{Fs: i.Fs}
+			content, err := afs.ReadFile(i.Path)
+			if err != nil {
+				return err
+			}
+
+			i.Content = string(content)
+		}
 	}
 
 	return nil
@@ -238,7 +250,7 @@ func (i *FileInfo) readListing(checker rules.Checker) error {
 		} else {
 			listing.NumFiles++
 
-			err := file.detectType(true)
+			err := file.detectType(true, false)
 			if err != nil {
 				return err
 			}

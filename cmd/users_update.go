@@ -26,17 +26,19 @@ options you want to change.`,
 		defer db.Close()
 		st := getStorage(db)
 
+		set, err := st.Settings.Get()
+		checkErr(err)
+
 		id, _ := cmd.Flags().GetUint("id")
 		username := mustGetString(cmd, "username")
 		password := mustGetString(cmd, "password")
 
 		var user *users.User
-		var err error
 
 		if id != 0 {
-			user, err = st.Users.Get(id)
+			user, err = st.Users.Get(set.Scope, id)
 		} else {
-			user, err = st.Users.Get(username)
+			user, err = st.Users.Get(set.Scope, username)
 		}
 
 		checkErr(err)
