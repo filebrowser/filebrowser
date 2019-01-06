@@ -31,7 +31,6 @@ var configCmd = &cobra.Command{
 
 func addConfigFlags(cmd *cobra.Command) {
 	addUserFlags(cmd)
-	cmd.Flags().StringP("baseURL", "b", "/", "base url of this installation")
 	cmd.Flags().BoolP("signup", "s", false, "allow users to signup")
 	cmd.Flags().String("shell", "", "shell command to which other commands should be appended")
 
@@ -91,7 +90,6 @@ func getAuthentication(cmd *cobra.Command) (settings.AuthMethod, auth.Auther) {
 func printSettings(s *settings.Settings, auther auth.Auther) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 
-	fmt.Fprintf(w, "\nBase URL:\t%s\n", s.BaseURL)
 	fmt.Fprintf(w, "Sign up:\t%t\n", s.Signup)
 	fmt.Fprintf(w, "Auth method:\t%s\n", s.AuthMethod)
 	fmt.Fprintf(w, "Shell:\t%s\t\n", strings.Join(s.Shell, " "))

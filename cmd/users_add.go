@@ -6,20 +6,15 @@ import (
 )
 
 func init() {
-	usersCmd.AddCommand(usersNewCmd)
-
-	addUserFlags(usersNewCmd)
-	usersNewCmd.Flags().StringP("username", "u", "", "new users's username")
-	usersNewCmd.Flags().StringP("password", "p", "", "new user's password")
-	usersNewCmd.MarkFlagRequired("username")
-	usersNewCmd.MarkFlagRequired("password")
+	usersCmd.AddCommand(usersAddCmd)
+	addUserFlags(usersAddCmd)
 }
 
-var usersNewCmd = &cobra.Command{
-	Use:   "new",
+var usersAddCmd = &cobra.Command{
+	Use:   "add <username> <password>",
 	Short: "Create a new user",
 	Long:  `Create a new user and add it to the database.`,
-	Args:  cobra.NoArgs,
+	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
@@ -29,12 +24,11 @@ var usersNewCmd = &cobra.Command{
 		checkErr(err)
 		getUserDefaults(cmd, &s.Defaults, false)
 
-		password, _ := cmd.Flags().GetString("password")
-		password, err = users.HashPwd(password)
+		password, err := users.HashPwd(args[1])
 		checkErr(err)
 
 		user := &users.User{
-			Username:     mustGetString(cmd, "username"),
+			Username:     args[0],
 			Password:     password,
 			LockPassword: mustGetBool(cmd, "lockPassword"),
 		}
