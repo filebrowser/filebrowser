@@ -42,14 +42,11 @@ func runRules(st *storage.Storage, cmd *cobra.Command, users func(*users.User), 
 		return
 	}
 
-	settings, err := st.Settings.Get()
-	checkErr(err)
-
 	if global != nil {
 		global(settings)
 	}
 
-	printRules(settings.Rules, id)
+	printRules(s.Rules, id)
 }
 
 func getUserIdentifier(cmd *cobra.Command) interface{} {

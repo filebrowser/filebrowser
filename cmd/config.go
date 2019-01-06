@@ -12,6 +12,8 @@ import (
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+	v "github.com/spf13/viper"
 )
 
 func init() {
@@ -26,21 +28,27 @@ var configCmd = &cobra.Command{
 	Args:    cobra.NoArgs,
 }
 
-func addConfigFlags(cmd *cobra.Command) {
-	addUserFlags(cmd)
-	cmd.Flags().BoolP("signup", "s", false, "allow users to signup")
-	cmd.Flags().String("shell", "", "shell command to which other commands should be appended")
+func addConfigFlags(f *pflag.FlagSet) {
 
-	cmd.Flags().String("auth.method", string(auth.MethodJSONAuth), "authentication type")
-	cmd.Flags().String("auth.header", "", "HTTP header for auth.method=proxy")
+	addUserFlags(f)
 
-	cmd.Flags().String("recaptcha.host", "https://www.google.com", "use another host for ReCAPTCHA. recaptcha.net might be useful in China")
-	cmd.Flags().String("recaptcha.key", "", "ReCaptcha site key")
-	cmd.Flags().String("recaptcha.secret", "", "ReCaptcha secret")
+	vaddP(f, "signup", "s", false, "allow users to signup")
+	vadd(f, "shell", "", "shell command to which other commands should be appended")
 
-	cmd.Flags().String("branding.name", "", "replace 'File Browser' by this name")
-	cmd.Flags().String("branding.files", "", "path to directory with images and custom styles")
-	cmd.Flags().Bool("branding.disableExternal", false, "disable external links such as GitHub links")
+	vadd(f, "auth.method", string(auth.MethodJSONAuth), "authentication type")
+	vadd(f, "auth.header", "", "HTTP header for auth.method=proxy")
+
+	vadd(f, "recaptcha.host", "https://www.google.com", "use another host for ReCAPTCHA. recaptcha.net might be useful in China")
+	vadd(f, "recaptcha.key", "", "ReCaptcha site key")
+	vadd(f, "recaptcha.secret", "", "ReCaptcha secret")
+
+	vadd(f, "branding.name", "", "replace 'File Browser' by this name")
+	vadd(f, "branding.files", "", "path to directory with images and custom styles")
+	vadd(f, "branding.disableExternal", false, "disable external links such as GitHub links")
+
+	if err := v.BindPFlags(f); err != nil {
+		panic(err)
+	}
 }
 
 func getAuthentication(cmd *cobra.Command) (settings.AuthMethod, auth.Auther) {

@@ -7,7 +7,7 @@ import (
 
 func init() {
 	usersCmd.AddCommand(usersAddCmd)
-	addUserFlags(usersAddCmd)
+	addUserFlags(usersAddCmd.Flags())
 }
 
 var usersAddCmd = &cobra.Command{

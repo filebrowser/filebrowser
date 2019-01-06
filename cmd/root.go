@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"crypto/tls"
-	"errors"
 	"io/ioutil"
 	"log"
 	"net"
@@ -57,8 +56,8 @@ func init() {
 
 var rootCmd = &cobra.Command{
 	Use:     "filebrowser",
-	Short:   "A stylish web-based file browser",
 	Version: version.Version,
+	Short:   "A stylish web-based file browser",
 	Long: `File Browser CLI lets you create the database to use with File Browser,
 manage your users and all the configurations without acessing the
 web interface.
@@ -93,7 +92,11 @@ set FB_DATABASE equals to the path.
 Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstraped and a new
 user created with the credentials from options "username" and "password".`,
+
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+
+		log.Println(cfgFile)
+
 		switch logMethod := v.GetString("log"); logMethod {
 		case "stdout":
 			log.SetOutput(os.Stdout)
@@ -113,6 +116,8 @@ user created with the credentials from options "username" and "password".`,
 		if !d.hadDB {
 			quickSetup(d)
 		}
+
+		// TODO: check if these fields (including baseurl) are available in the DB. proceed according to --force
 
 		port := v.GetInt("port")
 		address := v.GetString("address")
@@ -158,6 +163,9 @@ user created with the credentials from options "username" and "password".`,
 }
 
 func quickSetup(d pythonData) {
+
+	// TODO: save also port, address, cert, key, scope; if their values differ from defaults
+
 	set := &settings.Settings{
 		Key:        generateRandomBytes(64), // 256 bit
 		BaseURL:    v.GetString("baseurl"),
@@ -194,7 +202,7 @@ func quickSetup(d pythonData) {
 	}
 
 	if username == "" || password == "" {
-		checkErr(errors.New("username and password cannot be empty during quick setup"))
+		log.Fatal("username and password cannot be empty during quick setup")
 	}
 
 	user := &users.User{
@@ -230,7 +238,7 @@ func initConfig() {
 		if _, ok := err.(v.ConfigParseError); ok {
 			panic(err)
 		}
-		// TODO: log.Println("No config file provided")
+		cfgFile = "No config file used"
 	}
-	// else TODO: log.Println("Using config file:", v.ConfigFileUsed())
+	cfgFile = "Using config file: " + v.ConfigFileUsed()
 }

@@ -11,7 +11,7 @@ func init() {
 
 	usersUpdateCmd.Flags().StringP("password", "p", "", "new password")
 	usersUpdateCmd.Flags().StringP("username", "u", "", "new username")
-	addUserFlags(usersUpdateCmd)
+	addUserFlags(usersUpdateCmd.Flags())
 }
 
 var usersUpdateCmd = &cobra.Command{
@@ -28,6 +28,7 @@ options you want to change.`,
 		var err error
 		var user *users.User
 
+		var err error
 		if id != 0 {
 			user, err = d.store.Users.Get("", id)
 		} else {
