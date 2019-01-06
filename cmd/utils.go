@@ -55,12 +55,6 @@ func mustGetBool(cmd *cobra.Command, flag string) bool {
 	return b
 }
 
-func mustGetInt(cmd *cobra.Command, flag string) int {
-	b, err := cmd.Flags().GetInt(flag)
-	checkErr(err)
-	return b
-}
-
 func mustGetUint(cmd *cobra.Command, flag string) uint {
 	b, err := cmd.Flags().GetUint(flag)
 	checkErr(err)

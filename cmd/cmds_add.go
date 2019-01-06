@@ -1,22 +1,20 @@
 package cmd
 
 import (
+	"strings"
+
 	"github.com/spf13/cobra"
 )
 
 func init() {
 	cmdsCmd.AddCommand(cmdsAddCmd)
-	cmdsAddCmd.Flags().StringP("command", "c", "", "command to add")
-	cmdsAddCmd.Flags().StringP("event", "e", "", "corresponding event")
-	cmdsAddCmd.MarkFlagRequired("command")
-	cmdsAddCmd.MarkFlagRequired("event")
 }
 
 var cmdsAddCmd = &cobra.Command{
-	Use:   "add",
+	Use:   "add <event> <command>",
 	Short: "Add a command to run on a specific event",
 	Long:  `Add a command to run on a specific event.`,
-	Args:  cobra.NoArgs,
+	Args:  cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		db := getDB()
 		defer db.Close()
@@ -24,10 +22,9 @@ var cmdsAddCmd = &cobra.Command{
 		s, err := st.Settings.Get()
 		checkErr(err)
 
-		evt := mustGetString(cmd, "event")
-		command := mustGetString(cmd, "command")
+		command := strings.Join(args[1:], " ")
 
-		s.Commands[evt] = append(s.Commands[evt], command)
+		s.Commands[args[0]] = append(s.Commands[args[0]], command)
 		err = st.Settings.Save(s)
 		checkErr(err)
 		printEvents(s.Commands)

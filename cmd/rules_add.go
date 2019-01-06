@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"errors"
 	"regexp"
 
 	"github.com/filebrowser/filebrowser/v2/rules"
@@ -13,41 +12,33 @@ import (
 
 func init() {
 	rulesCmd.AddCommand(rulesAddCmd)
-	rulesAddCmd.Flags().BoolP("allow", "a", false, "allow rule instead of disallow")
-	rulesAddCmd.Flags().StringP("path", "p", "", "path to which the rule applies")
-	rulesAddCmd.Flags().StringP("regex", "r", "", "regex to which the rule applies")
+	rulesAddCmd.Flags().BoolP("allow", "a", false, "indicates this is an allow rule")
+	rulesAddCmd.Flags().BoolP("regex", "r", false, "indicates this is a regex rule")
 }
 
 var rulesAddCmd = &cobra.Command{
-	Use:   "add",
+	Use:   "add <path|expression>",
 	Short: "Add a global rule or user rule",
-	Long: `Add a global rule or user rule. You must
-set either path or regex.`,
-	Args: cobra.NoArgs,
+	Long:  `Add a global rule or user rule.`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		allow := mustGetBool(cmd, "allow")
-		path := mustGetString(cmd, "path")
-		regex := mustGetString(cmd, "regex")
+		regex := mustGetBool(cmd, "regex")
+		exp := args[0]
 
-		if path == "" && regex == "" {
-			panic(errors.New("you must set either --path or --regex flags"))
-		}
-
-		if path != "" && regex != "" {
-			panic(errors.New("you can't set --path and --regex flags at the same time"))
-		}
-
-		if regex != "" {
-			regexp.MustCompile(regex)
+		if regex {
+			regexp.MustCompile(exp)
 		}
 
 		rule := rules.Rule{
 			Allow: allow,
-			Path:  path,
-			Regex: regex != "",
-			Regexp: &rules.Regexp{
-				Raw: regex,
-			},
+			Regex: regex,
+		}
+
+		if regex {
+			rule.Regexp = &rules.Regexp{Raw: exp}
+		} else {
+			rule.Path = exp
 		}
 
 		user := func(u *users.User, st *storage.Storage) {

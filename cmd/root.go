@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"crypto/tls"
+	"errors"
 	"io/ioutil"
 	"log"
 	"net"
@@ -27,10 +28,12 @@ var (
 )
 
 func init() {
+	cobra.OnInitialize(initConfig)
+
 	f := rootCmd.Flags()
 	pf := rootCmd.PersistentFlags()
 
-	f.StringVarP(&cfgFile, "config", "c", "", "config file (defaults are './.filebrowser[ext]', '$HOME/.filebrowser[ext]' or '/etc/filebrowser/.filebrowser[ext]')")
+	pf.StringVarP(&cfgFile, "config", "c", "", "config file path")
 	vaddP(pf, "database", "d", "./filebrowser.db", "path to the database")
 	vaddP(f, "address", "a", "127.0.0.1", "address to listen on")
 	vaddP(f, "log", "l", "stdout", "log output")
@@ -38,6 +41,9 @@ func init() {
 	vaddP(f, "cert", "t", "", "tls certificate")
 	vaddP(f, "key", "k", "", "tls key")
 	vaddP(f, "scope", "s", ".", "scope to prepend to a user's scope when it is relative")
+	vaddP(f, "baseurl", "b", "", "base url")
+	vadd(f, "username", "admin", "username for the first user when using quick config")
+	vadd(f, "password", "admin", "password for the first user when using quick config")
 
 	if err := v.BindPFlags(f); err != nil {
 		panic(err)
@@ -52,17 +58,43 @@ var rootCmd = &cobra.Command{
 	Use:   "filebrowser",
 	Short: "A stylish web-based file browser",
 	Long: `File Browser CLI lets you create the database to use with File Browser,
-manage your user and all the configurations without accessing the
+manage your users and all the configurations without acessing the
 web interface.
+	
+If you've never run File Browser, you'll need to have a database for
+it. Don't worry: you don't need to setup a separate database server.
+We're using Bolt DB which is a single file database and all managed
+by ourselves.
 
-If you've never run File Browser, you will need to create the database.
-See 'filebrowser help config init' for more information.`,
+For this specific command, all the flags you have available (except
+"config" for the configuration file), can be given either through
+environment variables or configuration files.
+
+If you don't set "config", it will look for a configuration file called
+.filebrowser.{json, toml, yaml, yml} in the following directories:
+
+- ./
+- $HOME/
+- /etc/filebrowser/
+
+The precedence of the configuration values are as follows:
+
+- flag
+- environment variable
+- configuration file
+- defaults
+
+The environment variables are prefixed by "FB_" followed by the option
+name in caps. So to set "database" via an env variable, you should
+set FB_DATABASE equals to the path.
+
+Also, if the database path doesn't exist, File Browser will enter into
+the quick setup mode and a new database will be bootstraped and a new
+user created with the credentials from options "username" and "password".`,
 	Run: serveAndListen,
 }
 
 func serveAndListen(cmd *cobra.Command, args []string) {
-	initConfig()
-
 	switch logMethod := v.GetString("log"); logMethod {
 	case "stdout":
 		log.SetOutput(os.Stdout)
@@ -97,6 +129,12 @@ func serveAndListen(cmd *cobra.Command, args []string) {
 	checkErr(err)
 	settings, err := st.Settings.Get()
 	checkErr(err)
+
+	// Despite Base URL and Scope being "server" type of
+	// variables, we persist them to the database because
+	// they are needed during the execution and not only
+	// to start up the server.
+	settings.BaseURL = v.GetString("baseurl")
 	settings.Scope = scope
 	err = st.Settings.Save(settings)
 	checkErr(err)
@@ -130,7 +168,7 @@ func quickSetup(cmd *cobra.Command) {
 
 	set := &settings.Settings{
 		Key:        generateRandomBytes(64), // 256 bit
-		BaseURL:    "",
+		BaseURL:    v.GetString("baseurl"),
 		Signup:     false,
 		AuthMethod: auth.MethodJSONAuth,
 		Defaults: settings.UserDefaults{
@@ -157,11 +195,17 @@ func quickSetup(cmd *cobra.Command) {
 	err = st.Auth.Save(&auth.JSONAuth{})
 	checkErr(err)
 
-	password, err := users.HashPwd("admin")
+	username := v.GetString("username")
+	password := v.GetString("password")
+	if username == "" || password == "" {
+		checkErr(errors.New("username and password cannot be empty during quick setup"))
+	}
+
+	password, err = users.HashPwd(password)
 	checkErr(err)
 
 	user := &users.User{
-		Username:     "admin",
+		Username:     username,
 		Password:     password,
 		LockPassword: false,
 	}
@@ -173,7 +217,6 @@ func quickSetup(cmd *cobra.Command) {
 	checkErr(err)
 }
 
-// initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	if cfgFile == "" {
 		home, err := homedir.Dir()
@@ -194,8 +237,7 @@ func initConfig() {
 		if _, ok := err.(v.ConfigParseError); ok {
 			panic(err)
 		}
-		log.Println("No config file provided")
-	} else {
-		log.Println("Using config file:", v.ConfigFileUsed())
+		// TODO: log.Println("No config file provided")
 	}
+	// else TODO: log.Println("Using config file:", v.ConfigFileUsed())
 }
