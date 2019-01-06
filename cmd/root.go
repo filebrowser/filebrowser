@@ -78,16 +78,13 @@ func serveAndListen(cmd *cobra.Command, args []string) {
 	key := mustGetString(cmd, "key")
 	scope := mustGetString(cmd, "scope")
 
-	if scope != "." {
-		var err error
-		scope, err = filepath.Abs(scope)
-		checkErr(err)
-		settings, err := st.Settings.Get()
-		checkErr(err)
-		settings.Scope = scope
-		err = st.Settings.Save(settings)
-		checkErr(err)
-	}
+	scope, err := filepath.Abs(scope)
+	checkErr(err)
+	settings, err := st.Settings.Get()
+	checkErr(err)
+	settings.Scope = scope
+	err = st.Settings.Save(settings)
+	checkErr(err)
 
 	handler, err := fbhttp.NewHandler(st)
 	checkErr(err)
