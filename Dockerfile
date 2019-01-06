@@ -8,5 +8,4 @@ EXPOSE 80
 
 COPY filebrowser /filebrowser
 
-ENTRYPOINT [ "/filebrowser", "--database /database.db" ]
-CMD [ "--scope /srv", "--port 80" ]
+ENTRYPOINT [ "/filebrowser"]
