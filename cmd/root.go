@@ -1,13 +1,13 @@
 package cmd
 
 import (
-	"path/filepath"
 	"crypto/tls"
 	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/asdine/storm"
@@ -86,7 +86,7 @@ func serveAndListen(cmd *cobra.Command, args []string) {
 		checkErr(err)
 		settings.Scope = scope
 		err = st.Settings.Save(settings)
-		checkErr(err)		
+		checkErr(err)
 	}
 
 	handler, err := fbhttp.NewHandler(st)
