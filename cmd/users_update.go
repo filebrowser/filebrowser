@@ -12,7 +12,7 @@ func init() {
 	usersUpdateCmd.Flags().UintP("id", "i", 0, "id of the user")
 	usersUpdateCmd.Flags().StringP("username", "u", "", "user to change or new username if flag 'id' is set")
 	usersUpdateCmd.Flags().StringP("password", "p", "", "new password")
-	addUserFlags(usersUpdateCmd, "")
+	addUserFlags(usersUpdateCmd)
 }
 
 var usersUpdateCmd = &cobra.Command{
@@ -51,7 +51,7 @@ options you want to change.`,
 			Sorting:  user.Sorting,
 			Commands: user.Commands,
 		}
-		getUserDefaults(cmd, &defaults, "", false)
+		getUserDefaults(cmd, &defaults, false)
 		user.Scope = defaults.Scope
 		user.Locale = defaults.Locale
 		user.ViewMode = defaults.ViewMode

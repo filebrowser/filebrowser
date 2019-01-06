@@ -32,7 +32,7 @@ override the options.`,
 		}
 
 		defaults := settings.UserDefaults{}
-		getUserDefaults(cmd, &defaults, "defaults.", true)
+		getUserDefaults(cmd, &defaults, true)
 		authMethod, auther := getAuthentication(cmd)
 
 		var err error

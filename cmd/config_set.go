@@ -47,7 +47,7 @@ you want to change.`,
 			}
 		})
 
-		getUserDefaults(cmd, &s.Defaults, "defaults.",  false)
+		getUserDefaults(cmd, &s.Defaults, false)
 
 		var auther auth.Auther
 		if hasAuth {

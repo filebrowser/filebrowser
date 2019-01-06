@@ -30,7 +30,7 @@ var configCmd = &cobra.Command{
 }
 
 func addConfigFlags(cmd *cobra.Command) {
-	addUserFlags(cmd, "defaults.")
+	addUserFlags(cmd)
 	cmd.Flags().StringP("baseURL", "b", "/", "base url of this installation")
 	cmd.Flags().BoolP("signup", "s", false, "allow users to signup")
 	cmd.Flags().String("shell", "", "shell command to which other commands should be appended")
