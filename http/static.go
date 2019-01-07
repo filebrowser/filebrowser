@@ -9,8 +9,9 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/GeertJohan/go.rice"
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/filebrowser/filebrowser/v2/auth"
+	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/version"
 )
@@ -18,12 +19,12 @@ import (
 func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, box *rice.Box, file, contentType string) (int, error) {
 	w.Header().Set("Content-Type", contentType)
 
-	staticURL := strings.TrimPrefix(d.settings.BaseURL+"/static", "/")
+	staticURL := strings.TrimPrefix(settings.RuntimeCfg["baseurl"]+"/static", "/")
 
 	data := map[string]interface{}{
 		"Name":            d.settings.Branding.Name,
 		"DisableExternal": d.settings.Branding.DisableExternal,
-		"BaseURL":         d.settings.BaseURL,
+		"BaseURL":         settings.RuntimeCfg["baseurl"],
 		"Version":         version.Version,
 		"StaticURL":       staticURL,
 		"Signup":          d.settings.Signup,

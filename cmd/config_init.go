@@ -28,7 +28,7 @@ override the options.`,
 		authMethod, auther := getAuthentication(cmd)
 
 		s := &settings.Settings{
-			Key:        generateRandomBytes(64), // 256 bit
+			Runtime:    runtimeNonDefaults(),
 			Signup:     mustGetBool(cmd, "signup"),
 			Shell:      strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " "),
 			AuthMethod: authMethod,

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/filebrowser/filebrowser/v2/files"
+	"github.com/filebrowser/filebrowser/v2/settings"
 )
 
 var withHashFile = func(fn handleFunc) handleFunc {
@@ -13,7 +14,7 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			return errToStatus(err), err
 		}
 
-		user, err := d.store.Users.Get(d.settings.Root, link.UserID)
+		user, err := d.store.Users.Get(settings.RuntimeCfg["root"], link.UserID)
 		if err != nil {
 			return errToStatus(err), err
 		}

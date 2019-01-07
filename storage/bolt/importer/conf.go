@@ -13,8 +13,8 @@ import (
 	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
-	"github.com/pelletier/go-toml"
-	"gopkg.in/yaml.v2"
+	toml "github.com/pelletier/go-toml"
+	yaml "gopkg.in/yaml.v2"
 )
 
 type oldDefs struct {
@@ -109,9 +109,9 @@ func importConf(db *storm.DB, path string, sto *storage.Storage) error {
 	}
 
 	s := &settings.Settings{
-		Key:     key,
-		BaseURL: cfg.BaseURL,
-		Signup:  false,
+		//Key:     key,
+		//BaseURL: cfg.BaseURL,
+		Signup: false,
 		Defaults: settings.UserDefaults{
 			Scope:    cfg.Defaults.Scope,
 			Commands: cfg.Defaults.Commands,

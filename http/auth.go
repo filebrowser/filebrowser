@@ -7,9 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/filebrowser/filebrowser/v2/errors"
+	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
 
@@ -50,7 +51,7 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 func withUser(fn handleFunc) handleFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		keyFunc := func(token *jwt.Token) (interface{}, error) {
-			return d.settings.Key, nil
+			return settings.RuntimeCfg["key"], nil
 		}
 
 		var tk authToken
@@ -67,7 +68,7 @@ func withUser(fn handleFunc) handleFunc {
 			w.Header().Add("X-Renew-Token", "true")
 		}
 
-		d.user, err = d.store.Users.Get(d.settings.Root, tk.User.ID)
+		d.user, err = d.store.Users.Get(settings.RuntimeCfg["root"], tk.User.ID)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -169,7 +170,7 @@ func printToken(w http.ResponseWriter, r *http.Request, d *data, user *users.Use
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signed, err := token.SignedString(d.settings.Key)
+	signed, err := token.SignedString(settings.RuntimeCfg["key"])
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}

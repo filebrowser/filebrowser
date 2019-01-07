@@ -7,9 +7,7 @@ type AuthMethod string
 
 // Settings contain the main settings of the application.
 type Settings struct {
-	Key        []byte              `json:"key"`
-	BaseURL    string              `json:"baseURL"`
-	Root       string              `json:"root"`
+	Runtime    map[string]string   `json:"runtime"`
 	Signup     bool                `json:"signup"`
 	Defaults   UserDefaults        `json:"defaults"`
 	AuthMethod AuthMethod          `json:"authMethod"`

@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"crypto/tls"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
@@ -35,15 +35,16 @@ func init() {
 
 	pf.StringVarP(&cfgFile, "config", "c", "", "config file path")
 	vaddP(pf, "database", "d", "./filebrowser.db", "path to the database")
-	vaddP(f, "address", "a", "127.0.0.1", "address to listen on")
-	vaddP(f, "log", "l", "stdout", "log output")
-	vaddP(f, "port", "p", 8080, "port to listen on")
-	vaddP(f, "cert", "t", "", "tls certificate")
-	vaddP(f, "key", "k", "", "tls key")
-	vaddP(f, "root", "r", ".", "root to prepend to relative paths")
-	vaddP(f, "baseurl", "b", "", "base url")
+	vaddP(f, "address", "a", settings.RuntimeDefaults["address"], "address to listen on")
+	vaddP(f, "log", "l", settings.RuntimeDefaults["log"], "log output")
+	vaddP(f, "port", "p", settings.RuntimeDefaults["port"], "port to listen on")
+	vaddP(f, "cert", "t", settings.RuntimeDefaults["cert"], "tls certificate")
+	vaddP(f, "key", "k", settings.RuntimeDefaults["key"], "tls key")
+	vaddP(f, "root", "r", settings.RuntimeDefaults["root"], "root path to prepend to all relative paths")
+	vaddP(f, "baseurl", "b", settings.RuntimeDefaults["baseurl"], "base url")
 	vadd(f, "username", "admin", "username for the first user when using quick config")
 	vadd(f, "password", "", "hashed password for the first user when using quick config (default \"admin\")")
+	vaddP(f, "force", "f", false, "")
 
 	if err := v.BindPFlags(f); err != nil {
 		panic(err)
@@ -97,7 +98,7 @@ user created with the credentials from options "username" and "password".`,
 
 		log.Println(cfgFile)
 
-		switch logMethod := v.GetString("log"); logMethod {
+		switch logMethod := settings.RuntimeCfg["log"]; logMethod {
 		case "stdout":
 			log.SetOutput(os.Stdout)
 		case "stderr":
@@ -117,43 +118,39 @@ user created with the credentials from options "username" and "password".`,
 			quickSetup(d)
 		}
 
-		// TODO: check if these fields (including baseurl) are available in the DB. proceed according to --force
-
-		port := v.GetInt("port")
-		address := v.GetString("address")
-		cert := v.GetString("cert")
-		key := v.GetString("key")
-		root := v.GetString("root")
-
-		root, err := filepath.Abs(root)
-		checkErr(err)
-		settings, err := d.store.Settings.Get()
+		s, err := d.store.Settings.Get()
 		checkErr(err)
 
-		// Despite Base URL and Scope being "server" type of
-		// variables, we persist them to the database because
-		// they are needed during the execution and not only
-		// to start up the server.
-		settings.BaseURL = v.GetString("baseurl")
-		settings.Root = root
-		err = d.store.Settings.Save(settings)
-		checkErr(err)
+		if !v.GetBool("force") {
+			for k := range settings.RuntimeCfg {
+				if y, ok := s.Runtime[k]; ok {
+					settings.RuntimeCfg[k] = y
+				}
+			}
+		}
 
-		handler, err := fbhttp.NewHandler(d.store)
+		r, err := filepath.Abs(settings.RuntimeCfg["root"])
 		checkErr(err)
+		settings.RuntimeCfg["root"] = r
+
+		adr := settings.RuntimeCfg["address"] + ":" + settings.RuntimeCfg["port"]
+		cert := settings.RuntimeCfg["cert"]
+		key := settings.RuntimeCfg["key"]
 
 		var listener net.Listener
 
 		if key != "" && cert != "" {
 			cer, err := tls.LoadX509KeyPair(cert, key)
 			checkErr(err)
-			config := &tls.Config{Certificates: []tls.Certificate{cer}}
-			listener, err = tls.Listen("tcp", address+":"+strconv.Itoa(port), config)
+			listener, err = tls.Listen("tcp", adr, &tls.Config{Certificates: []tls.Certificate{cer}})
 			checkErr(err)
 		} else {
-			listener, err = net.Listen("tcp", address+":"+strconv.Itoa(port))
+			listener, err = net.Listen("tcp", adr)
 			checkErr(err)
 		}
+
+		handler, err := fbhttp.NewHandler(d.store)
+		checkErr(err)
 
 		log.Println("Listening on", listener.Addr().String())
 		if err := http.Serve(listener, handler); err != nil {
@@ -162,13 +159,26 @@ user created with the credentials from options "username" and "password".`,
 	}, pythonConfig{allowNoDB: true}),
 }
 
+func runtimeNonDefaults() (m map[string]string) {
+	for k, d := range settings.RuntimeDefaults {
+		if x, ok := settings.RuntimeCfg[k]; ok && (x != d) {
+			log.Println(fmt.Sprintf("Non-default value for key '%s': %s [default: %s]", k, x, d))
+			m[k] = x
+		}
+	}
+	if settings.RuntimeCfg["key"] == "" {
+		log.Println("Generate random 256 bit key")
+		m["key"] = string(generateRandomBytes(64)) // 256 bit
+	}
+	return
+}
+
 func quickSetup(d pythonData) {
 
-	// TODO: save also port, address, cert, key, scope; if their values differ from defaults
+	log.Println("Executing quick setup...")
 
 	set := &settings.Settings{
-		Key:        generateRandomBytes(64), // 256 bit
-		BaseURL:    v.GetString("baseurl"),
+		Runtime:    runtimeNonDefaults(),
 		Signup:     false,
 		AuthMethod: auth.MethodJSONAuth,
 		Defaults: settings.UserDefaults{
@@ -216,6 +226,8 @@ func quickSetup(d pythonData) {
 
 	err = d.store.Users.Save(user)
 	checkErr(err)
+
+	log.Println("Quick setup finished")
 }
 
 func initConfig() {
@@ -239,6 +251,11 @@ func initConfig() {
 			panic(err)
 		}
 		cfgFile = "No config file used"
+	} else {
+		cfgFile = "Using config file: " + v.ConfigFileUsed()
 	}
-	cfgFile = "Using config file: " + v.ConfigFileUsed()
+
+	for k := range settings.RuntimeDefaults {
+		settings.RuntimeCfg[k] = v.GetString(k)
+	}
 }

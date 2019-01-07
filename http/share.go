@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/filebrowser/filebrowser/v2/errors"
+	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/share"
 )
 
@@ -56,7 +57,7 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 		var err error
 		s, err = d.store.Share.GetPermanent(r.URL.Path, d.user.ID)
 		if err == nil {
-			w.Write([]byte(d.settings.BaseURL + "/share/" + s.Hash))
+			w.Write([]byte(settings.RuntimeCfg["baseurl"] + "/share/" + s.Hash))
 			return 0, nil
 		}
 	}
