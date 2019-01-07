@@ -42,8 +42,11 @@ func runRules(st *storage.Storage, cmd *cobra.Command, users func(*users.User), 
 		return
 	}
 
+	s, err := st.Settings.Get()
+	checkErr(err)
+
 	if global != nil {
-		global(settings)
+		global(s)
 	}
 
 	printRules(s.Rules, id)

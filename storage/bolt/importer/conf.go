@@ -109,8 +109,10 @@ func importConf(db *storm.DB, path string, sto *storage.Storage) error {
 	}
 
 	s := &settings.Settings{
-		//Key:     key,
-		//BaseURL: cfg.BaseURL,
+		Runtime: map[string]string{
+			"key":     string(key),
+			"baseurl": cfg.BaseURL,
+		},
 		Signup: false,
 		Defaults: settings.UserDefaults{
 			Scope:    cfg.Defaults.Scope,

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/asdine/storm"
+	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 	"github.com/spf13/cobra"
@@ -86,7 +87,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) {
 		data := pythonData{hadDB: true}
 
-		path := v.GetString("database")
+		path := settings.RuntimeCfg["database"]
 		_, err := os.Stat(path)
 
 		if os.IsNotExist(err) {

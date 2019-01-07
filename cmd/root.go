@@ -159,7 +159,8 @@ user created with the credentials from options "username" and "password".`,
 	}, pythonConfig{allowNoDB: true}),
 }
 
-func runtimeNonDefaults() (m map[string]string) {
+func runtimeNonDefaults() map[string]string {
+	m := map[string]string{}
 	for k, d := range settings.RuntimeDefaults {
 		if x, ok := settings.RuntimeCfg[k]; ok && (x != d) {
 			log.Println(fmt.Sprintf("Non-default value for key '%s': %s [default: %s]", k, x, d))
@@ -170,7 +171,7 @@ func runtimeNonDefaults() (m map[string]string) {
 		log.Println("Generate random 256 bit key")
 		m["key"] = string(generateRandomBytes(64)) // 256 bit
 	}
-	return
+	return m
 }
 
 func quickSetup(d pythonData) {

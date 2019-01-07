@@ -44,7 +44,6 @@ you want to change.`,
 		getUserDefaults(cmd, &s.Defaults, false)
 
 		var auther auth.Auther
-		var err error
 		if hasAuth {
 			s.AuthMethod, auther = getAuthentication(cmd)
 			err = d.store.Auth.Save(auther)
