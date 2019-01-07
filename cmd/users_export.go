@@ -12,14 +12,18 @@ func init() {
 }
 
 var usersExportCmd = &cobra.Command{
-	Use:   "export",
+	Use:   "export <filename>",
 	Short: "Export all users.",
-	Args:  cobra.NoArgs,
+	Args:  cobra.ExactArgs(1),
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
 		list, err := d.store.Users.Gets("")
 		checkErr(err)
 
-		encoder := json.NewEncoder(os.Stdout)
+		fd, err := os.Create(args[0])
+		checkErr(err)
+		defer fd.Close()
+
+		encoder := json.NewEncoder(fd)
 		encoder.SetIndent("", "    ")
 		encoder.Encode(list)
 
