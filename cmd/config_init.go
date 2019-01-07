@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
-	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/spf13/cobra"
 )
 
@@ -23,7 +22,7 @@ this options can be changed in the future with the command
 to the defaults when creating new users and you don't
 override the options.`,
 	Args: cobra.NoArgs,
-	Run: python(func(cmd *cobra.Command, args []string, st *storage.Storage) {
+	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
 		defaults := settings.UserDefaults{}
 		getUserDefaults(cmd, &defaults, true)
 		authMethod, auther := getAuthentication(cmd)
@@ -41,9 +40,9 @@ override the options.`,
 			},
 		}
 
-		err := st.Settings.Save(s)
+		err := d.store.Settings.Save(s)
 		checkErr(err)
-		err = st.Auth.Save(auther)
+		err = d.store.Auth.Save(auther)
 		checkErr(err)
 
 		fmt.Printf(`

@@ -4,7 +4,6 @@ import (
 	"strconv"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
-	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/users"
 	"github.com/spf13/cobra"
 )
@@ -32,7 +31,7 @@ var rulesRmCommand = &cobra.Command{
 
 		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
 		i, err := strconv.Atoi(args[0])
 		checkErr(err)
 		f := i
@@ -41,18 +40,18 @@ var rulesRmCommand = &cobra.Command{
 			checkErr(err)
 		}
 
-		user := func(u *users.User, st *storage.Storage) {
+		user := func(u *users.User) {
 			u.Rules = append(u.Rules[:i], u.Rules[f+1:]...)
-			err := st.Users.Save(u)
+			err := d.store.Users.Save(u)
 			checkErr(err)
 		}
 
-		global := func(s *settings.Settings, st *storage.Storage) {
+		global := func(s *settings.Settings) {
 			s.Rules = append(s.Rules[:i], s.Rules[f+1:]...)
-			err := st.Settings.Save(s)
+			err := d.store.Settings.Save(s)
 			checkErr(err)
 		}
 
-		runRules(cmd, user, global)
-	},
+		runRules(d.store, cmd, user, global)
+	}, pythonConfig{}),
 }

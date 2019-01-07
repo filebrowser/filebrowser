@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/v2/auth"
 	fbhttp "github.com/filebrowser/filebrowser/v2/http"
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -91,81 +90,71 @@ set FB_DATABASE equals to the path.
 Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstraped and a new
 user created with the credentials from options "username" and "password".`,
-	Run: serveAndListen,
+	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+		switch logMethod := v.GetString("log"); logMethod {
+		case "stdout":
+			log.SetOutput(os.Stdout)
+		case "stderr":
+			log.SetOutput(os.Stderr)
+		case "":
+			log.SetOutput(ioutil.Discard)
+		default:
+			log.SetOutput(&lumberjack.Logger{
+				Filename:   logMethod,
+				MaxSize:    100,
+				MaxAge:     14,
+				MaxBackups: 10,
+			})
+		}
+
+		if !d.hadDB {
+			quickSetup(d)
+		}
+
+		port := v.GetInt("port")
+		address := v.GetString("address")
+		cert := v.GetString("cert")
+		key := v.GetString("key")
+		scope := v.GetString("scope")
+
+		scope, err := filepath.Abs(scope)
+		checkErr(err)
+		settings, err := d.store.Settings.Get()
+		checkErr(err)
+
+		// Despite Base URL and Scope being "server" type of
+		// variables, we persist them to the database because
+		// they are needed during the execution and not only
+		// to start up the server.
+		settings.BaseURL = v.GetString("baseurl")
+		settings.Scope = scope
+		err = d.store.Settings.Save(settings)
+		checkErr(err)
+
+		handler, err := fbhttp.NewHandler(d.store)
+		checkErr(err)
+
+		var listener net.Listener
+
+		if key != "" && cert != "" {
+			cer, err := tls.LoadX509KeyPair(cert, key)
+			checkErr(err)
+			config := &tls.Config{Certificates: []tls.Certificate{cer}}
+			listener, err = tls.Listen("tcp", address+":"+strconv.Itoa(port), config)
+			checkErr(err)
+		} else {
+			listener, err = net.Listen("tcp", address+":"+strconv.Itoa(port))
+			checkErr(err)
+		}
+
+		log.Println("Listening on", listener.Addr().String())
+		if err := http.Serve(listener, handler); err != nil {
+			log.Fatal(err)
+		}
+	}, pythonConfig{noDB: true}),
 }
 
-func serveAndListen(cmd *cobra.Command, args []string) {
-	switch logMethod := v.GetString("log"); logMethod {
-	case "stdout":
-		log.SetOutput(os.Stdout)
-	case "stderr":
-		log.SetOutput(os.Stderr)
-	case "":
-		log.SetOutput(ioutil.Discard)
-	default:
-		log.SetOutput(&lumberjack.Logger{
-			Filename:   logMethod,
-			MaxSize:    100,
-			MaxAge:     14,
-			MaxBackups: 10,
-		})
-	}
-
-	if _, err := os.Stat(v.GetString("database")); os.IsNotExist(err) {
-		quickSetup(cmd)
-	}
-
-	db := getDB()
-	defer db.Close()
-	st := getStorage(db)
-
-	port := v.GetInt("port")
-	address := v.GetString("address")
-	cert := v.GetString("cert")
-	key := v.GetString("key")
-	scope := v.GetString("scope")
-
-	scope, err := filepath.Abs(scope)
-	checkErr(err)
-	settings, err := st.Settings.Get()
-	checkErr(err)
-
-	// Despite Base URL and Scope being "server" type of
-	// variables, we persist them to the database because
-	// they are needed during the execution and not only
-	// to start up the server.
-	settings.BaseURL = v.GetString("baseurl")
-	settings.Scope = scope
-	err = st.Settings.Save(settings)
-	checkErr(err)
-
-	handler, err := fbhttp.NewHandler(st)
-	checkErr(err)
-
-	var listener net.Listener
-
-	if key != "" && cert != "" {
-		cer, err := tls.LoadX509KeyPair(cert, key)
-		checkErr(err)
-		config := &tls.Config{Certificates: []tls.Certificate{cer}}
-		listener, err = tls.Listen("tcp", address+":"+strconv.Itoa(port), config)
-		checkErr(err)
-	} else {
-		listener, err = net.Listen("tcp", address+":"+strconv.Itoa(port))
-		checkErr(err)
-	}
-
-	log.Println("Listening on", listener.Addr().String())
-	if err := http.Serve(listener, handler); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func quickSetup(cmd *cobra.Command) {
-	db, err := storm.Open(v.GetString("database"))
-	checkErr(err)
-	defer db.Close()
-
+func quickSetup(d pythonData) {
 	set := &settings.Settings{
 		Key:        generateRandomBytes(64), // 256 bit
 		BaseURL:    v.GetString("baseurl"),
@@ -187,12 +176,10 @@ func quickSetup(cmd *cobra.Command) {
 		},
 	}
 
-	st := getStorage(db)
-
-	err = st.Settings.Save(set)
+	err := d.store.Settings.Save(set)
 	checkErr(err)
 
-	err = st.Auth.Save(&auth.JSONAuth{})
+	err = d.store.Auth.Save(&auth.JSONAuth{})
 	checkErr(err)
 
 	username := v.GetString("username")
@@ -216,7 +203,7 @@ func quickSetup(cmd *cobra.Command) {
 	set.Defaults.Apply(user)
 	user.Perm.Admin = true
 
-	err = st.Users.Save(user)
+	err = d.store.Users.Save(user)
 	checkErr(err)
 }
 

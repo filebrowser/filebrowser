@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/filebrowser/filebrowser/v2/settings"
-	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/users"
 	"github.com/spf13/cobra"
 )
@@ -21,8 +20,8 @@ var usersUpdateCmd = &cobra.Command{
 	Long: `Updates an existing user. Set the flags for the
 options you want to change.`,
 	Args: cobra.ExactArgs(1),
-	Run: python(func(cmd *cobra.Command, args []string, st *storage.Storage) {
-		set, err := st.Settings.Get()
+	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+		set, err := d.store.Settings.Get()
 		checkErr(err)
 
 		username, id := parseUsernameOrID(args[0])
@@ -32,9 +31,9 @@ options you want to change.`,
 		var user *users.User
 
 		if id != 0 {
-			user, err = st.Users.Get(set.Scope, id)
+			user, err = d.store.Users.Get(set.Scope, id)
 		} else {
-			user, err = st.Users.Get(set.Scope, username)
+			user, err = d.store.Users.Get(set.Scope, username)
 		}
 
 		checkErr(err)
@@ -65,7 +64,7 @@ options you want to change.`,
 			checkErr(err)
 		}
 
-		err = st.Users.Update(user)
+		err = d.store.Users.Update(user)
 		checkErr(err)
 		printUsers([]*users.User{user})
 	}, pythonConfig{}),
