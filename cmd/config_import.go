@@ -72,10 +72,9 @@ database.`,
 func getAuther(sample auth.Auther, data interface{}) interface{} {
 	authType := reflect.TypeOf(sample)
 	auther := reflect.New(authType).Interface()
-
 	bytes, err := json.Marshal(data)
 	checkErr(err)
 	err = json.Unmarshal(bytes, &auther)
-
+	checkErr(err)
 	return auther
 }
