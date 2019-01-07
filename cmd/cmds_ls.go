@@ -14,11 +14,8 @@ var cmdsLsCmd = &cobra.Command{
 	Short: "List all commands for each event",
 	Long:  `List all commands for each event.`,
 	Args:  cobra.NoArgs,
-	Run: func(cmd *cobra.Command, args []string) {
-		db := getDB()
-		defer db.Close()
-		st := getStorage(db)
-		s, err := st.Settings.Get()
+	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+		s, err := d.store.Settings.Get()
 		checkErr(err)
 		evt := mustGetString(cmd, "event")
 
@@ -30,5 +27,5 @@ var cmdsLsCmd = &cobra.Command{
 			show["after_"+evt] = s.Commands["after_"+evt]
 			printEvents(show)
 		}
-	},
+	}, pythonConfig{}),
 }

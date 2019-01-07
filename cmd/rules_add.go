@@ -5,7 +5,6 @@ import (
 
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/settings"
-	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/users"
 	"github.com/spf13/cobra"
 )
@@ -21,7 +20,7 @@ var rulesAddCmd = &cobra.Command{
 	Short: "Add a global rule or user rule",
 	Long:  `Add a global rule or user rule.`,
 	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
 		allow := mustGetBool(cmd, "allow")
 		regex := mustGetBool(cmd, "regex")
 		exp := args[0]
@@ -41,18 +40,18 @@ var rulesAddCmd = &cobra.Command{
 			rule.Path = exp
 		}
 
-		user := func(u *users.User, st *storage.Storage) {
+		user := func(u *users.User) {
 			u.Rules = append(u.Rules, rule)
-			err := st.Users.Save(u)
+			err := d.store.Users.Save(u)
 			checkErr(err)
 		}
 
-		global := func(s *settings.Settings, st *storage.Storage) {
+		global := func(s *settings.Settings) {
 			s.Rules = append(s.Rules, rule)
-			err := st.Settings.Save(s)
+			err := d.store.Settings.Save(s)
 			checkErr(err)
 		}
 
-		runRules(cmd, user, global)
-	},
+		runRules(d.store, cmd, user, global)
+	}, pythonConfig{}),
 }
