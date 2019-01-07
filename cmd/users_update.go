@@ -21,19 +21,17 @@ var usersUpdateCmd = &cobra.Command{
 options you want to change.`,
 	Args: cobra.ExactArgs(1),
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
-		set, err := d.store.Settings.Get()
-		checkErr(err)
-
 		username, id := parseUsernameOrID(args[0])
 		password := mustGetString(cmd, "password")
 		newUsername := mustGetString(cmd, "username")
 
+		var err error
 		var user *users.User
 
 		if id != 0 {
-			user, err = d.store.Users.Get(set.Scope, id)
+			user, err = d.store.Users.Get("", id)
 		} else {
-			user, err = d.store.Users.Get(set.Scope, username)
+			user, err = d.store.Users.Get("", username)
 		}
 
 		checkErr(err)

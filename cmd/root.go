@@ -39,7 +39,7 @@ func init() {
 	vaddP(f, "port", "p", 8080, "port to listen on")
 	vaddP(f, "cert", "t", "", "tls certificate")
 	vaddP(f, "key", "k", "", "tls key")
-	vaddP(f, "scope", "s", ".", "scope to prepend to a user's scope when it is relative")
+	vaddP(f, "root", "r", ".", "root to prepend to relative paths")
 	vaddP(f, "baseurl", "b", "", "base url")
 	vadd(f, "username", "admin", "username for the first user when using quick config")
 	vadd(f, "password", "", "hashed password for the first user when using quick config (default \"admin\")")
@@ -115,9 +115,9 @@ user created with the credentials from options "username" and "password".`,
 		address := v.GetString("address")
 		cert := v.GetString("cert")
 		key := v.GetString("key")
-		scope := v.GetString("scope")
+		root := v.GetString("root")
 
-		scope, err := filepath.Abs(scope)
+		root, err := filepath.Abs(root)
 		checkErr(err)
 		settings, err := d.store.Settings.Get()
 		checkErr(err)
@@ -127,7 +127,7 @@ user created with the credentials from options "username" and "password".`,
 		// they are needed during the execution and not only
 		// to start up the server.
 		settings.BaseURL = v.GetString("baseurl")
-		settings.Scope = scope
+		settings.Root = root
 		err = d.store.Settings.Save(settings)
 		checkErr(err)
 
@@ -151,7 +151,7 @@ user created with the credentials from options "username" and "password".`,
 		if err := http.Serve(listener, handler); err != nil {
 			log.Fatal(err)
 		}
-	}, pythonConfig{noDB: true}),
+	}, pythonConfig{allowNoDB: true}),
 }
 
 func quickSetup(d pythonData) {
