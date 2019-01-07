@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/spf13/cobra"
 )
 
@@ -14,10 +15,7 @@ var cmdsLsCmd = &cobra.Command{
 	Short: "List all commands for each event",
 	Long:  `List all commands for each event.`,
 	Args:  cobra.NoArgs,
-	Run: func(cmd *cobra.Command, args []string) {
-		db := getDB()
-		defer db.Close()
-		st := getStorage(db)
+	Run: python(func(cmd *cobra.Command, args []string, st *storage.Storage) {
 		s, err := st.Settings.Get()
 		checkErr(err)
 		evt := mustGetString(cmd, "event")
@@ -30,5 +28,5 @@ var cmdsLsCmd = &cobra.Command{
 			show["after_"+evt] = s.Commands["after_"+evt]
 			printEvents(show)
 		}
-	},
+	}, pythonConfig{}),
 }

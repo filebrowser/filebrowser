@@ -3,6 +3,7 @@ package cmd
 import (
 	"crypto/rand"
 	"errors"
+	"log"
 	"os"
 
 	"github.com/asdine/storm"
@@ -82,4 +83,32 @@ func generateRandomBytes(n int) []byte {
 	checkErr(err)
 	// Note that err == nil only if we read len(b) bytes.
 	return b
+}
+
+type cobraFunc func(cmd *cobra.Command, args []string)
+type pythonFunc func(cmd *cobra.Command, args []string, st *storage.Storage)
+
+type pythonConfig struct {
+	noDB bool
+}
+
+func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
+	return func(cmd *cobra.Command, args []string) {
+		path := v.GetString("database")
+		_, err := os.Stat(path)
+
+		if err != nil && !os.IsNotExist(err) {
+			panic(err)
+		} else if err != nil && !cfg.noDB {
+			log.Fatal(path + " does not exist. Please run 'filebrowser config init' first.")
+		} else if err == nil && cfg.noDB {
+			log.Fatal(path + " already exists")
+		}
+
+		db, err := storm.Open(path)
+		checkErr(err)
+		defer db.Close()
+		sto := bolt.NewStorage(db)
+		fn(cmd, args, sto)
+	}
 }

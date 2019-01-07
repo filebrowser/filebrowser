@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/spf13/cobra"
 )
 
@@ -13,14 +14,11 @@ var configCatCmd = &cobra.Command{
 	Short: "Prints the configuration",
 	Long:  `Prints the configuration.`,
 	Args:  cobra.NoArgs,
-	Run: func(cmd *cobra.Command, args []string) {
-		db := getDB()
-		defer db.Close()
-		st := getStorage(db)
+	Run: python(func(cmd *cobra.Command, args []string, st *storage.Storage) {
 		s, err := st.Settings.Get()
 		checkErr(err)
 		auther, err := st.Auth.Get(s.AuthMethod)
 		checkErr(err)
 		printSettings(s, auther)
-	},
+	}, pythonConfig{}),
 }

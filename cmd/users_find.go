@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/users"
 	"github.com/spf13/cobra"
 )
@@ -25,11 +26,7 @@ var usersLsCmd = &cobra.Command{
 	Run:   findUsers,
 }
 
-var findUsers = func(cmd *cobra.Command, args []string) {
-	db := getDB()
-	defer db.Close()
-	st := getStorage(db)
-
+var findUsers = python(func(cmd *cobra.Command, args []string, st *storage.Storage) {
 	var (
 		list []*users.User
 		user *users.User
@@ -51,4 +48,4 @@ var findUsers = func(cmd *cobra.Command, args []string) {
 
 	checkErr(err)
 	printUsers(list)
-}
+}, pythonConfig{})

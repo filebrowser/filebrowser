@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
+	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -19,11 +20,7 @@ var configSetCmd = &cobra.Command{
 	Long: `Updates the configuration. Set the flags for the options
 you want to change.`,
 	Args: cobra.NoArgs,
-	Run: func(cmd *cobra.Command, args []string) {
-		db := getDB()
-		defer db.Close()
-
-		st := getStorage(db)
+	Run: python(func(cmd *cobra.Command, args []string, st *storage.Storage) {
 		s, err := st.Settings.Get()
 		checkErr(err)
 
@@ -60,5 +57,5 @@ you want to change.`,
 		err = st.Settings.Save(s)
 		checkErr(err)
 		printSettings(s, auther)
-	},
+	}, pythonConfig{}),
 }

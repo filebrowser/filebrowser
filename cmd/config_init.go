@@ -1,15 +1,12 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
-	"os"
 	"strings"
 
-	"github.com/asdine/storm"
 	"github.com/filebrowser/filebrowser/v2/settings"
+	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/spf13/cobra"
-	v "github.com/spf13/viper"
 )
 
 func init() {
@@ -26,20 +23,11 @@ this options can be changed in the future with the command
 to the defaults when creating new users and you don't
 override the options.`,
 	Args: cobra.NoArgs,
-	Run: func(cmd *cobra.Command, args []string) {
-		databasePath := v.GetString("database")
-		if _, err := os.Stat(databasePath); err == nil {
-			panic(errors.New(databasePath + " already exists"))
-		}
-
+	Run: python(func(cmd *cobra.Command, args []string, st *storage.Storage) {
 		defaults := settings.UserDefaults{}
 		getUserDefaults(cmd, &defaults, true)
 		authMethod, auther := getAuthentication(cmd)
 
-		db, err := storm.Open(databasePath)
-		checkErr(err)
-		defer db.Close()
-		st := getStorage(db)
 		s := &settings.Settings{
 			Key:        generateRandomBytes(64), // 256 bit
 			Signup:     mustGetBool(cmd, "signup"),
@@ -53,7 +41,7 @@ override the options.`,
 			},
 		}
 
-		err = st.Settings.Save(s)
+		err := st.Settings.Save(s)
 		checkErr(err)
 		err = st.Auth.Save(auther)
 		checkErr(err)
@@ -64,5 +52,5 @@ Now add your first user via 'filebrowser users new' and then you just
 need to call the main command to boot up the server.
 `)
 		printSettings(s, auther)
-	},
+	}, pythonConfig{noDB: true}),
 }

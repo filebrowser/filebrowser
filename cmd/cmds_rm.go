@@ -3,6 +3,7 @@ package cmd
 import (
 	"strconv"
 
+	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/spf13/cobra"
 )
 
@@ -27,10 +28,7 @@ var cmdsRmCmd = &cobra.Command{
 
 		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
-		db := getDB()
-		defer db.Close()
-		st := getStorage(db)
+	Run: python(func(cmd *cobra.Command, args []string, st *storage.Storage) {
 		s, err := st.Settings.Get()
 		checkErr(err)
 		evt := args[0]
@@ -47,5 +45,5 @@ var cmdsRmCmd = &cobra.Command{
 		err = st.Settings.Save(s)
 		checkErr(err)
 		printEvents(s.Commands)
-	},
+	}, pythonConfig{}),
 }
