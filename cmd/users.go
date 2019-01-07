@@ -22,10 +22,6 @@ var usersCmd = &cobra.Command{
 	Short: "Users management utility",
 	Long:  `Users management utility.`,
 	Args:  cobra.NoArgs,
-	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
-		os.Exit(0)
-	},
 }
 
 func printUsers(users []*users.User) {
