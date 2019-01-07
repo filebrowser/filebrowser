@@ -11,10 +11,9 @@ import (
 const MethodNoAuth settings.AuthMethod = "noauth"
 
 // NoAuth is no auth implementation of auther.
-type NoAuth struct {
-}
+type NoAuth struct{}
 
 // Auth uses authenticates user 1.
-func (a *NoAuth) Auth(r *http.Request, sto *users.Storage, set *settings.Settings) (*users.User, error) {
-	return sto.Get(set.Scope, 1)
+func (a *NoAuth) Auth(r *http.Request, sto *users.Storage, root string) (*users.User, error) {
+	return sto.Get(root, 1)
 }

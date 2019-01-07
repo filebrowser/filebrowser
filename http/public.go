@@ -13,7 +13,7 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			return errToStatus(err), err
 		}
 
-		user, err := d.store.Users.Get(d.settings.Scope, link.UserID)
+		user, err := d.store.Users.Get(d.settings.Root, link.UserID)
 		if err != nil {
 			return errToStatus(err), err
 		}

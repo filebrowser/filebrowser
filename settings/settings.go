@@ -9,7 +9,7 @@ type AuthMethod string
 type Settings struct {
 	Key        []byte              `json:"key"`
 	BaseURL    string              `json:"baseURL"`
-	Scope      string              `json:"scope"`
+	Root       string              `json:"root"`
 	Signup     bool                `json:"signup"`
 	Defaults   UserDefaults        `json:"defaults"`
 	AuthMethod AuthMethod          `json:"authMethod"`

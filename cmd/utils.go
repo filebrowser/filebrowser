@@ -73,7 +73,8 @@ type cobraFunc func(cmd *cobra.Command, args []string)
 type pythonFunc func(cmd *cobra.Command, args []string, data pythonData)
 
 type pythonConfig struct {
-	noDB bool
+	noDB      bool
+	allowNoDB bool
 }
 
 type pythonData struct {
@@ -91,7 +92,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 		if os.IsNotExist(err) {
 			data.hadDB = false
 
-			if !cfg.noDB {
+			if !cfg.noDB || !cfg.allowNoDB {
 				log.Fatal(path + " does not exid.store. Please run 'filebrowser config init' fird.store.")
 			}
 		} else if err != nil {
