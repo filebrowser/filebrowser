@@ -7,17 +7,17 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(importCmd)
+	rootCmd.AddCommand(upgradeCmd)
 
-	importCmd.Flags().String("old.database", "", "")
-	importCmd.Flags().String("old.config", "", "")
-	importCmd.MarkFlagRequired("old.database")
+	upgradeCmd.Flags().String("old.database", "", "")
+	upgradeCmd.Flags().String("old.config", "", "")
+	upgradeCmd.MarkFlagRequired("old.database")
 }
 
-var importCmd = &cobra.Command{
-	Use:   "import",
-	Short: "Imports an old configuration",
-	Long: `Imports an old configuration. This command DOES NOT
+var upgradeCmd = &cobra.Command{
+	Use:   "upgrade",
+	Short: "Upgrades an old configuration",
+	Long: `Upgrades an old configuration. This command DOES NOT
 import share links because they are incompatible with
 this version.`,
 	Args: cobra.NoArgs,
