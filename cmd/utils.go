@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"crypto/rand"
+	"fmt"
 	"log"
 	"os"
 
@@ -39,7 +40,8 @@ func vadd(f *pflag.FlagSet, k string, i interface{}, u string) {
 
 func checkErr(err error) {
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 }
 
