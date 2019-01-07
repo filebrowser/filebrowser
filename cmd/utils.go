@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"crypto/rand"
-	"errors"
+	"log"
 	"os"
 
 	"github.com/asdine/storm"
@@ -61,25 +61,49 @@ func mustGetUint(cmd *cobra.Command, flag string) uint {
 	return b
 }
 
-func getDB() *storm.DB {
-	databasePath := v.GetString("database")
-	if _, err := os.Stat(databasePath); err != nil {
-		panic(errors.New(databasePath + " does not exist. Please run 'filebrowser init' first."))
-	}
-
-	db, err := storm.Open(databasePath)
-	checkErr(err)
-	return db
-}
-
-func getStorage(db *storm.DB) *storage.Storage {
-	return bolt.NewStorage(db)
-}
-
 func generateRandomBytes(n int) []byte {
 	b := make([]byte, n)
 	_, err := rand.Read(b)
 	checkErr(err)
 	// Note that err == nil only if we read len(b) bytes.
 	return b
+}
+
+type cobraFunc func(cmd *cobra.Command, args []string)
+type pythonFunc func(cmd *cobra.Command, args []string, data pythonData)
+
+type pythonConfig struct {
+	noDB bool
+}
+
+type pythonData struct {
+	hadDB bool
+	store *storage.Storage
+}
+
+func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
+	return func(cmd *cobra.Command, args []string) {
+		data := pythonData{hadDB: true}
+
+		path := v.GetString("database")
+		_, err := os.Stat(path)
+
+		if os.IsNotExist(err) {
+			data.hadDB = false
+
+			if !cfg.noDB {
+				log.Fatal(path + " does not exid.store. Please run 'filebrowser config init' fird.store.")
+			}
+		} else if err != nil {
+			panic(err)
+		} else if err == nil && cfg.noDB {
+			log.Fatal(path + " already exists")
+		}
+
+		db, err := storm.Open(path)
+		checkErr(err)
+		defer db.Close()
+		data.store = bolt.NewStorage(db)
+		fn(cmd, args, data)
+	}
 }

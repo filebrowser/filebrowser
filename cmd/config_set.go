@@ -19,12 +19,8 @@ var configSetCmd = &cobra.Command{
 	Long: `Updates the configuration. Set the flags for the options
 you want to change.`,
 	Args: cobra.NoArgs,
-	Run: func(cmd *cobra.Command, args []string) {
-		db := getDB()
-		defer db.Close()
-
-		st := getStorage(db)
-		s, err := st.Settings.Get()
+	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+		s, err := d.store.Settings.Get()
 		checkErr(err)
 
 		hasAuth := false
@@ -50,15 +46,15 @@ you want to change.`,
 		var auther auth.Auther
 		if hasAuth {
 			s.AuthMethod, auther = getAuthentication(cmd)
-			err = st.Auth.Save(auther)
+			err = d.store.Auth.Save(auther)
 			checkErr(err)
 		} else {
-			auther, err = st.Auth.Get(s.AuthMethod)
+			auther, err = d.store.Auth.Get(s.AuthMethod)
 			checkErr(err)
 		}
 
-		err = st.Settings.Save(s)
+		err = d.store.Settings.Save(s)
 		checkErr(err)
 		printSettings(s, auther)
-	},
+	}, pythonConfig{}),
 }

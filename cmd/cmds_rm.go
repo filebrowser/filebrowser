@@ -27,11 +27,8 @@ var cmdsRmCmd = &cobra.Command{
 
 		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
-		db := getDB()
-		defer db.Close()
-		st := getStorage(db)
-		s, err := st.Settings.Get()
+	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+		s, err := d.store.Settings.Get()
 		checkErr(err)
 		evt := args[0]
 
@@ -44,8 +41,8 @@ var cmdsRmCmd = &cobra.Command{
 		}
 
 		s.Commands[evt] = append(s.Commands[evt][:i], s.Commands[evt][f+1:]...)
-		err = st.Settings.Save(s)
+		err = d.store.Settings.Save(s)
 		checkErr(err)
 		printEvents(s.Commands)
-	},
+	}, pythonConfig{}),
 }
