@@ -58,7 +58,6 @@ var usersImportCmd = &cobra.Command{
 			err = d.store.Users.Save(user)
 			checkErr(err)
 		}
-
 	}, pythonConfig{}),
 }
 

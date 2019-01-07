@@ -32,6 +32,5 @@ var configExportCmd = &cobra.Command{
 			Settings: settings,
 			Auther:   auther,
 		})
-
 	}, pythonConfig{}),
 }

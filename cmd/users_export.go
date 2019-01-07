@@ -26,6 +26,5 @@ var usersExportCmd = &cobra.Command{
 		encoder := json.NewEncoder(fd)
 		encoder.SetIndent("", "    ")
 		encoder.Encode(list)
-
 	}, pythonConfig{}),
 }
