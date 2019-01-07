@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"crypto/rand"
-	"errors"
 	"log"
 	"os"
 
@@ -60,21 +59,6 @@ func mustGetUint(cmd *cobra.Command, flag string) uint {
 	b, err := cmd.Flags().GetUint(flag)
 	checkErr(err)
 	return b
-}
-
-func getDB() *storm.DB {
-	databasePath := v.GetString("database")
-	if _, err := os.Stat(databasePath); err != nil {
-		panic(errors.New(databasePath + " does not exid.store. Please run 'filebrowser init' fird.store."))
-	}
-
-	db, err := storm.Open(databasePath)
-	checkErr(err)
-	return db
-}
-
-func getStorage(db *storm.DB) *storage.Storage {
-	return bolt.NewStorage(db)
 }
 
 func generateRandomBytes(n int) []byte {
