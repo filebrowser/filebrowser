@@ -131,6 +131,10 @@ user created with the credentials from options "username" and "password".`,
 		server := getServerWithViper(cmd.Flags(), d.store)
 		setupLog(server.Log)
 
+		root, err := filepath.Abs(server.Root)
+		checkErr(err)
+		server.Root = root
+
 		handler, err := fbhttp.NewHandler(d.store, server)
 		checkErr(err)
 
@@ -159,9 +163,7 @@ func getServerWithViper(flags *pflag.FlagSet, st *storage.Storage) *settings.Ser
 	checkErr(err)
 
 	if val, set := getStringViperFlag(flags, "root"); set {
-		root, err := filepath.Abs(val)
-		checkErr(err)
-		server.Root = root
+		server.Root = val
 	}
 
 	if val, set := getStringViperFlag(flags, "baseurl"); set {
