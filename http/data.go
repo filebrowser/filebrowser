@@ -16,6 +16,7 @@ type handleFunc func(w http.ResponseWriter, r *http.Request, d *data) (int, erro
 type data struct {
 	*runner.Runner
 	settings *settings.Settings
+	server   *settings.Server
 	store    *storage.Storage
 	user     *users.User
 	raw      interface{}
@@ -38,7 +39,7 @@ func (d *data) Check(path string) bool {
 	return true
 }
 
-func handle(fn handleFunc, prefix string, storage *storage.Storage) http.Handler {
+func handle(fn handleFunc, prefix string, storage *storage.Storage, server *settings.Server) http.Handler {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		settings, err := storage.Settings.Get()
 		if err != nil {
@@ -50,6 +51,7 @@ func handle(fn handleFunc, prefix string, storage *storage.Storage) http.Handler
 			Runner:   &runner.Runner{Settings: settings},
 			store:    storage,
 			settings: settings,
+			server:   server,
 		})
 
 		if status != 0 {

@@ -12,6 +12,8 @@ import (
 type StorageBackend interface {
 	Get() (*Settings, error)
 	Save(*Settings) error
+	GetServer() (*Server, error)
+	SaveServer(*Server) error
 }
 
 // Storage is a settings storage.
@@ -39,8 +41,6 @@ var defaultEvents = []string{
 
 // Save saves the settings for the current instance.
 func (s *Storage) Save(set *Settings) error {
-	set.BaseURL = strings.TrimSuffix(set.BaseURL, "/")
-
 	if len(set.Key) == 0 {
 		return errors.ErrEmptyKey
 	}
@@ -85,4 +85,15 @@ func (s *Storage) Save(set *Settings) error {
 	}
 
 	return nil
+}
+
+// GetServer wraps StorageBackend.GetServer.
+func (s *Storage) GetServer() (*Server, error) {
+	return s.back.GetServer()
+}
+
+// SaveServer wraps StorageBackend.SaveServer and adds some verification.
+func (s *Storage) SaveServer(ser *Server) error {
+	ser.BaseURL = strings.TrimSuffix(ser.BaseURL, "/")
+	return s.back.SaveServer(ser)
 }

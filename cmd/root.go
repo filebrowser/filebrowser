@@ -9,12 +9,12 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	fbhttp "github.com/filebrowser/filebrowser/v2/http"
 	"github.com/filebrowser/filebrowser/v2/settings"
+	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/users"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -36,7 +36,7 @@ func init() {
 	vaddP(pf, "database", "d", "./filebrowser.db", "path to the database")
 	vaddP(f, "address", "a", "127.0.0.1", "address to listen on")
 	vaddP(f, "log", "l", "stdout", "log output")
-	vaddP(f, "port", "p", 8080, "port to listen on")
+	vaddP(f, "port", "p", "8080", "port to listen on")
 	vaddP(f, "cert", "t", "", "tls certificate")
 	vaddP(f, "key", "k", "", "tls key")
 	vaddP(f, "root", "r", ".", "root to prepend to relative paths")
@@ -91,59 +91,26 @@ Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstraped and a new
 user created with the credentials from options "username" and "password".`,
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
-		switch logMethod := v.GetString("log"); logMethod {
-		case "stdout":
-			log.SetOutput(os.Stdout)
-		case "stderr":
-			log.SetOutput(os.Stderr)
-		case "":
-			log.SetOutput(ioutil.Discard)
-		default:
-			log.SetOutput(&lumberjack.Logger{
-				Filename:   logMethod,
-				MaxSize:    100,
-				MaxAge:     14,
-				MaxBackups: 10,
-			})
-		}
-
 		if !d.hadDB {
 			quickSetup(d)
 		}
 
-		port := v.GetInt("port")
-		address := v.GetString("address")
-		cert := v.GetString("cert")
-		key := v.GetString("key")
-		root := v.GetString("root")
+		server := getServer(d.store)
+		setupLog(server.Log)
 
-		root, err := filepath.Abs(root)
-		checkErr(err)
-		settings, err := d.store.Settings.Get()
-		checkErr(err)
-
-		// Despite Base URL and Scope being "server" type of
-		// variables, we persist them to the database because
-		// they are needed during the execution and not only
-		// to start up the server.
-		settings.BaseURL = v.GetString("baseurl")
-		settings.Root = root
-		err = d.store.Settings.Save(settings)
-		checkErr(err)
-
-		handler, err := fbhttp.NewHandler(d.store)
+		handler, err := fbhttp.NewHandler(d.store, server)
 		checkErr(err)
 
 		var listener net.Listener
 
-		if key != "" && cert != "" {
-			cer, err := tls.LoadX509KeyPair(cert, key)
+		if server.TLSKey != "" && server.TLSCert != "" {
+			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey)
 			checkErr(err)
 			config := &tls.Config{Certificates: []tls.Certificate{cer}}
-			listener, err = tls.Listen("tcp", address+":"+strconv.Itoa(port), config)
+			listener, err = tls.Listen("tcp", server.Address+":"+server.Port, config)
 			checkErr(err)
 		} else {
-			listener, err = net.Listen("tcp", address+":"+strconv.Itoa(port))
+			listener, err = net.Listen("tcp", server.Address+":"+server.Port)
 			checkErr(err)
 		}
 
@@ -154,10 +121,52 @@ user created with the credentials from options "username" and "password".`,
 	}, pythonConfig{allowNoDB: true}),
 }
 
+// TODO: get server settings and only replace
+// them if set on Viper. Although viper.IsSet
+// is bugged and if binded to a pflag, it will
+// always return true.
+// Also, when doing that, add this options to
+// config init, config import, printConfig
+// and config set since the DB values will actually
+// be used. For now, despite being stored in the DB,
+// they won't be used.
+func getServer(st *storage.Storage) *settings.Server {
+	root := v.GetString("root")
+	root, err := filepath.Abs(root)
+	checkErr(err)
+	server := &settings.Server{}
+	server.BaseURL = v.GetString("baseurl")
+	server.Root = root
+	server.Address = v.GetString("address")
+	server.Port = v.GetString("port")
+	server.TLSKey = v.GetString("key")
+	server.TLSCert = v.GetString("cert")
+	server.Log = v.GetString("log")
+	return server
+}
+
+func setupLog(logMethod string) {
+	switch logMethod {
+	case "stdout":
+		log.SetOutput(os.Stdout)
+	case "stderr":
+		log.SetOutput(os.Stderr)
+	case "":
+		log.SetOutput(ioutil.Discard)
+	default:
+		log.SetOutput(&lumberjack.Logger{
+			Filename:   logMethod,
+			MaxSize:    100,
+			MaxAge:     14,
+			MaxBackups: 10,
+		})
+	}
+
+}
+
 func quickSetup(d pythonData) {
 	set := &settings.Settings{
 		Key:        generateRandomBytes(64), // 256 bit
-		BaseURL:    v.GetString("baseurl"),
 		Signup:     false,
 		AuthMethod: auth.MethodJSONAuth,
 		Defaults: settings.UserDefaults{
@@ -176,7 +185,19 @@ func quickSetup(d pythonData) {
 		},
 	}
 
+	ser := &settings.Server{
+		BaseURL: v.GetString("baseurl"),
+		Log:     v.GetString("log"),
+		TLSKey:  v.GetString("key"),
+		TLSCert: v.GetString("cert"),
+		Address: v.GetString("address"),
+		Root:    v.GetString("root"),
+	}
+
 	err := d.store.Settings.Save(set)
+	checkErr(err)
+
+	err = d.store.Settings.SaveServer(ser)
 	checkErr(err)
 
 	err = d.store.Auth.Save(&auth.JSONAuth{})

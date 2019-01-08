@@ -8,8 +8,6 @@ type AuthMethod string
 // Settings contain the main settings of the application.
 type Settings struct {
 	Key        []byte              `json:"key"`
-	BaseURL    string              `json:"baseURL"`
-	Root       string              `json:"root"`
 	Signup     bool                `json:"signup"`
 	Defaults   UserDefaults        `json:"defaults"`
 	AuthMethod AuthMethod          `json:"authMethod"`
@@ -17,6 +15,17 @@ type Settings struct {
 	Commands   map[string][]string `json:"commands"`
 	Shell      []string            `json:"shell"`
 	Rules      []rules.Rule        `json:"rules"`
+}
+
+// Server specific settings.
+type Server struct {
+	Root    string `json:"root"`
+	BaseURL string `json:"baseURL"`
+	TLSKey  string `json:"tlsKey"`
+	TLSCert string `json:"tlsCert"`
+	Port    string `json:"port"`
+	Address string `json:"address"`
+	Log     string `json:"log"`
 }
 
 // GetRules implements rules.Provider.
