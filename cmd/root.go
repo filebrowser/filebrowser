@@ -119,6 +119,7 @@ The precedence of the configuration values are as follows:
 - flag
 - environment variable
 - configuration file
+- database values
 - defaults
 
 The environment variables are prefixed by "FB_" followed by the option
