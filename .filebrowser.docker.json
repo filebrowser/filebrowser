@@ -3,6 +3,6 @@
   "baseURL": "",
   "address": "",
   "log": "stdout",
-  "database": "/etc/filebrowser/database.db",
+  "database": "/database.db",
   "root": "/srv"
 }
