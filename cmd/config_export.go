@@ -10,7 +10,8 @@ func init() {
 
 var configExportCmd = &cobra.Command{
 	Use:   "export <filename>",
-	Short: "Export the configuration to a file.",
+	Short: "Export the configuration to a file",
+	Long:  "Export the configuration to a file.",
 	Args:  jsonYamlArg,
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
 		settings, err := d.store.Settings.Get()
