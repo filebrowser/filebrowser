@@ -51,9 +51,10 @@ database.`,
 		checkErr(err)
 
 		var rawAuther interface{}
-		rawAuther = file.Auther
 		if filepath.Ext(args[0]) != ".json" {
 			rawAuther = cleanUpInterfaceMap(file.Auther.(map[interface{}]interface{}))
+		} else {
+			rawAuther = file.Auther
 		}
 
 		var auther auth.Auther
