@@ -8,6 +8,7 @@ import (
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/users"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 func init() {
@@ -28,7 +29,7 @@ rules.`,
 }
 
 func runRules(st *storage.Storage, cmd *cobra.Command, users func(*users.User), global func(*settings.Settings)) {
-	id := getUserIdentifier(cmd)
+	id := getUserIdentifier(cmd.Flags())
 	if id != nil {
 		user, err := st.Users.Get("", id)
 		checkErr(err)
@@ -51,9 +52,9 @@ func runRules(st *storage.Storage, cmd *cobra.Command, users func(*users.User), 
 	printRules(settings.Rules, id)
 }
 
-func getUserIdentifier(cmd *cobra.Command) interface{} {
-	id := mustGetUint(cmd, "id")
-	username := mustGetString(cmd, "username")
+func getUserIdentifier(flags *pflag.FlagSet) interface{} {
+	id := mustGetUint(flags, "id")
+	username := mustGetString(flags, "username")
 
 	if id != 0 {
 		return id

@@ -14,33 +14,8 @@ import (
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	v "github.com/spf13/viper"
 	yaml "gopkg.in/yaml.v2"
 )
-
-func vaddP(f *pflag.FlagSet, k, p string, i interface{}, u string) {
-	switch y := i.(type) {
-	case bool:
-		f.BoolP(k, p, y, u)
-	case int:
-		f.IntP(k, p, y, u)
-	case string:
-		f.StringP(k, p, y, u)
-	}
-	v.SetDefault(k, i)
-}
-
-func vadd(f *pflag.FlagSet, k string, i interface{}, u string) {
-	switch y := i.(type) {
-	case bool:
-		f.Bool(k, y, u)
-	case int:
-		f.Int(k, y, u)
-	case string:
-		f.String(k, y, u)
-	}
-	v.SetDefault(k, i)
-}
 
 func checkErr(err error) {
 	if err != nil {
@@ -49,20 +24,20 @@ func checkErr(err error) {
 	}
 }
 
-func mustGetString(cmd *cobra.Command, flag string) string {
-	s, err := cmd.Flags().GetString(flag)
+func mustGetString(flags *pflag.FlagSet, flag string) string {
+	s, err := flags.GetString(flag)
 	checkErr(err)
 	return s
 }
 
-func mustGetBool(cmd *cobra.Command, flag string) bool {
-	b, err := cmd.Flags().GetBool(flag)
+func mustGetBool(flags *pflag.FlagSet, flag string) bool {
+	b, err := flags.GetBool(flag)
 	checkErr(err)
 	return b
 }
 
-func mustGetUint(cmd *cobra.Command, flag string) uint {
-	b, err := cmd.Flags().GetUint(flag)
+func mustGetUint(flags *pflag.FlagSet, flag string) uint {
+	b, err := flags.GetUint(flag)
 	checkErr(err)
 	return b
 }
@@ -92,7 +67,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) {
 		data := pythonData{hadDB: true}
 
-		path := v.GetString("database")
+		path := mustGetStringViperFlag(cmd.Flags(), "database")
 		_, err := os.Stat(path)
 
 		if os.IsNotExist(err) {

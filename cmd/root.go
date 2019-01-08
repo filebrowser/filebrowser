@@ -18,6 +18,7 @@ import (
 	"github.com/filebrowser/filebrowser/v2/users"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	v "github.com/spf13/viper"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 )
@@ -28,29 +29,61 @@ var (
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	flags := rootCmd.Flags()
+	persistent := rootCmd.PersistentFlags()
 
-	f := rootCmd.Flags()
-	pf := rootCmd.PersistentFlags()
+	persistent.StringVarP(&cfgFile, "config", "c", "", "config file path")
+	persistent.StringP("database", "d", "./filebrowser.db", "database path")
+	flags.String("username", "admin", "username for the first user when using quick config")
+	flags.String("password", "", "hashed password for the first user when using quick config (default \"admin\")")
 
-	pf.StringVarP(&cfgFile, "config", "c", "", "config file path")
-	vaddP(pf, "database", "d", "./filebrowser.db", "path to the database")
-	vaddP(f, "address", "a", "127.0.0.1", "address to listen on")
-	vaddP(f, "log", "l", "stdout", "log output")
-	vaddP(f, "port", "p", "8080", "port to listen on")
-	vaddP(f, "cert", "t", "", "tls certificate")
-	vaddP(f, "key", "k", "", "tls key")
-	vaddP(f, "root", "r", ".", "root to prepend to relative paths")
-	vaddP(f, "baseurl", "b", "", "base url")
-	vadd(f, "username", "admin", "username for the first user when using quick config")
-	vadd(f, "password", "", "hashed password for the first user when using quick config (default \"admin\")")
+	addServerFlags(flags)
+}
 
-	if err := v.BindPFlags(f); err != nil {
-		panic(err)
+func addServerFlags(flags *pflag.FlagSet) {
+	flags.StringP("address", "a", "127.0.0.1", "address to listen on")
+	flags.StringP("log", "l", "stdout", "log output")
+	flags.StringP("port", "p", "8080", "port to listen on")
+	flags.StringP("cert", "t", "", "tls certificate")
+	flags.StringP("key", "k", "", "tls key")
+	flags.StringP("root", "r", ".", "root to prepend to relative paths")
+	flags.StringP("baseurl", "b", "", "base url")
+}
+
+// NOTE: we could simply bind the flags to viper and use IsSet.
+// Although there is a bug on Viper that always returns true on IsSet
+// if a flag is binded. Our alternative way is to manually check
+// the flag and then the value from env/config/gotten by viper.
+// https://github.com/spf13/viper/pull/331
+func getStringViperFlag(flags *pflag.FlagSet, key string) (string, bool) {
+	value := ""
+	set := false
+
+	// If set on Flags, use it.
+	flags.Visit(func(flag *pflag.Flag) {
+		if flag.Name == key {
+			set = true
+			value, _ = flags.GetString(key)
+		}
+	})
+
+	if set {
+		return value, set
 	}
 
-	if err := v.BindPFlags(pf); err != nil {
-		panic(err)
+	// If set through viper (env, config), return it.
+	if v.IsSet(key) {
+		return v.GetString(key), true
 	}
+
+	// Otherwise use default value on flags.
+	value, _ = flags.GetString(key)
+	return value, false
+}
+
+func mustGetStringViperFlag(flags *pflag.FlagSet, key string) string {
+	val, _ := getStringViperFlag(flags, key)
+	return val
 }
 
 var rootCmd = &cobra.Command{
@@ -92,10 +125,10 @@ the quick setup mode and a new database will be bootstraped and a new
 user created with the credentials from options "username" and "password".`,
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
 		if !d.hadDB {
-			quickSetup(d)
+			quickSetup(cmd.Flags(), d)
 		}
 
-		server := getServer(d.store)
+		server := getServerWithViper(cmd.Flags(), d.store)
 		setupLog(server.Log)
 
 		handler, err := fbhttp.NewHandler(d.store, server)
@@ -121,27 +154,40 @@ user created with the credentials from options "username" and "password".`,
 	}, pythonConfig{allowNoDB: true}),
 }
 
-// TODO: get server settings and only replace
-// them if set on Viper. Although viper.IsSet
-// is bugged and if binded to a pflag, it will
-// always return true.
-// Also, when doing that, add this options to
-// config init, config import, printConfig
-// and config set since the DB values will actually
-// be used. For now, despite being stored in the DB,
-// they won't be used.
-func getServer(st *storage.Storage) *settings.Server {
-	root := v.GetString("root")
-	root, err := filepath.Abs(root)
+func getServerWithViper(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
+	server, err := st.Settings.GetServer()
 	checkErr(err)
-	server := &settings.Server{}
-	server.BaseURL = v.GetString("baseurl")
-	server.Root = root
-	server.Address = v.GetString("address")
-	server.Port = v.GetString("port")
-	server.TLSKey = v.GetString("key")
-	server.TLSCert = v.GetString("cert")
-	server.Log = v.GetString("log")
+
+	if val, set := getStringViperFlag(flags, "root"); set {
+		root, err := filepath.Abs(val)
+		checkErr(err)
+		server.Root = root
+	}
+
+	if val, set := getStringViperFlag(flags, "baseurl"); set {
+		server.BaseURL = val
+	}
+
+	if val, set := getStringViperFlag(flags, "address"); set {
+		server.Address = val
+	}
+
+	if val, set := getStringViperFlag(flags, "port"); set {
+		server.Port = val
+	}
+
+	if val, set := getStringViperFlag(flags, "log"); set {
+		server.Log = val
+	}
+
+	if val, set := getStringViperFlag(flags, "key"); set {
+		server.TLSKey = val
+	}
+
+	if val, set := getStringViperFlag(flags, "cert"); set {
+		server.TLSCert = val
+	}
+
 	return server
 }
 
@@ -164,7 +210,7 @@ func setupLog(logMethod string) {
 
 }
 
-func quickSetup(d pythonData) {
+func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	set := &settings.Settings{
 		Key:        generateRandomBytes(64), // 256 bit
 		Signup:     false,
@@ -186,12 +232,13 @@ func quickSetup(d pythonData) {
 	}
 
 	ser := &settings.Server{
-		BaseURL: v.GetString("baseurl"),
-		Log:     v.GetString("log"),
-		TLSKey:  v.GetString("key"),
-		TLSCert: v.GetString("cert"),
-		Address: v.GetString("address"),
-		Root:    v.GetString("root"),
+		BaseURL: mustGetStringViperFlag(flags, "baseurl"),
+		Port:    mustGetStringViperFlag(flags, "port"),
+		Log:     mustGetStringViperFlag(flags, "log"),
+		TLSKey:  mustGetStringViperFlag(flags, "key"),
+		TLSCert: mustGetStringViperFlag(flags, "cert"),
+		Address: mustGetStringViperFlag(flags, "address"),
+		Root:    mustGetStringViperFlag(flags, "root"),
 	}
 
 	err := d.store.Settings.Save(set)
@@ -203,8 +250,8 @@ func quickSetup(d pythonData) {
 	err = d.store.Auth.Save(&auth.JSONAuth{})
 	checkErr(err)
 
-	username := v.GetString("username")
-	password := v.GetString("password")
+	username := mustGetStringViperFlag(flags, "username")
+	password := mustGetStringViperFlag(flags, "password")
 
 	if password == "" {
 		password, err = users.HashPwd("admin")

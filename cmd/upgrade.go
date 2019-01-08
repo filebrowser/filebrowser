@@ -3,7 +3,6 @@ package cmd
 import (
 	"github.com/filebrowser/filebrowser/v2/storage/bolt/importer"
 	"github.com/spf13/cobra"
-	v "github.com/spf13/viper"
 )
 
 func init() {
@@ -22,10 +21,10 @@ import share links because they are incompatible with
 this version.`,
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		oldDB := mustGetString(cmd, "old.database")
-		oldConf := mustGetString(cmd, "old.config")
-
-		err := importer.Import(oldDB, oldConf, v.GetString("database"))
+		flags := cmd.Flags()
+		oldDB := mustGetString(flags, "old.database")
+		oldConf := mustGetString(flags, "old.config")
+		err := importer.Import(oldDB, oldConf, mustGetStringViperFlag(flags, "database"))
 		checkErr(err)
 	},
 }

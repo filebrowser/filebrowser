@@ -16,12 +16,16 @@ var configExportCmd = &cobra.Command{
 		settings, err := d.store.Settings.Get()
 		checkErr(err)
 
+		server, err := d.store.Settings.GetServer()
+		checkErr(err)
+
 		auther, err := d.store.Auth.Get(settings.AuthMethod)
 		checkErr(err)
 
 		data := &settingsFile{
 			Settings: settings,
 			Auther:   auther,
+			Server:   server,
 		}
 
 		err = marshal(args[0], data)
