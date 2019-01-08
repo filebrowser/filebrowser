@@ -22,8 +22,9 @@ options you want to change.`,
 	Args: cobra.ExactArgs(1),
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
 		username, id := parseUsernameOrID(args[0])
-		password := mustGetString(cmd, "password")
-		newUsername := mustGetString(cmd, "username")
+		flags := cmd.Flags()
+		password := mustGetString(flags, "password")
+		newUsername := mustGetString(flags, "username")
 
 		var err error
 		var user *users.User
@@ -44,14 +45,14 @@ options you want to change.`,
 			Sorting:  user.Sorting,
 			Commands: user.Commands,
 		}
-		getUserDefaults(cmd, &defaults, false)
+		getUserDefaults(flags, &defaults, false)
 		user.Scope = defaults.Scope
 		user.Locale = defaults.Locale
 		user.ViewMode = defaults.ViewMode
 		user.Perm = defaults.Perm
 		user.Commands = defaults.Commands
 		user.Sorting = defaults.Sorting
-		user.LockPassword = mustGetBool(cmd, "lockPassword")
+		user.LockPassword = mustGetBool(flags, "lockPassword")
 
 		if newUsername != "" {
 			user.Username = newUsername

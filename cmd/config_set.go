@@ -20,6 +20,7 @@ var configSetCmd = &cobra.Command{
 you want to change.`,
 	Args: cobra.NoArgs,
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+		flags := cmd.Flags()
 		set, err := d.store.Settings.Get()
 		checkErr(err)
 
@@ -27,42 +28,42 @@ you want to change.`,
 		checkErr(err)
 
 		hasAuth := false
-		cmd.Flags().Visit(func(flag *pflag.Flag) {
+		flags.Visit(func(flag *pflag.Flag) {
 			switch flag.Name {
 			case "baseurl":
-				ser.BaseURL = mustGetString(cmd, flag.Name)
+				ser.BaseURL = mustGetString(flags, flag.Name)
 			case "root":
-				ser.Root = mustGetString(cmd, flag.Name)
+				ser.Root = mustGetString(flags, flag.Name)
 			case "cert":
-				ser.TLSCert = mustGetString(cmd, flag.Name)
+				ser.TLSCert = mustGetString(flags, flag.Name)
 			case "key":
-				ser.TLSKey = mustGetString(cmd, flag.Name)
+				ser.TLSKey = mustGetString(flags, flag.Name)
 			case "address":
-				ser.Address = mustGetString(cmd, flag.Name)
+				ser.Address = mustGetString(flags, flag.Name)
 			case "port":
-				ser.Port = mustGetString(cmd, flag.Name)
+				ser.Port = mustGetString(flags, flag.Name)
 			case "log":
-				ser.Log = mustGetString(cmd, flag.Name)
+				ser.Log = mustGetString(flags, flag.Name)
 			case "signup":
-				set.Signup = mustGetBool(cmd, flag.Name)
+				set.Signup = mustGetBool(flags, flag.Name)
 			case "auth.method":
 				hasAuth = true
 			case "shell":
-				set.Shell = strings.Split(strings.TrimSpace(mustGetString(cmd, flag.Name)), " ")
+				set.Shell = strings.Split(strings.TrimSpace(mustGetString(flags, flag.Name)), " ")
 			case "branding.name":
-				set.Branding.Name = mustGetString(cmd, flag.Name)
+				set.Branding.Name = mustGetString(flags, flag.Name)
 			case "branding.disableExternal":
-				set.Branding.DisableExternal = mustGetBool(cmd, flag.Name)
+				set.Branding.DisableExternal = mustGetBool(flags, flag.Name)
 			case "branding.files":
-				set.Branding.Files = mustGetString(cmd, flag.Name)
+				set.Branding.Files = mustGetString(flags, flag.Name)
 			}
 		})
 
-		getUserDefaults(cmd, &set.Defaults, false)
+		getUserDefaults(flags, &set.Defaults, false)
 
 		var auther auth.Auther
 		if hasAuth {
-			set.AuthMethod, auther = getAuthentication(cmd)
+			set.AuthMethod, auther = getAuthentication(flags)
 			err = d.store.Auth.Save(auther)
 			checkErr(err)
 		} else {

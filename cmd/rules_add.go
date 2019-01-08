@@ -21,8 +21,8 @@ var rulesAddCmd = &cobra.Command{
 	Long:  `Add a global rule or user rule.`,
 	Args:  cobra.ExactArgs(1),
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
-		allow := mustGetBool(cmd, "allow")
-		regex := mustGetBool(cmd, "regex")
+		allow := mustGetBool(cmd.Flags(), "allow")
+		regex := mustGetBool(cmd.Flags(), "regex")
 		exp := args[0]
 
 		if regex {

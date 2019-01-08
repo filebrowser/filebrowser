@@ -76,53 +76,53 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.String("viewMode", string(users.ListViewMode), "view mode for users")
 }
 
-func getViewMode(cmd *cobra.Command) users.ViewMode {
-	viewMode := users.ViewMode(mustGetString(cmd, "viewMode"))
+func getViewMode(flags *pflag.FlagSet) users.ViewMode {
+	viewMode := users.ViewMode(mustGetString(flags, "viewMode"))
 	if viewMode != users.ListViewMode && viewMode != users.MosaicViewMode {
 		checkErr(errors.New("view mode must be \"" + string(users.ListViewMode) + "\" or \"" + string(users.MosaicViewMode) + "\""))
 	}
 	return viewMode
 }
 
-func getUserDefaults(cmd *cobra.Command, defaults *settings.UserDefaults, all bool) {
+func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all bool) {
 	visit := func(flag *pflag.Flag) {
 		switch flag.Name {
 		case "scope":
-			defaults.Scope = mustGetString(cmd, flag.Name)
+			defaults.Scope = mustGetString(flags, flag.Name)
 		case "locale":
-			defaults.Locale = mustGetString(cmd, flag.Name)
+			defaults.Locale = mustGetString(flags, flag.Name)
 		case "viewMode":
-			defaults.ViewMode = getViewMode(cmd)
+			defaults.ViewMode = getViewMode(flags)
 		case "perm.admin":
-			defaults.Perm.Admin = mustGetBool(cmd, flag.Name)
+			defaults.Perm.Admin = mustGetBool(flags, flag.Name)
 		case "perm.execute":
-			defaults.Perm.Execute = mustGetBool(cmd, flag.Name)
+			defaults.Perm.Execute = mustGetBool(flags, flag.Name)
 		case "perm.create":
-			defaults.Perm.Create = mustGetBool(cmd, flag.Name)
+			defaults.Perm.Create = mustGetBool(flags, flag.Name)
 		case "perm.rename":
-			defaults.Perm.Rename = mustGetBool(cmd, flag.Name)
+			defaults.Perm.Rename = mustGetBool(flags, flag.Name)
 		case "perm.modify":
-			defaults.Perm.Modify = mustGetBool(cmd, flag.Name)
+			defaults.Perm.Modify = mustGetBool(flags, flag.Name)
 		case "perm.delete":
-			defaults.Perm.Delete = mustGetBool(cmd, flag.Name)
+			defaults.Perm.Delete = mustGetBool(flags, flag.Name)
 		case "perm.share":
-			defaults.Perm.Share = mustGetBool(cmd, flag.Name)
+			defaults.Perm.Share = mustGetBool(flags, flag.Name)
 		case "perm.download":
-			defaults.Perm.Download = mustGetBool(cmd, flag.Name)
+			defaults.Perm.Download = mustGetBool(flags, flag.Name)
 		case "commands":
-			commands, err := cmd.Flags().GetStringSlice(flag.Name)
+			commands, err := flags.GetStringSlice(flag.Name)
 			checkErr(err)
 			defaults.Commands = commands
 		case "sorting.by":
-			defaults.Sorting.By = mustGetString(cmd, flag.Name)
+			defaults.Sorting.By = mustGetString(flags, flag.Name)
 		case "sorting.asc":
-			defaults.Sorting.Asc = mustGetBool(cmd, flag.Name)
+			defaults.Sorting.Asc = mustGetBool(flags, flag.Name)
 		}
 	}
 
 	if all {
-		cmd.Flags().VisitAll(visit)
+		flags.VisitAll(visit)
 	} else {
-		cmd.Flags().Visit(visit)
+		flags.Visit(visit)
 	}
 }

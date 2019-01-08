@@ -32,7 +32,7 @@ var usersImportCmd = &cobra.Command{
 			checkErr(err)
 		}
 
-		overwrite := mustGetBool(cmd, "overwrite")
+		overwrite := mustGetBool(cmd.Flags(), "overwrite")
 
 		for _, user := range list {
 			old, err := d.store.Users.Get("", user.ID)

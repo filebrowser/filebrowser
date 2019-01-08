@@ -44,12 +44,12 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 }
 
-func getAuthentication(cmd *cobra.Command) (settings.AuthMethod, auth.Auther) {
-	method := settings.AuthMethod(mustGetString(cmd, "auth.method"))
+func getAuthentication(flags *pflag.FlagSet) (settings.AuthMethod, auth.Auther) {
+	method := settings.AuthMethod(mustGetString(flags, "auth.method"))
 
 	var auther auth.Auther
 	if method == auth.MethodProxyAuth {
-		header := mustGetString(cmd, "auth.header")
+		header := mustGetString(flags, "auth.header")
 		if header == "" {
 			panic(nerrors.New("you must set the flag 'auth.header' for method 'proxy'"))
 		}
@@ -63,9 +63,9 @@ func getAuthentication(cmd *cobra.Command) (settings.AuthMethod, auth.Auther) {
 	if method == auth.MethodJSONAuth {
 		jsonAuth := &auth.JSONAuth{}
 
-		host := mustGetString(cmd, "recaptcha.host")
-		key := mustGetString(cmd, "recaptcha.key")
-		secret := mustGetString(cmd, "recaptcha.secret")
+		host := mustGetString(flags, "recaptcha.host")
+		key := mustGetString(flags, "recaptcha.key")
+		secret := mustGetString(flags, "recaptcha.secret")
 
 		if key != "" && secret != "" {
 			jsonAuth.ReCaptcha = &auth.ReCaptcha{

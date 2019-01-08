@@ -13,6 +13,7 @@ import (
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -23,20 +24,20 @@ func checkErr(err error) {
 	}
 }
 
-func mustGetString(cmd *cobra.Command, flag string) string {
-	s, err := cmd.Flags().GetString(flag)
+func mustGetString(flags *pflag.FlagSet, flag string) string {
+	s, err := flags.GetString(flag)
 	checkErr(err)
 	return s
 }
 
-func mustGetBool(cmd *cobra.Command, flag string) bool {
-	b, err := cmd.Flags().GetBool(flag)
+func mustGetBool(flags *pflag.FlagSet, flag string) bool {
+	b, err := flags.GetBool(flag)
 	checkErr(err)
 	return b
 }
 
-func mustGetUint(cmd *cobra.Command, flag string) uint {
-	b, err := cmd.Flags().GetUint(flag)
+func mustGetUint(flags *pflag.FlagSet, flag string) uint {
+	b, err := flags.GetUint(flag)
 	checkErr(err)
 	return b
 }

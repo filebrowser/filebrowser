@@ -21,10 +21,10 @@ import share links because they are incompatible with
 this version.`,
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		oldDB := mustGetString(cmd, "old.database")
-		oldConf := mustGetString(cmd, "old.config")
-
-		err := importer.Import(oldDB, oldConf, mustGetStringViperFlag(cmd.Flags(), "database"))
+		flags := cmd.Flags()
+		oldDB := mustGetString(flags, "old.database")
+		oldConf := mustGetString(flags, "old.config")
+		err := importer.Import(oldDB, oldConf, mustGetStringViperFlag(flags, "database"))
 		checkErr(err)
 	},
 }
