@@ -9,7 +9,7 @@ func init() {
 }
 
 var usersExportCmd = &cobra.Command{
-	Use:   "export <filename>",
+	Use:   "export <path>",
 	Short: "Export all users to a file.",
 	Long: `Export all users to a json or yaml file. Please indicate the
 path to the file where you want to write the users.`,
