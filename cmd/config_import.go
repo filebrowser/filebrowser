@@ -3,7 +3,6 @@ package cmd
 import (
 	"encoding/json"
 	"errors"
-	"os"
 	"reflect"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
@@ -27,7 +26,7 @@ configuration. Can be used with or without unexisting databases.
 If used with a nonexisting database, a key will be generated
 automatically. Otherwise the key will be kept the same as in the
 database.`,
-	Args: cobra.ExactArgs(1),
+	Args: jsonYamlArg,
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
 		var key []byte
 		if d.hadDB {
@@ -38,27 +37,24 @@ database.`,
 			key = generateRandomBytes(64)
 		}
 
-		fd, err := os.Open(args[0])
-		checkErr(err)
-		defer fd.Close()
-
 		file := settingsFile{}
-		err = json.NewDecoder(fd).Decode(&file)
+		err := unmarshal(args[0], &file)
 		checkErr(err)
 
 		file.Settings.Key = key
-
 		err = d.store.Settings.Save(file.Settings)
 		checkErr(err)
+
+		autherInterf := cleanUpInterfaceMap(file.Auther.(map[interface{}]interface{}))
 
 		var auther auth.Auther
 		switch file.Settings.AuthMethod {
 		case auth.MethodJSONAuth:
-			auther = getAuther(auth.JSONAuth{}, file.Auther).(*auth.JSONAuth)
+			auther = getAuther(auth.JSONAuth{}, autherInterf).(*auth.JSONAuth)
 		case auth.MethodNoAuth:
-			auther = getAuther(auth.NoAuth{}, file.Auther).(*auth.NoAuth)
+			auther = getAuther(auth.NoAuth{}, autherInterf).(*auth.NoAuth)
 		case auth.MethodProxyAuth:
-			auther = getAuther(auth.ProxyAuth{}, file.Auther).(*auth.ProxyAuth)
+			auther = getAuther(auth.ProxyAuth{}, autherInterf).(*auth.ProxyAuth)
 		default:
 			checkErr(errors.New("invalid auth method"))
 		}

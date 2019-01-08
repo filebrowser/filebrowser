@@ -22,7 +22,7 @@ type jsonCred struct {
 
 // JSONAuth is a json implementaion of an Auther.
 type JSONAuth struct {
-	ReCaptcha *ReCaptcha
+	ReCaptcha *ReCaptcha `json:"recaptcha" yaml:"recaptcha"`
 }
 
 // Auth authenticates the user via a json in content body.

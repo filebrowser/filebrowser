@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"encoding/json"
 	"errors"
 	"os"
 	"strconv"
@@ -18,14 +17,14 @@ func init() {
 var usersImportCmd = &cobra.Command{
 	Use:   "import <filename>",
 	Short: "Import users from a file.",
-	Args:  cobra.ExactArgs(1),
+	Args:  jsonYamlArg,
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
 		fd, err := os.Open(args[0])
 		checkErr(err)
 		defer fd.Close()
 
 		list := []*users.User{}
-		err = json.NewDecoder(fd).Decode(&list)
+		err = unmarshal(args[0], &list)
 		checkErr(err)
 
 		for _, user := range list {

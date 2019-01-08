@@ -1,9 +1,6 @@
 package cmd
 
 import (
-	"encoding/json"
-	"os"
-
 	"github.com/spf13/cobra"
 )
 
@@ -14,17 +11,12 @@ func init() {
 var usersExportCmd = &cobra.Command{
 	Use:   "export <filename>",
 	Short: "Export all users.",
-	Args:  cobra.ExactArgs(1),
+	Args:  jsonYamlArg,
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
 		list, err := d.store.Users.Gets("")
 		checkErr(err)
 
-		fd, err := os.Create(args[0])
+		err = marshal(args[0], list)
 		checkErr(err)
-		defer fd.Close()
-
-		encoder := json.NewEncoder(fd)
-		encoder.SetIndent("", "    ")
-		encoder.Encode(list)
 	}, pythonConfig{}),
 }
