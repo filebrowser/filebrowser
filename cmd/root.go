@@ -233,9 +233,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 		},
 	}
 
-	_, noauth := getParamB(flags, "noauth")
-
-	if noauth {
+	if _, noauth := getParamB(flags, "noauth"); noauth {
 		set.AuthMethod = auth.MethodNoAuth
 		err = d.store.Auth.Save(&auth.NoAuth{})
 	} else {
