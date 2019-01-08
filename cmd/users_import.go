@@ -12,6 +12,7 @@ import (
 func init() {
 	usersCmd.AddCommand(usersImportCmd)
 	usersImportCmd.Flags().Bool("overwrite", false, "overwrite users with the same id/username combo")
+	usersImportCmd.Flags().Bool("replace", false, "replace the entire user base")
 }
 
 var usersImportCmd = &cobra.Command{
@@ -32,10 +33,23 @@ var usersImportCmd = &cobra.Command{
 			checkErr(err)
 		}
 
+		if mustGetBool(cmd.Flags(), "replace") {
+			oldUsers, err := d.store.Users.Gets("")
+			checkErr(err)
+			
+			err = marshal("users.backup.json", list)
+			checkErr(err)
+			
+			for _, user := range oldUsers {
+				err = d.store.Users.Delete(user.ID)
+				checkErr(err)
+			}
+		}
+		
 		overwrite := mustGetBool(cmd.Flags(), "overwrite")
 
 		for _, user := range list {
-			old, err := d.store.Users.Get("", user.ID)
+			onDB, err := d.store.Users.Get("", user.ID)
 
 			// User exists in DB.
 			if err == nil {
@@ -46,7 +60,7 @@ var usersImportCmd = &cobra.Command{
 				// If the usernames mismatch, check if there is another one in the DB
 				// with the new username. If there is, print an error and cancel the
 				// operation
-				if user.Username != old.Username {
+				if user.Username != onDB.Username {
 					conflictuous, err := d.store.Users.Get("", user.Username)
 					if err == nil {
 						checkErr(usernameConflictError(user.Username, conflictuous.ID, user.ID))
