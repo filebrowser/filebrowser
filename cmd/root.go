@@ -100,7 +100,7 @@ user created with the credentials from options "username" and "password".`,
 			quickSetup(cmd.Flags(), d)
 		}
 
-		server := getServerWithViper(cmd.Flags(), d.store)
+		server := getRunParams(cmd.Flags(), d.store)
 		setupLog(server.Log)
 
 		root, err := filepath.Abs(server.Root)
@@ -131,7 +131,7 @@ user created with the credentials from options "username" and "password".`,
 	}, pythonConfig{allowNoDB: true}),
 }
 
-func getServerWithViper(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
+func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 	server, err := st.Settings.GetServer()
 	checkErr(err)
 
