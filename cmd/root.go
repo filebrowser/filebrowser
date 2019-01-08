@@ -16,7 +16,8 @@ import (
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/users"
-	"github.com/mitchellh/go-homedir"
+	"github.com/filebrowser/filebrowser/v2/version"
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	v "github.com/spf13/viper"
@@ -29,6 +30,9 @@ var (
 
 func init() {
 	cobra.OnInitialize(initConfig)
+
+	rootCmd.SetVersionTemplate("File Browser version {{printf \"%s\" .Version}}\n")
+
 	flags := rootCmd.Flags()
 	persistent := rootCmd.PersistentFlags()
 
@@ -87,12 +91,13 @@ func mustGetStringViperFlag(flags *pflag.FlagSet, key string) string {
 }
 
 var rootCmd = &cobra.Command{
-	Use:   "filebrowser",
-	Short: "A stylish web-based file browser",
+	Use:     "filebrowser",
+	Short:   "A stylish web-based file browser",
+	Version: version.Version,
 	Long: `File Browser CLI lets you create the database to use with File Browser,
 manage your users and all the configurations without acessing the
 web interface.
-	
+
 If you've never run File Browser, you'll need to have a database for
 it. Don't worry: you don't need to setup a separate database server.
 We're using Bolt DB which is a single file database and all managed
