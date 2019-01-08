@@ -17,7 +17,15 @@ func init() {
 var rulesRmCommand = &cobra.Command{
 	Use:   "rm <index> [index_end]",
 	Short: "Remove a global rule or user rule",
-	Long:  `Remove a global rule or user rule.`,
+	Long: `Remove a global rule or user rule. The provided index
+is the same that's printed when you run 'rules ls'. Note
+that after each removal/addition, the index of the
+commands change. So be careful when removing them after each
+other.
+
+You can also specify an optional parameter (index_end) so
+you can remove all commands from 'index' to 'index_end',
+including 'index_end'.`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if err := cobra.RangeArgs(1, 2)(cmd, args); err != nil {
 			return err
