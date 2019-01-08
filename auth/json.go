@@ -22,11 +22,11 @@ type jsonCred struct {
 
 // JSONAuth is a json implementaion of an Auther.
 type JSONAuth struct {
-	ReCaptcha *ReCaptcha
+	ReCaptcha *ReCaptcha `json:"recaptcha" yaml:"recaptcha"`
 }
 
 // Auth authenticates the user via a json in content body.
-func (a *JSONAuth) Auth(r *http.Request, sto *users.Storage, root string) (*users.User, error) {
+func (a JSONAuth) Auth(r *http.Request, sto *users.Storage, root string) (*users.User, error) {
 	var cred jsonCred
 
 	if r.Body == nil {
