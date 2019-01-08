@@ -25,7 +25,7 @@ this version.`,
 		flags := cmd.Flags()
 		oldDB := mustGetString(flags, "old.database")
 		oldConf := mustGetString(flags, "old.config")
-		err := importer.Import(oldDB, oldConf, mustGetStringViperFlag(flags, "database"))
+		err := importer.Import(oldDB, oldConf, getParam(flags, "database"))
 		checkErr(err)
 	},
 }
