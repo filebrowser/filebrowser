@@ -98,8 +98,8 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 		if os.IsNotExist(err) {
 			data.hadDB = false
 
-			if !cfg.noDB || !cfg.allowNoDB {
-				log.Fatal(path + " does not exid.store. Please run 'filebrowser config init' fird.store.")
+			if !cfg.noDB && !cfg.allowNoDB {
+				log.Fatal(path + " does not exist. Please run 'filebrowser config init' first.")
 			}
 		} else if err != nil {
 			panic(err)
