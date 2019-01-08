@@ -15,5 +15,5 @@ type NoAuth struct{}
 
 // Auth uses authenticates user 1.
 func (a NoAuth) Auth(r *http.Request, sto *users.Storage, root string) (*users.User, error) {
-	return sto.Get(root, 1)
+	return sto.Get(root, uint(1))
 }

@@ -37,6 +37,7 @@ func init() {
 
 	persistent.StringVarP(&cfgFile, "config", "c", "", "config file path")
 	persistent.StringP("database", "d", "./filebrowser.db", "database path")
+	flags.Bool("noauth", false, "use the noauth auther when using quick setup")
 	flags.String("username", "admin", "username for the first user when using quick config")
 	flags.String("password", "", "hashed password for the first user when using quick config (default \"admin\")")
 
@@ -53,25 +54,27 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("baseurl", "b", "", "base url")
 }
 
+func isFlagSet(flags *pflag.FlagSet, key string) bool {
+	set:= false
+	flags.Visit(func(flag *pflag.Flag) {
+		if flag.Name == key {
+			set = true
+		}
+	})
+	return set
+}
+
 // NOTE: we could simply bind the flags to viper and use IsSet.
 // Although there is a bug on Viper that always returns true on IsSet
 // if a flag is binded. Our alternative way is to manually check
 // the flag and then the value from env/config/gotten by viper.
 // https://github.com/spf13/viper/pull/331
 func getStringViperFlag(flags *pflag.FlagSet, key string) (string, bool) {
-	value := ""
-	set := false
+	value, _ := flags.GetString(key)
 
 	// If set on Flags, use it.
-	flags.Visit(func(flag *pflag.Flag) {
-		if flag.Name == key {
-			set = true
-			value, _ = flags.GetString(key)
-		}
-	})
-
-	if set {
-		return value, set
+	if isFlagSet(flags, key) {
+		return value, true
 	}
 
 	// If set through viper (env, config), return it.
@@ -80,7 +83,6 @@ func getStringViperFlag(flags *pflag.FlagSet, key string) (string, bool) {
 	}
 
 	// Otherwise use default value on flags.
-	value, _ = flags.GetString(key)
 	return value, false
 }
 
@@ -217,14 +219,12 @@ func setupLog(logMethod string) {
 			MaxBackups: 10,
 		})
 	}
-
 }
 
 func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	set := &settings.Settings{
 		Key:        generateRandomBytes(64), // 256 bit
 		Signup:     false,
-		AuthMethod: auth.MethodJSONAuth,
 		Defaults: settings.UserDefaults{
 			Scope:  ".",
 			Locale: "en",
@@ -241,6 +241,25 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 		},
 	}
 
+	noauth, err := flags.GetBool("noauth")
+	checkErr(err)
+
+	if !isFlagSet(flags, "noauth") && v.IsSet("noauth") {
+		noauth = v.GetBool("noauth")
+	}
+
+	if noauth {
+		set.AuthMethod = auth.MethodNoAuth
+		err = d.store.Auth.Save(&auth.NoAuth{})
+	} else {
+		set.AuthMethod = auth.MethodJSONAuth
+		err = d.store.Auth.Save(&auth.JSONAuth{})
+	}
+	
+	checkErr(err)
+	err = d.store.Settings.Save(set)
+	checkErr(err)
+
 	ser := &settings.Server{
 		BaseURL: mustGetStringViperFlag(flags, "baseurl"),
 		Port:    mustGetStringViperFlag(flags, "port"),
@@ -251,13 +270,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 		Root:    mustGetStringViperFlag(flags, "root"),
 	}
 
-	err := d.store.Settings.Save(set)
-	checkErr(err)
-
 	err = d.store.Settings.SaveServer(ser)
-	checkErr(err)
-
-	err = d.store.Auth.Save(&auth.JSONAuth{})
 	checkErr(err)
 
 	username := mustGetStringViperFlag(flags, "username")
