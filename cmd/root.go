@@ -116,15 +116,15 @@ If you don't set "config", it will look for a configuration file called
 
 The precedence of the configuration values are as follows:
 
-- flag
-- environment variable
+- flags
+- environment variables
 - configuration file
 - database values
 - defaults
 
 The environment variables are prefixed by "FB_" followed by the option
 name in caps. So to set "database" via an env variable, you should
-set FB_DATABASE equals to the path.
+set FB_DATABASE.
 
 Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstraped and a new
