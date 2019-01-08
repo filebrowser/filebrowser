@@ -67,7 +67,7 @@ func withUser(fn handleFunc) handleFunc {
 			w.Header().Add("X-Renew-Token", "true")
 		}
 
-		d.user, err = d.store.Users.Get(d.settings.Root, tk.User.ID)
+		d.user, err = d.store.Users.Get(d.server.Root, tk.User.ID)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -91,7 +91,7 @@ var loginHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, e
 		return http.StatusInternalServerError, err
 	}
 
-	user, err := auther.Auth(r, d.store.Users, d.Settings.Root)
+	user, err := auther.Auth(r, d.store.Users, d.server.Root)
 	if err == os.ErrPermission {
 		return http.StatusForbidden, nil
 	} else if err != nil {

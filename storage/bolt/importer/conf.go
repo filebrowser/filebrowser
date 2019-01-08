@@ -33,7 +33,7 @@ type oldAuth struct {
 }
 
 type oldConf struct {
-	Port      int     `json:"port" yaml:"port" toml:"port"`
+	Port      string     `json:"port" yaml:"port" toml:"port"`
 	BaseURL   string  `json:"baseURL" yaml:"baseURL" toml:"baseURL"`
 	Log       string  `json:"log" yaml:"log" toml:"log"`
 	Address   string  `json:"address" yaml:"address" toml:"address"`
@@ -47,7 +47,7 @@ type oldConf struct {
 }
 
 var defaults = &oldConf{
-	Port: 0,
+	Port: "0",
 	Log:  "stdout",
 	Defaults: oldDefs{
 		Commands:      []string{"git", "svn", "hg"},
@@ -110,7 +110,6 @@ func importConf(db *storm.DB, path string, sto *storage.Storage) error {
 
 	s := &settings.Settings{
 		Key:     key,
-		BaseURL: cfg.BaseURL,
 		Signup:  false,
 		Defaults: settings.UserDefaults{
 			Scope:    cfg.Defaults.Scope,
@@ -128,6 +127,13 @@ func importConf(db *storm.DB, path string, sto *storage.Storage) error {
 				Download: true,
 			},
 		},
+	}
+
+	server := &settings.Server{
+		BaseURL : cfg.BaseURL,
+		Port : cfg.Port,
+		Address : cfg.Address,
+		Log : cfg.Log,
 	}
 
 	var auther auth.Auther
@@ -155,6 +161,11 @@ func importConf(db *storm.DB, path string, sto *storage.Storage) error {
 	}
 
 	err = sto.Settings.Save(s)
+	if err != nil {
+		return err
+	}
+
+	err = sto.Settings.SaveServer(server)
 	if err != nil {
 		return err
 	}
