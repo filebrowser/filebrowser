@@ -54,16 +54,6 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("baseurl", "b", "", "base url")
 }
 
-func isFlagSet(flags *pflag.FlagSet, key string) bool {
-	set:= false
-	flags.Visit(func(flag *pflag.Flag) {
-		if flag.Name == key {
-			set = true
-		}
-	})
-	return set
-}
-
 // NOTE: we could simply bind the flags to viper and use IsSet.
 // Although there is a bug on Viper that always returns true on IsSet
 // if a flag is binded. Our alternative way is to manually check
@@ -73,7 +63,7 @@ func getStringViperFlag(flags *pflag.FlagSet, key string) (string, bool) {
 	value, _ := flags.GetString(key)
 
 	// If set on Flags, use it.
-	if isFlagSet(flags, key) {
+	if flags.Changed(key) {
 		return value, true
 	}
 
@@ -223,8 +213,8 @@ func setupLog(logMethod string) {
 
 func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	set := &settings.Settings{
-		Key:        generateRandomBytes(64), // 256 bit
-		Signup:     false,
+		Key:    generateRandomBytes(64), // 256 bit
+		Signup: false,
 		Defaults: settings.UserDefaults{
 			Scope:  ".",
 			Locale: "en",
@@ -244,7 +234,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	noauth, err := flags.GetBool("noauth")
 	checkErr(err)
 
-	if !isFlagSet(flags, "noauth") && v.IsSet("noauth") {
+	if !flags.Changed("noauth") && v.IsSet("noauth") {
 		noauth = v.GetBool("noauth")
 	}
 
@@ -255,7 +245,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 		set.AuthMethod = auth.MethodJSONAuth
 		err = d.store.Auth.Save(&auth.JSONAuth{})
 	}
-	
+
 	checkErr(err)
 	err = d.store.Settings.Save(set)
 	checkErr(err)
