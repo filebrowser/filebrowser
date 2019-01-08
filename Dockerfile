@@ -6,6 +6,7 @@ VOLUME /tmp
 VOLUME /srv
 EXPOSE 80
 
+COPY .filebrowser.docker.json /etc/filebrowser/.filebrowser.json
 COPY filebrowser /filebrowser
 
-ENTRYPOINT [ "/filebrowser"]
+ENTRYPOINT [ "/filebrowser" ]
