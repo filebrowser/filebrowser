@@ -14,10 +14,12 @@ var configCatCmd = &cobra.Command{
 	Long:  `Prints the configuration.`,
 	Args:  cobra.NoArgs,
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
-		s, err := d.store.Settings.Get()
+		set, err := d.store.Settings.Get()
 		checkErr(err)
-		auther, err := d.store.Auth.Get(s.AuthMethod)
+		ser, err := d.store.Settings.GetServer()
 		checkErr(err)
-		printSettings(s, auther)
+		auther, err := d.store.Auth.Get(set.AuthMethod)
+		checkErr(err)
+		printSettings(ser, set, auther)
 	}, pythonConfig{}),
 }

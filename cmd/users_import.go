@@ -33,20 +33,20 @@ var usersImportCmd = &cobra.Command{
 			checkErr(err)
 		}
 
-		if mustGetBool(cmd, "replace") {
+		if mustGetBool(cmd.Flags(), "replace") {
 			oldUsers, err := d.store.Users.Gets("")
 			checkErr(err)
-
+			
 			err = marshal("users.backup.json", list)
 			checkErr(err)
-
+			
 			for _, user := range oldUsers {
 				err = d.store.Users.Delete(user.ID)
 				checkErr(err)
 			}
 		}
-
-		overwrite := mustGetBool(cmd, "overwrite")
+		
+		overwrite := mustGetBool(cmd.Flags(), "overwrite")
 
 		for _, user := range list {
 			onDB, err := d.store.Users.Get("", user.ID)

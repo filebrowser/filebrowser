@@ -24,23 +24,36 @@ override the options.`,
 	Args: cobra.NoArgs,
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
 		defaults := settings.UserDefaults{}
-		getUserDefaults(cmd, &defaults, true)
-		authMethod, auther := getAuthentication(cmd)
+		flags := cmd.Flags()
+		getUserDefaults(flags, &defaults, true)
+		authMethod, auther := getAuthentication(flags)
 
 		s := &settings.Settings{
 			Key:        generateRandomBytes(64), // 256 bit
-			Signup:     mustGetBool(cmd, "signup"),
-			Shell:      strings.Split(strings.TrimSpace(mustGetString(cmd, "shell")), " "),
+			Signup:     mustGetBool(flags, "signup"),
+			Shell:      strings.Split(strings.TrimSpace(mustGetString(flags, "shell")), " "),
 			AuthMethod: authMethod,
 			Defaults:   defaults,
 			Branding: settings.Branding{
-				Name:            mustGetString(cmd, "branding.name"),
-				DisableExternal: mustGetBool(cmd, "branding.disableExternal"),
-				Files:           mustGetString(cmd, "branding.files"),
+				Name:            mustGetString(flags, "branding.name"),
+				DisableExternal: mustGetBool(flags, "branding.disableExternal"),
+				Files:           mustGetString(flags, "branding.files"),
 			},
 		}
 
+		ser := &settings.Server{
+			Address: mustGetString(flags, "address"),
+			Root:    mustGetString(flags, "root"),
+			BaseURL: mustGetString(flags, "baseurl"),
+			TLSKey:  mustGetString(flags, "key"),
+			TLSCert: mustGetString(flags, "cert"),
+			Port:    mustGetString(flags, "port"),
+			Log:     mustGetString(flags, "log"),
+		}
+
 		err := d.store.Settings.Save(s)
+		checkErr(err)
+		err = d.store.Settings.SaveServer(ser)
 		checkErr(err)
 		err = d.store.Auth.Save(auther)
 		checkErr(err)
@@ -50,6 +63,6 @@ Congratulations! You've set up your database to use with File Browser.
 Now add your first user via 'filebrowser users new' and then you just
 need to call the main command to boot up the server.
 `)
-		printSettings(s, auther)
+		printSettings(ser, s, auther)
 	}, pythonConfig{noDB: true}),
 }
