@@ -18,10 +18,11 @@ func init() {
 }
 
 var usersCmd = &cobra.Command{
-	Use:   "users",
-	Short: "Users management utility",
-	Long:  `Users management utility.`,
-	Args:  cobra.NoArgs,
+	Use:     "users",
+	Version: rootCmd.Version,
+	Short:   "Users management utility",
+	Long:    `Users management utility.`,
+	Args:    cobra.NoArgs,
 }
 
 func printUsers(users []*users.User) {
