@@ -238,8 +238,11 @@ release () {
     exit 1
   fi
 
+  set +e
   git rev-parse --verify --quiet release
-  if [ $? -ne 0 ]; then
+  exitcode=$?
+  set -e
+  if [ $exitcode -ne 0 ]; then
     git checkout -b release "$semver"
   else
     git checkout release
