@@ -11,7 +11,7 @@ func init() {
 
 	usersUpdateCmd.Flags().StringP("password", "p", "", "new password")
 	usersUpdateCmd.Flags().StringP("username", "u", "", "new username")
-	addUserFlags(usersUpdateCmd)
+	addUserFlags(usersUpdateCmd.Flags())
 }
 
 var usersUpdateCmd = &cobra.Command{

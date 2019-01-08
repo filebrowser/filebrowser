@@ -10,7 +10,7 @@ import (
 
 func init() {
 	configCmd.AddCommand(configSetCmd)
-	addConfigFlags(configSetCmd)
+	addConfigFlags(configSetCmd.Flags())
 }
 
 var configSetCmd = &cobra.Command{
