@@ -62,14 +62,14 @@ var defaults = &oldConf{
 	},
 }
 
-func importConf(db *storm.DB, path string, sto *storage.Storage) error {
+func readConf(path string) (*oldConf, error) {
 	cfg := &oldConf{}
 	if path != "" {
 		ext := filepath.Ext(path)
 
 		fd, err := os.Open(path)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		defer fd.Close()
 
@@ -81,23 +81,32 @@ func importConf(db *storm.DB, path string, sto *storage.Storage) error {
 		case ".yaml", ".yml":
 			err = yaml.NewDecoder(fd).Decode(cfg)
 		default:
-			return errors.New("unsupported config extension " + ext)
+			return nil, errors.New("unsupported config extension " + ext)
 		}
 
 		if err != nil {
-			return err
+			return nil, err
 		}
 	} else {
 		cfg = defaults
 		path, err := filepath.Abs(".")
 		if err != nil {
-			return err
+			return nil, err
 		}
 		cfg.Defaults.Scope = path
 	}
+	return cfg, nil
+}
+
+func importConf(db *storm.DB, path string, sto *storage.Storage) error {
+
+	cfg, err := readConf(path)
+	if err != nil {
+		return err
+	}
 
 	commands := map[string][]string{}
-	err := db.Get("config", "commands", &commands)
+	err = db.Get("config", "commands", &commands)
 	if err != nil {
 		return err
 	}
