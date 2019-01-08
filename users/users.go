@@ -31,7 +31,7 @@ type User struct {
 	Perm         Permissions   `json:"perm"`
 	Commands     []string      `json:"commands"`
 	Sorting      files.Sorting `json:"sorting"`
-	Fs           afero.Fs      `json:"-"`
+	Fs           afero.Fs      `json:"-" yaml:"-"`
 	Rules        []rules.Rule  `json:"rules"`
 }
 
