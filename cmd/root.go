@@ -217,7 +217,6 @@ func setupLog(logMethod string) {
 			MaxBackups: 10,
 		})
 	}
-
 }
 
 func quickSetup(flags *pflag.FlagSet, d pythonData) {
