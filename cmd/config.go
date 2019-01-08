@@ -12,6 +12,7 @@ import (
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 func init() {
@@ -25,21 +26,21 @@ var configCmd = &cobra.Command{
 	Args:  cobra.NoArgs,
 }
 
-func addConfigFlags(cmd *cobra.Command) {
-	addUserFlags(cmd)
-	cmd.Flags().BoolP("signup", "s", false, "allow users to signup")
-	cmd.Flags().String("shell", "", "shell command to which other commands should be appended")
+func addConfigFlags(flags *pflag.FlagSet) {
+	addUserFlags(flags)
+	flags.BoolP("signup", "s", false, "allow users to signup")
+	flags.String("shell", "", "shell command to which other commands should be appended")
 
-	cmd.Flags().String("auth.method", string(auth.MethodJSONAuth), "authentication type")
-	cmd.Flags().String("auth.header", "", "HTTP header for auth.method=proxy")
+	flags.String("auth.method", string(auth.MethodJSONAuth), "authentication type")
+	flags.String("auth.header", "", "HTTP header for auth.method=proxy")
 
-	cmd.Flags().String("recaptcha.host", "https://www.google.com", "use another host for ReCAPTCHA. recaptcha.net might be useful in China")
-	cmd.Flags().String("recaptcha.key", "", "ReCaptcha site key")
-	cmd.Flags().String("recaptcha.secret", "", "ReCaptcha secret")
+	flags.String("recaptcha.host", "https://www.google.com", "use another host for ReCAPTCHA. recaptcha.net might be useful in China")
+	flags.String("recaptcha.key", "", "ReCaptcha site key")
+	flags.String("recaptcha.secret", "", "ReCaptcha secret")
 
-	cmd.Flags().String("branding.name", "", "replace 'File Browser' by this name")
-	cmd.Flags().String("branding.files", "", "path to directory with images and custom styles")
-	cmd.Flags().Bool("branding.disableExternal", false, "disable external links such as GitHub links")
+	flags.String("branding.name", "", "replace 'File Browser' by this name")
+	flags.String("branding.files", "", "path to directory with images and custom styles")
+	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 }
 
 func getAuthentication(cmd *cobra.Command) (settings.AuthMethod, auth.Auther) {

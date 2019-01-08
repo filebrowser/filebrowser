@@ -58,22 +58,22 @@ func parseUsernameOrID(arg string) (string, uint) {
 	return "", uint(id)
 }
 
-func addUserFlags(cmd *cobra.Command) {
-	cmd.Flags().Bool("perm.admin", false, "admin perm for users")
-	cmd.Flags().Bool("perm.execute", true, "execute perm for users")
-	cmd.Flags().Bool("perm.create", true, "create perm for users")
-	cmd.Flags().Bool("perm.rename", true, "rename perm for users")
-	cmd.Flags().Bool("perm.modify", true, "modify perm for users")
-	cmd.Flags().Bool("perm.delete", true, "delete perm for users")
-	cmd.Flags().Bool("perm.share", true, "share perm for users")
-	cmd.Flags().Bool("perm.download", true, "download perm for users")
-	cmd.Flags().String("sorting.by", "name", "sorting mode (name, size or modified)")
-	cmd.Flags().Bool("sorting.asc", false, "sorting by ascending order")
-	cmd.Flags().Bool("lockPassword", false, "lock password")
-	cmd.Flags().StringSlice("commands", nil, "a list of the commands a user can execute")
-	cmd.Flags().String("scope", ".", "scope for users")
-	cmd.Flags().String("locale", "en", "locale for users")
-	cmd.Flags().String("viewMode", string(users.ListViewMode), "view mode for users")
+func addUserFlags(flags *pflag.FlagSet) {
+	flags.Bool("perm.admin", false, "admin perm for users")
+	flags.Bool("perm.execute", true, "execute perm for users")
+	flags.Bool("perm.create", true, "create perm for users")
+	flags.Bool("perm.rename", true, "rename perm for users")
+	flags.Bool("perm.modify", true, "modify perm for users")
+	flags.Bool("perm.delete", true, "delete perm for users")
+	flags.Bool("perm.share", true, "share perm for users")
+	flags.Bool("perm.download", true, "download perm for users")
+	flags.String("sorting.by", "name", "sorting mode (name, size or modified)")
+	flags.Bool("sorting.asc", false, "sorting by ascending order")
+	flags.Bool("lockPassword", false, "lock password")
+	flags.StringSlice("commands", nil, "a list of the commands a user can execute")
+	flags.String("scope", ".", "scope for users")
+	flags.String("locale", "en", "locale for users")
+	flags.String("viewMode", string(users.ListViewMode), "view mode for users")
 }
 
 func getViewMode(cmd *cobra.Command) users.ViewMode {
