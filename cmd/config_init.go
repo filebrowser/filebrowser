@@ -40,7 +40,19 @@ override the options.`,
 			},
 		}
 
+		ser := &settings.Server{
+			Address: mustGetString(cmd, "address"),
+			Root:    mustGetString(cmd, "root"),
+			BaseURL: mustGetString(cmd, "baseurl"),
+			TLSKey:  mustGetString(cmd, "key"),
+			TLSCert: mustGetString(cmd, "cert"),
+			Port:    mustGetString(cmd, "port"),
+			Log:     mustGetString(cmd, "log"),
+		}
+
 		err := d.store.Settings.Save(s)
+		checkErr(err)
+		err = d.store.Settings.SaveServer(ser)
 		checkErr(err)
 		err = d.store.Auth.Save(auther)
 		checkErr(err)
@@ -50,6 +62,6 @@ Congratulations! You've set up your database to use with File Browser.
 Now add your first user via 'filebrowser users new' and then you just
 need to call the main command to boot up the server.
 `)
-		printSettings(s, auther)
+		printSettings(ser, s, auther)
 	}, pythonConfig{noDB: true}),
 }
