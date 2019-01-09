@@ -72,7 +72,7 @@ func dbExists(path string) (bool, error) {
 	}
 
 	if stat.Size() == 0 {
-		return true, nil
+		return false, nil
 	}
 
 	return true, nil
