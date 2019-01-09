@@ -64,9 +64,5 @@ func handle(fn handleFunc, prefix string, storage *storage.Storage, server *sett
 		}
 	})
 
-	if prefix == "" {
-		return handler
-	}
-
 	return http.StripPrefix(prefix, handler)
 }
