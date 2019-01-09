@@ -99,7 +99,6 @@ func readConf(path string) (*oldConf, error) {
 }
 
 func importConf(db *storm.DB, path string, sto *storage.Storage) error {
-
 	cfg, err := readConf(path)
 	if err != nil {
 		return err

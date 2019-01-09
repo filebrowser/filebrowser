@@ -1,8 +1,6 @@
 package settings
 
 import (
-	"strings"
-
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -94,6 +92,6 @@ func (s *Storage) GetServer() (*Server, error) {
 
 // SaveServer wraps StorageBackend.SaveServer and adds some verification.
 func (s *Storage) SaveServer(ser *Server) error {
-	ser.BaseURL = strings.TrimSuffix(ser.BaseURL, "/")
+	ser.Clean()
 	return s.back.SaveServer(ser)
 }
