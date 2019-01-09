@@ -62,29 +62,43 @@ type pythonData struct {
 	store *storage.Storage
 }
 
+func dbExists(path string) (bool, error) {
+	stat, err := os.Stat(path)
+
+	if os.IsNotExist(err) {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+
+	if stat.Size() == 0 {
+		return false, nil
+	}
+
+	return true, nil
+}
+
 func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) {
 		data := pythonData{hadDB: true}
 
 		path := getParam(cmd.Flags(), "database")
-		_, err := os.Stat(path)
+		exists, err := dbExists(path)
 
-		if os.IsNotExist(err) {
-			data.hadDB = false
-
-			if !cfg.noDB && !cfg.allowNoDB {
-				log.Fatal(path + " does not exist. Please run 'filebrowser config init' first.")
-			}
-		} else if err != nil {
+		if err != nil {
 			panic(err)
-		} else if err == nil && cfg.noDB {
+		} else if exists && cfg.noDB {
 			log.Fatal(path + " already exists")
+		} else if !exists && !cfg.noDB && !cfg.allowNoDB {
+			log.Fatal(path + " does not exist. Please run 'filebrowser config init' first.")
 		}
 
+		data.hadDB = exists
 		db, err := storm.Open(path)
 		checkErr(err)
 		defer db.Close()
-		data.store = bolt.NewStorage(db)
+		data.store, err = bolt.NewStorage(db)
+		checkErr(err)
 		fn(cmd, args, data)
 	}
 }
