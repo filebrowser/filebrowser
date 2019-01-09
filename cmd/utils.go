@@ -67,7 +67,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 		data := pythonData{hadDB: true}
 
 		path := getParam(cmd.Flags(), "database")
-		_, err := os.Stat(path)
+		fd, err := os.Stat(path)
 
 		if os.IsNotExist(err) {
 			data.hadDB = false
@@ -75,10 +75,16 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 			if !cfg.noDB && !cfg.allowNoDB {
 				log.Fatal(path + " does not exist. Please run 'filebrowser config init' first.")
 			}
-		} else if err != nil {
-			panic(err)
-		} else if err == nil && cfg.noDB {
-			log.Fatal(path + " already exists")
+		} else if err == nil {
+			if cfg.noDB {
+				log.Fatal(path + " already exists")
+			}
+			if fd.Size() == 0 {
+				log.Println("Database file is empty")
+				data.hadDB = false
+			}
+		} else {
+			log.Fatal(err)
 		}
 
 		db, err := storm.Open(path)

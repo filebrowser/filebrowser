@@ -214,6 +214,9 @@ func setupLog(logMethod string) {
 }
 
 func quickSetup(flags *pflag.FlagSet, d pythonData) {
+
+	log.Println("Executing quick setup...")
+
 	set := &settings.Settings{
 		Key:    generateRandomBytes(64), // 256 bit
 		Signup: false,
