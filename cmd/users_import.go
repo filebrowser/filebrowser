@@ -16,9 +16,13 @@ func init() {
 }
 
 var usersImportCmd = &cobra.Command{
-	Use:   "import <filename>",
-	Short: "Import users from a file.",
-	Args:  jsonYamlArg,
+	Use:   "import <path>",
+	Short: "Import users from a file",
+	Long: `Import users from a file. The path must be for a json or yaml
+file. You can use this command to import new users to your
+installation. For that, just don't place their ID on the files
+list or set it to 0.`,
+	Args: jsonYamlArg,
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
 		fd, err := os.Open(args[0])
 		checkErr(err)
@@ -36,16 +40,16 @@ var usersImportCmd = &cobra.Command{
 		if mustGetBool(cmd.Flags(), "replace") {
 			oldUsers, err := d.store.Users.Gets("")
 			checkErr(err)
-			
+
 			err = marshal("users.backup.json", list)
 			checkErr(err)
-			
+
 			for _, user := range oldUsers {
 				err = d.store.Users.Delete(user.ID)
 				checkErr(err)
 			}
 		}
-		
+
 		overwrite := mustGetBool(cmd.Flags(), "overwrite")
 
 		for _, user := range list {

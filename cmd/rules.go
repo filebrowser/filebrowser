@@ -18,8 +18,9 @@ func init() {
 }
 
 var rulesCmd = &cobra.Command{
-	Use:   "rules",
-	Short: "Rules management utility",
+	Use:     "rules",
+	Version: rootCmd.Version,
+	Short:   "Rules management utility",
 	Long: `On each subcommand you'll have available at least two flags:
 "username" and "id". You must either set only one of them
 or none. If you set one of them, the command will apply to
@@ -42,14 +43,14 @@ func runRules(st *storage.Storage, cmd *cobra.Command, users func(*users.User), 
 		return
 	}
 
-	settings, err := st.Settings.Get()
+	s, err := st.Settings.Get()
 	checkErr(err)
 
 	if global != nil {
-		global(settings)
+		global(s)
 	}
 
-	printRules(settings.Rules, id)
+	printRules(s.Rules, id)
 }
 
 func getUserIdentifier(flags *pflag.FlagSet) interface{} {

@@ -9,8 +9,7 @@ import (
 
 // StorageBackend is the interface to implement for a users storage.
 type StorageBackend interface {
-	GetByID(uint) (*User, error)
-	GetByUsername(string) (*User, error)
+	GetBy(interface{}) (*User, error)
 	Gets() ([]*User, error)
 	Save(u *User) error
 	Update(u *User, fields ...string) error
@@ -36,27 +35,13 @@ func NewStorage(back StorageBackend) *Storage {
 // Get allows you to get a user by its name or username. The provided
 // id must be a string for username lookup or a uint for id lookup. If id
 // is neither, a ErrInvalidDataType will be returned.
-func (s *Storage) Get(baseScope string, id interface{}) (*User, error) {
-	var (
-		user *User
-		err  error
-	)
-
-	switch id.(type) {
-	case string:
-		user, err = s.back.GetByUsername(id.(string))
-	case uint:
-		user, err = s.back.GetByID(id.(uint))
-	default:
-		return nil, errors.ErrInvalidDataType
-	}
-
+func (s *Storage) Get(baseScope string, id interface{}) (user *User, err error) {
+	user, err = s.back.GetBy(id)
 	if err != nil {
-		return nil, err
+		return
 	}
-
 	user.Clean(baseScope)
-	return user, err
+	return
 }
 
 // Gets gets a list of all users.

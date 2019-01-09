@@ -12,32 +12,29 @@ type usersBackend struct {
 	db *storm.DB
 }
 
-func (st usersBackend) GetByID(id uint) (*users.User, error) {
-	user := &users.User{}
-	err := st.db.One("ID", id, user)
-	if err == storm.ErrNotFound {
-		return nil, errors.ErrNotExist
+func (st usersBackend) GetBy(i interface{}) (user *users.User, err error) {
+	user = &users.User{}
+
+	var arg string
+	switch i.(type) {
+	case uint:
+		arg = "ID"
+	case string:
+		arg = "Username"
+	default:
+		return nil, errors.ErrInvalidDataType
 	}
 
+	err = st.db.One(arg, i, user)
+
 	if err != nil {
+		if err == storm.ErrNotFound {
+			return nil, errors.ErrNotExist
+		}
 		return nil, err
 	}
 
-	return user, nil
-}
-
-func (st usersBackend) GetByUsername(username string) (*users.User, error) {
-	user := &users.User{}
-	err := st.db.One("Username", username, user)
-	if err == storm.ErrNotFound {
-		return nil, errors.ErrNotExist
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
+	return
 }
 
 func (st usersBackend) Gets() ([]*users.User, error) {
@@ -82,7 +79,7 @@ func (st usersBackend) DeleteByID(id uint) error {
 }
 
 func (st usersBackend) DeleteByUsername(username string) error {
-	user, err := st.GetByUsername(username)
+	user, err := st.GetBy(username)
 	if err != nil {
 		return err
 	}

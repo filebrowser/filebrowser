@@ -9,7 +9,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/GeertJohan/go.rice"
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"

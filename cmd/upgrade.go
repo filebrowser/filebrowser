@@ -14,8 +14,9 @@ func init() {
 }
 
 var upgradeCmd = &cobra.Command{
-	Use:   "upgrade",
-	Short: "Upgrades an old configuration",
+	Use:     "upgrade",
+	Version: rootCmd.Version,
+	Short:   "Upgrades an old configuration",
 	Long: `Upgrades an old configuration. This command DOES NOT
 import share links because they are incompatible with
 this version.`,
@@ -24,7 +25,7 @@ this version.`,
 		flags := cmd.Flags()
 		oldDB := mustGetString(flags, "old.database")
 		oldConf := mustGetString(flags, "old.config")
-		err := importer.Import(oldDB, oldConf, mustGetStringViperFlag(flags, "database"))
+		err := importer.Import(oldDB, oldConf, getParam(flags, "database"))
 		checkErr(err)
 	},
 }

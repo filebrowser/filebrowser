@@ -32,7 +32,7 @@ jobs:
         repo: filebrowser/filebrowser
         branch: master
   - stage: release
-    script: ./wizard.sh -r
+    script: ./wizard.sh -r "$TRAVIS_TAG"
     if: tag IS present
     deploy:
       provider: releases

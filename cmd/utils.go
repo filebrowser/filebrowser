@@ -19,8 +19,7 @@ import (
 
 func checkErr(err error) {
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }
 
@@ -67,7 +66,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) {
 		data := pythonData{hadDB: true}
 
-		path := mustGetStringViperFlag(cmd.Flags(), "database")
+		path := getParam(cmd.Flags(), "database")
 		_, err := os.Stat(path)
 
 		if os.IsNotExist(err) {

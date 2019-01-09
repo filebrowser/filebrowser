@@ -3,7 +3,7 @@ project_name: filebrowser
 build:
   env:
     - CGO_ENABLED=0
-  main: cli/main.go
+  main: main.go
   binary: filebrowser
   goos:
     - darwin
@@ -50,8 +50,9 @@ dockers:
     goos: linux
     goarch: amd64
     goarm: ''
-    image: filebrowser/filebrowser
+    image_templates:
+      - "filebrowser/filebrowser:latest"
+      - "filebrowser/filebrowser:{{ .Tag }}"
     skip_push: true
-    tag_templates:
-      - "{{ .Tag }}"
-      - latest
+    extra_files:
+      - .docker.json
