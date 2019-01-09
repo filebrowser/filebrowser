@@ -19,7 +19,10 @@ func Import(oldDB, oldConf, newDB string) error {
 	}
 	defer new.Close()
 
-	sto := bolt.NewStorage(new)
+	sto, err := bolt.NewStorage(new)
+	if err != nil {
+		return err
+	}
 
 	err = importUsers(old, sto)
 	if err != nil {
