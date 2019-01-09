@@ -132,7 +132,7 @@ pushRicebox () {
   git clone git@github.com:filebrowser/caddy caddy
   cd caddy
   cp ../http/rice-box.go ./
-  sed -i 's/package lib/package caddy/g' ./rice-box.go
+  sed -i 's/package http/package caddy/g' ./rice-box.go
   git checkout -b update-rice-box origin/master
   git config --local user.name "Filebrowser Bot"
   git config --local user.email "FilebrowserBot@users.noreply.github.com"
