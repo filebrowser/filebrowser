@@ -14,8 +14,9 @@ type modifyRequest struct {
 }
 
 func NewHandler(storage *storage.Storage, server *settings.Server) (http.Handler, error) {
-	r := mux.NewRouter()
+	server.Clean()
 
+	r := mux.NewRouter()
 	index, static := getStaticHandlers(storage, server)
 
 	monkey := func(fn handleFunc, prefix string) http.Handler {

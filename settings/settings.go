@@ -1,6 +1,10 @@
 package settings
 
-import "github.com/filebrowser/filebrowser/v2/rules"
+import (
+	"strings"
+
+	"github.com/filebrowser/filebrowser/v2/rules"
+)
 
 // AuthMethod describes an authentication method.
 type AuthMethod string
@@ -17,6 +21,11 @@ type Settings struct {
 	Rules      []rules.Rule        `json:"rules"`
 }
 
+// GetRules implements rules.Provider.
+func (s *Settings) GetRules() []rules.Rule {
+	return s.Rules
+}
+
 // Server specific settings.
 type Server struct {
 	Root    string `json:"root"`
@@ -28,7 +37,7 @@ type Server struct {
 	Log     string `json:"log"`
 }
 
-// GetRules implements rules.Provider.
-func (s *Settings) GetRules() []rules.Rule {
-	return s.Rules
+// Clean cleans any variables that might need cleaning.
+func (s *Server) Clean() {
+	s.BaseURL = strings.TrimSuffix(s.BaseURL, "/")
 }
