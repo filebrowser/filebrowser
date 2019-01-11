@@ -215,7 +215,7 @@ func setupLog(logMethod string) {
 
 func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	set := &settings.Settings{
-		Key:    generateRandomBytes(64), // 256 bit
+		Key:    generateKey(),
 		Signup: false,
 		Defaults: settings.UserDefaults{
 			Scope:  ".",
