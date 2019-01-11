@@ -29,7 +29,7 @@ override the options.`,
 		authMethod, auther := getAuthentication(flags)
 
 		s := &settings.Settings{
-			Key:        generateRandomBytes(64), // 256 bit
+			Key:        generateKey(),
 			Signup:     mustGetBool(flags, "signup"),
 			Shell:      strings.Split(strings.TrimSpace(mustGetString(flags, "shell")), " "),
 			AuthMethod: authMethod,

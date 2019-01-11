@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"crypto/rand"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/asdine/storm"
+	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 	"github.com/spf13/cobra"
@@ -41,12 +41,10 @@ func mustGetUint(flags *pflag.FlagSet, flag string) uint {
 	return b
 }
 
-func generateRandomBytes(n int) []byte {
-	b := make([]byte, n)
-	_, err := rand.Read(b)
+func generateKey() []byte {
+	k, err := settings.GenerateKey()
 	checkErr(err)
-	// Note that err == nil only if we read len(b) bytes.
-	return b
+	return k
 }
 
 type cobraFunc func(cmd *cobra.Command, args []string)

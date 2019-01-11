@@ -40,7 +40,7 @@ The path must be for a json or yaml file.`,
 			checkErr(err)
 			key = settings.Key
 		} else {
-			key = generateRandomBytes(64)
+			key = generateKey()
 		}
 
 		file := settingsFile{}
