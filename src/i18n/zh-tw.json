@@ -82,7 +82,7 @@
     "loginInstead": "Already have an account",
     "passwordsDontMatch": "Passwords don't match",
     "usernameTaken": "Username already taken",
-    "signup": "Signup",
+    "signup": "註冊",
     "username": "帳號",
     "wrongCredentials": "帳號或密碼錯誤"
   },
@@ -173,19 +173,19 @@
     "executeOnShell": "Execute on shell",
     "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you want to run them on a shell instead (such as Bash or PowerShell), you can define it here with the  required arguments and flags. If set, the command you execute will be appended as an argument. This apply to both user commands and event hooks.",
     "perm": {
-      "create": "Create files and directories",
-      "delete": "Delete files and directories",
-      "download": "Download",
-      "modify": "Edit files",
+      "create": "建立檔案和資料夾",
+      "delete": "刪除檔案和資料夾",
+      "download": "下載",
+      "modify": "編輯檔案",
       "execute": "Execute commands",
-      "rename": "Rename or move files and directories",
-      "share": "Share files"
+      "rename": "重命名或移動檔案/資料夾",
+      "share": "分享檔案"
     }
   },
   "sidebar": {
     "help": "幫助",
-    "login": "Login",
-    "signup": "Signup",
+    "login": "登入",
+    "signup": "註冊",
     "logout": "登出",
     "myFiles": "我的檔案",
     "newFile": "建立檔案",
@@ -229,7 +229,7 @@
     "days": "天"
   },
   "download": {
-    "downloadFile": "Download File",
-    "downloadFolder": "Download Folder"
+    "downloadFile": "下載檔案",
+    "downloadFolder": "下載資料夾"
   }
 }
