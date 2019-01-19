@@ -38,7 +38,7 @@
     "linkCopied": "Verweis wurde kopiert !"
   },
   "errors": {
-    "forbidden": "You don't have permissions to access this.",
+    "forbidden": "Sie haben keine Berechtigung dies abzurufen.",
     "internal": "Etwas ist schief gelaufen.",
     "notFound": "Dieser Ort kann nicht angezeigt werden."
   },
@@ -76,13 +76,13 @@
   },
   "login": {
     "password": "Passwort",
-    "passwordConfirm": "Password Confirmation",
+    "passwordConfirm": "Passwort Bestätigung",
     "submit": "Login",
-    "createAnAccount": "Create an account",
-    "loginInstead": "Already have an account",
-    "passwordsDontMatch": "Passwords don't match",
-    "usernameTaken": "Username already taken",
-    "signup": "Signup",
+    "createAnAccount": "Account erstellen",
+    "loginInstead": "Account besteht bereits",
+    "passwordsDontMatch": "Passwörter stimmen nicht überein",
+    "usernameTaken": "Benutzername ist bereits vergeben",
+    "signup": "Registrieren",
     "username": "Benutzername",
     "wrongCredentials": "Falsche Zugangsdaten"
   },
@@ -121,9 +121,9 @@
   "settings": {
     "instanceName": "Instance name",
     "brandingDirectoryPath": "Branding directory path",
-    "documentation": "documentation",
+    "documentation": "Dokumentation",
     "branding": "Branding",
-    "disableExternalLinks": "Disable external links (except documentation)",
+    "disableExternalLinks": "Externe Links deaktivieren (außer Dokumentation)",
     "brandingHelp": "You can costumize how your File Browser instance looks and feels by changing its name, replacing the logo, adding custom styles and even disable external links to GitHub.\nFor more information about custom branding, please check out the {0}.",
     "admin": "Admin",
     "administrator": "Administrator",
@@ -164,28 +164,28 @@
     "username": "Nutzername",
     "users": "Nutzer",
     "globalRules": "This is a global set of allow and disallow rules. They apply to every user. You can define specific rules on each user's settings to override this ones.",
-    "allowSignup": "Allow users to signup",
+    "allowSignup": "Erlaube Benutzern sich zu registrieren",
     "insertRegex": "Insert regex expression",
     "insertPath": "Insert the path",
     "userUpdated": "Benutzer aktualisiert!",
     "userDefaults": "User default settings",
     "defaultUserDescription": "This are the default settings for new users.",
-    "executeOnShell": "Execute on shell",
+    "executeOnShell": "In shell ausführen",
     "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you want to run them on a shell instead (such as Bash or PowerShell), you can define it here with the  required arguments and flags. If set, the command you execute will be appended as an argument. This apply to both user commands and event hooks.",
     "perm": {
-      "create": "Create files and directories",
-      "delete": "Delete files and directories",
+      "create": "Dateien und Ordner erstellen",
+      "delete": "Dateien und Ordner löschen",
       "download": "Download",
       "modify": "Edit files",
-      "execute": "Execute commands",
-      "rename": "Rename or move files and directories",
-      "share": "Share files"
+      "execute": "Befehle ausführen",
+      "rename": "Umbenennen oder Verschieben von Dateien oder Ordnern",
+      "share": "Datei teilen"
     }
   },
   "sidebar": {
     "help": "Hilfe",
-    "login": "Login",
-    "signup": "Signup",
+    "login": "Anmelden",
+    "signup": "Registrieren",
     "logout": "Logout",
     "myFiles": "Meine Dateien",
     "newFile": "Neue Datei",
@@ -202,7 +202,7 @@
     "types": "Typen",
     "video": "Video",
     "search": "Suche...",
-    "typeToSearch": "Type to search...",
+    "typeToSearch": "Tippe um zu suchen...",
     "pressToSearch": "Press enter to search..."
   },
   "languages": {
@@ -229,7 +229,7 @@
     "days": "Tage"
   },
   "download": {
-    "downloadFile": "Download File",
-    "downloadFolder": "Download Folder"
+    "downloadFile": "Download Datei",
+    "downloadFolder": "Download Ordner"
   }
 }

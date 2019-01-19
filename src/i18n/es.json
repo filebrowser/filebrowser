@@ -1,7 +1,7 @@
 {
   "permanent": "Permanente",
   "buttons": {
-    "shell": "Toggle shell",
+    "shell": "Presiona Enter para buscar...",
     "cancel": "Cancelar",
     "close": "Cerrar",
     "copy": "Copiar",
@@ -79,9 +79,9 @@
     "passwordConfirm": "Confirmación de contraseña",
     "submit": "Iniciar sesión",
     "createAnAccount": "Crear una cuenta",
-    "loginInstead": "Already have an account",
+    "loginInstead": "Usuario ya existente",
     "passwordsDontMatch": "Las contraseñas no coinciden",
-    "usernameTaken": "Username already taken",
+    "usernameTaken": "Nombre usuario no disponible",
     "signup": "Signup",
     "username": "Usuario",
     "wrongCredentials": "Usuario y/o contraseña incorrectos"
@@ -119,7 +119,7 @@
     "newArchetype": "Crea un nuevo post basado en un arquetipo. Tu archivo será creado en la carpeta de contenido."
   },
   "settings": {
-    "instanceName": "Instance name",
+    "instanceName": "Nombre de la instancia",
     "brandingDirectoryPath": "Branding directory path",
     "documentation": "documentación",
     "branding": "Branding",
@@ -165,20 +165,20 @@
     "users": "Usuarios",
     "globalRules": "This is a global set of allow and disallow rules. They apply to every user. You can define specific rules on each user's settings to override this ones.",
     "allowSignup": "Permitir registro de usuarios",
-    "insertRegex": "Insert regex expression",
+    "insertRegex": "Introducir expresión regular",
     "insertPath": "Introduce la ruta",
     "userUpdated": "¡Usuario actualizado!",
     "userDefaults": "Configuración de usuario por defecto",
     "defaultUserDescription": "This are the default settings for new users.",
-    "executeOnShell": "Execute on shell",
+    "executeOnShell": "Ejecutar en la shell",
     "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you want to run them on a shell instead (such as Bash or PowerShell), you can define it here with the  required arguments and flags. If set, the command you execute will be appended as an argument. This apply to both user commands and event hooks.",
     "perm": {
       "create": "Crear ficheros y directorios",
       "delete": "Eliminar ficheros y directorios",
       "download": "Descargar",
-      "modify": "Edit files",
+      "modify": "Editar ficheros",
       "execute": "Executar comandos",
-      "rename": "Rename or move files and directories",
+      "rename": "Renombrar o mover ficheros y directorios",
       "share": "Compartir ficheros"
     }
   },
@@ -229,7 +229,7 @@
     "days": "Días"
   },
   "download": {
-    "downloadFile": "Download File",
-    "downloadFolder": "Download Folder"
+    "downloadFile": "Descargar fichero",
+    "downloadFolder": "Descargar directorio"
   }
 }

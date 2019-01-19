@@ -1,7 +1,7 @@
 {
   "permanent": "永久",
   "buttons": {
-    "shell": "Toggle shell",
+    "shell": "切換 shell",
     "cancel": "取消",
     "close": "關閉",
     "copy": "複製",
@@ -38,14 +38,14 @@
     "linkCopied": "連結已複製！"
   },
   "errors": {
-    "forbidden": "You don't have permissions to access this.",
+    "forbidden": "您無權訪問。",
     "internal": "伺服器出了點問題。",
     "notFound": "找不到檔案。"
   },
   "files": {
     "folders": "資料夾",
     "files": "檔案",
-    "body": "Body",
+    "body": "内容",
     "clear": "清空",
     "closePreview": "關閉預覽",
     "home": "主頁",
@@ -76,12 +76,12 @@
   },
   "login": {
     "password": "密碼",
-    "passwordConfirm": "Password Confirmation",
+    "passwordConfirm": "確認密碼",
     "submit": "登入",
-    "createAnAccount": "Create an account",
-    "loginInstead": "Already have an account",
-    "passwordsDontMatch": "Passwords don't match",
-    "usernameTaken": "Username already taken",
+    "createAnAccount": "新建賬戶",
+    "loginInstead": "已有賬戶登錄",
+    "passwordsDontMatch": "密碼不匹配",
+    "usernameTaken": "用戶名已存在",
     "signup": "註冊",
     "username": "帳號",
     "wrongCredentials": "帳號或密碼錯誤"
