@@ -14,7 +14,7 @@
     "js-base64": "^2.5.1",
     "lodash.clonedeep": "^4.5.0",
     "material-design-icons": "^3.0.1",
-    "moment": "^2.23.0",
+    "moment": "^2.24.0",
     "normalize.css": "^8.0.1",
     "noty": "^3.2.0-beta",
     "vue": "^2.5.22",
