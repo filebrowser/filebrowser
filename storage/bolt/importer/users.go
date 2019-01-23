@@ -30,7 +30,7 @@ type oldUser struct {
 
 func readOldUsers(db *storm.DB) ([]*oldUser, error) {
 	users := []*oldUser{}
-	err := db.Bolt.View(func(tx *bolt.Tx) error {
+	err := db.Bolt.View(func(tx *bbolt.Tx) error {
 		return tx.Bucket([]byte("User")).ForEach(func(k []byte, v []byte) error {
 			if len(v) > 0 && string(v)[0] == '{' {
 				user := &oldUser{}
