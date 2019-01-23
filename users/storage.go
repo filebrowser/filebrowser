@@ -89,11 +89,11 @@ func (s *Storage) Save(user *User) error {
 // id must be a string for username lookup or a uint for id lookup. If id
 // is neither, a ErrInvalidDataType will be returned.
 func (s *Storage) Delete(id interface{}) (err error) {
-	switch id.(type) {
+	switch id := id.(type) {
 	case string:
-		err = s.back.DeleteByUsername(id.(string))
+		err = s.back.DeleteByUsername(id)
 	case uint:
-		err = s.back.DeleteByID(id.(uint))
+		err = s.back.DeleteByID(id)
 	default:
 		err = errors.ErrInvalidDataType
 	}
