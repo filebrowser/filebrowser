@@ -1,4 +1,4 @@
 module.exports = {
   runtimeCompiler: true,
-  baseUrl: '[{[ .StaticURL ]}]'
+  publicPath: '[{[ .StaticURL ]}]'
 }
