@@ -70,6 +70,10 @@ list or set it to 0.`,
 						checkErr(usernameConflictError(user.Username, conflictuous.ID, user.ID))
 					}
 				}
+			} else {
+				// If it doesn't exist, set the ID to 0 to automatically get a new
+				// one that make sense in this DB.
+				user.ID = 0
 			}
 
 			err = d.store.Users.Save(user)
