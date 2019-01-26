@@ -55,7 +55,6 @@ func convertUsersToNew(old []*oldUser) ([]*users.User, error) {
 
 	for _, oldUser := range old {
 		user := &users.User{
-			ID:           uint(oldUser.ID),
 			Username:     oldUser.Username,
 			Password:     oldUser.Password,
 			Scope:        oldUser.Scope,
