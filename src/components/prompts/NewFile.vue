@@ -53,7 +53,7 @@ export default {
         uri = url.removeLastDir(uri) + '/'
       }
 
-      uri += this.name
+      uri += encodeURIComponent(this.name)
       uri = uri.replace('//', '/')
 
       try {

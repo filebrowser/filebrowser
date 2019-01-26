@@ -68,7 +68,7 @@ export default {
         oldLink = this.req.items[this.selected[0]].url
       }
 
-      newLink = url.removeLastDir(oldLink) + '/' + this.name
+      newLink = url.removeLastDir(oldLink) + '/' + encodeURIComponent(this.name)
 
       try {
         await api.move([{ from: oldLink, to: newLink }])

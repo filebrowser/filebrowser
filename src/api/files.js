@@ -9,7 +9,7 @@ export async function fetch (url) {
 
   if (res.status === 200) {
     let data = await res.json()
-    data.url = `/files${data.path}`
+    data.url = `/files${url}`
 
     if (data.isDir) {
       if (!data.url.endsWith('/')) data.url += '/'
