@@ -5,7 +5,6 @@ install: skip
 addons:
   apt:
     packages:
-    - docker-ce
     - pass
 env:
   global:
