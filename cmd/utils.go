@@ -62,24 +62,20 @@ type pythonData struct {
 
 func dbExists(path string) (bool, error) {
 	stat, err := os.Stat(path)
+	if err == nil {
+		return stat.Size() != 0, nil
+	}
 
 	if os.IsNotExist(err) {
 		d := filepath.Dir(path)
 		_, err = os.Stat(d)
-		if !os.IsNotExist(err) {
-			return false, err
+		if os.IsNotExist(err) {
+			os.MkdirAll(d, 0700)
+			return false, nil
 		}
-		os.MkdirAll(d, 0700)
-		return false, nil
-	} else if err != nil {
-		return false, err
 	}
 
-	if stat.Size() == 0 {
-		return false, nil
-	}
-
-	return true, nil
+	return false, err
 }
 
 func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
