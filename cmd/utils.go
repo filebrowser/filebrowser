@@ -64,6 +64,12 @@ func dbExists(path string) (bool, error) {
 	stat, err := os.Stat(path)
 
 	if os.IsNotExist(err) {
+		d := filepath.Dir(path)
+		_, err = os.Stat(d)
+		if !os.IsNotExist(err) {
+			return false, err
+		}
+		os.MkdirAll(d, 0700)
 		return false, nil
 	} else if err != nil {
 		return false, err
