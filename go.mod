@@ -26,7 +26,7 @@ require (
 	github.com/mitchellh/go-homedir v1.0.0
 	github.com/nwaples/rardecode v1.0.0 // indirect
 	github.com/pelletier/go-toml v1.2.0
-	github.com/pierrec/lz4 v2.0.5+incompatible // indirect
+	github.com/pierrec/lz4 v0.0.0-20190131084431-473cd7ce01a1 // indirect
 	github.com/spf13/afero v1.1.2
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.3
@@ -38,6 +38,7 @@ require (
 	golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9
 	golang.org/x/net v0.0.0-20180906233101-161cd47e91fd // indirect
 	golang.org/x/sync v0.0.0-20181108010431-42b317875d0f // indirect
+	golang.org/x/sys v0.0.0-20190201152629-afcc84fd7533 // indirect
 	google.golang.org/appengine v1.3.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
