@@ -2,6 +2,7 @@ package files
 
 import (
 	"sort"
+	"strings"
 
 	"github.com/maruel/natural"
 )
@@ -68,7 +69,7 @@ func (l byName) Less(i, j int) bool {
 		return false
 	}
 
-	return natural.Less(l.Items[i].Name, l.Items[j].Name)
+	return natural.Less(strings.ToLower(l.Items[j].Name), strings.ToLower(l.Items[i].Name))
 }
 
 // By Size
