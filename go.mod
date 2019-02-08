@@ -21,12 +21,12 @@ require (
 	github.com/kardianos/osext v0.0.0-20170510131534-ae77be60afb1 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/maruel/natural v0.0.0-20180416170133-dbcb3e2e8cf1
-	github.com/mholt/archiver v3.1.0+incompatible
+	github.com/mholt/archiver v3.1.1+incompatible
 	github.com/mholt/caddy v0.11.1
 	github.com/mitchellh/go-homedir v1.0.0
 	github.com/nwaples/rardecode v1.0.0 // indirect
 	github.com/pelletier/go-toml v1.2.0
-	github.com/pierrec/lz4 v2.0.5+incompatible // indirect
+	github.com/pierrec/lz4 v0.0.0-20190131084431-473cd7ce01a1 // indirect
 	github.com/spf13/afero v1.1.2
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.3
