@@ -15,7 +15,6 @@ import (
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/users"
-	"github.com/filebrowser/filebrowser/v2/version"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -55,9 +54,8 @@ func addServerFlags(flags *pflag.FlagSet) {
 }
 
 var rootCmd = &cobra.Command{
-	Use:     "filebrowser",
-	Version: version.Version,
-	Short:   "A stylish web-based file browser",
+	Use:   "filebrowser",
+	Short: "A stylish web-based file browser",
 	Long: `File Browser CLI lets you create the database to use with File Browser,
 manage your users and all the configurations without acessing the
 web interface.
