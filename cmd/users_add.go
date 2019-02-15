@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
 	"github.com/spf13/cobra"
 )
@@ -30,6 +31,19 @@ var usersAddCmd = &cobra.Command{
 		}
 
 		s.Defaults.Apply(user)
+
+		servSettings, err := d.store.Settings.GetServer()
+		checkErr(err)
+		//since getUserDefaults() polluted s.Defaults.Scope
+		//which makes the Scope not the one saved in the db
+		//we need the right s.Defaults.Scope here
+		s2, err := d.store.Settings.Get()
+		checkErr(err)
+
+		userHome, err := settings.CreateUserDir(user.Username, user.Scope, servSettings.Root, s2)
+		checkErr(err)
+		user.Scope = userHome
+
 		err = d.store.Users.Save(user)
 		checkErr(err)
 		printUsers([]*users.User{user})
