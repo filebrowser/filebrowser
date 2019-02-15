@@ -8,6 +8,7 @@ const signup = window.FileBrowser.Signup
 const version = window.FileBrowser.Version
 const logoURL = `/${staticURL}/img/logo.svg`
 const noAuth = window.FileBrowser.NoAuth
+const loginPage = window.FileBrowser.LoginPage
 
 export {
   name,
@@ -18,5 +19,6 @@ export {
   recaptchaKey,
   signup,
   version,
-  noAuth
+  noAuth,
+  loginPage
 }
