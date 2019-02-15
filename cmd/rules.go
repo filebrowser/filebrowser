@@ -19,7 +19,6 @@ func init() {
 
 var rulesCmd = &cobra.Command{
 	Use:     "rules",
-	Version: rootCmd.Version,
 	Short:   "Rules management utility",
 	Long: `On each subcommand you'll have available at least two flags:
 "username" and "id". You must either set only one of them

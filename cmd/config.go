@@ -20,11 +20,10 @@ func init() {
 }
 
 var configCmd = &cobra.Command{
-	Use:     "config",
-	Version: rootCmd.Version,
-	Short:   "Configuration management utility",
-	Long:    `Configuration management utility.`,
-	Args:    cobra.NoArgs,
+	Use:   "config",
+	Short: "Configuration management utility",
+	Long:  `Configuration management utility.`,
+	Args:  cobra.NoArgs,
 }
 
 func addConfigFlags(flags *pflag.FlagSet) {

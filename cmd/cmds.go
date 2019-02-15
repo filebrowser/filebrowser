@@ -11,11 +11,10 @@ func init() {
 }
 
 var cmdsCmd = &cobra.Command{
-	Use:     "cmds",
-	Version: rootCmd.Version,
-	Short:   "Command runner management utility",
-	Long:    `Command runner management utility.`,
-	Args:    cobra.NoArgs,
+	Use:   "cmds",
+	Short: "Command runner management utility",
+	Long:  `Command runner management utility.`,
+	Args:  cobra.NoArgs,
 }
 
 func printEvents(m map[string][]string) {
