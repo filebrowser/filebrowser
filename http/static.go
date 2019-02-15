@@ -21,6 +21,11 @@ func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, box *
 
 	staticURL := strings.TrimPrefix(d.server.BaseURL+"/static", "/")
 
+	auther, err := d.store.Auth.Get(d.settings.AuthMethod)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
 	data := map[string]interface{}{
 		"Name":            d.settings.Branding.Name,
 		"DisableExternal": d.settings.Branding.DisableExternal,
@@ -29,6 +34,7 @@ func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, box *
 		"StaticURL":       staticURL,
 		"Signup":          d.settings.Signup,
 		"NoAuth":          d.settings.AuthMethod == auth.MethodNoAuth,
+		"LoginPage":       auther.LoginPage(),
 		"CSS":             false,
 		"ReCaptcha":       false,
 	}
