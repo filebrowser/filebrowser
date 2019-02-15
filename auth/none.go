@@ -17,3 +17,8 @@ type NoAuth struct{}
 func (a NoAuth) Auth(r *http.Request, sto *users.Storage, root string) (*users.User, error) {
 	return sto.Get(root, uint(1))
 }
+
+// LoginPage tells that no auth doesn't require a login page.
+func (a NoAuth) LoginPage() bool {
+	return false
+}
