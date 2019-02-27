@@ -82,7 +82,6 @@ var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) 
 func addFile(ar archiver.Writer, d *data, path string) error {
 	// Checks are always done with paths with "/" as path separator.
 	path = strings.Replace(path, "\\", "/", -1)
-	fmt.Println(path)
 	if !d.Check(path) {
 		return nil
 	}
