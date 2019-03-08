@@ -18,7 +18,7 @@
     "normalize.css": "^8.0.1",
     "noty": "^3.2.0-beta",
     "vue": "^2.6.8",
-    "vue-i18n": "^8.8.2",
+    "vue-i18n": "^8.9.0",
     "vue-router": "^3.0.2",
     "vuex": "^3.1.0",
     "vuex-router-sync": "^5.0.0"
