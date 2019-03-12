@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.5.1",
-    "@vue/cli-plugin-eslint": "^3.5.0",
+    "@vue/cli-plugin-eslint": "^3.5.1",
     "@vue/cli-service": "^3.5.1",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.15.1",
