@@ -14,6 +14,7 @@
             <path d="M0 0h24v24H0z" fill="none"/>
           </svg>
           <h1 class="share__box__title">{{ file.name }}</h1>
+          <qrcode-vue :value="fullLink" size="200" level="M"></qrcode-vue>
         </div>
       </div>
     </a>
@@ -23,9 +24,13 @@
 <script>
 import { share as api } from '@/api'
 import { baseURL } from '@/utils/constants'
+import QrcodeVue from 'qrcode.vue'
 
 export default {
   name: 'share',
+  components: {
+    QrcodeVue
+  },
   data: () => ({
     loaded: false,
     notFound: false,
@@ -43,6 +48,9 @@ export default {
     },
     link: function () {
       return `${baseURL}/api/public/dl/${this.hash}`
+    },
+    fullLink: function () {
+      return window.location.origin + this.link
     },
   },
   methods: {
