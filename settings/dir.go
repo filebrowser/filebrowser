@@ -30,9 +30,9 @@ func (settings *Settings) MakeUserDir(username, userScope, serverRoot string) (s
 
 	fs := afero.NewBasePathFs(afero.NewOsFs(), serverRoot)
 
-	//use the default auto create logic only if specific scope is not the default scope
+	// Use the default auto create logic only if specific scope is not the default scope
 	if userScope != settings.Defaults.Scope {
-		//try create the dir, for example: settings.Defaults.Scope == "." and userScope == "./foo"
+		// Try create the dir, for example: settings.Defaults.Scope == "." and userScope == "./foo"
 		if userScope != "." {
 			err = fs.MkdirAll(userScope, os.ModePerm)
 			if err != nil {
@@ -42,14 +42,14 @@ func (settings *Settings) MakeUserDir(username, userScope, serverRoot string) (s
 		return userScope, err
 	}
 
-	//clean username first
+	// Clean username first
 	username = cleanUsername(username)
 	if username == "" || username == "-" || username == "." {
 		log.Printf("create user: invalid user for home dir creation: [%s]", username)
 		return "", errors.New("invalid user for home dir creation")
 	}
 
-	//create default user dir
+	// Create default user dir
 	userHomeBase := settings.Defaults.Scope + string(os.PathSeparator) + "users"
 	userHome := userHomeBase + string(os.PathSeparator) + username
 	err = fs.MkdirAll(userHome, os.ModePerm)
@@ -62,10 +62,8 @@ func (settings *Settings) MakeUserDir(username, userScope, serverRoot string) (s
 }
 
 func cleanUsername(s string) string {
-
 	// Remove any trailing space to avoid ending on -
 	s = strings.Trim(s, " ")
-
 	s = strings.Replace(s, "..", "", -1)
 
 	// Replace all characters which not in the list `0-9A-Za-z@_\-.` with a dash
@@ -73,6 +71,5 @@ func cleanUsername(s string) string {
 
 	// Remove any multiple dashes caused by replacements above
 	s = dashes.ReplaceAllString(s, "-")
-
 	return s
 }
