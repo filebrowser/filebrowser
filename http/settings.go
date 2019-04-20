@@ -9,24 +9,24 @@ import (
 )
 
 type settingsData struct {
-	Signup   bool                  `json:"signup"`
-	CreateUserDir   bool           `json:"createUserDir"`
-	Defaults settings.UserDefaults `json:"defaults"`
-	Rules    []rules.Rule          `json:"rules"`
-	Branding settings.Branding     `json:"branding"`
-	Shell    []string              `json:"shell"`
-	Commands map[string][]string   `json:"commands"`
+	Signup        bool                  `json:"signup"`
+	CreateUserDir bool                  `json:"createUserDir"`
+	Defaults      settings.UserDefaults `json:"defaults"`
+	Rules         []rules.Rule          `json:"rules"`
+	Branding      settings.Branding     `json:"branding"`
+	Shell         []string              `json:"shell"`
+	Commands      map[string][]string   `json:"commands"`
 }
 
 var settingsGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	data := &settingsData{
-		Signup:   d.settings.Signup,
+		Signup:        d.settings.Signup,
 		CreateUserDir: d.settings.CreateUserDir,
-		Defaults: d.settings.Defaults,
-		Rules:    d.settings.Rules,
-		Branding: d.settings.Branding,
-		Shell:    d.settings.Shell,
-		Commands: d.settings.Commands,
+		Defaults:      d.settings.Defaults,
+		Rules:         d.settings.Rules,
+		Branding:      d.settings.Branding,
+		Shell:         d.settings.Shell,
+		Commands:      d.settings.Commands,
 	}
 
 	return renderJSON(w, r, data)

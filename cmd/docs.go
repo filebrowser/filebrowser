@@ -111,7 +111,7 @@ func generateMarkdown(cmd *cobra.Command, w io.Writer) {
 	checkErr(err)
 }
 
-func generateFlagsTable(fs *pflag.FlagSet, buf *bytes.Buffer) {
+func generateFlagsTable(fs *pflag.FlagSet, buf io.StringWriter) {
 	buf.WriteString("| Name | Shorthand | Usage |\n")
 	buf.WriteString("|------|-----------|-------|\n")
 
