@@ -213,8 +213,8 @@ func setupLog(logMethod string) {
 
 func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	set := &settings.Settings{
-		Key:    generateKey(),
-		Signup: false,
+		Key:           generateKey(),
+		Signup:        false,
 		CreateUserDir: false,
 		Defaults: settings.UserDefaults{
 			Scope:  ".",

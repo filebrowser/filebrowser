@@ -2,7 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/filebrowser/filebrowser/v2/settings"
 	"log"
 	"net/http"
 	"sort"
@@ -121,7 +120,7 @@ var userPostHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *
 		return http.StatusInternalServerError, err
 	}
 
-	userHome,err := settings.CreateUserDir(req.Data.Username, req.Data.Scope, d.server.Root, d.settings)
+	userHome, err := d.settings.MakeUserDir(req.Data.Username, req.Data.Scope, d.server.Root)
 	if err != nil {
 		log.Printf("create user: failed to mkdir user home dir: [%s]", userHome)
 		return http.StatusInternalServerError, err

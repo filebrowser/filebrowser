@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
 	"github.com/spf13/cobra"
 )
@@ -40,7 +39,7 @@ var usersAddCmd = &cobra.Command{
 		s2, err := d.store.Settings.Get()
 		checkErr(err)
 
-		userHome, err := settings.CreateUserDir(user.Username, user.Scope, servSettings.Root, s2)
+		userHome, err := s2.MakeUserDir(user.Username, user.Scope, servSettings.Root)
 		checkErr(err)
 		user.Scope = userHome
 

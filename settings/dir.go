@@ -2,11 +2,12 @@ package settings
 
 import (
 	"errors"
-	"github.com/spf13/afero"
 	"log"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/spf13/afero"
 )
 
 var (
@@ -15,10 +16,11 @@ var (
 	dashes = regexp.MustCompile(`[\-]+`)
 )
 
-func CreateUserDir(username, userScope, serverRoot string, settings *Settings) (string, error) {
+// MakeUserDir makes the user directory according to settings.
+func (settings *Settings) MakeUserDir(username, userScope, serverRoot string) (string, error) {
 	var err error
 	userScope = strings.TrimSpace(userScope)
-	if userScope == "" || userScope == "./"  {
+	if userScope == "" || userScope == "./" {
 		userScope = "."
 	}
 
@@ -56,9 +58,8 @@ func CreateUserDir(username, userScope, serverRoot string, settings *Settings) (
 	} else {
 		log.Printf("create user: mkdir user home dir: [%s] successfully.", userHome)
 	}
-	return userHome,err
+	return userHome, err
 }
-
 
 func cleanUsername(s string) string {
 
