@@ -8,6 +8,8 @@
       <div class="card-content">
         <p><input type="checkbox" v-model="settings.signup"> {{ $t('settings.allowSignup') }}</p>
 
+        <p><input type="checkbox" v-model="settings.createUserDir"> {{ $t('settings.createUserDir') }}</p>
+
         <h3>{{ $t('settings.rules') }}</h3>
         <p class="small">{{ $t('settings.globalRules') }}</p>
         <rules :rules.sync="settings.rules" />
