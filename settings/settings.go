@@ -14,6 +14,7 @@ type AuthMethod string
 type Settings struct {
 	Key        []byte              `json:"key"`
 	Signup     bool                `json:"signup"`
+	CreateUserDir   bool           `json:"createUserDir"`
 	Defaults   UserDefaults        `json:"defaults"`
 	AuthMethod AuthMethod          `json:"authMethod"`
 	Branding   Branding            `json:"branding"`
