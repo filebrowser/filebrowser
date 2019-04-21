@@ -16,16 +16,16 @@ filebrowser provides a file managing interface within a specified directory and 
 
 ## Features
 
-Please refer to our docs at [filebrowser.xyz/features](https://filebrowser.xyz/features)
+Please refer to our docs at [docs.filebrowser.xyz/features](https://docs.filebrowser.xyz/features)
 
 ## Install
 
-Please refer to our docs at [filebrowser.xyz](https://filebrowser.xyz/).
+Please refer to our docs at [docs.filebrowser.xyz](https://docs.filebrowser.xyz/).
 
 ## Usage
 
-Please refer to our docs at [filebrowser.xyz/usage](https://filebrowser.xyz/usage).
+Please refer to our docs at [docs.filebrowser.xyz/usage](https://docs.filebrowser.xyz/usage).
 
 ## Contributing
 
-Please refer to our docs at [filebrowser.xyz/contributing](https://filebrowser.xyz/contributing).
+Please refer to our docs at [docs.filebrowser.xyz/contributing](https://docs.filebrowser.xyz/contributing).
