@@ -9,7 +9,7 @@
     "lint": "vue-cli-service lint --fix"
   },
   "dependencies": {
-    "ace-builds": "^1.4.3",
+    "ace-builds": "^1.4.4",
     "clipboard": "^2.0.4",
     "js-base64": "^2.5.1",
     "lodash.clonedeep": "^4.5.0",
