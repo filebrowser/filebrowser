@@ -16,9 +16,12 @@ jobs:
           command: |
             git submodule init
             git submodule update --remote
-      - run: cd frontend
-      - run: npm install
-      - run: npm run build
+      - run:
+          name: "Build"
+          command: |
+            cd frontend
+            npm install
+            npm run build
   build-go:
     docker:
       - image: circleci/golang
