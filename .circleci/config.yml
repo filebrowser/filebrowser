@@ -6,16 +6,30 @@ jobs:
     steps:
       - checkout
       - run: golangci-lint run -v
-  build-frontend:
+  build-node:
     docker:
       - image: circleci/node
     steps:
+      - checkout
+      - run:
+          name: "Pull Submodules"
+          command: |
+            git submodule init
+            git submodule update --remote
       - run: cd frontend
       - run: npm install
       - run: npm run build
+  build-node:
+    docker:
+      - image: circleci/golang
+    steps:
+      - run: go build
 workflows:
   version: 2
   build-workflow:
     jobs:
       - lint
-      - build-frontend
+      - build-node
+      - build-go:
+          requires:
+            - build-node
