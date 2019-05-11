@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  lint:
     docker:
       - image: golangci/golangci-lint:v1.16
     steps:
