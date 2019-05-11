@@ -42,6 +42,7 @@ jobs:
     steps:
       - attach_workspace:
           at: '~/project'
+      - setup_remote_docker
       - run: docker build -t filebrowser/filebrowser .
       - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
       - run: docker push filebrowser/filebrowser
