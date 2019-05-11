@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-set -eo pipefail
+set -e
 
 untracked="(untracked)"
 REPO=$(cd $(dirname $0); pwd)
