@@ -74,13 +74,6 @@ workflows:
           requires:
             - build-node
             - lint
-      - docker-latest:
-          context: deploy
-          requires:
-            - build-go
-          filters:
-            branches:
-              only: master
       - release:
           context: deploy
           requires:
@@ -89,4 +82,13 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
+              only: /^v[0-9]+(\.[0-9]+)*$/
+      - docker-latest:
+          context: deploy
+          requires:
+            - build-go
+          filters:
+            branches:
+              only: master
+            tags:
+              ignore: /^v[0-9]+(\.[0-9]+)*$/
