@@ -22,10 +22,12 @@ jobs:
             cd frontend
             npm install
             npm run build
+      - persist_to_workspace
   build-go:
     docker:
       - image: circleci/golang
     steps:
+      - attach_workspace
       - run: go build
 workflows:
   version: 2
