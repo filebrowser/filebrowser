@@ -72,6 +72,9 @@ workflows:
           context: deploy
           requires:
             - build-go
+          filters:
+            branches:
+              only: master
       - release:
           context: deploy
           requires:
