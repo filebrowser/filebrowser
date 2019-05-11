@@ -224,7 +224,7 @@ release () {
     exit 1
   fi
 
-  semver=$(echo "$1" | ggrep -P '^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)')
+  semver=$(echo "$1" | grep -P '^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)')
 
   if [ $? -ne 0 ]; then
     echo "Not valid semver format. See semver.org"
@@ -236,7 +236,7 @@ release () {
   cd frontend
   git fetch --all
 
-  if [ $(git tag | ggrep "$semver" | wc -l) -eq 0 ]; then
+  if [ $(git tag | grep "$semver" | wc -l) -eq 0 ]; then
     echo "Tag $semver does not exist in submodule 'frontend'. Tag it and run this script again."
     exit 1
   fi
