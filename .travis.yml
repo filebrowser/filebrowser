@@ -11,6 +11,7 @@ addons:
 env:
   global:
   - USE_DOCKER="true"
+  - GO111MODULE=on
 stages:
   - lint
   - build
