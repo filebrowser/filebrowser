@@ -28,7 +28,7 @@ jobs:
             - '*'
   build-go:
     docker:
-      - image: circleci/golang
+      - image: circleci/golang:1.12
     steps:
       - attach_workspace:
           at: '~/project'
@@ -37,7 +37,9 @@ jobs:
           command: ./wizard.sh -c
       - run:
           name: "Cleanup"
-          command: rm -rf frontend/build
+          command: |
+            rm -rf frontend/build
+            git checkout -- go.sum # TODO: why is it being changed?
       - persist_to_workspace:
           root: .
           paths:
@@ -59,18 +61,30 @@ jobs:
             - '*'
   release:
     docker:
-      - image: circleci/golang:1.10
+      - image: circleci/golang:1.12
     steps:
       - attach_workspace:
           at: '~/project'
+      - setup_remote_docker
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
       - run: curl -sL https://git.io/goreleaser | bash
+      - run: docker logout
 workflows:
   version: 2
   build-workflow:
     jobs:
-      - lint
-      - build-node
+      - lint:
+          filters:
+            tags:
+              only: /.*/
+      - build-node:
+          filters:
+            tags:
+              only: /.*/
       - build-go:
+          filters:
+            tags:
+              only: /.*/
           requires:
             - build-node
             - lint
@@ -79,10 +93,10 @@ workflows:
           requires:
             - build-go
           filters:
+            tags:
+              only: /^v.*/
             branches:
               ignore: /.*/
-            tags:
-              only: /^v[0-9]+(\.[0-9]+)*$/
       - docker-latest:
           context: deploy
           requires:
@@ -91,4 +105,4 @@ workflows:
             branches:
               only: master
             tags:
-              ignore: /^v[0-9]+(\.[0-9]+)*$/
+              ignore: /.*/
