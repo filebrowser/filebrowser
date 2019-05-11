@@ -8,6 +8,7 @@ LINT="false"
 BUILD="false"
 PUSH_LATEST="false"
 RELEASE=""
+GO111MODULES="on"
 
 debugInfo () {
   echo "Repo:                     $REPO"
@@ -133,6 +134,14 @@ pushRicebox () {
   cd caddy
   cp ../http/rice-box.go ./
   sed -i 's/package http/package caddy/g' ./rice-box.go
+
+  docker run --rm -t \
+    -v $(pwd):/src \
+    -w /src \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    filebrowser/dev \
+    sh -c "go get -u"
+
   git checkout -b update-rice-box origin/master
   git config --local user.name "Filebrowser Bot"
   git config --local user.email "FilebrowserBot@users.noreply.github.com"
@@ -169,8 +178,8 @@ ciRelease () {
       goreleaser \
     "
 
-  dockerPushTag
   pushRicebox
+  dockerPushTag
 }
 
 build () {
