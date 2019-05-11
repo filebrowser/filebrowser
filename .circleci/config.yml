@@ -1,0 +1,13 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: golangci/golangci-lint:v1.16
+    steps:
+      - checkout
+      - run: golangci-lint run -v
+workflows:
+  version: 2
+  build-workflow:
+    jobs:
+      - lint
