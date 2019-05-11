@@ -20,7 +20,7 @@ updateVersion () {
   from=$1
   to=$2
 
-  echo "Updating version from \"$from\" to \"$to\""
+  echo "🎁 Updating version from \"$from\" to \"$to\""
   sed -i.bak "s|$from|$to|g" $REPO/version/version.go
 }
 
@@ -52,56 +52,47 @@ buildBinary () {
 release () {
   cd $REPO
 
-  echo "> Checking semver format"
+  echo "👀 Checking semver format"
 
   if [ $# -ne 1 ]; then
-    echo "This release script requires a single argument corresponding to the semver to be released. See semver.org"
+    echo "❌ This release script requires a single argument corresponding to the semver to be released. See semver.org"
     exit 1
   fi
 
-  semver=$(echo "$1" | grep -P '^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)')
+  GREP="grep"
+  if [ -x "$(command -v ggrep)" ]; then
+    GREP="ggrep"
+  fi
+
+  semver=$(echo "$1" | $GREP -P '^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)')
 
   if [ $? -ne 0 ]; then
-    echo "Not valid semver format. See semver.org"
+    echo "❌ Not valid semver format. See semver.org"
     exit 1
   fi
 
-  echo "> Checking matching $semver in frontend submodule"
+  echo "🐑 Fetching 'master' on 'frontend' and creating new tag"
 
   cd frontend
   git fetch --all
-
-  if [ $(git tag | grep "$semver" | wc -l) -eq 0 ]; then
-    echo "Tag $semver does not exist in submodule 'frontend'. Tag it and run this script again."
-    exit 1
-  fi
-
-  set +e
-  git rev-parse --verify --quiet release
-  exitcode=$?
-  set -e
-  if [ $exitcode -ne 0 ]; then
-    git checkout -b release "$semver"
-  else
-    git checkout release
-    git reset --hard "$semver"
-  fi
+  git checkout master
+  git tag $semver
+  git push --tags
 
   cd ..
 
-  echo "> Updating submodule ref to $semver"
+  echo "🐑 Updating submodule ref to $semver"
   updateVersion $untracked $1
   git commit -am "chore: version $semver"
   git tag "$1"
-  git push
   git push --tags
 
-  echo "> Commiting untracked version notice..."
+  echo "🐑 Commiting untracked version notice..."
   updateVersion $1 $untracked
   git commit -am "chore: setting untracked version [ci skip]"
   git push
 
-  echo "> Done!"
+  echo "📦 Done! $semver released."
 }
 
 usage() {
