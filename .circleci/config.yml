@@ -6,8 +6,16 @@ jobs:
     steps:
       - checkout
       - run: golangci-lint run -v
+  build-frontend:
+    docker:
+      - image: circleci/node
+    steps:
+      - run: cd frontend
+      - run: npm install
+      - run: npm run build
 workflows:
   version: 2
   build-workflow:
     jobs:
       - lint
+      - build-frontend
