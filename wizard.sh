@@ -4,14 +4,12 @@ set -e
 
 untracked="(untracked)"
 REPO=$(cd $(dirname $0); pwd)
-LINT="false"
 BUILD="false"
 PUSH_LATEST="false"
 RELEASE=""
 
 debugInfo () {
   echo "Repo:                     $REPO"
-  echo "Will lint:                $LINT"
   echo "Will build:               $BUILD"
   echo "Will release:             $RELEASE"
   echo "Will push latest docker:  $PUSH_LATEST"
@@ -107,18 +105,6 @@ buildBinary () {
   echo "Build CLI"
   CGO_ENABLED=0 go build -a -o filebrowser
   updateVersion "($COMMIT_SHA)" $untracked
-}
-
-lint () {
-  cd $REPO
-
-  if [ "$USE_DOCKER" != "" ]; then
-    $(command -v winpty) docker run --rm -itv "/$(pwd)://src" -w "//src" filebrowser/dev sh -c "\
-      go get -v ./... && \
-      golangci-lint run -v"
-  else
-    golangci-lint run -v
-  fi
 }
 
 ciRelease () {
@@ -235,11 +221,8 @@ usage() {
 
 DEBUG="false"
 
-while getopts "pdlbr:" o; do
+while getopts "pdbr:" o; do
   case "${o}" in
-    l)
-      LINT="true"
-      ;;
     b)
       BUILD="true"
       ;;
@@ -261,10 +244,6 @@ shift $((OPTIND-1))
 
 if [ "$DEBUG" = "true" ]; then
   debugInfo
-fi
-
-if [ "$LINT" = "true" ]; then
-  lint
 fi
 
 if [ "$BUILD" = "true" ]; then
