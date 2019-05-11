@@ -77,7 +77,7 @@ release () {
   git fetch --all
   git checkout master
   git tag $semver
-  git push --tags
+  git push origin $semver
 
   cd ..
 
@@ -86,7 +86,7 @@ release () {
   git commit -am "chore: version $semver"
   git tag "$1"
   git push
-  git push --tags
+  git push origin $semver
 
   echo "🐑 Commiting untracked version notice..."
   updateVersion $1 $untracked
