@@ -8,7 +8,6 @@ LINT="false"
 BUILD="false"
 PUSH_LATEST="false"
 RELEASE=""
-GO111MODULES="on"
 
 debugInfo () {
   echo "Repo:                     $REPO"
