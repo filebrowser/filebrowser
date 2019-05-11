@@ -1,93 +1,18 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
-set -e
+set -eo pipefail
 
 untracked="(untracked)"
 REPO=$(cd $(dirname $0); pwd)
-BUILD="false"
-PUSH_LATEST="false"
+ASSETS="false"
+BINARY="false"
 RELEASE=""
 
 debugInfo () {
-  echo "Repo:                     $REPO"
-  echo "Will build:               $BUILD"
-  echo "Will release:             $RELEASE"
-  echo "Will push latest docker:  $PUSH_LATEST"
-  echo "Use Docker:               $USE_DOCKER"
-  echo "Is CI:                    $CI"
-}
-
-dockerLogin () {
-  if [ "$CI" = "true" ]; then
-    gpg --batch --gen-key <<-EOF
-%echo Generating a standard key
-Key-Type: DSA
-Key-Length: 1024
-Subkey-Type: ELG-E
-Subkey-Length: 1024
-Name-Real: Meshuggah Rocks
-Name-Email: meshuggah@example.com
-Expire-Date: 0
-# Do a commit here, so that we can later print "done" :-)
-%commit
-%echo done
-EOF
-
-    key=$(gpg --no-auto-check-trustdb --list-secret-keys | grep ^sec | cut -d/ -f2 | cut -d" " -f1)
-    pass init $key
-
-    if [ "$(command -v docker-credential-pass)" = "" ]; then
-      docker run --rm -itv /usr/local/bin:/src filebrowser/dev sh -c "cp /go/bin/docker-credential-pass /src"
-    fi
-
-    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-  fi
-}
-
-dockerLogout () {
-  if [ "$CI" = "true" ]; then
-    docker logout
-  fi
-}
-
-dockerPushLatest () {
-  docker build -t filebrowser/filebrowser .
-  dockerLogin
-  docker push filebrowser/filebrowser
-  dockerLogout
-}
-
-dockerPushTag () {
-  dockerLogin
-
-  for tag in `echo $(docker images filebrowser/filebrowser* | awk -F ' ' '{print $1 ":" $2}') | cut -d ' ' -f2-`; do
-    if [ "$tag" = "REPOSITORY:TAG" ]; then break; fi
-    docker push $tag
-  done
-
-  dockerLogout
-}
-
-installRice () {
-  if ! [ -x "$(command -v rice)" ]; then
-    go get github.com/GeertJohan/go.rice/rice
-  fi
-}
-
-buildAssets () {
-  installRice
-  cd $REPO/frontend
-
-  if [ -d "dist" ]; then
-    rm -rf dist/*
-  fi;
-
-  yarn install
-  yarn build
-
-  echo "Run rice"
-  cd $REPO/http
-  rice embed-go
+  echo "Repo:           $REPO"
+  echo "Build assets:   $ASSETS"
+  echo "Build binary:   $BINARY"
+  echo "Release:        $RELEASE"
 }
 
 updateVersion () {
@@ -98,65 +23,29 @@ updateVersion () {
   sed -i.bak "s|$from|$to|g" $REPO/version/version.go
 }
 
+buildAssets () {
+  cd $REPO
+  rm -rf frontend/dist
+  rm -f http/rice-box.go
+
+  cd $REPO/frontend
+  npm install
+  npm run build
+}
+
 buildBinary () {
+  if ! [ -x "$(command -v rice)" ]; then
+    go install github.com/GeertJohan/go.rice/rice
+  fi
+
+  cd $REPO/http
+  rm -rf rice-box.go
+  rice embed-go
+
   cd $REPO
-  go get -v ./...
   updateVersion $untracked "($COMMIT_SHA)"
-  echo "Build CLI"
-  CGO_ENABLED=0 go build -a -o filebrowser
+  go build -a -o filebrowser
   updateVersion "($COMMIT_SHA)" $untracked
-}
-
-ciRelease () {
-  docker run --rm -t \
-    -v $(pwd):/src \
-    -w /src \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    filebrowser/dev \
-    sh -c "\
-      go get ./... && \
-      goreleaser \
-    "
-
-  dockerPushTag
-}
-
-build () {
-  cd $REPO
-
-  if [ -d http/"rice-box.go" ]; then
-    rm -rf http/rice-box.go
-  fi
-
-  if [ "$USE_DOCKER" != "" ]; then
-    if [ -d "frontend/dist" ]; then
-      rm -rf frontend/dist
-    fi;
-
-    if [ -f "http/rice-box.go" ]; then
-      rm -f http/rice-box.go
-    fi;
-
-    if [ "$(command -v git)" != "" ]; then
-      COMMIT_SHA="$(git rev-parse HEAD | cut -c1-8)"
-    else
-      COMMIT_SHA="untracked"
-    fi
-
-    $(command -v winpty) docker run --rm -it \
-      -u "$(id -u)" \
-      -v /$(pwd):/src:z \
-      -w //src \
-      -e COMMIT_SHA=$COMMIT_SHA \
-      -e HOME="//tmp" \
-      -e GOPATH=//tmp/gopath \
-      filebrowser/dev \
-      sh -c "./wizard.sh -b"
-
-  else
-    buildAssets
-    buildBinary
-  fi
 }
 
 release () {
@@ -215,22 +104,26 @@ release () {
 }
 
 usage() {
-  echo "Usage: $0 [-l] [-b] [-p] [-r <string>]" 1>&2;
+  echo "Usage: $0 [-a] [-c] [-b] [-r <string>]" 1>&2;
   exit 1;
 }
 
 DEBUG="false"
 
-while getopts "pdbr:" o; do
+while getopts "bacr:d" o; do
   case "${o}" in
     b)
-      BUILD="true"
+      ASSETS="true"
+      BINARY="true"
+      ;;
+    a)
+      ASSETS="true"
+      ;;
+    c)
+      BINARY="true"
       ;;
     r)
       RELEASE=${OPTARG}
-      ;;
-    p)
-      PUSH_LATEST="true"
       ;;
     d)
       DEBUG="true"
@@ -246,18 +139,14 @@ if [ "$DEBUG" = "true" ]; then
   debugInfo
 fi
 
-if [ "$BUILD" = "true" ]; then
-  build
+if [ "$ASSETS" = "true" ]; then
+  buildAssets
 fi
 
-if [ "$PUSH_LATEST" = "true" ]; then
-  dockerPushLatest
+if [ "$BINARY" = "true" ]; then
+  buildBinary
 fi
 
 if [ "$RELEASE" != "" ]; then
-  if [ "$CI" = "true" ]; then
-    ciRelease
-  else
-    release $RELEASE
-  fi
+  release $RELEASE
 fi

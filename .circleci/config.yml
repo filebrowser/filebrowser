@@ -18,10 +18,7 @@ jobs:
             git submodule update --remote
       - run:
           name: "Build"
-          command: |
-            cd frontend
-            npm install
-            npm run build
+          command: ./wizard.sh -a
       - persist_to_workspace:
           root: .
           paths:
@@ -32,7 +29,20 @@ jobs:
     steps:
       - attach_workspace:
           at: '~/project'
-      - run: go build
+      - run:
+          name: "Compile"
+          command: ./wizard.sh -c
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*'
+  docker-latest:
+    docker:
+      - image: docker
+    steps:
+      - attach_workspace:
+          at: '~/project'
+      - run: ls
 workflows:
   version: 2
   build-workflow:
@@ -42,3 +52,6 @@ workflows:
       - build-go:
           requires:
             - build-node
+      - docker-latest:
+          requires:
+            - build-go
