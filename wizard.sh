@@ -140,7 +140,7 @@ pushRicebox () {
     -w /src \
     -v /var/run/docker.sock:/var/run/docker.sock \
     filebrowser/dev \
-    sh -c "go get -u"
+    sh -c "go get -u github.com/filebrowser/filebrowser/v2@latest"
 
   git checkout -b update-rice-box origin/master
   git config --local user.name "Filebrowser Bot"
