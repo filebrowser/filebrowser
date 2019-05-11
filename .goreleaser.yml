@@ -35,15 +35,13 @@ build:
     - goos: solaris
       goarch: arm
 
-archive:
-  name_template: "{{.Os}}-{{.Arch}}{{if .Arm}}v{{.Arm}}{{end}}-{{ .ProjectName }}"
-  format: tar.gz
-  format_overrides:
-    - goos: windows
-      format: zip
-
-release:
-  disable: true
+archives:
+  -
+    name_template: "{{.Os}}-{{.Arch}}{{if .Arm}}v{{.Arm}}{{end}}-{{ .ProjectName }}"
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
 
 dockers:
   -
@@ -53,6 +51,5 @@ dockers:
     image_templates:
       - "filebrowser/filebrowser:latest"
       - "filebrowser/filebrowser:{{ .Tag }}"
-    skip_push: true
     extra_files:
       - .docker.json

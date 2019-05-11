@@ -47,6 +47,17 @@ jobs:
       - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
       - run: docker push filebrowser/filebrowser
       - run: docker logout
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*'
+  release:
+    docker:
+      - image: circleci/golang:1.10
+    steps:
+      - attach_workspace:
+          at: '~/project'
+      - run: curl -sL https://git.io/goreleaser | bash
 workflows:
   version: 2
   build-workflow:
@@ -56,7 +67,17 @@ workflows:
       - build-go:
           requires:
             - build-node
+            - lint
       - docker-latest:
           context: deploy
           requires:
             - build-go
+      - release:
+          context: deploy
+          requires:
+            - build-go
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
