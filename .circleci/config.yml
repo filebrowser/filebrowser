@@ -24,6 +24,8 @@ jobs:
             npm run build
       - persist_to_workspace:
           root: .
+          paths:
+            - *
   build-go:
     docker:
       - image: circleci/golang
