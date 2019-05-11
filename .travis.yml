@@ -1,6 +1,8 @@
 os: linux
 services: docker
-language: minimal
+language: go
+go:
+  - 1.12.x
 install: skip
 addons:
   apt:
