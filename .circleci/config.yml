@@ -1,0 +1,86 @@
+version: 2
+jobs:
+  lint:
+    docker:
+      - image: golangci/golangci-lint:v1.16
+    steps:
+      - checkout
+      - run: golangci-lint run -v -D errcheck
+  build-node:
+    docker:
+      - image: circleci/node
+    steps:
+      - checkout
+      - run:
+          name: "Pull Submodules"
+          command: |
+            git submodule init
+            git submodule update --remote
+      - run:
+          name: "Build"
+          command: ./wizard.sh -a
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*'
+  build-go:
+    docker:
+      - image: circleci/golang
+    steps:
+      - attach_workspace:
+          at: '~/project'
+      - run:
+          name: "Compile"
+          command: ./wizard.sh -c
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*'
+  docker-latest:
+    docker:
+      - image: docker
+    steps:
+      - attach_workspace:
+          at: '~/project'
+      - setup_remote_docker
+      - run: docker build -t filebrowser/filebrowser .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - run: docker push filebrowser/filebrowser
+      - run: docker logout
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*'
+  release:
+    docker:
+      - image: circleci/golang:1.10
+    steps:
+      - attach_workspace:
+          at: '~/project'
+      - run: curl -sL https://git.io/goreleaser | bash
+workflows:
+  version: 2
+  build-workflow:
+    jobs:
+      - lint
+      - build-node
+      - build-go:
+          requires:
+            - build-node
+            - lint
+      - docker-latest:
+          context: deploy
+          requires:
+            - build-go
+          filters:
+            branches:
+              only: master
+      - release:
+          context: deploy
+          requires:
+            - build-go
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
