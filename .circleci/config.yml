@@ -19,6 +19,9 @@ jobs:
       - run:
           name: "Build"
           command: ./wizard.sh -a
+      - run:
+          name: "Cleanup"
+          command: rm -rf frontend/node_modules
       - persist_to_workspace:
           root: .
           paths:
@@ -32,6 +35,9 @@ jobs:
       - run:
           name: "Compile"
           command: ./wizard.sh -c
+      - run:
+          name: "Cleanup"
+          command: rm -rf frontend/build
       - persist_to_workspace:
           root: .
           paths:
