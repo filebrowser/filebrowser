@@ -31,7 +31,7 @@ jobs:
       - image: circleci/golang
     steps:
       - attach_workspace:
-          at: /tmp/workspace
+          at: '~/project'
       - run: go build
 workflows:
   version: 2
