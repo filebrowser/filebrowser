@@ -85,6 +85,7 @@ release () {
   updateVersion $untracked $1
   git commit -am "chore: version $semver"
   git tag "$1"
+  git push
   git push --tags
 
   echo "🐑 Commiting untracked version notice..."
