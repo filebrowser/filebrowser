@@ -3,7 +3,8 @@
 set -e
 
 untracked="(untracked)"
-REPO=$(cd $(dirname $0); pwd)
+REPO=$(cd $(dirname $0); pwd)\
+COMMIT_SHA=$(git rev-parse --short HEAD)
 ASSETS="false"
 BINARY="false"
 RELEASE=""
