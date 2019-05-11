@@ -5,7 +5,7 @@ jobs:
       - image: golangci/golangci-lint:v1.16
     steps:
       - checkout
-      - run: golangci-lint run -v
+      - run: golangci-lint run -v -D errcheck
   build-node:
     docker:
       - image: circleci/node
