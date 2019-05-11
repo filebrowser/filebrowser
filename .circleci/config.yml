@@ -42,7 +42,10 @@ jobs:
     steps:
       - attach_workspace:
           at: '~/project'
-      - run: ls
+      - run: docker build -t filebrowser/filebrowser .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - run: docker push filebrowser/filebrowser
+      - run: docker logout
 workflows:
   version: 2
   build-workflow:
@@ -53,5 +56,6 @@ workflows:
           requires:
             - build-node
       - docker-latest:
+          context: deploy
           requires:
             - build-go
