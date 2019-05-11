@@ -19,7 +19,7 @@ jobs:
       - run: cd frontend
       - run: npm install
       - run: npm run build
-  build-node:
+  build-go:
     docker:
       - image: circleci/golang
     steps:
