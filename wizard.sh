@@ -30,7 +30,13 @@ buildAssets () {
   rm -f http/rice-box.go
 
   cd $REPO/frontend
-  npm install
+
+  if [ "$CI" = "true" ]; then
+    npm ci
+  else
+    npm install
+  fi
+
   npm run build
 }
 
