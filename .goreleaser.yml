@@ -1,8 +1,17 @@
 project_name: filebrowser
 
+env:
+  - GO111MODULE=on
+
+before:
+  hooks:
+    - go mod download
+
 build:
   env:
     - CGO_ENABLED=0
+  ldflags:
+    - -s -w -X github.com/filebrowser/filebrowser/v2/version.Version={{ .Version }} -X github.com/filebrowser/filebrowser/v2/version.CommitSHA={{ .ShortCommit }}
   main: main.go
   binary: filebrowser
   goos:

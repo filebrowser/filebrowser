@@ -16,14 +16,6 @@ debugInfo () {
   echo "Release:        $RELEASE"
 }
 
-updateVersion () {
-  from=$1
-  to=$2
-
-  echo "🎁 Updating version from \"$from\" to \"$to\""
-  sed -i.bak "s|$from|$to|g" $REPO/version/version.go
-}
-
 buildAssets () {
   cd $REPO
   rm -rf frontend/dist
@@ -50,9 +42,7 @@ buildBinary () {
   rice embed-go
 
   cd $REPO
-  updateVersion $untracked "($COMMIT_SHA)"
-  go build -a -o filebrowser
-  updateVersion "($COMMIT_SHA)" $untracked
+  go build -a -o filebrowser -ldflags "-s -w -X github.com/filebrowser/filebrowser/v2/version.CommitSHA=$COMMIT_SHA"
 }
 
 release () {
@@ -90,17 +80,11 @@ release () {
 
   cd ..
 
-  echo "🐑 Updating submodule ref to $semver"
-  updateVersion $untracked $1
-  git commit -am "chore: version $semver"
+  echo "🐑 Creating a new commit for the new release"
+  git commit --allow-empty -am "chore: version $semver"
   git tag "$1"
   git push
   git push --tags origin
-
-  echo "🐑 Commiting untracked version notice..."
-  updateVersion $1 $untracked
-  git commit -am "chore: setting untracked version [ci skip]"
-  git push
 
   echo "📦 Done! $semver released."
 }
