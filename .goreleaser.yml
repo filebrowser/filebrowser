@@ -51,5 +51,6 @@ dockers:
     image_templates:
       - "filebrowser/filebrowser:latest"
       - "filebrowser/filebrowser:{{ .Tag }}"
+      - "filebrowser/filebrowser:v{{ .Major }}"
     extra_files:
       - .docker.json
