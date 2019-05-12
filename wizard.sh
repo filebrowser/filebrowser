@@ -77,6 +77,9 @@ release () {
     exit 1
   fi
 
+  echo "🧼  Tidying up go modules"
+  go mod tidy
+
   echo "🐑 Fetching 'master' on 'frontend' and creating new tag"
 
   cd frontend
