@@ -60,5 +60,5 @@ func NewHandler(storage *storage.Storage, server *settings.Server) (http.Handler
 	public.PathPrefix("/dl").Handler(monkey(publicDlHandler, "/api/public/dl/")).Methods("GET")
 	public.PathPrefix("/share").Handler(monkey(publicShareHandler, "/api/public/share/")).Methods("GET")
 
-	return http.StripPrefix(server.BaseURL, r), nil
+	return stripPrefix(server.BaseURL, r), nil
 }

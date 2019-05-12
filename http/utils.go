@@ -3,7 +3,9 @@ package http
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
 
 	"github.com/filebrowser/filebrowser/v2/errors"
 )
@@ -36,4 +38,22 @@ func errToStatus(err error) int {
 	default:
 		return http.StatusInternalServerError
 	}
+}
+
+// This is an addaptation if http.StripPrefix in which we don't
+// return 404 if the page doesn't have the needed prefix.
+func stripPrefix(prefix string, h http.Handler) http.Handler {
+	if prefix == "" {
+		return h
+	}
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		p := strings.TrimPrefix(r.URL.Path, prefix)
+		r2 := new(http.Request)
+		*r2 = *r
+		r2.URL = new(url.URL)
+		*r2.URL = *r.URL
+		r2.URL.Path = p
+		h.ServeHTTP(w, r2)
+	})
 }
