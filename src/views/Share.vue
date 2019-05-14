@@ -47,7 +47,7 @@ export default {
       return this.$route.params.pathMatch
     },
     link: function () {
-      return `${baseURL}/api/public/dl/${this.hash}`
+      return `${baseURL}/api/public/dl/${this.hash}/${encodeURI(this.file.name)}`
     },
     fullLink: function () {
       return window.location.origin + this.link
