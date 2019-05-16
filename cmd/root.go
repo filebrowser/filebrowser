@@ -127,7 +127,7 @@ user created with the credentials from options "username" and "password".`,
 		}
 
 		sigc := make(chan os.Signal, 1)
-		signal.Notify(sigc, os.Interrupt, os.Kill, syscall.SIGTERM)
+		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
 		go cleanupHandler(listener, sigc)
 
 		handler, err := fbhttp.NewHandler(d.store, server)
