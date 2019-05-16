@@ -34,6 +34,8 @@ you want to change. Other options will remain unchanged.`,
 				ser.BaseURL = mustGetString(flags, flag.Name)
 			case "root":
 				ser.Root = mustGetString(flags, flag.Name)
+			case "socket":
+				ser.Socket = mustGetString(flags, flag.Name)
 			case "cert":
 				ser.TLSCert = mustGetString(flags, flag.Name)
 			case "key":

@@ -101,6 +101,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tPort:\t%s\n", ser.Port)
 	fmt.Fprintf(w, "\tBase URL:\t%s\n", ser.BaseURL)
 	fmt.Fprintf(w, "\tRoot:\t%s\n", ser.Root)
+	fmt.Fprintf(w, "\tSocket:\t%s\n", ser.Socket)
 	fmt.Fprintf(w, "\tAddress:\t%s\n", ser.Address)
 	fmt.Fprintf(w, "\tTLS Cert:\t%s\n", ser.TLSCert)
 	fmt.Fprintf(w, "\tTLS Key:\t%s\n", ser.TLSKey)
