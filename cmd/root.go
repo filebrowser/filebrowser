@@ -2,13 +2,16 @@ package cmd
 
 import (
 	"crypto/tls"
+	"errors"
 	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
+	"syscall"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	fbhttp "github.com/filebrowser/filebrowser/v2/http"
@@ -50,6 +53,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("cert", "t", "", "tls certificate")
 	flags.StringP("key", "k", "", "tls key")
 	flags.StringP("root", "r", ".", "root to prepend to relative paths")
+	flags.String("socket", "", "socket to listen to (cannot be used with address, port, cert nor key flags)")
 	flags.StringP("baseurl", "b", "", "base url")
 }
 
@@ -109,7 +113,10 @@ user created with the credentials from options "username" and "password".`,
 
 		var listener net.Listener
 
-		if server.TLSKey != "" && server.TLSCert != "" {
+		if server.Socket != "" {
+			listener, err = net.Listen("unix", server.Socket)
+			checkErr(err)
+		} else if server.TLSKey != "" && server.TLSCert != "" {
 			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey)
 			checkErr(err)
 			listener, err = tls.Listen("tcp", adr, &tls.Config{Certificates: []tls.Certificate{cer}})
@@ -119,14 +126,27 @@ user created with the credentials from options "username" and "password".`,
 			checkErr(err)
 		}
 
+		sigc := make(chan os.Signal, 1)
+		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
+		go cleanupHandler(listener, sigc)
+
 		handler, err := fbhttp.NewHandler(d.store, server)
 		checkErr(err)
+
+		defer listener.Close()
 
 		log.Println("Listening on", listener.Addr().String())
 		if err := http.Serve(listener, handler); err != nil {
 			log.Fatal(err)
 		}
 	}, pythonConfig{allowNoDB: true}),
+}
+
+func cleanupHandler(listener net.Listener, c chan os.Signal) {
+	sig := <-c
+	log.Printf("Caught signal %s: shutting down.", sig)
+	listener.Close()
+	os.Exit(0)
 }
 
 func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
@@ -141,24 +161,45 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 		server.BaseURL = val
 	}
 
-	if val, set := getParamB(flags, "address"); set {
-		server.Address = val
-	}
-
-	if val, set := getParamB(flags, "port"); set {
-		server.Port = val
-	}
-
 	if val, set := getParamB(flags, "log"); set {
 		server.Log = val
 	}
 
+	isSocketSet := false
+	isAddrSet := false
+
+	if val, set := getParamB(flags, "address"); set {
+		server.Address = val
+		isAddrSet = isAddrSet || set
+	}
+
+	if val, set := getParamB(flags, "port"); set {
+		server.Port = val
+		isAddrSet = isAddrSet || set
+	}
+
 	if val, set := getParamB(flags, "key"); set {
 		server.TLSKey = val
+		isAddrSet = isAddrSet || set
 	}
 
 	if val, set := getParamB(flags, "cert"); set {
 		server.TLSCert = val
+		isAddrSet = isAddrSet || set
+	}
+
+	if val, set := getParamB(flags, "socket"); set {
+		server.Socket = val
+		isSocketSet = isSocketSet || set
+	}
+
+	if isAddrSet && isSocketSet {
+		checkErr(errors.New("--socket flag cannot be used with --adress, --port, --key nor --cert"))
+	}
+
+	// Do not use saved Socket if address was manually set.
+	if isAddrSet && server.Socket != "" {
+		server.Socket = ""
 	}
 
 	return server

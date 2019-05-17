@@ -43,6 +43,7 @@ override the options.`,
 
 		ser := &settings.Server{
 			Address: mustGetString(flags, "address"),
+			Socket:  mustGetString(flags, "socket"),
 			Root:    mustGetString(flags, "root"),
 			BaseURL: mustGetString(flags, "baseurl"),
 			TLSKey:  mustGetString(flags, "key"),
