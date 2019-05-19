@@ -72,7 +72,7 @@ you want to change. Other options will remain unchanged.`,
 			auther, err = d.store.Auth.Get(set.AuthMethod)
 			checkErr(err)
 			// check if there are new flags for existing auth method
-			set.AuthMethod, auther = getAuthentication(flags, set)
+			set.AuthMethod, auther = getAuthentication(flags, set, auther)
 			err = d.store.Auth.Save(auther)
 			checkErr(err)
 		}

@@ -44,18 +44,32 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 }
 
-func getAuthentication(flags *pflag.FlagSet, defaults ...*settings.Settings) (settings.AuthMethod, auth.Auther) {
+func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, auth.Auther) {
 	method := settings.AuthMethod(mustGetString(flags, "auth.method"))
-	if len(defaults) > 0 {
-		method = defaults[0].AuthMethod
+
+	var defaultAuther map[string]interface{}
+	for _, arg := range defaults {
+		switch def := arg.(type) {
+		case *settings.Settings:
+			method = settings.AuthMethod(def.AuthMethod)
+		case auth.Auther:
+			ms, _ := json.Marshal(def)
+			json.Unmarshal(ms, &defaultAuther)
+		}
 	}
 
 	var auther auth.Auther
 	if method == auth.MethodProxyAuth {
 		header := mustGetString(flags, "auth.header")
+
+		if header == "" {
+			header = defaultAuther["header"].(string)
+		}
+
 		if header == "" {
 			panic(nerrors.New("you must set the flag 'auth.header' for method 'proxy'"))
 		}
+
 		auther = &auth.ProxyAuth{Header: header}
 	}
 
@@ -69,6 +83,16 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...*settings.Settings) (se
 		host := mustGetString(flags, "recaptcha.host")
 		key := mustGetString(flags, "recaptcha.key")
 		secret := mustGetString(flags, "recaptcha.secret")
+
+		if key == "" {
+			kmap := defaultAuther["recaptcha"].(map[string]interface{})
+			key = kmap["key"].(string)
+		}
+
+		if secret == "" {
+			smap := defaultAuther["recaptcha"].(map[string]interface{})
+			secret = smap["secret"].(string)
+		}
 
 		if key == "" || secret == "" {
 			panic(nerrors.New("you must set the flag 'recaptcha.key' and 'recaptcha.secret' for method 'json'"))
