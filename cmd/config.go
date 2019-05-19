@@ -46,7 +46,6 @@ func addConfigFlags(flags *pflag.FlagSet) {
 
 func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, auth.Auther) {
 	method := settings.AuthMethod(mustGetString(flags, "auth.method"))
-
 	var defaultAuther map[string]interface{}
 	for _, arg := range defaults {
 		switch def := arg.(type) {
@@ -79,7 +78,6 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 
 	if method == auth.MethodJSONAuth {
 		jsonAuth := &auth.JSONAuth{}
-
 		host := mustGetString(flags, "recaptcha.host")
 		key := mustGetString(flags, "recaptcha.key")
 		secret := mustGetString(flags, "recaptcha.secret")
