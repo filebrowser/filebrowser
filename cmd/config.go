@@ -44,8 +44,11 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 }
 
-func getAuthentication(flags *pflag.FlagSet) (settings.AuthMethod, auth.Auther) {
+func getAuthentication(flags *pflag.FlagSet, defaults ...*settings.Settings) (settings.AuthMethod, auth.Auther) {
 	method := settings.AuthMethod(mustGetString(flags, "auth.method"))
+	if len(defaults) > 0 {
+		method = defaults[0].AuthMethod
+	}
 
 	var auther auth.Auther
 	if method == auth.MethodProxyAuth {
