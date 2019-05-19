@@ -70,12 +70,14 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...*settings.Settings) (se
 		key := mustGetString(flags, "recaptcha.key")
 		secret := mustGetString(flags, "recaptcha.secret")
 
-		if key != "" && secret != "" {
-			jsonAuth.ReCaptcha = &auth.ReCaptcha{
-				Host:   host,
-				Key:    key,
-				Secret: secret,
-			}
+		if key == "" || secret == "" {
+			panic(nerrors.New("you must set the flag 'recaptcha.key' and 'recaptcha.secret' for method 'json'"))
+		}
+
+		jsonAuth.ReCaptcha = &auth.ReCaptcha{
+			Host:   host,
+			Key:    key,
+			Secret: secret,
 		}
 
 		auther = jsonAuth
