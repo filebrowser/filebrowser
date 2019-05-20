@@ -44,15 +44,37 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 }
 
-func getAuthentication(flags *pflag.FlagSet) (settings.AuthMethod, auth.Auther) {
+func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, auth.Auther) {
 	method := settings.AuthMethod(mustGetString(flags, "auth.method"))
+
+	var defaultAuther map[string]interface{}
+	if len(defaults) > 0 {
+		if hasAuth := defaults[0]; hasAuth != true {
+			for _, arg := range defaults {
+				switch def := arg.(type) {
+				case *settings.Settings:
+					method = settings.AuthMethod(def.AuthMethod)
+				case auth.Auther:
+					ms, err := json.Marshal(def)
+					checkErr(err)
+					json.Unmarshal(ms, &defaultAuther)
+				}
+			}
+		}
+	}
 
 	var auther auth.Auther
 	if method == auth.MethodProxyAuth {
 		header := mustGetString(flags, "auth.header")
+
 		if header == "" {
-			panic(nerrors.New("you must set the flag 'auth.header' for method 'proxy'"))
+			header = defaultAuther["header"].(string)
 		}
+
+		if header == "" {
+			checkErr(nerrors.New("you must set the flag 'auth.header' for method 'proxy'"))
+		}
+
 		auther = &auth.ProxyAuth{Header: header}
 	}
 
@@ -62,17 +84,28 @@ func getAuthentication(flags *pflag.FlagSet) (settings.AuthMethod, auth.Auther) 
 
 	if method == auth.MethodJSONAuth {
 		jsonAuth := &auth.JSONAuth{}
-
 		host := mustGetString(flags, "recaptcha.host")
 		key := mustGetString(flags, "recaptcha.key")
 		secret := mustGetString(flags, "recaptcha.secret")
 
-		if key != "" && secret != "" {
-			jsonAuth.ReCaptcha = &auth.ReCaptcha{
-				Host:   host,
-				Key:    key,
-				Secret: secret,
-			}
+		if key == "" {
+			kmap := defaultAuther["recaptcha"].(map[string]interface{})
+			key = kmap["key"].(string)
+		}
+
+		if secret == "" {
+			smap := defaultAuther["recaptcha"].(map[string]interface{})
+			secret = smap["secret"].(string)
+		}
+
+		if key == "" || secret == "" {
+			checkErr(nerrors.New("you must set the flag 'recaptcha.key' and 'recaptcha.secret' for method 'json'"))
+		}
+
+		jsonAuth.ReCaptcha = &auth.ReCaptcha{
+			Host:   host,
+			Key:    key,
+			Secret: secret,
 		}
 
 		auther = jsonAuth

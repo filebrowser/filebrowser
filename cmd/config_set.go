@@ -3,7 +3,6 @@ package cmd
 import (
 	"strings"
 
-	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -63,16 +62,15 @@ you want to change. Other options will remain unchanged.`,
 
 		getUserDefaults(flags, &set.Defaults, false)
 
-		var auther auth.Auther
-		if hasAuth {
-			set.AuthMethod, auther = getAuthentication(flags)
-			err = d.store.Auth.Save(auther)
-			checkErr(err)
-		} else {
-			auther, err = d.store.Auth.Get(set.AuthMethod)
-			checkErr(err)
-		}
+		// read the defaults
+		auther, err := d.store.Auth.Get(set.AuthMethod)
+		checkErr(err)
 
+		// check if there are new flags for existing auth method
+		set.AuthMethod, auther = getAuthentication(flags, hasAuth, set, auther)
+
+		err = d.store.Auth.Save(auther)
+		checkErr(err)
 		err = d.store.Settings.Save(set)
 		checkErr(err)
 		err = d.store.Settings.SaveServer(ser)
