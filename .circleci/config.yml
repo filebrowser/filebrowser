@@ -34,7 +34,7 @@ jobs:
           at: '~/project'
       - run:
           name: "Compile"
-          command: ./wizard.sh -c
+          command: GOOS=linux GOARCH=amd64 ./wizard.sh -c
       - run:
           name: "Cleanup"
           command: |
