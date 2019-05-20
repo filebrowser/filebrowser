@@ -46,14 +46,20 @@ func addConfigFlags(flags *pflag.FlagSet) {
 
 func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, auth.Auther) {
 	method := settings.AuthMethod(mustGetString(flags, "auth.method"))
+
 	var defaultAuther map[string]interface{}
-	for _, arg := range defaults {
-		switch def := arg.(type) {
-		case *settings.Settings:
-			method = settings.AuthMethod(def.AuthMethod)
-		case auth.Auther:
-			ms, _ := json.Marshal(def)
-			json.Unmarshal(ms, &defaultAuther)
+	if len(defaults) > 0 {
+		if hasAuth := defaults[0]; hasAuth != true {
+			for _, arg := range defaults {
+				switch def := arg.(type) {
+				case *settings.Settings:
+					method = settings.AuthMethod(def.AuthMethod)
+				case auth.Auther:
+					ms, err := json.Marshal(def)
+					checkErr(err)
+					json.Unmarshal(ms, &defaultAuther)
+				}
+			}
 		}
 	}
 
