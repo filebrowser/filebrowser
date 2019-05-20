@@ -165,11 +165,12 @@
     "users": "Usuarios",
     "globalRules": "This is a global set of allow and disallow rules. They apply to every user. You can define specific rules on each user's settings to override this ones.",
     "allowSignup": "Permitir registro de usuarios",
+    "createUserDir": "Auto create user home dir while adding new user",
     "insertRegex": "Introducir expresión regular",
     "insertPath": "Introduce la ruta",
     "userUpdated": "¡Usuario actualizado!",
     "userDefaults": "Configuración de usuario por defecto",
-    "defaultUserDescription": "This are the default settings for new users.",
+    "defaultUserDescription": "Estas son las configuraciones por defecto para nuevos usuarios.",
     "executeOnShell": "Ejecutar en la shell",
     "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you want to run them on a shell instead (such as Bash or PowerShell), you can define it here with the  required arguments and flags. If set, the command you execute will be appended as an argument. This apply to both user commands and event hooks.",
     "perm": {

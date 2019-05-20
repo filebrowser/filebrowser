@@ -165,6 +165,7 @@
     "users": "使用者",
     "globalRules": "This is a global set of allow and disallow rules. They apply to every user. You can define specific rules on each user's settings to override this ones.",
     "allowSignup": "Allow users to signup",
+    "createUserDir": "Auto create user home dir while adding new user",
     "insertRegex": "Insert regex expression",
     "insertPath": "Insert the path",
     "userUpdated": "使用者已更新！",

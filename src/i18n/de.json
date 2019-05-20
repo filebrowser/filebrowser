@@ -1,7 +1,7 @@
 {
   "permanent": "Permanent",
   "buttons": {
-    "shell": "Toggle shell",
+    "shell": "Kommandozeile ein/ausschalten",
     "cancel": "Abbrechen",
     "close": "Schließen",
     "copy": "Kopieren",
@@ -35,7 +35,7 @@
     "permalink": "permanenten Verweis anzeigen"
   },
   "success": {
-    "linkCopied": "Verweis wurde kopiert !"
+    "linkCopied": "Verweis wurde kopiert!"
   },
   "errors": {
     "forbidden": "Sie haben keine Berechtigung dies abzurufen.",
@@ -101,7 +101,7 @@
     "filesSelected": "{count} Dateien ausgewählt.",
     "lastModified": "Zuletzt geändert",
     "move": "Verschieben",
-    "moveMessage": "Choose new house for your file(s)/folder(s):",
+    "moveMessage": "Wählen sie einen neuen Platz für ihre Datei(en)/Ordner:",
     "newDir": "Neuer Ordner",
     "newDirMessage": "Geben Sie den Namen des neuen Ordners an.",
     "newFile": "Neue Datei",
@@ -119,12 +119,12 @@
     "newArchetype": "Erstelle neuen Beitrag auf dem Archetyp. Ihre Datei wird im Inhalteordner erstellt."
   },
   "settings": {
-    "instanceName": "Instance name",
-    "brandingDirectoryPath": "Branding directory path",
+    "instanceName": "Instanzname",
+    "brandingDirectoryPath": "Markenverzeichnispfad",
     "documentation": "Dokumentation",
-    "branding": "Branding",
+    "branding": "Marke",
     "disableExternalLinks": "Externe Links deaktivieren (außer Dokumentation)",
-    "brandingHelp": "You can costumize how your File Browser instance looks and feels by changing its name, replacing the logo, adding custom styles and even disable external links to GitHub.\nFor more information about custom branding, please check out the {0}.",
+    "brandingHelp": "Sie können das Erscheinungsbild ihres File Browser anpassen, in dem sie den Namen ändern, das Logo austauchsen oder eigene Stile definieren und sogar externe Links zu GitHub deaktivieren.\nUm mehr Informationen zum Anpassen an ihre Marke zu bekommen, gehen sie bitte zu {0}.",
     "admin": "Admin",
     "administrator": "Administrator",
     "allowCommands": "Befehle ausführen",
@@ -133,8 +133,8 @@
     "allowPublish": "Veröffentlichen von neuen Beiträgen und Seiten",
     "avoidChanges": "(leer lassen um Änderungen zu vermeiden)",
     "changePassword": "Ändere das Passwort",
-    "commandRunner": "Command runner",
-    "commandRunnerHelp": "Here you can set commands that are executed in the named events. You must write one per line. The environment variables {0} and {1} will be available, being {0} relative to {1}. For more information about this feature and the available environment variables, please read the {2}.",
+    "commandRunner": "Befehlseingabe",
+    "commandRunnerHelp": "Hier könne sie Befehle eintragen die bei benannten Aktionen ausgeführt werden. Sie müssen pro Zeile jeweils einen eingeben. Die Umgebungsvariable {0} und {1} sind verfügbar, wobei {0} relative zu {1} ist. Für mehr Informationen über diese Funktion und die verfügbaren Umgebungsvariablen, lesen sie bitte das {2}.",
     "commandsUpdated": "Befehle aktualisiert!",
     "customStylesheet": "Individuelles Stylesheet",
     "examples": "Beispiele",
@@ -163,20 +163,21 @@
     "userManagement": "Benutzerverwaltung",
     "username": "Nutzername",
     "users": "Nutzer",
-    "globalRules": "This is a global set of allow and disallow rules. They apply to every user. You can define specific rules on each user's settings to override this ones.",
+    "globalRules": "Das ist ein globales Set von Regeln die erlauben oder nicht erlauben. Die sind für alle Benutzer zutreffend. Es können spezielle Regeln in den Einstellungen der Benutzer definiert werden die diese übersteuern.",
     "allowSignup": "Erlaube Benutzern sich zu registrieren",
-    "insertRegex": "Insert regex expression",
-    "insertPath": "Insert the path",
+    "createUserDir": "Auto create user home dir while adding new user",
+    "insertRegex": "Regex Ausdruck einfügen",
+    "insertPath": "Pfad einfügen",
     "userUpdated": "Benutzer aktualisiert!",
-    "userDefaults": "User default settings",
-    "defaultUserDescription": "This are the default settings for new users.",
+    "userDefaults": "Benutzer Standard Einstellungen",
+    "defaultUserDescription": "Das sind die Standard Einstellunge für Benutzer",
     "executeOnShell": "In shell ausführen",
-    "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you want to run them on a shell instead (such as Bash or PowerShell), you can define it here with the  required arguments and flags. If set, the command you execute will be appended as an argument. This apply to both user commands and event hooks.",
+    "executeOnShellDescription": "Es ist voreingestellt das der File Brower Befehle ausführt in dem er die Befehlsdatein direkt auf ruft. Wenn sie wollen das sie auf einer Kommandozeile (wo Bash oder PowerShell) laufen, könne sie das hier definieren mit allen bennötigten Argumenten und Optionen. Wenn gesetzt, wird das Kommando das ausgeführt werden soll als Parameter angehängt. Das gilt für Benuzerkommandos sowie auch für Ereignisse.",
     "perm": {
       "create": "Dateien und Ordner erstellen",
       "delete": "Dateien und Ordner löschen",
       "download": "Download",
-      "modify": "Edit files",
+      "modify": "Dateien editieren",
       "execute": "Befehle ausführen",
       "rename": "Umbenennen oder Verschieben von Dateien oder Ordnern",
       "share": "Datei teilen"
@@ -203,7 +204,7 @@
     "video": "Video",
     "search": "Suche...",
     "typeToSearch": "Tippe um zu suchen...",
-    "pressToSearch": "Press enter to search..."
+    "pressToSearch": "Drücken sie Enter um zu suchen..."
   },
   "languages": {
     "ar": "العربية",
