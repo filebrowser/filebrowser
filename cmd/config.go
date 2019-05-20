@@ -72,7 +72,7 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 		}
 
 		if header == "" {
-			panic(nerrors.New("you must set the flag 'auth.header' for method 'proxy'"))
+			checkErr(nerrors.New("you must set the flag 'auth.header' for method 'proxy'"))
 		}
 
 		auther = &auth.ProxyAuth{Header: header}
@@ -99,7 +99,7 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 		}
 
 		if key == "" || secret == "" {
-			panic(nerrors.New("you must set the flag 'recaptcha.key' and 'recaptcha.secret' for method 'json'"))
+			checkErr(nerrors.New("you must set the flag 'recaptcha.key' and 'recaptcha.secret' for method 'json'"))
 		}
 
 		jsonAuth.ReCaptcha = &auth.ReCaptcha{
