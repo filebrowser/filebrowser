@@ -194,7 +194,7 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 	}
 
 	if isAddrSet && isSocketSet {
-		checkErr(errors.New("--socket flag cannot be used with --adress, --port, --key nor --cert"))
+		checkErr(errors.New("--socket flag cannot be used with --address, --port, --key nor --cert"))
 	}
 
 	// Do not use saved Socket if address was manually set.
