@@ -40,25 +40,6 @@ jobs:
           command: |
             rm -rf frontend/build
             git checkout -- go.sum # TODO: why is it being changed?
-      - persist_to_workspace:
-          root: .
-          paths:
-            - '*'
-  docker-latest:
-    docker:
-      - image: docker
-    steps:
-      - attach_workspace:
-          at: '~/project'
-      - setup_remote_docker
-      - run: docker build -t filebrowser/filebrowser .
-      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-      - run: docker push filebrowser/filebrowser
-      - run: docker logout
-      - persist_to_workspace:
-          root: .
-          paths:
-            - '*'
   release:
     docker:
       - image: circleci/golang:1.12
@@ -96,13 +77,4 @@ workflows:
             tags:
               only: /^v.*/
             branches:
-              ignore: /.*/
-      - docker-latest:
-          context: deploy
-          requires:
-            - build-go
-          filters:
-            branches:
-              only: master
-            tags:
               ignore: /.*/
