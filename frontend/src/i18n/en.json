@@ -32,7 +32,8 @@
     "toggleSidebar": "Toggle sidebar",
     "update": "Update",
     "upload": "Upload",
-    "permalink": "Get Permanent Link"
+    "permalink": "Get Permanent Link",
+    "bookmark": "Bookmark"
   },
   "success": {
     "linkCopied": "Link copied!"

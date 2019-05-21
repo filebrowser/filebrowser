@@ -19,6 +19,7 @@ import Sidebar from '@/components/Sidebar'
 import Prompts from '@/components/prompts/Prompts'
 import SiteHeader from '@/components/Header'
 import Shell from '@/components/Shell'
+import { context as api } from '@/api'
 
 export default {
   name: 'layout',
@@ -37,6 +38,14 @@ export default {
       this.$store.commit('resetSelected')
       this.$store.commit('multiple', false)
       if (this.$store.state.show !== 'success') this.$store.commit('closeHovers')
+    }
+  },
+  async created() {
+    try {
+      const res = await api.get()
+      this.$store.commit('updateContext', res)
+    } catch (e) {
+      this.$showError(e)
     }
   }
 }

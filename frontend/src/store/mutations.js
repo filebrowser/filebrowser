@@ -71,9 +71,17 @@ const mutations = {
       state.user[field] = value[field]
     }
   },
+  updateBookmark: (state, value) => {
+    if (value.path === state.req.path) {
+      state.req.bookmarked = value.bookmarked
+    }
+  },
   updateRequest: (state, value) => {
     state.oldReq = state.req
     state.req = value
+  },
+  updateContext: (state, value) => {
+    state.context = value
   },
   updateClipboard: (state, value) => {
     state.clipboard.key = value.key

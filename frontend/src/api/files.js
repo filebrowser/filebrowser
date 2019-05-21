@@ -112,8 +112,20 @@ export async function post (url, content = '', overwrite = false, onupload) {
     }
 
     request.send(content)
-    // Upload is done no more message before closing the tab 
+    // Upload is done no more message before closing the tab
   }).finally(() => { window.onbeforeunload = null })
+}
+
+export function bookmark (items) {
+  let promises = []
+
+  for (let item of items) {
+    const path = removePrefix(item.path)
+    const url = `${path}?action=${item.bookmarked ? 'bookmark' : 'remove-bookmark'}`
+    promises.push(resourceAction(url, 'PATCH'))
+  }
+
+  return Promise.all(promises)
 }
 
 function moveCopy (items, copy = false) {

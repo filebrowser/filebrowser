@@ -45,6 +45,7 @@
           <switch-button v-show="isListing"></switch-button>
           <download-button v-show="showDownloadButton"></download-button>
           <upload-button v-show="showUpload"></upload-button>
+          <bookmark-button v-show="showBookmarkButton"></bookmark-button>
           <info-button v-show="isFiles"></info-button>
 
           <button v-show="isListing" @click="openSelect" :aria-label="$t('buttons.selectMultiple')" :title="$t('buttons.selectMultiple')" class="action">
@@ -71,6 +72,7 @@ import MoveButton from './buttons/Move'
 import CopyButton from './buttons/Copy'
 import ShareButton from './buttons/Share'
 import ShellButton from './buttons/Shell'
+import BookmarkButton from './buttons/Bookmark'
 import {mapGetters, mapState} from 'vuex'
 import { logoURL } from '@/utils/constants'
 import * as api from '@/api'
@@ -89,7 +91,8 @@ export default {
     UploadButton,
     SwitchButton,
     MoveButton,
-    ShellButton
+    ShellButton,
+    BookmarkButton
   },
   data: function () {
     return {
@@ -144,6 +147,9 @@ export default {
       return this.isFiles && (this.isListing
         ? (this.selectedCount === 1 && this.user.perm.rename)
         : this.user.perm.rename)
+    },
+    showBookmarkButton () {
+      return this.isFiles && this.isListing
     },
     showShareButton () {
       return this.isFiles && (this.isListing
