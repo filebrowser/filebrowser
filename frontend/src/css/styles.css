@@ -1,0 +1,269 @@
+@import "~normalize.css/normalize.css";
+@import "~noty/lib/noty.css";
+@import "~noty/lib/themes/mint.css";
+@import "./_variables.css";
+@import "./_buttons.css";
+@import "./_inputs.css";
+@import "./_shell.css";
+@import "./_share.css";
+@import "./fonts.css";
+@import "./base.css";
+@import "./header.css";
+@import "./listing.css";
+@import "./dashboard.css";
+@import "./login.css";
+
+.link {
+  color: var(--blue);
+}
+
+/* * * * * * * * * * * * * * * *
+ *            ACTION           *
+ * * * * * * * * * * * * * * * */
+
+.action {
+  display: inline-block;
+  cursor: pointer;
+  transition: 0.2s ease all;
+  border: 0;
+  margin: 0;
+  color: #546E7A;
+  border-radius: 50%;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+  vertical-align: middle;
+  text-align: left;
+  position: relative;
+}
+
+.action.disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.action i {
+  padding: 0.4em;
+  transition: .1s ease-in-out all;
+  border-radius: 50%;
+}
+
+.action:hover {
+  background-color: rgba(0, 0, 0, .1);
+}
+
+.action ul {
+  position: absolute;
+  top: 0;
+  color: #7d7d7d;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  display: flex;
+}
+
+.action ul li {
+  line-height: 1;
+  padding: .7em;
+  transition: .1s ease background-color;
+}
+
+.action ul li:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+#click-overlay {
+  display: none;
+  position: fixed;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#click-overlay.active {
+  display: block;
+}
+
+.action .counter {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: var(--blue);
+  color: #fff;
+  border-radius: 50%;
+  font-size: .75em;
+  width: 1.5em;
+  height: 1.5em;
+  text-align: center;
+  line-height: 1.25em;
+  border: 2px solid white;
+}
+
+
+/* PREVIEWER */
+
+#previewer {
+  background-color: rgba(0, 0, 0, 0.9);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+#previewer .bar {
+  width: 100%;
+  text-align: right;
+  display: flex;
+  padding: 0.5em;
+  height: 3.7em;
+}
+
+#previewer .action:first-of-type {
+  margin-right: auto;
+}
+
+#previewer .action i {
+  color: #fff;
+}
+
+#previewer .action:hover {
+  background-color: rgba(255, 255, 255, 0.3)
+}
+
+#previewer .action span {
+  display: none;
+}
+
+#previewer .preview {
+  margin: 2em auto 4em;
+  max-width: 80%;
+  text-align: center;
+  height: calc(100vh - 9.7em);
+}
+
+#previewer .preview pre {
+  text-align: left;
+  overflow: auto;
+}
+
+#previewer .preview pre,
+#previewer .preview video,
+#previewer .preview img {
+  max-height: 100%;
+  margin: 0;
+}
+
+#previewer .pdf {
+  width: 100%;
+  height: 100%;
+}
+
+#previewer h2.message {
+  color: rgba(255, 255, 255, 0.5)
+}
+
+#previewer>button {
+  margin: 0;
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#previewer>button:first-of-type {
+  left: 0.5em;
+}
+
+#previewer>button:last-of-type {
+  right: 0.5em;
+}
+
+
+/* * * * * * * * * * * * * * * *
+ *            PROMPT           *
+ * * * * * * * * * * * * * * * */
+
+.noty_buttons {
+  text-align: right;
+  padding: 0 10px 10px !important;
+}
+
+.noty_buttons button {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 0 0 0;
+  font-size: 14px;
+}
+
+/* * * * * * * * * * * * * * * *
+ *            FOOTER           *
+ * * * * * * * * * * * * * * * */
+
+.credits {
+  font-size: 0.6em;
+  margin: 3em 2.5em;
+  color: #a5a5a5;
+}
+
+.credits > span {
+  display: block;
+  margin: .3em 0;
+}
+
+.credits a,
+.credits a:hover {
+  color: inherit;
+  cursor: pointer;
+}
+
+
+/* * * * * * * * * * * * * * * *
+ *          ANIMATIONS         *
+ * * * * * * * * * * * * * * * */
+
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(-360deg);
+    transform: rotate(-360deg);
+  }
+}
+
+/* * * * * * * * * * * * * * * *
+ *         SETTINGS RULES      *
+ * * * * * * * * * * * * * * * */
+
+.rules > div {
+  display: flex;
+  align-items: center;
+  margin: .5rem 0;
+}
+
+.rules input[type="checkbox"] {
+  margin-right: .2rem;
+}
+
+.rules input[type="text"] {
+  border: 1px solid#ddd;
+  padding: .2rem;
+}
+
+.rules label {
+  margin-right: .5rem;
+}
+
+.rules button {
+  margin-left: auto;
+}
+
+.rules button.delete {
+  padding: .2rem .5rem;
+  margin-left: .5rem;
+}
+
+@import './mobile.css';
