@@ -29,6 +29,7 @@ buildAssets () {
     npm install
   fi
 
+  npm run lint
   npm run build
 }
 
