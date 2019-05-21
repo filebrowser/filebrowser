@@ -1,0 +1,29 @@
+.share__box {
+  text-align: center;
+  box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 3px, rgba(0, 0, 0, 0.12) 0px 1px 2px;
+  background: #fff;
+  display: block;
+  border-radius: 0.2em;
+  width: 90%;
+  max-width: 25em;
+  margin: 6em auto;
+}
+
+.share__box__download {
+  width: 100%;
+  padding: 1em;
+  cursor: pointer;
+  background: #ffffff;
+  color: rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.share__box__info {
+  padding: 2em 3em;
+}
+
+.share__box__title {
+  margin-top: .2em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,53 @@
+.shell {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 25em;
+  max-height: calc(100% - 4em);
+  background: white;
+  color: #212121;
+  z-index: 9999;
+  width: 100%;
+  font-family: monospace;
+  overflow: auto;
+  font-size: 1rem;
+  cursor: text;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  transition: .2s ease transform;
+}
+
+.shell__result {
+  display: flex;
+  padding: 0.5em;
+  align-items: flex-start;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.shell--hidden {
+  transform: translateY(105%);
+}
+
+.shell__result--hidden {
+  opacity: 0;
+}
+
+.shell__text,
+.shell__prompt,
+.shell__prompt i {
+  font-size: inherit;
+}
+
+.shell__prompt {
+  width: 1.2rem;
+}
+
+.shell__prompt i {
+  color: var(--blue);
+}
+
+.shell__text {
+  margin: 0;
+  font-family: inherit;
+  white-space: pre-wrap;
+  width: 100%;
+}

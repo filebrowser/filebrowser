@@ -1,0 +1,65 @@
+#login {
+  background: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#login img {
+  width: 4em;
+  height: 4em;
+  margin: 0 auto;
+  display: block;
+}
+
+#login h1 {
+  text-align: center;
+  font-size: 2.5em;
+  margin: .4em 0 .67em;
+}
+
+#login form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 16em;
+  width: 90%;
+}
+
+#login.recaptcha form {
+  min-width: 304px;
+}
+
+#login #recaptcha {
+  margin: .5em 0 0;
+}
+
+#login .wrong {
+  background: var(--red);
+  color: #fff;
+  padding: .5em;
+  text-align: center;
+  animation: .2s opac forwards;
+}
+
+@keyframes opac {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#login p {
+  cursor: pointer;
+  text-align: right;
+  color: var(--blue);
+  text-transform: lowercase;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin: .5rem 0;
+}

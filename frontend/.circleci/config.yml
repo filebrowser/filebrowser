@@ -1,0 +1,15 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node
+    steps:
+      - checkout
+      - run: npm install
+      - run: npm run lint
+      - run: npm run build
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build

@@ -1,0 +1,126 @@
+@media (max-width: 1024px) {
+  nav {
+    width: 10em
+  }
+}
+
+@media (max-width: 1024px) {
+  main {
+    width: calc(100% - 13em)
+  }
+}
+
+@media (max-width: 736px) {
+  body {
+    padding-bottom: 5em;
+  }
+  #listing.list .item .size {
+    display: none;
+  }
+  #listing.list .item .name {
+    width: 60%;
+  }
+  #more {
+    display: inherit
+  }
+  header .overlay {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  #dropdown {
+    position: fixed;
+    top: 1em;
+    right: 1em;
+    display: block;
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    transform: scale(0);
+    transition: .1s ease-in-out transform;
+    transform-origin: top right;
+    z-index: 99999;
+  }
+  #dropdown > div {
+    display: block;
+  }
+  #dropdown.active {
+    transform: scale(1);
+  }
+  #dropdown .action {
+    display: flex;
+    align-items: center;
+    border-radius: 0;
+    width: 100%;
+  }
+  #dropdown .action span:not(.counter) {
+    display: inline-block;
+    padding: .4em;
+  }
+  #dropdown .counter {
+    left: 2.25em;
+  }
+  #file-selection {
+    position: fixed;
+    bottom: 1em;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 3px, rgba(0, 0, 0, 0.12) 0px 1px 2px;
+    width: 95%;
+    max-width: 20em;
+  }
+  #file-selection .action {
+    border-radius: 50%;
+    width: auto;
+  }
+  #file-selection > span {
+    display: inline-block;
+    margin-left: 1em;
+    color: #6f6f6f;
+    margin-right: auto;
+  }
+  nav {
+    top: 0;
+    z-index: 99999;
+    background: #fff;
+    height: 100%;
+    width: 16em;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    transition: .1s ease left;
+    left: -17em;
+  }
+  nav.active {
+    left: 0;
+  }
+  header .search-button,
+  header>div:first-child>.action {
+    display: inherit;
+  }
+  header img {
+    display: none;
+  }
+  #listing {
+    margin-bottom: 5em;
+  }
+  main {
+    margin: 0 1em;
+    width: calc(100% - 2em);
+  }
+  #search {
+    display: none;
+  }
+  #search.active {
+    display: block;
+  }
+}
+
+@media (max-width: 450px) {
+  #listing.list .item .modified {
+    display: none;
+  }
+  #listing.list .item .name {
+    width: 100%;
+  }
+}
