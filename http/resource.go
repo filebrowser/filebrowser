@@ -15,6 +15,11 @@ import (
 	"github.com/filebrowser/filebrowser/v2/fileutils"
 )
 
+type resourceInfo struct {
+	*files.FileInfo
+	Bookmarked bool `json:"bookmarked"`
+}
+
 var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	file, err := files.NewFileInfo(files.FileOptions{
 		Fs:      d.user.Fs,
@@ -27,13 +32,21 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		return errToStatus(err), err
 	}
 
+	resource := &resourceInfo{
+		FileInfo: file,
+	}
+
 	if file.IsDir {
 		file.Listing.Sorting = d.user.Sorting
 		file.Listing.ApplySort()
-		return renderJSON(w, r, file)
+		for _, bookmark := range d.user.Bookmarks {
+			if bookmark.Path == file.Path {
+				resource.Bookmarked = true
+			}
+		}
 	}
 
-	if checksum := r.URL.Query().Get("checksum"); checksum != "" {
+	if checksum := r.URL.Query().Get("checksum"); !file.IsDir && checksum != "" {
 		err := file.Checksum(checksum)
 		if err == errors.ErrInvalidOption {
 			return http.StatusBadRequest, nil
@@ -45,7 +58,7 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		file.Content = ""
 	}
 
-	return renderJSON(w, r, file)
+	return renderJSON(w, r, resource)
 })
 
 var resourceDeleteHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
@@ -122,6 +135,7 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	src := r.URL.Path
 	dst := r.URL.Query().Get("destination")
+	name := r.URL.Query().Get("name")
 	action := r.URL.Query().Get("action")
 	dst, err := url.QueryUnescape(dst)
 
@@ -133,10 +147,25 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 		return http.StatusForbidden, nil
 	}
 
+	var hook func() error
+
 	switch action {
+	case "bookmark":
+		hook = func() error {
+			d.user.AddBookmark(src, name)
+			return d.store.Users.Save(d.user)
+		}
+	case "remove-bookmark":
+		hook = func() error {
+			d.user.RemoveBookmarkByPath(src)
+			return d.store.Users.Save(d.user)
+		}
 	case "copy":
 		if !d.user.Perm.Create {
 			return http.StatusForbidden, nil
+		}
+		hook = func() error {
+			return fileutils.Copy(d.user.Fs, src, dst)
 		}
 	case "rename":
 	default:
@@ -144,15 +173,12 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 		if !d.user.Perm.Rename {
 			return http.StatusForbidden, nil
 		}
+		hook = func() error {
+			return d.user.Fs.Rename(src, dst)
+		}
 	}
 
-	err = d.RunHook(func() error {
-		if action == "copy" {
-			return fileutils.Copy(d.user.Fs, src, dst)
-		}
-
-		return d.user.Fs.Rename(src, dst)
-	}, action, src, dst, d.user)
+	err = d.RunHook(hook, action, src, dst, d.user)
 
 	return errToStatus(err), err
 })

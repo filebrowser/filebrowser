@@ -33,6 +33,7 @@ type User struct {
 	Sorting      files.Sorting `json:"sorting"`
 	Fs           afero.Fs      `json:"-" yaml:"-"`
 	Rules        []rules.Rule  `json:"rules"`
+	Bookmarks    []Bookmark    `json:"bookmarks"`
 }
 
 // GetRules implements rules.Provider.
@@ -48,6 +49,7 @@ var checkableFields = []string{
 	"Commands",
 	"Sorting",
 	"Rules",
+	"Bookmarks",
 }
 
 // Clean cleans up a user and verifies if all its fields
@@ -83,6 +85,10 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 			if u.Rules == nil {
 				u.Rules = []rules.Rule{}
 			}
+		case "Bookmarks":
+			if u.Bookmarks == nil {
+				u.Bookmarks = []Bookmark{}
+			}
 		}
 	}
 
@@ -117,4 +123,36 @@ func (u *User) CanExecute(command string) bool {
 	}
 
 	return false
+}
+
+// RemoveBookmarkByPath removes a bookmark by path.
+func (u *User) RemoveBookmarkByPath(path string) {
+	var newBookmarks []Bookmark
+	for _, bookmark := range u.Bookmarks {
+		if bookmark.Path != path {
+			newBookmarks = append(newBookmarks, bookmark)
+		}
+	}
+	u.Bookmarks = newBookmarks
+}
+
+// AddBookmark adds a bookmark.
+func (u *User) AddBookmark(path, name string) {
+	for i, bookmark := range u.Bookmarks {
+		if bookmark.Path == path {
+			if name != "" {
+				u.Bookmarks[i].Name = name
+			}
+			return
+		}
+	}
+
+	if name == "" {
+		name = filepath.Base(path)
+	}
+
+	u.Bookmarks = append(u.Bookmarks, Bookmark{
+		Path: path,
+		Name: name,
+	})
 }
