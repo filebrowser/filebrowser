@@ -89,25 +89,24 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 		secret := mustGetString(flags, "recaptcha.secret")
 
 		if key == "" {
-			kmap := defaultAuther["recaptcha"].(map[string]interface{})
-			key = kmap["key"].(string)
+			if kmap, ok := defaultAuther["recaptcha"].(map[string]interface{}); ok {
+				key = kmap["key"].(string)
+			}
 		}
 
 		if secret == "" {
-			smap := defaultAuther["recaptcha"].(map[string]interface{})
-			secret = smap["secret"].(string)
+			if smap, ok := defaultAuther["recaptcha"].(map[string]interface{}); ok {
+				secret = smap["secret"].(string)
+			}
 		}
 
-		if key == "" || secret == "" {
-			checkErr(nerrors.New("you must set the flag 'recaptcha.key' and 'recaptcha.secret' for method 'json'"))
+		if key != "" && secret != "" {
+			jsonAuth.ReCaptcha = &auth.ReCaptcha{
+				Host:   host,
+				Key:    key,
+				Secret: secret,
+			}
 		}
-
-		jsonAuth.ReCaptcha = &auth.ReCaptcha{
-			Host:   host,
-			Key:    key,
-			Secret: secret,
-		}
-
 		auther = jsonAuth
 	}
 
