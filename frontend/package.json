@@ -17,7 +17,7 @@
     "moment": "^2.24.0",
     "normalize.css": "^8.0.1",
     "noty": "^3.2.0-beta",
-    "qrcode.vue": "^1.6.1",
+    "qrcode.vue": "^1.6.2",
     "vue": "^2.6.10",
     "vue-i18n": "^8.11.2",
     "vue-router": "^3.0.6",
