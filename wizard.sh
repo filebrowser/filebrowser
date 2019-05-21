@@ -71,16 +71,6 @@ release () {
   echo "🧼  Tidying up go modules"
   go mod tidy
 
-  echo "🐑 Fetching 'master' on 'frontend' and creating new tag"
-
-  cd frontend
-  git fetch --all
-  git checkout master
-  git tag $semver
-  git push --tags
-
-  cd ..
-
   echo "🐑 Creating a new commit for the new release"
   git commit --allow-empty -am "chore: version $semver"
   git tag "$1"
