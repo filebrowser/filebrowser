@@ -40,6 +40,10 @@ jobs:
           command: |
             rm -rf frontend/build
             git checkout -- go.sum # TODO: why is it being changed?
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*'
   release:
     docker:
       - image: circleci/golang:1.12
