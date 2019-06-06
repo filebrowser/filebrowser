@@ -54,7 +54,7 @@ func withUser(fn handleFunc) handleFunc {
 		}
 
 		var tk authToken
-		token, err := request.ParseFromRequestWithClaims(r, &extractor{}, &tk, keyFunc)
+		token, err := request.ParseFromRequest(r, &extractor{}, keyFunc, request.WithClaims(&tk))
 
 		if err != nil || !token.Valid {
 			return http.StatusForbidden, nil
