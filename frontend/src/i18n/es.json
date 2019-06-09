@@ -38,7 +38,7 @@
     "linkCopied": "¡Link copiado!"
   },
   "errors": {
-    "forbidden": "You don't have permissions to access this.",
+    "forbidden": "No tienes los permisos necesarios para acceder.",
     "internal": "La verdad es que algo ha ido mal.",
     "notFound": "No se puede acceder a este lugar."
   },
@@ -82,7 +82,7 @@
     "loginInstead": "Usuario ya existente",
     "passwordsDontMatch": "Las contraseñas no coinciden",
     "usernameTaken": "Nombre usuario no disponible",
-    "signup": "Signup",
+    "signup": "Registrate",
     "username": "Usuario",
     "wrongCredentials": "Usuario y/o contraseña incorrectos"
   },
@@ -120,11 +120,11 @@
   },
   "settings": {
     "instanceName": "Nombre de la instancia",
-    "brandingDirectoryPath": "Branding directory path",
+    "brandingDirectoryPath": "Ruta de la carpeta de personalizacion de marca",
     "documentation": "documentación",
-    "branding": "Branding",
+    "branding": "Marca",
     "disableExternalLinks": "Deshabilitar enlaces externos (excepto documentación)",
-    "brandingHelp": "You can costumize how your File Browser instance looks and feels by changing its name, replacing the logo, adding custom styles and even disable external links to GitHub.\nFor more information about custom branding, please check out the {0}.",
+    "brandingHelp": "Tú puedes personalizar como se ve tu instancia de FileBrowser cambiándole el nombre, reemplazando ellogo, agregar estilos personalizados e incluso deshabilitando loslinks externos que apuntan hacia GitHub. \nPara mayor información acerca de personalización de marca, por favor revisa el {0}.",
     "admin": "Admin",
     "administrator": "Administrador",
     "allowCommands": "Ejecutar comandos",
@@ -165,7 +165,7 @@
     "users": "Usuarios",
     "globalRules": "This is a global set of allow and disallow rules. They apply to every user. You can define specific rules on each user's settings to override this ones.",
     "allowSignup": "Permitir registro de usuarios",
-    "createUserDir": "Auto create user home dir while adding new user",
+    "createUserDir": "Crea automaticamente una carpeta de inicio cuando se agrega un usuario",
     "insertRegex": "Introducir expresión regular",
     "insertPath": "Introduce la ruta",
     "userUpdated": "¡Usuario actualizado!",
@@ -185,8 +185,8 @@
   },
   "sidebar": {
     "help": "Ayuda",
-    "login": "Login",
-    "signup": "Signup",
+    "login": "Iniciar sesión",
+    "signup": "Registrate",
     "logout": "Cerrar sesión",
     "myFiles": "Mis archivos",
     "newFile": "Nuevo archivo",
@@ -203,8 +203,8 @@
     "types": "Tipos",
     "video": "Vídeo",
     "search": "Buscar...",
-    "typeToSearch": "Type to search...",
-    "pressToSearch": "Press enter to search..."
+    "typeToSearch": "Escribe para realizar una busqueda...",
+    "pressToSearch": "Presiona enter para buscar..."
   },
   "languages": {
     "ar": "العربية",

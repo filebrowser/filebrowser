@@ -209,6 +209,7 @@
   "languages": {
     "ar": "العربية",
     "en": "English",
+    "is": "Icelandic",
     "it": "Italiano",
     "fr": "Français",
     "pt": "Português",
@@ -220,7 +221,10 @@
     "de": "Deutsch",
     "ru": "Русский",
     "pl": "Polski",
-    "ko": "한국어"
+    "ko": "한국어",
+    "nlBE": "Dutch (Belgium)",
+    "ro": "Romanian",
+    "svSE": "Swedish (Sweden)"
   },
   "time": {
     "unit": "Time Unit",

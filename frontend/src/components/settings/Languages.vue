@@ -5,13 +5,17 @@
     <option value="en">{{ $t('languages.en') }}</option>
     <option value="es">{{ $t('languages.es') }}</option>
     <option value="fr">{{ $t('languages.fr') }}</option>
+    <option value="is">{{ $t('languages.is') }}</option>
     <option value="it">{{ $t('languages.it') }}</option>
     <option value="ja">{{ $t('languages.ja') }}</option>
     <option value="ko">{{ $t('languages.ko') }}</option>
+    <option value="nl-be">{{ $t('languages.nlBE') }}</option>
     <option value="pl">{{ $t('languages.pl') }}</option>
     <option value="pt-br">{{ $t('languages.ptBR') }}</option>
     <option value="pt">{{ $t('languages.pt') }}</option>
+    <option value="ro">{{ $t('languages.ro') }}</option>
     <option value="ru">{{ $t('languages.ru') }}</option>
+    <option value="sv-se">{{ $t('languages.svSE') }}</option>
     <option value="zh-cn">{{ $t('languages.zhCN') }}</option>
     <option value="zh-tw">{{ $t('languages.zhTW') }}</option>
   </select>
