@@ -6,13 +6,17 @@ import de from './de.json'
 import en from './en.json'
 import es from './es.json'
 import fr from './fr.json'
+import is from './is.json'
 import it from './it.json'
 import ja from './ja.json'
-import pl from './pl.json'
 import ko from './ko.json'
+import nlBE from './nl-be.json'
+import pl from './pl.json'
 import pt from './pt.json'
 import ptBR from './pt-br.json'
+import ro from './ro.json'
 import ru from './ru.json'
+import svSE from './sv-se.json'
 import zhCN from './zh-cn.json'
 import zhTW from './zh-tw.json'
 
@@ -21,6 +25,12 @@ Vue.use(VueI18n)
 export function detectLocale () {
   let locale = (navigator.language || navigator.browserLangugae).toLowerCase()
   switch (true) {
+    case /^ar.*/i.test(locale):
+      locale = 'ar'
+      break
+    case /^es.*/i.test(locale):
+      locale = 'es'
+      break
     case /^en.*/i.test(locale):
       locale = 'en'
       break
@@ -47,9 +57,6 @@ export function detectLocale () {
       break
     case /^zh.*/i.test(locale):
       locale = 'zh-cn'
-      break
-    case /^es.*/i.test(locale):
-      locale = 'es'
       break
     case /^de.*/i.test(locale):
       locale = 'de'
@@ -79,13 +86,17 @@ const i18n = new VueI18n({
     'en': en,
     'es': es,
     'fr': fr,
+    'is': is,
     'it': it,
     'ja': ja,
     'ko': ko,
+    'nl-be': nlBE,
     'pl': pl,
     'pt-br': ptBR,
     'pt': pt,
     'ru': ru,
+    'ro': ro,
+    'sv-se': svSE,
     'zh-cn': zhCN,
     'zh-tw': zhTW
   }
