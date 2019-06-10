@@ -30,7 +30,7 @@ require (
 	github.com/spf13/viper v1.4.0
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
-	go.etcd.io/bbolt v1.3.2
+	go.etcd.io/bbolt v1.3.3
 	golang.org/x/crypto v0.0.0-20190510104115-cbcb75029529
 	golang.org/x/net v0.0.0-20190509222800-a4d6f7feada5 // indirect
 	golang.org/x/sys v0.0.0-20190509141414-a5b02f93d862 // indirect
