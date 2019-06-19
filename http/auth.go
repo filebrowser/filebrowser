@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -137,6 +138,15 @@ var signupHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, 
 	}
 
 	user.Password = pwd
+
+	userHome, err := d.settings.MakeUserDir(user.Username, user.Scope, d.server.Root)
+	if err != nil {
+		log.Printf("create user: failed to mkdir user home dir: [%s]", userHome)
+		return http.StatusInternalServerError, err
+	}
+	user.Scope = userHome
+	log.Printf("new user: %s, home dir: [%s].", user.Username, userHome)
+
 	err = d.store.Users.Save(user)
 	if err == errors.ErrExist {
 		return http.StatusConflict, err
