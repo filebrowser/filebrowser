@@ -91,6 +91,7 @@ import Item from './ListingItem'
 import css from '@/utils/css'
 import { users, files as api } from '@/api'
 import buttons from '@/utils/buttons'
+import url from '@/utils/url'
 
 export default {
   name: 'listing',
@@ -376,7 +377,8 @@ export default {
 
       for (let i = 0; i < files.length; i++) {
         let file = files[i]
-        promises.push(api.post(this.$route.path + base + file.name, file, overwrite, onupload(i)))
+        let filenameEncoded = url.encodeRFC5987ValueChars(file.name)
+        promises.push(api.post(this.$route.path + base + filenameEncoded, file, overwrite, onupload(i)))
       }
 
       let finish = () => {
