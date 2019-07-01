@@ -64,6 +64,7 @@ func NewHandler(storage *storage.Storage, server *settings.Server) (http.Handler
 	public := api.PathPrefix("/public").Subrouter()
 	public.PathPrefix("/dl").Handler(monkey(publicDlHandler, "/api/public/dl/")).Methods("GET")
 	public.PathPrefix("/share").Handler(monkey(publicShareHandler, "/api/public/share/")).Methods("GET")
+	public.PathPrefix("/resources").Handler(monkey(publicShareFolderHandler, "/api/public/resources/")).Methods("GET")
 
 	return stripPrefix(server.BaseURL, r), nil
 }

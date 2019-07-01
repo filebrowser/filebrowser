@@ -58,3 +58,22 @@ var publicDlHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, 
 
 	return rawDirHandler(w, r, d, file)
 })
+
+var publicShareFolderHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	baseFolder := d.raw.(*files.FileInfo)
+
+	file, err := files.NewFileInfo(files.FileOptions{
+		Fs:      d.user.Fs,
+		Path:    baseFolder.Path + "/" + r.Header.Get("Relative-Path"),
+		Modify:  d.user.Perm.Modify,
+		Expand:  true,
+		Checker: d,
+	})
+	if err != nil {
+		return errToStatus(err), err
+	}
+
+	file.Listing.Sorting = d.user.Sorting
+	file.Listing.ApplySort()
+	return renderJSON(w, r, file)
+})
