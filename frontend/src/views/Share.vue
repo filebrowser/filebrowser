@@ -83,7 +83,6 @@ export default {
           }).then((file) => {
             return file.items
           });
-          console.log(items);
 
           this.dirContent = items;
         }
