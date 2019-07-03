@@ -1,6 +1,13 @@
 <template>
-  <div class="share" v-if="loaded">
-    <a target="_blank" :href="link" v-if="!file.isDir">
+  <div
+    class="share"
+    v-if="loaded"
+  >
+    <a
+      target="_blank"
+      :href="link"
+      v-if="!file.isDir"
+    >
       <div class="share__box">
         <div class="share__box__download">{{ $t('download.downloadFile') }}</div>
         <div class="share__box__info">
@@ -11,21 +18,27 @@
             width="150"
             xmlns="http://www.w3.org/2000/svg"
           >
+            <path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z" />
             <path
-              d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"
+              d="M0 0h24v24H0z"
+              fill="none"
             />
-            <path d="M0 0h24v24H0z" fill="none" />
           </svg>
           <h1 class="share__box__title">{{ file.name }}</h1>
-          <qrcode-vue :value="fullLink" size="200" level="M"></qrcode-vue>
+          <qrcode-vue
+            :value="fullLink"
+            size="200"
+            level="M"
+          ></qrcode-vue>
         </div>
       </div>
     </a>
-    <listing></listing>
+    <listing :class="{ multiple }"></listing>
   </div>
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex'
 import Listing from '@/components/files/Listing'
 
 import { share as api } from '@/api'
@@ -51,6 +64,17 @@ export default {
     this.fetchData()
   },
   computed: {
+    ...mapState([
+      'isEditor',
+      'isFiles',
+      'isListing',
+      'loading',
+      'multiple',
+      'reload',
+      'req',
+      'selectedCount',
+      'user'
+    ]),
     hash: function () {
       return this.$route.params.pathMatch
     },
@@ -84,7 +108,22 @@ export default {
             return file.items
           });
 
+          this.$store.commit('setReload', false)
+          this.$store.commit('resetSelected')
+          this.$store.commit('multiple', false)
+          this.$store.commit('closeHovers')
+
           this.dirContent = items;
+          const req = {
+            items,
+            sorting: {
+              isDir: true,
+              asc: false,
+              by: "name",
+              path: relativePath,
+            }
+          };
+          this.$store.commit('updateRequest', req)
         }
 
         this.loaded = true

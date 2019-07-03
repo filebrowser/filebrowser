@@ -62,9 +62,14 @@ var publicDlHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, 
 var publicShareFolderHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	baseFolder := d.raw.(*files.FileInfo)
 
+	path := baseFolder.Path
+	if relativeHeaderString := r.Header.Get("Relative-Path"); relativeHeaderString != "" {
+		path = path + "/" + relativeHeaderString
+	}
+
 	file, err := files.NewFileInfo(files.FileOptions{
 		Fs:      d.user.Fs,
-		Path:    baseFolder.Path + "/" + r.Header.Get("Relative-Path"),
+		Path:    path,
 		Modify:  d.user.Perm.Modify,
 		Expand:  true,
 		Checker: d,
