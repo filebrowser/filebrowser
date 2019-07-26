@@ -8,6 +8,7 @@
     @mousedown="mousedownStart"
     @mousemove="mouseMove"
     @mouseup="mouseUp"
+    @wheel="wheelMove"
   >
     <img :src="src" class="image-ex-img" ref="imgex" @load="setCenter">
   </div>
@@ -32,9 +33,9 @@ export default {
       type: Array,
       default: () => []
     },
-    step: {
+    zoomStep: {
       type: Number,
-      default: () => 0.05
+      default: () => 0.25
     },
     autofill: {
       type: Boolean,
@@ -53,7 +54,7 @@ export default {
     }
   },
   mounted() {
-    let container = this.$refs.container;
+    let container = this.$refs.container
     this.classList.forEach(className => container.classList.add(className))
     // set width and height if they are zero
     if (getComputedStyle(container).width === "0px") {
@@ -76,9 +77,10 @@ export default {
         rate = 1
       }
       // height will be auto set
-      img.width = Math.floor(img.clientWidth * rate);
-      img.style.top = `${Math.floor((container.clientHeight - img.clientHeight) / 2)}px`;
-      img.style.left = `${Math.floor((container.clientWidth - img.clientWidth) / 2)}px`;
+      img.width = Math.floor(img.clientWidth * rate)
+      img.style.top = `${Math.floor((container.clientHeight - img.clientHeight) / 2)}px`
+      img.style.left = `${Math.floor((container.clientWidth - img.clientWidth) / 2)}px`
+      document.addEventListener('mouseup', () => this.inDrag = false )
     },
     mousedownStart(event) {
       this.lastX = null
@@ -114,7 +116,7 @@ export default {
           this.scale = 1
           break
       }
-      this.$refs.imgex.style.transform = `scale(${this.scale})`
+      this.setZoom()
       event.preventDefault()
     },
     touchMove(event) {
@@ -142,12 +144,9 @@ export default {
           this.lastTouchDistance = touchDistance
           return
         }
-        this.scale =
-          this.scale + (touchDistance - this.lastTouchDistance) / step
-        this.scale = this.scale < this.minScale ? this.minScale : this.scale
-        this.scale = this.scale > this.maxScale ? this.maxScale : this.scale
+        this.scale += (touchDistance - this.lastTouchDistance) / step
         this.lastTouchDistance = touchDistance
-        this.$refs.imgex.style.transform = `scale(${this.scale})`
+        this.setZoom()
       } else if (event.targetTouches.length === 1) {
         if (this.moveDisabled) return
         let x = event.targetTouches[0].pageX - this.lastX
@@ -163,6 +162,15 @@ export default {
       style.left = `${this.pxStringToNumber(style.left) + x}px`
       style.top = `${this.pxStringToNumber(style.top) + y}px`
     },
+    wheelMove(event) {
+      this.scale += (event.wheelDeltaY / 100) * this.zoomStep
+      this.setZoom()
+    },
+    setZoom() {
+      this.scale = this.scale < this.minScale ? this.minScale : this.scale
+      this.scale = this.scale > this.maxScale ? this.maxScale : this.scale
+      this.$refs.imgex.style.transform = `scale(${this.scale})`
+    },
     pxStringToNumber(style) {
       return +style.replace("px", "")
     }
@@ -171,14 +179,15 @@ export default {
 </script>
 <style>
 .image-ex-container {
-  position: relative;
   margin: auto;
   overflow: hidden;
+  position: relative;
 }
 
 .image-ex-img {
-  position: absolute;
-  top: 0;
   left: 0;
+  top: 0;
+  position: absolute;
+  transition: transform 0.1s ease;
 }
 </style>
