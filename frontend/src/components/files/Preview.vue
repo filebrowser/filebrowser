@@ -19,7 +19,7 @@
     </button>
 
     <div class="preview">
-      <img v-if="req.type == 'image'" :src="raw">
+      <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
       <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
       <video v-else-if="req.type == 'video'" :src="raw" autoplay controls>
         <track
@@ -49,6 +49,7 @@ import InfoButton from '@/components/buttons/Info'
 import DeleteButton from '@/components/buttons/Delete'
 import RenameButton from '@/components/buttons/Rename'
 import DownloadButton from '@/components/buttons/Download'
+import ExtendedImage from './ExtendedImage'
 
 const mediaTypes = [
   "image",
@@ -63,7 +64,8 @@ export default {
     InfoButton,
     DeleteButton,
     RenameButton,
-    DownloadButton
+    DownloadButton,
+    ExtendedImage
   },
   data: function () {
     return {
