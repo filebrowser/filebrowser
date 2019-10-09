@@ -76,7 +76,7 @@ type ReCaptcha struct {
 // Ok checks if a reCaptcha responde is correct.
 func (r *ReCaptcha) Ok(response string) (bool, error) {
 	body := url.Values{}
-	body.Set("secret", r.Key)
+	body.Set("secret", r.Secret)
 	body.Add("response", response)
 
 	client := &http.Client{}
