@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+
+  filebrowser:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5001:80"
+    networks:
+      - filebrowser-nw
+    volumes:
+      - "./.docker/database/database.db:/database.db"
+      - "./.docker/sysroot:/srv"
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+networks:
+  filebrowser-nw:
+

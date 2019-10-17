@@ -5,6 +5,7 @@ _old
 rice-box.go
 .idea/
 filebrowser
+.docker/sysroot/*
 
 .DS_Store
 node_modules
