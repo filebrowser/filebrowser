@@ -31,24 +31,23 @@
   <script>
     window.FileBrowser = JSON.parse(`[{[ .Json ]}]`);
     
-    var baseFullURL = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + window.FileBrowser.BaseURL;
-
+    var fullStaticURL = window.location.origin + "/" + window.FileBrowser.StaticURL; 
     var dynamicManifest = {
       "name": window.FileBrowser.Name || 'File Browser',
       "short_name": window.FileBrowser.Name || 'File Browser',
       "icons": [
         {
-          "src": baseFullURL + "/static/img/icons/android-chrome-192x192.png",
+          "src": fullStaticURL + "/img/icons/android-chrome-192x192.png",
           "sizes": "192x192",
           "type": "image/png"
         },
         {
-          "src": baseFullURL + "/static/img/icons/android-chrome-512x512.png",
+          "src": fullStaticURL + "/img/icons/android-chrome-512x512.png",
           "sizes": "512x512",
           "type": "image/png"
         }
       ],
-      "start_url": baseFullURL,
+      "start_url": window.location.origin + window.FileBrowser.BaseURL,
       "display": "standalone",
       "background_color": "#ffffff",
       "theme_color": "#455a64"
