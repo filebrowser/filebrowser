@@ -7,18 +7,16 @@ WORKDIR /app
 # Copy the source from the current directory to the Working Directory inside the container
 COPY . .
 
-# Remove old build files (if present)
+# 1. Remove old build files (if present)
+# 2. Set the current directory to frontend
+# 3. Install dependencies
+# 4. Build the frontend
 RUN rm -rf frontend/dist && \
-    rm -f http/rice-box.go
-
-# Set the Current Working Directory inside the container
-WORKDIR /app/frontend
-
-# Install dependencies
-RUN npm install
-
-# Build the frontend
-RUN npm run build
+    rm -rf frontend/node_modules && \
+    rm -f http/rice-box.go && \
+    cd /app/frontend && \
+    npm install && \
+    npm run build
 
 
 # Build the binary
@@ -27,27 +25,24 @@ FROM golang:alpine as binary-builder
 # Set the Current Working Directory inside the container
 WORKDIR /app
 
-# Install requirements
-RUN apk add --no-cache gcc musl-dev
-
 # Copy go mod and sum files
 COPY go.mod go.sum ./
-
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
-RUN go mod download
 
 # Copy the source from the current directory to the Working Directory inside the container
 COPY --from=frontend-builder /app .
 
-# Install dependencies
-RUN go install github.com/GeertJohan/go.rice/rice
-RUN cd /app/http && \
+# 1. Install requirements
+# 2. Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+# 3. Install dependencies
+# 4. Build the Go app
+RUN apk add --no-cache gcc musl-dev && \
+    go mod download && \
+    go install github.com/GeertJohan/go.rice/rice && \
+    cd /app/http && \
     rm -rf rice-box.go && \
     rice embed-go && \
-    cd /app
-
-# Build the Go app
-RUN go build -a -o filebrowser -ldflags "-s -w"
+    cd /app && \
+    go build -a -o filebrowser -ldflags "-s -w"
 
 
 # Add CA certificates
