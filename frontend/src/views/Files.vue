@@ -176,7 +176,8 @@ export default {
           !this.isFiles ||
           this.loading ||
           !this.user.perm.delete ||
-          (this.isListing && this.selectedCount === 0)) return
+          (this.isListing && this.selectedCount === 0) ||
+          this.$store.state.show != null) return
 
         this.$store.commit('showHover', 'delete')
       }
