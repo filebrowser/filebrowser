@@ -16,6 +16,7 @@
       <internal-error v-else></internal-error>
     </div>
     <editor v-else-if="isEditor"></editor>
+    <diagrams v-else-if="isDiagrams"></diagrams>
     <listing :class="{ multiple }" v-else-if="isListing"></listing>
     <preview v-else-if="isPreview"></preview>
     <div v-else>
@@ -35,6 +36,7 @@ import Listing from '@/components/files/Listing'
 import Editor from '@/components/files/Editor'
 import { files as api } from '@/api'
 import { mapGetters, mapState, mapMutations } from 'vuex'
+import Diagrams from '@/components/files/DiagramsViewer'
 
 function clean (path) {
   return path.endsWith('/') ? path.slice(0, -1) : path
@@ -48,14 +50,16 @@ export default {
     InternalError,
     Preview,
     Listing,
-    Editor
+    Editor,
+    Diagrams
   },
   computed: {
     ...mapGetters([
       'selectedCount',
       'isListing',
       'isEditor',
-      'isFiles'
+      'isFiles',
+      'isDiagrams'
     ]),
     ...mapState([
       'req',

@@ -149,11 +149,25 @@ func (i *FileInfo) detectType(modify, saveContent bool) error {
 	}
 
 	mimetype := mime.TypeByExtension(i.Extension)
+	if i.Extension == ".bpmn" { //Hardcoded extension because BPMN is not available in mime-db.
+		mimetype = "bpmn"
+	}
 	if mimetype == "" {
 		mimetype = http.DetectContentType(buffer[:n])
 	}
 
 	switch {
+	case strings.HasPrefix(mimetype, "bpmn"):
+		i.Type = "bpmn"
+		// START - Store content from API json for further use cases
+		afs := &afero.Afero{Fs: i.Fs}
+		content, err := afs.ReadFile(i.Path)
+		if err != nil {
+			return err
+		}
+		i.Content = string(content)
+		// END - Store content from API json for further use cases
+		return nil
 	case strings.HasPrefix(mimetype, "video"):
 		i.Type = "video"
 		i.detectSubtitles()
