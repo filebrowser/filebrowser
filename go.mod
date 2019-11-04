@@ -18,7 +18,7 @@ require (
 	github.com/mholt/archiver v3.1.1+incompatible
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nwaples/rardecode v1.0.0 // indirect
-	github.com/pelletier/go-toml v1.5.0
+	github.com/pelletier/go-toml v1.6.0
 	github.com/pierrec/lz4 v0.0.0-20190131084431-473cd7ce01a1 // indirect
 	github.com/spf13/afero v1.2.2
 	github.com/spf13/cobra v0.0.5
