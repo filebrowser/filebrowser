@@ -4,16 +4,17 @@ set -e
 
 untracked="(untracked)"
 REPO=$(cd $(dirname $0); pwd)
-COMMIT_SHA=$(git rev-parse --short HEAD)
+COMMIT_SHA="true"
 ASSETS="false"
 BINARY="false"
-RELEASE=""
+RELEASE="false"
+SEMVER=""
 
 debugInfo () {
   echo "Repo:           $REPO"
   echo "Build assets:   $ASSETS"
   echo "Build binary:   $BINARY"
-  echo "Release:        $RELEASE"
+  echo "Release:        $SEMVER"
 }
 
 buildAssets () {
@@ -43,11 +44,19 @@ buildBinary () {
   rice embed-go
 
   cd $REPO
-  go build -a -o filebrowser -ldflags "-s -w -X github.com/filebrowser/filebrowser/v2/version.CommitSHA=$COMMIT_SHA"
+  CMD_VARS=""
+  if [ "$COMMIT_SHA" = "true" ]; then
+    SHA=$(git rev-parse --short HEAD)
+    CMD_VARS="-X github.com/filebrowser/filebrowser/v2/version.CommitSHA=$SHA"
+  fi
+  
+  go build -a -o filebrowser -ldflags "-s -w"
 }
 
 release () {
   cd $REPO
+
+  echo "RELEASE $#"
 
   echo "👀 Checking semver format"
 
@@ -87,30 +96,54 @@ usage() {
 
 DEBUG="false"
 
-while getopts "bacr:d" o; do
-  case "${o}" in
-    b)
+while :; do
+  case $1 in
+    -h|-\?|--help)
+      usage
+      exit
+      ;;
+    -a|--assets)
+      ASSETS="true"
+      ;;
+    -c|--compile)
+      BINARY="true"
+      ;;
+    -b|--build)
       ASSETS="true"
       BINARY="true"
       ;;
-    a)
-      ASSETS="true"
+    -r|--release)
+      RELEASE="true"
+      if [ "$2" ]; then
+        SEMVER=$2
+        shift
+      fi
       ;;
-    c)
-      BINARY="true"
+    --release=?*)
+      RELEASE="true"
+      SEMVER=${1#*=}
       ;;
-    r)
-      RELEASE=${OPTARG}
+    --release=)
+      RELEASE="true"
       ;;
-    d)
+    -d|--debug)
       DEBUG="true"
       ;;
-    *)
+    --nosha)
+      COMMIT_SHA="false"
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -?*)
       usage
       ;;
+    *)
+    break
   esac
+  shift
 done
-shift $((OPTIND-1))
 
 if [ "$DEBUG" = "true" ]; then
   debugInfo
@@ -124,6 +157,6 @@ if [ "$BINARY" = "true" ]; then
   buildBinary
 fi
 
-if [ "$RELEASE" != "" ]; then
-  release $RELEASE
+if [ "$RELEASE" = "true" ]; then
+  release $SEMVER
 fi

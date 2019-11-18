@@ -2,20 +2,18 @@ version: "3.7"
 services:
 
   filebrowser:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: filebrowser:latest
     ports:
       - "5001:80"
     networks:
       - filebrowser-nw
     volumes:
-      - "./.docker/database/database.db:/database.db"
-      - "./.docker/sysroot:/srv"
+      - database:/database
+      - fsroot:/srv
     deploy:
       replicas: 1
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
@@ -23,3 +21,6 @@ services:
 networks:
   filebrowser-nw:
 
+volumes:
+  database:
+  fsroot:
