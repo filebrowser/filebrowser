@@ -42,7 +42,8 @@ export default {
       showPrintMargin: false,
       readOnly: this.req.type === 'textImmutable',
       theme: 'ace/theme/chrome',
-      mode: modelist.getModeForPath(this.req.name).mode
+      mode: modelist.getModeForPath(this.req.name).mode,
+      wrap: true
     })
   },
   methods: {
