@@ -1,16 +1,6 @@
 <template>
   <div>
-    <help v-if="showHelp" ></help>
-    <download v-else-if="showDownload"></download>
-    <new-file v-else-if="showNewFile"></new-file>
-    <new-dir v-else-if="showNewDir"></new-dir>
-    <rename v-else-if="showRename"></rename>
-    <delete v-else-if="showDelete"></delete>
-    <info v-else-if="showInfo"></info>
-    <move v-else-if="showMove"></move>
-    <copy v-else-if="showCopy"></copy>
-    <replace v-else-if="showReplace"></replace>
-    <share v-else-if="show === 'share'"></share>
+    <component :is="currentComponent"></component>
     <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
   </div>
 </template>
@@ -56,16 +46,23 @@ export default {
   },
   computed: {
     ...mapState(['show', 'plugins']),
-    showInfo: function () { return this.show === 'info' },
-    showHelp: function () { return this.show === 'help' },
-    showDelete: function () { return this.show === 'delete' },
-    showRename: function () { return this.show === 'rename' },
-    showMove: function () { return this.show === 'move' },
-    showCopy: function () { return this.show === 'copy' },
-    showNewFile: function () { return this.show === 'newFile' },
-    showNewDir: function () { return this.show === 'newDir' },
-    showDownload: function () { return this.show === 'download' },
-    showReplace: function () { return this.show === 'replace' },
+    currentComponent: function () {
+      const matched = [
+        'info',
+        'help',
+        'delete',
+        'rename',
+        'move',
+        'copy',
+        'newFile',
+        'newDir',
+        'download',
+        'replace',
+        'share'
+      ].indexOf(this.show) >= 0;
+
+      return matched && this.show || null;
+    },
     showOverlay: function () {
       return (this.show !== null && this.show !== 'search' && this.show !== 'more')
     }
