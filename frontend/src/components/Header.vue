@@ -47,7 +47,7 @@
           <upload-button v-show="showUpload"></upload-button>
           <info-button v-show="isFiles"></info-button>
 
-          <button v-show="isListing" @click="openSelect" :aria-label="$t('buttons.selectMultiple')" :title="$t('buttons.selectMultiple')" class="action">
+          <button v-show="isListing" @click="toggleMultipleSelection" :aria-label="$t('buttons.selectMultiple')" :title="$t('buttons.selectMultiple')" class="action" >
             <i class="material-icons">check_circle</i>
             <span>{{ $t('buttons.select') }}</span>
           </button>
@@ -177,8 +177,8 @@ export default {
     openSearch () {
       this.$store.commit('showHover', 'search')
     },
-    openSelect () {
-      this.$store.commit('multiple', true)
+    toggleMultipleSelection () {
+      this.$store.commit('multiple', !this.multiple)
       this.resetPrompts()
     },
     resetPrompts () {
