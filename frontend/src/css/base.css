@@ -124,3 +124,7 @@ main {
   width: 0;
   transition: .2s ease width;
 }
+
+.break-word {
+  word-break: break-all;
+}
