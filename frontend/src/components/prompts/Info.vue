@@ -88,6 +88,7 @@ export default {
 
       try {
         const hash = await api.checksum(link, algo)
+        // eslint-disable-next-line
         event.target.innerHTML = hash
       } catch (e) {
         this.$showError(e)
