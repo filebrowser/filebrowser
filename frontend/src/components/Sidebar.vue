@@ -24,7 +24,7 @@
           <span>{{ $t('sidebar.settings') }}</span>
         </router-link>
 
-        <button v-if="!noAuth" @click="logout" class="action" id="logout" :aria-label="$t('sidebar.logout')" :title="$t('sidebar.logout')">
+        <button v-if="authMethod == 'json'" @click="logout" class="action" id="logout" :aria-label="$t('sidebar.logout')" :title="$t('sidebar.logout')">
           <i class="material-icons">exit_to_app</i>
           <span>{{ $t('sidebar.logout') }}</span>
         </button>
@@ -56,7 +56,7 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import * as auth from '@/utils/auth'
-import { version, signup, disableExternal, noAuth } from '@/utils/constants'
+import { version, signup, disableExternal, noAuth, authMethod } from '@/utils/constants'
 
 export default {
   name: 'sidebar',
@@ -69,7 +69,8 @@ export default {
     signup: () => signup,
     version: () => version,
     disableExternal: () => disableExternal,
-    noAuth: () => noAuth
+    noAuth: () => noAuth,
+    authMethod: () => authMethod
   },
   methods: {
     help () {

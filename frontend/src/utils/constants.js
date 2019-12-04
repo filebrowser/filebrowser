@@ -8,6 +8,7 @@ const signup = window.FileBrowser.Signup
 const version = window.FileBrowser.Version
 const logoURL = `/${staticURL}/img/logo.svg`
 const noAuth = window.FileBrowser.NoAuth
+const authMethod = window.FileBrowser.AuthMethod
 const loginPage = window.FileBrowser.LoginPage
 
 export {
@@ -20,5 +21,6 @@ export {
   signup,
   version,
   noAuth,
+  authMethod,
   loginPage
 }

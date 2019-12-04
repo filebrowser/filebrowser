@@ -34,6 +34,7 @@ func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, box *
 		"StaticURL":       staticURL,
 		"Signup":          d.settings.Signup,
 		"NoAuth":          d.settings.AuthMethod == auth.MethodNoAuth,
+		"AuthMethod":      d.settings.AuthMethod,
 		"LoginPage":       auther.LoginPage(),
 		"CSS":             false,
 		"ReCaptcha":       false,
