@@ -10,7 +10,7 @@ export default {
   name: 'languages',
   props: [ 'locale' ],
   data() {
-    return {
+    let dataObj = {
       locales: {
         ar: 'ar',
         de: 'de',
@@ -32,6 +32,10 @@ export default {
         'zh-tw': 'zhTW'
       }
     };
+
+    Object.defineProperty(dataObj, "locales", { configurable: false, writable: false });
+
+    return dataObj;
   },
   methods: {
     change (event) {
