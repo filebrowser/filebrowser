@@ -18,10 +18,7 @@ export default {
     ...mapState(['req'])
   },
   data: function () {
-    return {
-      content: null,
-      editor: null
-    }
+    return {}
   },
   created () {
     window.addEventListener('keydown', this.keyEvent)
@@ -30,16 +27,15 @@ export default {
   beforeDestroy () {
     window.removeEventListener('keydown', this.keyEvent)
     document.getElementById('save-button').removeEventListener('click', this.save)
+    this.editor.destroy();
   },
   mounted: function () {
-    if (this.req.content === undefined || this.req.content === null) {
-      this.req.content = ''
-    }
+    const fileContent = this.req.content || '';
 
     this.editor = ace.edit('editor', {
       maxLines: Infinity,
       minLines: 20,
-      value: this.req.content,
+      value: fileContent,
       showPrintMargin: false,
       readOnly: this.req.type === 'textImmutable',
       theme: 'ace/theme/chrome',
