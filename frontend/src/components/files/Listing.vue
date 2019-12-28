@@ -290,10 +290,9 @@ export default {
       this.resetOpacity()
 
       let dt = event.dataTransfer
-      let files = dt.files
       let el = event.target
 
-      if (files.length <= 0) return
+      if (dt.files.length <= 0) return
 
       for (let i = 0; i < 5; i++) {
         if (el !== null && !el.classList.contains('item')) {
@@ -306,28 +305,45 @@ export default {
         base = el.querySelector('.name').innerHTML + '/'
       }
 
-      if (base !== '') {
-        api.fetch(this.$route.path + base)
-          .then(req => {
-            this.checkConflict(files, req.items, base)
-          })
-          .catch(this.$showError)
-
-        return
+      if (base === '') {
+        this.scanFiles(dt).then((result) => {
+          this.checkConflict(result, this.req.items, base)
+        })
+      } else {
+        this.scanFiles(dt).then((result) => {
+          api.fetch(this.$route.path + base)
+            .then(req => {
+                this.checkConflict(result, req.items, base)
+            })
+            .catch(this.$showError)
+        })
       }
-
-      this.checkConflict(files, this.req.items, base)
     },
     checkConflict (files, items, base) {
       if (typeof items === 'undefined' || items === null) {
         items = []
       }
 
+      let folder_upload = false
+      if (files[0].fullPath !== undefined) {
+        folder_upload = true
+      }
+
       let conflict = false
       for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        let name = file.name
+
+        if (folder_upload) {
+          let dirs = file.fullPath.split("/")
+          if (dirs.length > 1) {
+            name = dirs[0]
+          }
+        }
+
         let res = items.findIndex(function hasConflict (element) {
           return (element.name === this)
-        }, files[i].name)
+        }, name)
 
         if (res >= 0) {
           conflict = true
@@ -359,6 +375,60 @@ export default {
         file.style.opacity = 1
       })
     },
+    scanFiles(dt) {
+        return new Promise((resolve) => {
+            let reading = 0
+            const contents = []
+
+            if (dt.items !== undefined) {
+              for (let item of dt.items) {
+                if (item.kind === "file" && typeof item.webkitGetAsEntry === "function") {
+                  const entry = item.webkitGetAsEntry()
+                  readEntry(entry)
+                }
+              }
+            } else {
+              resolve(dt.files);
+            }
+
+            function readEntry(entry, directory = "") {
+                if (entry.isFile) {
+                    reading++
+                    entry.file(file => {
+                        reading--
+
+                        file.fullPath = `${directory}${file.name}`
+                        contents.push(file)
+
+                        if (reading === 0) {
+                            resolve(contents)
+                        }
+                    })
+                } else if (entry.isDirectory) {
+                    readReaderContent(entry.createReader(), `${directory}${entry.name}`)
+                }
+            }
+
+            function readReaderContent(reader, directory) {
+                reading++
+
+                reader.readEntries(function (entries) {
+                    reading--
+                    if (entries.length > 0) {
+                        for (const entry of entries) {
+                            readEntry(entry, `${directory}/`)
+                        }
+
+                        readReaderContent(reader, `${directory}/`)
+                    }
+
+                    if (reading === 0) {
+                        resolve(contents)
+                    }
+                })
+            }
+        })
+    },
     handleFiles (files, base, overwrite = false) {
       buttons.loading('upload')
       let promises = []
@@ -377,7 +447,8 @@ export default {
 
       for (let i = 0; i < files.length; i++) {
         let file = files[i]
-        let filenameEncoded = url.encodeRFC5987ValueChars(file.name)
+        let filename = (file.fullPath !== undefined) ? file.fullPath : file.name
+        let filenameEncoded = url.encodeRFC5987ValueChars(filename)
         promises.push(api.post(this.$route.path + base + filenameEncoded, file, overwrite, onupload(i)))
       }
 
