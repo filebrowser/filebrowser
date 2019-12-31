@@ -190,7 +190,7 @@ export default {
     document.removeEventListener('drop', this.drop)
   },
   methods: {
-    ...mapMutations([ 'updateUser' ]),
+    ...mapMutations([ 'updateUser', 'addSelected' ]),
     base64: function (name) {
       return window.btoa(unescape(encodeURIComponent(name)))
     },
@@ -212,6 +212,19 @@ export default {
           break
         case 'v':
           this.paste(event)
+          break
+        case 'a':
+          event.preventDefault()
+          for (let file of this.items.files) {
+            if (this.$store.state.selected.indexOf(file.index) === -1) {
+              this.addSelected(file.index)
+            }
+          }
+          for (let dir of this.items.dirs) {
+            if (this.$store.state.selected.indexOf(dir.index) === -1) {
+              this.addSelected(dir.index)
+            }
+          }
           break
       }
     },
