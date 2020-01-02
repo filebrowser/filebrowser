@@ -5,4 +5,5 @@ type Branding struct {
 	Name            string `json:"name"`
 	DisableExternal bool   `json:"disableExternal"`
 	Files           string `json:"files"`
+	Theme           string `json:"theme"`
 }

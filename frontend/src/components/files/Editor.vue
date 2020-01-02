@@ -10,6 +10,7 @@ import buttons from '@/utils/buttons'
 import ace from 'ace-builds/src-min-noconflict/ace.js'
 import modelist from 'ace-builds/src-min-noconflict/ext-modelist.js'
 import 'ace-builds/webpack-resolver'
+import { theme } from '@/utils/constants'
 
 export default {
   name: 'editor',
@@ -45,6 +46,10 @@ export default {
       mode: modelist.getModeForPath(this.req.name).mode,
       wrap: true
     })
+
+    if (theme == 'dark') {
+      this.editor.setTheme("ace/theme/twilight");
+    }
   },
   methods: {
     keyEvent (event) {

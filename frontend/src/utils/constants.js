@@ -9,6 +9,7 @@ const version = window.FileBrowser.Version
 const logoURL = `/${staticURL}/img/logo.svg`
 const noAuth = window.FileBrowser.NoAuth
 const loginPage = window.FileBrowser.LoginPage
+const theme = window.FileBrowser.Theme
 
 export {
   name,
@@ -20,5 +21,6 @@ export {
   signup,
   version,
   noAuth,
-  loginPage
+  loginPage,
+  theme
 }
