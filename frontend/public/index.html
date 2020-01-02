@@ -133,6 +133,9 @@
     </div>
   </div>
 
+  [{[ if .Theme -]}]
+    <link rel="stylesheet" href="/[{[ .StaticURL ]}]/themes/[{[ .Theme ]}].css" />
+  [{[ end ]}]
   [{[ if .CSS -]}]
     <link rel="stylesheet" href="/[{[ .StaticURL ]}]/custom.css" />
   [{[ end ]}]
