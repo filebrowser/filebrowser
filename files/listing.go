@@ -62,11 +62,11 @@ func (l byName) Swap(i, j int) {
 // Treat upper and lower case equally
 func (l byName) Less(i, j int) bool {
 	if l.Items[i].IsDir && !l.Items[j].IsDir {
-		return true
+		return l.Sorting.Asc
 	}
 
 	if !l.Items[i].IsDir && l.Items[j].IsDir {
-		return false
+		return !l.Sorting.Asc
 	}
 
 	return natural.Less(strings.ToLower(l.Items[j].Name), strings.ToLower(l.Items[i].Name))
