@@ -129,7 +129,7 @@ export default {
         return
       }
 
-      if (event.shiftKey && this.selected.length === 1) {
+      if (event.shiftKey) {
         let fi = 0
         let la = 0
 
