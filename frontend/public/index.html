@@ -14,7 +14,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/[{[ .StaticURL ]}]/img/icons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/[{[ .StaticURL ]}]/img/icons/favicon-16x16.png">
   <!-- Add to home screen for Android and modern mobile browsers -->
-  <link rel="manifest" id="manifestPlaceholder">
+  <link rel="manifest" id="manifestPlaceholder" crossorigin="use-credentials">
   <meta name="theme-color" content="#2979ff">
 
   <!-- Add to home screen for Safari on iOS -->
@@ -133,6 +133,9 @@
     </div>
   </div>
 
+  [{[ if .Theme -]}]
+    <link rel="stylesheet" href="/[{[ .StaticURL ]}]/themes/[{[ .Theme ]}].css" />
+  [{[ end ]}]
   [{[ if .CSS -]}]
     <link rel="stylesheet" href="/[{[ .StaticURL ]}]/custom.css" />
   [{[ end ]}]

@@ -30,6 +30,11 @@
         </p>
 
         <p>
+          <label for="theme">{{ $t('settings.themes.title') }}</label>
+          <themes class="input input--block" :theme.sync="settings.branding.theme" id="theme"></themes>
+        </p>
+
+        <p>
           <label for="branding-name">{{ $t('settings.instanceName') }}</label>
           <input class="input input--block" type="text" v-model="settings.branding.name" id="branding-name" />
         </p>
@@ -98,10 +103,12 @@ import { mapState } from 'vuex'
 import { settings as api } from '@/api'
 import UserForm from '@/components/settings/UserForm'
 import Rules from '@/components/settings/Rules'
+import Themes from '@/components/settings/Themes'
 
 export default {
   name: 'settings',
   components: {
+    Themes,
     UserForm,
     Rules
   },

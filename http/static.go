@@ -38,6 +38,7 @@ func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, box *
 		"LoginPage":       auther.LoginPage(),
 		"CSS":             false,
 		"ReCaptcha":       false,
+		"Theme":           d.settings.Branding.Theme,
 	}
 
 	if d.settings.Branding.Files != "" {

@@ -1,30 +1,42 @@
 <template>
   <select v-on:change="change" :value="locale">
-    <option value="ar">{{ $t('languages.ar') }}</option>
-    <option value="de">{{ $t('languages.de') }}</option>
-    <option value="en">{{ $t('languages.en') }}</option>
-    <option value="es">{{ $t('languages.es') }}</option>
-    <option value="fr">{{ $t('languages.fr') }}</option>
-    <option value="is">{{ $t('languages.is') }}</option>
-    <option value="it">{{ $t('languages.it') }}</option>
-    <option value="ja">{{ $t('languages.ja') }}</option>
-    <option value="ko">{{ $t('languages.ko') }}</option>
-    <option value="nl-be">{{ $t('languages.nlBE') }}</option>
-    <option value="pl">{{ $t('languages.pl') }}</option>
-    <option value="pt-br">{{ $t('languages.ptBR') }}</option>
-    <option value="pt">{{ $t('languages.pt') }}</option>
-    <option value="ro">{{ $t('languages.ro') }}</option>
-    <option value="ru">{{ $t('languages.ru') }}</option>
-    <option value="sv-se">{{ $t('languages.svSE') }}</option>
-    <option value="zh-cn">{{ $t('languages.zhCN') }}</option>
-    <option value="zh-tw">{{ $t('languages.zhTW') }}</option>
+    <option v-for="(language, value) in locales" :key="value" :value="value">{{ $t('languages.' + language) }}</option>
   </select>
 </template>
 
 <script>
+
 export default {
   name: 'languages',
   props: [ 'locale' ],
+  data() {
+    let dataObj = {
+      locales: {
+        ar: 'ar',
+        de: 'de',
+        en: 'en',
+        es: 'es',
+        fr: 'fr',
+        is: 'is',
+        it: 'it',
+        ja: 'ja',
+        ko: 'ko',
+        'nl-be': 'nlBE',
+        pl: 'pl',
+        'pt-br': 'ptBR',
+        pt: 'pt',
+        ro: 'ro',
+        ru: 'ru',
+        'sv-se': 'svSE',
+        'zh-cn': 'zhCN',
+        'zh-tw': 'zhTW'
+      }
+    };
+
+    Object.defineProperty(dataObj, "locales", { configurable: false, writable: false });
+
+    return dataObj;
+  },
   methods: {
     change (event) {
       this.$emit('update:locale', event.target.value)

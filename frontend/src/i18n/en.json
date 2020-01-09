@@ -119,6 +119,11 @@
     "newArchetype": "Create a new post based on an archetype. Your file will be created on content folder."
   },
   "settings": {
+    "themes": {
+      "title": "Theme",
+      "light": "Light",
+      "dark": "Dark"
+    },
     "instanceName": "Instance name",
     "brandingDirectoryPath": "Branding directory path",
     "documentation": "documentation",

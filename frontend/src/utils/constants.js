@@ -10,6 +10,7 @@ const logoURL = `/${staticURL}/img/logo.svg`
 const noAuth = window.FileBrowser.NoAuth
 const authMethod = window.FileBrowser.AuthMethod
 const loginPage = window.FileBrowser.LoginPage
+const theme = window.FileBrowser.Theme
 
 export {
   name,
@@ -22,5 +23,6 @@ export {
   version,
   noAuth,
   authMethod,
-  loginPage
+  loginPage,
+  theme
 }
