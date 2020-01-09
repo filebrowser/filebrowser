@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/filebrowser/logo/master/banner.png" width="550"/>
 </p>
 
-⚠️ WARN: **This project is not under active development ATM. A small group of developers keeps the project alive, but due to lack of time, we can't continue adding new features or doing deep changes. Please read [#532](https://github.com/filebrowser/filebrowser/issues/532) for more info!**
+⚠️ WARN: **This project will not be developed anymore. If you're willing to take over this project, please read [#532](https://github.com/filebrowser/filebrowser/issues/532) for more info!**
 
 ![Preview](https://user-images.githubusercontent.com/5447088/50716739-ebd26700-107a-11e9-9817-14230c53efd2.gif)
 
