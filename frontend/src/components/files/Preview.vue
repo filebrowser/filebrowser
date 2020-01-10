@@ -4,7 +4,8 @@
       <button @click="back" class="action" :title="$t('files.closePreview')" :aria-label="$t('files.closePreview')" id="close">
         <i class="material-icons">close</i>
       </button>
-
+      <span class="title">{{ req.name }}</span>
+      <edit-button v-if="isFileEditable"></edit-button>
       <rename-button v-if="user.perm.rename"></rename-button>
       <delete-button v-if="user.perm.delete"></delete-button>
       <download-button v-if="user.perm.download"></download-button>
@@ -33,29 +34,37 @@
         and watch it with your favorite video player!
       </video>
       <object v-else-if="req.extension == '.pdf'" class="pdf" :data="raw"></object>
-      <a v-else-if="req.type == 'blob'" :href="download">
-        <h2 class="message">{{ $t('buttons.download') }} <i class="material-icons">file_download</i></h2>
-      </a>
+      <div class="html" v-else-if="req.extension == '.html'"> <iframe :src="getHtmlContent()"></iframe> </div>
+      <div class="markdown" v-else-if="isMarkdown" v-html="getMarkdownContent()"></div>
+      <div class="text" v-else-if="req.type == 'text'">{{ previewContent }}</div>
+      <div v-else>
+        <a :href="download">
+          <h2 class="message">{{ $t('buttons.download') }} <i class="material-icons">file_download</i></h2>
+        </a>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import url from '@/utils/url'
 import { baseURL } from '@/utils/constants'
 import { files as api } from '@/api'
+import marked from 'marked'
 import InfoButton from '@/components/buttons/Info'
 import DeleteButton from '@/components/buttons/Delete'
 import RenameButton from '@/components/buttons/Rename'
 import DownloadButton from '@/components/buttons/Download'
+import EditButton from '@/components/buttons/Edit'
 import ExtendedImage from './ExtendedImage'
 
-const mediaTypes = [
-  "image",
-  "video",
-  "audio",
-  "blob"
+const markdownExtesions = [
+  '.md',
+  '.mkdn',
+  '.mdwn',
+  '.mdown',
+  '.markdown'
 ]
 
 export default {
@@ -65,6 +74,7 @@ export default {
     DeleteButton,
     RenameButton,
     DownloadButton,
+    EditButton,
     ExtendedImage
   },
   data: function () {
@@ -76,7 +86,8 @@ export default {
     }
   },
   computed: {
-    ...mapState(['req', 'user', 'oldReq', 'jwt']),
+    ...mapGetters(['isFileEditable']),
+    ...mapState(['req', 'user', 'oldReq', 'jwt', 'previewContent']),
     hasPrevious () {
       return (this.previousLink !== '')
     },
@@ -88,10 +99,13 @@ export default {
     },
     raw () {
       return `${this.download}&inline=true`
+    },
+    isMarkdown () {
+      return markdownExtesions.includes(this.req.extension)
     }
   },
   async mounted () {
-    window.addEventListener('keyup', this.key)
+    window.addEventListener('keydown', this.key)
 
     if (this.req.subtitles) {
       this.subtitles = this.req.subtitles.map(sub => `${baseURL}/api/raw${sub}?auth=${this.jwt}&inline=true`)
@@ -110,7 +124,7 @@ export default {
     }
   },
   beforeDestroy () {
-    window.removeEventListener('keyup', this.key)
+    window.removeEventListener('keydown', this.key)
   },
   methods: {
     back () {
@@ -130,6 +144,8 @@ export default {
         if (this.hasNext) this.next()
       } else if (event.which === 37) { // left arrow
         if (this.hasPrevious) this.prev()
+      } else if (event.which == 27) { // esc
+        this.back()
       }
     },
     updateLinks (items) {
@@ -139,14 +155,14 @@ export default {
         }
 
         for (let j = i - 1; j >= 0; j--) {
-          if (mediaTypes.includes(items[j].type)) {
+          if (!items[j].isDir) {
             this.previousLink = items[j].url
             break
           }
         }
 
         for (let j = i + 1; j < items.length; j++) {
-          if (mediaTypes.includes(items[j].type)) {
+          if (!items[j].isDir) {
             this.nextLink = items[j].url
             break
           }
@@ -154,6 +170,12 @@ export default {
 
         return
       }
+    },
+    getHtmlContent () {
+      return 'data:text/html;base64,' + btoa(unescape(encodeURIComponent(this.previewContent)))
+    },
+    getMarkdownContent () {
+      return marked(this.previewContent)
     }
   }
 }

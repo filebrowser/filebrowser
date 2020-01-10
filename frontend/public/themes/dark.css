@@ -124,6 +124,12 @@ nav > div {
   color: var(--textPrimary);
 }
 
+#previewer .text,
+#previewer .markdown,
+#previewer .html {
+  background: var(--surfacePrimary);
+}
+
 @media (max-width: 736px) {
   #file-selection {
     background: var(--surfaceSecondary) !important;

@@ -125,8 +125,13 @@
   height: 3.7em;
 }
 
-#previewer .action:first-of-type {
+#previewer .title {
+  color: #fff;
+  font-size: 18px;
+  line-height: 2.4;
+  padding: 0 8px;
   margin-right: auto;
+  overflow: hidden;
 }
 
 #previewer .action i {
@@ -146,6 +151,40 @@
   max-width: 80%;
   text-align: center;
   height: calc(100vh - 9.7em);
+}
+
+#previewer .editor {
+  max-height: 100%;
+  overflow: auto;
+}
+
+#previewer .text {
+  height: 100%;
+  padding: 16px;
+  overflow: auto;
+  background: white;
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+#previewer .markdown {
+  height: 100%;
+  padding: 16px;
+  overflow: auto;
+  background: white;
+  text-align: left;
+}
+
+#previewer .html {
+  height: 100%;
+  background: white;
+  text-align: left;
+  white-space: pre;
+}
+
+#previewer .html iframe {
+  width: 100%;
+  height: 100%;
 }
 
 #previewer .preview pre {

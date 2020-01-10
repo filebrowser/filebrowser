@@ -8,7 +8,7 @@
       <search v-if="isLogged"></search>
     </div>
     <div>
-      <template v-if="isLogged">
+      <template v-if="isLogged && isListing">
         <button @click="openSearch" :aria-label="$t('buttons.search')" :title="$t('buttons.search')" class="search-button action">
           <i class="material-icons">search</i>
         </button>

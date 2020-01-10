@@ -85,6 +85,12 @@ const mutations = {
   },
   setProgress: (state, value) => {
     state.progress = value
+  },
+  toggleEditor: (state) => (
+    state.showEditor = !state.showEditor
+  ),
+  setPreviewContent: (state, value) => {
+    state.previewContent = value
   }
 }
 

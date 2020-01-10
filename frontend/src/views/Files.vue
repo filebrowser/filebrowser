@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="breadcrumbs">
+    <div v-if="isListing" id="breadcrumbs">
       <router-link to="/files/" :aria-label="$t('files.home')" :title="$t('files.home')">
         <i class="material-icons">home</i>
       </router-link>
@@ -53,6 +53,7 @@ export default {
     ...mapGetters([
       'selectedCount',
       'isListing',
+      'isPreview',
       'isEditor',
       'isFiles'
     ]),
@@ -63,9 +64,6 @@ export default {
       'multiple',
       'loading'
     ]),
-    isPreview () {
-      return !this.loading && !this.isListing && !this.isEditor
-    },
     breadcrumbs () {
       let parts = this.$route.path.split('/')
 
@@ -151,6 +149,9 @@ export default {
 
         this.$store.commit('updateRequest', res)
         document.title = res.name
+
+        if (res.content)
+        this.$store.commit('setPreviewContent', res.content)
       } catch (e) {
         this.error = e
       } finally {
