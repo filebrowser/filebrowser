@@ -1,8 +1,9 @@
+⚠️ WARN: **This project will not be developed anymore. If you're willing to take over this project, please read [#532](https://github.com/filebrowser/filebrowser/issues/532) for more info and feel free to fork the project!**
+
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/filebrowser/logo/master/banner.png" width="550"/>
 </p>
-
-⚠️ WARN: **This project will not be developed anymore. If you're willing to take over this project, please read [#532](https://github.com/filebrowser/filebrowser/issues/532) for more info!**
 
 ![Preview](https://user-images.githubusercontent.com/5447088/50716739-ebd26700-107a-11e9-9817-14230c53efd2.gif)
 
@@ -16,16 +17,16 @@ filebrowser provides a file managing interface within a specified directory and 
 
 ## Features
 
-Please refer to our docs at [filebrowser.xyz/features](https://filebrowser.xyz/features)
+Please refer to our docs at [filebrowser.xyz/features](https://github.com/filebrowser/docs/tree/master/features)
 
 ## Install
 
-Please refer to our docs at [filebrowser.xyz](https://filebrowser.xyz/).
+Please refer to our docs at [filebrowser.xyz](https://github.com/filebrowser/docs/tree/master/).
 
 ## Usage
 
-Please refer to our docs at [filebrowser.xyz/usage](https://filebrowser.xyz/usage).
+Please refer to our docs at [filebrowser.xyz/usage](https://github.com/filebrowser/docs/tree/master/usage).
 
 ## Contributing
 
-Please refer to our docs at [filebrowser.xyz/contributing](https://filebrowser.xyz/contributing).
+Please refer to our docs at [filebrowser.xyz/contributing](https://github.com/filebrowser/docs/tree/master/contributing).
