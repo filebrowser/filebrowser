@@ -1,6 +1,3 @@
-⚠️ WARN: **This project will not be developed anymore. If you're willing to take over this project, please read [#532](https://github.com/filebrowser/filebrowser/issues/532) for more info and feel free to fork the project!**
-
-
 <p align="center">
   <img src="https://raw.githubusercontent.com/filebrowser/logo/master/banner.png" width="550"/>
 </p>
