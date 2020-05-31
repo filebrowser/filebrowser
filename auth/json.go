@@ -20,7 +20,7 @@ type jsonCred struct {
 	ReCaptcha string `json:"recaptcha"`
 }
 
-// JSONAuth is a json implementaion of an Auther.
+// JSONAuth is a json implementation of an Auther.
 type JSONAuth struct {
 	ReCaptcha *ReCaptcha `json:"recaptcha" yaml:"recaptcha"`
 }
@@ -40,7 +40,7 @@ func (a JSONAuth) Auth(r *http.Request, sto *users.Storage, root string) (*users
 
 	// If ReCaptcha is enabled, check the code.
 	if a.ReCaptcha != nil && len(a.ReCaptcha.Secret) > 0 {
-		ok, err := a.ReCaptcha.Ok(cred.ReCaptcha)
+		ok, err := a.ReCaptcha.Ok(cred.ReCaptcha) //nolint:shadow
 
 		if err != nil {
 			return nil, err
@@ -66,7 +66,7 @@ func (a JSONAuth) LoginPage() bool {
 
 const reCaptchaAPI = "/recaptcha/api/siteverify"
 
-// ReCaptcha identifies a recaptcha conenction.
+// ReCaptcha identifies a recaptcha connection.
 type ReCaptcha struct {
 	Host   string `json:"host"`
 	Key    string `json:"key"`
@@ -89,6 +89,7 @@ func (r *ReCaptcha) Ok(response string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		return false, nil

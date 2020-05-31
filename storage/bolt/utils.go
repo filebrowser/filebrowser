@@ -2,6 +2,7 @@ package bolt
 
 import (
 	"github.com/asdine/storm"
+
 	"github.com/filebrowser/filebrowser/v2/errors"
 )
 

@@ -13,16 +13,17 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/filebrowser/filebrowser/v2/auth"
-	fbhttp "github.com/filebrowser/filebrowser/v2/http"
-	"github.com/filebrowser/filebrowser/v2/settings"
-	"github.com/filebrowser/filebrowser/v2/storage"
-	"github.com/filebrowser/filebrowser/v2/users"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	v "github.com/spf13/viper"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
+
+	"github.com/filebrowser/filebrowser/v2/auth"
+	fbhttp "github.com/filebrowser/filebrowser/v2/http"
+	"github.com/filebrowser/filebrowser/v2/settings"
+	"github.com/filebrowser/filebrowser/v2/storage"
+	"github.com/filebrowser/filebrowser/v2/users"
 )
 
 var (
@@ -113,16 +114,17 @@ user created with the credentials from options "username" and "password".`,
 
 		var listener net.Listener
 
-		if server.Socket != "" {
+		switch {
+		case server.Socket != "":
 			listener, err = net.Listen("unix", server.Socket)
 			checkErr(err)
-		} else if server.TLSKey != "" && server.TLSCert != "" {
-			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey)
+		case server.TLSKey != "" && server.TLSCert != "":
+			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey) //nolint:shadow
 			checkErr(err)
-			listener, err = tls.Listen("tcp", adr, &tls.Config{Certificates: []tls.Certificate{cer}})
+			listener, err = tls.Listen("tcp", adr, &tls.Config{Certificates: []tls.Certificate{cer}}) //nolint:shadow
 			checkErr(err)
-		} else {
-			listener, err = net.Listen("tcp", adr)
+		default:
+			listener, err = net.Listen("tcp", adr) //nolint:shadow
 			checkErr(err)
 		}
 
@@ -142,13 +144,14 @@ user created with the credentials from options "username" and "password".`,
 	}, pythonConfig{allowNoDB: true}),
 }
 
-func cleanupHandler(listener net.Listener, c chan os.Signal) {
+func cleanupHandler(listener net.Listener, c chan os.Signal) { //nolint:interfacer
 	sig := <-c
 	log.Printf("Caught signal %s: shutting down.", sig)
 	listener.Close()
 	os.Exit(0)
 }
 
+//nolint:gocyclo
 func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 	server, err := st.Settings.GetServer()
 	checkErr(err)
@@ -348,5 +351,4 @@ func initConfig() {
 	} else {
 		cfgFile = "Using config file: " + v.ConfigFileUsed()
 	}
-
 }

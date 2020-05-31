@@ -7,34 +7,37 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/filebrowser/filebrowser/v2/files"
-	"github.com/filebrowser/filebrowser/v2/users"
 	"github.com/hacdias/fileutils"
 	"github.com/mholt/archiver"
+
+	"github.com/filebrowser/filebrowser/v2/files"
+	"github.com/filebrowser/filebrowser/v2/users"
 )
 
-func parseQueryFiles(r *http.Request, f *files.FileInfo, u *users.User) ([]string, error) {
-	files := []string{}
+func parseQueryFiles(r *http.Request, f *files.FileInfo, _ *users.User) ([]string, error) {
+	var fileSlice []string
 	names := strings.Split(r.URL.Query().Get("files"), ",")
 
 	if len(names) == 0 {
-		files = append(files, f.Path)
+		fileSlice = append(fileSlice, f.Path)
 	} else {
 		for _, name := range names {
-			name, err := url.QueryUnescape(strings.Replace(name, "+", "%2B", -1))
+			name, err := url.QueryUnescape(strings.Replace(name, "+", "%2B", -1)) //nolint:shadow
 			if err != nil {
 				return nil, err
 			}
 
 			name = fileutils.SlashClean(name)
-			files = append(files, filepath.Join(f.Path, name))
+			fileSlice = append(fileSlice, filepath.Join(f.Path, name))
 		}
 	}
 
-	return files, nil
+	return fileSlice, nil
 }
 
+//nolint: goconst
 func parseQueryAlgorithm(r *http.Request) (string, archiver.Writer, error) {
+	// TODO: use enum
 	switch r.URL.Query().Get("algo") {
 	case "zip", "true", "":
 		return ".zip", archiver.NewZip(), nil

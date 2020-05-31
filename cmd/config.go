@@ -8,11 +8,12 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/settings"
-	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 )
 
 func init() {
@@ -44,6 +45,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 }
 
+//nolint:gocyclo
 func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, auth.Auther) {
 	method := settings.AuthMethod(mustGetString(flags, "auth.method"))
 
@@ -53,11 +55,12 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 			for _, arg := range defaults {
 				switch def := arg.(type) {
 				case *settings.Settings:
-					method = settings.AuthMethod(def.AuthMethod)
+					method = def.AuthMethod
 				case auth.Auther:
 					ms, err := json.Marshal(def)
 					checkErr(err)
-					json.Unmarshal(ms, &defaultAuther)
+					err = json.Unmarshal(ms, &defaultAuther)
+					checkErr(err)
 				}
 			}
 		}

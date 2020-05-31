@@ -2,6 +2,7 @@ package bolt
 
 import (
 	"github.com/asdine/storm"
+
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/settings"

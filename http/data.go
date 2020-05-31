@@ -41,9 +41,9 @@ func (d *data) Check(path string) bool {
 	return true
 }
 
-func handle(fn handleFunc, prefix string, storage *storage.Storage, server *settings.Server) http.Handler {
+func handle(fn handleFunc, prefix string, store *storage.Storage, server *settings.Server) http.Handler {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		settings, err := storage.Settings.Get()
+		settings, err := store.Settings.Get()
 		if err != nil {
 			log.Fatalln("ERROR: couldn't get settings")
 			return
@@ -51,7 +51,7 @@ func handle(fn handleFunc, prefix string, storage *storage.Storage, server *sett
 
 		status, err := fn(w, r, &data{
 			Runner:   &runner.Runner{Settings: settings},
-			store:    storage,
+			store:    store,
 			settings: settings,
 			server:   server,
 		})

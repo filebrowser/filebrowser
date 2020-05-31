@@ -88,7 +88,7 @@ func generateMarkdown(cmd *cobra.Command, w io.Writer) {
 
 	short := cmd.Short
 	long := cmd.Long
-	if len(long) == 0 {
+	if long == "" {
 		long = short
 	}
 
@@ -106,21 +106,21 @@ func generateMarkdown(cmd *cobra.Command, w io.Writer) {
 		buf.WriteString(fmt.Sprintf("```\n%s\n```\n\n", cmd.Example))
 	}
 
-	printOptions(buf, cmd, name)
+	printOptions(buf, cmd)
 	_, err := buf.WriteTo(w)
 	checkErr(err)
 }
 
 func generateFlagsTable(fs *pflag.FlagSet, buf io.StringWriter) {
-	buf.WriteString("| Name | Shorthand | Usage |\n")
-	buf.WriteString("|------|-----------|-------|\n")
+	_, _ = buf.WriteString("| Name | Shorthand | Usage |\n")
+	_, _ = buf.WriteString("|------|-----------|-------|\n")
 
 	fs.VisitAll(func(f *pflag.Flag) {
-		buf.WriteString("|" + f.Name + "|" + f.Shorthand + "|" + f.Usage + "|\n")
+		_, _ = buf.WriteString("|" + f.Name + "|" + f.Shorthand + "|" + f.Usage + "|\n")
 	})
 }
 
-func printOptions(buf *bytes.Buffer, cmd *cobra.Command, name string) {
+func printOptions(buf *bytes.Buffer, cmd *cobra.Command) {
 	flags := cmd.NonInheritedFlags()
 	flags.SetOutput(buf)
 	if flags.HasAvailableFlags() {

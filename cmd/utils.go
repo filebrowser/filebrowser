@@ -9,12 +9,13 @@ import (
 	"path/filepath"
 
 	"github.com/asdine/storm"
-	"github.com/filebrowser/filebrowser/v2/settings"
-	"github.com/filebrowser/filebrowser/v2/storage"
-	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	yaml "gopkg.in/yaml.v2"
+
+	"github.com/filebrowser/filebrowser/v2/settings"
+	"github.com/filebrowser/filebrowser/v2/storage"
+	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 )
 
 func checkErr(err error) {
@@ -70,7 +71,9 @@ func dbExists(path string) (bool, error) {
 		d := filepath.Dir(path)
 		_, err = os.Stat(d)
 		if os.IsNotExist(err) {
-			os.MkdirAll(d, 0700)
+			if err := os.MkdirAll(d, 0700); err != nil { //nolint:shadow
+				return false, err
+			}
 			return false, nil
 		}
 	}
@@ -113,7 +116,7 @@ func marshal(filename string, data interface{}) error {
 		encoder := json.NewEncoder(fd)
 		encoder.SetIndent("", "    ")
 		return encoder.Encode(data)
-	case ".yml", ".yaml":
+	case ".yml", ".yaml": //nolint:goconst
 		encoder := yaml.NewEncoder(fd)
 		return encoder.Encode(data)
 	default:

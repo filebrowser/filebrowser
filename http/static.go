@@ -11,13 +11,14 @@ import (
 	"text/template"
 
 	rice "github.com/GeertJohan/go.rice"
+
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/version"
 )
 
-func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, box *rice.Box, file, contentType string) (int, error) {
+func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, box *rice.Box, file, contentType string) (int, error) {
 	w.Header().Set("Content-Type", contentType)
 
 	auther, err := d.store.Auth.Get(d.settings.AuthMethod)
@@ -41,8 +42,8 @@ func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, box *
 	}
 
 	if d.settings.Branding.Files != "" {
-		path := filepath.Join(d.settings.Branding.Files, "custom.css")
-		_, err := os.Stat(path)
+		fPath := filepath.Join(d.settings.Branding.Files, "custom.css")
+		_, err := os.Stat(fPath) //nolint:shadow
 
 		if err != nil && !os.IsNotExist(err) {
 			log.Printf("couldn't load custom styles: %v", err)
@@ -54,7 +55,7 @@ func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, box *
 	}
 
 	if d.settings.AuthMethod == auth.MethodJSONAuth {
-		raw, err := d.store.Auth.Get(d.settings.AuthMethod)
+		raw, err := d.store.Auth.Get(d.settings.AuthMethod) //nolint:shadow
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -84,29 +85,29 @@ func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, box *
 	return 0, nil
 }
 
-func getStaticHandlers(storage *storage.Storage, server *settings.Server) (http.Handler, http.Handler) {
+func getStaticHandlers(store *storage.Storage, server *settings.Server) (index, static http.Handler) {
 	box := rice.MustFindBox("../frontend/dist")
 	handler := http.FileServer(box.HTTPBox())
 
-	index := handle(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	index = handle(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if r.Method != http.MethodGet {
 			return http.StatusNotFound, nil
 		}
 
 		w.Header().Set("x-xss-protection", "1; mode=block")
 		return handleWithStaticData(w, r, d, box, "index.html", "text/html; charset=utf-8")
-	}, "", storage, server)
+	}, "", store, server)
 
-	static := handle(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	static = handle(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if r.Method != http.MethodGet {
 			return http.StatusNotFound, nil
 		}
 
 		if d.settings.Branding.Files != "" {
 			if strings.HasPrefix(r.URL.Path, "img/") {
-				path := filepath.Join(d.settings.Branding.Files, r.URL.Path)
-				if _, err := os.Stat(path); err == nil {
-					http.ServeFile(w, r, path)
+				fPath := filepath.Join(d.settings.Branding.Files, r.URL.Path)
+				if _, err := os.Stat(fPath); err == nil {
+					http.ServeFile(w, r, fPath)
 					return 0, nil
 				}
 			} else if r.URL.Path == "custom.css" && d.settings.Branding.Files != "" {
@@ -121,7 +122,7 @@ func getStaticHandlers(storage *storage.Storage, server *settings.Server) (http.
 		}
 
 		return handleWithStaticData(w, r, d, box, r.URL.Path, "application/javascript; charset=utf-8")
-	}, "/static/", storage, server)
+	}, "/static/", store, server)
 
 	return index, static
 }

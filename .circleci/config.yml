@@ -2,10 +2,10 @@ version: 2
 jobs:
   lint:
     docker:
-      - image: golangci/golangci-lint:v1.16
+      - image: golangci/golangci-lint:v1.27.0
     steps:
       - checkout
-      - run: golangci-lint run -v -D errcheck
+      - run: golangci-lint run -v
   build-node:
     docker:
       - image: circleci/node

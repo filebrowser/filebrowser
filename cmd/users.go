@@ -7,10 +7,11 @@ import (
 	"strconv"
 	"text/tabwriter"
 
-	"github.com/filebrowser/filebrowser/v2/settings"
-	"github.com/filebrowser/filebrowser/v2/users"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+
+	"github.com/filebrowser/filebrowser/v2/settings"
+	"github.com/filebrowser/filebrowser/v2/users"
 )
 
 func init() {
@@ -24,38 +25,38 @@ var usersCmd = &cobra.Command{
 	Args:  cobra.NoArgs,
 }
 
-func printUsers(users []*users.User) {
+func printUsers(usrs []*users.User) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 	fmt.Fprintln(w, "ID\tUsername\tScope\tLocale\tV. Mode\tAdmin\tExecute\tCreate\tRename\tModify\tDelete\tShare\tDownload\tPwd Lock")
 
-	for _, user := range users {
+	for _, u := range usrs {
 		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t\n",
-			user.ID,
-			user.Username,
-			user.Scope,
-			user.Locale,
-			user.ViewMode,
-			user.Perm.Admin,
-			user.Perm.Execute,
-			user.Perm.Create,
-			user.Perm.Rename,
-			user.Perm.Modify,
-			user.Perm.Delete,
-			user.Perm.Share,
-			user.Perm.Download,
-			user.LockPassword,
+			u.ID,
+			u.Username,
+			u.Scope,
+			u.Locale,
+			u.ViewMode,
+			u.Perm.Admin,
+			u.Perm.Execute,
+			u.Perm.Create,
+			u.Perm.Rename,
+			u.Perm.Modify,
+			u.Perm.Delete,
+			u.Perm.Share,
+			u.Perm.Download,
+			u.LockPassword,
 		)
 	}
 
 	w.Flush()
 }
 
-func parseUsernameOrID(arg string) (string, uint) {
-	id, err := strconv.ParseUint(arg, 10, 0)
+func parseUsernameOrID(arg string) (username string, id uint) {
+	id64, err := strconv.ParseUint(arg, 10, 0)
 	if err != nil {
 		return arg, 0
 	}
-	return "", uint(id)
+	return "", uint(id64)
 }
 
 func addUserFlags(flags *pflag.FlagSet) {
@@ -84,6 +85,7 @@ func getViewMode(flags *pflag.FlagSet) users.ViewMode {
 	return viewMode
 }
 
+//nolint:gocyclo
 func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all bool) {
 	visit := func(flag *pflag.Flag) {
 		switch flag.Name {

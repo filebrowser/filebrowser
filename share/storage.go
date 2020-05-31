@@ -33,7 +33,9 @@ func (s *Storage) GetByHash(hash string) (*Link, error) {
 	}
 
 	if link.Expire != 0 && link.Expire <= time.Now().Unix() {
-		s.Delete(link.Hash)
+		if err := s.Delete(link.Hash); err != nil {
+			return nil, err
+		}
 		return nil, errors.ErrNotExist
 	}
 
@@ -55,7 +57,9 @@ func (s *Storage) Gets(path string, id uint) ([]*Link, error) {
 
 	for i, link := range links {
 		if link.Expire != 0 && link.Expire <= time.Now().Unix() {
-			s.Delete(link.Hash)
+			if err := s.Delete(link.Hash); err != nil {
+				return nil, err
+			}
 			links = append(links[:i], links[i+1:]...)
 		}
 	}

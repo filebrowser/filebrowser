@@ -4,8 +4,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/spf13/afero"
+
+	"github.com/filebrowser/filebrowser/v2/rules"
 )
 
 type searchOptions struct {

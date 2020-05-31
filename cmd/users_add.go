@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"github.com/filebrowser/filebrowser/v2/users"
 	"github.com/spf13/cobra"
+
+	"github.com/filebrowser/filebrowser/v2/users"
 )
 
 func init() {
@@ -14,7 +15,7 @@ var usersAddCmd = &cobra.Command{
 	Use:   "add <username> <password>",
 	Short: "Create a new user",
 	Long:  `Create a new user and add it to the database.`,
-	Args:  cobra.ExactArgs(2),
+	Args:  cobra.ExactArgs(2), //nolint:mnd
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
 		s, err := d.store.Settings.Get()
 		checkErr(err)
@@ -33,9 +34,9 @@ var usersAddCmd = &cobra.Command{
 
 		servSettings, err := d.store.Settings.GetServer()
 		checkErr(err)
-		//since getUserDefaults() polluted s.Defaults.Scope
-		//which makes the Scope not the one saved in the db
-		//we need the right s.Defaults.Scope here
+		// since getUserDefaults() polluted s.Defaults.Scope
+		// which makes the Scope not the one saved in the db
+		// we need the right s.Defaults.Scope here
 		s2, err := d.store.Settings.Get()
 		checkErr(err)
 

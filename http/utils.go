@@ -10,7 +10,7 @@ import (
 	"github.com/filebrowser/filebrowser/v2/errors"
 )
 
-func renderJSON(w http.ResponseWriter, r *http.Request, data interface{}) (int, error) {
+func renderJSON(w http.ResponseWriter, _ *http.Request, data interface{}) (int, error) {
 	marsh, err := json.Marshal(data)
 
 	if err != nil {

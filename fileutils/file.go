@@ -9,7 +9,7 @@ import (
 
 // CopyFile copies a file from source to dest and returns
 // an error if any.
-func CopyFile(fs afero.Fs, source string, dest string) error {
+func CopyFile(fs afero.Fs, source, dest string) error {
 	// Open the source file.
 	src, err := fs.Open(source)
 	if err != nil {

@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/spf13/cobra"
+
+	"github.com/filebrowser/filebrowser/v2/settings"
 )
 
 func init() {

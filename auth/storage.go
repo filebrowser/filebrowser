@@ -18,8 +18,8 @@ type Storage struct {
 }
 
 // NewStorage creates a auth storage from a backend.
-func NewStorage(back StorageBackend, users *users.Storage) *Storage {
-	return &Storage{back: back, users: users}
+func NewStorage(back StorageBackend, userStore *users.Storage) *Storage {
+	return &Storage{back: back, users: userStore}
 }
 
 // Get wraps a StorageBackend.Get.

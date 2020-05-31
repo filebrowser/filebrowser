@@ -10,8 +10,13 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
+
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/users"
+)
+
+const (
+	TokenExpirationTime = time.Hour * 2
 )
 
 type userInfo struct {
@@ -161,7 +166,7 @@ var renewHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data
 	return printToken(w, r, d, d.user)
 })
 
-func printToken(w http.ResponseWriter, r *http.Request, d *data, user *users.User) (int, error) {
+func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.User) (int, error) {
 	claims := &authToken{
 		User: userInfo{
 			ID:           user.ID,
@@ -173,7 +178,7 @@ func printToken(w http.ResponseWriter, r *http.Request, d *data, user *users.Use
 		},
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(time.Hour * 2).Unix(),
+			ExpiresAt: time.Now().Add(TokenExpirationTime).Unix(),
 			Issuer:    "File Browser",
 		},
 	}
@@ -185,6 +190,8 @@ func printToken(w http.ResponseWriter, r *http.Request, d *data, user *users.Use
 	}
 
 	w.Header().Set("Content-Type", "cty")
-	w.Write([]byte(signed))
+	if _, err := w.Write([]byte(signed)); err != nil {
+		return http.StatusInternalServerError, err
+	}
 	return 0, nil
 }

@@ -1,8 +1,8 @@
 package files
 
 import (
-	"crypto/md5"
-	"crypto/sha1"
+	"crypto/md5"  //nolint:gosec
+	"crypto/sha1" //nolint:gosec
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
@@ -17,9 +17,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/spf13/afero"
+
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
-	"github.com/spf13/afero"
 )
 
 // FileInfo describes a file.
@@ -74,7 +75,10 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 
 	if opts.Expand {
 		if file.IsDir {
-			return file, file.readListing(opts.Checker)
+			if err := file.readListing(opts.Checker); err != nil { //nolint:shadow
+				return nil, err
+			}
+			return file, nil
 		}
 
 		err = file.detectType(opts.Modify, true)
@@ -105,6 +109,7 @@ func (i *FileInfo) Checksum(algo string) error {
 
 	var h hash.Hash
 
+	//nolint:gosec
 	switch algo {
 	case "md5":
 		h = md5.New()
@@ -127,6 +132,8 @@ func (i *FileInfo) Checksum(algo string) error {
 	return nil
 }
 
+//nolint:goconst
+//TODO: use constants
 func (i *FileInfo) detectType(modify, saveContent bool) error {
 	// failing to detect the type should not return error.
 	// imagine the situation where a file in a dir with thousands
@@ -198,9 +205,9 @@ func (i *FileInfo) detectSubtitles() {
 
 	// TODO: detect multiple languages. Base.Lang.vtt
 
-	path := strings.TrimSuffix(i.Path, ext) + ".vtt"
-	if _, err := i.Fs.Stat(path); err == nil {
-		i.Subtitles = append(i.Subtitles, path)
+	fPath := strings.TrimSuffix(i.Path, ext) + ".vtt"
+	if _, err := i.Fs.Stat(fPath); err == nil {
+		i.Subtitles = append(i.Subtitles, fPath)
 	}
 }
 
@@ -219,16 +226,16 @@ func (i *FileInfo) readListing(checker rules.Checker) error {
 
 	for _, f := range dir {
 		name := f.Name()
-		path := path.Join(i.Path, name)
+		fPath := path.Join(i.Path, name)
 
-		if !checker.Check(path) {
+		if !checker.Check(fPath) {
 			continue
 		}
 
 		if strings.HasPrefix(f.Mode().String(), "L") {
 			// It's a symbolic link. We try to follow it. If it doesn't work,
 			// we stay with the link information instead if the target's.
-			info, err := i.Fs.Stat(path)
+			info, err := i.Fs.Stat(fPath)
 			if err == nil {
 				f = info
 			}
@@ -242,7 +249,7 @@ func (i *FileInfo) readListing(checker rules.Checker) error {
 			Mode:      f.Mode(),
 			IsDir:     f.IsDir(),
 			Extension: filepath.Ext(name),
-			Path:      path,
+			Path:      fPath,
 		}
 
 		if file.IsDir {

@@ -40,7 +40,9 @@ func (s *Storage) Get(baseScope string, id interface{}) (user *User, err error) 
 	if err != nil {
 		return
 	}
-	user.Clean(baseScope)
+	if err := user.Clean(baseScope); err != nil {
+		return nil, err
+	}
 	return
 }
 
@@ -52,7 +54,9 @@ func (s *Storage) Gets(baseScope string) ([]*User, error) {
 	}
 
 	for _, user := range users {
-		user.Clean(baseScope)
+		if err := user.Clean(baseScope); err != nil { //nolint:shadow
+			return nil, err
+		}
 	}
 
 	return users, err

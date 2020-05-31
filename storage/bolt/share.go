@@ -3,6 +3,7 @@ package bolt
 import (
 	"github.com/asdine/storm"
 	"github.com/asdine/storm/q"
+
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/share"
 )
@@ -46,5 +47,9 @@ func (s shareBackend) Save(l *share.Link) error {
 }
 
 func (s shareBackend) Delete(hash string) error {
-	return s.db.DeleteStruct(&share.Link{Hash: hash})
+	err := s.db.DeleteStruct(&share.Link{Hash: hash})
+	if err == storm.ErrNotFound {
+		return nil
+	}
+	return err
 }

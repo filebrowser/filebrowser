@@ -5,10 +5,11 @@ import (
 	"fmt"
 
 	"github.com/asdine/storm"
+	bolt "go.etcd.io/bbolt"
+
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/users"
-	bolt "go.etcd.io/bbolt"
 )
 
 type oldUser struct {
@@ -29,7 +30,7 @@ type oldUser struct {
 }
 
 func readOldUsers(db *storm.DB) ([]*oldUser, error) {
-	users := []*oldUser{}
+	var oldUsers []*oldUser
 	err := db.Bolt.View(func(tx *bolt.Tx) error {
 		return tx.Bucket([]byte("User")).ForEach(func(k []byte, v []byte) error {
 			if len(v) > 0 && string(v)[0] == '{' {
@@ -40,14 +41,14 @@ func readOldUsers(db *storm.DB) ([]*oldUser, error) {
 					return err
 				}
 
-				users = append(users, user)
+				oldUsers = append(oldUsers, user)
 			}
 
 			return nil
 		})
 	})
 
-	return users, err
+	return oldUsers, err
 }
 
 func convertUsersToNew(old []*oldUser) ([]*users.User, error) {
