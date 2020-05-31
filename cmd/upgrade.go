@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"github.com/filebrowser/filebrowser/v2/storage/bolt/importer"
 	"github.com/spf13/cobra"
+
+	"github.com/filebrowser/filebrowser/v2/storage/bolt/importer"
 )
 
 func init() {
@@ -10,7 +11,7 @@ func init() {
 
 	upgradeCmd.Flags().String("old.database", "", "")
 	upgradeCmd.Flags().String("old.config", "", "")
-	upgradeCmd.MarkFlagRequired("old.database")
+	_ = upgradeCmd.MarkFlagRequired("old.database")
 }
 
 var upgradeCmd = &cobra.Command{

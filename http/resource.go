@@ -74,7 +74,7 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 	}
 
 	defer func() {
-		io.Copy(ioutil.Discard, r.Body)
+		_, _ = io.Copy(ioutil.Discard, r.Body)
 	}()
 
 	// For directories, only allow POST for creation.
@@ -119,6 +119,7 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 	return errToStatus(err), err
 })
 
+//nolint: goconst
 var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	src := r.URL.Path
 	dst := r.URL.Query().Get("destination")
@@ -134,6 +135,7 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 	}
 
 	switch action {
+	// TODO: use enum
 	case "copy":
 		if !d.user.Perm.Create {
 			return http.StatusForbidden, nil

@@ -46,7 +46,7 @@ func ifPathWithName(r *http.Request) string {
 	pathElements := strings.Split(r.URL.Path, "/")
 	// prevent maliciously constructed parameters like `/api/public/dl/XZzCDnK2_not_exists_hash_name`
 	// len(pathElements) will be 1, and golang will panic `runtime error: index out of range`
-	if len(pathElements) < 2 {
+	if len(pathElements) < 2 { //nolint: mnd
 		return r.URL.Path
 	}
 	id := pathElements[len(pathElements)-2]

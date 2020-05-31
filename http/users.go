@@ -8,9 +8,10 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gorilla/mux"
+
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/users"
-	"github.com/gorilla/mux"
 )
 
 type modifyUserRequest struct {
@@ -27,7 +28,7 @@ func getUserID(r *http.Request) (uint, error) {
 	return uint(i), err
 }
 
-func getUser(w http.ResponseWriter, r *http.Request) (*modifyUserRequest, error) {
+func getUser(_ http.ResponseWriter, r *http.Request) (*modifyUserRequest, error) {
 	if r.Body == nil {
 		return nil, errors.ErrEmptyRequest
 	}

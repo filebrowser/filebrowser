@@ -2,11 +2,13 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strconv"
 
-	"github.com/filebrowser/filebrowser/v2/users"
 	"github.com/spf13/cobra"
+
+	"github.com/filebrowser/filebrowser/v2/users"
 )
 
 func init() {
@@ -65,8 +67,7 @@ list or set it to 0.`,
 				// with the new username. If there is, print an error and cancel the
 				// operation
 				if user.Username != onDB.Username {
-					conflictuous, err := d.store.Users.Get("", user.Username)
-					if err == nil {
+					if conflictuous, err := d.store.Users.Get("", user.Username); err == nil { //nolint:shadow
 						checkErr(usernameConflictError(user.Username, conflictuous.ID, user.ID))
 					}
 				}
@@ -82,6 +83,7 @@ list or set it to 0.`,
 	}, pythonConfig{}),
 }
 
-func usernameConflictError(username string, original, new uint) error {
-	return errors.New("can't import user with ID " + strconv.Itoa(int(new)) + " and username \"" + username + "\" because the username is already registred with the user " + strconv.Itoa(int(original)))
+func usernameConflictError(username string, originalID, newID uint) error {
+	return fmt.Errorf(`can't import user with ID %d and username "%s" because the username is already registred with the user %d`,
+		newID, username, originalID)
 }

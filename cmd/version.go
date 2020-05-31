@@ -3,8 +3,9 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/filebrowser/filebrowser/v2/version"
 	"github.com/spf13/cobra"
+
+	"github.com/filebrowser/filebrowser/v2/version"
 )
 
 func init() {

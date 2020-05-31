@@ -14,7 +14,7 @@ var cmdsAddCmd = &cobra.Command{
 	Use:   "add <event> <command>",
 	Short: "Add a command to run on a specific event",
 	Long:  `Add a command to run on a specific event.`,
-	Args:  cobra.MinimumNArgs(2),
+	Args:  cobra.MinimumNArgs(2), //nolint:mnd
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
 		s, err := d.store.Settings.Get()
 		checkErr(err)

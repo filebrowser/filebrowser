@@ -2,34 +2,35 @@ package importer
 
 import (
 	"github.com/asdine/storm"
+
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 )
 
 // Import imports an old configuration to a newer database.
-func Import(oldDB, oldConf, newDB string) error {
-	old, err := storm.Open(oldDB)
+func Import(oldDBPath, oldConf, newDBPath string) error {
+	oldDB, err := storm.Open(oldDBPath)
 	if err != nil {
 		return err
 	}
-	defer old.Close()
+	defer oldDB.Close()
 
-	new, err := storm.Open(newDB)
+	newDB, err := storm.Open(newDBPath)
 	if err != nil {
 		return err
 	}
-	defer new.Close()
+	defer newDB.Close()
 
-	sto, err := bolt.NewStorage(new)
-	if err != nil {
-		return err
-	}
-
-	err = importUsers(old, sto)
+	sto, err := bolt.NewStorage(newDB)
 	if err != nil {
 		return err
 	}
 
-	err = importConf(old, oldConf, sto)
+	err = importUsers(oldDB, sto)
+	if err != nil {
+		return err
+	}
+
+	err = importConf(oldDB, oldConf, sto)
 	if err != nil {
 		return err
 	}

@@ -57,7 +57,9 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 		var err error
 		s, err = d.store.Share.GetPermanent(r.URL.Path, d.user.ID)
 		if err == nil {
-			w.Write([]byte(path.Join(d.server.BaseURL, "/share/", s.Hash)))
+			if _, err := w.Write([]byte(path.Join(d.server.BaseURL, "/share/", s.Hash))); err != nil {
+				return http.StatusInternalServerError, err
+			}
 			return 0, nil
 		}
 	}

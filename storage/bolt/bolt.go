@@ -2,6 +2,7 @@ package bolt
 
 import (
 	"github.com/asdine/storm"
+
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/share"
@@ -11,10 +12,10 @@ import (
 
 // NewStorage creates a storage.Storage based on Bolt DB.
 func NewStorage(db *storm.DB) (*storage.Storage, error) {
-	users := users.NewStorage(usersBackend{db: db})
-	share := share.NewStorage(shareBackend{db: db})
-	settings := settings.NewStorage(settingsBackend{db: db})
-	auth := auth.NewStorage(authBackend{db: db}, users)
+	userStore := users.NewStorage(usersBackend{db: db})
+	shareStore := share.NewStorage(shareBackend{db: db})
+	settingsStore := settings.NewStorage(settingsBackend{db: db})
+	authStore := auth.NewStorage(authBackend{db: db}, userStore)
 
 	err := save(db, "version", 2)
 	if err != nil {
@@ -22,9 +23,9 @@ func NewStorage(db *storm.DB) (*storage.Storage, error) {
 	}
 
 	return &storage.Storage{
-		Auth:     auth,
-		Users:    users,
-		Share:    share,
-		Settings: settings,
+		Auth:     authStore,
+		Users:    userStore,
+		Share:    shareStore,
+		Settings: settingsStore,
 	}, nil
 }

@@ -9,7 +9,7 @@ import (
 // CopyDir copies a directory from source to dest and all
 // of its sub-directories. It doesn't stop if it finds an error
 // during the copy. Returns an error if any.
-func CopyDir(fs afero.Fs, source string, dest string) error {
+func CopyDir(fs afero.Fs, source, dest string) error {
 	// Get properties of source.
 	srcinfo, err := fs.Stat(source)
 	if err != nil {

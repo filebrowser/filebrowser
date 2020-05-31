@@ -17,21 +17,21 @@ var (
 )
 
 // MakeUserDir makes the user directory according to settings.
-func (settings *Settings) MakeUserDir(username, userScope, serverRoot string) (string, error) {
+func (s *Settings) MakeUserDir(username, userScope, serverRoot string) (string, error) {
 	var err error
 	userScope = strings.TrimSpace(userScope)
 	if userScope == "" || userScope == "./" {
 		userScope = "."
 	}
 
-	if !settings.CreateUserDir {
+	if !s.CreateUserDir {
 		return userScope, nil
 	}
 
 	fs := afero.NewBasePathFs(afero.NewOsFs(), serverRoot)
 
 	// Use the default auto create logic only if specific scope is not the default scope
-	if userScope != settings.Defaults.Scope {
+	if userScope != s.Defaults.Scope {
 		// Try create the dir, for example: settings.Defaults.Scope == "." and userScope == "./foo"
 		if userScope != "." {
 			err = fs.MkdirAll(userScope, os.ModePerm)
@@ -50,7 +50,7 @@ func (settings *Settings) MakeUserDir(username, userScope, serverRoot string) (s
 	}
 
 	// Create default user dir
-	userHomeBase := settings.Defaults.Scope + string(os.PathSeparator) + "users"
+	userHomeBase := s.Defaults.Scope + string(os.PathSeparator) + "users"
 	userHome := userHomeBase + string(os.PathSeparator) + username
 	err = fs.MkdirAll(userHome, os.ModePerm)
 	if err != nil {

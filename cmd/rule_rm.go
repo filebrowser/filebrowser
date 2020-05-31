@@ -3,15 +3,16 @@ package cmd
 import (
 	"strconv"
 
+	"github.com/spf13/cobra"
+
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
-	"github.com/spf13/cobra"
 )
 
 func init() {
 	rulesCmd.AddCommand(rulesRmCommand)
 	rulesRmCommand.Flags().Uint("index", 0, "index of rule to remove")
-	rulesRmCommand.MarkFlagRequired("index")
+	_ = rulesRmCommand.MarkFlagRequired("index")
 }
 
 var rulesRmCommand = &cobra.Command{
@@ -43,7 +44,7 @@ including 'index_end'.`,
 		i, err := strconv.Atoi(args[0])
 		checkErr(err)
 		f := i
-		if len(args) == 2 {
+		if len(args) == 2 { //nolint:mnd
 			f, err = strconv.Atoi(args[1])
 			checkErr(err)
 		}

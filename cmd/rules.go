@@ -3,12 +3,13 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/users"
-	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 )
 
 func init() {
@@ -18,8 +19,8 @@ func init() {
 }
 
 var rulesCmd = &cobra.Command{
-	Use:     "rules",
-	Short:   "Rules management utility",
+	Use:   "rules",
+	Short: "Rules management utility",
 	Long: `On each subcommand you'll have available at least two flags:
 "username" and "id". You must either set only one of them
 or none. If you set one of them, the command will apply to
@@ -28,14 +29,14 @@ rules.`,
 	Args: cobra.NoArgs,
 }
 
-func runRules(st *storage.Storage, cmd *cobra.Command, users func(*users.User), global func(*settings.Settings)) {
+func runRules(st *storage.Storage, cmd *cobra.Command, usersFn func(*users.User), globalFn func(*settings.Settings)) {
 	id := getUserIdentifier(cmd.Flags())
 	if id != nil {
 		user, err := st.Users.Get("", id)
 		checkErr(err)
 
-		if users != nil {
-			users(user)
+		if usersFn != nil {
+			usersFn(user)
 		}
 
 		printRules(user.Rules, id)
@@ -45,8 +46,8 @@ func runRules(st *storage.Storage, cmd *cobra.Command, users func(*users.User), 
 	s, err := st.Settings.Get()
 	checkErr(err)
 
-	if global != nil {
-		global(s)
+	if globalFn != nil {
+		globalFn(s)
 	}
 
 	printRules(s.Rules, id)
@@ -65,14 +66,14 @@ func getUserIdentifier(flags *pflag.FlagSet) interface{} {
 	return nil
 }
 
-func printRules(rules []rules.Rule, id interface{}) {
+func printRules(rulez []rules.Rule, id interface{}) {
 	if id == nil {
 		fmt.Printf("Global Rules:\n\n")
 	} else {
 		fmt.Printf("Rules for user %v:\n\n", id)
 	}
 
-	for id, rule := range rules {
+	for id, rule := range rulez {
 		fmt.Printf("(%d) ", id)
 		if rule.Regex {
 			if rule.Allow {
