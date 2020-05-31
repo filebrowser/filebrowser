@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"net/http"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -56,7 +57,7 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 		var err error
 		s, err = d.store.Share.GetPermanent(r.URL.Path, d.user.ID)
 		if err == nil {
-			w.Write([]byte(d.server.BaseURL + "/share/" + s.Hash))
+			w.Write([]byte(path.Join(d.server.BaseURL, "/share/", s.Hash)))
 			return 0, nil
 		}
 	}

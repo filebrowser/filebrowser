@@ -11,8 +11,8 @@
 
   <title>[{[ if .Name -]}][{[ .Name ]}][{[ else ]}]File Browser[{[ end ]}]</title>
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/[{[ .StaticURL ]}]/img/icons/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/[{[ .StaticURL ]}]/img/icons/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="[{[ .StaticURL ]}]/img/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="[{[ .StaticURL ]}]/img/icons/favicon-16x16.png">
   <!-- Add to home screen for Android and modern mobile browsers -->
   <link rel="manifest" id="manifestPlaceholder" crossorigin="use-credentials">
   <meta name="theme-color" content="#2979ff">
@@ -21,17 +21,17 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="assets">
-  <link rel="apple-touch-icon" href="/[{[ .StaticURL ]}]/img/icons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" href="[{[ .StaticURL ]}]/img/icons/apple-touch-icon-152x152.png">
 
   <!-- Add to home screen for Windows -->
-  <meta name="msapplication-TileImage" content="/[{[ .StaticURL ]}]/img/icons/msapplication-icon-144x144.png">
+  <meta name="msapplication-TileImage" content="[{[ .StaticURL ]}]/img/icons/msapplication-icon-144x144.png">
   <meta name="msapplication-TileColor" content="#2979ff">
 
   <!-- Inject Some Variables and generate the manifest json -->
   <script>
     window.FileBrowser = JSON.parse(`[{[ .Json ]}]`);
     
-    var fullStaticURL = window.location.origin + "/" + window.FileBrowser.StaticURL; 
+    var fullStaticURL = window.location.origin + window.FileBrowser.StaticURL;
     var dynamicManifest = {
       "name": window.FileBrowser.Name || 'File Browser',
       "short_name": window.FileBrowser.Name || 'File Browser',
@@ -134,10 +134,10 @@
   </div>
 
   [{[ if .Theme -]}]
-    <link rel="stylesheet" href="/[{[ .StaticURL ]}]/themes/[{[ .Theme ]}].css" />
+    <link rel="stylesheet" href="[{[ .StaticURL ]}]/themes/[{[ .Theme ]}].css" />
   [{[ end ]}]
   [{[ if .CSS -]}]
-    <link rel="stylesheet" href="/[{[ .StaticURL ]}]/custom.css" />
+    <link rel="stylesheet" href="[{[ .StaticURL ]}]/custom.css" />
   [{[ end ]}]
 </body>
 </html>

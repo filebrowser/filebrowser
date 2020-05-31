@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -19,8 +20,6 @@ import (
 func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, box *rice.Box, file, contentType string) (int, error) {
 	w.Header().Set("Content-Type", contentType)
 
-	staticURL := strings.TrimPrefix(d.server.BaseURL+"/static", "/")
-
 	auther, err := d.store.Auth.Get(d.settings.AuthMethod)
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -31,7 +30,7 @@ func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, box *
 		"DisableExternal": d.settings.Branding.DisableExternal,
 		"BaseURL":         d.server.BaseURL,
 		"Version":         version.Version,
-		"StaticURL":       staticURL,
+		"StaticURL":       path.Join(d.server.BaseURL, "/static"),
 		"Signup":          d.settings.Signup,
 		"NoAuth":          d.settings.AuthMethod == auth.MethodNoAuth,
 		"AuthMethod":      d.settings.AuthMethod,
