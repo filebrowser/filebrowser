@@ -54,6 +54,9 @@ archives:
 
 dockers:
   -
+    dockerfile: Dockerfile
+    binaries:
+      - filebrowser
     goos: linux
     goarch: amd64
     goarm: ''
@@ -61,5 +64,18 @@ dockers:
       - "filebrowser/filebrowser:latest"
       - "filebrowser/filebrowser:{{ .Tag }}"
       - "filebrowser/filebrowser:v{{ .Major }}"
+    extra_files:
+      - .docker.json
+  -
+    dockerfile: Dockerfile
+    binaries:
+      - filebrowser
+    goos: linux
+    goarch: arm
+    goarm: '5'
+    image_templates:
+      - "filebrowser/filebrowser:pi"
+      - "filebrowser/filebrowser:{{ .Tag }}-pi"
+      - "filebrowser/filebrowser:v{{ .Major }}-pi"
     extra_files:
       - .docker.json
