@@ -105,7 +105,7 @@ export default {
       return `${baseURL}/api/raw${this.req.path}?auth=${this.jwt}`;
     },
     compress() {
-      if (this.type === 'image') {
+      if (this.req.type === 'image') {
         return `${baseURL}/api/compress${this.req.path}?auth=${this.jwt}`;
       } else {
         return `${baseURL}/api/raw${this.req.path}?auth=${this.jwt}`;
