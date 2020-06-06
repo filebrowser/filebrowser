@@ -2,57 +2,57 @@
   <div id="previewer">
     <div class="bar">
       <button
-        @click="back"
+        id="close"
         class="action"
         :title="$t('files.closePreview')"
         :aria-label="$t('files.closePreview')"
-        id="close"
+        @click="back"
       >
         <i class="material-icons">close</i>
       </button>
 
-      <rename-button v-if="user.perm.rename"></rename-button>
-      <delete-button v-if="user.perm.delete"></delete-button>
-      <download-button v-if="user.perm.download"></download-button>
-      <info-button></info-button>
+      <rename-button v-if="user.perm.rename" />
+      <delete-button v-if="user.perm.delete" />
+      <download-button v-if="user.perm.download" />
+      <info-button />
     </div>
 
     <button
-      class="action"
-      @click="prev"
       v-show="hasPrevious"
+      class="action"
       :aria-label="$t('buttons.previous')"
       :title="$t('buttons.previous')"
+      @click="prev"
     >
       <i class="material-icons">chevron_left</i>
     </button>
     <button
-      class="action"
-      @click="next"
       v-show="hasNext"
+      class="action"
       :aria-label="$t('buttons.next')"
       :title="$t('buttons.next')"
+      @click="next"
     >
       <i class="material-icons">chevron_right</i>
     </button>
 
     <div class="preview">
-      <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
-      <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
+      <ExtendedImage v-if="req.type == 'image'" :src="raw" />
+      <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls />
       <video v-else-if="req.type == 'video'" :src="raw" autoplay controls>
         <track
-          kind="captions"
           v-for="(sub, index) in subtitles"
           :key="index"
+          kind="captions"
           :src="sub"
           :label="'Subtitle ' + index"
           :default="index === 0"
-        />Sorry, your browser doesn't support embedded videos,
+        >Sorry, your browser doesn't support embedded videos,
         but don't worry, you can
         <a :href="download">download it</a>
         and watch it with your favorite video player!
       </video>
-      <object v-else-if="req.extension == '.pdf'" class="pdf" :data="raw"></object>
+      <object v-else-if="req.extension == '.pdf'" class="pdf" :data="raw" />
       <a v-else-if="req.type == 'blob'" :href="download">
         <h2 class="message">
           {{ $t('buttons.download') }}
@@ -64,20 +64,20 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import url from "@/utils/url";
-import { baseURL } from "@/utils/constants";
-import { files as api } from "@/api";
-import InfoButton from "@/components/buttons/Info";
-import DeleteButton from "@/components/buttons/Delete";
-import RenameButton from "@/components/buttons/Rename";
-import DownloadButton from "@/components/buttons/Download";
-import ExtendedImage from "./ExtendedImage";
+import { mapState } from 'vuex'
+import url from '@/utils/url'
+import { baseURL } from '@/utils/constants'
+import { files as api } from '@/api'
+import InfoButton from '@/components/buttons/Info'
+import DeleteButton from '@/components/buttons/Delete'
+import RenameButton from '@/components/buttons/Rename'
+import DownloadButton from '@/components/buttons/Download'
+import ExtendedImage from './ExtendedImage'
 
-const mediaTypes = ["image", "video", "audio", "blob"];
+const mediaTypes = ['image', 'video', 'audio', 'blob']
 
 export default {
-  name: "preview",
+  name: 'Preview',
   components: {
     InfoButton,
     DeleteButton,
@@ -87,103 +87,103 @@ export default {
   },
   data: function() {
     return {
-      previousLink: "",
-      nextLink: "",
+      previousLink: '',
+      nextLink: '',
       listing: null,
       subtitles: []
-    };
+    }
   },
   computed: {
-    ...mapState(["req", "user", "oldReq", "jwt"]),
+    ...mapState(['req', 'user', 'oldReq', 'jwt']),
     hasPrevious() {
-      return this.previousLink !== "";
+      return this.previousLink !== ''
     },
     hasNext() {
-      return this.nextLink !== "";
+      return this.nextLink !== ''
     },
     download() {
-      return `${baseURL}/api/raw${this.req.path}?auth=${this.jwt}`;
+      return `${baseURL}/api/raw${this.req.path}?auth=${this.jwt}`
     },
     compress() {
       if (this.req.type === 'image') {
-        return `${baseURL}/api/compress${this.req.path}?auth=${this.jwt}`;
+        return `${baseURL}/api/compress${this.req.path}?auth=${this.jwt}`
       } else {
-        return `${baseURL}/api/raw${this.req.path}?auth=${this.jwt}`;
+        return `${baseURL}/api/raw${this.req.path}?auth=${this.jwt}`
       }
     },
     raw() {
-      return `${this.compress}&inline=true`;
+      return `${this.compress}&inline=true`
     }
   },
   async mounted() {
-    window.addEventListener("keyup", this.key);
+    window.addEventListener('keyup', this.key)
 
     if (this.req.subtitles) {
       this.subtitles = this.req.subtitles.map(
         sub => `${baseURL}/api/raw${sub}?auth=${this.jwt}&inline=true`
-      );
+      )
     }
 
     try {
       if (this.oldReq.items) {
-        this.updateLinks(this.oldReq.items);
+        this.updateLinks(this.oldReq.items)
       } else {
-        const path = url.removeLastDir(this.$route.path);
-        const res = await api.fetch(path);
-        this.updateLinks(res.items);
+        const path = url.removeLastDir(this.$route.path)
+        const res = await api.fetch(path)
+        this.updateLinks(res.items)
       }
     } catch (e) {
-      this.$showError(e);
+      this.$showError(e)
     }
   },
   beforeDestroy() {
-    window.removeEventListener("keyup", this.key);
+    window.removeEventListener('keyup', this.key)
   },
   methods: {
     back() {
-      let uri = url.removeLastDir(this.$route.path) + "/";
-      this.$router.push({ path: uri });
+      const uri = url.removeLastDir(this.$route.path) + '/'
+      this.$router.push({ path: uri })
     },
     prev() {
-      this.$router.push({ path: this.previousLink });
+      this.$router.push({ path: this.previousLink })
     },
     next() {
-      this.$router.push({ path: this.nextLink });
+      this.$router.push({ path: this.nextLink })
     },
     key(event) {
-      event.preventDefault();
+      event.preventDefault()
 
       if (event.which === 13 || event.which === 39) {
         // right arrow
-        if (this.hasNext) this.next();
+        if (this.hasNext) this.next()
       } else if (event.which === 37) {
         // left arrow
-        if (this.hasPrevious) this.prev();
+        if (this.hasPrevious) this.prev()
       }
     },
     updateLinks(items) {
       for (let i = 0; i < items.length; i++) {
         if (items[i].name !== this.req.name) {
-          continue;
+          continue
         }
 
         for (let j = i - 1; j >= 0; j--) {
           if (mediaTypes.includes(items[j].type)) {
-            this.previousLink = items[j].url;
-            break;
+            this.previousLink = items[j].url
+            break
           }
         }
 
         for (let j = i + 1; j < items.length; j++) {
           if (mediaTypes.includes(items[j].type)) {
-            this.nextLink = items[j].url;
-            break;
+            this.nextLink = items[j].url
+            break
           }
         }
 
-        return;
+        return
       }
     }
   }
-};
+}
 </script>
