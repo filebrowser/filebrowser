@@ -1,7 +1,7 @@
 <template>
   <div
-    class="image-ex-container"
     ref="container"
+    class="image-ex-container"
     @touchstart="touchStart"
     @touchmove="touchMove"
     @dblclick="zoomAuto"
@@ -10,7 +10,7 @@
     @mouseup="mouseUp"
     @wheel="wheelMove"
   >
-    <img :src="src" class="image-ex-img" ref="imgex" @load="setCenter">
+    <img ref="imgex" :src="src" class="image-ex-img" @load="setCenter">
   </div>
 </template>
 <script>
@@ -54,20 +54,20 @@ export default {
     }
   },
   mounted() {
-    let container = this.$refs.container
+    const container = this.$refs.container
     this.classList.forEach(className => container.classList.add(className))
     // set width and height if they are zero
-    if (getComputedStyle(container).width === "0px") {
-      container.style.width = "100%"
+    if (getComputedStyle(container).width === '0px') {
+      container.style.width = '100%'
     }
-    if (getComputedStyle(container).height === "0px") {
-      container.style.height = "100%"
+    if (getComputedStyle(container).height === '0px') {
+      container.style.height = '100%'
     }
   },
   methods: {
     setCenter() {
-      let container = this.$refs.container
-      let img = this.$refs.imgex
+      const container = this.$refs.container
+      const img = this.$refs.imgex
 
       let rate = Math.min(
         container.clientWidth / img.clientWidth,
@@ -80,7 +80,7 @@ export default {
       img.width = Math.floor(img.clientWidth * rate)
       img.style.top = `${Math.floor((container.clientHeight - img.clientHeight) / 2)}px`
       img.style.left = `${Math.floor((container.clientWidth - img.clientWidth) / 2)}px`
-      document.addEventListener('mouseup', () => this.inDrag = false )
+      document.addEventListener('mouseup', () => { this.inDrag = false })
     },
     mousedownStart(event) {
       this.lastX = null
@@ -126,7 +126,7 @@ export default {
         this.lastY = event.targetTouches[0].pageY
         return
       }
-      let step = this.$refs.imgex.width / 5
+      const step = this.$refs.imgex.width / 5
       if (event.targetTouches.length === 2) {
         this.moveDisabled = true
         clearTimeout(this.disabledTimer)
@@ -135,9 +135,9 @@ export default {
           this.moveDisabledTime
         )
 
-        let p1 = event.targetTouches[0]
-        let p2 = event.targetTouches[1]
-        let touchDistance = Math.sqrt(
+        const p1 = event.targetTouches[0]
+        const p2 = event.targetTouches[1]
+        const touchDistance = Math.sqrt(
           Math.pow(p2.pageX - p1.pageX, 2) + Math.pow(p2.pageY - p1.pageY, 2)
         )
         if (!this.lastTouchDistance) {
@@ -149,8 +149,8 @@ export default {
         this.setZoom()
       } else if (event.targetTouches.length === 1) {
         if (this.moveDisabled) return
-        let x = event.targetTouches[0].pageX - this.lastX
-        let y = event.targetTouches[0].pageY - this.lastY
+        const x = event.targetTouches[0].pageX - this.lastX
+        const y = event.targetTouches[0].pageY - this.lastY
         if (Math.abs(x) >= step && Math.abs(y) >= step) return
         this.lastX = event.targetTouches[0].pageX
         this.lastY = event.targetTouches[0].pageY
@@ -158,7 +158,7 @@ export default {
       }
     },
     doMove(x, y) {
-      let style = this.$refs.imgex.style
+      const style = this.$refs.imgex.style
       style.left = `${this.pxStringToNumber(style.left) + x}px`
       style.top = `${this.pxStringToNumber(style.top) + y}px`
     },
@@ -172,7 +172,7 @@ export default {
       this.$refs.imgex.style.transform = `scale(${this.scale})`
     },
     pxStringToNumber(style) {
-      return +style.replace("px", "")
+      return +style.replace('px', '')
     }
   }
 }

@@ -2,11 +2,11 @@ import store from '@/store'
 import { renew } from '@/utils/auth'
 import { baseURL } from '@/utils/constants'
 
-export async function fetchURL (url, opts) {
+export async function fetchURL(url, opts) {
   opts = opts || {}
   opts.headers = opts.headers || {}
 
-  let { headers, ...rest } = opts
+  const { headers, ...rest } = opts
 
   const res = await fetch(`${baseURL}${url}`, {
     headers: {
@@ -23,7 +23,7 @@ export async function fetchURL (url, opts) {
   return res
 }
 
-export async function fetchJSON (url, opts) {
+export async function fetchJSON(url, opts) {
   const res = await fetchURL(url, opts)
 
   if (res.status === 200) {
@@ -33,7 +33,7 @@ export async function fetchJSON (url, opts) {
   }
 }
 
-export function removePrefix (url) {
+export function removePrefix(url) {
   if (url.startsWith('/files')) {
     url = url.slice(6)
   }

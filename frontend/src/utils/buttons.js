@@ -1,5 +1,5 @@
-function loading (button) {
-  let el = document.querySelector(`#${button}-button > i`)
+function loading(button) {
+  const el = document.querySelector(`#${button}-button > i`)
 
   if (el === undefined || el === null) {
     console.log('Error getting button ' + button) // eslint-disable-line
@@ -16,8 +16,8 @@ function loading (button) {
   }, 100)
 }
 
-function done (button) {
-  let el = document.querySelector(`#${button}-button > i`)
+function done(button) {
+  const el = document.querySelector(`#${button}-button > i`)
 
   if (el === undefined || el === null) {
     console.log('Error getting button ' + button) // eslint-disable-line
@@ -33,8 +33,8 @@ function done (button) {
   }, 100)
 }
 
-function success (button) {
-  let el = document.querySelector(`#${button}-button > i`)
+function success(button) {
+  const el = document.querySelector(`#${button}-button > i`)
 
   if (el === undefined || el === null) {
     console.log('Error getting button ' + button) // eslint-disable-line

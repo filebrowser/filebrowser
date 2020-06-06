@@ -24,19 +24,19 @@ Vue.prototype.$showSuccess = (message) => {
 }
 
 Vue.prototype.$showError = (error) => {
-  let btns = [
-    Noty.button(i18n.t('buttons.close'), '', function () {
+  const btns = [
+    Noty.button(i18n.t('buttons.close'), '', function() {
       n.close()
     })
   ]
 
   if (!disableExternal) {
-    btns.unshift(Noty.button(i18n.t('buttons.reportIssue'), '', function () {
+    btns.unshift(Noty.button(i18n.t('buttons.reportIssue'), '', function() {
       window.open('https://github.com/filebrowser/filebrowser/issues/new/choose')
     }))
   }
 
-  let n = new Noty(Object.assign({}, notyDefault, {
+  const n = new Noty(Object.assign({}, notyDefault, {
     text: error.message || error,
     type: 'error',
     timeout: null,
@@ -47,7 +47,7 @@ Vue.prototype.$showError = (error) => {
 }
 
 Vue.directive('focus', {
-  inserted: function (el) {
+  inserted: function(el) {
     el.focus()
   }
 })

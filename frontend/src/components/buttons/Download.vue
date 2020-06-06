@@ -1,5 +1,5 @@
 <template>
-  <button @click="download" :aria-label="$t('buttons.download')" :title="$t('buttons.download')" id="download-button" class="action">
+  <button id="download-button" :aria-label="$t('buttons.download')" :title="$t('buttons.download')" class="action" @click="download">
     <i class="material-icons">file_download</i>
     <span>{{ $t('buttons.download') }}</span>
     <span v-if="selectedCount > 0" class="counter">{{ selectedCount }}</span>
@@ -7,17 +7,17 @@
 </template>
 
 <script>
-import {mapGetters, mapState} from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import { files as api } from '@/api'
 
 export default {
-  name: 'download-button',
+  name: 'DownloadButton',
   computed: {
     ...mapState(['req', 'selected']),
     ...mapGetters(['isListing', 'selectedCount'])
   },
   methods: {
-    download: function () {
+    download: function() {
       if (!this.isListing) {
         api.download(null, this.$route.path)
         return

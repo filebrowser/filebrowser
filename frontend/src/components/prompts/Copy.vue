@@ -6,19 +6,23 @@
 
     <div class="card-content">
       <p>{{ $t('prompts.copyMessage') }}</p>
-      <file-list @update:selected="val => dest = val"></file-list>
+      <file-list @update:selected="val => dest = val" />
     </div>
 
     <div class="card-action">
-      <button class="button button--flat button--grey"
-        @click="$store.commit('closeHovers')"
+      <button
+        class="button button--flat button--grey"
         :aria-label="$t('buttons.cancel')"
-        :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
-      <button class="button button--flat"
-        @click="copy"
+        :title="$t('buttons.cancel')"
+        @click="$store.commit('closeHovers')"
+      >{{ $t('buttons.cancel') }}</button>
+      <button
+        class="button button--flat"
         :disabled="$route.path === dest"
         :aria-label="$t('buttons.copy')"
-        :title="$t('buttons.copy')">{{ $t('buttons.copy') }}</button>
+        :title="$t('buttons.copy')"
+        @click="copy"
+      >{{ $t('buttons.copy') }}</button>
     </div>
   </div>
 </template>
@@ -30,9 +34,9 @@ import { files as api } from '@/api'
 import buttons from '@/utils/buttons'
 
 export default {
-  name: 'copy',
+  name: 'Copy',
   components: { FileList },
-  data: function () {
+  data: function() {
     return {
       current: window.location.pathname,
       dest: null
@@ -40,13 +44,13 @@ export default {
   },
   computed: mapState(['req', 'selected']),
   methods: {
-    copy: async function (event) {
+    copy: async function(event) {
       event.preventDefault()
       buttons.loading('copy')
-      let items = []
+      const items = []
 
       // Create a new promise for each file.
-      for (let item of this.selected) {
+      for (const item of this.selected) {
         items.push({
           from: this.req.items[item].url,
           to: this.dest + encodeURIComponent(this.req.items[item].name)

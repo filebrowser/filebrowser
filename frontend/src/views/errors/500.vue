@@ -8,6 +8,6 @@
 </template>
 
 <script>
-export default {name: 'internal-error'}
+export default { name: 'InternalError' }
 </script>
 

@@ -8,6 +8,6 @@
 </template>
 
 <script>
-export default {name: 'not-found'}
+export default { name: 'NotFound' }
 </script>
 

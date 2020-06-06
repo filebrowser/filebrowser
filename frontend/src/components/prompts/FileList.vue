@@ -1,15 +1,18 @@
 <template>
   <div>
     <ul class="file-list">
-      <li @click="select"
-        @touchstart="touchstart"
-        @dblclick="next"
+      <li
+        v-for="item in items"
+        :key="item.name"
         role="button"
         tabindex="0"
         :aria-label="item.name"
         :aria-selected="selected == item.url"
-        :key="item.name" v-for="item in items"
-        :data-url="item.url">{{ item.name }}</li>
+        :data-url="item.url"
+        @click="select"
+        @touchstart="touchstart"
+        @dblclick="next"
+      >{{ item.name }}</li>
     </ul>
 
     <p>{{ $t('prompts.currentlyNavigating') }} <code>{{ nav }}</code>.</p>
@@ -22,8 +25,8 @@ import url from '@/utils/url'
 import { files } from '@/api'
 
 export default {
-  name: 'file-list',
-  data: function () {
+  name: 'FileList',
+  data: function() {
     return {
       items: [],
       touches: {
@@ -35,12 +38,12 @@ export default {
     }
   },
   computed: {
-    ...mapState([ 'req' ]),
-    nav () {
+    ...mapState(['req']),
+    nav() {
       return decodeURIComponent(this.current)
     }
   },
-  mounted () {
+  mounted() {
     // If we're showing this on a listing,
     // we can use the current request object
     // to fill the move options.
@@ -56,7 +59,7 @@ export default {
       .catch(this.$showError)
   },
   methods: {
-    fillOptions (req) {
+    fillOptions(req) {
       // Sets the current path and resets
       // the current items.
       this.current = req.url
@@ -79,7 +82,7 @@ export default {
 
       // Otherwise we add every directory to the
       // move options.
-      for (let item of req.items) {
+      for (const item of req.items) {
         if (!item.isDir) continue
 
         this.items.push({
@@ -88,18 +91,18 @@ export default {
         })
       }
     },
-    next: function (event) {
+    next: function(event) {
       // Retrieves the URL of the directory the user
       // just clicked in and fill the options with its
       // content.
-      let uri = event.currentTarget.dataset.url
+      const uri = event.currentTarget.dataset.url
 
       files.fetch(uri)
         .then(this.fillOptions)
         .catch(this.$showError)
     },
-    touchstart (event) {
-      let url = event.currentTarget.dataset.url
+    touchstart(event) {
+      const url = event.currentTarget.dataset.url
 
       // In 300 milliseconds, we shall reset the count.
       setTimeout(() => {
@@ -123,7 +126,7 @@ export default {
         this.next(event)
       }
     },
-    select: function (event) {
+    select: function(event) {
       // If the element is already selected, unselect it.
       if (this.selected === event.currentTarget.dataset.url) {
         this.selected = null

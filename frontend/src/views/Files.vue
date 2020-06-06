@@ -11,13 +11,13 @@
       </span>
     </div>
     <div v-if="error">
-      <not-found v-if="error.message === '404'"></not-found>
-      <forbidden v-else-if="error.message === '403'"></forbidden>
-      <internal-error v-else></internal-error>
+      <not-found v-if="error.message === '404'" />
+      <forbidden v-else-if="error.message === '403'" />
+      <internal-error v-else />
     </div>
-    <editor v-else-if="isEditor"></editor>
-    <listing :class="{ multiple }" v-else-if="isListing"></listing>
-    <preview v-else-if="isPreview"></preview>
+    <editor v-else-if="isEditor" />
+    <listing v-else-if="isListing" :class="{ multiple }" />
+    <preview v-else-if="isPreview" />
     <div v-else>
       <h2 class="message">
         <span>{{ $t('files.loading') }}</span>
@@ -35,12 +35,12 @@ import Listing from '@/components/files/Listing'
 import { files as api } from '@/api'
 import { mapGetters, mapState, mapMutations } from 'vuex'
 
-function clean (path) {
+function clean(path) {
   return path.endsWith('/') ? path.slice(0, -1) : path
 }
 
 export default {
-  name: 'files',
+  name: 'Files',
   components: {
     Forbidden,
     NotFound,
@@ -63,11 +63,11 @@ export default {
       'multiple',
       'loading'
     ]),
-    isPreview () {
+    isPreview() {
       return !this.loading && !this.isListing && !this.isEditor
     },
-    breadcrumbs () {
-      let parts = this.$route.path.split('/')
+    breadcrumbs() {
+      const parts = this.$route.path.split('/')
 
       if (parts[0] === '') {
         parts.shift()
@@ -77,7 +77,7 @@ export default {
         parts.pop()
       }
 
-      let breadcrumbs = []
+      const breadcrumbs = []
 
       for (let i = 0; i < parts.length; i++) {
         if (i === 0) {
@@ -100,34 +100,34 @@ export default {
       return breadcrumbs
     }
   },
-  data: function () {
+  data: function() {
     return {
       error: null
     }
   },
-  created () {
-    this.fetchData()
-  },
   watch: {
     '$route': 'fetchData',
-    'reload': function () {
+    'reload': function() {
       this.fetchData()
     }
   },
-  mounted () {
+  created() {
+    this.fetchData()
+  },
+  mounted() {
     window.addEventListener('keydown', this.keyEvent)
     window.addEventListener('scroll', this.scroll)
   },
-  beforeDestroy () {
+  beforeDestroy() {
     window.removeEventListener('keydown', this.keyEvent)
     window.removeEventListener('scroll', this.scroll)
   },
-  destroyed () {
+  destroyed() {
     this.$store.commit('updateRequest', {})
   },
   methods: {
-    ...mapMutations([ 'setLoading' ]),
-    async fetchData () {
+    ...mapMutations(['setLoading']),
+    async fetchData() {
       // Reset view information.
       this.$store.commit('setReload', false)
       this.$store.commit('resetSelected')
@@ -157,7 +157,7 @@ export default {
         this.setLoading(false)
       }
     },
-    keyEvent (event) {
+    keyEvent(event) {
       // Esc!
       if (event.keyCode === 27) {
         this.$store.commit('closeHovers')
@@ -212,7 +212,7 @@ export default {
         }
       }
     },
-    scroll () {
+    scroll() {
       if (this.req.kind !== 'listing' || this.$store.state.user.viewMode === 'mosaic') return
 
       let top = 112 - window.scrollY
@@ -223,10 +223,10 @@ export default {
 
       document.querySelector('#listing.list .item.header').style.top = top + 'px'
     },
-    openSidebar () {
+    openSidebar() {
       this.$store.commit('showHover', 'sidebar')
     },
-    openSearch () {
+    openSearch() {
       this.$store.commit('showHover', 'search')
     }
   }

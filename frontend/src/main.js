@@ -9,7 +9,7 @@ import App from '@/App'
 
 sync(store, router)
 
-async function start () {
+async function start() {
   if (loginPage) {
     await validateLogin()
   } else {
@@ -17,7 +17,7 @@ async function start () {
   }
 
   if (recaptcha) {
-    await new Promise (resolve => {
+    await new Promise(resolve => {
       const check = () => {
         if (typeof window.grecaptcha === 'undefined') {
           setTimeout(check, 100)
@@ -35,8 +35,8 @@ async function start () {
     store,
     router,
     i18n,
-    template: '<App/>',
-    components: { App }
+    components: { App },
+    template: '<App/>'
   })
 }
 

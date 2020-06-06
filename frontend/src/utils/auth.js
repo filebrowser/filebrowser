@@ -3,7 +3,7 @@ import router from '@/router'
 import { Base64 } from 'js-base64'
 import { baseURL } from '@/utils/constants'
 
-export function parseToken (token) {
+export function parseToken(token) {
   const parts = token.split('.')
 
   if (parts.length !== 3) {
@@ -21,7 +21,7 @@ export function parseToken (token) {
   store.commit('setUser', data.user)
 }
 
-export async function validateLogin () {
+export async function validateLogin() {
   try {
     if (localStorage.getItem('jwt')) {
       await renew(localStorage.getItem('jwt'))
@@ -31,7 +31,7 @@ export async function validateLogin () {
   }
 }
 
-export async function login (username, password, recaptcha) {
+export async function login(username, password, recaptcha) {
   const data = { username, password, recaptcha }
 
   const res = await fetch(`${baseURL}/api/login`, {
@@ -51,11 +51,11 @@ export async function login (username, password, recaptcha) {
   }
 }
 
-export async function renew (jwt) {
+export async function renew(jwt) {
   const res = await fetch(`${baseURL}/api/renew`, {
     method: 'POST',
     headers: {
-      'X-Auth': jwt,
+      'X-Auth': jwt
     }
   })
 
@@ -68,7 +68,7 @@ export async function renew (jwt) {
   }
 }
 
-export async function signup (username, password) {
+export async function signup(username, password) {
   const data = { username, password }
 
   const res = await fetch(`${baseURL}/api/signup`, {
@@ -84,9 +84,9 @@ export async function signup (username, password) {
   }
 }
 
-export function logout () {
+export function logout() {
   store.commit('setJWT', '')
   store.commit('setUser', null)
   localStorage.setItem('jwt', null)
-  router.push({path: '/login'})
+  router.push({ path: '/login' })
 }

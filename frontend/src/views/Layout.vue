@@ -1,15 +1,15 @@
 <template>
   <div>
     <div id="progress">
-      <div v-bind:style="{ width: $store.state.progress + '%' }"></div>
+      <div :style="{ width: $store.state.progress + '%' }" />
     </div>
-    <site-header></site-header>
-    <sidebar></sidebar>
+    <site-header />
+    <sidebar />
     <main>
-      <router-view></router-view>
+      <router-view />
       <shell v-if="isLogged && user.perm.execute" />
     </main>
-    <prompts></prompts>
+    <prompts />
   </div>
 </template>
 
@@ -21,7 +21,7 @@ import SiteHeader from '@/components/Header'
 import Shell from '@/components/Shell'
 
 export default {
-  name: 'layout',
+  name: 'Layout',
   components: {
     Sidebar,
     SiteHeader,
@@ -29,11 +29,11 @@ export default {
     Shell
   },
   computed: {
-    ...mapGetters([ 'isLogged' ]),
-    ...mapState([ 'user' ])
+    ...mapGetters(['isLogged']),
+    ...mapState(['user'])
   },
   watch: {
-    '$route': function () {
+    '$route': function() {
       this.$store.commit('resetSelected')
       this.$store.commit('multiple', false)
       if (this.$store.state.show !== 'success') this.$store.commit('closeHovers')

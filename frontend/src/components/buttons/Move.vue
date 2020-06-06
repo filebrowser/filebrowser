@@ -1,5 +1,5 @@
 <template>
-  <button @click="show" :aria-label="$t('buttons.move')" :title="$t('buttons.move')" class="action" id="move-button">
+  <button id="move-button" :aria-label="$t('buttons.move')" :title="$t('buttons.move')" class="action" @click="show">
     <i class="material-icons">forward</i>
     <span>{{ $t('buttons.moveFile') }}</span>
   </button>
@@ -7,9 +7,9 @@
 
 <script>
 export default {
-  name: 'move-button',
+  name: 'MoveButton',
   methods: {
-    show: function () {
+    show: function() {
       this.$store.commit('showHover', 'move')
     }
   }

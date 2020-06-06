@@ -1,17 +1,17 @@
 <template>
   <div>
-    <router-view></router-view>
+    <router-view />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'app',
-  mounted () {
+  name: 'App',
+  mounted() {
     const loading = document.getElementById('loading')
     loading.classList.add('done')
 
-    setTimeout(function () {
+    setTimeout(function() {
       loading.parentNode.removeChild(loading)
     }, 200)
   }

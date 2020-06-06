@@ -4,41 +4,53 @@
       <i class="material-icons">sentiment_dissatisfied</i>
       <span>{{ $t('files.lonely') }}</span>
     </h2>
-    <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" multiple>
+    <input id="upload-input" style="display:none" type="file" multiple @change="uploadInput($event)">
   </div>
-  <div v-else id="listing"
+  <div
+    v-else
+    id="listing"
     :class="user.viewMode"
     @dragenter="dragEnter"
-    @dragend="dragEnd">
+    @dragend="dragEnd"
+  >
     <div>
       <div class="item header">
-        <div></div>
+        <div />
         <div>
-          <p :class="{ active: nameSorted }" class="name"
+          <p
+            :class="{ active: nameSorted }"
+            class="name"
             role="button"
             tabindex="0"
-            @click="sort('name')"
             :title="$t('files.sortByName')"
-            :aria-label="$t('files.sortByName')">
+            :aria-label="$t('files.sortByName')"
+            @click="sort('name')"
+          >
             <span>{{ $t('files.name') }}</span>
             <i class="material-icons">{{ nameIcon }}</i>
           </p>
 
-          <p :class="{ active: sizeSorted }" class="size"
+          <p
+            :class="{ active: sizeSorted }"
+            class="size"
             role="button"
             tabindex="0"
-            @click="sort('size')"
             :title="$t('files.sortBySize')"
-            :aria-label="$t('files.sortBySize')">
+            :aria-label="$t('files.sortBySize')"
+            @click="sort('size')"
+          >
             <span>{{ $t('files.size') }}</span>
             <i class="material-icons">{{ sizeIcon }}</i>
           </p>
-          <p :class="{ active: modifiedSorted }" class="modified"
+          <p
+            :class="{ active: modifiedSorted }"
+            class="modified"
             role="button"
             tabindex="0"
-            @click="sort('modified')"
             :title="$t('files.sortByLastModified')"
-            :aria-label="$t('files.sortByLastModified')">
+            :aria-label="$t('files.sortByLastModified')"
+            @click="sort('modified')"
+          >
             <span>{{ $t('files.lastModified') }}</span>
             <i class="material-icons">{{ modifiedIcon }}</i>
           </p>
@@ -48,37 +60,39 @@
 
     <h2 v-if="req.numDirs > 0">{{ $t('files.folders') }}</h2>
     <div v-if="req.numDirs > 0">
-      <item v-for="(item) in dirs"
+      <item
+        v-for="(item) in dirs"
         :key="base64(item.name)"
-        v-bind:index="item.index"
-        v-bind:name="item.name"
-        v-bind:isDir="item.isDir"
-        v-bind:url="item.url"
-        v-bind:modified="item.modified"
-        v-bind:type="item.type"
-        v-bind:size="item.size">
-      </item>
+        :index="item.index"
+        :name="item.name"
+        :is-dir="item.isDir"
+        :url="item.url"
+        :modified="item.modified"
+        :type="item.type"
+        :size="item.size"
+      />
     </div>
 
     <h2 v-if="req.numFiles > 0">{{ $t('files.files') }}</h2>
     <div v-if="req.numFiles > 0">
-      <item v-for="(item) in files"
+      <item
+        v-for="(item) in files"
         :key="base64(item.name)"
-        v-bind:index="item.index"
-        v-bind:name="item.name"
-        v-bind:isDir="item.isDir"
-        v-bind:url="item.url"
-        v-bind:modified="item.modified"
-        v-bind:type="item.type"
-        v-bind:size="item.size">
-      </item>
+        :index="item.index"
+        :name="item.name"
+        :is-dir="item.isDir"
+        :url="item.url"
+        :modified="item.modified"
+        :type="item.type"
+        :size="item.size"
+      />
     </div>
 
-    <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" multiple>
+    <input id="upload-input" style="display:none" type="file" multiple @change="uploadInput($event)">
 
-    <div :class="{ active: $store.state.multiple }" id="multiple-selection">
-    <p>{{ $t('files.multipleSelectionEnabled') }}</p>
-      <div @click="$store.commit('multiple', false)" tabindex="0" role="button" :title="$t('files.clear')" :aria-label="$t('files.clear')" class="action">
+    <div id="multiple-selection" :class="{ active: $store.state.multiple }">
+      <p>{{ $t('files.multipleSelectionEnabled') }}</p>
+      <div tabindex="0" role="button" :title="$t('files.clear')" :aria-label="$t('files.clear')" class="action" @click="$store.commit('multiple', false)">
         <i class="material-icons">clear</i>
       </div>
     </div>
@@ -94,28 +108,28 @@ import buttons from '@/utils/buttons'
 import url from '@/utils/url'
 
 export default {
-  name: 'listing',
+  name: 'Listing',
   components: { Item },
-  data: function () {
+  data: function() {
     return {
       show: 50
     }
   },
   computed: {
     ...mapState(['req', 'selected', 'user']),
-    nameSorted () {
+    nameSorted() {
       return (this.req.sorting.by === 'name')
     },
-    sizeSorted () {
+    sizeSorted() {
       return (this.req.sorting.by === 'size')
     },
-    modifiedSorted () {
+    modifiedSorted() {
       return (this.req.sorting.by === 'modified')
     },
-    ascOrdered () {
+    ascOrdered() {
       return this.req.sorting.asc
     },
-    items () {
+    items() {
       const dirs = []
       const files = []
 
@@ -129,31 +143,31 @@ export default {
 
       return { dirs, files }
     },
-    dirs () {
+    dirs() {
       return this.items.dirs.slice(0, this.show)
     },
-    files () {
+    files() {
       let show = this.show - this.items.dirs.length
 
       if (show < 0) show = 0
 
       return this.items.files.slice(0, show)
     },
-    nameIcon () {
+    nameIcon() {
       if (this.nameSorted && !this.ascOrdered) {
         return 'arrow_upward'
       }
 
       return 'arrow_downward'
     },
-    sizeIcon () {
+    sizeIcon() {
       if (this.sizeSorted && this.ascOrdered) {
         return 'arrow_downward'
       }
 
       return 'arrow_upward'
     },
-    modifiedIcon () {
+    modifiedIcon() {
       if (this.modifiedSorted && this.ascOrdered) {
         return 'arrow_downward'
       }
@@ -161,7 +175,7 @@ export default {
       return 'arrow_upward'
     }
   },
-  mounted: function () {
+  mounted: function() {
     // Check the columns size for the first time.
     this.resizeEvent()
 
@@ -172,7 +186,7 @@ export default {
     document.addEventListener('dragover', this.preventDefault)
     document.addEventListener('drop', this.drop)
   },
-  beforeDestroy () {
+  beforeDestroy() {
     // Remove event listeners before destroying this page.
     window.removeEventListener('keydown', this.keyEvent)
     window.removeEventListener('resize', this.resizeEvent)
@@ -181,16 +195,16 @@ export default {
     document.removeEventListener('drop', this.drop)
   },
   methods: {
-    ...mapMutations([ 'updateUser' ]),
-    base64: function (name) {
+    ...mapMutations(['updateUser']),
+    base64: function(name) {
       return window.btoa(unescape(encodeURIComponent(name)))
     },
-    keyEvent (event) {
+    keyEvent(event) {
       if (!event.ctrlKey && !event.metaKey) {
         return
       }
 
-      let key = String.fromCharCode(event.which).toLowerCase()
+      const key = String.fromCharCode(event.which).toLowerCase()
 
       switch (key) {
         case 'f':
@@ -206,25 +220,25 @@ export default {
           break
       }
     },
-    preventDefault (event) {
+    preventDefault(event) {
       // Wrapper around prevent default.
       event.preventDefault()
     },
-    copyCut (event, key) {
+    copyCut(event, key) {
       if (event.target.tagName.toLowerCase() === 'input') {
         return
       }
 
-      let items = []
+      const items = []
 
-      for (let i of this.selected) {
+      for (const i of this.selected) {
         items.push({
           from: this.req.items[i].url,
           name: encodeURIComponent(this.req.items[i].name)
         })
       }
 
-      if (items.length == 0) {
+      if (items.length === 0) {
         return
       }
 
@@ -233,14 +247,14 @@ export default {
         items: items
       })
     },
-    paste (event) {
+    paste(event) {
       if (event.target.tagName.toLowerCase() === 'input') {
         return
       }
 
-      let items = []
+      const items = []
 
-      for (let item of this.$store.state.clipboard.items) {
+      for (const item of this.$store.state.clipboard.items) {
         const from = item.from.endsWith('/') ? item.from.slice(0, -1) : item.from
         const to = this.$route.path + item.name
         items.push({ from, to })
@@ -261,36 +275,36 @@ export default {
         this.$store.commit('setReload', true)
       }).catch(this.$showError)
     },
-    resizeEvent () {
+    resizeEvent() {
       // Update the columns size based on the window width.
       let columns = Math.floor(document.querySelector('main').offsetWidth / 300)
-      let items = css(['#listing.mosaic .item', '.mosaic#listing .item'])
+      const items = css(['#listing.mosaic .item', '.mosaic#listing .item'])
       if (columns === 0) columns = 1
       items.style.width = `calc(${100 / columns}% - 1em)`
     },
-    scrollEvent () {
+    scrollEvent() {
       if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
         this.show += 50
       }
     },
-    dragEnter () {
+    dragEnter() {
       // When the user starts dragging an item, put every
       // file on the listing with 50% opacity.
-      let items = document.getElementsByClassName('item')
+      const items = document.getElementsByClassName('item')
 
       Array.from(items).forEach(file => {
         file.style.opacity = 0.5
       })
     },
-    dragEnd () {
+    dragEnd() {
       this.resetOpacity()
     },
-    drop: function (event) {
+    drop: function(event) {
       event.preventDefault()
       this.resetOpacity()
 
-      let dt = event.dataTransfer
-      let files = dt.files
+      const dt = event.dataTransfer
+      const files = dt.files
       let el = event.target
 
       if (files.length <= 0) return
@@ -318,14 +332,14 @@ export default {
 
       this.checkConflict(files, this.req.items, base)
     },
-    checkConflict (files, items, base) {
+    checkConflict(files, items, base) {
       if (typeof items === 'undefined' || items === null) {
         items = []
       }
 
       let conflict = false
       for (let i = 0; i < files.length; i++) {
-        let res = items.findIndex(function hasConflict (element) {
+        const res = items.findIndex(function hasConflict(element) {
           return (element.name === this)
         }, files[i].name)
 
@@ -349,22 +363,22 @@ export default {
         }
       })
     },
-    uploadInput (event) {
+    uploadInput(event) {
       this.checkConflict(event.currentTarget.files, this.req.items, '')
     },
-    resetOpacity () {
-      let items = document.getElementsByClassName('item')
+    resetOpacity() {
+      const items = document.getElementsByClassName('item')
 
       Array.from(items).forEach(file => {
         file.style.opacity = 1
       })
     },
-    handleFiles (files, base, overwrite = false) {
+    handleFiles(files, base, overwrite = false) {
       buttons.loading('upload')
-      let promises = []
-      let progress = new Array(files.length).fill(0)
+      const promises = []
+      const progress = new Array(files.length).fill(0)
 
-      let onupload = (id) => (event) => {
+      const onupload = (id) => (event) => {
         progress[id] = (event.loaded / event.total) * 100
 
         let sum = 0
@@ -376,12 +390,12 @@ export default {
       }
 
       for (let i = 0; i < files.length; i++) {
-        let file = files[i]
-        let filenameEncoded = url.encodeRFC5987ValueChars(file.name)
+        const file = files[i]
+        const filenameEncoded = url.encodeRFC5987ValueChars(file.name)
         promises.push(api.post(this.$route.path + base + filenameEncoded, file, overwrite, onupload(i)))
       }
 
-      let finish = () => {
+      const finish = () => {
         buttons.success('upload')
         this.$store.commit('setProgress', 0)
       }
@@ -398,7 +412,7 @@ export default {
 
       return false
     },
-    async sort (by) {
+    async sort(by) {
       let asc = false
 
       if (by === 'name') {
@@ -416,7 +430,7 @@ export default {
       }
 
       try {
-        await users.update({ id: this.user.id, sorting: { by, asc } }, ['sorting'])
+        await users.update({ id: this.user.id, sorting: { by, asc }}, ['sorting'])
       } catch (e) {
         this.$showError(e)
       }

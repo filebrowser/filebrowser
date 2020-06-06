@@ -1,5 +1,5 @@
 <template>
-  <button @click="show" :aria-label="$t('buttons.share')" :title="$t('buttons.share')" class="action">
+  <button :aria-label="$t('buttons.share')" :title="$t('buttons.share')" class="action" @click="show">
     <i class="material-icons">share</i>
     <span>{{ $t('buttons.share') }}</span>
   </button>
@@ -7,9 +7,9 @@
 
 <script>
 export default {
-  name: 'share-button',
+  name: 'ShareButton',
   methods: {
-    show () {
+    show() {
       this.$store.commit('showHover', 'share')
     }
   }

@@ -5,19 +5,23 @@
     </div>
 
     <div class="card-content">
-      <file-list @update:selected="val => dest = val"></file-list>
+      <file-list @update:selected="val => dest = val" />
     </div>
 
     <div class="card-action">
-      <button class="button button--flat button--grey"
-        @click="$store.commit('closeHovers')"
+      <button
+        class="button button--flat button--grey"
         :aria-label="$t('buttons.cancel')"
-        :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
-      <button class="button button--flat"
-        @click="move"
+        :title="$t('buttons.cancel')"
+        @click="$store.commit('closeHovers')"
+      >{{ $t('buttons.cancel') }}</button>
+      <button
+        class="button button--flat"
         :disabled="$route.path === dest"
         :aria-label="$t('buttons.move')"
-        :title="$t('buttons.move')">{{ $t('buttons.move') }}</button>
+        :title="$t('buttons.move')"
+        @click="move"
+      >{{ $t('buttons.move') }}</button>
     </div>
   </div>
 </template>
@@ -29,9 +33,9 @@ import { files as api } from '@/api'
 import buttons from '@/utils/buttons'
 
 export default {
-  name: 'move',
+  name: 'Move',
   components: { FileList },
-  data: function () {
+  data: function() {
     return {
       current: window.location.pathname,
       dest: null
@@ -39,12 +43,12 @@ export default {
   },
   computed: mapState(['req', 'selected']),
   methods: {
-    move: async function (event) {
+    move: async function(event) {
       event.preventDefault()
       buttons.loading('move')
-      let items = []
+      const items = []
 
-      for (let item of this.selected) {
+      for (const item of this.selected) {
         items.push({
           from: this.req.items[item].url,
           to: this.dest + encodeURIComponent(this.req.items[item].name)

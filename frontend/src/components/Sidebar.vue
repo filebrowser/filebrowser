@@ -7,12 +7,12 @@
       </router-link>
 
       <div v-if="user.perm.create">
-        <button @click="$store.commit('showHover', 'newDir')" class="action" :aria-label="$t('sidebar.newFolder')" :title="$t('sidebar.newFolder')">
+        <button class="action" :aria-label="$t('sidebar.newFolder')" :title="$t('sidebar.newFolder')" @click="$store.commit('showHover', 'newDir')">
           <i class="material-icons">create_new_folder</i>
           <span>{{ $t('sidebar.newFolder') }}</span>
         </button>
 
-        <button @click="$store.commit('showHover', 'newFile')" class="action" :aria-label="$t('sidebar.newFile')" :title="$t('sidebar.newFile')">
+        <button class="action" :aria-label="$t('sidebar.newFile')" :title="$t('sidebar.newFile')" @click="$store.commit('showHover', 'newFile')">
           <i class="material-icons">note_add</i>
           <span>{{ $t('sidebar.newFile') }}</span>
         </button>
@@ -24,7 +24,7 @@
           <span>{{ $t('sidebar.settings') }}</span>
         </router-link>
 
-        <button v-if="authMethod == 'json'" @click="logout" class="action" id="logout" :aria-label="$t('sidebar.logout')" :title="$t('sidebar.logout')">
+        <button v-if="authMethod == 'json'" id="logout" class="action" :aria-label="$t('sidebar.logout')" :title="$t('sidebar.logout')" @click="logout">
           <i class="material-icons">exit_to_app</i>
           <span>{{ $t('sidebar.logout') }}</span>
         </button>
@@ -59,11 +59,11 @@ import * as auth from '@/utils/auth'
 import { version, signup, disableExternal, noAuth, authMethod } from '@/utils/constants'
 
 export default {
-  name: 'sidebar',
+  name: 'Sidebar',
   computed: {
-    ...mapState([ 'user' ]),
-    ...mapGetters([ 'isLogged' ]),
-    active () {
+    ...mapState(['user']),
+    ...mapGetters(['isLogged']),
+    active() {
       return this.$store.state.show === 'sidebar'
     },
     signup: () => signup,
@@ -73,7 +73,7 @@ export default {
     authMethod: () => authMethod
   },
   methods: {
-    help () {
+    help() {
       this.$store.commit('showHover', 'help')
     },
     logout: auth.logout

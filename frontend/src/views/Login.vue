@@ -5,14 +5,14 @@
       <h1>{{ name }}</h1>
       <div v-if="error !== ''" class="wrong">{{ error }}</div>
 
-      <input class="input input--block" type="text" v-model="username" :placeholder="$t('login.username')">
-      <input class="input input--block" type="password" v-model="password" :placeholder="$t('login.password')">
-      <input class="input input--block" v-if="createMode" type="password" v-model="passwordConfirm" :placeholder="$t('login.passwordConfirm')" />
+      <input v-model="username" class="input input--block" type="text" :placeholder="$t('login.username')">
+      <input v-model="password" class="input input--block" type="password" :placeholder="$t('login.password')">
+      <input v-if="createMode" v-model="passwordConfirm" class="input input--block" type="password" :placeholder="$t('login.passwordConfirm')">
 
-      <div v-if="recaptcha" id="recaptcha"></div>
+      <div v-if="recaptcha" id="recaptcha" />
       <input class="button button--block" type="submit" :value="createMode ? $t('login.signup') : $t('login.submit')">
 
-      <p @click="toggleMode" v-if="signup">{{ createMode ? $t('login.loginInstead') : $t('login.createAnAccount') }}</p>
+      <p v-if="signup" @click="toggleMode">{{ createMode ? $t('login.loginInstead') : $t('login.createAnAccount') }}</p>
     </form>
   </div>
 </template>
@@ -22,13 +22,8 @@ import * as auth from '@/utils/auth'
 import { name, logoURL, recaptcha, recaptchaKey, signup } from '@/utils/constants'
 
 export default {
-  name: 'login',
-  computed: {
-    signup: () => signup,
-    name: () => name,
-    logoURL: () => logoURL
-  },
-  data: function () {
+  name: 'Login',
+  data: function() {
     return {
       createMode: false,
       error: '',
@@ -38,7 +33,12 @@ export default {
       passwordConfirm: ''
     }
   },
-  mounted () {
+  computed: {
+    signup: () => signup,
+    name: () => name,
+    logoURL: () => logoURL
+  },
+  mounted() {
     if (!recaptcha) return
 
     window.grecaptcha.render('recaptcha', {
@@ -46,10 +46,10 @@ export default {
     })
   },
   methods: {
-    toggleMode () {
+    toggleMode() {
       this.createMode = !this.createMode
     },
-    async submit (event) {
+    async submit(event) {
       event.preventDefault()
       event.stopPropagation()
 
@@ -83,7 +83,7 @@ export default {
         await auth.login(this.username, this.password, captcha)
         this.$router.push({ path: redirect })
       } catch (e) {
-        if (e.message == 409) {
+        if (e.message === 409) {
           this.error = this.$t('login.usernameTaken')
         } else {
           this.error = this.$t('login.wrongCredentials')

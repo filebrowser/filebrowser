@@ -1,5 +1,5 @@
 <template>
-  <select v-on:change="change" :value="locale">
+  <select :value="locale" @change="change">
     <option v-for="(language, value) in locales" :key="value" :value="value">{{ $t('languages.' + language) }}</option>
   </select>
 </template>
@@ -7,10 +7,10 @@
 <script>
 
 export default {
-  name: 'languages',
-  props: [ 'locale' ],
+  name: 'Languages',
+  props: ['locale'],
   data() {
-    let dataObj = {
+    const dataObj = {
       locales: {
         ar: 'ar',
         de: 'de',
@@ -31,14 +31,14 @@ export default {
         'zh-cn': 'zhCN',
         'zh-tw': 'zhTW'
       }
-    };
+    }
 
-    Object.defineProperty(dataObj, "locales", { configurable: false, writable: false });
+    Object.defineProperty(dataObj, 'locales', { configurable: false, writable: false })
 
-    return dataObj;
+    return dataObj
   },
   methods: {
-    change (event) {
+    change(event) {
       this.$emit('update:locale', event.target.value)
     }
   }

@@ -22,7 +22,7 @@ import zhTW from './zh-tw.json'
 
 Vue.use(VueI18n)
 
-export function detectLocale () {
+export function detectLocale() {
   let locale = (navigator.language || navigator.browserLangugae).toLowerCase()
   switch (true) {
     case /^ar.*/i.test(locale):

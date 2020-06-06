@@ -6,15 +6,15 @@
 
     <div class="card-content">
       <p>{{ $t('prompts.newDirMessage') }}</p>
-      <input class="input input--block" type="text" @keyup.enter="submit" v-model.trim="name" v-focus>
+      <input v-model.trim="name" v-focus class="input input--block" type="text" @keyup.enter="submit">
     </div>
 
     <div class="card-action">
       <button
         class="button button--flat button--grey"
-        @click="$store.commit('closeHovers')"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')"
+        @click="$store.commit('closeHovers')"
       >{{ $t('buttons.cancel') }}</button>
       <button
         class="button button--flat"
@@ -32,14 +32,14 @@ import { files as api } from '@/api'
 import url from '@/utils/url'
 
 export default {
-  name: 'new-dir',
+  name: 'NewDir',
   data: function() {
     return {
       name: ''
-    };
+    }
   },
   computed: {
-    ...mapGetters([ 'isFiles', 'isListing' ])
+    ...mapGetters(['isFiles', 'isListing'])
   },
   methods: {
     submit: async function(event) {
@@ -66,6 +66,6 @@ export default {
       this.$store.commit('closeHovers')
     }
   }
-};
+}
 </script>
 

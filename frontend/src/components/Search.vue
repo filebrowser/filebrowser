@@ -1,25 +1,25 @@
 <template>
-  <div id="search" @click="open" v-bind:class="{ active , ongoing }">
+  <div id="search" :class="{ active , ongoing }" @click="open">
     <div id="input">
       <button
         v-if="active"
         class="action"
-        @click="close"
         :aria-label="$t('buttons.close')"
         :title="$t('buttons.close')"
+        @click="close"
       >
         <i class="material-icons">arrow_back</i>
       </button>
       <i v-else class="material-icons">search</i>
       <input
-        type="text"
-        @keyup.exact="keyup"
-        @keyup.enter="submit"
         ref="input"
-        :autofocus="active"
         v-model.trim="value"
+        type="text"
+        :autofocus="active"
         :aria-label="$t('search.search')"
         :placeholder="$t('search.search')"
+        @keyup.exact="keyup"
+        @keyup.enter="submit"
       >
     </div>
 
@@ -33,14 +33,14 @@
               <h3>{{ $t('search.types') }}</h3>
               <div>
                 <div
-                  tabindex="0"
                   v-for="(v,k) in boxes"
                   :key="k"
+                  tabindex="0"
                   role="button"
-                  @click="init('type:'+k)"
                   :aria-label="$t('search.'+v.label)"
+                  @click="init('type:'+k)"
                 >
-                  <i class="material-icons">{{v.icon}}</i>
+                  <i class="material-icons">{{ v.icon }}</i>
                   <p>{{ $t('search.'+v.label) }}</p>
                 </div>
               </div>
@@ -49,7 +49,7 @@
         </template>
         <ul v-show="results.length > 0">
           <li v-for="(s,k) in filteredResults" :key="k">
-            <router-link @click.native="close" :to="'./' + s.path">
+            <router-link :to="'./' + s.path" @click.native="close">
               <i v-if="s.dir" class="material-icons">folder</i>
               <i v-else class="material-icons">insert_drive_file</i>
               <span>./{{ s.path }}</span>
@@ -65,22 +65,22 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations } from "vuex"
-import url from "@/utils/url"
-import { search } from "@/api"
+import { mapState, mapGetters, mapMutations } from 'vuex'
+import url from '@/utils/url'
+import { search } from '@/api'
 
 var boxes = {
-  image: { label: "images", icon: "insert_photo" },
-  audio: { label: "music", icon: "volume_up" },
-  video: { label: "video", icon: "movie" },
-  pdf: { label: "pdf", icon: "picture_as_pdf" }
+  image: { label: 'images', icon: 'insert_photo' },
+  audio: { label: 'music', icon: 'volume_up' },
+  video: { label: 'video', icon: 'movie' },
+  pdf: { label: 'pdf', icon: 'picture_as_pdf' }
 }
 
 export default {
-  name: "search",
+  name: 'Search',
   data: function() {
     return {
-      value: "",
+      value: '',
       active: false,
       ongoing: false,
       results: [],
@@ -90,15 +90,15 @@ export default {
     }
   },
   watch: {
-    show (val, old) {
-      this.active = val === "search"
+    show(val, old) {
+      this.active = val === 'search'
 
-      if (old === "search" && !this.active) {
+      if (old === 'search' && !this.active) {
         if (this.reload) {
           this.setReload(true)
         }
 
-        document.body.style.overflow = "auto"
+        document.body.style.overflow = 'auto'
         this.reset()
         this.value = ''
         this.active = false
@@ -106,18 +106,18 @@ export default {
       } else if (this.active) {
         this.reload = false
         this.$refs.input.focus()
-        document.body.style.overflow = "hidden"
+        document.body.style.overflow = 'hidden'
       }
     },
-    value () {
+    value() {
       if (this.results.length) {
         this.reset()
       }
     }
   },
   computed: {
-    ...mapState(["user", "show"]),
-    ...mapGetters(["isListing"]),
+    ...mapState(['user', 'show']),
+    ...mapGetters(['isListing']),
     boxes() {
       return boxes
     },
@@ -126,17 +126,17 @@ export default {
     },
     text() {
       if (this.ongoing) {
-        return ""
+        return ''
       }
 
-      return this.value === '' ? this.$t("search.typeToSearch") : this.$t("search.pressToSearch")
+      return this.value === '' ? this.$t('search.typeToSearch') : this.$t('search.pressToSearch')
     },
-    filteredResults () {
+    filteredResults() {
       return this.results.slice(0, this.resultsCount)
     }
   },
   mounted() {
-    window.addEventListener("keydown", event => {
+    window.addEventListener('keydown', event => {
       if (event.keyCode === 27) {
         this.closeHovers()
       }
@@ -149,9 +149,9 @@ export default {
     })
   },
   methods: {
-    ...mapMutations(["showHover", "closeHovers", "setReload"]),
+    ...mapMutations(['showHover', 'closeHovers', 'setReload']),
     open() {
-      this.showHover("search")
+      this.showHover('search')
     },
     close(event) {
       event.stopPropagation()
@@ -166,11 +166,11 @@ export default {
 
       this.results.length = 0
     },
-    init (string) {
+    init(string) {
       this.value = `${string} `
       this.$refs.input.focus()
     },
-    reset () {
+    reset() {
       this.ongoing = false
       this.resultsCount = 50
       this.results = []
@@ -184,11 +184,10 @@ export default {
 
       let path = this.$route.path
       if (!this.isListing) {
-        path = url.removeLastDir(path) + "/"
+        path = url.removeLastDir(path) + '/'
       }
 
       this.ongoing = true
-
 
       this.results = await search(path, this.value)
       this.ongoing = false

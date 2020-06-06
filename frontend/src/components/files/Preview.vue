@@ -1,40 +1,63 @@
 <template>
   <div id="previewer">
     <div class="bar">
-      <button @click="back" class="action" :title="$t('files.closePreview')" :aria-label="$t('files.closePreview')" id="close">
+      <button
+        id="close"
+        class="action"
+        :title="$t('files.closePreview')"
+        :aria-label="$t('files.closePreview')"
+        @click="back"
+      >
         <i class="material-icons">close</i>
       </button>
 
-      <rename-button v-if="user.perm.rename"></rename-button>
-      <delete-button v-if="user.perm.delete"></delete-button>
-      <download-button v-if="user.perm.download"></download-button>
-      <info-button></info-button>
+      <rename-button v-if="user.perm.rename" />
+      <delete-button v-if="user.perm.delete" />
+      <download-button v-if="user.perm.download" />
+      <info-button />
     </div>
 
-    <button class="action" @click="prev" v-show="hasPrevious" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
+    <button
+      v-show="hasPrevious"
+      class="action"
+      :aria-label="$t('buttons.previous')"
+      :title="$t('buttons.previous')"
+      @click="prev"
+    >
       <i class="material-icons">chevron_left</i>
     </button>
-    <button class="action" @click="next" v-show="hasNext" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
+    <button
+      v-show="hasNext"
+      class="action"
+      :aria-label="$t('buttons.next')"
+      :title="$t('buttons.next')"
+      @click="next"
+    >
       <i class="material-icons">chevron_right</i>
     </button>
 
     <div class="preview">
-      <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
-      <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
+      <ExtendedImage v-if="req.type == 'image'" :src="raw" />
+      <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls />
       <video v-else-if="req.type == 'video'" :src="raw" autoplay controls>
         <track
-          kind="captions"
           v-for="(sub, index) in subtitles"
           :key="index"
+          kind="captions"
           :src="sub"
-          :label="'Subtitle ' + index" :default="index === 0">
-        Sorry, your browser doesn't support embedded videos,
-        but don't worry, you can <a :href="download">download it</a>
+          :label="'Subtitle ' + index"
+          :default="index === 0"
+        >Sorry, your browser doesn't support embedded videos,
+        but don't worry, you can
+        <a :href="download">download it</a>
         and watch it with your favorite video player!
       </video>
-      <object v-else-if="req.extension == '.pdf'" class="pdf" :data="raw"></object>
+      <object v-else-if="req.extension == '.pdf'" class="pdf" :data="raw" />
       <a v-else-if="req.type == 'blob'" :href="download">
-        <h2 class="message">{{ $t('buttons.download') }} <i class="material-icons">file_download</i></h2>
+        <h2 class="message">
+          {{ $t('buttons.download') }}
+          <i class="material-icons">file_download</i>
+        </h2>
       </a>
     </div>
   </div>
@@ -51,15 +74,10 @@ import RenameButton from '@/components/buttons/Rename'
 import DownloadButton from '@/components/buttons/Download'
 import ExtendedImage from './ExtendedImage'
 
-const mediaTypes = [
-  "image",
-  "video",
-  "audio",
-  "blob"
-]
+const mediaTypes = ['image', 'video', 'audio', 'blob']
 
 export default {
-  name: 'preview',
+  name: 'Preview',
   components: {
     InfoButton,
     DeleteButton,
@@ -67,7 +85,7 @@ export default {
     DownloadButton,
     ExtendedImage
   },
-  data: function () {
+  data: function() {
     return {
       previousLink: '',
       nextLink: '',
@@ -77,24 +95,33 @@ export default {
   },
   computed: {
     ...mapState(['req', 'user', 'oldReq', 'jwt']),
-    hasPrevious () {
-      return (this.previousLink !== '')
+    hasPrevious() {
+      return this.previousLink !== ''
     },
-    hasNext () {
-      return (this.nextLink !== '')
+    hasNext() {
+      return this.nextLink !== ''
     },
-    download () {
+    download() {
       return `${baseURL}/api/raw${this.req.path}?auth=${this.jwt}`
     },
-    raw () {
-      return `${this.download}&inline=true`
+    thumbnail() {
+      if (this.req.type === 'image') {
+        return `${baseURL}/api/thumbnail${this.req.path}?auth=${this.jwt}`
+      } else {
+        return `${baseURL}/api/raw${this.req.path}?auth=${this.jwt}`
+      }
+    },
+    raw() {
+      return `${this.thumbnail}&inline=true`
     }
   },
-  async mounted () {
+  async mounted() {
     window.addEventListener('keyup', this.key)
 
     if (this.req.subtitles) {
-      this.subtitles = this.req.subtitles.map(sub => `${baseURL}/api/raw${sub}?auth=${this.jwt}&inline=true`)
+      this.subtitles = this.req.subtitles.map(
+        sub => `${baseURL}/api/raw${sub}?auth=${this.jwt}&inline=true`
+      )
     }
 
     try {
@@ -109,30 +136,32 @@ export default {
       this.$showError(e)
     }
   },
-  beforeDestroy () {
+  beforeDestroy() {
     window.removeEventListener('keyup', this.key)
   },
   methods: {
-    back () {
-      let uri = url.removeLastDir(this.$route.path) + '/'
+    back() {
+      const uri = url.removeLastDir(this.$route.path) + '/'
       this.$router.push({ path: uri })
     },
-    prev () {
+    prev() {
       this.$router.push({ path: this.previousLink })
     },
-    next () {
+    next() {
       this.$router.push({ path: this.nextLink })
     },
-    key (event) {
+    key(event) {
       event.preventDefault()
 
-      if (event.which === 13 || event.which === 39) { // right arrow
+      if (event.which === 13 || event.which === 39) {
+        // right arrow
         if (this.hasNext) this.next()
-      } else if (event.which === 37) { // left arrow
+      } else if (event.which === 37) {
+        // left arrow
         if (this.hasPrevious) this.prev()
       }
     },
-    updateLinks (items) {
+    updateLinks(items) {
       for (let i = 0; i < items.length; i++) {
         if (items[i].name !== this.req.name) {
           continue

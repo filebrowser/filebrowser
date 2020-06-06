@@ -1,27 +1,29 @@
 <template>
   <div>
-    <form v-if="loaded" @submit="save" class="card">
+    <form v-if="loaded" class="card" @submit="save">
       <div class="card-title">
         <h2 v-if="user.id === 0">{{ $t('settings.newUser') }}</h2>
         <h2 v-else>{{ $t('settings.user') }} {{ user.username }}</h2>
       </div>
 
       <div class="card-content">
-        <user-form :user.sync="user" :isDefault="false" :isNew="isNew" />
+        <user-form :user.sync="user" :is-default="false" :is-new="isNew" />
       </div>
 
       <div class="card-action">
         <button
           v-if="!isNew"
-          @click.prevent="deletePrompt"
           type="button"
           class="button button--flat button--red"
           :aria-label="$t('buttons.delete')"
-          :title="$t('buttons.delete')">{{ $t('buttons.delete') }}</button>
+          :title="$t('buttons.delete')"
+          @click.prevent="deletePrompt"
+        >{{ $t('buttons.delete') }}</button>
         <input
           class="button button--flat"
           type="submit"
-          :value="$t('buttons.save')">
+          :value="$t('buttons.save')"
+        >
       </div>
     </form>
 
@@ -31,15 +33,19 @@
       </div>
 
       <div class="card-action">
-        <button class="button button--flat button--grey"
-          @click="closeHovers"
+        <button
           v-focus
+          class="button button--flat button--grey"
           :aria-label="$t('buttons.cancel')"
-          :title="$t('buttons.cancel')">
+          :title="$t('buttons.cancel')"
+          @click="closeHovers"
+        >
           {{ $t('buttons.cancel') }}
         </button>
-        <button class="button button--flat"
-          @click="deleteUser">
+        <button
+          class="button button--flat"
+          @click="deleteUser"
+        >
           {{ $t('buttons.delete') }}
         </button>
       </div>
@@ -54,7 +60,7 @@ import UserForm from '@/components/settings/UserForm'
 import deepClone from 'lodash.clonedeep'
 
 export default {
-  name: 'user',
+  name: 'User',
   components: {
     UserForm
   },
@@ -65,27 +71,27 @@ export default {
       loaded: false
     }
   },
-  created () {
-    this.fetchData()
-  },
   computed: {
-    isNew () {
+    isNew() {
       return this.$route.path === '/settings/users/new'
     }
   },
   watch: {
     '$route': 'fetchData',
-    'user.perm.admin': function () {
+    'user.perm.admin': function() {
       if (!this.user.perm.admin) return
       this.user.lockPassword = false
     }
   },
+  created() {
+    this.fetchData()
+  },
   methods: {
-    ...mapMutations([ 'closeHovers', 'showHover', 'setUser' ]),
-    async fetchData () {
+    ...mapMutations(['closeHovers', 'showHover', 'setUser']),
+    async fetchData() {
       try {
         if (this.isNew) {
-          let { defaults } = await settings.get()
+          const { defaults } = await settings.get()
           this.user = {
             ...defaults,
             username: '',
@@ -104,10 +110,10 @@ export default {
         this.$router.push({ path: '/settings/users/new' })
       }
     },
-    deletePrompt () {
+    deletePrompt() {
       this.showHover('deleteUser')
     },
-    async deleteUser (event) {
+    async deleteUser(event) {
       event.preventDefault()
 
       try {
@@ -118,9 +124,9 @@ export default {
         this.$showError(e)
       }
     },
-    async save (event) {
+    async save(event) {
       event.preventDefault()
-      let user = {
+      const user = {
         ...this.originalUser,
         ...this.user
       }

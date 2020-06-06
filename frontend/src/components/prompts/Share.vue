@@ -1,5 +1,5 @@
 <template>
-  <div class="card floating" id="share">
+  <div id="share" class="card floating">
     <div class="card-title">
       <h2>{{ $t('buttons.share') }}</h2>
     </div>
@@ -7,7 +7,7 @@
     <div class="card-content">
       <ul>
         <li v-if="!hasPermanent">
-          <a @click="getPermalink" :aria-label="$t('buttons.permalink')">{{ $t('buttons.permalink') }}</a>
+          <a :aria-label="$t('buttons.permalink')" @click="getPermalink">{{ $t('buttons.permalink') }}</a>
         </li>
 
         <li v-for="link in links" :key="link.hash">
@@ -16,43 +16,53 @@
             <template v-else>{{ $t('permanent') }}</template>
           </a>
 
-          <button class="action"
-            @click="deleteLink($event, link)"
+          <button
+            class="action"
             :aria-label="$t('buttons.delete')"
-            :title="$t('buttons.delete')"><i class="material-icons">delete</i></button>
+            :title="$t('buttons.delete')"
+            @click="deleteLink($event, link)"
+          ><i class="material-icons">delete</i></button>
 
-          <button class="action copy-clipboard"
+          <button
+            class="action copy-clipboard"
             :data-clipboard-text="buildLink(link.hash)"
             :aria-label="$t('buttons.copyToClipboard')"
-            :title="$t('buttons.copyToClipboard')"><i class="material-icons">content_paste</i></button>
+            :title="$t('buttons.copyToClipboard')"
+          ><i class="material-icons">content_paste</i></button>
         </li>
 
         <li>
-          <input v-focus
+          <input
+            v-model.trim="time"
+            v-focus
             type="number"
             max="2147483647"
             min="0"
             @keyup.enter="submit"
-            v-model.trim="time">
+          >
           <select v-model="unit" :aria-label="$t('time.unit')">
             <option value="seconds">{{ $t('time.seconds') }}</option>
             <option value="minutes">{{ $t('time.minutes') }}</option>
             <option value="hours">{{ $t('time.hours') }}</option>
             <option value="days">{{ $t('time.days') }}</option>
           </select>
-          <button class="action"
-            @click="submit"
+          <button
+            class="action"
             :aria-label="$t('buttons.create')"
-            :title="$t('buttons.create')"><i class="material-icons">add</i></button>
+            :title="$t('buttons.create')"
+            @click="submit"
+          ><i class="material-icons">add</i></button>
         </li>
       </ul>
     </div>
 
     <div class="card-action">
-      <button class="button button--flat"
-        @click="$store.commit('closeHovers')"
+      <button
+        class="button button--flat"
         :aria-label="$t('buttons.close')"
-        :title="$t('buttons.close')">{{ $t('buttons.close') }}</button>
+        :title="$t('buttons.close')"
+        @click="$store.commit('closeHovers')"
+      >{{ $t('buttons.close') }}</button>
     </div>
   </div>
 </template>
@@ -65,8 +75,8 @@ import moment from 'moment'
 import Clipboard from 'clipboard'
 
 export default {
-  name: 'share',
-  data: function () {
+  name: 'Share',
+  data: function() {
     return {
       time: '',
       unit: 'hours',
@@ -76,9 +86,9 @@ export default {
     }
   },
   computed: {
-    ...mapState([ 'req', 'selected', 'selectedCount' ]),
-    ...mapGetters([ 'isListing' ]),
-    url () {
+    ...mapState(['req', 'selected', 'selectedCount']),
+    ...mapGetters(['isListing']),
+    url() {
       if (!this.isListing) {
         return this.$route.path
       }
@@ -91,13 +101,13 @@ export default {
       return this.req.items[this.selected[0]].url
     }
   },
-  async beforeMount () {
+  async beforeMount() {
     try {
       const links = await api.get(this.url)
       this.links = links
       this.sort()
 
-      for (let link of this.links) {
+      for (const link of this.links) {
         if (link.expire === 0) {
           this.hasPermanent = true
           break
@@ -107,17 +117,17 @@ export default {
       this.$showError(e)
     }
   },
-  mounted () {
+  mounted() {
     this.clip = new Clipboard('.copy-clipboard')
     this.clip.on('success', () => {
       this.$showSuccess(this.$t('success.linkCopied'))
     })
   },
-  beforeDestroy () {
+  beforeDestroy() {
     this.clip.destroy()
   },
   methods: {
-    submit: async function () {
+    submit: async function() {
       if (!this.time) return
 
       try {
@@ -128,7 +138,7 @@ export default {
         this.$showError(e)
       }
     },
-    getPermalink: async function () {
+    getPermalink: async function() {
       try {
         const res = await api.create(this.url)
         this.links.push(res)
@@ -138,9 +148,9 @@ export default {
         this.$showError(e)
       }
     },
-    deleteLink: async function (event, link) {
+    deleteLink: async function(event, link) {
       event.preventDefault()
-       try {
+      try {
         await api.remove(link.hash)
         if (link.expire === 0) this.hasPermanent = false
         this.links = this.links.filter(item => item.hash !== link.hash)
@@ -148,13 +158,13 @@ export default {
         this.$showError(e)
       }
     },
-    humanTime (time) {
+    humanTime(time) {
       return moment(time * 1000).fromNow()
     },
-    buildLink (hash) {
+    buildLink(hash) {
       return `${window.location.origin}${baseURL}/share/${hash}`
     },
-    sort () {
+    sort() {
       this.links = this.links.sort((a, b) => {
         if (a.expire === 0) return -1
         if (b.expire === 0) return 1

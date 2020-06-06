@@ -1,5 +1,5 @@
 <template>
-  <select v-on:change="change" :value="theme">
+  <select :value="theme" @change="change">
     <option value="">{{ $t('settings.themes.light') }}</option>
     <option value="dark">{{ $t('settings.themes.dark') }}</option>
   </select>
@@ -7,10 +7,10 @@
 
 <script>
 export default {
-  name: 'themes',
-  props: [ 'theme' ],
+  name: 'Themes',
+  props: ['theme'],
   methods: {
-    change (event) {
+    change(event) {
       this.$emit('update:theme', event.target.value)
     }
   }

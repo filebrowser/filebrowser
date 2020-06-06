@@ -1,13 +1,13 @@
 <template>
   <div class="dashboard">
-     <form class="card" @submit="updateSettings">
+    <form class="card" @submit="updateSettings">
       <div class="card-title">
         <h2>{{ $t('settings.profileSettings') }}</h2>
       </div>
 
       <div class="card-content">
         <h3>{{ $t('settings.language') }}</h3>
-        <languages class="input input--block" :locale.sync="locale"></languages>
+        <languages class="input input--block" :locale.sync="locale" />
       </div>
 
       <div class="card-action">
@@ -15,14 +15,14 @@
       </div>
     </form>
 
-    <form class="card" v-if="!user.lockPassword" @submit="updatePassword">
+    <form v-if="!user.lockPassword" class="card" @submit="updatePassword">
       <div class="card-title">
         <h2>{{ $t('settings.changePassword') }}</h2>
       </div>
 
       <div class="card-content">
-        <input :class="passwordClass" type="password" :placeholder="$t('settings.newPassword')" v-model="password" name="password">
-        <input :class="passwordClass" type="password" :placeholder="$t('settings.newPasswordConfirm')" v-model="passwordConf" name="password">
+        <input v-model="password" :class="passwordClass" type="password" :placeholder="$t('settings.newPassword')" name="password">
+        <input v-model="passwordConf" :class="passwordClass" type="password" :placeholder="$t('settings.newPasswordConfirm')" name="password">
       </div>
 
       <div class="card-action">
@@ -38,11 +38,11 @@ import { users as api } from '@/api'
 import Languages from '@/components/settings/Languages'
 
 export default {
-  name: 'settings',
+  name: 'Settings',
   components: {
     Languages
   },
-  data: function () {
+  data: function() {
     return {
       password: '',
       passwordConf: '',
@@ -50,8 +50,8 @@ export default {
     }
   },
   computed: {
-    ...mapState([ 'user' ]),
-    passwordClass () {
+    ...mapState(['user']),
+    passwordClass() {
       const baseClass = 'input input--block'
 
       if (this.password === '' && this.passwordConf === '') {
@@ -65,12 +65,12 @@ export default {
       return `${baseClass} input--red`
     }
   },
-  created () {
+  created() {
     this.locale = this.user.locale
   },
   methods: {
-    ...mapMutations([ 'updateUser' ]),
-    async updatePassword (event) {
+    ...mapMutations(['updateUser']),
+    async updatePassword(event) {
       event.preventDefault()
 
       if (this.password !== this.passwordConf || this.password === '') {
@@ -86,7 +86,7 @@ export default {
         this.$showError(e)
       }
     },
-    async updateSettings (event) {
+    async updateSettings(event) {
       event.preventDefault()
 
       try {

@@ -1,5 +1,5 @@
 <template>
-  <button @click="show" :aria-label="$t('buttons.shell')" :title="$t('buttons.shell')" class="action">
+  <button :aria-label="$t('buttons.shell')" :title="$t('buttons.shell')" class="action" @click="show">
     <i class="material-icons">code</i>
     <span>{{ $t('buttons.shell') }}</span>
   </button>
@@ -7,9 +7,9 @@
 
 <script>
 export default {
-  name: 'shell-button',
+  name: 'ShellButton',
   methods: {
-    show: function () {
+    show: function() {
       this.$store.commit('toggleShell')
     }
   }

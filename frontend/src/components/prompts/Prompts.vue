@@ -1,7 +1,7 @@
 <template>
   <div>
-    <component :is="currentComponent"></component>
-    <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
+    <component :is="currentComponent" />
+    <div v-show="showOverlay" class="overlay" @click="resetPrompts" />
   </div>
 </template>
 
@@ -21,7 +21,7 @@ import { mapState } from 'vuex'
 import buttons from '@/utils/buttons'
 
 export default {
-  name: 'prompts',
+  name: 'Prompts',
   components: {
     Info,
     Delete,
@@ -35,7 +35,7 @@ export default {
     Help,
     Replace
   },
-  data: function () {
+  data: function() {
     return {
       pluginData: {
         buttons,
@@ -46,7 +46,7 @@ export default {
   },
   computed: {
     ...mapState(['show', 'plugins']),
-    currentComponent: function () {
+    currentComponent: function() {
       const matched = [
         'info',
         'help',
@@ -59,16 +59,16 @@ export default {
         'download',
         'replace',
         'share'
-      ].indexOf(this.show) >= 0;
+      ].indexOf(this.show) >= 0
 
-      return matched && this.show || null;
+      return matched && this.show || null
     },
-    showOverlay: function () {
+    showOverlay: function() {
       return (this.show !== null && this.show !== 'search' && this.show !== 'more')
     }
   },
   methods: {
-    resetPrompts () {
+    resetPrompts() {
       this.$store.commit('closeHovers')
     }
   }

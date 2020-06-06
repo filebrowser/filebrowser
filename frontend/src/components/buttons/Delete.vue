@@ -1,5 +1,5 @@
 <template>
-  <button @click="show" :aria-label="$t('buttons.delete')" :title="$t('buttons.delete')" class="action" id="delete-button">
+  <button id="delete-button" :aria-label="$t('buttons.delete')" :title="$t('buttons.delete')" class="action" @click="show">
     <i class="material-icons">delete</i>
     <span>{{ $t('buttons.delete') }}</span>
   </button>
@@ -7,9 +7,9 @@
 
 <script>
 export default {
-  name: 'delete-button',
+  name: 'DeleteButton',
   methods: {
-    show: function () {
+    show: function() {
       this.$store.commit('showHover', 'delete')
     }
   }

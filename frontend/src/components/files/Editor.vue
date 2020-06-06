@@ -1,5 +1,5 @@
 <template>
-  <form id="editor"></form>
+  <form id="editor" />
 </template>
 
 <script>
@@ -13,24 +13,24 @@ import 'ace-builds/webpack-resolver'
 import { theme } from '@/utils/constants'
 
 export default {
-  name: 'editor',
+  name: 'Editor',
   computed: {
     ...mapState(['req'])
   },
-  data: function () {
+  data: function() {
     return {}
   },
-  created () {
+  created() {
     window.addEventListener('keydown', this.keyEvent)
     document.getElementById('save-button').addEventListener('click', this.save)
   },
-  beforeDestroy () {
+  beforeDestroy() {
     window.removeEventListener('keydown', this.keyEvent)
     document.getElementById('save-button').removeEventListener('click', this.save)
-    this.editor.destroy();
+    this.editor.destroy()
   },
-  mounted: function () {
-    const fileContent = this.req.content || '';
+  mounted: function() {
+    const fileContent = this.req.content || ''
 
     this.editor = ace.edit('editor', {
       maxLines: Infinity,
@@ -43,12 +43,12 @@ export default {
       wrap: true
     })
 
-    if (theme == 'dark') {
-      this.editor.setTheme("ace/theme/twilight");
+    if (theme === 'dark') {
+      this.editor.setTheme('ace/theme/twilight')
     }
   },
   methods: {
-    keyEvent (event) {
+    keyEvent(event) {
       if (!event.ctrlKey && !event.metaKey) {
         return
       }
@@ -60,7 +60,7 @@ export default {
       event.preventDefault()
       this.save()
     },
-    async save () {
+    async save() {
       const button = 'save'
       buttons.loading('save')
 

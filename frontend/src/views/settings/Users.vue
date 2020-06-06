@@ -11,7 +11,7 @@
           <th>{{ $t('settings.username') }}</th>
           <th>{{ $t('settings.admin') }}</th>
           <th>{{ $t('settings.scope') }}</th>
-          <th></th>
+          <th />
         </tr>
 
         <tr v-for="user in users" :key="user.id">
@@ -31,13 +31,13 @@
 import { users as api } from '@/api'
 
 export default {
-  name: 'users',
-  data: function () {
+  name: 'Users',
+  data: function() {
     return {
       users: []
     }
   },
-  async created () {
+  async created() {
     try {
       this.users = await api.getAll()
     } catch (e) {

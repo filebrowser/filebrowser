@@ -5,33 +5,37 @@
       <p v-else>{{ $t('prompts.deleteMessageMultiple', { count: selectedCount}) }}</p>
     </div>
     <div class="card-action">
-      <button @click="$store.commit('closeHovers')"
+      <button
         class="button button--flat button--grey"
         :aria-label="$t('buttons.cancel')"
-        :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
-      <button @click="submit"
+        :title="$t('buttons.cancel')"
+        @click="$store.commit('closeHovers')"
+      >{{ $t('buttons.cancel') }}</button>
+      <button
         class="button button--flat button--red"
         :aria-label="$t('buttons.delete')"
-        :title="$t('buttons.delete')">{{ $t('buttons.delete') }}</button>
+        :title="$t('buttons.delete')"
+        @click="submit"
+      >{{ $t('buttons.delete') }}</button>
     </div>
   </div>
 </template>
 
 <script>
-import {mapGetters, mapMutations, mapState} from 'vuex'
+import { mapGetters, mapMutations, mapState } from 'vuex'
 import { files as api } from '@/api'
 import url from '@/utils/url'
 import buttons from '@/utils/buttons'
 
 export default {
-  name: 'delete',
+  name: 'Delete',
   computed: {
     ...mapGetters(['isListing', 'selectedCount']),
     ...mapState(['req', 'selected'])
   },
   methods: {
     ...mapMutations(['closeHovers']),
-    submit: async function () {
+    submit: async function() {
       this.closeHovers()
       buttons.loading('delete')
 
@@ -47,8 +51,8 @@ export default {
           return
         }
 
-        let promises = []
-        for (let index of this.selected) {
+        const promises = []
+        for (const index of this.selected) {
           promises.push(api.remove(this.req.items[index].url))
         }
 

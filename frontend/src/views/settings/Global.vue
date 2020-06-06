@@ -1,14 +1,14 @@
 <template>
-  <div class="dashboard" v-if="settings !== null">
+  <div v-if="settings !== null" class="dashboard">
     <form class="card" @submit.prevent="save">
       <div class="card-title">
         <h2>{{ $t('settings.globalSettings') }}</h2>
       </div>
 
       <div class="card-content">
-        <p><input type="checkbox" v-model="settings.signup"> {{ $t('settings.allowSignup') }}</p>
+        <p><input v-model="settings.signup" type="checkbox"> {{ $t('settings.allowSignup') }}</p>
 
-        <p><input type="checkbox" v-model="settings.createUserDir"> {{ $t('settings.createUserDir') }}</p>
+        <p><input v-model="settings.createUserDir" type="checkbox"> {{ $t('settings.createUserDir') }}</p>
 
         <h3>{{ $t('settings.rules') }}</h3>
         <p class="small">{{ $t('settings.globalRules') }}</p>
@@ -16,7 +16,7 @@
 
         <h3>{{ $t('settings.executeOnShell') }}</h3>
         <p class="small">{{ $t('settings.executeOnShellDescription') }}</p>
-        <input class="input input--block" type="text" placeholder="bash -c, cmd /c, ..." v-model="settings.shell" />
+        <input v-model="settings.shell" class="input input--block" type="text" placeholder="bash -c, cmd /c, ...">
 
         <h3>{{ $t('settings.branding') }}</h3>
 
@@ -25,23 +25,23 @@
         </i18n>
 
         <p>
-          <input type="checkbox" v-model="settings.branding.disableExternal" id="branding-links" />
+          <input id="branding-links" v-model="settings.branding.disableExternal" type="checkbox">
           {{ $t('settings.disableExternalLinks') }}
         </p>
 
         <p>
           <label for="theme">{{ $t('settings.themes.title') }}</label>
-          <themes class="input input--block" :theme.sync="settings.branding.theme" id="theme"></themes>
+          <themes id="theme" class="input input--block" :theme.sync="settings.branding.theme" />
         </p>
 
         <p>
           <label for="branding-name">{{ $t('settings.instanceName') }}</label>
-          <input class="input input--block" type="text" v-model="settings.branding.name" id="branding-name" />
+          <input id="branding-name" v-model="settings.branding.name" class="input input--block" type="text">
         </p>
 
         <p>
           <label for="branding-files">{{ $t('settings.brandingDirectoryPath') }}</label>
-          <input class="input input--block" type="text" v-model="settings.branding.files" id="branding-files" />
+          <input id="branding-files" v-model="settings.branding.files" class="input input--block" type="text">
         </p>
 
       </div>
@@ -59,7 +59,7 @@
       <div class="card-content">
         <p class="small">{{ $t('settings.defaultUserDescription') }}</p>
 
-        <user-form :isNew="false" :isDefault="true" :user.sync="settings.defaults" />
+        <user-form :is-new="false" :is-default="true" :user.sync="settings.defaults" />
       </div>
 
       <div class="card-action">
@@ -86,7 +86,7 @@
             <i class="material-icons">arrow_drop_down</i>
           </label>
           <div class="collapse">
-            <textarea class="input input--block input--textarea" v-model.trim="command.value"></textarea>
+            <textarea v-model.trim="command.value" class="input input--block input--textarea" />
           </div>
         </div>
       </div>
@@ -106,25 +106,25 @@ import Rules from '@/components/settings/Rules'
 import Themes from '@/components/settings/Themes'
 
 export default {
-  name: 'settings',
+  name: 'Settings',
   components: {
     Themes,
     UserForm,
     Rules
   },
-  data: function () {
+  data: function() {
     return {
       originalSettings: null,
       settings: null
     }
   },
   computed: {
-    ...mapState([ 'user' ])
+    ...mapState(['user'])
   },
-  async created () {
+  async created() {
     try {
       const original = await api.get()
-      let settings = { ...original, commands: [] }
+      const settings = { ...original, commands: [] }
 
       for (const key in original.commands) {
         settings.commands.push({
@@ -142,9 +142,9 @@ export default {
     }
   },
   methods: {
-    capitalize (name, where = '_') {
+    capitalize(name, where = '_') {
       if (where === 'caps') where = /(?=[A-Z])/
-      let splitted = name.split(where)
+      const splitted = name.split(where)
       name = ''
 
       for (let i = 0; i < splitted.length; i++) {
@@ -153,8 +153,8 @@ export default {
 
       return name.slice(0, -1)
     },
-    async save () {
-      let settings = {
+    async save() {
+      const settings = {
         ...this.settings,
         shell: this.settings.shell.trim().split(' ').filter(s => s !== ''),
         commands: {}

@@ -13,7 +13,8 @@
   :aria-label="name"
   :aria-selected="isSelected">
     <div>
-      <i class="material-icons">{{ icon }}</i>
+      <img v-if="type==='image'" :src="thumbnailUrl">
+      <i v-else class="material-icons">{{ icon }}</i>
     </div>
 
     <div>
@@ -31,25 +32,26 @@
 
 <script>
 import { mapMutations, mapGetters, mapState } from 'vuex'
+import { baseURL } from '@/utils/constants'
 import filesize from 'filesize'
 import moment from 'moment'
 import { files as api } from '@/api'
 
 export default {
-  name: 'item',
-  data: function () {
+  name: 'Item',
+  props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index'],
+  data: function() {
     return {
       touches: 0
     }
   },
-  props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index'],
   computed: {
-    ...mapState(['selected', 'req', 'user']),
+    ...mapState(['selected', 'req', 'jwt']),
     ...mapGetters(['selectedCount']),
-    isSelected () {
-      return (this.selected.indexOf(this.index) !== -1)
+    isSelected() {
+      return this.selected.indexOf(this.index) !== -1
     },
-    icon () {
+    icon() {
       if (this.isDir) return 'folder'
       if (this.type === 'image') return 'insert_photo'
       if (this.type === 'audio') return 'volume_up'
@@ -59,27 +61,31 @@ export default {
     isDraggable () {
       return this.user.perm.rename
     },
-    canDrop () {
+    canDrop() {
       if (!this.isDir) return false
 
-      for (let i of this.selected) {
+      for (const i of this.selected) {
         if (this.req.items[i].url === this.url) {
           return false
         }
       }
 
       return true
+    },
+    thumbnailUrl() {
+      const path = this.url.replace(/^\/files\//, '')
+      return `${baseURL}/api/thumbnail/${path}?auth=${this.jwt}&inline=true`
     }
   },
   methods: {
     ...mapMutations(['addSelected', 'removeSelected', 'resetSelected']),
-    humanSize: function () {
+    humanSize: function() {
       return filesize(this.size)
     },
-    humanTime: function () {
+    humanTime: function() {
       return moment(this.modified).fromNow()
     },
-    dragStart: function () {
+    dragStart: function() {
       if (this.selectedCount === 0) {
         this.addSelected(this.index)
         return
@@ -90,7 +96,7 @@ export default {
         this.addSelected(this.index)
       }
     },
-    dragOver: function (event) {
+    dragOver: function(event) {
       if (!this.canDrop) return
 
       event.preventDefault()
@@ -104,28 +110,29 @@ export default {
 
       el.style.opacity = 1
     },
-    drop: function (event) {
+    drop: function(event) {
       if (!this.canDrop) return
       event.preventDefault()
 
       if (this.selectedCount === 0) return
 
-      let items = []
+      const items = []
 
-      for (let i of this.selected) {
+      for (const i of this.selected) {
         items.push({
           from: this.req.items[i].url,
           to: this.url + this.req.items[i].name
         })
       }
 
-      api.move(items)
+      api
+        .move(items)
         .then(() => {
           this.$store.commit('setReload', true)
         })
         .catch(this.$showError)
     },
-    click: function (event) {
+    click: function(event) {
       if (this.selectedCount !== 0) event.preventDefault()
       if (this.$store.state.selected.indexOf(this.index) !== -1) {
         this.removeSelected(this.index)
@@ -154,7 +161,7 @@ export default {
       if (!event.ctrlKey && !this.$store.state.multiple) this.resetSelected()
       this.addSelected(this.index)
     },
-    touchstart () {
+    touchstart() {
       setTimeout(() => {
         this.touches = 0
       }, 300)
@@ -164,8 +171,8 @@ export default {
         this.open()
       }
     },
-    open: function () {
-      this.$router.push({path: this.url})
+    open: function() {
+      this.$router.push({ path: this.url })
     }
   }
 }

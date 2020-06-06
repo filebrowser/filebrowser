@@ -19,16 +19,18 @@
     </div>
 
     <div class="card-action">
-      <button type="submit"
-        @click="$store.commit('closeHovers')"
+      <button
+        type="submit"
         class="button button--flat"
         :aria-label="$t('buttons.ok')"
-        :title="$t('buttons.ok')">{{ $t('buttons.ok') }}</button>
+        :title="$t('buttons.ok')"
+        @click="$store.commit('closeHovers')"
+      >{{ $t('buttons.ok') }}</button>
     </div>
   </div>
 </template>
 
 <script>
-export default { name: 'help' }
+export default { name: 'Help' }
 </script>
 

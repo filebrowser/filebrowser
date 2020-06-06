@@ -2,13 +2,13 @@ import { fetchURL, removePrefix } from './utils'
 import { baseURL } from '@/utils/constants'
 import store from '@/store'
 
-export async function fetch (url) {
+export async function fetch(url) {
   url = removePrefix(url)
 
   const res = await fetchURL(`/api/resources${url}`, {})
 
   if (res.status === 200) {
-    let data = await res.json()
+    const data = await res.json()
     data.url = `/files${url}`
 
     if (data.isDir) {
@@ -31,10 +31,10 @@ export async function fetch (url) {
   }
 }
 
-async function resourceAction (url, method, content) {
+async function resourceAction(url, method, content) {
   url = removePrefix(url)
 
-  let opts = { method }
+  const opts = { method }
 
   if (content) {
     opts.body = content
@@ -49,15 +49,15 @@ async function resourceAction (url, method, content) {
   }
 }
 
-export async function remove (url) {
+export async function remove(url) {
   return resourceAction(url, 'DELETE')
 }
 
-export async function put (url, content = '') {
+export async function put(url, content = '') {
   return resourceAction(url, 'PUT', content)
 }
 
-export function download (format, ...files) {
+export function download(format, ...files) {
   let url = `${baseURL}/api/raw`
 
   if (files.length === 1) {
@@ -65,7 +65,7 @@ export function download (format, ...files) {
   } else {
     let arg = ''
 
-    for (let file of files) {
+    for (const file of files) {
       arg += removePrefix(file) + ','
     }
 
@@ -82,11 +82,11 @@ export function download (format, ...files) {
   window.open(url)
 }
 
-export async function post (url, content = '', overwrite = false, onupload) {
+export async function post(url, content = '', overwrite = false, onupload) {
   url = removePrefix(url)
 
   return new Promise((resolve, reject) => {
-    let request = new XMLHttpRequest()
+    const request = new XMLHttpRequest()
     request.open('POST', `${baseURL}/api/resources${url}?override=${overwrite}`, true)
     request.setRequestHeader('X-Auth', store.state.jwt)
 
@@ -95,7 +95,7 @@ export async function post (url, content = '', overwrite = false, onupload) {
     }
 
     // Send a message to user before closing the tab during file upload
-    window.onbeforeunload = () => "Files are being uploaded."
+    window.onbeforeunload = () => 'Files are being uploaded.'
 
     request.onload = () => {
       if (request.status === 200) {
@@ -112,14 +112,14 @@ export async function post (url, content = '', overwrite = false, onupload) {
     }
 
     request.send(content)
-    // Upload is done no more message before closing the tab 
+    // Upload is done no more message before closing the tab
   }).finally(() => { window.onbeforeunload = null })
 }
 
-function moveCopy (items, copy = false) {
-  let promises = []
+function moveCopy(items, copy = false) {
+  const promises = []
 
-  for (let item of items) {
+  for (const item of items) {
     const from = removePrefix(item.from)
     const to = encodeURIComponent(removePrefix(item.to))
     const url = `${from}?action=${copy ? 'copy' : 'rename'}&destination=${to}`
@@ -129,15 +129,15 @@ function moveCopy (items, copy = false) {
   return Promise.all(promises)
 }
 
-export function move (items) {
+export function move(items) {
   return moveCopy(items)
 }
 
-export function copy (items) {
+export function copy(items) {
   return moveCopy(items, true)
 }
 
-export async function checksum (url, algo) {
+export async function checksum(url, algo) {
   const data = await resourceAction(`${url}?checksum=${algo}`, 'GET')
   return (await data.json()).checksums[algo]
 }

@@ -6,19 +6,23 @@
 
     <div class="card-content">
       <p>{{ $t('prompts.renameMessage') }} <code>{{ oldName() }}</code>:</p>
-      <input class="input input--block" v-focus type="text" @keyup.enter="submit" v-model.trim="name">
+      <input v-model.trim="name" v-focus class="input input--block" type="text" @keyup.enter="submit">
     </div>
 
     <div class="card-action">
-      <button class="button button--flat button--grey"
-        @click="$store.commit('closeHovers')"
+      <button
+        class="button button--flat button--grey"
         :aria-label="$t('buttons.cancel')"
-        :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
-      <button @click="submit"
+        :title="$t('buttons.cancel')"
+        @click="$store.commit('closeHovers')"
+      >{{ $t('buttons.cancel') }}</button>
+      <button
         class="button button--flat"
         type="submit"
         :aria-label="$t('buttons.rename')"
-        :title="$t('buttons.rename')">{{ $t('buttons.rename') }}</button>
+        :title="$t('buttons.rename')"
+        @click="submit"
+      >{{ $t('buttons.rename') }}</button>
     </div>
   </div>
 </template>
@@ -29,13 +33,13 @@ import url from '@/utils/url'
 import { files as api } from '@/api'
 
 export default {
-  name: 'rename',
-  data: function () {
+  name: 'Rename',
+  data: function() {
     return {
       name: ''
     }
   },
-  created () {
+  created() {
     this.name = this.oldName()
   },
   computed: {
@@ -43,10 +47,10 @@ export default {
     ...mapGetters(['isListing'])
   },
   methods: {
-    cancel: function () {
+    cancel: function() {
       this.$store.commit('closeHovers')
     },
-    oldName: function () {
+    oldName: function() {
       if (!this.isListing) {
         return this.req.name
       }
@@ -58,7 +62,7 @@ export default {
 
       return this.req.items[this.selected[0]].name
     },
-    submit: async function () {
+    submit: async function() {
       let oldLink = ''
       let newLink = ''
 

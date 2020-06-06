@@ -7,8 +7,8 @@
     <div class="card-content">
       <p v-if="selected.length > 1">{{ $t('prompts.filesSelected', { count: selected.length }) }}</p>
 
-      <p class="break-word" v-if="selected.length < 2"><strong>{{ $t('prompts.displayName') }}</strong> {{ name }}</p>
-      <p v-if="!dir || selected.length > 1"><strong>{{ $t('prompts.size') }}:</strong> <span id="content_length"></span> {{ humanSize }}</p>
+      <p v-if="selected.length < 2" class="break-word"><strong>{{ $t('prompts.displayName') }}</strong> {{ name }}</p>
+      <p v-if="!dir || selected.length > 1"><strong>{{ $t('prompts.size') }}:</strong> <span id="content_length" /> {{ humanSize }}</p>
       <p v-if="selected.length < 2"><strong>{{ $t('prompts.lastModified') }}:</strong> {{ humanTime }}</p>
 
       <template v-if="dir && selected.length === 0">
@@ -25,57 +25,59 @@
     </div>
 
     <div class="card-action">
-      <button type="submit"
-        @click="$store.commit('closeHovers')"
+      <button
+        type="submit"
         class="button button--flat"
         :aria-label="$t('buttons.ok')"
-        :title="$t('buttons.ok')">{{ $t('buttons.ok') }}</button>
+        :title="$t('buttons.ok')"
+        @click="$store.commit('closeHovers')"
+      >{{ $t('buttons.ok') }}</button>
     </div>
   </div>
 </template>
 
 <script>
-import {mapState, mapGetters} from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import filesize from 'filesize'
 import moment from 'moment'
 import { files as api } from '@/api'
 
 export default {
-  name: 'info',
+  name: 'Info',
   computed: {
     ...mapState(['req', 'selected']),
     ...mapGetters(['selectedCount', 'isListing']),
-    humanSize: function () {
+    humanSize: function() {
       if (this.selectedCount === 0 || !this.isListing) {
         return filesize(this.req.size)
       }
 
       let sum = 0
 
-      for (let selected of this.selected) {
+      for (const selected of this.selected) {
         sum += this.req.items[selected].size
       }
 
       return filesize(sum)
     },
-    humanTime: function () {
+    humanTime: function() {
       if (this.selectedCount === 0) {
         return moment(this.req.modified).fromNow()
       }
 
       return moment(this.req.items[this.selected[0]]).fromNow()
     },
-    name: function () {
+    name: function() {
       return this.selectedCount === 0 ? this.req.name : this.req.items[this.selected[0]].name
     },
-    dir: function () {
+    dir: function() {
       return this.selectedCount > 1 || (this.selectedCount === 0
         ? this.req.isDir
         : this.req.items[this.selected[0]].isDir)
     }
   },
   methods: {
-    checksum: async function (event, algo) {
+    checksum: async function(event, algo) {
       event.preventDefault()
 
       let link

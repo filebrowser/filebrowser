@@ -52,7 +52,7 @@ const mutations = {
     state.plugins.push(value)
   },
   removeSelected: (state, value) => {
-    let i = state.selected.indexOf(value)
+    const i = state.selected.indexOf(value)
     if (i === -1) return
     state.selected.splice(i, 1)
   },
@@ -62,7 +62,7 @@ const mutations = {
   updateUser: (state, value) => {
     if (typeof value !== 'object') return
 
-    for (let field in value) {
+    for (const field in value) {
       if (field === 'locale') {
         moment.locale(value[field])
         i18n.default.locale = value[field]

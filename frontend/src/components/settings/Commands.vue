@@ -2,20 +2,20 @@
   <div>
     <h3>{{ $t('settings.userCommands') }}</h3>
     <p class="small">{{ $t('settings.userCommandsHelp') }} <i>git svn hg</i>.</p>
-    <input class="input input--block" type="text" v-model.trim="raw">
+    <input v-model.trim="raw" class="input input--block" type="text">
   </div>
 </template>
 
 <script>
 export default {
-  name: 'permissions',
+  name: 'Permissions',
   props: ['commands'],
   computed: {
     raw: {
-      get () {
+      get() {
         return this.commands.join(' ')
       },
-      set (value) {
+      set(value) {
         this.$emit('update:commands', value.split(' '))
       }
     }
