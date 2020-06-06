@@ -2,12 +2,13 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
 
-	"github.com/filebrowser/filebrowser/v2/errors"
+	libErrors "github.com/filebrowser/filebrowser/v2/errors"
 )
 
 func renderJSON(w http.ResponseWriter, _ *http.Request, data interface{}) (int, error) {
@@ -31,10 +32,14 @@ func errToStatus(err error) int {
 		return http.StatusOK
 	case os.IsPermission(err):
 		return http.StatusForbidden
-	case os.IsNotExist(err), err == errors.ErrNotExist:
+	case os.IsNotExist(err), err == libErrors.ErrNotExist:
 		return http.StatusNotFound
-	case os.IsExist(err), err == errors.ErrExist:
+	case os.IsExist(err), err == libErrors.ErrExist:
 		return http.StatusConflict
+	case errors.Is(err, libErrors.ErrPermissionDenied):
+		return http.StatusForbidden
+	case errors.Is(err, libErrors.ErrInvalidRequestParams):
+		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError
 	}

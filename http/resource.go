@@ -9,9 +9,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/filebrowser/filebrowser/v2/files"
-
 	"github.com/filebrowser/filebrowser/v2/errors"
+	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
 )
 
@@ -119,7 +118,6 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 	return errToStatus(err), err
 })
 
-//nolint: goconst
 var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	src := r.URL.Path
 	dst := r.URL.Query().Get("destination")
@@ -134,26 +132,22 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 		return http.StatusForbidden, nil
 	}
 
-	switch action {
-	// TODO: use enum
-	case "copy":
-		if !d.user.Perm.Create {
-			return http.StatusForbidden, nil
-		}
-	case "rename":
-	default:
-		action = "rename"
-		if !d.user.Perm.Rename {
-			return http.StatusForbidden, nil
-		}
-	}
-
 	err = d.RunHook(func() error {
-		if action == "copy" {
+		switch action {
+		// TODO: use enum
+		case "copy":
+			if !d.user.Perm.Create {
+				return errors.ErrPermissionDenied
+			}
 			return fileutils.Copy(d.user.Fs, src, dst)
+		case "rename":
+			if !d.user.Perm.Rename {
+				return errors.ErrPermissionDenied
+			}
+			return d.user.Fs.Rename(src, dst)
+		default:
+			return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
 		}
-
-		return d.user.Fs.Rename(src, dst)
 	}, action, src, dst, d.user)
 
 	return errToStatus(err), err
