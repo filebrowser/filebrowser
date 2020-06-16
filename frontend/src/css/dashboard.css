@@ -96,6 +96,7 @@ table tr>*:last-child {
   background-color: #fff;
   border-radius: 2px;
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+  overflow: auto;
 }
 
 .card.floating {
@@ -365,4 +366,34 @@ table tr>*:last-child {
 
 .card .collapsible .collapse {
   padding: 0 1em;
+}
+
+.card .card-action.full {
+  padding-top: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.card .card-action.full .action {
+  flex: 1;
+  padding: 2em;
+  border-radius: 0.2em;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.card .card-action.full .action {
+  margin: 0 0.25em 0.50em;
+}
+
+.card .card-action.full .action i {
+  display: block;
+  padding: 0;
+  margin-bottom: 0.25em;
+  font-size: 4em;
+}
+
+.card .card-action.full .action .title {
+  font-size: 1.5em;
+  font-weight: 500;
 }

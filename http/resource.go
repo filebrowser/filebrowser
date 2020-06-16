@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/filebrowser/filebrowser/v2/errors"
@@ -93,6 +94,12 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 	}
 
 	err := d.RunHook(func() error {
+		dir, _ := filepath.Split(r.URL.Path)
+		err := d.user.Fs.MkdirAll(dir, 0775)
+		if err != nil {
+			return err
+		}
+
 		file, err := d.user.Fs.OpenFile(r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
 		if err != nil {
 			return err
