@@ -419,6 +419,13 @@ export default {
                         }
                     })
                 } else if (entry.isDirectory) {
+                    const dir = {
+                      isDir: true,
+                      path: `${directory}${entry.name}`
+                    }
+
+                    contents.push(dir)
+
                     readReaderContent(entry.createReader(), `${directory}${entry.name}`)
                 }
             }
@@ -461,9 +468,23 @@ export default {
 
       for (let i = 0; i < files.length; i++) {
         let file = files[i]
-        let filename = (file.fullPath !== undefined) ? file.fullPath : file.name
-        let filenameEncoded = url.encodeRFC5987ValueChars(filename)
-        promises.push(api.post(this.$route.path + base + filenameEncoded, file, overwrite, onupload(i)))
+
+        if (!file.isDir) {
+          let filename = (file.fullPath !== undefined) ? file.fullPath : file.name
+          let filenameEncoded = url.encodeRFC5987ValueChars(filename)
+          promises.push(api.post(this.$route.path + base + filenameEncoded, file, overwrite, onupload(i)))
+        } else {
+          let uri = this.$route.path + base;
+          let folders = file.path.split("/");
+
+          for (let i = 0; i < folders.length; i++) {
+            let folder = folders[i];
+            let folderEncoded = encodeURIComponent(folder);
+            uri += folderEncoded + "/"
+          }
+
+          api.post(uri);
+        }
       }
 
       let finish = () => {
