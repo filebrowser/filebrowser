@@ -116,7 +116,9 @@
     "size": "Size",
     "schedule": "Schedule",
     "scheduleMessage": "Pick a date and time to schedule the publication of this post.",
-    "newArchetype": "Create a new post based on an archetype. Your file will be created on content folder."
+    "newArchetype": "Create a new post based on an archetype. Your file will be created on content folder.",
+    "upload": "Upload",
+    "uploadMessage": "Select an option to upload."
   },
   "settings": {
     "themes": {

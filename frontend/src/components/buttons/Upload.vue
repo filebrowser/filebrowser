@@ -10,7 +10,11 @@ export default {
   name: 'upload-button',
   methods: {
     upload: function () {
-      document.getElementById('upload-input').click()
+      if (typeof(DataTransferItem.prototype.webkitGetAsEntry) !== 'undefined') {
+        this.$store.commit('showHover', 'upload')
+      } else {
+        document.getElementById('upload-input').click();
+      }
     }
   }
 }

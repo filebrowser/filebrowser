@@ -17,6 +17,7 @@ import NewFile from './NewFile'
 import NewDir from './NewDir'
 import Replace from './Replace'
 import Share from './Share'
+import Upload from './Upload'
 import { mapState } from 'vuex'
 import buttons from '@/utils/buttons'
 
@@ -33,7 +34,8 @@ export default {
     NewFile,
     NewDir,
     Help,
-    Replace
+    Replace,
+    Upload
   },
   data: function () {
     return {
@@ -58,7 +60,8 @@ export default {
         'newDir',
         'download',
         'replace',
-        'share'
+        'share',
+        'upload'
       ].indexOf(this.show) >= 0;
 
       return matched && this.show || null;

@@ -5,6 +5,7 @@
       <span>{{ $t('files.lonely') }}</span>
     </h2>
     <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" multiple>
+    <input style="display:none" type="file" id="upload-folder-input" @change="uploadInput($event)" webkitdirectory multiple>
   </div>
   <div v-else id="listing"
     :class="user.viewMode"
@@ -75,6 +76,7 @@
     </div>
 
     <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" multiple>
+    <input style="display:none" type="file" id="upload-folder-input" @change="uploadInput($event)" webkitdirectory multiple>
 
     <div :class="{ active: $store.state.multiple }" id="multiple-selection">
     <p>{{ $t('files.multipleSelectionEnabled') }}</p>
@@ -331,7 +333,7 @@ export default {
 
       let conflict = false
       for (let i = 0; i < files.length; i++) {
-        let file = files[i];
+        let file = files[i]
         let name = file.name
 
         if (folder_upload) {
@@ -366,7 +368,19 @@ export default {
       })
     },
     uploadInput (event) {
-      this.checkConflict(event.currentTarget.files, this.req.items, '')
+      this.$store.commit('closeHovers')
+
+      let files = event.currentTarget.files
+      let folder_upload = files[0].webkitRelativePath !== undefined && files[0].webkitRelativePath !== ''
+
+      if (folder_upload) {
+        for (let i = 0; i < files.length; i++) {
+          let file = files[i]
+          files[i].fullPath = file.webkitRelativePath
+        }
+      }
+
+      this.checkConflict(files, this.req.items, '')
     },
     resetOpacity () {
       let items = document.getElementsByClassName('item')
@@ -388,7 +402,7 @@ export default {
                 }
               }
             } else {
-              resolve(dt.files);
+              resolve(dt.files)
             }
 
             function readEntry(entry, directory = "") {
