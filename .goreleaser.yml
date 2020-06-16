@@ -79,3 +79,29 @@ dockers:
       - "filebrowser/filebrowser:v{{ .Major }}-pi"
     extra_files:
       - .docker.json
+  -
+    dockerfile: Dockerfile.alpine
+    binaries:
+      - filebrowser
+    goos: linux
+    goarch: amd64
+    goarm: ''
+    image_templates:
+      - "filebrowser/filebrowser:alpine"
+      - "filebrowser/filebrowser:{{ .Tag }}-apline"
+      - "filebrowser/filebrowser:v{{ .Major }}-alpine"
+    extra_files:
+      - .docker.json
+  -
+    dockerfile: Dockerfile.debian
+    binaries:
+      - filebrowser
+    goos: linux
+    goarch: amd64
+    goarm: ''
+    image_templates:
+      - "filebrowser/filebrowser:debian"
+      - "filebrowser/filebrowser:{{ .Tag }}-debian"
+      - "filebrowser/filebrowser:v{{ .Major }}-debian"
+    extra_files:
+      - .docker.json
