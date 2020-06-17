@@ -14,16 +14,20 @@ filebrowser provides a file managing interface within a specified directory and 
 
 ## Features
 
-Please refer to our docs at [filebrowser.xyz/features](https://github.com/filebrowser/docs/tree/master/features)
+Please refer to our docs at [https://filebrowser.org/features](https://filebrowser.org/features)
 
 ## Install
 
-Please refer to our docs at [filebrowser.xyz](https://github.com/filebrowser/docs/tree/master/).
+For installation instructions please refer to our docs at [https://filebrowser.org/installation](https://filebrowser.org/installation).
 
-## Usage
+## Configuration
 
-Please refer to our docs at [filebrowser.xyz/usage](https://github.com/filebrowser/docs/tree/master/usage).
+[Authentication Method](https://filebrowser.org/configuration/authentication-method) - You can change the way the user authenticates with the filebrowser server
+
+[Commander Runner](https://filebrowser.org/configuration/command-runner) - The command runner is a feature that enables you to execute any shell command you want before or after a certain event.
+
+[Custom Branding](https://filebrowser.org/configuration/custom-branding) - You can customize your File Browser installation by change its name to any other you want, by adding a global custom style sheet and by using your own logotype if you want.
 
 ## Contributing
 
-Please refer to our docs at [filebrowser.xyz/contributing](https://github.com/filebrowser/docs/tree/master/contributing).
+If you're interested in contributing to this project, our docs are best places to start [https://filebrowser.org/contributing](https://filebrowser.org/contributing).
