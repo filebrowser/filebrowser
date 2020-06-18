@@ -132,7 +132,7 @@ export default {
         return
       }
 
-      if (event.shiftKey) {
+      if (event.shiftKey && this.selected.length > 0) {
         let fi = 0
         let la = 0
 
@@ -145,7 +145,9 @@ export default {
         }
 
         for (; fi <= la; fi++) {
-          this.addSelected(fi)
+          if (this.$store.state.selected.indexOf(fi) == -1) {
+            this.addSelected(fi)
+          }
         }
 
         return

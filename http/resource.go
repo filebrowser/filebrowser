@@ -93,6 +93,11 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 		}
 	}
 
+	action := "upload"
+	if r.Method == http.MethodPut {
+		action = "save"
+	}
+
 	err := d.RunHook(func() error {
 		dir, _ := filepath.Split(r.URL.Path)
 		err := d.user.Fs.MkdirAll(dir, 0775)
@@ -120,7 +125,7 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 		etag := fmt.Sprintf(`"%x%x"`, info.ModTime().UnixNano(), info.Size())
 		w.Header().Set("ETag", etag)
 		return nil
-	}, "upload", r.URL.Path, "", d.user)
+	}, action, r.URL.Path, "", d.user)
 
 	return errToStatus(err), err
 })
