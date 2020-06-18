@@ -33,7 +33,7 @@ export default {
     const fileContent = this.req.content || '';
 
     this.editor = ace.edit('editor', {
-      maxLines: Infinity,
+      maxLines: 80,
       minLines: 20,
       value: fileContent,
       showPrintMargin: false,
