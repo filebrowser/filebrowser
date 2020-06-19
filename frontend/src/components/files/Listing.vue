@@ -89,6 +89,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
+import throttle from 'lodash.throttle'
 import Item from './ListingItem'
 import css from '@/utils/css'
 import { users, files as api } from '@/api'
@@ -100,7 +101,13 @@ export default {
   components: { Item },
   data: function () {
     return {
-      show: 50
+      show: 50,
+      uploading: {
+        id: 0,
+        count: 0,
+        size: 0,
+        progress: []
+      }
     }
   },
   computed: {
@@ -450,20 +457,24 @@ export default {
             }
         })
     },
+    setProgress: throttle(function() {
+      if (this.uploading.count == 0) {
+        return
+      }
+      
+      let sum = this.uploading.progress.reduce((acc, val) => acc + val)
+      this.$store.commit('setProgress', Math.ceil(sum / this.uploading.size * 100))
+    }, 100, {leading: false, trailing: true}),
     handleFiles (files, base, overwrite = false) {
-      buttons.loading('upload')
+      if (this.uploading.count == 0) {
+        buttons.loading('upload')
+      }
+
       let promises = []
-      let progress = new Array(files.length).fill(0)
 
       let onupload = (id) => (event) => {
-        progress[id] = (event.loaded / event.total) * 100
-
-        let sum = 0
-        for (let i = 0; i < progress.length; i++) {
-          sum += progress[i]
-        }
-
-        this.$store.commit('setProgress', Math.ceil(sum / progress.length))
+        this.uploading.progress[id] = event.loaded
+        this.setProgress()
       }
 
       for (let i = 0; i < files.length; i++) {
@@ -472,30 +483,50 @@ export default {
         if (!file.isDir) {
           let filename = (file.fullPath !== undefined) ? file.fullPath : file.name
           let filenameEncoded = url.encodeRFC5987ValueChars(filename)
-          promises.push(api.post(this.$route.path + base + filenameEncoded, file, overwrite, onupload(i)))
+
+          let id = this.uploading.id
+
+          this.uploading.size += file.size
+          this.uploading.id++
+          this.uploading.count++
+
+          let promise = api.post(this.$route.path + base + filenameEncoded, file, overwrite, throttle(onupload(id), 100)).finally(() => {            
+            this.uploading.count--
+          })
+
+          promises.push(promise)
         } else {
-          let uri = this.$route.path + base;
-          let folders = file.path.split("/");
+          let uri = this.$route.path + base
+          let folders = file.path.split("/")
 
           for (let i = 0; i < folders.length; i++) {
-            let folder = folders[i];
-            let folderEncoded = encodeURIComponent(folder);
+            let folder = folders[i]
+            let folderEncoded = encodeURIComponent(folder)
             uri += folderEncoded + "/"
           }
 
-          api.post(uri);
+          api.post(uri)
         }
       }
 
       let finish = () => {
+        if (this.uploading.count > 0) {
+          return
+        }
+
         buttons.success('upload')
+
         this.$store.commit('setProgress', 0)
+        this.$store.commit('setReload', true)
+
+        this.uploading.id = 0
+        this.uploading.sizes = []
+        this.uploading.progress = []        
       }
 
       Promise.all(promises)
         .then(() => {
           finish()
-          this.$store.commit('setReload', true)
         })
         .catch(error => {
           finish()
