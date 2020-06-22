@@ -1,6 +1,6 @@
 <template>
   <div>
-    <component :is="currentComponent"></component>
+    <component ref="currentComponent" :is="currentComponent"></component>
     <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
   </div>
 </template>
@@ -45,6 +45,33 @@ export default {
         'router': this.$router
       }
     }
+  },
+  created () {
+    window.addEventListener('keydown', (event) => {
+      if (this.show == null)
+      return
+
+      let prompt = this.$refs.currentComponent;
+      
+      // Enter
+      if (event.keyCode == 13) {
+        switch (this.show) {
+          case 'delete':
+            prompt.submit()
+            break;
+          case 'copy':
+            prompt.copy(event)
+            break;
+          case 'move':
+            prompt.move(event)
+            break;
+          case 'replace':
+            prompt.showConfirm(event)
+            break;
+        }
+
+      }
+    })
   },
   computed: {
     ...mapState(['show', 'plugins']),
