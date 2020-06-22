@@ -86,8 +86,15 @@ export default {
     download () {
       return `${baseURL}/api/raw${this.req.path}?auth=${this.jwt}`
     },
+    thumbnail () {
+      if (this.req.type === 'image') {
+        return `${baseURL}/api/preview/big${this.req.path}?auth=${this.jwt}`
+      } else {
+        return `${baseURL}/api/raw${this.req.path}?auth=${this.jwt}`
+      }
+    },
     raw () {
-      return `${this.download}&inline=true`
+      return `${this.thumbnail}&inline=true`
     }
   },
   async mounted () {

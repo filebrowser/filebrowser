@@ -52,6 +52,13 @@
   vertical-align: bottom;
 }
 
+#listing .item img {
+  width: 4em;
+  height: 4em;
+  margin-right: 0.1em;
+  vertical-align: bottom;
+}
+
 .message {
   text-align: center;
   font-size: 2em;
@@ -127,6 +134,11 @@
 
 #listing.list .item div:first-of-type i {
   font-size: 2em;
+}
+
+#listing.list .item div:first-of-type img {
+  width: 2em;
+  height: 2em;
 }
 
 #listing.list .item div:last-of-type {
