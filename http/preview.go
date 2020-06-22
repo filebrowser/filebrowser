@@ -2,13 +2,14 @@ package http
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
 	"image"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
 
 	"github.com/disintegration/imaging"
+	"github.com/gorilla/mux"
 
 	"github.com/filebrowser/filebrowser/v2/files"
 )
@@ -58,7 +59,7 @@ var previewHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *da
 	}
 })
 
-func handleImagePreview(w http.ResponseWriter, file *files.FileInfo, size string) (int, error) {
+func handleImagePreview(w io.Writer, file *files.FileInfo, size string) (int, error) {
 	var imgProcessor imageProcessor
 	switch size {
 	case sizeBig:
