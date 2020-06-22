@@ -26,19 +26,20 @@ type data struct {
 
 // Check implements rules.Checker.
 func (d *data) Check(path string) bool {
-	for _, rule := range d.user.Rules {
-		if rule.Matches(path) {
-			return rule.Allow
-		}
-	}
-
+	allow := true
 	for _, rule := range d.settings.Rules {
 		if rule.Matches(path) {
-			return rule.Allow
+			allow = rule.Allow
 		}
 	}
 
-	return true
+	for _, rule := range d.user.Rules {
+		if rule.Matches(path) {
+			allow = rule.Allow
+		}
+	}
+
+	return allow
 }
 
 func handle(fn handleFunc, prefix string, store *storage.Storage, server *settings.Server) http.Handler {
