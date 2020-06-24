@@ -3,7 +3,6 @@ package http
 import (
 	"fmt"
 	"image"
-	"io"
 	"net/http"
 	"net/url"
 
@@ -50,13 +49,18 @@ var previewHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *da
 
 	switch file.Type {
 	case "image":
-		return handleImagePreview(w, file, size)
+		return handleImagePreview(w, r, file, size)
 	default:
 		return http.StatusNotImplemented, fmt.Errorf("can't create preview for %s type", file.Type)
 	}
 })
 
-func handleImagePreview(w io.Writer, file *files.FileInfo, size string) (int, error) {
+func handleImagePreview(w http.ResponseWriter, r *http.Request, file *files.FileInfo, size string) (int, error) {
+	// Unsupported extensions directly return the raw data
+	if file.Extension == ".ico" || file.Extension == ".svg" {
+		return rawFileHandler(w, r, file)
+	}
+
 	var imgProcessor imageProcessor
 	switch size {
 	case sizeBig:
