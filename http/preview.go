@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"image"
 	"net/http"
-	"net/url"
 
 	"github.com/disintegration/imaging"
 	"github.com/gorilla/mux"
@@ -40,12 +39,7 @@ var previewHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *da
 		return errToStatus(err), err
 	}
 
-	if r.URL.Query().Get("inline") == "true" {
-		w.Header().Set("Content-Disposition", "inline")
-	} else {
-		// As per RFC6266 section 4.3
-		w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(file.Name))
-	}
+	setContentDisposition(w, r, file)
 
 	switch file.Type {
 	case "image":
