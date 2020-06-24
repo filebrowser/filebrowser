@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
 
 	"github.com/disintegration/imaging"
 	"github.com/gorilla/mux"
@@ -31,11 +30,9 @@ var previewHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *da
 		return http.StatusNotImplemented, nil
 	}
 
-	// Resolve file path from URL
-	path := "/" + strings.Join(strings.Split(r.URL.Path, "/")[2:], "/")
 	file, err := files.NewFileInfo(files.FileOptions{
 		Fs:      d.user.Fs,
-		Path:    path,
+		Path:    "/" + vars["path"],
 		Modify:  d.user.Perm.Modify,
 		Expand:  true,
 		Checker: d,
