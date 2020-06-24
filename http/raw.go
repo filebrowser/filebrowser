@@ -22,7 +22,7 @@ func parseQueryFiles(r *http.Request, f *files.FileInfo, _ *users.User) ([]strin
 		fileSlice = append(fileSlice, f.Path)
 	} else {
 		for _, name := range names {
-			name, err := url.QueryUnescape(strings.Replace(name, "+", "%2B", -1)) // nolint:shadow
+			name, err := url.QueryUnescape(strings.Replace(name, "+", "%2B", -1)) //nolint:shadow
 			if err != nil {
 				return nil, err
 			}
@@ -35,7 +35,7 @@ func parseQueryFiles(r *http.Request, f *files.FileInfo, _ *users.User) ([]strin
 	return fileSlice, nil
 }
 
-// nolint: goconst
+//nolint: goconst
 func parseQueryAlgorithm(r *http.Request) (string, archiver.Writer, error) {
 	// TODO: use enum
 	switch r.URL.Query().Get("algo") {

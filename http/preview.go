@@ -50,9 +50,13 @@ var previewHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *da
 })
 
 func handleImagePreview(w http.ResponseWriter, r *http.Request, file *files.FileInfo, size string) (int, error) {
-	// Unsupported extensions directly return the raw data
-	if file.Extension == ".ico" || file.Extension == ".svg" {
-		return rawFileHandler(w, r, file)
+	format, err := imaging.FormatFromExtension(file.Extension)
+	if err != nil {
+		// Unsupported extensions directly return the raw data
+		if err == imaging.ErrUnsupportedFormat {
+			return rawFileHandler(w, r, file)
+		}
+		return errToStatus(err), err
 	}
 
 	var imgProcessor imageProcessor
@@ -74,10 +78,7 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, file *files.File
 		return errToStatus(err), err
 	}
 	defer fd.Close()
-	format, err := imaging.FormatFromExtension(file.Extension)
-	if err != nil {
-		return http.StatusNotImplemented, err
-	}
+
 	img, err := imaging.Decode(fd, imaging.AutoOrientation(true))
 	if err != nil {
 		return errToStatus(err), err
