@@ -88,7 +88,7 @@ dockers:
     goarm: ''
     image_templates:
       - "filebrowser/filebrowser:alpine"
-      - "filebrowser/filebrowser:{{ .Tag }}-apline"
+      - "filebrowser/filebrowser:{{ .Tag }}-alpine"
       - "filebrowser/filebrowser:v{{ .Major }}-alpine"
     extra_files:
       - .docker.json
