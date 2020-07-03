@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	"image"
+	"image/gif"
 	"net/http"
 
 	"github.com/disintegration/imaging"
@@ -78,6 +79,18 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, file *files.File
 		return errToStatus(err), err
 	}
 	defer fd.Close()
+
+	if format == imaging.GIF && size == sizeBig {
+		g, err := gif.DecodeAll(fd)
+		if err != nil {
+			return errToStatus(err), err
+		}
+
+		if gif.EncodeAll(w, g) != nil {
+			return errToStatus(err), err
+		}
+		return 0, nil
+	}
 
 	img, err := imaging.Decode(fd, imaging.AutoOrientation(true))
 	if err != nil {
