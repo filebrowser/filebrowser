@@ -81,13 +81,13 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, file *files.File
 	defer fd.Close()
 
 	if format == imaging.GIF && size == sizeBig {
-		g, err := gif.DecodeAll(fd)
-		if err != nil {
-			return errToStatus(err), err
+		g, gerr := gif.DecodeAll(fd)
+		if gerr != nil {
+			return errToStatus(gerr), err
 		}
 
 		if gif.EncodeAll(w, g) != nil {
-			return errToStatus(err), err
+			return errToStatus(gerr), err
 		}
 		return 0, nil
 	}
