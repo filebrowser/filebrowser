@@ -1,5 +1,5 @@
 <template>
-  <header>
+  <header v-if="!isEditor">
     <div>
       <button @click="openSidebar" :aria-label="$t('buttons.toggleSidebar')" :title="$t('buttons.toggleSidebar')" class="action">
         <i class="material-icons">menu</i>
@@ -11,10 +11,6 @@
       <template v-if="isLogged">
         <button @click="openSearch" :aria-label="$t('buttons.search')" :title="$t('buttons.search')" class="search-button action">
           <i class="material-icons">search</i>
-        </button>
-
-        <button v-show="showSaveButton" :aria-label="$t('buttons.save')" :title="$t('buttons.save')" class="action" id="save-button">
-          <i class="material-icons">save</i>
         </button>
 
         <button @click="openMore" id="more" :aria-label="$t('buttons.more')" :title="$t('buttons.more')" class="action">
@@ -128,9 +124,6 @@ export default {
     },
     showUpload () {
       return this.isListing && this.user.perm.create
-    },
-    showSaveButton () {
-      return this.isEditor && this.user.perm.modify
     },
     showDownloadButton () {
       return this.isFiles && this.user.perm.download

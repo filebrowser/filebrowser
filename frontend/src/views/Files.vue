@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="breadcrumbs">
+    <div id="breadcrumbs" v-if="isListing || error">
       <router-link to="/files/" :aria-label="$t('files.home')" :title="$t('files.home')">
         <i class="material-icons">home</i>
       </router-link>
