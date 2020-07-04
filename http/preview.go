@@ -3,7 +3,6 @@ package http
 import (
 	"fmt"
 	"image"
-	"image/gif"
 	"net/http"
 
 	"github.com/disintegration/imaging"
@@ -60,6 +59,20 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, file *files.File
 		return errToStatus(err), err
 	}
 
+	fd, err := file.Fs.Open(file.Path)
+	if err != nil {
+		return errToStatus(err), err
+	}
+	defer fd.Close()
+
+	if format == imaging.GIF && size == sizeBig {
+		_, err := rawFileHandler(w, r, file)
+		if err != nil {
+			return errToStatus(err), err
+		}
+		return 0, nil
+	}
+
 	var imgProcessor imageProcessor
 	switch size {
 	case sizeBig:
@@ -72,24 +85,6 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, file *files.File
 		}
 	default:
 		return http.StatusBadRequest, fmt.Errorf("unsupported preview size %s", size)
-	}
-
-	fd, err := file.Fs.Open(file.Path)
-	if err != nil {
-		return errToStatus(err), err
-	}
-	defer fd.Close()
-
-	if format == imaging.GIF && size == sizeBig {
-		g, gerr := gif.DecodeAll(fd)
-		if gerr != nil {
-			return errToStatus(gerr), err
-		}
-
-		if gif.EncodeAll(w, g) != nil {
-			return errToStatus(gerr), err
-		}
-		return 0, nil
 	}
 
 	img, err := imaging.Decode(fd, imaging.AutoOrientation(true))
