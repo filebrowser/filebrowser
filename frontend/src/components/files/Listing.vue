@@ -101,7 +101,7 @@ export default {
   components: { Item },
   data: function () {
     return {
-      show: 50,
+      showLimit: 50,
       uploading: {
         id: 0,
         count: 0,
@@ -111,7 +111,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['req', 'selected', 'user']),
+    ...mapState(['req', 'selected', 'user', 'show']),
     nameSorted () {
       return (this.req.sorting.by === 'name')
     },
@@ -139,14 +139,14 @@ export default {
       return { dirs, files }
     },
     dirs () {
-      return this.items.dirs.slice(0, this.show)
+      return this.items.dirs.slice(0, this.showLimit)
     },
     files () {
-      let show = this.show - this.items.dirs.length
+      let showLimit = this.showLimit - this.items.dirs.length
 
-      if (show < 0) show = 0
+      if (showLimit < 0) showLimit = 0
 
-      return this.items.files.slice(0, show)
+      return this.items.files.slice(0, showLimit)
     },
     nameIcon () {
       if (this.nameSorted && !this.ascOrdered) {
@@ -194,7 +194,11 @@ export default {
     base64: function (name) {
       return window.btoa(unescape(encodeURIComponent(name)))
     },
-    keyEvent (event) {
+    keyEvent (event) {      
+      if (this.show !== null) {
+        return
+      }
+
       if (!event.ctrlKey && !event.metaKey) {
         return
       }
@@ -292,7 +296,7 @@ export default {
     },
     scrollEvent () {
       if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-        this.show += 50
+        this.showLimit += 50
       }
     },
     dragEnter () {
