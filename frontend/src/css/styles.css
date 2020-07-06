@@ -184,6 +184,53 @@
   right: 0.5em;
 }
 
+/* EDITOR */
+
+#editor-container {
+  background-color: #fafafa;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+#editor-container .bar {
+  width: 100%;
+  text-align: right;
+  display: flex;
+  padding: 0.5em;
+  height: 3.7em;
+  background-color: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.075);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+#editor-container .title {
+  margin-right: auto;
+  padding: 0 1em;
+  line-height: 2.7em;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+#previewer .title span {
+  font-size: 1.2em;
+}
+
+#editor-container #editor {
+  height: calc(100vh - 8.2em);
+}
+
+#editor-container #breadcrumbs {
+  height: 2.3em;
+  padding: 0 1em;
+}
+
+#editor-container #breadcrumbs span {
+  font-size: 12px;
+}
 
 /* * * * * * * * * * * * * * * *
  *            PROMPT           *
