@@ -101,17 +101,11 @@ export default {
   components: { Item },
   data: function () {
     return {
-      showLimit: 50,
-      uploading: {
-        id: 0,
-        count: 0,
-        size: 0,
-        progress: []
-      }
+      showLimit: 50
     }
   },
   computed: {
-    ...mapState(['req', 'selected', 'user', 'show']),
+    ...mapState(['req', 'selected', 'user', 'show', 'uploading']),
     nameSorted () {
       return (this.req.sorting.by === 'name')
     },
@@ -194,7 +188,7 @@ export default {
     base64: function (name) {
       return window.btoa(unescape(encodeURIComponent(name)))
     },
-    keyEvent (event) {      
+    keyEvent (event) {
       if (this.show !== null) {
         return
       }
@@ -311,7 +305,7 @@ export default {
     dragEnd () {
       this.resetOpacity()
     },
-    drop: function (event) {
+    drop: async function (event) {
       event.preventDefault()
       this.resetOpacity()
 
@@ -331,21 +325,36 @@ export default {
         base = el.querySelector('.name').innerHTML + '/'
       }
 
-      if (base === '') {
-        this.scanFiles(dt).then((result) => {
-          this.checkConflict(result, this.req.items, base)
-        })
-      } else {
-        this.scanFiles(dt).then((result) => {
-          api.fetch(this.$route.path + base)
-            .then(req => {
-                this.checkConflict(result, req.items, base)
-            })
-            .catch(this.$showError)
-        })
+      let files = await this.scanFiles(dt);
+      let path = this.$route.path + base;
+      let items = this.req.items
+
+      if (base !== '') {
+        try {
+          items = (await api.fetch(path)).items
+        } catch (error) {
+          this.$showError(error)
+        }
       }
+
+      let conflict = this.checkConflict(files, items)
+
+      if (conflict) {
+        this.$store.commit('showHover', {
+          prompt: 'replace',
+          confirm: (event) => {
+            event.preventDefault()
+            this.$store.commit('closeHovers')
+            this.handleFiles(files, path, true)
+          }
+        })
+
+        return
+      }
+
+      this.handleFiles(files, path)
     },
-    checkConflict (files, items, base) {
+    checkConflict (files, items) {
       if (typeof items === 'undefined' || items === null) {
         items = []
       }
@@ -377,19 +386,7 @@ export default {
         }
       }
 
-      if (!conflict) {
-        this.handleFiles(files, base)
-        return
-      }
-
-      this.$store.commit('showHover', {
-        prompt: 'replace',
-        confirm: (event) => {
-          event.preventDefault()
-          this.$store.commit('closeHovers')
-          this.handleFiles(files, base, true)
-        }
-      })
+      return conflict
     },
     uploadInput (event) {
       this.$store.commit('closeHovers')
@@ -404,7 +401,22 @@ export default {
         }
       }
 
-      this.checkConflict(files, this.req.items, '')
+      let path = this.$route.path;
+      let conflict = this.checkConflict(files, this.req.items)
+
+      if (conflict) {
+        this.$store.commit('showHover', {
+          prompt: 'replace',
+          confirm: (event) => {
+            event.preventDefault()
+            this.$store.commit('closeHovers')
+            this.handleFiles(files, path, true)
+          }
+        })
+
+        return
+      }
+      this.handleFiles(files, path)
     },
     resetOpacity () {
       let items = document.getElementsByClassName('item')
@@ -474,15 +486,7 @@ export default {
             }
         })
     },
-    setProgress: throttle(function() {
-      if (this.uploading.count == 0) {
-        return
-      }
-      
-      let sum = this.uploading.progress.reduce((acc, val) => acc + val)
-      this.$store.commit('setProgress', Math.ceil(sum / this.uploading.size * 100))
-    }, 100, {leading: false, trailing: true}),
-    handleFiles (files, base, overwrite = false) {
+    handleFiles (files, path, overwrite = false) {
       if (this.uploading.count == 0) {
         buttons.loading('upload')
       }
@@ -490,8 +494,7 @@ export default {
       let promises = []
 
       let onupload = (id) => (event) => {
-        this.uploading.progress[id] = event.loaded
-        this.setProgress()
+        this.$store.commit('uploadigSetProgress', { id, loaded: event.loaded })
       }
 
       for (let i = 0; i < files.length; i++) {
@@ -503,17 +506,17 @@ export default {
 
           let id = this.uploading.id
 
-          this.uploading.size += file.size
-          this.uploading.id++
-          this.uploading.count++
+          this.$store.commit('uploadingIncrementSize', file.size)
+          this.$store.commit('uploadingIncrementId')
+          this.$store.commit('uploadingIncrementCount')
 
-          let promise = api.post(this.$route.path + base + filenameEncoded, file, overwrite, throttle(onupload(id), 100)).finally(() => {            
-            this.uploading.count--
+          let promise = api.post(path + filenameEncoded, file, overwrite, throttle(onupload(id), 100)).finally(() => {
+            this.$store.commit('uploadingDecreaseCount')
           })
 
           promises.push(promise)
         } else {
-          let uri = this.$route.path + base
+          let uri = path
           let folders = file.path.split("/")
 
           for (let i = 0; i < folders.length; i++) {
@@ -533,12 +536,8 @@ export default {
 
         buttons.success('upload')
 
-        this.$store.commit('setProgress', 0)
         this.$store.commit('setReload', true)
-
-        this.uploading.id = 0
-        this.uploading.sizes = []
-        this.uploading.progress = []        
+        this.$store.commit('uploadingReset')
       }
 
       Promise.all(promises)

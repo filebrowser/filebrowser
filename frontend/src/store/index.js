@@ -22,7 +22,13 @@ const state = {
   show: null,
   showShell: false,
   showMessage: null,
-  showConfirm: null
+  showConfirm: null,
+  uploading: {
+    id: 0,
+    count: 0,
+    size: 0,
+    progress: []
+  }
 }
 
 export default new Vuex.Store({

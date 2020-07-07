@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="progress">
-      <div v-bind:style="{ width: $store.state.progress + '%' }"></div>
+      <div v-bind:style="{ width: this.progress + '%' }"></div>
     </div>
     <site-header></site-header>
     <sidebar></sidebar>
@@ -29,7 +29,7 @@ export default {
     Shell
   },
   computed: {
-    ...mapGetters([ 'isLogged' ]),
+    ...mapGetters([ 'isLogged', 'progress' ]),
     ...mapState([ 'user' ])
   },
   watch: {
