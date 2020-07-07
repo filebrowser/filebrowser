@@ -89,12 +89,10 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import throttle from 'lodash.throttle'
 import Item from './ListingItem'
 import css from '@/utils/css'
 import { users, files as api } from '@/api'
-import buttons from '@/utils/buttons'
-import url from '@/utils/url'
+import * as upload  from '@/utils/upload'
 
 export default {
   name: 'listing',
@@ -325,8 +323,8 @@ export default {
         base = el.querySelector('.name').innerHTML + '/'
       }
 
-      let files = await this.scanFiles(dt);
-      let path = this.$route.path + base;
+      let files = await upload.scanFiles(dt)
+      let path = this.$route.path + base
       let items = this.req.items
 
       if (base !== '') {
@@ -337,7 +335,7 @@ export default {
         }
       }
 
-      let conflict = this.checkConflict(files, items)
+      let conflict = upload.checkConflict(files, items)
 
       if (conflict) {
         this.$store.commit('showHover', {
@@ -345,48 +343,14 @@ export default {
           confirm: (event) => {
             event.preventDefault()
             this.$store.commit('closeHovers')
-            this.handleFiles(files, path, true)
+            upload.handleFiles(files, path, true)
           }
         })
 
         return
       }
 
-      this.handleFiles(files, path)
-    },
-    checkConflict (files, items) {
-      if (typeof items === 'undefined' || items === null) {
-        items = []
-      }
-
-      let folder_upload = false
-      if (files[0].fullPath !== undefined) {
-        folder_upload = true
-      }
-
-      let conflict = false
-      for (let i = 0; i < files.length; i++) {
-        let file = files[i]
-        let name = file.name
-
-        if (folder_upload) {
-          let dirs = file.fullPath.split("/")
-          if (dirs.length > 1) {
-            name = dirs[0]
-          }
-        }
-
-        let res = items.findIndex(function hasConflict (element) {
-          return (element.name === this)
-        }, name)
-
-        if (res >= 0) {
-          conflict = true
-          break
-        }
-      }
-
-      return conflict
+      upload.handleFiles(files, path)
     },
     uploadInput (event) {
       this.$store.commit('closeHovers')
@@ -401,8 +365,8 @@ export default {
         }
       }
 
-      let path = this.$route.path;
-      let conflict = this.checkConflict(files, this.req.items)
+      let path = this.$route.path
+      let conflict = upload.checkConflict(files, this.req.items)
 
       if (conflict) {
         this.$store.commit('showHover', {
@@ -416,7 +380,7 @@ export default {
 
         return
       }
-      this.handleFiles(files, path)
+      upload.handleFiles(files, path)
     },
     resetOpacity () {
       let items = document.getElementsByClassName('item')
@@ -424,132 +388,6 @@ export default {
       Array.from(items).forEach(file => {
         file.style.opacity = 1
       })
-    },
-    scanFiles(dt) {
-        return new Promise((resolve) => {
-            let reading = 0
-            const contents = []
-
-            if (dt.items !== undefined) {
-              for (let item of dt.items) {
-                if (item.kind === "file" && typeof item.webkitGetAsEntry === "function") {
-                  const entry = item.webkitGetAsEntry()
-                  readEntry(entry)
-                }
-              }
-            } else {
-              resolve(dt.files)
-            }
-
-            function readEntry(entry, directory = "") {
-                if (entry.isFile) {
-                    reading++
-                    entry.file(file => {
-                        reading--
-
-                        file.fullPath = `${directory}${file.name}`
-                        contents.push(file)
-
-                        if (reading === 0) {
-                            resolve(contents)
-                        }
-                    })
-                } else if (entry.isDirectory) {
-                    const dir = {
-                      isDir: true,
-                      path: `${directory}${entry.name}`
-                    }
-
-                    contents.push(dir)
-
-                    readReaderContent(entry.createReader(), `${directory}${entry.name}`)
-                }
-            }
-
-            function readReaderContent(reader, directory) {
-                reading++
-
-                reader.readEntries(function (entries) {
-                    reading--
-                    if (entries.length > 0) {
-                        for (const entry of entries) {
-                            readEntry(entry, `${directory}/`)
-                        }
-
-                        readReaderContent(reader, `${directory}/`)
-                    }
-
-                    if (reading === 0) {
-                        resolve(contents)
-                    }
-                })
-            }
-        })
-    },
-    handleFiles (files, path, overwrite = false) {
-      if (this.uploading.count == 0) {
-        buttons.loading('upload')
-      }
-
-      let promises = []
-
-      let onupload = (id) => (event) => {
-        this.$store.commit('uploadigSetProgress', { id, loaded: event.loaded })
-      }
-
-      for (let i = 0; i < files.length; i++) {
-        let file = files[i]
-
-        if (!file.isDir) {
-          let filename = (file.fullPath !== undefined) ? file.fullPath : file.name
-          let filenameEncoded = url.encodeRFC5987ValueChars(filename)
-
-          let id = this.uploading.id
-
-          this.$store.commit('uploadingIncrementSize', file.size)
-          this.$store.commit('uploadingIncrementId')
-          this.$store.commit('uploadingIncrementCount')
-
-          let promise = api.post(path + filenameEncoded, file, overwrite, throttle(onupload(id), 100)).finally(() => {
-            this.$store.commit('uploadingDecreaseCount')
-          })
-
-          promises.push(promise)
-        } else {
-          let uri = path
-          let folders = file.path.split("/")
-
-          for (let i = 0; i < folders.length; i++) {
-            let folder = folders[i]
-            let folderEncoded = encodeURIComponent(folder)
-            uri += folderEncoded + "/"
-          }
-
-          api.post(uri)
-        }
-      }
-
-      let finish = () => {
-        if (this.uploading.count > 0) {
-          return
-        }
-
-        buttons.success('upload')
-
-        this.$store.commit('setReload', true)
-        this.$store.commit('uploadingReset')
-      }
-
-      Promise.all(promises)
-        .then(() => {
-          finish()
-        })
-        .catch(error => {
-          finish()
-          this.$showError(error)
-        })
-
-      return false
     },
     async sort (by) {
       let asc = false
