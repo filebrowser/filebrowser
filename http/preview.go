@@ -66,8 +66,7 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, file *files.File
 	defer fd.Close()
 
 	if format == imaging.GIF && size == sizeBig {
-		_, err := rawFileHandler(w, r, file)
-		if err != nil {
+		if _, err := rawFileHandler(w, r, file); err != nil { //nolint: govet
 			return errToStatus(err), err
 		}
 		return 0, nil
