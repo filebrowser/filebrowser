@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="breadcrumbs">
+    <div id="breadcrumbs" v-if="isListing || error">
       <router-link to="/files/" :aria-label="$t('files.home')" :title="$t('files.home')">
         <i class="material-icons">home</i>
       </router-link>
@@ -61,7 +61,8 @@ export default {
       'user',
       'reload',
       'multiple',
-      'loading'
+      'loading',
+      'show'
     ]),
     isPreview () {
       return !this.loading && !this.isListing && !this.isEditor
@@ -158,10 +159,17 @@ export default {
       }
     },
     keyEvent (event) {
-      // Esc!
-      if (event.keyCode === 27) {
-        this.$store.commit('closeHovers')
+      if (this.show !== null) {
+        // Esc!
+        if (event.keyCode === 27) {
+          this.$store.commit('closeHovers')
+        }
 
+        return
+      }
+
+      // Esc!
+      if (event.keyCode === 27) {        
         // If we're on a listing, unselect all
         // files and folders.
         if (this.isListing) {

@@ -136,12 +136,6 @@ export default {
     }
   },
   mounted() {
-    window.addEventListener("keydown", event => {
-      if (event.keyCode === 27) {
-        this.closeHovers()
-      }
-    })
-
     this.$refs.result.addEventListener('scroll', event => {
       if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 100) {
         this.resultsCount += 50
