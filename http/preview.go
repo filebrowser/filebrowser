@@ -59,6 +59,19 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, file *files.File
 		return errToStatus(err), err
 	}
 
+	fd, err := file.Fs.Open(file.Path)
+	if err != nil {
+		return errToStatus(err), err
+	}
+	defer fd.Close()
+
+	if format == imaging.GIF && size == sizeBig {
+		if _, err := rawFileHandler(w, r, file); err != nil { //nolint: govet
+			return errToStatus(err), err
+		}
+		return 0, nil
+	}
+
 	var imgProcessor imageProcessor
 	switch size {
 	case sizeBig:
@@ -72,12 +85,6 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, file *files.File
 	default:
 		return http.StatusBadRequest, fmt.Errorf("unsupported preview size %s", size)
 	}
-
-	fd, err := file.Fs.Open(file.Path)
-	if err != nil {
-		return errToStatus(err), err
-	}
-	defer fd.Close()
 
 	img, err := imaging.Decode(fd, imaging.AutoOrientation(true))
 	if err != nil {
