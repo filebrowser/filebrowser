@@ -103,7 +103,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['req', 'selected', 'user', 'show', 'uploading']),
+    ...mapState(['req', 'selected', 'user', 'show']),
     nameSorted () {
       return (this.req.sorting.by === 'name')
     },

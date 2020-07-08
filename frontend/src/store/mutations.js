@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import * as i18n from '@/i18n'
 import moment from 'moment'
 
@@ -83,28 +82,6 @@ const mutations = {
   resetClipboard: (state) => {
     state.clipboard.key = ''
     state.clipboard.items = []
-  },
-
-  uploadingIncrementId: (state) => {
-    state.uploading.id = state.uploading.id + 1
-  },
-  uploadingIncrementSize: (state, value) => {
-    state.uploading.size = state.uploading.size + value
-  },
-  uploadingIncrementCount: (state) => {
-    state.uploading.count = state.uploading.count + 1
-  },
-  uploadingDecreaseCount: (state) => {
-    state.uploading.count = state.uploading.count - 1
-  },
-  uploadigSetProgress(state, { id, loaded }) {
-    Vue.set(state.uploading.progress, id, loaded)
-  },
-  uploadingReset: (state) => {
-    state.uploading.id = 0
-    state.uploading.size = 0
-    state.uploading.count = 0
-    state.uploading.progress = []
   }
 }
 

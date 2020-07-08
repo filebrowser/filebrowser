@@ -102,14 +102,14 @@ export function scanFiles(dt) {
 }
 
 export function handleFiles(files, path, overwrite = false) {
-  if (store.state.uploading.count == 0) {
+  if (store.state.upload.count == 0) {
     buttons.loading('upload')
   }
 
   let promises = []
 
   let onupload = (id) => (event) => {
-    store.commit('uploadigSetProgress', { id, loaded: event.loaded })
+    store.commit('upload/setProgress', { id, loaded: event.loaded })
   }
 
   for (let i = 0; i < files.length; i++) {
@@ -119,14 +119,14 @@ export function handleFiles(files, path, overwrite = false) {
       let filename = (file.fullPath !== undefined) ? file.fullPath : file.name
       let filenameEncoded = url.encodeRFC5987ValueChars(filename)
 
-      let id = store.state.uploading.id
+      let id = store.state.upload.id
 
-      store.commit('uploadingIncrementSize', file.size)
-      store.commit('uploadingIncrementId')
-      store.commit('uploadingIncrementCount')
+      store.commit('upload/incrementSize', file.size)
+      store.commit('upload/incrementId')
+      store.commit('upload/incrementCount')
 
       let promise = api.post(path + filenameEncoded, file, overwrite, throttle(onupload(id), 100)).finally(() => {
-        store.commit('uploadingDecreaseCount')
+        store.commit('upload/decreaseCount')
       })
 
       promises.push(promise)
@@ -145,14 +145,14 @@ export function handleFiles(files, path, overwrite = false) {
   }
 
   let finish = () => {
-    if (store.state.uploading.count > 0) {
+    if (store.state.upload.count > 0) {
       return
     }
 
     buttons.success('upload')
 
     store.commit('setReload', true)
-    store.commit('uploadingReset')
+    store.commit('upload/reset')
   }
 
   Promise.all(promises)

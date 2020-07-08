@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import mutations from './mutations'
 import getters from './getters'
+import upload from './modules/upload'
 
 Vue.use(Vuex)
 
@@ -22,18 +23,13 @@ const state = {
   show: null,
   showShell: false,
   showMessage: null,
-  showConfirm: null,
-  uploading: {
-    id: 0,
-    count: 0,
-    size: 0,
-    progress: []
-  }
+  showConfirm: null
 }
 
 export default new Vuex.Store({
   strict: true,
   state,
   getters,
-  mutations
+  mutations,
+  modules: { upload }
 })
