@@ -1,7 +1,4 @@
 import store from '@/store'
-import { files as api } from '@/api'
-import throttle from 'lodash.throttle'
-import buttons from '@/utils/buttons'
 import url from '@/utils/url'
 
 export function checkConflict(files, items) {
@@ -71,6 +68,7 @@ export function scanFiles(dt) {
       } else if (entry.isDirectory) {
         const dir = {
           isDir: true,
+          size: 0,
           path: `${directory}${entry.name}`
         }
 
@@ -102,67 +100,34 @@ export function scanFiles(dt) {
 }
 
 export function handleFiles(files, path, overwrite = false) {
-  if (store.state.upload.count == 0) {
-    buttons.loading('upload')
-  }
-
-  let promises = []
-
-  let onupload = (id) => (event) => {
-    store.commit('upload/setProgress', { id, loaded: event.loaded })
-  }
-
   for (let i = 0; i < files.length; i++) {
     let file = files[i]
 
-    if (!file.isDir) {
-      let filename = (file.fullPath !== undefined) ? file.fullPath : file.name
-      let filenameEncoded = url.encodeRFC5987ValueChars(filename)
+    let filename = (file.fullPath !== undefined) ? file.fullPath : file.name
+    let filenameEncoded = url.encodeRFC5987ValueChars(filename)
 
-      let id = store.state.upload.id
+    let id = store.state.upload.id
 
-      store.commit('upload/incrementSize', file.size)
-      store.commit('upload/incrementId')
-      store.commit('upload/incrementCount')
+    let itemPath = path + filenameEncoded
 
-      let promise = api.post(path + filenameEncoded, file, overwrite, throttle(onupload(id), 100)).finally(() => {
-        store.commit('upload/decreaseCount')
-      })
-
-      promises.push(promise)
-    } else {
-      let uri = path
+    if (file.isDir) {
+      itemPath = path
       let folders = file.path.split("/")
 
       for (let i = 0; i < folders.length; i++) {
         let folder = folders[i]
         let folderEncoded = encodeURIComponent(folder)
-        uri += folderEncoded + "/"
+        itemPath += folderEncoded + "/"
       }
-
-      api.post(uri)
-    }
-  }
-
-  let finish = () => {
-    if (store.state.upload.count > 0) {
-      return
     }
 
-    buttons.success('upload')
+    const item = {
+      id,
+      path: itemPath,
+      file,
+      overwrite
+    }
 
-    store.commit('setReload', true)
-    store.commit('upload/reset')
+    store.dispatch('upload/upload', item);
   }
-
-  Promise.all(promises)
-    .then(() => {
-      finish()
-    })
-    .catch(error => {
-      finish()
-      this.$showError(error)
-    })
-
-  return false
 }
