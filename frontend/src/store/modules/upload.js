@@ -37,6 +37,11 @@ const mutations = {
   }
 }
 
+const beforeUnload = (event) => {
+  event.preventDefault()
+  event.returnValue = ''
+}
+
 const actions = {
   upload: (context, item) => {
     let uploadsCount = Object.keys(context.state.uploads).length;
@@ -45,6 +50,7 @@ const actions = {
     let isUploadsEmpty = uploadsCount == 0
 
     if (isQueueEmpty && isUploadsEmpty) {
+      window.addEventListener('beforeunload', beforeUnload)
       buttons.loading('upload')
     }
 
@@ -67,6 +73,7 @@ const actions = {
     let canProcess = isBellowLimit && !isQueueEmpty
 
     if (isFinished) {
+      window.removeEventListener('beforeunload', beforeUnload)
       buttons.success('upload')
       context.commit('reset')
       context.commit('setReload', true, { root: true })

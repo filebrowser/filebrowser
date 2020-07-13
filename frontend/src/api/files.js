@@ -94,9 +94,6 @@ export async function post (url, content = '', overwrite = false, onupload) {
       request.upload.onprogress = onupload
     }
 
-    // Send a message to user before closing the tab during file upload
-    window.onbeforeunload = () => "Files are being uploaded."
-
     request.onload = () => {
       if (request.status === 200) {
         resolve(request.responseText)
@@ -112,8 +109,7 @@ export async function post (url, content = '', overwrite = false, onupload) {
     }
 
     request.send(content)
-    // Upload is done no more message before closing the tab 
-  }).finally(() => { window.onbeforeunload = null })
+  })
 }
 
 function moveCopy (items, copy = false) {
