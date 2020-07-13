@@ -1,7 +1,7 @@
 :root {
-  --background: #121212;
-  --surfacePrimary: #171819;
-  --surfaceSecondary: #212528;
+  --background: #141D24;
+  --surfacePrimary: #20292F;
+  --surfaceSecondary: #3A4147;
   --divider: rgba(255, 255, 255, 0.12);
   --icon: #ffffff;
   --textPrimary: rgba(255, 255, 255, 0.87);
@@ -30,24 +30,33 @@ header {
 
 #search #input {
   background: var(--surfaceSecondary);
+  border-color: var(--surfacePrimary);
 }
-#search.active #input,
-#search.active .boxes {
+#search #input input::placeholder {
+  color: var(--textSecondary);
+}
+#search.active #input {
   background: var(--surfacePrimary);
 }
 #search.active input {
   color: var(--textPrimary);
 }
-#search.active #result {
+#search #result {
   background: var(--background);
   color: var(--textPrimary);
 }
-#search.active .boxes h3 {
+#search .boxes {
+  background: var(--surfaceSecondary);
+}
+#search .boxes h3 {
   color: var(--textPrimary);
 }
 
 .action {
   color: var(--textPrimary) !important;
+}
+.action:hover {
+  background-color: rgba(255, 255, 255, .1);
 }
 .action i {
   color: var(--icon) !important;
@@ -93,6 +102,10 @@ nav > div {
   background: var(--background);
 }
 
+.message {
+  color: var(--textPrimary);
+}
+
 .card {
   background: var(--surfacePrimary);
   color: var(--textPrimary);
@@ -106,9 +119,23 @@ nav > div {
 .dashboard p label {
   color: var(--textPrimary);
 }
+.card#share ul li input,
+.card#share ul li select,
 .input {
   background: var(--surfaceSecondary);
   color: var(--textPrimary);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.input:hover,
+.input:focus {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.input--red {
+  background: #73302D;
+}
+
+.input--green {
+  background: #147A41;
 }
 
 .dashboard #nav li,
@@ -119,9 +146,26 @@ nav > div {
   color: var(--textPrimary);
 }
 
+table th {
+  color: var(--textSecondary);
+}
+
+.file-list li:hover {
+  background: var(--surfaceSecondary);
+}
+.file-list li:before {
+  color: var(--textSecondary);
+}
+.file-list li[aria-selected=true]:before {
+  color: var(--icon);
+}
+
 .shell {
   background: var(--surfacePrimary);
   color: var(--textPrimary);
+}
+.shell__result {
+  border-top: 1px solid var(--divider);
 }
 
 #editor-container {
@@ -145,4 +189,12 @@ nav > div {
   #dropdown {
     background: var(--surfaceSecondary) !important;
   }
+}
+
+.share__box, .share__box__download {
+  background: var(--surfaceSecondary) !important;
+  color: var(--textPrimary);
+}
+.share__box__download {
+  border-bottom-color: var(--divider);
 }
