@@ -82,9 +82,6 @@ const mutations = {
   resetClipboard: (state) => {
     state.clipboard.key = ''
     state.clipboard.items = []
-  },
-  setProgress: (state, value) => {
-    state.progress = value
   }
 }
 

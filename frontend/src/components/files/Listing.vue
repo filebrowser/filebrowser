@@ -89,25 +89,17 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import throttle from 'lodash.throttle'
 import Item from './ListingItem'
 import css from '@/utils/css'
 import { users, files as api } from '@/api'
-import buttons from '@/utils/buttons'
-import url from '@/utils/url'
+import * as upload  from '@/utils/upload'
 
 export default {
   name: 'listing',
   components: { Item },
   data: function () {
     return {
-      showLimit: 50,
-      uploading: {
-        id: 0,
-        count: 0,
-        size: 0,
-        progress: []
-      }
+      showLimit: 50
     }
   },
   computed: {
@@ -194,7 +186,7 @@ export default {
     base64: function (name) {
       return window.btoa(unescape(encodeURIComponent(name)))
     },
-    keyEvent (event) {      
+    keyEvent (event) {
       if (this.show !== null) {
         return
       }
@@ -311,7 +303,7 @@ export default {
     dragEnd () {
       this.resetOpacity()
     },
-    drop: function (event) {
+    drop: async function (event) {
       event.preventDefault()
       this.resetOpacity()
 
@@ -331,65 +323,34 @@ export default {
         base = el.querySelector('.name').innerHTML + '/'
       }
 
-      if (base === '') {
-        this.scanFiles(dt).then((result) => {
-          this.checkConflict(result, this.req.items, base)
-        })
-      } else {
-        this.scanFiles(dt).then((result) => {
-          api.fetch(this.$route.path + base)
-            .then(req => {
-                this.checkConflict(result, req.items, base)
-            })
-            .catch(this.$showError)
-        })
-      }
-    },
-    checkConflict (files, items, base) {
-      if (typeof items === 'undefined' || items === null) {
-        items = []
+      let files = await upload.scanFiles(dt)
+      let path = this.$route.path + base
+      let items = this.req.items
+
+      if (base !== '') {
+        try {
+          items = (await api.fetch(path)).items
+        } catch (error) {
+          this.$showError(error)
+        }
       }
 
-      let folder_upload = false
-      if (files[0].fullPath !== undefined) {
-        folder_upload = true
-      }
+      let conflict = upload.checkConflict(files, items)
 
-      let conflict = false
-      for (let i = 0; i < files.length; i++) {
-        let file = files[i]
-        let name = file.name
-
-        if (folder_upload) {
-          let dirs = file.fullPath.split("/")
-          if (dirs.length > 1) {
-            name = dirs[0]
+      if (conflict) {
+        this.$store.commit('showHover', {
+          prompt: 'replace',
+          confirm: (event) => {
+            event.preventDefault()
+            this.$store.commit('closeHovers')
+            upload.handleFiles(files, path, true)
           }
-        }
+        })
 
-        let res = items.findIndex(function hasConflict (element) {
-          return (element.name === this)
-        }, name)
-
-        if (res >= 0) {
-          conflict = true
-          break
-        }
-      }
-
-      if (!conflict) {
-        this.handleFiles(files, base)
         return
       }
 
-      this.$store.commit('showHover', {
-        prompt: 'replace',
-        confirm: (event) => {
-          event.preventDefault()
-          this.$store.commit('closeHovers')
-          this.handleFiles(files, base, true)
-        }
-      })
+      upload.handleFiles(files, path)
     },
     uploadInput (event) {
       this.$store.commit('closeHovers')
@@ -404,7 +365,22 @@ export default {
         }
       }
 
-      this.checkConflict(files, this.req.items, '')
+      let path = this.$route.path
+      let conflict = upload.checkConflict(files, this.req.items)
+
+      if (conflict) {
+        this.$store.commit('showHover', {
+          prompt: 'replace',
+          confirm: (event) => {
+            event.preventDefault()
+            this.$store.commit('closeHovers')
+            this.handleFiles(files, path, true)
+          }
+        })
+
+        return
+      }
+      upload.handleFiles(files, path)
     },
     resetOpacity () {
       let items = document.getElementsByClassName('item')
@@ -412,145 +388,6 @@ export default {
       Array.from(items).forEach(file => {
         file.style.opacity = 1
       })
-    },
-    scanFiles(dt) {
-        return new Promise((resolve) => {
-            let reading = 0
-            const contents = []
-
-            if (dt.items !== undefined) {
-              for (let item of dt.items) {
-                if (item.kind === "file" && typeof item.webkitGetAsEntry === "function") {
-                  const entry = item.webkitGetAsEntry()
-                  readEntry(entry)
-                }
-              }
-            } else {
-              resolve(dt.files)
-            }
-
-            function readEntry(entry, directory = "") {
-                if (entry.isFile) {
-                    reading++
-                    entry.file(file => {
-                        reading--
-
-                        file.fullPath = `${directory}${file.name}`
-                        contents.push(file)
-
-                        if (reading === 0) {
-                            resolve(contents)
-                        }
-                    })
-                } else if (entry.isDirectory) {
-                    const dir = {
-                      isDir: true,
-                      path: `${directory}${entry.name}`
-                    }
-
-                    contents.push(dir)
-
-                    readReaderContent(entry.createReader(), `${directory}${entry.name}`)
-                }
-            }
-
-            function readReaderContent(reader, directory) {
-                reading++
-
-                reader.readEntries(function (entries) {
-                    reading--
-                    if (entries.length > 0) {
-                        for (const entry of entries) {
-                            readEntry(entry, `${directory}/`)
-                        }
-
-                        readReaderContent(reader, `${directory}/`)
-                    }
-
-                    if (reading === 0) {
-                        resolve(contents)
-                    }
-                })
-            }
-        })
-    },
-    setProgress: throttle(function() {
-      if (this.uploading.count == 0) {
-        return
-      }
-      
-      let sum = this.uploading.progress.reduce((acc, val) => acc + val)
-      this.$store.commit('setProgress', Math.ceil(sum / this.uploading.size * 100))
-    }, 100, {leading: false, trailing: true}),
-    handleFiles (files, base, overwrite = false) {
-      if (this.uploading.count == 0) {
-        buttons.loading('upload')
-      }
-
-      let promises = []
-
-      let onupload = (id) => (event) => {
-        this.uploading.progress[id] = event.loaded
-        this.setProgress()
-      }
-
-      for (let i = 0; i < files.length; i++) {
-        let file = files[i]
-
-        if (!file.isDir) {
-          let filename = (file.fullPath !== undefined) ? file.fullPath : file.name
-          let filenameEncoded = url.encodeRFC5987ValueChars(filename)
-
-          let id = this.uploading.id
-
-          this.uploading.size += file.size
-          this.uploading.id++
-          this.uploading.count++
-
-          let promise = api.post(this.$route.path + base + filenameEncoded, file, overwrite, throttle(onupload(id), 100)).finally(() => {            
-            this.uploading.count--
-          })
-
-          promises.push(promise)
-        } else {
-          let uri = this.$route.path + base
-          let folders = file.path.split("/")
-
-          for (let i = 0; i < folders.length; i++) {
-            let folder = folders[i]
-            let folderEncoded = encodeURIComponent(folder)
-            uri += folderEncoded + "/"
-          }
-
-          api.post(uri)
-        }
-      }
-
-      let finish = () => {
-        if (this.uploading.count > 0) {
-          return
-        }
-
-        buttons.success('upload')
-
-        this.$store.commit('setProgress', 0)
-        this.$store.commit('setReload', true)
-
-        this.uploading.id = 0
-        this.uploading.sizes = []
-        this.uploading.progress = []        
-      }
-
-      Promise.all(promises)
-        .then(() => {
-          finish()
-        })
-        .catch(error => {
-          finish()
-          this.$showError(error)
-        })
-
-      return false
     },
     async sort (by) {
       let asc = false
