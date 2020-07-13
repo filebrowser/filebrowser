@@ -127,6 +127,10 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 		return nil
 	}, action, r.URL.Path, "", d.user)
 
+	if err != nil {
+		_ = d.user.Fs.RemoveAll(r.URL.Path)
+	}
+
 	return errToStatus(err), err
 })
 
