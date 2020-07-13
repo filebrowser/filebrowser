@@ -6,10 +6,7 @@ export function checkConflict(files, items) {
     items = []
   }
 
-  let folder_upload = false
-  if (files[0].fullPath !== undefined) {
-    folder_upload = true
-  }
+  let folder_upload = files[0].fullPath !== undefined
 
   let conflict = false
   for (let i = 0; i < files.length; i++) {
@@ -69,7 +66,7 @@ export function scanFiles(dt) {
         const dir = {
           isDir: true,
           size: 0,
-          path: `${directory}${entry.name}`
+          fullPath: `${directory}${entry.name}`
         }
 
         contents.push(dir)
@@ -112,7 +109,7 @@ export function handleFiles(files, path, overwrite = false) {
 
     if (file.isDir) {
       itemPath = path
-      let folders = file.path.split("/")
+      let folders = file.fullPath.split("/")
 
       for (let i = 0; i < folders.length; i++) {
         let folder = folders[i]
