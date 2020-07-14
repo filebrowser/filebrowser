@@ -125,8 +125,13 @@
   height: 3.7em;
 }
 
-#previewer .action:first-of-type {
+#previewer .bar .title {
   margin-right: auto;
+  padding: 0 1em;
+  line-height: 2.7em;
+  overflow: hidden;
+  word-break: break-word;
+  color: #fff;
 }
 
 #previewer .action i {
@@ -217,6 +222,11 @@
 
 #previewer .title span {
   font-size: 1.2em;
+}
+
+#previewer .loading {
+  height: 100%;
+  width: 100%;
 }
 
 #editor-container #editor {

@@ -5,18 +5,33 @@
         <i class="material-icons">close</i>
       </button>
 
-      <rename-button v-if="user.perm.rename"></rename-button>
-      <delete-button v-if="user.perm.delete"></delete-button>
-      <download-button v-if="user.perm.download"></download-button>
-      <info-button></info-button>
+      <template v-if="!loading">
+        <div class="title">
+          <span>{{ req.name }}</span>
+        </div>
+
+        <rename-button v-if="user.perm.rename"></rename-button>
+        <delete-button v-if="user.perm.delete"></delete-button>
+        <download-button v-if="user.perm.download"></download-button>
+        <info-button></info-button>
+      </template>
     </div>
 
-    <button class="action" @click="prev" v-show="hasPrevious" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
-      <i class="material-icons">chevron_left</i>
-    </button>
-    <button class="action" @click="next" v-show="hasNext" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
-      <i class="material-icons">chevron_right</i>
-    </button>
+    <div class="loading" v-if="loading">
+      <div class="spinner">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+      </div>
+    </div>
+
+    <template v-if="!loading">
+      <button class="action" @click="prev" v-show="hasPrevious" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
+        <i class="material-icons">chevron_left</i>
+      </button>
+      <button class="action" @click="next" v-show="hasNext" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
+        <i class="material-icons">chevron_right</i>
+      </button>
 
     <div class="preview">
       <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
@@ -76,7 +91,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['req', 'user', 'oldReq', 'jwt']),
+    ...mapState(['req', 'user', 'oldReq', 'jwt', 'loading']),
     hasPrevious () {
       return (this.previousLink !== '')
     },
