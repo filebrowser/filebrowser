@@ -6,6 +6,10 @@
       </button>
 
       <template v-if="!loading">
+        <div class="title">
+          <span>{{ req.name }}</span>
+        </div>
+
         <rename-button v-if="user.perm.rename"></rename-button>
         <delete-button v-if="user.perm.delete"></delete-button>
         <download-button v-if="user.perm.download"></download-button>
@@ -13,6 +17,14 @@
       </template>
     </div>
 
+    <div class="loading" v-if="loading">
+      <div class="spinner">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+      </div>
+    </div>
+    
     <template v-if="!loading">
       <button class="action" @click="prev" v-show="hasPrevious" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
         <i class="material-icons">chevron_left</i>
@@ -80,7 +92,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['req', 'user', 'oldReq', 'jwt']),
+    ...mapState(['req', 'user', 'oldReq', 'jwt', 'loading']),
     hasPrevious () {
       return (this.previousLink !== '')
     },
