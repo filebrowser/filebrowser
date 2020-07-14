@@ -5,38 +5,42 @@
         <i class="material-icons">close</i>
       </button>
 
-      <rename-button v-if="user.perm.rename"></rename-button>
-      <delete-button v-if="user.perm.delete"></delete-button>
-      <download-button v-if="user.perm.download"></download-button>
-      <info-button></info-button>
+      <template v-if="!loading">
+        <rename-button v-if="user.perm.rename"></rename-button>
+        <delete-button v-if="user.perm.delete"></delete-button>
+        <download-button v-if="user.perm.download"></download-button>
+        <info-button></info-button>
+      </template>
     </div>
 
-    <button class="action" @click="prev" v-show="hasPrevious" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
-      <i class="material-icons">chevron_left</i>
-    </button>
-    <button class="action" @click="next" v-show="hasNext" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
-      <i class="material-icons">chevron_right</i>
-    </button>
+    <template v-if="!loading">
+      <button class="action" @click="prev" v-show="hasPrevious" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
+        <i class="material-icons">chevron_left</i>
+      </button>
+      <button class="action" @click="next" v-show="hasNext" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
+        <i class="material-icons">chevron_right</i>
+      </button>
 
-    <div class="preview">
-      <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
-      <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
-      <video v-else-if="req.type == 'video'" :src="raw" autoplay controls>
-        <track
-          kind="captions"
-          v-for="(sub, index) in subtitles"
-          :key="index"
-          :src="sub"
-          :label="'Subtitle ' + index" :default="index === 0">
-        Sorry, your browser doesn't support embedded videos,
-        but don't worry, you can <a :href="download">download it</a>
-        and watch it with your favorite video player!
-      </video>
-      <object v-else-if="req.extension == '.pdf'" class="pdf" :data="raw"></object>
-      <a v-else-if="req.type == 'blob'" :href="download">
-        <h2 class="message">{{ $t('buttons.download') }} <i class="material-icons">file_download</i></h2>
-      </a>
-    </div>
+      <div class="preview">
+        <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
+        <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
+        <video v-else-if="req.type == 'video'" :src="raw" autoplay controls>
+          <track
+            kind="captions"
+            v-for="(sub, index) in subtitles"
+            :key="index"
+            :src="sub"
+            :label="'Subtitle ' + index" :default="index === 0">
+          Sorry, your browser doesn't support embedded videos,
+          but don't worry, you can <a :href="download">download it</a>
+          and watch it with your favorite video player!
+        </video>
+        <object v-else-if="req.extension == '.pdf'" class="pdf" :data="raw"></object>
+        <a v-else-if="req.type == 'blob'" :href="download">
+          <h2 class="message">{{ $t('buttons.download') }} <i class="material-icons">file_download</i></h2>
+        </a>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -96,30 +100,23 @@ export default {
       return `${this.previewUrl}&inline=true`
     }
   },
+  watch: {
+    req: function () {
+      this.updatePreview()
+    }
+  },
   async mounted () {
     window.addEventListener('keyup', this.key)
-
-    if (this.req.subtitles) {
-      this.subtitles = this.req.subtitles.map(sub => `${baseURL}/api/raw${sub}?auth=${this.jwt}&inline=true`)
-    }
-
-    try {
-      if (this.oldReq.items) {
-        this.updateLinks(this.oldReq.items)
-      } else {
-        const path = url.removeLastDir(this.$route.path)
-        const res = await api.fetch(path)
-        this.updateLinks(res.items)
-      }
-    } catch (e) {
-      this.$showError(e)
-    }
+    this.$store.commit('setPreviewMode', true)
+    this.updatePreview()
   },
   beforeDestroy () {
     window.removeEventListener('keyup', this.key)
+    this.$store.commit('setPreviewMode', false)
   },
   methods: {
     back () {
+      this.$store.commit('setPreviewMode', false)
       let uri = url.removeLastDir(this.$route.path) + '/'
       this.$router.push({ path: uri })
     },
@@ -138,7 +135,26 @@ export default {
         if (this.hasPrevious) this.prev()
       }
     },
-    updateLinks (items) {
+    async updatePreview () {
+      if (this.req.subtitles) {
+        this.subtitles = this.req.subtitles.map(sub => `${baseURL}/api/raw${sub}?auth=${this.jwt}&inline=true`)
+      }
+
+      this.previousLink = ''
+      this.nextLink = ''
+      
+      let items = this.oldReq.items
+
+      if (!items) {
+        try {
+          const path = url.removeLastDir(this.$route.path)
+          const res = await api.fetch(path)
+          items = res.items
+        } catch (e) {
+          this.$showError(e)
+        }
+      }
+
       for (let i = 0; i < items.length; i++) {
         if (items[i].name !== this.req.name) {
           continue

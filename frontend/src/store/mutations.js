@@ -82,6 +82,9 @@ const mutations = {
   resetClipboard: (state) => {
     state.clipboard.key = ''
     state.clipboard.items = []
+  },
+  setPreviewMode(state, value) {
+    state.previewMode = value
   }
 }
 
