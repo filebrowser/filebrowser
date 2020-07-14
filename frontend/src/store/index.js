@@ -23,7 +23,8 @@ const state = {
   show: null,
   showShell: false,
   showMessage: null,
-  showConfirm: null
+  showConfirm: null,
+  previewMode: false
 }
 
 export default new Vuex.Store({

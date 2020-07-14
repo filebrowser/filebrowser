@@ -10,10 +10,12 @@
     @mouseup="mouseUp"
     @wheel="wheelMove"
   >
-    <img :src="src" class="image-ex-img" ref="imgex" @load="setCenter">
+    <img :src="src" class="image-ex-img image-ex-img-center" ref="imgex" @load="onLoad">
   </div>
 </template>
 <script>
+import throttle from 'lodash.throttle'
+
 export default {
   props: {
     src: String,
@@ -50,7 +52,12 @@ export default {
       inDrag: false,
       lastTouchDistance: 0,
       moveDisabled: false,
-      disabledTimer: null
+      disabledTimer: null,
+      imageLoaded: false,
+      position: {
+        center: { x: 0, y: 0 },
+        relative: { x: 0, y: 0 }
+      }
     }
   },
   mounted() {
@@ -63,24 +70,47 @@ export default {
     if (getComputedStyle(container).height === "0px") {
       container.style.height = "100%"
     }
+
+    window.addEventListener('resize', this.onResize)
+  },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.onResize)
+    document.removeEventListener('mouseup', this.onMouseUp)
   },
   methods: {
+    onLoad() {
+      let img = this.$refs.imgex
+
+      this.imageLoaded = true
+
+      if (img === undefined) {
+        return
+      }
+
+      img.classList.remove('image-ex-img-center')
+      this.setCenter()
+      img.classList.add('image-ex-img-ready')
+
+      document.addEventListener('mouseup', this.onMouseUp)
+    },
+    onMouseUp() {
+      this.inDrag = false
+    },
+    onResize: throttle(function() {
+      if (this.imageLoaded) {
+        this.setCenter()
+        this.doMove(this.position.relative.x, this.position.relative.y)
+      }
+    }, 100),
     setCenter() {
       let container = this.$refs.container
       let img = this.$refs.imgex
 
-      let rate = Math.min(
-        container.clientWidth / img.clientWidth,
-        container.clientHeight / img.clientHeight
-      )
-      if (!this.autofill && rate > 1) {
-        rate = 1
-      }
-      // height will be auto set
-      img.width = Math.floor(img.clientWidth * rate)
-      img.style.top = `${Math.floor((container.clientHeight - img.clientHeight) / 2)}px`
-      img.style.left = `${Math.floor((container.clientWidth - img.clientWidth) / 2)}px`
-      document.addEventListener('mouseup', () => this.inDrag = false )
+      this.position.center.x = Math.floor((container.clientWidth - img.clientWidth) / 2)
+      this.position.center.y = Math.floor((container.clientHeight - img.clientHeight) / 2)
+
+      img.style.left = this.position.center.x + 'px'
+      img.style.top = this.position.center.y + 'px'
     },
     mousedownStart(event) {
       this.lastX = null
@@ -159,8 +189,22 @@ export default {
     },
     doMove(x, y) {
       let style = this.$refs.imgex.style
-      style.left = `${this.pxStringToNumber(style.left) + x}px`
-      style.top = `${this.pxStringToNumber(style.top) + y}px`
+      let posX = this.pxStringToNumber(style.left) + x
+      let posY = this.pxStringToNumber(style.top) + y
+
+      style.left = posX + 'px'
+      style.top = posY + 'px'
+
+      this.position.relative.x =  Math.abs(this.position.center.x - posX)
+      this.position.relative.y =  Math.abs(this.position.center.y - posY)
+
+      if (posX < this.position.center.x) {
+        this.position.relative.x = this.position.relative.x * -1
+      }
+
+      if (posY < this.position.center.y) {
+        this.position.relative.y = this.position.relative.y * -1
+      }
     },
     wheelMove(event) {
       this.scale += (event.wheelDeltaY / 100) * this.zoomStep
@@ -185,9 +229,20 @@ export default {
 }
 
 .image-ex-img {
+  position: absolute;
+}
+
+.image-ex-img-center {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  transition: none;
+}
+
+.image-ex-img-ready {
   left: 0;
   top: 0;
-  position: absolute;
   transition: transform 0.1s ease;
 }
 </style>

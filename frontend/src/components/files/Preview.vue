@@ -5,16 +5,14 @@
         <i class="material-icons">close</i>
       </button>
 
-      <template v-if="!loading">
-        <div class="title">
-          <span>{{ req.name }}</span>
-        </div>
+      <div class="title">
+        <span>{{ this.name }}</span>
+      </div>
 
-        <rename-button v-if="user.perm.rename"></rename-button>
-        <delete-button v-if="user.perm.delete"></delete-button>
-        <download-button v-if="user.perm.download"></download-button>
-        <info-button></info-button>
-      </template>
+      <rename-button :disabled="loading" v-if="user.perm.rename"></rename-button>
+      <delete-button :disabled="loading" v-if="user.perm.delete"></delete-button>
+      <download-button :disabled="loading" v-if="user.perm.download"></download-button>
+      <info-button :disabled="loading"></info-button>
     </div>
 
     <div class="loading" v-if="loading">
@@ -25,33 +23,34 @@
       </div>
     </div>
 
-    <template v-if="!loading">
-      <button class="action" @click="prev" v-show="hasPrevious" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
-        <i class="material-icons">chevron_left</i>
-      </button>
-      <button class="action" @click="next" v-show="hasNext" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
-        <i class="material-icons">chevron_right</i>
-      </button>
+    <button class="action" @click="prev" v-show="hasPrevious" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
+      <i class="material-icons">chevron_left</i>
+    </button>
+    <button class="action" @click="next" v-show="hasNext" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
+      <i class="material-icons">chevron_right</i>
+    </button>
 
-    <div class="preview">
-      <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
-      <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
-      <video v-else-if="req.type == 'video'" :src="raw" autoplay controls>
-        <track
-          kind="captions"
-          v-for="(sub, index) in subtitles"
-          :key="index"
-          :src="sub"
-          :label="'Subtitle ' + index" :default="index === 0">
-        Sorry, your browser doesn't support embedded videos,
-        but don't worry, you can <a :href="download">download it</a>
-        and watch it with your favorite video player!
-      </video>
-      <object v-else-if="req.extension == '.pdf'" class="pdf" :data="raw"></object>
-      <a v-else-if="req.type == 'blob'" :href="download">
-        <h2 class="message">{{ $t('buttons.download') }} <i class="material-icons">file_download</i></h2>
-      </a>
-    </div>
+    <template v-if="!loading">
+      <div class="preview">
+        <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
+        <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
+        <video v-else-if="req.type == 'video'" :src="raw" autoplay controls>
+          <track
+            kind="captions"
+            v-for="(sub, index) in subtitles"
+            :key="index"
+            :src="sub"
+            :label="'Subtitle ' + index" :default="index === 0">
+          Sorry, your browser doesn't support embedded videos,
+          but don't worry, you can <a :href="download">download it</a>
+          and watch it with your favorite video player!
+        </video>
+        <object v-else-if="req.extension == '.pdf'" class="pdf" :data="raw"></object>
+        <a v-else-if="req.type == 'blob'" :href="download">
+          <h2 class="message">{{ $t('buttons.download') }} <i class="material-icons">file_download</i></h2>
+        </a>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -87,6 +86,7 @@ export default {
       previousLink: '',
       nextLink: '',
       listing: null,
+      name: '',
       subtitles: []
     }
   },
@@ -111,30 +111,24 @@ export default {
       return `${this.previewUrl}&inline=true`
     }
   },
+  watch: {
+    $route: function () {
+      this.updatePreview()
+    }
+  },
   async mounted () {
     window.addEventListener('keyup', this.key)
-
-    if (this.req.subtitles) {
-      this.subtitles = this.req.subtitles.map(sub => `${baseURL}/api/raw${sub}?auth=${this.jwt}&inline=true`)
-    }
-
-    try {
-      if (this.oldReq.items) {
-        this.updateLinks(this.oldReq.items)
-      } else {
-        const path = url.removeLastDir(this.$route.path)
-        const res = await api.fetch(path)
-        this.updateLinks(res.items)
-      }
-    } catch (e) {
-      this.$showError(e)
-    }
+    this.$store.commit('setPreviewMode', true)
+    this.listing = this.oldReq.items
+    this.updatePreview()
   },
   beforeDestroy () {
     window.removeEventListener('keyup', this.key)
+    this.$store.commit('setPreviewMode', false)
   },
   methods: {
     back () {
+      this.$store.commit('setPreviewMode', false)
       let uri = url.removeLastDir(this.$route.path) + '/'
       this.$router.push({ path: uri })
     },
@@ -153,22 +147,42 @@ export default {
         if (this.hasPrevious) this.prev()
       }
     },
-    updateLinks (items) {
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].name !== this.req.name) {
+    async updatePreview () {
+      if (this.req.subtitles) {
+        this.subtitles = this.req.subtitles.map(sub => `${baseURL}/api/raw${sub}?auth=${this.jwt}&inline=true`)
+      }
+
+      let dirs = this.$route.fullPath.split("/")
+      this.name = decodeURIComponent(dirs[dirs.length - 1])
+
+      if (!this.listing) {
+        try {
+          const path = url.removeLastDir(this.$route.path)
+          const res = await api.fetch(path)
+          this.listing = res.items
+        } catch (e) {
+          this.$showError(e)
+        }
+      }
+
+      this.previousLink = ''
+      this.nextLink = ''
+
+      for (let i = 0; i < this.listing.length; i++) {
+        if (this.listing[i].name !== this.name) {
           continue
         }
 
         for (let j = i - 1; j >= 0; j--) {
-          if (mediaTypes.includes(items[j].type)) {
-            this.previousLink = items[j].url
+          if (mediaTypes.includes(this.listing[j].type)) {
+            this.previousLink = this.listing[j].url
             break
           }
         }
 
-        for (let j = i + 1; j < items.length; j++) {
-          if (mediaTypes.includes(items[j].type)) {
-            this.nextLink = items[j].url
+        for (let j = i + 1; j < this.listing.length; j++) {
+          if (mediaTypes.includes(this.listing[j].type)) {
+            this.nextLink = this.listing[j].url
             break
           }
         }
