@@ -148,6 +148,12 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 		return http.StatusForbidden, nil
 	}
 
+	if r.URL.Query().Get("override") != "true" {
+		if _, err := d.user.Fs.Stat(dst); err == nil {
+			return http.StatusConflict, nil
+		}
+	}
+
 	err = d.RunHook(func() error {
 		switch action {
 		// TODO: use enum

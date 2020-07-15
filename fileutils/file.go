@@ -2,6 +2,7 @@ package fileutils
 
 import (
 	"io"
+	"os"
 	"path/filepath"
 
 	"github.com/spf13/afero"
@@ -25,7 +26,7 @@ func CopyFile(fs afero.Fs, source, dest string) error {
 	}
 
 	// Create the destination file.
-	dst, err := fs.Create(dest)
+	dst, err := fs.OpenFile(dest, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
 	if err != nil {
 		return err
 	}

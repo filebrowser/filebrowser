@@ -261,23 +261,43 @@ export default {
       for (let item of this.$store.state.clipboard.items) {
         const from = item.from.endsWith('/') ? item.from.slice(0, -1) : item.from
         const to = this.$route.path + item.name
-        items.push({ from, to })
+        items.push({ from, to, name: item.name })
       }
 
       if (items.length === 0) {
         return
       }
 
-      if (this.$store.state.clipboard.key === 'x') {
-        api.move(items).then(() => {
+      let action = (overwrite) => {
+        api.copy(items, overwrite).then(() => {
           this.$store.commit('setReload', true)
         }).catch(this.$showError)
+      }
+
+      if (this.$store.state.clipboard.key === 'x') {
+        action = (overwrite) => {
+          api.move(items, overwrite).then(() => {
+            this.$store.commit('setReload', true)
+          }).catch(this.$showError)
+        }
+      }
+
+      let conflict = upload.checkConflict(items, this.req.items)
+
+      if (conflict) {
+        this.$store.commit('showHover', {
+          prompt: 'replace',
+          confirm: (event) => {
+            event.preventDefault()
+            this.$store.commit('closeHovers')
+            action(true)
+          }
+        })
+
         return
       }
 
-      api.copy(items).then(() => {
-        this.$store.commit('setReload', true)
-      }).catch(this.$showError)
+      action(false)
     },
     resizeEvent () {
       // Update the columns size based on the window width.

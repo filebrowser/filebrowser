@@ -36,6 +36,7 @@ import { mapMutations, mapGetters, mapState } from 'vuex'
 import filesize from 'filesize'
 import moment from 'moment'
 import { files as api } from '@/api'
+import * as upload  from '@/utils/upload'
 
 export default {
   name: 'item',
@@ -110,26 +111,55 @@ export default {
 
       el.style.opacity = 1
     },
-    drop: function (event) {
+    drop: async function (event) {
       if (!this.canDrop) return
       event.preventDefault()
 
       if (this.selectedCount === 0) return
+
+      let el = event.target
+      for (let i = 0; i < 5; i++) {
+        if (el !== null && !el.classList.contains('item')) {
+          el = el.parentElement
+        }
+      }
 
       let items = []
 
       for (let i of this.selected) {
         items.push({
           from: this.req.items[i].url,
-          to: this.url + this.req.items[i].name
+          to: this.url + this.req.items[i].name,
+          name: this.req.items[i].name
         })
+      }      
+
+      let base = el.querySelector('.name').innerHTML + '/'
+      let path = this.$route.path + base
+      let baseItems = (await api.fetch(path)).items
+
+      let action = (overwrite) => {
+        api.move(items, overwrite).then(() => {
+          this.$store.commit('setReload', true)
+        }).catch(this.$showError)
       }
 
-      api.move(items)
-        .then(() => {
-          this.$store.commit('setReload', true)
+      let conflict = upload.checkConflict(items, baseItems)
+
+      if (conflict) {
+        this.$store.commit('showHover', {
+          prompt: 'replace',
+          confirm: (event) => {
+            event.preventDefault()
+            this.$store.commit('closeHovers')
+            action(true)
+          }
         })
-        .catch(this.$showError)
+
+        return
+      }
+
+      action(false)
     },
     click: function (event) {
       if (this.selectedCount !== 0) event.preventDefault()
