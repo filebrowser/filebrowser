@@ -16,7 +16,6 @@
         :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
       <button class="button button--flat"
         @click="copy"
-        :disabled="$route.path === dest"
         :aria-label="$t('buttons.copy')"
         :title="$t('buttons.copy')">{{ $t('buttons.copy') }}</button>
     </div>
@@ -59,11 +58,25 @@ export default {
 
         await api.copy(items, overwrite, rename).then(() => {
           buttons.success('copy')
+
+          if (this.$route.path === this.dest) {
+            this.$store.commit('setReload', true)
+
+            return
+          }
+
           this.$router.push({ path: this.dest })
         }).catch((e) => {
           buttons.done('copy')
           this.$showError(e)
         })
+      }
+
+      if (this.$route.path === this.dest) {
+        this.$store.commit('closeHovers')
+        action(false, true)
+
+        return
       }
 
       let dstItems = (await api.fetch(this.dest)).items

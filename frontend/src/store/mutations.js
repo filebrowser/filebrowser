@@ -78,6 +78,7 @@ const mutations = {
   updateClipboard: (state, value) => {
     state.clipboard.key = value.key
     state.clipboard.items = value.items
+    state.clipboard.path = value.path
   },
   resetClipboard: (state) => {
     state.clipboard.key = ''

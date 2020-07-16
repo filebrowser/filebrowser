@@ -248,7 +248,8 @@ export default {
 
       this.$store.commit('updateClipboard', {
         key: key,
-        items: items
+        items: items,
+        path: this.$route.path
       })
     },
     paste (event) {
@@ -280,6 +281,12 @@ export default {
             this.$store.commit('setReload', true)
           }).catch(this.$showError)
         }
+      }
+
+      if (this.$store.state.clipboard.path == this.$route.path) {
+        action(false, true)
+
+        return
       }
 
       let conflict = upload.checkConflict(items, this.req.items)
