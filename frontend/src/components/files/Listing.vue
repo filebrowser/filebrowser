@@ -268,15 +268,15 @@ export default {
         return
       }
 
-      let action = (overwrite) => {
-        api.copy(items, overwrite).then(() => {
+      let action = (overwrite, rename) => {
+        api.copy(items, overwrite, rename).then(() => {
           this.$store.commit('setReload', true)
         }).catch(this.$showError)
       }
 
       if (this.$store.state.clipboard.key === 'x') {
-        action = (overwrite) => {
-          api.move(items, overwrite).then(() => {
+        action = (overwrite, rename) => {
+          api.move(items, overwrite, rename).then(() => {
             this.$store.commit('setReload', true)
           }).catch(this.$showError)
         }
@@ -284,20 +284,26 @@ export default {
 
       let conflict = upload.checkConflict(items, this.req.items)
 
+      let overwrite = false
+      let rename = false
+
       if (conflict) {
         this.$store.commit('showHover', {
-          prompt: 'replace',
-          confirm: (event) => {
+          prompt: 'replace-rename',
+          confirm: (event, option) => {
+            overwrite = option == 'overwrite'
+            rename = option == 'rename'
+
             event.preventDefault()
             this.$store.commit('closeHovers')
-            action(true)
+            action(overwrite, rename)
           }
         })
 
         return
       }
 
-      action(false)
+      action(overwrite, rename)
     },
     resizeEvent () {
       // Update the columns size based on the window width.

@@ -52,10 +52,10 @@ export default {
         })
       }
 
-      let action = async (overwrite) => {
+      let action = async (overwrite, rename) => {
         buttons.loading('move')
 
-        await api.move(items, overwrite).then(() => {
+        await api.move(items, overwrite, rename).then(() => {
           buttons.success('move')
           this.$router.push({ path: this.dest })
         }).catch((e) => {
@@ -67,20 +67,26 @@ export default {
       let dstItems = (await api.fetch(this.dest)).items
       let conflict = upload.checkConflict(items, dstItems)
 
+      let overwrite = false
+      let rename = false
+
       if (conflict) {
         this.$store.commit('showHover', {
-          prompt: 'replace',
-          confirm: (event) => {
+          prompt: 'replace-rename',
+          confirm: (event, option) => {
+            overwrite = option == 'overwrite'
+            rename = option == 'rename'
+
             event.preventDefault()
             this.$store.commit('closeHovers')
-            action(true)
+            action(overwrite, rename)
           }
         })
 
         return
       }
 
-      action(false)
+      action(overwrite, rename)
     }
   }
 }

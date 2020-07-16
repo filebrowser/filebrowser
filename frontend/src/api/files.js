@@ -112,25 +112,25 @@ export async function post (url, content = '', overwrite = false, onupload) {
   })
 }
 
-function moveCopy (items, copy = false, overwrite = false) {
+function moveCopy (items, copy = false, overwrite = false, rename = false) {
   let promises = []
 
   for (let item of items) {
     const from = removePrefix(item.from)
     const to = encodeURIComponent(removePrefix(item.to))
-    const url = `${from}?action=${copy ? 'copy' : 'rename'}&destination=${to}&override=${overwrite}`
+    const url = `${from}?action=${copy ? 'copy' : 'rename'}&destination=${to}&override=${overwrite}&rename=${rename}`
     promises.push(resourceAction(url, 'PATCH'))
   }
 
   return Promise.all(promises)
 }
 
-export function move (items, overwrite = false) {
-  return moveCopy(items, false, overwrite)
+export function move (items, overwrite = false, rename = false) {
+  return moveCopy(items, false, overwrite, rename)
 }
 
-export function copy (items, overwrite = false) {
-  return moveCopy(items, true, overwrite)
+export function copy (items, overwrite = false, rename = false) {
+  return moveCopy(items, true, overwrite, rename)
 }
 
 export async function checksum (url, algo) {

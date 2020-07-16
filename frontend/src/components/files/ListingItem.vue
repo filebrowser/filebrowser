@@ -138,28 +138,34 @@ export default {
       let path = this.$route.path + base
       let baseItems = (await api.fetch(path)).items
 
-      let action = (overwrite) => {
-        api.move(items, overwrite).then(() => {
+      let action = (overwrite, rename) => {
+        api.move(items, overwrite, rename).then(() => {
           this.$store.commit('setReload', true)
         }).catch(this.$showError)
       }
 
       let conflict = upload.checkConflict(items, baseItems)
 
+      let overwrite = false
+      let rename = false
+
       if (conflict) {
         this.$store.commit('showHover', {
-          prompt: 'replace',
-          confirm: (event) => {
+          prompt: 'replace-rename',
+          confirm: (event, option) => {
+            overwrite = option == 'overwrite'
+            rename = option == 'rename'
+
             event.preventDefault()
             this.$store.commit('closeHovers')
-            action(true)
+            action(overwrite, rename)
           }
         })
 
         return
       }
 
-      action(false)
+      action(overwrite, rename)
     },
     click: function (event) {
       if (this.selectedCount !== 0) event.preventDefault()

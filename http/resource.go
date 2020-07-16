@@ -148,9 +148,28 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 		return http.StatusForbidden, nil
 	}
 
-	if r.URL.Query().Get("override") != "true" {
-		if _, err := d.user.Fs.Stat(dst); err == nil {
+	override := r.URL.Query().Get("override") == "true"
+	rename := r.URL.Query().Get("rename") == "true"
+
+	if !override && !rename {
+		if _, err = d.user.Fs.Stat(dst); err == nil {
 			return http.StatusConflict, nil
+		}
+	}
+
+	if rename {
+		counter := 1
+		dir, name := filepath.Split(dst)
+		ext := filepath.Ext(name)
+		base := strings.TrimSuffix(name, ext)
+
+		for {
+			if _, err = d.user.Fs.Stat(dst); err != nil {
+				break
+			}
+			new := fmt.Sprintf("%s(%d)%s", base, counter, ext)
+			dst = filepath.Join(dir, new)
+			counter++
 		}
 	}
 

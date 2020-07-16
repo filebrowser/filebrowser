@@ -16,6 +16,7 @@ import Copy from './Copy'
 import NewFile from './NewFile'
 import NewDir from './NewDir'
 import Replace from './Replace'
+import ReplaceRename from './ReplaceRename'
 import Share from './Share'
 import Upload from './Upload'
 import { mapState } from 'vuex'
@@ -35,6 +36,7 @@ export default {
     NewDir,
     Help,
     Replace,
+    ReplaceRename,
     Upload
   },
   data: function () {
@@ -52,7 +54,7 @@ export default {
       return
 
       let prompt = this.$refs.currentComponent;
-      
+
       // Enter
       if (event.keyCode == 13) {
         switch (this.show) {
@@ -87,6 +89,7 @@ export default {
         'newDir',
         'download',
         'replace',
+        'replace-rename',
         'share',
         'upload'
       ].indexOf(this.show) >= 0;
