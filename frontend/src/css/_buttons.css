@@ -25,8 +25,8 @@
   background: var(--red);
 }
 
-.button--red:hover {
-  background: var(--dark-red);
+.button--blue {
+  background: var(--blue);
 }
 
 .button--flat {

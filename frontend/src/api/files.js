@@ -94,9 +94,6 @@ export async function post (url, content = '', overwrite = false, onupload) {
       request.upload.onprogress = onupload
     }
 
-    // Send a message to user before closing the tab during file upload
-    window.onbeforeunload = () => "Files are being uploaded."
-
     request.onload = () => {
       if (request.status === 200) {
         resolve(request.responseText)
@@ -112,29 +109,28 @@ export async function post (url, content = '', overwrite = false, onupload) {
     }
 
     request.send(content)
-    // Upload is done no more message before closing the tab 
-  }).finally(() => { window.onbeforeunload = null })
+  })
 }
 
-function moveCopy (items, copy = false) {
+function moveCopy (items, copy = false, overwrite = false, rename = false) {
   let promises = []
 
   for (let item of items) {
     const from = removePrefix(item.from)
     const to = encodeURIComponent(removePrefix(item.to))
-    const url = `${from}?action=${copy ? 'copy' : 'rename'}&destination=${to}`
+    const url = `${from}?action=${copy ? 'copy' : 'rename'}&destination=${to}&override=${overwrite}&rename=${rename}`
     promises.push(resourceAction(url, 'PATCH'))
   }
 
   return Promise.all(promises)
 }
 
-export function move (items) {
-  return moveCopy(items)
+export function move (items, overwrite = false, rename = false) {
+  return moveCopy(items, false, overwrite, rename)
 }
 
-export function copy (items) {
-  return moveCopy(items, true)
+export function copy (items, overwrite = false, rename = false) {
+  return moveCopy(items, true, overwrite, rename)
 }
 
 export async function checksum (url, algo) {

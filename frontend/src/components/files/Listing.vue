@@ -248,7 +248,8 @@ export default {
 
       this.$store.commit('updateClipboard', {
         key: key,
-        items: items
+        items: items,
+        path: this.$route.path
       })
     },
     paste (event) {
@@ -261,23 +262,56 @@ export default {
       for (let item of this.$store.state.clipboard.items) {
         const from = item.from.endsWith('/') ? item.from.slice(0, -1) : item.from
         const to = this.$route.path + item.name
-        items.push({ from, to })
+        items.push({ from, to, name: item.name })
       }
 
       if (items.length === 0) {
         return
       }
 
-      if (this.$store.state.clipboard.key === 'x') {
-        api.move(items).then(() => {
+      let action = (overwrite, rename) => {
+        api.copy(items, overwrite, rename).then(() => {
           this.$store.commit('setReload', true)
         }).catch(this.$showError)
+      }
+
+      if (this.$store.state.clipboard.key === 'x') {
+        action = (overwrite, rename) => {
+          api.move(items, overwrite, rename).then(() => {
+            this.$store.commit('resetClipboard')
+            this.$store.commit('setReload', true)
+          }).catch(this.$showError)
+        }
+      }
+
+      if (this.$store.state.clipboard.path == this.$route.path) {
+        action(false, true)
+
         return
       }
 
-      api.copy(items).then(() => {
-        this.$store.commit('setReload', true)
-      }).catch(this.$showError)
+      let conflict = upload.checkConflict(items, this.req.items)
+
+      let overwrite = false
+      let rename = false
+
+      if (conflict) {
+        this.$store.commit('showHover', {
+          prompt: 'replace-rename',
+          confirm: (event, option) => {
+            overwrite = option == 'overwrite'
+            rename = option == 'rename'
+
+            event.preventDefault()
+            this.$store.commit('closeHovers')
+            action(overwrite, rename)
+          }
+        })
+
+        return
+      }
+
+      action(overwrite, rename)
     },
     resizeEvent () {
       // Update the columns size based on the window width.

@@ -41,19 +41,7 @@ export default {
     }
   },
   mounted () {
-    // If we're showing this on a listing,
-    // we can use the current request object
-    // to fill the move options.
-    if (this.req.kind === 'listing') {
-      this.fillOptions(this.req)
-      return
-    }
-
-    // Otherwise, we must be on a preview or editor
-    // so we fetch the data from the previous directory.
-    files.fetch(url.removeLastDir(this.$route.path))
-      .then(this.fillOptions)
-      .catch(this.$showError)
+    this.fillOptions(this.req)
   },
   methods: {
     fillOptions (req) {
