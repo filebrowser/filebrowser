@@ -13,7 +13,6 @@ require (
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/gorilla/mux v1.7.3
 	github.com/gorilla/websocket v1.4.1
-	github.com/hacdias/fileutils v0.0.0-20181202104838-227b317161a1
 	github.com/maruel/natural v0.0.0-20180416170133-dbcb3e2e8cf1
 	github.com/mholt/archiver v3.1.1+incompatible
 	github.com/mitchellh/go-homedir v1.1.0
