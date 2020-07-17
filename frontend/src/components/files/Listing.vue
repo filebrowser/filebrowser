@@ -278,6 +278,7 @@ export default {
       if (this.$store.state.clipboard.key === 'x') {
         action = (overwrite, rename) => {
           api.move(items, overwrite, rename).then(() => {
+            this.$store.commit('resetClipboard')
             this.$store.commit('setReload', true)
           }).catch(this.$showError)
         }
