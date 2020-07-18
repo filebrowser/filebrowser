@@ -4,15 +4,22 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
+	gopath "path"
 	"path/filepath"
 	"strings"
 
-	"github.com/hacdias/fileutils"
 	"github.com/mholt/archiver"
 
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
+
+func slashClean(name string) string {
+	if name == "" || name[0] != '/' {
+		name = "/" + name
+	}
+	return gopath.Clean(name)
+}
 
 func parseQueryFiles(r *http.Request, f *files.FileInfo, _ *users.User) ([]string, error) {
 	var fileSlice []string
@@ -27,7 +34,7 @@ func parseQueryFiles(r *http.Request, f *files.FileInfo, _ *users.User) ([]strin
 				return nil, err
 			}
 
-			name = fileutils.SlashClean(name)
+			name = slashClean(name)
 			fileSlice = append(fileSlice, filepath.Join(f.Path, name))
 		}
 	}
