@@ -43,7 +43,7 @@ async function resourceAction (url, method, content) {
   const res = await fetchURL(`/api/resources${url}`, opts)
 
   if (res.status !== 200) {
-    throw new Error(res.responseText)
+    throw new Error(await res.text())
   } else {
     return res
   }
