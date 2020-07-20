@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/spf13/afero"
+
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
@@ -139,38 +141,25 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 	dst := r.URL.Query().Get("destination")
 	action := r.URL.Query().Get("action")
 	dst, err := url.QueryUnescape(dst)
-
 	if err != nil {
 		return errToStatus(err), err
 	}
-
 	if dst == "/" || src == "/" {
 		return http.StatusForbidden, nil
+	}
+	if err = checkParent(src, dst); err != nil {
+		return http.StatusBadRequest, err
 	}
 
 	override := r.URL.Query().Get("override") == "true"
 	rename := r.URL.Query().Get("rename") == "true"
-
 	if !override && !rename {
 		if _, err = d.user.Fs.Stat(dst); err == nil {
 			return http.StatusConflict, nil
 		}
 	}
-
 	if rename {
-		counter := 1
-		dir, name := filepath.Split(dst)
-		ext := filepath.Ext(name)
-		base := strings.TrimSuffix(name, ext)
-
-		for {
-			if _, err = d.user.Fs.Stat(dst); err != nil {
-				break
-			}
-			new := fmt.Sprintf("%s(%d)%s", base, counter, ext)
-			dst = filepath.ToSlash(dir) + new
-			counter++
-		}
+		dst = addVersionSuffix(dst, d.user.Fs)
 	}
 
 	err = d.RunHook(func() error {
@@ -180,11 +169,14 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 			if !d.user.Perm.Create {
 				return errors.ErrPermissionDenied
 			}
+
 			return fileutils.Copy(d.user.Fs, src, dst)
 		case "rename":
 			if !d.user.Perm.Rename {
 				return errors.ErrPermissionDenied
 			}
+			dst = filepath.Clean("/" + dst)
+
 			return d.user.Fs.Rename(src, dst)
 		default:
 			return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
@@ -193,3 +185,35 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 
 	return errToStatus(err), err
 })
+
+func checkParent(src, dst string) error {
+	rel, err := filepath.Rel(src, dst)
+	if err != nil {
+		return err
+	}
+
+	rel = filepath.ToSlash(rel)
+	if !strings.HasPrefix(rel, "../") && rel != ".." && rel != "." {
+		return errors.ErrSourceIsParent
+	}
+
+	return nil
+}
+
+func addVersionSuffix(path string, fs afero.Fs) string {
+	counter := 1
+	dir, name := filepath.Split(path)
+	ext := filepath.Ext(name)
+	base := strings.TrimSuffix(name, ext)
+
+	for {
+		if _, err := fs.Stat(path); err != nil {
+			break
+		}
+		renamed := fmt.Sprintf("%s(%d)%s", base, counter, ext)
+		path = filepath.ToSlash(dir) + renamed
+		counter++
+	}
+
+	return path
+}
