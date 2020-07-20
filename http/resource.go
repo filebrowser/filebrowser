@@ -168,7 +168,7 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 				break
 			}
 			new := fmt.Sprintf("%s(%d)%s", base, counter, ext)
-			dst = filepath.Join(dir, new)
+			dst = filepath.ToSlash(dir) + new
 			counter++
 		}
 	}
