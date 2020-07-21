@@ -418,12 +418,13 @@ export default {
           confirm: (event) => {
             event.preventDefault()
             this.$store.commit('closeHovers')
-            this.handleFiles(files, path, true)
+            upload.handleFiles(files, path, true)
           }
         })
 
         return
       }
+
       upload.handleFiles(files, path)
     },
     resetOpacity () {
