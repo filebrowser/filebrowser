@@ -13,7 +13,7 @@
   :aria-label="name"
   :aria-selected="isSelected">
     <div>
-      <img v-if="type==='image'" :src="thumbnailUrl">
+      <img v-if="type==='image'" v-lazy="thumbnailUrl">
       <i v-else class="material-icons">{{ icon }}</i>
     </div>
 
