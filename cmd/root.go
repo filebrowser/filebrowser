@@ -13,6 +13,8 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/filebrowser/filebrowser/v2/img"
+
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -56,6 +58,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("root", "r", ".", "root to prepend to relative paths")
 	flags.String("socket", "", "socket to listen to (cannot be used with address, port, cert nor key flags)")
 	flags.StringP("baseurl", "b", "", "base url")
+	flags.Int("img-processors", 4, "image processors count")
 }
 
 var rootCmd = &cobra.Command{
@@ -103,6 +106,14 @@ user created with the credentials from options "username" and "password".`,
 			quickSetup(cmd.Flags(), d)
 		}
 
+		// build img service
+		workersCount, err := cmd.Flags().GetInt("img-processors")
+		checkErr(err)
+		if workersCount < 1 {
+			log.Fatal("Image resize workers count could not be < 1")
+		}
+		imgSvc := img.New(workersCount)
+
 		server := getRunParams(cmd.Flags(), d.store)
 		setupLog(server.Log)
 
@@ -132,7 +143,7 @@ user created with the credentials from options "username" and "password".`,
 		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
 		go cleanupHandler(listener, sigc)
 
-		handler, err := fbhttp.NewHandler(d.store, server)
+		handler, err := fbhttp.NewHandler(imgSvc, d.store, server)
 		checkErr(err)
 
 		defer listener.Close()
