@@ -8,9 +8,7 @@
     <input style="display:none" type="file" id="upload-folder-input" @change="uploadInput($event)" webkitdirectory multiple>
   </div>
   <div v-else id="listing"
-    :class="user.viewMode"
-    @dragenter="dragEnter"
-    @dragend="dragEnd">
+    :class="user.viewMode">
     <div>
       <div class="item header">
         <div></div>
@@ -99,7 +97,8 @@ export default {
   components: { Item },
   data: function () {
     return {
-      showLimit: 50
+      showLimit: 50,
+      dragCounter: 0
     }
   },
   computed: {
@@ -171,6 +170,8 @@ export default {
     window.addEventListener('resize', this.resizeEvent)
     window.addEventListener('scroll', this.scrollEvent)
     document.addEventListener('dragover', this.preventDefault)
+    document.addEventListener('dragenter', this.dragEnter)
+    document.addEventListener('dragleave', this.dragLeave)
     document.addEventListener('drop', this.drop)
   },
   beforeDestroy () {
@@ -179,6 +180,8 @@ export default {
     window.removeEventListener('resize', this.resizeEvent)
     window.removeEventListener('scroll', this.scrollEvent)
     document.removeEventListener('dragover', this.preventDefault)
+    document.removeEventListener('dragenter', this.dragEnter)
+    document.removeEventListener('dragleave', this.dragLeave)
     document.removeEventListener('drop', this.drop)
   },
   methods: {
@@ -326,6 +329,8 @@ export default {
       }
     },
     dragEnter () {
+      this.dragCounter++
+
       // When the user starts dragging an item, put every
       // file on the listing with 50% opacity.
       let items = document.getElementsByClassName('item')
@@ -334,11 +339,16 @@ export default {
         file.style.opacity = 0.5
       })
     },
-    dragEnd () {
-      this.resetOpacity()
+    dragLeave () {
+      this.dragCounter--
+
+      if (this.dragCounter == 0) {
+        this.resetOpacity()
+      }
     },
     drop: async function (event) {
       event.preventDefault()
+      this.dragCounter = 0
       this.resetOpacity()
 
       let dt = event.dataTransfer
@@ -408,12 +418,13 @@ export default {
           confirm: (event) => {
             event.preventDefault()
             this.$store.commit('closeHovers')
-            this.handleFiles(files, path, true)
+            upload.handleFiles(files, path, true)
           }
         })
 
         return
       }
+
       upload.handleFiles(files, path)
     },
     resetOpacity () {
