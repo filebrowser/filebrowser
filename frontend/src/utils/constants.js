@@ -11,6 +11,7 @@ const noAuth = window.FileBrowser.NoAuth
 const authMethod = window.FileBrowser.AuthMethod
 const loginPage = window.FileBrowser.LoginPage
 const theme = window.FileBrowser.Theme
+const enableThumbs = window.FileBrowser.EnableThumbs
 
 export {
   name,
@@ -24,5 +25,6 @@ export {
   noAuth,
   authMethod,
   loginPage,
-  theme
+  theme,
+  enableThumbs
 }

@@ -24,7 +24,7 @@ type ImgService interface {
 	Resize(ctx context.Context, file afero.File, width, height int, out io.Writer, options ...img.Option) error
 }
 
-func previewHandler(imgSvc ImgService) handleFunc {
+func previewHandler(imgSvc ImgService, enableThumbnails, resizePreview bool) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Download {
 			return http.StatusAccepted, nil
@@ -50,14 +50,15 @@ func previewHandler(imgSvc ImgService) handleFunc {
 
 		switch file.Type {
 		case "image":
-			return handleImagePreview(imgSvc, w, r, file, size)
+			return handleImagePreview(imgSvc, w, r, file, size, enableThumbnails, resizePreview)
 		default:
 			return http.StatusNotImplemented, fmt.Errorf("can't create preview for %s type", file.Type)
 		}
 	})
 }
 
-func handleImagePreview(imgSvc ImgService, w http.ResponseWriter, r *http.Request, file *files.FileInfo, size string) (int, error) {
+func handleImagePreview(imgSvc ImgService, w http.ResponseWriter, r *http.Request,
+	file *files.FileInfo, size string, enableThumbnails, resizePreview bool) (int, error) {
 	format, err := imgSvc.FormatFromExtension(file.Extension)
 	if err != nil {
 		// Unsupported extensions directly return the raw data
@@ -73,30 +74,26 @@ func handleImagePreview(imgSvc ImgService, w http.ResponseWriter, r *http.Reques
 	}
 	defer fd.Close()
 
-	if format == img.FormatGif && size == sizeBig {
-		if _, err := rawFileHandler(w, r, file); err != nil {
-			return errToStatus(err), err
-		}
-		return 0, nil
-	}
-
 	var (
 		width   int
 		height  int
 		options []img.Option
 	)
 
-	switch size {
-	case sizeBig:
+	switch {
+	case size == sizeBig && resizePreview && format != img.FormatGif:
 		width = 1080
 		height = 1080
-		options = append(options, img.WithHighPriority())
-	case sizeThumb:
+		options = append(options, img.WithMode(img.ResizeModeFit), img.WithQuality(img.QualityMedium))
+	case size == sizeThumb && enableThumbnails:
 		width = 128
 		height = 128
-		options = append(options, img.WithMode(img.ResizeModeFill), img.WithQuality(img.QualityLow))
+		options = append(options, img.WithMode(img.ResizeModeFill), img.WithQuality(img.QualityLow), img.WithFormat(img.FormatJpeg))
 	default:
-		return http.StatusBadRequest, fmt.Errorf("unsupported preview size %s", size)
+		if _, err := rawFileHandler(w, r, file); err != nil {
+			return errToStatus(err), err
+		}
+		return 0, nil
 	}
 
 	if err := imgSvc.Resize(r.Context(), fd, width, height, w, options...); err != nil {

@@ -59,7 +59,8 @@ func NewHandler(imgSvc ImgService, store *storage.Storage, server *settings.Serv
 	api.Handle("/settings", monkey(settingsPutHandler, "")).Methods("PUT")
 
 	api.PathPrefix("/raw").Handler(monkey(rawHandler, "/api/raw")).Methods("GET")
-	api.PathPrefix("/preview/{size}/{path:.*}").Handler(monkey(previewHandler(imgSvc), "/api/preview")).Methods("GET")
+	api.PathPrefix("/preview/{size}/{path:.*}").
+		Handler(monkey(previewHandler(imgSvc, server.EnableThumbnails, server.ResizePreview), "/api/preview")).Methods("GET")
 	api.PathPrefix("/command").Handler(monkey(commandsHandler, "/api/command")).Methods("GET")
 	api.PathPrefix("/search").Handler(monkey(searchHandler, "/api/search")).Methods("GET")
 

@@ -13,7 +13,7 @@
   :aria-label="name"
   :aria-selected="isSelected">
     <div>
-      <img v-if="type==='image'" v-lazy="thumbnailUrl">
+      <img v-if="type==='image' && isThumbsEnabled" v-lazy="thumbnailUrl">
       <i v-else class="material-icons">{{ icon }}</i>
     </div>
 
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { baseURL } from '@/utils/constants'
+import { baseURL, enableThumbs } from '@/utils/constants'
 import { mapMutations, mapGetters, mapState } from 'vuex'
 import filesize from 'filesize'
 import moment from 'moment'
@@ -76,6 +76,9 @@ export default {
     thumbnailUrl () {
       const path = this.url.replace(/^\/files\//, '')
       return `${baseURL}/api/preview/thumb/${path}?auth=${this.jwt}&inline=true`
+    },
+    isThumbsEnabled () {
+      return enableThumbs
     }
   },
   methods: {

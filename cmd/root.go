@@ -59,6 +59,8 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.String("socket", "", "socket to listen to (cannot be used with address, port, cert nor key flags)")
 	flags.StringP("baseurl", "b", "", "base url")
 	flags.Int("img-processors", 4, "image processors count")
+	flags.Bool("disable-thumbnails", false, "disable image thumbnails")
+	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
 }
 
 var rootCmd = &cobra.Command{
@@ -215,6 +217,12 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 	if isAddrSet && server.Socket != "" {
 		server.Socket = ""
 	}
+
+	_, disableThumbnails := getParamB(flags, "disable-thumbnails")
+	server.EnableThumbnails = !disableThumbnails
+
+	_, disablePreviewResize := getParamB(flags, "disable-preview-resize")
+	server.ResizePreview = !disablePreviewResize
 
 	return server
 }
