@@ -21,6 +21,14 @@ jobs:
           root: .
           paths:
             - '*'
+  test:
+    docker:
+      - image: circleci/golang:1.14.3
+    steps:
+      - checkout
+      - run:
+          name: "Test"
+          command: go test ./...
   build-go:
     docker:
       - image: circleci/golang:1.14.3
@@ -57,6 +65,10 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - test:
+          filters:
+            tags:
+              only: /.*/
       - build-node:
           filters:
             tags:
@@ -68,6 +80,7 @@ workflows:
           requires:
             - build-node
             - lint
+            - test
       - release:
           context: deploy
           requires:
