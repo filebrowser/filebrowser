@@ -2,14 +2,15 @@
 package img
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"fmt"
+	"image"
 	"io"
-	"path/filepath"
 
 	"github.com/disintegration/imaging"
 	"github.com/marusama/semaphore/v2"
-	"github.com/spf13/afero"
 )
 
 // ErrUnsupportedFormat means the given image format is not supported.
@@ -17,14 +18,12 @@ var ErrUnsupportedFormat = errors.New("unsupported image format")
 
 // Service
 type Service struct {
-	lowPrioritySem  semaphore.Semaphore
-	highPrioritySem semaphore.Semaphore
+	sem semaphore.Semaphore
 }
 
 func New(workers int) *Service {
 	return &Service{
-		lowPrioritySem:  semaphore.New(workers),
-		highPrioritySem: semaphore.New(workers),
+		sem: semaphore.New(workers),
 	}
 }
 
@@ -75,7 +74,7 @@ func (x Quality) resampleFilter() imaging.ResampleFilter {
 	case QualityLow:
 		return imaging.NearestNeighbor
 	default:
-		return imaging.Linear
+		return imaging.Box
 	}
 }
 
@@ -108,12 +107,18 @@ func (s *Service) FormatFromExtension(ext string) (Format, error) {
 }
 
 type resizeConfig struct {
-	prioritized bool
-	resizeMode  ResizeMode
-	quality     Quality
+	format     Format
+	resizeMode ResizeMode
+	quality    Quality
 }
 
 type Option func(*resizeConfig)
+
+func WithFormat(format Format) Option {
+	return func(config *resizeConfig) {
+		config.format = format
+	}
+}
 
 func WithMode(mode ResizeMode) Option {
 	return func(config *resizeConfig) {
@@ -127,14 +132,19 @@ func WithQuality(quality Quality) Option {
 	}
 }
 
-func WithHighPriority() Option {
-	return func(config *resizeConfig) {
-		config.prioritized = true
+func (s *Service) Resize(ctx context.Context, in io.Reader, width, height int, out io.Writer, options ...Option) error {
+	if err := s.sem.Acquire(ctx, 1); err != nil {
+		return err
 	}
-}
+	defer s.sem.Release(1)
 
-func (s *Service) Resize(ctx context.Context, file afero.File, width, height int, out io.Writer, options ...Option) error {
+	format, wrappedReader, err := s.detectFormat(in)
+	if err != nil {
+		return err
+	}
+
 	config := resizeConfig{
+		format:     format,
 		resizeMode: ResizeModeFit,
 		quality:    QualityMedium,
 	}
@@ -142,21 +152,7 @@ func (s *Service) Resize(ctx context.Context, file afero.File, width, height int
 		option(&config)
 	}
 
-	sem := s.lowPrioritySem
-	if config.prioritized {
-		sem = s.highPrioritySem
-	}
-
-	if err := sem.Acquire(ctx, 1); err != nil {
-		return err
-	}
-	defer sem.Release(1)
-
-	format, err := s.FormatFromExtension(filepath.Ext(file.Name()))
-	if err != nil {
-		return ErrUnsupportedFormat
-	}
-	img, err := imaging.Decode(file, imaging.AutoOrientation(true))
+	img, err := imaging.Decode(wrappedReader, imaging.AutoOrientation(true))
 	if err != nil {
 		return err
 	}
@@ -168,5 +164,22 @@ func (s *Service) Resize(ctx context.Context, file afero.File, width, height int
 		img = imaging.Fit(img, width, height, config.quality.resampleFilter())
 	}
 
-	return imaging.Encode(out, img, format.toImaging())
+	return imaging.Encode(out, img, config.format.toImaging())
+}
+
+func (s *Service) detectFormat(in io.Reader) (Format, io.Reader, error) {
+	buf := &bytes.Buffer{}
+	r := io.TeeReader(in, buf)
+
+	_, imgFormat, err := image.DecodeConfig(r)
+	if err != nil {
+		return 0, nil, fmt.Errorf("%s: %w", err.Error(), ErrUnsupportedFormat)
+	}
+
+	format, err := ParseFormat(imgFormat)
+	if err != nil {
+		return 0, nil, ErrUnsupportedFormat
+	}
+
+	return format, io.MultiReader(buf, in), nil
 }
