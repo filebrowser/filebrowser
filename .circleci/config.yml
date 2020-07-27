@@ -49,7 +49,7 @@ jobs:
             - '*'
   release:
     docker:
-      - image: circleci/golang:1.14.3
+      - image: circleci/golang:1.14.6
     steps:
       - attach_workspace:
           at: '~/project'
