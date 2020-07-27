@@ -14,7 +14,7 @@ type modifyRequest struct {
 	Which []string `json:"which"` // Answer to: which fields?
 }
 
-func NewHandler(imgSvc ImgService, store *storage.Storage, server *settings.Server) (http.Handler, error) {
+func NewHandler(imgSvc ImgService, fileCache FileCache, store *storage.Storage, server *settings.Server) (http.Handler, error) {
 	server.Clean()
 
 	r := mux.NewRouter()
@@ -60,7 +60,7 @@ func NewHandler(imgSvc ImgService, store *storage.Storage, server *settings.Serv
 
 	api.PathPrefix("/raw").Handler(monkey(rawHandler, "/api/raw")).Methods("GET")
 	api.PathPrefix("/preview/{size}/{path:.*}").
-		Handler(monkey(previewHandler(imgSvc, server.EnableThumbnails, server.ResizePreview), "/api/preview")).Methods("GET")
+		Handler(monkey(previewHandler(imgSvc, fileCache, server.EnableThumbnails, server.ResizePreview), "/api/preview")).Methods("GET")
 	api.PathPrefix("/command").Handler(monkey(commandsHandler, "/api/command")).Methods("GET")
 	api.PathPrefix("/search").Handler(monkey(searchHandler, "/api/search")).Methods("GET")
 

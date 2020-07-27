@@ -1,8 +1,8 @@
 package http
 
 import (
+	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -23,7 +23,12 @@ type ImgService interface {
 	Resize(ctx context.Context, in io.Reader, width, height int, out io.Writer, options ...img.Option) error
 }
 
-func previewHandler(imgSvc ImgService, enableThumbnails, resizePreview bool) handleFunc {
+type FileCache interface {
+	Store(ctx context.Context, key string, value []byte) error
+	Load(ctx context.Context, key string) ([]byte, bool, error)
+}
+
+func previewHandler(imgSvc ImgService, fileCache FileCache, enableThumbnails, resizePreview bool) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Download {
 			return http.StatusAccepted, nil
@@ -49,14 +54,14 @@ func previewHandler(imgSvc ImgService, enableThumbnails, resizePreview bool) han
 
 		switch file.Type {
 		case "image":
-			return handleImagePreview(imgSvc, w, r, file, size, enableThumbnails, resizePreview)
+			return handleImagePreview(w, r, imgSvc, fileCache, file, size, enableThumbnails, resizePreview)
 		default:
 			return http.StatusNotImplemented, fmt.Errorf("can't create preview for %s type", file.Type)
 		}
 	})
 }
 
-func handleImagePreview(imgSvc ImgService, w http.ResponseWriter, r *http.Request,
+func handleImagePreview(w http.ResponseWriter, r *http.Request, imgSvc ImgService, fileCache FileCache,
 	file *files.FileInfo, size string, enableThumbnails, resizePreview bool) (int, error) {
 	format, err := imgSvc.FormatFromExtension(file.Extension)
 	if err != nil {
@@ -65,6 +70,16 @@ func handleImagePreview(imgSvc ImgService, w http.ResponseWriter, r *http.Reques
 			return rawFileHandler(w, r, file)
 		}
 		return errToStatus(err), err
+	}
+
+	cacheKey := file.Path + size
+	cachedFile, ok, err := fileCache.Load(r.Context(), cacheKey)
+	if err != nil {
+		return errToStatus(err), err
+	}
+	if ok {
+		_, _ = w.Write(cachedFile)
+		return 0, nil
 	}
 
 	fd, err := file.Fs.Open(file.Path)
@@ -95,12 +110,18 @@ func handleImagePreview(imgSvc ImgService, w http.ResponseWriter, r *http.Reques
 		return 0, nil
 	}
 
-	if err := imgSvc.Resize(r.Context(), fd, width, height, w, options...); err != nil {
-		switch {
-		case errors.Is(err, context.DeadlineExceeded), errors.Is(err, context.Canceled):
-		default:
-			return 0, err
-		}
+	buf := &bytes.Buffer{}
+	if err := imgSvc.Resize(context.Background(), fd, width, height, buf, options...); err != nil {
+		return 0, err
 	}
+
+	go func() {
+		if err := fileCache.Store(context.Background(), cacheKey, buf.Bytes()); err != nil {
+			fmt.Printf("failed to cache resized image: %v", err)
+		}
+	}()
+
+	_, _ = w.Write(buf.Bytes())
+
 	return 0, nil
 }

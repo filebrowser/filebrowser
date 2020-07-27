@@ -13,16 +13,17 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/filebrowser/filebrowser/v2/img"
-
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	v "github.com/spf13/viper"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
+	"github.com/filebrowser/filebrowser/v2/diskcache"
 	fbhttp "github.com/filebrowser/filebrowser/v2/http"
+	"github.com/filebrowser/filebrowser/v2/img"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -58,6 +59,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("root", "r", ".", "root to prepend to relative paths")
 	flags.String("socket", "", "socket to listen to (cannot be used with address, port, cert nor key flags)")
 	flags.StringP("baseurl", "b", "", "base url")
+	flags.String("cache-dir", "", "file cache directory (disabled if empty)")
 	flags.Int("img-processors", 4, "image processors count")
 	flags.Bool("disable-thumbnails", false, "disable image thumbnails")
 	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
@@ -116,6 +118,16 @@ user created with the credentials from options "username" and "password".`,
 		}
 		imgSvc := img.New(workersCount)
 
+		var fileCache diskcache.Interface = diskcache.NewNoOp()
+		cacheDir, err := cmd.Flags().GetString("cache-dir")
+		checkErr(err)
+		if cacheDir != "" {
+			if err := os.MkdirAll(cacheDir, 0700); err != nil { //nolint:govet
+				log.Fatalf("can't make directory %s: %s", cacheDir, err)
+			}
+			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
+		}
+
 		server := getRunParams(cmd.Flags(), d.store)
 		setupLog(server.Log)
 
@@ -145,7 +157,7 @@ user created with the credentials from options "username" and "password".`,
 		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
 		go cleanupHandler(listener, sigc)
 
-		handler, err := fbhttp.NewHandler(imgSvc, d.store, server)
+		handler, err := fbhttp.NewHandler(imgSvc, fileCache, d.store, server)
 		checkErr(err)
 
 		defer listener.Close()
