@@ -99,13 +99,13 @@ export default {
       return (this.nextLink !== '')
     },
     download () {
-      return `${baseURL}/api/raw${this.req.path}?auth=${this.jwt}`
+      return `${baseURL}/api/raw${escape(this.req.path)}?auth=${this.jwt}`
     },
     previewUrl () {
       if (this.req.type === 'image') {
-        return `${baseURL}/api/preview/big${this.req.path}?auth=${this.jwt}`
+        return `${baseURL}/api/preview/big${escape(this.req.path)}?auth=${this.jwt}`
       }
-      return `${baseURL}/api/raw${this.req.path}?auth=${this.jwt}`
+      return `${baseURL}/api/raw${escape(this.req.path)}?auth=${this.jwt}`
     },
     raw () {
       return `${this.previewUrl}&inline=true`
