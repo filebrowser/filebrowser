@@ -68,7 +68,7 @@ func (f *FileCache) Delete(ctx context.Context, key string) error {
 	defer mu.Unlock()
 
 	fileName := f.getFileName(key)
-	if err := f.fs.Remove(fileName); err != nil && err != os.ErrNotExist {
+	if err := f.fs.Remove(fileName); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return err
 	}
 	return nil

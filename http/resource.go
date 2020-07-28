@@ -50,21 +50,42 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 	return renderJSON(w, r, file)
 })
 
-var resourceDeleteHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	if r.URL.Path == "/" || !d.user.Perm.Delete {
-		return http.StatusForbidden, nil
-	}
+func resourceDeleteHandler(fileCache FileCache) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if r.URL.Path == "/" || !d.user.Perm.Delete {
+			return http.StatusForbidden, nil
+		}
 
-	err := d.RunHook(func() error {
-		return d.user.Fs.RemoveAll(r.URL.Path)
-	}, "delete", r.URL.Path, "", d.user)
+		file, err := files.NewFileInfo(files.FileOptions{
+			Fs:      d.user.Fs,
+			Path:    r.URL.Path,
+			Modify:  d.user.Perm.Modify,
+			Expand:  true,
+			Checker: d,
+		})
+		if err != nil {
+			return errToStatus(err), err
+		}
 
-	if err != nil {
-		return errToStatus(err), err
-	}
+		// delete thumbnails
+		for _, previewSizeName := range PreviewSizeNames() {
+			size, _ := ParsePreviewSize(previewSizeName)
+			if err := fileCache.Delete(r.Context(), previewCacheKey(file.Path, size)); err != nil {
+				return errToStatus(err), err
+			}
+		}
 
-	return http.StatusOK, nil
-})
+		err = d.RunHook(func() error {
+			return d.user.Fs.RemoveAll(r.URL.Path)
+		}, "delete", r.URL.Path, "", d.user)
+
+		if err != nil {
+			return errToStatus(err), err
+		}
+
+		return http.StatusOK, nil
+	})
+}
 
 var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	if !d.user.Perm.Create && r.Method == http.MethodPost {

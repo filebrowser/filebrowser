@@ -1,3 +1,4 @@
+//go:generate go-enum --sql --marshal --names --file $GOFILE
 package http
 
 import (
@@ -13,10 +14,13 @@ import (
 	"github.com/filebrowser/filebrowser/v2/img"
 )
 
-const (
-	sizeThumb = "thumb"
-	sizeBig   = "big"
+/*
+ENUM(
+thumb
+big
 )
+*/
+type PreviewSize int
 
 type ImgService interface {
 	FormatFromExtension(ext string) (img.Format, error)
@@ -26,6 +30,7 @@ type ImgService interface {
 type FileCache interface {
 	Store(ctx context.Context, key string, value []byte) error
 	Load(ctx context.Context, key string) ([]byte, bool, error)
+	Delete(ctx context.Context, key string) error
 }
 
 func previewHandler(imgSvc ImgService, fileCache FileCache, enableThumbnails, resizePreview bool) handleFunc {
@@ -34,9 +39,10 @@ func previewHandler(imgSvc ImgService, fileCache FileCache, enableThumbnails, re
 			return http.StatusAccepted, nil
 		}
 		vars := mux.Vars(r)
-		size := vars["size"]
-		if size != sizeBig && size != sizeThumb {
-			return http.StatusNotImplemented, nil
+
+		previewSize, err := ParsePreviewSize(vars["size"])
+		if err != nil {
+			return http.StatusBadRequest, err
 		}
 
 		file, err := files.NewFileInfo(files.FileOptions{
@@ -54,7 +60,7 @@ func previewHandler(imgSvc ImgService, fileCache FileCache, enableThumbnails, re
 
 		switch file.Type {
 		case "image":
-			return handleImagePreview(w, r, imgSvc, fileCache, file, size, enableThumbnails, resizePreview)
+			return handleImagePreview(w, r, imgSvc, fileCache, file, previewSize, enableThumbnails, resizePreview)
 		default:
 			return http.StatusNotImplemented, fmt.Errorf("can't create preview for %s type", file.Type)
 		}
@@ -62,7 +68,7 @@ func previewHandler(imgSvc ImgService, fileCache FileCache, enableThumbnails, re
 }
 
 func handleImagePreview(w http.ResponseWriter, r *http.Request, imgSvc ImgService, fileCache FileCache,
-	file *files.FileInfo, size string, enableThumbnails, resizePreview bool) (int, error) {
+	file *files.FileInfo, previewSize PreviewSize, enableThumbnails, resizePreview bool) (int, error) {
 	format, err := imgSvc.FormatFromExtension(file.Extension)
 	if err != nil {
 		// Unsupported extensions directly return the raw data
@@ -72,7 +78,7 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, imgSvc ImgServic
 		return errToStatus(err), err
 	}
 
-	cacheKey := file.Path + size
+	cacheKey := previewCacheKey(file.Path, previewSize)
 	cachedFile, ok, err := fileCache.Load(r.Context(), cacheKey)
 	if err != nil {
 		return errToStatus(err), err
@@ -95,11 +101,11 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, imgSvc ImgServic
 	)
 
 	switch {
-	case size == sizeBig && resizePreview && format != img.FormatGif:
+	case previewSize == PreviewSizeBig && resizePreview && format != img.FormatGif:
 		width = 1080
 		height = 1080
 		options = append(options, img.WithMode(img.ResizeModeFit), img.WithQuality(img.QualityMedium))
-	case size == sizeThumb && enableThumbnails:
+	case previewSize == PreviewSizeThumb && enableThumbnails:
 		width = 128
 		height = 128
 		options = append(options, img.WithMode(img.ResizeModeFill), img.WithQuality(img.QualityLow), img.WithFormat(img.FormatJpeg))
@@ -124,4 +130,8 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, imgSvc ImgServic
 	_, _ = w.Write(buf.Bytes())
 
 	return 0, nil
+}
+
+func previewCacheKey(fPath string, previewSize PreviewSize) string {
+	return fPath + previewSize.String()
 }

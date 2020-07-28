@@ -46,7 +46,7 @@ func NewHandler(imgSvc ImgService, fileCache FileCache, store *storage.Storage, 
 	users.Handle("/{id:[0-9]+}", monkey(userDeleteHandler, "")).Methods("DELETE")
 
 	api.PathPrefix("/resources").Handler(monkey(resourceGetHandler, "/api/resources")).Methods("GET")
-	api.PathPrefix("/resources").Handler(monkey(resourceDeleteHandler, "/api/resources")).Methods("DELETE")
+	api.PathPrefix("/resources").Handler(monkey(resourceDeleteHandler(fileCache), "/api/resources")).Methods("DELETE")
 	api.PathPrefix("/resources").Handler(monkey(resourcePostPutHandler, "/api/resources")).Methods("POST")
 	api.PathPrefix("/resources").Handler(monkey(resourcePostPutHandler, "/api/resources")).Methods("PUT")
 	api.PathPrefix("/resources").Handler(monkey(resourcePatchHandler, "/api/resources")).Methods("PATCH")
