@@ -70,7 +70,7 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 		// delete thumbnails
 		for _, previewSizeName := range PreviewSizeNames() {
 			size, _ := ParsePreviewSize(previewSizeName)
-			if err := fileCache.Delete(r.Context(), previewCacheKey(file.Path, size)); err != nil {
+			if err := fileCache.Delete(r.Context(), previewCacheKey(file.Path, size)); err != nil { //nolint:govet
 				return errToStatus(err), err
 			}
 		}
