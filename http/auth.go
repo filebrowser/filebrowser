@@ -189,7 +189,7 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 		return http.StatusInternalServerError, err
 	}
 
-	w.Header().Set("Content-Type", "cty")
+	w.Header().Set("Content-Type", "text/plain")
 	if _, err := w.Write([]byte(signed)); err != nil {
 		return http.StatusInternalServerError, err
 	}
