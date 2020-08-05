@@ -20,7 +20,12 @@ function encodeRFC5987ValueChars(str) {
           replace(/%(?:7C|60|5E)/g, unescape);
 }
 
+function encodePath(str) {
+  return str.split('/').map(v => encodeURIComponent(v)).join('/')
+}
+
 export default {
   encodeRFC5987ValueChars: encodeRFC5987ValueChars,
-  removeLastDir: removeLastDir
+  removeLastDir: removeLastDir,
+  encodePath: encodePath
 }
