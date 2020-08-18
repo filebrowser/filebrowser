@@ -77,6 +77,13 @@ export default {
     window.removeEventListener('resize', this.onResize)
     document.removeEventListener('mouseup', this.onMouseUp)
   },
+  watch: {
+    src: function () {
+      this.scale = 1
+      this.setZoom()
+      this.setCenter()
+    }
+  },
   methods: {
     onLoad() {
       let img = this.$refs.imgex
