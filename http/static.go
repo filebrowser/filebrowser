@@ -40,6 +40,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, box *
 		"ReCaptcha":       false,
 		"Theme":           d.settings.Branding.Theme,
 		"EnableThumbs":    d.server.EnableThumbnails,
+		"ResizePreview":   d.server.ResizePreview,
 	}
 
 	if d.settings.Branding.Files != "" {

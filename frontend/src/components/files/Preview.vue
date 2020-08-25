@@ -9,10 +9,17 @@
         <span>{{ this.name }}</span>
       </div>
 
-      <rename-button :disabled="loading" v-if="user.perm.rename"></rename-button>
-      <delete-button :disabled="loading" v-if="user.perm.delete"></delete-button>
-      <download-button :disabled="loading" v-if="user.perm.download"></download-button>
-      <info-button :disabled="loading"></info-button>
+      <preview-size-button v-if="isResizeEnabled && this.req.type === 'image'" @change-size="toggleSize" v-bind:size="fullSize" :disabled="loading"></preview-size-button>
+      <button @click="openMore" id="more" :aria-label="$t('buttons.more')" :title="$t('buttons.more')" class="action">
+        <i class="material-icons">more_vert</i>
+      </button>
+
+      <div id="dropdown" :class="{ active : showMore }">
+        <rename-button :disabled="loading" v-if="user.perm.rename"></rename-button>
+        <delete-button :disabled="loading" v-if="user.perm.delete"></delete-button>
+        <download-button :disabled="loading" v-if="user.perm.download"></download-button>
+        <info-button :disabled="loading"></info-button>
+      </div>
     </div>
 
     <div class="loading" v-if="loading">
@@ -51,14 +58,17 @@
         </a>
       </div>
     </template>
+
+    <div v-show="showMore" @click="resetPrompts" class="overlay"></div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import url from '@/utils/url'
-import { baseURL } from '@/utils/constants'
+import { baseURL, resizePreview } from '@/utils/constants'
 import { files as api } from '@/api'
+import PreviewSizeButton from '@/components/buttons/PreviewSize'
 import InfoButton from '@/components/buttons/Info'
 import DeleteButton from '@/components/buttons/Delete'
 import RenameButton from '@/components/buttons/Rename'
@@ -75,6 +85,7 @@ const mediaTypes = [
 export default {
   name: 'preview',
   components: {
+    PreviewSizeButton,
     InfoButton,
     DeleteButton,
     RenameButton,
@@ -87,7 +98,8 @@ export default {
       nextLink: '',
       listing: null,
       name: '',
-      subtitles: []
+      subtitles: [],
+      fullSize: false
     }
   },
   computed: {
@@ -102,13 +114,19 @@ export default {
       return `${baseURL}/api/raw${url.encodePath(this.req.path)}?auth=${this.jwt}`
     },
     previewUrl () {
-      if (this.req.type === 'image') {
+      if (this.req.type === 'image' && !this.fullSize) {
         return `${baseURL}/api/preview/big${url.encodePath(this.req.path)}?auth=${this.jwt}`
       }
       return `${baseURL}/api/raw${url.encodePath(this.req.path)}?auth=${this.jwt}`
     },
     raw () {
       return `${this.previewUrl}&inline=true`
+    },
+    showMore () {
+      return this.$store.state.show === 'more'
+    },
+    isResizeEnabled () {
+      return resizePreview
     }
   },
   watch: {
@@ -189,6 +207,15 @@ export default {
 
         return
       }
+    },
+    openMore () {
+      this.$store.commit('showHover', 'more')
+    },
+    resetPrompts () {
+      this.$store.commit('closeHovers')
+    },
+    toggleSize () {
+      this.fullSize = !this.fullSize
     }
   }
 }

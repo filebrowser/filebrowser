@@ -1,5 +1,5 @@
 <template>
-  <header v-if="!isEditor">
+  <header v-if="!isEditor && !isPreview">
     <div>
       <button @click="openSidebar" :aria-label="$t('buttons.toggleSidebar')" :title="$t('buttons.toggleSidebar')" class="action">
         <i class="material-icons">menu</i>
@@ -108,6 +108,7 @@ export default {
       'selectedCount',
       'isFiles',
       'isEditor',
+      'isPreview',
       'isListing',
       'isLogged'
     ]),
