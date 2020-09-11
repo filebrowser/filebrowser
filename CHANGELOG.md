@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.7.0](https://github.com/filebrowser/filebrowser/compare/v2.6.2...v2.7.0) (2020-09-11)
+
+
+### Features
+
+* add --socket-perm flag to control unix socket file permissions (closes [#1060](https://github.com/filebrowser/filebrowser/issues/1060)) ([65ac734](https://github.com/filebrowser/filebrowser/commit/65ac73414fadc4686c94803a93ff319e8f7ce9d1))
+* preview mobile dropdown ([7787344](https://github.com/filebrowser/filebrowser/commit/778734419de314d4cb64d07109bbab73f8e2e42a))
+* preview size button ([3d2cb83](https://github.com/filebrowser/filebrowser/commit/3d2cb838d111ee61047599f49e76de80c821f341))
+* put selected files in the root of the archive (closes [#1065](https://github.com/filebrowser/filebrowser/issues/1065)) ([8142b32](https://github.com/filebrowser/filebrowser/commit/8142b32f3865eccd3331328e0d087f805d186ed5))
+
 ### [2.6.2](https://github.com/filebrowser/filebrowser/compare/v2.6.1...v2.6.2) (2020-08-05)
 
 ### [2.6.1](https://github.com/filebrowser/filebrowser/compare/v2.6.0...v2.6.1) (2020-07-28)
