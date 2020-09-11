@@ -144,7 +144,7 @@ user created with the credentials from options "username" and "password".`,
 		case server.Socket != "":
 			listener, err = net.Listen("unix", server.Socket)
 			checkErr(err)
-			socketPerm, err := cmd.Flags().GetUint32("socket-perm")
+			socketPerm, err := cmd.Flags().GetUint32("socket-perm") //nolint:govet
 			checkErr(err)
 			err = os.Chmod(server.Socket, os.FileMode(socketPerm))
 			checkErr(err)
