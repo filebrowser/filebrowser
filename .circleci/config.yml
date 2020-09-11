@@ -23,7 +23,7 @@ jobs:
             - '*'
   test:
     docker:
-      - image: circleci/golang:1.14.6
+      - image: circleci/golang:1.15.2
     steps:
       - checkout
       - run:
@@ -31,7 +31,7 @@ jobs:
           command: go test ./...
   build-go:
     docker:
-      - image: circleci/golang:1.14.6
+      - image: circleci/golang:1.15.2
     steps:
       - attach_workspace:
           at: '~/project'
@@ -49,7 +49,7 @@ jobs:
             - '*'
   release:
     docker:
-      - image: circleci/golang:1.14.6
+      - image: circleci/golang:1.15.2
     steps:
       - attach_workspace:
           at: '~/project'
