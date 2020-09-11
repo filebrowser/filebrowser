@@ -54,7 +54,7 @@ jobs:
       - attach_workspace:
           at: '~/project'
       - setup_remote_docker
-      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - run: echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
       - run: curl -sL https://git.io/goreleaser | bash
       - run: docker logout
 workflows:
