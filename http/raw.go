@@ -11,6 +11,7 @@ import (
 	"github.com/mholt/archiver"
 
 	"github.com/filebrowser/filebrowser/v2/files"
+	"github.com/filebrowser/filebrowser/v2/fileutils"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
 
@@ -97,7 +98,7 @@ var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) 
 	return rawDirHandler(w, r, d, file)
 })
 
-func addFile(ar archiver.Writer, d *data, path string) error {
+func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 	// Checks are always done with paths with "/" as path separator.
 	path = strings.Replace(path, "\\", "/", -1)
 	if !d.Check(path) {
@@ -115,10 +116,12 @@ func addFile(ar archiver.Writer, d *data, path string) error {
 	}
 	defer file.Close()
 
+	filename := strings.TrimPrefix(path, commonPath)
+	filename = strings.TrimPrefix(filename, "/")
 	err = ar.Write(archiver.File{
 		FileInfo: archiver.FileInfo{
 			FileInfo:   info,
-			CustomName: strings.TrimPrefix(path, "/"),
+			CustomName: filename,
 		},
 		ReadCloser: file,
 	})
@@ -133,7 +136,7 @@ func addFile(ar archiver.Writer, d *data, path string) error {
 		}
 
 		for _, name := range names {
-			err = addFile(ar, d, filepath.Join(path, name))
+			err = addFile(ar, d, filepath.Join(path, name), commonPath)
 			if err != nil {
 				return err
 			}
@@ -167,8 +170,10 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 	}
 	defer ar.Close()
 
+	commonDir := fileutils.CommonPrefix('/', filenames...)
+
 	for _, fname := range filenames {
-		err = addFile(ar, d, fname)
+		err = addFile(ar, d, fname, commonDir)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
