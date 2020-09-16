@@ -9,6 +9,12 @@
         <span class="chevron"><i class="material-icons">keyboard_arrow_right</i></span>
         <router-link :to="link.url">{{ link.name }}</router-link>
       </span>
+
+      <span style="margin-left:auto;">
+        <input type="checkbox">
+        Show hidden files
+      </span>
+
     </div>
 
     <div v-if="error">
@@ -38,6 +44,27 @@ import { mapGetters, mapState, mapMutations } from 'vuex'
 
 function clean (path) {
   return path.endsWith('/') ? path.slice(0, -1) : path
+}
+
+// pruneHiddenFiles removes files that start
+// with a dot and update numDirs and numFiles
+function pruneHiddenFiles(data) {
+  let numDirs = 0
+  let numFiles = 0
+  data.items = data.items.filter((item) => {
+    if (item.name[0] == ".") {
+      return false
+    }
+    if (item.isDir) {
+      numDirs++
+    } else {
+      numFiles++
+    }
+    return true
+  })
+  data.numDirs = numDirs
+  data.numFiles = numFiles
+  return data
 }
 
 export default {
@@ -145,10 +172,15 @@ export default {
       if (url[0] !== '/') url = '/' + url
 
       try {
-        const res = await api.fetch(url)
+        let res = await api.fetch(url)
 
         if (clean(res.path) !== clean(`/${this.$route.params.pathMatch}`)) {
           return
+        }
+
+        let showHiddenFiles = false
+        if (!showHiddenFiles) {
+          res = pruneHiddenFiles(res)
         }
 
         this.$store.commit('updateRequest', res)
