@@ -179,7 +179,7 @@ export default {
         }
 
         let showHiddenFiles = false
-        if (!showHiddenFiles) {
+        if (res.isDir && !showHiddenFiles) {
           res = pruneHiddenFiles(res)
         }
 
