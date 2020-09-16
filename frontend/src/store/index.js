@@ -24,7 +24,8 @@ const state = {
   showShell: false,
   showMessage: null,
   showConfirm: null,
-  previewMode: false
+  previewMode: false,
+  showHidden: true
 }
 
 export default new Vuex.Store({

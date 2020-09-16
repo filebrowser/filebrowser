@@ -11,8 +11,10 @@
       </span>
 
       <span style="margin-left:auto;">
-        <input type="checkbox">
-        Show hidden files
+        <input 
+          type="checkbox" 
+          v-model="showHidden">
+        <span>{{ $t('files.showHiddenFiles') }}</span>
       </span>
 
     </div>
@@ -82,7 +84,7 @@ export default {
       'selectedCount',
       'isListing',
       'isEditor',
-      'isFiles'
+      'isFiles',
     ]),
     ...mapState([
       'req',
@@ -127,6 +129,15 @@ export default {
       }
 
       return breadcrumbs
+    },
+    showHidden: {
+      get: function () {
+        return this.$store.getters.getShowHidden
+      },
+      set: function (val) {
+        this.$store.commit('setShowHidden', val)
+        this.fetchData()
+      }
     }
   },
   data: function () {
@@ -178,8 +189,7 @@ export default {
           return
         }
 
-        let showHiddenFiles = false
-        if (res.isDir && !showHiddenFiles) {
+        if (res.isDir && !this.showHidden) {
           res = pruneHiddenFiles(res)
         }
 

@@ -58,7 +58,8 @@
     "size": "Size",
     "sortByName": "Sort by name",
     "sortBySize": "Sort by size",
-    "sortByLastModified": "Sort by last modified"
+    "sortByLastModified": "Sort by last modified",
+    "showHiddenFiles": "Show hidden files"
   },
   "help": {
     "click": "select file or directory",
