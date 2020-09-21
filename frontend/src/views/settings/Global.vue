@@ -15,9 +15,9 @@
         <rules :rules.sync="settings.rules" />
 
         <div v-if="settings.execEnabled">
-        <h3>{{ $t('settings.executeOnShell') }}</h3>
-        <p class="small">{{ $t('settings.executeOnShellDescription') }}</p>
-        <input class="input input--block" type="text" placeholder="bash -c, cmd /c, ..." v-model="settings.shell" />
+          <h3>{{ $t('settings.executeOnShell') }}</h3>
+          <p class="small">{{ $t('settings.executeOnShellDescription') }}</p>
+          <input class="input input--block" type="text" placeholder="bash -c, cmd /c, ..." v-model="settings.shell" />
         </div>
 
         <h3>{{ $t('settings.branding') }}</h3>
