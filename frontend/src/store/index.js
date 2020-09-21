@@ -8,6 +8,7 @@ Vue.use(Vuex)
 
 const state = {
   user: null,
+  settings: null,
   req: {},
   oldReq: {},
   clipboard: {

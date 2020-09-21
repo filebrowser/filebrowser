@@ -40,6 +40,7 @@ import Languages from './Languages'
 import Rules from './Rules'
 import Permissions from './Permissions'
 import Commands from './Commands'
+import { mapState } from 'vuex'
 
 export default {
   name: 'user',
@@ -51,6 +52,7 @@ export default {
   },
   props: [ 'user', 'isNew', 'isDefault' ],
   computed: {
+    ...mapState([ 'settings' ]),
     passwordPlaceholder () {
       return this.isNew ? '' : this.$t('settings.avoidChanges')
     }

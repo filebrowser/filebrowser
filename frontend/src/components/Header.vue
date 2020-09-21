@@ -37,7 +37,7 @@
             <delete-button v-show="showDeleteButton"></delete-button>
           </div>
 
-          <shell-button v-show="user.perm.execute" />
+          <shell-button v-if="settings.execEnabled && user.perm.execute" />
           <switch-button v-show="isListing"></switch-button>
           <download-button v-show="showDownloadButton"></download-button>
           <upload-button v-show="showUpload"></upload-button>
@@ -117,7 +117,8 @@ export default {
       'user',
       'loading',
       'reload',
-      'multiple'
+      'multiple',
+      'settings'
     ]),
     logoURL: () => logoURL,
     isMobile () {

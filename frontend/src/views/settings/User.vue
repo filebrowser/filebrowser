@@ -48,8 +48,8 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
-import { users as api, settings } from '@/api'
+import { mapMutations, mapState } from 'vuex'
+import { users as api } from '@/api'
 import UserForm from '@/components/settings/UserForm'
 import deepClone from 'lodash.clonedeep'
 
@@ -69,6 +69,7 @@ export default {
     this.fetchData()
   },
   computed: {
+    ...mapState([ 'settings' ]),
     isNew () {
       return this.$route.path === '/settings/users/new'
     }
@@ -81,13 +82,12 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([ 'closeHovers', 'showHover', 'setUser' ]),
+    ...mapMutations([ 'closeHovers', 'showHover', 'setUser', 'setSettings' ]),
     async fetchData () {
       try {
         if (this.isNew) {
-          let { defaults } = await settings.get()
           this.user = {
-            ...defaults,
+            ...this.settings.defaults,
             username: '',
             passsword: '',
             rules: [],

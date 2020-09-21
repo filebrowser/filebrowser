@@ -45,6 +45,7 @@ const mutations = {
     i18n.default.locale = locale
     state.user = value
   },
+  setSettings: (state, value) => { state.settings = value },
   setJWT: (state, value) => (state.jwt = value),
   multiple: (state, value) => (state.multiple = value),
   addSelected: (state, value) => (state.selected.push(value)),

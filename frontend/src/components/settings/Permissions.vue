@@ -16,10 +16,12 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: 'permissions',
   props: ['perm'],
   computed: {
+    ...mapState([ 'settings' ]),
     admin: {
       get () {
         return this.perm.admin

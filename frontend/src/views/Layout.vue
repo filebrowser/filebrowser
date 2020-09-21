@@ -7,7 +7,7 @@
     <sidebar></sidebar>
     <main>
       <router-view></router-view>
-      <shell v-if="isLogged && user.perm.execute" />
+      <shell v-if="isLogged && settings.execEnabled && user.perm.execute" />
     </main>
     <prompts></prompts>
   </div>
@@ -30,7 +30,7 @@ export default {
   },
   computed: {
     ...mapGetters([ 'isLogged', 'progress' ]),
-    ...mapState([ 'user' ])
+    ...mapState([ 'user', 'settings' ])
   },
   watch: {
     '$route': function () {

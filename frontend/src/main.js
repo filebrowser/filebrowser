@@ -6,6 +6,7 @@ import Vue from '@/utils/vue'
 import { recaptcha, loginPage } from '@/utils/constants'
 import { login, validateLogin } from '@/utils/auth'
 import App from '@/App'
+import { settings } from '@/api'
 
 sync(store, router)
 
@@ -15,6 +16,7 @@ async function start () {
   } else {
     await login('', '', '')
   }
+  store.commit('setSettings', await settings.get())
 
   if (recaptcha) {
     await new Promise (resolve => {

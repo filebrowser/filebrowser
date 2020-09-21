@@ -101,7 +101,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 import { settings as api } from '@/api'
 import UserForm from '@/components/settings/UserForm'
 import Rules from '@/components/settings/Rules'
@@ -137,6 +137,7 @@ export default {
 
       settings.shell = settings.shell.join(' ')
 
+      setSettings(original)
       this.originalSettings = original
       this.settings = settings
     } catch (e) {
@@ -144,6 +145,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([ 'setSettings' ]),
     capitalize (name, where = '_') {
       if (where === 'caps') where = /(?=[A-Z])/
       let splitted = name.split(where)
@@ -168,6 +170,7 @@ export default {
 
       try {
         await api.update(settings)
+        this.setSettings(settings)
         this.$showSuccess(this.$t('settings.settingsUpdated'))
       } catch (e) {
         this.$showError(e)
