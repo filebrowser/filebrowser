@@ -9,7 +9,6 @@
         <span class="chevron"><i class="material-icons">keyboard_arrow_right</i></span>
         <router-link :to="link.url">{{ link.name }}</router-link>
       </span>
-
     </div>
 
     <div v-if="error">
