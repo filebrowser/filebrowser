@@ -137,7 +137,7 @@ export default {
 
       settings.shell = settings.shell.join(' ')
 
-      setSettings(original)
+      this.setSettings(original)
       this.originalSettings = original
       this.settings = settings
     } catch (e) {
