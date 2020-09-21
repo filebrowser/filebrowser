@@ -10,13 +10,6 @@
         <router-link :to="link.url">{{ link.name }}</router-link>
       </span>
 
-      <span style="margin-left:auto;">
-        <input 
-          type="checkbox" 
-          v-model="showHidden">
-        <span>{{ $t('files.showHiddenFiles') }}</span>
-      </span>
-
     </div>
 
     <div v-if="error">
@@ -189,7 +182,7 @@ export default {
           return
         }
 
-        if (res.isDir && !this.showHidden) {
+        if (res.isDir && !this.user.showHidden) {
           res = pruneHiddenFiles(res)
         }
 

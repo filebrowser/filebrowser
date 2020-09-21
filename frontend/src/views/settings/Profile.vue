@@ -6,6 +6,9 @@
       </div>
 
       <div class="card-content">
+
+        <p><input type="checkbox" v-model="showHidden"> {{ $t('settings.showHidden') }}</p>
+
         <h3>{{ $t('settings.language') }}</h3>
         <languages class="input input--block" :locale.sync="locale"></languages>
       </div>
@@ -67,6 +70,7 @@ export default {
   },
   created () {
     this.locale = this.user.locale
+    this.showHidden = this.user.showHidden
   },
   methods: {
     ...mapMutations([ 'updateUser' ]),
@@ -90,8 +94,8 @@ export default {
       event.preventDefault()
 
       try {
-        const data = { id: this.user.id, locale: this.locale }
-        await api.update(data, ['locale'])
+        const data = { id: this.user.id, locale: this.locale, showHidden: this.showHidden }
+        await api.update(data, ['locale', 'showHidden'])
         this.updateUser(data)
         this.$showSuccess(this.$t('settings.settingsUpdated'))
       } catch (e) {

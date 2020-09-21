@@ -26,6 +26,7 @@ type userInfo struct {
 	Perm         users.Permissions `json:"perm"`
 	Commands     []string          `json:"commands"`
 	LockPassword bool              `json:"lockPassword"`
+	ShowHidden   bool              `json:"showHidden"`
 }
 
 type authToken struct {
@@ -175,6 +176,7 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 			Perm:         user.Perm,
 			LockPassword: user.LockPassword,
 			Commands:     user.Commands,
+			ShowHidden:   user.ShowHidden,
 		},
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
