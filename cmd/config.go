@@ -31,6 +31,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	addServerFlags(flags)
 	addUserFlags(flags)
 	flags.BoolP("signup", "s", false, "allow users to signup")
+	flags.BoolP("execEnabled", "", true, "enable the Command Runner feature")
 	flags.String("shell", "", "shell command to which other commands should be appended")
 
 	flags.String("auth.method", string(auth.MethodJSONAuth), "authentication type")
@@ -126,6 +127,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "Sign up:\t%t\n", set.Signup)
 	fmt.Fprintf(w, "Create User Dir:\t%t\n", set.CreateUserDir)
 	fmt.Fprintf(w, "Auth method:\t%s\n", set.AuthMethod)
+	fmt.Fprintf(w, "Exec Enabled:\t%t\n", set.ExecEnabled)
 	fmt.Fprintf(w, "Shell:\t%s\t\n", strings.Join(set.Shell, " "))
 	fmt.Fprintln(w, "\nBranding:")
 	fmt.Fprintf(w, "\tName:\t%s\n", set.Branding.Name)

@@ -49,6 +49,8 @@ you want to change. Other options will remain unchanged.`,
 				set.Signup = mustGetBool(flags, flag.Name)
 			case "auth.method":
 				hasAuth = true
+			case "execEnabled":
+				set.ExecEnabled = mustGetBool(flags, flag.Name)
 			case "shell":
 				set.Shell = strings.Split(strings.TrimSpace(mustGetString(flags, flag.Name)), " ")
 			case "branding.name":

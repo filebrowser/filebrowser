@@ -14,6 +14,7 @@ type settingsData struct {
 	Defaults      settings.UserDefaults `json:"defaults"`
 	Rules         []rules.Rule          `json:"rules"`
 	Branding      settings.Branding     `json:"branding"`
+	ExecEnabled   bool                  `json:"execEnabled"`
 	Shell         []string              `json:"shell"`
 	Commands      map[string][]string   `json:"commands"`
 }
@@ -25,6 +26,7 @@ var settingsGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, 
 		Defaults:      d.settings.Defaults,
 		Rules:         d.settings.Rules,
 		Branding:      d.settings.Branding,
+		ExecEnabled:   d.settings.ExecEnabled,
 		Shell:         d.settings.Shell,
 		Commands:      d.settings.Commands,
 	}

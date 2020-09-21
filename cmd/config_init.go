@@ -30,11 +30,12 @@ override the options.`,
 		authMethod, auther := getAuthentication(flags)
 
 		s := &settings.Settings{
-			Key:        generateKey(),
-			Signup:     mustGetBool(flags, "signup"),
-			Shell:      strings.Split(strings.TrimSpace(mustGetString(flags, "shell")), " "),
-			AuthMethod: authMethod,
-			Defaults:   defaults,
+			Key:         generateKey(),
+			Signup:      mustGetBool(flags, "signup"),
+			ExecEnabled: true,
+			Shell:       strings.Split(strings.TrimSpace(mustGetString(flags, "shell")), " "),
+			AuthMethod:  authMethod,
+			Defaults:    defaults,
 			Branding: settings.Branding{
 				Name:            mustGetString(flags, "branding.name"),
 				DisableExternal: mustGetBool(flags, "branding.disableExternal"),
