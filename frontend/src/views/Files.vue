@@ -123,15 +123,6 @@ export default {
 
       return breadcrumbs
     },
-    showHidden: {
-      get: function () {
-        return this.$store.getters.getShowHidden
-      },
-      set: function (val) {
-        this.$store.commit('setShowHidden', val)
-        this.fetchData()
-      }
-    }
   },
   data: function () {
     return {

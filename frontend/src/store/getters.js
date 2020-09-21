@@ -13,7 +13,6 @@ const getters = {
     let sum = state.upload.progress.reduce((acc, val) => acc + val)
     return Math.ceil(sum / state.upload.size * 100);
   },
-  getShowHidden: state => state.showHidden
 }
 
 export default getters

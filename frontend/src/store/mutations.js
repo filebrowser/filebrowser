@@ -87,9 +87,6 @@ const mutations = {
   setPreviewMode(state, value) {
     state.previewMode = value
   },
-  setShowHidden: (state, value) => {
-    state.showHidden = value
-  }
 }
 
 export default mutations
