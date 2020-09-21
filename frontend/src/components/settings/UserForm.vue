@@ -25,7 +25,7 @@
     </p>
 
     <permissions :perm.sync="user.perm" />
-    <commands :commands.sync="user.commands" />
+    <commands v-if="settings.execEnabled" :commands.sync="user.commands" />
 
     <div v-if="!isDefault">
       <h3>{{ $t('settings.rules') }}</h3>

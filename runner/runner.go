@@ -18,6 +18,9 @@ type Runner struct {
 
 // RunHook runs the hooks for the before and after event.
 func (r *Runner) RunHook(fn func() error, evt, path, dst string, user *users.User) error {
+	if !r.Settings.ExecEnabled {
+		return nil
+	}
 	path = user.FullPath(path)
 	dst = user.FullPath(dst)
 

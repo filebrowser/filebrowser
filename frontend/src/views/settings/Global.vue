@@ -14,9 +14,11 @@
         <p class="small">{{ $t('settings.globalRules') }}</p>
         <rules :rules.sync="settings.rules" />
 
+        <div v-if="settings.execEnabled">
         <h3>{{ $t('settings.executeOnShell') }}</h3>
         <p class="small">{{ $t('settings.executeOnShellDescription') }}</p>
         <input class="input input--block" type="text" placeholder="bash -c, cmd /c, ..." v-model="settings.shell" />
+        </div>
 
         <h3>{{ $t('settings.branding') }}</h3>
 
@@ -67,7 +69,7 @@
       </div>
     </form>
 
-    <form class="card" @submit.prevent="save">
+    <form v-if="settings.execEnabled" class="card" @submit.prevent="save">
       <div class="card-title">
         <h2>{{ $t('settings.commandRunner') }}</h2>
       </div>

@@ -9,7 +9,7 @@
     <p><input type="checkbox" :disabled="admin" v-model="perm.delete"> {{ $t('settings.perm.delete') }}</p>
     <p><input type="checkbox" :disabled="admin" v-model="perm.download"> {{ $t('settings.perm.download') }}</p>
     <p><input type="checkbox" :disabled="admin" v-model="perm.modify"> {{ $t('settings.perm.modify') }}</p>
-    <p><input type="checkbox" :disabled="admin" v-model="perm.execute"> {{ $t('settings.perm.execute') }}</p>
+    <p v-if="settings.execEnabled"><input type="checkbox" :disabled="admin" v-model="perm.execute"> {{ $t('settings.perm.execute') }}</p>
     <p><input type="checkbox" :disabled="admin" v-model="perm.rename"> {{ $t('settings.perm.rename') }}</p>
     <p><input type="checkbox" :disabled="admin" v-model="perm.share"> {{ $t('settings.perm.share') }}</p>
   </div>
