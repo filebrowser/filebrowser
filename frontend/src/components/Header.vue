@@ -37,7 +37,7 @@
             <delete-button v-show="showDeleteButton"></delete-button>
           </div>
 
-          <shell-button v-show="user.perm.execute" />
+          <shell-button v-if="isExecEnabled && user.perm.execute" />
           <switch-button v-show="isListing"></switch-button>
           <download-button v-show="showDownloadButton"></download-button>
           <upload-button v-show="showUpload"></upload-button>
@@ -68,7 +68,7 @@ import CopyButton from './buttons/Copy'
 import ShareButton from './buttons/Share'
 import ShellButton from './buttons/Shell'
 import {mapGetters, mapState} from 'vuex'
-import { logoURL } from '@/utils/constants'
+import { logoURL, enableExec } from '@/utils/constants'
 import * as api from '@/api'
 import buttons from '@/utils/buttons'
 
@@ -120,6 +120,7 @@ export default {
       'multiple'
     ]),
     logoURL: () => logoURL,
+    isExecEnabled: () => enableExec,
     isMobile () {
       return this.width <= 736
     },

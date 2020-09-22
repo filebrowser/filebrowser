@@ -13,7 +13,7 @@
 
   <link rel="icon" type="image/png" sizes="32x32" href="[{[ .StaticURL ]}]/img/icons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="[{[ .StaticURL ]}]/img/icons/favicon-16x16.png">
-  
+
   <!-- Add to home screen for Android and modern mobile browsers -->
   <link rel="manifest" id="manifestPlaceholder" crossorigin="use-credentials">
   <meta name="theme-color" content="#2979ff">
@@ -31,7 +31,7 @@
   <!-- Inject Some Variables and generate the manifest json -->
   <script>
     window.FileBrowser = JSON.parse(`[{[ .Json ]}]`);
-    
+
     var fullStaticURL = window.location.origin + window.FileBrowser.StaticURL;
     var dynamicManifest = {
       "name": window.FileBrowser.Name || 'File Browser',

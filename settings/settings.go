@@ -40,6 +40,7 @@ type Server struct {
 	Log              string `json:"log"`
 	EnableThumbnails bool   `json:"enableThumbnails"`
 	ResizePreview    bool   `json:"resizePreview"`
+	EnableExec       bool   `json:"enableExec"`
 }
 
 // Clean cleans any variables that might need cleaning.

@@ -14,9 +14,11 @@
         <p class="small">{{ $t('settings.globalRules') }}</p>
         <rules :rules.sync="settings.rules" />
 
-        <h3>{{ $t('settings.executeOnShell') }}</h3>
-        <p class="small">{{ $t('settings.executeOnShellDescription') }}</p>
-        <input class="input input--block" type="text" placeholder="bash -c, cmd /c, ..." v-model="settings.shell" />
+        <div v-if="isExecEnabled">
+          <h3>{{ $t('settings.executeOnShell') }}</h3>
+          <p class="small">{{ $t('settings.executeOnShellDescription') }}</p>
+          <input class="input input--block" type="text" placeholder="bash -c, cmd /c, ..." v-model="settings.shell" />
+        </div>
 
         <h3>{{ $t('settings.branding') }}</h3>
 
@@ -67,7 +69,7 @@
       </div>
     </form>
 
-    <form class="card" @submit.prevent="save">
+    <form v-if="isExecEnabled" class="card" @submit.prevent="save">
       <div class="card-title">
         <h2>{{ $t('settings.commandRunner') }}</h2>
       </div>
@@ -104,6 +106,7 @@ import { settings as api } from '@/api'
 import UserForm from '@/components/settings/UserForm'
 import Rules from '@/components/settings/Rules'
 import Themes from '@/components/settings/Themes'
+import { enableExec } from '@/utils/constants'
 
 export default {
   name: 'settings',
@@ -119,7 +122,8 @@ export default {
     }
   },
   computed: {
-    ...mapState([ 'user' ])
+    ...mapState([ 'user' ]),
+    isExecEnabled: () => enableExec
   },
   async created () {
     try {
