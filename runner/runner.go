@@ -13,11 +13,15 @@ import (
 
 // Runner is a commands runner.
 type Runner struct {
+	Enabled bool
 	*settings.Settings
 }
 
 // RunHook runs the hooks for the before and after event.
 func (r *Runner) RunHook(fn func() error, evt, path, dst string, user *users.User) error {
+	if !r.Enabled {
+		return nil
+	}
 	path = user.FullPath(path)
 	dst = user.FullPath(dst)
 

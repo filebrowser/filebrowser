@@ -51,7 +51,7 @@ func handle(fn handleFunc, prefix string, store *storage.Storage, server *settin
 		}
 
 		status, err := fn(w, r, &data{
-			Runner:   &runner.Runner{Settings: settings},
+			Runner:   &runner.Runner{Enabled: server.EnableExec, Settings: settings},
 			store:    store,
 			settings: settings,
 			server:   server,
