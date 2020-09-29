@@ -16,7 +16,11 @@ export default {
         return this.commands.join(' ')
       },
       set (value) {
-        this.$emit('update:commands', value.split(' '))
+        if (value !== '') {
+          this.$emit('update:commands', value.split(' '))
+        } else {
+          this.$emit('update:commands', [])
+        }
       }
     }
   }
