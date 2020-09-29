@@ -96,31 +96,25 @@ export function scanFiles(dt) {
   })
 }
 
-export function handleFiles(files, path, overwrite = false) {
+export function handleFiles(files, base, overwrite = false) {
   for (let i = 0; i < files.length; i++) {
+    let id = store.state.upload.id
+    let path = base
     let file = files[i]
 
-    let filename = (file.fullPath !== undefined) ? file.fullPath : file.name
-    let filenameEncoded = url.encodeRFC5987ValueChars(filename)
-
-    let id = store.state.upload.id
-
-    let itemPath = path + filenameEncoded
+    if (file.fullPath !== undefined) {
+      path += url.encodePath(file.fullPath)
+    } else {
+      path += url.encodeRFC5987ValueChars(file.name)
+    }
 
     if (file.isDir) {
-      itemPath = path
-      let folders = file.fullPath.split("/")
-
-      for (let i = 0; i < folders.length; i++) {
-        let folder = folders[i]
-        let folderEncoded = encodeURIComponent(folder)
-        itemPath += folderEncoded + "/"
-      }
+      path += '/'
     }
 
     const item = {
       id,
-      path: itemPath,
+      path,
       file,
       overwrite
     }
