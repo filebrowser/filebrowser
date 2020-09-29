@@ -49,7 +49,7 @@
         </template>
         <ul v-show="results.length > 0">
           <li v-for="(s,k) in filteredResults" :key="k">
-            <router-link @click.native="close" :to="'./' + s.path">
+            <router-link @click.native="close" :to="s.url">
               <i v-if="s.dir" class="material-icons">folder</i>
               <i v-else class="material-icons">insert_drive_file</i>
               <span>./{{ s.path }}</span>
@@ -183,8 +183,12 @@ export default {
 
       this.ongoing = true
 
+      try {
+        this.results = await search(path, this.value)
+      } catch (error) {
+        this.$showError(error)
+      }
 
-      this.results = await search(path, this.value)
       this.ongoing = false
     }
   }
