@@ -103,7 +103,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['req', 'user', 'oldReq', 'jwt', 'loading']),
+    ...mapState(['req', 'user', 'oldReq', 'jwt', 'loading', 'show']),
     hasPrevious () {
       return (this.previousLink !== '')
     },
@@ -158,6 +158,10 @@ export default {
     },
     key (event) {
       event.preventDefault()
+
+      if (this.show !== null) {
+        return
+      }
 
       if (event.which === 13 || event.which === 39) { // right arrow
         if (this.hasNext) this.next()
