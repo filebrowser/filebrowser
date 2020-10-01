@@ -10,7 +10,7 @@
 [![Version](https://img.shields.io/github/release/filebrowser/filebrowser.svg?style=flat-square)](https://github.com/filebrowser/filebrowser/releases/latest)
 [![Chat IRC](https://img.shields.io/badge/freenode-%23filebrowser-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23filebrowser)
 
-filebrowser provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its own directory. It can be used as a standalone app or as a middleware.
+file browser provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its Own directory. It can be used as a standalone app or as a middleware.
 
 ## Features
 
@@ -22,12 +22,12 @@ For installation instructions please refer to our docs at [https://filebrowser.o
 
 ## Configuration
 
-[Authentication Method](https://filebrowser.org/configuration/authentication-method) - You can change the way the user authenticates with the filebrowser server
+[Authentication Method](https://filebrowser.org/configuration/authentication-method) - You can change the way the user authenticates with the file browser server
 
 [Commander Runner](https://filebrowser.org/configuration/command-runner) - The command runner is a feature that enables you to execute any shell command you want before or after a certain event.
 
-[Custom Branding](https://filebrowser.org/configuration/custom-branding) - You can customize your File Browser installation by change its name to any other you want, by adding a global custom style sheet and by using your own logotype if you want.
+[Custom Branding](https://filebrowser.org/configuration/custom-branding) - You can customize your File Browser installation by changing its name to any other you want, by adding a global custom style sheet and by using your logotype if you want.
 
 ## Contributing
 
-If you're interested in contributing to this project, our docs are best places to start [https://filebrowser.org/contributing](https://filebrowser.org/contributing).
+If you're interested in contributing to this project, our docs are the best places to start [https://filebrowser.org/contributing](https://filebrowser.org/contributing).
