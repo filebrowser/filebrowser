@@ -59,7 +59,7 @@ var commandsHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *d
 		}
 	}
 
-	if !d.user.CanExecute(strings.Split(raw, " ")[0]) {
+	if !d.server.EnableExec || !d.user.CanExecute(strings.Split(raw, " ")[0]) {
 		if err := conn.WriteMessage(websocket.TextMessage, cmdNotAllowed); err != nil { //nolint:shadow
 			wsErr(conn, r, http.StatusInternalServerError, err)
 		}

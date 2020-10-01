@@ -140,6 +140,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tAddress:\t%s\n", ser.Address)
 	fmt.Fprintf(w, "\tTLS Cert:\t%s\n", ser.TLSCert)
 	fmt.Fprintf(w, "\tTLS Key:\t%s\n", ser.TLSKey)
+	fmt.Fprintf(w, "\tExec Enabled:\t%t\n", ser.EnableExec)
 	fmt.Fprintln(w, "\nDefaults:")
 	fmt.Fprintf(w, "\tScope:\t%s\n", set.Defaults.Scope)
 	fmt.Fprintf(w, "\tLocale:\t%s\n", set.Defaults.Locale)

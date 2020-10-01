@@ -41,6 +41,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, box *
 		"Theme":           d.settings.Branding.Theme,
 		"EnableThumbs":    d.server.EnableThumbnails,
 		"ResizePreview":   d.server.ResizePreview,
+		"EnableExec":      d.server.EnableExec,
 	}
 
 	if d.settings.Branding.Files != "" {

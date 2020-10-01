@@ -13,6 +13,7 @@ const loginPage = window.FileBrowser.LoginPage
 const theme = window.FileBrowser.Theme
 const enableThumbs = window.FileBrowser.EnableThumbs
 const resizePreview = window.FileBrowser.ResizePreview
+const enableExec = window.FileBrowser.EnableExec
 
 export {
   name,
@@ -28,5 +29,6 @@ export {
   loginPage,
   theme,
   enableThumbs,
-  resizePreview
+  resizePreview,
+  enableExec
 }

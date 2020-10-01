@@ -13,6 +13,7 @@ import (
 
 // Runner is a commands runner.
 type Runner struct {
+	Enabled bool
 	*settings.Settings
 }
 
@@ -21,11 +22,13 @@ func (r *Runner) RunHook(fn func() error, evt, path, dst string, user *users.Use
 	path = user.FullPath(path)
 	dst = user.FullPath(dst)
 
-	if val, ok := r.Commands["before_"+evt]; ok {
-		for _, command := range val {
-			err := r.exec(command, "before_"+evt, path, dst, user)
-			if err != nil {
-				return err
+	if r.Enabled {
+		if val, ok := r.Commands["before_"+evt]; ok {
+			for _, command := range val {
+				err := r.exec(command, "before_"+evt, path, dst, user)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -35,11 +38,13 @@ func (r *Runner) RunHook(fn func() error, evt, path, dst string, user *users.Use
 		return err
 	}
 
-	if val, ok := r.Commands["after_"+evt]; ok {
-		for _, command := range val {
-			err := r.exec(command, "after_"+evt, path, dst, user)
-			if err != nil {
-				return err
+	if r.Enabled {
+		if val, ok := r.Commands["after_"+evt]; ok {
+			for _, command := range val {
+				err := r.exec(command, "after_"+evt, path, dst, user)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
