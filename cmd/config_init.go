@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -32,7 +31,7 @@ override the options.`,
 		s := &settings.Settings{
 			Key:        generateKey(),
 			Signup:     mustGetBool(flags, "signup"),
-			Shell:      strings.Split(strings.TrimSpace(mustGetString(flags, "shell")), " "),
+			Shell:      convertCmdStrToCmdArray(mustGetString(flags, "shell")),
 			AuthMethod: authMethod,
 			Defaults:   defaults,
 			Branding: settings.Branding{
