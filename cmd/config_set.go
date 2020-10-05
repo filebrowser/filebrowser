@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"strings"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -50,7 +48,7 @@ you want to change. Other options will remain unchanged.`,
 			case "auth.method":
 				hasAuth = true
 			case "shell":
-				set.Shell = strings.Split(strings.TrimSpace(mustGetString(flags, flag.Name)), " ")
+				set.Shell = convertCmdStrToCmdArray(mustGetString(flags, flag.Name))
 			case "branding.name":
 				set.Branding.Name = mustGetString(flags, flag.Name)
 			case "branding.disableExternal":
