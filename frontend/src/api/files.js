@@ -85,8 +85,9 @@ export function download (format, ...files) {
 export async function post (url, content = '', overwrite = false, onupload) {
   url = removePrefix(url)
 
+  let bufferContent
   if (content instanceof Blob && !['http:', 'https:'].includes(window.location.protocol)) {
-    content = await content.arrayBuffer()
+    bufferContent = await new Response(content).arrayBuffer()
   }
 
   return new Promise((resolve, reject) => {
@@ -112,7 +113,7 @@ export async function post (url, content = '', overwrite = false, onupload) {
       reject(error)
     }
 
-    request.send(content)
+    request.send(bufferContent || content)
   })
 }
 
