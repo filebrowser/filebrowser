@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.9.0](https://github.com/filebrowser/filebrowser/compare/v2.8.0...v2.9.0) (2020-10-21)
+
+
+### Features
+
+* support WKWebview custom protocol ([#1113](https://github.com/filebrowser/filebrowser/issues/1113)) ([0ac80e8](https://github.com/filebrowser/filebrowser/commit/0ac80e8387a69924284259bde448af2813d84ed1))
+
+
+### Bug Fixes
+
+* allow start from Windows explorer ([f2c4e78](https://github.com/filebrowser/filebrowser/commit/f2c4e78381610879eda5316d38a999c89df6c14a))
+* file upload missing path slash ([5e27ba5](https://github.com/filebrowser/filebrowser/commit/5e27ba5c8c1be603c6ae7fec8de48e3532dea1f7))
+* preview case sensitive file extension ([05bff54](https://github.com/filebrowser/filebrowser/commit/05bff54b71543fd232f1089c40504d0cbfd106be))
+* search missing path slash ([2bd163d](https://github.com/filebrowser/filebrowser/commit/2bd163d92a856d65c8d4615e37898470c1edf2f4))
+
 ## [2.8.0](https://github.com/filebrowser/filebrowser/compare/v2.7.0...v2.8.0) (2020-10-05)
 
 
