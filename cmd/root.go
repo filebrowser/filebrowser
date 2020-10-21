@@ -35,6 +35,7 @@ var (
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	cobra.MousetrapHelpText = ""
 
 	rootCmd.SetVersionTemplate("File Browser version {{printf \"%s\" .Version}}\n")
 

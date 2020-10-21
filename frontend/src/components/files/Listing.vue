@@ -368,7 +368,7 @@ export default {
       }
 
       let files = await upload.scanFiles(dt)
-      let path = this.$route.path + base
+      let path = this.$route.path.endsWith('/') ? this.$route.path + base : this.$route.path + '/' + base
       let items = this.req.items
 
       if (base !== '') {
@@ -409,7 +409,7 @@ export default {
         }
       }
 
-      let path = this.$route.path
+      let path = this.$route.path.endsWith('/') ? this.$route.path : this.$route.path + '/'
       let conflict = upload.checkConflict(files, this.req.items)
 
       if (conflict) {
