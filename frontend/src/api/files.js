@@ -85,6 +85,11 @@ export function download (format, ...files) {
 export async function post (url, content = '', overwrite = false, onupload) {
   url = removePrefix(url)
 
+  let bufferContent
+  if (content instanceof Blob && !['http:', 'https:'].includes(window.location.protocol)) {
+    bufferContent = await new Response(content).arrayBuffer()
+  }
+
   return new Promise((resolve, reject) => {
     let request = new XMLHttpRequest()
     request.open('POST', `${baseURL}/api/resources${url}?override=${overwrite}`, true)
@@ -108,7 +113,7 @@ export async function post (url, content = '', overwrite = false, onupload) {
       reject(error)
     }
 
-    request.send(content)
+    request.send(bufferContent || content)
   })
 }
 
