@@ -1,132 +1,169 @@
 <template>
-  <div id="editor-container">
-    <div class="bar">
-      <button @click="back" :title="$t('files.closePreview')" :aria-label="$t('files.closePreview')" id="close" class="action">
-        <i class="material-icons">close</i>
-      </button>
+	<div id="editor-container">
+		<div class="bar">
+			<button @click="back" :title="$t('files.closePreview')" :aria-label="$t('files.closePreview')" id="close" class="action">
+				<i class="material-icons">close</i>
+			</button>
 
-      <div class="title">
-        <span>{{ req.name }}</span>
-      </div>
+			<div class="title">
+				<span>{{ req.name }}</span>
+			</div>
 
-      <button @click="save" v-show="user.perm.modify" :aria-label="$t('buttons.save')" :title="$t('buttons.save')" id="save-button" class="action">
-        <i class="material-icons">save</i>
-      </button>
-    </div>
+			<button @click="save" v-show="user.perm.modify" :aria-label="$t('buttons.save')" :title="$t('buttons.save')" id="save-button" class="action">
+				<i class="material-icons">save</i>
+			</button>
+		</div>
 
-    <div id="breadcrumbs">
-      <span><i class="material-icons">home</i></span>
+		<div id="breadcrumbs">
+			<span><i class="material-icons">home</i></span>
 
-      <span v-for="(link, index) in breadcrumbs" :key="index">
-        <span class="chevron"><i class="material-icons">keyboard_arrow_right</i></span>
-        <span>{{ link.name }}</span>
-      </span>
-    </div>
+			<span v-for="(link, index) in breadcrumbs" :key="index">
+				<span class="chevron"><i class="material-icons">keyboard_arrow_right</i></span>
+				<span>{{ link.name }}</span>
+			</span>
+		</div>
 
-    <form id="editor"></form>
-  </div>
+		<!-- <form id="editor" ></form> -->
+
+		<form id="editor" v-show="isAceShow"></form>
+		<div v-show="!isAceShow">
+                       <mavon-editor id="mavon_editor" v-model="value"></mavon-editor>
+		</div>
+	</div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { files as api } from '@/api'
-import buttons from '@/utils/buttons'
-import url from '@/utils/url'
+	import {
+		mapState
+	} from 'vuex'
+	import {
+		files as api
+	} from '@/api'
+	import buttons from '@/utils/buttons'
+	import url from '@/utils/url'
 
-import ace from 'ace-builds/src-min-noconflict/ace.js'
-import modelist from 'ace-builds/src-min-noconflict/ext-modelist.js'
-import 'ace-builds/webpack-resolver'
-import { theme } from '@/utils/constants'
+	import ace from 'ace-builds/src-min-noconflict/ace.js'
+	import modelist from 'ace-builds/src-min-noconflict/ext-modelist.js'
+	import 'ace-builds/webpack-resolver'
+	import {
+		theme
+	} from '@/utils/constants'
+	
+	// import mavonEditor from 'mavon-editor'
 
-export default {
-  name: 'editor',
-  data: function () {
-    return {}
-  },
-  computed: {
-    ...mapState(['req', 'user']),
-    breadcrumbs () {
-      let parts = this.$route.path.split('/')
+	export default {
+		name: 'editor',
+		data: function() {
+			return {
+				isAceShow: true,
+				value: '',
+			}
+		},
+		computed: {
+			...mapState(['req', 'user']),
+			breadcrumbs() {
+				let parts = this.$route.path.split('/')
 
-      if (parts[0] === '') {
-        parts.shift()
-      }
+				if (parts[0] === '') {
+					parts.shift()
+				}
 
-      if (parts[parts.length - 1] === '') {
-        parts.pop()
-      }
+				if (parts[parts.length - 1] === '') {
+					parts.pop()
+				}
 
-      let breadcrumbs = []
+				let breadcrumbs = []
 
-      for (let i = 0; i < parts.length; i++) {
-        breadcrumbs.push({ name: decodeURIComponent(parts[i]) })
-      }
+				for (let i = 0; i < parts.length; i++) {
+					breadcrumbs.push({
+						name: decodeURIComponent(parts[i])
+					})
+				}
 
-      breadcrumbs.shift()
+				breadcrumbs.shift()
 
-      if (breadcrumbs.length > 3) {
-        while (breadcrumbs.length !== 4) {
-          breadcrumbs.shift()
-        }
+				if (breadcrumbs.length > 3) {
+					while (breadcrumbs.length !== 4) {
+						breadcrumbs.shift()
+					}
 
-        breadcrumbs[0].name = '...'
-      }
+					breadcrumbs[0].name = '...'
+				}
 
-      return breadcrumbs
-    }
-  },
-  created () {
-    window.addEventListener('keydown', this.keyEvent)
-  },
-  beforeDestroy () {
-    window.removeEventListener('keydown', this.keyEvent)
-    this.editor.destroy();
-  },
-  mounted: function () {    
-    const fileContent = this.req.content || '';
+				return breadcrumbs
+			}
+		},
+		created() {
+			window.addEventListener('keydown', this.keyEvent)
+		},
+		beforeDestroy() {
+			window.removeEventListener('keydown', this.keyEvent)
+			this.editor.destroy();
+		},
+		mounted: function() {
+			const fileContent = this.req.content || '';
 
-    this.editor = ace.edit('editor', {
-      value: fileContent,
-      showPrintMargin: false,
-      readOnly: this.req.type === 'textImmutable',
-      theme: 'ace/theme/chrome',
-      mode: modelist.getModeForPath(this.req.name).mode,
-      wrap: true
-    })
 
-    if (theme == 'dark') {
-      this.editor.setTheme("ace/theme/twilight");
-    }
-  },
-  methods: {
-    back () {
-      let uri = url.removeLastDir(this.$route.path) + '/'
-      this.$router.push({ path: uri })
-    },
-    keyEvent (event) {
-      if (!event.ctrlKey && !event.metaKey) {
-        return
-      }
+			//deal with md file alone
+			if (modelist.getModeForPath(this.req.name).mode.split("/").pop() == "markdown") {
+				console.log("is md file")
+				this.value = fileContent
+				this.isAceShow = false
+			} else {
+				this.isAceShow = true
+				this.editor = ace.edit('editor', {
+					value: fileContent,
+					showPrintMargin: false,
+					readOnly: this.req.type === 'textImmutable',
+					theme: 'ace/theme/chrome',
+					mode: modelist.getModeForPath(this.req.name).mode,
+					wrap: true
+				})
 
-      if (String.fromCharCode(event.which).toLowerCase() !== 's') {
-        return
-      }
+				if (theme == 'dark') {
+					this.editor.setTheme("ace/theme/twilight");
+				}
+			}
 
-      event.preventDefault()
-      this.save()
-    },
-    async save () {
-      const button = 'save'
-      buttons.loading('save')
 
-      try {
-        await api.put(this.$route.path, this.editor.getValue())
-        buttons.success(button)
-      } catch (e) {
-        buttons.done(button)
-        this.$showError(e)
-      }
-    }
-  }
-}
+		},
+		methods: {
+			back() {
+				let uri = url.removeLastDir(this.$route.path) + '/'
+				this.$router.push({
+					path: uri
+				})
+			},
+			keyEvent(event) {
+				if (!event.ctrlKey && !event.metaKey) {
+					return
+				}
+
+				if (String.fromCharCode(event.which).toLowerCase() !== 's') {
+					return
+				}
+
+				event.preventDefault()
+				this.save()
+			},
+			async save() {
+				const button = 'save'
+				buttons.loading('save')
+
+				try {
+					// await api.put(this.$route.path, this.editor.getValue())
+					if (this.isAceShow) {
+						await api.put(this.$route.path, this.editor.getValue())
+					} else {
+						await api.put(this.$route.path, this.value)
+					}
+					
+					buttons.success(button)
+				} catch (e) {
+					buttons.done(button)
+					this.$showError(e)
+				}
+			}
+		}
+	}
 </script>
