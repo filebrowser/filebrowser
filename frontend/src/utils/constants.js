@@ -14,6 +14,7 @@ const theme = window.FileBrowser.Theme
 const enableThumbs = window.FileBrowser.EnableThumbs
 const resizePreview = window.FileBrowser.ResizePreview
 const enableExec = window.FileBrowser.EnableExec
+const commitSHA = window.FileBrowser.CommitSHA
 
 export {
   name,
@@ -30,5 +31,6 @@ export {
   theme,
   enableThumbs,
   resizePreview,
-  enableExec
+  enableExec,
+  commitSHA
 }

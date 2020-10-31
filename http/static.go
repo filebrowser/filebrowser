@@ -42,6 +42,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, box *
 		"EnableThumbs":    d.server.EnableThumbnails,
 		"ResizePreview":   d.server.ResizePreview,
 		"EnableExec":      d.server.EnableExec,
+		"CommitSHA":       version.CommitSHA,
 	}
 
 	if d.settings.Branding.Files != "" {
