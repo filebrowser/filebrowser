@@ -5,6 +5,6 @@ var (
 	Version = "(untracked)"
 	// CommitSHA is the commmit sha.
 	CommitSHA = "(unknown)"
-	//GitURL is the url of the remote
+	// GitURL is the url of the remote
 	GitURL = "(unavailable)"
 )
