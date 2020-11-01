@@ -5,6 +5,7 @@ set -e
 untracked="(untracked)"
 REPO=$(cd $(dirname $0); pwd)
 COMMIT_SHA=$(git rev-parse --short HEAD)
+GIT_URL=$(git config --get remote.origin.url)
 ASSETS="false"
 BINARY="false"
 RELEASE=""
@@ -43,7 +44,7 @@ buildBinary () {
   rice embed-go
 
   cd $REPO
-  go build -a -o filebrowser -ldflags "-s -w -X github.com/filebrowser/filebrowser/v2/version.CommitSHA=$COMMIT_SHA"
+  go build -a -o filebrowser -ldflags "-s -w -X github.com/filebrowser/filebrowser/v2/version.CommitSHA=$COMMIT_SHA -X github.com/filebrowser/filebrowser/v2/version.GitURL=$GIT_URL"
 }
 
 release () {

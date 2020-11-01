@@ -15,6 +15,7 @@ const enableThumbs = window.FileBrowser.EnableThumbs
 const resizePreview = window.FileBrowser.ResizePreview
 const enableExec = window.FileBrowser.EnableExec
 const commitSHA = window.FileBrowser.CommitSHA
+const gitURL = window.FileBrowser.GitURL
 
 export {
   name,
@@ -32,5 +33,6 @@ export {
   enableThumbs,
   resizePreview,
   enableExec,
-  commitSHA
+  commitSHA,
+  gitURL
 }
