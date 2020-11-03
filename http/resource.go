@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -122,7 +123,7 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 	}
 
 	err := d.RunHook(func() error {
-		dir, _ := filepath.Split(r.URL.Path)
+		dir, _ := path.Split(r.URL.Path)
 		err := d.user.Fs.MkdirAll(dir, 0775)
 		if err != nil {
 			return err
@@ -196,7 +197,8 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 			if !d.user.Perm.Rename {
 				return errors.ErrPermissionDenied
 			}
-			dst = filepath.Clean("/" + dst)
+			src = path.Clean("/" + src)
+			dst = path.Clean("/" + dst)
 
 			return d.user.Fs.Rename(src, dst)
 		default:
@@ -221,20 +223,20 @@ func checkParent(src, dst string) error {
 	return nil
 }
 
-func addVersionSuffix(path string, fs afero.Fs) string {
+func addVersionSuffix(source string, fs afero.Fs) string {
 	counter := 1
-	dir, name := filepath.Split(path)
+	dir, name := path.Split(source)
 	ext := filepath.Ext(name)
 	base := strings.TrimSuffix(name, ext)
 
 	for {
-		if _, err := fs.Stat(path); err != nil {
+		if _, err := fs.Stat(source); err != nil {
 			break
 		}
 		renamed := fmt.Sprintf("%s(%d)%s", base, counter, ext)
-		path = filepath.ToSlash(dir) + renamed
+		source = path.Join(dir, renamed)
 		counter++
 	}
 
-	return path
+	return source
 }
