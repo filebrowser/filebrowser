@@ -1,10 +1,10 @@
 <template>
   <div class="share" v-if="loaded">
-    <a target="_blank" :href="link">
-      <div class="share__box">
-        <div class="share__box__download" v-if="file.isDir">{{ $t('download.downloadFolder') }}</div>
-        <div class="share__box__download" v-else>{{ $t('download.downloadFile') }}</div>
-        <div class="share__box__info">
+    <div class="share__box share__box__info">
+      <a target="_blank" :href="link">
+        <div class="share__box__header" v-if="file.isDir">{{ $t('download.downloadFolder') }}</div>
+        <div class="share__box__header" v-else>{{ $t('download.downloadFile') }}</div>
+        <div class="share__box__body">
           <svg v-if="file.isDir" fill="#40c4ff" height="150" viewBox="0 0 24 24" width="150" xmlns="http://www.w3.org/2000/svg">
             <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
             <path d="M0 0h24v24H0z" fill="none"/>
@@ -16,8 +16,30 @@
           <h1 class="share__box__title">{{ file.name }}</h1>
           <qrcode-vue :value="fullLink" size="200" level="M"></qrcode-vue>
         </div>
+      </a>
+    </div>
+    <div v-if="file.isDir" class="share__box share__box__items">
+      <div class="share__box__header" v-if="file.isDir">{{ $t('files.files') }}</div>
+
+      <div id="listing" class="list">
+        <div class="item" v-for="(item) in file.items.slice(0, this.showLimit)" :key="base64(item.name)">
+          <div>
+            <i v-if="item.isDir" class="material-icons">folder</i>
+            <i v-else-if="item.type==='image'" class="material-icons">insert_photo</i>
+            <i v-else class="material-icons">insert_drive_file</i>
+          </div>
+
+          <div>
+            <p class="name">{{ item.name }}</p>
+          </div>
+        </div>
+        <div v-if="file.items.length > showLimit" class="item">
+          <div>
+            <p class="name"> + {{ file.items.length - showLimit }} </p>
+          </div>
+        </div>
       </div>
-    </a>
+    </div>
   </div>
 </template>
 
@@ -34,7 +56,8 @@ export default {
   data: () => ({
     loaded: false,
     notFound: false,
-    file: null
+    file: null,
+    showLimit: 500
   }),
   watch: {
     '$route': 'fetchData'
@@ -54,6 +77,9 @@ export default {
     },
   },
   methods: {
+    base64: function (name) {
+      return window.btoa(unescape(encodeURIComponent(name)))
+    },
     fetchData: async function () {
       try {
         this.file = await api.getHash(this.hash)

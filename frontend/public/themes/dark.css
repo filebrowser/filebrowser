@@ -191,10 +191,10 @@ table th {
   }
 }
 
-.share__box, .share__box__download {
-  background: var(--surfaceSecondary) !important;
+.share__box, .share__box__header {
+  background: var(--surfacePrimary) !important;
   color: var(--textPrimary);
 }
-.share__box__download {
+.share__box__header {
   border-bottom-color: var(--divider);
 }
