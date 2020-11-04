@@ -20,37 +20,40 @@
 }
 
 .share__box__header {
-  width: 100%;
   padding: 1em;
-  cursor: pointer;
-  background: #ffffff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
-.share__box__body {
-  padding: 2em 3em;
+.share__box__icon i {
+  font-size: 10em;
+  color: #40c4ff;
 }
 
-.share__box__title {
-  margin: 0 0 2em;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.share__box__center {
+  text-align: center;
 }
 
 .share__box__info {
-  text-align: center;
   flex: 1 1 auto;
+}
+
+.share__box__element {
+  padding: 1em;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  word-break: break-all;
 }
 
 .share__box__items {
   text-align: left;
-  flex: 10 0 15em;
+  flex: 10 0 25em;
 }
 
 .share__box__items #listing.list .item {
   cursor: auto;
   border-left: 0;
   border-right: 0;
+  border-bottom: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .share__box__items #listing.list .item .name {
