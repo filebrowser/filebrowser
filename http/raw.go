@@ -116,17 +116,19 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 	}
 	defer file.Close()
 
-	filename := strings.TrimPrefix(path, commonPath)
-	filename = strings.TrimPrefix(filename, "/")
-	err = ar.Write(archiver.File{
-		FileInfo: archiver.FileInfo{
-			FileInfo:   info,
-			CustomName: filename,
-		},
-		ReadCloser: file,
-	})
-	if err != nil {
-		return err
+	if path != commonPath {
+		filename := strings.TrimPrefix(path, commonPath)
+		filename = strings.TrimPrefix(filename, "/")
+		err = ar.Write(archiver.File{
+			FileInfo: archiver.FileInfo{
+				FileInfo:   info,
+				CustomName: filename,
+			},
+			ReadCloser: file,
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	if info.IsDir() {

@@ -119,18 +119,23 @@
 
 #previewer .bar {
   width: 100%;
-  text-align: right;
   display: flex;
   padding: 0.5em;
   height: 3.7em;
 }
 
+#previewer .bar > * {
+  flex: 0 0 auto;
+}
+
 #previewer .bar .title {
-  margin-right: auto;
+  display: block;
+  flex: 1 1 auto;
   padding: 0 1em;
-  line-height: 2.7em;
+  line-height: 2.3em;
   overflow: hidden;
-  word-break: break-word;
+  text-overflow: ellipsis;
+  font-size: 1.2em;
   color: #fff;
 }
 
@@ -218,10 +223,6 @@
   line-height: 2.7em;
   overflow: hidden;
   word-break: break-word;
-}
-
-#previewer .title span {
-  font-size: 1.2em;
 }
 
 #previewer .loading {

@@ -28,7 +28,7 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			Fs:      d.user.Fs,
 			Path:    link.Path,
 			Modify:  d.user.Perm.Modify,
-			Expand:  false,
+			Expand:  true,
 			Checker: d,
 		})
 		if err != nil {
@@ -54,7 +54,15 @@ func ifPathWithName(r *http.Request) string {
 }
 
 var publicShareHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	return renderJSON(w, r, d.raw)
+	file := d.raw.(*files.FileInfo)
+
+	if file.IsDir {
+		file.Listing.Sorting = files.Sorting{By: "name", Asc: false}
+		file.Listing.ApplySort()
+		return renderJSON(w, r, file)
+	}
+
+	return renderJSON(w, r, file)
 })
 
 var publicDlHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {

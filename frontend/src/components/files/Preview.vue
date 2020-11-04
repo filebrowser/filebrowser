@@ -5,9 +5,7 @@
         <i class="material-icons">close</i>
       </button>
 
-      <div class="title">
-        <span>{{ this.name }}</span>
-      </div>
+      <div class="title">{{ this.name }}</div>
 
       <preview-size-button v-if="isResizeEnabled && this.req.type === 'image'" @change-size="toggleSize" v-bind:size="fullSize" :disabled="loading"></preview-size-button>
       <button @click="openMore" id="more" :aria-label="$t('buttons.more')" :title="$t('buttons.more')" class="action">
