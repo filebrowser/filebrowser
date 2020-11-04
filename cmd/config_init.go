@@ -61,7 +61,7 @@ override the options.`,
 
 		fmt.Printf(`
 Congratulations! You've set up your database to use with File Browser.
-Now add your first user via 'filebrowser users new' and then you just
+Now add your first user via 'filebrowser users add' and then you just
 need to call the main command to boot up the server.
 `)
 		printSettings(ser, s, auther)
