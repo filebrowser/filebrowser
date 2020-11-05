@@ -39,7 +39,14 @@ export default {
         if (!this.isListing) {
           await api.remove(this.$route.path)
           buttons.success('delete')
-          this.$router.push({ path: url.removeLastDir(this.$route.path) + '/' })
+          let path = url.removeLastDir(this.$route.path) + '/'
+
+          if (this.$store.state.postDeleteLink != null) {
+            path = this.$store.state.postDeleteLink;
+            this.$store.commit('postDeleteLink', null);
+          }
+
+          this.$router.push({ path: path })
           return
         }
 

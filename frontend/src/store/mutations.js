@@ -86,6 +86,9 @@ const mutations = {
   },
   setPreviewMode(state, value) {
     state.previewMode = value
+  },
+  postDeleteLink: (state, value) => {
+    state.postDeleteLink = value
   }
 }
 

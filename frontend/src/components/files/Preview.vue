@@ -147,6 +147,7 @@ export default {
   methods: {
     back () {
       this.$store.commit('setPreviewMode', false)
+      this.$store.commit('postDeleteLink', null)
       let uri = url.removeLastDir(this.$route.path) + '/'
       this.$router.push({ path: uri })
     },
@@ -205,6 +206,7 @@ export default {
         for (let j = i + 1; j < this.listing.length; j++) {
           if (mediaTypes.includes(this.listing[j].type)) {
             this.nextLink = this.listing[j].url
+            this.$store.commit('postDeleteLink', this.nextLink);
             break
           }
         }

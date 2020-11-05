@@ -135,7 +135,7 @@ export default {
           to: this.url + this.req.items[i].name,
           name: this.req.items[i].name
         })
-      }      
+      }
 
       let base = el.querySelector('.name').innerHTML + '/'
       let path = this.$route.path + base
