@@ -30,12 +30,13 @@ func printUsers(usrs []*users.User) {
 	fmt.Fprintln(w, "ID\tUsername\tScope\tLocale\tV. Mode\tAdmin\tExecute\tCreate\tRename\tModify\tDelete\tShare\tDownload\tPwd Lock")
 
 	for _, u := range usrs {
-		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t\n",
+		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t\n",
 			u.ID,
 			u.Username,
 			u.Scope,
 			u.Locale,
 			u.ViewMode,
+			u.SingleClick,
 			u.Perm.Admin,
 			u.Perm.Execute,
 			u.Perm.Create,
@@ -75,6 +76,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.String("scope", ".", "scope for users")
 	flags.String("locale", "en", "locale for users")
 	flags.String("viewMode", string(users.ListViewMode), "view mode for users")
+	flags.Bool("singleClick", false, "use single clicks only")
 }
 
 func getViewMode(flags *pflag.FlagSet) users.ViewMode {
@@ -95,6 +97,8 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 			defaults.Locale = mustGetString(flags, flag.Name)
 		case "viewMode":
 			defaults.ViewMode = getViewMode(flags)
+		case "singleClick":
+			defaults.SingleClick = mustGetBool(flags, flag.Name)
 		case "perm.admin":
 			defaults.Perm.Admin = mustGetBool(flags, flag.Name)
 		case "perm.execute":
