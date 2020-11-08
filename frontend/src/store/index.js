@@ -24,7 +24,10 @@ const state = {
   showShell: false,
   showMessage: null,
   showConfirm: null,
-  previewMode: false
+  previewMode: false,
+  postDeletionLink: null,
+  currentListingIndex: -1,
+  deletionOccurred: false
 }
 
 export default new Vuex.Store({

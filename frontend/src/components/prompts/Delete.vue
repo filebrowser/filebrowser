@@ -30,7 +30,11 @@ export default {
     ...mapState(['req', 'selected'])
   },
   methods: {
-    ...mapMutations(['closeHovers']),
+    ...mapMutations([
+      'closeHovers',
+      'setPostDeletionLink',
+      'setDeletionOccurred'
+    ]),
     submit: async function () {
       this.closeHovers()
       buttons.loading('delete')
@@ -39,7 +43,18 @@ export default {
         if (!this.isListing) {
           await api.remove(this.$route.path)
           buttons.success('delete')
-          this.$router.push({ path: url.removeLastDir(this.$route.path) + '/' })
+          let path = url.removeLastDir(this.$route.path) + '/'
+
+          // Indicate a deletion occurred to ensure the current index gets
+          // spliced out in Preview.vue.
+          this.setDeletionOccurred(true)
+
+          // Jump to the next listing item, if there is one.
+          if (this.$store.state.postDeletionLink != null) {
+            path = this.$store.state.postDeletionLink;
+          }
+
+          this.$router.push({ path: path })
           return
         }
 

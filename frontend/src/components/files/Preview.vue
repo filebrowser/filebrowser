@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 import url from '@/utils/url'
 import { baseURL, resizePreview } from '@/utils/constants'
 import { files as api } from '@/api'
@@ -143,8 +143,16 @@ export default {
     this.$store.commit('setPreviewMode', false)
   },
   methods: {
+    ...mapMutations([
+      'setPostDeletionLink',
+      'setCurrentListingIndex',
+      'setDeletionOccurred'
+    ]),
     back () {
       this.$store.commit('setPreviewMode', false)
+      this.setPostDeletionLink(null)
+      this.setCurrentListingIndex(-1)
+      this.setDeletionOccurred(false)
       let uri = url.removeLastDir(this.$route.path) + '/'
       this.$router.push({ path: uri })
     },
@@ -188,10 +196,19 @@ export default {
       this.previousLink = ''
       this.nextLink = ''
 
+      // Before continuing, splice out the prior current index if a deletion
+      // occurred.
+      if (this.$store.state.deletionOccurred) {
+        this.listing.splice(this.$store.state.currentListingIndex, 1)
+        this.setDeletionOccurred(false)
+      }
+
       for (let i = 0; i < this.listing.length; i++) {
         if (this.listing[i].name !== this.name) {
           continue
         }
+
+        this.setCurrentListingIndex(i)
 
         for (let j = i - 1; j >= 0; j--) {
           if (mediaTypes.includes(this.listing[j].type)) {
@@ -200,9 +217,12 @@ export default {
           }
         }
 
+        this.setPostDeletionLink(null)
+
         for (let j = i + 1; j < this.listing.length; j++) {
           if (mediaTypes.includes(this.listing[j].type)) {
             this.nextLink = this.listing[j].url
+            this.setPostDeletionLink(this.nextLink)
             break
           }
         }

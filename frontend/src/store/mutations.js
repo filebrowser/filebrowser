@@ -86,6 +86,15 @@ const mutations = {
   },
   setPreviewMode(state, value) {
     state.previewMode = value
+  },
+  setPostDeletionLink: (state, value) => {
+    state.postDeletionLink = value
+  },
+  setCurrentListingIndex: (state, value) => {
+    state.currentListingIndex = value
+  },
+  setDeletionOccurred: (state, value) => {
+    state.deletionOccurred = value
   }
 }
 
