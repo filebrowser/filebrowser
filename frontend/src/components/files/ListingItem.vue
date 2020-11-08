@@ -6,8 +6,8 @@
   @dragstart="dragStart"
   @dragover="dragOver"
   @drop="drop"
-  @click="click"
-  @dblclick="open"
+  @click="itemClick"
+  @dblclick="dblclick"
   @touchstart="touchstart"
   :data-dir="isDir"
   :aria-label="name"
@@ -26,6 +26,9 @@
       <p class="modified">
         <time :datetime="modified">{{ humanTime() }}</time>
       </p>
+
+      <input v-if="user.singleClick" v-bind:checked="isSelected"
+             class="selection" type="checkbox" @click.stop="click">
     </div>
   </div>
 </template>
@@ -47,7 +50,7 @@ export default {
   },
   props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index'],
   computed: {
-    ...mapState(['selected', 'req', 'user', 'jwt']),
+    ...mapState(['user', 'selected', 'req', 'user', 'jwt']),
     ...mapGetters(['selectedCount']),
     isSelected () {
       return (this.selected.indexOf(this.index) !== -1)
@@ -170,8 +173,12 @@ export default {
 
       action(overwrite, rename)
     },
+    itemClick: function(event) {
+      if (this.user.singleClick) this.open()
+      else this.click(event)
+    },
     click: function (event) {
-      if (this.selectedCount !== 0) event.preventDefault()
+      if (!this.user.singleClick && this.selectedCount !== 0) event.preventDefault()
       if (this.$store.state.selected.indexOf(this.index) !== -1) {
         this.removeSelected(this.index)
         return
@@ -198,8 +205,11 @@ export default {
         return
       }
 
-      if (!event.ctrlKey && !this.$store.state.multiple) this.resetSelected()
+      if (!this.user.singleClick && !event.ctrlKey && !this.$store.state.multiple) this.resetSelected()
       this.addSelected(this.index)
+    },
+    dblclick: function () {
+      if (!this.user.singleClick) this.open()
     },
     touchstart () {
       setTimeout(() => {

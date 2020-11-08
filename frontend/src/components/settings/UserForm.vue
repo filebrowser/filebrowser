@@ -24,6 +24,10 @@
       <input type="checkbox" :disabled="user.perm.admin" v-model="user.lockPassword"> {{ $t('settings.lockPassword') }}
     </p>
 
+    <p>
+      <input type="checkbox" v-model="user.singleClick"> {{ $t('settings.singleClick') }}
+    </p>
+
     <permissions :perm.sync="user.perm" />
     <commands v-if="isExecEnabled" :commands.sync="user.commands" />
 
