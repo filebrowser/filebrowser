@@ -26,9 +26,6 @@
       <p class="modified">
         <time :datetime="modified">{{ humanTime() }}</time>
       </p>
-
-      <input v-if="user.singleClick" v-bind:checked="isSelected"
-             class="selection" type="checkbox" @click.stop="click">
     </div>
   </div>
 </template>
@@ -174,7 +171,7 @@ export default {
       action(overwrite, rename)
     },
     itemClick: function(event) {
-      if (this.user.singleClick) this.open()
+      if (this.user.singleClick && !this.$store.state.multiple) this.open()
       else this.click(event)
     },
     click: function (event) {

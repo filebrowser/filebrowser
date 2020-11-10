@@ -104,12 +104,6 @@
   width: calc(100% - 5vw);
 }
 
-#listing.mosaic .item .selection {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-}
-
 #listing.list {
   flex-direction: column;
   width: 100%;
@@ -221,11 +215,6 @@
 
 #listing.list .item.header .active {
   font-weight: bold;
-}
-
-#listing.list .item .selection {
-  position: absolute;
-  right: 24px;
 }
 
 #listing #multiple-selection {
