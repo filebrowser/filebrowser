@@ -136,6 +136,7 @@ export default {
     window.addEventListener('keyup', this.key)
     this.$store.commit('setPreviewMode', true)
     this.listing = this.oldReq.items
+    this.$root.$on('preview_deleted', this.deleted)
     this.updatePreview()
   },
   beforeDestroy () {
@@ -143,6 +144,19 @@ export default {
     this.$store.commit('setPreviewMode', false)
   },
   methods: {
+    deleted (path) {
+
+      let pieces = path.split('/')
+      let deletedName = decodeURIComponent(pieces[pieces.length - 1])
+
+      this.listing = this.listing.filter(item => item.name !== deletedName)
+
+      if (this.hasNext) {
+        this.next()
+      } else {
+        this.back()
+      }
+    },
     back () {
       this.$store.commit('setPreviewMode', false)
       let uri = url.removeLastDir(this.$route.path) + '/'

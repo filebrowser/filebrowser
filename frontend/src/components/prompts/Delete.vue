@@ -20,7 +20,6 @@
 <script>
 import {mapGetters, mapMutations, mapState} from 'vuex'
 import { files as api } from '@/api'
-import url from '@/utils/url'
 import buttons from '@/utils/buttons'
 
 export default {
@@ -39,7 +38,8 @@ export default {
         if (!this.isListing) {
           await api.remove(this.$route.path)
           buttons.success('delete')
-          this.$router.push({ path: url.removeLastDir(this.$route.path) + '/' })
+
+          this.$root.$emit('preview_deleted', this.$route.path)
           return
         }
 
