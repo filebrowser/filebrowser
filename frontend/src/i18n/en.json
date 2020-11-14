@@ -32,7 +32,8 @@
     "toggleSidebar": "Toggle sidebar",
     "update": "Update",
     "upload": "Upload",
-    "permalink": "Get Permanent Link"
+    "permalink": "Get Permanent Link",
+    "hideDotfiles": "Hide dotfiles"
   },
   "success": {
     "linkCopied": "Link copied!"
@@ -188,7 +189,8 @@
       "execute": "Execute commands",
       "rename": "Rename or move files and directories",
       "share": "Share files"
-    }
+    },
+    "hideDotfiles": "Hide dotfiles"
   },
   "sidebar": {
     "help": "Help",

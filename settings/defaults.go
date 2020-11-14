@@ -8,12 +8,13 @@ import (
 // UserDefaults is a type that holds the default values
 // for some fields on User.
 type UserDefaults struct {
-	Scope    string            `json:"scope"`
-	Locale   string            `json:"locale"`
-	ViewMode users.ViewMode    `json:"viewMode"`
-	Sorting  files.Sorting     `json:"sorting"`
-	Perm     users.Permissions `json:"perm"`
-	Commands []string          `json:"commands"`
+	Scope        string            `json:"scope"`
+	Locale       string            `json:"locale"`
+	ViewMode     users.ViewMode    `json:"viewMode"`
+	Sorting      files.Sorting     `json:"sorting"`
+	Perm         users.Permissions `json:"perm"`
+	Commands     []string          `json:"commands"`
+	HideDotfiles bool              `json:"hideDotfiles"`
 }
 
 // Apply applies the default options to a user.
@@ -24,4 +25,5 @@ func (d *UserDefaults) Apply(u *users.User) {
 	u.Perm = d.Perm
 	u.Sorting = d.Sorting
 	u.Commands = d.Commands
+	u.HideDotfiles = d.HideDotfiles
 }

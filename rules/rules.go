@@ -18,6 +18,11 @@ type Rule struct {
 	Regexp *Regexp `json:"regexp"`
 }
 
+var MatchHidden = Rule{
+	Regex:  true,
+	Regexp: &Regexp{Raw: `\/\..*$`},
+}
+
 // Matches matches a path against a rule.
 func (r *Rule) Matches(path string) bool {
 	if r.Regex {
