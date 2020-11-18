@@ -133,14 +133,14 @@ export default {
     }
   },
   async mounted () {
-    window.addEventListener('keyup', this.key)
+    window.addEventListener('keydown', this.key)
     this.$store.commit('setPreviewMode', true)
     this.listing = this.oldReq.items
-    this.$root.$on('preview_deleted', this.deleted)
+    this.$root.$on('preview-deleted', this.deleted)
     this.updatePreview()
   },
   beforeDestroy () {
-    window.removeEventListener('keyup', this.key)
+    window.removeEventListener('keydown', this.key)
     this.$store.commit('setPreviewMode', false)
   },
   methods: {
@@ -153,8 +153,10 @@ export default {
 
       if (this.hasNext) {
         this.next()
-      } else {
+      } else if (!this.hasPrevious && !this.hasNext == true) {
         this.back()
+      } else {
+        this.prev()
       }
     },
     back () {
@@ -169,7 +171,6 @@ export default {
       this.$router.push({ path: this.nextLink })
     },
     key (event) {
-      event.preventDefault()
 
       if (this.show !== null) {
         return

@@ -31,7 +31,6 @@ export default {
   methods: {
     ...mapMutations(['closeHovers']),
     submit: async function () {
-      this.closeHovers()
       buttons.loading('delete')
 
       try {
@@ -39,9 +38,12 @@ export default {
           await api.remove(this.$route.path)
           buttons.success('delete')
 
-          this.$root.$emit('preview_deleted', this.$route.path)
+          this.$root.$emit('preview-deleted', this.$route.path)
+          this.closeHovers()
           return
         }
+
+        this.closeHovers()
 
         if (this.selectedCount === 0) {
           return
