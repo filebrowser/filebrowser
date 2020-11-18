@@ -14,7 +14,7 @@ func TestMatchHidden(t *testing.T) {
 		"/Dockerfile":         false,
 	}
 
-	for path, truth := range cases {
+	for path, want := range cases {
 		got := MatchHidden(path)
 		if got != truth {
 			t.Errorf("MatchHidden(%s)=%v; want %v", path, got, truth)
