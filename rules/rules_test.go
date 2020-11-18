@@ -16,8 +16,8 @@ func TestMatchHidden(t *testing.T) {
 
 	for path, want := range cases {
 		got := MatchHidden(path)
-		if got != truth {
-			t.Errorf("MatchHidden(%s)=%v; want %v", path, got, truth)
+		if got != want {
+			t.Errorf("MatchHidden(%s)=%v; want %v", path, got, want)
 		}
 	}
 }
