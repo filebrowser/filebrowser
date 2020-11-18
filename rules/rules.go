@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -18,9 +19,10 @@ type Rule struct {
 	Regexp *Regexp `json:"regexp"`
 }
 
-var MatchHidden = Rule{
-	Regex:  true,
-	Regexp: &Regexp{Raw: `\/\..*$`},
+// MatchHidden matches paths with a basename
+// that begins with a dot.
+func MatchHidden(path string) bool {
+	return filepath.Base(path)[0] == '.'
 }
 
 // Matches matches a path against a rule.

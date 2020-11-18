@@ -27,7 +27,7 @@ type data struct {
 
 // Check implements rules.Checker.
 func (d *data) Check(path string) bool {
-	if d.user.HideDotfiles && rules.MatchHidden.Matches(path) {
+	if d.user.HideDotfiles && rules.MatchHidden(path) {
 		return false
 	}
 
