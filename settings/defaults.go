@@ -11,7 +11,7 @@ type UserDefaults struct {
 	Scope        string            `json:"scope"`
 	Locale       string            `json:"locale"`
 	ViewMode     users.ViewMode    `json:"viewMode"`
-  SingleClick  bool              `json:"singleClick"`
+	SingleClick  bool              `json:"singleClick"`
 	Sorting      files.Sorting     `json:"sorting"`
 	Perm         users.Permissions `json:"perm"`
 	Commands     []string          `json:"commands"`
