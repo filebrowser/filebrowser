@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -16,6 +17,12 @@ type Rule struct {
 	Allow  bool    `json:"allow"`
 	Path   string  `json:"path"`
 	Regexp *Regexp `json:"regexp"`
+}
+
+// MatchHidden matches paths with a basename
+// that begins with a dot.
+func MatchHidden(path string) bool {
+	return strings.HasPrefix(filepath.Base(path), ".")
 }
 
 // Matches matches a path against a rule.
