@@ -142,18 +142,15 @@ export default {
   beforeDestroy () {
     window.removeEventListener('keydown', this.key)
     this.$store.commit('setPreviewMode', false)
+    this.$root.$off('preview-deleted', this.deleted)
   },
   methods: {
-    deleted (path) {
-
-      let pieces = path.split('/')
-      let deletedName = decodeURIComponent(pieces[pieces.length - 1])
-
-      this.listing = this.listing.filter(item => item.name !== deletedName)
+    deleted () {
+      this.listing = this.listing.filter(item => item.name !== this.name)
 
       if (this.hasNext) {
         this.next()
-      } else if (!this.hasPrevious && !this.hasNext == true) {
+      } else if (!this.hasPrevious && !this.hasNext) {
         this.back()
       } else {
         this.prev()

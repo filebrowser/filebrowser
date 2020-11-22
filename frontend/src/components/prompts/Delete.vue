@@ -38,7 +38,7 @@ export default {
           await api.remove(this.$route.path)
           buttons.success('delete')
 
-          this.$root.$emit('preview-deleted', this.$route.path)
+          this.$root.$emit('preview-deleted')
           this.closeHovers()
           return
         }
