@@ -33,6 +33,7 @@ type User struct {
 	Sorting      files.Sorting `json:"sorting"`
 	Fs           afero.Fs      `json:"-" yaml:"-"`
 	Rules        []rules.Rule  `json:"rules"`
+	HideDotfiles bool          `json:"hideDotfiles"`
 }
 
 // GetRules implements rules.Provider.
