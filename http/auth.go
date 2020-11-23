@@ -23,6 +23,7 @@ type userInfo struct {
 	ID           uint              `json:"id"`
 	Locale       string            `json:"locale"`
 	ViewMode     users.ViewMode    `json:"viewMode"`
+	SingleClick  bool              `json:"singleClick"`
 	Perm         users.Permissions `json:"perm"`
 	Commands     []string          `json:"commands"`
 	LockPassword bool              `json:"lockPassword"`
@@ -173,6 +174,7 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 			ID:           user.ID,
 			Locale:       user.Locale,
 			ViewMode:     user.ViewMode,
+			SingleClick:  user.SingleClick,
 			Perm:         user.Perm,
 			LockPassword: user.LockPassword,
 			Commands:     user.Commands,

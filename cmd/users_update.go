@@ -41,17 +41,19 @@ options you want to change.`,
 		checkErr(err)
 
 		defaults := settings.UserDefaults{
-			Scope:    user.Scope,
-			Locale:   user.Locale,
-			ViewMode: user.ViewMode,
-			Perm:     user.Perm,
-			Sorting:  user.Sorting,
-			Commands: user.Commands,
+			Scope:       user.Scope,
+			Locale:      user.Locale,
+			ViewMode:    user.ViewMode,
+			SingleClick: user.SingleClick,
+			Perm:        user.Perm,
+			Sorting:     user.Sorting,
+			Commands:    user.Commands,
 		}
 		getUserDefaults(flags, &defaults, false)
 		user.Scope = defaults.Scope
 		user.Locale = defaults.Locale
 		user.ViewMode = defaults.ViewMode
+		user.SingleClick = defaults.SingleClick
 		user.Perm = defaults.Perm
 		user.Commands = defaults.Commands
 		user.Sorting = defaults.Sorting

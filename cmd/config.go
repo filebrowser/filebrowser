@@ -145,6 +145,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tScope:\t%s\n", set.Defaults.Scope)
 	fmt.Fprintf(w, "\tLocale:\t%s\n", set.Defaults.Locale)
 	fmt.Fprintf(w, "\tView mode:\t%s\n", set.Defaults.ViewMode)
+	fmt.Fprintf(w, "\tSingle Click:\t%t\n", set.Defaults.SingleClick)
 	fmt.Fprintf(w, "\tCommands:\t%s\n", strings.Join(set.Defaults.Commands, " "))
 	fmt.Fprintf(w, "\tSorting:\n")
 	fmt.Fprintf(w, "\t\tBy:\t%s\n", set.Defaults.Sorting.By)
