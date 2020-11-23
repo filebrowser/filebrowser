@@ -20,7 +20,6 @@
 <script>
 import {mapGetters, mapMutations, mapState} from 'vuex'
 import { files as api } from '@/api'
-import url from '@/utils/url'
 import buttons from '@/utils/buttons'
 
 export default {
@@ -32,16 +31,19 @@ export default {
   methods: {
     ...mapMutations(['closeHovers']),
     submit: async function () {
-      this.closeHovers()
       buttons.loading('delete')
 
       try {
         if (!this.isListing) {
           await api.remove(this.$route.path)
           buttons.success('delete')
-          this.$router.push({ path: url.removeLastDir(this.$route.path) + '/' })
+
+          this.$root.$emit('preview-deleted')
+          this.closeHovers()
           return
         }
+
+        this.closeHovers()
 
         if (this.selectedCount === 0) {
           return
