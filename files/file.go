@@ -135,6 +135,10 @@ func (i *FileInfo) Checksum(algo string) error {
 //nolint:goconst
 //TODO: use constants
 func (i *FileInfo) detectType(modify, saveContent bool) error {
+	if IsNamedPipe(i.Mode) {
+		i.Type = "blob"
+		return nil
+	}
 	// failing to detect the type should not return error.
 	// imagine the situation where a file in a dir with thousands
 	// of files couldn't be opened: we'd have immediately
@@ -232,9 +236,9 @@ func (i *FileInfo) readListing(checker rules.Checker) error {
 			continue
 		}
 
-		if strings.HasPrefix(f.Mode().String(), "L") {
+		if IsSymlink(f.Mode()) {
 			// It's a symbolic link. We try to follow it. If it doesn't work,
-			// we stay with the link information instead if the target's.
+			// we stay with the link information instead of the target's.
 			info, err := i.Fs.Stat(fPath)
 			if err == nil {
 				f = info
