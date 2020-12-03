@@ -1,7 +1,9 @@
 package http
 
 import (
+	"bytes"
 	"errors"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	gopath "path"
@@ -9,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/mholt/archiver"
+	"github.com/spf13/afero"
 
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
@@ -91,6 +94,11 @@ var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) 
 		return errToStatus(err), err
 	}
 
+	if files.IsNamedPipe(file.Mode) {
+		setContentDisposition(w, r, file)
+		return 0, nil
+	}
+
 	if !file.IsDir {
 		return rawFileHandler(w, r, file)
 	}
@@ -110,11 +118,18 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 		return err
 	}
 
-	file, err := d.user.Fs.Open(path)
-	if err != nil {
-		return err
+	var (
+		file          afero.File
+		arcReadCloser = ioutil.NopCloser(&bytes.Buffer{})
+	)
+	if !files.IsNamedPipe(info.Mode()) {
+		file, err = d.user.Fs.Open(path)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+		arcReadCloser = file
 	}
-	defer file.Close()
 
 	if path != commonPath {
 		filename := strings.TrimPrefix(path, commonPath)
@@ -124,7 +139,7 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 				FileInfo:   info,
 				CustomName: filename,
 			},
-			ReadCloser: file,
+			ReadCloser: arcReadCloser,
 		})
 		if err != nil {
 			return err

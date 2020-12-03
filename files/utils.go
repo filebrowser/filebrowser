@@ -1,6 +1,7 @@
 package files
 
 import (
+	"os"
 	"unicode/utf8"
 )
 
@@ -47,4 +48,12 @@ func isBinary(content []byte, _ int) bool {
 		return true
 	}
 	return false
+}
+
+func IsNamedPipe(mode os.FileMode) bool {
+	return mode&os.ModeNamedPipe != 0
+}
+
+func IsSymlink(mode os.FileMode) bool {
+	return mode&os.ModeSymlink != 0
 }

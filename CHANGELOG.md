@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.10.0](https://github.com/filebrowser/filebrowser/compare/v2.9.0...v2.10.0) (2020-11-24)
+
+
+### Features
+
+* add hide dotfiles param  ([#1148](https://github.com/filebrowser/filebrowser/issues/1148)) ([10e399b](https://github.com/filebrowser/filebrowser/commit/10e399b3c3dbdcfb4465a9d4138e1da6bae0873d))
+* add single click mode ([#1139](https://github.com/filebrowser/filebrowser/issues/1139)) ([e8b4e9a](https://github.com/filebrowser/filebrowser/commit/e8b4e9af46d6e99dbeb965dd9727d9ed017d52a2))
+* automatically jump to the next photo when deleting while previewing ([#1143](https://github.com/filebrowser/filebrowser/issues/1143)) ([9515cee](https://github.com/filebrowser/filebrowser/commit/9515ceeb42e5ef5267400220a2082dec775e843d))
+* shared folder file listing ([e119bc5](https://github.com/filebrowser/filebrowser/commit/e119bc55ea82cefcbcc0571650107dfd5d73f570))
+* shared item information ([36cacdf](https://github.com/filebrowser/filebrowser/commit/36cacdf598e4e09f064c8ace0ca7a6c24b23028e))
+
+
+### Bug Fixes
+
+* empty folder in archive ([7096b3d](https://github.com/filebrowser/filebrowser/commit/7096b3dab92441981c9964e4a6175af0a255d2be))
+* fix hanging when reading a named pipe file (closes [#1155](https://github.com/filebrowser/filebrowser/issues/1155)) ([586d198](https://github.com/filebrowser/filebrowser/commit/586d198d47b525eeccc6fe587573a3ad83adb4f6))
+* previewer title overflow ([4e48ffc](https://github.com/filebrowser/filebrowser/commit/4e48ffc14d09dabeea12dc495144277db62b5b7d))
+* resource rename action invalid path ([1ce3068](https://github.com/filebrowser/filebrowser/commit/1ce3068a99c80c153fd41359255d173bce6e79e8))
+
 ## [2.9.0](https://github.com/filebrowser/filebrowser/compare/v2.8.0...v2.9.0) (2020-10-21)
 
 
