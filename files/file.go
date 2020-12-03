@@ -144,29 +144,12 @@ func (i *FileInfo) detectType(modify, saveContent bool) error {
 	// of files couldn't be opened: we'd have immediately
 	// a 500 even though it doesn't matter. So we just log it.
 
-	readLen := 0
-	buffer := make([]byte, 0)
+	var buffer []byte
 
 	mimetype := mime.TypeByExtension(i.Extension)
 	if mimetype == "" {
-		reader, err := i.Fs.Open(i.Path)
-		if err != nil {
-			log.Print(err)
-			i.Type = "blob"
-			return nil
-		}
-		defer reader.Close()
-
-		buffer = make([]byte, 512)
-		n, err := reader.Read(buffer)
-		if err != nil && err != io.EOF {
-			log.Print(err)
-			i.Type = "blob"
-			return nil
-		}
-
-		readLen = n
-		mimetype = http.DetectContentType(buffer[:n])
+		buffer = i.readFirstBytes()
+		mimetype = http.DetectContentType(buffer)
 	}
 
 	switch {
@@ -180,7 +163,7 @@ func (i *FileInfo) detectType(modify, saveContent bool) error {
 	case strings.HasPrefix(mimetype, "image"):
 		i.Type = "image"
 		return nil
-	case readLen > 0 && (isBinary(buffer[:readLen], readLen) || i.Size > 10*1024*1024): // 10 MB
+	case (len(buffer) > 0 && isBinary(buffer)) || i.Size > 10*1024*1024: // 10 MB
 		i.Type = "blob"
 		return nil
 	default:
@@ -202,6 +185,26 @@ func (i *FileInfo) detectType(modify, saveContent bool) error {
 	}
 
 	return nil
+}
+
+func (i *FileInfo) readFirstBytes() []byte {
+	reader, err := i.Fs.Open(i.Path)
+	if err != nil {
+		log.Print(err)
+		i.Type = "blob"
+		return nil
+	}
+	defer reader.Close()
+
+	buffer := make([]byte, 512)
+	n, err := reader.Read(buffer)
+	if err != nil && err != io.EOF {
+		log.Print(err)
+		i.Type = "blob"
+		return nil
+	}
+
+	return buffer[:n]
 }
 
 func (i *FileInfo) detectSubtitles() {
