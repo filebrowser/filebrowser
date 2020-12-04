@@ -261,9 +261,13 @@ func (i *FileInfo) readListing(checker rules.Checker) error {
 		} else {
 			listing.NumFiles++
 
-			err := file.detectType(true, false)
-			if err != nil {
-				return err
+			if checker.IsTypeDetectDisabled(file.Path) {
+				file.Type = "blob"
+			} else {
+				err := file.detectType(true, false)
+				if err != nil {
+					return err
+				}
 			}
 		}
 

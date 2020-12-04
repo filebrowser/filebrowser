@@ -160,6 +160,8 @@
     "ruleExample2": "阻止用户访问其目录范围的根目录下名为 Caddyfile 的文件。",
     "rules": "规则",
     "rulesHelp": "您可以为该用户制定一组黑名单或白名单式的规则，被屏蔽的文件将不会显示在列表中，用户也无权限访问,支持相对于目录范围的路径。",
+    "disableTypeDetections": "关闭文件类型检测",
+    "disableTypeDetectionsHelp": "您可以为该用户制定一组不会检测文件类型的路径，当路径是挂载的网络磁盘或者文件较多时能加快反应速度,支持相对于目录范围的路径。",
     "scope": "目录范围",
     "settingsUpdated": "设置已更新！",
     "user": "用户",

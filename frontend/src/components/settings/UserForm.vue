@@ -36,12 +36,19 @@
       <p class="small">{{ $t('settings.rulesHelp') }}</p>
       <rules :rules.sync="user.rules" />
     </div>
+
+    <div v-if="!isDefault">
+      <h3>{{ $t('settings.disableTypeDetections') }}</h3>
+      <p class="small">{{ $t('settings.disableTypeDetectionsHelp') }}</p>
+      <disableTypeDetections :disableTypeDetections.sync="user.disableTypeDetections" />
+    </div>
   </div>
 </template>
 
 <script>
 import Languages from './Languages'
 import Rules from './Rules'
+import DisableTypeDetections from './DisableTypeDetections'
 import Permissions from './Permissions'
 import Commands from './Commands'
 import { enableExec } from '@/utils/constants'
@@ -52,6 +59,7 @@ export default {
     Permissions,
     Languages,
     Rules,
+    DisableTypeDetections,
     Commands
   },
   props: [ 'user', 'isNew', 'isDefault' ],

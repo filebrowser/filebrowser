@@ -47,6 +47,18 @@ func (d *data) Check(path string) bool {
 	return allow
 }
 
+func (d *data) IsTypeDetectDisabled(path string) bool {
+	if d.Check(path) {
+		for _, rule := range d.user.DisableTypeDetections {
+			if rule.Matches(path) {
+				return true
+			}
+		}
+		return false
+	}
+	return false
+}
+
 func handle(fn handleFunc, prefix string, store *storage.Storage, server *settings.Server) http.Handler {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		settings, err := store.Settings.Get()
