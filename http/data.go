@@ -48,13 +48,10 @@ func (d *data) Check(path string) bool {
 }
 
 func (d *data) IsTypeDetectDisabled(path string) bool {
-	if d.Check(path) {
-		for _, rule := range d.user.DisableTypeDetections {
-			if rule.Matches(path) {
-				return true
-			}
+	for _, rule := range d.user.DisableTypeDetections {
+		if rule.Matches(path) {
+			return true
 		}
-		return false
 	}
 	return false
 }

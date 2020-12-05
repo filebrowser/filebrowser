@@ -228,6 +228,7 @@ func (i *FileInfo) readListing(checker rules.Checker) error {
 		NumFiles: 0,
 	}
 
+	detectDisabled := checker.IsTypeDetectDisabled(i.Path)
 	for _, f := range dir {
 		name := f.Name()
 		fPath := path.Join(i.Path, name)
@@ -261,7 +262,7 @@ func (i *FileInfo) readListing(checker rules.Checker) error {
 		} else {
 			listing.NumFiles++
 
-			if checker.IsTypeDetectDisabled(file.Path) {
+			if detectDisabled {
 				file.Type = "blob"
 			} else {
 				err := file.detectType(true, false)
