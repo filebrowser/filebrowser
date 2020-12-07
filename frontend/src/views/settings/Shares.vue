@@ -56,13 +56,13 @@ export default {
   },
   async created () {
     try {
-      this.links = await api.list()
+      let links = await api.list()
       if (this.user.perm.admin) {
         let userMap = new Map()
         for (let user of await users.getAll()) userMap.set(user.id, user.username)
-        for (let link of this.links) link.username = userMap.has(link.userID) ? userMap.get(link.userID) : link.userID
+        for (let link of links) link.username = userMap.has(link.userID) ? userMap.get(link.userID) : ''
       }
-      this.sort()
+      this.links = links
     } catch (e) {
       this.$showError(e)
     }
@@ -88,14 +88,6 @@ export default {
     },
     buildLink (hash) {
       return `${window.location.origin}${baseURL}/share/${hash}`
-    },
-    sort () {
-      this.links = this.links.sort((a, b) => {
-        if (a.userID !== b.userID) return a.userID - b.userID
-        if (a.expire === 0) return -1
-        if (b.expire === 0) return 1
-        return new Date(a.expire) - new Date(b.expire)
-      })
     }
   }
 }

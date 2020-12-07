@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"net/http"
 	"path"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -36,6 +37,13 @@ var shareListHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
+
+	sort.Slice(s, func(i, j int) bool {
+		if s[i].UserID != s[j].UserID {
+			return s[i].UserID < s[j].UserID
+		}
+		return s[i].Expire < s[j].Expire
+	})
 
 	return renderJSON(w, r, s)
 })
