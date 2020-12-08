@@ -41,8 +41,10 @@ export default {
   mounted () {
     if (!recaptcha) return
 
-    window.grecaptcha.render('recaptcha', {
-      sitekey: recaptchaKey
+    window.grecaptcha.ready(function () {
+      window.grecaptcha.render('recaptcha', {
+        sitekey: recaptchaKey
+      })
     })
   },
   methods: {
