@@ -1,44 +1,56 @@
 <template>
-  <div class="share" v-if="loaded">
-    <div class="share__box share__box__info">
-        <div class="share__box__header">
-          {{ file.isDir ? $t('download.downloadFolder') : $t('download.downloadFile') }}
-        </div>
-        <div class="share__box__element share__box__center share__box__icon">
-          <i class="material-icons">{{ file.isDir ? 'folder' : 'insert_drive_file'}}</i>
-        </div>
-        <div class="share__box__element">
-          <strong>{{ $t('prompts.displayName') }}</strong> {{ file.name }}
-        </div>
-        <div class="share__box__element">
-          <strong>{{ $t('prompts.lastModified') }}:</strong> {{ humanTime }}
-        </div>
-        <div class="share__box__element">
-          <strong>{{ $t('prompts.size') }}:</strong> {{ humanSize }}
-        </div>
-        <div class="share__box__element share__box__center">
-          <a target="_blank" :href="link" class="button button--flat">{{ $t('buttons.download') }}</a>
-        </div>
-        <div class="share__box__element share__box__center">
-          <qrcode-vue :value="fullLink" size="200" level="M"></qrcode-vue>
-        </div>
+  <div v-if="loaded">
+    <div id="breadcrumbs">
+      <router-link :to="'/share/'+rootHash" :aria-label="$t('files.home')" :title="$t('files.home')">
+        <i class="material-icons">home</i>
+      </router-link>
+
+      <span v-for="(link, index) in breadcrumbs" :key="index">
+          <span class="chevron"><i class="material-icons">keyboard_arrow_right</i></span>
+          <router-link :to="link.url">{{ link.name }}</router-link>
+        </span>
     </div>
-    <div v-if="file.isDir" class="share__box share__box__items">
-      <div class="share__box__header" v-if="file.isDir">
-        {{ $t('files.files') }}
+    <div class="share">
+      <div class="share__box share__box__info">
+          <div class="share__box__header">
+            {{ file.isDir ? $t('download.downloadFolder') : $t('download.downloadFile') }}
+          </div>
+          <div class="share__box__element share__box__center share__box__icon">
+            <i class="material-icons">{{ file.isDir ? 'folder' : 'insert_drive_file'}}</i>
+          </div>
+          <div class="share__box__element">
+            <strong>{{ $t('prompts.displayName') }}</strong> {{ file.name }}
+          </div>
+          <div class="share__box__element">
+            <strong>{{ $t('prompts.lastModified') }}:</strong> {{ humanTime }}
+          </div>
+          <div class="share__box__element">
+            <strong>{{ $t('prompts.size') }}:</strong> {{ humanSize }}
+          </div>
+          <div class="share__box__element share__box__center">
+            <a target="_blank" :href="link" class="button button--flat">{{ $t('buttons.download') }}</a>
+          </div>
+          <div class="share__box__element share__box__center">
+            <qrcode-vue :value="fullLink" size="200" level="M"></qrcode-vue>
+          </div>
       </div>
-      <div id="listing" class="list">
-        <div class="item" v-for="(item) in file.items.slice(0, this.showLimit)" :key="base64(item.name)">
-          <div>
-            <i class="material-icons">{{ item.isDir ? 'folder' : (item.type==='image') ? 'insert_photo' : 'insert_drive_file' }}</i>
-          </div>
-          <div>
-            <p class="name">{{ item.name }}</p>
-          </div>
+      <div v-if="file.isDir" class="share__box share__box__items">
+        <div class="share__box__header" v-if="file.isDir">
+          {{ $t('files.files') }}
         </div>
-        <div v-if="file.items.length > showLimit" class="item">
-          <div>
-            <p class="name"> + {{ file.items.length - showLimit }} </p>
+        <div id="listing" class="list">
+          <div class="item" v-for="(item) in file.items.slice(0, this.showLimit)" :key="base64(item.name)">
+            <div>
+              <router-link :to="'/share/'+hash+item.name"><i class="material-icons">{{ item.isDir ? 'folder' : (item.type==='image') ? 'insert_photo' : 'insert_drive_file' }}</i></router-link>
+            </div>
+            <div>
+              <router-link :to="'/share/'+hash+item.name"><p class="name">{{ item.name }}</p></router-link>
+            </div>
+          </div>
+          <div v-if="file.items.length > showLimit" class="item">
+            <div>
+              <p class="name"> + {{ file.items.length - showLimit }} </p>
+            </div>
           </div>
         </div>
       </div>
@@ -72,7 +84,11 @@ export default {
   },
   computed: {
     hash: function () {
+      if (this.$route.params.pathMatch[this.$route.params.pathMatch.length - 1] !== '/') return this.$route.params.pathMatch + '/'
       return this.$route.params.pathMatch
+    },
+    rootHash: function () {
+      return this.$route.params.pathMatch.split('/')[0] + '/'
     },
     link: function () {
       return `${baseURL}/api/public/dl/${this.hash}/${encodeURI(this.file.name)}`
@@ -89,6 +105,41 @@ export default {
     },
     humanTime: function () {
       return moment(this.file.modified).fromNow()
+    },
+    breadcrumbs () {
+      let parts = this.$route.path.split('/')
+
+      if (parts[0] === '') {
+        parts.shift()
+      }
+
+      if (parts[parts.length - 1] === '') {
+        parts.pop()
+      }
+
+      let breadcrumbs = []
+
+      for (let i = 0; i < parts.length; i++) {
+        if (i === 0) {
+          breadcrumbs.push({ name: decodeURIComponent(parts[i]), url: '/' + parts[i] + '/' })
+        } else {
+          breadcrumbs.push({ name: decodeURIComponent(parts[i]), url: breadcrumbs[i - 1].url + parts[i] + '/' })
+        }
+      }
+
+      breadcrumbs.shift()
+
+      if (breadcrumbs.length > 3) {
+        while (breadcrumbs.length !== 4) {
+          breadcrumbs.shift()
+        }
+
+        breadcrumbs[0].name = '...'
+      }
+
+      breadcrumbs.shift()
+
+      return breadcrumbs
     }
   },
   methods: {
