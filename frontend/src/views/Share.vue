@@ -1,7 +1,7 @@
 <template>
   <div v-if="loaded">
     <div id="breadcrumbs">
-      <router-link :to="'/share/'+rootHash" :aria-label="$t('files.home')" :title="$t('files.home')">
+      <router-link :to="'/share/' + rootHash" :aria-label="$t('files.home')" :title="$t('files.home')">
         <i class="material-icons">home</i>
       </router-link>
 
@@ -41,10 +41,10 @@
         <div id="listing" class="list">
           <div class="item" v-for="(item) in file.items.slice(0, this.showLimit)" :key="base64(item.name)">
             <div>
-              <router-link :to="'/share/'+hash+item.name"><i class="material-icons">{{ item.isDir ? 'folder' : (item.type==='image') ? 'insert_photo' : 'insert_drive_file' }}</i></router-link>
+              <router-link :to="'/share/' + hash + item.name + '/'"><i class="material-icons">{{ item.isDir ? 'folder' : (item.type==='image') ? 'insert_photo' : 'insert_drive_file' }}</i></router-link>
             </div>
             <div>
-              <router-link :to="'/share/'+hash+item.name"><p class="name">{{ item.name }}</p></router-link>
+              <router-link :to="'/share/' + hash + item.name + '/'"><p class="name">{{ item.name }}</p></router-link>
             </div>
           </div>
           <div v-if="file.items.length > showLimit" class="item">
@@ -91,7 +91,7 @@ export default {
       return this.$route.params.pathMatch.split('/')[0] + '/'
     },
     link: function () {
-      return `${baseURL}/api/public/dl/${this.hash}/${encodeURI(this.file.name)}`
+      return `${baseURL}/api/public/dl/${this.hash}${encodeURI(this.file.name)}`
     },
     fullLink: function () {
       return window.location.origin + this.link
@@ -128,6 +128,7 @@ export default {
       }
 
       breadcrumbs.shift()
+      breadcrumbs.shift()
 
       if (breadcrumbs.length > 3) {
         while (breadcrumbs.length !== 4) {
@@ -136,8 +137,6 @@ export default {
 
         breadcrumbs[0].name = '...'
       }
-
-      breadcrumbs.shift()
 
       return breadcrumbs
     }
