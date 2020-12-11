@@ -33,6 +33,12 @@
           <div class="share__box__element share__box__center">
             <qrcode-vue :value="fullLink" size="200" level="M"></qrcode-vue>
           </div>
+          <div v-if="file.isDir" class="share__box__element share__box__center">
+            <label>
+              <input type="checkbox" v-model="multiple">
+              {{ $t('buttons.selectMultiple') }}
+            </label>
+          </div>
       </div>
       <div v-if="file.isDir" class="share__box share__box__items">
         <div class="share__box__header" v-if="file.isDir">
@@ -42,7 +48,8 @@
           <div class="item" v-for="(item) in file.items.slice(0, this.showLimit)" :key="base64(item.name)"
                :aria-selected="selected.includes(item.name)"
                @click="click(item.name)"
-               @dblclick="dbclick(item.name)"
+               @dblclick="dblclick(item.name)"
+               @touchstart="touchstart(item.name)"
           >
             <div>
               <i class="material-icons">{{ item.isDir ? 'folder' : (item.type==='image') ? 'insert_photo' : 'insert_drive_file' }}</i>
@@ -79,6 +86,8 @@ export default {
     notFound: false,
     file: null,
     showLimit: 500,
+    multiple: false,
+    touches: 0,
     selected: [],
     firstSelected: -1
   }),
@@ -87,6 +96,12 @@ export default {
   },
   created: function () {
     this.fetchData()
+  },
+  mounted () {
+    window.addEventListener('keydown', this.keyEvent)
+  },
+  beforeDestroy () {
+    window.removeEventListener('keydown', this.keyEvent)
   },
   computed: {
     hasSelected: function () {
@@ -163,6 +178,8 @@ export default {
     fetchData: async function () {
       this.loaded = false
       this.notFound = false
+      this.multiple = false
+      this.touches = 0
       this.selected = []
       this.firstSelected = -1
       try {
@@ -216,12 +233,32 @@ export default {
         return
       }
 
-      if (!event.ctrlKey && !this.hasSelected) this.resetSelected()
+      if (!event.ctrlKey && !event.metaKey && !this.multiple) this.resetSelected()
       if (this.firstSelected === -1) this.firstSelected = index
       this.addSelected(name)
     },
-    dbclick: function (name) {
+    dblclick: function (name) {
       this.$router.push({path: `/share/${this.hash}${name}`})
+    },
+    touchstart (name) {
+      setTimeout(() => {
+        this.touches = 0
+      }, 300)
+
+      this.touches++
+      if (this.touches > 1) {
+        this.dblclick(name)
+      }
+    },
+    keyEvent (event) {
+      // Esc!
+      if (event.keyCode === 27) {
+        // If we're on a listing, unselect all
+        // files and folders.
+        if (this.hasSelected) {
+          this.resetSelected()
+        }
+      }
     }
   }
 }
