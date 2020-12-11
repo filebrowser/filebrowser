@@ -13,7 +13,7 @@
     <div class="share">
       <div class="share__box share__box__info">
           <div class="share__box__header">
-            {{ file.isDir ? multiple ? $t('download.downloadSelected') : $t('download.downloadFolder') : $t('download.downloadFile') }}
+            {{ file.isDir ? hasSelected ? $t('download.downloadSelected') : $t('download.downloadFolder') : $t('download.downloadFile') }}
           </div>
           <div class="share__box__element share__box__center share__box__icon">
             <i class="material-icons">{{ file.isDir ? 'folder' : 'insert_drive_file'}}</i>
@@ -89,7 +89,7 @@ export default {
     this.fetchData()
   },
   computed: {
-    multiple: function () {
+    hasSelected: function () {
       return this.selected.length > 0
     },
     hash: function () {
@@ -100,7 +100,8 @@ export default {
       return this.$route.params.pathMatch.split('/')[0] + '/'
     },
     link: function () {
-      if (!this.multiple) return `${baseURL}/api/public/dl/${this.hash}${encodeURI(this.file.name)}`
+      if (!this.hasSelected) return `${baseURL}/api/public/dl/${this.hash}${encodeURI(this.file.name)}`
+      if (this.selected.length === 1) return `${baseURL}/api/public/raw/${this.hash}${encodeURI(this.selected[0])}`
       let files = []
       for (let s of this.selected) {
         files.push('/' + encodeURI(s) + '/')
@@ -178,7 +179,7 @@ export default {
       let i = this.selected.indexOf(name)
       if (i === -1) return
       this.selected.splice(i, 1)
-      if (i === 0 && this.multiple) {
+      if (i === 0 && this.hasSelected) {
         this.firstSelected = this.file.items.indexOf(this.file.items.filter(item => item.name === this.selected[0])[0])
       }
     },
@@ -187,14 +188,14 @@ export default {
       this.firstSelected = -1
     },
     click: function (name) {
-      if (this.multiple) event.preventDefault()
+      if (this.hasSelected) event.preventDefault()
       if (this.selected.indexOf(name) !== -1) {
         this.removeSelected(name)
         return
       }
 
       let index = this.file.items.indexOf(this.file.items.filter(item => item.name === name)[0])
-      if (event.shiftKey && this.multiple) {
+      if (event.shiftKey && this.hasSelected) {
         let fi = 0
         let la = 0
 
@@ -215,7 +216,7 @@ export default {
         return
       }
 
-      if (!event.ctrlKey && !this.multiple) this.resetSelected()
+      if (!event.ctrlKey && !this.hasSelected) this.resetSelected()
       if (this.firstSelected === -1) this.firstSelected = index
       this.addSelected(name)
     },
