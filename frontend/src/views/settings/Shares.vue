@@ -51,7 +51,8 @@ export default {
   computed: mapState([ 'user' ]),
   data: function () {
     return {
-      links: []
+      links: [],
+      clip: null
     }
   },
   async created () {
@@ -72,6 +73,9 @@ export default {
     this.clip.on('success', () => {
       this.$showSuccess(this.$t('success.linkCopied'))
     })
+  },
+  beforeDestroy () {
+    this.clip.destroy()
   },
   methods: {
     deleteLink: async function (event, link) {
