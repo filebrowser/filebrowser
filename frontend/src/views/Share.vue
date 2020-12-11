@@ -13,7 +13,7 @@
     <div class="share">
       <div class="share__box share__box__info">
           <div class="share__box__header">
-            {{ file.isDir ? $t('download.downloadFolder') : $t('download.downloadFile') }}
+            {{ file.isDir ? multiple ? $t('download.downloadSelected') : $t('download.downloadFolder') : $t('download.downloadFile') }}
           </div>
           <div class="share__box__element share__box__center share__box__icon">
             <i class="material-icons">{{ file.isDir ? 'folder' : 'insert_drive_file'}}</i>
@@ -39,12 +39,16 @@
           {{ $t('files.files') }}
         </div>
         <div id="listing" class="list">
-          <div class="item" v-for="(item) in file.items.slice(0, this.showLimit)" :key="base64(item.name)">
+          <div class="item" v-for="(item) in file.items.slice(0, this.showLimit)" :key="base64(item.name)"
+               :aria-selected="selected.includes(item.name)"
+               @click="click(item.name)"
+               @dblclick="dbclick(item.name)"
+          >
             <div>
-              <router-link :to="'/share/' + hash + item.name + '/'"><i class="material-icons">{{ item.isDir ? 'folder' : (item.type==='image') ? 'insert_photo' : 'insert_drive_file' }}</i></router-link>
+              <i class="material-icons">{{ item.isDir ? 'folder' : (item.type==='image') ? 'insert_photo' : 'insert_drive_file' }}</i>
             </div>
             <div>
-              <router-link :to="'/share/' + hash + item.name + '/'"><p class="name">{{ item.name }}</p></router-link>
+              <p class="name">{{ item.name }}</p>
             </div>
           </div>
           <div v-if="file.items.length > showLimit" class="item">
@@ -74,7 +78,9 @@ export default {
     loaded: false,
     notFound: false,
     file: null,
-    showLimit: 500
+    showLimit: 500,
+    selected: [],
+    firstSelected: -1
   }),
   watch: {
     '$route': 'fetchData'
@@ -83,6 +89,9 @@ export default {
     this.fetchData()
   },
   computed: {
+    multiple: function () {
+      return this.selected.length > 0
+    },
     hash: function () {
       if (this.$route.params.pathMatch[this.$route.params.pathMatch.length - 1] !== '/') return this.$route.params.pathMatch + '/'
       return this.$route.params.pathMatch
@@ -91,7 +100,12 @@ export default {
       return this.$route.params.pathMatch.split('/')[0] + '/'
     },
     link: function () {
-      return `${baseURL}/api/public/dl/${this.hash}${encodeURI(this.file.name)}`
+      if (!this.multiple) return `${baseURL}/api/public/dl/${this.hash}${encodeURI(this.file.name)}`
+      let files = []
+      for (let s of this.selected) {
+        files.push('/' + encodeURI(s) + '/')
+      }
+      return `${baseURL}/api/public/raw/${this.hash}?files=${encodeURIComponent(files.join(','))}`
     },
     fullLink: function () {
       return window.location.origin + this.link
@@ -146,12 +160,67 @@ export default {
       return window.btoa(unescape(encodeURIComponent(name)))
     },
     fetchData: async function () {
+      this.loaded = false
+      this.notFound = false
+      this.selected = []
+      this.firstSelected = -1
       try {
         this.file = await api.getHash(this.hash)
         this.loaded = true
       } catch (e) {
         this.notFound = true
       }
+    },
+    addSelected: function(name) {
+      this.selected.push(name)
+    },
+    removeSelected: function (name) {
+      let i = this.selected.indexOf(name)
+      if (i === -1) return
+      this.selected.splice(i, 1)
+      if (i === 0 && this.multiple) {
+        this.firstSelected = this.file.items.indexOf(this.file.items.filter(item => item.name === this.selected[0])[0])
+      }
+    },
+    resetSelected: function () {
+      this.selected = []
+      this.firstSelected = -1
+    },
+    click: function (name) {
+      if (this.multiple) event.preventDefault()
+      if (this.selected.indexOf(name) !== -1) {
+        this.removeSelected(name)
+        return
+      }
+
+      let index = this.file.items.indexOf(this.file.items.filter(item => item.name === name)[0])
+      if (event.shiftKey && this.multiple) {
+        let fi = 0
+        let la = 0
+
+        if (index > this.firstSelected) {
+          fi = this.firstSelected + 1
+          la = index
+        } else {
+          fi = index
+          la = this.firstSelected - 1
+        }
+
+        for (; fi <= la; fi++) {
+          if (this.selected.indexOf(this.file.items[fi].name) === -1) {
+            this.addSelected(this.file.items[fi].name)
+          }
+        }
+
+        return
+      }
+
+      if (!event.ctrlKey && !this.multiple) this.resetSelected()
+      if (this.firstSelected === -1) this.firstSelected = index
+      this.addSelected(name)
+    },
+    dbclick: function (name) {
+      this.$router.push({path: `/share/${this.hash}${name}`})
     }
   }
 }

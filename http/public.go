@@ -74,3 +74,12 @@ var publicDlHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, 
 
 	return rawDirHandler(w, r, d, file)
 }, true)
+
+var publicRawHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	file := d.raw.(*files.FileInfo)
+	if !file.IsDir {
+		return rawFileHandler(w, r, file)
+	}
+
+	return rawDirHandler(w, r, d, file)
+}, false)

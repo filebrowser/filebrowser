@@ -49,11 +49,17 @@
 }
 
 .share__box__items #listing.list .item {
-  cursor: auto;
+  cursor: pointer;
   border-left: 0;
   border-right: 0;
   border-bottom: 0;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
+  -webkit-user-select:none;
+  -khtml-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  -o-user-select:none;
+  user-select:none;
 }
 
 .share__box__items #listing.list .item .name {
