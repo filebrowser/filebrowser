@@ -1,7 +1,7 @@
 <template>
   <div v-if="loaded">
     <div id="breadcrumbs">
-      <router-link :to="'/share/' + hash + '/' + this.root" :aria-label="$t('files.home')" :title="$t('files.home')">
+      <router-link :to="'/share/' + hash + '/' + this.path.split('/')[0]" :aria-label="$t('files.home')" :title="$t('files.home')">
         <i class="material-icons">home</i>
       </router-link>
 
@@ -48,8 +48,8 @@
           <div class="item" v-for="(item) in file.items.slice(0, this.showLimit)" :key="base64(item.name)"
                :aria-selected="selected.includes(item.name)"
                @click="click(item.name)"
-               @dblclick="dblclick(item.path)"
-               @touchstart="touchstart(item.path)"
+               @dblclick="dblclick(item.name)"
+               @touchstart="touchstart(item.name)"
           >
             <div>
               <i class="material-icons">{{ item.isDir ? 'folder' : (item.type==='image') ? 'insert_photo' : 'insert_drive_file' }}</i>
@@ -89,15 +89,13 @@ export default {
     multiple: false,
     touches: 0,
     selected: [],
-    firstSelected: -1,
-    root: ''
+    firstSelected: -1
   }),
   watch: {
     '$route': 'fetchData'
   },
   created: async function () {
     await this.fetchData()
-    this.root = this.file.path.split('/')[1]
   },
   mounted () {
     window.addEventListener('keydown', this.keyEvent)
@@ -112,15 +110,31 @@ export default {
     hash: function () {
       return this.$route.params.pathMatch.split('/')[0]
     },
+    path: function () {
+      let absoluteParts = this.file.path.split('/')
+      let urlParts = this.$route.params.pathMatch.split('/')
+
+      absoluteParts.shift()
+
+      if (absoluteParts[absoluteParts.length - 1] === '') absoluteParts.pop()
+      if (urlParts[urlParts.length - 1] === '') urlParts.pop()
+
+      if (urlParts.length === 1) return absoluteParts[absoluteParts.length - 1]
+
+      let len = Math.min(absoluteParts.length, urlParts.length)
+      for (let i = 0; i < len; i++) {
+        if (urlParts[urlParts.length - 1 - i] !== absoluteParts[absoluteParts.length - 1 - i]) return urlParts.slice(urlParts.length - i).join('/')
+      }
+      return absoluteParts.slice(absoluteParts.length - len).join('/')
+    },
     link: function () {
-      let path = this.file.path.endsWith('/') ? this.file.path.slice(0, this.file.path.length - 1) : this.file.path
-      if (!this.hasSelected) return `${baseURL}/api/public/dl/${this.hash}${path}`
-      if (this.selected.length === 1) return `${baseURL}/api/public/dl/${this.hash}${path}/${encodeURI(this.selected[0])}`
+      if (!this.hasSelected) return `${baseURL}/api/public/dl/${this.hash}/${this.path}`
+      if (this.selected.length === 1) return `${baseURL}/api/public/dl/${this.hash}/${this.path}/${encodeURI(this.selected[0])}`
       let files = []
       for (let s of this.selected) {
         files.push(encodeURI(s))
       }
-      return `${baseURL}/api/public/dl/${this.hash}${path}/?files=${encodeURIComponent(files.join(','))}`
+      return `${baseURL}/api/public/dl/${this.hash}/${this.path}/?files=${encodeURIComponent(files.join(','))}`
     },
     fullLink: function () {
       return window.location.origin + this.link
@@ -136,7 +150,7 @@ export default {
       return moment(this.file.modified).fromNow()
     },
     breadcrumbs () {
-      let parts = this.file.path.split('/')
+      let parts = this.path.split('/')
 
       if (parts[0] === '') {
         parts.shift()
@@ -238,17 +252,17 @@ export default {
       if (this.firstSelected === -1) this.firstSelected = index
       this.addSelected(name)
     },
-    dblclick: function (path) {
-      this.$router.push({path: `/share/${this.hash}${path}`})
+    dblclick: function (name) {
+      this.$router.push({path: `/share/${this.hash}/${this.path}/${name}`})
     },
-    touchstart (path) {
+    touchstart (name) {
       setTimeout(() => {
         this.touches = 0
       }, 300)
 
       this.touches++
       if (this.touches > 1) {
-        this.dblclick(path)
+        this.dblclick(name)
       }
     },
     keyEvent (event) {
