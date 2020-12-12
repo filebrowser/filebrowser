@@ -40,7 +40,7 @@ var withHashFile = func(fn handleFunc) handleFunc {
 
 // ref to https://github.com/filebrowser/filebrowser/pull/727
 // `/api/public/dl/MEEuZK-v/file-name.txt` for old browsers to save file with correct name
-func ifPathWithName(r *http.Request) (id string, path string) {
+func ifPathWithName(r *http.Request) (id, path string) {
 	pathElements := strings.Split(r.URL.Path, "/")
 	// prevent maliciously constructed parameters like `/api/public/dl/XZzCDnK2_not_exists_hash_name`
 	// len(pathElements) will be 1, and golang will panic `runtime error: index out of range`
