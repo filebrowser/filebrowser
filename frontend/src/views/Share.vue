@@ -1,7 +1,7 @@
 <template>
   <div v-if="loaded">
     <div id="breadcrumbs">
-      <router-link :to="'/share/' + rootHash" :aria-label="$t('files.home')" :title="$t('files.home')">
+      <router-link :to="'/share/' + hash + '/' + this.root" :aria-label="$t('files.home')" :title="$t('files.home')">
         <i class="material-icons">home</i>
       </router-link>
 
@@ -48,8 +48,8 @@
           <div class="item" v-for="(item) in file.items.slice(0, this.showLimit)" :key="base64(item.name)"
                :aria-selected="selected.includes(item.name)"
                @click="click(item.name)"
-               @dblclick="dblclick(item.name)"
-               @touchstart="touchstart(item.name)"
+               @dblclick="dblclick(item.path)"
+               @touchstart="touchstart(item.path)"
           >
             <div>
               <i class="material-icons">{{ item.isDir ? 'folder' : (item.type==='image') ? 'insert_photo' : 'insert_drive_file' }}</i>
@@ -89,13 +89,15 @@ export default {
     multiple: false,
     touches: 0,
     selected: [],
-    firstSelected: -1
+    firstSelected: -1,
+    root: ''
   }),
   watch: {
     '$route': 'fetchData'
   },
-  created: function () {
-    this.fetchData()
+  created: async function () {
+    await this.fetchData()
+    this.root = this.file.path.split('/')[1]
   },
   mounted () {
     window.addEventListener('keydown', this.keyEvent)
@@ -108,20 +110,17 @@ export default {
       return this.selected.length > 0
     },
     hash: function () {
-      if (this.$route.params.pathMatch[this.$route.params.pathMatch.length - 1] !== '/') return this.$route.params.pathMatch + '/'
-      return this.$route.params.pathMatch
-    },
-    rootHash: function () {
-      return this.$route.params.pathMatch.split('/')[0] + '/'
+      return this.$route.params.pathMatch.split('/')[0]
     },
     link: function () {
-      if (!this.hasSelected) return `${baseURL}/api/public/dl/${this.hash}${encodeURI(this.file.name)}`
-      if (this.selected.length === 1) return `${baseURL}/api/public/raw/${this.hash}${encodeURI(this.selected[0])}`
+      let path = this.file.path.endsWith('/') ? this.file.path.slice(0, this.file.path.length - 1) : this.file.path
+      if (!this.hasSelected) return `${baseURL}/api/public/dl/${this.hash}${path}`
+      if (this.selected.length === 1) return `${baseURL}/api/public/dl/${this.hash}${path}/${encodeURI(this.selected[0])}`
       let files = []
       for (let s of this.selected) {
-        files.push('/' + encodeURI(s) + '/')
+        files.push(encodeURI(s))
       }
-      return `${baseURL}/api/public/raw/${this.hash}?files=${encodeURIComponent(files.join(','))}`
+      return `${baseURL}/api/public/dl/${this.hash}${path}/?files=${encodeURIComponent(files.join(','))}`
     },
     fullLink: function () {
       return window.location.origin + this.link
@@ -137,7 +136,7 @@ export default {
       return moment(this.file.modified).fromNow()
     },
     breadcrumbs () {
-      let parts = this.$route.path.split('/')
+      let parts = this.file.path.split('/')
 
       if (parts[0] === '') {
         parts.shift()
@@ -151,13 +150,12 @@ export default {
 
       for (let i = 0; i < parts.length; i++) {
         if (i === 0) {
-          breadcrumbs.push({ name: decodeURIComponent(parts[i]), url: '/' + parts[i] + '/' })
-        } else {
+          breadcrumbs.push({ name: decodeURIComponent(parts[i]), url: '/share/' + this.hash + '/' + parts[i] + '/' })
+        } else  {
           breadcrumbs.push({ name: decodeURIComponent(parts[i]), url: breadcrumbs[i - 1].url + parts[i] + '/' })
         }
       }
 
-      breadcrumbs.shift()
       breadcrumbs.shift()
 
       if (breadcrumbs.length > 3) {
@@ -183,11 +181,14 @@ export default {
       this.selected = []
       this.firstSelected = -1
       try {
-        this.file = await api.getHash(this.hash)
+        this.file = await api.getHash(this.$route.params.pathMatch)
         this.loaded = true
       } catch (e) {
         this.notFound = true
       }
+    },
+    fileItemsIndexOf: function (name) {
+      return this.file.items.indexOf(this.file.items.filter(item => item.name === name)[0])
     },
     addSelected: function(name) {
       this.selected.push(name)
@@ -197,7 +198,7 @@ export default {
       if (i === -1) return
       this.selected.splice(i, 1)
       if (i === 0 && this.hasSelected) {
-        this.firstSelected = this.file.items.indexOf(this.file.items.filter(item => item.name === this.selected[0])[0])
+        this.firstSelected = this.fileItemsIndexOf(this.selected[0])
       }
     },
     resetSelected: function () {
@@ -211,7 +212,7 @@ export default {
         return
       }
 
-      let index = this.file.items.indexOf(this.file.items.filter(item => item.name === name)[0])
+      let index = this.fileItemsIndexOf(name)
       if (event.shiftKey && this.hasSelected) {
         let fi = 0
         let la = 0
@@ -237,17 +238,17 @@ export default {
       if (this.firstSelected === -1) this.firstSelected = index
       this.addSelected(name)
     },
-    dblclick: function (name) {
-      this.$router.push({path: `/share/${this.hash}${name}`})
+    dblclick: function (path) {
+      this.$router.push({path: `/share/${this.hash}${path}`})
     },
-    touchstart (name) {
+    touchstart (path) {
       setTimeout(() => {
         this.touches = 0
       }, 300)
 
       this.touches++
       if (this.touches > 1) {
-        this.dblclick(name)
+        this.dblclick(path)
       }
     },
     keyEvent (event) {
