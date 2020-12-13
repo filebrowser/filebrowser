@@ -200,7 +200,7 @@ export default {
       this.$store.commit('sharedMultiple', false)
       try {
         this.file = await api.getHash(encodeURIComponent(this.$route.params.pathMatch))
-        this.file.items = this.file.items.map((item, index) => {
+        if (this.file.isDir) this.file.items = this.file.items.map((item, index) => {
           item.index = index
           item.url = `/share/${this.hash}/${this.path}/${encodeURIComponent(item.name)}`
           return item
