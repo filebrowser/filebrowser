@@ -86,7 +86,17 @@ const mutations = {
   },
   setPreviewMode(state, value) {
     state.previewMode = value
-  }
+  },
+  addSharedSelected: (state, value) => (state.shared.selected.push(value)),
+  removeSharedSelected: (state, value) => {
+    let i = state.shared.selected.indexOf(value)
+    if (i === -1) return
+    state.shared.selected.splice(i, 1)
+  },
+  resetSharedSelected: (state) => {
+    state.shared.selected = []
+  },
+  sharedMultiple: (state, value) => (state.shared.multiple = value)
 }
 
 export default mutations

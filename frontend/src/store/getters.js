@@ -12,7 +12,8 @@ const getters = {
 
     let sum = state.upload.progress.reduce((acc, val) => acc + val)
     return Math.ceil(sum / state.upload.size * 100);
-  }
+  },
+  sharedSelectedCount: state => state.shared.selected.length
 }
 
 export default getters

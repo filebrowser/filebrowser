@@ -13,10 +13,10 @@
     <div class="share">
       <div class="share__box share__box__info">
           <div class="share__box__header">
-            {{ file.isDir ? hasSelected ? $t('download.downloadSelected') : $t('download.downloadFolder') : $t('download.downloadFile') }}
+            {{ file.isDir ? sharedSelectedCount > 0 ? $t('download.downloadSelected') : $t('download.downloadFolder') : $t('download.downloadFile') }}
           </div>
           <div class="share__box__element share__box__center share__box__icon">
-            <i class="material-icons">{{ file.isDir ? 'folder' : 'insert_drive_file'}}</i>
+            <i class="material-icons">{{ icon }}</i>
           </div>
           <div class="share__box__element">
             <strong>{{ $t('prompts.displayName') }}</strong> {{ file.name }}
@@ -35,7 +35,7 @@
           </div>
           <div v-if="file.isDir" class="share__box__element share__box__center">
             <label>
-              <input type="checkbox" v-model="multiple">
+              <input type="checkbox" :checked="shared.multiple" @click="toggleMultipleSelection">
               {{ $t('buttons.selectMultiple') }}
             </label>
           </div>
@@ -45,19 +45,16 @@
           {{ $t('files.files') }}
         </div>
         <div id="listing" class="list">
-          <div class="item" v-for="(item) in file.items.slice(0, this.showLimit)" :key="base64(item.name)"
-               :aria-selected="selected.includes(item.name)"
-               @click="click(item.name)"
-               @dblclick="dblclick(item.name)"
-               @touchstart="touchstart(item.name)"
-          >
-            <div>
-              <i class="material-icons">{{ item.isDir ? 'folder' : (item.type==='image') ? 'insert_photo' : 'insert_drive_file' }}</i>
-            </div>
-            <div>
-              <p class="name">{{ item.name }}</p>
-            </div>
-          </div>
+          <shared-item v-for="(item) in file.items.slice(0, this.showLimit)"
+            :key="base64(item.name)"
+            v-bind:index="item.index"
+            v-bind:name="item.name"
+            v-bind:isDir="item.isDir"
+            v-bind:url="item.url"
+            v-bind:modified="item.modified"
+            v-bind:type="item.type"
+            v-bind:size="item.size">
+          </shared-item>
           <div v-if="file.items.length > showLimit" class="item">
             <div>
               <p class="name"> + {{ file.items.length - showLimit }} </p>
@@ -70,26 +67,25 @@
 </template>
 
 <script>
+import {mapState, mapMutations, mapGetters} from 'vuex';
 import { share as api } from '@/api'
 import { baseURL } from '@/utils/constants'
 import filesize from 'filesize'
 import moment from 'moment'
 import QrcodeVue from 'qrcode.vue'
+import SharedItem from "@/components/files/SharedItem"
 
 export default {
   name: 'share',
   components: {
+    SharedItem,
     QrcodeVue
   },
   data: () => ({
     loaded: false,
     notFound: false,
     file: null,
-    showLimit: 500,
-    multiple: false,
-    touches: 0,
-    selected: [],
-    firstSelected: -1
+    showLimit: 500
   }),
   watch: {
     '$route': 'fetchData'
@@ -104,8 +100,14 @@ export default {
     window.removeEventListener('keydown', this.keyEvent)
   },
   computed: {
-    hasSelected: function () {
-      return this.selected.length > 0
+    ...mapState(['shared']),
+    ...mapGetters(['sharedSelectedCount']),
+    icon: function () {
+      if (this.file.isDir) return 'folder'
+      if (this.file.type === 'image') return 'insert_photo'
+      if (this.file.type === 'audio') return 'volume_up'
+      if (this.file.type === 'video') return 'movie'
+      return 'insert_drive_file'
     },
     hash: function () {
       return this.$route.params.pathMatch.split('/')[0]
@@ -131,11 +133,11 @@ export default {
       return absoluteParts.slice(absoluteParts.length - len).join('/')
     },
     link: function () {
-      if (!this.hasSelected) return `${baseURL}/api/public/dl/${this.hash}/${this.path}`
-      if (this.selected.length === 1) return `${baseURL}/api/public/dl/${this.hash}/${this.path}/${encodeURIComponent(this.selected[0])}`
+      if (this.sharedSelectedCount === 0) return `${baseURL}/api/public/dl/${this.hash}/${this.path}`
+      if (this.sharedSelectedCount === 1) return `${baseURL}/api/public/dl/${this.hash}/${this.path}/${encodeURIComponent(this.file.items[this.shared.selected[0]].name)}`
       let files = []
-      for (let s of this.selected) {
-        files.push(encodeURIComponent(s))
+      for (let s of this.shared.selected) {
+        files.push(encodeURIComponent(this.file.items[s].name))
       }
       return `${baseURL}/api/public/dl/${this.hash}/${this.path}/?files=${encodeURIComponent(files.join(','))}`
     },
@@ -187,85 +189,25 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([ 'resetSharedSelected' ]),
     base64: function (name) {
       return window.btoa(unescape(encodeURIComponent(name)))
     },
     fetchData: async function () {
       this.loaded = false
       this.notFound = false
-      this.multiple = false
-      this.touches = 0
-      this.selected = []
-      this.firstSelected = -1
+      this.$store.commit('resetSharedSelected')
+      this.$store.commit('sharedMultiple', false)
       try {
         this.file = await api.getHash(encodeURIComponent(this.$route.params.pathMatch))
+        this.file.items = this.file.items.map((item, index) => {
+          item.index = index
+          item.url = `/share/${this.hash}/${this.path}/${encodeURIComponent(item.name)}`
+          return item
+        })
         this.loaded = true
       } catch (e) {
         this.notFound = true
-      }
-    },
-    fileItemsIndexOf: function (name) {
-      return this.file.items.indexOf(this.file.items.filter(item => item.name === name)[0])
-    },
-    addSelected: function(name) {
-      this.selected.push(name)
-    },
-    removeSelected: function (name) {
-      let i = this.selected.indexOf(name)
-      if (i === -1) return
-      this.selected.splice(i, 1)
-      if (i === 0 && this.hasSelected) {
-        this.firstSelected = this.fileItemsIndexOf(this.selected[0])
-      }
-    },
-    resetSelected: function () {
-      this.selected = []
-      this.firstSelected = -1
-    },
-    click: function (name) {
-      if (this.hasSelected) event.preventDefault()
-      if (this.selected.indexOf(name) !== -1) {
-        this.removeSelected(name)
-        return
-      }
-
-      let index = this.fileItemsIndexOf(name)
-      if (event.shiftKey && this.hasSelected) {
-        let fi = 0
-        let la = 0
-
-        if (index > this.firstSelected) {
-          fi = this.firstSelected + 1
-          la = index
-        } else {
-          fi = index
-          la = this.firstSelected - 1
-        }
-
-        for (; fi <= la; fi++) {
-          if (this.selected.indexOf(this.file.items[fi].name) === -1) {
-            this.addSelected(this.file.items[fi].name)
-          }
-        }
-
-        return
-      }
-
-      if (!event.ctrlKey && !event.metaKey && !this.multiple) this.resetSelected()
-      if (this.firstSelected === -1) this.firstSelected = index
-      this.addSelected(name)
-    },
-    dblclick: function (name) {
-      this.$router.push({path: `/share/${this.hash}/${this.path}/${encodeURIComponent(name)}`})
-    },
-    touchstart (name) {
-      setTimeout(() => {
-        this.touches = 0
-      }, 300)
-
-      this.touches++
-      if (this.touches > 1) {
-        this.dblclick(name)
       }
     },
     keyEvent (event) {
@@ -273,10 +215,13 @@ export default {
       if (event.keyCode === 27) {
         // If we're on a listing, unselect all
         // files and folders.
-        if (this.hasSelected) {
-          this.resetSelected()
+        if (this.sharedSelectedCount > 0) {
+          this.resetSharedSelected()
         }
       }
+    },
+    toggleMultipleSelection () {
+      this.$store.commit('sharedMultiple', !this.shared.multiple)
     }
   }
 }

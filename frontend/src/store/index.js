@@ -24,7 +24,11 @@ const state = {
   showShell: false,
   showMessage: null,
   showConfirm: null,
-  previewMode: false
+  previewMode: false,
+  shared: {
+    selected: [],
+    multiple: false
+  }
 }
 
 export default new Vuex.Store({
