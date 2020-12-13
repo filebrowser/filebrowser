@@ -25,11 +25,15 @@ func withPermShare(fn handleFunc) handleFunc {
 }
 
 var shareListHandler = withPermShare(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	id := d.user.ID
+	var (
+		s   []*share.Link
+		err error
+	)
 	if d.user.Perm.Admin {
-		id = 0
+		s, err = d.store.Share.All()
+	} else {
+		s, err = d.store.Share.FindByUserID(d.user.ID)
 	}
-	s, err := d.store.Share.List(id)
 	if err == errors.ErrNotExist {
 		return renderJSON(w, r, []*share.Link{})
 	}
