@@ -116,6 +116,9 @@ export default {
 
       absoluteParts.shift()
 
+      absoluteParts.forEach((_, i) => absoluteParts[i] = encodeURIComponent(absoluteParts[i]))
+      urlParts.forEach((_, i) => urlParts[i] = encodeURIComponent(urlParts[i]))
+
       if (absoluteParts[absoluteParts.length - 1] === '') absoluteParts.pop()
       if (urlParts[urlParts.length - 1] === '') urlParts.pop()
 
@@ -129,10 +132,10 @@ export default {
     },
     link: function () {
       if (!this.hasSelected) return `${baseURL}/api/public/dl/${this.hash}/${this.path}`
-      if (this.selected.length === 1) return `${baseURL}/api/public/dl/${this.hash}/${this.path}/${encodeURI(this.selected[0])}`
+      if (this.selected.length === 1) return `${baseURL}/api/public/dl/${this.hash}/${this.path}/${encodeURIComponent(this.selected[0])}`
       let files = []
       for (let s of this.selected) {
-        files.push(encodeURI(s))
+        files.push(encodeURIComponent(s))
       }
       return `${baseURL}/api/public/dl/${this.hash}/${this.path}/?files=${encodeURIComponent(files.join(','))}`
     },
@@ -195,7 +198,7 @@ export default {
       this.selected = []
       this.firstSelected = -1
       try {
-        this.file = await api.getHash(this.$route.params.pathMatch)
+        this.file = await api.getHash(encodeURIComponent(this.$route.params.pathMatch))
         this.loaded = true
       } catch (e) {
         this.notFound = true
@@ -253,7 +256,7 @@ export default {
       this.addSelected(name)
     },
     dblclick: function (name) {
-      this.$router.push({path: `/share/${this.hash}/${this.path}/${name}`})
+      this.$router.push({path: `/share/${this.hash}/${this.path}/${encodeURIComponent(name)}`})
     },
     touchstart (name) {
       setTimeout(() => {
