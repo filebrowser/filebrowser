@@ -13,13 +13,14 @@ type StorageBackend interface {
 
 // Storage is a auth storage.
 type Storage struct {
-	back  StorageBackend
-	users *users.Storage
+	back     StorageBackend
+	users    *users.Storage
+	settings *settings.Storage
 }
 
 // NewStorage creates a auth storage from a backend.
-func NewStorage(back StorageBackend, userStore *users.Storage) *Storage {
-	return &Storage{back: back, users: userStore}
+func NewStorage(back StorageBackend, userStore *users.Storage, settingsStore *settings.Storage) *Storage {
+	return &Storage{back: back, users: userStore, settings: settingsStore}
 }
 
 // Get wraps a StorageBackend.Get.

@@ -36,6 +36,16 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("auth.method", string(auth.MethodJSONAuth), "authentication type")
 	flags.String("auth.header", "", "HTTP header for auth.method=proxy")
 
+	flags.String("ldap.server", "ldap://localhost", "LDAP scheme://server:port, if port is omitted the respective default will be used")
+	flags.Bool("ldap.starttls", true, "LDAP attempt to negotiate a secure connection on an insecure scheme")
+	flags.Bool("ldap.skipverify", false, "LDAP skip server certificate verification on secure connection")
+	flags.String("ldap.basedn", "dc=example,dc=com", "LDAP base distinguished name")
+	flags.String("ldap.userou", "people", "LDAP user organizational unit, will be appended to the BaseDN for authentification binds")
+	flags.String("ldap.groupou", "groups", "LDAP group organizational unit, will be appended to the BaseDN for memberOf queries")
+	flags.String("ldap.usercn", "", "LDAP user group, will be appended to the GroupOU, if set only members of this group can login")
+	flags.String("ldap.admincn", "file_browser_admins", "LDAP admin group common name, will be appended to the GroupOU, members of this group get admin permission")
+	flags.String("ldap.userhome", "homeDirectory", "LDAP attribute to use as a users scope relative to the servers root, set to nothing to disable")
+
 	flags.String("recaptcha.host", "https://www.google.com", "use another host for ReCAPTCHA. recaptcha.net might be useful in China")
 	flags.String("recaptcha.key", "", "ReCaptcha site key")
 	flags.String("recaptcha.secret", "", "ReCaptcha secret")
@@ -111,6 +121,60 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 			}
 		}
 		auther = jsonAuth
+	}
+
+	if method == auth.MethodLDAPAuth {
+		server := mustGetString(flags, "ldap.server")
+		if server == "" {
+			server = defaultAuther["server"].(string)
+		}
+		starttls := mustGetBool(flags, "ldap.starttls")
+		if !starttls {
+			if i, ok := defaultAuther["starttls"].(bool); ok {
+				starttls = i
+			}
+		}
+		skipverify := mustGetBool(flags, "ldap.skipverify")
+		if !skipverify {
+			if i, ok := defaultAuther["skipverify"].(bool); ok {
+				skipverify = i
+			}
+		}
+		basedn := mustGetString(flags, "ldap.basedn")
+		if basedn == "" {
+			basedn = defaultAuther["basedn"].(string)
+		}
+		userou := mustGetString(flags, "ldap.userou")
+		if userou == "" {
+			userou = defaultAuther["userou"].(string)
+		}
+		groupou := mustGetString(flags, "ldap.groupou")
+		if userou == "" {
+			userou = defaultAuther["groupou"].(string)
+		}
+		usercn := mustGetString(flags, "ldap.usercn")
+		if userou == "" {
+			userou = defaultAuther["usercn"].(string)
+		}
+		admincn := mustGetString(flags, "ldap.admincn")
+		if userou == "" {
+			userou = defaultAuther["admincn"].(string)
+		}
+		userhome := mustGetString(flags, "ldap.userhome")
+		if userhome == "" {
+			userhome = defaultAuther["userhome"].(string)
+		}
+		auther = &auth.LDAPAuth{
+			Server:		server,
+			StartTLS:   starttls,
+			SkipVerify:	skipverify,
+			BaseDN: 	basedn,
+			UserOU:	   	userou,
+			GroupOU: 	groupou,
+			UserCN: 	usercn,
+			AdminCN: 	admincn,
+			UserHome:	userhome,
+		}
 	}
 
 	if auther == nil {
