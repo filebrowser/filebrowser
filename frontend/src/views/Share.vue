@@ -1,7 +1,7 @@
 <template>
   <div v-if="loaded">
     <div id="breadcrumbs">
-      <router-link :to="'/share/' + hash + '/' + this.path.split('/')[0]" :aria-label="$t('files.home')" :title="$t('files.home')">
+      <router-link :to="'/share/' + hash" :aria-label="$t('files.home')" :title="$t('files.home')">
         <i class="material-icons">home</i>
       </router-link>
 
