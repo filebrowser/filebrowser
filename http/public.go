@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/filebrowser/filebrowser/v2/files"
 	libErrors "github.com/filebrowser/filebrowser/v2/errors"
+	"github.com/filebrowser/filebrowser/v2/files"
 )
 
 var withHashFile = func(fn handleFunc) handleFunc {
@@ -53,7 +53,7 @@ func ifPathWithName(r *http.Request) (id, rootName, path string) {
 	switch len(pathElements) {
 	case 1:
 		return r.URL.Path, "", ""
-	case 2:
+	case 2: //nolint: mnd
 		return pathElements[0], pathElements[1], ""
 	default:
 		return pathElements[0], pathElements[1], strings.Join(pathElements[2:], "/")
