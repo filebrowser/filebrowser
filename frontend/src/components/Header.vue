@@ -28,7 +28,7 @@
         </div>
 
         <!-- This buttons are shown on a dropdown on mobile phones -->
-        <div id="dropdown" :class="{ active: showMore }">
+        <div class="dropdown" :class="{ active: showMore }">
           <div v-if="!isListing || !isMobile">
             <share-button v-show="showShareButton"></share-button>
             <rename-button v-show="showRenameButton"></rename-button>
@@ -44,6 +44,17 @@
           <info-button v-show="isFiles"></info-button>
 
           <button v-show="isListing" @click="toggleMultipleSelection" :aria-label="$t('buttons.selectMultiple')" :title="$t('buttons.selectMultiple')" class="action" >
+            <i class="material-icons">check_circle</i>
+            <span>{{ $t('buttons.select') }}</span>
+          </button>
+        </div>
+      </template>
+      <template v-if="isSharing">
+        <!-- This buttons are shown on a dropdown on mobile phones -->
+        <div class="dropdown" :class="{ active: showMore }">
+          <download-button v-if="sharedSelectedCount > 0"></download-button>
+
+          <button @click="toggleSharedMultipleSelection" :aria-label="$t('buttons.selectMultiple')" :title="$t('buttons.selectMultiple')" class="action" >
             <i class="material-icons">check_circle</i>
             <span>{{ $t('buttons.select') }}</span>
           </button>
@@ -110,14 +121,17 @@ export default {
       'isEditor',
       'isPreview',
       'isListing',
-      'isLogged'
+      'isLogged',
+      'isSharing',
+      'sharedSelectedCount'
     ]),
     ...mapState([
       'req',
       'user',
       'loading',
       'reload',
-      'multiple'
+      'multiple',
+      'shared'
     ]),
     logoURL: () => logoURL,
     isExecEnabled: () => enableExec,
@@ -156,7 +170,7 @@ export default {
         : this.user.perm.create)
     },
     showMore () {
-      return this.isFiles && this.$store.state.show === 'more'
+      return (this.isFiles || this.isSharing) && this.$store.state.show === 'more'
     },
     showOverlay () {
       return this.showMore
@@ -174,6 +188,10 @@ export default {
     },
     toggleMultipleSelection () {
       this.$store.commit('multiple', !this.multiple)
+      this.resetPrompts()
+    },
+    toggleSharedMultipleSelection () {
+      this.$store.commit('sharedMultiple', !this.shared.multiple)
       this.resetPrompts()
     },
     resetPrompts () {

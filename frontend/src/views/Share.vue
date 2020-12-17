@@ -1,7 +1,7 @@
 <template>
-  <div v-if="loaded">
+  <div v-if="shared.loaded">
     <div id="breadcrumbs">
-      <router-link :to="'/share/' + hash" :aria-label="$t('files.home')" :title="$t('files.home')">
+      <router-link :to="'/share/' + shared.hash" :aria-label="$t('files.home')" :title="$t('files.home')">
         <i class="material-icons">home</i>
       </router-link>
 
@@ -13,13 +13,13 @@
     <div class="share">
       <div class="share__box share__box__info">
           <div class="share__box__header">
-            {{ file.isDir ? sharedSelectedCount > 0 ? $t('download.downloadSelected') : $t('download.downloadFolder') : $t('download.downloadFile') }}
+            {{ shared.req.isDir ? $t('download.downloadFolder') : $t('download.downloadFile') }}
           </div>
           <div class="share__box__element share__box__center share__box__icon">
             <i class="material-icons">{{ icon }}</i>
           </div>
           <div class="share__box__element">
-            <strong>{{ $t('prompts.displayName') }}</strong> {{ file.name }}
+            <strong>{{ $t('prompts.displayName') }}</strong> {{ shared.req.name }}
           </div>
           <div class="share__box__element">
             <strong>{{ $t('prompts.lastModified') }}:</strong> {{ humanTime }}
@@ -33,19 +33,13 @@
           <div class="share__box__element share__box__center">
             <qrcode-vue :value="fullLink" size="200" level="M"></qrcode-vue>
           </div>
-          <div v-if="file.isDir" class="share__box__element share__box__center">
-            <label>
-              <input type="checkbox" :checked="shared.multiple" @click="toggleMultipleSelection">
-              {{ $t('buttons.selectMultiple') }}
-            </label>
-          </div>
       </div>
-      <div v-if="file.isDir" class="share__box share__box__items">
-        <div class="share__box__header" v-if="file.isDir">
+      <div v-if="shared.req.isDir" class="share__box share__box__items">
+        <div class="share__box__header" v-if="shared.req.isDir">
           {{ $t('files.files') }}
         </div>
         <div id="listing" class="list">
-          <shared-item v-for="(item) in file.items.slice(0, this.showLimit)"
+          <shared-item v-for="(item) in shared.req.items.slice(0, this.showLimit)"
             :key="base64(item.name)"
             v-bind:index="item.index"
             v-bind:name="item.name"
@@ -55,9 +49,16 @@
             v-bind:type="item.type"
             v-bind:size="item.size">
           </shared-item>
-          <div v-if="file.items.length > showLimit" class="item">
+          <div v-if="shared.req.items.length > showLimit" class="item">
             <div>
-              <p class="name"> + {{ file.items.length - showLimit }} </p>
+              <p class="name"> + {{ shared.req.items.length - showLimit }} </p>
+            </div>
+          </div>
+
+          <div :class="{ active: $store.state.shared.multiple }" id="multiple-selection">
+            <p>{{ $t('files.multipleSelectionEnabled') }}</p>
+            <div @click="$store.commit('sharedMultiple', false)" tabindex="0" role="button" :title="$t('files.clear')" :aria-label="$t('files.clear')" class="action">
+              <i class="material-icons">clear</i>
             </div>
           </div>
         </div>
@@ -82,15 +83,16 @@ export default {
     QrcodeVue
   },
   data: () => ({
-    loaded: false,
     notFound: false,
-    file: null,
+    filePath: '',
     showLimit: 500
   }),
   watch: {
     '$route': 'fetchData'
   },
   created: async function () {
+    const hash = this.$route.params.pathMatch.split('/')[0]
+    this.setSharedHash(hash)
     await this.fetchData()
   },
   mounted () {
@@ -103,17 +105,14 @@ export default {
     ...mapState(['shared']),
     ...mapGetters(['sharedSelectedCount']),
     icon: function () {
-      if (this.file.isDir) return 'folder'
-      if (this.file.type === 'image') return 'insert_photo'
-      if (this.file.type === 'audio') return 'volume_up'
-      if (this.file.type === 'video') return 'movie'
+      if (this.shared.req.isDir) return 'folder'
+      if (this.shared.req.type === 'image') return 'insert_photo'
+      if (this.shared.req.type === 'audio') return 'volume_up'
+      if (this.shared.req.type === 'video') return 'movie'
       return 'insert_drive_file'
     },
-    hash: function () {
-      return this.$route.params.pathMatch.split('/')[0]
-    },
     path: function () {
-      let absoluteParts = this.file.path.split('/')
+      let absoluteParts = this.filePath.split('/')
       let urlParts = this.$route.params.pathMatch.split('/')
 
       absoluteParts.shift()
@@ -133,26 +132,20 @@ export default {
       return absoluteParts.slice(absoluteParts.length - len).join('/')
     },
     link: function () {
-      if (this.sharedSelectedCount === 0) return `${baseURL}/api/public/dl/${this.hash}/${this.path}`
-      if (this.sharedSelectedCount === 1) return `${baseURL}/api/public/dl/${this.hash}/${this.path}/${encodeURIComponent(this.file.items[this.shared.selected[0]].name)}`
-      let files = []
-      for (let s of this.shared.selected) {
-        files.push(encodeURIComponent(this.file.items[s].name))
-      }
-      return `${baseURL}/api/public/dl/${this.hash}/${this.path}/?files=${encodeURIComponent(files.join(','))}`
+      return `${baseURL}/api/public/dl/${this.shared.hash}/${this.path}`
     },
     fullLink: function () {
       return window.location.origin + this.link
     },
     humanSize: function () {
-      if (this.file.isDir) {
-        return this.file.items.length
+      if (this.shared.req.isDir) {
+        return this.shared.req.items.length
       }
 
-      return filesize(this.file.size)
+      return filesize(this.shared.req.size)
     },
     humanTime: function () {
-      return moment(this.file.modified).fromNow()
+      return moment(this.shared.req.modified).fromNow()
     },
     breadcrumbs () {
       let parts = this.path.split('/')
@@ -169,7 +162,7 @@ export default {
 
       for (let i = 0; i < parts.length; i++) {
         if (i === 0) {
-          breadcrumbs.push({ name: decodeURIComponent(parts[i]), url: '/share/' + this.hash + '/' + parts[i] + '/' })
+          breadcrumbs.push({ name: decodeURIComponent(parts[i]), url: '/share/' + this.shared.hash + '/' + parts[i] + '/' })
         } else  {
           breadcrumbs.push({ name: decodeURIComponent(parts[i]), url: breadcrumbs[i - 1].url + parts[i] + '/' })
         }
@@ -189,23 +182,25 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([ 'resetSharedSelected' ]),
+    ...mapMutations([ 'resetSharedSelected', 'setSharedHash', 'updateSharedRequest', 'toggleSharedLoaded' ]),
     base64: function (name) {
       return window.btoa(unescape(encodeURIComponent(name)))
     },
     fetchData: async function () {
-      this.loaded = false
       this.notFound = false
+      this.$store.commit('toggleSharedLoaded', false)
       this.$store.commit('resetSharedSelected')
       this.$store.commit('sharedMultiple', false)
       try {
-        this.file = await api.getHash(encodeURIComponent(this.$route.params.pathMatch))
-        if (this.file.isDir) this.file.items = this.file.items.map((item, index) => {
+        let file = await api.getHash(encodeURIComponent(this.$route.params.pathMatch))
+        this.filePath = file.path
+        if (file.isDir) file.items = file.items.map((item, index) => {
           item.index = index
-          item.url = `/share/${this.hash}/${this.path}/${encodeURIComponent(item.name)}`
+          item.url = `/share/${this.shared.hash}/${this.path}/${encodeURIComponent(item.name)}`
           return item
         })
-        this.loaded = true
+        this.updateSharedRequest(file)
+        this.$store.commit('toggleSharedLoaded', true)
       } catch (e) {
         this.notFound = true
       }

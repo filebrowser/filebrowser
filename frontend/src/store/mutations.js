@@ -27,8 +27,12 @@ const mutations = {
     state.show = 'success'
     state.showMessage = value
   },
-  setLoading: (state, value) => { state.loading = value },
-  setReload: (state, value) => { state.reload = value },
+  setLoading: (state, value) => {
+    state.loading = value
+  },
+  setReload: (state, value) => {
+    state.reload = value
+  },
   setUser: (state, value) => {
     if (value === null) {
       state.user = null
@@ -96,7 +100,10 @@ const mutations = {
   resetSharedSelected: (state) => {
     state.shared.selected = []
   },
-  sharedMultiple: (state, value) => (state.shared.multiple = value)
+  sharedMultiple: (state, value) => (state.shared.multiple = value),
+  updateSharedRequest: (state, value) => (state.shared.req = value),
+  setSharedHash: (state, value) => (state.shared.hash = value),
+  toggleSharedLoaded: (state, value) => (state.shared.loaded = value)
 }
 
 export default mutations

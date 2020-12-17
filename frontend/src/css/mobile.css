@@ -28,7 +28,7 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.1);
   }
-  #dropdown {
+  .dropdown {
     position: fixed;
     top: 1em;
     right: 1em;
@@ -40,23 +40,23 @@
     transform-origin: top right;
     z-index: 99999;
   }
-  #dropdown > div {
+  .dropdown > div {
     display: block;
   }
-  #dropdown.active {
+  .dropdown.active {
     transform: scale(1);
   }
-  #dropdown .action {
+  .dropdown .action {
     display: flex;
     align-items: center;
     border-radius: 0;
     width: 100%;
   }
-  #dropdown .action span:not(.counter) {
+  .dropdown .action span:not(.counter) {
     display: inline-block;
     padding: .4em;
   }
-  #dropdown .counter {
+  .dropdown .counter {
     left: 2.25em;
   }
   #file-selection {

@@ -26,6 +26,9 @@ const state = {
   showConfirm: null,
   previewMode: false,
   shared: {
+    req: {},
+    hash: '',
+    loaded: false,
     selected: [],
     multiple: false
   }
