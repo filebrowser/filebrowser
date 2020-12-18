@@ -1,8 +1,10 @@
 import { fetchURL, removePrefix } from './utils'
+import { md5Generate } from '../../src/utils/md5'
 import { baseURL } from '@/utils/constants'
 import store from '@/store'
 
-export async function fetch (url) {
+  /* eslint-disable no-debugger */
+export async function fetch(url) {
   url = removePrefix(url)
 
   const res = await fetchURL(`/api/resources${url}`, {})
@@ -31,7 +33,7 @@ export async function fetch (url) {
   }
 }
 
-async function resourceAction (url, method, content) {
+async function resourceAction(url, method, content) {
   url = removePrefix(url)
 
   let opts = { method }
@@ -49,15 +51,15 @@ async function resourceAction (url, method, content) {
   }
 }
 
-export async function remove (url) {
+export async function remove(url) {
   return resourceAction(url, 'DELETE')
 }
 
-export async function put (url, content = '') {
+export async function put(url, content = '') {
   return resourceAction(url, 'PUT', content)
 }
 
-export function download (format, ...files) {
+export function download(format, ...files) {
   let url = `${baseURL}/api/raw`
 
   if (files.length === 1) {
@@ -82,7 +84,7 @@ export function download (format, ...files) {
   window.open(url)
 }
 
-export async function post (url, content = '', overwrite = false, onupload) {
+export async function post(url, content = '', overwrite = false, onupload) {
   url = removePrefix(url)
 
   let bufferContent
@@ -90,34 +92,67 @@ export async function post (url, content = '', overwrite = false, onupload) {
     bufferContent = await new Response(content).arrayBuffer()
   }
 
-  return new Promise((resolve, reject) => {
-    let request = new XMLHttpRequest()
-    request.open('POST', `${baseURL}/api/resources${url}?override=${overwrite}`, true)
-    request.setRequestHeader('X-Auth', store.state.jwt)
-
-    if (typeof onupload === 'function') {
-      request.upload.onprogress = onupload
-    }
-
-    request.onload = () => {
-      if (request.status === 200) {
-        resolve(request.responseText)
-      } else if (request.status === 409) {
-        reject(request.status)
-      } else {
-        reject(request.responseText)
+  let partialUpload = function partialUpload(url, params, content) {
+    return new Promise((resolve, reject) => {
+      debugger;
+      let request = new XMLHttpRequest()
+      request.open('POST', `${baseURL}/api/resources${url}?override=${overwrite}${params}`, true)
+      request.setRequestHeader('X-Auth', store.state.jwt)
+      if (typeof onupload === 'function') {
+        request.upload.onprogress = onupload
       }
-    }
 
-    request.onerror = (error) => {
-      reject(error)
-    }
+      request.onload = () => {
+        if (request.status === 200) {
+          resolve(request.responseText)
+        } else if (request.status === 409) {
+          reject(request.status)
+        } else {
+          reject(request.responseText)
+        }
+      }
 
-    request.send(bufferContent || content)
-  })
+      request.onerror = (error) => {
+        reject(error)
+      }
+
+      request.send(content);
+    })
+  }
+
+  if (!content) {
+    //create folder or create new file
+    await partialUpload(url, "", content);
+    return;
+  }
+
+  debugger;
+  let fileSize = content.size;
+  let mb = 1024 * 1024;
+  let fileSizeMB = fileSize / mb;
+  let chunkSize = fileSizeMB <= 50 ? 5 * mb : 10 * mb;//each chunck capacity
+  let totalChunks = Math.ceil(fileSize / chunkSize);//get total chunck pieces
+  let fileID = await md5Generate(content);
+  let allContent = bufferContent || content;
+  //totalChunks = 1;
+  for (let index = 0; index < totalChunks; index++) {
+    debugger;
+    let fileContent = null;
+    let startIndex, endInex;
+    if (index < totalChunks - 1) {
+      startIndex = index * chunkSize;
+      endInex = (index + 1) * chunkSize;
+    } else {
+      startIndex = index * chunkSize;
+      endInex = fileSize;
+    }
+    fileContent = allContent.slice(startIndex, endInex);
+    let params = `&fileID=${fileID}&chunckIndex=${index + 1}&totalChunck=${totalChunks}`
+    await partialUpload(url, params, fileContent);
+  }
 }
 
-function moveCopy (items, copy = false, overwrite = false, rename = false) {
+function moveCopy(items, copy = false, overwrite = false, rename = false) {
   let promises = []
 
   for (let item of items) {
@@ -130,15 +165,15 @@ function moveCopy (items, copy = false, overwrite = false, rename = false) {
   return Promise.all(promises)
 }
 
-export function move (items, overwrite = false, rename = false) {
+export function move(items, overwrite = false, rename = false) {
   return moveCopy(items, false, overwrite, rename)
 }
 
-export function copy (items, overwrite = false, rename = false) {
+export function copy(items, overwrite = false, rename = false) {
   return moveCopy(items, true, overwrite, rename)
 }
 
-export async function checksum (url, algo) {
+export async function checksum(url, algo) {
   const data = await resourceAction(`${url}?checksum=${algo}`, 'GET')
   return (await data.json()).checksums[algo]
 }

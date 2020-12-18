@@ -128,7 +128,11 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 		if err != nil {
 			return err
 		}
-
+		u, err := url.Parse(r.URL.RequestURI())
+		fmt.Println(u)
+		if err != nil {
+			panic(err)
+		}
 		file, err := d.user.Fs.OpenFile(r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
 		if err != nil {
 			return err
