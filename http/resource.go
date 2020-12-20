@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/afero"
@@ -123,40 +124,99 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 	}
 
 	err := d.RunHook(func() error {
-		dir, _ := path.Split(r.URL.Path)
-		err := d.user.Fs.MkdirAll(dir, 0775)
-		if err != nil {
-			return err
+		filePath := r.URL.Path
+		dir, fileName := path.Split(filePath)
+		urlQuery := r.URL.Query()
+		fileID := urlQuery.Get("fileID")
+		chunckIndex := urlQuery.Get("chunckIndex")
+		totalChunck := urlQuery.Get("totalChunck")
+		isPieceUpload := totalChunck != "1"
+		isPieceHasUpload := false
+		if isPieceUpload {
+			tempDir := "tempDir_" + fileID + "/"
+			dir += tempDir
+			spieceFileName := chunckIndex + "_" + fileName //spiece file name
+			filePath = dir + spieceFileName
+			if totalChunck != chunckIndex {
+				_, err := d.user.Fs.Stat(filePath)
+				if err != nil {
+					//the piece has exist
+					isPieceHasUpload = true
+				}
+			}
 		}
-		u, err := url.Parse(r.URL.RequestURI())
-		fmt.Println(u)
-		if err != nil {
-			panic(err)
-		}
-		file, err := d.user.Fs.OpenFile(r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
+		var file afero.File
+		if isPieceHasUpload == false {
+			err := d.user.Fs.MkdirAll(dir, 0775)
+			if err != nil {
+				return err
+			}
 
-		_, err = io.Copy(file, r.Body)
-		if err != nil {
-			return err
+			file, err := d.user.Fs.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
+			if err != nil {
+				return err
+			}
+			defer file.Close()
+
+			_, err = io.Copy(file, r.Body)
+			if err != nil {
+				if isPieceUpload {
+					d.user.Fs.Remove(filePath)
+				}
+				return err
+			}
 		}
 
-		// Gets the info about the file.
-		info, err := file.Stat()
-		if err != nil {
-			return err
+		//all Chunck Uploaded
+		totalChunckInt, _ := strconv.Atoi(totalChunck)
+		if chunckIndex == totalChunck && totalChunckInt > 1 {
+			//merge all spiece files
+			itemPath := ""
+			//create original file
+			file, _err := d.user.Fs.OpenFile(r.URL.Path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0777)
+			if _err != nil {
+				return _err
+			}
+			defer file.Close()
+
+			for i := 1; i <= totalChunckInt; i++ {
+				piecefileName := strconv.Itoa(i) + "_" + fileName
+				itemPath = dir + piecefileName
+				spieceFile, err := d.user.Fs.Open(itemPath)
+				if err != nil {
+					return err
+				}
+				contents, err := ioutil.ReadAll(spieceFile)
+				if err != nil {
+					return err
+				}
+				file.Write(contents)
+			}
+
+			//deltet temp folder
+			d.user.Fs.RemoveAll(dir)
 		}
 
-		etag := fmt.Sprintf(`"%x%x"`, info.ModTime().UnixNano(), info.Size())
-		w.Header().Set("ETag", etag)
+		if (chunckIndex == totalChunck && totalChunckInt > 1) || totalChunckInt == 1 {
+			// Gets the info about the file.
+			info, err := file.Stat()
+			if err != nil {
+				return err
+			}
+			etag := fmt.Sprintf(`"%x%x"`, info.ModTime().UnixNano(), info.Size())
+			w.Header().Set("ETag", etag)
+		}
 		return nil
 	}, action, r.URL.Path, "", d.user)
 
 	if err != nil {
-		_ = d.user.Fs.RemoveAll(r.URL.Path)
+		urlQuery := r.URL.Query()
+		totalChunck := urlQuery.Get("totalChunck")
+
+		//spiece upload can retry
+		if totalChunck == "1" {
+			_ = d.user.Fs.RemoveAll(r.URL.Path)
+		}
 	}
 
 	return errToStatus(err), err

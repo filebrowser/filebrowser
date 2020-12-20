@@ -3,7 +3,7 @@ import { md5Generate } from '../../src/utils/md5'
 import { baseURL } from '@/utils/constants'
 import store from '@/store'
 
-  /* eslint-disable no-debugger */
+/* eslint-disable no-debugger */
 export async function fetch(url) {
   url = removePrefix(url)
 
@@ -122,7 +122,7 @@ export async function post(url, content = '', overwrite = false, onupload) {
 
   if (!content) {
     //create folder or create new file
-    await partialUpload(url, "", content);
+    await partialUpload(url, "", content)
     return;
   }
 
@@ -134,9 +134,9 @@ export async function post(url, content = '', overwrite = false, onupload) {
   let totalChunks = Math.ceil(fileSize / chunkSize);//get total chunck pieces
   let fileID = await md5Generate(content);
   let allContent = bufferContent || content;
-  //totalChunks = 1;
+  let tryCount = 0;
+  let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice
   for (let index = 0; index < totalChunks; index++) {
-    debugger;
     let fileContent = null;
     let startIndex, endInex;
     if (index < totalChunks - 1) {
@@ -146,9 +146,20 @@ export async function post(url, content = '', overwrite = false, onupload) {
       startIndex = index * chunkSize;
       endInex = fileSize;
     }
-    fileContent = allContent.slice(startIndex, endInex);
+    fileContent = blobSlice.call(allContent, startIndex, endInex);
+    
+    debugger;
     let params = `&fileID=${fileID}&chunckIndex=${index + 1}&totalChunck=${totalChunks}`
-    await partialUpload(url, params, fileContent);
+    await partialUpload(url, params, fileContent).catch(err => {
+      debugger;
+      if (tryCount <= 2) {//one file try three times
+        index--;
+        tryCount++;
+      } else {
+        throw err;
+      }
+    });
+    tryCount = 0;
   }
 }
 
