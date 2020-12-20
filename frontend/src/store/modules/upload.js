@@ -12,10 +12,8 @@ const state = {
   queue: [],
   uploads: {}
 }
-/* eslint-disable no-debugger */
 const mutations = {
   setProgress(state, { id, loaded }) {
-    debugger;
     Vue.set(state.progress, id, loaded)
   },
   reset: (state) => {

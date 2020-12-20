@@ -3,7 +3,6 @@ import { md5Generate } from '../../src/utils/md5'
 import { baseURL } from '@/utils/constants'
 import store from '@/store'
 
-/* eslint-disable no-debugger */
 export async function fetch(url) {
   url = removePrefix(url)
 
@@ -92,14 +91,24 @@ export async function post(url, content = '', overwrite = false, onupload) {
     bufferContent = await new Response(content).arrayBuffer()
   }
 
-  let partialUpload = function partialUpload(url, params, content) {
+  let partialUpload = function partialUpload(url, paramsObj, content) {
+    if (typeof paramsObj !== "object") {
+      paramsObj = {};
+    }
+    let params = '&' + Object.keys(paramsObj).map(key => key + '=' + paramsObj[key]).join('&');
+    let warpOnUpload = function (event) {
+      let chunckedLoaded = event.loaded + (paramsObj.chunckIndex - 1) * paramsObj.chunkSize;
+      let obj = {
+        loaded: chunckedLoaded
+      }
+      return onupload(obj);
+    }
     return new Promise((resolve, reject) => {
-      debugger;
       let request = new XMLHttpRequest()
       request.open('POST', `${baseURL}/api/resources${url}?override=${overwrite}${params}`, true)
       request.setRequestHeader('X-Auth', store.state.jwt)
       if (typeof onupload === 'function') {
-        request.upload.onprogress = onupload
+        request.upload.onprogress = warpOnUpload
       }
 
       request.onload = () => {
@@ -122,7 +131,7 @@ export async function post(url, content = '', overwrite = false, onupload) {
 
   if (!content) {
     //create folder or create new file
-    await partialUpload(url, "", content)
+    await partialUpload(url, {}, content)
     return;
   }
 
@@ -147,8 +156,10 @@ export async function post(url, content = '', overwrite = false, onupload) {
     }
     fileContent = blobSlice.call(allContent, startIndex, endInex);
 
-    debugger;
-    let params = `&fileID=${fileID}&chunckIndex=${index + 1}&totalChunck=${totalChunks}`
+    let params = {
+      fileID: fileID, chunckIndex: index + 1, totalChunck: totalChunks, chunkSize: chunkSize
+    }
+
     await partialUpload(url, params, fileContent).then(() => {
       tryCount = 0;
     }).catch(err => {
