@@ -126,7 +126,6 @@ export async function post(url, content = '', overwrite = false, onupload) {
     return;
   }
 
-  debugger;
   let fileSize = content.size;
   let mb = 1024 * 1024;
   let fileSizeMB = fileSize / mb;
@@ -147,11 +146,12 @@ export async function post(url, content = '', overwrite = false, onupload) {
       endInex = fileSize;
     }
     fileContent = blobSlice.call(allContent, startIndex, endInex);
-    
+
     debugger;
     let params = `&fileID=${fileID}&chunckIndex=${index + 1}&totalChunck=${totalChunks}`
-    await partialUpload(url, params, fileContent).catch(err => {
-      debugger;
+    await partialUpload(url, params, fileContent).then(() => {
+      tryCount = 0;
+    }).catch(err => {
       if (tryCount <= 2) {//one file try three times
         index--;
         tryCount++;
@@ -159,7 +159,6 @@ export async function post(url, content = '', overwrite = false, onupload) {
         throw err;
       }
     });
-    tryCount = 0;
   }
 }
 

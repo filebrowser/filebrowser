@@ -139,7 +139,7 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 			filePath = dir + spieceFileName
 			if totalChunck != chunckIndex {
 				_, err := d.user.Fs.Stat(filePath)
-				if err != nil {
+				if err == nil {
 					//the piece has exist
 					isPieceHasUpload = true
 				}
@@ -152,7 +152,7 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 				return err
 			}
 
-			file, err := d.user.Fs.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
+			file, err = d.user.Fs.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
 			if err != nil {
 				return err
 			}
@@ -172,10 +172,11 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 		if chunckIndex == totalChunck && totalChunckInt > 1 {
 			//merge all spiece files
 			itemPath := ""
+			var err error
 			//create original file
-			file, _err := d.user.Fs.OpenFile(r.URL.Path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0777)
-			if _err != nil {
-				return _err
+			file, err = d.user.Fs.OpenFile(r.URL.Path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0777)
+			if err != nil {
+				return err
 			}
 			defer file.Close()
 

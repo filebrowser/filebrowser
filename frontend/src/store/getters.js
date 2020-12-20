@@ -6,10 +6,12 @@ const getters = {
   isPreview: state => state.previewMode,
   selectedCount: state => state.selected.length,
   progress : state => {
+    /* eslint-disable no-debugger */
+
     if (state.upload.progress.length == 0) {
       return 0;
     }
-
+    debugger;
     let sum = state.upload.progress.reduce((acc, val) => acc + val)
     return Math.ceil(sum / state.upload.size * 100);
   }
