@@ -135,17 +135,17 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 		if isPieceUpload {
 			tempDir := "tempDir_" + fileID + "/"
 			dir += tempDir
-			spieceFileName := chunckIndex + "_" + fileName //spiece file name
+			spieceFileName := chunckIndex + "_" + fileName // spiece file name
 			filePath = dir + spieceFileName
 			if totalChunck != chunckIndex {
 				_, err := d.user.Fs.Stat(filePath)
 				if err == nil {
-					//the piece has exist
+					// the piece has exist
 					isPieceHasUpload = true
 				}
 			}
 		}
-		if isPieceHasUpload == false {
+		if !isPieceHasUpload {
 			err := d.user.Fs.MkdirAll(dir, 0775)
 			if err != nil {
 				return err
@@ -156,22 +156,22 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 				return err
 			}
 			_, err = io.Copy(file, r.Body)
-			file.Close() //close here ,for the last piece will stop delete operater
+			file.Close() // close here ,for the last piece will stop delete operater
 
 			if err != nil {
 				if isPieceUpload {
-					d.user.Fs.Remove(filePath)
+					_ = d.user.Fs.Remove(filePath)
 				}
 				return err
 			}
 		}
 
-		//all Chunck Uploaded
+		// all Chunck Uploaded
 		totalChunckInt, _ := strconv.Atoi(totalChunck)
 		if chunckIndex == totalChunck && totalChunckInt > 1 {
-			//merge all spiece files
+			// merge all spiece files
 			itemPath := ""
-			//create original file
+			// create original file
 			file, err := d.user.Fs.OpenFile(r.URL.Path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0777)
 			if err != nil {
 				return err
@@ -180,7 +180,7 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 			for i := 1; i <= totalChunckInt; i++ {
 				piecefileName := strconv.Itoa(i) + "_" + fileName
 				itemPath = dir + piecefileName
-				spieceFile, err := d.user.Fs.Open(itemPath)
+				spieceFile, err := d.user.Fs.Open(itemPath) // nolint:shadow
 				if err != nil {
 					return err
 				}
@@ -194,7 +194,7 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 			if err = file.Close(); err != nil {
 				return err
 			}
-			//deltet temp folder
+			// deltet temp folder
 			err = d.user.Fs.RemoveAll(dir)
 			if err != nil {
 				fmt.Println(err)
@@ -223,7 +223,7 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 		urlQuery := r.URL.Query()
 		totalChunck := urlQuery.Get("totalChunck")
 
-		//spiece upload can retry
+		// spiece upload can retry
 		if totalChunck == "1" {
 			_ = d.user.Fs.RemoveAll(r.URL.Path)
 		}
