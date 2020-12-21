@@ -75,7 +75,7 @@ const actions = {
       window.removeEventListener('beforeunload', beforeUnload)
       buttons.success('upload')
       context.commit('reset')
-      context.commit('setReload', true, { root: true })
+      context.commit('setReload', { value: true,isReset: false }, { root: true })
     }
 
     if (canProcess) {

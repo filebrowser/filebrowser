@@ -56,11 +56,11 @@ export default {
 
         await Promise.all(promises)
         buttons.success('delete')
-        this.$store.commit('setReload', true)
+        this.$store.commit('setReload', { value: true,isReset: false })
       } catch (e) {
         buttons.done('delete')
         this.$showError(e)
-        if (this.isListing) this.$store.commit('setReload', true)
+        if (this.isListing) this.$store.commit('setReload', { value: true,isReset: false })
       }
     }
   }
