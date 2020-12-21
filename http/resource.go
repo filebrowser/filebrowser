@@ -145,20 +145,19 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 				}
 			}
 		}
-		var file afero.File
 		if isPieceHasUpload == false {
 			err := d.user.Fs.MkdirAll(dir, 0775)
 			if err != nil {
 				return err
 			}
 
-			file, err = d.user.Fs.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
+			file, err := d.user.Fs.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
 			if err != nil {
 				return err
 			}
-			defer file.Close()
-
 			_, err = io.Copy(file, r.Body)
+			file.Close() //close here ,for the last piece will stop delete operater
+
 			if err != nil {
 				if isPieceUpload {
 					d.user.Fs.Remove(filePath)
@@ -172,13 +171,11 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 		if chunckIndex == totalChunck && totalChunckInt > 1 {
 			//merge all spiece files
 			itemPath := ""
-			var err error
 			//create original file
-			file, err = d.user.Fs.OpenFile(r.URL.Path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0777)
+			file, err := d.user.Fs.OpenFile(r.URL.Path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0777)
 			if err != nil {
 				return err
 			}
-			defer file.Close()
 
 			for i := 1; i <= totalChunckInt; i++ {
 				piecefileName := strconv.Itoa(i) + "_" + fileName
@@ -187,25 +184,37 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 				if err != nil {
 					return err
 				}
-				contents, err := ioutil.ReadAll(spieceFile)
-				if err != nil {
+				if _, err = io.Copy(file, spieceFile); err != nil {
 					return err
 				}
-				file.Write(contents)
+				if err = spieceFile.Close(); err != nil {
+					return err
+				}
 			}
-
+			if err = file.Close(); err != nil {
+				return err
+			}
 			//deltet temp folder
-			d.user.Fs.RemoveAll(dir)
+			err = d.user.Fs.RemoveAll(dir)
+			if err != nil {
+				fmt.Println(err)
+				return err
+			}
 		}
 
 		if (chunckIndex == totalChunck && totalChunckInt > 1) || totalChunckInt == 1 {
 			// Gets the info about the file.
+			file, err := d.user.Fs.Open(r.URL.Path)
+			if err != nil {
+				return err
+			}
 			info, err := file.Stat()
 			if err != nil {
 				return err
 			}
 			etag := fmt.Sprintf(`"%x%x"`, info.ModTime().UnixNano(), info.Size())
 			w.Header().Set("ETag", etag)
+			file.Close()
 		}
 		return nil
 	}, action, r.URL.Path, "", d.user)
