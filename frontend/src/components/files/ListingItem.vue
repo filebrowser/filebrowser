@@ -48,7 +48,7 @@ export default {
   props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index'],
   computed: {
     ...mapState(['user', 'selected', 'req', 'user', 'jwt']),
-    ...mapGetters(['selectedCount']),
+    ...mapGetters(['selectedCount', 'isSharing']),
     isSelected () {
       return (this.selected.indexOf(this.index) !== -1)
     },
@@ -63,7 +63,7 @@ export default {
       return this.user.perm.rename
     },
     canDrop () {
-      if (!this.isDir) return false
+      if (!this.isDir || this.isSharing) return false
 
       for (let i of this.selected) {
         if (this.req.items[i].url === this.url) {

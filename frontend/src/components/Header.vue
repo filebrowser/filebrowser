@@ -8,8 +8,8 @@
       <search v-if="isLogged"></search>
     </div>
     <div>
-      <template v-if="isLogged">
-        <button @click="openSearch" :aria-label="$t('buttons.search')" :title="$t('buttons.search')" class="search-button action">
+      <template v-if="isLogged || isSharing">
+        <button v-show="!isSharing" @click="openSearch" :aria-label="$t('buttons.search')" :title="$t('buttons.search')" class="search-button action">
           <i class="material-icons">search</i>
         </button>
 
@@ -18,7 +18,7 @@
         </button>
 
         <!-- Menu that shows on listing AND mobile when there are files selected -->
-        <div id="file-selection" v-if="isMobile && isListing">
+        <div id="file-selection" v-if="isMobile && isListing && !isSharing">
           <span v-if="selectedCount > 0">{{ selectedCount }} selected</span>
           <share-button v-show="showShareButton"></share-button>
           <rename-button v-show="showRenameButton"></rename-button>
@@ -28,7 +28,7 @@
         </div>
 
         <!-- This buttons are shown on a dropdown on mobile phones -->
-        <div class="dropdown" :class="{ active: showMore }">
+        <div id="dropdown" :class="{ active: showMore }">
           <div v-if="!isListing || !isMobile">
             <share-button v-show="showShareButton"></share-button>
             <rename-button v-show="showRenameButton"></rename-button>
@@ -43,18 +43,7 @@
           <upload-button v-show="showUpload"></upload-button>
           <info-button v-show="isFiles"></info-button>
 
-          <button v-show="isListing" @click="toggleMultipleSelection" :aria-label="$t('buttons.selectMultiple')" :title="$t('buttons.selectMultiple')" class="action" >
-            <i class="material-icons">check_circle</i>
-            <span>{{ $t('buttons.select') }}</span>
-          </button>
-        </div>
-      </template>
-      <template v-if="isSharing">
-        <!-- This buttons are shown on a dropdown on mobile phones -->
-        <div class="dropdown" :class="{ active: showMore }">
-          <download-button v-if="sharedSelectedCount > 0"></download-button>
-
-          <button @click="toggleSharedMultipleSelection" :aria-label="$t('buttons.selectMultiple')" :title="$t('buttons.selectMultiple')" class="action" >
+          <button v-show="isListing || (isSharing && req.isDir)" @click="toggleMultipleSelection" :aria-label="$t('buttons.selectMultiple')" :title="$t('buttons.selectMultiple')" class="action" >
             <i class="material-icons">check_circle</i>
             <span>{{ $t('buttons.select') }}</span>
           </button>
@@ -122,16 +111,14 @@ export default {
       'isPreview',
       'isListing',
       'isLogged',
-      'isSharing',
-      'sharedSelectedCount'
+      'isSharing'
     ]),
     ...mapState([
       'req',
       'user',
       'loading',
       'reload',
-      'multiple',
-      'shared'
+      'multiple'
     ]),
     logoURL: () => logoURL,
     isExecEnabled: () => enableExec,
@@ -142,7 +129,7 @@ export default {
       return this.isListing && this.user.perm.create
     },
     showDownloadButton () {
-      return this.isFiles && this.user.perm.download
+      return (this.isFiles && this.user.perm.download) || (this.isSharing && this.selectedCount > 0)
     },
     showDeleteButton () {
       return this.isFiles && (this.isListing
@@ -188,10 +175,6 @@ export default {
     },
     toggleMultipleSelection () {
       this.$store.commit('multiple', !this.multiple)
-      this.resetPrompts()
-    },
-    toggleSharedMultipleSelection () {
-      this.$store.commit('sharedMultiple', !this.shared.multiple)
       this.resetPrompts()
     },
     resetPrompts () {

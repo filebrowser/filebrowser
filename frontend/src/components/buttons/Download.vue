@@ -3,7 +3,6 @@
     <i class="material-icons">file_download</i>
     <span>{{ $t('buttons.download') }}</span>
     <span v-if="selectedCount > 0" class="counter">{{ selectedCount }}</span>
-    <span v-else-if="isSharing && sharedSelectedCount > 0" class="counter">{{ sharedSelectedCount }}</span>
   </button>
 </template>
 
@@ -14,8 +13,8 @@ import { files as api } from '@/api'
 export default {
   name: 'download-button',
   computed: {
-    ...mapState(['req', 'selected', 'shared']),
-    ...mapGetters(['isListing', 'selectedCount', 'isSharing', 'sharedSelectedCount'])
+    ...mapState(['req', 'selected']),
+    ...mapGetters(['isListing', 'selectedCount', 'isSharing'])
   },
   methods: {
     download: function () {
@@ -26,11 +25,6 @@ export default {
 
       if (this.selectedCount === 1 && !this.req.items[this.selected[0]].isDir) {
         api.download(null, this.req.items[this.selected[0]].url)
-        return
-      }
-
-      if (this.sharedSelectedCount === 1 && !this.shared.req.items[this.shared.selected[0]].isDir) {
-        api.download(null, this.shared.req.items[this.shared.selected[0]].url)
         return
       }
 

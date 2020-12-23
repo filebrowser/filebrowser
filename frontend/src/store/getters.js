@@ -4,7 +4,7 @@ const getters = {
   isListing: (state, getters) => getters.isFiles && state.req.isDir,
   isEditor: (state, getters) => getters.isFiles && (state.req.type === 'text' || state.req.type === 'textImmutable'),
   isPreview: state => state.previewMode,
-  isSharing: state =>  state.shared.loaded && state.route.name === 'Share',
+  isSharing: state =>  !state.loading && state.route.name === 'Share',
   selectedCount: state => state.selected.length,
   progress : state => {
     if (state.upload.progress.length == 0) {
@@ -13,8 +13,7 @@ const getters = {
 
     let sum = state.upload.progress.reduce((acc, val) => acc + val)
     return Math.ceil(sum / state.upload.size * 100);
-  },
-  sharedSelectedCount: state => state.shared.selected.length
+  }
 }
 
 export default getters

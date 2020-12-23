@@ -25,20 +25,12 @@ import { files as api } from '@/api'
 export default {
   name: 'download',
   computed: {
-    ...mapState(['selected', 'req', 'shared']),
-    ...mapGetters(['selectedCount', 'isSharing' ,'sharedSelectedCount'])
+    ...mapState(['selected', 'req']),
+    ...mapGetters(['selectedCount'])
   },
   methods: {
     download: function (format) {
-      if (this.isSharing) {
-        let files = []
-
-        for (let i of this.shared.selected) {
-          files.push(this.shared.req.items[i].url)
-        }
-
-        api.download(format, ...files)
-      } else if (this.selectedCount === 0) {
+      if (this.selectedCount === 0) {
         api.download(format, this.$route.path)
       } else {
         let files = []

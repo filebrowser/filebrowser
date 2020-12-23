@@ -58,8 +58,7 @@ export async function put (url, content = '') {
 }
 
 export function download (format, ...files) {
-  const isSharing = store.getters['isSharing']
-  let url = isSharing ? `${baseURL}/api/public/dl/${store.state.shared.hash}` : `${baseURL}/api/raw`
+  let url = store.getters['isSharing'] ? `${baseURL}/api/public/dl/${store.state.hash}` : `${baseURL}/api/raw`
 
   if (files.length === 1) {
     url += removePrefix(files[0]) + '?'
@@ -79,9 +78,7 @@ export function download (format, ...files) {
     url += `algo=${format}&`
   }
 
-  if (!isSharing) {
-    url += `auth=${store.state.jwt}`
-  }
+  url += `auth=${store.state.jwt}`
   window.open(url)
 }
 

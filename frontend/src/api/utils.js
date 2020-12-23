@@ -37,7 +37,7 @@ export function removePrefix (url) {
   if (url.startsWith('/files')) {
     url = url.slice(6)
   } else if (store.getters['isSharing']) {
-    url = url.slice(7 + store.state.shared.hash.length)
+    url = url.slice(7 + store.state.hash.length)
   }
 
   if (url === '') url = '/'

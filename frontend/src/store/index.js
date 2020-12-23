@@ -7,7 +7,18 @@ import upload from './modules/upload'
 Vue.use(Vuex)
 
 const state = {
-  user: null,
+  user: {
+    perm: {
+      admin: false,
+      create: false,
+      delete: false,
+      download: false,
+      execute: false,
+      modify: false,
+      rename: false,
+      share: false
+    }
+  },
   req: {},
   oldReq: {},
   clipboard: {
@@ -25,13 +36,7 @@ const state = {
   showMessage: null,
   showConfirm: null,
   previewMode: false,
-  shared: {
-    req: {},
-    hash: '',
-    loaded: false,
-    selected: [],
-    multiple: false
-  }
+  hash: ''
 }
 
 export default new Vuex.Store({
