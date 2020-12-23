@@ -7,18 +7,7 @@ import upload from './modules/upload'
 Vue.use(Vuex)
 
 const state = {
-  user: {
-    perm: {
-      admin: false,
-      create: false,
-      delete: false,
-      download: false,
-      execute: false,
-      modify: false,
-      rename: false,
-      share: false
-    }
-  },
+  user: null,
   req: {},
   oldReq: {},
   clipboard: {
