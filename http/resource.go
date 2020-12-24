@@ -200,7 +200,7 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 			src = path.Clean("/" + src)
 			dst = path.Clean("/" + dst)
 
-			return d.user.Fs.Rename(src, dst)
+			return fileutils.MoveFile(d.user.Fs, src, dst)
 		default:
 			return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
 		}
