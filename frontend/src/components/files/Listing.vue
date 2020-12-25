@@ -274,7 +274,7 @@ export default {
 
       let action = (overwrite, rename) => {
         api.copy(items, overwrite, rename).then(() => {
-          this.$store.commit('setReload', { value: true,isReset: false })
+          this.$store.commit('setReload', true)
         }).catch(this.$showError)
       }
 
@@ -282,7 +282,7 @@ export default {
         action = (overwrite, rename) => {
           api.move(items, overwrite, rename).then(() => {
             this.$store.commit('resetClipboard')
-            this.$store.commit('setReload', { value: true,isReset: false })
+            this.$store.commit('setReload', true)
           }).catch(this.$showError)
         }
       }
@@ -457,7 +457,7 @@ export default {
         this.$showError(e)
       }
 
-      this.$store.commit('setReload', { value: true,isReset: false })
+      this.$store.commit('setReload', true)
     }
   }
 }

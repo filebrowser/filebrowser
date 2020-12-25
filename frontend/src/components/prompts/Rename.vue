@@ -77,7 +77,7 @@ export default {
           return
         }
 
-        this.$store.commit('setReload', { value: true,isReset: false })
+        this.$store.commit('setReload', true)
       } catch (e) {
         this.$showError(e)
       }

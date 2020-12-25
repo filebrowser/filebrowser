@@ -60,7 +60,7 @@ export default {
           buttons.success('copy')
 
           if (this.$route.path === this.dest) {
-            this.$store.commit('setReload', { value: true,isReset: false })
+            this.$store.commit('setReload', true)
 
             return
           }
