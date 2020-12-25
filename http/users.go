@@ -14,6 +14,10 @@ import (
 	"github.com/filebrowser/filebrowser/v2/users"
 )
 
+var (
+	NonModifiableFieldsForNonAdmin = []string{"Username", "Scope", "LockPassword", "Perm", "Commands", "Rules"}
+)
+
 type modifyUserRequest struct {
 	modifyRequest
 	Data *users.User `json:"data"`
@@ -148,9 +152,9 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 		return http.StatusBadRequest, nil
 	}
 
-	if len(req.Which) == 1 && req.Which[0] == "all" {
+	if len(req.Which) == 0 || (len(req.Which) == 1 && req.Which[0] == "all") {
 		if !d.user.Perm.Admin {
-			return http.StatusForbidden, err
+			return http.StatusForbidden, nil
 		}
 
 		if req.Data.Password != "" {
@@ -169,7 +173,10 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 	}
 
 	for k, v := range req.Which {
-		if v == "password" {
+		v = strings.Title(v)
+		req.Which[k] = v
+
+		if v == "Password" {
 			if !d.user.Perm.Admin && d.user.LockPassword {
 				return http.StatusForbidden, nil
 			}
@@ -180,11 +187,11 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 			}
 		}
 
-		if !d.user.Perm.Admin && (v == "scope" || v == "perm" || v == "username") {
-			return http.StatusForbidden, nil
+		for _, f := range NonModifiableFieldsForNonAdmin {
+			if !d.user.Perm.Admin && v == f {
+				return http.StatusForbidden, nil
+			}
 		}
-
-		req.Which[k] = strings.Title(v)
 	}
 
 	err = d.store.Users.Update(req.Data, req.Which...)
