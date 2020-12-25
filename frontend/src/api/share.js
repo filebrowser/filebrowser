@@ -1,5 +1,9 @@
 import { fetchURL, fetchJSON, removePrefix } from './utils'
 
+export async function list() {
+  return fetchJSON('/api/shares')
+}
+
 export async function getHash(hash) {
   return fetchJSON(`/api/public/share/${hash}`)
 }
