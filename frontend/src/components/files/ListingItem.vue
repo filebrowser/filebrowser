@@ -143,7 +143,7 @@ export default {
 
       let action = (overwrite, rename) => {
         api.move(items, overwrite, rename).then(() => {
-          this.$store.commit('setReload', true)
+          this.$store.commit('setReload', { value: true,isReset: false })
         }).catch(this.$showError)
       }
 
