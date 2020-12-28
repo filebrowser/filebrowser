@@ -8,6 +8,8 @@ import (
 
 // StorageBackend is the interface to implement for a share storage.
 type StorageBackend interface {
+	All() ([]*Link, error)
+	FindByUserID(id uint) ([]*Link, error)
 	GetByHash(hash string) (*Link, error)
 	GetPermanent(path string, id uint) (*Link, error)
 	Gets(path string, id uint) ([]*Link, error)
@@ -23,6 +25,46 @@ type Storage struct {
 // NewStorage creates a share links storage from a backend.
 func NewStorage(back StorageBackend) *Storage {
 	return &Storage{back: back}
+}
+
+// All wraps a StorageBackend.All.
+func (s *Storage) All() ([]*Link, error) {
+	links, err := s.back.All()
+
+	if err != nil {
+		return nil, err
+	}
+
+	for i, link := range links {
+		if link.Expire != 0 && link.Expire <= time.Now().Unix() {
+			if err := s.Delete(link.Hash); err != nil {
+				return nil, err
+			}
+			links = append(links[:i], links[i+1:]...)
+		}
+	}
+
+	return links, nil
+}
+
+// FindByUserID wraps a StorageBackend.FindByUserID.
+func (s *Storage) FindByUserID(id uint) ([]*Link, error) {
+	links, err := s.back.FindByUserID(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for i, link := range links {
+		if link.Expire != 0 && link.Expire <= time.Now().Unix() {
+			if err := s.Delete(link.Hash); err != nil {
+				return nil, err
+			}
+			links = append(links[:i], links[i+1:]...)
+		}
+	}
+
+	return links, nil
 }
 
 // GetByHash wraps a StorageBackend.GetByHash.

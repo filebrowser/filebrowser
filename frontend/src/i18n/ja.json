@@ -124,7 +124,7 @@
     "documentation": "documentation",
     "branding": "Branding",
     "disableExternalLinks": "Disable external links (except documentation)",
-    "brandingHelp": "You can costumize how your File Browser instance looks and feels by changing its name, replacing the logo, adding custom styles and even disable external links to GitHub.\nFor more information about custom branding, please check out the {0}.",
+    "brandingHelp": "You can customize how your File Browser instance looks and feels by changing its name, replacing the logo, adding custom styles and even disable external links to GitHub.\nFor more information about custom branding, please check out the {0}.",
     "admin": "管理者",
     "administrator": "管理者",
     "allowCommands": "コマンドの実行",

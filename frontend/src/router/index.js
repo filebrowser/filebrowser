@@ -9,6 +9,7 @@ import User from '@/views/settings/User'
 import Settings from '@/views/Settings'
 import GlobalSettings from '@/views/settings/Global'
 import ProfileSettings from '@/views/settings/Profile'
+import Shares from '@/views/settings/Shares'
 import Error403 from '@/views/errors/403'
 import Error404 from '@/views/errors/404'
 import Error500 from '@/views/errors/500'
@@ -66,6 +67,11 @@ const router = new Router({
               path: '/settings/profile',
               name: 'Profile Settings',
               component: ProfileSettings
+            },
+            {
+              path: '/settings/shares',
+              name: 'Shares',
+              component: Shares
             },
             {
               path: '/settings/global',

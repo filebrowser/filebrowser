@@ -206,7 +206,7 @@ export default {
         return
       }
 
-      if (!this.singleClick && !event.ctrlKey && !this.$store.state.multiple) this.resetSelected()
+      if (!this.singleClick && !event.ctrlKey && !event.metaKey && !this.$store.state.multiple) this.resetSelected()
       this.addSelected(this.index)
     },
     dblclick: function () {

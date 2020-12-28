@@ -12,6 +12,26 @@ type shareBackend struct {
 	db *storm.DB
 }
 
+func (s shareBackend) All() ([]*share.Link, error) {
+	var v []*share.Link
+	err := s.db.All(&v)
+	if err == storm.ErrNotFound {
+		return v, errors.ErrNotExist
+	}
+
+	return v, err
+}
+
+func (s shareBackend) FindByUserID(id uint) ([]*share.Link, error) {
+	var v []*share.Link
+	err := s.db.Select(q.Eq("UserID", id)).Find(&v)
+	if err == storm.ErrNotFound {
+		return v, errors.ErrNotExist
+	}
+
+	return v, err
+}
+
 func (s shareBackend) GetByHash(hash string) (*share.Link, error) {
 	var v share.Link
 	err := s.db.One("Hash", hash, &v)
