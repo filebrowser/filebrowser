@@ -57,7 +57,7 @@
 
           <div :class="{ active: $store.state.multiple }" id="multiple-selection">
             <p>{{ $t('files.multipleSelectionEnabled') }}</p>
-            <div @click="$store.commit('sharedMultiple', false)" tabindex="0" role="button" :title="$t('files.clear')" :aria-label="$t('files.clear')" class="action">
+            <div @click="$store.commit('multiple', false)" tabindex="0" role="button" :title="$t('files.clear')" :aria-label="$t('files.clear')" class="action">
               <i class="material-icons">clear</i>
             </div>
           </div>
