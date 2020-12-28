@@ -101,7 +101,7 @@ export default {
   },
   data: () => ({
     error: null,
-    filePath: '',
+    path: '',
     showLimit: 500
   }),
   watch: {
@@ -128,28 +128,8 @@ export default {
       if (this.req.type === 'video') return 'movie'
       return 'insert_drive_file'
     },
-    path: function () {
-      let absoluteParts = this.filePath.split('/')
-      let urlParts = this.$route.params.pathMatch.split('/')
-
-      absoluteParts.shift()
-
-      absoluteParts.forEach((_, i) => absoluteParts[i] = encodeURIComponent(absoluteParts[i]))
-      urlParts.forEach((_, i) => urlParts[i] = encodeURIComponent(urlParts[i]))
-
-      if (absoluteParts[absoluteParts.length - 1] === '') absoluteParts.pop()
-      if (urlParts[urlParts.length - 1] === '') urlParts.pop()
-
-      if (urlParts.length === 1) return absoluteParts[absoluteParts.length - 1]
-
-      let len = Math.min(absoluteParts.length, urlParts.length)
-      for (let i = 0; i < len; i++) {
-        if (urlParts[urlParts.length - 1 - i] !== absoluteParts[absoluteParts.length - 1 - i]) return urlParts.slice(urlParts.length - i).join('/')
-      }
-      return absoluteParts.slice(absoluteParts.length - len).join('/')
-    },
     link: function () {
-      return `${baseURL}/api/public/dl/${this.hash}/${this.path}`
+      return `${baseURL}/api/public/dl/${this.hash}${this.path}`
     },
     fullLink: function () {
       return window.location.origin + this.link
@@ -185,8 +165,6 @@ export default {
         }
       }
 
-      breadcrumbs.shift()
-
       if (breadcrumbs.length > 3) {
         while (breadcrumbs.length !== 4) {
           breadcrumbs.shift()
@@ -216,10 +194,10 @@ export default {
 
       try {
         let file = await api.getHash(encodeURIComponent(this.$route.params.pathMatch))
-        this.filePath = file.path
+        this.path = file.path
         if (file.isDir) file.items = file.items.map((item, index) => {
           item.index = index
-          item.url = `/share/${this.hash}/${this.path}/${encodeURIComponent(item.name)}`
+          item.url = `/share/${this.hash}${this.path}/${encodeURIComponent(item.name)}`
           return item
         })
         this.updateRequest(file)
