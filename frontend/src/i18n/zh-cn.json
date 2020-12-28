@@ -245,6 +245,7 @@
   },
   "download": {
     "downloadFile": "下载文件",
-    "downloadFolder": "下载文件夹"
+    "downloadFolder": "下载文件夹",
+    "downloadSelected": "下载已选"
   }
 }

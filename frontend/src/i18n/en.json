@@ -248,6 +248,7 @@
   },
   "download": {
     "downloadFile": "Download File",
-    "downloadFolder": "Download Folder"
+    "downloadFolder": "Download Folder",
+    "downloadSelected": "Download Selected"
   }
 }
