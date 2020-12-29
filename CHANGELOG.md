@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.11.0](https://github.com/filebrowser/filebrowser/compare/v2.10.0...v2.11.0) (2020-12-28)
+
+
+### Features
+
+* add sharing management ([#1178](https://github.com/filebrowser/filebrowser/issues/1178)) (closes [#1000](https://github.com/filebrowser/filebrowser/issues/1000)) ([677bce3](https://github.com/filebrowser/filebrowser/commit/677bce376b024d9ff38f34e74243034fe5a1ec3c))
+* download shared subdirectory ([#1184](https://github.com/filebrowser/filebrowser/issues/1184)) ([fb5b28d](https://github.com/filebrowser/filebrowser/commit/fb5b28d9cbdee10d38fcd719b9fd832121be58ef))
+
+
+### Bug Fixes
+
+* check user input to prevent permission elevation ([#1196](https://github.com/filebrowser/filebrowser/issues/1196)) (closes [#1195](https://github.com/filebrowser/filebrowser/issues/1195)) ([f62806f](https://github.com/filebrowser/filebrowser/commit/f62806f6c9e9c7f392d1b747d65b8fe40b313e89))
+* delete extra remove prefix ([#1186](https://github.com/filebrowser/filebrowser/issues/1186)) ([7a5298a](https://github.com/filebrowser/filebrowser/commit/7a5298a7556f7dcc52f59b8ea76d040d3ddc3d12))
+* move files between different volumes (closes [#1177](https://github.com/filebrowser/filebrowser/issues/1177)) ([58835b7](https://github.com/filebrowser/filebrowser/commit/58835b7e535cc96e1c8a5d85821c1545743ca757))
+* recaptcha race condition ([#1176](https://github.com/filebrowser/filebrowser/issues/1176)) ([ac3673e](https://github.com/filebrowser/filebrowser/commit/ac3673e111afac6616af9650ca07028b6c27e6cd))
+
 ## [2.10.0](https://github.com/filebrowser/filebrowser/compare/v2.9.0...v2.10.0) (2020-11-24)
 
 

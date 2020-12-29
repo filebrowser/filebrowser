@@ -49,7 +49,7 @@
 }
 
 .share__box__items #listing.list .item {
-  cursor: auto;
+  cursor: pointer;
   border-left: 0;
   border-right: 0;
   border-bottom: 0;
@@ -57,5 +57,9 @@
 }
 
 .share__box__items #listing.list .item .name {
-  width: auto;
+  width: 50%;
+}
+
+.share__box__items #listing.list .item .modified {
+  width: 25%;
 }

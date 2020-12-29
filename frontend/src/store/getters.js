@@ -4,6 +4,7 @@ const getters = {
   isListing: (state, getters) => getters.isFiles && state.req.isDir,
   isEditor: (state, getters) => getters.isFiles && (state.req.type === 'text' || state.req.type === 'textImmutable'),
   isPreview: state => state.previewMode,
+  isSharing: state =>  !state.loading && state.route.name === 'Share',
   selectedCount: state => state.selected.length,
   progress : state => {
     if (state.upload.progress.length == 0) {

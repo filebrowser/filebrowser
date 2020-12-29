@@ -58,7 +58,7 @@ export async function put (url, content = '') {
 }
 
 export function download (format, ...files) {
-  let url = `${baseURL}/api/raw`
+  let url = store.getters['isSharing'] ? `${baseURL}/api/public/dl/${store.state.hash}` : `${baseURL}/api/raw`
 
   if (files.length === 1) {
     url += removePrefix(files[0]) + '?'
