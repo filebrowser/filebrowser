@@ -47,13 +47,9 @@ func (d *data) Check(path string) bool {
 	return allow
 }
 
-func (d *data) IsTypeDetectDisabled(path string) bool {
-	for _, rule := range d.user.DisableTypeDetections {
-		if rule.Matches(path) {
-			return true
-		}
-	}
-	return false
+// ReadHeader implements rules.ReadHeader.
+func (d *data) ReadHeader() bool {
+	return d.server.TypeDetectionByHeader
 }
 
 func handle(fn handleFunc, prefix string, store *storage.Storage, server *settings.Server) http.Handler {

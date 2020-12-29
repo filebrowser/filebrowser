@@ -5,7 +5,7 @@ import (
 	"unicode/utf8"
 )
 
-func isBinary(content []byte, _ int) bool {
+func isBinary(content []byte) bool {
 	maybeStr := string(content)
 	runeCnt := utf8.RuneCount(content)
 	runeIndex := 0
