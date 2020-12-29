@@ -95,7 +95,7 @@ export default {
 
       if (old === "search" && !this.active) {
         if (this.reload) {
-          this.setReload({ value: true,isReset: false })
+          this.setReload(true)
         }
 
         document.body.style.overflow = "auto"

@@ -112,8 +112,8 @@ export default {
   },
   watch: {
     '$route': 'fetchData',
-    'reload': function (newV) {
-       if (newV.isReset === false) {
+    'reload': function (value) {
+       if (value === true) {
         this.fetchData()
       }
     }
@@ -133,7 +133,7 @@ export default {
     ...mapMutations([ 'setLoading' ]),
     async fetchData () {
       // Reset view information.
-      this.$store.commit('setReload', { value: false,isReset: true })
+      this.$store.commit('setReload', false)
       this.$store.commit('resetSelected')
       this.$store.commit('multiple', false)
       this.$store.commit('closeHovers')
