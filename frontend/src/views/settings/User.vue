@@ -91,7 +91,6 @@ export default {
             username: '',
             passsword: '',
             rules: [],
-            disableTypeDetections: [],
             lockPassword: false,
             id: 0
           }
