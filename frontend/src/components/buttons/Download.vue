@@ -14,11 +14,11 @@ export default {
   name: 'download-button',
   computed: {
     ...mapState(['req', 'selected']),
-    ...mapGetters(['isListing', 'selectedCount'])
+    ...mapGetters(['isListing', 'selectedCount', 'isSharing'])
   },
   methods: {
     download: function () {
-      if (!this.isListing) {
+      if (!this.isListing && !this.isSharing) {
         api.download(null, this.$route.path)
         return
       }

@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"net/http"
 	"path"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -22,6 +23,34 @@ func withPermShare(fn handleFunc) handleFunc {
 		return fn(w, r, d)
 	})
 }
+
+var shareListHandler = withPermShare(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	var (
+		s   []*share.Link
+		err error
+	)
+	if d.user.Perm.Admin {
+		s, err = d.store.Share.All()
+	} else {
+		s, err = d.store.Share.FindByUserID(d.user.ID)
+	}
+	if err == errors.ErrNotExist {
+		return renderJSON(w, r, []*share.Link{})
+	}
+
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	sort.Slice(s, func(i, j int) bool {
+		if s[i].UserID != s[j].UserID {
+			return s[i].UserID < s[j].UserID
+		}
+		return s[i].Expire < s[j].Expire
+	})
+
+	return renderJSON(w, r, s)
+})
 
 var shareGetsHandler = withPermShare(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	s, err := d.store.Share.Gets(r.URL.Path, d.user.ID)

@@ -8,8 +8,8 @@
       <search v-if="isLogged"></search>
     </div>
     <div>
-      <template v-if="isLogged">
-        <button @click="openSearch" :aria-label="$t('buttons.search')" :title="$t('buttons.search')" class="search-button action">
+      <template v-if="isLogged || isSharing">
+        <button v-show="!isSharing" @click="openSearch" :aria-label="$t('buttons.search')" :title="$t('buttons.search')" class="search-button action">
           <i class="material-icons">search</i>
         </button>
 
@@ -18,7 +18,7 @@
         </button>
 
         <!-- Menu that shows on listing AND mobile when there are files selected -->
-        <div id="file-selection" v-if="isMobile && isListing">
+        <div id="file-selection" v-if="isMobile && isListing && !isSharing">
           <span v-if="selectedCount > 0">{{ selectedCount }} selected</span>
           <share-button v-show="showShareButton"></share-button>
           <rename-button v-show="showRenameButton"></rename-button>
@@ -37,13 +37,13 @@
             <delete-button v-show="showDeleteButton"></delete-button>
           </div>
 
-          <shell-button v-if="isExecEnabled && user.perm.execute" />
+          <shell-button v-if="isExecEnabled && !isSharing && user.perm.execute" />
           <switch-button v-show="isListing"></switch-button>
           <download-button v-show="showDownloadButton"></download-button>
           <upload-button v-show="showUpload"></upload-button>
           <info-button v-show="isFiles"></info-button>
 
-          <button v-show="isListing" @click="toggleMultipleSelection" :aria-label="$t('buttons.selectMultiple')" :title="$t('buttons.selectMultiple')" class="action" >
+          <button v-show="isListing || (isSharing && req.isDir)" @click="toggleMultipleSelection" :aria-label="$t('buttons.selectMultiple')" :title="$t('buttons.selectMultiple')" class="action" >
             <i class="material-icons">check_circle</i>
             <span>{{ $t('buttons.select') }}</span>
           </button>
@@ -110,7 +110,8 @@ export default {
       'isEditor',
       'isPreview',
       'isListing',
-      'isLogged'
+      'isLogged',
+      'isSharing'
     ]),
     ...mapState([
       'req',
@@ -128,7 +129,7 @@ export default {
       return this.isListing && this.user.perm.create
     },
     showDownloadButton () {
-      return this.isFiles && this.user.perm.download
+      return (this.isFiles && this.user.perm.download) || (this.isSharing && this.selectedCount > 0)
     },
     showDeleteButton () {
       return this.isFiles && (this.isListing
@@ -156,7 +157,7 @@ export default {
         : this.user.perm.create)
     },
     showMore () {
-      return this.isFiles && this.$store.state.show === 'more'
+      return (this.isFiles || this.isSharing) && this.$store.state.show === 'more'
     },
     showOverlay () {
       return this.showMore
