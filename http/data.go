@@ -47,11 +47,6 @@ func (d *data) Check(path string) bool {
 	return allow
 }
 
-// ReadHeader implements rules.ReadHeader.
-func (d *data) ReadHeader() bool {
-	return d.server.TypeDetectionByHeader
-}
-
 func handle(fn handleFunc, prefix string, store *storage.Storage, server *settings.Server) http.Handler {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		settings, err := store.Settings.Get()

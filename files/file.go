@@ -42,11 +42,12 @@ type FileInfo struct {
 
 // FileOptions are the options when getting a file info.
 type FileOptions struct {
-	Fs      afero.Fs
-	Path    string
-	Modify  bool
-	Expand  bool
-	Checker rules.Checker
+	Fs         afero.Fs
+	Path       string
+	Modify     bool
+	Expand     bool
+	ReadHeader bool
+	Checker    rules.Checker
 }
 
 // NewFileInfo creates a File object from a path and a given user. This File
@@ -75,7 +76,7 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 
 	if opts.Expand {
 		if file.IsDir {
-			if err := file.readListing(opts.Checker); err != nil { //nolint:shadow
+			if err := file.readListing(opts.Checker, opts.ReadHeader); err != nil { //nolint:shadow
 				return nil, err
 			}
 			return file, nil
@@ -223,7 +224,7 @@ func (i *FileInfo) detectSubtitles() {
 	}
 }
 
-func (i *FileInfo) readListing(checker rules.Checker) error {
+func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
 	afs := &afero.Afero{Fs: i.Fs}
 	dir, err := afs.ReadDir(i.Path)
 	if err != nil {
@@ -269,7 +270,7 @@ func (i *FileInfo) readListing(checker rules.Checker) error {
 		} else {
 			listing.NumFiles++
 
-			err := file.detectType(true, false, checker.ReadHeader())
+			err := file.detectType(true, false, readHeader)
 			if err != nil {
 				return err
 			}
