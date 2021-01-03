@@ -63,7 +63,7 @@ export default {
   },
   mounted() {
     if (!this.decodeUTIF()) {
-      this.$refs.imagex.src = this.src
+      this.$refs.imgex.src = this.src
     }
     let container = this.$refs.container
     this.classList.forEach(className => container.classList.add(className))
