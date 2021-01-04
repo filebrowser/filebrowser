@@ -38,6 +38,7 @@
     <template v-if="!loading">
       <div class="preview">
         <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
+        <ThreeViewer v-else-if="req.type == '3dobject'" :src="raw"></ThreeViewer>
         <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
         <video v-else-if="req.type == 'video'" :src="raw" autoplay controls>
           <track
@@ -72,8 +73,10 @@ import DeleteButton from '@/components/buttons/Delete'
 import RenameButton from '@/components/buttons/Rename'
 import DownloadButton from '@/components/buttons/Download'
 import ExtendedImage from './ExtendedImage'
+import ThreeViewer from './ThreeViewer'
 
 const mediaTypes = [
+  "3dobject",
   "image",
   "video",
   "audio",
@@ -88,7 +91,8 @@ export default {
     DeleteButton,
     RenameButton,
     DownloadButton,
-    ExtendedImage
+    ExtendedImage,
+    ThreeViewer
   },
   data: function () {
     return {
