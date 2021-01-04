@@ -175,7 +175,7 @@ func (i *FileInfo) detectType(modify, saveContent bool) error {
 	case strings.HasPrefix(mimetype, "image"):
 		i.Type = "image"
 		return nil
-	case strings.HasPrefix(mimetype, "application/object"):
+	case mimetype == "application/octet-stream" && is3DModelFile(i.Extension):
 		i.Type = "3dobject"
 		return nil
 	case isBinary(buffer[:n], n) || i.Size > 10*1024*1024: // 10 MB
@@ -200,6 +200,21 @@ func (i *FileInfo) detectType(modify, saveContent bool) error {
 	}
 
 	return nil
+}
+
+func is3DModelFile(ext string) bool {
+	switch strings.ToLower(ext) {
+	case
+		".obj",
+		".json",
+		".stl",
+		".dae",
+		".ply",
+		".fbx",
+		".gltf":
+		return true
+	}
+	return false
 }
 
 func (i *FileInfo) detectSubtitles() {
