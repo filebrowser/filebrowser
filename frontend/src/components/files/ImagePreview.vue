@@ -1,13 +1,13 @@
 <template>
   <div id="previewer">
-    <div class="bar">
+    <div class="image-bar">
       <button @click="back" class="action" :title="$t('files.closePreview')" :aria-label="$t('files.closePreview')" id="close">
         <i class="material-icons">close</i>
       </button>
 
       <div class="title">{{ this.name }}</div>
 
-      <preview-size-button v-if="isResizeEnabled && this.req.type === 'image'" @change-size="toggleSize" v-bind:size="fullSize" :disabled="loading"></preview-size-button>
+      <preview-size-button v-if="isResizeEnabled" @change-size="toggleSize" v-bind:size="fullSize" :disabled="loading"></preview-size-button>
       <button @click="openMore" id="more" :aria-label="$t('buttons.more')" :title="$t('buttons.more')" class="action">
         <i class="material-icons">more_vert</i>
       </button>
@@ -37,22 +37,7 @@
 
     <template v-if="!loading">
       <div class="preview">
-        <audio v-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
-        <video v-else-if="req.type == 'video'" :src="raw" autoplay controls>
-          <track
-            kind="captions"
-            v-for="(sub, index) in subtitles"
-            :key="index"
-            :src="sub"
-            :label="'Subtitle ' + index" :default="index === 0">
-          Sorry, your browser doesn't support embedded videos,
-          but don't worry, you can <a :href="download">download it</a>
-          and watch it with your favorite video player!
-        </video>
-        <object v-else-if="req.extension.toLowerCase() == '.pdf'" class="pdf" :data="raw"></object>
-        <a v-else-if="req.type == 'blob'" :href="download">
-          <h2 class="message">{{ $t('buttons.download') }} <i class="material-icons">file_download</i></h2>
-        </a>
+        <ExtendedImage :src="raw"></ExtendedImage>
       </div>
     </template>
 
@@ -70,21 +55,17 @@ import InfoButton from '@/components/buttons/Info'
 import DeleteButton from '@/components/buttons/Delete'
 import RenameButton from '@/components/buttons/Rename'
 import DownloadButton from '@/components/buttons/Download'
-
-const mediaTypes = [
-  "video",
-  "audio",
-  "blob"
-]
+import ExtendedImage from './ExtendedImage'
 
 export default {
-  name: 'preview',
+  name: 'image-preview',
   components: {
     PreviewSizeButton,
     InfoButton,
     DeleteButton,
     RenameButton,
-    DownloadButton
+    DownloadButton,
+    ExtendedImage
   },
   data: function () {
     return {
@@ -92,7 +73,6 @@ export default {
       nextLink: '',
       listing: null,
       name: '',
-      subtitles: [],
       fullSize: false
     }
   },
@@ -108,7 +88,7 @@ export default {
       return `${baseURL}/api/raw${url.encodePath(this.req.path)}?auth=${this.jwt}`
     },
     previewUrl () {
-      if (this.req.type === 'image' && !this.fullSize) {
+      if (!this.fullSize) {
         return `${baseURL}/api/preview/big${url.encodePath(this.req.path)}?auth=${this.jwt}`
       }
       return `${baseURL}/api/raw${url.encodePath(this.req.path)}?auth=${this.jwt}`
@@ -133,14 +113,20 @@ export default {
     this.$store.commit('setPreviewMode', true)
     this.listing = this.oldReq.items
     this.$root.$on('preview-deleted', this.deleted)
+    this.$root.$on('gallery-nav', this.nav)
     this.updatePreview()
   },
   beforeDestroy () {
     window.removeEventListener('keydown', this.key)
     this.$store.commit('setPreviewMode', false)
     this.$root.$off('preview-deleted', this.deleted)
+    this.$root.$off('gallery-nav', this.nav)
   },
   methods: {
+    nav(e) {
+      if (e===0 && this.hasPrevious) this.prev()
+      else if (e===1 && this.hasNext) this.next()
+    },
     deleted () {
       this.listing = this.listing.filter(item => item.name !== this.name)
 
@@ -202,14 +188,14 @@ export default {
         }
 
         for (let j = i - 1; j >= 0; j--) {
-          if (mediaTypes.includes(this.listing[j].type)) {
+          if (this.listing[j].type === 'image') {
             this.previousLink = this.listing[j].url
             break
           }
         }
 
         for (let j = i + 1; j < this.listing.length; j++) {
-          if (mediaTypes.includes(this.listing[j].type)) {
+          if (this.listing[j].type === 'image') {
             this.nextLink = this.listing[j].url
             break
           }

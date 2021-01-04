@@ -4,6 +4,7 @@
     ref="container"
     @touchstart="touchStart"
     @touchmove="touchMove"
+    @touchend="touchEnd"
     @dblclick="zoomAuto"
     @mousedown="mousedownStart"
     @mousemove="mouseMove"
@@ -29,7 +30,7 @@ export default {
     },
     minScale: {
       type: Number,
-      default: () => 0.25
+      default: () => 1
     },
     classList: {
       type: Array,
@@ -50,6 +51,8 @@ export default {
       lastX: null,
       lastY: null,
       inDrag: false,
+      touches: 0,
+      navOffset: 50,
       lastTouchDistance: 0,
       moveDisabled: false,
       disabledTimer: null,
@@ -79,12 +82,69 @@ export default {
   },
   watch: {
     src: function () {
-      this.scale = 1
-      this.setZoom()
       this.setCenter()
     }
   },
   methods: {
+    fit() {
+      let img = this.$refs.imgex
+
+      const wScale = window.innerWidth / img.clientWidth
+      const hScale = window.innerHeight / img.clientHeight
+
+      this.scale = wScale < hScale? wScale: hScale
+      this.minScale = this.scale
+      this.setZoom()
+    },
+    refit() {
+      const target = this.fitScreenTarget()
+      this.doMove(target[0], target[1])
+    },
+    fitScreenTarget() {
+      if (this.scale <= this.minScale) {
+        let style = this.$refs.imgex.style
+        let posX = this.pxStringToNumber(style.left)
+        let posY = this.pxStringToNumber(style.top)
+        return [this.position.center.x - posX, this.position.center.y - posY]
+      }
+      else {
+        let img = this.$refs.imgex
+
+        const rect = img.getBoundingClientRect()
+        const width = window.innerWidth
+        const height = window.innerHeight
+
+        let x = 0,y = 0
+
+        // left out of viewport
+        if (rect.left < 0 && rect.right < width) x = width - rect.right
+
+        // right out of viewport
+        else if (rect.left > 0 && rect.right > width) x = -rect.left
+
+        // top out of viewport
+        if (rect.top < 0 && rect.bottom < height) y = height - rect.bottom
+
+        // bottom out of viewport
+        else if (rect.top > 0 && rect.bottom > height) y = -rect.top
+
+        return [x,y]
+      }
+    },
+    checkNav(x) {
+      if (this.scale <= this.minScale) {
+        if (x > this.navOffset) this.$root.$emit('gallery-nav', 0)
+        else if (x < -this.navOffset) this.$root.$emit('gallery-nav', 1)
+      } else {
+        let img = this.$refs.imgex
+
+        const rect = img.getBoundingClientRect()
+        const width = window.innerWidth
+
+        if (rect.left > this.navOffset && rect.right > width + this.navOffset) this.$root.$emit('gallery-nav', 0)
+        else if (rect.left < - this.navOffset && rect.right < width - this.navOffset) this.$root.$emit('gallery-nav', 1)
+      }
+    },
     onLoad() {
       let img = this.$refs.imgex
 
@@ -102,6 +162,7 @@ export default {
     },
     onMouseUp() {
       this.inDrag = false
+      this.refit()
     },
     onResize: throttle(function() {
       if (this.imageLoaded) {
@@ -113,11 +174,13 @@ export default {
       let container = this.$refs.container
       let img = this.$refs.imgex
 
-      this.position.center.x = Math.floor((container.clientWidth - img.clientWidth) / 2)
-      this.position.center.y = Math.floor((container.clientHeight - img.clientHeight) / 2)
+      this.position.center.x = Math.floor((window.innerWidth - img.clientWidth) / 2 - container.offsetLeft)
+      this.position.center.y = Math.floor((window.innerHeight - img.clientHeight) / 2 - container.offsetTop)
 
       img.style.left = this.position.center.x + 'px'
       img.style.top = this.position.center.y + 'px'
+
+      this.fit()
     },
     mousedownStart(event) {
       this.lastX = null
@@ -128,6 +191,7 @@ export default {
     mouseMove(event) {
       if (!this.inDrag) return
       this.doMove(event.movementX, event.movementY)
+      this.checkNav(event.movementX)
       event.preventDefault()
     },
     mouseUp(event) {
@@ -138,6 +202,15 @@ export default {
       this.lastX = null
       this.lastY = null
       this.lastTouchDistance = null
+
+      setTimeout(() => {
+        this.touches = 0
+      }, 300)
+
+      this.touches++
+      if (this.touches > 1) {
+        this.zoomAuto(event)
+      }
       event.preventDefault()
     },
     zoomAuto(event) {
@@ -192,6 +265,12 @@ export default {
         this.lastX = event.targetTouches[0].pageX
         this.lastY = event.targetTouches[0].pageY
         this.doMove(x, y)
+        this.checkNav(x)
+      }
+    },
+    touchEnd(event) {
+      if (event.targetTouches.length === 0) {
+        this.refit()
       }
     },
     doMove(x, y) {
@@ -231,7 +310,6 @@ export default {
 <style>
 .image-ex-container {
   margin: auto;
-  overflow: hidden;
   position: relative;
 }
 

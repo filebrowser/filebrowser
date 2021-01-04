@@ -16,6 +16,7 @@
       <forbidden v-else-if="error.message === '403'"></forbidden>
       <internal-error v-else></internal-error>
     </div>
+    <image-preview v-else-if="isImagePreview"></image-preview>
     <preview v-else-if="isPreview"></preview>
     <editor v-else-if="isEditor"></editor>
     <listing :class="{ multiple }" v-else-if="isListing"></listing>
@@ -32,6 +33,7 @@ import Forbidden from './errors/403'
 import NotFound from './errors/404'
 import InternalError from './errors/500'
 import Preview from '@/components/files/Preview'
+import ImagePreview from "@/components/files/ImagePreview"
 import Listing from '@/components/files/Listing'
 import { files as api } from '@/api'
 import { mapGetters, mapState, mapMutations } from 'vuex'
@@ -43,6 +45,7 @@ function clean (path) {
 export default {
   name: 'files',
   components: {
+    ImagePreview,
     Forbidden,
     NotFound,
     InternalError,
@@ -65,8 +68,11 @@ export default {
       'loading',
       'show'
     ]),
+    isImagePreview () {
+      return (!this.loading && !this.isListing && !this.isEditor || this.loading && this.$store.state.previewMode) && this.req.type === 'image'
+    },
     isPreview () {
-      return !this.loading && !this.isListing && !this.isEditor || this.loading && this.$store.state.previewMode
+      return (!this.loading && !this.isListing && !this.isEditor || this.loading && this.$store.state.previewMode) && this.req.type !== 'image'
     },
     breadcrumbs () {
       let parts = this.$route.path.split('/')
