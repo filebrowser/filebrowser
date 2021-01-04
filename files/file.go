@@ -175,7 +175,7 @@ func (i *FileInfo) detectType(modify, saveContent bool) error {
 	case strings.HasPrefix(mimetype, "image"):
 		i.Type = "image"
 		return nil
-	case mimetype == "application/octet-stream" && is3DModelFile(i.Extension):
+	case is3DModelFile(i.Extension):
 		i.Type = "3dobject"
 		return nil
 	case isBinary(buffer[:n], n) || i.Size > 10*1024*1024: // 10 MB
