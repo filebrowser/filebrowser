@@ -218,7 +218,7 @@ export default {
           if (this.isGallery && this.listing[j].type === 'image') {
             this.previousLink = this.listing[j].url
             break
-          } else if (mediaTypes.includes(this.listing[j].type)) {
+          } else if (!this.isGallery && mediaTypes.includes(this.listing[j].type)) {
             this.previousLink = this.listing[j].url
             break
           }
@@ -228,7 +228,7 @@ export default {
           if (this.isGallery && this.listing[j].type === 'image') {
             this.nextLink = this.listing[j].url
             break
-          } else if (mediaTypes.includes(this.listing[j].type)) {
+          } else if (!this.isGallery && mediaTypes.includes(this.listing[j].type)) {
             this.nextLink = this.listing[j].url
             break
           }
