@@ -139,7 +139,7 @@
   color: #fff;
 }
 
-#previewer .image-bar {
+#previewer .gallery-bar {
   width: 100%;
   position: absolute;
   z-index: 2;
@@ -151,15 +151,15 @@
   transition: opacity 0.1s ease;
 }
 
-#previewer .image-bar:hover {
+#previewer .gallery-bar:hover {
   opacity: 1;
 }
 
-#previewer .image-bar > * {
+#previewer .gallery-bar > * {
   flex: 0 0 auto;
 }
 
-#previewer .image-bar .title {
+#previewer .gallery-bar .title {
   display: block;
   flex: 1 1 auto;
   padding: 0 1em;

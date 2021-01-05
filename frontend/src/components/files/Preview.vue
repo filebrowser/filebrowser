@@ -1,13 +1,13 @@
 <template>
   <div id="previewer">
-    <div class="bar">
+    <div :class="isGallery ? 'gallery-bar' : 'bar'">
       <button @click="back" class="action" :title="$t('files.closePreview')" :aria-label="$t('files.closePreview')" id="close">
         <i class="material-icons">close</i>
       </button>
 
       <div class="title">{{ this.name }}</div>
 
-      <preview-size-button v-if="isResizeEnabled && this.req.type === 'image'" @change-size="toggleSize" v-bind:size="fullSize" :disabled="loading"></preview-size-button>
+      <preview-size-button v-if="isResizeEnabled && req.type === 'image'" @change-size="toggleSize" v-bind:size="fullSize" :disabled="loading"></preview-size-button>
       <button @click="openMore" id="more" :aria-label="$t('buttons.more')" :title="$t('buttons.more')" class="action">
         <i class="material-icons">more_vert</i>
       </button>
@@ -37,7 +37,8 @@
 
     <template v-if="!loading">
       <div class="preview">
-        <audio v-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
+        <ExtendedImage v-if="isGallery" :src="raw"></ExtendedImage>
+        <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
         <video v-else-if="req.type == 'video'" :src="raw" autoplay controls>
           <track
             kind="captions"
@@ -70,6 +71,7 @@ import InfoButton from '@/components/buttons/Info'
 import DeleteButton from '@/components/buttons/Delete'
 import RenameButton from '@/components/buttons/Rename'
 import DownloadButton from '@/components/buttons/Download'
+import ExtendedImage from './ExtendedImage'
 
 const mediaTypes = [
   "video",
@@ -84,7 +86,8 @@ export default {
     InfoButton,
     DeleteButton,
     RenameButton,
-    DownloadButton
+    DownloadButton,
+    ExtendedImage
   },
   data: function () {
     return {
@@ -93,7 +96,8 @@ export default {
       listing: null,
       name: '',
       subtitles: [],
-      fullSize: false
+      fullSize: false,
+      isGallery: false
     }
   },
   computed: {
@@ -128,19 +132,28 @@ export default {
       this.updatePreview()
     }
   },
+  created() {
+    if (this.req.type === 'image') this.isGallery = true
+  },
   async mounted () {
     window.addEventListener('keydown', this.key)
     this.$store.commit('setPreviewMode', true)
     this.listing = this.oldReq.items
     this.$root.$on('preview-deleted', this.deleted)
+    if (this.isGallery) this.$root.$on('gallery-nav', this.nav)
     this.updatePreview()
   },
   beforeDestroy () {
     window.removeEventListener('keydown', this.key)
     this.$store.commit('setPreviewMode', false)
     this.$root.$off('preview-deleted', this.deleted)
+    if (this.isGallery) this.$root.$off('gallery-nav', this.nav)
   },
   methods: {
+    nav(e) {
+      if (e===0 && this.hasPrevious) this.prev()
+      else if (e===1 && this.hasNext) this.next()
+    },
     deleted () {
       this.listing = this.listing.filter(item => item.name !== this.name)
 
@@ -202,14 +215,20 @@ export default {
         }
 
         for (let j = i - 1; j >= 0; j--) {
-          if (mediaTypes.includes(this.listing[j].type)) {
+          if (this.isGallery && this.listing[j].type === 'image') {
+            this.previousLink = this.listing[j].url
+            break
+          } else if (mediaTypes.includes(this.listing[j].type)) {
             this.previousLink = this.listing[j].url
             break
           }
         }
 
         for (let j = i + 1; j < this.listing.length; j++) {
-          if (mediaTypes.includes(this.listing[j].type)) {
+          if (this.isGallery && this.listing[j].type === 'image') {
+            this.nextLink = this.listing[j].url
+            break
+          } else if (mediaTypes.includes(this.listing[j].type)) {
             this.nextLink = this.listing[j].url
             break
           }

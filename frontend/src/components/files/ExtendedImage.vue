@@ -52,7 +52,7 @@ export default {
       lastY: null,
       inDrag: false,
       touches: 0,
-      navOffset: 50,
+      navThreshold: 50,
       lastTouchDistance: 0,
       moveDisabled: false,
       disabledTimer: null,
@@ -92,7 +92,7 @@ export default {
       const wScale = window.innerWidth / img.clientWidth
       const hScale = window.innerHeight / img.clientHeight
 
-      this.scale = wScale < hScale? wScale: hScale
+      this.scale = Math.min(wScale, hScale)
       this.minScale = this.scale
       this.setZoom()
     },
@@ -117,32 +117,31 @@ export default {
         let x = 0,y = 0
 
         // left out of viewport
-        if (rect.left < 0 && rect.right < width) x = width - rect.right
-
+        if (rect.left < 0 && rect.right < width) x = Math.min(-rect.left, width - rect.right)
         // right out of viewport
-        else if (rect.left > 0 && rect.right > width) x = -rect.left
+        else if (rect.left > 0 && rect.right > width) x = Math.min(-rect.left, width - rect.right)
 
         // top out of viewport
-        if (rect.top < 0 && rect.bottom < height) y = height - rect.bottom
+        if (rect.top < 0 && rect.bottom < height) y = Math.min(-rect.top, height - rect.bottom)
 
         // bottom out of viewport
-        else if (rect.top > 0 && rect.bottom > height) y = -rect.top
+        else if (rect.top > 0 && rect.bottom > height) y = Math.min(-rect.top, height - rect.bottom)
 
         return [x,y]
       }
     },
     checkNav(x) {
       if (this.scale <= this.minScale) {
-        if (x > this.navOffset) this.$root.$emit('gallery-nav', 0)
-        else if (x < -this.navOffset) this.$root.$emit('gallery-nav', 1)
+        if (x > this.navThreshold) this.$root.$emit('gallery-nav', 0)
+        else if (x < -this.navThreshold) this.$root.$emit('gallery-nav', 1)
       } else {
         let img = this.$refs.imgex
 
         const rect = img.getBoundingClientRect()
         const width = window.innerWidth
 
-        if (rect.left > this.navOffset && rect.right > width + this.navOffset) this.$root.$emit('gallery-nav', 0)
-        else if (rect.left < - this.navOffset && rect.right < width - this.navOffset) this.$root.$emit('gallery-nav', 1)
+        if (x > this.navThreshold && rect.left > this.navThreshold && rect.right > width + this.navThreshold) this.$root.$emit('gallery-nav', 0)
+        else if (x < -this.navThreshold && rect.left < - this.navThreshold && rect.right < width - this.navThreshold) this.$root.$emit('gallery-nav', 1)
       }
     },
     onLoad() {
@@ -214,18 +213,8 @@ export default {
       event.preventDefault()
     },
     zoomAuto(event) {
-      switch (this.scale) {
-        case 1:
-          this.scale = 2
-          break
-        case 2:
-          this.scale = 4
-          break
-        default:
-        case 4:
-          this.scale = 1
-          break
-      }
+      if (this.minScale <= this.scale && this.scale < 2 * this.minScale) this.scale *= 2
+      else this.scale /= 2
       this.setZoom()
       event.preventDefault()
     },
@@ -300,6 +289,7 @@ export default {
       this.scale = this.scale < this.minScale ? this.minScale : this.scale
       this.scale = this.scale > this.maxScale ? this.maxScale : this.scale
       this.$refs.imgex.style.transform = `scale(${this.scale})`
+      this.refit()
     },
     pxStringToNumber(style) {
       return +style.replace("px", "")
