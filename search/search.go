@@ -29,6 +29,8 @@ func Search(fs afero.Fs, scope, query string, checker rules.Checker, found func(
 		originalPath = strings.TrimPrefix(originalPath, "/")
 		originalPath = "/" + originalPath
 		path := originalPath
+		originalPath = strings.TrimPrefix(originalPath, scope)
+		originalPath = strings.TrimPrefix(originalPath, "/")
 
 		if path == scope {
 			return nil
@@ -43,25 +45,18 @@ func Search(fs afero.Fs, scope, query string, checker rules.Checker, found func(
 		}
 
 		if len(search.Conditions) > 0 {
-			match := false
-
 			for _, t := range search.Conditions {
 				if t(path) {
-					match = true
-					break
+					return found(originalPath, f)
 				}
 			}
 
-			if !match {
-				return nil
-			}
+			return nil
 		}
 
 		if len(search.Terms) > 0 {
 			for _, term := range search.Terms {
 				if strings.Contains(path, term) {
-					originalPath = strings.TrimPrefix(originalPath, scope)
-					originalPath = strings.TrimPrefix(originalPath, "/")
 					return found(originalPath, f)
 				}
 			}
