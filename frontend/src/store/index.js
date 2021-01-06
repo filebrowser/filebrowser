@@ -25,7 +25,12 @@ const state = {
   showMessage: null,
   showConfirm: null,
   previewMode: false,
-  hash: ''
+  hash: '',
+  lastViewed: {
+    path: '',
+    clicked: '',
+    pageOffset: 0
+  }
 }
 
 export default new Vuex.Store({

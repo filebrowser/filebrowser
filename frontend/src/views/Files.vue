@@ -63,7 +63,8 @@ export default {
       'reload',
       'multiple',
       'loading',
-      'show'
+      'show',
+      'lastViewed'
     ]),
     isPreview () {
       return !this.loading && !this.isListing && !this.isEditor || this.loading && this.$store.state.previewMode
@@ -111,7 +112,7 @@ export default {
     this.fetchData()
   },
   watch: {
-    '$route': 'fetchData',
+    '$route': 'nav',
     'reload': function () {
       this.fetchData()
     }
@@ -129,6 +130,43 @@ export default {
   },
   methods: {
     ...mapMutations([ 'setLoading' ]),
+    async nav() {
+      if (!this.isPreview && !this.isEditor && clean(`/${this.$route.params.pathMatch}`) !== clean(this.lastViewed.path) && clean(`/${this.$route.params.pathMatch}`).startsWith(clean(this.lastViewed.path))) {
+        let dirs = clean(this.$route.fullPath).split("/")
+
+        this.$store.commit('setLastViewed', {
+          path: this.req.path,
+          clicked: decodeURIComponent(dirs[dirs.length - 1]),
+          pageOffset: window.pageYOffset
+        })
+        this.fetchData()
+      } else if (clean(this.lastViewed.path) === clean(`/${this.$route.params.pathMatch}`)) {
+        await this.fetchData()
+
+        let offset = 1000, oldPageOffset = 0, pageOffset = window.pageYOffset, _this = this
+        let int = setInterval(function() {
+          window.scrollTo(0, offset)
+          oldPageOffset = pageOffset
+          pageOffset = window.pageYOffset
+          if (offset >= _this.lastViewed.pageOffset || oldPageOffset === pageOffset) clearInterval(int);
+          offset += Math.min(1000, _this.lastViewed.pageOffset - offset)
+        }, 20);
+
+        for (let i = 0; i < this.req.items.length; i++) {
+          if (this.req.items[i].name === this.lastViewed.clicked) {
+            this.$store.commit('addSelected', i)
+            break
+          }
+        }
+      } else {
+        this.$store.commit('setLastViewed', {
+          path: '',
+          clicked: '',
+          pageOffset: 0
+        })
+        this.fetchData()
+      }
+    },
     async fetchData () {
       // Reset view information.
       this.$store.commit('setReload', false)

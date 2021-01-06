@@ -88,6 +88,7 @@ const mutations = {
     state.previewMode = value
   },
   setHash: (state, value) => (state.hash = value),
+  setLastViewed: (state, value) => (state.lastViewed = value)
 }
 
 export default mutations
