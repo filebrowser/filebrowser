@@ -38,7 +38,7 @@
     <template v-if="!loading">
       <div class="preview">
         <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
-        <ThreeViewer v-else-if="req.type == '3dobject'" :src="raw"></ThreeViewer>
+        <ThreeViewer v-else-if="is3DModelFile(req)" :src="raw"></ThreeViewer>
         <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
         <video v-else-if="req.type == 'video'" :src="raw" autoplay controls>
           <track
@@ -76,7 +76,6 @@ import ExtendedImage from './ExtendedImage'
 import ThreeViewer from './ThreeViewer'
 
 const mediaTypes = [
-  "3dobject",
   "image",
   "video",
   "audio",
@@ -234,6 +233,9 @@ export default {
     },
     toggleSize () {
       this.fullSize = !this.fullSize
+    },
+    is3DModelFile (req) {
+      return ThreeViewer.methods.is3DModelFile(req)
     }
   }
 }
