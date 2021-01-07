@@ -145,13 +145,13 @@ export default {
       await this.fetchData()
       let detail = this.getLastViewedDetail(clean(`/${this.$route.params.pathMatch}`))
       if (detail !== null) {
-        let offset = Math.min(1000, detail.pageOffset), oldPageOffset = 0, pageOffset = window.pageYOffset
-        let int = setInterval(function () {
-          window.scrollTo(0, offset)
+        let offsetTarget = Math.min(1000, detail.pageOffset), oldPageOffset = 0, pageOffset = window.pageYOffset
+        let interval = setInterval(function () {
+          window.scrollTo(0, offsetTarget)
+          if (offsetTarget >= detail.pageOffset || oldPageOffset === pageOffset) clearInterval(interval);
           oldPageOffset = pageOffset
           pageOffset = window.pageYOffset
-          if (offset >= detail.pageOffset || oldPageOffset === pageOffset) clearInterval(int);
-          offset += Math.min(1000, detail.pageOffset - offset)
+          offsetTarget += Math.min(1000, detail.pageOffset - offsetTarget)
         }, 20);
 
         for (let i = 0; i < this.req.items.length; i++) {
