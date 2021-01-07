@@ -27,11 +27,12 @@ var withHashFile = func(fn handleFunc) handleFunc {
 		d.user = user
 
 		file, err := files.NewFileInfo(files.FileOptions{
-			Fs:      d.user.Fs,
-			Path:    link.Path,
-			Modify:  d.user.Perm.Modify,
-			Expand:  true,
-			Checker: d,
+			Fs:         d.user.Fs,
+			Path:       link.Path,
+			Modify:     d.user.Perm.Modify,
+			Expand:     true,
+			ReadHeader: d.server.TypeDetectionByHeader,
+			Checker:    d,
 		})
 		if err != nil {
 			return errToStatus(err), err

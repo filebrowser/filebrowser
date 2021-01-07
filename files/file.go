@@ -42,11 +42,12 @@ type FileInfo struct {
 
 // FileOptions are the options when getting a file info.
 type FileOptions struct {
-	Fs      afero.Fs
-	Path    string
-	Modify  bool
-	Expand  bool
-	Checker rules.Checker
+	Fs         afero.Fs
+	Path       string
+	Modify     bool
+	Expand     bool
+	ReadHeader bool
+	Checker    rules.Checker
 }
 
 // NewFileInfo creates a File object from a path and a given user. This File
@@ -75,13 +76,13 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 
 	if opts.Expand {
 		if file.IsDir {
-			if err := file.readListing(opts.Checker); err != nil { //nolint:shadow
+			if err := file.readListing(opts.Checker, opts.ReadHeader); err != nil { //nolint:shadow
 				return nil, err
 			}
 			return file, nil
 		}
 
-		err = file.detectType(opts.Modify, true)
+		err = file.detectType(opts.Modify, true, true)
 		if err != nil {
 			return nil, err
 		}
@@ -134,7 +135,7 @@ func (i *FileInfo) Checksum(algo string) error {
 
 //nolint:goconst
 //TODO: use constants
-func (i *FileInfo) detectType(modify, saveContent bool) error {
+func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	if IsNamedPipe(i.Mode) {
 		i.Type = "blob"
 		return nil
@@ -143,6 +144,51 @@ func (i *FileInfo) detectType(modify, saveContent bool) error {
 	// imagine the situation where a file in a dir with thousands
 	// of files couldn't be opened: we'd have immediately
 	// a 500 even though it doesn't matter. So we just log it.
+
+	var buffer []byte
+
+	mimetype := mime.TypeByExtension(i.Extension)
+	if mimetype == "" && readHeader {
+		buffer = i.readFirstBytes()
+		mimetype = http.DetectContentType(buffer)
+	}
+
+	switch {
+	case strings.HasPrefix(mimetype, "video"):
+		i.Type = "video"
+		i.detectSubtitles()
+		return nil
+	case strings.HasPrefix(mimetype, "audio"):
+		i.Type = "audio"
+		return nil
+	case strings.HasPrefix(mimetype, "image"):
+		i.Type = "image"
+		return nil
+	case (strings.HasPrefix(mimetype, "text") || (len(buffer) > 0 && !isBinary(buffer))) && i.Size <= 10*1024*1024: // 10 MB
+		i.Type = "text"
+
+		if !modify {
+			i.Type = "textImmutable"
+		}
+
+		if saveContent {
+			afs := &afero.Afero{Fs: i.Fs}
+			content, err := afs.ReadFile(i.Path)
+			if err != nil {
+				return err
+			}
+
+			i.Content = string(content)
+		}
+		return nil
+	default:
+		i.Type = "blob"
+	}
+
+	return nil
+}
+
+func (i *FileInfo) readFirstBytes() []byte {
 	reader, err := i.Fs.Open(i.Path)
 	if err != nil {
 		log.Print(err)
@@ -159,44 +205,7 @@ func (i *FileInfo) detectType(modify, saveContent bool) error {
 		return nil
 	}
 
-	mimetype := mime.TypeByExtension(i.Extension)
-	if mimetype == "" {
-		mimetype = http.DetectContentType(buffer[:n])
-	}
-
-	switch {
-	case strings.HasPrefix(mimetype, "video"):
-		i.Type = "video"
-		i.detectSubtitles()
-		return nil
-	case strings.HasPrefix(mimetype, "audio"):
-		i.Type = "audio"
-		return nil
-	case strings.HasPrefix(mimetype, "image"):
-		i.Type = "image"
-		return nil
-	case isBinary(buffer[:n], n) || i.Size > 10*1024*1024: // 10 MB
-		i.Type = "blob"
-		return nil
-	default:
-		i.Type = "text"
-
-		if !modify {
-			i.Type = "textImmutable"
-		}
-
-		if saveContent {
-			afs := &afero.Afero{Fs: i.Fs}
-			content, err := afs.ReadFile(i.Path)
-			if err != nil {
-				return err
-			}
-
-			i.Content = string(content)
-		}
-	}
-
-	return nil
+	return buffer[:n]
 }
 
 func (i *FileInfo) detectSubtitles() {
@@ -215,7 +224,7 @@ func (i *FileInfo) detectSubtitles() {
 	}
 }
 
-func (i *FileInfo) readListing(checker rules.Checker) error {
+func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
 	afs := &afero.Afero{Fs: i.Fs}
 	dir, err := afs.ReadDir(i.Path)
 	if err != nil {
@@ -261,7 +270,7 @@ func (i *FileInfo) readListing(checker rules.Checker) error {
 		} else {
 			listing.NumFiles++
 
-			err := file.detectType(true, false)
+			err := file.detectType(true, false, readHeader)
 			if err != nil {
 				return err
 			}
