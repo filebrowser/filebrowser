@@ -55,7 +55,8 @@ export default {
       'selectedCount',
       'isListing',
       'isEditor',
-      'isFiles'
+      'isFiles',
+      'getLastViewedDetail'
     ]),
     ...mapState([
       'req',
@@ -63,8 +64,7 @@ export default {
       'reload',
       'multiple',
       'loading',
-      'show',
-      'lastViewed'
+      'show'
     ]),
     isPreview () {
       return !this.loading && !this.isListing && !this.isEditor || this.loading && this.$store.state.previewMode
@@ -131,40 +131,35 @@ export default {
   methods: {
     ...mapMutations([ 'setLoading' ]),
     async nav() {
-      if (!this.isPreview && !this.isEditor && clean(`/${this.$route.params.pathMatch}`) !== clean(this.lastViewed.path) && clean(`/${this.$route.params.pathMatch}`).startsWith(clean(this.lastViewed.path))) {
+      if (!this.isPreview && !this.isEditor && clean(`/${this.$route.params.pathMatch}`).startsWith(clean(this.req.path))) {
         let dirs = clean(this.$route.fullPath).split("/")
 
-        this.$store.commit('setLastViewed', {
-          path: this.req.path,
-          clicked: decodeURIComponent(dirs[dirs.length - 1]),
-          pageOffset: window.pageYOffset
+        this.$store.commit('addLastViewed', {
+          path: clean(this.req.path),
+          detail: {
+            clicked: decodeURIComponent(dirs[dirs.length - 1]),
+            pageOffset: window.pageYOffset
+          }
         })
-        this.fetchData()
-      } else if (clean(this.lastViewed.path) === clean(`/${this.$route.params.pathMatch}`)) {
-        await this.fetchData()
-
-        let offset = 1000, oldPageOffset = 0, pageOffset = window.pageYOffset, _this = this
-        let int = setInterval(function() {
+      }
+      await this.fetchData()
+      let detail = this.getLastViewedDetail(clean(`/${this.$route.params.pathMatch}`))
+      if (detail !== null) {
+        let offset = Math.min(1000, detail.pageOffset), oldPageOffset = 0, pageOffset = window.pageYOffset
+        let int = setInterval(function () {
           window.scrollTo(0, offset)
           oldPageOffset = pageOffset
           pageOffset = window.pageYOffset
-          if (offset >= _this.lastViewed.pageOffset || oldPageOffset === pageOffset) clearInterval(int);
-          offset += Math.min(1000, _this.lastViewed.pageOffset - offset)
+          if (offset >= detail.pageOffset || oldPageOffset === pageOffset) clearInterval(int);
+          offset += Math.min(1000, detail.pageOffset - offset)
         }, 20);
 
         for (let i = 0; i < this.req.items.length; i++) {
-          if (this.req.items[i].name === this.lastViewed.clicked) {
+          if (this.req.items[i].name === detail.clicked) {
             this.$store.commit('addSelected', i)
             break
           }
         }
-      } else {
-        this.$store.commit('setLastViewed', {
-          path: '',
-          clicked: '',
-          pageOffset: 0
-        })
-        this.fetchData()
       }
     },
     async fetchData () {

@@ -27,9 +27,8 @@ const state = {
   previewMode: false,
   hash: '',
   lastViewed: {
-    path: '',
-    clicked: '',
-    pageOffset: 0
+    paths: [],
+    details: new Map()
   }
 }
 
