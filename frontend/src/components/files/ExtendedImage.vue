@@ -20,6 +20,7 @@ import throttle from 'lodash.throttle'
 export default {
   props: {
     src: String,
+    angle: Number,
     moveDisabledTime: {
       type: Number,
       default: () => 200
@@ -83,17 +84,35 @@ export default {
   watch: {
     src: function () {
       this.setCenter()
+    },
+    angle: function () {
+      this.setCenter()
+    }
+  },
+  computed: {
+    imgHeight() {
+      let img = this.$refs.imgex
+
+      // slow version
+      // return img.clientHeight * Math.cos(this.angle * Math.PI) + img.clientWidth * Math.sin(this.angle * Math.PI)
+      return !(this.angle % 180) ? img.clientHeight : img.clientWidth
+    },
+    imgWidth() {
+      let img = this.$refs.imgex
+
+      // slow version
+      // return img.clientWidth * Math.cos(this.angle * Math.PI) + img.clientHeight * Math.sin(this.angle * Math.PI)
+      return !(this.angle % 180) ? img.clientWidth : img.clientHeight
     }
   },
   methods: {
     fit() {
-      let img = this.$refs.imgex
-
-      const wScale = window.innerWidth / img.clientWidth
-      const hScale = window.innerHeight / img.clientHeight
+      const wScale = window.innerWidth / this.imgWidth
+      const hScale = window.innerHeight / this.imgHeight
 
       this.scale = Math.min(wScale, hScale)
       this.minScale = this.scale
+      this.maxScale = 4 * this.scale
       this.setZoom()
     },
     refit() {
@@ -288,7 +307,7 @@ export default {
     setZoom() {
       this.scale = this.scale < this.minScale ? this.minScale : this.scale
       this.scale = this.scale > this.maxScale ? this.maxScale : this.scale
-      this.$refs.imgex.style.transform = `scale(${this.scale})`
+      this.$refs.imgex.style.transform = `scale(${this.scale}) rotate(${this.angle}deg)`
       this.refit()
     },
     pxStringToNumber(style) {
