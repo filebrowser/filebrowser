@@ -115,6 +115,7 @@
     "currentlyNavigating": "当前目录：",
     "deleteMessageMultiple": "你确定要删除这 {count} 个文件吗？",
     "deleteMessageSingle": "你确定要删除这个文件/文件夹吗？",
+    "deleteMessageShare": "你确定要删除这个分享({path})吗？",
     "deleteTitle": "删除文件",
     "displayName": "名称：",
     "download": "下载文件",
