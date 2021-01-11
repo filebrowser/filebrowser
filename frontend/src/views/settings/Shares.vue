@@ -73,19 +73,23 @@ export default {
     this.clip.on('success', () => {
       this.$showSuccess(this.$t('success.linkCopied'))
     })
+    this.$root.$on('share-deleted', this.deleted)
   },
   beforeDestroy () {
     this.clip.destroy()
+    this.$root.$off('share-deleted', this.deleted)
   },
   methods: {
     deleteLink: async function (event, link) {
       event.preventDefault()
-      try {
-        await api.remove(link.hash)
-        this.links = this.links.filter(item => item.hash !== link.hash)
-      } catch (e) {
-        this.$showError(e)
-      }
+      this.$store.commit('setHash', {
+        hash: link.hash,
+        path: link.path
+      })
+      this.$store.commit('showHover', 'share-delete')
+    },
+    deleted (hash) {
+      this.links = this.links.filter(item => item.hash !== hash)
     },
     humanTime (time) {
       return moment(time * 1000).fromNow()
