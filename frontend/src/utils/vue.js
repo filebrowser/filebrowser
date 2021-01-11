@@ -26,14 +26,14 @@ Vue.prototype.$showSuccess = (message) => {
   })).show()
 }
 
-Vue.prototype.$showError = (error) => {
+Vue.prototype.$showError = (error, displayReport = true) => {
   let btns = [
     Noty.button(i18n.t('buttons.close'), '', function () {
       n.close()
     })
   ]
 
-  if (!disableExternal) {
+  if (!disableExternal && displayReport) {
     btns.unshift(Noty.button(i18n.t('buttons.reportIssue'), '', function () {
       window.open('https://github.com/filebrowser/filebrowser/issues/new/choose')
     }))
