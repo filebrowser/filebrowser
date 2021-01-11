@@ -22,8 +22,6 @@ import { mapState } from 'vuex'
 import url from '@/utils/url'
 import { baseURL } from '@/utils/constants'
 
-const ThreeDModelExtRegExp = new RegExp(/\.(obj|stl|dae|ply|fbx|gltf)$/);
-
 export default {
   components: {
     ModelCollada,
@@ -58,9 +56,6 @@ export default {
     this.rotating = true
   },
   methods: {
-    is3DModelFile (req) {
-      return ThreeDModelExtRegExp.test(req.extension);
-    },
     onLoad () {
       this.loadingPreview = false
       this.rotate();
