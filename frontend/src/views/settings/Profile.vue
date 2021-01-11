@@ -7,6 +7,7 @@
 
       <div class="card-content">
         <p><input type="checkbox" v-model="hideDotfiles"> {{ $t('settings.hideDotfiles') }}</p>
+        <p><input type="checkbox" v-model="singleClick"> {{ $t('settings.singleClick') }}</p>
         <h3>{{ $t('settings.language') }}</h3>
         <languages class="input input--block" :locale.sync="locale"></languages>
       </div>
@@ -47,6 +48,8 @@ export default {
     return {
       password: '',
       passwordConf: '',
+      hideDotfiles: false,
+      singleClick: false,
       locale: ''
     }
   },
@@ -69,6 +72,7 @@ export default {
   created () {
     this.locale = this.user.locale
     this.hideDotfiles = this.user.hideDotfiles
+    this.singleClick = this.user.singleClick
   },
   methods: {
     ...mapMutations([ 'updateUser' ]),
@@ -92,8 +96,8 @@ export default {
       event.preventDefault()
 
       try {
-        const data = { id: this.user.id, locale: this.locale, hideDotfiles: this.hideDotfiles }
-        await api.update(data, ['locale', 'hideDotfiles'])
+        const data = { id: this.user.id, locale: this.locale, hideDotfiles: this.hideDotfiles, singleClick: this.singleClick }
+        await api.update(data, ['locale', 'hideDotfiles', 'singleClick'])
         this.updateUser(data)
         this.$showSuccess(this.$t('settings.settingsUpdated'))
       } catch (e) {
