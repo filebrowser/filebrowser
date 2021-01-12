@@ -65,6 +65,10 @@ func Search(fs afero.Fs, scope, query string, checker rules.Checker, found func(
 					return found(originalPath, f)
 				}
 			}
+		} else {
+			originalPath = strings.TrimPrefix(originalPath, scope)
+			originalPath = strings.TrimPrefix(originalPath, "/")
+			return found(originalPath, f)
 		}
 
 		return nil
