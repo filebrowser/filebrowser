@@ -120,8 +120,10 @@ export default {
   },
   watch: {
     '$route': 'fetchData',
-    'reload': function () {
-      this.fetchData()
+    'reload': function (value) {
+       if (value === true) {
+        this.fetchData()
+      }
     }
   },
   mounted () {
