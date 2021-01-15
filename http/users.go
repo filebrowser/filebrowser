@@ -99,8 +99,8 @@ var userGetHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 
 var userDeleteHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	err := d.store.Users.Delete(d.raw.(uint))
-	if err == errors.ErrNotExist {
-		return http.StatusNotFound, err
+	if err != nil {
+		return errToStatus(err), err
 	}
 
 	return http.StatusOK, nil
