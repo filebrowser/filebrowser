@@ -75,7 +75,7 @@ func parseSearch(value string) *searchOptions {
 		value = typeRegexp.ReplaceAllString(value, "")
 	}
 
-	// If it's canse insensitive, put everything in lowercase.
+	// If it's case insensitive, put everything in lowercase.
 	if !opts.CaseSensitive {
 		value = strings.ToLower(value)
 	}
