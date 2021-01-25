@@ -29,6 +29,7 @@
     "selectMultiple": "Select multiple",
     "share": "Share",
     "shell": "Toggle shell",
+    "submit": "Submit",
     "switchView": "Switch view",
     "toggleSidebar": "Toggle sidebar",
     "update": "Update",
@@ -142,7 +143,8 @@
     "show": "Show",
     "size": "Size",
     "upload": "Upload",
-    "uploadMessage": "Select an option to upload."
+    "uploadMessage": "Select an option to upload.",
+    "optionalPassword": "Optional password"
   },
   "search": {
     "images": "Images",

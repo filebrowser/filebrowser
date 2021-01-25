@@ -17,6 +17,15 @@ type StorageBackend interface {
 	DeleteByUsername(string) error
 }
 
+type Store interface {
+	Get(baseScope string, id interface{}) (user *User, err error)
+	Gets(baseScope string) ([]*User, error)
+	Update(user *User, fields ...string) error
+	Save(user *User) error
+	Delete(id interface{}) error
+	LastUpdate(id uint) int64
+}
+
 // Storage is a users storage.
 type Storage struct {
 	back    StorageBackend

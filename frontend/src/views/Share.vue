@@ -74,6 +74,24 @@
   <div v-else-if="error">
     <not-found v-if="error.message === '404'"></not-found>
     <forbidden v-else-if="error.message === '403'"></forbidden>
+    <div v-else-if="error.message === '401'">
+      <div class="card floating" id="password">
+        <div v-if="attemptedPasswordLogin" class="share__wrong__password">{{ $t('login.wrongCredentials') }}</div>
+        <div class="card-title">
+          <h2>{{ $t('login.password') }}</h2>
+        </div>
+
+        <div class="card-content">
+          <input v-focus type="password" :placeholder="$t('login.password')" v-model="password" @keyup.enter="fetchData">
+        </div>
+        <div class="card-action">
+          <button class="button button--flat"
+            @click="fetchData"
+            :aria-label="$t('buttons.submit')"
+            :title="$t('buttons.submit')">{{ $t('buttons.submit') }}</button>
+        </div>
+      </div>
+    </div>
     <internal-error v-else></internal-error>
   </div>
 </template>
@@ -102,7 +120,9 @@ export default {
   data: () => ({
     error: null,
     path: '',
-    showLimit: 500
+    showLimit: 500,
+    password: '',
+    attemptedPasswordLogin: false
   }),
   watch: {
     '$route': 'fetchData'
@@ -129,7 +149,11 @@ export default {
       return 'insert_drive_file'
     },
     link: function () {
-      return `${baseURL}/api/public/dl/${this.hash}${this.path}`
+      let queryArg = '';
+      if (this.token !== ''){
+        queryArg = `?token=${this.token}`
+      }
+      return `${baseURL}/api/public/dl/${this.hash}${this.path}${queryArg}`
     },
     fullLink: function () {
       return window.location.origin + this.link
@@ -193,8 +217,13 @@ export default {
       this.error = null
 
       try {
-        let file = await api.getHash(encodeURIComponent(this.$route.params.pathMatch))
+        if (this.password !== ''){
+          this.attemptedPasswordLogin = true
+        }
+        let file = await api.getHash(encodeURIComponent(this.$route.params.pathMatch), this.password)
         this.path = file.path
+        this.token = file.token || ''
+        this.$store.commit('setToken', this.token)
         if (file.isDir) file.items = file.items.map((item, index) => {
           item.index = index
           item.url = `/share/${this.hash}${this.path}/${encodeURIComponent(item.name)}`
