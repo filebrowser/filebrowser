@@ -19,6 +19,7 @@ import Replace from './Replace'
 import ReplaceRename from './ReplaceRename'
 import Share from './Share'
 import Upload from './Upload'
+import ShareDelete from './ShareDelete'
 import { mapState } from 'vuex'
 import buttons from '@/utils/buttons'
 
@@ -37,7 +38,8 @@ export default {
     Help,
     Replace,
     ReplaceRename,
-    Upload
+    Upload,
+    ShareDelete
   },
   data: function () {
     return {
@@ -91,7 +93,8 @@ export default {
         'replace',
         'replace-rename',
         'share',
-        'upload'
+        'upload',
+        'share-delete'
       ].indexOf(this.show) >= 0;
 
       return matched && this.show || null;

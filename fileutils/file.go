@@ -9,6 +9,25 @@ import (
 	"github.com/spf13/afero"
 )
 
+// MoveFile moves file from src to dst.
+// By default the rename filesystem system call is used. If src and dst point to different volumes
+// the file copy is used as a fallback
+func MoveFile(fs afero.Fs, src, dst string) error {
+	if fs.Rename(src, dst) == nil {
+		return nil
+	}
+	// fallback
+	err := CopyFile(fs, src, dst)
+	if err != nil {
+		_ = fs.Remove(dst)
+		return err
+	}
+	if err := fs.Remove(src); err != nil {
+		return err
+	}
+	return nil
+}
+
 // CopyFile copies a file from source to dest and returns
 // an error if any.
 func CopyFile(fs afero.Fs, source, dest string) error {
@@ -39,14 +58,14 @@ func CopyFile(fs afero.Fs, source, dest string) error {
 		return err
 	}
 
-	// Copy the mode if the user can't
-	// open the file.
+	// Copy the mode
 	info, err := fs.Stat(source)
 	if err != nil {
-		err = fs.Chmod(dest, info.Mode())
-		if err != nil {
-			return err
-		}
+		return err
+	}
+	err = fs.Chmod(dest, info.Mode())
+	if err != nil {
+		return err
 	}
 
 	return nil

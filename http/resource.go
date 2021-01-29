@@ -20,11 +20,12 @@ import (
 
 var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	file, err := files.NewFileInfo(files.FileOptions{
-		Fs:      d.user.Fs,
-		Path:    r.URL.Path,
-		Modify:  d.user.Perm.Modify,
-		Expand:  true,
-		Checker: d,
+		Fs:         d.user.Fs,
+		Path:       r.URL.Path,
+		Modify:     d.user.Perm.Modify,
+		Expand:     true,
+		ReadHeader: d.server.TypeDetectionByHeader,
+		Checker:    d,
 	})
 	if err != nil {
 		return errToStatus(err), err
@@ -58,11 +59,12 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 		}
 
 		file, err := files.NewFileInfo(files.FileOptions{
-			Fs:      d.user.Fs,
-			Path:    r.URL.Path,
-			Modify:  d.user.Perm.Modify,
-			Expand:  true,
-			Checker: d,
+			Fs:         d.user.Fs,
+			Path:       r.URL.Path,
+			Modify:     d.user.Perm.Modify,
+			Expand:     true,
+			ReadHeader: d.server.TypeDetectionByHeader,
+			Checker:    d,
 		})
 		if err != nil {
 			return errToStatus(err), err
@@ -200,7 +202,7 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 			src = path.Clean("/" + src)
 			dst = path.Clean("/" + dst)
 
-			return d.user.Fs.Rename(src, dst)
+			return fileutils.MoveFile(d.user.Fs, src, dst)
 		default:
 			return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
 		}

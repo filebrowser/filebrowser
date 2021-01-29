@@ -1,7 +1,7 @@
 <template>
   <div>
     <ul class="file-list">
-      <li @click="select"
+      <li @click="itemClick"
         @touchstart="touchstart"
         @dblclick="next"
         role="button"
@@ -35,7 +35,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([ 'req' ]),
+    ...mapState([ 'req', 'user' ]),
     nav () {
       return decodeURIComponent(this.current)
     }
@@ -110,6 +110,10 @@ export default {
       if (this.touches.count > 1) {
         this.next(event)
       }
+    },
+    itemClick: function (event) {
+      if (this.user.singleClick) this.next(event)
+      else this.select(event)
     },
     select: function (event) {
       // If the element is already selected, unselect it.

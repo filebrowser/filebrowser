@@ -77,28 +77,39 @@ export function detectLocale () {
   return locale
 }
 
+const removeEmpty = (obj) =>
+    Object.keys(obj)
+        .filter((k) => obj[k] !== null && obj[k] !== undefined && obj[k] !== '') // Remove undef. and null and empty.string.
+        .reduce(
+            (newObj, k) =>
+                typeof obj[k] === 'object'
+                    ? Object.assign(newObj, { [k]: removeEmpty(obj[k]) }) // Recurse.
+                    : Object.assign(newObj, { [k]: obj[k] }), // Copy value.
+            {},
+        );
+
 const i18n = new VueI18n({
   locale: detectLocale(),
   fallbackLocale: 'en',
   messages: {
-    'ar': ar,
-    'de': de,
+    'ar': removeEmpty(ar),
+    'de': removeEmpty(de),
     'en': en,
-    'es': es,
-    'fr': fr,
-    'is': is,
-    'it': it,
-    'ja': ja,
-    'ko': ko,
-    'nl-be': nlBE,
-    'pl': pl,
-    'pt-br': ptBR,
-    'pt': pt,
-    'ru': ru,
-    'ro': ro,
-    'sv-se': svSE,
-    'zh-cn': zhCN,
-    'zh-tw': zhTW
+    'es': removeEmpty(es),
+    'fr': removeEmpty(fr),
+    'is': removeEmpty(is),
+    'it': removeEmpty(it),
+    'ja': removeEmpty(ja),
+    'ko': removeEmpty(ko),
+    'nl-be': removeEmpty(nlBE),
+    'pl': removeEmpty(pl),
+    'pt-br': removeEmpty(ptBR),
+    'pt': removeEmpty(pt),
+    'ru': removeEmpty(ru),
+    'ro': removeEmpty(ro),
+    'sv-se': removeEmpty(svSE),
+    'zh-cn': removeEmpty(zhCN),
+    'zh-tw': removeEmpty(zhTW)
   }
 })
 

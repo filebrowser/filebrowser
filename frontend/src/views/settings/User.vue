@@ -115,7 +115,7 @@ export default {
         this.$router.push({ path: '/settings/users' })
         this.$showSuccess(this.$t('settings.userDeleted'))
       } catch (e) {
-        this.$showError(e)
+         (e.message === "403") ? this.$showError(this.$t("errors.forbidden"), false) : this.$showError(e)
       }
     },
     async save (event) {

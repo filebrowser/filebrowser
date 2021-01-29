@@ -65,6 +65,30 @@ func (r *Runner) exec(raw, evt, path, dst string, user *users.User) error {
 		return err
 	}
 
+	envMapping := func(key string) string {
+		switch key {
+		case "FILE":
+			return path
+		case "SCOPE":
+			return user.Scope
+		case "TRIGGER":
+			return evt
+		case "USERNAME":
+			return user.Username
+		case "DESTINATION":
+			return dst
+		default:
+			return os.Getenv(key)
+		}
+	}
+	for i, arg := range command {
+		if i == 0 {
+			continue
+		}
+
+		command[i] = os.Expand(arg, envMapping)
+	}
+
 	cmd := exec.Command(command[0], command[1:]...) //nolint:gosec
 	cmd.Env = append(os.Environ(), fmt.Sprintf("FILE=%s", path))
 	cmd.Env = append(cmd.Env, fmt.Sprintf("SCOPE=%s", user.Scope)) //nolint:gocritic
