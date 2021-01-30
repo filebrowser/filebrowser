@@ -82,6 +82,10 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 	rawExpire := r.URL.Query().Get("expires")
 	unit := r.URL.Query().Get("unit")
 
+	if r.Body != nil {
+		defer r.Body.Close()
+	}
+
 	if rawExpire == "" {
 		var err error
 		s, err = d.store.Share.GetPermanent(r.URL.Path, d.user.ID)
@@ -104,6 +108,7 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 	var expire int64 = 0
 
 	if rawExpire != "" {
+		//nolint:govet
 		num, err := strconv.Atoi(rawExpire)
 		if err != nil {
 			return http.StatusInternalServerError, err
@@ -124,11 +129,30 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 		expire = time.Now().Add(add).Unix()
 	}
 
-	s = &share.Link{
-		Path:   r.URL.Path,
-		Hash:   str,
-		Expire: expire,
-		UserID: d.user.ID,
+	sharedCode := r.URL.Query().Get("shared_code")
+	if sharedCode == "" {
+		s = &share.Link{
+			Path:            r.URL.Path,
+			Hash:            str,
+			Expire:          expire,
+			UserID:          d.user.ID,
+			SharedCodeToken: "",
+			SharedCode:      "",
+		}
+	} else {
+		tokenBuffer := make([]byte, 96)
+		if _, err := rand.Read(tokenBuffer); err != nil {
+			return http.StatusInternalServerError, err
+		}
+		token := base64.URLEncoding.EncodeToString(tokenBuffer)
+		s = &share.Link{
+			Path:            r.URL.Path,
+			Hash:            str,
+			Expire:          expire,
+			UserID:          d.user.ID,
+			SharedCodeToken: token,
+			SharedCode:      sharedCode,
+		}
 	}
 
 	if err := d.store.Share.Save(s); err != nil {

@@ -102,7 +102,9 @@ func (s *Storage) Gets(path string, id uint) ([]*Link, error) {
 			if err := s.Delete(link.Hash); err != nil {
 				return nil, err
 			}
-			links = append(links[:i], links[i+1:]...)
+			if len(links) > i+1 {
+				links = append(links[:i], links[i+1:]...)
+			}
 		}
 	}
 

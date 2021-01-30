@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
 set -e
 
@@ -35,7 +35,8 @@ buildAssets () {
 
 buildBinary () {
   if ! [ -x "$(command -v rice)" ]; then
-    go install github.com/GeertJohan/go.rice/rice
+    go get github.com/GeertJohan/go.rice
+    go get github.com/GeertJohan/go.rice/rice
   fi
 
   cd $REPO/http
@@ -55,28 +56,24 @@ release () {
     echo "❌ This release script requires a single argument corresponding to the semver to be released. See semver.org"
     exit 1
   fi
-
+echo "1"
   GREP="grep"
   if [ -x "$(command -v ggrep)" ]; then
     GREP="ggrep"
   fi
-
-  semver=$(echo "$1" | $GREP -P '^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)')
-
-  if [ $? -ne 0 ]; then
+  semver=$(echo "$1" | $GREP -P "^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)")
+err=$?
+  if [ $err -ne 0 ]; then
     echo "❌ Not valid semver format. See semver.org"
     exit 1
   fi
-
   echo "🧼  Tidying up go modules"
   go mod tidy
-
   echo "🐑 Creating a new commit for the new release"
   git commit --allow-empty -am "chore: version $semver"
   git tag "$1"
   git push
   git push --tags origin
-
   echo "📦 Done! $semver released."
 }
 

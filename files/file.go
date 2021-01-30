@@ -26,28 +26,30 @@ import (
 // FileInfo describes a file.
 type FileInfo struct {
 	*Listing
-	Fs        afero.Fs          `json:"-"`
-	Path      string            `json:"path"`
-	Name      string            `json:"name"`
-	Size      int64             `json:"size"`
-	Extension string            `json:"extension"`
-	ModTime   time.Time         `json:"modified"`
-	Mode      os.FileMode       `json:"mode"`
-	IsDir     bool              `json:"isDir"`
-	Type      string            `json:"type"`
-	Subtitles []string          `json:"subtitles,omitempty"`
-	Content   string            `json:"content,omitempty"`
-	Checksums map[string]string `json:"checksums,omitempty"`
+	Fs              afero.Fs          `json:"-"`
+	Path            string            `json:"path"`
+	Name            string            `json:"name"`
+	Size            int64             `json:"size"`
+	Extension       string            `json:"extension"`
+	ModTime         time.Time         `json:"modified"`
+	Mode            os.FileMode       `json:"mode"`
+	IsDir           bool              `json:"isDir"`
+	Type            string            `json:"type"`
+	Subtitles       []string          `json:"subtitles,omitempty"`
+	Content         string            `json:"content,omitempty"`
+	Checksums       map[string]string `json:"checksums,omitempty"`
+	SharedCodeToken string            `json:"sharedCodeToken,omitempty"`
 }
 
 // FileOptions are the options when getting a file info.
 type FileOptions struct {
-	Fs         afero.Fs
-	Path       string
-	Modify     bool
-	Expand     bool
-	ReadHeader bool
-	Checker    rules.Checker
+	Fs              afero.Fs
+	Path            string
+	Modify          bool
+	Expand          bool
+	ReadHeader      bool
+	SharedCodeToken string
+	Checker         rules.Checker
 }
 
 // NewFileInfo creates a File object from a path and a given user. This File
@@ -64,14 +66,15 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 	}
 
 	file := &FileInfo{
-		Fs:        opts.Fs,
-		Path:      opts.Path,
-		Name:      info.Name(),
-		ModTime:   info.ModTime(),
-		Mode:      info.Mode(),
-		IsDir:     info.IsDir(),
-		Size:      info.Size(),
-		Extension: filepath.Ext(info.Name()),
+		Fs:              opts.Fs,
+		Path:            opts.Path,
+		Name:            info.Name(),
+		ModTime:         info.ModTime(),
+		Mode:            info.Mode(),
+		IsDir:           info.IsDir(),
+		Size:            info.Size(),
+		Extension:       filepath.Ext(info.Name()),
+		SharedCodeToken: opts.SharedCodeToken,
 	}
 
 	if opts.Expand {

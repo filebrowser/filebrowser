@@ -13,7 +13,7 @@
     "more": "更多",
     "move": "移动",
     "moveFile": "移动文件",
-    "new": "新",
+    "new": "新建",
     "next": "下一个",
     "ok": "确定",
     "permalink": "获取永久链接",
@@ -32,7 +32,9 @@
     "switchView": "切换显示方式",
     "toggleSidebar": "切换侧边栏",
     "update": "更新",
-    "upload": "上传"
+    "upload": "上传",
+    "sharedCode": "提取码",
+    "optionalSharedCode": "提取码(可选)"
   },
   "download": {
     "downloadFile": "下载文件",
@@ -142,7 +144,10 @@
     "show": "点击以显示",
     "size": "大小",
     "upload": "上传",
-    "uploadMessage": "选择上传项。"
+    "uploadMessage": "选择上传项。",
+    "downloadPrompts": "下载链接：{0}",
+    "downloadPromptsWithSharedCode": "下载链接：{0}  提取码：{1}",
+    "invalidSharedCode": "提取码无效！"
   },
   "search": {
     "images": "图像",

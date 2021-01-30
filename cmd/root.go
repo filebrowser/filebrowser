@@ -47,6 +47,7 @@ func init() {
 	flags.Bool("noauth", false, "use the noauth auther when using quick setup")
 	flags.String("username", "admin", "username for the first user when using quick config")
 	flags.String("password", "", "hashed password for the first user when using quick config (default \"admin\")")
+	flags.String("salt", "", "The salt to use when for hashing share password. Can be any value. If changed, existing password-protected shares wil stop working.") //nolint:lll
 
 	addServerFlags(flags)
 }
@@ -249,6 +250,10 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 
 	_, disableExec := getParamB(flags, "disable-exec")
 	server.EnableExec = !disableExec
+
+	if val, set := getParamB(flags, "salt"); set {
+		server.Salt = val
+	}
 
 	return server
 }

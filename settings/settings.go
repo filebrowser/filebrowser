@@ -38,6 +38,7 @@ type Server struct {
 	Port                  string `json:"port"`
 	Address               string `json:"address"`
 	Log                   string `json:"log"`
+	Salt                  string `json:"salt"`
 	EnableThumbnails      bool   `json:"enableThumbnails"`
 	ResizePreview         bool   `json:"resizePreview"`
 	EnableExec            bool   `json:"enableExec"`

@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"net/http"
 	"path"
 	"path/filepath"
@@ -9,6 +10,7 @@ import (
 	"github.com/spf13/afero"
 
 	"github.com/filebrowser/filebrowser/v2/files"
+	"github.com/filebrowser/filebrowser/v2/share"
 )
 
 var withHashFile = func(fn handleFunc) handleFunc {
@@ -19,6 +21,11 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			return errToStatus(err), err
 		}
 
+		status, err := authenticateShareRequest(r, link, d.server.Salt)
+		if err != nil {
+			return status, err
+		}
+
 		user, err := d.store.Users.Get(d.server.Root, link.UserID)
 		if err != nil {
 			return errToStatus(err), err
@@ -27,12 +34,13 @@ var withHashFile = func(fn handleFunc) handleFunc {
 		d.user = user
 
 		file, err := files.NewFileInfo(files.FileOptions{
-			Fs:         d.user.Fs,
-			Path:       link.Path,
-			Modify:     d.user.Perm.Modify,
-			Expand:     true,
-			ReadHeader: d.server.TypeDetectionByHeader,
-			Checker:    d,
+			Fs:              d.user.Fs,
+			Path:            link.Path,
+			Modify:          d.user.Perm.Modify,
+			Expand:          true,
+			ReadHeader:      d.server.TypeDetectionByHeader,
+			Checker:         d,
+			SharedCodeToken: link.SharedCodeToken,
 		})
 		if err != nil {
 			return errToStatus(err), err
@@ -43,11 +51,12 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			d.user.Fs = afero.NewBasePathFs(d.user.Fs, filepath.Dir(link.Path))
 
 			file, err = files.NewFileInfo(files.FileOptions{
-				Fs:      d.user.Fs,
-				Path:    path,
-				Modify:  d.user.Perm.Modify,
-				Expand:  true,
-				Checker: d,
+				Fs:              d.user.Fs,
+				Path:            path,
+				Modify:          d.user.Perm.Modify,
+				Expand:          true,
+				Checker:         d,
+				SharedCodeToken: link.SharedCodeToken,
 			})
 			if err != nil {
 				return errToStatus(err), err
@@ -94,3 +103,20 @@ var publicDlHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, 
 
 	return rawDirHandler(w, r, d, file)
 })
+
+func authenticateShareRequest(r *http.Request, l *share.Link, salt string) (int, error) {
+	if l.SharedCode == "" {
+		return 0, nil
+	}
+
+	sharedCodeToken := r.URL.Query().Get("shared_code_token")
+	if sharedCodeToken == l.SharedCodeToken {
+		return 0, nil
+	}
+
+	sharedCode := r.Header.Get("X-SHARED-CODE")
+	if l.SharedCode != sharedCode {
+		return http.StatusUnauthorized, errors.New("invalid shared code")
+	}
+	return 0, nil
+}

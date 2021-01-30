@@ -19,6 +19,7 @@
     "permalink": "Get Permanent Link",
     "previous": "Previous",
     "publish": "Publish",
+    "password": "Password",
     "rename": "Rename",
     "replace": "Replace",
     "reportIssue": "Report Issue",
@@ -29,10 +30,13 @@
     "selectMultiple": "Select multiple",
     "share": "Share",
     "shell": "Toggle shell",
+    "submit": "Submit",
     "switchView": "Switch view",
     "toggleSidebar": "Toggle sidebar",
     "update": "Update",
-    "upload": "Upload"
+    "upload": "Upload",
+    "sharedCode": "Shared code",
+    "optionalSharedCode": "Shared code(optional)"
   },
   "download": {
     "downloadFile": "Download File",
@@ -142,7 +146,10 @@
     "show": "Show",
     "size": "Size",
     "upload": "Upload",
-    "uploadMessage": "Select an option to upload."
+    "uploadMessage": "Select an option to upload.",
+    "downloadPrompts": "Download url: {0}",
+    "downloadPromptsWithSharedCode": "Download url: {0}  Shared code: {1}",
+    "invalidSharedCode": "Invalid shared code."
   },
   "search": {
     "images": "Images",
