@@ -55,6 +55,7 @@
 #listing .item img {
   width: 4em;
   height: 4em;
+  object-fit: cover;
   margin-right: 0.1em;
   vertical-align: bottom;
 }

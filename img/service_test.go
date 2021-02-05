@@ -216,6 +216,46 @@ func TestService_Resize(t *testing.T) {
 			},
 			matcher: sizeMatcher(100, 100),
 		},
+		"get thumbnail from file with APP0 JFIF": {
+			options: []Option{WithMode(ResizeModeFill), WithQuality(QualityLow)},
+			width:   100,
+			height:  100,
+			source: func(t *testing.T) afero.File {
+				t.Helper()
+				return openFile(t, "testdata/gray-sample.jpg")
+			},
+			matcher: sizeMatcher(125, 128),
+		},
+		"get thumbnail from file without APP0 JFIF": {
+			options: []Option{WithMode(ResizeModeFill), WithQuality(QualityLow)},
+			width:   100,
+			height:  100,
+			source: func(t *testing.T) afero.File {
+				t.Helper()
+				return openFile(t, "testdata/20130612_142406.jpg")
+			},
+			matcher: sizeMatcher(320, 240),
+		},
+		"resize from file without IFD1 thumbnail": {
+			options: []Option{WithMode(ResizeModeFill), WithQuality(QualityLow)},
+			width:   100,
+			height:  100,
+			source: func(t *testing.T) afero.File {
+				t.Helper()
+				return openFile(t, "testdata/IMG_2578.JPG")
+			},
+			matcher: sizeMatcher(100, 100),
+		},
+		"resize for higher quality levels": {
+			options: []Option{WithMode(ResizeModeFill), WithQuality(QualityMedium)},
+			width:   100,
+			height:  100,
+			source: func(t *testing.T) afero.File {
+				t.Helper()
+				return openFile(t, "testdata/gray-sample.jpg")
+			},
+			matcher: sizeMatcher(100, 100),
+		},
 		"broken file": {
 			options: []Option{WithMode(ResizeModeFit)},
 			width:   100,
@@ -343,6 +383,15 @@ func newGrayBmp(t *testing.T, width, height int) afero.File {
 	require.NoError(t, err)
 
 	_, err = file.Seek(0, io.SeekStart)
+	require.NoError(t, err)
+
+	return file
+}
+
+func openFile(t *testing.T, name string) afero.File {
+	appfs := afero.NewOsFs()
+	file, err := appfs.Open(name)
+
 	require.NoError(t, err)
 
 	return file
