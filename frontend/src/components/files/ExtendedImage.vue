@@ -138,6 +138,15 @@ export default {
       this.lastX = null
       this.lastY = null
       this.lastTouchDistance = null
+      if (event.targetTouches.length < 2) {
+        setTimeout(() => {
+          this.touches = 0
+        }, 300)
+        this.touches++
+        if (this.touches > 1) {
+          this.zoomAuto(event)
+        }
+      }    
       event.preventDefault()
     },
     zoomAuto(event) {
@@ -151,6 +160,7 @@ export default {
         default:
         case 4:
           this.scale = 1
+          this.setCenter()
           break
       }
       this.setZoom()
