@@ -177,6 +177,8 @@ export default {
         if (this.hasNext) this.next()
       } else if (event.which === 37) { // left arrow
         if (this.hasPrevious) this.prev()
+      } else if (event.which === 27) { // esc
+        this.back()
       }
     },
     async updatePreview () {
