@@ -119,8 +119,8 @@ nav > div {
 .dashboard p label {
   color: var(--textPrimary);
 }
-.card#share ul li input,
-.card#share ul li select,
+.card#share input,
+.card#share select,
 .input {
   background: var(--surfaceSecondary);
   color: var(--textPrimary);

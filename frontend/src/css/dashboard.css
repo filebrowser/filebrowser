@@ -226,6 +226,18 @@ table tr>*:last-child {
   opacity: 1;
 }
 
+.card#share .input-group {
+  display: flex;
+}
+
+.card#share .input-group * {
+  border: none;
+}
+
+.card#share .input-group input {
+  flex: 1;
+}
+
 .overlay {
   background-color: rgba(0, 0, 0, 0.5);
   position: fixed;
