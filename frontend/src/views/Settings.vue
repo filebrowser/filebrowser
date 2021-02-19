@@ -1,11 +1,15 @@
 <template>
   <div class="dashboard">
-    <ul id="nav">
-      <li :class="{ active: $route.path === '/settings/profile' }"><router-link to="/settings/profile">{{ $t('settings.profileSettings') }}</router-link></li>
-      <li :class="{ active: $route.path === '/settings/shares' }"><router-link to="/settings/shares">{{ $t('settings.shareManagement') }}</router-link></li>
-      <li v-if="user.perm.admin" :class="{ active: $route.path === '/settings/global' }"><router-link to="/settings/global">{{ $t('settings.globalSettings') }}</router-link></li>
-      <li v-if="user.perm.admin" :class="{ active: $route.path === '/settings/users' }"><router-link to="/settings/users">{{ $t('settings.userManagement') }}</router-link></li>
-    </ul>
+    <div id="nav">
+      <div class="wrapper">
+        <ul>
+          <router-link to="/settings/profile"><li :class="{ active: $route.path === '/settings/profile' }">{{ $t('settings.profileSettings') }}</li></router-link>
+          <router-link to="/settings/shares"><li :class="{ active: $route.path === '/settings/shares' }">{{ $t('settings.shareManagement') }}</li></router-link>
+          <router-link to="/settings/global"><li :class="{ active: $route.path === '/settings/global' }" v-if="user.perm.admin">{{ $t('settings.globalSettings') }}</li></router-link>
+          <router-link to="/settings/users"><li :class="{ active: $route.path === '/settings/users' || $route.name === 'User' }" v-if="user.perm.admin">{{ $t('settings.userManagement') }}</li></router-link>
+        </ul>
+      </div>
+    </div>
 
     <router-view></router-view>
   </div>

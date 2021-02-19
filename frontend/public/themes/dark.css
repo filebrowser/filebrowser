@@ -114,6 +114,13 @@ nav > div {
   background: var(--surfaceSecondary);
 }
 
+.dashboard #nav ul li {
+  color: var(--textSecondary);
+}
+.dashboard #nav ul li:hover {
+  background: var(--surfaceSecondary);
+}
+
 .card h3,
 .dashboard #nav,
 .dashboard p label {
@@ -138,7 +145,7 @@ nav > div {
   background: #147A41;
 }
 
-.dashboard #nav li,
+.dashboard #nav .wrapper,
 .collapsible {
   border-color: var(--divider);
 }

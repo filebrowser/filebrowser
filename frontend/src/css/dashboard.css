@@ -49,25 +49,56 @@ p code {
 }
 
 .dashboard #nav {
+  display: flex;
+  padding-bottom: 1em;
+  overflow: auto;
+}
+
+.dashboard #nav .wrapper {
+  display: flex;
+  flex-grow: 1;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.dashboard #nav ul {
   list-style: none;
   display: flex;
   color: rgb(84, 110, 122);
   font-weight: 500;
-  margin: 0 0 1em;
+  padding: 0;
+  margin: 0 0 -2px 0;
   font-size: .8em;
   text-align: center;
-  justify-content: space-between;
-  padding: 0;
+  justify-content: left;
 }
 
-.dashboard #nav li {
+.dashboard #nav ul li {
+  position: relative;
+  padding: 1.5em 2em;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: .1s ease-in-out all;
+
+}
+
+.dashboard #nav ul li:hover {
+  background: var(--moon-grey);
+}
+
+.dashboard #nav ul li.active {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.dashboard #nav ul li.active::before {
   width: 100%;
-  padding: 0 0 1em;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
-}
-
-.dashboard #nav li.active {
-  border-color: var(--blue)
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "";
+  background: var(--blue);
+  opacity: 0.08;
 }
 
 .dashboard #nav i {
