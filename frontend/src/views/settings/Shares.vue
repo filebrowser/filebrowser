@@ -1,40 +1,44 @@
 <template>
-  <div class="card">
-    <div class="card-title">
-      <h2>{{ $t('settings.shareManagement') }}</h2>
-    </div>
+  <div class="row">
+    <div class="column">
+      <div class="card">
+        <div class="card-title">
+          <h2>{{ $t('settings.shareManagement') }}</h2>
+        </div>
 
-    <div class="card-content full">
-      <table>
-        <tr>
-          <th>{{ $t('settings.path') }}</th>
-          <th>{{ $t('settings.shareDuration') }}</th>
-          <th v-if="user.perm.admin">{{ $t('settings.username') }}</th>
-          <th></th>
-          <th></th>
-        </tr>
+        <div class="card-content full">
+          <table>
+            <tr>
+              <th>{{ $t('settings.path') }}</th>
+              <th>{{ $t('settings.shareDuration') }}</th>
+              <th v-if="user.perm.admin">{{ $t('settings.username') }}</th>
+              <th></th>
+              <th></th>
+            </tr>
 
-        <tr v-for="link in links" :key="link.hash">
-          <td><a :href="buildLink(link.hash)" target="_blank">{{ link.path }}</a></td>
-          <td>
-            <template v-if="link.expire !== 0">{{ humanTime(link.expire) }}</template>
-            <template v-else>{{ $t('permanent') }}</template>
-          </td>
-          <td v-if="user.perm.admin">{{ link.username }}</td>
-          <td class="small">
-            <button class="action"
-                    @click="deleteLink($event, link)"
-                    :aria-label="$t('buttons.delete')"
-                    :title="$t('buttons.delete')"><i class="material-icons">delete</i></button>
-          </td>
-          <td class="small">
-            <button class="action copy-clipboard"
-                    :data-clipboard-text="buildLink(link.hash)"
-                    :aria-label="$t('buttons.copyToClipboard')"
-                    :title="$t('buttons.copyToClipboard')"><i class="material-icons">content_paste</i></button>
-          </td>
-        </tr>
-      </table>
+            <tr v-for="link in links" :key="link.hash">
+              <td><a :href="buildLink(link.hash)" target="_blank">{{ link.path }}</a></td>
+              <td>
+                <template v-if="link.expire !== 0">{{ humanTime(link.expire) }}</template>
+                <template v-else>{{ $t('permanent') }}</template>
+              </td>
+              <td v-if="user.perm.admin">{{ link.username }}</td>
+              <td class="small">
+                <button class="action"
+                        @click="deleteLink($event, link)"
+                        :aria-label="$t('buttons.delete')"
+                        :title="$t('buttons.delete')"><i class="material-icons">delete</i></button>
+              </td>
+              <td class="small">
+                <button class="action copy-clipboard"
+                        :data-clipboard-text="buildLink(link.hash)"
+                        :aria-label="$t('buttons.copyToClipboard')"
+                        :title="$t('buttons.copyToClipboard')"><i class="material-icons">content_paste</i></button>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </template>
