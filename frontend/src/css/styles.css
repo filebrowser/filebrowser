@@ -152,10 +152,8 @@
 }
 
 #previewer .preview {
-  margin: 2em auto 4em;
-  max-width: 80%;
   text-align: center;
-  height: calc(100vh - 9.7em);
+  height: calc(100vh - 3.7em);
 }
 
 #previewer .preview pre {
@@ -170,6 +168,10 @@
   margin: 0;
 }
 
+#previewer .preview video {
+  height: 100%;
+}
+
 #previewer .pdf {
   width: 100%;
   height: 100%;
@@ -182,8 +184,25 @@
 #previewer>button {
   margin: 0;
   position: fixed;
-  top: 50%;
+  top: calc(50% + 1.85em);
   transform: translateY(-50%);
+  background-color: rgba(80, 80, 80, .5);
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  transition: 0.2s ease all;
+}
+
+#previewer>button.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+#previewer>button>i {
+  padding: 0.4em;
 }
 
 #previewer>button:first-of-type {

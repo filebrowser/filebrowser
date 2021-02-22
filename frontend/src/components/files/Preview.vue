@@ -1,5 +1,5 @@
 <template>
-  <div id="previewer">
+  <div id="previewer" @mousemove="toggleNavigation" @touchstart="toggleNavigation">
     <div class="bar">
       <button @click="back" class="action" :title="$t('files.closePreview')" :aria-label="$t('files.closePreview')" id="close">
         <i class="material-icons">close</i>
@@ -28,18 +28,11 @@
       </div>
     </div>
 
-    <button class="action" @click="prev" v-show="hasPrevious" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
-      <i class="material-icons">chevron_left</i>
-    </button>
-    <button class="action" @click="next" v-show="hasNext" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
-      <i class="material-icons">chevron_right</i>
-    </button>
-
     <template v-if="!loading">
       <div class="preview">
         <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
-        <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
-        <video v-else-if="req.type == 'video'" :src="raw" autoplay controls>
+        <audio v-else-if="req.type == 'audio'" :src="raw" controls></audio>
+        <video v-else-if="req.type == 'video'" :src="raw" controls>
           <track
             kind="captions"
             v-for="(sub, index) in subtitles"
@@ -57,6 +50,13 @@
       </div>
     </template>
 
+    <button @click="prev" @mouseover="hoverNav = true" @mouseleave="hoverNav = false" :class="{ hidden: !hasPrevious || !showNav }" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
+      <i class="material-icons">chevron_left</i>
+    </button>
+    <button @click="next" @mouseover="hoverNav = true" @mouseleave="hoverNav = false" :class="{ hidden: !hasNext || !showNav }" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
+      <i class="material-icons">chevron_right</i>
+    </button>
+
     <div v-show="showMore" @click="resetPrompts" class="overlay"></div>
   </div>
 </template>
@@ -66,6 +66,7 @@ import { mapState } from 'vuex'
 import url from '@/utils/url'
 import { baseURL, resizePreview } from '@/utils/constants'
 import { files as api } from '@/api'
+import throttle from 'lodash.throttle'
 import PreviewSizeButton from '@/components/buttons/PreviewSize'
 import InfoButton from '@/components/buttons/Info'
 import DeleteButton from '@/components/buttons/Delete'
@@ -97,7 +98,10 @@ export default {
       listing: null,
       name: '',
       subtitles: [],
-      fullSize: false
+      fullSize: false,
+      showNav: true,
+      navTimeout: null,
+      hoverNav: false
     }
   },
   computed: {
@@ -130,6 +134,7 @@ export default {
   watch: {
     $route: function () {
       this.updatePreview()
+      this.toggleNavigation()
     }
   },
   async mounted () {
@@ -162,9 +167,11 @@ export default {
       this.$router.push({ path: uri })
     },
     prev () {
+      this.hoverNav = false
       this.$router.push({ path: this.previousLink })
     },
     next () {
+      this.hoverNav = false
       this.$router.push({ path: this.nextLink })
     },
     key (event) {
@@ -232,7 +239,19 @@ export default {
     },
     toggleSize () {
       this.fullSize = !this.fullSize
-    }
+    },
+    toggleNavigation: throttle(function() {
+      this.showNav = true
+
+      if (this.navTimeout) {
+        clearTimeout(this.navTimeout)
+      }
+
+      this.navTimeout = setTimeout(() => {
+        this.showNav = false || this.hoverNav
+        this.navTimeout = null
+      }, 1500);
+    }, 500)
   }
 }
 </script>
