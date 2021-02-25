@@ -117,25 +117,8 @@
   overflow: hidden;
 }
 
-#previewer .bar {
-  width: 100%;
-  display: flex;
-  padding: 0.5em;
-  height: 3.7em;
-}
-
-#previewer .bar > * {
-  flex: 0 0 auto;
-}
-
-#previewer .bar .title {
-  display: block;
-  flex: 1 1 auto;
-  padding: 0 1em;
-  line-height: 2.3em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 1.2em;
+#previewer header {
+  background: none;
   color: #fff;
 }
 
@@ -152,8 +135,9 @@
 }
 
 #previewer .preview {
+  margin-top: 4em;
   text-align: center;
-  height: calc(100vh - 3.7em);
+  height: calc(100vh - 4em);
 }
 
 #previewer .preview pre {
@@ -218,30 +202,12 @@
 #editor-container {
   background-color: #fafafa;
   position: fixed;
+  margin-top: 4em;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 9999;
   overflow: hidden;
-}
-
-#editor-container .bar {
-  width: 100%;
-  text-align: right;
-  display: flex;
-  padding: 0.5em;
-  height: 3.7em;
-  background-color: #fff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.075);
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
-
-#editor-container .title {
-  margin-right: auto;
-  padding: 0 1em;
-  line-height: 2.7em;
-  overflow: hidden;
-  word-break: break-word;
 }
 
 #previewer .loading {
@@ -250,7 +216,7 @@
 }
 
 #editor-container #editor {
-  height: calc(100vh - 8.2em);
+  height: calc(100vh - 8.4em);
 }
 
 #editor-container #breadcrumbs {

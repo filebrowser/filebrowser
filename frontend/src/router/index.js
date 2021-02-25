@@ -10,9 +10,7 @@ import Settings from '@/views/Settings'
 import GlobalSettings from '@/views/settings/Global'
 import ProfileSettings from '@/views/settings/Profile'
 import Shares from '@/views/settings/Shares'
-import Error403 from '@/views/errors/403'
-import Error404 from '@/views/errors/404'
-import Error500 from '@/views/errors/500'
+import Errors from '@/views/Errors'
 import store from '@/store'
 import { baseURL } from '@/utils/constants'
 
@@ -102,17 +100,29 @@ const router = new Router({
         {
           path: '/403',
           name: 'Forbidden',
-          component: Error403
+          component: Errors,
+          props: {
+            errorCode: 403,
+            showHeader: true
+          }
         },
         {
           path: '/404',
           name: 'Not Found',
-          component: Error404
+          component: Errors,
+          props: {
+            errorCode: 404,
+            showHeader: true
+          }
         },
         {
           path: '/500',
           name: 'Internal Server Error',
-          component: Error500
+          component: Errors,
+          props: {
+            errorCode: 500,
+            showHeader: true
+          }
         },
         {
           path: '/files',

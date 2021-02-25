@@ -1,18 +1,13 @@
 <template>
   <div id="editor-container">
-    <div class="bar">
-      <button @click="back" :title="$t('files.closePreview')" :aria-label="$t('files.closePreview')" id="close" class="action">
-        <i class="material-icons">close</i>
-      </button>
+    <header-bar>
+      <action icon="close" :label="$t('buttons.close')" @action="close()" />
+      <title>{{ req.name }}</title>
 
-      <div class="title">
-        <span>{{ req.name }}</span>
-      </div>
-
-      <button @click="save" v-show="user.perm.modify" :aria-label="$t('buttons.save')" :title="$t('buttons.save')" id="save-button" class="action">
-        <i class="material-icons">save</i>
-      </button>
-    </div>
+      <template #actions>
+        <action id="save-button" icon="save" :label="$t('buttons.save')" @action="save()" />
+      </template>
+    </header-bar>
 
     <div id="breadcrumbs">
       <span><i class="material-icons">home</i></span>
@@ -30,16 +25,23 @@
 <script>
 import { mapState } from 'vuex'
 import { files as api } from '@/api'
+import { theme } from '@/utils/constants'
 import buttons from '@/utils/buttons'
 import url from '@/utils/url'
 
 import ace from 'ace-builds/src-min-noconflict/ace.js'
 import modelist from 'ace-builds/src-min-noconflict/ext-modelist.js'
 import 'ace-builds/webpack-resolver'
-import { theme } from '@/utils/constants'
+
+import HeaderBar from '@/components/header/HeaderBar'
+import Action from '@/components/header/Action'
 
 export default {
   name: 'editor',
+  components: {
+    HeaderBar,
+    Action
+  },
   data: function () {
     return {}
   },
@@ -82,7 +84,7 @@ export default {
     window.removeEventListener('keydown', this.keyEvent)
     this.editor.destroy();
   },
-  mounted: function () {    
+  mounted: function () {
     const fileContent = this.req.content || '';
 
     this.editor = ace.edit('editor', {
@@ -126,6 +128,10 @@ export default {
         buttons.done(button)
         this.$showError(e)
       }
+    },
+    close () {
+      let uri = url.removeLastDir(this.$route.path) + '/'
+      this.$router.push({ path: uri })
     }
   }
 }

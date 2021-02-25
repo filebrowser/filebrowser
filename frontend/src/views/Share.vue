@@ -1,98 +1,107 @@
 <template>
-  <div v-if="!loading">
-    <div id="breadcrumbs">
-      <router-link :to="'/share/' + hash" :aria-label="$t('files.home')" :title="$t('files.home')">
-        <i class="material-icons">home</i>
-      </router-link>
+  <div>
+    <header-bar showMenu showLogo>
+      <title />
 
-      <span v-for="(link, index) in breadcrumbs" :key="index">
-          <span class="chevron"><i class="material-icons">keyboard_arrow_right</i></span>
-          <router-link :to="link.url">{{ link.name }}</router-link>
-        </span>
-    </div>
-    <div class="share">
-      <div class="share__box share__box__info">
-          <div class="share__box__header">
-            {{ req.isDir ? $t('download.downloadFolder') : $t('download.downloadFile') }}
-          </div>
-          <div class="share__box__element share__box__center share__box__icon">
-            <i class="material-icons">{{ icon }}</i>
-          </div>
-          <div class="share__box__element">
-            <strong>{{ $t('prompts.displayName') }}</strong> {{ req.name }}
-          </div>
-          <div class="share__box__element">
-            <strong>{{ $t('prompts.lastModified') }}:</strong> {{ humanTime }}
-          </div>
-          <div class="share__box__element">
-            <strong>{{ $t('prompts.size') }}:</strong> {{ humanSize }}
-          </div>
-          <div class="share__box__element share__box__center">
-            <a target="_blank" :href="link" class="button button--flat">{{ $t('buttons.download') }}</a>
-          </div>
-          <div class="share__box__element share__box__center">
-            <qrcode-vue :value="fullLink" size="200" level="M"></qrcode-vue>
-          </div>
+      <template #actions v-if="!error">
+        <download-button v-if="selectedCount" />
+        <action icon="check_circle" :label="$t('buttons.selectMultiple')" @action="toggleMultipleSelection" />
+      </template>
+    </header-bar>
+
+    <div v-if="!loading">
+      <div id="breadcrumbs">
+        <router-link :to="'/share/' + hash" :aria-label="$t('files.home')" :title="$t('files.home')">
+          <i class="material-icons">home</i>
+        </router-link>
+
+        <span v-for="(link, index) in breadcrumbs" :key="index">
+            <span class="chevron"><i class="material-icons">keyboard_arrow_right</i></span>
+            <router-link :to="link.url">{{ link.name }}</router-link>
+          </span>
       </div>
-      <div v-if="req.isDir && req.items.length > 0" class="share__box share__box__items">
-        <div class="share__box__header" v-if="req.isDir">
-          {{ $t('files.files') }}
+      <div class="share">
+        <div class="share__box share__box__info">
+            <div class="share__box__header">
+              {{ req.isDir ? $t('download.downloadFolder') : $t('download.downloadFile') }}
+            </div>
+            <div class="share__box__element share__box__center share__box__icon">
+              <i class="material-icons">{{ icon }}</i>
+            </div>
+            <div class="share__box__element">
+              <strong>{{ $t('prompts.displayName') }}</strong> {{ req.name }}
+            </div>
+            <div class="share__box__element">
+              <strong>{{ $t('prompts.lastModified') }}:</strong> {{ humanTime }}
+            </div>
+            <div class="share__box__element">
+              <strong>{{ $t('prompts.size') }}:</strong> {{ humanSize }}
+            </div>
+            <div class="share__box__element share__box__center">
+              <a target="_blank" :href="link" class="button button--flat">{{ $t('buttons.download') }}</a>
+            </div>
+            <div class="share__box__element share__box__center">
+              <qrcode-vue :value="fullLink" size="200" level="M"></qrcode-vue>
+            </div>
         </div>
-        <div id="listing" class="list">
-          <item v-for="(item) in req.items.slice(0, this.showLimit)"
-            :key="base64(item.name)"
-            v-bind:index="item.index"
-            v-bind:name="item.name"
-            v-bind:isDir="item.isDir"
-            v-bind:url="item.url"
-            v-bind:modified="item.modified"
-            v-bind:type="item.type"
-            v-bind:size="item.size">
-          </item>
-          <div v-if="req.items.length > showLimit" class="item">
-            <div>
-              <p class="name"> + {{ req.items.length - showLimit }} </p>
+        <div v-if="req.isDir && req.items.length > 0" class="share__box share__box__items">
+          <div class="share__box__header" v-if="req.isDir">
+            {{ $t('files.files') }}
+          </div>
+          <div id="listing" class="list">
+            <item v-for="(item) in req.items.slice(0, this.showLimit)"
+              :key="base64(item.name)"
+              v-bind:index="item.index"
+              v-bind:name="item.name"
+              v-bind:isDir="item.isDir"
+              v-bind:url="item.url"
+              v-bind:modified="item.modified"
+              v-bind:type="item.type"
+              v-bind:size="item.size">
+            </item>
+            <div v-if="req.items.length > showLimit" class="item">
+              <div>
+                <p class="name"> + {{ req.items.length - showLimit }} </p>
+              </div>
+            </div>
+
+            <div :class="{ active: $store.state.multiple }" id="multiple-selection">
+              <p>{{ $t('files.multipleSelectionEnabled') }}</p>
+              <div @click="$store.commit('multiple', false)" tabindex="0" role="button" :title="$t('files.clear')" :aria-label="$t('files.clear')" class="action">
+                <i class="material-icons">clear</i>
+              </div>
             </div>
           </div>
+        </div>
+        <div v-else-if="req.isDir && req.items.length === 0" class="share__box share__box__items">
+          <h2 class="message">
+            <i class="material-icons">sentiment_dissatisfied</i>
+            <span>{{ $t('files.lonely') }}</span>
+          </h2>
+        </div>
+      </div>
+    </div>
+    <div v-if="error">
+      <div v-if="error.message === '401'">
+        <div class="card floating" id="password">
+          <div v-if="attemptedPasswordLogin" class="share__wrong__password">{{ $t('login.wrongCredentials') }}</div>
+          <div class="card-title">
+            <h2>{{ $t('login.password') }}</h2>
+          </div>
 
-          <div :class="{ active: $store.state.multiple }" id="multiple-selection">
-            <p>{{ $t('files.multipleSelectionEnabled') }}</p>
-            <div @click="$store.commit('multiple', false)" tabindex="0" role="button" :title="$t('files.clear')" :aria-label="$t('files.clear')" class="action">
-              <i class="material-icons">clear</i>
-            </div>
+          <div class="card-content">
+            <input v-focus type="password" :placeholder="$t('login.password')" v-model="password" @keyup.enter="fetchData">
+          </div>
+          <div class="card-action">
+            <button class="button button--flat"
+              @click="fetchData"
+              :aria-label="$t('buttons.submit')"
+              :title="$t('buttons.submit')">{{ $t('buttons.submit') }}</button>
           </div>
         </div>
       </div>
-      <div v-else-if="req.isDir && req.items.length === 0" class="share__box share__box__items">
-        <h2 class="message">
-          <i class="material-icons">sentiment_dissatisfied</i>
-          <span>{{ $t('files.lonely') }}</span>
-        </h2>
-      </div>
+      <errors v-else :errorCode="errorCode" />
     </div>
-  </div>
-  <div v-else-if="error">
-    <not-found v-if="error.message === '404'"></not-found>
-    <forbidden v-else-if="error.message === '403'"></forbidden>
-    <div v-else-if="error.message === '401'">
-      <div class="card floating" id="password">
-        <div v-if="attemptedPasswordLogin" class="share__wrong__password">{{ $t('login.wrongCredentials') }}</div>
-        <div class="card-title">
-          <h2>{{ $t('login.password') }}</h2>
-        </div>
-
-        <div class="card-content">
-          <input v-focus type="password" :placeholder="$t('login.password')" v-model="password" @keyup.enter="fetchData">
-        </div>
-        <div class="card-action">
-          <button class="button button--flat"
-            @click="fetchData"
-            :aria-label="$t('buttons.submit')"
-            :title="$t('buttons.submit')">{{ $t('buttons.submit') }}</button>
-        </div>
-      </div>
-    </div>
-    <internal-error v-else></internal-error>
   </div>
 </template>
 
@@ -102,20 +111,23 @@ import { share as api } from '@/api'
 import { baseURL } from '@/utils/constants'
 import filesize from 'filesize'
 import moment from 'moment'
+
+import HeaderBar from '@/components/header/HeaderBar'
+import Action from '@/components/header/Action'
+import DownloadButton from '@/components/buttons/Download'
+import Errors from '@/views/Errors'
 import QrcodeVue from 'qrcode.vue'
 import Item from "@/components/files/ListingItem"
-import Forbidden from './errors/403'
-import NotFound from './errors/404'
-import InternalError from './errors/500'
 
 export default {
   name: 'share',
   components: {
+    HeaderBar,
+    Action,
+    DownloadButton,
     Item,
-    Forbidden,
-    NotFound,
-    InternalError,
-    QrcodeVue
+    QrcodeVue,
+    Errors
   },
   data: () => ({
     error: null,
@@ -140,7 +152,7 @@ export default {
   },
   computed: {
     ...mapState(['hash', 'req', 'loading', 'multiple']),
-    ...mapGetters(['selectedCount']),
+    ...mapGetters(['selectedCount', 'selectedCount']),
     icon: function () {
       if (this.req.isDir) return 'folder'
       if (this.req.type === 'image') return 'insert_photo'
@@ -198,6 +210,9 @@ export default {
       }
 
       return breadcrumbs
+    },
+    errorCode() {
+      return (this.error.message === '404' || this.error.message === '403') ? parseInt(this.error.message) : 500
     }
   },
   methods: {

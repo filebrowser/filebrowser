@@ -1,24 +1,17 @@
 <template>
   <div id="previewer" @mousemove="toggleNavigation" @touchstart="toggleNavigation">
-    <div class="bar">
-      <button @click="back" class="action" :title="$t('files.closePreview')" :aria-label="$t('files.closePreview')" id="close">
-        <i class="material-icons">close</i>
-      </button>
+    <header-bar>
+      <action icon="close" :label="$t('buttons.close')" @action="close()" />
+      <title>{{ name }}</title>
+      <preview-size-button v-if="isResizeEnabled && req.type === 'image'" @change-size="toggleSize" v-bind:size="fullSize" :disabled="loading" />
 
-      <div class="title">{{ this.name }}</div>
-
-      <preview-size-button v-if="isResizeEnabled && this.req.type === 'image'" @change-size="toggleSize" v-bind:size="fullSize" :disabled="loading"></preview-size-button>
-      <button @click="openMore" id="more" :aria-label="$t('buttons.more')" :title="$t('buttons.more')" class="action">
-        <i class="material-icons">more_vert</i>
-      </button>
-
-      <div id="dropdown" :class="{ active : showMore }">
-        <rename-button :disabled="loading" v-if="user.perm.rename"></rename-button>
-        <delete-button :disabled="loading" v-if="user.perm.delete"></delete-button>
-        <download-button :disabled="loading" v-if="user.perm.download"></download-button>
-        <info-button :disabled="loading"></info-button>
-      </div>
-    </div>
+      <template #actions>
+        <rename-button :disabled="loading" v-if="user.perm.rename" />
+        <delete-button :disabled="loading" v-if="user.perm.delete" />
+        <download-button :disabled="loading" v-if="user.perm.download" />
+        <info-button :disabled="loading" />
+      </template>
+    </header-bar>
 
     <div class="loading" v-if="loading">
       <div class="spinner">
@@ -56,17 +49,18 @@
     <button @click="next" @mouseover="hoverNav = true" @mouseleave="hoverNav = false" :class="{ hidden: !hasNext || !showNav }" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
       <i class="material-icons">chevron_right</i>
     </button>
-
-    <div v-show="showMore" @click="resetPrompts" class="overlay"></div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import url from '@/utils/url'
-import { baseURL, resizePreview } from '@/utils/constants'
 import { files as api } from '@/api'
+import { baseURL, resizePreview } from '@/utils/constants'
+import url from '@/utils/url'
 import throttle from 'lodash.throttle'
+
+import HeaderBar from '@/components/header/HeaderBar'
+import Action from '@/components/header/Action'
 import PreviewSizeButton from '@/components/buttons/PreviewSize'
 import InfoButton from '@/components/buttons/Info'
 import DeleteButton from '@/components/buttons/Delete'
@@ -84,6 +78,8 @@ const mediaTypes = [
 export default {
   name: 'preview',
   components: {
+    HeaderBar,
+    Action,
     PreviewSizeButton,
     InfoButton,
     DeleteButton,
@@ -251,7 +247,11 @@ export default {
         this.showNav = false || this.hoverNav
         this.navTimeout = null
       }, 1500);
-    }, 500)
+    }, 500),
+    close () {
+      let uri = url.removeLastDir(this.$route.path) + '/'
+      this.$router.push({ path: uri })
+    }
   }
 }
 </script>
