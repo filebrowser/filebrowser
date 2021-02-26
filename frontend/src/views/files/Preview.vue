@@ -66,7 +66,7 @@ import InfoButton from '@/components/buttons/Info'
 import DeleteButton from '@/components/buttons/Delete'
 import RenameButton from '@/components/buttons/Rename'
 import DownloadButton from '@/components/buttons/Download'
-import ExtendedImage from './ExtendedImage'
+import ExtendedImage from '@/components/files/ExtendedImage'
 
 const mediaTypes = [
   "image",
