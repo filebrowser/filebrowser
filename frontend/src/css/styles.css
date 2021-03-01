@@ -96,10 +96,11 @@
   color: #fff;
   border-radius: 50%;
   font-size: .75em;
-  width: 1.5em;
-  height: 1.5em;
+  width: 1.8em;
+  height: 1.8em;
   text-align: center;
-  line-height: 1.25em;
+  line-height: 1.55em;
+  font-weight: bold;
   border: 2px solid white;
 }
 
