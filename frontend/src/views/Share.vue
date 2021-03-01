@@ -3,10 +3,8 @@
     <header-bar showMenu showLogo>
       <title />
 
-      <template #actions v-if="!error">
-        <download-button v-if="selectedCount" />
-        <action icon="check_circle" :label="$t('buttons.selectMultiple')" @action="toggleMultipleSelection" />
-      </template>
+      <action v-if="selectedCount" icon="file_download" :label="$t('buttons.download')" @action="download" :counter="selectedCount" />
+      <action icon="check_circle" :label="$t('buttons.selectMultiple')" @action="toggleMultipleSelection" />
     </header-bar>
 
     <div v-if="!loading">
@@ -107,14 +105,13 @@
 
 <script>
 import {mapState, mapMutations, mapGetters} from 'vuex';
-import { share as api } from '@/api'
+import { files, share as api } from '@/api'
 import { baseURL } from '@/utils/constants'
 import filesize from 'filesize'
 import moment from 'moment'
 
 import HeaderBar from '@/components/header/HeaderBar'
 import Action from '@/components/header/Action'
-import DownloadButton from '@/components/buttons/Download'
 import Errors from '@/views/Errors'
 import QrcodeVue from 'qrcode.vue'
 import Item from "@/components/files/ListingItem"
@@ -124,7 +121,6 @@ export default {
   components: {
     HeaderBar,
     Action,
-    DownloadButton,
     Item,
     QrcodeVue,
     Errors
@@ -151,7 +147,7 @@ export default {
     window.removeEventListener('keydown', this.keyEvent)
   },
   computed: {
-    ...mapState(['hash', 'req', 'loading', 'multiple']),
+    ...mapState(['hash', 'req', 'loading', 'multiple', 'selected']),
     ...mapGetters(['selectedCount', 'selectedCount']),
     icon: function () {
       if (this.req.isDir) return 'folder'
@@ -262,6 +258,14 @@ export default {
     },
     toggleMultipleSelection () {
       this.$store.commit('multiple', !this.multiple)
+    },
+    download () {
+      if (this.selectedCount === 1 && !this.req.items[this.selected[0]].isDir) {
+        files.download(null, this.req.items[this.selected[0]].url)
+        return
+      }
+
+      this.$store.commit('showHover', 'download')
     }
   }
 }

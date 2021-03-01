@@ -6,29 +6,29 @@
 
       <template #actions>
         <template v-if="!isMobile">
-          <share-button v-if="headerButtons.share" />
-          <rename-button v-if="headerButtons.rename" />
-          <copy-button v-if="headerButtons.copy" />
-          <move-button v-if="headerButtons.move" />
-          <delete-button v-if="headerButtons.delete" />
+          <action v-if="headerButtons.share" icon="share" :label="$t('buttons.share')" show="share" />
+          <action v-if="headerButtons.rename" icon="mode_edit" :label="$t('buttons.rename')" show="rename" />
+          <action v-if="headerButtons.copy" icon="content_copy" :label="$t('buttons.copyFile')" show="copy" />
+          <action v-if="headerButtons.move" icon="forward" :label="$t('buttons.moveFile')" show="move" />
+          <action v-if="headerButtons.delete" icon="delete" :label="$t('buttons.delete')" show="delete" />
         </template>
 
-        <shell-button v-if="headerButtons.shell" />
-        <switch-button />
-        <download-button v-if="headerButtons.download" />
-        <upload-button v-if="headerButtons.upload" />
-        <info-button />
+        <action v-if="headerButtons.shell" icon="code" :label="$t('buttons.shell')" @action="$store.commit('toggleShell')" />
+        <action :icon="user.viewMode  === 'mosaic' ? 'view_list' : 'view_module'" :label="$t('buttons.switchView')" @action="switchView" />
+        <action icon="file_download" :label="$t('buttons.download')" @action="download" :counter="selectedCount" />
+        <action icon="file_upload" :label="$t('buttons.upload')" @action="upload" />
+        <action icon="info" :label="$t('buttons.info')" show="info" />
         <action icon="check_circle" :label="$t('buttons.selectMultiple')" @action="toggleMultipleSelection" />
       </template>
     </header-bar>
 
     <div v-if="isMobile" id="file-selection">
       <span v-if="selectedCount > 0">{{ selectedCount }} selected</span>
-      <share-button v-if="headerButtons.share" />
-      <rename-button v-if="headerButtons.rename" />
-      <copy-button v-if="headerButtons.copy" />
-      <move-button v-if="headerButtons.move" />
-      <delete-button v-if="headerButtons.delete" />
+      <action v-if="headerButtons.share" icon="share" :label="$t('buttons.share')" show="share" />
+      <action v-if="headerButtons.rename" icon="mode_edit" :label="$t('buttons.rename')" show="rename" />
+      <action v-if="headerButtons.copy" icon="content_copy" :label="$t('buttons.copyFile')" show="copy" />
+      <action v-if="headerButtons.move" icon="forward" :label="$t('buttons.moveFile')" show="move" />
+      <action v-if="headerButtons.delete" icon="delete" :label="$t('buttons.delete')" show="delete" />
     </div>
 
     <div v-if="(req.numDirs + req.numFiles) == 0">
@@ -128,16 +128,6 @@ import css from '@/utils/css'
 import HeaderBar from '@/components/header/HeaderBar'
 import Action from '@/components/header/Action'
 import Search from '@/components/Search'
-import InfoButton from '@/components/buttons/Info'
-import DeleteButton from '@/components/buttons/Delete'
-import RenameButton from '@/components/buttons/Rename'
-import UploadButton from '@/components/buttons/Upload'
-import DownloadButton from '@/components/buttons/Download'
-import SwitchButton from '@/components/buttons/SwitchView'
-import MoveButton from '@/components/buttons/Move'
-import CopyButton from '@/components/buttons/Copy'
-import ShareButton from '@/components/buttons/Share'
-import ShellButton from '@/components/buttons/Shell'
 import Item from '@/components/files/ListingItem'
 
 export default {
@@ -146,16 +136,6 @@ export default {
     HeaderBar,
     Action,
     Search,
-    InfoButton,
-    DeleteButton,
-    ShareButton,
-    RenameButton,
-    DownloadButton,
-    CopyButton,
-    UploadButton,
-    SwitchButton,
-    MoveButton,
-    ShellButton,
     Item
   },
   data: function () {
@@ -241,8 +221,8 @@ export default {
         delete: this.selectedCount > 0 && this.user.perm.delete,
         rename: this.selectedCount === 1 && this.user.perm.rename,
         share: this.selectedCount === 1 && this.user.perm.share,
-        move: this.selectedCount === 1 && this.user.perm.rename,
-        copy: this.selectedCount === 1 && this.user.perm.create,
+        move: this.selectedCount > 0 && this.user.perm.rename,
+        copy: this.selectedCount > 0 && this.user.perm.create,
       }
     },
     isMobile () {
@@ -586,6 +566,36 @@ export default {
     },
     windowsResize () {
       this.width = window.innerWidth
+    },
+    download() {
+      if (this.selectedCount === 1 && !this.req.items[this.selected[0]].isDir) {
+        api.download(null, this.req.items[this.selected[0]].url)
+        return
+      }
+
+      this.$store.commit('showHover', 'download')
+    },
+    switchView: async function () {
+      this.$store.commit('closeHovers')
+
+      const data = {
+        id: this.user.id,
+        viewMode: (this.user.viewMode === 'mosaic') ? 'list' : 'mosaic'
+      }
+
+      try {
+        await users.update(data, ['viewMode'])
+        this.$store.commit('updateUser', data)
+      } catch (e) {
+        this.$showError(e)
+      }
+    },
+    upload: function () {
+      if (typeof(DataTransferItem.prototype.webkitGetAsEntry) !== 'undefined') {
+        this.$store.commit('showHover', 'upload')
+      } else {
+        document.getElementById('upload-input').click();
+      }
     }
   }
 }

@@ -3,13 +3,13 @@
     <header-bar>
       <action icon="close" :label="$t('buttons.close')" @action="close()" />
       <title>{{ name }}</title>
-      <preview-size-button v-if="isResizeEnabled && req.type === 'image'" @change-size="toggleSize" v-bind:size="fullSize" :disabled="loading" />
+      <action :disabled="loading" v-if="isResizeEnabled && req.type === 'image'" :icon="fullSize ? 'photo_size_select_large' : 'hd'" @action="toggleSize" />
 
       <template #actions>
-        <rename-button :disabled="loading" v-if="user.perm.rename" />
-        <delete-button :disabled="loading" v-if="user.perm.delete" />
-        <download-button :disabled="loading" v-if="user.perm.download" />
-        <info-button :disabled="loading" />
+        <action :disabled="loading" icon="mode_edit" :label="$t('buttons.rename')" show="rename" />
+        <action :disabled="loading" icon="delete" :label="$t('buttons.delete')" show="delete" />
+        <action :disabled="loading" icon="file_download" :label="$t('buttons.download')" @action="download" />
+        <action :disabled="loading" icon="info" :label="$t('buttons.info')" show="info" />
       </template>
     </header-bar>
 
@@ -33,11 +33,11 @@
             :src="sub"
             :label="'Subtitle ' + index" :default="index === 0">
           Sorry, your browser doesn't support embedded videos,
-          but don't worry, you can <a :href="download">download it</a>
+          but don't worry, you can <a :href="downloadUrl">download it</a>
           and watch it with your favorite video player!
         </video>
         <object v-else-if="req.extension.toLowerCase() == '.pdf'" class="pdf" :data="raw"></object>
-        <a v-else-if="req.type == 'blob'" :href="download">
+        <a v-else-if="req.type == 'blob'" :href="downloadUrl">
           <h2 class="message">{{ $t('buttons.download') }} <i class="material-icons">file_download</i></h2>
         </a>
       </div>
@@ -61,11 +61,6 @@ import throttle from 'lodash.throttle'
 
 import HeaderBar from '@/components/header/HeaderBar'
 import Action from '@/components/header/Action'
-import PreviewSizeButton from '@/components/buttons/PreviewSize'
-import InfoButton from '@/components/buttons/Info'
-import DeleteButton from '@/components/buttons/Delete'
-import RenameButton from '@/components/buttons/Rename'
-import DownloadButton from '@/components/buttons/Download'
 import ExtendedImage from '@/components/files/ExtendedImage'
 
 const mediaTypes = [
@@ -80,11 +75,6 @@ export default {
   components: {
     HeaderBar,
     Action,
-    PreviewSizeButton,
-    InfoButton,
-    DeleteButton,
-    RenameButton,
-    DownloadButton,
     ExtendedImage
   },
   data: function () {
@@ -108,7 +98,7 @@ export default {
     hasNext () {
       return (this.nextLink !== '')
     },
-    download () {
+    downloadUrl () {
       return `${baseURL}/api/raw${url.encodePath(this.req.path)}?auth=${this.jwt}`
     },
     previewUrl () {
@@ -251,6 +241,9 @@ export default {
     close () {
       let uri = url.removeLastDir(this.$route.path) + '/'
       this.$router.push({ path: uri })
+    },
+    download() {
+      api.download(null, this.$route.path)
     }
   }
 }
