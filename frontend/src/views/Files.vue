@@ -1,8 +1,8 @@
 <template>
   <div>
-    <header-bar showMenu showLogo />
+    <header-bar v-if="error || !req.type" showMenu showLogo />
 
-    <div id="breadcrumbs" v-if="isListing || error">
+    <div id="breadcrumbs">
       <router-link to="/files/" :aria-label="$t('files.home')" :title="$t('files.home')">
         <i class="material-icons">home</i>
       </router-link>
@@ -14,9 +14,7 @@
     </div>
 
     <errors v-if="error" :errorCode="errorCode" />
-    <preview v-else-if="isPreview"></preview>
-    <editor v-else-if="isEditor"></editor>
-    <listing v-else-if="isListing"></listing>
+    <component v-else-if="currentView" :is="currentView"></component>
     <div v-else>
       <h2 class="message">
         <span>{{ $t('files.loading') }}</span>
@@ -27,7 +25,7 @@
 
 <script>
 import { files as api } from '@/api'
-import { mapGetters, mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 
 import HeaderBar from '@/components/header/HeaderBar'
 import Errors from '@/views/Errors'
@@ -54,19 +52,24 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'isListing',
-      'isEditor',
-      'isFiles'
-    ]),
     ...mapState([
       'req',
       'reload',
       'loading',
       'show'
     ]),
-    isPreview () {
-      return !this.loading && !this.isListing && !this.isEditor || this.loading && this.$store.state.previewMode
+    currentView () {
+      if (this.req.type == undefined) {
+        return null
+      }
+
+      if (this.req.isDir) {
+        return 'listing'
+      } else if(this.req.type === 'text' || this.req.type === 'textImmutable') {
+        return 'editor'
+      } else {
+        return 'preview'
+      }
     },
     breadcrumbs () {
       let parts = this.$route.path.split('/')

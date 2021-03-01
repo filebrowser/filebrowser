@@ -125,14 +125,12 @@ export default {
   },
   async mounted () {
     window.addEventListener('keydown', this.key)
-    this.$store.commit('setPreviewMode', true)
     this.listing = this.oldReq.items
     this.$root.$on('preview-deleted', this.deleted)
     this.updatePreview()
   },
   beforeDestroy () {
     window.removeEventListener('keydown', this.key)
-    this.$store.commit('setPreviewMode', false)
     this.$root.$off('preview-deleted', this.deleted)
   },
   methods: {
@@ -142,15 +140,10 @@ export default {
       if (this.hasNext) {
         this.next()
       } else if (!this.hasPrevious && !this.hasNext) {
-        this.back()
+        this.close()
       } else {
         this.prev()
       }
-    },
-    back () {
-      this.$store.commit('setPreviewMode', false)
-      let uri = url.removeLastDir(this.$route.path) + '/'
-      this.$router.push({ path: uri })
     },
     prev () {
       this.hoverNav = false
@@ -171,7 +164,7 @@ export default {
       } else if (event.which === 37) { // left arrow
         if (this.hasPrevious) this.prev()
       } else if (event.which === 27) { // esc
-        this.back()
+        this.close()
       }
     },
     async updatePreview () {
@@ -239,6 +232,8 @@ export default {
       }, 1500);
     }, 500),
     close () {
+      this.$store.commit('updateRequest', {})
+
       let uri = url.removeLastDir(this.$route.path) + '/'
       this.$router.push({ path: uri })
     },

@@ -24,9 +24,8 @@ const state = {
   showShell: false,
   showMessage: null,
   showConfirm: null,
-  previewMode: false,
   hash: '',
-  token: '',
+  token: ''
 }
 
 export default new Vuex.Store({

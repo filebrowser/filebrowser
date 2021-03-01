@@ -31,90 +31,97 @@
       <action v-if="headerButtons.delete" icon="delete" :label="$t('buttons.delete')" show="delete" />
     </div>
 
-    <div v-if="(req.numDirs + req.numFiles) == 0">
+    <div v-if="$store.state.loading">
       <h2 class="message">
-        <i class="material-icons">sentiment_dissatisfied</i>
-        <span>{{ $t('files.lonely') }}</span>
+        <span>{{ $t('files.loading') }}</span>
       </h2>
-      <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" multiple>
-      <input style="display:none" type="file" id="upload-folder-input" @change="uploadInput($event)" webkitdirectory multiple>
     </div>
-    <div v-else id="listing"
-      :class="user.viewMode">
-      <div>
-        <div class="item header">
-          <div></div>
-          <div>
-            <p :class="{ active: nameSorted }" class="name"
-              role="button"
-              tabindex="0"
-              @click="sort('name')"
-              :title="$t('files.sortByName')"
-              :aria-label="$t('files.sortByName')">
-              <span>{{ $t('files.name') }}</span>
-              <i class="material-icons">{{ nameIcon }}</i>
-            </p>
+    <template v-else>
+      <div v-if="(req.numDirs + req.numFiles) == 0">
+        <h2 class="message">
+          <i class="material-icons">sentiment_dissatisfied</i>
+          <span>{{ $t('files.lonely') }}</span>
+        </h2>
+        <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" multiple>
+        <input style="display:none" type="file" id="upload-folder-input" @change="uploadInput($event)" webkitdirectory multiple>
+      </div>
+      <div v-else id="listing"
+        :class="user.viewMode">
+        <div>
+          <div class="item header">
+            <div></div>
+            <div>
+              <p :class="{ active: nameSorted }" class="name"
+                role="button"
+                tabindex="0"
+                @click="sort('name')"
+                :title="$t('files.sortByName')"
+                :aria-label="$t('files.sortByName')">
+                <span>{{ $t('files.name') }}</span>
+                <i class="material-icons">{{ nameIcon }}</i>
+              </p>
 
-            <p :class="{ active: sizeSorted }" class="size"
-              role="button"
-              tabindex="0"
-              @click="sort('size')"
-              :title="$t('files.sortBySize')"
-              :aria-label="$t('files.sortBySize')">
-              <span>{{ $t('files.size') }}</span>
-              <i class="material-icons">{{ sizeIcon }}</i>
-            </p>
-            <p :class="{ active: modifiedSorted }" class="modified"
-              role="button"
-              tabindex="0"
-              @click="sort('modified')"
-              :title="$t('files.sortByLastModified')"
-              :aria-label="$t('files.sortByLastModified')">
-              <span>{{ $t('files.lastModified') }}</span>
-              <i class="material-icons">{{ modifiedIcon }}</i>
-            </p>
+              <p :class="{ active: sizeSorted }" class="size"
+                role="button"
+                tabindex="0"
+                @click="sort('size')"
+                :title="$t('files.sortBySize')"
+                :aria-label="$t('files.sortBySize')">
+                <span>{{ $t('files.size') }}</span>
+                <i class="material-icons">{{ sizeIcon }}</i>
+              </p>
+              <p :class="{ active: modifiedSorted }" class="modified"
+                role="button"
+                tabindex="0"
+                @click="sort('modified')"
+                :title="$t('files.sortByLastModified')"
+                :aria-label="$t('files.sortByLastModified')">
+                <span>{{ $t('files.lastModified') }}</span>
+                <i class="material-icons">{{ modifiedIcon }}</i>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <h2 v-if="req.numDirs > 0">{{ $t('files.folders') }}</h2>
+        <div v-if="req.numDirs > 0">
+          <item v-for="(item) in dirs"
+            :key="base64(item.name)"
+            v-bind:index="item.index"
+            v-bind:name="item.name"
+            v-bind:isDir="item.isDir"
+            v-bind:url="item.url"
+            v-bind:modified="item.modified"
+            v-bind:type="item.type"
+            v-bind:size="item.size">
+          </item>
+        </div>
+
+        <h2 v-if="req.numFiles > 0">{{ $t('files.files') }}</h2>
+        <div v-if="req.numFiles > 0">
+          <item v-for="(item) in files"
+            :key="base64(item.name)"
+            v-bind:index="item.index"
+            v-bind:name="item.name"
+            v-bind:isDir="item.isDir"
+            v-bind:url="item.url"
+            v-bind:modified="item.modified"
+            v-bind:type="item.type"
+            v-bind:size="item.size">
+          </item>
+        </div>
+
+        <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" multiple>
+        <input style="display:none" type="file" id="upload-folder-input" @change="uploadInput($event)" webkitdirectory multiple>
+
+        <div :class="{ active: $store.state.multiple }" id="multiple-selection">
+        <p>{{ $t('files.multipleSelectionEnabled') }}</p>
+          <div @click="$store.commit('multiple', false)" tabindex="0" role="button" :title="$t('files.clear')" :aria-label="$t('files.clear')" class="action">
+            <i class="material-icons">clear</i>
           </div>
         </div>
       </div>
-
-      <h2 v-if="req.numDirs > 0">{{ $t('files.folders') }}</h2>
-      <div v-if="req.numDirs > 0">
-        <item v-for="(item) in dirs"
-          :key="base64(item.name)"
-          v-bind:index="item.index"
-          v-bind:name="item.name"
-          v-bind:isDir="item.isDir"
-          v-bind:url="item.url"
-          v-bind:modified="item.modified"
-          v-bind:type="item.type"
-          v-bind:size="item.size">
-        </item>
-      </div>
-
-      <h2 v-if="req.numFiles > 0">{{ $t('files.files') }}</h2>
-      <div v-if="req.numFiles > 0">
-        <item v-for="(item) in files"
-          :key="base64(item.name)"
-          v-bind:index="item.index"
-          v-bind:name="item.name"
-          v-bind:isDir="item.isDir"
-          v-bind:url="item.url"
-          v-bind:modified="item.modified"
-          v-bind:type="item.type"
-          v-bind:size="item.size">
-        </item>
-      </div>
-
-      <input style="display:none" type="file" id="upload-input" @change="uploadInput($event)" multiple>
-      <input style="display:none" type="file" id="upload-folder-input" @change="uploadInput($event)" webkitdirectory multiple>
-
-      <div :class="{ active: $store.state.multiple }" id="multiple-selection">
-      <p>{{ $t('files.multipleSelectionEnabled') }}</p>
-        <div @click="$store.commit('multiple', false)" tabindex="0" role="button" :title="$t('files.clear')" :aria-label="$t('files.clear')" class="action">
-          <i class="material-icons">clear</i>
-        </div>
-      </div>
-    </div>
+    </template>
   </div>
 </template>
 

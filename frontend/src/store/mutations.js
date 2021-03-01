@@ -85,9 +85,6 @@ const mutations = {
     state.clipboard.key = ''
     state.clipboard.items = []
   },
-  setPreviewMode(state, value) {
-    state.previewMode = value
-  },
   setHash: (state, value) => (state.hash = value),
 }
 
