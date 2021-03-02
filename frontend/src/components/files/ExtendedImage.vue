@@ -10,11 +10,12 @@
     @mouseup="mouseUp"
     @wheel="wheelMove"
   >
-    <img :src="src" class="image-ex-img image-ex-img-center" ref="imgex" @load="onLoad">
+    <img src="" class="image-ex-img image-ex-img-center" ref="imgex" @load="onLoad">
   </div>
 </template>
 <script>
 import throttle from 'lodash.throttle'
+import UTIF from 'utif'
 
 export default {
   props: {
@@ -61,6 +62,9 @@ export default {
     }
   },
   mounted() {
+    if (!this.decodeUTIF()) {
+      this.$refs.imgex.src = this.src
+    }
     let container = this.$refs.container
     this.classList.forEach(className => container.classList.add(className))
     // set width and height if they are zero
@@ -85,6 +89,20 @@ export default {
     }
   },
   methods: {
+    // Modified from UTIF.replaceIMG
+    decodeUTIF() {
+      const sufs = ["tif", "tiff", "dng", "cr2", "nef"]
+      let suff = document.location.pathname.split(".").pop().toLowerCase()
+      if (sufs.indexOf(suff) == -1) return false
+      let xhr = new XMLHttpRequest()
+      UTIF._xhrs.push(xhr)
+      UTIF._imgs.push(this.$refs.imgex)
+      xhr.open("GET", this.src)
+      xhr.responseType = "arraybuffer"
+      xhr.onload = UTIF._imgLoaded
+      xhr.send()
+      return true
+    },
     onLoad() {
       let img = this.$refs.imgex
 
