@@ -1,14 +1,11 @@
 <template>
-  <div class="card floating" id="share">
+  <div class="card floating share__promt__card" id="share">
     <div class="card-title">
       <h2>{{ $t('buttons.share') }}</h2>
     </div>
 
     <div class="card-content">
       <ul>
-        <li v-if="!hasPermanent">
-          <a @click="getPermalink" :aria-label="$t('buttons.permalink')">{{ $t('buttons.permalink') }}</a>
-        </li>
 
         <li v-for="link in links" :key="link.hash">
           <a :href="buildLink(link.hash)" target="_blank">
@@ -27,6 +24,13 @@
             :title="$t('buttons.copyToClipboard')"><i class="material-icons">content_paste</i></button>
         </li>
 
+        <li v-if="!hasPermanent">
+          <div>
+            <input type="password" :placeholder="$t('prompts.optionalPassword')" v-model="passwordPermalink">
+            <a @click="getPermalink" :aria-label="$t('buttons.permalink')">{{ $t('buttons.permalink') }}</a>
+          </div>
+        </li>
+
         <li>
           <input v-focus
             type="number"
@@ -40,6 +44,7 @@
             <option value="hours">{{ $t('time.hours') }}</option>
             <option value="days">{{ $t('time.days') }}</option>
           </select>
+          <input type="password" :placeholder="$t('prompts.optionalPassword')" v-model="password">
           <button class="action"
             @click="submit"
             :aria-label="$t('buttons.create')"
@@ -72,7 +77,9 @@ export default {
       unit: 'hours',
       hasPermanent: false,
       links: [],
-      clip: null
+      clip: null,
+      password: '',
+      passwordPermalink: ''
     }
   },
   computed: {
@@ -121,7 +128,7 @@ export default {
       if (!this.time) return
 
       try {
-        const res = await api.create(this.url, this.time, this.unit)
+        const res = await api.create(this.url, this.password, this.time, this.unit)
         this.links.push(res)
         this.sort()
       } catch (e) {
@@ -130,7 +137,7 @@ export default {
     },
     getPermalink: async function () {
       try {
-        const res = await api.create(this.url)
+        const res = await api.create(this.url, this.passwordPermalink)
         this.links.push(res)
         this.sort()
         this.hasPermanent = true

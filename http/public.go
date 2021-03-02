@@ -1,14 +1,17 @@
 package http
 
 import (
+	"errors"
 	"net/http"
 	"path"
 	"path/filepath"
 	"strings"
 
 	"github.com/spf13/afero"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/filebrowser/filebrowser/v2/files"
+	"github.com/filebrowser/filebrowser/v2/share"
 )
 
 var withHashFile = func(fn handleFunc) handleFunc {
@@ -17,6 +20,11 @@ var withHashFile = func(fn handleFunc) handleFunc {
 		link, err := d.store.Share.GetByHash(id)
 		if err != nil {
 			return errToStatus(err), err
+		}
+
+		status, err := authenticateShareRequest(r, link)
+		if status != 0 || err != nil {
+			return status, err
 		}
 
 		user, err := d.store.Users.Get(d.server.Root, link.UserID)
@@ -33,6 +41,7 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			Expand:     true,
 			ReadHeader: d.server.TypeDetectionByHeader,
 			Checker:    d,
+			Token:      link.Token,
 		})
 		if err != nil {
 			return errToStatus(err), err
@@ -48,6 +57,7 @@ var withHashFile = func(fn handleFunc) handleFunc {
 				Modify:  d.user.Perm.Modify,
 				Expand:  true,
 				Checker: d,
+				Token:   link.Token,
 			})
 			if err != nil {
 				return errToStatus(err), err
@@ -94,3 +104,26 @@ var publicDlHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, 
 
 	return rawDirHandler(w, r, d, file)
 })
+
+func authenticateShareRequest(r *http.Request, l *share.Link) (int, error) {
+	if l.PasswordHash == "" {
+		return 0, nil
+	}
+
+	if r.URL.Query().Get("token") == l.Token {
+		return 0, nil
+	}
+
+	password := r.Header.Get("X-SHARE-PASSWORD")
+	if password == "" {
+		return http.StatusUnauthorized, nil
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(l.PasswordHash), []byte(password)); err != nil {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			return http.StatusUnauthorized, nil
+		}
+		return 0, err
+	}
+
+	return 0, nil
+}

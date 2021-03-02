@@ -77,8 +77,13 @@ export function download (format, ...files) {
   if (format !== null) {
     url += `algo=${format}&`
   }
+  if (store.state.jwt !== ''){
+    url += `auth=${store.state.jwt}&`
+  }
+  if (store.state.token !== ''){
+    url += `token=${store.state.token}`
+  }
 
-  url += `auth=${store.state.jwt}`
   window.open(url)
 }
 

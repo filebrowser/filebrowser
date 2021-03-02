@@ -51,7 +51,7 @@ func handle(fn handleFunc, prefix string, store *storage.Storage, server *settin
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		settings, err := store.Settings.Get()
 		if err != nil {
-			log.Fatalln("ERROR: couldn't get settings")
+			log.Fatalf("ERROR: couldn't get settings: %v\n", err)
 			return
 		}
 
