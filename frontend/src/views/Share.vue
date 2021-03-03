@@ -7,17 +7,9 @@
       <action icon="check_circle" :label="$t('buttons.selectMultiple')" @action="toggleMultipleSelection" />
     </header-bar>
 
-    <div v-if="!loading">
-      <div id="breadcrumbs">
-        <router-link :to="'/share/' + hash" :aria-label="$t('files.home')" :title="$t('files.home')">
-          <i class="material-icons">home</i>
-        </router-link>
+    <breadcrumbs :base="'/share/' + hash" />
 
-        <span v-for="(link, index) in breadcrumbs" :key="index">
-            <span class="chevron"><i class="material-icons">keyboard_arrow_right</i></span>
-            <router-link :to="link.url">{{ link.name }}</router-link>
-          </span>
-      </div>
+    <div v-if="!loading">
       <div class="share">
         <div class="share__box share__box__info">
             <div class="share__box__header">
@@ -112,6 +104,7 @@ import moment from 'moment'
 
 import HeaderBar from '@/components/header/HeaderBar'
 import Action from '@/components/header/Action'
+import Breadcrumbs from '@/components/Breadcrumbs'
 import Errors from '@/views/Errors'
 import QrcodeVue from 'qrcode.vue'
 import Item from "@/components/files/ListingItem"
@@ -121,6 +114,7 @@ export default {
   components: {
     HeaderBar,
     Action,
+    Breadcrumbs,
     Item,
     QrcodeVue,
     Errors
@@ -176,37 +170,6 @@ export default {
     humanTime: function () {
       return moment(this.req.modified).fromNow()
     },
-    breadcrumbs () {
-      let parts = this.path.split('/')
-
-      if (parts[0] === '') {
-        parts.shift()
-      }
-
-      if (parts[parts.length - 1] === '') {
-        parts.pop()
-      }
-
-      let breadcrumbs = []
-
-      for (let i = 0; i < parts.length; i++) {
-        if (i === 0) {
-          breadcrumbs.push({ name: decodeURIComponent(parts[i]), url: '/share/' + this.hash + '/' + parts[i] + '/' })
-        } else  {
-          breadcrumbs.push({ name: decodeURIComponent(parts[i]), url: breadcrumbs[i - 1].url + parts[i] + '/' })
-        }
-      }
-
-      if (breadcrumbs.length > 3) {
-        while (breadcrumbs.length !== 4) {
-          breadcrumbs.shift()
-        }
-
-        breadcrumbs[0].name = '...'
-      }
-
-      return breadcrumbs
-    },
     errorCode() {
       return (this.error.message === '404' || this.error.message === '403') ? parseInt(this.error.message) : 500
     }
@@ -233,6 +196,8 @@ export default {
         }
         let file = await api.getHash(encodeURIComponent(this.$route.params.pathMatch), this.password)
         this.path = file.path
+        if (this.path.endsWith('/'))  this.path = this.path.slice(0, -1)
+
         this.token = file.token || ''
         this.$store.commit('setToken', this.token)
         if (file.isDir) file.items = file.items.map((item, index) => {

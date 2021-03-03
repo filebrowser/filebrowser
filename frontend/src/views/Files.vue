@@ -2,16 +2,7 @@
   <div>
     <header-bar v-if="error || !req.type" showMenu showLogo />
 
-    <div id="breadcrumbs">
-      <router-link to="/files/" :aria-label="$t('files.home')" :title="$t('files.home')">
-        <i class="material-icons">home</i>
-      </router-link>
-
-      <span v-for="(link, index) in breadcrumbs" :key="index">
-        <span class="chevron"><i class="material-icons">keyboard_arrow_right</i></span>
-        <router-link :to="link.url">{{ link.name }}</router-link>
-      </span>
-    </div>
+    <breadcrumbs base="/files" />
 
     <errors v-if="error" :errorCode="errorCode" />
     <component v-else-if="currentView" :is="currentView"></component>
@@ -28,6 +19,7 @@ import { files as api } from '@/api'
 import { mapState, mapMutations } from 'vuex'
 
 import HeaderBar from '@/components/header/HeaderBar'
+import Breadcrumbs from '@/components/Breadcrumbs'
 import Errors from '@/views/Errors'
 import Preview from '@/views/files/Preview'
 import Listing from '@/views/files/Listing'
@@ -40,6 +32,7 @@ export default {
   name: 'files',
   components: {
     HeaderBar,
+    Breadcrumbs,
     Errors,
     Preview,
     Listing,
@@ -70,39 +63,6 @@ export default {
       } else {
         return 'preview'
       }
-    },
-    breadcrumbs () {
-      let parts = this.$route.path.split('/')
-
-      if (parts[0] === '') {
-        parts.shift()
-      }
-
-      if (parts[parts.length - 1] === '') {
-        parts.pop()
-      }
-
-      let breadcrumbs = []
-
-      for (let i = 0; i < parts.length; i++) {
-        if (i === 0) {
-          breadcrumbs.push({ name: decodeURIComponent(parts[i]), url: '/' + parts[i] + '/' })
-        } else {
-          breadcrumbs.push({ name: decodeURIComponent(parts[i]), url: breadcrumbs[i - 1].url + parts[i] + '/' })
-        }
-      }
-
-      breadcrumbs.shift()
-
-      if (breadcrumbs.length > 3) {
-        while (breadcrumbs.length !== 4) {
-          breadcrumbs.shift()
-        }
-
-        breadcrumbs[0].name = '...'
-      }
-
-      return breadcrumbs
     },
     errorCode() {
       return (this.error.message === '404' || this.error.message === '403') ? parseInt(this.error.message) : 500

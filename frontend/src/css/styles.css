@@ -220,13 +220,17 @@
   height: calc(100vh - 8.4em);
 }
 
-#editor-container #breadcrumbs {
+#editor-container .breadcrumbs {
   height: 2.3em;
   padding: 0 1em;
 }
 
-#editor-container #breadcrumbs span {
+#editor-container .breadcrumbs span {
   font-size: 12px;
+}
+
+#editor-container .breadcrumbs i {
+  font-size: 16px;
 }
 
 /* * * * * * * * * * * * * * * *

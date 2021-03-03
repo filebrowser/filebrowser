@@ -9,14 +9,7 @@
       </template>
     </header-bar>
 
-    <div id="breadcrumbs">
-      <span><i class="material-icons">home</i></span>
-
-      <span v-for="(link, index) in breadcrumbs" :key="index">
-        <span class="chevron"><i class="material-icons">keyboard_arrow_right</i></span>
-        <span>{{ link.name }}</span>
-      </span>
-    </div>
+    <breadcrumbs base="/files" noLink />
 
     <form id="editor"></form>
   </div>
@@ -35,12 +28,14 @@ import 'ace-builds/webpack-resolver'
 
 import HeaderBar from '@/components/header/HeaderBar'
 import Action from '@/components/header/Action'
+import Breadcrumbs from '@/components/Breadcrumbs'
 
 export default {
   name: 'editor',
   components: {
     HeaderBar,
-    Action
+    Action,
+    Breadcrumbs
   },
   data: function () {
     return {}

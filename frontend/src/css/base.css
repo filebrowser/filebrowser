@@ -83,29 +83,29 @@ main {
   width: calc(100% - 19em);
 }
 
-#breadcrumbs {
+.breadcrumbs {
   height: 3em;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-#breadcrumbs span,
-#breadcrumbs {
+.breadcrumbs span,
+.breadcrumbs {
   display: flex;
   align-items: center;
   color: #6f6f6f;
 }
 
-#breadcrumbs a {
+.breadcrumbs a {
   color: inherit;
   transition: .1s ease-in;
   border-radius: .125em;
 }
 
-#breadcrumbs a:hover {
+.breadcrumbs a:hover {
   background-color: rgba(0,0,0, 0.05);
 }
 
-#breadcrumbs span a {
+.breadcrumbs span a {
   padding: .2em;
 }
 

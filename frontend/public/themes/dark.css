@@ -69,12 +69,15 @@ nav > div {
   border-color: var(--divider);
 }
 
-#breadcrumbs {
+.breadcrumbs {
   border-color: var(--divider);
   color: var(--textPrimary) !important;
 }
-#breadcrumbs span {
+.breadcrumbs span {
   color: var(--textPrimary) !important;
+}
+.breadcrumbs a:hover {
+  background-color: rgba(255, 255, 255, .1);
 }
 
 #listing .item {
