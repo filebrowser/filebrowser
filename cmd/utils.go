@@ -72,7 +72,7 @@ func dbExists(path string) (bool, error) {
 		d := filepath.Dir(path)
 		_, err = os.Stat(d)
 		if os.IsNotExist(err) {
-			if err := os.MkdirAll(d, 0700); err != nil { //nolint:shadow
+			if err := os.MkdirAll(d, 0700); err != nil { //nolint:govet
 				return false, err
 			}
 			return false, nil

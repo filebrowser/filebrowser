@@ -1,55 +1,39 @@
-version: 2
+version: 2.1
+references:
+  base_container: &base_container
+    docker:
+      - image: filebrowser/builder:v1.1.0
 jobs:
   lint:
-    docker:
-      - image: golangci/golangci-lint:v1.31.0
+    <<: *base_container
     steps:
       - checkout
-      - run: golangci-lint run -v
-  build-node:
-    docker:
-      - image: circleci/node
-    steps:
-      - checkout
-      - run:
-          name: "Build"
-          command: ./wizard.sh -a
-      - run:
-          name: "Cleanup"
-          command: rm -rf frontend/node_modules
-      - persist_to_workspace:
-          root: .
-          paths:
-            - '*'
+      - run: make lint
   test:
-    docker:
-      - image: circleci/golang:1.15.2
+    <<: *base_container
     steps:
       - checkout
       - run:
           name: "Test"
-          command: go test ./...
-  build-go:
-    docker:
-      - image: circleci/golang:1.15.2
+          command: make test
+  build:
+    <<: *base_container
     steps:
-      - attach_workspace:
-          at: '~/project'
+      - checkout
       - run:
-          name: "Compile"
-          command: GOOS=linux GOARCH=amd64 ./wizard.sh -c
+          name: "Build"
+          command: make build
       - run:
           name: "Cleanup"
           command: |
-            rm -rf frontend/build
-            git checkout -- go.sum # TODO: why is it being changed?
+            rm -rf frontend/node_modules
+            rm -rf bin/
       - persist_to_workspace:
           root: .
           paths:
             - '*'
   release:
-    docker:
-      - image: circleci/golang:1.15.2
+    <<: *base_container
     steps:
       - attach_workspace:
           at: '~/project'
@@ -69,22 +53,16 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - build-node:
+      - build:
           filters:
             tags:
               only: /.*/
-      - build-go:
-          filters:
-            tags:
-              only: /.*/
-          requires:
-            - build-node
-            - lint
-            - test
       - release:
           context: deploy
           requires:
-            - build-go
+            - build
+            - test
+            - lint
           filters:
             tags:
               only: /^v.*/

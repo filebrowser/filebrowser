@@ -44,7 +44,7 @@ including 'index_end'.`,
 		i, err := strconv.Atoi(args[0])
 		checkErr(err)
 		f := i
-		if len(args) == 2 { //nolint:mnd
+		if len(args) == 2 { //nolint:gomnd
 			f, err = strconv.Atoi(args[1])
 			checkErr(err)
 		}
