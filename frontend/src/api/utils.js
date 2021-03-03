@@ -33,11 +33,11 @@ export async function fetchJSON (url, opts) {
   }
 }
 
-export function removePrefix (url) {
+export function removePrefix (url, prefix) {
   if (url.startsWith('/files')) {
     url = url.slice(6)
-  } else if (store.getters['isSharing']) {
-    url = url.slice(7 + store.state.hash.length)
+  } else if (prefix) {
+    url = url.replace(prefix, '')
   }
 
   if (url === '') url = '/'

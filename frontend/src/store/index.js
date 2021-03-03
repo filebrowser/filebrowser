@@ -22,10 +22,7 @@ const state = {
   multiple: false,
   show: null,
   showShell: false,
-  showMessage: null,
-  showConfirm: null,
-  hash: '',
-  token: ''
+  showConfirm: null
 }
 
 export default new Vuex.Store({

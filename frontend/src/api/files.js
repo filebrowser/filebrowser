@@ -58,7 +58,7 @@ export async function put (url, content = '') {
 }
 
 export function download (format, ...files) {
-  let url = store.getters['isSharing'] ? `${baseURL}/api/public/dl/${store.state.hash}` : `${baseURL}/api/raw`
+  let url = `${baseURL}/api/raw`
 
   if (files.length === 1) {
     url += removePrefix(files[0]) + '?'
@@ -74,14 +74,12 @@ export function download (format, ...files) {
     url += `/?files=${arg}&`
   }
 
-  if (format !== null) {
+  if (format) {
     url += `algo=${format}&`
   }
-  if (store.state.jwt !== ''){
+
+  if (store.state.jwt){
     url += `auth=${store.state.jwt}&`
-  }
-  if (store.state.token !== ''){
-    url += `token=${store.state.token}`
   }
 
   window.open(url)

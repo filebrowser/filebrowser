@@ -47,7 +47,8 @@
               v-bind:url="item.url"
               v-bind:modified="item.modified"
               v-bind:type="item.type"
-              v-bind:size="item.size">
+              v-bind:size="item.size"
+              readOnly>
             </item>
             <div v-if="req.items.length > showLimit" class="item">
               <div>
@@ -97,7 +98,7 @@
 
 <script>
 import {mapState, mapMutations, mapGetters} from 'vuex';
-import { files, share as api } from '@/api'
+import { pub as api } from '@/api'
 import { baseURL } from '@/utils/constants'
 import filesize from 'filesize'
 import moment from 'moment'
@@ -124,14 +125,16 @@ export default {
     path: '',
     showLimit: 500,
     password: '',
-    attemptedPasswordLogin: false
+    attemptedPasswordLogin: false,
+    hash: null,
+    token: null
   }),
   watch: {
     '$route': 'fetchData'
   },
   created: async function () {
     const hash = this.$route.params.pathMatch.split('/')[0]
-    this.setHash(hash)
+    this.hash = hash
     await this.fetchData()
   },
   mounted () {
@@ -141,7 +144,7 @@ export default {
     window.removeEventListener('keydown', this.keyEvent)
   },
   computed: {
-    ...mapState(['hash', 'req', 'loading', 'multiple', 'selected']),
+    ...mapState(['req', 'loading', 'multiple', 'selected']),
     ...mapGetters(['selectedCount', 'selectedCount']),
     icon: function () {
       if (this.req.isDir) return 'folder'
@@ -175,7 +178,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([ 'setHash', 'resetSelected', 'updateRequest', 'setLoading' ]),
+    ...mapMutations([ 'resetSelected', 'updateRequest', 'setLoading' ]),
     base64: function (name) {
       return window.btoa(unescape(encodeURIComponent(name)))
     },
@@ -194,12 +197,11 @@ export default {
         if (this.password !== ''){
           this.attemptedPasswordLogin = true
         }
-        let file = await api.getHash(encodeURIComponent(this.$route.params.pathMatch), this.password)
+        let file = await api.fetch(encodeURIComponent(this.$route.params.pathMatch), this.password)
         this.path = file.path
         if (this.path.endsWith('/'))  this.path = this.path.slice(0, -1)
 
         this.token = file.token || ''
-        this.$store.commit('setToken', this.token)
         if (file.isDir) file.items = file.items.map((item, index) => {
           item.index = index
           item.url = `/share/${this.hash}${this.path}/${encodeURIComponent(item.name)}`
@@ -226,11 +228,24 @@ export default {
     },
     download () {
       if (this.selectedCount === 1 && !this.req.items[this.selected[0]].isDir) {
-        files.download(null, this.req.items[this.selected[0]].url)
+        api.download(null, this.hash, this.token, this.req.items[this.selected[0]].url)
         return
       }
 
-      this.$store.commit('showHover', 'download')
+      this.$store.commit('showHover', {
+        prompt: 'download',
+        confirm: (format) => {
+          this.$store.commit('closeHovers')
+
+          let files = []
+
+          for (let i of this.selected) {
+            files.push(this.req.items[i].url)
+          }
+
+          api.download(format, this.hash, this.token, ...files)
+        }
+      })
     }
   }
 }

@@ -158,7 +158,8 @@ export default {
       'selected',
       'user',
       'show',
-      'multiple'
+      'multiple',
+      'selected'
     ]),
     ...mapGetters([
       'selectedCount'
@@ -580,7 +581,20 @@ export default {
         return
       }
 
-      this.$store.commit('showHover', 'download')
+      this.$store.commit('showHover', {
+        prompt: 'download',
+        confirm: (format) => {
+          this.$store.commit('closeHovers')
+
+          let files = []
+
+          for (let i of this.selected) {
+            files.push(this.req.items[i].url)
+          }
+
+          api.download(format, ...files)
+        }
+      })
     },
     switchView: async function () {
       this.$store.commit('closeHovers')

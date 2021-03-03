@@ -7,43 +7,29 @@
     <div class="card-content">
       <p>{{ $t('prompts.downloadMessage') }}</p>
 
-      <button class="button button--block" @click="download('zip')" v-focus>zip</button>
-      <button class="button button--block" @click="download('tar')" v-focus>tar</button>
-      <button class="button button--block" @click="download('targz')" v-focus>tar.gz</button>
-      <button class="button button--block" @click="download('tarbz2')" v-focus>tar.bz2</button>
-      <button class="button button--block" @click="download('tarxz')" v-focus>tar.xz</button>
-      <button class="button button--block" @click="download('tarlz4')" v-focus>tar.lz4</button>
-      <button class="button button--block" @click="download('tarsz')" v-focus>tar.sz</button>
+      <button v-for="(ext, format) in formats" :key="format" class="button button--block" @click="showConfirm(format)" v-focus>{{ ext }}</button>
     </div>
   </div>
 </template>
 
 <script>
-import {mapGetters, mapState} from 'vuex'
-import { files as api } from '@/api'
+import { mapState } from 'vuex'
 
 export default {
   name: 'download',
-  computed: {
-    ...mapState(['selected', 'req']),
-    ...mapGetters(['selectedCount'])
-  },
-  methods: {
-    download: function (format) {
-      if (this.selectedCount === 0) {
-        api.download(format, this.$route.path)
-      } else {
-        let files = []
-
-        for (let i of this.selected) {
-          files.push(this.req.items[i].url)
-        }
-
-        api.download(format, ...files)
+  data: function () {
+    return {
+      formats: {
+        zip: 'zip',
+        tar: 'tar',
+        targz: 'tar.gz',
+        tarbz2: 'tar.bz2',
+        tarxz: 'tar.xz',
+        tarlz4: 'tar.lz4',
+        tarsz: 'tar.sz'
       }
-
-      this.$store.commit('closeHovers')
     }
-  }
+  },
+  computed: mapState(['showConfirm'])
 }
 </script>
