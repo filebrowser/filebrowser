@@ -1,15 +1,37 @@
-FROM alpine:latest as alpine
+FROM alpine:latest
 RUN apk --update add ca-certificates
 RUN apk --update add mailcap
-
-FROM scratch
-COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=alpine /etc/mime.types /etc/mime.types
 
 VOLUME /srv
 EXPOSE 80
 
-COPY .docker.json /.filebrowser.json
 COPY filebrowser /filebrowser
+
+# Create appuser.
+ENV USER=root
+ENV GROUP=root
+ENV UID=0
+ENV GID=0
+ENV UMASK=022
+
+RUN if [ "$GID" -ne 0 ]; then \
+    addgroup \
+    -g "${GID}" \
+    "${GROUP}" ; \
+    fi;
+
+RUN adduser \
+    -g "" \
+    -D \
+    -G "${GROUP}" \
+    -H \
+    -h "/nonexistent" \
+    -s "/sbin/nologin" \
+    -u "${UID}" \
+    "${USER}"
+
+USER ${USER}:${GROUP}
+
+RUN umask ${UMASK}
 
 ENTRYPOINT [ "/filebrowser" ]

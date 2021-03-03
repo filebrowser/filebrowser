@@ -19,10 +19,6 @@ build:
     - linux
     - windows
     - freebsd
-    - netbsd
-    - openbsd
-    - dragonfly
-    - solaris
   goarch:
     - amd64
     - 386
@@ -35,13 +31,7 @@ build:
   ignore:
     - goos: darwin
       goarch: 386
-    - goos: openbsd
-      goarch: arm
     - goos: freebsd
-      goarch: arm
-    - goos: netbsd
-      goarch: arm
-    - goos: solaris
       goarch: arm
 
 archives:
@@ -55,53 +45,86 @@ archives:
 dockers:
   -
     dockerfile: Dockerfile
-    binaries:
-      - filebrowser
+    use_buildx: true
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/amd64"
     goos: linux
     goarch: amd64
-    goarm: ''
     image_templates:
-      - "filebrowser/filebrowser:latest"
-      - "filebrowser/filebrowser:{{ .Tag }}"
-      - "filebrowser/filebrowser:v{{ .Major }}"
-    extra_files:
-      - .docker.json
+      - "filebrowser/filebrowser:{{ .Tag }}-amd64"
+      - "filebrowser/filebrowser:v{{ .Major }}-amd64"
   -
     dockerfile: Dockerfile
-    binaries:
-      - filebrowser
+    use_buildx: true
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/arm64"
+    goos: linux
+    goarch: arm64
+    image_templates:
+      - "filebrowser/filebrowser:{{ .Tag }}-arm64"
+      - "filebrowser/filebrowser:v{{ .Major }}-arm64"
+  -
+    dockerfile: Dockerfile
+    use_buildx: true
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/arm/v6"
     goos: linux
     goarch: arm
-    goarm: '5'
+    goarm: '6'
     image_templates:
-      - "filebrowser/filebrowser:pi"
-      - "filebrowser/filebrowser:{{ .Tag }}-pi"
-      - "filebrowser/filebrowser:v{{ .Major }}-pi"
-    extra_files:
-      - .docker.json
+      - "filebrowser/filebrowser:{{ .Tag }}-armv6"
+      - "filebrowser/filebrowser:v{{ .Major }}-armv6"
   -
-    dockerfile: Dockerfile.alpine
-    binaries:
-      - filebrowser
+    dockerfile: Dockerfile
+    use_buildx: true
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/arm/v7"
     goos: linux
-    goarch: amd64
-    goarm: ''
+    goarch: arm
+    goarm: '7'
     image_templates:
-      - "filebrowser/filebrowser:alpine"
-      - "filebrowser/filebrowser:{{ .Tag }}-alpine"
-      - "filebrowser/filebrowser:v{{ .Major }}-alpine"
-    extra_files:
-      - .docker.json
-  -
-    dockerfile: Dockerfile.debian
-    binaries:
-      - filebrowser
-    goos: linux
-    goarch: amd64
-    goarm: ''
+      - "filebrowser/filebrowser:{{ .Tag }}-armv7"
+      - "filebrowser/filebrowser:v{{ .Major }}-armv7"
+docker_manifests:
+  - name_template: "filebrowser/filebrowser:latest"
     image_templates:
-      - "filebrowser/filebrowser:debian"
-      - "filebrowser/filebrowser:{{ .Tag }}-debian"
-      - "filebrowser/filebrowser:v{{ .Major }}-debian"
-    extra_files:
-      - .docker.json
+      - "filebrowser/filebrowser:{{ .Tag }}-amd64"
+      - "filebrowser/filebrowser:{{ .Tag }}-arm64"
+      - "filebrowser/filebrowser:{{ .Tag }}-armv6"
+      - "filebrowser/filebrowser:{{ .Tag }}-armv7"
+  - name_template: "filebrowser/filebrowser:{{ .Tag }}"
+    image_templates:
+      - "filebrowser/filebrowser:{{ .Tag }}-amd64"
+      - "filebrowser/filebrowser:{{ .Tag }}-arm64"
+      - "filebrowser/filebrowser:{{ .Tag }}-armv6"
+      - "filebrowser/filebrowser:{{ .Tag }}-armv7"
+  - name_template: "filebrowser/filebrowser:{{ .Major }}"
+    image_templates:
+      - "filebrowser/filebrowser:{{ .Major }}-amd64"
+      - "filebrowser/filebrowser:{{ .Major }}-arm64"
+      - "filebrowser/filebrowser:{{ .Major }}-armv6"
+      - "filebrowser/filebrowser:{{ .Major }}-armv7"
