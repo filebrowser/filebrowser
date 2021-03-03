@@ -128,3 +128,15 @@ docker_manifests:
       - "filebrowser/filebrowser:{{ .Major }}-arm64"
       - "filebrowser/filebrowser:{{ .Major }}-armv6"
       - "filebrowser/filebrowser:{{ .Major }}-armv7"
+brews:
+  - name: filebrowser
+    tap:
+      owner: filebrowser
+      name: homebrew-tap
+    folder: Formula
+    homepage: https://filebrowser.org
+    commit_author:
+      name: FileBrowser Robot
+      email: robot@filebrowser.org
+    description: File Browser is a create-your-own-cloud-kind of software where you can install it on a server, direct it to a path and then access your files through a nice web interface
+    license: "MIT"
