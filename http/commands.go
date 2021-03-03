@@ -32,7 +32,7 @@ func wsErr(ws *websocket.Conn, r *http.Request, status int, err error) { //nolin
 	if err != nil || status >= 400 {
 		log.Printf("%s: %v %s %v", r.URL.Path, status, r.RemoteAddr, err)
 	}
-	if err := ws.WriteControl(websocket.CloseInternalServerErr, []byte(txt), time.Now().Add(WSWriteDeadline)); err != nil { //nolint:shadow
+	if err := ws.WriteControl(websocket.CloseInternalServerErr, []byte(txt), time.Now().Add(WSWriteDeadline)); err != nil {
 		log.Print(err)
 	}
 }
@@ -47,7 +47,7 @@ var commandsHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *d
 	var raw string
 
 	for {
-		_, msg, err := conn.ReadMessage() //nolint:shadow
+		_, msg, err := conn.ReadMessage() //nolint:govet
 		if err != nil {
 			wsErr(conn, r, http.StatusInternalServerError, err)
 			return 0, nil
@@ -60,7 +60,7 @@ var commandsHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *d
 	}
 
 	if !d.server.EnableExec || !d.user.CanExecute(strings.Split(raw, " ")[0]) {
-		if err := conn.WriteMessage(websocket.TextMessage, cmdNotAllowed); err != nil { //nolint:shadow
+		if err := conn.WriteMessage(websocket.TextMessage, cmdNotAllowed); err != nil { //nolint:govet
 			wsErr(conn, r, http.StatusInternalServerError, err)
 		}
 
@@ -69,7 +69,7 @@ var commandsHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *d
 
 	command, err := runner.ParseCommand(d.settings, raw)
 	if err != nil {
-		if err := conn.WriteMessage(websocket.TextMessage, []byte(err.Error())); err != nil { //nolint:shadow
+		if err := conn.WriteMessage(websocket.TextMessage, []byte(err.Error())); err != nil { //nolint:govet
 			wsErr(conn, r, http.StatusInternalServerError, err)
 		}
 		return 0, nil

@@ -46,7 +46,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, box *
 
 	if d.settings.Branding.Files != "" {
 		fPath := filepath.Join(d.settings.Branding.Files, "custom.css")
-		_, err := os.Stat(fPath) //nolint:shadow
+		_, err := os.Stat(fPath) //nolint:govet
 
 		if err != nil && !os.IsNotExist(err) {
 			log.Printf("couldn't load custom styles: %v", err)
@@ -58,7 +58,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, box *
 	}
 
 	if d.settings.AuthMethod == auth.MethodJSONAuth {
-		raw, err := d.store.Auth.Get(d.settings.AuthMethod) //nolint:shadow
+		raw, err := d.store.Auth.Get(d.settings.AuthMethod) //nolint:govet
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}

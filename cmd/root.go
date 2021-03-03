@@ -152,12 +152,15 @@ user created with the credentials from options "username" and "password".`,
 			err = os.Chmod(server.Socket, os.FileMode(socketPerm))
 			checkErr(err)
 		case server.TLSKey != "" && server.TLSCert != "":
-			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey) //nolint:shadow
+			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey) //nolint:govet
 			checkErr(err)
-			listener, err = tls.Listen("tcp", adr, &tls.Config{Certificates: []tls.Certificate{cer}}) //nolint:shadow
+			listener, err = tls.Listen("tcp", adr, &tls.Config{
+				MinVersion:   tls.VersionTLS12,
+				Certificates: []tls.Certificate{cer}},
+			)
 			checkErr(err)
 		default:
-			listener, err = net.Listen("tcp", adr) //nolint:shadow
+			listener, err = net.Listen("tcp", adr)
 			checkErr(err)
 		}
 

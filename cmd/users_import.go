@@ -67,7 +67,7 @@ list or set it to 0.`,
 				// with the new username. If there is, print an error and cancel the
 				// operation
 				if user.Username != onDB.Username {
-					if conflictuous, err := d.store.Users.Get("", user.Username); err == nil { //nolint:shadow
+					if conflictuous, err := d.store.Users.Get("", user.Username); err == nil { //nolint:govet
 						checkErr(usernameConflictError(user.Username, conflictuous.ID, user.ID))
 					}
 				}
