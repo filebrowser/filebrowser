@@ -1,7 +1,7 @@
 <template>
   <div class="card floating">
     <div class="card-content">
-      <p>{{ $t('prompts.deleteMessageShare', {path: hash.path}) }}</p>
+      <p>{{ $t('prompts.deleteMessageShare', {path: ''}) }}</p>
     </div>
     <div class="card-action">
       <button @click="$store.commit('closeHovers')"
@@ -17,30 +17,16 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from 'vuex'
-import { share as api } from '@/api'
-import buttons from '@/utils/buttons'
+import {mapState} from 'vuex'
 
 export default {
   name: 'share-delete',
   computed: {
-    ...mapState(['hash'])
+    ...mapState(['showConfirm'])
   },
   methods: {
-    ...mapMutations(['closeHovers']),
-    submit: async function () {
-      buttons.loading('delete')
-
-      try {
-        await api.remove(this.hash.hash)
-        buttons.success('delete')
-
-        this.$root.$emit('share-deleted', this.hash.hash)
-        this.closeHovers()
-      } catch (e) {
-        buttons.done('delete')
-        this.$showError(e)
-      }
+    submit: function () {
+      this.showConfirm()
     }
   }
 }

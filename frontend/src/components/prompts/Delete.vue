@@ -26,7 +26,7 @@ export default {
   name: 'delete',
   computed: {
     ...mapGetters(['isListing', 'selectedCount']),
-    ...mapState(['req', 'selected'])
+    ...mapState(['req', 'selected', 'showConfirm'])
   },
   methods: {
     ...mapMutations(['closeHovers']),
@@ -38,7 +38,7 @@ export default {
           await api.remove(this.$route.path)
           buttons.success('delete')
 
-          this.$root.$emit('preview-deleted')
+          this.showConfirm()
           this.closeHovers()
           return
         }
