@@ -5,7 +5,7 @@ env:
 
 before:
   hooks:
-    - go mod download
+    - make bundle-frontend
 
 build:
   env:
