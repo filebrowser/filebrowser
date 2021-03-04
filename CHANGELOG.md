@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.12.0](https://github.com/filebrowser/filebrowser/compare/v2.11.0...v2.12.0) (2021-03-04)
+
+
+### Features
+
+* add homebrew tap ([2d2c598](https://github.com/filebrowser/filebrowser/commit/2d2c598fa6bd1ecaf39c542182890c8dd9b1cad0))
+* added tiff files preview support ([#1222](https://github.com/filebrowser/filebrowser/issues/1222)) ([e8c9d1c](https://github.com/filebrowser/filebrowser/commit/e8c9d1c53989b4b52f6fba2a8ac41ae612c03a7c))
+* allow disabling file detections by reading header ([#1175](https://github.com/filebrowser/filebrowser/issues/1175)) ([6914063](https://github.com/filebrowser/filebrowser/commit/6914063853a8a3f3cecfa4b21f223820c2a0b7df))
+* allow to password protect shares ([#1252](https://github.com/filebrowser/filebrowser/issues/1252)) ([d8f415f](https://github.com/filebrowser/filebrowser/commit/d8f415f8abd0c4301803bd968c54429dd3fe4b59))
+* build multi-arch docker images ([cf4836d](https://github.com/filebrowser/filebrowser/commit/cf4836dc757ef79ad615179bb7a6c7bbd3b09c2c))
+* share management delete confirm ([#1212](https://github.com/filebrowser/filebrowser/issues/1212)) ([b600b11](https://github.com/filebrowser/filebrowser/commit/b600b11415fd1fb90ff2f5136be95a9c737ae1cb))
+
+
+### Bug Fixes
+
+* don't allow to remove root user ([019ce80](https://github.com/filebrowser/filebrowser/commit/019ce80fc529a0437984fdc3d1ab6916f34dd594))
+* double click to zoom pics in phone's browser ([#1274](https://github.com/filebrowser/filebrowser/issues/1274)) ([f1b7bd5](https://github.com/filebrowser/filebrowser/commit/f1b7bd59f67e719b7bfd203b0d7ec016fd21ab49))
+* environmental variables not expanded in command ([#1241](https://github.com/filebrowser/filebrowser/issues/1241)) ([f3afd5c](https://github.com/filebrowser/filebrowser/commit/f3afd5cb79d6ad8b9cc8d54cb8fc2344b7c07d3d))
+* fetch resource api once when sorting (closes [#1172](https://github.com/filebrowser/filebrowser/issues/1172)) ([#1202](https://github.com/filebrowser/filebrowser/issues/1202)) ([05bb7c8](https://github.com/filebrowser/filebrowser/commit/05bb7c85531349f3e9d1d8a523bb1243587b2ebc))
+
+
+### Build
+
+* use make for building the project ([#1304](https://github.com/filebrowser/filebrowser/issues/1304)) ([23f8464](https://github.com/filebrowser/filebrowser/commit/23f84642e6c1e07f89f98d2c1bb6fc9da36cc71c))
+
 ## [2.11.0](https://github.com/filebrowser/filebrowser/compare/v2.10.0...v2.11.0) (2020-12-28)
 
 
