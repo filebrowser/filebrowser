@@ -122,12 +122,12 @@ docker_manifests:
       - "filebrowser/filebrowser:{{ .Tag }}-arm64"
       - "filebrowser/filebrowser:{{ .Tag }}-armv6"
       - "filebrowser/filebrowser:{{ .Tag }}-armv7"
-  - name_template: "filebrowser/filebrowser:{{ .Major }}"
+  - name_template: "filebrowser/filebrowser:v{{ .Major }}"
     image_templates:
-      - "filebrowser/filebrowser:{{ .Major }}-amd64"
-      - "filebrowser/filebrowser:{{ .Major }}-arm64"
-      - "filebrowser/filebrowser:{{ .Major }}-armv6"
-      - "filebrowser/filebrowser:{{ .Major }}-armv7"
+      - "filebrowser/filebrowser:v{{ .Major }}-amd64"
+      - "filebrowser/filebrowser:v{{ .Major }}-arm64"
+      - "filebrowser/filebrowser:v{{ .Major }}-armv6"
+      - "filebrowser/filebrowser:v{{ .Major }}-armv7"
 brews:
   - name: filebrowser
     tap:
