@@ -29,6 +29,7 @@
     "selectMultiple": "选择多个",
     "share": "分享",
     "shell": "激活 shell",
+    "submit": "提交",
     "switchView": "切换显示方式",
     "toggleSidebar": "切换侧边栏",
     "update": "更新",
@@ -142,7 +143,8 @@
     "show": "点击以显示",
     "size": "大小",
     "upload": "上传",
-    "uploadMessage": "选择上传项。"
+    "uploadMessage": "选择上传项。",
+    "optionalPassword": "密码（选填，不填即无密码）"
   },
   "search": {
     "images": "图像",
