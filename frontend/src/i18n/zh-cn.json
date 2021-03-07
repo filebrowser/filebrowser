@@ -8,7 +8,7 @@
     "create": "创建",
     "delete": "删除",
     "download": "下载",
-    "hideDotfiles": "",
+    "hideDotfiles": "不显示隐藏的文件",
     "info": "信息",
     "more": "更多",
     "move": "移动",
@@ -139,11 +139,11 @@
     "replace": "替换",
     "replaceMessage": "您尝试上传的文件中有一个与现有文件的名称存在冲突。是否替换现有的同名文件？",
     "schedule": "计划",
-    "scheduleMessage": "请选择发布这篇帖子的日期。",
+    "scheduleMessage": "请选择发布这篇帖子的日期与时间。",
     "show": "点击以显示",
     "size": "大小",
     "upload": "上传",
-    "uploadMessage": "选择上传项。",
+    "uploadMessage": "选择上传选项。",
     "optionalPassword": "密码（选填，不填即无密码）"
   },
   "search": {
