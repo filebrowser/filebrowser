@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.12.1](https://github.com/filebrowser/filebrowser/compare/v2.12.0...v2.12.1) (2021-03-07)
+
+
+### Bug Fixes
+
+* add missing default config into the docker image ([7358b3f](https://github.com/filebrowser/filebrowser/commit/7358b3fe3178c20007b4b5ef5c03705badd538c4))
+
 ## [2.12.0](https://github.com/filebrowser/filebrowser/compare/v2.11.0...v2.12.0) (2021-03-04)
 
 
