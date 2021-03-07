@@ -59,6 +59,8 @@ dockers:
     image_templates:
       - "filebrowser/filebrowser:{{ .Tag }}-amd64"
       - "filebrowser/filebrowser:v{{ .Major }}-amd64"
+    extra_files:
+      - .docker.json
   -
     dockerfile: Dockerfile
     use_buildx: true
@@ -75,6 +77,8 @@ dockers:
     image_templates:
       - "filebrowser/filebrowser:{{ .Tag }}-arm64"
       - "filebrowser/filebrowser:v{{ .Major }}-arm64"
+    extra_files:
+      - .docker.json
   -
     dockerfile: Dockerfile
     use_buildx: true
@@ -92,6 +96,8 @@ dockers:
     image_templates:
       - "filebrowser/filebrowser:{{ .Tag }}-armv6"
       - "filebrowser/filebrowser:v{{ .Major }}-armv6"
+    extra_files:
+      - .docker.json
   -
     dockerfile: Dockerfile
     use_buildx: true
@@ -109,6 +115,8 @@ dockers:
     image_templates:
       - "filebrowser/filebrowser:{{ .Tag }}-armv7"
       - "filebrowser/filebrowser:v{{ .Major }}-armv7"
+    extra_files:
+      - .docker.json
 docker_manifests:
   - name_template: "filebrowser/filebrowser:latest"
     image_templates:
