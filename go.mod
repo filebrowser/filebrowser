@@ -3,6 +3,7 @@ module github.com/filebrowser/filebrowser/v2
 go 1.17
 
 require (
+	github.com/adrium/goheif v0.0.0-20210309200126-b184a7b446fa
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/caddyserver/caddy v1.0.3
 	github.com/disintegration/imaging v1.6.2
