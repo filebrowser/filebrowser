@@ -108,8 +108,6 @@ var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) 
 })
 
 func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
-	// Checks are always done with paths with "/" as path separator.
-	path = strings.Replace(path, "\\", "/", -1)
 	if !d.Check(path) {
 		return nil
 	}
@@ -134,7 +132,7 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 
 	if path != commonPath {
 		filename := strings.TrimPrefix(path, commonPath)
-		filename = strings.TrimPrefix(filename, "/")
+		filename = strings.TrimPrefix(filename, string(filepath.Separator))
 		err = ar.Write(archiver.File{
 			FileInfo: archiver.FileInfo{
 				FileInfo:   info,
@@ -188,7 +186,7 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 	}
 	defer ar.Close()
 
-	commonDir := fileutils.CommonPrefix('/', filenames...)
+	commonDir := fileutils.CommonPrefix(filepath.Separator, filenames...)
 
 	for _, fname := range filenames {
 		err = addFile(ar, d, fname, commonDir)
