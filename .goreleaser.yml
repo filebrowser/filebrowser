@@ -3,10 +3,6 @@ project_name: filebrowser
 env:
   - GO111MODULE=on
 
-before:
-  hooks:
-    - make bundle-frontend
-
 build:
   env:
     - CGO_ENABLED=0

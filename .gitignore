@@ -5,11 +5,9 @@ _old
 rice-box.go
 .idea/
 filebrowser
-dist/
 
 .DS_Store
 node_modules
-/frontend/dist
 
 # local env files
 .env.local

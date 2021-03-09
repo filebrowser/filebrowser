@@ -1,6 +1,7 @@
 package http
 
 import (
+	"io/fs"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -14,11 +15,17 @@ type modifyRequest struct {
 	Which []string `json:"which"` // Answer to: which fields?
 }
 
-func NewHandler(imgSvc ImgService, fileCache FileCache, store *storage.Storage, server *settings.Server) (http.Handler, error) {
+func NewHandler(
+	imgSvc ImgService,
+	fileCache FileCache,
+	store *storage.Storage,
+	server *settings.Server,
+	assetsFs fs.FS,
+) (http.Handler, error) {
 	server.Clean()
 
 	r := mux.NewRouter()
-	index, static := getStaticHandlers(store, server)
+	index, static := getStaticHandlers(store, server, assetsFs)
 
 	// NOTE: This fixes the issue where it would redirect if people did not put a
 	// trailing slash in the end. I hate this decision since this allows some awful

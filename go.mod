@@ -1,12 +1,12 @@
 module github.com/filebrowser/filebrowser/v2
 
+go 1.16
+
 require (
 	github.com/DataDog/zstd v1.4.0 // indirect
-	github.com/GeertJohan/go.rice v1.0.0
 	github.com/Sereal/Sereal v0.0.0-20190430203904-6faf9605eb56 // indirect
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/caddyserver/caddy v1.0.3
-	github.com/daaku/go.zipexe v1.0.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/disintegration/imaging v1.6.2
 	github.com/dsnet/compress v0.0.1 // indirect
@@ -39,5 +39,3 @@ require (
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.2.7
 )
-
-go 1.14

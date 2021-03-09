@@ -37,9 +37,6 @@ $(BIN)/golangci-lint: PACKAGE=github.com/golangci/golangci-lint/cmd/golangci-lin
 GOIMPORTS = $(BIN)/goimports
 $(BIN)/goimports: PACKAGE=golang.org/x/tools/cmd/goimports@v0.1.0
 
-RICE = $(BIN)/rice
-$(BIN)/rice: PACKAGE=github.com/GeertJohan/go.rice/rice@v1.0.2
-
 ## build: Build
 .PHONY: build
 build: | build-frontend build-backend ; $(info $(M) building…)
@@ -51,11 +48,8 @@ build-frontend: | ; $(info $(M) building frontend…)
 
 ## build-backend: Build backend
 .PHONY: build-backend
-build-backend: bundle-frontend | ; $(info $(M) building backend…)
+build-backend: | ; $(info $(M) building backend…)
 	$Q $(GO) build -ldflags '$(LDFLAGS)' -o filebrowser
-
-bundle-frontend: | $(RICE) ; $(info $(M) building backend…)
-	$Q cd ./http && rm -rf rice-box.go && $(RICE) embed-go
 
 ## test: Run all tests
 .PHONY: test
