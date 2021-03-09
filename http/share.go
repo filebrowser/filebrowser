@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"path"
 	"sort"
 	"strconv"
 	"strings"
@@ -89,17 +88,6 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 			return http.StatusBadRequest, fmt.Errorf("failed to decode body: %w", err)
 		}
 		defer r.Body.Close()
-	}
-
-	if body.Expires == "" {
-		var err error
-		s, err = d.store.Share.GetPermanent(r.URL.Path, d.user.ID)
-		if err == nil {
-			if _, err := w.Write([]byte(path.Join(d.server.BaseURL, "/share/", s.Hash))); err != nil {
-				return http.StatusInternalServerError, err
-			}
-			return 0, nil
-		}
 	}
 
 	bytes := make([]byte, 6)

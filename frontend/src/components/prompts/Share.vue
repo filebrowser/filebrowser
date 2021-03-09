@@ -4,61 +4,82 @@
       <h2>{{ $t('buttons.share') }}</h2>
     </div>
 
-    <div class="card-content">
-      <ul>
+    <template v-if="listing">
+      <div class="card-content">
+        <table>
+          <tr>
+            <th>#</th>
+            <th>{{ $t('settings.shareDuration') }}</th>
+            <th></th>
+            <th></th>
+          </tr>
 
-        <li v-for="link in links" :key="link.hash">
-          <a :href="buildLink(link.hash)" target="_blank">
-            <template v-if="link.expire !== 0">{{ humanTime(link.expire) }}</template>
-            <template v-else>{{ $t('permanent') }}</template>
-          </a>
+          <tr v-for="link in links" :key="link.hash">
+            <td>{{ link.hash }}</td>
+            <td>
+              <template v-if="link.expire !== 0">{{ humanTime(link.expire) }}</template>
+              <template v-else>{{ $t('permanent') }}</template>
+            </td>
+            <td class="small">
+              <button class="action copy-clipboard"
+                :data-clipboard-text="buildLink(link.hash)"
+                :aria-label="$t('buttons.copyToClipboard')"
+                :title="$t('buttons.copyToClipboard')"><i class="material-icons">content_paste</i></button>
+            </td>
+            <td class="small">
+              <button class="action"
+                @click="deleteLink($event, link)"
+                :aria-label="$t('buttons.delete')"
+                :title="$t('buttons.delete')"><i class="material-icons">delete</i></button>
+            </td>
+          </tr>
+        </table>
+      </div>
 
-          <button class="action"
-            @click="deleteLink($event, link)"
-            :aria-label="$t('buttons.delete')"
-            :title="$t('buttons.delete')"><i class="material-icons">delete</i></button>
+      <div class="card-action">
+        <button class="button button--flat button--grey"
+          @click="$store.commit('closeHovers')"
+          :aria-label="$t('buttons.close')"
+          :title="$t('buttons.close')">{{ $t('buttons.close') }}</button>
+        <button class="button button--flat button--blue"
+          @click="() => switchListing()"
+          :aria-label="$t('buttons.new')"
+          :title="$t('buttons.new')">{{ $t('buttons.new') }}</button>
+      </div>
+    </template>
 
-          <button class="action copy-clipboard"
-            :data-clipboard-text="buildLink(link.hash)"
-            :aria-label="$t('buttons.copyToClipboard')"
-            :title="$t('buttons.copyToClipboard')"><i class="material-icons">content_paste</i></button>
-        </li>
+    <template v-else>
+      <div class="card-content">
+        <p>{{ $t('settings.shareDuration') }}</p>
+        <div class="input-group input">
+            <input v-focus
+              type="number"
+              max="2147483647"
+              min="1"
+              @keyup.enter="submit"
+              v-model.trim="time">
+            <select class="right" v-model="unit" :aria-label="$t('time.unit')">
+              <option value="seconds">{{ $t('time.seconds') }}</option>
+              <option value="minutes">{{ $t('time.minutes') }}</option>
+              <option value="hours">{{ $t('time.hours') }}</option>
+              <option value="days">{{ $t('time.days') }}</option>
+            </select>
+        </div>
+        <p>{{ $t('prompts.optionalPassword') }}</p>
+        <input class="input input--block" type="password" v-model.trim="password">
+      </div>
 
-        <li v-if="!hasPermanent">
-          <div>
-            <input type="password" :placeholder="$t('prompts.optionalPassword')" v-model="passwordPermalink">
-            <a @click="getPermalink" :aria-label="$t('buttons.permalink')">{{ $t('buttons.permalink') }}</a>
-          </div>
-        </li>
-
-        <li>
-          <input v-focus
-            type="number"
-            max="2147483647"
-            min="0"
-            @keyup.enter="submit"
-            v-model.trim="time">
-          <select v-model="unit" :aria-label="$t('time.unit')">
-            <option value="seconds">{{ $t('time.seconds') }}</option>
-            <option value="minutes">{{ $t('time.minutes') }}</option>
-            <option value="hours">{{ $t('time.hours') }}</option>
-            <option value="days">{{ $t('time.days') }}</option>
-          </select>
-          <input type="password" :placeholder="$t('prompts.optionalPassword')" v-model="password">
-          <button class="action"
-            @click="submit"
-            :aria-label="$t('buttons.create')"
-            :title="$t('buttons.create')"><i class="material-icons">add</i></button>
-        </li>
-      </ul>
-    </div>
-
-    <div class="card-action">
-      <button class="button button--flat"
-        @click="$store.commit('closeHovers')"
-        :aria-label="$t('buttons.close')"
-        :title="$t('buttons.close')">{{ $t('buttons.close') }}</button>
-    </div>
+      <div class="card-action">
+        <button class="button button--flat button--grey"
+          @click="() => switchListing()"
+          :aria-label="$t('buttons.cancel')"
+          :title="$t('buttons.cancel')">{{ $t('buttons.cancel') }}</button>
+        <button class="button button--flat button--blue"
+          @click="submit"
+          :aria-label="$t('buttons.share')"
+          :title="$t('buttons.share')">{{ $t('buttons.share') }}</button>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -75,11 +96,10 @@ export default {
     return {
       time: '',
       unit: 'hours',
-      hasPermanent: false,
       links: [],
       clip: null,
       password: '',
-      passwordPermalink: ''
+      listing: true
     }
   },
   computed: {
@@ -104,11 +124,8 @@ export default {
       this.links = links
       this.sort()
 
-      for (let link of this.links) {
-        if (link.expire === 0) {
-          this.hasPermanent = true
-          break
-        }
+      if (this.links.length == 0) {
+        this.listing = false
       }
     } catch (e) {
       this.$showError(e)
@@ -125,22 +142,25 @@ export default {
   },
   methods: {
     submit: async function () {
-      if (!this.time) return
+      let isPermanent = !this.time || this.time == 0
 
       try {
-        const res = await api.create(this.url, this.password, this.time, this.unit)
+        let res = null
+
+        if (isPermanent) {
+          res = await api.create(this.url, this.password)
+        } else {
+          res = await api.create(this.url, this.password, this.time, this.unit)
+        }
+
         this.links.push(res)
         this.sort()
-      } catch (e) {
-        this.$showError(e)
-      }
-    },
-    getPermalink: async function () {
-      try {
-        const res = await api.create(this.url, this.passwordPermalink)
-        this.links.push(res)
-        this.sort()
-        this.hasPermanent = true
+
+        this.time = ''
+        this.unit = 'hours'
+        this.password = ''
+
+        this.listing = true
       } catch (e) {
         this.$showError(e)
       }
@@ -149,8 +169,11 @@ export default {
       event.preventDefault()
        try {
         await api.remove(link.hash)
-        if (link.expire === 0) this.hasPermanent = false
         this.links = this.links.filter(item => item.hash !== link.hash)
+
+        if (this.links.length == 0) {
+          this.listing = false
+        }
       } catch (e) {
         this.$showError(e)
       }
@@ -167,6 +190,13 @@ export default {
         if (b.expire === 0) return 1
         return new Date(a.expire) - new Date(b.expire)
       })
+    },
+    switchListing () {
+      if (this.links.length == 0 && !this.listing) {
+        this.$store.commit('closeHovers')
+      }
+
+      this.listing = !this.listing
     }
   }
 }

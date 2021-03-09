@@ -71,8 +71,3 @@
   text-align: center;
   animation: .2s opac forwards;
 }
-
-.share__promt__card {
-  max-width: max-content !important;
-  width: auto !important;
-}

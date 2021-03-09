@@ -1,102 +1,108 @@
 <template>
-  <div class="dashboard" v-if="settings !== null">
-    <form class="card" @submit.prevent="save">
-      <div class="card-title">
-        <h2>{{ $t('settings.globalSettings') }}</h2>
-      </div>
-
-      <div class="card-content">
-        <p><input type="checkbox" v-model="settings.signup"> {{ $t('settings.allowSignup') }}</p>
-
-        <p><input type="checkbox" v-model="settings.createUserDir"> {{ $t('settings.createUserDir') }}</p>
-
-        <h3>{{ $t('settings.rules') }}</h3>
-        <p class="small">{{ $t('settings.globalRules') }}</p>
-        <rules :rules.sync="settings.rules" />
-
-        <div v-if="isExecEnabled">
-          <h3>{{ $t('settings.executeOnShell') }}</h3>
-          <p class="small">{{ $t('settings.executeOnShellDescription') }}</p>
-          <input class="input input--block" type="text" placeholder="bash -c, cmd /c, ..." v-model="settings.shell" />
+  <div class="row" v-if="settings !== null">
+    <div class="column">
+      <form class="card" @submit.prevent="save">
+        <div class="card-title">
+          <h2>{{ $t('settings.globalSettings') }}</h2>
         </div>
 
-        <h3>{{ $t('settings.branding') }}</h3>
+        <div class="card-content">
+          <p><input type="checkbox" v-model="settings.signup"> {{ $t('settings.allowSignup') }}</p>
 
-        <i18n path="settings.brandingHelp" tag="p" class="small">
-          <a class="link" target="_blank" href="https://filebrowser.org/configuration/custom-branding">{{ $t('settings.documentation') }}</a>
-        </i18n>
+          <p><input type="checkbox" v-model="settings.createUserDir"> {{ $t('settings.createUserDir') }}</p>
 
-        <p>
-          <input type="checkbox" v-model="settings.branding.disableExternal" id="branding-links" />
-          {{ $t('settings.disableExternalLinks') }}
-        </p>
+          <h3>{{ $t('settings.rules') }}</h3>
+          <p class="small">{{ $t('settings.globalRules') }}</p>
+          <rules :rules.sync="settings.rules" />
 
-        <p>
-          <label for="theme">{{ $t('settings.themes.title') }}</label>
-          <themes class="input input--block" :theme.sync="settings.branding.theme" id="theme"></themes>
-        </p>
+          <div v-if="isExecEnabled">
+            <h3>{{ $t('settings.executeOnShell') }}</h3>
+            <p class="small">{{ $t('settings.executeOnShellDescription') }}</p>
+            <input class="input input--block" type="text" placeholder="bash -c, cmd /c, ..." v-model="settings.shell" />
+          </div>
 
-        <p>
-          <label for="branding-name">{{ $t('settings.instanceName') }}</label>
-          <input class="input input--block" type="text" v-model="settings.branding.name" id="branding-name" />
-        </p>
+          <h3>{{ $t('settings.branding') }}</h3>
 
-        <p>
-          <label for="branding-files">{{ $t('settings.brandingDirectoryPath') }}</label>
-          <input class="input input--block" type="text" v-model="settings.branding.files" id="branding-files" />
-        </p>
+          <i18n path="settings.brandingHelp" tag="p" class="small">
+            <a class="link" target="_blank" href="https://filebrowser.org/configuration/custom-branding">{{ $t('settings.documentation') }}</a>
+          </i18n>
 
-      </div>
+          <p>
+            <input type="checkbox" v-model="settings.branding.disableExternal" id="branding-links" />
+            {{ $t('settings.disableExternalLinks') }}
+          </p>
 
-      <div class="card-action">
-        <input class="button button--flat" type="submit" :value="$t('buttons.update')">
-      </div>
-    </form>
+          <p>
+            <label for="theme">{{ $t('settings.themes.title') }}</label>
+            <themes class="input input--block" :theme.sync="settings.branding.theme" id="theme"></themes>
+          </p>
 
-    <form class="card" @submit.prevent="save">
-      <div class="card-title">
-        <h2>{{ $t('settings.userDefaults') }}</h2>
-      </div>
+          <p>
+            <label for="branding-name">{{ $t('settings.instanceName') }}</label>
+            <input class="input input--block" type="text" v-model="settings.branding.name" id="branding-name" />
+          </p>
 
-      <div class="card-content">
-        <p class="small">{{ $t('settings.defaultUserDescription') }}</p>
+          <p>
+            <label for="branding-files">{{ $t('settings.brandingDirectoryPath') }}</label>
+            <input class="input input--block" type="text" v-model="settings.branding.files" id="branding-files" />
+          </p>
 
-        <user-form :isNew="false" :isDefault="true" :user.sync="settings.defaults" />
-      </div>
+        </div>
 
-      <div class="card-action">
-        <input class="button button--flat" type="submit" :value="$t('buttons.update')">
-      </div>
-    </form>
+        <div class="card-action">
+          <input class="button button--flat" type="submit" :value="$t('buttons.update')">
+        </div>
+      </form>
+    </div>
 
-    <form v-if="isExecEnabled" class="card" @submit.prevent="save">
-      <div class="card-title">
-        <h2>{{ $t('settings.commandRunner') }}</h2>
-      </div>
+    <div class="column">
+      <form class="card" @submit.prevent="save">
+        <div class="card-title">
+          <h2>{{ $t('settings.userDefaults') }}</h2>
+        </div>
 
-      <div class="card-content">
-        <i18n path="settings.commandRunnerHelp" tag="p" class="small">
-          <code>FILE</code>
-          <code>SCOPE</code>
-          <a class="link" target="_blank" href="https://filebrowser.org/configuration/command-runner">{{ $t('settings.documentation') }}</a>
-        </i18n>
+        <div class="card-content">
+          <p class="small">{{ $t('settings.defaultUserDescription') }}</p>
 
-        <div v-for="command in settings.commands" :key="command.name" class="collapsible">
-          <input :id="command.name" type="checkbox">
-          <label :for="command.name">
-            <p>{{ capitalize(command.name) }}</p>
-            <i class="material-icons">arrow_drop_down</i>
-          </label>
-          <div class="collapse">
-            <textarea class="input input--block input--textarea" v-model.trim="command.value"></textarea>
+          <user-form :isNew="false" :isDefault="true" :user.sync="settings.defaults" />
+        </div>
+
+        <div class="card-action">
+          <input class="button button--flat" type="submit" :value="$t('buttons.update')">
+        </div>
+      </form>
+    </div>
+
+    <div class="column">
+      <form v-if="isExecEnabled" class="card" @submit.prevent="save">
+        <div class="card-title">
+          <h2>{{ $t('settings.commandRunner') }}</h2>
+        </div>
+
+        <div class="card-content">
+          <i18n path="settings.commandRunnerHelp" tag="p" class="small">
+            <code>FILE</code>
+            <code>SCOPE</code>
+            <a class="link" target="_blank" href="https://filebrowser.org/configuration/command-runner">{{ $t('settings.documentation') }}</a>
+          </i18n>
+
+          <div v-for="command in settings.commands" :key="command.name" class="collapsible">
+            <input :id="command.name" type="checkbox">
+            <label :for="command.name">
+              <p>{{ capitalize(command.name) }}</p>
+              <i class="material-icons">arrow_drop_down</i>
+            </label>
+            <div class="collapse">
+              <textarea class="input input--block input--textarea" v-model.trim="command.value"></textarea>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="card-action">
-        <input class="button button--flat" type="submit" :value="$t('buttons.update')">
-      </div>
-    </form>
+        <div class="card-action">
+          <input class="button button--flat" type="submit" :value="$t('buttons.update')">
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 

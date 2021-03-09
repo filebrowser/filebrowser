@@ -13,7 +13,7 @@
   :aria-label="name"
   :aria-selected="isSelected">
     <div>
-      <img v-if="type==='image' && isThumbsEnabled && !isSharing" v-lazy="thumbnailUrl">
+      <img v-if="readOnly == undefined && type==='image' && isThumbsEnabled" v-lazy="thumbnailUrl">
       <i v-else class="material-icons">{{ icon }}</i>
     </div>
 
@@ -45,13 +45,12 @@ export default {
       touches: 0
     }
   },
-  props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index'],
+  props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index', 'readOnly'],
   computed: {
     ...mapState(['user', 'selected', 'req', 'jwt']),
-    ...mapGetters(['selectedCount', 'isSharing']),
+    ...mapGetters(['selectedCount']),
     singleClick () {
-      if (this.isSharing) return false
-      return this.user.singleClick
+      return this.readOnly == undefined && this.user.singleClick
     },
     isSelected () {
       return (this.selected.indexOf(this.index) !== -1)
@@ -64,10 +63,10 @@ export default {
       return 'insert_drive_file'
     },
     isDraggable () {
-      return !this.isSharing && this.user.perm.rename
+      return this.readOnly == undefined && this.user.perm.rename
     },
     canDrop () {
-      if (!this.isDir || this.isSharing) return false
+      if (!this.isDir || this.readOnly == undefined) return false
 
       for (let i of this.selected) {
         if (this.req.items[i].url === this.url) {
@@ -139,7 +138,7 @@ export default {
           to: this.url + this.req.items[i].name,
           name: this.req.items[i].name
         })
-      }      
+      }
 
       let base = el.querySelector('.name').innerHTML + '/'
       let path = this.$route.path + base

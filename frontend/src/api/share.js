@@ -4,12 +4,6 @@ export async function list() {
   return fetchJSON('/api/shares')
 }
 
-export async function getHash(hash, password = "") {
-  return fetchJSON(`/api/public/share/${hash}`, {
-    headers: {'X-SHARE-PASSWORD': password},
-  })
-}
-
 export async function get(url) {
   url = removePrefix(url)
   return fetchJSON(`/api/share${url}`)

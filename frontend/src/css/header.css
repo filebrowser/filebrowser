@@ -6,9 +6,25 @@ header {
   position: fixed;
   top: 0;
   left: 0;
+  height: 4em;
   width: 100%;
   padding: 0;
   display: flex;
+  padding: 0.5em 0.5em 0.5em 1em;
+  align-items: center;
+}
+
+header > * {
+  flex: 0 0 auto;
+}
+
+header title {
+  display: block;
+  flex: 1 1 auto;
+  padding: 0 1em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1.2em;
 }
 
 header .overlay {
@@ -30,17 +46,6 @@ header img {
   height: 2.5em;
 }
 
-header>div:first-child>.action {
-  display: none;
-}
-
-header>div {
-  display: flex;
-  width: 100%;
-  padding: 0.5em 0.5em 0.5em 1em;
-  align-items: center;
-}
-
 header .action span {
   display: none;
 }
@@ -50,19 +55,8 @@ header>div div {
   position: relative;
 }
 
-header>div:last-child div {
-  display: flex;
-}
-
-header>div:first-child {
-  height: 4em;
-}
-
-header>div:last-child {
-  justify-content: flex-end;
-}
-
-header .search-button {
+header .search-button,
+header .menu-button {
   display: none;
 }
 

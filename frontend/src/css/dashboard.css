@@ -1,6 +1,27 @@
 .dashboard {
-  max-width: 600px;
   margin: 1em 0;
+}
+
+.dashboard .row {
+  display: flex;
+  margin: 0 -.5em;
+  flex-wrap: wrap;
+}
+
+.dashboard .row .column {
+  display: flex;
+  padding: 0 .5em;
+  width: 50%;
+}
+
+.dashboard .row .column .card {
+  flex-grow: 1;
+}
+
+@media(max-width: 1200px) {
+  .dashboard .row .column {
+    width: 100%;
+  }
 }
 
 a {
@@ -28,25 +49,56 @@ p code {
 }
 
 .dashboard #nav {
+  display: flex;
+  padding-bottom: 1em;
+  overflow: auto;
+}
+
+.dashboard #nav .wrapper {
+  display: flex;
+  flex-grow: 1;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.dashboard #nav ul {
   list-style: none;
   display: flex;
   color: rgb(84, 110, 122);
   font-weight: 500;
-  margin: 0 0 1em;
+  padding: 0;
+  margin: 0 0 -2px 0;
   font-size: .8em;
   text-align: center;
-  justify-content: space-between;
-  padding: 0;
+  justify-content: left;
 }
 
-.dashboard #nav li {
+.dashboard #nav ul li {
+  position: relative;
+  padding: 1.5em 2em;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: .1s ease-in-out all;
+
+}
+
+.dashboard #nav ul li:hover {
+  background: var(--moon-grey);
+}
+
+.dashboard #nav ul li.active {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.dashboard #nav ul li.active::before {
   width: 100%;
-  padding: 0 0 1em;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
-}
-
-.dashboard #nav li.active {
-  border-color: var(--blue)
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "";
+  background: var(--blue);
+  opacity: 0.08;
 }
 
 .dashboard #nav i {
@@ -92,7 +144,7 @@ table tr>*:last-child {
 
 .card {
   position: relative;
-  margin: .5rem 0 1rem 0;
+  margin: 0 0 1rem 0;
   background-color: #fff;
   border-radius: 2px;
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
@@ -151,6 +203,7 @@ table tr>*:last-child {
 
 .card .card-content.full {
   padding-bottom: 0;
+  overflow: auto;
 }
 
 .card h2 {
@@ -224,6 +277,18 @@ table tr>*:last-child {
 
 .card#share .action.copy-clipboard.active::after {
   opacity: 1;
+}
+
+.card#share .input-group {
+  display: flex;
+}
+
+.card#share .input-group * {
+  border: none;
+}
+
+.card#share .input-group input {
+  flex: 1;
 }
 
 .overlay {

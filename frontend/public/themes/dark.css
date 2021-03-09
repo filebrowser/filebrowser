@@ -69,12 +69,15 @@ nav > div {
   border-color: var(--divider);
 }
 
-#breadcrumbs {
+.breadcrumbs {
   border-color: var(--divider);
   color: var(--textPrimary) !important;
 }
-#breadcrumbs span {
+.breadcrumbs span {
   color: var(--textPrimary) !important;
+}
+.breadcrumbs a:hover {
+  background-color: rgba(255, 255, 255, .1);
 }
 
 #listing .item {
@@ -114,13 +117,20 @@ nav > div {
   background: var(--surfaceSecondary);
 }
 
+.dashboard #nav ul li {
+  color: var(--textSecondary);
+}
+.dashboard #nav ul li:hover {
+  background: var(--surfaceSecondary);
+}
+
 .card h3,
 .dashboard #nav,
 .dashboard p label {
   color: var(--textPrimary);
 }
-.card#share ul li input,
-.card#share ul li select,
+.card#share input,
+.card#share select,
 .input {
   background: var(--surfaceSecondary);
   color: var(--textPrimary);
@@ -138,7 +148,7 @@ nav > div {
   background: #147A41;
 }
 
-.dashboard #nav li,
+.dashboard #nav .wrapper,
 .collapsible {
   border-color: var(--divider);
 }

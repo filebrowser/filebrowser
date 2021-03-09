@@ -3,7 +3,6 @@
     <div id="progress">
       <div v-bind:style="{ width: this.progress + '%' }"></div>
     </div>
-    <site-header></site-header>
     <sidebar></sidebar>
     <main>
       <router-view></router-view>
@@ -17,7 +16,6 @@
 import { mapState, mapGetters } from 'vuex'
 import Sidebar from '@/components/Sidebar'
 import Prompts from '@/components/prompts/Prompts'
-import SiteHeader from '@/components/Header'
 import Shell from '@/components/Shell'
 import { enableExec } from '@/utils/constants'
 
@@ -25,7 +23,6 @@ export default {
   name: 'layout',
   components: {
     Sidebar,
-    SiteHeader,
     Prompts,
     Shell
   },

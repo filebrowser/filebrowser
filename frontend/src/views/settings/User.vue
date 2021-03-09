@@ -1,29 +1,31 @@
 <template>
-  <div>
-    <form v-if="loaded" @submit="save" class="card">
-      <div class="card-title">
-        <h2 v-if="user.id === 0">{{ $t('settings.newUser') }}</h2>
-        <h2 v-else>{{ $t('settings.user') }} {{ user.username }}</h2>
-      </div>
+  <div class="row">
+    <div class="column">
+      <form v-if="loaded" @submit="save" class="card">
+        <div class="card-title">
+          <h2 v-if="user.id === 0">{{ $t('settings.newUser') }}</h2>
+          <h2 v-else>{{ $t('settings.user') }} {{ user.username }}</h2>
+        </div>
 
-      <div class="card-content">
-        <user-form :user.sync="user" :isDefault="false" :isNew="isNew" />
-      </div>
+        <div class="card-content">
+          <user-form :user.sync="user" :isDefault="false" :isNew="isNew" />
+        </div>
 
-      <div class="card-action">
-        <button
-          v-if="!isNew"
-          @click.prevent="deletePrompt"
-          type="button"
-          class="button button--flat button--red"
-          :aria-label="$t('buttons.delete')"
-          :title="$t('buttons.delete')">{{ $t('buttons.delete') }}</button>
-        <input
-          class="button button--flat"
-          type="submit"
-          :value="$t('buttons.save')">
-      </div>
-    </form>
+        <div class="card-action">
+          <button
+            v-if="!isNew"
+            @click.prevent="deletePrompt"
+            type="button"
+            class="button button--flat button--red"
+            :aria-label="$t('buttons.delete')"
+            :title="$t('buttons.delete')">{{ $t('buttons.delete') }}</button>
+          <input
+            class="button button--flat"
+            type="submit"
+            :value="$t('buttons.save')">
+        </div>
+      </form>
+    </div>
 
     <div v-if="$store.state.show === 'deleteUser'" class="card floating">
       <div class="card-content">

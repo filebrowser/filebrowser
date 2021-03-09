@@ -1,24 +1,17 @@
 <template>
-  <div id="previewer">
-    <div class="bar">
-      <button @click="back" class="action" :title="$t('files.closePreview')" :aria-label="$t('files.closePreview')" id="close">
-        <i class="material-icons">close</i>
-      </button>
+  <div id="previewer" @mousemove="toggleNavigation" @touchstart="toggleNavigation">
+    <header-bar>
+      <action icon="close" :label="$t('buttons.close')" @action="close()" />
+      <title>{{ name }}</title>
+      <action :disabled="loading" v-if="isResizeEnabled && req.type === 'image'" :icon="fullSize ? 'photo_size_select_large' : 'hd'" @action="toggleSize" />
 
-      <div class="title">{{ this.name }}</div>
-
-      <preview-size-button v-if="isResizeEnabled && this.req.type === 'image'" @change-size="toggleSize" v-bind:size="fullSize" :disabled="loading"></preview-size-button>
-      <button @click="openMore" id="more" :aria-label="$t('buttons.more')" :title="$t('buttons.more')" class="action">
-        <i class="material-icons">more_vert</i>
-      </button>
-
-      <div id="dropdown" :class="{ active : showMore }">
-        <rename-button :disabled="loading" v-if="user.perm.rename"></rename-button>
-        <delete-button :disabled="loading" v-if="user.perm.delete"></delete-button>
-        <download-button :disabled="loading" v-if="user.perm.download"></download-button>
-        <info-button :disabled="loading"></info-button>
-      </div>
-    </div>
+      <template #actions>
+        <action :disabled="loading" icon="mode_edit" :label="$t('buttons.rename')" show="rename" />
+        <action :disabled="loading" icon="delete" :label="$t('buttons.delete')" @action="deleteFile" id="delete-button" />
+        <action :disabled="loading" icon="file_download" :label="$t('buttons.download')" @action="download" />
+        <action :disabled="loading" icon="info" :label="$t('buttons.info')" show="info" />
+      </template>
+    </header-bar>
 
     <div class="loading" v-if="loading">
       <div class="spinner">
@@ -28,18 +21,11 @@
       </div>
     </div>
 
-    <button class="action" @click="prev" v-show="hasPrevious" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
-      <i class="material-icons">chevron_left</i>
-    </button>
-    <button class="action" @click="next" v-show="hasNext" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
-      <i class="material-icons">chevron_right</i>
-    </button>
-
     <template v-if="!loading">
       <div class="preview">
         <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
-        <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
-        <video v-else-if="req.type == 'video'" :src="raw" autoplay controls>
+        <audio v-else-if="req.type == 'audio'" :src="raw" controls></audio>
+        <video v-else-if="req.type == 'video'" :src="raw" controls>
           <track
             kind="captions"
             v-for="(sub, index) in subtitles"
@@ -47,31 +33,35 @@
             :src="sub"
             :label="'Subtitle ' + index" :default="index === 0">
           Sorry, your browser doesn't support embedded videos,
-          but don't worry, you can <a :href="download">download it</a>
+          but don't worry, you can <a :href="downloadUrl">download it</a>
           and watch it with your favorite video player!
         </video>
         <object v-else-if="req.extension.toLowerCase() == '.pdf'" class="pdf" :data="raw"></object>
-        <a v-else-if="req.type == 'blob'" :href="download">
+        <a v-else-if="req.type == 'blob'" :href="downloadUrl">
           <h2 class="message">{{ $t('buttons.download') }} <i class="material-icons">file_download</i></h2>
         </a>
       </div>
     </template>
 
-    <div v-show="showMore" @click="resetPrompts" class="overlay"></div>
+    <button @click="prev" @mouseover="hoverNav = true" @mouseleave="hoverNav = false" :class="{ hidden: !hasPrevious || !showNav }" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
+      <i class="material-icons">chevron_left</i>
+    </button>
+    <button @click="next" @mouseover="hoverNav = true" @mouseleave="hoverNav = false" :class="{ hidden: !hasNext || !showNav }" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
+      <i class="material-icons">chevron_right</i>
+    </button>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import url from '@/utils/url'
-import { baseURL, resizePreview } from '@/utils/constants'
 import { files as api } from '@/api'
-import PreviewSizeButton from '@/components/buttons/PreviewSize'
-import InfoButton from '@/components/buttons/Info'
-import DeleteButton from '@/components/buttons/Delete'
-import RenameButton from '@/components/buttons/Rename'
-import DownloadButton from '@/components/buttons/Download'
-import ExtendedImage from './ExtendedImage'
+import { baseURL, resizePreview } from '@/utils/constants'
+import url from '@/utils/url'
+import throttle from 'lodash.throttle'
+
+import HeaderBar from '@/components/header/HeaderBar'
+import Action from '@/components/header/Action'
+import ExtendedImage from '@/components/files/ExtendedImage'
 
 const mediaTypes = [
   "image",
@@ -83,11 +73,8 @@ const mediaTypes = [
 export default {
   name: 'preview',
   components: {
-    PreviewSizeButton,
-    InfoButton,
-    DeleteButton,
-    RenameButton,
-    DownloadButton,
+    HeaderBar,
+    Action,
     ExtendedImage
   },
   data: function () {
@@ -97,7 +84,10 @@ export default {
       listing: null,
       name: '',
       subtitles: [],
-      fullSize: false
+      fullSize: false,
+      showNav: true,
+      navTimeout: null,
+      hoverNav: false
     }
   },
   computed: {
@@ -108,7 +98,7 @@ export default {
     hasNext () {
       return (this.nextLink !== '')
     },
-    download () {
+    downloadUrl () {
       return `${baseURL}/api/raw${url.encodePath(this.req.path)}?auth=${this.jwt}`
     },
     previewUrl () {
@@ -130,41 +120,40 @@ export default {
   watch: {
     $route: function () {
       this.updatePreview()
+      this.toggleNavigation()
     }
   },
   async mounted () {
     window.addEventListener('keydown', this.key)
-    this.$store.commit('setPreviewMode', true)
     this.listing = this.oldReq.items
-    this.$root.$on('preview-deleted', this.deleted)
     this.updatePreview()
   },
   beforeDestroy () {
     window.removeEventListener('keydown', this.key)
-    this.$store.commit('setPreviewMode', false)
-    this.$root.$off('preview-deleted', this.deleted)
   },
   methods: {
-    deleted () {
-      this.listing = this.listing.filter(item => item.name !== this.name)
+    deleteFile () {
+      this.$store.commit('showHover', {
+        prompt: 'delete',
+        confirm: () => {
+          this.listing = this.listing.filter(item => item.name !== this.name)
 
-      if (this.hasNext) {
-        this.next()
-      } else if (!this.hasPrevious && !this.hasNext) {
-        this.back()
-      } else {
-        this.prev()
-      }
-    },
-    back () {
-      this.$store.commit('setPreviewMode', false)
-      let uri = url.removeLastDir(this.$route.path) + '/'
-      this.$router.push({ path: uri })
+          if (this.hasNext) {
+            this.next()
+          } else if (!this.hasPrevious && !this.hasNext) {
+            this.close()
+          } else {
+            this.prev()
+          }
+        }
+      })
     },
     prev () {
+      this.hoverNav = false
       this.$router.push({ path: this.previousLink })
     },
     next () {
+      this.hoverNav = false
       this.$router.push({ path: this.nextLink })
     },
     key (event) {
@@ -178,7 +167,7 @@ export default {
       } else if (event.which === 37) { // left arrow
         if (this.hasPrevious) this.prev()
       } else if (event.which === 27) { // esc
-        this.back()
+        this.close()
       }
     },
     async updatePreview () {
@@ -232,6 +221,27 @@ export default {
     },
     toggleSize () {
       this.fullSize = !this.fullSize
+    },
+    toggleNavigation: throttle(function() {
+      this.showNav = true
+
+      if (this.navTimeout) {
+        clearTimeout(this.navTimeout)
+      }
+
+      this.navTimeout = setTimeout(() => {
+        this.showNav = false || this.hoverNav
+        this.navTimeout = null
+      }, 1500);
+    }, 500),
+    close () {
+      this.$store.commit('updateRequest', {})
+
+      let uri = url.removeLastDir(this.$route.path) + '/'
+      this.$router.push({ path: uri })
+    },
+    download() {
+      api.download(null, this.$route.path)
     }
   }
 }
