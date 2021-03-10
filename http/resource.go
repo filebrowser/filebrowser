@@ -90,12 +90,8 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 	})
 }
 
-var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	if !d.user.Perm.Create && r.Method == http.MethodPost {
-		return http.StatusForbidden, nil
-	}
-
-	if !d.user.Perm.Modify && r.Method == http.MethodPut {
+var resourcePostHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	if !d.user.Perm.Create {
 		return http.StatusForbidden, nil
 	}
 
@@ -103,55 +99,54 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 		_, _ = io.Copy(ioutil.Discard, r.Body)
 	}()
 
-	// For directories, only allow POST for creation.
+	// Directories creation on POST.
 	if strings.HasSuffix(r.URL.Path, "/") {
-		if r.Method == http.MethodPut {
-			return http.StatusMethodNotAllowed, nil
-		}
-
 		err := d.user.Fs.MkdirAll(r.URL.Path, 0775)
 		return errToStatus(err), err
 	}
 
-	if r.Method == http.MethodPost && r.URL.Query().Get("override") != "true" {
+	if r.URL.Query().Get("override") != "true" {
 		if _, err := d.user.Fs.Stat(r.URL.Path); err == nil {
 			return http.StatusConflict, nil
 		}
 	}
 
-	action := "upload"
-	if r.Method == http.MethodPut {
-		action = "save"
-	}
-
 	err := d.RunHook(func() error {
-		dir, _ := path.Split(r.URL.Path)
-		err := d.user.Fs.MkdirAll(dir, 0775)
-		if err != nil {
-			return err
-		}
-
-		file, err := d.user.Fs.OpenFile(r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-
-		_, err = io.Copy(file, r.Body)
-		if err != nil {
-			return err
-		}
-
-		// Gets the info about the file.
-		info, err := file.Stat()
-		if err != nil {
-			return err
-		}
+		info, _ := writeFile(d.user.Fs, r.URL.Path, r.Body)
 
 		etag := fmt.Sprintf(`"%x%x"`, info.ModTime().UnixNano(), info.Size())
 		w.Header().Set("ETag", etag)
 		return nil
-	}, action, r.URL.Path, "", d.user)
+	}, "upload", r.URL.Path, "", d.user)
+
+	if err != nil {
+		_ = d.user.Fs.RemoveAll(r.URL.Path)
+	}
+
+	return errToStatus(err), err
+})
+
+var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	if !d.user.Perm.Modify {
+		return http.StatusForbidden, nil
+	}
+
+	defer func() {
+		_, _ = io.Copy(ioutil.Discard, r.Body)
+	}()
+
+	// Only allow PUT for files.
+	if strings.HasSuffix(r.URL.Path, "/") {
+		return http.StatusMethodNotAllowed, nil
+	}
+
+	err := d.RunHook(func() error {
+		info, _ := writeFile(d.user.Fs, r.URL.Path, r.Body)
+
+		etag := fmt.Sprintf(`"%x%x"`, info.ModTime().UnixNano(), info.Size())
+		w.Header().Set("ETag", etag)
+		return nil
+	}, "save", r.URL.Path, "", d.user)
 
 	if err != nil {
 		_ = d.user.Fs.RemoveAll(r.URL.Path)
@@ -241,4 +236,31 @@ func addVersionSuffix(source string, fs afero.Fs) string {
 	}
 
 	return source
+}
+
+func writeFile(fs afero.Fs, dst string, in io.Reader) (os.FileInfo, error) {
+	dir, _ := path.Split(dst)
+	err := fs.MkdirAll(dir, 0775)
+	if err != nil {
+		return nil, err
+	}
+
+	file, err := fs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	_, err = io.Copy(file, in)
+	if err != nil {
+		return nil, err
+	}
+
+	// Gets the info about the file.
+	info, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+
+	return info, nil
 }
