@@ -79,7 +79,7 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, imgSvc ImgServic
 		return errToStatus(err), err
 	}
 
-	cacheKey := previewCacheKey(file.Path, previewSize)
+	cacheKey := previewCacheKey(file.Path, file.ModTime.Unix(), previewSize)
 	cachedFile, ok, err := fileCache.Load(r.Context(), cacheKey)
 	if err != nil {
 		return errToStatus(err), err
@@ -133,6 +133,6 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, imgSvc ImgServic
 	return 0, nil
 }
 
-func previewCacheKey(fPath string, previewSize PreviewSize) string {
-	return fPath + previewSize.String()
+func previewCacheKey(fPath string, fTime int64, previewSize PreviewSize) string {
+	return fmt.Sprintf("%x%x%x", fPath, fTime, previewSize)
 }
