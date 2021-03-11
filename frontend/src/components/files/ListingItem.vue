@@ -66,7 +66,7 @@ export default {
       return this.readOnly == undefined && this.user.perm.rename
     },
     canDrop () {
-      if (!this.isDir || this.readOnly == undefined) return false
+      if (!this.isDir || this.readOnly !== undefined) return false
 
       for (let i of this.selected) {
         if (this.req.items[i].url === this.url) {
