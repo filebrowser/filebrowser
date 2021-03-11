@@ -123,15 +123,21 @@
   color: #fff;
 }
 
-#previewer .action i {
+#previewer header > .action i {
   color: #fff;
 }
 
-#previewer .action:hover {
+@media (min-width: 738px) {
+  #previewer header #dropdown .action i {
+    color: #fff;
+  }
+}
+
+#previewer header .action:hover {
   background-color: rgba(255, 255, 255, 0.3)
 }
 
-#previewer .action span {
+#previewer header .action span {
   display: none;
 }
 
