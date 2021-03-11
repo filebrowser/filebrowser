@@ -63,7 +63,7 @@ export default {
         return moment(this.req.modified).fromNow()
       }
 
-      return moment(this.req.items[this.selected[0]]).fromNow()
+      return moment(this.req.items[this.selected[0]].modified).fromNow()
     },
     name: function () {
       return this.selectedCount === 0 ? this.req.name : this.req.items[this.selected[0]].name
