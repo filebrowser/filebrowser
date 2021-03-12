@@ -173,13 +173,6 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 		return http.StatusInternalServerError, err
 	}
 
-	name := file.Name
-	if name == "." || name == "" {
-		name = "archive"
-	}
-	name += extension
-	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))
-
 	err = ar.Create(w)
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -187,6 +180,18 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 	defer ar.Close()
 
 	commonDir := fileutils.CommonPrefix(filepath.Separator, filenames...)
+
+	var name string
+	if len(filenames) > 1 {
+		name = "_" + filepath.Base(commonDir)
+	} else {
+		name = file.Name
+	}
+	if name == "." || name == "" {
+		name = "archive"
+	}
+	name += extension
+	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))
 
 	for _, fname := range filenames {
 		err = addFile(ar, d, fname, commonDir)
