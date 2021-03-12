@@ -16,7 +16,7 @@ import (
 
 var withHashFile = func(fn handleFunc) handleFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-		id, path := ifPathWithName(r)
+		id, ifPath := ifPathWithName(r)
 		link, err := d.store.Share.GetByHash(id)
 		if err != nil {
 			return errToStatus(err), err
@@ -47,21 +47,30 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			return errToStatus(err), err
 		}
 
-		if file.IsDir {
-			// set fs root to the shared folder
-			d.user.Fs = afero.NewBasePathFs(d.user.Fs, filepath.Dir(link.Path))
+		// share base path
+		basePath := link.Path
 
-			file, err = files.NewFileInfo(files.FileOptions{
-				Fs:      d.user.Fs,
-				Path:    path,
-				Modify:  d.user.Perm.Modify,
-				Expand:  true,
-				Checker: d,
-				Token:   link.Token,
-			})
-			if err != nil {
-				return errToStatus(err), err
-			}
+		// file relative path
+		filePath := ""
+
+		if file.IsDir {
+			basePath = filepath.Dir(basePath)
+			filePath = ifPath
+		}
+
+		// set fs root to the shared file/folder
+		d.user.Fs = afero.NewBasePathFs(d.user.Fs, basePath)
+
+		file, err = files.NewFileInfo(files.FileOptions{
+			Fs:      d.user.Fs,
+			Path:    filePath,
+			Modify:  d.user.Perm.Modify,
+			Expand:  true,
+			Checker: d,
+			Token:   link.Token,
+		})
+		if err != nil {
+			return errToStatus(err), err
 		}
 
 		d.raw = file
