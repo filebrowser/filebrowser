@@ -588,8 +588,12 @@ export default {
 
           let files = []
 
-          for (let i of this.selected) {
-            files.push(this.req.items[i].url)
+          if (this.selectedCount > 0) {
+            for (let i of this.selected) {
+              files.push(this.req.items[i].url)
+            }
+          } else {
+            files.push(this.$route.path)
           }
 
           api.download(format, ...files)
