@@ -33,12 +33,8 @@ export async function fetchJSON (url, opts) {
   }
 }
 
-export function removePrefix (url, prefix) {
-  if (url.startsWith('/files')) {
-    url = url.slice(6)
-  } else if (prefix) {
-    url = url.replace(prefix, '')
-  }
+export function removePrefix (url) {
+  url = url.split('/').splice(2).join('/')
 
   if (url === '') url = '/'
   if (url[0] !== '/') url = '/' + url
