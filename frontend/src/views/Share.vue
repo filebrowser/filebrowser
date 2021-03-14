@@ -31,7 +31,7 @@
               <a target="_blank" :href="link" class="button button--flat">{{ $t('buttons.download') }}</a>
             </div>
             <div class="share__box__element share__box__center">
-              <qrcode-vue :value="fullLink" size="200" level="M"></qrcode-vue>
+              <qrcode-vue :value="link" size="200" level="M"></qrcode-vue>
             </div>
         </div>
         <div v-if="req.isDir && req.items.length > 0" class="share__box share__box__items">
@@ -122,7 +122,6 @@ export default {
   },
   data: () => ({
     error: null,
-    path: '',
     showLimit: 500,
     password: '',
     attemptedPasswordLogin: false,
@@ -158,10 +157,9 @@ export default {
       if (this.token !== ''){
         queryArg = `?token=${this.token}`
       }
-      return `${baseURL}/api/public/dl/${this.hash}${this.path}${queryArg}`
-    },
-    fullLink: function () {
-      return window.location.origin + this.link
+
+      const path = this.$route.path.split('/').splice(2).join('/')
+      return `${baseURL}/api/public/dl/${path}${queryArg}`
     },
     humanSize: function () {
       if (this.req.isDir) {
@@ -193,20 +191,19 @@ export default {
       this.setLoading(true)
       this.error = null
 
+      if (this.password !== ''){
+        this.attemptedPasswordLogin = true
+      }
+
+      let url = this.$route.path
+      if (url === '') url = '/'
+      if (url[0] !== '/') url = '/' + url
+
       try {
-        if (this.password !== ''){
-          this.attemptedPasswordLogin = true
-        }
-        let file = await api.fetch(encodeURIComponent(this.$route.params.pathMatch), this.password)
-        this.path = file.path
-        if (this.path.endsWith('/'))  this.path = this.path.slice(0, -1)
+        let file = await api.fetch(url, this.password)
 
         this.token = file.token || ''
-        if (file.isDir) file.items = file.items.map((item, index) => {
-          item.index = index
-          item.url = `/share/${this.hash}${this.path}/${encodeURIComponent(item.name)}`
-          return item
-        })
+
         this.updateRequest(file)
         this.setLoading(false)
       } catch (e) {
@@ -228,7 +225,7 @@ export default {
     },
     download () {
       if (this.selectedCount === 1 && !this.req.items[this.selected[0]].isDir) {
-        api.download(null, this.hash, this.token, this.req.items[this.selected[0]].url)
+        api.download(null, this.hash, this.token, this.req.items[this.selected[0]].path)
         return
       }
 
@@ -240,7 +237,7 @@ export default {
           let files = []
 
           for (let i of this.selected) {
-            files.push(this.req.items[i].url)
+            files.push(this.req.items[i].path)
           }
 
           api.download(format, this.hash, this.token, ...files)

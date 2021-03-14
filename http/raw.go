@@ -108,8 +108,6 @@ var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) 
 })
 
 func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
-	// Checks are always done with paths with "/" as path separator.
-	path = strings.Replace(path, "\\", "/", -1)
 	if !d.Check(path) {
 		return nil
 	}
@@ -134,7 +132,7 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 
 	if path != commonPath {
 		filename := strings.TrimPrefix(path, commonPath)
-		filename = strings.TrimPrefix(filename, "/")
+		filename = strings.TrimPrefix(filename, string(filepath.Separator))
 		err = ar.Write(archiver.File{
 			FileInfo: archiver.FileInfo{
 				FileInfo:   info,
@@ -175,20 +173,25 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 		return http.StatusInternalServerError, err
 	}
 
-	name := file.Name
-	if name == "." || name == "" {
-		name = "archive"
-	}
-	name += extension
-	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))
-
 	err = ar.Create(w)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 	defer ar.Close()
 
-	commonDir := fileutils.CommonPrefix('/', filenames...)
+	commonDir := fileutils.CommonPrefix(filepath.Separator, filenames...)
+
+	var name string
+	if len(filenames) > 1 {
+		name = "_" + filepath.Base(commonDir)
+	} else {
+		name = file.Name
+	}
+	if name == "." || name == "" {
+		name = "archive"
+	}
+	name += extension
+	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))
 
 	for _, fname := range filenames {
 		err = addFile(ar, d, fname, commonDir)

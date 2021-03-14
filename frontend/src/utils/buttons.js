@@ -6,6 +6,10 @@ function loading (button) {
     return
   }
 
+  if (el.innerHTML == 'autorenew' || el.innerHTML == 'done') {
+    return
+  }
+
   el.dataset.icon = el.innerHTML
   el.style.opacity = 0
 

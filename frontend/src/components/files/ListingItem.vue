@@ -66,7 +66,7 @@ export default {
       return this.readOnly == undefined && this.user.perm.rename
     },
     canDrop () {
-      if (!this.isDir || this.readOnly == undefined) return false
+      if (!this.isDir || this.readOnly !== undefined) return false
 
       for (let i of this.selected) {
         if (this.req.items[i].url === this.url) {
@@ -78,7 +78,11 @@ export default {
     },
     thumbnailUrl () {
       const path = this.url.replace(/^\/files\//, '')
-      return `${baseURL}/api/preview/thumb/${path}?auth=${this.jwt}&inline=true`
+
+      // reload the image when the file is replaced
+      const key = Date.parse(this.modified)
+
+      return `${baseURL}/api/preview/thumb/${path}?auth=${this.jwt}&inline=true&k=${key}`
     },
     isThumbsEnabled () {
       return enableThumbs

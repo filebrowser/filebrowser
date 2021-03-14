@@ -102,10 +102,13 @@ export default {
       return `${baseURL}/api/raw${url.encodePath(this.req.path)}?auth=${this.jwt}`
     },
     previewUrl () {
+      // reload the image when the file is replaced
+      const key = Date.parse(this.req.modified)
+
       if (this.req.type === 'image' && !this.fullSize) {
-        return `${baseURL}/api/preview/big${url.encodePath(this.req.path)}?auth=${this.jwt}`
+        return `${baseURL}/api/preview/big${url.encodePath(this.req.path)}?auth=${this.jwt}&k=${key}`
       }
-      return `${baseURL}/api/raw${url.encodePath(this.req.path)}?auth=${this.jwt}`
+      return `${baseURL}/api/raw${url.encodePath(this.req.path)}?auth=${this.jwt}&k=${key}`
     },
     raw () {
       return `${this.previewUrl}&inline=true`
