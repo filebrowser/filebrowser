@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.13.0](https://github.com/filebrowser/filebrowser/compare/v2.12.1...v2.13.0) (2021-03-14)
+
+
+### Features
+
+* dual pane settings view ([db5aad8](https://github.com/filebrowser/filebrowser/commit/db5aad8eb679cfe1b1ace5142cf342951217f0f7))
+* improved settings navbar ([5b28aa0](https://github.com/filebrowser/filebrowser/commit/5b28aa0848710b9d3ee02a2aa912856395f48bd2))
+* improved sharing prompt ([1819377](https://github.com/filebrowser/filebrowser/commit/18193778971e27d18b5a35df8c2d0e2953b48111))
+* increased header button counter size ([4fb832c](https://github.com/filebrowser/filebrowser/commit/4fb832c0422107e16f22b7aa928224f36de4978f))
+* larger previewer content ([62fff5c](https://github.com/filebrowser/filebrowser/commit/62fff5ca60da1f887c1f95fa4808d3753596dab2))
+
+
+### Bug Fixes
+
+* archive contains parent path on Windows ([54f3570](https://github.com/filebrowser/filebrowser/commit/54f35701a2bd5cb7ec0628ca9789047072c073db))
+* check rules on http resource handlers ([5bf1554](https://github.com/filebrowser/filebrowser/commit/5bf15548d0ad147acfad5000277531be2671f7ce))
+* download current dir on file listing ([488d980](https://github.com/filebrowser/filebrowser/commit/488d98045e7476ed11e53c13d9498a9db3165bbc))
+* encoded file path on share ([7955e07](https://github.com/filebrowser/filebrowser/commit/7955e0720baef3710106c7e69bbbf078d5489220))
+* full file path on share ([e017a19](https://github.com/filebrowser/filebrowser/commit/e017a199850e19dd51b960ba59402c215fd8f1af))
+* header dropdown icon color on previewer ([f8df76f](https://github.com/filebrowser/filebrowser/commit/f8df76f52684f10722ce123fec2c90e321ddf103))
+* item dragging on file listing ([326b35a](https://github.com/filebrowser/filebrowser/commit/326b35a7ac7871afcdf892ca150349665b7f6379))
+* modified time on info prompt ([11ebaec](https://github.com/filebrowser/filebrowser/commit/11ebaec5f0671ec02ebe55d4a73a514bce3a6713))
+* root path name on archive ([426b38b](https://github.com/filebrowser/filebrowser/commit/426b38bb3362d2d477d0d8aa27d880664d537431))
+* stuck icon on header button ([6a734c0](https://github.com/filebrowser/filebrowser/commit/6a734c01391b437c2842f5d97fb63f29a0017510))
+* update image cache when replacing ([81b6f4d](https://github.com/filebrowser/filebrowser/commit/81b6f4d6f6a01886583016f61f4f1951a59f244d))
+* wait for async command exit ([#1326](https://github.com/filebrowser/filebrowser/issues/1326)) ([6d5ceae](https://github.com/filebrowser/filebrowser/commit/6d5ceae8b454edd749b3b65c88aacc0a31ce9215))
+
+
+### Refactorings
+
+* migrate from rice to embed.FS ([fc55061](https://github.com/filebrowser/filebrowser/commit/fc5506179a64e9e2f57f7b6d6cce4b95f5ebc235))
+
 ### [2.12.1](https://github.com/filebrowser/filebrowser/compare/v2.12.0...v2.12.1) (2021-03-07)
 
 
