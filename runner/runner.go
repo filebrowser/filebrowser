@@ -102,6 +102,14 @@ func (r *Runner) exec(raw, evt, path, dst string, user *users.User) error {
 
 	if !blocking {
 		log.Printf("[INFO] Nonblocking Command: \"%s\"", strings.Join(command, " "))
+		defer func() {
+			go func() {
+				err := cmd.Wait()
+				if err != nil {
+					log.Printf("[INFO] Nonblocking Command \"%s\" failed: %s", strings.Join(command, " "), err)
+				}
+			}()
+		}()
 		return cmd.Start()
 	}
 
