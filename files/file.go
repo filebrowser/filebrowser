@@ -167,7 +167,8 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	case strings.HasPrefix(mimetype, "image"):
 		i.Type = "image"
 		return nil
-	case (strings.HasPrefix(mimetype, "text") || strings.HasSuffix(mimetype, "json") || (len(buffer) > 0 && !isBinary(buffer))) && i.Size <= 10*1024*1024: // 10 MB
+	case (strings.HasPrefix(mimetype, "text") || strings.HasSuffix(mimetype, "json") ||
+		(len(buffer) > 0 && !isBinary(buffer))) && i.Size <= 10*1024*1024: // 10 MB
 		i.Type = "text"
 
 		if !modify {
