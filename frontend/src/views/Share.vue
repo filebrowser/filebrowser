@@ -31,7 +31,7 @@
               <a target="_blank" :href="link" class="button button--flat">{{ $t('buttons.download') }}</a>
             </div>
             <div class="share__box__element share__box__center">
-              <qrcode-vue :value="link" size="200" level="M"></qrcode-vue>
+              <qrcode-vue :value="fullLink" size="200" level="M"></qrcode-vue>
             </div>
         </div>
         <div v-if="req.isDir && req.items.length > 0" class="share__box share__box__items">
@@ -160,6 +160,9 @@ export default {
 
       const path = this.$route.path.split('/').splice(2).join('/')
       return `${baseURL}/api/public/dl/${path}${queryArg}`
+    },
+    fullLink: function () {
+      return window.location.origin + this.link
     },
     humanSize: function () {
       if (this.req.isDir) {
