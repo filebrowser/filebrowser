@@ -73,5 +73,5 @@ func handle(fn handleFunc, prefix string, store *storage.Storage, server *settin
 		}
 	})
 
-	return http.StripPrefix(prefix, handler)
+	return stripPrefix(prefix, handler)
 }
