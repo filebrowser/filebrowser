@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.14.1](https://github.com/filebrowser/filebrowser/compare/v2.14.0...v2.14.1) (2021-03-21)
+
+
+### Bug Fixes
+
+* display public routes with header proxy auth ([da54bd6](https://github.com/filebrowser/filebrowser/commit/da54bd6c214d7ee39b71d710ddfe6dd25fc4e5d6))
+
 ## [2.14.0](https://github.com/filebrowser/filebrowser/compare/v2.13.0...v2.14.0) (2021-03-21)
 
 
