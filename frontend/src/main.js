@@ -10,10 +10,14 @@ import App from "@/App";
 sync(store, router);
 
 async function start() {
-  if (loginPage) {
-    await validateLogin();
-  } else {
-    await login("", "", "");
+  try {
+    if (loginPage) {
+      await validateLogin();
+    } else {
+      await login("", "", "");
+    }
+  } catch (e) {
+    console.log(e);
   }
 
   if (recaptcha) {
