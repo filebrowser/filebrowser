@@ -1,31 +1,31 @@
-import { fetchURL, removePrefix } from './utils'
-import url from '../utils/url'
+import { fetchURL, removePrefix } from "./utils";
+import url from "../utils/url";
 
-export default async function search (base, query) {
-  base = removePrefix(base)
-  query = encodeURIComponent(query)
+export default async function search(base, query) {
+  base = removePrefix(base);
+  query = encodeURIComponent(query);
 
-  if (!base.endsWith('/')) {
-    base += '/'
+  if (!base.endsWith("/")) {
+    base += "/";
   }
 
-  let res = await fetchURL(`/api/search${base}?query=${query}`, {})
+  let res = await fetchURL(`/api/search${base}?query=${query}`, {});
 
   if (res.status === 200) {
-    let data = await res.json()
+    let data = await res.json();
 
     data = data.map((item) => {
-      item.url = `/files${base}` + url.encodePath(item.path)
+      item.url = `/files${base}` + url.encodePath(item.path);
 
       if (item.dir) {
-        item.url += '/'
+        item.url += "/";
       }
 
-      return item
-    })
+      return item;
+    });
 
-    return data
+    return data;
   } else {
-    throw Error(res.status)
+    throw Error(res.status);
   }
 }

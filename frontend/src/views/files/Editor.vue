@@ -5,7 +5,12 @@
       <title>{{ req.name }}</title>
 
       <template #actions>
-        <action id="save-button" icon="save" :label="$t('buttons.save')" @action="save()" />
+        <action
+          id="save-button"
+          icon="save"
+          :label="$t('buttons.save')"
+          @action="save()"
+        />
       </template>
     </header-bar>
 
@@ -16,120 +21,120 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { files as api } from '@/api'
-import { theme } from '@/utils/constants'
-import buttons from '@/utils/buttons'
-import url from '@/utils/url'
+import { mapState } from "vuex";
+import { files as api } from "@/api";
+import { theme } from "@/utils/constants";
+import buttons from "@/utils/buttons";
+import url from "@/utils/url";
 
-import ace from 'ace-builds/src-min-noconflict/ace.js'
-import modelist from 'ace-builds/src-min-noconflict/ext-modelist.js'
-import 'ace-builds/webpack-resolver'
+import ace from "ace-builds/src-min-noconflict/ace.js";
+import modelist from "ace-builds/src-min-noconflict/ext-modelist.js";
+import "ace-builds/webpack-resolver";
 
-import HeaderBar from '@/components/header/HeaderBar'
-import Action from '@/components/header/Action'
-import Breadcrumbs from '@/components/Breadcrumbs'
+import HeaderBar from "@/components/header/HeaderBar";
+import Action from "@/components/header/Action";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default {
-  name: 'editor',
+  name: "editor",
   components: {
     HeaderBar,
     Action,
-    Breadcrumbs
+    Breadcrumbs,
   },
   data: function () {
-    return {}
+    return {};
   },
   computed: {
-    ...mapState(['req', 'user']),
-    breadcrumbs () {
-      let parts = this.$route.path.split('/')
+    ...mapState(["req", "user"]),
+    breadcrumbs() {
+      let parts = this.$route.path.split("/");
 
-      if (parts[0] === '') {
-        parts.shift()
+      if (parts[0] === "") {
+        parts.shift();
       }
 
-      if (parts[parts.length - 1] === '') {
-        parts.pop()
+      if (parts[parts.length - 1] === "") {
+        parts.pop();
       }
 
-      let breadcrumbs = []
+      let breadcrumbs = [];
 
       for (let i = 0; i < parts.length; i++) {
-        breadcrumbs.push({ name: decodeURIComponent(parts[i]) })
+        breadcrumbs.push({ name: decodeURIComponent(parts[i]) });
       }
 
-      breadcrumbs.shift()
+      breadcrumbs.shift();
 
       if (breadcrumbs.length > 3) {
         while (breadcrumbs.length !== 4) {
-          breadcrumbs.shift()
+          breadcrumbs.shift();
         }
 
-        breadcrumbs[0].name = '...'
+        breadcrumbs[0].name = "...";
       }
 
-      return breadcrumbs
-    }
+      return breadcrumbs;
+    },
   },
-  created () {
-    window.addEventListener('keydown', this.keyEvent)
+  created() {
+    window.addEventListener("keydown", this.keyEvent);
   },
-  beforeDestroy () {
-    window.removeEventListener('keydown', this.keyEvent)
+  beforeDestroy() {
+    window.removeEventListener("keydown", this.keyEvent);
     this.editor.destroy();
   },
   mounted: function () {
-    const fileContent = this.req.content || '';
+    const fileContent = this.req.content || "";
 
-    this.editor = ace.edit('editor', {
+    this.editor = ace.edit("editor", {
       value: fileContent,
       showPrintMargin: false,
-      readOnly: this.req.type === 'textImmutable',
-      theme: 'ace/theme/chrome',
+      readOnly: this.req.type === "textImmutable",
+      theme: "ace/theme/chrome",
       mode: modelist.getModeForPath(this.req.name).mode,
-      wrap: true
-    })
+      wrap: true,
+    });
 
-    if (theme == 'dark') {
+    if (theme == "dark") {
       this.editor.setTheme("ace/theme/twilight");
     }
   },
   methods: {
-    back () {
-      let uri = url.removeLastDir(this.$route.path) + '/'
-      this.$router.push({ path: uri })
+    back() {
+      let uri = url.removeLastDir(this.$route.path) + "/";
+      this.$router.push({ path: uri });
     },
-    keyEvent (event) {
+    keyEvent(event) {
       if (!event.ctrlKey && !event.metaKey) {
-        return
+        return;
       }
 
-      if (String.fromCharCode(event.which).toLowerCase() !== 's') {
-        return
+      if (String.fromCharCode(event.which).toLowerCase() !== "s") {
+        return;
       }
 
-      event.preventDefault()
-      this.save()
+      event.preventDefault();
+      this.save();
     },
-    async save () {
-      const button = 'save'
-      buttons.loading('save')
+    async save() {
+      const button = "save";
+      buttons.loading("save");
 
       try {
-        await api.put(this.$route.path, this.editor.getValue())
-        buttons.success(button)
+        await api.put(this.$route.path, this.editor.getValue());
+        buttons.success(button);
       } catch (e) {
-        buttons.done(button)
-        this.$showError(e)
+        buttons.done(button);
+        this.$showError(e);
       }
     },
-    close () {
-      this.$store.commit('updateRequest', {})
+    close() {
+      this.$store.commit("updateRequest", {});
 
-      let uri = url.removeLastDir(this.$route.path) + '/'
-      this.$router.push({ path: uri })
-    }
-  }
-}
+      let uri = url.removeLastDir(this.$route.path) + "/";
+      this.$router.push({ path: uri });
+    },
+  },
+};
 </script>

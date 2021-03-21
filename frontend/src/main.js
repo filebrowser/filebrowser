@@ -1,43 +1,43 @@
-import { sync } from 'vuex-router-sync'
-import store from '@/store'
-import router from '@/router'
-import i18n from '@/i18n'
-import Vue from '@/utils/vue'
-import { recaptcha, loginPage } from '@/utils/constants'
-import { login, validateLogin } from '@/utils/auth'
-import App from '@/App'
+import { sync } from "vuex-router-sync";
+import store from "@/store";
+import router from "@/router";
+import i18n from "@/i18n";
+import Vue from "@/utils/vue";
+import { recaptcha, loginPage } from "@/utils/constants";
+import { login, validateLogin } from "@/utils/auth";
+import App from "@/App";
 
-sync(store, router)
+sync(store, router);
 
-async function start () {
+async function start() {
   if (loginPage) {
-    await validateLogin()
+    await validateLogin();
   } else {
-    await login('', '', '')
+    await login("", "", "");
   }
 
   if (recaptcha) {
-    await new Promise (resolve => {
+    await new Promise((resolve) => {
       const check = () => {
-        if (typeof window.grecaptcha === 'undefined') {
-          setTimeout(check, 100)
+        if (typeof window.grecaptcha === "undefined") {
+          setTimeout(check, 100);
         } else {
-          resolve()
+          resolve();
         }
-      }
+      };
 
-      check()
-    })
+      check();
+    });
   }
 
   new Vue({
-    el: '#app',
+    el: "#app",
     store,
     router,
     i18n,
-    template: '<App/>',
-    components: { App }
-  })
+    template: "<App/>",
+    components: { App },
+  });
 }
 
-start()
+start();

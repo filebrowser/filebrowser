@@ -5,8 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "find ./dist -maxdepth 1 -mindepth 1 ! -name '.gitignore' -exec rm -r {} + && vue-cli-service build --no-clean",
-    "watch": "find ./dist -maxdepth 1 -mindepth 1 ! -name '.gitignore' -exec rm -r {} + && vue-cli-service build --watch --no-clean",
-    "lint": "vue-cli-service lint --fix"
+    "lint": "npx vue-cli-service lint --no-fix",
+    "fix": "npx vue-cli-service lint",
+    "watch": "find ./dist -maxdepth 1 -mindepth 1 ! -name '.gitignore' -exec rm -r {} + && vue-cli-service build --watch --no-clean"
   },
   "dependencies": {
     "ace-builds": "^1.4.7",
@@ -29,11 +30,14 @@
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.1.2",
-    "@vue/cli-plugin-eslint": "^4.1.1",
+    "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "^4.1.2",
-    "babel-eslint": "^10.0.3",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^6.1.2",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-vue": "^6.2.2",
+    "prettier": "^2.2.1",
     "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {
@@ -43,7 +47,8 @@
     },
     "extends": [
       "plugin:vue/essential",
-      "eslint:recommended"
+      "eslint:recommended",
+      "@vue/prettier"
     ],
     "rules": {},
     "parserOptions": {

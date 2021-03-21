@@ -1,15 +1,45 @@
 <template>
-  <div id="previewer" @mousemove="toggleNavigation" @touchstart="toggleNavigation">
+  <div
+    id="previewer"
+    @mousemove="toggleNavigation"
+    @touchstart="toggleNavigation"
+  >
     <header-bar>
       <action icon="close" :label="$t('buttons.close')" @action="close()" />
       <title>{{ name }}</title>
-      <action :disabled="loading" v-if="isResizeEnabled && req.type === 'image'" :icon="fullSize ? 'photo_size_select_large' : 'hd'" @action="toggleSize" />
+      <action
+        :disabled="loading"
+        v-if="isResizeEnabled && req.type === 'image'"
+        :icon="fullSize ? 'photo_size_select_large' : 'hd'"
+        @action="toggleSize"
+      />
 
       <template #actions>
-        <action :disabled="loading" icon="mode_edit" :label="$t('buttons.rename')" show="rename" />
-        <action :disabled="loading" icon="delete" :label="$t('buttons.delete')" @action="deleteFile" id="delete-button" />
-        <action :disabled="loading" icon="file_download" :label="$t('buttons.download')" @action="download" />
-        <action :disabled="loading" icon="info" :label="$t('buttons.info')" show="info" />
+        <action
+          :disabled="loading"
+          icon="mode_edit"
+          :label="$t('buttons.rename')"
+          show="rename"
+        />
+        <action
+          :disabled="loading"
+          icon="delete"
+          :label="$t('buttons.delete')"
+          @action="deleteFile"
+          id="delete-button"
+        />
+        <action
+          :disabled="loading"
+          icon="file_download"
+          :label="$t('buttons.download')"
+          @action="download"
+        />
+        <action
+          :disabled="loading"
+          icon="info"
+          :label="$t('buttons.info')"
+          show="info"
+        />
       </template>
     </header-bar>
 
@@ -31,221 +61,249 @@
             v-for="(sub, index) in subtitles"
             :key="index"
             :src="sub"
-            :label="'Subtitle ' + index" :default="index === 0">
-          Sorry, your browser doesn't support embedded videos,
-          but don't worry, you can <a :href="downloadUrl">download it</a>
+            :label="'Subtitle ' + index"
+            :default="index === 0"
+          />
+          Sorry, your browser doesn't support embedded videos, but don't worry,
+          you can <a :href="downloadUrl">download it</a>
           and watch it with your favorite video player!
         </video>
-        <object v-else-if="req.extension.toLowerCase() == '.pdf'" class="pdf" :data="raw"></object>
+        <object
+          v-else-if="req.extension.toLowerCase() == '.pdf'"
+          class="pdf"
+          :data="raw"
+        ></object>
         <a v-else-if="req.type == 'blob'" :href="downloadUrl">
-          <h2 class="message">{{ $t('buttons.download') }} <i class="material-icons">file_download</i></h2>
+          <h2 class="message">
+            {{ $t("buttons.download") }}
+            <i class="material-icons">file_download</i>
+          </h2>
         </a>
       </div>
     </template>
 
-    <button @click="prev" @mouseover="hoverNav = true" @mouseleave="hoverNav = false" :class="{ hidden: !hasPrevious || !showNav }" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
+    <button
+      @click="prev"
+      @mouseover="hoverNav = true"
+      @mouseleave="hoverNav = false"
+      :class="{ hidden: !hasPrevious || !showNav }"
+      :aria-label="$t('buttons.previous')"
+      :title="$t('buttons.previous')"
+    >
       <i class="material-icons">chevron_left</i>
     </button>
-    <button @click="next" @mouseover="hoverNav = true" @mouseleave="hoverNav = false" :class="{ hidden: !hasNext || !showNav }" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
+    <button
+      @click="next"
+      @mouseover="hoverNav = true"
+      @mouseleave="hoverNav = false"
+      :class="{ hidden: !hasNext || !showNav }"
+      :aria-label="$t('buttons.next')"
+      :title="$t('buttons.next')"
+    >
       <i class="material-icons">chevron_right</i>
     </button>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { files as api } from '@/api'
-import { baseURL, resizePreview } from '@/utils/constants'
-import url from '@/utils/url'
-import throttle from 'lodash.throttle'
+import { mapState } from "vuex";
+import { files as api } from "@/api";
+import { baseURL, resizePreview } from "@/utils/constants";
+import url from "@/utils/url";
+import throttle from "lodash.throttle";
 
-import HeaderBar from '@/components/header/HeaderBar'
-import Action from '@/components/header/Action'
-import ExtendedImage from '@/components/files/ExtendedImage'
+import HeaderBar from "@/components/header/HeaderBar";
+import Action from "@/components/header/Action";
+import ExtendedImage from "@/components/files/ExtendedImage";
 
-const mediaTypes = [
-  "image",
-  "video",
-  "audio",
-  "blob"
-]
+const mediaTypes = ["image", "video", "audio", "blob"];
 
 export default {
-  name: 'preview',
+  name: "preview",
   components: {
     HeaderBar,
     Action,
-    ExtendedImage
+    ExtendedImage,
   },
   data: function () {
     return {
-      previousLink: '',
-      nextLink: '',
+      previousLink: "",
+      nextLink: "",
       listing: null,
-      name: '',
+      name: "",
       subtitles: [],
       fullSize: false,
       showNav: true,
       navTimeout: null,
-      hoverNav: false
-    }
+      hoverNav: false,
+    };
   },
   computed: {
-    ...mapState(['req', 'user', 'oldReq', 'jwt', 'loading', 'show']),
-    hasPrevious () {
-      return (this.previousLink !== '')
+    ...mapState(["req", "user", "oldReq", "jwt", "loading", "show"]),
+    hasPrevious() {
+      return this.previousLink !== "";
     },
-    hasNext () {
-      return (this.nextLink !== '')
+    hasNext() {
+      return this.nextLink !== "";
     },
-    downloadUrl () {
-      return `${baseURL}/api/raw${url.encodePath(this.req.path)}?auth=${this.jwt}`
+    downloadUrl() {
+      return `${baseURL}/api/raw${url.encodePath(this.req.path)}?auth=${
+        this.jwt
+      }`;
     },
-    previewUrl () {
+    previewUrl() {
       // reload the image when the file is replaced
-      const key = Date.parse(this.req.modified)
+      const key = Date.parse(this.req.modified);
 
-      if (this.req.type === 'image' && !this.fullSize) {
-        return `${baseURL}/api/preview/big${url.encodePath(this.req.path)}?auth=${this.jwt}&k=${key}`
+      if (this.req.type === "image" && !this.fullSize) {
+        return `${baseURL}/api/preview/big${url.encodePath(
+          this.req.path
+        )}?auth=${this.jwt}&k=${key}`;
       }
-      return `${baseURL}/api/raw${url.encodePath(this.req.path)}?auth=${this.jwt}&k=${key}`
+      return `${baseURL}/api/raw${url.encodePath(this.req.path)}?auth=${
+        this.jwt
+      }&k=${key}`;
     },
-    raw () {
-      return `${this.previewUrl}&inline=true`
+    raw() {
+      return `${this.previewUrl}&inline=true`;
     },
-    showMore () {
-      return this.$store.state.show === 'more'
+    showMore() {
+      return this.$store.state.show === "more";
     },
-    isResizeEnabled () {
-      return resizePreview
-    }
+    isResizeEnabled() {
+      return resizePreview;
+    },
   },
   watch: {
     $route: function () {
-      this.updatePreview()
-      this.toggleNavigation()
-    }
+      this.updatePreview();
+      this.toggleNavigation();
+    },
   },
-  async mounted () {
-    window.addEventListener('keydown', this.key)
-    this.listing = this.oldReq.items
-    this.updatePreview()
+  async mounted() {
+    window.addEventListener("keydown", this.key);
+    this.listing = this.oldReq.items;
+    this.updatePreview();
   },
-  beforeDestroy () {
-    window.removeEventListener('keydown', this.key)
+  beforeDestroy() {
+    window.removeEventListener("keydown", this.key);
   },
   methods: {
-    deleteFile () {
-      this.$store.commit('showHover', {
-        prompt: 'delete',
+    deleteFile() {
+      this.$store.commit("showHover", {
+        prompt: "delete",
         confirm: () => {
-          this.listing = this.listing.filter(item => item.name !== this.name)
+          this.listing = this.listing.filter((item) => item.name !== this.name);
 
           if (this.hasNext) {
-            this.next()
+            this.next();
           } else if (!this.hasPrevious && !this.hasNext) {
-            this.close()
+            this.close();
           } else {
-            this.prev()
+            this.prev();
           }
-        }
-      })
+        },
+      });
     },
-    prev () {
-      this.hoverNav = false
-      this.$router.push({ path: this.previousLink })
+    prev() {
+      this.hoverNav = false;
+      this.$router.push({ path: this.previousLink });
     },
-    next () {
-      this.hoverNav = false
-      this.$router.push({ path: this.nextLink })
+    next() {
+      this.hoverNav = false;
+      this.$router.push({ path: this.nextLink });
     },
-    key (event) {
-
+    key(event) {
       if (this.show !== null) {
-        return
+        return;
       }
 
-      if (event.which === 13 || event.which === 39) { // right arrow
-        if (this.hasNext) this.next()
-      } else if (event.which === 37) { // left arrow
-        if (this.hasPrevious) this.prev()
-      } else if (event.which === 27) { // esc
-        this.close()
+      if (event.which === 13 || event.which === 39) {
+        // right arrow
+        if (this.hasNext) this.next();
+      } else if (event.which === 37) {
+        // left arrow
+        if (this.hasPrevious) this.prev();
+      } else if (event.which === 27) {
+        // esc
+        this.close();
       }
     },
-    async updatePreview () {
+    async updatePreview() {
       if (this.req.subtitles) {
-        this.subtitles = this.req.subtitles.map(sub => `${baseURL}/api/raw${sub}?auth=${this.jwt}&inline=true`)
+        this.subtitles = this.req.subtitles.map(
+          (sub) => `${baseURL}/api/raw${sub}?auth=${this.jwt}&inline=true`
+        );
       }
 
-      let dirs = this.$route.fullPath.split("/")
-      this.name = decodeURIComponent(dirs[dirs.length - 1])
+      let dirs = this.$route.fullPath.split("/");
+      this.name = decodeURIComponent(dirs[dirs.length - 1]);
 
       if (!this.listing) {
         try {
-          const path = url.removeLastDir(this.$route.path)
-          const res = await api.fetch(path)
-          this.listing = res.items
+          const path = url.removeLastDir(this.$route.path);
+          const res = await api.fetch(path);
+          this.listing = res.items;
         } catch (e) {
-          this.$showError(e)
+          this.$showError(e);
         }
       }
 
-      this.previousLink = ''
-      this.nextLink = ''
+      this.previousLink = "";
+      this.nextLink = "";
 
       for (let i = 0; i < this.listing.length; i++) {
         if (this.listing[i].name !== this.name) {
-          continue
+          continue;
         }
 
         for (let j = i - 1; j >= 0; j--) {
           if (mediaTypes.includes(this.listing[j].type)) {
-            this.previousLink = this.listing[j].url
-            break
+            this.previousLink = this.listing[j].url;
+            break;
           }
         }
 
         for (let j = i + 1; j < this.listing.length; j++) {
           if (mediaTypes.includes(this.listing[j].type)) {
-            this.nextLink = this.listing[j].url
-            break
+            this.nextLink = this.listing[j].url;
+            break;
           }
         }
 
-        return
+        return;
       }
     },
-    openMore () {
-      this.$store.commit('showHover', 'more')
+    openMore() {
+      this.$store.commit("showHover", "more");
     },
-    resetPrompts () {
-      this.$store.commit('closeHovers')
+    resetPrompts() {
+      this.$store.commit("closeHovers");
     },
-    toggleSize () {
-      this.fullSize = !this.fullSize
+    toggleSize() {
+      this.fullSize = !this.fullSize;
     },
-    toggleNavigation: throttle(function() {
-      this.showNav = true
+    toggleNavigation: throttle(function () {
+      this.showNav = true;
 
       if (this.navTimeout) {
-        clearTimeout(this.navTimeout)
+        clearTimeout(this.navTimeout);
       }
 
       this.navTimeout = setTimeout(() => {
-        this.showNav = false || this.hoverNav
-        this.navTimeout = null
+        this.showNav = false || this.hoverNav;
+        this.navTimeout = null;
       }, 1500);
     }, 500),
-    close () {
-      this.$store.commit('updateRequest', {})
+    close() {
+      this.$store.commit("updateRequest", {});
 
-      let uri = url.removeLastDir(this.$route.path) + '/'
-      this.$router.push({ path: uri })
+      let uri = url.removeLastDir(this.$route.path) + "/";
+      this.$router.push({ path: uri });
     },
     download() {
-      api.download(null, this.$route.path)
-    }
-  }
-}
+      api.download(null, this.$route.path);
+    },
+  },
+};
 </script>

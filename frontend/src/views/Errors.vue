@@ -10,37 +10,34 @@
 </template>
 
 <script>
-
-import HeaderBar from '@/components/header/HeaderBar'
+import HeaderBar from "@/components/header/HeaderBar";
 
 const errors = {
   403: {
-    icon: 'error',
-    message: 'errors.forbidden'
+    icon: "error",
+    message: "errors.forbidden",
   },
   404: {
-    icon: 'gps_off',
-    message: 'errors.notFound'
+    icon: "gps_off",
+    message: "errors.notFound",
   },
   500: {
-    icon: 'error_outline',
-    message: 'errors.internal'
-  }
-}
+    icon: "error_outline",
+    message: "errors.internal",
+  },
+};
 
 export default {
-  name: 'errors',
+  name: "errors",
   components: {
-    HeaderBar
+    HeaderBar,
   },
-  props: [
-    'errorCode', 'showHeader'
-  ],
+  props: ["errorCode", "showHeader"],
   data: function () {
     return {
       icon: errors[this.errorCode].icon,
-      message: this.$t(errors[this.errorCode].message)
-    }
-  }
-}
+      message: this.$t(errors[this.errorCode].message),
+    };
+  },
+};
 </script>
