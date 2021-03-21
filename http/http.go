@@ -36,6 +36,7 @@ func NewHandler(
 		return handle(fn, prefix, store, server)
 	}
 
+	r.HandleFunc("/health", healthHandler)
 	r.PathPrefix("/static").Handler(static)
 	r.NotFoundHandler = index
 
