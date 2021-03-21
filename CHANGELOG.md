@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.14.0](https://github.com/filebrowser/filebrowser/compare/v2.13.0...v2.14.0) (2021-03-21)
+
+
+### Features
+
+* add health check handler ([a721dc1](https://github.com/filebrowser/filebrowser/commit/a721dc1f314732e60d331a1a7da97d06e0e8b613))
+
+
+### Bug Fixes
+
+* hide dotfile error on share ([5f4a031](https://github.com/filebrowser/filebrowser/commit/5f4a0317ab5685fe4a558df74e604c12e04a1c10))
+* prefix handling on http router ([93a35ad](https://github.com/filebrowser/filebrowser/commit/93a35ad2516accdcb9735db509550979d01de2c3))
+* qr code url on share ([22f4be8](https://github.com/filebrowser/filebrowser/commit/22f4be8f54162b7cf494177705ffb8b09117bd01))
+* text file detection on editor ([eeadc53](https://github.com/filebrowser/filebrowser/commit/eeadc532fe6057969b3c1a4726f236851b154cfa))
+
 ## [2.13.0](https://github.com/filebrowser/filebrowser/compare/v2.12.1...v2.13.0) (2021-03-14)
 
 
