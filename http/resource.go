@@ -125,7 +125,10 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 		}
 
 		err = d.RunHook(func() error {
-			info, _ := writeFile(d.user.Fs, r.URL.Path, r.Body)
+			info, writeErr := writeFile(d.user.Fs, r.URL.Path, r.Body)
+			if writeErr != nil {
+				return writeErr
+			}
 
 			etag := fmt.Sprintf(`"%x%x"`, info.ModTime().UnixNano(), info.Size())
 			w.Header().Set("ETag", etag)
@@ -155,7 +158,10 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 	}
 
 	err := d.RunHook(func() error {
-		info, _ := writeFile(d.user.Fs, r.URL.Path, r.Body)
+		info, writeErr := writeFile(d.user.Fs, r.URL.Path, r.Body)
+		if writeErr != nil {
+			return writeErr
+		}
 
 		etag := fmt.Sprintf(`"%x%x"`, info.ModTime().UnixNano(), info.Size())
 		w.Header().Set("ETag", etag)
