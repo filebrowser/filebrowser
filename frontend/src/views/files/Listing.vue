@@ -25,18 +25,21 @@
           />
           <action
             v-if="headerButtons.copy"
+            id="copy-button"
             icon="content_copy"
             :label="$t('buttons.copyFile')"
             show="copy"
           />
           <action
             v-if="headerButtons.move"
+            id="move-button"
             icon="forward"
             :label="$t('buttons.moveFile')"
             show="move"
           />
           <action
             v-if="headerButtons.delete"
+            id="delete-button"
             icon="delete"
             :label="$t('buttons.delete')"
             show="delete"
@@ -62,6 +65,7 @@
         />
         <action
           icon="file_upload"
+          id="upload-button"
           :label="$t('buttons.upload')"
           @action="upload"
         />
