@@ -135,7 +135,7 @@
           multiple
         />
       </div>
-      <div v-else id="listing" :class="user.viewMode">
+      <div v-else id="listing" ref="listing" :class="user.viewMode">
         <div>
           <div class="item header">
             <div></div>
@@ -253,6 +253,7 @@ import { users, files as api } from "@/api";
 import { enableExec } from "@/utils/constants";
 import * as upload from "@/utils/upload";
 import css from "@/utils/css";
+import throttle from "lodash.throttle";
 
 import HeaderBar from "@/components/header/HeaderBar";
 import Action from "@/components/header/Action";
@@ -350,13 +351,27 @@ export default {
       return this.width <= 736;
     },
   },
+  watch: {
+    req: function () {
+      // Reset the show value
+      this.showLimit = 50;
+
+      // Fill and fit the window with listing items
+      this.fillWindow(true);
+    },
+  },
   mounted: function () {
     // Check the columns size for the first time.
-    this.resizeEvent();
+    this.colunmsResize();
+
+    // How much every listing item affects the window height
+    this.setItemWeight();
+
+    // Fill and fit the window with listing items
+    this.fillWindow(true);
 
     // Add the needed event listeners to the window and document.
     window.addEventListener("keydown", this.keyEvent);
-    window.addEventListener("resize", this.resizeEvent);
     window.addEventListener("scroll", this.scrollEvent);
     window.addEventListener("resize", this.windowsResize);
     document.addEventListener("dragover", this.preventDefault);
@@ -367,7 +382,6 @@ export default {
   beforeDestroy() {
     // Remove event listeners before destroying this page.
     window.removeEventListener("keydown", this.keyEvent);
-    window.removeEventListener("resize", this.resizeEvent);
     window.removeEventListener("scroll", this.scrollEvent);
     window.removeEventListener("resize", this.windowsResize);
     document.removeEventListener("dragover", this.preventDefault);
@@ -543,7 +557,7 @@ export default {
 
       action(overwrite, rename);
     },
-    resizeEvent() {
+    colunmsResize() {
       // Update the columns size based on the window width.
       let columns = Math.floor(
         document.querySelector("main").offsetWidth / 300
@@ -552,11 +566,27 @@ export default {
       if (columns === 0) columns = 1;
       items.style.width = `calc(${100 / columns}% - 1em)`;
     },
-    scrollEvent() {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-        this.showLimit += 50;
+    scrollEvent: throttle(function () {
+      const totalItems = this.req.numDirs + this.req.numFiles;
+
+      // All items are displayed
+      if (this.showLimit >= totalItems) return;
+
+      const currentPos = window.innerHeight + window.scrollY;
+
+      // Trigger at the 75% of the window height
+      const triggerPos = document.body.offsetHeight - window.innerHeight * 0.25;
+
+      if (currentPos > triggerPos) {
+        // Quantity of items needed to fill 2x of the window height
+        const showQuantity = Math.ceil(
+          (window.innerHeight * 2) / this.itemWeight
+        );
+
+        // Increase the number of displayed items
+        this.showLimit += showQuantity;
       }
-    },
+    }, 100),
     dragEnter() {
       this.dragCounter++;
 
@@ -707,9 +737,19 @@ export default {
       this.$store.commit("multiple", !this.multiple);
       this.$store.commit("closeHovers");
     },
-    windowsResize() {
+    windowsResize: throttle(function () {
+      this.colunmsResize();
       this.width = window.innerWidth;
-    },
+
+      // Listing element is not displayed
+      if (this.$refs.listing == null) return;
+
+      // How much every listing item affects the window height
+      this.setItemWeight();
+
+      // Fill but not fit the window
+      this.fillWindow();
+    }, 100),
     download() {
       if (this.selectedCount === 1 && !this.req.items[this.selected[0]].isDir) {
         api.download(null, this.req.items[this.selected[0]].url);
@@ -745,7 +785,12 @@ export default {
 
       try {
         await users.update(data, ["viewMode"]);
-        this.$store.commit("updateUser", data);
+
+        // Await ensures correct value for setItemWeight()
+        await this.$store.commit("updateUser", data);
+
+        this.setItemWeight();
+        this.fillWindow();
       } catch (e) {
         this.$showError(e);
       }
@@ -756,6 +801,32 @@ export default {
       } else {
         document.getElementById("upload-input").click();
       }
+    },
+    setItemWeight() {
+      let itemQuantity = this.req.numDirs + this.req.numFiles;
+      if (itemQuantity > this.showLimit) itemQuantity = this.showLimit;
+
+      // How much every listing item affects the window height
+      this.itemWeight = this.$refs.listing.offsetHeight / itemQuantity;
+    },
+    fillWindow(fit = false) {
+      const totalItems = this.req.numDirs + this.req.numFiles;
+
+      // More items are displayed than the total
+      if (this.showLimit >= totalItems && !fit) return;
+
+      const windowHeight = window.innerHeight;
+
+      // Quantity of items needed to fill 2x of the window height
+      const showQuantity = Math.ceil(
+        (windowHeight + windowHeight * 2) / this.itemWeight
+      );
+
+      // Less items to display than current
+      if (this.showLimit > showQuantity && !fit) return;
+
+      // Set the number of displayed items
+      this.showLimit = showQuantity > totalItems ? totalItems : showQuantity;
     },
   },
 };
