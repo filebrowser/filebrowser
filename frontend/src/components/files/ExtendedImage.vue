@@ -260,7 +260,7 @@ export default {
       }
     },
     wheelMove(event) {
-      this.scale += (event.wheelDeltaY / 100) * this.zoomStep;
+      this.scale += -Math.sign(event.deltaY) * this.zoomStep;
       this.setZoom();
     },
     setZoom() {
