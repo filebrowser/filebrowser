@@ -88,6 +88,10 @@ export default {
   },
   watch: {
     src: function () {
+      if (!this.decodeUTIF()) {
+        this.$refs.imgex.src = this.src;
+      }
+
       this.scale = 1;
       this.setZoom();
       this.setCenter();
