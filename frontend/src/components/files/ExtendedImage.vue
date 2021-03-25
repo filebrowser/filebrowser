@@ -29,14 +29,6 @@ export default {
       type: Number,
       default: () => 200,
     },
-    maxScale: {
-      type: Number,
-      default: () => 4,
-    },
-    minScale: {
-      type: Number,
-      default: () => 0.25,
-    },
     classList: {
       type: Array,
       default: () => [],
@@ -44,10 +36,6 @@ export default {
     zoomStep: {
       type: Number,
       default: () => 0.25,
-    },
-    autofill: {
-      type: Boolean,
-      default: () => false,
     },
   },
   data() {
@@ -64,6 +52,8 @@ export default {
         center: { x: 0, y: 0 },
         relative: { x: 0, y: 0 },
       },
+      maxScale: 4,
+      minScale: 0.25,
     };
   },
   mounted() {
@@ -126,6 +116,21 @@ export default {
       img.classList.add("image-ex-img-ready");
 
       document.addEventListener("mouseup", this.onMouseUp);
+
+      let realSize = img.naturalWidth;
+      let displaySize = img.offsetWidth;
+
+      // Image is in portrait orientation
+      if (img.naturalHeight > img.naturalWidth) {
+        realSize = img.naturalHeight;
+        displaySize = img.offsetHeight;
+      }
+
+      // Scale needed to display the image on full size
+      const fullScale = realSize / displaySize;
+
+      // Full size plus additional zoom
+      this.maxScale = fullScale + 4;
     },
     onMouseUp() {
       this.inDrag = false;
