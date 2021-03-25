@@ -25,6 +25,7 @@
   transition: .1s ease background, .1s ease opacity;
   align-items: center;
   cursor: pointer;
+  user-select: none;
 }
 
 #listing .item div:last-of-type {

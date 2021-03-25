@@ -124,15 +124,6 @@ export default {
       }
     },
     keyEvent(event) {
-      if (this.show !== null) {
-        // Esc!
-        if (event.keyCode === 27) {
-          this.$store.commit("closeHovers");
-        }
-
-        return;
-      }
-
       // F1!
       if (event.keyCode === 112) {
         event.preventDefault();

@@ -56,6 +56,12 @@ export default {
 
       let prompt = this.$refs.currentComponent;
 
+      // Esc!
+      if (event.keyCode === 27) {
+        event.stopImmediatePropagation();
+        this.$store.commit("closeHovers");
+      }
+
       // Enter
       if (event.keyCode == 13) {
         switch (this.show) {
