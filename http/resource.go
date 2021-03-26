@@ -118,6 +118,11 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 				return http.StatusConflict, nil
 			}
 
+			// Permission for overwriting the file
+			if !d.user.Perm.Modify {
+				return http.StatusForbidden, nil
+			}
+
 			err = delThumbs(r.Context(), fileCache, file)
 			if err != nil {
 				return errToStatus(err), err
@@ -202,6 +207,11 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 	}
 	if rename {
 		dst = addVersionSuffix(dst, d.user.Fs)
+	}
+
+	// Permission for overwriting the file
+	if override && !d.user.Perm.Modify {
+		return http.StatusForbidden, nil
 	}
 
 	err = d.RunHook(func() error {
