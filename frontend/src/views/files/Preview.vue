@@ -17,12 +17,14 @@
       <template #actions>
         <action
           :disabled="loading"
+          v-if="user.perm.rename"
           icon="mode_edit"
           :label="$t('buttons.rename')"
           show="rename"
         />
         <action
           :disabled="loading"
+          v-if="user.perm.delete"
           icon="delete"
           :label="$t('buttons.delete')"
           @action="deleteFile"
@@ -30,6 +32,7 @@
         />
         <action
           :disabled="loading"
+          v-if="user.perm.download"
           icon="file_download"
           :label="$t('buttons.download')"
           @action="download"

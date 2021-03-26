@@ -6,6 +6,7 @@
 
       <template #actions>
         <action
+          v-if="user.perm.modify"
           id="save-button"
           icon="save"
           :label="$t('buttons.save')"

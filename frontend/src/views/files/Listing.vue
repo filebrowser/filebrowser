@@ -58,12 +58,14 @@
           @action="switchView"
         />
         <action
+          v-if="headerButtons.download"
           icon="file_download"
           :label="$t('buttons.download')"
           @action="download"
           :counter="selectedCount"
         />
         <action
+          v-if="headerButtons.upload"
           icon="file_upload"
           id="upload-button"
           :label="$t('buttons.upload')"
@@ -378,6 +380,8 @@ export default {
     window.addEventListener("keydown", this.keyEvent);
     window.addEventListener("scroll", this.scrollEvent);
     window.addEventListener("resize", this.windowsResize);
+
+    if (!this.user.perm.create) return;
     document.addEventListener("dragover", this.preventDefault);
     document.addEventListener("dragenter", this.dragEnter);
     document.addEventListener("dragleave", this.dragLeave);
@@ -388,6 +392,8 @@ export default {
     window.removeEventListener("keydown", this.keyEvent);
     window.removeEventListener("scroll", this.scrollEvent);
     window.removeEventListener("resize", this.windowsResize);
+
+    if (!this.user.perm.create) return;
     document.removeEventListener("dragover", this.preventDefault);
     document.removeEventListener("dragenter", this.dragEnter);
     document.removeEventListener("dragleave", this.dragLeave);
