@@ -17,12 +17,14 @@
       <template #actions>
         <action
           :disabled="loading"
+          v-if="user.perm.rename"
           icon="mode_edit"
           :label="$t('buttons.rename')"
           show="rename"
         />
         <action
           :disabled="loading"
+          v-if="user.perm.delete"
           icon="delete"
           :label="$t('buttons.delete')"
           @action="deleteFile"
@@ -30,6 +32,7 @@
         />
         <action
           :disabled="loading"
+          v-if="user.perm.download"
           icon="file_download"
           :label="$t('buttons.download')"
           @action="download"
@@ -54,8 +57,22 @@
     <template v-if="!loading">
       <div class="preview">
         <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
-        <audio v-else-if="req.type == 'audio'" :src="raw" controls></audio>
-        <video v-else-if="req.type == 'video'" :src="raw" controls>
+        <audio
+          v-else-if="req.type == 'audio'"
+          ref="player"
+          :src="raw"
+          controls
+          :autoplay="autoPlay"
+          @play="autoPlay = true"
+        ></audio>
+        <video
+          v-else-if="req.type == 'video'"
+          ref="player"
+          :src="raw"
+          controls
+          :autoplay="autoPlay"
+          @play="autoPlay = true"
+        >
           <track
             kind="captions"
             v-for="(sub, index) in subtitles"
@@ -136,6 +153,7 @@ export default {
       showNav: true,
       navTimeout: null,
       hoverNav: false,
+      autoPlay: false,
     };
   },
   computed: {
@@ -230,6 +248,14 @@ export default {
       }
     },
     async updatePreview() {
+      if (
+        this.$refs.player &&
+        this.$refs.player.paused &&
+        !this.$refs.player.ended
+      ) {
+        this.autoPlay = false;
+      }
+
       if (this.req.subtitles) {
         this.subtitles = this.req.subtitles.map(
           (sub) => `${baseURL}/api/raw${sub}?auth=${this.jwt}&inline=true`

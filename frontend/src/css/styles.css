@@ -109,6 +109,7 @@
 
 #previewer {
   background-color: rgba(0, 0, 0, 0.9);
+  padding-top: 4em;
   position: fixed;
   top: 0;
   left: 0;
@@ -142,7 +143,6 @@
 }
 
 #previewer .preview {
-  margin-top: 4em;
   text-align: center;
   height: calc(100vh - 4em);
 }
@@ -209,7 +209,7 @@
 #editor-container {
   background-color: #fafafa;
   position: fixed;
-  margin-top: 4em;
+  padding-top: 4em;
   top: 0;
   left: 0;
   width: 100%;

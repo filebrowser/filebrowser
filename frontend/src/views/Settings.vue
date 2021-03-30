@@ -10,26 +10,22 @@
               {{ $t("settings.profileSettings") }}
             </li></router-link
           >
-          <router-link to="/settings/shares"
+          <router-link to="/settings/shares" v-if="user.perm.share"
             ><li :class="{ active: $route.path === '/settings/shares' }">
               {{ $t("settings.shareManagement") }}
             </li></router-link
           >
-          <router-link to="/settings/global"
-            ><li
-              :class="{ active: $route.path === '/settings/global' }"
-              v-if="user.perm.admin"
-            >
+          <router-link to="/settings/global" v-if="user.perm.admin"
+            ><li :class="{ active: $route.path === '/settings/global' }">
               {{ $t("settings.globalSettings") }}
             </li></router-link
           >
-          <router-link to="/settings/users"
+          <router-link to="/settings/users" v-if="user.perm.admin"
             ><li
               :class="{
                 active:
                   $route.path === '/settings/users' || $route.name === 'User',
               }"
-              v-if="user.perm.admin"
             >
               {{ $t("settings.userManagement") }}
             </li></router-link

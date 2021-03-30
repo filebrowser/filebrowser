@@ -181,14 +181,14 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 
 	commonDir := fileutils.CommonPrefix(filepath.Separator, filenames...)
 
-	var name string
-	if len(filenames) > 1 {
-		name = "_" + filepath.Base(commonDir)
-	} else {
+	name := filepath.Base(commonDir)
+	if name == "." || name == "" || name == string(filepath.Separator) {
 		name = file.Name
 	}
-	if name == "." || name == "" {
-		name = "archive"
+	// Prefix used to distinguish a filelist generated
+	// archive from the full directory archive
+	if len(filenames) > 1 {
+		name = "_" + name
 	}
 	name += extension
 	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))

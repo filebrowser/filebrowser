@@ -118,6 +118,11 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 				return http.StatusConflict, nil
 			}
 
+			// Permission for overwriting the file
+			if !d.user.Perm.Modify {
+				return http.StatusForbidden, nil
+			}
+
 			err = delThumbs(r.Context(), fileCache, file)
 			if err != nil {
 				return errToStatus(err), err
@@ -125,7 +130,10 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 		}
 
 		err = d.RunHook(func() error {
-			info, _ := writeFile(d.user.Fs, r.URL.Path, r.Body)
+			info, writeErr := writeFile(d.user.Fs, r.URL.Path, r.Body)
+			if writeErr != nil {
+				return writeErr
+			}
 
 			etag := fmt.Sprintf(`"%x%x"`, info.ModTime().UnixNano(), info.Size())
 			w.Header().Set("ETag", etag)
@@ -155,7 +163,10 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 	}
 
 	err := d.RunHook(func() error {
-		info, _ := writeFile(d.user.Fs, r.URL.Path, r.Body)
+		info, writeErr := writeFile(d.user.Fs, r.URL.Path, r.Body)
+		if writeErr != nil {
+			return writeErr
+		}
 
 		etag := fmt.Sprintf(`"%x%x"`, info.ModTime().UnixNano(), info.Size())
 		w.Header().Set("ETag", etag)
@@ -196,6 +207,11 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 	}
 	if rename {
 		dst = addVersionSuffix(dst, d.user.Fs)
+	}
+
+	// Permission for overwriting the file
+	if override && !d.user.Perm.Modify {
+		return http.StatusForbidden, nil
 	}
 
 	err = d.RunHook(func() error {
