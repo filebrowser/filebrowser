@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.15.0](https://github.com/filebrowser/filebrowser/compare/v2.14.1...v2.15.0) (2021-04-06)
+
+
+### Features
+
+* add EXIF thumbnail support for JPEG files ([#1234](https://github.com/filebrowser/filebrowser/issues/1234)) ([7dd5b34](https://github.com/filebrowser/filebrowser/commit/7dd5b34d425dfbc2782152310483cbecf85c800a))
+* dynamic autoplay on previewer ([a76e01d](https://github.com/filebrowser/filebrowser/commit/a76e01d2b78a785f3665a8b3532c7cc566bfabce))
+* dynamic item count on file listing ([6c8ee96](https://github.com/filebrowser/filebrowser/commit/6c8ee96e6a21fae5d4608bdc7a5c5a161d7dafd3))
+* dynamic zoom limit on previewer ([e410272](https://github.com/filebrowser/filebrowser/commit/e410272e6be6a0b660efe8d4eee6c6e9dd834cc5))
+
+
+### Bug Fixes
+
+* buttons without permission on header ([1516d99](https://github.com/filebrowser/filebrowser/commit/1516d9932bf9926ac8b4cb3e738a5f51e80d5b1d))
+* check modify permission on file overwrite ([59f9964](https://github.com/filebrowser/filebrowser/commit/59f9964e80c8233775f27be33a4c16a31bfe848a))
+* empty archive name on directory download ([2697093](https://github.com/filebrowser/filebrowser/commit/2697093ac151f74eea3022951d128acfe04d1dcf))
+* empty text file on editor ([e9baf0c](https://github.com/filebrowser/filebrowser/commit/e9baf0c4b688fab291cdc842ec464c7a7a816499))
+* error causes panic on upload ([e1a6f59](https://github.com/filebrowser/filebrowser/commit/e1a6f593e1824e7fa4345a61dff5b1bb8cd22d05))
+* hidden editor header on Safari ([b521dec](https://github.com/filebrowser/filebrowser/commit/b521dec8f9b14dd92248c429e902ebc639046389))
+* image quality switch on previewer ([c0d85f3](https://github.com/filebrowser/filebrowser/commit/c0d85f3d85926c8790757bf142140d19455ae8ca))
+* list item interactions on share ([87f1881](https://github.com/filebrowser/filebrowser/commit/87f1881b429877a740ea84a8e783ad4103248289))
+* missing bold variation for Roboto font ([98d79b8](https://github.com/filebrowser/filebrowser/commit/98d79b8ed955df5691a306d709b4ab60d91da408))
+* mouse wheel zoom on previewer ([fcb115f](https://github.com/filebrowser/filebrowser/commit/fcb115f42d33db2be7a4d428ec53d65d6050320b))
+* no header button animations on file listing ([fe80730](https://github.com/filebrowser/filebrowser/commit/fe80730bb135b38e4d9de470c75cbe10b1aec201))
+
 ### [2.14.1](https://github.com/filebrowser/filebrowser/compare/v2.14.0...v2.14.1) (2021-03-21)
 
 
