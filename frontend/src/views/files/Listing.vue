@@ -254,6 +254,7 @@
 </template>
 
 <script>
+import Vue from "vue";
 import { mapState, mapGetters, mapMutations } from "vuex";
 import { users, files as api } from "@/api";
 import { enableExec } from "@/utils/constants";
@@ -279,6 +280,7 @@ export default {
       showLimit: 50,
       dragCounter: 0,
       width: window.innerWidth,
+      itemWeight: 0,
     };
   },
   computed: {
@@ -362,8 +364,14 @@ export default {
       // Reset the show value
       this.showLimit = 50;
 
-      // Fill and fit the window with listing items
-      this.fillWindow(true);
+      // Ensures that the listing is displayed
+      Vue.nextTick(() => {
+        // How much every listing item affects the window height
+        this.setItemWeight();
+
+        // Fill and fit the window with listing items
+        this.fillWindow(true);
+      });
     },
   },
   mounted: function () {
@@ -813,6 +821,9 @@ export default {
       }
     },
     setItemWeight() {
+      // Listing element is not displayed
+      if (this.$refs.listing == null) return;
+
       let itemQuantity = this.req.numDirs + this.req.numFiles;
       if (itemQuantity > this.showLimit) itemQuantity = this.showLimit;
 
