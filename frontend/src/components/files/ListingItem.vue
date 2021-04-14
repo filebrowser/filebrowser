@@ -8,8 +8,6 @@
     @dragover="dragOver"
     @drop="drop"
     @click="itemClick"
-    @dblclick="dblclick"
-    @touchstart="touchstart"
     :data-dir="isDir"
     :aria-label="name"
     :aria-selected="isSelected"
@@ -200,6 +198,16 @@ export default {
     },
     click: function (event) {
       if (!this.singleClick && this.selectedCount !== 0) event.preventDefault();
+
+      setTimeout(() => {
+        this.touches = 0;
+      }, 300);
+
+      this.touches++;
+      if (this.touches > 1) {
+        this.open();
+      }
+
       if (this.$store.state.selected.indexOf(this.index) !== -1) {
         this.removeSelected(this.index);
         return;
@@ -234,19 +242,6 @@ export default {
       )
         this.resetSelected();
       this.addSelected(this.index);
-    },
-    dblclick: function () {
-      if (!this.singleClick) this.open();
-    },
-    touchstart() {
-      setTimeout(() => {
-        this.touches = 0;
-      }, 300);
-
-      this.touches++;
-      if (this.touches > 1) {
-        this.open();
-      }
     },
     open: function () {
       this.$router.push({ path: this.url });
