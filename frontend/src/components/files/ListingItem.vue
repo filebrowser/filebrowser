@@ -151,13 +151,13 @@ export default {
       for (let i of this.selected) {
         items.push({
           from: this.req.items[i].url,
-          to: this.url + this.req.items[i].name,
+          to: this.url + encodeURIComponent(this.req.items[i].name),
           name: this.req.items[i].name,
         });
       }
 
-      let base = el.querySelector(".name").innerHTML + "/";
-      let path = this.$route.path + base;
+      // Get url from ListingItem instance
+      let path = el.__vue__.url;
       let baseItems = (await api.fetch(path)).items;
 
       let action = (overwrite, rename) => {

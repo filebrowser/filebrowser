@@ -492,7 +492,7 @@ export default {
       for (let i of this.selected) {
         items.push({
           from: this.req.items[i].url,
-          name: encodeURIComponent(this.req.items[i].name),
+          name: this.req.items[i].name,
         });
       }
 
@@ -517,7 +517,7 @@ export default {
         const from = item.from.endsWith("/")
           ? item.from.slice(0, -1)
           : item.from;
-        const to = this.$route.path + item.name;
+        const to = this.$route.path + encodeURIComponent(item.name);
         items.push({ from, to, name: item.name });
       }
 
@@ -639,22 +639,20 @@ export default {
         }
       }
 
-      let base = "";
+      let files = await upload.scanFiles(dt);
+      let items = this.req.items;
+      let path = this.$route.path.endsWith("/")
+        ? this.$route.path
+        : this.$route.path + "/";
+
       if (
         el !== null &&
         el.classList.contains("item") &&
         el.dataset.dir === "true"
       ) {
-        base = el.querySelector(".name").innerHTML + "/";
-      }
+        // Get url from ListingItem instance
+        path = el.__vue__.url;
 
-      let files = await upload.scanFiles(dt);
-      let path = this.$route.path.endsWith("/")
-        ? this.$route.path + base
-        : this.$route.path + "/" + base;
-      let items = this.req.items;
-
-      if (base !== "") {
         try {
           items = (await api.fetch(path)).items;
         } catch (error) {
