@@ -812,7 +812,10 @@ export default {
       }
     },
     upload: function () {
-      if (typeof DataTransferItem.prototype.webkitGetAsEntry !== "undefined") {
+      if (
+        typeof window.DataTransferItem !== "undefined" &&
+        typeof DataTransferItem.prototype.webkitGetAsEntry !== "undefined"
+      ) {
         this.$store.commit("showHover", "upload");
       } else {
         document.getElementById("upload-input").click();

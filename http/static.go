@@ -71,7 +71,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		}
 	}
 
-	b, err := json.MarshalIndent(data, "", "  ")
+	b, err := json.Marshal(data)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}

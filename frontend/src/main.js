@@ -1,3 +1,5 @@
+import "whatwg-fetch";
+import cssVars from "css-vars-ponyfill";
 import { sync } from "vuex-router-sync";
 import store from "@/store";
 import router from "@/router";
@@ -6,6 +8,8 @@ import Vue from "@/utils/vue";
 import { recaptcha, loginPage } from "@/utils/constants";
 import { login, validateLogin } from "@/utils/auth";
 import App from "@/App";
+
+cssVars();
 
 sync(store, router);
 
