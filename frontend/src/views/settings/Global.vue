@@ -1,5 +1,6 @@
 <template>
-  <div class="row" v-if="!loading">
+  <errors v-if="error" :errorCode="error.message" />
+  <div class="row" v-else-if="!loading">
     <div class="column">
       <form class="card" @submit.prevent="save">
         <div class="card-title">
@@ -172,10 +173,11 @@
 <script>
 import { mapState, mapMutations } from "vuex";
 import { settings as api } from "@/api";
+import { enableExec } from "@/utils/constants";
 import UserForm from "@/components/settings/UserForm";
 import Rules from "@/components/settings/Rules";
 import Themes from "@/components/settings/Themes";
-import { enableExec } from "@/utils/constants";
+import Errors from "@/views/Errors";
 
 export default {
   name: "settings",
@@ -183,9 +185,11 @@ export default {
     Themes,
     UserForm,
     Rules,
+    Errors,
   },
   data: function () {
     return {
+      error: null,
       originalSettings: null,
       settings: null,
     };
@@ -212,10 +216,10 @@ export default {
 
       this.originalSettings = original;
       this.settings = settings;
-
-      this.setLoading(false);
     } catch (e) {
-      this.$showError(e);
+      this.error = e;
+    } finally {
+      this.setLoading(false);
     }
   },
   methods: {

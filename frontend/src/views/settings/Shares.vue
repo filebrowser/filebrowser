@@ -1,12 +1,13 @@
 <template>
-  <div class="row" v-if="!loading">
+  <errors v-if="error" :errorCode="error.message" />
+  <div class="row" v-else-if="!loading">
     <div class="column">
       <div class="card">
         <div class="card-title">
           <h2>{{ $t("settings.shareManagement") }}</h2>
         </div>
 
-        <div class="card-content full">
+        <div class="card-content full" v-if="links.length > 0">
           <table>
             <tr>
               <th>{{ $t("settings.path") }}</th>
@@ -52,6 +53,10 @@
             </tr>
           </table>
         </div>
+        <h2 class="message" v-else>
+          <i class="material-icons">sentiment_dissatisfied</i>
+          <span>{{ $t("files.lonely") }}</span>
+        </h2>
       </div>
     </div>
   </div>
@@ -59,16 +64,21 @@
 
 <script>
 import { share as api, users } from "@/api";
-import moment from "moment";
 import { baseURL } from "@/utils/constants";
-import Clipboard from "clipboard";
 import { mapState, mapMutations } from "vuex";
+import moment from "moment";
+import Clipboard from "clipboard";
+import Errors from "@/views/Errors";
 
 export default {
   name: "shares",
+  components: {
+    Errors,
+  },
   computed: mapState(["user", "loading"]),
   data: function () {
     return {
+      error: null,
       links: [],
       clip: null,
     };
@@ -88,10 +98,10 @@ export default {
             : "";
       }
       this.links = links;
-
-      this.setLoading(false);
     } catch (e) {
-      this.$showError(e);
+      this.error = e;
+    } finally {
+      this.setLoading(false);
     }
   },
   mounted() {
@@ -113,8 +123,13 @@ export default {
         confirm: () => {
           this.$store.commit("closeHovers");
 
-          api.remove(link.hash);
-          this.links = this.links.filter((item) => item.hash !== link.hash);
+          try {
+            api.remove(link.hash);
+            this.links = this.links.filter((item) => item.hash !== link.hash);
+            this.$showSuccess(this.$t("settings.shareDeleted"));
+          } catch (e) {
+            this.$showError(e);
+          }
         },
       });
     },

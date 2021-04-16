@@ -1,5 +1,6 @@
 <template>
-  <div class="row" v-if="!loading">
+  <errors v-if="error" :errorCode="error.message" />
+  <div class="row" v-else-if="!loading">
     <div class="column">
       <form @submit="save" class="card">
         <div class="card-title">
@@ -58,15 +59,18 @@
 import { mapState, mapMutations } from "vuex";
 import { users as api, settings } from "@/api";
 import UserForm from "@/components/settings/UserForm";
+import Errors from "@/views/Errors";
 import deepClone from "lodash.clonedeep";
 
 export default {
   name: "user",
   components: {
     UserForm,
+    Errors,
   },
   data: () => {
     return {
+      error: null,
       originalUser: null,
       user: {},
     };
@@ -107,10 +111,10 @@ export default {
           const id = this.$route.params.pathMatch;
           this.user = { ...(await api.get(id)) };
         }
-
-        this.setLoading(false);
       } catch (e) {
-        this.$router.push({ path: "/settings/users/new" });
+        this.error = e;
+      } finally {
+        this.setLoading(false);
       }
     },
     deletePrompt() {
