@@ -3,8 +3,8 @@
     <header-bar v-if="showHeader" showMenu showLogo />
 
     <h2 class="message">
-      <i class="material-icons">{{ icon }}</i>
-      <span>{{ message }}</span>
+      <i class="material-icons">{{ info.icon }}</i>
+      <span>{{ $t(info.message) }}</span>
     </h2>
   </div>
 </template>
@@ -13,6 +13,10 @@
 import HeaderBar from "@/components/header/HeaderBar";
 
 const errors = {
+  0: {
+    icon: "cloud_off",
+    message: "errors.connection",
+  },
   403: {
     icon: "error",
     message: "errors.forbidden",
@@ -33,11 +37,17 @@ export default {
     HeaderBar,
   },
   props: ["errorCode", "showHeader"],
-  data: function () {
-    return {
-      icon: errors[this.errorCode].icon,
-      message: this.$t(errors[this.errorCode].message),
-    };
+  computed: {
+    code() {
+      return this.errorCode === "0" ||
+        this.errorCode === "404" ||
+        this.errorCode === "403"
+        ? parseInt(this.errorCode)
+        : 500;
+    },
+    info() {
+      return errors[this.code];
+    },
   },
 };
 </script>

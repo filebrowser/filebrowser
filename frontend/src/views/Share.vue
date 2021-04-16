@@ -60,7 +60,7 @@
           </div>
         </div>
       </div>
-      <errors v-else :errorCode="errorCode" />
+      <errors v-else :errorCode="error.message" />
     </div>
     <div v-else>
       <div class="share">
@@ -229,11 +229,6 @@ export default {
     },
     humanTime: function () {
       return moment(this.req.modified).fromNow();
-    },
-    errorCode() {
-      return this.error.message === "404" || this.error.message === "403"
-        ? parseInt(this.error.message)
-        : 500;
     },
   },
   methods: {

@@ -4,7 +4,7 @@
 
     <breadcrumbs base="/files" />
 
-    <errors v-if="error" :errorCode="errorCode" />
+    <errors v-if="error" :errorCode="error.message" />
     <component v-else-if="currentView" :is="currentView"></component>
     <div v-else>
       <h2 class="message delayed">
@@ -66,11 +66,6 @@ export default {
       } else {
         return "preview";
       }
-    },
-    errorCode() {
-      return this.error.message === "404" || this.error.message === "403"
-        ? parseInt(this.error.message)
-        : 500;
     },
   },
   created() {

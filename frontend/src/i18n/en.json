@@ -43,7 +43,8 @@
   "errors": {
     "forbidden": "You don't have permissions to access this.",
     "internal": "Something really went wrong.",
-    "notFound": "This location can't be reached."
+    "notFound": "This location can't be reached.",
+    "connection": "The server can't be reached."
   },
   "files": {
     "body": "Body",
