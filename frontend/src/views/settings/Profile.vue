@@ -103,12 +103,13 @@ export default {
     },
   },
   created() {
+    this.setLoading(false);
     this.locale = this.user.locale;
     this.hideDotfiles = this.user.hideDotfiles;
     this.singleClick = this.user.singleClick;
   },
   methods: {
-    ...mapMutations(["updateUser"]),
+    ...mapMutations(["updateUser", "setLoading"]),
     async updatePassword(event) {
       event.preventDefault();
 

@@ -17,6 +17,48 @@
   color: var(--blue);
 }
 
+main .spinner {
+  display: block;
+  text-align: center;
+  line-height: 0;
+  padding: 1em 0;
+}
+
+main .spinner > div {
+  width: .8em;
+  height: .8em;
+  margin: 0 .1em;
+  font-size: 1em;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 100%;
+  display: inline-block;
+  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+
+main .spinner .bounce1 {
+  animation-delay: -0.32s;
+}
+
+main .spinner .bounce2 {
+  animation-delay: -0.16s;
+}
+
+.delayed {
+  animation: delayed linear 100ms;
+}
+
+@keyframes delayed {
+  0% {
+    opacity: 0;
+  }
+  99% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 /* * * * * * * * * * * * * * * *
  *            ACTION           *
  * * * * * * * * * * * * * * * */
@@ -204,6 +246,20 @@
   right: 0.5em;
 }
 
+#previewer .spinner {
+  text-align: center;
+  position: fixed;
+  top: calc(50% + 1.85em);
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#previewer .spinner > div {
+  width: 18px;
+  height: 18px;
+  background-color: white;
+}
+
 /* EDITOR */
 
 #editor-container {
@@ -215,11 +271,6 @@
   width: 100%;
   z-index: 9999;
   overflow: hidden;
-}
-
-#previewer .loading {
-  height: 100%;
-  width: 100%;
 }
 
 #editor-container #editor {
@@ -283,7 +334,6 @@
 
 @keyframes spin {
   100% {
-    -webkit-transform: rotate(-360deg);
     transform: rotate(-360deg);
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="row" v-if="settings !== null">
+  <div class="row" v-if="!loading">
     <div class="column">
       <form class="card" @submit.prevent="save">
         <div class="card-title">
@@ -170,7 +170,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 import { settings as api } from "@/api";
 import UserForm from "@/components/settings/UserForm";
 import Rules from "@/components/settings/Rules";
@@ -191,11 +191,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(["user"]),
+    ...mapState(["user", "loading"]),
     isExecEnabled: () => enableExec,
   },
   async created() {
     try {
+      this.setLoading(true);
+
       const original = await api.get();
       let settings = { ...original, commands: [] };
 
@@ -210,11 +212,14 @@ export default {
 
       this.originalSettings = original;
       this.settings = settings;
+
+      this.setLoading(false);
     } catch (e) {
       this.$showError(e);
     }
   },
   methods: {
+    ...mapMutations(["setLoading"]),
     capitalize(name, where = "_") {
       if (where === "caps") where = /(?=[A-Z])/;
       let splitted = name.split(where);

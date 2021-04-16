@@ -46,15 +46,14 @@
       </template>
     </header-bar>
 
-    <div class="loading" v-if="loading">
+    <div class="loading delayed" v-if="loading">
       <div class="spinner">
         <div class="bounce1"></div>
         <div class="bounce2"></div>
         <div class="bounce3"></div>
       </div>
     </div>
-
-    <template v-if="!loading">
+    <template v-else>
       <div class="preview">
         <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
         <audio

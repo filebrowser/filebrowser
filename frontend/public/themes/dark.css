@@ -16,7 +16,7 @@ body {
 #loading {
   background: var(--background);
 }
-#loading .spinner div, #previewer .loading .spinner div {
+#loading .spinner div, main .spinner div {
   background: var(--icon);
 }
 

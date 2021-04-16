@@ -19,7 +19,50 @@
 
     <breadcrumbs :base="'/share/' + hash" />
 
-    <div v-if="!loading">
+    <div v-if="loading">
+      <h2 class="message delayed">
+        <div class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
+        <span>{{ $t("files.loading") }}</span>
+      </h2>
+    </div>
+    <div v-else-if="error">
+      <div v-if="error.message === '401'">
+        <div class="card floating" id="password">
+          <div v-if="attemptedPasswordLogin" class="share__wrong__password">
+            {{ $t("login.wrongCredentials") }}
+          </div>
+          <div class="card-title">
+            <h2>{{ $t("login.password") }}</h2>
+          </div>
+
+          <div class="card-content">
+            <input
+              v-focus
+              type="password"
+              :placeholder="$t('login.password')"
+              v-model="password"
+              @keyup.enter="fetchData"
+            />
+          </div>
+          <div class="card-action">
+            <button
+              class="button button--flat"
+              @click="fetchData"
+              :aria-label="$t('buttons.submit')"
+              :title="$t('buttons.submit')"
+            >
+              {{ $t("buttons.submit") }}
+            </button>
+          </div>
+        </div>
+      </div>
+      <errors v-else :errorCode="errorCode" />
+    </div>
+    <div v-else>
       <div class="share">
         <div class="share__box share__box__info">
           <div class="share__box__header">
@@ -105,39 +148,6 @@
           </h2>
         </div>
       </div>
-    </div>
-    <div v-if="error">
-      <div v-if="error.message === '401'">
-        <div class="card floating" id="password">
-          <div v-if="attemptedPasswordLogin" class="share__wrong__password">
-            {{ $t("login.wrongCredentials") }}
-          </div>
-          <div class="card-title">
-            <h2>{{ $t("login.password") }}</h2>
-          </div>
-
-          <div class="card-content">
-            <input
-              v-focus
-              type="password"
-              :placeholder="$t('login.password')"
-              v-model="password"
-              @keyup.enter="fetchData"
-            />
-          </div>
-          <div class="card-action">
-            <button
-              class="button button--flat"
-              @click="fetchData"
-              :aria-label="$t('buttons.submit')"
-              :title="$t('buttons.submit')"
-            >
-              {{ $t("buttons.submit") }}
-            </button>
-          </div>
-        </div>
-      </div>
-      <errors v-else :errorCode="errorCode" />
     </div>
   </div>
 </template>
@@ -256,9 +266,10 @@ export default {
         this.token = file.token || "";
 
         this.updateRequest(file);
-        this.setLoading(false);
       } catch (e) {
         this.error = e;
+      } finally {
+        this.setLoading(false);
       }
     },
     keyEvent(event) {

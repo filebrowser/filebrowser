@@ -1,5 +1,5 @@
 <template>
-  <div class="row">
+  <div class="row" v-if="!loading">
     <div class="column">
       <div class="card">
         <div class="card-title">
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from "vuex";
 import { users as api } from "@/api";
 
 export default {
@@ -51,11 +52,20 @@ export default {
     };
   },
   async created() {
+    this.setLoading(true);
+
     try {
       this.users = await api.getAll();
+      this.setLoading(false);
     } catch (e) {
       this.$showError(e);
     }
+  },
+  computed: {
+    ...mapState(["loading"]),
+  },
+  methods: {
+    ...mapMutations(["setLoading"]),
   },
 };
 </script>

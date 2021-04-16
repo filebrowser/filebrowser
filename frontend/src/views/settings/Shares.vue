@@ -1,5 +1,5 @@
 <template>
-  <div class="row">
+  <div class="row" v-if="!loading">
     <div class="column">
       <div class="card">
         <div class="card-title">
@@ -62,11 +62,11 @@ import { share as api, users } from "@/api";
 import moment from "moment";
 import { baseURL } from "@/utils/constants";
 import Clipboard from "clipboard";
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 
 export default {
   name: "shares",
-  computed: mapState(["user"]),
+  computed: mapState(["user", "loading"]),
   data: function () {
     return {
       links: [],
@@ -74,6 +74,8 @@ export default {
     };
   },
   async created() {
+    this.setLoading(true);
+
     try {
       let links = await api.list();
       if (this.user.perm.admin) {
@@ -86,6 +88,8 @@ export default {
             : "";
       }
       this.links = links;
+
+      this.setLoading(false);
     } catch (e) {
       this.$showError(e);
     }
@@ -100,6 +104,7 @@ export default {
     this.clip.destroy();
   },
   methods: {
+    ...mapMutations(["setLoading"]),
     deleteLink: async function (event, link) {
       event.preventDefault();
 

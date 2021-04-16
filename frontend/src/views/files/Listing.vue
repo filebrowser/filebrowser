@@ -114,8 +114,13 @@
       />
     </div>
 
-    <div v-if="$store.state.loading">
-      <h2 class="message">
+    <div v-if="loading">
+      <h2 class="message delayed">
+        <div class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
         <span>{{ $t("files.loading") }}</span>
       </h2>
     </div>
@@ -284,7 +289,15 @@ export default {
     };
   },
   computed: {
-    ...mapState(["req", "selected", "user", "show", "multiple", "selected"]),
+    ...mapState([
+      "req",
+      "selected",
+      "user",
+      "show",
+      "multiple",
+      "selected",
+      "loading",
+    ]),
     ...mapGetters(["selectedCount"]),
     nameSorted() {
       return this.req.sorting.by === "name";
@@ -799,17 +812,13 @@ export default {
         viewMode: this.user.viewMode === "mosaic" ? "list" : "mosaic",
       };
 
-      try {
-        await users.update(data, ["viewMode"]);
+      users.update(data, ["viewMode"]).catch(this.$showError);
 
-        // Await ensures correct value for setItemWeight()
-        await this.$store.commit("updateUser", data);
+      // Await ensures correct value for setItemWeight()
+      await this.$store.commit("updateUser", data);
 
-        this.setItemWeight();
-        this.fillWindow();
-      } catch (e) {
-        this.$showError(e);
-      }
+      this.setItemWeight();
+      this.fillWindow();
     },
     upload: function () {
       if (
