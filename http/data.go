@@ -49,7 +49,7 @@ func (d *data) Check(path string) bool {
 
 func handle(fn handleFunc, prefix string, store *storage.Storage, server *settings.Server) http.Handler {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 
 		settings, err := store.Settings.Get()
 		if err != nil {

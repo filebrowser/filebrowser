@@ -12,6 +12,8 @@ export function parseToken(token) {
 
   const data = JSON.parse(Base64.decode(parts[1]));
 
+  document.cookie = `auth=${token}; path=/`;
+
   localStorage.setItem("jwt", token);
   store.commit("setJWT", token);
   store.commit("setUser", data.user);
@@ -81,6 +83,8 @@ export async function signup(username, password) {
 }
 
 export function logout() {
+  document.cookie = "auth=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
+
   store.commit("setJWT", "");
   store.commit("setUser", null);
   localStorage.setItem("jwt", null);

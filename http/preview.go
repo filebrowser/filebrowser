@@ -79,6 +79,11 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, imgSvc ImgServic
 		return errToStatus(err), err
 	}
 
+	isFresh := checkEtag(w, r, file.ModTime.Unix(), file.Size)
+	if isFresh {
+		return http.StatusNotModified, nil
+	}
+
 	cacheKey := previewCacheKey(file.Path, file.ModTime.Unix(), previewSize)
 	cachedFile, ok, err := fileCache.Load(r.Context(), cacheKey)
 	if err != nil {

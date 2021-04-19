@@ -94,7 +94,7 @@ export default {
       // reload the image when the file is replaced
       const key = Date.parse(this.modified);
 
-      return `${baseURL}/api/preview/thumb/${path}?auth=${this.jwt}&inline=true&k=${key}`;
+      return `${baseURL}/api/preview/thumb/${path}?k=${key}&inline=true`;
     },
     isThumbsEnabled() {
       return enableThumbs;
