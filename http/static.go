@@ -126,7 +126,22 @@ func getStaticHandlers(store *storage.Storage, server *settings.Server, assetsFs
 			}
 		}
 
-		http.FileServer(http.FS(assetsFs)).ServeHTTP(w, r)
+		if !strings.HasSuffix(r.URL.Path, ".js") {
+			http.FileServer(http.FS(assetsFs)).ServeHTTP(w, r)
+			return 0, nil
+		}
+
+		fileContents, err := fs.ReadFile(assetsFs, r.URL.Path+".gz")
+		if err != nil {
+			return http.StatusNotFound, err
+		}
+
+		w.Header().Set("Content-Encoding", "gzip")
+		w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
+
+		if _, err := w.Write(fileContents); err != nil {
+			return http.StatusInternalServerError, err
+		}
 
 		return 0, nil
 	}, "/static/", store, server)
