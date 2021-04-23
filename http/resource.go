@@ -27,6 +27,7 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		Expand:     true,
 		ReadHeader: d.server.TypeDetectionByHeader,
 		Checker:    d,
+		Content:    true,
 	})
 	if err != nil {
 		return errToStatus(err), err
@@ -63,7 +64,7 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			Fs:         d.user.Fs,
 			Path:       r.URL.Path,
 			Modify:     d.user.Perm.Modify,
-			Expand:     true,
+			Expand:     false,
 			ReadHeader: d.server.TypeDetectionByHeader,
 			Checker:    d,
 		})
@@ -109,7 +110,7 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 			Fs:         d.user.Fs,
 			Path:       r.URL.Path,
 			Modify:     d.user.Perm.Modify,
-			Expand:     true,
+			Expand:     false,
 			ReadHeader: d.server.TypeDetectionByHeader,
 			Checker:    d,
 		})

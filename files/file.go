@@ -50,6 +50,7 @@ type FileOptions struct {
 	ReadHeader bool
 	Token      string
 	Checker    rules.Checker
+	Content    bool
 }
 
 // NewFileInfo creates a File object from a path and a given user. This File
@@ -85,7 +86,7 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 			return file, nil
 		}
 
-		err = file.detectType(opts.Modify, true, true)
+		err = file.detectType(opts.Modify, opts.Content, true)
 		if err != nil {
 			return nil, err
 		}
