@@ -116,7 +116,7 @@ export default {
         }
 
         this.$store.commit("updateRequest", res);
-        document.title = res.name;
+        document.title = `${res.name} - ${this.$route.name}`;
       } catch (e) {
         this.error = e;
       } finally {
