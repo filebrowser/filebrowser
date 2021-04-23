@@ -16,7 +16,7 @@
         <strong>{{ $t("prompts.size") }}:</strong>
         <span id="content_length"></span> {{ humanSize }}
       </p>
-      <p v-if="selected.length < 2">
+      <p v-if="selected.length < 2" :title="modTime">
         <strong>{{ $t("prompts.lastModified") }}:</strong> {{ humanTime }}
       </p>
 
@@ -109,6 +109,9 @@ export default {
       }
 
       return moment(this.req.items[this.selected[0]].modified).fromNow();
+    },
+    modTime: function () {
+      return new Date(Date.parse(this.req.modified)).toLocaleString();
     },
     name: function () {
       return this.selectedCount === 0

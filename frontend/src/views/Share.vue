@@ -78,7 +78,7 @@
           <div class="share__box__element">
             <strong>{{ $t("prompts.displayName") }}</strong> {{ req.name }}
           </div>
-          <div class="share__box__element">
+          <div class="share__box__element" :title="modTime">
             <strong>{{ $t("prompts.lastModified") }}:</strong> {{ humanTime }}
           </div>
           <div class="share__box__element">
@@ -243,6 +243,9 @@ export default {
     },
     humanTime: function () {
       return moment(this.req.modified).fromNow();
+    },
+    modTime: function () {
+      return new Date(Date.parse(this.req.modified)).toLocaleString();
     },
   },
   methods: {
