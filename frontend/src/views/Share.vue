@@ -85,9 +85,23 @@
             <strong>{{ $t("prompts.size") }}:</strong> {{ humanSize }}
           </div>
           <div class="share__box__element share__box__center">
-            <a target="_blank" :href="link" class="button button--flat">{{
-              $t("buttons.download")
-            }}</a>
+            <a target="_blank" :href="link" class="button button--flat">
+              <div>
+                <i class="material-icons">file_download</i
+                >{{ $t("buttons.download") }}
+              </div>
+            </a>
+            <a
+              target="_blank"
+              :href="link + '?inline=true'"
+              class="button button--flat"
+              v-if="!req.isDir"
+            >
+              <div>
+                <i class="material-icons">open_in_new</i
+                >{{ $t("buttons.openFile") }}
+              </div>
+            </a>
           </div>
           <div class="share__box__element share__box__center">
             <qrcode-vue :value="fullLink" size="200" level="M"></qrcode-vue>
