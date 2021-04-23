@@ -128,7 +128,11 @@
               readOnly
             >
             </item>
-            <div v-if="req.items.length > showLimit" class="item">
+            <div
+              v-if="req.items.length > showLimit"
+              class="item"
+              @click="showLimit += 100"
+            >
               <div>
                 <p class="name">+ {{ req.items.length - showLimit }}</p>
               </div>
@@ -192,14 +196,18 @@ export default {
   },
   data: () => ({
     error: null,
-    showLimit: 500,
+    showLimit: 100,
     password: "",
     attemptedPasswordLogin: false,
     hash: null,
     token: null,
   }),
   watch: {
-    $route: "fetchData",
+    $route: function () {
+      this.showLimit = 100;
+
+      this.fetchData();
+    },
   },
   created: async function () {
     const hash = this.$route.params.pathMatch.split("/")[0];
