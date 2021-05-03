@@ -8,13 +8,18 @@ export async function fetchURL(url, opts) {
 
   let { headers, ...rest } = opts;
 
-  const res = await fetch(`${baseURL}${url}`, {
-    headers: {
-      "X-Auth": store.state.jwt,
-      ...headers,
-    },
-    ...rest,
-  });
+  let res;
+  try {
+    res = await fetch(`${baseURL}${url}`, {
+      headers: {
+        "X-Auth": store.state.jwt,
+        ...headers,
+      },
+      ...rest,
+    });
+  } catch (error) {
+    return { status: 0 };
+  }
 
   if (res.headers.get("X-Renew-Token") === "true") {
     await renew(store.state.jwt);

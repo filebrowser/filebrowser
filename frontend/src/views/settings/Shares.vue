@@ -1,12 +1,13 @@
 <template>
-  <div class="row">
+  <errors v-if="error" :errorCode="error.message" />
+  <div class="row" v-else-if="!loading">
     <div class="column">
       <div class="card">
         <div class="card-title">
           <h2>{{ $t("settings.shareManagement") }}</h2>
         </div>
 
-        <div class="card-content full">
+        <div class="card-content full" v-if="links.length > 0">
           <table>
             <tr>
               <th>{{ $t("settings.path") }}</th>
@@ -52,6 +53,10 @@
             </tr>
           </table>
         </div>
+        <h2 class="message" v-else>
+          <i class="material-icons">sentiment_dissatisfied</i>
+          <span>{{ $t("files.lonely") }}</span>
+        </h2>
       </div>
     </div>
   </div>
@@ -59,21 +64,28 @@
 
 <script>
 import { share as api, users } from "@/api";
-import moment from "moment";
 import { baseURL } from "@/utils/constants";
+import { mapState, mapMutations } from "vuex";
+import moment from "moment";
 import Clipboard from "clipboard";
-import { mapState } from "vuex";
+import Errors from "@/views/Errors";
 
 export default {
   name: "shares",
-  computed: mapState(["user"]),
+  components: {
+    Errors,
+  },
+  computed: mapState(["user", "loading"]),
   data: function () {
     return {
+      error: null,
       links: [],
       clip: null,
     };
   },
   async created() {
+    this.setLoading(true);
+
     try {
       let links = await api.list();
       if (this.user.perm.admin) {
@@ -87,7 +99,9 @@ export default {
       }
       this.links = links;
     } catch (e) {
-      this.$showError(e);
+      this.error = e;
+    } finally {
+      this.setLoading(false);
     }
   },
   mounted() {
@@ -100,6 +114,7 @@ export default {
     this.clip.destroy();
   },
   methods: {
+    ...mapMutations(["setLoading"]),
     deleteLink: async function (event, link) {
       event.preventDefault();
 
@@ -108,8 +123,13 @@ export default {
         confirm: () => {
           this.$store.commit("closeHovers");
 
-          api.remove(link.hash);
-          this.links = this.links.filter((item) => item.hash !== link.hash);
+          try {
+            api.remove(link.hash);
+            this.links = this.links.filter((item) => item.hash !== link.hash);
+            this.$showSuccess(this.$t("settings.shareDeleted"));
+          } catch (e) {
+            this.$showError(e);
+          }
         },
       });
     },

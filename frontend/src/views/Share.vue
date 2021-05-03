@@ -19,7 +19,50 @@
 
     <breadcrumbs :base="'/share/' + hash" />
 
-    <div v-if="!loading">
+    <div v-if="loading">
+      <h2 class="message delayed">
+        <div class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
+        <span>{{ $t("files.loading") }}</span>
+      </h2>
+    </div>
+    <div v-else-if="error">
+      <div v-if="error.message === '401'">
+        <div class="card floating" id="password">
+          <div v-if="attemptedPasswordLogin" class="share__wrong__password">
+            {{ $t("login.wrongCredentials") }}
+          </div>
+          <div class="card-title">
+            <h2>{{ $t("login.password") }}</h2>
+          </div>
+
+          <div class="card-content">
+            <input
+              v-focus
+              type="password"
+              :placeholder="$t('login.password')"
+              v-model="password"
+              @keyup.enter="fetchData"
+            />
+          </div>
+          <div class="card-action">
+            <button
+              class="button button--flat"
+              @click="fetchData"
+              :aria-label="$t('buttons.submit')"
+              :title="$t('buttons.submit')"
+            >
+              {{ $t("buttons.submit") }}
+            </button>
+          </div>
+        </div>
+      </div>
+      <errors v-else :errorCode="error.message" />
+    </div>
+    <div v-else>
       <div class="share">
         <div class="share__box share__box__info">
           <div class="share__box__header">
@@ -35,16 +78,30 @@
           <div class="share__box__element">
             <strong>{{ $t("prompts.displayName") }}</strong> {{ req.name }}
           </div>
-          <div class="share__box__element">
+          <div class="share__box__element" :title="modTime">
             <strong>{{ $t("prompts.lastModified") }}:</strong> {{ humanTime }}
           </div>
           <div class="share__box__element">
             <strong>{{ $t("prompts.size") }}:</strong> {{ humanSize }}
           </div>
           <div class="share__box__element share__box__center">
-            <a target="_blank" :href="link" class="button button--flat">{{
-              $t("buttons.download")
-            }}</a>
+            <a target="_blank" :href="link" class="button button--flat">
+              <div>
+                <i class="material-icons">file_download</i
+                >{{ $t("buttons.download") }}
+              </div>
+            </a>
+            <a
+              target="_blank"
+              :href="link + '?inline=true'"
+              class="button button--flat"
+              v-if="!req.isDir"
+            >
+              <div>
+                <i class="material-icons">open_in_new</i
+                >{{ $t("buttons.openFile") }}
+              </div>
+            </a>
           </div>
           <div class="share__box__element share__box__center">
             <qrcode-vue :value="fullLink" size="200" level="M"></qrcode-vue>
@@ -71,7 +128,11 @@
               readOnly
             >
             </item>
-            <div v-if="req.items.length > showLimit" class="item">
+            <div
+              v-if="req.items.length > showLimit"
+              class="item"
+              @click="showLimit += 100"
+            >
               <div>
                 <p class="name">+ {{ req.items.length - showLimit }}</p>
               </div>
@@ -106,39 +167,6 @@
         </div>
       </div>
     </div>
-    <div v-if="error">
-      <div v-if="error.message === '401'">
-        <div class="card floating" id="password">
-          <div v-if="attemptedPasswordLogin" class="share__wrong__password">
-            {{ $t("login.wrongCredentials") }}
-          </div>
-          <div class="card-title">
-            <h2>{{ $t("login.password") }}</h2>
-          </div>
-
-          <div class="card-content">
-            <input
-              v-focus
-              type="password"
-              :placeholder="$t('login.password')"
-              v-model="password"
-              @keyup.enter="fetchData"
-            />
-          </div>
-          <div class="card-action">
-            <button
-              class="button button--flat"
-              @click="fetchData"
-              :aria-label="$t('buttons.submit')"
-              :title="$t('buttons.submit')"
-            >
-              {{ $t("buttons.submit") }}
-            </button>
-          </div>
-        </div>
-      </div>
-      <errors v-else :errorCode="errorCode" />
-    </div>
   </div>
 </template>
 
@@ -168,14 +196,18 @@ export default {
   },
   data: () => ({
     error: null,
-    showLimit: 500,
+    showLimit: 100,
     password: "",
     attemptedPasswordLogin: false,
     hash: null,
     token: null,
   }),
   watch: {
-    $route: "fetchData",
+    $route: function () {
+      this.showLimit = 100;
+
+      this.fetchData();
+    },
   },
   created: async function () {
     const hash = this.$route.params.pathMatch.split("/")[0];
@@ -220,10 +252,8 @@ export default {
     humanTime: function () {
       return moment(this.req.modified).fromNow();
     },
-    errorCode() {
-      return this.error.message === "404" || this.error.message === "403"
-        ? parseInt(this.error.message)
-        : 500;
+    modTime: function () {
+      return new Date(Date.parse(this.req.modified)).toLocaleString();
     },
   },
   methods: {
@@ -256,9 +286,11 @@ export default {
         this.token = file.token || "";
 
         this.updateRequest(file);
-        this.setLoading(false);
+        document.title = `${file.name} - ${this.$route.name}`;
       } catch (e) {
         this.error = e;
+      } finally {
+        this.setLoading(false);
       }
     },
     keyEvent(event) {

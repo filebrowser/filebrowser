@@ -1,5 +1,6 @@
 <template>
-  <div class="row">
+  <errors v-if="error" :errorCode="error.message" />
+  <div class="row" v-else-if="!loading">
     <div class="column">
       <div class="card">
         <div class="card-title">
@@ -41,21 +42,37 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from "vuex";
 import { users as api } from "@/api";
+import Errors from "@/views/Errors";
 
 export default {
   name: "users",
+  components: {
+    Errors,
+  },
   data: function () {
     return {
+      error: null,
       users: [],
     };
   },
   async created() {
+    this.setLoading(true);
+
     try {
       this.users = await api.getAll();
     } catch (e) {
-      this.$showError(e);
+      this.error = e;
+    } finally {
+      this.setLoading(false);
     }
+  },
+  computed: {
+    ...mapState(["loading"]),
+  },
+  methods: {
+    ...mapMutations(["setLoading"]),
   },
 };
 </script>

@@ -4,10 +4,15 @@
 
     <breadcrumbs base="/files" />
 
-    <errors v-if="error" :errorCode="errorCode" />
+    <errors v-if="error" :errorCode="error.message" />
     <component v-else-if="currentView" :is="currentView"></component>
     <div v-else>
-      <h2 class="message">
+      <h2 class="message delayed">
+        <div class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
         <span>{{ $t("files.loading") }}</span>
       </h2>
     </div>
@@ -62,11 +67,6 @@ export default {
         return "preview";
       }
     },
-    errorCode() {
-      return this.error.message === "404" || this.error.message === "403"
-        ? parseInt(this.error.message)
-        : 500;
-    },
   },
   created() {
     this.fetchData();
@@ -116,7 +116,7 @@ export default {
         }
 
         this.$store.commit("updateRequest", res);
-        document.title = res.name;
+        document.title = `${res.name} - ${this.$route.name}`;
       } catch (e) {
         this.error = e;
       } finally {

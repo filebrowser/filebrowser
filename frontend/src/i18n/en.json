@@ -33,7 +33,8 @@
     "switchView": "Switch view",
     "toggleSidebar": "Toggle sidebar",
     "update": "Update",
-    "upload": "Upload"
+    "upload": "Upload",
+    "openFile": "Open file"
   },
   "download": {
     "downloadFile": "Download File",
@@ -43,7 +44,8 @@
   "errors": {
     "forbidden": "You don't have permissions to access this.",
     "internal": "Something really went wrong.",
-    "notFound": "This location can't be reached."
+    "notFound": "This location can't be reached.",
+    "connection": "The server can't be reached."
   },
   "files": {
     "body": "Body",
@@ -214,6 +216,7 @@
     "settingsUpdated": "Settings updated!",
     "shareDuration": "Share Duration",
     "shareManagement": "Share Management",
+    "shareDeleted": "Share deleted!",
     "singleClick": "Use single clicks to open files and directories",
     "themes": {
       "dark": "Dark",

@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/fs"
 	"log"
 	"net/http"
@@ -71,7 +72,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		}
 	}
 
-	b, err := json.MarshalIndent(data, "", "  ")
+	b, err := json.Marshal(data)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -109,6 +110,9 @@ func getStaticHandlers(store *storage.Storage, server *settings.Server, assetsFs
 			return http.StatusNotFound, nil
 		}
 
+		const maxAge = 86400 // 1 day
+		w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%v", maxAge))
+
 		if d.settings.Branding.Files != "" {
 			if strings.HasPrefix(r.URL.Path, "img/") {
 				fPath := filepath.Join(d.settings.Branding.Files, r.URL.Path)
@@ -127,7 +131,19 @@ func getStaticHandlers(store *storage.Storage, server *settings.Server, assetsFs
 			return 0, nil
 		}
 
-		return handleWithStaticData(w, r, d, assetsFs, r.URL.Path, "application/javascript; charset=utf-8")
+		fileContents, err := fs.ReadFile(assetsFs, r.URL.Path+".gz")
+		if err != nil {
+			return http.StatusNotFound, err
+		}
+
+		w.Header().Set("Content-Encoding", "gzip")
+		w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
+
+		if _, err := w.Write(fileContents); err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		return 0, nil
 	}, "/static/", store, server)
 
 	return index, static

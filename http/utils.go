@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"os"
@@ -65,4 +66,12 @@ func stripPrefix(prefix string, h http.Handler) http.Handler {
 		r2.URL.RawPath = rp
 		h.ServeHTTP(w, r2)
 	})
+}
+
+func checkEtag(w http.ResponseWriter, r *http.Request, fTime, fSize int64) bool {
+	etag := fmt.Sprintf("%x%x", fTime, fSize)
+	w.Header().Set("Cache-Control", "private")
+	w.Header().Set("Etag", etag)
+
+	return r.Header.Get("If-None-Match") == etag
 }

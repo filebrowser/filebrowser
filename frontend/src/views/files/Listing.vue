@@ -114,8 +114,13 @@
       />
     </div>
 
-    <div v-if="$store.state.loading">
-      <h2 class="message">
+    <div v-if="loading">
+      <h2 class="message delayed">
+        <div class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
         <span>{{ $t("files.loading") }}</span>
       </h2>
     </div>
@@ -254,6 +259,7 @@
 </template>
 
 <script>
+import Vue from "vue";
 import { mapState, mapGetters, mapMutations } from "vuex";
 import { users, files as api } from "@/api";
 import { enableExec } from "@/utils/constants";
@@ -279,10 +285,19 @@ export default {
       showLimit: 50,
       dragCounter: 0,
       width: window.innerWidth,
+      itemWeight: 0,
     };
   },
   computed: {
-    ...mapState(["req", "selected", "user", "show", "multiple", "selected"]),
+    ...mapState([
+      "req",
+      "selected",
+      "user",
+      "show",
+      "multiple",
+      "selected",
+      "loading",
+    ]),
     ...mapGetters(["selectedCount"]),
     nameSorted() {
       return this.req.sorting.by === "name";
@@ -362,8 +377,14 @@ export default {
       // Reset the show value
       this.showLimit = 50;
 
-      // Fill and fit the window with listing items
-      this.fillWindow(true);
+      // Ensures that the listing is displayed
+      Vue.nextTick(() => {
+        // How much every listing item affects the window height
+        this.setItemWeight();
+
+        // Fill and fit the window with listing items
+        this.fillWindow(true);
+      });
     },
   },
   mounted: function () {
@@ -393,7 +414,7 @@ export default {
     window.removeEventListener("scroll", this.scrollEvent);
     window.removeEventListener("resize", this.windowsResize);
 
-    if (!this.user.perm.create) return;
+    if (this.user && !this.user.perm.create) return;
     document.removeEventListener("dragover", this.preventDefault);
     document.removeEventListener("dragenter", this.dragEnter);
     document.removeEventListener("dragleave", this.dragLeave);
@@ -484,7 +505,7 @@ export default {
       for (let i of this.selected) {
         items.push({
           from: this.req.items[i].url,
-          name: encodeURIComponent(this.req.items[i].name),
+          name: this.req.items[i].name,
         });
       }
 
@@ -509,7 +530,7 @@ export default {
         const from = item.from.endsWith("/")
           ? item.from.slice(0, -1)
           : item.from;
-        const to = this.$route.path + item.name;
+        const to = this.$route.path + encodeURIComponent(item.name);
         items.push({ from, to, name: item.name });
       }
 
@@ -631,22 +652,20 @@ export default {
         }
       }
 
-      let base = "";
+      let files = await upload.scanFiles(dt);
+      let items = this.req.items;
+      let path = this.$route.path.endsWith("/")
+        ? this.$route.path
+        : this.$route.path + "/";
+
       if (
         el !== null &&
         el.classList.contains("item") &&
         el.dataset.dir === "true"
       ) {
-        base = el.querySelector(".name").innerHTML + "/";
-      }
+        // Get url from ListingItem instance
+        path = el.__vue__.url;
 
-      let files = await upload.scanFiles(dt);
-      let path = this.$route.path.endsWith("/")
-        ? this.$route.path + base
-        : this.$route.path + "/" + base;
-      let items = this.req.items;
-
-      if (base !== "") {
         try {
           items = (await api.fetch(path)).items;
         } catch (error) {
@@ -793,26 +812,28 @@ export default {
         viewMode: this.user.viewMode === "mosaic" ? "list" : "mosaic",
       };
 
-      try {
-        await users.update(data, ["viewMode"]);
+      users.update(data, ["viewMode"]).catch(this.$showError);
 
-        // Await ensures correct value for setItemWeight()
-        await this.$store.commit("updateUser", data);
+      // Await ensures correct value for setItemWeight()
+      await this.$store.commit("updateUser", data);
 
-        this.setItemWeight();
-        this.fillWindow();
-      } catch (e) {
-        this.$showError(e);
-      }
+      this.setItemWeight();
+      this.fillWindow();
     },
     upload: function () {
-      if (typeof DataTransferItem.prototype.webkitGetAsEntry !== "undefined") {
+      if (
+        typeof window.DataTransferItem !== "undefined" &&
+        typeof DataTransferItem.prototype.webkitGetAsEntry !== "undefined"
+      ) {
         this.$store.commit("showHover", "upload");
       } else {
         document.getElementById("upload-input").click();
       }
     },
     setItemWeight() {
+      // Listing element is not displayed
+      if (this.$refs.listing == null) return;
+
       let itemQuantity = this.req.numDirs + this.req.numFiles;
       if (itemQuantity > this.showLimit) itemQuantity = this.showLimit;
 

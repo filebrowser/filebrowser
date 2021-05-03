@@ -1,7 +1,8 @@
 <template>
-  <div class="row">
+  <errors v-if="error" :errorCode="error.message" />
+  <div class="row" v-else-if="!loading">
     <div class="column">
-      <form v-if="loaded" @submit="save" class="card">
+      <form @submit="save" class="card">
         <div class="card-title">
           <h2 v-if="user.id === 0">{{ $t("settings.newUser") }}</h2>
           <h2 v-else>{{ $t("settings.user") }} {{ user.username }}</h2>
@@ -55,21 +56,23 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapState, mapMutations } from "vuex";
 import { users as api, settings } from "@/api";
 import UserForm from "@/components/settings/UserForm";
+import Errors from "@/views/Errors";
 import deepClone from "lodash.clonedeep";
 
 export default {
   name: "user",
   components: {
     UserForm,
+    Errors,
   },
   data: () => {
     return {
+      error: null,
       originalUser: null,
       user: {},
-      loaded: false,
     };
   },
   created() {
@@ -79,6 +82,7 @@ export default {
     isNew() {
       return this.$route.path === "/settings/users/new";
     },
+    ...mapState(["loading"]),
   },
   watch: {
     $route: "fetchData",
@@ -88,8 +92,10 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(["closeHovers", "showHover", "setUser"]),
+    ...mapMutations(["closeHovers", "showHover", "setUser", "setLoading"]),
     async fetchData() {
+      this.setLoading(true);
+
       try {
         if (this.isNew) {
           let { defaults } = await settings.get();
@@ -105,10 +111,10 @@ export default {
           const id = this.$route.params.pathMatch;
           this.user = { ...(await api.get(id)) };
         }
-
-        this.loaded = true;
       } catch (e) {
-        this.$router.push({ path: "/settings/users/new" });
+        this.error = e;
+      } finally {
+        this.setLoading(false);
       }
     },
     deletePrompt() {

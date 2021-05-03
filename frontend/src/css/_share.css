@@ -43,6 +43,15 @@
   word-break: break-all;
 }
 
+.share__box__element .button {
+  display: inline-block;
+}
+
+.share__box__element .button i {
+  display: block;
+  margin-bottom: 4px;
+}
+
 .share__box__items {
   text-align: left;
   flex: 10 0 25em;

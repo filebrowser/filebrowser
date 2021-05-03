@@ -38,7 +38,7 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			Fs:         d.user.Fs,
 			Path:       link.Path,
 			Modify:     d.user.Perm.Modify,
-			Expand:     true,
+			Expand:     false,
 			ReadHeader: d.server.TypeDetectionByHeader,
 			Checker:    d,
 			Token:      link.Token,

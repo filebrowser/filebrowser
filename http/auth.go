@@ -48,11 +48,16 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 	}
 
 	auth := r.URL.Query().Get("auth")
-	if auth == "" {
-		return "", request.ErrNoTokenInRequest
+	if auth != "" && strings.Count(auth, ".") == 2 {
+		return auth, nil
 	}
 
-	return auth, nil
+	cookie, _ := r.Cookie("auth")
+	if cookie != nil && strings.Count(cookie.Value, ".") == 2 {
+		return cookie.Value, nil
+	}
+
+	return "", request.ErrNoTokenInRequest
 }
 
 func withUser(fn handleFunc) handleFunc {

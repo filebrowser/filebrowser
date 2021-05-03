@@ -27,6 +27,7 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		Expand:     true,
 		ReadHeader: d.server.TypeDetectionByHeader,
 		Checker:    d,
+		Content:    true,
 	})
 	if err != nil {
 		return errToStatus(err), err
@@ -63,7 +64,7 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			Fs:         d.user.Fs,
 			Path:       r.URL.Path,
 			Modify:     d.user.Perm.Modify,
-			Expand:     true,
+			Expand:     false,
 			ReadHeader: d.server.TypeDetectionByHeader,
 			Checker:    d,
 		})
@@ -109,7 +110,7 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 			Fs:         d.user.Fs,
 			Path:       r.URL.Path,
 			Modify:     d.user.Perm.Modify,
-			Expand:     true,
+			Expand:     false,
 			ReadHeader: d.server.TypeDetectionByHeader,
 			Checker:    d,
 		})
@@ -180,64 +181,50 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 	return errToStatus(err), err
 })
 
-var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	src := r.URL.Path
-	dst := r.URL.Query().Get("destination")
-	action := r.URL.Query().Get("action")
-	dst, err := url.QueryUnescape(dst)
-	if !d.Check(src) || !d.Check(dst) {
-		return http.StatusForbidden, nil
-	}
-	if err != nil {
+func resourcePatchHandler(fileCache FileCache) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		src := r.URL.Path
+		dst := r.URL.Query().Get("destination")
+		action := r.URL.Query().Get("action")
+		dst, err := url.QueryUnescape(dst)
+		if !d.Check(src) || !d.Check(dst) {
+			return http.StatusForbidden, nil
+		}
+		if err != nil {
+			return errToStatus(err), err
+		}
+		if dst == "/" || src == "/" {
+			return http.StatusForbidden, nil
+		}
+
+		err = checkParent(src, dst)
+		if err != nil {
+			return http.StatusBadRequest, err
+		}
+
+		override := r.URL.Query().Get("override") == "true"
+		rename := r.URL.Query().Get("rename") == "true"
+		if !override && !rename {
+			if _, err = d.user.Fs.Stat(dst); err == nil {
+				return http.StatusConflict, nil
+			}
+		}
+		if rename {
+			dst = addVersionSuffix(dst, d.user.Fs)
+		}
+
+		// Permission for overwriting the file
+		if override && !d.user.Perm.Modify {
+			return http.StatusForbidden, nil
+		}
+
+		err = d.RunHook(func() error {
+			return patchAction(r.Context(), action, src, dst, d, fileCache)
+		}, action, src, dst, d.user)
+
 		return errToStatus(err), err
-	}
-	if dst == "/" || src == "/" {
-		return http.StatusForbidden, nil
-	}
-	if err = checkParent(src, dst); err != nil {
-		return http.StatusBadRequest, err
-	}
-
-	override := r.URL.Query().Get("override") == "true"
-	rename := r.URL.Query().Get("rename") == "true"
-	if !override && !rename {
-		if _, err = d.user.Fs.Stat(dst); err == nil {
-			return http.StatusConflict, nil
-		}
-	}
-	if rename {
-		dst = addVersionSuffix(dst, d.user.Fs)
-	}
-
-	// Permission for overwriting the file
-	if override && !d.user.Perm.Modify {
-		return http.StatusForbidden, nil
-	}
-
-	err = d.RunHook(func() error {
-		switch action {
-		// TODO: use enum
-		case "copy":
-			if !d.user.Perm.Create {
-				return errors.ErrPermissionDenied
-			}
-
-			return fileutils.Copy(d.user.Fs, src, dst)
-		case "rename":
-			if !d.user.Perm.Rename {
-				return errors.ErrPermissionDenied
-			}
-			src = path.Clean("/" + src)
-			dst = path.Clean("/" + dst)
-
-			return fileutils.MoveFile(d.user.Fs, src, dst)
-		default:
-			return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
-		}
-	}, action, src, dst, d.user)
-
-	return errToStatus(err), err
-})
+	})
+}
 
 func checkParent(src, dst string) error {
 	rel, err := filepath.Rel(src, dst)
@@ -307,4 +294,44 @@ func delThumbs(ctx context.Context, fileCache FileCache, file *files.FileInfo) e
 	}
 
 	return nil
+}
+
+func patchAction(ctx context.Context, action, src, dst string, d *data, fileCache FileCache) error {
+	switch action {
+	// TODO: use enum
+	case "copy":
+		if !d.user.Perm.Create {
+			return errors.ErrPermissionDenied
+		}
+
+		return fileutils.Copy(d.user.Fs, src, dst)
+	case "rename":
+		if !d.user.Perm.Rename {
+			return errors.ErrPermissionDenied
+		}
+		src = path.Clean("/" + src)
+		dst = path.Clean("/" + dst)
+
+		file, err := files.NewFileInfo(files.FileOptions{
+			Fs:         d.user.Fs,
+			Path:       src,
+			Modify:     d.user.Perm.Modify,
+			Expand:     false,
+			ReadHeader: false,
+			Checker:    d,
+		})
+		if err != nil {
+			return err
+		}
+
+		// delete thumbnails
+		err = delThumbs(ctx, fileCache, file)
+		if err != nil {
+			return err
+		}
+
+		return fileutils.MoveFile(d.user.Fs, src, dst)
+	default:
+		return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
+	}
 }

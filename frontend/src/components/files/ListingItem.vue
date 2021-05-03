@@ -8,8 +8,6 @@
     @dragover="dragOver"
     @drop="drop"
     @click="itemClick"
-    @dblclick="dblclick"
-    @touchstart="touchstart"
     :data-dir="isDir"
     :aria-label="name"
     :aria-selected="isSelected"
@@ -96,7 +94,7 @@ export default {
       // reload the image when the file is replaced
       const key = Date.parse(this.modified);
 
-      return `${baseURL}/api/preview/thumb/${path}?auth=${this.jwt}&inline=true&k=${key}`;
+      return `${baseURL}/api/preview/thumb/${path}?k=${key}&inline=true`;
     },
     isThumbsEnabled() {
       return enableThumbs;
@@ -153,13 +151,13 @@ export default {
       for (let i of this.selected) {
         items.push({
           from: this.req.items[i].url,
-          to: this.url + this.req.items[i].name,
+          to: this.url + encodeURIComponent(this.req.items[i].name),
           name: this.req.items[i].name,
         });
       }
 
-      let base = el.querySelector(".name").innerHTML + "/";
-      let path = this.$route.path + base;
+      // Get url from ListingItem instance
+      let path = el.__vue__.url;
       let baseItems = (await api.fetch(path)).items;
 
       let action = (overwrite, rename) => {
@@ -200,6 +198,16 @@ export default {
     },
     click: function (event) {
       if (!this.singleClick && this.selectedCount !== 0) event.preventDefault();
+
+      setTimeout(() => {
+        this.touches = 0;
+      }, 300);
+
+      this.touches++;
+      if (this.touches > 1) {
+        this.open();
+      }
+
       if (this.$store.state.selected.indexOf(this.index) !== -1) {
         this.removeSelected(this.index);
         return;
@@ -234,19 +242,6 @@ export default {
       )
         this.resetSelected();
       this.addSelected(this.index);
-    },
-    dblclick: function () {
-      if (!this.singleClick) this.open();
-    },
-    touchstart() {
-      setTimeout(() => {
-        this.touches = 0;
-      }, 300);
-
-      this.touches++;
-      if (this.touches > 1) {
-        this.open();
-      }
     },
     open: function () {
       this.$router.push({ path: this.url });
