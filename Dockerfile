@@ -11,5 +11,6 @@ EXPOSE 80
 
 COPY .docker.json /.filebrowser.json
 COPY filebrowser /filebrowser
+COPY run.sh /run.sh
 
-ENTRYPOINT [ "/filebrowser" ]
+ENTRYPOINT [ "run.sh" ]
