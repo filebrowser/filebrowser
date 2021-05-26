@@ -1,5 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
+cd /
 chmod 777 filebrowser
 ./filebrowser config init
 ./filebrowser users add admin ${PASSWORD}

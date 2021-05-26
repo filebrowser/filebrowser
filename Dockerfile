@@ -13,4 +13,4 @@ COPY .docker.json /.filebrowser.json
 COPY filebrowser /filebrowser
 COPY run.sh /run.sh
 
-ENTRYPOINT [ "run.sh" ]
+ENTRYPOINT [ "/run.sh" ]
