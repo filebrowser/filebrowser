@@ -12,6 +12,8 @@ import Delete from "./Delete";
 import Rename from "./Rename";
 import Download from "./Download";
 import Move from "./Move";
+import Archive from "./Archive";
+import Unarchive from "./Unarchive";
 import Copy from "./Copy";
 import NewFile from "./NewFile";
 import NewDir from "./NewDir";
@@ -31,6 +33,8 @@ export default {
     Rename,
     Download,
     Move,
+    Archive,
+    Unarchive,
     Copy,
     Share,
     NewFile,
@@ -91,6 +95,8 @@ export default {
           "delete",
           "rename",
           "move",
+          "archive",
+          "unarchive",
           "copy",
           "newFile",
           "newDir",

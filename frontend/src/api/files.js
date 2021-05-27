@@ -154,3 +154,34 @@ export async function checksum(url, algo) {
   const data = await resourceAction(`${url}?checksum=${algo}`, "GET");
   return (await data.json()).checksums[algo];
 }
+
+export async function diskUsage(url) {
+  const data = await resourceAction(`${url}?disk_usage=true`, "GET");
+  return await data.json();
+}
+
+export async function archive(url, name, format, ...files) {
+  let arg = "";
+
+  for (let file of files) {
+    arg += file + ",";
+  }
+
+  arg = arg.substring(0, arg.length - 1);
+  arg = encodeURIComponent(arg);
+  url += `?files=${arg}&`;
+  url += `name=${encodeURIComponent(name)}&`;
+
+  if (format) {
+    url += `algo=${format}&`;
+  }
+
+  return post(url);
+}
+
+export async function unarchive(path, name, override) {
+  const to = encodeURIComponent(removePrefix(name));
+  const action = `unarchive`;
+  const url = `${path}?action=${action}&destination=${to}&override=${override}`;
+  return resourceAction(url, "PATCH");
+}

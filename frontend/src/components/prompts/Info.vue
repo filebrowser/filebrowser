@@ -12,9 +12,15 @@
       <p class="break-word" v-if="selected.length < 2">
         <strong>{{ $t("prompts.displayName") }}</strong> {{ name }}
       </p>
-      <p v-if="!dir || selected.length > 1">
+      <p v-if="!dir">
         <strong>{{ $t("prompts.size") }}:</strong>
         <span id="content_length"></span> {{ humanSize }}
+      </p>
+      <p v-if="dir">
+        <strong>{{ $t("prompts.size") }}: </strong>
+        <code>
+          <a @click="diskUsage($event)">{{ $t("prompts.show") }}</a>
+        </code>
       </p>
       <p v-if="selected.length < 2" :title="modTime">
         <strong>{{ $t("prompts.lastModified") }}:</strong> {{ humanTime }}
@@ -146,6 +152,38 @@ export default {
       } catch (e) {
         this.$showError(e);
       }
+    },
+    diskUsage: async function (event) {
+      event.preventDefault();
+
+      // eslint-disable-next-line
+      event.target.innerHTML = this.$t('files.loading');
+
+      let links = [];
+
+      if (this.selectedCount === 0 || !this.isListing) {
+        links.push(this.$route.path);
+      } else {
+        for (let selected of this.selected) {
+          links.push(this.req.items[selected].url);
+        }
+      }
+
+      let size = 0;
+      let inodes = 0;
+
+      for (let link of links) {
+        try {
+          let data = await api.diskUsage(link);
+          size += data.diskUsage;
+          inodes += data.inodes;
+        } catch (e) {
+          this.$showError(e);
+        }
+      }
+
+      // eslint-disable-next-line
+      event.target.innerHTML = filesize(size) + " " + this.$t("prompts.inodeCount", { count: inodes })
     },
   },
 };

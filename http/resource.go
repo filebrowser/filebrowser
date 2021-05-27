@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/mholt/archiver"
 	"github.com/spf13/afero"
 
 	"github.com/filebrowser/filebrowser/v2/errors"
@@ -31,6 +32,17 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 	})
 	if err != nil {
 		return errToStatus(err), err
+	}
+
+	if r.URL.Query().Get("disk_usage") == "true" {
+		du, inodes, err := fileutils.DiskUsage(file.Fs, file.Path, 100)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+		file.DiskUsage = du
+		file.Inodes = inodes
+		file.Content = ""
+		return renderJSON(w, r, file)
 	}
 
 	if file.IsDir {
@@ -104,6 +116,15 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 		if strings.HasSuffix(r.URL.Path, "/") {
 			err := d.user.Fs.MkdirAll(r.URL.Path, 0775)
 			return errToStatus(err), err
+		}
+
+		// Archive creation on POST.
+		if strings.HasSuffix(r.URL.Path, "/archive") {
+			if !d.user.Perm.Create {
+				return http.StatusForbidden, nil
+			}
+
+			return archiveHandler(r, d)
 		}
 
 		file, err := files.NewFileInfo(files.FileOptions{
@@ -305,6 +326,20 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		}
 
 		return fileutils.Copy(d.user.Fs, src, dst)
+	case "unarchive":
+		if !d.user.Perm.Create {
+			return errors.ErrPermissionDenied
+		}
+
+		src = d.user.FullPath(path.Clean("/" + src))
+		dst = d.user.FullPath(path.Clean("/" + dst))
+
+		// THIS COULD BE VUNERABLE TO https://github.com/snyk/zip-slip-vulnerability
+		err := archiver.Unarchive(src, dst)
+		if err != nil {
+			return errors.ErrInvalidRequestParams
+		}
+		return nil
 	case "rename":
 		if !d.user.Perm.Rename {
 			return errors.ErrPermissionDenied
@@ -333,5 +368,99 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		return fileutils.MoveFile(d.user.Fs, src, dst)
 	default:
 		return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
+	}
+}
+
+func archiveHandler(r *http.Request, d *data) (int, error) {
+	dir := strings.TrimSuffix(r.URL.Path, "/archive")
+
+	destDir, err := files.NewFileInfo(files.FileOptions{
+		Fs:         d.user.Fs,
+		Path:       dir,
+		Modify:     d.user.Perm.Modify,
+		Expand:     false,
+		ReadHeader: false,
+		Checker:    d,
+	})
+	if err != nil {
+		return errToStatus(err), err
+	}
+
+	filenames, err := parseQueryFiles(r, destDir, d.user)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	archFile, err := parseQueryFilename(r, destDir)
+	if err != nil {
+		return http.StatusBadRequest, err
+	}
+
+	extension, ar, err := parseArchiver(r.URL.Query().Get("algo"))
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	archFile += extension
+
+	_, err = d.user.Fs.Stat(archFile)
+	if err == nil {
+		return http.StatusConflict, nil
+	}
+
+	dir, _ = path.Split(archFile)
+	err = d.user.Fs.MkdirAll(dir, 0775)
+	if err != nil {
+		return errToStatus(err), err
+	}
+
+	for i, path := range filenames {
+		_, err = d.user.Fs.Stat(path)
+		if err != nil {
+			return errToStatus(err), err
+		}
+		filenames[i] = d.user.FullPath(path)
+	}
+
+	dst := d.user.FullPath(archFile)
+	err = ar.Archive(filenames, dst)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return errToStatus(err), err
+}
+
+func parseQueryFilename(r *http.Request, f *files.FileInfo) (string, error) {
+	name := r.URL.Query().Get("name")
+	name, err := url.QueryUnescape(strings.Replace(name, "+", "%2B", -1))
+	if err != nil {
+		return "", err
+	}
+	name = strings.TrimSpace(name)
+	if name == "" {
+		return "", fmt.Errorf("empty name provided")
+	}
+	return filepath.Join(f.Path, slashClean(name)), nil
+}
+
+func parseArchiver(algo string) (string, archiver.Archiver, error) {
+	switch algo {
+	case "zip", "true", "":
+		return ".zip", archiver.NewZip(), nil
+	case "tar":
+		return ".tar", archiver.NewTar(), nil
+	case "targz":
+		return ".tar.gz", archiver.NewTarGz(), nil
+	case "tarbz2":
+		return ".tar.bz2", archiver.NewTarBz2(), nil
+	case "tarxz":
+		return ".tar.xz", archiver.NewTarXz(), nil
+	case "tarlz4":
+		return ".tar.lz4", archiver.NewTarLz4(), nil
+	case "tarsz":
+		return ".tar.sz", archiver.NewTarSz(), nil
+	default:
+		return "", nil, fmt.Errorf("format not implemented")
 	}
 }

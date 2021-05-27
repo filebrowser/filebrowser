@@ -38,6 +38,20 @@
             show="move"
           />
           <action
+            v-if="headerButtons.archive"
+            id="archive-button"
+            icon="archive"
+            :label="$t('buttons.archive')"
+            show="archive"
+          />
+          <action
+            v-if="headerButtons.unarchive"
+            id="unarchive-button"
+            icon="unarchive"
+            :label="$t('buttons.unarchive')"
+            show="unarchive"
+          />
+          <action
             v-if="headerButtons.delete"
             id="delete-button"
             icon="delete"
@@ -366,10 +380,28 @@ export default {
         share: this.selectedCount === 1 && this.user.perm.share,
         move: this.selectedCount > 0 && this.user.perm.rename,
         copy: this.selectedCount > 0 && this.user.perm.create,
+        archive: this.selectedCount > 0 && this.user.perm.create,
+        unarchive: this.selectedCount === 1 && this.onlyArchivesSelected,
       };
     },
     isMobile() {
       return this.width <= 736;
+    },
+    onlyArchivesSelected() {
+      let extensions = [".zip", ".tar", ".gz", ".bz2", ".xz", ".lz4", ".sz"];
+
+      if (this.selectedCount < 1) {
+        return false;
+      }
+
+      for (const i of this.selected) {
+        let item = this.req.items[i];
+        if (item.isDir || !extensions.includes(item.extension)) {
+          return false;
+        }
+      }
+
+      return true;
     },
   },
   watch: {

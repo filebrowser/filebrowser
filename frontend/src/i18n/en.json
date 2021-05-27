@@ -1,5 +1,7 @@
 {
   "buttons": {
+    "archive": "Archive",
+    "unarchive": "Unarchive",
     "cancel": "Cancel",
     "close": "Close",
     "copy": "Copy",
@@ -113,6 +115,10 @@
   },
   "permanent": "Permanent",
   "prompts": {
+    "archive": "Archive",
+    "archiveMessage": "Choose archive name and format:",
+    "unarchive": "Unarchive",
+    "unarchiveMessage": "Choose the destination folder name:",
     "copy": "Copy",
     "copyMessage": "Choose the place to copy your files:",
     "currentlyNavigating": "Currently navigating on:",
@@ -144,6 +150,7 @@
     "scheduleMessage": "Pick a date and time to schedule the publication of this post.",
     "show": "Show",
     "size": "Size",
+    "inodeCount": "({count} inodes)",
     "upload": "Upload",
     "uploadMessage": "Select an option to upload.",
     "optionalPassword": "Optional password"

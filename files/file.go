@@ -39,6 +39,8 @@ type FileInfo struct {
 	Content   string            `json:"content,omitempty"`
 	Checksums map[string]string `json:"checksums,omitempty"`
 	Token     string            `json:"token,omitempty"`
+	DiskUsage int64             `json:"diskUsage,omitempty"`
+	Inodes    int64             `json:"inodes,omitempty"`
 }
 
 // FileOptions are the options when getting a file info.
