@@ -16,6 +16,7 @@
       />
 
       <button
+        :disabled="loading"
         v-for="(ext, format) in formats"
         :key="format"
         class="button button--block"
@@ -38,6 +39,7 @@ export default {
   data: function () {
     return {
       name: "",
+      loading: false,
       formats: {
         zip: "zip",
         tar: "tar",
@@ -74,11 +76,14 @@ export default {
       uri = uri.replace("//", "/");
 
       try {
+        this.loading = true
         await api.archive(uri, this.name, format, ...items);
 
         this.$store.commit("setReload", true);
       } catch (e) {
         this.$showError(e);
+      } finally {
+        this.loading = false
       }
 
       this.$store.commit("closeHovers");

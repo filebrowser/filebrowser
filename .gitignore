@@ -28,4 +28,5 @@ yarn-error.log*
 *.sln
 *.sw*
 bin/
+dist/
 build/

@@ -108,3 +108,13 @@ func (l byModified) Less(i, j int) bool {
 	iModified, jModified := l.Items[i].ModTime, l.Items[j].ModTime
 	return iModified.Sub(jModified) < 0
 }
+
+func (l *Listing) FilterItems(fn func(fi *FileInfo) bool) {
+	var filtered []*FileInfo
+	for _, item := range l.Items {
+		if fn(item) {
+			filtered = append(filtered, item)
+		}
+	}
+	l.Items = filtered
+}

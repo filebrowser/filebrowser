@@ -191,3 +191,17 @@ func convertCmdStrToCmdArray(cmd string) []string {
 	}
 	return cmdArray
 }
+
+// convertFileStrToFileMap parses a comma-separated file list string
+// into a map where each key is a separate file
+func convertFileStrToFileMap(files string) map[string]struct{} {
+	fileMap := make(map[string]struct{})
+	files = strings.TrimSpace(files)
+	if files != "" {
+		fileParts := strings.Split(files, ",")
+		for _, file := range fileParts {
+			fileMap[file] = struct{}{}
+		}
+	}
+	return fileMap
+}

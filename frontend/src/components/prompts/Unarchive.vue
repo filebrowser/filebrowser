@@ -30,6 +30,7 @@
         type="submit"
         :aria-label="$t('buttons.unarchive')"
         :title="$t('buttons.unarchive')"
+        :disabled="loading"
       >
         {{ $t("buttons.unarchive") }}
       </button>
@@ -45,6 +46,7 @@ export default {
   name: "rename",
   data: function () {
     return {
+      loading: false,
       name: "",
     };
   },
@@ -63,11 +65,14 @@ export default {
       dst = dst.replace("//", "/");
 
       try {
+        this.loading = true;
         await api.unarchive(item.url, dst, false);
 
         this.$store.commit("setReload", true);
       } catch (e) {
         this.$showError(e);
+      } finally {
+        this.loading = true;
       }
 
       this.$store.commit("closeHovers");

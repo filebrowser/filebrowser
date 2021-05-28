@@ -69,6 +69,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
 	flags.Bool("disable-exec", false, "disables Command Runner feature")
 	flags.Bool("disable-type-detection-by-header", false, "disables type detection by reading file headers")
+	flags.String("hidden-files", "", "comma separated list of files that should be hidden")
 }
 
 var rootCmd = &cobra.Command{
@@ -259,6 +260,10 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 
 	_, disableExec := getParamB(flags, "disable-exec")
 	server.EnableExec = !disableExec
+
+	if val, set := getParamB(flags, "hidden-files"); set {
+		server.HiddenFiles = convertFileStrToFileMap(val)
+	}
 
 	return server
 }

@@ -7,14 +7,6 @@
         </div>
 
         <div class="card-content">
-          <p>
-            <input type="checkbox" v-model="hideDotfiles" />
-            {{ $t("settings.hideDotfiles") }}
-          </p>
-          <p>
-            <input type="checkbox" v-model="singleClick" />
-            {{ $t("settings.singleClick") }}
-          </p>
           <h3>{{ $t("settings.language") }}</h3>
           <languages
             class="input input--block"

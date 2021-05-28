@@ -48,6 +48,10 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 	if file.IsDir {
 		file.Listing.Sorting = d.user.Sorting
 		file.Listing.ApplySort()
+		file.Listing.FilterItems(func(fi *files.FileInfo) bool {
+			_, exists := d.server.HiddenFiles[fi.Name]
+			return !exists
+		})
 		return renderJSON(w, r, file)
 	}
 
