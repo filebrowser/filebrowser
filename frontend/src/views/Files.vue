@@ -22,6 +22,7 @@
 <script>
 import { files as api } from "@/api";
 import { mapState, mapMutations } from "vuex";
+import { onlyOffice } from "@/utils/constants";
 
 import HeaderBar from "@/components/header/HeaderBar";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -65,7 +66,7 @@ export default {
       ) {
         return "editor";
       } else if (
-        this.req.type === "officedocument"
+        this.req.type === "officedocument" && onlyOffice !== ""
       ) {
         return "OnlyOfficeEditor";
       } else {

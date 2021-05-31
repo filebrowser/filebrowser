@@ -21,7 +21,7 @@
 <script>
 import { mapState } from "vuex";
 import url from "@/utils/url";
-import { baseURL } from "@/utils/constants";
+import { baseURL, onlyOffice } from "@/utils/constants";
 
 import HeaderBar from "@/components/header/HeaderBar";
 import Action from "@/components/header/Action";
@@ -80,7 +80,7 @@ export default {
     let onlyofficeScript = document.createElement("script");
     onlyofficeScript.setAttribute(
       "src",
-      `http://10.10.2.1:8765/web-apps/apps/api/documents/api.js`
+      `${onlyOffice}/web-apps/apps/api/documents/api.js`
     );
     document.head.appendChild(onlyofficeScript);
 
