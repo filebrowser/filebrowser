@@ -1,19 +1,19 @@
 package http
 
 import (
+	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
-	"errors"
-	"encoding/json"
 )
 
 type OnlyOfficeCallback struct {
-	ChangesUrl  string              `json:"changesurl,omitempty"`
-	Key         string              `json:"key"`
-	Status      int                 `json:"status"`
-	Url         string              `json:"url,omitempty"`
-	Users       []string            `json:"users,omitempty"`
-	UserData    string              `json:"userdata,omitempty"`
+	ChangesURL string   `json:"changesurl,omitempty"`
+	Key        string   `json:"key"`
+	Status     int      `json:"status"`
+	URL        string   `json:"url,omitempty"`
+	Users      []string `json:"users,omitempty"`
+	UserData   string   `json:"userdata,omitempty"`
 }
 
 var onlyofficeCallbackHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
@@ -28,17 +28,17 @@ var onlyofficeCallbackHandler = withUser(func(w http.ResponseWriter, r *http.Req
 		return http.StatusInternalServerError, err1
 	}
 
-	if (data.Status == 2 || data.Status == 6) {
+	if data.Status == 2 || data.Status == 6 {
 		docPath := r.URL.Query().Get("save")
 		if docPath == "" {
-			return http.StatusInternalServerError, errors.New("Unable to get file save path")
+			return http.StatusInternalServerError, errors.New("unable to get file save path")
 		}
-		
+
 		if !d.user.Perm.Modify || !d.Check(docPath) {
 			return http.StatusForbidden, nil
 		}
 
-		doc, err2 := http.Get(data.Url)
+		doc, err2 := http.Get(data.URL)
 		if err2 != nil {
 			return http.StatusInternalServerError, err2
 		}

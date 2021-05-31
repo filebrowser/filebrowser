@@ -85,14 +85,15 @@ export default {
     document.head.appendChild(onlyofficeScript);
 
     onlyofficeScript.onload = () => {
-      let fileUrl = `${window.location.protocol}//${window.location.host}${baseURL}/api/raw${url.encodePath(this.req.path)}?auth=${
-        this.jwt
-      }`;
+      let fileUrl = `${window.location.protocol}//
+        ${window.location.host}${baseURL}/api/raw${url.encodePath(
+        this.req.path
+      )}?auth=${this.jwt}`;
 
-      let key = Date.parse(this.req.modified).toString() + this.req.path
-      key = key.replaceAll(/[-_.!~[\]*'()/,;:\-%+.]/g, "")
-      if(key.length > 127) {
-        key = key.substring(0, 127)
+      let key = Date.parse(this.req.modified).toString() + this.req.path;
+      key = key.replaceAll(/[-_.!~[\]*'()/,;:\-%+.]/g, "");
+      if (key.length > 127) {
+        key = key.substring(0, 127);
       }
 
       /*eslint-disable */
@@ -121,10 +122,10 @@ export default {
           lang: this.user.locale,
           mode: this.user.perm.modify ? "edit" : "view"
         }
-      }
+      };
       this.editor = new DocsAPI.DocEditor("editor", config);
       /*eslint-enable */
-    }
+    };
   },
   methods: {
     back() {

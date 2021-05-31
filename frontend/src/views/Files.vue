@@ -65,9 +65,7 @@ export default {
         this.req.type === "textImmutable"
       ) {
         return "editor";
-      } else if (
-        this.req.type === "officedocument" && onlyOffice !== ""
-      ) {
+      } else if (this.req.type === "officedocument" && onlyOffice !== "") {
         return "OnlyOfficeEditor";
       } else {
         return "preview";
