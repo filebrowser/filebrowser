@@ -18,6 +18,7 @@ const enableExec: boolean = window.FileBrowser.EnableExec;
 const tusSettings = window.FileBrowser.TusSettings;
 const origin = window.location.origin;
 const tusEndpoint = `/api/tus`;
+const onlyOffice = window.FileBrowser.OnlyOffice;
 
 export {
   name,
@@ -39,4 +40,5 @@ export {
   tusSettings,
   origin,
   tusEndpoint,
+  onlyOffice,
 };

@@ -37,6 +37,7 @@ import { storeToRefs } from "pinia";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 import { useUploadStore } from "@/stores/upload";
+import { onlyOffice } from "@/utils/constants";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
@@ -47,6 +48,7 @@ import FileListing from "@/views/files/FileListing.vue";
 import { StatusError } from "@/api/utils";
 const Editor = defineAsyncComponent(() => import("@/views/files/Editor.vue"));
 const Preview = defineAsyncComponent(() => import("@/views/files/Preview.vue"));
+const OnlyOfficeEditor = defineAsyncComponent(() => import("@/views/files/OnlyOfficeEditor.vue"));
 
 const layoutStore = useLayoutStore();
 const fileStore = useFileStore();
@@ -77,6 +79,8 @@ const currentView = computed(() => {
     fileStore.req.type === "textImmutable"
   ) {
     return Editor;
+  } else if (fileStore.req.type === "officedocument" && onlyOffice !== "") {
+    return OnlyOfficeEditor;
   } else {
     return Preview;
   }

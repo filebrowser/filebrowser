@@ -191,6 +191,8 @@
     "newPassword": "新しいパスワード",
     "newPasswordConfirm": "新しいパスワード（再入力）",
     "newUser": "新規ユーザー作成",
+    "onlyOffice": "Only Office Integration",
+    "onlyOfficeUrl": "Only Office URL (leave blank to disable)",
     "password": "パスワード",
     "passwordUpdated": "パスワードを更新しました！",
     "path": "パス",
