@@ -42,6 +42,7 @@ export default {
     Preview,
     Listing,
     Editor: () => import("@/views/files/Editor"),
+    OnlyOfficeEditor: () => import("@/views/files/OnlyOfficeEditor"),
   },
   data: function () {
     return {
@@ -63,6 +64,10 @@ export default {
         this.req.type === "textImmutable"
       ) {
         return "editor";
+      } else if (
+        this.req.type === "officedocument"
+      ) {
+        return "OnlyOfficeEditor";
       } else {
         return "preview";
       }
