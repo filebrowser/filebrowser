@@ -17,11 +17,23 @@
         v-if="readOnly == undefined && type === 'image' && isThumbsEnabled"
         v-lazy="thumbnailUrl"
       />
-      <i v-else class="material-icons">{{ icon }}</i>
+      <template v-else>
+        <i class="material-icons">{{ icon }}</i>
+        <i
+          v-if="isSymlink"
+          class="material-icons symlink-icon"
+          :class="{ dir: isDir, file: !isDir }"
+        >
+          link
+        </i>
+      </template>
     </div>
 
     <div>
-      <p class="name">{{ name }}</p>
+      <p v-if="isSymlink && link !== ''" class="name">
+        {{ name }} → {{ link }}
+      </p>
+      <p v-else class="name">{{ name }}</p>
 
       <p v-if="isDir" class="size" data-order="-1">&mdash;</p>
       <p v-else class="size" :data-order="humanSize()">{{ humanSize() }}</p>
@@ -50,6 +62,8 @@ export default {
   },
   props: [
     "name",
+    "link",
+    "isSymlink",
     "isDir",
     "url",
     "type",

@@ -34,6 +34,8 @@ type FileInfo struct {
 	ModTime   time.Time         `json:"modified"`
 	Mode      os.FileMode       `json:"mode"`
 	IsDir     bool              `json:"isDir"`
+	IsSymlink bool              `json:"isSymlink"`
+	Link      string            `json:"link"`
 	Type      string            `json:"type"`
 	Subtitles []string          `json:"subtitles,omitempty"`
 	Content   string            `json:"content,omitempty"`
@@ -254,12 +256,22 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
 			continue
 		}
 
-		if IsSymlink(f.Mode()) {
+		isSymlink := IsSymlink(f.Mode())
+		symLink := ""
+		if isSymlink {
 			// It's a symbolic link. We try to follow it. If it doesn't work,
 			// we stay with the link information instead of the target's.
 			info, err := i.Fs.Stat(fPath)
 			if err == nil {
 				f = info
+			}
+
+			// Try to read the link's target
+			if lsf, ok := i.Fs.(afero.LinkReader); ok {
+				link, err := lsf.ReadlinkIfPossible(fPath)
+				if err == nil {
+					symLink = link
+				}
 			}
 		}
 
@@ -270,6 +282,8 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
 			ModTime:   f.ModTime(),
 			Mode:      f.Mode(),
 			IsDir:     f.IsDir(),
+			IsSymlink: isSymlink,
+			Link:      symLink,
 			Extension: filepath.Ext(name),
 			Path:      fPath,
 		}

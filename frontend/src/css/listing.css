@@ -100,6 +100,7 @@
 
 #listing.mosaic .item div:first-of-type {
   width: 5em;
+  position: inherit;
 }
 
 #listing.mosaic .item div:last-of-type {
@@ -239,4 +240,33 @@
 #listing #multiple-selection p,
 #listing #multiple-selection i {
   color: #fff;
+}
+
+#listing .item .symlink-icon {
+  color: #fff;
+  position: absolute;
+}
+
+#listing.mosaic .item .symlink-icon.dir {
+  font-size: 1.5em;
+  left: .45em;
+  bottom: .45em;
+}
+
+#listing.mosaic .item .symlink-icon.file {
+  font-size: 1.5em;
+  left: .65em;
+  bottom: .2em;
+}
+
+#listing.list .item .symlink-icon.dir {
+  font-size: 1.2em;
+  left: 1em;
+  bottom: 1em;
+}
+
+#listing.list .item .symlink-icon.file {
+  font-size: 1.2em;
+  left: 1.14em;
+  bottom: .85em;
 }

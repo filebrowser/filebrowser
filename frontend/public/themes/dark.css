@@ -104,6 +104,9 @@ nav > div {
 #listing.list .item.header {
   background: var(--background);
 }
+#listing .item .symlink-icon {
+  color: var(--surfacePrimary);
+}
 
 .message {
   color: var(--textPrimary);
