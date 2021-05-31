@@ -110,7 +110,7 @@ func (l byModified) Less(i, j int) bool {
 }
 
 func (l *Listing) FilterItems(fn func(fi *FileInfo) bool) {
-	var filtered []*FileInfo
+	filtered := []*FileInfo{}
 	for _, item := range l.Items {
 		if fn(item) {
 			filtered = append(filtered, item)

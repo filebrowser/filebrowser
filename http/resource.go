@@ -229,7 +229,8 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 
 		override := r.URL.Query().Get("override") == "true"
 		rename := r.URL.Query().Get("rename") == "true"
-		if !override && !rename {
+		unarchive := r.URL.Query().Get("action") == "unarchive"
+		if !override && !rename && !unarchive {
 			if _, err = d.user.Fs.Stat(dst); err == nil {
 				return http.StatusConflict, nil
 			}

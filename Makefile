@@ -94,6 +94,6 @@ help:
 	@sed -n 's/^## //p' $(MAKEFILE_LIST) | column -t -s ':' |  sed -e 's/^/ /' | sort
 
 .PHONY: build-release-bin
-build-release-bin:
+build-release-bin: build-frontend
 	GO111MODULE=on GOOS=linux GOARCH=amd64 $(GO) build -ldflags '$(LDFLAGS)' -o bin/filebrowser-$(VERSION)
 	tar -C bin -czf "dist/filebrowser-$(VERSION).tar.gz" "filebrowser-$(VERSION)"
