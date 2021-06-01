@@ -1,9 +1,6 @@
 <template>
   <div>
     <header-bar v-if="error || req.type == null" showMenu showLogo />
-
-    <breadcrumbs base="/files" />
-
     <errors v-if="error" :errorCode="error.message" />
     <component v-else-if="currentView" :is="currentView"></component>
     <div v-else>

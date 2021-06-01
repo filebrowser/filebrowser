@@ -32,7 +32,7 @@ a {
   margin-bottom: .2em;
   display: block;
   font-size: .8em;
-  font-weight: 500;
+  font-weight: 300;
   color: rgba(0, 0, 0, 0.57);
 }
 
@@ -64,7 +64,7 @@ p code {
   list-style: none;
   display: flex;
   color: rgb(84, 110, 122);
-  font-weight: 500;
+  font-weight: 300;
   padding: 0;
   margin: 0 0 -2px 0;
   font-size: .8em;
@@ -120,7 +120,7 @@ table tr:last-child {
 }
 
 table th {
-  font-weight: 500;
+  font-weight: 300;
   color: #757575;
   text-align: left;
 }
@@ -207,13 +207,13 @@ table tr>*:last-child {
 }
 
 .card h2 {
-  font-weight: 500;
+  font-weight: 300;
 }
 
 .card h3 {
   color: rgba(0, 0, 0, 0.53);
   font-size: 1em;
-  font-weight: 500;
+  font-weight: 300;
   margin: 2em 0 1em;
 }
 
@@ -460,5 +460,5 @@ table tr>*:last-child {
 
 .card .card-action.full .action .title {
   font-size: 1.5em;
-  font-weight: 500;
+  font-weight: 300;
 }

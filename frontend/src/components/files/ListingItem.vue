@@ -23,9 +23,8 @@
     <div>
       <p class="name">{{ name }}</p>
 
-      <p v-if="isDir" class="size" data-order="-1">&mdash;</p>
+      <p v-if="isDir" class="size" data-order="-1"></p>
       <p v-else class="size" :data-order="humanSize()">{{ humanSize() }}</p>
-
       <p class="modified">
         <time :datetime="modified">{{ humanTime() }}</time>
       </p>

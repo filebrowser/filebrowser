@@ -2,7 +2,7 @@
   margin: 0 0 0 0.5em;
   font-size: .9em;
   color: rgba(0, 0, 0, 0.38);
-  font-weight: 500;
+  font-weight: 300;
 }
 
 #listing .item div:last-of-type * {
@@ -40,22 +40,23 @@
 
 #listing .item .size,
 #listing .item .modified {
-  font-size: 0.9em;
+  font-size: 12px;
+  color: #6f6f6f;
 }
 
 #listing .item .name {
-  font-weight: bold;
+  font-weight: 300;
 }
 
 #listing .item i {
-  font-size: 4em;
+  font-size: 25px;
   margin-right: 0.1em;
   vertical-align: bottom;
 }
 
 #listing .item img {
-  width: 4em;
-  height: 4em;
+  width: 25px;
+  height: 25px;
   object-fit: cover;
   margin-right: 0.1em;
   vertical-align: bottom;
@@ -68,7 +69,7 @@
   display: block !important;
   width: 95%;
   color: rgba(0, 0, 0, 0.3);
-  font-weight: 500;
+  font-weight: 300;
 }
 
 .message i {
@@ -86,7 +87,7 @@
   width: calc(33% - 1em);
   margin: .5em;
   padding: 0.5em;
-  border-radius: 0.2em;
+  border-radius: 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .12);
 }
 
@@ -99,7 +100,7 @@
 }
 
 #listing.mosaic .item div:first-of-type {
-  width: 5em;
+  width: 3em;
 }
 
 #listing.mosaic .item div:last-of-type {
@@ -111,13 +112,14 @@
   width: 100%;
   max-width: 100%;
   margin: 0;
+  margin-top: 64px;
 }
 
 #listing.list .item {
   width: 100%;
   margin: 0;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 1em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.2em;
   border-top: 0;
 }
 
@@ -166,13 +168,14 @@
   font-size: 1.5em;
   vertical-align: middle;
   margin-left: .2em;
+  margin-right: .2em;
 }
 
 #listing.list .item.header {
   display: flex !important;
-  background: #fafafa;
+  background: white;
   z-index: 999;
-  padding: .85em;
+  padding: .5em;
   border: 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
@@ -194,7 +197,7 @@
 }
 
 #listing.list .name {
-  font-weight: normal;
+  font-weight: 300;
 }
 
 #listing.list .item.header .name {
@@ -216,7 +219,7 @@
 }
 
 #listing.list .item.header .active {
-  font-weight: bold;
+  font-weight: 300;
 }
 
 #listing #multiple-selection {
@@ -239,4 +242,10 @@
 #listing #multiple-selection p,
 #listing #multiple-selection i {
   color: #fff;
+}
+
+
+/*OVERRIDE CSS*/
+#listing .item[aria-selected=true] .modified, #listing .item .size {
+  color: #fff !important;
 }

@@ -84,8 +84,8 @@ header .menu-button {
 #search #input {
   background-color: #f5f5f5;
   display: flex;
-  padding: 0.75em;
-  border-radius: 0.3em;
+  padding: 0.5em;
+  border-radius: 0;
   transition: .1s ease all;
   align-items: center;
   z-index: 2;
@@ -140,7 +140,7 @@ header .menu-button {
 
 #search.active #result {
   padding: .5em;
-  height: calc(100% - 4em);
+  height: calc(100% - 0);
 }
 
 #search ul {
@@ -217,7 +217,7 @@ header .menu-button {
 
 #search .boxes h3 {
   margin: 0;
-  font-weight: 500;
+  font-weight: 300;
   font-size: 1em;
   color: #212121;
   padding: .5em;

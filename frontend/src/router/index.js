@@ -51,53 +51,6 @@ const router = new Router({
           },
         },
         {
-          path: "/settings",
-          name: "Settings",
-          component: Settings,
-          redirect: {
-            path: "/settings/profile",
-          },
-          meta: {
-            requiresAuth: true,
-          },
-          children: [
-            {
-              path: "/settings/profile",
-              name: "Profile Settings",
-              component: ProfileSettings,
-            },
-            {
-              path: "/settings/shares",
-              name: "Shares",
-              component: Shares,
-            },
-            {
-              path: "/settings/global",
-              name: "Global Settings",
-              component: GlobalSettings,
-              meta: {
-                requiresAdmin: true,
-              },
-            },
-            {
-              path: "/settings/users",
-              name: "Users",
-              component: Users,
-              meta: {
-                requiresAdmin: true,
-              },
-            },
-            {
-              path: "/settings/users/*",
-              name: "User",
-              component: User,
-              meta: {
-                requiresAdmin: true,
-              },
-            },
-          ],
-        },
-        {
           path: "/403",
           name: "Forbidden",
           component: Errors,

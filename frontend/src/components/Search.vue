@@ -1,6 +1,16 @@
 <template>
   <div id="search" @click="open" v-bind:class="{ active, ongoing }">
     <div id="input">
+      <input
+        type="text"
+        @keyup.exact="keyup"
+        @keyup.enter="submit"
+        ref="input"
+        :autofocus="active"
+        v-model.trim="value"
+        :aria-label="$t('search.pressToSearch')"
+        :placeholder="$t('search.pressToSearch')"
+      />
       <button
         v-if="active"
         class="action"
@@ -11,39 +21,16 @@
         <i class="material-icons">arrow_back</i>
       </button>
       <i v-else class="material-icons">search</i>
-      <input
-        type="text"
-        @keyup.exact="keyup"
-        @keyup.enter="submit"
-        ref="input"
-        :autofocus="active"
-        v-model.trim="value"
-        :aria-label="$t('search.search')"
-        :placeholder="$t('search.search')"
-      />
     </div>
 
     <div id="result" ref="result">
       <div>
         <template v-if="isEmpty">
-          <p>{{ text }}</p>
-
           <template v-if="value.length === 0">
-            <div class="boxes">
-              <h3>{{ $t("search.types") }}</h3>
-              <div>
-                <div
-                  tabindex="0"
-                  v-for="(v, k) in boxes"
-                  :key="k"
-                  role="button"
-                  @click="init('type:' + k)"
-                  :aria-label="$t('search.' + v.label)"
-                >
-                  <i class="material-icons">{{ v.icon }}</i>
-                  <p>{{ $t("search." + v.label) }}</p>
-                </div>
-              </div>
+            <div class="valign-wrapper" style="padding: 45%">
+              <i class="material-icons" style="font-size: 8em !important"
+                >toc</i
+              >
             </div>
           </template>
         </template>
@@ -58,14 +45,16 @@
         </ul>
       </div>
       <p id="renew">
-        <i class="material-icons spin">autorenew</i>
+        <i class="material-icons spin" style="font-size: 8em !important"
+          >autorenew</i
+        >
       </p>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapState } from "vuex";
 import url from "@/utils/url";
 import { search } from "@/api";
 

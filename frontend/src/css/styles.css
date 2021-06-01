@@ -85,19 +85,20 @@ main .spinner .bounce2 {
 }
 
 .action i {
-  padding: 0.4em;
+  padding: 0.25em;
   transition: .1s ease-in-out all;
-  border-radius: 50%;
+  border-radius: 0;
+  font-size: 14px;
 }
 
 .action:hover {
-  background-color: rgba(0, 0, 0, .1);
+  color: #0277bd;
 }
 
 .action ul {
   position: absolute;
   top: 0;
-  color: #7d7d7d;
+  color: #f5f5f5;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -142,7 +143,7 @@ main .spinner .bounce2 {
   height: 1.8em;
   text-align: center;
   line-height: 1.55em;
-  font-weight: bold;
+  font-weight: 300;
   border: 2px solid white;
 }
 
@@ -371,3 +372,55 @@ main .spinner .bounce2 {
 }
 
 @import './mobile.css';
+
+
+input, .card {
+  border-radius: 0 !important;
+}
+
+#input {
+  font-size: 12px !important;
+  border-radius: 0;
+  height: 36px !important;
+  background-color: white;
+}
+
+i {
+  font-size: 16px !important;
+  color: #232f3e !important;
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* Track */
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 0;
+  box-shadow: inset 0 0 0 transparent;
+  background: #e8e8e8;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 0;
+  box-shadow: inset 0 0 0 transparent;;
+}
+
+.scroll-0 {
+  overflow-y: hidden !important;
+}
