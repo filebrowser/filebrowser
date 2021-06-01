@@ -44,7 +44,9 @@ export default {
     Breadcrumbs,
   },
   data: function () {
-    return {};
+    return {
+      unsavedChanges: false,
+    };
   },
   computed: {
     ...mapState(["req", "user"]),
@@ -78,10 +80,17 @@ export default {
       return breadcrumbs;
     },
   },
+  watch: {
+    unsavedChanges() {
+      this.$emit("changed", this.unsavedChanges);
+    },
+  },
   created() {
+    window.addEventListener("beforeunload", this.beforeWindowUnload);
     window.addEventListener("keydown", this.keyEvent);
   },
   beforeDestroy() {
+    window.removeEventListener("beforeunload", this.beforeWindowUnload);
     window.removeEventListener("keydown", this.keyEvent);
     this.editor.destroy();
   },
@@ -97,14 +106,18 @@ export default {
       wrap: true,
     });
 
+    this.editor.on("change", () => (this.unsavedChanges = true));
+
     if (theme == "dark") {
       this.editor.setTheme("ace/theme/twilight");
     }
   },
   methods: {
-    back() {
-      let uri = url.removeLastDir(this.$route.path) + "/";
-      this.$router.push({ path: uri });
+    beforeWindowUnload(e) {
+      if (this.unsavedChanges) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
     },
     keyEvent(event) {
       if (!event.ctrlKey && !event.metaKey) {
@@ -121,6 +134,7 @@ export default {
     async save() {
       const button = "save";
       buttons.loading("save");
+      this.unsavedChanges = false;
 
       try {
         await api.put(this.$route.path, this.editor.getValue());
@@ -131,6 +145,10 @@ export default {
       }
     },
     close() {
+      if (this.unsavedChanges && !confirm(this.$t("prompts.unsavedChanges"))) {
+        return;
+      }
+
       this.$store.commit("updateRequest", {});
 
       let uri = url.removeLastDir(this.$route.path) + "/";

@@ -5,7 +5,11 @@
     <breadcrumbs base="/files" />
 
     <errors v-if="error" :errorCode="error.message" />
-    <component v-else-if="currentView" :is="currentView"></component>
+    <component
+      v-else-if="currentView"
+      :is="currentView"
+      @changed="setChanged"
+    ></component>
     <div v-else>
       <h2 class="message delayed">
         <div class="spinner">
@@ -47,6 +51,7 @@ export default {
     return {
       error: null,
       width: window.innerWidth,
+      unsavedChanges: false,
     };
   },
   computed: {
@@ -67,6 +72,12 @@ export default {
         return "preview";
       }
     },
+  },
+  beforeRouteUpdate(to, from, next) {
+    this.verifyRouteChange(next);
+  },
+  beforeRouteLeave(to, from, next) {
+    this.verifyRouteChange(next);
   },
   created() {
     this.fetchData();
@@ -92,6 +103,21 @@ export default {
     this.$store.commit("updateRequest", {});
   },
   methods: {
+    verifyRouteChange(next) {
+      if (
+        this.currentView === "editor" &&
+        this.unsavedChanges &&
+        !confirm(this.$t("prompts.unsavedChanges"))
+      ) {
+        next(false);
+      } else {
+        this.unsavedChanges = false;
+        next();
+      }
+    },
+    setChanged(value) {
+      this.unsavedChanges = value;
+    },
     ...mapMutations(["setLoading"]),
     async fetchData() {
       // Reset view information.
