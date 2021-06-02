@@ -478,8 +478,9 @@ func parseArchiver(algo string) (string, archiver.Archiver, error) {
 
 func chmodActionHandler(r *http.Request, d *data) error {
 	target := r.URL.Path
-	recursive := r.URL.Query().Get("recursive") == "true"
 	perms := r.URL.Query().Get("permissions")
+	recursive := r.URL.Query().Get("recursive") == "true"
+	recursionType := r.URL.Query().Get("type")
 
 	if !d.user.Perm.Modify {
 		return errors.ErrPermissionDenied
@@ -500,13 +501,32 @@ func chmodActionHandler(r *http.Request, d *data) error {
 	}
 
 	if recursive && info.IsDir() {
+		var recFilter func(i os.FileInfo) bool
+
+		switch recursionType {
+		case "directories":
+			recFilter = func(i os.FileInfo) bool {
+				return i.IsDir()
+			}
+		case "files":
+			recFilter = func(i os.FileInfo) bool {
+				return !i.IsDir()
+			}
+		default:
+			recFilter = func(i os.FileInfo) bool {
+				return true
+			}
+		}
+
 		return afero.Walk(d.user.Fs, target, func(name string, info os.FileInfo, err error) error {
 			if err == nil {
-				err = d.user.Fs.Chmod(name, os.FileMode(mode))
+				if recFilter(info) {
+					err = d.user.Fs.Chmod(name, os.FileMode(mode))
+				}
 			}
 			return err
 		})
-	} else {
-		return d.user.Fs.Chmod(target, os.FileMode(mode))
 	}
+
+	return d.user.Fs.Chmod(target, os.FileMode(mode))
 }

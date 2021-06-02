@@ -4,8 +4,8 @@
       <h2>{{ $t("prompts.permissions") }}</h2>
     </div>
 
-    <div class="card-content">
-      <table class="permissions">
+    <div class="card-content" id="permissions">
+      <table>
         <thead>
           <tr>
             <td></td>
@@ -15,7 +15,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="permission-row">
+          <tr>
             <td>{{ $t("prompts.owner") }}</td>
             <td>
               <input type="checkbox" v-model="permissions.owner.read" />
@@ -27,7 +27,7 @@
               <input type="checkbox" v-model="permissions.owner.execute" />
             </td>
           </tr>
-          <tr class="permission-row">
+          <tr>
             <td>{{ $t("prompts.group") }}</td>
             <td>
               <input type="checkbox" v-model="permissions.group.read" />
@@ -39,7 +39,7 @@
               <input type="checkbox" v-model="permissions.group.execute" />
             </td>
           </tr>
-          <tr class="permission-row">
+          <tr>
             <td>{{ $t("prompts.others") }}</td>
             <td>
               <input type="checkbox" v-model="permissions.others.read" />
@@ -56,10 +56,50 @@
       <p>
         <code>{{ permModeString }} ({{ permMode.toString(8) }})</code>
       </p>
-      <p v-if="dirSelected">
-        <input type="checkbox" v-model="recursive" />
-        {{ $t("prompts.recursive") }}
-      </p>
+      <template v-if="dirSelected">
+        <p>
+          <input type="checkbox" v-model="recursive" />
+          {{ $t("prompts.recursive") }}:
+        </p>
+        <div class="recursion-types">
+          <p>
+            <input
+              type="radio"
+              id="recursive-all"
+              value="all"
+              :disabled="!recursive"
+              v-model="recursionType"
+            />
+            <label for="recursive-all">
+              {{ $t("prompts.directoriesAndFiles") }}
+            </label>
+          </p>
+          <p>
+            <input
+              type="radio"
+              id="recursive-directories"
+              value="directories"
+              :disabled="!recursive"
+              v-model="recursionType"
+            />
+            <label for="recursive-directories">
+              {{ $t("prompts.directories") }}
+            </label>
+          </p>
+          <p>
+            <input
+              type="radio"
+              id="recursive-files"
+              value="files"
+              :disabled="!recursive"
+              v-model="recursionType"
+            />
+            <label for="recursive-files">
+              {{ $t("prompts.files") }}
+            </label>
+          </p>
+        </div>
+      </template>
     </div>
 
     <div class="card-action">
@@ -93,6 +133,7 @@ export default {
   data: function () {
     return {
       recursive: false,
+      recursionType: "all",
       permissions: {
         owner: {
           read: false,
@@ -191,7 +232,12 @@ export default {
 
       try {
         this.loading = true;
-        await api.chmod(item.url, this.permMode, this.recursive);
+        await api.chmod(
+          item.url,
+          this.permMode,
+          this.recursive,
+          this.recursionType
+        );
 
         this.$store.commit("setReload", true);
       } catch (e) {
