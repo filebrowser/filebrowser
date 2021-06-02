@@ -14,6 +14,7 @@ import Download from "./Download";
 import Move from "./Move";
 import Archive from "./Archive";
 import Unarchive from "./Unarchive";
+import Permissions from "./Permissions";
 import Copy from "./Copy";
 import NewFile from "./NewFile";
 import NewDir from "./NewDir";
@@ -35,6 +36,7 @@ export default {
     Move,
     Archive,
     Unarchive,
+    Permissions,
     Copy,
     Share,
     NewFile,
@@ -97,6 +99,7 @@ export default {
           "move",
           "archive",
           "unarchive",
+          "permissions",
           "copy",
           "newFile",
           "newDir",

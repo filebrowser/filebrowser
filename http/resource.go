@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/mholt/archiver"
@@ -211,6 +212,12 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		src := r.URL.Path
 		dst := r.URL.Query().Get("destination")
 		action := r.URL.Query().Get("action")
+
+		if action == "chmod" {
+			err := chmodActionHandler(r, d)
+			return errToStatus(err), err
+		}
+
 		dst, err := url.QueryUnescape(dst)
 		if !d.Check(src) || !d.Check(dst) {
 			return http.StatusForbidden, nil
@@ -229,7 +236,7 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 
 		override := r.URL.Query().Get("override") == "true"
 		rename := r.URL.Query().Get("rename") == "true"
-		unarchive := r.URL.Query().Get("action") == "unarchive"
+		unarchive := action == "unarchive"
 		if !override && !rename && !unarchive {
 			if _, err = d.user.Fs.Stat(dst); err == nil {
 				return http.StatusConflict, nil
@@ -339,7 +346,6 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		src = d.user.FullPath(path.Clean("/" + src))
 		dst = d.user.FullPath(path.Clean("/" + dst))
 
-		// THIS COULD BE VUNERABLE TO https://github.com/snyk/zip-slip-vulnerability
 		err := archiver.Unarchive(src, dst)
 		if err != nil {
 			return errors.ErrInvalidRequestParams
@@ -467,5 +473,40 @@ func parseArchiver(algo string) (string, archiver.Archiver, error) {
 		return ".tar.sz", archiver.NewTarSz(), nil
 	default:
 		return "", nil, fmt.Errorf("format not implemented")
+	}
+}
+
+func chmodActionHandler(r *http.Request, d *data) error {
+	target := r.URL.Path
+	recursive := r.URL.Query().Get("recursive") == "true"
+	perms := r.URL.Query().Get("permissions")
+
+	if !d.user.Perm.Modify {
+		return errors.ErrPermissionDenied
+	}
+
+	if !d.Check(target) || target == "/" {
+		return errors.ErrPermissionDenied
+	}
+
+	mode, err := strconv.ParseUint(perms, 10, 32)
+	if err != nil {
+		return errors.ErrInvalidRequestParams
+	}
+
+	info, err := d.user.Fs.Stat(target)
+	if err != nil {
+		return err
+	}
+
+	if recursive && info.IsDir() {
+		return afero.Walk(d.user.Fs, target, func(name string, info os.FileInfo, err error) error {
+			if err == nil {
+				err = d.user.Fs.Chmod(name, os.FileMode(mode))
+			}
+			return err
+		})
+	} else {
+		return d.user.Fs.Chmod(target, os.FileMode(mode))
 	}
 }

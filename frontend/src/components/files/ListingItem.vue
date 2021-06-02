@@ -41,6 +41,8 @@
       <p class="modified">
         <time :datetime="modified">{{ humanTime() }}</time>
       </p>
+
+      <p class="permissions">{{ permissions() }}</p>
     </div>
   </div>
 </template>
@@ -68,6 +70,7 @@ export default {
     "url",
     "type",
     "size",
+    "mode",
     "modified",
     "index",
     "readOnly",
@@ -116,6 +119,26 @@ export default {
   },
   methods: {
     ...mapMutations(["addSelected", "removeSelected", "resetSelected"]),
+    permissions() {
+      let s = "";
+      if (this.isSymlink) {
+        s += "l";
+      } else if (this.isDir) {
+        s += "d";
+      } else {
+        s += "-";
+      }
+      s += (this.mode & 256) != 0 ? "r" : "-";
+      s += (this.mode & 128) != 0 ? "w" : "-";
+      s += (this.mode & 64) != 0 ? "x" : "-";
+      s += (this.mode & 32) != 0 ? "r" : "-";
+      s += (this.mode & 16) != 0 ? "w" : "-";
+      s += (this.mode & 8) != 0 ? "x" : "-";
+      s += (this.mode & 4) != 0 ? "r" : "-";
+      s += (this.mode & 2) != 0 ? "w" : "-";
+      s += (this.mode & 1) != 0 ? "x" : "-";
+      return s;
+    },
     humanSize: function () {
       return filesize(this.size);
     },

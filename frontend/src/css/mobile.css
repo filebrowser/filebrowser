@@ -8,6 +8,9 @@
   main {
     width: calc(100% - 13em)
   }
+  #listing.list .item .permissions {
+    display: none;
+  }
 }
 
 @media (max-width: 736px) {
@@ -19,6 +22,9 @@
   }
   #listing.list .item .name {
     width: 60%;
+  }
+  #listing.list .item .permissions {
+    display: none;
   }
   #more {
     display: inherit

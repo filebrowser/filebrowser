@@ -155,7 +155,19 @@
 }
 
 #listing.list .item .size {
-  width: 25%;
+  width: 15%;
+}
+
+#listing.list .item .modified {
+  width: 20%;
+}
+
+#listing .item .permissions {
+  font-family: monospace, monospace;
+}
+
+#listing.mosaic .item .permissions {
+  display: none;
 }
 
 #listing .item.header {
@@ -244,6 +256,11 @@
 
 #listing .item .symlink-icon {
   color: #fff;
+  position: absolute;
+}
+
+#listing .item[aria-selected=true] .symlink-icon {
+  color: var(--blue);
   position: absolute;
 }
 

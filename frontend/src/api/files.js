@@ -185,3 +185,9 @@ export async function unarchive(path, name, override) {
   const url = `${path}?action=${action}&destination=${to}&override=${override}`;
   return resourceAction(url, "PATCH");
 }
+
+export async function chmod(path, perms, recursive = false) {
+  const action = `chmod`;
+  const url = `${path}?action=${action}&permissions=${perms}&recursive=${recursive}`;
+  return resourceAction(url, "PATCH");
+}

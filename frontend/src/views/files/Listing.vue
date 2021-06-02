@@ -38,6 +38,13 @@
             show="move"
           />
           <action
+            v-if="headerButtons.permissions"
+            id="permissions-button"
+            icon="lock"
+            :label="$t('buttons.permissions')"
+            show="permissions"
+          />
+          <action
             v-if="headerButtons.archive"
             id="archive-button"
             icon="archive"
@@ -217,6 +224,7 @@
             v-bind:link="item.link"
             v-bind:isDir="item.isDir"
             v-bind:url="item.url"
+            v-bind:mode="item.mode"
             v-bind:modified="item.modified"
             v-bind:type="item.type"
             v-bind:size="item.size"
@@ -235,6 +243,7 @@
             v-bind:link="item.link"
             v-bind:isDir="item.isDir"
             v-bind:url="item.url"
+            v-bind:mode="item.mode"
             v-bind:modified="item.modified"
             v-bind:type="item.type"
             v-bind:size="item.size"
@@ -384,6 +393,7 @@ export default {
         share: this.selectedCount === 1 && this.user.perm.share,
         move: this.selectedCount > 0 && this.user.perm.rename,
         copy: this.selectedCount > 0 && this.user.perm.create,
+        permissions: this.selectedCount === 1 && this.user.perm.modify,
         archive: this.selectedCount > 0 && this.user.perm.create,
         unarchive: this.selectedCount === 1 && this.onlyArchivesSelected,
       };
