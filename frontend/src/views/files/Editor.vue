@@ -31,49 +31,18 @@ import "ace-builds/webpack-resolver";
 
 import HeaderBar from "@/components/header/HeaderBar";
 import Action from "@/components/header/Action";
-import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default {
   name: "editor",
   components: {
     HeaderBar,
     Action,
-    Breadcrumbs,
   },
   data: function () {
     return {};
   },
   computed: {
     ...mapState(["req", "user"]),
-    breadcrumbs() {
-      let parts = this.$route.path.split("/");
-
-      if (parts[0] === "") {
-        parts.shift();
-      }
-
-      if (parts[parts.length - 1] === "") {
-        parts.pop();
-      }
-
-      let breadcrumbs = [];
-
-      for (let i = 0; i < parts.length; i++) {
-        breadcrumbs.push({ name: decodeURIComponent(parts[i]) });
-      }
-
-      breadcrumbs.shift();
-
-      if (breadcrumbs.length > 3) {
-        while (breadcrumbs.length !== 4) {
-          breadcrumbs.shift();
-        }
-
-        breadcrumbs[0].name = "...";
-      }
-
-      return breadcrumbs;
-    },
   },
   created() {
     window.addEventListener("keydown", this.keyEvent);
