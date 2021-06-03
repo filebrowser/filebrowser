@@ -45,7 +45,10 @@
         </router-link>
 
         <button
-          v-if="authMethod == 'json'"
+          v-if="
+            authMethod == 'json' ||
+            (authMethod == 'proxy' && authLogoutURL != '')
+          "
           @click="logout"
           class="action"
           id="logout"
@@ -108,6 +111,7 @@ import {
   disableExternal,
   noAuth,
   authMethod,
+  authLogoutURL,
 } from "@/utils/constants";
 
 export default {
@@ -123,6 +127,7 @@ export default {
     disableExternal: () => disableExternal,
     noAuth: () => noAuth,
     authMethod: () => authMethod,
+    authLogoutURL: () => authLogoutURL,
   },
   methods: {
     help() {

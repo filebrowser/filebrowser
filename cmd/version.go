@@ -16,6 +16,6 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version number",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("File Browser v" + version.Version + "/" + version.CommitSHA)
+		fmt.Println("File Browser " + version.Version + "/" + version.CommitSHA)
 	},
 }

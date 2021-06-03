@@ -35,6 +35,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 
 	flags.String("auth.method", string(auth.MethodJSONAuth), "authentication type")
 	flags.String("auth.header", "", "HTTP header for auth.method=proxy")
+	flags.String("auth.logoutUrl", "", "Logout URL that should be called when auth.method=proxy")
 
 	flags.String("recaptcha.host", "https://www.google.com", "use another host for ReCAPTCHA. recaptcha.net might be useful in China")
 	flags.String("recaptcha.key", "", "ReCaptcha site key")

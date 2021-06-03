@@ -1,7 +1,7 @@
 import store from "@/store";
 import router from "@/router";
 import { Base64 } from "js-base64";
-import { baseURL } from "@/utils/constants";
+import { baseURL, authMethod, authLogoutURL } from "@/utils/constants";
 
 export function parseToken(token) {
   const parts = token.split(".");
@@ -82,11 +82,24 @@ export async function signup(username, password) {
   }
 }
 
-export function logout() {
+export async function logout() {
   document.cookie = "auth=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
 
   store.commit("setJWT", "");
   store.commit("setUser", null);
   localStorage.setItem("jwt", null);
   router.push({ path: "/login" });
+
+  if (authMethod === "proxy" && authLogoutURL != "") {
+    try {
+      await fetch(`${authLogoutURL}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (e) {
+      this.$showError(e);
+    }
+  }
 }
