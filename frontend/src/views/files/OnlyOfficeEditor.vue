@@ -85,12 +85,11 @@ export default {
     document.head.appendChild(onlyofficeScript);
 
     onlyofficeScript.onload = () => {
-      let fileUrl = `${window.location.protocol}//
-        ${window.location.host}${baseURL}/api/raw${url.encodePath(
+      let fileUrl = `${window.location.protocol}//${window.location.host}${baseURL}/api/raw${url.encodePath(
         this.req.path
       )}?auth=${this.jwt}`;
 
-      let key = Date.parse(this.req.modified).toString() + this.req.path;
+      let key = Date.parse(this.req.modified).toString() + url.encodePath(this.req.path);
       key = key.replaceAll(/[-_.!~[\]*'()/,;:\-%+.]/g, "");
       if (key.length > 127) {
         key = key.substring(0, 127);
