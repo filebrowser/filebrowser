@@ -54,7 +54,10 @@ export default {
         return false;
       }
 
-      if (this.req.path.startsWith(`/${trashDir}/`)) {
+      if (
+        this.req.path.startsWith(`/${trashDir}/`) ||
+        this.req.path.endsWith(`/${trashDir}`)
+      ) {
         return false;
       }
 

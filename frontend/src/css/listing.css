@@ -118,7 +118,7 @@
   width: 100%;
   margin: 0;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 1em;
+  padding: .2em .5em;
   border-top: 0;
 }
 
@@ -277,13 +277,13 @@
 }
 
 #listing.list .item .symlink-icon.dir {
-  font-size: 1.2em;
-  left: 1em;
-  bottom: 1em;
+  font-size: 1em;
+  left: .8em;
+  bottom: .6em;
 }
 
 #listing.list .item .symlink-icon.file {
-  font-size: 1.2em;
-  left: 1.14em;
-  bottom: .85em;
+  font-size: 1em;
+  left: .9em;
+  bottom: .4em;
 }
