@@ -25,6 +25,7 @@ type User struct {
 	Username     string        `storm:"unique" json:"username"`
 	Password     string        `json:"password"`
 	Scope        string        `json:"scope"`
+	TrashDir     string        `json:"trashDir"`
 	Locale       string        `json:"locale"`
 	LockPassword bool          `json:"lockPassword"`
 	ViewMode     ViewMode      `json:"viewMode"`

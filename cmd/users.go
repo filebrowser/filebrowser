@@ -27,13 +27,14 @@ var usersCmd = &cobra.Command{
 
 func printUsers(usrs []*users.User) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "ID\tUsername\tScope\tLocale\tV. Mode\tS.Click\tAdmin\tExecute\tCreate\tRename\tModify\tDelete\tShare\tDownload\tPwd Lock")
+	fmt.Fprintln(w, "ID\tUsername\tScope\tTrash Dir\tLocale\tV. Mode\tS.Click\tAdmin\tExecute\tCreate\tRename\tModify\tDelete\tShare\tDownload\tPwd Lock")
 
 	for _, u := range usrs {
-		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t\n",
+		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%s\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t\n",
 			u.ID,
 			u.Username,
 			u.Scope,
+			u.TrashDir,
 			u.Locale,
 			u.ViewMode,
 			u.SingleClick,
@@ -74,6 +75,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.Bool("lockPassword", false, "lock password")
 	flags.StringSlice("commands", nil, "a list of the commands a user can execute")
 	flags.String("scope", ".", "scope for users")
+	flags.String("trashDir", "", "trash directory path for users")
 	flags.String("locale", "en", "locale for users")
 	flags.String("viewMode", string(users.ListViewMode), "view mode for users")
 	flags.Bool("singleClick", false, "use single clicks only")
@@ -93,6 +95,8 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 		switch flag.Name {
 		case "scope":
 			defaults.Scope = mustGetString(flags, flag.Name)
+		case "trashDir":
+			defaults.TrashDir = mustGetString(flags, flag.Name)
 		case "locale":
 			defaults.Locale = mustGetString(flags, flag.Name)
 		case "viewMode":

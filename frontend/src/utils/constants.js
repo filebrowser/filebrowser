@@ -7,6 +7,7 @@ const recaptchaKey = window.FileBrowser.ReCaptchaKey;
 const signup = window.FileBrowser.Signup;
 const version = window.FileBrowser.Version;
 const logoURL = `${staticURL}/img/logo.svg`;
+const trashDir = window.FileBrowser.TrashDir;
 const noAuth = window.FileBrowser.NoAuth;
 const authMethod = window.FileBrowser.AuthMethod;
 const authLogoutURL = window.FileBrowser.AuthLogoutURL;
@@ -25,6 +26,7 @@ export {
   recaptchaKey,
   signup,
   version,
+  trashDir,
   noAuth,
   authMethod,
   authLogoutURL,

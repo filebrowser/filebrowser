@@ -33,6 +33,18 @@
         </button>
       </div>
 
+      <div v-if="trashDir != ''">
+        <router-link
+          class="action"
+          :to="'/files/' + trashDir"
+          :aria-label="$t('sidebar.trashBin')"
+          :title="$t('sidebar.trashBin')"
+        >
+          <i class="material-icons">delete</i>
+          <span>{{ $t("sidebar.trashBin") }}</span>
+        </router-link>
+      </div>
+
       <div>
         <router-link
           class="action"
@@ -109,6 +121,7 @@ import {
   version,
   signup,
   disableExternal,
+  trashDir,
   noAuth,
   authMethod,
   authLogoutURL,
@@ -125,6 +138,7 @@ export default {
     signup: () => signup,
     version: () => version,
     disableExternal: () => disableExternal,
+    trashDir: () => trashDir,
     noAuth: () => noAuth,
     authMethod: () => authMethod,
     authLogoutURL: () => authLogoutURL,

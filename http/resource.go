@@ -95,9 +95,31 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			return errToStatus(err), err
 		}
 
-		err = d.RunHook(func() error {
-			return d.user.Fs.RemoveAll(r.URL.Path)
-		}, "delete", r.URL.Path, "", d.user)
+		skipTrash := r.URL.Query().Get("skip_trash") == "true"
+
+		if d.user.TrashDir == "" || skipTrash {
+			err = d.RunHook(func() error {
+				return d.user.Fs.RemoveAll(r.URL.Path)
+			}, "delete", r.URL.Path, "", d.user)
+		} else {
+			src := r.URL.Path
+			dst := d.user.TrashDir
+
+			if !d.Check(src) || !d.Check(dst) {
+				return http.StatusForbidden, nil
+			}
+
+			src = path.Clean("/" + src)
+			dst = path.Clean("/" + dst)
+
+			err = d.user.Fs.MkdirAll(dst, 0755)
+			if err != nil {
+				return errToStatus(err), err
+			}
+
+			dst = path.Join(dst, file.Name)
+			err = fileutils.MoveFile(d.user.Fs, src, dst)
+		}
 
 		if err != nil {
 			return errToStatus(err), err

@@ -49,8 +49,8 @@ async function resourceAction(url, method, content) {
   }
 }
 
-export async function remove(url) {
-  return resourceAction(url, "DELETE");
+export async function remove(url, skipTrash = true) {
+  return resourceAction(`${url}?skip_trash=${skipTrash}`, "DELETE");
 }
 
 export async function put(url, content = "") {

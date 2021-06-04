@@ -42,6 +42,7 @@ options you want to change.`,
 
 		defaults := settings.UserDefaults{
 			Scope:       user.Scope,
+			TrashDir:    user.TrashDir,
 			Locale:      user.Locale,
 			ViewMode:    user.ViewMode,
 			SingleClick: user.SingleClick,
@@ -51,6 +52,7 @@ options you want to change.`,
 		}
 		getUserDefaults(flags, &defaults, false)
 		user.Scope = defaults.Scope
+		user.TrashDir = defaults.TrashDir
 		user.Locale = defaults.Locale
 		user.ViewMode = defaults.ViewMode
 		user.SingleClick = defaults.SingleClick
