@@ -56,7 +56,7 @@ header {
   color: var(--textPrimary) !important;
 }
 .action:hover {
-  background-color: rgba(255, 255, 255, .1);
+  background-color: rgba(255, 255, 255, .2);
 }
 .action i {
   color: var(--icon) !important;
@@ -77,7 +77,7 @@ nav > div {
   color: var(--textPrimary) !important;
 }
 .breadcrumbs a:hover {
-  background-color: rgba(255, 255, 255, .1);
+  background-color: rgba(255, 255, 255, .2);
 }
 
 #listing .item {
@@ -211,4 +211,16 @@ table th {
 
 .share__box__element {
   border-top-color: var(--divider);
+}
+
+@keyframes pulse {
+  0% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, .2);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0);
+  }
 }

@@ -14,7 +14,7 @@ function loading(button) {
   el.style.opacity = 0;
 
   setTimeout(() => {
-    el.classList.add("spin");
+    el.classList.add("pulse-spin");
     el.innerHTML = "autorenew";
     el.style.opacity = 1;
   }, 100);
@@ -31,7 +31,7 @@ function done(button) {
   el.style.opacity = 0;
 
   setTimeout(() => {
-    el.classList.remove("spin");
+    el.classList.remove("pulse-spin");
     el.innerHTML = el.dataset.icon;
     el.style.opacity = 1;
   }, 100);

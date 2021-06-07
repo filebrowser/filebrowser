@@ -16,7 +16,6 @@
       />
 
       <button
-        :disabled="loading"
         v-for="(ext, format) in formats"
         :key="format"
         class="button button--block"
@@ -33,13 +32,13 @@
 import { mapState, mapGetters } from "vuex";
 import { files as api } from "@/api";
 import url from "@/utils/url";
+import buttons from "@/utils/buttons";
 
 export default {
   name: "archive",
   data: function () {
     return {
       name: "",
-      loading: false,
       formats: {
         zip: "zip",
         tar: "tar",
@@ -76,17 +75,15 @@ export default {
       uri = uri.replace("//", "/");
 
       try {
-        this.loading = true;
+        buttons.loading("archive");
+        this.$store.commit("closeHovers");
         await api.archive(uri, this.name, format, ...items);
-
         this.$store.commit("setReload", true);
       } catch (e) {
         this.$showError(e);
       } finally {
-        this.loading = false;
+        buttons.done("archive");
       }
-
-      this.$store.commit("closeHovers");
     },
   },
 };

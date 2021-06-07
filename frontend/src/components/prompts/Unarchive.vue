@@ -30,7 +30,6 @@
         type="submit"
         :aria-label="$t('buttons.unarchive')"
         :title="$t('buttons.unarchive')"
-        :disabled="loading"
       >
         {{ $t("buttons.unarchive") }}
       </button>
@@ -41,12 +40,12 @@
 <script>
 import { mapState, mapGetters } from "vuex";
 import { files as api } from "@/api";
+import buttons from "@/utils/buttons";
 
 export default {
   name: "rename",
   data: function () {
     return {
-      loading: false,
       name: "",
     };
   },
@@ -65,17 +64,15 @@ export default {
       dst = dst.replace("//", "/");
 
       try {
-        this.loading = true;
+        buttons.loading("unarchive");
+        this.$store.commit("closeHovers");
         await api.unarchive(item.url, dst, false);
-
         this.$store.commit("setReload", true);
       } catch (e) {
         this.$showError(e);
       } finally {
-        this.loading = true;
+        buttons.done("unarchive");
       }
-
-      this.$store.commit("closeHovers");
     },
   },
 };

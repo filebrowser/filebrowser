@@ -40,7 +40,23 @@ video {
 }
 
 i.spin {
-  animation: 1s spin linear infinite;
+  animation: 1s spin linear infinite, 1s pulse linear infinite;
+}
+
+i.pulse-spin {
+  animation: 1s spin linear infinite, 1s pulse linear infinite;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  50% {
+    background-color: rgba(0, 0, 0, .1);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0);
+  }
 }
 
 #app {
