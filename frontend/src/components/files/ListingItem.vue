@@ -11,6 +11,7 @@
     :data-dir="isDir"
     :aria-label="name"
     :aria-selected="isSelected"
+    ref="item"
   >
     <div>
       <img
@@ -54,6 +55,7 @@ import filesize from "filesize";
 import moment from "moment";
 import { files as api } from "@/api";
 import * as upload from "@/utils/upload";
+import { eventPosition } from "@/utils/event";
 
 export default {
   name: "item",
@@ -117,8 +119,20 @@ export default {
       return enableThumbs;
     },
   },
+  mounted() {
+    this.$refs.item.addEventListener("contextmenu", this.contextMenu);
+  },
+  beforeDestroy() {
+    this.$refs.item.removeEventListener("contextmenu", this.contextMenu);
+  },
   methods: {
-    ...mapMutations(["addSelected", "removeSelected", "resetSelected"]),
+    ...mapMutations([
+      "addSelected",
+      "removeSelected",
+      "resetSelected",
+      "showContextMenu",
+      "hideContextMenu",
+    ]),
     permissions() {
       let s = "";
       if (this.isSymlink) {
@@ -282,6 +296,17 @@ export default {
     },
     open: function () {
       this.$router.push({ path: this.url });
+    },
+    contextMenu(event) {
+      event.preventDefault();
+      this.hideContextMenu();
+      if (this.$store.state.selected.indexOf(this.index) === -1) {
+        this.resetSelected();
+        this.addSelected(this.index);
+      }
+      let pos = eventPosition(event);
+      pos.x += 2;
+      this.showContextMenu(pos);
     },
   },
 };

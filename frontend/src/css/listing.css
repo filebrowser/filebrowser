@@ -287,3 +287,23 @@
   left: .9em;
   bottom: .4em;
 }
+
+#context-menu {
+  position: absolute;
+  z-index: 10;
+}
+
+#context-menu >p {
+  margin: 0;
+}
+
+#context-menu .action {
+  border-radius: 0;
+  width: 100%;
+  min-width: max-content;
+  padding-right: .8em;
+}
+
+#context-menu .action > * {
+  vertical-align: middle;
+}

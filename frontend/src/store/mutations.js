@@ -82,6 +82,15 @@ const mutations = {
     state.clipboard.key = "";
     state.clipboard.items = [];
   },
+  showContextMenu: (state, value) => {
+    state.contextMenu = {
+      x: value.x,
+      y: value.y,
+    };
+  },
+  hideContextMenu: (state) => {
+    state.contextMenu = null;
+  },
 };
 
 export default mutations;
