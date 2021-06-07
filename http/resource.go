@@ -21,6 +21,8 @@ import (
 	"github.com/filebrowser/filebrowser/v2/fileutils"
 )
 
+const unarchiveAction = "unarchive"
+
 var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	file, err := files.NewFileInfo(files.FileOptions{
 		Fs:         d.user.Fs,
@@ -258,7 +260,7 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 
 		override := r.URL.Query().Get("override") == "true"
 		rename := r.URL.Query().Get("rename") == "true"
-		unarchive := action == "unarchive"
+		unarchive := action == unarchiveAction
 		if !override && !rename && !unarchive {
 			if _, err = d.user.Fs.Stat(dst); err == nil {
 				return http.StatusConflict, nil
@@ -360,7 +362,7 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		}
 
 		return fileutils.Copy(d.user.Fs, src, dst)
-	case "unarchive":
+	case unarchiveAction:
 		if !d.user.Perm.Create {
 			return errors.ErrPermissionDenied
 		}
