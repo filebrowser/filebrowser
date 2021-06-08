@@ -37,6 +37,17 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		return errToStatus(err), err
 	}
 
+	// check if symlink's target is within base path
+	if file.IsSymlink {
+		parentDir := filepath.Dir(filepath.Clean(file.Path))
+		fullLinkTarget := filepath.Join(d.user.FullPath(parentDir), file.Link)
+		scopedLinkTarget := d.user.FullPath(filepath.Join(parentDir, file.Link))
+		if fullLinkTarget != scopedLinkTarget {
+			err = errors.ErrNotExist
+			return errToStatus(err), err
+		}
+	}
+
 	if r.URL.Query().Get("disk_usage") == "true" {
 		du, inodes, err := fileutils.DiskUsage(file.Fs, file.Path, 100)
 		if err != nil {
