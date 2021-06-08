@@ -109,6 +109,8 @@ func (l byModified) Less(i, j int) bool {
 	return iModified.Sub(jModified) < 0
 }
 
+// FilterItems only includes items that return true when
+// ran through the provided function
 func (l *Listing) FilterItems(fn func(fi *FileInfo) bool) {
 	filtered := []*FileInfo{}
 	for _, item := range l.Items {

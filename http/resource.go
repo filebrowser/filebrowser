@@ -52,8 +52,22 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		file.Listing.Sorting = d.user.Sorting
 		file.Listing.ApplySort()
 		file.Listing.FilterItems(func(fi *files.FileInfo) bool {
+			// remove files that should be hidden
 			_, exists := d.server.HiddenFiles[fi.Name]
-			return !exists
+			if exists {
+				return false
+			}
+
+			// remove symlinks that link outside base path
+			if fi.IsSymlink {
+				fullLinkTarget := filepath.Join(d.user.FullPath(file.Path), fi.Link)
+				scopedLinkTarget := d.user.FullPath(filepath.Join(file.Path, fi.Link))
+				if fullLinkTarget != scopedLinkTarget {
+					return false
+				}
+			}
+
+			return true
 		})
 		return renderJSON(w, r, file)
 	}
