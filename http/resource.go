@@ -65,7 +65,12 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 
 			// remove symlinks that link outside base path
 			if fi.IsSymlink {
-				fullLinkTarget := filepath.Join(d.user.FullPath(file.Path), fi.Link)
+				var fullLinkTarget string
+				if filepath.IsAbs(fi.Link) {
+					fullLinkTarget = fi.Link
+				} else {
+					fullLinkTarget = filepath.Join(d.user.FullPath(file.Path), fi.Link)
+				}
 				scopedLinkTarget := d.user.FullPath(filepath.Join(file.Path, fi.Link))
 				if fullLinkTarget != scopedLinkTarget {
 					return false
@@ -337,7 +342,12 @@ func checkOutOfScopeSymlink(d *data, target string) error {
 		symlink, err := lsf.ReadlinkIfPossible(evalPath)
 		if err == nil {
 			parentDir := filepath.Dir(evalPath)
-			fullLinkTarget := filepath.Join(d.user.FullPath(parentDir), symlink)
+			var fullLinkTarget string
+			if filepath.IsAbs(symlink) {
+				fullLinkTarget = symlink
+			} else {
+				fullLinkTarget = filepath.Join(d.user.FullPath(parentDir), symlink)
+			}
 			scopedLinkTarget := d.user.FullPath(filepath.Join(parentDir, symlink))
 			if fullLinkTarget != scopedLinkTarget {
 				return errors.ErrNotExist
