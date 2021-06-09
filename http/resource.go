@@ -37,15 +37,9 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		return errToStatus(err), err
 	}
 
-	// check if symlink's target is within base path
-	if file.IsSymlink {
-		parentDir := filepath.Dir(filepath.Clean(file.Path))
-		fullLinkTarget := filepath.Join(d.user.FullPath(parentDir), file.Link)
-		scopedLinkTarget := d.user.FullPath(filepath.Join(parentDir, file.Link))
-		if fullLinkTarget != scopedLinkTarget {
-			err = errors.ErrNotExist
-			return errToStatus(err), err
-		}
+	err = checkOutOfScopeSymlink(d, file.Path)
+	if err != nil {
+		return errToStatus(err), err
 	}
 
 	if r.URL.Query().Get("disk_usage") == "true" {
@@ -317,6 +311,38 @@ func checkParent(src, dst string) error {
 	rel = filepath.ToSlash(rel)
 	if !strings.HasPrefix(rel, "../") && rel != ".." && rel != "." {
 		return errors.ErrSourceIsParent
+	}
+
+	return nil
+}
+
+// Checks if path contains symlink to out-of-scope targets.
+// Returns error ErrNotExist if it does.
+func checkOutOfScopeSymlink(d *data, path string) error {
+	lsf, ok := d.user.Fs.(afero.LinkReader)
+	if !ok {
+		return nil
+	}
+
+	var parts []string
+	for _, part := range strings.Split(path, string(os.PathSeparator)) {
+		if part != "" {
+			parts = append(parts, part)
+		}
+	}
+
+	evalPath := string(os.PathSeparator)
+	for _, part := range parts {
+		evalPath = filepath.Join(evalPath, filepath.Clean(part))
+		symlink, err := lsf.ReadlinkIfPossible(evalPath)
+		if err == nil {
+			parentDir := filepath.Dir(evalPath)
+			fullLinkTarget := filepath.Join(d.user.FullPath(parentDir), symlink)
+			scopedLinkTarget := d.user.FullPath(filepath.Join(parentDir, symlink))
+			if fullLinkTarget != scopedLinkTarget {
+				return errors.ErrNotExist
+			}
+		}
 	}
 
 	return nil

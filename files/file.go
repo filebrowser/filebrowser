@@ -65,21 +65,6 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 		return nil, os.ErrPermission
 	}
 
-	isSymlink := false
-	symlink := ""
-	if lst, ok := opts.Fs.(afero.Lstater); ok {
-		info, _, err := lst.LstatIfPossible(opts.Path)
-		if err == nil {
-			isSymlink = IsSymlink(info.Mode())
-		}
-	}
-
-	if isSymlink {
-		if lsf, ok := opts.Fs.(afero.LinkReader); ok {
-			symlink, _ = lsf.ReadlinkIfPossible(opts.Path)
-		}
-	}
-
 	info, err := opts.Fs.Stat(opts.Path)
 	if err != nil {
 		return nil, err
@@ -92,8 +77,6 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 		ModTime:   info.ModTime(),
 		Mode:      info.Mode(),
 		IsDir:     info.IsDir(),
-		IsSymlink: isSymlink,
-		Link:      symlink,
 		Size:      info.Size(),
 		Extension: filepath.Ext(info.Name()),
 		Token:     opts.Token,
