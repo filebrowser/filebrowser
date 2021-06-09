@@ -318,14 +318,14 @@ func checkParent(src, dst string) error {
 
 // Checks if path contains symlink to out-of-scope targets.
 // Returns error ErrNotExist if it does.
-func checkOutOfScopeSymlink(d *data, path string) error {
+func checkOutOfScopeSymlink(d *data, target string) error {
 	lsf, ok := d.user.Fs.(afero.LinkReader)
 	if !ok {
 		return nil
 	}
 
 	var parts []string
-	for _, part := range strings.Split(path, string(os.PathSeparator)) {
+	for _, part := range strings.Split(target, string(os.PathSeparator)) {
 		if part != "" {
 			parts = append(parts, part)
 		}
