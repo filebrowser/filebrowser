@@ -45,6 +45,8 @@
         </router-link>
       </div>
 
+      <quota v-if="quotaExists"></quota>
+
       <div>
         <router-link
           class="action"
@@ -117,11 +119,13 @@
 <script>
 import { mapState, mapGetters } from "vuex";
 import * as auth from "@/utils/auth";
+import Quota from "@/components/Quota";
 import {
   version,
   signup,
   disableExternal,
   trashDir,
+  quotaExists,
   noAuth,
   authMethod,
   authLogoutURL,
@@ -129,6 +133,7 @@ import {
 
 export default {
   name: "sidebar",
+  components: { Quota },
   computed: {
     ...mapState(["user"]),
     ...mapGetters(["isLogged"]),
@@ -139,6 +144,7 @@ export default {
     version: () => version,
     disableExternal: () => disableExternal,
     trashDir: () => trashDir,
+    quotaExists: () => quotaExists,
     noAuth: () => noAuth,
     authMethod: () => authMethod,
     authLogoutURL: () => authLogoutURL,

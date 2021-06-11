@@ -48,7 +48,7 @@ function success(button) {
   el.style.opacity = 0;
 
   setTimeout(() => {
-    el.classList.remove("spin");
+    el.classList.remove("pulse-spin");
     el.innerHTML = "done";
     el.style.opacity = 1;
 

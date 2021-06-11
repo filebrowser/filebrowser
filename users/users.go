@@ -26,6 +26,7 @@ type User struct {
 	Password     string        `json:"password"`
 	Scope        string        `json:"scope"`
 	TrashDir     string        `json:"trashDir"`
+	QuotaFile    string        `json:"quotaFile"`
 	Locale       string        `json:"locale"`
 	LockPassword bool          `json:"lockPassword"`
 	ViewMode     ViewMode      `json:"viewMode"`

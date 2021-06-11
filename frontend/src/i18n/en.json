@@ -267,7 +267,11 @@
     "preview": "Preview",
     "settings": "Settings",
     "signup": "Signup",
-    "siteSettings": "Site Settings"
+    "siteSettings": "Site Settings",
+    "quota": {
+      "space": "Space",
+      "inodes": "Inodes"
+    }
   },
   "success": {
     "linkCopied": "Link copied!"

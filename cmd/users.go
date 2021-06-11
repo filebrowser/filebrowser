@@ -75,6 +75,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.StringSlice("commands", nil, "a list of the commands a user can execute")
 	flags.String("scope", ".", "scope for users")
 	flags.String("trashDir", "", "trash directory path for users")
+	flags.String("quotaFile", "", "path to file with quota data")
 	flags.String("locale", "en", "locale for users")
 	flags.String("viewMode", string(users.ListViewMode), "view mode for users")
 	flags.Bool("singleClick", false, "use single clicks only")
@@ -96,6 +97,8 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 			defaults.Scope = mustGetString(flags, flag.Name)
 		case "trashDir":
 			defaults.TrashDir = mustGetString(flags, flag.Name)
+		case "quotaFile":
+			defaults.QuotaFile = mustGetString(flags, flag.Name)
 		case "locale":
 			defaults.Locale = mustGetString(flags, flag.Name)
 		case "viewMode":

@@ -10,6 +10,7 @@ import (
 type UserDefaults struct {
 	Scope        string            `json:"scope"`
 	TrashDir     string            `json:"trashDir"`
+	QuotaFile    string            `json:"quotaFile"`
 	Locale       string            `json:"locale"`
 	ViewMode     users.ViewMode    `json:"viewMode"`
 	SingleClick  bool              `json:"singleClick"`
@@ -23,6 +24,7 @@ type UserDefaults struct {
 func (d *UserDefaults) Apply(u *users.User) {
 	u.Scope = d.Scope
 	u.TrashDir = d.TrashDir
+	u.QuotaFile = d.QuotaFile
 	u.Locale = d.Locale
 	u.ViewMode = d.ViewMode
 	u.SingleClick = d.SingleClick

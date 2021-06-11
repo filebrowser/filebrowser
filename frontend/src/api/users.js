@@ -49,3 +49,9 @@ export async function remove(id) {
     throw new Error(res.status);
   }
 }
+
+export async function getQuota() {
+  return await fetchJSON(`/api/quota`, {
+    method: "GET",
+  });
+}

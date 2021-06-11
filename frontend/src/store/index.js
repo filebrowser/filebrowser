@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import mutations from "./mutations";
 import getters from "./getters";
 import upload from "./modules/upload";
+import quota from "./modules/quota";
 
 Vue.use(Vuex);
 
@@ -31,5 +32,5 @@ export default new Vuex.Store({
   state,
   getters,
   mutations,
-  modules: { upload },
+  modules: { upload, quota },
 });
