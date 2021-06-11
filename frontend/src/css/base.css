@@ -153,8 +153,12 @@ main {
   margin-top: .5em;
 }
 
-#quota label {
+#quota .label {
   color: #546E7A;
+}
+
+#quota .label .metric {
+  float: right;
 }
 
 #quota .bar {

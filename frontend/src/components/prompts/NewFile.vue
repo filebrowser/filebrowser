@@ -74,6 +74,7 @@ export default {
       }
 
       this.$store.commit("closeHovers");
+      this.$store.dispatch("quota/fetch", 3000);
     },
   },
 };

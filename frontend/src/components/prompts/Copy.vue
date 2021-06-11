@@ -86,7 +86,7 @@ export default {
       if (this.$route.path === this.dest) {
         this.$store.commit("closeHovers");
         action(false, true);
-
+        this.$store.dispatch("quota/fetch", 3000);
         return;
       }
 
@@ -106,6 +106,7 @@ export default {
             event.preventDefault();
             this.$store.commit("closeHovers");
             action(overwrite, rename);
+            this.$store.dispatch("quota/fetch", 3000);
           },
         });
 
@@ -113,6 +114,7 @@ export default {
       }
 
       action(overwrite, rename);
+      this.$store.dispatch("quota/fetch", 3000);
     },
   },
 };

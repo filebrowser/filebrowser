@@ -1,14 +1,20 @@
 <template>
   <div id="quota">
     <div>
-      <label>{{ $t("sidebar.quota.space") }}</label>
-      <div class="bar" :title="spaceUsageTitle">
+      <div class="label">
+        <span>{{ $t("sidebar.quota.space") }}</span>
+        <span v-if="loaded" class="metric">{{ spaceUsageTitle }}</span>
+      </div>
+      <div class="bar" :title="spaceProgress + '%'">
         <div class="progress" :style="{ width: spaceProgress + '%' }"></div>
       </div>
     </div>
     <div>
-      <label>{{ $t("sidebar.quota.inodes") }}</label>
-      <div class="bar" :title="inodeUsageTitle">
+      <div class="label">
+        <span>{{ $t("sidebar.quota.inodes") }}</span>
+        <span v-if="loaded" class="metric">{{ inodeUsageTitle }}</span>
+      </div>
+      <div class="bar" :title="inodeProgress + '%'">
         <div class="progress" :style="{ width: inodeProgress + '%' }"></div>
       </div>
     </div>
@@ -64,6 +70,7 @@ export default {
   methods: {
     progress(metric) {
       let prc = (metric.usage / metric.quota) * 100;
+      prc = Math.round((prc + Number.EPSILON) * 100) / 100;
       return Math.min(prc, 100);
     },
   },

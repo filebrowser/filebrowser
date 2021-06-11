@@ -100,6 +100,7 @@ export default {
         await Promise.all(promises);
         buttons.success("delete");
         this.$store.commit("setReload", true);
+        this.$store.dispatch("quota/fetch", 3000);
       } catch (e) {
         buttons.done("delete");
         this.$showError(e);

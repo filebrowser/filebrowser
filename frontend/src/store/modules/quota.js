@@ -13,19 +13,21 @@ const mutations = {
 };
 
 const actions = {
-  fetch: async (context) => {
-    try {
-      let data = await api.getQuota();
-      if (
-        data !== null &&
-        data.inodes != undefined &&
-        data.space != undefined
-      ) {
-        context.commit("setQuota", data);
+  fetch: async (context, delay = 0) => {
+    setTimeout(async () => {
+      try {
+        let data = await api.getQuota();
+        if (
+          data !== null &&
+          data.inodes != undefined &&
+          data.space != undefined
+        ) {
+          context.commit("setQuota", data);
+        }
+      } catch (e) {
+        console.log(e);
       }
-    } catch (e) {
-      console.log(e);
-    }
+    }, delay);
   },
 };
 

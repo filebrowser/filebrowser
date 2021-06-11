@@ -84,6 +84,7 @@ export default {
       } finally {
         buttons.done("archive");
       }
+      this.$store.dispatch("quota/fetch", 3000);
     },
   },
 };

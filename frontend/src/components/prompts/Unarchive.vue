@@ -73,6 +73,7 @@ export default {
       } finally {
         buttons.done("unarchive");
       }
+      this.$store.dispatch("quota/fetch", 3000);
     },
   },
 };
