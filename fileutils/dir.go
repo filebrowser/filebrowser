@@ -62,8 +62,13 @@ func CopyDir(fs afero.Fs, source, dest string) error {
 	return nil
 }
 
-func DiskUsage(fs afero.Fs, path string, maxDepth int) (size, inodes int64, err error) {
-	info, err := fs.Stat(path)
+func DiskUsage(fs afero.Fs, path string) (size, inodes int64, err error) {
+	lst, ok := fs.(afero.Lstater)
+	if !ok {
+		return 0, 0, err
+	}
+
+	info, _, err := lst.LstatIfPossible(path)
 	if err != nil {
 		return 0, 0, err
 	}
@@ -71,35 +76,23 @@ func DiskUsage(fs afero.Fs, path string, maxDepth int) (size, inodes int64, err 
 	size = info.Size()
 	inodes = int64(1)
 
+	// don't follow symlinks
 	if !info.IsDir() {
 		return size, inodes, err
 	}
 
-	if maxDepth < 1 {
-		return size, inodes, err
-	}
-
-	dir, err := fs.Open(path)
-	if err != nil {
-		return size, inodes, err
-	}
-	defer dir.Close()
-
-	fis, err := dir.Readdir(-1)
+	afs := &afero.Afero{Fs: fs}
+	dir, err := afs.ReadDir(path)
 	if err != nil {
 		return size, inodes, err
 	}
 
-	for _, fi := range fis {
-		if fi.Name() == "." || fi.Name() == ".." {
-			continue
+	for _, fi := range dir {
+		s, i, e := DiskUsage(fs, filepath.Join(path, fi.Name()))
+		if e == nil {
+			size += s
+			inodes += i
 		}
-		s, i, e := DiskUsage(fs, filepath.Join(path, fi.Name()), maxDepth-1)
-		if e != nil {
-			return size, inodes, e
-		}
-		size += s
-		inodes += i
 	}
 
 	return size, inodes, err

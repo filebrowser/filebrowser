@@ -43,7 +43,7 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 	}
 
 	if r.URL.Query().Get("disk_usage") == "true" {
-		du, inodes, err := fileutils.DiskUsage(file.Fs, file.Path, 100)
+		du, inodes, err := fileutils.DiskUsage(file.Fs, file.Path)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}

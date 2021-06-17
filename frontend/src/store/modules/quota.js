@@ -1,4 +1,5 @@
 import { users as api } from "@/api";
+import { quotaExists } from "@/utils/constants";
 
 const state = {
   inodes: null,
@@ -14,6 +15,10 @@ const mutations = {
 
 const actions = {
   fetch: async (context, delay = 0) => {
+    if (!quotaExists) {
+      return;
+    }
+
     setTimeout(async () => {
       try {
         let data = await api.getQuota();
