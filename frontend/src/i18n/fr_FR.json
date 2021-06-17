@@ -1,5 +1,6 @@
 {
   "buttons": {
+    "archive": "Archive",
     "cancel": "Annuler",
     "close": "Fermer",
     "copy": "Copier",
@@ -16,7 +17,9 @@
     "new": "Nouveau",
     "next": "Suivant",
     "ok": "OK",
+    "openFile": "Open file",
     "permalink": "Obtenir un lien permanent",
+    "permissions": "Permissions",
     "previous": "Précédent",
     "publish": "Publier",
     "rename": "Renommer",
@@ -29,8 +32,10 @@
     "selectMultiple": "Sélection multiple",
     "share": "Partager",
     "shell": "Toggle shell",
+    "submit": "Submit",
     "switchView": "Changer le mode d'affichage",
     "toggleSidebar": "Afficher/Masquer la barre latérale",
+    "unarchive": "Unarchive",
     "update": "Mettre à jour",
     "upload": "Importer"
   },
@@ -40,6 +45,7 @@
     "downloadSelected": ""
   },
   "errors": {
+    "connection": "The server can't be reached.",
     "forbidden": "You don't have permissions to access this.",
     "internal": "Aïe ! Quelque chose s'est mal passé.",
     "notFound": "Impossible d'accéder à cet emplacement."
@@ -77,24 +83,21 @@
     "help": "Aide"
   },
   "languages": {
-    "ar": "العربية",
-    "de": "Deutsch",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "is": "",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "nlBE": "",
-    "pl": "Polski",
-    "pt": "Português",
+    "arAR": "العربية",
+    "enGB": "English",
+    "esAR": "Español (Argentina)",
+    "esCO": "Español (Colombia)",
+    "esES": "Español",
+    "esMX": "Español (Mexico)",
+    "frFR": "Français",
+    "idID": "Indonesian",
+    "ltLT": "Lietuvių",
     "ptBR": "Português (Brasil)",
-    "ro": "",
-    "ru": "Русский",
-    "svSE": "",
-    "zhCN": "中文 (简体)",
-    "zhTW": "中文 (繁體)"
+    "ptPT": "Português",
+    "ruRU": "Русский",
+    "trTR": "Türk",
+    "ukUA": "Український",
+    "zhCN": "中文 (简体)"
   },
   "login": {
     "createAnAccount": "Create an account",
@@ -110,18 +113,27 @@
   },
   "permanent": "Permanent",
   "prompts": {
+    "archive": "Archive",
+    "archiveMessage": "Choose archive name and format:",
     "copy": "Copier",
     "copyMessage": "Choisissez l'emplacement où copier la sélection :",
     "currentlyNavigating": "Dossier courant :",
     "deleteMessageMultiple": "Etes-vous sûr de vouloir supprimer ces {count} élément(s) ?",
+    "deleteMessageShare": "Are you sure you want to delete this share({path})?",
     "deleteMessageSingle": "Etes-vous sûr de vouloir supprimer cet élément ?",
     "deleteTitle": "Supprimer",
+    "directories": "Directories",
+    "directoriesAndFiles": "Directories and files",
     "displayName": "Nom :",
     "download": "Télécharger",
     "downloadMessage": "Choisissez le format de téléchargement :",
     "error": "Quelque chose s'est mal passé",
+    "execute": "Execute",
     "fileInfo": "Informations",
+    "files": "Files",
     "filesSelected": "{count} éléments sélectionnés",
+    "group": "Group",
+    "inodeCount": "({count} inodes)",
     "lastModified": "Dernière modification",
     "move": "Déplacer",
     "moveMessage": "Choisissez l'emplacement où déplacer la sélection :",
@@ -132,6 +144,12 @@
     "newFileMessage": "Nom du nouveau fichier :",
     "numberDirs": "Nombre de dossiers",
     "numberFiles": "Nombre de fichiers",
+    "optionalPassword": "Optional password",
+    "others": "Others",
+    "owner": "Owner",
+    "permissions": "Permissions",
+    "read": "Read",
+    "recursive": "Recursive",
     "rename": "Renommer",
     "renameMessage": "Nouveau nom pour",
     "replace": "Remplacer",
@@ -140,8 +158,13 @@
     "scheduleMessage": "Choisissez une date pour planifier la publication de ce post",
     "show": "Montrer",
     "size": "Taille",
+    "skipTrashMessage": "Skip trash bin and delete immediately",
+    "unarchive": "Unarchive",
+    "unarchiveMessage": "Choose the destination folder name:",
+    "unsavedChanges": "Changes that you made may not be saved. Leave page?",
     "upload": "",
-    "uploadMessage": ""
+    "uploadMessage": "",
+    "write": "Write"
   },
   "search": {
     "images": "Images",
@@ -149,8 +172,8 @@
     "pdf": "PDF",
     "pressToSearch": "Press enter to search...",
     "search": "Recherche en cours...",
-    "typeToSearch": "Type to search...",
     "types": "Types",
+    "typeToSearch": "Type to search...",
     "video": "Video"
   },
   "settings": {
@@ -209,6 +232,7 @@
     "rulesHelp": "Vous pouvez définir ici un ensemble de règles pour cet utilisateur. Les fichiers bloqués ne seront pas affichés et ne seront pas accessibles par l'utilisateur. Les expressions régulières sont supportées et les chemins d'accès sont relatifs par rapport au dossier de l'utilisateur.\n",
     "scope": "Portée du dossier utilisateur",
     "settingsUpdated": "Les paramètres ont été mis à jour !",
+    "shareDeleted": "Share deleted!",
     "shareDuration": "",
     "shareManagement": "",
     "singleClick": "",
@@ -224,9 +248,9 @@
     "userDefaults": "User default settings",
     "userDeleted": "Utilisateur supprimé !",
     "userManagement": "Gestion des utilisateurs",
-    "userUpdated": "Utilisateur mis à jour !",
     "username": "Nom d'utilisateur",
-    "users": "Utilisateurs"
+    "users": "Utilisateurs",
+    "userUpdated": "Utilisateur mis à jour !"
   },
   "sidebar": {
     "help": "Aide",
@@ -237,9 +261,14 @@
     "newFile": "Nouveau fichier",
     "newFolder": "Nouveau dossier",
     "preview": "Prévisualiser",
+    "quota": {
+      "inodes": "Inodes",
+      "space": "Space"
+    },
     "settings": "Paramètres",
     "signup": "Signup",
-    "siteSettings": "Paramètres du site"
+    "siteSettings": "Paramètres du site",
+    "trashBin": "Trash bin"
   },
   "success": {
     "linkCopied": "Link copied!"

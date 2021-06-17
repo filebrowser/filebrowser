@@ -1,5 +1,6 @@
 {
   "buttons": {
+    "archive": "Archive",
     "cancel": "إلغاء",
     "close": "إغلاق",
     "copy": "نسخ",
@@ -16,7 +17,9 @@
     "new": "جديد",
     "next": "التالي",
     "ok": "موافق",
+    "openFile": "Open file",
     "permalink": "الحصول على لنك دائم",
+    "permissions": "Permissions",
     "previous": "السابق",
     "publish": "نشر",
     "rename": "إعادة تسمية",
@@ -29,8 +32,10 @@
     "selectMultiple": "تحديد متعدد",
     "share": "مشاركة",
     "shell": "Toggle shell",
+    "submit": "Submit",
     "switchView": "تغيير العرض",
     "toggleSidebar": "تبديل الشريط الجانبي",
+    "unarchive": "Unarchive",
     "update": "تحديث",
     "upload": "رفع"
   },
@@ -40,6 +45,7 @@
     "downloadSelected": ""
   },
   "errors": {
+    "connection": "The server can't be reached.",
     "forbidden": "You don't have permissions to access this.",
     "internal": "لقد حدث خطأ ما.",
     "notFound": "لا يمكن الوصول لهذا المحتوى."
@@ -77,24 +83,21 @@
     "help": "مساعدة"
   },
   "languages": {
-    "ar": "العربية",
-    "de": "Deutsch",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "is": "",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "nlBE": "",
-    "pl": "Polski",
-    "pt": "Português",
+    "arAR": "العربية",
+    "enGB": "English",
+    "esAR": "Español (Argentina)",
+    "esCO": "Español (Colombia)",
+    "esES": "Español",
+    "esMX": "Español (Mexico)",
+    "frFR": "Français",
+    "idID": "Indonesian",
+    "ltLT": "Lietuvių",
     "ptBR": "Português (Brasil)",
-    "ro": "",
-    "ru": "Русский",
-    "svSE": "",
-    "zhCN": "中文 (简体)",
-    "zhTW": "中文 (繁體)"
+    "ptPT": "Português",
+    "ruRU": "Русский",
+    "trTR": "Türk",
+    "ukUA": "Український",
+    "zhCN": "中文 (简体)"
   },
   "login": {
     "createAnAccount": "Create an account",
@@ -110,18 +113,27 @@
   },
   "permanent": "دائم",
   "prompts": {
+    "archive": "Archive",
+    "archiveMessage": "Choose archive name and format:",
     "copy": "نسخ",
     "copyMessage": "رجاء حدد المكان لنسخ ملفاتك فيه:",
     "currentlyNavigating": "يتم الإنتقال حاليا إلى:",
     "deleteMessageMultiple": "هل تريد بالتأكيد حذف {count} ملف؟",
+    "deleteMessageShare": "Are you sure you want to delete this share({path})?",
     "deleteMessageSingle": "هل تريد بالتأكيد حذف هذا الملف/المجلد؟",
     "deleteTitle": "حذف الملفات",
+    "directories": "Directories",
+    "directoriesAndFiles": "Directories and files",
     "displayName": "الإسم:",
     "download": "تحميل الملفات",
     "downloadMessage": "حدد إمتداد الملف المراد تحميله.",
     "error": "لقد حدث خطأ ما",
+    "execute": "Execute",
     "fileInfo": "معلومات الملف",
+    "files": "Files",
     "filesSelected": "تم تحديد {count} ملفات.",
+    "group": "Group",
+    "inodeCount": "({count} inodes)",
     "lastModified": "آخر تعديل",
     "move": "نقل",
     "moveMessage": "إختر مكان جديد للملفات أو المجلدات المراد نقلها:",
@@ -132,6 +144,12 @@
     "newFileMessage": "رجاء ادخل اسم الملف الجديد.",
     "numberDirs": "عدد المجلدات",
     "numberFiles": "عدد الملفات",
+    "optionalPassword": "Optional password",
+    "others": "Others",
+    "owner": "Owner",
+    "permissions": "Permissions",
+    "read": "Read",
+    "recursive": "Recursive",
     "rename": "إعادة تسمية",
     "renameMessage": "إدراج اسم جديد لـ",
     "replace": "إستبدال",
@@ -140,8 +158,13 @@
     "scheduleMessage": "أختر الوقت والتاريخ لجدولة نشر هذا المقال.",
     "show": "عرض",
     "size": "الحجم",
+    "skipTrashMessage": "Skip trash bin and delete immediately",
+    "unarchive": "Unarchive",
+    "unarchiveMessage": "Choose the destination folder name:",
+    "unsavedChanges": "Changes that you made may not be saved. Leave page?",
     "upload": "",
-    "uploadMessage": ""
+    "uploadMessage": "",
+    "write": "Write"
   },
   "search": {
     "images": "الصور",
@@ -149,8 +172,8 @@
     "pdf": "PDF",
     "pressToSearch": "Press enter to search...",
     "search": "البحث...",
-    "typeToSearch": "Type to search...",
     "types": "الأنواع",
+    "typeToSearch": "Type to search...",
     "video": "فيديوهات"
   },
   "settings": {
@@ -209,6 +232,7 @@
     "rulesHelp": "يمكنك هنا تحديد مجموعة من شروط السماح والمنع لهذا المستخدم. الملفات الممنوعة لن تظهر ضمن القائمة لهذا المستخدم ولن يستطيع الوصول لها. هنا ندعم الـ regex والـ relative path لنطاق المستخدمين.\n",
     "scope": "نطاق",
     "settingsUpdated": "تم تعديل الإعدادات",
+    "shareDeleted": "Share deleted!",
     "shareDuration": "",
     "shareManagement": "",
     "singleClick": "",
@@ -224,9 +248,9 @@
     "userDefaults": "User default settings",
     "userDeleted": "تم حذف المستخدم",
     "userManagement": "إدارة المستخدمين",
-    "userUpdated": "تم تعديل المستخدم",
     "username": "إسم المستخدم",
-    "users": "المستخدمين"
+    "users": "المستخدمين",
+    "userUpdated": "تم تعديل المستخدم"
   },
   "sidebar": {
     "help": "مساعدة",
@@ -237,9 +261,14 @@
     "newFile": "ملف جديد",
     "newFolder": "مجلد جديد",
     "preview": "معاينة",
+    "quota": {
+      "inodes": "Inodes",
+      "space": "Space"
+    },
     "settings": "الإعدادات",
     "signup": "Signup",
-    "siteSettings": "إعدادات الموقع"
+    "siteSettings": "إعدادات الموقع",
+    "trashBin": "Trash bin"
   },
   "success": {
     "linkCopied": "تم نسخ الملف"

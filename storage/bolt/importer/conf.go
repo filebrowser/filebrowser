@@ -55,7 +55,7 @@ var defaults = &oldConf{
 		AllowCommands: true,
 		AllowEdit:     true,
 		AllowNew:      true,
-		Locale:        "en",
+		Locale:        "en_GB",
 	},
 	Auth: oldAuth{
 		Method: "default",

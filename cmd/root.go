@@ -322,7 +322,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 		CreateUserDir: false,
 		Defaults: settings.UserDefaults{
 			Scope:       ".",
-			Locale:      "en",
+			Locale:      "en_GB",
 			SingleClick: false,
 			Perm: users.Permissions{
 				Admin:    false,

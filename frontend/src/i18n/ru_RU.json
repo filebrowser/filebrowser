@@ -1,5 +1,6 @@
 {
   "buttons": {
+    "archive": "Archive",
     "cancel": "Отмена",
     "close": "Закрыть",
     "copy": "Копировать",
@@ -16,7 +17,9 @@
     "new": "Новый",
     "next": "Вперед",
     "ok": "OK",
+    "openFile": "Open file",
     "permalink": "Получить постоянную ссылку",
+    "permissions": "Permissions",
     "previous": "Назад",
     "publish": "Опубликовать",
     "rename": "Переименовать",
@@ -29,8 +32,10 @@
     "selectMultiple": "Мультивыбор",
     "share": "Поделиться",
     "shell": "Командная строка",
+    "submit": "Submit",
     "switchView": "Вид",
     "toggleSidebar": "Боковая панель",
+    "unarchive": "Unarchive",
     "update": "Обновить",
     "upload": "Загрузить"
   },
@@ -40,6 +45,7 @@
     "downloadSelected": "Скачать выбранное"
   },
   "errors": {
+    "connection": "The server can't be reached.",
     "forbidden": "У вас нет прав доступа к этому.",
     "internal": "Что-то пошло не так.",
     "notFound": "Неправильная ссылка."
@@ -77,24 +83,21 @@
     "help": "Помощь"
   },
   "languages": {
-    "ar": "العربية",
-    "de": "Deutsch",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "is": "",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "nlBE": "",
-    "pl": "Polski",
-    "pt": "Português",
+    "arAR": "العربية",
+    "enGB": "English",
+    "esAR": "Español (Argentina)",
+    "esCO": "Español (Colombia)",
+    "esES": "Español",
+    "esMX": "Español (Mexico)",
+    "frFR": "Français",
+    "idID": "Indonesian",
+    "ltLT": "Lietuvių",
     "ptBR": "Português (Brasil)",
-    "ro": "",
-    "ru": "Русский",
-    "svSE": "",
-    "zhCN": "中文 (简体)",
-    "zhTW": "中文 (繁體)"
+    "ptPT": "Português",
+    "ruRU": "Русский",
+    "trTR": "Türk",
+    "ukUA": "Український",
+    "zhCN": "中文 (简体)"
   },
   "login": {
     "createAnAccount": "Создать аккаунт",
@@ -110,18 +113,27 @@
   },
   "permanent": "Постоянный",
   "prompts": {
+    "archive": "Archive",
+    "archiveMessage": "Choose archive name and format:",
     "copy": "Копировать",
     "copyMessage": "Копировать в:",
     "currentlyNavigating": "Текущий каталог:",
     "deleteMessageMultiple": "Удалить эти файлы ({count})?",
+    "deleteMessageShare": "Are you sure you want to delete this share({path})?",
     "deleteMessageSingle": "Удалить этот файл/каталог?",
     "deleteTitle": "Удалить файлы",
+    "directories": "Directories",
+    "directoriesAndFiles": "Directories and files",
     "displayName": "Отображаемое имя:",
     "download": "Скачать файлы",
     "downloadMessage": "Выберите формат а котором хотите скачать.",
     "error": "Ошибка",
+    "execute": "Execute",
     "fileInfo": "Информация о файле",
+    "files": "Files",
     "filesSelected": "Файлов выбрано: {count}.",
+    "group": "Group",
+    "inodeCount": "({count} inodes)",
     "lastModified": "Последнее изменение",
     "move": "Переместить",
     "moveMessage": "Переместить в:",
@@ -132,6 +144,12 @@
     "newFileMessage": "Имя нового файла.",
     "numberDirs": "Количество каталогов",
     "numberFiles": "Количество файлов",
+    "optionalPassword": "Optional password",
+    "others": "Others",
+    "owner": "Owner",
+    "permissions": "Permissions",
+    "read": "Read",
+    "recursive": "Recursive",
     "rename": "Переименовать",
     "renameMessage": "Новое имя",
     "replace": "Заменить",
@@ -140,8 +158,13 @@
     "scheduleMessage": "Запланировать дату и время публикации.",
     "show": "Показать",
     "size": "Размер",
+    "skipTrashMessage": "Skip trash bin and delete immediately",
+    "unarchive": "Unarchive",
+    "unarchiveMessage": "Choose the destination folder name:",
+    "unsavedChanges": "Changes that you made may not be saved. Leave page?",
     "upload": "Загрузить",
-    "uploadMessage": "Выберите вариант для загрузки."
+    "uploadMessage": "Выберите вариант для загрузки.",
+    "write": "Write"
   },
   "search": {
     "images": "Изображения",
@@ -149,8 +172,8 @@
     "pdf": "PDF",
     "pressToSearch": "Нажмите Enter для поиска ...",
     "search": "Поиск...",
-    "typeToSearch": "Введите имя файла ...",
     "types": "Типы",
+    "typeToSearch": "Введите имя файла ...",
     "video": "Видео"
   },
   "settings": {
@@ -209,6 +232,7 @@
     "rulesHelp": "Здесь вы можете определить набор разрешающих и запрещающих правил для этого конкретного пользователь. Блокированные файлы не будут отображаться в списках, и не будут доступны для пользователя. Есть поддержка регулярных выражений и относительных путей.\n",
     "scope": "Корень",
     "settingsUpdated": "Настройки применены!",
+    "shareDeleted": "Share deleted!",
     "shareDuration": "Время расшаренной ссылки",
     "shareManagement": "Управление расшаренными ссылками",
     "singleClick": "Открытие файлов и каталогов одним кликом",
@@ -224,9 +248,9 @@
     "userDefaults": "Настройки пользователя по умолчанию",
     "userDeleted": "Пользователь удален!",
     "userManagement": "Управление пользователями",
-    "userUpdated": "Пользователь изменен!",
     "username": "Имя пользователя",
-    "users": "Пользователи"
+    "users": "Пользователи",
+    "userUpdated": "Пользователь изменен!"
   },
   "sidebar": {
     "help": "Помощь",
@@ -237,9 +261,14 @@
     "newFile": "Новый файл",
     "newFolder": "Новый каталог",
     "preview": "Предпросмотр",
+    "quota": {
+      "inodes": "Inodes",
+      "space": "Space"
+    },
     "settings": "Настройки",
     "signup": "Зарегистрироваться",
-    "siteSettings": "Настройки сайта"
+    "siteSettings": "Настройки сайта",
+    "trashBin": "Trash bin"
   },
   "success": {
     "linkCopied": "Ссылка скопирована!"

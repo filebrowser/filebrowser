@@ -1,5 +1,6 @@
 {
   "buttons": {
+    "archive": "Archive",
     "cancel": "取消",
     "close": "关闭",
     "copy": "复制",
@@ -16,7 +17,9 @@
     "new": "新",
     "next": "下一个",
     "ok": "确定",
+    "openFile": "Open file",
     "permalink": "获取永久链接",
+    "permissions": "Permissions",
     "previous": "上一个",
     "publish": "发布",
     "rename": "重命名",
@@ -32,6 +35,7 @@
     "submit": "提交",
     "switchView": "切换显示方式",
     "toggleSidebar": "切换侧边栏",
+    "unarchive": "Unarchive",
     "update": "更新",
     "upload": "上传"
   },
@@ -41,6 +45,7 @@
     "downloadSelected": "下载已选"
   },
   "errors": {
+    "connection": "The server can't be reached.",
     "forbidden": "你无权限访问",
     "internal": "服务器出了点问题。",
     "notFound": "找不到文件。"
@@ -78,24 +83,21 @@
     "help": "帮助"
   },
   "languages": {
-    "ar": "العربية",
-    "de": "Deutsch",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "is": "Icelandic",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "nlBE": "Dutch（Belgium）",
-    "pl": "Polski",
-    "pt": "Português",
+    "arAR": "العربية",
+    "enGB": "English",
+    "esAR": "Español (Argentina)",
+    "esCO": "Español (Colombia)",
+    "esES": "Español",
+    "esMX": "Español (Mexico)",
+    "frFR": "Français",
+    "idID": "Indonesian",
+    "ltLT": "Lietuvių",
     "ptBR": "Português（Brasil）",
-    "ro": "Romanian",
-    "ru": "Русский",
-    "svSE": "Swedish（Sweden）",
-    "zhCN": "中文（简体）",
-    "zhTW": "中文（繁體）"
+    "ptPT": "Português",
+    "ruRU": "Русский",
+    "trTR": "Türk",
+    "ukUA": "Український",
+    "zhCN": "中文（简体）"
   },
   "login": {
     "createAnAccount": "创建用户",
@@ -111,19 +113,27 @@
   },
   "permanent": "永久",
   "prompts": {
+    "archive": "Archive",
+    "archiveMessage": "Choose archive name and format:",
     "copy": "复制",
     "copyMessage": "请选择欲复制至的目录：",
     "currentlyNavigating": "当前目录：",
     "deleteMessageMultiple": "你确定要删除这 {count} 个文件吗？",
-    "deleteMessageSingle": "你确定要删除这个文件/文件夹吗？",
     "deleteMessageShare": "你确定要删除这个分享({path})吗？",
+    "deleteMessageSingle": "你确定要删除这个文件/文件夹吗？",
     "deleteTitle": "删除文件",
+    "directories": "Directories",
+    "directoriesAndFiles": "Directories and files",
     "displayName": "名称：",
     "download": "下载文件",
     "downloadMessage": "请选择要下载的压缩格式。",
     "error": "出了一点问题...",
+    "execute": "Execute",
     "fileInfo": "文件信息",
+    "files": "Files",
     "filesSelected": "已选择 {count} 个文件。",
+    "group": "Group",
+    "inodeCount": "({count} inodes)",
     "lastModified": "最后修改",
     "move": "移动",
     "moveMessage": "请选择欲移动至的目录：",
@@ -134,6 +144,12 @@
     "newFileMessage": "请输入新文件的名称。",
     "numberDirs": "目录数",
     "numberFiles": "文件数",
+    "optionalPassword": "密码（选填，不填即无密码）",
+    "others": "Others",
+    "owner": "Owner",
+    "permissions": "Permissions",
+    "read": "Read",
+    "recursive": "Recursive",
     "rename": "重命名",
     "renameMessage": "请输入新名称，旧名称为：",
     "replace": "替换",
@@ -142,9 +158,13 @@
     "scheduleMessage": "请选择发布这篇帖子的日期与时间。",
     "show": "点击以显示",
     "size": "大小",
+    "skipTrashMessage": "Skip trash bin and delete immediately",
+    "unarchive": "Unarchive",
+    "unarchiveMessage": "Choose the destination folder name:",
+    "unsavedChanges": "Changes that you made may not be saved. Leave page?",
     "upload": "上传",
     "uploadMessage": "选择上传选项。",
-    "optionalPassword": "密码（选填，不填即无密码）"
+    "write": "Write"
   },
   "search": {
     "images": "图像",
@@ -152,8 +172,8 @@
     "pdf": "PDF",
     "pressToSearch": "回车搜索...",
     "search": "搜索...",
-    "typeToSearch": "输入搜索...",
     "types": "类型",
+    "typeToSearch": "输入搜索...",
     "video": "视频"
   },
   "settings": {
@@ -212,6 +232,7 @@
     "rulesHelp": "您可以为该用户制定一组黑名单或白名单式的规则，被屏蔽的文件将不会显示在列表中，用户也无权限访问,支持相对于目录范围的路径。",
     "scope": "目录范围",
     "settingsUpdated": "设置已更新！",
+    "shareDeleted": "Share deleted!",
     "shareDuration": "分享期限",
     "shareManagement": "分享管理",
     "singleClick": "",
@@ -227,9 +248,9 @@
     "userDefaults": "用户默认设置",
     "userDeleted": "用户已删除！",
     "userManagement": "用户管理",
-    "userUpdated": "用户已更新！",
     "username": "用户名",
-    "users": "用户"
+    "users": "用户",
+    "userUpdated": "用户已更新！"
   },
   "sidebar": {
     "help": "帮助",
@@ -240,9 +261,14 @@
     "newFile": "新建文件",
     "newFolder": "新建文件夹",
     "preview": "预览",
+    "quota": {
+      "inodes": "Inodes",
+      "space": "Space"
+    },
     "settings": "设置",
     "signup": "注册",
-    "siteSettings": "网站设置"
+    "siteSettings": "网站设置",
+    "trashBin": "Trash bin"
   },
   "success": {
     "linkCopied": "链接已复制！"

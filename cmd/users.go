@@ -76,7 +76,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.String("scope", ".", "scope for users")
 	flags.String("trashDir", "", "trash directory path for users")
 	flags.String("quotaFile", "", "path to file with quota data")
-	flags.String("locale", "en", "locale for users")
+	flags.String("locale", "en_GB", "locale for users")
 	flags.String("viewMode", string(users.ListViewMode), "view mode for users")
 	flags.Bool("singleClick", false, "use single clicks only")
 }

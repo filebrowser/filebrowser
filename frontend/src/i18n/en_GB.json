@@ -1,9 +1,7 @@
 {
   "buttons": {
     "archive": "Archive",
-    "unarchive": "Unarchive",
     "cancel": "Cancel",
-    "permissions": "Permissions",
     "close": "Close",
     "copy": "Copy",
     "copyFile": "Copy file",
@@ -19,7 +17,9 @@
     "new": "New",
     "next": "Next",
     "ok": "OK",
+    "openFile": "Open file",
     "permalink": "Get Permanent Link",
+    "permissions": "Permissions",
     "previous": "Previous",
     "publish": "Publish",
     "rename": "Rename",
@@ -35,9 +35,9 @@
     "submit": "Submit",
     "switchView": "Switch view",
     "toggleSidebar": "Toggle sidebar",
+    "unarchive": "Unarchive",
     "update": "Update",
-    "upload": "Upload",
-    "openFile": "Open file"
+    "upload": "Upload"
   },
   "download": {
     "downloadFile": "Download File",
@@ -45,10 +45,10 @@
     "downloadSelected": "Download Selected"
   },
   "errors": {
+    "connection": "The server can't be reached.",
     "forbidden": "You don't have permissions to access this.",
     "internal": "Something really went wrong.",
-    "notFound": "This location can't be reached.",
-    "connection": "The server can't be reached."
+    "notFound": "This location can't be reached."
   },
   "files": {
     "body": "Body",
@@ -83,24 +83,21 @@
     "help": "Help"
   },
   "languages": {
-    "ar": "العربية",
-    "de": "Deutsch",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "is": "Icelandic",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "nlBE": "Dutch (Belgium)",
-    "pl": "Polski",
-    "pt": "Português",
+    "arAR": "العربية",
+    "enGB": "English",
+    "esAR": "Español (Argentina)",
+    "esCO": "Español (Colombia)",
+    "esES": "Español",
+    "esMX": "Español (Mexico)",
+    "frFR": "Français",
+    "idID": "Indonesian",
+    "ltLT": "Lietuvių",
     "ptBR": "Português (Brasil)",
-    "ro": "Romanian",
-    "ru": "Русский",
-    "svSE": "Swedish (Sweden)",
-    "zhCN": "中文 (简体)",
-    "zhTW": "中文 (繁體)"
+    "ptPT": "Português",
+    "ruRU": "Русский",
+    "trTR": "Türk",
+    "ukUA": "Український",
+    "zhCN": "中文 (简体)"
   },
   "login": {
     "createAnAccount": "Create an account",
@@ -116,36 +113,27 @@
   },
   "permanent": "Permanent",
   "prompts": {
-    "unsavedChanges": "Changes that you made may not be saved. Leave page?",
-    "permissions": "Permissions",
-    "read": "Read",
-    "write": "Write",
-    "execute": "Execute",
-    "owner": "Owner",
-    "group": "Group",
-    "others": "Others",
-    "recursive": "Recursive",
-    "directoriesAndFiles": "Directories and files",
-    "directories": "Directories",
-    "files": "Files",
     "archive": "Archive",
     "archiveMessage": "Choose archive name and format:",
-    "unarchive": "Unarchive",
-    "unarchiveMessage": "Choose the destination folder name:",
     "copy": "Copy",
     "copyMessage": "Choose the place to copy your files:",
     "currentlyNavigating": "Currently navigating on:",
     "deleteMessageMultiple": "Are you sure you want to delete {count} file(s)?",
-    "deleteMessageSingle": "Are you sure you want to delete this file/folder?",
     "deleteMessageShare": "Are you sure you want to delete this share({path})?",
-    "skipTrashMessage": "Skip trash bin and delete immediately",
+    "deleteMessageSingle": "Are you sure you want to delete this file/folder?",
     "deleteTitle": "Delete files",
+    "directories": "Directories",
+    "directoriesAndFiles": "Directories and files",
     "displayName": "Display Name:",
     "download": "Download files",
     "downloadMessage": "Choose the format you want to download.",
     "error": "Something went wrong",
+    "execute": "Execute",
     "fileInfo": "File information",
+    "files": "Files",
     "filesSelected": "{count} files selected.",
+    "group": "Group",
+    "inodeCount": "({count} inodes)",
     "lastModified": "Last Modified",
     "move": "Move",
     "moveMessage": "Choose new house for your file(s)/folder(s):",
@@ -156,6 +144,12 @@
     "newFileMessage": "Write the name of the new file.",
     "numberDirs": "Number of directories",
     "numberFiles": "Number of files",
+    "optionalPassword": "Optional password",
+    "others": "Others",
+    "owner": "Owner",
+    "permissions": "Permissions",
+    "read": "Read",
+    "recursive": "Recursive",
     "rename": "Rename",
     "renameMessage": "Insert a new name for",
     "replace": "Replace",
@@ -164,10 +158,13 @@
     "scheduleMessage": "Pick a date and time to schedule the publication of this post.",
     "show": "Show",
     "size": "Size",
-    "inodeCount": "({count} inodes)",
+    "skipTrashMessage": "Skip trash bin and delete immediately",
+    "unarchive": "Unarchive",
+    "unarchiveMessage": "Choose the destination folder name:",
+    "unsavedChanges": "Changes that you made may not be saved. Leave page?",
     "upload": "Upload",
     "uploadMessage": "Select an option to upload.",
-    "optionalPassword": "Optional password"
+    "write": "Write"
   },
   "search": {
     "images": "Images",
@@ -175,8 +172,8 @@
     "pdf": "PDF",
     "pressToSearch": "Press enter to search...",
     "search": "Search...",
-    "typeToSearch": "Type to search...",
     "types": "Types",
+    "typeToSearch": "Type to search...",
     "video": "Video"
   },
   "settings": {
@@ -235,9 +232,9 @@
     "rulesHelp": "Here you can define a set of allow and disallow rules for this specific user. The blocked files won't show up in the listings and they wont be accessible to the user. We support regex and paths relative to the users scope.\n",
     "scope": "Scope",
     "settingsUpdated": "Settings updated!",
+    "shareDeleted": "Share deleted!",
     "shareDuration": "Share Duration",
     "shareManagement": "Share Management",
-    "shareDeleted": "Share deleted!",
     "singleClick": "Use single clicks to open files and directories",
     "themes": {
       "dark": "Dark",
@@ -251,9 +248,9 @@
     "userDefaults": "User default settings",
     "userDeleted": "User deleted!",
     "userManagement": "User Management",
-    "userUpdated": "User updated!",
     "username": "Username",
-    "users": "Users"
+    "users": "Users",
+    "userUpdated": "User updated!"
   },
   "sidebar": {
     "help": "Help",
@@ -263,15 +260,15 @@
     "myFiles": "My files",
     "newFile": "New file",
     "newFolder": "New folder",
-    "trashBin": "Trash bin",
     "preview": "Preview",
+    "quota": {
+      "inodes": "Inodes",
+      "space": "Space"
+    },
     "settings": "Settings",
     "signup": "Signup",
     "siteSettings": "Site Settings",
-    "quota": {
-      "space": "Space",
-      "inodes": "Inodes"
-    }
+    "trashBin": "Trash bin"
   },
   "success": {
     "linkCopied": "Link copied!"
