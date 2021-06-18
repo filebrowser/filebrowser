@@ -48,7 +48,13 @@
     "connection": "The server can't be reached.",
     "forbidden": "You don't have permissions to access this.",
     "internal": "Ops! Algum erro ocorreu.",
-    "notFound": "Ops! Nada foi encontrado."
+    "notFound": "Ops! Nada foi encontrado.",
+    "resource": {
+      "alreadyExists": "Resource with such name already exists"
+    },
+    "validation": {
+      "emptyName": "Resource name can't be empty"
+    }
   },
   "files": {
     "body": "Corpo",

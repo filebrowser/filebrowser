@@ -48,7 +48,13 @@
     "connection": "The server can't be reached.",
     "forbidden": "You don't have permissions to access this.",
     "internal": "Aïe ! Quelque chose s'est mal passé.",
-    "notFound": "Impossible d'accéder à cet emplacement."
+    "notFound": "Impossible d'accéder à cet emplacement.",
+    "resource": {
+      "alreadyExists": "Resource with such name already exists"
+    },
+    "validation": {
+      "emptyName": "Resource name can't be empty"
+    }
   },
   "files": {
     "body": "Corps",

@@ -19,3 +19,26 @@ var (
 	ErrSourceIsParent       = errors.New("source is parent")
 	ErrRootUserDeletion     = errors.New("user with id 1 can't be deleted")
 )
+
+type HTTPError struct {
+	Err  error
+	Type string
+}
+
+func (e *HTTPError) Error() string {
+	if e.Err == nil {
+		return e.Type
+	}
+	return e.Err.Error()
+}
+
+func (e *HTTPError) Unwrap() error {
+	return e.Err
+}
+
+func NewHTTPError(err error, errType string) error {
+	return &HTTPError{
+		Err:  err,
+		Type: errType,
+	}
+}

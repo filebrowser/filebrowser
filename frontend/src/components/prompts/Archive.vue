@@ -76,15 +76,15 @@ export default {
 
       try {
         buttons.loading("archive");
-        this.$store.commit("closeHovers");
         await api.archive(uri, this.name, format, ...items);
+        this.$store.commit("closeHovers");
         this.$store.commit("setReload", true);
+        this.$store.dispatch("quota/fetch", 3000);
       } catch (e) {
         this.$showError(e);
       } finally {
         buttons.done("archive");
       }
-      this.$store.dispatch("quota/fetch", 3000);
     },
   },
 };

@@ -48,7 +48,13 @@
     "connection": "The server can't be reached.",
     "forbidden": "Não tem permissões para aceder a isto",
     "internal": "Algo correu bastante mal.",
-    "notFound": "Esta localização não é alcançável."
+    "notFound": "Esta localização não é alcançável.",
+    "resource": {
+      "alreadyExists": "Resource with such name already exists"
+    },
+    "validation": {
+      "emptyName": "Resource name can't be empty"
+    }
   },
   "files": {
     "body": "Corpo",

@@ -48,7 +48,13 @@
     "connection": "The server can't be reached.",
     "forbidden": "你无权限访问",
     "internal": "服务器出了点问题。",
-    "notFound": "找不到文件。"
+    "notFound": "找不到文件。",
+    "resource": {
+      "alreadyExists": "Resource with such name already exists"
+    },
+    "validation": {
+      "emptyName": "Resource name can't be empty"
+    }
   },
   "files": {
     "body": "内容",

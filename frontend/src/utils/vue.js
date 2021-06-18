@@ -45,9 +45,18 @@ Vue.prototype.$showError = (error, displayReport = true) => {
     );
   }
 
+  let message = error.message || error;
+  let matches = /\[(.+)\]/.exec(message);
+  if (matches && matches.length > 1) {
+    let key = "errors." + matches[1];
+    if (i18n.te(key)) {
+      message = i18n.t(key);
+    }
+  }
+
   let n = new Noty(
     Object.assign({}, notyDefault, {
-      text: error.message || error,
+      text: message,
       type: "error",
       timeout: null,
       buttons: btns,

@@ -7,6 +7,7 @@ import (
 
 	"github.com/tomasen/realip"
 
+	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/runner"
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -65,8 +66,11 @@ func handle(fn handleFunc, prefix string, store *storage.Storage, server *settin
 		})
 
 		if status != 0 {
-			txt := http.StatusText(status)
-			http.Error(w, strconv.Itoa(status)+" "+txt, status)
+			txt := strconv.Itoa(status) + " " + http.StatusText(status)
+			if httpErr, ok := err.(*errors.HTTPError); ok {
+				txt += " [" + httpErr.Type + "]"
+			}
+			http.Error(w, txt, status)
 		}
 
 		if status >= 400 || err != nil {
