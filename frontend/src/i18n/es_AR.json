@@ -1,6 +1,6 @@
 {
   "buttons": {
-    "archive": "Archive",
+    "archive": "Archivar",
     "cancel": "Cancelar",
     "close": "Cerrar",
     "copy": "Copiar",
@@ -17,9 +17,9 @@
     "new": "Nuevo",
     "next": "Siguiente",
     "ok": "OK",
-    "openFile": "Open file",
+    "openFile": "Abrir archivo",
     "permalink": "Link permanente",
-    "permissions": "Permissions",
+    "permissions": "Permisos",
     "previous": "Anterior",
     "publish": "Publicar",
     "rename": "Renombrar",
@@ -32,10 +32,10 @@
     "selectMultiple": "Selección múltiple",
     "share": "Compartir",
     "shell": "Presiona Enter para buscar...",
-    "submit": "Submit",
+    "submit": "Enviar",
     "switchView": "Cambiar vista",
     "toggleSidebar": "Mostrar/Ocultar menú",
-    "unarchive": "Unarchive",
+    "unarchive": "Desarchivar",
     "update": "Actualizar",
     "upload": "Subir"
   },
@@ -45,15 +45,15 @@
     "downloadSelected": ""
   },
   "errors": {
-    "connection": "The server can't be reached.",
+    "connection": "No se puede acceder al servidor.",
     "forbidden": "No tienes los permisos necesarios para acceder.",
     "internal": "La verdad es que algo ha ido mal.",
     "notFound": "No se puede acceder a este lugar.",
     "resource": {
-      "alreadyExists": "Resource with such name already exists"
+      "alreadyExists": "Ya existe un recurso con ese nombre"
     },
     "validation": {
-      "emptyName": "Resource name can't be empty"
+      "emptyName": "El nombre del recurso no puede estar vacío"
     }
   },
   "files": {
@@ -96,7 +96,7 @@
     "esES": "Español",
     "esMX": "Español (Mexico)",
     "frFR": "Français",
-    "idID": "Indonesian",
+    "idID": "Bahasa Indonesia",
     "ltLT": "Lietuvių",
     "ptBR": "Português (Brasil)",
     "ptPT": "Português",
@@ -119,27 +119,27 @@
   },
   "permanent": "Permanente",
   "prompts": {
-    "archive": "Archive",
-    "archiveMessage": "Choose archive name and format:",
+    "archive": "Archiva",
+    "archiveMessage": "Elige el nombre del archivo formato:",
     "copy": "Copiar",
     "copyMessage": "Elige el lugar donde quieres copiar tus archivos:",
     "currentlyNavigating": "Actualmente estás en:",
     "deleteMessageMultiple": "¿Estás seguro que quieres eliminar {count} archivo(s)?",
-    "deleteMessageShare": "Are you sure you want to delete this share({path})?",
+    "deleteMessageShare": "¿Estás seguro de querer eliminar la ruta ({path}) compartida?",
     "deleteMessageSingle": "¿Estás seguro que quieres eliminar este archivo/carpeta?",
     "deleteTitle": "Borrar archivos",
-    "directories": "Directories",
-    "directoriesAndFiles": "Directories and files",
+    "directories": "Directorios",
+    "directoriesAndFiles": "Directorios y archivos",
     "displayName": "Nombre:",
     "download": "Descargar archivos",
     "downloadMessage": "Elige el formato de descarga.",
     "error": "Algo ha fallado",
-    "execute": "Execute",
+    "execute": "Ejecuta",
     "fileInfo": "Información del archivo",
-    "files": "Files",
+    "files": "Archivos",
     "filesSelected": "{count} archivos seleccionados.",
-    "group": "Group",
-    "inodeCount": "({count} inodes)",
+    "group": "Grupo",
+    "inodeCount": "({count} inodos)",
     "lastModified": "Última modificación",
     "move": "Mover",
     "moveMessage": "Elige una nueva casa para tus archivo(s)/carpeta(s):",
@@ -150,12 +150,12 @@
     "newFileMessage": "Escribe el nombre del nuevo archivo.",
     "numberDirs": "Número de carpetas",
     "numberFiles": "Número de archivos",
-    "optionalPassword": "Optional password",
-    "others": "Others",
-    "owner": "Owner",
-    "permissions": "Permissions",
-    "read": "Read",
-    "recursive": "Recursive",
+    "optionalPassword": "Contraseña opcional",
+    "others": "Otros",
+    "owner": "Dueño",
+    "permissions": "Permisos",
+    "read": "Lee",
+    "recursive": "Recursivo",
     "rename": "Renombrar",
     "renameMessage": "Escribe el nuevo nombre para",
     "replace": "Reemplazar",
@@ -164,13 +164,13 @@
     "scheduleMessage": "Elige una hora y fecha para programar la publicación de este post.",
     "show": "Mostrar",
     "size": "Tamaño",
-    "skipTrashMessage": "Skip trash bin and delete immediately",
-    "unarchive": "Unarchive",
-    "unarchiveMessage": "Choose the destination folder name:",
-    "unsavedChanges": "Changes that you made may not be saved. Leave page?",
+    "skipTrashMessage": "Omitir papelera y eliminar inmediatamente",
+    "unarchive": "Desarchiva",
+    "unarchiveMessage": "Elige el nombre de la carpeta de destino:",
+    "unsavedChanges": "Los cambios que realizaste podrían no guardarse. ¿Abandonar página?",
     "upload": "",
     "uploadMessage": "",
-    "write": "Write"
+    "write": "Escribe"
   },
   "search": {
     "images": "Images",
@@ -238,7 +238,7 @@
     "rulesHelp": "Aquí puedes definir un conjunto de reglas de permisos para este usuario específico. Los archivos bloqueados no se mostrarán en las listas y no serán accesibles por el usuario. Puedes utilizar regex y rutas relativas a la raíz del usuario.\n",
     "scope": "Raíz",
     "settingsUpdated": "¡Ajustes actualizados!",
-    "shareDeleted": "Share deleted!",
+    "shareDeleted": "¡Eliminado!",
     "shareDuration": "",
     "shareManagement": "",
     "singleClick": "",
@@ -268,13 +268,13 @@
     "newFolder": "Nueva carpeta",
     "preview": "Vista previa",
     "quota": {
-      "inodes": "Inodes",
-      "space": "Space"
+      "inodes": "Inodos",
+      "space": "Espacio"
     },
     "settings": "Ajustes",
     "signup": "Registrate",
     "siteSettings": "Ajustes del sitio",
-    "trashBin": "Trash bin"
+    "trashBin": "Papelera"
   },
   "success": {
     "linkCopied": "¡Link copiado!"

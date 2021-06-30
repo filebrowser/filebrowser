@@ -1,6 +1,6 @@
 {
   "buttons": {
-    "archive": "Archive",
+    "archive": "压缩",
     "cancel": "取消",
     "close": "关闭",
     "copy": "复制",
@@ -17,9 +17,9 @@
     "new": "新",
     "next": "下一个",
     "ok": "确定",
-    "openFile": "Open file",
+    "openFile": "打开文件",
     "permalink": "获取永久链接",
-    "permissions": "Permissions",
+    "permissions": "权限",
     "previous": "上一个",
     "publish": "发布",
     "rename": "重命名",
@@ -35,7 +35,7 @@
     "submit": "提交",
     "switchView": "切换显示方式",
     "toggleSidebar": "切换侧边栏",
-    "unarchive": "Unarchive",
+    "unarchive": "解压缩",
     "update": "更新",
     "upload": "上传"
   },
@@ -45,15 +45,15 @@
     "downloadSelected": "下载已选"
   },
   "errors": {
-    "connection": "The server can't be reached.",
-    "forbidden": "你无权限访问",
+    "connection": "无法连接服务器",
+    "forbidden": "您无权限访问",
     "internal": "服务器出了点问题。",
     "notFound": "找不到文件。",
     "resource": {
-      "alreadyExists": "Resource with such name already exists"
+      "alreadyExists": "具有此类名称的资源已存在"
     },
     "validation": {
-      "emptyName": "Resource name can't be empty"
+      "emptyName": "资源名称不能为空"
     }
   },
   "files": {
@@ -96,7 +96,7 @@
     "esES": "Español",
     "esMX": "Español (Mexico)",
     "frFR": "Français",
-    "idID": "Indonesian",
+    "idID": "Bahasa Indonesia",
     "ltLT": "Lietuvių",
     "ptBR": "Português（Brasil）",
     "ptPT": "Português",
@@ -119,8 +119,8 @@
   },
   "permanent": "永久",
   "prompts": {
-    "archive": "Archive",
-    "archiveMessage": "Choose archive name and format:",
+    "archive": "压缩",
+    "archiveMessage": "设置压缩包名称和格式:",
     "copy": "复制",
     "copyMessage": "请选择欲复制至的目录：",
     "currentlyNavigating": "当前目录：",
@@ -128,17 +128,17 @@
     "deleteMessageShare": "你确定要删除这个分享({path})吗？",
     "deleteMessageSingle": "你确定要删除这个文件/文件夹吗？",
     "deleteTitle": "删除文件",
-    "directories": "Directories",
-    "directoriesAndFiles": "Directories and files",
+    "directories": "目录",
+    "directoriesAndFiles": "目录和文件",
     "displayName": "名称：",
     "download": "下载文件",
     "downloadMessage": "请选择要下载的压缩格式。",
     "error": "出了一点问题...",
-    "execute": "Execute",
+    "execute": "执行",
     "fileInfo": "文件信息",
-    "files": "Files",
+    "files": "文件",
     "filesSelected": "已选择 {count} 个文件。",
-    "group": "Group",
+    "group": "组",
     "inodeCount": "({count} inodes)",
     "lastModified": "最后修改",
     "move": "移动",
@@ -151,11 +151,11 @@
     "numberDirs": "目录数",
     "numberFiles": "文件数",
     "optionalPassword": "密码（选填，不填即无密码）",
-    "others": "Others",
-    "owner": "Owner",
-    "permissions": "Permissions",
-    "read": "Read",
-    "recursive": "Recursive",
+    "others": "其他",
+    "owner": "所有者",
+    "permissions": "权限",
+    "read": "读取",
+    "recursive": "递归",
     "rename": "重命名",
     "renameMessage": "请输入新名称，旧名称为：",
     "replace": "替换",
@@ -164,13 +164,13 @@
     "scheduleMessage": "请选择发布这篇帖子的日期与时间。",
     "show": "点击以显示",
     "size": "大小",
-    "skipTrashMessage": "Skip trash bin and delete immediately",
-    "unarchive": "Unarchive",
-    "unarchiveMessage": "Choose the destination folder name:",
-    "unsavedChanges": "Changes that you made may not be saved. Leave page?",
+    "skipTrashMessage": "跳过回收站并立即删除",
+    "unarchive": "解压缩",
+    "unarchiveMessage": "选择目标文件夹名字:",
+    "unsavedChanges": "您所做的修改将不会被保存, 丢弃更改吗?",
     "upload": "上传",
     "uploadMessage": "选择上传选项。",
-    "write": "Write"
+    "write": "写入"
   },
   "search": {
     "images": "图像",
@@ -208,7 +208,7 @@
     "executeOnShellDescription": "默认情况下，File Browser通过直接调用命令的二进制包来执行命令，如果想在shell中执行（如Bash、PowerShell），你可以在这里定义所使用的shell和参数。如果设置了这个选项，所执行的命令会作为参数追加在后面。本选项对用户命令和事件钩子都生效。",
     "globalRules": "这是全局允许与禁止规则。它们作用于所有用户。您可以给每个用户定义单独的特殊规则来覆盖全局规则。",
     "globalSettings": "全局设置",
-    "hideDotfiles": "",
+    "hideDotfiles": "不显示隐藏文件",
     "insertPath": "插入路径",
     "insertRegex": "插入正则表达式",
     "instanceName": "实例名称",
@@ -238,10 +238,10 @@
     "rulesHelp": "您可以为该用户制定一组黑名单或白名单式的规则，被屏蔽的文件将不会显示在列表中，用户也无权限访问,支持相对于目录范围的路径。",
     "scope": "目录范围",
     "settingsUpdated": "设置已更新！",
-    "shareDeleted": "Share deleted!",
+    "shareDeleted": "共享已删除!",
     "shareDuration": "分享期限",
     "shareManagement": "分享管理",
-    "singleClick": "",
+    "singleClick": "通过单击来打开文件和文件夹",
     "themes": {
       "dark": "深色",
       "light": "浅色",
@@ -269,12 +269,12 @@
     "preview": "预览",
     "quota": {
       "inodes": "Inodes",
-      "space": "Space"
+      "space": "空格"
     },
     "settings": "设置",
     "signup": "注册",
     "siteSettings": "网站设置",
-    "trashBin": "Trash bin"
+    "trashBin": "回收站"
   },
   "success": {
     "linkCopied": "链接已复制！"
