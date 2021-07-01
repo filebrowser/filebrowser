@@ -111,7 +111,7 @@ export default {
         copy: this.selectedCount > 0 && this.user.perm.create,
         permissions: this.selectedCount === 1 && this.user.perm.modify,
         archive: this.selectedCount > 0 && this.user.perm.create,
-        unarchive: this.selectedCount === 1 && this.onlyArchivesSelected,
+        unarchive: this.selectedCount === 1 && this.onlyArchivesSelected && this.user.perm.create,
       };
     },
   },
