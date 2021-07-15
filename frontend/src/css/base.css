@@ -150,15 +150,17 @@ main {
 }
 
 #quota > div + div {
-  margin-top: .5em;
+  margin-top: .8em;
 }
 
 #quota .label {
   color: #546E7A;
+  font-weight: 500;
 }
 
 #quota .label .metric {
-  float: right;
+  font-weight: 100;
+  margin: .2em 0
 }
 
 #quota .bar {

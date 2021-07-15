@@ -2,8 +2,8 @@
   <div id="quota">
     <div>
       <div class="label">
-        <span>{{ $t("sidebar.quota.space") }}</span>
-        <span v-if="loaded" class="metric">{{ spaceUsageTitle }}</span>
+        <div>{{ $t("sidebar.quota.space") }}</div>
+        <div v-if="loaded" class="metric">{{ spaceUsageTitle }}</div>
       </div>
       <div class="bar" :title="spaceProgress + '%'">
         <div class="progress" :style="{ width: spaceProgress + '%' }"></div>
@@ -11,8 +11,8 @@
     </div>
     <div>
       <div class="label">
-        <span>{{ $t("sidebar.quota.inodes") }}</span>
-        <span v-if="loaded" class="metric">{{ inodeUsageTitle }}</span>
+        <div>{{ $t("sidebar.quota.inodes") }}</div>
+        <div v-if="loaded" class="metric">{{ inodeUsageTitle }}</div>
       </div>
       <div class="bar" :title="inodeProgress + '%'">
         <div class="progress" :style="{ width: inodeProgress + '%' }"></div>
