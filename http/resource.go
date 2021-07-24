@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -96,10 +95,6 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 			return http.StatusForbidden, nil
 		}
 
-		defer func() {
-			_, _ = io.Copy(ioutil.Discard, r.Body)
-		}()
-
 		// Directories creation on POST.
 		if strings.HasSuffix(r.URL.Path, "/") {
 			err := d.user.Fs.MkdirAll(r.URL.Path, 0775)
@@ -153,11 +148,6 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 	if !d.user.Perm.Modify || !d.Check(r.URL.Path) {
 		return http.StatusForbidden, nil
 	}
-
-	defer func() {
-		_, _ = io.Copy(ioutil.Discard, r.Body)
-	}()
-
 
 	// Only allow PUT for files.
 	if strings.HasSuffix(r.URL.Path, "/") {
