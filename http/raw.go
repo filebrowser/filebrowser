@@ -1,21 +1,18 @@
 package http
 
 import (
-	"bytes"
 	"errors"
-	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	gopath "path"
 	"path/filepath"
 	"strings"
 
-	"github.com/mholt/archiver"
-	"github.com/spf13/afero"
-
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
 	"github.com/filebrowser/filebrowser/v2/users"
+	"github.com/mholt/archiver"
 )
 
 func slashClean(name string) string {
@@ -117,18 +114,15 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 		return err
 	}
 
-	var (
-		file          afero.File
-		arcReadCloser = ioutil.NopCloser(&bytes.Buffer{})
-	)
-	if !files.IsNamedPipe(info.Mode()) {
-		file, err = d.user.Fs.Open(path)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-		arcReadCloser = file
+	if !info.IsDir() && !info.Mode().IsRegular() {
+		return nil
 	}
+
+	file, err := d.user.Fs.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
 
 	if path != commonPath {
 		filename := strings.TrimPrefix(path, commonPath)
@@ -138,7 +132,7 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 				FileInfo:   info,
 				CustomName: filename,
 			},
-			ReadCloser: arcReadCloser,
+			ReadCloser: file,
 		})
 		if err != nil {
 			return err
@@ -152,9 +146,10 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 		}
 
 		for _, name := range names {
-			err = addFile(ar, d, filepath.Join(path, name), commonPath)
+			fPath := filepath.Join(path, name)
+			err = addFile(ar, d, fPath, commonPath)
 			if err != nil {
-				return err
+				log.Printf("Failed to archive %s: %v", fPath, err)
 			}
 		}
 	}
@@ -196,7 +191,7 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 	for _, fname := range filenames {
 		err = addFile(ar, d, fname, commonDir)
 		if err != nil {
-			return http.StatusInternalServerError, err
+			log.Printf("Failed to archive %s: %v", fname, err)
 		}
 	}
 
