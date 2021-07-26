@@ -32,10 +32,10 @@ $(BIN)/%: | $(BIN) ; $(info $(M) installing $(PACKAGE)…)
 	$Q env GOBIN=$(BIN) $(GO) install $(PACKAGE)
 
 GOLANGCI_LINT = $(BIN)/golangci-lint
-$(BIN)/golangci-lint: PACKAGE=github.com/golangci/golangci-lint/cmd/golangci-lint@v1.37.1
+$(BIN)/golangci-lint: PACKAGE=github.com/golangci/golangci-lint/cmd/golangci-lint@v1.41.1
 
 GOIMPORTS = $(BIN)/goimports
-$(BIN)/goimports: PACKAGE=golang.org/x/tools/cmd/goimports@v0.1.0
+$(BIN)/goimports: PACKAGE=golang.org/x/tools/cmd/goimports@v0.1.5
 
 ## build: Build
 .PHONY: build

@@ -28,7 +28,7 @@ You can also specify an optional parameter (index_end) so
 you can remove all commands from 'index' to 'index_end',
 including 'index_end'.`,
 	Args: func(cmd *cobra.Command, args []string) error {
-		if err := cobra.RangeArgs(1, 2)(cmd, args); err != nil {
+		if err := cobra.RangeArgs(1, 2)(cmd, args); err != nil { //nolint:gomnd
 			return err
 		}
 

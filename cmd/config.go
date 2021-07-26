@@ -121,7 +121,7 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 }
 
 func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Auther) {
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0) //nolint:gomnd
 
 	fmt.Fprintf(w, "Sign up:\t%t\n", set.Signup)
 	fmt.Fprintf(w, "Create User Dir:\t%t\n", set.CreateUserDir)

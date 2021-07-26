@@ -49,9 +49,9 @@ func (s *Server) Clean() {
 	s.BaseURL = strings.TrimSuffix(s.BaseURL, "/")
 }
 
-// GenerateKey generates a key of 256 bits.
+// GenerateKey generates a key of 512 bits.
 func GenerateKey() ([]byte, error) {
-	b := make([]byte, 64)
+	b := make([]byte, 64) //nolint:gomnd
 	_, err := rand.Read(b)
 	// Note that err == nil only if we read len(b) bytes.
 	if err != nil {
