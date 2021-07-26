@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.16.0](https://github.com/filebrowser/filebrowser/compare/v2.15.0...v2.16.0) (2021-07-26)
+
+
+### Features
+
+* browser cache directives ([190cb99](https://github.com/filebrowser/filebrowser/commit/190cb99a79a0d438eca2da13539f8c6449ad73ac))
+* display error messages on settings ([6032038](https://github.com/filebrowser/filebrowser/commit/603203848a8b2221158088b6d849609db4c0c46c))
+* file name on page title ([16a34de](https://github.com/filebrowser/filebrowser/commit/16a34defc02554a77c6ac47b9e17e69d098a09fe))
+* gzip encoding for static js files ([aa172b8](https://github.com/filebrowser/filebrowser/commit/aa172b8bb5f17d5f5cb9666bfb5ee650d8091fb5))
+* loading spinner on views navigation ([976eb55](https://github.com/filebrowser/filebrowser/commit/976eb5583dae474125fd7ddec5dc19b6c291f98f))
+* message for connection error ([5e6f14b](https://github.com/filebrowser/filebrowser/commit/5e6f14b5dcb9c5efdf526f1346e09c2d0b2f6974))
+* mod time title on file info ([7d1e030](https://github.com/filebrowser/filebrowser/commit/7d1e03075d2c27148f60813defa0f68403d1d3c2))
+* open file option on share ([1c25f6e](https://github.com/filebrowser/filebrowser/commit/1c25f6ee69bd71eed82af7020006d0e27537a967))
+* show more button on share ([ba8c09f](https://github.com/filebrowser/filebrowser/commit/ba8c09f454feeadf4a1e97547a34151a81b389d5))
+* support for IE11 browser ([7ec24d9](https://github.com/filebrowser/filebrowser/commit/7ec24d9d7794fa37825f64ca2d1575f568fb1362))
+
+
+### Bug Fixes
+
+* break resource create/update handlers on error (closes [#1464](https://github.com/filebrowser/filebrowser/issues/1464)) ([5072bbb](https://github.com/filebrowser/filebrowser/commit/5072bbb2cbf5b29d041629faa8367f15e4d145a2))
+* copying files with special characters ([20ebbf6](https://github.com/filebrowser/filebrowser/commit/20ebbf6611b734371426fb1b9cb5e388be90bf7e))
+* delete image cache when moving ([8973c45](https://github.com/filebrowser/filebrowser/commit/8973c4598ff817647f1f1ad6ee36480054cd2776))
+* don't remove files on unsuccessful updates (closes [#1456](https://github.com/filebrowser/filebrowser/issues/1456)) ([6b19ab6](https://github.com/filebrowser/filebrowser/commit/6b19ab6613b12be7f075299cd98f4b41d43827c7))
+* failure on broken symlink deletion ([8650d2f](https://github.com/filebrowser/filebrowser/commit/8650d2ffe7a29cbafa800efcecbf6a61598a9f0c))
+* inconsistent double click on listing item ([ba7e71a](https://github.com/filebrowser/filebrowser/commit/ba7e71a7c3b0cc71012e5adf94b1c642e554972e))
+* no items displayed on file listing ([18889ad](https://github.com/filebrowser/filebrowser/commit/18889ad725f7f7e5a7e3f7abcf156487556dbeaf))
+* omit file content ([209f9fa](https://github.com/filebrowser/filebrowser/commit/209f9fa77f751054512355f2b74b9b7258465d0b))
+* short commit sha and typo fix in Makefile ([#1411](https://github.com/filebrowser/filebrowser/issues/1411)) ([46ee595](https://github.com/filebrowser/filebrowser/commit/46ee59538914dc2859f0da6b32e2d062d0a01b10))
+
 ## [2.15.0](https://github.com/filebrowser/filebrowser/compare/v2.14.1...v2.15.0) (2021-04-06)
 
 
