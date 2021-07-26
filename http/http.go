@@ -25,6 +25,12 @@ func NewHandler(
 	server.Clean()
 
 	r := mux.NewRouter()
+	r.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Security-Policy", `default-src 'self'`)
+			next.ServeHTTP(w, r)
+		})
+	})
 	index, static := getStaticHandlers(store, server, assetsFs)
 
 	// NOTE: This fixes the issue where it would redirect if people did not put a
