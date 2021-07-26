@@ -34,6 +34,7 @@ type FileInfo struct {
 	ModTime   time.Time         `json:"modified"`
 	Mode      os.FileMode       `json:"mode"`
 	IsDir     bool              `json:"isDir"`
+	IsSymlink bool              `json:"isSymlink"`
 	Type      string            `json:"type"`
 	Subtitles []string          `json:"subtitles,omitempty"`
 	Content   string            `json:"content,omitempty"`
@@ -61,21 +62,9 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 		return nil, os.ErrPermission
 	}
 
-	info, err := opts.Fs.Stat(opts.Path)
+	file, err := stat(opts)
 	if err != nil {
 		return nil, err
-	}
-
-	file := &FileInfo{
-		Fs:        opts.Fs,
-		Path:      opts.Path,
-		Name:      info.Name(),
-		ModTime:   info.ModTime(),
-		Mode:      info.Mode(),
-		IsDir:     info.IsDir(),
-		Size:      info.Size(),
-		Extension: filepath.Ext(info.Name()),
-		Token:     opts.Token,
 	}
 
 	if opts.Expand {
@@ -93,6 +82,64 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 	}
 
 	return file, err
+}
+
+func stat(opts FileOptions) (*FileInfo, error) {
+	var file *FileInfo
+
+	if lstaterFs, ok := opts.Fs.(afero.Lstater); ok {
+		info, _, err := lstaterFs.LstatIfPossible(opts.Path)
+		if err != nil {
+			return nil, err
+		}
+		file = &FileInfo{
+			Fs:        opts.Fs,
+			Path:      opts.Path,
+			Name:      info.Name(),
+			ModTime:   info.ModTime(),
+			Mode:      info.Mode(),
+			IsDir:     info.IsDir(),
+			IsSymlink: IsSymlink(info.Mode()),
+			Size:      info.Size(),
+			Extension: filepath.Ext(info.Name()),
+			Token:     opts.Token,
+		}
+	}
+
+	// regular file
+	if file != nil && !file.IsSymlink {
+		return file, nil
+	}
+
+	// fs doesn't support afero.Lstater interface or the file is a symlink
+	info, err := opts.Fs.Stat(opts.Path)
+	if err != nil {
+		// can't follow symlink
+		if file != nil && file.IsSymlink {
+			return file, nil
+		}
+		return nil, err
+	}
+
+	// set correct file size in case of symlink
+	if file != nil && file.IsSymlink {
+		file.Size = info.Size()
+		return file, nil
+	}
+
+	file = &FileInfo{
+		Fs:        opts.Fs,
+		Path:      opts.Path,
+		Name:      info.Name(),
+		ModTime:   info.ModTime(),
+		Mode:      info.Mode(),
+		IsDir:     info.IsDir(),
+		Size:      info.Size(),
+		Extension: filepath.Ext(info.Name()),
+		Token:     opts.Token,
+	}
+
+	return file, nil
 }
 
 // Checksum checksums a given File for a given User, using a specific
@@ -252,7 +299,9 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
 			continue
 		}
 
+		isSymlink := false
 		if IsSymlink(f.Mode()) {
+			isSymlink = true
 			// It's a symbolic link. We try to follow it. If it doesn't work,
 			// we stay with the link information instead of the target's.
 			info, err := i.Fs.Stat(fPath)
@@ -268,6 +317,7 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
 			ModTime:   f.ModTime(),
 			Mode:      f.Mode(),
 			IsDir:     f.IsDir(),
+			IsSymlink: isSymlink,
 			Extension: filepath.Ext(name),
 			Path:      fPath,
 		}
