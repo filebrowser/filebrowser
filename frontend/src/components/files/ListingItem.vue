@@ -12,6 +12,7 @@
     :aria-label="name"
     :aria-selected="isSelected"
     ref="item"
+    :class="listingClass"
   >
     <div>
       <img
@@ -100,6 +101,13 @@ export default {
       if (this.type === "audio") return "volume_up";
       if (this.type === "video") return "movie";
       return "insert_drive_file";
+    },
+    listingClass() {
+      if (this.isDir) return "folder";
+      if (this.type === "image") return "image";
+      if (this.type === "audio") return "audio";
+      if (this.type === "video") return "video";
+      return "file";
     },
     isDraggable() {
       return this.readOnly == undefined && this.user.perm.rename;

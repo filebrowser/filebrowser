@@ -53,6 +53,14 @@
   vertical-align: bottom;
 }
 
+#listing .item.folder i {
+  color: var(--blue);
+}
+
+#listing .item[aria-selected=true].folder i {
+  color: #fff;
+}
+
 #listing .item img {
   width: 4em;
   height: 4em;
