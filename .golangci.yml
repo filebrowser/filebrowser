@@ -6,6 +6,8 @@ linters-settings:
   funlen:
     lines: 100
     statements: 50
+  gci:
+    local-prefixes: github.com/filebrowser/filebrowser
   goconst:
     min-len: 2
     min-occurrences: 2
@@ -26,8 +28,6 @@ linters-settings:
     min-complexity: 15
   goimports:
     local-prefixes: github.com/filebrowser/filebrowser
-  golint:
-    min-confidence: 0
   gomnd:
     settings:
       mnd:
@@ -58,26 +58,25 @@ linters:
     - dogsled
     - dupl
     - errcheck
+    - exportloopref
+    - exhaustive
     - funlen
     - gochecknoinits
     - goconst
     - gocritic
     - gocyclo
     - goimports
-    - golint
     - gomnd
     - goprintffuncname
     - gosec
     - gosimple
     - govet
     - ineffassign
-    - interfacer
     - lll
     - misspell
     - nakedret
     - nolintlint
     - rowserrcheck
-    - scopelint
     - staticcheck
     - structcheck
     - stylecheck
@@ -88,19 +87,6 @@ linters:
     - varcheck
     - whitespace
     - prealloc
-
-  # don't enable:
-  # - asciicheck
-  # - exhaustive (TODO: enable after next release; current release at time of writing is v1.27)
-  # - gochecknoglobals
-  # - gocognit
-  # - godot
-  # - godox
-  # - goerr113
-  # - maligned
-  # - nestif
-  # - testpackage
-  # - wsl
 
 issues:
   exclude-rules:
@@ -118,6 +104,9 @@ issues:
     - text: "Auther"
       linters:
         - misspell
+    - text: "strconv.Parse"
+      linters:
+        - gomnd
 
 run:
   skip-dirs:
