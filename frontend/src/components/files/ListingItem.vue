@@ -36,7 +36,14 @@
       </p>
       <p v-else class="name">{{ name }}</p>
 
-      <p v-if="isDir" class="size" data-order="-1">&mdash;</p>
+      <p v-if="isDir && !diskUsage" class="size" data-order="-1">&mdash;</p>
+      <p
+        v-else-if="isDir && diskUsage"
+        class="size"
+        :data-order="humanDiskUsage()"
+      >
+        {{ humanDiskUsage() }}
+      </p>
       <p v-else class="size" :data-order="humanSize()">{{ humanSize() }}</p>
 
       <p class="modified">
@@ -61,6 +68,7 @@ export default {
   name: "item",
   data: function () {
     return {
+      diskUsage: null,
       touches: 0,
     };
   },
@@ -78,7 +86,7 @@ export default {
     "readOnly",
   ],
   computed: {
-    ...mapState(["user", "selected", "req", "jwt"]),
+    ...mapState(["user", "selected", "req", "jwt", "diskUsages"]),
     ...mapGetters(["selectedCount"]),
     singleClick() {
       return this.readOnly == undefined && this.user.singleClick;
@@ -119,8 +127,14 @@ export default {
       return enableThumbs;
     },
   },
+  watch: {
+    diskUsages() {
+      this.fetchDiskUsage();
+    },
+  },
   mounted() {
     this.$refs.item.addEventListener("contextmenu", this.contextMenu);
+    this.fetchDiskUsage();
   },
   beforeDestroy() {
     this.$refs.item.removeEventListener("contextmenu", this.contextMenu);
@@ -133,6 +147,12 @@ export default {
       "showContextMenu",
       "hideContextMenu",
     ]),
+    fetchDiskUsage() {
+      if (this.isDir) {
+        this.diskUsage =
+          this.diskUsages[this.req.items[this.index].path] || null;
+      }
+    },
     permissions() {
       let s = "";
       if (this.isSymlink) {
@@ -152,6 +172,9 @@ export default {
       s += (this.mode & 2) != 0 ? "w" : "-";
       s += (this.mode & 1) != 0 ? "x" : "-";
       return s;
+    },
+    humanDiskUsage: function () {
+      return filesize(this.diskUsage);
     },
     humanSize: function () {
       return filesize(this.size);

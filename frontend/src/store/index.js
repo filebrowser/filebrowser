@@ -25,6 +25,7 @@ const state = {
   showShell: false,
   showConfirm: null,
   contextMenu: null,
+  diskUsages: {},
 };
 
 export default new Vuex.Store({

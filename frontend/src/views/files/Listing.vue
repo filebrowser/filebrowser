@@ -92,6 +92,12 @@
           :label="$t('buttons.upload')"
           @action="upload"
         />
+        <action
+          icon="assessment"
+          id="dir_size-button"
+          :label="$t('buttons.directorySizes')"
+          @action="calculateDirSizes"
+        />
         <action icon="info" :label="$t('buttons.info')" show="info" />
         <action
           icon="check_circle"
@@ -293,6 +299,7 @@ import { enableExec } from "@/utils/constants";
 import * as upload from "@/utils/upload";
 import css from "@/utils/css";
 import throttle from "lodash.throttle";
+import buttons from "@/utils/buttons";
 
 import HeaderBar from "@/components/header/HeaderBar";
 import Action from "@/components/header/Action";
@@ -836,6 +843,41 @@ export default {
 
           api.download(format, ...files);
         },
+      });
+    },
+    calculateDirSizes() {
+      let links = [];
+
+      if (this.selectedCount === 0) {
+        for (let item of this.req.items) {
+          if (item.isDir) {
+            links.push(item.url);
+          }
+        }
+      } else {
+        for (let selected of this.selected) {
+          if (this.req.items[selected].isDir) {
+            links.push(this.req.items[selected].url);
+          }
+        }
+      }
+
+      let promises = [];
+      for (let link of links) {
+        promises.push(api.diskUsage(link));
+      }
+
+      buttons.loading("dir_size");
+      Promise.allSettled(promises).then((results) => {
+        for (let result of results) {
+          if (result.status === "fulfilled") {
+            this.$store.commit("addDiskUsage", {
+              path: result.value.path,
+              usage: result.value.diskUsage,
+            });
+          }
+        }
+        buttons.success("dir_size");
       });
     },
     switchView: async function () {

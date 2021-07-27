@@ -91,6 +91,16 @@ const mutations = {
   hideContextMenu: (state) => {
     state.contextMenu = null;
   },
+  addDiskUsage: (state, value) => {
+    if (value.path[value.path.length - 1] == "/") {
+      value.path = value.path.slice(0, -1);
+    }
+
+    let tmp = state.diskUsages;
+    state.diskUsages = null;
+    tmp[value.path] = value.usage;
+    state.diskUsages = tmp;
+  },
 };
 
 export default mutations;
