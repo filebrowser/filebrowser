@@ -20,8 +20,6 @@ import (
 	"github.com/filebrowser/filebrowser/v2/fileutils"
 )
 
-const unarchiveAction = "unarchive"
-
 var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	file, err := files.NewFileInfo(files.FileOptions{
 		Fs:         d.user.Fs,
@@ -279,8 +277,7 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 
 		override := r.URL.Query().Get("override") == "true"
 		rename := r.URL.Query().Get("rename") == "true"
-		unarchive := action == unarchiveAction
-		if !override && !rename && !unarchive {
+		if !override && !rename {
 			if _, err = d.user.Fs.Stat(dst); err == nil {
 				return http.StatusConflict, nil
 			}
@@ -418,7 +415,7 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		}
 
 		return fileutils.Copy(d.user.Fs, src, dst)
-	case unarchiveAction:
+	case "unarchive":
 		if !d.user.Perm.Create {
 			return errors.ErrPermissionDenied
 		}
@@ -426,7 +423,38 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		src = d.user.FullPath(path.Clean("/" + src))
 		dst = d.user.FullPath(path.Clean("/" + dst))
 
-		err := archiver.Unarchive(src, dst)
+		arch, err := archiver.ByExtension(src)
+		if err != nil {
+			return err
+		}
+
+		// if we reach this place when overwrite is needed,
+		// it means that override was selected
+		switch a := arch.(type) {
+		case *archiver.Rar:
+			a.OverwriteExisting = true
+		case *archiver.Tar:
+			a.OverwriteExisting = true
+		case *archiver.TarBz2:
+			a.OverwriteExisting = true
+		case *archiver.TarGz:
+			a.OverwriteExisting = true
+		case *archiver.TarLz4:
+			a.OverwriteExisting = true
+		case *archiver.TarSz:
+			a.OverwriteExisting = true
+		case *archiver.TarXz:
+			a.OverwriteExisting = true
+		case *archiver.Zip:
+			a.OverwriteExisting = true
+		}
+
+		unarchiver, ok := arch.(archiver.Unarchiver)
+		if !ok {
+			return errors.ErrInvalidRequestParams
+		}
+
+		err = unarchiver.Unarchive(src, dst)
 		if err != nil {
 			return errors.ErrInvalidRequestParams
 		}

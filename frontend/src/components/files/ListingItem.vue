@@ -41,9 +41,10 @@
       <p
         v-else-if="isDir && diskUsage"
         class="size"
-        :data-order="humanDiskUsage()"
+        :data-order="humanDiskUsageSize()"
       >
-        {{ humanDiskUsage() }}
+        {{ humanDiskUsageSize() }}
+        {{ $t("prompts.inodeCount", { count: diskUsage.inodes }) }}
       </p>
       <p v-else class="size" :data-order="humanSize()">{{ humanSize() }}</p>
 
@@ -181,8 +182,8 @@ export default {
       s += (this.mode & 1) != 0 ? "x" : "-";
       return s;
     },
-    humanDiskUsage: function () {
-      return filesize(this.diskUsage);
+    humanDiskUsageSize: function () {
+      return filesize(this.diskUsage.size);
     },
     humanSize: function () {
       return filesize(this.size);

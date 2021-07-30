@@ -8,6 +8,7 @@
     "copyToClipboard": "Copiar para o clipboard",
     "create": "Criar",
     "delete": "Eliminar",
+    "directorySizes": "Calculate directory sizes",
     "download": "Descarregar",
     "hideDotfiles": "Esconder dotfiles",
     "info": "Info",
@@ -167,9 +168,12 @@
     "skipTrashMessage": "Saltar o caixote do lixo e apagar imediatamente",
     "unarchive": "Desarquivar",
     "unarchiveMessage": "Escolha o nome da pasta de destino:",
+    "unarchiveOverwriteExisting": "Overwrite existing files",
     "unsavedChanges": "As alterações que fez poderão não ser guardadas. Deixar a página?",
     "upload": "Upload",
-    "uploadMessage": "",
+    "uploadFile": "File",
+    "uploadFolder": "Folder",
+    "uploadMessage": "Selecionar uma opção para enviar.",
     "write": "Escrever"
   },
   "search": {

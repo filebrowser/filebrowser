@@ -13,6 +13,10 @@
         @keyup.enter="submit"
         v-model.trim="name"
       />
+      <p v-if="overwriteAvailable">
+        <input type="checkbox" v-model="overwriteExisting" />
+        {{ $t("prompts.unarchiveOverwriteExisting") }}
+      </p>
     </div>
 
     <div class="card-action">
@@ -46,12 +50,26 @@ export default {
   name: "rename",
   data: function () {
     return {
+      overwriteExisting: false,
       name: "",
     };
   },
   computed: {
     ...mapState(["req", "selected", "selectedCount"]),
     ...mapGetters(["isListing", "isFiles"]),
+    overwriteAvailable() {
+      let item = this.req.items[this.selected[0]];
+      return [
+        ".zip",
+        ".rar",
+        ".tar",
+        ".bz2",
+        ".gz",
+        ".xz",
+        ".lz4",
+        ".sz",
+      ].includes(item.extension);
+    },
   },
   methods: {
     cancel: function () {
@@ -66,7 +84,7 @@ export default {
       try {
         buttons.loading("unarchive");
         this.$store.commit("closeHovers");
-        await api.unarchive(item.url, dst, false);
+        await api.unarchive(item.url, dst, this.overwriteExisting);
         this.$store.commit("setReload", true);
       } catch (e) {
         this.$showError(e);

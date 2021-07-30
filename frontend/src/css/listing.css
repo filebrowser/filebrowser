@@ -159,11 +159,11 @@
 }
 
 #listing.list .item .name {
-  width: 50%;
+  width: 45%;
 }
 
 #listing.list .item .size {
-  width: 15%;
+  width: 20%;
 }
 
 #listing.list .item .modified {

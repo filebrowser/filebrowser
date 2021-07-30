@@ -873,7 +873,10 @@ export default {
           if (result.status === "fulfilled") {
             this.$store.commit("addDiskUsage", {
               path: result.value.path,
-              usage: result.value.diskUsage,
+              usage: {
+                size: result.value.diskUsage,
+                inodes: result.value.inodes,
+              },
             });
           }
         }

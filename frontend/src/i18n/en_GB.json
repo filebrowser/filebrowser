@@ -8,8 +8,8 @@
     "copyToClipboard": "Copy to clipboard",
     "create": "Create",
     "delete": "Delete",
-    "download": "Download",
     "directorySizes": "Calculate directory sizes",
+    "download": "Download",
     "hideDotfiles": "Hide dotfiles",
     "info": "Info",
     "more": "More",
@@ -168,11 +168,12 @@
     "skipTrashMessage": "Skip trash bin and delete immediately",
     "unarchive": "Unarchive",
     "unarchiveMessage": "Choose the destination folder name:",
+    "unarchiveOverwriteExisting": "Overwrite existing files",
     "unsavedChanges": "Changes that you made may not be saved. Leave page?",
     "upload": "Upload",
-    "uploadMessage": "Select an option to upload.",
     "uploadFile": "File",
     "uploadFolder": "Folder",
+    "uploadMessage": "Select an option to upload.",
     "write": "Write"
   },
   "search": {
