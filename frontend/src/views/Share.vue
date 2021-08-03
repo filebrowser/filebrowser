@@ -93,7 +93,7 @@
             </a>
             <a
               target="_blank"
-              :href="link + '?inline=true'"
+              :href="link + '&inline=true'"
               class="button button--flat"
               v-if="!req.isDir"
             >
