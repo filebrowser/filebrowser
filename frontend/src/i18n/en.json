@@ -63,7 +63,8 @@
     "size": "Size",
     "sortByLastModified": "Sort by last modified",
     "sortByName": "Sort by name",
-    "sortBySize": "Sort by size"
+    "sortBySize": "Sort by size",
+    "noPreview": "Preview is not available for this file."
   },
   "help": {
     "click": "select file or directory",

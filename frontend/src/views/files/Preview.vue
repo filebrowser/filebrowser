@@ -89,12 +89,31 @@
           class="pdf"
           :data="raw"
         ></object>
-        <a v-else-if="req.type == 'blob'" :href="downloadUrl">
-          <h2 class="message">
-            {{ $t("buttons.download") }}
-            <i class="material-icons">file_download</i>
-          </h2>
-        </a>
+        <div v-else-if="req.type == 'blob'" class="info">
+          <div class="title">
+            <i class="material-icons">feedback</i>
+            {{ $t("files.noPreview") }}
+          </div>
+          <div>
+            <a target="_blank" :href="downloadUrl" class="button button--flat">
+              <div>
+                <i class="material-icons">file_download</i
+                >{{ $t("buttons.download") }}
+              </div>
+            </a>
+            <a
+              target="_blank"
+              :href="downloadUrl + '&inline=true'"
+              class="button button--flat"
+              v-if="!req.isDir"
+            >
+              <div>
+                <i class="material-icons">open_in_new</i
+                >{{ $t("buttons.openFile") }}
+              </div>
+            </a>
+          </div>
+        </div>
       </div>
     </template>
 
