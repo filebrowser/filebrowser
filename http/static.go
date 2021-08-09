@@ -77,7 +77,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		return http.StatusInternalServerError, err
 	}
 
-	data["Json"] = string(b)
+	data["Json"] = strings.ReplaceAll(string(b), `'`, `\'`)
 
 	fileContents, err := fs.ReadFile(fSys, file)
 	if err != nil {
