@@ -240,8 +240,8 @@ export default {
       return `${baseURL}/api/public/dl/${path}${queryArg}`;
     },
     inlineLink: function () {
-      url = new URL(this.link);
-      url.searchParams.set('inline', 'true');
+      let url = new URL(this.link);
+      url.searchParams.set("inline", "true");
       return url.href;
     },
     fullLink: function () {
