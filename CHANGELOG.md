@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.17.0](https://github.com/filebrowser/filebrowser/compare/v2.16.1...v2.17.0) (2021-08-21)
+
+
+### Features
+
+* open file option on preview ([76add9e](https://github.com/filebrowser/filebrowser/commit/76add9e5274b0373c6b983e3b20e387a14ea6c9e))
+
+
+### Bug Fixes
+
+* 401 error in share view open file button ([#1495](https://github.com/filebrowser/filebrowser/issues/1495)) ([25c8788](https://github.com/filebrowser/filebrowser/commit/25c87883908babde073390a2e2320a8e5880a87c))
+* escape quote on index template ([23d646c](https://github.com/filebrowser/filebrowser/commit/23d646c456876d06cf48e71c1e57b69de99511f0)), closes [#1501](https://github.com/filebrowser/filebrowser/issues/1501)
+* file caching directive ([c63cc5a](https://github.com/filebrowser/filebrowser/commit/c63cc5a2d25909cc4e2f2e7235f276ec66c32bf2))
+
 ### [2.16.1](https://github.com/filebrowser/filebrowser/compare/v2.16.0...v2.16.1) (2021-08-04)
 
 
