@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.17.1](https://github.com/filebrowser/filebrowser/compare/v2.17.0...v2.17.1) (2021-08-23)
+
+
+### Bug Fixes
+
+* internal server error if --disable-preview-resize flag is set (closes [#1510](https://github.com/filebrowser/filebrowser/issues/1510)) ([4c3099a](https://github.com/filebrowser/filebrowser/commit/4c3099a086c206dcb3bc70ee8c8da02eee61c30b))
+
 ## [2.17.0](https://github.com/filebrowser/filebrowser/compare/v2.16.1...v2.17.0) (2021-08-21)
 
 
