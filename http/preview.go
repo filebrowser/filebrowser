@@ -68,10 +68,21 @@ func previewHandler(imgSvc ImgService, fileCache FileCache, enableThumbnails, re
 	})
 }
 
-func handleImagePreview(w http.ResponseWriter, r *http.Request, imgSvc ImgService, fileCache FileCache,
-	file *files.FileInfo, previewSize PreviewSize, enableThumbnails, resizePreview bool) (int, error) {
-	format, err := imgSvc.FormatFromExtension(file.Extension)
+func handleImagePreview(
+	w http.ResponseWriter,
+	r *http.Request,
+	imgSvc ImgService,
+	fileCache FileCache,
+	file *files.FileInfo,
+	previewSize PreviewSize,
+	enableThumbnails, resizePreview bool,
+) (int, error) {
+	if (previewSize == PreviewSizeBig && !resizePreview) ||
+		(previewSize == PreviewSizeThumb && !enableThumbnails) {
+		return rawFileHandler(w, r, file)
+	}
 
+	format, err := imgSvc.FormatFromExtension(file.Extension)
 	// Unsupported extensions directly return the raw data
 	if err == img.ErrUnsupportedFormat || format == img.FormatGif {
 		return rawFileHandler(w, r, file)
@@ -86,7 +97,7 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, imgSvc ImgServic
 		return errToStatus(err), err
 	}
 	if !ok {
-		resizedImage, err = createPreview(imgSvc, fileCache, file, previewSize, enableThumbnails, resizePreview)
+		resizedImage, err = createPreview(imgSvc, fileCache, file, previewSize)
 		if err != nil {
 			return errToStatus(err), err
 		}
@@ -99,7 +110,7 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, imgSvc ImgServic
 }
 
 func createPreview(imgSvc ImgService, fileCache FileCache,
-	file *files.FileInfo, previewSize PreviewSize, enableThumbnails, resizePreview bool) ([]byte, error) {
+	file *files.FileInfo, previewSize PreviewSize) ([]byte, error) {
 	fd, err := file.Fs.Open(file.Path)
 	if err != nil {
 		return nil, err
@@ -113,11 +124,11 @@ func createPreview(imgSvc ImgService, fileCache FileCache,
 	)
 
 	switch {
-	case previewSize == PreviewSizeBig && resizePreview:
+	case previewSize == PreviewSizeBig:
 		width = 1080
 		height = 1080
 		options = append(options, img.WithMode(img.ResizeModeFit), img.WithQuality(img.QualityMedium))
-	case previewSize == PreviewSizeThumb && enableThumbnails:
+	case previewSize == PreviewSizeThumb:
 		width = 128
 		height = 128
 		options = append(options, img.WithMode(img.ResizeModeFill), img.WithQuality(img.QualityLow), img.WithFormat(img.FormatJpeg))
