@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.17.2](https://github.com/filebrowser/filebrowser/compare/v2.17.1...v2.17.2) (2021-08-27)
+
+
+### Bug Fixes
+
+* bug with inlineLink not creating url properly ([#1515](https://github.com/filebrowser/filebrowser/issues/1515)) ([43a4609](https://github.com/filebrowser/filebrowser/commit/43a460993c3f0d158b876db4b20caa7963e9f361))
+
 ### [2.17.1](https://github.com/filebrowser/filebrowser/compare/v2.17.0...v2.17.1) (2021-08-23)
 
 
