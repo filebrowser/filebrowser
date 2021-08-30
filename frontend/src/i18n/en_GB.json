@@ -70,11 +70,11 @@
     "metadata": "Metadata",
     "multipleSelectionEnabled": "Multiple selection enabled",
     "name": "Name",
+    "noPreview": "Preview is not available for this file.",
     "size": "Size",
     "sortByLastModified": "Sort by last modified",
     "sortByName": "Sort by name",
-    "sortBySize": "Sort by size",
-    "noPreview": "Preview is not available for this file."
+    "sortBySize": "Sort by size"
   },
   "help": {
     "click": "select file or directory",
@@ -103,7 +103,7 @@
     "ptBR": "Português (Brasil)",
     "ptPT": "Português",
     "ruRU": "Русский",
-    "trTR": "Türk",
+    "trTR": "Türkçe",
     "ukUA": "Український",
     "zhCN": "中文 (简体)"
   },

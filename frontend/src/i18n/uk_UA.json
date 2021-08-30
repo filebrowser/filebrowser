@@ -70,6 +70,7 @@
     "metadata": "Метадані",
     "multipleSelectionEnabled": "Мультивибір включено",
     "name": "Ім'я",
+    "noPreview": "Preview is not available for this file.",
     "size": "Розмір",
     "sortByLastModified": "Сортувати за датою змін",
     "sortByName": "Сортувати за назвою",
@@ -102,7 +103,7 @@
     "ptBR": "Português (Brasil)",
     "ptPT": "Português",
     "ruRU": "Русский",
-    "trTR": "Türk",
+    "trTR": "Türkçe",
     "ukUA": "Українська",
     "zhCN": "中文 (简体)"
   },

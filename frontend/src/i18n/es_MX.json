@@ -70,6 +70,7 @@
     "metadata": "Metadatos",
     "multipleSelectionEnabled": "Selección múltiple activada",
     "name": "Nombre",
+    "noPreview": "Preview is not available for this file.",
     "size": "Tamaño",
     "sortByLastModified": "Ordenar por última modificación",
     "sortByName": "Ordenar por nombre",
@@ -102,7 +103,7 @@
     "ptBR": "Português (Brasil)",
     "ptPT": "Português",
     "ruRU": "Русский",
-    "trTR": "Türk",
+    "trTR": "Türkçe",
     "ukUA": "Український",
     "zhCN": "中文 (简体)"
   },
