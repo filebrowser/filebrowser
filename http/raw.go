@@ -200,11 +200,6 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 }
 
 func rawFileHandler(w http.ResponseWriter, r *http.Request, file *files.FileInfo) (int, error) {
-	isFresh := checkEtag(w, r, file.ModTime.Unix(), file.Size)
-	if isFresh {
-		return http.StatusNotModified, nil
-	}
-
 	fd, err := file.Fs.Open(file.Path)
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -213,6 +208,7 @@ func rawFileHandler(w http.ResponseWriter, r *http.Request, file *files.FileInfo
 
 	setContentDisposition(w, r, file)
 
+	w.Header().Set("Cache-Control", "private")
 	http.ServeContent(w, r, file.Name, file.ModTime, fd)
 	return 0, nil
 }

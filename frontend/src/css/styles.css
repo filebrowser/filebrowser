@@ -205,6 +205,34 @@ main .spinner .bounce2 {
   height: 100%;
 }
 
+#previewer .preview .info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5em;
+  color: #fff;
+}
+#previewer .preview .info .title {
+  margin-bottom: 1em;
+}
+#previewer .preview .info .title i {
+  display: block;
+  margin-bottom: .1em;
+  font-size: 4em;
+}
+#previewer .preview .info .button {
+  display: inline-block;
+}
+#previewer .preview .info .button:hover {
+  background-color: rgba(255, 255, 255, 0.2)
+}
+#previewer .preview .info .button i {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 1.3em;
+}
+
 #previewer .pdf {
   width: 100%;
   height: 100%;

@@ -127,6 +127,7 @@ func stat(opts FileOptions) (*FileInfo, error) {
 	// set correct file size in case of symlink
 	if file != nil && file.IsSymlink {
 		file.Size = info.Size()
+		file.IsDir = info.IsDir()
 		return file, nil
 	}
 

@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.17.2](https://github.com/filebrowser/filebrowser/compare/v2.17.1...v2.17.2) (2021-08-27)
+
+
+### Bug Fixes
+
+* bug with inlineLink not creating url properly ([#1515](https://github.com/filebrowser/filebrowser/issues/1515)) ([43a4609](https://github.com/filebrowser/filebrowser/commit/43a460993c3f0d158b876db4b20caa7963e9f361))
+
+### [2.17.1](https://github.com/filebrowser/filebrowser/compare/v2.17.0...v2.17.1) (2021-08-23)
+
+
+### Bug Fixes
+
+* internal server error if --disable-preview-resize flag is set (closes [#1510](https://github.com/filebrowser/filebrowser/issues/1510)) ([4c3099a](https://github.com/filebrowser/filebrowser/commit/4c3099a086c206dcb3bc70ee8c8da02eee61c30b))
+
+## [2.17.0](https://github.com/filebrowser/filebrowser/compare/v2.16.1...v2.17.0) (2021-08-21)
+
+
+### Features
+
+* open file option on preview ([76add9e](https://github.com/filebrowser/filebrowser/commit/76add9e5274b0373c6b983e3b20e387a14ea6c9e))
+
+
+### Bug Fixes
+
+* 401 error in share view open file button ([#1495](https://github.com/filebrowser/filebrowser/issues/1495)) ([25c8788](https://github.com/filebrowser/filebrowser/commit/25c87883908babde073390a2e2320a8e5880a87c))
+* escape quote on index template ([23d646c](https://github.com/filebrowser/filebrowser/commit/23d646c456876d06cf48e71c1e57b69de99511f0)), closes [#1501](https://github.com/filebrowser/filebrowser/issues/1501)
+* file caching directive ([c63cc5a](https://github.com/filebrowser/filebrowser/commit/c63cc5a2d25909cc4e2f2e7235f276ec66c32bf2))
+
+### [2.16.1](https://github.com/filebrowser/filebrowser/compare/v2.16.0...v2.16.1) (2021-08-04)
+
+
+### Bug Fixes
+
+* check symlink target type (closes [#1488](https://github.com/filebrowser/filebrowser/issues/1488)) ([76b466f](https://github.com/filebrowser/filebrowser/commit/76b466f6492e74cf13e66a33e7e5f597ac92b240))
+
 ## [2.16.0](https://github.com/filebrowser/filebrowser/compare/v2.15.0...v2.16.0) (2021-07-26)
 
 

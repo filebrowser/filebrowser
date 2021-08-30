@@ -68,10 +68,21 @@ func previewHandler(imgSvc ImgService, fileCache FileCache, enableThumbnails, re
 	})
 }
 
-func handleImagePreview(w http.ResponseWriter, r *http.Request, imgSvc ImgService, fileCache FileCache,
-	file *files.FileInfo, previewSize PreviewSize, enableThumbnails, resizePreview bool) (int, error) {
-	format, err := imgSvc.FormatFromExtension(file.Extension)
+func handleImagePreview(
+	w http.ResponseWriter,
+	r *http.Request,
+	imgSvc ImgService,
+	fileCache FileCache,
+	file *files.FileInfo,
+	previewSize PreviewSize,
+	enableThumbnails, resizePreview bool,
+) (int, error) {
+	if (previewSize == PreviewSizeBig && !resizePreview) ||
+		(previewSize == PreviewSizeThumb && !enableThumbnails) {
+		return rawFileHandler(w, r, file)
+	}
 
+	format, err := imgSvc.FormatFromExtension(file.Extension)
 	// Unsupported extensions directly return the raw data
 	if err == img.ErrUnsupportedFormat || format == img.FormatGif {
 		return rawFileHandler(w, r, file)
@@ -80,33 +91,26 @@ func handleImagePreview(w http.ResponseWriter, r *http.Request, imgSvc ImgServic
 		return errToStatus(err), err
 	}
 
-	isFresh := checkEtag(w, r, file.ModTime.Unix(), file.Size)
-	if isFresh {
-		return http.StatusNotModified, nil
-	}
-
 	cacheKey := previewCacheKey(file.Path, file.ModTime.Unix(), previewSize)
-	cachedFile, ok, err := fileCache.Load(r.Context(), cacheKey)
+	resizedImage, ok, err := fileCache.Load(r.Context(), cacheKey)
 	if err != nil {
 		return errToStatus(err), err
 	}
-	if ok {
-		_, _ = w.Write(cachedFile)
-		return 0, nil
+	if !ok {
+		resizedImage, err = createPreview(imgSvc, fileCache, file, previewSize)
+		if err != nil {
+			return errToStatus(err), err
+		}
 	}
 
-	resizedImage, err := createPreview(imgSvc, fileCache, file, previewSize, enableThumbnails, resizePreview)
-	if err != nil {
-		return errToStatus(err), err
-	}
-
-	_, _ = w.Write(resizedImage.Bytes())
+	w.Header().Set("Cache-Control", "private")
+	http.ServeContent(w, r, file.Name, file.ModTime, bytes.NewReader(resizedImage))
 
 	return 0, nil
 }
 
 func createPreview(imgSvc ImgService, fileCache FileCache,
-	file *files.FileInfo, previewSize PreviewSize, enableThumbnails, resizePreview bool) (*bytes.Buffer, error) {
+	file *files.FileInfo, previewSize PreviewSize) ([]byte, error) {
 	fd, err := file.Fs.Open(file.Path)
 	if err != nil {
 		return nil, err
@@ -120,11 +124,11 @@ func createPreview(imgSvc ImgService, fileCache FileCache,
 	)
 
 	switch {
-	case previewSize == PreviewSizeBig && resizePreview:
+	case previewSize == PreviewSizeBig:
 		width = 1080
 		height = 1080
 		options = append(options, img.WithMode(img.ResizeModeFit), img.WithQuality(img.QualityMedium))
-	case previewSize == PreviewSizeThumb && enableThumbnails:
+	case previewSize == PreviewSizeThumb:
 		width = 128
 		height = 128
 		options = append(options, img.WithMode(img.ResizeModeFill), img.WithQuality(img.QualityLow), img.WithFormat(img.FormatJpeg))
@@ -144,7 +148,7 @@ func createPreview(imgSvc ImgService, fileCache FileCache,
 		}
 	}()
 
-	return buf, nil
+	return buf.Bytes(), nil
 }
 
 func previewCacheKey(fPath string, fTime int64, previewSize PreviewSize) string {
