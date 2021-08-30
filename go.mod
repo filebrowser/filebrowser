@@ -7,10 +7,10 @@ require (
 	github.com/Sereal/Sereal v0.0.0-20190430203904-6faf9605eb56 // indirect
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/caddyserver/caddy v1.0.3
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/disintegration/imaging v1.6.2
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/dsoprea/go-exif/v3 v3.0.0-20201216222538-db167117f483
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/gorilla/mux v1.7.3
 	github.com/gorilla/websocket v1.4.1
