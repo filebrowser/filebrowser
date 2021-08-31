@@ -29,6 +29,7 @@ export default {
         ro: "ro",
         ru: "ru",
         "sv-se": "svSE",
+        tr: "tr",
         "zh-cn": "zhCN",
         "zh-tw": "zhTW",
       },
