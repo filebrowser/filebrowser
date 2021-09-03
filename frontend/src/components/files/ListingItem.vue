@@ -106,7 +106,7 @@ export default {
       return filesize(this.size);
     },
     humanTime: function () {
-      return moment(this.modified).fromNow();
+      return moment(this.modified).format("YYYY-MM-DD HH:mm");
     },
     dragStart: function () {
       if (this.selectedCount === 0) {
