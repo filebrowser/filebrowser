@@ -2,21 +2,21 @@
   <div id="search" @click="open" v-bind:class="{ active, ongoing }">
     <div id="input">
       <input
-        type="text"
-        @keyup.exact="keyup"
-        @keyup.enter="submit"
-        ref="input"
-        :autofocus="active"
-        v-model.trim="value"
-        :aria-label="$t('search.pressToSearch')"
-        :placeholder="$t('search.pressToSearch')"
+          type="text"
+          @keyup.exact="keyup"
+          @keyup.enter="submit"
+          ref="input"
+          :autofocus="active"
+          v-model.trim="value"
+          :aria-label="$t('search.pressToSearch')"
+          :placeholder="$t('search.pressToSearch')"
       />
       <button
-        v-if="active"
-        class="action"
-        @click="close"
-        :aria-label="$t('buttons.close')"
-        :title="$t('buttons.close')"
+          v-if="active"
+          class="action"
+          @click="close"
+          :aria-label="$t('buttons.close')"
+          :title="$t('buttons.close')"
       >
         <i class="material-icons">arrow_back</i>
       </button>
@@ -28,8 +28,8 @@
         <template v-if="isEmpty">
           <template v-if="value.length === 0">
             <div class="valign-wrapper" style="padding: 45%">
-              <i class="material-icons" style="font-size: 8em !important"
-                >toc</i
+              <i class="material-icons" style="font-size: 2em !important"
+              >toc</i
               >
             </div>
           </template>
@@ -44,9 +44,9 @@
           </li>
         </ul>
       </div>
-      <p id="renew">
-        <i class="material-icons spin" style="font-size: 8em !important"
-          >autorenew</i
+      <p id="renew" style=" padding: 45%">
+        <span style="font-size: 1em !important"
+        >Searching...</span
         >
       </p>
     </div>
@@ -54,15 +54,15 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from "vuex";
+import {mapGetters, mapMutations, mapState} from "vuex";
 import url from "@/utils/url";
-import { search } from "@/api";
+import {search} from "@/api";
 
 var boxes = {
-  image: { label: "images", icon: "insert_photo" },
-  audio: { label: "music", icon: "volume_up" },
-  video: { label: "video", icon: "movie" },
-  pdf: { label: "pdf", icon: "picture_as_pdf" },
+  image: {label: "images", icon: "insert_photo"},
+  audio: {label: "music", icon: "volume_up"},
+  video: {label: "video", icon: "movie"},
+  pdf: {label: "pdf", icon: "picture_as_pdf"},
 };
 
 export default {
@@ -119,8 +119,8 @@ export default {
       }
 
       return this.value === ""
-        ? this.$t("search.typeToSearch")
-        : this.$t("search.pressToSearch");
+          ? this.$t("search.typeToSearch")
+          : this.$t("search.pressToSearch");
     },
     filteredResults() {
       return this.results.slice(0, this.resultsCount);
@@ -129,8 +129,8 @@ export default {
   mounted() {
     this.$refs.result.addEventListener("scroll", (event) => {
       if (
-        event.target.offsetHeight + event.target.scrollTop >=
-        event.target.scrollHeight - 100
+          event.target.offsetHeight + event.target.scrollTop >=
+          event.target.scrollHeight - 100
       ) {
         this.resultsCount += 50;
       }

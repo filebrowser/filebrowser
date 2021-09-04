@@ -4,15 +4,9 @@ import Login from "@/views/Login";
 import Layout from "@/views/Layout";
 import Files from "@/views/Files";
 import Share from "@/views/Share";
-import Users from "@/views/settings/Users";
-import User from "@/views/settings/User";
-import Settings from "@/views/Settings";
-import GlobalSettings from "@/views/settings/Global";
-import ProfileSettings from "@/views/settings/Profile";
-import Shares from "@/views/settings/Shares";
 import Errors from "@/views/Errors";
 import store from "@/store";
-import { baseURL } from "@/utils/constants";
+import {baseURL} from "@/utils/constants";
 
 Vue.use(Router);
 

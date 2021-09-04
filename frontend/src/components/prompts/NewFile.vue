@@ -1,11 +1,11 @@
 <template>
   <div class="card floating">
     <div class="card-title">
-      <h2>{{ $t("prompts.newFile") }}</h2>
+      <h2>New rule</h2>
     </div>
 
     <div class="card-content">
-      <p>{{ $t("prompts.newFileMessage") }}</p>
+      <p>Rule name (extension .yml)</p>
       <input
         class="input input--block"
         v-focus

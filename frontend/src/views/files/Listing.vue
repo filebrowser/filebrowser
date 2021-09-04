@@ -1,81 +1,71 @@
 <template>
   <div>
     <header-bar showMenu showLogo>
-      <search /> <title />
+      <search/>
+      <title/>
       <action
-        class="search-button"
-        icon="search"
-        :label="$t('buttons.search')"
-        @action="openSearch()"
+          class="search-button"
+          icon="search"
+          :label="$t('buttons.search')"
+          @action="openSearch()"
       />
 
       <template #actions>
         <template v-if="!isMobile">
           <action
-            v-if="headerButtons.share"
-            icon="share"
-            :label="$t('buttons.share')"
-            show="share"
+              v-if="headerButtons.share"
+              icon="share"
+              :label="$t('buttons.share')"
+              show="share"
           />
           <action
-            v-if="headerButtons.rename"
-            icon="mode_edit"
-            :label="$t('buttons.rename')"
-            show="rename"
+              v-if="headerButtons.rename"
+              icon="mode_edit"
+              :label="$t('buttons.rename')"
+              show="rename"
           />
           <action
-            v-if="headerButtons.copy"
-            id="copy-button"
-            icon="content_copy"
-            :label="$t('buttons.copyFile')"
-            show="copy"
+              v-if="headerButtons.copy"
+              id="copy-button"
+              icon="content_copy"
+              :label="$t('buttons.copyFile')"
+              show="copy"
           />
           <action
-            v-if="headerButtons.move"
-            id="move-button"
-            icon="forward"
-            :label="$t('buttons.moveFile')"
-            show="move"
+              v-if="headerButtons.move"
+              id="move-button"
+              icon="forward"
+              :label="$t('buttons.moveFile')"
+              show="move"
           />
           <action
-            v-if="headerButtons.delete"
-            id="delete-button"
-            icon="delete"
-            :label="$t('buttons.delete')"
-            show="delete"
+              v-if="headerButtons.delete"
+              id="delete-button"
+              icon="delete"
+              :label="$t('buttons.delete')"
+              show="delete"
           />
         </template>
 
         <action
-          v-if="headerButtons.shell"
-          icon="code"
-          :label="$t('buttons.shell')"
-          @action="$store.commit('toggleShell')"
+            v-if="headerButtons.download"
+            icon="file_download"
+            :label="$t('buttons.download')"
+            @action="download"
+            :counter="selectedCount"
         />
         <action
-          :icon="user.viewMode === 'mosaic' ? 'view_list' : 'view_module'"
-          :label="$t('buttons.switchView')"
-          @action="switchView"
+            v-if="headerButtons.upload"
+            icon="file_upload"
+            id="upload-button"
+            :label="$t('buttons.upload')"
+            @action="upload"
         />
+        <action icon="info" :label="$t('buttons.info')" show="info"/>
         <action
-          v-if="headerButtons.download"
-          icon="file_download"
-          :label="$t('buttons.download')"
-          @action="download"
-          :counter="selectedCount"
-        />
-        <action
-          v-if="headerButtons.upload"
-          icon="file_upload"
-          id="upload-button"
-          :label="$t('buttons.upload')"
-          @action="upload"
-        />
-        <action icon="info" :label="$t('buttons.info')" show="info" />
-        <action
-          icon="check_circle"
-          :label="$t('buttons.selectMultiple')"
-          @action="toggleMultipleSelection"
+            icon="check_circle"
+            :label="$t('buttons.selectMultiple')"
+            @action="toggleMultipleSelection"
         />
       </template>
     </header-bar>
@@ -83,34 +73,34 @@
     <div v-if="isMobile" id="file-selection">
       <span v-if="selectedCount > 0">{{ selectedCount }} selected</span>
       <action
-        v-if="headerButtons.share"
-        icon="share"
-        :label="$t('buttons.share')"
-        show="share"
+          v-if="headerButtons.share"
+          icon="share"
+          :label="$t('buttons.share')"
+          show="share"
       />
       <action
-        v-if="headerButtons.rename"
-        icon="mode_edit"
-        :label="$t('buttons.rename')"
-        show="rename"
+          v-if="headerButtons.rename"
+          icon="mode_edit"
+          :label="$t('buttons.rename')"
+          show="rename"
       />
       <action
-        v-if="headerButtons.copy"
-        icon="content_copy"
-        :label="$t('buttons.copyFile')"
-        show="copy"
+          v-if="headerButtons.copy"
+          icon="content_copy"
+          :label="$t('buttons.copyFile')"
+          show="copy"
       />
       <action
-        v-if="headerButtons.move"
-        icon="forward"
-        :label="$t('buttons.moveFile')"
-        show="move"
+          v-if="headerButtons.move"
+          icon="forward"
+          :label="$t('buttons.moveFile')"
+          show="move"
       />
       <action
-        v-if="headerButtons.delete"
-        icon="delete"
-        :label="$t('buttons.delete')"
-        show="delete"
+          v-if="headerButtons.delete"
+          icon="delete"
+          :label="$t('buttons.delete')"
+          show="delete"
       />
     </div>
 
@@ -131,19 +121,20 @@
           <span>{{ $t("files.lonely") }}</span>
         </h2>
         <input
-          style="display: none"
-          type="file"
-          id="upload-input"
-          @change="uploadInput($event)"
-          multiple
+            style="display: none"
+            type="file"
+            id="upload-input"
+            accept=".yml"
+            @change="uploadInput($event)"
+            multiple
         />
         <input
-          style="display: none"
-          type="file"
-          id="upload-folder-input"
-          @change="uploadInput($event)"
-          webkitdirectory
-          multiple
+            style="display: none"
+            type="file"
+            id="upload-folder-input"
+            @change="uploadInput($event)"
+            webkitdirectory
+            multiple
         />
       </div>
       <div v-else id="listing" ref="listing" :class="user.viewMode">
@@ -152,38 +143,38 @@
             <div></div>
             <div>
               <p
-                :class="{ active: nameSorted }"
-                class="name"
-                role="button"
-                tabindex="0"
-                @click="sort('name')"
-                :title="$t('files.sortByName')"
-                :aria-label="$t('files.sortByName')"
+                  :class="{ active: nameSorted }"
+                  class="name"
+                  role="button"
+                  tabindex="0"
+                  @click="sort('name')"
+                  :title="$t('files.sortByName')"
+                  :aria-label="$t('files.sortByName')"
               >
                 <span>{{ $t("files.name") }}</span>
                 <i class="material-icons">{{ nameIcon }}</i>
               </p>
 
               <p
-                :class="{ active: sizeSorted }"
-                class="size"
-                role="button"
-                tabindex="0"
-                @click="sort('size')"
-                :title="$t('files.sortBySize')"
-                :aria-label="$t('files.sortBySize')"
+                  :class="{ active: sizeSorted }"
+                  class="size"
+                  role="button"
+                  tabindex="0"
+                  @click="sort('size')"
+                  :title="$t('files.sortBySize')"
+                  :aria-label="$t('files.sortBySize')"
               >
                 <span>{{ $t("files.size") }}</span>
                 <i class="material-icons">{{ sizeIcon }}</i>
               </p>
               <p
-                :class="{ active: modifiedSorted }"
-                class="modified"
-                role="button"
-                tabindex="0"
-                @click="sort('modified')"
-                :title="$t('files.sortByLastModified')"
-                :aria-label="$t('files.sortByLastModified')"
+                  :class="{ active: modifiedSorted }"
+                  class="modified"
+                  role="button"
+                  tabindex="0"
+                  @click="sort('modified')"
+                  :title="$t('files.sortByLastModified')"
+                  :aria-label="$t('files.sortByLastModified')"
               >
                 <span>{{ $t("files.lastModified") }}</span>
                 <i class="material-icons">{{ modifiedIcon }}</i>
@@ -195,15 +186,15 @@
         <h2 v-if="req.numDirs > 0">{{ $t("files.folders") }}</h2>
         <div v-if="req.numDirs > 0">
           <item
-            v-for="item in dirs"
-            :key="base64(item.name)"
-            v-bind:index="item.index"
-            v-bind:name="item.name"
-            v-bind:isDir="item.isDir"
-            v-bind:url="item.url"
-            v-bind:modified="item.modified"
-            v-bind:type="item.type"
-            v-bind:size="item.size"
+              v-for="item in dirs"
+              :key="base64(item.name)"
+              v-bind:index="item.index"
+              v-bind:name="item.name"
+              v-bind:isDir="item.isDir"
+              v-bind:url="item.url"
+              v-bind:modified="item.modified"
+              v-bind:type="item.type"
+              v-bind:size="item.size"
           >
           </item>
         </div>
@@ -211,44 +202,45 @@
         <h2 v-if="req.numFiles > 0">{{ $t("files.files") }}</h2>
         <div v-if="req.numFiles > 0">
           <item
-            v-for="item in files"
-            :key="base64(item.name)"
-            v-bind:index="item.index"
-            v-bind:name="item.name"
-            v-bind:isDir="item.isDir"
-            v-bind:url="item.url"
-            v-bind:modified="item.modified"
-            v-bind:type="item.type"
-            v-bind:size="item.size"
+              v-for="item in files"
+              :key="base64(item.name)"
+              v-bind:index="item.index"
+              v-bind:name="item.name"
+              v-bind:isDir="item.isDir"
+              v-bind:url="item.url"
+              v-bind:modified="item.modified"
+              v-bind:type="item.type"
+              v-bind:size="item.size"
           >
           </item>
         </div>
 
         <input
-          style="display: none"
-          type="file"
-          id="upload-input"
-          @change="uploadInput($event)"
-          multiple
+            style="display: none"
+            type="file"
+            id="upload-input"
+            accept=".yml"
+            @change="uploadInput($event)"
+            multiple
         />
         <input
-          style="display: none"
-          type="file"
-          id="upload-folder-input"
-          @change="uploadInput($event)"
-          webkitdirectory
-          multiple
+            style="display: none"
+            type="file"
+            id="upload-folder-input"
+            @change="uploadInput($event)"
+            webkitdirectory
+            multiple
         />
 
         <div :class="{ active: $store.state.multiple }" id="multiple-selection">
           <p>{{ $t("files.multipleSelectionEnabled") }}</p>
           <div
-            @click="$store.commit('multiple', false)"
-            tabindex="0"
-            role="button"
-            :title="$t('files.clear')"
-            :aria-label="$t('files.clear')"
-            class="action"
+              @click="$store.commit('multiple', false)"
+              tabindex="0"
+              role="button"
+              :title="$t('files.clear')"
+              :aria-label="$t('files.clear')"
+              class="action"
           >
             <i class="material-icons">clear</i>
           </div>
@@ -260,9 +252,9 @@
 
 <script>
 import Vue from "vue";
-import { mapState, mapGetters, mapMutations } from "vuex";
-import { users, files as api } from "@/api";
-import { enableExec } from "@/utils/constants";
+import {mapGetters, mapMutations, mapState} from "vuex";
+import {files as api, users} from "@/api";
+import {enableExec} from "@/utils/constants";
 import * as upload from "@/utils/upload";
 import css from "@/utils/css";
 import throttle from "lodash.throttle";
@@ -323,7 +315,7 @@ export default {
         }
       });
 
-      return { dirs, files };
+      return {dirs, files};
     },
     dirs() {
       return this.items.dirs.slice(0, this.showLimit);
@@ -528,10 +520,10 @@ export default {
 
       for (let item of this.$store.state.clipboard.items) {
         const from = item.from.endsWith("/")
-          ? item.from.slice(0, -1)
-          : item.from;
+            ? item.from.slice(0, -1)
+            : item.from;
         const to = this.$route.path + encodeURIComponent(item.name);
-        items.push({ from, to, name: item.name });
+        items.push({from, to, name: item.name});
       }
 
       if (items.length === 0) {
@@ -540,22 +532,22 @@ export default {
 
       let action = (overwrite, rename) => {
         api
-          .copy(items, overwrite, rename)
-          .then(() => {
-            this.$store.commit("setReload", true);
-          })
-          .catch(this.$showError);
+            .copy(items, overwrite, rename)
+            .then(() => {
+              this.$store.commit("setReload", true);
+            })
+            .catch(this.$showError);
       };
 
       if (this.$store.state.clipboard.key === "x") {
         action = (overwrite, rename) => {
           api
-            .move(items, overwrite, rename)
-            .then(() => {
-              this.$store.commit("resetClipboard");
-              this.$store.commit("setReload", true);
-            })
-            .catch(this.$showError);
+              .move(items, overwrite, rename)
+              .then(() => {
+                this.$store.commit("resetClipboard");
+                this.$store.commit("setReload", true);
+              })
+              .catch(this.$showError);
         };
       }
 
@@ -591,7 +583,7 @@ export default {
     colunmsResize() {
       // Update the columns size based on the window width.
       let columns = Math.floor(
-        document.querySelector("main").offsetWidth / 300
+          document.querySelector("main").offsetWidth / 300
       );
       let items = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
       if (columns === 0) columns = 1;
@@ -611,7 +603,7 @@ export default {
       if (currentPos > triggerPos) {
         // Quantity of items needed to fill 2x of the window height
         const showQuantity = Math.ceil(
-          (window.innerHeight * 2) / this.itemWeight
+            (window.innerHeight * 2) / this.itemWeight
         );
 
         // Increase the number of displayed items
@@ -655,13 +647,13 @@ export default {
       let files = await upload.scanFiles(dt);
       let items = this.req.items;
       let path = this.$route.path.endsWith("/")
-        ? this.$route.path
-        : this.$route.path + "/";
+          ? this.$route.path
+          : this.$route.path + "/";
 
       if (
-        el !== null &&
-        el.classList.contains("item") &&
-        el.dataset.dir === "true"
+          el !== null &&
+          el.classList.contains("item") &&
+          el.dataset.dir === "true"
       ) {
         // Get url from ListingItem instance
         path = el.__vue__.url;
@@ -695,8 +687,8 @@ export default {
 
       let files = event.currentTarget.files;
       let folder_upload =
-        files[0].webkitRelativePath !== undefined &&
-        files[0].webkitRelativePath !== "";
+          files[0].webkitRelativePath !== undefined &&
+          files[0].webkitRelativePath !== "";
 
       if (folder_upload) {
         for (let i = 0; i < files.length; i++) {
@@ -706,8 +698,8 @@ export default {
       }
 
       let path = this.$route.path.endsWith("/")
-        ? this.$route.path
-        : this.$route.path + "/";
+          ? this.$route.path
+          : this.$route.path + "/";
       let conflict = upload.checkConflict(files, this.req.items);
 
       if (conflict) {
@@ -750,7 +742,7 @@ export default {
       }
 
       try {
-        await users.update({ id: this.user.id, sorting: { by, asc } }, [
+        await users.update({id: this.user.id, sorting: {by, asc}}, [
           "sorting",
         ]);
       } catch (e) {
@@ -822,8 +814,8 @@ export default {
     },
     upload: function () {
       if (
-        typeof window.DataTransferItem !== "undefined" &&
-        typeof DataTransferItem.prototype.webkitGetAsEntry !== "undefined"
+          typeof window.DataTransferItem !== "undefined" &&
+          typeof DataTransferItem.prototype.webkitGetAsEntry !== "undefined"
       ) {
         this.$store.commit("showHover", "upload");
       } else {
@@ -850,7 +842,7 @@ export default {
 
       // Quantity of items needed to fill 2x of the window height
       const showQuantity = Math.ceil(
-        (windowHeight + windowHeight * 2) / this.itemWeight
+          (windowHeight + windowHeight * 2) / this.itemWeight
       );
 
       // Less items to display than current
