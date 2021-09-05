@@ -112,7 +112,7 @@
   width: 100%;
   max-width: 100%;
   margin: 0;
-  margin-top: 64px;
+  margin-top: 0;
 }
 
 #listing.list .item {

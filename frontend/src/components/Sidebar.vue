@@ -2,21 +2,34 @@
   <nav :class="{ active }">
     <template v-if="isLogged">
       <router-link
-        class="action"
-        to="/files/"
-        :aria-label="$t('sidebar.myFiles')"
-        :title="$t('sidebar.myFiles')"
+          class="action"
+          to="/files/"
+          :aria-label="$t('sidebar.myFiles')"
+          :title="$t('sidebar.myFiles')"
       >
         <i class="material-icons">folder</i>
         <span>{{ $t("sidebar.myFiles") }}</span>
       </router-link>
 
-        <div v-if="user.perm.create">
+      <div v-if="user.perm.create">
         <button
-          @click="$store.commit('showHover', 'newFile')"
-          class="action"
-          :aria-label="$t('sidebar.newFile')"
-          :title="$t('sidebar.newFile')"
+            @click="$store.commit('showHover', 'newDir')"
+            class="action"
+            :aria-label="$t('sidebar.newFolder')"
+            :title="$t('sidebar.newFolder')"
+        >
+          <i class="material-icons">create_new_folder</i>
+          <span>{{ $t("sidebar.newFolder") }}</span>
+        </button>
+      </div>
+
+
+      <div v-if="user.perm.create">
+        <button
+            @click="$store.commit('showHover', 'newFile')"
+            class="action"
+            :aria-label="$t('sidebar.newFile')"
+            :title="$t('sidebar.newFile')"
         >
           <i class="material-icons">note_add</i>
           <span>{{ $t("sidebar.newFile") }}</span>
@@ -28,9 +41,9 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
+import {mapGetters, mapState} from "vuex";
 import * as auth from "@/utils/auth";
-import { authMethod, disableExternal, noAuth, signup, version } from "@/utils/constants";
+import {authMethod, disableExternal, noAuth, signup, version} from "@/utils/constants";
 
 export default {
   name: "sidebar",
