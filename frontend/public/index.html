@@ -51,7 +51,7 @@
       "start_url": window.location.origin + window.FileBrowser.BaseURL,
       "display": "standalone",
       "background_color": "#ffffff",
-      "theme_color": "#455a64"
+      "theme_color": window.FileBrowser.Color || "#455a64"
     }
 
     const stringManifest = JSON.stringify(dynamicManifest);
