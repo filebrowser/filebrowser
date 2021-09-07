@@ -415,6 +415,32 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		}
 
 		return fileutils.Copy(d.user.Fs, src, dst)
+	case "rename":
+		if !d.user.Perm.Rename {
+			return errors.ErrPermissionDenied
+		}
+		src = path.Clean("/" + src)
+		dst = path.Clean("/" + dst)
+
+		file, err := files.NewFileInfo(files.FileOptions{
+			Fs:         d.user.Fs,
+			Path:       src,
+			Modify:     d.user.Perm.Modify,
+			Expand:     false,
+			ReadHeader: false,
+			Checker:    d,
+		})
+		if err != nil {
+			return err
+		}
+
+		// delete thumbnails
+		err = delThumbs(ctx, fileCache, file)
+		if err != nil {
+			return err
+		}
+
+		return fileutils.MoveFile(d.user.Fs, src, dst)
 	case "unarchive":
 		if !d.user.Perm.Create {
 			return errors.ErrPermissionDenied
@@ -459,32 +485,6 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 			return errors.ErrInvalidRequestParams
 		}
 		return nil
-	case "rename":
-		if !d.user.Perm.Rename {
-			return errors.ErrPermissionDenied
-		}
-		src = path.Clean("/" + src)
-		dst = path.Clean("/" + dst)
-
-		file, err := files.NewFileInfo(files.FileOptions{
-			Fs:         d.user.Fs,
-			Path:       src,
-			Modify:     d.user.Perm.Modify,
-			Expand:     false,
-			ReadHeader: false,
-			Checker:    d,
-		})
-		if err != nil {
-			return err
-		}
-
-		// delete thumbnails
-		err = delThumbs(ctx, fileCache, file)
-		if err != nil {
-			return err
-		}
-
-		return fileutils.MoveFile(d.user.Fs, src, dst)
 	default:
 		return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
 	}

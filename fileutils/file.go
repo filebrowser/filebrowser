@@ -1,7 +1,9 @@
 package fileutils
 
 import (
+	"fmt"
 	"io"
+	"math/rand"
 	"os"
 	"path"
 	"path/filepath"
@@ -16,8 +18,14 @@ func MoveFile(fs afero.Fs, src, dst string) error {
 	if fs.Rename(src, dst) == nil {
 		return nil
 	}
+
+	info, err := fs.Stat(src)
+	if err == nil && info.IsDir() {
+		return CopyFolder(fs, src, dst)
+	}
+
 	// fallback
-	err := CopyFile(fs, src, dst)
+	err = CopyFile(fs, src, dst)
 	if err != nil {
 		_ = fs.Remove(dst)
 		return err
@@ -67,6 +75,40 @@ func CopyFile(fs afero.Fs, source, dest string) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+// CopyFolder copies a folder to destination and returns
+// an error if any. If the destination already exists,
+// it get overriden.
+func CopyFolder(fs afero.Fs, source, dest string) error {
+	tmpDest := ""
+	_, err := fs.Stat(dest)
+	if err == nil {
+		// destination already exists - rename it so that src
+		// could be moved to its place
+		tmpDest = fmt.Sprintf("%s.%d", dest, rand.Intn(9999))
+		err = fs.Rename(dest, tmpDest)
+		if err != nil {
+			return err
+		}
+	} else if !os.IsNotExist(err) {
+		// unknown error, return
+		return err
+	}
+
+	if err = fs.Rename(source, dest); err != nil {
+		// if moving fails and we renamed an existing destination
+		// in the previous step, then restore its name
+		if tmpDest != "" {
+			fs.Rename(tmpDest, dest)
+		}
+		return err
+	}
+
+	// if moving was successful, delete the renamed dest
+	_ = fs.Remove(tmpDest)
 
 	return nil
 }
