@@ -106,7 +106,10 @@ export default {
       return filesize(this.size);
     },
     humanTime: function () {
-      return moment(this.modified).format("YYYY-MM-DD HH:mm");
+      if (this.user.dateFormat) {
+        return moment(this.modified).format("YYYY-MM-DD HH:mm");
+      }
+      return moment(this.modified).fromNow();
     },
     dragStart: function () {
       if (this.selectedCount === 0) {
