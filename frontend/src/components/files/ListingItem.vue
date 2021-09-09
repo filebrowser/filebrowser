@@ -107,7 +107,7 @@ export default {
     },
     humanTime: function () {
       if (this.user.dateFormat) {
-        return moment(this.modified).format("YYYY-MM-DD HH:mm");
+        return moment(this.modified).format("L LT");
       }
       return moment(this.modified).fromNow();
     },
