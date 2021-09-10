@@ -29,6 +29,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 	data := map[string]interface{}{
 		"Name":            d.settings.Branding.Name,
 		"DisableExternal": d.settings.Branding.DisableExternal,
+		"Color":           d.settings.Branding.Color,
 		"BaseURL":         d.server.BaseURL,
 		"Version":         version.Version,
 		"StaticURL":       path.Join(d.server.BaseURL, "/static"),

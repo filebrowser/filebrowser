@@ -41,6 +41,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("recaptcha.secret", "", "ReCaptcha secret")
 
 	flags.String("branding.name", "", "replace 'File Browser' by this name")
+	flags.String("branding.color", "", "set the theme color")
 	flags.String("branding.files", "", "path to directory with images and custom styles")
 	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 }
@@ -131,6 +132,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tName:\t%s\n", set.Branding.Name)
 	fmt.Fprintf(w, "\tFiles override:\t%s\n", set.Branding.Files)
 	fmt.Fprintf(w, "\tDisable external links:\t%t\n", set.Branding.DisableExternal)
+	fmt.Fprintf(w, "\tColor:\t%s\n", set.Branding.Color)
 	fmt.Fprintln(w, "\nServer:")
 	fmt.Fprintf(w, "\tLog:\t%s\n", ser.Log)
 	fmt.Fprintf(w, "\tPort:\t%s\n", ser.Port)
