@@ -218,6 +218,7 @@
     "rules": "Rules",
     "rulesHelp": "Here you can define a set of allow and disallow rules for this specific user. The blocked files won't show up in the listings and they wont be accessible to the user. We support regex and paths relative to the users scope.\n",
     "scope": "Scope",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Settings updated!",
     "shareDuration": "Share Duration",
     "shareManagement": "Share Management",
