@@ -45,6 +45,7 @@ type Server struct {
 	ResizePreview         bool   `json:"resizePreview"`
 	EnableExec            bool   `json:"enableExec"`
 	TypeDetectionByHeader bool   `json:"typeDetectionByHeader"`
+	AuthHook              string `json:"authHook"`
 }
 
 // Clean cleans any variables that might need cleaning.

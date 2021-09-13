@@ -26,7 +26,7 @@ type JSONAuth struct {
 }
 
 // Auth authenticates the user via a json in content body.
-func (a JSONAuth) Auth(r *http.Request, sto users.Store, root string) (*users.User, error) {
+func (a JSONAuth) Auth(r *http.Request, usr users.Store, stg *settings.Settings, srv *settings.Server) (*users.User, error) {
 	var cred jsonCred
 
 	if r.Body == nil {
@@ -51,7 +51,7 @@ func (a JSONAuth) Auth(r *http.Request, sto users.Store, root string) (*users.Us
 		}
 	}
 
-	u, err := sto.Get(root, cred.Username)
+	u, err := usr.Get(srv.Root, cred.Username)
 	if err != nil || !users.CheckPwd(cred.Password, u.Password) {
 		return nil, os.ErrPermission
 	}

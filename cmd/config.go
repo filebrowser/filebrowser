@@ -35,6 +35,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 
 	flags.String("auth.method", string(auth.MethodJSONAuth), "authentication type")
 	flags.String("auth.header", "", "HTTP header for auth.method=proxy")
+	flags.String("auth.command", "", "command for auth.method=hook")
 
 	flags.String("recaptcha.host", "https://www.google.com", "use another host for ReCAPTCHA. recaptcha.net might be useful in China")
 	flags.String("recaptcha.key", "", "ReCaptcha site key")
@@ -112,6 +113,20 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 			}
 		}
 		auther = jsonAuth
+	}
+
+	if method == auth.MethodHookAuth {
+		command := mustGetString(flags, "auth.command")
+
+		if command == "" {
+			command = defaultAuther["command"].(string)
+		}
+
+		if command == "" {
+			checkErr(nerrors.New("you must set the flag 'auth.command' for method 'hook'"))
+		}
+
+		auther = &auth.HookAuth{Command: command}
 	}
 
 	if auther == nil {
