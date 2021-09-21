@@ -44,7 +44,6 @@ export default {
       lastX: null,
       lastY: null,
       inDrag: false,
-      touches: 0,
       lastTouchDistance: 0,
       moveDisabled: false,
       disabledTimer: null,
