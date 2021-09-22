@@ -241,11 +241,11 @@ export default {
     },
     prev() {
       this.hoverNav = false;
-      this.$router.push({ path: this.previousLink });
+      this.$router.replace({ path: this.previousLink });
     },
     next() {
       this.hoverNav = false;
-      this.$router.push({ path: this.nextLink });
+      this.$router.replace({ path: this.nextLink });
     },
     key(event) {
       if (this.show !== null) {
@@ -341,7 +341,7 @@ export default {
       this.$store.commit("updateRequest", {});
 
       let uri = url.removeLastDir(this.$route.path) + "/";
-      this.$router.push({ path: uri });
+      this.$router.replace({ path: uri });
     },
     download() {
       api.download(null, this.$route.path);
