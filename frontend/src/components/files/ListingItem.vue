@@ -247,7 +247,11 @@ export default {
       this.addSelected(this.index);
     },
     open: function () {
-      this.$router.push({ path: this.url });
+      if (this.isDir) {
+        this.$router.push({ path: this.url });
+      } else {
+        this.$router.replace({ path: this.url });
+      }
     },
   },
 };
