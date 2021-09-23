@@ -4,6 +4,7 @@
       <router-link
         class="action"
         to="/files/"
+        @click.native="refresh"
         :aria-label="$t('sidebar.myFiles')"
         :title="$t('sidebar.myFiles')"
       >
@@ -37,6 +38,7 @@
         <router-link
           class="action"
           to="/settings"
+          @click.native="refresh"
           :aria-label="$t('sidebar.settings')"
           :title="$t('sidebar.settings')"
         >
@@ -127,6 +129,10 @@ export default {
   methods: {
     help() {
       this.$store.commit("showHover", "help");
+    },
+
+    refresh:function(){
+      this.$router.go(0);  
     },
     logout: auth.logout,
   },
