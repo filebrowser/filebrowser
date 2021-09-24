@@ -341,7 +341,7 @@ export default {
       this.$store.commit("updateRequest", {});
 
       let uri = url.removeLastDir(this.$route.path) + "/";
-      this.$router.replace({ path: uri });
+      this.$router.push({ path: uri });
     },
     download() {
       api.download(null, this.$route.path);
