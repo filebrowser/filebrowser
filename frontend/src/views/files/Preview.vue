@@ -339,7 +339,7 @@ export default {
     }, 500),
     close() {
       this.$store.commit("updateRequest", {});
-      this.$router.go(-1);
+      history.back();
     },
     download() {
       api.download(null, this.$route.path);
