@@ -9,7 +9,15 @@
       <shell v-if="isExecEnabled && isLogged && user.perm.execute" />
     </main>
     <prompts></prompts>
+
+    <div v-if="this.progress !==0" >
+       <div style=" height: 8rem;  width: 100%;  z-index: 9999;  position: absolute; top:40%; text-align:center; font-size:6em; "> {{ this.progress }}%</div>
+    </div>
+
   </div>
+
+
+  
 </template>
 
 <script>
