@@ -88,7 +88,6 @@ header .menu-button {
   padding: 0em 0.75em;
   border-radius: 0.3em;
   transition: .1s ease all;
-
   align-items: center;
   z-index: 2;
 }
