@@ -296,19 +296,21 @@ main .spinner .bounce2 {
   padding-top: 4em;
   top: 0;
   left: 0;
+  height: 100%;
   width: 100%;
   z-index: 9999;
   overflow: hidden;
 }
 
 #editor-container #editor {
-  height: calc(100vh - 8.4em);
+  height: 95%;
 }
 
 #editor-container .breadcrumbs {
-  height: 2.3em;
+  height: 5%;
   padding: 0 1em;
 }
+
 
 #editor-container .breadcrumbs span {
   font-size: 12px;
