@@ -1,15 +1,15 @@
 <template>
   <nav :class="{ active }">
     <template v-if="isLogged">
-      <router-link
-        class="action"
-        to="/files/"
-        :aria-label="$t('sidebar.myFiles')"
-        :title="$t('sidebar.myFiles')"
+      <button
+         class="action"
+         @click="toRoot"
+         :aria-label="$t('sidebar.myFiles')"
+         :title="$t('sidebar.myFiles')"
       >
         <i class="material-icons">folder</i>
         <span>{{ $t("sidebar.myFiles") }}</span>
-      </router-link>
+      </button>
 
       <div v-if="user.perm.create">
         <button
@@ -34,15 +34,15 @@
       </div>
 
       <div>
-        <router-link
-          class="action"
-          to="/settings"
-          :aria-label="$t('sidebar.settings')"
-          :title="$t('sidebar.settings')"
+        <button
+           class="action"
+           @click="toSettings"
+           :aria-label="$t('sidebar.settings')"
+           :title="$t('sidebar.settings')"
         >
           <i class="material-icons">settings_applications</i>
           <span>{{ $t("sidebar.settings") }}</span>
-        </router-link>
+        </button>
 
         <button
           v-if="authMethod == 'json'"
@@ -125,6 +125,14 @@ export default {
     authMethod: () => authMethod,
   },
   methods: {
+    toRoot() {
+      this.$router.replace({ path: "/files/" });
+      this.$store.commit('closeHovers');
+    },
+    toSettings() {
+      this.$router.replace({ path: "/settings" });
+      this.$store.commit('closeHovers');
+    },
     help() {
       this.$store.commit("showHover", "help");
     },
