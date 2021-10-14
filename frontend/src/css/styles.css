@@ -291,6 +291,8 @@ main .spinner .bounce2 {
 /* EDITOR */
 
 #editor-container {
+  display: flex;
+  flex-direction: column;
   background-color: #fafafa;
   position: fixed;
   padding-top: 4em;
@@ -303,14 +305,13 @@ main .spinner .bounce2 {
 }
 
 #editor-container #editor {
-  height: 95%;
+  flex: 1;
 }
 
 #editor-container .breadcrumbs {
-  height: 5%;
+  height: 2.3em;
   padding: 0 1em;
 }
-
 
 #editor-container .breadcrumbs span {
   font-size: 12px;
