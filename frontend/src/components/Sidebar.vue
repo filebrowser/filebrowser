@@ -2,10 +2,10 @@
   <nav :class="{ active }">
     <template v-if="isLogged">
       <button
-         class="action"
-         @click="toRoot"
-         :aria-label="$t('sidebar.myFiles')"
-         :title="$t('sidebar.myFiles')"
+        class="action"
+        @click="toRoot"
+        :aria-label="$t('sidebar.myFiles')"
+        :title="$t('sidebar.myFiles')"
       >
         <i class="material-icons">folder</i>
         <span>{{ $t("sidebar.myFiles") }}</span>
