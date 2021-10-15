@@ -126,12 +126,12 @@ export default {
   },
   methods: {
     toRoot() {
-      this.$router.push({ path: "/files/" });
-      this.$store.commit('closeHovers');
+      this.$router.push({ path: "/files/" }, () => {});
+      this.$store.commit("closeHovers");
     },
     toSettings() {
-      this.$router.push({ path: "/settings" });
-      this.$store.commit('closeHovers');
+      this.$router.push({ path: "/settings" }, () => {});
+      this.$store.commit("closeHovers");
     },
     help() {
       this.$store.commit("showHover", "help");
