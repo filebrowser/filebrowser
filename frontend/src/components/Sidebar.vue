@@ -35,10 +35,10 @@
 
       <div>
         <button
-           class="action"
-           @click="toSettings"
-           :aria-label="$t('sidebar.settings')"
-           :title="$t('sidebar.settings')"
+          class="action"
+          @click="toSettings"
+          :aria-label="$t('sidebar.settings')"
+          :title="$t('sidebar.settings')"
         >
           <i class="material-icons">settings_applications</i>
           <span>{{ $t("sidebar.settings") }}</span>
