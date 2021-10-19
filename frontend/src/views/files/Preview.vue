@@ -313,9 +313,9 @@ export default {
             } else if (this.listing[j].type === "image" ) {
               this.routeDataP = `${baseURL}/api/raw${this.previousLink.slice(6)}?k=${key}`;
             } else {
-	      this.routeDataP = "";
-	    }
-	    this.rawP=`${this.routeDataP}&inline=true`;
+              this.routeDataP = "";
+            }
+            this.rawP=`${this.routeDataP}&inline=true`;
             break;
           }
         }
@@ -323,14 +323,14 @@ export default {
         for (let j = i + 1; j < this.listing.length; j++) {
           if (mediaTypes.includes(this.listing[j].type)) {
             this.nextLink = this.listing[j].url;
-	    const key = Date.parse(this.listing[j].modified);
-	    if (this.listing[j].type === "image" && !this.fullSize) {
-	      this.routeDataN = `${baseURL}/api/preview/big${this.nextLink.slice(6)}?k=${key}`;
+            const key = Date.parse(this.listing[j].modified);
+            if (this.listing[j].type === "image" && !this.fullSize) {
+              this.routeDataN = `${baseURL}/api/preview/big${this.nextLink.slice(6)}?k=${key}`;
             } else if (this.listing[j].type === "image" ) {
               this.routeDataN = `${baseURL}/api/raw${this.nextLink.slice(6)}?k=${key}`;
             } else {
-	      this.routeDataN = "";
-	    }
+              this.routeDataN = "";
+            }
             this.rawN=`${this.routeDataN}&inline=true`;
             break;
           }
