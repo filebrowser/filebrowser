@@ -291,18 +291,21 @@ main .spinner .bounce2 {
 /* EDITOR */
 
 #editor-container {
+  display: flex;
+  flex-direction: column;
   background-color: #fafafa;
   position: fixed;
   padding-top: 4em;
   top: 0;
   left: 0;
+  height: 100%;
   width: 100%;
   z-index: 9999;
   overflow: hidden;
 }
 
 #editor-container #editor {
-  height: calc(100vh - 8.4em);
+  flex: 1;
 }
 
 #editor-container .breadcrumbs {
