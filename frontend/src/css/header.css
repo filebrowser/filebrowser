@@ -84,7 +84,8 @@ header .menu-button {
 #search #input {
   background-color: #f5f5f5;
   display: flex;
-  padding: 0.75em;
+  height: 100%;
+  padding: 0em 0.75em;
   border-radius: 0.3em;
   transition: .1s ease all;
   align-items: center;
