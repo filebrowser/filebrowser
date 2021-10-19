@@ -175,8 +175,8 @@ export default {
       autoPlay: false,
       routeDataP: "",
       routeDataN: "",
-      rawP:"",
-      rawN:"",
+      rawP: "",
+      rawN: "",
     };
   },
   computed: {
