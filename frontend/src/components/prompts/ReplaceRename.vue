@@ -28,6 +28,7 @@
       <button
         class="button button--flat button--red"
         @click="(event) => showConfirm(event, 'overwrite')"
+        :disabled="$route.path === dest"
         :aria-label="$t('buttons.replace')"
         :title="$t('buttons.replace')"
       >
@@ -42,6 +43,11 @@ import { mapState } from "vuex";
 
 export default {
   name: "replace-rename",
+  data() {
+    return {
+      dest: window.sessionStorage.getItem('destDir'),
+    };
+  },
   computed: mapState(["showConfirm"]),
 };
 </script>
