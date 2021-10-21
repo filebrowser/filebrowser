@@ -83,12 +83,18 @@ export default {
           });
       };
 
+      if (this.$route.path === this.dest) {
+        this.$store.commit("closeHovers");
+        action(false, true);
+        return;
+      }
+
       let dstItems = (await api.fetch(this.dest)).items;
       let conflict = upload.checkConflict(items, dstItems);
 
       let overwrite = false;
       let rename = false;
-      window.sessionStorage.setItem('destDir', this.dest);
+
       if (conflict) {
         this.$store.commit("showHover", {
           prompt: "replace-rename",
@@ -106,6 +112,7 @@ export default {
       }
 
       action(overwrite, rename);
+      
       if (!conflict) { 
         this.$store.commit("closeHovers");
         return;
