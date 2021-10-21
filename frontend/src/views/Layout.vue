@@ -1,7 +1,9 @@
 <template>
   <div>
-    <div id="progress">
-      <div v-bind:style="{ width: this.progress + '%' }"></div>
+    <div id="progress" v-if="this.progress !==0">
+      <div v-bind:style="{ width: this.progress + '%' }">
+          <span> {{ this.progress }}%</span>
+      </div>
     </div>
     <sidebar></sidebar>
     <main>
@@ -10,6 +12,9 @@
     </main>
     <prompts></prompts>
   </div>
+
+
+  
 </template>
 
 <script>
