@@ -14,9 +14,6 @@
     </main>
     <prompts></prompts>
   </div>
-
-
-  
 </template>
 
 <script>
