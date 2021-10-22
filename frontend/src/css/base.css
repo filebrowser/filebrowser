@@ -111,30 +111,44 @@ main {
 }
 
 #progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: fixed;
-  top: 4.5em;
-  right:1em;
-  width: 50%;
-  height: 2em;
+  top: 4em;
+  right:0.5em;
+  width: calc(50%-9.5em);
+  height: 5em;
   z-index: 99998;
   background:#fff;
-  border:0.1em solid #6F6F6F;
+  margin: .5em;
+  padding: 0.5em;
+  border-radius: 0.2em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .12);
+  color: #6f6f6f;
+  transition: .1s ease background, .1s ease opacity;
+  cursor: pointer;
+}
+
+#progress #frame {
+  width: 100%;
+  height: 2em;
+  border: 0.1em solid #6F6F6F;
   border-radius: 0.5em;
 }
 
-#progress div {
+#progress #frame div {
   height: 100%;
   background-color: #6F6F6F;
   width: 0;
   transition: .2s ease width;
-  border-radius: 0.2em 0em 0em 0.2em;
+  border-radius: 0.5em 0em 0em 0.5em;
 }
 
-#progress div span {
+#progress #frame div span {
   position: fixed;
   height: 100%; 
-  weight: 100%;
-  right:calc(25vw-0.25em);
+  right:calc(25vw-3.6em);
   font-size: 1.8em;
   background: transparent;
   color:blue;
@@ -142,18 +156,24 @@ main {
 
 @media (max-width: 736px) {
 #progress {
-  height: 1em;
-  border-radius: 0.25em;
-  border:1px solid #6F6F6F;
+  width: calc(50%);
+  height: 2em;
+  border-radius: 0.2em;
 }
 
-#progress div {
+#progress #frame {
+  height: 1em;
+  border-radius: 0.25em;
+  border: 1px solid #6F6F6F;
+}
+
+#progress #frame div {
   border-radius: 0.1em 0em 0em 0.1em;
 }
 
-#progress div span {
+#progress #frame div span {
   height: 100%; 
-  right:calc(25vw-0.2em);
+  right:calc(25vw+0.2em);
   font-size: 0.8em;
 }
 }
