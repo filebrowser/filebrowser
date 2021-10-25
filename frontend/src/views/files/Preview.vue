@@ -305,14 +305,14 @@ export default {
         for (let j = i - 1; j >= 0; j--) {
           if (mediaTypes.includes(this.listing[j].type)) {
             this.previousLink = this.listing[j].url;
-            this.previousRaw=`${this.prefetchUrl(this.listing[j],this.previousLink)}&inline=true`;
+            this.previousRaw=`${this.prefetchUrl(this.listing[j], this.previousLink)}&inline=true`;
             break;
           }
         }
         for (let j = i + 1; j < this.listing.length; j++) {
           if (mediaTypes.includes(this.listing[j].type)) {
             this.nextLink = this.listing[j].url;
-            this.nextRaw=`${this.prefetchUrl(this.listing[j],this.nextLink)}&inline=true`;
+            this.nextRaw=`${this.prefetchUrl(this.listing[j], this.nextLink)}&inline=true`;
             break;
           }
         }
@@ -320,13 +320,15 @@ export default {
         return;
       }
     },
-    prefetchUrl: function(item,link) {
+    prefetchUrl: function(item, routePath) {
       const key = Date.parse(item.modified);
       if (item.type === "image" && !this.fullSize) {
-        return `${baseURL}/api/preview/big${link.slice(6)}?k=${key}`;
-      } else {
-        return `${baseURL}/api/raw${link.slice(6)}?k=${key}`;
-      } 
+        return `${baseURL}/api/preview/big${routePath.slice(6)}?k=${key}`;
+      } else if (item.type === "image"){
+        return `${baseURL}/api/raw${routePath.slice(6)}?k=${key}`;
+      } else{
+        return "";
+      }
     },
     openMore() {
       this.$store.commit("showHover", "more");
