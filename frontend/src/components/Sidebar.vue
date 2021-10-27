@@ -1,15 +1,15 @@
 <template>
   <nav :class="{ active }">
     <template v-if="isLogged">
-      <router-link
+      <button
         class="action"
-        to="/files/"
+        @click="toRoot"
         :aria-label="$t('sidebar.myFiles')"
         :title="$t('sidebar.myFiles')"
       >
         <i class="material-icons">folder</i>
         <span>{{ $t("sidebar.myFiles") }}</span>
-      </router-link>
+      </button>
 
       <div v-if="user.perm.create">
         <button
@@ -48,15 +48,15 @@
       <quota v-if="quotaExists"></quota>
 
       <div>
-        <router-link
+        <button
           class="action"
-          to="/settings"
+          @click="toSettings"
           :aria-label="$t('sidebar.settings')"
           :title="$t('sidebar.settings')"
         >
           <i class="material-icons">settings_applications</i>
           <span>{{ $t("sidebar.settings") }}</span>
-        </router-link>
+        </button>
 
         <button
           v-if="
@@ -150,6 +150,14 @@ export default {
     authLogoutURL: () => authLogoutURL,
   },
   methods: {
+    toRoot() {
+      this.$router.push({ path: "/files/" }, () => {});
+      this.$store.commit("closeHovers");
+    },
+    toSettings() {
+      this.$router.push({ path: "/settings" }, () => {});
+      this.$store.commit("closeHovers");
+    },
     help() {
       this.$store.commit("showHover", "help");
     },

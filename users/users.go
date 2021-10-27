@@ -37,6 +37,7 @@ type User struct {
 	Fs           afero.Fs      `json:"-" yaml:"-"`
 	Rules        []rules.Rule  `json:"rules"`
 	HideDotfiles bool          `json:"hideDotfiles"`
+	DateFormat   bool          `json:"dateFormat"`
 }
 
 // GetRules implements rules.Provider.
