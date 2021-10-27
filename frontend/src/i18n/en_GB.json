@@ -282,6 +282,7 @@
     "settings": "Settings",
     "signup": "Signup",
     "siteSettings": "Site Settings",
+    "tmpDir": "Temporary folder",
     "trashBin": "Trash bin"
   },
   "success": {

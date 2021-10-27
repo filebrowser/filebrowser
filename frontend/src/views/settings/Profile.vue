@@ -143,7 +143,12 @@ export default {
           singleClick: this.singleClick,
           dateFormat: this.dateFormat,
         };
-        await api.update(data, ["locale", "hideDotfiles", "singleClick", "dateFormat"]);
+        await api.update(data, [
+          "locale",
+          "hideDotfiles",
+          "singleClick",
+          "dateFormat",
+        ]);
         this.updateUser(data);
         this.$showSuccess(this.$t("settings.settingsUpdated"));
       } catch (e) {

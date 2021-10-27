@@ -10,6 +10,8 @@
     "delete": "Ištrinti",
     "directorySizes": "Skaičiuoti katalogų dydžius",
     "download": "Atsisiųsti",
+    "file": "File",
+    "folder": "Folder",
     "hideDotfiles": "Paslėpti konfigūracijos failus",
     "info": "Informacija",
     "more": "Daugiau",
@@ -70,7 +72,7 @@
     "metadata": "Meta duomenys",
     "multipleSelectionEnabled": "Įjungtas pasirinkimas iš kelių variantų",
     "name": "Pavadinimas",
-    "noPreview": "Preview is not available for this file.",
+    "noPreview": "Šio failo peržiūra negalima.",
     "size": "Dydis",
     "sortByLastModified": "Rūšiuoti pagal pakeitimo datą",
     "sortByName": "Rūšiuoti pagal pavadinimą",
@@ -242,6 +244,7 @@
     "rules": "Taisyklės",
     "rulesHelp": "Čia galite apibrėžti konkrečiam naudotojui taikomų leidimų ir draudimų taisyklių rinkinį. Užblokuoti failai nebus rodomi sąrašuose ir nebus prieinami naudotojui.",
     "scope": "Apimtis",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Nustaytmai atnaujinti!",
     "shareDeleted": "Dalijimasis nutrauktas!",
     "shareDuration": "Dalijimosi trukmė",
@@ -279,6 +282,7 @@
     "settings": "Nustatymai",
     "signup": "Užsiregistruoti",
     "siteSettings": "Svetainės nustatymai",
+    "tmpDir": "Temporary folder",
     "trashBin": "Šiukšlių dėžė"
   },
   "success": {

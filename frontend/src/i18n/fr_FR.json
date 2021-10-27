@@ -10,6 +10,8 @@
     "delete": "Supprimer",
     "directorySizes": "Calculer la taille des dossiers",
     "download": "Télécharger",
+    "file": "File",
+    "folder": "Folder",
     "hideDotfiles": "Cacher les dotfiles",
     "info": "Info",
     "more": "Plus",
@@ -169,7 +171,7 @@
     "skipTrashMessage": "Ignorer la corbeille et supprimer immédiatement",
     "unarchive": "Extraire",
     "unarchiveMessage": "Choisissez le nom du dossier de destination :",
-    "unarchiveOverwriteExisting": "Overwrite existing files",
+    "unarchiveOverwriteExisting": "Écraser les fichiers existants",
     "unsavedChanges": "Les modifications que vous avez apportées peuvent ne pas être enregistrées. Quitter la page ?",
     "upload": "Importer",
     "uploadFile": "Fichier",
@@ -242,6 +244,7 @@
     "rules": "Règles",
     "rulesHelp": "Vous pouvez définir ici un ensemble de règles pour cet utilisateur. Les fichiers bloqués ne seront pas affichés et ne seront pas accessibles par l'utilisateur. Les expressions régulières sont supportées et les chemins d'accès sont relatifs par rapport au dossier de l'utilisateur.",
     "scope": "Portée du dossier utilisateur",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Les paramètres ont été mis à jour !",
     "shareDeleted": "Partage supprimé !",
     "shareDuration": "",
@@ -279,6 +282,7 @@
     "settings": "Paramètres",
     "signup": "S'inscrire",
     "siteSettings": "Paramètres du site",
+    "tmpDir": "Temporary folder",
     "trashBin": "Corbeille"
   },
   "success": {

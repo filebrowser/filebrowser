@@ -74,6 +74,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.Bool("lockPassword", false, "lock password")
 	flags.StringSlice("commands", nil, "a list of the commands a user can execute")
 	flags.String("scope", ".", "scope for users")
+	flags.String("tmpDir", "", "tmp directory path for users")
 	flags.String("trashDir", "", "trash directory path for users")
 	flags.String("quotaFile", "", "path to file with quota data")
 	flags.String("locale", "en_GB", "locale for users")
@@ -95,6 +96,8 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 		switch flag.Name {
 		case "scope":
 			defaults.Scope = mustGetString(flags, flag.Name)
+		case "tmpDir":
+			defaults.TmpDir = mustGetString(flags, flag.Name)
 		case "trashDir":
 			defaults.TrashDir = mustGetString(flags, flag.Name)
 		case "quotaFile":

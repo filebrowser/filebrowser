@@ -10,6 +10,8 @@
     "delete": "Borrar",
     "directorySizes": "Calcular los tamaños del directorio",
     "download": "Descargar",
+    "file": "File",
+    "folder": "Folder",
     "hideDotfiles": "Ocultar dotfiles",
     "info": "Info",
     "more": "Más",
@@ -169,7 +171,7 @@
     "skipTrashMessage": "Omitir papelera y eliminar inmediatamente",
     "unarchive": "Desarchiva",
     "unarchiveMessage": "Elige el nombre de la carpeta de destino:",
-    "unarchiveOverwriteExisting": "Overwrite existing files",
+    "unarchiveOverwriteExisting": "Sobrescribir archivos existentes",
     "unsavedChanges": "Los cambios que realizaste podrían no guardarse. ¿Abandonar página?",
     "upload": "Cargar",
     "uploadFile": "Archivo",
@@ -242,6 +244,7 @@
     "rules": "Reglas",
     "rulesHelp": "Aquí puedes definir un conjunto de reglas de permisos para este usuario específico. Los archivos bloqueados no se mostrarán en las listas y no serán accesibles por el usuario. Puedes utilizar regex y rutas relativas a la raíz del usuario.\n",
     "scope": "Raíz",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "¡Ajustes actualizados!",
     "shareDeleted": "¡Eliminado!",
     "shareDuration": "Compartir duración",
@@ -279,6 +282,7 @@
     "settings": "Ajustes",
     "signup": "Registrate",
     "siteSettings": "Ajustes del sitio",
+    "tmpDir": "Temporary folder",
     "trashBin": "Papelera"
   },
   "success": {

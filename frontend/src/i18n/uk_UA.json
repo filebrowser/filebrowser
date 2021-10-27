@@ -10,6 +10,8 @@
     "delete": "Видалити",
     "directorySizes": "Порахувати розміри каталогів",
     "download": "Скачати",
+    "file": "File",
+    "folder": "Folder",
     "hideDotfiles": "Сховати дотфайли",
     "info": "Інфо",
     "more": "Більше",
@@ -169,7 +171,7 @@
     "skipTrashMessage": "Видалити без збереження в кошик",
     "unarchive": "Розархівування",
     "unarchiveMessage": "Виберіть назву папки призначення:",
-    "unarchiveOverwriteExisting": "Overwrite existing files",
+    "unarchiveOverwriteExisting": "Перезаписати наявні файли",
     "unsavedChanges": "Неможливо зберегти внесені зміни. Покинути сторінку?",
     "upload": "Завантаження",
     "uploadFile": "Файл",
@@ -242,6 +244,7 @@
     "rules": "Правила",
     "rulesHelp": "Тут ви можете визначити набір правил, що дозволяють або забороняють для конкретного користувача. Заблоковані файли не показуватимуться в списках, і не будуть доступні для користувача. Є підтримка регулярних виразів і шляхів.",
     "scope": "Корінь",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Налаштування оновлено!",
     "shareDeleted": "Налаштування спільного доступу видалено!",
     "shareDuration": "Тривалість спільного доступу",
@@ -279,6 +282,7 @@
     "settings": "Налаштування",
     "signup": "Зареєструватися",
     "siteSettings": "Налаштування сайту",
+    "tmpDir": "Temporary folder",
     "trashBin": "Кошик"
   },
   "success": {

@@ -10,6 +10,8 @@
     "delete": "Eliminar",
     "directorySizes": "Calcular tamanho de diretório",
     "download": "Descarregar",
+    "file": "File",
+    "folder": "Folder",
     "hideDotfiles": "Esconder dotfiles",
     "info": "Info",
     "more": "Mais",
@@ -169,7 +171,7 @@
     "skipTrashMessage": "Saltar o caixote do lixo e apagar imediatamente",
     "unarchive": "Desarquivar",
     "unarchiveMessage": "Escolha o nome da pasta de destino:",
-    "unarchiveOverwriteExisting": "Overwrite existing files",
+    "unarchiveOverwriteExisting": "Sobrepor os ficheiros existentes",
     "unsavedChanges": "As alterações que fez poderão não ser guardadas. Deixar a página?",
     "upload": "Upload",
     "uploadFile": "Ficheiro",
@@ -242,6 +244,7 @@
     "rules": "Regras",
     "rulesHelp": "Aqui pode definir um conjunto de regras para permitir ou bloquear o acesso do utilizador a determinados ficheiros ou pastas. Os ficheiros bloqueados não irão aparecer durante a navegação. Suportamos expressões regulares e os caminhos dos ficheiros devem ser relativos à base do utilizador.\n",
     "scope": "Base",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Configurações atualizadas!",
     "shareDeleted": "Partilha eliminada!",
     "shareDuration": "Partilhar duração",
@@ -279,6 +282,7 @@
     "settings": "Configurações",
     "signup": "Registar",
     "siteSettings": "Configurações do site",
+    "tmpDir": "Temporary folder",
     "trashBin": "Caixote do lixo"
   },
   "success": {

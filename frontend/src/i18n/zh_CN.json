@@ -10,6 +10,8 @@
     "delete": "删除",
     "directorySizes": "计算文件夹大小",
     "download": "下载",
+    "file": "File",
+    "folder": "Folder",
     "hideDotfiles": "不显示隐藏的文件",
     "info": "信息",
     "more": "更多",
@@ -169,7 +171,7 @@
     "skipTrashMessage": "跳过回收站并立即删除",
     "unarchive": "解压缩",
     "unarchiveMessage": "选择目标文件夹名字:",
-    "unarchiveOverwriteExisting": "Overwrite existing files",
+    "unarchiveOverwriteExisting": "覆盖现有文件",
     "unsavedChanges": "您所做的修改将不会被保存, 丢弃更改吗?",
     "upload": "上传",
     "uploadFile": "文件",
@@ -242,6 +244,7 @@
     "rules": "规则",
     "rulesHelp": "您可以为该用户制定一组黑名单或白名单式的规则，被屏蔽的文件将不会显示在列表中，用户也无权限访问,支持相对于目录范围的路径。",
     "scope": "目录范围",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "设置已更新！",
     "shareDeleted": "共享已删除!",
     "shareDuration": "分享期限",
@@ -279,6 +282,7 @@
     "settings": "设置",
     "signup": "注册",
     "siteSettings": "网站设置",
+    "tmpDir": "Temporary folder",
     "trashBin": "回收站"
   },
   "success": {

@@ -10,6 +10,8 @@
     "delete": "Sil",
     "directorySizes": "Dizin boyutlarını hesapla",
     "download": "İndir",
+    "file": "File",
+    "folder": "Folder",
     "hideDotfiles": "Nokta dosyalarını gizle",
     "info": "Bilgi",
     "more": "Devamı",
@@ -242,6 +244,7 @@
     "rules": "Kurallar",
     "rulesHelp": "Burada, belirli kullanıcılara bir dizi izin ve engelleme tanımlayabilirsiniz. Engellenen dosyalar listelerde görünmez ve kullanıcı bunlara erişemez. Kullanıcı kapsamına göre regex ve yolları destekliyoruz.",
     "scope": "Kapsam",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Ayarlar güncellendi!",
     "shareDeleted": "Paylaşım Silindi!",
     "shareDuration": "Paylaşım Süresi",
@@ -279,6 +282,7 @@
     "settings": "Ayarlar",
     "signup": "Kayıt Ol",
     "siteSettings": "Site Ayarları",
+    "tmpDir": "Temporary folder",
     "trashBin": "Çöp Kutusu"
   },
   "success": {

@@ -34,6 +34,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		"Version":         version.Version,
 		"StaticURL":       path.Join(d.server.BaseURL, "/static"),
 		"Signup":          d.settings.Signup,
+		"TmpDir":          d.settings.Defaults.TmpDir,
 		"TrashDir":        d.settings.Defaults.TrashDir,
 		"QuotaExists":     d.settings.Defaults.QuotaFile != "",
 		"NoAuth":          d.settings.AuthMethod == auth.MethodNoAuth,

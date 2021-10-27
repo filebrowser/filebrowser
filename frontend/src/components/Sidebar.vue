@@ -33,8 +33,9 @@
         </button>
       </div>
 
-      <div v-if="trashDir != ''">
+      <div v-if="tmpDir != '' || trashDir != ''">
         <router-link
+          v-if="trashDir != ''"
           class="action"
           :to="'/files/' + trashDir"
           :aria-label="$t('sidebar.trashBin')"
@@ -42,6 +43,17 @@
         >
           <i class="material-icons">delete</i>
           <span>{{ $t("sidebar.trashBin") }}</span>
+        </router-link>
+
+        <router-link
+          v-if="tmpDir != ''"
+          class="action"
+          :to="'/files/' + tmpDir"
+          :aria-label="$t('sidebar.tmpDir')"
+          :title="$t('sidebar.tmpDir')"
+        >
+          <i class="material-icons">folder_open</i>
+          <span>{{ $t("sidebar.tmpDir") }}</span>
         </router-link>
       </div>
 
@@ -124,6 +136,7 @@ import {
   version,
   signup,
   disableExternal,
+  tmpDir,
   trashDir,
   quotaExists,
   noAuth,
@@ -143,6 +156,7 @@ export default {
     signup: () => signup,
     version: () => version,
     disableExternal: () => disableExternal,
+    tmpDir: () => tmpDir,
     trashDir: () => trashDir,
     quotaExists: () => quotaExists,
     noAuth: () => noAuth,

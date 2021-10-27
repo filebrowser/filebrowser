@@ -7,6 +7,7 @@ const recaptchaKey = window.FileBrowser.ReCaptchaKey;
 const signup = window.FileBrowser.Signup;
 const version = window.FileBrowser.Version;
 const logoURL = `${staticURL}/img/logo.svg`;
+const tmpDir = window.FileBrowser.TmpDir;
 const trashDir = window.FileBrowser.TrashDir;
 const quotaExists = window.FileBrowser.QuotaExists;
 const noAuth = window.FileBrowser.NoAuth;
@@ -27,6 +28,7 @@ export {
   recaptchaKey,
   signup,
   version,
+  tmpDir,
   trashDir,
   quotaExists,
   noAuth,

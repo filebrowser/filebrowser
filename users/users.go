@@ -25,6 +25,7 @@ type User struct {
 	Username     string        `storm:"unique" json:"username"`
 	Password     string        `json:"password"`
 	Scope        string        `json:"scope"`
+	TmpDir       string        `json:"tmpDir"`
 	TrashDir     string        `json:"trashDir"`
 	QuotaFile    string        `json:"quotaFile"`
 	Locale       string        `json:"locale"`

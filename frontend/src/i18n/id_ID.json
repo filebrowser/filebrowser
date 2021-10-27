@@ -10,6 +10,8 @@
     "delete": "Hapus",
     "directorySizes": "Hitung ukuran direktori",
     "download": "Download",
+    "file": "File",
+    "folder": "Folder",
     "hideDotfiles": "Sembunyikan dotfile",
     "info": "Info",
     "more": "Selengkapnya",
@@ -169,7 +171,7 @@
     "skipTrashMessage": "Lewati keranjang sampah dan langsung hapus saja",
     "unarchive": "Buka arsip",
     "unarchiveMessage": "Pilih nama folder tujuan:",
-    "unarchiveOverwriteExisting": "Overwrite existing files",
+    "unarchiveOverwriteExisting": "Timpa file yang sudah ada",
     "unsavedChanges": "Perubahan yang Anda buat mungkin tidak tersimpan. Tinggalkan halaman?",
     "upload": "Upload",
     "uploadFile": "File",
@@ -242,6 +244,7 @@
     "rules": "Aturan",
     "rulesHelp": "Di sini Anda dapat memberikan atau membatasi aturan untuk pengguna tertentu. File yang diblokir tidak akan muncul dalam daftar dan tidak dapat diakses oleh pengguna. Kami mendukung regex dan path yang berada dalam cakupan pengguna.",
     "scope": "Cakupan",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Pengaturan diperbarui",
     "shareDeleted": "Akses berbagi dihapus",
     "shareDuration": "Durasi Berbagi",
@@ -279,6 +282,7 @@
     "settings": "Pengaturan",
     "signup": "Daftar",
     "siteSettings": "Pengaturan Situs",
+    "tmpDir": "Temporary folder",
     "trashBin": "Keranjang sampah"
   },
   "success": {

@@ -9,6 +9,7 @@ import (
 // for some fields on User.
 type UserDefaults struct {
 	Scope        string            `json:"scope"`
+	TmpDir       string            `json:"tmpDir"`
 	TrashDir     string            `json:"trashDir"`
 	QuotaFile    string            `json:"quotaFile"`
 	Locale       string            `json:"locale"`
@@ -24,6 +25,7 @@ type UserDefaults struct {
 // Apply applies the default options to a user.
 func (d *UserDefaults) Apply(u *users.User) {
 	u.Scope = d.Scope
+	u.TmpDir = d.TmpDir
 	u.TrashDir = d.TrashDir
 	u.QuotaFile = d.QuotaFile
 	u.Locale = d.Locale

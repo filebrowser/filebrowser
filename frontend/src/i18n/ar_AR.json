@@ -10,6 +10,8 @@
     "delete": "حذف",
     "directorySizes": "حساب أحجام الدليل",
     "download": "تحميل",
+    "file": "File",
+    "folder": "Folder",
     "hideDotfiles": "إخفاء dotfiles",
     "info": "معلومات",
     "more": "المزيد",
@@ -169,7 +171,7 @@
     "skipTrashMessage": "تخطى سلة المهملات واحذف فورا",
     "unarchive": "حذف من الأرشيف",
     "unarchiveMessage": "اختر اسم المجلد الوجهة:",
-    "unarchiveOverwriteExisting": "Overwrite existing files",
+    "unarchiveOverwriteExisting": "الكتابة فوق الملفات الموجودة",
     "unsavedChanges": "قد لا يتم حفظ التغييرات التي قمت بها. هل تريد مغادرة الصفحة؟",
     "upload": "تحميل",
     "uploadFile": "ملف",
@@ -242,6 +244,7 @@
     "rules": "القواعد",
     "rulesHelp": "يمكنك هنا تحديد مجموعة من شروط السماح والمنع لهذا المستخدم. الملفات الممنوعة لن تظهر ضمن قائمة هذا المستخدم ولن يستطيع الوصول لها. هنا ندعم الـ regex والـ relative path لنطاق المستخدمين.",
     "scope": "نطاق",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "تم تعديل الإعدادات!",
     "shareDeleted": "حذف المشاركة!",
     "shareDuration": "مدة المشاركة",
@@ -279,6 +282,7 @@
     "settings": "الإعدادات",
     "signup": "Signup",
     "siteSettings": "إعدادات الموقع",
+    "tmpDir": "Temporary folder",
     "trashBin": "سلة المهملات"
   },
   "success": {
