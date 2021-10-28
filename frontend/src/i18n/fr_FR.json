@@ -170,6 +170,8 @@
     "size": "Taille",
     "skipTrashMessage": "Ignorer la corbeille et supprimer immédiatement",
     "unarchive": "Extraire",
+    "unarchiveDestinationLocationMessage": "Select the destination:",
+    "unarchiveFolderNameMessage": "Choose folder name:",
     "unarchiveMessage": "Choisissez le nom du dossier de destination :",
     "unarchiveOverwriteExisting": "Écraser les fichiers existants",
     "unsavedChanges": "Les modifications que vous avez apportées peuvent ne pas être enregistrées. Quitter la page ?",

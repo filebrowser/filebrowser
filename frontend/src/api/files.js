@@ -180,7 +180,7 @@ export async function archive(url, name, format, ...files) {
 }
 
 export async function unarchive(path, name, override) {
-  const to = encodeURIComponent(removePrefix(name));
+  const to = removePrefix(name);
   const action = `unarchive`;
   const url = `${path}?action=${action}&destination=${to}&override=${override}`;
   return resourceAction(url, "PATCH");

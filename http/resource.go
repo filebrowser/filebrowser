@@ -277,7 +277,8 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 
 		override := r.URL.Query().Get("override") == "true"
 		rename := r.URL.Query().Get("rename") == "true"
-		if !override && !rename {
+		unarchive := action == "unarchive"
+		if !override && !rename && !unarchive {
 			if _, err = d.user.Fs.Stat(dst); err == nil {
 				return http.StatusConflict, nil
 			}
@@ -292,7 +293,11 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		}
 
 		err = d.RunHook(func() error {
-			return patchAction(r.Context(), action, src, dst, d, fileCache)
+			if unarchive {
+				return unarchiveAction(src, dst, d, override)
+			} else {
+				return patchAction(r.Context(), action, src, dst, d, fileCache)
+			}
 		}, action, src, dst, d.user)
 
 		return errToStatus(err), err
@@ -441,53 +446,75 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		}
 
 		return fileutils.MoveFile(d.user.Fs, src, dst)
-	case "unarchive":
-		if !d.user.Perm.Create {
-			return errors.ErrPermissionDenied
-		}
+	default:
+		return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
+	}
+}
 
-		src = d.user.FullPath(path.Clean("/" + src))
-		dst = d.user.FullPath(path.Clean("/" + dst))
+func unarchiveAction(src, dst string, d *data, overwrite bool) error {
+	if !d.user.Perm.Create {
+		return errors.ErrPermissionDenied
+	}
 
-		arch, err := archiver.ByExtension(src)
-		if err != nil {
-			return err
-		}
+	src = d.user.FullPath(path.Clean("/" + src))
+	dst = d.user.FullPath(path.Clean("/" + dst))
 
-		// if we reach this place when overwrite is needed,
-		// it means that override was selected
-		switch a := arch.(type) {
-		case *archiver.Rar:
-			a.OverwriteExisting = true
-		case *archiver.Tar:
-			a.OverwriteExisting = true
-		case *archiver.TarBz2:
-			a.OverwriteExisting = true
-		case *archiver.TarGz:
-			a.OverwriteExisting = true
-		case *archiver.TarLz4:
-			a.OverwriteExisting = true
-		case *archiver.TarSz:
-			a.OverwriteExisting = true
-		case *archiver.TarXz:
-			a.OverwriteExisting = true
-		case *archiver.Zip:
-			a.OverwriteExisting = true
-		}
+	arch, err := archiver.ByExtension(src)
+	if err != nil {
+		return err
+	}
 
-		unarchiver, ok := arch.(archiver.Unarchiver)
-		if !ok {
-			return errors.ErrInvalidRequestParams
-		}
+	switch a := arch.(type) {
+	case *archiver.Rar:
+		a.OverwriteExisting = overwrite
+	case *archiver.Tar:
+		a.OverwriteExisting = overwrite
+	case *archiver.TarBz2:
+		a.OverwriteExisting = overwrite
+	case *archiver.TarGz:
+		a.OverwriteExisting = overwrite
+	case *archiver.TarLz4:
+		a.OverwriteExisting = overwrite
+	case *archiver.TarSz:
+		a.OverwriteExisting = overwrite
+	case *archiver.TarXz:
+		a.OverwriteExisting = overwrite
+	case *archiver.Zip:
+		a.OverwriteExisting = overwrite
+	}
 
+	unarchiver, ok := arch.(archiver.Unarchiver)
+	if ok {
 		err = unarchiver.Unarchive(src, dst)
 		if err != nil {
 			return errors.ErrInvalidRequestParams
 		}
+
 		return nil
-	default:
-		return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
 	}
+
+	decompressor, ok := arch.(archiver.Decompressor)
+	if ok {
+		reader, err := os.Open(src)
+		if err != nil {
+			return err
+		}
+
+		dst, err := os.OpenFile(dst, os.O_TRUNC|os.O_CREATE|os.O_RDWR, 0644)
+		if err != nil {
+			return err
+		}
+
+		err = decompressor.Decompress(reader, dst)
+		if err != nil {
+			fmt.Println(err)
+			return errors.ErrInvalidRequestParams
+		}
+
+		return nil
+	}
+
+	return errors.ErrInvalidRequestParams
 }
 
 func archiveHandler(r *http.Request, d *data) (int, error) {

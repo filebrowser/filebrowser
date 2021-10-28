@@ -170,6 +170,8 @@
     "size": "Tamaño",
     "skipTrashMessage": "Omitir papelera y eliminar inmediatamente",
     "unarchive": "Desarchiva",
+    "unarchiveDestinationLocationMessage": "Select the destination:",
+    "unarchiveFolderNameMessage": "Choose folder name:",
     "unarchiveMessage": "Elige el nombre de la carpeta de destino:",
     "unarchiveOverwriteExisting": "Sobrescribir archivos existentes",
     "unsavedChanges": "Los cambios que realizaste podrían no guardarse. ¿Abandonar página?",
@@ -282,7 +284,7 @@
     "settings": "Ajustes",
     "signup": "Registrate",
     "siteSettings": "Ajustes del sitio",
-    "tmpDir": "Temporary folder",
+    "tmpDir": "Carpeta temporal",
     "trashBin": "Papelera"
   },
   "success": {

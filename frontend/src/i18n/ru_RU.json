@@ -170,6 +170,8 @@
     "size": "Размер",
     "skipTrashMessage": "Удалить, не сохраняя в корзину",
     "unarchive": "Разархивирование",
+    "unarchiveDestinationLocationMessage": "Select the destination:",
+    "unarchiveFolderNameMessage": "Choose folder name:",
     "unarchiveMessage": "Выберите имя папки назначения:",
     "unarchiveOverwriteExisting": "Перезаписать существующие файлы",
     "unsavedChanges": "Невозможно сохранить внесённые изменения. Покинуть страницу?",

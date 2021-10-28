@@ -170,6 +170,8 @@
     "size": "Розмір",
     "skipTrashMessage": "Видалити без збереження в кошик",
     "unarchive": "Розархівування",
+    "unarchiveDestinationLocationMessage": "Select the destination:",
+    "unarchiveFolderNameMessage": "Choose folder name:",
     "unarchiveMessage": "Виберіть назву папки призначення:",
     "unarchiveOverwriteExisting": "Перезаписати наявні файли",
     "unsavedChanges": "Неможливо зберегти внесені зміни. Покинути сторінку?",

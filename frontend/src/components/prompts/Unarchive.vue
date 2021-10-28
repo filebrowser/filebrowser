@@ -5,14 +5,21 @@
     </div>
 
     <div class="card-content">
-      <p>{{ $t("prompts.unarchiveMessage") }}</p>
-      <input
-        class="input input--block"
-        v-focus
-        type="text"
-        @keyup.enter="submit"
-        v-model.trim="name"
-      />
+      <form ref="unarchiveForm">
+        <p>{{ $t("prompts.unarchiveFolderNameMessage") }}</p>
+        <input
+          class="input input--block"
+          v-focus
+          type="text"
+          @keyup.enter="submit"
+          v-model.trim="name"
+          required
+        />
+      </form>
+
+      <p>{{ $t("prompts.unarchiveDestinationLocationMessage") }}</p>
+      <file-list @update:selected="(val) => (dest = val)"></file-list>
+
       <p v-if="overwriteAvailable">
         <input type="checkbox" v-model="overwriteExisting" />
         {{ $t("prompts.unarchiveOverwriteExisting") }}
@@ -43,14 +50,17 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
+import FileList from "./FileList";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
 
 export default {
   name: "rename",
+  components: { FileList },
   data: function () {
     return {
       overwriteExisting: false,
+      dest: null,
       name: "",
     };
   },
@@ -76,10 +86,12 @@ export default {
       this.$store.commit("closeHovers");
     },
     submit: async function () {
+      if (!this.$refs.unarchiveForm.reportValidity()) {
+        return;
+      }
+
       let item = this.req.items[this.selected[0]];
-      let uri = this.isFiles ? this.$route.path + "/" : "/";
-      let dst = uri + this.name;
-      dst = dst.replace("//", "/");
+      let dst = this.dest + encodeURIComponent(this.name);
 
       try {
         buttons.loading("unarchive");

@@ -170,6 +170,8 @@
     "size": "Tamanho",
     "skipTrashMessage": "Pular lixeira e deletar imediatamente",
     "unarchive": "Desarquivar",
+    "unarchiveDestinationLocationMessage": "Select the destination:",
+    "unarchiveFolderNameMessage": "Choose folder name:",
     "unarchiveMessage": "Escolha o nome da pasta de destino:",
     "unarchiveOverwriteExisting": "Sobrescrever arquivos existentes",
     "unsavedChanges": "As alterações que você fez podem não ser salvas. Sair da página?",

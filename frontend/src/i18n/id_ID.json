@@ -170,6 +170,8 @@
     "size": "Ukuran",
     "skipTrashMessage": "Lewati keranjang sampah dan langsung hapus saja",
     "unarchive": "Buka arsip",
+    "unarchiveDestinationLocationMessage": "Select the destination:",
+    "unarchiveFolderNameMessage": "Choose folder name:",
     "unarchiveMessage": "Pilih nama folder tujuan:",
     "unarchiveOverwriteExisting": "Timpa file yang sudah ada",
     "unsavedChanges": "Perubahan yang Anda buat mungkin tidak tersimpan. Tinggalkan halaman?",

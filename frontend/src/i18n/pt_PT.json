@@ -170,6 +170,8 @@
     "size": "Tamanho",
     "skipTrashMessage": "Saltar o caixote do lixo e apagar imediatamente",
     "unarchive": "Desarquivar",
+    "unarchiveDestinationLocationMessage": "Select the destination:",
+    "unarchiveFolderNameMessage": "Choose folder name:",
     "unarchiveMessage": "Escolha o nome da pasta de destino:",
     "unarchiveOverwriteExisting": "Sobrepor os ficheiros existentes",
     "unsavedChanges": "As alterações que fez poderão não ser guardadas. Deixar a página?",
@@ -282,7 +284,7 @@
     "settings": "Configurações",
     "signup": "Registar",
     "siteSettings": "Configurações do site",
-    "tmpDir": "Temporary folder",
+    "tmpDir": "Pasta temporária",
     "trashBin": "Caixote do lixo"
   },
   "success": {

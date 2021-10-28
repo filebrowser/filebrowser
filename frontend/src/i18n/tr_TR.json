@@ -170,6 +170,8 @@
     "size": "Boyut",
     "skipTrashMessage": "Çöp kutusunu atlayıp hemen sil",
     "unarchive": "Arşivden çıkar",
+    "unarchiveDestinationLocationMessage": "Select the destination:",
+    "unarchiveFolderNameMessage": "Choose folder name:",
     "unarchiveMessage": "Hedef klasör adını seçin:",
     "unarchiveOverwriteExisting": "Mevcut dosyaların üzerine yaz",
     "unsavedChanges": "Yaptığınız değişiklikler kaydedilmeyecek. Çıkılsın mı?",

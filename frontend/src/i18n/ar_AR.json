@@ -170,6 +170,8 @@
     "size": "الحجم",
     "skipTrashMessage": "تخطى سلة المهملات واحذف فورا",
     "unarchive": "حذف من الأرشيف",
+    "unarchiveDestinationLocationMessage": "Select the destination:",
+    "unarchiveFolderNameMessage": "Choose folder name:",
     "unarchiveMessage": "اختر اسم المجلد الوجهة:",
     "unarchiveOverwriteExisting": "الكتابة فوق الملفات الموجودة",
     "unsavedChanges": "قد لا يتم حفظ التغييرات التي قمت بها. هل تريد مغادرة الصفحة؟",
