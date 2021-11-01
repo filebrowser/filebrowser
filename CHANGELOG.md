@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.18.0](https://github.com/filebrowser/filebrowser/compare/v2.17.2...v2.18.0) (2021-10-31)
+
+
+### Features
+
+* add ability to select file modified time format ([#1536](https://github.com/filebrowser/filebrowser/issues/1536)) ([0426629](https://github.com/filebrowser/filebrowser/commit/0426629a59c712849570d3e29956948ae7725a4a))
+* add manifest theme color param ([#1542](https://github.com/filebrowser/filebrowser/issues/1542)) ([0358e42](https://github.com/filebrowser/filebrowser/commit/0358e42d2c206732fffa77714f5a66f4fe50a69d))
+
+
+### Bug Fixes
+
+* back button behaviour in preview ([#1573](https://github.com/filebrowser/filebrowser/issues/1573)) ([deabc80](https://github.com/filebrowser/filebrowser/commit/deabc80fd7670983039dfcd29531b45002ca5d9e))
+* fix sidebar navigation on mobile devices ([#1618](https://github.com/filebrowser/filebrowser/issues/1618)) ([f09bf3e](https://github.com/filebrowser/filebrowser/commit/f09bf3e1d076b27d29ba8a91cf448a99993bc444))
+* search box is misaligned when the browser preferred font size is other than 16px ([#1613](https://github.com/filebrowser/filebrowser/issues/1613)) ([6f345be](https://github.com/filebrowser/filebrowser/commit/6f345be3e47ba57ecc1eb9a62587ab949078c125))
+* security issue in command runner (closes [#1621](https://github.com/filebrowser/filebrowser/issues/1621)) ([74b7cd8](https://github.com/filebrowser/filebrowser/commit/74b7cd8e81840537a8206317344f118093153e8d))
+* set correct editor height regardless of preferred font size ([#1614](https://github.com/filebrowser/filebrowser/issues/1614)) ([ddd4ffa](https://github.com/filebrowser/filebrowser/commit/ddd4ffa4caa6b292a3a644ecd897aba1237c7503))
+* zoom pics when dlclick at first time ([#1561](https://github.com/filebrowser/filebrowser/issues/1561)) ([b6a51be](https://github.com/filebrowser/filebrowser/commit/b6a51bed516814944f8aa41440652242d57824c5))
+
 ### [2.17.2](https://github.com/filebrowser/filebrowser/compare/v2.17.1...v2.17.2) (2021-08-27)
 
 
