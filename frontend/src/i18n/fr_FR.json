@@ -63,6 +63,7 @@
     "body": "Corps",
     "clear": "Fermer",
     "closePreview": "Fermer la prévisualisation",
+    "emptyFolder": "This folder is empty",
     "files": "Fichiers",
     "folders": "Dossiers",
     "home": "Accueil",
@@ -170,8 +171,8 @@
     "size": "Taille",
     "skipTrashMessage": "Ignorer la corbeille et supprimer immédiatement",
     "unarchive": "Extraire",
-    "unarchiveDestinationLocationMessage": "Select the destination:",
-    "unarchiveFolderNameMessage": "Choose folder name:",
+    "unarchiveDestinationLocationMessage": "Sélectionnez la destination :",
+    "unarchiveFolderNameMessage": "Choisissez un nom de dossier :",
     "unarchiveMessage": "Choisissez le nom du dossier de destination :",
     "unarchiveOverwriteExisting": "Écraser les fichiers existants",
     "unsavedChanges": "Les modifications que vous avez apportées peuvent ne pas être enregistrées. Quitter la page ?",
@@ -284,7 +285,7 @@
     "settings": "Paramètres",
     "signup": "S'inscrire",
     "siteSettings": "Paramètres du site",
-    "tmpDir": "Temporary folder",
+    "tmpDir": "Dossier temporaire",
     "trashBin": "Corbeille"
   },
   "success": {

@@ -30,6 +30,23 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		Checker:    d,
 		Content:    true,
 	})
+
+	// if the path does not exist and its the trash dir - create it
+	if os.IsNotExist(err) && d.user.TrashDir != "" {
+		if d.user.FullPath(r.URL.Path) == d.user.FullPath(d.user.TrashDir) {
+			d.user.Fs.MkdirAll(d.user.TrashDir, 0755)
+			file, err = files.NewFileInfo(files.FileOptions{
+				Fs:         d.user.Fs,
+				Path:       r.URL.Path,
+				Modify:     d.user.Perm.Modify,
+				Expand:     true,
+				ReadHeader: d.server.TypeDetectionByHeader,
+				Checker:    d,
+				Content:    true,
+			})
+		}
+	}
+
 	if err != nil {
 		return errToStatus(err), err
 	}

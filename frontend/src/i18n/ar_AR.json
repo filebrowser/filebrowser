@@ -63,6 +63,7 @@
     "body": "الصفحة",
     "clear": "مسح",
     "closePreview": "إغلاق العرض",
+    "emptyFolder": "This folder is empty",
     "files": "الملفات",
     "folders": "المجلدات",
     "home": "الصفحة الأولى",
@@ -170,8 +171,8 @@
     "size": "الحجم",
     "skipTrashMessage": "تخطى سلة المهملات واحذف فورا",
     "unarchive": "حذف من الأرشيف",
-    "unarchiveDestinationLocationMessage": "Select the destination:",
-    "unarchiveFolderNameMessage": "Choose folder name:",
+    "unarchiveDestinationLocationMessage": "حدد الوجهة:",
+    "unarchiveFolderNameMessage": "اختر اسم المجلد:",
     "unarchiveMessage": "اختر اسم المجلد الوجهة:",
     "unarchiveOverwriteExisting": "الكتابة فوق الملفات الموجودة",
     "unsavedChanges": "قد لا يتم حفظ التغييرات التي قمت بها. هل تريد مغادرة الصفحة؟",
@@ -284,7 +285,7 @@
     "settings": "الإعدادات",
     "signup": "Signup",
     "siteSettings": "إعدادات الموقع",
-    "tmpDir": "Temporary folder",
+    "tmpDir": "المجلد المؤقت",
     "trashBin": "سلة المهملات"
   },
   "success": {

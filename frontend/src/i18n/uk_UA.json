@@ -63,6 +63,7 @@
     "body": "Тіло",
     "clear": "Очистити",
     "closePreview": "Закрити попередній перегляд",
+    "emptyFolder": "This folder is empty",
     "files": "Файли",
     "folders": "Папки",
     "home": "Головна",
@@ -170,8 +171,8 @@
     "size": "Розмір",
     "skipTrashMessage": "Видалити без збереження в кошик",
     "unarchive": "Розархівування",
-    "unarchiveDestinationLocationMessage": "Select the destination:",
-    "unarchiveFolderNameMessage": "Choose folder name:",
+    "unarchiveDestinationLocationMessage": "Виберіть місце призначення:",
+    "unarchiveFolderNameMessage": "Виберіть назву папки:",
     "unarchiveMessage": "Виберіть назву папки призначення:",
     "unarchiveOverwriteExisting": "Перезаписати наявні файли",
     "unsavedChanges": "Неможливо зберегти внесені зміни. Покинути сторінку?",
@@ -284,7 +285,7 @@
     "settings": "Налаштування",
     "signup": "Зареєструватися",
     "siteSettings": "Налаштування сайту",
-    "tmpDir": "Temporary folder",
+    "tmpDir": "Тимчасова папка",
     "trashBin": "Кошик"
   },
   "success": {

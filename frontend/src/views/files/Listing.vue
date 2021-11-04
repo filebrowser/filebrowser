@@ -154,8 +154,8 @@
     <template v-else>
       <div v-if="req.numDirs + req.numFiles == 0">
         <h2 class="message">
-          <i class="material-icons">sentiment_dissatisfied</i>
-          <span>{{ $t("files.lonely") }}</span>
+          <i class="material-icons">folder_open</i>
+          <span>{{ $t("files.emptyFolder") }}</span>
         </h2>
         <input
           style="display: none"

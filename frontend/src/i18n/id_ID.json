@@ -63,6 +63,7 @@
     "body": "Body",
     "clear": "Hapus",
     "closePreview": "Tutup pratinjau",
+    "emptyFolder": "This folder is empty",
     "files": "File",
     "folders": "Folder",
     "home": "Beranda",
@@ -170,8 +171,8 @@
     "size": "Ukuran",
     "skipTrashMessage": "Lewati keranjang sampah dan langsung hapus saja",
     "unarchive": "Buka arsip",
-    "unarchiveDestinationLocationMessage": "Select the destination:",
-    "unarchiveFolderNameMessage": "Choose folder name:",
+    "unarchiveDestinationLocationMessage": "Pilih folder tujuan:",
+    "unarchiveFolderNameMessage": "Pilih nama folder:",
     "unarchiveMessage": "Pilih nama folder tujuan:",
     "unarchiveOverwriteExisting": "Timpa file yang sudah ada",
     "unsavedChanges": "Perubahan yang Anda buat mungkin tidak tersimpan. Tinggalkan halaman?",
@@ -284,7 +285,7 @@
     "settings": "Pengaturan",
     "signup": "Daftar",
     "siteSettings": "Pengaturan Situs",
-    "tmpDir": "Temporary folder",
+    "tmpDir": "Folder sementara",
     "trashBin": "Keranjang sampah"
   },
   "success": {

@@ -63,6 +63,7 @@
     "body": "Gövde",
     "clear": "Temizle",
     "closePreview": "Önizlemeyi kapat",
+    "emptyFolder": "This folder is empty",
     "files": "Dosyalar",
     "folders": "Klasörler",
     "home": "Anasayfa",
@@ -170,8 +171,8 @@
     "size": "Boyut",
     "skipTrashMessage": "Çöp kutusunu atlayıp hemen sil",
     "unarchive": "Arşivden çıkar",
-    "unarchiveDestinationLocationMessage": "Select the destination:",
-    "unarchiveFolderNameMessage": "Choose folder name:",
+    "unarchiveDestinationLocationMessage": "Hedefi seçin:",
+    "unarchiveFolderNameMessage": "Klasör adını seçin:",
     "unarchiveMessage": "Hedef klasör adını seçin:",
     "unarchiveOverwriteExisting": "Mevcut dosyaların üzerine yaz",
     "unsavedChanges": "Yaptığınız değişiklikler kaydedilmeyecek. Çıkılsın mı?",
@@ -284,7 +285,7 @@
     "settings": "Ayarlar",
     "signup": "Kayıt Ol",
     "siteSettings": "Site Ayarları",
-    "tmpDir": "Temporary folder",
+    "tmpDir": "Geçici dosya",
     "trashBin": "Çöp Kutusu"
   },
   "success": {

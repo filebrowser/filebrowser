@@ -63,6 +63,7 @@
     "body": "内容",
     "clear": "清空",
     "closePreview": "关闭预览",
+    "emptyFolder": "This folder is empty",
     "files": "文件",
     "folders": "文件夹",
     "home": "主页",
@@ -170,8 +171,8 @@
     "size": "大小",
     "skipTrashMessage": "跳过回收站并立即删除",
     "unarchive": "解压缩",
-    "unarchiveDestinationLocationMessage": "Select the destination:",
-    "unarchiveFolderNameMessage": "Choose folder name:",
+    "unarchiveDestinationLocationMessage": "选择目的地：",
+    "unarchiveFolderNameMessage": "选择文件夹名称：",
     "unarchiveMessage": "选择目标文件夹名字:",
     "unarchiveOverwriteExisting": "覆盖现有文件",
     "unsavedChanges": "您所做的修改将不会被保存, 丢弃更改吗?",
@@ -284,7 +285,7 @@
     "settings": "设置",
     "signup": "注册",
     "siteSettings": "网站设置",
-    "tmpDir": "Temporary folder",
+    "tmpDir": "临时文件夹",
     "trashBin": "回收站"
   },
   "success": {
