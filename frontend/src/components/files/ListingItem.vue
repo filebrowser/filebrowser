@@ -106,7 +106,7 @@ export default {
       return filesize(this.size);
     },
     humanTime: function () {
-      if (this.user.dateFormat) {
+      if (this.readOnly == undefined && this.user.dateFormat) {
         return moment(this.modified).format("L LT");
       }
       return moment(this.modified).fromNow();
