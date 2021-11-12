@@ -312,7 +312,7 @@ export default {
         for (let j = i + 1; j < this.listing.length; j++) {
           if (mediaTypes.includes(this.listing[j].type)) {
             this.nextLink = this.listing[j].url;
-            this.nextRaw=`${this.prefetchUrl(this.listing[j], this.nextLink)}&inline=true`;
+            this.nextRaw = this.prefetchUrl(this.listing[j]);
             break;
           }
         }
