@@ -305,7 +305,7 @@ export default {
         for (let j = i - 1; j >= 0; j--) {
           if (mediaTypes.includes(this.listing[j].type)) {
             this.previousLink = this.listing[j].url;
-            this.previousRaw=`${this.prefetchUrl(this.listing[j], this.previousLink)}&inline=true`;
+            this.previousRaw = this.prefetchUrl(this.listing[j]);
             break;
           }
         }
