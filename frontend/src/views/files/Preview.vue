@@ -320,12 +320,12 @@ export default {
         return;
       }
     },
-    prefetchUrl: function(item, routePath) {
+    prefetchUrl: function(item) {
       const key = Date.parse(item.modified);
       if (item.type === "image" && !this.fullSize) {
-        return `${baseURL}/api/preview/big${routePath.slice(6)}?k=${key}`;
+        return `${baseURL}/api/preview/big${item.path}?k=${key}&inline=true`;
       } else if (item.type === "image"){
-        return `${baseURL}/api/raw${routePath.slice(6)}?k=${key}`;
+        return `${baseURL}/api/raw${item.path}?k=${key}&inline=true`;
       } else{
         return "";
       }
