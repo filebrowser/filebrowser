@@ -167,3 +167,7 @@
 }
 
 @import "~material-design-icons/iconfont/material-icons.css";
+
+.material-icons {
+  font-size: 1.5rem;
+}
