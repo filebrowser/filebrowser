@@ -7,6 +7,16 @@
     <header-bar>
       <action icon="close" :label="$t('buttons.close')" @action="close()" />
       <title>{{ name }}</title>
+      <button
+        v-if="address!=='none'"
+        :disabled="loading"
+        class="action"
+        @click="switchShowLocation"
+        aria-label="Location Info"
+        title="Location Info"
+      >
+        <i :style="{color: showLocation? 'blue':'white'}" class="material-icons">location_on</i>
+      </button>      
       <action
         :disabled="loading"
         v-if="isResizeEnabled && req.type === 'image'"
@@ -55,7 +65,7 @@
     </div>
     <template v-else>
       <div class="preview">
-        <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
+        <ExtendedImage v-if="req.type == 'image'" :src="raw" ref="container"></ExtendedImage>
         <audio
           v-else-if="req.type == 'audio'"
           ref="player"
@@ -114,6 +124,11 @@
             </a>
           </div>
         </div>
+
+        <div v-if="showLocation && address!=='none'">
+          <span id="locationInfo" align="center">{{address}}</span>
+        </div>
+
       </div>
     </template>
 
@@ -151,6 +166,7 @@ import throttle from "lodash.throttle";
 import HeaderBar from "@/components/header/HeaderBar";
 import Action from "@/components/header/Action";
 import ExtendedImage from "@/components/files/ExtendedImage";
+import {EXIF} from 'exif-js';
 
 const mediaTypes = ["image", "video", "audio", "blob"];
 
@@ -175,6 +191,8 @@ export default {
       autoPlay: false,
       previousRaw: "",
       nextRaw: "",
+      address:'none',
+      showLocation: false,
     };
   },
   computed: {
@@ -216,16 +234,69 @@ export default {
       this.updatePreview();
       this.toggleNavigation();
     },
+    raw: function () {
+      this.address='none';  
+      this.getImgLocation();
+    },
   },
   async mounted() {
     window.addEventListener("keydown", this.key);
     this.listing = this.oldReq.items;
     this.updatePreview();
+    this.getImgLocation();
   },
   beforeDestroy() {
     window.removeEventListener("keydown", this.key);
   },
   methods: {
+    switchShowLocation(){
+      this.showLocation=!this.showLocation;
+    },
+    getImgLocation(){
+      this.$nextTick(() => {
+        if(this.req.type == 'image'){
+          let _this = this
+          EXIF.getData(this.$refs.container,function(){
+            const imgLon = EXIF.getTag(this, 'GPSLongitude')
+            const imgLat = EXIF.getTag(this, 'GPSLatitude')
+            let lon, lat
+            if(imgLon && imgLat){
+              if(EXIF.getTag(this, 'GPSLongitudeRef')=="E") {
+                lon = (imgLon[0] + imgLon[1]/60 + imgLon[2]/60/60).toFixed(7);
+              } else {
+                lon = -(imgLon[0] + imgLon[1]/60 + imgLon[2]/60/60).toFixed(7);              
+              }
+              if(EXIF.getTag(this, 'GPSLatitudeRef')=="N") {
+                lat = (imgLat[0] + imgLat[1]/60 + imgLat[2]/60/60).toFixed(7);
+              } else {
+                lat = -(imgLat[0] + imgLat[1]/60 + imgLat[2]/60/60).toFixed(7);              
+              }            
+  
+              fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=0`)
+              .then((response) => {
+                 if (response.status === 200) {
+                   return response.json()
+                 } else {
+                   return {}
+                 }
+              })
+              .then((data) => {
+                if(data.display_name.length==0){
+                  _this.address = 'none'               
+                } else {
+                  _this.address = data.display_name            
+                }
+              })
+            } else {
+              _this.address = 'none'
+            }
+          })
+        } else {
+          this.address = 'none'
+        }
+      })
+    },
+  
     deleteFile() {
       this.$store.commit("showHover", {
         prompt: "delete",
@@ -363,3 +434,17 @@ export default {
   },
 };
 </script>
+<style>
+#locationInfo  {
+  position:fixed;
+  bottom:0em;
+  left:50%;
+  background: #6f6f6f;
+  transform:translateX(-50%);
+  border:0.5em solid #6f6f6f;
+  border-radius: 0.5em;
+  color: #fff;
+  z-index: 99999;
+}
+
+</style>
