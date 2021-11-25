@@ -1,6 +1,8 @@
 <template>
   <header>
-    <img v-if="showLogo !== undefined" :src="logoURL" />
+    <a href="/">
+      <img v-if="showLogo !== undefined" :src="logoURL" alt="logo" />
+    </a>
     <action
       v-if="showMenu !== undefined"
       class="menu-button"
