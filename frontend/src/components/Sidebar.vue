@@ -44,6 +44,10 @@
           <span>{{ $t("sidebar.settings") }}</span>
         </button>
 
+        <div v-if="$router.currentRoute.path === '/files/'" style="padding: 1.3em">
+          {{ req.freeDiskSpace }} free of {{ req.totalDiskSpace }}
+        </div>
+
         <button
           v-if="authMethod == 'json'"
           @click="logout"
@@ -113,7 +117,7 @@ import {
 export default {
   name: "sidebar",
   computed: {
-    ...mapState(["user"]),
+    ...mapState(["user", "req"]),
     ...mapGetters(["isLogged"]),
     active() {
       return this.$store.state.show === "sidebar";

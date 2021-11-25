@@ -3,8 +3,10 @@ module github.com/filebrowser/filebrowser/v2
 go 1.16
 
 require (
+	code.cloudfoundry.org/bytefmt v0.0.0-20211005130812-5bb3c17173e5
 	github.com/DataDog/zstd v1.4.0 // indirect
 	github.com/Sereal/Sereal v0.0.0-20190430203904-6faf9605eb56 // indirect
+	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/caddyserver/caddy v1.0.3
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -21,6 +23,7 @@ require (
 	github.com/nwaples/rardecode v1.0.0 // indirect
 	github.com/pelletier/go-toml v1.6.0
 	github.com/pierrec/lz4 v0.0.0-20190131084431-473cd7ce01a1 // indirect
+	github.com/shirou/gopsutil v3.21.10+incompatible
 	github.com/spf13/afero v1.2.2
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
@@ -31,12 +34,9 @@ require (
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	go.etcd.io/bbolt v1.3.3
-	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8
-	golang.org/x/net v0.0.0-20200528225125-3c3fba18258b // indirect
-	golang.org/x/sys v0.0.0-20200523222454-059865788121 // indirect
-	golang.org/x/text v0.3.2 // indirect
 	google.golang.org/appengine v1.5.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
-	gopkg.in/yaml.v2 v2.3.0
+	gopkg.in/yaml.v2 v2.4.0
 )

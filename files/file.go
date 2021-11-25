@@ -26,20 +26,23 @@ import (
 // FileInfo describes a file.
 type FileInfo struct {
 	*Listing
-	Fs        afero.Fs          `json:"-"`
-	Path      string            `json:"path"`
-	Name      string            `json:"name"`
-	Size      int64             `json:"size"`
-	Extension string            `json:"extension"`
-	ModTime   time.Time         `json:"modified"`
-	Mode      os.FileMode       `json:"mode"`
-	IsDir     bool              `json:"isDir"`
-	IsSymlink bool              `json:"isSymlink"`
-	Type      string            `json:"type"`
-	Subtitles []string          `json:"subtitles,omitempty"`
-	Content   string            `json:"content,omitempty"`
-	Checksums map[string]string `json:"checksums,omitempty"`
-	Token     string            `json:"token,omitempty"`
+	Fs              afero.Fs          `json:"-"`
+	Path            string            `json:"path"`
+	Name            string            `json:"name"`
+	Size            int64             `json:"size"`
+	Extension       string            `json:"extension"`
+	ModTime         time.Time         `json:"modified"`
+	Mode            os.FileMode       `json:"mode"`
+	IsDir           bool              `json:"isDir"`
+	IsSymlink       bool              `json:"isSymlink"`
+	Type            string            `json:"type"`
+	Subtitles       []string          `json:"subtitles,omitempty"`
+	Content         string            `json:"content,omitempty"`
+	Checksums       map[string]string `json:"checksums,omitempty"`
+	Token           string            `json:"token,omitempty"`
+	DiskUsedPercent string            `json:"diskUsedPercent"`
+	FreeDiskSpace   string            `json:"freeDiskSpace"`
+	TotalDiskSpace  string            `json:"totalDiskSpace"`
 }
 
 // FileOptions are the options when getting a file info.

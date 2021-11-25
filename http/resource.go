@@ -1,8 +1,10 @@
 package http
 
 import (
+	"code.cloudfoundry.org/bytefmt"
 	"context"
 	"fmt"
+	"github.com/filebrowser/filebrowser/v2/disk"
 	"io"
 	"net/http"
 	"net/url"
@@ -28,6 +30,12 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		Checker:    d,
 		Content:    true,
 	})
+
+	usage := disk.GetDiskUsage("/")
+	file.DiskUsedPercent = fmt.Sprintf("%.2f", usage.UsedPercent)
+	file.TotalDiskSpace = bytefmt.ByteSize(usage.Total)
+	file.FreeDiskSpace = bytefmt.ByteSize(usage.Free)
+
 	if err != nil {
 		return errToStatus(err), err
 	}
