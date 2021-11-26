@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --no-clean",
+    "build": "find ./dist -maxdepth 1 -mindepth 1 ! -name '.gitignore' -exec rm -r {} + && vue-cli-service build --no-clean",
     "lint": "npx vue-cli-service lint --no-fix",
     "fix": "npx vue-cli-service lint",
     "watch": "find ./dist -maxdepth 1 -mindepth 1 ! -name '.gitignore' -exec rm -r {} + && vue-cli-service build --watch --no-clean"
