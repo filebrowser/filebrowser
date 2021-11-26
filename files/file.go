@@ -43,6 +43,7 @@ type FileInfo struct {
 	DiskUsedPercent string            `json:"diskUsedPercent"`
 	FreeDiskSpace   string            `json:"freeDiskSpace"`
 	TotalDiskSpace  string            `json:"totalDiskSpace"`
+	UsedDiskSpace   string            `json:"usedDiskSpace"`
 }
 
 // FileOptions are the options when getting a file info.

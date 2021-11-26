@@ -44,7 +44,12 @@
           <span>{{ $t("sidebar.settings") }}</span>
         </button>
 
-        <div v-if="$router.currentRoute.path === '/files/'" style="padding: 1.3em">
+        <div
+          v-if="$router.currentRoute.path.includes('/files/')"
+          style="padding: 0.5em 1.3em 0 1.3em"
+        >
+          <progress-bar :val="req.diskUsedPercent" :size="large"></progress-bar>
+          <br />
           {{ req.freeDiskSpace }} free of {{ req.totalDiskSpace }}
         </div>
 
@@ -105,6 +110,7 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
+import ProgressBar from "vue-simple-progress";
 import * as auth from "@/utils/auth";
 import {
   version,
@@ -127,6 +133,9 @@ export default {
     disableExternal: () => disableExternal,
     noAuth: () => noAuth,
     authMethod: () => authMethod,
+  },
+  components: {
+    ProgressBar,
   },
   methods: {
     toRoot() {
