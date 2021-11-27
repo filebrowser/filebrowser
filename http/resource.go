@@ -32,7 +32,7 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		Content:    true,
 	})
 
-	usage := disk.GetDiskUsage("/")
+	usage := disk.GetDiskUsage(d.server.Root)
 	file.DiskUsedPercent = fmt.Sprintf("%.2f", usage.UsedPercent)
 	file.TotalDiskSpace = bytefmt.ByteSize(usage.Total)
 	file.FreeDiskSpace = bytefmt.ByteSize(usage.Free)
