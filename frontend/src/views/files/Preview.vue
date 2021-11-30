@@ -137,6 +137,8 @@
     >
       <i class="material-icons">chevron_right</i>
     </button>
+    <link rel="prefetch" :href="previousRaw">
+    <link rel="prefetch" :href="nextRaw">
   </div>
 </template>
 
@@ -146,7 +148,6 @@ import { files as api } from "@/api";
 import { baseURL, resizePreview } from "@/utils/constants";
 import url from "@/utils/url";
 import throttle from "lodash.throttle";
-
 import HeaderBar from "@/components/header/HeaderBar";
 import Action from "@/components/header/Action";
 import ExtendedImage from "@/components/files/ExtendedImage";
@@ -172,6 +173,8 @@ export default {
       navTimeout: null,
       hoverNav: false,
       autoPlay: false,
+      previousRaw: "",
+      nextRaw: "",
     };
   },
   computed: {
@@ -302,18 +305,29 @@ export default {
         for (let j = i - 1; j >= 0; j--) {
           if (mediaTypes.includes(this.listing[j].type)) {
             this.previousLink = this.listing[j].url;
+            this.previousRaw = this.prefetchUrl(this.listing[j]);
             break;
           }
         }
-
         for (let j = i + 1; j < this.listing.length; j++) {
           if (mediaTypes.includes(this.listing[j].type)) {
             this.nextLink = this.listing[j].url;
+            this.nextRaw = this.prefetchUrl(this.listing[j]);
             break;
           }
         }
 
         return;
+      }
+    },
+    prefetchUrl: function(item) {
+      const key = Date.parse(item.modified);
+      if (item.type === "image" && !this.fullSize) {
+        return `${baseURL}/api/preview/big${item.path}?k=${key}&inline=true`;
+      } else if (item.type === "image"){
+        return `${baseURL}/api/raw${item.path}?k=${key}&inline=true`;
+      } else{
+        return "";
       }
     },
     openMore() {
