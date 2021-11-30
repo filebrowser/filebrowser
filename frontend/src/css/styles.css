@@ -314,11 +314,11 @@ main .spinner .bounce2 {
 }
 
 #editor-container .breadcrumbs span {
-  font-size: 12px;
+  font-size: .75rem;
 }
 
 #editor-container .breadcrumbs i {
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 /* * * * * * * * * * * * * * * *
@@ -334,7 +334,7 @@ main .spinner .bounce2 {
   background: rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(0,0,0,0.1);
   box-shadow: 0 0 0 0;
-  font-size: 14px;
+  font-size: 1rem;
 }
 
 /* * * * * * * * * * * * * * * *
