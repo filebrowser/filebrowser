@@ -44,15 +44,6 @@
           <span>{{ $t("sidebar.settings") }}</span>
         </button>
 
-        <div
-          v-if="$router.currentRoute.path.includes('/files/')"
-          style="padding: 0.5em 1.3em 0 1.3em"
-        >
-          <progress-bar :val="req.diskUsedPercent" :size="large"></progress-bar>
-          <br />
-          {{ req.freeDiskSpace }} free of {{ req.totalDiskSpace }}
-        </div>
-
         <button
           v-if="authMethod == 'json'"
           @click="logout"
@@ -88,6 +79,16 @@
         <span>{{ $t("sidebar.signup") }}</span>
       </router-link>
     </template>
+
+    <div
+      class="credits"
+      v-if="$router.currentRoute.path.includes('/files/')"
+      style="width: 90%; margin: 0em 2.5em 3em 2.5em"
+    >
+      <progress-bar :val="req.diskUsedPercent" :size="large"></progress-bar>
+      <br />
+      {{ req.freeDiskSpace }} free of {{ req.totalDiskSpace }}
+    </div>
 
     <p class="credits">
       <span>

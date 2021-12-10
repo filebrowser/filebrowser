@@ -12,10 +12,9 @@ import (
 	"strings"
 
 	"code.cloudfoundry.org/bytefmt"
-	"github.com/filebrowser/filebrowser/v2/disk"
-
 	"github.com/spf13/afero"
 
+	"github.com/filebrowser/filebrowser/v2/disk"
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
@@ -32,7 +31,7 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		Content:    true,
 	})
 
-	usage := disk.GetDiskUsage(d.server.Root)
+	usage := disk.GetDiskUsage(filepath.Dir(d.user.FullPath(r.URL.Path)))
 	file.DiskUsedPercent = fmt.Sprintf("%.2f", usage.UsedPercent)
 	file.TotalDiskSpace = bytefmt.ByteSize(usage.Total)
 	file.FreeDiskSpace = bytefmt.ByteSize(usage.Free)
