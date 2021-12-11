@@ -9,7 +9,7 @@
 		"subtitle": true,
 		"playbackRate": true,
 		"smartRemove": true,
-		"bufferTime": 300,
+		"bufferTime": 500,
 		"rtmpBufferTime": 0,
 		"click": true,
 		"doubleClick": true,

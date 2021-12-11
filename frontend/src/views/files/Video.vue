@@ -15,11 +15,10 @@ export default {
       videoConfig: {
         container: "#file-video", //“#”代表容器的ID，“`.`”或“”代表容器的class
         variable: "player", // 播放函数名称，该属性必需设置，值等于下面的new ckplayer()的对象
-        video: encodeURIComponent(this.src), // 视频地址
+        video: this.src, // 视频地址
         mobileCkControls: true, // 移动端h5显示控制栏
         overspread: false, //是否让视频铺满播放器
         seek: 0, // 默认需要跳转的秒数
-        unescape: true, // 默认flashplayer里需要解码
       },
     };
   },
