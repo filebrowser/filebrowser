@@ -64,26 +64,31 @@
           :autoplay="autoPlay"
           @play="autoPlay = true"
         ></audio>
-        <video
+<!--        <video-->
+<!--          v-else-if="req.type == 'video'"-->
+<!--          ref="player"-->
+<!--          :src="raw"-->
+<!--          controls-->
+<!--          :autoplay="autoPlay"-->
+<!--          @play="autoPlay = true"-->
+<!--        >-->
+<!--          <track-->
+<!--            kind="captions"-->
+<!--            v-for="(sub, index) in subtitles"-->
+<!--            :key="index"-->
+<!--            :src="sub"-->
+<!--            :label="'Subtitle ' + index"-->
+<!--            :default="index === 0"-->
+<!--          />-->
+<!--          Sorry, your browser doesn't support embedded videos, but don't worry,-->
+<!--          you can <a :href="downloadUrl">download it</a>-->
+<!--          and watch it with your favorite video player!-->
+<!--        </video>-->
+        <Video
           v-else-if="req.type == 'video'"
           ref="player"
           :src="raw"
-          controls
-          :autoplay="autoPlay"
-          @play="autoPlay = true"
-        >
-          <track
-            kind="captions"
-            v-for="(sub, index) in subtitles"
-            :key="index"
-            :src="sub"
-            :label="'Subtitle ' + index"
-            :default="index === 0"
-          />
-          Sorry, your browser doesn't support embedded videos, but don't worry,
-          you can <a :href="downloadUrl">download it</a>
-          and watch it with your favorite video player!
-        </video>
+        />
         <object
           v-else-if="req.extension.toLowerCase() == '.pdf'"
           class="pdf"
@@ -151,6 +156,7 @@ import throttle from "lodash.throttle";
 import HeaderBar from "@/components/header/HeaderBar";
 import Action from "@/components/header/Action";
 import ExtendedImage from "@/components/files/ExtendedImage";
+import Video from "./Video";
 
 const mediaTypes = ["image", "video", "audio", "blob"];
 
@@ -160,6 +166,7 @@ export default {
     HeaderBar,
     Action,
     ExtendedImage,
+    Video,
   },
   data: function () {
     return {
@@ -254,13 +261,14 @@ export default {
       if (this.show !== null) {
         return;
       }
+      const isNotVideo = this.req.type !== "video";
 
       if (event.which === 13 || event.which === 39) {
         // right arrow
-        if (this.hasNext) this.next();
+        if (this.hasNext && isNotVideo) this.next();
       } else if (event.which === 37) {
         // left arrow
-        if (this.hasPrevious) this.prev();
+        if (this.hasPrevious && isNotVideo) this.prev();
       } else if (event.which === 27) {
         // esc
         this.close();

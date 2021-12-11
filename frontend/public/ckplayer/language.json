@@ -1,0 +1,42 @@
+{
+    "adCountdown": "[$Second]",
+    "skipDelay": "[$Second]",
+    "buttonOver": {
+      "play": "点击播放",
+      "pause": "暂停播放",
+      "mute": "静音",
+      "escMute": "恢复音量",
+      "full": "全屏",
+      "escFull": "退出全屏",
+      "previousPage": "上一集",
+      "nextPage": "下一集",
+      "definition": "选择清晰度",
+      "subtitles": "选择字幕",
+      "playbackrate": "倍速播放"
+    },
+    "volumeSliderOver": "音量：[$volume]%",
+    "buffer": "[$percentage]%",
+    "timeSliderOver": "[$timeh]:[$timei]:[$times]",
+    "liveAndVod": "[$timeh]:[$timei]:[$times]",
+    "vod":"[$timeh]:[$timei]:[$times] / [$durationh]:[$durationi]:[$durations]",
+    "live": "直播中 [$liveTimeY]-[$liveTimem]-[$liveTimed] [$liveTimeh]:[$liveTimei]:[$liveTimes]",
+    "m3u8Definition": {
+      "name": [
+        "流畅",
+        "低清",
+        "标清",
+        "高清",
+        "超清",
+        "蓝光",
+        "未知"
+      ]
+    },
+    "error": {
+      "cannotFindUrl": "视频地址不存在",
+      "streamNotFound": "加载失败",
+      "formatError": "视频格式错误"
+    },
+    "definition": "自动",
+    "subtitle": "默认",
+    "playbackrate": "默认"
+}

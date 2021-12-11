@@ -7,7 +7,7 @@ build:
   env:
     - CGO_ENABLED=0
   ldflags:
-    - -s -w -X github.com/filebrowser/filebrowser/v2/version.Version={{ .Version }} -X github.com/filebrowser/filebrowser/v2/version.CommitSHA={{ .ShortCommit }}
+    - -s -w -X github.com/langren1353/filebrowser/v2/version.Version={{ .Version }} -X github.com/langren1353/filebrowser/v2/version.CommitSHA={{ .ShortCommit }}
   main: main.go
   binary: filebrowser
   goos:
@@ -53,8 +53,8 @@ dockers:
     goos: linux
     goarch: amd64
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-amd64"
-      - "filebrowser/filebrowser:v{{ .Major }}-amd64"
+      - "langren1353/filebrowser-ckplayer:{{ .Tag }}-amd64"
+      - "langren1353/filebrowser-ckplayer:v{{ .Major }}-amd64"
     extra_files:
       - docker/root
   -
@@ -71,8 +71,8 @@ dockers:
     goos: linux
     goarch: arm64
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-arm64"
-      - "filebrowser/filebrowser:v{{ .Major }}-arm64"
+      - "langren1353/filebrowser-ckplayer:{{ .Tag }}-arm64"
+      - "langren1353/filebrowser-ckplayer:v{{ .Major }}-arm64"
     extra_files:
       - docker/root
   -
@@ -90,8 +90,8 @@ dockers:
     goarch: arm
     goarm: '6'
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-armv6"
-      - "filebrowser/filebrowser:v{{ .Major }}-armv6"
+      - "langren1353/filebrowser-ckplayer:{{ .Tag }}-armv6"
+      - "langren1353/filebrowser-ckplayer:v{{ .Major }}-armv6"
     extra_files:
       - docker/root
   -
@@ -109,38 +109,38 @@ dockers:
     goarch: arm
     goarm: '7'
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-armv7"
-      - "filebrowser/filebrowser:v{{ .Major }}-armv7"
+      - "langren1353/filebrowser-ckplayer:{{ .Tag }}-armv7"
+      - "langren1353/filebrowser-ckplayer:v{{ .Major }}-armv7"
     extra_files:
       - docker/root
 docker_manifests:
-  - name_template: "filebrowser/filebrowser:latest"
+  - name_template: "langren1353/filebrowser-ckplayer:latest"
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-amd64"
-      - "filebrowser/filebrowser:{{ .Tag }}-arm64"
-      - "filebrowser/filebrowser:{{ .Tag }}-armv6"
-      - "filebrowser/filebrowser:{{ .Tag }}-armv7"
-  - name_template: "filebrowser/filebrowser:{{ .Tag }}"
+      - "langren1353/filebrowser-ckplayer:{{ .Tag }}-amd64"
+      - "langren1353/filebrowser-ckplayer:{{ .Tag }}-arm64"
+      - "langren1353/filebrowser-ckplayer:{{ .Tag }}-armv6"
+      - "langren1353/filebrowser-ckplayer:{{ .Tag }}-armv7"
+  - name_template: "langren1353/filebrowser-ckplayer:{{ .Tag }}"
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-amd64"
-      - "filebrowser/filebrowser:{{ .Tag }}-arm64"
-      - "filebrowser/filebrowser:{{ .Tag }}-armv6"
-      - "filebrowser/filebrowser:{{ .Tag }}-armv7"
-  - name_template: "filebrowser/filebrowser:v{{ .Major }}"
+      - "langren1353/filebrowser-ckplayer:{{ .Tag }}-amd64"
+      - "langren1353/filebrowser-ckplayer:{{ .Tag }}-arm64"
+      - "langren1353/filebrowser-ckplayer:{{ .Tag }}-armv6"
+      - "langren1353/filebrowser-ckplayer:{{ .Tag }}-armv7"
+  - name_template: "langren1353/filebrowser-ckplayer:v{{ .Major }}"
     image_templates:
-      - "filebrowser/filebrowser:v{{ .Major }}-amd64"
-      - "filebrowser/filebrowser:v{{ .Major }}-arm64"
-      - "filebrowser/filebrowser:v{{ .Major }}-armv6"
-      - "filebrowser/filebrowser:v{{ .Major }}-armv7"
-brews:
-  - name: filebrowser
-    tap:
-      owner: filebrowser
-      name: homebrew-tap
-    folder: Formula
-    homepage: https://filebrowser.org
-    commit_author:
-      name: FileBrowser Robot
-      email: robot@filebrowser.org
-    description: File Browser is a create-your-own-cloud-kind of software where you can install it on a server, direct it to a path and then access your files through a nice web interface
-    license: "MIT"
+      - "langren1353/filebrowser-ckplayer:v{{ .Major }}-amd64"
+      - "langren1353/filebrowser-ckplayer:v{{ .Major }}-arm64"
+      - "langren1353/filebrowser-ckplayer:v{{ .Major }}-armv6"
+      - "langren1353/filebrowser-ckplayer:v{{ .Major }}-armv7"
+#brews:
+#  - name: filebrowser-ckplayer
+#    tap:
+#      owner: langren1353
+#      name: homebrew-tap
+#    folder: Formula
+#    homepage: https://filebrowser.org
+#    commit_author:
+#      name: FileBrowser Robot
+#      email: robot@filebrowser.org
+#    description: File Browser is a create-your-own-cloud-kind of software where you can install it on a server, direct it to a path and then access your files through a nice web interface
+#    license: "MIT"
