@@ -56,9 +56,9 @@ dockers:
       - "filebrowser/filebrowser:{{ .Tag }}-amd64"
       - "filebrowser/filebrowser:v{{ .Major }}-amd64"
     extra_files:
-      - .docker.json
+      - docker/root
   -
-    dockerfile: Dockerfile
+    dockerfile: Dockerfile.aarch64
     use_buildx: true
     build_flag_templates:
       - "--pull"
@@ -74,9 +74,9 @@ dockers:
       - "filebrowser/filebrowser:{{ .Tag }}-arm64"
       - "filebrowser/filebrowser:v{{ .Major }}-arm64"
     extra_files:
-      - .docker.json
+      - docker/root
   -
-    dockerfile: Dockerfile
+    dockerfile: Dockerfile.armhf
     use_buildx: true
     build_flag_templates:
       - "--pull"
@@ -93,9 +93,9 @@ dockers:
       - "filebrowser/filebrowser:{{ .Tag }}-armv6"
       - "filebrowser/filebrowser:v{{ .Major }}-armv6"
     extra_files:
-      - .docker.json
+      - docker/root
   -
-    dockerfile: Dockerfile
+    dockerfile: Dockerfile.armhf
     use_buildx: true
     build_flag_templates:
       - "--pull"
@@ -112,7 +112,7 @@ dockers:
       - "filebrowser/filebrowser:{{ .Tag }}-armv7"
       - "filebrowser/filebrowser:v{{ .Major }}-armv7"
     extra_files:
-      - .docker.json
+      - docker/root
 docker_manifests:
   - name_template: "filebrowser/filebrowser:latest"
     image_templates:
