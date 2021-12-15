@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.19.0](https://github.com/filebrowser/filebrowser/compare/v2.18.0...v2.19.0) (2021-11-24)
+
+
+### Features
+
+* prefetch previous and next images in preview. ([#1627](https://github.com/filebrowser/filebrowser/issues/1627)) ([7401d16](https://github.com/filebrowser/filebrowser/commit/7401d16e457bb232fd7dd7ef427e8960d465705c))
+
+
+### Bug Fixes
+
+* empty file listing on share ([e082397](https://github.com/filebrowser/filebrowser/commit/e08239781f61e7bb25d9b8c5c6cce90f34621a76))
+* relative font sizes ([c29698d](https://github.com/filebrowser/filebrowser/commit/c29698dffac769077ab7c7869569a902979ee3d7))
+
 ## [2.18.0](https://github.com/filebrowser/filebrowser/compare/v2.17.2...v2.18.0) (2021-10-31)
 
 
