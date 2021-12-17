@@ -7,9 +7,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-
 	"github.com/gorilla/mux"
-
+	"path/filepath"
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/img"
 )
@@ -153,6 +152,6 @@ func createPreview(imgSvc ImgService, d *data, fileCache FileCache,
 }
 
 func previewCacheKey(fPath string, fTime int64, previewSize PreviewSize, d *data) string {
-        fPath = d.user.Scope + fPath
+        fPath = filepath.Clean("/"+ d.user.Scope + fPath)
 	return fmt.Sprintf("%x%x%x", fPath, fTime, previewSize)
 }
