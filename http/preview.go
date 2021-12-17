@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
 	"github.com/gorilla/mux"
 	"path/filepath"
 	"github.com/filebrowser/filebrowser/v2/files"
