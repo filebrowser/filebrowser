@@ -14,6 +14,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -271,7 +272,23 @@ func (i *FileInfo) detectSubtitles() {
 	i.Subtitles = []string{}
 	ext := filepath.Ext(i.Path)
 
-	// TODO: detect multiple languages. Base.Lang.vtt
+	// detect multiple languages. Base.Lang.vtt
+	// TODO: give subtitles descriptive names (lang) and track attributes
+	afs := &afero.Afero{Fs: i.Fs}
+	parentDir := strings.TrimRight(i.Path, i.Name)
+	dir, err := afs.ReadDir(parentDir)
+	if err == nil {
+		base := strings.TrimSuffix(i.Name, ext)
+		r := regexp.MustCompile(base + `\.(.*\.)?vtt`)
+		for _, f := range dir {
+			if !f.IsDir() {
+				if matches := r.FindStringSubmatch(f.Name()); len(matches) == 2 {
+					i.Subtitles = append(i.Subtitles, path.Join(parentDir, matches[0]))
+				}
+			}
+		}
+		return
+	}
 
 	fPath := strings.TrimSuffix(i.Path, ext) + ".vtt"
 	if _, err := i.Fs.Stat(fPath); err == nil {
