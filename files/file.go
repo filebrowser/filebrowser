@@ -273,9 +273,8 @@ func (i *FileInfo) detectSubtitles() {
 
 	// detect multiple languages. Base*.vtt
 	// TODO: give subtitles descriptive names (lang) and track attributes
-	afs := &afero.Afero{Fs: i.Fs}
 	parentDir := strings.TrimRight(i.Path, i.Name)
-	dir, err := afs.ReadDir(parentDir)
+	dir, err := afero.ReadDir(i.Fs, parentDir)
 	if err == nil {
 		base := strings.TrimSuffix(i.Name, ext)
 		for _, f := range dir {
