@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.20.0](https://github.com/filebrowser/filebrowser/compare/v2.19.0...v2.20.0) (2021-12-20)
+
+
+### Features
+
+* detect multiple subtitle languages ([#1723](https://github.com/filebrowser/filebrowser/issues/1723)) ([c2e03bb](https://github.com/filebrowser/filebrowser/commit/c2e03bbfab97fc6716bcdd59158e9d5129bf0ea7))
+* use linuxserver based docker image ([b8f35ce](https://github.com/filebrowser/filebrowser/commit/b8f35ce9322c2b0dbf954cfd3ff584bc9f742fdd))
+
+
+### Bug Fixes
+
+* set correct default database path in the config ([988d3e5](https://github.com/filebrowser/filebrowser/commit/988d3e5bdd224509ddc2f08444560e3087e9c67d))
+* upgrade vulnerable versions of the library ([6eb3ab0](https://github.com/filebrowser/filebrowser/commit/6eb3ab063509a015ad630ab704ae3791461d0982))
+
+
+### Build
+
+* refactor makefile ([f81857a](https://github.com/filebrowser/filebrowser/commit/f81857acce25936a700945db5ef4af545eaeb1cf))
+* remove deprecated goreleaser use_buildx param ([4d1b9dd](https://github.com/filebrowser/filebrowser/commit/4d1b9dd2112002a93bb26cece07dcfd81c31dc2c))
+
 ## [2.19.0](https://github.com/filebrowser/filebrowser/compare/v2.18.0...v2.19.0) (2021-11-24)
 
 
