@@ -34,6 +34,11 @@ export default {
     window.player = this.instance;
     this.$nextTick(() => this.loadHandler());
   },
+  beforeDestroy() {
+    this.instance.videoPause();
+    this.instance = null;
+    window.player = null;
+  },
   methods: {
     loadProcess() {
       this.videoConfig.seek = localStorage.getItem(this.localKey) || 0;
