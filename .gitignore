@@ -1,5 +1,4 @@
 *.db
-*.lock
 *.bak
 _old
 rice-box.go
