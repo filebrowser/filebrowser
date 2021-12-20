@@ -64,14 +64,15 @@ func handle(fn handleFunc, prefix string, store *storage.Storage, server *settin
 			server:   server,
 		})
 
-		if status != 0 {
-			txt := http.StatusText(status)
-			http.Error(w, strconv.Itoa(status)+" "+txt, status)
-		}
-
 		if status >= 400 || err != nil {
 			clientIP := realip.FromRequest(r)
 			log.Printf("%s: %v %s %v", r.URL.Path, status, clientIP, err)
+		}
+
+		if status != 0 {
+			txt := http.StatusText(status)
+			http.Error(w, strconv.Itoa(status)+" "+txt, status)
+			return
 		}
 	})
 

@@ -137,8 +137,8 @@
     >
       <i class="material-icons">chevron_right</i>
     </button>
-    <link rel="prefetch" :href="previousRaw">
-    <link rel="prefetch" :href="nextRaw">
+    <link rel="prefetch" :href="previousRaw" />
+    <link rel="prefetch" :href="nextRaw" />
   </div>
 </template>
 
@@ -320,13 +320,13 @@ export default {
         return;
       }
     },
-    prefetchUrl: function(item) {
+    prefetchUrl: function (item) {
       const key = Date.parse(item.modified);
       if (item.type === "image" && !this.fullSize) {
         return `${baseURL}/api/preview/big${item.path}?k=${key}&inline=true`;
-      } else if (item.type === "image"){
+      } else if (item.type === "image") {
         return `${baseURL}/api/raw${item.path}?k=${key}&inline=true`;
-      } else{
+      } else {
         return "";
       }
     },
