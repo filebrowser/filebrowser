@@ -41,7 +41,7 @@ archives:
 dockers:
   -
     dockerfile: Dockerfile
-    use_buildx: true
+    use: buildx
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
@@ -59,7 +59,7 @@ dockers:
       - docker/root
   -
     dockerfile: Dockerfile.aarch64
-    use_buildx: true
+    use: buildx
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
@@ -77,7 +77,7 @@ dockers:
       - docker/root
   -
     dockerfile: Dockerfile.armhf
-    use_buildx: true
+    use: buildx
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
@@ -96,7 +96,7 @@ dockers:
       - docker/root
   -
     dockerfile: Dockerfile.armhf
-    use_buildx: true
+    use: buildx
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
