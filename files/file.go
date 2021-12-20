@@ -279,7 +279,7 @@ func (i *FileInfo) detectSubtitles() {
 	dir, err := afs.ReadDir(parentDir)
 	if err == nil {
 		base := strings.TrimSuffix(i.Name, ext)
-		r := regexp.MustCompile(base + `\.(.*\.)?vtt`)
+		r := regexp.MustCompile("^" + regexp.QuoteMeta(base) + `\.(.*\.)?vtt$`)
 		for _, f := range dir {
 			if !f.IsDir() {
 				if matches := r.FindStringSubmatch(f.Name()); len(matches) == 2 {
