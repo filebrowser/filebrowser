@@ -9,25 +9,45 @@ on:
   pull_request:
 
 jobs:
-  lint:
+  lint-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: make lint-frontend
+  lint-backend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
         with:
-          go-version: 1.16
+          go-version: 1.17
+      - run: make lint-backend
+  lint-commints:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
       - run: npm i -g commitlint
-      - run: make lint
+      - run: make lint-commits
+  lint:
+    runs-on: ubuntu-latest
+    needs: [lint-frontend, lint-backend, lint-commints]
+    steps:
+      - run: echo "passed"
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
         with:
-          go-version: 1.16
+          go-version: 1.17
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
@@ -42,7 +62,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-go@v2
         with:
-          go-version: 1.16
+          go-version: 1.17
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
