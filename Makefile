@@ -35,7 +35,7 @@ GOLANGCI_LINT = $(BIN)/golangci-lint
 $(BIN)/golangci-lint: PACKAGE=github.com/golangci/golangci-lint/cmd/golangci-lint@v1.41.1
 
 GOIMPORTS = $(BIN)/goimports
-$(BIN)/goimports: PACKAGE=golang.org/x/tools/cmd/goimports@v0.1.5
+$(BIN)/goimports: PACKAGE=golang.org/x/tools/cmd/goimports@v0.1.8
 
 ## build: Build
 .PHONY: build
@@ -76,12 +76,16 @@ lint-frontend: | ; $(info $(M) running frontend linters…)
 ## lint-backend: Lint backend
 .PHONY: lint-backend
 lint-backend: | $(GOLANGCI_LINT) ; $(info $(M) running backend linters…)
-	$Q $(GOLANGCI_LINT) run
+	$Q $(GOLANGCI_LINT) run -v
 
 ## lint-commits: Lint commits
 .PHONY: lint-commits
 lint-commits: | ; $(info $(M) running commitlint…)
 	$Q ./scripts/commitlint.sh
+
+## fmt: Format source files
+fmt: $(GOIMPORTS)
+	$Q $(GOIMPORTS) -local $(MODULE) -w $$(find . -type f -name '*.go' -not -path "./vendor/*")
 
 ## bump-version: Bump app version
 .PHONY: bump-version
