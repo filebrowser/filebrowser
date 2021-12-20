@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -50,8 +51,8 @@ func (s *Settings) MakeUserDir(username, userScope, serverRoot string) (string, 
 	}
 
 	// Create default user dir
-	userHomeBase := s.Defaults.Scope + string(os.PathSeparator) + "users"
-	userHome := userHomeBase + string(os.PathSeparator) + username
+	userHomeBase := filepath.Join(s.Defaults.Scope, "users")
+	userHome := filepath.Join(userHomeBase, username)
 	err = fs.MkdirAll(userHome, os.ModePerm)
 	if err != nil {
 		log.Printf("create user: failed to mkdir user home dir: [%s]", userHome)

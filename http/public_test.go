@@ -110,7 +110,7 @@ func TestPublicShareHandlerAuthentication(t *testing.T) {
 
 func newHTTPRequest(t *testing.T, requestModifiers ...func(*http.Request)) *http.Request {
 	t.Helper()
-	r, err := http.NewRequest(http.MethodGet, "h", nil)
+	r, err := http.NewRequest(http.MethodGet, "h", http.NoBody)
 	if err != nil {
 		t.Fatalf("failed to construct request: %v", err)
 	}
