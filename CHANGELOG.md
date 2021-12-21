@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.20.1](https://github.com/filebrowser/filebrowser/compare/v2.20.0...v2.20.1) (2021-12-21)
+
+
+### Build
+
+* revert to using the default alpine based docker image ([46d8046](https://github.com/filebrowser/filebrowser/commit/46d80464d2a67927b06a11b83fb137ad364a90ed))
+
 ## [2.20.0](https://github.com/filebrowser/filebrowser/compare/v2.19.0...v2.20.0) (2021-12-20)
 
 
