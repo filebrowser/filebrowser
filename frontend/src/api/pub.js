@@ -3,9 +3,11 @@ import { baseURL } from "@/utils/constants";
 
 export async function fetch(url, password = "") {
   url = removePrefix(url);
+  let deiso = new TextDecoder("iso88591");
+  let enutf8 = new TextEncoder();
 
   const res = await fetchURL(`/api/public/share${url}`, {
-    headers: { "X-SHARE-PASSWORD": unescape(encodeURIComponent(password)) },
+    headers: { "X-SHARE-PASSWORD": deiso.decode(enutf8.encode(password)) },
   });
 
   if (res.status === 200) {
