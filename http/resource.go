@@ -72,7 +72,7 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 		}
 
 		// delete thumbnails
-		err = delThumbs(r.Context(), d, fileCache, file)
+		err = delThumbs(r.Context(), fileCache, file)
 		if err != nil {
 			return errToStatus(err), err
 		}
@@ -119,7 +119,7 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 				return http.StatusForbidden, nil
 			}
 
-			err = delThumbs(r.Context(), d, fileCache, file)
+			err = delThumbs(r.Context(), fileCache, file)
 			if err != nil {
 				return errToStatus(err), err
 			}
@@ -280,10 +280,14 @@ func writeFile(fs afero.Fs, dst string, in io.Reader) (os.FileInfo, error) {
 	return info, nil
 }
 
-func delThumbs(ctx context.Context, d *data, fileCache FileCache, file *files.FileInfo) error {
+func delThumbs(ctx context.Context, fileCache FileCache, file *files.FileInfo) error {
 	for _, previewSizeName := range PreviewSizeNames() {
 		size, _ := ParsePreviewSize(previewSizeName)
-		if err := fileCache.Delete(ctx, previewCacheKey(file.Path, file.ModTime.Unix(), size, d)); err != nil {
+		cacheKey, err := previewCacheKey(file, size)
+		if err != nil {
+			return err
+		}		
+		if err := fileCache.Delete(ctx, cacheKey); err != nil {
 			return err
 		}
 	}
@@ -320,7 +324,7 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		}
 
 		// delete thumbnails
-		err = delThumbs(ctx, d, fileCache, file)
+		err = delThumbs(ctx, fileCache, file)
 		if err != nil {
 			return err
 		}
