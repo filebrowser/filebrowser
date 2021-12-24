@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"sync"
@@ -55,7 +55,7 @@ func (f *FileCache) Load(ctx context.Context, key string) (value []byte, exist b
 	}
 	defer r.Close()
 
-	value, err = ioutil.ReadAll(r)
+	value, err = io.ReadAll(r)
 	if err != nil {
 		return nil, false, err
 	}
