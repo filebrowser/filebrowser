@@ -17,7 +17,7 @@
           </p>
           <p>
             <input type="checkbox" v-model="dateFormat" />
-            {{ $t("settings.setDateFormat") }}            
+            {{ $t("settings.setDateFormat") }}
           </p>
           <h3>{{ $t("settings.language") }}</h3>
           <languages
@@ -143,7 +143,12 @@ export default {
           singleClick: this.singleClick,
           dateFormat: this.dateFormat,
         };
-        await api.update(data, ["locale", "hideDotfiles", "singleClick", "dateFormat"]);
+        await api.update(data, [
+          "locale",
+          "hideDotfiles",
+          "singleClick",
+          "dateFormat",
+        ]);
         this.updateUser(data);
         this.$showSuccess(this.$t("settings.settingsUpdated"));
       } catch (e) {
