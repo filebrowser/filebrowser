@@ -24,7 +24,13 @@
         v-model="passwordConfirm"
         :placeholder="$t('login.passwordConfirm')"
       />
-
+      <input
+          class="input input--block"
+          v-if="createMode && useInvitationCode"
+          type="text"
+          v-model="invitationCode"
+          :placeholder="$t('login.invitationCode')"
+      />
       <div v-if="recaptcha" id="recaptcha"></div>
       <input
         class="button button--block"
@@ -49,12 +55,14 @@ import {
   recaptcha,
   recaptchaKey,
   signup,
+  useInvitationCode,
 } from "@/utils/constants";
 
 export default {
   name: "login",
   computed: {
     signup: () => signup,
+    useInvitationCode: () => useInvitationCode,
     name: () => name,
     logoURL: () => logoURL,
   },
@@ -66,6 +74,7 @@ export default {
       password: "",
       recaptcha: recaptcha,
       passwordConfirm: "",
+      invitationCode: null,
     };
   },
   mounted() {
@@ -109,7 +118,7 @@ export default {
 
       try {
         if (this.createMode) {
-          await auth.signup(this.username, this.password);
+          await auth.signup(this.username, this.password, this.invitationCode);
         }
 
         await auth.login(this.username, this.password, captcha);
