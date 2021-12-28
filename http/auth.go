@@ -116,8 +116,8 @@ var loginHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, e
 }
 
 type signupBody struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username       string `json:"username"`
+	Password       string `json:"password"`
 	InvitationCode string `json:"invitationCode"`
 }
 
