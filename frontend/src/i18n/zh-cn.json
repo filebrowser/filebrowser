@@ -110,11 +110,12 @@
     "password": "密码",
     "passwordConfirm": "确认密码",
     "passwordsDontMatch": "密码不一致",
+    "invitationCode": "邀请码",
     "signup": "注册",
     "submit": "登录",
     "username": "用户名",
     "usernameTaken": "用户名已经被使用",
-    "wrongCredentials": "用户名或密码错误"
+    "wrongCredentials": "输入信息错误"
   },
   "permanent": "永久",
   "prompts": {
@@ -180,6 +181,7 @@
     "commandRunnerHelp": "你可以在此设置在下列事件中执行的命令。每行必须写一条命令。可以在命令中使用环境变量 {0} 和 {1}，使 {0} 与 {1} 相关联。关于此功能和可用环境变量的更多信息，请阅读 {2}。",
     "commandsUpdated": "命令已更新！",
     "createUserDir": "在添加新用户的同时自动创建用户的个人目录",
+    "useInvitationCode": "使用邀请码",
     "customStylesheet": "自定义样式表（CSS）",
     "defaultUserDescription": "这些是新用户的默认设置。",
     "disableExternalLinks": "禁止外部链接（帮助文档除外）",
