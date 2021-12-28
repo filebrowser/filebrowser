@@ -13,6 +13,21 @@
             {{ $t("settings.allowSignup") }}
           </p>
 
+          <p style="marginLeft:1em">
+            <input
+              :disabled = "!settings.signup" 
+              type="checkbox" 
+              v-model="settings.useInvitationCode" 
+            />
+            {{ $t("settings.useInvitationCode") }}
+            <input
+              :disabled = "!settings.useInvitationCode"               
+              class="input input--block"
+              type="text"
+              v-model="settings.invitationCode"
+            />
+          </p>
+
           <p>
             <input type="checkbox" v-model="settings.createUserDir" />
             {{ $t("settings.createUserDir") }}
@@ -220,6 +235,18 @@ export default {
       this.error = e;
     } finally {
       this.setLoading(false);
+    }
+  },
+  watch: {
+    "settings.signup": function () {
+      if (!this.settings.signup) {
+        this.settings.useInvitationCode = false; 
+      }
+    },
+    "settings.useInvitationCode": function () {              
+      if (!this.settings.useInvitationCode) {
+        this.settings.invitationCode = null; 
+      }
     }
   },
   methods: {
