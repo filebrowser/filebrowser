@@ -205,6 +205,13 @@ main .spinner .bounce2 {
   height: 100%;
 }
 
+@media (max-width: 738px) {
+  #previewer .preview video {
+    height: calc(100% - 4em);
+    top: 0;
+  }
+}  
+
 #previewer .preview .info {
   position: absolute;
   top: 50%;
