@@ -118,6 +118,7 @@ var loginHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, e
 type signupBody struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	InvitationCode string `json:"invitationCode"`
 }
 
 var signupHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
@@ -139,6 +140,12 @@ var signupHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, 
 		return http.StatusBadRequest, nil
 	}
 
+	if d.UseInvitationCode {
+		if d.InvitationCode!=info.InvitationCode{
+			return http.StatusUnauthorized, nil
+		}
+	}
+  
 	user := &users.User{
 		Username: info.Username,
 	}
