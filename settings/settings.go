@@ -15,7 +15,7 @@ type Settings struct {
 	Key           		[]byte              `json:"key"`
 	Signup        		bool                `json:"signup"`
 	CreateUserDir 		bool                `json:"createUserDir"`
-	UseInvitationCode bool                `json:"useInvitationCode"`
+	UseInvitationCode       bool                `json:"useInvitationCode"`
 	InvitationCode 		string              `json:"invitationCode"`
 	Defaults      		UserDefaults        `json:"defaults"`
 	AuthMethod    		AuthMethod          `json:"authMethod"`
