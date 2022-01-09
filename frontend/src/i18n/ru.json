@@ -8,6 +8,8 @@
     "create": "Создать",
     "delete": "Удалить",
     "download": "Скачать",
+    "file": "Файл",
+    "folder": "Папка",
     "hideDotfiles": "Скрыть точечные файлы",
     "info": "Инфо",
     "more": "Еще",
@@ -29,10 +31,12 @@
     "selectMultiple": "Мультивыбор",
     "share": "Поделиться",
     "shell": "Командная строка",
+    "submit": "Отправить",
     "switchView": "Вид",
     "toggleSidebar": "Боковая панель",
     "update": "Обновить",
-    "upload": "Загрузить"
+    "upload": "Загрузить",
+    "openFile": "Открыть файл"
   },
   "download": {
     "downloadFile": "Скачать файл",
@@ -42,7 +46,8 @@
   "errors": {
     "forbidden": "У вас нет прав доступа к этому.",
     "internal": "Что-то пошло не так.",
-    "notFound": "Неправильная ссылка."
+    "notFound": "Неправильная ссылка.",
+    "connection": "Нет подключения к серверу."
   },
   "files": {
     "body": "Тело",
@@ -60,7 +65,8 @@
     "size": "Размер",
     "sortByLastModified": "Сортировка по дате изменения",
     "sortByName": "Сортировка по имени",
-    "sortBySize": "Сортировка по размеру"
+    "sortBySize": "Сортировка по размеру",
+    "noPreview": "Предварительный просмотр для этого файла недоступен."
   },
   "help": {
     "click": "выбрать файл или каталог",
@@ -82,18 +88,20 @@
     "en": "English",
     "es": "Español",
     "fr": "Français",
-    "is": "",
+    "is": "Icelandic",
     "it": "Italiano",
     "ja": "日本語",
     "ko": "한국어",
-    "nlBE": "",
+    "nlBE": "Dutch (Belgium)",
     "pl": "Polski",
     "pt": "Português",
     "ptBR": "Português (Brasil)",
-    "ro": "",
+    "ro": "Romanian",
     "ru": "Русский",
-    "svSE": "",
+    "sk": "Slovenčina",
+    "svSE": "Swedish (Sweden)",
     "tr" : "Türkçe",
+    "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
   },
@@ -116,10 +124,11 @@
     "currentlyNavigating": "Текущий каталог:",
     "deleteMessageMultiple": "Удалить эти файлы ({count})?",
     "deleteMessageSingle": "Удалить этот файл/каталог?",
+    "deleteMessageShare": "Удалить этот общий файл/каталог ({path})?",
     "deleteTitle": "Удалить файлы",
     "displayName": "Отображаемое имя:",
     "download": "Скачать файлы",
-    "downloadMessage": "Выберите формат а котором хотите скачать.",
+    "downloadMessage": "Выберите формат в котором хотите скачать.",
     "error": "Ошибка",
     "fileInfo": "Информация о файле",
     "filesSelected": "Файлов выбрано: {count}.",
@@ -142,7 +151,8 @@
     "show": "Показать",
     "size": "Размер",
     "upload": "Загрузить",
-    "uploadMessage": "Выберите вариант для загрузки."
+    "uploadMessage": "Выберите вариант для загрузки.",
+    "optionalPassword": "Необязательный пароль"
   },
   "search": {
     "images": "Изображения",
@@ -183,7 +193,7 @@
     "hideDotfiles": "Скрыть точечные файлы",
     "insertPath": "Вставьте путь",
     "insertRegex": "Вставить регулярное выражение",
-    "instanceName": "Instance name",
+    "instanceName": "Текущее название программы",
     "language": "Язык",
     "lockPassword": "Запретить пользователю менять пароль",
     "newPassword": "Новый пароль",
@@ -209,9 +219,11 @@
     "rules": "Права",
     "rulesHelp": "Здесь вы можете определить набор разрешающих и запрещающих правил для этого конкретного пользователь. Блокированные файлы не будут отображаться в списках, и не будут доступны для пользователя. Есть поддержка регулярных выражений и относительных путей.\n",
     "scope": "Корень",
+    "setDateFormat": "Установить точный формат даты",
     "settingsUpdated": "Настройки применены!",
     "shareDuration": "Время расшаренной ссылки",
     "shareManagement": "Управление расшаренными ссылками",
+    "shareDeleted": "Расшаренная ссылка удалена!",
     "singleClick": "Открытие файлов и каталогов одним кликом",
     "themes": {
       "dark": "Темная",
