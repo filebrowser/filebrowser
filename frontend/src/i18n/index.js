@@ -67,6 +67,9 @@ export function detectLocale() {
     case /^zh.*/i.test(locale):
       locale = "zh_CN";
       break;
+    case /^ua.*/i.test(locale):
+      locale = "ua";
+      break;
     default:
       locale = "en_GB";
   }
