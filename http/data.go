@@ -65,17 +65,17 @@ func handle(fn handleFunc, prefix string, store *storage.Storage, server *settin
 			server:   server,
 		})
 
+		if status >= 400 || err != nil {
+			clientIP := realip.FromRequest(r)
+			log.Printf("%s: %v %s %v", r.URL.Path, status, clientIP, err)
+		}
+
 		if status != 0 {
 			txt := strconv.Itoa(status) + " " + http.StatusText(status)
 			if httpErr, ok := err.(*errors.HTTPError); ok {
 				txt += " [" + httpErr.Type + "]"
 			}
 			http.Error(w, txt, status)
-		}
-
-		if status >= 400 || err != nil {
-			clientIP := realip.FromRequest(r)
-			log.Printf("%s: %v %s %v", r.URL.Path, status, clientIP, err)
 		}
 	})
 
