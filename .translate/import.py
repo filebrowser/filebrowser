@@ -41,10 +41,12 @@ config = configparser.ConfigParser()
 config.read('config')
 main = config['main']
 
-key_query = '?key=' + main['key']
-headers = {'accept': 'application/json'}
+headers = {
+    'accept': 'application/json',
+    'x-api-key': main['key'],
+}
 
-response = requests.get(main['host'] + '/api/v2/brands/' + main['brand'] + '/languages' + key_query, headers=headers)
+response = requests.get(main['host'] + '/api/v2/brands/' + main['brand'] + '/languages', headers=headers)
 if response.status_code != 200:
     raise Exception('Could not fetch brand languages')
 
@@ -52,7 +54,7 @@ languages = json.loads(response.text)
 
 for language in languages:
     print(language['code'])
-    response = requests.get(main['host'] + '/api/v3/brands/' + main['brand'] + '/languages/' + language['code'] + '/dictionary' + key_query + '&fallback_locale=en_GB')
+    response = requests.get(main['host'] + '/api/v3/brands/' + main['brand'] + '/languages/' + language['code'] + '/dictionary?fallback_locale=en_GB', headers=headers)
     if response.status_code != 200:
         print('could not fetch translations for messages: %s' % language['code'])
         continue

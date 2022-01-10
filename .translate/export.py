@@ -21,8 +21,12 @@ def flatten(data):
 
     return flattened
 
-key_query = '?key=' + main['key']
-response = requests.get(main['host'] + '/api/v3/brands/' + main['brand'] + '/languages/' + source_locale + '/dictionary' + key_query)
+headers = {
+    'accept': 'application/json',
+    'x-api-key': main['key'],
+}
+
+response = requests.get(main['host'] + '/api/v3/brands/' + main['brand'] + '/languages/' + source_locale + '/dictionary', headers=headers)
 if response.status_code != 200:
     print('could not fetch existing messages')
     exit()
@@ -35,8 +39,7 @@ f.close()
 
 flattened = flatten(data)
 
-url = main['host'] + '/api/v2/messages' + key_query
-headers = {'accept': 'application/json'}
+url = main['host'] + '/api/v2/messages'
 
 for key, value in flattened.items():
     if key in messages:

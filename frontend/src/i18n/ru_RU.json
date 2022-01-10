@@ -73,11 +73,11 @@
     "metadata": "Метаданные",
     "multipleSelectionEnabled": "Мультивыбор включен",
     "name": "Имя",
+    "noPreview": "Preview is not available for this file.",
     "size": "Размер",
     "sortByLastModified": "Сортировка по дате изменения",
     "sortByName": "Сортировка по имени",
-    "sortBySize": "Сортировка по размеру",
-    "noPreview": "Предварительный просмотр для этого файла недоступен."
+    "sortBySize": "Сортировка по размеру"
   },
   "help": {
     "click": "выбрать файл или каталог",
