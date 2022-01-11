@@ -72,6 +72,7 @@ export default {
       if (this.type === "image") return "insert_photo";
       if (this.type === "audio") return "volume_up";
       if (this.type === "video") return "movie";
+      if (this.type === "pdf") return "picture_as_pdf";
       return "insert_drive_file";
     },
     isDraggable() {
