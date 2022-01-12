@@ -141,7 +141,7 @@ var signupHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, 
 	}
 
 	if d.UseInvitationCode {
-		if d.InvitationCode!=info.InvitationCode{
+                if !strings.Contains(";"+d.InvitationCode+";", ";"+info.InvitationCode+";"){
 			return http.StatusUnauthorized, nil
 		}
 	}
