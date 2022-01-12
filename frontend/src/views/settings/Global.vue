@@ -24,6 +24,7 @@
               :disabled = "!settings.useInvitationCode"               
               class="input input--block"
               type="text"
+              placeholder="code OR code1;code2;code3"
               v-model="settings.invitationCode"
             />
           </p>
