@@ -110,6 +110,41 @@
   width: calc(100% - 5vw);
 }
 
+#listing.mosaic.gallery .item div:first-of-type {
+  width: 100%;
+  height: 12em;
+}
+
+#listing.mosaic.gallery .item div:last-of-type {
+  position: absolute;
+  bottom: 0.5em;
+  padding: 1em;
+  width: calc(100% - 1em);
+  text-align: center;
+}
+
+#listing.mosaic.gallery .item[data-type=image] div:last-of-type {
+  color: white;
+  background: linear-gradient(#0000, #0009);
+}
+
+#listing.mosaic.gallery .item i {
+    width: 100%;
+    margin-right: 0;
+    font-size: 8em;
+    text-align: center;
+}
+
+#listing.mosaic.gallery .item img {
+  width: 100%;
+  height: 100%;
+}
+
+#listing.gallery .size,
+#listing.gallery .modified {
+  display: none;
+}
+
 #listing.list {
   flex-direction: column;
   width: 100%;

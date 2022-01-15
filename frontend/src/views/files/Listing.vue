@@ -53,7 +53,7 @@
           @action="$store.commit('toggleShell')"
         />
         <action
-          :icon="user.viewMode === 'mosaic' ? 'view_list' : 'view_module'"
+          :icon="viewIcon"
           :label="$t('buttons.switchView')"
           @action="switchView"
         />
@@ -355,6 +355,14 @@ export default {
       }
 
       return "arrow_upward";
+    },
+    viewIcon() {
+      const icons = {
+        list: "view_module",
+        mosaic: "grid_view",
+        "mosaic gallery": "view_list",
+      };
+      return icons[this.user.viewMode];
     },
     headerButtons() {
       return {
@@ -807,9 +815,15 @@ export default {
     switchView: async function () {
       this.$store.commit("closeHovers");
 
+      const modes = {
+        list: "mosaic",
+        mosaic: "mosaic gallery",
+        "mosaic gallery": "list",
+      };
+
       const data = {
         id: this.user.id,
-        viewMode: this.user.viewMode === "mosaic" ? "list" : "mosaic",
+        viewMode: modes[this.user.viewMode] || "list",
       };
 
       users.update(data, ["viewMode"]).catch(this.$showError);
