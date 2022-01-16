@@ -283,6 +283,7 @@ export default {
   data: function () {
     return {
       showLimit: 50,
+      columnWidth: 280,
       dragCounter: 0,
       width: window.innerWidth,
       itemWeight: 0,
@@ -599,7 +600,7 @@ export default {
     colunmsResize() {
       // Update the columns size based on the window width.
       let columns = Math.floor(
-        document.querySelector("main").offsetWidth / 300
+        document.querySelector("main").offsetWidth / this.columnWidth
       );
       let items = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
       if (columns === 0) columns = 1;
