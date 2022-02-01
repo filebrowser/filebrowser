@@ -25,7 +25,6 @@ you want to change. Other options will remain unchanged.`,
 		checkErr(err)
 
 		hasAuth := false
-		println(flags)
 		flags.Visit(func(flag *pflag.Flag) {
 			switch flag.Name {
 			case "baseurl":
