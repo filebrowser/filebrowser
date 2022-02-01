@@ -25,6 +25,7 @@ you want to change. Other options will remain unchanged.`,
 		checkErr(err)
 
 		hasAuth := false
+		println(flags)
 		flags.Visit(func(flag *pflag.Flag) {
 			switch flag.Name {
 			case "baseurl":
@@ -47,6 +48,8 @@ you want to change. Other options will remain unchanged.`,
 				set.Signup = mustGetBool(flags, flag.Name)
 			case "auth.method":
 				hasAuth = true
+			case "session.timeout":
+				ser.Session.Timeout = mustGetUint(flags, flag.Name)
 			case "shell":
 				set.Shell = convertCmdStrToCmdArray(mustGetString(flags, flag.Name))
 			case "branding.name":

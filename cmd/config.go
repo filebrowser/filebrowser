@@ -39,7 +39,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("recaptcha.host", "https://www.google.com", "use another host for ReCAPTCHA. recaptcha.net might be useful in China")
 	flags.String("recaptcha.key", "", "ReCaptcha site key")
 	flags.String("recaptcha.secret", "", "ReCaptcha secret")
-
+	flags.Uint("session.timeout", 2, "Set session timeout in hours (default is 2 hours)")
 	flags.String("branding.name", "", "replace 'File Browser' by this name")
 	flags.String("branding.color", "", "set the theme color")
 	flags.String("branding.files", "", "path to directory with images and custom styles")
@@ -135,6 +135,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tColor:\t%s\n", set.Branding.Color)
 	fmt.Fprintln(w, "\nServer:")
 	fmt.Fprintf(w, "\tLog:\t%s\n", ser.Log)
+	fmt.Fprintf(w, "\tSession timeout:\t%d\n", ser.Session.Timeout)
 	fmt.Fprintf(w, "\tPort:\t%s\n", ser.Port)
 	fmt.Fprintf(w, "\tBase URL:\t%s\n", ser.BaseURL)
 	fmt.Fprintf(w, "\tRoot:\t%s\n", ser.Root)

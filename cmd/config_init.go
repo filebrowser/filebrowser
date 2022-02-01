@@ -50,6 +50,9 @@ override the options.`,
 			TLSCert: mustGetString(flags, "cert"),
 			Port:    mustGetString(flags, "port"),
 			Log:     mustGetString(flags, "log"),
+			Session: settings.Session{
+				Timeout: mustGetUint(flags, "session.timeout"),
+			},
 		}
 
 		err := d.store.Settings.Save(s)
