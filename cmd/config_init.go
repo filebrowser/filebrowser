@@ -51,7 +51,7 @@ override the options.`,
 			Port:    mustGetString(flags, "port"),
 			Log:     mustGetString(flags, "log"),
 			Session: settings.Session{
-				Timeout: mustGetUint(flags, "session.timeout"),
+				Timeout: uint64(mustGetUint(flags, "session.timeout")),
 			},
 		}
 

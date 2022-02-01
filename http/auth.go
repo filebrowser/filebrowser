@@ -185,7 +185,7 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 		},
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(time.Duration(d.server.Session.Timeout * uint(time.Hour))).Unix(),
+			ExpiresAt: time.Now().Add(time.Duration(d.server.Session.Timeout * uint64(time.Hour))).Unix(),
 			Issuer:    "File Browser",
 		},
 	}

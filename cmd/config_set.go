@@ -49,7 +49,7 @@ you want to change. Other options will remain unchanged.`,
 			case "auth.method":
 				hasAuth = true
 			case "session.timeout":
-				ser.Session.Timeout = mustGetUint(flags, flag.Name)
+				ser.Session.Timeout = uint64(mustGetUint(flags, flag.Name))
 			case "shell":
 				set.Shell = convertCmdStrToCmdArray(mustGetString(flags, flag.Name))
 			case "branding.name":
