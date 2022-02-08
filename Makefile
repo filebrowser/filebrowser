@@ -1,94 +1,68 @@
-SHELL := /bin/bash
-BASE_PATH := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-VERSION ?= $(shell git describe --tags --always --match=v* 2> /dev/null || \
-           			cat $(CURDIR)/.version 2> /dev/null || echo v0)
-VERSION_HASH = $(shell git rev-parse HEAD)
-
-BIN = $(BASE_PATH)/bin
-PATH := $(BIN):$(PATH)
-export PATH
-
-# printing
-V = 0
-Q = $(if $(filter 1,$V),,@)
-M = $(shell printf "\033[34;1m▶\033[0m")
-
-GO = GOGC=off go
-# go module
-MODULE = $(shell env GO111MODULE=on $(GO) list -m)
-
-DATE    ?= $(shell date +%FT%T%z)
-VERSION ?= $(shell git describe --tags --always --match=v* 2> /dev/null || \
-			cat $(CURDIR)/.version 2> /dev/null || echo v0)
-VERSION_HASH = 	$(shell git rev-parse --short HEAD)
-BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
+include common.mk
+include tools.mk
 
 LDFLAGS += -X "$(MODULE)/version.Version=$(VERSION)" -X "$(MODULE)/version.CommitSHA=$(VERSION_HASH)"
 
-# tools
-$(BIN):
-	@mkdir -p $@
-$(BIN)/%: | $(BIN) ; $(info $(M) installing $(PACKAGE)…)
-	$Q env GOBIN=$(BIN) $(GO) install $(PACKAGE)
+## Build:
 
-GOLANGCI_LINT = $(BIN)/golangci-lint
-$(BIN)/golangci-lint: PACKAGE=github.com/golangci/golangci-lint/cmd/golangci-lint@v1.41.1
-
-GOIMPORTS = $(BIN)/goimports
-$(BIN)/goimports: PACKAGE=golang.org/x/tools/cmd/goimports@v0.1.5
-
-## build: Build
 .PHONY: build
-build: | build-frontend build-backend ; $(info $(M) building…)
+build: | build-frontend build-backend ## Build binary
 
-## build-frontend: Build frontend
 .PHONY: build-frontend
-build-frontend: | ; $(info $(M) building frontend…)
+build-frontend: ## Build frontend
 	$Q cd frontend && npm ci && npm run build
 
-## build-backend: Build backend
 .PHONY: build-backend
-build-backend: | ; $(info $(M) building backend…)
-	$Q $(GO) build -ldflags '$(LDFLAGS)' -o .
+build-backend: ## Build backend
+	$Q $(go) build -ldflags '$(LDFLAGS)' -o .
 
-## test: Run all tests
 .PHONY: test
-test: | test-frontend test-backend ; $(info $(M) running tests…)
+test: | test-frontend test-backend ## Run all tests
 
-## test-frontend: Run frontend tests
 .PHONY: test-frontend
-test-frontend: | ; $(info $(M) running frontend tests…)
+test-frontend: ## Run frontend tests
 
-## test-backend: Run backend tests
 .PHONY: test-backend
-test-backend: | ; $(info $(M) running backend tests…)
-	$Q $(GO) test -v ./...
+test-backend: ## Run backend tests
+	$Q $(go) test -v ./...
 
-## lint: Lint
 .PHONY: lint
-lint: lint-frontend lint-backend lint-commits | ; $(info $(M) running all linters…)
+lint: lint-frontend lint-backend lint-commits ## Run all linters
 
-## lint-frontend: Lint frontend
 .PHONY: lint-frontend
-lint-frontend: | ; $(info $(M) running frontend linters…)
+lint-frontend: ## Run frontend linters
 	$Q cd frontend && npm ci && npm run lint
 
-## lint-backend: Lint backend
 .PHONY: lint-backend
-lint-backend: | $(GOLANGCI_LINT) ; $(info $(M) running backend linters…)
-	$Q $(GOLANGCI_LINT) run
+lint-backend: | $(golangci-lint) ## Run backend linters
+	$Q $(golangci-lint) run -v
 
-## lint-commits: Lint commits
 .PHONY: lint-commits
-lint-commits: | ; $(info $(M) running commitlint…)
+lint-commits: $(commitlint) ## Run commit linters
 	$Q ./scripts/commitlint.sh
 
-## bump-version: Bump app version
+fmt: $(goimports) ## Format source files
+	$Q $(goimports) -local $(MODULE) -w $$(find . -type f -name '*.go' -not -path "./vendor/*")
+
+clean: clean-tools ## Clean
+
+## Release:
+
 .PHONY: bump-version
-bump-version: | ; $(info $(M) creating a new release…)
+bump-version: $(standard-version) ## Bump app version
 	$Q ./scripts/bump_version.sh
 
-## help: Show this help
-.PHONY: help
-help:
-	@sed -n 's/^## //p' $(MAKEFILE_LIST) | column -t -s ':' |  sed -e 's/^/ /' | sort
+## Help:
+help: ## Show this help
+	@echo ''
+	@echo 'Usage:'
+	@echo '  ${YELLOW}make${RESET} ${GREEN}<target> [options]${RESET}'
+	@echo ''
+	@echo 'Options:'
+	@$(call global_option, "V [0|1]", "enable verbose mode (default:0)")
+	@echo ''
+	@echo 'Targets:'
+	@awk 'BEGIN {FS = ":.*?## "} { \
+		if (/^[a-zA-Z_-]+:.*?##.*$$/) {printf "    ${YELLOW}%-20s${GREEN}%s${RESET}\n", $$1, $$2} \
+		else if (/^## .*$$/) {printf "  ${CYAN}%s${RESET}\n", substr($$1,4)} \
+		}' $(MAKEFILE_LIST)

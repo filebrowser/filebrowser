@@ -223,6 +223,9 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	case strings.HasPrefix(mimetype, "image"):
 		i.Type = "image"
 		return nil
+	case strings.HasSuffix(mimetype, "pdf"):
+		i.Type = "pdf"
+		return nil
 	case (strings.HasPrefix(mimetype, "text") || !isBinary(buffer)) && i.Size <= 10*1024*1024: // 10 MB
 		i.Type = "text"
 
@@ -275,11 +278,17 @@ func (i *FileInfo) detectSubtitles() {
 	i.Subtitles = []string{}
 	ext := filepath.Ext(i.Path)
 
-	// TODO: detect multiple languages. Base.Lang.vtt
-
-	fPath := strings.TrimSuffix(i.Path, ext) + ".vtt"
-	if _, err := i.Fs.Stat(fPath); err == nil {
-		i.Subtitles = append(i.Subtitles, fPath)
+	// detect multiple languages. Base*.vtt
+	// TODO: give subtitles descriptive names (lang) and track attributes
+	parentDir := strings.TrimRight(i.Path, i.Name)
+	dir, err := afero.ReadDir(i.Fs, parentDir)
+	if err == nil {
+		base := strings.TrimSuffix(i.Name, ext)
+		for _, f := range dir {
+			if !f.IsDir() && strings.HasPrefix(f.Name(), base) && strings.HasSuffix(f.Name(), ".vtt") {
+				i.Subtitles = append(i.Subtitles, path.Join(parentDir, f.Name()))
+			}
+		}
 	}
 }
 

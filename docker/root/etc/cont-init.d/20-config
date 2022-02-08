@@ -1,0 +1,15 @@
+#!/usr/bin/with-contenv bash
+
+# make folders
+mkdir -p /database
+
+# copy config
+if [ ! -f "/config/settings.json" ]; then
+  cp -a /defaults/settings.json /config/settings.json
+fi
+
+# permissions
+chown abc:abc \
+	/config/settings.json \
+	/database \
+	/srv
