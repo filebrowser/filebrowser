@@ -9,6 +9,7 @@
     @drop="drop"
     @click="itemClick"
     :data-dir="isDir"
+    :data-type="type"
     :aria-label="name"
     :aria-selected="isSelected"
   >
@@ -17,7 +18,7 @@
         v-if="readOnly == undefined && type === 'image' && isThumbsEnabled"
         v-lazy="thumbnailUrl"
       />
-      <i v-else class="material-icons">{{ icon }}</i>
+      <i v-else class="material-icons"></i>
     </div>
 
     <div>
@@ -66,14 +67,6 @@ export default {
     },
     isSelected() {
       return this.selected.indexOf(this.index) !== -1;
-    },
-    icon() {
-      if (this.isDir) return "folder";
-      if (this.type === "image") return "insert_photo";
-      if (this.type === "audio") return "volume_up";
-      if (this.type === "video") return "movie";
-      if (this.type === "pdf") return "picture_as_pdf";
-      return "insert_drive_file";
     },
     isDraggable() {
       return this.readOnly == undefined && this.user.perm.rename;
