@@ -1,0 +1,203 @@
+/* Icons */
+
+/* General */
+
+#listing [aria-label^="."] { opacity: 0.33 }
+#listing [aria-label$=".bak"] { opacity: 0.33 }
+
+#listing [data-type=audio] i::before { content: 'volume_up' }
+#listing [data-type=blob] i::before { content: 'insert_drive_file' }
+#listing [data-type=image] i::before { content: 'image' }
+#listing [data-type=pdf] i::before { content: 'description' }
+#listing [data-type=text] i::before { content: 'description' }
+#listing [data-type=video] i::before { content: 'movie' }
+
+/* #f90 - Image */
+
+#listing [aria-label$=".ai"] i::before,
+#listing [aria-label$=".odg"] i::before,
+#listing [aria-label$=".xcf"] i::before
+{ content: 'image' }
+
+/* #f90 - Presentation */
+
+#listing [aria-label$=".odp"] i::before,
+#listing [aria-label$=".ppt"] i::before,
+#listing [aria-label$=".pptx"] i::before
+{ content: 'slideshow' }
+
+/* #0f0 - Spreadsheet/Database */
+
+#listing [aria-label$=".csv"] i::before,
+#listing [aria-label$=".db"] i::before,
+#listing [aria-label$=".odb"] i::before,
+#listing [aria-label$=".ods"] i::before,
+#listing [aria-label$=".xls"] i::before,
+#listing [aria-label$=".xlsx"] i::before
+{ content: 'border_all' }
+
+/* #00f - Document */
+
+#listing [aria-label$=".doc"] i::before,
+#listing [aria-label$=".docx"] i::before,
+#listing [aria-label$=".log"] i::before,
+#listing [aria-label$=".odt"] i::before,
+#listing [aria-label$=".rtf"] i::before
+{ content: 'description' }
+
+/* #999 - Code */
+
+#listing [aria-label$=".c"] i::before,
+#listing [aria-label$=".cpp"] i::before,
+#listing [aria-label$=".cs"] i::before,
+#listing [aria-label$=".css"] i::before,
+#listing [aria-label$=".go"] i::before,
+#listing [aria-label$=".h"] i::before,
+#listing [aria-label$=".html"] i::before,
+#listing [aria-label$=".java"] i::before,
+#listing [aria-label$=".js"] i::before,
+#listing [aria-label$=".json"] i::before,
+#listing [aria-label$=".kt"] i::before,
+#listing [aria-label$=".php"] i::before,
+#listing [aria-label$=".py"] i::before,
+#listing [aria-label$=".rb"] i::before,
+#listing [aria-label$=".rs"] i::before,
+#listing [aria-label$=".vue"] i::before,
+#listing [aria-label$=".xml"] i::before,
+#listing [aria-label$=".yml"] i::before
+{ content: 'code' }
+
+/* #999 - Executable */
+
+#listing [aria-label$=".apk"] i::before,
+#listing [aria-label$=".bat"] i::before,
+#listing [aria-label$=".exe"] i::before,
+#listing [aria-label$=".jar"] i::before,
+#listing [aria-label$=".ps1"] i::before,
+#listing [aria-label$=".sh"] i::before
+{ content: 'web_asset' }
+
+/* #999 - Installer */
+
+#listing [aria-label$=".deb"] i::before,
+#listing [aria-label$=".msi"] i::before,
+#listing [aria-label$=".pkg"] i::before,
+#listing [aria-label$=".rpm"] i::before
+{ content: 'archive' }
+
+/* #999 - Compressed */
+
+#listing [aria-label$=".7z"] i::before,
+#listing [aria-label$=".bz2"] i::before,
+#listing [aria-label$=".cab"] i::before,
+#listing [aria-label$=".gz"] i::before,
+#listing [aria-label$=".rar"] i::before,
+#listing [aria-label$=".tar"] i::before,
+#listing [aria-label$=".xz"] i::before,
+#listing [aria-label$=".zip"] i::before,
+#listing [aria-label$=".zst"] i::before
+{ content: 'folder_zip' }
+
+/* #999 - Disk */
+
+#listing [aria-label$=".ccd"] i::before,
+#listing [aria-label$=".dmg"] i::before,
+#listing [aria-label$=".iso"] i::before,
+#listing [aria-label$=".mdf"] i::before,
+#listing [aria-label$=".vdi"] i::before,
+#listing [aria-label$=".vhd"] i::before,
+#listing [aria-label$=".vmdk"] i::before,
+#listing [aria-label$=".wim"] i::before
+{ content: 'album' }
+
+/* #999 - Font */
+
+#listing [aria-label$=".otf"] i::before,
+#listing [aria-label$=".ttf"] i::before,
+#listing [aria-label$=".woff"] i::before,
+#listing [aria-label$=".woff2"] i::before
+{ content: 'font_download' }
+
+/* Colors */
+
+/* General */
+
+#listing [data-type=audio] i  { color: var(--icon-yellow) }
+#listing [data-type=image] i { color: var(--icon-orange) }
+#listing [data-type=video] i { color: var(--icon-violet) }
+
+/* #f00 - Adobe/Oracle */
+
+#listing [aria-label$=".ai"] i,
+#listing [aria-label$=".java"] i,
+#listing [aria-label$=".jar"] i,
+#listing [aria-label$=".psd"] i,
+#listing [aria-label$=".rb"] i,
+#listing [data-type=pdf] i
+{ color: var(--icon-red) }
+
+/* #f90 - Image/Presentation */
+
+#listing [aria-label$=".html"] i,
+#listing [aria-label$=".odg"] i,
+#listing [aria-label$=".odp"] i,
+#listing [aria-label$=".ppt"] i,
+#listing [aria-label$=".pptx"] i,
+#listing [aria-label$=".vue"] i,
+#listing [aria-label$=".xcf"] i
+{ color: var(--icon-orange) }
+
+/* #ff0 - Various */
+
+#listing [aria-label$=".css"] i,
+#listing [aria-label$=".js"] i,
+#listing [aria-label$=".json"] i,
+#listing [aria-label$=".zip"] i
+{ color: var(--icon-yellow) }
+
+/* #0f0 - Spreadsheet/Google */
+
+#listing [aria-label$=".apk"] i,
+#listing [aria-label$=".dex"] i,
+#listing [aria-label$=".go"] i,
+#listing [aria-label$=".ods"] i,
+#listing [aria-label$=".xls"] i,
+#listing [aria-label$=".xlsx"] i
+{ color: var(--icon-green) }
+
+/* #00f - Document/Microsoft/Apple/Closed */
+
+#listing [aria-label$=".aac"] i,
+#listing [aria-label$=".bat"] i,
+#listing [aria-label$=".cab"] i,
+#listing [aria-label$=".cs"] i,
+#listing [aria-label$=".dmg"] i,
+#listing [aria-label$=".doc"] i,
+#listing [aria-label$=".docx"] i,
+#listing [aria-label$=".emf"] i,
+#listing [aria-label$=".exe"] i,
+#listing [aria-label$=".ico"] i,
+#listing [aria-label$=".mp2"] i,
+#listing [aria-label$=".mp3"] i,
+#listing [aria-label$=".mp4"] i,
+#listing [aria-label$=".mpg"] i,
+#listing [aria-label$=".msi"] i,
+#listing [aria-label$=".odt"] i,
+#listing [aria-label$=".ps1"] i,
+#listing [aria-label$=".rtf"] i,
+#listing [aria-label$=".vob"] i,
+#listing [aria-label$=".wim"] i
+{ color: var(--icon-blue) }
+
+/* #60f - Various */
+
+#listing [aria-label$=".iso"] i,
+#listing [aria-label$=".php"] i,
+#listing [aria-label$=".rar"] i
+{ color: var(--icon-violet) }
+
+/* Overrides */
+
+#listing [data-dir=true] i { color: var(--icon-blue) }
+#listing [data-dir=true] i::before { content: 'folder' }
+#listing [aria-selected=true] i { color: var(--item-selected) }

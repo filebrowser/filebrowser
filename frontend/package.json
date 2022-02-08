@@ -17,7 +17,7 @@
     "js-base64": "^2.5.1",
     "lodash.clonedeep": "^4.5.0",
     "lodash.throttle": "^4.1.1",
-    "material-design-icons": "^3.0.1",
+    "material-icons": "^1.10.5",
     "moment": "^2.24.0",
     "normalize.css": "^8.0.1",
     "noty": "^3.2.0-beta",
