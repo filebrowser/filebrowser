@@ -26,7 +26,7 @@ jobs:
         with:
           go-version: 1.17
       - run: make lint-backend
-  lint-commints:
+  lint-commits:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -38,7 +38,7 @@ jobs:
       - run: make lint-commits
   lint:
     runs-on: ubuntu-latest
-    needs: [lint-frontend, lint-backend, lint-commints]
+    needs: [lint-frontend, lint-backend, lint-commits]
     steps:
       - run: echo "done"
 
@@ -84,7 +84,7 @@ jobs:
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      - name: Build fronetend
+      - name: Build frontend
         run: make build-frontend
       - name: Login to Docker Hub
         uses: docker/login-action@v1

@@ -1,3 +1,7 @@
+#listing {
+  --item-selected: white;
+}
+
 #listing h2 {
   margin: 0 0 0 0.5em;
   font-size: .9em;
@@ -127,7 +131,7 @@
 
 #listing .item[aria-selected=true] {
   background: var(--blue) !important;
-  color: #fff !important;
+  color: var(--item-selected) !important;
 }
 
 #listing.list .item div:first-of-type {
@@ -238,5 +242,5 @@
 
 #listing #multiple-selection p,
 #listing #multiple-selection i {
-  color: #fff;
+  color: var(--item-selected);
 }
