@@ -7,7 +7,7 @@ const UPLOADS_LIMIT = 5;
 
 const state = {
   id: 0,
-  size: 0,
+  sizes: [],
   progress: [],
   queue: [],
   uploads: {},
@@ -19,12 +19,12 @@ const mutations = {
   },
   reset: (state) => {
     state.id = 0;
-    state.size = 0;
+    state.sizes = [];
     state.progress = [];
   },
   addJob: (state, item) => {
     state.queue.push(item);
-    state.size += item.file.size;
+    state.sizes[state.id] = item.file.size;
     state.id++;
   },
   moveJob(state) {
