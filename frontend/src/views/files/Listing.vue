@@ -21,7 +21,7 @@
           icon="file_upload"
           id="upload-button"
           :label="$t('buttons.upload')"
-          :counter="filesInUpload.length"
+          :counter="filesInUploadCount"
           @action="upload"
         />
         <action icon="info" :label="$t('buttons.info')" show="info" />
@@ -182,7 +182,7 @@ export default {
   },
   computed: {
     ...mapState(["req", "selected", "user", "show", "multiple", "selected", "loading"]),
-    ...mapGetters(["selectedCount", "filesInUpload"]),
+    ...mapGetters(["selectedCount", "filesInUploadCount"]),
     nameSorted() {
       return this.req.sorting.by === "name";
     },
@@ -701,7 +701,7 @@ export default {
       this.fillWindow();
     },
     upload: function () {
-      if (this.filesInUpload.length > 0) {
+      if (this.filesInUploadCount > 0) {
         this.$store.commit("showHover", "uploadFiles");
       } else {
         if (typeof window.DataTransferItem !== "undefined" && typeof DataTransferItem.prototype.webkitGetAsEntry !== "undefined") {

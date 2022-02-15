@@ -13,6 +13,13 @@ const getters = {
     let sum = state.upload.progress.reduce((acc, val) => acc + val);
     return Math.ceil((sum / totalSize) * 100);
   },
+  filesInUploadCount: (state) => {
+    console.log("uploads", Object.keys(state.upload.uploads));
+    console.log("queue", state.upload.queue);
+    console.log(Object.keys(state.upload.uploads).length + state.upload.queue.length);
+    let total = Object.keys(state.upload.uploads).length + state.upload.queue.length;
+    return total;
+  },
   filesInUpload: (state) => {
     let files = [];
 
