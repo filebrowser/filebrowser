@@ -19,6 +19,7 @@ import Replace from "./Replace";
 import ReplaceRename from "./ReplaceRename";
 import Share from "./Share";
 import Upload from "./Upload";
+import UploadFiles from "./UploadFiles";
 import ShareDelete from "./ShareDelete";
 import { mapState } from "vuex";
 import buttons from "@/utils/buttons";
@@ -40,6 +41,7 @@ export default {
     ReplaceRename,
     Upload,
     ShareDelete,
+    UploadFiles,
   },
   data: function () {
     return {
@@ -99,15 +101,14 @@ export default {
           "replace-rename",
           "share",
           "upload",
+          "uploadFiles",
           "share-delete",
         ].indexOf(this.show) >= 0;
 
       return (matched && this.show) || null;
     },
     showOverlay: function () {
-      return (
-        this.show !== null && this.show !== "search" && this.show !== "more"
-      );
+      return this.show !== null && this.show !== "search" && this.show !== "more";
     },
   },
   methods: {

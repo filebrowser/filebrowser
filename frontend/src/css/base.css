@@ -116,30 +116,50 @@ main {
 }
 
 .progress {
-  position: absolute;
-  bottom: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 30px;
+  height: 3px;
   z-index: 9999999999;
 }
 
-.progress div,
-.files div div {
+.progress div {
   height: 100%;
   background-color: #40c4ff;
   width: 0;
   transition: 0.2s ease width;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.files div div {
-  height: 30px;
-  overflow: hidden;
-  background-color: #329fd1;
 }
 
 .break-word {
   word-break: break-all;
+}
+
+.upload-files .card.floating {
+  top: 4em;
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.upload-files .file {
+  margin-bottom: 8px;
+}
+
+.upload-files .file .file-name {
+  font-size: 1.1em;
+}
+
+.upload-files .file .file-progress {
+  margin-top: 2px;
+  width: 100%;
+  height: 5px;
+}
+
+.upload-files .file .file-progress div {
+  height: 100%;
+  background-color: #40c4ff;
+  width: 0;
+  transition: 0.2s ease width;
+  border-radius: 10px;
 }
