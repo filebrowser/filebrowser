@@ -1,16 +1,7 @@
 <template>
   <div>
-    <div v-if="files" class="files">
-      <div v-for="file in files" :key="file.id">
-        <div v-bind:style="{ width: file.progress + '%' }">
-          {{ file.name + " " + file.progress + "%" }}
-        </div>
-      </div>
-    </div>
     <div v-if="progress" class="progress">
-      <div v-bind:style="{ width: this.progress + '%' }">
-        {{ this.progress ? this.progress + "%" : "" }}
-      </div>
+      <div v-bind:style="{ width: this.progress + '%' }"></div>
     </div>
     <sidebar></sidebar>
     <main>
@@ -36,7 +27,7 @@ export default {
     Shell,
   },
   computed: {
-    ...mapGetters(["isLogged", "progress", "files"]),
+    ...mapGetters(["isLogged", "progress"]),
     ...mapState(["user"]),
     isExecEnabled: () => enableExec,
   },
@@ -44,8 +35,7 @@ export default {
     $route: function () {
       this.$store.commit("resetSelected");
       this.$store.commit("multiple", false);
-      if (this.$store.state.show !== "success")
-        this.$store.commit("closeHovers");
+      if (this.$store.state.show !== "success") this.$store.commit("closeHovers");
     },
   },
 };
