@@ -13,7 +13,7 @@ const getters = {
     let sum = state.upload.progress.reduce((acc, val) => acc + val);
     return Math.ceil((sum / totalSize) * 100);
   },
-  files: (state) => {
+  filesInUpload: (state) => {
     let files = [];
 
     for (let index in state.upload.uploads) {
@@ -26,7 +26,7 @@ const getters = {
       files.push({ id, name, progress: Math.ceil((progress / size) * 100) });
     }
 
-    return files;
+    return files.sort((a, b) => a.progress - b.progress);
   },
 };
 
