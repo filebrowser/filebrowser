@@ -69,7 +69,6 @@
           icon="file_upload"
           id="upload-button"
           :label="$t('buttons.upload')"
-          :counter="filesInUploadCount"
           @action="upload"
         />
         <action icon="info" :label="$t('buttons.info')" show="info" />
@@ -300,7 +299,7 @@ export default {
       "selected",
       "loading",
     ]),
-    ...mapGetters(["selectedCount", "filesInUploadCount"]),
+    ...mapGetters(["selectedCount"]),
     nameSorted() {
       return this.req.sorting.by === "name";
     },
@@ -837,17 +836,13 @@ export default {
       this.fillWindow();
     },
     upload: function () {
-      if (this.filesInUploadCount > 0) {
-        this.$store.commit("showHover", "uploadFiles");
+      if (
+        typeof window.DataTransferItem !== "undefined" &&
+        typeof DataTransferItem.prototype.webkitGetAsEntry !== "undefined"
+      ) {
+        this.$store.commit("showHover", "upload");
       } else {
-        if (
-          typeof window.DataTransferItem !== "undefined" &&
-          typeof DataTransferItem.prototype.webkitGetAsEntry !== "undefined"
-        ) {
-          this.$store.commit("showHover", "upload");
-        } else {
-          document.getElementById("upload-input").click();
-        }
+        document.getElementById("upload-input").click();
       }
     },
     setItemWeight() {
