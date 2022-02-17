@@ -2,202 +2,202 @@
 
 /* General */
 
-#listing [aria-label^="."] { opacity: 0.33 }
-#listing [aria-label$=".bak"] { opacity: 0.33 }
+.file-icons [aria-label^="."] { opacity: 0.33 }
+.file-icons [aria-label$=".bak"] { opacity: 0.33 }
 
-#listing [data-type=audio] i::before { content: 'volume_up' }
-#listing [data-type=blob] i::before { content: 'insert_drive_file' }
-#listing [data-type=image] i::before { content: 'image' }
-#listing [data-type=pdf] i::before { content: 'description' }
-#listing [data-type=text] i::before { content: 'description' }
-#listing [data-type=video] i::before { content: 'movie' }
+.file-icons [data-type=audio] i::before { content: 'volume_up' }
+.file-icons [data-type=blob] i::before { content: 'insert_drive_file' }
+.file-icons [data-type=image] i::before { content: 'image' }
+.file-icons [data-type=pdf] i::before { content: 'description' }
+.file-icons [data-type=text] i::before { content: 'description' }
+.file-icons [data-type=video] i::before { content: 'movie' }
 
 /* #f90 - Image */
 
-#listing [aria-label$=".ai"] i::before,
-#listing [aria-label$=".odg"] i::before,
-#listing [aria-label$=".xcf"] i::before
+.file-icons [aria-label$=".ai"] i::before,
+.file-icons [aria-label$=".odg"] i::before,
+.file-icons [aria-label$=".xcf"] i::before
 { content: 'image' }
 
 /* #f90 - Presentation */
 
-#listing [aria-label$=".odp"] i::before,
-#listing [aria-label$=".ppt"] i::before,
-#listing [aria-label$=".pptx"] i::before
+.file-icons [aria-label$=".odp"] i::before,
+.file-icons [aria-label$=".ppt"] i::before,
+.file-icons [aria-label$=".pptx"] i::before
 { content: 'slideshow' }
 
 /* #0f0 - Spreadsheet/Database */
 
-#listing [aria-label$=".csv"] i::before,
-#listing [aria-label$=".db"] i::before,
-#listing [aria-label$=".odb"] i::before,
-#listing [aria-label$=".ods"] i::before,
-#listing [aria-label$=".xls"] i::before,
-#listing [aria-label$=".xlsx"] i::before
+.file-icons [aria-label$=".csv"] i::before,
+.file-icons [aria-label$=".db"] i::before,
+.file-icons [aria-label$=".odb"] i::before,
+.file-icons [aria-label$=".ods"] i::before,
+.file-icons [aria-label$=".xls"] i::before,
+.file-icons [aria-label$=".xlsx"] i::before
 { content: 'border_all' }
 
 /* #00f - Document */
 
-#listing [aria-label$=".doc"] i::before,
-#listing [aria-label$=".docx"] i::before,
-#listing [aria-label$=".log"] i::before,
-#listing [aria-label$=".odt"] i::before,
-#listing [aria-label$=".rtf"] i::before
+.file-icons [aria-label$=".doc"] i::before,
+.file-icons [aria-label$=".docx"] i::before,
+.file-icons [aria-label$=".log"] i::before,
+.file-icons [aria-label$=".odt"] i::before,
+.file-icons [aria-label$=".rtf"] i::before
 { content: 'description' }
 
 /* #999 - Code */
 
-#listing [aria-label$=".c"] i::before,
-#listing [aria-label$=".cpp"] i::before,
-#listing [aria-label$=".cs"] i::before,
-#listing [aria-label$=".css"] i::before,
-#listing [aria-label$=".go"] i::before,
-#listing [aria-label$=".h"] i::before,
-#listing [aria-label$=".html"] i::before,
-#listing [aria-label$=".java"] i::before,
-#listing [aria-label$=".js"] i::before,
-#listing [aria-label$=".json"] i::before,
-#listing [aria-label$=".kt"] i::before,
-#listing [aria-label$=".php"] i::before,
-#listing [aria-label$=".py"] i::before,
-#listing [aria-label$=".rb"] i::before,
-#listing [aria-label$=".rs"] i::before,
-#listing [aria-label$=".vue"] i::before,
-#listing [aria-label$=".xml"] i::before,
-#listing [aria-label$=".yml"] i::before
+.file-icons [aria-label$=".c"] i::before,
+.file-icons [aria-label$=".cpp"] i::before,
+.file-icons [aria-label$=".cs"] i::before,
+.file-icons [aria-label$=".css"] i::before,
+.file-icons [aria-label$=".go"] i::before,
+.file-icons [aria-label$=".h"] i::before,
+.file-icons [aria-label$=".html"] i::before,
+.file-icons [aria-label$=".java"] i::before,
+.file-icons [aria-label$=".js"] i::before,
+.file-icons [aria-label$=".json"] i::before,
+.file-icons [aria-label$=".kt"] i::before,
+.file-icons [aria-label$=".php"] i::before,
+.file-icons [aria-label$=".py"] i::before,
+.file-icons [aria-label$=".rb"] i::before,
+.file-icons [aria-label$=".rs"] i::before,
+.file-icons [aria-label$=".vue"] i::before,
+.file-icons [aria-label$=".xml"] i::before,
+.file-icons [aria-label$=".yml"] i::before
 { content: 'code' }
 
 /* #999 - Executable */
 
-#listing [aria-label$=".apk"] i::before,
-#listing [aria-label$=".bat"] i::before,
-#listing [aria-label$=".exe"] i::before,
-#listing [aria-label$=".jar"] i::before,
-#listing [aria-label$=".ps1"] i::before,
-#listing [aria-label$=".sh"] i::before
+.file-icons [aria-label$=".apk"] i::before,
+.file-icons [aria-label$=".bat"] i::before,
+.file-icons [aria-label$=".exe"] i::before,
+.file-icons [aria-label$=".jar"] i::before,
+.file-icons [aria-label$=".ps1"] i::before,
+.file-icons [aria-label$=".sh"] i::before
 { content: 'web_asset' }
 
 /* #999 - Installer */
 
-#listing [aria-label$=".deb"] i::before,
-#listing [aria-label$=".msi"] i::before,
-#listing [aria-label$=".pkg"] i::before,
-#listing [aria-label$=".rpm"] i::before
+.file-icons [aria-label$=".deb"] i::before,
+.file-icons [aria-label$=".msi"] i::before,
+.file-icons [aria-label$=".pkg"] i::before,
+.file-icons [aria-label$=".rpm"] i::before
 { content: 'archive' }
 
 /* #999 - Compressed */
 
-#listing [aria-label$=".7z"] i::before,
-#listing [aria-label$=".bz2"] i::before,
-#listing [aria-label$=".cab"] i::before,
-#listing [aria-label$=".gz"] i::before,
-#listing [aria-label$=".rar"] i::before,
-#listing [aria-label$=".tar"] i::before,
-#listing [aria-label$=".xz"] i::before,
-#listing [aria-label$=".zip"] i::before,
-#listing [aria-label$=".zst"] i::before
+.file-icons [aria-label$=".7z"] i::before,
+.file-icons [aria-label$=".bz2"] i::before,
+.file-icons [aria-label$=".cab"] i::before,
+.file-icons [aria-label$=".gz"] i::before,
+.file-icons [aria-label$=".rar"] i::before,
+.file-icons [aria-label$=".tar"] i::before,
+.file-icons [aria-label$=".xz"] i::before,
+.file-icons [aria-label$=".zip"] i::before,
+.file-icons [aria-label$=".zst"] i::before
 { content: 'folder_zip' }
 
 /* #999 - Disk */
 
-#listing [aria-label$=".ccd"] i::before,
-#listing [aria-label$=".dmg"] i::before,
-#listing [aria-label$=".iso"] i::before,
-#listing [aria-label$=".mdf"] i::before,
-#listing [aria-label$=".vdi"] i::before,
-#listing [aria-label$=".vhd"] i::before,
-#listing [aria-label$=".vmdk"] i::before,
-#listing [aria-label$=".wim"] i::before
+.file-icons [aria-label$=".ccd"] i::before,
+.file-icons [aria-label$=".dmg"] i::before,
+.file-icons [aria-label$=".iso"] i::before,
+.file-icons [aria-label$=".mdf"] i::before,
+.file-icons [aria-label$=".vdi"] i::before,
+.file-icons [aria-label$=".vhd"] i::before,
+.file-icons [aria-label$=".vmdk"] i::before,
+.file-icons [aria-label$=".wim"] i::before
 { content: 'album' }
 
 /* #999 - Font */
 
-#listing [aria-label$=".otf"] i::before,
-#listing [aria-label$=".ttf"] i::before,
-#listing [aria-label$=".woff"] i::before,
-#listing [aria-label$=".woff2"] i::before
+.file-icons [aria-label$=".otf"] i::before,
+.file-icons [aria-label$=".ttf"] i::before,
+.file-icons [aria-label$=".woff"] i::before,
+.file-icons [aria-label$=".woff2"] i::before
 { content: 'font_download' }
 
 /* Colors */
 
 /* General */
 
-#listing [data-type=audio] i  { color: var(--icon-yellow) }
-#listing [data-type=image] i { color: var(--icon-orange) }
-#listing [data-type=video] i { color: var(--icon-violet) }
+.file-icons [data-type=audio] i  { color: var(--icon-yellow) }
+.file-icons [data-type=image] i { color: var(--icon-orange) }
+.file-icons [data-type=video] i { color: var(--icon-violet) }
 
 /* #f00 - Adobe/Oracle */
 
-#listing [aria-label$=".ai"] i,
-#listing [aria-label$=".java"] i,
-#listing [aria-label$=".jar"] i,
-#listing [aria-label$=".psd"] i,
-#listing [aria-label$=".rb"] i,
-#listing [data-type=pdf] i
+.file-icons [aria-label$=".ai"] i,
+.file-icons [aria-label$=".java"] i,
+.file-icons [aria-label$=".jar"] i,
+.file-icons [aria-label$=".psd"] i,
+.file-icons [aria-label$=".rb"] i,
+.file-icons [data-type=pdf] i
 { color: var(--icon-red) }
 
 /* #f90 - Image/Presentation */
 
-#listing [aria-label$=".html"] i,
-#listing [aria-label$=".odg"] i,
-#listing [aria-label$=".odp"] i,
-#listing [aria-label$=".ppt"] i,
-#listing [aria-label$=".pptx"] i,
-#listing [aria-label$=".vue"] i,
-#listing [aria-label$=".xcf"] i
+.file-icons [aria-label$=".html"] i,
+.file-icons [aria-label$=".odg"] i,
+.file-icons [aria-label$=".odp"] i,
+.file-icons [aria-label$=".ppt"] i,
+.file-icons [aria-label$=".pptx"] i,
+.file-icons [aria-label$=".vue"] i,
+.file-icons [aria-label$=".xcf"] i
 { color: var(--icon-orange) }
 
 /* #ff0 - Various */
 
-#listing [aria-label$=".css"] i,
-#listing [aria-label$=".js"] i,
-#listing [aria-label$=".json"] i,
-#listing [aria-label$=".zip"] i
+.file-icons [aria-label$=".css"] i,
+.file-icons [aria-label$=".js"] i,
+.file-icons [aria-label$=".json"] i,
+.file-icons [aria-label$=".zip"] i
 { color: var(--icon-yellow) }
 
 /* #0f0 - Spreadsheet/Google */
 
-#listing [aria-label$=".apk"] i,
-#listing [aria-label$=".dex"] i,
-#listing [aria-label$=".go"] i,
-#listing [aria-label$=".ods"] i,
-#listing [aria-label$=".xls"] i,
-#listing [aria-label$=".xlsx"] i
+.file-icons [aria-label$=".apk"] i,
+.file-icons [aria-label$=".dex"] i,
+.file-icons [aria-label$=".go"] i,
+.file-icons [aria-label$=".ods"] i,
+.file-icons [aria-label$=".xls"] i,
+.file-icons [aria-label$=".xlsx"] i
 { color: var(--icon-green) }
 
 /* #00f - Document/Microsoft/Apple/Closed */
 
-#listing [aria-label$=".aac"] i,
-#listing [aria-label$=".bat"] i,
-#listing [aria-label$=".cab"] i,
-#listing [aria-label$=".cs"] i,
-#listing [aria-label$=".dmg"] i,
-#listing [aria-label$=".doc"] i,
-#listing [aria-label$=".docx"] i,
-#listing [aria-label$=".emf"] i,
-#listing [aria-label$=".exe"] i,
-#listing [aria-label$=".ico"] i,
-#listing [aria-label$=".mp2"] i,
-#listing [aria-label$=".mp3"] i,
-#listing [aria-label$=".mp4"] i,
-#listing [aria-label$=".mpg"] i,
-#listing [aria-label$=".msi"] i,
-#listing [aria-label$=".odt"] i,
-#listing [aria-label$=".ps1"] i,
-#listing [aria-label$=".rtf"] i,
-#listing [aria-label$=".vob"] i,
-#listing [aria-label$=".wim"] i
+.file-icons [aria-label$=".aac"] i,
+.file-icons [aria-label$=".bat"] i,
+.file-icons [aria-label$=".cab"] i,
+.file-icons [aria-label$=".cs"] i,
+.file-icons [aria-label$=".dmg"] i,
+.file-icons [aria-label$=".doc"] i,
+.file-icons [aria-label$=".docx"] i,
+.file-icons [aria-label$=".emf"] i,
+.file-icons [aria-label$=".exe"] i,
+.file-icons [aria-label$=".ico"] i,
+.file-icons [aria-label$=".mp2"] i,
+.file-icons [aria-label$=".mp3"] i,
+.file-icons [aria-label$=".mp4"] i,
+.file-icons [aria-label$=".mpg"] i,
+.file-icons [aria-label$=".msi"] i,
+.file-icons [aria-label$=".odt"] i,
+.file-icons [aria-label$=".ps1"] i,
+.file-icons [aria-label$=".rtf"] i,
+.file-icons [aria-label$=".vob"] i,
+.file-icons [aria-label$=".wim"] i
 { color: var(--icon-blue) }
 
 /* #60f - Various */
 
-#listing [aria-label$=".iso"] i,
-#listing [aria-label$=".php"] i,
-#listing [aria-label$=".rar"] i
+.file-icons [aria-label$=".iso"] i,
+.file-icons [aria-label$=".php"] i,
+.file-icons [aria-label$=".rar"] i
 { color: var(--icon-violet) }
 
 /* Overrides */
 
-#listing [data-dir=true] i { color: var(--icon-blue) }
-#listing [data-dir=true] i::before { content: 'folder' }
-#listing [aria-selected=true] i { color: var(--item-selected) }
+.file-icons [data-dir=true] i { color: var(--icon-blue) }
+.file-icons [data-dir=true] i::before { content: 'folder' }
+.file-icons [aria-selected=true] i { color: var(--item-selected) }
