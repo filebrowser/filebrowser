@@ -97,7 +97,9 @@ const actions = {
           { leading: true, trailing: false }
         );
 
-        await api.post(item.path, item.file, item.overwrite, onUpload).catch(Vue.prototype.$showError);
+        await api
+          .post(item.path, item.file, item.overwrite, onUpload)
+          .catch(Vue.prototype.$showError);
       }
 
       context.dispatch("finishUpload", item);

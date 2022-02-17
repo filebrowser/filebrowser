@@ -15,7 +15,13 @@
       </div>
 
       <div class="card-action">
-        <button type="submit" @click="$store.commit('closeHovers')" class="button button--flat" :aria-label="$t('buttons.close')" :title="$t('buttons.close')">
+        <button
+          type="submit"
+          @click="$store.commit('closeHovers')"
+          class="button button--flat"
+          :aria-label="$t('buttons.close')"
+          :title="$t('buttons.close')"
+        >
           {{ $t("buttons.close") }}
         </button>
       </div>

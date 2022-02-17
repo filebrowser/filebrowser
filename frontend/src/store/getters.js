@@ -14,7 +14,8 @@ const getters = {
     return Math.ceil((sum / totalSize) * 100);
   },
   filesInUploadCount: (state) => {
-    let total = Object.keys(state.upload.uploads).length + state.upload.queue.length;
+    let total =
+      Object.keys(state.upload.uploads).length + state.upload.queue.length;
     return total;
   },
   filesInUpload: (state) => {
