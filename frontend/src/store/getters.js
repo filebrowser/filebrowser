@@ -24,11 +24,17 @@ const getters = {
     for (let index in state.upload.uploads) {
       let upload = state.upload.uploads[index];
       let id = upload.id;
+      let type = upload.type;
       let name = decodeURIComponent(upload.path.replace(/^.*[\\/]/, ""));
       let progress = state.upload.progress[id];
       let size = state.upload.sizes[id];
 
-      files.push({ id, name, progress: Math.ceil((progress / size) * 100) });
+      files.push({
+        id,
+        name,
+        progress: Math.ceil((progress / size) * 100),
+        type,
+      });
     }
 
     return files.sort((a, b) => a.progress - b.progress);

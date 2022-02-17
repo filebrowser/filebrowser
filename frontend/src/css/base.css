@@ -150,6 +150,12 @@ main {
 
 .upload-files .file .file-name {
   font-size: 1.1em;
+  display: flex;
+  align-items: center;
+}
+
+.upload-files .file .file-name i {
+  margin-right: 5px;
 }
 
 .upload-files .file .file-progress {
@@ -168,13 +174,15 @@ main {
 
 .upload-files.closed .card-content {
   display: none;
-  padding: 0em 1em;
+  padding: 0em 1em 1em 1em;
 }
 
-.upload-files .card-title {
+.upload-files .card .card-title {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.8em;
+  padding: 1em 1em 0em;
 }
 
 .upload-files.closed .card-title {

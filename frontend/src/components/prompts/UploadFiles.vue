@@ -11,8 +11,8 @@
         <button
           class="action"
           @click="toggle"
-          :aria-label="$t('sidebar.newFolder')"
-          :title="$t('sidebar.newFolder')"
+          aria-label="Toggle file upload list"
+          title="Toggle file upload list"
         >
           <i class="material-icons">{{
             open ? "keyboard_arrow_down" : "keyboard_arrow_up"
@@ -20,9 +20,16 @@
         </button>
       </div>
 
-      <div class="card-content">
-        <div class="file" v-for="file in filesInUpload" :key="file.id">
-          <div class="file-name">{{ file.name }}</div>
+      <div class="card-content file-icons">
+        <div
+          class="file"
+          v-for="file in filesInUpload"
+          :key="file.id"
+          :data-type="file.type"
+        >
+          <div class="file-name">
+            <i class="material-icons"></i> {{ file.name }}
+          </div>
           <div class="file-progress">
             <div v-bind:style="{ width: file.progress + '%' }"></div>
           </div>
