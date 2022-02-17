@@ -26,6 +26,7 @@
           v-for="file in filesInUpload"
           :key="file.id"
           :data-type="file.type"
+          :aria-label="file.name"
         >
           <div class="file-name">
             <i class="material-icons"></i> {{ file.name }}
