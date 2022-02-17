@@ -52,3 +52,10 @@
   font-size: 0.7em;
   padding: 0.5em 1em;
 }
+
+@media (max-width: 450px) {
+  .upload-files .card.floating {
+    max-width: 100%;
+    width: 100%;
+  }
+}
