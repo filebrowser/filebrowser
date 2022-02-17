@@ -151,7 +151,7 @@
     "show": "Show",
     "size": "Size",
     "upload": "Upload",
-    "uploadFiles": "Files in upload",
+    "uploadFiles": "Uploading {files} files...",
     "uploadMessage": "Select an option to upload.",
     "optionalPassword": "Optional password"
   },

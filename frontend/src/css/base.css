@@ -136,9 +136,11 @@ main {
 }
 
 .upload-files .card.floating {
-  top: 4em;
   left: auto;
+  top: auto;
+  margin: 0;
   right: 0;
+  bottom: 0;
   transform: none;
 }
 
@@ -162,4 +164,20 @@ main {
   width: 0;
   transition: 0.2s ease width;
   border-radius: 10px;
+}
+
+.upload-files.closed .card-content {
+  display: none;
+  padding: 0em 1em;
+}
+
+.upload-files .card-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-files.closed .card-title {
+  font-size: 0.7em;
+  padding: 0.5em 1em;
 }

@@ -1,8 +1,23 @@
 <template>
-  <div class="upload-files">
+  <div
+    v-if="filesInUploadCount > 0"
+    class="upload-files"
+    v-bind:class="{ closed: !open }"
+  >
     <div class="card floating">
       <div class="card-title">
-        <h2>{{ $t("prompts.uploadFiles") }}</h2>
+        <h2>{{ $t("prompts.uploadFiles", { files: filesInUploadCount }) }}</h2>
+
+        <button
+          class="action"
+          @click="toggle"
+          :aria-label="$t('sidebar.newFolder')"
+          :title="$t('sidebar.newFolder')"
+        >
+          <i class="material-icons">{{
+            open ? "keyboard_arrow_down" : "keyboard_arrow_up"
+          }}</i>
+        </button>
       </div>
 
       <div class="card-content">
@@ -13,18 +28,6 @@
           </div>
         </div>
       </div>
-
-      <div class="card-action">
-        <button
-          type="submit"
-          @click="$store.commit('closeHovers')"
-          class="button button--flat"
-          :aria-label="$t('buttons.close')"
-          :title="$t('buttons.close')"
-        >
-          {{ $t("buttons.close") }}
-        </button>
-      </div>
     </div>
   </div>
 </template>
@@ -34,9 +37,18 @@ import { mapGetters } from "vuex";
 
 export default {
   name: "uploadFiles",
-  computed: {
-    ...mapGetters(["filesInUpload"]),
+  data: function () {
+    return {
+      open: false,
+    };
   },
-  methods: {},
+  computed: {
+    ...mapGetters(["filesInUpload", "filesInUploadCount"]),
+  },
+  methods: {
+    toggle: function () {
+      this.open = !this.open;
+    },
+  },
 };
 </script>
