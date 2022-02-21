@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.21.0](https://github.com/filebrowser/filebrowser/compare/v2.20.1...v2.21.0) (2022-02-21)
+
+
+### Features
+
+* add colorized file type icons ([2948589](https://github.com/filebrowser/filebrowser/commit/2948589fcde6d1dca7f3ea52a621d8213fa3300c))
+* add gallery view mode ([8888b9f](https://github.com/filebrowser/filebrowser/commit/8888b9f44640394df9e3583db4392472d7027a4b))
+* add Ukrainian translation / update Russian translation ([#1753](https://github.com/filebrowser/filebrowser/issues/1753)) ([665e458](https://github.com/filebrowser/filebrowser/commit/665e45889cd333f1e3500e4bf38d15d229c9fe2a))
+* add upload file list with progress ([#1825](https://github.com/filebrowser/filebrowser/issues/1825)) ([cf85404](https://github.com/filebrowser/filebrowser/commit/cf85404dd25cd7fdd73aa32878b4dc5f85ee3e96))
+* smaller column width to fit 2 columns in landscape mobiles ([7870e89](https://github.com/filebrowser/filebrowser/commit/7870e89bc04f1494f2705795476b5f1c9d621e38))
+* use real image path to calculate cache key ([c198723](https://github.com/filebrowser/filebrowser/commit/c1987237d05adcce77c614e5247a181ae5cdfacd))
+
+
+### Bug Fixes
+
+* correctly handle non-ascii passwords for shared resources ([c782f21](https://github.com/filebrowser/filebrowser/commit/c782f21b0fa4511a15e7015117d075eaf5ea332c))
+* don't expose scope for non-admin users ([0942fc7](https://github.com/filebrowser/filebrowser/commit/0942fc7042fd949cce91855169d0bcf16eb75771))
+* open all the pdf files correctly ([#1742](https://github.com/filebrowser/filebrowser/issues/1742)) ([949f0f2](https://github.com/filebrowser/filebrowser/commit/949f0f277f6004904b3edfa716a8365ec93fa0fa))
+
+
+### Build
+
+* **deps:** bump browserslist from 4.16.3 to 4.19.1 in /frontend ([8089007](https://github.com/filebrowser/filebrowser/commit/80890075e802e2a4217edbb01d6417122d702f5e))
+* **deps:** bump dns-packet from 1.3.1 to 1.3.4 in /frontend ([a73d7f1](https://github.com/filebrowser/filebrowser/commit/a73d7f14b787935c6ebe525dba64b65f8ed733e2))
+* **deps:** bump follow-redirects from 1.13.3 to 1.14.8 in /frontend ([f1f7f17](https://github.com/filebrowser/filebrowser/commit/f1f7f17ade8d40fc6cfb22c79960bce299876b56))
+* **deps:** bump hosted-git-info from 2.8.8 to 2.8.9 in /frontend ([e7659ea](https://github.com/filebrowser/filebrowser/commit/e7659ea36bdf780ce17005f7170a2fef02a2d5e5))
+* **deps:** bump path-parse from 1.0.6 to 1.0.7 in /frontend ([c014966](https://github.com/filebrowser/filebrowser/commit/c01496624a7ebfc8a7c256bd919a400367281cbb))
+* **deps:** bump postcss from 7.0.35 to 7.0.39 in /frontend ([9182d33](https://github.com/filebrowser/filebrowser/commit/9182d33e1cc375473fb18989a92d20252884f096))
+* **deps:** bump ssri from 6.0.1 to 6.0.2 in /frontend ([3717186](https://github.com/filebrowser/filebrowser/commit/371718634b11f32e68165f31c51b6b1139c829ec))
+* **deps:** bump tar from 6.1.0 to 6.1.11 in /frontend ([010d16f](https://github.com/filebrowser/filebrowser/commit/010d16fc1d8f0200e5662943aef17ee89c5877b7))
+* **deps:** bump url-parse from 1.5.1 to 1.5.4 in /frontend ([8906408](https://github.com/filebrowser/filebrowser/commit/8906408a8f0ed86d1e11ea90fc573b36815c9c0d))
+* **deps:** bump url-parse from 1.5.4 to 1.5.7 in /frontend ([228ebea](https://github.com/filebrowser/filebrowser/commit/228ebea66cc871b33459406590a80ef906298e7d))
+* **deps:** bump ws from 6.2.1 to 6.2.2 in /frontend ([73c8073](https://github.com/filebrowser/filebrowser/commit/73c80732d934bc8802a6d7c7a559cad37df405f0))
+
 ### [2.20.1](https://github.com/filebrowser/filebrowser/compare/v2.20.0...v2.20.1) (2021-12-21)
 
 
