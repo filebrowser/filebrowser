@@ -5,7 +5,7 @@ export async function fetch(url, password = "") {
   url = removePrefix(url);
 
   const res = await fetchURL(`/api/public/share${url}`, {
-    headers: { "X-SHARE-PASSWORD": password },
+    headers: { "X-SHARE-PASSWORD": encodeURIComponent(password) },
   });
 
   if (res.status === 200) {
