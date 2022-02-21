@@ -1,5 +1,5 @@
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   padding-top: 4em;
   background-color: #fafafa;
   color: #333333;
@@ -13,7 +13,7 @@ body {
 *:hover,
 *:active,
 *:focus {
-  outline: 0
+  outline: 0;
 }
 
 a {
@@ -44,7 +44,7 @@ i.spin {
 }
 
 #app {
-  transition: .2s ease padding;
+  transition: 0.2s ease padding;
 }
 
 #app.multiple {
@@ -63,17 +63,17 @@ nav .action {
   display: block;
   border-radius: 0;
   font-size: 1.1em;
-  padding: .5em;
+  padding: 0.5em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-nav>div {
+nav > div {
   border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-nav .action>* {
+nav .action > * {
   vertical-align: middle;
 }
 
@@ -97,19 +97,25 @@ main {
 
 .breadcrumbs a {
   color: inherit;
-  transition: .1s ease-in;
-  border-radius: .125em;
+  transition: 0.1s ease-in;
+  border-radius: 0.125em;
 }
 
 .breadcrumbs a:hover {
-  background-color: rgba(0,0,0, 0.05);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .breadcrumbs span a {
-  padding: .2em;
+  padding: 0.2em;
 }
 
-#progress {
+.files {
+  position: absolute;
+  bottom: 30px;
+  width: 100%;
+}
+
+.progress {
   position: fixed;
   top: 0;
   left: 0;
@@ -118,11 +124,11 @@ main {
   z-index: 9999999999;
 }
 
-#progress div {
+.progress div {
   height: 100%;
   background-color: #40c4ff;
   width: 0;
-  transition: .2s ease width;
+  transition: 0.2s ease width;
 }
 
 .break-word {

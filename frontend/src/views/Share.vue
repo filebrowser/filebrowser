@@ -114,7 +114,7 @@
           <div class="share__box__header" v-if="req.isDir">
             {{ $t("files.files") }}
           </div>
-          <div id="listing" class="list">
+          <div id="listing" class="list file-icons">
             <item
               v-for="item in req.items.slice(0, this.showLimit)"
               :key="base64(item.name)"

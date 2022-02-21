@@ -146,7 +146,12 @@
           multiple
         />
       </div>
-      <div v-else id="listing" ref="listing" :class="user.viewMode">
+      <div
+        v-else
+        id="listing"
+        ref="listing"
+        :class="user.viewMode + ' file-icons'"
+      >
         <div>
           <div class="item header">
             <div></div>
