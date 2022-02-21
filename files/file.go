@@ -185,6 +185,19 @@ func (i *FileInfo) Checksum(algo string) error {
 	return nil
 }
 
+func (i *FileInfo) RealPath() string {
+	if realPathFs, ok := i.Fs.(interface {
+		RealPath(name string) (fPath string, err error)
+	}); ok {
+		realPath, err := realPathFs.RealPath(i.Path)
+		if err == nil {
+			return realPath
+		}
+	}
+
+	return i.Path
+}
+
 //nolint:goconst
 //TODO: use constants
 func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {

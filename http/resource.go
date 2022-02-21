@@ -283,7 +283,7 @@ func writeFile(fs afero.Fs, dst string, in io.Reader) (os.FileInfo, error) {
 func delThumbs(ctx context.Context, fileCache FileCache, file *files.FileInfo) error {
 	for _, previewSizeName := range PreviewSizeNames() {
 		size, _ := ParsePreviewSize(previewSizeName)
-		if err := fileCache.Delete(ctx, previewCacheKey(file.Path, file.ModTime.Unix(), size)); err != nil {
+		if err := fileCache.Delete(ctx, previewCacheKey(file, size)); err != nil {
 			return err
 		}
 	}
