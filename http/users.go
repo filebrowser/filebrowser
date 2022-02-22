@@ -94,7 +94,7 @@ var userGetHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 	}
 
 	u.Password = ""
-	if !u.Perm.Admin {
+	if !d.user.Perm.Admin {
 		u.Scope = ""
 	}
 	return renderJSON(w, r, u)
