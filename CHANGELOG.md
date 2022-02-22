@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.21.1](https://github.com/filebrowser/filebrowser/compare/v2.21.0...v2.21.1) (2022-02-22)
+
+
+### Bug Fixes
+
+* display user scope for admin users ([#1834](https://github.com/filebrowser/filebrowser/issues/1834)) ([6366cf0](https://github.com/filebrowser/filebrowser/commit/6366cf0b181f13eac38f69f1760d6f6f0586a5d1))
+
 ## [2.21.0](https://github.com/filebrowser/filebrowser/compare/v2.20.1...v2.21.0) (2022-02-21)
 
 
