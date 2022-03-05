@@ -28,11 +28,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import Errors from "@/views/Errors";
 import Preview from "@/views/files/Preview";
 import Listing from "@/views/files/Listing";
-import {
-  name,
-} from "@/utils/constants";
-
-
+import { name } from "@/utils/constants";
 
 function clean(path) {
   return path.endsWith("/") ? path.slice(0, -1) : path;

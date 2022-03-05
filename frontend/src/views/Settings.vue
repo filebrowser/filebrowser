@@ -50,12 +50,10 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from "vuex";
+import { mapMutations, mapState } from "vuex";
 
 import HeaderBar from "@/components/header/HeaderBar";
-import {
-  name,
-} from "@/utils/constants";
+import { name } from "@/utils/constants";
 
 export default {
   name: "settings",
@@ -80,9 +78,8 @@ export default {
   methods: {
     ...mapMutations(["setLoading"]),
     async fetchData() {
-        document.title = document.title + ` - ${this.name}`;
+      document.title = document.title + ` - ${this.name}`;
     },
   },
-
 };
 </script>
