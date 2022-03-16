@@ -61,7 +61,6 @@ export default {
   },
   computed: {
     ...mapState(["user", "loading"]),
-    name: () => name,
   },
 };
 </script>
