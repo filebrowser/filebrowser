@@ -69,7 +69,6 @@ export default {
     };
   },
   mounted() {
-    window.document.title = window.document.title + " - " + name;
     if (!recaptcha) return;
 
     window.grecaptcha.ready(function () {

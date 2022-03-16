@@ -50,10 +50,9 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from "vuex";
+import { mapState } from "vuex";
 
 import HeaderBar from "@/components/header/HeaderBar";
-import { name } from "@/utils/constants";
 
 export default {
   name: "settings",
@@ -63,23 +62,6 @@ export default {
   computed: {
     ...mapState(["user", "loading"]),
     name: () => name,
-  },
-  created() {
-    this.fetchData();
-  },
-  watch: {
-    $route: "fetchData",
-    reload: function (value) {
-      if (value === true) {
-        this.fetchData();
-      }
-    },
-  },
-  methods: {
-    ...mapMutations(["setLoading"]),
-    async fetchData() {
-      document.title = document.title + ` - ${this.name}`;
-    },
   },
 };
 </script>
