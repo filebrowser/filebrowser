@@ -12,7 +12,7 @@ import ProfileSettings from "@/views/settings/Profile";
 import Shares from "@/views/settings/Shares";
 import Errors from "@/views/Errors";
 import store from "@/store";
-import { baseURL } from "@/utils/constants";
+import { baseURL, name } from "@/utils/constants";
 
 Vue.use(Router);
 
@@ -29,7 +29,7 @@ const router = new Router({
           return next({ path: "/files" });
         }
 
-        document.title = "Login";
+        document.title = "Login - " + name;
         next();
       },
     },
@@ -140,7 +140,7 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  document.title = to.name;
+  document.title = to.name + " - " + name;
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!store.getters.isLogged) {
