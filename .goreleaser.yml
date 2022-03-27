@@ -3,10 +3,6 @@ project_name: filebrowser
 env:
   - GO111MODULE=on
 
-before:
-  hooks:
-    - go mod download
-
 build:
   env:
     - CGO_ENABLED=0
@@ -19,10 +15,6 @@ build:
     - linux
     - windows
     - freebsd
-    - netbsd
-    - openbsd
-    - dragonfly
-    - solaris
   goarch:
     - amd64
     - 386
@@ -35,13 +27,7 @@ build:
   ignore:
     - goos: darwin
       goarch: 386
-    - goos: openbsd
-      goarch: arm
     - goos: freebsd
-      goarch: arm
-    - goos: netbsd
-      goarch: arm
-    - goos: solaris
       goarch: arm
 
 archives:
@@ -55,53 +41,200 @@ archives:
 dockers:
   -
     dockerfile: Dockerfile
-    binaries:
-      - filebrowser
+    use: buildx
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/amd64"
     goos: linux
     goarch: amd64
-    goarm: ''
     image_templates:
-      - "filebrowser/filebrowser:latest"
-      - "filebrowser/filebrowser:{{ .Tag }}"
-      - "filebrowser/filebrowser:v{{ .Major }}"
+      - "filebrowser/filebrowser:{{ .Tag }}-amd64"
+      - "filebrowser/filebrowser:v{{ .Major }}-amd64"
     extra_files:
-      - .docker.json
+      - docker_config.json
   -
     dockerfile: Dockerfile
-    binaries:
-      - filebrowser
+    use: buildx
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/arm64"
+    goos: linux
+    goarch: arm64
+    image_templates:
+      - "filebrowser/filebrowser:{{ .Tag }}-arm64"
+      - "filebrowser/filebrowser:v{{ .Major }}-arm64"
+    extra_files:
+      - docker_config.json
+  -
+    dockerfile: Dockerfile
+    use: buildx
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/arm/v6"
     goos: linux
     goarch: arm
-    goarm: '5'
+    goarm: '6'
     image_templates:
-      - "filebrowser/filebrowser:pi"
-      - "filebrowser/filebrowser:{{ .Tag }}-pi"
-      - "filebrowser/filebrowser:v{{ .Major }}-pi"
+      - "filebrowser/filebrowser:{{ .Tag }}-armv6"
+      - "filebrowser/filebrowser:v{{ .Major }}-armv6"
     extra_files:
-      - .docker.json
+      - docker_config.json
   -
-    dockerfile: Dockerfile.alpine
-    binaries:
-      - filebrowser
+    dockerfile: Dockerfile
+    use: buildx
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/arm/v7"
+    goos: linux
+    goarch: arm
+    goarm: '7'
+    image_templates:
+      - "filebrowser/filebrowser:{{ .Tag }}-armv7"
+      - "filebrowser/filebrowser:v{{ .Major }}-armv7"
+    extra_files:
+      - docker_config.json
+## s6 based docker images
+  -
+    dockerfile: Dockerfile.s6
+    use: buildx
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/amd64"
     goos: linux
     goarch: amd64
-    goarm: ''
     image_templates:
-      - "filebrowser/filebrowser:alpine"
-      - "filebrowser/filebrowser:{{ .Tag }}-alpine"
-      - "filebrowser/filebrowser:v{{ .Major }}-alpine"
+      - "filebrowser/filebrowser:{{ .Tag }}-amd64-s6"
+      - "filebrowser/filebrowser:v{{ .Major }}-amd64-s6"
     extra_files:
-      - .docker.json
+      - docker/root
   -
-    dockerfile: Dockerfile.debian
-    binaries:
-      - filebrowser
+    dockerfile: Dockerfile.s6.aarch64
+    use: buildx
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/arm64"
     goos: linux
-    goarch: amd64
-    goarm: ''
+    goarch: arm64
     image_templates:
-      - "filebrowser/filebrowser:debian"
-      - "filebrowser/filebrowser:{{ .Tag }}-debian"
-      - "filebrowser/filebrowser:v{{ .Major }}-debian"
+      - "filebrowser/filebrowser:{{ .Tag }}-arm64-s6"
+      - "filebrowser/filebrowser:v{{ .Major }}-arm64-s6"
     extra_files:
-      - .docker.json
+      - docker/root
+  -
+    dockerfile: Dockerfile.s6.armhf
+    use: buildx
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/arm/v6"
+    goos: linux
+    goarch: arm
+    goarm: '6'
+    image_templates:
+      - "filebrowser/filebrowser:{{ .Tag }}-armv6-s6"
+      - "filebrowser/filebrowser:v{{ .Major }}-armv6-s6"
+    extra_files:
+      - docker/root
+  -
+    dockerfile: Dockerfile.s6.armhf
+    use: buildx
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/arm/v7"
+    goos: linux
+    goarch: arm
+    goarm: '7'
+    image_templates:
+      - "filebrowser/filebrowser:{{ .Tag }}-armv7-s6"
+      - "filebrowser/filebrowser:v{{ .Major }}-armv7-s6"
+    extra_files:
+      - docker/root
+docker_manifests:
+  - name_template: "filebrowser/filebrowser:latest"
+    image_templates:
+      - "filebrowser/filebrowser:{{ .Tag }}-amd64"
+      - "filebrowser/filebrowser:{{ .Tag }}-arm64"
+      - "filebrowser/filebrowser:{{ .Tag }}-armv6"
+      - "filebrowser/filebrowser:{{ .Tag }}-armv7"
+  - name_template: "filebrowser/filebrowser:{{ .Tag }}"
+    image_templates:
+      - "filebrowser/filebrowser:{{ .Tag }}-amd64"
+      - "filebrowser/filebrowser:{{ .Tag }}-arm64"
+      - "filebrowser/filebrowser:{{ .Tag }}-armv6"
+      - "filebrowser/filebrowser:{{ .Tag }}-armv7"
+  - name_template: "filebrowser/filebrowser:v{{ .Major }}"
+    image_templates:
+      - "filebrowser/filebrowser:v{{ .Major }}-amd64"
+      - "filebrowser/filebrowser:v{{ .Major }}-arm64"
+      - "filebrowser/filebrowser:v{{ .Major }}-armv6"
+      - "filebrowser/filebrowser:v{{ .Major }}-armv7"
+## s6 image manifests
+  - name_template: "filebrowser/filebrowser:s6"
+    image_templates:
+      - "filebrowser/filebrowser:{{ .Tag }}-amd64-s6"
+      - "filebrowser/filebrowser:{{ .Tag }}-arm64-s6"
+      - "filebrowser/filebrowser:{{ .Tag }}-armv6-s6"
+      - "filebrowser/filebrowser:{{ .Tag }}-armv7-s6"
+  - name_template: "filebrowser/filebrowser:{{ .Tag }}-s6"
+    image_templates:
+      - "filebrowser/filebrowser:{{ .Tag }}-amd64-s6"
+      - "filebrowser/filebrowser:{{ .Tag }}-arm64-s6"
+      - "filebrowser/filebrowser:{{ .Tag }}-armv6-s6"
+      - "filebrowser/filebrowser:{{ .Tag }}-armv7-s6"
+  - name_template: "filebrowser/filebrowser:v{{ .Major }}-s6"
+    image_templates:
+      - "filebrowser/filebrowser:v{{ .Major }}-amd64-s6"
+      - "filebrowser/filebrowser:v{{ .Major }}-arm64-s6"
+      - "filebrowser/filebrowser:v{{ .Major }}-armv6-s6"
+      - "filebrowser/filebrowser:v{{ .Major }}-armv7-s6"
+brews:
+  - name: filebrowser
+    tap:
+      owner: filebrowser
+      name: homebrew-tap
+    folder: Formula
+    homepage: https://filebrowser.org
+    commit_author:
+      name: FileBrowser Robot
+      email: robot@filebrowser.org
+    description: File Browser is a create-your-own-cloud-kind of software where you can install it on a server, direct it to a path and then access your files through a nice web interface
+    license: "MIT"

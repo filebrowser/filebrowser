@@ -26,7 +26,7 @@ type JSONAuth struct {
 }
 
 // Auth authenticates the user via a json in content body.
-func (a JSONAuth) Auth(r *http.Request, sto *users.Storage, root string) (*users.User, error) {
+func (a JSONAuth) Auth(r *http.Request, sto users.Store, root string) (*users.User, error) {
 	var cred jsonCred
 
 	if r.Body == nil {
@@ -40,7 +40,7 @@ func (a JSONAuth) Auth(r *http.Request, sto *users.Storage, root string) (*users
 
 	// If ReCaptcha is enabled, check the code.
 	if a.ReCaptcha != nil && len(a.ReCaptcha.Secret) > 0 {
-		ok, err := a.ReCaptcha.Ok(cred.ReCaptcha) //nolint:shadow
+		ok, err := a.ReCaptcha.Ok(cred.ReCaptcha) //nolint:govet
 
 		if err != nil {
 			return nil, err

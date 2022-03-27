@@ -7,12 +7,12 @@
         <div class="bounce3"></div>
       </div>
     </div>
-    <model-obj v-if="req.extension.match(/\.obj$/i)" :src="raw" :backgroundAlpha="0" :rotation="rotation" @on-mousedown="onMousedown" @on-load="onLoad" @on-error="onError"></model-obj>
-    <model-stl v-else-if="req.extension.match(/\.stl$/i)" :src="raw" :backgroundAlpha="0" :rotation="rotation" @on-mousedown="onMousedown" @on-load="onLoad" @on-error="onError"></model-stl>
-    <model-ply v-else-if="req.extension.match(/\.ply$/i)" :src="raw" :backgroundAlpha="0" :rotation="rotation" @on-mousedown="onMousedown" @on-load="onLoad" @on-error="onError"></model-ply>
-    <model-fbx v-else-if="req.extension.match(/\.fbx$/i)" :src="raw" :backgroundAlpha="0" :rotation="rotation" @on-mousedown="onMousedown" @on-load="onLoad" @on-error="onError"></model-fbx>
-    <model-gltf v-else-if="req.extension.match(/\.gltf$/i)" :src="raw" :backgroundAlpha="0" :rotation="rotation" @on-mousedown="onMousedown" @on-load="onLoad" @on-error="onError"></model-gltf>
-    <model-collada v-else-if="req.extension.match(/\.dae$/i)" :src="raw" :backgroundAlpha="0" :rotation="rotation" @on-mousedown="onMousedown" @on-load="onLoad" @on-error="onError"></model-collada>
+    <model-obj v-if="req.extension.match(/\.obj$/i)" :src="raw" :backgroundAlpha="0" :rotation="rotation" @on-click="onInteract" @on-load="onLoad" @on-error="onError"></model-obj>
+    <model-stl v-else-if="req.extension.match(/\.stl$/i)" :src="raw" :backgroundAlpha="0" :rotation="rotation" @on-click="onInteract" @on-load="onLoad" @on-error="onError"></model-stl>
+    <model-ply v-else-if="req.extension.match(/\.ply$/i)" :src="raw" :backgroundAlpha="0" :rotation="rotation" @on-click="onInteract" @on-load="onLoad" @on-error="onError"></model-ply>
+    <model-fbx v-else-if="req.extension.match(/\.fbx$/i)" :src="raw" :backgroundAlpha="0" :rotation="rotation" @on-click="onInteract" @on-load="onLoad" @on-error="onError"></model-fbx>
+    <model-gltf v-else-if="req.extension.match(/\.gltf$/i)" :src="raw" :backgroundAlpha="0" :rotation="rotation" @on-click="onInteract" @on-load="onLoad" @on-error="onError"></model-gltf>
+    <model-collada v-else-if="req.extension.match(/\.dae$/i)" :src="raw" :backgroundAlpha="0" :rotation="rotation" @on-click="onInteract" @on-load="onLoad" @on-error="onError"></model-collada>
   </div>
 </template>
 <script>
@@ -63,7 +63,7 @@ export default {
     onError () {
       this.loadingPreview = false
     },
-    onMousedown () {
+    onInteract () {
       this.rotating = false
     },
     rotate () {

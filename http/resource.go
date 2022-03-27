@@ -1,9 +1,9 @@
 package http
 
 import (
+	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -26,6 +26,7 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		Expand:     true,
 		ReadHeader: d.server.TypeDetectionByHeader,
 		Checker:    d,
+		Content:    true,
 	})
 	if err != nil {
 		return errToStatus(err), err
@@ -62,7 +63,7 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			Fs:         d.user.Fs,
 			Path:       r.URL.Path,
 			Modify:     d.user.Perm.Modify,
-			Expand:     true,
+			Expand:     false,
 			ReadHeader: d.server.TypeDetectionByHeader,
 			Checker:    d,
 		})
@@ -71,11 +72,9 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 		}
 
 		// delete thumbnails
-		for _, previewSizeName := range PreviewSizeNames() {
-			size, _ := ParsePreviewSize(previewSizeName)
-			if err := fileCache.Delete(r.Context(), previewCacheKey(file.Path, size)); err != nil { //nolint:govet
-				return errToStatus(err), err
-			}
+		err = delThumbs(r.Context(), fileCache, file)
+		if err != nil {
+			return errToStatus(err), err
 		}
 
 		err = d.RunHook(func() error {
@@ -90,126 +89,137 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 	})
 }
 
-var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	if !d.user.Perm.Create && r.Method == http.MethodPost {
-		return http.StatusForbidden, nil
-	}
-
-	if !d.user.Perm.Modify && r.Method == http.MethodPut {
-		return http.StatusForbidden, nil
-	}
-
-	defer func() {
-		_, _ = io.Copy(ioutil.Discard, r.Body)
-	}()
-
-	// For directories, only allow POST for creation.
-	if strings.HasSuffix(r.URL.Path, "/") {
-		if r.Method == http.MethodPut {
-			return http.StatusMethodNotAllowed, nil
+func resourcePostHandler(fileCache FileCache) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
+			return http.StatusForbidden, nil
 		}
 
-		err := d.user.Fs.MkdirAll(r.URL.Path, 0775)
+		// Directories creation on POST.
+		if strings.HasSuffix(r.URL.Path, "/") {
+			err := d.user.Fs.MkdirAll(r.URL.Path, 0775) //nolint:gomnd
+			return errToStatus(err), err
+		}
+
+		file, err := files.NewFileInfo(files.FileOptions{
+			Fs:         d.user.Fs,
+			Path:       r.URL.Path,
+			Modify:     d.user.Perm.Modify,
+			Expand:     false,
+			ReadHeader: d.server.TypeDetectionByHeader,
+			Checker:    d,
+		})
+		if err == nil {
+			if r.URL.Query().Get("override") != "true" {
+				return http.StatusConflict, nil
+			}
+
+			// Permission for overwriting the file
+			if !d.user.Perm.Modify {
+				return http.StatusForbidden, nil
+			}
+
+			err = delThumbs(r.Context(), fileCache, file)
+			if err != nil {
+				return errToStatus(err), err
+			}
+		}
+
+		err = d.RunHook(func() error {
+			info, writeErr := writeFile(d.user.Fs, r.URL.Path, r.Body)
+			if writeErr != nil {
+				return writeErr
+			}
+
+			etag := fmt.Sprintf(`"%x%x"`, info.ModTime().UnixNano(), info.Size())
+			w.Header().Set("ETag", etag)
+			return nil
+		}, "upload", r.URL.Path, "", d.user)
+
+		if err != nil {
+			_ = d.user.Fs.RemoveAll(r.URL.Path)
+		}
+
 		return errToStatus(err), err
+	})
+}
+
+var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	if !d.user.Perm.Modify || !d.Check(r.URL.Path) {
+		return http.StatusForbidden, nil
 	}
 
-	if r.Method == http.MethodPost && r.URL.Query().Get("override") != "true" {
-		if _, err := d.user.Fs.Stat(r.URL.Path); err == nil {
-			return http.StatusConflict, nil
-		}
+	// Only allow PUT for files.
+	if strings.HasSuffix(r.URL.Path, "/") {
+		return http.StatusMethodNotAllowed, nil
 	}
 
-	action := "upload"
-	if r.Method == http.MethodPut {
-		action = "save"
+	exists, err := afero.Exists(d.user.Fs, r.URL.Path)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+	if !exists {
+		return http.StatusNotFound, nil
 	}
 
-	err := d.RunHook(func() error {
-		dir, _ := path.Split(r.URL.Path)
-		err := d.user.Fs.MkdirAll(dir, 0775)
-		if err != nil {
-			return err
-		}
-
-		file, err := d.user.Fs.OpenFile(r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-
-		_, err = io.Copy(file, r.Body)
-		if err != nil {
-			return err
-		}
-
-		// Gets the info about the file.
-		info, err := file.Stat()
-		if err != nil {
-			return err
+	err = d.RunHook(func() error {
+		info, writeErr := writeFile(d.user.Fs, r.URL.Path, r.Body)
+		if writeErr != nil {
+			return writeErr
 		}
 
 		etag := fmt.Sprintf(`"%x%x"`, info.ModTime().UnixNano(), info.Size())
 		w.Header().Set("ETag", etag)
 		return nil
-	}, action, r.URL.Path, "", d.user)
-
-	if err != nil {
-		_ = d.user.Fs.RemoveAll(r.URL.Path)
-	}
+	}, "save", r.URL.Path, "", d.user)
 
 	return errToStatus(err), err
 })
 
-var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	src := r.URL.Path
-	dst := r.URL.Query().Get("destination")
-	action := r.URL.Query().Get("action")
-	dst, err := url.QueryUnescape(dst)
-	if err != nil {
+func resourcePatchHandler(fileCache FileCache) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		src := r.URL.Path
+		dst := r.URL.Query().Get("destination")
+		action := r.URL.Query().Get("action")
+		dst, err := url.QueryUnescape(dst)
+		if !d.Check(src) || !d.Check(dst) {
+			return http.StatusForbidden, nil
+		}
+		if err != nil {
+			return errToStatus(err), err
+		}
+		if dst == "/" || src == "/" {
+			return http.StatusForbidden, nil
+		}
+
+		err = checkParent(src, dst)
+		if err != nil {
+			return http.StatusBadRequest, err
+		}
+
+		override := r.URL.Query().Get("override") == "true"
+		rename := r.URL.Query().Get("rename") == "true"
+		if !override && !rename {
+			if _, err = d.user.Fs.Stat(dst); err == nil {
+				return http.StatusConflict, nil
+			}
+		}
+		if rename {
+			dst = addVersionSuffix(dst, d.user.Fs)
+		}
+
+		// Permission for overwriting the file
+		if override && !d.user.Perm.Modify {
+			return http.StatusForbidden, nil
+		}
+
+		err = d.RunHook(func() error {
+			return patchAction(r.Context(), action, src, dst, d, fileCache)
+		}, action, src, dst, d.user)
+
 		return errToStatus(err), err
-	}
-	if dst == "/" || src == "/" {
-		return http.StatusForbidden, nil
-	}
-	if err = checkParent(src, dst); err != nil {
-		return http.StatusBadRequest, err
-	}
-
-	override := r.URL.Query().Get("override") == "true"
-	rename := r.URL.Query().Get("rename") == "true"
-	if !override && !rename {
-		if _, err = d.user.Fs.Stat(dst); err == nil {
-			return http.StatusConflict, nil
-		}
-	}
-	if rename {
-		dst = addVersionSuffix(dst, d.user.Fs)
-	}
-
-	err = d.RunHook(func() error {
-		switch action {
-		// TODO: use enum
-		case "copy":
-			if !d.user.Perm.Create {
-				return errors.ErrPermissionDenied
-			}
-
-			return fileutils.Copy(d.user.Fs, src, dst)
-		case "rename":
-			if !d.user.Perm.Rename {
-				return errors.ErrPermissionDenied
-			}
-			src = path.Clean("/" + src)
-			dst = path.Clean("/" + dst)
-
-			return fileutils.MoveFile(d.user.Fs, src, dst)
-		default:
-			return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
-		}
-	}, action, src, dst, d.user)
-
-	return errToStatus(err), err
-})
+	})
+}
 
 func checkParent(src, dst string) error {
 	rel, err := filepath.Rel(src, dst)
@@ -241,4 +251,82 @@ func addVersionSuffix(source string, fs afero.Fs) string {
 	}
 
 	return source
+}
+
+func writeFile(fs afero.Fs, dst string, in io.Reader) (os.FileInfo, error) {
+	dir, _ := path.Split(dst)
+	err := fs.MkdirAll(dir, 0775) //nolint:gomnd
+	if err != nil {
+		return nil, err
+	}
+
+	file, err := fs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775) //nolint:gomnd
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	_, err = io.Copy(file, in)
+	if err != nil {
+		return nil, err
+	}
+
+	// Gets the info about the file.
+	info, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+
+	return info, nil
+}
+
+func delThumbs(ctx context.Context, fileCache FileCache, file *files.FileInfo) error {
+	for _, previewSizeName := range PreviewSizeNames() {
+		size, _ := ParsePreviewSize(previewSizeName)
+		if err := fileCache.Delete(ctx, previewCacheKey(file, size)); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func patchAction(ctx context.Context, action, src, dst string, d *data, fileCache FileCache) error {
+	switch action {
+	// TODO: use enum
+	case "copy":
+		if !d.user.Perm.Create {
+			return errors.ErrPermissionDenied
+		}
+
+		return fileutils.Copy(d.user.Fs, src, dst)
+	case "rename":
+		if !d.user.Perm.Rename {
+			return errors.ErrPermissionDenied
+		}
+		src = path.Clean("/" + src)
+		dst = path.Clean("/" + dst)
+
+		file, err := files.NewFileInfo(files.FileOptions{
+			Fs:         d.user.Fs,
+			Path:       src,
+			Modify:     d.user.Perm.Modify,
+			Expand:     false,
+			ReadHeader: false,
+			Checker:    d,
+		})
+		if err != nil {
+			return err
+		}
+
+		// delete thumbnails
+		err = delThumbs(ctx, fileCache, file)
+		if err != nil {
+			return err
+		}
+
+		return fileutils.MoveFile(d.user.Fs, src, dst)
+	default:
+		return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
+	}
 }

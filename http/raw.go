@@ -1,17 +1,15 @@
 package http
 
 import (
-	"bytes"
 	"errors"
-	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	gopath "path"
 	"path/filepath"
 	"strings"
 
-	"github.com/mholt/archiver"
-	"github.com/spf13/afero"
+	"github.com/mholt/archiver/v3"
 
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
@@ -33,7 +31,7 @@ func parseQueryFiles(r *http.Request, f *files.FileInfo, _ *users.User) ([]strin
 		fileSlice = append(fileSlice, f.Path)
 	} else {
 		for _, name := range names {
-			name, err := url.QueryUnescape(strings.Replace(name, "+", "%2B", -1)) //nolint:shadow
+			name, err := url.QueryUnescape(strings.Replace(name, "+", "%2B", -1)) //nolint:govet
 			if err != nil {
 				return nil, err
 			}
@@ -108,8 +106,6 @@ var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) 
 })
 
 func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
-	// Checks are always done with paths with "/" as path separator.
-	path = strings.Replace(path, "\\", "/", -1)
 	if !d.Check(path) {
 		return nil
 	}
@@ -119,28 +115,25 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 		return err
 	}
 
-	var (
-		file          afero.File
-		arcReadCloser = ioutil.NopCloser(&bytes.Buffer{})
-	)
-	if !files.IsNamedPipe(info.Mode()) {
-		file, err = d.user.Fs.Open(path)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-		arcReadCloser = file
+	if !info.IsDir() && !info.Mode().IsRegular() {
+		return nil
 	}
+
+	file, err := d.user.Fs.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
 
 	if path != commonPath {
 		filename := strings.TrimPrefix(path, commonPath)
-		filename = strings.TrimPrefix(filename, "/")
+		filename = strings.TrimPrefix(filename, string(filepath.Separator))
 		err = ar.Write(archiver.File{
 			FileInfo: archiver.FileInfo{
 				FileInfo:   info,
 				CustomName: filename,
 			},
-			ReadCloser: arcReadCloser,
+			ReadCloser: file,
 		})
 		if err != nil {
 			return err
@@ -154,9 +147,10 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 		}
 
 		for _, name := range names {
-			err = addFile(ar, d, filepath.Join(path, name), commonPath)
+			fPath := filepath.Join(path, name)
+			err = addFile(ar, d, fPath, commonPath)
 			if err != nil {
-				return err
+				log.Printf("Failed to archive %s: %v", fPath, err)
 			}
 		}
 	}
@@ -175,25 +169,30 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 		return http.StatusInternalServerError, err
 	}
 
-	name := file.Name
-	if name == "." || name == "" {
-		name = "archive"
-	}
-	name += extension
-	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))
-
 	err = ar.Create(w)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 	defer ar.Close()
 
-	commonDir := fileutils.CommonPrefix('/', filenames...)
+	commonDir := fileutils.CommonPrefix(filepath.Separator, filenames...)
+
+	name := filepath.Base(commonDir)
+	if name == "." || name == "" || name == string(filepath.Separator) {
+		name = file.Name
+	}
+	// Prefix used to distinguish a filelist generated
+	// archive from the full directory archive
+	if len(filenames) > 1 {
+		name = "_" + name
+	}
+	name += extension
+	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))
 
 	for _, fname := range filenames {
 		err = addFile(ar, d, fname, commonDir)
 		if err != nil {
-			return http.StatusInternalServerError, err
+			log.Printf("Failed to archive %s: %v", fname, err)
 		}
 	}
 
@@ -209,6 +208,7 @@ func rawFileHandler(w http.ResponseWriter, r *http.Request, file *files.FileInfo
 
 	setContentDisposition(w, r, file)
 
+	w.Header().Set("Cache-Control", "private")
 	http.ServeContent(w, r, file.Name, file.ModTime, fd)
 	return 0, nil
 }

@@ -1,15 +1,15 @@
-FROM alpine:latest as alpine
-RUN apk --update add ca-certificates
-RUN apk --update add mailcap
+FROM alpine:latest
+RUN apk --update add ca-certificates \
+                     mailcap \
+                     curl
 
-FROM scratch
-COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=alpine /etc/mime.types /etc/mime.types
+HEALTHCHECK --start-period=2s --interval=5s --timeout=3s \
+  CMD curl -f http://localhost/health || exit 1
 
 VOLUME /srv
 EXPOSE 80
 
-COPY .docker.json /.filebrowser.json
+COPY docker_config.json /.filebrowser.json
 COPY filebrowser /filebrowser
 
 ENTRYPOINT [ "/filebrowser" ]

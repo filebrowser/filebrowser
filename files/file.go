@@ -34,10 +34,12 @@ type FileInfo struct {
 	ModTime   time.Time         `json:"modified"`
 	Mode      os.FileMode       `json:"mode"`
 	IsDir     bool              `json:"isDir"`
+	IsSymlink bool              `json:"isSymlink"`
 	Type      string            `json:"type"`
 	Subtitles []string          `json:"subtitles,omitempty"`
 	Content   string            `json:"content,omitempty"`
 	Checksums map[string]string `json:"checksums,omitempty"`
+	Token     string            `json:"token,omitempty"`
 }
 
 // FileOptions are the options when getting a file info.
@@ -47,7 +49,9 @@ type FileOptions struct {
 	Modify     bool
 	Expand     bool
 	ReadHeader bool
+	Token      string
 	Checker    rules.Checker
+	Content    bool
 }
 
 // NewFileInfo creates a File object from a path and a given user. This File
@@ -58,12 +62,73 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 		return nil, os.ErrPermission
 	}
 
-	info, err := opts.Fs.Stat(opts.Path)
+	file, err := stat(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	file := &FileInfo{
+	if opts.Expand {
+		if file.IsDir {
+			if err := file.readListing(opts.Checker, opts.ReadHeader); err != nil { //nolint:govet
+				return nil, err
+			}
+			return file, nil
+		}
+
+		err = file.detectType(opts.Modify, opts.Content, true)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return file, err
+}
+
+func stat(opts FileOptions) (*FileInfo, error) {
+	var file *FileInfo
+
+	if lstaterFs, ok := opts.Fs.(afero.Lstater); ok {
+		info, _, err := lstaterFs.LstatIfPossible(opts.Path)
+		if err != nil {
+			return nil, err
+		}
+		file = &FileInfo{
+			Fs:        opts.Fs,
+			Path:      opts.Path,
+			Name:      info.Name(),
+			ModTime:   info.ModTime(),
+			Mode:      info.Mode(),
+			IsDir:     info.IsDir(),
+			IsSymlink: IsSymlink(info.Mode()),
+			Size:      info.Size(),
+			Extension: filepath.Ext(info.Name()),
+			Token:     opts.Token,
+		}
+	}
+
+	// regular file
+	if file != nil && !file.IsSymlink {
+		return file, nil
+	}
+
+	// fs doesn't support afero.Lstater interface or the file is a symlink
+	info, err := opts.Fs.Stat(opts.Path)
+	if err != nil {
+		// can't follow symlink
+		if file != nil && file.IsSymlink {
+			return file, nil
+		}
+		return nil, err
+	}
+
+	// set correct file size in case of symlink
+	if file != nil && file.IsSymlink {
+		file.Size = info.Size()
+		file.IsDir = info.IsDir()
+		return file, nil
+	}
+
+	file = &FileInfo{
 		Fs:        opts.Fs,
 		Path:      opts.Path,
 		Name:      info.Name(),
@@ -72,23 +137,10 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 		IsDir:     info.IsDir(),
 		Size:      info.Size(),
 		Extension: filepath.Ext(info.Name()),
+		Token:     opts.Token,
 	}
 
-	if opts.Expand {
-		if file.IsDir {
-			if err := file.readListing(opts.Checker, opts.ReadHeader); err != nil { //nolint:shadow
-				return nil, err
-			}
-			return file, nil
-		}
-
-		err = file.detectType(opts.Modify, true, true)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return file, err
+	return file, nil
 }
 
 // Checksum checksums a given File for a given User, using a specific
@@ -133,6 +185,19 @@ func (i *FileInfo) Checksum(algo string) error {
 	return nil
 }
 
+func (i *FileInfo) RealPath() string {
+	if realPathFs, ok := i.Fs.(interface {
+		RealPath(name string) (fPath string, err error)
+	}); ok {
+		realPath, err := realPathFs.RealPath(i.Path)
+		if err == nil {
+			return realPath
+		}
+	}
+
+	return i.Path
+}
+
 //nolint:goconst
 //TODO: use constants
 func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
@@ -145,12 +210,15 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	// of files couldn't be opened: we'd have immediately
 	// a 500 even though it doesn't matter. So we just log it.
 
-	var buffer []byte
-
 	mimetype := mime.TypeByExtension(i.Extension)
-	if mimetype == "" && readHeader {
+
+	var buffer []byte
+	if readHeader {
 		buffer = i.readFirstBytes()
-		mimetype = http.DetectContentType(buffer)
+
+		if mimetype == "" {
+			mimetype = http.DetectContentType(buffer)
+		}
 	}
 
 	switch {
@@ -164,7 +232,10 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	case strings.HasPrefix(mimetype, "image"):
 		i.Type = "image"
 		return nil
-	case (strings.HasPrefix(mimetype, "text") || (len(buffer) > 0 && !isBinary(buffer))) && i.Size <= 10*1024*1024: // 10 MB
+	case strings.HasSuffix(mimetype, "pdf"):
+		i.Type = "pdf"
+		return nil
+	case (strings.HasPrefix(mimetype, "text") || !isBinary(buffer)) && i.Size <= 10*1024*1024: // 10 MB
 		i.Type = "text"
 
 		if !modify {
@@ -197,7 +268,7 @@ func (i *FileInfo) readFirstBytes() []byte {
 	}
 	defer reader.Close()
 
-	buffer := make([]byte, 512)
+	buffer := make([]byte, 512) //nolint:gomnd
 	n, err := reader.Read(buffer)
 	if err != nil && err != io.EOF {
 		log.Print(err)
@@ -216,11 +287,17 @@ func (i *FileInfo) detectSubtitles() {
 	i.Subtitles = []string{}
 	ext := filepath.Ext(i.Path)
 
-	// TODO: detect multiple languages. Base.Lang.vtt
-
-	fPath := strings.TrimSuffix(i.Path, ext) + ".vtt"
-	if _, err := i.Fs.Stat(fPath); err == nil {
-		i.Subtitles = append(i.Subtitles, fPath)
+	// detect multiple languages. Base*.vtt
+	// TODO: give subtitles descriptive names (lang) and track attributes
+	parentDir := strings.TrimRight(i.Path, i.Name)
+	dir, err := afero.ReadDir(i.Fs, parentDir)
+	if err == nil {
+		base := strings.TrimSuffix(i.Name, ext)
+		for _, f := range dir {
+			if !f.IsDir() && strings.HasPrefix(f.Name(), base) && strings.HasSuffix(f.Name(), ".vtt") {
+				i.Subtitles = append(i.Subtitles, path.Join(parentDir, f.Name()))
+			}
+		}
 	}
 }
 
@@ -245,7 +322,9 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
 			continue
 		}
 
+		isSymlink := false
 		if IsSymlink(f.Mode()) {
+			isSymlink = true
 			// It's a symbolic link. We try to follow it. If it doesn't work,
 			// we stay with the link information instead of the target's.
 			info, err := i.Fs.Stat(fPath)
@@ -261,6 +340,7 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
 			ModTime:   f.ModTime(),
 			Mode:      f.Mode(),
 			IsDir:     f.IsDir(),
+			IsSymlink: isSymlink,
 			Extension: filepath.Ext(name),
 			Path:      fPath,
 		}

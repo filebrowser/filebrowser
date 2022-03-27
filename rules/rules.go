@@ -22,7 +22,7 @@ type Rule struct {
 // MatchHidden matches paths with a basename
 // that begins with a dot.
 func MatchHidden(path string) bool {
-	return strings.HasPrefix(filepath.Base(path), ".")
+	return path != "" && strings.HasPrefix(filepath.Base(path), ".")
 }
 
 // Matches matches a path against a rule.

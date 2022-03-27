@@ -4,36 +4,45 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "watch": "vue-cli-service build --watch",
-    "lint": "vue-cli-service lint --fix"
+    "build": "find ./dist -maxdepth 1 -mindepth 1 ! -name '.gitignore' -exec rm -r {} + && vue-cli-service build --no-clean",
+    "lint": "npx vue-cli-service lint --no-fix --max-warnings=0",
+    "fix": "npx vue-cli-service lint",
+    "watch": "find ./dist -maxdepth 1 -mindepth 1 ! -name '.gitignore' -exec rm -r {} + && vue-cli-service build --watch --no-clean"
   },
   "dependencies": {
     "ace-builds": "^1.4.7",
     "clipboard": "^2.0.4",
+    "core-js": "^3.9.1",
+    "css-vars-ponyfill": "^2.4.3",
     "js-base64": "^2.5.1",
     "lodash.clonedeep": "^4.5.0",
     "lodash.throttle": "^4.1.1",
-    "material-design-icons": "^3.0.1",
+    "material-icons": "^1.10.5",
     "moment": "^2.24.0",
     "normalize.css": "^8.0.1",
     "noty": "^3.2.0-beta",
     "qrcode.vue": "^1.7.0",
+    "utif": "^3.1.0",
     "vue": "^2.6.10",
     "vue-3d-model": "^1.3.1",
     "vue-i18n": "^8.15.3",
     "vue-lazyload": "^1.3.3",
     "vue-router": "^3.1.3",
     "vuex": "^3.1.2",
-    "vuex-router-sync": "^5.0.0"
+    "vuex-router-sync": "^5.0.0",
+    "whatwg-fetch": "^3.6.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.1.2",
-    "@vue/cli-plugin-eslint": "^4.1.1",
+    "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "^4.1.2",
-    "babel-eslint": "^10.0.3",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "babel-eslint": "^10.1.0",
+    "compression-webpack-plugin": "^6.0.3",
     "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^6.1.2",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-vue": "^6.2.2",
+    "prettier": "^2.2.1",
     "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {
@@ -43,7 +52,8 @@
     },
     "extends": [
       "plugin:vue/essential",
-      "eslint:recommended"
+      "eslint:recommended",
+      "@vue/prettier"
     ],
     "rules": {},
     "parserOptions": {
@@ -58,6 +68,6 @@
   "browserslist": [
     "> 1%",
     "last 2 versions",
-    "not ie <= 8"
+    "not ie < 11"
   ]
 }

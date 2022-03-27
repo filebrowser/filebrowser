@@ -3,7 +3,8 @@ package cmd
 import (
 	"crypto/tls"
 	"errors"
-	"io/ioutil"
+	"io"
+	"io/fs"
 	"log"
 	"net"
 	"net/http"
@@ -22,6 +23,7 @@ import (
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/diskcache"
+	"github.com/filebrowser/filebrowser/v2/frontend"
 	fbhttp "github.com/filebrowser/filebrowser/v2/http"
 	"github.com/filebrowser/filebrowser/v2/img"
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -59,10 +61,10 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("key", "k", "", "tls key")
 	flags.StringP("root", "r", ".", "root to prepend to relative paths")
 	flags.String("socket", "", "socket to listen to (cannot be used with address, port, cert nor key flags)")
-	flags.Uint32("socket-perm", 0666, "unix socket file permissions")
+	flags.Uint32("socket-perm", 0666, "unix socket file permissions") //nolint:gomnd
 	flags.StringP("baseurl", "b", "", "base url")
 	flags.String("cache-dir", "", "file cache directory (disabled if empty)")
-	flags.Int("img-processors", 4, "image processors count")
+	flags.Int("img-processors", 4, "image processors count") //nolint:gomnd
 	flags.Bool("disable-thumbnails", false, "disable image thumbnails")
 	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
 	flags.Bool("disable-exec", false, "disables Command Runner feature")
@@ -126,7 +128,7 @@ user created with the credentials from options "username" and "password".`,
 		cacheDir, err := cmd.Flags().GetString("cache-dir")
 		checkErr(err)
 		if cacheDir != "" {
-			if err := os.MkdirAll(cacheDir, 0700); err != nil { //nolint:govet
+			if err := os.MkdirAll(cacheDir, 0700); err != nil { //nolint:govet,gomnd
 				log.Fatalf("can't make directory %s: %s", cacheDir, err)
 			}
 			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
@@ -152,12 +154,15 @@ user created with the credentials from options "username" and "password".`,
 			err = os.Chmod(server.Socket, os.FileMode(socketPerm))
 			checkErr(err)
 		case server.TLSKey != "" && server.TLSCert != "":
-			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey) //nolint:shadow
+			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey) //nolint:govet
 			checkErr(err)
-			listener, err = tls.Listen("tcp", adr, &tls.Config{Certificates: []tls.Certificate{cer}}) //nolint:shadow
+			listener, err = tls.Listen("tcp", adr, &tls.Config{
+				MinVersion:   tls.VersionTLS12,
+				Certificates: []tls.Certificate{cer}},
+			)
 			checkErr(err)
 		default:
-			listener, err = net.Listen("tcp", adr) //nolint:shadow
+			listener, err = net.Listen("tcp", adr)
 			checkErr(err)
 		}
 
@@ -165,7 +170,12 @@ user created with the credentials from options "username" and "password".`,
 		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
 		go cleanupHandler(listener, sigc)
 
-		handler, err := fbhttp.NewHandler(imgSvc, fileCache, d.store, server)
+		assetsFs, err := fs.Sub(frontend.Assets(), "dist")
+		if err != nil {
+			panic(err)
+		}
+
+		handler, err := fbhttp.NewHandler(imgSvc, fileCache, d.store, server, assetsFs)
 		checkErr(err)
 
 		defer listener.Close()
@@ -289,7 +299,7 @@ func setupLog(logMethod string) {
 	case "stderr":
 		log.SetOutput(os.Stderr)
 	case "":
-		log.SetOutput(ioutil.Discard)
+		log.SetOutput(io.Discard)
 	default:
 		log.SetOutput(&lumberjack.Logger{
 			Filename:   logMethod,

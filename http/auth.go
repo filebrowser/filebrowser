@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/dgrijalva/jwt-go/request"
+	jwt "github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/request"
 
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -28,6 +28,7 @@ type userInfo struct {
 	Commands     []string          `json:"commands"`
 	LockPassword bool              `json:"lockPassword"`
 	HideDotfiles bool              `json:"hideDotfiles"`
+	DateFormat   bool              `json:"dateFormat"`
 }
 
 type authToken struct {
@@ -48,11 +49,16 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 	}
 
 	auth := r.URL.Query().Get("auth")
-	if auth == "" {
-		return "", request.ErrNoTokenInRequest
+	if auth != "" && strings.Count(auth, ".") == 2 {
+		return auth, nil
 	}
 
-	return auth, nil
+	cookie, _ := r.Cookie("auth")
+	if cookie != nil && strings.Count(cookie.Value, ".") == 2 {
+		return cookie.Value, nil
+	}
+
+	return "", request.ErrNoTokenInRequest
 }
 
 func withUser(fn handleFunc) handleFunc {
@@ -179,6 +185,7 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 			LockPassword: user.LockPassword,
 			Commands:     user.Commands,
 			HideDotfiles: user.HideDotfiles,
+			DateFormat:   user.DateFormat,
 		},
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),

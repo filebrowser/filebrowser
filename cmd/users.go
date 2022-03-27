@@ -26,7 +26,7 @@ var usersCmd = &cobra.Command{
 }
 
 func printUsers(usrs []*users.User) {
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0) //nolint:gomnd
 	fmt.Fprintln(w, "ID\tUsername\tScope\tLocale\tV. Mode\tS.Click\tAdmin\tExecute\tCreate\tRename\tModify\tDelete\tShare\tDownload\tPwd Lock")
 
 	for _, u := range usrs {
@@ -53,7 +53,7 @@ func printUsers(usrs []*users.User) {
 }
 
 func parseUsernameOrID(arg string) (username string, id uint) {
-	id64, err := strconv.ParseUint(arg, 10, 0)
+	id64, err := strconv.ParseUint(arg, 10, 64) //nolint:gomnd
 	if err != nil {
 		return arg, 0
 	}

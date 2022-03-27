@@ -10,7 +10,10 @@ import (
 	"io"
 
 	"github.com/disintegration/imaging"
+	"github.com/dsoprea/go-exif/v3"
 	"github.com/marusama/semaphore/v2"
+
+	exifcommon "github.com/dsoprea/go-exif/v3/common"
 )
 
 // ErrUnsupportedFormat means the given image format is not supported.
@@ -152,6 +155,17 @@ func (s *Service) Resize(ctx context.Context, in io.Reader, width, height int, o
 		option(&config)
 	}
 
+	if config.quality == QualityLow && format == FormatJpeg {
+		thm, newWrappedReader, errThm := getEmbeddedThumbnail(wrappedReader)
+		wrappedReader = newWrappedReader
+		if errThm == nil {
+			_, err = out.Write(thm)
+			if err == nil {
+				return nil
+			}
+		}
+	}
+
 	img, err := imaging.Decode(wrappedReader, imaging.AutoOrientation(true))
 	if err != nil {
 		return err
@@ -160,6 +174,8 @@ func (s *Service) Resize(ctx context.Context, in io.Reader, width, height int, o
 	switch config.resizeMode {
 	case ResizeModeFill:
 		img = imaging.Fill(img, width, height, imaging.Center, config.quality.resampleFilter())
+	case ResizeModeFit:
+		fallthrough //nolint:gocritic
 	default:
 		img = imaging.Fit(img, width, height, config.quality.resampleFilter())
 	}
@@ -182,4 +198,47 @@ func (s *Service) detectFormat(in io.Reader) (Format, io.Reader, error) {
 	}
 
 	return format, io.MultiReader(buf, in), nil
+}
+
+func getEmbeddedThumbnail(in io.Reader) ([]byte, io.Reader, error) {
+	buf := &bytes.Buffer{}
+	r := io.TeeReader(in, buf)
+	wrappedReader := io.MultiReader(buf, in)
+
+	offset := 0
+	offsets := []int{12, 30}
+	head := make([]byte, 0xffff) //nolint:gomnd
+
+	_, err := r.Read(head)
+	if err != nil {
+		return nil, wrappedReader, err
+	}
+
+	for _, offset = range offsets {
+		if _, err = exif.ParseExifHeader(head[offset:]); err == nil {
+			break
+		}
+	}
+
+	if err != nil {
+		return nil, wrappedReader, err
+	}
+
+	im, err := exifcommon.NewIfdMappingWithStandard()
+	if err != nil {
+		return nil, wrappedReader, err
+	}
+
+	_, index, err := exif.Collect(im, exif.NewTagIndex(), head[offset:])
+	if err != nil {
+		return nil, wrappedReader, err
+	}
+
+	ifd := index.RootIfd.NextIfd()
+	if ifd == nil {
+		return nil, wrappedReader, exif.ErrNoThumbnail
+	}
+
+	thm, err := ifd.Thumbnail()
+	return thm, wrappedReader, err
 }

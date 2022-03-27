@@ -8,6 +8,8 @@
     "create": "Create",
     "delete": "Delete",
     "download": "Download",
+    "file": "File",
+    "folder": "Folder",
     "hideDotfiles": "Hide dotfiles",
     "info": "Info",
     "more": "More",
@@ -29,10 +31,12 @@
     "selectMultiple": "Select multiple",
     "share": "Share",
     "shell": "Toggle shell",
+    "submit": "Submit",
     "switchView": "Switch view",
     "toggleSidebar": "Toggle sidebar",
     "update": "Update",
-    "upload": "Upload"
+    "upload": "Upload",
+    "openFile": "Open file"
   },
   "download": {
     "downloadFile": "Download File",
@@ -42,7 +46,8 @@
   "errors": {
     "forbidden": "You don't have permissions to access this.",
     "internal": "Something really went wrong.",
-    "notFound": "This location can't be reached."
+    "notFound": "This location can't be reached.",
+    "connection": "The server can't be reached."
   },
   "files": {
     "body": "Body",
@@ -60,7 +65,8 @@
     "size": "Size",
     "sortByLastModified": "Sort by last modified",
     "sortByName": "Sort by name",
-    "sortBySize": "Sort by size"
+    "sortBySize": "Sort by size",
+    "noPreview": "Preview is not available for this file."
   },
   "help": {
     "click": "select file or directory",
@@ -92,7 +98,10 @@
     "ptBR": "Português (Brasil)",
     "ro": "Romanian",
     "ru": "Русский",
+    "sk": "Slovenčina",
     "svSE": "Swedish (Sweden)",
+    "tr": "Türkçe",
+    "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
   },
@@ -115,6 +124,7 @@
     "currentlyNavigating": "Currently navigating on:",
     "deleteMessageMultiple": "Are you sure you want to delete {count} file(s)?",
     "deleteMessageSingle": "Are you sure you want to delete this file/folder?",
+    "deleteMessageShare": "Are you sure you want to delete this share({path})?",
     "deleteTitle": "Delete files",
     "displayName": "Display Name:",
     "download": "Download files",
@@ -141,7 +151,9 @@
     "show": "Show",
     "size": "Size",
     "upload": "Upload",
-    "uploadMessage": "Select an option to upload."
+    "uploadFiles": "Uploading {files} files...",
+    "uploadMessage": "Select an option to upload.",
+    "optionalPassword": "Optional password"
   },
   "search": {
     "images": "Images",
@@ -208,9 +220,11 @@
     "rules": "Rules",
     "rulesHelp": "Here you can define a set of allow and disallow rules for this specific user. The blocked files won't show up in the listings and they wont be accessible to the user. We support regex and paths relative to the users scope.\n",
     "scope": "Scope",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Settings updated!",
     "shareDuration": "Share Duration",
     "shareManagement": "Share Management",
+    "shareDeleted": "Share deleted!",
     "singleClick": "Use single clicks to open files and directories",
     "themes": {
       "dark": "Dark",

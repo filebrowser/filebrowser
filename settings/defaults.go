@@ -16,6 +16,7 @@ type UserDefaults struct {
 	Perm         users.Permissions `json:"perm"`
 	Commands     []string          `json:"commands"`
 	HideDotfiles bool              `json:"hideDotfiles"`
+	DateFormat   bool              `json:"dateFormat"`
 }
 
 // Apply applies the default options to a user.
@@ -28,4 +29,5 @@ func (d *UserDefaults) Apply(u *users.User) {
 	u.Sorting = d.Sorting
 	u.Commands = d.Commands
 	u.HideDotfiles = d.HideDotfiles
+	u.DateFormat = d.DateFormat
 }

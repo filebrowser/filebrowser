@@ -70,6 +70,7 @@
     box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 3px, rgba(0, 0, 0, 0.12) 0px 1px 2px;
     width: 95%;
     max-width: 20em;
+    z-index: 1;
   }
   #file-selection .action {
     border-radius: 50%;
@@ -80,6 +81,9 @@
     margin-left: 1em;
     color: #6f6f6f;
     margin-right: auto;
+  }
+  #file-selection .action span {
+    display: none;
   }
   nav {
     top: 0;
@@ -95,7 +99,7 @@
     left: 0;
   }
   header .search-button,
-  header>div:first-child>.action {
+  header .menu-button {
     display: inherit;
   }
   header img {
