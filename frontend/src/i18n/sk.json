@@ -190,7 +190,7 @@
     "executeOnShellDescription": "Predvolene File Browser vykonáva príkazy volaním priamo ich binárok. Ak ich chcete spúšťať cez shell (napr. Bash alebo PowerShell), môžete ho napísať sem a pridať potrebné argumenty a flagy. Ak je nastavený, tak sa príkazy budú spúšťať pridaním na koniec ako argument. Toto sa týka používateľských príkazov aj udalostí.",
     "globalRules": "Toto je globálne nastavenie pravidiel. Aplikujú sa na všetkých používateľov. Môžete definovať špecifické pravidlá pre každého používateľa a prekryť tak pravidlá nastavené tu.",
     "globalSettings": "Globálne nastavenia",
-    "hideDotfiles": "Skryť súroby začínajúce bodkou",
+    "hideDotfiles": "Skryť súbory začínajúce bodkou",
     "insertPath": "Vložte cestu",
     "insertRegex": "Vložte regex výraz",
     "instanceName": "Názov inštalácie",
