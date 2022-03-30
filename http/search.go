@@ -13,8 +13,10 @@ var searchHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *dat
 
 	err := search.Search(d.user.Fs, r.URL.Path, query, d, func(path string, f os.FileInfo) error {
 		response = append(response, map[string]interface{}{
-			"dir":  f.IsDir(),
-			"path": path,
+			"dir":      f.IsDir(),
+			"path":     path,
+			"modified": f.ModTime(),
+			"size":     f.Size(),
 		})
 
 		return nil
