@@ -221,6 +221,7 @@
             v-bind:index="item.index"
             v-bind:name="item.name"
             v-bind:isDir="item.isDir"
+            v-bind:isThumbsEnabled="item.isThumbsEnabled"
             v-bind:url="item.url"
             v-bind:modified="item.modified"
             v-bind:type="item.type"

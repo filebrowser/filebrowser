@@ -59,6 +59,18 @@ func previewHandler(imgSvc ImgService, fileCache FileCache, enableThumbnails, re
 
 		setContentDisposition(w, r, file)
 
+		thumbnail, err := files.NewThumbnailInfo(files.FileOptions{
+			Fs:         d.user.Fs,
+			Path:       "/" + vars["path"],
+			Modify:     d.user.Perm.Modify,
+			Expand:     true,
+			ReadHeader: d.server.TypeDetectionByHeader,
+			Checker:    d,
+		})
+		if err == nil && thumbnail != nil {
+			return rawFileHandler(w, r, thumbnail)
+		}
+
 		switch file.Type {
 		case "image":
 			return handleImagePreview(w, r, imgSvc, fileCache, file, previewSize, enableThumbnails, resizePreview)

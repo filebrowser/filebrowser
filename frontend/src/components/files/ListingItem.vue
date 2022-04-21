@@ -8,6 +8,7 @@
     @dragover="dragOver"
     @drop="drop"
     @click="itemClick"
+    :data-thumbs-enabled="isThumbsEnabled"
     :data-dir="isDir"
     :data-type="type"
     :aria-label="name"
@@ -15,7 +16,7 @@
   >
     <div>
       <img
-        v-if="readOnly == undefined && type === 'image' && isThumbsEnabled"
+        v-if="hasThumbnailUrl"
         v-lazy="thumbnailUrl"
       />
       <i v-else class="material-icons"></i>
@@ -52,6 +53,7 @@ export default {
   props: [
     "name",
     "isDir",
+    "isThumbsEnabled",
     "url",
     "type",
     "size",
@@ -90,8 +92,8 @@ export default {
 
       return `${baseURL}/api/preview/thumb/${path}?k=${key}&inline=true`;
     },
-    isThumbsEnabled() {
-      return enableThumbs;
+    hasThumbnailUrl() {
+      return this.readOnly == undefined && this.isThumbsEnabled && enableThumbs;
     },
   },
   methods: {

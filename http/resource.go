@@ -77,6 +77,18 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			return errToStatus(err), err
 		}
 
+		thumbnail, err := files.NewThumbnailInfo(files.FileOptions{
+			Fs:         d.user.Fs,
+			Path:       r.URL.Path,
+			Modify:     d.user.Perm.Modify,
+			Expand:     false,
+			ReadHeader: d.server.TypeDetectionByHeader,
+			Checker:    d,
+		})
+		if err == nil && thumbnail != nil {
+			d.user.Fs.RemoveAll(thumbnail.Path)
+		}
+
 		err = d.RunHook(func() error {
 			return d.user.Fs.RemoveAll(r.URL.Path)
 		}, "delete", r.URL.Path, "", d.user)
@@ -299,6 +311,32 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 			return errors.ErrPermissionDenied
 		}
 
+		srcThumbnail, err := files.NewThumbnailInfo(files.FileOptions{
+			Fs:         d.user.Fs,
+			Path:       src,
+			Modify:     d.user.Perm.Modify,
+			Expand:     false,
+			ReadHeader: d.server.TypeDetectionByHeader,
+			Checker:    d,
+		})
+		if err == nil && srcThumbnail != nil {
+			destThumbnail := files.NewFileThumbnail(files.FileOptions{
+				Fs:         d.user.Fs,
+				Path:       dst,
+				Modify:     d.user.Perm.Modify,
+				Expand:     false,
+				ReadHeader: d.server.TypeDetectionByHeader,
+				Checker:    d,
+			})
+
+			_, err := os.Stat(destThumbnail.Dir)
+			if err != nil {
+				fileutils.CreateDir(d.user.Fs, srcThumbnail.Dir, destThumbnail.Dir)
+			}
+
+			fileutils.Copy(d.user.Fs, srcThumbnail.Path, destThumbnail.Path)
+		}
+
 		return fileutils.Copy(d.user.Fs, src, dst)
 	case "rename":
 		if !d.user.Perm.Rename {
@@ -323,6 +361,32 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		err = delThumbs(ctx, fileCache, file)
 		if err != nil {
 			return err
+		}
+
+		srcThumbnail, err := files.NewThumbnailInfo(files.FileOptions{
+			Fs:         d.user.Fs,
+			Path:       src,
+			Modify:     d.user.Perm.Modify,
+			Expand:     false,
+			ReadHeader: d.server.TypeDetectionByHeader,
+			Checker:    d,
+		})
+		if err == nil && srcThumbnail != nil {
+			destThumbnail := files.NewFileThumbnail(files.FileOptions{
+				Fs:         d.user.Fs,
+				Path:       dst,
+				Modify:     d.user.Perm.Modify,
+				Expand:     false,
+				ReadHeader: d.server.TypeDetectionByHeader,
+				Checker:    d,
+			})
+
+			_, err := os.Stat(destThumbnail.Dir)
+			if err != nil {
+				fileutils.CreateDir(d.user.Fs, srcThumbnail.Dir, destThumbnail.Dir)
+			}
+
+			fileutils.MoveFile(d.user.Fs, srcThumbnail.Path, destThumbnail.Path)
 		}
 
 		return fileutils.MoveFile(d.user.Fs, src, dst)

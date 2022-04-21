@@ -26,20 +26,22 @@ import (
 // FileInfo describes a file.
 type FileInfo struct {
 	*Listing
-	Fs        afero.Fs          `json:"-"`
-	Path      string            `json:"path"`
-	Name      string            `json:"name"`
-	Size      int64             `json:"size"`
-	Extension string            `json:"extension"`
-	ModTime   time.Time         `json:"modified"`
-	Mode      os.FileMode       `json:"mode"`
-	IsDir     bool              `json:"isDir"`
-	IsSymlink bool              `json:"isSymlink"`
-	Type      string            `json:"type"`
-	Subtitles []string          `json:"subtitles,omitempty"`
-	Content   string            `json:"content,omitempty"`
-	Checksums map[string]string `json:"checksums,omitempty"`
-	Token     string            `json:"token,omitempty"`
+	Fs              afero.Fs          `json:"-"`
+	Dir             string            `json:"dir"`
+	Path            string            `json:"path"`
+	Name            string            `json:"name"`
+	Size            int64             `json:"size"`
+	Extension       string            `json:"extension"`
+	ModTime         time.Time         `json:"modified"`
+	Mode            os.FileMode       `json:"mode"`
+	IsDir           bool              `json:"isDir"`
+	IsSymlink       bool              `json:"isSymlink"`
+	IsThumbsEnabled bool              `json:"isThumbsEnabled"`
+	Type            string            `json:"type"`
+	Subtitles       []string          `json:"subtitles,omitempty"`
+	Content         string            `json:"content,omitempty"`
+	Checksums       map[string]string `json:"checksums,omitempty"`
+	Token           string            `json:"token,omitempty"`
 }
 
 // FileOptions are the options when getting a file info.
@@ -52,6 +54,11 @@ type FileOptions struct {
 	Token      string
 	Checker    rules.Checker
 	Content    bool
+}
+
+type FileThumbnail struct {
+	Dir  string
+	Path string
 }
 
 // NewFileInfo creates a File object from a path and a given user. This File
@@ -84,6 +91,34 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 	return file, err
 }
 
+func NewThumbnailInfo(opts FileOptions) (*FileInfo, error) {
+	return NewFileInfo(FileOptions{
+		Fs:         opts.Fs,
+		Path:       NewFileThumbnail(opts).Path,
+		Modify:     opts.Modify,
+		Expand:     opts.Expand,
+		ReadHeader: opts.ReadHeader,
+		Checker:    opts.Checker,
+	})
+}
+
+func NewFileThumbnail(opts FileOptions) FileThumbnail {
+	dir, name := filepath.Split(opts.Path)
+
+	hash := md5.Sum([]byte(name))
+
+	thumbnailName := hex.EncodeToString(hash[:]) + ".jpg"
+
+	thumbnailPath := path.Join(dir, ".filebrowser", thumbnailName)
+
+	dir, _ = filepath.Split(thumbnailPath)
+
+	return FileThumbnail{
+		Dir:  dir,
+		Path: thumbnailPath,
+	}
+}
+
 func stat(opts FileOptions) (*FileInfo, error) {
 	var file *FileInfo
 
@@ -92,8 +127,10 @@ func stat(opts FileOptions) (*FileInfo, error) {
 		if err != nil {
 			return nil, err
 		}
+		dir, _ := filepath.Split(opts.Path)
 		file = &FileInfo{
 			Fs:        opts.Fs,
+			Dir:       dir,
 			Path:      opts.Path,
 			Name:      info.Name(),
 			ModTime:   info.ModTime(),
@@ -128,8 +165,10 @@ func stat(opts FileOptions) (*FileInfo, error) {
 		return file, nil
 	}
 
+	dir, _ := filepath.Split(opts.Path)
 	file = &FileInfo{
 		Fs:        opts.Fs,
+		Dir:       dir,
 		Path:      opts.Path,
 		Name:      info.Name(),
 		ModTime:   info.ModTime(),
@@ -224,12 +263,14 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	switch {
 	case strings.HasPrefix(mimetype, "video"):
 		i.Type = "video"
+		i.detectThumbnail()
 		i.detectSubtitles()
 		return nil
 	case strings.HasPrefix(mimetype, "audio"):
 		i.Type = "audio"
 		return nil
 	case strings.HasPrefix(mimetype, "image"):
+		i.IsThumbsEnabled = true
 		i.Type = "image"
 		return nil
 	case strings.HasSuffix(mimetype, "pdf"):
@@ -298,6 +339,21 @@ func (i *FileInfo) detectSubtitles() {
 				i.Subtitles = append(i.Subtitles, path.Join(parentDir, f.Name()))
 			}
 		}
+	}
+}
+
+func (i *FileInfo) detectThumbnail() {
+	dir, name := filepath.Split(i.RealPath())
+
+	hash := md5.Sum([]byte(name))
+	thumbnailName := hex.EncodeToString(hash[:])
+
+	path := path.Join(dir, ".filebrowser", thumbnailName+".jpg")
+
+	_, err := os.Stat(path)
+
+	if err == nil {
+		i.IsThumbsEnabled = true
 	}
 }
 
