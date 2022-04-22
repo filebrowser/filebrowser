@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 
@@ -59,16 +60,9 @@ func previewHandler(imgSvc ImgService, fileCache FileCache, enableThumbnails, re
 
 		setContentDisposition(w, r, file)
 
-		thumbnail, err := files.NewThumbnailInfo(files.FileOptions{
-			Fs:         d.user.Fs,
-			Path:       "/" + vars["path"],
-			Modify:     d.user.Perm.Modify,
-			Expand:     true,
-			ReadHeader: d.server.TypeDetectionByHeader,
-			Checker:    d,
-		})
+		thumbnail, err := file.Thumbnail()
 		if err == nil && thumbnail != nil {
-			return rawFileHandler(w, r, thumbnail)
+			return handleThumbnail(w, r, thumbnail)
 		}
 
 		switch file.Type {
@@ -78,6 +72,18 @@ func previewHandler(imgSvc ImgService, fileCache FileCache, enableThumbnails, re
 			return http.StatusNotImplemented, fmt.Errorf("can't create preview for %s type", file.Type)
 		}
 	})
+}
+
+func handleThumbnail(w http.ResponseWriter, r *http.Request, file *files.FileInfo) (int, error) {
+	fd, err := os.Open(file.Path)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+	defer fd.Close()
+
+	w.Header().Set("Cache-Control", "private")
+	http.ServeContent(w, r, file.Name, file.ModTime, fd)
+	return 0, nil
 }
 
 func handleImagePreview(

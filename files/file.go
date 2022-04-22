@@ -56,11 +56,6 @@ type FileOptions struct {
 	Content    bool
 }
 
-type FileThumbnail struct {
-	Dir  string
-	Path string
-}
-
 // NewFileInfo creates a File object from a path and a given user. This File
 // object will be automatically filled depending on if it is a directory
 // or a file. If it's a video file, it will also detect any subtitles.
@@ -91,32 +86,16 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 	return file, err
 }
 
-func NewThumbnailInfo(opts FileOptions) (*FileInfo, error) {
-	return NewFileInfo(FileOptions{
-		Fs:         opts.Fs,
-		Path:       NewFileThumbnail(opts).Path,
-		Modify:     opts.Modify,
-		Expand:     opts.Expand,
-		ReadHeader: opts.ReadHeader,
-		Checker:    opts.Checker,
-	})
-}
+func ThumbnailPath(path string) string {
+	dir := os.Getenv("XDG_CACHE_HOME")
 
-func NewFileThumbnail(opts FileOptions) FileThumbnail {
-	dir, name := filepath.Split(opts.Path)
-
-	hash := md5.Sum([]byte(name))
-
-	thumbnailName := hex.EncodeToString(hash[:]) + ".jpg"
-
-	thumbnailPath := path.Join(dir, ".filebrowser", thumbnailName)
-
-	dir, _ = filepath.Split(thumbnailPath)
-
-	return FileThumbnail{
-		Dir:  dir,
-		Path: thumbnailPath,
+	if dir == "" {
+		dir = filepath.Join(os.Getenv("HOME"), ".cache")
 	}
+
+	hash := md5.Sum([]byte(path))
+
+	return filepath.Join(dir, "thumbnails", "xx-large", hex.EncodeToString(hash[:])+".png")
 }
 
 func stat(opts FileOptions) (*FileInfo, error) {
@@ -237,6 +216,37 @@ func (i *FileInfo) RealPath() string {
 	return i.Path
 }
 
+func (i *FileInfo) Thumbnail() (*FileInfo, error) {
+
+	realPath := i.RealPath()
+
+	path := ThumbnailPath(realPath)
+
+	dir, _ := filepath.Split(path)
+
+	info, err := os.Stat(path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	file := &FileInfo{
+		Fs:        i.Fs,
+		Dir:       dir,
+		Path:      path,
+		Name:      info.Name(),
+		ModTime:   info.ModTime(),
+		Mode:      info.Mode(),
+		IsDir:     info.IsDir(),
+		Size:      info.Size(),
+		Extension: filepath.Ext(info.Name()),
+		Token:     i.Token,
+		Type:      "image",
+	}
+
+	return file, err
+}
+
 //nolint:goconst
 //TODO: use constants
 func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
@@ -263,7 +273,6 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	switch {
 	case strings.HasPrefix(mimetype, "video"):
 		i.Type = "video"
-		i.detectThumbnail()
 		i.detectSubtitles()
 		return nil
 	case strings.HasPrefix(mimetype, "audio"):
@@ -343,14 +352,7 @@ func (i *FileInfo) detectSubtitles() {
 }
 
 func (i *FileInfo) detectThumbnail() {
-	dir, name := filepath.Split(i.RealPath())
-
-	hash := md5.Sum([]byte(name))
-	thumbnailName := hex.EncodeToString(hash[:])
-
-	path := path.Join(dir, ".filebrowser", thumbnailName+".jpg")
-
-	_, err := os.Stat(path)
+	_, err := i.Thumbnail()
 
 	if err == nil {
 		i.IsThumbsEnabled = true
@@ -409,6 +411,10 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
 			err := file.detectType(true, false, readHeader)
 			if err != nil {
 				return err
+			}
+
+			if !file.IsThumbsEnabled {
+				file.detectThumbnail()
 			}
 		}
 
