@@ -27,7 +27,6 @@ import (
 type FileInfo struct {
 	*Listing
 	Fs              afero.Fs          `json:"-"`
-	Dir             string            `json:"dir"`
 	Path            string            `json:"path"`
 	Name            string            `json:"name"`
 	Size            int64             `json:"size"`
@@ -106,10 +105,8 @@ func stat(opts FileOptions) (*FileInfo, error) {
 		if err != nil {
 			return nil, err
 		}
-		dir, _ := filepath.Split(opts.Path)
 		file = &FileInfo{
 			Fs:        opts.Fs,
-			Dir:       dir,
 			Path:      opts.Path,
 			Name:      info.Name(),
 			ModTime:   info.ModTime(),
@@ -144,10 +141,8 @@ func stat(opts FileOptions) (*FileInfo, error) {
 		return file, nil
 	}
 
-	dir, _ := filepath.Split(opts.Path)
 	file = &FileInfo{
 		Fs:        opts.Fs,
-		Dir:       dir,
 		Path:      opts.Path,
 		Name:      info.Name(),
 		ModTime:   info.ModTime(),
@@ -222,8 +217,6 @@ func (i *FileInfo) Thumbnail() (*FileInfo, error) {
 
 	path := ThumbnailPath(realPath)
 
-	dir, _ := filepath.Split(path)
-
 	info, err := os.Stat(path)
 
 	if err != nil {
@@ -232,7 +225,6 @@ func (i *FileInfo) Thumbnail() (*FileInfo, error) {
 
 	file := &FileInfo{
 		Fs:        i.Fs,
-		Dir:       dir,
 		Path:      path,
 		Name:      info.Name(),
 		ModTime:   info.ModTime(),
