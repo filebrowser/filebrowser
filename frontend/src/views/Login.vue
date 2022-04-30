@@ -8,6 +8,7 @@
       <input
         class="input input--block"
         type="text"
+        autocapitalize="off"
         v-model="username"
         :placeholder="$t('login.username')"
       />
