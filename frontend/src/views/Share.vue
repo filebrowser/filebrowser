@@ -104,7 +104,7 @@
             </a>
           </div>
           <div class="share__box__element share__box__center">
-            <qrcode-vue :value="fullLink" size="200" level="M"></qrcode-vue>
+            <qrcode-vue :value="link" size="200" level="M"></qrcode-vue>
           </div>
         </div>
         <div
@@ -173,7 +173,6 @@
 <script>
 import { mapState, mapMutations, mapGetters } from "vuex";
 import { pub as api } from "@/api";
-import { baseURL } from "@/utils/constants";
 import filesize from "filesize";
 import moment from "moment";
 
@@ -231,21 +230,10 @@ export default {
       return "insert_drive_file";
     },
     link: function () {
-      let queryArg = "";
-      if (this.token !== "") {
-        queryArg = `?token=${this.token}`;
-      }
-
-      const path = this.$route.path.split("/").splice(2).join("/");
-      return `${baseURL}/api/public/dl/${path}${queryArg}`;
+      return api.getDownloadURL(this.req);
     },
     inlineLink: function () {
-      let url = new URL(this.fullLink);
-      url.searchParams.set("inline", "true");
-      return url.href;
-    },
-    fullLink: function () {
-      return window.location.origin + this.link;
+      return api.getDownloadURL(this.req, true);
     },
     humanSize: function () {
       if (this.req.isDir) {
@@ -287,6 +275,7 @@ export default {
 
       try {
         let file = await api.fetch(url, this.password);
+        file.hash = this.hash;
 
         this.token = file.token || "";
 

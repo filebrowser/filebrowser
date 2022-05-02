@@ -1,4 +1,4 @@
-import { fetchURL, removePrefix } from "./utils";
+import { fetchURL, removePrefix, createURL } from "./utils";
 import { baseURL } from "@/utils/constants";
 import store from "@/store";
 
@@ -153,4 +153,34 @@ export function copy(items, overwrite = false, rename = false) {
 export async function checksum(url, algo) {
   const data = await resourceAction(`${url}?checksum=${algo}`, "GET");
   return (await data.json()).checksums[algo];
+}
+
+export function getDownloadURL(file, inline) {
+  const params = {
+    ...(inline && { inline: "true" }),
+  };
+
+  return createURL("api/raw" + file.path, params);
+}
+
+export function getPreviewURL(file, size) {
+  const params = {
+    inline: "true",
+    key: Date.parse(file.modified),
+  };
+
+  return createURL("api/preview/" + size + file.path, params);
+}
+
+export function getSubtitlesURL(file) {
+  const params = {
+    inline: "true",
+  };
+
+  const subtitles = [];
+  for (const sub of file.subtitles) {
+    subtitles.push(createURL("api/raw" + sub, params));
+  }
+
+  return subtitles;
 }

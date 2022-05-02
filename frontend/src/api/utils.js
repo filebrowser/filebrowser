@@ -1,6 +1,7 @@
 import store from "@/store";
 import { renew } from "@/utils/auth";
 import { baseURL } from "@/utils/constants";
+import { encodePath } from "@/utils/url";
 
 export async function fetchURL(url, opts) {
   opts = opts || {};
@@ -44,4 +45,19 @@ export function removePrefix(url) {
   if (url === "") url = "/";
   if (url[0] !== "/") url = "/" + url;
   return url;
+}
+
+export function createURL(endpoint, params = {}, auth = true) {
+  const url = new URL(encodePath(endpoint), origin + baseURL);
+
+  const searchParams = {
+    ...(auth && { auth: store.state.jwt }),
+    ...params,
+  };
+
+  for (const key in searchParams) {
+    url.searchParams.set(key, searchParams[key]);
+  }
+
+  return url.toString();
 }

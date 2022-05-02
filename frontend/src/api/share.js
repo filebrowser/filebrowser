@@ -1,4 +1,4 @@
-import { fetchURL, fetchJSON, removePrefix } from "./utils";
+import { fetchURL, fetchJSON, removePrefix, createURL } from "./utils";
 
 export async function list() {
   return fetchJSON("/api/shares");
@@ -33,4 +33,8 @@ export async function create(url, password = "", expires = "", unit = "hours") {
     method: "POST",
     body: body,
   });
+}
+
+export function getShareURL(share) {
+  return createURL("share/" + share.hash, {}, false);
 }
