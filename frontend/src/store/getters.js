@@ -25,15 +25,17 @@ const getters = {
       let upload = state.upload.uploads[index];
       let id = upload.id;
       let type = upload.type;
-      let name = decodeURIComponent(upload.path.replace(/^.*[\\/]/, ""));
-      let progress = state.upload.progress[id];
+      let name = upload.file.name;
       let size = state.upload.sizes[id];
+      let isDir = upload.file.isDir;
+      let progress = isDir ? 100 : Math.ceil((state.upload.progress[id] / size) * 100);
 
       files.push({
         id,
         name,
-        progress: Math.ceil((progress / size) * 100),
+        progress,
         type,
+        isDir,
       });
     }
 

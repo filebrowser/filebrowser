@@ -70,6 +70,7 @@ export function scanFiles(dt) {
           isDir: true,
           size: 0,
           fullPath: `${directory}${entry.name}`,
+          name: entry.name,
         };
 
         contents.push(dir);
