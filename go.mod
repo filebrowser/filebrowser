@@ -49,7 +49,7 @@ require (
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mholt/certmagic v0.6.2-0.20190624175158-6a42ef9fe8c2 // indirect
-	github.com/miekg/dns v1.1.3 // indirect
+	github.com/miekg/dns v1.1.25 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
