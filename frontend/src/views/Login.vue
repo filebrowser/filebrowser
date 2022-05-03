@@ -9,6 +9,7 @@
         class="input input--block"
         type="text"
         autocapitalize="off"
+        ref="username"
         v-model="username"
         :placeholder="$t('login.username')"
       />
@@ -70,6 +71,8 @@ export default {
     };
   },
   mounted() {
+    this.focusUsername();
+
     if (!recaptcha) return;
 
     window.grecaptcha.ready(function () {
@@ -79,6 +82,9 @@ export default {
     });
   },
   methods: {
+    focusUsername() {
+      this.$refs.username.focus();
+    },
     toggleMode() {
       this.createMode = !this.createMode;
     },
