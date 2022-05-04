@@ -111,8 +111,8 @@ export async function post(url, content = "", overwrite = false, onupload) {
       }
     };
 
-    request.onerror = (error) => {
-      reject(error);
+    request.onerror = () => {
+      reject(new Error("001 Connection aborted"));
     };
 
     request.send(bufferContent || content);

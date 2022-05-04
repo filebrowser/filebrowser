@@ -18,8 +18,11 @@ export async function fetchURL(url, opts) {
       },
       ...rest,
     });
-  } catch (error) {
-    return { status: 0 };
+  } catch {
+    const error = new Error("000 No connection");
+    error.status = 0;
+
+    throw error;
   }
 
   if (res.headers.get("X-Renew-Token") === "true") {
