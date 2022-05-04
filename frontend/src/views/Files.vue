@@ -4,7 +4,7 @@
 
     <breadcrumbs base="/files" />
 
-    <errors v-if="error" :errorCode="error.message" />
+    <errors v-if="error" :errorCode="error.status" />
     <component v-else-if="currentView" :is="currentView"></component>
     <div v-else>
       <h2 class="message delayed">

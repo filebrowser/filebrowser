@@ -10,13 +10,9 @@ export async function get(url) {
 }
 
 export async function remove(hash) {
-  const res = await fetchURL(`/api/share/${hash}`, {
+  await fetchURL(`/api/share/${hash}`, {
     method: "DELETE",
   });
-
-  if (res.status !== 200) {
-    throw new Error(res.status);
-  }
 }
 
 export async function create(url, password = "", expires = "", unit = "hours") {

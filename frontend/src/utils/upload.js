@@ -130,7 +130,7 @@ export function handleFiles(files, base, overwrite = false) {
       path,
       file,
       overwrite,
-      ...(!file.isDir && { type: detectType(file.type) })
+      ...(!file.isDir && { type: detectType(file.type) }),
     };
 
     store.dispatch("upload/upload", item);

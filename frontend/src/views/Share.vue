@@ -30,7 +30,7 @@
       </h2>
     </div>
     <div v-else-if="error">
-      <div v-if="error.message === '401'">
+      <div v-if="error.status === 401">
         <div class="card floating" id="password">
           <div v-if="attemptedPasswordLogin" class="share__wrong__password">
             {{ $t("login.wrongCredentials") }}
@@ -60,7 +60,7 @@
           </div>
         </div>
       </div>
-      <errors v-else :errorCode="error.message" />
+      <errors v-else :errorCode="error.status" />
     </div>
     <div v-else>
       <div class="share">

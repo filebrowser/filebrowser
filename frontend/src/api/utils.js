@@ -26,6 +26,13 @@ export async function fetchURL(url, opts) {
     await renew(store.state.jwt);
   }
 
+  if (res.status < 200 || res.status > 299) {
+    const error = new Error(await res.text());
+    error.status = res.status;
+
+    throw error;
+  }
+
   return res;
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <errors v-if="error" :errorCode="error.message" />
+  <errors v-if="error" :errorCode="error.status" />
   <div class="row" v-else-if="!loading">
     <div class="column">
       <div class="card">

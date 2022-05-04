@@ -7,28 +7,24 @@ export async function fetch(url) {
 
   const res = await fetchURL(`/api/resources${url}`, {});
 
-  if (res.status === 200) {
-    let data = await res.json();
-    data.url = `/files${url}`;
+  let data = await res.json();
+  data.url = `/files${url}`;
 
-    if (data.isDir) {
-      if (!data.url.endsWith("/")) data.url += "/";
-      data.items = data.items.map((item, index) => {
-        item.index = index;
-        item.url = `${data.url}${encodeURIComponent(item.name)}`;
+  if (data.isDir) {
+    if (!data.url.endsWith("/")) data.url += "/";
+    data.items = data.items.map((item, index) => {
+      item.index = index;
+      item.url = `${data.url}${encodeURIComponent(item.name)}`;
 
-        if (item.isDir) {
-          item.url += "/";
-        }
+      if (item.isDir) {
+        item.url += "/";
+      }
 
-        return item;
-      });
-    }
-
-    return data;
-  } else {
-    throw new Error(res.status);
+      return item;
+    });
   }
+
+  return data;
 }
 
 async function resourceAction(url, method, content) {
@@ -42,11 +38,7 @@ async function resourceAction(url, method, content) {
 
   const res = await fetchURL(`/api/resources${url}`, opts);
 
-  if (res.status !== 200) {
-    throw new Error(await res.text());
-  } else {
-    return res;
-  }
+  return res;
 }
 
 export async function remove(url) {

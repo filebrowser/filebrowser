@@ -28,7 +28,9 @@ const getters = {
       let name = upload.file.name;
       let size = state.upload.sizes[id];
       let isDir = upload.file.isDir;
-      let progress = isDir ? 100 : Math.ceil((state.upload.progress[id] / size) * 100);
+      let progress = isDir
+        ? 100
+        : Math.ceil((state.upload.progress[id] / size) * 100);
 
       files.push({
         id,
