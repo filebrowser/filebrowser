@@ -71,7 +71,7 @@ func withUser(fn handleFunc) handleFunc {
 		token, err := request.ParseFromRequest(r, &extractor{}, keyFunc, request.WithClaims(&tk))
 
 		if err != nil || !token.Valid {
-			return http.StatusForbidden, nil
+			return http.StatusUnauthorized, nil
 		}
 
 		expired := !tk.VerifyExpiresAt(time.Now().Add(time.Hour).Unix(), true)

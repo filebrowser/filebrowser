@@ -4,9 +4,13 @@ import { baseURL } from "@/utils/constants";
 export async function fetch(url, password = "") {
   url = removePrefix(url);
 
-  const res = await fetchURL(`/api/public/share${url}`, {
-    headers: { "X-SHARE-PASSWORD": encodeURIComponent(password) },
-  });
+  const res = await fetchURL(
+    `/api/public/share${url}`,
+    {
+      headers: { "X-SHARE-PASSWORD": encodeURIComponent(password) },
+    },
+    false
+  );
 
   let data = await res.json();
   data.url = `/share${url}`;
