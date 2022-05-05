@@ -98,7 +98,7 @@ export default {
   methods: {
     ...mapMutations(["addSelected", "removeSelected", "resetSelected"]),
     humanSize: function () {
-      return filesize(this.size);
+      return this.type == "invalid_link" ? "invalid link" : filesize(this.size);
     },
     humanTime: function () {
       if (this.readOnly == undefined && this.user.dateFormat) {
