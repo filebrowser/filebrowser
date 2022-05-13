@@ -25,6 +25,7 @@
           class="file"
           v-for="file in filesInUpload"
           :key="file.id"
+          :data-dir="file.isDir"
           :data-type="file.type"
           :aria-label="file.name"
         >

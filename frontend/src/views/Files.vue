@@ -4,7 +4,7 @@
 
     <breadcrumbs base="/files" />
 
-    <errors v-if="error" :errorCode="error.message" />
+    <errors v-if="error" :errorCode="error.status" />
     <component v-else-if="currentView" :is="currentView"></component>
     <div v-else>
       <h2 class="message delayed">
@@ -28,7 +28,6 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import Errors from "@/views/Errors";
 import Preview from "@/views/files/Preview";
 import Listing from "@/views/files/Listing";
-import { name } from "@/utils/constants";
 
 function clean(path) {
   return path.endsWith("/") ? path.slice(0, -1) : path;
@@ -52,7 +51,6 @@ export default {
   },
   computed: {
     ...mapState(["req", "reload", "loading", "show"]),
-    name: () => name,
     currentView() {
       if (this.req.type == undefined) {
         return null;
@@ -118,7 +116,7 @@ export default {
         }
 
         this.$store.commit("updateRequest", res);
-        document.title = `${res.name} - ${this.$route.name} - ${this.name}`;
+        document.title = `${res.name} - ${document.title}`;
       } catch (e) {
         this.error = e;
       } finally {

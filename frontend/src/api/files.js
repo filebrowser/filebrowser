@@ -1,4 +1,4 @@
-import { fetchURL, removePrefix } from "./utils";
+import { fetchURL, removePrefix, createURL } from "./utils";
 import { baseURL } from "@/utils/constants";
 import store from "@/store";
 
@@ -7,28 +7,24 @@ export async function fetch(url) {
 
   const res = await fetchURL(`/api/resources${url}`, {});
 
-  if (res.status === 200) {
-    let data = await res.json();
-    data.url = `/files${url}`;
+  let data = await res.json();
+  data.url = `/files${url}`;
 
-    if (data.isDir) {
-      if (!data.url.endsWith("/")) data.url += "/";
-      data.items = data.items.map((item, index) => {
-        item.index = index;
-        item.url = `${data.url}${encodeURIComponent(item.name)}`;
+  if (data.isDir) {
+    if (!data.url.endsWith("/")) data.url += "/";
+    data.items = data.items.map((item, index) => {
+      item.index = index;
+      item.url = `${data.url}${encodeURIComponent(item.name)}`;
 
-        if (item.isDir) {
-          item.url += "/";
-        }
+      if (item.isDir) {
+        item.url += "/";
+      }
 
-        return item;
-      });
-    }
-
-    return data;
-  } else {
-    throw new Error(res.status);
+      return item;
+    });
   }
+
+  return data;
 }
 
 async function resourceAction(url, method, content) {
@@ -42,11 +38,7 @@ async function resourceAction(url, method, content) {
 
   const res = await fetchURL(`/api/resources${url}`, opts);
 
-  if (res.status !== 200) {
-    throw new Error(await res.text());
-  } else {
-    return res;
-  }
+  return res;
 }
 
 export async function remove(url) {
@@ -119,8 +111,8 @@ export async function post(url, content = "", overwrite = false, onupload) {
       }
     };
 
-    request.onerror = (error) => {
-      reject(error);
+    request.onerror = () => {
+      reject(new Error("001 Connection aborted"));
     };
 
     request.send(bufferContent || content);
@@ -153,4 +145,34 @@ export function copy(items, overwrite = false, rename = false) {
 export async function checksum(url, algo) {
   const data = await resourceAction(`${url}?checksum=${algo}`, "GET");
   return (await data.json()).checksums[algo];
+}
+
+export function getDownloadURL(file, inline) {
+  const params = {
+    ...(inline && { inline: "true" }),
+  };
+
+  return createURL("api/raw" + file.path, params);
+}
+
+export function getPreviewURL(file, size) {
+  const params = {
+    inline: "true",
+    key: Date.parse(file.modified),
+  };
+
+  return createURL("api/preview/" + size + file.path, params);
+}
+
+export function getSubtitlesURL(file) {
+  const params = {
+    inline: "true",
+  };
+
+  const subtitles = [];
+  for (const sub of file.subtitles) {
+    subtitles.push(createURL("api/raw" + sub, params));
+  }
+
+  return subtitles;
 }

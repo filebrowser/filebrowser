@@ -70,6 +70,7 @@ export function scanFiles(dt) {
           isDir: true,
           size: 0,
           fullPath: `${directory}${entry.name}`,
+          name: entry.name,
         };
 
         contents.push(dir);
@@ -129,7 +130,7 @@ export function handleFiles(files, base, overwrite = false) {
       path,
       file,
       overwrite,
-      type: detectType(file.type),
+      ...(!file.isDir && { type: detectType(file.type) }),
     };
 
     store.dispatch("upload/upload", item);
