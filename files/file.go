@@ -188,6 +188,19 @@ func (i *FileInfo) Checksum(algo string) error {
 	return nil
 }
 
+func (i *FileInfo) RealPath() string {
+	if realPathFs, ok := i.Fs.(interface {
+		RealPath(name string) (fPath string, err error)
+	}); ok {
+		realPath, err := realPathFs.RealPath(i.Path)
+		if err == nil {
+			return realPath
+		}
+	}
+
+	return i.Path
+}
+
 //nolint:goconst
 //TODO: use constants
 func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
@@ -221,6 +234,9 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 		return nil
 	case strings.HasPrefix(mimetype, "image"):
 		i.Type = "image"
+		return nil
+	case strings.HasSuffix(mimetype, "pdf"):
+		i.Type = "pdf"
 		return nil
 	case (strings.HasPrefix(mimetype, "text") || !isBinary(buffer)) && i.Size <= 10*1024*1024: // 10 MB
 		i.Type = "text"
@@ -310,13 +326,16 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
 		}
 
 		symlink := ""
-		isSymlink := IsSymlink(f.Mode())
-		if isSymlink {
+		isSymlink, isInvalidLink := false, false
+		if IsSymlink(f.Mode()) {
+			isSymlink = true
 			// It's a symbolic link. We try to follow it. If it doesn't work,
 			// we stay with the link information instead of the target's.
 			info, err := i.Fs.Stat(fPath)
 			if err == nil {
 				f = info
+			} else {
+				isInvalidLink = true
 			}
 
 			// Try to read the link's target
@@ -343,9 +362,13 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
 		} else {
 			listing.NumFiles++
 
-			err := file.detectType(true, false, readHeader)
-			if err != nil {
-				return err
+			if isInvalidLink {
+				file.Type = "invalid_link"
+			} else {
+				err := file.detectType(true, false, readHeader)
+				if err != nil {
+					return err
+				}
 			}
 		}
 

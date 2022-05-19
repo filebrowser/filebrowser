@@ -1,4 +1,4 @@
-function removeLastDir(url) {
+export function removeLastDir(url) {
   var arr = url.split("/");
   if (arr.pop() === "") {
     arr.pop();
@@ -9,7 +9,7 @@ function removeLastDir(url) {
 
 // this code borrow from mozilla
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent#Examples
-function encodeRFC5987ValueChars(str) {
+export function encodeRFC5987ValueChars(str) {
   return (
     encodeURIComponent(str)
       // Note that although RFC3986 reserves "!", RFC5987 does not,
@@ -22,7 +22,7 @@ function encodeRFC5987ValueChars(str) {
   );
 }
 
-function encodePath(str) {
+export function encodePath(str) {
   return str
     .split("/")
     .map((v) => encodeURIComponent(v))
@@ -30,7 +30,7 @@ function encodePath(str) {
 }
 
 export default {
-  encodeRFC5987ValueChars: encodeRFC5987ValueChars,
-  removeLastDir: removeLastDir,
-  encodePath: encodePath,
+  encodeRFC5987ValueChars,
+  removeLastDir,
+  encodePath,
 };

@@ -4,7 +4,7 @@
 
     <breadcrumbs base="/files" />
 
-    <errors v-if="error" :errorCode="error.message" />
+    <errors v-if="error" :errorCode="error.status" />
     <component
       v-else-if="currentView"
       :is="currentView"
@@ -142,7 +142,7 @@ export default {
         }
 
         this.$store.commit("updateRequest", res);
-        document.title = `${res.name} - ${this.$route.name}`;
+        document.title = `${res.name} - ${document.title}`;
       } catch (e) {
         this.error = e;
       } finally {

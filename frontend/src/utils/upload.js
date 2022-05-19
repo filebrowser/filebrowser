@@ -70,6 +70,7 @@ export function scanFiles(dt) {
           isDir: true,
           size: 0,
           fullPath: `${directory}${entry.name}`,
+          name: entry.name,
         };
 
         contents.push(dir);
@@ -99,6 +100,15 @@ export function scanFiles(dt) {
   });
 }
 
+function detectType(mimetype) {
+  if (mimetype.startsWith("video")) return "video";
+  if (mimetype.startsWith("audio")) return "audio";
+  if (mimetype.startsWith("image")) return "image";
+  if (mimetype.startsWith("pdf")) return "pdf";
+  if (mimetype.startsWith("text")) return "text";
+  return "blob";
+}
+
 export function handleFiles(files, base, overwrite = false) {
   for (let i = 0; i < files.length; i++) {
     let id = store.state.upload.id;
@@ -120,6 +130,7 @@ export function handleFiles(files, base, overwrite = false) {
       path,
       file,
       overwrite,
+      ...(!file.isDir && { type: detectType(file.type) }),
     };
 
     store.dispatch("upload/upload", item);

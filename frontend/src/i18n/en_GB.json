@@ -179,6 +179,7 @@
     "upload": "Upload",
     "uploadFile": "File",
     "uploadFolder": "Folder",
+    "uploadFiles": "Uploading {files} files...",
     "uploadMessage": "Select an option to upload.",
     "write": "Write"
   },

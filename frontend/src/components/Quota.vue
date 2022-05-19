@@ -1,21 +1,27 @@
 <template>
   <div id="quota">
     <div>
-      <div class="label">
+      <div class="quota-label">
         <div>{{ $t("sidebar.quota.space") }}</div>
-        <div v-if="loaded" class="metric">{{ spaceUsageTitle }}</div>
+        <div v-if="loaded" class="quota-metric">{{ spaceUsageTitle }}</div>
       </div>
-      <div class="bar" :title="spaceProgress + '%'">
-        <div class="progress" :style="{ width: spaceProgress + '%' }"></div>
+      <div class="quota-bar" :title="spaceProgress + '%'">
+        <div
+          class="quota-progress"
+          :style="{ width: spaceProgress + '%' }"
+        ></div>
       </div>
     </div>
     <div>
-      <div class="label">
+      <div class="quota-label">
         <div>{{ $t("sidebar.quota.inodes") }}</div>
-        <div v-if="loaded" class="metric">{{ inodeUsageTitle }}</div>
+        <div v-if="loaded" class="quota-metric">{{ inodeUsageTitle }}</div>
       </div>
-      <div class="bar" :title="inodeProgress + '%'">
-        <div class="progress" :style="{ width: inodeProgress + '%' }"></div>
+      <div class="quota-bar" :title="inodeProgress + '%'">
+        <div
+          class="quota-progress"
+          :style="{ width: inodeProgress + '%' }"
+        ></div>
       </div>
     </div>
   </div>

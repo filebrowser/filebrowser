@@ -30,7 +30,7 @@
       </h2>
     </div>
     <div v-else-if="error">
-      <div v-if="error.message === '401'">
+      <div v-if="error.status === 401">
         <div class="card floating" id="password">
           <div v-if="attemptedPasswordLogin" class="share__wrong__password">
             {{ $t("login.wrongCredentials") }}
@@ -60,7 +60,7 @@
           </div>
         </div>
       </div>
-      <errors v-else :errorCode="error.message" />
+      <errors v-else :errorCode="error.status" />
     </div>
     <div v-else>
       <div class="share">
@@ -104,7 +104,7 @@
             </a>
           </div>
           <div class="share__box__element share__box__center">
-            <qrcode-vue :value="fullLink" size="200" level="M"></qrcode-vue>
+            <qrcode-vue :value="link" size="200" level="M"></qrcode-vue>
           </div>
         </div>
         <div
@@ -114,7 +114,7 @@
           <div class="share__box__header" v-if="req.isDir">
             {{ $t("files.files") }}
           </div>
-          <div id="listing" class="list">
+          <div id="listing" class="list file-icons">
             <item
               v-for="item in req.items.slice(0, this.showLimit)"
               :key="base64(item.name)"
@@ -173,7 +173,6 @@
 <script>
 import { mapState, mapMutations, mapGetters } from "vuex";
 import { pub as api } from "@/api";
-import { baseURL } from "@/utils/constants";
 import filesize from "filesize";
 import moment from "moment";
 
@@ -231,21 +230,10 @@ export default {
       return "insert_drive_file";
     },
     link: function () {
-      let queryArg = "";
-      if (this.token !== "") {
-        queryArg = `?token=${this.token}`;
-      }
-
-      const path = this.$route.path.split("/").splice(2).join("/");
-      return `${baseURL}/api/public/dl/${path}${queryArg}`;
+      return api.getDownloadURL(this.req);
     },
     inlineLink: function () {
-      let url = new URL(this.fullLink);
-      url.searchParams.set("inline", "true");
-      return url.href;
-    },
-    fullLink: function () {
-      return window.location.origin + this.link;
+      return api.getDownloadURL(this.req, true);
     },
     humanSize: function () {
       if (this.req.isDir) {
@@ -287,11 +275,12 @@ export default {
 
       try {
         let file = await api.fetch(url, this.password);
+        file.hash = this.hash;
 
         this.token = file.token || "";
 
         this.updateRequest(file);
-        document.title = `${file.name} - ${this.$route.name}`;
+        document.title = `${file.name} - ${document.title}`;
       } catch (e) {
         this.error = e;
       } finally {

@@ -3,7 +3,7 @@ package bolt
 import (
 	"reflect"
 
-	"github.com/asdine/storm"
+	"github.com/asdine/storm/v3"
 
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/users"
