@@ -1,35 +1,35 @@
-import { fetchURL, removePrefix } from "./utils";
+import { fetchURL, removePrefix, createURL } from "./utils";
 import { baseURL } from "@/utils/constants";
 
 export async function fetch(url, password = "") {
   url = removePrefix(url);
 
-  const res = await fetchURL(`/api/public/share${url}`, {
-    headers: { "X-SHARE-PASSWORD": password },
-  });
+  const res = await fetchURL(
+    `/api/public/share${url}`,
+    {
+      headers: { "X-SHARE-PASSWORD": encodeURIComponent(password) },
+    },
+    false
+  );
 
-  if (res.status === 200) {
-    let data = await res.json();
-    data.url = `/share${url}`;
+  let data = await res.json();
+  data.url = `/share${url}`;
 
-    if (data.isDir) {
-      if (!data.url.endsWith("/")) data.url += "/";
-      data.items = data.items.map((item, index) => {
-        item.index = index;
-        item.url = `${data.url}${encodeURIComponent(item.name)}`;
+  if (data.isDir) {
+    if (!data.url.endsWith("/")) data.url += "/";
+    data.items = data.items.map((item, index) => {
+      item.index = index;
+      item.url = `${data.url}${encodeURIComponent(item.name)}`;
 
-        if (item.isDir) {
-          item.url += "/";
-        }
+      if (item.isDir) {
+        item.url += "/";
+      }
 
-        return item;
-      });
-    }
-
-    return data;
-  } else {
-    throw new Error(res.status);
+      return item;
+    });
   }
+
+  return data;
 }
 
 export function download(format, hash, token, ...files) {
@@ -58,4 +58,13 @@ export function download(format, hash, token, ...files) {
   }
 
   window.open(url);
+}
+
+export function getDownloadURL(share, inline = false) {
+  const params = {
+    ...(inline && { inline: "true" }),
+    ...(share.token && { token: share.token }),
+  };
+
+  return createURL("api/public/dl/" + share.hash + share.path, params, false);
 }

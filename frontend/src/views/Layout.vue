@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="progress">
+    <div v-if="progress" class="progress">
       <div v-bind:style="{ width: this.progress + '%' }"></div>
     </div>
     <sidebar></sidebar>
@@ -10,6 +10,8 @@
     </main>
     <prompts></prompts>
     <context-menu v-if="isVisibleContext"></context-menu>
+
+    <upload-files></upload-files>
   </div>
 </template>
 
@@ -19,6 +21,7 @@ import Sidebar from "@/components/Sidebar";
 import Prompts from "@/components/prompts/Prompts";
 import ContextMenu from "@/components/files/ContextMenu";
 import Shell from "@/components/Shell";
+import UploadFiles from "../components/prompts/UploadFiles";
 import { enableExec } from "@/utils/constants";
 
 export default {
@@ -28,6 +31,7 @@ export default {
     Prompts,
     ContextMenu,
     Shell,
+    UploadFiles,
   },
   computed: {
     ...mapGetters(["isLogged", "isVisibleContext", "progress"]),

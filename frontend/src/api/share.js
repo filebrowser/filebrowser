@@ -1,4 +1,4 @@
-import { fetchURL, fetchJSON, removePrefix } from "./utils";
+import { fetchURL, fetchJSON, removePrefix, createURL } from "./utils";
 
 export async function list() {
   return fetchJSON("/api/shares");
@@ -10,13 +10,9 @@ export async function get(url) {
 }
 
 export async function remove(hash) {
-  const res = await fetchURL(`/api/share/${hash}`, {
+  await fetchURL(`/api/share/${hash}`, {
     method: "DELETE",
   });
-
-  if (res.status !== 200) {
-    throw new Error(res.status);
-  }
 }
 
 export async function create(url, password = "", expires = "", unit = "hours") {
@@ -33,4 +29,8 @@ export async function create(url, password = "", expires = "", unit = "hours") {
     method: "POST",
     body: body,
   });
+}
+
+export function getShareURL(share) {
+  return createURL("share/" + share.hash, {}, false);
 }

@@ -25,7 +25,7 @@
             <td class="small">
               <button
                 class="action copy-clipboard"
-                :data-clipboard-text="buildLink(link.hash)"
+                :data-clipboard-text="buildLink(link)"
                 :aria-label="$t('buttons.copyToClipboard')"
                 :title="$t('buttons.copyToClipboard')"
               >
@@ -118,7 +118,6 @@
 <script>
 import { mapState, mapGetters } from "vuex";
 import { share as api } from "@/api";
-import { baseURL } from "@/utils/constants";
 import moment from "moment";
 import Clipboard from "clipboard";
 
@@ -213,8 +212,8 @@ export default {
     humanTime(time) {
       return moment(time * 1000).fromNow();
     },
-    buildLink(hash) {
-      return `${window.location.origin}${baseURL}/share/${hash}`;
+    buildLink(share) {
+      return api.getShareURL(share);
     },
     sort() {
       this.links = this.links.sort((a, b) => {

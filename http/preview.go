@@ -91,7 +91,7 @@ func handleImagePreview(
 		return errToStatus(err), err
 	}
 
-	cacheKey := previewCacheKey(file.Path, file.ModTime.Unix(), previewSize)
+	cacheKey := previewCacheKey(file, previewSize)
 	resizedImage, ok, err := fileCache.Load(r.Context(), cacheKey)
 	if err != nil {
 		return errToStatus(err), err
@@ -129,8 +129,8 @@ func createPreview(imgSvc ImgService, fileCache FileCache,
 		height = 1080
 		options = append(options, img.WithMode(img.ResizeModeFit), img.WithQuality(img.QualityMedium))
 	case previewSize == PreviewSizeThumb:
-		width = 128
-		height = 128
+		width = 256
+		height = 256
 		options = append(options, img.WithMode(img.ResizeModeFill), img.WithQuality(img.QualityLow), img.WithFormat(img.FormatJpeg))
 	default:
 		return nil, img.ErrUnsupportedFormat
@@ -142,7 +142,7 @@ func createPreview(imgSvc ImgService, fileCache FileCache,
 	}
 
 	go func() {
-		cacheKey := previewCacheKey(file.Path, file.ModTime.Unix(), previewSize)
+		cacheKey := previewCacheKey(file, previewSize)
 		if err := fileCache.Store(context.Background(), cacheKey, buf.Bytes()); err != nil {
 			fmt.Printf("failed to cache resized image: %v", err)
 		}
@@ -151,6 +151,6 @@ func createPreview(imgSvc ImgService, fileCache FileCache,
 	return buf.Bytes(), nil
 }
 
-func previewCacheKey(fPath string, fTime int64, previewSize PreviewSize) string {
-	return fmt.Sprintf("%x%x%x", fPath, fTime, previewSize)
+func previewCacheKey(f *files.FileInfo, previewSize PreviewSize) string {
+	return fmt.Sprintf("%x%x%x", f.RealPath(), f.ModTime.Unix(), previewSize)
 }

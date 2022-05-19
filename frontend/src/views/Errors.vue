@@ -38,15 +38,8 @@ export default {
   },
   props: ["errorCode", "showHeader"],
   computed: {
-    code() {
-      return this.errorCode === "0" ||
-        this.errorCode === "404" ||
-        this.errorCode === "403"
-        ? parseInt(this.errorCode)
-        : 500;
-    },
     info() {
-      return errors[this.code];
+      return errors[this.errorCode] ? errors[this.errorCode] : errors[500];
     },
   },
 };

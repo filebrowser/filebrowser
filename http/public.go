@@ -3,6 +3,7 @@ package http
 import (
 	"errors"
 	"net/http"
+	"net/url"
 	"path"
 	"path/filepath"
 	"strings"
@@ -124,6 +125,10 @@ func authenticateShareRequest(r *http.Request, l *share.Link) (int, error) {
 	}
 
 	password := r.Header.Get("X-SHARE-PASSWORD")
+	password, err := url.QueryUnescape(password)
+	if err != nil {
+		return 0, err
+	}
 	if password == "" {
 		return http.StatusUnauthorized, nil
 	}

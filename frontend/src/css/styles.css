@@ -10,6 +10,8 @@
 @import "./base.css";
 @import "./header.css";
 @import "./listing.css";
+@import "./listing-icons.css";
+@import "./upload-files.css";
 @import "./dashboard.css";
 @import "./login.css";
 
@@ -365,7 +367,7 @@ main .spinner .bounce2 {
 
 @keyframes spin {
   100% {
-    transform: rotate(-360deg);
+    transform: rotate(360deg);
   }
 }
 

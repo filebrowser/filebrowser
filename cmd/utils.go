@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/asdine/storm"
+	"github.com/asdine/storm/v3"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	yaml "gopkg.in/yaml.v2"
