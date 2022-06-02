@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/spf13/afero"
 
 	"github.com/filebrowser/filebrowser/v2/errors"
@@ -330,3 +331,32 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
 	}
 }
+
+type DiskUsageResponse struct {
+	Total uint64 `json:"total"`
+	Used  uint64 `json:"used"`
+}
+
+var diskUsage = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	file, err := files.NewFileInfo(files.FileOptions{
+		Fs:         d.user.Fs,
+		Path:       r.URL.Path,
+		Modify:     d.user.Perm.Modify,
+		Expand:     false,
+		ReadHeader: false,
+		Checker:    d,
+		Content:    false,
+	})
+	if err != nil {
+		return errToStatus(err), err
+	}
+	fPath := file.RealPath()
+	usage, err := disk.UsageWithContext(r.Context(), fPath)
+	if err != nil {
+		return errToStatus(err), err
+	}
+	return renderJSON(w, r, &DiskUsageResponse{
+		Total: usage.Total,
+		Used:  usage.Used,
+	})
+})
