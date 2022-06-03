@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.22.0](https://github.com/filebrowser/filebrowser/compare/v2.21.1...v2.22.0) (2022-06-03)
+
+
+### Features
+
+* add branding to the window title ([#1850](https://github.com/filebrowser/filebrowser/issues/1850)) ([f8dfbf7](https://github.com/filebrowser/filebrowser/commit/f8dfbf7eeecf3ee99ce906276777676f44e81e34))
+* add disk usage information to the sidebar ([d1d8e3e](https://github.com/filebrowser/filebrowser/commit/d1d8e3e3405381b01317fe07ae729d70219415a7))
+* automatically focus username field on login page ([596c732](https://github.com/filebrowser/filebrowser/commit/596c73288f5b53bd7e79ab8046136dc75ff078b9))
+* invalid symlink icon ([b14b911](https://github.com/filebrowser/filebrowser/commit/b14b9114f837cacf9f7788e88c503142a81585be))
+* page title localization ([8a43413](https://github.com/filebrowser/filebrowser/commit/8a43413f888440dc11b11c509abff45f706033d8))
+
+
+### Bug Fixes
+
+* allow CSP inline styling ([5da9d74](https://github.com/filebrowser/filebrowser/commit/5da9d74da62c69c431361bcaf0c07dc1da237ea8))
+* disable autocapitalize of login input (closes [#1910](https://github.com/filebrowser/filebrowser/issues/1910)) ([aed3af5](https://github.com/filebrowser/filebrowser/commit/aed3af58384697dc3de30f1450b837b0b74e4fa6))
+* drag-and-drop folder upload ([e677c78](https://github.com/filebrowser/filebrowser/commit/e677c78471f09f8d2c21d63d7388e908924aa6d9))
+* expired token error ([c3bd118](https://github.com/filebrowser/filebrowser/commit/c3bd1188aa396cbf00c593d259a9da0eddeeea3b))
+* folder info on upload list ([d1d7b23](https://github.com/filebrowser/filebrowser/commit/d1d7b23da6cc0c9a2f2f3e17021ec4f13ea557dd))
+* network error object message ([fc209f6](https://github.com/filebrowser/filebrowser/commit/fc209f64deff7a2793980d11ee738f7140c444cf))
+* set correct scope when user home creation is enabled ([02730bb](https://github.com/filebrowser/filebrowser/commit/02730bb9bfa3bfbfa251bb4736fc4c08d33609ab))
+
+
+### Build
+
+* **backend:** bump dependency versions ([7c9a75e](https://github.com/filebrowser/filebrowser/commit/7c9a75e72588f92d58fb58d32cdac352bce73b20))
+* **deps:** bump async from 2.6.3 to 2.6.4 in /frontend ([#1933](https://github.com/filebrowser/filebrowser/issues/1933)) ([e5fa96b](https://github.com/filebrowser/filebrowser/commit/e5fa96b666eac2e46a02bde832488baca5f2cd6d))
+* **deps:** bump eventsource from 1.1.0 to 1.1.1 in /frontend ([dd50369](https://github.com/filebrowser/filebrowser/commit/dd503695a1a8119a631643414d3a9070890f3f3c))
+* **deps:** bump minimist from 1.2.5 to 1.2.6 in /frontend ([#1889](https://github.com/filebrowser/filebrowser/issues/1889)) ([a74c72d](https://github.com/filebrowser/filebrowser/commit/a74c72db451207e1275988f3d208fa6d6f0468a9))
+* **deps:** bump minimist from 1.2.5 to 1.2.6 in /tools ([#1891](https://github.com/filebrowser/filebrowser/issues/1891)) ([f5b1e10](https://github.com/filebrowser/filebrowser/commit/f5b1e106183fb2192063a72fd195fc8c181ba8f9))
+* **deps:** bump moment from 2.29.1 to 2.29.2 in /frontend ([#1900](https://github.com/filebrowser/filebrowser/issues/1900)) ([040584c](https://github.com/filebrowser/filebrowser/commit/040584c86563d869c7a05887ef1f781bce653033))
+* **deps:** bump url-parse from 1.5.7 to 1.5.10 in /frontend ([#1841](https://github.com/filebrowser/filebrowser/issues/1841)) ([b2ad3f7](https://github.com/filebrowser/filebrowser/commit/b2ad3f73686a2abaa4fc62963fba6f83c9da9b5e))
+* **frontend:** bump node version from 14 to 16 ([ac3ead8](https://github.com/filebrowser/filebrowser/commit/ac3ead8dcef9c64c6be8b5cbbceee143b2cc77a8))
+* upgrade go version to 1.18.1 ([6bd34c7](https://github.com/filebrowser/filebrowser/commit/6bd34c76324780c1edd8625d5b22f5a84990852b))
+
 ### [2.21.1](https://github.com/filebrowser/filebrowser/compare/v2.21.0...v2.21.1) (2022-02-22)
 
 
