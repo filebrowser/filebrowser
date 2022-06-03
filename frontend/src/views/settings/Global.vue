@@ -18,6 +18,15 @@
             {{ $t("settings.createUserDir") }}
           </p>
 
+          <div>
+            <p class="small">{{ $t("settings.userHomeBasePath") }}</p>
+            <input
+              class="input input--block"
+              type="text"
+              v-model="settings.userHomeBasePath"
+            />
+          </div>
+
           <h3>{{ $t("settings.rules") }}</h3>
           <p class="small">{{ $t("settings.globalRules") }}</p>
           <rules :rules.sync="settings.rules" />

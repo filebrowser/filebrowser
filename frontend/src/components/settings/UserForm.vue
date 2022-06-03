@@ -24,11 +24,17 @@
     <p>
       <label for="scope">{{ $t("settings.scope") }}</label>
       <input
+        :disabled="createUserDirData"
+        :placeholder="scopePlaceholder"
         class="input input--block"
         type="text"
         v-model="user.scope"
         id="scope"
       />
+    </p>
+    <p class="small" v-if="displayHomeDirectoryCheckbox">
+      <input type="checkbox" v-model="createUserDirData" />
+      {{ $t("settings.createUserHomeDirectory") }}
     </p>
 
     <p>
@@ -69,16 +75,34 @@ import { enableExec } from "@/utils/constants";
 
 export default {
   name: "user",
+  data: () => {
+    return {
+      createUserDirData: false,
+      originalUserScope: "/",
+    };
+  },
   components: {
     Permissions,
     Languages,
     Rules,
     Commands,
   },
-  props: ["user", "isNew", "isDefault"],
+  props: ["user", "createUserDir", "isNew", "isDefault"],
+  created() {
+    this.originalUserScope = this.user.scope;
+    this.createUserDirData = this.createUserDir;
+  },
   computed: {
     passwordPlaceholder() {
       return this.isNew ? "" : this.$t("settings.avoidChanges");
+    },
+    scopePlaceholder() {
+      return this.createUserDir
+        ? this.$t("settings.userScopeGenerationPlaceholder")
+        : "";
+    },
+    displayHomeDirectoryCheckbox() {
+      return this.isNew && this.createUserDir;
     },
     isExecEnabled: () => enableExec,
   },
@@ -86,6 +110,9 @@ export default {
     "user.perm.admin": function () {
       if (!this.user.perm.admin) return;
       this.user.lockPassword = false;
+    },
+    createUserDirData() {
+      this.user.scope = this.createUserDirData ? "" : this.originalUserScope;
     },
   },
 };

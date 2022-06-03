@@ -9,24 +9,26 @@ import (
 )
 
 type settingsData struct {
-	Signup        bool                  `json:"signup"`
-	CreateUserDir bool                  `json:"createUserDir"`
-	Defaults      settings.UserDefaults `json:"defaults"`
-	Rules         []rules.Rule          `json:"rules"`
-	Branding      settings.Branding     `json:"branding"`
-	Shell         []string              `json:"shell"`
-	Commands      map[string][]string   `json:"commands"`
+	Signup           bool                  `json:"signup"`
+	CreateUserDir    bool                  `json:"createUserDir"`
+	UserHomeBasePath string                `json:"userHomeBasePath"`
+	Defaults         settings.UserDefaults `json:"defaults"`
+	Rules            []rules.Rule          `json:"rules"`
+	Branding         settings.Branding     `json:"branding"`
+	Shell            []string              `json:"shell"`
+	Commands         map[string][]string   `json:"commands"`
 }
 
 var settingsGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	data := &settingsData{
-		Signup:        d.settings.Signup,
-		CreateUserDir: d.settings.CreateUserDir,
-		Defaults:      d.settings.Defaults,
-		Rules:         d.settings.Rules,
-		Branding:      d.settings.Branding,
-		Shell:         d.settings.Shell,
-		Commands:      d.settings.Commands,
+		Signup:           d.settings.Signup,
+		CreateUserDir:    d.settings.CreateUserDir,
+		UserHomeBasePath: d.settings.UserHomeBasePath,
+		Defaults:         d.settings.Defaults,
+		Rules:            d.settings.Rules,
+		Branding:         d.settings.Branding,
+		Shell:            d.settings.Shell,
+		Commands:         d.settings.Commands,
 	}
 
 	return renderJSON(w, r, data)
@@ -41,6 +43,7 @@ var settingsPutHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, 
 
 	d.settings.Signup = req.Signup
 	d.settings.CreateUserDir = req.CreateUserDir
+	d.settings.UserHomeBasePath = req.UserHomeBasePath
 	d.settings.Defaults = req.Defaults
 	d.settings.Rules = req.Rules
 	d.settings.Branding = req.Branding
