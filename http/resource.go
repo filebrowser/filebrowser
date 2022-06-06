@@ -351,12 +351,19 @@ var diskUsage = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (
 		return errToStatus(err), err
 	}
 	fPath := file.RealPath()
-	usage, err := disk.UsageWithContext(r.Context(), fPath)
-	if err != nil {
-		return errToStatus(err), err
+	if file.IsDir {
+		usage, err := disk.UsageWithContext(r.Context(), fPath)
+		if err != nil {
+			return errToStatus(err), err
+		}
+		return renderJSON(w, r, &DiskUsageResponse{
+			Total: usage.Total,
+			Used:  usage.Used,
+		})
+	} else {
+		return renderJSON(w, r, &DiskUsageResponse{
+			Total: 0,
+			Used:  0,
+		})
 	}
-	return renderJSON(w, r, &DiskUsageResponse{
-		Total: usage.Total,
-		Used:  usage.Used,
-	})
 })
