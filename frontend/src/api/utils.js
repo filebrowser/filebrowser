@@ -63,8 +63,8 @@ export function removePrefix(url) {
 
 export function createURL(endpoint, params = {}, auth = true) {
   let prefix = baseURL;
-  if (prefix[prefix.length] != '/') {
-    prefix = prefix + '/';
+  if (prefix[prefix.length] !== "/") {
+    prefix = prefix + "/";
   }
   const url = new URL(prefix + encodePath(endpoint), origin);
 
