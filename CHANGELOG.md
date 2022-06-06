@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.22.1](https://github.com/filebrowser/filebrowser/compare/v2.22.0...v2.22.1) (2022-06-06)
+
+
+### Bug Fixes
+
+* use correct basepath prefix for preview urls ([#1971](https://github.com/filebrowser/filebrowser/issues/1971)) ([1e7d3b2](https://github.com/filebrowser/filebrowser/commit/1e7d3b25c283c556d98c65f1c2f46db4e4178995))
+
+
+### Build
+
+* **backend:** bump go version to 1.8.3 ([b16982d](https://github.com/filebrowser/filebrowser/commit/b16982df0f7da9eedb678455298b42ac55c86666))
+
 ## [2.22.0](https://github.com/filebrowser/filebrowser/compare/v2.21.1...v2.22.0) (2022-06-03)
 
 
