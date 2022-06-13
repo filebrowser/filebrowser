@@ -85,7 +85,7 @@
       v-if="$router.currentRoute.path.includes('/files/')"
       style="width: 90%; margin: 2em 2.5em 3em 2.5em"
     >
-      <progress-bar :val="usage.usedPercentage" :size="large"></progress-bar>
+      <progress-bar :val="usage.usedPercentage" size="small"></progress-bar>
       <br />
       {{ usage.used }} of {{ usage.total }} used
     </div>
@@ -102,9 +102,9 @@
         >
         <span> {{ version }}</span>
       </span>
-      <span
-        ><a @click="help">{{ $t("sidebar.help") }}</a></span
-      >
+      <span>
+        <a @click="help">{{ $t("sidebar.help") }}</a>
+      </span>
     </p>
   </nav>
 </template>
