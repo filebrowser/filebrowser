@@ -33,7 +33,7 @@ type userInfo struct {
 
 type authToken struct {
 	User userInfo `json:"user"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 type extractor []string
@@ -74,8 +74,8 @@ func withUser(fn handleFunc) handleFunc {
 			return http.StatusUnauthorized, nil
 		}
 
-		expired := !tk.VerifyExpiresAt(time.Now().Add(time.Hour).Unix(), true)
-		updated := d.store.Users.LastUpdate(tk.User.ID) > tk.IssuedAt
+		expired := !tk.VerifyExpiresAt(time.Now().Add(time.Hour), true)
+		updated := tk.IssuedAt != nil && tk.IssuedAt.Unix() < d.store.Users.LastUpdate(tk.User.ID)
 
 		if expired || updated {
 			w.Header().Add("X-Renew-Token", "true")
@@ -187,9 +187,9 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 			HideDotfiles: user.HideDotfiles,
 			DateFormat:   user.DateFormat,
 		},
-		StandardClaims: jwt.StandardClaims{
-			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(TokenExpirationTime).Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(TokenExpirationTime)),
 			Issuer:    "File Browser",
 		},
 	}
