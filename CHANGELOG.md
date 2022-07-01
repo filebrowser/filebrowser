@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.22.2](https://github.com/filebrowser/filebrowser/compare/v2.22.1...v2.22.2) (2022-07-01)
+
+
+### Bug Fixes
+
+* display disk capacity in a correct format ([#2013](https://github.com/filebrowser/filebrowser/issues/2013)) ([dec3d62](https://github.com/filebrowser/filebrowser/commit/dec3d629d42de567aa708154ebc4e03b5223608c))
+* don't calculate usage for files ([#1973](https://github.com/filebrowser/filebrowser/issues/1973)) ([577c0ef](https://github.com/filebrowser/filebrowser/commit/577c0efa9cff13628d5e3bac710ef568a00949e0)), closes [#1972](https://github.com/filebrowser/filebrowser/issues/1972) [#1967](https://github.com/filebrowser/filebrowser/issues/1967)
+* preview url building fix ([#1976](https://github.com/filebrowser/filebrowser/issues/1976)) ([dcf0bc6](https://github.com/filebrowser/filebrowser/commit/dcf0bc65bfcfc7df3804d7392598a92019468cf7))
+
+
+### Build
+
+* **backend:** upgrade golangci-lint to 1.46.2 ([#1991](https://github.com/filebrowser/filebrowser/issues/1991)) ([8118afd](https://github.com/filebrowser/filebrowser/commit/8118afd0ac0d25f4503c98879369764c35e7408e))
+
 ### [2.22.1](https://github.com/filebrowser/filebrowser/compare/v2.22.0...v2.22.1) (2022-06-06)
 
 
