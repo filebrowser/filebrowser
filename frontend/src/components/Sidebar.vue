@@ -150,8 +150,8 @@ export default {
         try {
           let usage = await api.usage(path);
           usageStats = {
-            used: prettyBytes(usage.used),
-            total: prettyBytes(usage.total),
+            used: prettyBytes(usage.used, { binary: true }),
+            total: prettyBytes(usage.total, { binary: true }),
             usedPercentage: Math.round((usage.used / usage.total) * 100),
           };
         } catch (error) {
