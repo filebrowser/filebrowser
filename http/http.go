@@ -27,7 +27,7 @@ func NewHandler(
 	r := mux.NewRouter()
 	r.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Security-Policy", `default-src 'self'`)
+			w.Header().Set("Content-Security-Policy", `default-src 'self'; style-src 'unsafe-inline';`)
 			next.ServeHTTP(w, r)
 		})
 	})
@@ -64,6 +64,8 @@ func NewHandler(
 	api.PathPrefix("/resources").Handler(monkey(resourcePostHandler(fileCache), "/api/resources")).Methods("POST")
 	api.PathPrefix("/resources").Handler(monkey(resourcePutHandler, "/api/resources")).Methods("PUT")
 	api.PathPrefix("/resources").Handler(monkey(resourcePatchHandler(fileCache), "/api/resources")).Methods("PATCH")
+
+	api.PathPrefix("/usage").Handler(monkey(diskUsage, "/api/usage")).Methods("GET")
 
 	api.Path("/shares").Handler(monkey(shareListHandler, "/api/shares")).Methods("GET")
 	api.PathPrefix("/share").Handler(monkey(shareGetsHandler, "/api/share")).Methods("GET")

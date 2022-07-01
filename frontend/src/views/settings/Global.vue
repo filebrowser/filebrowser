@@ -1,5 +1,5 @@
 <template>
-  <errors v-if="error" :errorCode="error.message" />
+  <errors v-if="error" :errorCode="error.status" />
   <div class="row" v-else-if="!loading">
     <div class="column">
       <form class="card" @submit.prevent="save">
@@ -17,6 +17,15 @@
             <input type="checkbox" v-model="settings.createUserDir" />
             {{ $t("settings.createUserDir") }}
           </p>
+
+          <div>
+            <p class="small">{{ $t("settings.userHomeBasePath") }}</p>
+            <input
+              class="input input--block"
+              type="text"
+              v-model="settings.userHomeBasePath"
+            />
+          </div>
 
           <h3>{{ $t("settings.rules") }}</h3>
           <p class="small">{{ $t("settings.globalRules") }}</p>

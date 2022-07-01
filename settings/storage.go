@@ -26,7 +26,14 @@ func NewStorage(back StorageBackend) *Storage {
 
 // Get returns the settings for the current instance.
 func (s *Storage) Get() (*Settings, error) {
-	return s.back.Get()
+	set, err := s.back.Get()
+	if err != nil {
+		return nil, err
+	}
+	if set.UserHomeBasePath == "" {
+		set.UserHomeBasePath = DefaultUsersHomeBasePath
+	}
+	return set, nil
 }
 
 var defaultEvents = []string{

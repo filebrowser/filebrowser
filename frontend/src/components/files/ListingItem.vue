@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { baseURL, enableThumbs } from "@/utils/constants";
+import { enableThumbs } from "@/utils/constants";
 import { mapMutations, mapGetters, mapState } from "vuex";
 import filesize from "filesize";
 import moment from "moment";
@@ -58,6 +58,7 @@ export default {
     "modified",
     "index",
     "readOnly",
+    "path",
   ],
   computed: {
     ...mapState(["user", "selected", "req", "jwt"]),
@@ -83,12 +84,12 @@ export default {
       return true;
     },
     thumbnailUrl() {
-      const path = this.url.replace(/^\/files\//, "");
+      const file = {
+        path: this.path,
+        modified: this.modified,
+      };
 
-      // reload the image when the file is replaced
-      const key = Date.parse(this.modified);
-
-      return `${baseURL}/api/preview/thumb/${path}?k=${key}&inline=true`;
+      return api.getPreviewURL(file, "thumb");
     },
     isThumbsEnabled() {
       return enableThumbs;
@@ -97,7 +98,7 @@ export default {
   methods: {
     ...mapMutations(["addSelected", "removeSelected", "resetSelected"]),
     humanSize: function () {
-      return filesize(this.size);
+      return this.type == "invalid_link" ? "invalid link" : filesize(this.size);
     },
     humanTime: function () {
       if (this.readOnly == undefined && this.user.dateFormat) {

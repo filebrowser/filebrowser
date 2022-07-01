@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/asdine/storm"
+	"github.com/asdine/storm/v3"
 	bolt "go.etcd.io/bbolt"
 
 	"github.com/filebrowser/filebrowser/v2/rules"

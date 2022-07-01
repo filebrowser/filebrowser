@@ -92,11 +92,7 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 
 	if u.Fs == nil {
 		scope := u.Scope
-
-		if !filepath.IsAbs(scope) {
-			scope = filepath.Join(baseScope, scope)
-		}
-
+		scope = filepath.Join(baseScope, filepath.Join("/", scope)) //nolint:gocritic
 		u.Fs = afero.NewBasePathFs(afero.NewOsFs(), scope)
 	}
 

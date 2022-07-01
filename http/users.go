@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
-	"strings"
 
 	"github.com/gorilla/mux"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -176,7 +177,7 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 	}
 
 	for k, v := range req.Which {
-		v = strings.Title(v)
+		v = cases.Title(language.English).String(v)
 		req.Which[k] = v
 
 		if v == "Password" {

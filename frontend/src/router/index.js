@@ -13,8 +13,24 @@ import Shares from "@/views/settings/Shares";
 import Errors from "@/views/Errors";
 import store from "@/store";
 import { baseURL, name } from "@/utils/constants";
+import i18n from "@/i18n";
 
 Vue.use(Router);
+
+const titles = {
+  Login: "sidebar.login",
+  Share: "buttons.share",
+  Files: "files.files",
+  Settings: "sidebar.settings",
+  ProfileSettings: "settings.profileSettings",
+  Shares: "settings.shareManagement",
+  GlobalSettings: "settings.globalSettings",
+  Users: "settings.users",
+  User: "settings.user",
+  Forbidden: "errors.forbidden",
+  NotFound: "errors.notFound",
+  InternalServerError: "errors.internal",
+};
 
 const router = new Router({
   base: baseURL,
@@ -29,7 +45,6 @@ const router = new Router({
           return next({ path: "/files" });
         }
 
-        document.title = "Login - " + name;
         next();
       },
     },
@@ -63,7 +78,7 @@ const router = new Router({
           children: [
             {
               path: "/settings/profile",
-              name: "Profile Settings",
+              name: "ProfileSettings",
               component: ProfileSettings,
             },
             {
@@ -73,7 +88,7 @@ const router = new Router({
             },
             {
               path: "/settings/global",
-              name: "Global Settings",
+              name: "GlobalSettings",
               component: GlobalSettings,
               meta: {
                 requiresAdmin: true,
@@ -108,7 +123,7 @@ const router = new Router({
         },
         {
           path: "/404",
-          name: "Not Found",
+          name: "NotFound",
           component: Errors,
           props: {
             errorCode: 404,
@@ -117,7 +132,7 @@ const router = new Router({
         },
         {
           path: "/500",
-          name: "Internal Server Error",
+          name: "InternalServerError",
           component: Errors,
           props: {
             errorCode: 500,
@@ -140,7 +155,8 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  document.title = to.name + " - " + name;
+  const title = i18n.t(titles[to.name]);
+  document.title = title + " - " + name;
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!store.getters.isLogged) {

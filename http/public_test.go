@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/asdine/storm"
+	"github.com/asdine/storm/v3"
 	"github.com/spf13/afero"
 
 	"github.com/filebrowser/filebrowser/v2/settings"

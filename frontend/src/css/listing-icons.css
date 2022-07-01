@@ -11,6 +11,7 @@
 .file-icons [data-type=pdf] i::before { content: 'description' }
 .file-icons [data-type=text] i::before { content: 'description' }
 .file-icons [data-type=video] i::before { content: 'movie' }
+.file-icons [data-type=invalid_link] i::before { content: 'link_off' }
 
 /* #f90 - Image */
 
@@ -125,6 +126,7 @@
 .file-icons [data-type=audio] i  { color: var(--icon-yellow) }
 .file-icons [data-type=image] i { color: var(--icon-orange) }
 .file-icons [data-type=video] i { color: var(--icon-violet) }
+.file-icons [data-type=invalid_link] i { color: var(--icon-red) }
 
 /* #f00 - Adobe/Oracle */
 

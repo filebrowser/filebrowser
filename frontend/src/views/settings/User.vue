@@ -1,5 +1,5 @@
 <template>
-  <errors v-if="error" :errorCode="error.message" />
+  <errors v-if="error" :errorCode="error.status" />
   <div class="row" v-else-if="!loading">
     <div class="column">
       <form @submit="save" class="card">
@@ -9,7 +9,12 @@
         </div>
 
         <div class="card-content">
-          <user-form :user.sync="user" :isDefault="false" :isNew="isNew" />
+          <user-form
+            :user.sync="user"
+            :createUserDir.sync="createUserDir"
+            :isDefault="false"
+            :isNew="isNew"
+          />
         </div>
 
         <div class="card-action">
@@ -73,6 +78,7 @@ export default {
       error: null,
       originalUser: null,
       user: {},
+      createUserDir: false,
     };
   },
   created() {
@@ -98,7 +104,8 @@ export default {
 
       try {
         if (this.isNew) {
-          let { defaults } = await settings.get();
+          let { defaults, createUserDir } = await settings.get();
+          this.createUserDir = createUserDir;
           this.user = {
             ...defaults,
             username: "",
