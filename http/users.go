@@ -177,7 +177,7 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 	}
 
 	for k, v := range req.Which {
-		v = cases.Title(language.English).String(v)
+		v = cases.Title(language.English, cases.NoLower).String(v)
 		req.Which[k] = v
 
 		if v == "Password" {
