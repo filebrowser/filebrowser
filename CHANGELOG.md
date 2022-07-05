@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.22.3](https://github.com/filebrowser/filebrowser/compare/v2.22.2...v2.22.3) (2022-07-05)
+
+
+### Bug Fixes
+
+* use correct field name in user put api ([#2026](https://github.com/filebrowser/filebrowser/issues/2026)) ([d94acdd](https://github.com/filebrowser/filebrowser/commit/d94acdd89a0069fe87107024fd332a0d59a112fc))
+
 ### [2.22.2](https://github.com/filebrowser/filebrowser/compare/v2.22.1...v2.22.2) (2022-07-01)
 
 
