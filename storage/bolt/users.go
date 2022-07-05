@@ -1,6 +1,7 @@
 package bolt
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/asdine/storm/v3"
@@ -58,7 +59,11 @@ func (st usersBackend) Update(user *users.User, fields ...string) error {
 	}
 
 	for _, field := range fields {
-		val := reflect.ValueOf(user).Elem().FieldByName(field).Interface()
+		userField := reflect.ValueOf(user).Elem().FieldByName(field)
+		if !userField.IsValid() {
+			return fmt.Errorf("invalid field: %s", field)
+		}
+		val := userField.Interface()
 		if err := st.db.UpdateField(user, field, val); err != nil {
 			return err
 		}
