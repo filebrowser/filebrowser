@@ -3,6 +3,11 @@
     <header-bar showMenu showLogo>
       <search /> <title />
       <action
+        icon="storage"
+        :label="$t('yadownloader')"
+        @action="redirect"
+      />
+      <action
         class="search-button"
         icon="search"
         :label="$t('buttons.search')"
@@ -437,6 +442,10 @@ export default {
     document.removeEventListener("drop", this.drop);
   },
   methods: {
+    redirect(){
+       let url = "/downloader";
+      window.location.href = url;
+    },
     ...mapMutations(["updateUser", "addSelected"]),
     base64: function (name) {
       return window.btoa(unescape(encodeURIComponent(name)));

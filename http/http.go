@@ -2,12 +2,14 @@ package http
 
 import (
 	"io/fs"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
+	downloader "github.com/shiningw/yadownloader/http"
 )
 
 type modifyRequest struct {
@@ -84,6 +86,17 @@ func NewHandler(
 	public := api.PathPrefix("/public").Subrouter()
 	public.PathPrefix("/dl").Handler(monkey(publicDlHandler, "/api/public/dl/")).Methods("GET")
 	public.PathPrefix("/share").Handler(monkey(publicShareHandler, "/api/public/share/")).Methods("GET")
+
+	settings, err := store.Settings.Get()
+	if err != nil {
+		log.Fatalf("ERROR: couldn't get settings: %v\n", err)
+	}
+
+	data := &downloader.Data{
+		Settings: settings,
+		Server:   server,
+	}
+	downloader.RegisterRoutes(r, data)
 
 	return stripPrefix(server.BaseURL, r), nil
 }
