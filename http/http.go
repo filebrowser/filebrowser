@@ -92,9 +92,9 @@ func NewHandler(
 		log.Fatalf("ERROR: couldn't get settings: %v\n", err)
 	}
 
-	data := &downloader.Data{
-		Settings: settings,
-		Server:   server,
+	data := downloader.FBConfig{
+		Key:     settings.Key,
+		RootDir: server.Root,
 	}
 	downloader.RegisterRoutes(r, data)
 
