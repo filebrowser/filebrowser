@@ -107,7 +107,7 @@ var loginHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, e
 		return http.StatusInternalServerError, err
 	}
 
-	user, err := auther.Auth(r, d.store.Users, d.server.Root)
+	user, err := auther.Auth(r, d.store.Users, d.settings, d.server)
 	if err == os.ErrPermission {
 		return http.StatusForbidden, nil
 	} else if err != nil {
