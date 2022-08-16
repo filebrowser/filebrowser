@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.22.4](https://github.com/filebrowser/filebrowser/compare/v2.22.3...v2.22.4) (2022-07-18)
+
+
+### Bug Fixes
+
+* disable cookie auth for non GET requests ([80030de](https://github.com/filebrowser/filebrowser/commit/80030dee32d161043766d57ba4e0ad0b0d99290b))
+
+
+### Build
+
+* **deps:** bump moment from 2.29.2 to 2.29.4 in /frontend ([#2036](https://github.com/filebrowser/filebrowser/issues/2036)) ([cb43770](https://github.com/filebrowser/filebrowser/commit/cb437700255e41ff559b9f5a99ab4290b2f8df87))
+* **deps:** bump shell-quote from 1.7.2 to 1.7.3 in /frontend ([#2025](https://github.com/filebrowser/filebrowser/issues/2025)) ([eaba7e5](https://github.com/filebrowser/filebrowser/commit/eaba7e5255f960141e0fc1557f87073df9f6d66a))
+
 ### [2.22.3](https://github.com/filebrowser/filebrowser/compare/v2.22.2...v2.22.3) (2022-07-05)
 
 
