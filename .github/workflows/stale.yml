@@ -19,5 +19,5 @@ jobs:
           close-issue-message: 'This issue was closed because it has been stalled for 5 days with no activity.'
           days-before-stale: 30
           days-before-close: 5
-          exempt-issue-labels: 'future,improvement,bug'
+          exempt-issue-labels: 'feature ☘,enhancement ⚙,bug 🐞'
           exempt-pr-labels: 'need-help,wip'
