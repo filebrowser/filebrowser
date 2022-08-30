@@ -21,3 +21,4 @@ jobs:
           days-before-close: 5
           exempt-issue-labels: 'feature ☘,enhancement ⚙,bug 🐞'
           exempt-pr-labels: 'need-help,wip'
+          operations-per-run: 100
