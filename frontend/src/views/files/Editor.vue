@@ -34,6 +34,8 @@ import HeaderBar from "@/components/header/HeaderBar";
 import Action from "@/components/header/Action";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
+let timeoutBox;
+
 export default {
   name: "editor",
   components: {
@@ -77,9 +79,11 @@ export default {
     },
   },
   created() {
+    this.autoSave();
     window.addEventListener("keydown", this.keyEvent);
   },
   beforeDestroy() {
+    clearTimeout(timeoutBox);
     window.removeEventListener("keydown", this.keyEvent);
     this.editor.destroy();
   },
@@ -129,10 +133,21 @@ export default {
       }
     },
     close() {
+      this.save();
       this.$store.commit("updateRequest", {});
-
       let uri = url.removeLastDir(this.$route.path) + "/";
       this.$router.push({ path: uri });
+    },
+    autoSave() {
+      let editorAutoSaveInterval = this.user.editorAutoSaveInterval;
+      if (editorAutoSaveInterval < 0) {
+        return;
+      }
+      clearTimeout(timeoutBox);
+      timeoutBox = setTimeout(() => {
+        this.save();
+        this.autoSave();
+      }, editorAutoSaveInterval * 1000);
     },
   },
 };
