@@ -68,6 +68,32 @@
         </div>
       </form>
     </div>
+    <div class="column">
+      <form class="card" @submit="updateEditorSettings">
+        <div class="card-title">
+          <h2>{{ $t("settings.changeEditorSettings") }}</h2>
+        </div>
+        <div class="card-content">
+          <label for="editorAutoSaveInterval">
+            Set Editor Auto Save Interval
+          </label>
+          <input
+            :placeholder="$t('settings.editorAutoSaveInterval')"
+            type="number"
+            v-model.number="editorAutoSaveInterval"
+            name="editorAutoSaveInterval"
+          />
+          <label for="editorAutoSaveInterval"> s </label>
+        </div>
+        <div class="card-action">
+          <input
+            class="button button--flat"
+            type="submit"
+            :value="$t('buttons.update')"
+          />
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -89,6 +115,7 @@ export default {
       singleClick: false,
       dateFormat: false,
       locale: "",
+      editorAutoSaveInterval: 60,
     };
   },
   computed: {
@@ -113,6 +140,7 @@ export default {
     this.hideDotfiles = this.user.hideDotfiles;
     this.singleClick = this.user.singleClick;
     this.dateFormat = this.user.dateFormat;
+    this.editorAutoSaveInterval = this.user.editorAutoSaveInterval;
   },
   methods: {
     ...mapMutations(["updateUser", "setLoading"]),
@@ -149,6 +177,21 @@ export default {
           "singleClick",
           "dateFormat",
         ]);
+        this.updateUser(data);
+        this.$showSuccess(this.$t("settings.settingsUpdated"));
+      } catch (e) {
+        this.$showError(e);
+      }
+    },
+    async updateEditorSettings(event) {
+      event.preventDefault();
+
+      try {
+        const data = {
+          id: this.user.id,
+          editorAutoSaveInterval: this.editorAutoSaveInterval,
+        };
+        await api.update(data, ["editorAutoSaveInterval"]);
         this.updateUser(data);
         this.$showSuccess(this.$t("settings.settingsUpdated"));
       } catch (e) {
