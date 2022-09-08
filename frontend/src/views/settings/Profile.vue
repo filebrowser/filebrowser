@@ -75,10 +75,9 @@
         </div>
         <div class="card-content">
           <label for="editorAutoSaveInterval">
-            Set Editor Auto Save Interval
+            {{ $t("settings.editorAutoSaveInterval") }}
           </label>
           <input
-            :placeholder="$t('settings.editorAutoSaveInterval')"
             type="number"
             v-model.number="editorAutoSaveInterval"
             name="editorAutoSaveInterval"
