@@ -28,6 +28,13 @@
   <meta name="msapplication-TileImage" content="[{[ .StaticURL ]}]/img/icons/mstile-144x144.png">
   <meta name="msapplication-TileColor" content="[{[ if .Color -]}][{[ .Color ]}][{[ else ]}]#2979ff[{[ end ]}]">
 
+   <!-- Meta-information for OpenGraph embedding -->
+   <meta property="og:url" content="[{[ .BaseURL ]}][{[ .Path ]}]">
+   <meta property="og:type" content="website">
+   <meta property="og:title" content="[{[ if .Name -]}][{[ .Name ]}][{[ else ]}]File Browser[{[ end ]}]">
+   <meta property="og:description" content="[{[ .Path ]}]">
+   <meta property="og:image" content="[{[ .StaticURL ]}]/img/icons/android-chrome-512x512.png">
+
   <!-- Inject Some Variables and generate the manifest json -->
   <script>
     window.FileBrowser = JSON.parse('[{[ .Json ]}]');

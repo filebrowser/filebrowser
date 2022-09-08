@@ -18,7 +18,7 @@ import (
 	"github.com/filebrowser/filebrowser/v2/version"
 )
 
-func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys fs.FS, file, contentType string) (int, error) {
+func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, fSys fs.FS, file, contentType string) (int, error) {
 	w.Header().Set("Content-Type", contentType)
 
 	auther, err := d.store.Auth.Get(d.settings.AuthMethod)
@@ -43,6 +43,8 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		"EnableThumbs":    d.server.EnableThumbnails,
 		"ResizePreview":   d.server.ResizePreview,
 		"EnableExec":      d.server.EnableExec,
+		"Origin":          r.URL.Scheme + r.Host,
+		"Path":            r.URL.Path,
 	}
 
 	if d.settings.Branding.Files != "" {
