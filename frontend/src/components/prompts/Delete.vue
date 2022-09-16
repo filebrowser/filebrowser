@@ -1,13 +1,22 @@
 <template>
   <div class="card floating">
-    <div class="card-content">
-      <p v-if="req.kind !== 'listing'">
+    <div class="card-title">
+      <p v-if="selectedCount === 1">
         {{ $t("prompts.deleteMessageSingle") }}
       </p>
       <p v-else>
         {{ $t("prompts.deleteMessageMultiple", { count: selectedCount }) }}
       </p>
     </div>
+
+    <div class="card-content">        
+      <ul class="file-list">
+        <ul v-for="index in selected">
+          {{ req.items[index].name }}<span v-if="req.items[index].isDir">/</span>
+        </ul>
+      </ul>
+    </div>
+
     <div class="card-action">
       <button
         @click="$store.commit('closeHovers')"
