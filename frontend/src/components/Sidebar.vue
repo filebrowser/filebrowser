@@ -82,7 +82,7 @@
 
     <div
       class="credits"
-      v-if="$router.currentRoute.path.includes('/files/')"
+      v-if="$router.currentRoute.path.includes('/files/') && !disableUsedPercentage"
       style="width: 90%; margin: 2em 2.5em 3em 2.5em"
     >
       <progress-bar :val="usage.usedPercentage" size="small"></progress-bar>
@@ -116,6 +116,7 @@ import {
   version,
   signup,
   disableExternal,
+  disableUsedPercentage,
   noAuth,
   loginPage,
 } from "@/utils/constants";
@@ -137,6 +138,7 @@ export default {
     signup: () => signup,
     version: () => version,
     disableExternal: () => disableExternal,
+    disableUsedPercentage: () => disableUsedPercentage,
     canLogout: () => !noAuth && loginPage,
   },
   asyncComputed: {
