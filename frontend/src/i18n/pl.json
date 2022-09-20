@@ -177,6 +177,7 @@
     "customStylesheet": "Własny arkusz stylów",
     "defaultUserDescription": "Oto domyślne ustawienia dla nowych użytkowników.",
     "disableExternalLinks": "Wyłącz linki zewnętrzne (z wyjątkiem dokumentacji)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "dokumentacja",
     "examples": "Przykłady",
     "executeOnShell": "Wykonaj w powłoce",
@@ -256,4 +257,3 @@
     "unit": "Jednostka czasu"
   }
 }
-

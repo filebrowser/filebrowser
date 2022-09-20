@@ -176,6 +176,7 @@
     "customStylesheet": "Folgio di stile personalizzato",
     "defaultUserDescription": "This are the default settings for new users.",
     "disableExternalLinks": "Disable external links (except documentation)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentation",
     "examples": "Esempi",
     "executeOnShell": "Execute on shell",
