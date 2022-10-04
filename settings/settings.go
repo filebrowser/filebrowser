@@ -2,7 +2,9 @@ package settings
 
 import (
 	"crypto/rand"
+	"encoding/json"
 	"strings"
+	"time"
 
 	"github.com/filebrowser/filebrowser/v2/rules"
 )
@@ -14,16 +16,17 @@ type AuthMethod string
 
 // Settings contain the main settings of the application.
 type Settings struct {
-	Key              []byte              `json:"key"`
-	Signup           bool                `json:"signup"`
-	CreateUserDir    bool                `json:"createUserDir"`
-	UserHomeBasePath string              `json:"userHomeBasePath"`
-	Defaults         UserDefaults        `json:"defaults"`
-	AuthMethod       AuthMethod          `json:"authMethod"`
-	Branding         Branding            `json:"branding"`
-	Commands         map[string][]string `json:"commands"`
-	Shell            []string            `json:"shell"`
-	Rules            []rules.Rule        `json:"rules"`
+	Key                 []byte              `json:"key"`
+	Signup              bool                `json:"signup"`
+	CreateUserDir       bool                `json:"createUserDir"`
+	UserHomeBasePath    string              `json:"userHomeBasePath"`
+	Defaults            UserDefaults        `json:"defaults"`
+	AuthMethod          AuthMethod          `json:"authMethod"`
+	Branding            Branding            `json:"branding"`
+	Commands            map[string][]string `json:"commands"`
+	Shell               []string            `json:"shell"`
+	Rules               []rules.Rule        `json:"rules"`
+	TokenExpirationTime Duration            `json:"tokenExpirationTime"` // 0 is treated as 2 Hours
 }
 
 // GetRules implements rules.Provider.
@@ -63,4 +66,50 @@ func GenerateKey() ([]byte, error) {
 	}
 
 	return b, nil
+}
+
+type Duration time.Duration // support json Marshal/Unmarshal for time.Duration
+
+func (dur Duration) MarshalJSON() ([]byte, error) {
+	return []byte("\"" + time.Duration(dur).String() + "\""), nil
+}
+
+func (dur *Duration) UnmarshalJSON(data []byte) error {
+	var dStr string
+	err := json.Unmarshal(data, &dStr)
+	if err != nil {
+		return err
+	}
+	if dStr == "" {
+		*dur = 0 // zero value
+		return nil
+	}
+	d, err := time.ParseDuration(dStr)
+	if err != nil {
+		return err
+	}
+	*dur = Duration(d)
+	return nil
+}
+
+func (dur Duration) MarshalYAML() (interface{}, error) {
+	return time.Duration(dur).String(), nil
+}
+
+func (dur *Duration) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var dStr string
+	err := unmarshal(&dStr)
+	if err != nil {
+		return err
+	}
+	if dStr == "" {
+		*dur = 0 // zero value
+		return nil
+	}
+	d, err := time.ParseDuration(dStr)
+	if err != nil {
+		return err
+	}
+	*dur = Duration(d)
+	return nil
 }

@@ -177,6 +177,10 @@ var renewHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data
 })
 
 func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.User) (int, error) {
+	tokenExpirationTime := time.Duration(d.settings.TokenExpirationTime)
+	if tokenExpirationTime == time.Duration(0) {
+		tokenExpirationTime = 2 * time.Hour
+	}
 	claims := &authToken{
 		User: userInfo{
 			ID:           user.ID,
@@ -191,7 +195,7 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 		},
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(TokenExpirationTime)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(tokenExpirationTime)),
 			Issuer:    "File Browser",
 		},
 	}
