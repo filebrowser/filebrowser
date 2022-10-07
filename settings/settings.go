@@ -3,6 +3,7 @@ package settings
 import (
 	"crypto/rand"
 	"encoding/json"
+	"strconv"
 	"strings"
 	"time"
 
@@ -71,7 +72,7 @@ func GenerateKey() ([]byte, error) {
 type Duration time.Duration // support json Marshal/Unmarshal for time.Duration
 
 func (dur Duration) MarshalJSON() ([]byte, error) {
-	return []byte("\"" + time.Duration(dur).String() + "\""), nil
+	return []byte(strconv.Quote(time.Duration(dur).String())), nil
 }
 
 func (dur *Duration) UnmarshalJSON(data []byte) error {

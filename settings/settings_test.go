@@ -29,20 +29,21 @@ func TestDuration(t *testing.T) {
 		{"yaml", yaml.Marshal, yaml.Unmarshal},
 	}
 	for _, tc := range testCases {
-		for _, codec := range codecs {
-			t.Run(codec.name, func(t *testing.T) {
-				// str --> dur --> mid_str(may different from str) --> dur
-				var dur Duration
-				err := codec.unmarshal([]byte(tc.str), &dur)
-				require.NoError(t, err)
-				require.Equal(t, tc.value, dur)
-
-				midStr, err := codec.marshal(dur)
-				require.NoError(t, err)
-				err = codec.unmarshal(midStr, &dur)
-				require.NoError(t, err)
-				require.Equal(t, tc.value, dur)
-			})
-		}
+		t.Run(tc.str, func(t *testing.T) {
+			for _, codec := range codecs {
+				t.Run(codec.name, func(t *testing.T) {
+					// str --> dur --> mid_str(may different from str) --> dur
+					var dur Duration
+					err := codec.unmarshal([]byte(tc.str), &dur)
+					require.NoError(t, err)
+					require.Equal(t, tc.value, dur)
+					midStr, err := codec.marshal(dur)
+					require.NoError(t, err)
+					err = codec.unmarshal(midStr, &dur)
+					require.NoError(t, err)
+					require.Equal(t, tc.value, dur)
+				})
+			}
+		})
 	}
 }
