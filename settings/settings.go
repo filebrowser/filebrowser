@@ -27,7 +27,7 @@ type Settings struct {
 	Commands            map[string][]string `json:"commands"`
 	Shell               []string            `json:"shell"`
 	Rules               []rules.Rule        `json:"rules"`
-	TokenExpirationTime Duration            `json:"tokenExpirationTime"` // 0 is treated as 2 Hours
+	TokenExpirationTime Duration            `json:"tokenExpirationTime"` // 0 is treated as DefaultTokenExpirationTime(2 Hours)
 }
 
 // GetRules implements rules.Provider.

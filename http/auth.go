@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	TokenExpirationTime = time.Hour * 2
+	DefaultTokenExpirationTime = time.Hour * 2
 )
 
 type userInfo struct {
@@ -179,7 +179,7 @@ var renewHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data
 func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.User) (int, error) {
 	tokenExpirationTime := time.Duration(d.settings.TokenExpirationTime)
 	if tokenExpirationTime == time.Duration(0) {
-		tokenExpirationTime = 2 * time.Hour
+		tokenExpirationTime = DefaultTokenExpirationTime
 	}
 	claims := &authToken{
 		User: userInfo{
