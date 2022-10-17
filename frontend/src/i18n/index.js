@@ -104,7 +104,7 @@ const i18n = new VueI18n({
   locale: detectLocale(),
   fallbackLocale: "en",
   messages: {
-    he: removeEmpty(ar),
+    he: removeEmpty(he),
     ar: removeEmpty(ar),
     de: removeEmpty(de),
     en: en,
