@@ -15,6 +15,7 @@ const enableThumbs = window.FileBrowser.EnableThumbs;
 const resizePreview = window.FileBrowser.ResizePreview;
 const enableExec = window.FileBrowser.EnableExec;
 const origin = window.location.origin;
+const rtlLanguages = ["he", "ar"];
 
 export {
   name,
@@ -33,4 +34,5 @@ export {
   resizePreview,
   enableExec,
   origin,
+  rtlLanguages,
 };

@@ -16,6 +16,10 @@
   transition: .2s ease transform;
 }
 
+body.rtl .shell {
+  direction: ltr;
+}
+
 .shell__result {
   display: flex;
   padding: 0.5em;

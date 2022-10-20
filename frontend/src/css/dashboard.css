@@ -8,6 +8,10 @@
   flex-wrap: wrap;
 }
 
+body.rtl .dashboard .row {
+  margin-right: 16em;
+}
+
 .dashboard .row .column {
   display: flex;
   padding: 0 .5em;
@@ -58,6 +62,10 @@ p code {
   display: flex;
   flex-grow: 1;
   border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+body.rtl #nav .wrapper {
+  margin-right: 16em;
 }
 
 .dashboard #nav ul {
@@ -138,6 +146,13 @@ table tr>*:first-child {
   padding-left: 1em;
 }
 
+body.rtl table tr>* {
+  padding-left: unset;
+  padding-right: 1em;
+  text-align: right;
+  direction: ltr;
+}
+
 table tr>*:last-child {
   padding-right: 1em;
 }
@@ -179,6 +194,11 @@ table tr>*:last-child {
 
 .card .card-title>*:first-child {
   margin-right: auto;
+}
+
+body.rtl .card .card-title>*:first-child {
+  margin-right: 0;
+  text-align: right;
 }
 
 .card>div {
@@ -461,4 +481,10 @@ table tr>*:last-child {
 .card .card-action.full .action .title {
   font-size: 1.5em;
   font-weight: 500;
+}
+
+/*** RTL - Fix disk usage information (in english) ***/
+body.rtl .credits {
+  text-align: right;
+  direction: ltr;
 }

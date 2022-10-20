@@ -12,7 +12,7 @@ import ProfileSettings from "@/views/settings/Profile";
 import Shares from "@/views/settings/Shares";
 import Errors from "@/views/Errors";
 import store from "@/store";
-import { baseURL, name } from "@/utils/constants";
+import { baseURL, name, rtlLanguages } from "@/utils/constants";
 import i18n from "@/i18n";
 
 Vue.use(Router);
@@ -157,6 +157,17 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   const title = i18n.t(titles[to.name]);
   document.title = title + " - " + name;
+
+  /*** RTL related settings per route ****/
+  const rtlSet = document.querySelector("body").classList.contains("rtl");
+  const shouldSetRtl = rtlLanguages.includes(i18n.locale);
+  // Add RTL
+  if (shouldSetRtl && rtlSet === false) {
+    document.querySelector("body").classList.add("rtl");
+    //Remove RTL
+  } else if (rtlSet === true && shouldSetRtl === false) {
+    document.querySelector("body").classList.remove("rtl");
+  }
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!store.getters.isLogged) {
