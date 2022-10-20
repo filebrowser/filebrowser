@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueI18n from "vue-i18n";
 
+import he from "./he.json";
 import ar from "./ar.json";
 import de from "./de.json";
 import en from "./en.json";
@@ -27,6 +28,9 @@ Vue.use(VueI18n);
 export function detectLocale() {
   let locale = (navigator.language || navigator.browserLangugae).toLowerCase();
   switch (true) {
+    case /^he.*/i.test(locale):
+      locale = "he";
+      break;
     case /^ar.*/i.test(locale):
       locale = "ar";
       break;
@@ -100,6 +104,7 @@ const i18n = new VueI18n({
   locale: detectLocale(),
   fallbackLocale: "en",
   messages: {
+    he: removeEmpty(he),
     ar: removeEmpty(ar),
     de: removeEmpty(de),
     en: en,
