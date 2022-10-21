@@ -12,8 +12,8 @@ import ProfileSettings from "@/views/settings/Profile";
 import Shares from "@/views/settings/Shares";
 import Errors from "@/views/Errors";
 import store from "@/store";
-import { baseURL, name, rtlLanguages } from "@/utils/constants";
-import i18n from "@/i18n";
+import { baseURL, name } from "@/utils/constants";
+import i18n, { rtlLanguages } from "@/i18n";
 
 Vue.use(Router);
 
@@ -161,12 +161,13 @@ router.beforeEach((to, from, next) => {
   /*** RTL related settings per route ****/
   const rtlSet = document.querySelector("body").classList.contains("rtl");
   const shouldSetRtl = rtlLanguages.includes(i18n.locale);
-  // Add RTL
-  if (shouldSetRtl && rtlSet === false) {
-    document.querySelector("body").classList.add("rtl");
-    //Remove RTL
-  } else if (rtlSet === true && shouldSetRtl === false) {
-    document.querySelector("body").classList.remove("rtl");
+  switch (true) {
+    case shouldSetRtl && !rtlSet:
+      document.querySelector("body").classList.add("rtl");
+      break;
+    case !shouldSetRtl && rtlSet:
+      document.querySelector("body").classList.remove("rtl");
+      break;
   }
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {

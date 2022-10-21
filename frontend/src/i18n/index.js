@@ -100,6 +100,8 @@ const removeEmpty = (obj) =>
       {}
     );
 
+export const rtlLanguages = ["he", "ar"];
+
 const i18n = new VueI18n({
   locale: detectLocale(),
   fallbackLocale: "en",
