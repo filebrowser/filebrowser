@@ -5,6 +5,10 @@ body {
   color: #333333;
 }
 
+body.rtl {
+  direction: rtl;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -58,6 +62,11 @@ nav {
   left: 0;
 }
 
+body.rtl nav {
+  left: unset;
+  right: 0;
+}
+
 nav .action {
   width: 100%;
   display: block;
@@ -67,6 +76,11 @@ nav .action {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+body.rtl .action {
+  direction: rtl;
+  text-align: right;
 }
 
 nav > div {
@@ -99,6 +113,10 @@ main {
   color: inherit;
   transition: 0.1s ease-in;
   border-radius: 0.125em;
+}
+
+body.rtl .breadcrumbs a {
+  transform: translateX(-16em);
 }
 
 .breadcrumbs a:hover {

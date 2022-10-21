@@ -75,6 +75,7 @@
 import { mapState, mapMutations } from "vuex";
 import { users as api } from "@/api";
 import Languages from "@/components/settings/Languages";
+import i18n, { rtlLanguages } from "@/i18n";
 
 export default {
   name: "settings",
@@ -143,6 +144,9 @@ export default {
           singleClick: this.singleClick,
           dateFormat: this.dateFormat,
         };
+        const shouldReload =
+          rtlLanguages.includes(data.locale) !==
+          rtlLanguages.includes(i18n.locale);
         await api.update(data, [
           "locale",
           "hideDotfiles",
@@ -150,6 +154,9 @@ export default {
           "dateFormat",
         ]);
         this.updateUser(data);
+        if (shouldReload) {
+          location.reload();
+        }
         this.$showSuccess(this.$t("settings.settingsUpdated"));
       } catch (e) {
         this.$showError(e);
