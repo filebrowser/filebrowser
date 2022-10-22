@@ -35,6 +35,17 @@ const titles = {
 const router = new Router({
   base: baseURL,
   mode: "history",
+  scrollBehavior (to, from, saved) {
+    if (saved) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve({saved})
+        }, 50)
+      })
+    }
+    // Scroll to top if no saved
+    return false
+  },
   routes: [
     {
       path: "/login",
