@@ -2,6 +2,10 @@
   nav {
     width: 10em
   }
+  /* Mobile Only fix div hidden by bottom navigation bar of mobile browser when using height: 100vh */
+  #previewer .preview {
+    height: calc(100% - 4em) !important;
+  }
 }
 
 @media (max-width: 1024px) {
