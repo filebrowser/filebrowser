@@ -100,6 +100,11 @@ main {
 .breadcrumbs {
   height: 3em;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  position: -webkit-sticky;
+  position: sticky;
+  top: 64px;
+  z-index: 1000;
+  background: var(--background);
 }
 
 .breadcrumbs span,
