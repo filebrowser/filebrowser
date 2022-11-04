@@ -13,6 +13,7 @@ export default {
   data() {
     let dataObj = {
       locales: {
+        he: "he",
         ar: "ar",
         de: "de",
         en: "en",

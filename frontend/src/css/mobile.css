@@ -2,6 +2,10 @@
   nav {
     width: 10em
   }
+  /* Mobile Only fix div hidden by bottom navigation bar of mobile browser when using height: 100vh */
+  #previewer .preview {
+    height: calc(100% - 4em) !important;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -40,6 +44,13 @@
     transform-origin: top right;
     z-index: 99999;
   }
+
+  body.rtl #dropdown {
+    right: unset;
+    left: 1em;
+    transform-origin: top left;
+  }
+
   #dropdown > div {
     display: block;
   }
@@ -95,9 +106,20 @@
     transition: .1s ease left;
     left: -17em;
   }
+
+  body.rtl nav {
+    left: unset;
+    right: -17em;
+  }
   nav.active {
     left: 0;
   }
+
+  body.rtl nav.active {
+    left: unset;
+    right: 0;
+  }
+
   header .search-button,
   header .menu-button {
     display: inherit;
@@ -108,6 +130,23 @@
   #listing {
     margin-bottom: 5em;
   }
+
+  body.rtl #listing {
+    margin-right: unset;
+  }
+
+  body.rtl .breadcrumbs {
+    transform: translateX(16em);
+  }
+
+  body.rtl #nav .wrapper {
+    margin-right: unset;
+  }
+  
+  body.rtl .dashboard .row {
+    margin-right: unset;
+  }
+
   main {
     margin: 0 1em;
     width: calc(100% - 2em);

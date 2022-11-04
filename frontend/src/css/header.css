@@ -135,8 +135,23 @@ header .menu-button {
   z-index: 1;
 }
 
+body.rtl #search #result {
+  direction: ltr;
+}
+
 #search #result>div>*:first-child {
   margin-top: 0;
+}
+
+body.rtl #search #result {
+  direction: rtl;
+  text-align: right;
+}
+
+/*** RTL - Keep search result LTR because it has paths (in english) ***/
+body.rtl #search #result ul>* {
+  direction: ltr;
+  text-align: left;
 }
 
 #search.active #result {
@@ -222,6 +237,10 @@ header .menu-button {
   font-size: 1em;
   color: #212121;
   padding: .5em;
+}
+
+body.rtl #search .boxes h3 {
+  text-align: right;
 }
 
 #search .boxes>div {
