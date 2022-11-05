@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.23.0](https://github.com/filebrowser/filebrowser/compare/v2.22.4...v2.23.0) (2022-11-05)
+
+
+### Features
+
+* add rtl support ([#2178](https://github.com/filebrowser/filebrowser/issues/2178)) ([2c14146](https://github.com/filebrowser/filebrowser/commit/2c14146a314bb271be66a36c63b64852a2848e26))
+* hebrew translation ([#2168](https://github.com/filebrowser/filebrowser/issues/2168)) ([a49105d](https://github.com/filebrowser/filebrowser/commit/a49105db1d5f0d8f3d6641940ea86da959ffe006))
+* hook authentication method ([dda9a38](https://github.com/filebrowser/filebrowser/commit/dda9a389f387e94643a9a2ae56027260b210152a))
+* update Polish translation ([#2089](https://github.com/filebrowser/filebrowser/issues/2089)) ([57c99e0](https://github.com/filebrowser/filebrowser/commit/57c99e0e261b4ed4c2cf468ce3ab09f1a440b359))
+
+
+### Bug Fixes
+
+* missing video controls on mobile ([#2180](https://github.com/filebrowser/filebrowser/issues/2180)) ([a5757b9](https://github.com/filebrowser/filebrowser/commit/a5757b94e8ed492d454b9e427b7f45824cc56c5c))
+* modify the delete confirmation interface logic. ([#2138](https://github.com/filebrowser/filebrowser/issues/2138)) ([0401adf](https://github.com/filebrowser/filebrowser/commit/0401adf7f4dd76760fe26b5baee02ebc726b51a9))
+
+
+### Build
+
+* **deps:** bump ansi-html and webpack-dev-server in /frontend ([#2184](https://github.com/filebrowser/filebrowser/issues/2184)) ([3a0dace](https://github.com/filebrowser/filebrowser/commit/3a0dace9a93f9d57855801de548891010cf0830e))
+* **deps:** bump terser from 4.8.0 to 4.8.1 in /frontend ([#2054](https://github.com/filebrowser/filebrowser/issues/2054)) ([aaed985](https://github.com/filebrowser/filebrowser/commit/aaed985699b3c63092ecb02c8bc07634123360ab))
+
 ### [2.22.4](https://github.com/filebrowser/filebrowser/compare/v2.22.3...v2.22.4) (2022-07-18)
 
 
