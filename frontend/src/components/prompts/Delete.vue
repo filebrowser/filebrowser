@@ -1,7 +1,7 @@
 <template>
   <div class="card floating">
     <div class="card-content">
-      <p v-if="req.kind !== 'listing'">
+      <p v-if="selectedCount === 1">
         {{ $t("prompts.deleteMessageSingle") }}
       </p>
       <p v-else>

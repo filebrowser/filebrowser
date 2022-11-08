@@ -315,6 +315,11 @@ main .spinner .bounce2 {
   padding: 0 1em;
 }
 
+/*** RTL - flip and position arrow of path ***/
+body.rtl .breadcrumbs .chevron {
+  transform: scaleX(-1) translateX(16em);
+}
+
 #editor-container .breadcrumbs span {
   font-size: .75rem;
 }
@@ -404,3 +409,22 @@ main .spinner .bounce2 {
 }
 
 @import './mobile.css';
+
+/* * * * * * * * * * * * * * * *
+ *         RTL overrides       *
+ * * * * * * * * * * * * * * * */
+
+body.rtl .card-content textarea {
+  direction: ltr;
+  text-align: left;
+}
+
+body.rtl .card-content .small + input {
+  direction: ltr;
+  text-align: left;
+}
+
+body.rtl .card.floating .card-content .file-list {
+  direction: ltr;
+  text-align: left;
+}

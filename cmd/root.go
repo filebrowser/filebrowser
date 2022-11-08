@@ -317,9 +317,10 @@ func setupLog(logMethod string) {
 
 func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	set := &settings.Settings{
-		Key:           generateKey(),
-		Signup:        false,
-		CreateUserDir: false,
+		Key:              generateKey(),
+		Signup:           false,
+		CreateUserDir:    false,
+		UserHomeBasePath: settings.DefaultUsersHomeBasePath,
 		Defaults: settings.UserDefaults{
 			Scope:       ".",
 			Locale:      "en_GB",
@@ -335,6 +336,11 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 				Download: true,
 			},
 		},
+		AuthMethod: "",
+		Branding:   settings.Branding{},
+		Commands:   nil,
+		Shell:      nil,
+		Rules:      nil,
 	}
 
 	var err error

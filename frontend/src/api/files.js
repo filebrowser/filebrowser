@@ -1,4 +1,4 @@
-import { fetchURL, removePrefix, createURL } from "./utils";
+import { createURL, fetchURL, removePrefix } from "./utils";
 import { baseURL } from "@/utils/constants";
 import store from "@/store";
 
@@ -215,4 +215,12 @@ export function getSubtitlesURL(file) {
   }
 
   return subtitles;
+}
+
+export async function usage(url) {
+  url = removePrefix(url);
+
+  const res = await fetchURL(`/api/usage${url}`, {});
+
+  return await res.json();
 }

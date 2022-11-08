@@ -2,6 +2,10 @@
   --item-selected: white;
 }
 
+body.rtl #listing {
+  margin-right: 16em;
+}
+
 #listing h2 {
   margin: 0 0 0 0.5em;
   font-size: .9em;

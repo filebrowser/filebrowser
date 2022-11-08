@@ -73,7 +73,8 @@
         <button
           v-if="
             authMethod == 'json' ||
-            (authMethod == 'proxy' && authLogoutURL != '')
+            (authMethod == 'proxy' && authLogoutURL != '') ||
+            canLogout
           "
           @click="logout"
           class="action"
@@ -121,9 +122,9 @@
         >
         <span> {{ version }}</span>
       </span>
-      <span
-        ><a @click="help">{{ $t("sidebar.help") }}</a></span
-      >
+      <span>
+        <a @click="help">{{ $t("sidebar.help") }}</a>
+      </span>
     </p>
   </nav>
 </template>
@@ -142,11 +143,14 @@ import {
   noAuth,
   authMethod,
   authLogoutURL,
+  loginPage,
 } from "@/utils/constants";
 
 export default {
   name: "sidebar",
-  components: { Quota },
+  components: {
+    Quota,
+  },
   computed: {
     ...mapState(["user"]),
     ...mapGetters(["isLogged"]),
@@ -162,6 +166,7 @@ export default {
     noAuth: () => noAuth,
     authMethod: () => authMethod,
     authLogoutURL: () => authLogoutURL,
+    canLogout: () => !noAuth && loginPage,
   },
   methods: {
     toRoot() {

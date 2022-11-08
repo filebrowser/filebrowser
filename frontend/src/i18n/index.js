@@ -22,6 +22,9 @@ Vue.use(VueI18n);
 export function detectLocale() {
   let locale = (navigator.language || navigator.browserLanguage).toLowerCase();
   switch (true) {
+    case /^he.*/i.test(locale):
+      locale = "he";
+      break;
     case /^ar.*/i.test(locale):
       locale = "ar_AR";
       break;
@@ -87,6 +90,8 @@ const removeEmpty = (obj) =>
           : Object.assign(newObj, { [k]: obj[k] }), // Copy value.
       {}
     );
+
+export const rtlLanguages = ["he", "ar"];
 
 const i18n = new VueI18n({
   locale: detectLocale(),

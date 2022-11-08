@@ -5,6 +5,10 @@ body {
   color: #333333;
 }
 
+body.rtl {
+  direction: rtl;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -74,6 +78,11 @@ nav {
   left: 0;
 }
 
+body.rtl nav {
+  left: unset;
+  right: 0;
+}
+
 nav .action {
   width: 100%;
   display: block;
@@ -83,6 +92,11 @@ nav .action {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+body.rtl .action {
+  direction: rtl;
+  text-align: right;
 }
 
 nav > div {
@@ -115,6 +129,10 @@ main {
   color: inherit;
   transition: 0.1s ease-in;
   border-radius: 0.125em;
+}
+
+body.rtl .breadcrumbs a {
+  transform: translateX(-16em);
 }
 
 .breadcrumbs a:hover {
@@ -164,20 +182,9 @@ main {
   font-weight: 500;
 }
 
-#quota .quota-label .quota-metric {
+#quota .quota-metric {
   font-weight: 100;
-  margin: .2em 0
-}
-
-#quota .quota-bar {
-  width: 100%;
-  height: 10px;
-  background-color: rgba(0,0,0, 0.1);
-}
-
-#quota .quota-bar .quota-progress {
-  width: 0;
-  height: 100%;
-  transition: .2s ease width;
-  background-color: #40c4ff;
+  font-size: 0.8em;
+  margin: .5em 0;
+  color: #a5a5a5;
 }

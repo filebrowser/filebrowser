@@ -33,7 +33,7 @@ type userInfo struct {
 
 type authToken struct {
 	User userInfo `json:"user"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 type extractor []string
@@ -53,9 +53,11 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 		return auth, nil
 	}
 
-	cookie, _ := r.Cookie("auth")
-	if cookie != nil && strings.Count(cookie.Value, ".") == 2 {
-		return cookie.Value, nil
+	if r.Method == http.MethodGet {
+		cookie, _ := r.Cookie("auth")
+		if cookie != nil && strings.Count(cookie.Value, ".") == 2 {
+			return cookie.Value, nil
+		}
 	}
 
 	return "", request.ErrNoTokenInRequest
@@ -74,8 +76,8 @@ func withUser(fn handleFunc) handleFunc {
 			return http.StatusUnauthorized, nil
 		}
 
-		expired := !tk.VerifyExpiresAt(time.Now().Add(time.Hour).Unix(), true)
-		updated := d.store.Users.LastUpdate(tk.User.ID) > tk.IssuedAt
+		expired := !tk.VerifyExpiresAt(time.Now().Add(time.Hour), true)
+		updated := tk.IssuedAt != nil && tk.IssuedAt.Unix() < d.store.Users.LastUpdate(tk.User.ID)
 
 		if expired || updated {
 			w.Header().Add("X-Renew-Token", "true")
@@ -105,7 +107,7 @@ var loginHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, e
 		return http.StatusInternalServerError, err
 	}
 
-	user, err := auther.Auth(r, d.store.Users, d.server.Root)
+	user, err := auther.Auth(r, d.store.Users, d.settings, d.server)
 	if err == os.ErrPermission {
 		return http.StatusForbidden, nil
 	} else if err != nil {
@@ -187,9 +189,9 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 			HideDotfiles: user.HideDotfiles,
 			DateFormat:   user.DateFormat,
 		},
-		StandardClaims: jwt.StandardClaims{
-			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(TokenExpirationTime).Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(TokenExpirationTime)),
 			Issuer:    "File Browser",
 		},
 	}

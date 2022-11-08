@@ -2,9 +2,10 @@ package settings
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os"
-	"path/filepath"
+	"path"
 	"regexp"
 	"strings"
 
@@ -19,47 +20,23 @@ var (
 
 // MakeUserDir makes the user directory according to settings.
 func (s *Settings) MakeUserDir(username, userScope, serverRoot string) (string, error) {
-	var err error
 	userScope = strings.TrimSpace(userScope)
-	if userScope == "" || userScope == "./" {
-		userScope = "."
+	if userScope == "" && s.CreateUserDir {
+		username = cleanUsername(username)
+		if username == "" || username == "-" || username == "." {
+			log.Printf("create user: invalid user for home dir creation: [%s]", username)
+			return "", errors.New("invalid user for home dir creation")
+		}
+		userScope = path.Join(s.UserHomeBasePath, username)
 	}
 
-	if !s.CreateUserDir {
-		return userScope, nil
-	}
+	userScope = path.Join("/", userScope)
 
 	fs := afero.NewBasePathFs(afero.NewOsFs(), serverRoot)
-
-	// Use the default auto create logic only if specific scope is not the default scope
-	if userScope != s.Defaults.Scope {
-		// Try create the dir, for example: settings.Defaults.Scope == "." and userScope == "./foo"
-		if userScope != "." {
-			err = fs.MkdirAll(userScope, os.ModePerm)
-			if err != nil {
-				log.Printf("create user: failed to mkdir user home dir: [%s]", userScope)
-			}
-		}
-		return userScope, err
+	if err := fs.MkdirAll(userScope, os.ModePerm); err != nil {
+		return "", fmt.Errorf("failed to create user home dir: [%s]: %w", userScope, err)
 	}
-
-	// Clean username first
-	username = cleanUsername(username)
-	if username == "" || username == "-" || username == "." {
-		log.Printf("create user: invalid user for home dir creation: [%s]", username)
-		return "", errors.New("invalid user for home dir creation")
-	}
-
-	// Create default user dir
-	userHomeBase := filepath.Join(s.Defaults.Scope, "users")
-	userHome := filepath.Join(userHomeBase, username)
-	err = fs.MkdirAll(userHome, os.ModePerm)
-	if err != nil {
-		log.Printf("create user: failed to mkdir user home dir: [%s]", userHome)
-	} else {
-		log.Printf("create user: mkdir user home dir: [%s] successfully.", userHome)
-	}
-	return userHome, err
+	return userScope, nil
 }
 
 func cleanUsername(s string) string {

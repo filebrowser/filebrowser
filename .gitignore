@@ -30,3 +30,7 @@ yarn-error.log*
 bin/
 dist/
 build/
+
+# Hostinger-specific files
+.cagefs/
+.filebrowser/
