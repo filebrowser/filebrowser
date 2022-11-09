@@ -71,5 +71,5 @@ for language in languages:
         log_missing_translations(current_translations, decoded)
 
     fd = open('../frontend/src/i18n/%s.json' % language['code'], 'w')
-    fd.write(json.dumps(parsed, indent=2, ensure_ascii=False))
+    fd.write(json.dumps(parsed, indent=2, ensure_ascii=False) + '\n')
     fd.close()
