@@ -76,6 +76,7 @@ func handle(fn handleFunc, prefix string, store *storage.Storage, server *settin
 				txt += " [" + httpErr.Type + "]"
 			}
 			http.Error(w, txt, status)
+			return
 		}
 	})
 

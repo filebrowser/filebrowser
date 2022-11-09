@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	"github.com/mholt/archiver"
-	"github.com/shirou/gopsutil/v3/disk"
+	"github.com/shirou/gopsutil/disk"
 	"github.com/spf13/afero"
 
 	"github.com/filebrowser/filebrowser/v2/errors"
@@ -35,7 +35,11 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 	// if the path does not exist and its the trash dir - create it
 	if os.IsNotExist(err) && d.user.TrashDir != "" {
 		if d.user.FullPath(r.URL.Path) == d.user.FullPath(d.user.TrashDir) {
-			d.user.Fs.MkdirAll(d.user.TrashDir, 0755)
+			err = d.user.Fs.MkdirAll(d.user.TrashDir, 0775) //nolint:gomnd
+			if err != nil {
+				return errToStatus(err), err
+			}
+
 			file, err = files.NewFileInfo(files.FileOptions{
 				Fs:         d.user.Fs,
 				Path:       r.URL.Path,
@@ -153,7 +157,7 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			src = path.Clean("/" + src)
 			dst = path.Clean("/" + dst)
 
-			err = d.user.Fs.MkdirAll(dst, 0755)
+			err = d.user.Fs.MkdirAll(dst, 0775) //nolint:gomnd
 			if err != nil {
 				return errToStatus(err), err
 			}
@@ -266,6 +270,22 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 	return errToStatus(err), err
 })
 
+func checkSrcDstAccess(src, dst string, d *data) error {
+	if !d.Check(src) || !d.Check(dst) {
+		return errors.ErrPermissionDenied
+	}
+
+	if dst == "/" || src == "/" {
+		return errors.ErrPermissionDenied
+	}
+
+	if err := checkParent(src, dst); err != nil {
+		return errors.ErrInvalidRequestParams
+	}
+
+	return nil
+}
+
 func resourcePatchHandler(fileCache FileCache) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		src := r.URL.Path
@@ -278,19 +298,13 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		}
 
 		dst, err := url.QueryUnescape(dst)
-		if !d.Check(src) || !d.Check(dst) {
-			return http.StatusForbidden, nil
-		}
 		if err != nil {
 			return errToStatus(err), err
 		}
-		if dst == "/" || src == "/" {
-			return http.StatusForbidden, nil
-		}
 
-		err = checkParent(src, dst)
+		err = checkSrcDstAccess(src, dst, d)
 		if err != nil {
-			return http.StatusBadRequest, err
+			return errToStatus(err), err
 		}
 
 		override := r.URL.Query().Get("override") == "true"
@@ -301,6 +315,7 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 				return http.StatusConflict, nil
 			}
 		}
+
 		if rename {
 			dst = addVersionSuffix(dst, d.user.Fs)
 		}
@@ -313,9 +328,8 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		err = d.RunHook(func() error {
 			if unarchive {
 				return unarchiveAction(src, dst, d, override)
-			} else {
-				return patchAction(r.Context(), action, src, dst, d, fileCache)
 			}
+			return patchAction(r.Context(), action, src, dst, d, fileCache)
 		}, action, src, dst, d.user)
 
 		return errToStatus(err), err
@@ -474,6 +488,7 @@ type DiskUsageResponse struct {
 	Used  uint64 `json:"used"`
 }
 
+//lint:ignore U1000 unused in this fork
 var diskUsage = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	file, err := files.NewFileInfo(files.FileOptions{
 		Fs:         d.user.Fs,
@@ -539,8 +554,7 @@ func unarchiveAction(src, dst string, d *data, overwrite bool) error {
 
 	unarchiver, ok := arch.(archiver.Unarchiver)
 	if ok {
-		err = unarchiver.Unarchive(src, dst)
-		if err != nil {
+		if err := unarchiver.Unarchive(src, dst); err != nil {
 			return errors.ErrInvalidRequestParams
 		}
 
@@ -549,23 +563,7 @@ func unarchiveAction(src, dst string, d *data, overwrite bool) error {
 
 	decompressor, ok := arch.(archiver.Decompressor)
 	if ok {
-		reader, err := os.Open(src)
-		if err != nil {
-			return err
-		}
-
-		dst, err := os.OpenFile(dst, os.O_TRUNC|os.O_CREATE|os.O_RDWR, 0644)
-		if err != nil {
-			return err
-		}
-
-		err = decompressor.Decompress(reader, dst)
-		if err != nil {
-			fmt.Println(err)
-			return errors.ErrInvalidRequestParams
-		}
-
-		return nil
+		return fileutils.Decompress(src, dst, decompressor)
 	}
 
 	return errors.ErrInvalidRequestParams
@@ -609,7 +607,7 @@ func archiveHandler(r *http.Request, d *data) (int, error) {
 	}
 
 	dir, _ = path.Split(archFile)
-	err = d.user.Fs.MkdirAll(dir, 0775)
+	err = d.user.Fs.MkdirAll(dir, 0775) //nolint:gomnd
 	if err != nil {
 		return errToStatus(err), err
 	}
@@ -679,7 +677,7 @@ func chmodActionHandler(r *http.Request, d *data) error {
 		return errors.ErrPermissionDenied
 	}
 
-	mode, err := strconv.ParseUint(perms, 10, 32)
+	mode, err := strconv.ParseUint(perms, 10, 32) //nolint:gomnd
 	if err != nil {
 		return errors.ErrInvalidRequestParams
 	}

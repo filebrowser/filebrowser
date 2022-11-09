@@ -1,13 +1,15 @@
 package fileutils
 
 import (
+	"crypto/rand"
 	"fmt"
 	"io"
-	"math/rand"
+	"math/big"
 	"os"
 	"path"
 	"path/filepath"
 
+	"github.com/mholt/archiver"
 	"github.com/spf13/afero"
 )
 
@@ -81,14 +83,21 @@ func CopyFile(fs afero.Fs, source, dest string) error {
 
 // CopyFolder copies a folder to destination and returns
 // an error if any. If the destination already exists,
-// it get overriden.
+// it gets overridden.
 func CopyFolder(fs afero.Fs, source, dest string) error {
 	tmpDest := ""
 	_, err := fs.Stat(dest)
 	if err == nil {
 		// destination already exists - rename it so that src
 		// could be moved to its place
-		tmpDest = fmt.Sprintf("%s.%d", dest, rand.Intn(9999))
+		maxRn := 9999
+		rn, errrn := rand.Int(rand.Reader, big.NewInt(int64(maxRn)))
+		if errrn != nil {
+			return errrn
+		}
+
+		tmpDest = fmt.Sprintf("%s.%d", dest, rn.Int64())
+
 		err = fs.Rename(dest, tmpDest)
 		if err != nil {
 			return err
@@ -102,7 +111,7 @@ func CopyFolder(fs afero.Fs, source, dest string) error {
 		// if moving fails and we renamed an existing destination
 		// in the previous step, then restore its name
 		if tmpDest != "" {
-			fs.Rename(tmpDest, dest)
+			err = fs.Rename(tmpDest, dest)
 		}
 		return err
 	}
@@ -167,4 +176,22 @@ func CommonPrefix(sep byte, paths ...string) string {
 	}
 
 	return string(c)
+}
+
+func Decompress(src, dst string, decompressor archiver.Decompressor) error {
+	reader, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+
+	dstfd, err := os.OpenFile(dst, os.O_TRUNC|os.O_CREATE|os.O_RDWR, 0644) //nolint:gomnd
+	if err != nil {
+		return err
+	}
+
+	if err := decompressor.Decompress(reader, dstfd); err != nil {
+		return err
+	}
+
+	return nil
 }
