@@ -22,9 +22,6 @@ Vue.use(VueI18n);
 export function detectLocale() {
   let locale = (navigator.language || navigator.browserLanguage).toLowerCase();
   switch (true) {
-    case /^he.*/i.test(locale):
-      locale = "he";
-      break;
     case /^ar.*/i.test(locale):
       locale = "ar_AR";
       break;
@@ -70,9 +67,6 @@ export function detectLocale() {
     case /^zh.*/i.test(locale):
       locale = "zh_CN";
       break;
-    case /^ua.*/i.test(locale):
-      locale = "ua";
-      break;
     default:
       locale = "en_GB";
   }
@@ -91,7 +85,7 @@ const removeEmpty = (obj) =>
       {}
     );
 
-export const rtlLanguages = ["he", "ar"];
+export const rtlLanguages = ["ar_AR"];
 
 const i18n = new VueI18n({
   locale: detectLocale(),

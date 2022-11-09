@@ -178,6 +178,7 @@
     "unsavedChanges": "Perubahan yang Anda buat mungkin tidak tersimpan. Tinggalkan halaman?",
     "upload": "Upload",
     "uploadFile": "File",
+    "uploadFiles": "Uploading {files} files...",
     "uploadFolder": "Folder",
     "uploadMessage": "Pilih opsi untuk diupload",
     "write": "Tulis"
@@ -209,6 +210,7 @@
     "commandRunnerHelp": "Di sini Anda dapat mengatur command yang dijalankan di waktu tertentu. Anda hanya bisa menulis satu per baris. Variabel {0} dan {1} akan tersedia, dengan {0} relatif terhadap {1}. Informasi lebih lanjut tentang fitur ini dan variabel yang tersedia bisa dilihat di {2}.",
     "commandsUpdated": "Command diperbarui",
     "createUserDir": "Buat dir beranda otomatis selagi menambahkan pengguna baru",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Custom Stylesheet",
     "defaultUserDescription": "Pengaturan default untuk pengguna baru.",
     "disableExternalLinks": "Nonaktifkan link eksternal (kecuali dokumentasi)",
@@ -264,9 +266,11 @@
     "userCreated": "Pengguna berhasil dibuat",
     "userDefaults": "Pengaturan default pengguna",
     "userDeleted": "Pengguna dihapus",
+    "userHomeBasePath": "Base path for user home directories",
     "userManagement": "Manajemen Pengguna",
     "username": "Nama pengguna",
     "users": "Pengguna",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "userUpdated": "Pengguna diperbarui!"
   },
   "sidebar": {

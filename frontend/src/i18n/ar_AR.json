@@ -178,6 +178,7 @@
     "unsavedChanges": "قد لا يتم حفظ التغييرات التي قمت بها. هل تريد مغادرة الصفحة؟",
     "upload": "تحميل",
     "uploadFile": "ملف",
+    "uploadFiles": "Uploading {files} files...",
     "uploadFolder": "مجلّد",
     "uploadMessage": "حدد خيارا للتحميل.",
     "write": "كتابة"
@@ -209,6 +210,7 @@
     "commandRunnerHelp": "يمكنك هنا تعيين الأوامر التي يتم تنفيذها في الأحداث المسماة. يجب عليك كتابة واحدة فقط في كل سطر. المتغيرات البيئية {0} و {1} ستكون متاحة، حيث أن {0} متصلة بـ {1}. للمزيد من المعلومات حول هذه الميزة ومتغيرات البيئة المتاحة، يرجى قراءة {2}.",
     "commandsUpdated": "تم تحديث الأوامر!",
     "createUserDir": "إنشاء مستخدم Home Dir بصفة آلية مع إضافة مستخدم جديد",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "صفحة أنماط مخصصة",
     "defaultUserDescription": "هذه هي الإعدادات الافتراضية للمستخدمين الجدد.",
     "disableExternalLinks": "تعطيل الروابط الخارجية (باستثناء الوثائق)",
@@ -264,9 +266,11 @@
     "userCreated": "تم إنشاء المستخدم",
     "userDefaults": "إعدادات المستخدم الافتراضية",
     "userDeleted": "تم حذف المستخدم",
+    "userHomeBasePath": "Base path for user home directories",
     "userManagement": "إدارة المستخدمين",
     "username": "إسم المستخدم",
     "users": "المستخدمين",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "userUpdated": "تم تعديل المستخدم"
   },
   "sidebar": {

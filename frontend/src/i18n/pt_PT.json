@@ -178,6 +178,7 @@
     "unsavedChanges": "As alterações que fez poderão não ser guardadas. Deixar a página?",
     "upload": "Upload",
     "uploadFile": "Ficheiro",
+    "uploadFiles": "Uploading {files} files...",
     "uploadFolder": "Pasta",
     "uploadMessage": "Selecionar uma opção para enviar.",
     "write": "Escrever"
@@ -209,6 +210,7 @@
     "commandRunnerHelp": "Aqui pode definir comandos que são executados nos eventos nomeados. Tem de escrever um por linha. As variáveis de ambiente {0} e {1} estarão disponíveis, sendo {0} relativo a {1}. Para mais informações sobre esta funcionalidade e as variáveis de ambiente, por favor verifique {2}.",
     "commandsUpdated": "Comandos atualizados!",
     "createUserDir": "Criar automaticamente a pasta de início ao adicionar um novo utilizador",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Folha de estilos personalizada",
     "defaultUserDescription": "Estas são as configurações padrão para novos utilizadores.",
     "disableExternalLinks": "Desativar links externos (exceto documentação)",
@@ -264,9 +266,11 @@
     "userCreated": "Utilizador criado!",
     "userDefaults": "Configurações padrão do utilizador",
     "userDeleted": "Utilizador eliminado!",
+    "userHomeBasePath": "Base path for user home directories",
     "userManagement": "Gestão de utilizadores",
     "username": "Nome de utilizador",
     "users": "Utilizadores",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "userUpdated": "Utilizador atualizado!"
   },
   "sidebar": {

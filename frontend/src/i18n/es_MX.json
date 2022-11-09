@@ -45,7 +45,7 @@
   "download": {
     "downloadFile": "Descargar fichero",
     "downloadFolder": "Descargar directorio",
-    "downloadSelected": "Descargar seleccionados"
+    "downloadSelected": "Descargar seleccionado"
   },
   "errors": {
     "connection": "No se puede acceder al servidor.",
@@ -73,11 +73,11 @@
     "metadata": "Metadatos",
     "multipleSelectionEnabled": "Selección múltiple activada",
     "name": "Nombre",
+    "noPreview": "La vista previa no está disponible para este archivo.",
     "size": "Tamaño",
     "sortByLastModified": "Ordenar por última modificación",
     "sortByName": "Ordenar por nombre",
-    "sortBySize": "Ordenar por tamaño",
-    "noPreview": "La vista previa no está disponible para este archivo."
+    "sortBySize": "Ordenar por tamaño"
   },
   "help": {
     "click": "seleccionar archivo o carpeta",
@@ -178,13 +178,13 @@
     "unsavedChanges": "Los cambios que realizaste podrían no guardarse. ¿Abandonar página?",
     "upload": "Cargar",
     "uploadFile": "Archivo",
+    "uploadFiles": "Cargando {files} archivos...",
     "uploadFolder": "Carpeta",
     "uploadMessage": "Seleccione una opción para cargar.",
-    "write": "Escribe",
-    "uploadFiles": "Subiendo {files} archivos..."
+    "write": "Escribe"
   },
   "search": {
-    "images": "Imágenes",
+    "images": "Images",
     "music": "Música",
     "pdf": "PDF",
     "pressToSearch": "Presiona enter para buscar...",
@@ -207,20 +207,18 @@
     "brandingHelp": "Tú puedes personalizar como se ve tu instancia de FileBrowser cambiándole el nombre, reemplazando ellogo, agregar estilos personalizados e incluso deshabilitando loslinks externos que apuntan hacia GitHub.\nPara mayor información acerca de personalización de marca, por favor revisa el {0}.",
     "changePassword": "Cambiar contraseña",
     "commandRunner": "Executor de comandos",
-    "commandRunnerHelp": "Aquí puede establecer los comandos que se ejecutan en los eventos nombrados. Debe escribir uno por línea. Las variables de entorno {0} y {1} estarán disponibles, siendo {0} relativa a {1}. Para más información sobre esta característica y las variables de entorno disponibles, por favor lea el {2}.",
+    "commandRunnerHelp": "Here you can set commands that are executed in the named events. You must write one per line. The environment variables {0} and {1} will be available, being {0} relative to {1}. For more information about this feature and the available environment variables, please read the {2}.",
     "commandsUpdated": "¡Comandos actualizados!",
     "createUserDir": "Crea automaticamente una carpeta de inicio cuando se agrega un usuario",
-    "userHomeBasePath": "Ruta base para los directorios personales de los usuarios",
-    "userScopeGenerationPlaceholder": "El ámbito se generará automáticamente",
-    "createUserHomeDirectory": "Crear el directorio principal del usuario",
+    "createUserHomeDirectory": "Crear directorio de inicio de usuario",
     "customStylesheet": "Modificar hoja de estilos",
     "defaultUserDescription": "Estas son las configuraciones por defecto para nuevos usuarios.",
     "disableExternalLinks": "Deshabilitar enlaces externos (excepto documentación)",
     "documentation": "documentación",
     "examples": "Ejemplos",
     "executeOnShell": "Ejecutar en la shell",
-    "executeOnShellDescription": "Por defecto, FileBrowser ejecuta los comandos llamando directamente a sus binarios. Si quieres ejecutarlos en un shell en su lugar (como Bash o PowerShell), puedes definirlo aquí con los argumentos y banderas (flags) necesarios. Si se define, el comando que se ejecuta se añadirá como argumento. Esto se aplica tanto a los comandos de usuario como a los ganchos de eventos.",
-    "globalRules": "Se trata de un conjunto global de reglas de permiso y rechazo. Se aplican a todos los usuarios. Puedes definir reglas específicas en la configuración de cada usuario para anular estas.",
+    "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you want to run them on a shell instead (such as Bash or PowerShell), you can define it here with the  required arguments and flags. If set, the command you execute will be appended as an argument. This apply to both user commands and event hooks.",
+    "globalRules": "This is a global set of allow and disallow rules. They apply to every user. You can define specific rules on each user's settings to override this ones.",
     "globalSettings": "Ajustes globales",
     "hideDotfiles": "",
     "insertPath": "Introduce la ruta",
@@ -251,16 +249,16 @@
     "rules": "Reglas",
     "rulesHelp": "Aquí puedes definir un conjunto de reglas de permisos para este usuario específico. Los archivos bloqueados no se mostrarán en las listas y no serán accesibles por el usuario. Puedes utilizar regex y rutas relativas a la raíz del usuario.\n",
     "scope": "Raíz",
-    "setDateFormat": "Establecer el formato exacto de la fecha",
+    "setDateFormat": "Establecer formato de fecha exacta",
     "settingsUpdated": "¡Ajustes actualizados!",
-    "shareDuration": "Compartir Duración",
-    "shareManagement": "Gestión Compartida",
-    "shareDeleted": "¡Recurso compartido eliminado!",
-    "singleClick": "Utilice un solo clic para abrir archivos y directorios",
+    "shareDeleted": "¡Eliminado!",
+    "shareDuration": "",
+    "shareManagement": "",
+    "singleClick": "",
     "themes": {
-      "dark": "Oscuro",
-      "light": "Claro",
-      "title": "Tema"
+      "dark": "",
+      "light": "",
+      "title": ""
     },
     "user": "Usuario",
     "userCommands": "Comandos",
@@ -268,9 +266,11 @@
     "userCreated": "¡Usuario creado!",
     "userDefaults": "Configuración de usuario por defecto",
     "userDeleted": "¡Usuario eliminado!",
+    "userHomeBasePath": "Ruta base para directorios de inicio de usuario",
     "userManagement": "Administración de usuarios",
     "username": "Usuario",
     "users": "Usuarios",
+    "userScopeGenerationPlaceholder": "El alcance se generará automáticamente",
     "userUpdated": "¡Usuario actualizado!"
   },
   "sidebar": {
