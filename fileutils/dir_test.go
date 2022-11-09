@@ -1,7 +1,6 @@
 package fileutils
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -22,12 +21,12 @@ func createFileStructure() error {
 
 	data := []byte("test_data")
 
-	err = ioutil.WriteFile(filepath.Join(childDir, "test_file"), data, 0600)
+	err = os.WriteFile(filepath.Join(childDir, "test_file"), data, 0600)
 	if err != nil {
 		return err
 	}
 
-	err = ioutil.WriteFile(filepath.Join(RootTestDir, "test_file"), data, 0600)
+	err = os.WriteFile(filepath.Join(RootTestDir, "test_file"), data, 0600)
 	if err != nil {
 		return err
 	}
@@ -75,7 +74,7 @@ func TestDiskUsageOnNestedDir(t *testing.T) {
 	size, inodes, err := DiskUsage(fs, filepath.Join(RootTestDir, "child_dir"))
 
 	require.NoError(t, err)
-	require.Equal(t, int64(105), size)
+	require.GreaterOrEqual(t, size, int64(105))
 	require.Equal(t, int64(2), inodes)
 }
 
@@ -95,6 +94,6 @@ func TestDiskUsageOnRootDir(t *testing.T) {
 	size, inodes, err := DiskUsage(fs, RootTestDir)
 
 	require.NoError(t, err)
-	require.Equal(t, int64(242), size)
+	require.GreaterOrEqual(t, size, int64(242))
 	require.Equal(t, int64(4), inodes)
 }
