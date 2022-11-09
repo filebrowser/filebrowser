@@ -178,6 +178,7 @@
     "unsavedChanges": "Неможливо зберегти внесені зміни. Покинути сторінку?",
     "upload": "Завантаження",
     "uploadFile": "Файл",
+    "uploadFiles": "Uploading {files} files...",
     "uploadFolder": "Папка",
     "uploadMessage": "Виберіть опцію для завантаження.",
     "write": "Запис"
@@ -209,6 +210,7 @@
     "commandRunnerHelp": "Тут ви можете встановити команди, які будуть виконуватися у вказаних подіях. Ви можете вказати по одній команді в кожному рядку. Змінні середовища {0} і {1} будуть доступні, {0} відносно {1}. З додатковою інформацією про цю функцію і доступні змінні середовища можна ознайомитися тут {2}.",
     "commandsUpdated": "Команди оновлено!",
     "createUserDir": "Автоматичне створення домашнього каталогу користувача при додаванні нового користувача",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Власна таблиця стилів",
     "defaultUserDescription": "Це налаштування за замовчуванням для нових користувачів.",
     "disableExternalLinks": "Вимкнути зовнішні посилання (крім документації)",
@@ -264,9 +266,11 @@
     "userCreated": "Користувача створено!",
     "userDefaults": "Налаштування користувачів за замовчуванням",
     "userDeleted": "Користувача видалено!",
+    "userHomeBasePath": "Base path for user home directories",
     "userManagement": "Управління користувачами",
     "username": "Ім'я користувача",
     "users": "Користувачі",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "userUpdated": "Користувача оновлено!"
   },
   "sidebar": {

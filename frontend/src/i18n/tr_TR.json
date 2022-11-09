@@ -178,6 +178,7 @@
     "unsavedChanges": "Yaptığınız değişiklikler kaydedilmeyecek. Çıkılsın mı?",
     "upload": "Yükle",
     "uploadFile": "Dosya",
+    "uploadFiles": "Uploading {files} files...",
     "uploadFolder": "Klasör",
     "uploadMessage": "Yükleme seçeneğini belirleyin.",
     "write": "Yaz"
@@ -209,6 +210,7 @@
     "commandRunnerHelp": "Here you can set commands that are executed in the named events. You must write one per line. The environment variables {0} and {1} will be available, being {0} relative to {1}. For more information about this feature and the available environment variables, please read the {2}.",
     "commandsUpdated": "Komutlar güncellendi!",
     "createUserDir": "Yeni kullanıcı eklerken otomatik kullanıcı ana sayfa dizini oluştur",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Özel Stil Sayfası",
     "defaultUserDescription": "Yeni kullanıcılar için varsayılan ayarlar.",
     "disableExternalLinks": "Harici bağlantıları devre dışı bırak (belgeler hariç)",
@@ -264,9 +266,11 @@
     "userCreated": "Kullanıcı oluşturuldu!",
     "userDefaults": "Varsayılan kullanıcı ayarları",
     "userDeleted": "Kullanıcı silindi!",
+    "userHomeBasePath": "Base path for user home directories",
     "userManagement": "Kullanıcı Yönetimi",
     "username": "Kullanıcı Adı",
     "users": "Kullanıcılar",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "userUpdated": "Kullanıcı güncellendi!"
   },
   "sidebar": {

@@ -178,6 +178,7 @@
     "unsavedChanges": "Atlikti pakeitimai gali būti neišsaugoti. Norite išeiti iš puslapio?",
     "upload": "Įkelti",
     "uploadFile": "Failas",
+    "uploadFiles": "Uploading {files} files...",
     "uploadFolder": "Aplankas",
     "uploadMessage": "Pasirinkite, ką norite įkelti.",
     "write": "Rašyti"
@@ -209,6 +210,7 @@
     "commandRunnerHelp": "Čia galite nustatyti komandas, kurios bus vykdomos įvardytuose įvykiuose. Kiekvienoje eilutėje turite įrašyti po vieną komandą. Aplinkos kintamieji {0} ir {1} bus prieinami, kai {0} yra {0} atžvilgiu {1}. Daugiau informacijos apie šią funkciją ir galimus aplinkos kintamuosius rasite {2}.",
     "commandsUpdated": "Komandos atnaujintos!",
     "createUserDir": "Automatiškai susikurkite pagrindinę direktoriją, pridėjus naują naudotoją",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Individualių stilių rinkinys",
     "defaultUserDescription": "Tai yra numatytieji nustatymai naujiems naudotojams.",
     "disableExternalLinks": "Išjungti išorines nuorodas (ošskyrus dokumentaciją)",
@@ -264,9 +266,11 @@
     "userCreated": "Pavyko sukurti naudotojo paskyrą!",
     "userDefaults": "Numatytieji paskyros nustatymai",
     "userDeleted": "Pavyko pašalinti naudotoją!",
+    "userHomeBasePath": "Base path for user home directories",
     "userManagement": "Naudotojų valdymas",
     "username": "Vartotojo vardas",
     "users": "Naudotojai",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "userUpdated": "Naudotojo nustatymai atnaujinti!"
   },
   "sidebar": {

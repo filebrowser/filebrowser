@@ -178,6 +178,7 @@
     "unsavedChanges": "Невозможно сохранить внесённые изменения. Покинуть страницу?",
     "upload": "Загрузка",
     "uploadFile": "Файл",
+    "uploadFiles": "Uploading {files} files...",
     "uploadFolder": "Папка",
     "uploadMessage": "Выберите вариант для загрузки.",
     "write": "Запись"
@@ -209,6 +210,7 @@
     "commandRunnerHelp": "Здесь вы можете установить команды, которые будут выполняться в указанных событиях. Вы должны указать по одной команде в каждой строке. Переменные среды {0} и {1} будут доступны, будучи {0} относительно {1}. Дополнительные сведения об этой функции и доступных переменных среды см. здесь {2}.",
     "commandsUpdated": "Команды обновлены!",
     "createUserDir": "Автоматическое создание домашнего каталога пользователя при добавлении нового пользователя",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Свой стиль",
     "defaultUserDescription": "Это настройки по умолчанию для новых пользователей.",
     "disableExternalLinks": "Отключить внешние ссылки (кроме документации)",
@@ -264,9 +266,11 @@
     "userCreated": "Пользователь создан!",
     "userDefaults": "Настройки пользователя по умолчанию",
     "userDeleted": "Пользователь удалён!",
+    "userHomeBasePath": "Base path for user home directories",
     "userManagement": "Управление пользователями",
     "username": "Имя пользователя",
     "users": "Пользователи",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "userUpdated": "Пользователь изменён!"
   },
   "sidebar": {

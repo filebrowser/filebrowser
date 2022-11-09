@@ -178,6 +178,7 @@
     "unsavedChanges": "您所做的修改将不会被保存, 丢弃更改吗?",
     "upload": "上传",
     "uploadFile": "文件",
+    "uploadFiles": "Uploading {files} files...",
     "uploadFolder": "文件夹",
     "uploadMessage": "选择上传选项。",
     "write": "写入"
@@ -209,6 +210,7 @@
     "commandRunnerHelp": "在这里你可以设置在下面的事件中执行的命令。每行必须写一条命令。可以在命令中使用环境变量 {0} 和 {1}。关于此功能和可用环境变量的更多信息，请阅读{2}.",
     "commandsUpdated": "命令已更新！",
     "createUserDir": "在添加新用户的同时自动创建用户的个人目录",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "自定义样式表（CSS）",
     "defaultUserDescription": "这些是新用户的默认设置。",
     "disableExternalLinks": "禁止外部链接（帮助文档除外）",
@@ -264,9 +266,11 @@
     "userCreated": "用户已创建！",
     "userDefaults": "用户默认设置",
     "userDeleted": "用户已删除！",
+    "userHomeBasePath": "Base path for user home directories",
     "userManagement": "用户管理",
     "username": "用户名",
     "users": "用户",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "userUpdated": "用户已更新！"
   },
   "sidebar": {

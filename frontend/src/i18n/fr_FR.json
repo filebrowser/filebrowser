@@ -178,6 +178,7 @@
     "unsavedChanges": "Les modifications que vous avez apportées peuvent ne pas être enregistrées. Quitter la page ?",
     "upload": "Importer",
     "uploadFile": "Fichier",
+    "uploadFiles": "Uploading {files} files...",
     "uploadFolder": "Dossier",
     "uploadMessage": "Sélectionnez une option à télécharger.",
     "write": "Écrire"
@@ -209,6 +210,7 @@
     "commandRunnerHelp": "Ici, vous pouvez définir les commandes qui sont exécutées dans les événements nommés. Vous devez en écrire une par ligne. Les variables d'environnement {0} et {1} seront disponibles, {0} étant relatif à {1}. Pour plus d'informations sur cette fonctionnalité et les variables d'environnement disponibles, veuillez lire le {2}.",
     "commandsUpdated": "Commandes mises à jour !",
     "createUserDir": "Création automatique du répertoire personnel lors de l'ajout d'un nouvel utilisateur",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Fiche de style personnalisée",
     "defaultUserDescription": "Ce sont les paramètres par défaut pour les nouveaux utilisateurs.",
     "disableExternalLinks": "Désactiver les liens externes (sauf la documentation)",
@@ -264,9 +266,11 @@
     "userCreated": "Utilisateur créé !",
     "userDefaults": "Paramètres par défaut de l'utilisateur",
     "userDeleted": "Utilisateur supprimé !",
+    "userHomeBasePath": "Base path for user home directories",
     "userManagement": "Gestion des utilisateurs",
     "username": "Nom d'utilisateur",
     "users": "Utilisateurs",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "userUpdated": "Utilisateur mis à jour !"
   },
   "sidebar": {
