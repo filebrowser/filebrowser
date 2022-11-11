@@ -20,6 +20,7 @@ build:
     - 386
     - arm
     - arm64
+    - riscv64
   goarm:
     - 5
     - 6
@@ -113,6 +114,24 @@ dockers:
       - "filebrowser/filebrowser:v{{ .Major }}-armv7"
     extra_files:
       - docker_config.json
+  -
+    dockerfile: Dockerfile.riscv64
+    use: buildx
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/riscv64"
+    goos: linux
+    goarch: riscv64
+    image_templates:
+      - "filebrowser/filebrowser:{{ .Tag }}-riscv64"
+      - "filebrowser/filebrowser:v{{ .Major }}-riscv64"
+    extra_files:
+      - docker_config.json
 ## s6 based docker images
   -
     dockerfile: Dockerfile.s6
@@ -195,18 +214,21 @@ docker_manifests:
       - "filebrowser/filebrowser:{{ .Tag }}-arm64"
       - "filebrowser/filebrowser:{{ .Tag }}-armv6"
       - "filebrowser/filebrowser:{{ .Tag }}-armv7"
+      - "filebrowser/filebrowser:{{ .Tag }}-riscv64"
   - name_template: "filebrowser/filebrowser:{{ .Tag }}"
     image_templates:
       - "filebrowser/filebrowser:{{ .Tag }}-amd64"
       - "filebrowser/filebrowser:{{ .Tag }}-arm64"
       - "filebrowser/filebrowser:{{ .Tag }}-armv6"
       - "filebrowser/filebrowser:{{ .Tag }}-armv7"
+      - "filebrowser/filebrowser:{{ .Tag }}-riscv64"
   - name_template: "filebrowser/filebrowser:v{{ .Major }}"
     image_templates:
       - "filebrowser/filebrowser:v{{ .Major }}-amd64"
       - "filebrowser/filebrowser:v{{ .Major }}-arm64"
       - "filebrowser/filebrowser:v{{ .Major }}-armv6"
       - "filebrowser/filebrowser:v{{ .Major }}-armv7"
+      - "filebrowser/filebrowser:v{{ .Major }}-riscv64"
 ## s6 image manifests
   - name_template: "filebrowser/filebrowser:s6"
     image_templates:
