@@ -83,7 +83,11 @@ func dbExists(path string) (bool, error) {
 	return false, err
 }
 
-func openBoltDB(path string, cfg pythonConfig) pythonData {
+type Closeable interface {
+	Close() error
+}
+
+func openBoltDB(path string, cfg pythonConfig) (pythonData, Closeable) {
 	data := pythonData{hadDB: true}
 	exists, err := dbExists(path)
 
@@ -98,17 +102,16 @@ func openBoltDB(path string, cfg pythonConfig) pythonData {
 	data.hadDB = exists
 	db, err := storm.Open(path)
 	checkErr(err)
-	defer db.Close()
 	data.store, err = bolt.NewStorage(db)
 	checkErr(err)
-	return data
+	return data, db
 }
 
 func isPsqlDB(path string) bool {
 	return strings.HasPrefix(path, "postgres:")
 }
 
-func openPsqlDB(path string, cfg pythonConfig) pythonData {
+func openPsqlDB(path string, cfg pythonConfig) (pythonData, Closeable) {
 	data := pythonData{hadDB: true}
 	db, err := psql.ConnectDB(path)
 	if err != nil {
@@ -116,10 +119,10 @@ func openPsqlDB(path string, cfg pythonConfig) pythonData {
 	} else {
 		log.Fatal("Fail to open psql database " + path)
 	}
-	return data
+	return data, db
 }
 
-func openDB(path string, cfg pythonConfig) pythonData {
+func openDB(path string, cfg pythonConfig) (pythonData, Closeable) {
 	if isPsqlDB(path) {
 		return openPsqlDB(path, cfg)
 	}
@@ -128,8 +131,27 @@ func openDB(path string, cfg pythonConfig) pythonData {
 
 func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) {
-		path := getParam(cmd.Flags(), "database")
-		data := openDB(path, cfg)
+		// data := pythonData{hadDB: true}
+
+		// path := getParam(cmd.Flags(), "database")
+		// exists, err := dbExists(path)
+
+		// if err != nil {
+		// panic(err)
+		// } else if exists && cfg.noDB {
+		// log.Fatal(path + " already exists")
+		// } else if !exists && !cfg.noDB && !cfg.allowNoDB {
+		// log.Fatal(path + " does not exist. Please run 'filebrowser config init' first.")
+		// }
+
+		// data.hadDB = exists
+		// db, err := storm.Open(path)
+		// checkErr(err)
+		// defer db.Close()
+		// data.store, err = bolt.NewStorage(db)
+		// checkErr(err)
+		data, db := openDB(getParam(cmd.Flags(), "database"), cfg)
+		defer db.Close()
 		fn(cmd, args, data)
 	}
 }
