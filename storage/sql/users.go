@@ -1,4 +1,4 @@
-package psql
+package sql
 
 import (
 	"database/sql"
@@ -86,6 +86,12 @@ func RulesToString(rules []rules.Rule) string {
 		return ""
 	}
 	return string(data)
+}
+
+func InitUserTable(db *sql.DB) error {
+	sql := "create table if not exists users (id integer primary key, username string, password string, scope string, lockpassword bool, viewmode string, perm string, commands string, sorting string, rules string);"
+	_, err := db.Exec(sql)
+	return err
 }
 
 func (s usersBackend) Get(id interface{}) (*users.User, error) {

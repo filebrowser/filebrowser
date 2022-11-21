@@ -1,4 +1,4 @@
-package psql
+package sql
 
 import (
 	"database/sql"
@@ -14,6 +14,12 @@ type shareBackend struct {
 
 type linkRecord interface {
 	Scan(dest ...interface{}) error
+}
+
+func InitShareTable(db *sql.DB) error {
+	sql := "create table if not exists share_links (path string, userid integer, expire integer, passwordhash string, token string)"
+	_, err := db.Exec(sql)
+	return err
 }
 
 func parseLink(row linkRecord) (*share.Link, error) {

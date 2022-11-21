@@ -1,4 +1,4 @@
-package psql
+package sql
 
 import (
 	"database/sql"
@@ -11,6 +11,12 @@ import (
 
 type settingsBackend struct {
 	db *sql.DB
+}
+
+func InitSettingsTable(db *sql.DB) error {
+	sql := "create table if not exists settings(key string primary key, value string)"
+	_, err := db.Exec(sql)
+	return err
 }
 
 func userDefaultsFromString(s string) settings.UserDefaults {
@@ -251,4 +257,40 @@ func (s settingsBackend) SaveServer(ss *settings.Server) error {
 		return err
 	}
 	return nil
+}
+
+func SetSetting(db *sql.DB, key string, value string) error {
+	sql := "select count(key) from settings"
+	count := 0
+	err := db.QueryRow(sql).Scan(&count)
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return addSetting(db, key, value)
+	}
+	return updateSetting(db, key, value)
+}
+
+func GetSetting(db *sql.DB, key string) string {
+	sql := "select value from settings where key = '" + key + "';"
+	value := ""
+	err := db.QueryRow(sql).Scan(&value)
+	if err != nil {
+		fmt.Printf("ERROR: " + err.Error())
+		return value
+	}
+	return value
+}
+
+func addSetting(db *sql.DB, key string, value string) error {
+	sql := "insert into settings(key, value) values('" + key + "', '" + value + "')"
+	_, err := db.Exec(sql)
+	return err
+}
+
+func updateSetting(db *sql.DB, key string, value string) error {
+	sql := "update settings set value = '" + value + "' where key = '" + key + "'"
+	_, err := db.Exec(sql)
+	return err
 }

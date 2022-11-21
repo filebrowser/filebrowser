@@ -17,7 +17,7 @@ import (
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
-	"github.com/filebrowser/filebrowser/v2/storage/psql"
+	"github.com/filebrowser/filebrowser/v2/storage/sql"
 )
 
 func checkErr(err error) {
@@ -107,49 +107,22 @@ func openBoltDB(path string, cfg pythonConfig) (pythonData, Closeable) {
 	return data, db
 }
 
-func isPsqlDB(path string) bool {
-	return strings.HasPrefix(path, "postgres:")
-}
-
-func openPsqlDB(path string, cfg pythonConfig) (pythonData, Closeable) {
-	data := pythonData{hadDB: true}
-	db, err := psql.ConnectDB(path)
-	if err != nil {
-		data.store, err = psql.NewStorage(db)
-	} else {
-		log.Fatal("Fail to open psql database " + path)
-	}
-	return data, db
-}
-
 func openDB(path string, cfg pythonConfig) (pythonData, Closeable) {
-	if isPsqlDB(path) {
-		return openPsqlDB(path, cfg)
+	if sql.IsDBPath(path) {
+		data := pythonData{hadDB: true}
+		db, err := sql.OpenDB(path)
+		if err != nil {
+			data.store, err = sql.NewStorage(db)
+		} else {
+			log.Fatal("Fail to open database " + path)
+		}
+		return data, db
 	}
 	return openBoltDB(path, cfg)
 }
 
 func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) {
-		// data := pythonData{hadDB: true}
-
-		// path := getParam(cmd.Flags(), "database")
-		// exists, err := dbExists(path)
-
-		// if err != nil {
-		// panic(err)
-		// } else if exists && cfg.noDB {
-		// log.Fatal(path + " already exists")
-		// } else if !exists && !cfg.noDB && !cfg.allowNoDB {
-		// log.Fatal(path + " does not exist. Please run 'filebrowser config init' first.")
-		// }
-
-		// data.hadDB = exists
-		// db, err := storm.Open(path)
-		// checkErr(err)
-		// defer db.Close()
-		// data.store, err = bolt.NewStorage(db)
-		// checkErr(err)
 		data, db := openDB(getParam(cmd.Flags(), "database"), cfg)
 		defer db.Close()
 		fn(cmd, args, data)
