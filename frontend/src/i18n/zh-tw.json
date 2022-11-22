@@ -1,5 +1,6 @@
 {
   "buttons": {
+    "unzip": "解压",
     "cancel": "取消",
     "close": "關閉",
     "copy": "複製",
@@ -114,6 +115,7 @@
   },
   "permanent": "永久",
   "prompts": {
+    "unzip":"解壓檔案",
     "copy": "複製",
     "copyMessage": "請選擇欲複製至的目錄：",
     "currentlyNavigating": "目前目錄：",
@@ -202,7 +204,8 @@
       "execute": "執行命令",
       "modify": "編輯檔案",
       "rename": "重命名或移動檔案/資料夾",
-      "share": "分享檔案"
+      "share": "分享檔案",
+      "unzip": "解壓檔案"
     },
     "permissions": "權限",
     "permissionsHelp": "您可以將該使用者設置為管理員，也可以單獨選擇各項權限。如果選擇了“管理員”，則其他的選項會被自動勾上，同時該使用者可以管理其他使用者。",

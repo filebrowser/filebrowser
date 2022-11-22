@@ -30,6 +30,8 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 )
 
+require github.com/pierrec/lz4 v2.6.1+incompatible // indirect
+
 require (
 	github.com/andybalholm/brotli v1.0.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -46,6 +48,7 @@ require (
 	github.com/klauspost/compress v1.11.4 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
+	github.com/mholt/archiver v3.1.1+incompatible
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect

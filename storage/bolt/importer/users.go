@@ -73,6 +73,7 @@ func convertUsersToNew(old []*oldUser) ([]*users.User, error) {
 				Delete:   oldUser.AllowEdit,
 				Share:    true,
 				Download: true,
+				Unzip:    true,
 			},
 		}
 

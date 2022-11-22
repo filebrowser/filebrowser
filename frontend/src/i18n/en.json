@@ -1,5 +1,6 @@
 {
   "buttons": {
+    "unzip": "unzip",
     "cancel": "Cancel",
     "close": "Close",
     "copy": "Copy",
@@ -120,6 +121,7 @@
   },
   "permanent": "Permanent",
   "prompts": {
+    "unzip": "Unzip",
     "copy": "Copy",
     "copyMessage": "Choose the place to copy your files:",
     "currentlyNavigating": "Currently navigating on:",
@@ -214,7 +216,8 @@
       "execute": "Execute commands",
       "modify": "Edit files",
       "rename": "Rename or move files and directories",
-      "share": "Share files"
+      "share": "Share files",
+      "unzip": "unzip"
     },
     "permissions": "Permissions",
     "permissionsHelp": "You can set the user to be an administrator or choose the permissions individually. If you select \"Administrator\", all of the other options will be automatically checked. The management of users remains a privilege of an administrator.\n",

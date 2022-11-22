@@ -10,4 +10,5 @@ type Permissions struct {
 	Delete   bool `json:"delete"`
 	Share    bool `json:"share"`
 	Download bool `json:"download"`
+	Unzip    bool `json:"unzip"`
 }

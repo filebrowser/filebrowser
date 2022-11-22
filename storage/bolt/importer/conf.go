@@ -134,6 +134,7 @@ func importConf(db *storm.DB, path string, sto *storage.Storage) error {
 				Delete:   cfg.Defaults.AllowEdit,
 				Share:    true,
 				Download: true,
+				Unzip:    true,
 			},
 		},
 	}

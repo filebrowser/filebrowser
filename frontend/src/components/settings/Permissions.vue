@@ -36,6 +36,10 @@
       <input type="checkbox" :disabled="admin" v-model="perm.share" />
       {{ $t("settings.perm.share") }}
     </p>
+    <p>
+      <input type="checkbox" :disabled="admin" v-model="perm.unzip" />
+      {{ $t("settings.perm.unzip") }}
+    </p>
   </div>
 </template>
 

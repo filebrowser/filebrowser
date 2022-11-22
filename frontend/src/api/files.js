@@ -119,19 +119,25 @@ export async function post(url, content = "", overwrite = false, onupload) {
   });
 }
 
-function moveCopy(items, copy = false, overwrite = false, rename = false) {
+function moveCopy(items, copy = false, overwrite = false, rename = false, unzip = false) {
   let promises = [];
 
   for (let item of items) {
     const from = item.from;
     const to = encodeURIComponent(removePrefix(item.to));
     const url = `${from}?action=${
-      copy ? "copy" : "rename"
-    }&destination=${to}&override=${overwrite}&rename=${rename}`;
+      unzip ? "unzip" : copy ? "copy" : "rename"
+    }&destination=${to}&override=${overwrite}&rename=${rename}&unzip=${unzip}`;
+    console.log(url);
     promises.push(resourceAction(url, "PATCH"));
   }
 
   return Promise.all(promises);
+}
+
+export function unzip(items) {
+  console.log("unzip fn")
+  return moveCopy(items, false, false,false, true);
 }
 
 export function move(items, overwrite = false, rename = false) {
