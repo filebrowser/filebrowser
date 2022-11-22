@@ -303,7 +303,6 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		if !d.user.Perm.Create {
 			return errors.ErrPermissionDenied
 		}
-
 		return fileutils.Copy(d.user.Fs, src, dst)
 	case "rename":
 		if !d.user.Perm.Rename {
@@ -335,12 +334,8 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		if !d.user.Perm.Unzip {
 			return errors.ErrPermissionDenied
 		}
-		if strings.HasPrefix(src, "/") {
-			src = "." + src
-		}
-		if strings.HasPrefix(dst, "/") {
-			dst = "." + dst
-		}
+		src = d.user.FullPath(src)
+		dst = d.user.FullPath(dst)
 		return archiver.Unarchive(src, dst)
 	default:
 		return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
