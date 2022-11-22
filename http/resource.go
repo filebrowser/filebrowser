@@ -192,7 +192,7 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		if err != nil {
 			return errToStatus(err), err
 		}
-		if dst == "/" || src == "/" || action != "unzip" {
+		if (dst == "/" || src == "/") && action != "unzip" {
 			return http.StatusForbidden, nil
 		}
 
