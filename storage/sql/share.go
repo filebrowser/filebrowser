@@ -29,11 +29,11 @@ func parseLink(row linkRecord) (*share.Link, error) {
 	expire := int64(0)
 	passwordhash := ""
 	token := ""
-	err := row.Scan(path, hash, userid, expire, passwordhash, token)
+	err := row.Scan(&path, &hash, &userid, &expire, &passwordhash, &token)
 	if err != nil {
 		s := "ERROR: Fail to parse record for share.Link"
 		err := errors.New(s)
-		fmt.Printf(s)
+		fmt.Println(s)
 		return nil, err
 	}
 	link := share.Link{}
@@ -59,7 +59,7 @@ func queryLinks(db *sql.DB, condition string) ([]*share.Link, error) {
 	for rows.Next() {
 		link, err := parseLink(rows)
 		if err != nil {
-			fmt.Printf("ERROR: Fail to parse record for share.Link")
+			fmt.Println("ERROR: Fail to parse record for share.Link")
 			continue
 		}
 		links = append(links, link)

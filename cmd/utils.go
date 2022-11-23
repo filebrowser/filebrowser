@@ -112,9 +112,11 @@ func openDB(path string, cfg pythonConfig) (pythonData, Closeable) {
 		data := pythonData{hadDB: true}
 		db, err := sql.OpenDB(path)
 		if err != nil {
-			data.store, err = sql.NewStorage(db)
-		} else {
 			log.Fatal("Fail to open database " + path)
+		}
+		data.store, err = sql.NewStorage(db)
+		if err != nil {
+			log.Fatal("Fail to create database storage for " + path)
 		}
 		return data, db
 	}

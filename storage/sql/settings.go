@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/filebrowser/filebrowser/v2/files"
+	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/settings"
+	"github.com/filebrowser/filebrowser/v2/users"
 )
 
 type settingsBackend struct {
@@ -26,7 +29,7 @@ func userDefaultsFromString(s string) settings.UserDefaults {
 	userDefaults := settings.UserDefaults{}
 	err := json.Unmarshal([]byte(s), &userDefaults)
 	if err != nil {
-		fmt.Printf("ERROR: fail to parse settings.UserDefaults")
+		fmt.Println("ERROR: Fail to parse settings.UserDefaults")
 	}
 	return userDefaults
 }
@@ -46,7 +49,7 @@ func brandingFromString(s string) settings.Branding {
 	branding := settings.Branding{}
 	err := json.Unmarshal([]byte(s), &branding)
 	if err != nil {
-		fmt.Printf("ERROR: fail to parse settings.Branding")
+		fmt.Println("ERROR: Fail to parse settings.Branding")
 	}
 	return branding
 }
@@ -54,7 +57,7 @@ func brandingFromString(s string) settings.Branding {
 func brandingToString(s settings.Branding) string {
 	data, err := json.Marshal(s)
 	if err != nil {
-		fmt.Printf("ERROR: fail to jsonify settings.Branding")
+		fmt.Println("ERROR: Fail to jsonify settings.Branding")
 		return ""
 	}
 	return string(data)
@@ -63,7 +66,7 @@ func brandingToString(s settings.Branding) string {
 func commandsToString(c map[string][]string) string {
 	data, err := json.Marshal(c)
 	if err != nil {
-		fmt.Printf("ERROR: fail to jsonify commands")
+		fmt.Println("ERROR: Fail to jsonify commands")
 		return ""
 	}
 	return string(data)
@@ -76,7 +79,7 @@ func commandsFromString(s string) map[string][]string {
 	c := map[string][]string{}
 	err := json.Unmarshal([]byte(s), &c)
 	if err != nil {
-		fmt.Printf("ERROR: fail to parse commands")
+		fmt.Println("ERROR: Fail to parse commands")
 	}
 	return c
 }
@@ -88,7 +91,7 @@ func stringsFromString(s string) []string {
 	c := []string{}
 	err := json.Unmarshal([]byte(s), &c)
 	if err != nil {
-		fmt.Printf("ERROR: fail to parse []string")
+		fmt.Println("ERROR: Fail to parse []string")
 	}
 	return c
 }
@@ -96,7 +99,7 @@ func stringsFromString(s string) []string {
 func stringsToString(c []string) string {
 	data, err := json.Marshal(c)
 	if err != nil {
-		fmt.Printf("ERROR: fail to jsonify strings")
+		fmt.Println("ERROR: Fail to jsonify strings")
 		return ""
 	}
 	return string(data)
@@ -138,11 +141,12 @@ func (s settingsBackend) Get() (*settings.Settings, error) {
 	}
 	key := ""
 	value := ""
-	settings1 := settings.Settings{}
+	settings1 := cloneSettings(defaultSettings)
 	for rows.Next() {
-		err = rows.Scan(key, value)
+		err = rows.Scan(&key, &value)
 		if err != nil {
-			fmt.Printf("ERROR: fail to query settings.Settings")
+			fmt.Println(err.Error())
+			fmt.Println("ERROR: Fail to query settings.Settings")
 		}
 		if key == "Key" {
 			settings1.Key = []byte(value)
@@ -162,8 +166,6 @@ func (s settingsBackend) Get() (*settings.Settings, error) {
 			settings1.Shell = stringsFromString(value)
 		} else if key == "Rules" {
 			settings1.Rules = rulesFromString(value)
-		} else {
-			fmt.Printf("ERROR: unknown settings key " + key)
 		}
 	}
 	return &settings1, nil
@@ -190,19 +192,91 @@ func (s settingsBackend) Save(ss *settings.Settings) error {
 	return nil
 }
 
+var defaultServer = settings.Server{
+	Port:                  "8080",
+	Log:                   "stdout",
+	EnableThumbnails:      false,
+	ResizePreview:         false,
+	EnableExec:            false,
+	TypeDetectionByHeader: false,
+}
+
+var defaultSettings = settings.Settings{
+	Key:              []byte(""),
+	Signup:           false,
+	CreateUserDir:    false,
+	UserHomeBasePath: "/users",
+	Defaults: settings.UserDefaults{
+		Scope:       ".",
+		Locale:      "en",
+		ViewMode:    "mosaic",
+		SingleClick: false,
+		Sorting: files.Sorting{
+			By:  "",
+			Asc: false,
+		},
+		Perm: users.Permissions{
+			Admin:    false,
+			Execute:  true,
+			Create:   true,
+			Rename:   true,
+			Modify:   true,
+			Delete:   true,
+			Share:    true,
+			Download: true,
+		},
+		Commands:     []string{},
+		HideDotfiles: false,
+		DateFormat:   false,
+	},
+	AuthMethod: "json",
+	Branding: settings.Branding{
+		Name:            "",
+		DisableExternal: false,
+		Files:           "",
+		Theme:           "",
+		Color:           "",
+	},
+	Commands: map[string][]string{},
+	Shell:    []string{},
+	Rules:    []rules.Rule{},
+}
+
+func cloneServer(server settings.Server) settings.Server {
+	data, err := json.Marshal(server)
+	if err != nil {
+		return settings.Server{}
+	}
+	s := settings.Server{}
+	json.Unmarshal(data, &s)
+	return s
+}
+
+func cloneSettings(s settings.Settings) settings.Settings {
+	data, err := json.Marshal(s)
+	if err != nil {
+		return settings.Settings{}
+	}
+	s1 := settings.Settings{}
+	json.Unmarshal(data, &s1)
+	return s1
+}
+
 func (s settingsBackend) GetServer() (*settings.Server, error) {
 	sql := "select key, value from settings"
 	rows, err := s.db.Query(sql)
 	if err != nil {
 		return nil, nil
 	}
+	server := cloneServer(defaultServer)
 	key := ""
 	value := ""
-	server := settings.Server{}
+
 	for rows.Next() {
-		err = rows.Scan(key, value)
+		err = rows.Scan(&key, &value)
 		if err != nil {
-			fmt.Printf("ERROR: fail to query settings.Settings")
+			fmt.Println(err.Error())
+			fmt.Println("ERROR: Fail to query settings.Settings")
 		}
 		if key == "Root" {
 			server.Root = value
@@ -260,7 +334,7 @@ func (s settingsBackend) SaveServer(ss *settings.Server) error {
 }
 
 func SetSetting(db *sql.DB, key string, value string) error {
-	sql := "select count(key) from settings"
+	sql := "select count(key) from settings where key = '" + key + "'"
 	count := 0
 	err := db.QueryRow(sql).Scan(&count)
 	if err != nil {
@@ -277,7 +351,6 @@ func GetSetting(db *sql.DB, key string) string {
 	value := ""
 	err := db.QueryRow(sql).Scan(&value)
 	if err != nil {
-		fmt.Printf("ERROR: " + err.Error())
 		return value
 	}
 	return value

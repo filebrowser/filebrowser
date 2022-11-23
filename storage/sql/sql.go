@@ -3,6 +3,7 @@ package sql
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
@@ -56,13 +57,25 @@ func NewStorage(db *sql.DB) (*storage.Storage, error) {
 
 	err := SetSetting(db, "version", "2")
 	if err != nil {
+		fmt.Println("ERROR: fail to set version")
 		return nil, err
 	}
 
-	return &storage.Storage{
+	// TODO: default
+	fmt.Println(GetSetting(db, "auther"))
+	if GetSetting(db, "auther") == "" {
+		err := SetSetting(db, "auther", "json")
+		if err != nil {
+			fmt.Println("ERROR: fail to set auther")
+			return nil, err
+		}
+	}
+
+	storage := &storage.Storage{
 		Auth:     authStore,
 		Users:    userStore,
 		Share:    shareStore,
 		Settings: settingsStore,
-	}, nil
+	}
+	return storage, nil
 }

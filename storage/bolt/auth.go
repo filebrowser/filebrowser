@@ -1,6 +1,8 @@
 package bolt
 
 import (
+	"fmt"
+
 	"github.com/asdine/storm/v3"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
@@ -14,6 +16,7 @@ type authBackend struct {
 
 func (s authBackend) Get(t settings.AuthMethod) (auth.Auther, error) {
 	var auther auth.Auther
+	fmt.Println("ERROR: unknown auth method " + t)
 
 	switch t {
 	case auth.MethodJSONAuth:

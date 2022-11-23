@@ -95,7 +95,7 @@ func InitUserTable(db *sql.DB) error {
 }
 
 func (s usersBackend) Get(id interface{}) (*users.User, error) {
-	userId := id.(uint)
+	userID := id.(uint)
 	username := ""
 	password := ""
 	scope := ""
@@ -105,10 +105,10 @@ func (s usersBackend) Get(id interface{}) (*users.User, error) {
 	commands := ""
 	sorting := ""
 	rules := ""
-	sql := "select username, password, scope, lockpassword, viewmode, perm,commands,sorting,rules from users where id=" + strconv.Itoa(int(userId))
-	s.db.QueryRow(sql).Scan(username, password, scope, lockpassword, viewmode, perm, commands, sorting, rules)
+	sql := "select username, password, scope, lockpassword, viewmode, perm,commands,sorting,rules from users where id=" + strconv.Itoa(int(userID))
+	s.db.QueryRow(sql).Scan(&username, &password, &scope, &lockpassword, &viewmode, &perm, &commands, &sorting, &rules)
 	user := users.User{}
-	user.ID = userId
+	user.ID = userID
 	user.Username = username
 	user.Password = password
 	user.Scope = scope
@@ -139,9 +139,9 @@ func (s usersBackend) Gets() ([]*users.User, error) {
 		commands := ""
 		sorting := ""
 		rules := ""
-		err := rows.Scan(id, username, password, scope, lockpassword, viewmode, perm, commands, sorting, rules)
+		err := rows.Scan(&id, &username, &password, &scope, &lockpassword, &viewmode, &perm, &commands, &sorting, &rules)
 		if err != nil {
-			fmt.Printf("Fail to parse record for user.User")
+			fmt.Println("Fail to parse record for user.User")
 			continue
 		}
 		user := users.User{}

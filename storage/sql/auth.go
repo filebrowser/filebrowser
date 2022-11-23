@@ -3,6 +3,7 @@ package sql
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/errors"
@@ -11,12 +12,6 @@ import (
 
 type authBackend struct {
 	db *sql.DB
-}
-
-func InitAuthTable(db *sql.DB) error {
-	sql := "create table if not exists appliction(key string primary key, value string)"
-	_, err := db.Exec(sql)
-	return err
 }
 
 func (s authBackend) Get(t settings.AuthMethod) (auth.Auther, error) {
@@ -32,6 +27,7 @@ func (s authBackend) Get(t settings.AuthMethod) (auth.Auther, error) {
 	case auth.MethodNoAuth:
 		auther = &auth.NoAuth{}
 	default:
+		fmt.Println("ERROR: unknown auth method " + t)
 		return nil, errors.ErrInvalidAuthMethod
 	}
 

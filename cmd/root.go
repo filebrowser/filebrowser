@@ -123,6 +123,7 @@ user created with the credentials from options "username" and "password".`,
 			log.Fatal("Image resize workers count could not be < 1")
 		}
 		imgSvc := img.New(workersCount)
+		log.Println("after img.New")
 
 		var fileCache diskcache.Interface = diskcache.NewNoOp()
 		cacheDir, err := cmd.Flags().GetString("cache-dir")
@@ -133,9 +134,13 @@ user created with the credentials from options "username" and "password".`,
 			}
 			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
 		}
+		log.Println("after diskcache.New")
 
 		server := getRunParams(cmd.Flags(), d.store)
+		log.Println("after getRunParams")
+		log.Println(server.Log)
 		setupLog(server.Log)
+		log.Println("after setupLog")
 
 		root, err := filepath.Abs(server.Root)
 		checkErr(err)
@@ -165,6 +170,7 @@ user created with the credentials from options "username" and "password".`,
 			listener, err = net.Listen("tcp", adr)
 			checkErr(err)
 		}
+		log.Println("before make(chan)")
 
 		sigc := make(chan os.Signal, 1)
 		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
@@ -175,6 +181,7 @@ user created with the credentials from options "username" and "password".`,
 			panic(err)
 		}
 
+		log.Println("before fbhttp.NewHandler)")
 		handler, err := fbhttp.NewHandler(imgSvc, fileCache, d.store, server, assetsFs)
 		checkErr(err)
 
