@@ -15,6 +15,7 @@ type authBackend struct {
 }
 
 func (s authBackend) Get(t settings.AuthMethod) (auth.Auther, error) {
+	logBacktrace()
 	var auther auth.Auther
 
 	switch t {
@@ -30,17 +31,12 @@ func (s authBackend) Get(t settings.AuthMethod) (auth.Auther, error) {
 		fmt.Println("ERROR: unknown auth method " + t)
 		return nil, errors.ErrInvalidAuthMethod
 	}
-
-	val := GetSetting(s.db, "auther")
-	if val == "" {
-		return auther, nil
-	}
-	return auther, json.Unmarshal([]byte(val), auther)
+	return auther, nil
 }
 
 func (s authBackend) Save(a auth.Auther) error {
 	val, err := json.Marshal(a)
-	if !checkError(err, "Fail to save auth.Auther") {
+	if checkError(err, "Fail to save auth.Auther") {
 		return err
 	}
 	return SetSetting(s.db, "auther", string(val))

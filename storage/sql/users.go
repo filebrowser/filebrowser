@@ -4,10 +4,12 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"reflect"
 	"strconv"
 	"strings"
 
+	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -18,10 +20,10 @@ type usersBackend struct {
 }
 
 func PermFromString(s string) users.Permissions {
-	if s == "" {
-		return users.Permissions{}
-	}
 	var perm users.Permissions
+	if s == "" {
+		return perm
+	}
 	err := json.Unmarshal([]byte(s), &perm)
 	checkError(err, "Fail to parse perm from string")
 	return perm
@@ -29,7 +31,7 @@ func PermFromString(s string) users.Permissions {
 
 func PermToString(perm users.Permissions) string {
 	data, err := json.Marshal(perm)
-	if !checkError(err, "Fail to stringify users.Permissions") {
+	if checkError(err, "Fail to stringify users.Permissions") {
 		return ""
 	}
 	return string(data)
@@ -37,7 +39,7 @@ func PermToString(perm users.Permissions) string {
 
 func CommandsFromString(s string) []string {
 	if s == "" {
-		return []string{}
+		return make([]string, 0)
 	}
 	var commands []string
 	err := json.Unmarshal([]byte(s), &commands)
@@ -47,7 +49,7 @@ func CommandsFromString(s string) []string {
 
 func CommandsToString(commands []string) string {
 	data, err := json.Marshal(commands)
-	if !checkError(err, "Fail to stringify users commands") {
+	if checkError(err, "Fail to stringify users commands") {
 		return ""
 	}
 	return string(data)
@@ -65,17 +67,17 @@ func SortingFromString(s string) files.Sorting {
 
 func SortingToString(sorting files.Sorting) string {
 	data, err := json.Marshal(sorting)
-	if !checkError(err, "Fail to stringify files.Sorting") {
+	if checkError(err, "Fail to stringify files.Sorting") {
 		return ""
 	}
 	return string(data)
 }
 
 func rulesFromString(s string) []rules.Rule {
+	rules := make([]rules.Rule, 0)
 	if s == "" {
-		return []rules.Rule{}
+		return rules
 	}
-	var rules []rules.Rule
 	err := json.Unmarshal([]byte(s), &rules)
 	checkError(err, "Fail to parse Rules from string")
 	return rules
@@ -83,34 +85,82 @@ func rulesFromString(s string) []rules.Rule {
 
 func RulesToString(rules []rules.Rule) string {
 	data, err := json.Marshal(rules)
-	if !checkError(err, "Fail to stringify []rules.Rule") {
+	if checkError(err, "Fail to stringify []rules.Rule") {
 		return ""
 	}
 	return string(data)
 }
 
+var adminUser = createAdminUser()
+
+func createAdminUser() users.User {
+	userDefault := defaultSettings.Defaults
+	user := users.User{}
+	user.Username = "admin"
+	user.Password = "admin"
+	user.Scope = userDefault.Scope
+	user.LockPassword = false
+	user.ViewMode = userDefault.ViewMode
+	user.Perm = users.Permissions{
+		Admin:    true,
+		Execute:  true,
+		Create:   true,
+		Rename:   true,
+		Modify:   true,
+		Delete:   true,
+		Share:    true,
+		Download: true,
+	}
+	user.Commands = userDefault.Commands
+	user.Sorting = userDefault.Sorting
+	return user
+}
+
 func InitUserTable(db *sql.DB) error {
+	logBacktrace()
 	sql := "create table if not exists users (id integer primary key, username string, password string, scope string, lockpassword bool, viewmode string, perm string, commands string, sorting string, rules string);"
 	_, err := db.Exec(sql)
+	if checkError(err, "Fail to create users table") {
+		return err
+	}
+	user, err := usersBackend{db}.Get("admin")
+	if user == nil {
+		log.Println("No admin exists")
+		err := usersBackend{db}.Save(&adminUser)
+		checkError(err, "Fail to init admin user")
+	}
 	return err
 }
 
-func (s usersBackend) Get(id interface{}) (*users.User, error) {
-	userID := id.(uint)
+func (s usersBackend) Get(i interface{}) (*users.User, error) {
+	columns := []string{"id", "username", "password", "scope", "lockpassword", "viewmode", "perm", "commands", "sorting", "rules"}
+	columnsStr := strings.Join(columns, ",")
+	var conditionStr string
+	switch i.(type) {
+	case uint:
+		conditionStr = fmt.Sprintf("id=%v", i)
+	case int:
+		conditionStr = fmt.Sprintf("id=%v", i)
+	case string:
+		conditionStr = fmt.Sprintf("username='%v'", i)
+	default:
+		return nil, errors.ErrInvalidDataType
+	}
+	userID := uint(0)
 	username := ""
 	password := ""
 	scope := ""
 	lockpassword := false
-	var viewmode users.ViewMode = "list"
+	var viewmode users.ViewMode = users.ListViewMode
 	perm := ""
 	commands := ""
 	sorting := ""
 	rules := ""
 	user := users.User{}
-	sql := "select username, password, scope, lockpassword, viewmode, perm,commands,sorting,rules from users where id=" + strconv.Itoa(int(userID))
-	err := s.db.QueryRow(sql).Scan(&username, &password, &scope, &lockpassword, &viewmode, &perm, &commands, &sorting, &rules)
-	if !checkError(err, "Fail to QueryRow for user") {
-		return &user, err
+	sql := fmt.Sprintf("select %s from users where %s", columnsStr, conditionStr)
+	err := s.db.QueryRow(sql).Scan(&userID, &username, &password, &scope, &lockpassword, &viewmode, &perm, &commands, &sorting, &rules)
+	if checkError(err, "") {
+		return nil, err
 	}
 	user.ID = userID
 	user.Username = username
@@ -128,10 +178,10 @@ func (s usersBackend) Get(id interface{}) (*users.User, error) {
 func (s usersBackend) Gets() ([]*users.User, error) {
 	sql := "select id, username, password, scope, lockpassword, viewmode, perm,commands,sorting,rules from users"
 	rows, err := s.db.Query(sql)
-	if !checkError(err, "Fail to Query []*users.User") {
+	if checkError(err, "Fail to Query []*users.User") {
 		return nil, err
 	}
-	var users2 []*users.User = []*users.User{}
+	var users2 []*users.User = make([]*users.User, 0)
 	for rows.Next() {
 		id := 0
 		username := ""
@@ -144,7 +194,7 @@ func (s usersBackend) Gets() ([]*users.User, error) {
 		sorting := ""
 		rules := ""
 		err := rows.Scan(&id, &username, &password, &scope, &lockpassword, &viewmode, &perm, &commands, &sorting, &rules)
-		if !checkError(err, "Fail to parse record for user.User") {
+		if checkError(err, "Fail to parse record for user.User") {
 			continue
 		}
 		user := users.User{}
@@ -191,10 +241,14 @@ func (s usersBackend) updateUser(id uint, user *users.User) error {
 }
 
 func (s usersBackend) insertUser(user *users.User) error {
+	password, err := users.HashPwd(user.Password)
+	if checkError(err, "Fail to hash password") {
+		return err
+	}
 	sql := fmt.Sprintf(
-		"insert into users (username, password, scope, lockpassword, viewmode, perm, commands, sorting) values ('%s','%s','%s',%s,'%s','%s','%s','%s','%s')",
+		"insert into users (username, password, scope, lockpassword, viewmode, perm, commands, sorting, rules) values ('%s','%s','%s',%s,'%s','%s','%s','%s','%s')",
 		user.Username,
-		user.Password,
+		password,
 		user.Scope,
 		boolToString(user.LockPassword),
 		user.ViewMode,
@@ -203,15 +257,14 @@ func (s usersBackend) insertUser(user *users.User) error {
 		SortingToString(user.Sorting),
 		RulesToString(user.Rules),
 	)
-	_, err := s.db.Exec(sql)
+	_, err = s.db.Exec(sql)
+	checkError(err, "Fail to insert user")
 	return err
 }
 
 func (s usersBackend) Save(user *users.User) error {
-	userOriginal, err := s.GetBy(user.ID)
-	if !checkError(err, "Fail to Save *users.User") {
-		return err
-	}
+	userOriginal, err := s.GetBy(user.Username)
+	checkError(err, "")
 	if userOriginal != nil {
 		return s.updateUser(user.ID, user)
 	}
