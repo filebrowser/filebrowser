@@ -40,7 +40,7 @@ func (s authBackend) Get(t settings.AuthMethod) (auth.Auther, error) {
 
 func (s authBackend) Save(a auth.Auther) error {
 	val, err := json.Marshal(a)
-	if err != nil {
+	if !checkError(err, "Fail to save auth.Auther") {
 		return err
 	}
 	return SetSetting(s.db, "auther", string(val))

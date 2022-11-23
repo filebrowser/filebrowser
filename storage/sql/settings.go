@@ -19,6 +19,7 @@ type settingsBackend struct {
 func InitSettingsTable(db *sql.DB) error {
 	sql := "create table if not exists settings(key string primary key, value string)"
 	_, err := db.Exec(sql)
+	checkError(err, "Fail to create table settings")
 	return err
 }
 
@@ -28,15 +29,13 @@ func userDefaultsFromString(s string) settings.UserDefaults {
 	}
 	userDefaults := settings.UserDefaults{}
 	err := json.Unmarshal([]byte(s), &userDefaults)
-	if err != nil {
-		fmt.Println("ERROR: Fail to parse settings.UserDefaults")
-	}
+	checkError(err, "Fail to parse settings.UserDefaults")
 	return userDefaults
 }
 
 func userDefaultsToString(d settings.UserDefaults) string {
 	data, err := json.Marshal(d)
-	if err != nil {
+	if !checkError(err, "Fail to stringify settings.UserDefaults") {
 		return ""
 	}
 	return string(data)
@@ -48,16 +47,13 @@ func brandingFromString(s string) settings.Branding {
 	}
 	branding := settings.Branding{}
 	err := json.Unmarshal([]byte(s), &branding)
-	if err != nil {
-		fmt.Println("ERROR: Fail to parse settings.Branding")
-	}
+	checkError(err, "Fail to parse settings.Branding")
 	return branding
 }
 
 func brandingToString(s settings.Branding) string {
 	data, err := json.Marshal(s)
-	if err != nil {
-		fmt.Println("ERROR: Fail to jsonify settings.Branding")
+	if !checkError(err, "Fail to jsonify settings.Branding") {
 		return ""
 	}
 	return string(data)
@@ -65,8 +61,7 @@ func brandingToString(s settings.Branding) string {
 
 func commandsToString(c map[string][]string) string {
 	data, err := json.Marshal(c)
-	if err != nil {
-		fmt.Println("ERROR: Fail to jsonify commands")
+	if !checkError(err, "Fail to jsonify commands") {
 		return ""
 	}
 	return string(data)
@@ -78,9 +73,7 @@ func commandsFromString(s string) map[string][]string {
 	}
 	c := map[string][]string{}
 	err := json.Unmarshal([]byte(s), &c)
-	if err != nil {
-		fmt.Println("ERROR: Fail to parse commands")
-	}
+	checkError(err, "Fail to parse commands")
 	return c
 }
 
@@ -90,16 +83,13 @@ func stringsFromString(s string) []string {
 	}
 	c := []string{}
 	err := json.Unmarshal([]byte(s), &c)
-	if err != nil {
-		fmt.Println("ERROR: Fail to parse []string")
-	}
+	checkError(err, "Fail to parse []string")
 	return c
 }
 
 func stringsToString(c []string) string {
 	data, err := json.Marshal(c)
-	if err != nil {
-		fmt.Println("ERROR: Fail to jsonify strings")
+	if !checkError(err, "Fail to jsonify strings") {
 		return ""
 	}
 	return string(data)
@@ -136,18 +126,15 @@ func boolToString(b bool) string {
 func (s settingsBackend) Get() (*settings.Settings, error) {
 	sql := "select key, value from settings"
 	rows, err := s.db.Query(sql)
-	if err != nil {
-		return nil, nil
+	if !checkError(err, "Fail to Query settings.Settings") {
+		return nil, err
 	}
 	key := ""
 	value := ""
 	settings1 := cloneSettings(defaultSettings)
 	for rows.Next() {
 		err = rows.Scan(&key, &value)
-		if err != nil {
-			fmt.Println(err.Error())
-			fmt.Println("ERROR: Fail to query settings.Settings")
-		}
+		checkError(err, "Fail to query settings.Settings")
 		if key == "Key" {
 			settings1.Key = []byte(value)
 		} else if key == "Signup" {
@@ -186,7 +173,7 @@ func (s settingsBackend) Save(ss *settings.Settings) error {
 		RulesToString(ss.Rules)}
 	sql := fmt.Sprintf("INSERT INTO settings (%s) VALUES(%s)", strings.Join(columns, ","), strings.Join(values, ","))
 	_, err := s.db.Exec(sql)
-	if err != nil {
+	if !checkError(err, "Fail to insert settings.Settings") {
 		return err
 	}
 	return nil
@@ -244,7 +231,7 @@ var defaultSettings = settings.Settings{
 
 func cloneServer(server settings.Server) settings.Server {
 	data, err := json.Marshal(server)
-	if err != nil {
+	if !checkError(err, "Fail to clone settings.Server") {
 		return settings.Server{}
 	}
 	s := settings.Server{}
@@ -254,7 +241,7 @@ func cloneServer(server settings.Server) settings.Server {
 
 func cloneSettings(s settings.Settings) settings.Settings {
 	data, err := json.Marshal(s)
-	if err != nil {
+	if !checkError(err, "Fail to clone settings.Settings") {
 		return settings.Settings{}
 	}
 	s1 := settings.Settings{}
@@ -265,8 +252,8 @@ func cloneSettings(s settings.Settings) settings.Settings {
 func (s settingsBackend) GetServer() (*settings.Server, error) {
 	sql := "select key, value from settings"
 	rows, err := s.db.Query(sql)
-	if err != nil {
-		return nil, nil
+	if !checkError(err, "Fail to Query for GetServer") {
+		return nil, err
 	}
 	server := cloneServer(defaultServer)
 	key := ""
@@ -274,9 +261,8 @@ func (s settingsBackend) GetServer() (*settings.Server, error) {
 
 	for rows.Next() {
 		err = rows.Scan(&key, &value)
-		if err != nil {
-			fmt.Println(err.Error())
-			fmt.Println("ERROR: Fail to query settings.Settings")
+		if !checkError(err, "Fail to query settings.Settings") {
+			continue
 		}
 		if key == "Root" {
 			server.Root = value
@@ -327,7 +313,7 @@ func (s settingsBackend) SaveServer(ss *settings.Server) error {
 		"'" + ss.AuthHook + "'"}
 	sql := fmt.Sprintf("INSERT INTO settings (%s) VALUES(%s)", strings.Join(columns, ","), strings.Join(values, ","))
 	_, err := s.db.Exec(sql)
-	if err != nil {
+	if !checkError(err, "Fail to insert for settings.Settings") {
 		return err
 	}
 	return nil
@@ -337,7 +323,7 @@ func SetSetting(db *sql.DB, key string, value string) error {
 	sql := "select count(key) from settings where key = '" + key + "'"
 	count := 0
 	err := db.QueryRow(sql).Scan(&count)
-	if err != nil {
+	if !checkError(err, "Fail to QueryRow for key="+key) {
 		return err
 	}
 	if count == 0 {
@@ -350,7 +336,7 @@ func GetSetting(db *sql.DB, key string) string {
 	sql := "select value from settings where key = '" + key + "';"
 	value := ""
 	err := db.QueryRow(sql).Scan(&value)
-	if err != nil {
+	if !checkError(err, "Fail to QueryRow for key "+key) {
 		return value
 	}
 	return value

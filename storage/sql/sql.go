@@ -56,17 +56,14 @@ func NewStorage(db *sql.DB) (*storage.Storage, error) {
 	authStore := auth.NewStorage(authBackend{db: db}, userStore)
 
 	err := SetSetting(db, "version", "2")
-	if err != nil {
-		fmt.Println("ERROR: fail to set version")
+	if !checkError(err, "Fail to set version") {
 		return nil, err
 	}
 
 	// TODO: default
-	fmt.Println(GetSetting(db, "auther"))
 	if GetSetting(db, "auther") == "" {
 		err := SetSetting(db, "auther", "json")
-		if err != nil {
-			fmt.Println("ERROR: fail to set auther")
+		if !checkError(err, "Fail to set auther") {
 			return nil, err
 		}
 	}
@@ -78,4 +75,13 @@ func NewStorage(db *sql.DB) (*storage.Storage, error) {
 		Settings: settingsStore,
 	}
 	return storage, nil
+}
+
+func checkError(err error, message string) bool {
+	if err != nil {
+		fmt.Println("ERROR: " + err.Error())
+		fmt.Println("ERROR: " + message)
+		return false
+	}
+	return true
 }
