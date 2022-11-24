@@ -3,8 +3,6 @@ package sql
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
-	"strings"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/files"
@@ -128,6 +126,7 @@ func boolToString(b bool) string {
 }
 
 func (s settingsBackend) Get() (*settings.Settings, error) {
+	logBacktrace()
 	sql := "select key, value from settings"
 	rows, err := s.db.Query(sql)
 	if checkError(err, "Fail to Query settings.Settings") {
@@ -159,28 +158,50 @@ func (s settingsBackend) Get() (*settings.Settings, error) {
 			settings1.Rules = rulesFromString(value)
 		}
 	}
+	if len(settings1.Key) == 0 {
+		return nil, nil
+	}
 	return &settings1, nil
 }
 
 func (s settingsBackend) Save(ss *settings.Settings) error {
-	columns := []string{"Key", "Signup", "CreateUserDir", "UserHomeBasePath", "Defaults", "AuthMethod", "Branding", "Commands", "Shell", "Rules"}
+	logBacktrace()
+	fields := []string{"Key", "Signup", "CreateUserDir", "UserHomeBasePath", "Defaults", "AuthMethod", "Branding", "Commands", "Shell", "Rules"}
 	values := []string{
-		"'" + string(ss.Key) + "'",
+		string(ss.Key),
 		boolToString(ss.Signup),
 		boolToString(ss.CreateUserDir),
-		"'" + string(ss.UserHomeBasePath) + "'",
+		string(ss.UserHomeBasePath),
 		userDefaultsToString(ss.Defaults),
 		string(ss.AuthMethod),
 		brandingToString(ss.Branding),
 		commandsToString(ss.Commands),
 		stringsToString(ss.Shell),
-		RulesToString(ss.Rules)}
-	sql := fmt.Sprintf("INSERT INTO settings (%s) VALUES(%s)", strings.Join(columns, ","), strings.Join(values, ","))
-	_, err := s.db.Exec(sql)
-	if checkError(err, "Fail to insert settings.Settings") {
+		RulesToString(ss.Rules),
+	}
+	tx, err := s.db.Begin()
+	if checkError(err, "Fail to begin db transaction") {
 		return err
 	}
-	return nil
+	for i, field := range fields {
+		stmt, err := s.db.Prepare("INSERT INTO settings (key, value) VALUES(?,?)")
+		defer stmt.Close()
+		if checkError(err, "Fail to prepare statement") {
+			tx.Rollback()
+			break
+		}
+		_, err = stmt.Exec(field, values[i])
+		if checkError(err, "Fail to insert field "+field+" of settings") {
+			tx.Rollback()
+			break
+		}
+	}
+	err = tx.Commit()
+	if checkError(err, "Fail to commit") {
+		tx.Rollback()
+		return err
+	}
+	return err
 }
 
 var defaultServer = settings.Server{
@@ -255,6 +276,7 @@ func cloneSettings(s settings.Settings) settings.Settings {
 }
 
 func (s settingsBackend) GetServer() (*settings.Server, error) {
+	logBacktrace()
 	sql := "select key, value from settings"
 	rows, err := s.db.Query(sql)
 	if checkError(err, "Fail to Query for GetServer") {
@@ -301,27 +323,45 @@ func (s settingsBackend) GetServer() (*settings.Server, error) {
 }
 
 func (s settingsBackend) SaveServer(ss *settings.Server) error {
-	columns := []string{"Root", "BaseURL", "Socket", "TLSKey", "TLSCert", "Port", "Address", "Log", "EnableThumbnails", "ResizePreview", "EnableExec", "TypeDetectionByHeader", "AuthHook"}
+	logBacktrace()
+	fields := []string{"Root", "BaseURL", "Socket", "TLSKey", "TLSCert", "Port", "Address", "Log", "EnableThumbnails", "ResizePreview", "EnableExec", "TypeDetectionByHeader", "AuthHook"}
 	values := []string{
-		"'" + ss.Root + "'",
-		"'" + ss.BaseURL + "'",
-		"'" + ss.Socket + "'",
-		"'" + ss.TLSKey + "'",
-		"'" + ss.TLSCert + "'",
-		"'" + ss.Port + "'",
-		"'" + ss.Address + "'",
-		"'" + ss.Log + "'",
+		ss.Root,
+		ss.BaseURL,
+		ss.Socket,
+		ss.TLSKey,
+		ss.TLSCert,
+		ss.Port,
+		ss.Address,
+		ss.Log,
 		boolToString(ss.EnableThumbnails),
 		boolToString(ss.ResizePreview),
 		boolToString(ss.EnableExec),
 		boolToString(ss.TypeDetectionByHeader),
-		"'" + ss.AuthHook + "'"}
-	sql := fmt.Sprintf("INSERT INTO settings (%s) VALUES(%s)", strings.Join(columns, ","), strings.Join(values, ","))
-	_, err := s.db.Exec(sql)
-	if checkError(err, "Fail to insert for settings.Settings") {
+		ss.AuthHook}
+	tx, err := s.db.Begin()
+	if checkError(err, "Fail to begin db transaction") {
 		return err
 	}
-	return nil
+	for i, field := range fields {
+		stmt, err := s.db.Prepare("INSERT INTO settings (key, value) VALUES(?,?)")
+		defer stmt.Close()
+		if checkError(err, "Fail to prepare statement") {
+			tx.Rollback()
+			break
+		}
+		_, err = stmt.Exec(field, values[i])
+		if checkError(err, "Fail to insert field "+field+" of settings") {
+			tx.Rollback()
+			break
+		}
+	}
+	err = tx.Commit()
+	if checkError(err, "Fail to commit") {
+		tx.Rollback()
+		return err
+	}
+	return err
 }
 
 func SetSetting(db *sql.DB, key string, value string) error {
@@ -350,11 +390,21 @@ func GetSetting(db *sql.DB, key string) string {
 func addSetting(db *sql.DB, key string, value string) error {
 	sql := "insert into settings(key, value) values('" + key + "', '" + value + "')"
 	_, err := db.Exec(sql)
+	checkError(err, "Fail to addSetting")
 	return err
 }
 
 func updateSetting(db *sql.DB, key string, value string) error {
 	sql := "update settings set value = '" + value + "' where key = '" + key + "'"
 	_, err := db.Exec(sql)
+	checkError(err, "Fail to updateSetting")
 	return err
+}
+
+func HadSetting(db *sql.DB) bool {
+	key := GetSetting(db, "Key")
+	if key == "" {
+		return false
+	}
+	return true
 }

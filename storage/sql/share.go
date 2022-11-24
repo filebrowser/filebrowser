@@ -16,8 +16,9 @@ type linkRecord interface {
 }
 
 func InitShareTable(db *sql.DB) error {
-	sql := "create table if not exists share_links (path string, userid integer, expire integer, passwordhash string, token string)"
+	sql := "create table if not exists share_links (hash string, path string, userid integer, expire integer, passwordhash string, token string)"
 	_, err := db.Exec(sql)
+	checkError(err, "Fail to InitShareTable")
 	return err
 }
 
@@ -88,10 +89,12 @@ func (s shareBackend) Gets(path string, id uint) ([]*share.Link, error) {
 func (s shareBackend) Save(l *share.Link) error {
 	sql := fmt.Sprintf("insert into share_links (hash, path, userid, expire, passwordhash, token) values('%s', '%s', %d, %d, '%s', '%s')", l.Hash, l.Path, l.UserID, l.Expire, l.PasswordHash, l.Token)
 	_, err := s.db.Exec(sql)
+	checkError(err, "Fail to Save share")
 	return err
 }
 func (s shareBackend) Delete(hash string) error {
 	sql := fmt.Sprintf("DELETE FROM share_links WHERE hash='%s'", hash)
 	_, err := s.db.Exec(sql)
+	checkError(err, "Fail to Delete share")
 	return err
 }

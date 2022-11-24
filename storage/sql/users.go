@@ -124,6 +124,7 @@ func InitUserTable(db *sql.DB) error {
 		return err
 	}
 	user, err := usersBackend{db}.Get("admin")
+	checkError(err, "Fail to query admin user")
 	if user == nil {
 		log.Println("No admin exists")
 		err := usersBackend{db}.Save(&adminUser)
@@ -276,7 +277,7 @@ func (s usersBackend) insertUser(user *users.User) error {
 	}
 	columns := []string{}
 	specs := []string{}
-	for _,c := range columnSpec {
+	for _, c := range columnSpec {
 		columns = append(columns, c[0])
 		specs = append(specs, c[1])
 	}
@@ -318,6 +319,7 @@ func (s usersBackend) DeleteByID(id uint) error {
 	logBacktrace()
 	sql := "delete from users where id=" + strconv.Itoa(int(id))
 	_, err := s.db.Exec(sql)
+	checkError(err, "Fail to delete User by id")
 	return err
 }
 
@@ -325,6 +327,7 @@ func (s usersBackend) DeleteByUsername(username string) error {
 	logBacktrace()
 	sql := "delete from users where username='" + username + "'"
 	_, err := s.db.Exec(sql)
+	checkError(err, "Fail to delete user by username")
 	return err
 }
 

@@ -55,3 +55,17 @@ func logBacktrace() {
 	funcs = reverse(funcs)
 	log.Printf("%s\n", strings.Join(funcs, " -> "))
 }
+
+func LogBacktrace() {
+	funcs := make([]string, 0)
+	for _, i := range []int{1, 2, 3} {
+		p := filepath.Base(getRuntimeFunctionName(uint(i)))
+		if len(p) > 0 {
+			funcs = append(funcs, p)
+		} else {
+			break
+		}
+	}
+	funcs = reverse(funcs)
+	log.Printf("%s\n", strings.Join(funcs, " -> "))
+}

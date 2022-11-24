@@ -109,7 +109,7 @@ func openBoltDB(path string, cfg pythonConfig) (pythonData, Closeable) {
 
 func openDB(path string, cfg pythonConfig) (pythonData, Closeable) {
 	if sql.IsDBPath(path) {
-		data := pythonData{hadDB: true}
+		data := pythonData{hadDB: false}
 		db, err := sql.OpenDB(path)
 		if err != nil {
 			log.Fatal("Fail to open database " + path)
@@ -118,6 +118,7 @@ func openDB(path string, cfg pythonConfig) (pythonData, Closeable) {
 		if err != nil {
 			log.Fatal("Fail to create database storage for " + path)
 		}
+		data.hadDB = sql.HadSetting(db)
 		return data, db
 	}
 	return openBoltDB(path, cfg)

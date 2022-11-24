@@ -4,6 +4,7 @@ import (
 	"github.com/asdine/storm/v3"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
+	"github.com/filebrowser/filebrowser/v2/storage/sql"
 )
 
 type settingsBackend struct {
@@ -16,6 +17,7 @@ func (s settingsBackend) Get() (*settings.Settings, error) {
 }
 
 func (s settingsBackend) Save(set *settings.Settings) error {
+	sql.LogBacktrace()
 	return save(s.db, "settings", set)
 }
 
@@ -25,5 +27,6 @@ func (s settingsBackend) GetServer() (*settings.Server, error) {
 }
 
 func (s settingsBackend) SaveServer(server *settings.Server) error {
+	sql.LogBacktrace()
 	return save(s.db, "server", server)
 }
