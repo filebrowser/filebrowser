@@ -118,7 +118,7 @@ func createAdminUser() users.User {
 
 func InitUserTable(db *sql.DB) error {
 	logBacktrace()
-	sql := "create table if not exists users (id integer primary key, username string, password string, scope string, lockpassword bool, viewmode string, perm string, commands string, sorting string, rules string);"
+	sql := "create table if not exists users (id integer primary key, username string, password string, scope string, locale string, lockpassword bool, viewmode string, perm string, commands string, sorting string, rules string, hidedotfiles bool, dateformat bool, singleclick bool);"
 	_, err := db.Exec(sql)
 	if checkError(err, "Fail to create users table") {
 		return err
@@ -133,7 +133,8 @@ func InitUserTable(db *sql.DB) error {
 }
 
 func (s usersBackend) Get(i interface{}) (*users.User, error) {
-	columns := []string{"id", "username", "password", "scope", "lockpassword", "viewmode", "perm", "commands", "sorting", "rules"}
+	logBacktrace()
+	columns := []string{"id", "username", "password", "scope", "locale", "lockpassword", "viewmode", "perm", "commands", "sorting", "rules", "hidedotfiles", "dateformat", "singleclick"}
 	columnsStr := strings.Join(columns, ",")
 	var conditionStr string
 	switch i.(type) {
@@ -150,15 +151,19 @@ func (s usersBackend) Get(i interface{}) (*users.User, error) {
 	username := ""
 	password := ""
 	scope := ""
+	locale := ""
 	lockpassword := false
 	var viewmode users.ViewMode = users.ListViewMode
 	perm := ""
 	commands := ""
 	sorting := ""
 	rules := ""
+	hidedotfiles := false
+	dateformat := false
+	singleclick := false
 	user := users.User{}
 	sql := fmt.Sprintf("select %s from users where %s", columnsStr, conditionStr)
-	err := s.db.QueryRow(sql).Scan(&userID, &username, &password, &scope, &lockpassword, &viewmode, &perm, &commands, &sorting, &rules)
+	err := s.db.QueryRow(sql).Scan(&userID, &username, &password, &scope, &locale, &lockpassword, &viewmode, &perm, &commands, &sorting, &rules, &hidedotfiles, &dateformat, &singleclick)
 	if checkError(err, "") {
 		return nil, err
 	}
@@ -166,16 +171,21 @@ func (s usersBackend) Get(i interface{}) (*users.User, error) {
 	user.Username = username
 	user.Password = password
 	user.Scope = scope
+	user.Locale = locale
 	user.LockPassword = lockpassword
 	user.ViewMode = viewmode
 	user.Perm = PermFromString(perm)
 	user.Commands = CommandsFromString(commands)
 	user.Sorting = SortingFromString(sorting)
 	user.Rules = rulesFromString(rules)
+	user.HideDotfiles = hidedotfiles
+	user.DateFormat = dateformat
+	user.SingleClick = singleclick
 	return &user, nil
 }
 
 func (s usersBackend) Gets() ([]*users.User, error) {
+	logBacktrace()
 	sql := "select id, username, password, scope, lockpassword, viewmode, perm,commands,sorting,rules from users"
 	rows, err := s.db.Query(sql)
 	if checkError(err, "Fail to Query []*users.User") {
@@ -215,10 +225,12 @@ func (s usersBackend) Gets() ([]*users.User, error) {
 }
 
 func (s usersBackend) GetBy(id interface{}) (*users.User, error) {
+	logBacktrace()
 	return s.Get(id)
 }
 
 func (s usersBackend) updateUser(id uint, user *users.User) error {
+	logBacktrace()
 	lockpassword := 0
 	if user.LockPassword {
 		lockpassword = 1
@@ -237,25 +249,55 @@ func (s usersBackend) updateUser(id uint, user *users.User) error {
 		user.ID,
 	)
 	_, err := s.db.Exec(sql)
+	checkError(err, "Fail to update user")
 	return err
 }
 
 func (s usersBackend) insertUser(user *users.User) error {
+	logBacktrace()
 	password, err := users.HashPwd(user.Password)
 	if checkError(err, "Fail to hash password") {
 		return err
 	}
+	columnSpec := [][]string{
+		{"username", "'%s'"},
+		{"password", "'%s'"},
+		{"scope", "'%s'"},
+		{"locale", "'%s'"},
+		{"lockpassword", "%s"},
+		{"viewmode", "'%s'"},
+		{"perm", "'%s'"},
+		{"commands", "'%s'"},
+		{"sorting", "'%s'"},
+		{"rules", "'%s'"},
+		{"hidedotfiles", "%s"},
+		{"dateformat", "%s"},
+		{"singleclick", "%s"},
+	}
+	columns := []string{}
+	specs := []string{}
+	for _,c := range columnSpec {
+		columns = append(columns, c[0])
+		specs = append(specs, c[1])
+	}
+	columnStr := strings.Join(columns, ",")
+	specStr := strings.Join(specs, ",")
+	sqlFormat := fmt.Sprintf("insert into users (%s) values (%s)", columnStr, specStr)
 	sql := fmt.Sprintf(
-		"insert into users (username, password, scope, lockpassword, viewmode, perm, commands, sorting, rules) values ('%s','%s','%s',%s,'%s','%s','%s','%s','%s')",
+		sqlFormat,
 		user.Username,
 		password,
 		user.Scope,
+		user.Locale,
 		boolToString(user.LockPassword),
 		user.ViewMode,
 		PermToString(user.Perm),
 		CommandsToString(user.Commands),
 		SortingToString(user.Sorting),
 		RulesToString(user.Rules),
+		boolToString(user.HideDotfiles),
+		boolToString(user.DateFormat),
+		boolToString(user.SingleClick),
 	)
 	_, err = s.db.Exec(sql)
 	checkError(err, "Fail to insert user")
@@ -263,6 +305,7 @@ func (s usersBackend) insertUser(user *users.User) error {
 }
 
 func (s usersBackend) Save(user *users.User) error {
+	logBacktrace()
 	userOriginal, err := s.GetBy(user.Username)
 	checkError(err, "")
 	if userOriginal != nil {
@@ -272,33 +315,43 @@ func (s usersBackend) Save(user *users.User) error {
 }
 
 func (s usersBackend) DeleteByID(id uint) error {
+	logBacktrace()
 	sql := "delete from users where id=" + strconv.Itoa(int(id))
 	_, err := s.db.Exec(sql)
 	return err
 }
 
 func (s usersBackend) DeleteByUsername(username string) error {
+	logBacktrace()
 	sql := "delete from users where username='" + username + "'"
 	_, err := s.db.Exec(sql)
 	return err
 }
 
 func (s usersBackend) Update(u *users.User, fields ...string) error {
+	logBacktrace()
 	var setItems = []string{}
 	for _, field := range fields {
 		userField := reflect.ValueOf(u).Elem().FieldByName(field)
 		if !userField.IsValid() {
 			continue
 		}
+		field = strings.ToLower(field)
 		val := userField.Interface()
-		if reflect.TypeOf(val).Kind().String() == "string" {
+		typeStr := reflect.TypeOf(val).Kind().String()
+		fmt.Println(typeStr)
+		if typeStr == "string" {
 			setItems = append(setItems, fmt.Sprintf("%s='%s'", field, val))
+		} else if typeStr == "bool" {
+			setItems = append(setItems, fmt.Sprintf("%s=%s", field, boolToString(val.(bool))))
 		} else {
 			// TODO
-			setItems = append(setItems, fmt.Sprintf("%s=%d", field, val))
+			setItems = append(setItems, fmt.Sprintf("%s=%s", field, val))
 		}
 	}
-	sql := fmt.Sprintf("update users set %s if id=%d", strings.Join(setItems, ","), u.ID)
+	sql := fmt.Sprintf("update users set %s where id=%d", strings.Join(setItems, ","), u.ID)
+	fmt.Println(sql)
 	_, err := s.db.Exec(sql)
+	checkError(err, "Fail to update user")
 	return err
 }
