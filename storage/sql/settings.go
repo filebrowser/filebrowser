@@ -2,6 +2,7 @@ package sql
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
@@ -23,6 +24,14 @@ func InitSettingsTable(db *sql.DB) error {
 	_, err := db.Exec(sql)
 	checkError(err, "Fail to create table settings")
 	return err
+}
+
+func bytesToString(data []byte) string {
+	return base64.RawStdEncoding.EncodeToString(data)
+}
+
+func bytesFromString(s string) ([]byte, error) {
+	return base64.RawStdEncoding.DecodeString(s)
 }
 
 func userDefaultsFromString(s string) settings.UserDefaults {
@@ -126,7 +135,6 @@ func boolToString(b bool) string {
 }
 
 func (s settingsBackend) Get() (*settings.Settings, error) {
-	logBacktrace()
 	sql := "select key, value from settings"
 	rows, err := s.db.Query(sql)
 	if checkError(err, "Fail to Query settings.Settings") {
@@ -139,11 +147,16 @@ func (s settingsBackend) Get() (*settings.Settings, error) {
 		err = rows.Scan(&key, &value)
 		checkError(err, "Fail to query settings.Settings")
 		if key == "Key" {
-			settings1.Key = []byte(value)
+			val, err := bytesFromString(value)
+			if !checkError(err, "Fail to parse []byte from string") {
+				settings1.Key = val
+			}
 		} else if key == "Signup" {
 			settings1.Signup = boolFromString(value)
 		} else if key == "CreateUserDir" {
 			settings1.CreateUserDir = boolFromString(value)
+		} else if key == "UserHomeBasePath" {
+			settings1.UserHomeBasePath = value
 		} else if key == "Defaults" {
 			settings1.Defaults = userDefaultsFromString(value)
 		} else if key == "AuthMethod" {
@@ -165,13 +178,12 @@ func (s settingsBackend) Get() (*settings.Settings, error) {
 }
 
 func (s settingsBackend) Save(ss *settings.Settings) error {
-	logBacktrace()
 	fields := []string{"Key", "Signup", "CreateUserDir", "UserHomeBasePath", "Defaults", "AuthMethod", "Branding", "Commands", "Shell", "Rules"}
 	values := []string{
-		string(ss.Key),
+		bytesToString(ss.Key),
 		boolToString(ss.Signup),
 		boolToString(ss.CreateUserDir),
-		string(ss.UserHomeBasePath),
+		ss.UserHomeBasePath,
 		userDefaultsToString(ss.Defaults),
 		string(ss.AuthMethod),
 		brandingToString(ss.Branding),
@@ -184,13 +196,18 @@ func (s settingsBackend) Save(ss *settings.Settings) error {
 		return err
 	}
 	for i, field := range fields {
-		stmt, err := s.db.Prepare("INSERT INTO settings (key, value) VALUES(?,?)")
+		exists := ContainKey(s.db, field)
+		sql := "INSERT INTO settings (value, key) VALUES(?,?)"
+		if exists {
+			sql = "UPDATE settings set value = ? where key = ?"
+		}
+		stmt, err := s.db.Prepare(sql)
 		defer stmt.Close()
 		if checkError(err, "Fail to prepare statement") {
 			tx.Rollback()
 			break
 		}
-		_, err = stmt.Exec(field, values[i])
+		_, err = stmt.Exec(values[i], field)
 		if checkError(err, "Fail to insert field "+field+" of settings") {
 			tx.Rollback()
 			break
@@ -276,7 +293,6 @@ func cloneSettings(s settings.Settings) settings.Settings {
 }
 
 func (s settingsBackend) GetServer() (*settings.Server, error) {
-	logBacktrace()
 	sql := "select key, value from settings"
 	rows, err := s.db.Query(sql)
 	if checkError(err, "Fail to Query for GetServer") {
@@ -323,7 +339,6 @@ func (s settingsBackend) GetServer() (*settings.Server, error) {
 }
 
 func (s settingsBackend) SaveServer(ss *settings.Server) error {
-	logBacktrace()
 	fields := []string{"Root", "BaseURL", "Socket", "TLSKey", "TLSCert", "Port", "Address", "Log", "EnableThumbnails", "ResizePreview", "EnableExec", "TypeDetectionByHeader", "AuthHook"}
 	values := []string{
 		ss.Root,
@@ -407,4 +422,18 @@ func HadSetting(db *sql.DB) bool {
 		return false
 	}
 	return true
+}
+
+func ContainKey(db *sql.DB, key string) bool {
+	sql := "select value from settings where key = '" + key + "';"
+	value := ""
+	err := db.QueryRow(sql).Scan(&value)
+	if checkError(err, "Fail to QueryRow for key "+key) {
+		return false
+	}
+	return true
+}
+
+func HadSettingOfKey(db *sql.DB, key string) bool {
+	return GetSetting(db, "Key") == key
 }

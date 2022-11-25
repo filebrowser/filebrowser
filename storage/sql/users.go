@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"log"
 	"reflect"
 	"strconv"
 	"strings"
@@ -117,24 +116,13 @@ func createAdminUser() users.User {
 }
 
 func InitUserTable(db *sql.DB) error {
-	logBacktrace()
 	sql := "create table if not exists users (id integer primary key, username string, password string, scope string, locale string, lockpassword bool, viewmode string, perm string, commands string, sorting string, rules string, hidedotfiles bool, dateformat bool, singleclick bool);"
 	_, err := db.Exec(sql)
-	if checkError(err, "Fail to create users table") {
-		return err
-	}
-	user, err := usersBackend{db}.Get("admin")
-	checkError(err, "Fail to query admin user")
-	if user == nil {
-		log.Println("No admin exists")
-		err := usersBackend{db}.Save(&adminUser)
-		checkError(err, "Fail to init admin user")
-	}
+	checkError(err, "Fail to create users table")
 	return err
 }
 
-func (s usersBackend) Get(i interface{}) (*users.User, error) {
-	logBacktrace()
+func (s usersBackend) GetBy(i interface{}) (*users.User, error) {
 	columns := []string{"id", "username", "password", "scope", "locale", "lockpassword", "viewmode", "perm", "commands", "sorting", "rules", "hidedotfiles", "dateformat", "singleclick"}
 	columnsStr := strings.Join(columns, ",")
 	var conditionStr string
@@ -186,7 +174,6 @@ func (s usersBackend) Get(i interface{}) (*users.User, error) {
 }
 
 func (s usersBackend) Gets() ([]*users.User, error) {
-	logBacktrace()
 	sql := "select id, username, password, scope, lockpassword, viewmode, perm,commands,sorting,rules from users"
 	rows, err := s.db.Query(sql)
 	if checkError(err, "Fail to Query []*users.User") {
@@ -225,13 +212,7 @@ func (s usersBackend) Gets() ([]*users.User, error) {
 	return users2, nil
 }
 
-func (s usersBackend) GetBy(id interface{}) (*users.User, error) {
-	logBacktrace()
-	return s.Get(id)
-}
-
 func (s usersBackend) updateUser(id uint, user *users.User) error {
-	logBacktrace()
 	lockpassword := 0
 	if user.LockPassword {
 		lockpassword = 1
@@ -255,7 +236,6 @@ func (s usersBackend) updateUser(id uint, user *users.User) error {
 }
 
 func (s usersBackend) insertUser(user *users.User) error {
-	logBacktrace()
 	password, err := users.HashPwd(user.Password)
 	if checkError(err, "Fail to hash password") {
 		return err
@@ -300,13 +280,17 @@ func (s usersBackend) insertUser(user *users.User) error {
 		boolToString(user.DateFormat),
 		boolToString(user.SingleClick),
 	)
-	_, err = s.db.Exec(sql)
-	checkError(err, "Fail to insert user")
+	res, err := s.db.Exec(sql)
+	if !checkError(err, "Fail to insert user") {
+		id, err2 := res.LastInsertId()
+		if !checkError(err2, "Fail to fetch last insert id") {
+			user.ID = uint(id)
+		}
+	}
 	return err
 }
 
 func (s usersBackend) Save(user *users.User) error {
-	logBacktrace()
 	userOriginal, err := s.GetBy(user.Username)
 	checkError(err, "")
 	if userOriginal != nil {
@@ -316,7 +300,6 @@ func (s usersBackend) Save(user *users.User) error {
 }
 
 func (s usersBackend) DeleteByID(id uint) error {
-	logBacktrace()
 	sql := "delete from users where id=" + strconv.Itoa(int(id))
 	_, err := s.db.Exec(sql)
 	checkError(err, "Fail to delete User by id")
@@ -324,7 +307,6 @@ func (s usersBackend) DeleteByID(id uint) error {
 }
 
 func (s usersBackend) DeleteByUsername(username string) error {
-	logBacktrace()
 	sql := "delete from users where username='" + username + "'"
 	_, err := s.db.Exec(sql)
 	checkError(err, "Fail to delete user by username")
@@ -332,7 +314,6 @@ func (s usersBackend) DeleteByUsername(username string) error {
 }
 
 func (s usersBackend) Update(u *users.User, fields ...string) error {
-	logBacktrace()
 	var setItems = []string{}
 	for _, field := range fields {
 		userField := reflect.ValueOf(u).Elem().FieldByName(field)

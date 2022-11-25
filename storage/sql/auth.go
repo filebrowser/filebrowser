@@ -15,7 +15,6 @@ type authBackend struct {
 }
 
 func (s authBackend) Get(t settings.AuthMethod) (auth.Auther, error) {
-	logBacktrace()
 	var auther auth.Auther
 
 	switch t {
