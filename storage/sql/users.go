@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
 
 	"github.com/filebrowser/filebrowser/v2/errors"
@@ -116,7 +115,7 @@ func createAdminUser() users.User {
 }
 
 func InitUserTable(db *sql.DB) error {
-	sql := "create table if not exists users (id integer primary key, username string, password string, scope string, locale string, lockpassword bool, viewmode string, perm string, commands string, sorting string, rules string, hidedotfiles bool, dateformat bool, singleclick bool);"
+	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS \"%s\" (id integer primary key, username string, password string, scope string, locale string, lockpassword bool, viewmode string, perm string, commands string, sorting string, rules string, hidedotfiles bool, dateformat bool, singleclick bool);", UsersTable)
 	_, err := db.Exec(sql)
 	checkError(err, "Fail to create users table")
 	return err
@@ -151,7 +150,7 @@ func (s usersBackend) GetBy(i interface{}) (*users.User, error) {
 	dateformat := false
 	singleclick := false
 	user := users.User{}
-	sql := fmt.Sprintf("select %s from users where %s", columnsStr, conditionStr)
+	sql := fmt.Sprintf("SELECT %s FROM \"%s\" WHERE %s", columnsStr, UsersTable, conditionStr)
 	err := s.db.QueryRow(sql).Scan(&userID, &username, &password, &scope, &locale, &lockpassword, &viewmode, &perm, &commands, &sorting, &rules, &hidedotfiles, &dateformat, &singleclick)
 	if checkError(err, "") {
 		return nil, err
@@ -174,7 +173,7 @@ func (s usersBackend) GetBy(i interface{}) (*users.User, error) {
 }
 
 func (s usersBackend) Gets() ([]*users.User, error) {
-	sql := "select id, username, password, scope, lockpassword, viewmode, perm,commands,sorting,rules from users"
+	sql := fmt.Sprintf("SELECT id, username, password, scope, lockpassword, viewmode, perm,commands,sorting,rules FROM \"%s\"", UsersTable)
 	rows, err := s.db.Query(sql)
 	if checkError(err, "Fail to Query []*users.User") {
 		return nil, err
@@ -218,7 +217,8 @@ func (s usersBackend) updateUser(id uint, user *users.User) error {
 		lockpassword = 1
 	}
 	sql := fmt.Sprintf(
-		"update users set username='%s',password='%s',scope='%s',lockpassword=%d,viewmode='%s',perm='%s',commands='%s',sorting='%s',rules='%s' where id=%d",
+		"UPDATE \"%s\" SET username='%s',password='%s',scope='%s',lockpassword=%d,viewmode='%s',perm='%s',commands='%s',sorting='%s',rules='%s' WHERE id=%d",
+		UsersTable,
 		user.Username,
 		user.Password,
 		user.Scope,
@@ -236,10 +236,6 @@ func (s usersBackend) updateUser(id uint, user *users.User) error {
 }
 
 func (s usersBackend) insertUser(user *users.User) error {
-	password, err := users.HashPwd(user.Password)
-	if checkError(err, "Fail to hash password") {
-		return err
-	}
 	columnSpec := [][]string{
 		{"username", "'%s'"},
 		{"password", "'%s'"},
@@ -263,11 +259,11 @@ func (s usersBackend) insertUser(user *users.User) error {
 	}
 	columnStr := strings.Join(columns, ",")
 	specStr := strings.Join(specs, ",")
-	sqlFormat := fmt.Sprintf("insert into users (%s) values (%s)", columnStr, specStr)
+	sqlFormat := fmt.Sprintf("INSERT INTO \"%s\" (%s) VALUES (%s)", UsersTable, columnStr, specStr)
 	sql := fmt.Sprintf(
 		sqlFormat,
 		user.Username,
-		password,
+		user.Password,
 		user.Scope,
 		user.Locale,
 		boolToString(user.LockPassword),
@@ -300,20 +296,23 @@ func (s usersBackend) Save(user *users.User) error {
 }
 
 func (s usersBackend) DeleteByID(id uint) error {
-	sql := "delete from users where id=" + strconv.Itoa(int(id))
+	sql := fmt.Sprintf("delete from \"%s\" where id=%d", UsersTable, id)
 	_, err := s.db.Exec(sql)
 	checkError(err, "Fail to delete User by id")
 	return err
 }
 
 func (s usersBackend) DeleteByUsername(username string) error {
-	sql := "delete from users where username='" + username + "'"
+	sql := fmt.Sprintf("delete from \"%s\" where username='%s'", UsersTable, username)
 	_, err := s.db.Exec(sql)
 	checkError(err, "Fail to delete user by username")
 	return err
 }
 
 func (s usersBackend) Update(u *users.User, fields ...string) error {
+	if len(fields) == 0 {
+		return s.Save(u)
+	}
 	var setItems = []string{}
 	for _, field := range fields {
 		userField := reflect.ValueOf(u).Elem().FieldByName(field)
@@ -323,18 +322,16 @@ func (s usersBackend) Update(u *users.User, fields ...string) error {
 		field = strings.ToLower(field)
 		val := userField.Interface()
 		typeStr := reflect.TypeOf(val).Kind().String()
-		fmt.Println(typeStr)
 		if typeStr == "string" {
-			setItems = append(setItems, fmt.Sprintf("%s='%s'", field, val))
+			setItems = append(setItems, fmt.Sprintf("\"%s\"='%s'", field, val))
 		} else if typeStr == "bool" {
-			setItems = append(setItems, fmt.Sprintf("%s=%s", field, boolToString(val.(bool))))
+			setItems = append(setItems, fmt.Sprintf("\"%s\"=%s", field, boolToString(val.(bool))))
 		} else {
 			// TODO
-			setItems = append(setItems, fmt.Sprintf("%s=%s", field, val))
+			setItems = append(setItems, fmt.Sprintf("\"%s\"=%s", field, val))
 		}
 	}
-	sql := fmt.Sprintf("update users set %s where id=%d", strings.Join(setItems, ","), u.ID)
-	fmt.Println(sql)
+	sql := fmt.Sprintf("UPDATE \"%s\" SET %s WHERE id=%d", UsersTable, strings.Join(setItems, ","), u.ID)
 	_, err := s.db.Exec(sql)
 	checkError(err, "Fail to update user")
 	return err

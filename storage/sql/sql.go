@@ -46,7 +46,7 @@ func connectDB(dbType string, path string) (*sql.DB, error) {
 func NewStorage(db *sql.DB) (*storage.Storage, error) {
 
 	InitUserTable(db)
-	InitShareTable(db)
+	InitSharesTable(db)
 	InitSettingsTable(db)
 
 	userStore := users.NewStorage(usersBackend{db: db})
@@ -58,16 +58,6 @@ func NewStorage(db *sql.DB) (*storage.Storage, error) {
 	if checkError(err, "Fail to set version") {
 		return nil, err
 	}
-
-	// TODO: default
-	/*
-		if GetSetting(db, "auther") == "" {
-			err := SetSetting(db, "auther", "json")
-			if checkError(err, "Fail to set auther") {
-				return nil, err
-			}
-		}
-	*/
 
 	storage := &storage.Storage{
 		Auth:     authStore,

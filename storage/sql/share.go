@@ -15,10 +15,10 @@ type linkRecord interface {
 	Scan(dest ...interface{}) error
 }
 
-func InitShareTable(db *sql.DB) error {
-	sql := "create table if not exists share_links (hash string, path string, userid integer, expire integer, passwordhash string, token string)"
+func InitSharesTable(db *sql.DB) error {
+	sql := fmt.Sprintf("create table if not exists \"%s\" (hash string, path string, userid integer, expire integer, passwordhash string, token string)", SharesTable)
 	_, err := db.Exec(sql)
-	checkError(err, "Fail to InitShareTable")
+	checkError(err, "Fail to InitSharesTable")
 	return err
 }
 
@@ -44,7 +44,7 @@ func parseLink(row linkRecord) (*share.Link, error) {
 }
 
 func queryLinks(db *sql.DB, condition string) ([]*share.Link, error) {
-	sql := "select hash, path, userid, expire, passwordhash, token from share_links"
+	sql := fmt.Sprintf("select hash, path, userid, expire, passwordhash, token from \"%s\"", SharesTable)
 	if len(condition) > 0 {
 		sql = sql + " where " + condition
 	}
@@ -73,12 +73,12 @@ func (s shareBackend) FindByUserID(id uint) ([]*share.Link, error) {
 }
 
 func (s shareBackend) GetByHash(hash string) (*share.Link, error) {
-	sql := fmt.Sprintf("select hash, path, userid, expire, passwordhash, token from share_links where hash='%s'", hash)
+	sql := fmt.Sprintf("select hash, path, userid, expire, passwordhash, token from \"%s\" where hash='%s'", SharesTable, hash)
 	return parseLink(s.db.QueryRow(sql))
 }
 
 func (s shareBackend) GetPermanent(path string, id uint) (*share.Link, error) {
-	sql := fmt.Sprintf("select hash, path, userid, expire, passwordhash, token from share_links where path='%s' and userid=%d", path, id)
+	sql := fmt.Sprintf("select hash, path, userid, expire, passwordhash, token from \"%s\" where path='%s' and userid=%d", SharesTable, path, id)
 	return parseLink(s.db.QueryRow(sql))
 }
 
@@ -87,13 +87,13 @@ func (s shareBackend) Gets(path string, id uint) ([]*share.Link, error) {
 	return queryLinks(s.db, condition)
 }
 func (s shareBackend) Save(l *share.Link) error {
-	sql := fmt.Sprintf("insert into share_links (hash, path, userid, expire, passwordhash, token) values('%s', '%s', %d, %d, '%s', '%s')", l.Hash, l.Path, l.UserID, l.Expire, l.PasswordHash, l.Token)
+	sql := fmt.Sprintf("insert into \"%s\" (hash, path, userid, expire, passwordhash, token) values('%s', '%s', %d, %d, '%s', '%s')", SharesTable, l.Hash, l.Path, l.UserID, l.Expire, l.PasswordHash, l.Token)
 	_, err := s.db.Exec(sql)
 	checkError(err, "Fail to Save share")
 	return err
 }
 func (s shareBackend) Delete(hash string) error {
-	sql := fmt.Sprintf("DELETE FROM share_links WHERE hash='%s'", hash)
+	sql := fmt.Sprintf("DELETE FROM \"%s\" WHERE hash='%s'", SharesTable, hash)
 	_, err := s.db.Exec(sql)
 	checkError(err, "Fail to Delete share")
 	return err

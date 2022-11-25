@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/files"
@@ -20,7 +21,7 @@ type settingsBackend struct {
 }
 
 func InitSettingsTable(db *sql.DB) error {
-	sql := "create table if not exists settings(key string primary key, value string)"
+	sql := fmt.Sprintf("create table if not exists \"%s\"(key string primary key, value string)", SettingsTable)
 	_, err := db.Exec(sql)
 	checkError(err, "Fail to create table settings")
 	return err
@@ -135,7 +136,7 @@ func boolToString(b bool) string {
 }
 
 func (s settingsBackend) Get() (*settings.Settings, error) {
-	sql := "select key, value from settings"
+	sql := fmt.Sprintf("select key, value from \"%s\"", SettingsTable)
 	rows, err := s.db.Query(sql)
 	if checkError(err, "Fail to Query settings.Settings") {
 		return nil, err
@@ -197,9 +198,9 @@ func (s settingsBackend) Save(ss *settings.Settings) error {
 	}
 	for i, field := range fields {
 		exists := ContainKey(s.db, field)
-		sql := "INSERT INTO settings (value, key) VALUES(?,?)"
+		sql := fmt.Sprintf("INSERT INTO \"%s\" (value, key) VALUES(?,?)", SettingsTable)
 		if exists {
-			sql = "UPDATE settings set value = ? where key = ?"
+			sql = fmt.Sprintf("UPDATE \"%s\" set value = ? where key = ?", SettingsTable)
 		}
 		stmt, err := s.db.Prepare(sql)
 		defer stmt.Close()
@@ -219,15 +220,6 @@ func (s settingsBackend) Save(ss *settings.Settings) error {
 		return err
 	}
 	return err
-}
-
-var defaultServer = settings.Server{
-	Port:                  "8080",
-	Log:                   "stdout",
-	EnableThumbnails:      false,
-	ResizePreview:         false,
-	EnableExec:            false,
-	TypeDetectionByHeader: false,
 }
 
 var defaultSettings = settings.Settings{
@@ -271,17 +263,6 @@ var defaultSettings = settings.Settings{
 	Rules:    make([]rules.Rule, 0),
 }
 
-func cloneServer(server settings.Server) settings.Server {
-	data, err := json.Marshal(server)
-	s := settings.Server{}
-	if checkError(err, "Fail to clone settings.Server") {
-		return s
-	}
-	err = json.Unmarshal(data, &s)
-	checkError(err, "Fail to decode for settings.Server")
-	return s
-}
-
 func cloneSettings(s settings.Settings) settings.Settings {
 	data, err := json.Marshal(s)
 	s1 := settings.Settings{}
@@ -292,95 +273,8 @@ func cloneSettings(s settings.Settings) settings.Settings {
 	return s1
 }
 
-func (s settingsBackend) GetServer() (*settings.Server, error) {
-	sql := "select key, value from settings"
-	rows, err := s.db.Query(sql)
-	if checkError(err, "Fail to Query for GetServer") {
-		return nil, err
-	}
-	server := cloneServer(defaultServer)
-	key := ""
-	value := ""
-
-	for rows.Next() {
-		err = rows.Scan(&key, &value)
-		if checkError(err, "Fail to query settings.Settings") {
-			continue
-		}
-		if key == "Root" {
-			server.Root = value
-		} else if key == "BaseURL" {
-			server.BaseURL = value
-		} else if key == "Socket" {
-			server.Socket = value
-		} else if key == "TLSKey" {
-			server.TLSKey = value
-		} else if key == "TLSCert" {
-			server.TLSCert = value
-		} else if key == "Port" {
-			server.Port = value
-		} else if key == "Address" {
-			server.Address = value
-		} else if key == "Log" {
-			server.Log = value
-		} else if key == "EnableThumbnails" {
-			server.EnableThumbnails = boolFromString(value)
-		} else if key == "ResizePreview" {
-			server.ResizePreview = boolFromString(value)
-		} else if key == "EnableExec" {
-			server.EnableExec = boolFromString(value)
-		} else if key == "TypeDetectionByHeader" {
-			server.TypeDetectionByHeader = boolFromString(value)
-		} else if key == "AuthHook" {
-			server.AuthHook = value
-		}
-	}
-	return &server, nil
-}
-
-func (s settingsBackend) SaveServer(ss *settings.Server) error {
-	fields := []string{"Root", "BaseURL", "Socket", "TLSKey", "TLSCert", "Port", "Address", "Log", "EnableThumbnails", "ResizePreview", "EnableExec", "TypeDetectionByHeader", "AuthHook"}
-	values := []string{
-		ss.Root,
-		ss.BaseURL,
-		ss.Socket,
-		ss.TLSKey,
-		ss.TLSCert,
-		ss.Port,
-		ss.Address,
-		ss.Log,
-		boolToString(ss.EnableThumbnails),
-		boolToString(ss.ResizePreview),
-		boolToString(ss.EnableExec),
-		boolToString(ss.TypeDetectionByHeader),
-		ss.AuthHook}
-	tx, err := s.db.Begin()
-	if checkError(err, "Fail to begin db transaction") {
-		return err
-	}
-	for i, field := range fields {
-		stmt, err := s.db.Prepare("INSERT INTO settings (key, value) VALUES(?,?)")
-		defer stmt.Close()
-		if checkError(err, "Fail to prepare statement") {
-			tx.Rollback()
-			break
-		}
-		_, err = stmt.Exec(field, values[i])
-		if checkError(err, "Fail to insert field "+field+" of settings") {
-			tx.Rollback()
-			break
-		}
-	}
-	err = tx.Commit()
-	if checkError(err, "Fail to commit") {
-		tx.Rollback()
-		return err
-	}
-	return err
-}
-
 func SetSetting(db *sql.DB, key string, value string) error {
-	sql := "select count(key) from settings where key = '" + key + "'"
+	sql := fmt.Sprintf("select count(key) from \"%s\" where key = '%s'", SettingsTable, key)
 	count := 0
 	err := db.QueryRow(sql).Scan(&count)
 	if checkError(err, "Fail to QueryRow for key="+key) {
@@ -393,7 +287,7 @@ func SetSetting(db *sql.DB, key string, value string) error {
 }
 
 func GetSetting(db *sql.DB, key string) string {
-	sql := "select value from settings where key = '" + key + "';"
+	sql := fmt.Sprintf("select value from \"%s\" where key = '%s'", SettingsTable, key)
 	value := ""
 	err := db.QueryRow(sql).Scan(&value)
 	if checkError(err, "Fail to QueryRow for key "+key) {
@@ -403,14 +297,14 @@ func GetSetting(db *sql.DB, key string) string {
 }
 
 func addSetting(db *sql.DB, key string, value string) error {
-	sql := "insert into settings(key, value) values('" + key + "', '" + value + "')"
+	sql := fmt.Sprintf("insert into \"%s\" (key, value) values('%s', '%s')", SettingsTable, key, value)
 	_, err := db.Exec(sql)
 	checkError(err, "Fail to addSetting")
 	return err
 }
 
 func updateSetting(db *sql.DB, key string, value string) error {
-	sql := "update settings set value = '" + value + "' where key = '" + key + "'"
+	sql := fmt.Sprintf("update \"%s\" set value = '%s' where key = '%s'", SettingsTable, value, key)
 	_, err := db.Exec(sql)
 	checkError(err, "Fail to updateSetting")
 	return err
@@ -425,7 +319,7 @@ func HadSetting(db *sql.DB) bool {
 }
 
 func ContainKey(db *sql.DB, key string) bool {
-	sql := "select value from settings where key = '" + key + "';"
+	sql := fmt.Sprintf("select value from \"%s\" where key = '%s'", SettingsTable, key)
 	value := ""
 	err := db.QueryRow(sql).Scan(&value)
 	if checkError(err, "Fail to QueryRow for key "+key) {
