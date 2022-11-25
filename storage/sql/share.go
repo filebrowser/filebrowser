@@ -16,7 +16,7 @@ type linkRecord interface {
 }
 
 func InitSharesTable(db *sql.DB) error {
-	sql := fmt.Sprintf("create table if not exists \"%s\" (hash string, path string, userid integer, expire integer, passwordhash string, token string)", SharesTable)
+	sql := fmt.Sprintf("create table if not exists \"%s\" (hash text, path text, userid integer, expire integer, passwordhash text, token text)", SharesTable)
 	_, err := db.Exec(sql)
 	checkError(err, "Fail to InitSharesTable")
 	return err

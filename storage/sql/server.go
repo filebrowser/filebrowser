@@ -93,7 +93,7 @@ func (s settingsBackend) SaveServer(ss *settings.Server) error {
 	if checkError(err, "Fail to begin db transaction") {
 		return err
 	}
-	sql := fmt.Sprintf("INSERT INTO \"%s\" (key, value) VALUES(?,?)", SettingsTable)
+	sql := fmt.Sprintf("INSERT INTO \"%s\" (key, value) VALUES($1,$2)", SettingsTable)
 	for i, field := range fields {
 		stmt, err := s.db.Prepare(sql)
 		defer stmt.Close()

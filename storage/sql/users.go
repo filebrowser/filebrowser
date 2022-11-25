@@ -115,7 +115,7 @@ func createAdminUser() users.User {
 }
 
 func InitUserTable(db *sql.DB) error {
-	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS \"%s\" (id integer primary key, username string, password string, scope string, locale string, lockpassword bool, viewmode string, perm string, commands string, sorting string, rules string, hidedotfiles bool, dateformat bool, singleclick bool);", UsersTable)
+	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS \"%s\" (id integer primary key, username text, password text, scope text, locale text, lockpassword integer, viewmode text, perm text, commands text, sorting text, rules text, hidedotfiles integer, dateformat integer, singleclick integer);", UsersTable)
 	_, err := db.Exec(sql)
 	checkError(err, "Fail to create users table")
 	return err

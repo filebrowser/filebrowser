@@ -29,13 +29,16 @@ func OpenDB(path string) (*sql.DB, error) {
 	prefixes := []string{"sqlite3", "postgres", "mysql"}
 	for _, prefix := range prefixes {
 		if strings.HasPrefix(path, prefix) {
-			return connectDB(prefix, strings.TrimPrefix(path, prefix+"://"))
+			return connectDB(prefix, path)
 		}
 	}
 	return nil, errors.New("Unsupported db scheme")
 }
 
 func connectDB(dbType string, path string) (*sql.DB, error) {
+	if dbType == "sqlite3" && strings.HasPrefix(path, "sqlite3://") {
+		path = strings.TrimPrefix(path, "sqlite3://")
+	}
 	db, err := sql.Open(dbType, path)
 	if err == nil {
 		return db, nil

@@ -21,7 +21,7 @@ type settingsBackend struct {
 }
 
 func InitSettingsTable(db *sql.DB) error {
-	sql := fmt.Sprintf("create table if not exists \"%s\"(key string primary key, value string)", SettingsTable)
+	sql := fmt.Sprintf("create table if not exists \"%s\"(key text primary key, value text);", SettingsTable)
 	_, err := db.Exec(sql)
 	checkError(err, "Fail to create table settings")
 	return err
@@ -136,7 +136,7 @@ func boolToString(b bool) string {
 }
 
 func (s settingsBackend) Get() (*settings.Settings, error) {
-	sql := fmt.Sprintf("select key, value from \"%s\"", SettingsTable)
+	sql := fmt.Sprintf("select key, value from \"%s\";", SettingsTable)
 	rows, err := s.db.Query(sql)
 	if checkError(err, "Fail to Query settings.Settings") {
 		return nil, err
@@ -198,10 +198,11 @@ func (s settingsBackend) Save(ss *settings.Settings) error {
 	}
 	for i, field := range fields {
 		exists := ContainKey(s.db, field)
-		sql := fmt.Sprintf("INSERT INTO \"%s\" (value, key) VALUES(?,?)", SettingsTable)
+		sql := fmt.Sprintf("INSERT INTO \"%s\" (value, key) VALUES($1,$2);", SettingsTable)
 		if exists {
-			sql = fmt.Sprintf("UPDATE \"%s\" set value = ? where key = ?", SettingsTable)
+			sql = fmt.Sprintf("UPDATE \"%s\" set value = $1 where key = $2;", SettingsTable)
 		}
+		fmt.Println(sql)
 		stmt, err := s.db.Prepare(sql)
 		defer stmt.Close()
 		if checkError(err, "Fail to prepare statement") {
@@ -274,7 +275,7 @@ func cloneSettings(s settings.Settings) settings.Settings {
 }
 
 func SetSetting(db *sql.DB, key string, value string) error {
-	sql := fmt.Sprintf("select count(key) from \"%s\" where key = '%s'", SettingsTable, key)
+	sql := fmt.Sprintf("select count(key) from \"%s\" where key = '%s';", SettingsTable, key)
 	count := 0
 	err := db.QueryRow(sql).Scan(&count)
 	if checkError(err, "Fail to QueryRow for key="+key) {
@@ -287,7 +288,7 @@ func SetSetting(db *sql.DB, key string, value string) error {
 }
 
 func GetSetting(db *sql.DB, key string) string {
-	sql := fmt.Sprintf("select value from \"%s\" where key = '%s'", SettingsTable, key)
+	sql := fmt.Sprintf("select value from \"%s\" where key = '%s';", SettingsTable, key)
 	value := ""
 	err := db.QueryRow(sql).Scan(&value)
 	if checkError(err, "Fail to QueryRow for key "+key) {
@@ -297,15 +298,23 @@ func GetSetting(db *sql.DB, key string) string {
 }
 
 func addSetting(db *sql.DB, key string, value string) error {
-	sql := fmt.Sprintf("insert into \"%s\" (key, value) values('%s', '%s')", SettingsTable, key, value)
-	_, err := db.Exec(sql)
-	checkError(err, "Fail to addSetting")
+	sql := fmt.Sprintf("insert into \"%s\" (key, value) values($1, $2);", SettingsTable)
+	stmt, err := db.Prepare(sql)
+	if checkError(err, "Fail to prepare sql") {
+		return err
+	}
+	_, err = stmt.Exec(key, value)
+	checkError(err, "Fail to add settings")
 	return err
 }
 
 func updateSetting(db *sql.DB, key string, value string) error {
-	sql := fmt.Sprintf("update \"%s\" set value = '%s' where key = '%s'", SettingsTable, value, key)
-	_, err := db.Exec(sql)
+	sql := fmt.Sprintf("update \"%s\" set value = $1 where key = $2;", SettingsTable)
+	stmt, err := db.Prepare(sql)
+	if checkError(err, "Fail to prepare sql") {
+		return err
+	}
+	_, err = stmt.Exec(key, value)
 	checkError(err, "Fail to updateSetting")
 	return err
 }
@@ -319,7 +328,7 @@ func HadSetting(db *sql.DB) bool {
 }
 
 func ContainKey(db *sql.DB, key string) bool {
-	sql := fmt.Sprintf("select value from \"%s\" where key = '%s'", SettingsTable, key)
+	sql := fmt.Sprintf("select value from \"%s\" where key = '%s';", SettingsTable, key)
 	value := ""
 	err := db.QueryRow(sql).Scan(&value)
 	if checkError(err, "Fail to QueryRow for key "+key) {
