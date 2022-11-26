@@ -28,7 +28,7 @@ func cloneServer(server settings.Server) settings.Server {
 }
 
 func (s settingsBackend) GetServer() (*settings.Server, error) {
-	sql := fmt.Sprintf("select key, value from %s", SettingsTable)
+	sql := fmt.Sprintf("select %s, value from %s", quoteName(s.dbType, "key"), quoteName(s.dbType, SettingsTable))
 	rows, err := s.db.Query(sql)
 	if checkError(err, "Fail to Query for GetServer") {
 		return nil, err
@@ -93,7 +93,11 @@ func (s settingsBackend) SaveServer(ss *settings.Server) error {
 	if checkError(err, "Fail to begin db transaction") {
 		return err
 	}
-	sql := fmt.Sprintf("INSERT INTO \"%s\" (key, value) VALUES($1,$2)", SettingsTable)
+	table := quoteName(s.dbType, SettingsTable)
+	k := quoteName(s.dbType, "key")
+	p1 := placeHolder(s.dbType, 1)
+	p2 := placeHolder(s.dbType, 2)
+	sql := fmt.Sprintf("INSERT INTO %s (%s, value) VALUES(%s,%s)", table, k, p1, p2)
 	for i, field := range fields {
 		stmt, err := s.db.Prepare(sql)
 		defer stmt.Close()

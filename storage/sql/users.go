@@ -14,7 +14,8 @@ import (
 )
 
 type usersBackend struct {
-	db *sql.DB
+	db     *sql.DB
+	dbType string
 }
 
 func PermFromString(s string) users.Permissions {
@@ -114,11 +115,22 @@ func createAdminUser() users.User {
 	return user
 }
 
-func InitUserTable(db *sql.DB) error {
-	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS \"%s\" (id integer primary key, username text, password text, scope text, locale text, lockpassword integer, viewmode text, perm text, commands text, sorting text, rules text, hidedotfiles integer, dateformat integer, singleclick integer);", UsersTable)
+func InitUserTable(db *sql.DB, dbType string) error {
+	primaryKey := "integer primary key"
+	if dbType == "postgres" {
+		primaryKey = "serial primary key"
+	} else if dbType == "mysql" {
+		primaryKey = "int unsigned primary key auto_increment"
+	}
+	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (id %s, username text, password text, scope text, locale text, lockpassword integer, viewmode text, perm text, commands text, sorting text, rules text, hidedotfiles integer, dateformat integer, singleclick integer);", quoteName(dbType, UsersTable), primaryKey)
 	_, err := db.Exec(sql)
 	checkError(err, "Fail to create users table")
 	return err
+}
+
+func newUsersBackend(db *sql.DB, dbType string) usersBackend {
+	InitUserTable(db, dbType)
+	return usersBackend{db: db, dbType: dbType}
 }
 
 func (s usersBackend) GetBy(i interface{}) (*users.User, error) {
@@ -150,7 +162,7 @@ func (s usersBackend) GetBy(i interface{}) (*users.User, error) {
 	dateformat := false
 	singleclick := false
 	user := users.User{}
-	sql := fmt.Sprintf("SELECT %s FROM \"%s\" WHERE %s", columnsStr, UsersTable, conditionStr)
+	sql := fmt.Sprintf("SELECT %s FROM %s WHERE %s", columnsStr, quoteName(s.dbType, UsersTable), conditionStr)
 	err := s.db.QueryRow(sql).Scan(&userID, &username, &password, &scope, &locale, &lockpassword, &viewmode, &perm, &commands, &sorting, &rules, &hidedotfiles, &dateformat, &singleclick)
 	if checkError(err, "") {
 		return nil, err
@@ -173,7 +185,7 @@ func (s usersBackend) GetBy(i interface{}) (*users.User, error) {
 }
 
 func (s usersBackend) Gets() ([]*users.User, error) {
-	sql := fmt.Sprintf("SELECT id, username, password, scope, lockpassword, viewmode, perm,commands,sorting,rules FROM \"%s\"", UsersTable)
+	sql := fmt.Sprintf("SELECT id, username, password, scope, lockpassword, viewmode, perm,commands,sorting,rules FROM %s", quoteName(s.dbType, UsersTable))
 	rows, err := s.db.Query(sql)
 	if checkError(err, "Fail to Query []*users.User") {
 		return nil, err
@@ -217,8 +229,8 @@ func (s usersBackend) updateUser(id uint, user *users.User) error {
 		lockpassword = 1
 	}
 	sql := fmt.Sprintf(
-		"UPDATE \"%s\" SET username='%s',password='%s',scope='%s',lockpassword=%d,viewmode='%s',perm='%s',commands='%s',sorting='%s',rules='%s' WHERE id=%d",
-		UsersTable,
+		"UPDATE %s SET username='%s',password='%s',scope='%s',lockpassword=%d,viewmode='%s',perm='%s',commands='%s',sorting='%s',rules='%s' WHERE id=%d",
+		quoteName(s.dbType, UsersTable),
 		user.Username,
 		user.Password,
 		user.Scope,
@@ -259,7 +271,10 @@ func (s usersBackend) insertUser(user *users.User) error {
 	}
 	columnStr := strings.Join(columns, ",")
 	specStr := strings.Join(specs, ",")
-	sqlFormat := fmt.Sprintf("INSERT INTO \"%s\" (%s) VALUES (%s)", UsersTable, columnStr, specStr)
+	sqlFormat := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", quoteName(s.dbType, UsersTable), columnStr, specStr)
+	if s.dbType == "postgres" {
+		sqlFormat = sqlFormat + " RETURNING id;"
+	}
 	sql := fmt.Sprintf(
 		sqlFormat,
 		user.Username,
@@ -276,12 +291,19 @@ func (s usersBackend) insertUser(user *users.User) error {
 		boolToString(user.DateFormat),
 		boolToString(user.SingleClick),
 	)
+	if s.dbType == "postgres" {
+		id := uint(0)
+		err := s.db.QueryRow(sql).Scan(&id)
+		if !checkError(err, "Fail to insert user") {
+			user.ID = id
+		}
+		return err
+	}
 	res, err := s.db.Exec(sql)
 	if !checkError(err, "Fail to insert user") {
-		id, err2 := res.LastInsertId()
-		if !checkError(err2, "Fail to fetch last insert id") {
-			user.ID = uint(id)
-		}
+		id, err := res.LastInsertId()
+		checkError(err, "Fail to get last inserted id")
+		user.ID = uint(id)
 	}
 	return err
 }
@@ -296,14 +318,14 @@ func (s usersBackend) Save(user *users.User) error {
 }
 
 func (s usersBackend) DeleteByID(id uint) error {
-	sql := fmt.Sprintf("delete from \"%s\" where id=%d", UsersTable, id)
+	sql := fmt.Sprintf("delete from %s where id=%d", quoteName(s.dbType, UsersTable), id)
 	_, err := s.db.Exec(sql)
 	checkError(err, "Fail to delete User by id")
 	return err
 }
 
 func (s usersBackend) DeleteByUsername(username string) error {
-	sql := fmt.Sprintf("delete from \"%s\" where username='%s'", UsersTable, username)
+	sql := fmt.Sprintf("delete from %s where username='%s'", quoteName(s.dbType, UsersTable), username)
 	_, err := s.db.Exec(sql)
 	checkError(err, "Fail to delete user by username")
 	return err
@@ -323,15 +345,15 @@ func (s usersBackend) Update(u *users.User, fields ...string) error {
 		val := userField.Interface()
 		typeStr := reflect.TypeOf(val).Kind().String()
 		if typeStr == "string" {
-			setItems = append(setItems, fmt.Sprintf("\"%s\"='%s'", field, val))
+			setItems = append(setItems, fmt.Sprintf("%s='%s'", field, val))
 		} else if typeStr == "bool" {
-			setItems = append(setItems, fmt.Sprintf("\"%s\"=%s", field, boolToString(val.(bool))))
+			setItems = append(setItems, fmt.Sprintf("%s=%s", field, boolToString(val.(bool))))
 		} else {
 			// TODO
-			setItems = append(setItems, fmt.Sprintf("\"%s\"=%s", field, val))
+			setItems = append(setItems, fmt.Sprintf("%s=%s", field, val))
 		}
 	}
-	sql := fmt.Sprintf("UPDATE \"%s\" SET %s WHERE id=%d", UsersTable, strings.Join(setItems, ","), u.ID)
+	sql := fmt.Sprintf("UPDATE %s SET %s WHERE id=%d", UsersTable, strings.Join(setItems, ","), u.ID)
 	_, err := s.db.Exec(sql)
 	checkError(err, "Fail to update user")
 	return err

@@ -11,7 +11,8 @@ import (
 )
 
 type authBackend struct {
-	db *sql.DB
+	db     *sql.DB
+	dbType string
 }
 
 func (s authBackend) Get(t settings.AuthMethod) (auth.Auther, error) {
@@ -38,5 +39,9 @@ func (s authBackend) Save(a auth.Auther) error {
 	if checkError(err, "Fail to save auth.Auther") {
 		return err
 	}
-	return SetSetting(s.db, "auther", string(val))
+	return SetSetting(s.db, s.dbType, "auther", string(val))
+}
+
+func newAuthBackend(db *sql.DB, dbType string) authBackend {
+	return authBackend{db: db, dbType: dbType}
 }

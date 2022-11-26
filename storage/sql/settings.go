@@ -17,11 +17,12 @@ func init() {
 }
 
 type settingsBackend struct {
-	db *sql.DB
+	db     *sql.DB
+	dbType string
 }
 
-func InitSettingsTable(db *sql.DB) error {
-	sql := fmt.Sprintf("create table if not exists \"%s\"(key text primary key, value text);", SettingsTable)
+func InitSettingsTable(db *sql.DB, dbType string) error {
+	sql := fmt.Sprintf("create table if not exists %s (%s varchar(128) primary key, value text);", quoteName(dbType, SettingsTable), quoteName(dbType, "key"))
 	_, err := db.Exec(sql)
 	checkError(err, "Fail to create table settings")
 	return err
@@ -136,7 +137,7 @@ func boolToString(b bool) string {
 }
 
 func (s settingsBackend) Get() (*settings.Settings, error) {
-	sql := fmt.Sprintf("select key, value from \"%s\";", SettingsTable)
+	sql := fmt.Sprintf("select %s, value from %s;", quoteName(s.dbType, "key"), quoteName(s.dbType, SettingsTable))
 	rows, err := s.db.Query(sql)
 	if checkError(err, "Fail to Query settings.Settings") {
 		return nil, err
@@ -196,13 +197,16 @@ func (s settingsBackend) Save(ss *settings.Settings) error {
 	if checkError(err, "Fail to begin db transaction") {
 		return err
 	}
+	table := quoteName(s.dbType, SettingsTable)
+	k := quoteName(s.dbType, "key")
+	p1 := placeHolder(s.dbType, 1)
+	p2 := placeHolder(s.dbType, 2)
 	for i, field := range fields {
-		exists := ContainKey(s.db, field)
-		sql := fmt.Sprintf("INSERT INTO \"%s\" (value, key) VALUES($1,$2);", SettingsTable)
+		exists := ContainKey(s.db, s.dbType, field)
+		sql := fmt.Sprintf("INSERT INTO %s (value, %s) VALUES(%s,%s);", table, k, p1, p2)
 		if exists {
-			sql = fmt.Sprintf("UPDATE \"%s\" set value = $1 where key = $2;", SettingsTable)
+			sql = fmt.Sprintf("UPDATE %s set value = %s where %s = %s;", table, p1, k, p2)
 		}
-		fmt.Println(sql)
 		stmt, err := s.db.Prepare(sql)
 		defer stmt.Close()
 		if checkError(err, "Fail to prepare statement") {
@@ -274,31 +278,37 @@ func cloneSettings(s settings.Settings) settings.Settings {
 	return s1
 }
 
-func SetSetting(db *sql.DB, key string, value string) error {
-	sql := fmt.Sprintf("select count(key) from \"%s\" where key = '%s';", SettingsTable, key)
+func SetSetting(db *sql.DB, dbType string, key string, value string) error {
+	t := quoteName(dbType, SettingsTable)
+	k := quoteName(dbType, "key")
+	sql := fmt.Sprintf("select count(%s) from %s where %s = '%s';", k, t, k, key)
 	count := 0
 	err := db.QueryRow(sql).Scan(&count)
 	if checkError(err, "Fail to QueryRow for key="+key) {
 		return err
 	}
 	if count == 0 {
-		return addSetting(db, key, value)
+		return addSetting(db, dbType, key, value)
 	}
-	return updateSetting(db, key, value)
+	return updateSetting(db, dbType, key, value)
 }
 
-func GetSetting(db *sql.DB, key string) string {
-	sql := fmt.Sprintf("select value from \"%s\" where key = '%s';", SettingsTable, key)
+func GetSetting(db *sql.DB, dbType string, key string) string {
+	sql := fmt.Sprintf("select value from %s where %s = '%s';", quoteName(dbType, SettingsTable), quoteName(dbType, "key"), key)
 	value := ""
 	err := db.QueryRow(sql).Scan(&value)
-	if checkError(err, "Fail to QueryRow for key "+key) {
+	if checkError(err, "") {
 		return value
 	}
 	return value
 }
 
-func addSetting(db *sql.DB, key string, value string) error {
-	sql := fmt.Sprintf("insert into \"%s\" (key, value) values($1, $2);", SettingsTable)
+func addSetting(db *sql.DB, dbType string, key string, value string) error {
+	table := quoteName(dbType, SettingsTable)
+	k := quoteName(dbType, "key")
+	p1 := placeHolder(dbType, 1)
+	p2 := placeHolder(dbType, 2)
+	sql := fmt.Sprintf("insert into %s (%s, value) values(%s, %s);", table, k, p1, p2)
 	stmt, err := db.Prepare(sql)
 	if checkError(err, "Fail to prepare sql") {
 		return err
@@ -308,8 +318,14 @@ func addSetting(db *sql.DB, key string, value string) error {
 	return err
 }
 
-func updateSetting(db *sql.DB, key string, value string) error {
-	sql := fmt.Sprintf("update \"%s\" set value = $1 where key = $2;", SettingsTable)
+func updateSetting(db *sql.DB, dbType string, key string, value string) error {
+	sql := fmt.Sprintf(
+		"update %s set value = %s where %s = %s;",
+		quoteName(dbType, SettingsTable),
+		placeHolder(dbType, 1),
+		quoteName(dbType, "key"),
+		placeHolder(dbType, 2),
+	)
 	stmt, err := db.Prepare(sql)
 	if checkError(err, "Fail to prepare sql") {
 		return err
@@ -320,23 +336,32 @@ func updateSetting(db *sql.DB, key string, value string) error {
 }
 
 func HadSetting(db *sql.DB) bool {
-	key := GetSetting(db, "Key")
+	dbType, err := GetDBType(db)
+	if checkError(err, "Fail to get db type") {
+		return false
+	}
+	key := GetSetting(db, dbType, "Key")
 	if key == "" {
 		return false
 	}
 	return true
 }
 
-func ContainKey(db *sql.DB, key string) bool {
-	sql := fmt.Sprintf("select value from \"%s\" where key = '%s';", SettingsTable, key)
+func ContainKey(db *sql.DB, dbType string, key string) bool {
+	sql := fmt.Sprintf("select value from %s where %s = '%s';", quoteName(dbType, SettingsTable), quoteName(dbType, "key"), key)
 	value := ""
 	err := db.QueryRow(sql).Scan(&value)
-	if checkError(err, "Fail to QueryRow for key "+key) {
+	if checkError(err, "") {
 		return false
 	}
 	return true
 }
 
-func HadSettingOfKey(db *sql.DB, key string) bool {
-	return GetSetting(db, "Key") == key
+func HadSettingOfKey(db *sql.DB, dbType string, key string) bool {
+	return GetSetting(db, dbType, "Key") == key
+}
+
+func newSettingsBackend(db *sql.DB, dbType string) settingsBackend {
+	InitSettingsTable(db, dbType)
+	return settingsBackend{db: db, dbType: dbType}
 }
