@@ -7,6 +7,7 @@ import de from "./de.json";
 import en from "./en.json";
 import es from "./es.json";
 import fr from "./fr.json";
+import hu from './hu.json';
 import is from "./is.json";
 import it from "./it.json";
 import ja from "./ja.json";
@@ -45,6 +46,9 @@ export function detectLocale() {
       break;
     case /^fr.*/i.test(locale):
       locale = "fr";
+      break;
+    case /^hu.*/i.test(locale):
+      locale = "hu";
       break;
     case /^pt.*/i.test(locale):
       locale = "pt";
@@ -112,6 +116,7 @@ const i18n = new VueI18n({
     en: en,
     es: removeEmpty(es),
     fr: removeEmpty(fr),
+    hu: removeEmpty(hu),
     is: removeEmpty(is),
     it: removeEmpty(it),
     ja: removeEmpty(ja),
