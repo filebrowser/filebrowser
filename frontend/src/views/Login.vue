@@ -1,44 +1,57 @@
 <template>
-  <div id="login" :class="{ recaptcha: recaptcha }">
-    <form @submit="submit">
-      <img :src="logoURL" alt="File Browser" />
-      <h1>{{ name }}</h1>
-      <div v-if="error !== ''" class="wrong">{{ error }}</div>
+  <div :class="['login-view', { 'login-view--with-captcha': recaptcha }]">
+    <form @submit.prevent="submit" class="login-form">
+      <div class="logo login-form__logo">
+        <img :src="logoURL" :alt="name" class="logo__image" />
+      </div>
 
-      <input
-        autofocus
-        class="input input--block"
-        type="text"
-        autocapitalize="off"
-        v-model="username"
-        :placeholder="$t('login.username')"
-      />
-      <input
-        class="input input--block"
-        type="password"
-        v-model="password"
-        :placeholder="$t('login.password')"
-      />
-      <input
-        class="input input--block"
-        v-if="createMode"
-        type="password"
-        v-model="passwordConfirm"
-        :placeholder="$t('login.passwordConfirm')"
-      />
+      <h1 class="login-form__title">{{ title }}</h1>
+
+      <span class="login-form__description">
+        To use all the <b>{{ name }}</b> features you need to
+        {{ title.toLowerCase() }} first.
+      </span>
+
+      <div class="login-form__inputs">
+        <Input
+          v-model="username"
+          autocapitalize="off"
+          class="login-form__input"
+          :placeholder="$t('login.username')"
+          autofocus
+        />
+
+        <Input
+          type="password"
+          v-model="password"
+          class="login-form__input"
+          :placeholder="$t('login.password')"
+        />
+
+        <Input
+          v-if="createMode"
+          type="password"
+          v-model="passwordConfirm"
+          class="login-form__input"
+          :placeholder="$t('login.passwordConfirm')"
+        />
+      </div>
+
+      <Button class="login-form__submit" fullWidth>
+        {{ title }}
+      </Button>
 
       <div v-if="recaptcha" id="recaptcha"></div>
-      <input
-        class="button button--block"
-        type="submit"
-        :value="createMode ? $t('login.signup') : $t('login.submit')"
-      />
 
-      <p @click="toggleMode" v-if="signup">
+      <p v-if="!signup" class="login-form__change-mode" @click="toggleMode">
         {{
           createMode ? $t("login.loginInstead") : $t("login.createAnAccount")
         }}
       </p>
+
+      <span v-if="error" class="login-form__error">
+        {{ error }}
+      </span>
     </form>
   </div>
 </template>
@@ -53,45 +66,67 @@ import {
   signup,
 } from "@/utils/constants";
 
+import Input from "@/components/Input.vue";
+import Button from "@/components/Button.vue";
+
 export default {
-  name: "login",
-  computed: {
-    signup: () => signup,
-    name: () => name,
-    logoURL: () => logoURL,
+  name: "LoginView",
+
+  components: {
+    Input,
+    Button,
   },
-  data: function () {
+
+  data() {
     return {
+      name,
+      signup,
+      logoURL,
+      recaptcha,
       createMode: false,
       error: "",
       username: "",
       password: "",
-      recaptcha: recaptcha,
       passwordConfirm: "",
     };
   },
-  mounted() {
-    if (!recaptcha) return;
 
-    window.grecaptcha.ready(function () {
-      window.grecaptcha.render("recaptcha", {
-        sitekey: recaptchaKey,
-      });
-    });
+  computed: {
+    title() {
+      return this.createMode
+        ? this.$t("login.signup")
+        : this.$t("login.submit");
+    },
   },
+
+  watch: {
+    error(value) {
+      if (value) {
+        setTimeout(() => {
+          this.error = "";
+        }, 5000);
+      }
+    },
+  },
+
+  mounted() {
+    this.renderRecaptcha();
+  },
+
   methods: {
+    renderRecaptcha() {
+      if (!this.recaptcha) return;
+
+      window.grecaptcha.ready(() => {
+        window.grecaptcha.render("recaptcha", { sitekey: recaptchaKey });
+      });
+    },
+
     toggleMode() {
       this.createMode = !this.createMode;
     },
-    async submit(event) {
-      event.preventDefault();
-      event.stopPropagation();
 
-      let redirect = this.$route.query.redirect;
-      if (redirect === "" || redirect === undefined || redirect === null) {
-        redirect = "/files/";
-      }
-
+    async submit() {
       let captcha = "";
       if (recaptcha) {
         captcha = window.grecaptcha.getResponse();
@@ -102,11 +137,9 @@ export default {
         }
       }
 
-      if (this.createMode) {
-        if (this.password !== this.passwordConfirm) {
-          this.error = this.$t("login.passwordsDontMatch");
-          return;
-        }
+      if (this.createMode && this.password !== this.passwordConfirm) {
+        this.error = this.$t("login.passwordsDontMatch");
+        return;
       }
 
       try {
@@ -115,15 +148,18 @@ export default {
         }
 
         await auth.login(this.username, this.password, captcha);
+
+        const redirect = this.$route.query.redirect || "/files/";
         this.$router.push({ path: redirect });
       } catch (e) {
-        if (e.message == 409) {
-          this.error = this.$t("login.usernameTaken");
-        } else {
-          this.error = this.$t("login.wrongCredentials");
-        }
+        this.error =
+          e.message == 409
+            ? this.$t("login.usernameTaken")
+            : this.$t("login.wrongCredentials");
       }
     },
   },
 };
 </script>
+
+<style src="@/css/login.css" />

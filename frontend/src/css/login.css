@@ -1,48 +1,82 @@
-#login {
-  background: #fff;
-  position: fixed;
+.login-view {
   top: 0;
   left: 0;
-  width: 100%;
   height: 100%;
-}
-
-#login img {
-  width: 4em;
-  height: 4em;
-  margin: 0 auto;
-  display: block;
-}
-
-#login h1 {
-  text-align: center;
-  font-size: 2.5em;
-  margin: .4em 0 .67em;
-}
-
-#login form {
+  height: 100%;
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 16em;
-  width: 90%;
+  background-color: #ffffff;
 }
 
-#login.recaptcha form {
+.login-view--with-captcha .login-form {
   min-width: 304px;
 }
 
-#login #recaptcha {
-  margin: .5em 0 0;
+.login-form {
+  top: 50%;
+  left: 50%;
+  width: 90%;
+  position: fixed;
+  max-width: 20rem;
+  transform: translate(-50%, -50%);
 }
 
-#login .wrong {
-  background: var(--red);
-  color: #fff;
-  padding: .5em;
+.login-form__logo {
+  margin: 0 auto;
+}
+
+.login-form__title {
+  font-size: 1.5em;
+  margin-top: 1rem;
   text-align: center;
-  animation: .2s opac forwards;
+}
+
+.login-form__description {
+  display: block;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.login-form__inputs {
+  margin-top: 1.5rem;
+}
+
+.login-form__input {
+  width: 100%;
+}
+
+.login-form__input:not(:first-child) {
+  margin-top: 0.5rem;
+}
+
+.login-form__submit {
+  margin-top: 1.5rem;
+}
+
+.login-view #recaptcha {
+  margin: 0.5em 0 0;
+}
+
+.login-form__change-mode {
+  border: 0;
+  outline: 0;
+  width: 100%;
+  cursor: pointer;
+  font-weight: 500;
+  text-align: right;
+  margin-top: 0.5rem;
+  color: var(--blue);
+  font-size: 0.875rem; /* 14px */
+  background-color: unset;
+  text-transform: lowercase;
+}
+
+.login-form__error {
+  padding: 0.5em;
+  display: block;
+  margin-top: 1rem;
+  color: var(--red);
+  text-align: center;
+  animation: 0.2s opac forwards;
 }
 
 @keyframes opac {
@@ -54,12 +88,18 @@
   }
 }
 
-#login p {
-  cursor: pointer;
-  text-align: right;
-  color: var(--blue);
-  text-transform: lowercase;
-  font-weight: 500;
-  font-size: 0.9rem;
-  margin: .5rem 0;
+/* New */
+.logo {
+  width: 4rem;
+  height: 4rem;
+  position: relative;
+}
+
+.logo__image {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
 }
