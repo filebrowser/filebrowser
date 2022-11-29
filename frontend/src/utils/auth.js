@@ -92,7 +92,7 @@ export async function logout() {
 
   if (authMethod === "proxy" && authLogoutURL != "") {
     try {
-      await fetch(`${authLogoutURL}`, {
+      await fetch(`${baseURL}${authLogoutURL}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
