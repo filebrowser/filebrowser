@@ -43,7 +43,7 @@
 
       <div v-if="recaptcha" id="recaptcha"></div>
 
-      <p v-if="!signup" class="login-form__change-mode" @click="toggleMode">
+      <p v-if="signup" class="login-form__change-mode" @click="toggleMode">
         {{
           createMode ? $t("login.loginInstead") : $t("login.createAnAccount")
         }}
