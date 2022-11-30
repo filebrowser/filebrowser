@@ -7,6 +7,7 @@ const protocol = ssl ? "wss:" : "ws:";
 
 export default function command(url, command, onmessage, onclose) {
   url = removePrefix(url);
+  console.log(command)
   url = `${protocol}//${window.location.host}${baseURL}/api/command${url}?auth=${store.state.jwt}`;
 
   let conn = new window.WebSocket(url);

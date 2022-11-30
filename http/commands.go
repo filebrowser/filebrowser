@@ -2,6 +2,7 @@ package http
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -59,9 +60,12 @@ var commandsHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *d
 		}
 	}
 
-	command, err := runner.ParseCommand(d.settings, raw)
+	command, err := runner.ParseCommand(d.settings, raw, r.URL.Path)
+
+	// fmt.Println("Full Command: ", command)
 	if err != nil {
 		if err := conn.WriteMessage(websocket.TextMessage, []byte(err.Error())); err != nil { //nolint:govet
+
 			wsErr(conn, r, http.StatusInternalServerError, err)
 		}
 		return 0, nil
@@ -76,21 +80,25 @@ var commandsHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *d
 	}
 
 	cmd := exec.Command(command[0], command[1:]...) //nolint:gosec
+	// needs glob expansion somehow
 	cmd.Dir = d.user.FullPath(r.URL.Path)
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
+		fmt.Println("or here")
 		wsErr(conn, r, http.StatusInternalServerError, err)
 		return 0, nil
 	}
 
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
+		fmt.Println("failed here")
 		wsErr(conn, r, http.StatusInternalServerError, err)
 		return 0, nil
 	}
 
 	if err := cmd.Start(); err != nil {
+		fmt.Println("or there")
 		wsErr(conn, r, http.StatusInternalServerError, err)
 		return 0, nil
 	}

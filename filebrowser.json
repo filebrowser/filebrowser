@@ -1,0 +1,71 @@
+{
+    "settings": {
+        "key": "P9K5v4kaFKonVZ1IeeiO5MPSk4xKjK/lN5ZICsVycOX0p1u7ZK4wTpQt7djkCwcx0eLdbMzUixJrkYbAFEoTUQ==",
+        "signup": false,
+        "createUserDir": false,
+        "userHomeBasePath": "/users",
+        "defaults": {
+            "scope": ".",
+            "locale": "en",
+            "viewMode": "mosaic",
+            "singleClick": false,
+            "sorting": {
+                "by": "",
+                "asc": false
+            },
+            "perm": {
+                "admin": false,
+                "execute": true,
+                "create": true,
+                "rename": true,
+                "modify": true,
+                "delete": true,
+                "share": true,
+                "download": true
+            },
+            "commands": ["grep", "ls", "bash"],
+            "hideDotfiles": false,
+            "dateFormat": false
+        },
+        "authMethod": "json",
+        "branding": {
+            "name": "",
+            "disableExternal": false,
+            "files": "",
+            "theme": "",
+            "color": ""
+        },
+        "commands": {
+            "after_copy": [],
+            "after_delete": [],
+            "after_rename": [],
+            "after_save": [],
+            "after_upload": [],
+            "before_copy": [],
+            "before_delete": [],
+            "before_rename": [],
+            "before_save": [],
+            "before_upload": []
+        },
+        "shell": [],
+        "rules": []
+    },
+    "server": {
+        "root": ".",
+        "baseURL": "",
+        "socket": "",
+        "tlsKey": "",
+        "tlsCert": "",
+        "port": "8080",
+        "address": "127.0.0.1",
+        "log": "stdout",
+        "enableThumbnails": false,
+        "resizePreview": false,
+        "enableExec": false,
+        "typeDetectionByHeader": false,
+        "authHook": ""
+    },
+    "auther": {
+        "recaptcha": null
+    }
+}
