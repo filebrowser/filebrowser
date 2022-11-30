@@ -7,6 +7,8 @@ rice-box.go
 /filebrowser.exe
 /dist
 
+/filebrowser.json
+
 .DS_Store
 node_modules
 
