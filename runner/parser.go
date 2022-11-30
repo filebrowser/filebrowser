@@ -1,7 +1,6 @@
 package runner
 
 import (
-	"fmt"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -22,7 +21,7 @@ func GlobExpand(args []string, cwd string) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
-		//No match means the argument is just appended to the end.
+		//No match means the argument is fine so just appended to the end.
 		if len(matches) == 0 {
 			expandedArgs = append(expandedArgs, arg)
 		} else {
@@ -85,8 +84,6 @@ func ParseCommand(s *settings.Settings, raw string, cwd string) ([]string, error
 	} else {
 		command = append(s.Shell, raw) //nolint:gocritic
 	}
-
-	fmt.Println("Final Command: ", command)
 
 	return command, nil
 }
