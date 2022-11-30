@@ -42,7 +42,7 @@ func GlobExpand(args []string, cwd string) ([]string, error) {
 
 				//if the split diff is more than one, then add an extra number to help with slicing the array.
 				//If this step does not exist, then an empty string will be returned on join, if dir depth is 1
-				if matchSplitLength-splitCwdLength > 1 {
+				if matchSplitLength-splitCwdLength > 2 {
 					splitCwdLength++
 				}
 				newMatch := strings.Join(strings.Split(match, "/")[splitCwdLength:], "/")
