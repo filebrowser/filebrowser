@@ -35,7 +35,7 @@
     "switchView": "Alterar modo de visão",
     "toggleSidebar": "Alternar barra lateral",
     "update": "Atualizar",
-    "upload": "Enviar"
+    "upload": "Enviar",
     "openFile": "Abrir"
   },
   "download": {
@@ -46,7 +46,7 @@
   "errors": {
     "forbidden": "Você não tem permissões para acessar isto.",
     "internal": "Ops! Algum erro ocorreu.",
-    "notFound": "Ops! Nada foi encontrado."
+    "notFound": "Ops! Nada foi encontrado.",
     "connection": "O servidor não pode ser alcançado."
   },
   "files": {
@@ -65,7 +65,7 @@
     "size": "Tamanho",
     "sortByLastModified": "Ordenar pela última modificação",
     "sortByName": "Ordenar pelo nome",
-    "sortBySize": "Ordenar pelo tamanho"
+    "sortBySize": "Ordenar pelo tamanho",
     "noPreview": "Pré-visualização não disponível para este arquivo."
   },
   "help": {
@@ -153,7 +153,7 @@
     "size": "Tamanho",
     "upload": "Enviar",
     "uploadFiles": "Enviando {files} arquivos...",
-    "uploadMessage": "Selecione uma opção para enviar."
+    "uploadMessage": "Selecione uma opção para enviar.",
     "optionalPassword": "Senha opcional"
   },
   "search": {
@@ -196,7 +196,7 @@
     "globalRules": "Este é um conjunto global de regras de permissão e restrição que se aplicam a todos os usuários. Você pode definir regras específicas em cada usuário para sobrepor estas.",
     "globalSettings": "Configurações globais",
     "hideDotfiles": "Ocultar dotfiles",
-    "insertPath": "Insirir o caminho",
+    "insertPath": "Inserir o caminho",
     "insertRegex": "Inserir expressão regular",
     "instanceName": "Nome da instância",
     "language": "Idioma",
