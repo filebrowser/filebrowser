@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueI18n from "vue-i18n";
 
 import he from "./he.json";
+import hu from "./hu.json";
 import ar from "./ar.json";
 import de from "./de.json";
 import en from "./en.json";
@@ -30,6 +31,9 @@ export function detectLocale() {
   switch (true) {
     case /^he.*/i.test(locale):
       locale = "he";
+      break;
+    case /^hu.*/i.test(locale):
+      locale = "hu";
       break;
     case /^ar.*/i.test(locale):
       locale = "ar";
@@ -107,6 +111,7 @@ const i18n = new VueI18n({
   fallbackLocale: "en",
   messages: {
     he: removeEmpty(he),
+    hu: removeEmpty(hu),
     ar: removeEmpty(ar),
     de: removeEmpty(de),
     en: en,
