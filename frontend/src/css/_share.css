@@ -1,0 +1,82 @@
+.share {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+@media (max-width: 736px) {
+  .share {
+    display: block;
+  }
+}
+
+.share__box {
+  box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 3px, rgba(0, 0, 0, 0.12) 0px 1px 2px;
+  background: #fff;
+  border-radius: 0.2em;
+  margin: 5px;
+  overflow: hidden;
+}
+
+.share__box__header {
+  padding: 1em;
+  text-align: center;
+}
+
+.share__box__icon i {
+  font-size: 10em;
+  color: #40c4ff;
+}
+
+.share__box__center {
+  text-align: center;
+}
+
+.share__box__info {
+  flex: 1 1 18em;
+}
+
+.share__box__element {
+  padding: 1em;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  word-break: break-all;
+}
+
+.share__box__element .button {
+  display: inline-block;
+}
+
+.share__box__element .button i {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.share__box__items {
+  text-align: left;
+  flex: 10 0 25em;
+}
+
+.share__box__items #listing.list .item {
+  cursor: pointer;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.share__box__items #listing.list .item .name {
+  width: 50%;
+}
+
+.share__box__items #listing.list .item .modified {
+  width: 25%;
+}
+
+.share__wrong__password {
+  background: var(--red);
+  color: #fff;
+  padding: .5em;
+  text-align: center;
+  animation: .2s opac forwards;
+}

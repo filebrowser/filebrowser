@@ -1,0 +1,211 @@
+:root {
+  --background: #141D24;
+  --surfacePrimary: #20292F;
+  --surfaceSecondary: #3A4147;
+  --divider: rgba(255, 255, 255, 0.12);
+  --icon: #ffffff;
+  --textPrimary: rgba(255, 255, 255, 0.87);
+  --textSecondary: rgba(255, 255, 255, 0.6);
+}
+
+body {
+  background: var(--background);
+  color: var(--textPrimary);
+}
+
+#loading {
+  background: var(--background);
+}
+#loading .spinner div, main .spinner div {
+  background: var(--icon);
+}
+
+#login {
+  background: var(--background);
+}
+
+header {
+  background: var(--surfacePrimary);
+}
+
+#search #input {
+  background: var(--surfaceSecondary);
+  border-color: var(--surfacePrimary);
+}
+#search #input input::placeholder {
+  color: var(--textSecondary);
+}
+#search.active #input {
+  background: var(--surfacePrimary);
+}
+#search.active input {
+  color: var(--textPrimary);
+}
+#search #result {
+  background: var(--background);
+  color: var(--textPrimary);
+}
+#search .boxes {
+  background: var(--surfaceSecondary);
+}
+#search .boxes h3 {
+  color: var(--textPrimary);
+}
+
+.action {
+  color: var(--textPrimary) !important;
+}
+.action:hover {
+  background-color: rgba(255, 255, 255, .1);
+}
+.action i {
+  color: var(--icon) !important;
+}
+.action .counter {
+  border-color: var(--surfacePrimary);
+}
+
+nav > div {
+  border-color: var(--divider);
+}
+
+.breadcrumbs {
+  border-color: var(--divider);
+  color: var(--textPrimary) !important;
+}
+.breadcrumbs span {
+  color: var(--textPrimary) !important;
+}
+.breadcrumbs a:hover {
+  background-color: rgba(255, 255, 255, .1);
+}
+
+#listing .item {
+  background: var(--surfacePrimary);
+  color: var(--textPrimary);
+  border-color: var(--divider) !important;
+}
+#listing .item i {
+  color: var(--icon);
+}
+#listing .item .modified {
+  color: var(--textSecondary);
+}
+#listing h2,
+#listing.list .header span {
+  color: var(--textPrimary) !important;
+}
+#listing.list .header span {
+  color: var(--textPrimary);
+}
+#listing.list .header i {
+  color: var(--icon);
+}
+#listing.list .item.header {
+  background: var(--background);
+}
+
+.message {
+  color: var(--textPrimary);
+}
+
+.card {
+  background: var(--surfacePrimary);
+  color: var(--textPrimary);
+}
+.button--flat:hover {
+  background: var(--surfaceSecondary);
+}
+
+.dashboard #nav ul li {
+  color: var(--textSecondary);
+}
+.dashboard #nav ul li:hover {
+  background: var(--surfaceSecondary);
+}
+
+.card h3,
+.dashboard #nav,
+.dashboard p label {
+  color: var(--textPrimary);
+}
+.card#share input,
+.card#share select,
+.input {
+  background: var(--surfaceSecondary);
+  color: var(--textPrimary);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.input:hover,
+.input:focus {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.input--red {
+  background: #73302D;
+}
+
+.input--green {
+  background: #147A41;
+}
+
+.dashboard #nav .wrapper,
+.collapsible {
+  border-color: var(--divider);
+}
+.collapsible > label * {
+  color: var(--textPrimary);
+}
+
+table th {
+  color: var(--textSecondary);
+}
+
+.file-list li:hover {
+  background: var(--surfaceSecondary);
+}
+.file-list li:before {
+  color: var(--textSecondary);
+}
+.file-list li[aria-selected=true]:before {
+  color: var(--icon);
+}
+
+.shell {
+  background: var(--surfacePrimary);
+  color: var(--textPrimary);
+}
+.shell__result {
+  border-top: 1px solid var(--divider);
+}
+
+#editor-container {
+  background: var(--background);
+}
+
+#editor-container .bar {
+  background: var(--surfacePrimary);
+}
+
+@media (max-width: 736px) {
+  #file-selection {
+    background: var(--surfaceSecondary) !important;
+  }
+  #file-selection span {
+    color: var(--textPrimary) !important;
+  }
+  nav {
+    background: var(--surfaceSecondary) !important;
+  }
+  #dropdown {
+    background: var(--surfaceSecondary) !important;
+  }
+}
+
+.share__box {
+  background: var(--surfacePrimary) !important;
+  color: var(--textPrimary);
+}
+
+.share__box__element {
+  border-top-color: var(--divider);
+}

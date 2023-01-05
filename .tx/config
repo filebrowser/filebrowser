@@ -1,0 +1,10 @@
+[main]
+host = https://www.transifex.com
+lang_map = pt_BR: pt-br, zh_CN: zh-cn, zh_HK: zh-hk, zh_TW: zh-tw, nl_BE: nl-be, sv_SE: sv-se
+
+[file-browser.file-browser]
+file_filter = frontend/src/i18n/<lang>.json
+minimum_perc = 50
+source_file = frontend/src/i18n/en.json
+source_lang = en
+type = KEYVALUEJSON

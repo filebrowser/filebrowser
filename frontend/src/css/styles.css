@@ -1,0 +1,430 @@
+@import "~normalize.css/normalize.css";
+@import "~noty/lib/noty.css";
+@import "~noty/lib/themes/mint.css";
+@import "./_variables.css";
+@import "./_buttons.css";
+@import "./_inputs.css";
+@import "./_shell.css";
+@import "./_share.css";
+@import "./fonts.css";
+@import "./base.css";
+@import "./header.css";
+@import "./listing.css";
+@import "./listing-icons.css";
+@import "./upload-files.css";
+@import "./dashboard.css";
+@import "./login.css";
+
+.link {
+  color: var(--blue);
+}
+
+main .spinner {
+  display: block;
+  text-align: center;
+  line-height: 0;
+  padding: 1em 0;
+}
+
+main .spinner > div {
+  width: .8em;
+  height: .8em;
+  margin: 0 .1em;
+  font-size: 1em;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 100%;
+  display: inline-block;
+  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+
+main .spinner .bounce1 {
+  animation-delay: -0.32s;
+}
+
+main .spinner .bounce2 {
+  animation-delay: -0.16s;
+}
+
+.delayed {
+  animation: delayed linear 100ms;
+}
+
+@keyframes delayed {
+  0% {
+    opacity: 0;
+  }
+  99% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* * * * * * * * * * * * * * * *
+ *            ACTION           *
+ * * * * * * * * * * * * * * * */
+
+.action {
+  display: inline-block;
+  cursor: pointer;
+  transition: 0.2s ease all;
+  border: 0;
+  margin: 0;
+  color: #546E7A;
+  border-radius: 50%;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+  vertical-align: middle;
+  text-align: left;
+  position: relative;
+}
+
+.action.disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.action i {
+  padding: 0.4em;
+  transition: .1s ease-in-out all;
+  border-radius: 50%;
+}
+
+.action:hover {
+  background-color: rgba(0, 0, 0, .1);
+}
+
+.action ul {
+  position: absolute;
+  top: 0;
+  color: #7d7d7d;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  display: flex;
+}
+
+.action ul li {
+  line-height: 1;
+  padding: .7em;
+  transition: .1s ease background-color;
+}
+
+.action ul li:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+#click-overlay {
+  display: none;
+  position: fixed;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#click-overlay.active {
+  display: block;
+}
+
+.action .counter {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: var(--blue);
+  color: #fff;
+  border-radius: 50%;
+  font-size: .75em;
+  width: 1.8em;
+  height: 1.8em;
+  text-align: center;
+  line-height: 1.55em;
+  font-weight: bold;
+  border: 2px solid white;
+}
+
+
+/* PREVIEWER */
+
+#previewer {
+  background-color: rgba(0, 0, 0, 0.9);
+  padding-top: 4em;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+#previewer header {
+  background: none;
+  color: #fff;
+}
+
+#previewer header > .action i {
+  color: #fff;
+}
+
+@media (min-width: 738px) {
+  #previewer header #dropdown .action i {
+    color: #fff;
+  }
+}
+
+#previewer header .action:hover {
+  background-color: rgba(255, 255, 255, 0.3)
+}
+
+#previewer header .action span {
+  display: none;
+}
+
+#previewer .preview {
+  text-align: center;
+  height: calc(100vh - 4em);
+}
+
+#previewer .preview pre {
+  text-align: left;
+  overflow: auto;
+}
+
+#previewer .preview pre,
+#previewer .preview video,
+#previewer .preview img {
+  max-height: 100%;
+  margin: 0;
+}
+
+#previewer .preview video {
+  height: 100%;
+}
+
+#previewer .preview .info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5em;
+  color: #fff;
+}
+#previewer .preview .info .title {
+  margin-bottom: 1em;
+}
+#previewer .preview .info .title i {
+  display: block;
+  margin-bottom: .1em;
+  font-size: 4em;
+}
+#previewer .preview .info .button {
+  display: inline-block;
+}
+#previewer .preview .info .button:hover {
+  background-color: rgba(255, 255, 255, 0.2)
+}
+#previewer .preview .info .button i {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 1.3em;
+}
+
+#previewer .pdf {
+  width: 100%;
+  height: 100%;
+}
+
+#previewer h2.message {
+  color: rgba(255, 255, 255, 0.5)
+}
+
+#previewer>button {
+  margin: 0;
+  position: fixed;
+  top: calc(50% + 1.85em);
+  transform: translateY(-50%);
+  background-color: rgba(80, 80, 80, .5);
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  transition: 0.2s ease all;
+}
+
+#previewer>button.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+#previewer>button>i {
+  padding: 0.4em;
+}
+
+#previewer>button:first-of-type {
+  left: 0.5em;
+}
+
+#previewer>button:last-of-type {
+  right: 0.5em;
+}
+
+#previewer .spinner {
+  text-align: center;
+  position: fixed;
+  top: calc(50% + 1.85em);
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#previewer .spinner > div {
+  width: 18px;
+  height: 18px;
+  background-color: white;
+}
+
+/* EDITOR */
+
+#editor-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #fafafa;
+  position: fixed;
+  padding-top: 4em;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+#editor-container #editor {
+  flex: 1;
+}
+
+#editor-container .breadcrumbs {
+  height: 2.3em;
+  padding: 0 1em;
+}
+
+/*** RTL - flip and position arrow of path ***/
+body.rtl .breadcrumbs .chevron {
+  transform: scaleX(-1) translateX(16em);
+}
+
+#editor-container .breadcrumbs span {
+  font-size: .75rem;
+}
+
+#editor-container .breadcrumbs i {
+  font-size: 1rem;
+}
+
+/* * * * * * * * * * * * * * * *
+ *            PROMPT           *
+ * * * * * * * * * * * * * * * */
+
+.noty_buttons {
+  text-align: right;
+  padding: 0 10px 10px !important;
+}
+
+.noty_buttons button {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 0 0 0;
+  font-size: 1rem;
+}
+
+/* * * * * * * * * * * * * * * *
+ *            FOOTER           *
+ * * * * * * * * * * * * * * * */
+
+.credits {
+  font-size: 0.6em;
+  margin: 3em 2.5em;
+  color: #a5a5a5;
+}
+
+.credits > span {
+  display: block;
+  margin: .3em 0;
+}
+
+.credits a,
+.credits a:hover {
+  color: inherit;
+  cursor: pointer;
+}
+
+
+/* * * * * * * * * * * * * * * *
+ *          ANIMATIONS         *
+ * * * * * * * * * * * * * * * */
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* * * * * * * * * * * * * * * *
+ *         SETTINGS RULES      *
+ * * * * * * * * * * * * * * * */
+
+.rules > div {
+  display: flex;
+  align-items: center;
+  margin: .5rem 0;
+}
+
+.rules input[type="checkbox"] {
+  margin-right: .2rem;
+}
+
+.rules input[type="text"] {
+  border: 1px solid#ddd;
+  padding: .2rem;
+}
+
+.rules label {
+  margin-right: .5rem;
+}
+
+.rules button {
+  margin-left: auto;
+}
+
+.rules button.delete {
+  padding: .2rem .5rem;
+  margin-left: .5rem;
+}
+
+@import './mobile.css';
+
+/* * * * * * * * * * * * * * * *
+ *         RTL overrides       *
+ * * * * * * * * * * * * * * * */
+
+body.rtl .card-content textarea {
+  direction: ltr;
+  text-align: left;
+}
+
+body.rtl .card-content .small + input {
+  direction: ltr;
+  text-align: left;
+}
+
+body.rtl .card.floating .card-content .file-list {
+  direction: ltr;
+  text-align: left;
+}

@@ -1,0 +1,31 @@
+*.db
+*.bak
+_old
+rice-box.go
+.idea/
+/filebrowser
+/filebrowser.exe
+/dist
+
+.DS_Store
+node_modules
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
+bin/
+build/

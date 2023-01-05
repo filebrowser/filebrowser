@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  [{[ if .ReCaptcha -]}]
+    <script src="[{[ .ReCaptchaHost ]}]/recaptcha/api.js?render=explicit"></script>
+  [{[ end ]}]
+
+  <title>[{[ if .Name -]}][{[ .Name ]}][{[ else ]}]File Browser[{[ end ]}]</title>
+
+  <link rel="icon" type="image/png" sizes="32x32" href="[{[ .StaticURL ]}]/img/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="[{[ .StaticURL ]}]/img/icons/favicon-16x16.png">
+
+  <!-- Add to home screen for Android and modern mobile browsers -->
+  <link rel="manifest" id="manifestPlaceholder" crossorigin="use-credentials">
+  <meta name="theme-color" content="[{[ if .Color -]}][{[ .Color ]}][{[ else ]}]#2979ff[{[ end ]}]">
+
+  <!-- Add to home screen for Safari on iOS/iPadOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="assets">
+  <link rel="apple-touch-icon" href="[{[ .StaticURL ]}]/img/icons/apple-touch-icon.png">
+
+  <!-- Add to home screen for Windows -->
+  <meta name="msapplication-TileImage" content="[{[ .StaticURL ]}]/img/icons/mstile-144x144.png">
+  <meta name="msapplication-TileColor" content="[{[ if .Color -]}][{[ .Color ]}][{[ else ]}]#2979ff[{[ end ]}]">
+
+  <!-- Inject Some Variables and generate the manifest json -->
+  <script>
+    window.FileBrowser = JSON.parse('[{[ .Json ]}]');
+
+    var fullStaticURL = window.location.origin + window.FileBrowser.StaticURL;
+    var dynamicManifest = {
+      "name": window.FileBrowser.Name || 'File Browser',
+      "short_name": window.FileBrowser.Name || 'File Browser',
+      "icons": [
+        {
+          "src": fullStaticURL + "/img/icons/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": fullStaticURL + "/img/icons/android-chrome-512x512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ],
+      "start_url": window.location.origin + window.FileBrowser.BaseURL,
+      "display": "standalone",
+      "background_color": "#ffffff",
+      "theme_color": window.FileBrowser.Color || "#455a64"
+    }
+
+    const stringManifest = JSON.stringify(dynamicManifest);
+    const blob = new Blob([stringManifest], {type: 'application/json'});
+    const manifestURL = URL.createObjectURL(blob);
+    document.querySelector('#manifestPlaceholder').setAttribute('href', manifestURL);
+  </script>
+
+  <style>
+  #loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 9999;
+    transition: .1s ease opacity;
+    -webkit-transition: .1s ease opacity;
+  }
+
+  #loading.done {
+    opacity: 0;
+  }
+
+  #loading .spinner {
+    width: 70px;
+    text-align: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+  }
+
+  #loading .spinner > div {
+    width: 18px;
+    height: 18px;
+    background-color: #333;
+    border-radius: 100%;
+    display: inline-block;
+    -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+    animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+  }
+
+  #loading .spinner .bounce1 {
+    -webkit-animation-delay: -0.32s;
+    animation-delay: -0.32s;
+  }
+
+  #loading .spinner .bounce2 {
+    -webkit-animation-delay: -0.16s;
+    animation-delay: -0.16s;
+  }
+
+  @-webkit-keyframes sk-bouncedelay {
+    0%, 80%, 100% { -webkit-transform: scale(0) }
+    40% { -webkit-transform: scale(1.0) }
+  }
+
+  @keyframes sk-bouncedelay {
+    0%, 80%, 100% {
+      -webkit-transform: scale(0);
+      transform: scale(0);
+    } 40% {
+      -webkit-transform: scale(1.0);
+      transform: scale(1.0);
+    }
+  }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <div id="loading">
+    <div class="spinner">
+      <div class="bounce1"></div>
+      <div class="bounce2"></div>
+      <div class="bounce3"></div>
+    </div>
+  </div>
+
+  [{[ if .Theme -]}]
+    <link rel="stylesheet" href="[{[ .StaticURL ]}]/themes/[{[ .Theme ]}].css" />
+  [{[ end ]}]
+  [{[ if .CSS -]}]
+    <link rel="stylesheet" href="[{[ .StaticURL ]}]/custom.css" />
+  [{[ end ]}]
+</body>
+</html>
