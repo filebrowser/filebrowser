@@ -10,6 +10,7 @@
     "delete": "Delete",
     "directorySizes": "Calculate directory sizes",
     "download": "Download",
+    "edit": "Edit",
     "file": "File",
     "folder": "Folder",
     "hideDotfiles": "Hide dotfiles",
