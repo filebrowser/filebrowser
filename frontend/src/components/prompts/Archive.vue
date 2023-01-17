@@ -12,17 +12,25 @@
         type="text"
         @keyup.enter="submit"
         v-model.trim="name"
+        :disabled="loading"
         required
       />
 
       <button
         v-for="(ext, format) in formats"
         :key="format"
+        :disabled="loading"
         class="button button--block"
         @click="archive(format)"
         v-focus
       >
-        {{ ext }}
+        <i
+          v-if="loading && format === loadingFormat"
+          class="material-icons spin"
+        >
+          autorenew
+        </i>
+        <span v-else>{{ ext }}</span>
       </button>
     </div>
   </div>
@@ -48,11 +56,18 @@ export default {
         tarlz4: "tar.lz4",
         tarsz: "tar.sz",
       },
+      loading: false,
+      loadingFormat: "",
     };
   },
   computed: {
     ...mapState(["req", "selected"]),
     ...mapGetters(["isFiles", "isListing"]),
+  },
+  mounted() {
+    if (this.selected.length > 0) {
+      this.name = this.req.items[this.selected[0]].name;
+    }
   },
   methods: {
     cancel: function () {
@@ -75,6 +90,8 @@ export default {
       uri = uri.replace("//", "/");
 
       try {
+        this.loading = true;
+        this.loadingFormat = format;
         buttons.loading("archive");
         await api.archive(uri, this.name, format, ...items);
         this.$store.commit("closeHovers");
@@ -83,6 +100,8 @@ export default {
       } catch (e) {
         this.$showError(e);
       } finally {
+        this.loading = false;
+        this.loadingFormat = "";
         buttons.done("archive");
       }
     },
