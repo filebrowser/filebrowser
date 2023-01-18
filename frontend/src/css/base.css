@@ -44,7 +44,7 @@ video {
 }
 
 i.spin {
-  animation: 1s spin linear infinite, 1s pulse linear infinite;
+  animation: 1s spin linear infinite;
 }
 
 i.pulse-spin {

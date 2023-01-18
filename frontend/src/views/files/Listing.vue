@@ -518,10 +518,6 @@ export default {
       let key = String.fromCharCode(event.which).toLowerCase();
 
       switch (key) {
-        case "f":
-          event.preventDefault();
-          this.$store.commit("showHover", "search");
-          break;
         case "c":
         case "x":
           this.copyCut(event, key);

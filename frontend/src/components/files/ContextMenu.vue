@@ -12,8 +12,15 @@
     <p v-if="options.share">
       <action icon="share" :label="$t('buttons.share')" show="share" />
     </p>
+    <p v-if="options.edit">
+      <action icon="mode_edit" :label="$t('buttons.edit')" @action="openFile" />
+    </p>
     <p v-if="options.rename">
-      <action icon="mode_edit" :label="$t('buttons.rename')" show="rename" />
+      <action
+        icon="drive_file_rename_outline"
+        :label="$t('buttons.rename')"
+        show="rename"
+      />
     </p>
     <p v-if="options.copy">
       <action
@@ -83,7 +90,7 @@ export default {
   name: "context-menu",
   components: { Action },
   computed: {
-    ...mapState(["req", "selected", "user", "selected", "contextMenu"]),
+    ...mapState(["req", "selected", "user", "contextMenu"]),
     ...mapGetters(["selectedCount", "onlyArchivesSelected"]),
     menuPosition() {
       if (this.contextMenu === null) {
@@ -105,6 +112,10 @@ export default {
       return {
         download: this.user.perm.download,
         delete: this.selectedCount > 0 && this.user.perm.delete,
+        edit:
+          this.selectedCount === 1 &&
+          (this.req.items[this.selected].type === "text" ||
+            this.req.items[this.selected].type === "textImmutable"),
         rename: this.selectedCount === 1 && this.user.perm.rename,
         share: this.selectedCount === 1 && this.user.perm.share,
         move: this.selectedCount > 0 && this.user.perm.rename,
@@ -132,6 +143,9 @@ export default {
     },
     close() {
       this.$store.commit("hideContextMenu");
+    },
+    openFile() {
+      this.$router.push({ path: this.req.items[this.selected].url });
     },
     download() {
       if (this.selectedCount === 1 && !this.req.items[this.selected[0]].isDir) {
