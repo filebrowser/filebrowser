@@ -423,6 +423,7 @@ export default {
     document.addEventListener("dragenter", this.dragEnter);
     document.addEventListener("dragleave", this.dragLeave);
     document.addEventListener("drop", this.drop);
+    document.addEventListener("paste", this.drop);
   },
   beforeDestroy() {
     // Remove event listeners before destroying this page.
@@ -435,6 +436,7 @@ export default {
     document.removeEventListener("dragenter", this.dragEnter);
     document.removeEventListener("dragleave", this.dragLeave);
     document.removeEventListener("drop", this.drop);
+    document.removeEventListener("paste", this.drop);
   },
   methods: {
     ...mapMutations(["updateUser", "addSelected"]),
@@ -657,7 +659,7 @@ export default {
       this.dragCounter = 0;
       this.resetOpacity();
 
-      let dt = event.dataTransfer;
+      let dt = event.dataTransfer ?? event.clipboardData;
       let el = event.target;
 
       if (dt.files.length <= 0) return;

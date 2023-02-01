@@ -45,7 +45,14 @@ export function scanFiles(dt) {
           typeof item.webkitGetAsEntry === "function"
         ) {
           const entry = item.webkitGetAsEntry();
-          readEntry(entry);
+          if (entry) {
+            // for "drop" event
+            readEntry(entry);
+          } else {
+            // for "paste" event
+            resolve(dt.files);
+            break;
+          }
         }
       }
     } else {
