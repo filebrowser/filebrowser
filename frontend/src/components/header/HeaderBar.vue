@@ -1,6 +1,8 @@
 <template>
   <header>
-    <img v-if="showLogo !== undefined" :src="logoURL" />
+    <a :href="home">
+      <img v-if="showLogo !== undefined" :src="logoURL" />
+    </a>
     <action
       v-if="showMenu !== undefined"
       class="menu-button"
@@ -32,7 +34,7 @@
 </template>
 
 <script>
-import { logoURL } from "@/utils/constants";
+import { logoURL, baseURL } from "@/utils/constants";
 
 import Action from "@/components/header/Action";
 
@@ -45,6 +47,7 @@ export default {
   data: function () {
     return {
       logoURL,
+      home: baseURL + "/",
     };
   },
   methods: {
