@@ -82,7 +82,9 @@
 
     <div
       class="credits"
-      v-if="$router.currentRoute.path.includes('/files/') && !disableUsedPercentage"
+      v-if="
+        $router.currentRoute.path.includes('/files/') && !disableUsedPercentage
+      "
       style="width: 90%; margin: 2em 2.5em 3em 2.5em"
     >
       <progress-bar :val="usage.usedPercentage" size="small"></progress-bar>
