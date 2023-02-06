@@ -150,6 +150,9 @@ export default {
           ? this.$route.path
           : this.$route.path + "/";
         let usageStats = { used: 0, total: 0, usedPercentage: 0 };
+        if (this.disableUsedPercentage) {
+          return usageStats;
+        }
         try {
           let usage = await api.usage(path);
           usageStats = {
