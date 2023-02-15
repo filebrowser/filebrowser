@@ -178,6 +178,7 @@
     "customStylesheet": "Aangepast Stylesheet",
     "defaultUserDescription": "Dit zijn de standaardinstellingen voor nieuwe gebruikers.",
     "disableExternalLinks": "Schakel externe links uit (behalve documentatie)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "Documentatie",
     "examples": "Voorbeelden",
     "executeOnShell": "Uitvoeren in de shell",

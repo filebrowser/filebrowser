@@ -178,6 +178,7 @@
     "customStylesheet": "Custom Stylesheet",
     "defaultUserDescription": "Þetta eru sjálfgefnar stillingar fyrir nýja notendur.",
     "disableExternalLinks": "Sýna ytri-hlekki (fyrir utan leiðbeiningar)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "leiðbeiningar",
     "examples": "Dæmi",
     "executeOnShell": "Keyra í skel",

@@ -190,6 +190,7 @@
     "customStylesheet": "Custom Stylesheet",
     "defaultUserDescription": "This are the default settings for new users.",
     "disableExternalLinks": "Disable external links (except documentation)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentation",
     "examples": "Examples",
     "executeOnShell": "Execute on shell",

@@ -190,6 +190,7 @@
     "customStylesheet": "Estilos personalizados",
     "defaultUserDescription": "Estas são as configurações padrão para novos usuários.",
     "disableExternalLinks": "Desabilitar links externos (exceto documentação)",
+    "disableUsedDiskPercentage": "Desabilitar gráfico de porcentagem de disco usado",
     "documentation": "documentação",
     "examples": "Exemplos",
     "executeOnShell": "Executar no console",

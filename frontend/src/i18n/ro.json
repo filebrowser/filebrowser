@@ -178,6 +178,7 @@
     "customStylesheet": "CSS personalizat",
     "defaultUserDescription": "Acestea sunt setările implicite pentru noii utilizatori.",
     "disableExternalLinks": "Dezactivează linkurile externe (exceptând documentația)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentație",
     "examples": "Exemple",
     "executeOnShell": "Execută in linia de comandă",

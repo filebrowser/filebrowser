@@ -184,6 +184,7 @@
     "customStylesheet": "Özel CSS",
     "defaultUserDescription": "Bu, yeni kullanıcılar için varsayılan ayarlardır.",
     "disableExternalLinks": "Harici bağlantıları devre dışı bırakın (dökümantasyon hariç)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "dökümantasyon",
     "examples": "Örnekler",
     "executeOnShell": "Komut satırında çalıştır",
