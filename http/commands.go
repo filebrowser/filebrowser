@@ -27,6 +27,7 @@ var (
 	cmdNotAllowed = []byte("Command not allowed.")
 )
 
+//nolint:unparam
 func wsErr(ws *websocket.Conn, r *http.Request, status int, err error) {
 	txt := http.StatusText(status)
 	if err != nil || status >= 400 {

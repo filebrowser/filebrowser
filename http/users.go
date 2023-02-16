@@ -26,7 +26,7 @@ type modifyUserRequest struct {
 
 func getUserID(r *http.Request) (uint, error) {
 	vars := mux.Vars(r)
-	i, err := strconv.ParseUint(vars["id"], 10, 0) //nolint:gomnd
+	i, err := strconv.ParseUint(vars["id"], 10, 0)
 	if err != nil {
 		return 0, err
 	}
@@ -142,7 +142,7 @@ var userPostHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *
 		return http.StatusInternalServerError, err
 	}
 
-	w.Header().Set("Location", "/settings/users/"+strconv.FormatUint(uint64(req.Data.ID), 10)) //nolint:gomnd
+	w.Header().Set("Location", "/settings/users/"+strconv.FormatUint(uint64(req.Data.ID), 10))
 	return http.StatusCreated, nil
 })
 

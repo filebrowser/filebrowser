@@ -53,7 +53,7 @@ func printUsers(usrs []*users.User) {
 }
 
 func parseUsernameOrID(arg string) (username string, id uint) {
-	id64, err := strconv.ParseUint(arg, 10, 64) //nolint:gomnd
+	id64, err := strconv.ParseUint(arg, 10, 64)
 	if err != nil {
 		return arg, 0
 	}
