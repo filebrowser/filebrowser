@@ -198,8 +198,9 @@ func (i *FileInfo) RealPath() string {
 	return i.Path
 }
 
+// TODO: use constants
+//
 //nolint:goconst
-//TODO: use constants
 func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	if IsNamedPipe(i.Mode) {
 		i.Type = "blob"
