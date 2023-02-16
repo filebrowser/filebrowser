@@ -67,9 +67,9 @@ func parseUnixCommand(cmd string) ([]string, error) {
 // returns the command and the arguments as an array. It
 // should be able to parse commonly used command lines.
 // Only basic syntax is supported:
-//  - spaces in double quotes are not token delimiters
-//  - double quotes are escaped by either backspace or another double quote
-//  - except for the above case backspaces are path separators (not special)
+//   - spaces in double quotes are not token delimiters
+//   - double quotes are escaped by either backspace or another double quote
+//   - except for the above case backspaces are path separators (not special)
 //
 // Many sources point out that escaping quotes using backslash can be unsafe.
 // Use two double quotes when possible. (Source: http://stackoverflow.com/a/31413730/2616179 )
