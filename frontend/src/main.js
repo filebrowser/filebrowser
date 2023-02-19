@@ -5,7 +5,7 @@ import store from "@/store";
 import router from "@/router";
 import i18n from "@/i18n";
 import Vue from "@/utils/vue";
-import { recaptcha, loginPage } from "@/utils/constants";
+import { recaptcha, loginPage, authMethod } from "@/utils/constants";
 import { login, validateLogin } from "@/utils/auth";
 import App from "@/App";
 
@@ -15,7 +15,7 @@ sync(store, router);
 
 async function start() {
   try {
-    if (loginPage) {
+    if (loginPage || authMethod === "oidc") {
       await validateLogin();
     } else {
       await login("", "", "");

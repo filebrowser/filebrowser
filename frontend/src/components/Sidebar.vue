@@ -121,6 +121,7 @@ import {
   disableUsedPercentage,
   noAuth,
   loginPage,
+  authMethod,
 } from "@/utils/constants";
 import { files as api } from "@/api";
 import ProgressBar from "vue-simple-progress";
@@ -141,7 +142,7 @@ export default {
     version: () => version,
     disableExternal: () => disableExternal,
     disableUsedPercentage: () => disableUsedPercentage,
-    canLogout: () => !noAuth && loginPage,
+    canLogout: () => (!noAuth && loginPage) || authMethod === "oidc"
   },
   asyncComputed: {
     usage: {

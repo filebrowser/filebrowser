@@ -2,6 +2,7 @@ import store from "@/store";
 import router from "@/router";
 import { Base64 } from "js-base64";
 import { baseURL } from "@/utils/constants";
+import cookie from "@/utils/cookie";
 
 export function parseToken(token) {
   const parts = token.split(".");
@@ -20,9 +21,15 @@ export function parseToken(token) {
 }
 
 export async function validateLogin() {
+  let jwt = localStorage.getItem("jwt")
+
+  if (!jwt || jwt === "null") {
+    jwt = cookie("auth");
+  }
+
   try {
-    if (localStorage.getItem("jwt")) {
-      await renew(localStorage.getItem("jwt"));
+    if (jwt) {
+      await renew(jwt);
     }
   } catch (_) {
     console.warn('Invalid JWT token in storage') // eslint-disable-line

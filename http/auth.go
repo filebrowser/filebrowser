@@ -112,6 +112,8 @@ var loginHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, e
 		return http.StatusForbidden, nil
 	} else if err != nil {
 		return http.StatusInternalServerError, err
+	} else if user != nil && user.AuthSource == "oidc" {
+		return setTokenCookie(w, r, d, user)
 	} else {
 		return printToken(w, r, d, user)
 	}
@@ -176,7 +178,7 @@ var renewHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data
 	return printToken(w, r, d, d.user)
 })
 
-func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.User) (int, error) {
+func getToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.User) (string, error) {
 	claims := &authToken{
 		User: userInfo{
 			ID:           user.ID,
@@ -198,6 +200,12 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signed, err := token.SignedString(d.settings.Key)
+
+	return signed, err
+}
+
+func printToken(w http.ResponseWriter, r *http.Request, d *data, user *users.User) (int, error) {
+	signed, err := getToken(w, r, d, user)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -206,5 +214,17 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 	if _, err := w.Write([]byte(signed)); err != nil {
 		return http.StatusInternalServerError, err
 	}
+	return 0, nil
+}
+
+func setTokenCookie(w http.ResponseWriter, r *http.Request, d *data, user *users.User) (int, error) {
+	signed, err := getToken(w, r, d, user)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	w.Header().Set("Set-Cookie", "auth="+signed+"; path=/")
+	http.Redirect(w, r, "/files", http.StatusMovedPermanently)
+
 	return 0, nil
 }

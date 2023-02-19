@@ -41,6 +41,11 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("recaptcha.key", "", "ReCaptcha site key")
 	flags.String("recaptcha.secret", "", "ReCaptcha secret")
 
+	flags.String("oidc.clientID", "", "Open ID Connect Client ID for auth.method=oidc")
+	flags.String("oidc.clientSecret", "", "Open ID Connect Client Secret for auth.method=oidc")
+	flags.String("oidc.issuer", "", "Open ID Connect Configuration Issuer auth.method=oidc")
+	flags.String("oidc.redirectURL", "", "Open ID Connect Redirect URL for auth.method=oidc")
+
 	flags.String("branding.name", "", "replace 'File Browser' by this name")
 	flags.String("branding.color", "", "set the theme color")
 	flags.String("branding.files", "", "path to directory with images and custom styles")
@@ -114,6 +119,24 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 			}
 		}
 		auther = jsonAuth
+	}
+
+	if method == auth.MethodOIDCAuth {
+		oidcAuth := &auth.OIDCAuth{}
+		id := mustGetString(flags, "oidc.clientID")
+		secret := mustGetString(flags, "oidc.clientSecret")
+		url := mustGetString(flags, "oidc.issuer")
+		redirect := mustGetString(flags, "oidc.redirectURL")
+
+		if id != "" && secret != "" && url != "" && redirect != "" {
+			oidcAuth.OIDC = &auth.OAuthClient{
+				ClientID:     id,
+				ClientSecret: secret,
+				Issuer:       url,
+				RedirectURL:  redirect,
+			}
+		}
+		auther = oidcAuth
 	}
 
 	if method == auth.MethodHookAuth {

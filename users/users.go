@@ -36,6 +36,7 @@ type User struct {
 	Rules        []rules.Rule  `json:"rules"`
 	HideDotfiles bool          `json:"hideDotfiles"`
 	DateFormat   bool          `json:"dateFormat"`
+	AuthSource   string        `json:"authSource"`
 }
 
 // GetRules implements rules.Provider.

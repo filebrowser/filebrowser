@@ -18,7 +18,7 @@ import (
 	"github.com/filebrowser/filebrowser/v2/version"
 )
 
-func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys fs.FS, file, contentType string) (int, error) {
+func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, fSys fs.FS, file, contentType string) (int, error) {
 	w.Header().Set("Content-Type", contentType)
 
 	auther, err := d.store.Auth.Get(d.settings.AuthMethod)
@@ -71,6 +71,21 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 			data["ReCaptcha"] = auther.ReCaptcha.Key != "" && auther.ReCaptcha.Secret != ""
 			data["ReCaptchaHost"] = auther.ReCaptcha.Host
 			data["ReCaptchaKey"] = auther.ReCaptcha.Key
+		}
+	}
+
+	if d.settings.AuthMethod == auth.MethodOIDCAuth {
+		raw, err := d.store.Auth.Get(d.settings.AuthMethod) //nolint:govet
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		auther := raw.(*auth.OIDCAuth)
+		cookie, _ := r.Cookie("auth")
+		
+		if cookie == nil {
+			auther.OIDC.InitAuthFlow(w, r)
+			return 0, nil
 		}
 	}
 
