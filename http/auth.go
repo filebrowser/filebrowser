@@ -223,8 +223,12 @@ func setTokenCookie(w http.ResponseWriter, r *http.Request, d *data, user *users
 		return http.StatusInternalServerError, err
 	}
 
+	redirect := "/files"
+	if r.URL.Query().Has("redirect") {
+		redirect = r.URL.Query().Get("redirect")
+	}
 	w.Header().Set("Set-Cookie", "auth="+signed+"; path=/")
-	http.Redirect(w, r, "/files", http.StatusMovedPermanently)
+	http.Redirect(w, r, redirect, http.StatusMovedPermanently)
 
 	return 0, nil
 }

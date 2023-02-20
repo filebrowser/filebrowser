@@ -55,7 +55,6 @@ func (o *OAuthClient) InitClient() {
 	ctx := context.Background()
 	provider, err := oidc.NewProvider(ctx, o.Issuer)
 	if err != nil {
-		fmt.Println(err)
 		log.Fatal(err)
 	}
 
@@ -74,6 +73,7 @@ func (o *OAuthClient) InitAuthFlow(w http.ResponseWriter, r *http.Request) {
 	o.InitClient()
 	state := fmt.Sprintf("%x", rand.Uint32())
 	nonce := fmt.Sprintf("%x", rand.Uint32())
+	o.OAuth2Config.RedirectURL += "?redirect=" + r.URL.Path
 	url := o.OAuth2Config.AuthCodeURL(state, oidc.Nonce(nonce))
 
 	log.Println("oidc init flow ", url)
@@ -84,7 +84,6 @@ func (o *OAuthClient) InitAuthFlow(w http.ResponseWriter, r *http.Request) {
 // HandleAuthCallback manages code exchange and obtains the id token.
 func (o *OAuthClient) HandleAuthCallback(r *http.Request, usr users.Store, srv *settings.Server) (*users.User, error) {
 	o.InitClient()
-
 	code := r.URL.Query().Get("code")
 	stateQuery := r.URL.Query().Get("state")
 	stateCookie, err := r.Cookie("state")
