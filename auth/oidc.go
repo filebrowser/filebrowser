@@ -2,11 +2,13 @@ package auth
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
 	"log"
-	"math/rand"
+	"math"
+	"math/big"
 	"net/http"
 	"os"
 
@@ -71,8 +73,11 @@ func (o *OAuthClient) InitClient() {
 // InitAuthFlow triggers the oidc authentication flow.
 func (o *OAuthClient) InitAuthFlow(w http.ResponseWriter, r *http.Request) {
 	o.InitClient()
-	state := fmt.Sprintf("%x", rand.Uint32())
-	nonce := fmt.Sprintf("%x", rand.Uint32())
+
+	rand1, _ := rand.Int(rand.Reader, big.NewInt(math.MaxInt32))
+	rand2, _ := rand.Int(rand.Reader, big.NewInt(math.MaxInt32))
+	state := fmt.Sprintf("%x", rand1)
+	nonce := fmt.Sprintf("%x", rand2)
 	o.OAuth2Config.RedirectURL += "?redirect=" + r.URL.Path
 	url := o.OAuth2Config.AuthCodeURL(state, oidc.Nonce(nonce))
 
