@@ -8,7 +8,9 @@ import (
 	"math"
 	"math/big"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
@@ -45,12 +47,13 @@ func (a OIDCAuth) LoginPage() bool {
 
 // OAuthClient describes the oidc connector parameters.
 type OAuthClient struct {
-	ClientID     string                `json:"clientID"`
-	ClientSecret string                `json:"clientSecret"`
-	Issuer       string                `json:"issuer"`
-	RedirectURL  string                `json:"redirectURL"`
-	OAuth2Config oauth2.Config         `json:"-"`
-	Verifier     *oidc.IDTokenVerifier `json:"-"`
+	ClientID               string                `json:"clientID"`
+	ClientSecret           string                `json:"clientSecret"`
+	Issuer                 string                `json:"issuer"`
+	RedirectURL            string                `json:"redirectURL"`
+	RedirectURLAppendQuery bool                  `json:"redirectURLAppendQuery"`
+	OAuth2Config           oauth2.Config         `json:"-"`
+	Verifier               *oidc.IDTokenVerifier `json:"-"`
 }
 
 // InitClient configures the connector via oidc discovery.
@@ -79,12 +82,14 @@ func (o *OAuthClient) InitAuthFlow(w http.ResponseWriter, r *http.Request) {
 	rand2, _ := rand.Int(rand.Reader, big.NewInt(math.MaxInt32))
 	state := fmt.Sprintf("%x", rand1)
 	nonce := fmt.Sprintf("%x", rand2)
-	o.OAuth2Config.RedirectURL += "?redirect=" + r.URL.Path
-	url := o.OAuth2Config.AuthCodeURL(state, oidc.Nonce(nonce))
+	if strings.HasPrefix(r.URL.Path, "/files/") && o.RedirectURLAppendQuery {
+		o.OAuth2Config.RedirectURL += "?redirect=" + url.QueryEscape(r.URL.Path)
+	}
+	redirect := o.OAuth2Config.AuthCodeURL(state, oidc.Nonce(nonce))
 
-	log.Println("oidc init flow ", url)
+	log.Println("oidc init flow ", redirect)
 	w.Header().Set("Set-Cookie", "state="+state+"; path=/")
-	http.Redirect(w, r, url, http.StatusMovedPermanently)
+	http.Redirect(w, r, redirect, http.StatusMovedPermanently)
 }
 
 // HandleAuthCallback manages code exchange and obtains the id token.

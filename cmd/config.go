@@ -45,6 +45,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("oidc.clientSecret", "", "Open ID Connect Client Secret for auth.method=oidc")
 	flags.String("oidc.issuer", "", "Open ID Connect Configuration Issuer URL for auth.method=oidc")
 	flags.String("oidc.redirectURL", "", "Open ID Connect Redirect URL for auth.method=oidc")
+	flags.Bool("oidc.redirectURLAppendQuery", false, "Whether to append '?redirect=...' to the redirectURL")
 
 	flags.String("branding.name", "", "replace 'File Browser' by this name")
 	flags.String("branding.color", "", "set the theme color")
@@ -132,13 +133,15 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 		secret := mustGetString(flags, "oidc.clientSecret")
 		url := mustGetString(flags, "oidc.issuer")
 		redirect := mustGetString(flags, "oidc.redirectURL")
+		appendQuery := mustGetBool(flags, "oidc.redirectURLAppendQuery")
 
 		if id != "" && secret != "" && url != "" && redirect != "" {
 			oidcAuth.OIDC = &auth.OAuthClient{
-				ClientID:     id,
-				ClientSecret: secret,
-				Issuer:       url,
-				RedirectURL:  redirect,
+				ClientID:               id,
+				ClientSecret:           secret,
+				Issuer:                 url,
+				RedirectURL:            redirect,
+				RedirectURLAppendQuery: appendQuery,
 			}
 		}
 		auther = oidcAuth
