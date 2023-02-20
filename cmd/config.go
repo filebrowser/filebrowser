@@ -53,11 +53,8 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.Bool("branding.disableUsedPercentage", false, "disable used disk percentage graph")
 }
 
-//nolint:gocyclo
-func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, auth.Auther) {
-	method := settings.AuthMethod(mustGetString(flags, "auth.method"))
-
-	var defaultAuther map[string]interface{}
+func getDefaultAuther(method settings.AuthMethod, defaults ...interface{}) (map[string]interface{}, settings.AuthMethod) {
+	var d map[string]interface{}
 	if len(defaults) > 0 {
 		if hasAuth := defaults[0]; hasAuth != true {
 			for _, arg := range defaults {
@@ -67,12 +64,20 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 				case auth.Auther:
 					ms, err := json.Marshal(def)
 					checkErr(err)
-					err = json.Unmarshal(ms, &defaultAuther)
+					err = json.Unmarshal(ms, &d)
 					checkErr(err)
 				}
 			}
 		}
 	}
+	return d, method
+}
+
+//nolint:gocyclo
+func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, auth.Auther) {
+	method := settings.AuthMethod(mustGetString(flags, "auth.method"))
+
+	defaultAuther, method := getDefaultAuther(method, defaults)
 
 	var auther auth.Auther
 	if method == auth.MethodProxyAuth {

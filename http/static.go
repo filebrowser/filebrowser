@@ -59,35 +59,9 @@ func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, fSys 
 		}
 	}
 
-	if d.settings.AuthMethod == auth.MethodJSONAuth {
-		raw, err := d.store.Auth.Get(d.settings.AuthMethod) //nolint:govet
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		auther := raw.(*auth.JSONAuth)
-
-		if auther.ReCaptcha != nil {
-			data["ReCaptcha"] = auther.ReCaptcha.Key != "" && auther.ReCaptcha.Secret != ""
-			data["ReCaptchaHost"] = auther.ReCaptcha.Host
-			data["ReCaptchaKey"] = auther.ReCaptcha.Key
-		}
-	}
-
-	if d.settings.AuthMethod == auth.MethodOIDCAuth {
-		raw, err := d.store.Auth.Get(d.settings.AuthMethod) //nolint:govet
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		auther := raw.(*auth.OIDCAuth)
-		cookie, _ := r.Cookie("auth")
-		public := strings.HasPrefix(r.URL.Path, "/share/") && r.Method == "GET"
-
-		if cookie == nil && !public {
-			auther.OIDC.InitAuthFlow(w, r)
-			return 0, nil
-		}
+	code, err := initializeAuther(w, r, d, data)
+	if code != 0 {
+		return code, err
 	}
 
 	b, err := json.Marshal(data)
@@ -108,6 +82,41 @@ func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, fSys 
 	err = index.Execute(w, data)
 	if err != nil {
 		return http.StatusInternalServerError, err
+	}
+
+	return 0, nil
+}
+
+func initializeAuther(w http.ResponseWriter, r *http.Request, d *data, data map[string]interface{}) (int, error) {
+	if d.settings.AuthMethod == auth.MethodJSONAuth {
+		raw, err := d.store.Auth.Get(d.settings.AuthMethod)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		auther := raw.(*auth.JSONAuth)
+
+		if auther.ReCaptcha != nil {
+			data["ReCaptcha"] = auther.ReCaptcha.Key != "" && auther.ReCaptcha.Secret != ""
+			data["ReCaptchaHost"] = auther.ReCaptcha.Host
+			data["ReCaptchaKey"] = auther.ReCaptcha.Key
+		}
+	}
+
+	if d.settings.AuthMethod == auth.MethodOIDCAuth {
+		raw, err := d.store.Auth.Get(d.settings.AuthMethod)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		auther := raw.(*auth.OIDCAuth)
+		cookie, _ := r.Cookie("auth")
+		public := strings.HasPrefix(r.URL.Path, "/share/") && r.Method == "GET"
+
+		if cookie == nil && !public {
+			auther.OIDC.InitAuthFlow(w, r)
+			return 0, nil
+		}
 	}
 
 	return 0, nil
