@@ -117,10 +117,7 @@ func (o *OAuthClient) HandleAuthCallback(r *http.Request, usr users.Store, srv *
 
 	// Extract claims
 	var claims struct {
-		Email    string `json:"email"`
-		Verified bool   `json:"email_verified"`
 		Username string `json:"preferred_username"`
-		Profile  string `json:"profile"`
 	}
 	if err := idToken.Claims(&claims); err != nil {
 		log.Printf("oidc extract claims failed: %s", err)

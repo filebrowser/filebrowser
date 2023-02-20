@@ -43,7 +43,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 
 	flags.String("oidc.clientID", "", "Open ID Connect Client ID for auth.method=oidc")
 	flags.String("oidc.clientSecret", "", "Open ID Connect Client Secret for auth.method=oidc")
-	flags.String("oidc.issuer", "", "Open ID Connect Configuration Issuer auth.method=oidc")
+	flags.String("oidc.issuer", "", "Open ID Connect Configuration Issuer URL for auth.method=oidc")
 	flags.String("oidc.redirectURL", "", "Open ID Connect Redirect URL for auth.method=oidc")
 
 	flags.String("branding.name", "", "replace 'File Browser' by this name")
