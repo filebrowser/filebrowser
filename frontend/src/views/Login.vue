@@ -1,5 +1,5 @@
 <template>
-  <div id="login" :class="{ recaptcha: recaptcha }">
+  <div id="login" :class="{ recaptcha: recaptcha }" v-if="authMethodJSON">
     <form @submit="submit">
       <img :src="logoURL" alt="File Browser" />
       <h1>{{ name }}</h1>
@@ -41,11 +41,24 @@
       </p>
     </form>
   </div>
+  <div id="login" v-else-if="authMethodOIDC">
+    <form @submit="submit">
+      <img :src="logoURL" alt="File Browser" />
+      <h1>{{ name }}</h1>
+      <div v-if="error !== ''" class="wrong">{{ error }}</div>
+      <input
+          class="button button--block"
+          type="submit"
+          :value="$t('login.oidc')"
+      />
+    </form>
+  </div>
 </template>
 
 <script>
 import * as auth from "@/utils/auth";
 import {
+  authMethod,
   name,
   logoURL,
   recaptcha,
@@ -59,6 +72,8 @@ export default {
     signup: () => signup,
     name: () => name,
     logoURL: () => logoURL,
+    authMethodJSON: () => authMethod === "json",
+    authMethodOIDC: () => authMethod === "oidc",
   },
   data: function () {
     return {
@@ -86,6 +101,10 @@ export default {
     async submit(event) {
       event.preventDefault();
       event.stopPropagation();
+
+      if (authMethod === 'oidc') {
+        return document.location.reload();
+      }
 
       let redirect = this.$route.query.redirect;
       if (redirect === "" || redirect === undefined || redirect === null) {
