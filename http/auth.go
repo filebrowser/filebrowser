@@ -178,7 +178,7 @@ var renewHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data
 	return printToken(w, r, d, d.user)
 })
 
-func getToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.User) (string, error) {
+func getToken(_ *http.Request, d *data, user *users.User) (string, error) {
 	claims := &authToken{
 		User: userInfo{
 			ID:           user.ID,
@@ -205,7 +205,7 @@ func getToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.User)
 }
 
 func printToken(w http.ResponseWriter, r *http.Request, d *data, user *users.User) (int, error) {
-	signed, err := getToken(w, r, d, user)
+	signed, err := getToken(r, d, user)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -218,7 +218,7 @@ func printToken(w http.ResponseWriter, r *http.Request, d *data, user *users.Use
 }
 
 func setTokenCookie(w http.ResponseWriter, r *http.Request, d *data, user *users.User) (int, error) {
-	signed, err := getToken(w, r, d, user)
+	signed, err := getToken(r, d, user)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
