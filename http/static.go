@@ -82,8 +82,9 @@ func handleWithStaticData(w http.ResponseWriter, r *http.Request, d *data, fSys 
 
 		auther := raw.(*auth.OIDCAuth)
 		cookie, _ := r.Cookie("auth")
-		
-		if cookie == nil {
+		public := strings.HasPrefix(r.URL.Path, "/share/") && r.Method == "GET"
+
+		if cookie == nil && public == false {
 			auther.OIDC.InitAuthFlow(w, r)
 			return 0, nil
 		}
