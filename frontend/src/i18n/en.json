@@ -110,7 +110,7 @@
   "login": {
     "createAnAccount": "Create an account",
     "loginInstead": "Already have an account",
-    "oidc": "Loin with OAuth",
+    "oidc": "Login with OAuth",
     "password": "Password",
     "passwordConfirm": "Password Confirmation",
     "passwordsDontMatch": "Passwords don't match",
