@@ -47,9 +47,9 @@
       <h1>{{ name }}</h1>
       <div v-if="error !== ''" class="wrong">{{ error }}</div>
       <input
-          class="button button--block"
-          type="submit"
-          :value="$t('login.oidc')"
+        class="button button--block"
+        type="submit"
+        :value="$t('login.oidc')"
       />
     </form>
   </div>
@@ -102,7 +102,7 @@ export default {
       event.preventDefault();
       event.stopPropagation();
 
-      if (authMethod === 'oidc') {
+      if (authMethod === "oidc") {
         return document.location.reload();
       }
 

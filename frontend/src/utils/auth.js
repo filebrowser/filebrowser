@@ -21,9 +21,9 @@ export function parseToken(token) {
 }
 
 export async function validateLogin() {
-  let jwt = localStorage.getItem("jwt")
+  let jwt = localStorage.getItem("jwt");
 
-  if (authMethod === 'oidc' && (!jwt || jwt === "null")) {
+  if (authMethod === "oidc" && (!jwt || jwt === "null")) {
     jwt = cookie("auth");
   }
 
@@ -48,7 +48,6 @@ export async function login(username, password, recaptcha) {
   });
 
   const body = await res.text();
-
   if (res.status === 200) {
     parseToken(body);
   } else {
@@ -69,7 +68,7 @@ export async function renew(jwt) {
   if (res.status === 200) {
     parseToken(body);
   } else {
-    if (authMethod === 'oidc') {
+    if (authMethod === "oidc") {
       clearLoginState();
       document.location.replace(document.location.pathname);
     }

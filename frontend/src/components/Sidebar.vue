@@ -142,7 +142,7 @@ export default {
     version: () => version,
     disableExternal: () => disableExternal,
     disableUsedPercentage: () => disableUsedPercentage,
-    canLogout: () => (!noAuth && loginPage) || authMethod === "oidc"
+    canLogout: () => (!noAuth && loginPage) || authMethod === "oidc",
   },
   asyncComputed: {
     usage: {
