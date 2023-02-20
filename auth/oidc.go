@@ -90,29 +90,29 @@ func (o *OAuthClient) HandleAuthCallback(r *http.Request, usr users.Store, srv *
 
 	// Validate state
 	if code == "" || stateQuery == "" || err != nil || stateQuery != stateCookie.Value {
-		log.Fatal("Invalid request")
+		log.Println("oidc invalid callback request")
 		return nil, os.ErrPermission
 	}
 
 	// Exchange code for token
 	oauth2Token, err := o.OAuth2Config.Exchange(context.Background(), code)
 	if err != nil {
-		log.Fatal(err)
-		return nil, err
+		log.Printf("oidc code exchange failed: %s", err)
+		return nil, os.ErrPermission
 	}
 
 	// Parse id token
 	rawIDToken, ok := oauth2Token.Extra("id_token").(string)
 	if !ok {
-		log.Fatal("Invalid token")
+		log.Println("oidc id token extract failed")
 		return nil, os.ErrPermission
 	}
 
 	// Verify id token
 	idToken, err := o.Verifier.Verify(context.Background(), rawIDToken)
 	if err != nil {
-		log.Fatal("oidc verify failed")
-		return nil, err
+		log.Printf("oidc token verify failed: %s", err)
+		return nil, os.ErrPermission
 	}
 
 	// Extract claims
@@ -123,8 +123,8 @@ func (o *OAuthClient) HandleAuthCallback(r *http.Request, usr users.Store, srv *
 		Profile  string `json:"profile"`
 	}
 	if err := idToken.Claims(&claims); err != nil {
-		log.Fatal(err)
-		return nil, err
+		log.Printf("oidc extract claims failed: %s", err)
+		return nil, os.ErrPermission
 	}
 
 	// Find filebrowser user by oidc username
@@ -134,7 +134,7 @@ func (o *OAuthClient) HandleAuthCallback(r *http.Request, usr users.Store, srv *
 		return nil, os.ErrPermission
 	}
 	u.AuthSource = "oidc"
-	log.Println("oidc success (user, claims) ", u.Username, claims)
+	log.Printf("oidc authenticated user %s", u.Username)
 
 	return u, nil
 }
