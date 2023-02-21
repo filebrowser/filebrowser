@@ -187,6 +187,7 @@
     "customStylesheet": "Individuelles Stylesheet",
     "defaultUserDescription": "Das sind die Standardeinstellung für Benutzer",
     "disableExternalLinks": "Externe Links deaktivieren (außer Dokumentation)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "Dokumentation",
     "examples": "Beispiele",
     "executeOnShell": "In Shell ausführen",

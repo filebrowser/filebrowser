@@ -178,6 +178,7 @@
     "customStylesheet": "自定義樣式表",
     "defaultUserDescription": "這些是新使用者的預設設定。",
     "disableExternalLinks": "禁止外部連結（幫助文件除外）",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "幫助文件",
     "examples": "範例",
     "executeOnShell": "在Shell中執行",

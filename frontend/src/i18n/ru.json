@@ -186,6 +186,7 @@
     "customStylesheet": "Свой стиль",
     "defaultUserDescription": "Это настройки по умолчанию для новых пользователей.",
     "disableExternalLinks": "Отключить внешние ссылки (кроме документации)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "документация",
     "examples": "Примеры",
     "executeOnShell": "Выполнить в командной строке",

@@ -178,6 +178,7 @@
     "customStylesheet": "Anpassad formatmall",
     "defaultUserDescription": "Detta är standard inställningar för användare.",
     "disableExternalLinks": "Inaktivera externa länkar (förutom dokumentation)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "dokumentation",
     "examples": "Exempel",
     "executeOnShell": "Exekvera på skal",

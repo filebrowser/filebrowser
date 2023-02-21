@@ -1,4 +1,4 @@
-SHELL := /bin/bash
+SHELL := /usr/bin/env bash
 DATE ?= $(shell date +%FT%T%z)
 BASE_PATH := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 VERSION ?= $(shell git describe --tags --always --match=v* 2> /dev/null || \

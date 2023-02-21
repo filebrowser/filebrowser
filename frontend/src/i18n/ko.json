@@ -178,6 +178,7 @@
     "customStylesheet": "커스텀 스타일시트",
     "defaultUserDescription": "아래 사항은 신규 사용자들에 대한 기본 설정입니다.",
     "disableExternalLinks": "외부 링크 감추기",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "문서",
     "examples": "예",
     "executeOnShell": "쉘에서 실행",

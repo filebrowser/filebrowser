@@ -178,6 +178,7 @@
     "customStylesheet": "Foglio di stile personalizzato",
     "defaultUserDescription": "Queste sono le impostazioni predefinite per i nuovi utenti.",
     "disableExternalLinks": "Disabilita link esterni (tranne per la documentazione)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentazione",
     "examples": "Esempi",
     "executeOnShell": "Esegui nella shell",
