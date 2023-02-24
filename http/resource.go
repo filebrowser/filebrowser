@@ -56,9 +56,8 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		return errToStatus(err), err
 	}
 
-	err = checkOutOfScopeSymlink(d, file.Path)
-	if err != nil {
-		return errToStatus(err), err
+	if file.IsSymlink && symlinkOutOfScope(d, file) {
+		return errToStatus(errors.ErrNotExist), errors.ErrNotExist
 	}
 
 	if r.URL.Query().Get("disk_usage") == "true" {
@@ -357,39 +356,22 @@ func checkParent(src, dst string) error {
 
 // Checks if path contains symlink to out-of-scope targets.
 // Returns error ErrNotExist if it does.
-func checkOutOfScopeSymlink(d *data, target string) error {
-	lsf, ok := d.user.Fs.(afero.LinkReader)
-	if !ok {
-		return nil
-	}
+func symlinkOutOfScope(d *data, file *files.FileInfo) bool {
+	var err error
 
-	var parts []string
-	for _, part := range strings.Split(target, string(os.PathSeparator)) {
-		if part != "" {
-			parts = append(parts, part)
+	link := ""
+	if lsf, ok := d.user.Fs.(afero.LinkReader); ok {
+		if link, err = lsf.ReadlinkIfPossible(file.Path); err != nil {
+			return false
 		}
 	}
 
-	evalPath := string(os.PathSeparator)
-	for _, part := range parts {
-		evalPath = filepath.Join(evalPath, filepath.Clean(part))
-		symlink, err := lsf.ReadlinkIfPossible(evalPath)
-		if err == nil {
-			parentDir := filepath.Dir(evalPath)
-			var fullLinkTarget string
-			if filepath.IsAbs(symlink) {
-				fullLinkTarget = symlink
-			} else {
-				fullLinkTarget = filepath.Join(d.user.FullPath(parentDir), symlink)
-			}
-			scopedLinkTarget := d.user.FullPath(filepath.Join(parentDir, symlink))
-			if fullLinkTarget != scopedLinkTarget {
-				return errors.ErrNotExist
-			}
-		}
+	if !filepath.IsAbs(link) {
+		link = filepath.Join(d.user.FullPath(file.Path), link)
 	}
+	link = filepath.Clean(link)
 
-	return nil
+	return !strings.HasPrefix(link, d.server.Root)
 }
 
 func addVersionSuffix(source string, fs afero.Fs) string {
