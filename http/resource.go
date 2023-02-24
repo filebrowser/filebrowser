@@ -85,12 +85,19 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 			// remove symlinks that link outside base path
 			if fi.IsSymlink {
 				link := fi.Link
-				if !filepath.IsAbs(link) {
+				isAbs := filepath.IsAbs(link)
+
+				if !isAbs {
 					link = filepath.Join(d.user.FullPath(file.Path), link)
 				}
 				link = filepath.Clean(link)
+
 				if !strings.HasPrefix(link, d.server.Root) {
 					return false
+				}
+
+				if isAbs {
+					fi.Link = strings.TrimPrefix(link, d.server.Root)
 				}
 			}
 
