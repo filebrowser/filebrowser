@@ -2,9 +2,10 @@ package audit
 
 import (
 	"bytes"
-	"github.com/filebrowser/filebrowser/v2/users"
 	"log"
 	"testing"
+
+	"github.com/filebrowser/filebrowser/v2/users"
 )
 
 func TestLogFileActivity(t *testing.T) {
