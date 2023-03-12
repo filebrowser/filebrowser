@@ -8,9 +8,12 @@ import (
 func TestSetupAuditLogger(t *testing.T) {
 	auditLogger = nil
 
-	setupAuditLogger()
+	result := getAuditLogger()
 
-	if auditLogger != log.Default() {
-		t.Error("Audit logger isn't set to the default logger!")
+	if result != log.Default() {
+		t.Error("Audit logger wasn't initialized with the default logger!")
+	}
+	if auditLogger != result {
+		t.Error("Audit logger wasn't set globally!")
 	}
 }

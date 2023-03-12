@@ -22,5 +22,5 @@ func createLogMessage(info ResourceActivity) string {
 }
 
 func logToAuditLogger(message string) {
-	auditLogger.Println(message)
+	getAuditLogger().Println(message)
 }

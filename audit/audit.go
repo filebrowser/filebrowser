@@ -4,10 +4,9 @@ import "log"
 
 var auditLogger *log.Logger
 
-func init() {
-	setupAuditLogger()
-}
-
-func setupAuditLogger() {
-	auditLogger = log.Default()
+func getAuditLogger() *log.Logger {
+	if auditLogger == nil {
+		auditLogger = log.Default()
+	}
+	return auditLogger
 }
