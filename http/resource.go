@@ -14,6 +14,7 @@ import (
 	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/spf13/afero"
 
+	"github.com/filebrowser/filebrowser/v2/audit"
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
@@ -86,6 +87,12 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			return errToStatus(err), err
 		}
 
+		audit.LogResourceActivity(audit.ResourceActivity{
+			Event:        "Deletion",
+			ResourcePath: r.URL.Path,
+			User:         d.user,
+		})
+
 		return http.StatusOK, nil
 	})
 }
@@ -139,6 +146,12 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 
 		if err != nil {
 			_ = d.user.Fs.RemoveAll(r.URL.Path)
+		} else {
+			audit.LogResourceActivity(audit.ResourceActivity{
+				Event:        "Creation",
+				ResourcePath: r.URL.Path,
+				User:         d.user,
+			})
 		}
 
 		return errToStatus(err), err
@@ -173,6 +186,14 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		w.Header().Set("ETag", etag)
 		return nil
 	}, "save", r.URL.Path, "", d.user)
+
+	if err == nil {
+		audit.LogResourceActivity(audit.ResourceActivity{
+			Event:        "Update",
+			ResourcePath: r.URL.Path,
+			User:         d.user,
+		})
+	}
 
 	return errToStatus(err), err
 })
@@ -217,6 +238,14 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		err = d.RunHook(func() error {
 			return patchAction(r.Context(), action, src, dst, d, fileCache)
 		}, action, src, dst, d.user)
+
+		if err == nil {
+			audit.LogResourceActivity(audit.ResourceActivity{
+				Event:        "Patch",
+				ResourcePath: r.URL.Path,
+				User:         d.user,
+			})
+		}
 
 		return errToStatus(err), err
 	})
