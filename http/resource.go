@@ -11,6 +11,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+
 	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/spf13/afero"
 
@@ -240,8 +243,9 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		}, action, src, dst, d.user)
 
 		if err == nil {
+			titleAction := cases.Title(language.English).String(action)
 			audit.LogResourceActivity(audit.ResourceActivity{
-				Event:        "Patch",
+				Event:        fmt.Sprintf("%v with destination %v", titleAction, dst),
 				ResourcePath: r.URL.Path,
 				User:         d.user,
 			})
