@@ -356,9 +356,15 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
 			if isInvalidLink {
 				file.Type = "invalid_link"
 			} else {
-				err := file.detectType(true, false, readHeader)
-				if err != nil {
-					return err
+				extensionLowerCase := strings.ToLower(file.Extension)
+				if extensionLowerCase == ".apng" || extensionLowerCase == ".avif" || extensionLowerCase == ".jpg" ||
+					extensionLowerCase == ".jpeg" || extensionLowerCase == ".png" || extensionLowerCase == ".gif" ||
+					extensionLowerCase == ".jfif" || extensionLowerCase == ".pjpeg" || extensionLowerCase == ".pjp" ||
+					extensionLowerCase == ".svg" || extensionLowerCase == ".webp" {
+
+					file.Type = "image"
+				} else {
+					file.Type = "other"
 				}
 			}
 		}
