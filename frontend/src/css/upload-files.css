@@ -1,0 +1,61 @@
+.upload-files .card.floating {
+  left: auto;
+  top: auto;
+  margin: 0;
+  right: 0;
+  bottom: 0;
+  transform: none;
+}
+
+.upload-files .file {
+  margin-bottom: 8px;
+}
+
+.upload-files .file .file-name {
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+}
+
+.upload-files .file .file-name i {
+  margin-right: 5px;
+}
+
+.upload-files .file .file-progress {
+  margin-top: 2px;
+  width: 100%;
+  height: 5px;
+}
+
+.upload-files .file .file-progress div {
+  height: 100%;
+  background-color: #40c4ff;
+  width: 0;
+  transition: 0.2s ease width;
+  border-radius: 10px;
+}
+
+.upload-files.closed .card-content {
+  display: none;
+  padding: 0em 1em 1em 1em;
+}
+
+.upload-files .card .card-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  padding: 1em 1em 0em;
+}
+
+.upload-files.closed .card-title {
+  font-size: 0.7em;
+  padding: 0.5em 1em;
+}
+
+@media (max-width: 450px) {
+  .upload-files .card.floating {
+    max-width: 100%;
+    width: 100%;
+  }
+}

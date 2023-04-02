@@ -11,11 +11,11 @@
     <div class="card-action full">
       <div @click="uploadFile" class="action">
         <i class="material-icons">insert_drive_file</i>
-        <div class="title">File</div>
+        <div class="title">{{ $t("buttons.file") }}</div>
       </div>
       <div @click="uploadFolder" class="action">
         <i class="material-icons">folder</i>
-        <div class="title">Folder</div>
+        <div class="title">{{ $t("buttons.folder") }}</div>
       </div>
     </div>
   </div>

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -12,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/spf13/afero"
 
 	"github.com/filebrowser/filebrowser/v2/errors"
@@ -96,13 +96,9 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 			return http.StatusForbidden, nil
 		}
 
-		defer func() {
-			_, _ = io.Copy(ioutil.Discard, r.Body)
-		}()
-
 		// Directories creation on POST.
 		if strings.HasSuffix(r.URL.Path, "/") {
-			err := d.user.Fs.MkdirAll(r.URL.Path, 0775)
+			err := d.user.Fs.MkdirAll(r.URL.Path, 0775) //nolint:gomnd
 			return errToStatus(err), err
 		}
 
@@ -154,16 +150,20 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		return http.StatusForbidden, nil
 	}
 
-	defer func() {
-		_, _ = io.Copy(ioutil.Discard, r.Body)
-	}()
-
 	// Only allow PUT for files.
 	if strings.HasSuffix(r.URL.Path, "/") {
 		return http.StatusMethodNotAllowed, nil
 	}
 
-	err := d.RunHook(func() error {
+	exists, err := afero.Exists(d.user.Fs, r.URL.Path)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+	if !exists {
+		return http.StatusNotFound, nil
+	}
+
+	err = d.RunHook(func() error {
 		info, writeErr := writeFile(d.user.Fs, r.URL.Path, r.Body)
 		if writeErr != nil {
 			return writeErr
@@ -173,10 +173,6 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		w.Header().Set("ETag", etag)
 		return nil
 	}, "save", r.URL.Path, "", d.user)
-
-	if err != nil {
-		_ = d.user.Fs.RemoveAll(r.URL.Path)
-	}
 
 	return errToStatus(err), err
 })
@@ -260,12 +256,12 @@ func addVersionSuffix(source string, fs afero.Fs) string {
 
 func writeFile(fs afero.Fs, dst string, in io.Reader) (os.FileInfo, error) {
 	dir, _ := path.Split(dst)
-	err := fs.MkdirAll(dir, 0775)
+	err := fs.MkdirAll(dir, 0775) //nolint:gomnd
 	if err != nil {
 		return nil, err
 	}
 
-	file, err := fs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
+	file, err := fs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775) //nolint:gomnd
 	if err != nil {
 		return nil, err
 	}
@@ -288,7 +284,7 @@ func writeFile(fs afero.Fs, dst string, in io.Reader) (os.FileInfo, error) {
 func delThumbs(ctx context.Context, fileCache FileCache, file *files.FileInfo) error {
 	for _, previewSizeName := range PreviewSizeNames() {
 		size, _ := ParsePreviewSize(previewSizeName)
-		if err := fileCache.Delete(ctx, previewCacheKey(file.Path, file.ModTime.Unix(), size)); err != nil {
+		if err := fileCache.Delete(ctx, previewCacheKey(file, size)); err != nil {
 			return err
 		}
 	}
@@ -335,3 +331,39 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
 	}
 }
+
+type DiskUsageResponse struct {
+	Total uint64 `json:"total"`
+	Used  uint64 `json:"used"`
+}
+
+var diskUsage = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	file, err := files.NewFileInfo(files.FileOptions{
+		Fs:         d.user.Fs,
+		Path:       r.URL.Path,
+		Modify:     d.user.Perm.Modify,
+		Expand:     false,
+		ReadHeader: false,
+		Checker:    d,
+		Content:    false,
+	})
+	if err != nil {
+		return errToStatus(err), err
+	}
+	fPath := file.RealPath()
+	if !file.IsDir {
+		return renderJSON(w, r, &DiskUsageResponse{
+			Total: 0,
+			Used:  0,
+		})
+	}
+
+	usage, err := disk.UsageWithContext(r.Context(), fPath)
+	if err != nil {
+		return errToStatus(err), err
+	}
+	return renderJSON(w, r, &DiskUsageResponse{
+		Total: usage.Total,
+		Used:  usage.Used,
+	})
+})

@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"sync"
@@ -37,11 +37,11 @@ func (f *FileCache) Store(ctx context.Context, key string, value []byte) error {
 	defer mu.Unlock()
 
 	fileName := f.getFileName(key)
-	if err := f.fs.MkdirAll(filepath.Dir(fileName), 0700); err != nil {
+	if err := f.fs.MkdirAll(filepath.Dir(fileName), 0700); err != nil { //nolint:gomnd
 		return err
 	}
 
-	if err := afero.WriteFile(f.fs, fileName, value, 0700); err != nil {
+	if err := afero.WriteFile(f.fs, fileName, value, 0700); err != nil { //nolint:gomnd
 		return err
 	}
 
@@ -55,7 +55,7 @@ func (f *FileCache) Load(ctx context.Context, key string) (value []byte, exist b
 	}
 	defer r.Close()
 
-	value, err = ioutil.ReadAll(r)
+	value, err = io.ReadAll(r)
 	if err != nil {
 		return nil, false, err
 	}

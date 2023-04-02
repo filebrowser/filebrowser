@@ -20,13 +20,11 @@ export async function create(user) {
 
   if (res.status === 201) {
     return res.headers.get("Location");
-  } else {
-    throw new Error(res.status);
   }
 }
 
 export async function update(user, which = ["all"]) {
-  const res = await fetchURL(`/api/users/${user.id}`, {
+  await fetchURL(`/api/users/${user.id}`, {
     method: "PUT",
     body: JSON.stringify({
       what: "user",
@@ -34,18 +32,10 @@ export async function update(user, which = ["all"]) {
       data: user,
     }),
   });
-
-  if (res.status !== 200) {
-    throw new Error(res.status);
-  }
 }
 
 export async function remove(id) {
-  const res = await fetchURL(`/api/users/${id}`, {
+  await fetchURL(`/api/users/${id}`, {
     method: "DELETE",
   });
-
-  if (res.status !== 200) {
-    throw new Error(res.status);
-  }
 }

@@ -1,6 +1,8 @@
 import Vue from "vue";
 import VueI18n from "vue-i18n";
 
+import he from "./he.json";
+import hu from "./hu.json";
 import ar from "./ar.json";
 import de from "./de.json";
 import en from "./en.json";
@@ -16,6 +18,8 @@ import pt from "./pt.json";
 import ptBR from "./pt-br.json";
 import ro from "./ro.json";
 import ru from "./ru.json";
+import sk from "./sk.json";
+import ua from "./ua.json";
 import svSE from "./sv-se.json";
 import zhCN from "./zh-cn.json";
 import zhTW from "./zh-tw.json";
@@ -25,6 +29,12 @@ Vue.use(VueI18n);
 export function detectLocale() {
   let locale = (navigator.language || navigator.browserLangugae).toLowerCase();
   switch (true) {
+    case /^he.*/i.test(locale):
+      locale = "he";
+      break;
+    case /^hu.*/i.test(locale):
+      locale = "hu";
+      break;
     case /^ar.*/i.test(locale):
       locale = "ar";
       break;
@@ -70,6 +80,12 @@ export function detectLocale() {
     case /^ko.*/i.test(locale):
       locale = "ko";
       break;
+    case /^sk.*/i.test(locale):
+      locale = "sk";
+      break;
+    case /^ua.*/i.test(locale):
+      locale = "ua";
+      break;
     default:
       locale = "en";
   }
@@ -88,10 +104,14 @@ const removeEmpty = (obj) =>
       {}
     );
 
+export const rtlLanguages = ["he", "ar"];
+
 const i18n = new VueI18n({
   locale: detectLocale(),
   fallbackLocale: "en",
   messages: {
+    he: removeEmpty(he),
+    hu: removeEmpty(hu),
     ar: removeEmpty(ar),
     de: removeEmpty(de),
     en: en,
@@ -107,7 +127,9 @@ const i18n = new VueI18n({
     pt: removeEmpty(pt),
     ru: removeEmpty(ru),
     ro: removeEmpty(ro),
+    sk: removeEmpty(sk),
     "sv-se": removeEmpty(svSE),
+    ua: removeEmpty(ua),
     "zh-cn": removeEmpty(zhCN),
     "zh-tw": removeEmpty(zhTW),
   },

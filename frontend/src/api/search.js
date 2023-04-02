@@ -11,21 +11,17 @@ export default async function search(base, query) {
 
   let res = await fetchURL(`/api/search${base}?query=${query}`, {});
 
-  if (res.status === 200) {
-    let data = await res.json();
+  let data = await res.json();
 
-    data = data.map((item) => {
-      item.url = `/files${base}` + url.encodePath(item.path);
+  data = data.map((item) => {
+    item.url = `/files${base}` + url.encodePath(item.path);
 
-      if (item.dir) {
-        item.url += "/";
-      }
+    if (item.dir) {
+      item.url += "/";
+    }
 
-      return item;
-    });
+    return item;
+  });
 
-    return data;
-  } else {
-    throw Error(res.status);
-  }
+  return data;
 }

@@ -1,5 +1,6 @@
 const name = window.FileBrowser.Name || "File Browser";
 const disableExternal = window.FileBrowser.DisableExternal;
+const disableUsedPercentage = window.FileBrowser.DisableUsedPercentage;
 const baseURL = window.FileBrowser.BaseURL;
 const staticURL = window.FileBrowser.StaticURL;
 const recaptcha = window.FileBrowser.ReCaptcha;
@@ -15,10 +16,12 @@ const enableThumbs = window.FileBrowser.EnableThumbs;
 const resizePreview = window.FileBrowser.ResizePreview;
 const enableExec = window.FileBrowser.EnableExec;
 const onlyOffice = window.FileBrowser.OnlyOffice;
+const origin = window.location.origin;
 
 export {
   name,
   disableExternal,
+  disableUsedPercentage,
   baseURL,
   logoURL,
   recaptcha,
@@ -33,4 +36,5 @@ export {
   resizePreview,
   enableExec,
   onlyOffice,
+  origin,
 };

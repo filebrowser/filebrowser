@@ -35,6 +35,7 @@ type User struct {
 	Fs           afero.Fs      `json:"-" yaml:"-"`
 	Rules        []rules.Rule  `json:"rules"`
 	HideDotfiles bool          `json:"hideDotfiles"`
+	DateFormat   bool          `json:"dateFormat"`
 }
 
 // GetRules implements rules.Provider.
@@ -54,6 +55,7 @@ var checkableFields = []string{
 
 // Clean cleans up a user and verifies if all its fields
 // are alright to be saved.
+//
 //nolint:gocyclo
 func (u *User) Clean(baseScope string, fields ...string) error {
 	if len(fields) == 0 {
@@ -91,11 +93,7 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 
 	if u.Fs == nil {
 		scope := u.Scope
-
-		if !filepath.IsAbs(scope) {
-			scope = filepath.Join(baseScope, scope)
-		}
-
+		scope = filepath.Join(baseScope, filepath.Join("/", scope)) //nolint:gocritic
 		u.Fs = afero.NewBasePathFs(afero.NewOsFs(), scope)
 	}
 

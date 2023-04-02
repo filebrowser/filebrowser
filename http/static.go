@@ -27,22 +27,24 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 	}
 
 	data := map[string]interface{}{
-		"Name":            d.settings.Branding.Name,
-		"DisableExternal": d.settings.Branding.DisableExternal,
-		"BaseURL":         d.server.BaseURL,
-		"Version":         version.Version,
-		"StaticURL":       path.Join(d.server.BaseURL, "/static"),
-		"Signup":          d.settings.Signup,
-		"NoAuth":          d.settings.AuthMethod == auth.MethodNoAuth,
-		"AuthMethod":      d.settings.AuthMethod,
-		"LoginPage":       auther.LoginPage(),
-		"CSS":             false,
-		"ReCaptcha":       false,
-		"Theme":           d.settings.Branding.Theme,
-		"EnableThumbs":    d.server.EnableThumbnails,
-		"ResizePreview":   d.server.ResizePreview,
-		"EnableExec":      d.server.EnableExec,
-		"OnlyOffice":      d.settings.OnlyOffice,
+		"Name":                  d.settings.Branding.Name,
+		"DisableExternal":       d.settings.Branding.DisableExternal,
+		"DisableUsedPercentage": d.settings.Branding.DisableUsedPercentage,
+		"Color":                 d.settings.Branding.Color,
+		"BaseURL":               d.server.BaseURL,
+		"Version":               version.Version,
+		"StaticURL":             path.Join(d.server.BaseURL, "/static"),
+		"Signup":                d.settings.Signup,
+		"NoAuth":                d.settings.AuthMethod == auth.MethodNoAuth,
+		"AuthMethod":            d.settings.AuthMethod,
+		"LoginPage":             auther.LoginPage(),
+		"CSS":                   false,
+		"ReCaptcha":             false,
+		"Theme":                 d.settings.Branding.Theme,
+		"EnableThumbs":          d.server.EnableThumbnails,
+		"ResizePreview":         d.server.ResizePreview,
+		"EnableExec":            d.server.EnableExec,
+		"OnlyOffice":            d.settings.OnlyOffice,
 	}
 
 	if d.settings.Branding.Files != "" {
@@ -78,7 +80,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		return http.StatusInternalServerError, err
 	}
 
-	data["Json"] = string(b)
+	data["Json"] = strings.ReplaceAll(string(b), `'`, `\'`)
 
 	fileContents, err := fs.ReadFile(fSys, file)
 	if err != nil {

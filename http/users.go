@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
-	"strings"
 
 	"github.com/gorilla/mux"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -94,6 +95,9 @@ var userGetHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 	}
 
 	u.Password = ""
+	if !d.user.Perm.Admin {
+		u.Scope = ""
+	}
 	return renderJSON(w, r, u)
 })
 
@@ -173,7 +177,7 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 	}
 
 	for k, v := range req.Which {
-		v = strings.Title(v)
+		v = cases.Title(language.English, cases.NoLower).String(v)
 		req.Which[k] = v
 
 		if v == "Password" {

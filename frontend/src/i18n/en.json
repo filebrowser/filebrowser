@@ -8,6 +8,8 @@
     "create": "Create",
     "delete": "Delete",
     "download": "Download",
+    "file": "File",
+    "folder": "Folder",
     "hideDotfiles": "Hide dotfiles",
     "info": "Info",
     "more": "More",
@@ -63,7 +65,8 @@
     "size": "Size",
     "sortByLastModified": "Sort by last modified",
     "sortByName": "Sort by name",
-    "sortBySize": "Sort by size"
+    "sortBySize": "Sort by size",
+    "noPreview": "Preview is not available for this file."
   },
   "help": {
     "click": "select file or directory",
@@ -80,6 +83,8 @@
     "help": "Help"
   },
   "languages": {
+    "he": "עברית",
+    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
@@ -95,7 +100,10 @@
     "ptBR": "Português (Brasil)",
     "ro": "Romanian",
     "ru": "Русский",
+    "sk": "Slovenčina",
     "svSE": "Swedish (Sweden)",
+    "tr": "Türkçe",
+    "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
   },
@@ -145,6 +153,7 @@
     "show": "Show",
     "size": "Size",
     "upload": "Upload",
+    "uploadFiles": "Uploading {files} files...",
     "uploadMessage": "Select an option to upload.",
     "optionalPassword": "Optional password"
   },
@@ -175,9 +184,13 @@
     "commandRunnerHelp": "Here you can set commands that are executed in the named events. You must write one per line. The environment variables {0} and {1} will be available, being {0} relative to {1}. For more information about this feature and the available environment variables, please read the {2}.",
     "commandsUpdated": "Commands updated!",
     "createUserDir": "Auto create user home dir while adding new user",
+    "userHomeBasePath": "Base path for user home directories",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Custom Stylesheet",
     "defaultUserDescription": "This are the default settings for new users.",
     "disableExternalLinks": "Disable external links (except documentation)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentation",
     "examples": "Examples",
     "executeOnShell": "Execute on shell",
@@ -216,6 +229,7 @@
     "rules": "Rules",
     "rulesHelp": "Here you can define a set of allow and disallow rules for this specific user. The blocked files won't show up in the listings and they wont be accessible to the user. We support regex and paths relative to the users scope.\n",
     "scope": "Scope",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Settings updated!",
     "shareDuration": "Share Duration",
     "shareManagement": "Share Management",

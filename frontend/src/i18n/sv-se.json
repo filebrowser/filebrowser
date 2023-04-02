@@ -77,6 +77,8 @@
     "help": "Hjälp"
   },
   "languages": {
+    "he": "עברית",
+    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
@@ -92,7 +94,10 @@
     "ptBR": "Português (Brasil)",
     "ro": "",
     "ru": "Русский",
+    "sk": "Slovenčina",
     "svSE": "",
+    "tr" : "Türkçe",
+    "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
   },
@@ -173,6 +178,7 @@
     "customStylesheet": "Anpassad formatmall",
     "defaultUserDescription": "Detta är standard inställningar för användare.",
     "disableExternalLinks": "Inaktivera externa länkar (förutom dokumentation)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "dokumentation",
     "examples": "Exempel",
     "executeOnShell": "Exekvera på skal",

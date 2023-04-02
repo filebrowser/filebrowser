@@ -27,7 +27,8 @@ var (
 	cmdNotAllowed = []byte("Command not allowed.")
 )
 
-func wsErr(ws *websocket.Conn, r *http.Request, status int, err error) { //nolint:unparam
+//nolint:unparam
+func wsErr(ws *websocket.Conn, r *http.Request, status int, err error) {
 	txt := http.StatusText(status)
 	if err != nil || status >= 400 {
 		log.Printf("%s: %v %s %v", r.URL.Path, status, r.RemoteAddr, err)
@@ -59,19 +60,19 @@ var commandsHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *d
 		}
 	}
 
-	if !d.server.EnableExec || !d.user.CanExecute(strings.Split(raw, " ")[0]) {
-		if err := conn.WriteMessage(websocket.TextMessage, cmdNotAllowed); err != nil { //nolint:govet
-			wsErr(conn, r, http.StatusInternalServerError, err)
-		}
-
-		return 0, nil
-	}
-
 	command, err := runner.ParseCommand(d.settings, raw)
 	if err != nil {
 		if err := conn.WriteMessage(websocket.TextMessage, []byte(err.Error())); err != nil { //nolint:govet
 			wsErr(conn, r, http.StatusInternalServerError, err)
 		}
+		return 0, nil
+	}
+
+	if !d.server.EnableExec || !d.user.CanExecute(command[0]) {
+		if err := conn.WriteMessage(websocket.TextMessage, cmdNotAllowed); err != nil { //nolint:govet
+			wsErr(conn, r, http.StatusInternalServerError, err)
+		}
+
 		return 0, nil
 	}
 

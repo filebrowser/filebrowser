@@ -1,7 +1,7 @@
 package bolt
 
 import (
-	"github.com/asdine/storm"
+	"github.com/asdine/storm/v3"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/errors"
@@ -20,6 +20,8 @@ func (s authBackend) Get(t settings.AuthMethod) (auth.Auther, error) {
 		auther = &auth.JSONAuth{}
 	case auth.MethodProxyAuth:
 		auther = &auth.ProxyAuth{}
+	case auth.MethodHookAuth:
+		auther = &auth.HookAuth{}
 	case auth.MethodNoAuth:
 		auther = &auth.NoAuth{}
 	default:

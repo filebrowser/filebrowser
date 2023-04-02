@@ -9,6 +9,7 @@
     @drop="drop"
     @click="itemClick"
     :data-dir="isDir"
+    :data-type="type"
     :aria-label="name"
     :aria-selected="isSelected"
   >
@@ -17,7 +18,7 @@
         v-if="readOnly == undefined && type === 'image' && isThumbsEnabled"
         v-lazy="thumbnailUrl"
       />
-      <i v-else class="material-icons">{{ icon }}</i>
+      <i v-else class="material-icons"></i>
     </div>
 
     <div>
@@ -34,7 +35,7 @@
 </template>
 
 <script>
-import { baseURL, enableThumbs } from "@/utils/constants";
+import { enableThumbs } from "@/utils/constants";
 import { mapMutations, mapGetters, mapState } from "vuex";
 import filesize from "filesize";
 import moment from "moment";
@@ -57,6 +58,7 @@ export default {
     "modified",
     "index",
     "readOnly",
+    "path",
   ],
   computed: {
     ...mapState(["user", "selected", "req", "jwt"]),
@@ -66,13 +68,6 @@ export default {
     },
     isSelected() {
       return this.selected.indexOf(this.index) !== -1;
-    },
-    icon() {
-      if (this.isDir) return "folder";
-      if (this.type === "image") return "insert_photo";
-      if (this.type === "audio") return "volume_up";
-      if (this.type === "video") return "movie";
-      return "insert_drive_file";
     },
     isDraggable() {
       return this.readOnly == undefined && this.user.perm.rename;
@@ -89,12 +84,12 @@ export default {
       return true;
     },
     thumbnailUrl() {
-      const path = this.url.replace(/^\/files\//, "");
+      const file = {
+        path: this.path,
+        modified: this.modified,
+      };
 
-      // reload the image when the file is replaced
-      const key = Date.parse(this.modified);
-
-      return `${baseURL}/api/preview/thumb/${path}?k=${key}&inline=true`;
+      return api.getPreviewURL(file, "thumb");
     },
     isThumbsEnabled() {
       return enableThumbs;
@@ -103,9 +98,12 @@ export default {
   methods: {
     ...mapMutations(["addSelected", "removeSelected", "resetSelected"]),
     humanSize: function () {
-      return filesize(this.size);
+      return this.type == "invalid_link" ? "invalid link" : filesize(this.size);
     },
     humanTime: function () {
+      if (this.readOnly == undefined && this.user.dateFormat) {
+        return moment(this.modified).format("L LT");
+      }
       return moment(this.modified).fromNow();
     },
     dragStart: function () {

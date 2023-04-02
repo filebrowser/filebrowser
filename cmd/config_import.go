@@ -70,6 +70,8 @@ The path must be for a json or yaml file.`,
 			auther = getAuther(auth.NoAuth{}, rawAuther).(*auth.NoAuth)
 		case auth.MethodProxyAuth:
 			auther = getAuther(auth.ProxyAuth{}, rawAuther).(*auth.ProxyAuth)
+		case auth.MethodHookAuth:
+			auther = getAuther(&auth.HookAuth{}, rawAuther).(*auth.HookAuth)
 		default:
 			checkErr(errors.New("invalid auth method"))
 		}

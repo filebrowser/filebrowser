@@ -1,7 +1,7 @@
 package importer
 
 import (
-	"github.com/asdine/storm"
+	"github.com/asdine/storm/v3"
 
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 )

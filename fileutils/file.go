@@ -40,13 +40,13 @@ func CopyFile(fs afero.Fs, source, dest string) error {
 
 	// Makes the directory needed to create the dst
 	// file.
-	err = fs.MkdirAll(filepath.Dir(dest), 0666)
+	err = fs.MkdirAll(filepath.Dir(dest), 0666) //nolint:gomnd
 	if err != nil {
 		return err
 	}
 
 	// Create the destination file.
-	dst, err := fs.OpenFile(dest, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
+	dst, err := fs.OpenFile(dest, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775) //nolint:gomnd
 	if err != nil {
 		return err
 	}

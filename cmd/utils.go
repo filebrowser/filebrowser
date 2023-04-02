@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/asdine/storm"
+	"github.com/asdine/storm/v3"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	yaml "gopkg.in/yaml.v2"
@@ -72,7 +72,7 @@ func dbExists(path string) (bool, error) {
 		d := filepath.Dir(path)
 		_, err = os.Stat(d)
 		if os.IsNotExist(err) {
-			if err := os.MkdirAll(d, 0700); err != nil { //nolint:govet
+			if err := os.MkdirAll(d, 0700); err != nil { //nolint:govet,gomnd
 				return false, err
 			}
 			return false, nil

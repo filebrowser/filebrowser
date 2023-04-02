@@ -77,6 +77,8 @@
     "help": "مساعدة"
   },
   "languages": {
+    "he": "עברית",
+    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
@@ -92,7 +94,10 @@
     "ptBR": "Português (Brasil)",
     "ro": "",
     "ru": "Русский",
+    "sk": "Slovenčina",
     "svSE": "",
+    "tr" : "Türkçe",
+    "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
   },
@@ -173,6 +178,7 @@
     "customStylesheet": "ستايل مخصص",
     "defaultUserDescription": "This are the default settings for new users.",
     "disableExternalLinks": "Disable external links (except documentation)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentation",
     "examples": "أمثلة",
     "executeOnShell": "Execute on shell",

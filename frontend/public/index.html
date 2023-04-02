@@ -16,7 +16,7 @@
 
   <!-- Add to home screen for Android and modern mobile browsers -->
   <link rel="manifest" id="manifestPlaceholder" crossorigin="use-credentials">
-  <meta name="theme-color" content="#2979ff">
+  <meta name="theme-color" content="[{[ if .Color -]}][{[ .Color ]}][{[ else ]}]#2979ff[{[ end ]}]">
 
   <!-- Add to home screen for Safari on iOS/iPadOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -26,7 +26,7 @@
 
   <!-- Add to home screen for Windows -->
   <meta name="msapplication-TileImage" content="[{[ .StaticURL ]}]/img/icons/mstile-144x144.png">
-  <meta name="msapplication-TileColor" content="#2979ff">
+  <meta name="msapplication-TileColor" content="[{[ if .Color -]}][{[ .Color ]}][{[ else ]}]#2979ff[{[ end ]}]">
 
   <!-- Inject Some Variables and generate the manifest json -->
   <script>
@@ -51,7 +51,7 @@
       "start_url": window.location.origin + window.FileBrowser.BaseURL,
       "display": "standalone",
       "background_color": "#ffffff",
-      "theme_color": "#455a64"
+      "theme_color": window.FileBrowser.Color || "#455a64"
     }
 
     const stringManifest = JSON.stringify(dynamicManifest);

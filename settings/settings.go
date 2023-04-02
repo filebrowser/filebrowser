@@ -7,21 +7,24 @@ import (
 	"github.com/filebrowser/filebrowser/v2/rules"
 )
 
+const DefaultUsersHomeBasePath = "/users"
+
 // AuthMethod describes an authentication method.
 type AuthMethod string
 
 // Settings contain the main settings of the application.
 type Settings struct {
-	Key           []byte              `json:"key"`
-	Signup        bool                `json:"signup"`
-	CreateUserDir bool                `json:"createUserDir"`
-	Defaults      UserDefaults        `json:"defaults"`
-	AuthMethod    AuthMethod          `json:"authMethod"`
-	Branding      Branding            `json:"branding"`
-	Commands      map[string][]string `json:"commands"`
-	Shell         []string            `json:"shell"`
-	Rules         []rules.Rule        `json:"rules"`
-	OnlyOffice    OnlyOffice          `json:"onlyoffice"`
+	Key              []byte              `json:"key"`
+	Signup           bool                `json:"signup"`
+	CreateUserDir    bool                `json:"createUserDir"`
+	UserHomeBasePath string              `json:"userHomeBasePath"`
+	Defaults         UserDefaults        `json:"defaults"`
+	AuthMethod       AuthMethod          `json:"authMethod"`
+	Branding         Branding            `json:"branding"`
+	Commands         map[string][]string `json:"commands"`
+	Shell            []string            `json:"shell"`
+	Rules            []rules.Rule        `json:"rules"`
+	OnlyOffice       OnlyOffice          `json:"onlyoffice"`
 }
 
 // GetRules implements rules.Provider.
@@ -43,6 +46,7 @@ type Server struct {
 	ResizePreview         bool   `json:"resizePreview"`
 	EnableExec            bool   `json:"enableExec"`
 	TypeDetectionByHeader bool   `json:"typeDetectionByHeader"`
+	AuthHook              string `json:"authHook"`
 }
 
 // Clean cleans any variables that might need cleaning.
@@ -50,9 +54,9 @@ func (s *Server) Clean() {
 	s.BaseURL = strings.TrimSuffix(s.BaseURL, "/")
 }
 
-// GenerateKey generates a key of 256 bits.
+// GenerateKey generates a key of 512 bits.
 func GenerateKey() ([]byte, error) {
-	b := make([]byte, 64)
+	b := make([]byte, 64) //nolint:gomnd
 	_, err := rand.Read(b)
 	// Note that err == nil only if we read len(b) bytes.
 	if err != nil {

@@ -1,17 +1,15 @@
 package http
 
 import (
-	"bytes"
 	"errors"
-	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	gopath "path"
 	"path/filepath"
 	"strings"
 
-	"github.com/mholt/archiver"
-	"github.com/spf13/afero"
+	"github.com/mholt/archiver/v3"
 
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
@@ -46,7 +44,7 @@ func parseQueryFiles(r *http.Request, f *files.FileInfo, _ *users.User) ([]strin
 	return fileSlice, nil
 }
 
-//nolint: goconst
+// nolint: goconst,nolintlint
 func parseQueryAlgorithm(r *http.Request) (string, archiver.Writer, error) {
 	// TODO: use enum
 	switch r.URL.Query().Get("algo") {
@@ -117,18 +115,15 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 		return err
 	}
 
-	var (
-		file          afero.File
-		arcReadCloser = ioutil.NopCloser(&bytes.Buffer{})
-	)
-	if !files.IsNamedPipe(info.Mode()) {
-		file, err = d.user.Fs.Open(path)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-		arcReadCloser = file
+	if !info.IsDir() && !info.Mode().IsRegular() {
+		return nil
 	}
+
+	file, err := d.user.Fs.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
 
 	if path != commonPath {
 		filename := strings.TrimPrefix(path, commonPath)
@@ -138,7 +133,7 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 				FileInfo:   info,
 				CustomName: filename,
 			},
-			ReadCloser: arcReadCloser,
+			ReadCloser: file,
 		})
 		if err != nil {
 			return err
@@ -152,9 +147,10 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 		}
 
 		for _, name := range names {
-			err = addFile(ar, d, filepath.Join(path, name), commonPath)
+			fPath := filepath.Join(path, name)
+			err = addFile(ar, d, fPath, commonPath)
 			if err != nil {
-				return err
+				log.Printf("Failed to archive %s: %v", fPath, err)
 			}
 		}
 	}
@@ -196,7 +192,7 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 	for _, fname := range filenames {
 		err = addFile(ar, d, fname, commonDir)
 		if err != nil {
-			return http.StatusInternalServerError, err
+			log.Printf("Failed to archive %s: %v", fname, err)
 		}
 	}
 
@@ -204,11 +200,6 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 }
 
 func rawFileHandler(w http.ResponseWriter, r *http.Request, file *files.FileInfo) (int, error) {
-	isFresh := checkEtag(w, r, file.ModTime.Unix(), file.Size)
-	if isFresh {
-		return http.StatusNotModified, nil
-	}
-
 	fd, err := file.Fs.Open(file.Path)
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -217,6 +208,7 @@ func rawFileHandler(w http.ResponseWriter, r *http.Request, file *files.FileInfo
 
 	setContentDisposition(w, r, file)
 
+	w.Header().Set("Cache-Control", "private")
 	http.ServeContent(w, r, file.Name, file.ModTime, fd)
 	return 0, nil
 }

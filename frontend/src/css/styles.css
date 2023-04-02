@@ -10,6 +10,8 @@
 @import "./base.css";
 @import "./header.css";
 @import "./listing.css";
+@import "./listing-icons.css";
+@import "./upload-files.css";
 @import "./dashboard.css";
 @import "./login.css";
 
@@ -205,6 +207,34 @@ main .spinner .bounce2 {
   height: 100%;
 }
 
+#previewer .preview .info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5em;
+  color: #fff;
+}
+#previewer .preview .info .title {
+  margin-bottom: 1em;
+}
+#previewer .preview .info .title i {
+  display: block;
+  margin-bottom: .1em;
+  font-size: 4em;
+}
+#previewer .preview .info .button {
+  display: inline-block;
+}
+#previewer .preview .info .button:hover {
+  background-color: rgba(255, 255, 255, 0.2)
+}
+#previewer .preview .info .button i {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 1.3em;
+}
+
 #previewer .pdf {
   width: 100%;
   height: 100%;
@@ -263,18 +293,21 @@ main .spinner .bounce2 {
 /* EDITOR */
 
 #editor-container {
+  display: flex;
+  flex-direction: column;
   background-color: #fafafa;
   position: fixed;
   padding-top: 4em;
   top: 0;
   left: 0;
+  height: 100%;
   width: 100%;
   z-index: 9999;
   overflow: hidden;
 }
 
 #editor-container #editor {
-  height: calc(100vh - 8.4em);
+  flex: 1;
 }
 
 #editor-container .breadcrumbs {
@@ -282,12 +315,17 @@ main .spinner .bounce2 {
   padding: 0 1em;
 }
 
+/*** RTL - flip and position arrow of path ***/
+body.rtl .breadcrumbs .chevron {
+  transform: scaleX(-1) translateX(16em);
+}
+
 #editor-container .breadcrumbs span {
-  font-size: 12px;
+  font-size: .75rem;
 }
 
 #editor-container .breadcrumbs i {
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 /* * * * * * * * * * * * * * * *
@@ -303,7 +341,7 @@ main .spinner .bounce2 {
   background: rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(0,0,0,0.1);
   box-shadow: 0 0 0 0;
-  font-size: 14px;
+  font-size: 1rem;
 }
 
 /* * * * * * * * * * * * * * * *
@@ -334,7 +372,7 @@ main .spinner .bounce2 {
 
 @keyframes spin {
   100% {
-    transform: rotate(-360deg);
+    transform: rotate(360deg);
   }
 }
 
@@ -371,3 +409,22 @@ main .spinner .bounce2 {
 }
 
 @import './mobile.css';
+
+/* * * * * * * * * * * * * * * *
+ *         RTL overrides       *
+ * * * * * * * * * * * * * * * */
+
+body.rtl .card-content textarea {
+  direction: ltr;
+  text-align: left;
+}
+
+body.rtl .card-content .small + input {
+  direction: ltr;
+  text-align: left;
+}
+
+body.rtl .card.floating .card-content .file-list {
+  direction: ltr;
+  text-align: left;
+}

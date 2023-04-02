@@ -1,7 +1,7 @@
 package bolt
 
 import (
-	"github.com/asdine/storm"
+	"github.com/asdine/storm/v3"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -17,7 +17,7 @@ func NewStorage(db *storm.DB) (*storage.Storage, error) {
 	settingsStore := settings.NewStorage(settingsBackend{db: db})
 	authStore := auth.NewStorage(authBackend{db: db}, userStore)
 
-	err := save(db, "version", 2)
+	err := save(db, "version", 2) //nolint:gomnd
 	if err != nil {
 		return nil, err
 	}

@@ -77,6 +77,8 @@
     "help": "幫助"
   },
   "languages": {
+    "he": "עברית",
+    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
@@ -92,7 +94,10 @@
     "ptBR": "Português (Brasil)",
     "ro": "Romanian",
     "ru": "Русский",
+    "sk": "Slovenčina",
     "svSE": "Swedish（Sweden）",
+    "tr" : "Türkçe",
+    "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
   },
@@ -173,6 +178,7 @@
     "customStylesheet": "自定義樣式表",
     "defaultUserDescription": "這些是新使用者的預設設定。",
     "disableExternalLinks": "禁止外部連結（幫助文件除外）",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "幫助文件",
     "examples": "範例",
     "executeOnShell": "在Shell中執行",

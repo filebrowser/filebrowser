@@ -7,9 +7,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/asdine/storm"
-	toml "github.com/pelletier/go-toml"
-	yaml "gopkg.in/yaml.v2"
+	"github.com/asdine/storm/v3"
+	"github.com/pelletier/go-toml/v2"
+	"gopkg.in/yaml.v2"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -28,8 +28,9 @@ type oldDefs struct {
 }
 
 type oldAuth struct {
-	Method string `json:"method" yaml:"method" toml:"method"` // default none proxy
-	Header string `json:"header" yaml:"header" toml:"header"`
+	Method  string `json:"method" yaml:"method" toml:"method"` // default none proxy
+	Header  string `json:"header" yaml:"header" toml:"header"`
+	Command string `json:"command" yaml:"command" toml:"command"`
 }
 
 type oldConf struct {
@@ -149,6 +150,9 @@ func importConf(db *storm.DB, path string, sto *storage.Storage) error {
 	case "proxy":
 		auther = &auth.ProxyAuth{Header: cfg.Auth.Header}
 		s.AuthMethod = auth.MethodProxyAuth
+	case "hook":
+		auther = &auth.HookAuth{Command: cfg.Auth.Command}
+		s.AuthMethod = auth.MethodHookAuth
 	case "none":
 		auther = &auth.NoAuth{}
 		s.AuthMethod = auth.MethodNoAuth

@@ -1,5 +1,5 @@
 <template>
-  <errors v-if="error" :errorCode="error.message" />
+  <errors v-if="error" :errorCode="error.status" />
   <div class="row" v-else-if="!loading">
     <div class="column">
       <div class="card">
@@ -19,9 +19,7 @@
 
             <tr v-for="link in links" :key="link.hash">
               <td>
-                <a :href="buildLink(link.hash)" target="_blank">{{
-                  link.path
-                }}</a>
+                <a :href="buildLink(link)" target="_blank">{{ link.path }}</a>
               </td>
               <td>
                 <template v-if="link.expire !== 0">{{
@@ -43,7 +41,7 @@
               <td class="small">
                 <button
                   class="action copy-clipboard"
-                  :data-clipboard-text="buildLink(link.hash)"
+                  :data-clipboard-text="buildLink(link)"
                   :aria-label="$t('buttons.copyToClipboard')"
                   :title="$t('buttons.copyToClipboard')"
                 >
@@ -64,7 +62,6 @@
 
 <script>
 import { share as api, users } from "@/api";
-import { baseURL } from "@/utils/constants";
 import { mapState, mapMutations } from "vuex";
 import moment from "moment";
 import Clipboard from "clipboard";
@@ -136,8 +133,8 @@ export default {
     humanTime(time) {
       return moment(time * 1000).fromNow();
     },
-    buildLink(hash) {
-      return `${window.location.origin}${baseURL}/share/${hash}`;
+    buildLink(share) {
+      return api.getShareURL(share);
     },
   },
 };

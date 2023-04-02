@@ -77,6 +77,8 @@
     "help": "Ajuda"
   },
   "languages": {
+    "he": "עברית",
+    "hu": "Magyar",
     "ar": "Árabe",
     "de": "Alemão",
     "en": "Inglês",
@@ -92,7 +94,10 @@
     "ptBR": "Português (Brasil)",
     "ro": "",
     "ru": "Russo",
+    "sk": "Slovenčina",
     "svSE": "",
+    "tr" : "Türkçe",
+    "ua": "Українська",
     "zhCN": "Chinês simplificado",
     "zhTW": "Chinês tradicional"
   },
@@ -173,6 +178,7 @@
     "customStylesheet": "Folha de estilos personalizada",
     "defaultUserDescription": "Estas são as configurações padrão para novos utilizadores.",
     "disableExternalLinks": "Desativar links externos (exceto documentação)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentação",
     "examples": "Exemplos",
     "executeOnShell": "Executar na shell",

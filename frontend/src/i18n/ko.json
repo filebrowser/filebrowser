@@ -77,6 +77,8 @@
     "help": "도움말"
   },
   "languages": {
+    "he": "עברית",
+    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
@@ -92,7 +94,10 @@
     "ptBR": "Português (Brasil)",
     "ro": "",
     "ru": "Русский",
+    "sk": "Slovenčina",
     "svSE": "",
+    "tr" : "Türkçe",
+    "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
   },
@@ -173,6 +178,7 @@
     "customStylesheet": "커스텀 스타일시트",
     "defaultUserDescription": "아래 사항은 신규 사용자들에 대한 기본 설정입니다.",
     "disableExternalLinks": "외부 링크 감추기",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "문서",
     "examples": "예",
     "executeOnShell": "쉘에서 실행",
