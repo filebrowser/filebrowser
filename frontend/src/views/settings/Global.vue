@@ -93,8 +93,19 @@
             <input
               class="input input--block"
               type="text"
-              v-model="settings.onlyoffice"
+              v-model="settings.onlyoffice.url"
               id="onlyoffice-url"
+            />
+          </p>
+          <p>
+            <label for="onlyoffice-jwt">{{
+              $t("settings.onlyOfficeJwtSecret")
+            }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              v-model="settings.onlyoffice.jwtSecret"
+              id="onlyoffice-jwt"
             />
           </p>
         </div>

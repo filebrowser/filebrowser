@@ -22,6 +22,7 @@
 import { mapState } from "vuex";
 import url from "@/utils/url";
 import { baseURL, onlyOffice } from "@/utils/constants";
+import * as jose from "jose";
 
 import HeaderBar from "@/components/header/HeaderBar";
 import Action from "@/components/header/Action";
@@ -80,7 +81,7 @@ export default {
     let onlyofficeScript = document.createElement("script");
     onlyofficeScript.setAttribute(
       "src",
-      `${onlyOffice}/web-apps/apps/api/documents/api.js`
+      `${onlyOffice.url}/web-apps/apps/api/documents/api.js`
     );
     document.head.appendChild(onlyofficeScript);
 
@@ -100,7 +101,7 @@ export default {
           .replaceAll(/[!~[\]*'()/,;:\-%+. ]/g, "")
       ).substring(0, 20);
 
-      let config = {
+      const config = {
         document: {
           fileType: this.req.extension.substring(1),
           key: key,
@@ -126,7 +127,18 @@ export default {
           mode: this.user.perm.modify ? "edit" : "view"
         }
       };
-      this.editor = new DocsAPI.DocEditor("editor", config);
+
+      if(onlyOffice.jwtSecret != "") {
+        const alg = 'HS256';
+        new jose.SignJWT(config)
+          .setProtectedHeader({ alg })
+          .sign(new TextEncoder().encode(onlyOffice.jwtSecret)).then((jwt) => {
+            config.token = jwt;
+            this.editor = new DocsAPI.DocEditor("editor", config);
+          })
+      } else {
+        this.editor = new DocsAPI.DocEditor("editor", config);
+      }
     };
     /*eslint-enable */
   },

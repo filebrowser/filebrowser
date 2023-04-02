@@ -21,7 +21,7 @@ type Settings struct {
 	Commands      map[string][]string `json:"commands"`
 	Shell         []string            `json:"shell"`
 	Rules         []rules.Rule        `json:"rules"`
-	OnlyOffice    string              `json:"onlyoffice"`
+	OnlyOffice    OnlyOffice          `json:"onlyoffice"`
 }
 
 // GetRules implements rules.Provider.

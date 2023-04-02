@@ -16,7 +16,7 @@ type settingsData struct {
 	Branding      settings.Branding     `json:"branding"`
 	Shell         []string              `json:"shell"`
 	Commands      map[string][]string   `json:"commands"`
-	OnlyOffice    string                `json:"onlyoffice"`
+	OnlyOffice    settings.OnlyOffice   `json:"onlyoffice"`
 }
 
 var settingsGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
