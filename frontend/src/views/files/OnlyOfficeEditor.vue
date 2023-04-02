@@ -84,18 +84,22 @@ export default {
     );
     document.head.appendChild(onlyofficeScript);
 
+    /*eslint-disable */
     onlyofficeScript.onload = () => {
       let fileUrl = `${window.location.protocol}//${window.location.host}${baseURL}/api/raw${url.encodePath(
         this.req.path
       )}?auth=${this.jwt}`;
 
-      let key = Date.parse(this.req.modified).toString() + url.encodePath(this.req.path);
-      key = key.replaceAll(/[-_.!~[\]*'()/,;:\-%+.]/g, "");
-      if (key.length > 127) {
-        key = key.substring(0, 127);
-      }
+      // create a key from the last modified timestamp and the reversed file path (most specific part first)
+      // replace all special characters (only these symbols are supported: 0-9, a-z, A-Z, -._=)
+      // and truncate it (max length is 20 characters)
+      const key = (
+        Date.parse(this.req.modified).valueOf()
+        + url
+          .encodePath(this.req.path.split('/').reverse().join(''))
+          .replaceAll(/[!~[\]*'()/,;:\-%+. ]/g, "")
+      ).substring(0, 20);
 
-      /*eslint-disable */
       let config = {
         document: {
           fileType: this.req.extension.substring(1),
@@ -123,8 +127,8 @@ export default {
         }
       };
       this.editor = new DocsAPI.DocEditor("editor", config);
-      /*eslint-enable */
     };
+    /*eslint-enable */
   },
   methods: {
     back() {

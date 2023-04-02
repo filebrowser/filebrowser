@@ -3,7 +3,7 @@ package http
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -17,15 +17,15 @@ type OnlyOfficeCallback struct {
 }
 
 var onlyofficeCallbackHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	body, e1 := ioutil.ReadAll(r.Body)
-	if e1 != nil {
-		return http.StatusInternalServerError, e1
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return http.StatusInternalServerError, err
 	}
 
 	var data OnlyOfficeCallback
-	err1 := json.Unmarshal(body, &data)
-	if err1 != nil {
-		return http.StatusInternalServerError, err1
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return http.StatusInternalServerError, err
 	}
 
 	if data.Status == 2 || data.Status == 6 {
@@ -38,13 +38,13 @@ var onlyofficeCallbackHandler = withUser(func(w http.ResponseWriter, r *http.Req
 			return http.StatusForbidden, nil
 		}
 
-		doc, err2 := http.Get(data.URL)
-		if err2 != nil {
-			return http.StatusInternalServerError, err2
+		doc, err := http.Get(data.URL)
+		if err != nil {
+			return http.StatusInternalServerError, err
 		}
 		defer doc.Body.Close()
 
-		err := d.RunHook(func() error {
+		err = d.RunHook(func() error {
 			_, writeErr := writeFile(d.user.Fs, docPath, doc.Body)
 			if writeErr != nil {
 				return writeErr
@@ -53,7 +53,6 @@ var onlyofficeCallbackHandler = withUser(func(w http.ResponseWriter, r *http.Req
 		}, "save", docPath, "", d.user)
 
 		if err != nil {
-			_ = d.user.Fs.RemoveAll(docPath)
 			return http.StatusInternalServerError, err
 		}
 	}
