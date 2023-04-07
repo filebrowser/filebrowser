@@ -68,6 +68,27 @@
 
     <template v-else>
       <div class="card-content">
+        <div>
+          <span class="margin-tb-1em">
+            <label for="customLink" style="margin-right: 5px">{{
+              $t("settings.shareCustomLink")
+            }}</label>
+            <input
+              id="customLink"
+              class="input display-inline"
+              type="checkbox"
+              v-model="custom"
+              @change="customChange"
+            />
+          </span>
+          <input
+            class="input input--block"
+            :class="{ 'disable-gray': !custom }"
+            :disabled="!custom"
+            type="text"
+            v-model="customLink"
+          />
+        </div>
         <p>{{ $t("settings.shareDuration") }}</p>
         <div class="input-group input">
           <input
@@ -90,6 +111,7 @@
           class="input input--block"
           type="password"
           v-model.trim="password"
+          autocomplete="new-password"
         />
       </div>
 
@@ -130,6 +152,8 @@ export default {
       links: [],
       clip: null,
       password: "",
+      custom: false,
+      customLink: "",
       listing: true,
     };
   },
@@ -148,6 +172,13 @@ export default {
 
       return this.req.items[this.selected[0]].url;
     },
+    name() {
+      if (this.selectedCount === 0 || this.selectedCount > 1) {
+        // This shouldn't happen.
+        return;
+      }
+      return this.req.items[this.selected[0]].name;
+    },
   },
   async beforeMount() {
     try {
@@ -155,7 +186,7 @@ export default {
       this.links = links;
       this.sort();
 
-      if (this.links.length == 0) {
+      if (this.links.length === 0) {
         this.listing = false;
       }
     } catch (e) {
@@ -167,22 +198,37 @@ export default {
     this.clip.on("success", () => {
       this.$showSuccess(this.$t("success.linkCopied"));
     });
+    this.customLink = this.name;
   },
   beforeDestroy() {
     this.clip.destroy();
   },
   methods: {
     submit: async function () {
-      let isPermanent = !this.time || this.time == 0;
-
+      let isPermanent = !this.time || this.time === 0;
       try {
-        let res = null;
+        let query = {
+          url: this.url,
+          password: this.password,
+          custom: this.custom,
+          customLink: this.customLink,
+        };
 
-        if (isPermanent) {
-          res = await api.create(this.url, this.password);
-        } else {
-          res = await api.create(this.url, this.password, this.time, this.unit);
+        if (this.custom) {
+          if (!this.checkCustomLink()) {
+            alert("自定义链接，只支持英文和数字");
+            return;
+          }
         }
+
+        if (!isPermanent) {
+          Object.assign(query, {
+            expires: this.time,
+            unit: this.unit,
+          });
+        }
+
+        const res = await api.create(query);
 
         this.links.push(res);
         this.sort();
@@ -194,6 +240,18 @@ export default {
         this.listing = true;
       } catch (e) {
         this.$showError(e);
+      }
+    },
+    checkCustomLink() {
+      if (this.custom) {
+        return /[\w]/.test(this.customLink);
+      }
+      return true;
+    },
+    customChange(tf) {
+      console.log("数据发生变化");
+      if (tf) {
+        this.customLink = this.name;
       }
     },
     deleteLink: async function (event, link) {
@@ -232,3 +290,16 @@ export default {
   },
 };
 </script>
+<style scoped>
+.display-inline {
+  display: inline;
+}
+.margin-tb-1em {
+  display: block;
+  margin-bottom: 1em;
+}
+.disable-gray {
+  background-color: #dbdbdb;
+  cursor: not-allowed;
+}
+</style>
