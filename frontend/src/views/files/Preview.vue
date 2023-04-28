@@ -200,11 +200,11 @@ export default {
     isResizeEnabled() {
       return resizePreview;
     },
-    subtitles(){
+    subtitles() {
       if (this.req.subtitles) {
-        return  api.getSubtitlesURL(this.req);
+        return api.getSubtitlesURL(this.req);
       }
-      return []
+      return [];
     },
   },
   watch: {
