@@ -10,6 +10,15 @@
         @action="download"
         :counter="selectedCount"
       />
+      <button
+        v-if="isSingleFile()"
+        class="action copy-clipboard"
+        :data-clipboard-text="linkSelected()"
+        :aria-label="$t('buttons.copyDownloadLinkToClipboard')"
+        :title="$t('buttons.copyDownloadLinkToClipboard')"
+      >
+        <i class="material-icons">content_paste</i>
+      </button>
       <action
         icon="check_circle"
         :label="$t('buttons.selectMultiple')"
@@ -182,6 +191,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import Errors from "@/views/Errors";
 import QrcodeVue from "qrcode.vue";
 import Item from "@/components/files/ListingItem";
+import Clipboard from "clipboard";
 
 export default {
   name: "share",
@@ -200,6 +210,7 @@ export default {
     attemptedPasswordLogin: false,
     hash: null,
     token: null,
+    clip: null,
   }),
   watch: {
     $route: function () {
@@ -215,13 +226,18 @@ export default {
   },
   mounted() {
     window.addEventListener("keydown", this.keyEvent);
+    this.clip = new Clipboard(".copy-clipboard");
+    this.clip.on("success", () => {
+      this.$showSuccess(this.$t("success.linkCopied"));
+    });
   },
   beforeDestroy() {
     window.removeEventListener("keydown", this.keyEvent);
+    this.clip.destroy();
   },
   computed: {
     ...mapState(["req", "loading", "multiple", "selected"]),
-    ...mapGetters(["selectedCount", "selectedCount"]),
+    ...mapGetters(["selectedCount"]),
     icon: function () {
       if (this.req.isDir) return "folder";
       if (this.req.type === "image") return "insert_photo";
@@ -300,8 +316,13 @@ export default {
     toggleMultipleSelection() {
       this.$store.commit("multiple", !this.multiple);
     },
+    isSingleFile: function () {
+      return (
+        this.selectedCount === 1 && !this.req.items[this.selected[0]].isDir
+      );
+    },
     download() {
-      if (this.selectedCount === 1 && !this.req.items[this.selected[0]].isDir) {
+      if (this.isSingleFile()) {
         api.download(
           null,
           this.hash,
@@ -325,6 +346,14 @@ export default {
           api.download(format, this.hash, this.token, ...files);
         },
       });
+    },
+    linkSelected: function () {
+      return this.isSingleFile()
+        ? api.getDownloadURL({
+            hash: this.hash,
+            path: this.req.items[this.selected[0]].path,
+          })
+        : "";
     },
   },
 };
