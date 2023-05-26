@@ -23,11 +23,11 @@ type JWTAuth struct {
 	Claim        string `json:"claim"`
 	Header       string `json:"header"`
 	remoteKeySet *oidc.RemoteKeySet
-	init         *sync.Once
+	init         sync.Once
 }
 
 // Auth authenticates the user via a JWT token in an HTTP header.
-func (a JWTAuth) Auth(r *http.Request, usr users.Store, stg *settings.Settings, srv *settings.Server) (*users.User, error) {
+func (a *JWTAuth) Auth(r *http.Request, usr users.Store, stg *settings.Settings, srv *settings.Server) (*users.User, error) {
 	a.init.Do(func() {
 		a.remoteKeySet = oidc.NewRemoteKeySet(context.Background(), a.CertsURL)
 	})
