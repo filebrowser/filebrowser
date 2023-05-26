@@ -111,7 +111,13 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 			checkErr(nerrors.New("you must set the flag 'auth.claim' for method 'jwt-header'"))
 		}
 
-		auther = &auth.JWTAuth{}
+		auther = &auth.JWTAuth{
+			Header:   header,
+			Aud:      aud,
+			Iss:      iss,
+			CertsURL: certsurl,
+			Claim:    claim,
+		}
 	}
 
 	if method == auth.MethodNoAuth {
