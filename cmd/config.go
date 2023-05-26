@@ -36,6 +36,8 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("auth.method", string(auth.MethodJSONAuth), "authentication type")
 	flags.String("auth.header", "", "HTTP header for auth.method=proxy")
 	flags.String("auth.command", "", "command for auth.method=hook")
+	flags.String("auth.team", "", "Cloudflare Access Team name for auth.method=cloudflare-access")
+	flags.String("auth.team", "", "The Application Audience (AUD) tag for your application for auth.method=cloudflare-access")
 
 	flags.String("recaptcha.host", "https://www.google.com", "use another host for ReCAPTCHA. recaptcha.net might be useful in China")
 	flags.String("recaptcha.key", "", "ReCaptcha site key")
@@ -82,6 +84,20 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 		}
 
 		auther = &auth.ProxyAuth{Header: header}
+	}
+
+	if method == auth.MethodCloudflareAuth {
+		team := mustGetString(flags, "auth.team")
+		aud := mustGetString(flags, "auth.aud")
+
+		if team == "" {
+			checkErr(nerrors.New("you must set the flag 'auth.team' for method 'cloudflare-access'"))
+		}
+		if aud == "" {
+			checkErr(nerrors.New("you must set the flag 'auth.aud' for method 'cloudflare-access'"))
+		}
+
+		auther = &auth.CloudflareAuth{Team: team, Aud: aud}
 	}
 
 	if method == auth.MethodNoAuth {
