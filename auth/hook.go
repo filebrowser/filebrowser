@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/filebrowser/filebrowser/v2/rules"
 	"log"
 	"net/http"
 	"os"
@@ -228,6 +229,7 @@ func (a *HookAuth) GetUser(d *users.User) *users.User {
 			Asc: a.Fields.GetBoolean("user.sorting.asc", d.Sorting.Asc),
 			By:  a.Fields.GetString("user.sorting.by", d.Sorting.By),
 		},
+		Rules:        a.Fields.GetJson("user.perm.rule", d.Rules),
 		Commands:     a.Fields.GetArray("user.commands", d.Commands),
 		HideDotfiles: a.Fields.GetBoolean("user.hideDotfiles", d.HideDotfiles),
 		Perm:         perms,
@@ -261,6 +263,7 @@ var validHookFields = []string{
 	"user.perm.delete",
 	"user.perm.share",
 	"user.perm.download",
+	"user.perm.rule",
 }
 
 // IsValid checks if the provided field is on the valid fields list
@@ -297,6 +300,22 @@ func (hf *hookFields) GetArray(k string, dv []string) []string {
 	val, ok := hf.Values[k]
 	if ok && strings.TrimSpace(val) != "" {
 		return strings.Split(val, " ")
+	}
+	return dv
+}
+
+func (hf *hookFields) GetJson(k string, dv []rules.Rule) []rules.Rule {
+	val, ok := hf.Values[k]
+	if !ok {
+		return nil
+	}
+	for _, ruleString := range strings.Split(val, ";") {
+		var rule rules.Rule
+		err := json.Unmarshal([]byte(ruleString), &rule)
+		if err != nil {
+			return nil
+		}
+		dv = append(dv, rule)
 	}
 	return dv
 }
