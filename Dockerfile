@@ -7,7 +7,7 @@ RUN npm run build
 FROM golang:alpine as base
 WORKDIR /app
 COPY  ./src/backend ./
-RUN go build -o filebrowser .
+RUN go build -ldflags='-w -s' -o filebrowser .
 
 FROM alpine:latest
 RUN apk --no-cache add \
