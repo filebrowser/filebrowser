@@ -14,7 +14,7 @@ export default async function search(base, query) {
   let data = await res.json();
 
   data = data.map((item) => {
-    item.url = `/files${base}` + url.encodePath(item.path);
+    item.url = `/${base}` + url.encodePath(item.path);
 
     if (item.dir) {
       item.url += "/";
