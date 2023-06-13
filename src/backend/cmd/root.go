@@ -23,7 +23,6 @@ import (
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/diskcache"
-	"github.com/filebrowser/filebrowser/v2/frontend"
 	fbhttp "github.com/filebrowser/filebrowser/v2/http"
 	"github.com/filebrowser/filebrowser/v2/img"
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -34,6 +33,14 @@ import (
 var (
 	cfgFile string
 )
+
+type dirFS struct {
+	http.Dir
+}
+
+func (d dirFS) Open(name string) (fs.File, error) {
+	return d.Dir.Open(name)
+}
 
 func init() {
 	cobra.OnInitialize(initConfig)
@@ -170,11 +177,7 @@ user created with the credentials from options "username" and "password".`,
 		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
 		go cleanupHandler(listener, sigc)
 
-		assetsFs, err := fs.Sub(frontend.Assets(), "dist")
-		if err != nil {
-			panic(err)
-		}
-
+		assetsFs := dirFS{Dir: http.Dir("frontend/dist")}
 		handler, err := fbhttp.NewHandler(imgSvc, fileCache, d.store, server, assetsFs)
 		checkErr(err)
 

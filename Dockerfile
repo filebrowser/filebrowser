@@ -6,8 +6,7 @@ RUN npm run build
 
 FROM golang:alpine as base
 WORKDIR /app
-COPY  ./src/ ./
-COPY --from=nbuild /app/dist ./frontend/dist
+COPY  ./src/backend ./
 RUN go build -o filebrowser .
 
 FROM alpine:latest
@@ -24,4 +23,6 @@ EXPOSE 80
 
 COPY --from=base /app/docker_config.json /.filebrowser.json
 COPY --from=base /app/filebrowser /filebrowser
+COPY --from=nbuild /app/dist/ ./frontend/dist/
+
 ENTRYPOINT [ "/filebrowser" ]

@@ -1,33 +1,70 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/filebrowser/logo/master/banner.png" width="550"/>
-</p>
+## gtstef fork of filebrowser
 
-![Preview](https://user-images.githubusercontent.com/5447088/50716739-ebd26700-107a-11e9-9817-14230c53efd2.gif)
+Intended for docker use only, makes the following significant changes to filebrowser;
 
-[![Build](https://github.com/filebrowser/filebrowser/actions/workflows/main.yaml/badge.svg)](https://github.com/filebrowser/filebrowser/actions/workflows/main.yaml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/filebrowser/filebrowser?style=flat-square)](https://goreportcard.com/report/github.com/filebrowser/filebrowser)
-[![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/filebrowser/filebrowser)
-[![Version](https://img.shields.io/github/release/filebrowser/filebrowser.svg?style=flat-square)](https://github.com/filebrowser/filebrowser/releases/latest)
-[![Chat IRC](https://img.shields.io/badge/freenode-%23filebrowser-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23filebrowser)
+ 1. Improves search to use index instead of filesystem search.
+   - lightning fast
+   - realtime results as you type
+ 1. Preview enhancments
+   - preview default view is constrained to files subwindow, which can be toggled to fullscreen.
+ 1. Updated node version and dependancies
+   - uses latest npm and node version
+   - removes deprecated npm packages
+ 1. Improved routing
+   - fixed bugs in original version
+ 1. Added authentication type
+   - Using bearer token with remote authentication server
+
+## About
 
 filebrowser provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its own directory. It can be used as a standalone app.
 
-## Features
-
-Please refer to our docs at [https://filebrowser.org/features](https://filebrowser.org/features)
-
 ## Install
 
-For installation instructions please refer to our docs at [https://filebrowser.org/installation](https://filebrowser.org/installation).
+Using docker:
+
+1. docker run: 
+
+```
+```
+
+1. docker-compose:
+
+  - with local storage
+
+```
+version: '3.7'
+services:
+  filebrowser:
+    volumes:
+      - '/path/to/folder:/srv'
+      #- './database/:/database/'
+      #- './config.json:/.filebrowser.json'
+    ports:
+      - '8080:80'
+    image: gtstef/filebrowser:0.1.0
+```
+
+  - with network share
+
+```
+version: '3.7'
+services:
+  filebrowser:
+    volumes:
+      - 'nas:/srv'
+      #- './database/:/database/' 
+      #- './config.json:/.filebrowser.json'
+    ports:
+      - '8080:80'
+    image: gtstef/filebrowser:0.1.0
+volumes:
+  nas:
+    driver_opts:
+      type: cifs
+      o: "username=myusername,password=mypassword,rw"
+      device: "//fileshare/"
+```
 
 ## Configuration
 
-[Authentication Method](https://filebrowser.org/configuration/authentication-method) - You can change the way the user authenticates with the filebrowser server
-
-[Command Runner](https://filebrowser.org/configuration/command-runner) - The command runner is a feature that enables you to execute any shell command you want before or after a certain event.
-
-[Custom Branding](https://filebrowser.org/configuration/custom-branding) - You can customize your File Browser installation by change its name to any other you want, by adding a global custom style sheet and by using your own logotype if you want.
-
-## Contributing
-
-If you're interested in contributing to this project, our docs are best places to start [https://filebrowser.org/contributing](https://filebrowser.org/contributing).
