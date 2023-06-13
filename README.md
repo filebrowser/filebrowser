@@ -1,19 +1,22 @@
-## gtstef fork of filebrowser
+## My fork of filebrowser
 
-Intended for docker use only, makes the following significant changes to filebrowser;
+**Note: Intended to be used in docker only.**
 
- 1. Improves search to use index instead of filesystem search.
-   - lightning fast
-   - realtime results as you type
+This fork makes the following significant changes to filebrowser for origin:
+
+ 1. Improves search to use index instead of filesystem.
+    - lightning fast
+    - realtime results as you type
  1. Preview enhancments
-   - preview default view is constrained to files subwindow, which can be toggled to fullscreen.
+    - preview default view is constrained to files subwindow,
+    which can be toggled to fullscreen.
  1. Updated node version and dependancies
-   - uses latest npm and node version
-   - removes deprecated npm packages
+    - uses latest npm and node version
+    - removes deprecated npm packages
  1. Improved routing
-   - fixed bugs in original version
+    - fixed bugs in original version
  1. Added authentication type
-   - Using bearer token with remote authentication server
+    - Using bearer token with remote authentication server
 
 ## About
 
