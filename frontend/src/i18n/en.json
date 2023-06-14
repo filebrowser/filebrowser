@@ -133,6 +133,8 @@
     "download": "Download files",
     "downloadMessage": "Choose the format you want to download.",
     "error": "Something went wrong",
+    "exifcam": "Camera (Exif)",
+    "exifdate": "Date taken (Exif)",
     "fileInfo": "File information",
     "filesSelected": "{count} files selected.",
     "lastModified": "Last Modified",

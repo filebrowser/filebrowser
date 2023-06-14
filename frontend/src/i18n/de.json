@@ -132,6 +132,8 @@
     "download": "Lade Dateien",
     "downloadMessage": "Wählen Sie ein Format zum Herunterladen aus.",
     "error": "Etwas ist schief gelaufen",
+    "exifcam": "Kamera (Exif)",
+    "exifdate": "Datum (Exif)",
     "fileInfo": "Dateiinformation",
     "filesSelected": "{count} Dateien ausgewählt.",
     "lastModified": "Zuletzt geändert",

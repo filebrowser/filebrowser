@@ -19,6 +19,24 @@
       <p v-if="selected.length < 2" :title="modTime">
         <strong>{{ $t("prompts.lastModified") }}:</strong> {{ humanTime }}
       </p>
+      <p
+        v-if="
+          selected.length < 2 &&
+          (this.req.type === 'image' ||
+            this.req.items[this.selected[0]].type === 'image')
+        "
+      >
+        <strong>{{ $t("prompts.exifcam") }}:</strong> {{ exifcam }}
+      </p>
+      <p
+        v-if="
+          selected.length < 2 &&
+          (this.req.type === 'image' ||
+            this.req.items[this.selected[0]].type === 'image')
+        "
+      >
+        <strong>{{ $t("prompts.exifdate") }}:</strong> {{ exifdate }}
+      </p>
 
       <template v-if="dir && selected.length === 0">
         <p>
@@ -112,6 +130,16 @@ export default {
     },
     modTime: function () {
       return new Date(Date.parse(this.req.modified)).toLocaleString();
+    },
+    exifcam: function () {
+      return this.selectedCount === 0
+        ? this.req.exifcam
+        : this.req.items[this.selected[0]].exifcam;
+    },
+    exifdate: function () {
+      return this.selectedCount === 0
+        ? this.req.exifdate
+        : this.req.items[this.selected[0]].exifdate;
     },
     name: function () {
       return this.selectedCount === 0
