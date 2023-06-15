@@ -3,18 +3,31 @@ package search
 import (
 	"os"
 	"path"
+	"log"
+	"fmt"
 	"path/filepath"
 	"strings"
 
 	"github.com/spf13/afero"
-
-	"github.com/filebrowser/filebrowser/v2/rules"
+	"github.com/gtsteffaniak/filebrowser/rules"
 )
 
 type searchOptions struct {
 	CaseSensitive bool
 	Conditions    []condition
 	Terms         []string
+}
+
+func IndexedSearch(query string, scope string) {
+	// Initialize the indexes map
+	indexes = make(map[string]PathInfo)
+	fmt.Println("Indexing files")
+	// Call the function to index files and directories
+	err := indexFiles(query, 1)
+	if err != nil {
+		log.Fatal(err)
+	}
+	searchAllIndexes("new")
 }
 
 // Search searches for a query in a fs.

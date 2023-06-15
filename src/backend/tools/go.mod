@@ -1,4 +1,4 @@
-module github.com/filebrowser/filebrowser/v2/tools
+module github.com/gtsteffaniak/filebrowser/tools
 
 go 1.18
 
