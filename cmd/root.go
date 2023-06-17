@@ -45,7 +45,7 @@ func init() {
 	persistent := rootCmd.PersistentFlags()
 
 	persistent.StringVarP(&cfgFile, "config", "c", "", "config file path")
-	persistent.StringP("database", "d", "./filebrowser.db", "database path")
+	persistent.StringP("database", "d", "./filebrowser.db", "database path. Possible choices:\n\tbolt: ./bolt.db\n\tsqlite3: sqlite3://test.db\n\tpostgresql: postgres://user:password@192.168.1.10:5432/postgres?sslmode=disable\n\tmysql: mysql://user:password@192.168.1.10:3306/root\n")
 	flags.Bool("noauth", false, "use the noauth auther when using quick setup")
 	flags.String("username", "admin", "username for the first user when using quick config")
 	flags.String("password", "", "hashed password for the first user when using quick config (default \"admin\")")
