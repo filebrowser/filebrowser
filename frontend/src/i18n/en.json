@@ -5,6 +5,7 @@
     "copy": "Copy",
     "copyFile": "Copy file",
     "copyToClipboard": "Copy to clipboard",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Create",
     "delete": "Delete",
     "download": "Download",
@@ -84,6 +85,7 @@
   },
   "languages": {
     "he": "עברית",
+    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
@@ -189,6 +191,7 @@
     "customStylesheet": "Custom Stylesheet",
     "defaultUserDescription": "This are the default settings for new users.",
     "disableExternalLinks": "Disable external links (except documentation)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentation",
     "examples": "Examples",
     "executeOnShell": "Execute on shell",

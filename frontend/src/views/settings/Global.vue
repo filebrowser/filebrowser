@@ -63,6 +63,15 @@
           </p>
 
           <p>
+            <input
+              type="checkbox"
+              v-model="settings.branding.disableUsedPercentage"
+              id="branding-links"
+            />
+            {{ $t("settings.disableUsedDiskPercentage") }}
+          </p>
+
+          <p>
             <label for="theme">{{ $t("settings.themes.title") }}</label>
             <themes
               class="input input--block"
