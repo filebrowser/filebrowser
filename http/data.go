@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/tomasen/realip"
 
@@ -45,6 +46,64 @@ func (d *data) Check(path string) bool {
 	}
 
 	return allow
+}
+
+func (d *data) CheckReadPerm(path string) bool {
+	if d.user.HideDotfiles && rules.MatchHidden(path) {
+		return false
+	}
+
+	read := true
+	for _, rule := range d.settings.Rules {
+		if rule.Matches(path) {
+			if !rule.Allow {
+				read = false
+			} else {
+				read = strings.Contains(rule.Perm, "read")
+			}
+		}
+	}
+
+	for _, rule := range d.user.Rules {
+		if rule.Matches(path) {
+			if !rule.Allow {
+				read = false
+			} else {
+				read = strings.Contains(rule.Perm, "read")
+			}
+		}
+	}
+
+	return read
+}
+
+func (d *data) CheckWritePerm(path string) bool {
+	if d.user.HideDotfiles && rules.MatchHidden(path) {
+		return false
+	}
+
+	write := true
+	for _, rule := range d.settings.Rules {
+		if rule.Matches(path) {
+			if !rule.Allow {
+				write = false
+			} else {
+				write = strings.Contains(rule.Perm, "write")
+			}
+		}
+	}
+
+	for _, rule := range d.user.Rules {
+		if rule.Matches(path) {
+			if !rule.Allow {
+				write = false
+			} else {
+				write = strings.Contains(rule.Perm, "write")
+			}
+		}
+	}
+
+	return write
 }
 
 func handle(fn handleFunc, prefix string, store *storage.Storage, server *settings.Server) http.Handler {

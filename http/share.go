@@ -56,6 +56,10 @@ var shareListHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 })
 
 var shareGetsHandler = withPermShare(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	if !d.CheckReadPerm(r.URL.Path) {
+		return http.StatusForbidden, nil
+	}
+
 	s, err := d.store.Share.Gets(r.URL.Path, d.user.ID)
 	if err == errors.ErrNotExist {
 		return renderJSON(w, r, []*share.Link{})
@@ -69,6 +73,10 @@ var shareGetsHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 })
 
 var shareDeleteHandler = withPermShare(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	if !d.CheckReadPerm(r.URL.Path) {
+		return http.StatusForbidden, nil
+	}
+
 	hash := strings.TrimSuffix(r.URL.Path, "/")
 	hash = strings.TrimPrefix(hash, "/")
 
@@ -81,6 +89,10 @@ var shareDeleteHandler = withPermShare(func(w http.ResponseWriter, r *http.Reque
 })
 
 var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	if !d.CheckReadPerm(r.URL.Path) {
+		return http.StatusForbidden, nil
+	}
+
 	var s *share.Link
 	var body share.CreateBody
 	if r.Body != nil {

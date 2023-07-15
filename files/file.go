@@ -58,7 +58,7 @@ type FileOptions struct {
 // object will be automatically filled depending on if it is a directory
 // or a file. If it's a video file, it will also detect any subtitles.
 func NewFileInfo(opts FileOptions) (*FileInfo, error) {
-	if !opts.Checker.Check(opts.Path) {
+	if !opts.Checker.CheckReadPerm(opts.Path) { // display folder/file list
 		return nil, os.ErrPermission
 	}
 
@@ -319,7 +319,7 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
 		name := f.Name()
 		fPath := path.Join(i.Path, name)
 
-		if !checker.Check(fPath) {
+		if !checker.CheckReadPerm(fPath) {
 			continue
 		}
 

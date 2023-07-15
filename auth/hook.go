@@ -11,6 +11,7 @@ import (
 
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
+	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -31,6 +32,7 @@ type HookAuth struct {
 	Cred     hookCred           `json:"-"`
 	Fields   hookFields         `json:"-"`
 	Command  string             `json:"command"`
+	Rules    []rules.Rule       `json:"rules"`
 }
 
 // Auth authenticates the user via a json in content body.
@@ -228,6 +230,7 @@ func (a *HookAuth) GetUser(d *users.User) *users.User {
 			Asc: a.Fields.GetBoolean("user.sorting.asc", d.Sorting.Asc),
 			By:  a.Fields.GetString("user.sorting.by", d.Sorting.By),
 		},
+		Rules:        a.Fields.GetRules("user.perm.rule", d.Rules),
 		Commands:     a.Fields.GetArray("user.commands", d.Commands),
 		HideDotfiles: a.Fields.GetBoolean("user.hideDotfiles", d.HideDotfiles),
 		Perm:         perms,
@@ -261,6 +264,7 @@ var validHookFields = []string{
 	"user.perm.delete",
 	"user.perm.share",
 	"user.perm.download",
+	"user.perm.rule",
 }
 
 // IsValid checks if the provided field is on the valid fields list
@@ -299,4 +303,21 @@ func (hf *hookFields) GetArray(k string, dv []string) []string {
 		return strings.Split(val, " ")
 	}
 	return dv
+}
+
+func (hf *hookFields) GetRules(k string, dv []rules.Rule) []rules.Rule {
+	val, ok := hf.Values[k]
+	if !ok {
+		return dv
+	}
+	var dvv []rules.Rule
+	for _, ruleString := range strings.Split(val, ";") {
+		var rule rules.Rule
+		err := json.Unmarshal([]byte(ruleString), &rule)
+		if err != nil {
+			return dv
+		}
+		dvv = append(dvv, rule)
+	}
+	return dvv
 }

@@ -9,6 +9,8 @@ import (
 // Checker is a Rules checker.
 type Checker interface {
 	Check(path string) bool
+	CheckReadPerm(path string) bool
+	CheckWritePerm(path string) bool
 }
 
 // Rule is a allow/disallow rule.
@@ -17,6 +19,13 @@ type Rule struct {
 	Allow  bool    `json:"allow"`
 	Path   string  `json:"path"`
 	Regexp *Regexp `json:"regexp"`
+	Perm   string  `json:"perm"`
+}
+
+// Perm is a read/write permission.
+type Perms struct {
+	Read  bool `json:"read"`
+	Write bool `json:"write"`
 }
 
 // MatchHidden matches paths with a basename

@@ -56,7 +56,7 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 
 func resourceDeleteHandler(fileCache FileCache) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-		if r.URL.Path == "/" || !d.user.Perm.Delete {
+		if r.URL.Path == "/" || !d.user.Perm.Delete || !d.CheckWritePerm(r.URL.Path) {
 			return http.StatusForbidden, nil
 		}
 
@@ -92,7 +92,7 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 
 func resourcePostHandler(fileCache FileCache) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
+		if !d.user.Perm.Create || !d.CheckWritePerm(r.URL.Path) {
 			return http.StatusForbidden, nil
 		}
 
@@ -146,7 +146,7 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 }
 
 var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	if !d.user.Perm.Modify || !d.Check(r.URL.Path) {
+	if !d.user.Perm.Modify || !d.CheckWritePerm(r.URL.Path) {
 		return http.StatusForbidden, nil
 	}
 
@@ -183,8 +183,19 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		dst := r.URL.Query().Get("destination")
 		action := r.URL.Query().Get("action")
 		dst, err := url.QueryUnescape(dst)
-		if !d.Check(src) || !d.Check(dst) {
-			return http.StatusForbidden, nil
+		switch action {
+		case "rename": // rename and move action
+			if !d.CheckWritePerm(src) || !d.CheckWritePerm(dst) {
+				return http.StatusForbidden, nil
+			}
+			break
+		case "copy": // copy action
+			if !d.CheckReadPerm(src) || !d.CheckWritePerm(dst) {
+				return http.StatusForbidden, nil
+			}
+			break
+		default:
+			break
 		}
 		if err != nil {
 			return errToStatus(err), err
