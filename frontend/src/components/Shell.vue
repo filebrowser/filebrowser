@@ -114,9 +114,9 @@ export default {
         },
         () => {
           results.text = results.text
-              // eslint-disable-next-line no-control-regex
-              .replace(/\u001b\[[0-9;]+m/g, '') // Filter ANSI color for now
-              .trimEnd();
+            // eslint-disable-next-line no-control-regex
+            .replace(/\u001b\[[0-9;]+m/g, "") // Filter ANSI color for now
+            .trimEnd();
           this.canInput = true;
           this.$refs.input.focus();
           this.scroll();
