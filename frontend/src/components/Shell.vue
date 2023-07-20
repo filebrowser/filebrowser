@@ -113,7 +113,10 @@ export default {
           this.scroll();
         },
         () => {
-          results.text = results.text.trimEnd();
+          results.text = results.text
+            // eslint-disable-next-line no-control-regex
+            .replace(/\u001b\[[0-9;]+m/g, "") // Filter ANSI color for now
+            .trimEnd();
           this.canInput = true;
           this.$refs.input.focus();
           this.scroll();
