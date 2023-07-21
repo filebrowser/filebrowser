@@ -87,9 +87,9 @@ func (d *data) CheckWritePerm(path string) bool {
 		if rule.Matches(path) {
 			if !rule.Allow {
 				write = false
-			} else {
-				write = strings.Contains(rule.Perm, "write")
+				continue
 			}
+			write = strings.Contains(rule.Perm, "write")
 		}
 	}
 
@@ -97,9 +97,9 @@ func (d *data) CheckWritePerm(path string) bool {
 		if rule.Matches(path) {
 			if !rule.Allow {
 				write = false
-			} else {
-				write = strings.Contains(rule.Perm, "write")
+				continue
 			}
+			write = strings.Contains(rule.Perm, "write")
 		}
 	}
 

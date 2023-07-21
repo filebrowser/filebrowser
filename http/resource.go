@@ -183,25 +183,18 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		dst := r.URL.Query().Get("destination")
 		action := r.URL.Query().Get("action")
 		dst, err := url.QueryUnescape(dst)
-		switch action {
-		case "rename": // rename and move action
-			if !d.CheckWritePerm(src) || !d.CheckWritePerm(dst) {
-				return http.StatusForbidden, nil
-			}
-			break
-		case "copy": // copy action
-			if !d.CheckReadPerm(src) || !d.CheckWritePerm(dst) {
-				return http.StatusForbidden, nil
-			}
-			break
-		default:
-			break
-		}
 		if err != nil {
 			return errToStatus(err), err
 		}
 		if dst == "/" || src == "/" {
 			return http.StatusForbidden, nil
+		}
+		if !d.CheckReadPerm(src) || !d.CheckWritePerm(dst) {
+			copy := action == "copy"
+			rename := action == "rename"
+			if !rename || !copy {
+				return http.StatusForbidden, nil
+			}
 		}
 
 		err = checkParent(src, dst)
