@@ -33,6 +33,14 @@ func (s *Storage) Get() (*Settings, error) {
 	if set.UserHomeBasePath == "" {
 		set.UserHomeBasePath = DefaultUsersHomeBasePath
 	}
+	if set.Tus == (Tus{}) {
+		set.Tus = Tus{
+			Enabled:         false,
+			ChunkSize:       DefaultTusChunkSize,
+			ParallelUploads: DefaultTusParallelUploads,
+			RetryCount:      DefaultTusRetryCount,
+		}
+	}
 	return set, nil
 }
 

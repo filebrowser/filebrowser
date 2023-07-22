@@ -15,7 +15,9 @@ const theme = window.FileBrowser.Theme;
 const enableThumbs = window.FileBrowser.EnableThumbs;
 const resizePreview = window.FileBrowser.ResizePreview;
 const enableExec = window.FileBrowser.EnableExec;
+const tusSettings = window.FileBrowser.TusSettings;
 const origin = window.location.origin;
+const tusEndpoint = `${baseURL}/api/tus`;
 
 export {
   name,
@@ -34,5 +36,7 @@ export {
   enableThumbs,
   resizePreview,
   enableExec,
+  tusSettings,
   origin,
+  tusEndpoint,
 };

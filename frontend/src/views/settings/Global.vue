@@ -101,6 +101,56 @@
               id="branding-files"
             />
           </p>
+
+          <h3>{{ $t("settings.tusUploads") }}</h3>
+
+          <p class="small">{{ $t("settings.tusUploadsHelp") }}</p>
+
+          <p>
+            <input
+              type="checkbox"
+              v-model="settings.tus.enabled"
+              id="tus-enabled"
+            />
+            {{ $t("settings.tusUploadsEnabled") }}
+          </p>
+
+          <div class="tusConditionalSettings">
+            <label for="tus-parallelUploads">{{
+              $t("settings.tusUploadsParallelUploads")
+            }}</label>
+            <input
+              class="input input--block"
+              type="number"
+              v-model.number="settings.tus.parallelUploads"
+              id="tus-parallelUploads"
+              v-bind:disabled="!settings.tus.enabled"
+              min="1"
+            />
+
+            <label for="tus-chunkSize">{{
+              $t("settings.tusUploadsChunkSize")
+            }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              v-model="formattedChunkSize"
+              id="tus-chunkSize"
+              v-bind:disabled="!settings.tus.enabled"
+            />
+
+            <label for="tus-retryCount">{{
+              $t("settings.tusUploadsRetryCount")
+            }}</label>
+            <input
+              class="input input--block"
+              type="number"
+              v-model.number="settings.tus.retryCount"
+              id="tus-retryCount"
+              v-bind:disabled="!settings.tus.enabled"
+              min="0"
+            />
+          </div>
         </div>
 
         <div class="card-action">
@@ -210,11 +260,30 @@ export default {
       error: null,
       originalSettings: null,
       settings: null,
+      debounceTimeout: null,
     };
   },
   computed: {
     ...mapState(["user", "loading"]),
     isExecEnabled: () => enableExec,
+    formattedChunkSize: {
+      get() {
+        return this.formatBytes(this.settings.tus.chunkSize);
+      },
+      set(value) {
+        // Use debouncing to allow the user to type freely without
+        // interruption by the formatter
+        // Clear the previous timeout if it exists
+        if (this.debounceTimeout) {
+          clearTimeout(this.debounceTimeout);
+        }
+
+        // Set a new timeout to apply the format after a short delay
+        this.debounceTimeout = setTimeout(() => {
+          this.settings.tus.chunkSize = this.parseBytes(value);
+        }, 1500);
+      },
+    },
   },
   async created() {
     try {
@@ -273,6 +342,45 @@ export default {
         this.$showSuccess(this.$t("settings.settingsUpdated"));
       } catch (e) {
         this.$showError(e);
+      }
+    },
+    // Parse the user-friendly input (e.g., "20M" or "1T") to bytes
+    parseBytes(input) {
+      const regex = /^(\d+\.?\d*)([BKMGT]?[B|I]?)$/i;
+      const matches = input.match(regex);
+      if (matches) {
+        const size = parseFloat(matches[1]);
+        const unit = matches[2].toUpperCase();
+        const units = {
+          KB: 1e3,
+          MB: 1e6,
+          GB: 1e9,
+          TB: 1e12,
+          KI: 1024,
+          MI: 1024 ** 2,
+          GI: 1024 ** 3,
+          TI: 1024 ** 4,
+        };
+        return size * (units[unit] || 1);
+      } else {
+        return 0;
+      }
+    },
+    // Format the chunk size in bytes to user-friendly format
+    formatBytes(bytes) {
+      const units = ["B", "Ki", "Mi", "Gi", "Ti"];
+      let size = bytes;
+      let unitIndex = 0;
+      while (size >= 1024 && unitIndex < units.length - 1) {
+        size /= 1024;
+        unitIndex++;
+      }
+      return `${size.toFixed(2)}${units[unitIndex]}`;
+    },
+    // Clear the debounce timeout when the component is destroyed
+    beforeDestroy() {
+      if (this.debounceTimeout) {
+        clearTimeout(this.debounceTimeout);
       }
     },
   },

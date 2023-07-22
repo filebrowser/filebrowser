@@ -23,6 +23,7 @@
     "noty": "^3.2.0-beta",
     "pretty-bytes": "^6.0.0",
     "qrcode.vue": "^1.7.0",
+    "tus-js-client": "^3.0.1",
     "utif": "^3.1.0",
     "vue": "^2.6.10",
     "vue-async-computed": "^3.9.0",
