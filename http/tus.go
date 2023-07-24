@@ -32,8 +32,8 @@ type TusHandler struct {
 	mutex                *sync.Mutex
 }
 
-func NewTusHandler(store *storage.Storage, server *settings.Server, apiPath string) (TusHandler, error) {
-	tusHandler := TusHandler{}
+func NewTusHandler(store *storage.Storage, server *settings.Server, apiPath string) (_ *TusHandler, err error) {
+	tusHandler := &TusHandler{}
 	tusHandler.store = store
 	tusHandler.server = server
 	tusHandler.tusdHandlers = make(map[uint]*tusd.UnroutedHandler)
@@ -41,7 +41,6 @@ func NewTusHandler(store *storage.Storage, server *settings.Server, apiPath stri
 	tusHandler.apiPath = apiPath
 	tusHandler.mutex = &sync.Mutex{}
 
-	var err error
 	if tusHandler.settings, err = store.Settings.Get(); err != nil {
 		return tusHandler, fmt.Errorf("couldn't get settings: %w", err)
 	}
@@ -52,13 +51,12 @@ func NewTusHandler(store *storage.Storage, server *settings.Server, apiPath stri
 	return tusHandler, nil
 }
 
-func (th TusHandler) getOrCreateTusdHandler(d *data, r *http.Request) (*tusd.UnroutedHandler, error) {
+func (th *TusHandler) getOrCreateTusdHandler(d *data, r *http.Request) (_ *tusd.UnroutedHandler, err error) {
 	// Use a mutex to make sure only one tus handler is created for each user
 	th.mutex.Lock()
 	defer th.mutex.Unlock()
 
 	tusdHandler, ok := th.tusdHandlers[d.user.ID]
-	log.Printf("Getting tus handler for user %s with basePath %s\n", d.user.Username, d.user.FullPath("/"))
 	if !ok {
 		// If we don't define an absolute URL for tusd, it creates an absolute URL for us that the client will use.
 		// See tusd/handler/unrouted_handler.go/absFileURL() for details.
@@ -76,7 +74,7 @@ func (th TusHandler) getOrCreateTusdHandler(d *data, r *http.Request) (*tusd.Unr
 		}
 
 		log.Printf("Creating tus handler for user %s on path %s\n", d.user.Username, basePath)
-		tusdHandler, err := th.createTusdHandler(d, basePath) //nolint:govet
+		tusdHandler, err = th.createTusdHandler(d, basePath)
 		if err != nil {
 			return nil, err
 		}
