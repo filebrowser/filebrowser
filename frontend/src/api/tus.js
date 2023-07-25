@@ -13,20 +13,26 @@ export async function upload(url, content = "", overwrite = false, onupload) {
   }
 
   return new Promise((resolve, reject) => {
+    const metadata = {
+      filename: content.name,
+      filetype: content.type,
+      overwrite: overwrite.toString(),
+      // url is URI encoded and needs to be decoded for metadata first
+      destination: decodeURIComponent(removePrefix(url)),
+    };
     var upload = new tus.Upload(content, {
       endpoint: tusEndpoint,
       chunkSize: tusSettings.chunkSize,
       retryDelays: computeRetryDelays(tusSettings),
       parallelUploads: tusSettings.parallelUploads || 1,
-      metadata: {
-        filename: content.name,
-        filetype: content.type,
-        overwrite: overwrite.toString(),
-        // url is URI encoded and needs to be decoded for metadata first
-        destination: decodeURIComponent(removePrefix(url)),
-      },
       headers: {
         "X-Auth": store.state.jwt,
+        // Send the metadata with every request
+        // If we used the tus client's metadata option, it would only be sent
+        // with some of the requests.
+        "Upload-Metadata": Object.entries(metadata)
+          .map(([key, value]) => `${key} ${btoa(value)}`)
+          .join(","),
       },
       onError: function (error) {
         reject("Upload failed: " + error);
@@ -42,13 +48,12 @@ export async function upload(url, content = "", overwrite = false, onupload) {
         resolve();
       },
     });
-
     upload.findPreviousUploads().then(function (previousUploads) {
       if (previousUploads.length) {
         upload.resumeFromPreviousUpload(previousUploads[0]);
       }
-      upload.start();
     });
+    upload.start();
   });
 }
 

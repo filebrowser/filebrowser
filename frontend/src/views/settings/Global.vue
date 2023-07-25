@@ -116,6 +116,17 @@
           </p>
 
           <div class="tusConditionalSettings">
+            <label for="tus-chunkSize">{{
+              $t("settings.tusUploadsChunkSize")
+            }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              v-model="formattedChunkSize"
+              id="tus-chunkSize"
+              v-bind:disabled="!settings.tus.enabled"
+            />
+
             <label for="tus-parallelUploads">{{
               $t("settings.tusUploadsParallelUploads")
             }}</label>
@@ -126,17 +137,6 @@
               id="tus-parallelUploads"
               v-bind:disabled="!settings.tus.enabled"
               min="1"
-            />
-
-            <label for="tus-chunkSize">{{
-              $t("settings.tusUploadsChunkSize")
-            }}</label>
-            <input
-              class="input input--block"
-              type="text"
-              v-model="formattedChunkSize"
-              id="tus-chunkSize"
-              v-bind:disabled="!settings.tus.enabled"
             />
 
             <label for="tus-retryCount">{{
