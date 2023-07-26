@@ -30,6 +30,9 @@ type InPlaceDataStore struct {
 	// It equals the user's root directory.
 	path string
 
+	// Store whether the user is permitted to modify files or only create new ones.
+	modifyPerm bool
+
 	// Maps an upload ID to its object.
 	// Required, since GetUpload only provides us with the id of an upload
 	// and expects us to return the Info object.
@@ -41,11 +44,12 @@ type InPlaceDataStore struct {
 	mutex *sync.Mutex
 }
 
-func NewInPlaceDataStore(path string) *InPlaceDataStore {
+func NewInPlaceDataStore(path string, modifyPerm bool) *InPlaceDataStore {
 	return &InPlaceDataStore{
-		path:    path,
-		uploads: make(map[string]*InPlaceUpload),
-		mutex:   &sync.Mutex{},
+		path:       path,
+		modifyPerm: modifyPerm,
+		uploads:    make(map[string]*InPlaceUpload),
+		mutex:      &sync.Mutex{},
 	}
 }
 
@@ -54,7 +58,7 @@ func (store *InPlaceDataStore) UseIn(composer *tusd.StoreComposer) {
 	composer.UseConcater(store)
 }
 
-func (store *InPlaceDataStore) restoreState(filePath string, info *tusd.FileInfo) error {
+func (store *InPlaceDataStore) cleanupOrphanedUploads(filePath string) error {
 	// If the file doesn't exist, remove all upload references.
 	// This way we can eliminate inconsistencies for failed uploads.
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
@@ -75,6 +79,11 @@ func (store *InPlaceDataStore) restoreState(filePath string, info *tusd.FileInfo
 			}
 		}
 		if !uploadExists {
+			if !store.modifyPerm {
+				// Gets interpreted as a 400 by tusd.
+				// There is no way to return a 403, so a 400 is better than a 500.
+				return tusd.ErrUploadStoppedByServer
+			}
 			if err := os.Remove(filePath); err != nil {
 				return err
 			}
@@ -83,11 +92,11 @@ func (store *InPlaceDataStore) restoreState(filePath string, info *tusd.FileInfo
 	return nil
 }
 
-func (store *InPlaceDataStore) prepareFile(filePath string, info *tusd.FileInfo) (int64, error) {
+func (store *InPlaceDataStore) initializeUpload(filePath string, info *tusd.FileInfo) (int64, error) {
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
 
-	if err := store.restoreState(filePath, info); err != nil {
+	if err := store.cleanupOrphanedUploads(filePath); err != nil {
 		return 0, err
 	}
 
@@ -114,11 +123,8 @@ func (store *InPlaceDataStore) prepareFile(filePath string, info *tusd.FileInfo)
 
 func (store *InPlaceDataStore) NewUpload(ctx context.Context, info tusd.FileInfo) (_ tusd.Upload, err error) { //nolint: gocritic
 	// The method must return an unique id which is used to identify the upload
-	if info.ID == "" {
-		info.ID, err = uid()
-		if err != nil {
-			return nil, err
-		}
+	if info.ID, err = uid(); err != nil {
+		return nil, err
 	}
 
 	destination, ok := info.MetaData["destination"]
@@ -136,7 +142,7 @@ func (store *InPlaceDataStore) NewUpload(ctx context.Context, info tusd.FileInfo
 	// Tus creates a POST request for the final concatenation.
 	// In that case, we don't need to create a new upload.
 	if !info.IsFinal {
-		if upload.actualOffset, err = store.prepareFile(filePath, &info); err != nil {
+		if upload.actualOffset, err = store.initializeUpload(filePath, &info); err != nil {
 			return nil, err
 		}
 		store.uploads[info.ID] = upload
@@ -207,18 +213,18 @@ func (upload *InPlaceUpload) FinishUpload(ctx context.Context) error {
 }
 
 func (upload *InPlaceUpload) ConcatUploads(ctx context.Context, uploads []tusd.Upload) (err error) {
-	for _, upload := range uploads {
-		delete((upload.(*InPlaceUpload)).parent.uploads, (upload.(*InPlaceUpload)).ID)
+	parent := upload.parent
+	for _, u := range uploads {
+		delete(parent.uploads, (u.(*InPlaceUpload)).ID)
 	}
-	delete(upload.parent.uploads, upload.ID)
+	delete(parent.uploads, upload.ID)
 	return nil
 }
 
 func uid() (string, error) {
 	id := make([]byte, uidLength)
-	_, err := io.ReadFull(rand.Reader, id)
-	if err != nil {
+	if _, err := io.ReadFull(rand.Reader, id); err != nil {
 		return "", err
 	}
-	return hex.EncodeToString(id), err
+	return hex.EncodeToString(id), nil
 }

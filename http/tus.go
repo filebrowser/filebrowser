@@ -72,6 +72,11 @@ func (th *TusHandler) getOrCreateTusdHandler(d *data, r *http.Request) (_ *tusd.
 
 func (th TusHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	code, err := withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		// Check if user has permission to create files
+		if !d.user.Perm.Create {
+			return http.StatusForbidden, nil
+		}
+
 		// Create a new tus handler for current user if it doesn't exist yet
 		tusdHandler, err := th.getOrCreateTusdHandler(d, r)
 		if err != nil {
@@ -106,7 +111,7 @@ func (th TusHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (th TusHandler) createTusdHandler(d *data, basePath string) (*tusd.UnroutedHandler, error) {
-	tusStore := NewInPlaceDataStore(d.user.FullPath("/"))
+	tusStore := NewInPlaceDataStore(d.user.FullPath("/"), d.user.Perm.Modify)
 	composer := tusd.NewStoreComposer()
 	tusStore.UseIn(composer)
 
