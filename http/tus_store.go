@@ -1,3 +1,12 @@
+// InPlaceDataStore is a storage backend for tusd, which stores the uploaded
+// files in the user's root directory. It features parallel and resumable uploads.
+// It only touches the target file, without creating any lock files or separate
+// files for upload parts. It thus requires no clean-up on failed uploads.
+// It requires the destination metadata field to be set in the upload request.
+// For each NewUpload, the target file is expanded by the upload's size.
+// This way, multiple uploads can work on the same file, without interfering
+// with each other.
+
 package http
 
 import (
@@ -19,7 +28,7 @@ const filePerm = 0644
 type InPlaceDataStore struct {
 	// All uploads will be stored relative to this directory.
 	// It equals the user's root directory.
-	basePath string
+	path string
 
 	// Maps an upload ID to its object.
 	// Required, since GetUpload only provides us with the id of an upload
@@ -32,11 +41,11 @@ type InPlaceDataStore struct {
 	mutex *sync.Mutex
 }
 
-func NewInPlaceDataStore(basePath string) *InPlaceDataStore {
+func NewInPlaceDataStore(path string) *InPlaceDataStore {
 	return &InPlaceDataStore{
-		basePath: basePath,
-		uploads:  make(map[string]*InPlaceUpload),
-		mutex:    &sync.Mutex{},
+		path:    path,
+		uploads: make(map[string]*InPlaceUpload),
+		mutex:   &sync.Mutex{},
 	}
 }
 
@@ -83,7 +92,7 @@ func (store *InPlaceDataStore) NewUpload(ctx context.Context, info tusd.FileInfo
 	if !ok {
 		return nil, fmt.Errorf("metadata field 'destination' not found in upload request")
 	}
-	filePath := filepath.Join(store.basePath, destination)
+	filePath := filepath.Join(store.path, destination)
 
 	// Tus creates a POST request for the final concatenation.
 	// In that case, we don't need to create a new upload.
