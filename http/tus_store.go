@@ -54,10 +54,7 @@ func (store *InPlaceDataStore) UseIn(composer *tusd.StoreComposer) {
 	composer.UseConcater(store)
 }
 
-func (store *InPlaceDataStore) prepareFile(filePath string, info *tusd.FileInfo) (int64, error) {
-	store.mutex.Lock()
-	defer store.mutex.Unlock()
-
+func (store *InPlaceDataStore) restoreState(filePath string, info *tusd.FileInfo) error {
 	// If the file doesn't exist, remove all upload references.
 	// This way we can eliminate inconsistencies for failed uploads.
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
@@ -66,6 +63,32 @@ func (store *InPlaceDataStore) prepareFile(filePath string, info *tusd.FileInfo)
 				delete(store.uploads, id)
 			}
 		}
+	} else {
+		// If the file but no uploads exist for it,
+		// we need to remove the file to make sure we don't append to an existing file.
+		// This would lead to files with duplicate content.
+		uploadExists := false
+		for _, upload := range store.uploads {
+			if upload.filePath == filePath {
+				uploadExists = true
+				break
+			}
+		}
+		if !uploadExists {
+			if err := os.Remove(filePath); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (store *InPlaceDataStore) prepareFile(filePath string, info *tusd.FileInfo) (int64, error) {
+	store.mutex.Lock()
+	defer store.mutex.Unlock()
+
+	if err := store.restoreState(filePath, info); err != nil {
+		return 0, err
 	}
 
 	// Create the file if it doesn't exist.
@@ -104,23 +127,20 @@ func (store *InPlaceDataStore) NewUpload(ctx context.Context, info tusd.FileInfo
 	}
 	filePath := filepath.Join(store.path, destination)
 
-	// Tus creates a POST request for the final concatenation.
-	// In that case, we don't need to create a new upload.
-	actualOffset := info.Size
-	if !info.IsFinal {
-		if actualOffset, err = store.prepareFile(filePath, &info); err != nil {
-			return nil, err
-		}
-	}
-
 	upload := &InPlaceUpload{
 		FileInfo:     info,
 		filePath:     filePath,
-		actualOffset: actualOffset,
+		actualOffset: info.Size,
 		parent:       store,
 	}
-
-	store.uploads[info.ID] = upload
+	// Tus creates a POST request for the final concatenation.
+	// In that case, we don't need to create a new upload.
+	if !info.IsFinal {
+		if upload.actualOffset, err = store.prepareFile(filePath, &info); err != nil {
+			return nil, err
+		}
+		store.uploads[info.ID] = upload
+	}
 
 	return upload, nil
 }
@@ -183,12 +203,14 @@ func (upload *InPlaceUpload) GetReader(ctx context.Context) (io.Reader, error) {
 }
 
 func (upload *InPlaceUpload) FinishUpload(ctx context.Context) error {
-	// Remove the upload from the ID-mapping.
-	delete(upload.parent.uploads, upload.filePath)
 	return nil
 }
 
 func (upload *InPlaceUpload) ConcatUploads(ctx context.Context, uploads []tusd.Upload) (err error) {
+	for _, upload := range uploads {
+		delete((upload.(*InPlaceUpload)).parent.uploads, (upload.(*InPlaceUpload)).ID)
+	}
+	delete(upload.parent.uploads, upload.ID)
 	return nil
 }
 
