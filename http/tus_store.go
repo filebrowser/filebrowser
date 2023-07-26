@@ -54,9 +54,19 @@ func (store *InPlaceDataStore) UseIn(composer *tusd.StoreComposer) {
 	composer.UseConcater(store)
 }
 
-func prepareFile(filePath string, uploadSize int64, mutex *sync.Mutex) (int64, error) {
-	mutex.Lock()
-	defer mutex.Unlock()
+func (store *InPlaceDataStore) prepareFile(filePath string, info *tusd.FileInfo) (int64, error) {
+	store.mutex.Lock()
+	defer store.mutex.Unlock()
+
+	// If the file doesn't exist, remove all upload references.
+	// This way we can eliminate inconsistencies for failed uploads.
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		for id, upload := range store.uploads {
+			if upload.filePath == filePath {
+				delete(store.uploads, id)
+			}
+		}
+	}
 
 	// Create the file if it doesn't exist.
 	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, filePerm)
@@ -71,7 +81,7 @@ func prepareFile(filePath string, uploadSize int64, mutex *sync.Mutex) (int64, e
 		return 0, err
 	}
 	// Enlarge the file by the upload's size.
-	_, err = file.Write(make([]byte, uploadSize))
+	_, err = file.Write(make([]byte, info.Size))
 	if err != nil {
 		return 0, err
 	}
@@ -97,9 +107,8 @@ func (store *InPlaceDataStore) NewUpload(ctx context.Context, info tusd.FileInfo
 	// Tus creates a POST request for the final concatenation.
 	// In that case, we don't need to create a new upload.
 	actualOffset := info.Size
-	if info.IsPartial {
-		actualOffset, err = prepareFile(filePath, info.Size, store.mutex)
-		if err != nil {
+	if !info.IsFinal {
+		if actualOffset, err = store.prepareFile(filePath, &info); err != nil {
 			return nil, err
 		}
 	}

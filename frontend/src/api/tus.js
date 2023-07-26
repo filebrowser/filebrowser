@@ -14,8 +14,6 @@ export async function upload(url, content = "", overwrite = false, onupload) {
 
   return new Promise((resolve, reject) => {
     const metadata = {
-      filename: content.name,
-      filetype: content.type,
       overwrite: overwrite.toString(),
       // url is URI encoded and needs to be decoded for metadata first
       destination: decodeURIComponent(removePrefix(url)),
