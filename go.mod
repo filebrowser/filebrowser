@@ -22,6 +22,7 @@ require (
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.2
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce
+	github.com/tus/tusd v1.11.0
 	go.etcd.io/bbolt v1.3.7
 	golang.org/x/crypto v0.6.0
 	golang.org/x/image v0.5.0
@@ -55,12 +56,11 @@ require (
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
-	github.com/tus/tusd v1.11.0 // indirect
 	github.com/ulikunitz/xz v0.5.9 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
-	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
