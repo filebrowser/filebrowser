@@ -127,18 +127,6 @@
               v-bind:disabled="!settings.tus.enabled"
             />
 
-            <label for="tus-parallelUploads">{{
-              $t("settings.tusUploadsParallelUploads")
-            }}</label>
-            <input
-              class="input input--block"
-              type="number"
-              v-model.number="settings.tus.parallelUploads"
-              id="tus-parallelUploads"
-              v-bind:disabled="!settings.tus.enabled"
-              min="1"
-            />
-
             <label for="tus-retryCount">{{
               $t("settings.tusUploadsRetryCount")
             }}</label>

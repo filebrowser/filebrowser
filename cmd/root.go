@@ -335,10 +335,9 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 		AuthMethod: "",
 		Branding:   settings.Branding{},
 		Tus: settings.Tus{
-			Enabled:         true,
-			ChunkSize:       settings.DefaultTusChunkSize,
-			ParallelUploads: settings.DefaultTusParallelUploads,
-			RetryCount:      settings.DefaultTusRetryCount,
+			Enabled:    true,
+			ChunkSize:  settings.DefaultTusChunkSize,
+			RetryCount: settings.DefaultTusRetryCount,
 		},
 		Commands: nil,
 		Shell:    nil,

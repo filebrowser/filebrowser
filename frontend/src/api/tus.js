@@ -22,7 +22,7 @@ export async function upload(url, content = "", overwrite = false, onupload) {
       endpoint: tusEndpoint,
       chunkSize: tusSettings.chunkSize,
       retryDelays: computeRetryDelays(tusSettings),
-      parallelUploads: tusSettings.parallelUploads || 1,
+      parallelUploads: 1,
       headers: {
         "X-Auth": store.state.jwt,
         // Send the metadata with every request
