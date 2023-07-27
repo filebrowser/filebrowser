@@ -43,6 +43,10 @@ export async function upload(url, content = "", overwrite = false, onupload) {
         }
       },
       onSuccess: function () {
+        // Remove the upload from the storage when completed.
+        // Otherwise, old storage keys aren't overwritten, which
+        // lets resumable uploads fail.
+        upload._removeFromUrlStorage();
         resolve();
       },
     });
