@@ -35,7 +35,6 @@ func (s *Storage) Get() (*Settings, error) {
 	}
 	if set.Tus == (Tus{}) {
 		set.Tus = Tus{
-			Enabled:    false,
 			ChunkSize:  DefaultTusChunkSize,
 			RetryCount: DefaultTusRetryCount,
 		}

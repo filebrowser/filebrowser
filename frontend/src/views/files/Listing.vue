@@ -694,6 +694,11 @@ export default {
       if (conflict) {
         this.$store.commit("showHover", {
           prompt: "replace",
+          action: (event) => {
+            event.preventDefault();
+            this.$store.commit("closeHovers");
+            upload.handleFiles(files, path, false);
+          },
           confirm: (event) => {
             event.preventDefault();
             this.$store.commit("closeHovers");
@@ -729,6 +734,11 @@ export default {
       if (conflict) {
         this.$store.commit("showHover", {
           prompt: "replace",
+          action: (event) => {
+            event.preventDefault();
+            this.$store.commit("closeHovers");
+            upload.handleFiles(files, path, false);
+          },
           confirm: (event) => {
             event.preventDefault();
             this.$store.commit("closeHovers");

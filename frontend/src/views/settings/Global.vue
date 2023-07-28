@@ -106,38 +106,31 @@
 
           <p class="small">{{ $t("settings.tusUploadsHelp") }}</p>
 
-          <p>
-            <input
-              type="checkbox"
-              v-model="settings.tus.enabled"
-              id="tus-enabled"
-            />
-            {{ $t("settings.tusUploadsEnabled") }}
-          </p>
-
           <div class="tusConditionalSettings">
-            <label for="tus-chunkSize">{{
-              $t("settings.tusUploadsChunkSize")
-            }}</label>
-            <input
-              class="input input--block"
-              type="text"
-              v-model="formattedChunkSize"
-              id="tus-chunkSize"
-              v-bind:disabled="!settings.tus.enabled"
-            />
+            <p>
+              <label for="tus-chunkSize">{{
+                $t("settings.tusUploadsChunkSize")
+              }}</label>
+              <input
+                class="input input--block"
+                type="text"
+                v-model="formattedChunkSize"
+                id="tus-chunkSize"
+              />
+            </p>
 
-            <label for="tus-retryCount">{{
-              $t("settings.tusUploadsRetryCount")
-            }}</label>
-            <input
-              class="input input--block"
-              type="number"
-              v-model.number="settings.tus.retryCount"
-              id="tus-retryCount"
-              v-bind:disabled="!settings.tus.enabled"
-              min="0"
-            />
+            <p>
+              <label for="tus-retryCount">{{
+                $t("settings.tusUploadsRetryCount")
+              }}</label>
+              <input
+                class="input input--block"
+                type="number"
+                v-model.number="settings.tus.retryCount"
+                id="tus-retryCount"
+                min="0"
+              />
+            </p>
           </div>
         </div>
 
@@ -334,36 +327,35 @@ export default {
     },
     // Parse the user-friendly input (e.g., "20M" or "1T") to bytes
     parseBytes(input) {
-      const regex = /^(\d+\.?\d*)([BKMGT]?[B|I]?)$/i;
+      const regex = /^(\d+)(\.\d+)?(B|K|KB|M|MB|G|GB|T|TB)?$/i;
       const matches = input.match(regex);
       if (matches) {
-        const size = parseFloat(matches[1]);
-        const unit = matches[2].toUpperCase();
+        const size = parseFloat(matches[1].concat(matches[2] || ""));
+        let unit = matches[3].toUpperCase();
+        if (!unit.endsWith("B")) {
+          unit += "B";
+        }
         const units = {
-          KB: 1e3,
-          MB: 1e6,
-          GB: 1e9,
-          TB: 1e12,
-          KI: 1024,
-          MI: 1024 ** 2,
-          GI: 1024 ** 3,
-          TI: 1024 ** 4,
+          KB: 1024,
+          MB: 1024 ** 2,
+          GB: 1024 ** 3,
+          TB: 1024 ** 4,
         };
         return size * (units[unit] || 1);
       } else {
-        return 0;
+        return 1024 ** 2;
       }
     },
     // Format the chunk size in bytes to user-friendly format
     formatBytes(bytes) {
-      const units = ["B", "Ki", "Mi", "Gi", "Ti"];
+      const units = ["B", "KB", "MB", "GB", "TB"];
       let size = bytes;
       let unitIndex = 0;
       while (size >= 1024 && unitIndex < units.length - 1) {
         size /= 1024;
         unitIndex++;
       }
-      return `${size.toFixed(2)}${units[unitIndex]}`;
+      return `${size}${units[unitIndex]}`;
     },
     // Clear the debounce timeout when the component is destroyed
     beforeDestroy() {

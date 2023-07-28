@@ -2,6 +2,7 @@ import * as tus from "tus-js-client";
 import { tusEndpoint, tusSettings } from "@/utils/constants";
 import store from "@/store";
 import { removePrefix } from "@/api/utils";
+import { fetchURL } from "./utils";
 
 const RETRY_BASE_DELAY = 1000;
 const RETRY_MAX_DELAY = 20000;
@@ -12,25 +13,20 @@ export async function upload(url, content = "", overwrite = false, onupload) {
     throw new Error("Tus.io settings are not defined");
   }
 
+  url = removePrefix(url);
+  let resourceUrl = `${tusEndpoint}${url}?override=${overwrite}`;
+
+  await createUpload(resourceUrl);
+
   return new Promise((resolve, reject) => {
-    const metadata = {
-      overwrite: overwrite.toString(),
-      // url is URI encoded and needs to be decoded for metadata first
-      destination: decodeURIComponent(removePrefix(url)),
-    };
-    var upload = new tus.Upload(content, {
-      endpoint: tusEndpoint,
+    let upload = new tus.Upload(content, {
+      uploadUrl: resourceUrl,
       chunkSize: tusSettings.chunkSize,
       retryDelays: computeRetryDelays(tusSettings),
       parallelUploads: 1,
+      storeFingerprintForResuming: false,
       headers: {
         "X-Auth": store.state.jwt,
-        // Send the metadata with every request
-        // If we used the tus client's metadata option, it would only be sent
-        // with some of the requests.
-        "Upload-Metadata": Object.entries(metadata)
-          .map(([key, value]) => `${key} ${btoa(value)}`)
-          .join(","),
       },
       onError: function (error) {
         reject("Upload failed: " + error);
@@ -43,20 +39,22 @@ export async function upload(url, content = "", overwrite = false, onupload) {
         }
       },
       onSuccess: function () {
-        // Remove the upload from the storage when completed.
-        // Otherwise, old storage keys aren't overwritten, which
-        // lets resumable uploads fail.
-        upload._removeFromUrlStorage();
         resolve();
       },
     });
-    upload.findPreviousUploads().then(function (previousUploads) {
-      if (previousUploads.length) {
-        upload.resumeFromPreviousUpload(previousUploads[0]);
-      }
-    });
     upload.start();
   });
+}
+
+async function createUpload(resourceUrl) {
+  let headResp = await fetchURL(resourceUrl, {
+    method: "POST",
+  });
+  if (headResp.status !== 201) {
+    throw new Error(
+      `Failed to create an upload: ${headResp.status} ${headResp.statusText}`
+    );
+  }
 }
 
 function computeRetryDelays(tusSettings) {
@@ -79,16 +77,7 @@ function computeRetryDelays(tusSettings) {
 }
 
 export async function useTus(content) {
-  if (!isTusSupported() || !(content instanceof Blob)) {
-    return false;
-  }
-
-  // use tus if tus uploads are enabled and the content's size is larger than chunkSize
-  return (
-    tusSettings &&
-    tusSettings.enabled === true &&
-    content.size > tusSettings.chunkSize
-  );
+  return isTusSupported() && content instanceof Blob;
 }
 
 function isTusSupported() {

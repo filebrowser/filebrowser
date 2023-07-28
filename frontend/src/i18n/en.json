@@ -37,7 +37,8 @@
     "toggleSidebar": "Toggle sidebar",
     "update": "Update",
     "upload": "Upload",
-    "openFile": "Open file"
+    "openFile": "Open file",
+    "continue": "Continue"
   },
   "download": {
     "downloadFile": "Download File",
@@ -148,7 +149,7 @@
     "rename": "Rename",
     "renameMessage": "Insert a new name for",
     "replace": "Replace",
-    "replaceMessage": "One of the files you're trying to upload is conflicting because of its name. Do you wish to replace the existing one?\n",
+    "replaceMessage": "One of the files you're trying to upload is conflicting because of its name. Do you wish to continue to upload or replace the existing one?\n",
     "schedule": "Schedule",
     "scheduleMessage": "Pick a date and time to schedule the publication of this post.",
     "show": "Show",
@@ -186,10 +187,9 @@
     "commandsUpdated": "Commands updated!",
     "createUserDir": "Auto create user home dir while adding new user",
     "tusUploads": "Chunked Uploads",
-    "tusUploadsHelp": "File Browser supports the tus.io protocol for resumable file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
-    "tusUploadsEnabled": "Enable chunked file uploads",
-    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting a bytes input or a string like 10MB, 1.00Ti etc.",
-    "tusUploadsRetryCount": "Number of times to retry a failed upload (set to 0 to disable retries)",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting a bytes input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Base path for user home directories",
     "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "createUserHomeDirectory": "Create user home directory",

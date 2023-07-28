@@ -335,7 +335,6 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 		AuthMethod: "",
 		Branding:   settings.Branding{},
 		Tus: settings.Tus{
-			Enabled:    true,
 			ChunkSize:  settings.DefaultTusChunkSize,
 			RetryCount: settings.DefaultTusRetryCount,
 		},
