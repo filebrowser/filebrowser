@@ -57,6 +57,7 @@ dockers:
       - "filebrowser/filebrowser:v{{ .Major }}-amd64"
     extra_files:
       - docker_config.json
+      - healthcheck.sh
   -
     dockerfile: Dockerfile
     use: buildx
@@ -75,6 +76,7 @@ dockers:
       - "filebrowser/filebrowser:v{{ .Major }}-arm64"
     extra_files:
       - docker_config.json
+      - healthcheck.sh
   -
     dockerfile: Dockerfile
     use: buildx
@@ -94,6 +96,7 @@ dockers:
       - "filebrowser/filebrowser:v{{ .Major }}-armv6"
     extra_files:
       - docker_config.json
+      - healthcheck.sh
   -
     dockerfile: Dockerfile
     use: buildx
@@ -113,6 +116,7 @@ dockers:
       - "filebrowser/filebrowser:v{{ .Major }}-armv7"
     extra_files:
       - docker_config.json
+      - healthcheck.sh
 ## s6 based docker images
   -
     dockerfile: Dockerfile.s6
