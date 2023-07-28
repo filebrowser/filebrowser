@@ -21,6 +21,7 @@ type Settings struct {
 	Defaults         UserDefaults        `json:"defaults"`
 	AuthMethod       AuthMethod          `json:"authMethod"`
 	Branding         Branding            `json:"branding"`
+	Tus              Tus                 `json:"tus"`
 	Commands         map[string][]string `json:"commands"`
 	Shell            []string            `json:"shell"`
 	Rules            []rules.Rule        `json:"rules"`

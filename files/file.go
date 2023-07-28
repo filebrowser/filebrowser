@@ -23,6 +23,8 @@ import (
 	"github.com/filebrowser/filebrowser/v2/rules"
 )
 
+const PERM = 0664
+
 // FileInfo describes a file.
 type FileInfo struct {
 	*Listing
