@@ -1,3 +1,4 @@
 *
 !docker/*
+!docker_config.json
 !filebrowser
