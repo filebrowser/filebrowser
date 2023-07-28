@@ -164,25 +164,6 @@ dockers:
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
       - "--label=org.opencontainers.image.source={{.GitURL}}"
-      - "--platform=linux/arm/v6"
-    goos: linux
-    goarch: arm
-    goarm: '6'
-    image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-armv6-s6"
-      - "filebrowser/filebrowser:v{{ .Major }}-armv6-s6"
-    extra_files:
-      - docker/root
-  -
-    dockerfile: Dockerfile.s6.armhf
-    use: buildx
-    build_flag_templates:
-      - "--pull"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.name={{.ProjectName}}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--label=org.opencontainers.image.source={{.GitURL}}"
       - "--platform=linux/arm/v7"
     goos: linux
     goarch: arm
@@ -197,38 +178,32 @@ docker_manifests:
     image_templates:
       - "filebrowser/filebrowser:{{ .Tag }}-amd64"
       - "filebrowser/filebrowser:{{ .Tag }}-arm64"
-      - "filebrowser/filebrowser:{{ .Tag }}-armv6"
       - "filebrowser/filebrowser:{{ .Tag }}-armv7"
   - name_template: "filebrowser/filebrowser:{{ .Tag }}"
     image_templates:
       - "filebrowser/filebrowser:{{ .Tag }}-amd64"
       - "filebrowser/filebrowser:{{ .Tag }}-arm64"
-      - "filebrowser/filebrowser:{{ .Tag }}-armv6"
       - "filebrowser/filebrowser:{{ .Tag }}-armv7"
   - name_template: "filebrowser/filebrowser:v{{ .Major }}"
     image_templates:
       - "filebrowser/filebrowser:v{{ .Major }}-amd64"
       - "filebrowser/filebrowser:v{{ .Major }}-arm64"
-      - "filebrowser/filebrowser:v{{ .Major }}-armv6"
       - "filebrowser/filebrowser:v{{ .Major }}-armv7"
 ## s6 image manifests
   - name_template: "filebrowser/filebrowser:s6"
     image_templates:
       - "filebrowser/filebrowser:{{ .Tag }}-amd64-s6"
       - "filebrowser/filebrowser:{{ .Tag }}-arm64-s6"
-      - "filebrowser/filebrowser:{{ .Tag }}-armv6-s6"
       - "filebrowser/filebrowser:{{ .Tag }}-armv7-s6"
   - name_template: "filebrowser/filebrowser:{{ .Tag }}-s6"
     image_templates:
       - "filebrowser/filebrowser:{{ .Tag }}-amd64-s6"
       - "filebrowser/filebrowser:{{ .Tag }}-arm64-s6"
-      - "filebrowser/filebrowser:{{ .Tag }}-armv6-s6"
       - "filebrowser/filebrowser:{{ .Tag }}-armv7-s6"
   - name_template: "filebrowser/filebrowser:v{{ .Major }}-s6"
     image_templates:
       - "filebrowser/filebrowser:v{{ .Major }}-amd64-s6"
       - "filebrowser/filebrowser:v{{ .Major }}-arm64-s6"
-      - "filebrowser/filebrowser:v{{ .Major }}-armv6-s6"
       - "filebrowser/filebrowser:v{{ .Major }}-armv7-s6"
 brews:
   - name: filebrowser
