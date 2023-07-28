@@ -3,12 +3,14 @@ package http
 import (
 	"errors"
 	"fmt"
-	"github.com/filebrowser/filebrowser/v2/files"
-	"github.com/spf13/afero"
 	"io"
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/spf13/afero"
+
+	"github.com/filebrowser/filebrowser/v2/files"
 )
 
 func tusPostHandler() handleFunc {
@@ -42,7 +44,7 @@ func tusPostHandler() handleFunc {
 			}
 		}
 
-		openFile, err := d.user.Fs.OpenFile(r.URL.Path, fileFlags, 0664)
+		openFile, err := d.user.Fs.OpenFile(r.URL.Path, fileFlags, files.PERM)
 		if err != nil {
 			return errToStatus(err), err
 		}
@@ -121,7 +123,7 @@ func tusPatchHandler() handleFunc {
 			)
 		}
 
-		openFile, err := d.user.Fs.OpenFile(r.URL.Path, os.O_WRONLY|os.O_APPEND, 0664)
+		openFile, err := d.user.Fs.OpenFile(r.URL.Path, os.O_WRONLY|os.O_APPEND, files.PERM)
 		if err != nil {
 			return http.StatusInternalServerError, fmt.Errorf("could not open file: %v", err)
 		}
