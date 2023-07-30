@@ -175,7 +175,6 @@ table tr>*:last-child {
   max-width: 25em;
   width: 90%;
   max-height: 95%;
-  z-index: 99999;
   animation: .1s show forwards;
 }
 
