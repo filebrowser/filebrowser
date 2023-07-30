@@ -128,7 +128,7 @@ main .spinner .bounce2 {
 }
 
 #click-overlay.active {
-  display: block;
+  visibility: visible;
 }
 
 .action .counter {
