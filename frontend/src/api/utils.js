@@ -9,6 +9,10 @@ export async function fetchURL(url, opts, auth = true) {
 
   let { headers, ...rest } = opts;
 
+  if (url.startsWith(baseURL)) {
+    url = url.substring(baseURL.length);
+  }
+
   let res;
   try {
     res = await fetch(`${baseURL}${url}`, {
