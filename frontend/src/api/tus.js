@@ -1,5 +1,5 @@
 import * as tus from "tus-js-client";
-import { tusEndpoint, tusSettings } from "@/utils/constants";
+import { baseURL, tusEndpoint, tusSettings } from "@/utils/constants";
 import store from "@/store";
 import { removePrefix } from "@/api/utils";
 import { fetchURL } from "./utils";
@@ -7,20 +7,25 @@ import { fetchURL } from "./utils";
 const RETRY_BASE_DELAY = 1000;
 const RETRY_MAX_DELAY = 20000;
 
-export async function upload(url, content = "", overwrite = false, onupload) {
+export async function upload(
+  filePath,
+  content = "",
+  overwrite = false,
+  onupload
+) {
   if (!tusSettings) {
     // Shouldn't happen as we check for tus support before calling this function
     throw new Error("Tus.io settings are not defined");
   }
 
-  url = removePrefix(url);
-  let resourceUrl = `${tusEndpoint}${url}?override=${overwrite}`;
+  filePath = removePrefix(filePath);
+  let resourcePath = `${tusEndpoint}${filePath}?override=${overwrite}`;
 
-  await createUpload(resourceUrl);
+  await createUpload(resourcePath);
 
   return new Promise((resolve, reject) => {
     let upload = new tus.Upload(content, {
-      uploadUrl: resourceUrl,
+      uploadUrl: `${baseURL}${resourcePath}`,
       chunkSize: tusSettings.chunkSize,
       retryDelays: computeRetryDelays(tusSettings),
       parallelUploads: 1,
@@ -46,8 +51,8 @@ export async function upload(url, content = "", overwrite = false, onupload) {
   });
 }
 
-async function createUpload(resourceUrl) {
-  let headResp = await fetchURL(resourceUrl, {
+async function createUpload(resourcePath) {
+  let headResp = await fetchURL(resourcePath, {
     method: "POST",
   });
   if (headResp.status !== 201) {

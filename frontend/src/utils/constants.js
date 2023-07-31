@@ -17,7 +17,7 @@ const resizePreview = window.FileBrowser.ResizePreview;
 const enableExec = window.FileBrowser.EnableExec;
 const tusSettings = window.FileBrowser.TusSettings;
 const origin = window.location.origin;
-const tusEndpoint = `${baseURL}/api/tus`;
+const tusEndpoint = `/api/tus`;
 
 export {
   name,
