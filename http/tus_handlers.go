@@ -32,7 +32,7 @@ func tusPostHandler() handleFunc {
 
 			dirPath := filepath.Dir(r.URL.Path)
 			if _, statErr := d.user.Fs.Stat(dirPath); os.IsNotExist(statErr) {
-				if mkdirErr := d.user.Fs.MkdirAll(dirPath, files.DIR_PERM); mkdirErr != nil {
+				if mkdirErr := d.user.Fs.MkdirAll(dirPath, files.PermDir); mkdirErr != nil {
 					return http.StatusInternalServerError, err
 				}
 			}
@@ -52,7 +52,7 @@ func tusPostHandler() handleFunc {
 			}
 		}
 
-		openFile, err := d.user.Fs.OpenFile(r.URL.Path, fileFlags, files.PERM)
+		openFile, err := d.user.Fs.OpenFile(r.URL.Path, fileFlags, files.PermFile)
 		if err != nil {
 			return errToStatus(err), err
 		}
@@ -131,7 +131,7 @@ func tusPatchHandler() handleFunc {
 			)
 		}
 
-		openFile, err := d.user.Fs.OpenFile(r.URL.Path, os.O_WRONLY|os.O_APPEND, files.PERM)
+		openFile, err := d.user.Fs.OpenFile(r.URL.Path, os.O_WRONLY|os.O_APPEND, files.PermFile)
 		if err != nil {
 			return http.StatusInternalServerError, fmt.Errorf("could not open file: %v", err)
 		}
