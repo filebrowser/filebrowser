@@ -8,10 +8,6 @@ export async function fetchURL(url, opts, auth = true) {
   opts.headers = opts.headers || {};
 
   let { headers, ...rest } = opts;
-
-  if (url.startsWith(baseURL)) {
-    url = url.substring(baseURL.length);
-  }
   
   let res;
   try {
