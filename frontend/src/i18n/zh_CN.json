@@ -215,6 +215,7 @@
     "customStylesheet": "自定义样式表（CSS）",
     "defaultUserDescription": "这些是新用户的默认设置。",
     "disableExternalLinks": "禁止外部链接（帮助文档除外）",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "帮助文档",
     "examples": "例子",
     "executeOnShell": "在Shell中执行",

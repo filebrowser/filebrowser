@@ -182,6 +182,7 @@ user created with the credentials from options "username" and "password".`,
 		defer listener.Close()
 
 		log.Println("Listening on", listener.Addr().String())
+		//nolint: gosec
 		if err := http.Serve(listener, handler); err != nil {
 			log.Fatal(err)
 		}
@@ -338,9 +339,13 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 		},
 		AuthMethod: "",
 		Branding:   settings.Branding{},
-		Commands:   nil,
-		Shell:      nil,
-		Rules:      nil,
+		Tus: settings.Tus{
+			ChunkSize:  settings.DefaultTusChunkSize,
+			RetryCount: settings.DefaultTusRetryCount,
+		},
+		Commands: nil,
+		Shell:    nil,
+		Rules:    nil,
 	}
 
 	var err error

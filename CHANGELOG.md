@@ -2,6 +2,58 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.24.1](https://github.com/filebrowser/filebrowser/compare/v2.24.0...v2.24.1) (2023-07-31)
+
+
+### Bug Fixes
+
+* add directory creation code to partial upload handler ([#2575](https://github.com/filebrowser/filebrowser/issues/2575)) ([#2580](https://github.com/filebrowser/filebrowser/issues/2580)) ([912f27a](https://github.com/filebrowser/filebrowser/commit/912f27a9e3286ee4bf2a27b366a1d35b3b55799c))
+* resolved CSS rendering issue in Chrome browser ([#2582](https://github.com/filebrowser/filebrowser/issues/2582)) ([2a4a46c](https://github.com/filebrowser/filebrowser/commit/2a4a46c61a5d5376bea65b28d0eb6a7ec2fdf4e5))
+
+
+### Build
+
+* **backend:** upgrade golangci-lint to v1.53.3 ([efd41cc](https://github.com/filebrowser/filebrowser/commit/efd41cc4c147b8d2d5e61fb2642df8d934f49362))
+
+## [2.24.0](https://github.com/filebrowser/filebrowser/compare/v2.23.0...v2.24.0) (2023-07-29)
+
+
+### Features
+
+* add a healthcheck script that works with a dynamic port ([#2510](https://github.com/filebrowser/filebrowser/issues/2510)) ([ff4375c](https://github.com/filebrowser/filebrowser/commit/ff4375cf6ce849459889f892dd91304703c52dcd))
+* add a new setting that disables the display of the disk usage ([#2136](https://github.com/filebrowser/filebrowser/issues/2136)) ([428c1c6](https://github.com/filebrowser/filebrowser/commit/428c1c606d1b858ed0eb58b7c31f570bc6a9b792))
+* add Hungarian translation ([#2232](https://github.com/filebrowser/filebrowser/issues/2232)) ([11e9202](https://github.com/filebrowser/filebrowser/commit/11e92021607e12efff9fb2d5c8728483eee31199))
+* add option to copy download links from shares ([#2442](https://github.com/filebrowser/filebrowser/issues/2442)) ([a4ef02a](https://github.com/filebrowser/filebrowser/commit/a4ef02a47b53742a0ac1f639563b0c67116619c8))
+* integrate tus.io for resumable and chunked uploads ([#2145](https://github.com/filebrowser/filebrowser/issues/2145)) ([7b35815](https://github.com/filebrowser/filebrowser/commit/7b35815754690540f76e3ffe114eedb47cfd5c7e))
+
+
+### Bug Fixes
+
+* added an early return on non-existent items ([#2571](https://github.com/filebrowser/filebrowser/issues/2571)) ([2744f7d](https://github.com/filebrowser/filebrowser/commit/2744f7d5b9106c7c2eec69010e550e0939c23d80))
+* build on FreeBSD and non-Linux platforms ([#2332](https://github.com/filebrowser/filebrowser/issues/2332)) ([60d1e2d](https://github.com/filebrowser/filebrowser/commit/60d1e2d2913cce591fbee97337bd58310480269f))
+* error while using fallback of dir move ([#2349](https://github.com/filebrowser/filebrowser/issues/2349)) ([853ec90](https://github.com/filebrowser/filebrowser/commit/853ec906efbdee9013c5d34ed1d9b8fee88a6b29))
+* filter ANSI color for shell ([#2529](https://github.com/filebrowser/filebrowser/issues/2529)) ([9bcfa90](https://github.com/filebrowser/filebrowser/commit/9bcfa900f904fe683c8d9085947f57932bfe22a0))
+* goreleaser docker build ([051104b](https://github.com/filebrowser/filebrowser/commit/051104bfa061720d4402c612e61bb0fc80a946bf))
+* solve broken Docker build with alpine image ([#2486](https://github.com/filebrowser/filebrowser/issues/2486)) ([b8ee340](https://github.com/filebrowser/filebrowser/commit/b8ee3404ee480ef1fd439543ab6d46f318ff3647))
+* video preview click next or prev button subtitles not update ([#2423](https://github.com/filebrowser/filebrowser/issues/2423)) ([6744cd4](https://github.com/filebrowser/filebrowser/commit/6744cd47cef87e3a76a2190bdf123b6c2197fe6f))
+* xss vulnerability in /api/raw ([#2570](https://github.com/filebrowser/filebrowser/issues/2570)) ([#2572](https://github.com/filebrowser/filebrowser/issues/2572)) ([b508ac3](https://github.com/filebrowser/filebrowser/commit/b508ac3d4f7f0f75d6b49c99bdc661a6d2173f30))
+
+
+### Refactorings
+
+* replace username old focus logic with the autofocus attribute ([#2223](https://github.com/filebrowser/filebrowser/issues/2223)) ([2b2c108](https://github.com/filebrowser/filebrowser/commit/2b2c1085fb50ad68612ad438e527fd316d8aafee))
+
+
+### Build
+
+* **backend:** bump go version to 1.20.1 ([fa95299](https://github.com/filebrowser/filebrowser/commit/fa95299df4aa7e4c54d872e786a91ded5bdb01c1))
+* **backend:** bump go version to 1.20.6 ([9bf6b85](https://github.com/filebrowser/filebrowser/commit/9bf6b856e5411e635ba9102ff53dfe927183848e))
+* **deps-dev:** bump word-wrap from 1.2.3 to 1.2.4 in /frontend ([#2556](https://github.com/filebrowser/filebrowser/issues/2556)) ([bb34862](https://github.com/filebrowser/filebrowser/commit/bb3486286c0da112ad97456ad258ddcdfe17c154))
+* **deps:** bump minimatch from 3.0.4 to 3.1.2 in /tools ([#2561](https://github.com/filebrowser/filebrowser/issues/2561)) ([a664ba1](https://github.com/filebrowser/filebrowser/commit/a664ba1f9df45c7f6d03492c85466c5aa07c740e))
+* **deps:** bump semver from 5.7.1 to 5.7.2 in /tools ([#2546](https://github.com/filebrowser/filebrowser/issues/2546)) ([c2f1423](https://github.com/filebrowser/filebrowser/commit/c2f1423c02e4736f4c243c3164dc671879e065f3))
+* remove armv6-s6 docker target ([66dfbb3](https://github.com/filebrowser/filebrowser/commit/66dfbb303cf792b7b01650d0125d948ab8d81ddd))
+* remove armv7-s6 docker target ([4d77ce0](https://github.com/filebrowser/filebrowser/commit/4d77ce0955644551f891af3e4098c37e9cc37e40))
+
 ## [2.23.0](https://github.com/filebrowser/filebrowser/compare/v2.22.4...v2.23.0) (2022-11-05)
 
 

@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mholt/archiver"
-	"github.com/shirou/gopsutil/disk"
+	"github.com/mholt/archiver/v3"
+	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/spf13/afero"
 
 	"github.com/filebrowser/filebrowser/v2/errors"

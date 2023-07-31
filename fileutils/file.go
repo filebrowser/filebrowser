@@ -9,7 +9,7 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/mholt/archiver"
+	"github.com/mholt/archiver/v3"
 	"github.com/spf13/afero"
 )
 
@@ -21,18 +21,16 @@ func MoveFile(fs afero.Fs, src, dst string) error {
 		return nil
 	}
 
-	info, err := fs.Stat(src)
-	if err == nil && info.IsDir() {
+	if info, err := fs.Stat(src); err == nil && info.IsDir() {
 		return CopyFolder(fs, src, dst)
 	}
 
 	// fallback
-	err = CopyFile(fs, src, dst)
-	if err != nil {
+	if err := CopyFile(fs, src, dst); err != nil {
 		_ = fs.Remove(dst)
 		return err
 	}
-	if err := fs.Remove(src); err != nil {
+	if err := fs.RemoveAll(src); err != nil {
 		return err
 	}
 	return nil

@@ -36,9 +36,10 @@ override the options.`,
 			AuthLogoutURL: mustGetString(flags, "auth.logoutUrl"),
 			Defaults:      defaults,
 			Branding: settings.Branding{
-				Name:            mustGetString(flags, "branding.name"),
-				DisableExternal: mustGetBool(flags, "branding.disableExternal"),
-				Files:           mustGetString(flags, "branding.files"),
+				Name:                  mustGetString(flags, "branding.name"),
+				DisableExternal:       mustGetBool(flags, "branding.disableExternal"),
+				DisableUsedPercentage: mustGetBool(flags, "branding.disableUsedPercentage"),
+				Files:                 mustGetString(flags, "branding.files"),
 			},
 		}
 

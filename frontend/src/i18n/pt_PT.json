@@ -215,6 +215,7 @@
     "customStylesheet": "Folha de estilos personalizada",
     "defaultUserDescription": "Estas são as configurações padrão para novos utilizadores.",
     "disableExternalLinks": "Desativar links externos (exceto documentação)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentação",
     "examples": "Exemplos",
     "executeOnShell": "Executar na shell",

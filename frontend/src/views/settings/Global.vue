@@ -63,6 +63,15 @@
           </p>
 
           <p>
+            <input
+              type="checkbox"
+              v-model="settings.branding.disableUsedPercentage"
+              id="branding-links"
+            />
+            {{ $t("settings.disableUsedDiskPercentage") }}
+          </p>
+
+          <p>
             <label for="theme">{{ $t("settings.themes.title") }}</label>
             <themes
               class="input input--block"
@@ -92,6 +101,37 @@
               id="branding-files"
             />
           </p>
+
+          <h3>{{ $t("settings.tusUploads") }}</h3>
+
+          <p class="small">{{ $t("settings.tusUploadsHelp") }}</p>
+
+          <div class="tusConditionalSettings">
+            <p>
+              <label for="tus-chunkSize">{{
+                $t("settings.tusUploadsChunkSize")
+              }}</label>
+              <input
+                class="input input--block"
+                type="text"
+                v-model="formattedChunkSize"
+                id="tus-chunkSize"
+              />
+            </p>
+
+            <p>
+              <label for="tus-retryCount">{{
+                $t("settings.tusUploadsRetryCount")
+              }}</label>
+              <input
+                class="input input--block"
+                type="number"
+                v-model.number="settings.tus.retryCount"
+                id="tus-retryCount"
+                min="0"
+              />
+            </p>
+          </div>
         </div>
 
         <div class="card-action">
@@ -201,11 +241,30 @@ export default {
       error: null,
       originalSettings: null,
       settings: null,
+      debounceTimeout: null,
     };
   },
   computed: {
     ...mapState(["user", "loading"]),
     isExecEnabled: () => enableExec,
+    formattedChunkSize: {
+      get() {
+        return this.formatBytes(this.settings.tus.chunkSize);
+      },
+      set(value) {
+        // Use debouncing to allow the user to type freely without
+        // interruption by the formatter
+        // Clear the previous timeout if it exists
+        if (this.debounceTimeout) {
+          clearTimeout(this.debounceTimeout);
+        }
+
+        // Set a new timeout to apply the format after a short delay
+        this.debounceTimeout = setTimeout(() => {
+          this.settings.tus.chunkSize = this.parseBytes(value);
+        }, 1500);
+      },
+    },
   },
   async created() {
     try {
@@ -264,6 +323,44 @@ export default {
         this.$showSuccess(this.$t("settings.settingsUpdated"));
       } catch (e) {
         this.$showError(e);
+      }
+    },
+    // Parse the user-friendly input (e.g., "20M" or "1T") to bytes
+    parseBytes(input) {
+      const regex = /^(\d+)(\.\d+)?(B|K|KB|M|MB|G|GB|T|TB)?$/i;
+      const matches = input.match(regex);
+      if (matches) {
+        const size = parseFloat(matches[1].concat(matches[2] || ""));
+        let unit = matches[3].toUpperCase();
+        if (!unit.endsWith("B")) {
+          unit += "B";
+        }
+        const units = {
+          KB: 1024,
+          MB: 1024 ** 2,
+          GB: 1024 ** 3,
+          TB: 1024 ** 4,
+        };
+        return size * (units[unit] || 1);
+      } else {
+        return 1024 ** 2;
+      }
+    },
+    // Format the chunk size in bytes to user-friendly format
+    formatBytes(bytes) {
+      const units = ["B", "KB", "MB", "GB", "TB"];
+      let size = bytes;
+      let unitIndex = 0;
+      while (size >= 1024 && unitIndex < units.length - 1) {
+        size /= 1024;
+        unitIndex++;
+      }
+      return `${size}${units[unitIndex]}`;
+    },
+    // Clear the debounce timeout when the component is destroyed
+    beforeDestroy() {
+      if (this.debounceTimeout) {
+        clearTimeout(this.debounceTimeout);
       }
     },
   },
