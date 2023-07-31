@@ -32,7 +32,7 @@ func tusPostHandler() handleFunc {
 
 			dirPath := filepath.Dir(r.URL.Path)
 			if _, statErr := d.user.Fs.Stat(dirPath); os.IsNotExist(statErr) {
-				if mkdirErr := d.user.Fs.MkdirAll(dirPath, files.DirPERM); mkdirErr != nil {
+				if mkdirErr := d.user.Fs.MkdirAll(dirPath, files.DIR_PERM); mkdirErr != nil {
 					return http.StatusInternalServerError, err
 				}
 			}
