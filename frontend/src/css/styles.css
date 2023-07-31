@@ -128,7 +128,7 @@ main .spinner .bounce2 {
 }
 
 #click-overlay.active {
-  display: block;
+  visibility: visible;
 }
 
 .action .counter {
@@ -374,6 +374,16 @@ body.rtl .breadcrumbs .chevron {
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* * * * * * * * * * * * * * * *
+ *         SETTINGS TUS        *
+ * * * * * * * * * * * * * * * */
+
+.tusConditionalSettings input:disabled {
+  background-color: #ddd;
+  color: #999;
+  cursor: not-allowed;
 }
 
 /* * * * * * * * * * * * * * * *

@@ -606,10 +606,12 @@ export default {
     },
     colunmsResize() {
       // Update the columns size based on the window width.
+      let items = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
+      if (!items) return;
+
       let columns = Math.floor(
         document.querySelector("main").offsetWidth / this.columnWidth
       );
-      let items = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
       if (columns === 0) columns = 1;
       items.style.width = `calc(${100 / columns}% - 1em)`;
     },
@@ -694,6 +696,11 @@ export default {
       if (conflict) {
         this.$store.commit("showHover", {
           prompt: "replace",
+          action: (event) => {
+            event.preventDefault();
+            this.$store.commit("closeHovers");
+            upload.handleFiles(files, path, false);
+          },
           confirm: (event) => {
             event.preventDefault();
             this.$store.commit("closeHovers");
@@ -729,6 +736,11 @@ export default {
       if (conflict) {
         this.$store.commit("showHover", {
           prompt: "replace",
+          action: (event) => {
+            event.preventDefault();
+            this.$store.commit("closeHovers");
+            upload.handleFiles(files, path, false);
+          },
           confirm: (event) => {
             event.preventDefault();
             this.$store.commit("closeHovers");
