@@ -83,3 +83,10 @@ export function createURL(endpoint, params = {}, auth = true) {
 
   return url.toString();
 }
+
+export function removeTusEndpoint(tusEndpoint, url) {
+  if (url.startsWith(tusEndpoint)) {
+    return url.substring(tusEndpoint.length);
+  }
+  return url;
+}
