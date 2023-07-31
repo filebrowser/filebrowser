@@ -318,6 +318,8 @@ body.rtl .card .card-title>*:first-child {
   height: 100%;
   width: 100%;
   z-index: 9999;
+  visibility: hidden;
+  opacity: 0;
   animation: .1s show forwards;
 }
 
@@ -379,15 +381,15 @@ body.rtl .card .card-title>*:first-child {
 
 @keyframes show {
   0% {
-    display: none;
+    visibility: hidden;
     opacity: 0;
   }
   1% {
-    display: block;
+    visibility: visible;
     opacity: 0;
   }
   100% {
-    display: block;
+    visibility: visible;
     opacity: 1;
   }
 }
