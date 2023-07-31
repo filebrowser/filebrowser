@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.24.1](https://github.com/filebrowser/filebrowser/compare/v2.24.0...v2.24.1) (2023-07-31)
+
+
+### Bug Fixes
+
+* add directory creation code to partial upload handler ([#2575](https://github.com/filebrowser/filebrowser/issues/2575)) ([#2580](https://github.com/filebrowser/filebrowser/issues/2580)) ([912f27a](https://github.com/filebrowser/filebrowser/commit/912f27a9e3286ee4bf2a27b366a1d35b3b55799c))
+* resolved CSS rendering issue in Chrome browser ([#2582](https://github.com/filebrowser/filebrowser/issues/2582)) ([2a4a46c](https://github.com/filebrowser/filebrowser/commit/2a4a46c61a5d5376bea65b28d0eb6a7ec2fdf4e5))
+
+
+### Build
+
+* **backend:** upgrade golangci-lint to v1.53.3 ([efd41cc](https://github.com/filebrowser/filebrowser/commit/efd41cc4c147b8d2d5e61fb2642df8d934f49362))
+
 ## [2.24.0](https://github.com/filebrowser/filebrowser/compare/v2.23.0...v2.24.0) (2023-07-29)
 
 
