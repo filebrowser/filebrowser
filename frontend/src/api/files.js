@@ -88,7 +88,6 @@ export async function post(url, content = "", overwrite = false, onupload) {
       !["http:", "https:"].includes(window.location.protocol)) ||
     // Tus is disabled / not applicable
     !(await useTus(content));
-
   return useResourcesApi
     ? postResources(url, content, overwrite, onupload)
     : postTus(url, content, overwrite, onupload);

@@ -8,7 +8,6 @@ export async function fetchURL(url, opts, auth = true) {
   opts.headers = opts.headers || {};
 
   let { headers, ...rest } = opts;
-
   let res;
   try {
     res = await fetch(`${baseURL}${url}`, {
