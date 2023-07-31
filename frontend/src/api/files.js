@@ -2,7 +2,7 @@ import { createURL, fetchURL, removePrefix, removeTusEndpoint } from "./utils";
 import { baseURL } from "@/utils/constants";
 import store from "@/store";
 import { upload as postTus, useTus } from "./tus";
-import {tusEndpoint} from "../utils/constants";
+import { tusEndpoint } from "../utils/constants";
 
 export async function fetch(url) {
   url = removePrefix(url);
@@ -90,7 +90,7 @@ export async function post(url, content = "", overwrite = false, onupload) {
     // Tus is disabled / not applicable
     !(await useTus(content));
   if (!useResourcesApi) {
-    url = removeTusEndpoint(tusEndpoint, url)
+    url = removeTusEndpoint(tusEndpoint, url);
   }
   return useResourcesApi
     ? postResources(url, content, overwrite, onupload)
