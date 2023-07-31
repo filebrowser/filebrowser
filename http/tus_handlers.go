@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/spf13/afero"
@@ -27,6 +28,13 @@ func tusPostHandler() handleFunc {
 		case errors.Is(err, afero.ErrFileNotFound):
 			if !d.user.Perm.Create || !d.Check(r.URL.Path) {
 				return http.StatusForbidden, nil
+			}
+
+			dirPath := filepath.Dir(r.URL.Path)
+			if _, statErr := d.user.Fs.Stat(dirPath); os.IsNotExist(statErr) {
+				if mkdirErr := d.user.Fs.MkdirAll(dirPath, files.DIR_PERM); mkdirErr != nil {
+					return http.StatusInternalServerError, err
+				}
 			}
 		case err != nil:
 			return errToStatus(err), err

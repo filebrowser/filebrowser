@@ -24,6 +24,7 @@ import (
 )
 
 const PERM = 0664
+const DIR_PERM = 0755
 
 // FileInfo describes a file.
 type FileInfo struct {
