@@ -20,6 +20,7 @@ build:
     - 386
     - arm
     - arm64
+    - riscv64
   goarm:
     - 5
     - 6
