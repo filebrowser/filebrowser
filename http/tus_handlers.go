@@ -40,7 +40,7 @@ func tusPostHandler() handleFunc {
 			return errToStatus(err), err
 		}
 
-		fileFlags := os.O_CREATE
+		fileFlags := os.O_CREATE | os.O_WRONLY
 		if r.URL.Query().Get("override") == "true" {
 			fileFlags |= os.O_TRUNC
 		}
