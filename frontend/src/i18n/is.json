@@ -102,6 +102,7 @@
     "zhTW": "中文 (繁體)"
   },
   "login": {
+    "guestLoginFail": "Guest mod on, buuto login failed",
     "createAnAccount": "Búa til nýjan aðgang",
     "loginInstead": "Þú ert þegar með aðgang",
     "password": "Lykilorð",
@@ -165,6 +166,7 @@
     "allowEdit": "Breyta, endurnefna og eyða skjölum eða möppum",
     "allowNew": "Búa til ný skjöl og möppur",
     "allowPublish": "Gefa út nýjar færslur og síður",
+    "enableGuest": "Open guest mod & guest auto login (Please add user：guest/guest and permission)",
     "allowSignup": "Leyfa nýjum notendum að skrá sig",
     "avoidChanges": "(engar breytingar ef ekkert er skrifað)",
     "branding": "Útlit",

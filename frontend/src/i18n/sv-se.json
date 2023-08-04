@@ -102,6 +102,7 @@
     "zhTW": "中文 (繁體)"
   },
   "login": {
+    "guestLoginFail": "Guest mod on, buuto login failed",
     "createAnAccount": "Skapa ett konto",
     "loginInstead": "Du har redan ett konto",
     "password": "Lösenord",
@@ -165,6 +166,7 @@
     "allowEdit": "Ändra, döp om och ta bort filer eller mappar",
     "allowNew": "Skapa nya filer eller mappar",
     "allowPublish": "Publicera nya inlägg och sidor",
+    "enableGuest": "Open guest mod & guest auto login (Please add user：guest/guest and permission)",
     "allowSignup": "Tillåt användare att registrera sig",
     "avoidChanges": "(lämna blankt för att undvika ändringar)",
     "branding": "Varumärke",

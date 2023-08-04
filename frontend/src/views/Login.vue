@@ -51,14 +51,25 @@ import {
   recaptcha,
   recaptchaKey,
   signup,
+  enableGuest,
 } from "@/utils/constants";
+
+let isFromLogOut = false;
 
 export default {
   name: "login",
   computed: {
+    enableGuest: () => enableGuest,
     signup: () => signup,
     name: () => name,
     logoURL: () => logoURL,
+    redirectURL() {
+      let redirect = this.$route.query.redirect;
+      if (redirect === "" || redirect === undefined || redirect === null) {
+        redirect = "/files/";
+      }
+      return redirect;
+    },
   },
   data: function () {
     return {
@@ -69,6 +80,22 @@ export default {
       recaptcha: recaptcha,
       passwordConfirm: "",
     };
+  },
+  beforeRouteEnter(to, from, next) {
+    if (from.path.startsWith("/files")) {
+      isFromLogOut = true;
+    }
+    next();
+  },
+  async beforeMount() {
+    if (this.enableGuest && !isFromLogOut) {
+      try {
+        await auth.login("guest", "guest", "");
+        await this.$router.push({ path: this.redirectURL });
+      } catch (e) {
+        this.error = this.$t("login.guestLoginFail");
+      }
+    }
   },
   mounted() {
     if (!recaptcha) return;
@@ -86,11 +113,6 @@ export default {
     async submit(event) {
       event.preventDefault();
       event.stopPropagation();
-
-      let redirect = this.$route.query.redirect;
-      if (redirect === "" || redirect === undefined || redirect === null) {
-        redirect = "/files/";
-      }
 
       let captcha = "";
       if (recaptcha) {
@@ -115,9 +137,10 @@ export default {
         }
 
         await auth.login(this.username, this.password, captcha);
-        this.$router.push({ path: redirect });
+        this.$router.push({ path: this.redirectURL });
       } catch (e) {
-        if (e.message == 409) {
+        console.error(e);
+        if (e.message === 409) {
           this.error = this.$t("login.usernameTaken");
         } else {
           this.error = this.$t("login.wrongCredentials");

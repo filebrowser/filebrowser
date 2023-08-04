@@ -102,6 +102,7 @@
     "zhTW": "中文 (繁體)"
   },
   "login": {
+    "guestLoginFail": "Guest mod on, buuto login failed",
     "createAnAccount": "계정 생성",
     "loginInstead": "이미 계정이 있습니다",
     "password": "비밀번호",
@@ -165,6 +166,7 @@
     "allowEdit": "파일/디렉토리의 수정/변경/삭제 허용",
     "allowNew": "파일/디렉토리 생성 허용",
     "allowPublish": "새 포스트/페이지 생성 허용",
+    "enableGuest": "Open guest mod & guest auto login (Please add user：guest/guest and permission)",
     "allowSignup": "사용자 가입 허용",
     "avoidChanges": "(수정하지 않으면 비워두세요)",
     "branding": "브랜딩",

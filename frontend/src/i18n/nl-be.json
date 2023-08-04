@@ -102,6 +102,7 @@
     "zhTW": "Chinees (traditioneel)"
   },
   "login": {
+    "guestLoginFail": "Guest mod on, buuto login failed",
     "createAnAccount": "Account aanmaken",
     "loginInstead": "Heeft al een account",
     "password": "Wachtwoord",
@@ -165,6 +166,7 @@
     "allowEdit": "Bestanden of mappen aanpassen, hernoemen of verwijderen",
     "allowNew": "Nieuwe bestanden of mappen aanmaken",
     "allowPublish": "Publiceer nieuwe berichten en pagina's",
+    "enableGuest": "Open guest mod & guest auto login (Please add user：guest/guest and permission)",
     "allowSignup": "Sta gebruikers toe om zich te registreren",
     "avoidChanges": "(laat leeg om wijzigingen te voorkomen)",
     "branding": "Branding",

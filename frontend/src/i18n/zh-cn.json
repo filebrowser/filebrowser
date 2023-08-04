@@ -108,6 +108,7 @@
     "zhTW": "中文（繁體）"
   },
   "login": {
+    "guestLoginFail": "已开启guest模式，但无法自动登录",
     "createAnAccount": "创建用户",
     "loginInstead": "已有用户登录",
     "password": "密码",
@@ -173,6 +174,7 @@
     "allowEdit": "编辑、重命名或删除文件/目录",
     "allowNew": "创建新文件和目录",
     "allowPublish": "发布新的帖子与页面",
+    "enableGuest": "开启Guest模式，并自动登录（注意手动添加用户：guest/guest，并注意权限）",
     "allowSignup": "允许用户注册",
     "avoidChanges": "（留空以避免更改）",
     "branding": "品牌",
