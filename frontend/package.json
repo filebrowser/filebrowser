@@ -56,7 +56,7 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/recommended",
+      "plugin:vue/essential",
       "eslint:recommended",
       "@vue/prettier"
     ],
@@ -66,10 +66,13 @@
       "vue/no-mutating-props": "warn"
     },
     "parserOptions": {
-      "parser": "@babel/eslint-parser"
+      "parser": "@babel/eslint-parser",
+      "ecmaVersion": "latest"
     }
   },
-  "prettier": {},
+  "prettier": {
+    "trailingComma": "es5"
+  },
   "postcss": {
     "plugins": {
       "autoprefixer": {}

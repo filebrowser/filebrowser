@@ -1,7 +1,8 @@
 <template>
   <div>
     <header-bar showMenu showLogo>
-      <search /> <title />
+      <search />
+      <title />
       <action
         class="search-button"
         icon="search"
