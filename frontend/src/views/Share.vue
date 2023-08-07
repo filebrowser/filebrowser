@@ -182,7 +182,7 @@
 <script>
 import { mapState, mapMutations, mapGetters } from "vuex";
 import { pub as api } from "@/api";
-import filesize from "filesize";
+import { filesize } from "filesize";
 import moment from "moment";
 
 import HeaderBar from "@/components/header/HeaderBar";
