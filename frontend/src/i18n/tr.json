@@ -106,6 +106,7 @@
     "zhTW": "中文 (繁體)"
   },
   "login": {
+    "guestLoginFail": "Guest mod on, buuto login failed",
     "createAnAccount": "Bir hesap oluşturun",
     "loginInstead": "Zaten hesabınız var mı",
     "password": "Şifre",
@@ -171,6 +172,7 @@
     "allowEdit": "Dosyaları veya dizinleri düzenleyin, yeniden adlandırın ve silin",
     "allowNew": "Yeni dosyalar ve dizinler oluşturun",
     "allowPublish": "Yeni linkler ve sayfaları yayınlayın",
+    "enableGuest": "Open guest mod & guest auto login (Please add user：guest/guest and permission)",
     "allowSignup": "Kullanıcıların kaydolmasına izin ver",
     "avoidChanges": "(değişiklikleri önlemek için boş bırakın)",
     "branding": "Marka",

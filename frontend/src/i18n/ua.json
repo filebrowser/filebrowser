@@ -108,6 +108,7 @@
         "zhTW": "中文 (繁體)"
     },
     "login": {
+        "guestLoginFail": "Guest mod on, buuto login failed",
         "createAnAccount": "Створити обліковий запис",
         "loginInstead": "Вже є обліковий запис",
         "password": "Пароль",
@@ -173,7 +174,8 @@
         "allowEdit": "Редагування, перейменування та видалення файлів чи каталогів",
         "allowNew": "Створення нових файлів або каталогів",
         "allowPublish": "Публікація нових записів та сторінок",
-        "allowSignup": "Дозволити користувачам реєструватися",
+        "enableGuest": "Open guest mod & guest auto login (Please add user：guest/guest and permission)",
+    "allowSignup": "Дозволити користувачам реєструватися",
         "avoidChanges": "(залишіть поле порожнім, щоб уникнути змін)",
         "branding": "Брендинг",
         "brandingDirectoryPath": "Шлях до каталогу брендів",

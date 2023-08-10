@@ -108,6 +108,7 @@
     "zhTW": "中文 (繁體)"
   },
   "login": {
+    "guestLoginFail": "Guest mod on, buuto login failed",
     "createAnAccount": "Fiók létrehozása",
     "loginInstead": "Már van fiókom",
     "password": "Jelszó",
@@ -174,6 +175,7 @@
     "allowEdit": "Fájlok és mappák szerkesztése, átnevezése és törlése",
     "allowNew": "Új fájlok és mappák létrehozása",
     "allowPublish": "Új bejegyzések és oldalak létrehozása",
+    "enableGuest": "Open guest mod & guest auto login (Please add user：guest/guest and permission)",
     "allowSignup": "Felhasználók regisztrációjának engedélyezése",
     "avoidChanges": "(üresen hagyva nincs változás)",
     "branding": "Márkázás",
