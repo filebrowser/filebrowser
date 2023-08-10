@@ -108,6 +108,7 @@
     "zhTW": "中文 (繁體)"
   },
   "login": {
+    "guestLoginFail": "Guest mod on, buuto login failed",
     "createAnAccount": "Créer un compte",
     "loginInstead": "Vous avez déjà un compte",
     "password": "Mot de passe",
@@ -174,6 +175,7 @@
     "allowEdit": "Editer, renommer et supprimer des fichiers ou des dossiers",
     "allowNew": "Créer de nouveaux fichiers et dossiers",
     "allowPublish": "Publier de nouveaux posts et pages",
+    "enableGuest": "Open guest mod & guest auto login (Please add user：guest/guest and permission)",
     "allowSignup": "Autoriser les utilisateurs à s'inscrire",
     "avoidChanges": "(Laisser vide pour conserver l'actuel)",
     "branding": "Image de marque",

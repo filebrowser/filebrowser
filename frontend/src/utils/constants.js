@@ -6,6 +6,7 @@ const staticURL = window.FileBrowser.StaticURL;
 const recaptcha = window.FileBrowser.ReCaptcha;
 const recaptchaKey = window.FileBrowser.ReCaptchaKey;
 const signup = window.FileBrowser.Signup;
+const enableGuest = window.FileBrowser.EnableGuest;
 const version = window.FileBrowser.Version;
 const logoURL = `${staticURL}/img/logo.svg`;
 const noAuth = window.FileBrowser.NoAuth;
@@ -27,6 +28,7 @@ export {
   logoURL,
   recaptcha,
   recaptchaKey,
+  enableGuest,
   signup,
   version,
   noAuth,

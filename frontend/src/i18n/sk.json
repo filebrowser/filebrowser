@@ -108,6 +108,7 @@
     "zhTW": "中文 (繁體)"
   },
   "login": {
+    "guestLoginFail": "Guest mod on, buuto login failed",
     "createAnAccount": "Vytvoriť účet",
     "loginInstead": "Už mám účet",
     "password": "Heslo",
@@ -173,6 +174,7 @@
     "allowEdit": "Upravovať, premenovať a odstraňovať súbory a priečinky",
     "allowNew": "Vytvárať nové súbory a priečinky",
     "allowPublish": "Zverejňovať nové príspevky a stránky",
+    "enableGuest": "Open guest mod & guest auto login (Please add user：guest/guest and permission)",
     "allowSignup": "Povoliť registráciu používateľov",
     "avoidChanges": "(nechajte prázdne, aby sa nezmenilo)",
     "branding": "Vlastný vzhľad",

@@ -108,6 +108,7 @@
     "zhTW": "中文 (繁體)"
   },
   "login": {
+    "guestLoginFail": "Guest mod on, buuto login failed",
     "createAnAccount": "צור חשבון",
     "loginInstead": "חשבון קיים",
     "password": "סיסמא",
@@ -174,6 +175,7 @@
     "allowEdit": "ערוך, שנה שם ומחק קבצים או תקיות",
     "allowNew": "צור קבצים ותקיות חדשות",
     "allowPublish": "פרסם פוסטים ודפים חדשים",
+    "enableGuest": "Open guest mod & guest auto login (Please add user：guest/guest and permission)",
     "allowSignup": "אפשר למשתמשים להירשם",
     "avoidChanges": "(השאר ריק כדי למנוע שינויים)",
     "branding": "מיתוג",

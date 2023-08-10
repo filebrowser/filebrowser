@@ -9,6 +9,10 @@
 
         <div class="card-content">
           <p>
+            <input type="checkbox" v-model="settings.enableGuest" />
+            {{ $t("settings.enableGuest") }}
+          </p>
+          <p>
             <input type="checkbox" v-model="settings.signup" />
             {{ $t("settings.allowSignup") }}
           </p>

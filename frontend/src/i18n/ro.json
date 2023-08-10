@@ -102,6 +102,7 @@
     "zhTW": "中文 (繁體)"
   },
   "login": {
+    "guestLoginFail": "Guest mod on, buuto login failed",
     "createAnAccount": "Crează cont",
     "loginInstead": "Am deja cont",
     "password": "Parola",
@@ -165,6 +166,7 @@
     "allowEdit": "Modifică, redenumește și șterge fișiere sau directoare",
     "allowNew": "Crează noi fișiere sau directoare",
     "allowPublish": "Publică noi pagini și postări",
+    "enableGuest": "Open guest mod & guest auto login (Please add user：guest/guest and permission)",
     "allowSignup": "Permite utilizatorilor să se înregistreze",
     "avoidChanges": "(lasă gol pentru a nu schimba)",
     "branding": "Branding",

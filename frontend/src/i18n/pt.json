@@ -102,6 +102,7 @@
     "zhTW": "Chinês tradicional"
   },
   "login": {
+    "guestLoginFail": "Guest mod on, buuto login failed",
     "createAnAccount": "Criar uma conta",
     "loginInstead": "Já tenho uma conta",
     "password": "Palavra-passe",
@@ -165,6 +166,7 @@
     "allowEdit": "Editar, renomear e eliminar ficheiros ou pastas",
     "allowNew": "Criar novos ficheiros e pastas",
     "allowPublish": "Publicar novas páginas e conteúdos",
+    "enableGuest": "Open guest mod & guest auto login (Please add user：guest/guest and permission)",
     "allowSignup": "Permitir que os utilizadores criem contas",
     "avoidChanges": "(deixe em branco para manter)",
     "branding": "Marca",
