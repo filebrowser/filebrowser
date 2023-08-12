@@ -230,7 +230,7 @@ func (a *HookAuth) GetUser(d *users.User) *users.User {
 			Asc: a.Fields.GetBoolean("user.sorting.asc", d.Sorting.Asc),
 			By:  a.Fields.GetString("user.sorting.by", d.Sorting.By),
 		},
-		Rules:        a.Fields.GetRules("user.perm.rule", d.Rules),
+		Rules:        a.Fields.GetRules("user.perm.rules", d.Rules),
 		Commands:     a.Fields.GetArray("user.commands", d.Commands),
 		HideDotfiles: a.Fields.GetBoolean("user.hideDotfiles", d.HideDotfiles),
 		Perm:         perms,
@@ -264,7 +264,7 @@ var validHookFields = []string{
 	"user.perm.delete",
 	"user.perm.share",
 	"user.perm.download",
-	"user.perm.rule",
+	"user.perm.rules",
 }
 
 // IsValid checks if the provided field is on the valid fields list
@@ -310,14 +310,11 @@ func (hf *hookFields) GetRules(k string, dv []rules.Rule) []rules.Rule {
 	if !ok {
 		return dv
 	}
-	var dvv []rules.Rule
-	for _, ruleString := range strings.Split(val, ";") {
-		var rule rules.Rule
-		err := json.Unmarshal([]byte(ruleString), &rule)
-		if err != nil {
-			return dv
-		}
-		dvv = append(dvv, rule)
+	var Rules []rules.Rule
+	err := json.Unmarshal([]byte(val), &Rules)
+	if err != nil {
+		log.Printf("hook: json format in user.perm.rules is incorrect. %s", err)
+		return dv
 	}
-	return dvv
+	return Rules
 }
