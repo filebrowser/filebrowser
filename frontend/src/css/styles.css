@@ -14,6 +14,7 @@
 @import "./upload-files.css";
 @import "./dashboard.css";
 @import "./login.css";
+@import "./mobile.css";
 
 .link {
   color: var(--blue);
@@ -415,8 +416,6 @@ body.rtl .breadcrumbs .chevron {
   padding: 0.2rem 0.5rem;
   margin-left: 0.5rem;
 }
-
-@import "./mobile.css";
 
 /* * * * * * * * * * * * * * * *
  *         RTL overrides       *
