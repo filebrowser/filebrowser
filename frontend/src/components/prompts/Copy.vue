@@ -32,7 +32,7 @@
 
 <script>
 import { mapState } from "vuex";
-import FileList from "./FileList";
+import FileList from "./FileList.vue";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
 import * as upload from "@/utils/upload";
