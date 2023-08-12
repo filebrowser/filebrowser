@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite dev",
     "serve": "vite serve",
-    "build": "rimraf dist && vite build",
-    "watch": "rimraf dist && vite build --watch",
+    "build": "vite build",
+    "watch": "vite build --watch",
     "lint": "eslint --ext .vue,.js src/",
     "lint:fix": "eslint --ext .vue,.js src/ --fix",
     "format": "prettier --write ."

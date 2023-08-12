@@ -17,6 +17,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
+      vue: "vue/dist/vue.esm.js",
       "@/": fileURLToPath(new URL("./src/", import.meta.url)),
     },
   },
@@ -24,16 +25,9 @@ export default defineConfig({
   experimental: {
     renderBuiltUrl(filename, { hostType }) {
       if (hostType === "js") {
-        return { runtime: `window.__appendStaticUrl("${filename}")` };
-        // } else if (hostType === "css") {
-        //   return `'[{[ .StaticURL ]}]/${filename}'`;
+        return { runtime: `window.__prependStaticUrl("${filename}")` };
       } else if (hostType === "html") {
         return `[{[ .StaticURL ]}]/${filename}`;
-        // return {
-        //   runtime: `window.__appendStaticUrl(${JSON.stringify(filename)})`,
-        // };
-        // if (hostType === "js") {
-        // return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` };
       } else {
         return { relative: true };
       }
