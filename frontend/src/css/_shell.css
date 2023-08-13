@@ -2,21 +2,49 @@
   position: fixed;
   bottom: 0;
   left: 0;
-  height: 25em;
   max-height: calc(100% - 4em);
   background: white;
   color: #212121;
-  z-index: 9999;
+  z-index: 9997;
   width: 100%;
-  font-family: monospace;
-  overflow: auto;
-  font-size: 1rem;
-  cursor: text;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   transition: .2s ease transform;
 }
 
-body.rtl .shell {
+.shell__divider {
+  position: relative;
+  height: 8px;
+  z-index: 9999;
+  background: rgba(127, 127, 127, 0.1);
+  transition: 0.2s ease background;
+  cursor: ns-resize;
+  touch-action: none;
+  user-select: none;
+}
+
+.shell__divider:hover {
+  background: rgba(127, 127, 127, 0.4);
+}
+
+.shell__content {
+  height: 100%;
+  font-family: monospace;
+  overflow: auto;
+  font-size: 1rem;
+  cursor: text;
+}
+
+.shell__overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  z-index: 9998;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+body.rtl .shell-content {
   direction: ltr;
 }
 

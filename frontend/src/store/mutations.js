@@ -8,6 +8,7 @@ const mutations = {
     state.showAction = null;
   },
   toggleShell: (state) => {
+    state.show = null;
     state.showShell = !state.showShell;
   },
   showHover: (state, value) => {
