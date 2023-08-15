@@ -1,23 +1,28 @@
 import { fileURLToPath, URL } from "node:url";
 
 import { defineConfig } from "vite";
-import legacy from "@vitejs/plugin-legacy";
-import vue2 from "@vitejs/plugin-vue2";
+import vue from "@vitejs/plugin-vue";
+import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import { compression } from "vite-plugin-compression2";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue2(),
-    legacy({
-      targets: ["ie >= 11"],
-      additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
+    vue({
+      template: {
+        compilerOptions: {
+          compatConfig: {
+            MODE: 2,
+          },
+        },
+      },
     }),
+    VueI18nPlugin(),
     compression({ include: /\.js$/i, deleteOriginalAssets: true }),
   ],
   resolve: {
     alias: {
-      vue: "vue/dist/vue.esm.js",
+      vue: "@vue/compat",
       "@/": fileURLToPath(new URL("./src/", import.meta.url)),
     },
   },

@@ -1,5 +1,4 @@
-import Vue from "vue";
-import VueI18n from "vue-i18n";
+import { createI18n } from "vue-i18n";
 
 import he from "./he.json";
 import hu from "./hu.json";
@@ -23,8 +22,6 @@ import ua from "./ua.json";
 import svSE from "./sv-se.json";
 import zhCN from "./zh-cn.json";
 import zhTW from "./zh-tw.json";
-
-Vue.use(VueI18n);
 
 export function detectLocale() {
   let locale = (navigator.language || navigator.browserLangugae).toLowerCase();
@@ -106,7 +103,7 @@ const removeEmpty = (obj) =>
 
 export const rtlLanguages = ["he", "ar"];
 
-const i18n = new VueI18n({
+const i18n = createI18n({
   locale: detectLocale(),
   fallbackLocale: "en",
   messages: {
@@ -133,6 +130,7 @@ const i18n = new VueI18n({
     "zh-cn": removeEmpty(zhCN),
     "zh-tw": removeEmpty(zhTW),
   },
+  legacy: true,
 });
 
 export default i18n;

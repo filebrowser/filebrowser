@@ -44,14 +44,14 @@
 
           <h3>{{ $t("settings.branding") }}</h3>
 
-          <i18n path="settings.brandingHelp" tag="p" class="small">
+          <i18n-t keypath="settings.brandingHelp" tag="p" class="small">
             <a
               class="link"
               target="_blank"
               href="https://filebrowser.org/configuration/custom-branding"
               >{{ $t("settings.documentation") }}</a
             >
-          </i18n>
+          </i18n-t>
 
           <p>
             <input
@@ -177,7 +177,7 @@
         </div>
 
         <div class="card-content">
-          <i18n path="settings.commandRunnerHelp" tag="p" class="small">
+          <i18n-t keypath="settings.commandRunnerHelp" tag="p" class="small">
             <code>FILE</code>
             <code>SCOPE</code>
             <a
@@ -186,7 +186,7 @@
               href="https://filebrowser.org/configuration/command-runner"
               >{{ $t("settings.documentation") }}</a
             >
-          </i18n>
+          </i18n-t>
 
           <div
             v-for="command in settings.commands"

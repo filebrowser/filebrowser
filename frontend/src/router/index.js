@@ -1,5 +1,4 @@
-import Vue from "vue";
-import Router from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import Login from "@/views/Login.vue";
 import Layout from "@/views/Layout.vue";
 import Files from "@/views/Files.vue";
@@ -14,8 +13,6 @@ import Errors from "@/views/Errors.vue";
 import store from "@/store";
 import { baseURL, name } from "@/utils/constants";
 import i18n, { rtlLanguages } from "@/i18n";
-
-Vue.use(Router);
 
 const titles = {
   Login: "sidebar.login",
@@ -32,131 +29,147 @@ const titles = {
   InternalServerError: "errors.internal",
 };
 
-const router = new Router({
-  base: baseURL,
-  mode: "history",
-  routes: [
-    {
-      path: "/login",
-      name: "Login",
-      component: Login,
-      beforeEnter: (to, from, next) => {
-        if (store.getters.isLogged) {
-          return next({ path: "/files" });
-        }
+const routes = [
+  {
+    path: "/login",
+    name: "Login",
+    component: Login,
+    beforeEnter: (to, from, next) => {
+      if (store.getters.isLogged) {
+        return next({ path: "/files" });
+      }
 
-        next();
+      next();
+    },
+  },
+  {
+    path: "/share",
+    component: Layout,
+    children: [
+      {
+        path: ":pathMatch(.*)*",
+        name: "Share",
+        component: Share,
       },
+    ],
+  },
+  {
+    path: "/files",
+    component: Layout,
+    children: [
+      {
+        path: ":pathMatch(.*)*",
+        name: "Files",
+        component: Files,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+    ],
+  },
+  {
+    path: "/settings",
+    component: Layout,
+    children: [
+      {
+        path: "",
+        name: "Settings",
+        component: Settings,
+        redirect: {
+          path: "/settings/profile",
+        },
+        meta: {
+          requiresAuth: true,
+        },
+        children: [
+          {
+            path: "profile",
+            name: "ProfileSettings",
+            component: ProfileSettings,
+          },
+          {
+            path: "shares",
+            name: "Shares",
+            component: Shares,
+          },
+          {
+            path: "global",
+            name: "GlobalSettings",
+            component: GlobalSettings,
+            meta: {
+              requiresAdmin: true,
+            },
+          },
+          {
+            path: "users",
+            name: "Users",
+            component: Users,
+            meta: {
+              requiresAdmin: true,
+            },
+          },
+          {
+            path: "users/:id(.*)*",
+            name: "User",
+            component: User,
+            meta: {
+              requiresAdmin: true,
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    path: "/403",
+    name: "Forbidden",
+    component: Errors,
+    props: {
+      errorCode: 403,
+      showHeader: true,
     },
-    {
-      path: "/*",
-      component: Layout,
-      children: [
-        {
-          path: "/share/*",
-          name: "Share",
-          component: Share,
-        },
-        {
-          path: "/files/*",
-          name: "Files",
-          component: Files,
-          meta: {
-            requiresAuth: true,
-          },
-        },
-        {
-          path: "/settings",
-          name: "Settings",
-          component: Settings,
-          redirect: {
-            path: "/settings/profile",
-          },
-          meta: {
-            requiresAuth: true,
-          },
-          children: [
-            {
-              path: "/settings/profile",
-              name: "ProfileSettings",
-              component: ProfileSettings,
-            },
-            {
-              path: "/settings/shares",
-              name: "Shares",
-              component: Shares,
-            },
-            {
-              path: "/settings/global",
-              name: "GlobalSettings",
-              component: GlobalSettings,
-              meta: {
-                requiresAdmin: true,
-              },
-            },
-            {
-              path: "/settings/users",
-              name: "Users",
-              component: Users,
-              meta: {
-                requiresAdmin: true,
-              },
-            },
-            {
-              path: "/settings/users/*",
-              name: "User",
-              component: User,
-              meta: {
-                requiresAdmin: true,
-              },
-            },
-          ],
-        },
-        {
-          path: "/403",
-          name: "Forbidden",
-          component: Errors,
-          props: {
-            errorCode: 403,
-            showHeader: true,
-          },
-        },
-        {
-          path: "/404",
-          name: "NotFound",
-          component: Errors,
-          props: {
-            errorCode: 404,
-            showHeader: true,
-          },
-        },
-        {
-          path: "/500",
-          name: "InternalServerError",
-          component: Errors,
-          props: {
-            errorCode: 500,
-            showHeader: true,
-          },
-        },
-        {
-          path: "/files",
-          redirect: {
-            path: "/files/",
-          },
-        },
-        {
-          path: "/*",
-          redirect: (to) => `/files${to.path}`,
-        },
-      ],
+  },
+  {
+    path: "/404",
+    name: "NotFound",
+    component: Errors,
+    props: {
+      errorCode: 404,
+      showHeader: true,
     },
-  ],
+  },
+  {
+    path: "/500",
+    name: "InternalServerError",
+    component: Errors,
+    props: {
+      errorCode: 500,
+      showHeader: true,
+    },
+  },
+  // {
+  //   path: "/files",
+  //   redirect: {
+  //     path: "/files/",
+  //   },
+  // },
+  {
+    path: "/:catchAll(.*)*",
+    redirect: (to) => `/files${to.params.catchAll}`,
+  },
+];
+
+const router = createRouter({
+  history: createWebHistory(baseURL),
+  routes,
 });
 
 router.beforeEach((to, from, next) => {
-  const title = i18n.t(titles[to.name]);
+  // const title = i18n.t(titles[to.name]);
+  const title = titles[to.name];
   document.title = title + " - " + name;
+
+  console.log({ from, to });
 
   /*** RTL related settings per route ****/
   const rtlSet = document.querySelector("body").classList.contains("rtl");

@@ -1,17 +1,24 @@
 import "whatwg-fetch";
 import cssVars from "css-vars-ponyfill";
-import { sync } from "vuex-router-sync";
+import { createApp, configureCompat } from "vue";
 import store from "@/store";
 import router from "@/router";
 import i18n from "@/i18n";
-import Vue from "@/utils/vue";
 import { recaptcha, loginPage } from "@/utils/constants";
 import { login, validateLogin } from "@/utils/auth";
 import App from "@/App.vue";
 
 cssVars();
 
-sync(store, router);
+configureCompat({
+  MODE: 2,
+});
+
+const app = createApp(App);
+
+app.use(store);
+app.use(router);
+app.use(i18n);
 
 async function start() {
   try {
@@ -38,14 +45,7 @@ async function start() {
     });
   }
 
-  new Vue({
-    el: "#app",
-    store,
-    router,
-    i18n,
-    template: "<App/>",
-    components: { App },
-  });
+  router.isReady().then(() => app.mount("#app"));
 }
 
 start();

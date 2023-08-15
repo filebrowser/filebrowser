@@ -1,10 +1,8 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import { createStore } from "vuex";
 import mutations from "./mutations";
 import getters from "./getters";
 import upload from "./modules/upload";
-
-Vue.use(Vuex);
+import router from "@/router";
 
 const state = {
   user: null,
@@ -24,12 +22,17 @@ const state = {
   showShell: false,
   showConfirm: null,
   showAction: null,
+  get route() {
+    return router.currentRoute.value;
+  },
 };
 
-export default new Vuex.Store({
+const store = createStore({
   strict: true,
   state,
   getters,
   mutations,
   modules: { upload },
 });
+
+export default store;
