@@ -8,9 +8,9 @@
     "serve": "vite serve",
     "build": "vite build",
     "watch": "vite build --watch",
-    "lint": "eslint --ext .vue,.js src/",
-    "lint:fix": "eslint --ext .vue,.js src/ --fix",
-    "format": "prettier --write ."
+    "lint": "eslint --ext .vue,.js --ignore-path .gitignore src/",
+    "lint:fix": "eslint --ext .vue,.js --ignore-path .gitignore --fix src/",
+    "format": "prettier --write --ignore-path .gitignore ."
   },
   "dependencies": {
     "ace-builds": "^1.23.4",
