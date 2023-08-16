@@ -87,7 +87,7 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
-import filesize from "filesize";
+import { filesize } from "filesize";
 import moment from "moment";
 import { files as api } from "@/api";
 

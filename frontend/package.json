@@ -36,16 +36,18 @@
     "whatwg-fetch": "^3.6.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.1.2",
-    "@vue/cli-plugin-eslint": "~4.5.0",
-    "@vue/cli-service": "^4.1.2",
-    "@vue/eslint-config-prettier": "^6.0.0",
-    "babel-eslint": "^10.1.0",
-    "compression-webpack-plugin": "^6.0.3",
-    "eslint": "^6.7.2",
-    "eslint-plugin-prettier": "^3.3.1",
-    "eslint-plugin-vue": "^6.2.2",
-    "prettier": "^2.2.1",
+    "@babel/eslint-parser": "^7.5.4",
+    "@vue/cli-plugin-babel": "^5.0.8",
+    "@vue/cli-plugin-eslint": "~5.0.8",
+    "@vue/cli-service": "^5.0.8",
+    "@vue/eslint-config-prettier": "^8.0.0",
+    "compression-webpack-plugin": "^10.0.0",
+    "eslint": "^8.47.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-vue": "^9.17.0",
+    "file-loader": "^6.2.0",
+    "filesize": "^10.0.12",
+    "prettier": "^3.0.2",
     "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {
@@ -58,9 +60,14 @@
       "eslint:recommended",
       "@vue/prettier"
     ],
-    "rules": {},
+    "rules": {
+      "vue/no-mutating-props": "off",
+      "vue/no-reserved-component-names": "off",
+      "vue/multi-word-component-names": "off"
+    },
     "parserOptions": {
-      "parser": "babel-eslint"
+      "parser": "@babel/eslint-parser",
+      "requireConfigFile": false
     }
   },
   "postcss": {
