@@ -26,6 +26,7 @@ import { theme } from "@/utils/constants";
 import buttons from "@/utils/buttons";
 import url from "@/utils/url";
 
+import { version as ace_version } from "ace-builds";
 import ace from "ace-builds/src-min-noconflict/ace.js";
 import modelist from "ace-builds/src-min-noconflict/ext-modelist.js";
 
@@ -84,6 +85,11 @@ export default {
   },
   mounted: function () {
     const fileContent = this.req.content || "";
+
+    ace.config.set(
+      "basePath",
+      `https://cdn.jsdelivr.net/npm/ace-builds@${ace_version}/src-min-noconflict/`
+    );
 
     this.editor = ace.edit("editor", {
       value: fileContent,
