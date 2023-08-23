@@ -43,6 +43,9 @@ import url from "@/utils/url";
 
 export default {
   name: "new-dir",
+  props: {
+    redirect: Boolean,
+  },
   data: function () {
     return {
       name: "",
@@ -68,7 +71,13 @@ export default {
 
       try {
         await api.post(uri);
-        this.$router.push({ path: uri });
+        if (this.redirect) {
+          this.$router.push({ path: uri });
+        }else{
+          console.log(uri);
+          const res = await api.fetch(url.removeLastDir(uri) + "/");
+          this.$store.commit("updateRequest", res);
+        }
       } catch (e) {
         this.$showError(e);
       }

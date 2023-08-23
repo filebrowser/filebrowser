@@ -9,17 +9,17 @@
     </div>
 
     <div class="card-action">
-      <div v-if="user.perm.create">
+      <template v-if="user.perm.create">
         <button
           class="button button--flat"
-          @click="$store.commit('showHover', 'newDir')"
+          @click="createDir()"
           :aria-label="$t('sidebar.newFolder')"
           :title="$t('sidebar.newFolder')"
         >
           <i class="material-icons">create_new_folder</i>
           <span>{{ $t("sidebar.newFolder") }}</span>
         </button>
-      </div>
+      </template>
       <button
         class="button button--flat button--grey"
         @click="$store.commit('closeHovers')"
@@ -110,6 +110,16 @@ export default {
 
       action(overwrite, rename);
     },
+    createDir: async function (){
+      this.$store.commit('showHover', {
+        prompt: 'newDir',
+        action: null,
+        confirm: null,
+        props:{
+          redirect: false
+        }
+      })
+    }
   },
 };
 </script>

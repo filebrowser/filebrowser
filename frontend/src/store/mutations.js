@@ -20,7 +20,7 @@ const mutations = {
         prompt: value,
         confirm: null,
         action: null,
-        props: {}
+        props: {},
       });
       return;
     }
@@ -88,6 +88,7 @@ const mutations = {
   updateRequest: (state, value) => {
     state.oldReq = state.req;
     state.req = value;
+    console.log(state.req)
   },
   updateClipboard: (state, value) => {
     state.clipboard.key = value.key;
