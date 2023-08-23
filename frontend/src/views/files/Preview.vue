@@ -196,7 +196,7 @@ export default {
       return api.getDownloadURL(this.req, true);
     },
     showMore() {
-      return this.currentPrompt.prompt === "more";
+      return this.currentPrompt?.prompt === "more";
     },
     isResizeEnabled() {
       return resizePreview;

@@ -38,7 +38,7 @@ export default {
     $route: function () {
       this.$store.commit("resetSelected");
       this.$store.commit("multiple", false);
-      if (this.currentPrompt.prompt !== "success")
+      if (this.currentPrompt?.prompt !== "success")
         this.$store.commit("closeHovers");
     },
   },

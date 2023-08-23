@@ -135,7 +135,7 @@ export default {
     ...mapState(["user"]),
     ...mapGetters(["isLogged", "currentPrompt"]),
     active() {
-      return this.currentPrompt.prompt === "sidebar";
+      return this.currentPrompt?.prompt === "sidebar";
     },
     signup: () => signup,
     version: () => version,

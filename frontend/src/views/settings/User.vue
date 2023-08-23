@@ -37,7 +37,7 @@
       </form>
     </div>
 
-    <div v-if="this.currentPrompt.prompt === 'deleteUser'" class="card floating">
+    <div v-if="this.currentPromptName === 'deleteUser'" class="card floating">
       <div class="card-content">
         <p>Are you sure you want to delete this user?</p>
       </div>
@@ -89,7 +89,7 @@ export default {
       return this.$route.path === "/settings/users/new";
     },
     ...mapState(["loading"]),
-    ...mapGetters(["currentPrompt"])
+    ...mapGetters(["currentPrompt", "currentPromptName"])
   },
   watch: {
     $route: "fetchData",

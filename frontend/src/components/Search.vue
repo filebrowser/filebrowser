@@ -91,9 +91,9 @@ export default {
   },
   watch: {
     currentPrompt(val, old) {
-      this.active = val.prompt === "search";
+      this.active = val?.prompt === "search";
 
-      if (old.prompt === "search" && !this.active) {
+      if (old?.prompt === "search" && !this.active) {
         if (this.reload) {
           this.setReload(true);
         }

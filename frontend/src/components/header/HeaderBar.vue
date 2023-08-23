@@ -11,7 +11,7 @@
 
     <slot />
 
-    <div id="dropdown" :class="{ active: this.currentPrompt.prompt === 'more' }">
+    <div id="dropdown" :class="{ active: this.currentPromptName === 'more' }">
       <slot name="actions" />
     </div>
 
@@ -25,7 +25,7 @@
 
     <div
       class="overlay"
-      v-show="this.currentPrompt.prompt == 'more'"
+      v-show="this.currentPromptName == 'more'"
       @click="$store.commit('closeHovers')"
     />
   </header>
@@ -54,7 +54,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["currentPrompt"]),
+    ...mapGetters(["currentPromptName"]),
   }
 };
 </script>

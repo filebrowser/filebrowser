@@ -1,6 +1,6 @@
 <template>
   <div>
-    <component ref="getCurrentPrompt" :is="getCurrentPrompt"></component>
+    <component v-if="showOverlay" :ref="currentPromptName" :is="currentPromptName" v-bind="currentPrompt.props"></component>
     <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
   </div>
 </template>
@@ -83,7 +83,7 @@ export default {
   },
   computed: {
     ...mapState(["plugins"]),
-    ...mapGetters(["currentPrompt"]),
+    ...mapGetters(["currentPrompt", "currentPromptName"]),
     showOverlay: function () {
       return (
         this.currentPrompt !== null &&

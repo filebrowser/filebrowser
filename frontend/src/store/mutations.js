@@ -13,12 +13,14 @@ const mutations = {
     state.showShell = !state.showShell;
   },
   showHover: (state, value) => {
+    console.log(value);
     if (typeof value !== "object") {
       state.show = value;
       state.prompts.push({
         prompt: value,
         confirm: null,
-        action: null
+        action: null,
+        props: {}
       });
       return;
     }
