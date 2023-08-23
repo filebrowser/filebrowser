@@ -43,6 +43,9 @@ const getters = {
 
     return files.sort((a, b) => a.progress - b.progress);
   },
+  currentPrompt: (state) => {
+    return state.prompts.length > 0 ? state.prompts[state.prompts.length - 1] : null;
+  },
 };
 
 export default getters;

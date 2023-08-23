@@ -4,6 +4,8 @@ import moment from "moment";
 const mutations = {
   closeHovers: (state) => {
     state.show = null;
+    state.prompts.pop();
+    console.log(state.prompts);
     state.showConfirm = null;
     state.showAction = null;
   },
@@ -13,10 +15,16 @@ const mutations = {
   showHover: (state, value) => {
     if (typeof value !== "object") {
       state.show = value;
+      state.prompts.push({
+        prompt: value,
+        confirm: null,
+        action: null
+      });
       return;
     }
 
     state.show = value.prompt;
+    state.prompts.push(value);
     state.showConfirm = value.confirm;
     if (value.action !== undefined) {
       state.showAction = value.action;
@@ -24,9 +32,11 @@ const mutations = {
   },
   showError: (state) => {
     state.show = "error";
+    state.prompts.push("error");
   },
   showSuccess: (state) => {
     state.show = "success";
+    state.prompts.push("success");
   },
   setLoading: (state, value) => {
     state.loading = value;

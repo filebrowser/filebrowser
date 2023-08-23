@@ -1,6 +1,6 @@
 <template>
   <div>
-    <component ref="currentComponent" :is="currentComponent"></component>
+    <component ref="getCurrentPrompt" :is="getCurrentPrompt"></component>
     <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
   </div>
 </template>
@@ -20,7 +20,7 @@ import ReplaceRename from "./ReplaceRename";
 import Share from "./Share";
 import Upload from "./Upload";
 import ShareDelete from "./ShareDelete";
-import { mapState } from "vuex";
+import { mapGetters, mapState } from "vuex";
 import buttons from "@/utils/buttons";
 
 export default {
@@ -52,7 +52,7 @@ export default {
   },
   created() {
     window.addEventListener("keydown", (event) => {
-      if (this.show == null) return;
+      if (this.currentPrompt == null) return;
 
       let prompt = this.$refs.currentComponent;
 
@@ -64,7 +64,7 @@ export default {
 
       // Enter
       if (event.keyCode == 13) {
-        switch (this.show) {
+        switch (this.currentPrompt.prompt) {
           case "delete":
             prompt.submit();
             break;
@@ -82,31 +82,15 @@ export default {
     });
   },
   computed: {
-    ...mapState(["show", "plugins"]),
-    currentComponent: function () {
-      const matched =
-        [
-          "info",
-          "help",
-          "delete",
-          "rename",
-          "move",
-          "copy",
-          "newFile",
-          "newDir",
-          "download",
-          "replace",
-          "replace-rename",
-          "share",
-          "upload",
-          "share-delete",
-        ].indexOf(this.show) >= 0;
-
-      return (matched && this.show) || null;
-    },
+    ...mapState(["plugins"]),
+    ...mapGetters(["currentPrompt"]),
     showOverlay: function () {
       return (
-        this.show !== null && this.show !== "search" && this.show !== "more"
+        this.currentPrompt !== null &&
+        this.currentPrompt.prompt
+        !== "search" &&
+        this.currentPrompt.prompt
+        !== "more"
       );
     },
   },

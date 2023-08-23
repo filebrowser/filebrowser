@@ -9,6 +9,17 @@
     </div>
 
     <div class="card-action">
+      <div v-if="user.perm.create">
+        <button
+          class="button button--flat"
+          @click="$store.commit('showHover', 'newDir')"
+          :aria-label="$t('sidebar.newFolder')"
+          :title="$t('sidebar.newFolder')"
+        >
+          <i class="material-icons">create_new_folder</i>
+          <span>{{ $t("sidebar.newFolder") }}</span>
+        </button>
+      </div>
       <button
         class="button button--flat button--grey"
         @click="$store.commit('closeHovers')"
@@ -46,7 +57,7 @@ export default {
       dest: null,
     };
   },
-  computed: mapState(["req", "selected"]),
+  computed: mapState(["req", "selected", "user"]),
   methods: {
     move: async function (event) {
       event.preventDefault();

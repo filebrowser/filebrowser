@@ -37,7 +37,7 @@
       </form>
     </div>
 
-    <div v-if="$store.state.show === 'deleteUser'" class="card floating">
+    <div v-if="this.currentPrompt.prompt === 'deleteUser'" class="card floating">
       <div class="card-content">
         <p>Are you sure you want to delete this user?</p>
       </div>
@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations, mapGetters } from "vuex";
 import { users as api, settings } from "@/api";
 import UserForm from "@/components/settings/UserForm";
 import Errors from "@/views/Errors";
@@ -89,6 +89,7 @@ export default {
       return this.$route.path === "/settings/users/new";
     },
     ...mapState(["loading"]),
+    ...mapGetters(["currentPrompt"])
   },
   watch: {
     $route: "fetchData",

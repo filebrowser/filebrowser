@@ -50,7 +50,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["req", "reload", "loading", "show"]),
+    ...mapState(["req", "reload", "loading"]),
     currentView() {
       if (this.req.type == undefined) {
         return null;
