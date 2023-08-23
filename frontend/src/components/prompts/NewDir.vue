@@ -74,7 +74,6 @@ export default {
         if (this.redirect) {
           this.$router.push({ path: uri });
         }else{
-          console.log(uri);
           const res = await api.fetch(url.removeLastDir(uri) + "/");
           this.$store.commit("updateRequest", res);
         }

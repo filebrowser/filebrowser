@@ -16,8 +16,7 @@
           :aria-label="$t('sidebar.newFolder')"
           :title="$t('sidebar.newFolder')"
         >
-          <i class="material-icons">create_new_folder</i>
-          <span>{{ $t("sidebar.newFolder") }}</span>
+          <span style="vertical-align: bottom;">{{ $t("sidebar.newFolder") }}</span>
         </button>
       </template>
       <button
