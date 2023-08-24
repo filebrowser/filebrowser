@@ -9,16 +9,6 @@
     </div>
 
     <div class="card-action">
-      <template v-if="user.perm.create">
-        <button
-          class="button button--flat"
-          @click="createDir()"
-          :aria-label="$t('sidebar.newFolder')"
-          :title="$t('sidebar.newFolder')"
-        >
-          <span style="vertical-align: bottom;">{{ $t("sidebar.newFolder") }}</span>
-        </button>
-      </template>
       <button
         class="button button--flat button--grey"
         @click="$store.commit('closeHovers')"
@@ -108,16 +98,6 @@ export default {
       }
 
       action(overwrite, rename);
-    },
-    createDir: async function (){
-      this.$store.commit('showHover', {
-        prompt: 'newDir',
-        action: null,
-        confirm: null,
-        props:{
-          redirect: false
-        }
-      })
     }
   },
 };
