@@ -79,7 +79,11 @@ const mutations = {
   },
   updateRequest: (state, value) => {
     state.oldReq = state.req;
+    const selectedItems = state.selected.map((i) => state.req.items[i]);
     state.req = value;
+    state.selected = state.req.items
+      .filter((item) => selectedItems.some((rItem) => rItem.url === item.url))
+      .map((item) => item.index);
   },
   updateClipboard: (state, value) => {
     state.clipboard.key = value.key;
