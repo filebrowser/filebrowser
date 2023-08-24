@@ -23,8 +23,8 @@ const mutations = {
       prompt: value.prompt, // Should not be null
       confirm: value?.confirm,
       action: value?.action,
-      props: value?.props
-    })
+      props: value?.props,
+    });
   },
   showError: (state) => {
     state.prompts.push("error");

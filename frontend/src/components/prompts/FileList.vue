@@ -22,14 +22,16 @@
       >.
     </p>
     <template v-if="user.perm.create">
-        <button
-          class="button button--flat"
-          @click="createDir()"
-          :aria-label="$t('sidebar.newFolder')"
-          :title="$t('sidebar.newFolder')"
-        >
-          <span style="vertical-align: bottom;">{{ $t("sidebar.newFolder") }}</span>
-        </button>
+      <button
+        class="button button--flat"
+        @click="createDir()"
+        :aria-label="$t('sidebar.newFolder')"
+        :title="$t('sidebar.newFolder')"
+      >
+        <span style="vertical-align: bottom">{{
+          $t("sidebar.newFolder")
+        }}</span>
+      </button>
     </template>
   </div>
 </template>
@@ -143,17 +145,17 @@ export default {
       this.selected = event.currentTarget.dataset.url;
       this.$emit("update:selected", this.selected);
     },
-    createDir: async function (){
-      this.$store.commit('showHover', {
-        prompt: 'newDir',
+    createDir: async function () {
+      this.$store.commit("showHover", {
+        prompt: "newDir",
         action: null,
         confirm: null,
-        props:{
+        props: {
           redirect: false,
           base: this.current === this.$route.path ? null : this.current,
-        }
-      })
-    }
+        },
+      });
+    },
   },
 };
 </script>

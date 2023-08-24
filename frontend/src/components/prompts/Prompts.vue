@@ -1,6 +1,12 @@
 <template>
   <div>
-    <component v-if="showOverlay" :ref="currentPromptName" :is="currentPromptName" v-bind="currentPrompt.props"></component>
+    <component
+      v-if="showOverlay"
+      :ref="currentPromptName"
+      :is="currentPromptName"
+      v-bind="currentPrompt.props"
+    >
+    </component>
     <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
   </div>
 </template>
@@ -87,10 +93,8 @@ export default {
     showOverlay: function () {
       return (
         this.currentPrompt !== null &&
-        this.currentPrompt.prompt
-        !== "search" &&
-        this.currentPrompt.prompt
-        !== "more"
+        this.currentPrompt.prompt !== "search" &&
+        this.currentPrompt.prompt !== "more"
       );
     },
   },

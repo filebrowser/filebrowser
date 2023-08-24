@@ -297,14 +297,7 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      "req",
-      "selected",
-      "user",
-      "multiple",
-      "selected",
-      "loading",
-    ]),
+    ...mapState(["req", "selected", "user", "multiple", "selected", "loading"]),
     ...mapGetters(["selectedCount", "currentPrompt"]),
     nameSorted() {
       return this.req.sorting.by === "name";

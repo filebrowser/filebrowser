@@ -89,7 +89,7 @@ export default {
       return this.$route.path === "/settings/users/new";
     },
     ...mapState(["loading"]),
-    ...mapGetters(["currentPrompt", "currentPromptName"])
+    ...mapGetters(["currentPrompt", "currentPromptName"]),
   },
   watch: {
     $route: "fetchData",

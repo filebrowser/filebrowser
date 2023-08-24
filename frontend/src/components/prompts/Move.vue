@@ -98,7 +98,7 @@ export default {
       }
 
       action(overwrite, rename);
-    }
+    },
   },
 };
 </script>
