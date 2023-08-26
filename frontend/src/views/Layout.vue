@@ -15,10 +15,10 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
-import Sidebar from "@/components/Sidebar";
-import Prompts from "@/components/prompts/Prompts";
-import Shell from "@/components/Shell";
-import UploadFiles from "../components/prompts/UploadFiles";
+import Sidebar from "@/components/Sidebar.vue";
+import Prompts from "@/components/prompts/Prompts.vue";
+import Shell from "@/components/Shell.vue";
+import UploadFiles from "../components/prompts/UploadFiles.vue";
 import { enableExec } from "@/utils/constants";
 
 export default {

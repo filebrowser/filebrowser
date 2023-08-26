@@ -6,20 +6,20 @@
 </template>
 
 <script>
-import Help from "./Help";
-import Info from "./Info";
-import Delete from "./Delete";
-import Rename from "./Rename";
-import Download from "./Download";
-import Move from "./Move";
-import Copy from "./Copy";
-import NewFile from "./NewFile";
-import NewDir from "./NewDir";
-import Replace from "./Replace";
-import ReplaceRename from "./ReplaceRename";
-import Share from "./Share";
-import Upload from "./Upload";
-import ShareDelete from "./ShareDelete";
+import Help from "./Help.vue";
+import Info from "./Info.vue";
+import Delete from "./Delete.vue";
+import Rename from "./Rename.vue";
+import Download from "./Download.vue";
+import Move from "./Move.vue";
+import Copy from "./Copy.vue";
+import NewFile from "./NewFile.vue";
+import NewDir from "./NewDir.vue";
+import Replace from "./Replace.vue";
+import ReplaceRename from "./ReplaceRename.vue";
+import Share from "./Share.vue";
+import Upload from "./Upload.vue";
+import ShareDelete from "./ShareDelete.vue";
 import { mapState } from "vuex";
 import buttons from "@/utils/buttons";
 
