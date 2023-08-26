@@ -27,6 +27,11 @@ export default defineConfig(({ command }) => {
     return {
       plugins,
       resolve,
+      server: {
+        proxy: {
+          "/api": "http://localhost:8080",
+        },
+      },
     };
   } else {
     // command === 'build'
