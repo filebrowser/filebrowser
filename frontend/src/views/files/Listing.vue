@@ -298,16 +298,8 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      "req",
-      "selected",
-      "user",
-      "show",
-      "multiple",
-      "selected",
-      "loading",
-    ]),
-    ...mapGetters(["selectedCount"]),
+    ...mapState(["req", "selected", "user", "multiple", "selected", "loading"]),
+    ...mapGetters(["selectedCount", "currentPrompt"]),
     nameSorted() {
       return this.req.sorting.by === "name";
     },
@@ -444,7 +436,7 @@ export default {
     },
     keyEvent(event) {
       // No prompts are shown
-      if (this.show !== null) {
+      if (this.currentPrompt !== null) {
         return;
       }
 

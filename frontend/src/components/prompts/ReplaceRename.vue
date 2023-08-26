@@ -19,7 +19,7 @@
       </button>
       <button
         class="button button--flat button--blue"
-        @click="(event) => showConfirm(event, 'rename')"
+        @click="(event) => currentPrompt.confirm(event, 'rename')"
         :aria-label="$t('buttons.rename')"
         :title="$t('buttons.rename')"
       >
@@ -27,7 +27,7 @@
       </button>
       <button
         class="button button--flat button--red"
-        @click="(event) => showConfirm(event, 'overwrite')"
+        @click="(event) => currentPrompt.confirm(event, 'overwrite')"
         :aria-label="$t('buttons.replace')"
         :title="$t('buttons.replace')"
       >
@@ -38,10 +38,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   name: "replace-rename",
-  computed: mapState(["showConfirm"]),
+  computed: mapGetters(["currentPrompt"]),
 };
 </script>

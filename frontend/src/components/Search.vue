@@ -90,10 +90,10 @@ export default {
     };
   },
   watch: {
-    show(val, old) {
-      this.active = val === "search";
+    currentPrompt(val, old) {
+      this.active = val?.prompt === "search";
 
-      if (old === "search" && !this.active) {
+      if (old?.prompt === "search" && !this.active) {
         if (this.reload) {
           this.setReload(true);
         }
@@ -116,8 +116,8 @@ export default {
     },
   },
   computed: {
-    ...mapState(["user", "show"]),
-    ...mapGetters(["isListing"]),
+    ...mapState(["user"]),
+    ...mapGetters(["isListing", "currentPrompt"]),
     boxes() {
       return boxes;
     },
