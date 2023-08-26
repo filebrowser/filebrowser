@@ -34,7 +34,7 @@
 <script>
 import { logoURL } from "@/utils/constants";
 
-import Action from "@/components/header/Action";
+import Action from "@/components/header/Action.vue";
 import { mapGetters } from "vuex";
 
 export default {

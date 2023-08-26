@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import HeaderBar from "@/components/header/HeaderBar";
+import HeaderBar from "@/components/header/HeaderBar.vue";
 
 const errors = {
   0: {
