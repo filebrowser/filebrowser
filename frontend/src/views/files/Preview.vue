@@ -143,7 +143,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapGetters, mapState } from "vuex";
 import { files as api } from "@/api";
 import { resizePreview } from "@/utils/constants";
 import url from "@/utils/url";
@@ -177,7 +177,8 @@ export default {
     };
   },
   computed: {
-    ...mapState(["req", "user", "oldReq", "jwt", "loading", "show"]),
+    ...mapState(["req", "user", "oldReq", "jwt", "loading"]),
+    ...mapGetters(["currentPrompt"]),
     hasPrevious() {
       return this.previousLink !== "";
     },
@@ -195,7 +196,7 @@ export default {
       return api.getDownloadURL(this.req, true);
     },
     showMore() {
-      return this.$store.state.show === "more";
+      return this.currentPrompt?.prompt === "more";
     },
     isResizeEnabled() {
       return resizePreview;
@@ -247,7 +248,7 @@ export default {
       this.$router.replace({ path: this.nextLink });
     },
     key(event) {
-      if (this.show !== null) {
+      if (this.currentPrompt !== null) {
         return;
       }
 

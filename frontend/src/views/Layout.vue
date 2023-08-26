@@ -30,7 +30,7 @@ export default {
     UploadFiles,
   },
   computed: {
-    ...mapGetters(["isLogged", "progress"]),
+    ...mapGetters(["isLogged", "progress", "currentPrompt"]),
     ...mapState(["user"]),
     isExecEnabled: () => enableExec,
   },
@@ -38,7 +38,7 @@ export default {
     $route: function () {
       this.$store.commit("resetSelected");
       this.$store.commit("multiple", false);
-      if (this.$store.state.show !== "success")
+      if (this.currentPrompt?.prompt !== "success")
         this.$store.commit("closeHovers");
     },
   },

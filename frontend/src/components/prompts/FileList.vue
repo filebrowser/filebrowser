@@ -133,6 +133,17 @@ export default {
       this.selected = event.currentTarget.dataset.url;
       this.$emit("update:selected", this.selected);
     },
+    createDir: async function () {
+      this.$store.commit("showHover", {
+        prompt: "newDir",
+        action: null,
+        confirm: null,
+        props: {
+          redirect: false,
+          base: this.current === this.$route.path ? null : this.current,
+        },
+      });
+    },
   },
 };
 </script>
