@@ -21,18 +21,6 @@
       {{ $t("prompts.currentlyNavigating") }} <code>{{ nav }}</code
       >.
     </p>
-    <template v-if="user.perm.create">
-      <button
-        class="button button--flat"
-        @click="createDir()"
-        :aria-label="$t('sidebar.newFolder')"
-        :title="$t('sidebar.newFolder')"
-      >
-        <span style="vertical-align: bottom">{{
-          $t("sidebar.newFolder")
-        }}</span>
-      </button>
-    </template>
   </div>
 </template>
 
