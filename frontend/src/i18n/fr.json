@@ -132,6 +132,8 @@
     "download": "Télécharger",
     "downloadMessage": "Choisissez le format de téléchargement :",
     "error": "Quelque chose s'est mal passé",
+    "exifcam": "Caméra (Exif)",
+    "exifdate": "Date (Exif)",
     "fileInfo": "Informations",
     "filesSelected": "{count} éléments sélectionnés",
     "lastModified": "Dernière modification",

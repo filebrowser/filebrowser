@@ -19,6 +19,8 @@ import (
 
 	"github.com/spf13/afero"
 
+	"github.com/rwcarlsen/goexif/exif"
+
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
 )
@@ -29,20 +31,22 @@ const PermDir = 0755
 // FileInfo describes a file.
 type FileInfo struct {
 	*Listing
-	Fs        afero.Fs          `json:"-"`
-	Path      string            `json:"path"`
-	Name      string            `json:"name"`
-	Size      int64             `json:"size"`
-	Extension string            `json:"extension"`
-	ModTime   time.Time         `json:"modified"`
-	Mode      os.FileMode       `json:"mode"`
-	IsDir     bool              `json:"isDir"`
-	IsSymlink bool              `json:"isSymlink"`
-	Type      string            `json:"type"`
-	Subtitles []string          `json:"subtitles,omitempty"`
-	Content   string            `json:"content,omitempty"`
-	Checksums map[string]string `json:"checksums,omitempty"`
-	Token     string            `json:"token,omitempty"`
+	Fs         afero.Fs          `json:"-"`
+	Path       string            `json:"path"`
+	Name       string            `json:"name"`
+	Size       int64             `json:"size"`
+	Extension  string            `json:"extension"`
+	ModTime    time.Time         `json:"modified"`
+	Mode       os.FileMode       `json:"mode"`
+	IsDir      bool              `json:"isDir"`
+	IsSymlink  bool              `json:"isSymlink"`
+	Type       string            `json:"type"`
+	ExifCam    string            `json:"exifcam,omitempty"`
+	ExifDate   string            `json:"exifdate,omitempty"`
+	Subtitles  []string          `json:"subtitles,omitempty"`
+	Content    string            `json:"content,omitempty"`
+	Checksums  map[string]string `json:"checksums,omitempty"`
+	Token      string            `json:"token,omitempty"`
 }
 
 // FileOptions are the options when getting a file info.
@@ -235,6 +239,7 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 		return nil
 	case strings.HasPrefix(mimetype, "image"):
 		i.Type = "image"
+		i.decodeExif()
 		return nil
 	case strings.HasSuffix(mimetype, "pdf"):
 		i.Type = "pdf"
@@ -303,6 +308,50 @@ func (i *FileInfo) detectSubtitles() {
 			}
 		}
 	}
+}
+
+func (i *FileInfo) decodeExif() error {
+        if i.Type != "image" {
+                return nil
+        }
+
+	f, err := i.Fs.Open(i.Path)
+	if err != nil {
+		return err
+	}
+
+	x, err := exif.Decode(f)
+        if err != nil {
+                return err
+        }
+
+	camModel, err := x.Get(exif.Model)
+        if err != nil {
+                return err
+        }
+
+	MycamModel, err := camModel.StringVal()
+        if err != nil {
+                return err
+        }
+
+        camMake, err := x.Get(exif.Make)
+        if err != nil {
+                return err
+        }
+
+        MycamMake, err := camMake.StringVal()
+        if err != nil {
+                return err
+        }
+
+	i.ExifCam = MycamMake + " " + MycamModel
+
+	// Two convenience functions exist for date/time taken and GPS coords:
+	tm, _ := x.DateTime()
+	i.ExifDate = tm.String()
+
+	return nil
 }
 
 func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
