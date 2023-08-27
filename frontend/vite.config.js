@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from "node:url";
-
+import path from "node:path";
 import { defineConfig } from "vite";
 import legacy from "@vitejs/plugin-legacy";
 import vue2 from "@vitejs/plugin-vue2";
@@ -14,15 +14,10 @@ const plugins = [
   compression({ include: /\.js$/i, deleteOriginalAssets: true }),
 ];
 
-function getProjectRoot() {
-  const currentFile = new URL(import.meta.url).pathname;
-  return currentFile.substring(0, currentFile.lastIndexOf("/")) + "/";
-}
-
 const resolve = {
   alias: {
     vue: "vue/dist/vue.esm.js",
-    "@/": getProjectRoot() + "src/",
+    "@/": `${path.resolve(__dirname, "src")}/`,
   },
 };
 
