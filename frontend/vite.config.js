@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from "node:url";
-
+import path from "node:path";
 import { defineConfig } from "vite";
 import legacy from "@vitejs/plugin-legacy";
 import vue2 from "@vitejs/plugin-vue2";
@@ -17,7 +17,7 @@ const plugins = [
 const resolve = {
   alias: {
     vue: "vue/dist/vue.esm.js",
-    "@/": fileURLToPath(new URL("./src/", import.meta.url)),
+    "@/": `${path.resolve(__dirname, "src")}/`,
   },
 };
 
