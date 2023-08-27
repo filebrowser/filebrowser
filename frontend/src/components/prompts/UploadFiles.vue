@@ -69,7 +69,7 @@ export default {
       this.open = !this.open;
     },
     abortAll() {
-      if (confirm('Are you sure you want to abort?')) {
+      if (confirm(this.$t('upload.abortUpload'))) {
         abortAllUploads();
         buttons.done('upload');
         this.open = false;
