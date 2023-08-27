@@ -14,10 +14,15 @@ const plugins = [
   compression({ include: /\.js$/i, deleteOriginalAssets: true }),
 ];
 
+function getProjectRoot() {
+  const currentFile = new URL(import.meta.url).pathname;
+  return currentFile.substring(0, currentFile.lastIndexOf("/")) + "/";
+}
+
 const resolve = {
   alias: {
     vue: "vue/dist/vue.esm.js",
-    "@/": fileURLToPath(new URL("./src/", import.meta.url)),
+    "@/": getProjectRoot() + "src/",
   },
 };
 
