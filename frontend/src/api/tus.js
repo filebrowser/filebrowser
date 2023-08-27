@@ -6,6 +6,7 @@ import { fetchURL } from "./utils";
 
 const RETRY_BASE_DELAY = 1000;
 const RETRY_MAX_DELAY = 20000;
+const CURRENT_UPLOAD_LIST = {};
 
 export async function upload(
   filePath,
@@ -34,6 +35,7 @@ export async function upload(
         "X-Auth": store.state.jwt,
       },
       onError: function (error) {
+        delete CURRENT_UPLOAD_LIST[filePath];
         reject("Upload failed: " + error);
       },
       onProgress: function (bytesUploaded) {
@@ -44,10 +46,12 @@ export async function upload(
         }
       },
       onSuccess: function () {
+        delete CURRENT_UPLOAD_LIST[filePath];
         resolve();
       },
     });
     upload.start();
+    CURRENT_UPLOAD_LIST[filePath] = upload;
   });
 }
 
@@ -87,4 +91,22 @@ export async function useTus(content) {
 
 function isTusSupported() {
   return tus.isSupported === true;
+}
+
+export function abortUpload(filePath) {
+  const upload = CURRENT_UPLOAD_LIST[filePath];
+  if (upload) {
+    upload.abort();
+    delete CURRENT_UPLOAD_LIST[filePath];
+  }
+}
+
+export function abortAllUploads() {
+  for (let filePath in CURRENT_UPLOAD_LIST) {
+    const upload = CURRENT_UPLOAD_LIST[filePath];
+    if (upload) {
+      upload.abort();
+      delete CURRENT_UPLOAD_LIST[filePath];
+    }
+  }
 }
