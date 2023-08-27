@@ -97,6 +97,13 @@ const mutations = {
     state.clipboard.key = "";
     state.clipboard.items = [];
   },
+  resetUpload(state) {
+    state.upload.uploads = {};
+    state.upload.queue = [];
+    state.upload.progress = [];
+    state.upload.sizes = [];
+    state.upload.id = 0;
+  },
 };
 
 export default mutations;
