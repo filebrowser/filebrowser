@@ -7,7 +7,14 @@
     <div class="card floating">
       <div class="card-title">
         <h2>{{ $t("prompts.uploadFiles", { files: filesInUploadCount }) }}</h2>
-
+        <button
+          class="action"
+          @click="abortAll"
+          aria-label="Abort upload"
+          title="Abort upload"
+        >
+        <i class="material-icons">{{ "cancel" }}</i>
+        </button>
         <button
           class="action"
           @click="toggle"
@@ -42,7 +49,9 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
+import { abortAllUploads } from "@/api/tus";
+import buttons from "@/utils/buttons";
 
 export default {
   name: "uploadFiles",
@@ -53,10 +62,20 @@ export default {
   },
   computed: {
     ...mapGetters(["filesInUpload", "filesInUploadCount"]),
+    ...mapMutations(['resetUpload']),
   },
   methods: {
     toggle: function () {
       this.open = !this.open;
+    },
+    abortAll() {
+      if (confirm(this.$t('upload.abortUpload'))) {
+        abortAllUploads();
+        buttons.done('upload');
+        this.open = false;
+        this.$store.commit('resetUpload');
+        this.$store.commit("setReload", true);
+      }
     },
   },
 };

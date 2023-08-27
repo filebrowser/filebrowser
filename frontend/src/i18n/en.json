@@ -45,6 +45,9 @@
     "downloadFolder": "Download Folder",
     "downloadSelected": "Download Selected"
   },
+  "upload": {
+    "abortUpload": "Are you sure you want to abort?"
+  },
   "errors": {
     "forbidden": "You don't have permissions to access this.",
     "internal": "Something really went wrong.",
