@@ -56,4 +56,3 @@ export default {
 </script>
 
 <style></style>
-@/stores/layout

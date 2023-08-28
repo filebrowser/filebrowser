@@ -74,4 +74,3 @@ export default {
   },
 };
 </script>
-@/stores/file

@@ -42,4 +42,3 @@ export default {
   computed: mapState(useLayoutStore, ["showConfirm"]),
 };
 </script>
-@/stores/layout

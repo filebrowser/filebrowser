@@ -134,6 +134,7 @@ export default {
   components: {
     ProgressBar,
   },
+  inject: ["$showError"],
   computed: {
     ...mapState(useAuthStore, ["user", "isLoggedIn"]),
     ...mapState(useLayoutStore, ["show"]),
@@ -177,7 +178,7 @@ export default {
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),
     toRoot() {
-      this.$router.push({ path: "/files/" });
+      this.$router.push({ path: "/files" });
       this.closeHovers();
     },
     toSettings() {
@@ -191,4 +192,3 @@ export default {
   },
 };
 </script>
-@/stores/auth@/stores/layout

@@ -38,6 +38,7 @@ import { useLayoutStore } from "@/stores/layout";
 
 export default {
   name: "delete",
+  inject: ["$showError"],
   computed: {
     ...mapState(useFileStore, [
       "isListing",
@@ -86,4 +87,3 @@ export default {
   },
 };
 </script>
-@/stores/file@/stores/layout

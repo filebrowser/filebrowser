@@ -1,5 +1,7 @@
 import "whatwg-fetch";
 import cssVars from "css-vars-ponyfill";
+import Noty from "noty";
+import { disableExternal } from "@/utils/constants";
 import { createApp } from "vue";
 import VueLazyload from "vue-lazyload";
 import createPinia from "@/stores";
@@ -31,6 +33,55 @@ app.directive("focus", {
     // initiate focus for the element
     el.focus();
   },
+});
+
+const notyDefault = {
+  type: "info",
+  layout: "bottomRight",
+  timeout: 1000,
+  progressBar: true,
+};
+
+app.provide("$noty", (opts) => {
+  new Noty(Object.assign({}, notyDefault, opts)).show();
+});
+
+app.provide("$showSuccess", (message) => {
+  new Noty(
+    Object.assign({}, notyDefault, {
+      text: message,
+      type: "success",
+    })
+  ).show();
+});
+
+app.provide("$showError", (error, displayReport = true) => {
+  let btns = [
+    Noty.button(i18n.global.t("buttons.close"), "", function () {
+      n.close();
+    }),
+  ];
+
+  if (!disableExternal && displayReport) {
+    btns.unshift(
+      Noty.button(i18n.global.t("buttons.reportIssue"), "", function () {
+        window.open(
+          "https://github.com/filebrowser/filebrowser/issues/new/choose"
+        );
+      })
+    );
+  }
+
+  let n = new Noty(
+    Object.assign({}, notyDefault, {
+      text: error.message || error,
+      type: "error",
+      timeout: null,
+      buttons: btns,
+    })
+  );
+
+  n.show();
 });
 
 router.isReady().then(() => app.mount("#app"));

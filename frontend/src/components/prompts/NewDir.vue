@@ -51,6 +51,7 @@ export default {
       name: "",
     };
   },
+  inject: ["$showError"],
   computed: {
     ...mapState(useFileStore, ["isFiles", "isListing"]),
   },
@@ -72,7 +73,7 @@ export default {
 
       try {
         await api.post(uri);
-        this.$router.push({ path: uri });
+        this.$router.push({ path: `${uri}` });
       } catch (e) {
         this.$showError(e);
       }
@@ -82,4 +83,3 @@ export default {
   },
 };
 </script>
-@/stores/file@/stores/layout

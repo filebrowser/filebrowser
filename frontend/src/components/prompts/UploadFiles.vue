@@ -62,4 +62,3 @@ export default {
   },
 };
 </script>
-@/stores/upload

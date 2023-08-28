@@ -51,6 +51,7 @@ export default {
       name: "",
     };
   },
+  inject: ["$showError"],
   computed: {
     ...mapState(useFileStore, ["isFiles", "isListing"]),
   },
@@ -82,4 +83,3 @@ export default {
   },
 };
 </script>
-@/stores/file@/stores/layout

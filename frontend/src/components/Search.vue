@@ -203,4 +203,3 @@ export default {
   },
 };
 </script>
-@/stores/file@/stores/layout

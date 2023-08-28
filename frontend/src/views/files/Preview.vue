@@ -360,4 +360,3 @@ export default {
   },
 };
 </script>
-@/stores/auth@/stores/file@/stores/layout

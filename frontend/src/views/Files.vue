@@ -123,7 +123,7 @@ export default {
 
         if (
           clean(res.path) !==
-          clean(`/${this.$route.params.path}`).replace(/,/g, "/")
+          clean(`/${[...this.$route.params.path].join("/")}`)
         ) {
           throw new Error("Data Mismatch!");
         }
@@ -146,4 +146,3 @@ export default {
   },
 };
 </script>
-@/stores/file@/stores/layout

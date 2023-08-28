@@ -115,4 +115,3 @@ export default {
   },
 };
 </script>
-@/stores/layout

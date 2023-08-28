@@ -142,15 +142,9 @@ const routes = [
       showHeader: true,
     },
   },
-  // {
-  //   path: "/files",
-  //   redirect: {
-  //     path: "/files/",
-  //   },
-  // },
   {
     path: "/:catchAll(.*)*",
-    redirect: (to) => `/files${to.params.catchAll}`,
+    redirect: (to) => `/files/${[...to.params.catchAll].join("/")}`,
   },
 ];
 

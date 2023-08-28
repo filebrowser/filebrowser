@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { useRouterStore } from "./router";
-// import { useAuthPreferencesStore } from "./auth-preferences";
-// import { useAuthEmailStore } from "./auth-email";
+import { useLayoutStore } from "./layout";
 
 export const useFileStore = defineStore("file", {
   // convert to a function
@@ -13,17 +12,17 @@ export const useFileStore = defineStore("file", {
     multiple: false,
   }),
   getters: {
-    // user and jwt getter removed, no longer needed
     selectedCount: (state) => state.selected.length,
     route: () => {
       const routerStore = useRouterStore();
       return routerStore.router.currentRoute;
     },
-    isFiles(state) {
-      return !state.loading && this.route.name === "Files";
+    isFiles: (state) => {
+      const layoutStore = useLayoutStore();
+      return !layoutStore.loading && state.route._value.name === "Files";
     },
-    isListing(state) {
-      return this.isFiles && state.req.isDir;
+    isListing: (state) => {
+      return state.isFiles && state.req.isDir;
     },
   },
   actions: {

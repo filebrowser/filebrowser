@@ -52,4 +52,3 @@ export default {
   },
 };
 </script>
-@/stores/auth@/stores/layout@/stores/file

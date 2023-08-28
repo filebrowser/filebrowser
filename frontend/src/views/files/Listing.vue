@@ -905,4 +905,3 @@ export default {
   },
 };
 </script>
-@/stores/auth@/stores/clipboard@/stores/file@/stores/layout
