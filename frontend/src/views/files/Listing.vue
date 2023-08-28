@@ -51,7 +51,7 @@
           v-if="headerButtons.shell"
           icon="code"
           :label="$t('buttons.shell')"
-          @action="$store.commit('toggleShell')"
+          @action="toggleShell"
         />
         <action
           :icon="viewIcon"
@@ -248,10 +248,10 @@
           multiple
         />
 
-        <div :class="{ active: $store.state.multiple }" id="multiple-selection">
+        <div :class="{ active: multiple }" id="multiple-selection">
           <p>{{ $t("files.multipleSelectionEnabled") }}</p>
           <div
-            @click="$store.commit('multiple', false)"
+            @click="() => (multiple = false)"
             tabindex="0"
             role="button"
             :title="$t('files.clear')"
@@ -268,12 +268,18 @@
 
 <script>
 import Vue from "vue";
-import { mapState, mapGetters, mapMutations } from "vuex";
+import { mapState, mapWritableState, mapActions, mapStores } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+import { useClipboardStore } from "@/stores/clipboard";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
+
 import { users, files as api } from "@/api";
 import { enableExec } from "@/utils/constants";
 import * as upload from "@/utils/upload";
 import css from "@/utils/css";
 import throttle from "lodash.throttle";
+import { Base64 } from "js-base64";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
@@ -298,16 +304,17 @@ export default {
     };
   },
   computed: {
-    ...mapState([
+    ...mapStores(useClipboardStore),
+    ...mapState(useAuthStore, ["user"]),
+    ...mapState(useFileStore, ["selectedCount", "toggleMultiple"]),
+    ...mapState(useLayoutStore, ["show"]),
+    ...mapWritableState(useFileStore, [
       "req",
       "selected",
-      "user",
-      "show",
       "multiple",
-      "selected",
       "loading",
+      "reload",
     ]),
-    ...mapGetters(["selectedCount"]),
     nameSorted() {
       return this.req.sorting.by === "name";
     },
@@ -425,7 +432,7 @@ export default {
     document.addEventListener("dragleave", this.dragLeave);
     document.addEventListener("drop", this.drop);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     // Remove event listeners before destroying this page.
     window.removeEventListener("keydown", this.keyEvent);
     window.removeEventListener("scroll", this.scrollEvent);
@@ -438,9 +445,10 @@ export default {
     document.removeEventListener("drop", this.drop);
   },
   methods: {
-    ...mapMutations(["updateUser", "addSelected"]),
+    ...mapActions(useAuthStore, ["updateUser"]),
+    ...mapActions(useLayoutStore, ["showHover", "closeHovers", "toggleShell"]),
     base64: function (name) {
-      return window.btoa(unescape(encodeURIComponent(name)));
+      return Base64.encodeURI(name);
     },
     keyEvent(event) {
       // No prompts are shown
@@ -451,7 +459,7 @@ export default {
       // Esc!
       if (event.keyCode === 27) {
         // Reset files selection.
-        this.$store.commit("resetSelected");
+        this.selected = [];
       }
 
       // Del!
@@ -459,7 +467,7 @@ export default {
         if (!this.user.perm.delete || this.selectedCount == 0) return;
 
         // Show delete prompt.
-        this.$store.commit("showHover", "delete");
+        this.showHover("delete");
       }
 
       // F2!
@@ -467,7 +475,7 @@ export default {
         if (!this.user.perm.rename || this.selectedCount !== 1) return;
 
         // Show rename prompt.
-        this.$store.commit("showHover", "rename");
+        this.showHover("rename");
       }
 
       // Ctrl is pressed
@@ -480,7 +488,7 @@ export default {
       switch (key) {
         case "f":
           event.preventDefault();
-          this.$store.commit("showHover", "search");
+          this.showHover("search");
           break;
         case "c":
         case "x":
@@ -492,13 +500,13 @@ export default {
         case "a":
           event.preventDefault();
           for (let file of this.items.files) {
-            if (this.$store.state.selected.indexOf(file.index) === -1) {
-              this.addSelected(file.index);
+            if (this.selected.indexOf(file.index) === -1) {
+              this.selected.push(file.index);
             }
           }
           for (let dir of this.items.dirs) {
-            if (this.$store.state.selected.indexOf(dir.index) === -1) {
-              this.addSelected(dir.index);
+            if (this.selected.indexOf(dir.index) === -1) {
+              this.selected.push(dir.index);
             }
           }
           break;
@@ -530,7 +538,7 @@ export default {
         return;
       }
 
-      this.$store.commit("updateClipboard", {
+      this.clipboardStore.updateClipboard({
         key: key,
         items: items,
         path: this.$route.path,
@@ -543,7 +551,7 @@ export default {
 
       let items = [];
 
-      for (let item of this.$store.state.clipboard.items) {
+      for (let item of this.clipboardStore.items) {
         const from = item.from.endsWith("/")
           ? item.from.slice(0, -1)
           : item.from;
@@ -559,24 +567,24 @@ export default {
         api
           .copy(items, overwrite, rename)
           .then(() => {
-            this.$store.commit("setReload", true);
+            this.reload = true;
           })
           .catch(this.$showError);
       };
 
-      if (this.$store.state.clipboard.key === "x") {
+      if (this.clipboardStore.key === "x") {
         action = (overwrite, rename) => {
           api
             .move(items, overwrite, rename)
             .then(() => {
-              this.$store.commit("resetClipboard");
-              this.$store.commit("setReload", true);
+              this.clipboardStore.resetClipboard();
+              this.reload = true;
             })
             .catch(this.$showError);
         };
       }
 
-      if (this.$store.state.clipboard.path == this.$route.path) {
+      if (this.clipboardStore.path == this.$route.path) {
         action(false, true);
 
         return;
@@ -588,14 +596,14 @@ export default {
       let rename = false;
 
       if (conflict) {
-        this.$store.commit("showHover", {
+        this.showHover({
           prompt: "replace-rename",
           confirm: (event, option) => {
             overwrite = option == "overwrite";
             rename = option == "rename";
 
             event.preventDefault();
-            this.$store.commit("closeHovers");
+            this.closeHovers();
             action(overwrite, rename);
           },
         });
@@ -695,16 +703,16 @@ export default {
       let conflict = upload.checkConflict(files, items);
 
       if (conflict) {
-        this.$store.commit("showHover", {
+        this.showHover({
           prompt: "replace",
           action: (event) => {
             event.preventDefault();
-            this.$store.commit("closeHovers");
+            this.closeHovers();
             upload.handleFiles(files, path, false);
           },
           confirm: (event) => {
             event.preventDefault();
-            this.$store.commit("closeHovers");
+            this.closeHovers();
             upload.handleFiles(files, path, true);
           },
         });
@@ -715,7 +723,7 @@ export default {
       upload.handleFiles(files, path);
     },
     uploadInput(event) {
-      this.$store.commit("closeHovers");
+      this.closeHovers();
 
       let files = event.currentTarget.files;
       let folder_upload =
@@ -735,16 +743,16 @@ export default {
       let conflict = upload.checkConflict(files, this.req.items);
 
       if (conflict) {
-        this.$store.commit("showHover", {
+        this.showHover({
           prompt: "replace",
           action: (event) => {
             event.preventDefault();
-            this.$store.commit("closeHovers");
+            this.closeHovers();
             upload.handleFiles(files, path, false);
           },
           confirm: (event) => {
             event.preventDefault();
-            this.$store.commit("closeHovers");
+            this.closeHovers();
             upload.handleFiles(files, path, true);
           },
         });
@@ -786,14 +794,14 @@ export default {
         this.$showError(e);
       }
 
-      this.$store.commit("setReload", true);
+      this.reload = true;
     },
     openSearch() {
-      this.$store.commit("showHover", "search");
+      this.showHover("search");
     },
     toggleMultipleSelection() {
-      this.$store.commit("multiple", !this.multiple);
-      this.$store.commit("closeHovers");
+      this.toggleMultiple();
+      this.closeHovers();
     },
     windowsResize: throttle(function () {
       this.colunmsResize();
@@ -814,10 +822,10 @@ export default {
         return;
       }
 
-      this.$store.commit("showHover", {
+      this.showHover({
         prompt: "download",
         confirm: (format) => {
-          this.$store.commit("closeHovers");
+          this.closeHovers();
 
           let files = [];
 
@@ -834,7 +842,7 @@ export default {
       });
     },
     switchView: async function () {
-      this.$store.commit("closeHovers");
+      this.closeHovers();
 
       const modes = {
         list: "mosaic",
@@ -850,7 +858,7 @@ export default {
       users.update(data, ["viewMode"]).catch(this.$showError);
 
       // Await ensures correct value for setItemWeight()
-      await this.$store.commit("updateUser", data);
+      await this.updateUser(data);
 
       this.setItemWeight();
       this.fillWindow();
@@ -860,7 +868,7 @@ export default {
         typeof window.DataTransferItem !== "undefined" &&
         typeof DataTransferItem.prototype.webkitGetAsEntry !== "undefined"
       ) {
-        this.$store.commit("showHover", "upload");
+        this.showHover("upload");
       } else {
         document.getElementById("upload-input").click();
       }
@@ -897,3 +905,4 @@ export default {
   },
 };
 </script>
+@/stores/auth@/stores/clipboard@/stores/file@/stores/layout

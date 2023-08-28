@@ -10,8 +10,8 @@
 
         <div class="card-content">
           <user-form
-            :user.sync="user"
-            :createUserDir.sync="createUserDir"
+            v-model:user="user"
+            v-model:createUserDir="createUserDir"
             :isDefault="false"
             :isNew="isNew"
           />
@@ -37,7 +37,7 @@
       </form>
     </div>
 
-    <div v-if="$store.state.show === 'deleteUser'" class="card floating">
+    <div v-if="show === 'deleteUser'" class="card floating">
       <div class="card-content">
         <p>Are you sure you want to delete this user?</p>
       </div>
@@ -61,7 +61,9 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapActions, mapState, mapWritableState } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+import { useLayoutStore } from "@/stores/layout";
 import { users as api, settings } from "@/api";
 import UserForm from "@/components/settings/UserForm.vue";
 import Errors from "@/views/Errors.vue";
@@ -85,10 +87,12 @@ export default {
     this.fetchData();
   },
   computed: {
+    ...mapState(useAuthStore, ["user"]),
+    ...mapState(useLayoutStore, ["show"]),
+    ...mapWritableState(useLayoutStore, ["loading"]),
     isNew() {
       return this.$route.path === "/settings/users/new";
     },
-    ...mapState(["loading"]),
   },
   watch: {
     $route: "fetchData",
@@ -98,9 +102,10 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(["closeHovers", "showHover", "setUser", "setLoading"]),
+    ...mapActions(useAuthStore, ["setUser"]),
+    ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),
     async fetchData() {
-      this.setLoading(true);
+      this.loading = true;
 
       try {
         if (this.isNew) {
@@ -121,7 +126,7 @@ export default {
       } catch (e) {
         this.error = e;
       } finally {
-        this.setLoading(false);
+        this.loading = false;
       }
     },
     deletePrompt() {
@@ -155,7 +160,7 @@ export default {
         } else {
           await api.update(user);
 
-          if (user.id === this.$store.state.user.id) {
+          if (user.id === this.user.id) {
             this.setUser({ ...deepClone(user) });
           }
 
@@ -168,3 +173,4 @@ export default {
   },
 };
 </script>
+@/stores/auth@/stores/file@/stores/layout

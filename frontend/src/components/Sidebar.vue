@@ -1,6 +1,6 @@
 <template>
   <nav :class="{ active }">
-    <template v-if="isLogged">
+    <template v-if="isLoggedIn">
       <button
         class="action"
         @click="toRoot"
@@ -13,7 +13,7 @@
 
       <div v-if="user.perm.create">
         <button
-          @click="$store.commit('showHover', 'newDir')"
+          @click="showHover('newDir')"
           class="action"
           :aria-label="$t('sidebar.newFolder')"
           :title="$t('sidebar.newFolder')"
@@ -23,7 +23,7 @@
         </button>
 
         <button
-          @click="$store.commit('showHover', 'newFile')"
+          @click="showHover('newFile')"
           class="action"
           :aria-label="$t('sidebar.newFile')"
           :title="$t('sidebar.newFile')"
@@ -83,7 +83,7 @@
     <div
       class="credits"
       v-if="
-        $router.currentRoute.path.includes('/files/') && !disableUsedPercentage
+        $router.currentRoute.path?.includes('/files/') && !disableUsedPercentage
       "
       style="width: 90%; margin: 2em 2.5em 3em 2.5em"
     >
@@ -112,7 +112,10 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapActions, mapState } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+import { useLayoutStore } from "@/stores/layout";
+
 import * as auth from "@/utils/auth";
 import {
   version,
@@ -132,10 +135,10 @@ export default {
     ProgressBar,
   },
   computed: {
-    ...mapState(["user"]),
-    ...mapGetters(["isLogged"]),
+    ...mapState(useAuthStore, ["user", "isLoggedIn"]),
+    ...mapState(useLayoutStore, ["show"]),
     active() {
-      return this.$store.state.show === "sidebar";
+      return this.show === "sidebar";
     },
     signup: () => signup,
     version: () => version,
@@ -172,18 +175,20 @@ export default {
     },
   },
   methods: {
+    ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),
     toRoot() {
-      this.$router.push({ path: "/files/" }, () => {});
-      this.$store.commit("closeHovers");
+      this.$router.push({ path: "/files/" });
+      this.closeHovers();
     },
     toSettings() {
-      this.$router.push({ path: "/settings" }, () => {});
-      this.$store.commit("closeHovers");
+      this.$router.push({ path: "/settings" });
+      this.closeHovers();
     },
     help() {
-      this.$store.commit("showHover", "help");
+      this.showHover("help");
     },
     logout: auth.logout,
   },
 };
 </script>
+@/stores/auth@/stores/layout

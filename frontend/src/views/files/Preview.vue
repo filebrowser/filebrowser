@@ -143,7 +143,11 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapActions, mapState } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
+
 import { files as api } from "@/api";
 import { resizePreview } from "@/utils/constants";
 import url from "@/utils/url";
@@ -177,7 +181,9 @@ export default {
     };
   },
   computed: {
-    ...mapState(["req", "user", "oldReq", "jwt", "loading", "show"]),
+    ...mapState(useAuthStore, ["user", "jwt"]),
+    ...mapState(useFileStore, ["req", "oldReq", "loading"]),
+    ...mapState(useLayoutStore, ["show"]),
     hasPrevious() {
       return this.previousLink !== "";
     },
@@ -195,7 +201,7 @@ export default {
       return api.getDownloadURL(this.req, true);
     },
     showMore() {
-      return this.$store.state.show === "more";
+      return this.show === "more";
     },
     isResizeEnabled() {
       return resizePreview;
@@ -218,12 +224,14 @@ export default {
     this.listing = this.oldReq.items;
     this.updatePreview();
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener("keydown", this.key);
   },
   methods: {
+    ...mapActions(useFileStore, ["updateRequest"]),
+    ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
     deleteFile() {
-      this.$store.commit("showHover", {
+      this.showHover({
         prompt: "delete",
         confirm: () => {
           this.listing = this.listing.filter((item) => item.name !== this.name);
@@ -320,10 +328,10 @@ export default {
         : api.getPreviewURL(item, "big");
     },
     openMore() {
-      this.$store.commit("showHover", "more");
+      this.showHover("more");
     },
     resetPrompts() {
-      this.$store.commit("closeHovers");
+      this.closeHovers();
     },
     toggleSize() {
       this.fullSize = !this.fullSize;
@@ -341,7 +349,7 @@ export default {
       }, 1500);
     }, 500),
     close() {
-      this.$store.commit("updateRequest", {});
+      this.updateRequest({});
 
       let uri = url.removeLastDir(this.$route.path) + "/";
       this.$router.push({ path: uri });
@@ -352,3 +360,4 @@ export default {
   },
 };
 </script>
+@/stores/auth@/stores/file@/stores/layout

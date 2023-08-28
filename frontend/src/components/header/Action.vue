@@ -7,13 +7,17 @@
 </template>
 
 <script>
+import { mapActions } from "pinia";
+import { useLayoutStore } from "@/stores/layout";
+
 export default {
   name: "action",
   props: ["icon", "label", "counter", "show"],
   methods: {
+    ...mapActions(useLayoutStore, ["showHover"]),
     action: function () {
       if (this.show) {
-        this.$store.commit("showHover", this.show);
+        this.showHover(this.show);
       }
 
       this.$emit("action");
@@ -23,3 +27,4 @@ export default {
 </script>
 
 <style></style>
+@/stores/layout

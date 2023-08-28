@@ -5,7 +5,7 @@
     </div>
     <div class="card-action">
       <button
-        @click="$store.commit('closeHovers')"
+        @click="closeHovers"
         class="button button--flat button--grey"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')"
@@ -25,17 +25,20 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapActions, mapState } from "pinia";
+import { useLayoutStore } from "@/stores/layout";
 
 export default {
   name: "share-delete",
   computed: {
-    ...mapState(["showConfirm"]),
+    ...mapState(useLayoutStore, ["showConfirm"]),
   },
   methods: {
+    ...mapActions(useLayoutStore, ["closeHovers"]),
     submit: function () {
       this.showConfirm();
     },
   },
 };
 </script>
+@/stores/layout

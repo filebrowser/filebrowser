@@ -25,7 +25,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+import { useFileStore } from "@/stores/file";
+
 import url from "@/utils/url";
 import { files } from "@/api";
 
@@ -43,7 +46,8 @@ export default {
     };
   },
   computed: {
-    ...mapState(["req", "user"]),
+    ...mapState(useAuthStore, ["user"]),
+    ...mapState(useFileStore, ["req"]),
     nav() {
       return decodeURIComponent(this.current);
     },
@@ -136,3 +140,4 @@ export default {
   },
 };
 </script>
+@/stores/auth@/stores/file

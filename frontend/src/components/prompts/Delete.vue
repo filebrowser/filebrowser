@@ -10,7 +10,7 @@
     </div>
     <div class="card-action">
       <button
-        @click="$store.commit('closeHovers')"
+        @click="closeHovers"
         class="button button--flat button--grey"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')"
@@ -30,18 +30,26 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from "vuex";
+import { mapActions, mapState, mapWritableState } from "pinia";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
 
 export default {
   name: "delete",
   computed: {
-    ...mapGetters(["isListing", "selectedCount"]),
-    ...mapState(["req", "selected", "showConfirm"]),
+    ...mapState(useFileStore, [
+      "isListing",
+      "selectedCount",
+      "req",
+      "selected",
+    ]),
+    ...mapWritableState(useFileStore, ["reload"]),
+    ...mapState(useLayoutStore, ["showConfirm"]),
   },
   methods: {
-    ...mapMutations(["closeHovers"]),
+    ...mapActions(useLayoutStore, ["closeHovers"]),
     submit: async function () {
       buttons.loading("delete");
 
@@ -68,13 +76,14 @@ export default {
 
         await Promise.all(promises);
         buttons.success("delete");
-        this.$store.commit("setReload", true);
+        this.reload = true;
       } catch (e) {
         buttons.done("delete");
         this.$showError(e);
-        if (this.isListing) this.$store.commit("setReload", true);
+        if (this.isListing) this.reload = true;
       }
     },
   },
 };
 </script>
+@/stores/file@/stores/layout

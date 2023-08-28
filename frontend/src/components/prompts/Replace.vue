@@ -11,7 +11,7 @@
     <div class="card-action">
       <button
         class="button button--flat button--grey"
-        @click="$store.commit('closeHovers')"
+        @click="closeHovers"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')"
       >
@@ -38,10 +38,17 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapActions, mapState } from "pinia";
+import { useLayoutStore } from "@/stores/layout";
 
 export default {
   name: "replace",
-  computed: mapState(["showConfirm", "showAction"]),
+  computed: {
+    ...mapState(useLayoutStore, ["showConfirm", "showAction"]),
+  },
+  methods: {
+    ...mapActions(useLayoutStore, ["closeHovers"]),
+  },
 };
 </script>
+@/stores/layout

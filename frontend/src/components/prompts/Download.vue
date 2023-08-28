@@ -21,7 +21,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from "pinia";
+import { useLayoutStore } from "@/stores/layout";
 
 export default {
   name: "download",
@@ -38,6 +39,7 @@ export default {
       },
     };
   },
-  computed: mapState(["showConfirm"]),
+  computed: mapState(useLayoutStore, ["showConfirm"]),
 };
 </script>
+@/stores/layout

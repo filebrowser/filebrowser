@@ -6,7 +6,7 @@
     <sidebar></sidebar>
     <main>
       <router-view></router-view>
-      <shell v-if="isExecEnabled && isLogged && user.perm.execute" />
+      <shell v-if="isExecEnabled && isLoggedIn && user.perm.execute" />
     </main>
     <prompts></prompts>
     <upload-files></upload-files>
@@ -14,11 +14,14 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapActions, mapState, mapWritableState } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+import { useLayoutStore } from "@/stores/layout";
+import { useFileStore } from "@/stores/file";
 import Sidebar from "@/components/Sidebar.vue";
 import Prompts from "@/components/prompts/Prompts.vue";
 import Shell from "@/components/Shell.vue";
-import UploadFiles from "../components/prompts/UploadFiles.vue";
+import UploadFiles from "@/components/prompts/UploadFiles.vue";
 import { enableExec } from "@/utils/constants";
 
 export default {
@@ -30,17 +33,23 @@ export default {
     UploadFiles,
   },
   computed: {
-    ...mapGetters(["isLogged", "progress"]),
-    ...mapState(["user"]),
+    ...mapState(useAuthStore, ["isLoggedIn", "user"]),
+    ...mapState(useLayoutStore, ["progress", "show"]),
+    ...mapWritableState(useFileStore, ["selected", "multiple"]),
     isExecEnabled: () => enableExec,
+  },
+  methods: {
+    ...mapActions(useLayoutStore, ["closeHovers"]),
   },
   watch: {
     $route: function () {
-      this.$store.commit("resetSelected");
-      this.$store.commit("multiple", false);
-      if (this.$store.state.show !== "success")
-        this.$store.commit("closeHovers");
+      this.selected = [];
+      this.multiple = false;
+      if (this.show !== "success") {
+        this.closeHovers();
+      }
     },
   },
 };
 </script>
+@/stores/auth@/stores/layout@/stores/file

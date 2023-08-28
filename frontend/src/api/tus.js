@@ -1,6 +1,6 @@
 import * as tus from "tus-js-client";
 import { baseURL, tusEndpoint, tusSettings } from "@/utils/constants";
-import store from "@/store";
+import { useAuthStore } from "@/stores/auth";
 import { removePrefix } from "@/api/utils";
 import { fetchURL } from "./utils";
 
@@ -23,6 +23,7 @@ export async function upload(
 
   await createUpload(resourcePath);
 
+  const authStore = useAuthStore();
   return new Promise((resolve, reject) => {
     let upload = new tus.Upload(content, {
       uploadUrl: `${baseURL}${resourcePath}`,
@@ -31,7 +32,7 @@ export async function upload(
       parallelUploads: 1,
       storeFingerprintForResuming: false,
       headers: {
-        "X-Auth": store.state.jwt,
+        "X-Auth": authStore.jwt,
       },
       onError: function (error) {
         reject("Upload failed: " + error);

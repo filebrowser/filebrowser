@@ -1,4 +1,4 @@
-import store from "@/store";
+import { useUploadStore } from "@/stores/upload";
 import url from "@/utils/url";
 
 export function checkConflict(files, items) {
@@ -110,8 +110,10 @@ function detectType(mimetype) {
 }
 
 export function handleFiles(files, base, overwrite = false) {
+  const uploadStore = useUploadStore();
+
   for (let i = 0; i < files.length; i++) {
-    let id = store.state.upload.id;
+    let id = uploadStore.id;
     let path = base;
     let file = files[i];
 
@@ -133,6 +135,6 @@ export function handleFiles(files, base, overwrite = false) {
       ...(!file.isDir && { type: detectType(file.type) }),
     };
 
-    store.dispatch("upload/upload", item);
+    uploadStore.upload(item);
   }
 }

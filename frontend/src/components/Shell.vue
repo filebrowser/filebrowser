@@ -20,9 +20,9 @@
         tabindex="0"
         ref="input"
         class="shell__text"
-        contenteditable="true"
-        @keydown.prevent.38="historyUp"
-        @keydown.prevent.40="historyDown"
+        :contenteditable="true"
+        @keydown.prevent.arrow-up="historyUp"
+        @keydown.prevent.arrow-down="historyDown"
         @keypress.prevent.enter="submit"
       />
     </div>
@@ -30,14 +30,17 @@
 </template>
 
 <script>
-import { mapMutations, mapState, mapGetters } from "vuex";
+import { mapState, mapActions } from "pinia";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
+
 import { commands } from "@/api";
 
 export default {
   name: "shell",
   computed: {
-    ...mapState(["user", "showShell"]),
-    ...mapGetters(["isFiles", "isLogged"]),
+    ...mapState(useLayoutStore, ["showShell"]),
+    ...mapState(useFileStore, ["isFiles"]),
     path: function () {
       if (this.isFiles) {
         return this.$route.path;
@@ -53,7 +56,7 @@ export default {
     canInput: true,
   }),
   methods: {
-    ...mapMutations(["toggleShell"]),
+    ...mapActions(useLayoutStore, ["toggleShell"]),
     scroll: function () {
       this.$refs.scrollable.scrollTop = this.$refs.scrollable.scrollHeight;
     },
@@ -126,3 +129,4 @@ export default {
   },
 };
 </script>
+@/stores/file@/stores/layout

@@ -21,7 +21,9 @@
 
 <script>
 import { files as api } from "@/api";
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapActions, mapWritableState } from "pinia";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
@@ -50,7 +52,14 @@ export default {
     };
   },
   computed: {
-    ...mapState(["req", "reload", "loading", "show"]),
+    ...mapWritableState(useFileStore, [
+      "req",
+      "reload",
+      "selected",
+      "multiple",
+    ]),
+    ...mapState(useLayoutStore, ["show", "showShell"]),
+    ...mapWritableState(useLayoutStore, ["loading"]),
     currentView() {
       if (this.req.type == undefined) {
         return null;
@@ -82,26 +91,27 @@ export default {
   mounted() {
     window.addEventListener("keydown", this.keyEvent);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener("keydown", this.keyEvent);
   },
-  destroyed() {
-    if (this.$store.state.showShell) {
-      this.$store.commit("toggleShell");
+  unmounted() {
+    if (this.showShell) {
+      this.toggleShell();
     }
-    this.$store.commit("updateRequest", {});
+    this.updateRequest({});
   },
   methods: {
-    ...mapMutations(["setLoading"]),
+    ...mapActions(useLayoutStore, ["toggleShell", "showHover", "closeHovers"]),
+    ...mapActions(useFileStore, ["updateRequest"]),
     async fetchData() {
       // Reset view information.
-      this.$store.commit("setReload", false);
-      this.$store.commit("resetSelected");
-      this.$store.commit("multiple", false);
-      this.$store.commit("closeHovers");
+      this.reload = false;
+      this.selected = [];
+      this.multiple = false;
+      this.closeHovers();
 
       // Set loading to true and reset the error.
-      this.setLoading(true);
+      this.loading = true;
       this.error = null;
 
       let url = this.$route.path;
@@ -111,25 +121,29 @@ export default {
       try {
         const res = await api.fetch(url);
 
-        if (clean(res.path) !== clean(`/${this.$route.params.pathMatch}`)) {
-          return;
+        if (
+          clean(res.path) !==
+          clean(`/${this.$route.params.path}`).replace(/,/g, "/")
+        ) {
+          throw new Error("Data Mismatch!");
         }
 
-        this.$store.commit("updateRequest", res);
+        this.updateRequest(res);
         document.title = `${res.name} - ${document.title}`;
       } catch (e) {
         this.error = e;
       } finally {
-        this.setLoading(false);
+        this.loading = false;
       }
     },
     keyEvent(event) {
       // F1!
       if (event.keyCode === 112) {
         event.preventDefault();
-        this.$store.commit("showHover", "help");
+        this.showHover("help");
       }
     },
   },
 };
 </script>
+@/stores/file@/stores/layout

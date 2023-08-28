@@ -49,7 +49,7 @@
         </template>
         <ul v-show="results.length > 0">
           <li v-for="(s, k) in filteredResults" :key="k">
-            <router-link @click.native="close" :to="s.url">
+            <router-link v-on:click="close" :to="s.url">
               <i v-if="s.dir" class="material-icons">folder</i>
               <i v-else class="material-icons">insert_drive_file</i>
               <span>./{{ s.path }}</span>
@@ -65,7 +65,10 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations } from "vuex";
+import { mapActions, mapState, mapWritableState } from "pinia";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
+
 import url from "@/utils/url";
 import { search } from "@/api";
 
@@ -95,7 +98,7 @@ export default {
 
       if (old === "search" && !this.active) {
         if (this.reload) {
-          this.setReload(true);
+          this.sReload = true;
         }
 
         document.body.style.overflow = "auto";
@@ -116,8 +119,9 @@ export default {
     },
   },
   computed: {
-    ...mapState(["user", "show"]),
-    ...mapGetters(["isListing"]),
+    ...mapState(useFileStore, ["isListing"]),
+    ...mapState(useLayoutStore, ["show"]),
+    ...mapWritableState(useFileStore, { sReload: "reload" }),
     boxes() {
       return boxes;
     },
@@ -148,7 +152,7 @@ export default {
     });
   },
   methods: {
-    ...mapMutations(["showHover", "closeHovers", "setReload"]),
+    ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
     open() {
       this.showHover("search");
     },
@@ -199,3 +203,4 @@ export default {
   },
 };
 </script>
+@/stores/file@/stores/layout

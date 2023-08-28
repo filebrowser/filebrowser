@@ -103,7 +103,7 @@ const removeEmpty = (obj) =>
 
 export const rtlLanguages = ["he", "ar"];
 
-const i18n = createI18n({
+export const i18n = createI18n({
   locale: detectLocale(),
   fallbackLocale: "en",
   messages: {

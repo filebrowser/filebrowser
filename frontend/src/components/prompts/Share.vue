@@ -59,7 +59,7 @@
       <div class="card-action">
         <button
           class="button button--flat button--grey"
-          @click="$store.commit('closeHovers')"
+          @click="closeHovers"
           :aria-label="$t('buttons.close')"
           :title="$t('buttons.close')"
         >
@@ -126,10 +126,12 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapActions, mapState } from "pinia";
+import { useFileStore } from "@/stores/file";
 import { share as api, pub as pub_api } from "@/api";
 import moment from "moment";
 import Clipboard from "clipboard";
+import { useLayoutStore } from "@/stores/layout";
 
 export default {
   name: "share",
@@ -144,8 +146,12 @@ export default {
     };
   },
   computed: {
-    ...mapState(["req", "selected", "selectedCount"]),
-    ...mapGetters(["isListing"]),
+    ...mapState(useFileStore, [
+      "req",
+      "selected",
+      "selectedCount",
+      "isListing",
+    ]),
     url() {
       if (!this.isListing) {
         return this.$route.path;
@@ -178,10 +184,11 @@ export default {
       this.$showSuccess(this.$t("success.linkCopied"));
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.clip.destroy();
   },
   methods: {
+    ...mapActions(useLayoutStore, ["closeHovers"]),
     submit: async function () {
       let isPermanent = !this.time || this.time == 0;
 
@@ -242,7 +249,7 @@ export default {
     },
     switchListing() {
       if (this.links.length == 0 && !this.listing) {
-        this.$store.commit("closeHovers");
+        this.closeHovers();
       }
 
       this.listing = !this.listing;
@@ -250,3 +257,4 @@ export default {
   },
 };
 </script>
+@/stores/file@/stores/layout

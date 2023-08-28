@@ -1,22 +1,20 @@
-import store from "@/store";
+import { useAuthStore } from "@/stores/auth";
 import router from "@/router";
-import { Base64 } from "js-base64";
+import jwt_decode from "jwt-decode";
 import { baseURL } from "@/utils/constants";
 
 export function parseToken(token) {
-  const parts = token.split(".");
+  // falsy or malformed jwt will throw InvalidTokenError
+  const data = jwt_decode(token);
+  console.log(data);
 
-  if (parts.length !== 3) {
-    throw new Error("token malformed");
-  }
-
-  const data = JSON.parse(Base64.decode(parts[1]));
-
-  document.cookie = `auth=${token}; path=/`;
+  document.cookie = `auth=${token}; Path=/; SameSite=Strict;`;
 
   localStorage.setItem("jwt", token);
-  store.commit("setJWT", token);
-  store.commit("setUser", data.user);
+
+  const authStore = useAuthStore();
+  authStore.jwt = token;
+  authStore.setUser(data.user);
 }
 
 export async function validateLogin() {
@@ -25,7 +23,7 @@ export async function validateLogin() {
       await renew(localStorage.getItem("jwt"));
     }
   } catch (_) {
-    console.warn('Invalid JWT token in storage') // eslint-disable-line
+    console.warn("Invalid JWT token in storage"); // eslint-disable-line
   }
 }
 
@@ -83,10 +81,11 @@ export async function signup(username, password) {
 }
 
 export function logout() {
-  document.cookie = "auth=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
+  document.cookie = "auth=; Max-Age=0; Path=/; SameSite=Strict;";
 
-  store.commit("setJWT", "");
-  store.commit("setUser", null);
+  const authStore = useAuthStore();
+  authStore.clearUser();
+
   localStorage.setItem("jwt", null);
   router.push({ path: "/login" });
 }

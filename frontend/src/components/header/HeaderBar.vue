@@ -6,12 +6,12 @@
       class="menu-button"
       icon="menu"
       :label="$t('buttons.toggleSidebar')"
-      @action="openSidebar()"
+      @action="showHover('sidebar')"
     />
 
     <slot />
 
-    <div id="dropdown" :class="{ active: this.$store.state.show === 'more' }">
+    <div id="dropdown" :class="{ active: this.show === 'more' }">
       <slot name="actions" />
     </div>
 
@@ -20,18 +20,17 @@
       id="more"
       icon="more_vert"
       :label="$t('buttons.more')"
-      @action="$store.commit('showHover', 'more')"
+      @action="showHover('more')"
     />
 
-    <div
-      class="overlay"
-      v-show="this.$store.state.show == 'more'"
-      @click="$store.commit('closeHovers')"
-    />
+    <div class="overlay" v-show="this.show == 'more'" @click="closeHovers" />
   </header>
 </template>
 
 <script>
+import { mapActions, mapState } from "pinia";
+import { useLayoutStore } from "@/stores/layout";
+
 import { logoURL } from "@/utils/constants";
 
 import Action from "@/components/header/Action.vue";
@@ -47,12 +46,14 @@ export default {
       logoURL,
     };
   },
+  computed: {
+    ...mapState(useLayoutStore, ["show"]),
+  },
   methods: {
-    openSidebar() {
-      this.$store.commit("showHover", "sidebar");
-    },
+    ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
   },
 };
 </script>
 
 <style></style>
+@/stores/layout

@@ -29,7 +29,7 @@
 
           <h3>{{ $t("settings.rules") }}</h3>
           <p class="small">{{ $t("settings.globalRules") }}</p>
-          <rules :rules.sync="settings.rules" />
+          <rules v-model:rules="settings.rules" />
 
           <div v-if="isExecEnabled">
             <h3>{{ $t("settings.executeOnShell") }}</h3>
@@ -75,7 +75,7 @@
             <label for="theme">{{ $t("settings.themes.title") }}</label>
             <themes
               class="input input--block"
-              :theme.sync="settings.branding.theme"
+              v-model:theme="settings.branding.theme"
               id="theme"
             ></themes>
           </p>
@@ -156,7 +156,7 @@
           <user-form
             :isNew="false"
             :isDefault="true"
-            :user.sync="settings.defaults"
+            v-model:user="settings.defaults"
           />
         </div>
 
@@ -220,7 +220,9 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapWritableState } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+import { useLayoutStore } from "@/stores/layout";
 import { settings as api } from "@/api";
 import { enableExec } from "@/utils/constants";
 import UserForm from "@/components/settings/UserForm.vue";
@@ -245,7 +247,8 @@ export default {
     };
   },
   computed: {
-    ...mapState(["user", "loading"]),
+    ...mapState(useAuthStore, ["user"]),
+    ...mapWritableState(useLayoutStore, ["loading"]),
     isExecEnabled: () => enableExec,
     formattedChunkSize: {
       get() {
@@ -268,7 +271,7 @@ export default {
   },
   async created() {
     try {
-      this.setLoading(true);
+      this.loading = true;
 
       const original = await api.get();
       let settings = { ...original, commands: [] };
@@ -287,11 +290,10 @@ export default {
     } catch (e) {
       this.error = e;
     } finally {
-      this.setLoading(false);
+      this.loading = false;
     }
   },
   methods: {
-    ...mapMutations(["setLoading"]),
     capitalize(name, where = "_") {
       if (where === "caps") where = /(?=[A-Z])/;
       let splitted = name.split(where);
@@ -358,7 +360,7 @@ export default {
       return `${size}${units[unitIndex]}`;
     },
     // Clear the debounce timeout when the component is destroyed
-    beforeDestroy() {
+    beforeUnmount() {
       if (this.debounceTimeout) {
         clearTimeout(this.debounceTimeout);
       }
@@ -366,3 +368,4 @@ export default {
   },
 };
 </script>
+@/stores/auth@/stores/file

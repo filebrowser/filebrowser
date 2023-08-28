@@ -18,7 +18,7 @@
     <div class="card-action">
       <button
         class="button button--flat button--grey"
-        @click="$store.commit('closeHovers')"
+        @click="closeHovers"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')"
       >
@@ -37,7 +37,10 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapState } from "pinia";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
+
 import { files as api } from "@/api";
 import url from "@/utils/url";
 
@@ -49,9 +52,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["isFiles", "isListing"]),
+    ...mapState(useFileStore, ["isFiles", "isListing"]),
   },
   methods: {
+    ...mapActions(useLayoutStore, ["closeHovers"]),
     submit: async function (event) {
       event.preventDefault();
       if (this.new === "") return;
@@ -73,8 +77,9 @@ export default {
         this.$showError(e);
       }
 
-      this.$store.commit("closeHovers");
+      this.closeHovers();
     },
   },
 };
 </script>
+@/stores/file@/stores/layout

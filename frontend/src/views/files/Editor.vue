@@ -20,18 +20,21 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapActions, mapState } from "pinia";
 import { files as api } from "@/api";
 import { theme } from "@/utils/constants";
 import buttons from "@/utils/buttons";
 import url from "@/utils/url";
 
+import { version as ace_version } from "ace-builds";
 import ace from "ace-builds/src-min-noconflict/ace.js";
 import modelist from "ace-builds/src-min-noconflict/ext-modelist.js";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import { useAuthStore } from "@/stores/auth";
+import { useFileStore } from "@/stores/file";
 
 export default {
   name: "editor",
@@ -44,7 +47,8 @@ export default {
     return {};
   },
   computed: {
-    ...mapState(["req", "user"]),
+    ...mapState(useAuthStore, ["user"]),
+    ...mapState(useFileStore, ["req"]),
     breadcrumbs() {
       let parts = this.$route.path.split("/");
 
@@ -78,12 +82,17 @@ export default {
   created() {
     window.addEventListener("keydown", this.keyEvent);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener("keydown", this.keyEvent);
     this.editor.destroy();
   },
   mounted: function () {
     const fileContent = this.req.content || "";
+
+    ace.config.set(
+      "basePath",
+      `https://cdn.jsdelivr.net/npm/ace-builds@${ace_version}/src-min-noconflict/`
+    );
 
     this.editor = ace.edit("editor", {
       value: fileContent,
@@ -99,6 +108,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(useFileStore, ["updateRequest"]),
     back() {
       let uri = url.removeLastDir(this.$route.path) + "/";
       this.$router.push({ path: uri });
@@ -128,7 +138,7 @@ export default {
       }
     },
     close() {
-      this.$store.commit("updateRequest", {});
+      this.updateRequest({});
 
       let uri = url.removeLastDir(this.$route.path) + "/";
       this.$router.push({ path: uri });
@@ -136,3 +146,4 @@ export default {
   },
 };
 </script>
+@/stores/auth@/stores/file

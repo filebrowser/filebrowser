@@ -1,6 +1,6 @@
 import { createURL, fetchURL, removePrefix } from "./utils";
 import { baseURL } from "@/utils/constants";
-import store from "@/store";
+import { useAuthStore } from "@/stores/auth";
 import { upload as postTus, useTus } from "./tus";
 
 export async function fetch(url) {
@@ -71,8 +71,9 @@ export function download(format, ...files) {
     url += `algo=${format}&`;
   }
 
-  if (store.state.jwt) {
-    url += `auth=${store.state.jwt}&`;
+  const authStore = useAuthStore();
+  if (authStore.jwt) {
+    url += `auth=${authStore.jwt}&`;
   }
 
   window.open(url);
@@ -104,6 +105,7 @@ async function postResources(url, content = "", overwrite = false, onupload) {
     bufferContent = await new Response(content).arrayBuffer();
   }
 
+  const authStore = useAuthStore();
   return new Promise((resolve, reject) => {
     let request = new XMLHttpRequest();
     request.open(
@@ -111,7 +113,7 @@ async function postResources(url, content = "", overwrite = false, onupload) {
       `${baseURL}/api/resources${url}?override=${overwrite}`,
       true
     );
-    request.setRequestHeader("X-Auth", store.state.jwt);
+    request.setRequestHeader("X-Auth", authStore.jwt);
 
     if (typeof onupload === "function") {
       request.upload.onprogress = onupload;

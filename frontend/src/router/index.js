@@ -10,9 +10,11 @@ import GlobalSettings from "@/views/settings/Global.vue";
 import ProfileSettings from "@/views/settings/Profile.vue";
 import Shares from "@/views/settings/Shares.vue";
 import Errors from "@/views/Errors.vue";
-import store from "@/store";
+import { useAuthStore } from "@/stores/auth";
 import { baseURL, name } from "@/utils/constants";
-import i18n, { rtlLanguages } from "@/i18n";
+import { i18n, rtlLanguages } from "@/i18n";
+import { recaptcha, loginPage } from "@/utils/constants";
+import { login, validateLogin } from "@/utils/auth";
 
 const titles = {
   Login: "sidebar.login",
@@ -34,20 +36,13 @@ const routes = [
     path: "/login",
     name: "Login",
     component: Login,
-    beforeEnter: (to, from, next) => {
-      if (store.getters.isLogged) {
-        return next({ path: "/files" });
-      }
-
-      next();
-    },
   },
   {
     path: "/share",
     component: Layout,
     children: [
       {
-        path: ":pathMatch(.*)*",
+        path: ":path*",
         name: "Share",
         component: Share,
       },
@@ -56,20 +51,23 @@ const routes = [
   {
     path: "/files",
     component: Layout,
+    meta: {
+      requiresAuth: true,
+    },
     children: [
       {
-        path: ":pathMatch(.*)*",
+        path: ":path*",
         name: "Files",
         component: Files,
-        meta: {
-          requiresAuth: true,
-        },
       },
     ],
   },
   {
     path: "/settings",
     component: Layout,
+    meta: {
+      requiresAuth: true,
+    },
     children: [
       {
         path: "",
@@ -77,9 +75,6 @@ const routes = [
         component: Settings,
         redirect: {
           path: "/settings/profile",
-        },
-        meta: {
-          requiresAuth: true,
         },
         children: [
           {
@@ -159,21 +154,50 @@ const routes = [
   },
 ];
 
+async function start() {
+  try {
+    if (loginPage) {
+      await validateLogin();
+    } else {
+      await login("", "", "");
+    }
+  } catch (e) {
+    console.log(e);
+  }
+
+  if (recaptcha) {
+    await new Promise((resolve) => {
+      const check = () => {
+        if (typeof window.grecaptcha === "undefined") {
+          setTimeout(check, 100);
+        } else {
+          resolve();
+        }
+      };
+
+      check();
+    });
+  }
+}
+
 const router = createRouter({
   history: createWebHistory(baseURL),
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  // const title = i18n.t(titles[to.name]);
-  const title = titles[to.name];
+router.beforeResolve(async (to, from, next) => {
+  let title;
+  try {
+    title = i18n.global.t(titles[to.name]);
+  } catch (error) {
+    title = to.name;
+  }
+  // const title = titles[to.name];
   document.title = title + " - " + name;
-
-  console.log({ from, to });
 
   /*** RTL related settings per route ****/
   const rtlSet = document.querySelector("body").classList.contains("rtl");
-  const shouldSetRtl = rtlLanguages.includes(i18n.locale);
+  const shouldSetRtl = rtlLanguages.includes(i18n.global.locale);
   switch (true) {
     case shouldSetRtl && !rtlSet:
       document.querySelector("body").classList.add("rtl");
@@ -183,8 +207,19 @@ router.beforeEach((to, from, next) => {
       break;
   }
 
+  const authStore = useAuthStore();
+
+  if (from.name == null) {
+    await start();
+  }
+
+  if (to.path.endsWith("/login") && authStore.isLoggedIn) {
+    next({ path: "/files/" });
+    return;
+  }
+
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!store.getters.isLogged) {
+    if (!authStore.isLoggedIn) {
       next({
         path: "/login",
         query: { redirect: to.fullPath },
@@ -194,7 +229,7 @@ router.beforeEach((to, from, next) => {
     }
 
     if (to.matched.some((record) => record.meta.requiresAdmin)) {
-      if (!store.state.user.perm.admin) {
+      if (!authStore.user.perm.admin) {
         next({ path: "/403" });
         return;
       }
@@ -204,4 +239,4 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-export default router;
+export { router, router as default };

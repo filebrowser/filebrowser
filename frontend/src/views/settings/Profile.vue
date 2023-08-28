@@ -22,7 +22,7 @@
           <h3>{{ $t("settings.language") }}</h3>
           <languages
             class="input input--block"
-            :locale.sync="locale"
+            v-model:locale="locale"
           ></languages>
         </div>
 
@@ -72,7 +72,9 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapActions, mapState, mapWritableState } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+import { useLayoutStore } from "@/stores/layout";
 import { users as api } from "@/api";
 import Languages from "@/components/settings/Languages.vue";
 import i18n, { rtlLanguages } from "@/i18n";
@@ -93,7 +95,8 @@ export default {
     };
   },
   computed: {
-    ...mapState(["user"]),
+    ...mapState(useAuthStore, ["user"]),
+    ...mapWritableState(useLayoutStore, ["loading"]),
     passwordClass() {
       const baseClass = "input input--block";
 
@@ -109,14 +112,14 @@ export default {
     },
   },
   created() {
-    this.setLoading(false);
+    this.loading = true;
     this.locale = this.user.locale;
     this.hideDotfiles = this.user.hideDotfiles;
     this.singleClick = this.user.singleClick;
     this.dateFormat = this.user.dateFormat;
   },
   methods: {
-    ...mapMutations(["updateUser", "setLoading"]),
+    ...mapActions(useAuthStore, ["updateUser"]),
     async updatePassword(event) {
       event.preventDefault();
 
@@ -165,3 +168,4 @@ export default {
   },
 };
 </script>
+@/stores/auth@/stores/file

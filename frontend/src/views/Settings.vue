@@ -50,9 +50,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-
+import { mapState } from "pinia";
+import { useAuthStore } from "@/stores/auth";
 import HeaderBar from "@/components/header/HeaderBar.vue";
+import { useLayoutStore } from "@/stores/layout";
 
 export default {
   name: "settings",
@@ -60,7 +61,9 @@ export default {
     HeaderBar,
   },
   computed: {
-    ...mapState(["user", "loading"]),
+    ...mapState(useAuthStore, ["user"]),
+    ...mapState(useLayoutStore, ["loading"]),
   },
 };
 </script>
+@/stores/auth@/stores/file

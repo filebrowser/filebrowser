@@ -10,12 +10,7 @@
     @mouseup="mouseUp"
     @wheel="wheelMove"
   >
-    <img
-      src=""
-      class="image-ex-img image-ex-img-center"
-      ref="imgex"
-      @load="onLoad"
-    />
+    <img class="image-ex-img image-ex-img-center" ref="imgex" @load="onLoad" />
   </div>
 </template>
 <script>
@@ -73,7 +68,7 @@ export default {
 
     window.addEventListener("resize", this.onResize);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener("resize", this.onResize);
     document.removeEventListener("mouseup", this.onMouseUp);
   },

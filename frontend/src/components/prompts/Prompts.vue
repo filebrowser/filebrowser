@@ -1,11 +1,14 @@
 <template>
   <div>
     <component ref="currentComponent" :is="currentComponent"></component>
-    <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
+    <div v-show="showOverlay" @click="closeHovers" class="overlay"></div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapState } from "pinia";
+import { useLayoutStore } from "@/stores/layout";
+
 import Help from "./Help.vue";
 import Info from "./Info.vue";
 import Delete from "./Delete.vue";
@@ -20,7 +23,6 @@ import ReplaceRename from "./ReplaceRename.vue";
 import Share from "./Share.vue";
 import Upload from "./Upload.vue";
 import ShareDelete from "./ShareDelete.vue";
-import { mapState } from "vuex";
 import buttons from "@/utils/buttons";
 
 export default {
@@ -45,8 +47,6 @@ export default {
     return {
       pluginData: {
         buttons,
-        store: this.$store,
-        router: this.$router,
       },
     };
   },
@@ -59,7 +59,7 @@ export default {
       // Esc!
       if (event.keyCode === 27) {
         event.stopImmediatePropagation();
-        this.$store.commit("closeHovers");
+        this.closeHovers();
       }
 
       // Enter
@@ -82,7 +82,7 @@ export default {
     });
   },
   computed: {
-    ...mapState(["show", "plugins"]),
+    ...mapState(useLayoutStore, ["show", "showConfirm"]),
     currentComponent: function () {
       const matched =
         [
@@ -111,9 +111,8 @@ export default {
     },
   },
   methods: {
-    resetPrompts() {
-      this.$store.commit("closeHovers");
-    },
+    ...mapActions(useLayoutStore, ["closeHovers"]),
   },
 };
 </script>
+@/stores/layout

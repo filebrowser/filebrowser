@@ -42,7 +42,8 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapWritableState } from "pinia";
+import { useLayoutStore } from "@/stores/layout";
 import { users as api } from "@/api";
 import Errors from "@/views/Errors.vue";
 
@@ -58,21 +59,19 @@ export default {
     };
   },
   async created() {
-    this.setLoading(true);
+    this.loading = true;
 
     try {
       this.users = await api.getAll();
     } catch (e) {
       this.error = e;
     } finally {
-      this.setLoading(false);
+      this.loading = false;
     }
   },
   computed: {
-    ...mapState(["loading"]),
-  },
-  methods: {
-    ...mapMutations(["setLoading"]),
+    ...mapWritableState(useLayoutStore, ["loading"]),
   },
 };
 </script>
+@/stores/file

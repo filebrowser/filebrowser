@@ -42,7 +42,8 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapState } from "pinia";
+import { useUploadStore } from "@/stores/upload";
 
 export default {
   name: "uploadFiles",
@@ -52,7 +53,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["filesInUpload", "filesInUploadCount"]),
+    ...mapState(useUploadStore, ["filesInUpload", "filesInUploadCount"]),
   },
   methods: {
     toggle: function () {
@@ -61,3 +62,4 @@ export default {
   },
 };
 </script>
+@/stores/upload

@@ -1,51 +1,36 @@
 import "whatwg-fetch";
 import cssVars from "css-vars-ponyfill";
-import { createApp, configureCompat } from "vue";
-import store from "@/store";
+import { createApp } from "vue";
+import VueLazyload from "vue-lazyload";
+import createPinia from "@/stores";
 import router from "@/router";
 import i18n from "@/i18n";
-import { recaptcha, loginPage } from "@/utils/constants";
-import { login, validateLogin } from "@/utils/auth";
 import App from "@/App.vue";
 
 cssVars();
 
-configureCompat({
-  MODE: 2,
-});
+const pinia = createPinia(router);
 
 const app = createApp(App);
 
-app.use(store);
-app.use(router);
+app.use(VueLazyload);
 app.use(i18n);
+app.use(pinia);
+app.use(router);
 
-async function start() {
-  try {
-    if (loginPage) {
-      await validateLogin();
-    } else {
-      await login("", "", "");
-    }
-  } catch (e) {
-    console.log(e);
-  }
+app.mixin({
+  mounted() {
+    // expose vue instance to components
+    this.$el.__vue__ = this;
+  },
+});
 
-  if (recaptcha) {
-    await new Promise((resolve) => {
-      const check = () => {
-        if (typeof window.grecaptcha === "undefined") {
-          setTimeout(check, 100);
-        } else {
-          resolve();
-        }
-      };
+// provide v-focus for components
+app.directive("focus", {
+  mounted: (el) => {
+    // initiate focus for the element
+    el.focus();
+  },
+});
 
-      check();
-    });
-  }
-
-  router.isReady().then(() => app.mount("#app"));
-}
-
-start();
+router.isReady().then(() => app.mount("#app"));

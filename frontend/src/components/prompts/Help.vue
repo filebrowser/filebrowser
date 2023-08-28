@@ -21,7 +21,7 @@
     <div class="card-action">
       <button
         type="submit"
-        @click="$store.commit('closeHovers')"
+        @click="closeHovers"
         class="button button--flat"
         :aria-label="$t('buttons.ok')"
         :title="$t('buttons.ok')"
@@ -33,5 +33,14 @@
 </template>
 
 <script>
-export default { name: "help" };
+import { mapActions } from "pinia";
+import { useLayoutStore } from "@/stores/layout";
+
+export default {
+  name: "help",
+  methods: {
+    ...mapActions(useLayoutStore, ["closeHovers"]),
+  },
+};
 </script>
+@/stores/layout

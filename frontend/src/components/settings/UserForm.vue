@@ -42,7 +42,7 @@
       <languages
         class="input input--block"
         id="locale"
-        :locale.sync="user.locale"
+        v-model:locale="user.locale"
       ></languages>
     </p>
 
@@ -55,13 +55,13 @@
       {{ $t("settings.lockPassword") }}
     </p>
 
-    <permissions :perm.sync="user.perm" />
-    <commands v-if="isExecEnabled" :commands.sync="user.commands" />
+    <permissions v-model:perm="user.perm" />
+    <commands v-if="isExecEnabled" v-model:commands="user.commands" />
 
     <div v-if="!isDefault">
       <h3>{{ $t("settings.rules") }}</h3>
       <p class="small">{{ $t("settings.rulesHelp") }}</p>
-      <rules :rules.sync="user.rules" />
+      <rules v-model:rules="user.rules" />
     </div>
   </div>
 </template>

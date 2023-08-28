@@ -61,8 +61,10 @@
 </template>
 
 <script>
+import { mapState, mapWritableState } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+import { useLayoutStore } from "@/stores/layout";
 import { share as api, users } from "@/api";
-import { mapState, mapMutations } from "vuex";
 import moment from "moment";
 import Clipboard from "clipboard";
 import Errors from "@/views/Errors.vue";
@@ -72,7 +74,10 @@ export default {
   components: {
     Errors,
   },
-  computed: mapState(["user", "loading"]),
+  computed: {
+    ...mapState(useAuthStore, ["user"]),
+    ...mapWritableState(useLayoutStore, ["loading"]),
+  },
   data: function () {
     return {
       error: null,
@@ -81,7 +86,7 @@ export default {
     };
   },
   async created() {
-    this.setLoading(true);
+    this.loading = true;
 
     try {
       let links = await api.list();
@@ -98,7 +103,7 @@ export default {
     } catch (e) {
       this.error = e;
     } finally {
-      this.setLoading(false);
+      this.loading = false;
     }
   },
   mounted() {
@@ -107,18 +112,17 @@ export default {
       this.$showSuccess(this.$t("success.linkCopied"));
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.clip.destroy();
   },
   methods: {
-    ...mapMutations(["setLoading"]),
     deleteLink: async function (event, link) {
       event.preventDefault();
 
-      this.$store.commit("showHover", {
+      this.showHover({
         prompt: "share-delete",
         confirm: () => {
-          this.$store.commit("closeHovers");
+          this.closeHovers();
 
           try {
             api.remove(link.hash);
@@ -139,3 +143,4 @@ export default {
   },
 };
 </script>
+@/stores/auth@/stores/file

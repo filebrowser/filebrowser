@@ -1,9 +1,11 @@
-import store from "@/store";
+import { useAuthStore } from "@/stores/auth";
 import { renew, logout } from "@/utils/auth";
 import { baseURL } from "@/utils/constants";
 import { encodePath } from "@/utils/url";
 
 export async function fetchURL(url, opts, auth = true) {
+  const authStore = useAuthStore();
+
   opts = opts || {};
   opts.headers = opts.headers || {};
 
@@ -12,7 +14,7 @@ export async function fetchURL(url, opts, auth = true) {
   try {
     res = await fetch(`${baseURL}${url}`, {
       headers: {
-        "X-Auth": store.state.jwt,
+        "X-Auth": authStore.jwt,
         ...headers,
       },
       ...rest,
@@ -25,7 +27,7 @@ export async function fetchURL(url, opts, auth = true) {
   }
 
   if (auth && res.headers.get("X-Renew-Token") === "true") {
-    await renew(store.state.jwt);
+    await renew(authStore.jwt);
   }
 
   if (res.status < 200 || res.status > 299) {
@@ -61,6 +63,8 @@ export function removePrefix(url) {
 }
 
 export function createURL(endpoint, params = {}, auth = true) {
+  const authStore = useAuthStore();
+
   let prefix = baseURL;
   if (!prefix.endsWith("/")) {
     prefix = prefix + "/";
@@ -68,7 +72,7 @@ export function createURL(endpoint, params = {}, auth = true) {
   const url = new URL(prefix + encodePath(endpoint), origin);
 
   const searchParams = {
-    ...(auth && { auth: store.state.jwt }),
+    ...(auth && { auth: authStore.jwt }),
     ...params,
   };
 

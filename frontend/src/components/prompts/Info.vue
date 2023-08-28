@@ -68,7 +68,7 @@
     <div class="card-action">
       <button
         type="submit"
-        @click="$store.commit('closeHovers')"
+        @click="closeHovers"
         class="button button--flat"
         :aria-label="$t('buttons.ok')"
         :title="$t('buttons.ok')"
@@ -80,7 +80,9 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapActions, mapState } from "pinia";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
 import { filesize } from "filesize";
 import moment from "moment";
 import { files as api } from "@/api";
@@ -88,8 +90,12 @@ import { files as api } from "@/api";
 export default {
   name: "info",
   computed: {
-    ...mapState(["req", "selected"]),
-    ...mapGetters(["selectedCount", "isListing"]),
+    ...mapState(useFileStore, [
+      "req",
+      "selected",
+      "selectedCount",
+      "isListing",
+    ]),
     humanSize: function () {
       if (this.selectedCount === 0 || !this.isListing) {
         return filesize(this.req.size);
@@ -128,6 +134,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(useLayoutStore, ["closeHovers"]),
     checksum: async function (event, algo) {
       event.preventDefault();
 
@@ -142,7 +149,7 @@ export default {
       try {
         const hash = await api.checksum(link, algo);
         // eslint-disable-next-line
-        event.target.innerHTML = hash
+        event.target.innerHTML = hash;
       } catch (e) {
         this.$showError(e);
       }
@@ -150,3 +157,4 @@ export default {
   },
 };
 </script>
+@/stores/file@/stores/layout

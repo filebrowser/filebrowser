@@ -35,8 +35,12 @@
 </template>
 
 <script>
+import { mapState, mapActions, mapWritableState } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
+
 import { enableThumbs } from "@/utils/constants";
-import { mapMutations, mapGetters, mapState } from "vuex";
 import { filesize } from "filesize";
 import moment from "moment";
 import { files as api } from "@/api";
@@ -44,6 +48,9 @@ import * as upload from "@/utils/upload";
 
 export default {
   name: "item",
+  compatConfig: {
+    ATTR_FALSE_VALUE: "suppress-warning",
+  },
   data: function () {
     return {
       touches: 0,
@@ -61,8 +68,9 @@ export default {
     "path",
   ],
   computed: {
-    ...mapState(["user", "selected", "req", "jwt"]),
-    ...mapGetters(["selectedCount"]),
+    ...mapState(useAuthStore, ["user", "jwt"]),
+    ...mapState(useFileStore, ["req", "selectedCount", "multiple"]),
+    ...mapWritableState(useFileStore, ["reload", "selected"]),
     singleClick() {
       return this.readOnly == undefined && this.user.singleClick;
     },
@@ -96,7 +104,8 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(["addSelected", "removeSelected", "resetSelected"]),
+    ...mapActions(useFileStore, ["removeSelected"]),
+    ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
     humanSize: function () {
       return this.type == "invalid_link" ? "invalid link" : filesize(this.size);
     },
@@ -108,13 +117,13 @@ export default {
     },
     dragStart: function () {
       if (this.selectedCount === 0) {
-        this.addSelected(this.index);
+        this.selected.push(this.index);
         return;
       }
 
       if (!this.isSelected) {
-        this.resetSelected();
-        this.addSelected(this.index);
+        this.selected = [];
+        this.selected.push(this.index);
       }
     },
     dragOver: function (event) {
@@ -162,7 +171,7 @@ export default {
         api
           .move(items, overwrite, rename)
           .then(() => {
-            this.$store.commit("setReload", true);
+            this.reload = true;
           })
           .catch(this.$showError);
       };
@@ -173,14 +182,14 @@ export default {
       let rename = false;
 
       if (conflict) {
-        this.$store.commit("showHover", {
+        this.showHover({
           prompt: "replace-rename",
           confirm: (event, option) => {
             overwrite = option == "overwrite";
             rename = option == "rename";
 
             event.preventDefault();
-            this.$store.commit("closeHovers");
+            this.closeHovers();
             action(overwrite, rename);
           },
         });
@@ -191,7 +200,7 @@ export default {
       action(overwrite, rename);
     },
     itemClick: function (event) {
-      if (this.singleClick && !this.$store.state.multiple) this.open();
+      if (this.singleClick && !this.multiple) this.open();
       else this.click(event);
     },
     click: function (event) {
@@ -206,7 +215,7 @@ export default {
         this.open();
       }
 
-      if (this.$store.state.selected.indexOf(this.index) !== -1) {
+      if (this.selected.indexOf(this.index) !== -1) {
         this.removeSelected(this.index);
         return;
       }
@@ -224,8 +233,8 @@ export default {
         }
 
         for (; fi <= la; fi++) {
-          if (this.$store.state.selected.indexOf(fi) == -1) {
-            this.addSelected(fi);
+          if (this.selected.indexOf(fi) == -1) {
+            this.selected.push(fi);
           }
         }
 
@@ -236,10 +245,11 @@ export default {
         !this.singleClick &&
         !event.ctrlKey &&
         !event.metaKey &&
-        !this.$store.state.multiple
-      )
-        this.resetSelected();
-      this.addSelected(this.index);
+        !this.multiple
+      ) {
+        this.selected = [];
+      }
+      this.selected.push(this.index);
     },
     open: function () {
       this.$router.push({ path: this.url });
@@ -247,3 +257,4 @@ export default {
   },
 };
 </script>
+@/stores/auth@/stores/file@/stores/layout

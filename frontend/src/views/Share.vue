@@ -147,13 +147,10 @@
               </div>
             </div>
 
-            <div
-              :class="{ active: $store.state.multiple }"
-              id="multiple-selection"
-            >
+            <div :class="{ active: multiple }" id="multiple-selection">
               <p>{{ $t("files.multipleSelectionEnabled") }}</p>
               <div
-                @click="$store.commit('multiple', false)"
+                @click="() => (multiple = false)"
                 tabindex="0"
                 role="button"
                 :title="$t('files.clear')"
@@ -180,10 +177,11 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapGetters } from "vuex";
+import { mapState, mapActions, mapWritableState } from "pinia";
 import { pub as api } from "@/api";
 import { filesize } from "filesize";
 import moment from "moment";
+import { Base64 } from "js-base64";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
@@ -192,6 +190,8 @@ import Errors from "@/views/Errors.vue";
 import QrcodeVue from "qrcode.vue";
 import Item from "@/components/files/ListingItem.vue";
 import Clipboard from "clipboard";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
 
 export default {
   name: "share",
@@ -231,13 +231,14 @@ export default {
       this.$showSuccess(this.$t("success.linkCopied"));
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener("keydown", this.keyEvent);
     this.clip.destroy();
   },
   computed: {
-    ...mapState(["req", "loading", "multiple", "selected"]),
-    ...mapGetters(["selectedCount"]),
+    ...mapState(useFileStore, ["req", "selectedCount"]),
+    ...mapWritableState(useFileStore, ["reload", "multiple", "selected"]),
+    ...mapWritableState(useLayoutStore, ["loading"]),
     icon: function () {
       if (this.req.isDir) return "folder";
       if (this.req.type === "image") return "insert_photo";
@@ -266,19 +267,20 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(["resetSelected", "updateRequest", "setLoading"]),
+    ...mapActions(useFileStore, ["updateRequest", "toggleMultiple"]),
+    ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
     base64: function (name) {
-      return window.btoa(unescape(encodeURIComponent(name)));
+      return Base64.encodeURI(name);
     },
     fetchData: async function () {
       // Reset view information.
-      this.$store.commit("setReload", false);
-      this.$store.commit("resetSelected");
-      this.$store.commit("multiple", false);
-      this.$store.commit("closeHovers");
+      this.reload = false;
+      this.selected = [];
+      this.multiple = false;
+      this.closeHovers();
 
       // Set loading to true and reset the error.
-      this.setLoading(true);
+      this.loading = true;
       this.error = null;
 
       if (this.password !== "") {
@@ -300,7 +302,7 @@ export default {
       } catch (e) {
         this.error = e;
       } finally {
-        this.setLoading(false);
+        this.loading = false;
       }
     },
     keyEvent(event) {
@@ -309,12 +311,12 @@ export default {
         // If we're on a listing, unselect all
         // files and folders.
         if (this.selectedCount > 0) {
-          this.resetSelected();
+          this.selected = [];
         }
       }
     },
     toggleMultipleSelection() {
-      this.$store.commit("multiple", !this.multiple);
+      this.toggleMultiple();
     },
     isSingleFile: function () {
       return (
@@ -332,10 +334,10 @@ export default {
         return;
       }
 
-      this.$store.commit("showHover", {
+      this.showHover({
         prompt: "download",
         confirm: (format) => {
-          this.$store.commit("closeHovers");
+          this.closeHovers();
 
           let files = [];
 
@@ -358,3 +360,4 @@ export default {
   },
 };
 </script>
+@/stores/file@/stores/layout
