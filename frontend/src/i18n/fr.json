@@ -102,7 +102,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -181,7 +181,7 @@
     "brandingHelp": "Vous pouvez personnaliser l'apparence de votre instance de File Browser en changeant son nom, en remplaçant le logo, en ajoutant des styles personnalisés et même en désactivant les liens externes vers GitHub.\nPour plus d'informations sur la personnalisation de l'image de marque, veuillez consulter la {0}.",
     "changePassword": "Modifier le mot de passe",
     "commandRunner": "Command runner",
-    "commandRunnerHelp" : "Ici, vous pouvez définir les commandes qui sont exécutées pour les événements nommés précédemments. Vous devez en écrire une par ligne. Les variables d'environnement {0} et {1} seront disponibles, {0} étant relatif à {1}. Pour plus d'informations sur cette fonctionnalité et les variables d'environnement disponibles, veuillez lire la {2}.",
+    "commandRunnerHelp": "Ici, vous pouvez définir les commandes qui sont exécutées pour les événements nommés précédemments. Vous devez en écrire une par ligne. Les variables d'environnement {0} et {1} seront disponibles, {0} étant relatif à {1}. Pour plus d'informations sur cette fonctionnalité et les variables d'environnement disponibles, veuillez lire la {2}.",
     "commandsUpdated": "Commandes mises à jour !",
     "createUserDir": "Créer automatiquement un dossier pour l'utilisateur",
     "customStylesheet": "Feuille de style personnalisée",

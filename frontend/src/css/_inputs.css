@@ -1,9 +1,9 @@
 .input {
-  border-radius: .1em;
-  padding: .5em 1em;
+  border-radius: 0.1em;
+  padding: 0.5em 1em;
   background: white;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  transition: .2s ease all;
+  transition: 0.2s ease all;
   color: #333;
   margin: 0;
 }
@@ -14,7 +14,7 @@
 }
 
 .input--block {
-  margin-bottom: .5em;
+  margin-bottom: 0.5em;
   display: block;
   width: 100%;
 }

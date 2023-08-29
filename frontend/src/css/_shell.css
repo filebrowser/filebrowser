@@ -13,7 +13,7 @@
   font-size: 1rem;
   cursor: text;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  transition: .2s ease transform;
+  transition: 0.2s ease transform;
 }
 
 body.rtl .shell {

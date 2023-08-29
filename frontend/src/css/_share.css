@@ -12,7 +12,9 @@
 }
 
 .share__box {
-  box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 3px, rgba(0, 0, 0, 0.12) 0px 1px 2px;
+  box-shadow:
+    rgba(0, 0, 0, 0.06) 0px 1px 3px,
+    rgba(0, 0, 0, 0.12) 0px 1px 2px;
   background: #fff;
   border-radius: 0.2em;
   margin: 5px;
@@ -76,7 +78,7 @@
 .share__wrong__password {
   background: var(--red);
   color: #fff;
-  padding: .5em;
+  padding: 0.5em;
   text-align: center;
-  animation: .2s opac forwards;
+  animation: 0.2s opac forwards;
 }

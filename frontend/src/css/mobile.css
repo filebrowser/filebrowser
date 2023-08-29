@@ -1,6 +1,6 @@
 @media (max-width: 1024px) {
   nav {
-    width: 10em
+    width: 10em;
   }
   /* Mobile Only fix div hidden by bottom navigation bar of mobile browser when using height: 100vh */
   #previewer .preview {
@@ -10,7 +10,7 @@
 
 @media (max-width: 1024px) {
   main {
-    width: calc(100% - 13em)
+    width: calc(100% - 13em);
   }
 }
 
@@ -25,7 +25,7 @@
     width: 60%;
   }
   #more {
-    display: inherit
+    display: inherit;
   }
   header .overlay {
     width: 100%;
@@ -40,7 +40,7 @@
     background-color: #fff;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     transform: scale(0);
-    transition: .1s ease-in-out transform;
+    transition: 0.1s ease-in-out transform;
     transform-origin: top right;
     z-index: 99999;
   }
@@ -65,7 +65,7 @@
   }
   #dropdown .action span:not(.counter) {
     display: inline-block;
-    padding: .4em;
+    padding: 0.4em;
   }
   #dropdown .counter {
     left: 2.25em;
@@ -78,7 +78,9 @@
     display: flex;
     align-items: center;
     background: #fff;
-    box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 3px, rgba(0, 0, 0, 0.12) 0px 1px 2px;
+    box-shadow:
+      rgba(0, 0, 0, 0.06) 0px 1px 3px,
+      rgba(0, 0, 0, 0.12) 0px 1px 2px;
     width: 95%;
     max-width: 20em;
     z-index: 1;
@@ -103,7 +105,7 @@
     height: 100%;
     width: 16em;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    transition: .1s ease left;
+    transition: 0.1s ease left;
     left: -17em;
   }
 
@@ -142,7 +144,7 @@
   body.rtl #nav .wrapper {
     margin-right: unset;
   }
-  
+
   body.rtl .dashboard .row {
     margin-right: unset;
   }

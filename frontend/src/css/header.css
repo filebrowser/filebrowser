@@ -37,7 +37,7 @@ header a:hover {
   color: inherit;
 }
 
-header>div:first-child>.action,
+header > div:first-child > .action,
 header img {
   margin-right: 1em;
 }
@@ -50,7 +50,7 @@ header .action span {
   display: none;
 }
 
-header>div div {
+header > div div {
   vertical-align: middle;
   position: relative;
 }
@@ -87,7 +87,7 @@ header .menu-button {
   height: 100%;
   padding: 0em 0.75em;
   border-radius: 0.3em;
-  transition: .1s ease all;
+  transition: 0.1s ease all;
   align-items: center;
   z-index: 2;
 }
@@ -99,7 +99,7 @@ header .menu-button {
   height: 4em;
 }
 
-#search.active>div {
+#search.active > div {
   border-radius: 0 !important;
 }
 
@@ -108,8 +108,8 @@ header .menu-button {
   color: #212121;
 }
 
-#search #input>.action,
-#search #input>i {
+#search #input > .action,
+#search #input > i {
   margin-right: 0.3em;
   user-select: none;
 }
@@ -129,7 +129,9 @@ header .menu-button {
   padding: 0;
   color: rgba(0, 0, 0, 0.6);
   height: 0;
-  transition: .1s ease height, .1s ease padding;
+  transition:
+    0.1s ease height,
+    0.1s ease padding;
   overflow-x: hidden;
   overflow-y: auto;
   z-index: 1;
@@ -139,7 +141,7 @@ body.rtl #search #result {
   direction: ltr;
 }
 
-#search #result>div>*:first-child {
+#search #result > div > *:first-child {
   margin-top: 0;
 }
 
@@ -149,13 +151,13 @@ body.rtl #search #result {
 }
 
 /*** RTL - Keep search result LTR because it has paths (in english) ***/
-body.rtl #search #result ul>* {
+body.rtl #search #result ul > * {
   direction: ltr;
   text-align: left;
 }
 
 #search.active #result {
-  padding: .5em;
+  padding: 0.5em;
   height: calc(100% - 4em);
 }
 
@@ -166,10 +168,10 @@ body.rtl #search #result ul>* {
 }
 
 #search li {
-  margin-bottom: .5em;
+  margin-bottom: 0.5em;
 }
 
-#search #result>div {
+#search #result > div {
   max-width: 45em;
   margin: 0 auto;
 }
@@ -190,7 +192,7 @@ body.rtl #search #result ul>* {
   color: #ccc;
 }
 
-#search.active #result>p>i {
+#search.active #result > p > i {
   text-align: center;
   margin: 0 auto;
   display: table;
@@ -199,29 +201,29 @@ body.rtl #search #result ul>* {
 #search.active #result ul li a {
   display: flex;
   align-items: center;
-  padding: .3em 0;
+  padding: 0.3em 0;
 }
 
 #search.active #result ul li a i {
-  margin-right: .3em;
+  margin-right: 0.3em;
 }
 
 #search::-webkit-input-placeholder {
-  color: rgba(255, 255, 255, .5);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 #search:-moz-placeholder {
   opacity: 1;
-  color: rgba(255, 255, 255, .5);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 #search::-moz-placeholder {
   opacity: 1;
-  color: rgba(255, 255, 255, .5);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 #search:-ms-input-placeholder {
-  color: rgba(255, 255, 255, .5);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 #search .boxes {
@@ -236,14 +238,14 @@ body.rtl #search #result ul>* {
   font-weight: 500;
   font-size: 1em;
   color: #212121;
-  padding: .5em;
+  padding: 0.5em;
 }
 
 body.rtl #search .boxes h3 {
   text-align: right;
 }
 
-#search .boxes>div {
+#search .boxes > div {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -251,7 +253,7 @@ body.rtl #search .boxes h3 {
   margin-bottom: -1em;
 }
 
-#search .boxes>div>div {
+#search .boxes > div > div {
   background: var(--blue);
   color: #fff;
   text-align: center;
