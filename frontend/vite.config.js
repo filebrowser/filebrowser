@@ -4,6 +4,7 @@ import { defineConfig } from "vite";
 import legacy from "@vitejs/plugin-legacy";
 import vue2 from "@vitejs/plugin-vue2";
 import { compression } from "vite-plugin-compression2";
+import pluginRewriteAll from "vite-plugin-rewrite-all";
 
 const plugins = [
   vue2(),
@@ -12,6 +13,7 @@ const plugins = [
     additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
   }),
   compression({ include: /\.js$/i, deleteOriginalAssets: true }),
+  pluginRewriteAll(), // fixes 404 error with paths containing dot in dev server
 ];
 
 const resolve = {
@@ -29,6 +31,10 @@ export default defineConfig(({ command }) => {
       resolve,
       server: {
         proxy: {
+          "/api/command": {
+            target: "ws://127.0.0.1:8080",
+            ws: true,
+          },
           "/api": "http://127.0.0.1:8080",
         },
       },
