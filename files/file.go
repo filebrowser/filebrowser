@@ -296,7 +296,8 @@ func (i *FileInfo) detectSubtitles() {
 	// TODO: give subtitles descriptive names (lang) and track attributes
 	parentDir := strings.TrimRight(i.Path, i.Name)
 	// pattern to match against <video_base_name>.*\.(vtt|srt)
-	subsRegex := regexp.MustCompile("(?i)" + strings.TrimSuffix(filepath.Base(i.Name), filepath.Ext(i.Name)) + ".*\\.(vtt|srt)$")
+	baseName := strings.TrimSuffix(filepath.Base(i.Name), filepath.Ext(i.Name))
+	subsRegex := regexp.MustCompile("(?i)" + regexp.QuoteMeta(baseName) + ".*\\.(vtt|srt)$")
 	subsFoldersRegex := regexp.MustCompile(`(?i)\bsub(s|titles)$`)
 
 	// find .vtt/.srt files in current dir or nested folders, Subtitles/Subs/subtitles/subs
