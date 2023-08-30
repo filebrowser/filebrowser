@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue";
 import { files as api } from "@/api";
 import { mapState, mapActions, mapWritableState } from "pinia";
 import { useFileStore } from "@/stores/file";
@@ -43,7 +44,7 @@ export default {
     Errors,
     Preview,
     Listing,
-    Editor: () => import("@/views/files/Editor.vue"),
+    Editor: defineAsyncComponent(() => import("@/views/files/Editor.vue")),
   },
   data: function () {
     return {

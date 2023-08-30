@@ -23,7 +23,11 @@ export async function create(url, password = "", expires = "", unit = "hours") {
   }
   let body = "{}";
   if (password != "" || expires !== "" || unit !== "hours") {
-    body = JSON.stringify({ password: password, expires: expires, unit: unit });
+    body = JSON.stringify({
+      password: password,
+      expires: expires.toString(), // backend expects string not number
+      unit: unit,
+    });
   }
   return fetchJSON(url, {
     method: "POST",
