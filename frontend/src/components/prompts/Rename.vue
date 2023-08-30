@@ -57,6 +57,7 @@ export default {
   created() {
     this.name = this.oldName();
   },
+  inject: ["$showError"],
   computed: {
     ...mapState(useFileStore, [
       "req",

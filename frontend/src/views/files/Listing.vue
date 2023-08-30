@@ -278,7 +278,7 @@ import { users, files as api } from "@/api";
 import { enableExec } from "@/utils/constants";
 import * as upload from "@/utils/upload";
 import css from "@/utils/css";
-import throttle from "lodash.throttle";
+import throttle from "lodash/throttle";
 import { Base64 } from "js-base64";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
@@ -303,6 +303,7 @@ export default {
       itemWeight: 0,
     };
   },
+  inject: ["$showError"],
   computed: {
     ...mapStores(useClipboardStore),
     ...mapState(useAuthStore, ["user"]),
@@ -456,22 +457,19 @@ export default {
         return;
       }
 
-      // Esc!
-      if (event.keyCode === 27) {
+      if (event.key === "Escape") {
         // Reset files selection.
         this.selected = [];
       }
 
-      // Del!
-      if (event.keyCode === 46) {
+      if (event.key === "Delete") {
         if (!this.user.perm.delete || this.selectedCount == 0) return;
 
         // Show delete prompt.
         this.showHover("delete");
       }
 
-      // F2!
-      if (event.keyCode === 113) {
+      if (event.key === "F2") {
         if (!this.user.perm.rename || this.selectedCount !== 1) return;
 
         // Show rename prompt.

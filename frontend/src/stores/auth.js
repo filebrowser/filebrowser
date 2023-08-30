@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
-// import { useAuthPreferencesStore } from "./auth-preferences";
-// import { useAuthEmailStore } from "./auth-email";
+import dayjs from "dayjs";
+import i18n, { detectLocale } from "@/i18n";
 
 export const useAuthStore = defineStore("auth", {
   // convert to a function
@@ -20,19 +20,20 @@ export const useAuthStore = defineStore("auth", {
         return;
       }
 
-      // const locale = value.locale || i18n.detectLocale();
-      // moment.locale(locale);
-      // i18n.default.locale = locale;
+      const locale = value.locale || detectLocale();
+      dayjs.locale(locale);
+      i18n.global.locale.value = locale;
       this.user = value;
     },
     updateUser(value) {
       if (typeof value !== "object") return;
 
       for (let field in value) {
-        // if (field === "locale") {
-        //   moment.locale(value[field]);
-        //   i18n.default.locale = value[field];
-        // }
+        if (field === "locale") {
+          const locale = value[field];
+          dayjs.locale(locale);
+          i18n.global.locale.value = locale;
+        }
 
         this.user[field] = structuredClone(value[field]);
       }

@@ -180,7 +180,7 @@
 import { mapState, mapActions, mapWritableState } from "pinia";
 import { pub as api } from "@/api";
 import { filesize } from "filesize";
-import moment from "moment";
+import dayjs from "dayjs";
 import { Base64 } from "js-base64";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
@@ -212,6 +212,7 @@ export default {
     token: null,
     clip: null,
   }),
+  inject: ["$showSuccess"],
   watch: {
     $route: function () {
       this.showLimit = 100;
@@ -260,7 +261,7 @@ export default {
       return filesize(this.req.size);
     },
     humanTime: function () {
-      return moment(this.req.modified).fromNow();
+      return dayjs(this.req.modified).fromNow();
     },
     modTime: function () {
       return new Date(Date.parse(this.req.modified)).toLocaleString();
@@ -306,8 +307,7 @@ export default {
       }
     },
     keyEvent(event) {
-      // Esc!
-      if (event.keyCode === 27) {
+      if (event.key === "Escape") {
         // If we're on a listing, unselect all
         // files and folders.
         if (this.selectedCount > 0) {

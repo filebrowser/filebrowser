@@ -67,7 +67,6 @@ import { useLayoutStore } from "@/stores/layout";
 import { users as api, settings } from "@/api";
 import UserForm from "@/components/settings/UserForm.vue";
 import Errors from "@/views/Errors.vue";
-import deepClone from "lodash.clonedeep";
 
 export default {
   name: "user",
@@ -86,6 +85,7 @@ export default {
   created() {
     this.fetchData();
   },
+  inject: ["$showError", "$showSuccess"],
   computed: {
     ...mapState(useAuthStore, ["user"]),
     ...mapState(useLayoutStore, ["show"]),
@@ -161,7 +161,7 @@ export default {
           await api.update(user);
 
           if (user.id === this.user.id) {
-            this.setUser({ ...deepClone(user) });
+            this.setUser({ ...structuredClone(user) });
           }
 
           this.$showSuccess(this.$t("settings.userUpdated"));

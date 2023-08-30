@@ -42,7 +42,7 @@ import { useLayoutStore } from "@/stores/layout";
 
 import { enableThumbs } from "@/utils/constants";
 import { filesize } from "filesize";
-import moment from "moment";
+import dayjs from "dayjs";
 import { files as api } from "@/api";
 import * as upload from "@/utils/upload";
 
@@ -56,6 +56,7 @@ export default {
       touches: 0,
     };
   },
+  inject: ["$showError"],
   props: [
     "name",
     "isDir",
@@ -111,9 +112,9 @@ export default {
     },
     humanTime: function () {
       if (this.readOnly == undefined && this.user.dateFormat) {
-        return moment(this.modified).format("L LT");
+        return dayjs(this.modified).format("L LT");
       }
-      return moment(this.modified).fromNow();
+      return dayjs(this.modified).fromNow();
     },
     dragStart: function () {
       if (this.selectedCount === 0) {

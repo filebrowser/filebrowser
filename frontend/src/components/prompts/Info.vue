@@ -84,11 +84,12 @@ import { mapActions, mapState } from "pinia";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 import { filesize } from "filesize";
-import moment from "moment";
+import dayjs from "dayjs";
 import { files as api } from "@/api";
 
 export default {
   name: "info",
+  inject: ["$showError"],
   computed: {
     ...mapState(useFileStore, [
       "req",
@@ -111,10 +112,10 @@ export default {
     },
     humanTime: function () {
       if (this.selectedCount === 0) {
-        return moment(this.req.modified).fromNow();
+        return dayjs(this.req.modified).fromNow();
       }
 
-      return moment(this.req.items[this.selected[0]].modified).fromNow();
+      return dayjs(this.req.items[this.selected[0]].modified).fromNow();
     },
     modTime: function () {
       return new Date(Date.parse(this.req.modified)).toLocaleString();

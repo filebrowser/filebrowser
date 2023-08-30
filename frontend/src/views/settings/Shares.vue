@@ -65,7 +65,7 @@ import { mapState, mapWritableState } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
 import { share as api, users } from "@/api";
-import moment from "moment";
+import dayjs from "dayjs";
 import Clipboard from "clipboard";
 import Errors from "@/views/Errors.vue";
 
@@ -74,6 +74,7 @@ export default {
   components: {
     Errors,
   },
+  inject: ["$showError", "$showSuccess"],
   computed: {
     ...mapState(useAuthStore, ["user"]),
     ...mapWritableState(useLayoutStore, ["loading"]),
@@ -135,7 +136,7 @@ export default {
       });
     },
     humanTime(time) {
-      return moment(time * 1000).fromNow();
+      return dayjs(time * 1000).fromNow();
     },
     buildLink(share) {
       return api.getShareURL(share);

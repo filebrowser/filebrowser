@@ -246,6 +246,7 @@ export default {
       debounceTimeout: null,
     };
   },
+  inject: ["$showError", "$showSuccess"],
   computed: {
     ...mapState(useAuthStore, ["user"]),
     ...mapWritableState(useLayoutStore, ["loading"]),

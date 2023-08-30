@@ -129,7 +129,7 @@
 import { mapActions, mapState } from "pinia";
 import { useFileStore } from "@/stores/file";
 import { share as api, pub as pub_api } from "@/api";
-import moment from "moment";
+import dayjs from "dayjs";
 import Clipboard from "clipboard";
 import { useLayoutStore } from "@/stores/layout";
 
@@ -145,6 +145,7 @@ export default {
       listing: true,
     };
   },
+  inject: ["$showError"],
   computed: {
     ...mapState(useFileStore, [
       "req",
@@ -227,7 +228,7 @@ export default {
       }
     },
     humanTime(time) {
-      return moment(time * 1000).fromNow();
+      return dayjs(time * 1000).fromNow();
     },
     buildLink(share) {
       return api.getShareURL(share);

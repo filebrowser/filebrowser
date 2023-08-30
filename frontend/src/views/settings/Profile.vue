@@ -94,6 +94,7 @@ export default {
       locale: "",
     };
   },
+  inject: ["$showError", "$showSuccess"],
   computed: {
     ...mapState(useAuthStore, ["user"]),
     ...mapWritableState(useLayoutStore, ["loading"]),

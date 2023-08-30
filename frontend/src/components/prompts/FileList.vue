@@ -45,6 +45,7 @@ export default {
       current: window.location.pathname,
     };
   },
+  inject: ["$showError"],
   computed: {
     ...mapState(useAuthStore, ["user"]),
     ...mapState(useFileStore, ["req"]),

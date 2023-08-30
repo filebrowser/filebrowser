@@ -1,21 +1,29 @@
-import "whatwg-fetch";
-import cssVars from "css-vars-ponyfill";
-import Noty from "noty";
 import { disableExternal } from "@/utils/constants";
 import { createApp } from "vue";
+import Noty from "noty";
 import VueLazyload from "vue-lazyload";
 import createPinia from "@/stores";
 import router from "@/router";
 import i18n from "@/i18n";
 import App from "@/App.vue";
 
-cssVars();
+// import "core-js/actual/structured-clone";
+
+import dayjs from "dayjs";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+import relativeTime from "dayjs/plugin/relativeTime";
+import duration from "dayjs/plugin/duration";
+// register dayjs plugins globally
+dayjs.extend(localizedFormat);
+dayjs.extend(relativeTime);
+dayjs.extend(duration);
 
 const pinia = createPinia(router);
 
 const app = createApp(App);
 
 app.use(VueLazyload);
+
 app.use(i18n);
 app.use(pinia);
 app.use(router);
@@ -37,14 +45,14 @@ app.directive("focus", {
 
 const notyDefault = {
   type: "info",
-  layout: "bottomRight",
+  layout: "bottomCenter",
   timeout: 1000,
   progressBar: true,
 };
 
-app.provide("$noty", (opts) => {
-  new Noty(Object.assign({}, notyDefault, opts)).show();
-});
+// app.provide("$noty", (opts) => {
+//   new Noty(Object.assign({}, notyDefault, opts)).show();
+// });
 
 app.provide("$showSuccess", (message) => {
   new Noty(

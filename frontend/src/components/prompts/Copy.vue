@@ -48,6 +48,7 @@ export default {
       dest: null,
     };
   },
+  inject: ["$showError"],
   computed: {
     ...mapState(useFileStore, ["req", "selected"]),
     ...mapWritableState(useFileStore, ["reload"]),

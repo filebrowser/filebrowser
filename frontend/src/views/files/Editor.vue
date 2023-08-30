@@ -46,6 +46,7 @@ export default {
   data: function () {
     return {};
   },
+  inject: ["$showError"],
   computed: {
     ...mapState(useAuthStore, ["user"]),
     ...mapState(useFileStore, ["req"]),

@@ -56,14 +56,12 @@ export default {
 
       let prompt = this.$refs.currentComponent;
 
-      // Esc!
-      if (event.keyCode === 27) {
+      if (event.key === "Escape") {
         event.stopImmediatePropagation();
         this.closeHovers();
       }
 
-      // Enter
-      if (event.keyCode == 13) {
+      if (event.key == "Enter") {
         switch (this.show) {
           case "delete":
             prompt.submit();

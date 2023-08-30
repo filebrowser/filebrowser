@@ -1,5 +1,29 @@
 import { createI18n } from "vue-i18n";
 
+import("dayjs/locale/ar");
+import("dayjs/locale/de");
+import("dayjs/locale/en");
+import("dayjs/locale/es");
+import("dayjs/locale/fr");
+import("dayjs/locale/he");
+import("dayjs/locale/hu");
+import("dayjs/locale/is");
+import("dayjs/locale/it");
+import("dayjs/locale/ja");
+import("dayjs/locale/ko");
+import("dayjs/locale/nl-be");
+import("dayjs/locale/pl");
+import("dayjs/locale/pt-br");
+import("dayjs/locale/pt");
+import("dayjs/locale/ro");
+import("dayjs/locale/ru");
+import("dayjs/locale/sk");
+import("dayjs/locale/sv");
+import("dayjs/locale/tr");
+import("dayjs/locale/uk");
+import("dayjs/locale/zh-cn");
+import("dayjs/locale/zh-tw");
+
 import he from "./he.json";
 import hu from "./hu.json";
 import ar from "./ar.json";
@@ -18,7 +42,7 @@ import ptBR from "./pt-br.json";
 import ro from "./ro.json";
 import ru from "./ru.json";
 import sk from "./sk.json";
-import ua from "./ua.json";
+import uk from "./uk.json";
 import svSE from "./sv-se.json";
 import zhCN from "./zh-cn.json";
 import zhTW from "./zh-tw.json";
@@ -47,21 +71,19 @@ export function detectLocale() {
     case /^fr.*/i.test(locale):
       locale = "fr";
       break;
-    case /^pt.*/i.test(locale):
-      locale = "pt";
-      break;
     case /^pt-BR.*/i.test(locale):
       locale = "pt-br";
+      break;
+    case /^pt.*/i.test(locale):
+      locale = "pt";
       break;
     case /^ja.*/i.test(locale):
       locale = "ja";
       break;
-    case /^zh-CN/i.test(locale):
-      locale = "zh-cn";
-      break;
     case /^zh-TW/i.test(locale):
       locale = "zh-tw";
       break;
+    case /^zh-CN/i.test(locale):
     case /^zh.*/i.test(locale):
       locale = "zh-cn";
       break;
@@ -80,8 +102,13 @@ export function detectLocale() {
     case /^sk.*/i.test(locale):
       locale = "sk";
       break;
+    case /^uk.*/i.test(locale):
     case /^ua.*/i.test(locale):
-      locale = "ua";
+      locale = "uk";
+      break;
+    case /^sv-SE.*/i.test(locale):
+    case /^sv.*/i.test(locale):
+      locale = "sv";
       break;
     default:
       locale = "en";
@@ -125,8 +152,8 @@ export const i18n = createI18n({
     ru: removeEmpty(ru),
     ro: removeEmpty(ro),
     sk: removeEmpty(sk),
-    "sv-se": removeEmpty(svSE),
-    ua: removeEmpty(ua),
+    sv: removeEmpty(svSE),
+    uk: removeEmpty(uk),
     "zh-cn": removeEmpty(zhCN),
     "zh-tw": removeEmpty(zhTW),
   },

@@ -1,8 +1,7 @@
-import Vue from "vue";
 import { defineStore } from "pinia";
 import { useFileStore } from "./file";
 import { files as api } from "@/api";
-import throttle from "lodash.throttle";
+import throttle from "lodash/throttle";
 import buttons from "@/utils/buttons";
 
 const UPLOADS_LIMIT = 5;
@@ -66,7 +65,8 @@ export const useUploadStore = defineStore("upload", {
   actions: {
     // no context as first argument, use `this` instead
     setProgress({ id, loaded }) {
-      Vue.set(this.progress, id, loaded);
+      // Vue.set(this.progress, id, loaded);
+      this.progress[id] = loaded;
     },
     reset() {
       this.id = 0;
@@ -81,10 +81,11 @@ export const useUploadStore = defineStore("upload", {
     moveJob() {
       const item = this.queue[0];
       this.queue.shift();
-      Vue.set(this.uploads, item.id, item);
+      // Vue.set(this.uploads, item.id, item);
+      this.uploads[item.id] = item;
     },
     removeJob(id) {
-      Vue.delete(this.uploads, id);
+      // Vue.delete(this.uploads, id);
       delete this.uploads[id];
     },
     upload(item) {
@@ -129,7 +130,8 @@ export const useUploadStore = defineStore("upload", {
         this.moveJob();
 
         if (item.file.isDir) {
-          await api.post(item.path).catch(Vue.prototype.$showError);
+          // TODO: find a way to display notification
+          await api.post(item.path).catch(console.error);
         } else {
           let onUpload = throttle(
             (event) =>
@@ -141,9 +143,10 @@ export const useUploadStore = defineStore("upload", {
             { leading: true, trailing: false }
           );
 
+          // TODO: find a way to display notification
           await api
             .post(item.path, item.file, item.overwrite, onUpload)
-            .catch(Vue.prototype.$showError);
+            .catch(console.error);
         }
 
         this.finishUpload(item);

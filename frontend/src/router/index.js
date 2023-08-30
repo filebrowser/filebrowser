@@ -104,7 +104,7 @@ const routes = [
             },
           },
           {
-            path: "users/:id(.*)*",
+            path: "users/:id",
             name: "User",
             component: User,
             meta: {
@@ -148,7 +148,7 @@ const routes = [
   },
 ];
 
-async function start() {
+async function initialize() {
   try {
     if (loginPage) {
       await validateLogin();
@@ -156,7 +156,7 @@ async function start() {
       await login("", "", "");
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (recaptcha) {
@@ -182,9 +182,10 @@ const router = createRouter({
 router.beforeResolve(async (to, from, next) => {
   let title;
   try {
+    // this should not fail after we finished the migration
     title = i18n.global.t(titles[to.name]);
   } catch (error) {
-    title = to.name;
+    console.error(error);
   }
   // const title = titles[to.name];
   document.title = title + " - " + name;
@@ -203,8 +204,9 @@ router.beforeResolve(async (to, from, next) => {
 
   const authStore = useAuthStore();
 
+  // this will only be null on first route
   if (from.name == null) {
-    await start();
+    await initialize();
   }
 
   if (to.path.endsWith("/login") && authStore.isLoggedIn) {

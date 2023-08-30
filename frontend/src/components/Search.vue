@@ -92,6 +92,7 @@ export default {
       scrollable: null,
     };
   },
+  inject: ["$showError"],
   watch: {
     show(val, old) {
       this.active = val === "search";
@@ -162,7 +163,7 @@ export default {
       this.closeHovers();
     },
     keyup(event) {
-      if (event.keyCode === 27) {
+      if (event.key === "Escape") {
         this.close(event);
         return;
       }

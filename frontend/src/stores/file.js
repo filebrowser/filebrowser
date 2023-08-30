@@ -1,6 +1,4 @@
 import { defineStore } from "pinia";
-import { useRouterStore } from "./router";
-import { useLayoutStore } from "./layout";
 
 export const useFileStore = defineStore("file", {
   // convert to a function
@@ -10,17 +8,18 @@ export const useFileStore = defineStore("file", {
     reload: false,
     selected: [],
     multiple: false,
+    isFiles: false,
   }),
   getters: {
     selectedCount: (state) => state.selected.length,
-    route: () => {
-      const routerStore = useRouterStore();
-      return routerStore.router.currentRoute;
-    },
-    isFiles: (state) => {
-      const layoutStore = useLayoutStore();
-      return !layoutStore.loading && state.route._value.name === "Files";
-    },
+    // route: () => {
+    //   const routerStore = useRouterStore();
+    //   return routerStore.router.currentRoute;
+    // },
+    // isFiles: (state) => {
+    //   const layoutStore = useLayoutStore();
+    //   return !layoutStore.loading && state.route._value.name === "Files";
+    // },
     isListing: (state) => {
       return state.isFiles && state.req.isDir;
     },

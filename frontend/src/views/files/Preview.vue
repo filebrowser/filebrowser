@@ -151,7 +151,7 @@ import { useLayoutStore } from "@/stores/layout";
 import { files as api } from "@/api";
 import { resizePreview } from "@/utils/constants";
 import url from "@/utils/url";
-import throttle from "lodash.throttle";
+import throttle from "lodash/throttle";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import ExtendedImage from "@/components/files/ExtendedImage.vue";
@@ -180,6 +180,7 @@ export default {
       nextRaw: "",
     };
   },
+  inject: ["$showError"],
   computed: {
     ...mapState(useAuthStore, ["user", "jwt"]),
     ...mapState(useFileStore, ["req", "oldReq", "loading"]),

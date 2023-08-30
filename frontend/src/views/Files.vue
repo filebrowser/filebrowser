@@ -57,6 +57,7 @@ export default {
       "reload",
       "selected",
       "multiple",
+      "isFiles",
     ]),
     ...mapState(useLayoutStore, ["show", "showShell"]),
     ...mapWritableState(useLayoutStore, ["loading"]),
@@ -89,12 +90,14 @@ export default {
     },
   },
   mounted() {
+    this.isFiles = true;
     window.addEventListener("keydown", this.keyEvent);
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.keyEvent);
   },
   unmounted() {
+    this.isFiles = false;
     if (this.showShell) {
       this.toggleShell();
     }
@@ -137,8 +140,7 @@ export default {
       }
     },
     keyEvent(event) {
-      // F1!
-      if (event.keyCode === 112) {
+      if (event.key === "F1") {
         event.preventDefault();
         this.showHover("help");
       }
