@@ -14,6 +14,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -290,27 +291,31 @@ func (i *FileInfo) detectSubtitles() {
 	}
 
 	i.Subtitles = []string{}
-	ext := filepath.Ext(i.Path)
 
-	// detect multiple languages. Base*.vtt
+	// detect multiple languages. Base *.vtt/*.srt
 	// TODO: give subtitles descriptive names (lang) and track attributes
 	parentDir := strings.TrimRight(i.Path, i.Name)
-	var dir []os.FileInfo
-	if len(i.currentDir) > 0 {
-		dir = i.currentDir
-	} else {
-		var err error
-		dir, err = afero.ReadDir(i.Fs, parentDir)
+	// pattern to match against <video_base_name>.*\.(vtt|srt)
+	subsRegex := regexp.MustCompile("(?i)" + strings.TrimSuffix(filepath.Base(i.Name), filepath.Ext(i.Name)) + ".*\\.(vtt|srt)$")
+	subsFoldersRegex := regexp.MustCompile(`(?i)\bsub(s|titles)$`)
+
+	// find .vtt/.srt files in current dir or nested folders, Subtitles/Subs/subtitles/subs
+	subsWalker := func(path string, fileInfo os.FileInfo, err error) error {
 		if err != nil {
-			return
+			return err
 		}
+
+		if fileInfo.IsDir() && path != parentDir && !subsFoldersRegex.MatchString(path) {
+			return filepath.SkipDir
+		} else if subsRegex.MatchString(filepath.Base(path)) {
+			i.Subtitles = append(i.Subtitles, path)
+		}
+		return nil
 	}
 
-	base := strings.TrimSuffix(i.Name, ext)
-	for _, f := range dir {
-		if !f.IsDir() && strings.HasPrefix(f.Name(), base) && strings.HasSuffix(f.Name(), ".vtt") {
-			i.Subtitles = append(i.Subtitles, path.Join(parentDir, f.Name()))
-		}
+	err := afero.Walk(i.Fs, parentDir, subsWalker)
+	if err != nil {
+		return
 	}
 }
 

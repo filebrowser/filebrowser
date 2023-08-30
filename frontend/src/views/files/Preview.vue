@@ -76,8 +76,8 @@
             kind="captions"
             v-for="(sub, index) in subtitles"
             :key="index"
-            :src="sub"
-            :label="'Subtitle ' + index"
+            :src="sub.src"
+            :label="sub.label"
             :default="index === 0"
           />
           Sorry, your browser doesn't support embedded videos, but don't worry,
@@ -176,6 +176,19 @@ export default {
       nextRaw: "",
     };
   },
+  asyncComputed: {
+    async subtitles() {
+      if (this.req.subtitles) {
+        const subs = await Promise.all(
+          api
+            .getSubtitlesURL(this.req)
+            .map(async (s) => await this.loadSubtitle(s))
+        );
+        return subs.filter((s) => s.src != undefined);
+      }
+      return [];
+    },
+  },
   computed: {
     ...mapState(["req", "user", "oldReq", "jwt", "loading"]),
     ...mapGetters(["currentPrompt"]),
@@ -200,12 +213,6 @@ export default {
     },
     isResizeEnabled() {
       return resizePreview;
-    },
-    subtitles() {
-      if (this.req.subtitles) {
-        return api.getSubtitlesURL(this.req);
-      }
-      return [];
     },
   },
   watch: {
@@ -349,6 +356,76 @@ export default {
     },
     download() {
       window.open(this.downloadUrl);
+    },
+    async loadSubtitle(subUrl) {
+      const _self = this;
+      const url = new URL(subUrl);
+      const label = url.pathname
+        .split("/")
+        .pop()
+        .replace(/\.[^/.]+$/, "");
+      let src;
+      if (url.pathname.toLowerCase().endsWith(".srt")) {
+        try {
+          const resp = await fetch(subUrl);
+          if (!resp.ok) {
+            throw new Error(`Failed to fetch subtitle from ${subUrl}!`);
+          }
+          const vtt = _self.srtToVttBlob(await resp.text());
+          src = URL.createObjectURL(vtt);
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        src = subUrl;
+      }
+
+      return { src, label };
+    },
+    srtToVttBlob(srtData) {
+      const VTT_HEAD = `WEBVTT
+
+STYLE
+::cue {font-size: 3vh; color:#ffffff; border:3px solid black; text-align:center;text-shadow: -1px -1px 1px rgba(255,255,255,.1), 1px 1px 1px rgba(0,0,0,.5), 2px 2px 3px rgba(206,89,55,0)}
+::cue(b) {color: rgb(51, 216, 18); border: 2px solid black;}
+::cue(i) {color: #00bafd;}
+::cue(u) {color: #ff00ee;}
+`;
+      // Replace line breaks with \n
+      let subtitles = srtData.replace(/\r\n|\r|\n/g, "\n");
+      // commas -> dots in timestamps
+      subtitles = subtitles.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g, "$1.$2");
+      // map SRT font colors to VTT cue span classes
+      var colorMap = {};
+
+      // font tags -> ::cue span tags
+      subtitles = subtitles.replace(
+        /<font color="([^"]+)">([\s\S]*?)<\/font>/g,
+        function (_match, color, text) {
+          let key =
+            "c_" + color.replace(/^rgb/, "").replace(/\W/g, "").toLowerCase();
+          colorMap[key] = color;
+          return `<c.${key}>${text.replace("\n", "").trim()}</c>`;
+        }
+      );
+      subtitles = subtitles.replace(/<br\s*\/?>/g, "\n");
+
+      let vttSubtitles = VTT_HEAD;
+
+      if (Object.keys(colorMap).length) {
+        let vttStyles = "";
+
+        for (let cssClass in colorMap) {
+          let color = colorMap[cssClass];
+          // add cue style declaration
+          vttStyles += `::cue(.${cssClass}) {color: ${color};}\n`;
+        }
+        vttSubtitles += vttStyles;
+      }
+      vttSubtitles += "\n"; // an empty line MUST separate styles from subs
+      vttSubtitles += subtitles;
+
+      return new Blob([vttSubtitles], { type: "text/vtt" });
     },
   },
 };
