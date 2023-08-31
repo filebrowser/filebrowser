@@ -34,12 +34,13 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("shell", "", "shell command to which other commands should be appended")
 
 	flags.String("auth.method", string(auth.MethodJSONAuth), "authentication type")
-	flags.String("auth.header", "", "HTTP header for auth.method=proxy and auth.method=jwt-header")
+	flags.String("auth.header", "", "HTTP header for auth.method=proxy")
 	flags.String("auth.command", "", "command for auth.method=hook")
-	flags.String("auth.aud", "", "The Application Audience (AUD) tag for JWT validation auth.method=jwt-header")
-	flags.String("auth.iss", "", "The Issuer (AUD) for JWT validation auth.method=jwt-header")
-	flags.String("auth.certsurl", "", "The URL to download certs from for JWT validation auth.method=jwt-header")
-	flags.String("auth.claim", "", "The claim which will contain the username auth.method=jwt-header")
+	flags.String("auth.jwt-header.header", "", "HTTP header for auth.method=jwt-header")
+	flags.String("auth.jwt-header.aud", "", "The Application Audience (AUD) tag for JWT validation auth.method=jwt-header")
+	flags.String("auth.jwt-header.iss", "", "The Issuer (AUD) for JWT validation auth.method=jwt-header")
+	flags.String("auth.jwt-header.certsurl", "", "The URL to download certs from for JWT validation auth.method=jwt-header")
+	flags.String("auth.jwt-header.usernameClaim", "", "The claim which will contain the username auth.method=jwt-header")
 
 	flags.String("recaptcha.host", "https://www.google.com", "use another host for ReCAPTCHA. recaptcha.net might be useful in China")
 	flags.String("recaptcha.key", "", "ReCaptcha site key")
@@ -89,11 +90,11 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 	}
 
 	if method == auth.MethodJWTAuth {
-		header := mustGetString(flags, "auth.header")
-		aud := mustGetString(flags, "auth.aud")
-		iss := mustGetString(flags, "auth.iss")
-		certsurl := mustGetString(flags, "auth.certsurl")
-		claim := mustGetString(flags, "auth.claim")
+		header := mustGetString(flags, "auth.jwt-header.header")
+		aud := mustGetString(flags, "auth.jwt-header.aud")
+		iss := mustGetString(flags, "auth.jwt-header.iss")
+		certsurl := mustGetString(flags, "auth.jwt-header.certsurl")
+		usernameClaim := mustGetString(flags, "auth.usernameClaim")
 
 		if header == "" {
 			checkErr(nerrors.New("you must set the flag 'auth.header' for method 'jwt-header'"))
@@ -107,7 +108,7 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 		if certsurl == "" {
 			checkErr(nerrors.New("you must set the flag 'auth.certsurl' for method 'jwt-header'"))
 		}
-		if claim == "" {
+		if usernameClaim == "" {
 			checkErr(nerrors.New("you must set the flag 'auth.claim' for method 'jwt-header'"))
 		}
 
@@ -116,7 +117,7 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 			Aud:           aud,
 			Iss:           iss,
 			CertsURL:      certsurl,
-			UsernameClaim: claim,
+			UsernameClaim: usernameClaim,
 		}
 	}
 
