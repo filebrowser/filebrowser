@@ -42,73 +42,88 @@ import ptBR from "./pt-br.json";
 import ro from "./ro.json";
 import ru from "./ru.json";
 import sk from "./sk.json";
+import tr from "./tr.json";
 import uk from "./uk.json";
 import svSE from "./sv-se.json";
 import zhCN from "./zh-cn.json";
 import zhTW from "./zh-tw.json";
 
 export function detectLocale() {
-  let locale = (navigator.language || navigator.browserLangugae).toLowerCase();
+  // locale is an RFC 5646 language tag
+  // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language
+  let locale = navigator.language.toLowerCase();
   switch (true) {
-    case /^he.*/i.test(locale):
+    case /^he\b/.test(locale):
       locale = "he";
       break;
-    case /^hu.*/i.test(locale):
+    case /^hu\b/.test(locale):
       locale = "hu";
       break;
-    case /^ar.*/i.test(locale):
+    case /^ar\b/.test(locale):
       locale = "ar";
       break;
-    case /^es.*/i.test(locale):
+    case /^es\b/.test(locale):
       locale = "es";
       break;
-    case /^en.*/i.test(locale):
+    case /^en\b/.test(locale):
       locale = "en";
       break;
-    case /^it.*/i.test(locale):
+    case /^is\b/.test(locale):
+      locale = "is";
+      break;
+    case /^it\b/.test(locale):
       locale = "it";
       break;
-    case /^fr.*/i.test(locale):
+    case /^fr\b/.test(locale):
       locale = "fr";
       break;
-    case /^pt-BR.*/i.test(locale):
+    case /^pt-br\b/.test(locale):
       locale = "pt-br";
       break;
-    case /^pt.*/i.test(locale):
+    case /^pt\b/.test(locale):
       locale = "pt";
       break;
-    case /^ja.*/i.test(locale):
+    case /^ja\b/.test(locale):
       locale = "ja";
       break;
-    case /^zh-TW/i.test(locale):
+    case /^zh-tw\b/.test(locale):
       locale = "zh-tw";
       break;
-    case /^zh-CN/i.test(locale):
-    case /^zh.*/i.test(locale):
+    case /^zh-cn\b/.test(locale):
+    case /^zh\b/.test(locale):
       locale = "zh-cn";
       break;
-    case /^de.*/i.test(locale):
+    case /^de\b/.test(locale):
       locale = "de";
       break;
-    case /^ru.*/i.test(locale):
+    case /^ro\b/.test(locale):
+      locale = "ro";
+      break;
+    case /^ru\b/.test(locale):
       locale = "ru";
       break;
-    case /^pl.*/i.test(locale):
+    case /^pl\b/.test(locale):
       locale = "pl";
       break;
-    case /^ko.*/i.test(locale):
+    case /^ko\b/.test(locale):
       locale = "ko";
       break;
-    case /^sk.*/i.test(locale):
+    case /^sk\b/.test(locale):
       locale = "sk";
       break;
-    case /^uk.*/i.test(locale):
-    case /^ua.*/i.test(locale):
+    case /^tr\b/.test(locale):
+      locale = "tr";
+      break;
+    // ua wasnt a valid locale for ukraine
+    case /^uk\b/.test(locale):
       locale = "uk";
       break;
-    case /^sv-SE.*/i.test(locale):
-    case /^sv.*/i.test(locale):
+    case /^sv-se\b/.test(locale):
+    case /^sv\b/.test(locale):
       locale = "sv";
+      break;
+    case /^nl-be\b/.test(locale):
+      locale = "nl-be";
       break;
     default:
       locale = "en";
@@ -153,10 +168,12 @@ export const i18n = createI18n({
     ro: removeEmpty(ro),
     sk: removeEmpty(sk),
     sv: removeEmpty(svSE),
+    tr: removeEmpty(tr),
     uk: removeEmpty(uk),
     "zh-cn": removeEmpty(zhCN),
     "zh-tw": removeEmpty(zhTW),
   },
+  // expose i18n.global for outside components
   legacy: true,
 });
 
