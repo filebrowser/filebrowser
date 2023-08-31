@@ -112,11 +112,11 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 		}
 
 		auther = &auth.JWTAuth{
-			Header:   header,
-			Aud:      aud,
-			Iss:      iss,
-			CertsURL: certsurl,
-			Claim:    claim,
+			Header:        header,
+			Aud:           aud,
+			Iss:           iss,
+			CertsURL:      certsurl,
+			UsernameClaim: claim,
 		}
 	}
 

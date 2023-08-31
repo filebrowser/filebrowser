@@ -18,13 +18,13 @@ const MethodJWTAuth settings.AuthMethod = "jwt-header"
 
 // JWTAuth is a JWTAuth implementation of an auther.
 type JWTAuth struct {
-	CertsURL     string `json:"certsurl"`
-	Aud          string `json:"aud"`
-	Iss          string `json:"iss"`
-	Claim        string `json:"claim"`
-	Header       string `json:"header"`
-	remoteKeySet *oidc.RemoteKeySet
-	init         sync.Once
+	CertsURL      string `json:"certsurl"`
+	Aud           string `json:"aud"`
+	Iss           string `json:"iss"`
+	UsernameClaim string `json:"usernameClaim"`
+	Header        string `json:"header"`
+	remoteKeySet  *oidc.RemoteKeySet
+	init          sync.Once
 }
 
 // Auth authenticates the user via a JWT token in an HTTP header.
