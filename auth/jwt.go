@@ -53,7 +53,7 @@ func (a *JWTAuth) Auth(r *http.Request, usr users.Store, stg *settings.Settings,
 	token.Claims(&payload)
 
 	user, err := usr.Get(srv.Root, payload[a.Claim])
-	if err == errors.ErrNotExist {
+	if errors.Is(err, errors.ErrNotExist) {
 		return nil, os.ErrPermission
 	}
 
