@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/coreos/go-oidc/v3/oidc"
+
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
