@@ -2,13 +2,13 @@ package auth
 
 import (
 	"context"
-	"errors"
+	nerrors "errors"
 	"net/http"
 	"os"
 	"sync"
 
 	"github.com/coreos/go-oidc/v3/oidc"
-	fberrors "github.com/filebrowser/filebrowser/v2/errors"
+	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -51,10 +51,13 @@ func (a *JWTAuth) Auth(r *http.Request, usr users.Store, stg *settings.Settings,
 	}
 
 	payload := map[string]string{}
-	token.Claims(&payload)
+	err = token.Claims(&payload)
+	if err != nil {
+		return nil, os.ErrPermission
+	}
 
 	user, err := usr.Get(srv.Root, payload[a.UsernameClaim])
-	if errors.Is(err, fberrors.ErrNotExist) {
+	if nerrors.Is(err, errors.ErrNotExist) {
 		return nil, os.ErrPermission
 	}
 
@@ -62,6 +65,6 @@ func (a *JWTAuth) Auth(r *http.Request, usr users.Store, stg *settings.Settings,
 }
 
 // LoginPage tells that proxy auth doesn't require a login page.
-func (a JWTAuth) LoginPage() bool {
+func (a *JWTAuth) LoginPage() bool {
 	return false
 }
