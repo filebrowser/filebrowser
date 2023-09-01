@@ -3,7 +3,6 @@ package auth
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/filebrowser/filebrowser/v2/rules"
 	"log"
 	"net/http"
 	"os"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
+	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -310,11 +310,11 @@ func (hf *hookFields) GetRules(k string, dv []rules.Rule) []rules.Rule {
 	if !ok {
 		return dv
 	}
-	var Rules []rules.Rule
-	err := json.Unmarshal([]byte(val), &Rules)
+	var userRules []rules.Rule
+	err := json.Unmarshal([]byte(val), &userRules)
 	if err != nil {
 		log.Printf("hook: json format in user.perm.rules is incorrect. %s", err)
 		return dv
 	}
-	return Rules
+	return userRules
 }
