@@ -33,11 +33,11 @@
 <script>
 import { mapActions, mapState, mapWritableState } from "pinia";
 import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
 import FileList from "./FileList.vue";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
 import * as upload from "@/utils/upload";
-import { useLayoutStore } from "@/stores/layout";
 
 export default {
   name: "copy",

@@ -8,9 +8,10 @@
     "serve": "vite serve",
     "build": "vite build",
     "watch": "vite build --watch",
-    "lint": "eslint --ext .vue,.js,.ts --ignore-path .gitignore src/",
-    "lint:fix": "eslint --ext .vue,.js,.ts --ignore-path .gitignore --fix src/",
-    "format": "prettier --write src/"
+    "clean": "find ./dist -maxdepth 1 -mindepth 1 ! -name '.gitkeep' -exec rm -r {} +",
+    "lint": "eslint --ext .vue,.js src/",
+    "lint:fix": "eslint --ext .vue,.js --fix src/",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@vue/compat": "^3.3.4",

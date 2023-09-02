@@ -1,12 +1,12 @@
 import { useAuthStore } from "@/stores/auth";
 import router from "@/router";
 import jwt_decode from "jwt-decode";
+import { fetchURL } from "@/api/utils";
 import { baseURL } from "@/utils/constants";
 
 export function parseToken(token) {
   // falsy or malformed jwt will throw InvalidTokenError
   const data = jwt_decode(token);
-  console.log(data);
 
   document.cookie = `auth=${token}; Path=/; SameSite=Strict;`;
 
@@ -30,13 +30,17 @@ export async function validateLogin() {
 export async function login(username, password, recaptcha) {
   const data = { username, password, recaptcha };
 
-  const res = await fetch(`${baseURL}/api/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  const res = await fetchURL(
+    `/api/login`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     },
-    body: JSON.stringify(data),
-  });
+    false
+  );
 
   const body = await res.text();
 
@@ -48,7 +52,7 @@ export async function login(username, password, recaptcha) {
 }
 
 export async function renew(jwt) {
-  const res = await fetch(`${baseURL}/api/renew`, {
+  const res = await fetchURL(`/api/renew`, {
     method: "POST",
     headers: {
       "X-Auth": jwt,
@@ -67,13 +71,17 @@ export async function renew(jwt) {
 export async function signup(username, password) {
   const data = { username, password };
 
-  const res = await fetch(`${baseURL}/api/signup`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  const res = await fetchURL(
+    `/api/signup`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     },
-    body: JSON.stringify(data),
-  });
+    false
+  );
 
   if (res.status !== 200) {
     throw new Error(res.status);

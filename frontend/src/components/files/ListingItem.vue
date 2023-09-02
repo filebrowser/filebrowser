@@ -41,8 +41,9 @@ import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
 import { enableThumbs } from "@/utils/constants";
-import { filesize } from "filesize";
-import dayjs from "dayjs";
+import { mapMutations, mapGetters, mapState } from "vuex";
+import filesize from "filesize";
+import moment from "moment";
 import { files as api } from "@/api";
 import * as upload from "@/utils/upload";
 
