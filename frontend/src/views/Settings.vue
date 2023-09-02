@@ -52,9 +52,7 @@
 <script>
 import { mapState } from "pinia";
 import { useAuthStore } from "@/stores/auth";
-import HeaderBar from "@/components/header/HeaderBar.vue";
 import { useLayoutStore } from "@/stores/layout";
-
 import HeaderBar from "@/components/header/HeaderBar.vue";
 
 export default {
