@@ -148,15 +148,11 @@ const routes = [
   },
 ];
 
-async function initialize() {
-  try {
-    if (loginPage) {
-      await validateLogin();
-    } else {
-      await login("", "", "");
-    }
-  } catch (e) {
-    console.error(e);
+async function initAuth() {
+  if (loginPage) {
+    await validateLogin();
+  } else {
+    await login("", "", "");
   }
 
   if (recaptcha) {
@@ -206,7 +202,11 @@ router.beforeResolve(async (to, from, next) => {
 
   // this will only be null on first route
   if (from.name == null) {
-    await initialize();
+    try {
+      await initAuth();
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   if (to.path.endsWith("/login") && authStore.isLoggedIn) {
