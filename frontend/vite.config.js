@@ -1,4 +1,3 @@
-import { fileURLToPath, URL } from "node:url";
 import path from "node:path";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
@@ -53,9 +52,16 @@ export default defineConfig(({ command }) => {
       build: {
         rollupOptions: {
           input: {
-            index: fileURLToPath(
-              new URL(`./public/index.html`, import.meta.url)
-            ),
+            index: path.resolve(__dirname, "./public/index.html"),
+          },
+          output: {
+            manualChunks: (id) => {
+              // bundle dayjs files in a single chunk
+              // this avoids having small files for each locale
+              if (id.includes("dayjs/")) {
+                return "dayjs";
+              }
+            },
           },
         },
       },
