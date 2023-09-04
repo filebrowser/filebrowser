@@ -118,6 +118,7 @@ export default {
     this.hideDotfiles = this.user.hideDotfiles;
     this.singleClick = this.user.singleClick;
     this.dateFormat = this.user.dateFormat;
+    this.loading = false;
   },
   methods: {
     ...mapActions(useAuthStore, ["updateUser"]),

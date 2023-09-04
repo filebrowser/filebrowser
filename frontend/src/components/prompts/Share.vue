@@ -145,7 +145,7 @@ export default {
       listing: true,
     };
   },
-  inject: ["$showError"],
+  inject: ["$showError", "$showSuccess"],
   computed: {
     ...mapState(useFileStore, [
       "req",

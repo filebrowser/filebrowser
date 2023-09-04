@@ -28,6 +28,15 @@
           >
             {{ $t("buttons.delete") }}
           </button>
+          <router-link to="/settings/users">
+            <button
+              class="button button--flat button--grey"
+              :aria-label="$t('buttons.cancel')"
+              :title="$t('buttons.cancel')"
+            >
+              {{ $t("buttons.cancel") }}
+            </button>
+          </router-link>
           <input
             class="button button--flat"
             type="submit"
@@ -67,6 +76,7 @@ import { useLayoutStore } from "@/stores/layout";
 import { users as api, settings } from "@/api";
 import UserForm from "@/components/settings/UserForm.vue";
 import Errors from "@/views/Errors.vue";
+import { cloneDeep } from "lodash-es";
 
 export default {
   name: "user",
@@ -120,7 +130,7 @@ export default {
             id: 0,
           };
         } else {
-          const id = this.$route.params.pathMatch;
+          const id = this.$route.params.id;
           this.user = { ...(await api.get(id)) };
         }
       } catch (e) {
@@ -161,7 +171,7 @@ export default {
           await api.update(user);
 
           if (user.id === this.user.id) {
-            this.setUser({ ...structuredClone(user) });
+            this.setUser({ ...cloneDeep(user) });
           }
 
           this.$showSuccess(this.$t("settings.userUpdated"));

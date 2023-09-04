@@ -44,7 +44,12 @@
 
           <h3>{{ $t("settings.branding") }}</h3>
 
-          <i18n-t keypath="settings.brandingHelp" tag="p" class="small">
+          <i18n-t
+            keypath="settings.brandingHelp"
+            tag="p"
+            class="small"
+            scope="global"
+          >
             <a
               class="link"
               target="_blank"
@@ -177,7 +182,12 @@
         </div>
 
         <div class="card-content">
-          <i18n-t keypath="settings.commandRunnerHelp" tag="p" class="small">
+          <i18n-t
+            keypath="settings.commandRunnerHelp"
+            tag="p"
+            class="small"
+            scope="global"
+          >
             <code>FILE</code>
             <code>SCOPE</code>
             <a

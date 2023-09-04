@@ -113,7 +113,7 @@
             </a>
           </div>
           <div class="share__box__element share__box__center">
-            <qrcode-vue :value="link" size="200" level="M"></qrcode-vue>
+            <qrcode-vue :value="link" :size="200" level="M"></qrcode-vue>
           </div>
         </div>
         <div
@@ -221,7 +221,7 @@ export default {
     },
   },
   created: async function () {
-    const hash = this.$route.params.pathMatch.split("/")[0];
+    const hash = this.$route.params.path[0];
     this.hash = hash;
     await this.fetchData();
   },

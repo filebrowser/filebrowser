@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import dayjs from "dayjs";
 import i18n, { detectLocale } from "@/i18n";
+import { cloneDeep } from "lodash-es";
 
 export const useAuthStore = defineStore("auth", {
   // convert to a function
@@ -35,7 +36,7 @@ export const useAuthStore = defineStore("auth", {
           i18n.global.locale.value = locale;
         }
 
-        this.user[field] = structuredClone(value[field]);
+        this.user[field] = cloneDeep(value[field]);
       }
     },
     // easily reset state using `$reset`

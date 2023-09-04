@@ -1,5 +1,5 @@
 import { disableExternal } from "@/utils/constants";
-import { createApp } from "vue";
+import { createApp, configureCompat } from "vue";
 import Noty from "noty";
 import VueLazyload from "vue-lazyload";
 import createPinia from "@/stores";
@@ -7,7 +7,7 @@ import router from "@/router";
 import i18n from "@/i18n";
 import App from "@/App.vue";
 
-// import "core-js/actual/structured-clone";
+configureCompat({ RENDER_FUNCTION: false });
 
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
