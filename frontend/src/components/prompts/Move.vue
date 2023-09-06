@@ -5,34 +5,51 @@
     </div>
 
     <div class="card-content">
-      <file-list @update:selected="(val) => (dest = val)"></file-list>
+      <file-list ref="fileList" @update:selected="(val) => (dest = val)">
+      </file-list>
     </div>
 
-    <div class="card-action">
-      <button
-        class="button button--flat button--grey"
-        @click="$store.commit('closeHovers')"
-        :aria-label="$t('buttons.cancel')"
-        :title="$t('buttons.cancel')"
-      >
-        {{ $t("buttons.cancel") }}
-      </button>
-      <button
-        class="button button--flat"
-        @click="move"
-        :disabled="$route.path === dest"
-        :aria-label="$t('buttons.move')"
-        :title="$t('buttons.move')"
-      >
-        {{ $t("buttons.move") }}
-      </button>
+    <div
+      class="card-action"
+      style="display: flex; align-items: center; justify-content: space-between;"
+    >
+      <template v-if="user.perm.create">
+        <button
+          class="button button--flat"
+          @click="$refs.fileList.createDir()"
+          :aria-label="$t('sidebar.newFolder')"
+          :title="$t('sidebar.newFolder')"
+          style="justify-self: left;"
+        >
+          <span>{{ $t("sidebar.newFolder") }}</span>
+        </button>
+      </template>
+      <div>
+        <button
+          class="button button--flat button--grey"
+          @click="$store.commit('closeHovers')"
+          :aria-label="$t('buttons.cancel')"
+          :title="$t('buttons.cancel')"
+        >
+          {{ $t("buttons.cancel") }}
+        </button>
+        <button
+          class="button button--flat"
+          @click="move"
+          :disabled="$route.path === dest"
+          :aria-label="$t('buttons.move')"
+          :title="$t('buttons.move')"
+        >
+          {{ $t("buttons.move") }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import FileList from "./FileList";
+import FileList from "./FileList.vue";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
 import * as upload from "@/utils/upload";
@@ -46,7 +63,7 @@ export default {
       dest: null,
     };
   },
-  computed: mapState(["req", "selected"]),
+  computed: mapState(["req", "selected", "user"]),
   methods: {
     move: async function (event) {
       event.preventDefault();

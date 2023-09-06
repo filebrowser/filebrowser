@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.24.2](https://github.com/filebrowser/filebrowser/compare/v2.24.1...v2.24.2) (2023-08-08)
+
+
+### Bug Fixes
+
+* 403 error error when uploading ([#2598](https://github.com/filebrowser/filebrowser/issues/2598)) ([289c8e6](https://github.com/filebrowser/filebrowser/commit/289c8e6f32eb520cc711389f6b6a4ed94a73ecd4))
+* config init for branding.disableUsedPercentage ([#2576](https://github.com/filebrowser/filebrowser/issues/2576)) ([#2596](https://github.com/filebrowser/filebrowser/issues/2596)) ([ff1e0b8](https://github.com/filebrowser/filebrowser/commit/ff1e0b8185faf14b1f8e91830ca5e71e68ab672e))
+
+
+### Build
+
+* add riscv64 binary releases ([#2587](https://github.com/filebrowser/filebrowser/issues/2587)) ([0ac3968](https://github.com/filebrowser/filebrowser/commit/0ac39684f175487314e97403406f4d2c482e3d79))
+
 ### [2.24.1](https://github.com/filebrowser/filebrowser/compare/v2.24.0...v2.24.1) (2023-07-31)
 
 

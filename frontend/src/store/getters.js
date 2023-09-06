@@ -4,7 +4,7 @@ const getters = {
   isListing: (state, getters) => getters.isFiles && state.req.isDir,
   selectedCount: (state) => state.selected.length,
   progress: (state) => {
-    if (state.upload.progress.length == 0) {
+    if (state.upload.progress.length === 0) {
       return 0;
     }
 
@@ -14,9 +14,7 @@ const getters = {
     return Math.ceil((sum / totalSize) * 100);
   },
   filesInUploadCount: (state) => {
-    let total =
-      Object.keys(state.upload.uploads).length + state.upload.queue.length;
-    return total;
+    return Object.keys(state.upload.uploads).length + state.upload.queue.length;
   },
   filesInUpload: (state) => {
     let files = [];
@@ -42,6 +40,14 @@ const getters = {
     }
 
     return files.sort((a, b) => a.progress - b.progress);
+  },
+  currentPrompt: (state) => {
+    return state.prompts.length > 0
+      ? state.prompts[state.prompts.length - 1]
+      : null;
+  },
+  currentPromptName: (_, getters) => {
+    return getters.currentPrompt?.prompt;
   },
 };
 
