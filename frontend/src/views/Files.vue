@@ -25,6 +25,7 @@ import { files as api } from "@/api";
 import { mapState, mapActions, mapWritableState } from "pinia";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
+import { useUploadStore } from "@/stores/upload";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
@@ -52,6 +53,7 @@ export default {
       width: window.innerWidth,
     };
   },
+  inject: ["$showError"],
   computed: {
     ...mapWritableState(useFileStore, [
       "req",
@@ -62,6 +64,9 @@ export default {
     ]),
     ...mapState(useLayoutStore, ["show", "showShell"]),
     ...mapWritableState(useLayoutStore, ["loading"]),
+    ...mapState(useUploadStore, {
+      uploadError: "error",
+    }),
     currentView() {
       if (this.req.type == undefined) {
         return null;
@@ -88,6 +93,9 @@ export default {
       if (value === true) {
         this.fetchData();
       }
+    },
+    uploadError(newValue, oldValue) {
+      newValue && newValue !== oldValue && this.$showError(this.uploadError);
     },
   },
   mounted() {
