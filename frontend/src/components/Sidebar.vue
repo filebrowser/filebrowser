@@ -82,9 +82,7 @@
 
     <div
       class="credits"
-      v-if="
-        $router.currentRoute.path?.includes('/files/') && !disableUsedPercentage
-      "
+      v-if="isFiles && !disableUsedPercentage"
       style="width: 90%; margin: 2em 2.5em 3em 2.5em"
     >
       <progress-bar :val="usage.usedPercentage" size="small"></progress-bar>
@@ -112,8 +110,10 @@
 </template>
 
 <script>
+import { reactive } from "vue";
 import { mapActions, mapState } from "pinia";
 import { useAuthStore } from "@/stores/auth";
+import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
 import * as auth from "@/utils/auth";
@@ -129,14 +129,21 @@ import { files as api } from "@/api";
 import ProgressBar from "vue-simple-progress";
 import prettyBytes from "pretty-bytes";
 
+const USAGE_DEFAULT = { used: "0 B", total: "0 B", usedPercentage: 0 };
+
 export default {
   name: "sidebar",
+  setup() {
+    const usage = reactive(USAGE_DEFAULT);
+    return { usage };
+  },
   components: {
     ProgressBar,
   },
   inject: ["$showError"],
   computed: {
     ...mapState(useAuthStore, ["user", "isLoggedIn"]),
+    ...mapState(useFileStore, ["isFiles", "reload"]),
     ...mapState(useLayoutStore, ["show"]),
     active() {
       return this.show === "sidebar";
@@ -147,36 +154,28 @@ export default {
     disableUsedPercentage: () => disableUsedPercentage,
     canLogout: () => !noAuth && loginPage,
   },
-  asyncComputed: {
-    usage: {
-      async get() {
-        let path = this.$route.path.endsWith("/")
-          ? this.$route.path
-          : this.$route.path + "/";
-        let usageStats = { used: 0, total: 0, usedPercentage: 0 };
-        if (this.disableUsedPercentage) {
-          return usageStats;
-        }
-        try {
-          let usage = await api.usage(path);
-          usageStats = {
-            used: prettyBytes(usage.used, { binary: true }),
-            total: prettyBytes(usage.total, { binary: true }),
-            usedPercentage: Math.round((usage.used / usage.total) * 100),
-          };
-        } catch (error) {
-          this.$showError(error);
-        }
-        return usageStats;
-      },
-      default: { used: "0 B", total: "0 B", usedPercentage: 0 },
-      shouldUpdate() {
-        return this.$router.currentRoute.path.includes("/files/");
-      },
-    },
-  },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),
+    async fetchUsage() {
+      let path = this.$route.path.endsWith("/")
+        ? this.$route.path
+        : this.$route.path + "/";
+      let usageStats = USAGE_DEFAULT;
+      if (this.disableUsedPercentage) {
+        return Object.assign(this.usage, usageStats);
+      }
+      try {
+        let usage = await api.usage(path);
+        usageStats = {
+          used: prettyBytes(usage.used, { binary: true }),
+          total: prettyBytes(usage.total, { binary: true }),
+          usedPercentage: Math.round((usage.used / usage.total) * 100),
+        };
+      } catch (error) {
+        this.$showError(error);
+      }
+      return Object.assign(this.usage, usageStats);
+    },
     toRoot() {
       this.$router.push({ path: "/files" });
       this.closeHovers();
@@ -189,6 +188,11 @@ export default {
       this.showHover("help");
     },
     logout: auth.logout,
+  },
+  watch: {
+    isFiles(newValue) {
+      newValue && this.fetchUsage();
+    },
   },
 };
 </script>
