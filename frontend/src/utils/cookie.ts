@@ -1,4 +1,4 @@
-export default function (name) {
+export default function (name: string) {
   let re = new RegExp(
     "(?:(?:^|.*;\\s*)" + name + "\\s*\\=\\s*([^;]*).*$)|^.*$"
   );

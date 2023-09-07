@@ -1,4 +1,4 @@
-export default function getRule(rules) {
+export default function getRule(rules: any) {
   for (let i = 0; i < rules.length; i++) {
     rules[i] = rules[i].toLowerCase();
   }

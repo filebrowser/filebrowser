@@ -1,7 +1,7 @@
 import { useUploadStore } from "@/stores/upload";
 import url from "@/utils/url";
 
-export function checkConflict(files, items) {
+export function checkConflict(files: file[], items: item[]) {
   if (typeof items === "undefined" || items === null) {
     items = [];
   }
@@ -21,6 +21,7 @@ export function checkConflict(files, items) {
     }
 
     let res = items.findIndex(function hasConflict(element) {
+      // @ts-ignore Don't know what this does
       return element.name === this;
     }, name);
 
@@ -33,10 +34,10 @@ export function checkConflict(files, items) {
   return conflict;
 }
 
-export function scanFiles(dt) {
+export function scanFiles(dt: {[key: string]: any, item: item}) {
   return new Promise((resolve) => {
     let reading = 0;
-    const contents = [];
+    const contents: any[] = [];
 
     if (dt.items !== undefined) {
       for (let item of dt.items) {
@@ -52,10 +53,10 @@ export function scanFiles(dt) {
       resolve(dt.files);
     }
 
-    function readEntry(entry, directory = "") {
+    function readEntry(entry: any, directory = "") {
       if (entry.isFile) {
         reading++;
-        entry.file((file) => {
+        entry.file((file: file) => {
           reading--;
 
           file.fullPath = `${directory}${file.name}`;
@@ -79,10 +80,10 @@ export function scanFiles(dt) {
       }
     }
 
-    function readReaderContent(reader, directory) {
+    function readReaderContent(reader: any, directory: string) {
       reading++;
 
-      reader.readEntries(function (entries) {
+      reader.readEntries(function (entries: any[]) {
         reading--;
         if (entries.length > 0) {
           for (const entry of entries) {
@@ -100,7 +101,7 @@ export function scanFiles(dt) {
   });
 }
 
-function detectType(mimetype) {
+function detectType(mimetype: string): uploadType {
   if (mimetype.startsWith("video")) return "video";
   if (mimetype.startsWith("audio")) return "audio";
   if (mimetype.startsWith("image")) return "image";
@@ -109,7 +110,7 @@ function detectType(mimetype) {
   return "blob";
 }
 
-export function handleFiles(files, base, overwrite = false) {
+export function handleFiles(files: file[], base: string, overwrite = false) {
   const uploadStore = useUploadStore();
 
   for (let i = 0; i < files.length; i++) {

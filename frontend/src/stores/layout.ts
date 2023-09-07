@@ -4,7 +4,13 @@ import { defineStore } from "pinia";
 
 export const useLayoutStore = defineStore("layout", {
   // convert to a function
-  state: () => ({
+  state: (): {
+    loading: boolean,
+    show: string | null | boolean,
+    showConfirm: boolean | null,
+    showAction: boolean | null,
+    showShell: boolean | null
+  } => ({
     loading: false,
     show: null,
     showConfirm: null,
@@ -19,7 +25,7 @@ export const useLayoutStore = defineStore("layout", {
     toggleShell() {
       this.showShell = !this.showShell;
     },
-    showHover(value) {
+    showHover(value: LayoutValue) {
       if (typeof value !== "object") {
         this.show = value;
         return;
