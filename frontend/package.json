@@ -27,7 +27,6 @@
     "material-icons": "^1.13.10",
     "moment": "^2.29.4",
     "normalize.css": "^8.0.1",
-    "noty": "^3.2.0-beta",
     "pinia": "^2.1.6",
     "pretty-bytes": "^6.1.1",
     "qrcode.vue": "^3.4.1",
@@ -37,7 +36,8 @@
     "vue-i18n": "^9.2.2",
     "vue-lazyload": "^3.0.0",
     "vue-router": "^4.2.4",
-    "vue-simple-progress": "^1.1.1"
+    "vue-simple-progress": "^1.1.1",
+    "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
     "@intlify/unplugin-vue-i18n": "^0.12.3",
