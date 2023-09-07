@@ -32,3 +32,5 @@ build/
 
 /frontend/dist/*
 !/frontend/dist/.gitkeep
+
+default.nix
