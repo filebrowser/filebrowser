@@ -12,7 +12,7 @@ export const useClipboardStore = defineStore("clipboard", {
   },
   actions: {
     // no context as first argument, use `this` instead
-    updateClipboard(value) {
+    updateClipboard(value: any) {
       this.key = value.key;
       this.items = value.items;
       this.path = value.path;

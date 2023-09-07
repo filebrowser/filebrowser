@@ -15,7 +15,7 @@ const plugins = [
       },
     },
   }),
-  VueI18nPlugin(),
+  VueI18nPlugin({}),
   compression({ include: /\.js$/i, deleteOriginalAssets: true }),
   pluginRewriteAll(), // fixes 404 error with paths containing dot in dev server
 ];

@@ -1,12 +1,11 @@
 import Vue from "vue";
 import Noty from "noty";
 import VueLazyload from "vue-lazyload";
+// @ts-ignore
 import i18n from "@/i18n";
 import { disableExternal } from "@/utils/constants";
-import AsyncComputed from "vue-async-computed";
 
 Vue.use(VueLazyload);
-Vue.use(AsyncComputed);
 
 Vue.config.productionTip = true;
 

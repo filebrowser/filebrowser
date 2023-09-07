@@ -1,13 +1,14 @@
 import { disableExternal } from "@/utils/constants";
-import { createApp, configureCompat } from "vue";
+import { createApp } from "vue";
 import Noty from "noty";
 import VueLazyload from "vue-lazyload";
 import createPinia from "@/stores";
 import router from "@/router";
 import i18n from "@/i18n";
 import App from "@/App.vue";
+import '@/css/styles.css'
 
-configureCompat({ RENDER_FUNCTION: false });
+// configureCompat({ RENDER_FUNCTION: false });
 
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
@@ -43,7 +44,7 @@ app.directive("focus", {
   },
 });
 
-const notyDefault = {
+const notyDefault: Noty.Options = {
   type: "info",
   layout: "bottomCenter",
   timeout: 1000,
@@ -54,7 +55,7 @@ const notyDefault = {
 //   new Noty(Object.assign({}, notyDefault, opts)).show();
 // });
 
-app.provide("$showSuccess", (message) => {
+app.provide("$showSuccess", (message: any) => {
   new Noty(
     Object.assign({}, notyDefault, {
       text: message,
@@ -63,8 +64,9 @@ app.provide("$showSuccess", (message) => {
   ).show();
 });
 
-app.provide("$showError", (error, displayReport = true) => {
+app.provide("$showError", (error: any, displayReport = true) => {
   let btns = [
+    // @ts-ignore
     Noty.button(i18n.global.t("buttons.close"), "", function () {
       n.close();
     }),

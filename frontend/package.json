@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "@intlify/unplugin-vue-i18n": "^0.12.3",
+    "@types/node": "^20.5.9",
     "@vitejs/plugin-legacy": "^4.1.1",
     "@vitejs/plugin-vue": "^4.3.3",
     "@vue/eslint-config-prettier": "^8.0.0",
@@ -52,6 +53,7 @@
     "postcss": "^8.4.28",
     "prettier": "^3.0.2",
     "terser": "^5.19.2",
+    "typescript": "^5.2.2",
     "vite": "^4.4.9",
     "vite-plugin-compression2": "^0.10.4",
     "vite-plugin-rewrite-all": "^1.0.1"
