@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { disableExternal } from "@/utils/constants";
 import { createApp } from "vue";
 import VueLazyload from "vue-lazyload";

@@ -8,7 +8,7 @@ import pluginRewriteAll from "vite-plugin-rewrite-all";
 
 const plugins = [
   vue(),
-  VueI18nPlugin(),
+  VueI18nPlugin({}),
   legacy({
     // defaults already drop IE support
     targets: ["defaults"],
