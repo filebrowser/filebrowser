@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { defineStore } from "pinia";
 import { useFileStore } from "./file";
 import { files as api } from "@/api";

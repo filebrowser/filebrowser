@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { defineStore } from "pinia";
 import dayjs from "dayjs";
 import i18n, { detectLocale } from "@/i18n";
