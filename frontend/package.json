@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "serve": "vite serve",
-    "build": "vue-tsc -p ./tsconfig.json --noEmit && vite build --emptyOutDir",
+    "build": "vite build",
     "watch": "vite build --watch",
     "clean": "find ./dist -maxdepth 1 -mindepth 1 ! -name '.gitkeep' -exec rm -r {} +",
     "lint": "eslint --ext .vue,.js src/",
@@ -14,7 +14,6 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@vue/compat": "^3.3.4",
     "@vueuse/core": "^10.4.1",
     "ace-builds": "^1.24.1",
     "clipboard": "^2.0.11",
@@ -27,7 +26,6 @@
     "material-icons": "^1.13.10",
     "moment": "^2.29.4",
     "normalize.css": "^8.0.1",
-    "noty": "^3.2.0-beta",
     "pinia": "^2.1.6",
     "pretty-bytes": "^6.1.1",
     "qrcode.vue": "^3.4.1",
@@ -37,11 +35,10 @@
     "vue-i18n": "^9.2.2",
     "vue-lazyload": "^3.0.0",
     "vue-router": "^4.2.4",
-    "vue-simple-progress": "^1.1.1"
+    "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
     "@intlify/unplugin-vue-i18n": "^0.12.3",
-    "@types/node": "^20.5.9",
     "@vitejs/plugin-legacy": "^4.1.1",
     "@vitejs/plugin-vue": "^4.3.3",
     "@vue/eslint-config-prettier": "^8.0.0",
@@ -53,15 +50,8 @@
     "postcss": "^8.4.28",
     "prettier": "^3.0.2",
     "terser": "^5.19.2",
-    "typescript": "^5.2.2",
     "vite": "^4.4.9",
     "vite-plugin-compression2": "^0.10.4",
-    "vite-plugin-rewrite-all": "^1.0.1",
-    "vue-tsc": "^1.8.10"
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie < 11"
-  ]
+    "vite-plugin-rewrite-all": "^1.0.1"
+  }
 }

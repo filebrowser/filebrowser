@@ -1,14 +1,12 @@
 import { disableExternal } from "@/utils/constants";
 import { createApp } from "vue";
-import Noty from "noty";
 import VueLazyload from "vue-lazyload";
+import Toast, { useToast } from "vue-toastification";
 import createPinia from "@/stores";
 import router from "@/router";
-import i18n from "@/i18n";
+import i18n, { rtlLanguages } from "@/i18n";
 import App from "@/App.vue";
-import '@/css/styles.css'
-
-// configureCompat({ RENDER_FUNCTION: false });
+import CustomToast from "@/components/CustomToast.vue";
 
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
@@ -24,6 +22,11 @@ const pinia = createPinia(router);
 const app = createApp(App);
 
 app.use(VueLazyload);
+app.use(Toast, {
+  transition: "Vue-Toastification__bounce",
+  maxToasts: 10,
+  newestOnTop: true,
+});
 
 app.use(i18n);
 app.use(pinia);
@@ -44,54 +47,51 @@ app.directive("focus", {
   },
 });
 
-const notyDefault: Noty.Options = {
-  type: "info",
-  layout: "bottomCenter",
-  timeout: 1000,
-  progressBar: true,
+const toastConfig = {
+  position: "bottom-center",
+  timeout: 4000,
+  closeOnClick: true,
+  pauseOnFocusLoss: true,
+  pauseOnHover: true,
+  draggable: true,
+  draggablePercent: 0.6,
+  showCloseButtonOnHover: false,
+  hideProgressBar: false,
+  closeButton: "button",
+  icon: true,
 };
 
-// app.provide("$noty", (opts) => {
-//   new Noty(Object.assign({}, notyDefault, opts)).show();
-// });
-
-app.provide("$showSuccess", (message: any) => {
-  new Noty(
-    Object.assign({}, notyDefault, {
-      text: message,
-      type: "success",
-    })
-  ).show();
+app.provide("$showSuccess", (message) => {
+  const $toast = useToast();
+  $toast.success(
+    {
+      component: CustomToast,
+      props: {
+        message: message,
+      },
+    },
+    { ...toastConfig, rtl: rtlLanguages.includes(i18n.global.locale) }
+  );
 });
 
-app.provide("$showError", (error: any, displayReport = true) => {
-  let btns = [
-    // @ts-ignore
-    Noty.button(i18n.global.t("buttons.close"), "", function () {
-      n.close();
-    }),
-  ];
-
-  if (!disableExternal && displayReport) {
-    btns.unshift(
-      Noty.button(i18n.global.t("buttons.reportIssue"), "", function () {
-        window.open(
-          "https://github.com/filebrowser/filebrowser/issues/new/choose"
-        );
-      })
-    );
-  }
-
-  let n = new Noty(
-    Object.assign({}, notyDefault, {
-      text: error.message || error,
-      type: "error",
-      timeout: null,
-      buttons: btns,
-    })
+app.provide("$showError", (error, displayReport = true) => {
+  const $toast = useToast();
+  $toast.error(
+    {
+      component: CustomToast,
+      props: {
+        message: error.message || error,
+        isReport: !disableExternal && displayReport,
+        // TODO: i couldnt use $t inside the component
+        reportText: i18n.global.t("buttons.reportIssue"),
+      },
+    },
+    {
+      ...toastConfig,
+      timeout: 0,
+      rtl: rtlLanguages.includes(i18n.global.locale),
+    }
   );
-
-  n.show();
 });
 
 router.isReady().then(() => app.mount("#app"));

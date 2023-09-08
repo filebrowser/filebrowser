@@ -25,12 +25,13 @@ import { files as api } from "@/api";
 import { mapState, mapActions, mapWritableState } from "pinia";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
+import { useUploadStore } from "@/stores/upload";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import Errors from "@/views/Errors.vue";
 import Preview from "@/views/files/Preview.vue";
-import Listing from "@/views/files/Listing.vue";
+import FileListing from "@/views/files/FileListing.vue";
 
 function clean(path) {
   return path.endsWith("/") ? path.slice(0, -1) : path;
@@ -43,7 +44,7 @@ export default {
     Breadcrumbs,
     Errors,
     Preview,
-    Listing,
+    FileListing,
     Editor: defineAsyncComponent(() => import("@/views/files/Editor.vue")),
   },
   data: function () {
@@ -52,6 +53,7 @@ export default {
       width: window.innerWidth,
     };
   },
+  inject: ["$showError"],
   computed: {
     ...mapWritableState(useFileStore, [
       "req",
@@ -62,13 +64,16 @@ export default {
     ]),
     ...mapState(useLayoutStore, ["show", "showShell"]),
     ...mapWritableState(useLayoutStore, ["loading"]),
+    ...mapState(useUploadStore, {
+      uploadError: "error",
+    }),
     currentView() {
       if (this.req.type == undefined) {
         return null;
       }
 
       if (this.req.isDir) {
-        return "listing";
+        return "file-listing";
       } else if (
         this.req.type === "text" ||
         this.req.type === "textImmutable"
@@ -88,6 +93,9 @@ export default {
       if (value === true) {
         this.fetchData();
       }
+    },
+    uploadError(newValue, oldValue) {
+      newValue && newValue !== oldValue && this.$showError(this.uploadError);
     },
   },
   mounted() {

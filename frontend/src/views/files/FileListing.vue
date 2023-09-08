@@ -267,7 +267,6 @@
 </template>
 
 <script>
-import Vue from "vue";
 import { mapState, mapWritableState, mapActions, mapStores } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 import { useClipboardStore } from "@/stores/clipboard";
@@ -287,7 +286,7 @@ import Search from "@/components/Search.vue";
 import Item from "@/components/files/ListingItem.vue";
 
 export default {
-  name: "listing",
+  name: "file-listing",
   components: {
     HeaderBar,
     Action,
@@ -403,7 +402,7 @@ export default {
       this.showLimit = 50;
 
       // Ensures that the listing is displayed
-      Vue.nextTick(() => {
+      this.$nextTick(() => {
         // How much every listing item affects the window height
         this.setItemWeight();
 

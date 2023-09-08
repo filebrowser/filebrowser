@@ -97,7 +97,7 @@ export default {
   },
   inject: ["$showError", "$showSuccess"],
   computed: {
-    ...mapState(useAuthStore, ["user"]),
+    ...mapState(useAuthStore, { sUser: "user" }),
     ...mapState(useLayoutStore, ["show"]),
     ...mapWritableState(useLayoutStore, ["loading"]),
     isNew() {
@@ -170,7 +170,7 @@ export default {
         } else {
           await api.update(user);
 
-          if (user.id === this.user.id) {
+          if (user.id === this.sUser.id) {
             this.setUser({ ...cloneDeep(user) });
           }
 

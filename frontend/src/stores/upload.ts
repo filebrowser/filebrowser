@@ -27,6 +27,7 @@ export const useUploadStore = defineStore("upload", {
     progress: [],
     queue: [],
     uploads: {},
+    error: null,
   }),
   getters: {
     // user and jwt getter removed, no longer needed
@@ -77,6 +78,9 @@ export const useUploadStore = defineStore("upload", {
       // Vue.set(this.progress, id, loaded);
       const { id, loaded } = obj
       this.progress[id] = loaded;
+    },
+    setError(error) {
+      this.error = error;
     },
     reset() {
       this.id = 0;
@@ -140,8 +144,7 @@ export const useUploadStore = defineStore("upload", {
         this.moveJob();
 
         if (item.file.isDir) {
-          // TODO: find a way to display notification
-          await api.post(item.path).catch(console.error);
+          await api.post(item.path).catch(this.setError);
         } else {
           let onUpload = throttle(
             (event) =>
@@ -153,10 +156,9 @@ export const useUploadStore = defineStore("upload", {
             { leading: true, trailing: false }
           );
 
-          // TODO: find a way to display notification
           await api
             .post(item.path, item.file, item.overwrite, onUpload)
-            .catch(console.error);
+            .catch(this.setError);
         }
 
         this.finishUpload(item);
