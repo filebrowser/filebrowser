@@ -1,5 +1,5 @@
 import { disableExternal } from "@/utils/constants";
-import { createApp, configureCompat } from "vue";
+import { createApp } from "vue";
 import VueLazyload from "vue-lazyload";
 import Toast, { useToast } from "vue-toastification";
 import createPinia from "@/stores";
@@ -7,8 +7,6 @@ import router from "@/router";
 import i18n, { rtlLanguages } from "@/i18n";
 import App from "@/App.vue";
 import CustomToast from "@/components/CustomToast.vue";
-
-configureCompat({ RENDER_FUNCTION: false });
 
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";

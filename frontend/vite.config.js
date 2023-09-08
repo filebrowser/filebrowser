@@ -2,27 +2,24 @@ import path from "node:path";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
+import legacy from "@vitejs/plugin-legacy";
 import { compression } from "vite-plugin-compression2";
 import pluginRewriteAll from "vite-plugin-rewrite-all";
 
 const plugins = [
-  vue({
-    template: {
-      compilerOptions: {
-        compatConfig: {
-          MODE: 3,
-        },
-      },
-    },
-  }),
+  vue(),
   VueI18nPlugin(),
+  legacy({
+    // defaults already drop IE support
+    targets: ["defaults"],
+  }),
   compression({ include: /\.js$/i, deleteOriginalAssets: true }),
   pluginRewriteAll(), // fixes 404 error with paths containing dot in dev server
 ];
 
 const resolve = {
   alias: {
-    vue: "@vue/compat",
+    // vue: "@vue/compat",
     "@/": `${path.resolve(__dirname, "src")}/`,
   },
 };
