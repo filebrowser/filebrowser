@@ -21,16 +21,18 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .t-container {
   width: 100%;
+  padding: 5px 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 .action {
+  text-align: center;
   height: 40px;
-  padding: 5px 10px;
+  padding: 0 10px;
   border-radius: 5px;
   color: white;
   cursor: pointer;

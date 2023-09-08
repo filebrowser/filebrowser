@@ -1,13 +1,14 @@
 import { disableExternal } from "@/utils/constants";
-import { createApp } from "vue";
-import Noty from "noty";
+import { createApp, configureCompat } from "vue";
 import VueLazyload from "vue-lazyload";
 import Toast, { useToast } from "vue-toastification";
 import createPinia from "@/stores";
 import router from "@/router";
-import i18n from "@/i18n";
+import i18n, { rtlLanguages } from "@/i18n";
 import App from "@/App.vue";
-import ErrorToast from "@/components/ErrorToast.vue";
+import CustomToast from "@/components/CustomToast.vue";
+
+configureCompat({ RENDER_FUNCTION: false });
 
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
@@ -60,20 +61,26 @@ const toastConfig = {
   hideProgressBar: false,
   closeButton: "button",
   icon: true,
-  // TODO: add RTL support
-  // rtl: false,
 };
 
 app.provide("$showSuccess", (message) => {
   const $toast = useToast();
-  $toast.success(message, { ...toastConfig });
+  $toast.success(
+    {
+      component: CustomToast,
+      props: {
+        message: message,
+      },
+    },
+    { ...toastConfig, rtl: rtlLanguages.includes(i18n.global.locale) }
+  );
 });
 
 app.provide("$showError", (error, displayReport = true) => {
   const $toast = useToast();
   $toast.error(
     {
-      component: ErrorToast,
+      component: CustomToast,
       props: {
         message: error.message || error,
         isReport: !disableExternal && displayReport,
@@ -81,7 +88,11 @@ app.provide("$showError", (error, displayReport = true) => {
         reportText: i18n.global.t("buttons.reportIssue"),
       },
     },
-    { ...toastConfig, timeout: 0 }
+    {
+      ...toastConfig,
+      timeout: 0,
+      rtl: rtlLanguages.includes(i18n.global.locale),
+    }
   );
 });
 
