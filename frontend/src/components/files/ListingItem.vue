@@ -48,9 +48,6 @@ import * as upload from "@/utils/upload";
 
 export default {
   name: "item",
-  compatConfig: {
-    ATTR_FALSE_VALUE: "suppress-warning",
-  },
   data: function () {
     return {
       touches: 0,

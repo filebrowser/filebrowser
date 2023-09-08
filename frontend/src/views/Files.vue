@@ -31,7 +31,7 @@ import HeaderBar from "@/components/header/HeaderBar.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import Errors from "@/views/Errors.vue";
 import Preview from "@/views/files/Preview.vue";
-import Listing from "@/views/files/Listing.vue";
+import FileListing from "@/views/files/FileListing.vue";
 
 function clean(path) {
   return path.endsWith("/") ? path.slice(0, -1) : path;
@@ -44,7 +44,7 @@ export default {
     Breadcrumbs,
     Errors,
     Preview,
-    Listing,
+    FileListing,
     Editor: defineAsyncComponent(() => import("@/views/files/Editor.vue")),
   },
   data: function () {
@@ -73,7 +73,7 @@ export default {
       }
 
       if (this.req.isDir) {
-        return "listing";
+        return "file-listing";
       } else if (
         this.req.type === "text" ||
         this.req.type === "textImmutable"
