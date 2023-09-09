@@ -16,10 +16,6 @@ build-frontend: ## Build frontend
 build-backend: ## Build backend
 	$Q $(go) build -ldflags '$(LDFLAGS)' -o .
 
-.PHONY: build-docker
-build-docker: ## Build docker
-	docker build . -t filebrowser:dev
-
 .PHONY: test
 test: | test-frontend test-backend ## Run all tests
 
