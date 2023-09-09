@@ -16,7 +16,7 @@ interface IFile {
 
 
 
-type uploadType = "video" | "audio" | "image" | "pdf" | "text" | "blob"
+type uploadType = "video" | "audio" | "image" | "pdf" | "text" | "blob" | "textImmutable"
 
 type req = {
     path: string

@@ -36,7 +36,7 @@ export const useFileStore = defineStore("file", {
     toggleMultiple() {
       this.multiple = !this.multiple;
     },
-    updateRequest(value: IFile) {
+    updateRequest(value: IFile | null) {
       this.oldReq = this.req;
       this.req = value;
     },

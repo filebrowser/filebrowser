@@ -25,7 +25,7 @@ export const useLayoutStore = defineStore("layout", {
     toggleShell() {
       this.showShell = !this.showShell;
     },
-    showHover(value: LayoutValue) {
+    showHover(value: LayoutValue | string) {
       if (typeof value !== "object") {
         this.show = value;
         return;

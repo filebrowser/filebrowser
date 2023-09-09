@@ -1,10 +1,10 @@
 <template>
   <div>
-    <header-bar v-if="error || req?.type === null" showMenu showLogo />
+    <header-bar v-if="error || fileStore.req?.type === null" showMenu showLogo />
 
     <breadcrumbs base="/files" />
 
-    <errors v-if="error" :errorCode="error.status" />
+    <errors v-if="error" :errorCode="error?.status" />
     <component v-else-if="currentView" :is="currentView"></component>
     <div v-else>
       <h2 class="message delayed">
@@ -19,8 +19,8 @@
   </div>
 </template>
 
-<script>
-import { defineAsyncComponent } from "vue";
+<script setup lang="ts">
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from "vue";
 import { files as api } from "@/api";
 import { mapState, mapActions, mapWritableState } from "pinia";
 import { useFileStore } from "@/stores/file";
@@ -32,127 +32,114 @@ import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import Errors from "@/views/Errors.vue";
 import Preview from "@/views/files/Preview.vue";
 import FileListing from "@/views/files/FileListing.vue";
+import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
 
-function clean(path) {
+const layoutStore = useLayoutStore()
+const fileStore = useFileStore()
+const uploadStore = useUploadStore()
+
+const route = useRoute()
+const router = useRouter()
+
+
+const { t } = useI18n({});
+
+const clean = (path: string) => {
   return path.endsWith("/") ? path.slice(0, -1) : path;
 }
 
-export default {
-  name: "files",
-  components: {
-    HeaderBar,
-    Breadcrumbs,
-    Errors,
-    Preview,
-    FileListing,
-    Editor: defineAsyncComponent(() => import("@/views/files/Editor.vue")),
-  },
-  data: function () {
-    return {
-      error: null,
-      width: window.innerWidth,
-    };
-  },
-  inject: ["$showError"],
-  computed: {
-    ...mapWritableState(useFileStore, [
-      "req",
-      "reload",
-      "selected",
-      "multiple",
-      "isFiles",
-    ]),
-    ...mapState(useLayoutStore, ["show", "showShell"]),
-    ...mapWritableState(useLayoutStore, ["loading"]),
-    ...mapState(useUploadStore, {
-      uploadError: "error",
-    }),
-    currentView() {
-      if (this.req?.type == undefined) {
-        return null;
-      }
+const Editor = defineAsyncComponent(() => import("@/views/files/Editor.vue"));
+const error = ref<any | null>(null)
+const width = computed(() => window.innerWidth)
 
-      if (this.req.isDir) {
-        return "file-listing";
-      } else if (
-        this.req.type === "text" ||
-        this.req.type === "textImmutable"
-      ) {
-        return "editor";
-      } else {
-        return "preview";
-      }
-    },
-  },
-  created() {
-    this.fetchData();
-  },
-  watch: {
-    $route: "fetchData",
-    reload: function (value) {
-      if (value === true) {
-        this.fetchData();
-      }
-    },
-    uploadError(newValue, oldValue) {
-      newValue && newValue !== oldValue && this.$showError(this.uploadError);
-    },
-  },
-  mounted() {
-    this.isFiles = true;
-    window.addEventListener("keydown", this.keyEvent);
-  },
-  beforeUnmount() {
-    window.removeEventListener("keydown", this.keyEvent);
-  },
-  unmounted() {
-    this.isFiles = false;
-    if (this.showShell) {
-      this.toggleShell();
+const currentView = computed(() => {
+  if (fileStore.req?.type == undefined) {
+    return null;
+  }
+
+  if (fileStore.req.isDir) {
+    return "file-listing";
+  } else if (
+    fileStore.req.type === "text" ||
+    fileStore.req.type === "textImmutable"
+  ) {
+    return "editor";
+  } else {
+    return "preview";
+  }
+})
+
+// Define hooks
+onMounted(() => {
+  fetchData();
+  fileStore.isFiles = true;
+  window.addEventListener("keydown", keyEvent);
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", keyEvent);
+})
+
+onUnmounted(() => {
+  fileStore.isFiles = false;
+  if (layoutStore.showShell) {
+    layoutStore.toggleShell();
+  }
+  fileStore.updateRequest(null);
+})
+
+watch(route, () => fetchData())
+// @ts-ignore
+watch(fileStore.reload, (val) => {
+  if (val) {
+    fetchData();
+  }
+}
+)
+watch(uploadStore.error, (newValue, oldValue) => {
+  newValue && newValue !== oldValue && layoutStore.showError();
+})
+
+
+// Define functions
+
+const fetchData = async () => {
+  // Reset view information.
+  fileStore.reload = false;
+  fileStore.selected = [];
+  fileStore.multiple = false;
+  layoutStore.closeHovers();
+
+  // Set loading to true and reset the error.
+  layoutStore.loading = true;
+  error.value = null;
+
+  let url = route.path;
+  if (url === "") url = "/";
+  if (url[0] !== "/") url = "/" + url;
+  try {
+    const res = await api.fetch(url);
+
+    if (
+      clean(res.path) !==
+      clean(`/${[...route.params.path].join("/")}`)
+    ) {
+      throw new Error("Data Mismatch!");
     }
-    this.updateRequest({});
-  },
-  methods: {
-    ...mapActions(useLayoutStore, ["toggleShell", "showHover", "closeHovers"]),
-    ...mapActions(useFileStore, ["updateRequest"]),
-    async fetchData() {
-      // Reset view information.
-      this.reload = false;
-      this.selected = [];
-      this.multiple = false;
-      this.closeHovers();
 
-      // Set loading to true and reset the error.
-      this.loading = true;
-      this.error = null;
-
-      let url = this.$route.path;
-      if (url === "") url = "/";
-      if (url[0] !== "/") url = "/" + url;
-      try {
-        const res = await api.fetch(url);
-
-        if (
-          clean(res.path) !==
-          clean(`/${[...this.$route.params.path].join("/")}`)
-        ) {
-          throw new Error("Data Mismatch!");
-        }
-
-        this.updateRequest(res);
-        document.title = `${res.name} - ${document.title}`;
-      } catch (e) {
-        this.error = e;
-      } finally {
-        this.loading = false;
-      }
-    },
-    keyEvent(event) {
-      if (event.key === "F1") {
-        event.preventDefault();
-        this.showHover("help");
-      }
-    },
-  },
-};
+    fileStore.updateRequest(res);
+    document.title = `${res.name} - ${document.title}`;
+  } catch (e: any) {
+    error.value = e;
+  } finally {
+    layoutStore.loading = false;
+  }
+}
+const keyEvent = (event: KeyboardEvent) => {
+  if (event.key === "F1") {
+    event.preventDefault();
+    layoutStore.showHover("help");
+  }
+}
 </script>

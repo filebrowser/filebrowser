@@ -20,7 +20,8 @@ export const useUploadStore = defineStore("upload", {
     sizes: any[],
     progress: any[],
     queue: any[],
-    uploads: uploads
+    uploads: uploads,
+    error: any
   } => ({
     id: 0,
     sizes: [],
