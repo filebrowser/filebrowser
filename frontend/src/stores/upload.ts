@@ -50,7 +50,7 @@ export const useUploadStore = defineStore("upload", {
     filesInUpload: (state) => {
       const files = [];
 
-      for (let index in state.uploads) {
+      for (const index in state.uploads) {
         const upload = state.uploads[index];
         const id = upload.id;
         const type = upload.type;

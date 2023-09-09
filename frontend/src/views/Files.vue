@@ -22,7 +22,6 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from "vue";
 import { files as api } from "@/api";
-import { mapState, mapActions, mapWritableState } from "pinia";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 import { useUploadStore } from "@/stores/upload";
@@ -30,8 +29,6 @@ import { useUploadStore } from "@/stores/upload";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import Errors from "@/views/Errors.vue";
-import Preview from "@/views/files/Preview.vue";
-import FileListing from "@/views/files/FileListing.vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 

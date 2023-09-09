@@ -41,7 +41,7 @@ export const useFileStore = defineStore("file", {
       this.req = value;
     },
     removeSelected(value: any) {
-      let i = this.selected.indexOf(value);
+      const i = this.selected.indexOf(value);
       if (i === -1) return;
       this.selected.splice(i, 1);
     },

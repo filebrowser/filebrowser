@@ -122,7 +122,7 @@
 </template>
 
 <script setup lang="ts">
-import { pub as api, files } from "@/api";
+import { pub as api } from "@/api";
 import { filesize } from "filesize";
 import dayjs from "dayjs";
 import { Base64 } from "js-base64";
@@ -154,15 +154,12 @@ const route = useRoute()
 const fileStore = useFileStore()
 const layoutStore = useLayoutStore()
 
-watch(route, (newValue, oldValue) => {
+watch(route, () => {
   showLimit.value = 100
   fetchData();
 })
 
 const req = computed(() => fileStore.req)
-
-// inject: ["$showSuccess"],
-
 
 // Define computes
 
@@ -209,8 +206,8 @@ const fetchData = async () => {
   try {
     let file = await api.fetch(url, password.value);
     file.hash = hash.value;
-    
-    
+
+
     token.value = file.token || "";
 
     fileStore.updateRequest(file);
@@ -283,16 +280,16 @@ onMounted(async () => {
   await fetchData();
 
 
-  // window.addEventListener("keydown", this.keyEvent);
-  // this.clip = new Clipboard(".copy-clipboard");
-  // this.clip.on("success", () => {
-  //   this.$showSuccess(this.t("success.linkCopied"));
-  // });
+  window.addEventListener("keydown", keyEvent);
+  clip.value = new Clipboard(".copy-clipboard");
+  clip.value.on("success", () => {
+    // $showSuccess(this.t("success.linkCopied"));
+  });
 })
 
 onBeforeUnmount(() => {
-  // window.removeEventListener("keydown", this.keyEvent);
-  // this.clip.destroy();
+  window.removeEventListener("keydown", keyEvent);
+  clip.value.destroy();
 })
 
 </script>
