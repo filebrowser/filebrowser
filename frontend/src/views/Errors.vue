@@ -9,10 +9,16 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import HeaderBar from "@/components/header/HeaderBar.vue";
+import { computed } from "vue";
 
-const errors = {
+const errors: {
+  [key: string]: {
+    icon: string,
+    message: string
+  }
+} = {
   0: {
     icon: "cloud_off",
     message: "errors.connection",
@@ -31,16 +37,13 @@ const errors = {
   },
 };
 
-export default {
-  name: "errors",
-  components: {
-    HeaderBar,
-  },
-  props: ["errorCode", "showHeader"],
-  computed: {
-    info() {
-      return errors[this.errorCode] ? errors[this.errorCode] : errors[500];
-    },
-  },
-};
+const props = defineProps<{
+  errorCode: any,
+  showHeader: boolean
+}>()
+
+const info = computed(() => {
+  return errors[props.errorCode] ? errors [props.errorCode] : errors[500]
+})
+
 </script>
