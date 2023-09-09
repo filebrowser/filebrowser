@@ -3,15 +3,15 @@ import { defineStore } from "pinia";
 export const useFileStore = defineStore("file", {
   // convert to a function
   state: (): {
-    req: req,
-    oldReq: req,
+    req: IFile | null,
+    oldReq: IFile | null,
     reload: boolean,
     selected: any[],
     multiple: boolean,
     isFiles: boolean
   } => ({
-    req: {},
-    oldReq: {},
+    req: null,
+    oldReq: null,
     reload: false,
     selected: [],
     multiple: false,
@@ -28,7 +28,7 @@ export const useFileStore = defineStore("file", {
     //   return !layoutStore.loading && state.route._value.name === "Files";
     // },
     isListing: (state) => {
-      return state.isFiles && state.req.isDir;
+      return state.isFiles && state?.req?.isDir;
     },
   },
   actions: {
@@ -36,7 +36,7 @@ export const useFileStore = defineStore("file", {
     toggleMultiple() {
       this.multiple = !this.multiple;
     },
-    updateRequest(value: req) {
+    updateRequest(value: IFile) {
       this.oldReq = this.req;
       this.req = value;
     },

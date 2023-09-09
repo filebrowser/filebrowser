@@ -3,7 +3,7 @@ import { renew, logout } from "@/utils/auth";
 import { baseURL } from "@/utils/constants";
 import { encodePath } from "@/utils/url";
 
-export async function fetchURL(url: apiUrl, opts: apiOpts, auth = true) {
+export async function fetchURL(url: ApiUrl, opts: ApiOpts, auth = true) {
   const authStore = useAuthStore();
 
   opts = opts || {};
@@ -46,7 +46,7 @@ export async function fetchURL(url: apiUrl, opts: apiOpts, auth = true) {
   return res;
 }
 
-export async function fetchJSON(url: apiUrl, opts?: any) {
+export async function fetchJSON(url: ApiUrl, opts?: any) {
   const res = await fetchURL(url, opts);
 
   if (res.status === 200) {
@@ -56,7 +56,7 @@ export async function fetchJSON(url: apiUrl, opts?: any) {
   }
 }
 
-export function removePrefix(url: apiUrl) {
+export function removePrefix(url: ApiUrl) {
   url = url.split("/").splice(2).join("/");
 
   if (url === "") url = "/";
@@ -64,7 +64,7 @@ export function removePrefix(url: apiUrl) {
   return url;
 }
 
-export function createURL(endpoint: apiUrl, params = {}, auth = true) {
+export function createURL(endpoint: ApiUrl, params = {}, auth = true) {
   const authStore = useAuthStore();
 
   let prefix = baseURL;

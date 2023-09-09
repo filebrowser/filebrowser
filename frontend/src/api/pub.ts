@@ -1,7 +1,7 @@
 import { fetchURL, removePrefix, createURL } from "./utils";
 import { baseURL } from "@/utils/constants";
 
-export async function fetch(url: apiUrl, password: string = "") {
+export async function fetch(url: ApiUrl, password: string = "") {
   url = removePrefix(url);
 
   const res = await fetchURL(
@@ -33,35 +33,35 @@ export async function fetch(url: apiUrl, password: string = "") {
 }
 
 // Is this redundant code?
-// export function download(format, hash, token, ...files) {
-//   let url = `${baseURL}/api/public/dl/${hash}`;
+export function download(format: any, hash: string, token: string, ...files: any) {
+  let url = `${baseURL}/api/public/dl/${hash}`;
 
-//   if (files.length === 1) {
-//     url += encodeURIComponent(files[0]) + "?";
-//   } else {
-//     let arg = "";
+  if (files.length === 1) {
+    url += encodeURIComponent(files[0]) + "?";
+  } else {
+    let arg = "";
 
-//     for (let file of files) {
-//       arg += encodeURIComponent(file) + ",";
-//     }
+    for (let file of files) {
+      arg += encodeURIComponent(file) + ",";
+    }
 
-//     arg = arg.substring(0, arg.length - 1);
-//     arg = encodeURIComponent(arg);
-//     url += `/?files=${arg}&`;
-//   }
+    arg = arg.substring(0, arg.length - 1);
+    arg = encodeURIComponent(arg);
+    url += `/?files=${arg}&`;
+  }
 
-//   if (format) {
-//     url += `algo=${format}&`;
-//   }
+  if (format) {
+    url += `algo=${format}&`;
+  }
 
-//   if (token) {
-//     url += `token=${token}&`;
-//   }
+  if (token) {
+    url += `token=${token}&`;
+  }
 
-//   window.open(url);
-// }
+  window.open(url);
+}
 
-export function getDownloadURL(share: share, inline = false) {
+export function getDownloadURL(share: IFile, inline = false) {
   const params = {
     ...(inline && { inline: "true" }),
     ...(share.token && { token: share.token }),

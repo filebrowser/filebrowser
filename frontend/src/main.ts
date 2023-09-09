@@ -13,6 +13,8 @@ import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 import duration from "dayjs/plugin/duration";
+import "./css/styles.css";
+
 // register dayjs plugins globally
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);

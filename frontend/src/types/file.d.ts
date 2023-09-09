@@ -1,5 +1,5 @@
-
-interface file {
+interface IFile {
+    index?: number
     name: string,
     modified: string,
     path: string,
@@ -7,27 +7,32 @@ interface file {
     isDir: boolean,
     size: number,
     fullPath: string,
-    type: uploadType
+    type: uploadType,
+    items: IFile[]
+    token?: string,
+    hash: string,
+    url?: string
 }
 
-interface item {
-    id: number,
-    path: string,
-    file: file,
-    url?: string,
-    dir?: boolean,
-    from?: string,
-    to?: string,
-    name?: string,
-    type?: uploadType
-    overwrite: boolean
-}
+
 
 type uploadType = "video" | "audio" | "image" | "pdf" | "text" | "blob"
 
-interface req {
-    isDir?: boolean
-}
+type req = {
+    path: string
+    name: string
+    size: number
+    extension: string
+    modified: string
+    mode: number
+    isDir: boolean
+    isSymlink: boolean
+    type: string
+    url: string
+    hash: string
+  }
+  
+
 
 interface uploads {
     [key: string]: upload

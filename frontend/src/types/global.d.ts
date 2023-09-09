@@ -5,4 +5,7 @@ declare global {
         FileBrowser: any;
         grecaptcha: any
     }
+    interface HTMLAttributes extends HTMLAttributes {
+        title: any
+    }
 }

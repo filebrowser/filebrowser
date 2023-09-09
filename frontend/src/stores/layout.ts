@@ -7,7 +7,7 @@ export const useLayoutStore = defineStore("layout", {
   state: (): {
     loading: boolean,
     show: string | null | boolean,
-    showConfirm: boolean | null,
+    showConfirm: Function | null,
     showAction: boolean | null,
     showShell: boolean | null
   } => ({

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <header-bar v-if="error || req.type == null" showMenu showLogo />
+    <header-bar v-if="error || req?.type === null" showMenu showLogo />
 
     <breadcrumbs base="/files" />
 
@@ -68,7 +68,7 @@ export default {
       uploadError: "error",
     }),
     currentView() {
-      if (this.req.type == undefined) {
+      if (this.req?.type == undefined) {
         return null;
       }
 
@@ -129,7 +129,6 @@ export default {
       let url = this.$route.path;
       if (url === "") url = "/";
       if (url[0] !== "/") url = "/" + url;
-
       try {
         const res = await api.fetch(url);
 
