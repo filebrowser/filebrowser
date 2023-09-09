@@ -1,5 +1,5 @@
 export function removeLastDir(url: string) {
-  var arr = url.split("/");
+  const arr = url.split("/");
   if (arr.pop() === "") {
     arr.pop();
   }

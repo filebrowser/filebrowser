@@ -15,7 +15,12 @@ export async function remove(hash: string) {
   });
 }
 
-export async function create(url: apiUrl, password = "", expires = "", unit = "hours") {
+export async function create(
+  url: apiUrl,
+  password = "",
+  expires = "",
+  unit = "hours"
+) {
   url = removePrefix(url);
   url = `/api/share${url}`;
   if (expires !== "") {

@@ -61,8 +61,6 @@ const { t } = useI18n();
 const authStore = useAuthStore();
 const layoutStore = useLayoutStore();
 
-const user = computed(() => authStore.user)
-const loading = computed(() => layoutStore.loading)
-
-
+const user = computed(() => authStore.user);
+const loading = computed(() => layoutStore.loading);
 </script>

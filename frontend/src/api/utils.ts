@@ -9,7 +9,7 @@ export async function fetchURL(url: ApiUrl, opts: ApiOpts, auth = true) {
   opts = opts || {};
   opts.headers = opts.headers || {};
 
-  let { headers, ...rest } = opts;
+  const { headers, ...rest } = opts;
   let res;
   try {
     res = await fetch(`${baseURL}${url}`, {

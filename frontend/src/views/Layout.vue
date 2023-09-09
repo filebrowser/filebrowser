@@ -6,7 +6,11 @@
     <sidebar></sidebar>
     <main>
       <router-view></router-view>
-      <shell v-if="enableExec && authStore.isLoggedIn && authStore.user?.perm.execute" />
+      <shell
+        v-if="
+          enableExec && authStore.isLoggedIn && authStore.user?.perm.execute
+        "
+      />
     </main>
     <prompts></prompts>
     <upload-files></upload-files>
@@ -33,10 +37,9 @@ const route = useRoute();
 
 watch(route, (newval, oldval) => {
   fileStore.selected = [];
-      fileStore.multiple = false;
-      if (layoutStore.show !== "success") {
-        layoutStore.closeHovers();
-      }
-})
-
+  fileStore.multiple = false;
+  if (layoutStore.show !== "success") {
+    layoutStore.closeHovers();
+  }
+});
 </script>

@@ -9,8 +9,8 @@
     "build": "vite build",
     "watch": "vite build --watch",
     "clean": "find ./dist -maxdepth 1 -mindepth 1 ! -name '.gitkeep' -exec rm -r {} +",
-    "lint": "eslint --ext .vue,.js src/",
-    "lint:fix": "eslint --ext .vue,.js --fix src/",
+    "lint": "eslint --ext .vue,.ts src/",
+    "lint:fix": "eslint --ext .vue,.ts --fix src/",
     "format": "prettier --write ."
   },
   "dependencies": {

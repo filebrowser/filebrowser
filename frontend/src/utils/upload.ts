@@ -6,21 +6,21 @@ export function checkConflict(files: file[], items: item[]) {
     items = [];
   }
 
-  let folder_upload = files[0].fullPath !== undefined;
+  const folder_upload = files[0].fullPath !== undefined;
 
   let conflict = false;
   for (let i = 0; i < files.length; i++) {
-    let file = files[i];
+    const file = files[i];
     let name = file.name;
 
     if (folder_upload) {
-      let dirs = file.fullPath.split("/");
+      const dirs = file.fullPath.split("/");
       if (dirs.length > 1) {
         name = dirs[0];
       }
     }
 
-    let res = items.findIndex(function hasConflict(element) {
+    const res = items.findIndex(function hasConflict(element) {
       // @ts-ignore Don't know what this does
       return element.name === this;
     }, name);
@@ -34,13 +34,13 @@ export function checkConflict(files: file[], items: item[]) {
   return conflict;
 }
 
-export function scanFiles(dt: {[key: string]: any, item: item}) {
+export function scanFiles(dt: { [key: string]: any; item: item }) {
   return new Promise((resolve) => {
     let reading = 0;
     const contents: any[] = [];
 
     if (dt.items !== undefined) {
-      for (let item of dt.items) {
+      for (const item of dt.items) {
         if (
           item.kind === "file" &&
           typeof item.webkitGetAsEntry === "function"
@@ -114,9 +114,9 @@ export function handleFiles(files: file[], base: string, overwrite = false) {
   const uploadStore = useUploadStore();
 
   for (let i = 0; i < files.length; i++) {
-    let id = uploadStore.id;
+    const id = uploadStore.id;
     let path = base;
-    let file = files[i];
+    const file = files[i];
 
     if (file.fullPath !== undefined) {
       path += url.encodePath(file.fullPath);

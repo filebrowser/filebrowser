@@ -5,11 +5,11 @@ import { defineStore } from "pinia";
 export const useLayoutStore = defineStore("layout", {
   // convert to a function
   state: (): {
-    loading: boolean,
-    show: string | null | boolean,
-    showConfirm: any,
-    showAction: boolean | null,
-    showShell: boolean | null
+    loading: boolean;
+    show: string | null | boolean;
+    showConfirm: any;
+    showAction: boolean | null;
+    showShell: boolean | null;
   } => ({
     loading: false,
     show: null,

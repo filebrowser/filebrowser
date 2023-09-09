@@ -19,18 +19,18 @@ export async function upload(
   }
 
   filePath = removePrefix(filePath);
-  let resourcePath = `${tusEndpoint}${filePath}?override=${overwrite}`;
+  const resourcePath = `${tusEndpoint}${filePath}?override=${overwrite}`;
 
   await createUpload(resourcePath);
 
   const authStore = useAuthStore();
 
   // Exit early because of typescript, tus content can't be a string
-  if(content === "") {
+  if (content === "") {
     return false;
   }
   return new Promise<void | string>((resolve, reject) => {
-    let upload = new tus.Upload(content, {
+    const upload = new tus.Upload(content, {
       uploadUrl: `${baseURL}${resourcePath}`,
       chunkSize: tusSettings.chunkSize,
       retryDelays: computeRetryDelays(tusSettings),
@@ -58,7 +58,7 @@ export async function upload(
 }
 
 async function createUpload(resourcePath: resourcePath) {
-  let headResp = await fetchURL(resourcePath, {
+  const headResp = await fetchURL(resourcePath, {
     method: "POST",
   });
   if (headResp.status !== 201) {
@@ -68,7 +68,7 @@ async function createUpload(resourcePath: resourcePath) {
   }
 }
 
-function computeRetryDelays(tusSettings: tusSettings): number[] | undefined{
+function computeRetryDelays(tusSettings: tusSettings): number[] | undefined {
   if (!tusSettings.retryCount || tusSettings.retryCount < 1) {
     // Disable retries altogether
     return undefined;

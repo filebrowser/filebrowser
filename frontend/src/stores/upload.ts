@@ -16,12 +16,12 @@ const beforeUnload = (event: Event) => {
 export const useUploadStore = defineStore("upload", {
   // convert to a function
   state: (): {
-    id: number,
-    sizes: any[],
-    progress: any[],
-    queue: any[],
-    uploads: uploads,
-    error: any
+    id: number;
+    sizes: any[];
+    progress: any[];
+    queue: any[];
+    uploads: uploads;
+    error: any;
   } => ({
     id: 0,
     sizes: [],
@@ -75,9 +75,9 @@ export const useUploadStore = defineStore("upload", {
   },
   actions: {
     // no context as first argument, use `this` instead
-    setProgress(obj: { id: number, loaded: boolean }) {
+    setProgress(obj: { id: number; loaded: boolean }) {
       // Vue.set(this.progress, id, loaded);
-      const { id, loaded } = obj
+      const { id, loaded } = obj;
       this.progress[id] = loaded;
     },
     setError(error) {
@@ -104,10 +104,10 @@ export const useUploadStore = defineStore("upload", {
       delete this.uploads[id];
     },
     upload(item: item) {
-      let uploadsCount = Object.keys(this.uploads).length;
+      const uploadsCount = Object.keys(this.uploads).length;
 
-      let isQueueEmpty = this.queue.length == 0;
-      let isUploadsEmpty = uploadsCount == 0;
+      const isQueueEmpty = this.queue.length == 0;
+      const isUploadsEmpty = uploadsCount == 0;
 
       if (isQueueEmpty && isUploadsEmpty) {
         window.addEventListener("beforeunload", beforeUnload);
@@ -118,7 +118,7 @@ export const useUploadStore = defineStore("upload", {
       this.processUploads();
     },
     finishUpload(item: item) {
-      this.setProgress({ id: item.id, loaded: (item.file.size > 0) });
+      this.setProgress({ id: item.id, loaded: item.file.size > 0 });
       this.removeJob(item.id);
       this.processUploads();
     },
@@ -147,7 +147,7 @@ export const useUploadStore = defineStore("upload", {
         if (item.file.isDir) {
           await api.post(item.path).catch(this.setError);
         } else {
-          let onUpload = throttle(
+          const onUpload = throttle(
             (event) =>
               this.setProgress({
                 id: item.id,

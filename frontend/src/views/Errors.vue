@@ -14,13 +14,13 @@ import HeaderBar from "@/components/header/HeaderBar.vue";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
-const { t } = useI18n({})
+const { t } = useI18n({});
 
 const errors: {
   [key: string]: {
-    icon: string,
-    message: string
-  }
+    icon: string;
+    message: string;
+  };
 } = {
   0: {
     icon: "cloud_off",
@@ -40,11 +40,9 @@ const errors: {
   },
 };
 
-const props = defineProps(["errorCode", "showHeader"])
-
+const props = defineProps(["errorCode", "showHeader"]);
 
 const info = computed(() => {
-  return errors[props.errorCode] ? errors [props.errorCode] : errors[500]
-})
-
+  return errors[props.errorCode] ? errors[props.errorCode] : errors[500];
+});
 </script>

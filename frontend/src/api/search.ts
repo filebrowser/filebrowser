@@ -9,7 +9,7 @@ export default async function search(base: apiUrl, query: string) {
     base += "/";
   }
 
-  let res = await fetchURL(`/api/search${base}?query=${query}`, {});
+  const res = await fetchURL(`/api/search${base}?query=${query}`, {});
 
   let data = await res.json();
 

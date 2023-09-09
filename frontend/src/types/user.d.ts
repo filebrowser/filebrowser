@@ -1,7 +1,7 @@
 interface user {
-    id: number,
-    locale: string,
-    perm: any
+  id: number;
+  locale: string;
+  perm: any;
 }
 
-type userKey = keyof user
+type userKey = keyof user;

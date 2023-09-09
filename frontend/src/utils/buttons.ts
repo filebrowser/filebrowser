@@ -1,5 +1,7 @@
 function loading(button: string) {
-  let el: HTMLButtonElement | null = document.querySelector(`#${button}-button > i`);
+  const el: HTMLButtonElement | null = document.querySelector(
+    `#${button}-button > i`
+  );
 
   if (el === undefined || el === null) {
     console.log("Error getting button " + button); // eslint-disable-line
@@ -14,7 +16,7 @@ function loading(button: string) {
   el.style.opacity = "0";
 
   setTimeout(() => {
-    if(el) {
+    if (el) {
       el.classList.add("spin");
       el.innerHTML = "autorenew";
       el.style.opacity = "1";
@@ -23,7 +25,9 @@ function loading(button: string) {
 }
 
 function done(button: string) {
-  let el: HTMLButtonElement | null = document.querySelector(`#${button}-button > i`);
+  const el: HTMLButtonElement | null = document.querySelector(
+    `#${button}-button > i`
+  );
 
   if (el === undefined || el === null) {
     console.log("Error getting button " + button); // eslint-disable-line
@@ -33,18 +37,18 @@ function done(button: string) {
   el.style.opacity = "0";
 
   setTimeout(() => {
-    if(el !== null) {
+    if (el !== null) {
       el.classList.remove("spin");
       el.innerHTML = el?.dataset?.icon || "";
       el.style.opacity = "1";
     }
-    
-    
   }, 100);
 }
 
 function success(button: string) {
-  let el: HTMLButtonElement | null = document.querySelector(`#${button}-button > i`);
+  const el: HTMLButtonElement | null = document.querySelector(
+    `#${button}-button > i`
+  );
 
   if (el === undefined || el === null) {
     console.log("Error getting button " + button); // eslint-disable-line
@@ -54,16 +58,16 @@ function success(button: string) {
   el.style.opacity = "0";
 
   setTimeout(() => {
-    if(el !== null) {
+    if (el !== null) {
       el.classList.remove("spin");
       el.innerHTML = "done";
       el.style.opacity = "1";
     }
     setTimeout(() => {
-      if(el) el.style.opacity = "0";
+      if (el) el.style.opacity = "0";
 
       setTimeout(() => {
-        if(el !== null) {
+        if (el !== null) {
           el.innerHTML = el?.dataset?.icon || "";
           el.style.opacity = "1";
         }

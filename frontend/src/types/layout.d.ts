@@ -1,5 +1,5 @@
 interface LayoutValue {
-    prompt: string,
-    confirm: Function,
-    action?: boolean,
+  prompt: string;
+  confirm: any;
+  action?: boolean;
 }

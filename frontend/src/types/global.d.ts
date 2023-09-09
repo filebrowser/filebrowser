@@ -1,8 +1,8 @@
 export {};
 
 declare global {
-    interface Window {
-        FileBrowser: any;
-        grecaptcha: any
-    }
+  interface Window {
+    FileBrowser: any;
+    grecaptcha: any;
+  }
 }

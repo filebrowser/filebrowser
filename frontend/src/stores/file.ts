@@ -3,12 +3,12 @@ import { defineStore } from "pinia";
 export const useFileStore = defineStore("file", {
   // convert to a function
   state: (): {
-    req: IFile | null,
-    oldReq: IFile | null,
-    reload: boolean,
-    selected: any[],
-    multiple: boolean,
-    isFiles: boolean
+    req: IFile | null;
+    oldReq: IFile | null;
+    reload: boolean;
+    selected: any[];
+    multiple: boolean;
+    isFiles: boolean;
   } => ({
     req: null,
     oldReq: null,

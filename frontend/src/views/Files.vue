@@ -1,6 +1,10 @@
 <template>
   <div>
-    <header-bar v-if="error || fileStore.req?.type === null" showMenu showLogo />
+    <header-bar
+      v-if="error || fileStore.req?.type === null"
+      showMenu
+      showLogo
+    />
 
     <breadcrumbs base="/files" />
 
@@ -20,7 +24,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from "vue";
+import {
+  computed,
+  defineAsyncComponent,
+  onBeforeUnmount,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+} from "vue";
 import { files as api } from "@/api";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
@@ -32,23 +44,22 @@ import Errors from "@/views/Errors.vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
-const layoutStore = useLayoutStore()
-const fileStore = useFileStore()
-const uploadStore = useUploadStore()
+const layoutStore = useLayoutStore();
+const fileStore = useFileStore();
+const uploadStore = useUploadStore();
 
-const route = useRoute()
-const router = useRouter()
-
+const route = useRoute();
+const router = useRouter();
 
 const { t } = useI18n({});
 
 const clean = (path: string) => {
   return path.endsWith("/") ? path.slice(0, -1) : path;
-}
+};
 
 const Editor = defineAsyncComponent(() => import("@/views/files/Editor.vue"));
-const error = ref<any | null>(null)
-const width = computed(() => window.innerWidth)
+const error = ref<any | null>(null);
+const width = computed(() => window.innerWidth);
 
 const currentView = computed(() => {
   if (fileStore.req?.type == undefined) {
@@ -65,18 +76,18 @@ const currentView = computed(() => {
   } else {
     return "preview";
   }
-})
+});
 
 // Define hooks
 onMounted(() => {
   fetchData();
   fileStore.isFiles = true;
   window.addEventListener("keydown", keyEvent);
-})
+});
 
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", keyEvent);
-})
+});
 
 onUnmounted(() => {
   fileStore.isFiles = false;
@@ -84,20 +95,18 @@ onUnmounted(() => {
     layoutStore.toggleShell();
   }
   fileStore.updateRequest(null);
-})
+});
 
-watch(route, () => fetchData())
+watch(route, () => fetchData());
 // @ts-ignore
 watch(fileStore.reload, (val) => {
   if (val) {
     fetchData();
   }
-}
-)
+});
 watch(uploadStore.error, (newValue, oldValue) => {
   newValue && newValue !== oldValue && layoutStore.showError();
-})
-
+});
 
 // Define functions
 
@@ -118,10 +127,7 @@ const fetchData = async () => {
   try {
     const res = await api.fetch(url);
 
-    if (
-      clean(res.path) !==
-      clean(`/${[...route.params.path].join("/")}`)
-    ) {
+    if (clean(res.path) !== clean(`/${[...route.params.path].join("/")}`)) {
       throw new Error("Data Mismatch!");
     }
 
@@ -132,11 +138,11 @@ const fetchData = async () => {
   } finally {
     layoutStore.loading = false;
   }
-}
+};
 const keyEvent = (event: KeyboardEvent) => {
   if (event.key === "F1") {
     event.preventDefault();
     layoutStore.showHover("help");
   }
-}
+};
 </script>

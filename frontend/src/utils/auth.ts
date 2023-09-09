@@ -5,7 +5,7 @@ import { baseURL } from "./constants";
 
 export function parseToken(token: string) {
   // falsy or malformed jwt will throw InvalidTokenError
-  const data = jwt_decode<{[key:string]: any, user: user}>(token);
+  const data = jwt_decode<{ [key: string]: any; user: user }>(token);
 
   document.cookie = `auth=${token}; Path=/; SameSite=Strict;`;
 
@@ -27,7 +27,11 @@ export async function validateLogin() {
   }
 }
 
-export async function login(username: string, password: string, recaptcha: string) {
+export async function login(
+  username: string,
+  password: string,
+  recaptcha: string
+) {
   const data = { username, password, recaptcha };
 
   const res = await fetch(`${baseURL}/api/login`, {
@@ -87,6 +91,6 @@ export function logout() {
   const authStore = useAuthStore();
   authStore.clearUser();
 
-  localStorage.setItem("jwt", '');
+  localStorage.setItem("jwt", "");
   router.push({ path: "/login" });
 }

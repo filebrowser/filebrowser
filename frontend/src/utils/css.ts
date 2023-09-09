@@ -4,7 +4,7 @@ export default function getRule(rules: any) {
   }
 
   let result = null;
-  let find = Array.prototype.find;
+  const find = Array.prototype.find;
 
   find.call(document.styleSheets, (styleSheet) => {
     result = find.call(styleSheet.cssRules, (cssRule) => {

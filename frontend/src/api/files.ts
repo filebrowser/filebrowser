@@ -8,7 +8,7 @@ export async function fetch(url: apiUrl) {
 
   const res = await fetchURL(`/api/resources${url}`, {});
 
-  let data = await res.json();
+  const data = await res.json();
   data.url = `/files${url}`;
 
   if (data.isDir) {
@@ -33,9 +33,9 @@ async function resourceAction(url: apiUrl, method: apiMethod, content?: any) {
   debugger;
   url = removePrefix(url);
 
-  let opts: apiOpts = { 
-    method
-   };
+  const opts: apiOpts = {
+    method,
+  };
 
   if (content) {
     opts.body = content;
@@ -62,7 +62,7 @@ export function download(format: any, ...files: string[]) {
   } else {
     let arg = "";
 
-    for (let file of files) {
+    for (const file of files) {
       arg += removePrefix(file) + ",";
     }
 
@@ -83,7 +83,12 @@ export function download(format: any, ...files: string[]) {
   window.open(url);
 }
 
-export async function post(url: apiUrl, content: apiContent = "", overwrite = false, onupload: Function = () => {}) {
+export async function post(
+  url: apiUrl,
+  content: apiContent = "",
+  overwrite = false,
+  onupload: Function = () => {}
+) {
   // Use the pre-existing API if:
   const useResourcesApi =
     // a folder is being created
@@ -98,7 +103,12 @@ export async function post(url: apiUrl, content: apiContent = "", overwrite = fa
     : postTus(url, content, overwrite, onupload);
 }
 
-async function postResources(url: apiUrl, content: apiContent = "", overwrite = false, onupload: any) {
+async function postResources(
+  url: apiUrl,
+  content: apiContent = "",
+  overwrite = false,
+  onupload: any
+) {
   url = removePrefix(url);
 
   let bufferContent: ArrayBuffer;
@@ -111,7 +121,7 @@ async function postResources(url: apiUrl, content: apiContent = "", overwrite = 
 
   const authStore = useAuthStore();
   return new Promise((resolve, reject) => {
-    let request = new XMLHttpRequest();
+    const request = new XMLHttpRequest();
     request.open(
       "POST",
       `${baseURL}/api/resources${url}?override=${overwrite}`,
@@ -141,10 +151,15 @@ async function postResources(url: apiUrl, content: apiContent = "", overwrite = 
   });
 }
 
-function moveCopy(items: item[], copy = false, overwrite = false, rename = false) {
-  let promises = [];
+function moveCopy(
+  items: item[],
+  copy = false,
+  overwrite = false,
+  rename = false
+) {
+  const promises = [];
 
-  for (let item of items) {
+  for (const item of items) {
     const from = item.from;
     const to = encodeURIComponent(removePrefix(item.to ?? ""));
     const url = `${from}?action=${

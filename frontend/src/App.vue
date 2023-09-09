@@ -5,19 +5,18 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted } from "vue";
 
 onMounted(() => {
   const loading = document.getElementById("loading");
-  if(loading !== null) {
+  if (loading !== null) {
     loading.classList.add("done");
-  
+
     setTimeout(function () {
-      if(loading.parentNode !== null) {
+      if (loading.parentNode !== null) {
         loading.parentNode.removeChild(loading);
       }
     }, 200);
-  } 
-})
-
+  }
+});
 </script>

@@ -3,13 +3,27 @@
     <header-bar showMenu showLogo>
       <title />
 
-      <action v-if="fileStore.selectedCount" icon="file_download" :label="t('buttons.download')" @action="download"
-        :counter="fileStore.selectedCount" />
-      <button v-if="isSingleFile()" class="action copy-clipboard" :data-clipboard-text="linkSelected()"
-        :aria-label="t('buttons.copyDownloadLinkToClipboard')" :data-title="t('buttons.copyDownloadLinkToClipboard')">
+      <action
+        v-if="fileStore.selectedCount"
+        icon="file_download"
+        :label="t('buttons.download')"
+        @action="download"
+        :counter="fileStore.selectedCount"
+      />
+      <button
+        v-if="isSingleFile()"
+        class="action copy-clipboard"
+        :data-clipboard-text="linkSelected()"
+        :aria-label="t('buttons.copyDownloadLinkToClipboard')"
+        :data-title="t('buttons.copyDownloadLinkToClipboard')"
+      >
         <i class="material-icons">content_paste</i>
       </button>
-      <action icon="check_circle" :label="t('buttons.selectMultiple')" @action="toggleMultipleSelection" />
+      <action
+        icon="check_circle"
+        :label="t('buttons.selectMultiple')"
+        @action="toggleMultipleSelection"
+      />
     </header-bar>
 
     <breadcrumbs :base="'/share/' + hash" />
@@ -35,12 +49,21 @@
           </div>
 
           <div class="card-content">
-            <input v-focus type="password" :placeholder="t('login.password')" v-model="password"
-              @keyup.enter="fetchData" />
+            <input
+              v-focus
+              type="password"
+              :placeholder="t('login.password')"
+              v-model="password"
+              @keyup.enter="fetchData"
+            />
           </div>
           <div class="card-action">
-            <button class="button button--flat" @click="fetchData" :aria-label="t('buttons.submit')"
-              :data-title="t('buttons.submit')">
+            <button
+              class="button button--flat"
+              @click="fetchData"
+              :aria-label="t('buttons.submit')"
+              :data-title="t('buttons.submit')"
+            >
               {{ t("buttons.submit") }}
             </button>
           </div>
@@ -54,8 +77,8 @@
           <div class="share__box__header">
             {{
               req.isDir
-              ? t("download.downloadFolder")
-              : t("download.downloadFile")
+                ? t("download.downloadFolder")
+                : t("download.downloadFile")
             }}
           </div>
           <div class="share__box__element share__box__center share__box__icon">
@@ -73,12 +96,19 @@
           <div class="share__box__element share__box__center">
             <a target="_blank" :href="link" class="button button--flat">
               <div>
-                <i class="material-icons">file_download</i>{{ t("buttons.download") }}
+                <i class="material-icons">file_download</i
+                >{{ t("buttons.download") }}
               </div>
             </a>
-            <a target="_blank" :href="inlineLink" class="button button--flat" v-if="!req.isDir">
+            <a
+              target="_blank"
+              :href="inlineLink"
+              class="button button--flat"
+              v-if="!req.isDir"
+            >
               <div>
-                <i class="material-icons">open_in_new</i>{{ t("buttons.openFile") }}
+                <i class="material-icons">open_in_new</i
+                >{{ t("buttons.openFile") }}
               </div>
             </a>
           </div>
@@ -86,31 +116,59 @@
             <qrcode-vue :value="link" :size="200" level="M"></qrcode-vue>
           </div>
         </div>
-        <div v-if="req.isDir && req.items.length > 0" class="share__box share__box__items">
+        <div
+          v-if="req.isDir && req.items.length > 0"
+          class="share__box share__box__items"
+        >
           <div class="share__box__header" v-if="req.isDir">
             {{ t("files.files") }}
           </div>
           <div id="listing" class="list file-icons">
-            <item v-for="item in req.items.slice(0, showLimit)" :key="base64(item.name)" v-bind:index="item.index"
-              v-bind:name="item.name" v-bind:isDir="item.isDir" v-bind:url="item.url" v-bind:modified="item.modified"
-              v-bind:type="item.type" v-bind:size="item.size" readOnly>
+            <item
+              v-for="item in req.items.slice(0, showLimit)"
+              :key="base64(item.name)"
+              v-bind:index="item.index"
+              v-bind:name="item.name"
+              v-bind:isDir="item.isDir"
+              v-bind:url="item.url"
+              v-bind:modified="item.modified"
+              v-bind:type="item.type"
+              v-bind:size="item.size"
+              readOnly
+            >
             </item>
-            <div v-if="req.items.length > showLimit" class="item" @click="showLimit += 100">
+            <div
+              v-if="req.items.length > showLimit"
+              class="item"
+              @click="showLimit += 100"
+            >
               <div>
                 <p class="name">+ {{ req.items.length - showLimit }}</p>
               </div>
             </div>
 
-            <div :class="{ active: fileStore.multiple }" id="multiple-selection">
+            <div
+              :class="{ active: fileStore.multiple }"
+              id="multiple-selection"
+            >
               <p>{{ t("files.multipleSelectionEnabled") }}</p>
-              <div @click="() => (fileStore.multiple = false)" tabindex="0" role="button" :data-title="t('files.clear')"
-                :aria-label="t('files.clear')" class="action">
+              <div
+                @click="() => (fileStore.multiple = false)"
+                tabindex="0"
+                role="button"
+                :data-title="t('files.clear')"
+                :aria-label="t('files.clear')"
+                class="action"
+              >
                 <i class="material-icons">clear</i>
               </div>
             </div>
           </div>
         </div>
-        <div v-else-if="req.isDir && req.items.length === 0" class="share__box share__box__items">
+        <div
+          v-else-if="req.isDir && req.items.length === 0"
+          class="share__box share__box__items"
+        >
           <h2 class="message">
             <i class="material-icons">sentiment_dissatisfied</i>
             <span>{{ t("files.lonely") }}</span>
@@ -140,49 +198,57 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 
-const error = ref<null | any>(null)
-const showLimit = ref<number>(100)
-const password = ref<string>("")
-const attemptedPasswordLogin = ref<boolean>(false)
-const hash = ref<any>(null)
-const token = ref<any>(null)
-const clip = ref<any>(null)
+const error = ref<null | any>(null);
+const showLimit = ref<number>(100);
+const password = ref<string>("");
+const attemptedPasswordLogin = ref<boolean>(false);
+const hash = ref<any>(null);
+const token = ref<any>(null);
+const clip = ref<any>(null);
 
-const { t } = useI18n({})
+const { t } = useI18n({});
 
-const route = useRoute()
-const fileStore = useFileStore()
-const layoutStore = useLayoutStore()
+const route = useRoute();
+const fileStore = useFileStore();
+const layoutStore = useLayoutStore();
 
 watch(route, () => {
-  showLimit.value = 100
+  showLimit.value = 100;
   fetchData();
-})
+});
 
-const req = computed(() => fileStore.req)
+const req = computed(() => fileStore.req);
 
 // Define computes
 
 const icon = computed(() => {
-  if (req.value === null) return "insert_drive_file"
+  if (req.value === null) return "insert_drive_file";
   if (req.value.isDir) return "folder";
   if (req.value.type === "image") return "insert_photo";
   if (req.value.type === "audio") return "volume_up";
   if (req.value.type === "video") return "movie";
   return "insert_drive_file";
-})
+});
 
-const link = computed(() => (req.value ? api.getDownloadURL(req.value) : ""))
-const inlineLink = computed(() => (req.value ? api.getDownloadURL(req.value, true) : ""))
+const link = computed(() => (req.value ? api.getDownloadURL(req.value) : ""));
+const inlineLink = computed(() =>
+  req.value ? api.getDownloadURL(req.value, true) : ""
+);
 const humanSize = computed(() => {
   if (req.value) {
-    return (req.value.isDir ? req.value.items.length : filesize(req.value.size ?? 0))
+    return req.value.isDir
+      ? req.value.items.length
+      : filesize(req.value.size ?? 0);
   } else {
-    return ""
+    return "";
   }
-})
-const humanTime = computed(() => dayjs(req.value?.modified).fromNow())
-const modTime = computed(() => (req.value ? new Date(Date.parse(req.value.modified)).toLocaleString() : new Date()))
+});
+const humanTime = computed(() => dayjs(req.value?.modified).fromNow());
+const modTime = computed(() =>
+  req.value
+    ? new Date(Date.parse(req.value.modified)).toLocaleString()
+    : new Date()
+);
 
 // Functions
 const base64 = (name: any) => Base64.encodeURI(name);
@@ -207,7 +273,6 @@ const fetchData = async () => {
     let file = await api.fetch(url, password.value);
     file.hash = hash.value;
 
-
     token.value = file.token || "";
 
     fileStore.updateRequest(file);
@@ -217,7 +282,7 @@ const fetchData = async () => {
   } finally {
     layoutStore.loading = false;
   }
-}
+};
 
 const keyEvent = (event: KeyboardEvent) => {
   if (event.key === "Escape") {
@@ -227,13 +292,15 @@ const keyEvent = (event: KeyboardEvent) => {
       fileStore.selected = [];
     }
   }
-}
+};
 
 const toggleMultipleSelection = () => {
   // toggle
-}
+};
 
-const isSingleFile = () => fileStore.selectedCount === 1 && !req.value?.items[fileStore.selected[0]].isDir
+const isSingleFile = () =>
+  fileStore.selectedCount === 1 &&
+  !req.value?.items[fileStore.selected[0]].isDir;
 
 const download = () => {
   if (isSingleFile()) {
@@ -248,7 +315,7 @@ const download = () => {
   layoutStore.showHover({
     prompt: "download",
     confirm: (format: any) => {
-      if (req.value === null) return false
+      if (req.value === null) return false;
       layoutStore.closeHovers();
 
       let files: string[] = [];
@@ -261,35 +328,32 @@ const download = () => {
       api.download(format, hash.value, token.value, ...files);
     },
   });
-}
+};
 
 const linkSelected = () => {
   return isSingleFile() && req.value
-    // @ts-ignore
-    ? api.getDownloadURL({
-      hash: hash.value,
-      path: req.value.items[fileStore.selected[0]].path,
-    })
+    ? // @ts-ignore
+      api.getDownloadURL({
+        hash: hash.value,
+        path: req.value.items[fileStore.selected[0]].path,
+      })
     : "";
-}
-
+};
 
 onMounted(async () => {
   // Created
   hash.value = route.params.path[0];
   await fetchData();
 
-
   window.addEventListener("keydown", keyEvent);
   clip.value = new Clipboard(".copy-clipboard");
   clip.value.on("success", () => {
     // $showSuccess(this.t("success.linkCopied"));
   });
-})
+});
 
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", keyEvent);
   clip.value.destroy();
-})
-
+});
 </script>

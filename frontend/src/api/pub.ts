@@ -12,7 +12,7 @@ export async function fetch(url: ApiUrl, password: string = "") {
     false
   );
 
-  let data = await res.json();
+  const data = await res.json();
   data.url = `/share${url}`;
 
   if (data.isDir) {
@@ -33,7 +33,12 @@ export async function fetch(url: ApiUrl, password: string = "") {
 }
 
 // Is this redundant code?
-export function download(format: any, hash: string, token: string, ...files: any) {
+export function download(
+  format: any,
+  hash: string,
+  token: string,
+  ...files: any
+) {
   let url = `${baseURL}/api/public/dl/${hash}`;
 
   if (files.length === 1) {
@@ -41,7 +46,7 @@ export function download(format: any, hash: string, token: string, ...files: any
   } else {
     let arg = "";
 
-    for (let file of files) {
+    for (const file of files) {
       arg += encodeURIComponent(file) + ",";
     }
 

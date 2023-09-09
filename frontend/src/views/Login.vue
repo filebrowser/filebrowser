@@ -35,9 +35,7 @@
       />
 
       <p @click="toggleMode" v-if="signup">
-        {{
-          createMode ? t("login.loginInstead") : t("login.createAnAccount")
-        }}
+        {{ createMode ? t("login.loginInstead") : t("login.createAnAccount") }}
       </p>
     </form>
   </div>
@@ -57,18 +55,17 @@ import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 // Define refs
-const createMode = ref<boolean>(false)
-const error = ref<string>("")
-const username = ref<string>("")
-const password = ref<string>("")
-const passwordConfirm = ref<string>("")
+const createMode = ref<boolean>(false);
+const error = ref<string>("");
+const username = ref<string>("");
+const password = ref<string>("");
+const passwordConfirm = ref<string>("");
 
-const route = useRoute()
-const router = useRouter()
-const { t } = useI18n({})
+const route = useRoute();
+const router = useRouter();
+const { t } = useI18n({});
 // Define functions
-const toggleMode = () => createMode.value = !createMode.value;
-
+const toggleMode = () => (createMode.value = !createMode.value);
 
 const submit = async (event: Event) => {
   event.preventDefault();
@@ -112,17 +109,16 @@ const submit = async (event: Event) => {
       error.value = t("login.wrongCredentials");
     }
   }
-}
+};
 
 // Run hooks
 onMounted(() => {
-    if (!recaptcha) return;
+  if (!recaptcha) return;
 
-    window.grecaptcha.ready(function () {
-      window.grecaptcha.render("recaptcha", {
-        sitekey: recaptchaKey,
-      });
+  window.grecaptcha.ready(function () {
+    window.grecaptcha.render("recaptcha", {
+      sitekey: recaptchaKey,
     });
-})
-
+  });
+});
 </script>

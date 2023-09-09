@@ -1,1 +1,1 @@
-type settings = any
+type settings = any;

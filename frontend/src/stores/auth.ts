@@ -7,8 +7,8 @@ import { cloneDeep } from "lodash-es";
 export const useAuthStore = defineStore("auth", {
   // convert to a function
   state: (): {
-    user: user | null,
-    jwt: string
+    user: user | null;
+    jwt: string;
   } => ({
     user: null,
     jwt: "",
@@ -34,7 +34,7 @@ export const useAuthStore = defineStore("auth", {
     updateUser(value: user) {
       if (typeof value !== "object") return;
 
-      let field: userKey
+      let field: userKey;
       for (field in value) {
         if (field === "locale") {
           const locale = value[field];
