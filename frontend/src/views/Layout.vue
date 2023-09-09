@@ -23,6 +23,7 @@ import Prompts from "@/components/prompts/Prompts.vue";
 import Shell from "@/components/Shell.vue";
 import UploadFiles from "@/components/prompts/UploadFiles.vue";
 import { enableExec } from "@/utils/constants";
+import { useUploadStore } from "@/stores/upload";
 
 export default {
   name: "layout",
@@ -34,7 +35,8 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ["isLoggedIn", "user"]),
-    ...mapState(useLayoutStore, ["progress", "show"]),
+    ...mapState(useLayoutStore, ["show"]),
+    ...mapState(useUploadStore, { progress: "getProgress" }),
     ...mapWritableState(useFileStore, ["selected", "multiple"]),
     isExecEnabled: () => enableExec,
   },
