@@ -8,7 +8,7 @@
 
     <breadcrumbs base="/files" />
 
-    <errors v-if="error" :errorCode="error?.status" />
+    <Errors v-if="error" :errorCode="error?.status" />
     <component v-else-if="currentView" :is="currentView"></component>
     <div v-else>
       <h2 class="message delayed">
@@ -26,6 +26,7 @@
 <script setup lang="ts">
 import {
   computed,
+  defineAsyncComponent,
   onBeforeUnmount,
   onMounted,
   onUnmounted,
@@ -42,6 +43,9 @@ import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import Errors from "@/views/Errors.vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
+import Preview from "@/views/files/Preview.vue";
+import FileListing from "@/views/files/FileListing.vue";
+const Editor = defineAsyncComponent(() => import("@/views/files/Editor.vue"));
 
 const layoutStore = useLayoutStore();
 const fileStore = useFileStore();
@@ -58,19 +62,19 @@ const clean = (path: string) => {
 const error = ref<any | null>(null);
 
 const currentView = computed(() => {
-  if (fileStore.req?.type == undefined) {
+  if (fileStore.req?.type === undefined) {
     return null;
   }
 
   if (fileStore.req.isDir) {
-    return "file-listing";
+    return FileListing;
   } else if (
     fileStore.req.type === "text" ||
     fileStore.req.type === "textImmutable"
   ) {
-    return "editor";
+    return Editor;
   } else {
-    return "preview";
+    return Preview;
   }
 });
 

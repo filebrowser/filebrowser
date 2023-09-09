@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div v-if="false" class="layoutStore.progress">
-      <!-- <div v-bind:style="{ width: this.layoutStore.progress + '%' }"></div> -->
-    </div>
+    <!-- <div v-if="true" class="layoutStore.progress">
+      <div v-bind:style="{ width: this.layoutStore.progress + '%' }"></div>
+    </div> -->
     <sidebar></sidebar>
     <main>
       <router-view></router-view>
