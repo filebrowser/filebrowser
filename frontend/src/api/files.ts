@@ -3,7 +3,7 @@ import { baseURL } from "@/utils/constants";
 import { useAuthStore } from "@/stores/auth";
 import { upload as postTus, useTus } from "./tus";
 
-export async function fetch(url: apiUrl) {
+export async function fetch(url: ApiUrl) {
   url = removePrefix(url);
 
   const res = await fetchURL(`/api/resources${url}`, {});
@@ -29,11 +29,10 @@ export async function fetch(url: apiUrl) {
   return data;
 }
 
-async function resourceAction(url: apiUrl, method: apiMethod, content?: any) {
-  debugger;
+async function resourceAction(url: ApiUrl, method: ApiMethod, content?: any) {
   url = removePrefix(url);
 
-  const opts: apiOpts = {
+  const opts: ApiOpts = {
     method,
   };
 
@@ -46,11 +45,11 @@ async function resourceAction(url: apiUrl, method: apiMethod, content?: any) {
   return res;
 }
 
-export async function remove(url: apiUrl) {
+export async function remove(url: ApiUrl) {
   return resourceAction(url, "DELETE");
 }
 
-export async function put(url: apiUrl, content = "") {
+export async function put(url: ApiUrl, content = "") {
   return resourceAction(url, "PUT", content);
 }
 
@@ -84,10 +83,10 @@ export function download(format: any, ...files: string[]) {
 }
 
 export async function post(
-  url: apiUrl,
-  content: apiContent = "",
+  url: ApiUrl,
+  content: ApiContent = "",
   overwrite = false,
-  onupload: Function = () => {}
+  onupload: any = () => {}
 ) {
   // Use the pre-existing API if:
   const useResourcesApi =
@@ -104,8 +103,8 @@ export async function post(
 }
 
 async function postResources(
-  url: apiUrl,
-  content: apiContent = "",
+  url: ApiUrl,
+  content: ApiContent = "",
   overwrite = false,
   onupload: any
 ) {
@@ -152,7 +151,7 @@ async function postResources(
 }
 
 function moveCopy(
-  items: item[],
+  items: any[],
   copy = false,
   overwrite = false,
   rename = false
@@ -171,20 +170,20 @@ function moveCopy(
   return Promise.all(promises);
 }
 
-export function move(items: item[], overwrite = false, rename = false) {
+export function move(items: any[], overwrite = false, rename = false) {
   return moveCopy(items, false, overwrite, rename);
 }
 
-export function copy(items: item[], overwrite = false, rename = false) {
+export function copy(items: any[], overwrite = false, rename = false) {
   return moveCopy(items, true, overwrite, rename);
 }
 
-export async function checksum(url: apiUrl, algo: algo) {
+export async function checksum(url: ApiUrl, algo: algo) {
   const data = await resourceAction(`${url}?checksum=${algo}`, "GET");
   return (await data.json()).checksums[algo];
 }
 
-export function getDownloadURL(file: file, inline: any) {
+export function getDownloadURL(file: IFile, inline: any) {
   const params = {
     ...(inline && { inline: "true" }),
   };
@@ -192,7 +191,7 @@ export function getDownloadURL(file: file, inline: any) {
   return createURL("api/raw" + file.path, params);
 }
 
-export function getPreviewURL(file: file, size: string) {
+export function getPreviewURL(file: IFile, size: string) {
   const params = {
     inline: "true",
     key: Date.parse(file.modified),
@@ -201,7 +200,7 @@ export function getPreviewURL(file: file, size: string) {
   return createURL("api/preview/" + size + file.path, params);
 }
 
-export function getSubtitlesURL(file: file) {
+export function getSubtitlesURL(file: IFile) {
   const params = {
     inline: "true",
   };
@@ -214,7 +213,7 @@ export function getSubtitlesURL(file: file) {
   return subtitles;
 }
 
-export async function usage(url: apiUrl) {
+export async function usage(url: ApiUrl) {
   url = removePrefix(url);
 
   const res = await fetchURL(`/api/usage${url}`, {});

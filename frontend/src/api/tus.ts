@@ -9,9 +9,9 @@ const RETRY_MAX_DELAY = 20000;
 
 export async function upload(
   filePath: string,
-  content: apiContent = "",
+  content: ApiContent = "",
   overwrite = false,
-  onupload: Function
+  onupload: any
 ) {
   if (!tusSettings) {
     // Shouldn't happen as we check for tus support before calling this function
@@ -87,7 +87,7 @@ function computeRetryDelays(tusSettings: tusSettings): number[] | undefined {
   return retryDelays;
 }
 
-export async function useTus(content: apiContent) {
+export async function useTus(content: ApiContent) {
   return isTusSupported() && content instanceof Blob;
 }
 

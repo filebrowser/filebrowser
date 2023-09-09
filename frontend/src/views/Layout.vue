@@ -18,7 +18,6 @@
 </template>
 
 <script setup lang="ts">
-import { mapActions, mapState, mapWritableState } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
 import { useFileStore } from "@/stores/file";
@@ -27,7 +26,7 @@ import Prompts from "@/components/prompts/Prompts.vue";
 import Shell from "@/components/Shell.vue";
 import UploadFiles from "@/components/prompts/UploadFiles.vue";
 import { enableExec } from "@/utils/constants";
-import { computed, watch } from "vue";
+import { watch } from "vue";
 import { useRoute } from "vue-router";
 
 const layoutStore = useLayoutStore();
@@ -35,7 +34,7 @@ const authStore = useAuthStore();
 const fileStore = useFileStore();
 const route = useRoute();
 
-watch(route, (newval, oldval) => {
+watch(route, () => {
   fileStore.selected = [];
   fileStore.multiple = false;
   if (layoutStore.show !== "success") {

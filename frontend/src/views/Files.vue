@@ -26,7 +26,6 @@
 <script setup lang="ts">
 import {
   computed,
-  defineAsyncComponent,
   onBeforeUnmount,
   onMounted,
   onUnmounted,
@@ -42,14 +41,13 @@ import HeaderBar from "@/components/header/HeaderBar.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import Errors from "@/views/Errors.vue";
 import { useI18n } from "vue-i18n";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
 const layoutStore = useLayoutStore();
 const fileStore = useFileStore();
 const uploadStore = useUploadStore();
 
 const route = useRoute();
-const router = useRouter();
 
 const { t } = useI18n({});
 
@@ -57,9 +55,7 @@ const clean = (path: string) => {
   return path.endsWith("/") ? path.slice(0, -1) : path;
 };
 
-const Editor = defineAsyncComponent(() => import("@/views/files/Editor.vue"));
 const error = ref<any | null>(null);
-const width = computed(() => window.innerWidth);
 
 const currentView = computed(() => {
   if (fileStore.req?.type == undefined) {
