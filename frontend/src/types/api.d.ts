@@ -18,6 +18,7 @@ interface ApiOpts {
 
 interface tusSettings {
   retryCount: number;
+  chunkSize: number;
 }
 
 type algo = any;
