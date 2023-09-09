@@ -7,17 +7,17 @@
         <ul>
           <router-link to="/settings/profile"
             ><li :class="{ active: $route.path === '/settings/profile' }">
-              {{ $t("settings.profileSettings") }}
+              {{ t("settings.profileSettings") }}
             </li></router-link
           >
           <router-link to="/settings/shares" v-if="user?.perm.share"
             ><li :class="{ active: $route.path === '/settings/shares' }">
-              {{ $t("settings.shareManagement") }}
+              {{ t("settings.shareManagement") }}
             </li></router-link
           >
           <router-link to="/settings/global" v-if="user?.perm.admin"
             ><li :class="{ active: $route.path === '/settings/global' }">
-              {{ $t("settings.globalSettings") }}
+              {{ t("settings.globalSettings") }}
             </li></router-link
           >
           <router-link to="/settings/users" v-if="user?.perm.admin"
@@ -27,7 +27,7 @@
                   $route.path === '/settings/users' || $route.name === 'User',
               }"
             >
-              {{ $t("settings.userManagement") }}
+              {{ t("settings.userManagement") }}
             </li></router-link
           >
         </ul>
@@ -41,7 +41,7 @@
           <div class="bounce2"></div>
           <div class="bounce3"></div>
         </div>
-        <span>{{ $t("files.loading") }}</span>
+        <span>{{ t("files.loading") }}</span>
       </h2>
     </div>
 
@@ -54,6 +54,9 @@ import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const authStore = useAuthStore();
 const layoutStore = useLayoutStore();

@@ -4,7 +4,7 @@
 
     <h2 class="message">
       <i class="material-icons">{{ info.icon }}</i>
-      <span>{{ $t(info.message) }}</span>
+      <span>{{ t(info.message) }}</span>
     </h2>
   </div>
 </template>
@@ -12,6 +12,9 @@
 <script setup lang="ts">
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n({})
 
 const errors: {
   [key: string]: {
@@ -37,10 +40,8 @@ const errors: {
   },
 };
 
-const props = defineProps<{
-  errorCode: any,
-  showHeader: boolean
-}>()
+const props = defineProps(["errorCode", "showHeader"])
+
 
 const info = computed(() => {
   return errors[props.errorCode] ? errors [props.errorCode] : errors[500]

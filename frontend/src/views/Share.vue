@@ -3,13 +3,13 @@
     <header-bar showMenu showLogo>
       <title />
 
-      <action v-if="fileStore.selectedCount" icon="file_download" :label="$t('buttons.download')" @action="download"
+      <action v-if="fileStore.selectedCount" icon="file_download" :label="t('buttons.download')" @action="download"
         :counter="fileStore.selectedCount" />
       <button v-if="isSingleFile()" class="action copy-clipboard" :data-clipboard-text="linkSelected()"
-        :aria-label="$t('buttons.copyDownloadLinkToClipboard')" :data-title="$t('buttons.copyDownloadLinkToClipboard')">
+        :aria-label="t('buttons.copyDownloadLinkToClipboard')" :data-title="t('buttons.copyDownloadLinkToClipboard')">
         <i class="material-icons">content_paste</i>
       </button>
-      <action icon="check_circle" :label="$t('buttons.selectMultiple')" @action="toggleMultipleSelection" />
+      <action icon="check_circle" :label="t('buttons.selectMultiple')" @action="toggleMultipleSelection" />
     </header-bar>
 
     <breadcrumbs :base="'/share/' + hash" />
@@ -21,27 +21,27 @@
           <div class="bounce2"></div>
           <div class="bounce3"></div>
         </div>
-        <span>{{ $t("files.loading") }}</span>
+        <span>{{ t("files.loading") }}</span>
       </h2>
     </div>
     <div v-else-if="error">
       <div v-if="error.status === 401">
         <div class="card floating" id="password">
           <div v-if="attemptedPasswordLogin" class="share__wrong__password">
-            {{ $t("login.wrongCredentials") }}
+            {{ t("login.wrongCredentials") }}
           </div>
           <div class="card-title">
-            <h2>{{ $t("login.password") }}</h2>
+            <h2>{{ t("login.password") }}</h2>
           </div>
 
           <div class="card-content">
-            <input v-focus type="password" :placeholder="$t('login.password')" v-model="password"
+            <input v-focus type="password" :placeholder="t('login.password')" v-model="password"
               @keyup.enter="fetchData" />
           </div>
           <div class="card-action">
-            <button class="button button--flat" @click="fetchData" :aria-label="$t('buttons.submit')"
-              :data-title="$t('buttons.submit')">
-              {{ $t("buttons.submit") }}
+            <button class="button button--flat" @click="fetchData" :aria-label="t('buttons.submit')"
+              :data-title="t('buttons.submit')">
+              {{ t("buttons.submit") }}
             </button>
           </div>
         </div>
@@ -54,31 +54,31 @@
           <div class="share__box__header">
             {{
               req.isDir
-              ? $t("download.downloadFolder")
-              : $t("download.downloadFile")
+              ? t("download.downloadFolder")
+              : t("download.downloadFile")
             }}
           </div>
           <div class="share__box__element share__box__center share__box__icon">
             <i class="material-icons">{{ icon }}</i>
           </div>
           <div class="share__box__element">
-            <strong>{{ $t("prompts.displayName") }}</strong> {{ req.name }}
+            <strong>{{ t("prompts.displayName") }}</strong> {{ req.name }}
           </div>
           <div class="share__box__element" :data-title="modTime">
-            <strong>{{ $t("prompts.lastModified") }}:</strong> {{ humanTime }}
+            <strong>{{ t("prompts.lastModified") }}:</strong> {{ humanTime }}
           </div>
           <div class="share__box__element">
-            <strong>{{ $t("prompts.size") }}:</strong> {{ humanSize }}
+            <strong>{{ t("prompts.size") }}:</strong> {{ humanSize }}
           </div>
           <div class="share__box__element share__box__center">
             <a target="_blank" :href="link" class="button button--flat">
               <div>
-                <i class="material-icons">file_download</i>{{ $t("buttons.download") }}
+                <i class="material-icons">file_download</i>{{ t("buttons.download") }}
               </div>
             </a>
             <a target="_blank" :href="inlineLink" class="button button--flat" v-if="!req.isDir">
               <div>
-                <i class="material-icons">open_in_new</i>{{ $t("buttons.openFile") }}
+                <i class="material-icons">open_in_new</i>{{ t("buttons.openFile") }}
               </div>
             </a>
           </div>
@@ -88,7 +88,7 @@
         </div>
         <div v-if="req.isDir && req.items.length > 0" class="share__box share__box__items">
           <div class="share__box__header" v-if="req.isDir">
-            {{ $t("files.files") }}
+            {{ t("files.files") }}
           </div>
           <div id="listing" class="list file-icons">
             <item v-for="item in req.items.slice(0, showLimit)" :key="base64(item.name)" v-bind:index="item.index"
@@ -102,9 +102,9 @@
             </div>
 
             <div :class="{ active: fileStore.multiple }" id="multiple-selection">
-              <p>{{ $t("files.multipleSelectionEnabled") }}</p>
-              <div @click="() => (fileStore.multiple = false)" tabindex="0" role="button" :data-title="$t('files.clear')"
-                :aria-label="$t('files.clear')" class="action">
+              <p>{{ t("files.multipleSelectionEnabled") }}</p>
+              <div @click="() => (fileStore.multiple = false)" tabindex="0" role="button" :data-title="t('files.clear')"
+                :aria-label="t('files.clear')" class="action">
                 <i class="material-icons">clear</i>
               </div>
             </div>
@@ -113,7 +113,7 @@
         <div v-else-if="req.isDir && req.items.length === 0" class="share__box share__box__items">
           <h2 class="message">
             <i class="material-icons">sentiment_dissatisfied</i>
-            <span>{{ $t("files.lonely") }}</span>
+            <span>{{ t("files.lonely") }}</span>
           </h2>
         </div>
       </div>
@@ -138,6 +138,7 @@ import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 
 const error = ref<null | any>(null)
 const showLimit = ref<number>(100)
@@ -146,6 +147,8 @@ const attemptedPasswordLogin = ref<boolean>(false)
 const hash = ref<any>(null)
 const token = ref<any>(null)
 const clip = ref<any>(null)
+
+const { t } = useI18n({})
 
 const route = useRoute()
 const fileStore = useFileStore()
@@ -283,7 +286,7 @@ onMounted(async () => {
   // window.addEventListener("keydown", this.keyEvent);
   // this.clip = new Clipboard(".copy-clipboard");
   // this.clip.on("success", () => {
-  //   this.$showSuccess(this.$t("success.linkCopied"));
+  //   this.$showSuccess(this.t("success.linkCopied"));
   // });
 })
 
