@@ -10,17 +10,17 @@
               {{ $t("settings.profileSettings") }}
             </li></router-link
           >
-          <router-link to="/settings/shares" v-if="user.perm.share"
+          <router-link to="/settings/shares" v-if="user?.perm.share"
             ><li :class="{ active: $route.path === '/settings/shares' }">
               {{ $t("settings.shareManagement") }}
             </li></router-link
           >
-          <router-link to="/settings/global" v-if="user.perm.admin"
+          <router-link to="/settings/global" v-if="user?.perm.admin"
             ><li :class="{ active: $route.path === '/settings/global' }">
               {{ $t("settings.globalSettings") }}
             </li></router-link
           >
-          <router-link to="/settings/users" v-if="user.perm.admin"
+          <router-link to="/settings/users" v-if="user?.perm.admin"
             ><li
               :class="{
                 active:
@@ -49,20 +49,17 @@
   </div>
 </template>
 
-<script>
-import { mapState } from "pinia";
+<script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
 import HeaderBar from "@/components/header/HeaderBar.vue";
+import { computed } from "vue";
 
-export default {
-  name: "settings",
-  components: {
-    HeaderBar,
-  },
-  computed: {
-    ...mapState(useAuthStore, ["user"]),
-    ...mapState(useLayoutStore, ["loading"]),
-  },
-};
+const authStore = useAuthStore();
+const layoutStore = useLayoutStore();
+
+const user = computed(() => authStore.user)
+const loading = computed(() => layoutStore.loading)
+
+
 </script>
