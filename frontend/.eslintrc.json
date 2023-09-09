@@ -17,7 +17,8 @@
     "vue/no-reserved-component-names": "warn",
     "vue/no-mutating-props": "warn",
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/ban-ts-comment": "off"
+    "@typescript-eslint/ban-ts-comment": "off",
+    "no-undef": "off"
   },
   "parserOptions": {
     "ecmaVersion": "latest",
