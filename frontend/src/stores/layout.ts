@@ -39,7 +39,7 @@ export const useLayoutStore = defineStore("layout", {
     },
     showError() {
       this.show = "error";
-      console.error(' error')
+      console.error(" error");
     },
     showSuccess() {
       this.show = "success";
