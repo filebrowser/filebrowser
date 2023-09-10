@@ -34,6 +34,7 @@ import {
   watch,
 } from "vue";
 import { files as api } from "@/api";
+import { storeToRefs } from "pinia";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 import { useUploadStore } from "@/stores/upload";
@@ -50,6 +51,9 @@ const Editor = defineAsyncComponent(() => import("@/views/files/Editor.vue"));
 const layoutStore = useLayoutStore();
 const fileStore = useFileStore();
 const uploadStore = useUploadStore();
+
+const { reload } = storeToRefs(fileStore);
+const { error: uploadError } = storeToRefs(uploadStore);
 
 const route = useRoute();
 
@@ -98,14 +102,11 @@ onUnmounted(() => {
 });
 
 watch(route, () => fetchData());
-// @ts-ignore
-watch(fileStore.reload, (val) => {
-  if (val) {
-    fetchData();
-  }
+watch(reload, (newValue) => {
+  newValue && fetchData();
 });
-watch(uploadStore.error, (newValue, oldValue) => {
-  newValue && newValue !== oldValue && layoutStore.showError();
+watch(uploadError, (newValue) => {
+  newValue && layoutStore.showError();
 });
 
 // Define functions
