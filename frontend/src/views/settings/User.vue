@@ -107,12 +107,6 @@ watch(user, () => {
   user.value.lockPassword = false;
 });
 
-// ...mapState(useAuthStore, { sUser: "user" }),
-// ...mapState(useLayoutStore, ["show"]),
-// ...mapWritableState(useLayoutStore, ["loading"]),
-// ...mapActions(useAuthStore, ["setUser"]),
-// ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),
-
 const fetchData = async () => {
   layoutStore.loading = true;
 
