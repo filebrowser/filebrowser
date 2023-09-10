@@ -25,7 +25,7 @@ type algo = any;
 
 type inline = any;
 
-interface share {
+interface IShare {
   expire: any;
   hash: string;
   path: string;
