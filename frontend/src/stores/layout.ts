@@ -1,3 +1,4 @@
+import type { LayoutValue } from "@/types";
 import { defineStore } from "pinia";
 // import { useAuthPreferencesStore } from "./auth-preferences";
 // import { useAuthEmailStore } from "./auth-email";
@@ -39,7 +40,7 @@ export const useLayoutStore = defineStore("layout", {
     },
     showError() {
       this.show = "error";
-      console.error(' error')
+      console.error(" error");
     },
     showSuccess() {
       this.show = "success";

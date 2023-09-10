@@ -1,4 +1,4 @@
-interface IFile {
+export interface IFile {
   index?: number;
   name: string;
   modified: string;
@@ -7,14 +7,14 @@ interface IFile {
   isDir: boolean;
   size: number;
   fullPath: string;
-  type: uploadType;
+  type: FileType;
   items: IFile[];
   token?: string;
   hash: string;
   url?: string;
 }
 
-type uploadType =
+export type FileType =
   | "video"
   | "audio"
   | "image"
@@ -37,12 +37,22 @@ type req = {
   hash: string;
 };
 
-interface uploads {
-  [key: string]: upload;
+export interface Uploads {
+  [key: string]: Upload;
 }
 
-interface upload {
+export interface Upload {
   id: number;
-  file: file;
+  file: IFile;
   type: string;
+}
+
+export interface Item {
+  id: number;
+  url?: string;
+  path: string;
+  file: IFile;
+  dir?: boolean;
+  overwrite?: boolean;
+  type?: FileType;
 }

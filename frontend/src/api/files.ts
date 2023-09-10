@@ -2,8 +2,15 @@ import { createURL, fetchURL, removePrefix } from "./utils";
 import { baseURL } from "@/utils/constants";
 import { useAuthStore } from "@/stores/auth";
 import { upload as postTus, useTus } from "./tus";
+import type {
+  ApiContent,
+  ApiMethod,
+  ApiOpts,
+  ChecksumAlgs,
+  IFile,
+} from "@/types";
 
-export async function fetch(url: ApiUrl) {
+export async function fetch(url: string) {
   url = removePrefix(url);
 
   const res = await fetchURL(`/api/resources${url}`, {});
@@ -29,7 +36,7 @@ export async function fetch(url: ApiUrl) {
   return data;
 }
 
-async function resourceAction(url: ApiUrl, method: ApiMethod, content?: any) {
+async function resourceAction(url: string, method: ApiMethod, content?: any) {
   url = removePrefix(url);
 
   const opts: ApiOpts = {
@@ -45,11 +52,11 @@ async function resourceAction(url: ApiUrl, method: ApiMethod, content?: any) {
   return res;
 }
 
-export async function remove(url: ApiUrl) {
+export async function remove(url: string) {
   return resourceAction(url, "DELETE");
 }
 
-export async function put(url: ApiUrl, content = "") {
+export async function put(url: string, content = "") {
   return resourceAction(url, "PUT", content);
 }
 
@@ -83,7 +90,7 @@ export function download(format: any, ...files: string[]) {
 }
 
 export async function post(
-  url: ApiUrl,
+  url: string,
   content: ApiContent = "",
   overwrite = false,
   onupload: any = () => {}
@@ -103,7 +110,7 @@ export async function post(
 }
 
 async function postResources(
-  url: ApiUrl,
+  url: string,
   content: ApiContent = "",
   overwrite = false,
   onupload: any
@@ -178,7 +185,7 @@ export function copy(items: any[], overwrite = false, rename = false) {
   return moveCopy(items, true, overwrite, rename);
 }
 
-export async function checksum(url: ApiUrl, algo: algo) {
+export async function checksum(url: string, algo: ChecksumAlgs) {
   const data = await resourceAction(`${url}?checksum=${algo}`, "GET");
   return (await data.json()).checksums[algo];
 }
@@ -213,7 +220,7 @@ export function getSubtitlesURL(file: IFile) {
   return subtitles;
 }
 
-export async function usage(url: ApiUrl) {
+export async function usage(url: string) {
   url = removePrefix(url);
 
   const res = await fetchURL(`/api/usage${url}`, {});

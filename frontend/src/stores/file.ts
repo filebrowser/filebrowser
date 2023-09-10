@@ -1,3 +1,4 @@
+import type { IFile } from "@/types";
 import { defineStore } from "pinia";
 
 export const useFileStore = defineStore("file", {

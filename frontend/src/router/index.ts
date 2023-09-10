@@ -176,12 +176,10 @@ const router = createRouter({
   routes,
 });
 
-router.beforeResolve(async (to: RouteLocation, from, next) => {
+router.beforeResolve(async (to, from, next) => {
   let title;
   try {
-    // this should not fail after we finished the migration
-    // @ts-ignore
-    title = i18n.global.t(titles[to.name]);
+    title = i18n.global.t(titles[to.name as keyof typeof titles]);
   } catch (error) {
     console.error(error);
   }

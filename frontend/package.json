@@ -14,6 +14,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@vue/eslint-config-typescript": "^11.0.3",
     "@vueuse/core": "^10.4.1",
     "ace-builds": "^1.24.1",
     "clipboard": "^2.0.11",
@@ -39,6 +40,8 @@
   },
   "devDependencies": {
     "@intlify/unplugin-vue-i18n": "^0.12.3",
+    "@types/lodash-es": "^4.17.9",
+    "@types/node": "^20.6.0",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@vitejs/plugin-legacy": "^4.1.1",
     "@vitejs/plugin-vue": "^4.3.3",

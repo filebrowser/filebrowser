@@ -1,3 +1,4 @@
+import type { ISettings } from "@/types";
 import { fetchURL, fetchJSON } from "./utils";
 
 export function get() {

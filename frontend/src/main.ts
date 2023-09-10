@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { disableExternal } from "@/utils/constants";
 import { createApp } from "vue";
 import VueLazyload from "vue-lazyload";
@@ -64,7 +63,7 @@ const toastConfig = {
   icon: true,
 };
 
-app.provide("$showSuccess", (message) => {
+app.provide("$showSuccess", (message: string) => {
   const $toast = useToast();
   $toast.success(
     {
@@ -73,22 +72,27 @@ app.provide("$showSuccess", (message) => {
         message: message,
       },
     },
+    // their type defs are messed up
+    //@ts-ignore
     { ...toastConfig, rtl: rtlLanguages.includes(i18n.global.locale) }
   );
 });
 
-app.provide("$showError", (error, displayReport = true) => {
+app.provide("$showError", (error: Error | string, displayReport = true) => {
   const $toast = useToast();
   $toast.error(
     {
       component: CustomToast,
       props: {
-        message: error.message || error,
+        message: (error as Error).message || error,
         isReport: !disableExternal && displayReport,
         // TODO: i couldnt use $t inside the component
+        //@ts-ignore
         reportText: i18n.global.t("buttons.reportIssue"),
       },
     },
+    // their type defs are messed up
+    //@ts-ignore
     {
       ...toastConfig,
       timeout: 0,

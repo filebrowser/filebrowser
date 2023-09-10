@@ -2,10 +2,12 @@ import { useAuthStore } from "@/stores/auth";
 import router from "@/router";
 import jwt_decode from "jwt-decode";
 import { baseURL } from "./constants";
+import { StatusError } from "@/api/utils";
+import type { User } from "@/types";
 
 export function parseToken(token: string) {
   // falsy or malformed jwt will throw InvalidTokenError
-  const data = jwt_decode<{ [key: string]: any; user: user }>(token);
+  const data = jwt_decode<{ [key: string]: any; user: User }>(token);
 
   document.cookie = `auth=${token}; Path=/; SameSite=Strict;`;
 
@@ -80,8 +82,7 @@ export async function signup(username: string, password: string) {
   });
 
   if (res.status !== 200) {
-    // @ts-ignore still need to fix these errors
-    throw new Error(res.status);
+    throw new StatusError(res.statusText, res.status);
   }
 }
 

@@ -3,6 +3,7 @@ import { baseURL, tusEndpoint, tusSettings } from "@/utils/constants";
 import { useAuthStore } from "@/stores/auth";
 import { removePrefix } from "@/api/utils";
 import { fetchURL } from "./utils";
+import type { ApiContent, TusSettings } from "@/types";
 
 const RETRY_BASE_DELAY = 1000;
 const RETRY_MAX_DELAY = 20000;
@@ -57,7 +58,7 @@ export async function upload(
   });
 }
 
-async function createUpload(resourcePath: resourcePath) {
+async function createUpload(resourcePath: string) {
   const headResp = await fetchURL(resourcePath, {
     method: "POST",
   });
@@ -68,7 +69,7 @@ async function createUpload(resourcePath: resourcePath) {
   }
 }
 
-function computeRetryDelays(tusSettings: tusSettings): number[] | undefined {
+function computeRetryDelays(tusSettings: TusSettings): number[] | undefined {
   if (!tusSettings.retryCount || tusSettings.retryCount < 1) {
     // Disable retries altogether
     return undefined;

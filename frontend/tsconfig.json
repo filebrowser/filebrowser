@@ -5,26 +5,19 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Node10",
     "strict": true,
-    "jsx": "preserve",
     "sourceMap": true,
-    "outDir": "../dist/frontend",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
     "types": ["vite/client"],
-    "typeRoots": ["./node_modules/@types", "./some-custom-lib"],
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "include": [
-    "./**/*.ts",
-    "src/**/*.d.ts",
-    "src/**/*.vue",
-  ],
+  "include": ["src/**/*.ts", "src/**/*.vue", "src/i18n/index.ts.bak"],
   "exclude": ["node_modules", "dist"]
 }

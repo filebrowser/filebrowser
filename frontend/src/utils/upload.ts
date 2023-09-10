@@ -1,7 +1,8 @@
 import { useUploadStore } from "@/stores/upload";
+import type { IFile, Item, FileType } from "@/types";
 import url from "@/utils/url";
 
-export function checkConflict(files: file[], items: item[]) {
+export function checkConflict(files: IFile[], items: Item[]) {
   if (typeof items === "undefined" || items === null) {
     items = [];
   }
@@ -34,7 +35,7 @@ export function checkConflict(files: file[], items: item[]) {
   return conflict;
 }
 
-export function scanFiles(dt: { [key: string]: any; item: item }) {
+export function scanFiles(dt: { [key: string]: any; item: Item }) {
   return new Promise((resolve) => {
     let reading = 0;
     const contents: any[] = [];
@@ -56,7 +57,7 @@ export function scanFiles(dt: { [key: string]: any; item: item }) {
     function readEntry(entry: any, directory = "") {
       if (entry.isFile) {
         reading++;
-        entry.file((file: file) => {
+        entry.file((file: IFile) => {
           reading--;
 
           file.fullPath = `${directory}${file.name}`;
@@ -101,7 +102,7 @@ export function scanFiles(dt: { [key: string]: any; item: item }) {
   });
 }
 
-function detectType(mimetype: string): uploadType {
+function detectType(mimetype: string): FileType {
   if (mimetype.startsWith("video")) return "video";
   if (mimetype.startsWith("audio")) return "audio";
   if (mimetype.startsWith("image")) return "image";
@@ -110,7 +111,7 @@ function detectType(mimetype: string): uploadType {
   return "blob";
 }
 
-export function handleFiles(files: file[], base: string, overwrite = false) {
+export function handleFiles(files: IFile[], base: string, overwrite = false) {
   const uploadStore = useUploadStore();
 
   for (let i = 0; i < files.length; i++) {
@@ -128,7 +129,7 @@ export function handleFiles(files: file[], base: string, overwrite = false) {
       path += "/";
     }
 
-    const item = {
+    const item: Item = {
       id,
       path,
       file,

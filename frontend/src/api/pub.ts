@@ -1,7 +1,8 @@
+import type { IFile } from "@/types";
 import { fetchURL, removePrefix, createURL } from "./utils";
 import { baseURL } from "@/utils/constants";
 
-export async function fetch(url: ApiUrl, password: string = "") {
+export async function fetch(url: string, password: string = "") {
   url = removePrefix(url);
 
   const res = await fetchURL(

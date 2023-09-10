@@ -239,6 +239,13 @@ import Themes from "@/components/settings/Themes.vue";
 import Errors from "@/views/Errors.vue";
 import { computed, inject, onBeforeUnmount, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import type {
+  ISettings,
+  IToastError,
+  IToastSuccess,
+  SettingsCommand,
+  SettingsUnit,
+} from "@/types";
 
 const error = ref<any>(null);
 const originalSettings = ref<ISettings | null>(null);
@@ -248,10 +255,10 @@ const debounceTimeout = ref<number | null>(null);
 const commandObject = ref<{
   [key in keyof SettingsCommand]: string;
 }>({});
-const shellValue = ref<string>("")
+const shellValue = ref<string>("");
 
-const $showError = inject<TToast>("$showError") as TToast;
-const $showSuccess = inject<TToast>("$showSuccess") as TToast;
+const $showSuccess = inject<IToastSuccess>("$showSuccess") as IToastSuccess;
+const $showError = inject<IToastError>("$showError") as IToastError;
 
 const { t } = useI18n();
 
@@ -307,16 +314,16 @@ const save = async () => {
   // @ts-ignore
   for (const name of Object.keys(settings.value.commands)) {
     // @ts-ignore
-    const newValue = commandObject.value[name]
+    const newValue = commandObject.value[name];
     // @ts-ignore
-    if(name in commandObject.value && !Array.isArray(newValue)) {
+    if (name in commandObject.value && !Array.isArray(newValue)) {
       // @ts-ignore
       newSettings.commands[name] = newValue
-      .split("\n")
-      .filter((cmd: string) => cmd !== "");
+        .split("\n")
+        .filter((cmd: string) => cmd !== "");
     } else {
       // @ts-ignore
-      newSettings.commands[name] = newValue
+      newSettings.commands[name] = newValue;
     }
   }
   newSettings.shell = shellValue.value.split("\n");
@@ -381,7 +388,7 @@ onMounted(async () => {
     originalSettings.value = original;
     settings.value = newSettings;
     // @ts-ignore
-    shellValue.value = newSettings.shell.join("\n")
+    shellValue.value = newSettings.shell.join("\n");
   } catch (e) {
     error.value = e;
   } finally {
