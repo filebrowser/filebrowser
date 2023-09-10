@@ -7,7 +7,7 @@ import { cloneDeep } from "lodash-es";
 export const useAuthStore = defineStore("auth", {
   // convert to a function
   state: (): {
-    user: user | null;
+    user: IUser | null;
     jwt: string;
   } => ({
     user: null,
