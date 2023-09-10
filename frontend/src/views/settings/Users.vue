@@ -1,13 +1,13 @@
 <template>
   <errors v-if="error" :errorCode="error.status" />
-  <div class="row" v-else-if="!loading">
+  <div class="row" v-else-if="!layoutStore.loading">
     <div class="column">
       <div class="card">
         <div class="card-title">
-          <h2>{{ $t("settings.users") }}</h2>
+          <h2>{{ t("settings.users") }}</h2>
           <router-link to="/settings/users/new"
             ><button class="button">
-              {{ $t("buttons.new") }}
+              {{ t("buttons.new") }}
             </button></router-link
           >
         </div>
@@ -15,9 +15,9 @@
         <div class="card-content full">
           <table>
             <tr>
-              <th>{{ $t("settings.username") }}</th>
-              <th>{{ $t("settings.admin") }}</th>
-              <th>{{ $t("settings.scope") }}</th>
+              <th>{{ t("settings.username") }}</th>
+              <th>{{ t("settings.admin") }}</th>
+              <th>{{ t("settings.scope") }}</th>
               <th></th>
             </tr>
 
@@ -41,36 +41,28 @@
   </div>
 </template>
 
-<script>
-import { mapWritableState } from "pinia";
+<script setup lang="ts">
 import { useLayoutStore } from "@/stores/layout";
 import { users as api } from "@/api";
 import Errors from "@/views/Errors.vue";
+import { onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 
-export default {
-  name: "users",
-  components: {
-    Errors,
-  },
-  data: function () {
-    return {
-      error: null,
-      users: [],
-    };
-  },
-  async created() {
-    this.loading = true;
+const error = ref<any>(null);
+const users = ref<IUser[]>([]);
 
-    try {
-      this.users = await api.getAll();
-    } catch (e) {
-      this.error = e;
-    } finally {
-      this.loading = false;
-    }
-  },
-  computed: {
-    ...mapWritableState(useLayoutStore, ["loading"]),
-  },
-};
+const layoutStore = useLayoutStore();
+const { t } = useI18n();
+
+onMounted(async () => {
+  layoutStore.loading = true;
+
+  try {
+    users.value = await api.getAll();
+  } catch (e: any) {
+    error.value = e;
+  } finally {
+    layoutStore.loading = false;
+  }
+});
 </script>
