@@ -4,18 +4,23 @@ export async function list() {
   return fetchJSON("/api/shares");
 }
 
-export async function get(url) {
+export async function get(url: apiUrl) {
   url = removePrefix(url);
   return fetchJSON(`/api/share${url}`);
 }
 
-export async function remove(hash) {
+export async function remove(hash: string) {
   await fetchURL(`/api/share/${hash}`, {
     method: "DELETE",
   });
 }
 
-export async function create(url, password = "", expires = "", unit = "hours") {
+export async function create(
+  url: apiUrl,
+  password = "",
+  expires = "",
+  unit = "hours"
+) {
   url = removePrefix(url);
   url = `/api/share${url}`;
   if (expires !== "") {
@@ -35,6 +40,6 @@ export async function create(url, password = "", expires = "", unit = "hours") {
   });
 }
 
-export function getShareURL(share) {
+export function getShareURL(share: share) {
   return createURL("share/" + share.hash, {}, false);
 }

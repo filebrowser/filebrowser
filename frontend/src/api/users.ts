@@ -4,11 +4,11 @@ export async function getAll() {
   return fetchJSON(`/api/users`, {});
 }
 
-export async function get(id) {
+export async function get(id: number) {
   return fetchJSON(`/api/users/${id}`, {});
 }
 
-export async function create(user) {
+export async function create(user: user) {
   const res = await fetchURL(`/api/users`, {
     method: "POST",
     body: JSON.stringify({
@@ -23,7 +23,7 @@ export async function create(user) {
   }
 }
 
-export async function update(user, which = ["all"]) {
+export async function update(user: user, which = ["all"]) {
   await fetchURL(`/api/users/${user.id}`, {
     method: "PUT",
     body: JSON.stringify({
@@ -34,7 +34,7 @@ export async function update(user, which = ["all"]) {
   });
 }
 
-export async function remove(id) {
+export async function remove(id: number) {
   await fetchURL(`/api/users/${id}`, {
     method: "DELETE",
   });

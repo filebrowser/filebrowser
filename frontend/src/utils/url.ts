@@ -1,5 +1,5 @@
-export function removeLastDir(url) {
-  var arr = url.split("/");
+export function removeLastDir(url: string) {
+  const arr = url.split("/");
   if (arr.pop() === "") {
     arr.pop();
   }
@@ -9,7 +9,7 @@ export function removeLastDir(url) {
 
 // this function is taken from mozilla
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent#Examples
-export function encodeRFC5987ValueChars(str) {
+export function encodeRFC5987ValueChars(str: string) {
   return (
     encodeURIComponent(str)
       // The following creates the sequences %27 %28 %29 %2A (Note that
@@ -28,7 +28,7 @@ export function encodeRFC5987ValueChars(str) {
   );
 }
 
-export function encodePath(str) {
+export function encodePath(str: string) {
   return str
     .split("/")
     .map((v) => encodeURIComponent(v))

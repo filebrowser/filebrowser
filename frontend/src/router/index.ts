@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { RouteLocation, createRouter, createWebHistory } from "vue-router";
 import Login from "@/views/Login.vue";
 import Layout from "@/views/Layout.vue";
 import Files from "@/views/Files.vue";
@@ -144,7 +144,8 @@ const routes = [
   },
   {
     path: "/:catchAll(.*)*",
-    redirect: (to) => `/files/${[...to.params.catchAll].join("/")}`,
+    redirect: (to: RouteLocation) =>
+      `/files/${[...to.params.catchAll].join("/")}`,
   },
 ];
 
@@ -156,7 +157,7 @@ async function initAuth() {
   }
 
   if (recaptcha) {
-    await new Promise((resolve) => {
+    await new Promise<void>((resolve) => {
       const check = () => {
         if (typeof window.grecaptcha === "undefined") {
           setTimeout(check, 100);
@@ -175,10 +176,11 @@ const router = createRouter({
   routes,
 });
 
-router.beforeResolve(async (to, from, next) => {
+router.beforeResolve(async (to: RouteLocation, from, next) => {
   let title;
   try {
     // this should not fail after we finished the migration
+    // @ts-ignore
     title = i18n.global.t(titles[to.name]);
   } catch (error) {
     console.error(error);
@@ -187,14 +189,14 @@ router.beforeResolve(async (to, from, next) => {
   document.title = title + " - " + name;
 
   /*** RTL related settings per route ****/
-  const rtlSet = document.querySelector("body").classList.contains("rtl");
+  const rtlSet = document.querySelector("body")?.classList.contains("rtl");
   const shouldSetRtl = rtlLanguages.includes(i18n.global.locale);
   switch (true) {
     case shouldSetRtl && !rtlSet:
-      document.querySelector("body").classList.add("rtl");
+      document.querySelector("body")?.classList.add("rtl");
       break;
     case !shouldSetRtl && rtlSet:
-      document.querySelector("body").classList.remove("rtl");
+      document.querySelector("body")?.classList.remove("rtl");
       break;
   }
 
@@ -225,7 +227,7 @@ router.beforeResolve(async (to, from, next) => {
     }
 
     if (to.matched.some((record) => record.meta.requiresAdmin)) {
-      if (!authStore.user.perm.admin) {
+      if (authStore.user === null || !authStore.user.perm.admin) {
         next({ path: "/403" });
         return;
       }

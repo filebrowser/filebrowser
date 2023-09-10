@@ -3,9 +3,9 @@ import router from "@/router";
 import jwt_decode from "jwt-decode";
 import { baseURL } from "./constants";
 
-export function parseToken(token) {
+export function parseToken(token: string) {
   // falsy or malformed jwt will throw InvalidTokenError
-  const data = jwt_decode(token);
+  const data = jwt_decode<{ [key: string]: any; user: user }>(token);
 
   document.cookie = `auth=${token}; Path=/; SameSite=Strict;`;
 
@@ -19,7 +19,7 @@ export function parseToken(token) {
 export async function validateLogin() {
   try {
     if (localStorage.getItem("jwt")) {
-      await renew(localStorage.getItem("jwt"));
+      await renew(<string>localStorage.getItem("jwt"));
     }
   } catch (error) {
     console.warn("Invalid JWT token in storage"); // eslint-disable-line
@@ -27,7 +27,11 @@ export async function validateLogin() {
   }
 }
 
-export async function login(username, password, recaptcha) {
+export async function login(
+  username: string,
+  password: string,
+  recaptcha: string
+) {
   const data = { username, password, recaptcha };
 
   const res = await fetch(`${baseURL}/api/login`, {
@@ -47,7 +51,7 @@ export async function login(username, password, recaptcha) {
   }
 }
 
-export async function renew(jwt) {
+export async function renew(jwt: string) {
   const res = await fetch(`${baseURL}/api/renew`, {
     method: "POST",
     headers: {
@@ -64,7 +68,7 @@ export async function renew(jwt) {
   }
 }
 
-export async function signup(username, password) {
+export async function signup(username: string, password: string) {
   const data = { username, password };
 
   const res = await fetch(`${baseURL}/api/signup`, {
@@ -76,6 +80,7 @@ export async function signup(username, password) {
   });
 
   if (res.status !== 200) {
+    // @ts-ignore still need to fix these errors
     throw new Error(res.status);
   }
 }
@@ -86,6 +91,6 @@ export function logout() {
   const authStore = useAuthStore();
   authStore.clearUser();
 
-  localStorage.setItem("jwt", null);
+  localStorage.setItem("jwt", "");
   router.push({ path: "/login" });
 }

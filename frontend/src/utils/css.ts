@@ -1,10 +1,10 @@
-export default function getRule(rules) {
+export default function getRule(rules: any) {
   for (let i = 0; i < rules.length; i++) {
     rules[i] = rules[i].toLowerCase();
   }
 
   let result = null;
-  let find = Array.prototype.find;
+  const find = Array.prototype.find;
 
   find.call(document.styleSheets, (styleSheet) => {
     result = find.call(styleSheet.cssRules, (cssRule) => {

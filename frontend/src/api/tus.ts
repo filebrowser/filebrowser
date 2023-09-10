@@ -8,10 +8,10 @@ const RETRY_BASE_DELAY = 1000;
 const RETRY_MAX_DELAY = 20000;
 
 export async function upload(
-  filePath,
-  content = "",
+  filePath: string,
+  content: ApiContent = "",
   overwrite = false,
-  onupload
+  onupload: any
 ) {
   if (!tusSettings) {
     // Shouldn't happen as we check for tus support before calling this function
@@ -19,13 +19,18 @@ export async function upload(
   }
 
   filePath = removePrefix(filePath);
-  let resourcePath = `${tusEndpoint}${filePath}?override=${overwrite}`;
+  const resourcePath = `${tusEndpoint}${filePath}?override=${overwrite}`;
 
   await createUpload(resourcePath);
 
   const authStore = useAuthStore();
-  return new Promise((resolve, reject) => {
-    let upload = new tus.Upload(content, {
+
+  // Exit early because of typescript, tus content can't be a string
+  if (content === "") {
+    return false;
+  }
+  return new Promise<void | string>((resolve, reject) => {
+    const upload = new tus.Upload(content, {
       uploadUrl: `${baseURL}${resourcePath}`,
       chunkSize: tusSettings.chunkSize,
       retryDelays: computeRetryDelays(tusSettings),
@@ -52,8 +57,8 @@ export async function upload(
   });
 }
 
-async function createUpload(resourcePath) {
-  let headResp = await fetchURL(resourcePath, {
+async function createUpload(resourcePath: resourcePath) {
+  const headResp = await fetchURL(resourcePath, {
     method: "POST",
   });
   if (headResp.status !== 201) {
@@ -63,10 +68,10 @@ async function createUpload(resourcePath) {
   }
 }
 
-function computeRetryDelays(tusSettings) {
+function computeRetryDelays(tusSettings: tusSettings): number[] | undefined {
   if (!tusSettings.retryCount || tusSettings.retryCount < 1) {
     // Disable retries altogether
-    return null;
+    return undefined;
   }
   // The tus client expects our retries as an array with computed backoffs
   // E.g.: [0, 3000, 5000, 10000, 20000]
@@ -82,7 +87,7 @@ function computeRetryDelays(tusSettings) {
   return retryDelays;
 }
 
-export async function useTus(content) {
+export async function useTus(content: ApiContent) {
   return isTusSupported() && content instanceof Blob;
 }
 

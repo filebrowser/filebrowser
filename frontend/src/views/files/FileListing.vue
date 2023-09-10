@@ -616,7 +616,7 @@ export default {
       if (!items) return;
 
       let columns = Math.floor(
-        document.querySelector("main").offsetWidth / this.columnWidth
+        document.querySelector("main")?.offsetWidth / this.columnWidth
       );
       if (columns === 0) columns = 1;
       items.style.width = `calc(${100 / columns}% - 1em)`;

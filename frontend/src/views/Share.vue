@@ -4,55 +4,55 @@
       <title />
 
       <action
-        v-if="selectedCount"
+        v-if="fileStore.selectedCount"
         icon="file_download"
-        :label="$t('buttons.download')"
+        :label="t('buttons.download')"
         @action="download"
-        :counter="selectedCount"
+        :counter="fileStore.selectedCount"
       />
       <button
         v-if="isSingleFile()"
         class="action copy-clipboard"
         :data-clipboard-text="linkSelected()"
-        :aria-label="$t('buttons.copyDownloadLinkToClipboard')"
-        :title="$t('buttons.copyDownloadLinkToClipboard')"
+        :aria-label="t('buttons.copyDownloadLinkToClipboard')"
+        :data-title="t('buttons.copyDownloadLinkToClipboard')"
       >
         <i class="material-icons">content_paste</i>
       </button>
       <action
         icon="check_circle"
-        :label="$t('buttons.selectMultiple')"
+        :label="t('buttons.selectMultiple')"
         @action="toggleMultipleSelection"
       />
     </header-bar>
 
     <breadcrumbs :base="'/share/' + hash" />
 
-    <div v-if="loading">
+    <div v-if="layoutStore.loading">
       <h2 class="message delayed">
         <div class="spinner">
           <div class="bounce1"></div>
           <div class="bounce2"></div>
           <div class="bounce3"></div>
         </div>
-        <span>{{ $t("files.loading") }}</span>
+        <span>{{ t("files.loading") }}</span>
       </h2>
     </div>
     <div v-else-if="error">
       <div v-if="error.status === 401">
         <div class="card floating" id="password">
           <div v-if="attemptedPasswordLogin" class="share__wrong__password">
-            {{ $t("login.wrongCredentials") }}
+            {{ t("login.wrongCredentials") }}
           </div>
           <div class="card-title">
-            <h2>{{ $t("login.password") }}</h2>
+            <h2>{{ t("login.password") }}</h2>
           </div>
 
           <div class="card-content">
             <input
               v-focus
               type="password"
-              :placeholder="$t('login.password')"
+              :placeholder="t('login.password')"
               v-model="password"
               @keyup.enter="fetchData"
             />
@@ -61,43 +61,43 @@
             <button
               class="button button--flat"
               @click="fetchData"
-              :aria-label="$t('buttons.submit')"
-              :title="$t('buttons.submit')"
+              :aria-label="t('buttons.submit')"
+              :data-title="t('buttons.submit')"
             >
-              {{ $t("buttons.submit") }}
+              {{ t("buttons.submit") }}
             </button>
           </div>
         </div>
       </div>
       <errors v-else :errorCode="error.status" />
     </div>
-    <div v-else>
+    <div v-else-if="req !== null">
       <div class="share">
         <div class="share__box share__box__info">
           <div class="share__box__header">
             {{
               req.isDir
-                ? $t("download.downloadFolder")
-                : $t("download.downloadFile")
+                ? t("download.downloadFolder")
+                : t("download.downloadFile")
             }}
           </div>
           <div class="share__box__element share__box__center share__box__icon">
             <i class="material-icons">{{ icon }}</i>
           </div>
           <div class="share__box__element">
-            <strong>{{ $t("prompts.displayName") }}</strong> {{ req.name }}
+            <strong>{{ t("prompts.displayName") }}</strong> {{ req.name }}
           </div>
-          <div class="share__box__element" :title="modTime">
-            <strong>{{ $t("prompts.lastModified") }}:</strong> {{ humanTime }}
+          <div class="share__box__element" :data-title="modTime">
+            <strong>{{ t("prompts.lastModified") }}:</strong> {{ humanTime }}
           </div>
           <div class="share__box__element">
-            <strong>{{ $t("prompts.size") }}:</strong> {{ humanSize }}
+            <strong>{{ t("prompts.size") }}:</strong> {{ humanSize }}
           </div>
           <div class="share__box__element share__box__center">
             <a target="_blank" :href="link" class="button button--flat">
               <div>
                 <i class="material-icons">file_download</i
-                >{{ $t("buttons.download") }}
+                >{{ t("buttons.download") }}
               </div>
             </a>
             <a
@@ -108,7 +108,7 @@
             >
               <div>
                 <i class="material-icons">open_in_new</i
-                >{{ $t("buttons.openFile") }}
+                >{{ t("buttons.openFile") }}
               </div>
             </a>
           </div>
@@ -121,11 +121,11 @@
           class="share__box share__box__items"
         >
           <div class="share__box__header" v-if="req.isDir">
-            {{ $t("files.files") }}
+            {{ t("files.files") }}
           </div>
           <div id="listing" class="list file-icons">
             <item
-              v-for="item in req.items.slice(0, this.showLimit)"
+              v-for="item in req.items.slice(0, showLimit)"
               :key="base64(item.name)"
               v-bind:index="item.index"
               v-bind:name="item.name"
@@ -147,14 +147,17 @@
               </div>
             </div>
 
-            <div :class="{ active: multiple }" id="multiple-selection">
-              <p>{{ $t("files.multipleSelectionEnabled") }}</p>
+            <div
+              :class="{ active: fileStore.multiple }"
+              id="multiple-selection"
+            >
+              <p>{{ t("files.multipleSelectionEnabled") }}</p>
               <div
-                @click="() => (multiple = false)"
+                @click="() => (fileStore.multiple = false)"
                 tabindex="0"
                 role="button"
-                :title="$t('files.clear')"
-                :aria-label="$t('files.clear')"
+                :data-title="t('files.clear')"
+                :aria-label="t('files.clear')"
                 class="action"
               >
                 <i class="material-icons">clear</i>
@@ -168,7 +171,7 @@
         >
           <h2 class="message">
             <i class="material-icons">sentiment_dissatisfied</i>
-            <span>{{ $t("files.lonely") }}</span>
+            <span>{{ t("files.lonely") }}</span>
           </h2>
         </div>
       </div>
@@ -176,8 +179,7 @@
   </div>
 </template>
 
-<script>
-import { mapState, mapActions, mapWritableState } from "pinia";
+<script setup lang="ts">
 import { pub as api } from "@/api";
 import { filesize } from "filesize";
 import dayjs from "dayjs";
@@ -192,171 +194,166 @@ import Item from "@/components/files/ListingItem.vue";
 import Clipboard from "clipboard";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 
-export default {
-  name: "share",
-  components: {
-    HeaderBar,
-    Action,
-    Breadcrumbs,
-    Item,
-    QrcodeVue,
-    Errors,
-  },
-  data: () => ({
-    error: null,
-    showLimit: 100,
-    password: "",
-    attemptedPasswordLogin: false,
-    hash: null,
-    token: null,
-    clip: null,
-  }),
-  inject: ["$showSuccess"],
-  watch: {
-    $route: function () {
-      this.showLimit = 100;
+const error = ref<null | any>(null);
+const showLimit = ref<number>(100);
+const password = ref<string>("");
+const attemptedPasswordLogin = ref<boolean>(false);
+const hash = ref<any>(null);
+const token = ref<any>(null);
+const clip = ref<any>(null);
 
-      this.fetchData();
-    },
-  },
-  created: async function () {
-    const hash = this.$route.params.path[0];
-    this.hash = hash;
-    await this.fetchData();
-  },
-  mounted() {
-    window.addEventListener("keydown", this.keyEvent);
-    this.clip = new Clipboard(".copy-clipboard");
-    this.clip.on("success", () => {
-      this.$showSuccess(this.$t("success.linkCopied"));
-    });
-  },
-  beforeUnmount() {
-    window.removeEventListener("keydown", this.keyEvent);
-    this.clip.destroy();
-  },
-  computed: {
-    ...mapState(useFileStore, ["req", "selectedCount"]),
-    ...mapWritableState(useFileStore, ["reload", "multiple", "selected"]),
-    ...mapWritableState(useLayoutStore, ["loading"]),
-    icon: function () {
-      if (this.req.isDir) return "folder";
-      if (this.req.type === "image") return "insert_photo";
-      if (this.req.type === "audio") return "volume_up";
-      if (this.req.type === "video") return "movie";
-      return "insert_drive_file";
-    },
-    link: function () {
-      return api.getDownloadURL(this.req);
-    },
-    inlineLink: function () {
-      return api.getDownloadURL(this.req, true);
-    },
-    humanSize: function () {
-      if (this.req.isDir) {
-        return this.req.items.length;
-      }
+const { t } = useI18n({});
 
-      return filesize(this.req.size);
-    },
-    humanTime: function () {
-      return dayjs(this.req.modified).fromNow();
-    },
-    modTime: function () {
-      return new Date(Date.parse(this.req.modified)).toLocaleString();
-    },
-  },
-  methods: {
-    ...mapActions(useFileStore, ["updateRequest", "toggleMultiple"]),
-    ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
-    base64: function (name) {
-      return Base64.encodeURI(name);
-    },
-    fetchData: async function () {
-      // Reset view information.
-      this.reload = false;
-      this.selected = [];
-      this.multiple = false;
-      this.closeHovers();
+const route = useRoute();
+const fileStore = useFileStore();
+const layoutStore = useLayoutStore();
 
-      // Set loading to true and reset the error.
-      this.loading = true;
-      this.error = null;
+watch(route, () => {
+  showLimit.value = 100;
+  fetchData();
+});
 
-      if (this.password !== "") {
-        this.attemptedPasswordLogin = true;
-      }
+const req = computed(() => fileStore.req);
 
-      let url = this.$route.path;
-      if (url === "") url = "/";
-      if (url[0] !== "/") url = "/" + url;
+// Define computes
 
-      try {
-        let file = await api.fetch(url, this.password);
-        file.hash = this.hash;
+const icon = computed(() => {
+  if (req.value === null) return "insert_drive_file";
+  if (req.value.isDir) return "folder";
+  if (req.value.type === "image") return "insert_photo";
+  if (req.value.type === "audio") return "volume_up";
+  if (req.value.type === "video") return "movie";
+  return "insert_drive_file";
+});
 
-        this.token = file.token || "";
+const link = computed(() => (req.value ? api.getDownloadURL(req.value) : ""));
+const inlineLink = computed(() =>
+  req.value ? api.getDownloadURL(req.value, true) : ""
+);
+const humanSize = computed(() => {
+  if (req.value) {
+    return req.value.isDir
+      ? req.value.items.length
+      : filesize(req.value.size ?? 0);
+  } else {
+    return "";
+  }
+});
+const humanTime = computed(() => dayjs(req.value?.modified).fromNow());
+const modTime = computed(() =>
+  req.value
+    ? new Date(Date.parse(req.value.modified)).toLocaleString()
+    : new Date()
+);
 
-        this.updateRequest(file);
-        document.title = `${file.name} - ${document.title}`;
-      } catch (e) {
-        this.error = e;
-      } finally {
-        this.loading = false;
-      }
-    },
-    keyEvent(event) {
-      if (event.key === "Escape") {
-        // If we're on a listing, unselect all
-        // files and folders.
-        if (this.selectedCount > 0) {
-          this.selected = [];
-        }
-      }
-    },
-    toggleMultipleSelection() {
-      this.toggleMultiple();
-    },
-    isSingleFile: function () {
-      return (
-        this.selectedCount === 1 && !this.req.items[this.selected[0]].isDir
-      );
-    },
-    download() {
-      if (this.isSingleFile()) {
-        api.download(
-          null,
-          this.hash,
-          this.token,
-          this.req.items[this.selected[0]].path
-        );
-        return;
-      }
+// Functions
+const base64 = (name: any) => Base64.encodeURI(name);
+const fetchData = async () => {
+  fileStore.reload = false;
+  fileStore.selected = [];
+  fileStore.multiple = false;
+  // fileStore.closeHovers();
 
-      this.showHover({
-        prompt: "download",
-        confirm: (format) => {
-          this.closeHovers();
+  // Set loading to true and reset the error.
+  layoutStore.loading = true;
+  error.value = null;
+  if (password.value !== "") {
+    attemptedPasswordLogin.value = true;
+  }
 
-          let files = [];
+  let url = route.path;
+  if (url === "") url = "/";
+  if (url[0] !== "/") url = "/" + url;
 
-          for (let i of this.selected) {
-            files.push(this.req.items[i].path);
-          }
+  try {
+    let file = await api.fetch(url, password.value);
+    file.hash = hash.value;
 
-          api.download(format, this.hash, this.token, ...files);
-        },
-      });
-    },
-    linkSelected: function () {
-      return this.isSingleFile()
-        ? api.getDownloadURL({
-            hash: this.hash,
-            path: this.req.items[this.selected[0]].path,
-          })
-        : "";
-    },
-  },
+    token.value = file.token || "";
+
+    fileStore.updateRequest(file);
+    document.title = `${file.name} - ${document.title}`;
+  } catch (e) {
+    error.value = e;
+  } finally {
+    layoutStore.loading = false;
+  }
 };
+
+const keyEvent = (event: KeyboardEvent) => {
+  if (event.key === "Escape") {
+    // If we're on a listing, unselect all
+    // files and folders.
+    if (fileStore.selectedCount > 0) {
+      fileStore.selected = [];
+    }
+  }
+};
+
+const toggleMultipleSelection = () => {
+  // toggle
+};
+
+const isSingleFile = () =>
+  fileStore.selectedCount === 1 &&
+  !req.value?.items[fileStore.selected[0]].isDir;
+
+const download = () => {
+  if (isSingleFile()) {
+    api.download(
+      null,
+      hash.value,
+      token.value,
+      req.value?.items[fileStore.selected[0]].path
+    );
+    return;
+  }
+  layoutStore.showHover({
+    prompt: "download",
+    confirm: (format: any) => {
+      if (req.value === null) return false;
+      layoutStore.closeHovers();
+
+      let files: string[] = [];
+
+      for (let i of fileStore.selected) {
+        files.push(req.value.items[i].path);
+      }
+
+      // @ts-ignore
+      api.download(format, hash.value, token.value, ...files);
+    },
+  });
+};
+
+const linkSelected = () => {
+  return isSingleFile() && req.value
+    ? // @ts-ignore
+      api.getDownloadURL({
+        hash: hash.value,
+        path: req.value.items[fileStore.selected[0]].path,
+      })
+    : "";
+};
+
+onMounted(async () => {
+  // Created
+  hash.value = route.params.path[0];
+  await fetchData();
+
+  window.addEventListener("keydown", keyEvent);
+  clip.value = new Clipboard(".copy-clipboard");
+  clip.value.on("success", () => {
+    // $showSuccess(this.t("success.linkCopied"));
+  });
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", keyEvent);
+  clip.value.destroy();
+});
 </script>

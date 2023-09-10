@@ -3,13 +3,13 @@ import { renew, logout } from "@/utils/auth";
 import { baseURL } from "@/utils/constants";
 import { encodePath } from "@/utils/url";
 
-export async function fetchURL(url, opts, auth = true) {
+export async function fetchURL(url: ApiUrl, opts: ApiOpts, auth = true) {
   const authStore = useAuthStore();
 
   opts = opts || {};
   opts.headers = opts.headers || {};
 
-  let { headers, ...rest } = opts;
+  const { headers, ...rest } = opts;
   let res;
   try {
     res = await fetch(`${baseURL}${url}`, {
@@ -21,6 +21,7 @@ export async function fetchURL(url, opts, auth = true) {
     });
   } catch {
     const error = new Error("000 No connection");
+    // @ts-ignore don't know yet how to solve
     error.status = 0;
 
     throw error;
@@ -32,6 +33,7 @@ export async function fetchURL(url, opts, auth = true) {
 
   if (res.status < 200 || res.status > 299) {
     const error = new Error(await res.text());
+    // @ts-ignore don't know yet how to solve
     error.status = res.status;
 
     if (auth && res.status == 401) {
@@ -44,17 +46,17 @@ export async function fetchURL(url, opts, auth = true) {
   return res;
 }
 
-export async function fetchJSON(url, opts) {
+export async function fetchJSON(url: ApiUrl, opts?: any) {
   const res = await fetchURL(url, opts);
 
   if (res.status === 200) {
     return res.json();
   } else {
-    throw new Error(res.status);
+    throw new Error(res.status.toString());
   }
 }
 
-export function removePrefix(url) {
+export function removePrefix(url: ApiUrl) {
   url = url.split("/").splice(2).join("/");
 
   if (url === "") url = "/";
@@ -62,7 +64,7 @@ export function removePrefix(url) {
   return url;
 }
 
-export function createURL(endpoint, params = {}, auth = true) {
+export function createURL(endpoint: ApiUrl, params = {}, auth = true) {
   const authStore = useAuthStore();
 
   let prefix = baseURL;
@@ -71,7 +73,7 @@ export function createURL(endpoint, params = {}, auth = true) {
   }
   const url = new URL(prefix + encodePath(endpoint), origin);
 
-  const searchParams = {
+  const searchParams: searchParams = {
     ...(auth && { auth: authStore.jwt }),
     ...params,
   };

@@ -1,7 +1,7 @@
 import { fetchURL, removePrefix, createURL } from "./utils";
 import { baseURL } from "@/utils/constants";
 
-export async function fetch(url, password = "") {
+export async function fetch(url: ApiUrl, password: string = "") {
   url = removePrefix(url);
 
   const res = await fetchURL(
@@ -12,12 +12,12 @@ export async function fetch(url, password = "") {
     false
   );
 
-  let data = await res.json();
+  const data = await res.json();
   data.url = `/share${url}`;
 
   if (data.isDir) {
     if (!data.url.endsWith("/")) data.url += "/";
-    data.items = data.items.map((item, index) => {
+    data.items = data.items.map((item: any, index: any) => {
       item.index = index;
       item.url = `${data.url}${encodeURIComponent(item.name)}`;
 
@@ -32,7 +32,13 @@ export async function fetch(url, password = "") {
   return data;
 }
 
-export function download(format, hash, token, ...files) {
+// Is this redundant code?
+export function download(
+  format: any,
+  hash: string,
+  token: string,
+  ...files: any
+) {
   let url = `${baseURL}/api/public/dl/${hash}`;
 
   if (files.length === 1) {
@@ -40,7 +46,7 @@ export function download(format, hash, token, ...files) {
   } else {
     let arg = "";
 
-    for (let file of files) {
+    for (const file of files) {
       arg += encodeURIComponent(file) + ",";
     }
 
@@ -60,7 +66,7 @@ export function download(format, hash, token, ...files) {
   window.open(url);
 }
 
-export function getDownloadURL(share, inline = false) {
+export function getDownloadURL(share: IFile, inline = false) {
   const params = {
     ...(inline && { inline: "true" }),
     ...(share.token && { token: share.token }),

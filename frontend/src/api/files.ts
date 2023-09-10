@@ -3,17 +3,18 @@ import { baseURL } from "@/utils/constants";
 import { useAuthStore } from "@/stores/auth";
 import { upload as postTus, useTus } from "./tus";
 
-export async function fetch(url) {
+export async function fetch(url: ApiUrl) {
   url = removePrefix(url);
 
   const res = await fetchURL(`/api/resources${url}`, {});
 
-  let data = await res.json();
+  const data = await res.json();
   data.url = `/files${url}`;
 
   if (data.isDir) {
     if (!data.url.endsWith("/")) data.url += "/";
-    data.items = data.items.map((item, index) => {
+    // Perhaps change the any
+    data.items = data.items.map((item: any, index: any) => {
       item.index = index;
       item.url = `${data.url}${encodeURIComponent(item.name)}`;
 
@@ -28,10 +29,12 @@ export async function fetch(url) {
   return data;
 }
 
-async function resourceAction(url, method, content) {
+async function resourceAction(url: ApiUrl, method: ApiMethod, content?: any) {
   url = removePrefix(url);
 
-  let opts = { method };
+  const opts: ApiOpts = {
+    method,
+  };
 
   if (content) {
     opts.body = content;
@@ -42,15 +45,15 @@ async function resourceAction(url, method, content) {
   return res;
 }
 
-export async function remove(url) {
+export async function remove(url: ApiUrl) {
   return resourceAction(url, "DELETE");
 }
 
-export async function put(url, content = "") {
+export async function put(url: ApiUrl, content = "") {
   return resourceAction(url, "PUT", content);
 }
 
-export function download(format, ...files) {
+export function download(format: any, ...files: string[]) {
   let url = `${baseURL}/api/raw`;
 
   if (files.length === 1) {
@@ -58,7 +61,7 @@ export function download(format, ...files) {
   } else {
     let arg = "";
 
-    for (let file of files) {
+    for (const file of files) {
       arg += removePrefix(file) + ",";
     }
 
@@ -79,7 +82,12 @@ export function download(format, ...files) {
   window.open(url);
 }
 
-export async function post(url, content = "", overwrite = false, onupload) {
+export async function post(
+  url: ApiUrl,
+  content: ApiContent = "",
+  overwrite = false,
+  onupload: any = () => {}
+) {
   // Use the pre-existing API if:
   const useResourcesApi =
     // a folder is being created
@@ -94,10 +102,15 @@ export async function post(url, content = "", overwrite = false, onupload) {
     : postTus(url, content, overwrite, onupload);
 }
 
-async function postResources(url, content = "", overwrite = false, onupload) {
+async function postResources(
+  url: ApiUrl,
+  content: ApiContent = "",
+  overwrite = false,
+  onupload: any
+) {
   url = removePrefix(url);
 
-  let bufferContent;
+  let bufferContent: ArrayBuffer;
   if (
     content instanceof Blob &&
     !["http:", "https:"].includes(window.location.protocol)
@@ -107,7 +120,7 @@ async function postResources(url, content = "", overwrite = false, onupload) {
 
   const authStore = useAuthStore();
   return new Promise((resolve, reject) => {
-    let request = new XMLHttpRequest();
+    const request = new XMLHttpRequest();
     request.open(
       "POST",
       `${baseURL}/api/resources${url}?override=${overwrite}`,
@@ -137,12 +150,17 @@ async function postResources(url, content = "", overwrite = false, onupload) {
   });
 }
 
-function moveCopy(items, copy = false, overwrite = false, rename = false) {
-  let promises = [];
+function moveCopy(
+  items: any[],
+  copy = false,
+  overwrite = false,
+  rename = false
+) {
+  const promises = [];
 
-  for (let item of items) {
+  for (const item of items) {
     const from = item.from;
-    const to = encodeURIComponent(removePrefix(item.to));
+    const to = encodeURIComponent(removePrefix(item.to ?? ""));
     const url = `${from}?action=${
       copy ? "copy" : "rename"
     }&destination=${to}&override=${overwrite}&rename=${rename}`;
@@ -152,20 +170,20 @@ function moveCopy(items, copy = false, overwrite = false, rename = false) {
   return Promise.all(promises);
 }
 
-export function move(items, overwrite = false, rename = false) {
+export function move(items: any[], overwrite = false, rename = false) {
   return moveCopy(items, false, overwrite, rename);
 }
 
-export function copy(items, overwrite = false, rename = false) {
+export function copy(items: any[], overwrite = false, rename = false) {
   return moveCopy(items, true, overwrite, rename);
 }
 
-export async function checksum(url, algo) {
+export async function checksum(url: ApiUrl, algo: algo) {
   const data = await resourceAction(`${url}?checksum=${algo}`, "GET");
   return (await data.json()).checksums[algo];
 }
 
-export function getDownloadURL(file, inline) {
+export function getDownloadURL(file: IFile, inline: any) {
   const params = {
     ...(inline && { inline: "true" }),
   };
@@ -173,7 +191,7 @@ export function getDownloadURL(file, inline) {
   return createURL("api/raw" + file.path, params);
 }
 
-export function getPreviewURL(file, size) {
+export function getPreviewURL(file: IFile, size: string) {
   const params = {
     inline: "true",
     key: Date.parse(file.modified),
@@ -182,7 +200,7 @@ export function getPreviewURL(file, size) {
   return createURL("api/preview/" + size + file.path, params);
 }
 
-export function getSubtitlesURL(file) {
+export function getSubtitlesURL(file: IFile) {
   const params = {
     inline: "true",
   };
@@ -195,7 +213,7 @@ export function getSubtitlesURL(file) {
   return subtitles;
 }
 
-export async function usage(url) {
+export async function usage(url: ApiUrl) {
   url = removePrefix(url);
 
   const res = await fetchURL(`/api/usage${url}`, {});

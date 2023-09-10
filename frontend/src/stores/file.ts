@@ -2,9 +2,16 @@ import { defineStore } from "pinia";
 
 export const useFileStore = defineStore("file", {
   // convert to a function
-  state: () => ({
-    req: {},
-    oldReq: {},
+  state: (): {
+    req: IFile | null;
+    oldReq: IFile | null;
+    reload: boolean;
+    selected: any[];
+    multiple: boolean;
+    isFiles: boolean;
+  } => ({
+    req: null,
+    oldReq: null,
     reload: false,
     selected: [],
     multiple: false,
@@ -21,7 +28,7 @@ export const useFileStore = defineStore("file", {
     //   return !layoutStore.loading && state.route._value.name === "Files";
     // },
     isListing: (state) => {
-      return state.isFiles && state.req.isDir;
+      return state.isFiles && state?.req?.isDir;
     },
   },
   actions: {
@@ -29,12 +36,12 @@ export const useFileStore = defineStore("file", {
     toggleMultiple() {
       this.multiple = !this.multiple;
     },
-    updateRequest(value) {
+    updateRequest(value: IFile | null) {
       this.oldReq = this.req;
       this.req = value;
     },
-    removeSelected(value) {
-      let i = this.selected.indexOf(value);
+    removeSelected(value: any) {
+      const i = this.selected.indexOf(value);
       if (i === -1) return;
       this.selected.splice(i, 1);
     },

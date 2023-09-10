@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { defineStore } from "pinia";
 import dayjs from "dayjs";
 import i18n, { detectLocale } from "@/i18n";
@@ -5,7 +6,10 @@ import { cloneDeep } from "lodash-es";
 
 export const useAuthStore = defineStore("auth", {
   // convert to a function
-  state: () => ({
+  state: (): {
+    user: user | null;
+    jwt: string;
+  } => ({
     user: null,
     jwt: "",
   }),
@@ -15,7 +19,7 @@ export const useAuthStore = defineStore("auth", {
   },
   actions: {
     // no context as first argument, use `this` instead
-    setUser(value) {
+    setUser(value: user) {
       if (value === null) {
         this.user = null;
         return;
@@ -23,19 +27,23 @@ export const useAuthStore = defineStore("auth", {
 
       const locale = value.locale || detectLocale();
       dayjs.locale(locale);
+      // @ts-ignore Don't know how to fix this yet
       i18n.global.locale.value = locale;
       this.user = value;
     },
-    updateUser(value) {
+    updateUser(value: user) {
       if (typeof value !== "object") return;
 
-      for (let field in value) {
+      let field: userKey;
+      for (field in value) {
         if (field === "locale") {
           const locale = value[field];
           dayjs.locale(locale);
+          // @ts-ignore Don't know how to fix this yet
           i18n.global.locale.value = locale;
         }
 
+        // @ts-ignore to fix
         this.user[field] = cloneDeep(value[field]);
       }
     },

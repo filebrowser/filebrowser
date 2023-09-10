@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { defineStore } from "pinia";
 import { useFileStore } from "./file";
 import { files as api } from "@/api";
@@ -6,14 +7,22 @@ import buttons from "@/utils/buttons";
 
 const UPLOADS_LIMIT = 5;
 
-const beforeUnload = (event) => {
+const beforeUnload = (event: Event) => {
   event.preventDefault();
-  event.returnValue = "";
+  // To remove >> is deprecated
+  // event.returnValue = "";
 };
 
 export const useUploadStore = defineStore("upload", {
   // convert to a function
-  state: () => ({
+  state: (): {
+    id: number;
+    sizes: any[];
+    progress: any[];
+    queue: any[];
+    uploads: uploads;
+    error: any;
+  } => ({
     id: 0,
     sizes: [],
     progress: [],
@@ -30,7 +39,8 @@ export const useUploadStore = defineStore("upload", {
 
       const totalSize = state.sizes.reduce((a, b) => a + b, 0);
 
-      const sum = state.progress.reduce((acc, val) => acc + val);
+      // @ts-ignore
+      const sum: number = state.progress.reduce((acc, val) => acc + val);
       return Math.ceil((sum / totalSize) * 100);
     },
     filesInUploadCount: (state) => {
@@ -40,7 +50,7 @@ export const useUploadStore = defineStore("upload", {
     filesInUpload: (state) => {
       const files = [];
 
-      for (let index in state.uploads) {
+      for (const index in state.uploads) {
         const upload = state.uploads[index];
         const id = upload.id;
         const type = upload.type;
@@ -65,8 +75,9 @@ export const useUploadStore = defineStore("upload", {
   },
   actions: {
     // no context as first argument, use `this` instead
-    setProgress({ id, loaded }) {
+    setProgress(obj: { id: number; loaded: boolean }) {
       // Vue.set(this.progress, id, loaded);
+      const { id, loaded } = obj;
       this.progress[id] = loaded;
     },
     setError(error) {
@@ -77,7 +88,7 @@ export const useUploadStore = defineStore("upload", {
       this.sizes = [];
       this.progress = [];
     },
-    addJob(item) {
+    addJob(item: item) {
       this.queue.push(item);
       this.sizes[this.id] = item.file.size;
       this.id++;
@@ -88,15 +99,15 @@ export const useUploadStore = defineStore("upload", {
       // Vue.set(this.uploads, item.id, item);
       this.uploads[item.id] = item;
     },
-    removeJob(id) {
+    removeJob(id: number) {
       // Vue.delete(this.uploads, id);
       delete this.uploads[id];
     },
-    upload(item) {
-      let uploadsCount = Object.keys(this.uploads).length;
+    upload(item: item) {
+      const uploadsCount = Object.keys(this.uploads).length;
 
-      let isQueueEmpty = this.queue.length == 0;
-      let isUploadsEmpty = uploadsCount == 0;
+      const isQueueEmpty = this.queue.length == 0;
+      const isUploadsEmpty = uploadsCount == 0;
 
       if (isQueueEmpty && isUploadsEmpty) {
         window.addEventListener("beforeunload", beforeUnload);
@@ -106,8 +117,8 @@ export const useUploadStore = defineStore("upload", {
       this.addJob(item);
       this.processUploads();
     },
-    finishUpload(item) {
-      this.setProgress({ id: item.id, loaded: item.file.size });
+    finishUpload(item: item) {
+      this.setProgress({ id: item.id, loaded: item.file.size > 0 });
       this.removeJob(item.id);
       this.processUploads();
     },
@@ -136,7 +147,7 @@ export const useUploadStore = defineStore("upload", {
         if (item.file.isDir) {
           await api.post(item.path).catch(this.setError);
         } else {
-          let onUpload = throttle(
+          const onUpload = throttle(
             (event) =>
               this.setProgress({
                 id: item.id,

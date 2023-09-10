@@ -4,20 +4,19 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "app",
-  mounted() {
-    const loading = document.getElementById("loading");
+<script setup lang="ts">
+import { onMounted } from "vue";
+
+onMounted(() => {
+  const loading = document.getElementById("loading");
+  if (loading !== null) {
     loading.classList.add("done");
 
     setTimeout(function () {
-      loading.parentNode.removeChild(loading);
+      if (loading.parentNode !== null) {
+        loading.parentNode.removeChild(loading);
+      }
     }, 200);
-  },
-};
+  }
+});
 </script>
-
-<style>
-@import "./css/styles.css";
-</style>

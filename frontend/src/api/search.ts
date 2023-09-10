@@ -1,7 +1,7 @@
 import { fetchURL, removePrefix } from "./utils";
 import url from "../utils/url";
 
-export default async function search(base, query) {
+export default async function search(base: apiUrl, query: string) {
   base = removePrefix(base);
   query = encodeURIComponent(query);
 
@@ -9,11 +9,11 @@ export default async function search(base, query) {
     base += "/";
   }
 
-  let res = await fetchURL(`/api/search${base}?query=${query}`, {});
+  const res = await fetchURL(`/api/search${base}?query=${query}`, {});
 
   let data = await res.json();
 
-  data = data.map((item) => {
+  data = data.map((item: item) => {
     item.url = `/files${base}` + url.encodePath(item.path);
 
     if (item.dir) {
