@@ -122,7 +122,8 @@
     "submit": "Login",
     "username": "Username",
     "usernameTaken": "Username already taken",
-    "wrongCredentials": "Wrong credentials"
+    "wrongCredentials": "Wrong credentials",
+    "captchaNeeded": "Captcha Needed"
   },
   "permanent": "Permanent",
   "prompts": {

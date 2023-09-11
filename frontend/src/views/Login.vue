@@ -97,7 +97,7 @@ export default {
         captcha = window.grecaptcha.getResponse();
 
         if (captcha === "") {
-          this.error = this.$t("login.wrongCredentials");
+          this.error = this.$t("login.captchaNeeded");
           return;
         }
       }

@@ -96,7 +96,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "Swedish（Sweden）",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -111,7 +111,8 @@
     "submit": "登入",
     "username": "帳號",
     "usernameTaken": "用戶名已存在",
-    "wrongCredentials": "帳號或密碼錯誤"
+    "wrongCredentials": "帳號或密碼錯誤",
+    "captchaNeeded": "需要驗證碼"
   },
   "permanent": "永久",
   "prompts": {

@@ -96,7 +96,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -111,7 +111,8 @@
     "submit": "ログイン",
     "username": "ユーザ名",
     "usernameTaken": "Username already taken",
-    "wrongCredentials": "ユーザ名またはパスワードが間違っています。"
+    "wrongCredentials": "ユーザ名またはパスワードが間違っています。",
+    "captchaNeeded": "キャプチャが必要です"
   },
   "permanent": "永久",
   "prompts": {

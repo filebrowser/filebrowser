@@ -117,7 +117,8 @@
     "submit": "登录",
     "username": "用户名",
     "usernameTaken": "用户名已经被使用",
-    "wrongCredentials": "用户名或密码错误"
+    "wrongCredentials": "用户名或密码错误",
+    "captchaNeeded": "需要验证"
   },
   "permanent": "永久",
   "prompts": {
