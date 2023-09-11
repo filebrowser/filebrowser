@@ -1,7 +1,7 @@
 <template>
   <div>
     <p v-if="!isDefault && props.user !== null">
-      <label for="username">{{ $t("settings.username") }}</label>
+      <label for="username">{{ t("settings.username") }}</label>
       <input
         class="input input--block"
         type="text"
@@ -11,7 +11,7 @@
     </p>
 
     <p v-if="!isDefault">
-      <label for="password">{{ $t("settings.password") }}</label>
+      <label for="password">{{ t("settings.password") }}</label>
       <input
         class="input input--block"
         type="password"
@@ -22,7 +22,7 @@
     </p>
 
     <p>
-      <label for="scope">{{ $t("settings.scope") }}</label>
+      <label for="scope">{{ t("settings.scope") }}</label>
       <input
         :disabled="createUserDirData ?? false"
         :placeholder="scopePlaceholder"
@@ -34,11 +34,11 @@
     </p>
     <p class="small" v-if="displayHomeDirectoryCheckbox">
       <input type="checkbox" v-model="createUserDirData" />
-      {{ $t("settings.createUserHomeDirectory") }}
+      {{ t("settings.createUserHomeDirectory") }}
     </p>
 
     <p>
-      <label for="locale">{{ $t("settings.language") }}</label>
+      <label for="locale">{{ t("settings.language") }}</label>
       <languages
         class="input input--block"
         id="locale"
@@ -46,21 +46,21 @@
       ></languages>
     </p>
 
-    <p v-if="!isDefault">
+    <p v-if="!isDefault && user.perm">
       <input
         type="checkbox"
         :disabled="user.perm.admin"
         v-model="user.lockPassword"
       />
-      {{ $t("settings.lockPassword") }}
+      {{ t("settings.lockPassword") }}
     </p>
 
     <permissions v-model:perm="user.perm" />
     <commands v-if="enableExec" v-model:commands="user.commands" />
 
     <div v-if="!isDefault">
-      <h3>{{ $t("settings.rules") }}</h3>
-      <p class="small">{{ $t("settings.rulesHelp") }}</p>
+      <h3>{{ t("settings.rules") }}</h3>
+      <p class="small">{{ t("settings.rulesHelp") }}</p>
       <rules v-model:rules="user.rules" />
     </div>
   </div>
@@ -81,15 +81,17 @@ const createUserDirData = ref<boolean | null>(null);
 const originalUserScope = ref<string | null>(null);
 
 const props = defineProps<{
-  user: IUser;
+  user: IUserForm;
   isNew: boolean;
   isDefault: boolean;
   createUserDir?: boolean;
 }>();
 
 onMounted(() => {
-  originalUserScope.value = props.user.scope;
-  createUserDirData.value = props.createUserDir;
+  if (props.user.scope) {
+    originalUserScope.value = props.user.scope;
+    createUserDirData.value = props.createUserDir;
+  }
 });
 
 const passwordPlaceholder = computed(() =>
@@ -103,7 +105,7 @@ const displayHomeDirectoryCheckbox = computed(
 );
 
 watch(props.user, () => {
-  if (!props.user.perm.admin) return;
+  if (!props.user?.perm?.admin) return;
   props.user.lockPassword = false;
 });
 

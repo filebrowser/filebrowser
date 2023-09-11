@@ -369,12 +369,11 @@ const formatBytes = (bytes: number) => {
 onMounted(async () => {
   try {
     layoutStore.loading = true;
-
     const original: ISettings = await api.get();
     let newSettings: ISettings = { ...original, commands: {} };
 
     const keys = Object.keys(original.commands) as Array<keyof SettingsCommand>;
-    for (const key in keys) {
+    for (const key of keys) {
       //@ts-ignore
       newSettings.commands[key] = original.commands[key];
       //@ts-ignore

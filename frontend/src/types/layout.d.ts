@@ -1,4 +1,4 @@
-export interface LayoutValue {
+interface LayoutValue {
   prompt: string;
   confirm: any;
   action?: boolean;

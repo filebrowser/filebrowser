@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "serve": "vite serve",
-    "build": "vite build",
+    "build": "vue-tsc -p ./tsconfig.json --noEmit && vite build",
     "watch": "vite build --watch",
     "clean": "find ./dist -maxdepth 1 -mindepth 1 ! -name '.gitkeep' -exec rm -r {} +",
     "lint": "eslint --ext .vue,.ts src/",
@@ -38,8 +38,8 @@
     "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
-    "@types/lodash-es": "^4.17.9",
     "@intlify/unplugin-vue-i18n": "^1.0.1",
+    "@types/lodash-es": "^4.17.9",
     "@types/node": "^20.6.0",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@vitejs/plugin-legacy": "^4.1.1",
@@ -55,6 +55,7 @@
     "terser": "^5.19.4",
     "vite": "^4.4.9",
     "vite-plugin-compression2": "^0.10.4",
-    "vite-plugin-rewrite-all": "^1.0.1"
+    "vite-plugin-rewrite-all": "^1.0.1",
+    "vue-tsc": "^1.8.10"
   }
 }

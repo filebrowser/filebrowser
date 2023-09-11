@@ -13,7 +13,7 @@
     "vue/multi-word-component-names": "off",
     "vue/no-reserved-component-names": "warn",
     "vue/no-mutating-props": "warn",
-    "no-undef": "error"
+    "no-undef": "off"
   },
   "parserOptions": {
     "ecmaVersion": "latest",
