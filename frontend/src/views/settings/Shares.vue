@@ -71,16 +71,9 @@ import Clipboard from "clipboard";
 import Errors from "@/views/Errors.vue";
 import { inject, onBeforeUnmount, ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-<<<<<<< HEAD
 
-const $showError = inject("$showError") as TToast;
-const $showSuccess = inject("$showSuccess") as TToast;
-=======
-import type { IShare, IToastError, IToastSuccess } from "@/types";
-
-const $showError = inject<IToastError>("$showError")!;
-const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
->>>>>>> kloon15/vue3
+const $showError = inject("$showError") as IToastSuccess;
+const $showSuccess = inject("$showSuccess") as IToastError;
 const { t } = useI18n();
 
 const layoutStore = useLayoutStore();
@@ -142,7 +135,7 @@ const humanTime = (time: number) => {
   return dayjs(time * 1000).fromNow();
 };
 
-const buildLink = (share: IShare) => {
+const buildLink = (share: Share) => {
   return api.getShareURL(share);
 };
 </script>

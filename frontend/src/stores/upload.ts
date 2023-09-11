@@ -3,7 +3,6 @@ import { useFileStore } from "./file";
 import { files as api } from "@/api";
 import throttle from "lodash/throttle";
 import buttons from "@/utils/buttons";
-import type { Item, Uploads } from "@/types";
 
 // TODO: make this into a user setting
 const UPLOADS_LIMIT = 5;

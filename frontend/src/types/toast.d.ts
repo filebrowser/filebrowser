@@ -1,5 +1,5 @@
-export type IToastSuccess = (message: string) => void;
-export type IToastError = (
+type IToastSuccess = (message: string) => void;
+type IToastError = (
   error: Error | string,
   displayReport?: boolean
 ) => void;

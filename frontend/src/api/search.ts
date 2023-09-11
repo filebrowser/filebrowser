@@ -1,6 +1,5 @@
 import { fetchURL, removePrefix } from "./utils";
 import url from "../utils/url";
-import type { Item } from "@/types";
 
 export default async function search(base: string, query: string) {
   base = removePrefix(base);

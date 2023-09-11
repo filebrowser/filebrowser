@@ -1,5 +1,4 @@
 import { useUploadStore } from "@/stores/upload";
-import type { IFile, Item, FileType } from "@/types";
 import url from "@/utils/url";
 
 export function checkConflict(files: IFile[], items: Item[]) {

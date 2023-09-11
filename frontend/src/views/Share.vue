@@ -197,7 +197,6 @@ import { useLayoutStore } from "@/stores/layout";
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
-import type { IToastSuccess } from "@/types";
 
 const error = ref<null | any>(null);
 const showLimit = ref<number>(100);
@@ -335,6 +334,7 @@ const download = () => {
 const linkSelected = () => {
   return isSingleFile() && req.value
     ? api.getDownloadURL({
+        ...req.value,
         hash: hash.value,
         path: req.value.items[fileStore.selected[0]].path,
       })

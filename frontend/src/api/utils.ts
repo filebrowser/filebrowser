@@ -1,5 +1,4 @@
 import { useAuthStore } from "@/stores/auth";
-import type { ApiOpts, SearchParams } from "@/types";
 import { renew, logout } from "@/utils/auth";
 import { baseURL } from "@/utils/constants";
 import { encodePath } from "@/utils/url";

@@ -1,4 +1,4 @@
-export interface IFile {
+interface IFile {
   index?: number;
   name: string;
   modified: string;
@@ -14,7 +14,7 @@ export interface IFile {
   url?: string;
 }
 
-export type FileType =
+type FileType =
   | "video"
   | "audio"
   | "image"
@@ -37,17 +37,17 @@ type req = {
   hash: string;
 };
 
-export interface Uploads {
+interface Uploads {
   [key: string]: Upload;
 }
 
-export interface Upload {
+interface Upload {
   id: number;
   file: IFile;
   type: string;
 }
 
-export interface Item {
+interface Item {
   id: number;
   url?: string;
   path: string;

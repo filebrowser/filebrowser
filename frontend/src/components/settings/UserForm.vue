@@ -74,10 +74,6 @@ import Commands from "./Commands.vue";
 import { enableExec } from "@/utils/constants";
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-<<<<<<< HEAD
-=======
-import { IUser } from "@/types";
->>>>>>> kloon15/vue3
 
 const { t } = useI18n();
 
@@ -86,15 +82,9 @@ const originalUserScope = ref<string | null>(null);
 
 const props = defineProps<{
   user: IUser;
-<<<<<<< HEAD
-  createUserDir: boolean;
-  isNew: boolean;
-  isDefault: boolean;
-=======
   isNew: boolean;
   isDefault: boolean;
   createUserDir?: boolean;
->>>>>>> kloon15/vue3
 }>();
 
 onMounted(() => {

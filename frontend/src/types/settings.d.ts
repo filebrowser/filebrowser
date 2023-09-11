@@ -1,6 +1,4 @@
-import type { Permissions } from "./user";
-
-export interface ISettings {
+ interface ISettings {
   signup: boolean;
   createUserDir: boolean;
   userHomeBasePath: string;
@@ -43,7 +41,7 @@ interface SettingsTus {
   retryCount: number;
 }
 
-export interface SettingsCommand {
+interface SettingsCommand {
   after_copy?: string[];
   after_delete?: string[];
   after_rename?: string[];
@@ -56,7 +54,7 @@ export interface SettingsCommand {
   before_upload?: string[];
 }
 
-export interface SettingsUnit {
+interface SettingsUnit {
   KB: number;
   MB: number;
   GB: number;

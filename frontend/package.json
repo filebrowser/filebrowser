@@ -38,14 +38,9 @@
     "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
-<<<<<<< HEAD
-    "@intlify/unplugin-vue-i18n": "^0.12.3",
     "@types/lodash-es": "^4.17.9",
-=======
     "@intlify/unplugin-vue-i18n": "^1.0.1",
-    "@types/lodash-es": "^4.17.9",
     "@types/node": "^20.6.0",
->>>>>>> kloon15/vue3
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@vitejs/plugin-legacy": "^4.1.1",
     "@vitejs/plugin-vue": "^4.3.4",

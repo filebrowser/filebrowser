@@ -47,10 +47,6 @@ import { users as api } from "@/api";
 import Errors from "@/views/Errors.vue";
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
-<<<<<<< HEAD
-=======
-import type { IUser } from "@/types";
->>>>>>> kloon15/vue3
 
 const error = ref<any>(null);
 const users = ref<IUser[]>([]);

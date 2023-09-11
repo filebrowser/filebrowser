@@ -3,7 +3,6 @@ import { baseURL, tusEndpoint, tusSettings } from "@/utils/constants";
 import { useAuthStore } from "@/stores/auth";
 import { removePrefix } from "@/api/utils";
 import { fetchURL } from "./utils";
-import type { ApiContent, TusSettings } from "@/types";
 
 const RETRY_BASE_DELAY = 1000;
 const RETRY_MAX_DELAY = 20000;

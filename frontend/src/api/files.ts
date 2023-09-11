@@ -2,13 +2,6 @@ import { createURL, fetchURL, removePrefix } from "./utils";
 import { baseURL } from "@/utils/constants";
 import { useAuthStore } from "@/stores/auth";
 import { upload as postTus, useTus } from "./tus";
-import type {
-  ApiContent,
-  ApiMethod,
-  ApiOpts,
-  ChecksumAlgs,
-  IFile,
-} from "@/types";
 
 export async function fetch(url: string) {
   url = removePrefix(url);

@@ -1,4 +1,3 @@
-import type { IUser } from "@/types";
 import { defineStore } from "pinia";
 import dayjs from "dayjs";
 import i18n, { detectLocale } from "@/i18n";
@@ -19,29 +18,24 @@ export const useAuthStore = defineStore("auth", {
   },
   actions: {
     // no context as first argument, use `this` instead
-    setUser(user: IUser | null) {
-      if (user === null) {
+    setUser(value: IUser) {
+      if (value === null) {
         this.user = null;
         return;
       }
 
-      const locale = user.locale || detectLocale();
+      const locale = value.locale || detectLocale();
       dayjs.locale(locale);
-      // according to doc u only need .value if legacy: false but they lied
+      // according to doc u only need .value if legacy: false
+      // in createI18n but they lied
       // https://vue-i18n.intlify.dev/guide/essentials/scope.html#local-scope-1
       //@ts-ignore
-      i18n.global.locale.value = locale;
-      this.user = user;
+      i18n.global.locale = locale;
+      this.user = value;
     },
-    updateUser(user: Partial<IUser>) {
-      if (user.locale) {
-        dayjs.locale(user.locale);
-        // see above
-        //@ts-ignore
-        i18n.global.locale.value = user.locale;
-      }
-
-      this.user = { ...this.user, ...cloneDeep(user) } as IUser;
+    updateUser(value: IUser) {
+      if (typeof value !== "object" || !value) return;
+      this.setUser(cloneDeep(value));
     },
     // easily reset state using `$reset`
     clearUser() {

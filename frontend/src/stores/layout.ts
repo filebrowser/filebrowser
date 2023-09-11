@@ -1,4 +1,3 @@
-import type { LayoutValue } from "@/types";
 import { defineStore } from "pinia";
 // import { useAuthPreferencesStore } from "./auth-preferences";
 // import { useAuthEmailStore } from "./auth-email";

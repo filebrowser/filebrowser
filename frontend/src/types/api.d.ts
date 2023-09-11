@@ -1,45 +1,38 @@
-export type ApiUrl = string; // Can also be set as a path eg: "path1" | "path2"
+type ApiMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
-export type ApiMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-
-export type ApiContent =
+type ApiContent =
   | Blob
   | File
   | Pick<ReadableStreamDefaultReader<any>, "read">
   | "";
 
-export interface ApiOpts {
+interface ApiOpts {
   method?: ApiMethod;
   headers?: object;
   body?: any;
 }
 
-export interface TusSettings {
+interface TusSettings {
   retryCount: number;
   chunkSize: number;
 }
 
-export type ChecksumAlgs = "md5" | "sha1" | "sha256" | "sha512";
+type ChecksumAlgs = "md5" | "sha1" | "sha256" | "sha512";
 
 type inline = any;
 
-<<<<<<< HEAD
-interface IShare {
+interface Share {
   expire: any;
-=======
-export interface IShare {
->>>>>>> kloon15/vue3
   hash: string;
   path: string;
-  expire?: any;
-  userID?: number;
-  token?: string;
+  userID: number;
+  token: string;
 }
 
 interface settings {
   any;
 }
 
-export interface SearchParams {
+interface SearchParams {
   [key: string]: string;
 }

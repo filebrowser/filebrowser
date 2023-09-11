@@ -1,4 +1,3 @@
-import type { IShare } from "@/types";
 import { fetchURL, removePrefix, createURL } from "./utils";
 import { baseURL } from "@/utils/constants";
 
@@ -67,7 +66,7 @@ export function download(
   window.open(url);
 }
 
-export function getDownloadURL(share: IShare, inline = false) {
+export function getDownloadURL(share: IFile, inline = false) {
   const params = {
     ...(inline && { inline: "true" }),
     ...(share.token && { token: share.token }),
@@ -75,3 +74,4 @@ export function getDownloadURL(share: IShare, inline = false) {
 
   return createURL("api/public/dl/" + share.hash + share.path, params, false);
 }
+  
