@@ -23,11 +23,7 @@ export async function create(user: IUser) {
   }
 }
 
-<<<<<<< HEAD
-export async function update(user: User, which = ["all"]) {
-=======
 export async function update(user: IUser, which = ["all"]) {
->>>>>>> vue3-bak
   await fetchURL(`/api/users/${user.id}`, {
     method: "PUT",
     body: JSON.stringify({
