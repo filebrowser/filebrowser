@@ -1,4 +1,4 @@
- interface ISettings {
+interface ISettings {
   signup: boolean;
   createUserDir: boolean;
   userHomeBasePath: string;

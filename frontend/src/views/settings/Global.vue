@@ -247,7 +247,7 @@ const settings = ref<ISettings | null>(null);
 const debounceTimeout = ref<number | null>(null);
 
 const commandObject = ref<{
-  [key in keyof SettingsCommand]: string[] | string;
+  [key: string]: string[] | string;
 }>({});
 const shellValue = ref<string>("");
 

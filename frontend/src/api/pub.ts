@@ -74,4 +74,3 @@ export function getDownloadURL(share: IFile, inline = false) {
 
   return createURL("api/public/dl/" + share.hash + share.path, params, false);
 }
-  
