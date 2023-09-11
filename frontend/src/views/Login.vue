@@ -71,10 +71,7 @@ const submit = async (event: Event) => {
   event.preventDefault();
   event.stopPropagation();
 
-  let redirect = route.query.redirect;
-  if (redirect === "" || redirect === undefined || redirect === null) {
-    redirect = "/files/";
-  }
+  const redirect = (route.query.redirect || "/files/") as string;
 
   let captcha = "";
   if (recaptcha) {
@@ -99,7 +96,6 @@ const submit = async (event: Event) => {
     }
 
     await auth.login(username.value, password.value, captcha);
-    // @ts-ignore
     router.push({ path: redirect });
   } catch (e: any) {
     console.error(e);

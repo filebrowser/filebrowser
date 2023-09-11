@@ -24,11 +24,11 @@ export type ChecksumAlgs = "md5" | "sha1" | "sha256" | "sha512";
 type inline = any;
 
 export interface IShare {
-  expire: any;
   hash: string;
   path: string;
-  userID: number;
-  token: string;
+  expire?: any;
+  userID?: number;
+  token?: string;
 }
 
 interface settings {
