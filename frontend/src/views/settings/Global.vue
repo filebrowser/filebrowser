@@ -158,6 +158,7 @@
         <div class="card-content">
           <p class="small">{{ t("settings.defaultUserDescription") }}</p>
 
+          <!-- TODO: idk how to fix this ts error -->
           <user-form
             :isNew="false"
             :isDefault="true"

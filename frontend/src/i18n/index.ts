@@ -24,29 +24,9 @@ import("dayjs/locale/uk");
 import("dayjs/locale/zh-cn");
 import("dayjs/locale/zh-tw");
 
-import he from "./he.json";
-import hu from "./hu.json";
-import ar from "./ar.json";
-import de from "./de.json";
-import en from "./en.json";
-import es from "./es.json";
-import fr from "./fr.json";
-import is from "./is.json";
-import it from "./it.json";
-import ja from "./ja.json";
-import ko from "./ko.json";
-import nlBE from "./nl-be.json";
-import pl from "./pl.json";
-import pt from "./pt.json";
-import ptBR from "./pt-br.json";
-import ro from "./ro.json";
-import ru from "./ru.json";
-import sk from "./sk.json";
-import tr from "./tr.json";
-import uk from "./uk.json";
-import svSE from "./sv-se.json";
-import zhCN from "./zh-cn.json";
-import zhTW from "./zh-tw.json";
+// All i18n resources specified in the plugin `include` option can be loaded
+// at once using the import syntax
+import messages from "@intlify/unplugin-vue-i18n/messages";
 
 export function detectLocale() {
   // locale is an RFC 5646 language tag
@@ -132,7 +112,8 @@ export function detectLocale() {
   return locale;
 }
 
-const removeEmpty = (obj) =>
+// TODO: was this really necessary?
+function removeEmpty(obj: Record<string, any>): void {
   Object.keys(obj)
     .filter((k) => obj[k] !== null && obj[k] !== undefined && obj[k] !== "") // Remove undef. and null and empty.string.
     .reduce(
@@ -142,37 +123,14 @@ const removeEmpty = (obj) =>
           : Object.assign(newObj, { [k]: obj[k] }), // Copy value.
       {}
     );
+}
 
 export const rtlLanguages = ["he", "ar"];
 
 export const i18n = createI18n({
   locale: detectLocale(),
   fallbackLocale: "en",
-  messages: {
-    he: removeEmpty(he),
-    hu: removeEmpty(hu),
-    ar: removeEmpty(ar),
-    de: removeEmpty(de),
-    en: en,
-    es: removeEmpty(es),
-    fr: removeEmpty(fr),
-    is: removeEmpty(is),
-    it: removeEmpty(it),
-    ja: removeEmpty(ja),
-    ko: removeEmpty(ko),
-    "nl-be": removeEmpty(nlBE),
-    pl: removeEmpty(pl),
-    "pt-br": removeEmpty(ptBR),
-    pt: removeEmpty(pt),
-    ru: removeEmpty(ru),
-    ro: removeEmpty(ro),
-    sk: removeEmpty(sk),
-    sv: removeEmpty(svSE),
-    tr: removeEmpty(tr),
-    uk: removeEmpty(uk),
-    "zh-cn": removeEmpty(zhCN),
-    "zh-tw": removeEmpty(zhTW),
-  },
+  messages,
   // expose i18n.global for outside components
   legacy: true,
 });

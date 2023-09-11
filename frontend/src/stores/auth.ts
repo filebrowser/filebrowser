@@ -27,15 +27,18 @@ export const useAuthStore = defineStore("auth", {
 
       const locale = user.locale || detectLocale();
       dayjs.locale(locale);
+      // according to doc u only need .value if legacy: false but they lied
+      // https://vue-i18n.intlify.dev/guide/essentials/scope.html#local-scope-1
       //@ts-ignore
-      i18n.global.locale = locale;
+      i18n.global.locale.value = locale;
       this.user = user;
     },
     updateUser(user: Partial<IUser>) {
       if (user.locale) {
         dayjs.locale(user.locale);
+        // see above
         //@ts-ignore
-        i18n.global.locale = user.locale;
+        i18n.global.locale.value = user.locale;
       }
 
       this.user = { ...this.user, ...cloneDeep(user) } as IUser;
