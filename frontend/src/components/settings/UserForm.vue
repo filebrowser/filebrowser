@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p v-if="!isDefault">
+    <p v-if="!isDefault && props.user !== null">
       <label for="username">{{ $t("settings.username") }}</label>
       <input
         class="input input--block"
@@ -24,7 +24,7 @@
     <p>
       <label for="scope">{{ $t("settings.scope") }}</label>
       <input
-        :disabled="createUserDirData"
+        :disabled="createUserDirData ?? false"
         :placeholder="scopePlaceholder"
         class="input input--block"
         type="text"
@@ -56,7 +56,7 @@
     </p>
 
     <permissions v-model:perm="user.perm" />
-    <commands v-if="isExecEnabled" v-model:commands="user.commands" />
+    <commands v-if="enableExec" v-model:commands="user.commands" />
 
     <div v-if="!isDefault">
       <h3>{{ $t("settings.rules") }}</h3>
@@ -66,54 +66,53 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import Languages from "./Languages.vue";
 import Rules from "./Rules.vue";
 import Permissions from "./Permissions.vue";
 import Commands from "./Commands.vue";
 import { enableExec } from "@/utils/constants";
+import { computed, onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { IUser } from "@/types";
 
-export default {
-  name: "user",
-  data: () => {
-    return {
-      createUserDirData: false,
-      originalUserScope: "/",
-    };
-  },
-  components: {
-    Permissions,
-    Languages,
-    Rules,
-    Commands,
-  },
-  props: ["user", "createUserDir", "isNew", "isDefault"],
-  created() {
-    this.originalUserScope = this.user.scope;
-    this.createUserDirData = this.createUserDir;
-  },
-  computed: {
-    passwordPlaceholder() {
-      return this.isNew ? "" : this.$t("settings.avoidChanges");
-    },
-    scopePlaceholder() {
-      return this.createUserDir
-        ? this.$t("settings.userScopeGenerationPlaceholder")
-        : "";
-    },
-    displayHomeDirectoryCheckbox() {
-      return this.isNew && this.createUserDir;
-    },
-    isExecEnabled: () => enableExec,
-  },
-  watch: {
-    "user.perm.admin": function () {
-      if (!this.user.perm.admin) return;
-      this.user.lockPassword = false;
-    },
-    createUserDirData() {
-      this.user.scope = this.createUserDirData ? "" : this.originalUserScope;
-    },
-  },
-};
+const { t } = useI18n();
+
+const createUserDirData = ref<boolean | null>(null);
+const originalUserScope = ref<string | null>(null);
+
+const props = defineProps<{
+  user: IUser;
+  isNew: boolean;
+  isDefault: boolean;
+  createUserDir?: boolean;
+}>();
+
+onMounted(() => {
+  originalUserScope.value = props.user.scope;
+  createUserDirData.value = props.createUserDir;
+});
+
+const passwordPlaceholder = computed(() =>
+  props.isNew ? "" : t("settings.avoidChanges")
+);
+const scopePlaceholder = computed(() =>
+  createUserDirData.value ? t("settings.userScopeGenerationPlaceholder") : ""
+);
+const displayHomeDirectoryCheckbox = computed(
+  () => props.isNew && createUserDirData.value
+);
+
+watch(props.user, () => {
+  if (!props.user.perm.admin) return;
+  props.user.lockPassword = false;
+});
+
+watch(createUserDirData, () => {
+  if (props.user?.scope) {
+    props.user.scope = createUserDirData.value
+      ? ""
+      : originalUserScope.value ?? "";
+  }
+});
 </script>

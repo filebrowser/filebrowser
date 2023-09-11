@@ -1,11 +1,11 @@
-import type { Share } from "@/types";
+import type { ApiUrl, IShare } from "@/types";
 import { fetchURL, fetchJSON, removePrefix, createURL } from "./utils";
 
 export async function list() {
   return fetchJSON("/api/shares");
 }
 
-export async function get(url: string) {
+export async function get(url: ApiUrl) {
   url = removePrefix(url);
   return fetchJSON(`/api/share${url}`);
 }
@@ -17,7 +17,7 @@ export async function remove(hash: string) {
 }
 
 export async function create(
-  url: string,
+  url: ApiUrl,
   password = "",
   expires = "",
   unit = "hours"
@@ -41,6 +41,6 @@ export async function create(
   });
 }
 
-export function getShareURL(share: Share) {
+export function getShareURL(share: IShare) {
   return createURL("share/" + share.hash, {}, false);
 }

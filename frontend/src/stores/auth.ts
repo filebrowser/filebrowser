@@ -1,4 +1,4 @@
-import type { User } from "@/types";
+import type { IUser } from "@/types";
 import { defineStore } from "pinia";
 import dayjs from "dayjs";
 import i18n, { detectLocale } from "@/i18n";
@@ -7,7 +7,7 @@ import { cloneDeep } from "lodash-es";
 export const useAuthStore = defineStore("auth", {
   // convert to a function
   state: (): {
-    user: User | null;
+    user: IUser | null;
     jwt: string;
   } => ({
     user: null,
@@ -19,24 +19,26 @@ export const useAuthStore = defineStore("auth", {
   },
   actions: {
     // no context as first argument, use `this` instead
-    setUser(value: User) {
-      if (value === null) {
+    setUser(user: IUser | null) {
+      if (user === null) {
         this.user = null;
         return;
       }
 
-      const locale = value.locale || detectLocale();
+      const locale = user.locale || detectLocale();
       dayjs.locale(locale);
-      // according to doc u only need .value if legacy: false
-      // in createI18n but they lied
-      // https://vue-i18n.intlify.dev/guide/essentials/scope.html#local-scope-1
       //@ts-ignore
       i18n.global.locale = locale;
-      this.user = value;
+      this.user = user;
     },
-    updateUser(value: User) {
-      if (typeof value !== "object" || !value) return;
-      this.setUser(cloneDeep(value));
+    updateUser(user: Partial<IUser>) {
+      if (user.locale) {
+        dayjs.locale(user.locale);
+        //@ts-ignore
+        i18n.global.locale = user.locale;
+      }
+
+      this.user = { ...this.user, ...cloneDeep(user) } as IUser;
     },
     // easily reset state using `$reset`
     clearUser() {

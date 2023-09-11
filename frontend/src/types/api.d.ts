@@ -1,3 +1,5 @@
+export type ApiUrl = string; // Can also be set as a path eg: "path1" | "path2"
+
 export type ApiMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 export type ApiContent =
@@ -21,7 +23,7 @@ export type ChecksumAlgs = "md5" | "sha1" | "sha256" | "sha512";
 
 type inline = any;
 
-export interface Share {
+export interface IShare {
   expire: any;
   hash: string;
   path: string;

@@ -257,8 +257,8 @@ const commandObject = ref<{
 }>({});
 const shellValue = ref<string>("");
 
-const $showSuccess = inject<IToastSuccess>("$showSuccess") as IToastSuccess;
-const $showError = inject<IToastError>("$showError") as IToastError;
+const $showError = inject<IToastError>("$showError")!;
+const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
 
 const { t } = useI18n();
 
