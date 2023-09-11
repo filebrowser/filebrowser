@@ -1,8 +1,10 @@
-interface ISettings {
+import type { Permissions } from "./user";
+
+export interface ISettings {
   signup: boolean;
   createUserDir: boolean;
   userHomeBasePath: string;
-  defaults: Defaults;
+  defaults: SettingsDefaults;
   rules: any[];
   branding: SettingsBranding;
   tus: SettingsTus;
@@ -16,7 +18,7 @@ interface SettingsDefaults {
   viewMode: string;
   singleClick: boolean;
   sorting: SettingsSorting;
-  perm: SettingsPerm;
+  perm: Permissions;
   commands: any[];
   hideDotfiles: boolean;
   dateFormat: boolean;
@@ -25,17 +27,6 @@ interface SettingsDefaults {
 interface SettingsSorting {
   by: string;
   asc: boolean;
-}
-
-interface SettingsPerm {
-  admin: boolean;
-  execute: boolean;
-  create: boolean;
-  rename: boolean;
-  modify: boolean;
-  delete: boolean;
-  share: boolean;
-  download: boolean;
 }
 
 interface SettingsBranding {
@@ -52,7 +43,7 @@ interface SettingsTus {
   retryCount: number;
 }
 
-interface SettingsCommand {
+export interface SettingsCommand {
   after_copy?: string[];
   after_delete?: string[];
   after_rename?: string[];
@@ -65,7 +56,7 @@ interface SettingsCommand {
   before_upload?: string[];
 }
 
-interface SettingsUnit {
+export interface SettingsUnit {
   KB: number;
   MB: number;
   GB: number;

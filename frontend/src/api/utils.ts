@@ -1,9 +1,20 @@
 import { useAuthStore } from "@/stores/auth";
+import type { ApiOpts, SearchParams } from "@/types";
 import { renew, logout } from "@/utils/auth";
 import { baseURL } from "@/utils/constants";
 import { encodePath } from "@/utils/url";
 
-export async function fetchURL(url: ApiUrl, opts: ApiOpts, auth = true) {
+export class StatusError extends Error {
+  constructor(
+    message: any,
+    public status?: number
+  ) {
+    super(message);
+    this.name = "StatusError";
+  }
+}
+
+export async function fetchURL(url: string, opts: ApiOpts, auth = true) {
   const authStore = useAuthStore();
 
   opts = opts || {};
@@ -20,11 +31,7 @@ export async function fetchURL(url: ApiUrl, opts: ApiOpts, auth = true) {
       ...rest,
     });
   } catch {
-    const error = new Error("000 No connection");
-    // @ts-ignore don't know yet how to solve
-    error.status = 0;
-
-    throw error;
+    throw new StatusError("000 No connection", 0);
   }
 
   if (auth && res.headers.get("X-Renew-Token") === "true") {
@@ -32,9 +39,7 @@ export async function fetchURL(url: ApiUrl, opts: ApiOpts, auth = true) {
   }
 
   if (res.status < 200 || res.status > 299) {
-    const error = new Error(await res.text());
-    // @ts-ignore don't know yet how to solve
-    error.status = res.status;
+    const error = new StatusError(await res.text(), res.status);
 
     if (auth && res.status == 401) {
       logout();
@@ -46,7 +51,7 @@ export async function fetchURL(url: ApiUrl, opts: ApiOpts, auth = true) {
   return res;
 }
 
-export async function fetchJSON(url: ApiUrl, opts?: any) {
+export async function fetchJSON(url: string, opts?: any) {
   const res = await fetchURL(url, opts);
 
   if (res.status === 200) {
@@ -56,7 +61,7 @@ export async function fetchJSON(url: ApiUrl, opts?: any) {
   }
 }
 
-export function removePrefix(url: ApiUrl) {
+export function removePrefix(url: string) {
   url = url.split("/").splice(2).join("/");
 
   if (url === "") url = "/";
@@ -64,7 +69,7 @@ export function removePrefix(url: ApiUrl) {
   return url;
 }
 
-export function createURL(endpoint: ApiUrl, params = {}, auth = true) {
+export function createURL(endpoint: string, params = {}, auth = true) {
   const authStore = useAuthStore();
 
   let prefix = baseURL;
@@ -73,7 +78,7 @@ export function createURL(endpoint: ApiUrl, params = {}, auth = true) {
   }
   const url = new URL(prefix + encodePath(endpoint), origin);
 
-  const searchParams: searchParams = {
+  const searchParams: SearchParams = {
     ...(auth && { auth: authStore.jwt }),
     ...params,
   };

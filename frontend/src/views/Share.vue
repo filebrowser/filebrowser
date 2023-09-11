@@ -194,9 +194,10 @@ import Item from "@/components/files/ListingItem.vue";
 import Clipboard from "clipboard";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
+import type { IToastSuccess } from "@/types";
 
 const error = ref<null | any>(null);
 const showLimit = ref<number>(100);
@@ -205,6 +206,8 @@ const attemptedPasswordLogin = ref<boolean>(false);
 const hash = ref<any>(null);
 const token = ref<any>(null);
 const clip = ref<any>(null);
+
+const $showSuccess = inject<IToastSuccess>("$showError")!;
 
 const { t } = useI18n({});
 
@@ -256,7 +259,7 @@ const fetchData = async () => {
   fileStore.reload = false;
   fileStore.selected = [];
   fileStore.multiple = false;
-  // fileStore.closeHovers();
+  layoutStore.closeHovers();
 
   // Set loading to true and reset the error.
   layoutStore.loading = true;
@@ -324,7 +327,6 @@ const download = () => {
         files.push(req.value.items[i].path);
       }
 
-      // @ts-ignore
       api.download(format, hash.value, token.value, ...files);
     },
   });
@@ -332,8 +334,7 @@ const download = () => {
 
 const linkSelected = () => {
   return isSingleFile() && req.value
-    ? // @ts-ignore
-      api.getDownloadURL({
+    ? api.getDownloadURL({
         hash: hash.value,
         path: req.value.items[fileStore.selected[0]].path,
       })
@@ -348,7 +349,7 @@ onMounted(async () => {
   window.addEventListener("keydown", keyEvent);
   clip.value = new Clipboard(".copy-clipboard");
   clip.value.on("success", () => {
-    // $showSuccess(this.t("success.linkCopied"));
+    $showSuccess(t("success.linkCopied"));
   });
 });
 

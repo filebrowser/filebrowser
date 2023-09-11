@@ -1,10 +1,11 @@
-// @ts-nocheck
 import { defineStore } from "pinia";
 import { useFileStore } from "./file";
 import { files as api } from "@/api";
 import throttle from "lodash/throttle";
 import buttons from "@/utils/buttons";
+import type { Item, Uploads } from "@/types";
 
+// TODO: make this into a user setting
 const UPLOADS_LIMIT = 5;
 
 const beforeUnload = (event: Event) => {
@@ -20,8 +21,8 @@ export const useUploadStore = defineStore("upload", {
     sizes: any[];
     progress: any[];
     queue: any[];
-    uploads: uploads;
-    error: any;
+    uploads: Uploads;
+    error: Error | null;
   } => ({
     id: 0,
     sizes: [],
@@ -39,7 +40,6 @@ export const useUploadStore = defineStore("upload", {
 
       const totalSize = state.sizes.reduce((a, b) => a + b, 0);
 
-      // @ts-ignore
       const sum: number = state.progress.reduce((acc, val) => acc + val);
       return Math.ceil((sum / totalSize) * 100);
     },
@@ -80,7 +80,7 @@ export const useUploadStore = defineStore("upload", {
       const { id, loaded } = obj;
       this.progress[id] = loaded;
     },
-    setError(error) {
+    setError(error: Error) {
       this.error = error;
     },
     reset() {
@@ -88,7 +88,7 @@ export const useUploadStore = defineStore("upload", {
       this.sizes = [];
       this.progress = [];
     },
-    addJob(item: item) {
+    addJob(item: Item) {
       this.queue.push(item);
       this.sizes[this.id] = item.file.size;
       this.id++;
@@ -103,7 +103,7 @@ export const useUploadStore = defineStore("upload", {
       // Vue.delete(this.uploads, id);
       delete this.uploads[id];
     },
-    upload(item: item) {
+    upload(item: Item) {
       const uploadsCount = Object.keys(this.uploads).length;
 
       const isQueueEmpty = this.queue.length == 0;
@@ -117,7 +117,7 @@ export const useUploadStore = defineStore("upload", {
       this.addJob(item);
       this.processUploads();
     },
-    finishUpload(item: item) {
+    finishUpload(item: Item) {
       this.setProgress({ id: item.id, loaded: item.file.size > 0 });
       this.removeJob(item.id);
       this.processUploads();

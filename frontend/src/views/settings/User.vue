@@ -75,19 +75,31 @@ import { useLayoutStore } from "@/stores/layout";
 import { users as api, settings } from "@/api";
 import UserForm from "@/components/settings/UserForm.vue";
 import Errors from "@/views/Errors.vue";
+<<<<<<< HEAD
 // @ts-ignore
 import { cloneDeep } from "lodash-es";
 import { computed, inject, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+=======
+import { computed, inject, onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import type { IToastError, IToastSuccess, IUser } from "@/types";
+>>>>>>> kloon15/vue3
 
 const error = ref<any | null>(null);
 const originalUser = ref<IUser | null>(null);
 const user = ref<IUser | null>(null);
 const createUserDir = ref<boolean>(false);
 
+<<<<<<< HEAD
 const $showError = inject("$showError") as TToast;
 const $showSuccess = inject("$showSuccess") as TToast;
+=======
+const $showError = inject<IToastError>("$showError")!;
+const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
+>>>>>>> kloon15/vue3
 
 const authStore = useAuthStore();
 const layoutStore = useLayoutStore();
@@ -121,6 +133,8 @@ const fetchData = async () => {
         rules: [],
         lockPassword: false,
         id: 0,
+<<<<<<< HEAD
+=======
       };
     } else {
       const id = Array.isArray(route.params.id)
@@ -135,6 +149,48 @@ const fetchData = async () => {
   }
 };
 
+const deletePrompt = () => layoutStore.showHover("deleteUser");
+
+const deleteUser = async (e: Event) => {
+  e.preventDefault();
+  if (user.value === null) {
+    return false;
+  }
+  try {
+    await api.remove(user.value.id);
+    router.push({ path: "/settings/users" });
+    $showSuccess(t("settings.userDeleted"));
+  } catch (e: any) {
+    e.message === "403" ? $showError(t("errors.forbidden")) : $showError(e);
+  }
+};
+const save = async (event: Event) => {
+  event.preventDefault();
+  if (originalUser.value === null || user.value === null) {
+    return false;
+  }
+
+  try {
+    if (isNew.value) {
+      const newUser: IUser = {
+        ...originalUser.value,
+        ...user.value,
+>>>>>>> kloon15/vue3
+      };
+    } else {
+      const id = Array.isArray(route.params.id)
+        ? route.params.id.join("")
+        : route.params.id;
+      user.value = { ...(await api.get(parseInt(id))) };
+    }
+  } catch (e) {
+    error.value = e;
+  } finally {
+    layoutStore.loading = false;
+  }
+};
+
+<<<<<<< HEAD
 const deletePrompt = () => layoutStore.showHover("deleteUser");
 
 const deleteUser = async (e: Event) => {
@@ -170,6 +226,16 @@ const save = async (event: Event) => {
 
       if (user.value.id === authStore.user?.id) {
         authStore.setUser({ ...cloneDeep(user) });
+=======
+      const loc = (await api.create(newUser)) as string;
+      router.push({ path: loc });
+      $showSuccess(t("settings.userCreated"));
+    } else {
+      await api.update(user);
+
+      if (user.value.id === authStore.user?.id) {
+        authStore.updateUser(user.value);
+>>>>>>> kloon15/vue3
       }
 
       $showSuccess(t("settings.userUpdated"));

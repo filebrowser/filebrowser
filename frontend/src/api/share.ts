@@ -1,3 +1,4 @@
+import type { ApiUrl, IShare } from "@/types";
 import { fetchURL, fetchJSON, removePrefix, createURL } from "./utils";
 
 export async function list() {

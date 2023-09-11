@@ -1,7 +1,8 @@
 import { fetchURL, removePrefix } from "./utils";
 import url from "../utils/url";
+import type { Item } from "@/types";
 
-export default async function search(base: apiUrl, query: string) {
+export default async function search(base: string, query: string) {
   base = removePrefix(base);
   query = encodeURIComponent(query);
 
@@ -13,7 +14,7 @@ export default async function search(base: apiUrl, query: string) {
 
   let data = await res.json();
 
-  data = data.map((item: item) => {
+  data = data.map((item: Item) => {
     item.url = `/files${base}` + url.encodePath(item.path);
 
     if (item.dir) {

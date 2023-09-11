@@ -1,8 +1,8 @@
 <template>
   <div>
-    <!-- <div v-if="true" class="layoutStore.progress">
-      <div v-bind:style="{ width: this.layoutStore.progress + '%' }"></div>
-    </div> -->
+    <div v-if="uploadStore.getProgress" class="progress">
+      <div v-bind:style="{ width: uploadStore.getProgress + '%' }"></div>
+    </div>
     <sidebar></sidebar>
     <main>
       <router-view></router-view>
@@ -21,6 +21,7 @@
 import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
 import { useFileStore } from "@/stores/file";
+import { useUploadStore } from "@/stores/upload";
 import Sidebar from "@/components/Sidebar.vue";
 import Prompts from "@/components/prompts/Prompts.vue";
 import Shell from "@/components/Shell.vue";
@@ -32,6 +33,7 @@ import { useRoute } from "vue-router";
 const layoutStore = useLayoutStore();
 const authStore = useAuthStore();
 const fileStore = useFileStore();
+const uploadStore = useUploadStore();
 const route = useRoute();
 
 watch(route, () => {

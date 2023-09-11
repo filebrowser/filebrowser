@@ -1,3 +1,4 @@
+import type { User } from "@/types/user";
 import { fetchURL, fetchJSON } from "./utils";
 
 export async function getAll() {
@@ -8,7 +9,7 @@ export async function get(id: number) {
   return fetchJSON(`/api/users/${id}`, {});
 }
 
-export async function create(user: user) {
+export async function create(user: User) {
   const res = await fetchURL(`/api/users`, {
     method: "POST",
     body: JSON.stringify({
@@ -23,7 +24,7 @@ export async function create(user: user) {
   }
 }
 
-export async function update(user: user, which = ["all"]) {
+export async function update(user: User, which = ["all"]) {
   await fetchURL(`/api/users/${user.id}`, {
     method: "PUT",
     body: JSON.stringify({

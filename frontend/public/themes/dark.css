@@ -1,7 +1,7 @@
 :root {
-  --background: #141D24;
-  --surfacePrimary: #20292F;
-  --surfaceSecondary: #3A4147;
+  --background: #141d24;
+  --surfacePrimary: #20292f;
+  --surfaceSecondary: #3a4147;
   --divider: rgba(255, 255, 255, 0.12);
   --icon: #ffffff;
   --textPrimary: rgba(255, 255, 255, 0.87);
@@ -16,7 +16,8 @@ body {
 #loading {
   background: var(--background);
 }
-#loading .spinner div, main .spinner div {
+#loading .spinner div,
+main .spinner div {
   background: var(--icon);
 }
 
@@ -56,7 +57,7 @@ header {
   color: var(--textPrimary) !important;
 }
 .action:hover {
-  background-color: rgba(255, 255, 255, .1);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 .action i {
   color: var(--icon) !important;
@@ -77,7 +78,7 @@ nav > div {
   color: var(--textPrimary) !important;
 }
 .breadcrumbs a:hover {
-  background-color: rgba(255, 255, 255, .1);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 #listing .item {
@@ -141,11 +142,11 @@ nav > div {
   border-color: rgba(255, 255, 255, 0.15);
 }
 .input--red {
-  background: #73302D;
+  background: #73302d;
 }
 
 .input--green {
-  background: #147A41;
+  background: #147a41;
 }
 
 .dashboard #nav .wrapper,
@@ -166,7 +167,7 @@ table th {
 .file-list li:before {
   color: var(--textSecondary);
 }
-.file-list li[aria-selected=true]:before {
+.file-list li[aria-selected="true"]:before {
   color: var(--icon);
 }
 

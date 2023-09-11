@@ -158,6 +158,7 @@
         <div class="card-content">
           <p class="small">{{ t("settings.defaultUserDescription") }}</p>
 
+          <!-- TODO: idk how to fix this ts error -->
           <user-form
             :isNew="false"
             :isDefault="true"
@@ -239,6 +240,13 @@ import Themes from "@/components/settings/Themes.vue";
 import Errors from "@/views/Errors.vue";
 import { computed, inject, onBeforeUnmount, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import type {
+  ISettings,
+  IToastError,
+  IToastSuccess,
+  SettingsCommand,
+  SettingsUnit,
+} from "@/types";
 
 const error = ref<any>(null);
 const originalSettings = ref<ISettings | null>(null);
@@ -246,12 +254,12 @@ const settings = ref<ISettings | null>(null);
 const debounceTimeout = ref<number | null>(null);
 
 const commandObject = ref<{
-  [key in keyof SettingsCommand]: string;
+  [key in keyof SettingsCommand]: string[] | string;
 }>({});
 const shellValue = ref<string>("");
 
-const $showError = inject<TToast>("$showError") as TToast;
-const $showSuccess = inject<TToast>("$showSuccess") as TToast;
+const $showError = inject<IToastError>("$showError")!;
+const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
 
 const { t } = useI18n();
 
@@ -304,6 +312,7 @@ const save = async () => {
     commands: {},
   };
 
+<<<<<<< HEAD
   // @ts-ignore
   for (const name of Object.keys(settings.value.commands)) {
     // @ts-ignore
@@ -317,6 +326,22 @@ const save = async () => {
     } else {
       // @ts-ignore
       newSettings.commands[name] = newValue;
+=======
+  const keys = Object.keys(settings.value.commands) as Array<
+    keyof SettingsCommand
+  >;
+  for (const key of keys) {
+    // not sure if we can safely assert non-null
+    const newValue = commandObject.value[key];
+    if (!newValue) continue;
+
+    if (Array.isArray(newValue)) {
+      newSettings.commands[key] = newValue;
+    } else if (key in commandObject.value) {
+      newSettings.commands[key] = newValue
+        .split("\n")
+        .filter((cmd: string) => cmd !== "");
+>>>>>>> kloon15/vue3
     }
   }
   newSettings.shell = shellValue.value.split("\n");
@@ -371,16 +396,20 @@ onMounted(async () => {
     const original: ISettings = await api.get();
     let newSettings: ISettings = { ...original, commands: {} };
 
-    for (const key in original.commands) {
-      // @ts-ignore
+    const keys = Object.keys(original.commands) as Array<keyof SettingsCommand>;
+    for (const key in keys) {
+      //@ts-ignore
       newSettings.commands[key] = original.commands[key];
-      // @ts-ignore
+      //@ts-ignore
       commandObject.value[key] = original.commands[key].join("\n");
     }
 
     originalSettings.value = original;
     settings.value = newSettings;
+<<<<<<< HEAD
     // @ts-ignore
+=======
+>>>>>>> kloon15/vue3
     shellValue.value = newSettings.shell.join("\n");
   } catch (e) {
     error.value = e;
