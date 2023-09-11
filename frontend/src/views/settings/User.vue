@@ -167,7 +167,7 @@ const save = async (event: Event) => {
       router.push({ path: loc });
       $showSuccess(t("settings.userCreated"));
     } else {
-      await api.update(user);
+      await api.update(user.value);
 
       if (user.value.id === authStore.user?.id) {
         authStore.updateUser(user.value);
