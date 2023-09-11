@@ -158,6 +158,7 @@
         <div class="card-content">
           <p class="small">{{ t("settings.defaultUserDescription") }}</p>
 
+          <!-- TODO: idk how to fix this ts error -->
           <user-form
             :isNew="false"
             :isDefault="true"
@@ -246,12 +247,12 @@ const settings = ref<ISettings | null>(null);
 const debounceTimeout = ref<number | null>(null);
 
 const commandObject = ref<{
-  [key in keyof SettingsCommand]: string;
+  [key in keyof SettingsCommand]: string[] | string;
 }>({});
 const shellValue = ref<string>("");
 
-const $showSuccess = inject<IToastSuccess>("$showSuccess") as IToastSuccess;
-const $showError = inject<IToastError>("$showError") as IToastError;
+const $showError = inject<IToastError>("$showError")!;
+const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
 
 const { t } = useI18n();
 
@@ -304,19 +305,20 @@ const save = async () => {
     commands: {},
   };
 
-  // @ts-ignore
-  for (const name of Object.keys(settings.value.commands)) {
-    // @ts-ignore
-    const newValue = commandObject.value[name];
-    // @ts-ignore
-    if (name in commandObject.value && !Array.isArray(newValue)) {
-      // @ts-ignore
-      newSettings.commands[name] = newValue
+  const keys = Object.keys(settings.value.commands) as Array<
+    keyof SettingsCommand
+  >;
+  for (const key of keys) {
+    // not sure if we can safely assert non-null
+    const newValue = commandObject.value[key];
+    if (!newValue) continue;
+
+    if (Array.isArray(newValue)) {
+      newSettings.commands[key] = newValue;
+    } else if (key in commandObject.value) {
+      newSettings.commands[key] = newValue
         .split("\n")
         .filter((cmd: string) => cmd !== "");
-    } else {
-      // @ts-ignore
-      newSettings.commands[name] = newValue;
     }
   }
   newSettings.shell = shellValue.value.split("\n");
@@ -371,16 +373,16 @@ onMounted(async () => {
     const original: ISettings = await api.get();
     let newSettings: ISettings = { ...original, commands: {} };
 
-    for (const key in original.commands) {
-      // @ts-ignore
+    const keys = Object.keys(original.commands) as Array<keyof SettingsCommand>;
+    for (const key in keys) {
+      //@ts-ignore
       newSettings.commands[key] = original.commands[key];
-      // @ts-ignore
+      //@ts-ignore
       commandObject.value[key] = original.commands[key].join("\n");
     }
 
     originalSettings.value = original;
     settings.value = newSettings;
-    // @ts-ignore
     shellValue.value = newSettings.shell.join("\n");
   } catch (e) {
     error.value = e;

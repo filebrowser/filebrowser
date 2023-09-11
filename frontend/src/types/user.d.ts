@@ -1,34 +1,45 @@
-type UserKey = keyof IUser;
-
 interface IUser {
   id: number;
   username: string;
   password: string;
   scope: string;
   locale: string;
+  perm: Permissions;
+  commands: string[];
+  rules: IRule[];
   lockPassword: boolean;
-  viewMode: string;
-  singleClick: boolean;
-  perm: UserPerm;
-  commands: any[];
-  sorting: UserSorting;
-  rules: any[];
   hideDotfiles: boolean;
+  singleClick: boolean;
   dateFormat: boolean;
 }
 
-interface UserPerm {
+interface Permissions {
   admin: boolean;
-  execute: boolean;
+  copy: boolean;
   create: boolean;
-  rename: boolean;
-  modify: boolean;
   delete: boolean;
-  share: boolean;
   download: boolean;
+  execute: boolean;
+  modify: boolean;
+  move: boolean;
+  rename: boolean;
+  share: boolean;
+  shell: boolean;
+  upload: boolean;
 }
 
 interface UserSorting {
   by: string;
   asc: boolean;
+}
+
+interface IRule {
+  allow: boolean;
+  path: string;
+  regex: boolean;
+  regexp: IRegexp;
+}
+
+interface IRegexp {
+  raw: string;
 }
