@@ -1,5 +1,5 @@
 <template>
-  <errors v-if="error" :errorCode="error.status" />
+  <errors v-if="error" :errorCode="error.status ?? 400" />
   <div class="row" v-else-if="!layoutStore.loading">
     <div class="column">
       <div class="card">
@@ -71,6 +71,7 @@ import Clipboard from "clipboard";
 import Errors from "@/views/Errors.vue";
 import { inject, onBeforeUnmount, ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
+import { StatusError } from "@/api/utils";
 
 const $showError = inject("$showError") as IToastSuccess;
 const $showSuccess = inject("$showSuccess") as IToastError;
@@ -79,10 +80,8 @@ const { t } = useI18n();
 const layoutStore = useLayoutStore();
 const authStore = useAuthStore();
 
-// ...mapState(useAuthStore, ["user"]),
-// ...mapWritableState(useLayoutStore, ["loading"]),
-const error = ref<any>(null);
-const links = ref<any[]>([]);
+const error = ref<StatusError | null>(null);
+const links = ref<Share[]>([]);
 const clip = ref<Clipboard | null>(null);
 
 onMounted(async () => {
@@ -100,8 +99,10 @@ onMounted(async () => {
           : "";
     }
     links.value = newLinks;
-  } catch (e: any) {
-    error.value = e;
+  } catch (err) {
+    if (err instanceof StatusError || err instanceof Error) {
+      error.value = err;
+    }
   } finally {
     layoutStore.loading = false;
   }

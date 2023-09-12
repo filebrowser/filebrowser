@@ -80,9 +80,9 @@ import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
 import { users as api } from "@/api";
 import Languages from "@/components/settings/Languages.vue";
-// import i18n, { rtlLanguages } from "@/i18n";
 import { inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import i18n, { rtlLanguages } from "@/i18n";
 
 const layoutStore = useLayoutStore();
 const authStore = useAuthStore();
@@ -97,10 +97,6 @@ const hideDotfiles = ref<boolean>(false);
 const singleClick = ref<boolean>(false);
 const dateFormat = ref<boolean>(false);
 const locale = ref<string>("");
-
-// ...mapState(useAuthStore, ["user"]),
-// ...mapWritableState(useLayoutStore, ["loading"]),
-//...mapActions(useAuthStore, ["updateUser"]),
 
 const passwordClass = () => {
   const baseClass = "input input--block";
@@ -164,10 +160,9 @@ const updateSettings = async (event: Event) => {
       singleClick: singleClick.value,
       dateFormat: dateFormat.value,
     };
-    // TODO don't know what this is doing
-    const shouldReload = false;
-    // rtlLanguages.includes(data.locale) !==
-    // rtlLanguages.includes(i18n.locale);
+    const shouldReload =
+      rtlLanguages.includes(data.locale) !==
+      rtlLanguages.includes(i18n.global.locale);
     await api.update(data, [
       "locale",
       "hideDotfiles",
@@ -179,8 +174,10 @@ const updateSettings = async (event: Event) => {
       location.reload();
     }
     $showSuccess(t("settings.settingsUpdated"));
-  } catch (e: any) {
-    $showError(e);
+  } catch (err) {
+    if (err instanceof Error) {
+      $showError(err);
+    }
   }
 };
 </script>

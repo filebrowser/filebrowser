@@ -297,7 +297,7 @@ const keyEvent = (event: KeyboardEvent) => {
 };
 
 const toggleMultipleSelection = () => {
-  // toggle
+  fileStore.toggleMultiple();
 };
 
 const isSingleFile = () =>

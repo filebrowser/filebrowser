@@ -17,7 +17,7 @@ import { useI18n } from "vue-i18n";
 const { t } = useI18n({});
 
 const errors: {
-  [key: string]: {
+  [key: number]: {
     icon: string;
     message: string;
   };
@@ -40,7 +40,10 @@ const errors: {
   },
 };
 
-const props = defineProps(["errorCode", "showHeader"]);
+const props = defineProps<{
+  errorCode: number;
+  showHeader?: boolean;
+}>();
 
 const info = computed(() => {
   return errors[props.errorCode] ? errors[props.errorCode] : errors[500];

@@ -1,5 +1,5 @@
 <template>
-  <errors v-if="error" :errorCode="error.status" />
+  <errors v-if="error" :errorCode="error.status ?? 400" />
   <div class="row" v-else-if="!layoutStore.loading">
     <div class="column">
       <div class="card">
@@ -47,8 +47,9 @@ import { users as api } from "@/api";
 import Errors from "@/views/Errors.vue";
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { StatusError } from "@/api/utils";
 
-const error = ref<any>(null);
+const error = ref<StatusError | null>(null);
 const users = ref<IUser[]>([]);
 
 const layoutStore = useLayoutStore();
@@ -59,8 +60,10 @@ onMounted(async () => {
 
   try {
     users.value = await api.getAll();
-  } catch (e: any) {
-    error.value = e;
+  } catch (err) {
+    if (err instanceof StatusError || err instanceof Error) {
+      error.value = err;
+    }
   } finally {
     layoutStore.loading = false;
   }

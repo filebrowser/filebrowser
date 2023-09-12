@@ -75,11 +75,10 @@ import { useLayoutStore } from "@/stores/layout";
 import { users as api, settings } from "@/api";
 import UserForm from "@/components/settings/UserForm.vue";
 import Errors from "@/views/Errors.vue";
-// @ts-ignore
-import { cloneDeep } from "lodash-es";
 import { computed, inject, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import { StatusError } from "@/api/utils";
 
 const error = ref<any | null>(null);
 const originalUser = ref<IUser | null>(null);
@@ -112,12 +111,12 @@ const fetchData = async () => {
 
   try {
     if (isNew.value) {
-      let { defaults, _createUserDir } = await settings.get();
+      let { defaults, createUserDir: _createUserDir } = await settings.get();
       createUserDir.value = _createUserDir;
       user.value = {
         ...defaults,
         username: "",
-        passsword: "",
+        password: "",
         rules: [],
         lockPassword: false,
         id: 0,
@@ -146,8 +145,12 @@ const deleteUser = async (e: Event) => {
     await api.remove(user.value.id);
     router.push({ path: "/settings/users" });
     $showSuccess(t("settings.userDeleted"));
-  } catch (e: any) {
-    e.message === "403" ? $showError(t("errors.forbidden")) : $showError(e);
+  } catch (err) {
+    if (err instanceof StatusError) {
+      err.status === 403 ? $showError(t("errors.forbidden")) : $showError(err);
+    } else if (err instanceof Error) {
+      $showError(err);
+    }
   }
 };
 const save = async (event: Event) => {
@@ -163,7 +166,7 @@ const save = async (event: Event) => {
         ...user.value,
       };
 
-      const loc = (await api.create(newUser)) as string;
+      const loc = (await api.create(newUser)) || "/settings/users";
       router.push({ path: loc });
       $showSuccess(t("settings.userCreated"));
     } else {

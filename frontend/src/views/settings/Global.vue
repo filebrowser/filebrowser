@@ -309,7 +309,7 @@ const save = async () => {
     keyof SettingsCommand
   >;
   for (const key of keys) {
-    // not sure if we can safely assert non-null
+    // not sure if we can safely assume non-null
     const newValue = commandObject.value[key];
     if (!newValue) continue;
 
@@ -374,10 +374,8 @@ onMounted(async () => {
 
     const keys = Object.keys(original.commands) as Array<keyof SettingsCommand>;
     for (const key of keys) {
-      //@ts-ignore
       newSettings.commands[key] = original.commands[key];
-      //@ts-ignore
-      commandObject.value[key] = original.commands[key].join("\n");
+      commandObject.value[key] = original.commands[key]!.join("\n");
     }
 
     originalSettings.value = original;

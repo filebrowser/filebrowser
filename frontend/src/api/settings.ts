@@ -1,7 +1,7 @@
 import { fetchURL, fetchJSON } from "./utils";
 
 export function get() {
-  return fetchJSON(`/api/settings`, {});
+  return fetchJSON<ISettings>(`/api/settings`, {});
 }
 
 export async function update(settings: ISettings) {

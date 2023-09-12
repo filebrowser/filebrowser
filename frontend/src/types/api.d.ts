@@ -27,10 +27,7 @@ interface Share {
   expire?: any;
   userID?: number;
   token?: string;
-}
-
-interface settings {
-  any;
+  username?: string;
 }
 
 interface SearchParams {

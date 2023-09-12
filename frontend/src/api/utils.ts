@@ -13,7 +13,11 @@ export class StatusError extends Error {
   }
 }
 
-export async function fetchURL(url: string, opts: ApiOpts, auth = true) {
+export async function fetchURL(
+  url: string,
+  opts: ApiOpts,
+  auth = true
+): Promise<Response> {
   const authStore = useAuthStore();
 
   opts = opts || {};
@@ -50,17 +54,17 @@ export async function fetchURL(url: string, opts: ApiOpts, auth = true) {
   return res;
 }
 
-export async function fetchJSON(url: string, opts?: any) {
+export async function fetchJSON<T>(url: string, opts?: any): Promise<T> {
   const res = await fetchURL(url, opts);
 
   if (res.status === 200) {
-    return res.json();
-  } else {
-    throw new Error(res.status.toString());
+    return res.json() as Promise<T>;
   }
+
+  throw new StatusError(`${res.status} ${res.statusText}`, res.status);
 }
 
-export function removePrefix(url: string) {
+export function removePrefix(url: string): string {
   url = url.split("/").splice(2).join("/");
 
   if (url === "") url = "/";
@@ -68,7 +72,7 @@ export function removePrefix(url: string) {
   return url;
 }
 
-export function createURL(endpoint: string, params = {}, auth = true) {
+export function createURL(endpoint: string, params = {}, auth = true): string {
   const authStore = useAuthStore();
 
   let prefix = baseURL;

@@ -1,11 +1,11 @@
-import { fetchURL, fetchJSON } from "./utils";
+import { fetchURL, fetchJSON, StatusError } from "./utils";
 
 export async function getAll() {
-  return fetchJSON(`/api/users`, {});
+  return fetchJSON<IUser[]>(`/api/users`, {});
 }
 
 export async function get(id: number) {
-  return fetchJSON(`/api/users/${id}`, {});
+  return fetchJSON<IUser>(`/api/users/${id}`, {});
 }
 
 export async function create(user: IUser) {
@@ -21,6 +21,8 @@ export async function create(user: IUser) {
   if (res.status === 201) {
     return res.headers.get("Location");
   }
+
+  throw new StatusError(await res.text(), res.status);
 }
 
 export async function update(user: IUser, which = ["all"]) {

@@ -8,15 +8,12 @@
 import { onMounted } from "vue";
 
 onMounted(() => {
-  const loading = document.getElementById("loading");
-  if (loading !== null) {
-    loading.classList.add("done");
+  // we can safely assume non-nullity here
+  const loading = document.getElementById("loading")!;
+  loading.classList.add("done");
 
-    setTimeout(function () {
-      if (loading.parentNode !== null) {
-        loading.parentNode.removeChild(loading);
-      }
-    }, 200);
-  }
+  setTimeout(function () {
+    loading.parentNode!.removeChild(loading);
+  }, 200);
 });
 </script>
