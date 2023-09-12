@@ -61,7 +61,7 @@ onMounted(async () => {
   try {
     users.value = await api.getAll();
   } catch (err) {
-    if (err instanceof StatusError || err instanceof Error) {
+    if (err instanceof Error) {
       error.value = err;
     }
   } finally {

@@ -1,20 +1,32 @@
-interface IFile {
-  index?: number;
-  name: string;
-  modified: string;
+interface ResourceBase {
   path: string;
-  subtitles: any[];
-  isDir: boolean;
+  name: string;
   size: number;
-  fullPath: string;
-  type: FileType;
-  items: IFile[];
-  token?: string;
-  hash: string;
-  url?: string;
+  extension: string;
+  modified: string; // ISO 8601 datetime
+  mode: number;
+  isDir: boolean;
+  isSymlink: boolean;
+  type: ResourceType;
+  url: string;
+  fullPath?: string;
 }
 
-type FileType =
+interface Resource extends ResourceBase {
+  items: ResourceItem[];
+  numDirs: number;
+  numFiles: number;
+  sorting: Sorting;
+  hash?: string;
+  token?: string;
+}
+
+interface ResourceItem extends ResourceBase {
+  index?: number;
+  subtitles?: string[];
+}
+
+type ResourceType =
   | "video"
   | "audio"
   | "image"
@@ -23,27 +35,13 @@ type FileType =
   | "blob"
   | "textImmutable";
 
-type req = {
-  path: string;
-  name: string;
-  size: number;
-  extension: string;
-  modified: string;
-  mode: number;
-  isDir: boolean;
-  isSymlink: boolean;
-  type: string;
-  url: string;
-  hash: string;
-};
-
 interface Uploads {
   [key: string]: Upload;
 }
 
 interface Upload {
   id: number;
-  file: IFile;
+  file: Resource;
   type: string;
 }
 
@@ -51,8 +49,8 @@ interface Item {
   id: number;
   url?: string;
   path: string;
-  file: IFile;
+  file: Resource;
   dir?: boolean;
   overwrite?: boolean;
-  type?: FileType;
+  type?: ResourceType;
 }

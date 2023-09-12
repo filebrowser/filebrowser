@@ -3,8 +3,8 @@ import { defineStore } from "pinia";
 export const useFileStore = defineStore("file", {
   // convert to a function
   state: (): {
-    req: IFile | null;
-    oldReq: IFile | null;
+    req: Resource | null;
+    oldReq: Resource | null;
     reload: boolean;
     selected: any[];
     multiple: boolean;
@@ -36,7 +36,7 @@ export const useFileStore = defineStore("file", {
     toggleMultiple() {
       this.multiple = !this.multiple;
     },
-    updateRequest(value: IFile | null) {
+    updateRequest(value: Resource | null) {
       this.oldReq = this.req;
       this.req = value;
     },

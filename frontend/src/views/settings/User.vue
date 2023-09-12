@@ -80,13 +80,13 @@ import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { StatusError } from "@/api/utils";
 
-const error = ref<any | null>(null);
+const error = ref<StatusError | null>(null);
 const originalUser = ref<IUser | null>(null);
 const user = ref<IUser | null>(null);
 const createUserDir = ref<boolean>(false);
 
-const $showError = inject("$showError") as IToastError;
-const $showSuccess = inject("$showSuccess") as IToastSuccess;
+const $showError = inject<IToastError>("$showError")!;
+const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
 
 const authStore = useAuthStore();
 const layoutStore = useLayoutStore();
@@ -127,8 +127,10 @@ const fetchData = async () => {
         : route.params.id;
       user.value = { ...(await api.get(parseInt(id))) };
     }
-  } catch (e) {
-    error.value = e;
+  } catch (err) {
+    if (err instanceof Error) {
+      error.value = err;
+    }
   } finally {
     layoutStore.loading = false;
   }

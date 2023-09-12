@@ -273,7 +273,7 @@ const fetchData = async () => {
   if (url[0] !== "/") url = "/" + url;
 
   try {
-    let file = await api.fetch(url, password.value);
+    const file = await api.fetch(url, password.value);
     file.hash = hash.value;
 
     token.value = file.token || "";
@@ -281,7 +281,7 @@ const fetchData = async () => {
     fileStore.updateRequest(file);
     document.title = `${file.name} - ${document.title}`;
   } catch (err) {
-    if (err instanceof StatusError || err instanceof Error) {
+    if (err instanceof Error) {
       error.value = err;
     }
   } finally {

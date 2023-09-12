@@ -15,16 +15,11 @@ interface SettingsDefaults {
   locale: string;
   viewMode: string;
   singleClick: boolean;
-  sorting: SettingsSorting;
+  sorting: Sorting;
   perm: Permissions;
   commands: any[];
   hideDotfiles: boolean;
   dateFormat: boolean;
-}
-
-interface SettingsSorting {
-  by: string;
-  asc: boolean;
 }
 
 interface SettingsBranding {

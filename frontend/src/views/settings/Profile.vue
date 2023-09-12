@@ -88,8 +88,8 @@ const layoutStore = useLayoutStore();
 const authStore = useAuthStore();
 const { t } = useI18n();
 
-const $showSuccess = inject("$showSuccess") as IToastSuccess;
-const $showError = inject("$showError") as IToastError;
+const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
+const $showError = inject<IToastError>("$showError")!;
 
 const password = ref<string>("");
 const passwordConf = ref<string>("");
@@ -150,7 +150,7 @@ const updateSettings = async (event: Event) => {
   event.preventDefault();
 
   try {
-    if (authStore.user === null) throw "User is not set";
+    if (authStore.user === null) throw new Error("User is not set!");
 
     const data = {
       ...authStore.user,

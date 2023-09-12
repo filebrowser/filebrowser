@@ -13,6 +13,7 @@ export async function fetch(url: string, password: string = "") {
   );
 
   const data = await res.json();
+  console.log(data);
   data.url = `/share${url}`;
 
   if (data.isDir) {
@@ -66,11 +67,11 @@ export function download(
   window.open(url);
 }
 
-export function getDownloadURL(share: IFile, inline = false) {
+export function getDownloadURL(res: Resource, inline = false) {
   const params = {
     ...(inline && { inline: "true" }),
-    ...(share.token && { token: share.token }),
+    ...(res.token && { token: res.token }),
   };
 
-  return createURL("api/public/dl/" + share.hash + share.path, params, false);
+  return createURL("api/public/dl/" + res.hash + res.path, params, false);
 }

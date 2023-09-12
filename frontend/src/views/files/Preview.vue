@@ -195,6 +195,7 @@ export default {
       return api.getDownloadURL(this.req);
     },
     raw() {
+      console.log(this.req);
       if (this.req.type === "image" && !this.fullSize) {
         return api.getPreviewURL(this.req, "big");
       }

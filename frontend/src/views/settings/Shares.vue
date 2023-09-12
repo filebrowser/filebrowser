@@ -73,8 +73,8 @@ import { inject, onBeforeUnmount, ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { StatusError } from "@/api/utils";
 
-const $showError = inject("$showError") as IToastSuccess;
-const $showSuccess = inject("$showSuccess") as IToastError;
+const $showError = inject<IToastError>("$showError")!;
+const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
 const { t } = useI18n();
 
 const layoutStore = useLayoutStore();
@@ -90,17 +90,17 @@ onMounted(async () => {
   try {
     let newLinks = await api.list();
     if (authStore.user?.perm.admin) {
-      let userMap = new Map();
+      let userMap = new Map<number, string>();
       for (let user of await users.getAll())
         userMap.set(user.id, user.username);
-      for (let link of newLinks)
-        link.username = userMap.has(link.userID)
-          ? userMap.get(link.userID)
-          : "";
+      for (let link of newLinks) {
+        if (link.userID && userMap.has(link.userID))
+          link.username = userMap.get(link.userID);
+      }
     }
     links.value = newLinks;
   } catch (err) {
-    if (err instanceof StatusError || err instanceof Error) {
+    if (err instanceof Error) {
       error.value = err;
     }
   } finally {
@@ -126,8 +126,10 @@ const deleteLink = async (event: Event, link: any) => {
         api.remove(link.hash);
         links.value = links.value.filter((item) => item.hash !== link.hash);
         $showSuccess(t("settings.shareDeleted"));
-      } catch (e: any) {
-        $showError(e);
+      } catch (err) {
+        if (err instanceof Error) {
+          $showError(err);
+        }
       }
     },
   });

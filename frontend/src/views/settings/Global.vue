@@ -382,7 +382,7 @@ onMounted(async () => {
     settings.value = newSettings;
     shellValue.value = newSettings.shell.join("\n");
   } catch (err) {
-    if (err instanceof StatusError || err instanceof Error) {
+    if (err instanceof Error) {
       error.value = err;
     }
   } finally {

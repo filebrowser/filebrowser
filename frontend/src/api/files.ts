@@ -183,7 +183,7 @@ export async function checksum(url: string, algo: ChecksumAlgs) {
   return (await data.json()).checksums[algo];
 }
 
-export function getDownloadURL(file: IFile, inline: any) {
+export function getDownloadURL(file: ResourceItem, inline: any) {
   const params = {
     ...(inline && { inline: "true" }),
   };
@@ -191,7 +191,7 @@ export function getDownloadURL(file: IFile, inline: any) {
   return createURL("api/raw" + file.path, params);
 }
 
-export function getPreviewURL(file: IFile, size: string) {
+export function getPreviewURL(file: ResourceItem, size: string) {
   const params = {
     inline: "true",
     key: Date.parse(file.modified),
@@ -200,17 +200,12 @@ export function getPreviewURL(file: IFile, size: string) {
   return createURL("api/preview/" + size + file.path, params);
 }
 
-export function getSubtitlesURL(file: IFile) {
+export function getSubtitlesURL(file: ResourceItem) {
   const params = {
     inline: "true",
   };
 
-  const subtitles = [];
-  for (const sub of file.subtitles) {
-    subtitles.push(createURL("api/raw" + sub, params));
-  }
-
-  return subtitles;
+  return file.subtitles?.map((d) => createURL("api/raw" + d, params));
 }
 
 export async function usage(url: string) {
