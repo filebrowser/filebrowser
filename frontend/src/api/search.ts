@@ -13,7 +13,7 @@ export default async function search(base: string, query: string) {
 
   let data = await res.json();
 
-  data = data.map((item: Item) => {
+  data = data.map((item: UploadItem) => {
     item.url = `/files${base}` + url.encodePath(item.path);
 
     if (item.dir) {

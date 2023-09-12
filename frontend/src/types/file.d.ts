@@ -34,23 +34,3 @@ type ResourceType =
   | "text"
   | "blob"
   | "textImmutable";
-
-interface Uploads {
-  [key: string]: Upload;
-}
-
-interface Upload {
-  id: number;
-  file: Resource;
-  type: string;
-}
-
-interface Item {
-  id: number;
-  url?: string;
-  path: string;
-  file: Resource;
-  dir?: boolean;
-  overwrite?: boolean;
-  type?: ResourceType;
-}

@@ -87,7 +87,7 @@ export const useUploadStore = defineStore("upload", {
       this.sizes = [];
       this.progress = [];
     },
-    addJob(item: Item) {
+    addJob(item: UploadItem) {
       this.queue.push(item);
       this.sizes[this.id] = item.file.size;
       this.id++;
@@ -102,7 +102,7 @@ export const useUploadStore = defineStore("upload", {
       // Vue.delete(this.uploads, id);
       delete this.uploads[id];
     },
-    upload(item: Item) {
+    upload(item: UploadItem) {
       const uploadsCount = Object.keys(this.uploads).length;
 
       const isQueueEmpty = this.queue.length == 0;
@@ -116,7 +116,7 @@ export const useUploadStore = defineStore("upload", {
       this.addJob(item);
       this.processUploads();
     },
-    finishUpload(item: Item) {
+    finishUpload(item: UploadItem) {
       this.setProgress({ id: item.id, loaded: item.file.size > 0 });
       this.removeJob(item.id);
       this.processUploads();

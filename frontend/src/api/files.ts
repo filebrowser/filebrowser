@@ -8,7 +8,7 @@ export async function fetch(url: string) {
 
   const res = await fetchURL(`/api/resources${url}`, {});
 
-  const data = await res.json();
+  const data = (await res.json()) as Resource;
   data.url = `/files${url}`;
 
   if (data.isDir) {

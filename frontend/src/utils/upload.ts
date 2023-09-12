@@ -1,14 +1,17 @@
 import { useUploadStore } from "@/stores/upload";
 import url from "@/utils/url";
 
-export function checkConflict(files: Resource[], items: Item[]) {
-  if (typeof items === "undefined" || items === null) {
-    items = [];
+export function checkConflict(
+  files: ResourceItem[],
+  dest: ResourceItem[]
+): boolean {
+  if (typeof dest === "undefined" || dest === null) {
+    dest = [];
   }
 
   const folder_upload = files[0].fullPath !== undefined;
 
-  let conflict = false;
+  const names: string[] = [];
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     let name = file.name;
@@ -20,23 +23,13 @@ export function checkConflict(files: Resource[], items: Item[]) {
       }
     }
 
-    const res = items.findIndex(function hasConflict(element) {
-      // @ts-ignore
-      console.log({ left: element.name, right: this });
-      // @ts-ignore Don't know what this does
-      return element.name === this;
-    }, name);
-
-    if (res >= 0) {
-      conflict = true;
-      break;
-    }
+    names.push(name);
   }
 
-  return conflict;
+  return dest.some((d) => names.includes(d.name));
 }
 
-export function scanFiles(dt: { [key: string]: any; item: Item }) {
+export function scanFiles(dt: { [key: string]: any; item: ResourceItem }) {
   return new Promise((resolve) => {
     let reading = 0;
     const contents: any[] = [];
@@ -134,7 +127,7 @@ export function handleFiles(
       path += "/";
     }
 
-    const item: Item = {
+    const item: UploadItem = {
       id,
       path,
       file,
