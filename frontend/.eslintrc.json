@@ -12,8 +12,9 @@
   "rules": {
     "vue/multi-word-component-names": "off",
     "vue/no-reserved-component-names": "warn",
-    "vue/no-mutating-props": "warn",
-    "no-undef": "off"
+    "vue/no-mutating-props": "warn"
+    // no-undef is already included in
+    // @vue/eslint-config-typescript
   },
   "parserOptions": {
     "ecmaVersion": "latest",

@@ -9,7 +9,7 @@ import pluginRewriteAll from "vite-plugin-rewrite-all";
 const plugins = [
   vue(),
   VueI18nPlugin({
-    include: [path.resolve(__dirname, "./src/i18n/**.json")],
+    include: [path.resolve(__dirname, "./src/i18n/**/*.json")],
   }),
   legacy({
     // defaults already drop IE support
