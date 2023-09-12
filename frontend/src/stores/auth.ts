@@ -18,24 +18,29 @@ export const useAuthStore = defineStore("auth", {
   },
   actions: {
     // no context as first argument, use `this` instead
-    setUser(value: IUser) {
-      if (value === null) {
+    setUser(user: IUser) {
+      if (user === null) {
         this.user = null;
         return;
       }
 
-      const locale = value.locale || detectLocale();
+      const locale = user.locale || detectLocale();
       dayjs.locale(locale);
-      // according to doc u only need .value if legacy: false
-      // in createI18n but they lied
+      // according to doc u only need .value if legacy: false but they lied
       // https://vue-i18n.intlify.dev/guide/essentials/scope.html#local-scope-1
       //@ts-ignore
-      i18n.global.locale = locale;
-      this.user = value;
+      i18n.global.locale.value = locale;
+      this.user = user;
     },
-    updateUser(value: IUser) {
-      if (typeof value !== "object" || !value) return;
-      this.setUser(cloneDeep(value));
+    updateUser(user: Partial<IUser>) {
+      if (user.locale) {
+        dayjs.locale(user.locale);
+        // see above
+        //@ts-ignore
+        i18n.global.locale.value = user.locale;
+      }
+
+      this.user = { ...this.user, ...cloneDeep(user) } as IUser;
     },
     // easily reset state using `$reset`
     clearUser() {
