@@ -80,7 +80,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
 import { users as api } from "@/api";
 import Languages from "@/components/settings/Languages.vue";
-import { inject, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import i18n, { rtlLanguages } from "@/i18n";
 
@@ -98,7 +98,7 @@ const singleClick = ref<boolean>(false);
 const dateFormat = ref<boolean>(false);
 const locale = ref<string>("");
 
-const passwordClass = () => {
+const passwordClass = computed(() => {
   const baseClass = "input input--block";
 
   if (password.value === "" && passwordConf.value === "") {
@@ -110,7 +110,7 @@ const passwordClass = () => {
   }
 
   return `${baseClass} input--red`;
-};
+});
 
 onMounted(() => {
   layoutStore.loading = true;
