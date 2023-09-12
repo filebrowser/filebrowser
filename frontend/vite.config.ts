@@ -59,6 +59,9 @@ export default defineConfig(({ command }) => {
               // this avoids having small files for each locale
               if (id.includes("dayjs/")) {
                 return "dayjs";
+                // bundle i18n in a separate chunk
+              } else if (id.includes("i18n/")) {
+                return "i18n";
               }
             },
           },
