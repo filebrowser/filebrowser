@@ -40,10 +40,16 @@ const errors: {
   },
 };
 
-const props = defineProps<{
-  errorCode: number;
-  showHeader?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    errorCode?: number;
+    showHeader?: boolean;
+  }>(),
+  {
+    errorCode: 500,
+    showHeader: false,
+  }
+);
 
 const info = computed(() => {
   return errors[props.errorCode] ? errors[props.errorCode] : errors[500];

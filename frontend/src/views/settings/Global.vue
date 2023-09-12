@@ -158,7 +158,6 @@
         <div class="card-content">
           <p class="small">{{ t("settings.defaultUserDescription") }}</p>
 
-          <!-- TODO: idk how to fix this ts error -->
           <user-form
             :isNew="false"
             :isDefault="true"
@@ -240,8 +239,9 @@ import Themes from "@/components/settings/Themes.vue";
 import Errors from "@/views/Errors.vue";
 import { computed, inject, onBeforeUnmount, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { StatusError } from "@/api/utils";
 
-const error = ref<any>(null);
+const error = ref<StatusError | null>(null);
 const originalSettings = ref<ISettings | null>(null);
 const settings = ref<ISettings | null>(null);
 const debounceTimeout = ref<number | null>(null);
@@ -381,8 +381,10 @@ onMounted(async () => {
     originalSettings.value = original;
     settings.value = newSettings;
     shellValue.value = newSettings.shell.join("\n");
-  } catch (e) {
-    error.value = e;
+  } catch (err) {
+    if (err instanceof StatusError || err instanceof Error) {
+      error.value = err;
+    }
   } finally {
     layoutStore.loading = false;
   }

@@ -8,7 +8,7 @@
 
     <breadcrumbs base="/files" />
 
-    <Errors v-if="error" :errorCode="error?.status" />
+    <errors v-if="error" :errorCode="error.status" />
     <component v-else-if="currentView" :is="currentView"></component>
     <div v-else>
       <h2 class="message delayed">
@@ -46,6 +46,7 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import Preview from "@/views/files/Preview.vue";
 import FileListing from "@/views/files/FileListing.vue";
+import { StatusError } from "@/api/utils";
 const Editor = defineAsyncComponent(() => import("@/views/files/Editor.vue"));
 
 const layoutStore = useLayoutStore();
@@ -63,7 +64,7 @@ const clean = (path: string) => {
   return path.endsWith("/") ? path.slice(0, -1) : path;
 };
 
-const error = ref<any | null>(null);
+const error = ref<StatusError | null>(null);
 
 const currentView = computed(() => {
   if (fileStore.req?.type === undefined) {
@@ -134,8 +135,10 @@ const fetchData = async () => {
 
     fileStore.updateRequest(res);
     document.title = `${res.name} - ${document.title}`;
-  } catch (e: any) {
-    error.value = e;
+  } catch (err) {
+    if (err instanceof StatusError || err instanceof Error) {
+      error.value = err;
+    }
   } finally {
     layoutStore.loading = false;
   }

@@ -197,8 +197,9 @@ import { useLayoutStore } from "@/stores/layout";
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
+import { StatusError } from "@/api/utils";
 
-const error = ref<null | any>(null);
+const error = ref<StatusError | null>(null);
 const showLimit = ref<number>(100);
 const password = ref<string>("");
 const attemptedPasswordLogin = ref<boolean>(false);
@@ -279,8 +280,10 @@ const fetchData = async () => {
 
     fileStore.updateRequest(file);
     document.title = `${file.name} - ${document.title}`;
-  } catch (e) {
-    error.value = e;
+  } catch (err) {
+    if (err instanceof StatusError || err instanceof Error) {
+      error.value = err;
+    }
   } finally {
     layoutStore.loading = false;
   }
