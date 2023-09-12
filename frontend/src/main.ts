@@ -1,7 +1,11 @@
 import { disableExternal } from "@/utils/constants";
 import { createApp } from "vue";
 import VueLazyload from "vue-lazyload";
-import Toast, { useToast } from "vue-toastification";
+import Toast, { POSITION, useToast } from "vue-toastification";
+import {
+  ToastOptions,
+  PluginOptions,
+} from "vue-toastification/dist/types/types";
 import createPinia from "@/stores";
 import router from "@/router";
 import i18n, { rtlLanguages } from "@/i18n";
@@ -12,6 +16,7 @@ import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 import duration from "dayjs/plugin/duration";
+
 import "./css/styles.css";
 
 // register dayjs plugins globally
@@ -28,7 +33,7 @@ app.use(Toast, {
   transition: "Vue-Toastification__bounce",
   maxToasts: 10,
   newestOnTop: true,
-});
+} satisfies PluginOptions);
 
 app.use(i18n);
 app.use(pinia);
@@ -50,7 +55,7 @@ app.directive("focus", {
 });
 
 const toastConfig = {
-  position: "bottom-center",
+  position: POSITION.BOTTOM_CENTER,
   timeout: 4000,
   closeOnClick: true,
   pauseOnFocusLoss: true,
@@ -61,7 +66,7 @@ const toastConfig = {
   hideProgressBar: false,
   closeButton: "button",
   icon: true,
-};
+} satisfies ToastOptions;
 
 app.provide("$showSuccess", (message: string) => {
   const $toast = useToast();
@@ -72,8 +77,6 @@ app.provide("$showSuccess", (message: string) => {
         message: message,
       },
     },
-    // their type defs are messed up
-    //@ts-ignore
     { ...toastConfig, rtl: rtlLanguages.includes(i18n.global.locale) }
   );
 });
@@ -86,13 +89,10 @@ app.provide("$showError", (error: Error | string, displayReport = true) => {
       props: {
         message: (error as Error).message || error,
         isReport: !disableExternal && displayReport,
-        // TODO: i couldnt use $t inside the component
-        //@ts-ignore
+        // TODO: could you add this to the component itself?
         reportText: i18n.global.t("buttons.reportIssue"),
       },
     },
-    // their type defs are messed up
-    //@ts-ignore
     {
       ...toastConfig,
       timeout: 0,
