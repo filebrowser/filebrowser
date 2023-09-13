@@ -8,6 +8,7 @@
     "moduleResolution": "Node10",
     "strict": true,
     "sourceMap": true,
+    "noImplicitReturns": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,

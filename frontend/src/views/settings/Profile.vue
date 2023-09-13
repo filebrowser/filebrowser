@@ -120,6 +120,7 @@ onMounted(() => {
   singleClick.value = authStore.user.singleClick;
   dateFormat.value = authStore.user.dateFormat;
   layoutStore.loading = false;
+  return true;
 });
 
 const updatePassword = async (event: Event) => {

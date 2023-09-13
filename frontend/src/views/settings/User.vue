@@ -154,6 +154,8 @@ const deleteUser = async (e: Event) => {
       $showError(err);
     }
   }
+
+  return true;
 };
 const save = async (event: Event) => {
   event.preventDefault();
@@ -183,5 +185,7 @@ const save = async (event: Event) => {
   } catch (e: any) {
     $showError(e);
   }
+
+  return true;
 };
 </script>

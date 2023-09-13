@@ -12,7 +12,7 @@ export async function fetch(url: string, password: string = "") {
     false
   );
 
-  const data = await res.json();
+  const data = (await res.json()) as Resource;
   console.log(data);
   data.url = `/share${url}`;
 
@@ -33,12 +33,11 @@ export async function fetch(url: string, password: string = "") {
   return data;
 }
 
-// Is this redundant code?
 export function download(
-  format: any,
+  format: DownloadFormat,
   hash: string,
   token: string,
-  ...files: any
+  ...files: string[]
 ) {
   let url = `${baseURL}/api/public/dl/${hash}`;
 

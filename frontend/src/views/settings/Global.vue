@@ -329,6 +329,8 @@ const save = async () => {
   } catch (e: any) {
     $showError(e);
   }
+
+  return true;
 };
 // Parse the user-friendly input (e.g., "20M" or "1T") to bytes
 const parseBytes = (input: string) => {

@@ -203,8 +203,8 @@ const error = ref<StatusError | null>(null);
 const showLimit = ref<number>(100);
 const password = ref<string>("");
 const attemptedPasswordLogin = ref<boolean>(false);
-const hash = ref<any>(null);
-const token = ref<any>(null);
+const hash = ref<string>("");
+const token = ref<string>("");
 const clip = ref<any>(null);
 
 const $showSuccess = inject<IToastSuccess>("$showError")!;
@@ -308,18 +308,21 @@ const isSingleFile = () =>
   !req.value?.items[fileStore.selected[0]].isDir;
 
 const download = () => {
+  if (!req.value) return false;
+
   if (isSingleFile()) {
     api.download(
       null,
       hash.value,
       token.value,
-      req.value?.items[fileStore.selected[0]].path
+      req.value.items[fileStore.selected[0]].path
     );
-    return;
+    return true;
   }
+
   layoutStore.showHover({
     prompt: "download",
-    confirm: (format: any) => {
+    confirm: (format: DownloadFormat) => {
       if (req.value === null) return false;
       layoutStore.closeHovers();
 
@@ -330,8 +333,11 @@ const download = () => {
       }
 
       api.download(format, hash.value, token.value, ...files);
+      return true;
     },
   });
+
+  return true;
 };
 
 const linkSelected = () => {
