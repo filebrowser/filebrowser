@@ -6,6 +6,7 @@ const mutations = {
     state.prompts.pop();
   },
   toggleShell: (state) => {
+    state.show = null;
     state.showShell = !state.showShell;
   },
   showHover: (state, value) => {
