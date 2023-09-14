@@ -49,6 +49,8 @@ const getters = {
   currentPromptName: (_, getters) => {
     return getters.currentPrompt?.prompt;
   },
+  uploadSpeed: (state) => state.upload.speedMbyte,
+  eta: (state) => state.upload.eta,
 };
 
 export default getters;
