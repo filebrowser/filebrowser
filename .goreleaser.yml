@@ -3,7 +3,7 @@ project_name: filebrowser
 env:
   - GO111MODULE=on
 
-build:
+builds:
   env:
     - CGO_ENABLED=0
   ldflags:
@@ -186,7 +186,7 @@ docker_manifests:
       - "filebrowser/filebrowser:v{{ .Major }}-arm64-s6"
 brews:
   - name: filebrowser
-    tap:
+    repository:
       owner: filebrowser
       name: homebrew-tap
     folder: Formula
