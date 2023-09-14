@@ -43,3 +43,8 @@ type DownloadFormat =
   | "tarlz4"
   | "tarsz"
   | null;
+
+interface ClipItem {
+  from: string;
+  name: string;
+}

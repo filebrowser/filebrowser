@@ -1,12 +1,12 @@
 import { useAuthStore } from "@/stores/auth";
 import router from "@/router";
-import jwt_decode from "jwt-decode";
+import jwt_decode, { JwtPayload } from "jwt-decode";
 import { baseURL } from "./constants";
 import { StatusError } from "@/api/utils";
 
 export function parseToken(token: string) {
   // falsy or malformed jwt will throw InvalidTokenError
-  const data = jwt_decode<{ [key: string]: any; user: IUser }>(token);
+  const data = jwt_decode<JwtPayload & { user: IUser }>(token);
 
   document.cookie = `auth=${token}; Path=/; SameSite=Strict;`;
 
@@ -48,7 +48,7 @@ export async function login(
   if (res.status === 200) {
     parseToken(body);
   } else {
-    throw new Error(body);
+    throw new StatusError(body, res.status);
   }
 }
 
@@ -65,7 +65,7 @@ export async function renew(jwt: string) {
   if (res.status === 200) {
     parseToken(body);
   } else {
-    throw new Error(body);
+    throw new StatusError(body, res.status);
   }
 }
 

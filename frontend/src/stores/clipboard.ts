@@ -2,7 +2,11 @@ import { defineStore } from "pinia";
 
 export const useClipboardStore = defineStore("clipboard", {
   // convert to a function
-  state: () => ({
+  state: (): {
+    key: string;
+    items: ClipItem[];
+    path?: string;
+  } => ({
     key: "",
     items: [],
     path: undefined,
@@ -12,11 +16,6 @@ export const useClipboardStore = defineStore("clipboard", {
   },
   actions: {
     // no context as first argument, use `this` instead
-    updateClipboard(value: any) {
-      this.key = value.key;
-      this.items = value.items;
-      this.path = value.path;
-    },
     // easily reset state using `$reset`
     resetClipboard() {
       this.$reset();

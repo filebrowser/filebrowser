@@ -535,9 +535,9 @@ export default {
         return;
       }
 
-      this.clipboardStore.updateClipboard({
-        key: key,
-        items: items,
+      this.clipboardStore.$patch({
+        key,
+        items,
         path: this.$route.path,
       });
     },

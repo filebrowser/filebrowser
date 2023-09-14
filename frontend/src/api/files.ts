@@ -178,7 +178,7 @@ export function copy(items: any[], overwrite = false, rename = false) {
   return moveCopy(items, true, overwrite, rename);
 }
 
-export async function checksum(url: string, algo: ChecksumAlgs) {
+export async function checksum(url: string, algo: ChecksumAlg) {
   const data = await resourceAction(`${url}?checksum=${algo}`, "GET");
   return (await data.json()).checksums[algo];
 }

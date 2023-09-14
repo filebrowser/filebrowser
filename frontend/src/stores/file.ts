@@ -6,7 +6,7 @@ export const useFileStore = defineStore("file", {
     req: Resource | null;
     oldReq: Resource | null;
     reload: boolean;
-    selected: any[];
+    selected: number[];
     multiple: boolean;
     isFiles: boolean;
   } => ({

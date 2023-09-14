@@ -17,9 +17,7 @@ interface TusSettings {
   chunkSize: number;
 }
 
-type ChecksumAlgs = "md5" | "sha1" | "sha256" | "sha512";
-
-type inline = any;
+type ChecksumAlg = "md5" | "sha1" | "sha256" | "sha512";
 
 interface Share {
   hash: string;
