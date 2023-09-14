@@ -17,9 +17,9 @@ export const useUploadStore = defineStore("upload", {
   // convert to a function
   state: (): {
     id: number;
-    sizes: any[];
-    progress: any[];
-    queue: any[];
+    sizes: number[];
+    progress: Progress[];
+    queue: UploadItem[];
     uploads: Uploads;
     error: Error | null;
   } => ({
@@ -39,7 +39,8 @@ export const useUploadStore = defineStore("upload", {
 
       const totalSize = state.sizes.reduce((a, b) => a + b, 0);
 
-      const sum: number = state.progress.reduce((acc, val) => acc + val);
+      // TODO: this looks ugly but it works with ts now
+      const sum = state.progress.reduce((acc, val) => +acc + +val) as number;
       return Math.ceil((sum / totalSize) * 100);
     },
     filesInUploadCount: (state) => {
@@ -58,7 +59,7 @@ export const useUploadStore = defineStore("upload", {
         const isDir = upload.file.isDir;
         const progress = isDir
           ? 100
-          : Math.ceil((state.progress[id] / size) * 100);
+          : Math.ceil(((state.progress[id] as number) / size) * 100);
 
         files.push({
           id,
@@ -74,9 +75,7 @@ export const useUploadStore = defineStore("upload", {
   },
   actions: {
     // no context as first argument, use `this` instead
-    setProgress(obj: { id: number; loaded: boolean }) {
-      // Vue.set(this.progress, id, loaded);
-      const { id, loaded } = obj;
+    setProgress({ id, loaded }: { id: number; loaded: Progress }) {
       this.progress[id] = loaded;
     },
     setError(error: Error) {
@@ -95,11 +94,9 @@ export const useUploadStore = defineStore("upload", {
     moveJob() {
       const item = this.queue[0];
       this.queue.shift();
-      // Vue.set(this.uploads, item.id, item);
       this.uploads[item.id] = item;
     },
     removeJob(id: number) {
-      // Vue.delete(this.uploads, id);
       delete this.uploads[id];
     },
     upload(item: UploadItem) {
@@ -147,7 +144,7 @@ export const useUploadStore = defineStore("upload", {
           await api.post(item.path).catch(this.setError);
         } else {
           const onUpload = throttle(
-            (event) =>
+            (event: ProgressEvent) =>
               this.setProgress({
                 id: item.id,
                 loaded: event.loaded,
@@ -157,7 +154,7 @@ export const useUploadStore = defineStore("upload", {
           );
 
           await api
-            .post(item.path, item.file, item.overwrite, onUpload)
+            .post(item.path, item.file.file as File, item.overwrite, onUpload)
             .catch(this.setError);
         }
 

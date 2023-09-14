@@ -9,7 +9,6 @@ interface ResourceBase {
   isSymlink: boolean;
   type: ResourceType;
   url: string;
-  fullPath?: string;
 }
 
 interface Resource extends ResourceBase {
