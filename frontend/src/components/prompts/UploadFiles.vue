@@ -7,13 +7,17 @@
     <div class="card floating">
       <div class="card-title">
         <h2>{{ $t("prompts.uploadFiles", { files: filesInUploadCount }) }}</h2>
+        <div class="upload-info">
+          <div class="upload-speed">{{ uploadSpeed.toFixed(2) }} MB/s</div>
+          <div class="upload-eta">{{ formattedETA }} remaining</div>
+        </div>
         <button
           class="action"
           @click="abortAll"
           aria-label="Abort upload"
           title="Abort upload"
         >
-        <i class="material-icons">{{ "cancel" }}</i>
+          <i class="material-icons">{{ "cancel" }}</i>
         </button>
         <button
           class="action"
@@ -61,19 +65,39 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["filesInUpload", "filesInUploadCount"]),
-    ...mapMutations(['resetUpload']),
+    ...mapGetters([
+      "filesInUpload",
+      "filesInUploadCount",
+      "uploadSpeed",
+      "eta",
+    ]),
+    ...mapMutations(["resetUpload"]),
+    formattedETA() {
+      if (!this.eta || this.eta === Infinity) {
+        return "--:--:--";
+      }
+
+      let totalSeconds = this.eta;
+      const hours = Math.floor(totalSeconds / 3600);
+      totalSeconds %= 3600;
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = Math.round(totalSeconds % 60);
+
+      return `${hours.toString().padStart(2, "0")}:${minutes
+        .toString()
+        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+    },
   },
   methods: {
     toggle: function () {
       this.open = !this.open;
     },
     abortAll() {
-      if (confirm(this.$t('upload.abortUpload'))) {
+      if (confirm(this.$t("upload.abortUpload"))) {
         abortAllUploads();
-        buttons.done('upload');
+        buttons.done("upload");
         this.open = false;
-        this.$store.commit('resetUpload');
+        this.$store.commit("resetUpload");
         this.$store.commit("setReload", true);
       }
     },
