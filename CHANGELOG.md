@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.25.0](https://github.com/filebrowser/filebrowser/compare/v2.24.2...v2.25.0) (2023-09-14)
+
+
+### Features
+
+* add new folder button to move/create dialogs ([#2667](https://github.com/filebrowser/filebrowser/issues/2667)) ([5994224](https://github.com/filebrowser/filebrowser/commit/599422446849fa37d5ab448bbf464afb7304b99d))
+* added shell resizing ([#2648](https://github.com/filebrowser/filebrowser/issues/2648)) ([584b706](https://github.com/filebrowser/filebrowser/commit/584b706b1e310297acc2580c60442ff5c11ae432))
+* implement abort upload functionality ([#2673](https://github.com/filebrowser/filebrowser/issues/2673)) ([a404fb0](https://github.com/filebrowser/filebrowser/commit/a404fb043da2573bf04385863b2d34b1f918b8e1))
+* implement upload speed calculation and ETA estimation ([#2677](https://github.com/filebrowser/filebrowser/issues/2677)) ([ecdd684](https://github.com/filebrowser/filebrowser/commit/ecdd684bf1d537a4591caa38348102b61dd51e5d))
+
+
+### Bug Fixes
+
+* refactor path resolution logic for project root ([#2674](https://github.com/filebrowser/filebrowser/issues/2674)) ([95fec7f](https://github.com/filebrowser/filebrowser/commit/95fec7f69430c108e5cf95c428db9d671cd97a94))
+* tus upload with cloudflare proxy ([36af01d](https://github.com/filebrowser/filebrowser/commit/36af01daa6e04005ce3d18985eebaeef06f7393d)), closes [#2593](https://github.com/filebrowser/filebrowser/issues/2593)
+
+
+### Refactorings
+
+* migrate frontend tooling to vite 4 ([#2645](https://github.com/filebrowser/filebrowser/issues/2645)) ([8838a09](https://github.com/filebrowser/filebrowser/commit/8838a09cf5104deac22b6143050588040c6825e6))
+
+
+### Build
+
+* bump go version to 1.21.0 ([#2672](https://github.com/filebrowser/filebrowser/issues/2672)) ([2c97573](https://github.com/filebrowser/filebrowser/commit/2c97573301a1b13179678fb7f9bd8316539ecdff))
+* bump node version to 18 ([#2671](https://github.com/filebrowser/filebrowser/issues/2671)) ([70eba7e](https://github.com/filebrowser/filebrowser/commit/70eba7ecc9d19545c0899ae40eb3897a7c48562f))
+
+
+### Performance improvements
+
+* **backend:** optimize subtitles detection performance ([#2637](https://github.com/filebrowser/filebrowser/issues/2637)) ([374bbd3](https://github.com/filebrowser/filebrowser/commit/374bbd3ec199fddbe491ab2b74e520a10a73e54b))
+
 ### [2.24.2](https://github.com/filebrowser/filebrowser/compare/v2.24.1...v2.24.2) (2023-08-08)
 
 
