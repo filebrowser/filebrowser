@@ -18,6 +18,7 @@
     "new": "Novo",
     "next": "Próximo",
     "ok": "OK",
+    "openFile": "Abrir",
     "permalink": "Obter link permanente",
     "previous": "Anterior",
     "publish": "Publicar",
@@ -35,8 +36,7 @@
     "switchView": "Alterar modo de visão",
     "toggleSidebar": "Alternar barra lateral",
     "update": "Atualizar",
-    "upload": "Enviar",
-    "openFile": "Abrir"
+    "upload": "Enviar"
   },
   "download": {
     "downloadFile": "Baixar arquivo",
@@ -44,10 +44,10 @@
     "downloadSelected": "Baixar selecionado"
   },
   "errors": {
+    "connection": "O servidor não pode ser alcançado.",
     "forbidden": "Você não tem permissões para acessar isto.",
     "internal": "Ops! Algum erro ocorreu.",
-    "notFound": "Ops! Nada foi encontrado.",
-    "connection": "O servidor não pode ser alcançado."
+    "notFound": "Ops! Nada foi encontrado."
   },
   "files": {
     "body": "Corpo",
@@ -62,11 +62,11 @@
     "metadata": "Metadados",
     "multipleSelectionEnabled": "Seleção múltipla ativada",
     "name": "Nome",
+    "noPreview": "Pré-visualização não disponível para este arquivo.",
     "size": "Tamanho",
     "sortByLastModified": "Ordenar pela última modificação",
     "sortByName": "Ordenar pelo nome",
-    "sortBySize": "Ordenar pelo tamanho",
-    "noPreview": "Pré-visualização não disponível para este arquivo."
+    "sortBySize": "Ordenar pelo tamanho"
   },
   "help": {
     "click": "selecionar pasta ou arquivo",
@@ -83,13 +83,13 @@
     "help": "Ajuda"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "",
     "it": "Italiano",
     "ja": "日本語",
@@ -102,7 +102,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -125,8 +125,8 @@
     "copyMessage": "Escolha um lugar para copiar os arquivos:",
     "currentlyNavigating": "Navegando em:",
     "deleteMessageMultiple": "Deseja apagar {count} arquivo(s)?",
-    "deleteMessageSingle": "Deseja apagar esta pasta/arquivo?",
     "deleteMessageShare": "Deseja apagar este compartilhamento ({path})?",
+    "deleteMessageSingle": "Deseja apagar esta pasta/arquivo?",
     "deleteTitle": "Apagar arquivos",
     "displayName": "Nome:",
     "download": "Baixar arquivos",
@@ -144,6 +144,7 @@
     "newFileMessage": "Escreva o nome do novo arquivo.",
     "numberDirs": "Número de pastas",
     "numberFiles": "Número de arquivos",
+    "optionalPassword": "Senha opcional",
     "rename": "Renomear",
     "renameMessage": "Insira um novo nome para",
     "replace": "Substituir",
@@ -154,8 +155,7 @@
     "size": "Tamanho",
     "upload": "Enviar",
     "uploadFiles": "Enviando {files} arquivos...",
-    "uploadMessage": "Selecione uma opção para enviar.",
-    "optionalPassword": "Senha opcional"
+    "uploadMessage": "Selecione uma opção para enviar."
   },
   "search": {
     "images": "Imagens",
@@ -163,8 +163,8 @@
     "pdf": "PDF",
     "pressToSearch": "Pressione Enter para pesquisar...",
     "search": "Pesquise...",
-    "typeToSearch": "Digite para pesquisar...",
     "types": "Tipos",
+    "typeToSearch": "Digite para pesquisar...",
     "video": "Vídeos"
   },
   "settings": {
@@ -184,8 +184,6 @@
     "commandRunnerHelp": "Aqui você pode definir comandos que serão executados nos eventos descritos. Escreva um por linha. As variáveis de ambiente {0} e {1} estão disponíveis, sendo {0} relativo a {1}. Para mais informações sobre esta função e as variáveis de ambiente disponíveis, leia a {2}.",
     "commandsUpdated": "Comandos atualizados!",
     "createUserDir": "Criar diretório Home para novos usuários",
-    "userHomeBasePath": "Caminho base para diretórios de usuários",
-    "userScopeGenerationPlaceholder": "O escopo será gerado automaticamente",
     "createUserHomeDirectory": "Criar diretório Home de usuário",
     "customStylesheet": "Estilos personalizados",
     "defaultUserDescription": "Estas são as configurações padrão para novos usuários.",
@@ -228,9 +226,9 @@
     "scope": "Escopo",
     "setDateFormat": "Definir formato exato de data",
     "settingsUpdated": "Configurações atualizadas!",
+    "shareDeleted": "Compartilhamento apagado!",
     "shareDuration": "Duração do compartilhamento",
     "shareManagement": "Gerenciamento do compartilhamento",
-    "shareDeleted": "Compartilhamento apagado!",
     "singleClick": "Usar clique único para abrir arquivos e diretórios",
     "themes": {
       "dark": "Escuro",
@@ -243,10 +241,12 @@
     "userCreated": "Usuário criado!",
     "userDefaults": "Configurações padrão de usuário",
     "userDeleted": "Usuário apagado!",
+    "userHomeBasePath": "Caminho base para diretórios de usuários",
     "userManagement": "Gerenciamento de usuários",
-    "userUpdated": "Usuário atualizado!",
     "username": "Nome do usuário",
-    "users": "Usuários"
+    "users": "Usuários",
+    "userScopeGenerationPlaceholder": "O escopo será gerado automaticamente",
+    "userUpdated": "Usuário atualizado!"
   },
   "sidebar": {
     "help": "Ajuda",

@@ -77,13 +77,13 @@
     "help": "Hjálp"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "",
     "it": "Italiano",
     "ja": "日本語",
@@ -96,7 +96,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -154,8 +154,8 @@
     "pdf": "PDF",
     "pressToSearch": "Ýttu á Enter til að leita...",
     "search": "Leita...",
-    "typeToSearch": "Skrifaðu til að leita...",
     "types": "Skrárgerðir",
+    "typeToSearch": "Skrifaðu til að leita...",
     "video": "Myndbönd"
   },
   "settings": {
@@ -230,9 +230,9 @@
     "userDefaults": "Sjálfgefnar notendastillingar",
     "userDeleted": "Notanda eytt!",
     "userManagement": "Notendastýring",
-    "userUpdated": "Notandastillingar vistaðar!",
     "username": "Notendanafn",
-    "users": "Notendur"
+    "users": "Notendur",
+    "userUpdated": "Notandastillingar vistaðar!"
   },
   "sidebar": {
     "help": "Hjálp",

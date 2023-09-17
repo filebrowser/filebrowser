@@ -77,13 +77,13 @@
     "help": "ヘルプ"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "",
     "it": "Italiano",
     "ja": "日本語",
@@ -96,7 +96,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -154,8 +154,8 @@
     "pdf": "PDF",
     "pressToSearch": "Press enter to search...",
     "search": "検索...",
-    "typeToSearch": "Type to search...",
     "types": "種類",
+    "typeToSearch": "Type to search...",
     "video": "ビデオ"
   },
   "settings": {
@@ -230,9 +230,9 @@
     "userDefaults": "User default settings",
     "userDeleted": "ユーザーは削除されました！",
     "userManagement": "ユーザー管理",
-    "userUpdated": "ユーザーは更新されました！",
     "username": "ユーザー名",
-    "users": "ユーザー"
+    "users": "ユーザー",
+    "userUpdated": "ユーザーは更新されました！"
   },
   "sidebar": {
     "help": "ヘルプ",

@@ -18,6 +18,7 @@
     "new": "Новый",
     "next": "Вперед",
     "ok": "OK",
+    "openFile": "Открыть файл",
     "permalink": "Получить постоянную ссылку",
     "previous": "Назад",
     "publish": "Опубликовать",
@@ -35,8 +36,7 @@
     "switchView": "Вид",
     "toggleSidebar": "Боковая панель",
     "update": "Обновить",
-    "upload": "Загрузить",
-    "openFile": "Открыть файл"
+    "upload": "Загрузить"
   },
   "download": {
     "downloadFile": "Скачать файл",
@@ -44,10 +44,10 @@
     "downloadSelected": "Скачать выбранное"
   },
   "errors": {
+    "connection": "Нет подключения к серверу.",
     "forbidden": "У вас нет прав доступа к этому.",
     "internal": "Что-то пошло не так.",
-    "notFound": "Неправильная ссылка.",
-    "connection": "Нет подключения к серверу."
+    "notFound": "Неправильная ссылка."
   },
   "files": {
     "body": "Тело",
@@ -62,11 +62,11 @@
     "metadata": "Метаданные",
     "multipleSelectionEnabled": "Мультивыбор включен",
     "name": "Имя",
+    "noPreview": "Предварительный просмотр для этого файла недоступен.",
     "size": "Размер",
     "sortByLastModified": "Сортировка по дате изменения",
     "sortByName": "Сортировка по имени",
-    "sortBySize": "Сортировка по размеру",
-    "noPreview": "Предварительный просмотр для этого файла недоступен."
+    "sortBySize": "Сортировка по размеру"
   },
   "help": {
     "click": "выбрать файл или каталог",
@@ -83,13 +83,13 @@
     "help": "Помощь"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "Icelandic",
     "it": "Italiano",
     "ja": "日本語",
@@ -102,7 +102,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "Swedish (Sweden)",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -125,8 +125,8 @@
     "copyMessage": "Копировать в:",
     "currentlyNavigating": "Текущий каталог:",
     "deleteMessageMultiple": "Удалить эти файлы ({count})?",
-    "deleteMessageSingle": "Удалить этот файл/каталог?",
     "deleteMessageShare": "Удалить этот общий файл/каталог ({path})?",
+    "deleteMessageSingle": "Удалить этот файл/каталог?",
     "deleteTitle": "Удалить файлы",
     "displayName": "Отображаемое имя:",
     "download": "Скачать файлы",
@@ -144,6 +144,7 @@
     "newFileMessage": "Имя нового файла.",
     "numberDirs": "Количество каталогов",
     "numberFiles": "Количество файлов",
+    "optionalPassword": "Необязательный пароль",
     "rename": "Переименовать",
     "renameMessage": "Новое имя",
     "replace": "Заменить",
@@ -153,8 +154,7 @@
     "show": "Показать",
     "size": "Размер",
     "upload": "Загрузить",
-    "uploadMessage": "Выберите вариант для загрузки.",
-    "optionalPassword": "Необязательный пароль"
+    "uploadMessage": "Выберите вариант для загрузки."
   },
   "search": {
     "images": "Изображения",
@@ -162,8 +162,8 @@
     "pdf": "PDF",
     "pressToSearch": "Нажмите Enter для поиска ...",
     "search": "Поиск...",
-    "typeToSearch": "Введите имя файла ...",
     "types": "Типы",
+    "typeToSearch": "Введите имя файла ...",
     "video": "Видео"
   },
   "settings": {
@@ -224,9 +224,9 @@
     "scope": "Корень",
     "setDateFormat": "Установить точный формат даты",
     "settingsUpdated": "Настройки применены!",
+    "shareDeleted": "Расшаренная ссылка удалена!",
     "shareDuration": "Время расшаренной ссылки",
     "shareManagement": "Управление расшаренными ссылками",
-    "shareDeleted": "Расшаренная ссылка удалена!",
     "singleClick": "Открытие файлов и каталогов одним кликом",
     "themes": {
       "dark": "Темная",
@@ -240,9 +240,9 @@
     "userDefaults": "Настройки пользователя по умолчанию",
     "userDeleted": "Пользователь удален!",
     "userManagement": "Управление пользователями",
-    "userUpdated": "Пользователь изменен!",
     "username": "Имя пользователя",
-    "users": "Пользователи"
+    "users": "Пользователи",
+    "userUpdated": "Пользователь изменен!"
   },
   "sidebar": {
     "help": "Помощь",

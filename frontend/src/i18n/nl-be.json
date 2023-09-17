@@ -77,13 +77,13 @@
     "help": "Help"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "Arabisch",
     "de": "Duits",
     "en": "Engels",
     "es": "Spaans",
     "fr": "Frans",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "",
     "it": "Italiaans",
     "ja": "Japans",
@@ -96,7 +96,7 @@
     "ru": "Russisch",
     "sk": "Slovenčina",
     "svSE": "",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "Chinees (vereenvoudigd)",
     "zhTW": "Chinees (traditioneel)"
@@ -154,8 +154,8 @@
     "pdf": "PDF",
     "pressToSearch": "Druk op enter om te zoeken...",
     "search": "Zoeken...",
-    "typeToSearch": "Typ om te zoeken...",
     "types": "Types",
+    "typeToSearch": "Typ om te zoeken...",
     "video": "Video"
   },
   "settings": {
@@ -230,9 +230,9 @@
     "userDefaults": "Standaardinstellingen gebruiker",
     "userDeleted": "Gebruiker verwijderd!",
     "userManagement": "Gebruikersbeheer",
-    "userUpdated": "Gebruiker bijgewerkt!",
     "username": "Gebruikersnaam",
-    "users": "Gebruikers"
+    "users": "Gebruikers",
+    "userUpdated": "Gebruiker bijgewerkt!"
   },
   "sidebar": {
     "help": "Help",

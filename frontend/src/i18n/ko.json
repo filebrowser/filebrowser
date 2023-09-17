@@ -77,13 +77,13 @@
     "help": "도움말"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "",
     "it": "Italiano",
     "ja": "日本語",
@@ -96,7 +96,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -154,8 +154,8 @@
     "pdf": "PDF",
     "pressToSearch": "검색하려면 엔터를 입력하세요",
     "search": "검색...",
-    "typeToSearch": "검색어 입력...",
     "types": "Types",
+    "typeToSearch": "검색어 입력...",
     "video": "비디오"
   },
   "settings": {
@@ -230,9 +230,9 @@
     "userDefaults": "사용자 기본 설정",
     "userDeleted": "사용자 삭제됨!",
     "userManagement": "사용자 관리",
-    "userUpdated": "사용자 수정됨!",
     "username": "사용자 이름",
-    "users": "사용자"
+    "users": "사용자",
+    "userUpdated": "사용자 수정됨!"
   },
   "sidebar": {
     "help": "도움말",

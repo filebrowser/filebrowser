@@ -2,6 +2,7 @@
   "buttons": {
     "cancel": "Abbrechen",
     "close": "Schließen",
+    "continue": "Fortfahren",
     "copy": "Kopieren",
     "copyFile": "Kopiere Datei",
     "copyToClipboard": "In Zwischenablage kopieren",
@@ -18,6 +19,7 @@
     "new": "Neu",
     "next": "nächste",
     "ok": "OK",
+    "openFile": "Datei öffnen",
     "permalink": "permanenten Verweis anzeigen",
     "previous": "vorherige",
     "publish": "Veröffentlichen",
@@ -35,9 +37,7 @@
     "switchView": "Ansicht wechseln",
     "toggleSidebar": "Seitenleiste anzeigen",
     "update": "Update",
-    "upload": "Upload",
-    "openFile": "Datei öffnen",
-    "continue": "Fortfahren"
+    "upload": "Upload"
   },
   "download": {
     "downloadFile": "Download Datei",
@@ -45,10 +45,10 @@
     "downloadSelected": "Auswahl herunterladen"
   },
   "errors": {
+    "connection": "Der Server ist nicht erreichbar.",
     "forbidden": "Sie haben keine Berechtigung dies abzurufen.",
     "internal": "Etwas ist schief gelaufen.",
-    "notFound": "Dieser Ort kann nicht angezeigt werden.",
-    "connection": "Der Server ist nicht erreichbar."
+    "notFound": "Dieser Ort kann nicht angezeigt werden."
   },
   "files": {
     "body": "Body",
@@ -63,11 +63,11 @@
     "metadata": "Metadaten",
     "multipleSelectionEnabled": "Mehrfachauswahl aktiviert",
     "name": "Name",
+    "noPreview": "Für diese Datei ist keine Vorschau verfügbar.",
     "size": "Größe",
     "sortByLastModified": "Nach Änderungsdatum sortieren",
     "sortByName": "Nach Namen sortieren",
-    "sortBySize": "Nach Größe sortieren",
-    "noPreview": "Für diese Datei ist keine Vorschau verfügbar."
+    "sortBySize": "Nach Größe sortieren"
   },
   "help": {
     "click": "Wähle Datei oder Ordner",
@@ -84,13 +84,13 @@
     "help": "Hilfe"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "Icelandic",
     "it": "Italiano",
     "ja": "日本語",
@@ -126,8 +126,8 @@
     "copyMessage": "Wählen Sie einen Zielort zum Kopieren:",
     "currentlyNavigating": "Aktueller Ort:",
     "deleteMessageMultiple": "Sind Sie sicher, dass Sie {count} Datei(en) löschen möchten?",
-    "deleteMessageSingle": "Sind Sie sicher, dass Sie diesen Ordner/diese Datei löschen möchten?",
     "deleteMessageShare": "Sind Sie sicher, dass Sie diese Freigabe löschen möchten ({path})?",
+    "deleteMessageSingle": "Sind Sie sicher, dass Sie diesen Ordner/diese Datei löschen möchten?",
     "deleteTitle": "Lösche Dateien",
     "displayName": "Anzeigename:",
     "download": "Lade Dateien",
@@ -145,6 +145,7 @@
     "newFileMessage": "Geben Sie den Namen der neuen Datei an.",
     "numberDirs": "Anzahl der Ordner",
     "numberFiles": "Anzahl der Dateien",
+    "optionalPassword": "Optionales Passwort",
     "rename": "Umbenennen",
     "renameMessage": "Fügen Sie einen Namen ein für",
     "replace": "Ersetzen",
@@ -155,8 +156,7 @@
     "size": "Größe",
     "upload": "Upload",
     "uploadFiles": "Upload von {files} Dateien...",
-    "uploadMessage": "Wählen Sie eine Upload-Methode",
-    "optionalPassword": "Optionales Passwort"
+    "uploadMessage": "Wählen Sie eine Upload-Methode"
   },
   "search": {
     "images": "Bilder",
@@ -164,8 +164,8 @@
     "pdf": "PDF",
     "pressToSearch": "Drücken Sie Enter um zu suchen...",
     "search": "Suche...",
-    "typeToSearch": "Tippen um zu suchen...",
     "types": "Typen",
+    "typeToSearch": "Tippen um zu suchen...",
     "video": "Video"
   },
   "settings": {
@@ -185,10 +185,6 @@
     "commandRunnerHelp": "Hier könne Sie Befehle eintragen, welche bei den benannten Aktionen ausgeführt werden. Sie müssen pro Zeile jeweils einen Befehl eingeben. Die Umgebungsvariable {0} und {1} sind verfügbar, wobei {0} relative zu {1} ist. Für mehr Informationen über diese Funktion und die verfügbaren Umgebungsvariablen, lesen Sie bitte die {2}.",
     "commandsUpdated": "Befehle aktualisiert!",
     "createUserDir": "Automatisches Erstellen des Home-Verzeichnisses beim Anlegen neuer Benutzer",
-    "tusUploads": "Gestückelter Upload",
-    "tusUploadsHelp": "File Browser unterstützt das Hochladen von gestückelten Dateien und ermöglicht so einen effizienten, zuverlässigen, fortsetzbaren und gestückelten Datei-Upload auch in unzuverlässigen Netzwerken.",
-    "tusUploadsChunkSize": "Gibt die maximale Größe pro Anfrage an (direkte Uploads werden für kleinere Uploads verwendet). Bitte geben Sie eine Byte-Angabe oder eine Zeichenfolge wie 10 MB, 1 GB usw. an",
-    "tusUploadsRetryCount": "Anzahl der Wiederholungsversuche, wenn das Hochladen eines Stückes fehlschlägt.",
     "customStylesheet": "Individuelles Stylesheet",
     "defaultUserDescription": "Das sind die Standardeinstellung für Benutzer",
     "disableExternalLinks": "Externe Links deaktivieren (außer Dokumentation)",
@@ -230,15 +226,19 @@
     "scope": "Scope",
     "setDateFormat": "Exaktes Datumsformat setzen",
     "settingsUpdated": "Einstellungen aktualisiert!",
+    "shareDeleted": "Freigabe gelöscht!",
     "shareDuration": "Dauer",
     "shareManagement": "Freigaben verwalten",
-    "shareDeleted": "Freigabe gelöscht!",
     "singleClick": "Einfacher Klick zum Öffnen von Dateien und Ordnern",
     "themes": {
       "dark": "Dunkel",
       "light": "Hell",
       "title": "Erscheinungsbild"
     },
+    "tusUploads": "Gestückelter Upload",
+    "tusUploadsChunkSize": "Gibt die maximale Größe pro Anfrage an (direkte Uploads werden für kleinere Uploads verwendet). Bitte geben Sie eine Byte-Angabe oder eine Zeichenfolge wie 10 MB, 1 GB usw. an",
+    "tusUploadsHelp": "File Browser unterstützt das Hochladen von gestückelten Dateien und ermöglicht so einen effizienten, zuverlässigen, fortsetzbaren und gestückelten Datei-Upload auch in unzuverlässigen Netzwerken.",
+    "tusUploadsRetryCount": "Anzahl der Wiederholungsversuche, wenn das Hochladen eines Stückes fehlschlägt.",
     "user": "Benutzer",
     "userCommands": "Befehle",
     "userCommandsHelp": "Eine Liste, mit einem Leerzeichen als Trennung, mit den für diesen Nutzer verfügbaren Befehlen. Beispiel:\n",
@@ -246,9 +246,9 @@
     "userDefaults": "Benutzer Standard Einstellungen",
     "userDeleted": "Benutzer gelöscht!",
     "userManagement": "Benutzerverwaltung",
-    "userUpdated": "Benutzer aktualisiert!",
     "username": "Nutzername",
-    "users": "Nutzer"
+    "users": "Nutzer",
+    "userUpdated": "Benutzer aktualisiert!"
   },
   "sidebar": {
     "help": "Hilfe",

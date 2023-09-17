@@ -18,6 +18,7 @@
     "new": "Új",
     "next": "Következő",
     "ok": "OK",
+    "openFile": "Fájl megnyitása",
     "permalink": "Állandó link lekérése",
     "previous": "Előző",
     "publish": "Publikálása",
@@ -35,8 +36,7 @@
     "switchView": "Nézet váltása",
     "toggleSidebar": "Oldalsáv átváltása",
     "update": "Frissítés",
-    "upload": "Feltöltés",
-    "openFile": "Fájl megnyitása"
+    "upload": "Feltöltés"
   },
   "download": {
     "downloadFile": "Fájl letöltése",
@@ -44,10 +44,10 @@
     "downloadSelected": "Kijelölés letöltése"
   },
   "errors": {
+    "connection": "A kiszolgáló nem érhető el.",
     "forbidden": "Nincs jogosultsága a hozzáféréshez.",
     "internal": "Valami nagyon elromlott.",
-    "notFound": "Ez a hely nem érhető el.",
-    "connection": "A kiszolgáló nem érhető el."
+    "notFound": "Ez a hely nem érhető el."
   },
   "files": {
     "body": "Törzs",
@@ -62,11 +62,11 @@
     "metadata": "Metaadat",
     "multipleSelectionEnabled": "Többszörös kijelölés aktiválva",
     "name": "Név",
+    "noPreview": "Ehhez a fájlhoz nincs előnézet.",
     "size": "Méret",
     "sortByLastModified": "Rendezés utolsó módosítás szerint",
     "sortByName": "Rendezés név szerint",
-    "sortBySize": "Rendezés méret szerint",
-    "noPreview": "Ehhez a fájlhoz nincs előnézet."
+    "sortBySize": "Rendezés méret szerint"
   },
   "help": {
     "click": "mappa vagy fájl kijelölése",
@@ -83,13 +83,13 @@
     "help": "Súgó"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "Icelandic",
     "it": "Italiano",
     "ja": "日本語",
@@ -125,8 +125,8 @@
     "copyMessage": "Válassza ki a másolás célját:",
     "currentlyNavigating": "Jelenlegi helyzet:",
     "deleteMessageMultiple": "Biztosan törölni szeretne {count} fájlt?",
-    "deleteMessageSingle": "Biztosan törölni szeretné ezt a fájl vagy mappát?",
     "deleteMessageShare": "Biztosan törölni szeretné ezt a megosztást ({path})?",
+    "deleteMessageSingle": "Biztosan törölni szeretné ezt a fájl vagy mappát?",
     "deleteTitle": "Fájlok törlése",
     "displayName": "Megjelenített név:",
     "download": "Fájlok letöltése",
@@ -144,6 +144,7 @@
     "newFileMessage": "Adja meg az új fájl nevét.",
     "numberDirs": "Mappák száma",
     "numberFiles": "Fájlok száma",
+    "optionalPassword": "Választható jelszó",
     "rename": "Átnevezés",
     "renameMessage": "Adja meg az új nevét:",
     "replace": "Csere",
@@ -154,8 +155,7 @@
     "size": "Méret",
     "upload": "Feltöltés",
     "uploadFiles": "{files} fájl feltöltése…",
-    "uploadMessage": "Válasszon egy feltöltési módot.",
-    "optionalPassword": "Választható jelszó"
+    "uploadMessage": "Válasszon egy feltöltési módot."
   },
   "search": {
     "images": "Képek",
@@ -163,8 +163,8 @@
     "pdf": "PDF",
     "pressToSearch": "Keresés indítása Enterrel…",
     "search": "Keresés…",
-    "typeToSearch": "Keresés indítása beírással…",
     "types": "Típusok",
+    "typeToSearch": "Keresés indítása beírással…",
     "video": "Videó"
   },
   "settings": {
@@ -184,8 +184,6 @@
     "commandRunnerHelp": "Beállíthatja azokat a parancsokat, amelyek a megnevezett események során végrehajtásra kerülnek. Soronként egyet kell megadni. A {0} és a {1} környezeti változók lesznek elérhetőek, ahol a {0} relatív a {1}-hez. A funkcióról és a rendelkezésre álló környezeti változókról további információ: {2}.",
     "commandsUpdated": "Parancsok frissítve!",
     "createUserDir": "Felhasználók saját mappáinak automatikus létrehozása új felhasználók hozzáadásakor",
-    "userHomeBasePath": "Alap elérési útvonal a felhasználók saját mappáihoz",
-    "userScopeGenerationPlaceholder": "A környezet automatikus lesz létrehozva",
     "createUserHomeDirectory": "Felhasználói saját mappák létrehozása",
     "customStylesheet": "Egyéni stíluslap",
     "defaultUserDescription": "Ezek az alapértelmezett beállítások az új felhasználók számára.",
@@ -227,9 +225,9 @@
     "scope": "Hatókör",
     "setDateFormat": "Pontos dátumformátum beállítása",
     "settingsUpdated": "Beállítások frissítve!",
+    "shareDeleted": "Megosztás törölve!",
     "shareDuration": "Megosztás időtartama",
     "shareManagement": "Megosztáskezelés",
-    "shareDeleted": "Megosztás törölve!",
     "singleClick": "Fájlok és könyvtárak megnyitása egyetlen kattintással",
     "themes": {
       "dark": "Sötét",
@@ -242,10 +240,12 @@
     "userCreated": "Felhasználó létrehozva!",
     "userDefaults": "Felhasználói alapértelmezett beállítások",
     "userDeleted": "Felhasználó törölve!",
+    "userHomeBasePath": "Alap elérési útvonal a felhasználók saját mappáihoz",
     "userManagement": "Felhasználókezelés",
-    "userUpdated": "Felhasználó frissítve!",
     "username": "Felhasználói név",
-    "users": "Felhasználók"
+    "users": "Felhasználók",
+    "userScopeGenerationPlaceholder": "A környezet automatikus lesz létrehozva",
+    "userUpdated": "Felhasználó frissítve!"
   },
   "sidebar": {
     "help": "Súgó",

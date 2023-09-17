@@ -18,6 +18,7 @@
     "new": "Nový",
     "next": "Ďalšie",
     "ok": "OK",
+    "openFile": "Otvoriť súbor",
     "permalink": "Získať trvalý odkaz",
     "previous": "Predošlé",
     "publish": "Zverejniť",
@@ -35,8 +36,7 @@
     "switchView": "Prepnúť pohľad",
     "toggleSidebar": "Prepnúť sidebar",
     "update": "Aktualizovať",
-    "upload": "Nahrať",
-    "openFile": "Otvoriť súbor"
+    "upload": "Nahrať"
   },
   "download": {
     "downloadFile": "Stiahnuť súbor",
@@ -44,10 +44,10 @@
     "downloadSelected": "Stiahnuť vybraté"
   },
   "errors": {
+    "connection": "The server can't be reached.",
     "forbidden": "You don't have permissions to access this.",
     "internal": "Something really went wrong.",
-    "notFound": "This location can't be reached.",
-    "connection": "The server can't be reached."
+    "notFound": "This location can't be reached."
   },
   "files": {
     "body": "Telo",
@@ -62,11 +62,11 @@
     "metadata": "Metadata",
     "multipleSelectionEnabled": "Zapnutý viacnásobný výber",
     "name": "Názov",
+    "noPreview": "Pre tento súbor nie je dostupný náhľad.",
     "size": "Veľkosť",
     "sortByLastModified": "Zoradiť podľa dátumu",
     "sortByName": "Zoradiť podľa názvu",
-    "sortBySize": "Zoradiť podľa veľkosti",
-    "noPreview": "Pre tento súbor nie je dostupný náhľad."
+    "sortBySize": "Zoradiť podľa veľkosti"
   },
   "help": {
     "click": "vyberie súbor alebo priečinok",
@@ -83,13 +83,13 @@
     "help": "Pomoc"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "Icelandic",
     "it": "Italiano",
     "ja": "日本語",
@@ -102,7 +102,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "Swedish (Sweden)",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -125,8 +125,8 @@
     "copyMessage": "Zvoľte miesto, kde chcete kopírovať súbory:",
     "currentlyNavigating": "Aktuálna cesta:",
     "deleteMessageMultiple": "Naozaj chcete odstrániť {count} súbor(ov)?",
-    "deleteMessageSingle": "Naozaj chcete odstrániť tento súbor/priečinok?",
     "deleteMessageShare": "Naozaj chcete odstrániť toto zdieľanie({path})?",
+    "deleteMessageSingle": "Naozaj chcete odstrániť tento súbor/priečinok?",
     "deleteTitle": "Odstránenie súborov",
     "displayName": "Zobrazený názov:",
     "download": "Stiahnuť súbory",
@@ -144,6 +144,7 @@
     "newFileMessage": "Napíšte názov nového súboru.",
     "numberDirs": "Počet priečinkov",
     "numberFiles": "Počet súborov",
+    "optionalPassword": "Voliteľné heslo",
     "rename": "Premenovať",
     "renameMessage": "Zadajte nový názov pre",
     "replace": "Nahradiť",
@@ -153,8 +154,7 @@
     "show": "Zobraziť",
     "size": "Veľkosť",
     "upload": "Nahrať",
-    "uploadMessage": "Zvoľte možnosť nahrávania.",
-    "optionalPassword": "Voliteľné heslo"
+    "uploadMessage": "Zvoľte možnosť nahrávania."
   },
   "search": {
     "images": "Obrázky",
@@ -162,8 +162,8 @@
     "pdf": "PDF",
     "pressToSearch": "Vyhľadáte stlačením Enter...",
     "search": "Hľadať...",
-    "typeToSearch": "Vyhľadáte písaním...",
     "types": "Typy",
+    "typeToSearch": "Vyhľadáte písaním...",
     "video": "Video"
   },
   "settings": {
@@ -223,9 +223,9 @@
     "rulesHelp": "Tu môžete definovať pravidlá pre konkrétneho používateľa. Blokované súbory používateľ nebude vidieť a ani nebude k nim mať prístup. Podporujeme regex a cesty relatívne k používateľovi.\n",
     "scope": "Scope",
     "settingsUpdated": "Nastavenia upravené!",
+    "shareDeleted": "Zdieľanie odstránené!",
     "shareDuration": "Trvanie zdieľania",
     "shareManagement": "Správa zdieľania",
-    "shareDeleted": "Zdieľanie odstránené!",
     "singleClick": "Používať jeden klik na otváranie súborov a priečinkov",
     "themes": {
       "dark": "Tmavá",
@@ -239,9 +239,9 @@
     "userDefaults": "Predvolené nastavenia používateľa",
     "userDeleted": "Používateľ odstránený!",
     "userManagement": "Správa používateľov",
-    "userUpdated": "Používateľ upravený!",
     "username": "Meno používateľa",
-    "users": "Používatelia"
+    "users": "Používatelia",
+    "userUpdated": "Používateľ upravený!"
   },
   "sidebar": {
     "help": "Pomoc",

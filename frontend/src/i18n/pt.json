@@ -77,13 +77,13 @@
     "help": "Ajuda"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "Árabe",
     "de": "Alemão",
     "en": "Inglês",
     "es": "Espanhol",
     "fr": "Francês",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "",
     "it": "Italiano",
     "ja": "Japonês",
@@ -96,7 +96,7 @@
     "ru": "Russo",
     "sk": "Slovenčina",
     "svSE": "",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "Chinês simplificado",
     "zhTW": "Chinês tradicional"
@@ -154,8 +154,8 @@
     "pdf": "PDF",
     "pressToSearch": "Tecla Enter para pesquisar...",
     "search": "Pesquisar...",
-    "typeToSearch": "Escrever para pesquisar...",
     "types": "Tipos",
+    "typeToSearch": "Escrever para pesquisar...",
     "video": "Vídeos"
   },
   "settings": {
@@ -230,9 +230,9 @@
     "userDefaults": "Configurações padrão do utilizador",
     "userDeleted": "Utilizador eliminado!",
     "userManagement": "Gestão de utilizadores",
-    "userUpdated": "Utilizador atualizado!",
     "username": "Nome de utilizador",
-    "users": "Utilizadores"
+    "users": "Utilizadores",
+    "userUpdated": "Utilizador atualizado!"
   },
   "sidebar": {
     "help": "Ajuda",

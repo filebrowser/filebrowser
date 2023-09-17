@@ -77,13 +77,13 @@
     "help": "مساعدة"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "",
     "it": "Italiano",
     "ja": "日本語",
@@ -96,7 +96,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -154,8 +154,8 @@
     "pdf": "PDF",
     "pressToSearch": "Press enter to search...",
     "search": "البحث...",
-    "typeToSearch": "Type to search...",
     "types": "الأنواع",
+    "typeToSearch": "Type to search...",
     "video": "فيديوهات"
   },
   "settings": {
@@ -230,9 +230,9 @@
     "userDefaults": "User default settings",
     "userDeleted": "تم حذف المستخدم",
     "userManagement": "إدارة المستخدمين",
-    "userUpdated": "تم تعديل المستخدم",
     "username": "إسم المستخدم",
-    "users": "المستخدمين"
+    "users": "المستخدمين",
+    "userUpdated": "تم تعديل المستخدم"
   },
   "sidebar": {
     "help": "مساعدة",

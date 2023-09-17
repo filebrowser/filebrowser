@@ -77,13 +77,13 @@
     "help": "Ajutor"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "",
     "it": "Italiano",
     "ja": "日本語",
@@ -96,7 +96,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -154,8 +154,8 @@
     "pdf": "PDF",
     "pressToSearch": "Apasă enter pentru a căuta...",
     "search": "Caută...",
-    "typeToSearch": "Scrie pentru a căuta...",
     "types": "Tipuri",
+    "typeToSearch": "Scrie pentru a căuta...",
     "video": "Video"
   },
   "settings": {
@@ -230,9 +230,9 @@
     "userDefaults": "Setări implicite",
     "userDeleted": "Utilizator șters!",
     "userManagement": "Gestionare utilizatori",
-    "userUpdated": "Utilizator actualizat!",
     "username": "Utilizator",
-    "users": "Utilizatori"
+    "users": "Utilizatori",
+    "userUpdated": "Utilizator actualizat!"
   },
   "sidebar": {
     "help": "Ajutor",
