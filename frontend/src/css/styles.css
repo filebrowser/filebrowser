@@ -315,7 +315,7 @@ main .spinner .bounce2 {
 }
 
 /*** RTL - flip and position arrow of path ***/
-body.rtl .breadcrumbs .chevron {
+html[dir="rtl"] .breadcrumbs .chevron {
   transform: scaleX(-1) translateX(16em);
 }
 
@@ -420,17 +420,17 @@ body.rtl .breadcrumbs .chevron {
  *         RTL overrides       *
  * * * * * * * * * * * * * * * */
 
-body.rtl .card-content textarea {
+html[dir="rtl"] .card-content textarea {
   direction: ltr;
   text-align: left;
 }
 
-body.rtl .card-content .small + input {
+html[dir="rtl"] .card-content .small + input {
   direction: ltr;
   text-align: left;
 }
 
-body.rtl .card.floating .card-content .file-list {
+html[dir="rtl"] .card.floating .card-content .file-list {
   direction: ltr;
   text-align: left;
 }

@@ -8,7 +8,7 @@ import {
 } from "vue-toastification/dist/types/types";
 import createPinia from "@/stores";
 import router from "@/router";
-import i18n, { rtlLanguages } from "@/i18n";
+import i18n, { isRtl } from "@/i18n";
 import App from "@/App.vue";
 import CustomToast from "@/components/CustomToast.vue";
 
@@ -77,7 +77,7 @@ app.provide("$showSuccess", (message: string) => {
         message: message,
       },
     },
-    { ...toastConfig, rtl: rtlLanguages.includes(i18n.global.locale) }
+    { ...toastConfig, rtl: isRtl() }
   );
 });
 
@@ -96,7 +96,7 @@ app.provide("$showError", (error: Error | string, displayReport = true) => {
     {
       ...toastConfig,
       timeout: 0,
-      rtl: rtlLanguages.includes(i18n.global.locale),
+      rtl: isRtl(),
     }
   );
 });

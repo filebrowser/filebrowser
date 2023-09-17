@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import dayjs from "dayjs";
-import i18n, { detectLocale } from "@/i18n";
+import i18n, { detectLocale, setLocale } from "@/i18n";
 import { cloneDeep } from "lodash-es";
 
 export const useAuthStore = defineStore("auth", {
@@ -24,20 +24,12 @@ export const useAuthStore = defineStore("auth", {
         return;
       }
 
-      const locale = user.locale || detectLocale();
-      dayjs.locale(locale);
-      // according to doc u only need .value if legacy: false but they lied
-      // https://vue-i18n.intlify.dev/guide/essentials/scope.html#local-scope-1
-      //@ts-ignore
-      i18n.global.locale.value = locale;
+      setLocale(user.locale || detectLocale());
       this.user = user;
     },
     updateUser(user: Partial<IUser>) {
       if (user.locale) {
-        dayjs.locale(user.locale);
-        // see above
-        //@ts-ignore
-        i18n.global.locale.value = user.locale;
+        setLocale(user.locale);
       }
 
       this.user = { ...this.user, ...cloneDeep(user) } as IUser;

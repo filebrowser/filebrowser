@@ -137,7 +137,7 @@ header .menu-button {
   z-index: 1;
 }
 
-body.rtl #search #result {
+html[dir="rtl"] #search #result {
   direction: ltr;
 }
 
@@ -145,13 +145,13 @@ body.rtl #search #result {
   margin-top: 0;
 }
 
-body.rtl #search #result {
+html[dir="rtl"] #search #result {
   direction: rtl;
   text-align: right;
 }
 
 /*** RTL - Keep search result LTR because it has paths (in english) ***/
-body.rtl #search #result ul > * {
+html[dir="rtl"] #search #result ul > * {
   direction: ltr;
   text-align: left;
 }
@@ -241,7 +241,7 @@ body.rtl #search #result ul > * {
   padding: 0.5em;
 }
 
-body.rtl #search .boxes h3 {
+html[dir="rtl"] #search .boxes h3 {
   text-align: right;
 }
 

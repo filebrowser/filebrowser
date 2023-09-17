@@ -2,7 +2,7 @@
   --item-selected: white;
 }
 
-body.rtl #listing {
+html[dir="rtl"] #listing {
   margin-right: 16em;
 }
 

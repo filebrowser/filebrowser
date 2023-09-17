@@ -161,9 +161,7 @@ const updateSettings = async (event: Event) => {
       singleClick: singleClick.value,
       dateFormat: dateFormat.value,
     };
-    const shouldReload =
-      rtlLanguages.includes(data.locale) !==
-      rtlLanguages.includes(i18n.global.locale);
+
     await api.update(data, [
       "locale",
       "hideDotfiles",
@@ -171,9 +169,6 @@ const updateSettings = async (event: Event) => {
       "dateFormat",
     ]);
     authStore.updateUser(data);
-    if (shouldReload) {
-      location.reload();
-    }
     $showSuccess(t("settings.settingsUpdated"));
   } catch (err) {
     if (err instanceof Error) {

@@ -5,10 +5,6 @@ body {
   color: #333333;
 }
 
-body.rtl {
-  direction: rtl;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -62,8 +58,8 @@ nav {
   left: 0;
 }
 
-body.rtl nav {
-  left: unset;
+html[dir="rtl"] nav {
+  left: initial;
   right: 0;
 }
 
@@ -78,8 +74,7 @@ nav .action {
   text-overflow: ellipsis;
 }
 
-body.rtl .action {
-  direction: rtl;
+html[dir="rtl"] nav .action {
   text-align: right;
 }
 
@@ -115,7 +110,7 @@ main {
   border-radius: 0.125em;
 }
 
-body.rtl .breadcrumbs a {
+html[dir="rtl"] .breadcrumbs a {
   transform: translateX(-16em);
 }
 

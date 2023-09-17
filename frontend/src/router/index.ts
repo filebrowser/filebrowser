@@ -12,7 +12,7 @@ import Shares from "@/views/settings/Shares.vue";
 import Errors from "@/views/Errors.vue";
 import { useAuthStore } from "@/stores/auth";
 import { baseURL, name } from "@/utils/constants";
-import { i18n, rtlLanguages } from "@/i18n";
+import { i18n, isRtl, rtlLanguages } from "@/i18n";
 import { recaptcha, loginPage } from "@/utils/constants";
 import { login, validateLogin } from "@/utils/auth";
 
@@ -185,18 +185,6 @@ router.beforeResolve(async (to, from, next) => {
   }
   // const title = titles[to.name];
   document.title = title + " - " + name;
-
-  /*** RTL related settings per route ****/
-  const rtlSet = document.querySelector("body")?.classList.contains("rtl");
-  const shouldSetRtl = rtlLanguages.includes(i18n.global.locale);
-  switch (true) {
-    case shouldSetRtl && !rtlSet:
-      document.querySelector("body")?.classList.add("rtl");
-      break;
-    case !shouldSetRtl && rtlSet:
-      document.querySelector("body")?.classList.remove("rtl");
-      break;
-  }
 
   const authStore = useAuthStore();
 

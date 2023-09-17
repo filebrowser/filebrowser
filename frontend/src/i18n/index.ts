@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { createI18n } from "vue-i18n";
 
 import("dayjs/locale/ar");
@@ -134,5 +135,24 @@ export const i18n = createI18n({
   // expose i18n.global for outside components
   legacy: true,
 });
+
+export const isRtl = (locale?: string) => {
+  return rtlLanguages.includes(locale || i18n.global.locale);
+};
+
+export function setLocale(locale: string) {
+  dayjs.locale(locale);
+  // according to doc u only need .value if legacy: false but they lied
+  // https://vue-i18n.intlify.dev/guide/essentials/scope.html#local-scope-1
+  //@ts-ignore
+  i18n.global.locale.value = locale;
+}
+
+export function setHtmlLocale(locale: string) {
+  const html = document.documentElement;
+  html.lang = locale;
+  if (isRtl(locale)) html.dir = "rtl";
+  else html.dir = "ltr";
+}
 
 export default i18n;

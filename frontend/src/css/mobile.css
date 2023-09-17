@@ -45,7 +45,7 @@
     z-index: 99999;
   }
 
-  body.rtl #dropdown {
+  html[dir="rtl"] #dropdown {
     right: unset;
     left: 1em;
     transform-origin: top left;
@@ -109,7 +109,7 @@
     left: -17em;
   }
 
-  body.rtl nav {
+  html[dir="rtl"] nav {
     left: unset;
     right: -17em;
   }
@@ -117,7 +117,7 @@
     left: 0;
   }
 
-  body.rtl nav.active {
+  html[dir="rtl"] nav.active {
     left: unset;
     right: 0;
   }
@@ -133,19 +133,19 @@
     margin-bottom: 5em;
   }
 
-  body.rtl #listing {
+  html[dir="rtl"] #listing {
     margin-right: unset;
   }
 
-  body.rtl .breadcrumbs {
+  html[dir="rtl"] .breadcrumbs {
     transform: translateX(16em);
   }
 
-  body.rtl #nav .wrapper {
+  html[dir="rtl"] #nav .wrapper {
     margin-right: unset;
   }
 
-  body.rtl .dashboard .row {
+  html[dir="rtl"] .dashboard .row {
     margin-right: unset;
   }
 
