@@ -120,6 +120,10 @@
     right: 0;
   }
 
+  .shell__divider {
+    height: 12px;
+  }
+
   header .search-button,
   header .menu-button {
     display: inherit;

@@ -98,12 +98,12 @@ func generateMarkdown(cmd *cobra.Command, w io.Writer) {
 	buf.WriteString(long + "\n\n")
 
 	if cmd.Runnable() {
-		buf.WriteString(fmt.Sprintf("```\n%s\n```\n\n", cmd.UseLine()))
+		_, _ = fmt.Fprintf(buf, "```\n%s\n```\n\n", cmd.UseLine())
 	}
 
 	if len(cmd.Example) > 0 {
 		buf.WriteString("## Examples\n\n")
-		buf.WriteString(fmt.Sprintf("```\n%s\n```\n\n", cmd.Example))
+		_, _ = fmt.Fprintf(buf, "```\n%s\n```\n\n", cmd.Example)
 	}
 
 	printOptions(buf, cmd)

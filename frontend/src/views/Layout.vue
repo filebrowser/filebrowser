@@ -15,10 +15,10 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
-import Sidebar from "@/components/Sidebar";
-import Prompts from "@/components/prompts/Prompts";
-import Shell from "@/components/Shell";
-import UploadFiles from "../components/prompts/UploadFiles";
+import Sidebar from "@/components/Sidebar.vue";
+import Prompts from "@/components/prompts/Prompts.vue";
+import Shell from "@/components/Shell.vue";
+import UploadFiles from "../components/prompts/UploadFiles.vue";
 import { enableExec } from "@/utils/constants";
 
 export default {
@@ -30,7 +30,7 @@ export default {
     UploadFiles,
   },
   computed: {
-    ...mapGetters(["isLogged", "progress"]),
+    ...mapGetters(["isLogged", "progress", "currentPrompt"]),
     ...mapState(["user"]),
     isExecEnabled: () => enableExec,
   },
@@ -38,7 +38,7 @@ export default {
     $route: function () {
       this.$store.commit("resetSelected");
       this.$store.commit("multiple", false);
-      if (this.$store.state.show !== "success")
+      if (this.currentPrompt?.prompt !== "success")
         this.$store.commit("closeHovers");
     },
   },

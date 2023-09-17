@@ -44,7 +44,7 @@
 <script>
 import { mapState, mapMutations } from "vuex";
 import { users as api } from "@/api";
-import Errors from "@/views/Errors";
+import Errors from "@/views/Errors.vue";
 
 export default {
   name: "users",

@@ -18,8 +18,16 @@
         {{ $t("buttons.cancel") }}
       </button>
       <button
+        class="button button--flat button--blue"
+        @click="currentPrompt.action"
+        :aria-label="$t('buttons.continue')"
+        :title="$t('buttons.continue')"
+      >
+        {{ $t("buttons.continue") }}
+      </button>
+      <button
         class="button button--flat button--red"
-        @click="showConfirm"
+        @click="currentPrompt.confirm"
         :aria-label="$t('buttons.replace')"
         :title="$t('buttons.replace')"
       >
@@ -30,10 +38,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   name: "replace",
-  computed: mapState(["showConfirm"]),
+  computed: mapGetters(["currentPrompt"]),
 };
 </script>

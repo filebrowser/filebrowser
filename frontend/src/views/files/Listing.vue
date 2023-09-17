@@ -1,7 +1,8 @@
 <template>
   <div>
     <header-bar showMenu showLogo>
-      <search /> <title />
+      <search />
+      <title />
       <action
         class="search-button"
         icon="search"
@@ -274,10 +275,10 @@ import * as upload from "@/utils/upload";
 import css from "@/utils/css";
 import throttle from "lodash.throttle";
 
-import HeaderBar from "@/components/header/HeaderBar";
-import Action from "@/components/header/Action";
-import Search from "@/components/Search";
-import Item from "@/components/files/ListingItem";
+import HeaderBar from "@/components/header/HeaderBar.vue";
+import Action from "@/components/header/Action.vue";
+import Search from "@/components/Search.vue";
+import Item from "@/components/files/ListingItem.vue";
 
 export default {
   name: "listing",
@@ -297,16 +298,8 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      "req",
-      "selected",
-      "user",
-      "show",
-      "multiple",
-      "selected",
-      "loading",
-    ]),
-    ...mapGetters(["selectedCount"]),
+    ...mapState(["req", "selected", "user", "multiple", "selected", "loading"]),
+    ...mapGetters(["selectedCount", "currentPrompt"]),
     nameSorted() {
       return this.req.sorting.by === "name";
     },
@@ -443,7 +436,7 @@ export default {
     },
     keyEvent(event) {
       // No prompts are shown
-      if (this.show !== null) {
+      if (this.currentPrompt !== null) {
         return;
       }
 
@@ -606,10 +599,12 @@ export default {
     },
     colunmsResize() {
       // Update the columns size based on the window width.
+      let items = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
+      if (!items) return;
+
       let columns = Math.floor(
         document.querySelector("main").offsetWidth / this.columnWidth
       );
-      let items = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
       if (columns === 0) columns = 1;
       items.style.width = `calc(${100 / columns}% - 1em)`;
     },
@@ -694,6 +689,11 @@ export default {
       if (conflict) {
         this.$store.commit("showHover", {
           prompt: "replace",
+          action: (event) => {
+            event.preventDefault();
+            this.$store.commit("closeHovers");
+            upload.handleFiles(files, path, false);
+          },
           confirm: (event) => {
             event.preventDefault();
             this.$store.commit("closeHovers");
@@ -729,6 +729,11 @@ export default {
       if (conflict) {
         this.$store.commit("showHover", {
           prompt: "replace",
+          action: (event) => {
+            event.preventDefault();
+            this.$store.commit("closeHovers");
+            upload.handleFiles(files, path, false);
+          },
           confirm: (event) => {
             event.preventDefault();
             this.$store.commit("closeHovers");
