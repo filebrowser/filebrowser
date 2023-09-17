@@ -77,13 +77,13 @@
     "help": "Pomoc"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "Íslenska",
     "it": "Italiano",
     "ja": "日本語",
@@ -96,7 +96,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "Svenska (Sverige)",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -147,7 +147,6 @@
     "size": "Rozmiar",
     "upload": "Prześlij",
     "uploadMessage": "Proszę wybrać metodę przesyłania"
-
   },
   "search": {
     "images": "Zdjęcia",
@@ -155,8 +154,8 @@
     "pdf": "PDF",
     "pressToSearch": "Wciśnij enter, aby wyszukać...",
     "search": "Szukaj...",
-    "typeToSearch": "Zacznij pisać, aby wyszukać...",
     "types": "Typy",
+    "typeToSearch": "Zacznij pisać, aby wyszukać...",
     "video": "Wideo"
   },
   "settings": {
@@ -231,9 +230,9 @@
     "userDefaults": "Domyślne ustawienia użytkownika",
     "userDeleted": "Użytkownik usunięty!",
     "userManagement": "Zarządzanie użytkownikami",
-    "userUpdated": "Użytkownik zapisany!",
     "username": "Nazwa użytkownika",
-    "users": "Użytkownicy"
+    "users": "Użytkownicy",
+    "userUpdated": "Użytkownik zapisany!"
   },
   "sidebar": {
     "help": "Pomoc",

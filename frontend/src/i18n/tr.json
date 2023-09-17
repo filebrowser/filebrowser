@@ -16,6 +16,7 @@
     "new": "Yeni",
     "next": "Sonraki",
     "ok": "Tamam",
+    "openFile": "Dosyayı aç",
     "permalink": "Kalıcı Bağlantı Alın",
     "previous": "Önceki",
     "publish": "Yayınla",
@@ -33,8 +34,7 @@
     "switchView": "Görünümü değiştir",
     "toggleSidebar": "Menüyü aç/kapat",
     "update": "Güncelle",
-    "upload": "Yükle",
-    "openFile": "Dosyayı aç"
+    "upload": "Yükle"
   },
   "download": {
     "downloadFile": "Dosyayı indir",
@@ -42,10 +42,10 @@
     "downloadSelected": "Seçilileri indir"
   },
   "errors": {
+    "connection": "Sunucuya ulaşılamıyor.",
     "forbidden": "Buna erişim izniniz yok.",
     "internal": "Bir şeyler ters gitti.",
-    "notFound": "Bu konuma ulaşılamıyor.",
-    "connection": "Sunucuya ulaşılamıyor."
+    "notFound": "Bu konuma ulaşılamıyor."
   },
   "files": {
     "body": "Sayfa",
@@ -60,11 +60,11 @@
     "metadata": "meta veri",
     "multipleSelectionEnabled": "Çoklu seçim etkin",
     "name": "İsim",
+    "noPreview": "Bu dosya için önizleme aktif değil",
     "size": "Boyut",
     "sortByLastModified": "Güncelleme tarihine göre sırala",
     "sortByName": "İsme göre sırala",
-    "sortBySize": "Boyuta göre sırala",
-    "noPreview": "Bu dosya için önizleme aktif değil"
+    "sortBySize": "Boyuta göre sırala"
   },
   "help": {
     "click": "dosya veya klasör seçin",
@@ -81,13 +81,13 @@
     "help": "Yardım"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "Icelandic",
     "it": "Italiano",
     "ja": "日本語",
@@ -100,7 +100,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "Swedish (Sweden)",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -123,8 +123,8 @@
     "copyMessage": "Dosyalarınızı kopyalayacağınız yeri seçin:",
     "currentlyNavigating": "Şu anki lokasyon:",
     "deleteMessageMultiple": "{count} dosyayı/dosyaları silmek istediğinizden emin misiniz?",
-    "deleteMessageSingle": "Bu dosyayı/klasörü silmek istediğinizden emin misiniz?",
     "deleteMessageShare": "Bu paylaşımı({path}) silmek istediğinizden emin misiniz?",
+    "deleteMessageSingle": "Bu dosyayı/klasörü silmek istediğinizden emin misiniz?",
     "deleteTitle": "Dosyaları sil",
     "displayName": "Görünen Ad:",
     "download": "Dosyaları indirŞ",
@@ -142,6 +142,7 @@
     "newFileMessage": "Yeni dosyanın adını yazın.",
     "numberDirs": "Dizin sayısı",
     "numberFiles": "Dosya sayısı",
+    "optionalPassword": "İsteğe bağlı şifre",
     "rename": "Yeniden adlandır",
     "renameMessage": "için yeni bir ad girin",
     "replace": "Değiştir",
@@ -151,8 +152,7 @@
     "show": "Göster",
     "size": "Boyut",
     "upload": "Gönder",
-    "uploadMessage": "Yüklemek için bir seçenek belirleyin.",
-    "optionalPassword": "İsteğe bağlı şifre"
+    "uploadMessage": "Yüklemek için bir seçenek belirleyin."
   },
   "search": {
     "images": "Görseller",
@@ -160,8 +160,8 @@
     "pdf": "PDF",
     "pressToSearch": "Aramak için enter'a basın...",
     "search": "Ara...",
-    "typeToSearch": "Aramak için yazın...",
     "types": "Türler",
+    "typeToSearch": "Aramak için yazın...",
     "video": "Video"
   },
   "settings": {
@@ -221,9 +221,9 @@
     "rulesHelp": "Burada, bu belirli kullanıcı için bir dizi izin verme ve izin vermeme kuralı tanımlayabilirsiniz. Engellenen dosyalar listelerde görünmeyecek ve kullanıcı bunlara erişemeyecek. Kullanıcı erişimine göre regex ifadeleri destekliyoruz.\n",
     "scope": "Kapsam",
     "settingsUpdated": "Ayarlar güncellendi!",
+    "shareDeleted": "Paylaşım silindi!",
     "shareDuration": "Paylaşım süresi",
     "shareManagement": "Paylaşım yönetimi",
-    "shareDeleted": "Paylaşım silindi!",
     "singleClick": "Dosyaları ve dizinleri açmak için tek tıklamayı kullanın",
     "themes": {
       "dark": "Dark",
@@ -237,9 +237,9 @@
     "userDefaults": "Kullanıcı varsayılan ayarları",
     "userDeleted": "Kullanıcı silindi!",
     "userManagement": "Kullanıcı yönetimi",
-    "userUpdated": "Kullanıcı güncellendi!",
     "username": "Kullanıcı adı",
-    "users": "Kullanıcılar"
+    "users": "Kullanıcılar",
+    "userUpdated": "Kullanıcı güncellendi!"
   },
   "sidebar": {
     "help": "Yardım",

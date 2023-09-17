@@ -77,13 +77,13 @@
     "help": "Hjälp"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "",
     "it": "Italiano",
     "ja": "日本語",
@@ -96,7 +96,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -154,8 +154,8 @@
     "pdf": "PDF",
     "pressToSearch": "Tryck på enter för att söka...",
     "search": "Sök...",
-    "typeToSearch": "Skriv för att söka....",
     "types": "Typ",
+    "typeToSearch": "Skriv för att söka....",
     "video": "Video"
   },
   "settings": {
@@ -230,9 +230,9 @@
     "userDefaults": "Standard inställning för användare",
     "userDeleted": "Användare borttagen",
     "userManagement": "Användarehantering",
-    "userUpdated": "Användare uppdaterad!",
     "username": "Användarnamn",
-    "users": "Användare"
+    "users": "Användare",
+    "userUpdated": "Användare uppdaterad!"
   },
   "sidebar": {
     "help": "Hjälp",

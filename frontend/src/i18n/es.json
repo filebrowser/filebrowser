@@ -18,6 +18,7 @@
     "new": "Nuevo",
     "next": "Siguiente",
     "ok": "OK",
+    "openFile": "Abrir archivo",
     "permalink": "Link permanente",
     "previous": "Anterior",
     "publish": "Publicar",
@@ -35,8 +36,7 @@
     "switchView": "Cambiar vista",
     "toggleSidebar": "Mostrar/Ocultar menú",
     "update": "Actualizar",
-    "upload": "Subir",
-    "openFile": "Abrir archivo"
+    "upload": "Subir"
   },
   "download": {
     "downloadFile": "Descargar fichero",
@@ -44,10 +44,10 @@
     "downloadSelected": "Descargar seleccionados"
   },
   "errors": {
+    "connection": "No se puede acceder al servidor.",
     "forbidden": "No tienes los permisos necesarios para acceder.",
     "internal": "La verdad es que algo ha ido mal.",
-    "notFound": "No se puede acceder a este lugar.",
-    "connection": "No se puede acceder al servidor."
+    "notFound": "No se puede acceder a este lugar."
   },
   "files": {
     "body": "Cuerpo",
@@ -62,11 +62,11 @@
     "metadata": "Metadatos",
     "multipleSelectionEnabled": "Selección múltiple activada",
     "name": "Nombre",
+    "noPreview": "La vista previa no está disponible para este archivo.",
     "size": "Tamaño",
     "sortByLastModified": "Ordenar por última modificación",
     "sortByName": "Ordenar por nombre",
-    "sortBySize": "Ordenar por tamaño",
-    "noPreview": "La vista previa no está disponible para este archivo."
+    "sortBySize": "Ordenar por tamaño"
   },
   "help": {
     "click": "seleccionar archivo o carpeta",
@@ -83,13 +83,13 @@
     "help": "Ayuda"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "Icelandic",
     "it": "Italiano",
     "ja": "日本語",
@@ -102,7 +102,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "Swedish (Sweden)",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -125,8 +125,8 @@
     "copyMessage": "Elige el lugar donde quieres copiar tus archivos:",
     "currentlyNavigating": "Actualmente estás en:",
     "deleteMessageMultiple": "¿Estás seguro que quieres eliminar {count} archivo(s)?",
-    "deleteMessageSingle": "¿Estás seguro que quieres eliminar este archivo/carpeta?",
     "deleteMessageShare": "¿Está seguro de que quiere eliminar este recurso compartido({path})?",
+    "deleteMessageSingle": "¿Estás seguro que quieres eliminar este archivo/carpeta?",
     "deleteTitle": "Borrar archivos",
     "displayName": "Nombre:",
     "download": "Descargar archivos",
@@ -144,6 +144,7 @@
     "newFileMessage": "Escribe el nombre del nuevo archivo.",
     "numberDirs": "Número de carpetas",
     "numberFiles": "Número de archivos",
+    "optionalPassword": "Contraseña opcional",
     "rename": "Renombrar",
     "renameMessage": "Escribe el nuevo nombre para",
     "replace": "Reemplazar",
@@ -154,8 +155,7 @@
     "size": "Tamaño",
     "upload": "Subir",
     "uploadFiles": "Subiendo {files} archivos...",
-    "uploadMessage": "Seleccione una opción para subir.",
-    "optionalPassword": "Contraseña opcional"
+    "uploadMessage": "Seleccione una opción para subir."
   },
   "search": {
     "images": "Imágenes",
@@ -163,8 +163,8 @@
     "pdf": "PDF",
     "pressToSearch": "Presiona enter para buscar...",
     "search": "Buscar...",
-    "typeToSearch": "Escribe para realizar una busqueda...",
     "types": "Tipos",
+    "typeToSearch": "Escribe para realizar una busqueda...",
     "video": "Vídeo"
   },
   "settings": {
@@ -184,8 +184,6 @@
     "commandRunnerHelp": "Aquí puede establecer los comandos que se ejecutan en los eventos nombrados. Debe escribir uno por línea. Las variables de entorno {0} y {1} estarán disponibles, siendo {0} relativa a {1}. Para más información sobre esta característica y las variables de entorno disponibles, por favor lea el {2}.",
     "commandsUpdated": "¡Comandos actualizados!",
     "createUserDir": "Crea automaticamente una carpeta de inicio cuando se agrega un usuario",
-    "userHomeBasePath": "Ruta base para los directorios personales de los usuarios",
-    "userScopeGenerationPlaceholder": "El ámbito se generará automáticamente",
     "createUserHomeDirectory": "Crear el directorio principal del usuario",
     "customStylesheet": "Modificar hoja de estilos",
     "defaultUserDescription": "Estas son las configuraciones por defecto para nuevos usuarios.",
@@ -228,9 +226,9 @@
     "scope": "Raíz",
     "setDateFormat": "Establecer el formato exacto de la fecha",
     "settingsUpdated": "¡Ajustes actualizados!",
+    "shareDeleted": "¡Recurso compartido eliminado!",
     "shareDuration": "Compartir Duración",
     "shareManagement": "Gestión Compartida",
-    "shareDeleted": "¡Recurso compartido eliminado!",
     "singleClick": "Utilice un solo clic para abrir archivos y directorios",
     "themes": {
       "dark": "Oscuro",
@@ -243,10 +241,12 @@
     "userCreated": "¡Usuario creado!",
     "userDefaults": "Configuración de usuario por defecto",
     "userDeleted": "¡Usuario eliminado!",
+    "userHomeBasePath": "Ruta base para los directorios personales de los usuarios",
     "userManagement": "Administración de usuarios",
-    "userUpdated": "¡Usuario actualizado!",
     "username": "Usuario",
-    "users": "Usuarios"
+    "users": "Usuarios",
+    "userScopeGenerationPlaceholder": "El ámbito se generará automáticamente",
+    "userUpdated": "¡Usuario actualizado!"
   },
   "sidebar": {
     "help": "Ayuda",

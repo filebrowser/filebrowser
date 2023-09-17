@@ -18,6 +18,7 @@
     "new": "Nouveau",
     "next": "Suivant",
     "ok": "OK",
+    "openFile": "Ouvrir le fichier",
     "permalink": "Obtenir un lien permanent",
     "previous": "Précédent",
     "publish": "Publier",
@@ -35,8 +36,7 @@
     "switchView": "Changer le mode d'affichage",
     "toggleSidebar": "Afficher/Masquer la barre latérale",
     "update": "Mettre à jour",
-    "upload": "Importer",
-    "openFile": "Ouvrir le fichier"
+    "upload": "Importer"
   },
   "download": {
     "downloadFile": "Télécharger le fichier",
@@ -44,10 +44,10 @@
     "downloadSelected": "Télécharger la selection"
   },
   "errors": {
+    "connection": "Le serveur n'est pas accessible.",
     "forbidden": "Vous n'avez pas la permission d'accéder à cela.",
     "internal": "Aïe ! Quelque chose s'est mal passé.",
-    "notFound": "Impossible d'accéder à cet emplacement.",
-    "connection": "Le serveur n'est pas accessible."
+    "notFound": "Impossible d'accéder à cet emplacement."
   },
   "files": {
     "body": "Corps",
@@ -62,11 +62,11 @@
     "metadata": "Metadonnées",
     "multipleSelectionEnabled": "Sélection multiple activée",
     "name": "Nom",
+    "noPreview": "Il n'y a pas de prévisualisation pour ce fichier.",
     "size": "Taille",
     "sortByLastModified": "Trier par date de dernière modification",
     "sortByName": "Trier par nom",
-    "sortBySize": "Trier par taille",
-    "noPreview": "Il n'y a pas de prévisualisation pour ce fichier."
+    "sortBySize": "Trier par taille"
   },
   "help": {
     "click": "Sélectionner un élément",
@@ -83,13 +83,13 @@
     "help": "Aide"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "",
     "it": "Italiano",
     "ja": "日本語",
@@ -102,7 +102,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
@@ -125,8 +125,8 @@
     "copyMessage": "Choisissez l'emplacement où copier la sélection :",
     "currentlyNavigating": "Dossier courant :",
     "deleteMessageMultiple": "Êtes-vous sûr de vouloir supprimer ces {count} élément(s) ?",
-    "deleteMessageSingle": "Êtes-vous sûr de vouloir supprimer cet élément ?",
     "deleteMessageShare": "Êtes-vous sûr de vouloir supprimer ce partage ({path}) ?",
+    "deleteMessageSingle": "Êtes-vous sûr de vouloir supprimer cet élément ?",
     "deleteTitle": "Supprimer",
     "displayName": "Nom :",
     "download": "Télécharger",
@@ -144,6 +144,7 @@
     "newFileMessage": "Nom du nouveau fichier :",
     "numberDirs": "Nombre de dossiers",
     "numberFiles": "Nombre de fichiers",
+    "optionalPassword": "Mot de passe optionnel",
     "rename": "Renommer",
     "renameMessage": "Nouveau nom pour",
     "replace": "Remplacer",
@@ -154,8 +155,7 @@
     "size": "Taille",
     "upload": "Importer",
     "uploadFiles": "Importation de {files} fichiers...",
-    "uploadMessage": "Séléctionnez une option d'import.",
-    "optionalPassword": "Mot de passe optionnel"
+    "uploadMessage": "Séléctionnez une option d'import."
   },
   "search": {
     "images": "Images",
@@ -163,8 +163,8 @@
     "pdf": "PDF",
     "pressToSearch": "Appuyez du entrée pour chercher...",
     "search": "Recherche en cours...",
-    "typeToSearch": "Écrivez pour chercher...",
     "types": "Types",
+    "typeToSearch": "Écrivez pour chercher...",
     "video": "Video"
   },
   "settings": {
@@ -181,7 +181,7 @@
     "brandingHelp": "Vous pouvez personnaliser l'apparence de votre instance de File Browser en changeant son nom, en remplaçant le logo, en ajoutant des styles personnalisés et même en désactivant les liens externes vers GitHub.\nPour plus d'informations sur la personnalisation de l'image de marque, veuillez consulter la {0}.",
     "changePassword": "Modifier le mot de passe",
     "commandRunner": "Command runner",
-    "commandRunnerHelp" : "Ici, vous pouvez définir les commandes qui sont exécutées pour les événements nommés précédemments. Vous devez en écrire une par ligne. Les variables d'environnement {0} et {1} seront disponibles, {0} étant relatif à {1}. Pour plus d'informations sur cette fonctionnalité et les variables d'environnement disponibles, veuillez lire la {2}.",
+    "commandRunnerHelp": "Ici, vous pouvez définir les commandes qui sont exécutées pour les événements nommés précédemments. Vous devez en écrire une par ligne. Les variables d'environnement {0} et {1} seront disponibles, {0} étant relatif à {1}. Pour plus d'informations sur cette fonctionnalité et les variables d'environnement disponibles, veuillez lire la {2}.",
     "commandsUpdated": "Commandes mises à jour !",
     "createUserDir": "Créer automatiquement un dossier pour l'utilisateur",
     "customStylesheet": "Feuille de style personnalisée",
@@ -225,9 +225,9 @@
     "scope": "Portée du dossier utilisateur",
     "setDateFormat": "Définir le format de la date",
     "settingsUpdated": "Les paramètres ont été mis à jour !",
+    "shareDeleted": "Partage supprimé !",
     "shareDuration": "Durée du partage",
     "shareManagement": "Gestion des partages",
-    "shareDeleted": "Partage supprimé !",
     "singleClick": "Utiliser un simple clic pour ouvrir les fichiers et les dossiers",
     "themes": {
       "dark": "Sombre",
@@ -241,9 +241,9 @@
     "userDefaults": "User default settings",
     "userDeleted": "Utilisateur supprimé !",
     "userManagement": "Gestion des utilisateurs",
-    "userUpdated": "Utilisateur mis à jour !",
     "username": "Nom d'utilisateur",
-    "users": "Utilisateurs"
+    "users": "Utilisateurs",
+    "userUpdated": "Utilisateur mis à jour !"
   },
   "sidebar": {
     "help": "Aide",

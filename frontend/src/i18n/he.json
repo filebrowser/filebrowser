@@ -18,6 +18,7 @@
     "new": "חדש",
     "next": "הבא",
     "ok": "אישור",
+    "openFile": "פתח קובץ",
     "permalink": "צור קישור קבוע",
     "previous": "הקודם",
     "publish": "יצירה",
@@ -35,8 +36,7 @@
     "switchView": "שנה תצוגה",
     "toggleSidebar": "פתיחת / סגירת סרגל צד",
     "update": "עדכון",
-    "upload": "העלאה",
-    "openFile": "פתח קובץ"
+    "upload": "העלאה"
   },
   "download": {
     "downloadFile": "הורד קובץ",
@@ -44,10 +44,10 @@
     "downloadSelected": "הורד קבצים שנבחרו"
   },
   "errors": {
+    "connection": "לא ניתן להגיע לשרת",
     "forbidden": "אין לך הרשאות גישה",
     "internal": "משהו השתבש",
-    "notFound": "לא ניתן להגיע למיקום זה",
-    "connection": "לא ניתן להגיע לשרת"
+    "notFound": "לא ניתן להגיע למיקום זה"
   },
   "files": {
     "body": "גוף",
@@ -62,11 +62,11 @@
     "metadata": "נתונים",
     "multipleSelectionEnabled": "בחירה מרובה מופעלת",
     "name": "שם",
+    "noPreview": "תצוגה מקדימה לא זמינה לקובץ זה",
     "size": "גודל",
     "sortByLastModified": "מיין לפי השינוי האחרון",
     "sortByName": "מיין לפי שם",
-    "sortBySize": "מיין לפי גודל",
-    "noPreview": "תצוגה מקדימה לא זמינה לקובץ זה"
+    "sortBySize": "מיין לפי גודל"
   },
   "help": {
     "click": "בחר קובץ או תקייה",
@@ -83,13 +83,13 @@
     "help": "עזרה"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "Icelandic",
     "it": "Italiano",
     "ja": "日本語",
@@ -125,8 +125,8 @@
     "copyMessage": "בחר לאן להעתיק את הקבצים:",
     "currentlyNavigating": "כרגע מנווט ב:",
     "deleteMessageMultiple": "האם אתה בטוח שברצונך למחוק {count} קבצים?",
-    "deleteMessageSingle": "האם אתה בטוח שברצונך למחוק את הקובץ או התקייה?",
     "deleteMessageShare": "האם אתה בטוח שברצונך למחוק את השיתוף הזה?({path})?",
+    "deleteMessageSingle": "האם אתה בטוח שברצונך למחוק את הקובץ או התקייה?",
     "deleteTitle": "מחק קבצים",
     "displayName": "שם:",
     "download": "הורד קבצים",
@@ -144,6 +144,7 @@
     "newFileMessage": "כתוב את שם הקובץ החדש",
     "numberDirs": "מספר התקיות",
     "numberFiles": "מספר הקבצים",
+    "optionalPassword": "סיסמא אופציונלית",
     "rename": "שנה שם",
     "renameMessage": "הכנס שם חדש עבור",
     "replace": "החלף",
@@ -154,8 +155,7 @@
     "size": "גודל",
     "upload": "העלאה",
     "uploadFiles": "מעלה {files} קבצים...",
-    "uploadMessage": "בחר אפשרות העלאה.",
-    "optionalPassword": "סיסמא אופציונלית"
+    "uploadMessage": "בחר אפשרות העלאה."
   },
   "search": {
     "images": "תמונות",
@@ -163,8 +163,8 @@
     "pdf": "PDF",
     "pressToSearch": "הקש אנטר לחיפוש...",
     "search": "חפש...",
-    "typeToSearch": "הקלד לחיפוש...",
     "types": "סוג",
+    "typeToSearch": "הקלד לחיפוש...",
     "video": "וידאו"
   },
   "settings": {
@@ -184,8 +184,6 @@
     "commandRunnerHelp": "אתה יכול להגדיר פקודות שיבוצעו באירועים שונים. עליך לכתוב אחד בכל שורה. משתני הסביבה {0} ו-{1} יהיו זמינים, בהיותם {0} ביחס ל-{1}. למידע נוסף על תכונה זו ועל משתני הסביבה הזמינים, עיין ב {2}.",
     "commandsUpdated": "הפקודות עודכנו.",
     "createUserDir": "צור תקיית בית במהלך הוספת משתמש חדש",
-    "userHomeBasePath": "נתיב ראשי לתקיות הבית של משתמשים",
-    "userScopeGenerationPlaceholder": "התחום יווצר אוטומטית",
     "createUserHomeDirectory": "צור תקיית בית למשתמש",
     "customStylesheet": "עיצוב מותאם אישית (Stylesheet)",
     "defaultUserDescription": "אלה הגדרות ברירת המחדל למשתמשים חדשים",
@@ -227,9 +225,9 @@
     "scope": "תחום",
     "setDateFormat": "הגדר פורמט תאריך",
     "settingsUpdated": "ההגדרות עודכנו!",
+    "shareDeleted": "שיתוף נמחק!",
     "shareDuration": "משך השיתוף",
     "shareManagement": "ניהול שיתוף",
-    "shareDeleted": "שיתוף נמחק!",
     "singleClick": "השתמש בלחיצות בודדות כדי לפתוח קבצים ותקיות",
     "themes": {
       "dark": "כהה",
@@ -242,10 +240,12 @@
     "userCreated": "משתמש נוצר!",
     "userDefaults": "הגדרות ברירת מחדל למשתמש",
     "userDeleted": "משתמש נמחק!",
+    "userHomeBasePath": "נתיב ראשי לתקיות הבית של משתמשים",
     "userManagement": "ניהול משתמש",
-    "userUpdated": "המשתמש עודכן!",
     "username": "שם משתמש",
-    "users": "משתמשים"
+    "users": "משתמשים",
+    "userScopeGenerationPlaceholder": "התחום יווצר אוטומטית",
+    "userUpdated": "המשתמש עודכן!"
   },
   "sidebar": {
     "help": "עזרה",

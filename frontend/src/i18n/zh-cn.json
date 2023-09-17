@@ -18,6 +18,7 @@
     "new": "新建",
     "next": "下一个",
     "ok": "确定",
+    "openFile": "打开文件",
     "permalink": "获取永久链接",
     "previous": "上一个",
     "publish": "发布",
@@ -35,8 +36,7 @@
     "switchView": "切换显示方式",
     "toggleSidebar": "切换侧边栏",
     "update": "更新",
-    "upload": "上传",
-    "openFile": "打开文件"
+    "upload": "上传"
   },
   "download": {
     "downloadFile": "下载文件",
@@ -44,10 +44,10 @@
     "downloadSelected": "下载已选"
   },
   "errors": {
+    "connection": "无法连接到服务器。",
     "forbidden": "你无权限访问",
     "internal": "服务器出了点问题。",
-    "notFound": "找不到文件。",
-    "connection": "无法连接到服务器。"
+    "notFound": "找不到文件。"
   },
   "files": {
     "body": "内容",
@@ -62,11 +62,11 @@
     "metadata": "元数据",
     "multipleSelectionEnabled": "多选模式已开启",
     "name": "名称",
+    "noPreview": "此文件无法预览。",
     "size": "大小",
     "sortByLastModified": "按最后修改时间排序",
     "sortByName": "按名称排序",
-    "sortBySize": "按大小排序",
-    "noPreview": "此文件无法预览。"
+    "sortBySize": "按大小排序"
   },
   "help": {
     "click": "选择文件或目录",
@@ -83,13 +83,13 @@
     "help": "帮助"
   },
   "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
+    "he": "עברית",
+    "hu": "Magyar",
     "is": "Icelandic",
     "it": "Italiano",
     "ja": "日本語",
@@ -102,7 +102,7 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "Swedish（Sweden）",
-    "tr" : "Türkçe",
+    "tr": "Türkçe",
     "ua": "Українська",
     "zhCN": "中文（简体）",
     "zhTW": "中文（繁體）"
@@ -125,8 +125,8 @@
     "copyMessage": "请选择欲复制至的目录：",
     "currentlyNavigating": "当前目录：",
     "deleteMessageMultiple": "你确定要删除这 {count} 个文件吗？",
-    "deleteMessageSingle": "你确定要删除这个文件/文件夹吗？",
     "deleteMessageShare": "你确定要删除这个分享（{path}）吗？",
+    "deleteMessageSingle": "你确定要删除这个文件/文件夹吗？",
     "deleteTitle": "删除文件",
     "displayName": "名称：",
     "download": "下载文件",
@@ -144,6 +144,7 @@
     "newFileMessage": "请输入新文件的名称。",
     "numberDirs": "目录数",
     "numberFiles": "文件数",
+    "optionalPassword": "密码（选填，不填即无密码）",
     "rename": "重命名",
     "renameMessage": "请输入新名称，旧名称为：",
     "replace": "替换",
@@ -153,8 +154,7 @@
     "show": "点击以显示",
     "size": "大小",
     "upload": "上传",
-    "uploadMessage": "选择上传选项。",
-    "optionalPassword": "密码（选填，不填即无密码）"
+    "uploadMessage": "选择上传选项。"
   },
   "search": {
     "images": "图像",
@@ -162,8 +162,8 @@
     "pdf": "PDF",
     "pressToSearch": "输入回车以搜索...",
     "search": "搜索...",
-    "typeToSearch": "输入以搜索...",
     "types": "类型",
+    "typeToSearch": "输入以搜索...",
     "video": "视频"
   },
   "settings": {
@@ -224,9 +224,9 @@
     "scope": "目录范围",
     "setDateFormat": "显示精确的日期格式",
     "settingsUpdated": "设置已更新！",
+    "shareDeleted": "分享已删除！",
     "shareDuration": "分享期限",
     "shareManagement": "分享管理",
-    "shareDeleted": "分享已删除！",
     "singleClick": "使用单击来打开文件和目录",
     "themes": {
       "dark": "深色",
@@ -240,9 +240,9 @@
     "userDefaults": "用户默认设置",
     "userDeleted": "用户已删除！",
     "userManagement": "用户管理",
-    "userUpdated": "用户已更新！",
     "username": "用户名",
-    "users": "用户"
+    "users": "用户",
+    "userUpdated": "用户已更新！"
   },
   "sidebar": {
     "help": "帮助",
