@@ -20,7 +20,7 @@ Password: `demo`
 
 ## Features
 
-Please refer to [our docs](https://filebrowser.org/features) at
+Please refer to [our docs](https://filebrowser.org/features)
 
 ## Install
 
