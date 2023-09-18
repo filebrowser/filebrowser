@@ -10,17 +10,17 @@
 [![Version](https://img.shields.io/github/release/filebrowser/filebrowser.svg?style=flat-square)](https://github.com/filebrowser/filebrowser/releases/latest)
 [![Chat IRC](https://img.shields.io/badge/freenode-%23filebrowser-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23filebrowser)
 
-filebrowser provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its own directory. It can be used as a standalone app.
+File Browser provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its own directory. It can be used as a standalone app.
 
 ## Demo
 
-url: https://demo.filebrowser.org/
-
-credentials: `demo`/`demo`
+URL: https://demo.filebrowser.org
+Username: `demo`
+Password: `demo`
 
 ## Features
 
-Please refer to our docs at [https://filebrowser.org/features](https://filebrowser.org/features)
+Please refer to [our docs](https://filebrowser.org/features) at
 
 ## Install
 
@@ -36,4 +36,4 @@ For installation instructions please refer to our docs at [https://filebrowser.o
 
 ## Contributing
 
-If you're interested in contributing to this project, our docs are best places to start [https://filebrowser.org/contributing](https://filebrowser.org/contributing).
+[Contributing](https://filebrowser.org/contributing) - If you're interested in contributing to this project, our docs are best places to start.
