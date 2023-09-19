@@ -51,7 +51,7 @@
           v-if="headerButtons.shell"
           icon="code"
           :label="$t('buttons.shell')"
-          @action="toggleShell"
+          @action="layoutStore.toggleShell"
         />
         <action
           :icon="viewIcon"
@@ -63,7 +63,7 @@
           icon="file_download"
           :label="$t('buttons.download')"
           @action="download"
-          :counter="selectedCount"
+          :counter="fileStore.selectedCount"
         />
         <action
           v-if="headerButtons.upload"
@@ -82,7 +82,7 @@
     </header-bar>
 
     <div v-if="isMobile" id="file-selection">
-      <span v-if="selectedCount > 0">{{ selectedCount }} selected</span>
+      <span v-if="fileStore.selectedCount > 0">{{ fileStore.selectedCount }} selected</span>
       <action
         v-if="headerButtons.share"
         icon="share"
@@ -115,7 +115,7 @@
       />
     </div>
 
-    <div v-if="loading">
+    <div v-if="layoutStore.loading">
       <h2 class="message delayed">
         <div class="spinner">
           <div class="bounce1"></div>
@@ -126,7 +126,7 @@
       </h2>
     </div>
     <template v-else>
-      <div v-if="req.numDirs + req.numFiles == 0">
+      <div v-if="(fileStore.req?.numDirs ?? 0) + (fileStore.req?.numFiles ?? 0) == 0">
         <h2 class="message">
           <i class="material-icons">sentiment_dissatisfied</i>
           <span>{{ $t("files.lonely") }}</span>
@@ -151,7 +151,7 @@
         v-else
         id="listing"
         ref="listing"
-        :class="user.viewMode + ' file-icons'"
+        :class="authStore.user?.viewMode ?? '' + ' file-icons'"
       >
         <div>
           <div class="item header">
@@ -198,8 +198,8 @@
           </div>
         </div>
 
-        <h2 v-if="req.numDirs > 0">{{ $t("files.folders") }}</h2>
-        <div v-if="req.numDirs > 0">
+        <h2 v-if="fileStore.req?.numDirs ?? 0 > 0">{{ $t("files.folders") }}</h2>
+        <div v-if="fileStore.req?.numDirs ?? 0 > 0">
           <item
             v-for="item in dirs"
             :key="base64(item.name)"
@@ -215,8 +215,8 @@
           </item>
         </div>
 
-        <h2 v-if="req.numFiles > 0">{{ $t("files.files") }}</h2>
-        <div v-if="req.numFiles > 0">
+        <h2 v-if="fileStore.req?.numFiles ?? 0 > 0">{{ $t("files.files") }}</h2>
+        <div v-if="fileStore.req?.numFiles ?? 0> 0">
           <item
             v-for="item in files"
             :key="base64(item.name)"
@@ -248,10 +248,10 @@
           multiple
         />
 
-        <div :class="{ active: multiple }" id="multiple-selection">
+        <div :class="{ active: fileStore.multiple }" id="multiple-selection">
           <p>{{ $t("files.multipleSelectionEnabled") }}</p>
           <div
-            @click="() => (multiple = false)"
+            @click="() => (fileStore.multiple = false)"
             tabindex="0"
             role="button"
             :title="$t('files.clear')"
@@ -266,7 +266,7 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { mapState, mapWritableState, mapActions, mapStores } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 import { useClipboardStore } from "@/stores/clipboard";
@@ -284,54 +284,55 @@ import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Search from "@/components/Search.vue";
 import Item from "@/components/files/ListingItem.vue";
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { RouteLocation, useRoute, useRouter } from "vue-router";
 
-export default {
-  name: "file-listing",
-  components: {
-    HeaderBar,
-    Action,
-    Search,
-    Item,
-  },
-  data: function () {
-    return {
-      showLimit: 50,
-      columnWidth: 280,
-      dragCounter: 0,
-      width: window.innerWidth,
-      itemWeight: 0,
-    };
-  },
-  inject: ["$showError"],
-  computed: {
-    ...mapStores(useClipboardStore),
-    ...mapState(useAuthStore, ["user"]),
-    ...mapState(useFileStore, ["selectedCount", "toggleMultiple"]),
-    ...mapState(useLayoutStore, ["show"]),
-    ...mapWritableState(useFileStore, [
-      "req",
-      "selected",
-      "multiple",
-      "loading",
-      "reload",
-    ]),
-    nameSorted() {
-      return this.req.sorting.by === "name";
-    },
-    sizeSorted() {
-      return this.req.sorting.by === "size";
-    },
-    modifiedSorted() {
-      return this.req.sorting.by === "modified";
-    },
-    ascOrdered() {
-      return this.req.sorting.asc;
-    },
-    items() {
-      const dirs = [];
-      const files = [];
+const showLimit = ref<number>(50)
+const columnWidth = ref<number>(280)
+const dragCounter = ref<number>(0)
+const width = ref<number>(window.innerWidth)
+const itemWeight = ref<number>(0)
 
-      this.req.items.forEach((item) => {
+const $showError = inject<IToastError>('$showError')!
+
+const clipboardStore = useClipboardStore();
+const authStore = useAuthStore();
+const fileStore = useFileStore();
+const layoutStore = useLayoutStore();
+
+const route = useRoute();
+const router = useRouter();
+
+const listing = ref<HTMLElement | null>(null)
+
+// ...mapStores(useClipboardStore),
+// ...mapState(useAuthStore, ["user"]),
+// ...mapState(useFileStore, ["selectedCount", "toggleMultiple"]),
+// ...mapState(useLayoutStore, ["show"]),
+// ...mapWritableState(useFileStore, [
+//   "req",
+//   "selected",
+//   "multiple",
+//   "loading",
+//   "reload",
+// ])
+
+
+const nameSorted = computed(() => (fileStore.req ? fileStore.req.sorting.by === "name" : false))
+
+const sizeSorted = computed(() => (fileStore.req ? fileStore.req.sorting.by === "size" : false))
+
+const modifiedSorted = computed(() => (fileStore.req ? fileStore.req.sorting.by === "modified" : false))
+
+const ascOrdered = computed(() => (fileStore.req ? fileStore.req.sorting.asc : false))
+
+const dirs = computed(() =>  items.value.dirs.slice(0, showLimit.value))
+
+const items = computed(() => {
+      const dirs: any[] = [];
+      const files: any[] = [];
+
+      fileStore.req?.items.forEach((item) => {
         if (item.isDir) {
           dirs.push(item);
         } else {
@@ -340,565 +341,616 @@ export default {
       });
 
       return { dirs, files };
-    },
-    dirs() {
-      return this.items.dirs.slice(0, this.showLimit);
-    },
-    files() {
-      let showLimit = this.showLimit - this.items.dirs.length;
+})
 
-      if (showLimit < 0) showLimit = 0;
+const files = computed(() => {
+      let _showLimit = showLimit.value - items.value.dirs.length;
 
-      return this.items.files.slice(0, showLimit);
-    },
-    nameIcon() {
-      if (this.nameSorted && !this.ascOrdered) {
+      if (_showLimit < 0) _showLimit = 0;
+
+      return items.value.files.slice(0, _showLimit);
+})
+
+const nameIcon = computed(() => {
+      if (nameSorted.value && !ascOrdered.value) {
         return "arrow_upward";
       }
 
       return "arrow_downward";
-    },
-    sizeIcon() {
-      if (this.sizeSorted && this.ascOrdered) {
+})
+
+const sizeIcon = computed(() => {
+      if (sizeSorted.value && ascOrdered.value) {
         return "arrow_downward";
       }
 
       return "arrow_upward";
-    },
-    modifiedIcon() {
-      if (this.modifiedSorted && this.ascOrdered) {
+})
+
+const modifiedIcon = computed(() => {
+      if (modifiedSorted.value && ascOrdered.value) {
         return "arrow_downward";
       }
 
       return "arrow_upward";
-    },
-    viewIcon() {
+})
+
+const viewIcon = computed(() => {
       const icons = {
         list: "view_module",
         mosaic: "grid_view",
         "mosaic gallery": "view_list",
       };
-      return icons[this.user.viewMode];
-    },
-    headerButtons() {
+      return (authStore.user === null ? icons['list']: icons[authStore.user.viewMode])
+})
+
+const headerButtons = computed(() => {
       return {
-        upload: this.user.perm.create,
-        download: this.user.perm.download,
-        shell: this.user.perm.execute && enableExec,
-        delete: this.selectedCount > 0 && this.user.perm.delete,
-        rename: this.selectedCount === 1 && this.user.perm.rename,
-        share: this.selectedCount === 1 && this.user.perm.share,
-        move: this.selectedCount > 0 && this.user.perm.rename,
-        copy: this.selectedCount > 0 && this.user.perm.create,
+        upload: authStore.user?.perm.create,
+        download: authStore.user?.perm.download,
+        shell: authStore.user?.perm.execute && enableExec,
+        delete: fileStore.selectedCount > 0 && authStore.user?.perm.delete,
+        rename: fileStore.selectedCount === 1 && authStore.user?.perm.rename,
+        share: fileStore.selectedCount === 1 && authStore.user?.perm.share,
+        move: fileStore.selectedCount > 0 && authStore.user?.perm.rename,
+        copy: fileStore.selectedCount > 0 && authStore.user?.perm.create,
       };
-    },
-    isMobile() {
-      return this.width <= 736;
-    },
-  },
-  watch: {
-    req: function () {
-      // Reset the show value
-      this.showLimit = 50;
+})
 
-      // Ensures that the listing is displayed
-      this.$nextTick(() => {
-        // How much every listing item affects the window height
-        this.setItemWeight();
+const isMobile = computed(() => {
+      return width.value <= 736;
+})
 
-        // Fill and fit the window with listing items
-        this.fillWindow(true);
-      });
-    },
-  },
-  mounted: function () {
+// @ts-ignore
+// TODO
+watch(fileStore.req, () => {
+  // Reset the show value
+  showLimit.value = 50;
+
+  // Ensures that the listing is displayed
+  // TODO: implement nextTick
+  // this.$nextTick(() => {
+  //   // How much every listing item affects the window height
+  //   setItemWeight();
+
+  //   // Fill and fit the window with listing items
+  //   fillWindow(true);
+  // });
+})
+
+
+onMounted(() => {
     // Check the columns size for the first time.
-    this.colunmsResize();
+    colunmsResize();
 
     // How much every listing item affects the window height
-    this.setItemWeight();
+    setItemWeight();
 
     // Fill and fit the window with listing items
-    this.fillWindow(true);
+    fillWindow(true);
 
     // Add the needed event listeners to the window and document.
-    window.addEventListener("keydown", this.keyEvent);
-    window.addEventListener("scroll", this.scrollEvent);
-    window.addEventListener("resize", this.windowsResize);
+    window.addEventListener("keydown", keyEvent);
+    window.addEventListener("scroll", scrollEvent);
+    window.addEventListener("resize", windowsResize);
 
-    if (!this.user.perm.create) return;
-    document.addEventListener("dragover", this.preventDefault);
-    document.addEventListener("dragenter", this.dragEnter);
-    document.addEventListener("dragleave", this.dragLeave);
-    document.addEventListener("drop", this.drop);
-  },
-  beforeUnmount() {
-    // Remove event listeners before destroying this page.
-    window.removeEventListener("keydown", this.keyEvent);
-    window.removeEventListener("scroll", this.scrollEvent);
-    window.removeEventListener("resize", this.windowsResize);
+    if (!authStore.user?.perm.create) return;
+    document.addEventListener("dragover", preventDefault);
+    document.addEventListener("dragenter", dragEnter);
+    document.addEventListener("dragleave", dragLeave);
+    document.addEventListener("drop", drop);
+})
 
-    if (this.user && !this.user.perm.create) return;
-    document.removeEventListener("dragover", this.preventDefault);
-    document.removeEventListener("dragenter", this.dragEnter);
-    document.removeEventListener("dragleave", this.dragLeave);
-    document.removeEventListener("drop", this.drop);
-  },
-  methods: {
-    ...mapActions(useAuthStore, ["updateUser"]),
-    ...mapActions(useLayoutStore, ["showHover", "closeHovers", "toggleShell"]),
-    base64: function (name) {
-      return Base64.encodeURI(name);
-    },
-    keyEvent(event) {
-      // No prompts are shown
-      if (this.show !== null) {
-        return;
-      }
+onBeforeUnmount(() => {
+  // Remove event listeners before destroying this page.
+  window.removeEventListener("keydown", keyEvent);
+  window.removeEventListener("scroll", scrollEvent);
+  window.removeEventListener("resize", windowsResize);
 
-      if (event.key === "Escape") {
-        // Reset files selection.
-        this.selected = [];
-      }
+  if (authStore.user && !authStore.user?.perm.create) return;
+  document.removeEventListener("dragover", preventDefault);
+  document.removeEventListener("dragenter", dragEnter);
+  document.removeEventListener("dragleave", dragLeave);
+  document.removeEventListener("drop", drop);
+})
 
-      if (event.key === "Delete") {
-        if (!this.user.perm.delete || this.selectedCount == 0) return;
+// ...mapActions(useAuthStore, ["updateUser"]),
+// ...mapActions(useLayoutStore, ["showHover", "closeHovers", "layoutStore.toggleShell"]),
 
-        // Show delete prompt.
-        this.showHover("delete");
-      }
 
-      if (event.key === "F2") {
-        if (!this.user.perm.rename || this.selectedCount !== 1) return;
+const base64 = (name: string) => Base64.encodeURI(name)
 
-        // Show rename prompt.
-        this.showHover("rename");
-      }
+const keyEvent = (event: KeyboardEvent) => {
+  // No prompts are shown
+  if (layoutStore.show !== null) {
+    return;
+  }
 
-      // Ctrl is pressed
-      if (!event.ctrlKey && !event.metaKey) {
-        return;
-      }
+  if (event.key === "Escape") {
+    // Reset files selection.
+    fileStore.selected = [];
+  }
 
-      let key = String.fromCharCode(event.which).toLowerCase();
+  if (event.key === "Delete") {
+    if (!authStore.user?.perm.delete || fileStore.selectedCount == 0) return;
 
-      switch (key) {
-        case "f":
-          event.preventDefault();
-          this.showHover("search");
-          break;
-        case "c":
-        case "x":
-          this.copyCut(event, key);
-          break;
-        case "v":
-          this.paste(event);
-          break;
-        case "a":
-          event.preventDefault();
-          for (let file of this.items.files) {
-            if (this.selected.indexOf(file.index) === -1) {
-              this.selected.push(file.index);
-            }
-          }
-          for (let dir of this.items.dirs) {
-            if (this.selected.indexOf(dir.index) === -1) {
-              this.selected.push(dir.index);
-            }
-          }
-          break;
-        case "s":
-          event.preventDefault();
-          document.getElementById("download-button").click();
-          break;
-      }
-    },
-    preventDefault(event) {
-      // Wrapper around prevent default.
+    // Show delete prompt.
+    layoutStore.showHover("delete");
+  }
+
+  if (event.key === "F2") {
+    if (!authStore.user?.perm.rename || fileStore.selectedCount !== 1) return;
+
+    // Show rename prompt.
+    layoutStore.showHover("rename");
+  }
+
+  // Ctrl is pressed
+  if (!event.ctrlKey && !event.metaKey) {
+    return;
+  }
+
+  let key = String.fromCharCode(event.which).toLowerCase();
+
+  switch (key) {
+    case "f":
       event.preventDefault();
-    },
-    copyCut(event, key) {
-      if (event.target.tagName.toLowerCase() === "input") {
-        return;
-      }
-
-      let items = [];
-
-      for (let i of this.selected) {
-        items.push({
-          from: this.req.items[i].url,
-          name: this.req.items[i].name,
-        });
-      }
-
-      if (items.length == 0) {
-        return;
-      }
-
-      this.clipboardStore.$patch({
-        key,
-        items,
-        path: this.$route.path,
-      });
-    },
-    paste(event) {
-      if (event.target.tagName.toLowerCase() === "input") {
-        return;
-      }
-
-      let items = [];
-
-      for (let item of this.clipboardStore.items) {
-        const from = item.from.endsWith("/")
-          ? item.from.slice(0, -1)
-          : item.from;
-        const to = this.$route.path + encodeURIComponent(item.name);
-        items.push({ from, to, name: item.name });
-      }
-
-      if (items.length === 0) {
-        return;
-      }
-
-      let action = (overwrite, rename) => {
-        api
-          .copy(items, overwrite, rename)
-          .then(() => {
-            this.reload = true;
-          })
-          .catch(this.$showError);
-      };
-
-      if (this.clipboardStore.key === "x") {
-        action = (overwrite, rename) => {
-          api
-            .move(items, overwrite, rename)
-            .then(() => {
-              this.clipboardStore.resetClipboard();
-              this.reload = true;
-            })
-            .catch(this.$showError);
-        };
-      }
-
-      if (this.clipboardStore.path == this.$route.path) {
-        action(false, true);
-
-        return;
-      }
-
-      let conflict = upload.checkConflict(items, this.req.items);
-
-      let overwrite = false;
-      let rename = false;
-
-      if (conflict) {
-        this.showHover({
-          prompt: "replace-rename",
-          confirm: (event, option) => {
-            overwrite = option == "overwrite";
-            rename = option == "rename";
-
-            event.preventDefault();
-            this.closeHovers();
-            action(overwrite, rename);
-          },
-        });
-
-        return;
-      }
-
-      action(overwrite, rename);
-    },
-    colunmsResize() {
-      // Update the columns size based on the window width.
-      let items = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
-      if (!items) return;
-
-      let columns = Math.floor(
-        document.querySelector("main")?.offsetWidth / this.columnWidth
-      );
-      if (columns === 0) columns = 1;
-      items.style.width = `calc(${100 / columns}% - 1em)`;
-    },
-    scrollEvent: throttle(function () {
-      const totalItems = this.req.numDirs + this.req.numFiles;
-
-      // All items are displayed
-      if (this.showLimit >= totalItems) return;
-
-      const currentPos = window.innerHeight + window.scrollY;
-
-      // Trigger at the 75% of the window height
-      const triggerPos = document.body.offsetHeight - window.innerHeight * 0.25;
-
-      if (currentPos > triggerPos) {
-        // Quantity of items needed to fill 2x of the window height
-        const showQuantity = Math.ceil(
-          (window.innerHeight * 2) / this.itemWeight
-        );
-
-        // Increase the number of displayed items
-        this.showLimit += showQuantity;
-      }
-    }, 100),
-    dragEnter() {
-      this.dragCounter++;
-
-      // When the user starts dragging an item, put every
-      // file on the listing with 50% opacity.
-      let items = document.getElementsByClassName("item");
-
-      Array.from(items).forEach((file) => {
-        file.style.opacity = 0.5;
-      });
-    },
-    dragLeave() {
-      this.dragCounter--;
-
-      if (this.dragCounter == 0) {
-        this.resetOpacity();
-      }
-    },
-    drop: async function (event) {
+      layoutStore.showHover("search");
+      break;
+    case "c":
+    case "x":
+      copyCut(event, key);
+      break;
+    case "v":
+      paste(event);
+      break;
+    case "a":
       event.preventDefault();
-      this.dragCounter = 0;
-      this.resetOpacity();
-
-      let dt = event.dataTransfer;
-      let el = event.target;
-
-      if (dt.files.length <= 0) return;
-
-      for (let i = 0; i < 5; i++) {
-        if (el !== null && !el.classList.contains("item")) {
-          el = el.parentElement;
+      for (let file of items.value.files) {
+        if (fileStore.selected.indexOf(file.index) === -1) {
+          fileStore.selected.push(file.index);
         }
       }
-
-      let files = await upload.scanFiles(dt);
-      let items = this.req.items;
-      let path = this.$route.path.endsWith("/")
-        ? this.$route.path
-        : this.$route.path + "/";
-
-      if (
-        el !== null &&
-        el.classList.contains("item") &&
-        el.dataset.dir === "true"
-      ) {
-        // Get url from ListingItem instance
-        path = el.__vue__.url;
-
-        try {
-          items = (await api.fetch(path)).items;
-        } catch (error) {
-          this.$showError(error);
+      for (let dir of items.value.dirs) {
+        if (fileStore.selected.indexOf(dir.index) === -1) {
+          fileStore.selected.push(dir.index);
         }
       }
+      break;
+    case "s":
+      event.preventDefault();
+      document.getElementById("download-button")?.click();
+      break;
+  }
+}
 
-      let conflict = upload.checkConflict(files, items);
+const preventDefault = (event: Event) => {
+  // Wrapper around prevent default.
+  event.preventDefault();
+}
 
-      if (conflict) {
-        this.showHover({
-          prompt: "replace",
-          action: (event) => {
-            event.preventDefault();
-            this.closeHovers();
-            upload.handleFiles(files, path, false);
-          },
-          confirm: (event) => {
-            event.preventDefault();
-            this.closeHovers();
-            upload.handleFiles(files, path, true);
-          },
-        });
+const copyCut = (event: Event, key: string ): void => {
+  if ((<HTMLElement>event.target).tagName?.toLowerCase() === "input") return;
 
-        return;
-      }
+  if(fileStore.req === null) return
 
-      upload.handleFiles(files, path);
-    },
-    uploadInput(event) {
-      this.closeHovers();
+  let items = [];
 
-      let files = event.currentTarget.files;
-      let folder_upload =
-        files[0].webkitRelativePath !== undefined &&
-        files[0].webkitRelativePath !== "";
+  for (let i of fileStore.selected) {
+    items.push({
+      from: fileStore.req.items[i].url,
+      name: fileStore.req.items[i].name
+    })
+  }
 
-      if (folder_upload) {
-        for (let i = 0; i < files.length; i++) {
-          let file = files[i];
-          files[i].fullPath = file.webkitRelativePath;
+  if (items.length == 0) {
+    return;
+  }
+
+  clipboardStore.$patch({
+    key,
+    items,
+    path: route.path,
+  });
+}
+
+const paste = (event: Event) => {
+  if ((<HTMLElement>event.target).tagName?.toLowerCase() === "input") return;
+
+  // TODO router location should it be
+  let items: any[] = [];
+
+  for (let item of clipboardStore.items) {
+    const from = item.from.endsWith("/")
+      ? item.from.slice(0, -1)
+      : item.from;
+    const to = route.path + encodeURIComponent(item.name);
+    items.push({ from, to, name: item.name });
+  }
+
+  if (items.length === 0) {
+    return;
+  }
+
+  let action = (overwrite: boolean, rename: boolean) => {
+    api
+      .copy(items, overwrite, rename)
+      .then(() => {
+        fileStore.reload = true;
+      })
+      .catch($showError);
+  };
+
+  if (clipboardStore.key === "x") {
+    action = (overwrite, rename) => {
+      api
+        .move(items, overwrite, rename)
+        .then(() => {
+          clipboardStore.resetClipboard();
+          fileStore.reload = true;
+        })
+        .catch($showError);
+    };
+  }
+
+  if (clipboardStore.path == route.path) {
+    action(false, true);
+
+    return;
+  }
+
+  // @ts-ignore
+  let conflict = upload.checkConflict(items, fileStore.req.items);
+
+  let overwrite = false;
+  let rename = false;
+
+  if (conflict) {
+    layoutStore.showHover({
+      prompt: "replace-rename",
+      confirm: (event: Event, option: string) => {
+        overwrite = option == "overwrite";
+        rename = option == "rename";
+
+        event.preventDefault();
+        layoutStore.closeHovers();
+        action(overwrite, rename);
+      },
+    });
+
+    return;
+  }
+
+  action(overwrite, rename);
+}
+
+const colunmsResize = () => {
+  // Update the columns size based on the window width.
+  let items = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
+  if (items === null) return;
+
+  let columns = Math.floor(
+    document.querySelector("main")?.offsetWidth ?? 0 / columnWidth.value
+  );
+  if (columns === 0) columns = 1;
+  // @ts-ignore never type error
+  items.style.width = `calc(${100 / columns}% - 1em)`;
+}
+
+const scrollEvent = throttle(() => {
+  const totalItems = (fileStore.req?.numDirs ?? 0) + (fileStore.req?.numFiles ?? 0);
+
+  // All items are displayed
+  if (showLimit.value >= totalItems) return;
+
+  const currentPos = window.innerHeight + window.scrollY;
+
+  // Trigger at the 75% of the window height
+  const triggerPos = document.body.offsetHeight - window.innerHeight * 0.25;
+
+  if (currentPos > triggerPos) {
+    // Quantity of items needed to fill 2x of the window height
+    const showQuantity = Math.ceil(
+      (window.innerHeight * 2) / itemWeight.value
+    );
+
+    // Increase the number of displayed items
+    showLimit.value += showQuantity;
+  }
+}, 100)
+
+const dragEnter = () => {
+  dragCounter.value++;
+
+  // When the user starts dragging an item, put every
+  // file on the listing with 50% opacity.
+  let items = document.getElementsByClassName("item");
+
+  // @ts-ignore
+  Array.from(items).forEach((file: HTMLElement) => {
+    file.style.opacity = "0.5";
+  });
+}
+
+const dragLeave = () => {
+  dragCounter.value--;
+
+  if (dragCounter.value == 0) {
+    resetOpacity();
+  }
+}
+
+const drop = async (event: DragEvent) => {
+  event.preventDefault();
+  dragCounter.value = 0;
+  resetOpacity();
+
+  let dt = event.dataTransfer;
+  let el: HTMLElement | null = <HTMLElement>event.target;
+
+  if ( fileStore.req === null || dt === null || (dt?.files.length ?? 0) <= 0) return;
+
+  for (let i = 0; i < 5; i++) {
+    if (el !== null && !el.classList.contains("item")) {
+      el = el.parentElement;
+    }
+  }
+
+  let files: UploadList = <UploadList>(await upload.scanFiles(dt));
+  let items = fileStore.req.items;
+  let path = route.path.endsWith("/")
+    ? route.path
+    : route.path + "/";
+
+  if (
+    el !== null &&
+    el.classList.contains("item") &&
+    el.dataset.dir === "true"
+  ) {
+    // Get url from ListingItem instance
+    // TODO: Don't know what is happening here
+    // @ts-ignore
+    path = el.__vue__.url;
+
+    try {
+      items = (await api.fetch(path)).items;
+    } catch (error: any) {
+      $showError(error);
+    }
+  }
+
+  let conflict = upload.checkConflict(files, items);
+
+  if (conflict) {
+    layoutStore.showHover({
+      prompt: "replace",
+      // TODO: don't know yet
+      // @ts-ignore 
+      action: (event: Event) => {
+        event.preventDefault();
+        layoutStore.closeHovers();
+        upload.handleFiles(files, path, false);
+      },
+      confirm: (event: Event) => {
+        event.preventDefault();
+        layoutStore.closeHovers();
+        upload.handleFiles(files, path, true);
+      },
+    });
+
+    return;
+  }
+
+  upload.handleFiles(files, path);
+}
+
+const uploadInput = (event: Event) => {
+  layoutStore.closeHovers();
+
+  let files = (event.currentTarget as HTMLInputElement)?.files;
+  if(files === null) return;
+
+  let folder_upload =
+    files[0].webkitRelativePath !== undefined &&
+    files[0].webkitRelativePath !== "";
+
+  if (folder_upload) {
+    for (let i = 0; i < files.length; i++) {
+      let file = files[i];
+      // @ts-ignore
+      files[i].fullPath = file.webkitRelativePath;
+    }
+  }
+
+  let path = route.path.endsWith("/")
+    ? route.path
+    : route.path + "/";
+  // @ts-ignore
+  let conflict = upload.checkConflict(files, fileStore.req.items);
+
+  if (conflict) {
+    layoutStore.showHover({
+      prompt: "replace",
+      // @ts-ignore
+      action: (event: Event) => {
+        event.preventDefault();
+        layoutStore.closeHovers();
+        // @ts-ignore
+        upload.handleFiles(files, path, false);
+      },
+      confirm: (event: Event) => {
+        event.preventDefault();
+        layoutStore.closeHovers();
+        // @ts-ignore
+        upload.handleFiles(files, path, true);
+      },
+    });
+
+    return;
+  }
+
+  // @ts-ignore
+  upload.handleFiles(files, path);
+}
+
+const resetOpacity = () => {
+  let items = document.getElementsByClassName("item");
+
+  // @ts-ignore
+  Array.from(items).forEach((file: HTMLElement) => {
+    file.style.opacity = "1";
+  });
+}
+
+const sort = async (by: string) => {
+  let asc = false;
+
+  if (by === "name") {
+    if (nameIcon.value === "arrow_upward") {
+      asc = true;
+    }
+  } else if (by === "size") {
+    if (sizeIcon.value === "arrow_upward") {
+      asc = true;
+    }
+  } else if (by === "modified") {
+    if (modifiedIcon.value === "arrow_upward") {
+      asc = true;
+    }
+  }
+
+  try {
+    if(authStore.user?.id) {
+      // @ts-ignore
+      await users.update({ id: authStore.user?.id, sorting: { by, asc } }, [
+        "sorting",
+      ]);
+    }
+  } catch (e: any) {
+    $showError(e);
+  }
+
+  fileStore.reload = true;
+}
+
+const openSearch = () => {
+  layoutStore.showHover("search");
+}
+
+const toggleMultipleSelection = () => {
+  fileStore.toggleMultiple();
+  layoutStore.closeHovers();
+}
+
+const windowsResize = throttle(() => {
+  colunmsResize();
+  width.value = window.innerWidth;
+
+  // Listing element is not displayed
+  if (listing.value == null) return;
+
+  // How much every listing item affects the window height
+  setItemWeight();
+
+  // Fill but not fit the window
+  fillWindow();
+}, 100)
+
+const download = () => {
+  if(fileStore.req === null) return
+
+  if (fileStore.selectedCount === 1 && !fileStore.req.items[fileStore.selected[0]].isDir) {
+    api.download(null, fileStore.req.items[fileStore.selected[0]].url);
+    return;
+  }
+
+  layoutStore.showHover({
+    prompt: "download",
+    confirm: (format: any) => {
+      layoutStore.closeHovers();
+
+      let files = [];
+
+      if (fileStore.selectedCount > 0 && fileStore.req !== null) {
+        for (let i of fileStore.selected) {
+          files.push(fileStore.req.items[i].url);
         }
-      }
-
-      let path = this.$route.path.endsWith("/")
-        ? this.$route.path
-        : this.$route.path + "/";
-      let conflict = upload.checkConflict(files, this.req.items);
-
-      if (conflict) {
-        this.showHover({
-          prompt: "replace",
-          action: (event) => {
-            event.preventDefault();
-            this.closeHovers();
-            upload.handleFiles(files, path, false);
-          },
-          confirm: (event) => {
-            event.preventDefault();
-            this.closeHovers();
-            upload.handleFiles(files, path, true);
-          },
-        });
-
-        return;
-      }
-
-      upload.handleFiles(files, path);
-    },
-    resetOpacity() {
-      let items = document.getElementsByClassName("item");
-
-      Array.from(items).forEach((file) => {
-        file.style.opacity = 1;
-      });
-    },
-    async sort(by) {
-      let asc = false;
-
-      if (by === "name") {
-        if (this.nameIcon === "arrow_upward") {
-          asc = true;
-        }
-      } else if (by === "size") {
-        if (this.sizeIcon === "arrow_upward") {
-          asc = true;
-        }
-      } else if (by === "modified") {
-        if (this.modifiedIcon === "arrow_upward") {
-          asc = true;
-        }
-      }
-
-      try {
-        await users.update({ id: this.user.id, sorting: { by, asc } }, [
-          "sorting",
-        ]);
-      } catch (e) {
-        this.$showError(e);
-      }
-
-      this.reload = true;
-    },
-    openSearch() {
-      this.showHover("search");
-    },
-    toggleMultipleSelection() {
-      this.toggleMultiple();
-      this.closeHovers();
-    },
-    windowsResize: throttle(function () {
-      this.colunmsResize();
-      this.width = window.innerWidth;
-
-      // Listing element is not displayed
-      if (this.$refs.listing == null) return;
-
-      // How much every listing item affects the window height
-      this.setItemWeight();
-
-      // Fill but not fit the window
-      this.fillWindow();
-    }, 100),
-    download() {
-      if (this.selectedCount === 1 && !this.req.items[this.selected[0]].isDir) {
-        api.download(null, this.req.items[this.selected[0]].url);
-        return;
-      }
-
-      this.showHover({
-        prompt: "download",
-        confirm: (format) => {
-          this.closeHovers();
-
-          let files = [];
-
-          if (this.selectedCount > 0) {
-            for (let i of this.selected) {
-              files.push(this.req.items[i].url);
-            }
-          } else {
-            files.push(this.$route.path);
-          }
-
-          api.download(format, ...files);
-        },
-      });
-    },
-    switchView: async function () {
-      this.closeHovers();
-
-      const modes = {
-        list: "mosaic",
-        mosaic: "mosaic gallery",
-        "mosaic gallery": "list",
-      };
-
-      const data = {
-        id: this.user.id,
-        viewMode: modes[this.user.viewMode] || "list",
-      };
-
-      users.update(data, ["viewMode"]).catch(this.$showError);
-
-      // Await ensures correct value for setItemWeight()
-      await this.updateUser(data);
-
-      this.setItemWeight();
-      this.fillWindow();
-    },
-    upload: function () {
-      if (
-        typeof window.DataTransferItem !== "undefined" &&
-        typeof DataTransferItem.prototype.webkitGetAsEntry !== "undefined"
-      ) {
-        this.showHover("upload");
       } else {
-        document.getElementById("upload-input").click();
+        files.push(route.path);
       }
+
+      api.download(format, ...files);
     },
-    setItemWeight() {
-      // Listing element is not displayed
-      if (this.$refs.listing == null) return;
+  });
+}
 
-      let itemQuantity = this.req.numDirs + this.req.numFiles;
-      if (itemQuantity > this.showLimit) itemQuantity = this.showLimit;
+const switchView = async () => {
+  layoutStore.closeHovers();
 
-      // How much every listing item affects the window height
-      this.itemWeight = this.$refs.listing.offsetHeight / itemQuantity;
-    },
-    fillWindow(fit = false) {
-      const totalItems = this.req.numDirs + this.req.numFiles;
+  const modes = {
+    list: "mosaic",
+    mosaic: "mosaic gallery",
+    "mosaic gallery": "list",
+  };
 
-      // More items are displayed than the total
-      if (this.showLimit >= totalItems && !fit) return;
+  const data = {
+    id: authStore.user?.id,
+    viewMode: modes[authStore.user?.viewMode ?? "list"] || "list",
+  };
 
-      const windowHeight = window.innerHeight;
+  // @ts-ignore
+  users.update(data, ["viewMode"]).catch($showError);
 
-      // Quantity of items needed to fill 2x of the window height
-      const showQuantity = Math.ceil(
-        (windowHeight + windowHeight * 2) / this.itemWeight
-      );
+  // @ts-ignore
+  authStore.updateUser(data);
 
-      // Less items to display than current
-      if (this.showLimit > showQuantity && !fit) return;
+  setItemWeight();
+  fillWindow();
+}
 
-      // Set the number of displayed items
-      this.showLimit = showQuantity > totalItems ? totalItems : showQuantity;
-    },
-  },
-};
+const uploadFunc = () => {
+  if (
+    typeof window.DataTransferItem !== "undefined" &&
+    typeof DataTransferItem.prototype.webkitGetAsEntry !== "undefined"
+  ) {
+    layoutStore.showHover("upload");
+  } else {
+    document.getElementById("upload-input")?.click();
+  }
+}
+
+const setItemWeight = () => {
+  // Listing element is not displayed
+  if (listing.value === null || fileStore.req === null) return;
+
+  let itemQuantity = fileStore.req.numDirs + fileStore.req.numFiles;
+  if (itemQuantity > showLimit.value) itemQuantity = showLimit.value;
+
+  // How much every listing item affects the window height
+  itemWeight.value = listing.value.offsetHeight / itemQuantity;
+}
+
+const fillWindow = (fit = false) => {
+  if (fileStore.req === null) return;
+
+  const totalItems = fileStore.req.numDirs + fileStore.req.numFiles;
+
+  // More items are displayed than the total
+  if (showLimit.value >= totalItems && !fit) return;
+
+  const windowHeight = window.innerHeight;
+
+  // Quantity of items needed to fill 2x of the window height
+  const showQuantity = Math.ceil(
+    (windowHeight + windowHeight * 2) / itemWeight.value
+  );
+
+  // Less items to display than current
+  if (showLimit.value > showQuantity && !fit) return;
+
+  // Set the number of displayed items
+  showLimit.value = showQuantity > totalItems ? totalItems : showQuantity;
+}
+
+
 </script>

@@ -11,6 +11,11 @@ interface IUser {
   hideDotfiles: boolean;
   singleClick: boolean;
   dateFormat: boolean;
+  viewMode: "list" | "mosaic" | "mosaic gallery";
+  sorting?: {
+    by: string,
+    asc: boolean
+  }
 }
 
 interface IUserForm {

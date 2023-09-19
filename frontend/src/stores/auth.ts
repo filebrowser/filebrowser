@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import dayjs from "dayjs";
 import i18n, { detectLocale, setLocale } from "@/i18n";
 import { cloneDeep } from "lodash-es";
 
