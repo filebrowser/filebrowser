@@ -18,12 +18,12 @@ interface Resource extends ResourceBase {
   sorting: Sorting;
   hash?: string;
   token?: string;
-}
-
-interface ResourceItem extends ResourceBase {
   index?: number;
   subtitles?: string[];
 }
+
+// interface ResourceItem extends ResourceBase {
+// }
 
 type ResourceType =
   | "video"
