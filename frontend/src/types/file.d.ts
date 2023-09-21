@@ -20,6 +20,7 @@ interface Resource extends ResourceBase {
   token?: string;
   index?: number;
   subtitles?: string[];
+  content?: string;
 }
 
 // interface ResourceItem extends ResourceBase {

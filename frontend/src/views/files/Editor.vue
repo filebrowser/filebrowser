@@ -1,149 +1,113 @@
 <template>
   <div id="editor-container">
     <header-bar>
-      <action icon="close" :label="$t('buttons.close')" @action="close()" />
-      <title>{{ req.name }}</title>
+      <action icon="close" :label="t('buttons.close')" @action="close()" />
+      <title>{{ fileStore.req?.name ?? "" }}</title>
 
       <action
-        v-if="user.perm.modify"
+        v-if="authStore.user?.perm.modify"
         id="save-button"
         icon="save"
-        :label="$t('buttons.save')"
+        :label="t('buttons.save')"
         @action="save()"
       />
     </header-bar>
 
-    <breadcrumbs base="/files" noLink />
+    <Breadcrumbs base="/files" noLink />
 
     <form id="editor"></form>
   </div>
 </template>
 
-<script>
-import { mapActions, mapState } from "pinia";
+<script setup lang="ts">
 import { files as api } from "@/api";
 import { theme } from "@/utils/constants";
 import buttons from "@/utils/buttons";
 import url from "@/utils/url";
-
-import { version as ace_version } from "ace-builds";
+import { Ace, version as ace_version } from "ace-builds";
+// @ts-ignore
 import ace from "ace-builds/src-min-noconflict/ace.js";
+// @ts-ignore
 import modelist from "ace-builds/src-min-noconflict/ext-modelist.js";
-
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";
+import { inject, onBeforeUnmount, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 
-export default {
-  name: "editor",
-  components: {
-    HeaderBar,
-    Action,
-    Breadcrumbs,
-  },
-  data: function () {
-    return {};
-  },
-  inject: ["$showError"],
-  computed: {
-    ...mapState(useAuthStore, ["user"]),
-    ...mapState(useFileStore, ["req"]),
-    breadcrumbs() {
-      let parts = this.$route.path.split("/");
+const $showError = inject<IToastError>("$showError")!;
 
-      if (parts[0] === "") {
-        parts.shift();
-      }
+const fileStore = useFileStore();
+const authStore = useAuthStore();
 
-      if (parts[parts.length - 1] === "") {
-        parts.pop();
-      }
+const { t } = useI18n();
 
-      let breadcrumbs = [];
+const route = useRoute();
+const router = useRouter();
 
-      for (let i = 0; i < parts.length; i++) {
-        breadcrumbs.push({ name: decodeURIComponent(parts[i]) });
-      }
+const editor = ref<Ace.Editor | null>(null);
 
-      breadcrumbs.shift();
+onMounted(() => {
+  window.addEventListener("keydown", keyEvent);
 
-      if (breadcrumbs.length > 3) {
-        while (breadcrumbs.length !== 4) {
-          breadcrumbs.shift();
-        }
+  const fileContent = fileStore.req?.content || "";
 
-        breadcrumbs[0].name = "...";
-      }
+  ace.config.set(
+    "basePath",
+    `https://cdn.jsdelivr.net/npm/ace-builds@${ace_version}/src-min-noconflict/`
+  );
 
-      return breadcrumbs;
-    },
-  },
-  created() {
-    window.addEventListener("keydown", this.keyEvent);
-  },
-  beforeUnmount() {
-    window.removeEventListener("keydown", this.keyEvent);
-    this.editor.destroy();
-  },
-  mounted: function () {
-    const fileContent = this.req.content || "";
+  editor.value = ace.edit("editor", {
+    value: fileContent,
+    showPrintMargin: false,
+    readOnly: fileStore.req?.type === "textImmutable",
+    theme: "ace/theme/chrome",
+    mode: modelist.getModeForPath(fileStore.req?.name).mode,
+    wrap: true,
+  });
 
-    ace.config.set(
-      "basePath",
-      `https://cdn.jsdelivr.net/npm/ace-builds@${ace_version}/src-min-noconflict/`
-    );
+  if (theme == "dark") {
+    editor.value?.setTheme("ace/theme/twilight");
+  }
+});
 
-    this.editor = ace.edit("editor", {
-      value: fileContent,
-      showPrintMargin: false,
-      readOnly: this.req.type === "textImmutable",
-      theme: "ace/theme/chrome",
-      mode: modelist.getModeForPath(this.req.name).mode,
-      wrap: true,
-    });
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", keyEvent);
+  editor.value?.destroy();
+});
 
-    if (theme == "dark") {
-      this.editor.setTheme("ace/theme/twilight");
-    }
-  },
-  methods: {
-    ...mapActions(useFileStore, ["updateRequest"]),
-    back() {
-      let uri = url.removeLastDir(this.$route.path) + "/";
-      this.$router.push({ path: uri });
-    },
-    keyEvent(event) {
-      if (!event.ctrlKey && !event.metaKey) {
-        return;
-      }
+const keyEvent = (event: KeyboardEvent) => {
+  if (!event.ctrlKey && !event.metaKey) {
+    return;
+  }
 
-      if (String.fromCharCode(event.which).toLowerCase() !== "s") {
-        return;
-      }
+  if (String.fromCharCode(event.which).toLowerCase() !== "s") {
+    return;
+  }
 
-      event.preventDefault();
-      this.save();
-    },
-    async save() {
-      const button = "save";
-      buttons.loading("save");
+  event.preventDefault();
+  save();
+};
 
-      try {
-        await api.put(this.$route.path, this.editor.getValue());
-        buttons.success(button);
-      } catch (e) {
-        buttons.done(button);
-        this.$showError(e);
-      }
-    },
-    close() {
-      this.updateRequest({});
+const save = async () => {
+  const button = "save";
+  buttons.loading("save");
 
-      let uri = url.removeLastDir(this.$route.path) + "/";
-      this.$router.push({ path: uri });
-    },
-  },
+  try {
+    await api.put(route.path, editor.value?.getValue());
+    buttons.success(button);
+  } catch (e: any) {
+    buttons.done(button);
+    $showError(e);
+  }
+};
+const close = () => {
+  fileStore.updateRequest(null);
+
+  let uri = url.removeLastDir(route.path) + "/";
+  router.push({ path: uri });
 };
 </script>
