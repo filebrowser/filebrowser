@@ -764,7 +764,7 @@ const uploadInput = (event: Event) => {
   let files = (event.currentTarget as HTMLInputElement)?.files;
   if (files === null) return;
 
-  let folder_upload = !files[0].webkitRelativePath;
+  let folder_upload = !!files[0].webkitRelativePath;
 
   const uploadFiles: UploadList = [];
   for (let i = 0; i < files.length; i++) {
