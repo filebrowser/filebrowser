@@ -1,7 +1,10 @@
 import { useUploadStore } from "@/stores/upload";
 import url from "@/utils/url";
 
-export function checkConflict(files: UploadList, dest: Resource[]): boolean {
+export function checkConflict(
+  files: UploadList,
+  dest: ResourceItem[]
+): boolean {
   if (typeof dest === "undefined" || dest === null) {
     dest = [];
   }

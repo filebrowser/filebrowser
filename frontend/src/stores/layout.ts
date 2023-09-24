@@ -8,7 +8,7 @@ export const useLayoutStore = defineStore("layout", {
     loading: boolean;
     show: string | null | boolean;
     showConfirm: any;
-    showAction: boolean | null;
+    showAction: PopupAction | null;
     showShell: boolean | null;
   } => ({
     loading: false,
@@ -25,7 +25,7 @@ export const useLayoutStore = defineStore("layout", {
     toggleShell() {
       this.showShell = !this.showShell;
     },
-    showHover(value: LayoutValue | string) {
+    showHover(value: PopupProps | string) {
       if (typeof value !== "object") {
         this.show = value;
         return;

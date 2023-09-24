@@ -11,12 +11,11 @@ interface IUser {
   hideDotfiles: boolean;
   singleClick: boolean;
   dateFormat: boolean;
-  viewMode: "list" | "mosaic" | "mosaic gallery";
-  sorting?: {
-    by: string,
-    asc: boolean
-  }
+  viewMode: ViewModeType;
+  sorting?: Sorting;
 }
+
+type ViewModeType = "list" | "mosaic" | "mosaic gallery";
 
 interface IUserForm {
   id?: number;
@@ -48,7 +47,7 @@ interface Permissions {
   upload: boolean;
 }
 
-interface UserSorting {
+interface Sorting {
   by: string;
   asc: boolean;
 }

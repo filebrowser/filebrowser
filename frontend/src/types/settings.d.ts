@@ -13,7 +13,7 @@ interface ISettings {
 interface SettingsDefaults {
   scope: string;
   locale: string;
-  viewMode: string;
+  viewMode: ViewModeType;
   singleClick: boolean;
   sorting: Sorting;
   perm: Permissions;

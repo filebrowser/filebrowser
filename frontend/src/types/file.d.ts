@@ -23,8 +23,10 @@ interface Resource extends ResourceBase {
   content?: string;
 }
 
-// interface ResourceItem extends ResourceBase {
-// }
+interface ResourceItem extends ResourceBase {
+  index?: number;
+  subtitles?: string[];
+}
 
 type ResourceType =
   | "video"

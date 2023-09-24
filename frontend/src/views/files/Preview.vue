@@ -164,7 +164,7 @@ const mediaTypes: ResourceType[] = ["image", "video", "audio", "blob"];
 
 const previousLink = ref<string>("");
 const nextLink = ref<string>("");
-const listing = ref<null | Resource[]>(null);
+const listing = ref<ResourceItem[] | null>(null);
 const name = ref<string>("");
 const fullSize = ref<boolean>(false);
 const showNav = ref<boolean>(true);
@@ -318,7 +318,7 @@ const updatePreview = async () => {
   }
 };
 
-const prefetchUrl = (item: Resource) => {
+const prefetchUrl = (item: ResourceItem) => {
   if (item.type !== "image") {
     return "";
   }

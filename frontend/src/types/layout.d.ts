@@ -1,5 +1,7 @@
-interface LayoutValue {
+interface PopupProps {
   prompt: string;
   confirm: any;
-  action?: boolean;
+  action?: PopupAction;
 }
+
+type PopupAction = (e: Event) => void;

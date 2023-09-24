@@ -19,10 +19,10 @@ interface UploadItem {
 }
 
 interface UploadEntry {
-  fullPath: string;
-  isDir: boolean;
   name: string;
   size: number;
+  isDir: boolean;
+  fullPath?: string;
   file?: File;
 }
 

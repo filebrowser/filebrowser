@@ -303,6 +303,7 @@ import {
 } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
+import { storeToRefs } from "pinia";
 
 const showLimit = ref<number>(50);
 const columnWidth = ref<number>(280);
@@ -316,6 +317,8 @@ const clipboardStore = useClipboardStore();
 const authStore = useAuthStore();
 const fileStore = useFileStore();
 const layoutStore = useLayoutStore();
+
+const { req } = storeToRefs(fileStore);
 
 const route = useRoute();
 
@@ -428,9 +431,7 @@ const isMobile = computed(() => {
   return width.value <= 736;
 });
 
-// @ts-ignore
-// TODO
-watch(fileStore.req, () => {
+watch(req, () => {
   // Reset the show value
   showLimit.value = 50;
 
@@ -725,7 +726,6 @@ const drop = async (event: DragEvent) => {
   ) {
     // Get url from ListingItem instance
     // TODO: Don't know what is happening here
-    // @ts-ignore
     path = el.__vue__.url;
 
     try {
@@ -740,8 +740,6 @@ const drop = async (event: DragEvent) => {
   if (conflict) {
     layoutStore.showHover({
       prompt: "replace",
-      // TODO: don't know yet
-      // @ts-ignore
       action: (event: Event) => {
         event.preventDefault();
         layoutStore.closeHovers();
@@ -766,53 +764,50 @@ const uploadInput = (event: Event) => {
   let files = (event.currentTarget as HTMLInputElement)?.files;
   if (files === null) return;
 
-  let folder_upload =
-    files[0].webkitRelativePath !== undefined &&
-    files[0].webkitRelativePath !== "";
+  let folder_upload = !files[0].webkitRelativePath;
 
-  if (folder_upload) {
-    for (let i = 0; i < files.length; i++) {
-      let file = files[i];
-      // @ts-ignore
-      files[i].fullPath = file.webkitRelativePath;
-    }
+  const uploadFiles: UploadList = [];
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const fullPath = folder_upload ? file.webkitRelativePath : undefined;
+    uploadFiles.push({
+      file,
+      name: file.name,
+      size: file.size,
+      isDir: false,
+      fullPath,
+    });
   }
 
   let path = route.path.endsWith("/") ? route.path : route.path + "/";
-  // @ts-ignore
-  let conflict = upload.checkConflict(files, fileStore.req.items);
+  let conflict = upload.checkConflict(uploadFiles, fileStore.req!.items);
 
   if (conflict) {
     layoutStore.showHover({
       prompt: "replace",
-      // @ts-ignore
       action: (event: Event) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        // @ts-ignore
-        upload.handleFiles(files, path, false);
+        upload.handleFiles(uploadFiles, path, false);
       },
       confirm: (event: Event) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        // @ts-ignore
-        upload.handleFiles(files, path, true);
+        upload.handleFiles(uploadFiles, path, true);
       },
     });
 
     return;
   }
 
-  // @ts-ignore
-  upload.handleFiles(files, path);
+  upload.handleFiles(uploadFiles, path);
 };
 
 const resetOpacity = () => {
   let items = document.getElementsByClassName("item");
 
-  // @ts-ignore
-  Array.from(items).forEach((file: HTMLElement) => {
-    file.style.opacity = "1";
+  Array.from(items).forEach((file: Element) => {
+    (file as HTMLElement).style.opacity = "1";
   });
 };
 
