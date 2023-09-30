@@ -67,26 +67,14 @@
           :autoplay="autoPlay"
           @play="autoPlay = true"
         ></audio>
-        <video
+        <VideoPlayer
           v-else-if="fileStore.req?.type == 'video'"
           ref="player"
-          :src="raw"
-          controls
-          :autoplay="autoPlay"
-          @play="autoPlay = true"
+          :source="raw"
+          :subtitles="subtitles"
+          :options="videoOptions"
         >
-          <track
-            kind="captions"
-            v-for="(sub, index) in subtitles"
-            :key="index"
-            :src="sub"
-            :label="'Subtitle ' + index"
-            :default="index === 0"
-          />
-          Sorry, your browser doesn't support embedded videos, but don't worry,
-          you can <a :href="downloadUrl">download it</a>
-          and watch it with your favorite video player!
-        </video>
+        </VideoPlayer>
         <object
           v-else-if="fileStore.req?.extension.toLowerCase() == '.pdf'"
           class="pdf"
@@ -159,6 +147,7 @@ import Action from "@/components/header/Action.vue";
 import ExtendedImage from "@/components/files/ExtendedImage.vue";
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import VideoPlayer from "@/components/files/VideoPlayer.vue";
 
 const mediaTypes: ResourceType[] = ["image", "video", "audio", "blob"];
 
@@ -208,6 +197,10 @@ const subtitles = computed(() => {
     return api.getSubtitlesURL(fileStore.req);
   }
   return [];
+});
+
+const videoOptions = computed(() => {
+  return { autoplay: autoPlay.value };
 });
 
 watch(route, () => {
