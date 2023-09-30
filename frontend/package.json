@@ -10,7 +10,8 @@
     "typecheck": "vue-tsc -p ./tsconfig.json --noEmit",
     "lint": "npm run typecheck && eslint --ext .vue,.ts src/",
     "lint:fix": "eslint --ext .vue,.ts --fix src/",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "playwright test"
   },
   "dependencies": {
     "@vue/eslint-config-typescript": "^11.0.3",
@@ -38,6 +39,7 @@
   },
   "devDependencies": {
     "@intlify/unplugin-vue-i18n": "^1.2.0",
+    "@playwright/test": "^1.38.1",
     "@types/lodash-es": "^4.17.9",
     "@types/node": "^20.6.0",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
