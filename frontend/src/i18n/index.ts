@@ -137,7 +137,9 @@ export const i18n = createI18n({
 });
 
 export const isRtl = (locale?: string) => {
-  return rtlLanguages.includes(locale || i18n.global.locale);
+  // see below
+  // @ts-ignore
+  return rtlLanguages.includes(locale || i18n.global.locale.value);
 };
 
 export function setLocale(locale: string) {
