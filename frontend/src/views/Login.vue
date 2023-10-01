@@ -42,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import { StatusError } from "@/api/utils";
 import * as auth from "@/utils/auth";
 import {
   name,
@@ -50,7 +51,7 @@ import {
   recaptchaKey,
   signup,
 } from "@/utils/constants";
-import { onMounted, ref } from "vue";
+import { inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
@@ -66,6 +67,8 @@ const router = useRouter();
 const { t } = useI18n({});
 // Define functions
 const toggleMode = () => (createMode.value = !createMode.value);
+
+const $showError = inject<IToastError>("$showError")!;
 
 const submit = async (event: Event) => {
   event.preventDefault();
@@ -98,11 +101,15 @@ const submit = async (event: Event) => {
     await auth.login(username.value, password.value, captcha);
     router.push({ path: redirect });
   } catch (e: any) {
-    console.error(e);
-    if (e.message == 409) {
-      error.value = t("login.usernameTaken");
-    } else {
-      error.value = t("login.wrongCredentials");
+    // console.error(e);
+    if (e instanceof StatusError) {
+      if (e.status === 409) {
+        error.value = t("login.usernameTaken");
+      } else if (e.status === 403) {
+        error.value = t("login.wrongCredentials");
+      } else {
+        $showError(e);
+      }
     }
   }
 };

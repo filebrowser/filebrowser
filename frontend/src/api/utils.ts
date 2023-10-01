@@ -42,7 +42,11 @@ export async function fetchURL(
   }
 
   if (res.status < 200 || res.status > 299) {
-    const error = new StatusError(await res.text(), res.status);
+    const body = await res.text();
+    const error = new StatusError(
+      body || `${res.status} ${res.statusText}`,
+      res.status
+    );
 
     if (auth && res.status == 401) {
       logout();

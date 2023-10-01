@@ -48,7 +48,10 @@ export async function login(
   if (res.status === 200) {
     parseToken(body);
   } else {
-    throw new StatusError(body, res.status);
+    throw new StatusError(
+      body || `${res.status} ${res.statusText}`,
+      res.status
+    );
   }
 }
 
@@ -65,7 +68,10 @@ export async function renew(jwt: string) {
   if (res.status === 200) {
     parseToken(body);
   } else {
-    throw new StatusError(body, res.status);
+    throw new StatusError(
+      body || `${res.status} ${res.statusText}`,
+      res.status
+    );
   }
 }
 
@@ -81,7 +87,7 @@ export async function signup(username: string, password: string) {
   });
 
   if (res.status !== 200) {
-    throw new StatusError(res.statusText, res.status);
+    throw new StatusError(`${res.status} ${res.statusText}`, res.status);
   }
 }
 
