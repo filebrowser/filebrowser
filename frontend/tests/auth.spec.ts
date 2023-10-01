@@ -1,4 +1,15 @@
-import { test, expect } from "@playwright/test";
+import { test as base, expect } from "@playwright/test";
+import { AuthPage } from "./auth-page";
+
+const test = base.extend<{ authPage: AuthPage }>({
+  authPage: async ({ page }, use) => {
+    const authPage = new AuthPage(page);
+    // await authPage.goto();
+    // await authPage.loginAs();
+    await use(authPage);
+    // await authPage.logout();
+  },
+});
 
 test("redirect to login", async ({ page }) => {
   await page.goto("/");
@@ -8,28 +19,25 @@ test("redirect to login", async ({ page }) => {
   await expect(page).toHaveURL(/\/login\?redirect=\/files\//);
 });
 
-test("login and logout", async ({ page, context }) => {
-  await page.goto("/login");
-  await expect(page).toHaveTitle("Login - File Browser");
+test("login and logout", async ({ authPage, page, context }) => {
+  await authPage.goto();
+  await expect(page).toHaveTitle(/Login - File Browser$/);
 
-  await page.getByRole("button", { name: "Login" }).click();
-  await expect(
-    page.getByText("Wrong credentials", { exact: true })
-  ).toBeVisible();
+  await authPage.loginAs("fake", "fake");
+  await expect(authPage.wrongCredentials).toBeVisible();
 
-  await page.getByPlaceholder("Username").fill("admin");
-  await page.getByPlaceholder("Password").fill("admin");
-  await page.getByRole("button", { name: "Login" }).click();
+  await authPage.loginAs();
+  await expect(authPage.wrongCredentials).toBeHidden();
   await page.waitForURL("**/files/", { timeout: 5000 });
-  await expect(page).toHaveTitle(/.*Files - File Browser/);
+  await expect(page).toHaveTitle(/.*Files - File Browser$/);
 
   let cookies = await context.cookies();
-  await expect(cookies.find((c) => c.name == "auth")?.value).toBeDefined();
+  expect(cookies.find((c) => c.name == "auth")?.value).toBeDefined();
 
-  await page.getByRole("button", { name: "Logout" }).click();
+  await authPage.logout();
   await page.waitForURL("**/login", { timeout: 5000 });
-  await expect(page).toHaveTitle("Login - File Browser");
+  await expect(page).toHaveTitle(/Login - File Browser$/);
 
   cookies = await context.cookies();
-  await expect(cookies.find((c) => c.name == "auth")?.value).toBeUndefined();
+  expect(cookies.find((c) => c.name == "auth")?.value).toBeUndefined();
 });
