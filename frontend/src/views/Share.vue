@@ -207,7 +207,7 @@ const hash = ref<string>("");
 const token = ref<string>("");
 const clip = ref<any>(null);
 
-const $showSuccess = inject<IToastSuccess>("$showError")!;
+const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
 
 const { t } = useI18n({});
 
