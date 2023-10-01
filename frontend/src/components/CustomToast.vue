@@ -33,9 +33,15 @@ export default {
   text-align: center;
   height: 40px;
   padding: 0 10px;
+  margin-left: 20px;
   border-radius: 5px;
   color: white;
   cursor: pointer;
   border: thin solid currentColor;
+}
+
+html[dir="rtl"] .action {
+  margin-left: initial;
+  margin-right: 20px;
 }
 </style>
