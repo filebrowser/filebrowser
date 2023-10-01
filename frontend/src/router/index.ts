@@ -12,7 +12,7 @@ import Shares from "@/views/settings/Shares.vue";
 import Errors from "@/views/Errors.vue";
 import { useAuthStore } from "@/stores/auth";
 import { baseURL, name } from "@/utils/constants";
-import { i18n, isRtl, rtlLanguages } from "@/i18n";
+import i18n from "@/i18n";
 import { recaptcha, loginPage } from "@/utils/constants";
 import { login, validateLogin } from "@/utils/auth";
 
@@ -177,13 +177,7 @@ const router = createRouter({
 });
 
 router.beforeResolve(async (to, from, next) => {
-  let title;
-  try {
-    title = i18n.global.t(titles[to.name as keyof typeof titles]);
-  } catch (error) {
-    console.error(error);
-  }
-  // const title = titles[to.name];
+  const title = i18n.global.t(titles[to.name as keyof typeof titles]);
   document.title = title + " - " + name;
 
   const authStore = useAuthStore();

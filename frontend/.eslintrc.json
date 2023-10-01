@@ -11,8 +11,12 @@
   ],
   "rules": {
     "vue/multi-word-component-names": "off",
-    "vue/no-reserved-component-names": "warn",
-    "vue/no-mutating-props": "warn"
+    "vue/no-mutating-props": [
+      "error",
+      {
+        "shallowOnly": true
+      }
+    ]
     // no-undef is already included in
     // @vue/eslint-config-typescript
   },

@@ -16,6 +16,7 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   (e: "update:theme", val: string | null): void;
 }>();
 

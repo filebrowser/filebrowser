@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import i18n, { detectLocale, setLocale } from "@/i18n";
+import { detectLocale, setLocale } from "@/i18n";
 import { cloneDeep } from "lodash-es";
 
 export const useAuthStore = defineStore("auth", {

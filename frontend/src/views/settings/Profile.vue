@@ -82,7 +82,6 @@ import { users as api } from "@/api";
 import Languages from "@/components/settings/Languages.vue";
 import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import i18n, { rtlLanguages } from "@/i18n";
 
 const layoutStore = useLayoutStore();
 const authStore = useAuthStore();
