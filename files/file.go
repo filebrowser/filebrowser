@@ -14,6 +14,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -307,8 +308,23 @@ func (i *FileInfo) detectSubtitles() {
 	}
 
 	base := strings.TrimSuffix(i.Name, ext)
+	subDirsRegex := regexp.MustCompile("(?i)^sub(s|titles)$")
 	for _, f := range dir {
-		if !f.IsDir() && strings.HasPrefix(f.Name(), base) && strings.HasSuffix(f.Name(), ".vtt") {
+		// load all .vtt/.srt subtitles from subs directories
+		if f.IsDir() && subDirsRegex.MatchString(f.Name()) {
+			subsDir := path.Join(parentDir, f.Name())
+			var err error
+			dir, err = afero.ReadDir(i.Fs, subsDir)
+			if err == nil {
+				for _, f := range dir {
+					if !f.IsDir() && (strings.HasSuffix(f.Name(), ".vtt") ||
+						strings.HasSuffix(f.Name(), ".srt")) {
+						i.Subtitles = append(i.Subtitles, path.Join(subsDir, f.Name()))
+					}
+				}
+			}
+		} else if !f.IsDir() && strings.HasPrefix(f.Name(), base) &&
+			(strings.HasSuffix(f.Name(), ".vtt") || strings.HasSuffix(f.Name(), ".srt")) {
 			i.Subtitles = append(i.Subtitles, path.Join(parentDir, f.Name()))
 		}
 	}
