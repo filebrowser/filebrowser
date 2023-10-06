@@ -24,11 +24,10 @@ import { files as api } from "@/api";
 import { theme } from "@/utils/constants";
 import buttons from "@/utils/buttons";
 import url from "@/utils/url";
-import { Ace, version as ace_version } from "ace-builds";
-// @ts-ignore
-import ace from "ace-builds/src-min-noconflict/ace.js";
-// @ts-ignore
-import modelist from "ace-builds/src-min-noconflict/ext-modelist.js";
+import ace, { Ace, version as ace_version } from "ace-builds";
+import modelist from "ace-builds/src-noconflict/ext-modelist";
+import "ace-builds/src-noconflict/ext-language_tools";
+
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
@@ -67,10 +66,13 @@ onMounted(() => {
     theme: "ace/theme/chrome",
     mode: modelist.getModeForPath(fileStore.req?.name).mode,
     wrap: true,
+    enableBasicAutocompletion: true,
+    enableLiveAutocompletion: true,
+    enableSnippets: true,
   });
 
-  if (theme == "dark") {
-    editor.value?.setTheme("ace/theme/twilight");
+  if (theme === "dark") {
+    editor.value!.setTheme("ace/theme/twilight");
   }
 });
 
