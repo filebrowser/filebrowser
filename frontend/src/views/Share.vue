@@ -241,7 +241,7 @@ const humanSize = computed(() => {
   if (req.value) {
     return req.value.isDir
       ? req.value.items.length
-      : filesize(req.value.size ?? 0);
+      : filesize(req.value.size ?? 0, { base: 2 });
   } else {
     return "";
   }

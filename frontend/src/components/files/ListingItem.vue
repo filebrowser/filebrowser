@@ -105,7 +105,9 @@ export default {
     ...mapActions(useFileStore, ["removeSelected"]),
     ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
     humanSize: function () {
-      return this.type == "invalid_link" ? "invalid link" : filesize(this.size);
+      return this.type == "invalid_link"
+        ? "invalid link"
+        : filesize(this.size, { base: 2 });
     },
     humanTime: function () {
       if (this.readOnly == undefined && this.user.dateFormat) {

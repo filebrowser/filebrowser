@@ -99,7 +99,7 @@ export default {
     ]),
     humanSize: function () {
       if (this.selectedCount === 0 || !this.isListing) {
-        return filesize(this.req.size);
+        return filesize(this.req.size, { base: 2 });
       }
 
       let sum = 0;
@@ -108,7 +108,7 @@ export default {
         sum += this.req.items[selected].size;
       }
 
-      return filesize(sum);
+      return filesize(sum, { base: 2 });
     },
     humanTime: function () {
       if (this.selectedCount === 0) {
