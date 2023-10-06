@@ -21,7 +21,6 @@
 
 <script setup lang="ts">
 import { files as api } from "@/api";
-import { theme } from "@/utils/constants";
 import buttons from "@/utils/buttons";
 import url from "@/utils/url";
 import ace, { Ace, version as ace_version } from "ace-builds";
@@ -36,6 +35,7 @@ import { useFileStore } from "@/stores/file";
 import { inject, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import { getTheme } from "@/utils/theme";
 
 const $showError = inject<IToastError>("$showError")!;
 
@@ -71,7 +71,7 @@ onMounted(() => {
     enableSnippets: true,
   });
 
-  if (theme === "dark") {
+  if (getTheme() === "dark") {
     editor.value!.setTheme("ace/theme/twilight");
   }
 });
