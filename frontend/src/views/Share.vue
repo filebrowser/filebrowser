@@ -181,7 +181,7 @@
 
 <script setup lang="ts">
 import { pub as api } from "@/api";
-import { filesize } from "filesize";
+import { filesize } from "@/utils";
 import dayjs from "dayjs";
 import { Base64 } from "js-base64";
 
@@ -241,7 +241,7 @@ const humanSize = computed(() => {
   if (req.value) {
     return req.value.isDir
       ? req.value.items.length
-      : filesize(req.value.size ?? 0, { base: 2 });
+      : filesize(req.value.size ?? 0);
   } else {
     return "";
   }

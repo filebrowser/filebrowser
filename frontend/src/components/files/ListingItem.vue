@@ -41,7 +41,7 @@ import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
 import { enableThumbs } from "@/utils/constants";
-import { filesize } from "filesize";
+import { filesize } from "@/utils";
 import dayjs from "dayjs";
 import { files as api } from "@/api";
 import * as upload from "@/utils/upload";
@@ -105,9 +105,7 @@ export default {
     ...mapActions(useFileStore, ["removeSelected"]),
     ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
     humanSize: function () {
-      return this.type == "invalid_link"
-        ? "invalid link"
-        : filesize(this.size, { base: 2 });
+      return this.type == "invalid_link" ? "invalid link" : filesize(this.size);
     },
     humanTime: function () {
       if (this.readOnly == undefined && this.user.dateFormat) {

@@ -83,7 +83,7 @@
 import { mapActions, mapState } from "pinia";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
-import { filesize } from "filesize";
+import { filesize } from "@/utils";
 import dayjs from "dayjs";
 import { files as api } from "@/api";
 
@@ -99,7 +99,7 @@ export default {
     ]),
     humanSize: function () {
       if (this.selectedCount === 0 || !this.isListing) {
-        return filesize(this.req.size, { base: 2 });
+        return filesize(this.req.size);
       }
 
       let sum = 0;
@@ -108,7 +108,7 @@ export default {
         sum += this.req.items[selected].size;
       }
 
-      return filesize(sum, { base: 2 });
+      return filesize(sum);
     },
     humanTime: function () {
       if (this.selectedCount === 0) {
