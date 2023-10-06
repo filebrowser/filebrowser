@@ -1,16 +1,6 @@
-:root {
-  --background: #141d24;
-  --surfacePrimary: #20292f;
-  --surfaceSecondary: #3a4147;
-  --divider: rgba(255, 255, 255, 0.12);
-  --icon: #ffffff;
-  --textPrimary: rgba(255, 255, 255, 0.87);
-  --textSecondary: rgba(255, 255, 255, 0.6);
-}
-
 body {
   background: var(--background);
-  color: var(--textPrimary);
+  color: var(--textSecondary);
 }
 
 #loading {
@@ -18,11 +8,11 @@ body {
 }
 #loading .spinner div,
 main .spinner div {
-  background: var(--icon);
+  background: var(--iconPrimary);
 }
 
 #login {
-  background: var(--background);
+  background: var(--surfacePrimary);
 }
 
 header {
@@ -47,20 +37,20 @@ header {
   color: var(--textPrimary);
 }
 #search .boxes {
-  background: var(--surfaceSecondary);
+  background: var(--surfacePrimary);
 }
 #search .boxes h3 {
-  color: var(--textPrimary);
+  color: var(--textSecondary);
 }
 
 .action {
-  color: var(--textPrimary) !important;
+  color: var(--action) !important;
 }
 .action:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--hover);
 }
 .action i {
-  color: var(--icon) !important;
+  color: var(--action) !important;
 }
 .action .counter {
   border-color: var(--surfacePrimary);
@@ -78,7 +68,7 @@ nav > div {
   color: var(--textPrimary) !important;
 }
 .breadcrumbs a:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--hover);
 }
 
 #listing .item {
@@ -87,20 +77,17 @@ nav > div {
   border-color: var(--divider) !important;
 }
 #listing .item i {
-  color: var(--icon);
+  color: var(--iconPrimary);
 }
-#listing .item .modified {
-  color: var(--textSecondary);
+#listing .item[aria-selected="true"] i {
+  color: var(--iconSecondary);
 }
 #listing h2,
 #listing.list .header span {
   color: var(--textPrimary) !important;
 }
-#listing.list .header span {
-  color: var(--textPrimary);
-}
 #listing.list .header i {
-  color: var(--icon);
+  color: var(--textPrimary);
 }
 #listing.list .item.header {
   background: var(--background);
@@ -112,14 +99,14 @@ nav > div {
 
 .card {
   background: var(--surfacePrimary);
-  color: var(--textPrimary);
+  color: var(--textSecondary);
 }
 .button--flat:hover {
   background: var(--surfaceSecondary);
 }
 
 .dashboard #nav ul li {
-  color: var(--textSecondary);
+  color: var(--action);
 }
 .dashboard #nav ul li:hover {
   background: var(--surfaceSecondary);
@@ -131,22 +118,10 @@ nav > div {
   color: var(--textPrimary);
 }
 .card#share input,
-.card#share select,
-.input {
-  background: var(--surfaceSecondary);
+.card#share select {
+  background: var(--surfacePrimary);
   color: var(--textPrimary);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-.input:hover,
-.input:focus {
-  border-color: rgba(255, 255, 255, 0.15);
-}
-.input--red {
-  background: #73302d;
-}
-
-.input--green {
-  background: #147a41;
+  border: 1px solid var(--borderPrimary);
 }
 
 .dashboard #nav .wrapper,
@@ -168,7 +143,7 @@ table th {
   color: var(--textSecondary);
 }
 .file-list li[aria-selected="true"]:before {
-  color: var(--icon);
+  color: var(--iconSecondary);
 }
 
 .shell {

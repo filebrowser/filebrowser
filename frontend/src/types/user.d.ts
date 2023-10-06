@@ -62,3 +62,5 @@ interface IRule {
 interface IRegexp {
   raw: string;
 }
+
+type UserTheme = "light" | "dark" | "";

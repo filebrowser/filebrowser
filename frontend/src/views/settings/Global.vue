@@ -240,6 +240,7 @@ import Errors from "@/views/Errors.vue";
 import { computed, inject, onBeforeUnmount, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { StatusError } from "@/api/utils";
+import { getTheme, setTheme } from "@/utils/theme";
 
 const error = ref<StatusError | null>(null);
 const originalSettings = ref<ISettings | null>(null);
@@ -264,7 +265,7 @@ const formattedChunkSize = computed({
       ? formatBytes(settings?.value?.tus?.chunkSize)
       : "";
   },
-  set(value: any) {
+  set(value: string) {
     // Use debouncing to allow the user to type freely without
     // interruption by the formatter
     // Clear the previous timeout if it exists
@@ -322,6 +323,10 @@ const save = async () => {
     }
   }
   newSettings.shell = shellValue.value.split("\n");
+
+  if (newSettings.branding.theme !== getTheme()) {
+    setTheme(newSettings.branding.theme);
+  }
 
   try {
     await api.update(newSettings);

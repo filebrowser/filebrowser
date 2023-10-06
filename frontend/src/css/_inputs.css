@@ -1,16 +1,16 @@
 .input {
+  background: var(--surfacePrimary);
+  color: var(--textPrimary);
+  border: 1px solid var(--borderPrimary);
   border-radius: 0.1em;
   padding: 0.5em 1em;
-  background: white;
-  border: 1px solid rgba(0, 0, 0, 0.1);
   transition: 0.2s ease all;
-  color: #333;
   margin: 0;
 }
 
 .input:hover,
 .input:focus {
-  border-color: rgba(0, 0, 0, 0.2);
+  border-color: var(--borderSecondary);
 }
 
 .input--block {
@@ -27,9 +27,9 @@
 }
 
 .input--red {
-  background: #fcd0cd;
+  background: var(--input-red) !important;
 }
 
 .input--green {
-  background: #c9f2da;
+  background: var(--input-green) !important;
 }
