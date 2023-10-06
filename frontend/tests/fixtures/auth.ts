@@ -1,4 +1,9 @@
-import { type Page, type Locator } from "@playwright/test";
+import {
+  type Page,
+  type Locator,
+  test as base,
+  expect,
+} from "@playwright/test";
 
 export class AuthPage {
   public readonly wrongCredentials: Locator;
@@ -21,3 +26,15 @@ export class AuthPage {
     await this.page.getByRole("button", { name: "Logout" }).click();
   }
 }
+
+const test = base.extend<{ authPage: AuthPage }>({
+  authPage: async ({ page }, use) => {
+    const authPage = new AuthPage(page);
+    await authPage.goto();
+    await authPage.loginAs();
+    await use(authPage);
+    // await authPage.logout();
+  },
+});
+
+export { test, expect };

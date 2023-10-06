@@ -8,15 +8,15 @@
 
         <div class="card-content">
           <p>
-            <input type="checkbox" v-model="hideDotfiles" />
+            <input type="checkbox" name="hideDotfiles" v-model="hideDotfiles" />
             {{ t("settings.hideDotfiles") }}
           </p>
           <p>
-            <input type="checkbox" v-model="singleClick" />
+            <input type="checkbox" name="singleClick" v-model="singleClick" />
             {{ t("settings.singleClick") }}
           </p>
           <p>
-            <input type="checkbox" v-model="dateFormat" />
+            <input type="checkbox" name="dateFormat" v-model="dateFormat" />
             {{ t("settings.setDateFormat") }}
           </p>
           <h3>{{ t("settings.language") }}</h3>
@@ -30,6 +30,7 @@
           <input
             class="button button--flat"
             type="submit"
+            name="submitProfile"
             :value="t('buttons.update')"
           />
         </div>
@@ -59,7 +60,7 @@
             type="password"
             :placeholder="t('settings.newPasswordConfirm')"
             v-model="passwordConf"
-            name="password"
+            name="passwordConf"
           />
         </div>
 
@@ -67,6 +68,7 @@
           <input
             class="button button--flat"
             type="submit"
+            name="submitPassword"
             :value="t('buttons.update')"
           />
         </div>
@@ -144,6 +146,8 @@ const updatePassword = async (event: Event) => {
     $showSuccess(t("settings.passwordUpdated"));
   } catch (e: any) {
     $showError(e);
+  } finally {
+    password.value = passwordConf.value = "";
   }
 };
 const updateSettings = async (event: Event) => {
