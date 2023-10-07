@@ -10,14 +10,14 @@
 import { useLayoutStore } from "@/stores/layout";
 
 defineProps<{
-  icon: any;
-  label: any;
-  counter: any;
-  show: any;
+  icon?: string;
+  label?: any;
+  counter?: any;
+  show?: any;
 }>();
 
 const emit = defineEmits<{
-  (e: "action"): void;
+  (e: "action"): any;
 }>();
 
 const layoutStore = useLayoutStore();
