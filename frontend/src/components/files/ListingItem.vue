@@ -233,11 +233,7 @@ const click = (event: Event | KeyboardEvent) => {
     return;
   }
 
-  if (
-    event instanceof KeyboardEvent &&
-    event.shiftKey &&
-    fileStore.selected.length > 0
-  ) {
+  if ((event as KeyboardEvent).shiftKey && fileStore.selected.length > 0) {
     let fi = 0;
     let la = 0;
 
@@ -259,10 +255,9 @@ const click = (event: Event | KeyboardEvent) => {
   }
 
   if (
-    event instanceof KeyboardEvent &&
     !singleClick.value &&
-    !event.ctrlKey &&
-    !event.metaKey &&
+    !(event as KeyboardEvent).ctrlKey &&
+    !(event as KeyboardEvent).metaKey &&
     !fileStore.multiple
   ) {
     fileStore.selected = [];
