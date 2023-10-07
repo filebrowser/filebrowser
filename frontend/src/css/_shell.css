@@ -12,7 +12,7 @@
   overflow: auto;
   font-size: 1rem;
   cursor: text;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 5px var(--borderPrimary);
   transition: 0.2s ease transform;
 }
 
@@ -20,7 +20,7 @@
   display: flex;
   padding: 0.5em;
   align-items: flex-start;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid var(--divider);
 }
 
 .shell--hidden {

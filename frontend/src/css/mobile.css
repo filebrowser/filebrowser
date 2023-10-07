@@ -30,7 +30,7 @@
   header .overlay {
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: var(--borderPrimary);
   }
   #dropdown {
     position: fixed;
@@ -38,7 +38,7 @@
     right: 1em;
     display: block;
     background-color: #fff;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 5px var(--borderPrimary);
     transform: scale(0);
     transition: 0.1s ease-in-out transform;
     transform-origin: top right;
@@ -104,7 +104,7 @@
     background: #fff;
     height: 100%;
     width: 16em;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 5px var(--borderPrimary);
     transition: 0.1s ease left;
     left: -17em;
   }

@@ -41,7 +41,7 @@
 
 .share__box__element {
   padding: 1em;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--borderPrimary);
   word-break: break-all;
 }
 
@@ -64,7 +64,7 @@
   border-left: 0;
   border-right: 0;
   border-bottom: 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--borderPrimary);
 }
 
 .share__box__items #listing.list .item .name {

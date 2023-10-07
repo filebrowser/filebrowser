@@ -37,12 +37,12 @@ a {
   display: block;
   font-size: 0.8em;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.57);
+  color: var(--textPrimary);
 }
 
 li code,
 p code {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--divider);
   padding: 0.1em;
   border-radius: 0.2em;
 }
@@ -61,7 +61,7 @@ p code {
 .dashboard #nav .wrapper {
   display: flex;
   flex-grow: 1;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 2px solid var(--divider);
 }
 
 html[dir="rtl"] .dashboard #nav .wrapper {
@@ -71,7 +71,7 @@ html[dir="rtl"] .dashboard #nav .wrapper {
 .dashboard #nav ul {
   list-style: none;
   display: flex;
-  color: rgb(84, 110, 122);
+  color: var(--action);
   font-weight: 500;
   padding: 0;
   margin: 0 0 -2px 0;
@@ -89,7 +89,7 @@ html[dir="rtl"] .dashboard #nav .wrapper {
 }
 
 .dashboard #nav ul li:hover {
-  background: var(--moon-grey);
+  background: var(--surfaceSecondary);
 }
 
 .dashboard #nav ul li.active {
@@ -119,7 +119,7 @@ table {
 }
 
 table tr {
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--iconTertiary);
 }
 
 table tr:last-child {
@@ -128,7 +128,7 @@ table tr:last-child {
 
 table th {
   font-weight: 500;
-  color: #757575;
+  color: var(--textSecondary);
   text-align: left;
 }
 
@@ -159,7 +159,8 @@ table tr > *:last-child {
 .card {
   position: relative;
   margin: 0 0 1rem 0;
-  background-color: #fff;
+  background: var(--surfacePrimary);
+  color: var(--textSecondary);
   border-radius: 2px;
   box-shadow:
     0 2px 2px 0 rgba(0, 0, 0, 0.14),
@@ -396,11 +397,11 @@ html[dir="rtl"] .card .card-title > *:first-child {
 }
 
 .collapsible {
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--borderPrimary);
 }
 
 .collapsible:last-of-type {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--borderPrimary);
 }
 
 .collapsible > input {
@@ -465,7 +466,7 @@ html[dir="rtl"] .card .card-title > *:first-child {
   flex: 1;
   padding: 2em;
   border-radius: 0.2em;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--borderPrimary);
   text-align: center;
 }
 

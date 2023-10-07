@@ -6,8 +6,8 @@
   cursor: pointer;
   background: var(--blue);
   color: white;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--divider);
+  box-shadow: 0 0 5px var(--divider);
   transition: 0.1s ease all;
 }
 
@@ -38,7 +38,7 @@
 }
 
 .button--flat:hover {
-  background: var(--moon-grey);
+  background: var(--surfaceSecondary);
 }
 
 .button--flat.button--red {

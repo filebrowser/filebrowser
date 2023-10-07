@@ -1,5 +1,5 @@
 #login {
-  background: #fff;
+  background: var(--surfacePrimary);
   position: fixed;
   top: 0;
   left: 0;

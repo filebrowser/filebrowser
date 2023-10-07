@@ -1,24 +1,3 @@
-body {
-  background: var(--background);
-  color: var(--textSecondary);
-}
-
-#loading {
-  background: var(--background);
-}
-#loading .spinner div,
-main .spinner div {
-  background: var(--iconPrimary);
-}
-
-#login {
-  background: var(--surfacePrimary);
-}
-
-header {
-  background: var(--surfacePrimary);
-}
-
 #search #input {
   background: var(--surfaceSecondary);
   border-color: var(--surfacePrimary);
@@ -56,10 +35,6 @@ header {
   border-color: var(--surfacePrimary);
 }
 
-nav > div {
-  border-color: var(--divider);
-}
-
 .breadcrumbs {
   border-color: var(--divider);
   color: var(--textPrimary) !important;
@@ -93,28 +68,7 @@ nav > div {
   background: var(--background);
 }
 
-.message {
-  color: var(--textPrimary);
-}
-
-.card {
-  background: var(--surfacePrimary);
-  color: var(--textSecondary);
-}
-.button--flat:hover {
-  background: var(--surfaceSecondary);
-}
-
-.dashboard #nav ul li {
-  color: var(--action);
-}
-.dashboard #nav ul li:hover {
-  background: var(--surfaceSecondary);
-}
-
-.card h3,
-.dashboard #nav,
-.dashboard p label {
+.card h3 {
   color: var(--textPrimary);
 }
 .card#share input,
@@ -124,16 +78,11 @@ nav > div {
   border: 1px solid var(--borderPrimary);
 }
 
-.dashboard #nav .wrapper,
 .collapsible {
   border-color: var(--divider);
 }
 .collapsible > label * {
   color: var(--textPrimary);
-}
-
-table th {
-  color: var(--textSecondary);
 }
 
 .file-list li:hover {

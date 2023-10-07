@@ -20,6 +20,13 @@
   color: var(--blue);
 }
 
+#loading {
+  background: var(--background);
+}
+#loading .spinner > div {
+  background: var(--iconPrimary);
+}
+
 main .spinner {
   display: block;
   text-align: center;
@@ -32,7 +39,7 @@ main .spinner > div {
   height: 0.8em;
   margin: 0 0.1em;
   font-size: 1em;
-  background-color: rgba(0, 0, 0, 0.3);
+  background: var(--iconPrimary);
   border-radius: 100%;
   display: inline-block;
   animation: sk-bouncedelay 1.4s infinite ease-in-out both;
@@ -94,7 +101,7 @@ main .spinner .bounce2 {
 }
 
 .action:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--borderPrimary);
 }
 
 .action ul {
@@ -287,7 +294,7 @@ main .spinner .bounce2 {
 #previewer .spinner > div {
   width: 18px;
   height: 18px;
-  background-color: white;
+  background: var(--iconPrimary);
 }
 
 /* EDITOR */
@@ -338,8 +345,8 @@ html[dir="rtl"] .breadcrumbs .chevron {
 }
 
 .noty_buttons button {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--divider);
+  border: 1px solid var(--borderPrimary);
   box-shadow: 0 0 0 0;
   font-size: 1rem;
 }

@@ -1,6 +1,6 @@
 .input {
   background: var(--surfacePrimary);
-  color: var(--textPrimary);
+  color: var(--textSecondary);
   border: 1px solid var(--borderPrimary);
   border-radius: 0.1em;
   padding: 0.5em 1em;

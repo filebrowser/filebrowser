@@ -1,8 +1,8 @@
 header {
   z-index: 1000;
-  background-color: #fff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.075);
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  background: var(--surfacePrimary);
+  border-bottom: 1px solid var(--divider);
+  box-shadow: 0 0 5px var(--borderPrimary);
   position: fixed;
   top: 0;
   left: 0;
@@ -94,7 +94,7 @@ header .menu-button {
 
 #search.active #input {
   border-bottom: 1px solid rgba(0, 0, 0, 0.075);
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 5px var(--borderPrimary);
   background-color: #fff;
   height: 4em;
 }
@@ -189,7 +189,7 @@ html[dir="rtl"] #search #result ul > * {
 }
 
 #search.active #result i {
-  color: #ccc;
+  color: var(--iconTertiary);
 }
 
 #search.active #result > p > i {
@@ -228,7 +228,7 @@ html[dir="rtl"] #search #result ul > * {
 
 #search .boxes {
   border: 1px solid rgba(0, 0, 0, 0.075);
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 5px var(--borderPrimary);
   background: #fff;
   margin: 1em 0;
 }

@@ -1,8 +1,8 @@
 body {
   font-family: "Roboto", sans-serif;
   padding-top: 4em;
-  background-color: #fafafa;
-  color: #333333;
+  background: var(--background);
+  color: var(--textSecondary);
 }
 
 * {
@@ -79,7 +79,7 @@ html[dir="rtl"] nav .action {
 }
 
 nav > div {
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid var(--divider);
 }
 
 nav .action > * {
@@ -94,7 +94,7 @@ main {
 
 .breadcrumbs {
   height: 3em;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid var(--divider);
 }
 
 .breadcrumbs span,
@@ -115,7 +115,7 @@ html[dir="rtl"] .breadcrumbs a {
 }
 
 .breadcrumbs a:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--divider);
 }
 
 .breadcrumbs span a {

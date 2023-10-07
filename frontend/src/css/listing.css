@@ -77,7 +77,7 @@ html[dir="rtl"] #listing {
   margin: 1em auto;
   display: block !important;
   width: 95%;
-  color: rgba(0, 0, 0, 0.3);
+  color: var(--textPrimary);
   font-weight: 500;
 }
 
@@ -165,7 +165,7 @@ html[dir="rtl"] #listing {
 #listing.list .item {
   width: 100%;
   margin: 0;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--borderPrimary);
   padding: 1em;
   border-top: 0;
 }
@@ -208,7 +208,7 @@ html[dir="rtl"] #listing {
 
 #listing .item.header {
   display: none !important;
-  background-color: #ccc;
+  background-color: var(--iconTertiary);
 }
 
 #listing.list .header i {
@@ -223,7 +223,7 @@ html[dir="rtl"] #listing {
   z-index: 999;
   padding: 0.85em;
   border: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--borderPrimary);
 }
 
 #listing.list .item.header > div:first-child {
