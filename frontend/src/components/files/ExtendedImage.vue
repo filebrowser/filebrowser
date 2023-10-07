@@ -83,16 +83,18 @@ onBeforeUnmount(() => {
   document.removeEventListener("mouseup", onMouseUp);
 });
 
-// @ts-ignore
-watch(props.src, () => {
-  if (!decodeUTIF() && imgex.value !== null) {
-    imgex.value.src = props.src;
-  }
+watch(
+  () => props.src,
+  () => {
+    if (!decodeUTIF() && imgex.value !== null) {
+      imgex.value.src = props.src;
+    }
 
-  scale.value = 1;
-  setZoom();
-  setCenter();
-});
+    scale.value = 1;
+    setZoom();
+    setCenter();
+  }
+);
 
 // Modified from UTIF.replaceIMG
 const decodeUTIF = () => {

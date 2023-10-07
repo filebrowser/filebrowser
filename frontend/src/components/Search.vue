@@ -17,7 +17,7 @@
         @keyup.enter="submit"
         ref="input"
         :autofocus="active"
-        v-model.trim="value"
+        v-model.trim="prompt"
         :aria-label="$t('search.search')"
         :placeholder="$t('search.search')"
       />
@@ -28,7 +28,7 @@
         <template v-if="isEmpty">
           <p>{{ text }}</p>
 
-          <template v-if="value.length === 0">
+          <template v-if="prompt.length === 0">
             <div class="boxes">
               <h3>{{ $t("search.types") }}</h3>
               <div>
@@ -73,6 +73,7 @@ import { search } from "@/api";
 import { computed, inject, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
+import { storeToRefs } from "pinia";
 
 const boxes = {
   image: { label: "images", icon: "insert_photo" },
@@ -84,7 +85,9 @@ const boxes = {
 const layoutStore = useLayoutStore();
 const fileStore = useFileStore();
 
-const value = ref<string>("");
+const { show } = storeToRefs(layoutStore);
+
+const prompt = ref<string>("");
 const active = ref<boolean>(false);
 const ongoing = ref<boolean>(false);
 const results = ref<any[]>([]);
@@ -100,8 +103,7 @@ const { t } = useI18n();
 
 const route = useRoute();
 
-// @ts-ignore
-watch(layoutStore.show, (newVal: string, oldVal: string) => {
+watch(show, (newVal, oldVal) => {
   active.value = newVal === "search";
 
   if (oldVal === "search" && !active.value) {
@@ -111,7 +113,7 @@ watch(layoutStore.show, (newVal: string, oldVal: string) => {
 
     document.body.style.overflow = "auto";
     reset();
-    value.value = "";
+    prompt.value = "";
     active.value = false;
     input.value?.blur();
   } else if (active.value) {
@@ -121,7 +123,7 @@ watch(layoutStore.show, (newVal: string, oldVal: string) => {
   }
 });
 
-watch(value, () => {
+watch(prompt, () => {
   if (results.value.length) {
     reset();
   }
@@ -139,7 +141,7 @@ const text = computed(() => {
     return "";
   }
 
-  return value.value === ""
+  return prompt.value === ""
     ? t("search.typeToSearch")
     : t("search.pressToSearch");
 });
@@ -181,7 +183,7 @@ const keyup = (event: KeyboardEvent) => {
 };
 
 const init = (string: string) => {
-  value.value = `${string} `;
+  prompt.value = `${string} `;
   input.value !== null ? input.value.focus() : "";
 };
 
@@ -194,7 +196,7 @@ const reset = () => {
 const submit = async (event: Event) => {
   event.preventDefault();
 
-  if (value.value === "") {
+  if (prompt.value === "") {
     return;
   }
 
@@ -206,7 +208,8 @@ const submit = async (event: Event) => {
   ongoing.value = true;
 
   try {
-    results.value = await search(path, value.value);
+    results.value = await search(path, prompt.value);
+    console.log("Search: ", results.value);
   } catch (error: any) {
     $showError(error);
   }
