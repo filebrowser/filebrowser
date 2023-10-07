@@ -64,143 +64,153 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState, mapWritableState } from "pinia";
+<script setup lang="ts">
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
 import url from "@/utils/url";
 import { search } from "@/api";
+import { computed, inject, onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRoute } from "vue-router";
 
-var boxes = {
+const boxes = {
   image: { label: "images", icon: "insert_photo" },
   audio: { label: "music", icon: "volume_up" },
   video: { label: "video", icon: "movie" },
   pdf: { label: "pdf", icon: "picture_as_pdf" },
 };
 
-export default {
-  name: "search",
-  data: function () {
-    return {
-      value: "",
-      active: false,
-      ongoing: false,
-      results: [],
-      reload: false,
-      resultsCount: 50,
-      scrollable: null,
-    };
-  },
-  inject: ["$showError"],
-  watch: {
-    show(val, old) {
-      this.active = val === "search";
+const layoutStore = useLayoutStore();
+const fileStore = useFileStore();
 
-      if (old === "search" && !this.active) {
-        if (this.reload) {
-          this.sReload = true;
-        }
+const value = ref<string>("");
+const active = ref<boolean>(false);
+const ongoing = ref<boolean>(false);
+const results = ref<any[]>([]);
+const reload = ref<boolean>(false);
+const resultsCount = ref<number>(50);
 
-        document.body.style.overflow = "auto";
-        this.reset();
-        this.value = "";
-        this.active = false;
-        this.$refs.input.blur();
-      } else if (this.active) {
-        this.reload = false;
-        this.$refs.input.focus();
-        document.body.style.overflow = "hidden";
-      }
-    },
-    value() {
-      if (this.results.length) {
-        this.reset();
-      }
-    },
-  },
-  computed: {
-    ...mapState(useFileStore, ["isListing"]),
-    ...mapState(useLayoutStore, ["show"]),
-    ...mapWritableState(useFileStore, { sReload: "reload" }),
-    boxes() {
-      return boxes;
-    },
-    isEmpty() {
-      return this.results.length === 0;
-    },
-    text() {
-      if (this.ongoing) {
-        return "";
-      }
+const $showError = inject<IToastError>("$showError")!;
 
-      return this.value === ""
-        ? this.$t("search.typeToSearch")
-        : this.$t("search.pressToSearch");
-    },
-    filteredResults() {
-      return this.results.slice(0, this.resultsCount);
-    },
-  },
-  mounted() {
-    this.$refs.result.addEventListener("scroll", (event) => {
-      if (
-        event.target.offsetHeight + event.target.scrollTop >=
-        event.target.scrollHeight - 100
-      ) {
-        this.resultsCount += 50;
-      }
-    });
-  },
-  methods: {
-    ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
-    open() {
-      this.showHover("search");
-    },
-    close(event) {
-      event.stopPropagation();
-      event.preventDefault();
-      this.closeHovers();
-    },
-    keyup(event) {
-      if (event.key === "Escape") {
-        this.close(event);
-        return;
-      }
+const input = ref<HTMLInputElement | null>(null);
+const result = ref<HTMLElement | null>(null);
 
-      this.results.length = 0;
-    },
-    init(string) {
-      this.value = `${string} `;
-      this.$refs.input.focus();
-    },
-    reset() {
-      this.ongoing = false;
-      this.resultsCount = 50;
-      this.results = [];
-    },
-    async submit(event) {
-      event.preventDefault();
+const { t } = useI18n();
 
-      if (this.value === "") {
-        return;
-      }
+const route = useRoute();
 
-      let path = this.$route.path;
-      if (!this.isListing) {
-        path = url.removeLastDir(path) + "/";
-      }
+// @ts-ignore
+watch(layoutStore.show, (newVal: string, oldVal: string) => {
+  active.value = newVal === "search";
 
-      this.ongoing = true;
+  if (oldVal === "search" && !active.value) {
+    if (reload.value) {
+      fileStore.reload = true;
+    }
 
-      try {
-        this.results = await search(path, this.value);
-      } catch (error) {
-        this.$showError(error);
-      }
+    document.body.style.overflow = "auto";
+    reset();
+    value.value = "";
+    active.value = false;
+    input.value?.blur();
+  } else if (active.value) {
+    reload.value = false;
+    input.value?.focus();
+    document.body.style.overflow = "hidden";
+  }
+});
 
-      this.ongoing = false;
-    },
-  },
+watch(value, () => {
+  if (results.value.length) {
+    reset();
+  }
+});
+
+// ...mapState(useFileStore, ["isListing"]),
+// ...mapState(useLayoutStore, ["show"]),
+// ...mapWritableState(useFileStore, { sReload: "reload" }),
+
+const isEmpty = computed(() => {
+  return results.value.length === 0;
+});
+const text = computed(() => {
+  if (ongoing.value) {
+    return "";
+  }
+
+  return value.value === ""
+    ? t("search.typeToSearch")
+    : t("search.pressToSearch");
+});
+const filteredResults = computed(() => {
+  return results.value.slice(0, resultsCount.value);
+});
+
+onMounted(() => {
+  if (result.value === null) {
+    return;
+  }
+  result.value.addEventListener("scroll", (event: Event) => {
+    if (
+      (event.target as HTMLElement).offsetHeight +
+        (event.target as HTMLElement).scrollTop >=
+      (event.target as HTMLElement).scrollHeight - 100
+    ) {
+      resultsCount.value += 50;
+    }
+  });
+});
+
+const open = () => {
+  layoutStore.showHover("search");
+};
+
+const close = (event: Event) => {
+  event.stopPropagation();
+  event.preventDefault();
+  layoutStore.closeHovers();
+};
+
+const keyup = (event: KeyboardEvent) => {
+  if (event.key === "Escape") {
+    close(event);
+    return;
+  }
+  results.value.length = 0;
+};
+
+const init = (string: string) => {
+  value.value = `${string} `;
+  input.value !== null ? input.value.focus() : "";
+};
+
+const reset = () => {
+  ongoing.value = false;
+  resultsCount.value = 50;
+  results.value = [];
+};
+
+const submit = async (event: Event) => {
+  event.preventDefault();
+
+  if (value.value === "") {
+    return;
+  }
+
+  let path = route.path;
+  if (!fileStore.isListing) {
+    path = url.removeLastDir(path) + "/";
+  }
+
+  ongoing.value = true;
+
+  try {
+    results.value = await search(path, value.value);
+  } catch (error: any) {
+    $showError(error);
+  }
+
+  ongoing.value = false;
 };
 </script>

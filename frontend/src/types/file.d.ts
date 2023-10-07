@@ -18,13 +18,13 @@ interface Resource extends ResourceBase {
   sorting: Sorting;
   hash?: string;
   token?: string;
-  index?: number;
+  index: number;
   subtitles?: string[];
   content?: string;
 }
 
 interface ResourceItem extends ResourceBase {
-  index?: number;
+  index: number;
   subtitles?: string[];
 }
 

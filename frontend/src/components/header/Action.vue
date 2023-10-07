@@ -6,24 +6,28 @@
   </button>
 </template>
 
-<script>
-import { mapActions } from "pinia";
+<script setup lang="ts">
 import { useLayoutStore } from "@/stores/layout";
 
-export default {
-  name: "action",
-  props: ["icon", "label", "counter", "show"],
-  methods: {
-    ...mapActions(useLayoutStore, ["showHover"]),
-    action: function () {
-      if (this.show) {
-        this.showHover(this.show);
-      }
+defineProps<{
+  icon?: string;
+  label?: any;
+  counter?: any;
+  show?: any;
+}>();
 
-      this.$emit("action");
-    },
-  },
+const emit = defineEmits<{
+  (e: "action"): any;
+}>();
+
+const layoutStore = useLayoutStore();
+
+const action = () => {
+  if (layoutStore.show) {
+    // TODO: is not very pretty
+    layoutStore.showHover(layoutStore.show as string);
+  }
+
+  emit("action");
 };
 </script>
-
-<style></style>

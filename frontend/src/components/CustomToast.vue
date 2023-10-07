@@ -7,17 +7,15 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "error-toast",
-  props: ["message", "reportText", "isReport"],
-  methods: {
-    clicked() {
-      window.open(
-        "https://github.com/filebrowser/filebrowser/issues/new/choose"
-      );
-    },
-  },
+<script setup lang="ts">
+defineProps<{
+  message: string;
+  reportText: string;
+  isReport: boolean;
+}>();
+
+const clicked = () => {
+  window.open("https://github.com/filebrowser/filebrowser/issues/new/choose");
 };
 </script>
 

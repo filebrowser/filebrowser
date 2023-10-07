@@ -45,6 +45,7 @@ https://raw.githubusercontent.com/dzwillia/vue-simple-progress/master/src/compon
 </template>
 
 <script>
+// We're leaving this untouched as you can read in the beginning
 var isNumber = function (n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 };
