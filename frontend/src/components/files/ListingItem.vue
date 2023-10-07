@@ -15,7 +15,7 @@
   >
     <div>
       <img
-        v-if="readOnly == undefined && type === 'image' && isThumbsEnabled"
+        v-if="!readOnly && type === 'image' && isThumbsEnabled"
         v-lazy="thumbnailUrl"
       />
       <i v-else class="material-icons"></i>
@@ -60,8 +60,8 @@ const props = defineProps<{
   size: number;
   modified: string;
   index: number;
-  readOnly: boolean;
-  path: string;
+  readOnly?: boolean;
+  path?: string;
 }>();
 
 const authStore = useAuthStore();
@@ -69,17 +69,17 @@ const fileStore = useFileStore();
 const layoutStore = useLayoutStore();
 
 const singleClick = computed(
-  () => props.readOnly == undefined && authStore.user?.singleClick
+  () => !props.readOnly && authStore.user?.singleClick
 );
 const isSelected = computed(
   () => fileStore.selected.indexOf(props.index) !== -1
 );
 const isDraggable = computed(
-  () => props.readOnly == undefined && authStore.user?.perm.rename
+  () => !props.readOnly && authStore.user?.perm.rename
 );
 
 const canDrop = computed(() => {
-  if (!props.isDir || props.readOnly !== undefined) return false;
+  if (!props.isDir || props.readOnly) return false;
 
   for (let i of fileStore.selected) {
     if (fileStore.req?.items[i].url === props.url) {
@@ -111,7 +111,7 @@ const humanSize = () => {
 };
 
 const humanTime = () => {
-  if (props.readOnly == undefined && authStore.user?.dateFormat) {
+  if (!props.readOnly && authStore.user?.dateFormat) {
     return dayjs(props.modified).format("L LT");
   }
   return dayjs(props.modified).fromNow();

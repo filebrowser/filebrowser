@@ -1,8 +1,8 @@
 <template>
   <header>
-    <img v-if="showLogo !== undefined" :src="logoURL" />
+    <img v-if="showLogo" :src="logoURL" />
     <Action
-      v-if="showMenu !== undefined"
+      v-if="showMenu"
       class="menu-button"
       icon="menu"
       :label="t('buttons.toggleSidebar')"
@@ -41,8 +41,8 @@ import { computed, useSlots } from "vue";
 import { useI18n } from "vue-i18n";
 
 defineProps<{
-  showLogo: boolean;
-  showMenu: boolean;
+  showLogo?: boolean;
+  showMenu?: boolean;
 }>();
 
 const layoutStore = useLayoutStore();

@@ -29,7 +29,7 @@ const route = useRoute();
 
 const props = defineProps<{
   base: string;
-  noLink: boolean;
+  noLink?: boolean;
 }>();
 
 const items = computed(() => {
@@ -72,7 +72,7 @@ const items = computed(() => {
 });
 
 const element = computed(() => {
-  if (props.noLink !== undefined) {
+  if (props.noLink) {
     return "span";
   }
 
