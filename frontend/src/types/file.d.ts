@@ -51,3 +51,8 @@ interface ClipItem {
   from: string;
   name: string;
 }
+
+interface BreadCrumb {
+  name: string;
+  url: string;
+}

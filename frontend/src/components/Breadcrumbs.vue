@@ -44,7 +44,7 @@ const items = computed(() => {
     parts.pop();
   }
 
-  let breadcrumbs: any[] = [];
+  let breadcrumbs: BreadCrumb[] = [];
 
   for (let i = 0; i < parts.length; i++) {
     if (i === 0) {

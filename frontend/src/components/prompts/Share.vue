@@ -80,13 +80,14 @@
       <div class="card-content">
         <p>{{ $t("settings.shareDuration") }}</p>
         <div class="input-group input">
-          <input
-            v-focus
-            type="number"
+          <vue-number-input
+            controls
+            size="small"
             max="2147483647"
             min="1"
             @keyup.enter="submit"
             v-model.trim="time"
+            v-focus
           />
           <select class="right" v-model="unit" :aria-label="$t('time.unit')">
             <option value="seconds">{{ $t("time.seconds") }}</option>

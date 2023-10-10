@@ -128,9 +128,8 @@
               <label for="tus-retryCount">{{
                 t("settings.tusUploadsRetryCount")
               }}</label>
-              <input
-                class="input input--block"
-                type="number"
+              <vue-number-input
+                controls
                 v-model.number="settings.tus.retryCount"
                 id="tus-retryCount"
                 min="0"

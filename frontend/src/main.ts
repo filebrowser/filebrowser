@@ -1,5 +1,6 @@
 import { disableExternal } from "@/utils/constants";
 import { createApp } from "vue";
+import VueNumberInput from "@chenfengyuan/vue-number-input";
 import VueLazyload from "vue-lazyload";
 import Toast, { POSITION, useToast } from "vue-toastification";
 import {
@@ -28,6 +29,7 @@ const pinia = createPinia(router);
 
 const app = createApp(App);
 
+app.component(VueNumberInput.name, VueNumberInput);
 app.use(VueLazyload);
 app.use(Toast, {
   transition: "Vue-Toastification__bounce",

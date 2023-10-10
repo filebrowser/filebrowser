@@ -14,6 +14,7 @@
     "test": "playwright test"
   },
   "dependencies": {
+    "@chenfengyuan/vue-number-input": "^2.0.1",
     "@vueuse/core": "^10.5.0",
     "@vueuse/integrations": "^10.5.0",
     "ace-builds": "^1.28.0",
