@@ -1,7 +1,3 @@
-#listing {
-  --item-selected: white;
-}
-
 html[dir="rtl"] #listing {
   margin-right: 16em;
 }
@@ -9,7 +5,7 @@ html[dir="rtl"] #listing {
 #listing h2 {
   margin: 0 0 0 0.5em;
   font-size: 0.9em;
-  color: rgba(0, 0, 0, 0.38);
+  color: var(--textPrimary);
   font-weight: 500;
 }
 
@@ -25,11 +21,12 @@ html[dir="rtl"] #listing {
 }
 
 #listing .item {
-  background-color: #fff;
+  background: var(--surfacePrimary);
+  border-color: var(--divider);
   position: relative;
   display: flex;
   flex-wrap: nowrap;
-  color: #6f6f6f;
+  color: var(--textPrimary);
   transition:
     0.1s ease background,
     0.1s ease opacity;
@@ -176,7 +173,7 @@ html[dir="rtl"] #listing {
 
 #listing .item[aria-selected="true"] {
   background: var(--blue) !important;
-  color: var(--item-selected) !important;
+  color: var(--iconSecondary) !important;
 }
 
 #listing.list .item div:first-of-type {
@@ -219,7 +216,7 @@ html[dir="rtl"] #listing {
 
 #listing.list .item.header {
   display: flex !important;
-  background: #fafafa;
+  background: var(--background);
   z-index: 999;
   padding: 0.85em;
   border: 0;
@@ -287,5 +284,5 @@ html[dir="rtl"] #listing {
 
 #listing #multiple-selection p,
 #listing #multiple-selection i {
-  color: var(--item-selected);
+  color: var(--iconSecondary);
 }

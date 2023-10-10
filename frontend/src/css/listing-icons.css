@@ -249,5 +249,5 @@
   content: "folder";
 }
 .file-icons [aria-selected="true"] i {
-  color: var(--item-selected);
+  color: var(--iconSecondary);
 }

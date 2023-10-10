@@ -4,8 +4,8 @@
   left: 0;
   height: 25em;
   max-height: calc(100% - 4em);
-  background: white;
-  color: #212121;
+  background: var(--surfacePrimary);
+  color: var(--textPrimary);
   z-index: 9999;
   width: 100%;
   font-family: monospace;

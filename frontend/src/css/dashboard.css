@@ -233,7 +233,7 @@ html[dir="rtl"] .card .card-title > *:first-child {
 }
 
 .card h3 {
-  color: rgba(0, 0, 0, 0.53);
+  color: var(--textPrimary);
   font-size: 1em;
   font-weight: 500;
   margin: 2em 0 1em;
@@ -250,6 +250,14 @@ html[dir="rtl"] .card .card-title > *:first-child {
 
 .card#download {
   max-width: 15em;
+}
+
+.card#share input,
+.card#share select,
+.card#share input::-webkit-inner-spin-button,
+.card#share input::-webkit-outer-spin-button {
+  background: var(--surfacePrimary);
+  color: var(--textSecondary);
 }
 
 .card#share ul {
@@ -278,7 +286,7 @@ html[dir="rtl"] .card .card-title > *:first-child {
 .card#share ul li select {
   padding: 0.2em;
   margin-right: 0.5em;
-  border: 1px solid #dadada;
+  border: 1px solid var(--borderPrimary);
 }
 
 .card#share .action.copy-clipboard::after {
@@ -348,18 +356,18 @@ html[dir="rtl"] .card .card-title > *:first-child {
 
 .file-list li[aria-selected="true"] {
   background: var(--blue) !important;
-  color: #fff !important;
+  color: var(--iconSecondary) !important;
   transition: 0.1s ease all;
 }
 
 .file-list li:hover {
-  background-color: #e9eaeb;
+  background: var(--surfaceSecondary);
   cursor: pointer;
 }
 
 .file-list li:before {
   content: "folder";
-  color: #6f6f6f;
+  color: var(--textPrimary);
   vertical-align: middle;
   line-height: 1.4;
   font-family: "Material Icons";
@@ -368,7 +376,7 @@ html[dir="rtl"] .card .card-title > *:first-child {
 }
 
 .file-list li[aria-selected="true"]:before {
-  color: white;
+  color: var(--iconSecondary);
 }
 
 .help {
@@ -419,7 +427,7 @@ html[dir="rtl"] .card .card-title > *:first-child {
 
 .collapsible > label * {
   margin: 0;
-  color: rgba(0, 0, 0, 0.57);
+  color: var(--textPrimary);
 }
 
 .collapsible > label i {

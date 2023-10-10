@@ -37,7 +37,7 @@
     top: 1em;
     right: 1em;
     display: block;
-    background-color: #fff;
+    background: var(--surfaceSecondary);
     box-shadow: 0 0 5px var(--borderPrimary);
     transform: scale(0);
     transition: 0.1s ease-in-out transform;
@@ -77,7 +77,7 @@
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    background: #fff;
+    background: var(--surfaceSecondary);
     box-shadow:
       rgba(0, 0, 0, 0.06) 0px 1px 3px,
       rgba(0, 0, 0, 0.12) 0px 1px 2px;
@@ -92,7 +92,7 @@
   #file-selection > span {
     display: inline-block;
     margin-left: 1em;
-    color: #6f6f6f;
+    color: var(--textPrimary);
     margin-right: auto;
   }
   #file-selection .action span {
@@ -101,7 +101,7 @@
   nav {
     top: 0;
     z-index: 99999;
-    background: #fff;
+    background: var(--surfaceSecondary);
     height: 100%;
     width: 16em;
     box-shadow: 0 0 5px var(--borderPrimary);

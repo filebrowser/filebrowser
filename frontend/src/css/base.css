@@ -94,6 +94,7 @@ main {
 
 .breadcrumbs {
   height: 3em;
+  background: var(--background);
   border-bottom: 1px solid var(--divider);
 }
 
@@ -101,7 +102,7 @@ main {
 .breadcrumbs {
   display: flex;
   align-items: center;
-  color: #6f6f6f;
+  color: var(--textPrimary);
 }
 
 .breadcrumbs a {
@@ -146,4 +147,34 @@ html[dir="rtl"] .breadcrumbs a {
 
 .break-word {
   word-break: break-all;
+}
+
+.vue-number-input > input {
+  background: var(--surfacePrimary) !important;
+  border-color: var(--surfaceSecondary) !important;
+  color: var(--textSecondary) !important;
+}
+
+.vue-number-input--small > input {
+  height: 1rem !important;
+  font-size: 1rem !important;
+}
+
+.vue-number-input :hover,
+.vue-number-input :focus {
+  border-color: var(--borderSecondary) !important;
+}
+
+.vue-number-input__button {
+  background: var(--surfacePrimary) !important;
+}
+
+.vue-number-input__button--minus,
+.vue-number-input__button--plus {
+  border-color: var(--surfaceSecondary) !important;
+}
+
+.vue-number-input__button::before,
+.vue-number-input__button::after {
+  background: var(--textSecondary) !important;
 }
