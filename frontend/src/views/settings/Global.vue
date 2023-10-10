@@ -132,7 +132,7 @@
                 controls
                 v-model.number="settings.tus.retryCount"
                 id="tus-retryCount"
-                min="0"
+                :min="0"
               />
             </p>
           </div>

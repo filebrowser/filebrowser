@@ -10,8 +10,8 @@
 <script setup lang="ts">
 defineProps<{
   message: string;
-  reportText: string;
-  isReport: boolean;
+  reportText?: string;
+  isReport?: boolean;
 }>();
 
 const clicked = () => {

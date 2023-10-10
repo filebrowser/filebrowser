@@ -83,8 +83,8 @@
           <vue-number-input
             controls
             size="small"
-            max="2147483647"
-            min="1"
+            :max="2147483647"
+            :min="1"
             @keyup.enter="submit"
             v-model.trim="time"
             v-focus
