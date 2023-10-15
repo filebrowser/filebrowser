@@ -91,6 +91,7 @@ export async function post(url, content = "", overwrite = false, onupload) {
   return useResourcesApi
     ? postResources(url, content, overwrite, onupload)
     : postTus(url, content, overwrite, onupload);
+
 }
 
 async function postResources(url, content = "", overwrite = false, onupload) {
@@ -161,6 +162,11 @@ export function copy(items, overwrite = false, rename = false) {
 export async function checksum(url, algo) {
   const data = await resourceAction(`${url}?checksum=${algo}`, "GET");
   return (await data.json()).checksums[algo];
+}
+
+export async function runHook(url) {
+  const data = await resourceAction(`${url}?runhookafter=true`, "GET");
+  return await data.json();
 }
 
 export function getDownloadURL(file, inline) {

@@ -38,6 +38,16 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		file.Listing.ApplySort()
 		return renderJSON(w, r, file)
 	}
+	if runhookafter := r.URL.Query().Get("runhookafter"); runhookafter != "" {
+		err := d.RunHookAfter(func() error {
+			return nil
+		}, "upload", r.URL.Path, "", d.user)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+		// do not waste bandwidth if we just want the run hook
+		file.Content = ""
+	}
 
 	if checksum := r.URL.Query().Get("checksum"); checksum != "" {
 		err := file.Checksum(checksum)

@@ -59,7 +59,12 @@ func tusPostHandler() handleFunc {
 		if err := openFile.Close(); err != nil {
 			return errToStatus(err), err
 		}
-
+		err = d.RunHookBefore(func() error {
+			return nil
+		}, "upload", r.URL.Path, "", d.user)
+		if err != nil {
+			return errToStatus(err), err
+		}
 		return http.StatusCreated, nil
 	})
 }

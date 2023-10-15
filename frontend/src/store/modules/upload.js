@@ -60,7 +60,9 @@ const actions = {
     context.commit("addJob", item);
     context.dispatch("processUploads");
   },
-  finishUpload: (context, item) => {
+  finishUpload: async (context, item) => {
+    await api.runHook(item.path).catch(Vue.prototype.$showError);
+
     context.commit("setProgress", { id: item.id, loaded: item.file.size });
     context.commit("removeJob", item.id);
     context.dispatch("processUploads");
