@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"hash"
 	"io"
+	"io/fs"
 	"log"
 	"mime"
 	"net/http"
@@ -26,6 +27,11 @@ import (
 
 const PermFile = 0664
 const PermDir = 0755
+
+var (
+	reSubDirs = regexp.MustCompile("(?i)^sub(s|titles)$")
+	reSubExts = regexp.MustCompile("(?i)(.vtt|.srt|.ass|.ssa)$")
+)
 
 // FileInfo describes a file.
 type FileInfo struct {
@@ -308,26 +314,44 @@ func (i *FileInfo) detectSubtitles() {
 	}
 
 	base := strings.TrimSuffix(i.Name, ext)
-	subDirsRegex := regexp.MustCompile("(?i)^sub(s|titles)$")
 	for _, f := range dir {
-		// load all .vtt/.srt subtitles from subs directories
-		if f.IsDir() && subDirsRegex.MatchString(f.Name()) {
+		// load all supported subtitles from subs directories
+		// should cover all instances of subtitle distributions
+		// like tv-shows with multiple episodes in single dir
+		if f.IsDir() && reSubDirs.MatchString(f.Name()) {
 			subsDir := path.Join(parentDir, f.Name())
-			var err error
-			dir, err = afero.ReadDir(i.Fs, subsDir)
-			if err == nil {
-				for _, f := range dir {
-					if !f.IsDir() && (strings.HasSuffix(f.Name(), ".vtt") ||
-						strings.HasSuffix(f.Name(), ".srt")) {
-						i.Subtitles = append(i.Subtitles, path.Join(subsDir, f.Name()))
-					}
-				}
-			}
-		} else if !f.IsDir() && strings.HasPrefix(f.Name(), base) &&
-			(strings.HasSuffix(f.Name(), ".vtt") || strings.HasSuffix(f.Name(), ".srt")) {
-			i.Subtitles = append(i.Subtitles, path.Join(parentDir, f.Name()))
+			i.loadSubtitles(subsDir, base, true)
+		} else if isSubtitleMatch(f, base) {
+			i.addSubtitle(path.Join(parentDir, f.Name()))
 		}
 	}
+}
+
+func (i *FileInfo) loadSubtitles(subsPath string, baseName string, recursive bool) {
+	dir, err := afero.ReadDir(i.Fs, subsPath)
+	if err == nil {
+		for _, f := range dir {
+			if isSubtitleMatch(f, "") {
+				i.addSubtitle(path.Join(subsPath, f.Name()))
+			} else if f.IsDir() && recursive && strings.HasPrefix(f.Name(), baseName) {
+				subsDir := path.Join(subsPath, f.Name())
+				i.loadSubtitles(subsDir, baseName, false)
+			}
+		}
+	}
+}
+
+func IsSupportedSubtitle(fileName string) bool {
+	return reSubExts.MatchString(fileName)
+}
+
+func isSubtitleMatch(f fs.FileInfo, baseName string) bool {
+	return !f.IsDir() && strings.HasPrefix(f.Name(), baseName) &&
+		IsSupportedSubtitle(f.Name())
+}
+
+func (i *FileInfo) addSubtitle(path string) {
+	i.Subtitles = append(i.Subtitles, path)
 }
 
 func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {

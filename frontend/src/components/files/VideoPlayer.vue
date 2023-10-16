@@ -1,11 +1,14 @@
 <template>
-  <video
-    ref="videoPlayer"
-    class="video-js"
-    controls
-    style="width: 100%; height: 100%"
-  >
+  <video ref="videoPlayer" class="video-max video-js" controls>
     <source :src="source" />
+    <track
+      kind="subtitles"
+      v-for="(sub, index) in subtitles"
+      :key="index"
+      :src="sub"
+      :label="subLabel(sub)"
+      :default="index === 0"
+    />
     <p class="vjs-no-js">
       Sorry, your browser doesn't support embedded videos, but don't worry, you
       can <a :href="source">download it</a>
@@ -20,7 +23,6 @@ import videojs from "video.js";
 import type Player from "video.js/dist/types/player";
 import "videojs-mobile-ui";
 import "videojs-hotkeys";
-import { loadSubtitle } from "@/utils/subtitle";
 
 import "video.js/dist/video-js.min.css";
 import "videojs-mobile-ui/dist/videojs-mobile-ui.css";
@@ -45,6 +47,7 @@ onMounted(() => {
     {
       html5: {
         // needed for customizable subtitles
+        // TODO: add to user settings
         nativeTextTracks: false,
       },
       plugins: {
@@ -59,7 +62,6 @@ onMounted(() => {
     // onReady callback
     async () => {
       // player.value!.log("onPlayerReady", this);
-      addSubtitles(props.subtitles);
     }
   );
   // TODO: need to test on mobile
@@ -74,21 +76,29 @@ onBeforeUnmount(() => {
   }
 });
 
-const addSubtitles = async (subtitles: string[] | undefined) => {
-  if (!subtitles) return;
-  // add subtitles dynamically (srt is converted on-the-fly)
-  const subs = await Promise.all(
-    subtitles.map(async (s) => await loadSubtitle(s))
-  );
-  // TODO: player.value wouldnt work here, no idea why
-  const _player = videojs.getPlayer(videoPlayer.value!);
-  for (const [idx, sub] of subs.filter((s) => !!s.src).entries()) {
-    _player.addRemoteTextTrack({
-      src: sub.src,
-      label: sub.label,
-      kind: "subtitles",
-      default: idx === 0,
-    });
+const subLabel = (subUrl: string) => {
+  let url: URL;
+  try {
+    url = new URL(subUrl);
+  } catch (_) {
+    // treat it as a relative url
+    // we only need this for filename
+    url = new URL(subUrl, window.location.origin);
   }
+
+  const label = decodeURIComponent(
+    url.pathname
+      .split("/")
+      .pop()!
+      .replace(/\.[^/.]+$/, "")
+  );
+
+  return label;
 };
 </script>
+<style scoped>
+.video-max {
+  width: 100%;
+  height: 100%;
+}
+</style>

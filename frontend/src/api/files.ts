@@ -205,7 +205,7 @@ export function getSubtitlesURL(file: ResourceItem) {
     inline: "true",
   };
 
-  return file.subtitles?.map((d) => createURL("api/raw" + d, params));
+  return file.subtitles?.map((d) => createURL("api/subtitle" + d, params));
 }
 
 export async function usage(url: string) {
