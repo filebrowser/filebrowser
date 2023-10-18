@@ -14,6 +14,11 @@ Given('the user has browsed to the login page', async function () {
     await expect(page).toHaveURL(loginPage.loginUrl);
 });
 
+Given('the user has logged in with username {string} and password {string}', async function (username, password) {
+    await loginPage.login(username,password);
+    await expect(page).toHaveURL(loginPage.fileUrl);
+});
+
 When('user logs in with username {string} and password {string}', async function (username, password) {
     await loginPage.login(username,password);
 });

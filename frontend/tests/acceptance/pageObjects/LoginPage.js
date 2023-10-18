@@ -20,6 +20,10 @@ class LoginPage {
         await page.fill(this.passwordSelector, password);
         await page.click(this.loginSelector);
     }
+
+    // async assertLoginPageIsOpen() {
+    //     await expect(this.page).toHaveURL(this.loginUrl);
+    //   }
 }
 
 module.exports = LoginPage
