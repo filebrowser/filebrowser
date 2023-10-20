@@ -36,4 +36,4 @@ For installation instructions please refer to our documentation at [https://file
 
 ## Contributing
 
-If you're interested in contributing to this project, our documentation is the best places to start [https://filebrowser.org/contributing](https://filebrowser.org/contributing).
+If you're interested in contributing to this project, our documentation is the best place to start [https://filebrowser.org/contributing](https://filebrowser.org/contributing).
