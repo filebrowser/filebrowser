@@ -1,7 +1,7 @@
 import store from "@/store";
 import router from "@/router";
 import { Base64 } from "js-base64";
-import { fetchURL } from "@/api/utils";
+import { baseURL } from "@/utils/constants";
 
 export function parseToken(token) {
   const parts = token.split(".");
@@ -32,17 +32,13 @@ export async function validateLogin() {
 export async function login(username, password, recaptcha) {
   const data = { username, password, recaptcha };
 
-  const res = await fetchURL(
-    `/api/login`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
+  const res = await fetch(`${baseURL}/api/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-    false
-  );
+    body: JSON.stringify(data),
+  });
 
   const body = await res.text();
 
@@ -54,7 +50,7 @@ export async function login(username, password, recaptcha) {
 }
 
 export async function renew(jwt) {
-  const res = await fetchURL(`/api/renew`, {
+  const res = await fetch(`${baseURL}/api/renew`, {
     method: "POST",
     headers: {
       "X-Auth": jwt,
@@ -73,17 +69,13 @@ export async function renew(jwt) {
 export async function signup(username, password) {
   const data = { username, password };
 
-  const res = await fetchURL(
-    `/api/signup`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
+  const res = await fetch(`${baseURL}/api/signup`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-    false
-  );
+    body: JSON.stringify(data),
+  });
 
   if (res.status !== 200) {
     throw new Error(res.status);
