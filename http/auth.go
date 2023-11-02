@@ -173,6 +173,7 @@ var signupHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, 
 }
 
 var renewHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	w.Header().Set("X-Renew-Token", "false")
 	return printToken(w, r, d, d.user)
 })
 
