@@ -17,6 +17,7 @@ export default {
         hu: "hu",
         ar: "ar",
         de: "de",
+        el: "el",
         en: "en",
         es: "es",
         fr: "fr",
