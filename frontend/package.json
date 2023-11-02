@@ -49,7 +49,7 @@
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-vue": "^9.16.1",
     "jsdom": "^22.1.0",
-    "postcss": "^8.4.27",
+    "postcss": "^8.4.31",
     "prettier": "^3.0.1",
     "terser": "^5.19.2",
     "vite": "^4.4.9",
