@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.26.0](https://github.com/filebrowser/filebrowser/compare/v2.25.0...v2.26.0) (2023-11-02)
+
+
+### Features
+
+* add modern greek translation ([#2778](https://github.com/filebrowser/filebrowser/issues/2778)) ([c3079d3](https://github.com/filebrowser/filebrowser/commit/c3079d30e22385d7e677f172324cd9cbab6487ce))
+* make user session timeout configurable ([#2753](https://github.com/filebrowser/filebrowser/issues/2753)) ([7fabadc](https://github.com/filebrowser/filebrowser/commit/7fabadc871ea91ea22fe9454e2ca4b33e5c211be))
+
+
+### Bug Fixes
+
+* avoid the front-end calling api/renew loop ([#2792](https://github.com/filebrowser/filebrowser/issues/2792)) ([edd808f](https://github.com/filebrowser/filebrowser/commit/edd808f124f4ada99bcbe4bca98ddbe20e5a424c))
+* disable static resource files listing ([da1fe7c](https://github.com/filebrowser/filebrowser/commit/da1fe7c9d76a9c6a25bfa19ebd6cf8023eff5d62))
+* display file size as base 2 (KiB instead of KB) ([#2779](https://github.com/filebrowser/filebrowser/issues/2779)) ([cdcd9a3](https://github.com/filebrowser/filebrowser/commit/cdcd9a313aa50c2e6806a182b6838462d42dcafe))
+* goreleaser yaml ([4d0a68e](https://github.com/filebrowser/filebrowser/commit/4d0a68e7875274f4c939f2bfa15739a9b0ecf70a))
+* revert fetchURL changes in auth (Fixes [#2729](https://github.com/filebrowser/filebrowser/issues/2729)) ([#2739](https://github.com/filebrowser/filebrowser/issues/2739)) ([bd3c194](https://github.com/filebrowser/filebrowser/commit/bd3c1941ff8289a5dae877e08f7e25fa9b2a92c5))
+* solve docker build failed issue ([#2797](https://github.com/filebrowser/filebrowser/issues/2797)) ([6a31af6](https://github.com/filebrowser/filebrowser/commit/6a31af6c0a144128af865d802c8039fa5250e946))
+
+
+### Build
+
+* **deps-dev:** bump postcss from 8.4.27 to 8.4.31 in /frontend ([#2749](https://github.com/filebrowser/filebrowser/issues/2749)) ([21d361a](https://github.com/filebrowser/filebrowser/commit/21d361ad308d109d2a6b323597019aaa09ce1781))
+* **deps:** bump @babel/traverse in /frontend ([#2775](https://github.com/filebrowser/filebrowser/issues/2775)) ([bb4bb50](https://github.com/filebrowser/filebrowser/commit/bb4bb508a9d71516e8fa80b3a6285fe002a059d2))
+* **deps:** bump golang.org/x/image from 0.5.0 to 0.10.0 ([#2800](https://github.com/filebrowser/filebrowser/issues/2800)) ([a744bd2](https://github.com/filebrowser/filebrowser/commit/a744bd224f0ff1efc53ab94481fa76ef68788df1))
+* **deps:** bump golang.org/x/net from 0.11.0 to 0.17.0 ([#2758](https://github.com/filebrowser/filebrowser/issues/2758)) ([d574fb6](https://github.com/filebrowser/filebrowser/commit/d574fb6d1af41ec31778b0f402674e5111a7875d))
+* fix deprecated goreleaser config options ([38f7788](https://github.com/filebrowser/filebrowser/commit/38f77882559133b9ff330cfb955a9d4ea4728cf8))
+
 ## [2.25.0](https://github.com/filebrowser/filebrowser/compare/v2.24.2...v2.25.0) (2023-09-14)
 
 
