@@ -43,9 +43,9 @@
               <td class="small">
                 <button
                   class="action copy-clipboard"
-                  :data-clipboard-text="buildLink(link)"
                   :aria-label="t('buttons.copyToClipboard')"
                   :title="t('buttons.copyToClipboard')"
+                  @click="copyToClipboard(buildLink(link))"
                 >
                   <i class="material-icons">content_paste</i>
                 </button>
@@ -67,11 +67,11 @@ import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
 import { share as api, users } from "@/api";
 import dayjs from "dayjs";
-import Clipboard from "clipboard";
 import Errors from "@/views/Errors.vue";
-import { inject, onBeforeUnmount, ref, onMounted } from "vue";
+import { inject, ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { StatusError } from "@/api/utils";
+import { copy } from "@/utils/clipboard";
 
 const $showError = inject<IToastError>("$showError")!;
 const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
@@ -82,7 +82,6 @@ const authStore = useAuthStore();
 
 const error = ref<StatusError | null>(null);
 const links = ref<Share[]>([]);
-const clip = ref<Clipboard | null>(null);
 
 onMounted(async () => {
   layoutStore.loading = true;
@@ -106,13 +105,19 @@ onMounted(async () => {
   } finally {
     layoutStore.loading = false;
   }
-  clip.value = new Clipboard(".copy-clipboard");
-  clip.value.on("success", () => {
-    $showSuccess(t("success.linkCopied"));
-  });
 });
 
-onBeforeUnmount(() => clip.value?.destroy());
+const copyToClipboard = (text: string) => {
+  copy(text).then(
+    () => {
+      // clipboard successfully set
+      $showSuccess(t("success.linkCopied"));
+    },
+    () => {
+      // clipboard write failed
+    }
+  );
+};
 
 const deleteLink = async (event: Event, link: any) => {
   event.preventDefault();

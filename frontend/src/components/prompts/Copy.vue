@@ -6,7 +6,7 @@
 
     <div class="card-content">
       <p>{{ $t("prompts.copyMessage") }}</p>
-      <file-list @update:selected="(val) => (dest = val)"></file-list>
+      <file-list @update:selected="(val) => (dest = val)" tabindex="1" />
     </div>
 
     <div class="card-action">
@@ -15,14 +15,17 @@
         @click="closeHovers"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')"
+        tabindex="3"
       >
         {{ $t("buttons.cancel") }}
       </button>
       <button
+        id="focus-prompt"
         class="button button--flat"
         @click="copy"
         :aria-label="$t('buttons.copy')"
         :title="$t('buttons.copy')"
+        tabindex="2"
       >
         {{ $t("buttons.copy") }}
       </button>

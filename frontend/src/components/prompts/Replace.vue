@@ -14,6 +14,7 @@
         @click="closeHovers"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')"
+        tabindex="3"
       >
         {{ $t("buttons.cancel") }}
       </button>
@@ -22,14 +23,17 @@
         @click="showAction"
         :aria-label="$t('buttons.continue')"
         :title="$t('buttons.continue')"
+        tabindex="2"
       >
         {{ $t("buttons.continue") }}
       </button>
       <button
+        id="focus-prompt"
         class="button button--flat button--red"
         @click="showConfirm"
         :aria-label="$t('buttons.replace')"
         :title="$t('buttons.replace')"
+        tabindex="1"
       >
         {{ $t("buttons.replace") }}
       </button>

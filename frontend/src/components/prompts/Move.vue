@@ -5,7 +5,7 @@
     </div>
 
     <div class="card-content">
-      <file-list @update:selected="(val) => (dest = val)"></file-list>
+      <file-list @update:selected="(val) => (dest = val)" tabindex="1" />
     </div>
 
     <div class="card-action">
@@ -14,15 +14,18 @@
         @click="closeHovers"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')"
+        tabindex="3"
       >
         {{ $t("buttons.cancel") }}
       </button>
       <button
+        id="focus-prompt"
         class="button button--flat"
         @click="move"
         :disabled="$route.path === dest"
         :aria-label="$t('buttons.move')"
         :title="$t('buttons.move')"
+        tabindex="2"
       >
         {{ $t("buttons.move") }}
       </button>

@@ -74,6 +74,8 @@ onMounted(() => {
   if (getTheme() === "dark") {
     editor.value!.setTheme("ace/theme/twilight");
   }
+
+  editor.value.focus();
 });
 
 onBeforeUnmount(() => {

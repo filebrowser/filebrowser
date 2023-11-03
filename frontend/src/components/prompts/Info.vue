@@ -33,33 +33,45 @@
         <p>
           <strong>MD5: </strong
           ><code
-            ><a @click="checksum($event, 'md5')">{{
-              $t("prompts.show")
-            }}</a></code
+            ><a
+              @click="checksum($event, 'md5')"
+              @keypress.enter="checksum($event, 'md5')"
+              tabindex="2"
+              >{{ $t("prompts.show") }}</a
+            ></code
           >
         </p>
         <p>
           <strong>SHA1: </strong
           ><code
-            ><a @click="checksum($event, 'sha1')">{{
-              $t("prompts.show")
-            }}</a></code
+            ><a
+              @click="checksum($event, 'sha1')"
+              @keypress.enter="checksum($event, 'sha1')"
+              tabindex="3"
+              >{{ $t("prompts.show") }}</a
+            ></code
           >
         </p>
         <p>
           <strong>SHA256: </strong
           ><code
-            ><a @click="checksum($event, 'sha256')">{{
-              $t("prompts.show")
-            }}</a></code
+            ><a
+              @click="checksum($event, 'sha256')"
+              @keypress.enter="checksum($event, 'sha256')"
+              tabindex="4"
+              >{{ $t("prompts.show") }}</a
+            ></code
           >
         </p>
         <p>
           <strong>SHA512: </strong
           ><code
-            ><a @click="checksum($event, 'sha512')">{{
-              $t("prompts.show")
-            }}</a></code
+            ><a
+              @click="checksum($event, 'sha512')"
+              @keypress.enter="checksum($event, 'sha512')"
+              tabindex="5"
+              >{{ $t("prompts.show") }}</a
+            ></code
           >
         </p>
       </template>
@@ -67,6 +79,7 @@
 
     <div class="card-action">
       <button
+        id="focus-prompt"
         type="submit"
         @click="closeHovers"
         class="button button--flat"
@@ -149,8 +162,7 @@ export default {
 
       try {
         const hash = await api.checksum(link, algo);
-        // eslint-disable-next-line
-        event.target.innerHTML = hash;
+        event.target.textContent = hash;
       } catch (e) {
         this.$showError(e);
       }

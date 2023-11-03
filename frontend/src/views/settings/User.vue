@@ -45,27 +45,6 @@
         </div>
       </form>
     </div>
-
-    <div v-if="layoutStore.show === 'deleteUser'" class="card floating">
-      <div class="card-content">
-        <p>Are you sure you want to delete this user?</p>
-      </div>
-
-      <div class="card-action">
-        <button
-          class="button button--flat button--grey"
-          @click="layoutStore.closeHovers"
-          v-focus
-          :aria-label="$t('buttons.cancel')"
-          :title="$t('buttons.cancel')"
-        >
-          {{ $t("buttons.cancel") }}
-        </button>
-        <button class="button button--flat" @click="deleteUser">
-          {{ $t("buttons.delete") }}
-        </button>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -80,9 +59,9 @@ import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { StatusError } from "@/api/utils";
 
-const error = ref<StatusError | null>(null);
-const originalUser = ref<IUser | null>(null);
-const user = ref<IUser | null>(null);
+const error = ref<StatusError>();
+const originalUser = ref<IUser>();
+const user = ref<IUser>();
 const createUserDir = ref<boolean>(false);
 
 const $showError = inject<IToastError>("$showError")!;
@@ -136,11 +115,12 @@ const fetchData = async () => {
   }
 };
 
-const deletePrompt = () => layoutStore.showHover("deleteUser");
+const deletePrompt = () =>
+  layoutStore.showHover({ prompt: "deleteUser", confirm: deleteUser });
 
 const deleteUser = async (e: Event) => {
   e.preventDefault();
-  if (user.value === null) {
+  if (!user.value) {
     return false;
   }
   try {
@@ -157,21 +137,22 @@ const deleteUser = async (e: Event) => {
 
   return true;
 };
+
 const save = async (event: Event) => {
   event.preventDefault();
-  if (originalUser.value === null || user.value === null) {
+  if (!user.value) {
     return false;
   }
 
   try {
     if (isNew.value) {
       const newUser: IUser = {
-        ...originalUser.value,
+        ...originalUser?.value,
         ...user.value,
       };
 
-      const loc = (await api.create(newUser)) || "/settings/users";
-      router.push({ path: loc });
+      const loc = await api.create(newUser);
+      router.push({ path: loc || "/settings/users" });
       $showSuccess(t("settings.userCreated"));
     } else {
       await api.update(user.value);

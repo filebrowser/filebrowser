@@ -141,7 +141,7 @@ export function handleFiles(
       path += "/";
     }
 
-    console.log("File", file);
+    // console.log("File", file);
 
     const item: UploadItem = {
       id,

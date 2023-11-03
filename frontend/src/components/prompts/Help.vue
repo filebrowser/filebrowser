@@ -20,11 +20,13 @@
 
     <div class="card-action">
       <button
+        id="focus-prompt"
         type="submit"
         @click="closeHovers"
         class="button button--flat"
         :aria-label="$t('buttons.ok')"
         :title="$t('buttons.ok')"
+        tabindex="1"
       >
         {{ $t("buttons.ok") }}
       </button>

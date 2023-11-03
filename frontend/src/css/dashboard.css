@@ -174,11 +174,11 @@ table tr > *:last-child {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 99999;
   max-width: 25em;
   width: 90%;
   max-height: 95%;
-  animation: 0.1s show forwards;
+  /* animation-duration: 0.3s;
+  animation-fill-mode: forwards; */
 }
 
 .card > * > *:first-child {

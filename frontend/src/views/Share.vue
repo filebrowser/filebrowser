@@ -13,9 +13,9 @@
       <button
         v-if="isSingleFile()"
         class="action copy-clipboard"
-        :data-clipboard-text="linkSelected()"
         :aria-label="t('buttons.copyDownloadLinkToClipboard')"
         :data-title="t('buttons.copyDownloadLinkToClipboard')"
+        @click="copyToClipboard(linkSelected())"
       >
         <i class="material-icons">content_paste</i>
       </button>
@@ -51,6 +51,7 @@
           <div class="card-content">
             <input
               v-focus
+              class="input input--block"
               type="password"
               :placeholder="t('login.password')"
               v-model="password"
@@ -68,6 +69,7 @@
             </button>
           </div>
         </div>
+        <div class="overlay" />
       </div>
       <errors v-else :errorCode="error.status" />
     </div>
@@ -191,13 +193,13 @@ import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import Errors from "@/views/Errors.vue";
 import QrcodeVue from "qrcode.vue";
 import Item from "@/components/files/ListingItem.vue";
-import Clipboard from "clipboard";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
-import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, inject, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { StatusError } from "@/api/utils";
+import { copy } from "@/utils/clipboard";
 
 const error = ref<StatusError | null>(null);
 const showLimit = ref<number>(100);
@@ -205,7 +207,6 @@ const password = ref<string>("");
 const attemptedPasswordLogin = ref<boolean>(false);
 const hash = ref<string>("");
 const token = ref<string>("");
-const clip = ref<any>(null);
 
 const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
 
@@ -350,20 +351,21 @@ const linkSelected = () => {
     : "";
 };
 
+const copyToClipboard = (text: string) => {
+  copy(text).then(
+    () => {
+      // clipboard successfully set
+      $showSuccess(t("success.linkCopied"));
+    },
+    () => {
+      // clipboard write failed
+    }
+  );
+};
+
 onMounted(async () => {
   // Created
   hash.value = route.params.path[0];
   await fetchData();
-
-  window.addEventListener("keydown", keyEvent);
-  clip.value = new Clipboard(".copy-clipboard");
-  clip.value.on("success", () => {
-    $showSuccess(t("success.linkCopied"));
-  });
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener("keydown", keyEvent);
-  clip.value.destroy();
 });
 </script>

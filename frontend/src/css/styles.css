@@ -1,5 +1,6 @@
 @import "normalize.css/normalize.css";
 @import "vue-toastification/dist/index.css";
+@import "vue-final-modal/style.css";
 @import "./_variables.css";
 @import "./_buttons.css";
 @import "./_inputs.css";
@@ -14,6 +15,12 @@
 @import "./dashboard.css";
 @import "./login.css";
 @import "./mobile.css";
+
+/* For testing only
+ :focus {
+  outline: 2px solid crimson !important;
+  border-radius: 3px !important;
+} */
 
 .link {
   color: var(--blue);

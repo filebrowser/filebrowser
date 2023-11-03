@@ -1,85 +1,88 @@
 <template>
   <div class="card floating">
     <div class="card-title">
-      <h2>{{ $t("prompts.newDir") }}</h2>
+      <h2>{{ t("prompts.newDir") }}</h2>
     </div>
 
     <div class="card-content">
-      <p>{{ $t("prompts.newDirMessage") }}</p>
+      <p>{{ t("prompts.newDirMessage") }}</p>
       <input
+        id="focus-prompt"
         class="input input--block"
         type="text"
         @keyup.enter="submit"
         v-model.trim="name"
-        v-focus
+        tabindex="1"
       />
     </div>
 
     <div class="card-action">
       <button
         class="button button--flat button--grey"
-        @click="closeHovers"
-        :aria-label="$t('buttons.cancel')"
-        :title="$t('buttons.cancel')"
+        @click="layoutStore.closeHovers"
+        :aria-label="t('buttons.cancel')"
+        :title="t('buttons.cancel')"
+        tabindex="3"
       >
-        {{ $t("buttons.cancel") }}
+        {{ t("buttons.cancel") }}
       </button>
       <button
         class="button button--flat"
         :aria-label="$t('buttons.create')"
-        :title="$t('buttons.create')"
+        :title="t('buttons.create')"
         @click="submit"
+        tabindex="2"
       >
-        {{ $t("buttons.create") }}
+        {{ t("buttons.create") }}
       </button>
     </div>
   </div>
 </template>
 
-<script>
-import { mapActions, mapState } from "pinia";
+<script setup lang="ts">
+import { inject, ref } from "vue";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
 import { files as api } from "@/api";
 import url from "@/utils/url";
+import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 
-export default {
-  name: "new-dir",
-  data: function () {
-    return {
-      name: "",
-    };
-  },
-  inject: ["$showError"],
-  computed: {
-    ...mapState(useFileStore, ["isFiles", "isListing"]),
-  },
-  methods: {
-    ...mapActions(useLayoutStore, ["closeHovers"]),
-    submit: async function (event) {
-      event.preventDefault();
-      if (this.new === "") return;
+const $showError = inject<IToastError>("$showError")!;
 
-      // Build the path of the new directory.
-      let uri = this.isFiles ? this.$route.path + "/" : "/";
+const fileStore = useFileStore();
+const layoutStore = useLayoutStore();
 
-      if (!this.isListing) {
-        uri = url.removeLastDir(uri) + "/";
-      }
+const route = useRoute();
+const router = useRouter();
+const { t } = useI18n();
 
-      uri += encodeURIComponent(this.name) + "/";
-      uri = uri.replace("//", "/");
+const name = ref<string>("");
 
-      try {
-        await api.post(uri);
-        this.$router.push({ path: `${uri}` });
-      } catch (e) {
-        this.$showError(e);
-      }
+const submit = async (event: Event) => {
+  event.preventDefault();
+  if (name.value === "") return;
 
-      this.closeHovers();
-    },
-  },
+  // Build the path of the new directory.
+  let uri = fileStore.isFiles ? route.path + "/" : "/";
+
+  if (!fileStore.isListing) {
+    uri = url.removeLastDir(uri) + "/";
+  }
+
+  uri += encodeURIComponent(name.value) + "/";
+  uri = uri.replace("//", "/");
+
+  try {
+    await api.post(uri);
+    router.push({ path: `${uri}` });
+  } catch (e) {
+    if (e instanceof Error) {
+      $showError(e);
+    }
+  }
+
+  layoutStore.closeHovers();
 };
 </script>

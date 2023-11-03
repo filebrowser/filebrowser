@@ -1,19 +1,22 @@
 <template>
   <div>
-    <component ref="currentComponent" :is="currentComponent"></component>
-    <div v-show="showOverlay" @click="closeHovers" class="overlay"></div>
+    <ModalsContainer />
   </div>
 </template>
 
-<script>
-import { mapActions, mapState } from "pinia";
+<script setup lang="ts">
+import { ref, watch } from "vue";
+import { ModalsContainer, useModal } from "vue-final-modal";
+import { storeToRefs } from "pinia";
 import { useLayoutStore } from "@/stores/layout";
 
+import BaseModal from "./BaseModal.vue";
 import Help from "./Help.vue";
 import Info from "./Info.vue";
 import Delete from "./Delete.vue";
-import Rename from "./Rename.vue";
+import DeleteUser from "./DeleteUser.vue";
 import Download from "./Download.vue";
+import Rename from "./Rename.vue";
 import Move from "./Move.vue";
 import Copy from "./Copy.vue";
 import NewFile from "./NewFile.vue";
@@ -21,95 +24,65 @@ import NewDir from "./NewDir.vue";
 import Replace from "./Replace.vue";
 import ReplaceRename from "./ReplaceRename.vue";
 import Share from "./Share.vue";
-import Upload from "./Upload.vue";
 import ShareDelete from "./ShareDelete.vue";
-import buttons from "@/utils/buttons";
+import Upload from "./Upload.vue";
 
-export default {
-  name: "prompts",
-  components: {
-    Info,
-    Delete,
-    Rename,
-    Download,
-    Move,
-    Copy,
-    Share,
-    NewFile,
-    NewDir,
-    Help,
-    Replace,
-    ReplaceRename,
-    Upload,
-    ShareDelete,
-  },
-  data: function () {
-    return {
-      pluginData: {
-        buttons,
-      },
-    };
-  },
-  created() {
-    window.addEventListener("keydown", (event) => {
-      if (this.show == null) return;
+const layoutStore = useLayoutStore();
 
-      let prompt = this.$refs.currentComponent;
+const { show } = storeToRefs(layoutStore);
 
-      if (event.key === "Escape") {
-        event.stopImmediatePropagation();
-        this.closeHovers();
-      }
+const closeModal = ref<() => Promise<string>>();
 
-      if (event.key == "Enter") {
-        switch (this.show) {
-          case "delete":
-            prompt.submit();
-            break;
-          case "copy":
-            prompt.copy(event);
-            break;
-          case "move":
-            prompt.move(event);
-            break;
-          case "replace":
-            prompt.showConfirm(event);
-            break;
-        }
-      }
-    });
-  },
-  computed: {
-    ...mapState(useLayoutStore, ["show", "showConfirm"]),
-    currentComponent: function () {
-      const matched =
-        [
-          "info",
-          "help",
-          "delete",
-          "rename",
-          "move",
-          "copy",
-          "newFile",
-          "newDir",
-          "download",
-          "replace",
-          "replace-rename",
-          "share",
-          "upload",
-          "share-delete",
-        ].indexOf(this.show) >= 0;
+const components = new Map<string, any>([
+  ["info", Info],
+  ["help", Help],
+  ["delete", Delete],
+  ["rename", Rename],
+  ["move", Move],
+  ["copy", Copy],
+  ["newFile", NewFile],
+  ["newDir", NewDir],
+  ["download", Download],
+  ["replace", Replace],
+  ["replace-rename", ReplaceRename],
+  ["share", Share],
+  ["upload", Upload],
+  ["share-delete", ShareDelete],
+  ["deleteUser", DeleteUser],
+]);
 
-      return (matched && this.show) || null;
+watch(show, (newValue) => {
+  if (closeModal.value) {
+    closeModal.value();
+    closeModal.value = undefined;
+  }
+
+  const modal = components.get(newValue!);
+  if (!modal) return;
+
+  const { open, close } = useModal({
+    component: BaseModal,
+    attrs: {
+      // title: "Hello World!",
+      // onConfirm() {
+      //   console.log("onConfirm");
+      // },
     },
-    showOverlay: function () {
-      return (
-        this.show !== null && this.show !== "search" && this.show !== "more"
-      );
+    slots: {
+      default: modal,
     },
-  },
-  methods: {
-    ...mapActions(useLayoutStore, ["closeHovers"]),
-  },
-};
+  });
+
+  closeModal.value = close;
+  open();
+});
+
+window.addEventListener("keydown", (event) => {
+  if (!layoutStore.show) return;
+
+  if (event.key === "Escape") {
+    event.stopImmediatePropagation();
+    layoutStore.closeHovers();
+  }
+});
 </script>

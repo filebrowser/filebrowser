@@ -10,8 +10,8 @@
         >:
       </p>
       <input
+        id="focus-prompt"
         class="input input--block"
-        v-focus
         type="text"
         @keyup.enter="submit"
         v-model.trim="name"

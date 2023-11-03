@@ -2,6 +2,7 @@ import { disableExternal } from "@/utils/constants";
 import { createApp } from "vue";
 import VueNumberInput from "@chenfengyuan/vue-number-input";
 import VueLazyload from "vue-lazyload";
+import { createVfm } from "vue-final-modal";
 import Toast, { POSITION, useToast } from "vue-toastification";
 import {
   ToastOptions,
@@ -26,6 +27,7 @@ dayjs.extend(relativeTime);
 dayjs.extend(duration);
 
 const pinia = createPinia(router);
+const vfm = createVfm();
 
 const app = createApp(App);
 
@@ -37,6 +39,7 @@ app.use(Toast, {
   newestOnTop: true,
 } satisfies PluginOptions);
 
+app.use(vfm);
 app.use(i18n);
 app.use(pinia);
 app.use(router);
@@ -50,7 +53,7 @@ app.mixin({
 
 // provide v-focus for components
 app.directive("focus", {
-  mounted: (el) => {
+  mounted: async (el) => {
     // initiate focus for the element
     el.focus();
   },

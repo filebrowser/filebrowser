@@ -6,7 +6,7 @@ export const useLayoutStore = defineStore("layout", {
   // convert to a function
   state: (): {
     loading: boolean;
-    show: string | null | boolean;
+    show: string | null;
     showConfirm: any;
     showAction: PopupAction | null;
     showShell: boolean | null;
