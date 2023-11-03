@@ -212,7 +212,7 @@ html[dir="rtl"] #search #result ul > * {
   margin-right: 0.3em;
 }
 
-// I dont think we need these anymore
+/* I dont think we need these anymore */
 /* #search::-webkit-input-placeholder {
   color: var(--textPrimary);
 }

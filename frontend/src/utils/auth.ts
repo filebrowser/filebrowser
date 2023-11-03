@@ -1,12 +1,12 @@
 import { useAuthStore } from "@/stores/auth";
 import router from "@/router";
-import jwt_decode, { JwtPayload } from "jwt-decode";
+import { JwtPayload, jwtDecode } from "jwt-decode";
 import { baseURL } from "./constants";
 import { StatusError } from "@/api/utils";
 
 export function parseToken(token: string) {
   // falsy or malformed jwt will throw InvalidTokenError
-  const data = jwt_decode<JwtPayload & { user: IUser }>(token);
+  const data = jwtDecode<JwtPayload & { user: IUser }>(token);
 
   document.cookie = `auth=${token}; Path=/; SameSite=Strict;`;
 
