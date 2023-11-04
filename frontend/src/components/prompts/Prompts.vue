@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <ModalsContainer />
-  </div>
+  <ModalsContainer />
 </template>
 
 <script setup lang="ts">
@@ -75,14 +73,5 @@ watch(show, (newValue) => {
 
   closeModal.value = close;
   open();
-});
-
-window.addEventListener("keydown", (event) => {
-  if (!layoutStore.show) return;
-
-  if (event.key === "Escape") {
-    event.stopImmediatePropagation();
-    layoutStore.closeHovers();
-  }
 });
 </script>
