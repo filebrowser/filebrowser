@@ -27,7 +27,8 @@ var usersCmd = &cobra.Command{
 
 func printUsers(usrs []*users.User) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0) //nolint:gomnd
-	fmt.Fprintln(w, "ID\tUsername\tScope\tLocale\tDefShare\tV. Mode\tS.Click\tAdmin\tExecute\tCreate\tRename\tModify\tDelete\tShare\tDownload\tPwd Lock")
+	fmt.Fprintln(w, "ID\tUsername\tScope\tLocale\tDefShare\tV. Mode\tS.Click\tAdmin\tExecute\t"+
+		"Create\tRename\tModify\tDelete\tShare\tDownload\tPwd Lock")
 
 	for _, u := range usrs {
 		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%d%s\t%s\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t\n",

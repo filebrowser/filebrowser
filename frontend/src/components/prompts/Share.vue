@@ -177,9 +177,9 @@ export default {
           await this.submit();
           this.$nextTick(() => {
             console.log(this.$refs)
-            if (this.$refs.hasOwnProperty("copyDownload") && this.$refs.copyDownload.length > 0) {
+            if (Object.prototype.hasOwnProperty.call(this.$refs, "copyDownload") && this.$refs.copyDownload.length > 0) {
               this.$refs.copyDownload[0].click();
-            } else if (this.$refs.hasOwnProperty("copyShare") && this.$refs.copyShare.length > 0) {
+            } else if (Object.prototype.hasOwnProperty.call(this.$refs, "copyShare") && this.$refs.copyShare.length > 0) {
               this.$refs.copyShare[0].click();
             }
           });
