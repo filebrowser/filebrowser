@@ -199,6 +199,8 @@
     "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Custom Stylesheet",
     "defaultUserDescription": "These are the default settings for new users.",
+    "defaultShareDuration": "Default share duration",
+    "defaultShareDurationExplanation": "The default share duration to automatically copy direct download links to the clipboard when creating a share. Set to 0 for permanent shares and -1 to disable the feature and choose a duration manually.",
     "disableExternalLinks": "Disable external links (except documentation)",
     "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentation",

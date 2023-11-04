@@ -24,6 +24,23 @@
             class="input input--block"
             :locale.sync="locale"
           ></languages>
+          <h3>{{ $t("settings.defaultShareDuration") }}</h3>
+          <p>{{ $t("settings.defaultShareDurationExplanation") }}</p>
+          <div class="input-group input">
+            <input
+                v-focus
+                type="number"
+                max="2147483647"
+                min="-1"
+                v-model.trim="defaultShareDurationTime"
+            />
+            <select class="right" v-model="defaultShareDurationUnit" :aria-label="$t('time.unit')">
+              <option value="seconds">{{ $t("time.seconds") }}</option>
+              <option value="minutes">{{ $t("time.minutes") }}</option>
+              <option value="hours">{{ $t("time.hours") }}</option>
+              <option value="days">{{ $t("time.days") }}</option>
+            </select>
+          </div>
         </div>
 
         <div class="card-action">
@@ -90,6 +107,8 @@ export default {
       singleClick: false,
       dateFormat: false,
       locale: "",
+      defaultShareDurationTime: -1,
+      defaultShareDurationUnit: "hours",
     };
   },
   computed: {
@@ -114,6 +133,8 @@ export default {
     this.hideDotfiles = this.user.hideDotfiles;
     this.singleClick = this.user.singleClick;
     this.dateFormat = this.user.dateFormat;
+    this.defaultShareDurationTime = this.user.defaultShareDurationTime;
+    this.defaultShareDurationUnit = this.user.defaultShareDurationUnit;
   },
   methods: {
     ...mapMutations(["updateUser", "setLoading"]),
@@ -143,6 +164,8 @@ export default {
           hideDotfiles: this.hideDotfiles,
           singleClick: this.singleClick,
           dateFormat: this.dateFormat,
+          defaultShareDurationTime: parseInt(this.defaultShareDurationTime),
+          defaultShareDurationUnit: this.defaultShareDurationUnit,
         };
         const shouldReload =
           rtlLanguages.includes(data.locale) !==
@@ -152,6 +175,8 @@ export default {
           "hideDotfiles",
           "singleClick",
           "dateFormat",
+          "defaultShareDurationTime",
+          "defaultShareDurationUnit",
         ]);
         this.updateUser(data);
         if (shouldReload) {

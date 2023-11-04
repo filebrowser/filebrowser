@@ -121,10 +121,12 @@ func importConf(db *storm.DB, path string, sto *storage.Storage) error {
 		Key:    key,
 		Signup: false,
 		Defaults: settings.UserDefaults{
-			Scope:    cfg.Defaults.Scope,
-			Commands: cfg.Defaults.Commands,
-			ViewMode: users.ViewMode(cfg.Defaults.ViewMode),
-			Locale:   cfg.Defaults.Locale,
+			Scope:                    cfg.Defaults.Scope,
+			Commands:                 cfg.Defaults.Commands,
+			ViewMode:                 users.ViewMode(cfg.Defaults.ViewMode),
+			Locale:                   cfg.Defaults.Locale,
+			DefaultShareDurationTime: -1,
+			DefaultShareDurationUnit: "hours",
 			Perm: users.Permissions{
 				Admin:    false,
 				Execute:  cfg.Defaults.AllowCommands,

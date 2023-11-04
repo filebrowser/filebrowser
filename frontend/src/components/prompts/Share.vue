@@ -24,6 +24,7 @@
             </td>
             <td class="small">
               <button
+                ref="copyShare"
                 class="action copy-clipboard"
                 :data-clipboard-text="buildLink(link)"
                 :aria-label="$t('buttons.copyToClipboard')"
@@ -34,6 +35,7 @@
             </td>
             <td class="small" v-if="hasDownloadLink()">
               <button
+                ref="copyDownload"
                 class="action copy-clipboard"
                 :data-clipboard-text="buildDownloadLink(link)"
                 :aria-label="$t('buttons.copyDownloadLinkToClipboard')"
@@ -144,7 +146,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["req", "selected", "selectedCount"]),
+    ...mapState(["req", "selected", "selectedCount", "user"]),
     ...mapGetters(["isListing"]),
     url() {
       if (!this.isListing) {
@@ -165,8 +167,23 @@ export default {
       this.links = links;
       this.sort();
 
-      if (this.links.length == 0) {
+      if (this.links.length === 0) {
         this.listing = false;
+
+        // If enabled and this is the first share, automate the creation of the link and copy it to the clipboard.
+        if (this.user.defaultShareDurationTime !== -1) {
+          this.time = this.user.defaultShareDurationTime.toString();
+          this.unit = this.user.defaultShareDurationUnit;
+          await this.submit();
+          this.$nextTick(() => {
+            console.log(this.$refs)
+            if (this.$refs.hasOwnProperty("copyDownload") && this.$refs.copyDownload.length > 0) {
+              this.$refs.copyDownload[0].click();
+            } else if (this.$refs.hasOwnProperty("copyShare") && this.$refs.copyShare.length > 0) {
+              this.$refs.copyShare[0].click();
+            }
+          });
+        }
       }
     } catch (e) {
       this.$showError(e);
@@ -183,7 +200,7 @@ export default {
   },
   methods: {
     submit: async function () {
-      let isPermanent = !this.time || this.time == 0;
+      let isPermanent = !this.time || this.time === "0";
 
       try {
         let res = null;

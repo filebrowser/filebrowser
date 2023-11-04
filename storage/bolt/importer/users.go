@@ -3,7 +3,6 @@ package importer
 import (
 	"encoding/json"
 	"fmt"
-
 	"github.com/asdine/storm/v3"
 	bolt "go.etcd.io/bbolt"
 
@@ -56,14 +55,16 @@ func convertUsersToNew(old []*oldUser) ([]*users.User, error) {
 
 	for _, oldUser := range old {
 		user := &users.User{
-			Username:     oldUser.Username,
-			Password:     oldUser.Password,
-			Scope:        oldUser.Scope,
-			Locale:       oldUser.Locale,
-			LockPassword: oldUser.LockPassword,
-			ViewMode:     users.ViewMode(oldUser.ViewMode),
-			Commands:     oldUser.Commands,
-			Rules:        []rules.Rule{},
+			Username:                 oldUser.Username,
+			Password:                 oldUser.Password,
+			Scope:                    oldUser.Scope,
+			Locale:                   oldUser.Locale,
+			DefaultShareDurationTime: -1,
+			DefaultShareDurationUnit: "hours",
+			LockPassword:             oldUser.LockPassword,
+			ViewMode:                 users.ViewMode(oldUser.ViewMode),
+			Commands:                 oldUser.Commands,
+			Rules:                    []rules.Rule{},
 			Perm: users.Permissions{
 				Admin:    oldUser.Admin,
 				Execute:  oldUser.AllowCommands,

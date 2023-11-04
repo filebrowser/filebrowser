@@ -43,6 +43,12 @@ func mustGetUint(flags *pflag.FlagSet, flag string) uint {
 	return b
 }
 
+func mustGetInt(flags *pflag.FlagSet, flag string) int {
+	b, err := flags.GetInt(flag)
+	checkErr(err)
+	return b
+}
+
 func generateKey() []byte {
 	k, err := settings.GenerateKey()
 	checkErr(err)
