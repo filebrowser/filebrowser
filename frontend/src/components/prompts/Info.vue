@@ -81,7 +81,7 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
-import { filesize } from "filesize";
+import { filesize } from "@/utils";
 import moment from "moment";
 import { files as api } from "@/api";
 
@@ -142,7 +142,7 @@ export default {
       try {
         const hash = await api.checksum(link, algo);
         // eslint-disable-next-line
-        event.target.innerHTML = hash
+        event.target.innerHTML = hash;
       } catch (e) {
         this.$showError(e);
       }
