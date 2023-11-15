@@ -12,10 +12,17 @@
       <p class="break-word" v-if="selected.length < 2">
         <strong>{{ $t("prompts.displayName") }}</strong> {{ name }}
       </p>
+
       <p v-if="!dir || selected.length > 1">
         <strong>{{ $t("prompts.size") }}:</strong>
         <span id="content_length"></span> {{ humanSize }}
       </p>
+
+      <div v-if="resolution">
+        <strong>{{ $t("prompts.resolution") }}:</strong>
+        {{ resolution.width }} x {{ resolution.height }}
+      </div>
+
       <p v-if="selected.length < 2" :title="modTime">
         <strong>{{ $t("prompts.lastModified") }}:</strong> {{ humanTime }}
       </p>
@@ -125,6 +132,18 @@ export default {
           ? this.req.isDir
           : this.req.items[this.selected[0]].isDir)
       );
+    },
+    resolution: function() {
+      if (this.selectedCount === 1) {
+        const selectedItem = this.req.items[this.selected[0]];
+        if (selectedItem && selectedItem.type === 'image') {
+          return selectedItem.resolution;
+        }
+      }
+      else if (this.req && this.req.type === 'image') {
+        return this.req.resolution;
+      }
+      return null;
     },
   },
   methods: {
