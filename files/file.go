@@ -240,7 +240,7 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	case strings.HasPrefix(mimetype, "audio"):
 		i.Type = "audio"
 		return nil
-	case strings.HasPrefix(mimetype, "image"), strings.HasPrefix(mimetype, "video"):
+	case strings.HasPrefix(mimetype, "image"):
 		i.Type = "image"
 		resolution, err := calculateImageResolution(i.Fs, i.Path)
 		if err != nil {
@@ -281,12 +281,11 @@ func calculateImageResolution(fs afero.Fs, path string) (*ImageResolution, error
 	if err != nil {
 		return nil, err
 	}
-	defer func(file afero.File) {
-		err := file.Close()
-		if err != nil {
-
+	defer func() {
+		if cErr := file.Close(); cErr != nil {
+			log.Printf("Failed to close file: %v", cErr)
 		}
-	}(file)
+	}()
 
 	config, _, err := image.DecodeConfig(file)
 	if err != nil {
