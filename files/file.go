@@ -278,6 +278,7 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 }
 
 func calculateImageResolution(fs afero.Fs, filePath string) (*ImageResolution, error) {
+	file, err := fs.Open(filePath)
 	if err != nil {
 		return nil, err
 	}
