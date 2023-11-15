@@ -6,7 +6,6 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
-	"github.com/spf13/afero"
 	"hash"
 	"image"
 	"io"
@@ -18,6 +17,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/spf13/afero"
 
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
@@ -276,8 +277,7 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	return nil
 }
 
-func calculateImageResolution(fs afero.Fs, filepath string) (*ImageResolution, error) {
-	file, err := fs.Open(filepath)
+func calculateImageResolution(fs afero.Fs, filePath string) (*ImageResolution, error) {
 	if err != nil {
 		return nil, err
 	}
