@@ -125,7 +125,7 @@
     "usernameTaken": "ユーザー名はすでに取得されています",
     "wrongCredentials": "ユーザー名またはパスワードが間違っています"
   },
-  "permanent": "永久？",
+  "permanent": "永久",
   "prompts": {
     "copy": "コピー",
     "copyMessage": "ファイルをコピーする場所を選択してください：",
@@ -142,7 +142,7 @@
     "filesSelected": "{count} 個のファイル／フォルダーが選択されています",
     "lastModified": "更新日時",
     "move": "移動",
-    "moveMessage": "ファイル／フォルダーの新しい家？を選択してください：",
+    "moveMessage": "ファイル／フォルダーの新しいハウスを選択してください：",
     "newArchetype": "archetype に基づいて新しい投稿を作成します。ファイルは content フォルダーに作成されます。",
     "newDir": "新規フォルダー",
     "newDirMessage": "フォルダーの名前を入力してください：",
@@ -167,9 +167,9 @@
     "images": "画像",
     "music": "音楽",
     "pdf": "PDF",
-    "pressToSearch": "エンターを押して検索します…",
-    "search": "検索…",
-    "typeToSearch": "検索の種類…",
+    "pressToSearch": "エンターを押して検索します",
+    "search": "検索",
+    "typeToSearch": "検索の種類",
     "types": "ファイルの種類",
     "video": "動画"
   },
@@ -190,12 +190,12 @@
     "commandRunnerHelp": "ここでは、指定したイベントの際に実行されるコマンドを設定することができます。1行に1つずつ書く必要があります。環境変数として {0} や {1} が使用可能で、{0} は {1} に関連した変数として扱われます。この機能と使用可能な環境変数の詳細については、{2}をお読みください。",
     "commandsUpdated": "コマンドを更新しました！",
     "createUserDir": "新規ユーザー追加時にユーザーのホームディレクトリを自動生成する",
-    "tusUploads": "Chunked Uploads",
+    "tusUploads": "チャンクされたファイルアップロード",
     "tusUploadsHelp": "File Browser はチャンクされたファイルアップロードをサポートしており、信頼性の低いネットワーク上でも、効率的で信頼性の高い、再開可能なチャンクされたファイルアップロードを作成することができます。",
     "tusUploadsChunkSize": "1チャンクあたりのリクエストの最大サイズ。バイト数を示す整数か、10MB、1GBなどの文字列を入力できます。",
     "tusUploadsRetryCount": "チャンクのアップロードに失敗した場合の再試行回数。",
     "userHomeBasePath": "ユーザーのホームディレクトリのベースパス",
-    "userScopeGenerationPlaceholder": "スコープは自動で生成されます",
+    "userScopeGenerationPlaceholder": "スコープは自動生成されます",
     "createUserHomeDirectory": "ユーザーのホームディレクトリを作成する",
     "customStylesheet": "カスタムスタイルシート",
     "defaultUserDescription": "これらは新規ユーザーのデフォルト設定です。",
@@ -279,6 +279,6 @@
     "hours": "時間",
     "minutes": "分",
     "seconds": "秒",
-    "unit": "Time Unit"
+    "unit": "時間単位"
   }
 }
