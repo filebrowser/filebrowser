@@ -24,7 +24,7 @@
     "publish": "公開",
     "rename": "名前の変更",
     "replace": "置換する",
-    "reportIssue": "問題を報告する",
+    "reportIssue": "問題を報告",
     "save": "保存",
     "schedule": "スケジュール",
     "search": "検索",
@@ -43,16 +43,16 @@
   "download": {
     "downloadFile": "ファイルのダウンロード",
     "downloadFolder": "フォルダーのダウンロード",
-    "downloadSelected": "選択した物のダウンロード"
+    "downloadSelected": "選択した項目のダウンロード"
   },
   "upload": {
     "abortUpload": "アップロードをキャンセルしますか？"
   },
   "errors": {
-    "forbidden": "これにアクセスする権限がありません",
-    "internal": "内部エラーが発生しました",
-    "notFound": "このファイルは存在しません",
-    "connection": "サーバーに接続できませんでした"
+    "forbidden": "これにアクセスする権限がありません。",
+    "internal": "内部エラーが発生しました。",
+    "notFound": "リソースが見つかりませんでした。",
+    "connection": "サーバーに接続できませんでした。"
   },
   "files": {
     "body": "本文",
