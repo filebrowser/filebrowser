@@ -161,7 +161,8 @@
     "upload": "Upload",
     "uploadFiles": "Uploading {files} files...",
     "uploadMessage": "Select an option to upload.",
-    "optionalPassword": "Optional password"
+    "optionalPassword": "Optional password",
+    "resolution": "Resolution"
   },
   "search": {
     "images": "Images",
