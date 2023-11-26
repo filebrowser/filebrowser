@@ -1,0 +1,17 @@
+[Unit]
+Description=Filebrowser as a Systemd service
+
+[Service]
+WorkingDirectory= /files/
+User=www-data
+ExecStart=filebrowser -r /files/
+
+Restart=always
+RestartSec=1
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=autodeploy
+
+[Install]
+WantedBy=multi-user.target
