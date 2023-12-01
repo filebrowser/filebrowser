@@ -1,37 +1,37 @@
 <template>
-  <div
-    class="item"
-    role="button"
-    tabindex="0"
-    :draggable="isDraggable"
-    @dragstart="dragStart"
-    @dragover="dragOver"
-    @drop="drop"
-    @click="itemClick"
-    :data-dir="isDir"
-    :data-type="type"
-    :aria-label="name"
-    :aria-selected="isSelected"
-  >
-    <div>
-      <img
-        v-if="readOnly == undefined && type === 'image' && isThumbsEnabled"
-        v-lazy="thumbnailUrl"
-      />
-      <i v-else class="material-icons"></i>
+    <div
+      class="item"
+      role="button"
+      tabindex="0"
+      :draggable="isDraggable"
+      @dragstart="dragStart"
+      @dragover="dragOver"
+      @drop="drop"
+      @click="itemClick"
+      :data-dir="isDir"
+      :data-type="type"
+      :aria-label="name"
+      :aria-selected="isSelected"
+    >
+      <div>
+        <img
+          v-if="readOnly == undefined && type === 'image' && isThumbsEnabled"
+          v-lazy="thumbnailUrl"
+        />
+        <i v-else class="material-icons"></i>
+      </div>
+
+      <div>
+        <p class="name">{{ name }}</p>
+
+        <p v-if="isDir" class="size" data-order="-1">&mdash;</p>
+        <p v-else class="size" :data-order="humanSize()">{{ humanSize() }}</p>
+
+        <p class="modified">
+          <time :datetime="modified">{{ humanTime() }}</time>
+        </p>
+      </div>
     </div>
-
-    <div>
-      <p class="name">{{ name }}</p>
-
-      <p v-if="isDir" class="size" data-order="-1">&mdash;</p>
-      <p v-else class="size" :data-order="humanSize()">{{ humanSize() }}</p>
-
-      <p class="modified">
-        <time :datetime="modified">{{ humanTime() }}</time>
-      </p>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -242,8 +242,10 @@ export default {
       this.addSelected(this.index);
     },
     open: function () {
-      this.$router.push({ path: this.url });
-    },
+      // this.$router.push({ path: this.url });
+      const routeData = this.$router.resolve({ path: this.url });
+      window.open(routeData.href);
+    }
   },
 };
 </script>
