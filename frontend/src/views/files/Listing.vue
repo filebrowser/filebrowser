@@ -198,39 +198,88 @@
           </div>
         </div>
 
-        <h2 v-if="req.numDirs > 0">{{ $t("files.folders") }}</h2>
-        <div v-if="req.numDirs > 0">
-          <item
-            v-for="item in dirs"
-            :key="base64(item.name)"
-            v-bind:index="item.index"
-            v-bind:name="item.name"
-            v-bind:isDir="item.isDir"
-            v-bind:url="item.url"
-            v-bind:modified="item.modified"
-            v-bind:type="item.type"
-            v-bind:size="item.size"
-            v-bind:path="item.path"
-          >
-          </item>
-        </div>
+        <span @contextmenu="showContextMenu">
+          <h2 v-if="req.numDirs > 0">{{ $t("files.folders") }}</h2>
+          <div v-if="req.numDirs > 0">
+            <item
+              v-for="item in dirs"
+              :key="base64(item.name)"
+              v-bind:index="item.index"
+              v-bind:name="item.name"
+              v-bind:isDir="item.isDir"
+              v-bind:url="item.url"
+              v-bind:modified="item.modified"
+              v-bind:type="item.type"
+              v-bind:size="item.size"
+              v-bind:path="item.path"
+            >
+            </item>
+          </div>
 
-        <h2 v-if="req.numFiles > 0">{{ $t("files.files") }}</h2>
-        <div v-if="req.numFiles > 0">
-          <item
-            v-for="item in files"
-            :key="base64(item.name)"
-            v-bind:index="item.index"
-            v-bind:name="item.name"
-            v-bind:isDir="item.isDir"
-            v-bind:url="item.url"
-            v-bind:modified="item.modified"
-            v-bind:type="item.type"
-            v-bind:size="item.size"
-            v-bind:path="item.path"
+          <h2 v-if="req.numFiles > 0">{{ $t("files.files") }}</h2>
+          <div v-if="req.numFiles > 0">
+            <item
+              v-for="item in files"
+              :key="base64(item.name)"
+              v-bind:index="item.index"
+              v-bind:name="item.name"
+              v-bind:isDir="item.isDir"
+              v-bind:url="item.url"
+              v-bind:modified="item.modified"
+              v-bind:type="item.type"
+              v-bind:size="item.size"
+              v-bind:path="item.path"
+            >
+            </item>
+          </div>
+          <context-menu
+            :show="isContextMenuVisible"
+            :pos="contextMenuPos"
+            @hide="hideContextMenu"
           >
-          </item>
-        </div>
+            <action
+              v-if="headerButtons.share"
+              icon="share"
+              :label="$t('buttons.share')"
+              show="share"
+            />
+            <action
+              v-if="headerButtons.rename"
+              icon="mode_edit"
+              :label="$t('buttons.rename')"
+              show="rename"
+            />
+            <action
+              v-if="headerButtons.copy"
+              id="copy-button"
+              icon="content_copy"
+              :label="$t('buttons.copyFile')"
+              show="copy"
+            />
+            <action
+              v-if="headerButtons.move"
+              id="move-button"
+              icon="forward"
+              :label="$t('buttons.moveFile')"
+              show="move"
+            />
+            <action
+              v-if="headerButtons.delete"
+              id="delete-button"
+              icon="delete"
+              :label="$t('buttons.delete')"
+              show="delete"
+            />
+            <action
+              v-if="headerButtons.download"
+              icon="file_download"
+              :label="$t('buttons.download')"
+              @action="download"
+              :counter="selectedCount"
+            />
+            <action icon="info" :label="$t('buttons.info')" show="info" />
+          </context-menu>
+        </span>
 
         <input
           style="display: none"
@@ -278,6 +327,7 @@ import throttle from "lodash.throttle";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Search from "@/components/Search.vue";
+import ContextMenu from "@/components/ContextMenu.vue";
 import Item from "@/components/files/ListingItem.vue";
 
 export default {
@@ -287,6 +337,7 @@ export default {
     Action,
     Search,
     Item,
+    ContextMenu,
   },
   data: function () {
     return {
@@ -295,10 +346,12 @@ export default {
       dragCounter: 0,
       width: window.innerWidth,
       itemWeight: 0,
+      isContextMenuVisible: false,
+      contextMenuPos: { x: 0, y: 0 },
     };
   },
   computed: {
-    ...mapState(["req", "selected", "user", "multiple", "selected", "loading"]),
+    ...mapState(["req", "user", "multiple", "selected", "loading"]),
     ...mapGetters(["selectedCount", "currentPrompt"]),
     nameSorted() {
       return this.req.sorting.by === "name";
@@ -398,7 +451,7 @@ export default {
   },
   mounted: function () {
     // Check the columns size for the first time.
-    this.colunmsResize();
+    this.columnsResize();
 
     // How much every listing item affects the window height
     this.setItemWeight();
@@ -597,7 +650,7 @@ export default {
 
       action(overwrite, rename);
     },
-    colunmsResize() {
+    columnsResize() {
       // Update the columns size based on the window width.
       let items = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
       if (!items) return;
@@ -788,7 +841,7 @@ export default {
       this.$store.commit("closeHovers");
     },
     windowsResize: throttle(function () {
-      this.colunmsResize();
+      this.columnsResize();
       this.width = window.innerWidth;
 
       // Listing element is not displayed
@@ -885,6 +938,16 @@ export default {
 
       // Set the number of displayed items
       this.showLimit = showQuantity > totalItems ? totalItems : showQuantity;
+    },
+    showContextMenu(event) {
+      this.isContextMenuVisible = true;
+      this.contextMenuPos = {
+        x: event.clientX,
+        y: event.clientY,
+      };
+    },
+    hideContextMenu() {
+      this.isContextMenuVisible = false;
     },
   },
 };

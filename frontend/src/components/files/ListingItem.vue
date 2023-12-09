@@ -8,6 +8,7 @@
     @dragover="dragOver"
     @drop="drop"
     @click="itemClick"
+    @contextmenu="contextMenu"
     :data-dir="isDir"
     :data-type="type"
     :aria-label="name"
@@ -193,6 +194,25 @@ export default {
     itemClick: function (event) {
       if (this.singleClick && !this.$store.state.multiple) this.open();
       else this.click(event);
+    },
+    contextMenu: function (event) {
+      const to = setTimeout(() => {
+        this.touches = 0;
+      }, 300);
+
+      this.touches++;
+      if (this.touches > 1) return;
+
+      event.preventDefault();
+      if (
+        this.selected.length < 2 ||
+        event.ctrlKey ||
+        this.$store.state.selected.indexOf(this.index) === -1
+      ) {
+        this.touches--;
+        clearTimeout(to);
+        this.click(event);
+      }
     },
     click: function (event) {
       if (!this.singleClick && this.selectedCount !== 0) event.preventDefault();
