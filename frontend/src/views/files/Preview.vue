@@ -342,10 +342,14 @@ export default {
       }, 1500);
     }, 500),
     close() {
-      this.$store.commit("updateRequest", {});
-
-      let uri = url.removeLastDir(this.$route.path) + "/";
-      this.$router.push({ path: uri });
+      const uri = url.removeLastDir(this.$route.path) + "/";
+      const hasCachedListing = !!this.oldReq.items;
+      this.$store.commit("updateRequest", this.oldReq);
+      if (hasCachedListing) {
+        this.$router.push({ path: uri, query: { cache: true } });
+      } else {
+        this.$router.push({ path: uri });
+      }
     },
     download() {
       window.open(this.downloadUrl);

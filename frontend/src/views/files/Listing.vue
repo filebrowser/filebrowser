@@ -290,7 +290,6 @@ export default {
   },
   data: function () {
     return {
-      showLimit: 50,
       columnWidth: 280,
       dragCounter: 0,
       width: window.innerWidth,
@@ -298,7 +297,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["req", "selected", "user", "multiple", "selected", "loading"]),
+    ...mapState(["req", "selected", "showLimit", "user", "multiple", "selected", "loading"]),
     ...mapGetters(["selectedCount", "currentPrompt"]),
     nameSorted() {
       return this.req.sorting.by === "name";
@@ -383,9 +382,7 @@ export default {
   },
   watch: {
     req: function () {
-      // Reset the show value
-      this.showLimit = 50;
-
+      this.$store.commit("setShowLimit", 50);
       // Ensures that the listing is displayed
       Vue.nextTick(() => {
         // How much every listing item affects the window height
@@ -611,9 +608,14 @@ export default {
     scrollEvent: throttle(function () {
       const totalItems = this.req.numDirs + this.req.numFiles;
 
+      // Stop if listing is loading
+      if (this.loading) return;
+
+      // Update store scroll position
+      this.$store.commit("setScrollPosition", window.scrollY);
+
       // All items are displayed
       if (this.showLimit >= totalItems) return;
-
       const currentPos = window.innerHeight + window.scrollY;
 
       // Trigger at the 75% of the window height
@@ -626,7 +628,7 @@ export default {
         );
 
         // Increase the number of displayed items
-        this.showLimit += showQuantity;
+        this.$store.commit('setShowLimit', this.showLimit + showQuantity);
       }
     }, 100),
     dragEnter() {
@@ -884,7 +886,9 @@ export default {
       if (this.showLimit > showQuantity && !fit) return;
 
       // Set the number of displayed items
-      this.showLimit = showQuantity > totalItems ? totalItems : showQuantity;
+      const newShowLimit = showQuantity > totalItems ? totalItems : showQuantity;
+      this.$store.commit('setShowLimit', newShowLimit);
+      
     },
   },
 };

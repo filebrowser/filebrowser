@@ -22,6 +22,8 @@ const state = {
   multiple: false,
   prompts: [],
   showShell: false,
+  scrollPosition: 0,
+  showLimit: 50,
 };
 
 export default new Vuex.Store({

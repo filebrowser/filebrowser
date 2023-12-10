@@ -50,7 +50,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["req", "reload", "loading"]),
+    ...mapState(["req", "scrollPosition", "reload", "loading"]),
     currentView() {
       if (this.req.type == undefined) {
         return null;
@@ -72,7 +72,22 @@ export default {
     this.fetchData();
   },
   watch: {
-    $route: "fetchData",
+    $route: async function (value) {
+      // Do not fetch data if "cache" query parameter is set
+      if (!this.$route.query.cache) {
+        await this.fetchData();
+        return;
+      }
+
+      // Load previous listing view parameters
+      if (this.currentView === "listing") {
+        const cachedShowLimit = this.$store.state.showLimit;
+        this.$nextTick(() => {
+          this.$store.commit('setShowLimit', cachedShowLimit);
+          this.$nextTick(() => window.scrollTo(0, this.scrollPosition));
+        });
+      }
+    },
     reload: function (value) {
       if (value === true) {
         this.fetchData();

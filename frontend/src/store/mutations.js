@@ -104,6 +104,12 @@ const mutations = {
   setETA(state, value) {
     state.upload.eta = value;
   },
+  setShowLimit(state, value) {
+    state.showLimit = value;
+  },
+  setScrollPosition(state, value) {
+    state.scrollPosition = value;
+  },
   resetUpload(state) {
     state.upload.uploads = {};
     state.upload.queue = [];
