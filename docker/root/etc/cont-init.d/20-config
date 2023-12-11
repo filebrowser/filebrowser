@@ -1,15 +1,17 @@
 #!/usr/bin/with-contenv bash
 
-# make folders
-mkdir -p /database
-
 # copy config
 if [ ! -f "/config/settings.json" ]; then
   cp -a /defaults/settings.json /config/settings.json
 fi
 
+# check if db exists
+if [ ! -f "/database/filebrowser.db" ]; then
+  touch "/database/filebrowser.db"
+fi
+
 # permissions
-chown abc:abc \
-	/config/settings.json \
+chown -R "$PUID:$PGID" \
+	/config \
 	/database \
 	/srv
