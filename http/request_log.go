@@ -21,6 +21,8 @@ type RequestLog struct {
 	method        string
 	status        int
 	elapsed       float64
+	referer       string
+	origin        string
 }
 
 func (r *RequestLog) user_name() string {
@@ -58,6 +60,8 @@ func LogRequest(w http.ResponseWriter, r *http.Request, format string, log_ Requ
 	if log_.response_size == 0 {
 		log_.response_size = parseSize(w.Header().Get("Content-Length"))
 	}
+	log_.origin = r.Header.Get("Origin")
+	log_.referer = r.Header.Get("Referer")
 	log_.path = r.URL.Path
 	log_.method = r.Method
 	log.Println(formatLog(format, log_))
@@ -76,6 +80,8 @@ func LogRequest(w http.ResponseWriter, r *http.Request, format string, log_ Requ
 //	%{method}
 //	%{status}
 //	%{elapsed}
+//	%{referer}
+//	%{origin}
 func formatLog(format string, log RequestLog) string {
 	format = strings.ReplaceAll(format, "%{user_name}", log.user_name())
 	format = strings.ReplaceAll(format, "%{user_id}", log.user_id())
@@ -88,6 +94,8 @@ func formatLog(format string, log RequestLog) string {
 	format = strings.ReplaceAll(format, "%{method}", log.method)
 	format = strings.ReplaceAll(format, "%{status}", int2string(log.status))
 	format = strings.ReplaceAll(format, "%{elapsed}", float2string(log.elapsed))
+	format = strings.ReplaceAll(format, "%{referer}", log.referer)
+	format = strings.ReplaceAll(format, "%{origin}", log.origin)
 	return format
 }
 
