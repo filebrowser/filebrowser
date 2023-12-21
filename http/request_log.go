@@ -43,9 +43,12 @@ func (r *RequestLog) user_id() string {
 
 func (r *RequestLog) user_scope() string {
 	if r.user != nil {
+		if r.user.Scope == "" {
+			return "."
+		}
 		return r.user.Scope
 	}
-	return "."
+	return "-"
 }
 
 func (r *RequestLog) time_string() string {
