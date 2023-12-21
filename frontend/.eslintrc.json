@@ -1,0 +1,20 @@
+{
+  "root": true,
+  "env": {
+    "node": true
+  },
+  "extends": [
+    "plugin:vue/essential",
+    "eslint:recommended",
+    "@vue/eslint-config-prettier"
+  ],
+  "rules": {
+    "vue/multi-word-component-names": "off",
+    "vue/no-reserved-component-names": "warn",
+    "vue/no-mutating-props": "warn"
+  },
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  }
+}

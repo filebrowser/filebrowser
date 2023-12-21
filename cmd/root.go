@@ -64,6 +64,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.Uint32("socket-perm", 0666, "unix socket file permissions") //nolint:gomnd
 	flags.StringP("baseurl", "b", "", "base url")
 	flags.String("cache-dir", "", "file cache directory (disabled if empty)")
+	flags.String("token-expiration-time", "2h", "user session timeout")
 	flags.Int("img-processors", 4, "image processors count") //nolint:gomnd
 	flags.Bool("disable-thumbnails", false, "disable image thumbnails")
 	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
@@ -261,6 +262,10 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 	_, disableExec := getParamB(flags, "disable-exec")
 	server.EnableExec = !disableExec
 
+	if val, set := getParamB(flags, "token-expiration-time"); set {
+		server.TokenExpirationTime = val
+	}
+
 	return server
 }
 
@@ -334,9 +339,13 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 		},
 		AuthMethod: "",
 		Branding:   settings.Branding{},
-		Commands:   nil,
-		Shell:      nil,
-		Rules:      nil,
+		Tus: settings.Tus{
+			ChunkSize:  settings.DefaultTusChunkSize,
+			RetryCount: settings.DefaultTusRetryCount,
+		},
+		Commands: nil,
+		Shell:    nil,
+		Rules:    nil,
 	}
 
 	var err error

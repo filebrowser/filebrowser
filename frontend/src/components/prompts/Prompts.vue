@@ -1,26 +1,33 @@
 <template>
   <div>
-    <component ref="currentComponent" :is="currentComponent"></component>
+    <component
+      v-if="showOverlay"
+      :ref="currentPromptName"
+      :is="currentPromptName"
+      v-bind="currentPrompt.props"
+    >
+    </component>
     <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
   </div>
 </template>
 
 <script>
-import Help from "./Help";
-import Info from "./Info";
-import Delete from "./Delete";
-import Rename from "./Rename";
-import Download from "./Download";
-import Move from "./Move";
-import Copy from "./Copy";
-import NewFile from "./NewFile";
-import NewDir from "./NewDir";
-import Replace from "./Replace";
-import ReplaceRename from "./ReplaceRename";
-import Share from "./Share";
-import Upload from "./Upload";
-import ShareDelete from "./ShareDelete";
-import { mapState } from "vuex";
+import Help from "./Help.vue";
+import Info from "./Info.vue";
+import Delete from "./Delete.vue";
+import Rename from "./Rename.vue";
+import Download from "./Download.vue";
+import Move from "./Move.vue";
+import Copy from "./Copy.vue";
+import NewFile from "./NewFile.vue";
+import NewDir from "./NewDir.vue";
+import Replace from "./Replace.vue";
+import ReplaceRename from "./ReplaceRename.vue";
+import Share from "./Share.vue";
+import Upload from "./Upload.vue";
+import ShareDelete from "./ShareDelete.vue";
+import Sidebar from "../Sidebar.vue";
+import { mapGetters, mapState } from "vuex";
 import buttons from "@/utils/buttons";
 
 export default {
@@ -40,6 +47,7 @@ export default {
     ReplaceRename,
     Upload,
     ShareDelete,
+    Sidebar
   },
   data: function () {
     return {
@@ -52,7 +60,7 @@ export default {
   },
   created() {
     window.addEventListener("keydown", (event) => {
-      if (this.show == null) return;
+      if (this.currentPrompt == null) return;
 
       let prompt = this.$refs.currentComponent;
 
@@ -64,7 +72,7 @@ export default {
 
       // Enter
       if (event.keyCode == 13) {
-        switch (this.show) {
+        switch (this.currentPrompt.prompt) {
           case "delete":
             prompt.submit();
             break;
@@ -82,31 +90,13 @@ export default {
     });
   },
   computed: {
-    ...mapState(["show", "plugins"]),
-    currentComponent: function () {
-      const matched =
-        [
-          "info",
-          "help",
-          "delete",
-          "rename",
-          "move",
-          "copy",
-          "newFile",
-          "newDir",
-          "download",
-          "replace",
-          "replace-rename",
-          "share",
-          "upload",
-          "share-delete",
-        ].indexOf(this.show) >= 0;
-
-      return (matched && this.show) || null;
-    },
+    ...mapState(["plugins"]),
+    ...mapGetters(["currentPrompt", "currentPromptName"]),
     showOverlay: function () {
       return (
-        this.show !== null && this.show !== "search" && this.show !== "more"
+        this.currentPrompt !== null &&
+        this.currentPrompt.prompt !== "search" &&
+        this.currentPrompt.prompt !== "more"
       );
     },
   },

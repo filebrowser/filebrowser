@@ -143,14 +143,14 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapGetters, mapState } from "vuex";
 import { files as api } from "@/api";
 import { resizePreview } from "@/utils/constants";
 import url from "@/utils/url";
 import throttle from "lodash.throttle";
-import HeaderBar from "@/components/header/HeaderBar";
-import Action from "@/components/header/Action";
-import ExtendedImage from "@/components/files/ExtendedImage";
+import HeaderBar from "@/components/header/HeaderBar.vue";
+import Action from "@/components/header/Action.vue";
+import ExtendedImage from "@/components/files/ExtendedImage.vue";
 
 const mediaTypes = ["image", "video", "audio", "blob"];
 
@@ -177,7 +177,8 @@ export default {
     };
   },
   computed: {
-    ...mapState(["req", "user", "oldReq", "jwt", "loading", "show"]),
+    ...mapState(["req", "user", "oldReq", "jwt", "loading"]),
+    ...mapGetters(["currentPrompt"]),
     hasPrevious() {
       return this.previousLink !== "";
     },
@@ -195,7 +196,7 @@ export default {
       return api.getDownloadURL(this.req, true);
     },
     showMore() {
-      return this.$store.state.show === "more";
+      return this.currentPrompt?.prompt === "more";
     },
     isResizeEnabled() {
       return resizePreview;
@@ -247,7 +248,7 @@ export default {
       this.$router.replace({ path: this.nextLink });
     },
     key(event) {
-      if (this.show !== null) {
+      if (this.currentPrompt !== null) {
         return;
       }
 

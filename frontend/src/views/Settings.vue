@@ -52,7 +52,7 @@
 <script>
 import { mapState } from "vuex";
 
-import HeaderBar from "@/components/header/HeaderBar";
+import HeaderBar from "@/components/header/HeaderBar.vue";
 
 export default {
   name: "settings",

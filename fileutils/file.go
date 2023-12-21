@@ -17,12 +17,12 @@ func MoveFile(fs afero.Fs, src, dst string) error {
 		return nil
 	}
 	// fallback
-	err := CopyFile(fs, src, dst)
+	err := Copy(fs, src, dst)
 	if err != nil {
 		_ = fs.Remove(dst)
 		return err
 	}
-	if err := fs.Remove(src); err != nil {
+	if err := fs.RemoveAll(src); err != nil {
 		return err
 	}
 	return nil

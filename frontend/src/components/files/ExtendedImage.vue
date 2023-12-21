@@ -10,12 +10,7 @@
     @mouseup="mouseUp"
     @wheel="wheelMove"
   >
-    <img
-      src=""
-      class="image-ex-img image-ex-img-center"
-      ref="imgex"
-      @load="onLoad"
-    />
+    <img class="image-ex-img image-ex-img-center" ref="imgex" @load="onLoad" />
   </div>
 </template>
 <script>

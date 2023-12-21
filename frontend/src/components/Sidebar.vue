@@ -133,9 +133,9 @@ export default {
   },
   computed: {
     ...mapState(["user"]),
-    ...mapGetters(["isLogged"]),
+    ...mapGetters(["isLogged", "currentPrompt"]),
     active() {
-      return this.$store.state.show === "sidebar";
+      return this.currentPrompt?.prompt === "sidebar";
     },
     signup: () => signup,
     version: () => version,

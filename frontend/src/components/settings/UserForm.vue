@@ -67,10 +67,10 @@
 </template>
 
 <script>
-import Languages from "./Languages";
-import Rules from "./Rules";
-import Permissions from "./Permissions";
-import Commands from "./Commands";
+import Languages from "./Languages.vue";
+import Rules from "./Rules.vue";
+import Permissions from "./Permissions.vue";
+import Commands from "./Commands.vue";
 import { enableExec } from "@/utils/constants";
 
 export default {

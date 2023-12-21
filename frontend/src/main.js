@@ -7,7 +7,7 @@ import i18n from "@/i18n";
 import Vue from "@/utils/vue";
 import { recaptcha, loginPage } from "@/utils/constants";
 import { login, validateLogin } from "@/utils/auth";
-import App from "@/App";
+import App from "@/App.vue";
 
 cssVars();
 

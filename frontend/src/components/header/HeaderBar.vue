@@ -11,7 +11,7 @@
 
     <slot />
 
-    <div id="dropdown" :class="{ active: this.$store.state.show === 'more' }">
+    <div id="dropdown" :class="{ active: this.currentPromptName === 'more' }">
       <slot name="actions" />
     </div>
 
@@ -25,7 +25,7 @@
 
     <div
       class="overlay"
-      v-show="this.$store.state.show == 'more'"
+      v-show="this.currentPromptName == 'more'"
       @click="$store.commit('closeHovers')"
     />
   </header>
@@ -34,7 +34,8 @@
 <script>
 import { logoURL } from "@/utils/constants";
 
-import Action from "@/components/header/Action";
+import Action from "@/components/header/Action.vue";
+import { mapGetters } from "vuex";
 
 export default {
   name: "header-bar",
@@ -51,6 +52,9 @@ export default {
     openSidebar() {
       this.$store.commit("showHover", "sidebar");
     },
+  },
+  computed: {
+    ...mapGetters(["currentPromptName"]),
   },
 };
 </script>
