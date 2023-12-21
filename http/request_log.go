@@ -8,15 +8,17 @@ import (
 	"strings"
 	"time"
 
+	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
+	"github.com/tomasen/realip"
 )
 
 type RequestLog struct {
 	user          *users.User
 	ip            string
 	time          time.Time
-	request_size  int64
-	response_size int64
+	request_size  uint64
+	response_size uint64
 	path          string
 	method        string
 	status        int
@@ -50,19 +52,19 @@ func (r *RequestLog) time_string() string {
 	return r.time.Format(time.RFC3339)
 }
 
-func LogRequest(w http.ResponseWriter, r *http.Request, format string, log_ RequestLog) {
+func logRequest(w http.ResponseWriter, r *http.Request, format string, log_ RequestLog) {
 	if log_.status == 0 {
 		log_.status = 200
 	}
-	log_.ip = getRealIp(r)
+	log_.ip = realip.FromRequest(r)
 	log_.time = time.Now()
-	log_.request_size = r.ContentLength
+	log_.request_size = getRequestSize(r)
 	if log_.response_size == 0 {
-		log_.response_size = parseSize(w.Header().Get("Content-Length"))
+		log_.response_size = str2uint64(w.Header().Get("Content-Length"))
 	}
 	log_.origin = r.Header.Get("Origin")
 	log_.referer = r.Header.Get("Referer")
-	log_.path = r.URL.Path
+	log_.path = r.RequestURI
 	log_.method = r.Method
 	log.Println(formatLog(format, log_))
 }
@@ -120,12 +122,12 @@ func parseFirstItem(s string) string {
 	return items[0]
 }
 
-func parseSize(d string) int64 {
+func str2uint64(d string) uint64 {
 	val, err := strconv.ParseInt(d, 10, 64)
 	if err != nil {
 		return 0
 	}
-	return val
+	return uint64(val)
 }
 
 func int2string(val any) string {
@@ -134,4 +136,62 @@ func int2string(val any) string {
 
 func float2string(val float64) string {
 	return fmt.Sprintf("%f", val)
+}
+
+func getRequestSize(r *http.Request) uint64 {
+	return uint64(r.ContentLength)
+}
+
+type myHandler struct {
+	f http.HandlerFunc
+}
+
+func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	h.f(w, r)
+}
+
+func handlerfunc2handler(f http.HandlerFunc) http.Handler {
+	return &myHandler{f: f}
+}
+func handler2handlerfunc(h http.Handler) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		h.ServeHTTP(w, r)
+	})
+}
+
+func RequestLogHandlerFunc(handler http.HandlerFunc, server *settings.Server) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		begin := time.Now()
+		writer := MakeResponseWriterWrapper(w)
+		handler(writer, r)
+		if server.EnableRequestLog {
+			logRequest(w, r, server.RequestLogFormat, RequestLog{
+				user:          nil,
+				status:        writer.GetStatus(),
+				elapsed:       time.Now().Sub(begin).Seconds(),
+				response_size: writer.GetSize(),
+			})
+		}
+	})
+}
+
+func RequestLogHandler(handler http.Handler, server *settings.Server) http.Handler {
+	return handlerfunc2handler(RequestLogHandlerFunc(handler2handlerfunc(handler), server))
+}
+
+func RequestLogHandleFunc(handle handleFunc, server *settings.Server) handleFunc {
+	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		begin := time.Now()
+		writer := MakeResponseWriterWrapper(w)
+		status, err := handle(writer, r, d)
+		if server.EnableRequestLog {
+			logRequest(w, r, server.RequestLogFormat, RequestLog{
+				user:          d.user,
+				status:        writer.GetStatus(),
+				elapsed:       time.Now().Sub(begin).Seconds(),
+				response_size: writer.GetSize(),
+			})
+		}
+		return status, err
+	}
 }
