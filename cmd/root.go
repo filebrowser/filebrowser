@@ -70,6 +70,8 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
 	flags.Bool("disable-exec", false, "disables Command Runner feature")
 	flags.Bool("disable-type-detection-by-header", false, "disables type detection by reading file headers")
+	flags.Bool("enable-request-log", false, "enable logging all the request")
+	flags.String("request-log-format", "%{user_name} %{ip} %{method} %{path} %{response_size}", "logging format for the request")
 }
 
 var rootCmd = &cobra.Command{
@@ -261,6 +263,12 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 
 	_, disableExec := getParamB(flags, "disable-exec")
 	server.EnableExec = !disableExec
+
+	_, enableRequestLog := getParamB(flags, "enable-request-log")
+	server.EnableRequestLog = enableRequestLog
+
+	requestLogFormat := getParam(flags, "request-log-format")
+	server.RequestLogFormat = requestLogFormat
 
 	if val, set := getParamB(flags, "token-expiration-time"); set {
 		server.TokenExpirationTime = val

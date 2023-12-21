@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/tomasen/realip"
 
@@ -49,6 +50,7 @@ func (d *data) Check(path string) bool {
 
 func handle(fn handleFunc, prefix string, store *storage.Storage, server *settings.Server) http.Handler {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		begin := time.Now()
 		for k, v := range globalHeaders {
 			w.Header().Set(k, v)
 		}
@@ -59,12 +61,21 @@ func handle(fn handleFunc, prefix string, store *storage.Storage, server *settin
 			return
 		}
 
-		status, err := fn(w, r, &data{
+		d := data{
 			Runner:   &runner.Runner{Enabled: server.EnableExec, Settings: settings},
 			store:    store,
 			settings: settings,
 			server:   server,
-		})
+		}
+
+		status, err := fn(w, r, &d)
+		if server.EnableRequestLog {
+			LogRequest(w, r, server.RequestLogFormat, RequestLog{
+				user:    d.user,
+				status:  status,
+				elapsed: time.Now().Sub(begin).Seconds(),
+			})
+		}
 
 		if status >= 400 || err != nil {
 			clientIP := realip.FromRequest(r)
