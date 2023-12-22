@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"time"
 )
 
 type _size struct {
@@ -33,13 +34,15 @@ type ResponseWriterWrapper struct {
 	writer http.ResponseWriter
 	size   *_size
 	status *_status
+	time   time.Time
 }
 
 func MakeResponseWriterWrapper(w http.ResponseWriter) *ResponseWriterWrapper {
 	return &ResponseWriterWrapper{
 		writer: w,
 		size:   &_size{value: 0},
-		status: &_status{value: 0},
+		status: &_status{value: 200},
+		time:   time.Now(),
 	}
 }
 
@@ -61,6 +64,14 @@ func (r *ResponseWriterWrapper) GetSize() uint64 {
 	return r.size.get()
 }
 
+func (r *ResponseWriterWrapper) GetTime() time.Time {
+	return r.time
+}
+
 func (r *ResponseWriterWrapper) GetStatus() int {
 	return r.status.get()
+}
+
+func (r *ResponseWriterWrapper) GetElapsed() float64 {
+	return time.Now().Sub(r.time).Seconds()
 }

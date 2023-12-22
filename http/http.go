@@ -44,7 +44,7 @@ func NewHandler(
 
 	r.HandleFunc("/health", RequestLogHandlerFunc(healthHandler, server))
 	r.PathPrefix("/static").Handler(RequestLogHandler(static, server))
-	r.NotFoundHandler = index
+	r.NotFoundHandler = RequestLogHandler(index, server)
 
 	api := r.PathPrefix("/api").Subrouter()
 

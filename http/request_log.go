@@ -55,23 +55,6 @@ func (r *RequestLog) time_string() string {
 	return r.time.Format(time.RFC3339)
 }
 
-func logRequest(w http.ResponseWriter, r *http.Request, format string, log_ RequestLog) {
-	if log_.status == 0 {
-		log_.status = 200
-	}
-	log_.ip = realip.FromRequest(r)
-	log_.time = time.Now()
-	log_.request_size = getRequestSize(r)
-	if log_.response_size == 0 {
-		log_.response_size = str2uint64(w.Header().Get("Content-Length"))
-	}
-	log_.origin = r.Header.Get("Origin")
-	log_.referer = r.Header.Get("Referer")
-	log_.path = r.RequestURI
-	log_.method = r.Method
-	log.Println(formatLog(format, log_))
-}
-
 // support placeholders:
 //
 //	%{user_name}
@@ -132,13 +115,21 @@ func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.f(w, r)
 }
 
-func handlerfunc2handler(f http.HandlerFunc) http.Handler {
-	return &myHandler{f: f}
-}
-func handler2handlerfunc(h http.Handler) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		h.ServeHTTP(w, r)
-	})
+func _log(writer *ResponseWriterWrapper, r *http.Request, user *users.User, server *settings.Server) {
+	log_ := RequestLog{
+		user:          user,
+		status:        writer.GetStatus(),
+		elapsed:       writer.GetElapsed(),
+		response_size: writer.GetSize(),
+		ip:            realip.FromRequest(r),
+		time:          writer.GetTime(),
+		request_size:  getRequestSize(r),
+		origin:        r.Header.Get("Origin"),
+		referer:       r.Header.Get("Referer"),
+		path:          r.RequestURI,
+		method:        r.Method,
+	}
+	log.Println(formatLog(server.RequestLogFormat, log_))
 }
 
 func RequestLogHandlerFunc(handler http.HandlerFunc, server *settings.Server) http.HandlerFunc {
@@ -146,15 +137,9 @@ func RequestLogHandlerFunc(handler http.HandlerFunc, server *settings.Server) ht
 		return handler
 	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		begin := time.Now()
 		writer := MakeResponseWriterWrapper(w)
 		handler(writer, r)
-		logRequest(w, r, server.RequestLogFormat, RequestLog{
-			user:          nil,
-			status:        writer.GetStatus(),
-			elapsed:       time.Now().Sub(begin).Seconds(),
-			response_size: writer.GetSize(),
-		})
+		_log(writer, r, nil, server)
 	})
 }
 
@@ -162,7 +147,11 @@ func RequestLogHandler(handler http.Handler, server *settings.Server) http.Handl
 	if !server.EnableRequestLog {
 		return handler
 	}
-	return handlerfunc2handler(RequestLogHandlerFunc(handler2handlerfunc(handler), server))
+	return &myHandler{f: func(w http.ResponseWriter, r *http.Request) {
+		writer := MakeResponseWriterWrapper(w)
+		handler.ServeHTTP(writer, r)
+		_log(writer, r, nil, server)
+	}}
 }
 
 func RequestLogHandleFunc(handle handleFunc, server *settings.Server) handleFunc {
@@ -170,15 +159,10 @@ func RequestLogHandleFunc(handle handleFunc, server *settings.Server) handleFunc
 		return handle
 	}
 	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-		begin := time.Now()
 		writer := MakeResponseWriterWrapper(w)
 		status, err := handle(writer, r, d)
-		logRequest(w, r, server.RequestLogFormat, RequestLog{
-			user:          d.user,
-			status:        writer.GetStatus(),
-			elapsed:       time.Now().Sub(begin).Seconds(),
-			response_size: writer.GetSize(),
-		})
+		writer.status.set(status)
+		_log(writer, r, nil, server)
 		return status, err
 	}
 }
