@@ -7,6 +7,7 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 	"hash"
+	"image"
 	"io"
 	"log"
 	"mime"
@@ -29,23 +30,25 @@ const PermDir = 0755
 // FileInfo describes a file.
 type FileInfo struct {
 	*Listing
-	Fs        afero.Fs          `json:"-"`
-	Path      string            `json:"path"`
-	Name      string            `json:"name"`
-	Size      int64             `json:"size"`
-	Extension string            `json:"extension"`
-	ModTime   time.Time         `json:"modified"`
-	Mode      os.FileMode       `json:"mode"`
-	IsDir     bool              `json:"isDir"`
-	IsSymlink bool              `json:"isSymlink"`
-	Link      string            `json:"link"`
-	Type      string            `json:"type"`
-	Subtitles []string          `json:"subtitles,omitempty"`
-	Content   string            `json:"content,omitempty"`
-	Checksums map[string]string `json:"checksums,omitempty"`
-	Token     string            `json:"token,omitempty"`
-	DiskUsage int64             `json:"diskUsage,omitempty"`
-	Inodes    int64             `json:"inodes,omitempty"`
+	Fs         afero.Fs          `json:"-"`
+	Path       string            `json:"path"`
+	Name       string            `json:"name"`
+	Size       int64             `json:"size"`
+	Extension  string            `json:"extension"`
+	ModTime    time.Time         `json:"modified"`
+	Mode       os.FileMode       `json:"mode"`
+	IsDir      bool              `json:"isDir"`
+	IsSymlink  bool              `json:"isSymlink"`
+	Link       string            `json:"link"`
+	Type       string            `json:"type"`
+	Subtitles  []string          `json:"subtitles,omitempty"`
+	Content    string            `json:"content,omitempty"`
+	Checksums  map[string]string `json:"checksums,omitempty"`
+	Token      string            `json:"token,omitempty"`
+	DiskUsage  int64             `json:"diskUsage,omitempty"`
+	Inodes     int64             `json:"inodes,omitempty"`
+	currentDir []os.FileInfo     `json:"-"`
+	Resolution *ImageResolution  `json:"resolution,omitempty"`
 }
 
 // FileOptions are the options when getting a file info.
@@ -58,6 +61,11 @@ type FileOptions struct {
 	Token      string
 	Checker    rules.Checker
 	Content    bool
+}
+
+type ImageResolution struct {
+	Width  int `json:"width"`
+	Height int `json:"height"`
 }
 
 // NewFileInfo creates a File object from a path and a given user. This File
@@ -238,6 +246,12 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 		return nil
 	case strings.HasPrefix(mimetype, "image"):
 		i.Type = "image"
+		resolution, err := calculateImageResolution(i.Fs, i.Path)
+		if err != nil {
+			log.Printf("Error calculating image resolution: %v", err)
+		} else {
+			i.Resolution = resolution
+		}
 		return nil
 	case strings.HasSuffix(mimetype, "pdf"):
 		i.Type = "pdf"
@@ -264,6 +278,28 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	}
 
 	return nil
+}
+
+func calculateImageResolution(fs afero.Fs, filePath string) (*ImageResolution, error) {
+	file, err := fs.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if cErr := file.Close(); cErr != nil {
+			log.Printf("Failed to close file: %v", cErr)
+		}
+	}()
+
+	config, _, err := image.DecodeConfig(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ImageResolution{
+		Width:  config.Width,
+		Height: config.Height,
+	}, nil
 }
 
 func (i *FileInfo) readFirstBytes() []byte {
@@ -297,13 +333,21 @@ func (i *FileInfo) detectSubtitles() {
 	// detect multiple languages. Base*.vtt
 	// TODO: give subtitles descriptive names (lang) and track attributes
 	parentDir := strings.TrimRight(i.Path, i.Name)
-	dir, err := afero.ReadDir(i.Fs, parentDir)
-	if err == nil {
-		base := strings.TrimSuffix(i.Name, ext)
-		for _, f := range dir {
-			if !f.IsDir() && strings.HasPrefix(f.Name(), base) && strings.HasSuffix(f.Name(), ".vtt") {
-				i.Subtitles = append(i.Subtitles, path.Join(parentDir, f.Name()))
-			}
+	var dir []os.FileInfo
+	if len(i.currentDir) > 0 {
+		dir = i.currentDir
+	} else {
+		var err error
+		dir, err = afero.ReadDir(i.Fs, parentDir)
+		if err != nil {
+			return
+		}
+	}
+
+	base := strings.TrimSuffix(i.Name, ext)
+	for _, f := range dir {
+		if !f.IsDir() && strings.HasPrefix(f.Name(), base) && strings.HasSuffix(f.Name(), ".vtt") {
+			i.Subtitles = append(i.Subtitles, path.Join(parentDir, f.Name()))
 		}
 	}
 }
@@ -349,16 +393,26 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
 		}
 
 		file := &FileInfo{
-			Fs:        i.Fs,
-			Name:      name,
-			Size:      f.Size(),
-			ModTime:   f.ModTime(),
-			Mode:      f.Mode(),
-			IsDir:     f.IsDir(),
-			IsSymlink: isSymlink,
-			Link:      symlink,
-			Extension: filepath.Ext(name),
-			Path:      fPath,
+			Fs:         i.Fs,
+			Name:       name,
+			Size:       f.Size(),
+			ModTime:    f.ModTime(),
+			Mode:       f.Mode(),
+			IsDir:      f.IsDir(),
+			IsSymlink:  isSymlink,
+			Link:       symlink,
+			Extension:  filepath.Ext(name),
+			Path:       fPath,
+			currentDir: dir,
+		}
+
+		if !file.IsDir && strings.HasPrefix(mime.TypeByExtension(file.Extension), "image/") {
+			resolution, err := calculateImageResolution(file.Fs, file.Path)
+			if err != nil {
+				log.Printf("Error calculating resolution for image %s: %v", file.Path, err)
+			} else {
+				file.Resolution = resolution
+			}
 		}
 
 		if file.IsDir {

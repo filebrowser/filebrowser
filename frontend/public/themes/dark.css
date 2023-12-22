@@ -177,6 +177,12 @@ table th {
   background: var(--surfacePrimary);
   color: var(--textPrimary);
 }
+.shell__divider {
+  background: rgba(255, 255, 255, 0.1);
+}
+.shell__divider:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
 .shell__result {
   border-top: 1px solid var(--divider);
 }

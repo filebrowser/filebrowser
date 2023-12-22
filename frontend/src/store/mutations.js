@@ -3,30 +3,35 @@ import moment from "moment";
 
 const mutations = {
   closeHovers: (state) => {
-    state.show = null;
-    state.showConfirm = null;
-    state.showAction = null;
+    state.prompts.pop();
   },
   toggleShell: (state) => {
+    state.show = null;
     state.showShell = !state.showShell;
   },
   showHover: (state, value) => {
     if (typeof value !== "object") {
-      state.show = value;
+      state.prompts.push({
+        prompt: value,
+        confirm: null,
+        action: null,
+        props: null,
+      });
       return;
     }
 
-    state.show = value.prompt;
-    state.showConfirm = value.confirm;
-    if (value.action !== undefined) {
-      state.showAction = value.action;
-    }
+    state.prompts.push({
+      prompt: value.prompt, // Should not be null
+      confirm: value?.confirm,
+      action: value?.action,
+      props: value?.props,
+    });
   },
   showError: (state) => {
-    state.show = "error";
+    state.prompts.push("error");
   },
   showSuccess: (state) => {
-    state.show = "success";
+    state.prompts.push("success");
   },
   setLoading: (state, value) => {
     state.loading = value;
@@ -74,8 +79,15 @@ const mutations = {
     }
   },
   updateRequest: (state, value) => {
+    const selectedItems = state.selected.map((i) => state.req.items[i]);
     state.oldReq = state.req;
     state.req = value;
+    state.selected = [];
+
+    if (!state.req?.items) return;
+    state.selected = state.req.items
+      .filter((item) => selectedItems.some((rItem) => rItem.url === item.url))
+      .map((item) => item.index);
   },
   updateClipboard: (state, value) => {
     state.clipboard.key = value.key;
@@ -104,6 +116,21 @@ const mutations = {
     state.diskUsages = null;
     tmp[value.path] = value.usage;
     state.diskUsages = tmp;
+  },
+  setUploadSpeed: (state, value) => {
+    state.upload.speedMbyte = value;
+  },
+  setETA(state, value) {
+    state.upload.eta = value;
+  },
+  resetUpload(state) {
+    state.upload.uploads = {};
+    state.upload.queue = [];
+    state.upload.progress = [];
+    state.upload.sizes = [];
+    state.upload.id = 0;
+    state.upload.speedMbyte = 0;
+    state.upload.eta = 0;
   },
 };
 

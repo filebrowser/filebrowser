@@ -144,7 +144,7 @@
 <script>
 import { mapState, mapGetters } from "vuex";
 import * as auth from "@/utils/auth";
-import Quota from "@/components/Quota";
+import Quota from "./Quota.vue";
 import {
   version,
   signup,
@@ -170,9 +170,9 @@ export default {
   },
   computed: {
     ...mapState(["user"]),
-    ...mapGetters(["isLogged"]),
+    ...mapGetters(["isLogged", "currentPrompt"]),
     active() {
-      return this.$store.state.show === "sidebar";
+      return this.currentPrompt?.prompt === "sidebar";
     },
     signup: () => signup,
     version: () => version,

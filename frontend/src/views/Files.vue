@@ -27,11 +27,11 @@
 import { files as api } from "@/api";
 import { mapState, mapMutations } from "vuex";
 
-import HeaderBar from "@/components/header/HeaderBar";
-import Breadcrumbs from "@/components/Breadcrumbs";
-import Errors from "@/views/Errors";
-import Preview from "@/views/files/Preview";
-import Listing from "@/views/files/Listing";
+import HeaderBar from "@/components/header/HeaderBar.vue";
+import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import Errors from "@/views/Errors.vue";
+import Preview from "@/views/files/Preview.vue";
+import Listing from "@/views/files/Listing.vue";
 
 function clean(path) {
   return path.endsWith("/") ? path.slice(0, -1) : path;
@@ -45,7 +45,7 @@ export default {
     Errors,
     Preview,
     Listing,
-    Editor: () => import("@/views/files/Editor"),
+    Editor: () => import("@/views/files/Editor.vue"),
   },
   data: function () {
     return {
@@ -55,7 +55,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["req", "reload", "loading", "show"]),
+    ...mapState(["req", "reload", "loading"]),
     currentView() {
       if (this.req.type == undefined) {
         return null;

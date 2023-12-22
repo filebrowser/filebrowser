@@ -8,25 +8,19 @@
       content="width=device-width, initial-scale=1, user-scalable=no"
     />
 
-    [{[ if .ReCaptcha -]}]
-    <script src="[{[ .ReCaptchaHost ]}]/recaptcha/api.js?render=explicit"></script>
-    [{[ end ]}]
-
-    <title>
-      [{[ if .Name -]}][{[ .Name ]}][{[ else ]}]File Browser[{[ end ]}]
-    </title>
+    <title>File Browser</title>
 
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="[{[ .StaticURL ]}]/img/icons/favicon-32x32.png"
+      href="/img/icons/favicon-32x32.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="16x16"
-      href="[{[ .StaticURL ]}]/img/icons/favicon-16x16.png"
+      href="/img/icons/favicon-16x16.png"
     />
 
     <!-- Add to home screen for Android and modern mobile browsers -->
@@ -35,34 +29,44 @@
       id="manifestPlaceholder"
       crossorigin="use-credentials"
     />
-    <meta
-      name="theme-color"
-      content="[{[ if .Color -]}][{[ .Color ]}][{[ else ]}]#2979ff[{[ end ]}]"
-    />
+    <meta name="theme-color" content="#2979ff" />
 
     <!-- Add to home screen for Safari on iOS/iPadOS -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="apple-mobile-web-app-title" content="assets" />
-    <link
-      rel="apple-touch-icon"
-      href="[{[ .StaticURL ]}]/img/icons/apple-touch-icon.png"
-    />
+    <link rel="apple-touch-icon" href="/img/icons/apple-touch-icon.png" />
 
     <!-- Add to home screen for Windows -->
     <meta
       name="msapplication-TileImage"
-      content="[{[ .StaticURL ]}]/img/icons/mstile-144x144.png"
+      content="/img/icons/mstile-144x144.png"
     />
-    <meta
-      name="msapplication-TileColor"
-      content="[{[ if .Color -]}][{[ .Color ]}][{[ else ]}]#2979ff[{[ end ]}]"
-    />
+    <meta name="msapplication-TileColor" content="#2979ff" />
 
     <!-- Inject Some Variables and generate the manifest json -->
     <script>
       // We can assign JSON directly
-      window.FileBrowser = [{[ .Json ]}];
+      window.FileBrowser = {
+        AuthMethod: "json",
+        BaseURL: "",
+        CSS: false,
+        Color: "",
+        DisableExternal: false,
+        DisableUsedPercentage: false,
+        EnableExec: true,
+        EnableThumbs: true,
+        LoginPage: true,
+        Name: "",
+        NoAuth: false,
+        ReCaptcha: false,
+        ResizePreview: true,
+        Signup: false,
+        StaticURL: "",
+        Theme: "",
+        TusSettings: { chunkSize: 10485760, retryCount: 5 },
+        Version: "(untracked)",
+      };
       // Global function to prepend static url
       window.__prependStaticUrl = (url) => {
         return `${window.FileBrowser.StaticURL}/${url.replace(/^\/+/, "")}`;
@@ -72,12 +76,16 @@
         short_name: window.FileBrowser.Name || "File Browser",
         icons: [
           {
-            src: window.__prependStaticUrl("/img/icons/android-chrome-192x192.png"),
+            src: window.__prependStaticUrl(
+              "/img/icons/android-chrome-192x192.png"
+            ),
             sizes: "192x192",
             type: "image/png",
           },
           {
-            src: window.__prependStaticUrl("/img/icons/android-chrome-512x512.png"),
+            src: window.__prependStaticUrl(
+              "/img/icons/android-chrome-512x512.png"
+            ),
             sizes: "512x512",
             type: "image/png",
           },
@@ -180,14 +188,5 @@
     </div>
 
     <script type="module" src="/src/main.js"></script>
-
-    [{[ if .Theme -]}]
-    <link
-      rel="stylesheet"
-      href="[{[ .StaticURL ]}]/themes/[{[ .Theme ]}].css"
-    />
-    [{[ end ]}] [{[ if .CSS -]}]
-    <link rel="stylesheet" href="[{[ .StaticURL ]}]/custom.css" />
-    [{[ end ]}]
   </body>
 </html>

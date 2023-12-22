@@ -1,7 +1,8 @@
 <template>
   <div>
     <header-bar showMenu showLogo>
-      <search /> <title />
+      <search />
+      <title />
       <action
         class="search-button"
         icon="search"
@@ -308,10 +309,10 @@ import css from "@/utils/css";
 import throttle from "lodash.throttle";
 import buttons from "@/utils/buttons";
 
-import HeaderBar from "@/components/header/HeaderBar";
-import Action from "@/components/header/Action";
-import Search from "@/components/Search";
-import Item from "@/components/files/ListingItem";
+import HeaderBar from "@/components/header/HeaderBar.vue";
+import Action from "@/components/header/Action.vue";
+import Search from "@/components/Search.vue";
+import Item from "@/components/files/ListingItem.vue";
 
 export default {
   name: "listing",
@@ -331,16 +332,8 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      "req",
-      "selected",
-      "user",
-      "show",
-      "multiple",
-      "selected",
-      "loading",
-    ]),
-    ...mapGetters(["selectedCount", "onlyArchivesSelected"]),
+    ...mapState(["req", "selected", "user", "multiple", "selected", "loading"]),
+    ...mapGetters(["selectedCount", "currentPrompt", "onlyArchivesSelected"]),
     nameSorted() {
       return this.req.sorting.by === "name";
     },
@@ -483,7 +476,7 @@ export default {
     },
     keyEvent(event) {
       // No prompts are shown
-      if (this.show !== null) {
+      if (this.currentPrompt !== null) {
         return;
       }
 

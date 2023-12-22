@@ -50,12 +50,12 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
-import FileList from "./FileList";
+import FileList from "./FileList.vue";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
 
 export default {
-  name: "rename",
+  name: "unarchive",
   components: { FileList },
   data: function () {
     return {

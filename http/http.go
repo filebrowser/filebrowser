@@ -48,9 +48,10 @@ func NewHandler(
 
 	api := r.PathPrefix("/api").Subrouter()
 
-	api.Handle("/login", monkey(loginHandler, ""))
+	tokenExpirationTime := server.GetTokenExpirationTime(DefaultTokenExpirationTime)
+	api.Handle("/login", monkey(loginHandler(tokenExpirationTime), ""))
 	api.Handle("/signup", monkey(signupHandler, ""))
-	api.Handle("/renew", monkey(renewHandler, ""))
+	api.Handle("/renew", monkey(renewHandler(tokenExpirationTime), ""))
 
 	users := api.PathPrefix("/users").Subrouter()
 	users.Handle("", monkey(usersGetHandler, "")).Methods("GET")
@@ -66,10 +67,8 @@ func NewHandler(
 	api.PathPrefix("/resources").Handler(monkey(resourcePatchHandler(fileCache), "/api/resources")).Methods("PATCH")
 
 	api.PathPrefix("/tus").Handler(monkey(tusPostHandler(), "/api/tus")).Methods("POST")
-	api.PathPrefix("/tus").Handler(monkey(tusHeadHandler(), "/api/tus")).Methods("HEAD")
+	api.PathPrefix("/tus").Handler(monkey(tusHeadHandler(), "/api/tus")).Methods("HEAD", "GET")
 	api.PathPrefix("/tus").Handler(monkey(tusPatchHandler(), "/api/tus")).Methods("PATCH")
-
-	// api.PathPrefix("/usage").Handler(monkey(diskUsage, "/api/usage")).Methods("GET")
 
 	api.Path("/shares").Handler(monkey(shareListHandler, "/api/shares")).Methods("GET")
 	api.PathPrefix("/share").Handler(monkey(shareGetsHandler, "/api/share")).Methods("GET")

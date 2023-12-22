@@ -53,7 +53,7 @@ linters:
   disable-all: true
   enable:
     - bodyclose
-    - depguard
+    - deadcode
     - dogsled
     - dupl
     - errcheck

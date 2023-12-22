@@ -74,7 +74,7 @@
 <script>
 import { mapState, mapMutations } from "vuex";
 import { users as api } from "@/api";
-import Languages from "@/components/settings/Languages";
+import Languages from "@/components/settings/Languages.vue";
 import i18n, { rtlLanguages } from "@/i18n";
 
 export default {

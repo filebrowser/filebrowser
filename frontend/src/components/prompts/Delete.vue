@@ -47,8 +47,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["isListing", "selectedCount"]),
-    ...mapState(["req", "selected", "showConfirm"]),
+    ...mapGetters(["isListing", "selectedCount", "currentPrompt"]),
+    ...mapState(["req", "selected"]),
     trashBinCheckbox() {
       if (trashDir === "") {
         return false;
@@ -81,7 +81,7 @@ export default {
           await api.remove(this.$route.path, this.skipTrash);
           buttons.success("delete");
 
-          this.showConfirm();
+          this.currentPrompt?.confirm();
           this.closeHovers();
           return;
         }

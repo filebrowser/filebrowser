@@ -476,6 +476,7 @@ type DiskUsageResponse struct {
 }
 
 //lint:ignore U1000 unused in this fork
+//nolint:deadcode
 var diskUsage = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	file, err := files.NewFileInfo(files.FileOptions{
 		Fs:         d.user.Fs,
@@ -664,7 +665,7 @@ func chmodActionHandler(r *http.Request, d *data) error {
 		return errors.ErrPermissionDenied
 	}
 
-	mode, err := strconv.ParseUint(perms, 10, 32) //nolint:gomnd
+	mode, err := strconv.ParseUint(perms, 10, 32)
 	if err != nil {
 		return errors.ErrInvalidRequestParams
 	}

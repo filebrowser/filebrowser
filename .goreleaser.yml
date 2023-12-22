@@ -3,32 +3,33 @@ project_name: filebrowser
 env:
   - GO111MODULE=on
 
-build:
-  env:
-    - CGO_ENABLED=0
-  ldflags:
-    - -s -w -X github.com/filebrowser/filebrowser/v2/version.Version={{ .Version }} -X github.com/filebrowser/filebrowser/v2/version.CommitSHA={{ .ShortCommit }}
-  main: main.go
-  binary: filebrowser
-  goos:
-    - darwin
-    - linux
-    - windows
-    - freebsd
-  goarch:
-    - amd64
-    - 386
-    - arm
-    - arm64
-  goarm:
-    - 5
-    - 6
-    - 7
-  ignore:
-    - goos: darwin
-      goarch: 386
-    - goos: freebsd
-      goarch: arm
+builds:
+  - env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X github.com/filebrowser/filebrowser/v2/version.Version={{ .Version }} -X github.com/filebrowser/filebrowser/v2/version.CommitSHA={{ .ShortCommit }}
+    main: main.go
+    binary: filebrowser
+    goos:
+      - darwin
+      - linux
+      - windows
+      - freebsd
+    goarch:
+      - amd64
+      - 386
+      - arm
+      - arm64
+      - riscv64
+    goarm:
+      - 5
+      - 6
+      - 7
+    ignore:
+      - goos: darwin
+        goarch: 386
+      - goos: freebsd
+        goarch: arm
 
 archives:
   -
@@ -185,7 +186,7 @@ docker_manifests:
       - "filebrowser/filebrowser:v{{ .Major }}-arm64-s6"
 brews:
   - name: filebrowser
-    tap:
+    repository:
       owner: filebrowser
       name: homebrew-tap
     folder: Formula

@@ -2,7 +2,9 @@ package settings
 
 import (
 	"crypto/rand"
+	"log"
 	"strings"
+	"time"
 
 	"github.com/filebrowser/filebrowser/v2/rules"
 )
@@ -49,11 +51,25 @@ type Server struct {
 	TypeDetectionByHeader bool                `json:"typeDetectionByHeader"`
 	AuthHook              string              `json:"authHook"`
 	HiddenFiles           map[string]struct{} `json:"hiddenFiles"`
+	TokenExpirationTime   string              `json:"tokenExpirationTime"`
 }
 
 // Clean cleans any variables that might need cleaning.
 func (s *Server) Clean() {
 	s.BaseURL = strings.TrimSuffix(s.BaseURL, "/")
+}
+
+func (s *Server) GetTokenExpirationTime(fallback time.Duration) time.Duration {
+	if s.TokenExpirationTime == "" {
+		return fallback
+	}
+
+	if duration, err := time.ParseDuration(s.TokenExpirationTime); err == nil {
+		return duration
+	} else {
+		log.Printf("[WARN] Failed to parse tokenExpirationTime: %v", err)
+		return fallback
+	}
 }
 
 // GenerateKey generates a key of 512 bits.

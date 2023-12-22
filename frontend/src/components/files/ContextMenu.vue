@@ -84,7 +84,7 @@
 <script>
 import { mapState, mapGetters } from "vuex";
 import { files as api } from "@/api";
-import Action from "@/components/header/Action";
+import Action from "../header/Action.vue";
 
 export default {
   name: "context-menu",

@@ -38,7 +38,7 @@ override the options.`,
 			Branding: settings.Branding{
 				Name:                  mustGetString(flags, "branding.name"),
 				DisableExternal:       mustGetBool(flags, "branding.disableExternal"),
-				DisableUsedPercentage: true,
+				DisableUsedPercentage: mustGetBool(flags, "branding.disableUsedPercentage"),
 				Files:                 mustGetString(flags, "branding.files"),
 			},
 		}

@@ -31,6 +31,9 @@ bin/
 dist/
 build/
 
+/frontend/dist/*
+!/frontend/dist/.gitkeep
+
 # Hostinger-specific files
 .cagefs/
 .filebrowser/

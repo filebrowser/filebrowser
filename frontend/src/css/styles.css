@@ -1,6 +1,6 @@
-@import "~normalize.css/normalize.css";
-@import "~noty/lib/noty.css";
-@import "~noty/lib/themes/mint.css";
+@import "normalize.css/normalize.css";
+@import "noty/lib/noty.css";
+@import "noty/lib/themes/mint.css";
 @import "./_variables.css";
 @import "./_buttons.css";
 @import "./_inputs.css";
@@ -14,6 +14,7 @@
 @import "./upload-files.css";
 @import "./dashboard.css";
 @import "./login.css";
+@import "./mobile.css";
 
 .link {
   color: var(--blue);
@@ -27,9 +28,9 @@ main .spinner {
 }
 
 main .spinner > div {
-  width: .8em;
-  height: .8em;
-  margin: 0 .1em;
+  width: 0.8em;
+  height: 0.8em;
+  margin: 0 0.1em;
   font-size: 1em;
   background-color: rgba(0, 0, 0, 0.3);
   border-radius: 100%;
@@ -71,7 +72,7 @@ main .spinner .bounce2 {
   transition: 0.2s ease all;
   border: 0;
   margin: 0;
-  color: #546E7A;
+  color: #546e7a;
   border-radius: 50%;
   background: transparent;
   padding: 0;
@@ -88,12 +89,12 @@ main .spinner .bounce2 {
 
 .action i {
   padding: 0.4em;
-  transition: .1s ease-in-out all;
+  transition: 0.1s ease-in-out all;
   border-radius: 50%;
 }
 
 .action:hover {
-  background-color: rgba(0, 0, 0, .1);
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .action ul {
@@ -109,8 +110,8 @@ main .spinner .bounce2 {
 
 .action ul li {
   line-height: 1;
-  padding: .7em;
-  transition: .1s ease background-color;
+  padding: 0.7em;
+  transition: 0.1s ease background-color;
 }
 
 .action ul li:hover {
@@ -139,7 +140,7 @@ main .spinner .bounce2 {
   background: var(--blue);
   color: #fff;
   border-radius: 50%;
-  font-size: .75em;
+  font-size: 0.75em;
   width: 1.8em;
   height: 1.8em;
   text-align: center;
@@ -147,7 +148,6 @@ main .spinner .bounce2 {
   font-weight: bold;
   border: 2px solid white;
 }
-
 
 /* PREVIEWER */
 
@@ -179,7 +179,7 @@ main .spinner .bounce2 {
 }
 
 #previewer header .action:hover {
-  background-color: rgba(255, 255, 255, 0.3)
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 #previewer header .action span {
@@ -220,14 +220,14 @@ main .spinner .bounce2 {
 }
 #previewer .preview .info .title i {
   display: block;
-  margin-bottom: .1em;
+  margin-bottom: 0.1em;
   font-size: 4em;
 }
 #previewer .preview .info .button {
   display: inline-block;
 }
 #previewer .preview .info .button:hover {
-  background-color: rgba(255, 255, 255, 0.2)
+  background-color: rgba(255, 255, 255, 0.2);
 }
 #previewer .preview .info .button i {
   display: block;
@@ -241,15 +241,15 @@ main .spinner .bounce2 {
 }
 
 #previewer h2.message {
-  color: rgba(255, 255, 255, 0.5)
+  color: rgba(255, 255, 255, 0.5);
 }
 
-#previewer>button {
+#previewer > button {
   margin: 0;
   position: fixed;
   top: calc(50% + 1.85em);
   transform: translateY(-50%);
-  background-color: rgba(80, 80, 80, .5);
+  background-color: rgba(80, 80, 80, 0.5);
   color: white;
   border-radius: 50%;
   cursor: pointer;
@@ -259,20 +259,20 @@ main .spinner .bounce2 {
   transition: 0.2s ease all;
 }
 
-#previewer>button.hidden {
+#previewer > button.hidden {
   opacity: 0;
   visibility: hidden;
 }
 
-#previewer>button>i {
+#previewer > button > i {
   padding: 0.4em;
 }
 
-#previewer>button:first-of-type {
+#previewer > button:first-of-type {
   left: 0.5em;
 }
 
-#previewer>button:last-of-type {
+#previewer > button:last-of-type {
   right: 0.5em;
 }
 
@@ -321,7 +321,7 @@ body.rtl .breadcrumbs .chevron {
 }
 
 #editor-container .breadcrumbs span {
-  font-size: .75rem;
+  font-size: 0.75rem;
 }
 
 #editor-container .breadcrumbs i {
@@ -339,7 +339,7 @@ body.rtl .breadcrumbs .chevron {
 
 .noty_buttons button {
   background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 0 0 0;
   font-size: 1rem;
 }
@@ -356,7 +356,7 @@ body.rtl .breadcrumbs .chevron {
 
 .credits > span {
   display: block;
-  margin: .3em 0;
+  margin: 0.3em 0;
 }
 
 .credits a,
@@ -364,7 +364,6 @@ body.rtl .breadcrumbs .chevron {
   color: inherit;
   cursor: pointer;
 }
-
 
 /* * * * * * * * * * * * * * * *
  *          ANIMATIONS         *
@@ -393,20 +392,20 @@ body.rtl .breadcrumbs .chevron {
 .rules > div {
   display: flex;
   align-items: center;
-  margin: .5rem 0;
+  margin: 0.5rem 0;
 }
 
 .rules input[type="checkbox"] {
-  margin-right: .2rem;
+  margin-right: 0.2rem;
 }
 
 .rules input[type="text"] {
   border: 1px solid#ddd;
-  padding: .2rem;
+  padding: 0.2rem;
 }
 
 .rules label {
-  margin-right: .5rem;
+  margin-right: 0.5rem;
 }
 
 .rules button {
@@ -414,11 +413,9 @@ body.rtl .breadcrumbs .chevron {
 }
 
 .rules button.delete {
-  padding: .2rem .5rem;
-  margin-left: .5rem;
+  padding: 0.2rem 0.5rem;
+  margin-left: 0.5rem;
 }
-
-@import './mobile.css';
 
 /* * * * * * * * * * * * * * * *
  *         RTL overrides       *

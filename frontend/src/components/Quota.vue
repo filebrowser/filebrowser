@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { filesize } from "filesize";
+import { filesize } from "@/utils";
 import { mapState } from "vuex";
 import ProgressBar from "vue-simple-progress";
 

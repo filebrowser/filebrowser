@@ -33,6 +33,7 @@ func Copy(fs afero.Fs, src, dst, scope string) error {
 		return err
 	}
 
+	//nolint:exhaustive
 	switch info.Mode() & os.ModeType {
 	case os.ModeDir:
 		return CopyDir(fs, src, dst, scope)

@@ -25,16 +25,16 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   name: "share-delete",
   computed: {
-    ...mapState(["showConfirm"]),
+    ...mapGetters(["currentPrompt"]),
   },
   methods: {
     submit: function () {
-      this.showConfirm();
+      this.currentPrompt?.confirm();
     },
   },
 };

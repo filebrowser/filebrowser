@@ -36,6 +36,7 @@ func CopyDir(fs afero.Fs, source, dest, scope string) error {
 		fsource := source + "/" + obj.Name()
 		fdest := dest + "/" + obj.Name()
 
+		//nolint:exhaustive
 		switch obj.Mode() & os.ModeType {
 		case os.ModeDir:
 			// Create sub-directories, recursively.
