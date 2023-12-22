@@ -104,27 +104,6 @@ func formatLog(format string, log RequestLog) string {
 	return format
 }
 
-func getRealIp(r *http.Request) string {
-	remoteAddr := r.RemoteAddr
-	forwardedFor := parseFirstItem(r.Header.Get("X-Forwarded-For"))
-	realIp := parseFirstItem(r.Header.Get("X-Real-IP"))
-	if forwardedFor != "" {
-		return forwardedFor
-	}
-	if realIp != "" {
-		return realIp
-	}
-	return remoteAddr
-}
-
-func parseFirstItem(s string) string {
-	items := strings.Split(s, ",")
-	if len(items) == 0 {
-		return ""
-	}
-	return items[0]
-}
-
 func str2uint64(d string) uint64 {
 	val, err := strconv.ParseInt(d, 10, 64)
 	if err != nil {
@@ -163,38 +142,43 @@ func handler2handlerfunc(h http.Handler) http.HandlerFunc {
 }
 
 func RequestLogHandlerFunc(handler http.HandlerFunc, server *settings.Server) http.HandlerFunc {
+	if !server.EnableRequestLog {
+		return handler
+	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		begin := time.Now()
 		writer := MakeResponseWriterWrapper(w)
 		handler(writer, r)
-		if server.EnableRequestLog {
-			logRequest(w, r, server.RequestLogFormat, RequestLog{
-				user:          nil,
-				status:        writer.GetStatus(),
-				elapsed:       time.Now().Sub(begin).Seconds(),
-				response_size: writer.GetSize(),
-			})
-		}
+		logRequest(w, r, server.RequestLogFormat, RequestLog{
+			user:          nil,
+			status:        writer.GetStatus(),
+			elapsed:       time.Now().Sub(begin).Seconds(),
+			response_size: writer.GetSize(),
+		})
 	})
 }
 
 func RequestLogHandler(handler http.Handler, server *settings.Server) http.Handler {
+	if !server.EnableRequestLog {
+		return handler
+	}
 	return handlerfunc2handler(RequestLogHandlerFunc(handler2handlerfunc(handler), server))
 }
 
 func RequestLogHandleFunc(handle handleFunc, server *settings.Server) handleFunc {
+	if !server.EnableRequestLog {
+		return handle
+	}
 	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		begin := time.Now()
 		writer := MakeResponseWriterWrapper(w)
 		status, err := handle(writer, r, d)
-		if server.EnableRequestLog {
-			logRequest(w, r, server.RequestLogFormat, RequestLog{
-				user:          d.user,
-				status:        writer.GetStatus(),
-				elapsed:       time.Now().Sub(begin).Seconds(),
-				response_size: writer.GetSize(),
-			})
-		}
+		logRequest(w, r, server.RequestLogFormat, RequestLog{
+			user:          d.user,
+			status:        writer.GetStatus(),
+			elapsed:       time.Now().Sub(begin).Seconds(),
+			response_size: writer.GetSize(),
+		})
 		return status, err
 	}
 }
