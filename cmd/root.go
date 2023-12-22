@@ -72,6 +72,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.Bool("disable-type-detection-by-header", false, "disables type detection by reading file headers")
 	flags.Bool("enable-request-log", false, "enable logging all the request")
 	flags.String("request-log-format", "%{user_name} %{ip} %{method} %{path} %{response_size}", "logging format for the request")
+	flags.String("request-log-output", "system", "destination for request logs, available options: system (golang logging), file://path/to/log.txt (local file), udp://host:port (syslog server by UDP), tcp://host:port (syslog server by TCP). By default: system.")
 }
 
 var rootCmd = &cobra.Command{
@@ -269,6 +270,9 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 
 	requestLogFormat := getParam(flags, "request-log-format")
 	server.RequestLogFormat = requestLogFormat
+
+	requestLogOutput := getParam(flags, "request-log-output")
+	server.RequestLogOutput = requestLogOutput
 
 	if val, set := getParamB(flags, "token-expiration-time"); set {
 		server.TokenExpirationTime = val

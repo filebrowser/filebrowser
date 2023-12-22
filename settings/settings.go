@@ -52,6 +52,7 @@ type Server struct {
 	TokenExpirationTime   string `json:"tokenExpirationTime"`
 	EnableRequestLog      bool   `json:"enableRequestLog"`
 	RequestLogFormat      string `json:"requestLogFormat"`
+	RequestLogOutput      string `json:"requestLogOutput"`
 }
 
 // Clean cleans any variables that might need cleaning.
