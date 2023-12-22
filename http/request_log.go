@@ -162,7 +162,7 @@ func RequestLogHandleFunc(handle handleFunc, server *settings.Server) handleFunc
 		writer := MakeResponseWriterWrapper(w)
 		status, err := handle(writer, r, d)
 		writer.status.set(status)
-		_log(writer, r, nil, server)
+		_log(writer, r, d.user, server)
 		return status, err
 	}
 }
