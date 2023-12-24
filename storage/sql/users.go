@@ -117,7 +117,7 @@ func createAdminUser() users.User {
 
 func InitUserTable(db *sql.DB, dbType string) error {
 	primaryKey := "integer primary key"
-	if dbType == "postgres" {
+	if dbType == "postgres" || dbType == "postgresql" {
 		primaryKey = "serial primary key"
 	} else if dbType == "mysql" {
 		primaryKey = "int unsigned primary key auto_increment"
@@ -131,6 +131,18 @@ func InitUserTable(db *sql.DB, dbType string) error {
 func newUsersBackend(db *sql.DB, dbType string) usersBackend {
 	InitUserTable(db, dbType)
 	return usersBackend{db: db, dbType: dbType}
+}
+
+func (s usersBackend) IsPostgresql() bool {
+	return s.dbType == "postgres" || s.dbType == "postgresql"
+}
+
+func (s usersBackend) IsMysql() bool {
+	return s.dbType == "mysql"
+}
+
+func (s usersBackend) IsSqlite() bool {
+	return s.dbType == "sqlite3"
 }
 
 func (s usersBackend) GetBy(i interface{}) (*users.User, error) {
@@ -272,7 +284,7 @@ func (s usersBackend) insertUser(user *users.User) error {
 	columnStr := strings.Join(columns, ",")
 	specStr := strings.Join(specs, ",")
 	sqlFormat := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", quoteName(s.dbType, UsersTable), columnStr, specStr)
-	if s.dbType == "postgres" {
+	if s.IsPostgresql() {
 		sqlFormat = sqlFormat + " RETURNING id;"
 	}
 	sql := fmt.Sprintf(
@@ -291,7 +303,7 @@ func (s usersBackend) insertUser(user *users.User) error {
 		boolToString(user.DateFormat),
 		boolToString(user.SingleClick),
 	)
-	if s.dbType == "postgres" {
+	if s.IsPostgresql() {
 		id := uint(0)
 		err := s.db.QueryRow(sql).Scan(&id)
 		if !checkError(err, "Fail to insert user") {

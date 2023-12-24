@@ -50,7 +50,7 @@ func getNameQuote(dbType string) string {
 	return "\""
 }
 
-// for mysql, it is ``
+// for mysql, it is “
 // for postgres and sqlite, it is ""
 func quoteName(dbType string, name string) string {
 	q := getNameQuote(dbType)
@@ -64,14 +64,14 @@ func placeHolder(dbType string, index int) string {
 	if index <= 0 {
 		panic("the placeholder index should >= 1")
 	}
-	if dbType == "postgres" {
+	if dbType == "postgres" || dbType == "postgresql" {
 		return fmt.Sprintf("$%d", index)
 	}
 	return "?"
 }
 
 func IsDBPath(path string) bool {
-	prefixes := []string{"sqlite3", "postgres", "mysql"}
+	prefixes := []string{"sqlite3", "postgres", "postgresql", "mysql"}
 	for _, prefix := range prefixes {
 		if strings.HasPrefix(path, prefix+"://") {
 			return true
@@ -84,7 +84,7 @@ func OpenDB(path string) (*sql.DB, error) {
 	if val, ok := dbRecords[path]; ok {
 		return val.db, nil
 	}
-	prefixes := []string{"sqlite3", "postgres", "mysql"}
+	prefixes := []string{"sqlite3", "postgres", "postgresql", "mysql"}
 	for _, prefix := range prefixes {
 		if strings.HasPrefix(path, prefix) {
 			db, err := connectDB(prefix, path)
