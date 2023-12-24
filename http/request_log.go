@@ -2,13 +2,10 @@ package http
 
 import (
 	"fmt"
-	"log"
-	"log/syslog"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -16,76 +13,14 @@ import (
 	"github.com/tomasen/realip"
 )
 
-type LogWriter struct {
-	Type         string
-	Uri          string
-	syslogWriter *syslog.Writer
-	fileWriter   *os.File
-}
-
+var mutex sync.Mutex
 var globalLogWriter *LogWriter = nil
 
-func _syslogConnect(type_ string, host string) *syslog.Writer {
-	writer, err := syslog.Dial(type_, host, syslog.LOG_EMERG|syslog.LOG_SYSLOG, "filebrowser")
-	if err != nil {
-		log.Printf("ERROR: fail to connect to the syslog-%s server: %s", type_, host)
-		log.Println(err)
-		return nil
-	} else {
-		return writer
+func _globalLogWriter(output string) *LogWriter {
+	if globalLogWriter == nil {
+		globalLogWriter = MakeLogWriter(output)
 	}
-}
-
-func (w *LogWriter) Connect() bool {
-	if w.Type == "system" {
-		return true
-	}
-	if w.Type == "file" && w.fileWriter != nil {
-		return true
-	}
-	if (w.Type == "syslog-tcp" || w.Type == "syslog-udp") && w.syslogWriter != nil {
-		return true
-	}
-	if w.Type == "file" {
-		w.fileWriter = _openFile(w.Uri)
-	} else if w.Type == "syslog-udp" {
-		w.syslogWriter = _syslogConnect("udp", w.Uri)
-	} else if w.Type == "syslog-tcp" {
-		w.syslogWriter = _syslogConnect("tcp", w.Uri)
-	}
-	return w.syslogWriter != nil || w.fileWriter != nil
-}
-
-func _openFile(path string) *os.File {
-	d := filepath.Dir(path)
-	err := os.MkdirAll(d, 0644)
-	if err != nil {
-		log.Println("ERROR: fail to create dir " + d)
-		return nil
-	}
-	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
-	if err != nil {
-		log.Println("ERROR: fail to open file " + path)
-		log.Println(err)
-		return nil
-	}
-	return file
-}
-
-func (w *LogWriter) Write(msg string) {
-	if w.Type == "system" {
-		log.Println(msg)
-	} else if w.Type == "file" {
-		if w.Connect() {
-			w.fileWriter.Write([]byte(msg + "\n"))
-		}
-	} else if w.Type == "syslog-udp" || w.Type == "syslog-tcp" {
-		if w.Connect() {
-			w.syslogWriter.Emerg(msg)
-		}
-	} else {
-		log.Println("Unsupported request log output type " + w.Type)
-	}
+	return globalLogWriter
 }
 
 type RequestLog struct {
@@ -190,34 +125,6 @@ func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.f(w, r)
 }
 
-func _logToOutput(msg string, writer *LogWriter) {
-	if writer != nil {
-		writer.Write(msg)
-	}
-}
-
-func _getLogWriter(output string) *LogWriter {
-	if output == "system" {
-		return &LogWriter{Type: "system"}
-	} else if strings.HasPrefix(output, "udp://") {
-		return &LogWriter{Type: "syslog-udp", Uri: output[6:]}
-	} else if strings.HasPrefix(output, "tcp://") {
-		return &LogWriter{Type: "syslog-tcp", Uri: output[6:]}
-	} else if strings.HasPrefix(output, "file://") {
-		return &LogWriter{Type: "file", Uri: output[7:]}
-	}
-	log.Fatal("Unsupported log output: " + output)
-	return &LogWriter{}
-}
-
-func _globalLogWriter(output string) *LogWriter {
-	if globalLogWriter == nil {
-		globalLogWriter = _getLogWriter(output)
-	}
-	return globalLogWriter
-
-}
-
 func _log(writer *ResponseWriterWrapper, r *http.Request, user *users.User, server *settings.Server) {
 	log_ := RequestLog{
 		user:          user,
@@ -235,7 +142,10 @@ func _log(writer *ResponseWriterWrapper, r *http.Request, user *users.User, serv
 	if log_.status == 0 {
 		log_.status = 200
 	}
-	_globalLogWriter(server.RequestLogOutput).Write(formatLog(server.RequestLogFormat, log_))
+	msg := formatLog(server.RequestLogFormat, log_)
+	mutex.Lock()
+	defer mutex.Unlock()
+	_globalLogWriter(server.RequestLogOutput).Write(msg)
 }
 
 func RequestLogHandlerFunc(handler http.HandlerFunc, server *settings.Server) http.HandlerFunc {
