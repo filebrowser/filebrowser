@@ -125,6 +125,14 @@ func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.f(w, r)
 }
 
+func _getHeader(r *http.Request, name string) string {
+	v := r.Header.Get(name)
+	if v == "" {
+		return "-"
+	}
+	return v
+}
+
 func _log(writer *ResponseWriterWrapper, r *http.Request, user *users.User, server *settings.Server) {
 	log_ := RequestLog{
 		user:          user,
@@ -134,8 +142,8 @@ func _log(writer *ResponseWriterWrapper, r *http.Request, user *users.User, serv
 		ip:            realip.FromRequest(r),
 		time:          writer.GetTime(),
 		request_size:  getRequestSize(r),
-		origin:        r.Header.Get("Origin"),
-		referer:       r.Header.Get("Referer"),
+		origin:        _getHeader(r, "Origin"),
+		referer:       _getHeader(r, "Referer"),
 		path:          r.RequestURI,
 		method:        r.Method,
 	}
