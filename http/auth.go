@@ -65,6 +65,24 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 
 func withUser(fn handleFunc) handleFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		username, password, ok := r.BasicAuth()
+		if ok {
+			tokenExpirationTime := d.server.GetTokenExpirationTime(DefaultTokenExpirationTime)
+			user, err := d.store.Users.Get(d.server.Root, username)
+			if err != nil || !users.CheckPwd(password, user.Password) {
+				return http.StatusForbidden, nil
+			}
+			if err != nil {
+				return http.StatusInternalServerError, err
+			} else {
+				token, err := generateToken(d, user, tokenExpirationTime)
+				if err != nil {
+					return http.StatusInternalServerError, err
+				}
+				r.Header.Set("X-Auth", token)
+			}
+		}
+
 		keyFunc := func(token *jwt.Token) (interface{}, error) {
 			return d.settings.Key, nil
 		}
@@ -182,6 +200,19 @@ func renewHandler(tokenExpireTime time.Duration) handleFunc {
 }
 
 func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.User, tokenExpirationTime time.Duration) (int, error) {
+	signed, err := generateToken(d, user, tokenExpirationTime)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	if _, err := w.Write([]byte(signed)); err != nil {
+		return http.StatusInternalServerError, err
+	}
+	return 0, nil
+}
+
+func generateToken(d *data, user *users.User, tokenExpirationTime time.Duration) (string, error) {
 	claims := &authToken{
 		User: userInfo{
 			ID:           user.ID,
@@ -202,14 +233,5 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signed, err := token.SignedString(d.settings.Key)
-	if err != nil {
-		return http.StatusInternalServerError, err
-	}
-
-	w.Header().Set("Content-Type", "text/plain")
-	if _, err := w.Write([]byte(signed)); err != nil {
-		return http.StatusInternalServerError, err
-	}
-	return 0, nil
+	return token.SignedString(d.settings.Key)
 }
