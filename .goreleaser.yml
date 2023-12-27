@@ -7,7 +7,7 @@ builds:
   - env:
       - CGO_ENABLED=0
     ldflags:
-      - -s -w -X github.com/filebrowser/filebrowser/v2/version.Version={{ .Version }} -X github.com/filebrowser/filebrowser/v2/version.CommitSHA={{ .ShortCommit }}
+      - -s -w -X github.com/mystery0/filebrowser/v2/version.Version={{ .Version }} -X github.com/mystery0/filebrowser/v2/version.CommitSHA={{ .ShortCommit }}
     main: main.go
     binary: filebrowser
     goos:
@@ -54,8 +54,8 @@ dockers:
     goos: linux
     goarch: amd64
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-amd64"
-      - "filebrowser/filebrowser:v{{ .Major }}-amd64"
+      - "mystery0/filebrowser:{{ .Tag }}-amd64"
+      - "mystery0/filebrowser:v{{ .Major }}-amd64"
     extra_files:
       - docker_config.json
       - healthcheck.sh
@@ -73,8 +73,8 @@ dockers:
     goos: linux
     goarch: arm64
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-arm64"
-      - "filebrowser/filebrowser:v{{ .Major }}-arm64"
+      - "mystery0/filebrowser:{{ .Tag }}-arm64"
+      - "mystery0/filebrowser:v{{ .Major }}-arm64"
     extra_files:
       - docker_config.json
       - healthcheck.sh
@@ -93,8 +93,8 @@ dockers:
     goarch: arm
     goarm: '6'
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-armv6"
-      - "filebrowser/filebrowser:v{{ .Major }}-armv6"
+      - "mystery0/filebrowser:{{ .Tag }}-armv6"
+      - "mystery0/filebrowser:v{{ .Major }}-armv6"
     extra_files:
       - docker_config.json
       - healthcheck.sh
@@ -113,8 +113,8 @@ dockers:
     goarch: arm
     goarm: '7'
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-armv7"
-      - "filebrowser/filebrowser:v{{ .Major }}-armv7"
+      - "mystery0/filebrowser:{{ .Tag }}-armv7"
+      - "mystery0/filebrowser:v{{ .Major }}-armv7"
     extra_files:
       - docker_config.json
       - healthcheck.sh
@@ -133,8 +133,8 @@ dockers:
     goos: linux
     goarch: amd64
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-amd64-s6"
-      - "filebrowser/filebrowser:v{{ .Major }}-amd64-s6"
+      - "mystery0/filebrowser:{{ .Tag }}-amd64-s6"
+      - "mystery0/filebrowser:v{{ .Major }}-amd64-s6"
     extra_files:
       - docker/root
   -
@@ -151,39 +151,39 @@ dockers:
     goos: linux
     goarch: arm64
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-arm64-s6"
-      - "filebrowser/filebrowser:v{{ .Major }}-arm64-s6"
+      - "mystery0/filebrowser:{{ .Tag }}-arm64-s6"
+      - "mystery0/filebrowser:v{{ .Major }}-arm64-s6"
     extra_files:
       - docker/root
 docker_manifests:
-  - name_template: "filebrowser/filebrowser:latest"
+  - name_template: "mystery0/filebrowser:latest"
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-amd64"
-      - "filebrowser/filebrowser:{{ .Tag }}-arm64"
-      - "filebrowser/filebrowser:{{ .Tag }}-armv7"
-  - name_template: "filebrowser/filebrowser:{{ .Tag }}"
+      - "mystery0/filebrowser:{{ .Tag }}-amd64"
+      - "mystery0/filebrowser:{{ .Tag }}-arm64"
+      - "mystery0/filebrowser:{{ .Tag }}-armv7"
+  - name_template: "mystery0/filebrowser:{{ .Tag }}"
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-amd64"
-      - "filebrowser/filebrowser:{{ .Tag }}-arm64"
-      - "filebrowser/filebrowser:{{ .Tag }}-armv7"
-  - name_template: "filebrowser/filebrowser:v{{ .Major }}"
+      - "mystery0/filebrowser:{{ .Tag }}-amd64"
+      - "mystery0/filebrowser:{{ .Tag }}-arm64"
+      - "mystery0/filebrowser:{{ .Tag }}-armv7"
+  - name_template: "mystery0/filebrowser:v{{ .Major }}"
     image_templates:
-      - "filebrowser/filebrowser:v{{ .Major }}-amd64"
-      - "filebrowser/filebrowser:v{{ .Major }}-arm64"
-      - "filebrowser/filebrowser:v{{ .Major }}-armv7"
+      - "mystery0/filebrowser:v{{ .Major }}-amd64"
+      - "mystery0/filebrowser:v{{ .Major }}-arm64"
+      - "mystery0/filebrowser:v{{ .Major }}-armv7"
 ## s6 image manifests
-  - name_template: "filebrowser/filebrowser:s6"
+  - name_template: "mystery0/filebrowser:s6"
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-amd64-s6"
-      - "filebrowser/filebrowser:{{ .Tag }}-arm64-s6"
-  - name_template: "filebrowser/filebrowser:{{ .Tag }}-s6"
+      - "mystery0/filebrowser:{{ .Tag }}-amd64-s6"
+      - "mystery0/filebrowser:{{ .Tag }}-arm64-s6"
+  - name_template: "mystery0/filebrowser:{{ .Tag }}-s6"
     image_templates:
-      - "filebrowser/filebrowser:{{ .Tag }}-amd64-s6"
-      - "filebrowser/filebrowser:{{ .Tag }}-arm64-s6"
-  - name_template: "filebrowser/filebrowser:v{{ .Major }}-s6"
+      - "mystery0/filebrowser:{{ .Tag }}-amd64-s6"
+      - "mystery0/filebrowser:{{ .Tag }}-arm64-s6"
+  - name_template: "mystery0/filebrowser:v{{ .Major }}-s6"
     image_templates:
-      - "filebrowser/filebrowser:v{{ .Major }}-amd64-s6"
-      - "filebrowser/filebrowser:v{{ .Major }}-arm64-s6"
+      - "mystery0/filebrowser:v{{ .Major }}-amd64-s6"
+      - "mystery0/filebrowser:v{{ .Major }}-arm64-s6"
 brews:
   - name: filebrowser
     repository:
