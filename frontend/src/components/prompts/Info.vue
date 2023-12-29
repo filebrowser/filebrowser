@@ -138,7 +138,13 @@ export default {
       return dayjs(this.req.items[this.selected[0]].modified).fromNow();
     },
     modTime: function () {
-      return new Date(Date.parse(this.req.modified)).toLocaleString();
+      if (this.selectedCount === 0) {
+        return new Date(Date.parse(this.req.modified)).toLocaleString();
+      }
+
+      return new Date(
+        Date.parse(this.req.items[this.selected[0]].modified)
+      ).toLocaleString();
     },
     name: function () {
       return this.selectedCount === 0
