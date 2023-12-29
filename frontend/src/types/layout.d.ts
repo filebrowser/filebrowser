@@ -1,7 +1,8 @@
 interface PopupProps {
   prompt: string;
-  confirm: any;
+  confirm?: any;
   action?: PopupAction;
+  props?: any;
 }
 
 type PopupAction = (e: Event) => void;

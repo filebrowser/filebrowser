@@ -48,9 +48,9 @@ export default {
       "selectedCount",
       "req",
       "selected",
+      "currentPrompt",
     ]),
     ...mapWritableState(useFileStore, ["reload"]),
-    ...mapState(useLayoutStore, ["showConfirm"]),
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),
@@ -62,7 +62,7 @@ export default {
           await api.remove(this.$route.path);
           buttons.success("delete");
 
-          this.showConfirm();
+          this.currentPrompt?.confirm();
           this.closeHovers();
           return;
         }

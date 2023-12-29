@@ -39,7 +39,7 @@ const route = useRoute();
 watch(route, () => {
   fileStore.selected = [];
   fileStore.multiple = false;
-  if (layoutStore.show !== "success") {
+  if (layoutStore.currentPromptName !== "success") {
     layoutStore.closeHovers();
   }
 });

@@ -55,10 +55,7 @@
     </div>
     <template v-else>
       <div class="preview">
-        <ExtendedImage
-          v-if="fileStore.req?.type == 'image'"
-          :src="raw"
-        ></ExtendedImage>
+        <ExtendedImage v-if="fileStore.req?.type == 'image'" :src="raw" />
         <audio
           v-else-if="fileStore.req?.type == 'audio'"
           ref="player"
@@ -251,7 +248,7 @@ const next = () => {
 };
 
 const key = (event: KeyboardEvent) => {
-  if (layoutStore.show !== null) {
+  if (layoutStore.currentPrompt !== null) {
     return;
   }
   if (event.which === 13 || event.which === 39) {

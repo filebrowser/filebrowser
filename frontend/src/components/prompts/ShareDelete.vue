@@ -34,12 +34,12 @@ import { useLayoutStore } from "@/stores/layout";
 export default {
   name: "share-delete",
   computed: {
-    ...mapState(useLayoutStore, ["showConfirm"]),
+    ...mapState(useLayoutStore, ["currentPrompt"]),
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),
     submit: function () {
-      this.showConfirm();
+      this.currentPrompt?.confirm();
     },
   },
 };

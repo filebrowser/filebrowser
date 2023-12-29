@@ -484,7 +484,7 @@ const base64 = (name: string) => Base64.encodeURI(name);
 
 const keyEvent = (event: KeyboardEvent) => {
   // No prompts are shown
-  if (layoutStore.show !== null) {
+  if (layoutStore.currentPrompt !== null) {
     return;
   }
 

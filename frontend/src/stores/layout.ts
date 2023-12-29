@@ -6,18 +6,22 @@ export const useLayoutStore = defineStore("layout", {
   // convert to a function
   state: (): {
     loading: boolean;
-    show: string | null;
-    showConfirm: any;
-    showAction: PopupAction | null;
+    prompts: PopupProps[];
     showShell: boolean | null;
   } => ({
     loading: false,
-    show: null,
-    showConfirm: null,
-    showAction: null,
+    prompts: [],
     showShell: false,
   }),
   getters: {
+    currentPrompt(state) {
+      return state.prompts.length > 0
+        ? state.prompts[state.prompts.length - 1]
+        : null;
+    },
+    currentPromptName(): string | null | undefined {
+      return this.currentPrompt?.prompt;
+    },
     // user and jwt getter removed, no longer needed
   },
   actions: {
@@ -27,27 +31,40 @@ export const useLayoutStore = defineStore("layout", {
     },
     showHover(value: PopupProps | string) {
       if (typeof value !== "object") {
-        this.show = value;
+        this.prompts.push({
+          prompt: value,
+          confirm: null,
+          action: undefined,
+          props: null,
+        });
         return;
       }
 
-      this.show = value.prompt;
-      this.showConfirm = value.confirm;
-      if (value.action !== undefined) {
-        this.showAction = value.action;
-      }
+      this.prompts.push({
+        prompt: value.prompt,
+        confirm: value?.confirm,
+        action: value?.action,
+        props: value?.props,
+      });
     },
     showError() {
-      this.show = "error";
-      console.error(" error");
+      this.prompts.push({
+        prompt: "error",
+        confirm: null,
+        action: undefined,
+        props: null,
+      });
     },
     showSuccess() {
-      this.show = "success";
+      this.prompts.push({
+        prompt: "success",
+        confirm: null,
+        action: undefined,
+        props: null,
+      });
     },
     closeHovers() {
-      this.show = null;
-      this.showConfirm = null;
-      this.showAction = null;
+      this.prompts.pop();
     },
     // easily reset state using `$reset`
     clearLayout() {

@@ -37,8 +37,16 @@ export const useFileStore = defineStore("file", {
       this.multiple = !this.multiple;
     },
     updateRequest(value: Resource | null) {
+      const selectedItems = this.selected.map((i) => this.req?.items[i]);
       this.oldReq = this.req;
       this.req = value;
+
+      this.selected = [];
+
+      if (!this.req?.items) return;
+      this.selected = this.req.items
+        .filter((item) => selectedItems.some((rItem) => rItem?.url === item.url))
+        .map((item) => item.index);
     },
     removeSelected(value: any) {
       const i = this.selected.indexOf(value);

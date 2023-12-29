@@ -29,7 +29,7 @@ import Upload from "./Upload.vue";
 
 const layoutStore = useLayoutStore();
 
-const { show } = storeToRefs(layoutStore);
+const { currentPromptName } = storeToRefs(layoutStore);
 
 const closeModal = ref<() => Promise<string>>();
 
@@ -51,7 +51,7 @@ const components = new Map<string, any>([
   ["deleteUser", DeleteUser],
 ]);
 
-watch(show, (newValue) => {
+watch(currentPromptName, (newValue) => {
   if (closeModal.value) {
     closeModal.value();
     closeModal.value = undefined;
@@ -62,12 +62,6 @@ watch(show, (newValue) => {
 
   const { open, close } = useModal({
     component: BaseModal,
-    attrs: {
-      // title: "Hello World!",
-      // onConfirm() {
-      //   console.log("onConfirm");
-      // },
-    },
     slots: {
       default: modal,
     },
@@ -78,7 +72,7 @@ watch(show, (newValue) => {
 });
 
 window.addEventListener("keydown", (event) => {
-  if (!layoutStore.show) return;
+  if (!layoutStore.currentPrompt) return;
 
   if (event.key === "Escape") {
     event.stopImmediatePropagation();

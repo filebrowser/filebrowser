@@ -113,6 +113,10 @@ func getStaticHandlers(store *storage.Storage, server *settings.Server, assetsFs
 			return http.StatusNotFound, nil
 		}
 
+		if strings.HasSuffix(r.URL.Path, "/") {
+			return http.StatusNotFound, nil
+		}
+
 		const maxAge = 86400 // 1 day
 		w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%v", maxAge))
 

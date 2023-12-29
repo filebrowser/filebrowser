@@ -85,7 +85,7 @@ const boxes = {
 const layoutStore = useLayoutStore();
 const fileStore = useFileStore();
 
-const { show } = storeToRefs(layoutStore);
+const { currentPromptName } = storeToRefs(layoutStore);
 
 const prompt = ref<string>("");
 const active = ref<boolean>(false);
@@ -103,7 +103,7 @@ const { t } = useI18n();
 
 const route = useRoute();
 
-watch(show, (newVal, oldVal) => {
+watch(currentPromptName, (newVal, oldVal) => {
   active.value = newVal === "search";
 
   if (oldVal === "search" && !active.value) {

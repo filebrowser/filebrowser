@@ -11,7 +11,10 @@
 
     <slot />
 
-    <div id="dropdown" :class="{ active: layoutStore.show === 'more' }">
+    <div
+      id="dropdown"
+      :class="{ active: layoutStore.currentPromptName === 'more' }"
+    >
       <slot name="actions" />
     </div>
 
@@ -25,7 +28,7 @@
 
     <div
       class="overlay"
-      v-show="layoutStore.show == 'more'"
+      v-show="layoutStore.currentPromptName == 'more'"
       @click="layoutStore.closeHovers"
     />
   </header>

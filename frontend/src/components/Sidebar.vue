@@ -144,9 +144,9 @@ export default {
   computed: {
     ...mapState(useAuthStore, ["user", "isLoggedIn"]),
     ...mapState(useFileStore, ["isFiles", "reload"]),
-    ...mapState(useLayoutStore, ["show"]),
+    ...mapState(useLayoutStore, ["currentPromptName"]),
     active() {
-      return this.show === "sidebar";
+      return this.currentPromptName === "sidebar";
     },
     signup: () => signup,
     version: () => version,
