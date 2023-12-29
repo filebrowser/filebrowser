@@ -37,7 +37,7 @@
     "toggleSidebar": "切换侧边栏",
     "update": "更新",
     "upload": "上传",
-    "openFile": "打开文件"
+    "openFile": "打开文件",
     "continue": "继续"
   },
   "download": {
@@ -161,7 +161,7 @@
     "upload": "上传",
     "uploadFiles": "正在上传 {files} ...",
     "uploadMessage": "选择上传选项。",
-    "optionalPassword": "密码（选填，不填即无密码）"
+    "optionalPassword": "密码（选填，不填即无密码）",
     "resolution": "分辨率"
   },
   "search": {
