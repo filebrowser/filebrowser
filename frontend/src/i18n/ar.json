@@ -1,7 +1,9 @@
 {
   "buttons": {
     "cancel": "إلغاء",
+    "clear": "مسح",
     "close": "إغلاق",
+    "continue": "متابعة",
     "copy": "نسخ",
     "copyFile": "نسخ الملف",
     "copyToClipboard": "نسخ الى الحافظة",
@@ -11,6 +13,7 @@
     "download": "تحميل",
     "file": "ملف",
     "folder": "مجلد",
+    "fullScreen": "تكبير/تصغير الشاشة",
     "hideDotfiles": "إخفاء ملفات النقطة",
     "info": "معلومات",
     "more": "المزيد",
@@ -37,8 +40,7 @@
     "toggleSidebar": "تبديل الشريط الجانبي",
     "update": "تحديث",
     "upload": "رفع",
-    "openFile": "فتح الملف",
-    "continue": "متابعة"
+    "openFile": "فتح الملف"
   },
   "download": {
     "downloadFile": "تحميل الملف",
@@ -56,7 +58,6 @@
   },
   "files": {
     "body": "الصفحة",
-    "clear": "مسح",
     "closePreview": "إغلاق العرض",
     "files": "الملفات",
     "folders": "المجلدات",

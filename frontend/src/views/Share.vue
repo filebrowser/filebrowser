@@ -158,8 +158,8 @@
                 @click="() => (fileStore.multiple = false)"
                 tabindex="0"
                 role="button"
-                :data-title="t('files.clear')"
-                :aria-label="t('files.clear')"
+                :data-title="t('buttons.clear')"
+                :aria-label="t('buttons.clear')"
                 class="action"
               >
                 <i class="material-icons">clear</i>

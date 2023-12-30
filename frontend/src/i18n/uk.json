@@ -1,6 +1,7 @@
 {
   "buttons": {
     "cancel": "Відмінити",
+    "clear": "Очистити",
     "close": "Закрити",
     "copy": "Копіювати",
     "copyFile": "Копіювати файл",
@@ -51,7 +52,6 @@
   },
   "files": {
     "body": "Тіло",
-    "clear": "Очистити",
     "closePreview": "Закрити",
     "files": "Файли",
     "folders": "Папки",
@@ -87,6 +87,7 @@
     "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
+    "el": "Ελληνικά",
     "en": "English",
     "es": "Español",
     "fr": "Français",

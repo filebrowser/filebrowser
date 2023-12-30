@@ -1,6 +1,7 @@
 {
   "buttons": {
     "cancel": "Mégse",
+    "clear": "Törlése",
     "close": "Bezárás",
     "copy": "Másolás",
     "copyFile": "Fájl másolása",
@@ -51,7 +52,6 @@
   },
   "files": {
     "body": "Törzs",
-    "clear": "Törlése",
     "closePreview": "Előnézet bezárása",
     "files": "Fájlok",
     "folders": "Mappák",
@@ -87,6 +87,7 @@
     "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
+    "el": "Ελληνικά",
     "en": "English",
     "es": "Español",
     "fr": "Français",

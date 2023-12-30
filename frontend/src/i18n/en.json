@@ -1,7 +1,9 @@
 {
   "buttons": {
     "cancel": "Cancel",
+    "clear": "Clear",
     "close": "Close",
+    "continue": "Continue",
     "copy": "Copy",
     "copyFile": "Copy file",
     "copyToClipboard": "Copy to clipboard",
@@ -11,6 +13,7 @@
     "download": "Download",
     "file": "File",
     "folder": "Folder",
+    "fullScreen": "Toggle full screen",
     "hideDotfiles": "Hide dotfiles",
     "info": "Info",
     "more": "More",
@@ -37,8 +40,7 @@
     "toggleSidebar": "Toggle sidebar",
     "update": "Update",
     "upload": "Upload",
-    "openFile": "Open file",
-    "continue": "Continue"
+    "openFile": "Open file"
   },
   "download": {
     "downloadFile": "Download File",
@@ -56,7 +58,6 @@
   },
   "files": {
     "body": "Body",
-    "clear": "Clear",
     "closePreview": "Close preview",
     "files": "Files",
     "folders": "Folders",

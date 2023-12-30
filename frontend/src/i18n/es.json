@@ -1,7 +1,9 @@
 {
   "buttons": {
     "cancel": "Cancelar",
+    "clear": "Limpiar",
     "close": "Cerrar",
+    "continue": "Continuar",
     "copy": "Copiar",
     "copyFile": "Copiar archivo",
     "copyToClipboard": "Copiar al portapapeles",
@@ -51,7 +53,6 @@
   },
   "files": {
     "body": "Cuerpo",
-    "clear": "Limpiar",
     "closePreview": "Cerrar vista previa",
     "files": "Archivos",
     "folders": "Carpetas",

@@ -1,6 +1,7 @@
 {
   "buttons": {
     "cancel": "取消",
+    "clear": "清空",
     "close": "关闭",
     "copy": "复制",
     "copyFile": "复制文件",
@@ -51,7 +52,6 @@
   },
   "files": {
     "body": "内容",
-    "clear": "清空",
     "closePreview": "关闭预览",
     "files": "文件",
     "folders": "文件夹",
@@ -87,6 +87,7 @@
     "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
+    "el": "Ελληνικά",
     "en": "English",
     "es": "Español",
     "fr": "Français",
@@ -94,18 +95,18 @@
     "it": "Italiano",
     "ja": "日本語",
     "ko": "한국어",
-    "nlBE": "Dutch（Belgium）",
+    "nlBE": "Dutch (Belgium)",
     "pl": "Polski",
     "pt": "Português",
-    "ptBR": "Português（Brasil）",
+    "ptBR": "Português (Brasil)",
     "ro": "Romanian",
     "ru": "Русский",
     "sk": "Slovenčina",
-    "svSE": "Swedish（Sweden）",
+    "svSE": "Swedish (Sweden)",
     "tr": "Türkçe",
     "uk": "Українська",
-    "zhCN": "中文（简体）",
-    "zhTW": "中文（繁體）"
+    "zhCN": "中文 (简体)",
+    "zhTW": "中文 (繁體)"
   },
   "login": {
     "createAnAccount": "创建用户",

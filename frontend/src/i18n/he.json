@@ -1,6 +1,7 @@
 {
   "buttons": {
     "cancel": "ביטול",
+    "clear": "נקה",
     "close": "סגירה",
     "copy": "העתק",
     "copyFile": "העתק קובץ",
@@ -51,7 +52,6 @@
   },
   "files": {
     "body": "גוף",
-    "clear": "נקה",
     "closePreview": "סגירת תצוגה מקדימה",
     "files": "קבצים",
     "folders": "תקיות",
@@ -87,6 +87,7 @@
     "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
+    "el": "Ελληνικά",
     "en": "English",
     "es": "Español",
     "fr": "Français",
