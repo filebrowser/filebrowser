@@ -38,6 +38,7 @@ override the options.`,
 				Name:                  mustGetString(flags, "branding.name"),
 				DisableExternal:       mustGetBool(flags, "branding.disableExternal"),
 				DisableUsedPercentage: mustGetBool(flags, "branding.disableUsedPercentage"),
+				Theme:                 mustGetString(flags, "branding.theme"),
 				Files:                 mustGetString(flags, "branding.files"),
 			},
 		}
