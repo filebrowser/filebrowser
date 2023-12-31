@@ -42,6 +42,16 @@ async function resourceAction(url, method, content) {
   return res;
 }
 
+async function resourceSizeAction(url, method, content) {
+  url = removePrefix(url);
+  let opts = { method };
+  if (content) {
+    opts.body = content;
+  }
+  const res = await fetchURL(`/api/resources/size${url}`, opts);
+  return res;
+}
+
 export async function remove(url) {
   return resourceAction(url, "DELETE");
 }
@@ -161,6 +171,11 @@ export function copy(items, overwrite = false, rename = false) {
 export async function checksum(url, algo) {
   const data = await resourceAction(`${url}?checksum=${algo}`, "GET");
   return (await data.json()).checksums[algo];
+}
+
+export async function foldersize(url) {
+  const data = await resourceSizeAction(`${url}`, "GET");
+  return (await data.json()).size;
 }
 
 export function getDownloadURL(file, inline) {

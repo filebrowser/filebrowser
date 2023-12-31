@@ -13,9 +13,18 @@
         <strong>{{ $t("prompts.displayName") }}</strong> {{ name }}
       </p>
 
-      <p v-if="!dir || selected.length > 1">
+      <p v-if="!dir && selected.length === 1">
         <strong>{{ $t("prompts.size") }}:</strong>
         <span id="content_length"></span> {{ humanSize }}
+      </p>
+
+      <p v-if="dir || selected.length > 1">
+        <strong>Size: </strong
+        ><code
+          ><a @click="foldersize($event)">{{
+            $t("prompts.show")
+          }}</a></code
+        >
       </p>
 
       <div v-if="resolution">
@@ -162,6 +171,26 @@ export default {
         const hash = await api.checksum(link, algo);
         // eslint-disable-next-line
         event.target.innerHTML = hash;
+      } catch (e) {
+        this.$showError(e);
+      }
+    },
+    foldersize: async function (event) {
+      event.preventDefault();
+
+      try {
+        let totalSize = 0;
+
+        for (let selected of this.selected) {
+          let item = this.req.items[selected]
+          if (!item.isDir) {
+            totalSize += item.size;
+          } else {
+            totalSize += await api.foldersize(item.url)
+          }
+        }
+
+        event.target.innerHTML = filesize(totalSize);
       } catch (e) {
         this.$showError(e);
       }

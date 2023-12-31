@@ -95,6 +95,37 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 	return file, err
 }
 
+func NewFolderInfo(opts FileOptions) (*FileInfo, error) {
+	file, err := NewFileInfo(opts)
+	if err != nil {
+		return nil, err
+	}
+	size, err := GetFolderSize(file.RealPath())
+	if err != nil {
+		return nil, err
+	}
+	file.Size = size
+	return file, nil
+}
+
+func GetFolderSize(path string) (int64, error) {
+	var size int64
+	err := filepath.WalkDir(path, func(_ string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if !d.IsDir() {
+			info, err := d.Info()
+			if err != nil {
+				return err
+			}
+			size += info.Size()
+		}
+		return err
+	})
+	return size, err
+}
+
 func stat(opts FileOptions) (*FileInfo, error) {
 	var file *FileInfo
 
