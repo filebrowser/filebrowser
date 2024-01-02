@@ -360,15 +360,15 @@ table tr>*:last-child {
 
 @keyframes show {
   0% {
-    display: none;
+    visibility: hidden;
     opacity: 0;
   }
   1% {
-    display: block;
+    visibility: visible;
     opacity: 0;
   }
   100% {
-    display: block;
+    visibility: visible;
     opacity: 1;
   }
 }
