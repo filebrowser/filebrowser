@@ -12,7 +12,7 @@ Vue.config.productionTip = true;
 
 const notyDefault = {
   type: "info",
-  layout: "bottomRight",
+  layout: "bottomLeft",
   timeout: 1000,
   progressBar: true,
 };
