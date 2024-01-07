@@ -50,6 +50,15 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '18'
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.21.0
+      - name: Build frontend
+        run: make build-frontend
+      - name: run filebrowser
+        run: |
+          go mod download
+          go run main.go &
       - run: make test-frontend
   test-backend:
     runs-on: ubuntu-latest
