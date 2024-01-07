@@ -11,7 +11,8 @@
     "clean": "find ./dist -maxdepth 1 -mindepth 1 ! -name '.gitkeep' -exec rm -r {} +",
     "lint": "eslint --ext .vue,.js src/",
     "lint:fix": "eslint --ext .vue,.js --fix src/",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:e2e": "cucumber-js --import tests/cucumber.conf.js  --import tests/acceptance/stepDefinitions/**/*.js --format @cucumber/pretty-formatter"
   },
   "dependencies": {
     "ace-builds": "^1.23.4",
@@ -41,6 +42,9 @@
     "whatwg-fetch": "^3.6.17"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^10.1.0",
+    "@cucumber/pretty-formatter": "^1.0.0",
+    "@playwright/test": "^1.40.1",
     "@vitejs/plugin-legacy": "^4.1.1",
     "@vitejs/plugin-vue2": "^2.2.0",
     "@vue/eslint-config-prettier": "^8.0.0",
@@ -49,6 +53,7 @@
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-vue": "^9.16.1",
     "jsdom": "^22.1.0",
+    "playwright": "^1.40.1",
     "postcss": "^8.4.31",
     "prettier": "^3.0.1",
     "terser": "^5.19.2",

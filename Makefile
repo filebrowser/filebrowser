@@ -21,6 +21,7 @@ test: | test-frontend test-backend ## Run all tests
 
 .PHONY: test-frontend
 test-frontend: ## Run frontend tests
+	$Q cd frontend && npm run test:e2e tests/acceptance/features/
 
 .PHONY: test-backend
 test-backend: ## Run backend tests
