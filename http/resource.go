@@ -20,11 +20,12 @@ import (
 )
 
 var resourceGetSizeHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	folder, err := files.NewFolderInfo(files.FileOptions{
+	folder, err := files.NewFileInfo(files.FileOptions{
 		Fs:         d.user.Fs,
 		Path:       r.URL.Path,
 		Modify:     d.user.Perm.Modify,
 		Expand:     true,
+		FolderSize: true,
 		ReadHeader: d.server.TypeDetectionByHeader,
 		Checker:    d,
 		Content:    true,

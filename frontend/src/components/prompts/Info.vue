@@ -18,10 +18,10 @@
         <span id="content_length"></span> {{ humanSize }}
       </p>
 
-      <p v-if="dir || selected.length > 1">
+      <p v-if="showFolderSize && (dir || selected.length > 1)">
         <strong>Size: </strong
         ><code
-          ><a @click="foldersize($event)">{{
+          ><a @click="folderSize($event)">{{
             $t("prompts.show")
           }}</a></code
         >
@@ -103,6 +103,12 @@ import { files as api } from "@/api";
 
 export default {
   name: "info",
+  props: {
+    showFolderSize: {
+      type: Boolean,
+      default: true,
+    },
+  },
   computed: {
     ...mapState(["req", "selected"]),
     ...mapGetters(["selectedCount", "isListing"]),
@@ -175,7 +181,7 @@ export default {
         this.$showError(e);
       }
     },
-    foldersize: async function (event) {
+    folderSize: async function (event) {
       event.preventDefault();
 
       try {
@@ -186,7 +192,7 @@ export default {
           if (!item.isDir) {
             totalSize += item.size;
           } else {
-            totalSize += await api.foldersize(item.url)
+            totalSize += await api.folderSize(item.url)
           }
         }
 

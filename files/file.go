@@ -55,6 +55,7 @@ type FileOptions struct {
 	Modify     bool
 	Expand     bool
 	ReadHeader bool
+	FolderSize bool
 	Token      string
 	Checker    rules.Checker
 	Content    bool
@@ -78,6 +79,14 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 		return nil, err
 	}
 
+	if file.IsDir && opts.FolderSize {
+		size, err := getFolderSize(file.RealPath())
+		if err != nil {
+			return nil, err
+		}
+		file.Size = size
+	}
+
 	if opts.Expand {
 		if file.IsDir {
 			if err := file.readListing(opts.Checker, opts.ReadHeader); err != nil { //nolint:govet
@@ -95,20 +104,7 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 	return file, err
 }
 
-func NewFolderInfo(opts FileOptions) (*FileInfo, error) {
-	file, err := NewFileInfo(opts)
-	if err != nil {
-		return nil, err
-	}
-	size, err := GetFolderSize(file.RealPath())
-	if err != nil {
-		return nil, err
-	}
-	file.Size = size
-	return file, nil
-}
-
-func GetFolderSize(path string) (int64, error) {
+func getFolderSize(path string) (int64, error) {
 	var size int64
 	err := filepath.WalkDir(path, func(_ string, d os.DirEntry, err error) error {
 		if err != nil {
