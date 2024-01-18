@@ -110,6 +110,10 @@ export default {
       this.$router.push({ path: uri });
     },
     keyEvent(event) {
+      if (event.code === "Escape") {
+        this.close();
+      }
+
       if (!event.ctrlKey && !event.metaKey) {
         return;
       }
