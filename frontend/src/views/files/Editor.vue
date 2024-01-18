@@ -103,6 +103,8 @@ export default {
     if (theme == "dark") {
       this.editor.setTheme("ace/theme/twilight");
     }
+
+    this.editor.focus();
   },
   methods: {
     back() {
