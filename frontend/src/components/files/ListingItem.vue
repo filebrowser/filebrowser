@@ -191,7 +191,7 @@ export default {
       action(overwrite, rename);
     },
     itemClick: function (event) {
-      if (this.singleClick && !this.$store.state.multiple) this.open();
+      if (!(event.ctrlKey || event.metaKey) && this.singleClick && !this.$store.state.multiple) this.open();
       else this.click(event);
     },
     click: function (event) {
