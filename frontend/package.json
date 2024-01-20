@@ -19,7 +19,6 @@
     "core-js": "^3.32.0",
     "css-vars-ponyfill": "^2.4.8",
     "filesize": "^10.0.8",
-    "jose": "^4.13.1",
     "js-base64": "^3.7.5",
     "lodash.clonedeep": "^4.5.0",
     "lodash.throttle": "^4.1.1",
