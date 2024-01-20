@@ -18,11 +18,12 @@ type handleFunc func(w http.ResponseWriter, r *http.Request, d *data) (int, erro
 
 type data struct {
 	*runner.Runner
-	settings *settings.Settings
-	server   *settings.Server
-	store    *storage.Storage
-	user     *users.User
-	raw      interface{}
+	authToken string
+	settings  *settings.Settings
+	server    *settings.Server
+	store     *storage.Storage
+	user      *users.User
+	raw       interface{}
 }
 
 // Check implements rules.Checker.

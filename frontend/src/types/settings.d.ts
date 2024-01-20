@@ -8,6 +8,7 @@ interface ISettings {
   tus: SettingsTus;
   shell: string[];
   commands: SettingsCommand;
+  onlyoffice: SettingsOnlyOffice;
 }
 
 interface SettingsDefaults {
@@ -54,4 +55,9 @@ interface SettingsUnit {
   MB: number;
   GB: number;
   TB: number;
+}
+
+interface SettingsOnlyOffice {
+  url: string;
+  jwtSecret: string;
 }
