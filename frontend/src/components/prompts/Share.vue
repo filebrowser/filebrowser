@@ -128,7 +128,7 @@
 <script>
 import { mapState, mapGetters } from "vuex";
 import { share as api, pub as pub_api } from "@/api";
-import moment from "moment";
+import moment from "moment/min/moment-with-locales";
 import Clipboard from "clipboard";
 
 export default {
