@@ -53,6 +53,8 @@ you want to change. Other options will remain unchanged.`,
 				set.Branding.Name = mustGetString(flags, flag.Name)
 			case "branding.color":
 				set.Branding.Color = mustGetString(flags, flag.Name)
+			case "branding.theme":
+				set.Branding.Theme = mustGetString(flags, flag.Name)
 			case "branding.disableExternal":
 				set.Branding.DisableExternal = mustGetBool(flags, flag.Name)
 			case "branding.disableUsedPercentage":
