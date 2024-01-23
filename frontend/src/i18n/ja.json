@@ -4,8 +4,8 @@
     "close": "閉じる",
     "copy": "コピー",
     "copyFile": "ファイルのコピー",
-    "copyToClipboard": "クリップボードにコピー",
-    "copyDownloadLinkToClipboard": "ダウンロードリンクをクリップボードにコピー",
+    "copyToClipboard": "共有リンクをコピー",
+    "copyDownloadLinkToClipboard": "ダウンロードリンクをコピー",
     "create": "作成",
     "delete": "削除",
     "download": "ダウンロード",
@@ -78,7 +78,7 @@
     "ctrl": {
       "click": "複数のファイルやフォルダーを選択",
       "f": "検索画面を開く",
-      "s": "現在のフォルダーにあるファイルを保存あるいはダウンロード"
+      "s": "現在のフォルダーにあるファイルを保存またはダウンロード"
     },
     "del": "選択した項目を削除",
     "doubleClick": "ファイルやフォルダーを開く",
@@ -279,6 +279,6 @@
     "hours": "時間",
     "minutes": "分",
     "seconds": "秒",
-    "unit": "時間単位"
+    "unit": "時間の単位"
   }
 }
