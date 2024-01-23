@@ -68,12 +68,28 @@ func initProxyAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) a
 	return &auth.ProxyAuth{Header: header}
 }
 
-func initJWTAuth(flags *pflag.FlagSet) auth.Auther {
+func initJWTAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) auth.Auther {
 	header := mustGetString(flags, "auth.jwt-header.header")
 	aud := mustGetString(flags, "auth.jwt-header.aud")
 	iss := mustGetString(flags, "auth.jwt-header.iss")
 	certsurl := mustGetString(flags, "auth.jwt-header.certsurl")
 	usernameClaim := mustGetString(flags, "auth.jwt-header.usernameClaim")
+
+	if header == "" {
+		header = defaultAuther["header"].(string)
+	}
+	if aud == "" {
+		aud = defaultAuther["aud"].(string)
+	}
+	if iss == "" {
+		iss = defaultAuther["iss"].(string)
+	}
+	if certsurl == "" {
+		certsurl = defaultAuther["certsurl"].(string)
+	}
+	if usernameClaim == "" {
+		usernameClaim = defaultAuther["usernameClaim"].(string)
+	}
 
 	if header == "" {
 		checkErr(nerrors.New("you must set the flag 'auth.jwt-header.header' for method 'jwt-header'"))
@@ -167,7 +183,7 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 	case auth.MethodProxyAuth:
 		auther = initProxyAuth(flags, defaultAuther)
 	case auth.MethodJWTAuth:
-		auther = initJWTAuth(flags)
+		auther = initJWTAuth(flags, defaultAuther)
 	case auth.MethodNoAuth:
 		auther = &auth.NoAuth{}
 	case auth.MethodJSONAuth:
