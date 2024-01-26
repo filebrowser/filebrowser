@@ -98,7 +98,7 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 
 		// Directories creation on POST.
 		if strings.HasSuffix(r.URL.Path, "/") {
-			err := d.user.Fs.MkdirAll(r.URL.Path, files.PermDir)
+			err := d.user.Fs.MkdirAll(r.URL.Path, 0775) //nolint:gomnd
 			return errToStatus(err), err
 		}
 
@@ -256,12 +256,12 @@ func addVersionSuffix(source string, fs afero.Fs) string {
 
 func writeFile(fs afero.Fs, dst string, in io.Reader) (os.FileInfo, error) {
 	dir, _ := path.Split(dst)
-	err := fs.MkdirAll(dir, files.PermDir)
+	err := fs.MkdirAll(dir, 0775) //nolint:gomnd
 	if err != nil {
 		return nil, err
 	}
 
-	file, err := fs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, files.PermFile)
+	file, err := fs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0664) //nolint:gomnd
 	if err != nil {
 		return nil, err
 	}
