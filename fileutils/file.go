@@ -6,8 +6,9 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/spf13/afero"
+
+	"github.com/filebrowser/filebrowser/v2/files"
 )
 
 // MoveFile moves file from src to dst.
