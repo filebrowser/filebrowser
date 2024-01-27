@@ -236,7 +236,7 @@
     "rules": "ルール",
     "rulesHelp": "ここでは、特定のユーザーに対して許可と不許可のルールを設定することができます。ブロックされたファイルはリストに表示されず、ユーザはアクセスできなくなります。正規表現とユーザースコープからの相対パスをサポートしています。\n",
     "scope": "スコープ",
-    "setDateFormat": "日時の形式を MM/DD/YYYY H:MM AM/PM にする",
+    "setDateFormat": "正確な日時表記を使用する",
     "settingsUpdated": "設定を更新しました！",
     "shareDuration": "共有期間",
     "shareManagement": "共有の管理",
