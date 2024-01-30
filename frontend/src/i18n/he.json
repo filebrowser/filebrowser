@@ -38,7 +38,8 @@
     "update": "עדכון",
     "upload": "העלאה",
     "openFile": "פתח קובץ",
-    "continue": "המשך"
+    "continue": "המשך",
+    "discardChanges": "זריקת השינויים"
   },
   "download": {
     "downloadFile": "הורד קובץ",
@@ -160,7 +161,8 @@
     "upload": "העלאה",
     "uploadFiles": "מעלה {files} קבצים...",
     "uploadMessage": "בחר אפשרות העלאה.",
-    "optionalPassword": "סיסמא אופציונלית"
+    "optionalPassword": "סיסמא אופציונלית",
+    "discardEditorChanges": "האם אתה בטוח שברצונך לבטל את השינויים שביצעת?"
   },
   "search": {
     "images": "תמונות",
