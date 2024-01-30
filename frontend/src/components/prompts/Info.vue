@@ -89,7 +89,7 @@
 <script>
 import { mapState, mapGetters } from "vuex";
 import { filesize } from "@/utils";
-import moment from "moment";
+import moment from "moment/min/moment-with-locales";
 import { files as api } from "@/api";
 
 export default {

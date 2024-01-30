@@ -103,13 +103,15 @@ export default {
     if (theme == "dark") {
       this.editor.setTheme("ace/theme/twilight");
     }
+
+    this.editor.focus();
   },
   methods: {
-    back() {
-      let uri = url.removeLastDir(this.$route.path) + "/";
-      this.$router.push({ path: uri });
-    },
     keyEvent(event) {
+      if (event.code === "Escape") {
+        this.close();
+      }
+
       if (!event.ctrlKey && !event.metaKey) {
         return;
       }
@@ -134,6 +136,13 @@ export default {
       }
     },
     close() {
+      const originalContent = this.req.content;
+      const currentContent = this.editor.getValue();
+      if (originalContent !== currentContent) {
+        this.$store.commit("showHover", "discardEditorChanges");
+        return;
+      }
+
       this.$store.commit("updateRequest", {});
 
       let uri = url.removeLastDir(this.$route.path) + "/";
