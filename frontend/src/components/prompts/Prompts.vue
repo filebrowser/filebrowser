@@ -64,17 +64,16 @@ export default {
     window.addEventListener("keydown", (event) => {
       if (this.currentPrompt == null) return;
 
-      let prompt = this.$refs.currentComponent;
+      const promptName = this.currentPrompt.prompt;
+      const prompt = this.$refs[promptName];
 
-      // Esc!
-      if (event.keyCode === 27) {
+      if (event.code === "Escape") {
         event.stopImmediatePropagation();
         this.$store.commit("closeHovers");
       }
 
-      // Enter
-      if (event.keyCode == 13) {
-        switch (this.currentPrompt.prompt) {
+      if (event.code === "Enter") {
+        switch (promptName) {
           case "delete":
             prompt.submit();
             break;

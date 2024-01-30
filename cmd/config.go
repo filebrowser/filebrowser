@@ -31,6 +31,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	addServerFlags(flags)
 	addUserFlags(flags)
 	flags.BoolP("signup", "s", false, "allow users to signup")
+	flags.Bool("create-user-dir", false, "generate user's home directory automatically")
 	flags.String("shell", "", "shell command to which other commands should be appended")
 
 	flags.String("auth.method", string(auth.MethodJSONAuth), "authentication type")

@@ -38,7 +38,7 @@
 import { enableThumbs } from "@/utils/constants";
 import { mapMutations, mapGetters, mapState } from "vuex";
 import { filesize } from "@/utils";
-import moment from "moment";
+import moment from "moment/min/moment-with-locales";
 import { files as api } from "@/api";
 import * as upload from "@/utils/upload";
 

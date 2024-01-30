@@ -63,7 +63,7 @@
 <script>
 import { share as api, users } from "@/api";
 import { mapState, mapMutations } from "vuex";
-import moment from "moment";
+import moment from "moment/min/moment-with-locales";
 import Clipboard from "clipboard";
 import Errors from "@/views/Errors.vue";
 
