@@ -27,6 +27,7 @@ import Share from "./Share.vue";
 import Upload from "./Upload.vue";
 import ShareDelete from "./ShareDelete.vue";
 import Sidebar from "../Sidebar.vue";
+import DiscardEditorChanges from "./DiscardEditorChanges.vue";
 import { mapGetters, mapState } from "vuex";
 import buttons from "@/utils/buttons";
 
@@ -47,7 +48,8 @@ export default {
     ReplaceRename,
     Upload,
     ShareDelete,
-    Sidebar
+    Sidebar,
+    DiscardEditorChanges,
   },
   data: function () {
     return {
@@ -62,17 +64,16 @@ export default {
     window.addEventListener("keydown", (event) => {
       if (this.currentPrompt == null) return;
 
-      let prompt = this.$refs.currentComponent;
+      const promptName = this.currentPrompt.prompt;
+      const prompt = this.$refs[promptName];
 
-      // Esc!
-      if (event.keyCode === 27) {
+      if (event.code === "Escape") {
         event.stopImmediatePropagation();
         this.$store.commit("closeHovers");
       }
 
-      // Enter
-      if (event.keyCode == 13) {
-        switch (this.currentPrompt.prompt) {
+      if (event.code === "Enter") {
+        switch (promptName) {
           case "delete":
             prompt.submit();
             break;
