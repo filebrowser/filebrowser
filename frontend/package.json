@@ -52,7 +52,7 @@
     "postcss": "^8.4.31",
     "prettier": "^3.0.1",
     "terser": "^5.19.2",
-    "vite": "^4.4.12",
+    "vite": "^4.5.2",
     "vite-plugin-compression2": "^0.10.3",
     "vite-plugin-rewrite-all": "^1.0.1"
   },
