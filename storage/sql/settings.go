@@ -174,7 +174,8 @@ func (s settingsBackend) Get() (*settings.Settings, error) {
 		}
 	}
 	if len(settings1.Key) == 0 {
-		return nil, nil
+		fmt.Println("The tables may not exist. Please run 'filebrowser config init' first")
+		return &settings1, nil
 	}
 	return &settings1, nil
 }

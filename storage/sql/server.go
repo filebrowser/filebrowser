@@ -94,20 +94,60 @@ func (s settingsBackend) SaveServer(ss *settings.Server) error {
 		return err
 	}
 	table := quoteName(s.dbType, SettingsTable)
-	k := quoteName(s.dbType, "key")
+	keyName := quoteName(s.dbType, "key")
 	p1 := placeHolder(s.dbType, 1)
 	p2 := placeHolder(s.dbType, 2)
-	sql := fmt.Sprintf("INSERT INTO %s (%s, value) VALUES(%s,%s)", table, k, p1, p2)
-	for i, field := range fields {
-		stmt, err := s.db.Prepare(sql)
+
+	Insert := func(key string, value string) bool {
+		insertSql := fmt.Sprintf("INSERT INTO %s (%s, value) VALUES(%s,%s)", table, keyName, p1, p2)
+		stmt, err := s.db.Prepare(insertSql)
 		defer stmt.Close()
 		if checkError(err, "Fail to prepare statement") {
 			tx.Rollback()
-			break
+			return false
 		}
-		_, err = stmt.Exec(field, values[i])
-		if checkError(err, "Fail to insert field "+field+" of settings.Server") {
+		_, err = stmt.Exec(key, value)
+		if checkError(err, "Fail to insert field "+key+" of settings.Server") {
 			tx.Rollback()
+			return false
+		}
+		return true
+	}
+	Update := func(key string, value string) bool {
+		updateSql := fmt.Sprintf("UPDATE %s SET value=%s WHERE %s=%s", table, p1, keyName, p2)
+		stmt, err := s.db.Prepare(updateSql)
+		defer stmt.Close()
+		if checkError(err, "Fail to prepare statement") {
+			tx.Rollback()
+			return false
+		}
+		_, err = stmt.Exec(value, key)
+		if checkError(err, "Fail to update field "+key+" of settings.Server") {
+			tx.Rollback()
+			return false
+		}
+		return true
+	}
+	Exist := func(key string) bool {
+		querySql := fmt.Sprintf("SELECT count(*) FROM %s WHERE %s=%s", table, keyName, p1)
+		row := s.db.QueryRow(querySql, key)
+		count := 0
+		err := row.Scan(&count)
+		if checkError(err, "Fail to Query "+key+" for GetServer") {
+			return false
+		}
+		return count == 1
+	}
+	InsertOrUpdate := func(key string, value string) bool {
+		if Exist(key) {
+			return Update(key, value)
+		} else {
+			return Insert(key, value)
+		}
+	}
+
+	for i, field := range fields {
+		if !InsertOrUpdate(field, values[i]) {
 			break
 		}
 	}
