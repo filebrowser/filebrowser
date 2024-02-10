@@ -220,6 +220,10 @@ body.rtl .card .card-title>*:first-child {
   text-align: right;
 }
 
+body.rtl .card .card-action {
+  text-align: left;
+}
+
 .card .card-content.full {
   padding-bottom: 0;
   overflow: auto;

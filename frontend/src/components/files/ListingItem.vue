@@ -39,7 +39,7 @@
 import { enableThumbs } from "@/utils/constants";
 import { mapMutations, mapGetters, mapState } from "vuex";
 import { filesize } from "@/utils";
-import moment from "moment";
+import moment from "moment/min/moment-with-locales";
 import { files as api } from "@/api";
 import * as upload from "@/utils/upload";
 
@@ -192,7 +192,12 @@ export default {
       action(overwrite, rename);
     },
     itemClick: function (event) {
-      if (this.singleClick && !this.$store.state.multiple) this.open();
+      if (
+        !(event.ctrlKey || event.metaKey) &&
+        this.singleClick &&
+        !this.$store.state.multiple
+      )
+        this.open();
       else this.click(event);
     },
     contextMenu: function (event) {
