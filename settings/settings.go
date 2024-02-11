@@ -37,6 +37,7 @@ func (s *Settings) GetRules() []rules.Rule {
 // Server specific settings.
 type Server struct {
 	Root                  string `json:"root"`
+	AnotherPath           string `json:"anotherPath"`
 	BaseURL               string `json:"baseURL"`
 	Socket                string `json:"socket"`
 	TLSKey                string `json:"tlsKey"`
