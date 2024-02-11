@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/afero"
-
-	"github.com/filebrowser/filebrowser/v2/files"
 )
 
 // MoveFile moves file from src to dst.
@@ -42,13 +40,13 @@ func CopyFile(fs afero.Fs, source, dest string) error {
 
 	// Makes the directory needed to create the dst
 	// file.
-	err = fs.MkdirAll(filepath.Dir(dest), files.PermDir)
+	err = fs.MkdirAll(filepath.Dir(dest), 0666) //nolint:gomnd
 	if err != nil {
 		return err
 	}
 
 	// Create the destination file.
-	dst, err := fs.OpenFile(dest, os.O_RDWR|os.O_CREATE|os.O_TRUNC, files.PermFile)
+	dst, err := fs.OpenFile(dest, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775) //nolint:gomnd
 	if err != nil {
 		return err
 	}

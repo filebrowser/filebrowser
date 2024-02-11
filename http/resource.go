@@ -11,34 +11,53 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/shirou/gopsutil/v3/disk"
-	"github.com/spf13/afero"
-
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
+	"github.com/shirou/gopsutil/v3/disk"
+	"github.com/spf13/afero"
 )
 
-var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	file, err := files.NewFileInfo(files.FileOptions{
-		Fs:         d.user.Fs,
-		Path:       r.URL.Path,
-		Modify:     d.user.Perm.Modify,
-		Expand:     true,
-		ReadHeader: d.server.TypeDetectionByHeader,
-		Checker:    d,
-		Content:    true,
+var resourceGetSizeHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	folder, err := files.NewFileInfo(files.FileOptions{
+		Fs:          d.user.Fs,
+		Path:        r.URL.Path,
+		Modify:      d.user.Perm.Modify,
+		Expand:      true,
+		FolderSize:  true,
+		ReadHeader:  d.server.TypeDetectionByHeader,
+		Checker:     d,
+		Content:     true,
+		RootPath:    d.server.Root,
+		AnotherPath: d.server.AnotherPath,
 	})
 	if err != nil {
 		return errToStatus(err), err
 	}
 
+	return renderJSON(w, r, folder)
+})
+
+var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	file, err := files.NewFileInfo(files.FileOptions{
+		Fs:          d.user.Fs,
+		Path:        r.URL.Path,
+		Modify:      d.user.Perm.Modify,
+		Expand:      true,
+		ReadHeader:  d.server.TypeDetectionByHeader,
+		Checker:     d,
+		Content:     true,
+		RootPath:    d.server.Root,
+		AnotherPath: d.server.AnotherPath,
+	})
+	if err != nil {
+		return errToStatus(err), err
+	}
 	if file.IsDir {
 		file.Listing.Sorting = d.user.Sorting
 		file.Listing.ApplySort()
 		return renderJSON(w, r, file)
 	}
-
 	if checksum := r.URL.Query().Get("checksum"); checksum != "" {
 		err := file.Checksum(checksum)
 		if err == errors.ErrInvalidOption {
@@ -50,7 +69,6 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		// do not waste bandwidth if we just want the checksum
 		file.Content = ""
 	}
-
 	return renderJSON(w, r, file)
 })
 
@@ -61,12 +79,14 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 		}
 
 		file, err := files.NewFileInfo(files.FileOptions{
-			Fs:         d.user.Fs,
-			Path:       r.URL.Path,
-			Modify:     d.user.Perm.Modify,
-			Expand:     false,
-			ReadHeader: d.server.TypeDetectionByHeader,
-			Checker:    d,
+			Fs:          d.user.Fs,
+			Path:        r.URL.Path,
+			Modify:      d.user.Perm.Modify,
+			Expand:      false,
+			ReadHeader:  d.server.TypeDetectionByHeader,
+			Checker:     d,
+			RootPath:    d.server.Root,
+			AnotherPath: d.server.AnotherPath,
 		})
 		if err != nil {
 			return errToStatus(err), err
@@ -98,17 +118,19 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 
 		// Directories creation on POST.
 		if strings.HasSuffix(r.URL.Path, "/") {
-			err := d.user.Fs.MkdirAll(r.URL.Path, files.PermDir)
+			err := d.user.Fs.MkdirAll(r.URL.Path, 0775) //nolint:gomnd
 			return errToStatus(err), err
 		}
 
 		file, err := files.NewFileInfo(files.FileOptions{
-			Fs:         d.user.Fs,
-			Path:       r.URL.Path,
-			Modify:     d.user.Perm.Modify,
-			Expand:     false,
-			ReadHeader: d.server.TypeDetectionByHeader,
-			Checker:    d,
+			Fs:          d.user.Fs,
+			Path:        r.URL.Path,
+			Modify:      d.user.Perm.Modify,
+			Expand:      false,
+			ReadHeader:  d.server.TypeDetectionByHeader,
+			Checker:     d,
+			RootPath:    d.server.Root,
+			AnotherPath: d.server.AnotherPath,
 		})
 		if err == nil {
 			if r.URL.Query().Get("override") != "true" {
@@ -256,12 +278,12 @@ func addVersionSuffix(source string, fs afero.Fs) string {
 
 func writeFile(fs afero.Fs, dst string, in io.Reader) (os.FileInfo, error) {
 	dir, _ := path.Split(dst)
-	err := fs.MkdirAll(dir, files.PermDir)
+	err := fs.MkdirAll(dir, 0775) //nolint:gomnd
 	if err != nil {
 		return nil, err
 	}
 
-	file, err := fs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, files.PermFile)
+	file, err := fs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775) //nolint:gomnd
 	if err != nil {
 		return nil, err
 	}
@@ -309,12 +331,14 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		dst = path.Clean("/" + dst)
 
 		file, err := files.NewFileInfo(files.FileOptions{
-			Fs:         d.user.Fs,
-			Path:       src,
-			Modify:     d.user.Perm.Modify,
-			Expand:     false,
-			ReadHeader: false,
-			Checker:    d,
+			Fs:          d.user.Fs,
+			Path:        src,
+			Modify:      d.user.Perm.Modify,
+			Expand:      false,
+			ReadHeader:  false,
+			Checker:     d,
+			RootPath:    d.server.Root,
+			AnotherPath: d.server.AnotherPath,
 		})
 		if err != nil {
 			return err
@@ -339,13 +363,15 @@ type DiskUsageResponse struct {
 
 var diskUsage = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	file, err := files.NewFileInfo(files.FileOptions{
-		Fs:         d.user.Fs,
-		Path:       r.URL.Path,
-		Modify:     d.user.Perm.Modify,
-		Expand:     false,
-		ReadHeader: false,
-		Checker:    d,
-		Content:    false,
+		Fs:          d.user.Fs,
+		Path:        r.URL.Path,
+		Modify:      d.user.Perm.Modify,
+		Expand:      false,
+		ReadHeader:  false,
+		Checker:     d,
+		Content:     false,
+		RootPath:    d.server.Root,
+		AnotherPath: d.server.AnotherPath,
 	})
 	if err != nil {
 		return errToStatus(err), err

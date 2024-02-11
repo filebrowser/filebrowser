@@ -38,8 +38,7 @@
     "update": "Update",
     "upload": "Upload",
     "openFile": "Open file",
-    "continue": "Continue",
-    "discardChanges": "Discard"
+    "continue": "Continue"
   },
   "download": {
     "downloadFile": "Download File",
@@ -163,8 +162,7 @@
     "uploadFiles": "Uploading {files} files...",
     "uploadMessage": "Select an option to upload.",
     "optionalPassword": "Optional password",
-    "resolution": "Resolution",
-    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
+    "resolution": "Resolution"
   },
   "search": {
     "images": "Images",

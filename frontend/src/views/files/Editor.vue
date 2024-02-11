@@ -103,15 +103,13 @@ export default {
     if (theme == "dark") {
       this.editor.setTheme("ace/theme/twilight");
     }
-
-    this.editor.focus();
   },
   methods: {
+    back() {
+      let uri = url.removeLastDir(this.$route.path) + "/";
+      this.$router.push({ path: uri });
+    },
     keyEvent(event) {
-      if (event.code === "Escape") {
-        this.close();
-      }
-
       if (!event.ctrlKey && !event.metaKey) {
         return;
       }
@@ -129,7 +127,6 @@ export default {
 
       try {
         await api.put(this.$route.path, this.editor.getValue());
-        this.editor.session.getUndoManager().markClean();
         buttons.success(button);
       } catch (e) {
         buttons.done(button);
@@ -137,11 +134,6 @@ export default {
       }
     },
     close() {
-      if (!this.editor.session.getUndoManager().isClean()) {
-        this.$store.commit("showHover", "discardEditorChanges");
-        return;
-      }
-
       this.$store.commit("updateRequest", {});
 
       let uri = url.removeLastDir(this.$route.path) + "/";

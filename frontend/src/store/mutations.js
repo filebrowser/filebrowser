@@ -1,5 +1,5 @@
 import * as i18n from "@/i18n";
-import moment from "moment/min/moment-with-locales";
+import moment from "moment";
 
 const mutations = {
   closeHovers: (state) => {
