@@ -2,7 +2,7 @@ module github.com/filebrowser/filebrowser/v2
 
 go 1.20
 
-replace "github.com/filebrowser/filebrowser/v2/" v1.0.0 => .
+replace "github.com/filebrowser/filebrowser/v2/" v1.0.0 => ./
 
 require (
 	github.com/asdine/storm/v3 v3.2.1
