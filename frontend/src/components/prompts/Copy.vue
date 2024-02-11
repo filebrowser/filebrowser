@@ -12,7 +12,7 @@
 
     <div
       class="card-action"
-      style="display: flex; align-items: center; justify-content: space-between"
+      style="display: flex; align-items: center; justify-content: space-between;"
     >
       <template v-if="user.perm.create">
         <button
@@ -20,7 +20,7 @@
           @click="$refs.fileList.createDir()"
           :aria-label="$t('sidebar.newFolder')"
           :title="$t('sidebar.newFolder')"
-          style="justify-self: left"
+          style="justify-self: left;"
         >
           <span>{{ $t("sidebar.newFolder") }}</span>
         </button>

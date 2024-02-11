@@ -2,7 +2,7 @@
   <div
     class="shell"
     :class="{ ['shell--hidden']: !showShell }"
-    :style="{ height: `${this.shellHeight}em`, direction: 'ltr' }"
+    :style="{ height: `${this.shellHeight}em` }"
   >
     <div
       @pointerdown="startDrag()"

@@ -5,9 +5,8 @@
     "copy": "העתקה",
     "copyFile": "העתק קובץ",
     "copyToClipboard": "העתק ללוח",
-    "copyDownloadLinkToClipboard": "העתק קישור הורדה ללוח",
-    "create": "צור",
-    "delete": "מחק",
+    "create": "יצירה",
+    "delete": "מחיקה",
     "download": "הורדה",
     "file": "קובץ",
     "folder": "תיקייה",
@@ -19,7 +18,7 @@
     "new": "חדש",
     "next": "הבא",
     "ok": "אישור",
-    "permalink": "יצירת קישור קבוע",
+    "permalink": "צור קישור קבוע",
     "previous": "הקודם",
     "publish": "פרסום",
     "rename": "שינוי שם",
@@ -37,17 +36,12 @@
     "toggleSidebar": "פתיחת/סגירת סרגל צד",
     "update": "עדכון",
     "upload": "העלאה",
-    "openFile": "פתח קובץ",
-    "continue": "המשך",
-    "discardChanges": "זריקת השינויים"
+    "openFile": "פתח קובץ"
   },
   "download": {
     "downloadFile": "הורד קובץ",
     "downloadFolder": "הורד תיקייה",
     "downloadSelected": "הורד קבצים שנבחרו"
-  },
-  "upload": {
-    "abortUpload": "האם אתה בטוח שברצונך להפסיק את ההעלאה?"
   },
   "errors": {
     "forbidden": "אין לך הרשאות גישה",
@@ -72,7 +66,7 @@
     "sortByLastModified": "מיין לפי השינוי האחרון",
     "sortByName": "מיין לפי שם",
     "sortBySize": "מיין לפי גודל",
-    "noPreview": "לא זמינה תצוגה מקדימה לקובץ זה"
+    "noPreview": "תצוגה מקדימה לא זמינה לקובץ זה"
   },
   "help": {
     "click": "בחר קובץ או תיקייה",
@@ -161,8 +155,7 @@
     "upload": "העלאה",
     "uploadFiles": "מעלה {files} קבצים...",
     "uploadMessage": "בחר אפשרות העלאה.",
-    "optionalPassword": "סיסמא אופציונלית",
-    "discardEditorChanges": "האם אתה בטוח שברצונך לבטל את השינויים שביצעת?"
+    "optionalPassword": "סיסמא אופציונלית"
   },
   "search": {
     "images": "תמונות",
@@ -197,7 +190,6 @@
     "customStylesheet": "עיצוב מותאם אישית (Stylesheet)",
     "defaultUserDescription": "הגדרות ברירת המחדל למשתמשים חדשים",
     "disableExternalLinks": "השבת קישורים חיצוניים (למעט תיעוד)",
-    "disableUsedDiskPercentage": "אל תציג גרף שימוש בדיסק",
     "documentation": "תיעוד",
     "examples": "דוגמאות",
     "executeOnShell": "בצע במסוף",
@@ -226,7 +218,7 @@
       "share": "שיתוף קבצים"
     },
     "permissions": "הרשאות",
-    "permissionsHelp": "אתה יכול להגדיר את המשתמש להיות מנהל מערכת או לבחור את ההרשאות בנפרד. אם תבחר \"מנהל מערכת\", כל ההרשאות יינתנו אוטומטית. ניהול המשתמשים נשאר הרשאה של מנהל מערכת.\n",
+    "permissionsHelp": "אתה יכול להגדיר את המשתמש להיות מנהל מערכת או לבחור את ההרשאות בנפרד. אם תבחר \"מנהל מערכת\", כל ההרשאות ייבחרו אוטומטית. ניהול המשתמשים נשאר הרשאה של מנהל מערכת.\n",
     "profileSettings": "הגדרות פרופיל",
     "ruleExample1": "מנע גישה לקבצים נסתרים (כל קובץ/תיקייה שמתחיל בנקודה, לדוגמא .git)",
     "ruleExample2": "חסימת גישה לקובץ בשם Caddyfile בהיקף הראשי.",
