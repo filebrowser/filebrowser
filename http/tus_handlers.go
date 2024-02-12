@@ -17,12 +17,14 @@ import (
 func tusPostHandler() handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		file, err := files.NewFileInfo(files.FileOptions{
-			Fs:         d.user.Fs,
-			Path:       r.URL.Path,
-			Modify:     d.user.Perm.Modify,
-			Expand:     false,
-			ReadHeader: d.server.TypeDetectionByHeader,
-			Checker:    d,
+			Fs:          d.user.Fs,
+			Path:        r.URL.Path,
+			Modify:      d.user.Perm.Modify,
+			Expand:      false,
+			ReadHeader:  d.server.TypeDetectionByHeader,
+			Checker:     d,
+			RootPath:    d.server.Root,
+			AnotherPath: d.server.AnotherPath,
 		})
 		switch {
 		case errors.Is(err, afero.ErrFileNotFound):
@@ -72,12 +74,14 @@ func tusHeadHandler() handleFunc {
 		}
 
 		file, err := files.NewFileInfo(files.FileOptions{
-			Fs:         d.user.Fs,
-			Path:       r.URL.Path,
-			Modify:     d.user.Perm.Modify,
-			Expand:     false,
-			ReadHeader: d.server.TypeDetectionByHeader,
-			Checker:    d,
+			Fs:          d.user.Fs,
+			Path:        r.URL.Path,
+			Modify:      d.user.Perm.Modify,
+			Expand:      false,
+			ReadHeader:  d.server.TypeDetectionByHeader,
+			Checker:     d,
+			RootPath:    d.server.Root,
+			AnotherPath: d.server.AnotherPath,
 		})
 		if err != nil {
 			return errToStatus(err), err
@@ -105,12 +109,14 @@ func tusPatchHandler() handleFunc {
 		}
 
 		file, err := files.NewFileInfo(files.FileOptions{
-			Fs:         d.user.Fs,
-			Path:       r.URL.Path,
-			Modify:     d.user.Perm.Modify,
-			Expand:     false,
-			ReadHeader: d.server.TypeDetectionByHeader,
-			Checker:    d,
+			Fs:          d.user.Fs,
+			Path:        r.URL.Path,
+			Modify:      d.user.Perm.Modify,
+			Expand:      false,
+			ReadHeader:  d.server.TypeDetectionByHeader,
+			Checker:     d,
+			RootPath:    d.server.Root,
+			AnotherPath: d.server.AnotherPath,
 		})
 
 		switch {
