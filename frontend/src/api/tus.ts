@@ -40,7 +40,7 @@ export async function upload(
         "X-Auth": authStore.jwt,
       },
       onError: function (error) {
-        reject("Upload failed: " + error);
+        reject(new Error(`Upload failed: ${error.message}`));
       },
       onProgress: function (bytesUploaded) {
         // Emulate ProgressEvent.loaded which is used by calling functions
