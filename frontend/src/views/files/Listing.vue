@@ -9,7 +9,6 @@
         :label="$t('buttons.search')"
         @action="openSearch()"
       />
-
       <template #actions>
         <template v-if="!isMobile">
           <action
