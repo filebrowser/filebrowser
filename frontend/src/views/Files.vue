@@ -97,7 +97,6 @@ export default {
   },
   mounted() {
     window.addEventListener("keydown", this.keyEvent);
-    window.sessionStorage.setItem('listFrozen',"false");
   },
   beforeDestroy() {
     window.removeEventListener("keydown", this.keyEvent);
