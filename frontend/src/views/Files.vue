@@ -3,10 +3,10 @@
     <header-bar v-if="error || req.type == null" showMenu showLogo />
 
     <breadcrumbs base="/files" />
-
+    <listing />
     <errors v-if="error" :errorCode="error.status" />
     <component v-else-if="currentView" :is="currentView"></component>
-    <div v-else>
+    <div v-else-if="currentView !== null">
       <h2 class="message delayed">
         <div class="spinner">
           <div class="bounce1"></div>
@@ -52,13 +52,10 @@ export default {
   computed: {
     ...mapState(["req", "reload", "loading"]),
     currentView() {
-      if (this.req.type == undefined) {
+      if (this.req.type == undefined || this.req.isDir) {
         return null;
       }
-
-      if (this.req.isDir) {
-        return "listing";
-      } else if (
+      else if (
         this.req.type === "text" ||
         this.req.type === "textImmutable"
       ) {
@@ -72,7 +69,26 @@ export default {
     this.fetchData();
   },
   watch: {
-    $route: "fetchData",
+    $route: function (to, from) {
+      if (from.path.endsWith("/")) { 
+        if (to.path.endsWith("/"))   {
+          window.sessionStorage.setItem('listFrozen', "false");
+          this.fetchData();
+          return;
+        } else {
+          window.sessionStorage.setItem('listFrozen', "true");
+          this.fetchData();
+          return;        
+        }
+      } else if (to.path.endsWith("/")) {
+        this.$store.commit("updateRequest", {});
+        this.fetchData();
+        return;
+      } else {
+        this.fetchData();
+        return;
+      } 
+    }, 
     reload: function (value) {
       if (value === true) {
         this.fetchData();
@@ -101,7 +117,9 @@ export default {
       this.$store.commit("closeHovers");
 
       // Set loading to true and reset the error.
-      this.setLoading(true);
+      if (window.sessionStorage.getItem('listFrozen') !=="true"){ 
+        this.setLoading(true);
+      }
       this.error = null;
 
       let url = this.$route.path;
