@@ -129,6 +129,7 @@ export default {
 
       try {
         await api.put(this.$route.path, this.editor.getValue());
+        this.editor.session.getUndoManager().markClean();
         buttons.success(button);
       } catch (e) {
         buttons.done(button);
@@ -136,9 +137,7 @@ export default {
       }
     },
     close() {
-      const originalContent = this.req.content;
-      const currentContent = this.editor.getValue();
-      if (originalContent !== currentContent) {
+      if (!this.editor.session.getUndoManager().isClean()) {
         this.$store.commit("showHover", "discardEditorChanges");
         return;
       }

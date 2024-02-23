@@ -1,6 +1,8 @@
 <template>
   <div
     id="previewer"
+    @touchmove.prevent.stop 
+    @wheel.prevent.stop
     @mousemove="toggleNavigation"
     @touchstart="toggleNavigation"
   >
