@@ -7,11 +7,14 @@ require (
 	github.com/disintegration/imaging v1.6.2
 	github.com/dsoprea/go-exif/v3 v3.0.0-20201216222538-db167117f483
 	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
+	github.com/lib/pq v1.10.9
 	github.com/maruel/natural v1.1.0
 	github.com/marusama/semaphore/v2 v2.5.0
+	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pelletier/go-toml/v2 v2.0.6

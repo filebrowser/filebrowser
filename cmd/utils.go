@@ -17,6 +17,7 @@ import (
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
+	"github.com/filebrowser/filebrowser/v2/storage/sql"
 )
 
 func checkErr(err error) {
@@ -82,27 +83,51 @@ func dbExists(path string) (bool, error) {
 	return false, err
 }
 
+type Closeable interface {
+	Close() error
+}
+
+func openBoltDB(path string, cfg pythonConfig) (pythonData, Closeable) {
+	data := pythonData{hadDB: true}
+	exists, err := dbExists(path)
+
+	if err != nil {
+		panic(err)
+	} else if exists && cfg.noDB {
+		log.Fatal(path + " already exists")
+	} else if !exists && !cfg.noDB && !cfg.allowNoDB {
+		log.Fatal(path + " does not exist. Please run 'filebrowser config init' first.")
+	}
+
+	data.hadDB = exists
+	db, err := storm.Open(path)
+	checkErr(err)
+	data.store, err = bolt.NewStorage(db)
+	checkErr(err)
+	return data, db
+}
+
+func openDB(path string, cfg pythonConfig) (pythonData, Closeable) {
+	if sql.IsDBPath(path) {
+		data := pythonData{hadDB: false}
+		db, err := sql.OpenDB(path)
+		if err != nil {
+			log.Fatal("Fail to open database " + path)
+		}
+		data.store, err = sql.NewStorage(db)
+		if err != nil {
+			log.Fatal("Fail to create database storage for " + path)
+		}
+		data.hadDB = sql.HadSetting(db)
+		return data, db
+	}
+	return openBoltDB(path, cfg)
+}
+
 func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) {
-		data := pythonData{hadDB: true}
-
-		path := getParam(cmd.Flags(), "database")
-		exists, err := dbExists(path)
-
-		if err != nil {
-			panic(err)
-		} else if exists && cfg.noDB {
-			log.Fatal(path + " already exists")
-		} else if !exists && !cfg.noDB && !cfg.allowNoDB {
-			log.Fatal(path + " does not exist. Please run 'filebrowser config init' first.")
-		}
-
-		data.hadDB = exists
-		db, err := storm.Open(path)
-		checkErr(err)
+		data, db := openDB(getParam(cmd.Flags(), "database"), cfg)
 		defer db.Close()
-		data.store, err = bolt.NewStorage(db)
-		checkErr(err)
 		fn(cmd, args, data)
 	}
 }
