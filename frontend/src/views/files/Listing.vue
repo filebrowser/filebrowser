@@ -397,7 +397,7 @@ export default {
         });
       }
       if (this.req.isDir) {
-        window.sessionStorage.setItem(”listFrozen“, "false");
+        window.sessionStorage.setItem("listFrozen", "false");
         window.sessionStorage.setItem("modified", "false"); 
       }
     },
