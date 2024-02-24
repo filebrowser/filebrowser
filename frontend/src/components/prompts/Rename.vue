@@ -101,9 +101,6 @@ export default {
         this.$showError(e);
       }
 
-      this.$nextTick(() => {
-        window.sessionStorage.setItem("modified", "false");
-      });
       this.$store.commit("closeHovers");
     },
   },
