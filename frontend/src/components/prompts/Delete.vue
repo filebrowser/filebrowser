@@ -45,6 +45,7 @@ export default {
     submit: async function () {
       buttons.loading("delete");
 
+      window.sessionStorage.setItem('modified', "true");
       try {
         if (!this.isListing) {
           await api.remove(this.$route.path);
@@ -74,6 +75,9 @@ export default {
         this.$showError(e);
         if (this.isListing) this.$store.commit("setReload", true);
       }
+      Vue.nextTick(() => {
+        window.sessionStorage.setItem('modified', "false");
+      });
     },
   },
 };
