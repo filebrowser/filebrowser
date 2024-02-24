@@ -75,9 +75,6 @@ export default {
         this.$showError(e);
         if (this.isListing) this.$store.commit("setReload", true);
       }
-      this.$nextTick(() => {
-        window.sessionStorage.setItem("modified", "false");
-      });
     },
   },
 };
