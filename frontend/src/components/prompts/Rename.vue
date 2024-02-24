@@ -87,7 +87,8 @@ export default {
 
       newLink =
         url.removeLastDir(oldLink) + "/" + encodeURIComponent(this.name);
-
+      
+      window.sessionStorage.setItem('modified', "true");
       try {
         await api.move([{ from: oldLink, to: newLink }]);
         if (!this.isListing) {
@@ -100,6 +101,9 @@ export default {
         this.$showError(e);
       }
 
+      Vue.nextTick(() => {
+        window.sessionStorage.setItem('modified', "false");
+      });
       this.$store.commit("closeHovers");
     },
   },
