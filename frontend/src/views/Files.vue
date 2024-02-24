@@ -117,7 +117,7 @@ export default {
       this.$store.commit("closeHovers");
 
       // Set loading to true and reset the error.
-      if (window.sessionStorage.getItem('listFrozen') !=="true"){ 
+      if (window.sessionStorage.getItem('listFrozen') !=="true" && window.sessionStorage.getItem('modified') !=="true"){ 
         this.setLoading(true);
       }
       this.error = null;
