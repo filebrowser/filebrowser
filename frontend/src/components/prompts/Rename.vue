@@ -101,7 +101,7 @@ export default {
         this.$showError(e);
       }
 
-      nextTick(() => {
+      this.$nextTick(() => {
         window.sessionStorage.setItem("modified", "false");
       });
       this.$store.commit("closeHovers");
