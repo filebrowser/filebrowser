@@ -54,7 +54,7 @@ func init() {
 }
 
 func addServerFlags(flags *pflag.FlagSet) {
-	flags.StringP("address", "a", "127.0.0.1", "address to listen on")
+	flags.StringP("address", "a", "0.0.0.0", "address to listen on")
 	flags.StringP("log", "l", "stdout", "log output")
 	flags.StringP("port", "p", "8080", "port to listen on")
 	flags.StringP("cert", "t", "", "tls certificate")
@@ -181,7 +181,11 @@ user created with the credentials from options "username" and "password".`,
 
 		defer listener.Close()
 
-		log.Println("Listening on", listener.Addr().String())
+		if strings.Contains(adr, "0.0.0.0") {
+			log.Println("Listening on 127.0.0.1:" + server.Port)
+		} else {
+			log.Println("Listening on", listener.Addr().String())
+		}
 		//nolint: gosec
 		if err := http.Serve(listener, handler); err != nil {
 			log.Fatal(err)
