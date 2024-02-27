@@ -102,7 +102,8 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 		} else if !exists && !cfg.noDB {
 			log.Println(absPath + " does not exist. initialing...")
 		}
-		log.Println("Using database: " + absPath )
+
+		log.Println("Using database: " + absPath)
 		data.hadDB = exists
 		db, err := storm.Open(path)
 		checkErr(err)
