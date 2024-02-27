@@ -152,7 +152,7 @@ main .spinner .bounce2 {
 /* PREVIEWER */
 
 #previewer {
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(0, 0, 0, 0.99);
   position: fixed;
   top: 0;
   left: 0;
