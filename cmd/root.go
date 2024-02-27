@@ -54,7 +54,7 @@ func init() {
 }
 
 func addServerFlags(flags *pflag.FlagSet) {
-	flags.StringP("address", "a", "127.0.0.1", "address to listen on")
+	flags.StringP("address", "a", "0.0.0.0", "address to listen on")
 	flags.StringP("log", "l", "stdout", "log output")
 	flags.StringP("port", "p", "8080", "port to listen on")
 	flags.StringP("cert", "t", "", "tls certificate")
@@ -69,7 +69,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.Bool("disable-thumbnails", false, "disable image thumbnails")
 	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
 	flags.Bool("disable-exec", false, "disables Command Runner feature")
-	flags.Bool("disable-type-detection-by-header", false, "disables type detection by reading file headers")
+	flags.Bool("enable-type-detection-by-header", false, "enables type detection by reading file headers")
 }
 
 var rootCmd = &cobra.Command{
@@ -181,7 +181,11 @@ user created with the credentials from options "username" and "password".`,
 
 		defer listener.Close()
 
-		log.Println("Listening on", listener.Addr().String())
+		if strings.Contains(adr, "0.0.0.0") {
+			log.Println("Listening on localhost:" + server.Port)
+		} else {
+			log.Println("Listening on", listener.Addr().String())
+		}
 		//nolint: gosec
 		if err := http.Serve(listener, handler); err != nil {
 			log.Fatal(err)
@@ -256,8 +260,8 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 	_, disablePreviewResize := getParamB(flags, "disable-preview-resize")
 	server.ResizePreview = !disablePreviewResize
 
-	_, disableTypeDetectionByHeader := getParamB(flags, "disable-type-detection-by-header")
-	server.TypeDetectionByHeader = !disableTypeDetectionByHeader
+	_, enableTypeDetectionByHeader := getParamB(flags, "enable-type-detection-by-header")
+	server.TypeDetectionByHeader = enableTypeDetectionByHeader
 
 	_, disableExec := getParamB(flags, "disable-exec")
 	server.EnableExec = !disableExec
