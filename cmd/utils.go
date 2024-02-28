@@ -100,7 +100,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 		} else if !exists && !cfg.noDB && !cfg.allowNoDB {
 			log.Fatal(absPath + " does not exist. Please run 'filebrowser config init' first.")
 		} else if !exists && !cfg.noDB {
-			log.Println(absPath + " does not exist. initialing...")
+			log.Println("Warning: filebrowser.db can't be found. Initialing in " + strings.TrimRight(absPath, "filebrowser.db"))
 		}
 
 		log.Println("Using database: " + absPath)
