@@ -181,7 +181,7 @@ user created with the credentials from options "username" and "password".`,
 
 		defer listener.Close()
 		if strings.Contains(adr, "0.0.0.0") {
-			log.Println("Listening on 0.0.0.0:" + server.Port +". You can access the FileBrowser at 127.0.0.1:" + server.Port)
+			log.Println("Listening on 0.0.0.0:" + server.Port + ". You can access the FileBrowser at 127.0.0.1:" + server.Port)
 		} else {
 			log.Println("Listening on", listener.Addr().String())
 		}
