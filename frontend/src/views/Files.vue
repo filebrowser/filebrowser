@@ -54,8 +54,7 @@ export default {
     currentView() {
       if (this.req.type == undefined || this.req.isDir) {
         return null;
-      }
-      else if (
+      } else if (
         this.req.type === "text" ||
         this.req.type === "textImmutable"
       ) {
@@ -151,3 +150,9 @@ export default {
   },
 };
 </script>
+<style>
+  #listing{
+    height: calc(100vh - 8em);   
+    overflow-y: auto; 
+  }
+</style>
