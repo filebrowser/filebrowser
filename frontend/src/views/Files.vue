@@ -150,9 +150,3 @@ export default {
   },
 };
 </script>
-<style>
-  #listing{
-    height: calc(100vh - 8em);   
-    overflow-y: auto; 
-  }
-</style>
