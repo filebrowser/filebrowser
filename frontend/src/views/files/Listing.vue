@@ -383,7 +383,7 @@ export default {
   },
   watch: {
     req: function () {
-      if (window.sessionStorage.getItem('listFrozen') !=="true"){
+      if (window.sessionStorage.getItem("listFrozen") !=="true" && window.sessionStorage.getItem("modified") !=="true"){
         // Reset the show value
         this.showLimit = 50;
 
@@ -397,7 +397,8 @@ export default {
         });
       }
       if (this.req.isDir) {
-        window.sessionStorage.setItem('listFrozen', "false"); 
+        window.sessionStorage.setItem("listFrozen", "false");
+        window.sessionStorage.setItem("modified", "false"); 
       }
     },
   },
