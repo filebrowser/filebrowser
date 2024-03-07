@@ -7,7 +7,7 @@ builds:
   - env:
       - CGO_ENABLED=0
     ldflags:
-      - -s -w -X github.com/filebrowser/filebrowser/v2/version.Version={{ .Version }} -X github.com/filebrowser/filebrowser/v2/version.CommitSHA={{ .ShortCommit }}
+      - -s -w -X github.com/yi-you/filebrowser/v2/version.Version={{ .Version }} -X github.com/yi-you/filebrowser/v2/version.CommitSHA={{ .ShortCommit }}
     main: main.go
     binary: filebrowser
     goos:
@@ -42,7 +42,7 @@ archives:
 brews:
   - name: filebrowser
     repository:
-      owner: filebrowser
+      owner: yi-you
       name: homebrew-tap
     folder: Formula
     homepage: https://filebrowser.org
