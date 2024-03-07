@@ -20,8 +20,8 @@ import (
 
 	"github.com/spf13/afero"
 
-	"github.com/filebrowser/filebrowser/v2/errors"
-	"github.com/filebrowser/filebrowser/v2/rules"
+	"github.com/yi-you/filebrowser/v2/errors"
+	"github.com/yi-you/filebrowser/v2/rules"
 )
 
 const PermFile = 0644

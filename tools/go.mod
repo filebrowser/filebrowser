@@ -1,4 +1,4 @@
-module github.com/filebrowser/filebrowser/v2/tools
+module github.com/yi-you/filebrowser/v2/tools
 
 go 1.20
 

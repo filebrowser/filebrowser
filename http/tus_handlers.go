@@ -11,7 +11,7 @@ import (
 
 	"github.com/spf13/afero"
 
-	"github.com/filebrowser/filebrowser/v2/files"
+	"github.com/yi-you/filebrowser/v2/files"
 )
 
 func tusPostHandler() handleFunc {
