@@ -67,7 +67,7 @@ func handle(fn handleFunc, prefix string, store *storage.Storage, server *settin
 		})
 
 		clientIP := realip.FromRequest(r)
-		log.Printf("%s: %v %s %v", r.URL.Path, status, clientIP, err)
+		log.Printf("%s %s: %v %s %v", r.Method, r.URL.Path, status, clientIP, err)
 		if status != 0 {
 			txt := http.StatusText(status)
 			http.Error(w, strconv.Itoa(status)+" "+txt, status)
