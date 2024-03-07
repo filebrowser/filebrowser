@@ -45,6 +45,7 @@ export default {
     submit: async function () {
       buttons.loading("delete");
 
+      window.sessionStorage.setItem("modified", "true");
       try {
         if (!this.isListing) {
           await api.remove(this.$route.path);
