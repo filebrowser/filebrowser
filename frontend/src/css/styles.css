@@ -153,7 +153,6 @@ main .spinner .bounce2 {
 
 #previewer {
   background-color: rgba(0, 0, 0, 0.99);
-  padding-top: 4em;
   position: fixed;
   top: 0;
   left: 0;
@@ -166,15 +165,25 @@ main .spinner .bounce2 {
 #previewer header {
   background: none;
   color: #fff;
+  border-bottom: 0px;
+  box-shadow: 0px 0px 0px;
+  z-index: 19999;
 }
 
 #previewer header > .action i {
   color: #fff;
+  text-shadow: 1px 1px 1px #000000;
+}
+
+#previewer header > title {
+  white-space: nowrap; 
+  text-shadow: 1px 1px 1px #000000;
 }
 
 @media (min-width: 738px) {
   #previewer header #dropdown .action i {
     color: #fff;
+  text-shadow: 1px 1px 1px #000000;
   }
 }
 
@@ -188,7 +197,7 @@ main .spinner .bounce2 {
 
 #previewer .preview {
   text-align: center;
-  height: calc(100vh - 4em);
+  height: 100%;
 }
 
 #previewer .preview pre {
@@ -202,6 +211,12 @@ main .spinner .bounce2 {
   max-height: 100%;
   margin: 0;
 }
+
+#previewer .preview audio {
+  width: 95%;
+  height: 88%;
+}
+
 
 #previewer .preview video {
   height: 100%;
@@ -247,7 +262,7 @@ main .spinner .bounce2 {
 #previewer > button {
   margin: 0;
   position: fixed;
-  top: calc(50% + 1.85em);
+  top: 50%;
   transform: translateY(-50%);
   background-color: rgba(80, 80, 80, 0.5);
   color: white;
