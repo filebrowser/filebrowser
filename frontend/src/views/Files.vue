@@ -54,8 +54,7 @@ export default {
     currentView() {
       if (this.req.type == undefined || this.req.isDir) {
         return null;
-      }
-      else if (
+      } else if (
         this.req.type === "text" ||
         this.req.type === "textImmutable"
       ) {
@@ -72,11 +71,11 @@ export default {
     $route: function (to, from) {
       if (from.path.endsWith("/")) { 
         if (to.path.endsWith("/"))   {
-          window.sessionStorage.setItem('listFrozen', "false");
+          window.sessionStorage.setItem("listFrozen", "false");
           this.fetchData();
           return;
         } else {
-          window.sessionStorage.setItem('listFrozen', "true");
+          window.sessionStorage.setItem("listFrozen", "true");
           this.fetchData();
           return;        
         }
@@ -117,7 +116,7 @@ export default {
       this.$store.commit("closeHovers");
 
       // Set loading to true and reset the error.
-      if (window.sessionStorage.getItem('listFrozen') !=="true"){ 
+      if (window.sessionStorage.getItem("listFrozen") !=="true" && window.sessionStorage.getItem("modified") !=="true"){ 
         this.setLoading(true);
       }
       this.error = null;
