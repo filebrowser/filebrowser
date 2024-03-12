@@ -436,17 +436,23 @@ export default {
   },
   watch: {
     req: function () {
-      // Reset the show value
-      this.showLimit = 50;
+      if (window.sessionStorage.getItem("listFrozen") !=="true" && window.sessionStorage.getItem("modified") !=="true"){
+        // Reset the show value
+        this.showLimit = 50;
 
-      // Ensures that the listing is displayed
-      Vue.nextTick(() => {
-        // How much every listing item affects the window height
-        this.setItemWeight();
+        // Ensures that the listing is displayed
+        Vue.nextTick(() => {
+          // How much every listing item affects the window height
+          this.setItemWeight();
 
-        // Fill and fit the window with listing items
-        this.fillWindow(true);
-      });
+          // Fill and fit the window with listing items
+          this.fillWindow(true);
+        });
+      }
+      if (this.req.isDir) {
+        window.sessionStorage.setItem("listFrozen", "false");
+        window.sessionStorage.setItem("modified", "false"); 
+      }
     },
   },
   mounted: function () {
