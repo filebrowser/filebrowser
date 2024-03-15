@@ -385,7 +385,7 @@ export default {
     req: function () {
       if (window.sessionStorage.getItem("listFrozen") !=="true" && window.sessionStorage.getItem("modified") !=="true"){
         // Reset the show value
-        this.showLimit = 50;
+        this.showLimit = this.req.numDirs + this.req.numFiles;
 
         // Ensures that the listing is displayed
         Vue.nextTick(() => {
@@ -394,6 +394,11 @@ export default {
 
           // Fill and fit the window with listing items
           this.fillWindow(true);
+          if (window.sessionStorage.getItem(this.$route.path)) {
+            this.addSelected(JSON.parse(window.sessionStorage.getItem(this.$route.path))[1]);
+            document.documentElement.scrollTop = JSON.parse(window.sessionStorage.getItem(this.$route.path))[0];
+	    window.sessionStorage.removeItem(this.$route.path);
+          }
         });
       }
       if (this.req.isDir) {
@@ -882,9 +887,9 @@ export default {
       const windowHeight = window.innerHeight;
 
       // Quantity of items needed to fill 2x of the window height
-      const showQuantity = Math.ceil(
-        (windowHeight + windowHeight * 2) / this.itemWeight
-      );
+      const showQuantity = window.sessionStorage.getItem(this.$route.path) ?
+        Math.ceil((JSON.parse(window.sessionStorage.getItem(this.$route.path))[0] + windowHeight * 2) / this.itemWeight) :
+        Math.ceil((windowHeight + windowHeight * 2) / this.itemWeight);
 
       // Less items to display than current
       if (this.showLimit > showQuantity && !fit) return;

@@ -28,7 +28,6 @@ import { mapState } from "vuex";
 import { files as api } from "@/api";
 import { theme } from "@/utils/constants";
 import buttons from "@/utils/buttons";
-import url from "@/utils/url";
 
 import { version as ace_version } from "ace-builds";
 import ace from "ace-builds/src-min-noconflict/ace.js";
@@ -148,8 +147,7 @@ export default {
 
       this.$store.commit("updateRequest", {});
 
-      let uri = url.removeLastDir(this.$route.path) + "/";
-      this.$router.push({ path: uri });
+      history.back();
     },
   },
 };
