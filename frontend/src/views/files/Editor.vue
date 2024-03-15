@@ -148,8 +148,7 @@ export default {
 
       this.$store.commit("updateRequest", {});
 
-      let uri = url.removeLastDir(this.$route.path) + "/";
-      this.$router.push({ path: uri });
+      history.back();
     },
   },
 };
