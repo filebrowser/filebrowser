@@ -247,6 +247,7 @@ export default {
       this.addSelected(this.index);
     },
     open: function () {
+      window.sessionStorage.setItem(this.$route.path, JSON.stringify([document.documentElement.scrollTop, this.index])); 
       this.$router.push({ path: this.url });
     },
   },
