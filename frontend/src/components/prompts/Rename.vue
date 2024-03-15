@@ -92,7 +92,7 @@ export default {
       try {
         await api.move([{ from: oldLink, to: newLink }]);
         if (!this.isListing) {
-          this.$router.push({ path: newLink });
+          this.$router.replace({ path: newLink });
           return;
         }
 
