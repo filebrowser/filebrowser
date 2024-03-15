@@ -4,18 +4,20 @@
 
     <breadcrumbs base="/files" />
     <listing />
-    <errors v-if="error" :errorCode="error.status" />
-    <component v-else-if="currentView" :is="currentView"></component>
-    <div v-else-if="currentView !== null">
-      <h2 class="message delayed">
-        <div class="spinner">
-          <div class="bounce1"></div>
-          <div class="bounce2"></div>
-          <div class="bounce3"></div>
-        </div>
-        <span>{{ $t("files.loading") }}</span>
-      </h2>
-    </div>
+    <transition name="closing">    
+      <errors v-if="error" :errorCode="error.status" />
+      <component v-else-if="currentView" :is="currentView"></component>
+      <div v-else-if="currentView !== null">
+        <h2 class="message delayed">
+          <div class="spinner">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+          </div>
+          <span>{{ $t("files.loading") }}</span>
+        </h2>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -74,26 +76,18 @@ export default {
         this.parentDir = "true";
       } else {
         this.parentDir = "false"; 
-	window.sessionStorage.removeItem(to.path);
+        window.sessionStorage.removeItem(to.path);
       } 
       if (from.path.endsWith("/")) { 
         if (to.path.endsWith("/"))   {
           window.sessionStorage.setItem("listFrozen", "false");
-          this.fetchData();
-          return;
         } else {
           window.sessionStorage.setItem("listFrozen", "true");
-          this.fetchData();
-          return;        
         }
       } else if (to.path.endsWith("/")) {
         this.$store.commit("updateRequest", {});
-        this.fetchData();
-        return;
-      } else {
-        this.fetchData();
-        return;
       } 
+      this.fetchData();
     }, 
     reload: function (value) {
       if (value === true) {
@@ -125,7 +119,7 @@ export default {
       // Set loading to true and reset the error.
       if (window.sessionStorage.getItem("listFrozen") !=="true" 
           && window.sessionStorage.getItem("modified") !=="true" 
-	  && this.parentDir !== "true"){
+          && this.parentDir !== "true"){ 
         this.setLoading(true);
       }
       this.error = null;
@@ -159,3 +153,13 @@ export default {
   },
 };
 </script>
+<style>
+  .closing-leave-active {
+    animation: closing 0.5s
+  }
+  @keyframes closing {
+    to {
+      transform: scale(0);
+    }
+  }
+</style>
