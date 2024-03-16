@@ -395,8 +395,8 @@ export default {
           // Fill and fit the window with listing items
           this.fillWindow(true);
           if (window.sessionStorage.getItem(this.$route.path)) {
-            this.addSelected(JSON.parse(window.sessionStorage.getItem(this.$route.path))[1]);
             document.documentElement.scrollTop = JSON.parse(window.sessionStorage.getItem(this.$route.path))[0];
+            if(!this.isMobile)  this.addSelected(JSON.parse(window.sessionStorage.getItem(this.$route.path))[1]);
 	    window.sessionStorage.removeItem(this.$route.path);
           }
         });
