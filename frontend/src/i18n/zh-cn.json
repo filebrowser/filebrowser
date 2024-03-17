@@ -217,6 +217,8 @@
     "newPassword": "你的新密码",
     "newPasswordConfirm": "再次输入以确认你的新密码",
     "newUser": "新建用户",
+    "onlyOffice": "Only Office Integration",
+    "onlyOfficeUrl": "Only Office URL (leave blank to disable)",
     "password": "密码",
     "passwordUpdated": "密码已更新！",
     "path": "路径",
