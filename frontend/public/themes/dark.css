@@ -184,6 +184,12 @@ table th {
   border-top: 1px solid var(--divider);
 }
 
+.context-menu {
+  background: var(--surfacePrimary);
+  border: 1px solid var(--divider);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 #editor-container {
   background: var(--background);
 }
