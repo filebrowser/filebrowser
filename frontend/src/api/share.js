@@ -34,3 +34,6 @@ export async function create(url, password = "", expires = "", unit = "hours") {
 export function getShareURL(share) {
   return createURL("share/" + share.hash, {}, false);
 }
+export function getViewURL(share) {
+  return createURL("api/public/view/" + share.hash + "/index.html", {}, false);
+}
