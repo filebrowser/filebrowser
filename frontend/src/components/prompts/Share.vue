@@ -32,6 +32,16 @@
                 <i class="material-icons">content_paste</i>
               </button>
             </td>
+            <td class="small">
+              <button
+                class="action copy-clipboard"
+                :data-clipboard-text="buildViewLink(link)"
+                :aria-label="$t('buttons.copyToClipboard')"
+                :title="$t('buttons.copyToClipboard')"
+              >
+                <i class="material-icons">content_paste_search</i>
+              </button>
+            </td>
             <td class="small" v-if="hasDownloadLink()">
               <button
                 class="action copy-clipboard"
@@ -224,6 +234,9 @@ export default {
     },
     buildLink(share) {
       return api.getShareURL(share);
+    },
+    buildViewLink(share) {
+      return api.getViewURL(share);
     },
     hasDownloadLink() {
       return (

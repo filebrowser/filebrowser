@@ -158,7 +158,7 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 	return nil
 }
 
-func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.FileInfo) (int, error) {
+func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.FileInfo, setContentDispositionOptional ...bool) (int, error) {
 	filenames, err := parseQueryFiles(r, file, d.user)
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -187,7 +187,10 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 		name = "_" + name
 	}
 	name += extension
-	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))
+	
+	if len(setContentDispositionOptional) == 0 || (len(setContentDispositionOptional) > 0 && setContentDispositionOptional[0]) {
+		w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))
+	}
 
 	for _, fname := range filenames {
 		err = addFile(ar, d, fname, commonDir)
@@ -199,14 +202,18 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 	return 0, nil
 }
 
-func rawFileHandler(w http.ResponseWriter, r *http.Request, file *files.FileInfo) (int, error) {
+func rawFileHandler(w http.ResponseWriter, r *http.Request, file *files.FileInfo, setContentDispositionOptional ...bool) (int, error) {
 	fd, err := file.Fs.Open(file.Path)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 	defer fd.Close()
 
-	setContentDisposition(w, r, file)
+	// Check if setContentDispositionOptional is provided and false
+	if len(setContentDispositionOptional) == 0 || (len(setContentDispositionOptional) > 0 && setContentDispositionOptional[0]) {
+		setContentDisposition(w, r, file)
+	}
+
 	w.Header().Add("Content-Security-Policy", `script-src 'none';`)
 	w.Header().Set("Cache-Control", "private")
 	http.ServeContent(w, r, file.Name, file.ModTime, fd)

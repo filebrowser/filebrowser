@@ -115,6 +115,15 @@ var publicDlHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, 
 	return rawDirHandler(w, r, d, file)
 })
 
+var publicViewHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	file := d.raw.(*files.FileInfo)
+	if !file.IsDir {
+		return rawFileHandler(w, r, file, false)
+	}
+
+	return rawDirHandler(w, r, d, file, false)
+})
+
 func authenticateShareRequest(r *http.Request, l *share.Link) (int, error) {
 	if l.PasswordHash == "" {
 		return 0, nil
