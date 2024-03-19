@@ -32,7 +32,7 @@
                 <i class="material-icons">content_paste</i>
               </button>
             </td>
-            <td class="small">
+            <td class="small" v-if="!hasDownloadLink()">
               <button
                 class="action copy-clipboard"
                 :data-clipboard-text="buildViewLink(link)"
