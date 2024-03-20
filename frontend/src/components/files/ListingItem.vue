@@ -30,6 +30,10 @@
       <p class="modified">
         <time :datetime="modified">{{ humanTime() }}</time>
       </p>
+
+      <a class="" target=”_blank” @click="openInNewTab">
+        open in new tab
+      </a>
     </div>
   </div>
 </template>
@@ -248,6 +252,10 @@ export default {
     },
     open: function () {
       this.$router.push({ path: this.url });
+    },
+    openInNewTab: function () {
+      const routeUrl = this.$router.resolve({path: this.url});
+      window.open(routeUrl.href, '_blank');
     },
   },
 };
