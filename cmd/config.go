@@ -37,6 +37,11 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("auth.method", string(auth.MethodJSONAuth), "authentication type")
 	flags.String("auth.header", "", "HTTP header for auth.method=proxy")
 	flags.String("auth.command", "", "command for auth.method=hook")
+	flags.String("auth.jwt-header.header", "", "HTTP header for auth.method=jwt-header")
+	flags.String("auth.jwt-header.aud", "", "The Application Audience (AUD) tag for JWT validation for auth.method=jwt-header")
+	flags.String("auth.jwt-header.iss", "", "The Issuer (AUD) for JWT validation for auth.method=jwt-header")
+	flags.String("auth.jwt-header.certsurl", "", "The URL to download certs from for JWT validation for auth.method=jwt-header")
+	flags.String("auth.jwt-header.usernameClaim", "", "The claim which will contain the username for auth.method=jwt-header")
 
 	flags.String("recaptcha.host", "https://www.google.com", "use another host for ReCAPTCHA. recaptcha.net might be useful in China")
 	flags.String("recaptcha.key", "", "ReCaptcha site key")
@@ -50,7 +55,110 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.Bool("branding.disableUsedPercentage", false, "disable used disk percentage graph")
 }
 
-//nolint:gocyclo
+func initProxyAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) auth.Auther {
+	header := mustGetString(flags, "auth.header")
+
+	if header == "" {
+		header = defaultAuther["header"].(string)
+	}
+
+	if header == "" {
+		checkErr(nerrors.New("you must set the flag 'auth.header' for method 'proxy'"))
+	}
+
+	return &auth.ProxyAuth{Header: header}
+}
+
+func initJWTAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) auth.Auther {
+	header := mustGetString(flags, "auth.jwt-header.header")
+	aud := mustGetString(flags, "auth.jwt-header.aud")
+	iss := mustGetString(flags, "auth.jwt-header.iss")
+	certsurl := mustGetString(flags, "auth.jwt-header.certsurl")
+	usernameClaim := mustGetString(flags, "auth.jwt-header.usernameClaim")
+
+	if header == "" {
+		header = defaultAuther["header"].(string)
+	}
+	if aud == "" {
+		aud = defaultAuther["aud"].(string)
+	}
+	if iss == "" {
+		iss = defaultAuther["iss"].(string)
+	}
+	if certsurl == "" {
+		certsurl = defaultAuther["certsurl"].(string)
+	}
+	if usernameClaim == "" {
+		usernameClaim = defaultAuther["usernameClaim"].(string)
+	}
+
+	if header == "" {
+		checkErr(nerrors.New("you must set the flag 'auth.jwt-header.header' for method 'jwt-header'"))
+	}
+	if aud == "" {
+		checkErr(nerrors.New("you must set the flag 'auth.jwt-header.aud' for method 'jwt-header'"))
+	}
+	if iss == "" {
+		checkErr(nerrors.New("you must set the flag 'auth.jwt-header.iss' for method 'jwt-header'"))
+	}
+	if certsurl == "" {
+		checkErr(nerrors.New("you must set the flag 'auth.jwt-header.certsurl' for method 'jwt-header'"))
+	}
+	if usernameClaim == "" {
+		checkErr(nerrors.New("you must set the flag 'auth.jwt-header.usernameClaim' for method 'jwt-header'"))
+	}
+
+	return &auth.JWTAuth{
+		Header:        header,
+		Aud:           aud,
+		Iss:           iss,
+		CertsURL:      certsurl,
+		UsernameClaim: usernameClaim,
+	}
+}
+
+func initJSONAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) auth.Auther {
+	jsonAuth := &auth.JSONAuth{}
+	host := mustGetString(flags, "recaptcha.host")
+	key := mustGetString(flags, "recaptcha.key")
+	secret := mustGetString(flags, "recaptcha.secret")
+
+	if key == "" {
+		if kmap, ok := defaultAuther["recaptcha"].(map[string]interface{}); ok {
+			key = kmap["key"].(string)
+		}
+	}
+
+	if secret == "" {
+		if smap, ok := defaultAuther["recaptcha"].(map[string]interface{}); ok {
+			secret = smap["secret"].(string)
+		}
+	}
+
+	if key != "" && secret != "" {
+		jsonAuth.ReCaptcha = &auth.ReCaptcha{
+			Host:   host,
+			Key:    key,
+			Secret: secret,
+		}
+	}
+	return jsonAuth
+}
+
+func initHookAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) auth.Auther {
+	command := mustGetString(flags, "auth.command")
+
+	if command == "" {
+		command = defaultAuther["command"].(string)
+	}
+
+	if command == "" {
+		checkErr(nerrors.New("you must set the flag 'auth.command' for method 'hook'"))
+	}
+
+	return &auth.HookAuth{Command: command}
+}
+
 func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, auth.Auther) {
 	method := settings.AuthMethod(mustGetString(flags, "auth.method"))
 
@@ -72,67 +180,18 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 	}
 
 	var auther auth.Auther
-	if method == auth.MethodProxyAuth {
-		header := mustGetString(flags, "auth.header")
-
-		if header == "" {
-			header = defaultAuther["header"].(string)
-		}
-
-		if header == "" {
-			checkErr(nerrors.New("you must set the flag 'auth.header' for method 'proxy'"))
-		}
-
-		auther = &auth.ProxyAuth{Header: header}
-	}
-
-	if method == auth.MethodNoAuth {
+	switch method {
+	case auth.MethodProxyAuth:
+		auther = initProxyAuth(flags, defaultAuther)
+	case auth.MethodJWTAuth:
+		auther = initJWTAuth(flags, defaultAuther)
+	case auth.MethodNoAuth:
 		auther = &auth.NoAuth{}
-	}
-
-	if method == auth.MethodJSONAuth {
-		jsonAuth := &auth.JSONAuth{}
-		host := mustGetString(flags, "recaptcha.host")
-		key := mustGetString(flags, "recaptcha.key")
-		secret := mustGetString(flags, "recaptcha.secret")
-
-		if key == "" {
-			if kmap, ok := defaultAuther["recaptcha"].(map[string]interface{}); ok {
-				key = kmap["key"].(string)
-			}
-		}
-
-		if secret == "" {
-			if smap, ok := defaultAuther["recaptcha"].(map[string]interface{}); ok {
-				secret = smap["secret"].(string)
-			}
-		}
-
-		if key != "" && secret != "" {
-			jsonAuth.ReCaptcha = &auth.ReCaptcha{
-				Host:   host,
-				Key:    key,
-				Secret: secret,
-			}
-		}
-		auther = jsonAuth
-	}
-
-	if method == auth.MethodHookAuth {
-		command := mustGetString(flags, "auth.command")
-
-		if command == "" {
-			command = defaultAuther["command"].(string)
-		}
-
-		if command == "" {
-			checkErr(nerrors.New("you must set the flag 'auth.command' for method 'hook'"))
-		}
-
-		auther = &auth.HookAuth{Command: command}
-	}
-
-	if auther == nil {
+	case auth.MethodJSONAuth:
+		auther = initJSONAuth(flags, defaultAuther)
+	case auth.MethodHookAuth:
+		auther = initHookAuth(flags, defaultAuther)
+	default:
 		panic(errors.ErrInvalidAuthMethod)
 	}
 
