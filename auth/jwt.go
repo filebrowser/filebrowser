@@ -2,14 +2,14 @@ package auth
 
 import (
 	"context"
-	nerrors "errors"
+	"errors"
 	"net/http"
 	"os"
 	"sync"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 
-	"github.com/filebrowser/filebrowser/v2/errors"
+	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -58,7 +58,7 @@ func (a *JWTAuth) Auth(r *http.Request, usr users.Store, stg *settings.Settings,
 	}
 
 	user, err := usr.Get(srv.Root, payload[a.UsernameClaim])
-	if nerrors.Is(err, errors.ErrNotExist) {
+	if errors.Is(err, fbErrors.ErrNotExist) {
 		return nil, os.ErrPermission
 	}
 
