@@ -133,14 +133,13 @@ export default {
           : this.req.items[this.selected[0]].isDir)
       );
     },
-    resolution: function() {
+    resolution: function () {
       if (this.selectedCount === 1) {
         const selectedItem = this.req.items[this.selected[0]];
-        if (selectedItem && selectedItem.type === 'image') {
+        if (selectedItem && selectedItem.type === "image") {
           return selectedItem.resolution;
         }
-      }
-      else if (this.req && this.req.type === 'image') {
+      } else if (this.req && this.req.type === "image") {
         return this.req.resolution;
       }
       return null;

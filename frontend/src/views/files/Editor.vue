@@ -1,5 +1,9 @@
 <template>
-  <div id="editor-container">
+  <div 
+    id="editor-container"
+    @touchmove.prevent.stop 
+    @wheel.prevent.stop
+  >
     <header-bar>
       <action icon="close" :label="$t('buttons.close')" @action="close()" />
       <title>{{ req.name }}</title>
@@ -129,6 +133,7 @@ export default {
 
       try {
         await api.put(this.$route.path, this.editor.getValue());
+        this.editor.session.getUndoManager().markClean();
         buttons.success(button);
       } catch (e) {
         buttons.done(button);
@@ -136,9 +141,7 @@ export default {
       }
     },
     close() {
-      const originalContent = this.req.content;
-      const currentContent = this.editor.getValue();
-      if (originalContent !== currentContent) {
+      if (!this.editor.session.getUndoManager().isClean()) {
         this.$store.commit("showHover", "discardEditorChanges");
         return;
       }
