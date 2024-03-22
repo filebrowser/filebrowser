@@ -163,7 +163,6 @@
                 justify-content: space-between;"
       	    >
               <p style="margin: 0.5em; height: 3em;">{{req.items[this.selected[0]].name}}</p>
-
               <div style="height:4em; width:100%; position:relative;">
                 <button @click="play" v-if="!this.tag" style="fontSize:4em !important; left:0; right:0; margin=auto; border:0px; background: white;" class="material-icons">play_circle_filled</button>
                 <button @click="play" v-if="this.tag"  style="fontSize:4em !important; left:0; right:0; margin=auto; border:0px; background: white;" class="material-icons">pause_circle_filled</button>
@@ -173,16 +172,12 @@
                 flex-direction: row;
                 justify-content: space-between;"
               >
-
                 <button @click="switchMusic(-1)" style="fontSize:2em !important;  border:0px; background: white;" class="material-icons">fast_rewind</button>
-
                 <button @click="switchLoopMode" v-if="this.loopMode == 'once'" style="fontSize:2em !important; border:0px;outline:none; background: white; " class="material-icons">skip_next</button>
                 <button @click="switchLoopMode" v-if="this.loopMode == 'singleLoop'" style="fontSize:2em !important; background: white;" class="material-icons">repeat_one</button>
                 <button @click="switchLoopMode" v-if="this.loopMode == 'listLoop'" style="fontSize:2em !important; background: white; " class="material-icons">repeat</button>
-
                 <button @click="switchMusic(1)" style="fontSize:2em !important; border:0px; background: white;" class="material-icons">fast_forward</button>
               </div>
-
       	      <audio id="myaudio"
       	        :src="raw"
                 :autoplay="tag"
@@ -238,7 +233,6 @@
             </item>
       
 
-
             <div
               :class="{ active: $store.state.multiple }"
               id="multiple-selection"
@@ -276,7 +270,6 @@ import { mapState, mapMutations, mapGetters } from "vuex";
 import { pub as api } from "@/api";
 import { filesize } from "@/utils";
 import moment from "moment/min/moment-with-locales";
-
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
@@ -307,7 +300,6 @@ export default {
   }),
   watch: {
     $route: function () {
-
       this.fetchData();
     },
   },
@@ -402,13 +394,11 @@ export default {
       } else {
         this.loopMode = "once";
       }
-      console.log(this.loopMode);
     },
     playEnd() {
       if (this.loopMode == "singleLoop") document.getElementById('myaudio').play();
       if (this.loopMode == "listLoop") this.switchMusic(1);
     },
-    
     fetchData: async function () {
       // Reset view information.
       this.$store.commit("setReload", false);
