@@ -29,7 +29,7 @@
     <breadcrumbs :base="'/share/' + hash" />
 
     <div v-if="loading">
-      <h2 class="message delayed" style="padding-top: 3em !important;">
+      <h2 class="message delayed" style="padding-top: 3em !important">
         <div class="spinner">
           <div class="bounce1"></div>
           <div class="bounce2"></div>
@@ -73,21 +73,26 @@
     </div>
     <div v-else>
       <div class="share">
-        <div class="share__box share__box__info"
+        <div
+          class="share__box share__box__info"
           style="
             position: -webkit-sticky;
             position: sticky;
-            top:-20.5em;
-            z-index:999;"
+            top: -20.5em;
+            z-index: 999;
+            "
         >
-          <div class="share__box__header" style="height:3em">
+          <div class="share__box__header" style="height: 3em">
             {{
               req.isDir
                 ? $t("download.downloadFolder")
                 : $t("download.downloadFile")
             }}
           </div>
-          <div v-if="!this.req.isDir" class="share__box__element share__box__center share__box__icon">
+          <div 
+            v-if="!this.req.isDir"
+            class="share__box__element share__box__center share__box__icon"
+          >
             <i class="material-icons">{{ icon }}</i>
           </div>
           <div class="share__box__element" style="height:3em">
@@ -180,7 +185,6 @@
 
       	      <audio id="myaudio"
       	        :src="raw"
-      	        controls="controls" 
                 :autoplay="tag"
 		controls @ended= "playEnd"
 		style="position: relative; bottom: 0"
@@ -373,7 +377,7 @@ export default {
     },
     switchMusic(switchX) {
       let i = this.req.items[this.selected[0]].index + switchX
-      while (true) {
+      while (i+2) {
       	if(switchX == -1 && i == -1) {
 	  i = this.req.items.length + switchX;
 	} else if (switchX == 1 && i == this.req.items.length) {
