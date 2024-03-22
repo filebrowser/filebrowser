@@ -77,7 +77,7 @@
           style="
             position: -webkit-sticky;
             position: sticky;
-            top:-20.6em;
+            top:-20.5em;
             z-index:999;"
         >
           <div class="share__box__header" style="height:3em">
@@ -149,14 +149,41 @@
       	        !this.$store.state.multiple && 
       	        selectedCount === 1 && 
       	        req.items[this.selected[0]].type === 'audio'" 
-      	      style="height: 12em; paddingTop:1em; margin:0;"
+      	      style="
+	        height: 12em; 
+		paddingTop:0; 
+		margin:0;
+	        display: flex;
+                flex-direction: column;
+                justify-content: space-between;"
       	    >
-              <button @click="play" v-if="!this.tag" style="fontSize:6em !important; border:0px;outline:none; background: white;" class="material-icons">play_circle_filled</button>
-              <button @click="play" v-if="this.tag"  style="fontSize:6em !important; border:0px;outline:none; background: white;" class="material-icons">pause_circle_filled</button>
+              <p style="margin: 0.5em; height: 3em;">{{req.items[this.selected[0]].name}}</p>
+
+              <div style="height:4em; width:100%; position:relative;">
+                <button @click="play" v-if="!this.tag" style="fontSize:4em !important; left:0; right:0; margin=auto; border:0px; background: white;" class="material-icons">play_circle_filled</button>
+                <button @click="play" v-if="this.tag"  style="fontSize:4em !important; left:0; right:0; margin=auto; border:0px; background: white;" class="material-icons">pause_circle_filled</button>
+              </div>
+              <div style="height:2em; width:100%; position:relative;
+	        display: flex;
+                flex-direction: row;
+                justify-content: space-between;"
+              >
+
+                <button @click="switchMusic(-1)" style="fontSize:2em !important;  border:0px; background: white;" class="material-icons">fast_rewind</button>
+
+                <button @click="switchLoopMode" v-if="this.loopMode == 'once'" style="fontSize:2em !important; border:0px;outline:none; background: white; " class="material-icons">skip_next</button>
+                <button @click="switchLoopMode" v-if="this.loopMode == 'singleLoop'" style="fontSize:2em !important; background: white;" class="material-icons">repeat_one</button>
+                <button @click="switchLoopMode" v-if="this.loopMode == 'listLoop'" style="fontSize:2em !important; background: white; " class="material-icons">repeat</button>
+
+                <button @click="switchMusic(1)" style="fontSize:2em !important; border:0px; background: white;" class="material-icons">fast_forward</button>
+              </div>
+
       	      <audio id="myaudio"
       	        :src="raw"
       	        controls="controls" 
                 :autoplay="tag"
+		controls @ended= "playEnd"
+		style="position: relative; bottom: 0"
       	      >
               </audio>
             </div>
@@ -192,8 +219,9 @@
           </div>
           <div id="listing" class="list file-icons">
             <item
-              v-for="item in req.items.slice(0, this.showLimit)"
+              v-for="item in req.items"
               :key="base64(item.name)"
+	      v-bind:id="item.index"
               v-bind:index="item.index"
               v-bind:name="item.name"
               v-bind:isDir="item.isDir"
@@ -204,15 +232,8 @@
               readOnly
             >
             </item>
-            <div
-              v-if="req.items.length > showLimit"
-              class="item"
-              @click="showLimit += 100"
-            >
-              <div>
-                <p class="name">+ {{ req.items.length - showLimit }}</p>
-              </div>
-            </div>
+      
+
 
             <div
               :class="{ active: $store.state.multiple }"
@@ -272,17 +293,16 @@ export default {
   },
   data: () => ({
     error: null,
-    showLimit: 100,
     password: "",
     attemptedPasswordLogin: false,
     hash: null,
     token: null,
     clip: null,
     tag: false,
+    loopMode: "once",
   }),
   watch: {
     $route: function () {
-      this.showLimit = 100;
 
       this.fetchData();
     },
@@ -337,7 +357,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(["resetSelected", "updateRequest", "setLoading"]),
+    ...mapMutations(["resetSelected", "updateRequest", "setLoading", "addSelected"]),
     base64: function (name) {
       return window.btoa(unescape(encodeURIComponent(name)));
     },
@@ -351,6 +371,40 @@ export default {
         this.tag = true;
       }
     },
+    switchMusic(switchX) {
+      let i = this.req.items[this.selected[0]].index + switchX
+      while (true) {
+      	if(switchX == -1 && i == -1) {
+	  i = this.req.items.length + switchX;
+	} else if (switchX == 1 && i == this.req.items.length) {
+	  i = 0;
+	}
+        if (this.req.items[i].type == "audio") {
+          this.resetSelected();
+          this.addSelected(i);
+ 	  document.getElementById(i).scrollIntoView({block:"center", behavior:"smooth",});
+	  document.getElementById('myaudio').play();
+	  this.tag = true;
+          break;
+        }
+	i = i + switchX;
+      }
+    },
+    switchLoopMode() {
+      if (this.loopMode == "once") {
+        this.loopMode = "singleLoop";
+      } else if (this.loopMode == "singleLoop") {
+        this.loopMode = "listLoop";
+      } else {
+        this.loopMode = "once";
+      }
+      console.log(this.loopMode);
+    },
+    playEnd() {
+      if (this.loopMode == "singleLoop") document.getElementById('myaudio').play();
+      if (this.loopMode == "listLoop") this.switchMusic(1);
+    },
+    
     fetchData: async function () {
       // Reset view information.
       this.$store.commit("setReload", false);
@@ -443,11 +497,22 @@ export default {
   #listing.list{
     height: auto;
   }
+  @media (max-width: 736px) {
+    header {
+      height: 3.5em;
+    }
+  }
+</style>
+
+<style>
+  .share__box__items #listing.list .item .name {
+    width: 100% !important;
+  }
   #shareList{
     overflow-y: scroll; 
   }
-  @media (min-width: 930px) {
-    #shareList{
+  @media (min-width: 737px) {
+    #shareList {
       height: calc(100vh - 9.8em);   
       overflow-y: auto; 
     }
