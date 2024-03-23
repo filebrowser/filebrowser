@@ -29,7 +29,7 @@
     <breadcrumbs :base="'/share/' + hash" />
 
     <div v-if="loading">
-      <h2 class="message delayed" style="padding-top: 3em !important;">
+      <h2 class="message delayed" style="padding-top: 3em !important">
         <div class="spinner">
           <div class="bounce1"></div>
           <div class="bounce2"></div>
@@ -73,34 +73,48 @@
     </div>
     <div v-else>
       <div class="share">
-        <div class="share__box share__box__info"
+        <div
+          class="share__box share__box__info"
           style="
             position: -webkit-sticky;
             position: sticky;
-            top:-20.6em;
-            z-index:999;"
+            top: -20.5em;
+            z-index: 999;
+          "
         >
-          <div class="share__box__header" style="height:3em">
+          <div class="share__box__header" style="height: 3em">
             {{
               req.isDir
                 ? $t("download.downloadFolder")
                 : $t("download.downloadFile")
             }}
           </div>
-          <div v-if="!this.req.isDir" class="share__box__element share__box__center share__box__icon">
+          <div
+            v-if="!this.req.isDir"
+            class="share__box__element share__box__center share__box__icon"
+          >
             <i class="material-icons">{{ icon }}</i>
           </div>
-          <div class="share__box__element" style="height:3em">
+          <div class="share__box__element" style="height: 3em">
             <strong>{{ $t("prompts.displayName") }}</strong> {{ req.name }}
           </div>
-          <div v-if="!this.req.isDir" class="share__box__element" :title="modTime">
+          <div
+            v-if="!this.req.isDir"
+            class="share__box__element"
+            :title="modTime"
+          >
             <strong>{{ $t("prompts.lastModified") }}:</strong> {{ humanTime }}
           </div>
-          <div class="share__box__element" style="height:3em">
+          <div class="share__box__element" style="height: 3em">
             <strong>{{ $t("prompts.size") }}:</strong> {{ humanSize }}
           </div>
           <div class="share__box__element share__box__center">
-            <a target="_blank" :href="link" class="button button--flat" style="height:4em">
+            <a
+              target="_blank"
+              :href="link"
+              class="button button--flat"
+              style="height: 4em"
+            >
               <div>
                 <i class="material-icons">file_download</i
                 >{{ $t("buttons.download") }}
@@ -117,73 +131,193 @@
                 >{{ $t("buttons.openFile") }}
               </div>
             </a>
-            <qrcode-vue v-if="this.req.isDir" :value="fullLink" size="100" level="M"></qrcode-vue>
+            <qrcode-vue
+              v-if="this.req.isDir"
+              :value="fullLink"
+              size="100"
+              level="M"
+            ></qrcode-vue>
           </div>
-          <div v-if="!this.req.isDir" class="share__box__element share__box__center">
+          <div
+            v-if="!this.req.isDir"
+            class="share__box__element share__box__center"
+          >
             <qrcode-vue :value="link" size="200" level="M"></qrcode-vue>
           </div>
-      	  <div v-if="this.req.isDir" class="share__box__element share__box__header" style="height:3em">
+          <div
+            v-if="this.req.isDir"
+            class="share__box__element share__box__header"
+            style="height: 3em"
+          >
             {{ $t("sidebar.preview") }}
           </div>
           <div
-      	    v-if="this.req.isDir" 
-      	    class="share__box__element share__box__center share__box__icon"
-      	    style="padding:0em !important;height:12em !important;"
-      	  >
-      	    <a
+            v-if="this.req.isDir"
+            class="share__box__element share__box__center share__box__icon"
+            style="padding: 0em !important; height: 12em !important"
+          >
+            <a
               target="_blank"
               :href="raw"
               class="button button--flat"
-      	      v-if= "!this.$store.state.multiple && 
-      	             selectedCount === 1 && 
-      	             req.items[this.selected[0]].type === 'image'" 
-              style="height: 12em; padding:0; margin:0;"
+              v-if="
+                !this.$store.state.multiple &&
+                selectedCount === 1 &&
+                req.items[this.selected[0]].type === 'image'
+              "
+              style="height: 12em; padding: 0; margin: 0"
             >
-      	      <img 
-      	        style="height: 12em;"
-      	        :src="raw"
-      	      >
+              <img style="height: 12em" :src="raw" />
             </a>
             <div
-      	      v-else-if= "
-      	        !this.$store.state.multiple && 
-      	        selectedCount === 1 && 
-      	        req.items[this.selected[0]].type === 'audio'" 
-      	      style="height: 12em; paddingTop:1em; margin:0;"
-      	    >
-              <button @click="play" v-if="!this.tag" style="fontSize:6em !important; border:0px;outline:none; background: white;" class="material-icons">play_circle_filled</button>
-              <button @click="play" v-if="this.tag"  style="fontSize:6em !important; border:0px;outline:none; background: white;" class="material-icons">pause_circle_filled</button>
-      	      <audio id="myaudio"
-      	        :src="raw"
-      	        controls="controls" 
-                :autoplay="tag"
-      	      >
-              </audio>
-            </div>
-      	    <video
-      	      v-else-if= "
-      	        !this.$store.state.multiple && 
-      	        selectedCount === 1 && 
-      	        req.items[this.selected[0]].type === 'video'" 
-      	      style="height: 12em; padding:0; margin:0;"
-      	      :src="raw"
-      	      controls="controls" 
-      	    >
-      	      Sorry, your browser doesn't support embedded videos, but don't worry,
-      	      you can <a :href="raw">download it</a>
-      	      and watch it with your favorite video player!
-      	    </video>
-            <i 
-      	      v-else-if= "
-                !this.$store.state.multiple && 
+              v-else-if="
+                !this.$store.state.multiple &&
                 selectedCount === 1 &&
-                req.items[this.selected[0]].isDir" 
-              class="material-icons">folder
+                req.items[this.selected[0]].type === 'audio'
+              "
+              style="
+                height: 12em;
+                padding-top: 0;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+              "
+            >
+              <p style="margin: 0.5em; height: 3em">
+                {{ req.items[this.selected[0]].name }}
+              </p>
+              <div style="height: 4em; width: 100%; position: relative">
+                <button
+                  @click="play"
+                  v-if="!this.tag"
+                  style="
+                    font-size: 4em !important;
+                    left: 0;
+                    right: 0;
+                    margin: auto;
+                    border: 0px;
+                    background: white;
+                  "
+                  class="material-icons"
+                >
+                  play_circle_filled
+                </button>
+                <button
+                  @click="play"
+                  v-if="this.tag"
+                  style="
+                    font-size: 4em !important;
+                    left: 0;
+                    right: 0;
+                    margin: auto;
+                    border: 0px;
+                    background: white;
+                  "
+                  class="material-icons"
+                >
+                  pause_circle_filled
+                </button>
+              </div>
+              <div
+                style="
+                  height: 2em;
+                  width: 100%;
+                  position: relative;
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-around;
+                "
+              >
+                <button
+                  @click="switchMusic(-1)"
+                  style="
+                    font-size: 2em !important;
+                    border: 0px;
+                    background: white;
+                  "
+                  class="material-icons"
+                >
+                  fast_rewind
+                </button>
+                <button
+                  @click="switchLoopMode"
+                  v-if="this.loopMode == 'once'"
+                  style="
+                    font-size: 2em !important;
+                    border: 0px;
+                    outline: none;
+                    background: white;
+                  "
+                  class="material-icons"
+                >
+                  skip_next
+                </button>
+                <button
+                  @click="switchLoopMode"
+                  v-if="this.loopMode == 'singleLoop'"
+                  style="font-size: 2em !important; background: white"
+                  class="material-icons"
+                >
+                  repeat_one
+                </button>
+                <button
+                  @click="switchLoopMode"
+                  v-if="this.loopMode == 'listLoop'"
+                  style="font-size: 2em !important; background: white"
+                  class="material-icons"
+                >
+                  repeat
+                </button>
+                <button
+                  @click="switchMusic(1)"
+                  style="
+                    font-size: 2em !important;
+                    border: 0px;
+                    background: white;
+                  "
+                  class="material-icons"
+                >
+                  fast_forward
+                </button>
+              </div>
+              <audio
+                id="myaudio"
+                :src="raw"
+                :autoplay="tag"
+                controls
+                @ended="playEnd"
+                style="position: relative; bottom: 0"
+              ></audio>
+            </div>
+            <video
+              v-else-if="
+                !this.$store.state.multiple &&
+                selectedCount === 1 &&
+                req.items[this.selected[0]].type === 'video'
+              "
+              style="height: 12em; padding: 0; margin: 0"
+              :src="raw"
+              controls="controls"
+            >
+              Sorry, your browser doesn't support embedded videos, but don't
+              worry, you can <a :href="raw">download it</a>
+              and watch it with your favorite video player!
+            </video>
+            <i
+              v-else-if="
+                !this.$store.state.multiple &&
+                selectedCount === 1 &&
+                req.items[this.selected[0]].isDir
+              "
+              class="material-icons"
+              >folder
             </i>
             <i v-else class="material-icons">call_to_action</i>
           </div>
         </div>
-        <div id="shareList"
+        <div
+          id="shareList"
           v-if="req.isDir && req.items.length > 0"
           class="share__box share__box__items"
         >
@@ -192,8 +326,9 @@
           </div>
           <div id="listing" class="list file-icons">
             <item
-              v-for="item in req.items.slice(0, this.showLimit)"
+              v-for="item in req.items"
               :key="base64(item.name)"
+              v-bind:id="item.index"
               v-bind:index="item.index"
               v-bind:name="item.name"
               v-bind:isDir="item.isDir"
@@ -204,15 +339,6 @@
               readOnly
             >
             </item>
-            <div
-              v-if="req.items.length > showLimit"
-              class="item"
-              @click="showLimit += 100"
-            >
-              <div>
-                <p class="name">+ {{ req.items.length - showLimit }}</p>
-              </div>
-            </div>
 
             <div
               :class="{ active: $store.state.multiple }"
@@ -251,7 +377,6 @@ import { mapState, mapMutations, mapGetters } from "vuex";
 import { pub as api } from "@/api";
 import { filesize } from "@/utils";
 import moment from "moment/min/moment-with-locales";
-
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
@@ -272,18 +397,16 @@ export default {
   },
   data: () => ({
     error: null,
-    showLimit: 100,
     password: "",
     attemptedPasswordLogin: false,
     hash: null,
     token: null,
     clip: null,
     tag: false,
+    loopMode: "once",
   }),
   watch: {
     $route: function () {
-      this.showLimit = 100;
-
       this.fetchData();
     },
   },
@@ -317,7 +440,11 @@ export default {
       return api.getDownloadURL(this.req);
     },
     raw: function () {
-      return this.req.items[this.selected[0]].url.replace(/share/, 'api/public/dl')+'?token='+this.token;    
+      return (
+        this.req.items[this.selected[0]].url.replace(/share/, "api/public/dl") +
+        "?token=" +
+        this.token
+      );
     },
     inlineLink: function () {
       return api.getDownloadURL(this.req, true);
@@ -337,19 +464,59 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(["resetSelected", "updateRequest", "setLoading"]),
+    ...mapMutations([
+      "resetSelected",
+      "updateRequest",
+      "setLoading",
+      "addSelected",
+    ]),
     base64: function (name) {
       return window.btoa(unescape(encodeURIComponent(name)));
     },
     play() {
-      var audio = document.getElementById('myaudio');
-      if(this.tag){
+      var audio = document.getElementById("myaudio");
+      if (this.tag) {
         audio.pause();
         this.tag = false;
       } else {
         audio.play();
         this.tag = true;
       }
+    },
+    switchMusic(switchX) {
+      let i = this.req.items[this.selected[0]].index + switchX;
+      while (i + 2) {
+        if (switchX == -1 && i == -1) {
+          i = this.req.items.length + switchX;
+        } else if (switchX == 1 && i == this.req.items.length) {
+          i = 0;
+        }
+        if (this.req.items[i].type == "audio") {
+          this.resetSelected();
+          this.addSelected(i);
+          document
+            .getElementById(i)
+            .scrollIntoView({ block: "center", behavior: "smooth" });
+          document.getElementById("myaudio").play();
+          this.tag = true;
+          break;
+        }
+        i = i + switchX;
+      }
+    },
+    switchLoopMode() {
+      if (this.loopMode == "once") {
+        this.loopMode = "singleLoop";
+      } else if (this.loopMode == "singleLoop") {
+        this.loopMode = "listLoop";
+      } else {
+        this.loopMode = "once";
+      }
+    },
+    playEnd() {
+      if (this.loopMode == "singleLoop")
+        document.getElementById("myaudio").play();
+      if (this.loopMode == "listLoop") this.switchMusic(1);
     },
     fetchData: async function () {
       // Reset view information.
@@ -440,16 +607,30 @@ export default {
 };
 </script>
 <style scoped>
-  #listing.list{
-    height: auto;
+#listing.list {
+  height: auto;
+}
+
+@media (max-width: 736px) {
+  header {
+    height: 3.5em;
   }
-  #shareList{
-    overflow-y: scroll; 
+}
+</style>
+
+<style>
+.share__box__items #listing.list .item .name {
+  width: 100% !important;
+}
+
+#shareList {
+  overflow-y: scroll;
+}
+
+@media (min-width: 737px) {
+  #shareList {
+    height: calc(100vh - 9.8em);
+    overflow-y: auto;
   }
-  @media (min-width: 930px) {
-    #shareList{
-      height: calc(100vh - 9.8em);   
-      overflow-y: auto; 
-    }
-  }
+}
 </style>
