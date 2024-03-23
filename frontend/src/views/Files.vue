@@ -1,6 +1,6 @@
 <template>
   <div>
-    <header-bar v-if="error || req.type == null" showMenu showLogo />
+    <header-bar v-if="error || req.type == undefined" showMenu showLogo />
 
     <breadcrumbs base="/files" />
     <listing />
@@ -47,6 +47,7 @@ export default {
     return {
       error: null,
       width: window.innerWidth,
+      parentDir: false,
     };
   },
   computed: {
@@ -69,25 +70,27 @@ export default {
   },
   watch: {
     $route: function (to, from) {
-      if (from.path.endsWith("/")) { 
-        if (to.path.endsWith("/"))   {
+      if (
+        to.path.endsWith("/") &&
+        from.path.startsWith(to.path) &&
+        from.path.length > to.path.length
+      ) {
+        this.parentDir = "true";
+      } else {
+        this.parentDir = "false";
+        window.sessionStorage.removeItem(to.path);
+      }
+      if (from.path.endsWith("/")) {
+        if (to.path.endsWith("/")) {
           window.sessionStorage.setItem("listFrozen", "false");
-          this.fetchData();
-          return;
         } else {
           window.sessionStorage.setItem("listFrozen", "true");
-          this.fetchData();
-          return;        
         }
       } else if (to.path.endsWith("/")) {
         this.$store.commit("updateRequest", {});
-        this.fetchData();
-        return;
-      } else {
-        this.fetchData();
-        return;
-      } 
-    }, 
+      }
+      this.fetchData();
+    },
     reload: function (value) {
       if (value === true) {
         this.fetchData();
@@ -116,7 +119,11 @@ export default {
       this.$store.commit("closeHovers");
 
       // Set loading to true and reset the error.
-      if (window.sessionStorage.getItem("listFrozen") !=="true" && window.sessionStorage.getItem("modified") !=="true"){ 
+      if (
+        window.sessionStorage.getItem("listFrozen") !== "true" &&
+        window.sessionStorage.getItem("modified") !== "true" &&
+        this.parentDir !== "true"
+      ) {
         this.setLoading(true);
       }
       this.error = null;

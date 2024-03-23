@@ -1,9 +1,5 @@
 <template>
-  <div 
-    id="editor-container"
-    @touchmove.prevent.stop 
-    @wheel.prevent.stop
-  >
+  <div id="editor-container" @touchmove.prevent.stop @wheel.prevent.stop>
     <header-bar>
       <action icon="close" :label="$t('buttons.close')" @action="close()" />
       <title>{{ req.name }}</title>
@@ -28,7 +24,6 @@ import { mapState } from "vuex";
 import { files as api } from "@/api";
 import { theme } from "@/utils/constants";
 import buttons from "@/utils/buttons";
-import url from "@/utils/url";
 
 import { version as ace_version } from "ace-builds";
 import ace from "ace-builds/src-min-noconflict/ace.js";
@@ -148,8 +143,7 @@ export default {
 
       this.$store.commit("updateRequest", {});
 
-      let uri = url.removeLastDir(this.$route.path) + "/";
-      this.$router.push({ path: uri });
+      history.back();
     },
   },
 };
