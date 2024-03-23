@@ -1,9 +1,5 @@
 <template>
-  <div 
-    id="editor-container"
-    @touchmove.prevent.stop 
-    @wheel.prevent.stop
-  >
+  <div id="editor-container" @touchmove.prevent.stop @wheel.prevent.stop>
     <header-bar>
       <action icon="close" :label="$t('buttons.close')" @action="close()" />
       <title>{{ req.name }}</title>

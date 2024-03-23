@@ -1,12 +1,12 @@
 <template>
   <div
     id="previewer"
-    @touchmove.prevent.stop 
+    @touchmove.prevent.stop
     @wheel.prevent.stop
     @mousemove="toggleNavigation"
     @touchstart="toggleNavigation"
   >
-    <header-bar  v-if="showNav">
+    <header-bar v-if="showNav">
       <action icon="close" :label="$t('buttons.close')" @action="close()" />
       <title>{{ name }}</title>
       <action
@@ -346,7 +346,7 @@ export default {
     close() {
       this.$store.commit("updateRequest", {});
 
-      history.back();   
+      history.back();
     },
     download() {
       window.open(this.downloadUrl);
