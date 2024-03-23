@@ -1,6 +1,6 @@
 <template>
   <div>
-    <header-bar v-if="error || req.type == null" showMenu showLogo />
+    <header-bar v-if="error || req.type == undefined" showMenu showLogo />
 
     <breadcrumbs base="/files" />
     <listing />
