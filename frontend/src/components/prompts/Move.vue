@@ -45,7 +45,7 @@
           :aria-label="$t('buttons.move')"
           :title="$t('buttons.move')"
           tabindex="2"
-      >
+        >
           {{ $t("buttons.move") }}
         </button>
       </div>

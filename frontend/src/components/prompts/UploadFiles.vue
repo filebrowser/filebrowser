@@ -71,11 +71,9 @@ export default {
       "filesInUpload",
       "filesInUploadCount",
       "uploadSpeed",
-      "eta"
+      "eta",
     ]),
-    ...mapWritableState(useFileStore, [
-      "reload"
-    ]),
+    ...mapWritableState(useFileStore, ["reload"]),
     ...mapActions(useUploadStore, ["reset"]),
     formattedETA() {
       if (!this.eta || this.eta === Infinity) {
