@@ -40,7 +40,8 @@
     "toggleSidebar": "تبديل الشريط الجانبي",
     "update": "تحديث",
     "upload": "رفع",
-    "openFile": "فتح الملف"
+    "openFile": "فتح الملف",
+    "discardChanges": "إلغاء التغييرات"
   },
   "download": {
     "downloadFile": "تحميل الملف",
@@ -164,7 +165,8 @@
     "uploadFiles": "يتم رفع {files} ملفات.",
     "uploadMessage": "إختر الملفات التي تريد رفعها.",
     "optionalPassword": "كلمة مرور إختيارية",
-    "resolution": "الدقة"
+    "resolution": "الدقة",
+    "discardEditorChanges": "هل تريد بالتأكيد إلغاء التغييرات؟"
   },
   "search": {
     "images": "الصور",
