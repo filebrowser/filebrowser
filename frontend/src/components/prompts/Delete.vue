@@ -1,7 +1,7 @@
 <template>
   <div class="card floating">
     <div class="card-content">
-      <p v-if="selectedCount === 1">
+      <p v-if="!this.isListing || selectedCount === 1">
         {{ $t("prompts.deleteMessageSingle") }}
       </p>
       <p v-else>
@@ -57,6 +57,7 @@ export default {
     submit: async function () {
       buttons.loading("delete");
 
+      window.sessionStorage.setItem("modified", "true");
       try {
         if (!this.isListing) {
           await api.remove(this.$route.path);

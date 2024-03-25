@@ -38,61 +38,43 @@
 
       <template v-if="!dir">
         <p>
-          <strong>MD5: </strong
-          ><code
-            ><a
+          <strong>MD5: </strong><code><a
               @click="checksum($event, 'md5')"
               @keypress.enter="checksum($event, 'md5')"
               tabindex="2"
               >{{ $t("prompts.show") }}</a
-            ></code
-          >
+            ></code>
         </p>
         <p>
-          <strong>SHA1: </strong
-          ><code
-            ><a
+          <strong>SHA1: </strong><code><a
               @click="checksum($event, 'sha1')"
               @keypress.enter="checksum($event, 'sha1')"
               tabindex="3"
               >{{ $t("prompts.show") }}</a
-            ></code
-          >
+            ></code>
         </p>
         <p>
-          <strong>SHA256: </strong
-          ><code
-            ><a
+          <strong>SHA256: </strong><code><a
               @click="checksum($event, 'sha256')"
               @keypress.enter="checksum($event, 'sha256')"
               tabindex="4"
               >{{ $t("prompts.show") }}</a
-            ></code
-          >
+            ></code>
         </p>
         <p>
-          <strong>SHA512: </strong
-          ><code
-            ><a
+          <strong>SHA512: </strong><code><a
               @click="checksum($event, 'sha512')"
               @keypress.enter="checksum($event, 'sha512')"
               tabindex="5"
               >{{ $t("prompts.show") }}</a
-            ></code
-          >
+            ></code>
         </p>
       </template>
     </div>
 
     <div class="card-action">
-      <button
-        id="focus-prompt"
-        type="submit"
-        @click="closeHovers"
-        class="button button--flat"
-        :aria-label="$t('buttons.ok')"
-        :title="$t('buttons.ok')"
-      >
+      <button id="focus-prompt" type="submit" @click="closeHovers" class="button button--flat"
+        :aria-label="$t('buttons.ok')" :title="$t('buttons.ok')">
         {{ $t("buttons.ok") }}
       </button>
     </div>
@@ -159,14 +141,13 @@ export default {
           : this.req.items[this.selected[0]].isDir)
       );
     },
-    resolution: function() {
+    resolution: function () {
       if (this.selectedCount === 1) {
         const selectedItem = this.req.items[this.selected[0]];
-        if (selectedItem && selectedItem.type === 'image') {
+        if (selectedItem && selectedItem.type === "image") {
           return selectedItem.resolution;
         }
-      }
-      else if (this.req && this.req.type === 'image') {
+      } else if (this.req && this.req.type === "image") {
         return this.req.resolution;
       }
       return null;

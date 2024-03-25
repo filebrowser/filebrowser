@@ -40,7 +40,8 @@
     "toggleSidebar": "Toggle sidebar",
     "update": "Update",
     "upload": "Upload",
-    "openFile": "Open file"
+    "openFile": "Open file",
+    "discardChanges": "Discard"
   },
   "download": {
     "downloadFile": "Download File",
@@ -164,7 +165,8 @@
     "uploadFiles": "Uploading {files} files...",
     "uploadMessage": "Select an option to upload.",
     "optionalPassword": "Optional password",
-    "resolution": "Resolution"
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "Images",

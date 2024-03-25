@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.27.0](https://github.com/filebrowser/filebrowser/compare/v2.26.0...v2.27.0) (2024-01-02)
+
+
+### Features
+
+* allow setting theme via cli ([#2881](https://github.com/filebrowser/filebrowser/issues/2881)) ([748af71](https://github.com/filebrowser/filebrowser/commit/748af7172ce96f0b66c394e88839bd57c194ffc7))
+* display image resolutions in file details ([#2830](https://github.com/filebrowser/filebrowser/issues/2830)) ([a09dfa8](https://github.com/filebrowser/filebrowser/commit/a09dfa8d9f190243d811a841de44c4abb4403d87))
+* make user session timeout configurable by flags ([#2845](https://github.com/filebrowser/filebrowser/issues/2845)) ([391a078](https://github.com/filebrowser/filebrowser/commit/391a078cd486e618c95a0c5850326076cbc025b6))
+
+
+### Bug Fixes
+
+* delete message when delete file from preview ([3264cea](https://github.com/filebrowser/filebrowser/commit/3264cea8307dca9ab5463dc81f2a10a817eb3d54))
+* fix typo ([#2843](https://github.com/filebrowser/filebrowser/issues/2843)) ([4dbc802](https://github.com/filebrowser/filebrowser/commit/4dbc802972c930f5f42fc27507fac35c28c42afd))
+* set correct port in docker healthcheck ([#2812](https://github.com/filebrowser/filebrowser/issues/2812)) ([d59ad59](https://github.com/filebrowser/filebrowser/commit/d59ad594b8649f57f61453b0dfbc350c57b690a2))
+* typo in build error [#2903](https://github.com/filebrowser/filebrowser/issues/2903) ([#2904](https://github.com/filebrowser/filebrowser/issues/2904)) ([c4e955a](https://github.com/filebrowser/filebrowser/commit/c4e955acf4a1a8f8e8e94f697ffc838515e69a60))
+
+
+### Build
+
+* **deps-dev:** bump vite from 4.4.9 to 4.4.12 in /frontend ([#2862](https://github.com/filebrowser/filebrowser/issues/2862)) ([fc2ee37](https://github.com/filebrowser/filebrowser/commit/fc2ee373536584d024f7def62f350bdbb712d927))
+* **deps:** bump golang.org/x/crypto from 0.14.0 to 0.17.0 ([#2890](https://github.com/filebrowser/filebrowser/issues/2890)) ([821fba4](https://github.com/filebrowser/filebrowser/commit/821fba41a25ba99d47641f01b10ac51960157888))
+
 ## [2.26.0](https://github.com/filebrowser/filebrowser/compare/v2.25.0...v2.26.0) (2023-11-02)
 
 

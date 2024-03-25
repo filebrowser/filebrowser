@@ -26,7 +26,7 @@ import (
 	"github.com/filebrowser/filebrowser/v2/rules"
 )
 
-const PermFile = 0664
+const PermFile = 0644
 const PermDir = 0755
 
 var (

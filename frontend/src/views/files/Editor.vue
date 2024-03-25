@@ -1,5 +1,5 @@
 <template>
-  <div id="editor-container">
+  <div id="editor-container" @touchmove.prevent.stop @wheel.prevent.stop>
     <header-bar>
       <action icon="close" :label="t('buttons.close')" @action="close()" />
       <title>{{ fileStore.req?.name ?? "" }}</title>
@@ -32,6 +32,7 @@ import Action from "@/components/header/Action.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
 import { inject, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -41,6 +42,7 @@ const $showError = inject<IToastError>("$showError")!;
 
 const fileStore = useFileStore();
 const authStore = useAuthStore();
+const layoutStore = useLayoutStore();
 
 const { t } = useI18n();
 
@@ -84,6 +86,10 @@ onBeforeUnmount(() => {
 });
 
 const keyEvent = (event: KeyboardEvent) => {
+  if (event.code === "Escape") {
+    close();
+  }
+
   if (!event.ctrlKey && !event.metaKey) {
     return;
   }
@@ -102,6 +108,7 @@ const save = async () => {
 
   try {
     await api.put(route.path, editor.value?.getValue());
+    editor.value?.session.getUndoManager().markClean();
     buttons.success(button);
   } catch (e: any) {
     buttons.done(button);
@@ -109,6 +116,11 @@ const save = async () => {
   }
 };
 const close = () => {
+  if (!editor.value?.session.getUndoManager().isClean()) {
+    layoutStore.showHover("discardEditorChanges");
+    return;
+  }
+
   fileStore.updateRequest(null);
 
   let uri = url.removeLastDir(route.path) + "/";
