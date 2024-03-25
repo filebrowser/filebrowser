@@ -51,8 +51,7 @@ export async function upload(
           clearInterval(CURRENT_UPLOAD_LIST[filePath].interval);
         }
         delete CURRENT_UPLOAD_LIST[filePath];
-        reject("Upload failed: " + error);
-      },
+        reject(new Error(`Upload failed: ${error.message}`));
       onProgress: function (bytesUploaded) {
         const fileData = CURRENT_UPLOAD_LIST[filePath];
         fileData.currentBytesUploaded = bytesUploaded;

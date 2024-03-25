@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <ModalsContainer />
-  </div>
+  <ModalsContainer />
 </template>
 
 <script setup lang="ts">
