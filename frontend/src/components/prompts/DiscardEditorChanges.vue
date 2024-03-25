@@ -7,7 +7,7 @@
     </div>
     <div class="card-action">
       <button
-        @click="$store.commit('closeHovers')"
+        @click="closeHovers()"
         class="button button--flat button--grey"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')"
@@ -27,15 +27,18 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapActions } from "pinia";
 import url from "@/utils/url";
+import { useLayoutStore } from "@/stores/layout";
+import { useFileStore } from "@/stores/file";
 
 export default {
   name: "discardEditorChanges",
   methods: {
-    ...mapMutations(["closeHovers"]),
+    ...mapActions(useLayoutStore, ["closeHovers"]),
+    ...mapActions(useFileStore, ["updateRequest"]),
     submit: async function () {
-      this.$store.commit("updateRequest", {});
+      this.updateRequest(null);
 
       let uri = url.removeLastDir(this.$route.path) + "/";
       this.$router.push({ path: uri });
