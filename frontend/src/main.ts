@@ -31,7 +31,7 @@ const vfm = createVfm();
 
 const app = createApp(App);
 
-app.component(VueNumberInput.name, VueNumberInput);
+app.component(VueNumberInput.name || "vue-number-input", VueNumberInput);
 app.use(VueLazyload);
 app.use(Toast, {
   transition: "Vue-Toastification__bounce",

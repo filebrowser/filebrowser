@@ -52,6 +52,7 @@ export async function upload(
         }
         delete CURRENT_UPLOAD_LIST[filePath];
         reject(new Error(`Upload failed: ${error.message}`));
+      },
       onProgress: function (bytesUploaded) {
         const fileData = CURRENT_UPLOAD_LIST[filePath];
         fileData.currentBytesUploaded = bytesUploaded;
