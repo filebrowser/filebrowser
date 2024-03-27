@@ -78,7 +78,7 @@ export const useUploadStore = defineStore("upload", {
     uploadSpeed: (state) => {
       return state.speedMbyte;
     },
-    eta: (state) => state.eta,
+    getETA: (state) => state.eta,
   },
   actions: {
     // no context as first argument, use `this` instead

@@ -103,9 +103,6 @@ const isThumbsEnabled = computed(() => {
   return enableThumbs;
 });
 
-// ...mapActions(useFileStore, ["removeSelected"]),
-// ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
-
 const humanSize = () => {
   return props.type == "invalid_link" ? "invalid link" : filesize(props.size);
 };

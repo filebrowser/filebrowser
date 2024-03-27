@@ -7,7 +7,6 @@
     />
 
     <breadcrumbs base="/files" />
-    <listing />
     <errors v-if="error" :errorCode="error.status" />
     <component v-else-if="currentView" :is="currentView"></component>
     <div v-else-if="currentView !== null">

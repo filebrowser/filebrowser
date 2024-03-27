@@ -7,6 +7,7 @@
       initialFocus: '#focus-prompt',
       fallbackFocus: 'div.vfm__content',
     }"
+    style="z-index: 9999999"
   >
     <slot />
   </VueFinalModal>

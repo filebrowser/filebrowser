@@ -165,7 +165,7 @@ onMounted(() => {
 });
 
 const open = () => {
-  layoutStore.showHover("search");
+  !active.value && layoutStore.showHover("search");
 };
 
 const close = (event: Event) => {
@@ -209,7 +209,6 @@ const submit = async (event: Event) => {
 
   try {
     results.value = await search(path, prompt.value);
-    console.log("Search: ", results.value);
   } catch (error: any) {
     $showError(error);
   }

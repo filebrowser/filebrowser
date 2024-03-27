@@ -326,18 +326,6 @@ const { t } = useI18n();
 
 const listing = ref<HTMLElement | null>(null);
 
-// ...mapStores(useClipboardStore),
-// ...mapState(useAuthStore, ["user"]),
-// ...mapState(useFileStore, ["selectedCount", "toggleMultiple"]),
-// ...mapState(useLayoutStore, ["show"]),
-// ...mapWritableState(useFileStore, [
-//   "req",
-//   "selected",
-//   "multiple",
-//   "loading",
-//   "reload",
-// ])
-
 const nameSorted = computed(() =>
   fileStore.req ? fileStore.req.sorting.by === "name" : false
 );
@@ -521,16 +509,14 @@ const keyEvent = (event: KeyboardEvent) => {
     return;
   }
 
-  let key = String.fromCharCode(event.which).toLowerCase();
-
-  switch (key) {
+  switch (event.key) {
     case "f":
       event.preventDefault();
       layoutStore.showHover("search");
       break;
     case "c":
     case "x":
-      copyCut(event, key);
+      copyCut(event);
       break;
     case "v":
       paste(event);
@@ -560,7 +546,7 @@ const preventDefault = (event: Event) => {
   event.preventDefault();
 };
 
-const copyCut = (event: Event, key: string): void => {
+const copyCut = (event: Event | KeyboardEvent): void => {
   if ((event.target as HTMLElement).tagName?.toLowerCase() === "input") return;
 
   if (fileStore.req === null) return;
@@ -579,7 +565,7 @@ const copyCut = (event: Event, key: string): void => {
   }
 
   clipboardStore.$patch({
-    key,
+    key: (event as KeyboardEvent).key,
     items,
     path: route.path,
   });
@@ -628,8 +614,7 @@ const paste = (event: Event) => {
     return;
   }
 
-  // @ts-ignore
-  let conflict = upload.checkConflict(items, fileStore.req.items);
+  let conflict = upload.checkConflict(items, fileStore.req!.items);
 
   let overwrite = false;
   let rename = false;

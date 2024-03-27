@@ -71,16 +71,16 @@ export default {
       "filesInUpload",
       "filesInUploadCount",
       "uploadSpeed",
-      "eta",
+      "getETA",
     ]),
     ...mapWritableState(useFileStore, ["reload"]),
     ...mapActions(useUploadStore, ["reset"]),
     formattedETA() {
-      if (!this.eta || this.eta === Infinity) {
+      if (!this.getETA || this.getETA === Infinity) {
         return "--:--:--";
       }
 
-      let totalSeconds = this.eta;
+      let totalSeconds = this.getETA;
       const hours = Math.floor(totalSeconds / 3600);
       totalSeconds %= 3600;
       const minutes = Math.floor(totalSeconds / 60);
