@@ -13,7 +13,7 @@ const state = {
   uploads: {},
   speedMbyte: 0,
   eta: 0,
-  percentage: 0
+  uploadPercentage: 0
 };
 
 const mutations = {
