@@ -125,7 +125,7 @@ function isTusSupported() {
 
 function computeETA(state) {
   if (state.speedMbyte === 0) {
-    return Infinity;
+    return { eta: Infinity, percentage: 0 };
   }
   const totalSize = state.sizes.reduce((acc, size) => acc + size, 0);
   const uploadedSize = state.progress.reduce(
@@ -134,7 +134,10 @@ function computeETA(state) {
   );
   const remainingSize = totalSize - uploadedSize;
   const speedBytesPerSecond = state.speedMbyte * 1024 * 1024;
-  return remainingSize / speedBytesPerSecond;
+  const eta = remainingSize / speedBytesPerSecond;
+  const percentage = (uploadedSize / totalSize) * 100;
+
+  return { eta, percentage };
 }
 
 function computeGlobalSpeedAndETA() {
@@ -146,12 +149,12 @@ function computeGlobalSpeedAndETA() {
     totalCount++;
   }
 
-  if (totalCount === 0) return { speed: 0, eta: Infinity };
+  if (totalCount === 0) return { speed: 0, eta: Infinity, percentage: 0 };
 
   const averageSpeed = totalSpeed / totalCount;
-  const averageETA = computeETA(store.state.upload, averageSpeed);
+  const { eta, percentage } = computeETA(store.state.upload, averageSpeed);
 
-  return { speed: averageSpeed, eta: averageETA };
+  return { speed: averageSpeed, eta, percentage };
 }
 
 function calcProgress(filePath) {
@@ -174,9 +177,10 @@ function calcProgress(filePath) {
   fileData.currentAverageSpeed =
     ALPHA * avgRecentSpeed + ONE_MINUS_ALPHA * fileData.currentAverageSpeed;
 
-  const { speed, eta } = computeGlobalSpeedAndETA();
+  const { speed, eta, percentage } = computeGlobalSpeedAndETA();
   store.commit("setUploadSpeed", speed);
   store.commit("setETA", eta);
+  store.commit("setUploadPercentage", percentage);
 
   fileData.initialBytesUploaded = fileData.currentBytesUploaded;
   fileData.lastProgressTimestamp = Date.now();
