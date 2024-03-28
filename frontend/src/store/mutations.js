@@ -104,6 +104,9 @@ const mutations = {
   setETA(state, value) {
     state.upload.eta = value;
   },
+  setUploadPercentage(state, value) {
+    state.upload.percentage = value;
+  },
   resetUpload(state) {
     state.upload.uploads = {};
     state.upload.queue = [];
@@ -112,6 +115,7 @@ const mutations = {
     state.upload.id = 0;
     state.upload.speedMbyte = 0;
     state.upload.eta = 0;
+    state.upload.percentage = 0;
   },
 };
 
