@@ -10,6 +10,7 @@
         <div class="upload-info">
           <div class="upload-speed">{{ uploadSpeed.toFixed(2) }} MB/s</div>
           <div class="upload-eta">{{ formattedETA }} remaining</div>
+          <div class="upload-percentage">{{ uploadPercentage.toFixed(2) }}%</div>
         </div>
         <button
           class="action"
@@ -70,6 +71,7 @@ export default {
       "filesInUploadCount",
       "uploadSpeed",
       "eta",
+      "uploadPercentage"
     ]),
     ...mapMutations(["resetUpload"]),
     formattedETA() {
