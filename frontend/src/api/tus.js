@@ -135,7 +135,7 @@ function computeETA(state) {
   const remainingSize = totalSize - uploadedSize;
   const speedBytesPerSecond = state.speedMbyte * 1024 * 1024;
   const eta = remainingSize / speedBytesPerSecond;
-  const percentage = (uploadedSize / totalSize) * 100;
+  const uploadPercentage = (uploadedSize / totalSize) * 100;
 
   return { eta, uploadPercentage };
 }
