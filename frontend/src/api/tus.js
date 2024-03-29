@@ -28,6 +28,8 @@ export async function upload(
   let resourcePath = `${tusEndpoint}${filePath}?override=${overwrite}`;
 
   await createUpload(resourcePath);
+  let uploadSize = content.size || 0; // Get the size of the content being uploaded
+  store.commit('setTotalFileSize', store.state.upload.totalFileSize + uploadSize);
 
   return new Promise((resolve, reject) => {
     let upload = new tus.Upload(content, {
@@ -181,6 +183,12 @@ function calcProgress(filePath) {
   store.commit("setUploadSpeed", speed);
   store.commit("setETA", eta);
   store.commit("setUploadPercentage", uploadPercentage);
+
+  let totalUploaded = 0;
+  for (let file in CURRENT_UPLOAD_LIST) {
+    totalUploaded += CURRENT_UPLOAD_LIST[file].currentBytesUploaded;
+  }
+  store.commit('setTotalUploadedSize', totalUploaded);
 
   fileData.initialBytesUploaded = fileData.currentBytesUploaded;
   fileData.lastProgressTimestamp = Date.now();

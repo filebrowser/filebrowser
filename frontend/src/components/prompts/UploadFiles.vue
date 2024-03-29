@@ -11,6 +11,10 @@
           <div class="upload-speed">{{ uploadSpeed.toFixed(2) }} MB/s</div>
           <div class="upload-eta">{{ formattedETA }} remaining</div>
           <div class="upload-percentage">{{ uploadPercentage.toFixed(2) }}%</div>
+          <div class="upload-size">
+            {{ formatFileSize(totalUploadedSize) }} /
+            {{ formatFileSize(totalFileSize) }}
+          </div>
         </div>
         <button
           class="action"
@@ -71,7 +75,9 @@ export default {
       "filesInUploadCount",
       "uploadSpeed",
       "eta",
-      "uploadPercentage"
+      "uploadPercentage",
+      "totalUploadedSize",
+      "totalFileSize",
     ]),
     ...mapMutations(["resetUpload"]),
     formattedETA() {
@@ -101,6 +107,17 @@ export default {
         this.open = false;
         this.$store.commit("resetUpload");
         this.$store.commit("setReload", true);
+      }
+    },
+    formatFileSize(size) {
+      if (size < 1024) {
+        return size + ' B';
+      } else if (size < 1024 * 1024) {
+        return (size / 1024).toFixed(2) + ' KB';
+      } else if (size < 1024 * 1024 * 1024) {
+        return (size / 1024 / 1024).toFixed(2) + ' MB';
+      } else {
+        return (size / 1024 / 1024 / 1024).toFixed(2) + ' GB';
       }
     },
   },

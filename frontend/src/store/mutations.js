@@ -107,6 +107,12 @@ const mutations = {
   setUploadPercentage(state, value) {
     state.upload.uploadPercentage = value;
   },
+  setTotalUploadedSize(state, value) {
+    state.upload.totalUploadedSize = value;
+  },
+  setTotalFileSize(state, value) {
+    state.upload.totalFileSize = value;
+  },
   resetUpload(state) {
     state.upload.uploads = {};
     state.upload.queue = [];
@@ -116,6 +122,8 @@ const mutations = {
     state.upload.speedMbyte = 0;
     state.upload.eta = 0;
     state.upload.uploadPercentage = 0;
+    state.upload.totalFileSize = 0;
+    state.upload.totalUploadedSize = 0;
   },
 };
 

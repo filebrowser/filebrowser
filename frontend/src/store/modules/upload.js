@@ -13,7 +13,9 @@ const state = {
   uploads: {},
   speedMbyte: 0,
   eta: 0,
-  uploadPercentage: 0
+  uploadPercentage: 0,
+  totalFileSize: 0,
+  totalUploadedSize: 0
 };
 
 const mutations = {

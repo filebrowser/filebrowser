@@ -51,7 +51,9 @@ const getters = {
   },
   uploadSpeed: (state) => state.upload.speedMbyte,
   eta: (state) => state.upload.eta,
-  uploadPercentage: (state) => state.upload.uploadPercentage
+  uploadPercentage: (state) => state.upload.uploadPercentage,
+  totalUploadedSize: (state) => state.upload.totalUploadedSize,
+  totalFileSize: (state) => state.upload.totalFileSize
 };
 
 export default getters;
