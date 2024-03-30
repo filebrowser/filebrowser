@@ -4,7 +4,6 @@ import vue from "@vitejs/plugin-vue";
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import legacy from "@vitejs/plugin-legacy";
 import { compression } from "vite-plugin-compression2";
-import pluginRewriteAll from "vite-plugin-rewrite-all";
 
 const plugins = [
   vue(),
@@ -16,7 +15,6 @@ const plugins = [
     targets: ["defaults"],
   }),
   compression({ include: /\.js$/i, deleteOriginalAssets: true }),
-  pluginRewriteAll(), // fixes 404 error with paths containing dot in dev server
 ];
 
 const resolve = {
