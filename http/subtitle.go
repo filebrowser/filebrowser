@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/asticode/go-astisub"
+
 	"github.com/filebrowser/filebrowser/v2/files"
 )
 
