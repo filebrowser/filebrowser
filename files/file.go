@@ -284,8 +284,8 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	return nil
 }
 
-func calculateImageResolution(fs afero.Fs, filePath string) (*ImageResolution, error) {
-	file, err := fs.Open(filePath)
+func calculateImageResolution(fs_ afero.Fs, filePath string) (*ImageResolution, error) {
+	file, err := fs_.Open(filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -362,7 +362,7 @@ func (i *FileInfo) detectSubtitles() {
 	}
 }
 
-func (i *FileInfo) loadSubtitles(subsPath string, baseName string, recursive bool) {
+func (i *FileInfo) loadSubtitles(subsPath, baseName string, recursive bool) {
 	dir, err := afero.ReadDir(i.Fs, subsPath)
 	if err == nil {
 		for _, f := range dir {
@@ -385,8 +385,8 @@ func isSubtitleMatch(f fs.FileInfo, baseName string) bool {
 		IsSupportedSubtitle(f.Name())
 }
 
-func (i *FileInfo) addSubtitle(path string) {
-	i.Subtitles = append(i.Subtitles, path)
+func (i *FileInfo) addSubtitle(path_ string) {
+	i.Subtitles = append(i.Subtitles, path_)
 }
 
 func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
