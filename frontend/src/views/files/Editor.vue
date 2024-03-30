@@ -94,7 +94,7 @@ const keyEvent = (event: KeyboardEvent) => {
     return;
   }
 
-  if (String.fromCharCode(event.which).toLowerCase() !== "s") {
+  if (event.key !== "s") {
     return;
   }
 

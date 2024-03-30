@@ -105,7 +105,7 @@ watch(route, (to, from) => {
   if (from.path.endsWith("/")) {
     window.sessionStorage.setItem(
       "listFrozen",
-      to.path.endsWith("/").toString()
+      (!to.path.endsWith("/")).toString()
     );
   } else if (to.path.endsWith("/")) {
     fileStore.updateRequest(null);
