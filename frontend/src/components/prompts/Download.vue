@@ -12,7 +12,7 @@
         v-for="(ext, format) in formats"
         :key="format"
         class="button button--block"
-        @click="layoutStore.showConfirm(format)"
+        @click="layoutStore.currentPrompt?.confirm(format)"
       >
         {{ ext }}
       </button>

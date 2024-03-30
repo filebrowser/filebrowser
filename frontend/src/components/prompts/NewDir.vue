@@ -51,6 +51,14 @@ import { useI18n } from "vue-i18n";
 
 const $showError = inject<IToastError>("$showError")!;
 
+const props = defineProps({
+  base: String,
+  redirect: {
+    type: Boolean,
+    default: true,
+  },
+});
+
 const fileStore = useFileStore();
 const layoutStore = useLayoutStore();
 
@@ -65,7 +73,10 @@ const submit = async (event: Event) => {
   if (name.value === "") return;
 
   // Build the path of the new directory.
-  let uri = fileStore.isFiles ? route.path + "/" : "/";
+  let uri: string;
+  if (props.base) uri = props.base;
+  else if (fileStore.isFiles) uri = route.path + "/";
+  else uri = "/";
 
   if (!fileStore.isListing) {
     uri = url.removeLastDir(uri) + "/";
@@ -76,7 +87,12 @@ const submit = async (event: Event) => {
 
   try {
     await api.post(uri);
-    router.push({ path: `${uri}` });
+    if (props.redirect) {
+      router.push({ path: uri });
+    } else if (!props.base) {
+      const res = await api.fetch(url.removeLastDir(uri) + "/");
+      fileStore.updateRequest(res);
+    }
   } catch (e) {
     if (e instanceof Error) {
       $showError(e);

@@ -205,10 +205,10 @@
           </div>
         </div>
 
-        <h2 v-if="fileStore.req?.numDirs ?? 0 > 0">
+        <h2 v-if="fileStore.req?.numDirs ?? false">
           {{ t("files.folders") }}
         </h2>
-        <div v-if="fileStore.req?.numDirs ?? 0 > 0">
+        <div v-if="fileStore.req?.numDirs ?? false">
           <item
             v-for="item in dirs"
             :key="base64(item.name)"
@@ -224,8 +224,8 @@
           </item>
         </div>
 
-        <h2 v-if="fileStore.req?.numFiles ?? 0 > 0">{{ t("files.files") }}</h2>
-        <div v-if="fileStore.req?.numFiles ?? 0 > 0">
+        <h2 v-if="fileStore.req?.numFiles ?? false">{{ t("files.files") }}</h2>
+        <div v-if="fileStore.req?.numFiles ?? false">
           <item
             v-for="item in files"
             :key="base64(item.name)"
@@ -263,8 +263,8 @@
             @click="() => (fileStore.multiple = false)"
             tabindex="0"
             role="button"
-            :title="t('files.clear')"
-            :aria-label="t('files.clear')"
+            :title="t('buttons.clear')"
+            :aria-label="t('buttons.clear')"
             class="action"
           >
             <i class="material-icons">clear</i>
@@ -325,18 +325,6 @@ const route = useRoute();
 const { t } = useI18n();
 
 const listing = ref<HTMLElement | null>(null);
-
-// ...mapStores(useClipboardStore),
-// ...mapState(useAuthStore, ["user"]),
-// ...mapState(useFileStore, ["selectedCount", "toggleMultiple"]),
-// ...mapState(useLayoutStore, ["show"]),
-// ...mapWritableState(useFileStore, [
-//   "req",
-//   "selected",
-//   "multiple",
-//   "loading",
-//   "reload",
-// ])
 
 const nameSorted = computed(() =>
   fileStore.req ? fileStore.req.sorting.by === "name" : false
@@ -433,16 +421,25 @@ const isMobile = computed(() => {
 
 watch(req, () => {
   // Reset the show value
-  showLimit.value = 50;
+  if (
+    window.sessionStorage.getItem("listFrozen") !== "true" &&
+    window.sessionStorage.getItem("modified") !== "true"
+  ) {
+    showLimit.value = 50;
 
-  nextTick(() => {
-    // Ensures that the listing is displayed
-    // How much every listing item affects the window height
-    setItemWeight();
+    nextTick(() => {
+      // Ensures that the listing is displayed
+      // How much every listing item affects the window height
+      setItemWeight();
 
-    // Fill and fit the window with listing items
-    fillWindow(true);
-  });
+      // Fill and fit the window with listing items
+      fillWindow(true);
+    });
+  }
+  if (req.value?.isDir) {
+    window.sessionStorage.setItem("listFrozen", "false");
+    window.sessionStorage.setItem("modified", "false");
+  }
 });
 
 onMounted(() => {
@@ -484,7 +481,7 @@ const base64 = (name: string) => Base64.encodeURI(name);
 
 const keyEvent = (event: KeyboardEvent) => {
   // No prompts are shown
-  if (layoutStore.show !== null) {
+  if (layoutStore.currentPrompt !== null) {
     return;
   }
 
@@ -512,16 +509,14 @@ const keyEvent = (event: KeyboardEvent) => {
     return;
   }
 
-  let key = String.fromCharCode(event.which).toLowerCase();
-
-  switch (key) {
+  switch (event.key) {
     case "f":
       event.preventDefault();
       layoutStore.showHover("search");
       break;
     case "c":
     case "x":
-      copyCut(event, key);
+      copyCut(event);
       break;
     case "v":
       paste(event);
@@ -551,7 +546,7 @@ const preventDefault = (event: Event) => {
   event.preventDefault();
 };
 
-const copyCut = (event: Event, key: string): void => {
+const copyCut = (event: Event | KeyboardEvent): void => {
   if ((event.target as HTMLElement).tagName?.toLowerCase() === "input") return;
 
   if (fileStore.req === null) return;
@@ -570,7 +565,7 @@ const copyCut = (event: Event, key: string): void => {
   }
 
   clipboardStore.$patch({
-    key,
+    key: (event as KeyboardEvent).key,
     items,
     path: route.path,
   });
@@ -619,8 +614,7 @@ const paste = (event: Event) => {
     return;
   }
 
-  // @ts-ignore
-  let conflict = upload.checkConflict(items, fileStore.req.items);
+  let conflict = upload.checkConflict(items, fileStore.req!.items);
 
   let overwrite = false;
   let rename = false;

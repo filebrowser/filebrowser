@@ -1,11 +1,18 @@
 import * as tus from "tus-js-client";
 import { baseURL, tusEndpoint, tusSettings } from "@/utils/constants";
 import { useAuthStore } from "@/stores/auth";
+import { useUploadStore } from "@/stores/upload";
 import { removePrefix } from "@/api/utils";
 import { fetchURL } from "./utils";
 
 const RETRY_BASE_DELAY = 1000;
 const RETRY_MAX_DELAY = 20000;
+const SPEED_UPDATE_INTERVAL = 1000;
+const ALPHA = 0.2;
+const ONE_MINUS_ALPHA = 1 - ALPHA;
+const RECENT_SPEEDS_LIMIT = 5;
+const MB_DIVISOR = 1024 * 1024;
+const CURRENT_UPLOAD_LIST: CurrentUploadList = {};
 
 export async function upload(
   filePath: string,
@@ -40,19 +47,47 @@ export async function upload(
         "X-Auth": authStore.jwt,
       },
       onError: function (error) {
+        if (CURRENT_UPLOAD_LIST[filePath].interval) {
+          clearInterval(CURRENT_UPLOAD_LIST[filePath].interval);
+        }
+        delete CURRENT_UPLOAD_LIST[filePath];
         reject(new Error(`Upload failed: ${error.message}`));
       },
       onProgress: function (bytesUploaded) {
-        // Emulate ProgressEvent.loaded which is used by calling functions
-        // loaded is specified in bytes (https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent/loaded)
+        const fileData = CURRENT_UPLOAD_LIST[filePath];
+        fileData.currentBytesUploaded = bytesUploaded;
+
+        if (!fileData.hasStarted) {
+          fileData.hasStarted = true;
+          fileData.lastProgressTimestamp = Date.now();
+
+          fileData.interval = setInterval(() => {
+            calcProgress(filePath);
+          }, SPEED_UPDATE_INTERVAL);
+        }
         if (typeof onupload === "function") {
           onupload({ loaded: bytesUploaded });
         }
       },
       onSuccess: function () {
+        if (CURRENT_UPLOAD_LIST[filePath].interval) {
+          clearInterval(CURRENT_UPLOAD_LIST[filePath].interval);
+        }
+        delete CURRENT_UPLOAD_LIST[filePath];
         resolve();
       },
     });
+    CURRENT_UPLOAD_LIST[filePath] = {
+      upload: upload,
+      recentSpeeds: [],
+      initialBytesUploaded: 0,
+      currentBytesUploaded: 0,
+      currentAverageSpeed: 0,
+      lastProgressTimestamp: null,
+      sumOfRecentSpeeds: 0,
+      hasStarted: false,
+      interval: undefined,
+    };
     upload.start();
   });
 }
@@ -93,4 +128,86 @@ export async function useTus(content: ApiContent) {
 
 function isTusSupported() {
   return tus.isSupported === true;
+}
+
+function computeETA(state: ETAState, speed?: number) {
+  if (state.speedMbyte === 0) {
+    return Infinity;
+  }
+  const totalSize = state.sizes.reduce(
+    (acc: number, size: number) => acc + size,
+    0
+  );
+  const uploadedSize = state.progress.reduce(
+    (acc: number, progress: Progress) => {
+      if (typeof progress === "number") {
+        return acc + progress;
+      }
+      return acc;
+    },
+    0
+  );
+  const remainingSize = totalSize - uploadedSize;
+  const speedBytesPerSecond = (speed ?? state.speedMbyte) * 1024 * 1024;
+  return remainingSize / speedBytesPerSecond;
+}
+
+function computeGlobalSpeedAndETA() {
+  const uploadStore = useUploadStore();
+  let totalSpeed = 0;
+  let totalCount = 0;
+
+  for (const filePath in CURRENT_UPLOAD_LIST) {
+    totalSpeed += CURRENT_UPLOAD_LIST[filePath].currentAverageSpeed;
+    totalCount++;
+  }
+
+  if (totalCount === 0) return { speed: 0, eta: Infinity };
+
+  const averageSpeed = totalSpeed / totalCount;
+  const averageETA = computeETA(uploadStore, averageSpeed);
+
+  return { speed: averageSpeed, eta: averageETA };
+}
+
+function calcProgress(filePath: string) {
+  const uploadStore = useUploadStore();
+  const fileData = CURRENT_UPLOAD_LIST[filePath];
+
+  const elapsedTime =
+    (Date.now() - (fileData.lastProgressTimestamp ?? 0)) / 1000;
+  const bytesSinceLastUpdate =
+    fileData.currentBytesUploaded - fileData.initialBytesUploaded;
+  const currentSpeed = bytesSinceLastUpdate / MB_DIVISOR / elapsedTime;
+
+  if (fileData.recentSpeeds.length >= RECENT_SPEEDS_LIMIT) {
+    fileData.sumOfRecentSpeeds -= fileData.recentSpeeds.shift() ?? 0;
+  }
+
+  fileData.recentSpeeds.push(currentSpeed);
+  fileData.sumOfRecentSpeeds += currentSpeed;
+
+  const avgRecentSpeed =
+    fileData.sumOfRecentSpeeds / fileData.recentSpeeds.length;
+  fileData.currentAverageSpeed =
+    ALPHA * avgRecentSpeed + ONE_MINUS_ALPHA * fileData.currentAverageSpeed;
+
+  const { speed, eta } = computeGlobalSpeedAndETA();
+  uploadStore.setUploadSpeed(speed);
+  uploadStore.setETA(eta);
+
+  fileData.initialBytesUploaded = fileData.currentBytesUploaded;
+  fileData.lastProgressTimestamp = Date.now();
+}
+
+export function abortAllUploads() {
+  for (const filePath in CURRENT_UPLOAD_LIST) {
+    if (CURRENT_UPLOAD_LIST[filePath].interval) {
+      clearInterval(CURRENT_UPLOAD_LIST[filePath].interval);
+    }
+    if (CURRENT_UPLOAD_LIST[filePath].upload) {
+      CURRENT_UPLOAD_LIST[filePath].upload.abort(true);
+    }
+    delete CURRENT_UPLOAD_LIST[filePath];
+  }
 }

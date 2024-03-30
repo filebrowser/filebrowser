@@ -7,6 +7,7 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 	"hash"
+	"image"
 	"io"
 	"io/fs"
 	"log"
@@ -25,7 +26,7 @@ import (
 	"github.com/filebrowser/filebrowser/v2/rules"
 )
 
-const PermFile = 0664
+const PermFile = 0644
 const PermDir = 0755
 
 var (
@@ -51,6 +52,7 @@ type FileInfo struct {
 	Checksums  map[string]string `json:"checksums,omitempty"`
 	Token      string            `json:"token,omitempty"`
 	currentDir []os.FileInfo     `json:"-"`
+	Resolution *ImageResolution  `json:"resolution,omitempty"`
 }
 
 // FileOptions are the options when getting a file info.
@@ -63,6 +65,11 @@ type FileOptions struct {
 	Token      string
 	Checker    rules.Checker
 	Content    bool
+}
+
+type ImageResolution struct {
+	Width  int `json:"width"`
+	Height int `json:"height"`
 }
 
 // NewFileInfo creates a File object from a path and a given user. This File
@@ -243,6 +250,12 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 		return nil
 	case strings.HasPrefix(mimetype, "image"):
 		i.Type = "image"
+		resolution, err := calculateImageResolution(i.Fs, i.Path)
+		if err != nil {
+			log.Printf("Error calculating image resolution: %v", err)
+		} else {
+			i.Resolution = resolution
+		}
 		return nil
 	case strings.HasSuffix(mimetype, "pdf"):
 		i.Type = "pdf"
@@ -269,6 +282,28 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	}
 
 	return nil
+}
+
+func calculateImageResolution(fs afero.Fs, filePath string) (*ImageResolution, error) {
+	file, err := fs.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if cErr := file.Close(); cErr != nil {
+			log.Printf("Failed to close file: %v", cErr)
+		}
+	}()
+
+	config, _, err := image.DecodeConfig(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ImageResolution{
+		Width:  config.Width,
+		Height: config.Height,
+	}, nil
 }
 
 func (i *FileInfo) readFirstBytes() []byte {
@@ -399,6 +434,15 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {
 			Extension:  filepath.Ext(name),
 			Path:       fPath,
 			currentDir: dir,
+		}
+
+		if !file.IsDir && strings.HasPrefix(mime.TypeByExtension(file.Extension), "image/") {
+			resolution, err := calculateImageResolution(file.Fs, file.Path)
+			if err != nil {
+				log.Printf("Error calculating resolution for image %s: %v", file.Path, err)
+			} else {
+				file.Resolution = resolution
+			}
 		}
 
 		if file.IsDir {

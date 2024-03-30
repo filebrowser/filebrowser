@@ -29,15 +29,17 @@ override the options.`,
 		authMethod, auther := getAuthentication(flags)
 
 		s := &settings.Settings{
-			Key:        generateKey(),
-			Signup:     mustGetBool(flags, "signup"),
-			Shell:      convertCmdStrToCmdArray(mustGetString(flags, "shell")),
-			AuthMethod: authMethod,
-			Defaults:   defaults,
+			Key:           generateKey(),
+			Signup:        mustGetBool(flags, "signup"),
+			CreateUserDir: mustGetBool(flags, "create-user-dir"),
+			Shell:         convertCmdStrToCmdArray(mustGetString(flags, "shell")),
+			AuthMethod:    authMethod,
+			Defaults:      defaults,
 			Branding: settings.Branding{
 				Name:                  mustGetString(flags, "branding.name"),
 				DisableExternal:       mustGetBool(flags, "branding.disableExternal"),
 				DisableUsedPercentage: mustGetBool(flags, "branding.disableUsedPercentage"),
+				Theme:                 mustGetString(flags, "branding.theme"),
 				Files:                 mustGetString(flags, "branding.files"),
 			},
 		}

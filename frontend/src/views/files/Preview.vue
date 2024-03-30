@@ -1,10 +1,12 @@
 <template>
   <div
     id="previewer"
+    @touchmove.prevent.stop 
+    @wheel.prevent.stop
     @mousemove="toggleNavigation"
     @touchstart="toggleNavigation"
   >
-    <header-bar>
+    <header-bar  v-if="showNav">
       <action icon="close" :label="$t('buttons.close')" @action="close()" />
       <title>{{ name }}</title>
       <action
@@ -55,10 +57,7 @@
     </div>
     <template v-else>
       <div class="preview">
-        <ExtendedImage
-          v-if="fileStore.req?.type == 'image'"
-          :src="raw"
-        ></ExtendedImage>
+        <ExtendedImage v-if="fileStore.req?.type == 'image'" :src="raw" />
         <audio
           v-else-if="fileStore.req?.type == 'audio'"
           ref="player"
@@ -251,7 +250,7 @@ const next = () => {
 };
 
 const key = (event: KeyboardEvent) => {
-  if (layoutStore.show !== null) {
+  if (layoutStore.currentPrompt !== null) {
     return;
   }
   if (event.which === 13 || event.which === 39) {

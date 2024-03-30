@@ -7,10 +7,9 @@
     />
 
     <breadcrumbs base="/files" />
-
     <errors v-if="error" :errorCode="error.status" />
     <component v-else-if="currentView" :is="currentView"></component>
-    <div v-else>
+    <div v-else-if="currentView !== null">
       <h2 class="message delayed">
         <div class="spinner">
           <div class="bounce1"></div>
@@ -102,7 +101,17 @@ onUnmounted(() => {
   fileStore.updateRequest(null);
 });
 
-watch(route, () => fetchData());
+watch(route, (to, from) => {
+  if (from.path.endsWith("/")) {
+    window.sessionStorage.setItem(
+      "listFrozen",
+      (!to.path.endsWith("/")).toString()
+    );
+  } else if (to.path.endsWith("/")) {
+    fileStore.updateRequest(null);
+  }
+  fetchData();
+});
 watch(reload, (newValue) => {
   newValue && fetchData();
 });
@@ -120,7 +129,12 @@ const fetchData = async () => {
   layoutStore.closeHovers();
 
   // Set loading to true and reset the error.
-  layoutStore.loading = true;
+  if (
+    window.sessionStorage.getItem("listFrozen") !== "true" &&
+    window.sessionStorage.getItem("modified") !== "true"
+  ) {
+    layoutStore.loading = true;
+  }
   error.value = null;
 
   let url = route.path;

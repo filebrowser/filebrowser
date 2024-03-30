@@ -20,7 +20,7 @@
       </button>
       <button
         class="button button--flat button--blue"
-        @click="showAction"
+        @click="currentPrompt.action"
         :aria-label="$t('buttons.continue')"
         :title="$t('buttons.continue')"
         tabindex="2"
@@ -30,7 +30,7 @@
       <button
         id="focus-prompt"
         class="button button--flat button--red"
-        @click="showConfirm"
+        @click="currentPrompt.confirm"
         :aria-label="$t('buttons.replace')"
         :title="$t('buttons.replace')"
         tabindex="1"
@@ -48,7 +48,7 @@ import { useLayoutStore } from "@/stores/layout";
 export default {
   name: "replace",
   computed: {
-    ...mapState(useLayoutStore, ["showConfirm", "showAction"]),
+    ...mapState(useLayoutStore, ["currentPrompt"]),
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),

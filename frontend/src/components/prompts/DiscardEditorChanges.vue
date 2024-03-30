@@ -1,12 +1,14 @@
 <template>
   <div class="card floating">
     <div class="card-content">
-      <p>{{ $t("prompts.deleteMessageShare", { path: "" }) }}</p>
+      <p>
+        {{ $t("prompts.discardEditorChanges") }}
+      </p>
     </div>
     <div class="card-action">
       <button
-        @click="closeHovers"
         class="button button--flat button--grey"
+        @click="closeHovers"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')"
         tabindex="2"
@@ -17,29 +19,32 @@
         id="focus-prompt"
         @click="submit"
         class="button button--flat button--red"
-        :aria-label="$t('buttons.delete')"
-        :title="$t('buttons.delete')"
+        :aria-label="$t('buttons.discardChanges')"
+        :title="$t('buttons.discardChanges')"
         tabindex="1"
       >
-        {{ $t("buttons.delete") }}
+        {{ $t("buttons.discardChanges") }}
       </button>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapState } from "pinia";
+import { mapActions } from "pinia";
+import url from "@/utils/url";
 import { useLayoutStore } from "@/stores/layout";
+import { useFileStore } from "@/stores/file";
 
 export default {
-  name: "share-delete",
-  computed: {
-    ...mapState(useLayoutStore, ["currentPrompt"]),
-  },
+  name: "discardEditorChanges",
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),
-    submit: function () {
-      this.currentPrompt?.confirm();
+    ...mapActions(useFileStore, ["updateRequest"]),
+    submit: async function () {
+      this.updateRequest(null);
+
+      let uri = url.removeLastDir(this.$route.path) + "/";
+      this.$router.push({ path: uri });
     },
   },
 };

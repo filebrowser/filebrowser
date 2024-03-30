@@ -1,3 +1,5 @@
 #!/bin/sh
-PORT=$(jq .port /.filebrowser.json)
-curl -f http://localhost:$PORT/health || exit 1
+PORT=${FB_PORT:-$(jq .port /.filebrowser.json)}
+ADDRESS=${FB_ADDRESS:-$(jq .address /.filebrowser.json)}
+ADDRESS=${ADDRESS:-localhost}
+curl -f http://$ADDRESS:$PORT/health || exit 1

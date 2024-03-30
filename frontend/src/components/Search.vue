@@ -85,7 +85,7 @@ const boxes = {
 const layoutStore = useLayoutStore();
 const fileStore = useFileStore();
 
-const { show } = storeToRefs(layoutStore);
+const { currentPromptName } = storeToRefs(layoutStore);
 
 const prompt = ref<string>("");
 const active = ref<boolean>(false);
@@ -103,7 +103,7 @@ const { t } = useI18n();
 
 const route = useRoute();
 
-watch(show, (newVal, oldVal) => {
+watch(currentPromptName, (newVal, oldVal) => {
   active.value = newVal === "search";
 
   if (oldVal === "search" && !active.value) {
@@ -165,7 +165,7 @@ onMounted(() => {
 });
 
 const open = () => {
-  layoutStore.showHover("search");
+  !active.value && layoutStore.showHover("search");
 };
 
 const close = (event: Event) => {
@@ -209,7 +209,6 @@ const submit = async (event: Event) => {
 
   try {
     results.value = await search(path, prompt.value);
-    console.log("Search: ", results.value);
   } catch (error: any) {
     $showError(error);
   }

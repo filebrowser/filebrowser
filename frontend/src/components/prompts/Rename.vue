@@ -97,6 +97,7 @@ export default {
       newLink =
         url.removeLastDir(oldLink) + "/" + encodeURIComponent(this.name);
 
+      window.sessionStorage.setItem("modified", "true");
       try {
         await api.move([{ from: oldLink, to: newLink }]);
         if (!this.isListing) {

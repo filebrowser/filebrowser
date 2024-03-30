@@ -21,6 +21,8 @@ export const useUploadStore = defineStore("upload", {
     progress: Progress[];
     queue: UploadItem[];
     uploads: Uploads;
+    speedMbyte: number;
+    eta: number;
     error: Error | null;
   } => ({
     id: 0,
@@ -28,12 +30,14 @@ export const useUploadStore = defineStore("upload", {
     progress: [],
     queue: [],
     uploads: {},
+    speedMbyte: 0,
+    eta: 0,
     error: null,
   }),
   getters: {
     // user and jwt getter removed, no longer needed
     getProgress: (state) => {
-      if (state.progress.length == 0) {
+      if (state.progress.length === 0) {
         return 0;
       }
 
@@ -44,8 +48,7 @@ export const useUploadStore = defineStore("upload", {
       return Math.ceil((sum / totalSize) * 100);
     },
     filesInUploadCount: (state) => {
-      const total = Object.keys(state.uploads).length + state.queue.length;
-      return total;
+      return Object.keys(state.uploads).length + state.queue.length;
     },
     filesInUpload: (state) => {
       const files = [];
@@ -72,6 +75,10 @@ export const useUploadStore = defineStore("upload", {
 
       return files.sort((a, b) => a.progress - b.progress);
     },
+    uploadSpeed: (state) => {
+      return state.speedMbyte;
+    },
+    getETA: (state) => state.eta,
   },
   actions: {
     // no context as first argument, use `this` instead
@@ -85,6 +92,11 @@ export const useUploadStore = defineStore("upload", {
       this.id = 0;
       this.sizes = [];
       this.progress = [];
+      this.queue = [];
+      this.uploads = {};
+      this.speedMbyte = 0;
+      this.eta = 0;
+      this.error = null;
     },
     addJob(item: UploadItem) {
       this.queue.push(item);
@@ -160,6 +172,12 @@ export const useUploadStore = defineStore("upload", {
 
         this.finishUpload(item);
       }
+    },
+    setUploadSpeed(value: number) {
+      this.speedMbyte = value;
+    },
+    setETA(value: number) {
+      this.eta = value;
     },
     // easily reset state using `$reset`
     clearUpload() {

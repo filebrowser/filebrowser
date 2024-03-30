@@ -13,7 +13,6 @@ export async function fetch(url: string, password: string = "") {
   );
 
   const data = (await res.json()) as Resource;
-  console.log(data);
   data.url = `/share${url}`;
 
   if (data.isDir) {

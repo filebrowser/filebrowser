@@ -3,6 +3,7 @@ import { createI18n } from "vue-i18n";
 
 import("dayjs/locale/ar");
 import("dayjs/locale/de");
+import("dayjs/locale/el");
 import("dayjs/locale/en");
 import("dayjs/locale/es");
 import("dayjs/locale/fr");
@@ -42,6 +43,9 @@ export function detectLocale() {
       break;
     case /^ar\b/.test(locale):
       locale = "ar";
+      break;
+    case /^el.*/i.test(locale):
+      locale = "el";
       break;
     case /^es\b/.test(locale):
       locale = "es";

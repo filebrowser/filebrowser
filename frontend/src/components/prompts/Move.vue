@@ -5,30 +5,50 @@
     </div>
 
     <div class="card-content">
-      <file-list @update:selected="(val) => (dest = val)" tabindex="1" />
+      <file-list
+        ref="fileList"
+        @update:selected="(val) => (dest = val)"
+        tabindex="1"
+      />
     </div>
 
-    <div class="card-action">
-      <button
-        class="button button--flat button--grey"
-        @click="closeHovers"
-        :aria-label="$t('buttons.cancel')"
-        :title="$t('buttons.cancel')"
-        tabindex="3"
-      >
-        {{ $t("buttons.cancel") }}
-      </button>
-      <button
-        id="focus-prompt"
-        class="button button--flat"
-        @click="move"
-        :disabled="$route.path === dest"
-        :aria-label="$t('buttons.move')"
-        :title="$t('buttons.move')"
-        tabindex="2"
-      >
-        {{ $t("buttons.move") }}
-      </button>
+    <div
+      class="card-action"
+      style="display: flex; align-items: center; justify-content: space-between"
+    >
+      <template v-if="user.perm.create">
+        <button
+          class="button button--flat"
+          @click="$refs.fileList.createDir()"
+          :aria-label="$t('sidebar.newFolder')"
+          :title="$t('sidebar.newFolder')"
+          style="justify-self: left"
+        >
+          <span>{{ $t("sidebar.newFolder") }}</span>
+        </button>
+      </template>
+      <div>
+        <button
+          class="button button--flat button--grey"
+          @click="closeHovers"
+          :aria-label="$t('buttons.cancel')"
+          :title="$t('buttons.cancel')"
+          tabindex="3"
+        >
+          {{ $t("buttons.cancel") }}
+        </button>
+        <button
+          id="focus-prompt"
+          class="button button--flat"
+          @click="move"
+          :disabled="$route.path === dest"
+          :aria-label="$t('buttons.move')"
+          :title="$t('buttons.move')"
+          tabindex="2"
+        >
+          {{ $t("buttons.move") }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -37,6 +57,7 @@
 import { mapActions, mapState } from "pinia";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
+import { useAuthStore } from "@/stores/auth";
 import FileList from "./FileList.vue";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
@@ -52,7 +73,10 @@ export default {
     };
   },
   inject: ["$showError"],
-  computed: mapState(useFileStore, ["req", "selected"]),
+  computed: {
+    ...mapState(useFileStore, ["req", "selected"]),
+    ...mapState(useAuthStore, ["user"]),
+  },
   methods: {
     ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
     move: async function (event) {

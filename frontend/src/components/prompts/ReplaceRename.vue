@@ -20,7 +20,7 @@
       </button>
       <button
         class="button button--flat button--blue"
-        @click="(event) => showConfirm(event, 'rename')"
+        @click="(event) => currentPrompt.confirm(event, 'rename')"
         :aria-label="$t('buttons.rename')"
         :title="$t('buttons.rename')"
         tabindex="2"
@@ -30,7 +30,7 @@
       <button
         id="focus-prompt"
         class="button button--flat button--red"
-        @click="(event) => showConfirm(event, 'overwrite')"
+        @click="(event) => currentPrompt.confirm(event, 'overwrite')"
         :aria-label="$t('buttons.replace')"
         :title="$t('buttons.replace')"
         tabindex="1"
@@ -48,7 +48,7 @@ import { useLayoutStore } from "@/stores/layout";
 export default {
   name: "replace-rename",
   computed: {
-    ...mapState(useLayoutStore, ["showConfirm"]),
+    ...mapState(useLayoutStore, ["currentPrompt"]),
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),

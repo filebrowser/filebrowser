@@ -103,9 +103,6 @@ const isThumbsEnabled = computed(() => {
   return enableThumbs;
 });
 
-// ...mapActions(useFileStore, ["removeSelected"]),
-// ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
-
 const humanSize = () => {
   return props.type == "invalid_link" ? "invalid link" : filesize(props.size);
 };
@@ -210,8 +207,13 @@ const drop = async (event: Event) => {
   action(overwrite, rename);
 };
 
-const itemClick = (event: Event) => {
-  if (singleClick.value && !fileStore.multiple) open();
+const itemClick = (event: Event | KeyboardEvent) => {
+  if (
+    !((event as KeyboardEvent).ctrlKey || (event as KeyboardEvent).metaKey) &&
+    singleClick.value &&
+    !fileStore.multiple
+  )
+    open();
   else click(event);
 };
 

@@ -62,14 +62,17 @@
           @click="closeHovers"
           :aria-label="$t('buttons.close')"
           :title="$t('buttons.close')"
+          tabindex="2"
         >
           {{ $t("buttons.close") }}
         </button>
         <button
+          id="focus-prompt"
           class="button button--flat button--blue"
           @click="() => switchListing()"
           :aria-label="$t('buttons.new')"
           :title="$t('buttons.new')"
+          tabindex="1"
         >
           {{ $t("buttons.new") }}
         </button>
@@ -81,7 +84,6 @@
         <p>{{ $t("settings.shareDuration") }}</p>
         <div class="input-group input">
           <vue-number-input
-            tabindex="1"
             center
             controls
             size="small"
@@ -89,6 +91,7 @@
             :min="0"
             @keyup.enter="submit"
             v-model="time"
+            tabindex="1"
           />
           <select
             class="right"

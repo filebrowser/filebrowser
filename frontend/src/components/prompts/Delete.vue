@@ -1,7 +1,7 @@
 <template>
   <div class="card floating">
     <div class="card-content">
-      <p v-if="selectedCount === 1">
+      <p v-if="!this.isListing || selectedCount === 1">
         {{ $t("prompts.deleteMessageSingle") }}
       </p>
       <p v-else>
@@ -48,21 +48,22 @@ export default {
       "selectedCount",
       "req",
       "selected",
+      "currentPrompt",
     ]),
     ...mapWritableState(useFileStore, ["reload"]),
-    ...mapState(useLayoutStore, ["showConfirm"]),
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),
     submit: async function () {
       buttons.loading("delete");
 
+      window.sessionStorage.setItem("modified", "true");
       try {
         if (!this.isListing) {
           await api.remove(this.$route.path);
           buttons.success("delete");
 
-          this.showConfirm();
+          this.currentPrompt?.confirm();
           this.closeHovers();
           return;
         }

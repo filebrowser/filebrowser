@@ -24,10 +24,11 @@ import ReplaceRename from "./ReplaceRename.vue";
 import Share from "./Share.vue";
 import ShareDelete from "./ShareDelete.vue";
 import Upload from "./Upload.vue";
+import DiscardEditorChanges from "./DiscardEditorChanges.vue";
 
 const layoutStore = useLayoutStore();
 
-const { show } = storeToRefs(layoutStore);
+const { currentPromptName } = storeToRefs(layoutStore);
 
 const closeModal = ref<() => Promise<string>>();
 
@@ -47,9 +48,10 @@ const components = new Map<string, any>([
   ["upload", Upload],
   ["share-delete", ShareDelete],
   ["deleteUser", DeleteUser],
+  ["discardEditorChanges", DiscardEditorChanges],
 ]);
 
-watch(show, (newValue) => {
+watch(currentPromptName, (newValue) => {
   if (closeModal.value) {
     closeModal.value();
     closeModal.value = undefined;
@@ -60,12 +62,6 @@ watch(show, (newValue) => {
 
   const { open, close } = useModal({
     component: BaseModal,
-    attrs: {
-      // title: "Hello World!",
-      // onConfirm() {
-      //   console.log("onConfirm");
-      // },
-    },
     slots: {
       default: modal,
     },
@@ -73,5 +69,14 @@ watch(show, (newValue) => {
 
   closeModal.value = close;
   open();
+});
+
+window.addEventListener("keydown", (event) => {
+  if (!layoutStore.currentPrompt) return;
+
+  if (event.key === "Escape") {
+    event.stopImmediatePropagation();
+    layoutStore.closeHovers();
+  }
 });
 </script>
