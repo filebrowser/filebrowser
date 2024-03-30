@@ -45,7 +45,9 @@ export const useFileStore = defineStore("file", {
 
       if (!this.req?.items) return;
       this.selected = this.req.items
-        .filter((item) => selectedItems.some((rItem) => rItem?.url === item.url))
+        .filter((item) =>
+          selectedItems.some((rItem) => rItem?.url === item.url)
+        )
         .map((item) => item.index);
     },
     removeSelected(value: any) {

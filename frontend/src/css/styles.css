@@ -189,14 +189,14 @@ main .spinner .bounce2 {
 }
 
 #previewer header > title {
-  white-space: nowrap; 
+  white-space: nowrap;
   text-shadow: 1px 1px 1px #000000;
 }
 
 @media (min-width: 738px) {
   #previewer header #dropdown .action i {
     color: #fff;
-  text-shadow: 1px 1px 1px #000000;
+    text-shadow: 1px 1px 1px #000000;
   }
 }
 
@@ -229,7 +229,6 @@ main .spinner .bounce2 {
   width: 95%;
   height: 88%;
 }
-
 
 #previewer .preview video {
   height: 100%;
