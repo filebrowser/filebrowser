@@ -46,7 +46,12 @@
             show="delete"
           />
         </template>
-
+        <action
+          v-if="headerButtons.gotoParent"
+          icon="arrow_upward"
+          :label="$t('buttons.gotoParent')"
+          @action="gotoParent"
+        />
         <action
           v-if="headerButtons.shell"
           icon="code"
@@ -367,6 +372,7 @@ export default {
     },
     headerButtons() {
       return {
+        gotoParent: true,
         upload: this.user.perm.create,
         download: this.user.perm.download,
         shell: this.user.perm.execute && enableExec,
@@ -852,6 +858,14 @@ export default {
 
       this.setItemWeight();
       this.fillWindow();
+    },
+
+    gotoParent: function() {
+      const url = (window.location.pathname || "")
+      const parts = url.replace(/\/$/, '').split('/');
+      parts.pop();
+      const parentUrl = parts.join('/');
+      this.$router.push({ path: parentUrl });
     },
     upload: function () {
       if (

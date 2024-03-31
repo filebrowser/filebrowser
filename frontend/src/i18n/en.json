@@ -32,6 +32,7 @@
     "selectMultiple": "Select multiple",
     "share": "Share",
     "shell": "Toggle shell",
+    "gotoParent": "Open parent dir",
     "submit": "Submit",
     "switchView": "Switch view",
     "toggleSidebar": "Toggle sidebar",
