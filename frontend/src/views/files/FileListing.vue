@@ -48,6 +48,12 @@
         </template>
 
         <action
+          v-if="headerButtons.gotoParent || true"
+          icon="arrow_upward"
+          :label="t('buttons.gotoParent')"
+          @action="gotoParent"
+        />
+        <action
           v-if="headerButtons.shell"
           icon="code"
           :label="t('buttons.shell')"
@@ -85,6 +91,14 @@
       <span v-if="fileStore.selectedCount > 0"
         >{{ fileStore.selectedCount }} selected</span
       >
+
+      <action
+        v-if="headerButtons.gotoParent || true"
+        icon="arrow_upward"
+        :label="t('buttons.gotoParent')"
+        @action="gotoParent"
+
+      />
       <action
         v-if="headerButtons.share"
         icon="share"
@@ -301,9 +315,10 @@ import {
   ref,
   watch,
 } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
+import { useRouterStore } from "@/stores/router";
 
 const showLimit = ref<number>(50);
 const columnWidth = ref<number>(280);
@@ -321,6 +336,7 @@ const layoutStore = useLayoutStore();
 const { req } = storeToRefs(fileStore);
 
 const route = useRoute();
+const router = useRouter();
 
 const { t } = useI18n();
 
@@ -404,6 +420,7 @@ const viewIcon = computed(() => {
 
 const headerButtons = computed(() => {
   return {
+    gotoParent: true,
     upload: authStore.user?.perm.create,
     download: authStore.user?.perm.download,
     shell: authStore.user?.perm.execute && enableExec,
@@ -888,6 +905,15 @@ const download = () => {
       api.download(format, ...files);
     },
   });
+};
+
+const gotoParent = () => {
+  console.log(route.fullPath)
+  const url = (route.fullPath || "")
+  const parts = url.replace(/\/$/, '').split('/');
+  parts.pop();
+  const parentUrl = parts.join('/');
+  router.push({ path: parentUrl });
 };
 
 const switchView = async () => {
