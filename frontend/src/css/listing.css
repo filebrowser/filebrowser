@@ -85,6 +85,79 @@ body.rtl #listing {
   display: block;
 }
 
+#listing.compact {
+  padding-top: 1em;
+  margin: 0 -0.5em;
+}
+
+#listing.compact .item {
+
+  /* border: 1px solid red;; */
+  width: calc(15% - 1vw);
+  margin: .15em;
+  padding: 0.1em;
+  border-radius: 0.2em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .12);
+}
+
+#listing.compact .item:hover {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 1px 2px rgba(0, 0, 0, .24) !important;
+}
+
+#listing.compact .header {
+  display: none;
+}
+
+#listing.compact .item .picture {
+  width: calc(20%);
+  height: 1.2rem;
+  overflow: hidden;
+}
+#listing.compact .item .picture i {
+  width: calc(8%);
+  position: relative;
+  font-size: 1rem;
+}
+
+#listing.compact .item .name {
+  font-size: 0.8rem;
+}
+
+#listing.compact .item .modified,
+#listing.compact .item .size {
+  width: calc(100% - 5vw);
+  display: none;
+}
+
+#listing.compact.gallery .item div:first-of-type {
+  width: 100%;
+}
+
+#listing.compact.gallery .item div:last-of-type {
+  position: absolute;
+  bottom: 0.5em;
+  padding: 1em;
+  width: calc(100% - 1em);
+  text-align: center;
+}
+
+#listing.compact.gallery .item[data-type=image] div:last-of-type {
+  color: white;
+  background: linear-gradient(#0000, #0009);
+}
+
+#listing.compact.gallery .item i {
+    width: 100%;
+    margin-right: 0;
+    font-size: 8em;
+    text-align: center;
+}
+
+#listing.compact.gallery .item img {
+  width: 100%;
+  height: 100%;
+}
+
 #listing.mosaic {
   padding-top: 1em;
   margin: 0 -0.5em;

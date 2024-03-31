@@ -13,7 +13,7 @@
     :aria-label="name"
     :aria-selected="isSelected"
   >
-    <div>
+    <div class="picture">
       <img
         v-if="readOnly == undefined && type === 'image' && isThumbsEnabled"
         v-lazy="thumbnailUrl"
@@ -22,7 +22,7 @@
     </div>
 
     <div>
-      <p class="name">{{ name }}</p>
+      <p class="name" :title="name">{{ name }}</p>
 
       <p v-if="isDir" class="size" data-order="-1">&mdash;</p>
       <p v-else class="size" :data-order="humanSize()">{{ humanSize() }}</p>

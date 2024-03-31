@@ -359,9 +359,10 @@ export default {
     },
     viewIcon() {
       const icons = {
-        list: "view_module",
-        mosaic: "grid_view",
+        "list": "view_module",
+        "mosaic": "grid_view",
         "mosaic gallery": "view_list",
+        "compact": "view_compact",
       };
       return icons[this.user.viewMode];
     },
@@ -834,10 +835,12 @@ export default {
     switchView: async function () {
       this.$store.commit("closeHovers");
 
+      // cycle through the modes
       const modes = {
-        list: "mosaic",
-        mosaic: "mosaic gallery",
-        "mosaic gallery": "list",
+        "list": "mosaic",
+        "mosaic": "mosaic gallery",
+        "mosaic gallery": "compact",
+        "compact": "list",
       };
 
       const data = {
