@@ -13,7 +13,7 @@
     "dev:go": "cd .. && go run -tags dev .",
     "build": "npm run build:vite && npm run build:go",
     "build:vite": "npm run typecheck && vite build",
-    "build:go": "cd .. && go build .",
+    "build:go": "cd .. && CGO_ENABLED=0 go build",
     "clean": "npm run clean:vite && npm run clean:go",
     "clean:vite": "find ./dist -maxdepth 1 -mindepth 1 ! -name '.gitkeep' -exec rm -r {} +",
     "clean:go": "cd .. && go clean",
