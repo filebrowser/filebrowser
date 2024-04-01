@@ -8,15 +8,9 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "dev": "concurrently -k \"npm:dev:go\" \"npm:dev:vite\"",
-    "dev:vite": "vite dev",
-    "dev:go": "cd .. && go run -tags dev .",
-    "build": "npm run build:vite && npm run build:go",
-    "build:vite": "npm run typecheck && vite build",
-    "build:go": "cd .. && CGO_ENABLED=0 go build",
-    "clean": "npm run clean:vite && npm run clean:go",
-    "clean:vite": "find ./dist -maxdepth 1 -mindepth 1 ! -name '.gitkeep' -exec rm -r {} +",
-    "clean:go": "cd .. && go clean",
+    "dev": "vite dev",
+    "build": "npm run typecheck && vite build",
+    "clean": "find ./dist -maxdepth 1 -mindepth 1 ! -name '.gitkeep' -exec rm -r {} +",
     "typecheck": "vue-tsc -p ./tsconfig.json --noEmit",
     "lint": "npm run typecheck && eslint --ext .vue,.ts src/",
     "lint:fix": "eslint --ext .vue,.ts --fix src/",
