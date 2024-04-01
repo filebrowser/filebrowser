@@ -1,5 +1,5 @@
 <template>
-  <div class="card floating share__promt__card" id="share">
+  <div class="card floating" id="share">
     <div class="card-title">
       <h2>{{ $t("buttons.share") }}</h2>
     </div>
@@ -25,9 +25,9 @@
             <td class="small">
               <button
                 class="action copy-clipboard"
-                :data-clipboard-text="buildLink(link)"
                 :aria-label="$t('buttons.copyToClipboard')"
                 :title="$t('buttons.copyToClipboard')"
+                @click="copyToClipboard(buildLink(link))"
               >
                 <i class="material-icons">content_paste</i>
               </button>
@@ -35,9 +35,9 @@
             <td class="small" v-if="hasDownloadLink()">
               <button
                 class="action copy-clipboard"
-                :data-clipboard-text="buildDownloadLink(link)"
                 :aria-label="$t('buttons.copyDownloadLinkToClipboard')"
                 :title="$t('buttons.copyDownloadLinkToClipboard')"
+                @click="copyToClipboard(buildDownloadLink(link))"
               >
                 <i class="material-icons">content_paste_go</i>
               </button>
@@ -59,17 +59,20 @@
       <div class="card-action">
         <button
           class="button button--flat button--grey"
-          @click="$store.commit('closeHovers')"
+          @click="closeHovers"
           :aria-label="$t('buttons.close')"
           :title="$t('buttons.close')"
+          tabindex="2"
         >
           {{ $t("buttons.close") }}
         </button>
         <button
+          id="focus-prompt"
           class="button button--flat button--blue"
           @click="() => switchListing()"
           :aria-label="$t('buttons.new')"
           :title="$t('buttons.new')"
+          tabindex="1"
         >
           {{ $t("buttons.new") }}
         </button>
@@ -80,15 +83,22 @@
       <div class="card-content">
         <p>{{ $t("settings.shareDuration") }}</p>
         <div class="input-group input">
-          <input
-            v-focus
-            type="number"
-            max="2147483647"
-            min="1"
+          <vue-number-input
+            center
+            controls
+            size="small"
+            :max="2147483647"
+            :min="0"
             @keyup.enter="submit"
-            v-model.trim="time"
+            v-model="time"
+            tabindex="1"
           />
-          <select class="right" v-model="unit" :aria-label="$t('time.unit')">
+          <select
+            class="right"
+            v-model="unit"
+            :aria-label="$t('time.unit')"
+            tabindex="2"
+          >
             <option value="seconds">{{ $t("time.seconds") }}</option>
             <option value="minutes">{{ $t("time.minutes") }}</option>
             <option value="hours">{{ $t("time.hours") }}</option>
@@ -100,6 +110,7 @@
           class="input input--block"
           type="password"
           v-model.trim="password"
+          tabindex="3"
         />
       </div>
 
@@ -109,14 +120,17 @@
           @click="() => switchListing()"
           :aria-label="$t('buttons.cancel')"
           :title="$t('buttons.cancel')"
+          tabindex="5"
         >
           {{ $t("buttons.cancel") }}
         </button>
         <button
+          id="focus-prompt"
           class="button button--flat button--blue"
           @click="submit"
           :aria-label="$t('buttons.share')"
           :title="$t('buttons.share')"
+          tabindex="4"
         >
           {{ $t("buttons.share") }}
         </button>
@@ -126,16 +140,18 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapActions, mapState } from "pinia";
+import { useFileStore } from "@/stores/file";
 import { share as api, pub as pub_api } from "@/api";
-import moment from "moment/min/moment-with-locales";
-import Clipboard from "clipboard";
+import dayjs from "dayjs";
+import { useLayoutStore } from "@/stores/layout";
+import { copy } from "@/utils/clipboard";
 
 export default {
   name: "share",
   data: function () {
     return {
-      time: "",
+      time: 0,
       unit: "hours",
       links: [],
       clip: null,
@@ -143,9 +159,14 @@ export default {
       listing: true,
     };
   },
+  inject: ["$showError", "$showSuccess"],
   computed: {
-    ...mapState(["req", "selected", "selectedCount"]),
-    ...mapGetters(["isListing"]),
+    ...mapState(useFileStore, [
+      "req",
+      "selected",
+      "selectedCount",
+      "isListing",
+    ]),
     url() {
       if (!this.isListing) {
         return this.$route.path;
@@ -172,23 +193,24 @@ export default {
       this.$showError(e);
     }
   },
-  mounted() {
-    this.clip = new Clipboard(".copy-clipboard");
-    this.clip.on("success", () => {
-      this.$showSuccess(this.$t("success.linkCopied"));
-    });
-  },
-  beforeDestroy() {
-    this.clip.destroy();
-  },
   methods: {
+    ...mapActions(useLayoutStore, ["closeHovers"]),
+    copyToClipboard: function (text) {
+      copy(text).then(
+        () => {
+          // clipboard successfully set
+          this.$showSuccess(this.$t("success.linkCopied"));
+        },
+        () => {
+          // clipboard write failed
+        }
+      );
+    },
     submit: async function () {
-      let isPermanent = !this.time || this.time == 0;
-
       try {
         let res = null;
 
-        if (isPermanent) {
+        if (!this.time) {
           res = await api.create(this.url, this.password);
         } else {
           res = await api.create(this.url, this.password, this.time, this.unit);
@@ -197,7 +219,7 @@ export default {
         this.links.push(res);
         this.sort();
 
-        this.time = "";
+        this.time = 0;
         this.unit = "hours";
         this.password = "";
 
@@ -220,7 +242,7 @@ export default {
       }
     },
     humanTime(time) {
-      return moment(time * 1000).fromNow();
+      return dayjs(time * 1000).fromNow();
     },
     buildLink(share) {
       return api.getShareURL(share);
@@ -242,7 +264,7 @@ export default {
     },
     switchListing() {
       if (this.links.length == 0 && !this.listing) {
-        this.$store.commit("closeHovers");
+        this.closeHovers();
       }
 
       this.listing = !this.listing;

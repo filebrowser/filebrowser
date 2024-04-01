@@ -1,12 +1,8 @@
 body {
   font-family: "Roboto", sans-serif;
   padding-top: 4em;
-  background-color: #fafafa;
-  color: #333333;
-}
-
-body.rtl {
-  direction: rtl;
+  background: var(--background);
+  color: var(--textSecondary);
 }
 
 * {
@@ -62,8 +58,8 @@ nav {
   left: 0;
 }
 
-body.rtl nav {
-  left: unset;
+html[dir="rtl"] nav {
+  left: initial;
   right: 0;
 }
 
@@ -78,13 +74,12 @@ nav .action {
   text-overflow: ellipsis;
 }
 
-body.rtl .action {
-  direction: rtl;
+html[dir="rtl"] nav .action {
   text-align: right;
 }
 
 nav > div {
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid var(--divider);
 }
 
 nav .action > * {
@@ -99,14 +94,15 @@ main {
 
 .breadcrumbs {
   height: 3em;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--background);
+  border-bottom: 1px solid var(--divider);
 }
 
 .breadcrumbs span,
 .breadcrumbs {
   display: flex;
   align-items: center;
-  color: #6f6f6f;
+  color: var(--textPrimary);
 }
 
 .breadcrumbs a {
@@ -115,12 +111,12 @@ main {
   border-radius: 0.125em;
 }
 
-body.rtl .breadcrumbs a {
+html[dir="rtl"] .breadcrumbs a {
   transform: translateX(-16em);
 }
 
 .breadcrumbs a:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--divider);
 }
 
 .breadcrumbs span a {
@@ -151,4 +147,34 @@ body.rtl .breadcrumbs a {
 
 .break-word {
   word-break: break-all;
+}
+
+.vue-number-input > input {
+  background: var(--surfacePrimary) !important;
+  border-color: var(--surfaceSecondary) !important;
+  color: var(--textSecondary) !important;
+}
+
+.vue-number-input--small > input {
+  height: 1rem !important;
+  font-size: 1rem !important;
+}
+
+.vue-number-input :hover,
+.vue-number-input :focus {
+  border-color: var(--borderSecondary) !important;
+}
+
+.vue-number-input__button {
+  background: var(--surfacePrimary) !important;
+}
+
+.vue-number-input__button--minus,
+.vue-number-input__button--plus {
+  border-color: var(--surfaceSecondary) !important;
+}
+
+.vue-number-input__button::before,
+.vue-number-input__button::after {
+  background: var(--textSecondary) !important;
 }

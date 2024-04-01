@@ -1,6 +1,6 @@
 @import "normalize.css/normalize.css";
-@import "noty/lib/noty.css";
-@import "noty/lib/themes/mint.css";
+@import "vue-toastification/dist/index.css";
+@import "vue-final-modal/style.css";
 @import "./_variables.css";
 @import "./_buttons.css";
 @import "./_inputs.css";
@@ -16,8 +16,21 @@
 @import "./login.css";
 @import "./mobile.css";
 
+/* For testing only
+ :focus {
+  outline: 2px solid crimson !important;
+  border-radius: 3px !important;
+} */
+
 .link {
   color: var(--blue);
+}
+
+#loading {
+  background: var(--background);
+}
+#loading .spinner > div {
+  background: var(--iconPrimary);
 }
 
 main .spinner {
@@ -32,7 +45,7 @@ main .spinner > div {
   height: 0.8em;
   margin: 0 0.1em;
   font-size: 1em;
-  background-color: rgba(0, 0, 0, 0.3);
+  background: var(--iconPrimary);
   border-radius: 100%;
   display: inline-block;
   animation: sk-bouncedelay 1.4s infinite ease-in-out both;
@@ -72,7 +85,7 @@ main .spinner .bounce2 {
   transition: 0.2s ease all;
   border: 0;
   margin: 0;
-  color: #546e7a;
+  color: var(--action);
   border-radius: 50%;
   background: transparent;
   padding: 0;
@@ -94,7 +107,7 @@ main .spinner .bounce2 {
 }
 
 .action:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--hover);
 }
 
 .action ul {
@@ -115,7 +128,7 @@ main .spinner .bounce2 {
 }
 
 .action ul li:hover {
-  background-color: rgba(0, 0, 0, 0.04);
+  background-color: var(--divider);
 }
 
 #click-overlay {
@@ -138,7 +151,7 @@ main .spinner .bounce2 {
   bottom: 0;
   right: 0;
   background: var(--blue);
-  color: #fff;
+  color: var(--iconSecondary);
   border-radius: 50%;
   font-size: 0.75em;
   width: 1.8em;
@@ -146,7 +159,7 @@ main .spinner .bounce2 {
   text-align: center;
   line-height: 1.55em;
   font-weight: bold;
-  border: 2px solid white;
+  border: 2px solid var(--borderPrimary);
 }
 
 /* PREVIEWER */
@@ -176,14 +189,14 @@ main .spinner .bounce2 {
 }
 
 #previewer header > title {
-  white-space: nowrap; 
+  white-space: nowrap;
   text-shadow: 1px 1px 1px #000000;
 }
 
 @media (min-width: 738px) {
   #previewer header #dropdown .action i {
     color: #fff;
-  text-shadow: 1px 1px 1px #000000;
+    text-shadow: 1px 1px 1px #000000;
   }
 }
 
@@ -216,7 +229,6 @@ main .spinner .bounce2 {
   width: 95%;
   height: 88%;
 }
-
 
 #previewer .preview video {
   height: 100%;
@@ -302,7 +314,7 @@ main .spinner .bounce2 {
 #previewer .spinner > div {
   width: 18px;
   height: 18px;
-  background-color: white;
+  background: var(--iconPrimary);
 }
 
 /* EDITOR */
@@ -310,15 +322,19 @@ main .spinner .bounce2 {
 #editor-container {
   display: flex;
   flex-direction: column;
-  background-color: #fafafa;
+  background-color: var(--background);
   position: fixed;
   padding-top: 4em;
   top: 0;
   left: 0;
   height: 100%;
   width: 100%;
-  z-index: 9999;
+  z-index: 9998;
   overflow: hidden;
+}
+
+#editor-container .bar {
+  background: var(--surfacePrimary);
 }
 
 #editor-container #editor {
@@ -331,7 +347,7 @@ main .spinner .bounce2 {
 }
 
 /*** RTL - flip and position arrow of path ***/
-body.rtl .breadcrumbs .chevron {
+html[dir="rtl"] .breadcrumbs .chevron {
   transform: scaleX(-1) translateX(16em);
 }
 
@@ -340,22 +356,6 @@ body.rtl .breadcrumbs .chevron {
 }
 
 #editor-container .breadcrumbs i {
-  font-size: 1rem;
-}
-
-/* * * * * * * * * * * * * * * *
- *            PROMPT           *
- * * * * * * * * * * * * * * * */
-
-.noty_buttons {
-  text-align: right;
-  padding: 0 10px 10px !important;
-}
-
-.noty_buttons button {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 0 0 0;
   font-size: 1rem;
 }
 
@@ -436,17 +436,17 @@ body.rtl .breadcrumbs .chevron {
  *         RTL overrides       *
  * * * * * * * * * * * * * * * */
 
-body.rtl .card-content textarea {
+html[dir="rtl"] .card-content textarea {
   direction: ltr;
   text-align: left;
 }
 
-body.rtl .card-content .small + input {
+html[dir="rtl"] .card-content .small + input {
   direction: ltr;
   text-align: left;
 }
 
-body.rtl .card.floating .card-content .file-list {
+html[dir="rtl"] .card.floating .card-content .file-list {
   direction: ltr;
   text-align: left;
 }

@@ -1,5 +1,5 @@
 #login {
-  background: #fff;
+  background: var(--surfacePrimary);
   position: fixed;
   top: 0;
   left: 0;
@@ -17,7 +17,7 @@
 #login h1 {
   text-align: center;
   font-size: 2.5em;
-  margin: .4em 0 .67em;
+  margin: 0.4em 0 0.67em;
 }
 
 #login form {
@@ -34,15 +34,15 @@
 }
 
 #login #recaptcha {
-  margin: .5em 0 0;
+  margin: 0.5em 0 0;
 }
 
 #login .wrong {
   background: var(--red);
   color: #fff;
-  padding: .5em;
+  padding: 0.5em;
   text-align: center;
-  animation: .2s opac forwards;
+  animation: 0.2s opac forwards;
 }
 
 @keyframes opac {
@@ -61,5 +61,5 @@
   text-transform: lowercase;
   font-weight: 500;
   font-size: 0.9rem;
-  margin: .5rem 0;
+  margin: 0.5rem 0;
 }

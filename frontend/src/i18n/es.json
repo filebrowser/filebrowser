@@ -1,7 +1,9 @@
 {
   "buttons": {
     "cancel": "Cancelar",
+    "clear": "Limpiar",
     "close": "Cerrar",
+    "continue": "Continuar",
     "copy": "Copiar",
     "copyFile": "Copiar archivo",
     "copyToClipboard": "Copiar al portapapeles",
@@ -51,7 +53,6 @@
   },
   "files": {
     "body": "Cuerpo",
-    "clear": "Limpiar",
     "closePreview": "Cerrar vista previa",
     "files": "Archivos",
     "folders": "Carpetas",
@@ -102,8 +103,8 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "Swedish (Sweden)",
-    "tr" : "Türkçe",
-    "ua": "Українська",
+    "tr": "Türkçe",
+    "uk": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
   },

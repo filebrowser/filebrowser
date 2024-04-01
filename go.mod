@@ -32,6 +32,9 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
+	github.com/asticode/go-astikit v0.20.0 // indirect
+	github.com/asticode/go-astisub v0.25.0 // indirect
+	github.com/asticode/go-astits v1.8.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
 	github.com/dsoprea/go-logging v0.0.0-20200517223158-a10564966e9d // indirect

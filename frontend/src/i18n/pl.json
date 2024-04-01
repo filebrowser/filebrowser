@@ -1,6 +1,7 @@
 {
   "buttons": {
     "cancel": "Anuluj",
+    "clear": "Wyczyść",
     "close": "Zamknij",
     "copy": "Kopiuj",
     "copyFile": "Kopiuj plik",
@@ -46,7 +47,6 @@
   },
   "files": {
     "body": "Body",
-    "clear": "Wyczyść",
     "closePreview": "Zamknij poprzednie",
     "files": "Pliki",
     "folders": "Foldery",
@@ -81,23 +81,24 @@
     "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
+    "el": "Ελληνικά",
     "en": "English",
     "es": "Español",
     "fr": "Français",
-    "is": "Íslenska",
+    "is": "Icelandic",
     "it": "Italiano",
     "ja": "日本語",
     "ko": "한국어",
-    "nlBE": "Nederlands (België)",
+    "nlBE": "Dutch (Belgium)",
     "pl": "Polski",
     "pt": "Português",
     "ptBR": "Português (Brasil)",
-    "ro": "Română",
+    "ro": "Romanian",
     "ru": "Русский",
     "sk": "Slovenčina",
-    "svSE": "Svenska (Sverige)",
-    "tr" : "Türkçe",
-    "ua": "Українська",
+    "svSE": "Swedish (Sweden)",
+    "tr": "Türkçe",
+    "uk": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
   },
@@ -147,7 +148,6 @@
     "size": "Rozmiar",
     "upload": "Prześlij",
     "uploadMessage": "Proszę wybrać metodę przesyłania"
-
   },
   "search": {
     "images": "Zdjęcia",
