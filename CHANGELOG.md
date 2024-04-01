@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.28.0](https://github.com/filebrowser/filebrowser/compare/v2.27.0...v2.28.0) (2024-04-01)
+
+
+### Features
+
+* allow to configure if home directory is automatically created from cli ([#2963](https://github.com/filebrowser/filebrowser/issues/2963)) ([a4b089a](https://github.com/filebrowser/filebrowser/commit/a4b089a6dbf9821ecede428cd7d13e69c8b85231))
+* auto hiding header bar in preview to enlarge the preview window ([#3024](https://github.com/filebrowser/filebrowser/issues/3024)) ([d706506](https://github.com/filebrowser/filebrowser/commit/d70650689c34ce9f631fda6a453fd521faef22fa))
+* close editor when click escape key ([#2947](https://github.com/filebrowser/filebrowser/issues/2947)) ([70c8261](https://github.com/filebrowser/filebrowser/commit/70c826133b8578b8712e6db8f762a15a076cd9a9))
+* enable preview in shared folder ([#3055](https://github.com/filebrowser/filebrowser/issues/3055)) ([4c233c3](https://github.com/filebrowser/filebrowser/commit/4c233c3db39ea5a00d6e602ec0ecbddecb590877))
+* focus editor when opened ([#2946](https://github.com/filebrowser/filebrowser/issues/2946)) ([b19710e](https://github.com/filebrowser/filebrowser/commit/b19710efca6daa7af56dc211d0051d500d2eea22))
+* freezing the list in the backgroud while previewing a file ([#3004](https://github.com/filebrowser/filebrowser/issues/3004)) ([e167c3e](https://github.com/filebrowser/filebrowser/commit/e167c3e1efed8b16be45d994a8d443fda1d8cf49))
+* prompt to confirm discard editor changes ([#2948](https://github.com/filebrowser/filebrowser/issues/2948)) ([fb1a09c](https://github.com/filebrowser/filebrowser/commit/fb1a09c7c172b913c12b30975ca545e505df0c05))
+* select multiple files with ctrl even with singleClick option ([#2953](https://github.com/filebrowser/filebrowser/issues/2953)) ([d49c3df](https://github.com/filebrowser/filebrowser/commit/d49c3dfacfc0ff07e620b3ad2700e64927b06235))
+
+
+### Bug Fixes
+
+* dashboard buttons position in rtl layout ([#2949](https://github.com/filebrowser/filebrowser/issues/2949)) ([2cfee21](https://github.com/filebrowser/filebrowser/commit/2cfee2183c98d0cb67fc4e9788644ed4278e25bc))
+* editor discard prompt ([#2990](https://github.com/filebrowser/filebrowser/issues/2990)) ([34a0817](https://github.com/filebrowser/filebrowser/commit/34a08170c894321d49bb843e259a0e59e2245998))
+* files and directories are created with the correct permissions ([#2966](https://github.com/filebrowser/filebrowser/issues/2966)) ([5c5ab6b](https://github.com/filebrowser/filebrowser/commit/5c5ab6b8750a5168f0ae2a26bd5de41e0b6d9637))
+* fix lint warnings ([#2976](https://github.com/filebrowser/filebrowser/issues/2976)) ([fe5ca74](https://github.com/filebrowser/filebrowser/commit/fe5ca74aa1e4257e5cb36f1de58daa0c3548319f))
+* **healthcheck:** use address configured if not empty ([#2938](https://github.com/filebrowser/filebrowser/issues/2938)) ([81cd8fc](https://github.com/filebrowser/filebrowser/commit/81cd8fc6d307b00af278beefcdbad4158a128fea))
+* keyboard shortcut to confirm prompts ([#2932](https://github.com/filebrowser/filebrowser/issues/2932)) ([ff9502f](https://github.com/filebrowser/filebrowser/commit/ff9502ff34790c46f31d175911cd51c9b62804fb))
+* moment locale ([#2952](https://github.com/filebrowser/filebrowser/issues/2952)) ([883383a](https://github.com/filebrowser/filebrowser/commit/883383a5715d82883c51138dfb547805dfad2a3c))
+* shell direction ([#2980](https://github.com/filebrowser/filebrowser/issues/2980)) ([6d7ba65](https://github.com/filebrowser/filebrowser/commit/6d7ba65faf576ee4ed095f3d0c41775b21e498de))
+* stay in the same position after renaming or deleting ([#3039](https://github.com/filebrowser/filebrowser/issues/3039)) ([cdf8def](https://github.com/filebrowser/filebrowser/commit/cdf8def3304315bef261da7f52f8599d90b1f0f0))
+
+
+### Build
+
+* **deps-dev:** bump vite from 4.4.12 to 4.5.2 in /frontend ([#2951](https://github.com/filebrowser/filebrowser/issues/2951)) ([bf36cc0](https://github.com/filebrowser/filebrowser/commit/bf36cc00f1369dd10a422f230ccabcbeefae1517))
+* **deps:** bump google.golang.org/protobuf from 1.31.0 to 1.33.0 ([#3045](https://github.com/filebrowser/filebrowser/issues/3045)) ([05bfae2](https://github.com/filebrowser/filebrowser/commit/05bfae264a7a477d1b7db582f06f4efb24d26ec9))
+* **deps:** bump google.golang.org/protobuf in /tools ([#3044](https://github.com/filebrowser/filebrowser/issues/3044)) ([7797a4e](https://github.com/filebrowser/filebrowser/commit/7797a4ef18038a877df31bd34f2ebf70d18823f8))
+
 ## [2.27.0](https://github.com/filebrowser/filebrowser/compare/v2.26.0...v2.27.0) (2024-01-02)
 
 
