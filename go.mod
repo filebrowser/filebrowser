@@ -1,9 +1,10 @@
 module github.com/filebrowser/filebrowser/v2
 
-go 1.20
+go 1.22
 
 require (
 	github.com/asdine/storm/v3 v3.2.1
+	github.com/asticode/go-astisub v0.25.0
 	github.com/disintegration/imaging v1.6.2
 	github.com/dsoprea/go-exif/v3 v3.0.0-20201216222538-db167117f483
 	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568
@@ -33,7 +34,6 @@ require (
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/asticode/go-astikit v0.20.0 // indirect
-	github.com/asticode/go-astisub v0.25.0 // indirect
 	github.com/asticode/go-astits v1.8.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
