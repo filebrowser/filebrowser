@@ -29,7 +29,7 @@
     <breadcrumbs :base="'/share/' + hash" />
 
     <div v-if="loading">
-      <h2 class="message delayed">
+      <h2 class="message delayed" style="padding-top: 3em !important;">
         <div class="spinner">
           <div class="bounce1"></div>
           <div class="bounce2"></div>
@@ -73,28 +73,34 @@
     </div>
     <div v-else>
       <div class="share">
-        <div class="share__box share__box__info">
-          <div class="share__box__header">
+        <div class="share__box share__box__info"
+          style="
+            position: -webkit-sticky;
+            position: sticky;
+            top:-20.6em;
+            z-index:999;"
+        >
+          <div class="share__box__header" style="height:3em">
             {{
               req.isDir
                 ? $t("download.downloadFolder")
                 : $t("download.downloadFile")
             }}
           </div>
-          <div class="share__box__element share__box__center share__box__icon">
+          <div v-if="!this.req.isDir" class="share__box__element share__box__center share__box__icon">
             <i class="material-icons">{{ icon }}</i>
           </div>
-          <div class="share__box__element">
+          <div class="share__box__element" style="height:3em">
             <strong>{{ $t("prompts.displayName") }}</strong> {{ req.name }}
           </div>
-          <div class="share__box__element" :title="modTime">
+          <div v-if="!this.req.isDir" class="share__box__element" :title="modTime">
             <strong>{{ $t("prompts.lastModified") }}:</strong> {{ humanTime }}
           </div>
-          <div class="share__box__element">
+          <div class="share__box__element" style="height:3em">
             <strong>{{ $t("prompts.size") }}:</strong> {{ humanSize }}
           </div>
           <div class="share__box__element share__box__center">
-            <a target="_blank" :href="link" class="button button--flat">
+            <a target="_blank" :href="link" class="button button--flat" style="height:4em">
               <div>
                 <i class="material-icons">file_download</i
                 >{{ $t("buttons.download") }}
@@ -111,12 +117,73 @@
                 >{{ $t("buttons.openFile") }}
               </div>
             </a>
+            <qrcode-vue v-if="this.req.isDir" :value="fullLink" size="100" level="M"></qrcode-vue>
           </div>
-          <div class="share__box__element share__box__center">
+          <div v-if="!this.req.isDir" class="share__box__element share__box__center">
             <qrcode-vue :value="link" size="200" level="M"></qrcode-vue>
           </div>
+      	  <div v-if="this.req.isDir" class="share__box__element share__box__header" style="height:3em">
+            {{ $t("sidebar.preview") }}
+          </div>
+          <div
+      	    v-if="this.req.isDir" 
+      	    class="share__box__element share__box__center share__box__icon"
+      	    style="padding:0em !important;height:12em !important;"
+      	  >
+      	    <a
+              target="_blank"
+              :href="raw"
+              class="button button--flat"
+      	      v-if= "!this.$store.state.multiple && 
+      	             selectedCount === 1 && 
+      	             req.items[this.selected[0]].type === 'image'" 
+              style="height: 12em; padding:0; margin:0;"
+            >
+      	      <img 
+      	        style="height: 12em;"
+      	        :src="raw"
+      	      >
+            </a>
+            <div
+      	      v-else-if= "
+      	        !this.$store.state.multiple && 
+      	        selectedCount === 1 && 
+      	        req.items[this.selected[0]].type === 'audio'" 
+      	      style="height: 12em; paddingTop:1em; margin:0;"
+      	    >
+              <button @click="play" v-if="!this.tag" style="fontSize:6em !important; border:0px;outline:none; background: white;" class="material-icons">play_circle_filled</button>
+              <button @click="play" v-if="this.tag"  style="fontSize:6em !important; border:0px;outline:none; background: white;" class="material-icons">pause_circle_filled</button>
+      	      <audio id="myaudio"
+      	        :src="raw"
+      	        controls="controls" 
+                :autoplay="tag"
+      	      >
+              </audio>
+            </div>
+      	    <video
+      	      v-else-if= "
+      	        !this.$store.state.multiple && 
+      	        selectedCount === 1 && 
+      	        req.items[this.selected[0]].type === 'video'" 
+      	      style="height: 12em; padding:0; margin:0;"
+      	      :src="raw"
+      	      controls="controls" 
+      	    >
+      	      Sorry, your browser doesn't support embedded videos, but don't worry,
+      	      you can <a :href="raw">download it</a>
+      	      and watch it with your favorite video player!
+      	    </video>
+            <i 
+      	      v-else-if= "
+                !this.$store.state.multiple && 
+                selectedCount === 1 &&
+                req.items[this.selected[0]].isDir" 
+              class="material-icons">folder
+            </i>
+            <i v-else class="material-icons">call_to_action</i>
+          </div>
         </div>
-        <div
+        <div id="shareList"
           v-if="req.isDir && req.items.length > 0"
           class="share__box share__box__items"
         >
@@ -211,6 +278,7 @@ export default {
     hash: null,
     token: null,
     clip: null,
+    tag: false,
   }),
   watch: {
     $route: function () {
@@ -248,6 +316,9 @@ export default {
     link: function () {
       return api.getDownloadURL(this.req);
     },
+    raw: function () {
+      return this.req.items[this.selected[0]].url.replace(/share/, 'api/public/dl')+'?token='+this.token;    
+    },
     inlineLink: function () {
       return api.getDownloadURL(this.req, true);
     },
@@ -269,6 +340,16 @@ export default {
     ...mapMutations(["resetSelected", "updateRequest", "setLoading"]),
     base64: function (name) {
       return window.btoa(unescape(encodeURIComponent(name)));
+    },
+    play() {
+      var audio = document.getElementById('myaudio');
+      if(this.tag){
+        audio.pause();
+        this.tag = false;
+      } else {
+        audio.play();
+        this.tag = true;
+      }
     },
     fetchData: async function () {
       // Reset view information.
@@ -358,3 +439,17 @@ export default {
   },
 };
 </script>
+<style scoped>
+  #listing.list{
+    height: auto;
+  }
+  #shareList{
+    overflow-y: scroll; 
+  }
+  @media (min-width: 930px) {
+    #shareList{
+      height: calc(100vh - 9.8em);   
+      overflow-y: auto; 
+    }
+  }
+</style>
