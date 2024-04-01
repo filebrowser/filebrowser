@@ -26,7 +26,7 @@ var usersLsCmd = &cobra.Command{
 	Run:   findUsers,
 }
 
-var findUsers = python(func(cmd *cobra.Command, args []string, d pythonData) {
+var findUsers = python(func(_ *cobra.Command, args []string, d pythonData) {
 	var (
 		list []*users.User
 		user *users.User

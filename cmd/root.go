@@ -110,7 +110,7 @@ set FB_DATABASE.
 Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstraped and a new
 user created with the credentials from options "username" and "password".`,
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	Run: python(func(cmd *cobra.Command, _ []string, d pythonData) {
 		log.Println(cfgFile)
 
 		if !d.hadDB {
@@ -416,7 +416,8 @@ func initConfig() {
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	if err := v.ReadInConfig(); err != nil {
-		if _, ok := err.(v.ConfigParseError); ok {
+		var configParseError v.ConfigParseError
+		if errors.As(err, &configParseError) {
 			panic(err)
 		}
 		cfgFile = "No config file used"

@@ -15,7 +15,7 @@ var subtitleHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *d
 		return http.StatusAccepted, nil
 	}
 
-	file, err := files.NewFileInfo(files.FileOptions{
+	file, err := files.NewFileInfo(&files.FileOptions{
 		Fs:         d.user.Fs,
 		Path:       r.URL.Path,
 		Modify:     d.user.Perm.Modify,
@@ -26,12 +26,6 @@ var subtitleHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *d
 	if err != nil {
 		return errToStatus(err), err
 	}
-
-	// TODO: no idea what this does
-	// if files.IsNamedPipe(file.Mode) {
-	// 	setContentDisposition(w, r, file)
-	// 	return 0, nil
-	// }
 
 	if file.IsDir {
 		return http.StatusBadRequest, nil
@@ -63,7 +57,6 @@ func subtitleFileHandler(w http.ResponseWriter, r *http.Request, file *files.Fil
 		return http.StatusInternalServerError, err
 	}
 
-	// TODO: not sure if this is needed here
 	setContentDisposition(w, r, file)
 	w.Header().Add("Content-Security-Policy", `script-src 'none';`)
 	w.Header().Set("Cache-Control", "private")

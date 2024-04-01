@@ -22,7 +22,7 @@ this options can be changed in the future with the command
 to the defaults when creating new users and you don't
 override the options.`,
 	Args: cobra.NoArgs,
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	Run: python(func(cmd *cobra.Command, _ []string, d pythonData) {
 		defaults := settings.UserDefaults{}
 		flags := cmd.Flags()
 		getUserDefaults(flags, &defaults, true)

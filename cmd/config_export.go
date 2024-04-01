@@ -15,7 +15,7 @@ var configExportCmd = &cobra.Command{
 json or yaml file. This exported configuration can be changed,
 and imported again with 'config import' command.`,
 	Args: jsonYamlArg,
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	Run: python(func(_ *cobra.Command, args []string, d pythonData) {
 		settings, err := d.store.Settings.Get()
 		checkErr(err)
 

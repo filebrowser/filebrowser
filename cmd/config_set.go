@@ -16,7 +16,7 @@ var configSetCmd = &cobra.Command{
 	Long: `Updates the configuration. Set the flags for the options
 you want to change. Other options will remain unchanged.`,
 	Args: cobra.NoArgs,
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	Run: python(func(cmd *cobra.Command, _ []string, d pythonData) {
 		flags := cmd.Flags()
 		set, err := d.store.Settings.Get()
 		checkErr(err)

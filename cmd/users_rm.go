@@ -15,7 +15,7 @@ var usersRmCmd = &cobra.Command{
 	Short: "Delete a user by username or id",
 	Long:  `Delete a user by username or id`,
 	Args:  cobra.ExactArgs(1),
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	Run: python(func(_ *cobra.Command, args []string, d pythonData) {
 		username, id := parseUsernameOrID(args[0])
 		var err error
 

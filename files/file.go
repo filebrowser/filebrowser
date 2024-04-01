@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
+	"errors"
 	"hash"
 	"image"
 	"io"
@@ -22,7 +23,7 @@ import (
 
 	"github.com/spf13/afero"
 
-	"github.com/filebrowser/filebrowser/v2/errors"
+	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
 )
 
@@ -75,7 +76,7 @@ type ImageResolution struct {
 // NewFileInfo creates a File object from a path and a given user. This File
 // object will be automatically filled depending on if it is a directory
 // or a file. If it's a video file, it will also detect any subtitles.
-func NewFileInfo(opts FileOptions) (*FileInfo, error) {
+func NewFileInfo(opts *FileOptions) (*FileInfo, error) {
 	if !opts.Checker.Check(opts.Path) {
 		return nil, os.ErrPermission
 	}
@@ -102,7 +103,7 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 	return file, err
 }
 
-func stat(opts FileOptions) (*FileInfo, error) {
+func stat(opts *FileOptions) (*FileInfo, error) {
 	var file *FileInfo
 
 	if lstaterFs, ok := opts.Fs.(afero.Lstater); ok {
@@ -165,7 +166,7 @@ func stat(opts FileOptions) (*FileInfo, error) {
 // algorithm. The checksums data is saved on File object.
 func (i *FileInfo) Checksum(algo string) error {
 	if i.IsDir {
-		return errors.ErrIsDirectory
+		return fbErrors.ErrIsDirectory
 	}
 
 	if i.Checksums == nil {
@@ -191,7 +192,7 @@ func (i *FileInfo) Checksum(algo string) error {
 	case "sha512":
 		h = sha512.New()
 	default:
-		return errors.ErrInvalidOption
+		return fbErrors.ErrInvalidOption
 	}
 
 	_, err = io.Copy(h, reader)
@@ -216,8 +217,6 @@ func (i *FileInfo) RealPath() string {
 	return i.Path
 }
 
-// TODO: use constants
-//
 //nolint:goconst
 func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	if IsNamedPipe(i.Mode) {
@@ -284,8 +283,8 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	return nil
 }
 
-func calculateImageResolution(fs_ afero.Fs, filePath string) (*ImageResolution, error) {
-	file, err := fs_.Open(filePath)
+func calculateImageResolution(fSys afero.Fs, filePath string) (*ImageResolution, error) {
+	file, err := fSys.Open(filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -317,7 +316,7 @@ func (i *FileInfo) readFirstBytes() []byte {
 
 	buffer := make([]byte, 512) //nolint:gomnd
 	n, err := reader.Read(buffer)
-	if err != nil && err != io.EOF {
+	if err != nil && !errors.Is(err, io.EOF) {
 		log.Print(err)
 		i.Type = "blob"
 		return nil
@@ -335,7 +334,6 @@ func (i *FileInfo) detectSubtitles() {
 	ext := filepath.Ext(i.Path)
 
 	// detect multiple languages. Base*.vtt
-	// TODO: give subtitles descriptive names (lang) and track attributes
 	parentDir := strings.TrimRight(i.Path, i.Name)
 	var dir []os.FileInfo
 	if len(i.currentDir) > 0 {
@@ -385,8 +383,8 @@ func isSubtitleMatch(f fs.FileInfo, baseName string) bool {
 		IsSupportedSubtitle(f.Name())
 }
 
-func (i *FileInfo) addSubtitle(path_ string) {
-	i.Subtitles = append(i.Subtitles, path_)
+func (i *FileInfo) addSubtitle(fPath string) {
+	i.Subtitles = append(i.Subtitles, fPath)
 }
 
 func (i *FileInfo) readListing(checker rules.Checker, readHeader bool) error {

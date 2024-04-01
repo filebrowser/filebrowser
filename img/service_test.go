@@ -3,7 +3,6 @@ package img
 import (
 	"bytes"
 	"context"
-	"errors"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -437,7 +436,7 @@ func TestService_FormatFromExtension(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			svc := New(1)
 			got, err := svc.FormatFromExtension(test.ext)
-			require.Truef(t, errors.Is(err, test.wantErr), "error = %v, wantErr %v", err, test.wantErr)
+			require.ErrorIsf(t, err, test.wantErr, "error = %v, wantErr %v", err, test.wantErr)
 			if err != nil {
 				return
 			}
