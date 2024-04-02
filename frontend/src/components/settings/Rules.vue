@@ -1,8 +1,11 @@
 <template>
   <form class="rules small">
     <div v-for="(rule, index) in rules" :key="index">
-      <input type="checkbox" v-model="rule.regex" /><label>Regex</label>
-      <input type="checkbox" v-model="rule.allow" /><label>Allow</label>
+      <input :id="'regex-'+index" type="checkbox" v-model="rule.regex" />
+      <label :for="'regex-'+index" >Regex</label>
+
+      <input :id="'allow-'+index" type="checkbox" v-model="rule.allow" />
+      <label :for="'allow-'+index">Allow</label>
 
       <input
         @keypress.enter.prevent

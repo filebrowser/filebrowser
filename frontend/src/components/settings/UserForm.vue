@@ -51,8 +51,9 @@
         type="checkbox"
         :disabled="user.perm.admin"
         v-model="user.lockPassword"
+        id="user-lock-pass"
       />
-      {{ t("settings.lockPassword") }}
+      <label for="user-lock-pass">{{ t("settings.lockPassword") }}</label>
     </p>
 
     <permissions v-model:perm="user.perm" />

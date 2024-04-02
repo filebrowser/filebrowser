@@ -32,12 +32,16 @@ a {
   color: inherit;
 }
 
-.dashboard p label {
+.dashboard p input[type="checkbox"] {
+  cursor: pointer;
+  vertical-align: middle;
   margin-bottom: 0.2em;
-  display: block;
-  font-size: 0.8em;
-  font-weight: 500;
-  color: var(--textPrimary);
+}
+.dashboard p label {
+  margin-left: 0.35em;
+  vertical-align: bottom;
+  display: inline-block;
+  cursor: pointer;
 }
 
 li code,

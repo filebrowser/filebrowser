@@ -8,16 +8,16 @@
 
         <div class="card-content">
           <p>
-            <input type="checkbox" name="hideDotfiles" v-model="hideDotfiles" />
-            {{ t("settings.hideDotfiles") }}
+            <input id="hideDotfiles" type="checkbox" name="hideDotfiles" v-model="hideDotfiles" />
+            <label for="hideDotfiles">{{ t("settings.hideDotfiles") }}</label>
           </p>
           <p>
-            <input type="checkbox" name="singleClick" v-model="singleClick" />
-            {{ t("settings.singleClick") }}
+            <input id="singleClick" type="checkbox" name="singleClick" v-model="singleClick" />
+            <label for="singleClick">{{ t("settings.singleClick") }}</label>
           </p>
           <p>
-            <input type="checkbox" name="dateFormat" v-model="dateFormat" />
-            {{ t("settings.setDateFormat") }}
+            <input id="dateFormat" type="checkbox" name="dateFormat" v-model="dateFormat" />
+            <label for="dateFormat">{{ t("settings.setDateFormat") }}</label>
           </p>
           <h3>{{ t("settings.language") }}</h3>
           <languages

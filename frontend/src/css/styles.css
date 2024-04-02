@@ -417,6 +417,7 @@ html[dir="rtl"] .breadcrumbs .chevron {
 
 .rules input[type="checkbox"] {
   margin-right: 0.2rem;
+  cursor: pointer;
 }
 
 .rules input[type="text"] {
@@ -426,6 +427,7 @@ html[dir="rtl"] .breadcrumbs .chevron {
 
 .rules label {
   margin-right: 0.5rem;
+  cursor: pointer;
 }
 
 .rules button {

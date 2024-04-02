@@ -9,13 +9,14 @@
 
         <div class="card-content">
           <p>
-            <input type="checkbox" v-model="settings.signup" />
-            {{ t("settings.allowSignup") }}
+            <input id="allowSignup" type="checkbox" v-model="settings.signup" />
+            <label for="allowSignup">{{ t("settings.allowSignup") }}</label>
           </p>
 
           <p>
-            <input type="checkbox" v-model="settings.createUserDir" />
-            {{ t("settings.createUserDir") }}
+            <input id="createUserDir" type="checkbox" v-model="settings.createUserDir" />
+            <label for="createUserDir">{{ t("settings.createUserDir") }}</label>
+
           </p>
 
           <div>
@@ -64,7 +65,7 @@
               v-model="settings.branding.disableExternal"
               id="branding-links"
             />
-            {{ t("settings.disableExternalLinks") }}
+            <label for="branding-links">{{ t("settings.disableExternalLinks") }}</label>
           </p>
 
           <p>
@@ -73,7 +74,7 @@
               v-model="settings.branding.disableUsedPercentage"
               id="branding-used-disk"
             />
-            {{ t("settings.disableUsedDiskPercentage") }}
+            <label for="branding-used-disk">{{ t("settings.disableUsedDiskPercentage") }}</label>
           </p>
 
           <p>
