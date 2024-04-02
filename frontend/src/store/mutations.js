@@ -9,6 +9,8 @@ const mutations = {
     state.show = null;
     state.showShell = !state.showShell;
   },
+  // display a modal prompt or a dialog, such as when renaming a file
+  // opinion: should be renamed to showPrompt or showDialog because "hover" means something else in HTML speak
   showHover: (state, value) => {
     if (typeof value !== "object") {
       state.prompts.push({
@@ -21,7 +23,7 @@ const mutations = {
     }
 
     state.prompts.push({
-      prompt: value.prompt, // Should not be null
+      prompt: value.prompt, // Should not be null ('newDir', 'newFile', etc)
       confirm: value?.confirm,
       action: value?.action,
       props: value?.props,

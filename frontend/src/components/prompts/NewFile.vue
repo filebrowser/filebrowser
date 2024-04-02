@@ -8,7 +8,7 @@
       <p>{{ $t("prompts.newFileMessage") }}</p>
       <input
         class="input input--block"
-        v-focus
+        ref="wantInput"
         type="text"
         @keyup.enter="submit"
         v-model.trim="name"
@@ -50,6 +50,9 @@ export default {
   },
   computed: {
     ...mapGetters(["isFiles", "isListing"]),
+  },
+  mounted() {
+    this.$nextTick(() => setTimeout(() => this.$refs.wantInput.focus(), 100))
   },
   methods: {
     submit: async function (event) {

@@ -93,6 +93,7 @@ export default {
   computed: {
     ...mapState(["plugins"]),
     ...mapGetters(["currentPrompt", "currentPromptName"]),
+    // yes, if the stack of modals/dialogs is not empty
     showOverlay: function () {
       return (
         this.currentPrompt !== null &&

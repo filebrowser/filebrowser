@@ -11,7 +11,7 @@
         type="text"
         @keyup.enter="submit"
         v-model.trim="name"
-        v-focus
+        ref="wantInput"
       />
     </div>
 
@@ -60,6 +60,9 @@ export default {
   },
   computed: {
     ...mapGetters(["isFiles", "isListing"]),
+  },
+  mounted() {
+    this.$nextTick(() => setTimeout(() => this.$refs.wantInput.focus(), 100))
   },
   methods: {
     submit: async function (event) {

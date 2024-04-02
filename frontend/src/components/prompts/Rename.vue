@@ -11,7 +11,7 @@
       </p>
       <input
         class="input input--block"
-        v-focus
+        ref="wantInput"
         type="text"
         @keyup.enter="submit"
         v-model.trim="name"
@@ -59,6 +59,10 @@ export default {
     ...mapState(["req", "selected", "selectedCount"]),
     ...mapGetters(["isListing"]),
   },
+  mounted() {
+    this.$nextTick(() => setTimeout(() => this.$refs.wantInput.focus(), 100))
+  },
+
   methods: {
     cancel: function () {
       this.$store.commit("closeHovers");
