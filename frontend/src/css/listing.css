@@ -1,288 +1,571 @@
-html[dir="rtl"] #listing {
-  margin-right: 16em;
+#listing {
+    --item-selected: white;
+}
+
+body.rtl #listing {
+    margin-right: 16em;
 }
 
 #listing h2 {
-  margin: 0 0 0 0.5em;
-  font-size: 0.9em;
-  color: var(--textPrimary);
-  font-weight: 500;
+    margin: 0 0 0 0.5em;
+    font-size: .9em;
+    color: rgba(0, 0, 0, 0.38);
+    font-weight: 500;
 }
 
 #listing .item div:last-of-type * {
-  text-overflow: ellipsis;
-  overflow: hidden;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
-#listing > div {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+#listing>div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
 }
 
 #listing .item {
-  background: var(--surfacePrimary);
-  border-color: var(--divider);
-  position: relative;
-  display: flex;
-  flex-wrap: nowrap;
-  color: var(--textPrimary);
-  transition:
-    0.1s ease background,
-    0.1s ease opacity;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
+    background-color: #fff;
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    color: #6f6f6f;
+    transition: .1s ease background, .1s ease opacity;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
 }
 
 #listing .item div:last-of-type {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 #listing .item p {
-  margin: 0;
+    margin: 0;
 }
 
 #listing .item .size,
 #listing .item .modified {
-  font-size: 0.9em;
+    font-size: 0.9em;
 }
 
 #listing .item .name {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 #listing .item i {
-  font-size: 4em;
-  margin-right: 0.1em;
-  vertical-align: bottom;
+    font-size: 4em;
+    margin-right: 0.1em;
+    vertical-align: bottom;
 }
 
 #listing .item img {
-  width: 4em;
-  height: 4em;
-  object-fit: cover;
-  margin-right: 0.1em;
-  vertical-align: bottom;
+    width: 4em;
+    height: 4em;
+    object-fit: cover;
+    margin-right: 0.1em;
+    vertical-align: bottom;
 }
 
 .message {
-  text-align: center;
-  font-size: 2em;
-  margin: 1em auto;
-  display: block !important;
-  width: 95%;
-  color: var(--textPrimary);
-  font-weight: 500;
+    text-align: center;
+    font-size: 2em;
+    margin: 1em auto;
+    display: block !important;
+    width: 95%;
+    color: rgba(0, 0, 0, 0.3);
+    font-weight: 500;
 }
 
 .message i {
-  font-size: 2.5em;
-  margin-bottom: 0.2em;
-  display: block;
+    font-size: 2.5em;
+    margin-bottom: .2em;
+    display: block;
 }
 
 #listing.mosaic {
-  padding-top: 1em;
-  margin: 0 -0.5em;
+    padding-top: 1em;
+    margin: 0 -0.5em;
 }
 
 #listing.mosaic .item {
-  width: calc(33% - 1em);
-  margin: 0.5em;
-  padding: 0.5em;
-  border-radius: 0.2em;
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.06),
-    0 1px 2px rgba(0, 0, 0, 0.12);
+    width: calc(33% - 1em);
+    margin: .5em;
+    padding: 0.5em;
+    border-radius: 0.2em;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .12);
 }
 
 #listing.mosaic .item:hover {
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.12),
-    0 1px 2px rgba(0, 0, 0, 0.24) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 1px 2px rgba(0, 0, 0, .24) !important;
 }
 
 #listing.mosaic .header {
-  display: none;
+    display: none;
 }
 
 #listing.mosaic .item div:first-of-type {
-  width: 5em;
+    width: 5em;
 }
 
 #listing.mosaic .item div:last-of-type {
-  width: calc(100% - 5vw);
+    width: calc(100% - 5vw);
 }
 
 #listing.mosaic.gallery .item div:first-of-type {
-  width: 100%;
-  height: 12em;
+    width: 100%;
+    height: 12em;
 }
 
 #listing.mosaic.gallery .item div:last-of-type {
-  position: absolute;
-  bottom: 0.5em;
-  padding: 1em;
-  width: calc(100% - 1em);
-  text-align: center;
+    position: absolute;
+    bottom: 0.5em;
+    padding: 1em;
+    width: calc(100% - 1em);
+    text-align: center;
 }
 
-#listing.mosaic.gallery .item[data-type="image"] div:last-of-type {
-  color: white;
-  background: linear-gradient(#0000, #0009);
+#listing.mosaic.gallery .item[data-type=image] div:last-of-type {
+    color: white;
+    background: linear-gradient(#0000, #0009);
 }
 
 #listing.mosaic.gallery .item i {
-  width: 100%;
-  margin-right: 0;
-  font-size: 8em;
-  text-align: center;
+    width: 100%;
+    margin-right: 0;
+    font-size: 8em;
+    text-align: center;
 }
 
 #listing.mosaic.gallery .item img {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 #listing.gallery .size,
 #listing.gallery .modified {
-  display: none;
+    display: none;
 }
 
 #listing.list {
-  flex-direction: column;
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
 }
 
 #listing.list .item {
-  width: 100%;
-  margin: 0;
-  border: 1px solid var(--borderPrimary);
-  padding: 1em;
-  border-top: 0;
+    width: 100%;
+    margin: 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1em;
+    border-top: 0;
 }
 
 #listing.list h2 {
-  display: none;
+    display: none;
 }
 
-#listing .item[aria-selected="true"] {
-  background: var(--blue) !important;
-  color: var(--iconSecondary) !important;
+#listing .item[aria-selected=true] {
+    /* background: var(--blue) !important; */
+    color: var(--item-selected) !important;
 }
 
 #listing.list .item div:first-of-type {
-  width: 3em;
+    width: 3em;
 }
 
 #listing.list .item div:first-of-type i {
-  font-size: 2em;
+    font-size: 2em;
 }
 
 #listing.list .item div:first-of-type img {
-  width: 2em;
-  height: 2em;
+    width: 2em;
+    height: 2em;
 }
 
 #listing.list .item div:last-of-type {
-  width: calc(100% - 3em);
-  display: flex;
-  align-items: center;
+    width: calc(100% - 3em);
+    display: flex;
+    align-items: center;
 }
 
 #listing.list .item .name {
-  width: 50%;
+    width: 50%;
 }
 
 #listing.list .item .size {
-  width: 25%;
+    width: 25%;
 }
 
 #listing .item.header {
-  display: none !important;
-  background-color: var(--iconTertiary);
+    display: none !important;
+    background-color: #ccc;
 }
 
 #listing.list .header i {
-  font-size: 1.5em;
-  vertical-align: middle;
-  margin-left: 0.2em;
+    font-size: 1.5em;
+    vertical-align: middle;
+    margin-left: .2em;
 }
 
 #listing.list .item.header {
-  display: flex !important;
-  background: var(--background);
-  z-index: 999;
-  padding: 0.85em;
-  border: 0;
-  border-bottom: 1px solid var(--borderPrimary);
+    display: flex !important;
+    background: #fafafa;
+    z-index: 999;
+    padding: .85em;
+    border: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-#listing.list .item.header > div:first-child {
-  width: 0;
+#listing.list .item.header>div:first-child {
+    width: 0;
 }
 
 #listing.list .item.header .name {
-  margin-right: 3em;
+    margin-right: 3em;
 }
 
 #listing.list .header a {
-  color: inherit;
+    color: inherit;
 }
 
-#listing.list .item.header > div:first-child {
-  width: 0;
+#listing.list .item.header>div:first-child {
+    width: 0;
 }
 
 #listing.list .name {
-  font-weight: normal;
+    font-weight: normal;
 }
 
 #listing.list .item.header .name {
-  margin-right: 3em;
+    margin-right: 3em;
 }
 
 #listing.list .header span {
-  vertical-align: middle;
+    vertical-align: middle;
 }
 
 #listing.list .header i {
-  opacity: 0;
-  transition: 0.1s ease all;
+    opacity: 0;
+    transition: .1s ease all;
 }
 
 #listing.list .header p:hover i,
 #listing.list .header .active i {
-  opacity: 1;
+    opacity: 1;
 }
 
 #listing.list .item.header .active {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 #listing #multiple-selection {
-  position: fixed;
-  bottom: -4em;
-  left: 0;
-  z-index: 99999;
-  width: 100%;
-  background-color: var(--blue);
-  height: 4em;
-  padding: 0.5em 0.5em 0.5em 1em;
-  justify-content: space-between;
-  transition: 0.2s ease bottom;
+    position: fixed;
+    bottom: -4em;
+    left: 0;
+    z-index: 99999;
+    width: 100%;
+    background-color: var(--blue);
+    height: 4em;
+    padding: 0.5em 0.5em 0.5em 1em;
+    justify-content: space-between;
+    transition: .2s ease bottom;
 }
 
 #listing #multiple-selection.active {
-  bottom: 0;
+    bottom: 0;
 }
 
 #listing #multiple-selection p,
 #listing #multiple-selection i {
-  color: var(--iconSecondary);
+    color: var(--item-selected);
+}
+
+
+/* remove a bit of padding from the file list entries */
+
+#listing.list .item {
+    padding: 0.7em;
+}
+
+/* make folders yellow-ish */
+#listing .item[data-dir=true] div i {
+    color: #ffc84b;
+}
+
+/* packed files - colorize and change icon */
+#listing .item[aria-label$=".7z"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".7z"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".7z"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".arj"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".arj"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".arj"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".zip"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".zip"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".zip"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".gz"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".gz"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".gz"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".tar"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".tar"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".tar"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+
+#listing .item[aria-label$=".bz"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".bz"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".bz"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".bz2"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".bz2"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".bz2"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".xz"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".xz"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".xz"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".tbz"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".tbz"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".tbz"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+
+/* office files */
+/* PDF - colorize and change icon /*
+  /* Note: This is yellow because I use SumatraPDF */
+#listing .item[aria-label$=".pdf"] div i {
+    color: #FFEE00;
+}
+
+#listing .item[aria-label$=".pdf"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".pdf"] .material-icons::before {
+    content: "picture_as_pdf";
+    visibility: visible;
+}
+
+/* word processors - colorize and change icon */
+/* Word */
+#listing .item[aria-label$=".doc"] div i {
+    color: #185ABD;
+}
+
+#listing .item[aria-label$=".doc"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".doc"] .material-icons::before {
+    content: "description";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".docx"] div i {
+    color: #185ABD;
+}
+
+#listing .item[aria-label$=".docx"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".docx"] .material-icons::before {
+    content: "description";
+    visibility: visible;
+}
+
+/* OpenOffice Writer */
+#listing .item[aria-label$=".odt"] div i {
+    color: #185ABD;
+}
+
+#listing .item[aria-label$=".odt"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".odt"] .material-icons::before {
+    content: "description";
+    visibility: visible;
+}
+
+/* LibreOffice Writer */
+#listing .item[aria-label$=".sxw"] div i {
+    color: #185ABD;
+}
+
+#listing .item[aria-label$=".sxw"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".sxw"] .material-icons::before {
+    content: "description";
+    visibility: visible;
+}
+
+
+/* PowerPoint */
+#listing .item[aria-label$=".ppt"] div i {
+    color: #D35230;
+}
+
+#listing .item[aria-label$=".pptx"] div i {
+    color: #D35230;
+}
+
+#listing .item[aria-label$=".pps"] div i {
+    color: #D35230;
+}
+
+/* OpenOffice Impress */
+#listing .item[aria-label$=".odp"] div i {
+    color: #D35230;
+}
+
+
+/* Excel */
+#listing .item[aria-label$=".xls"] div i {
+    color: #107C41;
+}
+
+#listing .item[aria-label$=".xlsx"] div i {
+    color: #107C41;
+}
+
+#listing .item[aria-label$=".ods"] div i {
+    color: #107C41;
+}
+
+#listing .item[aria-label$=".sxc"] div i {
+    color: #107C41;
+}
+
+#listing .item[aria-label$=".wri"] div i {
+    color: #336eff;
+}
+
+
+/* sound files - colorize */
+#listing .item[data-type=audio] div i {
+    color: #F47900;
+}
+
+/* video files - colorize */
+#listing .item[data-type=video] div i {
+    color: #F47900;
+}
+
+/* text files - change icon*/
+#listing .item[aria-label$=".txt"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".txt"] .material-icons::before {
+    content: "description";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".md"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".md"] .material-icons::before {
+    content: "description";
+    visibility: visible;
+}
+
+/* various other files*/
+/* iCal - change icon*/
+#listing .item[aria-label$=".ics"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".ics"] .material-icons::before {
+    content: "event";
+    visibility: visible;
 }

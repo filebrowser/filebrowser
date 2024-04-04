@@ -16,8 +16,8 @@
       [{[ if .Name -]}][{[ .Name ]}][{[ else ]}]File Browser[{[ end ]}]
     </title>
 
-    <meta name="robots" content="noindex,nofollow" />
-
+    <meta name="robots" content="noindex,nofollow">
+    
     <link
       rel="icon"
       type="image/png"
@@ -126,8 +126,8 @@
       }
 
       #loading .spinner > div {
-        width: 18px;
-        height: 18px;
+        width: 12px;
+        height: 12px;
         background-color: #333;
         border-radius: 100%;
         display: inline-block;
@@ -181,9 +181,14 @@
       </div>
     </div>
 
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/main.js"></script>
 
-    [{[ if .CSS -]}]
+    [{[ if .Theme -]}]
+    <link
+      rel="stylesheet"
+      href="[{[ .StaticURL ]}]/themes/[{[ .Theme ]}].css"
+    />
+    [{[ end ]}] [{[ if .CSS -]}]
     <link rel="stylesheet" href="[{[ .StaticURL ]}]/custom.css" />
     [{[ end ]}]
   </body>

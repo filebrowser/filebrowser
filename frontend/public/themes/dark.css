@@ -1,0 +1,556 @@
+:root {
+    --background: #141D24;
+    --surfacePrimary: #20292F;
+    --surfaceSecondary: #3A4147;
+    --divider: rgba(255, 255, 255, 0.12);
+    --icon: #ffffff;
+    /* --textPrimary: rgba(255, 255, 255, 0.87); */
+    --textPrimary: #DFDEDF !important;
+    --textSecondary: rgba(255, 255, 255, 0.6);
+}
+
+body {
+    background: var(--background);
+    color: var(--textPrimary);
+}
+
+/* ::-webkit-scrollbar {
+    display: none!important;
+  } */
+#listing.mosaic,
+.breadcrumbs {
+    background-color: #38393A !important;
+}
+
+#listing.list {
+    background-color: transparent !important;
+}
+
+#loading {
+    background: var(--background);
+}
+
+#loading .spinner div,
+main .spinner div {
+    background: var(--icon);
+}
+
+#login {
+    background: var(--background);
+}
+
+header {
+    background: #38393A !important;
+}
+
+#search #input {
+    background: var(--surfaceSecondary);
+    border-color: var(--surfacePrimary);
+}
+
+#search #input input::placeholder {
+    color: var(--textSecondary);
+}
+
+#search.active #input {
+    background: rgb(71 71 71) !important;
+}
+
+#search.active input {
+    color: var(--textPrimary);
+}
+
+#search #result {
+    background: var(--background);
+    color: var(--textPrimary);
+}
+
+#search .boxes {
+    /* background: var(--surfaceSecondary); */
+}
+
+#search #result .boxes {
+    background: #38393A !important;
+    border: 0.5px solid #4C4C4C !important;
+    box-shadow: 0px 36px 100px rgba(0, 0, 0, 0.4), 0px 0px 3px rgba(0, 0, 0, 0.55) !important;
+    border-radius: 12px !important;
+}
+
+#search .boxes>div>div {
+    background: #282828 !important;
+}
+
+#search .boxes h3,
+#search .boxes>div>div>p {
+    color: var(--textPrimary) !important;
+}
+
+.action {
+    color: var(--textPrimary) !important;
+}
+
+.action:hover {
+    background-color: rgba(255, 255, 255, .1) !important;
+}
+
+.action i {
+    /* color: var(--icon) !important; */
+}
+
+.action .counter {
+    border-color: var(--surfacePrimary);
+}
+
+nav>div {
+    border-color: var(--divider);
+}
+
+.breadcrumbs {
+    border-color: var(--divider);
+    color: var(--textPrimary) !important;
+}
+
+.breadcrumbs span {
+    color: var(--textPrimary) !important;
+}
+
+.breadcrumbs a:hover {
+    background: rgba(120, 120, 128, 0.2);
+}
+
+#listing .item {
+    background: var(--surfacePrimary);
+    color: var(--textPrimary);
+    border-color: var(--divider) !important;
+}
+
+#listing .item i {
+    color: var(--icon);
+}
+
+#listing .item .modified {
+    color: var(--textSecondary);
+}
+
+#listing h2,
+#listing.list .header span {
+    color: var(--textPrimary) !important;
+}
+
+#listing.list .header span {
+    color: var(--textPrimary);
+}
+
+#listing.list .header i {
+    color: var(--icon);
+}
+
+#listing.list .item.header {
+    background: var(--background);
+}
+
+.message {
+    color: var(--textPrimary);
+}
+
+.card {
+    background: #38393A !important;
+    color: var(--textPrimary) !important;
+    box-shadow: 0px 36px 100px rgba(0, 0, 0, 0.4), 0px 0px 3px rgba(0, 0, 0, 0.55) !important;
+    border-radius: 12px !important;
+}
+
+.card-title,
+.card-content {
+    color: var(--textPrimary) !important;
+}
+
+.button--flat:hover {
+    background: var(--surfaceSecondary);
+}
+
+.dashboard #nav ul li {
+    color: var(--textSecondary);
+}
+
+.dashboard #nav ul li:hover {
+    background: var(--surfaceSecondary);
+}
+
+.card h3,
+.dashboard #nav,
+.dashboard p label {
+    color: var(--textPrimary);
+}
+
+.card#share input,
+.card#share select,
+.input {
+    background: var(--surfaceSecondary);
+    color: var(--textPrimary);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.input:hover,
+.input:focus {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.input--red {
+    background: #73302D;
+}
+
+.input--green {
+    background: #147A41;
+}
+
+.dashboard #nav .wrapper,
+.collapsible {
+    border-color: var(--divider);
+}
+
+.collapsible>label * {
+    color: var(--textPrimary);
+}
+
+table th {
+    color: var(--textSecondary);
+}
+
+.file-list li:hover {
+    background: var(--surfaceSecondary);
+}
+
+.file-list li:before {
+    color: var(--textSecondary);
+}
+
+.file-list li[aria-selected=true]:before {
+    color: var(--icon);
+}
+
+.shell {
+    background: var(--surfacePrimary);
+    color: var(--textPrimary);
+}
+
+.shell__divider {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.shell__divider:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.shell__result {
+    border-top: 1px solid var(--divider);
+}
+
+#editor-container {
+    background: var(--background);
+}
+
+#editor-container .bar {
+    background: var(--surfacePrimary);
+}
+
+@media (max-width: 736px) {
+    #file-selection {
+        background: var(--surfaceSecondary) !important;
+    }
+
+    #file-selection span {
+        color: var(--textPrimary) !important;
+    }
+
+    nav {
+        background: var(--surfaceSecondary) !important;
+    }
+
+    #dropdown {
+        background: var(--surfaceSecondary) !important;
+    }
+}
+
+.share__box {
+    background: var(--surfacePrimary) !important;
+    color: var(--textPrimary);
+}
+
+.share__box__element {
+    border-top-color: var(--divider);
+}
+
+/*----------Custom---------------------------*/
+
+body,
+#login {
+    background-color: #303030 !important;
+}
+
+/* header {
+    background-color: #1b1b1b !important;
+} */
+
+#search #input {
+    background-color: #424242 !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+#listing.list .item,
+#listing.mosaic .item {
+    background: rgba(50, 50, 50, 1) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+#listing.list .item:hover,
+#listing.mosaic .item:hover,
+#listing .item[aria-selected=true] {
+    background: linear-gradient(0deg, rgba(30, 30, 30, 0.6), rgba(30, 30, 30, 0.6)), rgba(84, 84, 88, 0.3) !important;
+}
+
+/* #listing.mosaic,
+.breadcrumbs {
+    background-color: #303030 !important;
+} */
+
+
+/*action*/
+.action span {
+    color: #DFDEDF !important;
+}
+
+
+/* listing */
+#listing .item .size,
+#listing .item .modified {
+    color: rgba(223, 222, 223, 0.8) !important;
+}
+
+#listing .item .name {
+
+    color: #DFDEDF !important;
+}
+
+select,
+textarea,
+input,
+.dashboard textarea,
+.dashboard #locale,
+.dashboard input[type=password],
+.dashboard input[type=text] {
+    background: #212121;
+    color: rgba(255, 255, 255, 0.9) !important;
+    border-color: #303030;
+}
+
+.action,
+#breadcrumbs,
+#breadcrumbs span,
+.dashboard #nav,
+#login h1 {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+#search #result {
+    background-color: #212121 !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.action:hover {
+    /* background: rgba(120, 120, 128, 0.2) !important; */
+    /* border: 1px solid transparent !important; */
+    box-shadow: unset !important;
+    border-radius: 45px !important;
+}
+
+nav>div:first-of-type:before {
+    /* color: rgba(255, 255, 255, 0.45)!important; */
+}
+
+nav.active,
+#dropdown.active {
+    background-color: rgb(51, 51, 51) !important;
+}
+
+button[aria-label="New file"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/new-file-dark.svg') !important;
+    background-repeat: no-repeat;
+    background-position: 4px center;
+
+}
+
+button[aria-label="New folder"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/new-folder-dark.svg') !important;
+    background-repeat: no-repeat;
+    background-position: 4px center;
+}
+
+button[aria-label="Download"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/download-dark.svg') !important;
+
+}
+
+button[aria-label="Close"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/close-dark.svg') !important;
+
+}
+
+#dropdown button[aria-label="Rename"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/edit-dark.svg') !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 36px;
+    height: 36px;
+
+}
+
+/* button[aria-label="Delete"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/delete-dark.svg') !important;
+
+} */
+
+button[aria-label="Switch view"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/switch-view-dark.svg') !important;
+}
+
+button[aria-label="Upload"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/upload-dark.svg') !important;
+}
+
+button[aria-label="My files"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/files-dark.svg') !important;
+    background-repeat: no-repeat !important;
+    background-position: left center !important;
+}
+
+a[aria-label="Home"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/home-dark.svg') !important;
+    background-repeat: no-repeat !important;
+    background-position: 16px center !important;
+    width: 36px;
+    height: 36px;
+    background-size: auto;
+}
+
+
+.card .card-action.full .action .title,
+.card.floating .card-title>h2 {
+    color: rgba(255, 255, 255, 1) !important;
+}
+
+.card.floating .card-content>p {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.card#download,
+.card.floating {
+    background: #38393A !important;
+    border: 0.5px solid #4C4C4C !important;
+    box-shadow: 0px 36px 100px rgba(0, 0, 0, 0.4), 0px 0px 3px rgba(0, 0, 0, 0.55) !important;
+}
+
+.card .card-action.full .action {
+    background: rgba(40, 40, 40, 1) !important;
+}
+
+.card .card-action.full .action:hover,
+#download .card-content .button:hover {
+    background: linear-gradient(0deg, rgba(30, 30, 30, 0.6), rgba(30, 30, 30, 0.6)), rgba(84, 84, 88, 0.3) !important;
+}
+
+#download .card-content .button {
+    background: rgba(50, 50, 50, 1) !important;
+    color: rgba(223, 222, 223, 1) !important;
+}
+
+#previewer {
+    background-color: rgba(0, 0, 0, 0.9) !important;
+}
+
+#previewer header>title {
+    color: rgb(255, 255, 255) !important;
+}
+
+#search button[aria-label="Close"] {
+    background-image: unset !important;
+}
+
+#search.active #input>.action i {
+    background-color: rgba(255, 255, 255, .5) !important;
+}
+
+#previewer .preview .info {
+    color: #ffffff !important;
+}
+
+.button--flat.button--grey {
+    color: #ffff !important;
+}
+
+button[aria-label="Upload"]>i,
+button[aria-label="Delete"]>i,
+button[aria-label="Move file"]>i,
+button[aria-label="Copy file"]>i,
+button[aria-label="Share"]>i,
+button[aria-label="Rename"]>i 
+{
+    display: none;
+}
+
+button[aria-label="Download"]>i {
+    display: none;
+}
+
+button[aria-label="Switch view"]>i {
+    display: none;
+}
+
+
+.card .card-action.full .action i {
+    font-size: 0;
+}
+
+.card .card-action.full .action .title {
+    margin-top: 10px;
+}
+
+
+a[aria-label="Home"]>i.material-icons {
+    font-size: 0 !important;
+}
+
+
+button[aria-label="My files"]>i {
+    display: none !important;
+}
+button[aria-label="New file"]>i {
+    display: none;
+}
+
+button[aria-label="New folder"]>i {
+    display: none;
+}
+
+#search .boxes i {
+    color: transparent !important;
+    font-size: 0 !important;
+}
+#dropdown.active button[aria-label="Switch view"] {
+    background-image: unset !important;
+}
+
+#dropdown.active button[aria-label="Switch view"] {
+    background-image: unset !important;
+}
+
+#dropdown.active button[aria-label="Upload"] {
+    background-image: unset !important;
+}
+
+#dropdown.active button[aria-label="Download"] {
+    background-image: unset !important
+}
+button[aria-label="More"].action:hover {
+    background-color: transparent !important;
+}

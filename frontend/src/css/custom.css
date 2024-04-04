@@ -1,0 +1,1098 @@
+/* 
+    filebrowser-css - a custom stylesheet for filebrowser
+    that adds colors and changes some icons
+    https://github.com/jniggemann/filebrowser-css
+
+    Copyright (C) 2021-2022 Jan Niggemann
+        With kind contributions of
+        * Richard Asplin (https://github.com/richneptune)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+@import url('https://fonts.googleapis.com/css?family=Inter');
+
+/*header*/
+header>div:first-child>.action,
+header img {
+    display: none !important;
+}
+
+button[aria-label="Select multiple"],
+button[aria-label="Info"],
+button[aria-label="Toggle shell"],
+button[aria-label="Settings"],
+button[aria-label="Logout"],
+.credits {
+    display: none !important;
+}
+
+button[aria-label="Download"],
+button[aria-label="Switch view"],
+button[aria-label="Upload"],
+/* button[aria-label="Delete"], */
+button[aria-label="Close"] {
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 2.25em;
+    height: 2.25em;
+
+}
+
+button[aria-label="Download"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/download.svg');
+
+}
+
+button[aria-label="Download"]>i {
+    display: none;
+}
+
+
+/* button[aria-label="Close"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/close.svg');
+
+} */
+#previewer header>.action i {
+    color: #000000;
+}
+
+button[aria-label="Close"]>i {
+    padding: 6px;
+}
+
+#search button[aria-label="Close"] {
+    background-image: unset !important;
+}
+
+
+#search button[aria-label="Close"] {
+    background-image: unset !important;
+}
+
+
+#dropdown button[aria-label="Rename"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/edit.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 2.25em;
+    height: 2.25em;
+
+}
+
+/* button[aria-label="Delete"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/delete.svg');
+
+} */
+
+button[aria-label="Switch view"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/switch-view.svg');
+}
+
+button[aria-label="Switch view"]>i {
+    display: none;
+}
+
+button[aria-label="Upload"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/upload.svg');
+}
+
+button[aria-label="Upload"]>i,
+button[aria-label="Delete"]>i,
+button[aria-label="Move file"]>i,
+button[aria-label="Copy file"]>i,
+button[aria-label="Share"]>i,
+button[aria-label="Rename"]>i {
+    display: none;
+}
+
+.card .card-action.full .action i {
+    font-size: 0;
+}
+
+.card .card-action.full .action .title {
+    margin-top: 10px;
+}
+
+
+button[aria-label="My files"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/files.svg');
+    background-repeat: no-repeat !important;
+    background-position: left center !important;
+}
+
+a[aria-label="Home"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/home.svg');
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    width: 2.25em;
+    height: 2.25em;
+    background-size: auto;
+    margin-left: 1em;
+    border: 1px solid transparent;
+}
+
+a[aria-label="Home"]>i.material-icons {
+    font-size: 0 !important;
+}
+
+
+button[aria-label="My files"]>i {
+    display: none !important;
+}
+
+button[aria-label="My files"] span {
+    padding-left: 0.875em;
+}
+
+button[aria-label="New file"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/new-file.svg');
+    background-repeat: no-repeat;
+    background-position: 4px center;
+
+}
+
+button[aria-label="New file"]>i {
+    display: none;
+}
+
+button[aria-label="New folder"] {
+    background-image: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/new-folder.svg');
+    background-repeat: no-repeat;
+    background-position: 4px center;
+    margin-bottom: 0.625em;
+}
+
+button[aria-label="New folder"]>i {
+    display: none;
+}
+
+button[aria-label="New file"] span,
+button[aria-label="New folder"] span {
+    padding-left: 2em !important;
+}
+
+
+
+/*Side navigation*/
+nav>div {
+    position: fixed !important;
+    bottom: 0.625em !important;
+    left: 0 !important;
+    border: transparent !important;
+    width: inherit !important;
+}
+
+button[aria-label="New folder"] {
+    margin-top: 0.625em !important;
+
+}
+
+nav>div:first-of-type:before {
+    content: "Create";
+    font-size: 0.75em;
+    font-weight: 600;
+    padding-left: 2em;
+}
+
+/* remove a bit of padding from the file list entries */
+#listing h2 {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 0.75em !important;
+    line-height: 1.15 !important;
+    letter-spacing: -.02em !important;
+    -webkit-font-smoothing: antialiased !important;
+    color: #242424;
+}
+
+#listing.list {
+    color: #FFEE00 !important;
+}
+
+#listing.list .item {
+    padding: 0.7em;
+}
+
+/* make folders yellow-ish */
+#listing .item[data-dir=true] div i {
+    color: #ffc84b;
+}
+
+/* packed files - colorize and change icon */
+#listing .item[aria-label$=".7z"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".7z"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".7z"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".arj"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".arj"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".arj"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".zip"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".zip"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".zip"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".gz"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".gz"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".gz"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".tar"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".tar"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".tar"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+
+#listing .item[aria-label$=".bz"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".bz"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".bz"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".bz2"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".bz2"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".bz2"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".xz"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".xz"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".xz"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".tbz"] div i {
+    color: #a268a1;
+}
+
+#listing .item[aria-label$=".tbz"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".tbz"] .material-icons::before {
+    content: "archive";
+    visibility: visible;
+}
+
+
+/* office files */
+/* PDF - colorize and change icon /*
+/* Note: This is yellow because I use SumatraPDF */
+#listing .item[aria-label$=".pdf"] div i {
+    color: #FFEE00;
+}
+
+#listing .item[aria-label$=".pdf"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".pdf"] .material-icons::before {
+    content: "picture_as_pdf";
+    visibility: visible;
+}
+
+/* word processors - colorize and change icon */
+/* Word */
+#listing .item[aria-label$=".doc"] div i {
+    color: #185ABD;
+}
+
+#listing .item[aria-label$=".doc"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".doc"] .material-icons::before {
+    content: "description";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".docx"] div i {
+    color: #185ABD;
+}
+
+#listing .item[aria-label$=".docx"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".docx"] .material-icons::before {
+    content: "description";
+    visibility: visible;
+}
+
+/* OpenOffice Writer */
+#listing .item[aria-label$=".odt"] div i {
+    color: #185ABD;
+}
+
+#listing .item[aria-label$=".odt"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".odt"] .material-icons::before {
+    content: "description";
+    visibility: visible;
+}
+
+/* LibreOffice Writer */
+#listing .item[aria-label$=".sxw"] div i {
+    color: #185ABD;
+}
+
+#listing .item[aria-label$=".sxw"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".sxw"] .material-icons::before {
+    content: "description";
+    visibility: visible;
+}
+
+
+/* PowerPoint */
+#listing .item[aria-label$=".ppt"] div i {
+    color: #D35230;
+}
+
+#listing .item[aria-label$=".pptx"] div i {
+    color: #D35230;
+}
+
+#listing .item[aria-label$=".pps"] div i {
+    color: #D35230;
+}
+
+/* OpenOffice Impress */
+#listing .item[aria-label$=".odp"] div i {
+    color: #D35230;
+}
+
+
+/* Excel */
+#listing .item[aria-label$=".xls"] div i {
+    color: #107C41;
+}
+
+#listing .item[aria-label$=".xlsx"] div i {
+    color: #107C41;
+}
+
+#listing .item[aria-label$=".ods"] div i {
+    color: #107C41;
+}
+
+#listing .item[aria-label$=".sxc"] div i {
+    color: #107C41;
+}
+
+#listing .item[aria-label$=".wri"] div i {
+    color: #336eff;
+}
+
+
+/* sound files - colorize */
+#listing .item[data-type=audio] div i {
+    color: #F47900;
+}
+
+/* video files - colorize */
+#listing .item[data-type=video] div i {
+    color: #F47900;
+}
+
+/* text files - change icon*/
+#listing .item[aria-label$=".txt"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".txt"] .material-icons::before {
+    content: "description";
+    visibility: visible;
+}
+
+#listing .item[aria-label$=".md"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".md"] .material-icons::before {
+    content: "description";
+    visibility: visible;
+}
+
+/* various other files*/
+/* iCal - change icon*/
+#listing .item[aria-label$=".ics"] .material-icons {
+    visibility: hidden;
+}
+
+#listing .item[aria-label$=".ics"] .material-icons::before {
+    content: "event";
+    visibility: visible;
+}
+
+body {
+    background-color: rgba(225, 225, 224, 0.65);
+}
+
+/* ::-webkit-scrollbar {
+    display: none!important;
+  } */
+#listing.mosaic,
+#listing.list,
+.breadcrumbs {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+#listing.mosaic {
+    padding-left: 1em;
+    padding-right: 1em;
+    min-height: 100vh;
+    margin: 0px -0.5em 0 0 !important;
+    /* overflow-y: hidden!important;  */
+}
+
+
+#login {
+    background-color: rgba(246, 246, 246, 0.84);
+}
+
+header {
+    background-color: rgba(255, 255, 255, 1);
+    padding: 0.5em 1em 0.5em 1em !important;
+}
+
+.action,
+#breadcrumbs,
+#breadcrumbs span,
+.dashboard #nav,
+#login h1 {
+    color: #242424;
+}
+
+nav .action {
+    border-radius: 2.813em;
+    box-shadow: none;
+    border: 1px solid transparent;
+    margin-left: 1em !important;
+}
+
+nav>.action:first-child:hover {
+    background-color: transparent !important;
+    box-shadow: unset !important;
+    border: 1px solid transparent !important;
+}
+
+.action:hover {
+    /* background: #3B3B3B; */
+    /* border: 1px solid transparent; */
+    box-shadow: unset;
+    border-radius: 2.813em;
+}
+
+#search .action:hover {
+    border: unset !important;
+}
+
+#listing.list .item.header {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#listing.list .item,
+#listing.mosaic .item {
+    background: rgba(237, 237, 237, 1);
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 0.375em;
+}
+
+#listing.list .item:hover,
+#listing.mosaic .item:hover,
+#listing .item[aria-selected=true] {
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), rgba(246, 246, 246, 0.84) !important;
+}
+
+
+
+.dashboard {
+    background: #424242;
+    color: rgba(255, 255, 255, 1.0);
+}
+
+select,
+textarea,
+input,
+.dashboard textarea,
+.dashboard #locale,
+.dashboard input[type=password],
+.dashboard input[type=text] {
+    background: rgba(154, 154, 157, 0.12);
+    color: #242424;
+    border-color: #303030;
+}
+
+
+select,
+.dashboard input[type=password],
+.dashboard input[type=text],
+.dashboard select {
+    padding: 0.5em;
+}
+
+input[type=submit] {
+    color: #DFDEDF;
+}
+
+
+#search #input {
+    background-color: rgba(154, 154, 157, 0.12);
+    color: #242424;
+}
+
+#search #input input {
+    background: transparent !important;
+}
+
+#search.active #input {
+    background-color: rgb(255 255 255) !important;
+}
+
+#search.active #input>.action i {
+    background-color: rgba(232, 232, 231, 1);
+    border: transparent;
+}
+
+#login input[type=password],
+#login input[type=text] {
+    background-color: rgba(154, 154, 157, 0.12) !important;
+    color: #242424;
+}
+
+#search #result {
+    background-color: rgba(246, 246, 246, 0.84);
+    color: #242424;
+}
+
+#search #result .boxes {
+    background: #F9F6F6;
+    box-shadow: 0px 0px 1.5px rgba(0, 0, 0, 0.3), 0px 7px 22px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(40px);
+    border-radius: 12px;
+    padding: 0 0.938em 0.938em 0.938em;
+}
+
+#search .boxes>div>div {
+    background: rgba(236, 236, 236, 1);
+    padding: 2.125em 1.875em 1.875em;
+    border-radius: 0.5em;
+}
+
+#search .boxes>div>div>p {
+    color: rgba(36, 36, 36, 1);
+    font-weight: 500;
+    font-size: 0.75em;
+    margin-top: 0;
+}
+
+.card {
+    background-color: white;
+}
+
+#search #result .boxes h3
+
+/* .card h2, */
+/* .card h3, */
+/* .card p, */
+/* .card-content  */
+    {
+    color: #242424;
+    padding: 0.9em 0 0.5em;
+    font-weight: 600;
+    font-size: 0.875em;
+}
+
+#nav li {
+    padding-top: 1em !important;
+}
+
+nav.active {
+    background-color:
+        rgb(236, 236, 236);
+}
+
+#dropdown.active {
+    background-color:
+        rgb(236, 236, 236);
+}
+
+
+#file-selection {
+    background: #303030;
+}
+
+/* Icons */
+
+/* General */
+.file-icons [data-type=pdf] i::before {
+    content: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/pdf-icon.svg') !important;
+}
+
+div [aria-label="PDF"] i::before {
+    content: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/pdf-icon.svg') !important;
+}
+
+div [aria-label="Video"] i::before {
+    content: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/mp4.svg') !important;
+}
+
+div [aria-label="Music"] i::before {
+    content: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/mp3.svg') !important;
+}
+
+div [aria-label="Images"] i::before {
+    content: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/image.svg') !important;
+}
+
+.file-icons [data-type=video] i::before {
+    content: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/mp4.svg') !important;
+}
+
+.file-icons [data-dir=true] i::before {
+    content: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/folder.svg') !important;
+}
+
+#search .boxes i {
+    /* color: transparent !important; */
+    font-size: 0 !important;
+}
+
+
+/*action*/
+.action span {
+    font-weight: 500;
+    font-size: 0.875em;
+    color: rgba(36, 36, 36, 1);
+}
+
+
+/* listing */
+#listing .item .size,
+#listing .item .modified {
+    font-size: 0.625em;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+#listing .item .size {
+    padding-top: 0.25;
+    padding-bottom: 0.25;
+}
+
+#listing .item .name {
+    font-weight: 500;
+    font-size: 0.75em;
+    color: rgba(36, 36, 36, 1);
+}
+
+#listing .item i {
+    font-size: 2.5em;
+    margin-right: 0;
+}
+
+#listing .item img {
+    width: 2.5em;
+    height: 2.5em;
+    margin-right: 0;
+    border-radius: 0.188em;
+}
+
+#listing.mosaic .item {
+    border-radius: 0.375em;
+}
+
+#listing.mosaic .item div:first-of-type {
+    width: 2.9em;
+}
+
+#listing.mosaic.gallery .item i {
+    margin-right: 0.75em
+}
+
+
+/*base*/
+main {
+    margin: 0 0em 0 auto !important;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    overflow-x: hidden !important;
+}
+
+body::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* body::-webkit-scrollbar-thumb {
+    background: #d3cccc !important;
+    border-radius: 2rem !important;
+}
+
+body::-webkit-scrollbar {
+    width: 0.25rem !important;
+    display: block !important;
+} */
+
+.breadcrumbs a {
+    font-size: 0.75em;
+    font-weight: 400;
+    border-radius: 0;
+}
+
+.breadcrumbs a :hover {
+    border-radius: 6px !important;
+}
+
+/*header*/
+#search {
+    max-width: 14em;
+    height: 2.25em;
+}
+
+#search #input {
+    padding: 0.375em;
+    border-radius: 0.375em;
+    font-size: 0.875em;
+}
+
+#search::-webkit-input-placeholder {
+    font-size: 0.875em;
+    font-weight: 400;
+}
+
+#search:-moz-placeholder {
+    opacity: 1;
+    font-size: 0.875em;
+    font-weight: 400;
+}
+
+#search::-moz-placeholder {
+    opacity: 1;
+    font-size: 0.875em;
+    font-weight: 400;
+}
+
+#search:-ms-input-placeholder {
+    font-size: 0.875em;
+    font-weight: 400;
+}
+
+/*responsiveness*/
+@media (max-width: 736px) {
+    nav>div {
+        left: unset !important;
+        bottom: unset !important;
+    }
+
+    body {
+        padding-bottom: 0 !important;
+    }
+
+    main {
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    nav .action {
+        width: 75%;
+    }
+}
+
+.action .counter {
+    background: #844BDC;
+}
+
+
+input[type=submit] {
+    background: #844BDC !important;
+}
+
+#download .card-content .button {
+    background: rgba(237, 237, 237, 1);
+    border: unset !important;
+}
+
+#download .card-content .button:hover {
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), rgba(246, 246, 246, 0.84);
+}
+
+#download button {
+    color: rgba(36, 36, 36, 1);
+    font-weight: 500;
+    font-size: 0.875em;
+    padding: 0.75em 1em;
+}
+
+.card#download {
+    max-width: 16.25em !important;
+}
+
+input[type=submit]:hover,
+.button--flat:hover {
+    background: #7539c8 !important;
+}
+
+.button--flat {
+    /* color: #844BDC !important; */
+    border-radius: 36px;
+    background: rgba(132, 75, 220, 1);
+    color: #ffff;
+    font-size: 14px;
+    padding: 0.75em 1.25em;
+}
+
+.button--flat.button--grey {
+    background: transparent;
+    color: #242424;
+    font-size: 0.875em;
+}
+
+.button--flat.button--grey:hover {
+    opacity: 0.7;
+    background: transparent !important;
+}
+
+.breadcrumbs a:hover,
+#dropdown .action,
+#dropdown .action:hover {
+    border-radius: 6px !important;
+    border: 1px solid transparent !important;
+}
+
+#listing.mosaic.gallery .item div:first-of-type {
+    height: 6em !important;
+}
+
+#listing.mosaic.gallery .item i {
+    font-size: 4em !important;
+}
+
+#listing.mosaic.gallery .item div:last-of-type {
+    bottom: 0.5em !important;
+}
+
+#download.card::-webkit-scrollbar {
+    display: none !important;
+}
+
+.card#download,
+.card.floating {
+    /* font-size: 0.75em !important; */
+    background: #F9F6F6;
+    box-shadow: 0px 0px 1.5px rgba(0, 0, 0, 0.3), 0px 7px 22px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(40px);
+    border-radius: 12px;
+}
+
+#login h1 {
+    font-size: 1.8em;
+}
+
+.card .card-action.full .action {
+    background: #ECECEC;
+    border-radius: 8px !important;
+    border: 1px transparent;
+}
+
+.card .card-action.full .action:hover {
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), rgba(246, 246, 246, 0.84);
+}
+
+.card .card-action.full .action:first-of-type i::before {
+    content: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/upload-file-icon.svg') !important;
+}
+
+.card .card-action.full .action:nth-child(2) i::before {
+    content: url('https://evoque-localportal.s3.ap-south-1.amazonaws.com/file-browser/upload-folder-icon.svg') !important;
+}
+
+.card .card-action.full .action .title {
+    font-size: 0.75em !important;
+    color: #242424;
+}
+
+.card.floating .card-title>h2 {
+    font-size: 0.875em !important;
+    font-weight: 600 !important;
+    color: rgba(36, 36, 36, 1);
+}
+
+.card.floating .card-content {
+    padding: 0em 1em 1em !important;
+}
+
+.card.floating .card-content>p {
+    font-size: 0.75em !important;
+    color: rgba(36, 36, 36, 0.7);
+    line-height: 18px !important;
+}
+
+#previewer {
+    background-color: rgb(242 242 242 / 90%);
+}
+
+#previewer header>title {
+    color: #242424;
+}
+
+#previewer header .action:hover {
+    background-color: rgba(0, 0, 0, .1);
+    border-radius: 6px;
+}
+
+#search.active .action i {
+    padding: 0.2em !important;
+}
+
+.card .card-title {
+    padding: 1.5em 1em 0.6em !important;
+}
+
+.action .counter {
+
+    font-size: 8px;
+    width: 20px;
+    height: 20px;
+    padding: 2px;
+}
+
+#previewer .preview .info .button,
+#previewer .preview .info {
+    font-size: 1em;
+}
+
+#previewer .preview .info .title i {
+    font-size: 3em;
+}
+
+#previewer .preview .info {
+    color: #242424;
+}
+
+#listing.list.file-icons .item {
+    border-radius: 0 !important;
+}
+
+#search ul {
+    font-size: 0.875em;
+}
+
+.message {
+    font-size: 1.1em;
+}
+
+#search {
+    background: transparent !important;
+}
+
+#search .boxes i {
+    color: transparent !important;
+    font-size: 0 !important;
+}
+
+#dropdown.active .action:hover {
+    background-color: rgb(221 217 217) !important;
+}
+
+#dropdown.active button[aria-label="Switch view"] {
+    background-image: unset !important;
+}
+
+#dropdown.active button[aria-label="Switch view"] {
+    background-image: unset !important;
+}
+
+#dropdown.active button[aria-label="Upload"] {
+    background-image: unset !important;
+}
+
+#dropdown.active button[aria-label="Download"] {
+    background-image: unset !important
+}
+
+
+button[aria-label="More"].action:hover {
+    background-color: transparent !important;
+}

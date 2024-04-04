@@ -1,12 +1,16 @@
 @media (max-width: 1024px) {
   nav {
-    width: 10em;
+    width: 10em
+  }
+  /* Mobile Only fix div hidden by bottom navigation bar of mobile browser when using height: 100vh */
+  #previewer .preview {
+    /* height: calc(100% - 4em) !important; */
   }
 }
 
 @media (max-width: 1024px) {
   main {
-    width: calc(100% - 13em);
+    width: calc(100% - 13em)
   }
 }
 
@@ -21,27 +25,27 @@
     width: 60%;
   }
   #more {
-    display: inherit;
+    display: inherit
   }
   header .overlay {
     width: 100%;
     height: 100%;
-    background-color: var(--borderPrimary);
+    background-color: rgba(0, 0, 0, 0.1);
   }
   #dropdown {
     position: fixed;
     top: 1em;
     right: 1em;
     display: block;
-    background: var(--surfaceSecondary);
-    box-shadow: 0 0 5px var(--borderPrimary);
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     transform: scale(0);
-    transition: 0.1s ease-in-out transform;
+    transition: .1s ease-in-out transform;
     transform-origin: top right;
     z-index: 99999;
   }
 
-  html[dir="rtl"] #dropdown {
+  body.rtl #dropdown {
     right: unset;
     left: 1em;
     transform-origin: top left;
@@ -61,7 +65,7 @@
   }
   #dropdown .action span:not(.counter) {
     display: inline-block;
-    padding: 0.4em;
+    padding: .4em;
   }
   #dropdown .counter {
     left: 2.25em;
@@ -73,10 +77,8 @@
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    background: var(--surfaceSecondary);
-    box-shadow:
-      rgba(0, 0, 0, 0.06) 0px 1px 3px,
-      rgba(0, 0, 0, 0.12) 0px 1px 2px;
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 3px, rgba(0, 0, 0, 0.12) 0px 1px 2px;
     width: 95%;
     max-width: 20em;
     z-index: 1;
@@ -88,7 +90,7 @@
   #file-selection > span {
     display: inline-block;
     margin-left: 1em;
-    color: var(--textPrimary);
+    color: #6f6f6f;
     margin-right: auto;
   }
   #file-selection .action span {
@@ -97,15 +99,15 @@
   nav {
     top: 0;
     z-index: 99999;
-    background: var(--surfaceSecondary);
+    background: #fff;
     height: 100%;
     width: 16em;
-    box-shadow: 0 0 5px var(--borderPrimary);
-    transition: 0.1s ease left;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    transition: .1s ease left;
     left: -17em;
   }
 
-  html[dir="rtl"] nav {
+  body.rtl nav {
     left: unset;
     right: -17em;
   }
@@ -113,7 +115,7 @@
     left: 0;
   }
 
-  html[dir="rtl"] nav.active {
+  body.rtl nav.active {
     left: unset;
     right: 0;
   }
@@ -133,19 +135,19 @@
     margin-bottom: 5em;
   }
 
-  html[dir="rtl"] #listing {
+  body.rtl #listing {
     margin-right: unset;
   }
 
-  html[dir="rtl"] .breadcrumbs {
+  body.rtl .breadcrumbs {
     transform: translateX(16em);
   }
 
-  html[dir="rtl"] #nav .wrapper {
+  body.rtl #nav .wrapper {
     margin-right: unset;
   }
-
-  html[dir="rtl"] .dashboard .row {
+  
+  body.rtl .dashboard .row {
     margin-right: unset;
   }
 
