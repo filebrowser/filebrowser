@@ -111,7 +111,8 @@ func handleImagePreview(
 }
 
 func createPreview(imgSvc ImgService, fileCache FileCache,
-	file *files.FileInfo, previewSize PreviewSize) ([]byte, error) {
+	file *files.FileInfo, previewSize PreviewSize,
+) ([]byte, error) {
 	fd, err := file.Fs.Open(file.Path)
 	if err != nil {
 		return nil, err

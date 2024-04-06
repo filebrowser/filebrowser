@@ -95,7 +95,8 @@
             v-if="!req.isDir"
             class="share__box__element share__box__center share__box__icon"
           >
-            <i class="material-icons">{{ icon }}</i>
+            <img v-if="req.type === 'image'" :src="raw" />
+            <i v-else class="material-icons">{{ icon }}</i>
           </div>
           <div class="share__box__element" style="height: 3em">
             <strong>{{ $t("prompts.displayName") }}</strong> {{ req.name }}
@@ -236,51 +237,9 @@
           id="shareList"
           v-if="req.isDir && req.items.length > 0"
           class="share__box share__box__items"
+          style="background-color: transparent"
         >
-          <div class="share__box__header" v-if="req.isDir">
-            {{ t("files.files") }}
-          </div>
-          <div id="listing" class="list file-icons">
-            <item
-              v-for="item in req.items.slice(0, showLimit)"
-              :key="base64(item.name)"
-              v-bind:index="item.index"
-              v-bind:name="item.name"
-              v-bind:isDir="item.isDir"
-              v-bind:url="item.url"
-              v-bind:modified="item.modified"
-              v-bind:type="item.type"
-              v-bind:size="item.size"
-              readOnly
-            >
-            </item>
-            <div
-              v-if="req.items.length > showLimit"
-              class="item"
-              @click="showLimit += 100"
-            >
-              <div>
-                <p class="name">+ {{ req.items.length - showLimit }}</p>
-              </div>
-            </div>
-
-            <div
-              :class="{ active: fileStore.multiple }"
-              id="multiple-selection"
-            >
-              <p>{{ t("files.multipleSelectionEnabled") }}</p>
-              <div
-                @click="() => (fileStore.multiple = false)"
-                tabindex="0"
-                role="button"
-                :data-title="t('buttons.clear')"
-                :aria-label="t('buttons.clear')"
-                class="action"
-              >
-                <i class="material-icons">clear</i>
-              </div>
-            </div>
-          </div>
+          <FileListing />
         </div>
         <div
           v-else-if="req.isDir && req.items.length === 0"
@@ -300,21 +259,24 @@
 import { pub as api } from "@/api";
 import { filesize } from "@/utils";
 import dayjs from "dayjs";
-import { Base64 } from "js-base64";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import Errors from "@/views/Errors.vue";
 import QrcodeVue from "qrcode.vue";
-import Item from "@/components/files/ListingItem.vue";
+import FileListing from "@/views/files/FileListing.vue";
+
 import { useFileStore } from "@/stores/file";
+import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
+
 import { computed, inject, onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { StatusError } from "@/api/utils";
 import { copy } from "@/utils/clipboard";
+import { storeToRefs } from "pinia";
 
 const error = ref<StatusError | null>(null);
 const showLimit = ref<number>(100);
@@ -331,7 +293,9 @@ const { t } = useI18n({});
 
 const route = useRoute();
 const fileStore = useFileStore();
+const { reload } = storeToRefs(fileStore);
 const layoutStore = useLayoutStore();
+const authStore = useAuthStore();
 
 watch(route, () => {
   showLimit.value = 100;
@@ -352,16 +316,27 @@ const icon = computed(() => {
 });
 
 const link = computed(() => (req.value ? api.getDownloadURL(req.value) : ""));
+
+// 用于转换 URL 的辅助函数
+function transformUrl(url: string) {
+  return url.replace(/share/, "api/public/dl") + "?token=" + token.value;
+}
 const raw = computed(() => {
-  return req.value
-    ? req.value.items[fileStore.selected[0]].url.replace(
-        /share/,
-        "api/public/dl"
-      ) +
-        "?token=" +
-        token.value
-    : "";
+  // 如果 req.value 不存在，则直接返回空字符串
+  if (!req.value) {
+    return "";
+  }
+
+  // 如果 req.value 是目录
+  if (req.value.isDir) {
+    const selectedItemUrl = req.value.items[fileStore.selected[0]].url;
+    return transformUrl(selectedItemUrl);
+  }
+
+  // 如果 req.value 不是目录
+  return transformUrl(req.value.url);
 });
+
 const inlineLink = computed(() =>
   req.value ? api.getDownloadURL(req.value, true) : ""
 );
@@ -382,7 +357,6 @@ const modTime = computed(() =>
 );
 
 // Functions
-const base64 = (name: any) => Base64.encodeURI(name);
 const play = () => {
   if (tag.value) {
     audio.value?.pause();
@@ -392,6 +366,10 @@ const play = () => {
     tag.value = true;
   }
 };
+
+watch(reload, (newValue) => {
+  newValue && fetchData();
+});
 const fetchData = async () => {
   fileStore.reload = false;
   fileStore.selected = [];
@@ -408,12 +386,12 @@ const fetchData = async () => {
   let url = route.path;
   if (url === "") url = "/";
   if (url[0] !== "/") url = "/" + url;
-
   try {
     const file = await api.fetch(url, password.value);
     file.hash = hash.value;
 
     token.value = file.token || "";
+    authStore.guestJwt = token.value;
 
     fileStore.updateRequest(file);
     document.title = `${file.name} - ${document.title}`;
@@ -504,6 +482,7 @@ onMounted(async () => {
   hash.value = route.params.path[0];
   window.addEventListener("keydown", keyEvent);
   await fetchData();
+  fileStore.selected[0] = 0;
 });
 
 onBeforeUnmount(() => {

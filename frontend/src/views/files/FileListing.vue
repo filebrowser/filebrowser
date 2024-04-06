@@ -74,6 +74,7 @@
         />
         <action icon="info" :label="t('buttons.info')" show="info" />
         <action
+          v-if="authStore.isLoggedIn"
           icon="check_circle"
           :label="t('buttons.selectMultiple')"
           @action="toggleMultipleSelection"
@@ -829,6 +830,8 @@ const sort = async (by: string) => {
         "sorting",
       ]);
     }
+    authStore.shareConfig.sortBy = by;
+    authStore.shareConfig.asc = asc;
   } catch (e: any) {
     $showError(e);
   }
@@ -904,8 +907,10 @@ const switchView = async () => {
     viewMode: modes[authStore.user?.viewMode ?? "list"] || "list",
   };
 
-  // @ts-ignore
-  users.update(data, ["viewMode"]).catch($showError);
+  if (authStore.isLoggedIn) {
+    // @ts-ignore
+    users.update(data, ["viewMode"]).catch($showError);
+  }
 
   // @ts-ignore
   authStore.updateUser(data);

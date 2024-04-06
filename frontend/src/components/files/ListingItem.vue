@@ -14,10 +14,7 @@
     :aria-selected="isSelected"
   >
     <div>
-      <img
-        v-if="!readOnly && type === 'image' && isThumbsEnabled"
-        v-lazy="thumbnailUrl"
-      />
+      <img v-if="type === 'image' && isThumbsEnabled" v-lazy="thumbnailUrl" />
       <i v-else class="material-icons"></i>
     </div>
 
@@ -42,15 +39,16 @@ import { useLayoutStore } from "@/stores/layout";
 import { enableThumbs } from "@/utils/constants";
 import { filesize } from "@/utils";
 import dayjs from "dayjs";
-import { files as api } from "@/api";
+import { files as api, pub as pub_api } from "@/api";
 import * as upload from "@/utils/upload";
 import { computed, inject, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 const touches = ref<number>(0);
 
 const $showError = inject<IToastError>("$showError")!;
 const router = useRouter();
+const route = useRoute();
 
 const props = defineProps<{
   name: string;
@@ -95,8 +93,13 @@ const thumbnailUrl = computed(() => {
     path: props.path,
     modified: props.modified,
   };
-
-  return api.getPreviewURL(file as Resource, "thumb");
+  if (route.name === "Share") {
+    const hash = props.url.split("/")[2];
+    file.path = `/${hash}${props.path}`;
+    return pub_api.getPreviewURL(file as Resource, "thumb");
+  } else {
+    return api.getPreviewURL(file as Resource, "thumb");
+  }
 });
 
 const isThumbsEnabled = computed(() => {

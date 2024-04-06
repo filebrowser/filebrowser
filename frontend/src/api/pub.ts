@@ -1,11 +1,12 @@
 import { fetchURL, removePrefix, createURL } from "./utils";
 import { baseURL } from "@/utils/constants";
-
+import { useAuthStore } from "@/stores/auth";
 export async function fetch(url: string, password: string = "") {
   url = removePrefix(url);
 
+  const authStore = useAuthStore();
   const res = await fetchURL(
-    `/api/public/share${url}`,
+    `/api/public/share${url}?s=${authStore.shareConfig.sortBy}&a=${Number(authStore.shareConfig.asc)}`,
     {
       headers: { "X-SHARE-PASSWORD": encodeURIComponent(password) },
     },
@@ -72,4 +73,15 @@ export function getDownloadURL(res: Resource, inline = false) {
   };
 
   return createURL("api/public/dl/" + res.hash + res.path, params, false);
+}
+
+export function getPreviewURL(file: ResourceItem, size: string) {
+  const authStore = useAuthStore();
+  const params = {
+    inline: "true",
+    token: authStore.guestJwt,
+    key: Date.parse(file.modified),
+  };
+
+  return createURL("api/public/preview/" + size + file.path, params, false);
 }

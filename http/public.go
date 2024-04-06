@@ -2,12 +2,14 @@ package http
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"path"
 	"path/filepath"
 	"strings"
 
+	"github.com/gorilla/mux"
 	"github.com/spf13/afero"
 	"golang.org/x/crypto/bcrypt"
 
@@ -98,7 +100,16 @@ var publicShareHandler = withHashFile(func(w http.ResponseWriter, r *http.Reques
 	file := d.raw.(*files.FileInfo)
 
 	if file.IsDir {
-		file.Listing.Sorting = files.Sorting{By: "name", Asc: false}
+		sortBy := r.URL.Query().Get("s")
+		ascStr := r.URL.Query().Get("a")
+		asc := false
+		if sortBy == "" {
+			sortBy = "name"
+		}
+		if ascStr == "1" {
+			asc = true
+		}
+		file.Listing.Sorting = files.Sorting{By: sortBy, Asc: asc}
 		file.Listing.ApplySort()
 		return renderJSON(w, r, file)
 	}
@@ -114,6 +125,28 @@ var publicDlHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, 
 
 	return rawDirHandler(w, r, d, file)
 })
+
+func publicPreviewHandler(imgSvc ImgService, fileCache FileCache, enableThumbnails, resizePreview bool) handleFunc {
+	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		vars := mux.Vars(r)
+		previewSize, err := ParsePreviewSize(vars["size"])
+		if err != nil {
+			return http.StatusBadRequest, err
+		}
+		r.URL.Path = vars["path"]
+		return withHashFile(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+			file := d.raw.(*files.FileInfo)
+			setContentDisposition(w, r, file)
+
+			switch file.Type {
+			case "image":
+				return handleImagePreview(w, r, imgSvc, fileCache, file, previewSize, enableThumbnails, resizePreview)
+			default:
+				return http.StatusNotImplemented, fmt.Errorf("can't create preview for %s type", file.Type)
+			}
+		})(w, r, d)
+	}
+}
 
 func authenticateShareRequest(r *http.Request, l *share.Link) (int, error) {
 	if l.PasswordHash == "" {
