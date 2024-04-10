@@ -92,6 +92,10 @@ main {
   width: calc(100% - 19em);
 }
 
+.filebrower-toast {
+  z-index: 10000;
+}
+
 .breadcrumbs {
   height: 3em;
   background: var(--background);

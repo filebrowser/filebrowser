@@ -37,6 +37,7 @@ app.use(Toast, {
   transition: "Vue-Toastification__bounce",
   maxToasts: 10,
   newestOnTop: true,
+  containerClassName: "filebrower-toast",
 } satisfies PluginOptions);
 
 app.use(vfm);
