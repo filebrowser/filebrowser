@@ -1,15 +1,17 @@
 <template>
   <div>
     <header-bar showMenu showLogo>
-      <search />
+      <search v-if="enableSearch" />
       <title />
       <action
+        v-if="enableSearch"
         class="search-button"
         icon="search"
         :label="t('buttons.search')"
         @action="openSearch()"
       />
 
+      <slot />
       <template #actions>
         <template v-if="!isMobile">
           <action
@@ -74,7 +76,7 @@
         />
         <action icon="info" :label="t('buttons.info')" show="info" />
         <action
-          v-if="authStore.isLoggedIn"
+          v-if="showMultipleSelectionButton"
           icon="check_circle"
           :label="t('buttons.selectMultiple')"
           @action="toggleMultipleSelection"
@@ -313,9 +315,17 @@ import {
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
-const { headerStickyTop } = defineProps<{
-  headerStickyTop?: string;
-}>();
+const { headerStickyTop } = withDefaults(
+  defineProps<{
+    headerStickyTop?: string;
+    enableSearch: boolean;
+    showMultipleSelectionButton: boolean;
+  }>(),
+  {
+    enableSearch: true,
+    showMultipleSelectionButton: true,
+  }
+);
 
 const showLimit = ref<number>(50);
 const columnWidth = ref<number>(280);

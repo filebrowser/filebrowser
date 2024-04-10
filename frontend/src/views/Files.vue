@@ -47,7 +47,7 @@ import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import Errors from "@/views/Errors.vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
-import FileListing from "@/views/files/FileListing.vue";
+import FileListing from "@/components/files/FileListing.vue";
 import { StatusError } from "@/api/utils";
 const Editor = defineAsyncComponent(() => import("@/views/files/Editor.vue"));
 const Preview = defineAsyncComponent(() => import("@/views/files/Preview.vue"));

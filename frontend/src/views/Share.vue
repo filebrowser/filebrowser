@@ -1,31 +1,5 @@
 <template>
   <div>
-    <header-bar showMenu showLogo>
-      <title />
-
-      <action
-        v-if="fileStore.selectedCount"
-        icon="file_download"
-        :label="t('buttons.download')"
-        @action="download"
-        :counter="fileStore.selectedCount"
-      />
-      <button
-        v-if="isSingleFile()"
-        class="action copy-clipboard"
-        :aria-label="t('buttons.copyDownloadLinkToClipboard')"
-        :data-title="t('buttons.copyDownloadLinkToClipboard')"
-        @click="copyToClipboard(linkSelected())"
-      >
-        <i class="material-icons">content_paste</i>
-      </button>
-      <action
-        icon="check_circle"
-        :label="t('buttons.selectMultiple')"
-        @action="toggleMultipleSelection"
-      />
-    </header-bar>
-
     <breadcrumbs :base="'/share/' + hash" />
 
     <div v-if="layoutStore.loading">
@@ -77,12 +51,10 @@
       <div class="share">
         <div
           class="share__box share__box__info"
-          style="
-            position: -webkit-sticky;
-            position: sticky;
-            top: -25.6em;
-            z-index: 999;
-          "
+          style="position: -webkit-sticky; position: sticky; z-index: 999"
+          :style="{
+            top: isMobile ? '-25.6em' : '4em',
+          }"
         >
           <div class="share__box__header" style="height: 3em">
             {{
@@ -233,10 +205,32 @@
           style="background-color: transparent"
         >
           <FileListing
-            :header-sticky-top="
-              useMediaQuery('min-width: 916px') ? '19em' : '0'
-            "
-          />
+            :header-sticky-top="isMobile ? '19em' : '4em'"
+            :enable-search="false"
+            :show-multiple-selection-button="false"
+          >
+            <action
+              v-if="fileStore.selectedCount"
+              icon="file_download"
+              :label="t('buttons.download')"
+              @action="download"
+              :counter="fileStore.selectedCount"
+            />
+            <button
+              v-if="isSingleFile()"
+              class="action copy-clipboard"
+              :aria-label="t('buttons.copyDownloadLinkToClipboard')"
+              :data-title="t('buttons.copyDownloadLinkToClipboard')"
+              @click="copyToClipboard(linkSelected())"
+            >
+              <i class="material-icons">content_paste</i>
+            </button>
+            <action
+              icon="check_circle"
+              :label="t('buttons.selectMultiple')"
+              @action="toggleMultipleSelection"
+            />
+          </FileListing>
         </div>
         <div
           v-else-if="req.isDir && req.items.length === 0"
@@ -257,12 +251,11 @@ import { pub as api } from "@/api";
 import { filesize } from "@/utils";
 import dayjs from "dayjs";
 
-import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import Errors from "@/views/Errors.vue";
 import QrcodeVue from "qrcode.vue";
-import FileListing from "@/views/files/FileListing.vue";
+import FileListing from "@/components/files/FileListing.vue";
 
 import { useFileStore } from "@/stores/file";
 import { useAuthStore } from "@/stores/auth";
@@ -276,6 +269,7 @@ import { copy } from "@/utils/clipboard";
 import { storeToRefs } from "pinia";
 import { useMediaQuery } from "@vueuse/core";
 
+const isMobile = useMediaQuery("(max-width: 1125px)");
 const error = ref<StatusError | null>(null);
 const showLimit = ref<number>(100);
 const password = ref<string>("");
@@ -415,6 +409,7 @@ const keyEvent = (event: KeyboardEvent) => {
 
 const toggleMultipleSelection = () => {
   fileStore.toggleMultiple();
+  layoutStore.closeHovers();
 };
 
 const isSingleFile = () =>
@@ -489,12 +484,3 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", keyEvent);
 });
 </script>
-
-<style scoped>
-@media (min-width: 916px) {
-  .share__box__items {
-    height: calc(100vh - 9.8em);
-    overflow-y: auto;
-  }
-}
-</style>
