@@ -91,7 +91,16 @@ func NewHandler(
 	public.PathPrefix("/dl").Handler(monkey(publicDlHandler, "/api/public/dl/")).Methods("GET")
 	public.PathPrefix("/share").Handler(monkey(publicShareHandler, "/api/public/share/")).Methods("GET")
 	public.PathPrefix("/preview/{size}/{path:.*}").
-		Handler(monkey(publicPreviewHandler(imgSvc, fileCache, server.EnableThumbnails, server.ResizePreview), "/api/public/preview")).Methods("GET")
+		Handler(
+			monkey(
+				publicPreviewHandler(
+					imgSvc,
+					fileCache,
+					server.EnableThumbnails,
+					server.ResizePreview,
+				),
+				"/api/public/preview"),
+		).Methods("GET")
 
 	return stripPrefix(server.BaseURL, r), nil
 }

@@ -27,12 +27,27 @@ import (
 	"github.com/filebrowser/filebrowser/v2/rules"
 )
 
-const PermFile = 0644
-const PermDir = 0755
+const (
+	PermFile = 0o644
+	PermDir  = 0o755
+)
 
 var (
 	reSubDirs = regexp.MustCompile("(?i)^sub(s|titles)$")
 	reSubExts = regexp.MustCompile("(?i)(.vtt|.srt|.ass|.ssa)$")
+)
+
+type FileType string
+
+const (
+	Blob          FileType = "blob"
+	Video         FileType = "video"
+	Audio         FileType = "audio"
+	Image         FileType = "image"
+	PDF           FileType = "pdf"
+	Text          FileType = "text"
+	TextImmutable FileType = "textImmutable"
+	InvalidLink   FileType = "invalid_link"
 )
 
 // FileInfo describes a file.
@@ -47,7 +62,7 @@ type FileInfo struct {
 	Mode       os.FileMode       `json:"mode"`
 	IsDir      bool              `json:"isDir"`
 	IsSymlink  bool              `json:"isSymlink"`
-	Type       string            `json:"type"`
+	Type       FileType          `json:"type"`
 	Subtitles  []string          `json:"subtitles,omitempty"`
 	Content    string            `json:"content,omitempty"`
 	Checksums  map[string]string `json:"checksums,omitempty"`
@@ -241,14 +256,14 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 
 	switch {
 	case strings.HasPrefix(mimetype, "video"):
-		i.Type = "video"
+		i.Type = Video
 		i.detectSubtitles()
 		return nil
 	case strings.HasPrefix(mimetype, "audio"):
-		i.Type = "audio"
+		i.Type = Audio
 		return nil
 	case strings.HasPrefix(mimetype, "image"):
-		i.Type = "image"
+		i.Type = Image
 		resolution, err := calculateImageResolution(i.Fs, i.Path)
 		if err != nil {
 			log.Printf("Error calculating image resolution: %v", err)
@@ -257,13 +272,13 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 		}
 		return nil
 	case strings.HasSuffix(mimetype, "pdf"):
-		i.Type = "pdf"
+		i.Type = PDF
 		return nil
 	case (strings.HasPrefix(mimetype, "text") || !isBinary(buffer)) && i.Size <= 10*1024*1024: // 10 MB
-		i.Type = "text"
+		i.Type = Text
 
 		if !modify {
-			i.Type = "textImmutable"
+			i.Type = TextImmutable
 		}
 
 		if saveContent {
@@ -277,7 +292,7 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 		}
 		return nil
 	default:
-		i.Type = "blob"
+		i.Type = Blob
 	}
 
 	return nil
