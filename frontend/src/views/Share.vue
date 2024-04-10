@@ -80,7 +80,7 @@
           style="
             position: -webkit-sticky;
             position: sticky;
-            top: -20.6em;
+            top: -25.6em;
             z-index: 999;
           "
         >
@@ -130,14 +130,8 @@
                 >{{ t("buttons.openFile") }}
               </div>
             </a>
-            <qrcode-vue
-              v-if="req.isDir"
-              :value="link"
-              :size="100"
-              level="M"
-            ></qrcode-vue>
           </div>
-          <div v-if="!req.isDir" class="share__box__element share__box__center">
+          <div class="share__box__element share__box__center">
             <qrcode-vue :value="link" :size="200" level="M"></qrcode-vue>
           </div>
           <div
