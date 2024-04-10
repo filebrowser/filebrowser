@@ -19,7 +19,6 @@
   color: var(--textPrimary);
   border-radius: 0.2em;
   margin: 5px;
-  overflow: hidden;
 }
 
 .share__box__header {

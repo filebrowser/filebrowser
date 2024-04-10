@@ -16,7 +16,10 @@ export const useAuthStore = defineStore("auth", () => {
     perm: { create: false },
   });
 
-  const shareConfig = ref({ sortBy: "name", asc: false });
+  const shareConfig = useStorage("share-config", {
+    sortBy: "name",
+    asc: false,
+  });
   const isLoggedIn = computed(() => registeredUser.value !== null);
   const user = computed({
     get: () =>

@@ -8,7 +8,11 @@
 
     <breadcrumbs base="/files" />
     <errors v-if="error" :errorCode="error.status" />
-    <component v-else-if="currentView" :is="currentView"></component>
+    <component
+      v-else-if="currentView"
+      :is="currentView"
+      v-bind="currentViewProps"
+    ></component>
     <div v-else-if="currentView !== null">
       <h2 class="message delayed">
         <div class="spinner">
@@ -64,6 +68,25 @@ const clean = (path: string) => {
 };
 
 const error = ref<StatusError | null>(null);
+
+const currentViewProps = computed(() => {
+  if (fileStore.req?.type === undefined) {
+    return null;
+  }
+
+  if (fileStore.req.isDir) {
+    return {
+      headerStickyTop: "4em",
+    };
+  } else if (
+    fileStore.req.type === "text" ||
+    fileStore.req.type === "textImmutable"
+  ) {
+    return {};
+  } else {
+    return {};
+  }
+});
 
 const currentView = computed(() => {
   if (fileStore.req?.type === undefined) {

@@ -161,48 +161,56 @@
         class="file-icons"
         :class="authStore.user?.viewMode ?? ''"
       >
-        <div>
-          <div class="item header">
-            <div></div>
-            <div>
-              <p
-                :class="{ active: nameSorted }"
-                class="name"
-                role="button"
-                tabindex="0"
-                @click="sort('name')"
-                :title="t('files.sortByName')"
-                :aria-label="t('files.sortByName')"
-              >
-                <span>{{ t("files.name") }}</span>
-                <i class="material-icons">{{ nameIcon }}</i>
-              </p>
+        <div
+          class="item header"
+          :style="
+            headerStickyTop
+              ? {
+                  position: 'sticky',
+                  top: headerStickyTop,
+                }
+              : {}
+          "
+        >
+          <div></div>
+          <div>
+            <p
+              :class="{ active: nameSorted }"
+              class="name"
+              role="button"
+              tabindex="0"
+              @click="sort('name')"
+              :title="t('files.sortByName')"
+              :aria-label="t('files.sortByName')"
+            >
+              <span>{{ t("files.name") }}</span>
+              <i class="material-icons">{{ nameIcon }}</i>
+            </p>
 
-              <p
-                :class="{ active: sizeSorted }"
-                class="size"
-                role="button"
-                tabindex="0"
-                @click="sort('size')"
-                :title="t('files.sortBySize')"
-                :aria-label="t('files.sortBySize')"
-              >
-                <span>{{ t("files.size") }}</span>
-                <i class="material-icons">{{ sizeIcon }}</i>
-              </p>
-              <p
-                :class="{ active: modifiedSorted }"
-                class="modified"
-                role="button"
-                tabindex="0"
-                @click="sort('modified')"
-                :title="t('files.sortByLastModified')"
-                :aria-label="t('files.sortByLastModified')"
-              >
-                <span>{{ t("files.lastModified") }}</span>
-                <i class="material-icons">{{ modifiedIcon }}</i>
-              </p>
-            </div>
+            <p
+              :class="{ active: sizeSorted }"
+              class="size"
+              role="button"
+              tabindex="0"
+              @click="sort('size')"
+              :title="t('files.sortBySize')"
+              :aria-label="t('files.sortBySize')"
+            >
+              <span>{{ t("files.size") }}</span>
+              <i class="material-icons">{{ sizeIcon }}</i>
+            </p>
+            <p
+              :class="{ active: modifiedSorted }"
+              class="modified"
+              role="button"
+              tabindex="0"
+              @click="sort('modified')"
+              :title="t('files.sortByLastModified')"
+              :aria-label="t('files.sortByLastModified')"
+            >
+              <span>{{ t("files.lastModified") }}</span>
+              <i class="material-icons">{{ modifiedIcon }}</i>
+            </p>
           </div>
         </div>
 
@@ -305,6 +313,9 @@ import {
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
+const { headerStickyTop } = defineProps<{
+  headerStickyTop?: string;
+}>();
 
 const showLimit = ref<number>(50);
 const columnWidth = ref<number>(280);

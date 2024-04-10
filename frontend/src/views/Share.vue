@@ -161,7 +161,7 @@
             </a>
             <div
               v-else-if="
-                fileStore.multiple &&
+                !fileStore.multiple &&
                 fileStore.selectedCount === 1 &&
                 req.items[fileStore.selected[0]].type === 'audio'
               "
@@ -228,12 +228,15 @@
           </div>
         </div>
         <div
-          id="shareList"
           v-if="req.isDir && req.items.length > 0"
           class="share__box share__box__items"
           style="background-color: transparent"
         >
-          <FileListing />
+          <FileListing
+            :header-sticky-top="
+              useMediaQuery('min-width: 916px') ? '19em' : '0'
+            "
+          />
         </div>
         <div
           v-else-if="req.isDir && req.items.length === 0"
@@ -271,6 +274,7 @@ import { useI18n } from "vue-i18n";
 import { StatusError } from "@/api/utils";
 import { copy } from "@/utils/clipboard";
 import { storeToRefs } from "pinia";
+import { useMediaQuery } from "@vueuse/core";
 
 const error = ref<StatusError | null>(null);
 const showLimit = ref<number>(100);
@@ -364,6 +368,7 @@ const play = () => {
 watch(reload, (newValue) => {
   newValue && fetchData();
 });
+
 const fetchData = async () => {
   fileStore.reload = false;
   fileStore.selected = [];
@@ -486,16 +491,8 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-#listing.list {
-  height: auto;
-}
-
-#shareList {
-  overflow-y: scroll;
-}
-
-@media (min-width: 930px) {
-  #shareList {
+@media (min-width: 916px) {
+  .share__box__items {
     height: calc(100vh - 9.8em);
     overflow-y: auto;
   }
