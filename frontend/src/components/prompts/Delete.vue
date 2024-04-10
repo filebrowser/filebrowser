@@ -48,15 +48,15 @@ export default {
       "selectedCount",
       "req",
       "selected",
-      "currentPrompt",
     ]),
+    ...mapState(useLayoutStore, ["currentPrompt"]),
     ...mapWritableState(useFileStore, ["reload"]),
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),
+
     submit: async function () {
       buttons.loading("delete");
-
       window.sessionStorage.setItem("modified", "true");
       try {
         if (!this.isListing) {
