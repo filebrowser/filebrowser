@@ -47,6 +47,16 @@ export const useUploadStore = defineStore("upload", {
       const sum = state.progress.reduce((acc, val) => +acc + +val) as number;
       return Math.ceil((sum / totalSize) * 100);
     },
+    getTotalSize: (state) => {
+      if (state.sizes.length === 0) {
+        return '0 Bytes';
+      }
+    
+      const totalSize = state.sizes.reduce((a, b) => a + b, 0);
+      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+      const i = Math.floor(Math.log(totalSize) / Math.log(1024));
+      return parseFloat((totalSize / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
+    },    
     filesInUploadCount: (state) => {
       return Object.keys(state.uploads).length + state.queue.length;
     },
