@@ -34,7 +34,7 @@ database.
 
 The path must be for a json or yaml file.`,
 	Args: jsonYamlArg,
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	Run: python(func(_ *cobra.Command, args []string, d pythonData) {
 		var key []byte
 		if d.hadDB {
 			settings, err := d.store.Settings.Get()

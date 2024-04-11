@@ -16,8 +16,8 @@
       [{[ if .Name -]}][{[ .Name ]}][{[ else ]}]File Browser[{[ end ]}]
     </title>
 
-    <meta name="robots" content="noindex,nofollow">
-    
+    <meta name="robots" content="noindex,nofollow" />
+
     <link
       rel="icon"
       type="image/png"
@@ -181,14 +181,9 @@
       </div>
     </div>
 
-    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="/src/main.ts"></script>
 
-    [{[ if .Theme -]}]
-    <link
-      rel="stylesheet"
-      href="[{[ .StaticURL ]}]/themes/[{[ .Theme ]}].css"
-    />
-    [{[ end ]}] [{[ if .CSS -]}]
+    [{[ if .CSS -]}]
     <link rel="stylesheet" href="[{[ .StaticURL ]}]/custom.css" />
     [{[ end ]}]
   </body>

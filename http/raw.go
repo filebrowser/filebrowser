@@ -44,9 +44,8 @@ func parseQueryFiles(r *http.Request, f *files.FileInfo, _ *users.User) ([]strin
 	return fileSlice, nil
 }
 
-// nolint: goconst,nolintlint
+//nolint:goconst
 func parseQueryAlgorithm(r *http.Request) (string, archiver.Writer, error) {
-	// TODO: use enum
 	switch r.URL.Query().Get("algo") {
 	case "zip", "true", "":
 		return ".zip", archiver.NewZip(), nil
@@ -81,7 +80,7 @@ var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) 
 		return http.StatusAccepted, nil
 	}
 
-	file, err := files.NewFileInfo(files.FileOptions{
+	file, err := files.NewFileInfo(&files.FileOptions{
 		Fs:         d.user.Fs,
 		Path:       r.URL.Path,
 		Modify:     d.user.Perm.Modify,

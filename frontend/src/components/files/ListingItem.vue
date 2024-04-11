@@ -15,7 +15,7 @@
   >
     <div>
       <img
-        v-if="readOnly == undefined && type === 'image' && isThumbsEnabled"
+        v-if="!readOnly && type === 'image' && isThumbsEnabled"
         v-lazy="thumbnailUrl"
       />
       <i v-else class="material-icons"></i>
@@ -34,221 +34,240 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { useAuthStore } from "@/stores/auth";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
+
 import { enableThumbs } from "@/utils/constants";
-import { mapMutations, mapGetters, mapState } from "vuex";
 import { filesize } from "@/utils";
-import moment from "moment/min/moment-with-locales";
+import dayjs from "dayjs";
 import { files as api } from "@/api";
 import * as upload from "@/utils/upload";
+import { computed, inject, ref } from "vue";
+import { useRouter } from "vue-router";
 
-export default {
-  name: "item",
-  data: function () {
-    return {
-      touches: 0,
-    };
-  },
-  props: [
-    "name",
-    "isDir",
-    "url",
-    "type",
-    "size",
-    "modified",
-    "index",
-    "readOnly",
-    "path",
-  ],
-  computed: {
-    ...mapState(["user", "selected", "req", "jwt"]),
-    ...mapGetters(["selectedCount"]),
-    singleClick() {
-      return this.readOnly == undefined && this.user.singleClick;
-    },
-    isSelected() {
-      return this.selected.indexOf(this.index) !== -1;
-    },
-    isDraggable() {
-      return this.readOnly == undefined && this.user.perm.rename;
-    },
-    canDrop() {
-      if (!this.isDir || this.readOnly !== undefined) return false;
+const touches = ref<number>(0);
 
-      for (let i of this.selected) {
-        if (this.req.items[i].url === this.url) {
-          return false;
-        }
+const $showError = inject<IToastError>("$showError")!;
+const router = useRouter();
+
+const props = defineProps<{
+  name: string;
+  isDir: boolean;
+  url: string;
+  type: string;
+  size: number;
+  modified: string;
+  index: number;
+  readOnly?: boolean;
+  path?: string;
+}>();
+
+const authStore = useAuthStore();
+const fileStore = useFileStore();
+const layoutStore = useLayoutStore();
+
+const singleClick = computed(
+  () => !props.readOnly && authStore.user?.singleClick
+);
+const isSelected = computed(
+  () => fileStore.selected.indexOf(props.index) !== -1
+);
+const isDraggable = computed(
+  () => !props.readOnly && authStore.user?.perm.rename
+);
+
+const canDrop = computed(() => {
+  if (!props.isDir || props.readOnly) return false;
+
+  for (let i of fileStore.selected) {
+    if (fileStore.req?.items[i].url === props.url) {
+      return false;
+    }
+  }
+
+  return true;
+});
+
+const thumbnailUrl = computed(() => {
+  const file = {
+    path: props.path,
+    modified: props.modified,
+  };
+
+  return api.getPreviewURL(file as Resource, "thumb");
+});
+
+const isThumbsEnabled = computed(() => {
+  return enableThumbs;
+});
+
+const humanSize = () => {
+  return props.type == "invalid_link" ? "invalid link" : filesize(props.size);
+};
+
+const humanTime = () => {
+  if (!props.readOnly && authStore.user?.dateFormat) {
+    return dayjs(props.modified).format("L LT");
+  }
+  return dayjs(props.modified).fromNow();
+};
+
+const dragStart = () => {
+  if (fileStore.selectedCount === 0) {
+    fileStore.selected.push(props.index);
+    return;
+  }
+
+  if (!isSelected.value) {
+    fileStore.selected = [];
+    fileStore.selected.push(props.index);
+  }
+};
+
+const dragOver = (event: Event) => {
+  if (!canDrop.value) return;
+
+  event.preventDefault();
+  let el = event.target as HTMLElement | null;
+  if (el !== null) {
+    for (let i = 0; i < 5; i++) {
+      if (!el?.classList.contains("item")) {
+        el = el?.parentElement ?? null;
       }
+    }
 
-      return true;
-    },
-    thumbnailUrl() {
-      const file = {
-        path: this.path,
-        modified: this.modified,
-      };
+    if (el !== null) el.style.opacity = "1";
+  }
+};
 
-      return api.getPreviewURL(file, "thumb");
-    },
-    isThumbsEnabled() {
-      return enableThumbs;
-    },
-  },
-  methods: {
-    ...mapMutations(["addSelected", "removeSelected", "resetSelected"]),
-    humanSize: function () {
-      return this.type == "invalid_link" ? "invalid link" : filesize(this.size);
-    },
-    humanTime: function () {
-      if (this.readOnly == undefined && this.user.dateFormat) {
-        return moment(this.modified).format("L LT");
+const drop = async (event: Event) => {
+  if (!canDrop.value) return;
+  event.preventDefault();
+
+  if (fileStore.selectedCount === 0) return;
+
+  let el = event.target as HTMLElement | null;
+  for (let i = 0; i < 5; i++) {
+    if (el !== null && !el.classList.contains("item")) {
+      el = el.parentElement;
+    }
+  }
+
+  let items: any[] = [];
+
+  for (let i of fileStore.selected) {
+    if (fileStore.req) {
+      items.push({
+        from: fileStore.req?.items[i].url,
+        to: props.url + encodeURIComponent(fileStore.req?.items[i].name),
+        name: fileStore.req?.items[i].name,
+      });
+    }
+  }
+
+  // Get url from ListingItem instance
+  if (el === null) {
+    return;
+  }
+  let path = el.__vue__.url;
+  let baseItems = (await api.fetch(path)).items;
+
+  let action = (overwrite: boolean, rename: boolean) => {
+    api
+      .move(items, overwrite, rename)
+      .then(() => {
+        fileStore.reload = true;
+      })
+      .catch($showError);
+  };
+
+  let conflict = upload.checkConflict(items, baseItems);
+
+  let overwrite = false;
+  let rename = false;
+
+  if (conflict) {
+    layoutStore.showHover({
+      prompt: "replace-rename",
+      confirm: (event: Event, option: any) => {
+        overwrite = option == "overwrite";
+        rename = option == "rename";
+
+        event.preventDefault();
+        layoutStore.closeHovers();
+        action(overwrite, rename);
+      },
+    });
+
+    return;
+  }
+
+  action(overwrite, rename);
+};
+
+const itemClick = (event: Event | KeyboardEvent) => {
+  if (
+    !((event as KeyboardEvent).ctrlKey || (event as KeyboardEvent).metaKey) &&
+    singleClick.value &&
+    !fileStore.multiple
+  )
+    open();
+  else click(event);
+};
+
+const click = (event: Event | KeyboardEvent) => {
+  if (!singleClick.value && fileStore.selectedCount !== 0)
+    event.preventDefault();
+
+  setTimeout(() => {
+    touches.value = 0;
+  }, 300);
+
+  touches.value++;
+  if (touches.value > 1) {
+    open();
+  }
+
+  if (fileStore.selected.indexOf(props.index) !== -1) {
+    fileStore.removeSelected(props.index);
+    return;
+  }
+
+  if ((event as KeyboardEvent).shiftKey && fileStore.selected.length > 0) {
+    let fi = 0;
+    let la = 0;
+
+    if (props.index > fileStore.selected[0]) {
+      fi = fileStore.selected[0] + 1;
+      la = props.index;
+    } else {
+      fi = props.index;
+      la = fileStore.selected[0] - 1;
+    }
+
+    for (; fi <= la; fi++) {
+      if (fileStore.selected.indexOf(fi) == -1) {
+        fileStore.selected.push(fi);
       }
-      return moment(this.modified).fromNow();
-    },
-    dragStart: function () {
-      if (this.selectedCount === 0) {
-        this.addSelected(this.index);
-        return;
-      }
+    }
 
-      if (!this.isSelected) {
-        this.resetSelected();
-        this.addSelected(this.index);
-      }
-    },
-    dragOver: function (event) {
-      if (!this.canDrop) return;
+    return;
+  }
 
-      event.preventDefault();
-      let el = event.target;
+  if (
+    !singleClick.value &&
+    !(event as KeyboardEvent).ctrlKey &&
+    !(event as KeyboardEvent).metaKey &&
+    !fileStore.multiple
+  ) {
+    fileStore.selected = [];
+  }
+  fileStore.selected.push(props.index);
+};
 
-      for (let i = 0; i < 5; i++) {
-        if (!el.classList.contains("item")) {
-          el = el.parentElement;
-        }
-      }
-
-      el.style.opacity = 1;
-    },
-    drop: async function (event) {
-      if (!this.canDrop) return;
-      event.preventDefault();
-
-      if (this.selectedCount === 0) return;
-
-      let el = event.target;
-      for (let i = 0; i < 5; i++) {
-        if (el !== null && !el.classList.contains("item")) {
-          el = el.parentElement;
-        }
-      }
-
-      let items = [];
-
-      for (let i of this.selected) {
-        items.push({
-          from: this.req.items[i].url,
-          to: this.url + encodeURIComponent(this.req.items[i].name),
-          name: this.req.items[i].name,
-        });
-      }
-
-      // Get url from ListingItem instance
-      let path = el.__vue__.url;
-      let baseItems = (await api.fetch(path)).items;
-
-      let action = (overwrite, rename) => {
-        api
-          .move(items, overwrite, rename)
-          .then(() => {
-            this.$store.commit("setReload", true);
-          })
-          .catch(this.$showError);
-      };
-
-      let conflict = upload.checkConflict(items, baseItems);
-
-      let overwrite = false;
-      let rename = false;
-
-      if (conflict) {
-        this.$store.commit("showHover", {
-          prompt: "replace-rename",
-          confirm: (event, option) => {
-            overwrite = option == "overwrite";
-            rename = option == "rename";
-
-            event.preventDefault();
-            this.$store.commit("closeHovers");
-            action(overwrite, rename);
-          },
-        });
-
-        return;
-      }
-
-      action(overwrite, rename);
-    },
-    itemClick: function (event) {
-      if (
-        !(event.ctrlKey || event.metaKey) &&
-        this.singleClick &&
-        !this.$store.state.multiple
-      )
-        this.open();
-      else this.click(event);
-    },
-    click: function (event) {
-      if (!this.singleClick && this.selectedCount !== 0) event.preventDefault();
-
-      setTimeout(() => {
-        this.touches = 0;
-      }, 300);
-
-      this.touches++;
-      if (this.touches > 1) {
-        this.open();
-      }
-
-      if (this.$store.state.selected.indexOf(this.index) !== -1) {
-        this.removeSelected(this.index);
-        return;
-      }
-
-      if (event.shiftKey && this.selected.length > 0) {
-        let fi = 0;
-        let la = 0;
-
-        if (this.index > this.selected[0]) {
-          fi = this.selected[0] + 1;
-          la = this.index;
-        } else {
-          fi = this.index;
-          la = this.selected[0] - 1;
-        }
-
-        for (; fi <= la; fi++) {
-          if (this.$store.state.selected.indexOf(fi) == -1) {
-            this.addSelected(fi);
-          }
-        }
-
-        return;
-      }
-
-      if (
-        !this.singleClick &&
-        !event.ctrlKey &&
-        !event.metaKey &&
-        !this.$store.state.multiple
-      )
-        this.resetSelected();
-      this.addSelected(this.index);
-    },
-    open: function () {
-      this.$router.push({ path: this.url });
-    },
-  },
+const open = () => {
+  router.push({ path: props.url });
 };
 </script>

@@ -1,6 +1,7 @@
 {
   "buttons": {
     "cancel": "Отмена",
+    "clear": "Очистить",
     "close": "Закрыть",
     "copy": "Копировать",
     "copyFile": "Скопировать файл",
@@ -51,7 +52,6 @@
   },
   "files": {
     "body": "Тело",
-    "clear": "Очистить",
     "closePreview": "Закрыть",
     "files": "Файлы",
     "folders": "Папки",
@@ -87,6 +87,7 @@
     "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
+    "el": "Ελληνικά",
     "en": "English",
     "es": "Español",
     "fr": "Français",
@@ -102,8 +103,8 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "Swedish (Sweden)",
-    "tr" : "Türkçe",
-    "ua": "Українська",
+    "tr": "Türkçe",
+    "uk": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
   },

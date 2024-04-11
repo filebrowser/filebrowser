@@ -39,12 +39,12 @@ var docsCmd = &cobra.Command{
 	Use:    "docs",
 	Hidden: true,
 	Args:   cobra.NoArgs,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, _ []string) {
 		dir := mustGetString(cmd.Flags(), "path")
 		generateDocs(rootCmd, dir)
 		names := []string{}
 
-		err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		err := filepath.Walk(dir, func(_ string, info os.FileInfo, err error) error {
 			if err != nil || info.IsDir() {
 				return err
 			}
@@ -101,7 +101,7 @@ func generateMarkdown(cmd *cobra.Command, w io.Writer) {
 		_, _ = fmt.Fprintf(buf, "```\n%s\n```\n\n", cmd.UseLine())
 	}
 
-	if len(cmd.Example) > 0 {
+	if cmd.Example != "" {
 		buf.WriteString("## Examples\n\n")
 		_, _ = fmt.Fprintf(buf, "```\n%s\n```\n\n", cmd.Example)
 	}

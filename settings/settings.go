@@ -62,12 +62,12 @@ func (s *Server) GetTokenExpirationTime(fallback time.Duration) time.Duration {
 		return fallback
 	}
 
-	if duration, err := time.ParseDuration(s.TokenExpirationTime); err == nil {
-		return duration
-	} else {
+	duration, err := time.ParseDuration(s.TokenExpirationTime)
+	if err != nil {
 		log.Printf("[WARN] Failed to parse tokenExpirationTime: %v", err)
 		return fallback
 	}
+	return duration
 }
 
 // GenerateKey generates a key of 512 bits.

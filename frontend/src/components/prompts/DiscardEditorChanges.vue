@@ -7,18 +7,21 @@
     </div>
     <div class="card-action">
       <button
-        @click="$store.commit('closeHovers')"
         class="button button--flat button--grey"
+        @click="closeHovers"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')"
+        tabindex="2"
       >
         {{ $t("buttons.cancel") }}
       </button>
       <button
+        id="focus-prompt"
         @click="submit"
         class="button button--flat button--red"
         :aria-label="$t('buttons.discardChanges')"
         :title="$t('buttons.discardChanges')"
+        tabindex="1"
       >
         {{ $t("buttons.discardChanges") }}
       </button>
@@ -27,15 +30,18 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapActions } from "pinia";
 import url from "@/utils/url";
+import { useLayoutStore } from "@/stores/layout";
+import { useFileStore } from "@/stores/file";
 
 export default {
   name: "discardEditorChanges",
   methods: {
-    ...mapMutations(["closeHovers"]),
+    ...mapActions(useLayoutStore, ["closeHovers"]),
+    ...mapActions(useFileStore, ["updateRequest"]),
     submit: async function () {
-      this.$store.commit("updateRequest", {});
+      this.updateRequest(null);
 
       let uri = url.removeLastDir(this.$route.path) + "/";
       this.$router.push({ path: uri });

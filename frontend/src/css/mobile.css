@@ -1,12 +1,12 @@
 @media (max-width: 1024px) {
   nav {
-    width: 10em
+    width: 10em;
   }
 }
 
 @media (max-width: 1024px) {
   main {
-    width: calc(100% - 13em)
+    width: calc(100% - 13em);
   }
 }
 
@@ -21,27 +21,27 @@
     width: 60%;
   }
   #more {
-    display: inherit
+    display: inherit;
   }
   header .overlay {
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: var(--borderPrimary);
   }
   #dropdown {
     position: fixed;
     top: 1em;
     right: 1em;
     display: block;
-    background-color: #fff;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    background: var(--surfaceSecondary);
+    box-shadow: 0 0 5px var(--borderPrimary);
     transform: scale(0);
-    transition: .1s ease-in-out transform;
+    transition: 0.1s ease-in-out transform;
     transform-origin: top right;
     z-index: 99999;
   }
 
-  body.rtl #dropdown {
+  html[dir="rtl"] #dropdown {
     right: unset;
     left: 1em;
     transform-origin: top left;
@@ -61,7 +61,7 @@
   }
   #dropdown .action span:not(.counter) {
     display: inline-block;
-    padding: .4em;
+    padding: 0.4em;
   }
   #dropdown .counter {
     left: 2.25em;
@@ -73,8 +73,10 @@
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    background: #fff;
-    box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 3px, rgba(0, 0, 0, 0.12) 0px 1px 2px;
+    background: var(--surfaceSecondary);
+    box-shadow:
+      rgba(0, 0, 0, 0.06) 0px 1px 3px,
+      rgba(0, 0, 0, 0.12) 0px 1px 2px;
     width: 95%;
     max-width: 20em;
     z-index: 1;
@@ -86,7 +88,7 @@
   #file-selection > span {
     display: inline-block;
     margin-left: 1em;
-    color: #6f6f6f;
+    color: var(--textPrimary);
     margin-right: auto;
   }
   #file-selection .action span {
@@ -95,15 +97,15 @@
   nav {
     top: 0;
     z-index: 99999;
-    background: #fff;
+    background: var(--surfaceSecondary);
     height: 100%;
     width: 16em;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    transition: .1s ease left;
+    box-shadow: 0 0 5px var(--borderPrimary);
+    transition: 0.1s ease left;
     left: -17em;
   }
 
-  body.rtl nav {
+  html[dir="rtl"] nav {
     left: unset;
     right: -17em;
   }
@@ -111,7 +113,7 @@
     left: 0;
   }
 
-  body.rtl nav.active {
+  html[dir="rtl"] nav.active {
     left: unset;
     right: 0;
   }
@@ -131,19 +133,19 @@
     margin-bottom: 5em;
   }
 
-  body.rtl #listing {
+  html[dir="rtl"] #listing {
     margin-right: unset;
   }
 
-  body.rtl .breadcrumbs {
+  html[dir="rtl"] .breadcrumbs {
     transform: translateX(16em);
   }
 
-  body.rtl #nav .wrapper {
+  html[dir="rtl"] #nav .wrapper {
     margin-right: unset;
   }
-  
-  body.rtl .dashboard .row {
+
+  html[dir="rtl"] .dashboard .row {
     margin-right: unset;
   }
 

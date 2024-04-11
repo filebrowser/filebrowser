@@ -6,8 +6,6 @@ linters-settings:
   funlen:
     lines: 100
     statements: 50
-  gci:
-    local-prefixes: github.com/filebrowser/filebrowser
   goconst:
     min-len: 2
     min-occurrences: 2
@@ -29,23 +27,31 @@ linters-settings:
   goimports:
     local-prefixes: github.com/filebrowser/filebrowser
   gomnd:
-    settings:
-      mnd:
-        # don't include the "operation" and "assign"
-        checks: argument,case,condition,return
+    # don't include the "operation" and "assign"
+    checks:
+      - argument
+      - case
+      - condition
+      - return
+    ignored-numbers:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+    ignored-functions:
+      - strings.SplitN
   govet:
-    check-shadowing: true
+    enable:
+      - nilness
+      - shadow
   lll:
     line-length: 140
-  maligned:
-    suggest-new: true
   misspell:
     locale: US
   nolintlint:
-    allow-leading-space: true # don't require machine-readable nolint directives (i.e. with no leading space)
     allow-unused: false # report any unused nolint directives
-    require-explanation: false # don't require an explanation for nolint directives
-    require-specific: false # don't require nolint directives to be specific about which linter is being skipped
+    require-explanation: false # require an explanation for nolint directives
+    require-specific: true # require nolint directives to be specific about which linter is being skipped
 
 linters:
   # please, do not use `enable-all`: it's deprecated and will be removed soon.
@@ -53,17 +59,19 @@ linters:
   disable-all: true
   enable:
     - bodyclose
-    - deadcode
     - dogsled
     - dupl
     - errcheck
+    - errorlint
     - exportloopref
     - exhaustive
     - funlen
+    - gocheckcompilerdirectives
     - gochecknoinits
     - goconst
     - gocritic
     - gocyclo
+    - godox
     - goimports
     - gomnd
     - goprintffuncname
@@ -75,19 +83,21 @@ linters:
     - misspell
     - nakedret
     - nolintlint
+    - prealloc
+    - revive
     - rowserrcheck
     - staticcheck
-    - structcheck
     - stylecheck
+    - testifylint
     - typecheck
     - unconvert
     - unparam
     - unused
-    - varcheck
     - whitespace
-    - prealloc
 
 issues:
+  exclude-dirs:
+    - frontend/
   exclude-rules:
     - path: cmd/.*.go
       linters:
@@ -108,13 +118,4 @@ issues:
         - gomnd
 
 run:
-  go: '1.18'
-  skip-dirs:
-    - frontend/
-  skip-files:
-    - http/rice-box.go
-
-# golangci.com configuration
-# https://github.com/golangci/golangci/wiki/Configuration
-service:
-  golangci-lint-version: 1.27.x # use the fixed version to not introduce new linters unexpectedly
+  timeout: 5m

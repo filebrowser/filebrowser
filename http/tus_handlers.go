@@ -15,8 +15,8 @@ import (
 )
 
 func tusPostHandler() handleFunc {
-	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-		file, err := files.NewFileInfo(files.FileOptions{
+	return withUser(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		file, err := files.NewFileInfo(&files.FileOptions{
 			Fs:         d.user.Fs,
 			Path:       r.URL.Path,
 			Modify:     d.user.Perm.Modify,
@@ -71,7 +71,7 @@ func tusHeadHandler() handleFunc {
 			return http.StatusForbidden, nil
 		}
 
-		file, err := files.NewFileInfo(files.FileOptions{
+		file, err := files.NewFileInfo(&files.FileOptions{
 			Fs:         d.user.Fs,
 			Path:       r.URL.Path,
 			Modify:     d.user.Perm.Modify,
@@ -101,10 +101,10 @@ func tusPatchHandler() handleFunc {
 
 		uploadOffset, err := getUploadOffset(r)
 		if err != nil {
-			return http.StatusBadRequest, fmt.Errorf("invalid upload offset: %v", err)
+			return http.StatusBadRequest, fmt.Errorf("invalid upload offset: %w", err)
 		}
 
-		file, err := files.NewFileInfo(files.FileOptions{
+		file, err := files.NewFileInfo(&files.FileOptions{
 			Fs:         d.user.Fs,
 			Path:       r.URL.Path,
 			Modify:     d.user.Perm.Modify,
@@ -133,19 +133,19 @@ func tusPatchHandler() handleFunc {
 
 		openFile, err := d.user.Fs.OpenFile(r.URL.Path, os.O_WRONLY|os.O_APPEND, files.PermFile)
 		if err != nil {
-			return http.StatusInternalServerError, fmt.Errorf("could not open file: %v", err)
+			return http.StatusInternalServerError, fmt.Errorf("could not open file: %w", err)
 		}
 		defer openFile.Close()
 
 		_, err = openFile.Seek(uploadOffset, 0)
 		if err != nil {
-			return http.StatusInternalServerError, fmt.Errorf("could not seek file: %v", err)
+			return http.StatusInternalServerError, fmt.Errorf("could not seek file: %w", err)
 		}
 
 		defer r.Body.Close()
 		bytesWritten, err := io.Copy(openFile, r.Body)
 		if err != nil {
-			return http.StatusInternalServerError, fmt.Errorf("could not write to file: %v", err)
+			return http.StatusInternalServerError, fmt.Errorf("could not write to file: %w", err)
 		}
 
 		w.Header().Set("Upload-Offset", strconv.FormatInt(uploadOffset+bytesWritten, 10))
@@ -157,7 +157,7 @@ func tusPatchHandler() handleFunc {
 func getUploadOffset(r *http.Request) (int64, error) {
 	uploadOffset, err := strconv.ParseInt(r.Header.Get("Upload-Offset"), 10, 64)
 	if err != nil {
-		return 0, fmt.Errorf("invalid upload offset: %v", err)
+		return 0, fmt.Errorf("invalid upload offset: %w", err)
 	}
 	return uploadOffset, nil
 }

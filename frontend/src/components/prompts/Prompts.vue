@@ -1,22 +1,20 @@
 <template>
-  <div>
-    <component
-      v-if="showOverlay"
-      :ref="currentPromptName"
-      :is="currentPromptName"
-      v-bind="currentPrompt.props"
-    >
-    </component>
-    <div v-show="showOverlay" @click="resetPrompts" class="overlay"></div>
-  </div>
+  <ModalsContainer />
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, watch } from "vue";
+import { ModalsContainer, useModal } from "vue-final-modal";
+import { storeToRefs } from "pinia";
+import { useLayoutStore } from "@/stores/layout";
+
+import BaseModal from "./BaseModal.vue";
 import Help from "./Help.vue";
 import Info from "./Info.vue";
 import Delete from "./Delete.vue";
-import Rename from "./Rename.vue";
+import DeleteUser from "./DeleteUser.vue";
 import Download from "./Download.vue";
+import Rename from "./Rename.vue";
 import Move from "./Move.vue";
 import Copy from "./Copy.vue";
 import NewFile from "./NewFile.vue";
@@ -24,87 +22,61 @@ import NewDir from "./NewDir.vue";
 import Replace from "./Replace.vue";
 import ReplaceRename from "./ReplaceRename.vue";
 import Share from "./Share.vue";
-import Upload from "./Upload.vue";
 import ShareDelete from "./ShareDelete.vue";
-import Sidebar from "../Sidebar.vue";
+import Upload from "./Upload.vue";
 import DiscardEditorChanges from "./DiscardEditorChanges.vue";
-import { mapGetters, mapState } from "vuex";
-import buttons from "@/utils/buttons";
 
-export default {
-  name: "prompts",
-  components: {
-    Info,
-    Delete,
-    Rename,
-    Download,
-    Move,
-    Copy,
-    Share,
-    NewFile,
-    NewDir,
-    Help,
-    Replace,
-    ReplaceRename,
-    Upload,
-    ShareDelete,
-    Sidebar,
-    DiscardEditorChanges,
-  },
-  data: function () {
-    return {
-      pluginData: {
-        buttons,
-        store: this.$store,
-        router: this.$router,
-      },
-    };
-  },
-  created() {
-    window.addEventListener("keydown", (event) => {
-      if (this.currentPrompt == null) return;
+const layoutStore = useLayoutStore();
 
-      const promptName = this.currentPrompt.prompt;
-      const prompt = this.$refs[promptName];
+const { currentPromptName } = storeToRefs(layoutStore);
 
-      if (event.code === "Escape") {
-        event.stopImmediatePropagation();
-        this.$store.commit("closeHovers");
-      }
+const closeModal = ref<() => Promise<string>>();
 
-      if (event.code === "Enter") {
-        switch (promptName) {
-          case "delete":
-            prompt.submit();
-            break;
-          case "copy":
-            prompt.copy(event);
-            break;
-          case "move":
-            prompt.move(event);
-            break;
-          case "replace":
-            prompt.showConfirm(event);
-            break;
-        }
-      }
-    });
-  },
-  computed: {
-    ...mapState(["plugins"]),
-    ...mapGetters(["currentPrompt", "currentPromptName"]),
-    showOverlay: function () {
-      return (
-        this.currentPrompt !== null &&
-        this.currentPrompt.prompt !== "search" &&
-        this.currentPrompt.prompt !== "more"
-      );
+const components = new Map<string, any>([
+  ["info", Info],
+  ["help", Help],
+  ["delete", Delete],
+  ["rename", Rename],
+  ["move", Move],
+  ["copy", Copy],
+  ["newFile", NewFile],
+  ["newDir", NewDir],
+  ["download", Download],
+  ["replace", Replace],
+  ["replace-rename", ReplaceRename],
+  ["share", Share],
+  ["upload", Upload],
+  ["share-delete", ShareDelete],
+  ["deleteUser", DeleteUser],
+  ["discardEditorChanges", DiscardEditorChanges],
+]);
+
+watch(currentPromptName, (newValue) => {
+  if (closeModal.value) {
+    closeModal.value();
+    closeModal.value = undefined;
+  }
+
+  const modal = components.get(newValue!);
+  if (!modal) return;
+
+  const { open, close } = useModal({
+    component: BaseModal,
+    slots: {
+      default: modal,
     },
-  },
-  methods: {
-    resetPrompts() {
-      this.$store.commit("closeHovers");
-    },
-  },
-};
+  });
+
+  closeModal.value = close;
+  open();
+});
+
+window.addEventListener("keydown", (event) => {
+  if (!layoutStore.currentPrompt) return;
+
+  if (event.key === "Escape") {
+    event.stopImmediatePropagation();
+    layoutStore.closeHovers();
+  }
+});
 </script>

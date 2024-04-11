@@ -1,10 +1,11 @@
 package auth
 
 import (
+	"errors"
 	"net/http"
 	"os"
 
-	"github.com/filebrowser/filebrowser/v2/errors"
+	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -18,10 +19,10 @@ type ProxyAuth struct {
 }
 
 // Auth authenticates the user via an HTTP header.
-func (a ProxyAuth) Auth(r *http.Request, usr users.Store, stg *settings.Settings, srv *settings.Server) (*users.User, error) {
+func (a ProxyAuth) Auth(r *http.Request, usr users.Store, _ *settings.Settings, srv *settings.Server) (*users.User, error) {
 	username := r.Header.Get(a.Header)
 	user, err := usr.Get(srv.Root, username)
-	if err == errors.ErrNotExist {
+	if errors.Is(err, fbErrors.ErrNotExist) {
 		return nil, os.ErrPermission
 	}
 

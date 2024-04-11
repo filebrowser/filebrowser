@@ -1,6 +1,7 @@
 {
   "buttons": {
     "cancel": "Vazgeç",
+    "clear": "Temizle",
     "close": "Kapat",
     "copy": "Kopyala",
     "copyFile": "Dosyayı kopyala",
@@ -49,7 +50,6 @@
   },
   "files": {
     "body": "Sayfa",
-    "clear": "Temizle",
     "closePreview": "Önizlemeyi kapat",
     "files": "Dosyalar",
     "folders": "Klasörler",
@@ -85,6 +85,7 @@
     "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
+    "el": "Ελληνικά",
     "en": "English",
     "es": "Español",
     "fr": "Français",
@@ -100,8 +101,8 @@
     "ru": "Русский",
     "sk": "Slovenčina",
     "svSE": "Swedish (Sweden)",
-    "tr" : "Türkçe",
-    "ua": "Українська",
+    "tr": "Türkçe",
+    "uk": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
   },
