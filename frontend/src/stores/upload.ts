@@ -47,6 +47,17 @@ export const useUploadStore = defineStore("upload", {
       const sum = state.progress.reduce((acc, val) => +acc + +val) as number;
       return Math.ceil((sum / totalSize) * 100);
     },
+    getProgressDecimal: (state) => {
+      if (state.progress.length === 0) {
+        return 0;
+      }
+
+      const totalSize = state.sizes.reduce((a, b) => a + b, 0);
+
+      // TODO: this looks ugly but it works with ts now
+      const sum = state.progress.reduce((acc, val) => +acc + +val) as number;
+      return ((sum / totalSize) * 100).toFixed(2);
+    },
     getTotalProgressBytes: (state) => {
      if (state.progress.length === 0 || state.sizes.length === 0) {
         return '0 Bytes';
