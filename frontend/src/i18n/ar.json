@@ -1,7 +1,9 @@
 {
   "buttons": {
     "cancel": "إلغاء",
+    "clear": "مسح",
     "close": "إغلاق",
+    "continue": "متابعة",
     "copy": "نسخ",
     "copyFile": "نسخ الملف",
     "copyToClipboard": "نسخ الى الحافظة",
@@ -11,6 +13,7 @@
     "download": "تحميل",
     "file": "ملف",
     "folder": "مجلد",
+    "fullScreen": "تكبير/تصغير الشاشة",
     "hideDotfiles": "إخفاء ملفات النقطة",
     "info": "معلومات",
     "more": "المزيد",
@@ -38,7 +41,7 @@
     "update": "تحديث",
     "upload": "رفع",
     "openFile": "فتح الملف",
-    "continue": "متابعة"
+    "discardChanges": "إلغاء التغييرات"
   },
   "download": {
     "downloadFile": "تحميل الملف",
@@ -56,7 +59,6 @@
   },
   "files": {
     "body": "الصفحة",
-    "clear": "مسح",
     "closePreview": "إغلاق العرض",
     "files": "الملفات",
     "folders": "المجلدات",
@@ -133,6 +135,7 @@
     "deleteMessageMultiple": "هل تريد بالتأكيد حذف {count} ملف؟",
     "deleteMessageSingle": "هل تريد بالتأكيد حذف هذا الملف/المجلد؟",
     "deleteMessageShare": "هل تريد بالتأكيد إلغاء مشاركة هذا الملف/المجلد ({path})؟",
+    "deleteUser": "هل تريد بالتأكيد حذف هذا المستخدم؟",
     "deleteTitle": "حذف الملفات",
     "displayName": "عرض اﻹسم:",
     "download": "تحميل الملفات",
@@ -161,7 +164,9 @@
     "upload": "رفع",
     "uploadFiles": "يتم رفع {files} ملفات.",
     "uploadMessage": "إختر الملفات التي تريد رفعها.",
-    "optionalPassword": "كلمة مرور إختيارية"
+    "optionalPassword": "كلمة مرور إختيارية",
+    "resolution": "الدقة",
+    "discardEditorChanges": "هل تريد بالتأكيد إلغاء التغييرات؟"
   },
   "search": {
     "images": "الصور",
@@ -243,6 +248,7 @@
     "shareDeleted": "تم حذف المشاركة!",
     "singleClick": "استخدم النقرة الواحدة لفتح الملفات",
     "themes": {
+      "default": "افتراضي (نظام التشغيل)",
       "dark": "غامق",
       "light": "فاتح",
       "title": "موضوع"
@@ -282,4 +288,3 @@
     "unit": "وحدة الوقت"
   }
 }
-

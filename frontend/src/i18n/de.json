@@ -1,6 +1,7 @@
 {
   "buttons": {
     "cancel": "Abbrechen",
+    "clear": "Schließen",
     "close": "Schließen",
     "copy": "Kopieren",
     "copyFile": "Kopiere Datei",
@@ -36,8 +37,7 @@
     "toggleSidebar": "Seitenleiste anzeigen",
     "update": "Update",
     "upload": "Upload",
-    "openFile": "Datei öffnen",
-    "continue": "Fortfahren"
+    "openFile": "Datei öffnen"
   },
   "download": {
     "downloadFile": "Download Datei",
@@ -52,7 +52,6 @@
   },
   "files": {
     "body": "Body",
-    "clear": "Schließen",
     "closePreview": "Vorschau schließen",
     "files": "Dateien",
     "folders": "Ordner",
@@ -88,6 +87,7 @@
     "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
+    "el": "Ελληνικά",
     "en": "English",
     "es": "Español",
     "fr": "Français",
@@ -104,7 +104,7 @@
     "sk": "Slovenčina",
     "svSE": "Swedish (Sweden)",
     "tr": "Türkçe",
-    "ua": "Українська",
+    "uk": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
   },

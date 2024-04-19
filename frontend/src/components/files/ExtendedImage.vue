@@ -13,261 +13,290 @@
     <img class="image-ex-img image-ex-img-center" ref="imgex" @load="onLoad" />
   </div>
 </template>
-<script>
-import throttle from "lodash.throttle";
+<script setup lang="ts">
+import throttle from "lodash/throttle";
 import UTIF from "utif";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
-export default {
-  props: {
-    src: String,
-    moveDisabledTime: {
-      type: Number,
-      default: () => 200,
-    },
-    classList: {
-      type: Array,
-      default: () => [],
-    },
-    zoomStep: {
-      type: Number,
-      default: () => 0.25,
-    },
-  },
-  data() {
-    return {
-      scale: 1,
-      lastX: null,
-      lastY: null,
-      inDrag: false,
-      touches: 0,
-      lastTouchDistance: 0,
-      moveDisabled: false,
-      disabledTimer: null,
-      imageLoaded: false,
-      position: {
-        center: { x: 0, y: 0 },
-        relative: { x: 0, y: 0 },
-      },
-      maxScale: 4,
-      minScale: 0.25,
-    };
-  },
-  mounted() {
-    if (!this.decodeUTIF()) {
-      this.$refs.imgex.src = this.src;
+interface IProps {
+  src: string;
+  moveDisabledTime: number;
+  classList: any[];
+  zoomStep: number;
+}
+
+const props = withDefaults(defineProps<IProps>(), {
+  moveDisabledTime: () => 200,
+  classList: () => [],
+  zoomStep: () => 0.25,
+});
+
+const scale = ref<number>(1);
+const lastX = ref<number | null>(null);
+const lastY = ref<number | null>(null);
+const inDrag = ref<boolean>(false);
+const touches = ref<number>(0);
+const lastTouchDistance = ref<number | null>(0);
+const moveDisabled = ref<boolean>(false);
+const disabledTimer = ref<number | null>(null);
+const imageLoaded = ref<boolean>(false);
+const position = ref<{
+  center: { x: number; y: number };
+  relative: { x: number; y: number };
+}>({
+  center: { x: 0, y: 0 },
+  relative: { x: 0, y: 0 },
+});
+const maxScale = ref<number>(4);
+const minScale = ref<number>(0.25);
+
+// Refs
+const imgex = ref<HTMLImageElement | null>(null);
+const container = ref<HTMLDivElement | null>(null);
+
+onMounted(() => {
+  if (!decodeUTIF() && imgex.value !== null) {
+    imgex.value.src = props.src;
+  }
+
+  props.classList.forEach((className) =>
+    container.value !== null ? container.value.classList.add(className) : ""
+  );
+
+  if (container.value === null) {
+    return;
+  }
+
+  // set width and height if they are zero
+  if (getComputedStyle(container.value).width === "0px") {
+    container.value.style.width = "100%";
+  }
+  if (getComputedStyle(container.value).height === "0px") {
+    container.value.style.height = "100%";
+  }
+
+  window.addEventListener("resize", onResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", onResize);
+  document.removeEventListener("mouseup", onMouseUp);
+});
+
+watch(
+  () => props.src,
+  () => {
+    if (!decodeUTIF() && imgex.value !== null) {
+      imgex.value.src = props.src;
     }
-    let container = this.$refs.container;
-    this.classList.forEach((className) => container.classList.add(className));
-    // set width and height if they are zero
-    if (getComputedStyle(container).width === "0px") {
-      container.style.width = "100%";
+
+    scale.value = 1;
+    setZoom();
+    setCenter();
+  }
+);
+
+// Modified from UTIF.replaceIMG
+const decodeUTIF = () => {
+  const sufs = ["tif", "tiff", "dng", "cr2", "nef"];
+  if (document?.location?.pathname === undefined) {
+    return;
+  }
+  let suff = document.location.pathname.split(".")?.pop()?.toLowerCase() ?? "";
+
+  if (sufs.indexOf(suff) == -1) return false;
+  let xhr = new XMLHttpRequest();
+  UTIF._xhrs.push(xhr);
+  UTIF._imgs.push(imgex.value);
+  xhr.open("GET", props.src);
+  xhr.responseType = "arraybuffer";
+  xhr.onload = UTIF._imgLoaded;
+  xhr.send();
+  return true;
+};
+
+const onLoad = () => {
+  imageLoaded.value = true;
+
+  if (imgex.value === null) {
+    return;
+  }
+
+  imgex.value.classList.remove("image-ex-img-center");
+  setCenter();
+  imgex.value.classList.add("image-ex-img-ready");
+
+  document.addEventListener("mouseup", onMouseUp);
+
+  let realSize = imgex.value.naturalWidth;
+  let displaySize = imgex.value.offsetWidth;
+
+  // Image is in portrait orientation
+  if (imgex.value.naturalHeight > imgex.value.naturalWidth) {
+    realSize = imgex.value.naturalHeight;
+    displaySize = imgex.value.offsetHeight;
+  }
+
+  // Scale needed to display the image on full size
+  const fullScale = realSize / displaySize;
+
+  // Full size plus additional zoom
+  maxScale.value = fullScale + 4;
+};
+
+const onMouseUp = () => {
+  inDrag.value = false;
+};
+
+const onResize = throttle(function () {
+  if (imageLoaded.value) {
+    setCenter();
+    doMove(position.value.relative.x, position.value.relative.y);
+  }
+}, 100);
+
+const setCenter = () => {
+  if (container.value === null || imgex.value === null) {
+    return;
+  }
+
+  position.value.center.x = Math.floor(
+    (container.value.clientWidth - imgex.value.clientWidth) / 2
+  );
+  position.value.center.y = Math.floor(
+    (container.value.clientHeight - imgex.value.clientHeight) / 2
+  );
+
+  imgex.value.style.left = position.value.center.x + "px";
+  imgex.value.style.top = position.value.center.y + "px";
+};
+
+const mousedownStart = (event: Event) => {
+  lastX.value = null;
+  lastY.value = null;
+  inDrag.value = true;
+  event.preventDefault();
+};
+const mouseMove = (event: MouseEvent) => {
+  if (!inDrag.value) return;
+  doMove(event.movementX, event.movementY);
+  event.preventDefault();
+};
+const mouseUp = (event: Event) => {
+  inDrag.value = false;
+  event.preventDefault();
+};
+const touchStart = (event: TouchEvent) => {
+  lastX.value = null;
+  lastY.value = null;
+  lastTouchDistance.value = null;
+  if (event.targetTouches.length < 2) {
+    setTimeout(() => {
+      touches.value = 0;
+    }, 300);
+    touches.value++;
+    if (touches.value > 1) {
+      zoomAuto(event);
     }
-    if (getComputedStyle(container).height === "0px") {
-      container.style.height = "100%";
+  }
+  event.preventDefault();
+};
+
+const zoomAuto = (event: Event) => {
+  switch (scale.value) {
+    case 1:
+      scale.value = 2;
+      break;
+    case 2:
+      scale.value = 4;
+      break;
+    default:
+    case 4:
+      scale.value = 1;
+      setCenter();
+      break;
+  }
+  setZoom();
+  event.preventDefault();
+};
+
+const touchMove = (event: TouchEvent) => {
+  event.preventDefault();
+  if (lastX.value === null) {
+    lastX.value = event.targetTouches[0].pageX;
+    lastY.value = event.targetTouches[0].pageY;
+    return;
+  }
+  if (imgex.value === null) {
+    return;
+  }
+  let step = imgex.value.width / 5;
+  if (event.targetTouches.length === 2) {
+    moveDisabled.value = true;
+    if (disabledTimer.value) clearTimeout(disabledTimer.value);
+    disabledTimer.value = window.setTimeout(
+      () => (moveDisabled.value = false),
+      props.moveDisabledTime
+    );
+
+    let p1 = event.targetTouches[0];
+    let p2 = event.targetTouches[1];
+    let touchDistance = Math.sqrt(
+      Math.pow(p2.pageX - p1.pageX, 2) + Math.pow(p2.pageY - p1.pageY, 2)
+    );
+    if (!lastTouchDistance.value) {
+      lastTouchDistance.value = touchDistance;
+      return;
     }
+    scale.value += (touchDistance - lastTouchDistance.value) / step;
+    lastTouchDistance.value = touchDistance;
+    setZoom();
+  } else if (event.targetTouches.length === 1) {
+    if (moveDisabled.value) return;
+    let x = event.targetTouches[0].pageX - (lastX.value ?? 0);
+    let y = event.targetTouches[0].pageY - (lastY.value ?? 0);
+    if (Math.abs(x) >= step && Math.abs(y) >= step) return;
+    lastX.value = event.targetTouches[0].pageX;
+    lastY.value = event.targetTouches[0].pageY;
+    doMove(x, y);
+  }
+};
 
-    window.addEventListener("resize", this.onResize);
-  },
-  beforeDestroy() {
-    window.removeEventListener("resize", this.onResize);
-    document.removeEventListener("mouseup", this.onMouseUp);
-  },
-  watch: {
-    src: function () {
-      if (!this.decodeUTIF()) {
-        this.$refs.imgex.src = this.src;
-      }
+const doMove = (x: number, y: number) => {
+  if (imgex.value === null) {
+    return;
+  }
+  const style = imgex.value.style;
 
-      this.scale = 1;
-      this.setZoom();
-      this.setCenter();
-    },
-  },
-  methods: {
-    // Modified from UTIF.replaceIMG
-    decodeUTIF() {
-      const sufs = ["tif", "tiff", "dng", "cr2", "nef"];
-      let suff = document.location.pathname.split(".").pop().toLowerCase();
-      if (sufs.indexOf(suff) == -1) return false;
-      let xhr = new XMLHttpRequest();
-      UTIF._xhrs.push(xhr);
-      UTIF._imgs.push(this.$refs.imgex);
-      xhr.open("GET", this.src);
-      xhr.responseType = "arraybuffer";
-      xhr.onload = UTIF._imgLoaded;
-      xhr.send();
-      return true;
-    },
-    onLoad() {
-      let img = this.$refs.imgex;
+  let posX = pxStringToNumber(style.left) + x;
+  let posY = pxStringToNumber(style.top) + y;
 
-      this.imageLoaded = true;
+  style.left = posX + "px";
+  style.top = posY + "px";
 
-      if (img === undefined) {
-        return;
-      }
+  position.value.relative.x = Math.abs(position.value.center.x - posX);
+  position.value.relative.y = Math.abs(position.value.center.y - posY);
 
-      img.classList.remove("image-ex-img-center");
-      this.setCenter();
-      img.classList.add("image-ex-img-ready");
+  if (posX < position.value.center.x) {
+    position.value.relative.x = position.value.relative.x * -1;
+  }
 
-      document.addEventListener("mouseup", this.onMouseUp);
-
-      let realSize = img.naturalWidth;
-      let displaySize = img.offsetWidth;
-
-      // Image is in portrait orientation
-      if (img.naturalHeight > img.naturalWidth) {
-        realSize = img.naturalHeight;
-        displaySize = img.offsetHeight;
-      }
-
-      // Scale needed to display the image on full size
-      const fullScale = realSize / displaySize;
-
-      // Full size plus additional zoom
-      this.maxScale = fullScale + 4;
-    },
-    onMouseUp() {
-      this.inDrag = false;
-    },
-    onResize: throttle(function () {
-      if (this.imageLoaded) {
-        this.setCenter();
-        this.doMove(this.position.relative.x, this.position.relative.y);
-      }
-    }, 100),
-    setCenter() {
-      let container = this.$refs.container;
-      let img = this.$refs.imgex;
-
-      this.position.center.x = Math.floor(
-        (container.clientWidth - img.clientWidth) / 2
-      );
-      this.position.center.y = Math.floor(
-        (container.clientHeight - img.clientHeight) / 2
-      );
-
-      img.style.left = this.position.center.x + "px";
-      img.style.top = this.position.center.y + "px";
-    },
-    mousedownStart(event) {
-      this.lastX = null;
-      this.lastY = null;
-      this.inDrag = true;
-      event.preventDefault();
-    },
-    mouseMove(event) {
-      if (!this.inDrag) return;
-      this.doMove(event.movementX, event.movementY);
-      event.preventDefault();
-    },
-    mouseUp(event) {
-      this.inDrag = false;
-      event.preventDefault();
-    },
-    touchStart(event) {
-      this.lastX = null;
-      this.lastY = null;
-      this.lastTouchDistance = null;
-      if (event.targetTouches.length < 2) {
-        setTimeout(() => {
-          this.touches = 0;
-        }, 300);
-        this.touches++;
-        if (this.touches > 1) {
-          this.zoomAuto(event);
-        }
-      }
-      event.preventDefault();
-    },
-    zoomAuto(event) {
-      switch (this.scale) {
-        case 1:
-          this.scale = 2;
-          break;
-        case 2:
-          this.scale = 4;
-          break;
-        default:
-        case 4:
-          this.scale = 1;
-          this.setCenter();
-          break;
-      }
-      this.setZoom();
-      event.preventDefault();
-    },
-    touchMove(event) {
-      event.preventDefault();
-      if (this.lastX === null) {
-        this.lastX = event.targetTouches[0].pageX;
-        this.lastY = event.targetTouches[0].pageY;
-        return;
-      }
-      let step = this.$refs.imgex.width / 5;
-      if (event.targetTouches.length === 2) {
-        this.moveDisabled = true;
-        clearTimeout(this.disabledTimer);
-        this.disabledTimer = setTimeout(
-          () => (this.moveDisabled = false),
-          this.moveDisabledTime
-        );
-
-        let p1 = event.targetTouches[0];
-        let p2 = event.targetTouches[1];
-        let touchDistance = Math.sqrt(
-          Math.pow(p2.pageX - p1.pageX, 2) + Math.pow(p2.pageY - p1.pageY, 2)
-        );
-        if (!this.lastTouchDistance) {
-          this.lastTouchDistance = touchDistance;
-          return;
-        }
-        this.scale += (touchDistance - this.lastTouchDistance) / step;
-        this.lastTouchDistance = touchDistance;
-        this.setZoom();
-      } else if (event.targetTouches.length === 1) {
-        if (this.moveDisabled) return;
-        let x = event.targetTouches[0].pageX - this.lastX;
-        let y = event.targetTouches[0].pageY - this.lastY;
-        if (Math.abs(x) >= step && Math.abs(y) >= step) return;
-        this.lastX = event.targetTouches[0].pageX;
-        this.lastY = event.targetTouches[0].pageY;
-        this.doMove(x, y);
-      }
-    },
-    doMove(x, y) {
-      let style = this.$refs.imgex.style;
-      let posX = this.pxStringToNumber(style.left) + x;
-      let posY = this.pxStringToNumber(style.top) + y;
-
-      style.left = posX + "px";
-      style.top = posY + "px";
-
-      this.position.relative.x = Math.abs(this.position.center.x - posX);
-      this.position.relative.y = Math.abs(this.position.center.y - posY);
-
-      if (posX < this.position.center.x) {
-        this.position.relative.x = this.position.relative.x * -1;
-      }
-
-      if (posY < this.position.center.y) {
-        this.position.relative.y = this.position.relative.y * -1;
-      }
-    },
-    wheelMove(event) {
-      this.scale += -Math.sign(event.deltaY) * this.zoomStep;
-      this.setZoom();
-    },
-    setZoom() {
-      this.scale = this.scale < this.minScale ? this.minScale : this.scale;
-      this.scale = this.scale > this.maxScale ? this.maxScale : this.scale;
-      this.$refs.imgex.style.transform = `scale(${this.scale})`;
-    },
-    pxStringToNumber(style) {
-      return +style.replace("px", "");
-    },
-  },
+  if (posY < position.value.center.y) {
+    position.value.relative.y = position.value.relative.y * -1;
+  }
+};
+const wheelMove = (event: WheelEvent) => {
+  scale.value += -Math.sign(event.deltaY) * props.zoomStep;
+  setZoom();
+};
+const setZoom = () => {
+  scale.value = scale.value < minScale.value ? minScale.value : scale.value;
+  scale.value = scale.value > maxScale.value ? maxScale.value : scale.value;
+  if (imgex.value !== null)
+    imgex.value.style.transform = `scale(${scale.value})`;
+};
+const pxStringToNumber = (style: string) => {
+  return +style.replace("px", "");
 };
 </script>
 <style>

@@ -1,7 +1,9 @@
 {
   "buttons": {
     "cancel": "Cancel",
+    "clear": "Clear",
     "close": "Close",
+    "continue": "Continue",
     "copy": "Copy",
     "copyFile": "Copy file",
     "copyToClipboard": "Copy to clipboard",
@@ -11,6 +13,7 @@
     "download": "Download",
     "file": "File",
     "folder": "Folder",
+    "fullScreen": "Toggle full screen",
     "hideDotfiles": "Hide dotfiles",
     "info": "Info",
     "more": "More",
@@ -38,7 +41,6 @@
     "update": "Update",
     "upload": "Upload",
     "openFile": "Open file",
-    "continue": "Continue",
     "discardChanges": "Discard"
   },
   "download": {
@@ -57,7 +59,6 @@
   },
   "files": {
     "body": "Body",
-    "clear": "Clear",
     "closePreview": "Close preview",
     "files": "Files",
     "folders": "Folders",
@@ -110,7 +111,7 @@
     "sk": "Slovenčina",
     "svSE": "Swedish (Sweden)",
     "tr": "Türkçe",
-    "ua": "Українська",
+    "uk": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
   },
@@ -134,6 +135,7 @@
     "deleteMessageMultiple": "Are you sure you wish to delete {count} file(s)?",
     "deleteMessageSingle": "Are you sure you wish to delete this file/folder?",
     "deleteMessageShare": "Are you sure you wish to delete this share({path})?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "Delete files",
     "displayName": "Display Name:",
     "download": "Download files",
@@ -246,6 +248,7 @@
     "shareDeleted": "Share deleted!",
     "singleClick": "Use single clicks to open files and directories",
     "themes": {
+      "default": "System default",
       "dark": "Dark",
       "light": "Light",
       "title": "Theme"

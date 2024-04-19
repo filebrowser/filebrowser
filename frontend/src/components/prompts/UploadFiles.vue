@@ -53,7 +53,9 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapState, mapWritableState, mapActions } from "pinia";
+import { useUploadStore } from "@/stores/upload";
+import { useFileStore } from "@/stores/file";
 import { abortAllUploads } from "@/api/tus";
 import buttons from "@/utils/buttons";
 
@@ -65,19 +67,20 @@ export default {
     };
   },
   computed: {
-    ...mapGetters([
+    ...mapState(useUploadStore, [
       "filesInUpload",
       "filesInUploadCount",
       "uploadSpeed",
-      "eta",
+      "getETA",
     ]),
-    ...mapMutations(["resetUpload"]),
+    ...mapWritableState(useFileStore, ["reload"]),
+    ...mapActions(useUploadStore, ["reset"]),
     formattedETA() {
-      if (!this.eta || this.eta === Infinity) {
+      if (!this.getETA || this.getETA === Infinity) {
         return "--:--:--";
       }
 
-      let totalSeconds = this.eta;
+      let totalSeconds = this.getETA;
       const hours = Math.floor(totalSeconds / 3600);
       totalSeconds %= 3600;
       const minutes = Math.floor(totalSeconds / 60);
@@ -97,8 +100,8 @@ export default {
         abortAllUploads();
         buttons.done("upload");
         this.open = false;
-        this.$store.commit("resetUpload");
-        this.$store.commit("setReload", true);
+        this.reset();
+        this.reload = true;
       }
     },
   },

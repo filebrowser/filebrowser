@@ -3,17 +3,8 @@
   bottom: 0;
   left: 0;
   max-height: calc(100% - 4em);
-  background: white;
-  color: #212121;
-  z-index: 9997;
-  width: 100%;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  transition: .2s ease transform;
-}
-
-.shell__divider {
-  position: relative;
-  height: 8px;
+  background: var(--surfacePrimary);
+  color: var(--textPrimary);
   z-index: 9999;
   background: rgba(127, 127, 127, 0.1);
   transition: 0.2s ease background;
@@ -32,6 +23,8 @@
   overflow: auto;
   font-size: 1rem;
   cursor: text;
+  box-shadow: 0 0 5px var(--borderPrimary);
+  transition: 0.2s ease transform;
 }
 
 .shell__overlay {
@@ -52,7 +45,7 @@ body.rtl .shell-content {
   display: flex;
   padding: 0.5em;
   align-items: flex-start;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid var(--divider);
 }
 
 .shell--hidden {

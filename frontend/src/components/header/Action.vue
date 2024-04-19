@@ -2,24 +2,31 @@
   <button @click="action" :aria-label="label" :title="label" class="action">
     <i class="material-icons">{{ icon }}</i>
     <span>{{ label }}</span>
-    <span v-if="counter > 0" class="counter">{{ counter }}</span>
+    <span v-if="counter && counter > 0" class="counter">{{ counter }}</span>
   </button>
 </template>
 
-<script>
-export default {
-  name: "action",
-  props: ["icon", "label", "counter", "show"],
-  methods: {
-    action: function () {
-      if (this.show) {
-        this.$store.commit("showHover", this.show);
-      }
+<script setup lang="ts">
+import { useLayoutStore } from "@/stores/layout";
 
-      this.$emit("action");
-    },
-  },
+const props = defineProps<{
+  icon?: string;
+  label?: string;
+  counter?: number;
+  show?: string;
+}>();
+
+const emit = defineEmits<{
+  (e: "action"): any;
+}>();
+
+const layoutStore = useLayoutStore();
+
+const action = () => {
+  if (props.show) {
+    layoutStore.showHover(props.show);
+  }
+
+  emit("action");
 };
 </script>
-
-<style></style>

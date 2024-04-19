@@ -1,6 +1,7 @@
 {
   "buttons": {
     "cancel": "ביטול",
+    "clear": "נקה",
     "close": "סגירה",
     "copy": "העתקה",
     "copyFile": "העתק קובץ",
@@ -93,6 +94,7 @@
     "hu": "Magyar",
     "ar": "العربية",
     "de": "Deutsch",
+    "el": "Ελληνικά",
     "en": "English",
     "es": "Español",
     "fr": "Français",
@@ -109,7 +111,7 @@
     "sk": "Slovenčina",
     "svSE": "Swedish (Sweden)",
     "tr": "Türkçe",
-    "ua": "Українська",
+    "uk": "Українська",
     "zhCN": "中文 (简体)",
     "zhTW": "中文 (繁體)"
   },

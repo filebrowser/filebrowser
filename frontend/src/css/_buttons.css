@@ -1,14 +1,14 @@
 .button {
   outline: 0;
   border: 0;
-  padding: .5em 1em;
-  border-radius: .1em;
+  padding: 0.5em 1em;
+  border-radius: 0.1em;
   cursor: pointer;
   background: var(--blue);
   color: white;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
-  transition: .1s ease all;
+  border: 1px solid var(--divider);
+  box-shadow: 0 0 5px var(--divider);
+  transition: 0.1s ease all;
 }
 
 .button:hover {
@@ -38,7 +38,7 @@
 }
 
 .button--flat:hover {
-  background: var(--moon-grey);
+  background: var(--surfaceSecondary);
 }
 
 .button--flat.button--red {
@@ -50,6 +50,6 @@
 }
 
 .button[disabled] {
-  opacity: .5;
+  opacity: 0.5;
   cursor: not-allowed;
 }
