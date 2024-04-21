@@ -71,7 +71,7 @@
             <input
               type="checkbox"
               v-model="settings.branding.disableUsedPercentage"
-              id="branding-links"
+              id="branding-used-disk"
             />
             {{ t("settings.disableUsedDiskPercentage") }}
           </p>
