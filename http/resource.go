@@ -87,7 +87,7 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			return errToStatus(err), err
 		}
 
-		return http.StatusOK, nil
+		return http.StatusNoContent, nil
 	})
 }
 

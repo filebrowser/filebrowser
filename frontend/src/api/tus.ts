@@ -200,35 +200,14 @@ function calcProgress(filePath: string) {
   fileData.lastProgressTimestamp = Date.now();
 }
 
-export async function abortAllUploads() {
-  const deletePromises = [];
-
+export function abortAllUploads() {
   for (const filePath in CURRENT_UPLOAD_LIST) {
     if (CURRENT_UPLOAD_LIST[filePath].interval) {
       clearInterval(CURRENT_UPLOAD_LIST[filePath].interval);
     }
     if (CURRENT_UPLOAD_LIST[filePath].upload) {
-      //setting to false since the current tus method tries to delete against a non-existent endpoint 
-      CURRENT_UPLOAD_LIST[filePath].upload.abort(false); //TODO figure out how to do this properly through tus
+      CURRENT_UPLOAD_LIST[filePath].upload.abort(true);
     }
-
-    // Make a DELETE request to remove the file from the server 
-    // TODO figure out how to do this properly through tus
-    const deleteUrl = `${baseURL}/api/resources/${filePath}`;
-    const deletePromise = fetchURL(deleteUrl, {
-      method: "DELETE"
-    }).then(response => {
-      if (response.status !== 200) {
-        console.error(`Failed to delete file: ${response.status} ${response.statusText}`);
-      }
-    }).catch(error => {
-      console.error(`Error deleting file: ${error.message}`);
-    });
-
-    deletePromises.push(deletePromise);
     delete CURRENT_UPLOAD_LIST[filePath];
   }
-
-  await Promise.all(deletePromises);
 }
-
