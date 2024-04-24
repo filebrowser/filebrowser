@@ -68,11 +68,11 @@
   border-top: 1px solid var(--borderPrimary);
 }
 
-.share__box__items #listing.list .item .name {
+#listing.list .item .name {
   width: 50%;
 }
 
-.share__box__items #listing.list .item .modified {
+#listing.list .item .modified {
   width: 25%;
 }
 
