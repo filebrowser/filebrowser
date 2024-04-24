@@ -22,7 +22,7 @@ export function copy(text: string) {
           }
         })
         .catch((e) => {
-          // Firefox doesnt support clipboard-write permission
+          // Firefox doesn't support clipboard-write permission
           if (navigator.userAgent.indexOf("Firefox") != -1) {
             navigator.clipboard.writeText(text).then(resolve).catch(reject);
           } else {
