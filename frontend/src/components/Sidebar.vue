@@ -4,17 +4,6 @@
       <i class="material-icons">person</i>
       <span>{{ user.username }}</span>
     </button>
-    <button
-      v-if="canLogout"
-      @click="logout"
-      class="action"
-      id="logout"
-      :aria-label="$t('sidebar.logout')"
-      :title="$t('sidebar.logout')"
-    >
-      <i class="material-icons">exit_to_app</i>
-      <span>{{ $t("sidebar.logout") }}</span>
-    </button>
     <template v-if="isLoggedIn">
       <button
         class="action"
@@ -59,6 +48,17 @@
           <span>{{ $t("sidebar.settings") }}</span>
         </button>
       </div>
+      <button
+        v-if="canLogout"
+        @click="logout"
+        class="action"
+        id="logout"
+        :aria-label="$t('sidebar.logout')"
+        :title="$t('sidebar.logout')"
+      >
+        <i class="material-icons">exit_to_app</i>
+        <span>{{ $t("sidebar.logout") }}</span>
+      </button>
     </template>
     <template v-else>
       <router-link
