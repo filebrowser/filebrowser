@@ -184,11 +184,11 @@ export default {
       this.closeHovers();
     },
     toAccountSettings() {
-      this.$router.push({ path: "/settings/profile" }, () => {});
+      this.$router.push({ path: "/settings/profile" });
       this.$store.commit("closeHovers");
     },
     toSettings() {
-      this.$router.push({ path: "/settings/global" }, () => {});
+      this.$router.push({ path: "/settings/global" });
       this.closeHovers();
     },
     help() {
