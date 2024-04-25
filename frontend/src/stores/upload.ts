@@ -15,11 +15,11 @@ const beforeUnload = (event: Event) => {
 
 // Utility function to format bytes into a readable string
 function formatSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
+  if (bytes === 0) return "0 Bytes";
 
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
+  return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + " " + sizes[i];
 }
 
 export const useUploadStore = defineStore("upload", {
@@ -69,18 +69,18 @@ export const useUploadStore = defineStore("upload", {
     },
     getTotalProgressBytes: (state) => {
       if (state.progress.length === 0 || state.sizes.length === 0) {
-        return '0 Bytes';
+        return "0 Bytes";
       }
       const sum = state.progress.reduce((acc, val) => +acc + +val, 0) as number;
       return formatSize(sum);
     },
     getTotalSize: (state) => {
       if (state.sizes.length === 0) {
-        return '0 Bytes';
+        return "0 Bytes";
       }
       const totalSize = state.sizes.reduce((a, b) => a + b, 0);
       return formatSize(totalSize);
-    },  
+    },
     filesInUploadCount: (state) => {
       return Object.keys(state.uploads).length + state.queue.length;
     },
