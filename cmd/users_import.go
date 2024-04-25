@@ -60,7 +60,7 @@ list or set it to 0.`,
 			// User exists in DB.
 			if err == nil {
 				if !overwrite {
-					checkErr(errors.New("user " + strconv.Itoa(int(user.ID)) + " is already registred"))
+					checkErr(errors.New("user " + strconv.Itoa(int(user.ID)) + " is already registered"))
 				}
 
 				// If the usernames mismatch, check if there is another one in the DB
@@ -84,6 +84,6 @@ list or set it to 0.`,
 }
 
 func usernameConflictError(username string, originalID, newID uint) error {
-	return fmt.Errorf(`can't import user with ID %d and username "%s" because the username is already registred with the user %d`,
+	return fmt.Errorf(`can't import user with ID %d and username "%s" because the username is already registered with the user %d`,
 		newID, username, originalID)
 }
