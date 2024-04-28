@@ -1,5 +1,6 @@
 <template>
   <VueFinalModal
+    class="vfm-modal"
     overlay-transition="vfm-fade"
     content-transition="vfm-fade"
     @closed="layoutStore.closeHovers"
@@ -7,7 +8,6 @@
       initialFocus: '#focus-prompt',
       fallbackFocus: 'div.vfm__content',
     }"
-    style="z-index: 9999999"
   >
     <slot />
   </VueFinalModal>
