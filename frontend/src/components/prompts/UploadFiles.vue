@@ -91,7 +91,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(useUploadStore, ["reset"]),  // Mapping reset action from upload store
+    ...mapActions(useUploadStore, ["reset"]), // Mapping reset action from upload store
     toggle: function () {
       this.open = !this.open;
     },
@@ -100,8 +100,8 @@ export default {
         abortAllUploads();
         buttons.done("upload");
         this.open = false;
-        this.reset();  // Resetting the upload store state
-        this.reload = true;  // Trigger reload in the file store
+        this.reset(); // Resetting the upload store state
+        this.reload = true; // Trigger reload in the file store
       }
     },
   },
