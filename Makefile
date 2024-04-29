@@ -3,6 +3,18 @@ include tools.mk
 
 LDFLAGS += -X "$(MODULE)/version.Version=$(VERSION)" -X "$(MODULE)/version.CommitSHA=$(VERSION_HASH)"
 
+
+## Development:
+
+.PHONY: start-fe-dev
+start-fe-dev: ## Frontend Development (entry=./)
+start-fe-dev: entry:='./'
+start-fe-dev:
+	$Q $(go) build -tags dev && ./filebrowser -r ${entry} 1> /dev/null 2> /dev/null & \
+	cd frontend && npm i -s && npm run dev && \
+	trap 'kill -- -$$PID'; \
+	wait
+
 ## Build:
 
 .PHONY: build
