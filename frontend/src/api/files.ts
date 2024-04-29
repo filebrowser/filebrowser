@@ -40,9 +40,7 @@ async function resourceAction(url: string, method: ApiMethod, content?: any) {
     opts.body = content;
   }
 
-  const res = await fetchURL(`/api/resources${url}`, opts);
-
-  return res;
+  return await fetchURL(`/api/resources${url}`, opts);
 }
 
 export async function remove(url: string) {

@@ -142,7 +142,7 @@
 <script>
 import { mapActions, mapState } from "pinia";
 import { useFileStore } from "@/stores/file";
-import { share as api, pub as pub_api } from "@/api";
+import { pub as pub_api, share as api } from "@/api";
 import dayjs from "dayjs";
 import { useLayoutStore } from "@/stores/layout";
 import { copy } from "@/utils/clipboard";
@@ -182,11 +182,10 @@ export default {
   },
   async beforeMount() {
     try {
-      const links = await api.get(this.url);
-      this.links = links;
+      this.links = await api.get(this.url);
       this.sort();
 
-      if (this.links.length == 0) {
+      if (this.links.length === 0) {
         this.listing = false;
       }
     } catch (e) {
@@ -234,7 +233,7 @@ export default {
         await api.remove(link.hash);
         this.links = this.links.filter((item) => item.hash !== link.hash);
 
-        if (this.links.length == 0) {
+        if (this.links.length === 0) {
           this.listing = false;
         }
       } catch (e) {
@@ -263,7 +262,7 @@ export default {
       });
     },
     switchListing() {
-      if (this.links.length == 0 && !this.listing) {
+      if (this.links.length === 0 && !this.listing) {
         this.closeHovers();
       }
 

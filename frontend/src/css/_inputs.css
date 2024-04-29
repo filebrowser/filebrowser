@@ -2,7 +2,7 @@
   background: var(--surfacePrimary);
   color: var(--textSecondary);
   border: 1px solid var(--borderPrimary);
-  border-radius: 0.1em;
+  border-radius: 0.35em;
   padding: 0.5em 1em;
   transition: 0.2s ease all;
   margin: 0;

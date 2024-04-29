@@ -444,7 +444,7 @@ watch(req, () => {
 
 onMounted(() => {
   // Check the columns size for the first time.
-  colunmsResize();
+  columnsResize();
 
   // How much every listing item affects the window height
   setItemWeight();
@@ -638,7 +638,7 @@ const paste = (event: Event) => {
   action(overwrite, rename);
 };
 
-const colunmsResize = () => {
+const columnsResize = () => {
   // Update the columns size based on the window width.
   let items_ = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
   if (items_ === null) return;
@@ -846,7 +846,7 @@ const toggleMultipleSelection = () => {
 };
 
 const windowsResize = throttle(() => {
-  colunmsResize();
+  columnsResize();
   width.value = window.innerWidth;
 
   // Listing element is not displayed

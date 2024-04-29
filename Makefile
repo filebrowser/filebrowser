@@ -53,6 +53,7 @@ bump-version: $(standard-version) ## Bump app version
 	$Q ./scripts/bump_version.sh
 
 ## Help:
+.DEFAULT_GOAL := help
 help: ## Show this help
 	@echo ''
 	@echo 'Usage:'
