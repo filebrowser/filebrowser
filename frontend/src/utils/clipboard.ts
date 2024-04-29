@@ -46,16 +46,25 @@ export function copy(text: string) {
       textarea.style.outline = "none";
       textarea.style.boxShadow = "none";
       textarea.style.background = "transparent";
-      document.body.appendChild(textarea);
+
+      let body: Element | null = null;
+      const focusedElement = document.activeElement;
+      if (focusedElement){
+        body = focusedElement
+      }else{
+        body = document.body
+      }
+      body.appendChild(textarea)
+
       textarea.focus();
       textarea.select();
       try {
         document.execCommand("copy");
-        document.body.removeChild(textarea);
         resolve();
       } catch (e) {
-        document.body.removeChild(textarea);
         reject(e);
+      }finally{
+        body.removeChild(textarea)
       }
     } else {
       reject(
