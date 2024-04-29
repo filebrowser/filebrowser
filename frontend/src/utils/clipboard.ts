@@ -51,7 +51,6 @@ export function copy(text: string) {
       textarea.select();
       try {
         document.execCommand("copy");
-        document.body.removeChild(textarea);
         resolve();
       } catch (e) {
         document.body.removeChild(textarea);
