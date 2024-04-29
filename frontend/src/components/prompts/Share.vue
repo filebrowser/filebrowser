@@ -207,7 +207,7 @@ export default {
     },
     submit: async function () {
       try {
-        let res = null;
+        let res;
 
         if (!this.time) {
           res = await api.create(this.url, this.password);

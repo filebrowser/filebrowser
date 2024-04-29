@@ -374,7 +374,7 @@ body.rtl .card .card-action {
   color: var(--textPrimary);
   vertical-align: middle;
   line-height: 1.4;
-  font-family: "Material Icons";
+  font-family: "Material Icons", serif;
   font-size: 1.75em;
   margin-right: 0.25em;
 }
