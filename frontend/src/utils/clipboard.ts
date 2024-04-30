@@ -33,29 +33,18 @@ export function copy(text: string) {
       document.queryCommandSupported &&
       document.queryCommandSupported("copy")
     ) {
-      const textarea = document.createElement("textarea");
-      textarea.textContent = text;
-      textarea.setAttribute("readonly", "");
-      textarea.style.fontSize = "12pt";
-      textarea.style.position = "fixed";
-      textarea.style.width = "2em";
-      textarea.style.height = "2em";
-      textarea.style.padding = "0";
-      textarea.style.margin = "0";
-      textarea.style.border = "none";
-      textarea.style.outline = "none";
-      textarea.style.boxShadow = "none";
-      textarea.style.background = "transparent";
-      document.body.appendChild(textarea);
-      textarea.focus();
-      textarea.select();
+      const textarea = createTemporaryTextarea(text);
+      const body = document.activeElement || document.body;
       try {
+        body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
         document.execCommand("copy");
-        document.body.removeChild(textarea);
         resolve();
       } catch (e) {
-        document.body.removeChild(textarea);
         reject(e);
+      } finally {
+        body.removeChild(textarea);
       }
     } else {
       reject(
@@ -64,3 +53,26 @@ export function copy(text: string) {
     }
   });
 }
+
+const styles = {
+  fontSize: "12pt",
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "2em",
+  height: "2em",
+  padding: 0,
+  margin: 0,
+  border: "none",
+  outline: "none",
+  boxShadow: "none",
+  background: "transparent"
+};
+
+const createTemporaryTextarea = (text:string) => {
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  Object.assign(textarea.style, styles);
+  return textarea;
+};
