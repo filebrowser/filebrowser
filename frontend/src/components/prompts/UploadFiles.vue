@@ -10,6 +10,12 @@
         <div class="upload-info">
           <div class="upload-speed">{{ uploadSpeed.toFixed(2) }} MB/s</div>
           <div class="upload-eta">{{ formattedETA }} remaining</div>
+          <div class="upload-percentage">
+            {{ getProgressDecimal }}% Completed
+          </div>
+          <div class="upload-fraction">
+            {{ getTotalProgressBytes }} / {{ getTotalSize }}
+          </div>
         </div>
         <button
           class="action"
@@ -72,6 +78,10 @@ export default {
       "filesInUploadCount",
       "uploadSpeed",
       "getETA",
+      "getProgress",
+      "getProgressDecimal",
+      "getTotalProgressBytes",
+      "getTotalSize",
     ]),
     ...mapWritableState(useFileStore, ["reload"]),
     formattedETA() {
