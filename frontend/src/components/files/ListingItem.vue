@@ -275,7 +275,7 @@ const open = () => {
 const getExtension = (fileName: string): string => {
   const lastDotIndex = fileName.lastIndexOf('.');
   if (lastDotIndex === -1) {
-    return '';
+    return fileName;
   }
   return fileName.substring(lastDotIndex );
 };
