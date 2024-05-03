@@ -210,8 +210,10 @@ const drop = async (event: Event) => {
 
 const itemClick = (event: Event | KeyboardEvent) => {
   if (
-    !((event as KeyboardEvent).ctrlKey || (event as KeyboardEvent).metaKey) &&
     singleClick.value &&
+    !(event as KeyboardEvent).ctrlKey &&
+    !(event as KeyboardEvent).metaKey &&
+    !(event as KeyboardEvent).shiftKey &&
     !fileStore.multiple
   )
     open();
