@@ -586,20 +586,20 @@ var types = map[string]string{
 	".onepkg":    "application/onenote",
 	".xpi":       "application/x-xpinstall",
 	".wasm":      "application/wasm",
-	//---
-	".m4a":  "audio/mp4",
-	".flac": "audio/x-flac",
-	".amr":  "audio/amr",
-	".aac":  "audio/aac",
-	".opus": "video/ogg",
-	".m4v":  "video/mp4",
-	".mkv":  "video/x-matroska",
-	".caf":  "audio/x-caf",
-	".m3u8": "application/x-mpegURL",
-	".mpd":  "application/dash+xml",
-	".webp": "image/webp",
+	".m4a":       "audio/mp4",
+	".flac":      "audio/x-flac",
+	".amr":       "audio/amr",
+	".aac":       "audio/aac",
+	".opus":      "video/ogg",
+	".m4v":       "video/mp4",
+	".mkv":       "video/x-matroska",
+	".caf":       "audio/x-caf",
+	".m3u8":      "application/x-mpegURL",
+	".mpd":       "application/dash+xml",
+	".webp":      "image/webp",
 }
 
+//nolint:gochecknoinits
 func init() {
 	for ext, typ := range types {
 		// skip errors
