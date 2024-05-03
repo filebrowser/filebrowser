@@ -12,6 +12,7 @@
     :data-type="type"
     :aria-label="name"
     :aria-selected="isSelected"
+    :data-ext="getExtension(name).toLowerCase()"
   >
     <div>
       <img
@@ -270,4 +271,14 @@ const click = (event: Event | KeyboardEvent) => {
 const open = () => {
   router.push({ path: props.url });
 };
+
+const getExtension = (fileName: string): string => {
+  const lastDotIndex = fileName.lastIndexOf('.');
+  if (lastDotIndex === -1) {
+    return fileName;
+  }
+  return fileName.substring(lastDotIndex );
+};
+
+
 </script>
