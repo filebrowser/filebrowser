@@ -37,3 +37,31 @@ For installation instructions please refer to our docs at [https://filebrowser.o
 ## Contributing
 
 If you're interested in contributing to this project, our docs are best places to start [https://filebrowser.org/contributing](https://filebrowser.org/contributing).
+
+## Help for SSL Docker
+
+To use SSL in Docker you must make this volumes configuration like this table
+
+| Host/volume                                       | Path in container             | Description                       |
+| :-------------                                    | :-------                      | :-------------------------------- |
+| `/home/devops/configFilebrowser/filebrowser.db`   | `/filebrowser.db`             | **Required**. for Database        |
+| `/home/devops/configFilebrowser/filebrowser.json` | `/filebrowser.json`           | **Required**. for Configuration file (*)        |
+| `/home/devops/exemple.com`                        | `/Certs`                      | **Required**. for Certs        |
+| `/portainer/Downloads`                            | `/srv`                        | **Required**. Folder to be shared        |
+
+
+(*) and make the configuration in json file like this 
+
+```http
+
+    {
+      "port": 8080, //the same port as your host container 
+      "baseURL": "",
+      "address": "exemple.com",
+      "log": "stdout",
+      "database": "/filebrowser.db",
+      "root": "/srv",
+      "cert": "/Certs/fullchain.pem",
+      "key": "/Certs/privkey.pem"
+    }
+```
