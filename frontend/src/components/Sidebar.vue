@@ -1,4 +1,5 @@
 <template>
+  <div v-show="active" @click="closeHovers" class="overlay"></div>
   <nav :class="{ active }">
     <template v-if="isLoggedIn">
       <button
