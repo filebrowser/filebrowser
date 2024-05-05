@@ -6,15 +6,23 @@
   background: var(--surfacePrimary);
   color: var(--textPrimary);
   z-index: 9999;
-  background: rgba(127, 127, 127, 0.1);
+  background: rgba(255, 255, 255, 0.9);
   transition: 0.2s ease background;
   cursor: ns-resize;
   touch-action: none;
   user-select: none;
+  width: 100%;
 }
 
+.shell__divider{
+  background: rgba(127, 127, 127, 0.3);
+  width: 100%;
+  height: 8px;
+}
 .shell__divider:hover {
-  background: rgba(127, 127, 127, 0.4);
+  background: rgba(127, 127, 127, 0.9);
+  
+
 }
 
 .shell__content {
@@ -60,6 +68,10 @@ body.rtl .shell-content {
 .shell__prompt,
 .shell__prompt i {
   font-size: inherit;
+}
+
+.shell__text{
+  color:black
 }
 
 .shell__prompt {
