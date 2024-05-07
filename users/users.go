@@ -15,8 +15,10 @@ import (
 type ViewMode string
 
 const (
-	ListViewMode   ViewMode = "list"
-	MosaicViewMode ViewMode = "mosaic"
+	ListViewMode        ViewMode = "list"
+	MosaicViewMode      ViewMode = "mosaic"
+	DefaultUploadsLimit          = uint(5)
+	MaxUploadsLimit              = uint(10)
 )
 
 // User describes a user.
@@ -36,6 +38,17 @@ type User struct {
 	Rules        []rules.Rule  `json:"rules"`
 	HideDotfiles bool          `json:"hideDotfiles"`
 	DateFormat   bool          `json:"dateFormat"`
+	UploadsLimit uint          `json:"uploadsLimit"`
+}
+
+func (u *User) GetUploadsLimit() uint {
+	if u.UploadsLimit == 0 {
+		return DefaultUploadsLimit
+	}
+	if u.UploadsLimit > MaxUploadsLimit {
+		return MaxUploadsLimit
+	}
+	return u.UploadsLimit
 }
 
 // GetRules implements rules.Provider.

@@ -20,6 +20,7 @@ interface SettingsDefaults {
   commands: any[];
   hideDotfiles: boolean;
   dateFormat: boolean;
+  uploadsLimit:number;
 }
 
 interface SettingsBranding {

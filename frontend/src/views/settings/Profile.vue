@@ -19,11 +19,18 @@
             <input type="checkbox" name="dateFormat" v-model="dateFormat" />
             {{ t("settings.setDateFormat") }}
           </p>
+          <h3>{{ t("settings.uploadsLimit") }}</h3>
+          <vue-number-input
+                controls
+                v-model.number="uploadsLimit"
+                :min="1" :max="10"
+              />
           <h3>{{ t("settings.language") }}</h3>
           <languages
             class="input input--block"
             v-model:locale="locale"
           ></languages>
+
         </div>
 
         <div class="card-action">
@@ -98,6 +105,7 @@ const hideDotfiles = ref<boolean>(false);
 const singleClick = ref<boolean>(false);
 const dateFormat = ref<boolean>(false);
 const locale = ref<string>("");
+const uploadsLimit = ref<number>(0);
 
 const passwordClass = computed(() => {
   const baseClass = "input input--block";
@@ -120,6 +128,7 @@ onMounted(() => {
   hideDotfiles.value = authStore.user.hideDotfiles;
   singleClick.value = authStore.user.singleClick;
   dateFormat.value = authStore.user.dateFormat;
+  uploadsLimit.value = authStore.user.uploadsLimit;
   layoutStore.loading = false;
   return true;
 });
@@ -163,6 +172,7 @@ const updateSettings = async (event: Event) => {
       hideDotfiles: hideDotfiles.value,
       singleClick: singleClick.value,
       dateFormat: dateFormat.value,
+      uploadsLimit:uploadsLimit.value,
     };
 
     await api.update(data, [
@@ -170,6 +180,7 @@ const updateSettings = async (event: Event) => {
       "hideDotfiles",
       "singleClick",
       "dateFormat",
+      "uploadsLimit",
     ]);
     authStore.updateUser(data);
     $showSuccess(t("settings.settingsUpdated"));

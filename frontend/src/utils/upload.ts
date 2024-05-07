@@ -123,7 +123,8 @@ function detectType(mimetype: string): ResourceType {
 export function handleFiles(
   files: UploadList,
   base: string,
-  overwrite = false
+  uploadsLimit:number,
+  overwrite = false,
 ) {
   const uploadStore = useUploadStore();
 
@@ -149,6 +150,6 @@ export function handleFiles(
       ...(!file.isDir && { type: detectType((file.file as File).type) }),
     };
 
-    uploadStore.upload(item);
+    uploadStore.upload(item,uploadsLimit);
   }
 }

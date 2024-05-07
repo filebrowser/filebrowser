@@ -236,7 +236,8 @@
     "userManagement": "User Management",
     "userUpdated": "User updated!",
     "username": "Username",
-    "users": "Users"
+    "users": "Users",
+    "uploadsLimit":"Limit of concurrent uploads"
   },
   "sidebar": {
     "help": "Help",

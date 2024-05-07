@@ -13,6 +13,7 @@ interface IUser {
   dateFormat: boolean;
   viewMode: ViewModeType;
   sorting?: Sorting;
+  uploadsLimit:number;
 }
 
 type ViewModeType = "list" | "mosaic" | "mosaic gallery";
@@ -30,6 +31,7 @@ interface IUserForm {
   hideDotfiles?: boolean;
   singleClick?: boolean;
   dateFormat?: boolean;
+  uploadsLimit:number;
 }
 
 interface Permissions {

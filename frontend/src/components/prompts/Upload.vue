@@ -37,11 +37,13 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
+import { useAuthStore } from "@/stores/auth";
 
 import * as upload from "@/utils/upload";
 
 const { t } = useI18n();
 const route = useRoute();
+const authStore = useAuthStore();
 
 const fileStore = useFileStore();
 const layoutStore = useLayoutStore();
@@ -54,6 +56,11 @@ const uploadInput = (event: Event) => {
   if (files === null) return;
 
   let folder_upload = !!files[0].webkitRelativePath;
+  let uploadsLimit = 1
+  if (authStore.user!=null){
+    uploadsLimit = authStore.user.uploadsLimit
+  }
+
 
   const uploadFiles: UploadList = [];
   for (let i = 0; i < files.length; i++) {
@@ -77,19 +84,19 @@ const uploadInput = (event: Event) => {
       action: (event: Event) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        upload.handleFiles(uploadFiles, path, false);
+        upload.handleFiles(uploadFiles, path, uploadsLimit);
       },
       confirm: (event: Event) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        upload.handleFiles(uploadFiles, path, true);
+        upload.handleFiles(uploadFiles, path, uploadsLimit, true);
       },
     });
 
     return;
   }
 
-  upload.handleFiles(uploadFiles, path);
+  upload.handleFiles(uploadFiles, path, uploadsLimit);
 };
 
 const openUpload = (isFolder: boolean) => {

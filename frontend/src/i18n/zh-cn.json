@@ -236,7 +236,8 @@
     "userManagement": "用户管理",
     "userUpdated": "用户已更新！",
     "username": "用户名",
-    "users": "用户"
+    "users": "用户",
+    "uploadsLimit":"上传并行任务数限制"
   },
   "sidebar": {
     "help": "帮助",

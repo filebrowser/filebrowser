@@ -4,8 +4,6 @@ import { files as api } from "@/api";
 import throttle from "lodash/throttle";
 import buttons from "@/utils/buttons";
 
-// TODO: make this into a user setting
-const UPLOADS_LIMIT = 5;
 
 const beforeUnload = (event: Event) => {
   event.preventDefault();
@@ -145,7 +143,7 @@ export const useUploadStore = defineStore("upload", {
     removeJob(id: number) {
       delete this.uploads[id];
     },
-    upload(item: UploadItem) {
+    upload(item: UploadItem,uploadsLimit:number) {
       const uploadsCount = Object.keys(this.uploads).length;
 
       const isQueueEmpty = this.queue.length == 0;
@@ -157,17 +155,17 @@ export const useUploadStore = defineStore("upload", {
       }
 
       this.addJob(item);
-      this.processUploads();
+      this.processUploads(uploadsLimit);
     },
-    finishUpload(item: UploadItem) {
+    finishUpload(item: UploadItem,uploadsLimit:number) {
       this.setProgress({ id: item.id, loaded: item.file.size > 0 });
       this.removeJob(item.id);
-      this.processUploads();
+      this.processUploads(uploadsLimit);
     },
-    async processUploads() {
+    async processUploads(uploadsLimit:number) {
       const uploadsCount = Object.keys(this.uploads).length;
 
-      const isBellowLimit = uploadsCount < UPLOADS_LIMIT;
+      const isBellowLimit = uploadsCount < uploadsLimit;
       const isQueueEmpty = this.queue.length == 0;
       const isUploadsEmpty = uploadsCount == 0;
 
@@ -204,7 +202,7 @@ export const useUploadStore = defineStore("upload", {
             .catch(this.setError);
         }
 
-        this.finishUpload(item);
+        this.finishUpload(item,uploadsLimit);
       }
     },
     setUploadSpeed(value: number) {

@@ -731,25 +731,30 @@ const drop = async (event: DragEvent) => {
 
   let conflict = upload.checkConflict(files, items);
 
+  let uploadsLimit = 1
+  if (authStore.user!=null){
+    uploadsLimit = authStore.user.uploadsLimit
+  }
+
   if (conflict) {
     layoutStore.showHover({
       prompt: "replace",
       action: (event: Event) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        upload.handleFiles(files, path, false);
+        upload.handleFiles(files, path,uploadsLimit);
       },
       confirm: (event: Event) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        upload.handleFiles(files, path, true);
+        upload.handleFiles(files, path,uploadsLimit, true,);
       },
     });
 
     return;
   }
 
-  upload.handleFiles(files, path);
+  upload.handleFiles(files, path,uploadsLimit);
 };
 
 const uploadInput = (event: Event) => {
@@ -776,25 +781,30 @@ const uploadInput = (event: Event) => {
   let path = route.path.endsWith("/") ? route.path : route.path + "/";
   let conflict = upload.checkConflict(uploadFiles, fileStore.req!.items);
 
+  let uploadsLimit = 1
+  if (authStore.user!=null){
+    uploadsLimit = authStore.user.uploadsLimit
+  }
+
   if (conflict) {
     layoutStore.showHover({
       prompt: "replace",
       action: (event: Event) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        upload.handleFiles(uploadFiles, path, false);
+        upload.handleFiles(uploadFiles, path, uploadsLimit);
       },
       confirm: (event: Event) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        upload.handleFiles(uploadFiles, path, true);
+        upload.handleFiles(uploadFiles, path, uploadsLimit,true);
       },
     });
 
     return;
   }
 
-  upload.handleFiles(uploadFiles, path);
+  upload.handleFiles(uploadFiles, path,uploadsLimit);
 };
 
 const resetOpacity = () => {
