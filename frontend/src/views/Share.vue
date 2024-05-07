@@ -51,8 +51,8 @@
           <div class="card-content">
             <input
               v-focus
-              class="input input--block"
-              type="password"
+              class="input input--block input--secure"
+              type="text"
               :placeholder="t('login.password')"
               v-model="password"
               @keyup.enter="fetchData"

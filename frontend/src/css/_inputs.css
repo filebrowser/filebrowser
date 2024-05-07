@@ -19,6 +19,12 @@
   width: 100%;
 }
 
+.input--secure{
+    text-security:disc;
+    -webkit-text-security:disc;
+    -mox-text-security:disc;
+}
+
 .input--textarea {
   line-height: 1.15;
   font-family: monospace;
