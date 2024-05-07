@@ -8,13 +8,13 @@
       <div class="card-title">
         <h2>{{ $t("prompts.uploadFiles", { files: filesInUploadCount }) }}</h2>
         <div class="upload-info">
-          <div class="upload-speed">{{ uploadSpeed.toFixed(2) }} MB/s</div>
-          <div class="upload-eta">{{ formattedETA }} remaining</div>
+          <div class="upload-speed">{{ getUploadSpeedText() }}</div>
+          <div class="upload-eta">{{ getUploadEtaText() }}</div>
           <div class="upload-percentage">
-            {{ getProgressDecimal }}% Completed
+            {{ getUploadPercentageText() }}
           </div>
           <div class="upload-fraction">
-            {{ getTotalProgressBytes }} / {{ getTotalSize }}
+            {{ getUploadFractionText() }}
           </div>
         </div>
         <button
@@ -70,6 +70,8 @@ export default {
   data: function () {
     return {
       open: false,
+      padMaxLen:19,
+      padChar:'\u00A0',
     };
   },
   computed: {
@@ -104,6 +106,22 @@ export default {
     ...mapActions(useUploadStore, ["reset"]), // Mapping reset action from upload store
     toggle: function () {
       this.open = !this.open;
+    },
+    getUploadFractionText:function(){
+      let str = this.getTotalProgressBytes+'/'+this.getTotalSize
+      return str.padEnd(this.padMaxLen,this.padChar)
+    },
+    getUploadPercentageText:function(){
+      let str =  this.getProgressDecimal +'% Completed'
+      return  str.padEnd(this.padMaxLen,this.padChar)
+    },
+    getUploadEtaText:function(){
+      let str = this.formattedETA+ " remaining"
+      return str.padEnd(this.padMaxLen,this.padChar)
+    },
+    getUploadSpeedText:function(){
+      let str = this.uploadSpeed.toFixed(2)+ " MB/s"
+      return str.padEnd(this.padMaxLen,this.padChar)
     },
     abortAll() {
       if (confirm(this.$t("upload.abortUpload"))) {
