@@ -148,7 +148,7 @@ const fetchData = async () => {
     }
 
     fileStore.updateRequest(res);
-    document.title = `${res.name} - ${document.title}`;
+    document.title = `${res.name} - ${t("files.files")} - File Browser`;
   } catch (err) {
     if (err instanceof Error) {
       error.value = err;
