@@ -39,7 +39,9 @@
     "update": "更新",
     "upload": "上传",
     "openFile": "打开文件",
-    "continue": "继续"
+    "continue": "继续",
+    "fullScreen": "切换全屏",
+    "discardChanges": "放弃更改"
   },
   "download": {
     "downloadFile": "下载文件",
@@ -86,32 +88,6 @@
     "f1": "显示该帮助信息",
     "f2": "重命名文件/文件夹",
     "help": "帮助"
-  },
-  "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
-    "ar": "العربية",
-    "de": "Deutsch",
-    "el": "Ελληνικά",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "is": "Icelandic",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "nlBE": "Dutch (Belgium)",
-    "pl": "Polski",
-    "pt": "Português",
-    "ptBR": "Português (Brasil)",
-    "ro": "Romanian",
-    "ru": "Русский",
-    "sk": "Slovenčina",
-    "svSE": "Swedish (Sweden)",
-    "tr": "Türkçe",
-    "uk": "Українська",
-    "zhCN": "中文 (简体)",
-    "zhTW": "中文 (繁體)"
   },
   "login": {
     "createAnAccount": "创建用户",
@@ -162,7 +138,9 @@
     "uploadFiles": "正在上传 {files} ...",
     "uploadMessage": "选择上传选项。",
     "optionalPassword": "密码（选填，不填即无密码）",
-    "resolution": "分辨率"
+    "resolution": "分辨率",
+    "deleteUser": "你确定要删除这个用户吗？",
+    "discardEditorChanges": "你确定要放弃所做的更改吗？"
   },
   "search": {
     "images": "图像",
@@ -244,6 +222,7 @@
     "shareDeleted": "分享已删除！",
     "singleClick": "使用单击来打开文件和文件夹",
     "themes": {
+      "default": "系统默认",
       "dark": "深色",
       "light": "浅色",
       "title": "主题"

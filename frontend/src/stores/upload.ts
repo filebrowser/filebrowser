@@ -13,6 +13,15 @@ const beforeUnload = (event: Event) => {
   // event.returnValue = "";
 };
 
+// Utility function to format bytes into a readable string
+function formatSize(bytes: number): string {
+  if (bytes === 0) return "0 Bytes";
+
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + " " + sizes[i];
+}
+
 export const useUploadStore = defineStore("upload", {
   // convert to a function
   state: (): {
@@ -46,6 +55,31 @@ export const useUploadStore = defineStore("upload", {
       // TODO: this looks ugly but it works with ts now
       const sum = state.progress.reduce((acc, val) => +acc + +val) as number;
       return Math.ceil((sum / totalSize) * 100);
+    },
+    getProgressDecimal: (state) => {
+      if (state.progress.length === 0) {
+        return 0;
+      }
+
+      const totalSize = state.sizes.reduce((a, b) => a + b, 0);
+
+      // TODO: this looks ugly but it works with ts now
+      const sum = state.progress.reduce((acc, val) => +acc + +val) as number;
+      return ((sum / totalSize) * 100).toFixed(2);
+    },
+    getTotalProgressBytes: (state) => {
+      if (state.progress.length === 0 || state.sizes.length === 0) {
+        return "0 Bytes";
+      }
+      const sum = state.progress.reduce((acc, val) => +acc + +val, 0) as number;
+      return formatSize(sum);
+    },
+    getTotalSize: (state) => {
+      if (state.sizes.length === 0) {
+        return "0 Bytes";
+      }
+      const totalSize = state.sizes.reduce((a, b) => a + b, 0);
+      return formatSize(totalSize);
     },
     filesInUploadCount: (state) => {
       return Object.keys(state.uploads).length + state.queue.length;

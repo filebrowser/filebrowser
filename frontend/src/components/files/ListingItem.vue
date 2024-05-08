@@ -12,6 +12,7 @@
     :data-type="type"
     :aria-label="name"
     :aria-selected="isSelected"
+    :data-ext="getExtension(name).toLowerCase()"
   >
     <div>
       <img
@@ -209,8 +210,10 @@ const drop = async (event: Event) => {
 
 const itemClick = (event: Event | KeyboardEvent) => {
   if (
-    !((event as KeyboardEvent).ctrlKey || (event as KeyboardEvent).metaKey) &&
     singleClick.value &&
+    !(event as KeyboardEvent).ctrlKey &&
+    !(event as KeyboardEvent).metaKey &&
+    !(event as KeyboardEvent).shiftKey &&
     !fileStore.multiple
   )
     open();
@@ -270,4 +273,14 @@ const click = (event: Event | KeyboardEvent) => {
 const open = () => {
   router.push({ path: props.url });
 };
+
+const getExtension = (fileName: string): string => {
+  const lastDotIndex = fileName.lastIndexOf('.');
+  if (lastDotIndex === -1) {
+    return fileName;
+  }
+  return fileName.substring(lastDotIndex );
+};
+
+
 </script>
