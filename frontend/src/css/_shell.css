@@ -6,21 +6,12 @@
   background: var(--surfacePrimary);
   color: var(--textPrimary);
   z-index: 9999;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--dividerSecondary);
   transition: 0.2s ease background;
   cursor: ns-resize;
   touch-action: none;
   user-select: none;
   width: 100%;
-}
-
-:root.dark {
-  .shell {
-    background: rgba(30, 30, 30, 0.6);
-  }
-  .shell__text {
-    color: white;
-  }
 }
 
 .shell__divider{
@@ -50,7 +41,7 @@
   top: 0px;
   left: 0px;
   z-index: 9998;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--dividerPrimary);
 }
 
 body.rtl .shell-content {
@@ -78,9 +69,7 @@ body.rtl .shell-content {
   font-size: inherit;
 }
 
-.shell__text{
-  color:black
-}
+
 
 .shell__prompt {
   width: 1.2rem;
@@ -95,4 +84,5 @@ body.rtl .shell-content {
   font-family: inherit;
   white-space: pre-wrap;
   width: 100%;
+  color:var(--textSecondary);
 }
