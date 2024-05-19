@@ -1,0 +1,399 @@
+const contentCache = {
+  compulsory: {
+    ios: {
+      gameassetbundles: {
+        config: {
+          Open: {
+            "Iphone Ob40 Editor": "ANTIBAN 100% |",
+            "ipad Ob40 Editor": "ANTIBAN 100% |",
+            EDITOR: {
+              "Flags": 9999,
+              "MaximumSpeed": 9999,
+              "TimeToMaximumSpeed": 9999
+            },
+            "Iphone Ob40 Editor sensi": {
+              TimeToMaximumSpeed: 9999
+            },
+            "ipad Ob40 Editor sensi": {
+              TimeToMaximumSpeed: 9999
+            },
+            "Iphone Ob40 Editor >FILE<FREEFIRE<\<FILE>FREEFIRE<\>": "AIMBOT_HEAD+AIMLOCK_HEAD+NO_RECOIL+AIMFOV",
+            "ipad Ob40 Editor >FILE<FREEFIRE<\<FILE>FREEFIRE<\>": "AIMBOT_HEAD+AIMLOCK_HEAD+NO_RECOIL+AIMFOV",
+
+            AIMLOCK_HEAD: {
+
+// ... AIMLOCK_HEAD Escopetas ...
+
+	AIMLOCK_HEAD_OB40_gun_M1887_100: true,
+	AIMLOCK_HEAD_OB40_gun_M1887-X_100: true,
+	AIMLOCK_HEAD_OB40_gun_SPAS12_100: true,
+	AIMLOCK_HEAD_OB40_gun_M1014_100: true,
+	AIMLOCK_HEAD_OB40_gun_MAG-7_100: true,
+	AIMLOCK_HEAD_OB40_gun_CHARGEBUSTER_100: true,
+	AIMLOCK_HEAD_OB40_gun_TROGON_100: true,
+	
+// ... AIMLOCK_HEAD Subfusiles ...
+
+	AIMLOCK_HEAD_OB40_gun_UMP_100: true,
+	AIMLOCK_HEAD_OB40_gun_MP5_100: true,
+	AIMLOCK_HEAD_OB40_gun_VSS_100: true,
+	AIMLOCK_HEAD_OB40_gun_MP40_100: true,
+	AIMLOCK_HEAD_OB40_gun_P90_100: true,
+	AIMLOCK_HEAD_OB40_gun_CG15_100: true,
+	AIMLOCK_HEAD_OB40_gun_THOMPSON_100: true,
+	AIMLOCK_HEAD_OB40_gun_BIZON_100: true,
+	AIMLOCK_HEAD_OB40_gun_VECTOR_100: true,
+	AIMLOCK_HEAD_OB40_gun_MAC10_100: true,
+	
+// ... AIMLOCK_HEAD Rifles de Asalto ...
+
+	AIMLOCK_HEAD_OB40_gun_M4A1_100: true,
+	AIMLOCK_HEAD_OB40_gun_AK47_100: true,
+	AIMLOCK_HEAD_OB40_gun_M14_100: true,
+	AIMLOCK_HEAD_OB40_gun_SCAR_100: true,
+	AIMLOCK_HEAD_OB40_gun_GROZA_100: true,
+	AIMLOCK_HEAD_OB40_gun_SKS_100: true,
+	AIMLOCK_HEAD_OB40_gun_M249_100: true,
+	AIMLOCK_HEAD_OB40_gun_FAMAS_100: true,
+	AIMLOCK_HEAD_OB40_gun_SVD_100: true,
+	AIMLOCK_HEAD_OB40_gun_XM8_100: true,
+	AIMLOCK_HEAD_OB40_gun_M60_100: true,
+	AIMLOCK_HEAD_OB40_gun_AN94_100: true,
+	AIMLOCK_HEAD_OB40_gun_PLASMA_100: true,
+	AIMLOCK_HEAD_OB40_gun_AUG_100: true,
+	AIMLOCK_HEAD_OB40_gun_PARAFAL_100: true,
+	AIMLOCK_HEAD_OB40_gun_WOODPECKER_100: true,
+	AIMLOCK_HEAD_OB40_gun_KORD_100: true,
+	AIMLOCK_HEAD_OB40_gun_KINGFISHER_100: true,
+	AIMLOCK_HEAD_OB40_gun_GROZA-X_100: true,
+	AIMLOCK_HEAD_OB40_gun_M249-X_100: true,
+	AIMLOCK_HEAD_OB40_gun_SVD-Y_100: true,
+	AIMLOCK_HEAD_OB40_gun_G36_100: true,
+	AIMLOCK_HEAD_OB40_gun_AC80_100: true,
+	AIMLOCK_HEAD_OB40_gun_ARMAESCUDO_100: true,
+	
+// ... AIMLOCK_HEAD Francotirador ...
+
+	AIMLOCK_HEAD_OB40_gun_AWM_100: true,
+	AIMLOCK_HEAD_OB40_gun_AWM-Y_100: true,
+	AIMLOCK_HEAD_OB40_gun_KAR98K_100: true,
+	AIMLOCK_HEAD_OB40_gun_M828_100: true,
+	AIMLOCK_HEAD_OB40_gun_M24_100: true,
+	
+// ... AIMLOCK_HEAD Pistola ...
+
+	AIMLOCK_HEAD_OB40_gun_USP_100: true,
+	AIMLOCK_HEAD_OB40_gun_DESERTEAGLE_100: true,
+	AIMLOCK_HEAD_OB40_gun_G18_100: true,
+	AIMLOCK_HEAD_OB40_gun_M1873_100: true,
+	AIMLOCK_HEAD_OB40_gun_M500_100: true,
+	AIMLOCK_HEAD_OB40_gun_M1917_100: true,
+	AIMLOCK_HEAD_OB40_gun_USP-2_100: true,
+	AIMLOCK_HEAD_OB40_gun_MINIUZI_100: true,
+	
+            },
+
+            AIMBOT_HEAD: {
+
+// ... AIMBOT_HEAD Escopeta ...
+
+	AIMBOT_HEAD_OB40_gun_M1887_100: true,
+	AIMBOT_HEAD_OB40_gun_M1887-X_100: true,
+	AIMBOT_HEAD_OB40_gun_SPAS12_100: true,
+	AIMBOT_HEAD_OB40_gun_M1014_100: true,
+	AIMBOT_HEAD_OB40_gun_MAG-7_100: true,
+	AIMBOT_HEAD_OB40_gun_CHARGEBUSTER_100: true,
+	AIMBOT_HEAD_OB40_gun_TROGON_100: true,
+	
+// ... AIMBOT_HEAD Subfusiles ...
+
+	AIMBOT_HEAD_OB40_gun_UMP_100: true,
+	AIMBOT_HEAD_OB40_gun_MP5_100: true,
+	AIMBOT_HEAD_OB40_gun_VSS_100: true,
+	AIMBOT_HEAD_OB40_gun_MP40_100: true,
+	AIMBOT_HEAD_OB40_gun_P90_100: true,
+	AIMBOT_HEAD_OB40_gun_CG15_100: true,
+	AIMBOT_HEAD_OB40_gun_THOMPSON_100: true,
+	AIMBOT_HEAD_OB40_gun_BIZON_100: true,
+	AIMBOT_HEAD_OB40_gun_VECTOR_100: true,
+	AIMBOT_HEAD_OB40_gun_MAC10_100: true,
+
+// ... AIMBOT_HEAD Rifles de Asalto ...
+
+	AIMBOT_HEAD_OB40_gun_M4A1_100: true,
+	AIMBOT_HEAD_OB40_gun_AK47_100: true,
+	AIMBOT_HEAD_OB40_gun_M14_100: true,
+	AIMBOT_HEAD_OB40_gun_SCAR_100: true,
+	AIMBOT_HEAD_OB40_gun_GROZA_100: true,
+	AIMBOT_HEAD_OB40_gun_SKS_100: true,
+	AIMBOT_HEAD_OB40_gun_M249_100: true,
+	AIMBOT_HEAD_OB40_gun_FAMAS_100: true,
+	AIMBOT_HEAD_OB40_gun_SVD_100: true,
+	AIMBOT_HEAD_OB40_gun_XM8_100: true,
+	AIMBOT_HEAD_OB40_gun_M60_100: true,
+	AIMBOT_HEAD_OB40_gun_AN94_100: true,
+	AIMBOT_HEAD_OB40_gun_PLASMA_100: true,
+	AIMBOT_HEAD_OB40_gun_AUG_100: true,
+	AIMBOT_HEAD_OB40_gun_PARAFAL_100: true,
+	AIMBOT_HEAD_OB40_gun_WOODPECKER_100: true,
+	AIMBOT_HEAD_OB40_gun_KORD_100: true,
+	AIMBOT_HEAD_OB40_gun_KINGFISHER_100: true,
+	AIMBOT_HEAD_OB40_gun_GROZA-X_100: true,
+	AIMBOT_HEAD_OB40_gun_M249-X_100: true,
+	AIMBOT_HEAD_OB40_gun_SVD-Y_100: true,
+	AIMBOT_HEAD_OB40_gun_G36_100: true,
+	AIMBOT_HEAD_OB40_gun_AC80_100: true,
+	AIMBOT_HEAD_OB40_gun_ARMAESCUDO_100: true,
+              
+// ... AIMBOT_HEAD Francotirador ...
+
+	AIMBOT_HEAD_OB40_gun_AWM_100: true,
+	AIMBOT_HEAD_OB40_gun_AWM-Y_100: true,
+	AIMBOT_HEAD_OB40_gun_KAR98K_100: true,
+	AIMBOT_HEAD_OB40_gun_M828_100: true,
+	AIMBOT_HEAD_OB40_gun_M24_100: true,
+	
+// ... AIMBOT_HEAD Pistola ...
+
+	AIMBOT_HEAD_OB40_gun_USP_100: true,
+	AIMBOT_HEAD_OB40_gun_DESERTEAGLE_100: true,
+	AIMBOT_HEAD_OB40_gun_G18_100: true,
+	AIMBOT_HEAD_OB40_gun_M1873_100: true,
+	AIMBOT_HEAD_OB40_gun_M500_100: true,
+	AIMBOT_HEAD_OB40_gun_M1917_100: true,
+	AIMBOT_HEAD_OB40_gun_USP-2_100: true,
+	AIMBOT_HEAD_OB40_gun_MINIUZI_100: true,
+	
+			},
+			
+			NO_RECOIL:	{
+			
+// ... NO_RECOIL Escopetas ...
+
+	NO_RECOIL_OB40_gun_M1887_0: true,	
+	NO_RECOIL_OB40_gun_M1887-X_0: true,
+	NO_RECOIL_OB40_gun_SPAS12_0: true,
+	NO_RECOIL_OB40_gun_M1014_0: true,
+	NO_RECOIL_OB40_gun_MAG-7_0: true,
+	NO_RECOIL_OB40_gun_CHARGEBUSTER_0: true,
+	NO_RECOIL_OB40_gun_TROGON_0: true,
+	
+// ... NO_RECOIL Subfusiles ...
+
+	NO_RECOIL_OB40_gun_UMP_0: true,
+	NO_RECOIL_OB40_gun_MP5_0: true,
+	NO_RECOIL_OB40_gun_VSS_0: true,
+	NO_RECOIL_OB40_gun_MP40_0: true,
+	NO_RECOIL_OB40_gun_P90_0: true,
+	NO_RECOIL_OB40_gun_CG15_0: true,
+	NO_RECOIL_OB40_gun_THOMPSON_0: true,
+	NO_RECOIL_OB40_gun_BIZON_0: true,
+	NO_RECOIL_OB40_gun_VECTOR_0: true,
+	NO_RECOIL_OB40_gun_MAC10_0: true,
+	
+// ... NO_RECOIL Rifles de Asalto ...
+
+	NO_RECOIL_OB40_gun_M4A1_0: true,
+	NO_RECOIL_OB40_gun_AK47_0: true,
+	NO_RECOIL_OB40_gun_M14_0: true,
+	NO_RECOIL_OB40_gun_SCAR_0: true,
+	NO_RECOIL_OB40_gun_GROZA_0: true,
+	NO_RECOIL_OB40_gun_SKS_0: true,
+	NO_RECOIL_OB40_gun_M249_0: true,
+	NO_RECOIL_OB40_gun_FAMAS_0: true,
+	NO_RECOIL_OB40_gun_SVD_0: true,
+	NO_RECOIL_OB40_gun_XM8_0: true,
+	NO_RECOIL_OB40_gun_M60_0: true,
+	NO_RECOIL_OB40_gun_AN94_0: true,
+	NO_RECOIL_OB40_gun_PLASMA_0: true,
+	NO_RECOIL_OB40_gun_AUG_0: true,
+	NO_RECOIL_OB40_gun_PARAFAL_0: true,
+	NO_RECOIL_OB40_gun_WOODPECKER_0: true,
+	NO_RECOIL_OB40_gun_KORD_0: true,
+	NO_RECOIL_OB40_gun_KINGFISHER_0: true,
+	NO_RECOIL_OB40_gun_GROZA-X_0: true,
+	NO_RECOIL_OB40_gun_M249-X_0: true,
+	NO_RECOIL_OB40_gun_SVD-Y_0: true,
+	NO_RECOIL_OB40_gun_G36_0: true,
+	NO_RECOIL_OB40_gun_AC80_0: true,
+	NO_RECOIL_OB40_gun_ARMAESCUDO_0: true,
+	
+// ... NO_RECOIL Francotirador ...
+
+	NO_RECOIL_OB40_gun_AWM_0: true,
+	NO_RECOIL_OB40_gun_AWM-Y_0: true,
+	NO_RECOIL_OB40_gun_KAR98K_0: true,
+	NO_RECOIL_OB40_gun_M828_0: true,
+	NO_RECOIL_OB40_gun_M24_0: true,
+	
+// ... NO_RECOIL Pistola ...
+
+	NO_RECOIL_OB40_gun_USP_0: true,
+	NO_RECOIL_OB40_gun_DESERTEAGLE_0: true,
+	NO_RECOIL_OB40_gun_G18_0: true,
+	NO_RECOIL_OB40_gun_M1873_0: true,
+	NO_RECOIL_OB40_gun_M500_0: true,
+	NO_RECOIL_OB40_gun_M1917_0: true,
+	NO_RECOIL_OB40_gun_USP-2_0: true,
+	NO_RECOIL_OB40_gun_MINIUZI_0: true,
+	
+            },		
+            
+			 AIMFOV:	{
+
+	// ... Aimfov Escopetas ...
+
+	AIMFOV_OB40_gun_M1887_180: true,
+	AIMFOV_OB40_gun_M1887-X_180: true,
+	AIMFOV_OB40_gun_SPAS12_180: true,
+	AIMFOV_OB40_gun_M1014_180: true,
+	AIMFOV_OB40_gun_MAG-7_180: true,
+	AIMFOV_OB40_gun_CHARGEBUSTER_180: true,
+	AIMFOV_OB40_gun_TROGON_180: true,
+	
+// ... Aimfov Subfusiles ...
+
+	AIMFOV_OB40_gun_UMP_180: true,
+	AIMFOV_OB40_gun_MP5_180: true,
+	AIMFOV_OB40_gun_VSS_180: true,
+	AIMFOV_OB40_gun_MP40_180: true,
+	AIMFOV_OB40_gun_P90_180: true,
+	AIMFOV_OB40_gun_CG15_180: true,
+	AIMFOV_OB40_gun_THOMPSON_180: true,
+	AIMFOV_OB40_gun_BIZON_180: true,
+	AIMFOV_OB40_gun_VECTOR_180: true,
+	AIMFOV_OB40_gun_MAC10_180: true,
+	
+// ... Aimfov Rifles de Asalto ...
+
+	AIMFOV_OB40_gun_M4A1_180: true,
+	AIMFOV_OB40_gun_AK47_180: true,
+	AIMFOV_OB40_gun_M14_180: true,
+	AIMFOV_OB40_gun_SCAR_180: true,
+	AIMFOV_OB40_gun_GROZA_180: true,
+	AIMFOV_OB40_gun_SKS_180: true,
+	AIMFOV_OB40_gun_M249_180: true,
+	AIMFOV_OB40_gun_FAMAS_180: true,
+	AIMFOV_OB40_gun_SVD_180: true,
+	AIMFOV_OB40_gun_XM8_180: true,
+	AIMFOV_OB40_gun_M60_180: true,
+	AIMFOV_OB40_gun_AN94_180: true,
+	AIMFOV_OB40_gun_PLASMA_180: true,
+	AIMFOV_OB40_gun_AUG_180: true,
+	AIMFOV_OB40_gun_PARAFAL_180: true,
+	AIMFOV_OB40_gun_WOODPECKER_180: true,
+	AIMFOV_OB40_gun_KORD_180: true,
+	AIMFOV_OB40_gun_KINGFISHER_180: true,
+	AIMFOV_OB40_gun_GROZA-X_180: true,
+	AIMFOV_OB40_gun_M249-X_180: true,
+	AIMFOV_OB40_gun_SVD-Y_180: true,
+	AIMFOV_OB40_gun_G36_180: true,
+	AIMFOV_OB40_gun_AC80_180: true,
+	AIMFOV_OB40_gun_ARMAESCUDO_180: true,
+	
+// ... Aimfov Francotirador ...
+
+	AIMFOV_OB40_gun_AWM_180: true,
+	AIMFOV_OB40_gun_AWM-Y_180: true,
+	AIMFOV_OB40_gun_KAR98K_180: true,
+	AIMFOV_OB40_gun_M828_180: true,
+	AIMFOV_OB40_gun_M24_180: true,
+	
+// ... Aimfov Pistola ...
+
+	AIMFOV_OB40_gun_USP_180: true,
+	AIMFOV_OB40_gun_DESERTEAGLE_180: true,
+	AIMFOV_OB40_gun_G18_180: true,
+	AIMFOV_OB40_gun_M1873_180: true,
+	AIMFOV_OB40_gun_M500_180: true,
+	AIMFOV_OB40_gun_M1917_180: true,
+	AIMFOV_OB40_gun_USP-2_180: true,
+	AIMFOV_OB40_gun_MINIUZI_180: true,
+	
+            },
+
+			 SENSI:	{
+
+	// ... Sensi Escopetas ...
+
+	SENSI_OB40_gun_M1887_9999: true,
+	SENSI_OB40_gun_M1887-X_9999: true,
+	SENSI_OB40_gun_SPAS12_9999: true,
+	SENSI_OB40_gun_M1014_9999: true,
+	SENSI_OB40_gun_MAG-7_180: true,
+	SENSI_OB40_gun_CHARGEBUSTER_9999: true,
+	SENSI_OB40_gun_TROGON_9999: true,
+	
+// ... Sensi Subfusiles ...
+
+	SENSI_OB40_gun_UMP_9999: true,
+	SENSI_OB40_gun_MP5_9999: true,
+	SENSI_OB40_gun_VSS_9999: true,
+	SENSI_OB40_gun_MP40_9999: true,
+	SENSI_OB40_gun_P90_9999: true,
+	SENSI_OB40_gun_CG15_9999: true,
+	SENSI_OB40_gun_THOMPSON_9999: true,
+	SENSI_OB40_gun_BIZON_9999: true,
+	SENSI_OB40_gun_VECTOR_9999: true,
+	SENSI_OB40_gun_MAC10_9999: true,
+	
+// ... Sensi Rifles de Asalto ...
+
+	SENSI_OB40_gun_M4A1_9999: true,
+	SENSI_OB40_gun_AK47_9999: true,
+	SENSI_OB40_gun_M14_9999: true,
+	SENSI_OB40_gun_SCAR_9999: true,
+	SENSI_OB40_gun_GROZA_9999: true,
+	SENSI_OB40_gun_SKS_9999: true,
+	SENSI_OB40_gun_M249_9999: true,
+	SENSI_OB40_gun_FAMAS_9999: true,
+	SENSI_OB40_gun_SVD_9999: true,
+	SENSI_OB40_gun_XM8_9999: true,
+	SENSI_OB40_gun_M60_9999: true,
+	SENSI_OB40_gun_AN94_9999: true,
+	SENSI_OB40_gun_PLASMA_9999: true,
+	SENSI_OB40_gun_AUG_9999: true,
+	SENSI_OB40_gun_PARAFAL_9999: true,
+	SENSI_OB40_gun_WOODPECKER_9999: true,
+	SENSI_OB40_gun_KORD_9999: true,
+	SENSI_OB40_gun_KINGFISHER_9999: true,
+	SENSI_OB40_gun_GROZA-X_9999: true,
+	SENSI_OB40_gun_M249-X_9999: true,
+	SENSI_OB40_gun_SVD-Y_9999: true,
+	SENSI_OB40_gun_G36_9999: true,
+	SENSI_OB40_gun_AC80_9999: true,
+	SENSI_OB40_gun_ARMAESCUDO_9999: true,
+	
+// ... Sensi Francotirador ...
+
+	SENSI_OB40_gun_AWM_9999: true,
+	SENSI_OB40_gun_AWM-Y_9999: true,
+	SENSI_OB40_gun_KAR98K_9999: true,
+	SENSI_OB40_gun_M828_9999: true,
+	SENSI_OB40_gun_M24_9999: true,
+	
+// ... Sensi Pistola ...
+
+	SENSI_OB40_gun_USP_9999: true,
+	SENSI_OB40_gun_DESERTEAGLE_9999: true,
+	SENSI_OB40_gun_G18_9999: true,
+	SENSI_OB40_gun_M1873_9999: true,
+	SENSI_OB40_gun_M500_9999: true,
+	SENSI_OB40_gun_M1917_9999: true,
+	SENSI_OB40_gun_USP-2_9999: true,
+	SENSI_OB40_gun_MINIUZI_9999: true,
+	
+            },
+
+}
+          },
+          version: "1.102.1",
+          build: "16797",
+          updateDate: "2023-11-02"
+        }
+      }
+    }
+  }
+};
+
+module.exports = contentCache;
