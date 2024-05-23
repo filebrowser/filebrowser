@@ -45,14 +45,15 @@ override the options.`,
 		}
 
 		ser := &settings.Server{
-			Address: mustGetString(flags, "address"),
-			Socket:  mustGetString(flags, "socket"),
-			Root:    mustGetString(flags, "root"),
-			BaseURL: mustGetString(flags, "baseurl"),
-			TLSKey:  mustGetString(flags, "key"),
-			TLSCert: mustGetString(flags, "cert"),
-			Port:    mustGetString(flags, "port"),
-			Log:     mustGetString(flags, "log"),
+			Address:             mustGetString(flags, "address"),
+			Socket:              mustGetString(flags, "socket"),
+			Root:                mustGetString(flags, "root"),
+			BaseURL:             mustGetString(flags, "baseurl"),
+			TLSKey:              mustGetString(flags, "key"),
+			TLSCert:             mustGetString(flags, "cert"),
+			Port:                mustGetString(flags, "port"),
+			Log:                 mustGetString(flags, "log"),
+			TokenExpirationTime: mustGetString(flags, "token-expiration-time"),
 		}
 
 		err := d.store.Settings.Save(s)
