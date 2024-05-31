@@ -269,7 +269,7 @@ main .spinner .bounce2 {
 #previewer .pdf {
   width: 100%;
   height: 100%;
-  margin-top: 4em;
+  padding-top: 4em;
 }
 
 #previewer h2.message {
