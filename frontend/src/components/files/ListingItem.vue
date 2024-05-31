@@ -211,12 +211,14 @@ const drop = async (event: Event) => {
 const itemClick = (event: Event | KeyboardEvent) => {
   if (
     singleClick.value &&
-    !(event as KeyboardEvent).ctrlKey &&
-    !(event as KeyboardEvent).metaKey &&
+    !(
+      fileStore.selectedCount !== 0 &&
+      ((event as KeyboardEvent).ctrlKey || (event as KeyboardEvent).metaKey)
+    ) &&
     !(event as KeyboardEvent).shiftKey &&
     !fileStore.multiple
   )
-    open();
+    open(event);
   else click(event);
 };
 
@@ -230,7 +232,7 @@ const click = (event: Event | KeyboardEvent) => {
 
   touches.value++;
   if (touches.value > 1) {
-    open();
+    open(event);
   }
 
   if (fileStore.selected.indexOf(props.index) !== -1) {
@@ -270,8 +272,13 @@ const click = (event: Event | KeyboardEvent) => {
   fileStore.selected.push(props.index);
 };
 
-const open = () => {
-  router.push({ path: props.url });
+const open = (event: Event | KeyboardEvent) => {
+  if ((event as KeyboardEvent).ctrlKey || (event as KeyboardEvent).metaKey) {
+    const route = router.resolve({ path: props.url });
+    window.open(route.href, "_blank");
+  } else {
+    router.push({ path: props.url });
+  }
 };
 
 const getExtension = (fileName: string): string => {
