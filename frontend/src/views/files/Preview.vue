@@ -6,7 +6,7 @@
     @mousemove="toggleNavigation"
     @touchstart="toggleNavigation"
   >
-    <header-bar v-if="showNav">
+    <header-bar v-if="isPdf || showNav">
       <action icon="close" :label="$t('buttons.close')" @action="close()" />
       <title>{{ name }}</title>
       <action
@@ -74,11 +74,7 @@
           :options="videoOptions"
         >
         </VideoPlayer>
-        <object
-          v-else-if="fileStore.req?.extension.toLowerCase() == '.pdf'"
-          class="pdf"
-          :data="raw"
-        ></object>
+        <object v-else-if="isPdf" class="pdf" :data="raw"></object>
         <div v-else-if="fileStore.req?.type == 'blob'" class="info">
           <div class="title">
             <i class="material-icons">feedback</i>
@@ -188,6 +184,8 @@ const raw = computed(() => {
 
   return downloadUrl.value;
 });
+
+const isPdf = computed(() => fileStore.req?.extension.toLowerCase() == ".pdf");
 
 const isResizeEnabled = computed(() => resizePreview);
 
