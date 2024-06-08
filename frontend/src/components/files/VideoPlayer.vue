@@ -1,8 +1,14 @@
 <template>
   <video ref="videoPlayer" class="video-max video-js" controls preload="auto">
     <source />
-    <track kind="subtitles" v-for="(sub, index) in subtitles" :key="index" :src="sub" :label="subLabel(sub)"
-      :default="index === 0" />
+    <track
+      kind="subtitles"
+      v-for="(sub, index) in subtitles"
+      :key="index"
+      :src="sub"
+      :label="subLabel(sub)"
+      :default="index === 0"
+    />
     <p class="vjs-no-js">
       Sorry, your browser doesn't support embedded videos, but don't worry, you
       can <a :href="source">download it</a>
@@ -12,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, nextTick, } from "vue";
+import { ref, onMounted, onBeforeUnmount, nextTick } from "vue";
 import videojs from "video.js";
 import type Player from "video.js/dist/types/player";
 import "videojs-mobile-ui";
@@ -22,7 +28,6 @@ import "videojs-mobile-ui/dist/videojs-mobile-ui.css";
 
 const videoPlayer = ref<HTMLElement | null>(null);
 const player = ref<Player | null>(null);
-
 
 const props = withDefaults(
   defineProps<{
@@ -35,14 +40,14 @@ const props = withDefaults(
   }
 );
 
-const source = ref(props.source)
-const sourceType = ref("")
+const source = ref(props.source);
+const sourceType = ref("");
 
 nextTick(() => {
-  initVideoPlayer()
-})
+  initVideoPlayer();
+});
 
-onMounted(() => { });
+onMounted(() => {});
 
 onBeforeUnmount(() => {
   if (player.value) {
@@ -54,21 +59,22 @@ onBeforeUnmount(() => {
 const initVideoPlayer = async () => {
   try {
     const lang = document.documentElement.lang;
-    const languagePack = await (languageImports[lang] || languageImports.en)?.();
-    videojs.addLanguage('videoPlayerLocal', languagePack.default);
-    sourceType.value = ""
+    const languagePack = await (
+      languageImports[lang] || languageImports.en
+    )?.();
+    videojs.addLanguage("videoPlayerLocal", languagePack.default);
+    sourceType.value = "";
 
     //
     sourceType.value = getSourceType(source.value);
 
-    const srcOpt = { sources: { src: props.source, type: sourceType.value } }
+    const srcOpt = { sources: { src: props.source, type: sourceType.value } };
     //Supporting localized language display.
-    const langOpt = { language: "videoPlayerLocal" }
+    const langOpt = { language: "videoPlayerLocal" };
     // support for playback at different speeds.
-    const playbackRatesOpt = { playbackRates: [0.5, 1, 1.5, 2, 2.5, 3] }
-    let options = getOptions(props.options, langOpt, srcOpt, playbackRatesOpt)
-    player.value = videojs(videoPlayer.value!, options, () => {
-    });
+    const playbackRatesOpt = { playbackRates: [0.5, 1, 1.5, 2, 2.5, 3] };
+    let options = getOptions(props.options, langOpt, srcOpt, playbackRatesOpt);
+    player.value = videojs(videoPlayer.value!, options, () => {});
 
     // TODO: need to test on mobile
     // @ts-ignore
@@ -76,18 +82,16 @@ const initVideoPlayer = async () => {
   } catch (error) {
     console.error("Error initializing video player:", error);
   }
-
-}
+};
 
 const getOptions = (...srcOpt: any[]) => {
   const options = {
     controlBar: {
-    skipButtons: {
-      forward: 5,
-      backward: 5
-    }
-    
-  },
+      skipButtons: {
+        forward: 5,
+        backward: 5,
+      },
+    },
     html5: {
       nativeTextTracks: false,
     },
@@ -101,7 +105,7 @@ const getOptions = (...srcOpt: any[]) => {
   };
 
   return videojs.obj.merge(options, ...srcOpt);
-}
+};
 
 //  Attempting to fix the issue of being unable to play .MKV format video files
 const getSourceType = (source: string) => {
@@ -137,30 +141,29 @@ interface LanguageImports {
 }
 
 const languageImports: LanguageImports = {
-  'he': () => import('video.js/dist/lang/he.json'),
-  'hu': () => import('video.js/dist/lang/hu.json'),
-  'ar': () => import('video.js/dist/lang/ar.json'),
-  'de': () => import('video.js/dist/lang/de.json'),
-  'el': () => import('video.js/dist/lang/el.json'),
-  'en': () => import('video.js/dist/lang/en.json'),
-  'es': () => import('video.js/dist/lang/es.json'),
-  'fr': () => import('video.js/dist/lang/fr.json'),
-  'it': () => import('video.js/dist/lang/it.json'),
-  'ja': () => import('video.js/dist/lang/ja.json'),
-  'ko': () => import('video.js/dist/lang/ko.json'),
-  'nl-be': () => import('video.js/dist/lang/nl.json'),
-  'pl': () => import('video.js/dist/lang/pl.json'),
-  'pt-br': () => import('video.js/dist/lang/pt-BR.json'),
-  'pt': () => import('video.js/dist/lang/pt-PT.json'),
-  'ro': () => import('video.js/dist/lang/ro.json'),
-  'ru': () => import('video.js/dist/lang/ru.json'),
-  'sk': () => import('video.js/dist/lang/sk.json'),
-  'tr': () => import('video.js/dist/lang/tr.json'),
-  'uk': () => import('video.js/dist/lang/uk.json'),
-  'zh-cn': () => import('video.js/dist/lang/zh-CN.json'),
-  'zh-tw': () => import('video.js/dist/lang/zh-TW.json'),
+  he: () => import("video.js/dist/lang/he.json"),
+  hu: () => import("video.js/dist/lang/hu.json"),
+  ar: () => import("video.js/dist/lang/ar.json"),
+  de: () => import("video.js/dist/lang/de.json"),
+  el: () => import("video.js/dist/lang/el.json"),
+  en: () => import("video.js/dist/lang/en.json"),
+  es: () => import("video.js/dist/lang/es.json"),
+  fr: () => import("video.js/dist/lang/fr.json"),
+  it: () => import("video.js/dist/lang/it.json"),
+  ja: () => import("video.js/dist/lang/ja.json"),
+  ko: () => import("video.js/dist/lang/ko.json"),
+  "nl-be": () => import("video.js/dist/lang/nl.json"),
+  pl: () => import("video.js/dist/lang/pl.json"),
+  "pt-br": () => import("video.js/dist/lang/pt-BR.json"),
+  pt: () => import("video.js/dist/lang/pt-PT.json"),
+  ro: () => import("video.js/dist/lang/ro.json"),
+  ru: () => import("video.js/dist/lang/ru.json"),
+  sk: () => import("video.js/dist/lang/sk.json"),
+  tr: () => import("video.js/dist/lang/tr.json"),
+  uk: () => import("video.js/dist/lang/uk.json"),
+  "zh-cn": () => import("video.js/dist/lang/zh-CN.json"),
+  "zh-tw": () => import("video.js/dist/lang/zh-TW.json"),
 };
-
 </script>
 <style scoped>
 .video-max {
