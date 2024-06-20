@@ -2,44 +2,85 @@
   <div class="card floating" style="max-width: 50em;" id="share">
     <div class="card-title">
       <h2>{{ $t("buttons.torrent") }}</h2>
+      <button class="button button--flat button--blue" @click="toggleDetailedView">
+        {{ detailedView ? $t("buttons.compact") : $t("buttons.detailed") }}
+      </button>
     </div>
 
     <div class="card-content">
+      <!--
+      <p>{{ $t("prompts.name") }}</p>
+      <input 
+        class="input input--block" 
+        type="text" 
+        v-model.trim="name" 
+        tabindex="0" />
+      -->
+
+      <p v-if="detailedView">{{ $t("prompts.pieceLength") }}</p>
+      <select 
+        v-if="detailedView"
+        class="input input--block" 
+        v-model.trim="pieceLen" 
+        tabindex="1">
+        <option value="0">{{ $t("prompts.auto") }}</option>
+        <option value="15">32 KiB</option>
+        <option value="16">64 KiB</option>
+        <option value="17">128 KiB</option>
+        <option value="18">256 KiB</option>
+        <option value="19">512 KiB</option>
+        <option value="20">1 MiB</option>
+        <option value="21">2 MiB</option>
+        <option value="22">4 MiB</option>
+        <option value="23">8 MiB</option>
+        <option value="24">16 MiB</option>
+        <option value="25">32 MiB</option>
+        <option value="26">64 MiB</option>
+        <option value="27">128 MiB</option>
+        <option value="28">256 MiB</option>
+      </select>
+
       <p>{{ $t("prompts.trackersList") }}</p>
       <textarea 
         class="input input--block input--textarea"
-        style="min-height: 5em;"
+        style="min-height: 4em;"
         type="text" 
         v-model.trim="announces" 
-        tabindex="1"></textarea>
+        tabindex="2"></textarea>
 
       <p>{{ $t("prompts.webSeeds") }}</p>
-      <textarea 
+      <textarea
         class="input input--block input--textarea" 
-        style="min-height: 5em;"
+        style="min-height: 4em;"
         type="text" 
         v-model.trim="webSeeds" 
-        tabindex="2"></textarea>
+        tabindex="3"></textarea>
 
       <p>{{ $t("prompts.comment") }}</p>
       <textarea 
         class="input input--block input--textarea" 
-        style="min-height: 5em;"
+        style="min-height: 4em;"
         type="text" 
         v-model.trim="comment" 
-        tabindex="3"></textarea>
+        tabindex="4"></textarea>
 
-      <p>{{ $t("prompts.source") }}</p>
+      <p v-if="detailedView">{{ $t("prompts.source") }}</p>
       <input 
+        v-if="detailedView"
         class="input input--block" 
         type="text" 
         v-model.trim="source" 
-        tabindex="4" />
+        tabindex="5" />
 
-      <label>
-        <input type="checkbox" v-model="privateFlag" tabindex="3" />
+      <p v-if="detailedView">
+        <input type="checkbox" v-model="date" tabindex="6" />
+        {{ $t("prompts.includeDate") }}
+      </p>
+
+      <p v-if="detailedView">
+        <input type="checkbox" v-model="privateFlag" tabindex="7" />
         {{ $t("prompts.privateTorrent") }}
-      </label>
+      </p>
     </div>
 
     <div class="card-action">
@@ -70,10 +111,11 @@ export default {
       comment: "",
       date: true,
       name: "",
-      pieceLen: 18,
+      pieceLen: 0,
       privateFlag: false,
       source: "",
       webSeeds: [],
+      detailedView: false
     };
   },
   inject: ["$showError", "$showSuccess"],
@@ -99,25 +141,21 @@ export default {
     },
   },
   async beforeMount() {
-    this.fetchTrackers();
+    api.fetchDefaultOptions().then((res) => {
+      this.announces = res.announces.join("\n");
+      this.comment = res.comment;
+      this.date = res.date;
+      this.name = res.name;
+      this.pieceLen = res.pieceLen;
+      this.privateFlag = res.private;
+      this.source = res.source;
+      this.webSeeds = res.webSeeds.join("\n");
+    });
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),
-    async fetchTrackers() {
-      const url = 'https://cf.trackerslist.com/all.txt';
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(this.$t("error.failedToFetchTrackers"));
-        }
-        let text = await response.text();
-        text = text.replace(/^\s*[\r\n]/gm, '');
-        this.announces = text;
-      } catch (error) {
-        this.$showError(error);
-        text = this.$t("error.faildToFetchTrackers");
-        this.announces = text;
-      }
+    toggleDetailedView() {
+      this.detailedView = !this.detailedView;
     },
     torrent: async function (event) {
       event.preventDefault();
@@ -135,10 +173,10 @@ export default {
             this.comment,
             this.date,
             this.name,
-            this.pieceLen,
+            parseInt(this.pieceLen),
             this.privateFlag,
             this.source,
-            this.webSeeds,
+            this.webSeeds.split("\n").map((t) => t.trim()).filter((t) => t),
           ).then(
             () => {
               buttons.success("torrent");
@@ -147,9 +185,9 @@ export default {
               this.$showSuccess(this.$t("success.torrentCreated"));
             }
           ).catch((e) => {
-              buttons.done("torrent");
-              this.$showError(e);
-            });
+            buttons.done("torrent");
+            this.$showError(e);
+          });
         }
 
         this.closeHovers();

@@ -8,6 +8,7 @@ interface ISettings {
   tus: SettingsTus;
   shell: string[];
   commands: SettingsCommand;
+  torrent: SettingsTorrent;
 }
 
 interface SettingsDefaults {
@@ -47,6 +48,13 @@ interface SettingsCommand {
   before_rename?: string[];
   before_save?: string[];
   before_upload?: string[];
+}
+
+interface SettingsTorrent {
+  trackersListUrl?: string;
+  qbUrl?: string;
+  qbUsername?: string;
+  qbPassword?: string;
 }
 
 interface SettingsUnit {

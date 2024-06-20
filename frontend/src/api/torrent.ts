@@ -1,5 +1,10 @@
 import { fetchURL, fetchJSON, removePrefix, createURL } from "./utils";
 
+export async function fetchDefaultOptions() {
+  const url = `/api/torrent`
+  return fetchJSON(url);
+}
+
 export async function makeTorrent(
   url: string,
   announces: string[],

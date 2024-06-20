@@ -2,7 +2,7 @@
   <div class="card floating">
     <div class="card-content">
       <p>
-        {{ $t("prompts.publishMessageSingle") }}
+        {{ $t("prompts.publishMessage") }}
       </p>
     </div>
     <div class="card-action">
@@ -65,9 +65,9 @@ export default {
             this.req.items[this.selected[0]].url
           ).then(() => {
             buttons.success("publish");
-            this.$showSuccess(this.$t("prompts.publishSuccess"));
+            this.$showSuccess(this.$t("success.torrentPublished"));
           }).catch((e) => {
-            buttons.done("delete");
+            buttons.done("publish");
             this.$showError(e);
           });
         };

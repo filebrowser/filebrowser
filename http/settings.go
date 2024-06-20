@@ -18,10 +18,11 @@ type settingsData struct {
 	Tus              settings.Tus          `json:"tus"`
 	Shell            []string              `json:"shell"`
 	Commands         map[string][]string   `json:"commands"`
+	Torrent          settings.Torrent      `json:"torrent"`
 }
 
 var settingsGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	data := &settingsData{
+	data := settingsData{
 		Signup:           d.settings.Signup,
 		CreateUserDir:    d.settings.CreateUserDir,
 		UserHomeBasePath: d.settings.UserHomeBasePath,
@@ -31,7 +32,10 @@ var settingsGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, 
 		Tus:              d.settings.Tus,
 		Shell:            d.settings.Shell,
 		Commands:         d.settings.Commands,
+		Torrent:          d.settings.Torrent,
 	}
+
+	data.Torrent.QbPassword = ""
 
 	return renderJSON(w, r, data)
 })
@@ -52,6 +56,7 @@ var settingsPutHandler = withAdmin(func(_ http.ResponseWriter, r *http.Request, 
 	d.settings.Tus = req.Tus
 	d.settings.Shell = req.Shell
 	d.settings.Commands = req.Commands
+	d.settings.Torrent = req.Torrent
 
 	err = d.store.Settings.Save(d.settings)
 	return errToStatus(err), err

@@ -225,6 +225,67 @@
         </div>
       </form>
     </div>
+
+    <div class="column">
+      <form class="card" @submit.prevent="save">
+        <div class="card-title">
+          <h2>{{ t("settings.torrentSettings") }}</h2>
+        </div>
+
+        <div class="card-content">
+          <h3>{{ t("settings.makeTorrent") }}</h3>
+          <p class="small">{{ t("settings.makeTorrentSettingsDescription") }}</p>
+          <p>
+            <label for="trackersListUrl">{{ t("settings.trackersListUrl") }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              v-model="settings.torrent.trackersListUrl"
+              id="trackersListUrl"
+            />
+          </p>
+
+          <h3>{{ t("settings.publish") }}</h3>
+          <p class="small">{{ t("settings.qbSettingsDescription") }}</p>
+          <p>
+            <label for="qbUrl">{{ t("settings.qbUrl") }}</label>
+            <input
+              class="input input--block"
+              v-model.trim="settings.torrent.qbUrl"
+              id="qbUrl"
+            ></input>
+          </p>
+
+          <p>
+            <label for="qbUsername">{{ t("settings.qbUsername") }}</label>
+            <input
+              class="input input--block"
+              v-model.trim="settings.torrent.qbUsername"
+              id="qbUsername"
+            ></input>
+          </p>
+
+          <p>
+            <label for="qbPassword">{{ t("settings.qbPassword") }}</label>
+            <input
+              class="input input--block"
+              type="password"
+              placeholder="●●●●●●●●"
+              v-model.trim="settings.torrent.qbPassword"
+              id="qbPassword"
+            ></input>
+          </p>
+        </div>
+
+        <div class="card-action">
+          <input
+            class="button button--flat"
+            type="submit"
+            :value="t('buttons.update')"
+          />
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 

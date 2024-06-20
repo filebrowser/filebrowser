@@ -337,6 +337,9 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 				Download: true,
 				Torrent:  true,
 			},
+			CreateBody: users.CreateTorrentBody{
+				Date: true,
+			},
 		},
 		AuthMethod: "",
 		Branding:   settings.Branding{},

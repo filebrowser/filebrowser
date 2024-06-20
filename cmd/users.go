@@ -78,7 +78,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.String("locale", "en", "locale for users")
 	flags.String("viewMode", string(users.ListViewMode), "view mode for users")
 	flags.Bool("singleClick", false, "use single clicks only")
-	flags.String("trackerListsUrl", "https://cf.trackerslist.com/all.txt", "tracker lists url")
+	flags.String("trackersListUrl", "https://cf.trackerslist.com/all.txt", "tracker lists url")
 }
 
 func getViewMode(flags *pflag.FlagSet) users.ViewMode {

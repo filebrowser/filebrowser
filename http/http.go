@@ -78,6 +78,7 @@ func NewHandler(
 	api.PathPrefix("/share").Handler(monkey(sharePostHandler, "/api/share")).Methods("POST")
 	api.PathPrefix("/share").Handler(monkey(shareDeleteHandler, "/api/share")).Methods("DELETE")
 
+	api.PathPrefix("/torrent").Handler(monkey(torrentGetHandler, "/api/torrent")).Methods("Get")
 	api.PathPrefix("/torrent").Handler(monkey(torrentPostHandler, "/api/torrent")).Methods("POST")
 	api.PathPrefix("/publish").Handler(monkey(publishPostHandler, "/api/publish")).Methods("POST")
 

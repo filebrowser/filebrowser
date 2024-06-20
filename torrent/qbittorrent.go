@@ -10,9 +10,10 @@ import (
 	"path/filepath"
 )
 
-func Login(client *http.Client, qbURL, username, password string) (string, error) {
+func login(client *http.Client, qbURL, username, password string) (string, error) {
 	loginURL := fmt.Sprintf("%s/api/v2/auth/login", qbURL)
 	data := fmt.Sprintf("username=%s&password=%s", username, password)
+
 	req, err := http.NewRequest("POST", loginURL, bytes.NewBufferString(data))
 	if err != nil {
 		return "", err
@@ -39,7 +40,7 @@ func Login(client *http.Client, qbURL, username, password string) (string, error
 	return "", fmt.Errorf("SID cookie not found")
 }
 
-func AddTorrent(client *http.Client, qbURL, sid, torrentPath, savePath string) error {
+func addTorrent(client *http.Client, qbURL, sid, torrentPath, savePath string) error {
 	addTorrentURL := fmt.Sprintf("%s/api/v2/torrents/add", qbURL)
 
 	file, err := os.Open(torrentPath)
