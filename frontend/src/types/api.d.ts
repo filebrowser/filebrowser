@@ -31,3 +31,14 @@ interface Share {
 interface SearchParams {
   [key: string]: string;
 }
+
+interface Torrent {
+  announces: string[];
+  comment: string;
+  date: boolean;
+  name: string;
+  pieceLen: number;
+  private: boolean;
+  source: string;
+  webSeeds: string[];
+}

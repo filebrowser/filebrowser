@@ -15,6 +15,8 @@ import Delete from "./Delete.vue";
 import DeleteUser from "./DeleteUser.vue";
 import Download from "./Download.vue";
 import Rename from "./Rename.vue";
+import Torrent from "./Torrent.vue";
+import Publish from "./Publish.vue";
 import Move from "./Move.vue";
 import Copy from "./Copy.vue";
 import NewFile from "./NewFile.vue";
@@ -37,6 +39,8 @@ const components = new Map<string, any>([
   ["help", Help],
   ["delete", Delete],
   ["rename", Rename],
+  ["torrent", Torrent],
+  ["publish", Publish],
   ["move", Move],
   ["copy", Copy],
   ["newFile", NewFile],
