@@ -30,7 +30,7 @@ func printUsers(usrs []*users.User) {
 	fmt.Fprintln(w, "ID\tUsername\tScope\tLocale\tV. Mode\tS.Click\tAdmin\tExecute\tCreate\tRename\tModify\tDelete\tShare\tDownload\tPwd Lock")
 
 	for _, u := range usrs {
-		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t\n",
+		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t\n",
 			u.ID,
 			u.Username,
 			u.Scope,
@@ -45,6 +45,7 @@ func printUsers(usrs []*users.User) {
 			u.Perm.Delete,
 			u.Perm.Share,
 			u.Perm.Download,
+			u.Perm.Torrent,
 			u.LockPassword,
 		)
 	}
@@ -77,6 +78,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.String("locale", "en", "locale for users")
 	flags.String("viewMode", string(users.ListViewMode), "view mode for users")
 	flags.Bool("singleClick", false, "use single clicks only")
+	flags.String("trackerListsUrl", "https://cf.trackerslist.com/all.txt", "tracker lists url")
 }
 
 func getViewMode(flags *pflag.FlagSet) users.ViewMode {
@@ -115,6 +117,8 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 			defaults.Perm.Share = mustGetBool(flags, flag.Name)
 		case "perm.download":
 			defaults.Perm.Download = mustGetBool(flags, flag.Name)
+		case "perm.torrent":
+			defaults.Perm.Torrent = mustGetBool(flags, flag.Name)
 		case "commands":
 			commands, err := flags.GetStringSlice(flag.Name)
 			checkErr(err)

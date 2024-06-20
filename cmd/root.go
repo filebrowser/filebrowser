@@ -335,6 +335,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 				Delete:   true,
 				Share:    true,
 				Download: true,
+				Torrent:  true,
 			},
 		},
 		AuthMethod: "",
