@@ -3,6 +3,7 @@ RUN apk --update add ca-certificates \
                      mailcap \
                      curl \
                      jq \
+                     gcompat \
                      mktorrent
 
 COPY healthcheck.sh /healthcheck.sh
