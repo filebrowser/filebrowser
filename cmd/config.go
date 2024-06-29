@@ -48,6 +48,9 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("branding.files", "", "path to directory with images and custom styles")
 	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 	flags.Bool("branding.disableUsedPercentage", false, "disable used disk percentage graph")
+
+	flags.String("onlyoffice.url", "", "onlyoffice integration url")
+	flags.String("onlyoffice.jwtSecret", "", "onlyoffice integration secret")
 }
 
 //nolint:gocyclo

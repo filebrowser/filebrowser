@@ -169,6 +169,8 @@
     "newPassword": "Twoje nowe hasło",
     "newPasswordConfirm": "Potwierdź swoje hasło",
     "newUser": "Nowy Użytkownik",
+    "onlyOffice": "Integracja z Only Office",
+    "onlyOfficeUrl": "Link do Only Office (w celu wyłączenia usługi, pozostaw puste)",
     "password": "Hasło",
     "passwordUpdated": "Hasło zostało zapisane!",
     "path": "Ścieżka",
