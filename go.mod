@@ -25,8 +25,8 @@ require (
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce
 	go.etcd.io/bbolt v1.3.9
 	golang.org/x/crypto v0.21.0
-	golang.org/x/image v0.15.0
-	golang.org/x/text v0.14.0
+	golang.org/x/image v0.18.0
+	golang.org/x/text v0.16.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v2 v2.4.0
 )
