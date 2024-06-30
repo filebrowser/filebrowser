@@ -10,7 +10,9 @@ RUN chmod +x /healthcheck.sh  # Make the script executable
 HEALTHCHECK --start-period=2s --interval=5s --timeout=3s \
     CMD /healthcheck.sh || exit 1
 
-VOLUME /srv
+RUN mkdir -p /Certs    
+
+VOLUME /srv /Certs
 EXPOSE 80
 
 COPY docker_config.json /.filebrowser.json
