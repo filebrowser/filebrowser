@@ -5,6 +5,7 @@
     </div>
 
     <div class="card-content">
+      <p>{{ $t("prompts.moveMessage") }}</p>
       <file-list
         ref="fileList"
         @update:selected="(val) => (dest = val)"
