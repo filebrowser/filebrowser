@@ -205,41 +205,92 @@
           </div>
         </div>
 
-        <h2 v-if="fileStore.req?.numDirs ?? false">
-          {{ t("files.folders") }}
-        </h2>
-        <div v-if="fileStore.req?.numDirs ?? false">
-          <item
-            v-for="item in dirs"
-            :key="base64(item.name)"
-            v-bind:index="item.index"
-            v-bind:name="item.name"
-            v-bind:isDir="item.isDir"
-            v-bind:url="item.url"
-            v-bind:modified="item.modified"
-            v-bind:type="item.type"
-            v-bind:size="item.size"
-            v-bind:path="item.path"
-          >
-          </item>
-        </div>
+        <span @contextmenu="showContextMenu">
+          <h2 v-if="fileStore.req?.numDirs ?? false">
+            {{ t("files.folders") }}
+          </h2>
+          <div v-if="fileStore.req?.numDirs ?? false">
+            <item
+              v-for="item in dirs"
+              :key="base64(item.name)"
+              v-bind:index="item.index"
+              v-bind:name="item.name"
+              v-bind:isDir="item.isDir"
+              v-bind:url="item.url"
+              v-bind:modified="item.modified"
+              v-bind:type="item.type"
+              v-bind:size="item.size"
+              v-bind:path="item.path"
+            >
+            </item>
+          </div>
 
-        <h2 v-if="fileStore.req?.numFiles ?? false">{{ t("files.files") }}</h2>
-        <div v-if="fileStore.req?.numFiles ?? false">
-          <item
-            v-for="item in files"
-            :key="base64(item.name)"
-            v-bind:index="item.index"
-            v-bind:name="item.name"
-            v-bind:isDir="item.isDir"
-            v-bind:url="item.url"
-            v-bind:modified="item.modified"
-            v-bind:type="item.type"
-            v-bind:size="item.size"
-            v-bind:path="item.path"
+          <h2 v-if="fileStore.req?.numFiles ?? false">
+            {{ t("files.files") }}
+          </h2>
+          <div v-if="fileStore.req?.numFiles ?? false">
+            <item
+              v-for="item in files"
+              :key="base64(item.name)"
+              v-bind:index="item.index"
+              v-bind:name="item.name"
+              v-bind:isDir="item.isDir"
+              v-bind:url="item.url"
+              v-bind:modified="item.modified"
+              v-bind:type="item.type"
+              v-bind:size="item.size"
+              v-bind:path="item.path"
+            >
+            </item>
+          </div>
+          <context-menu
+            :show="isContextMenuVisible"
+            :pos="contextMenuPos"
+            @hide="hideContextMenu"
           >
-          </item>
-        </div>
+            <action
+              v-if="headerButtons.share"
+              icon="share"
+              :label="$t('buttons.share')"
+              show="share"
+            />
+            <action
+              v-if="headerButtons.rename"
+              icon="mode_edit"
+              :label="$t('buttons.rename')"
+              show="rename"
+            />
+            <action
+              v-if="headerButtons.copy"
+              id="copy-button"
+              icon="content_copy"
+              :label="$t('buttons.copyFile')"
+              show="copy"
+            />
+            <action
+              v-if="headerButtons.move"
+              id="move-button"
+              icon="forward"
+              :label="$t('buttons.moveFile')"
+              show="move"
+            />
+            <action
+              v-if="headerButtons.delete"
+              id="delete-button"
+              icon="delete"
+              :label="$t('buttons.delete')"
+              show="delete"
+            />
+            <action
+              v-if="headerButtons.download"
+              icon="file_download"
+              :label="$t('buttons.download')"
+              @action="download"
+              :counter="fileStore.selectedCount"
+            />
+            <action icon="info" :label="$t('buttons.info')" show="info" />
+          </context-menu>
+        </span>
 
         <input
           style="display: none"
@@ -292,6 +343,7 @@ import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Search from "@/components/Search.vue";
 import Item from "@/components/files/ListingItem.vue";
+import ContextMenu from "@/components/ContextMenu.vue";
 import {
   computed,
   inject,
@@ -310,6 +362,8 @@ const columnWidth = ref<number>(280);
 const dragCounter = ref<number>(0);
 const width = ref<number>(window.innerWidth);
 const itemWeight = ref<number>(0);
+const isContextMenuVisible = ref<boolean>(false);
+const contextMenuPos = ref<{ x: number; y: number }>({ x: 0, y: 0 });
 
 const $showError = inject<IToastError>("$showError")!;
 
@@ -444,7 +498,7 @@ watch(req, () => {
 
 onMounted(() => {
   // Check the columns size for the first time.
-  colunmsResize();
+  columnsResize();
 
   // How much every listing item affects the window height
   setItemWeight();
@@ -638,7 +692,7 @@ const paste = (event: Event) => {
   action(overwrite, rename);
 };
 
-const colunmsResize = () => {
+const columnsResize = () => {
   // Update the columns size based on the window width.
   let items_ = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
   if (items_ === null) return;
@@ -846,7 +900,7 @@ const toggleMultipleSelection = () => {
 };
 
 const windowsResize = throttle(() => {
-  colunmsResize();
+  columnsResize();
   width.value = window.innerWidth;
 
   // Listing element is not displayed
@@ -956,5 +1010,17 @@ const fillWindow = (fit = false) => {
 
   // Set the number of displayed items
   showLimit.value = showQuantity > totalItems ? totalItems : showQuantity;
+};
+
+const showContextMenu = (event: MouseEvent) => {
+  isContextMenuVisible.value = true;
+  contextMenuPos.value = {
+    x: event.clientX,
+    y: event.clientY,
+  };
+};
+
+const hideContextMenu = () => {
+  isContextMenuVisible.value = false;
 };
 </script>
