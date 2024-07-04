@@ -6,15 +6,22 @@
   background: var(--surfacePrimary);
   color: var(--textPrimary);
   z-index: 9999;
-  background: rgba(127, 127, 127, 0.1);
+  background: var(--dividerSecondary);
   transition: 0.2s ease background;
   cursor: ns-resize;
   touch-action: none;
   user-select: none;
+  width: 100%;
+}
+
+.shell__divider{
+  background: rgba(127, 127, 127, 0.3);
+  width: 100%;
+  height: 8px;
 }
 
 .shell__divider:hover {
-  background: rgba(127, 127, 127, 0.4);
+  background: rgba(127, 127, 127, 0.9);
 }
 
 .shell__content {
@@ -34,7 +41,7 @@
   top: 0px;
   left: 0px;
   z-index: 9998;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--dividerPrimary);
 }
 
 body.rtl .shell-content {
@@ -62,6 +69,8 @@ body.rtl .shell-content {
   font-size: inherit;
 }
 
+
+
 .shell__prompt {
   width: 1.2rem;
 }
@@ -75,4 +84,5 @@ body.rtl .shell-content {
   font-family: inherit;
   white-space: pre-wrap;
   width: 100%;
+  color:var(--textSecondary);
 }

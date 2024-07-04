@@ -1,9 +1,11 @@
-// Based on code provided by Amir Fo
+// Based on code by the following links:
 // https://stackoverflow.com/a/74528564
+// https://web.dev/articles/async-clipboard
 export function copy(text: string) {
   return new Promise<void>((resolve, reject) => {
     if (
-      typeof navigator !== "undefined" &&
+      // Clipboard API requires secure context
+      window.isSecureContext &&
       typeof navigator.clipboard !== "undefined" &&
       // @ts-ignore
       navigator.permissions !== "undefined"
@@ -13,10 +15,8 @@ export function copy(text: string) {
         .query({ name: "clipboard-write" })
         .then((permission) => {
           if (permission.state === "granted" || permission.state === "prompt") {
-            const type = "text/plain";
-            const blob = new Blob([text], { type });
-            const data = [new ClipboardItem({ [type]: blob })];
-            navigator.clipboard.write(data).then(resolve).catch(reject);
+            // simple writeText should work for all modern browsers
+            navigator.clipboard.writeText(text).then(resolve).catch(reject);
           } else {
             reject(new Error("Permission not granted!"));
           }
@@ -66,10 +66,10 @@ const styles = {
   border: "none",
   outline: "none",
   boxShadow: "none",
-  background: "transparent"
+  background: "transparent",
 };
 
-const createTemporaryTextarea = (text:string) => {
+const createTemporaryTextarea = (text: string) => {
   const textarea = document.createElement("textarea");
   textarea.value = text;
   textarea.setAttribute("readonly", "");

@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.30.0](https://github.com/filebrowser/filebrowser/compare/v2.29.0...v2.30.0) (2024-05-19)
+
+
+### Features
+
+* allow multi-select with SHIFT key in singleClick mode ([#3185](https://github.com/filebrowser/filebrowser/issues/3185)) ([2e47a03](https://github.com/filebrowser/filebrowser/commit/2e47a038d63de8f848b070578c1d71f765438a24))
+* Enhance MIME Type Detection for Additional File Extensions ([#3183](https://github.com/filebrowser/filebrowser/issues/3183)) ([be62f56](https://github.com/filebrowser/filebrowser/commit/be62f56782551e17d6d5dc23bc29cc56ef961a66))
+
+
+### Bug Fixes
+
+* add overlay for sidebar on mobile ([#3197](https://github.com/filebrowser/filebrowser/issues/3197)) ([3b48f75](https://github.com/filebrowser/filebrowser/commit/3b48f75301287fe94cbbacff184b4db03f37f7ea))
+* current folder name in page title ([#3200](https://github.com/filebrowser/filebrowser/issues/3200)) ([e336a25](https://github.com/filebrowser/filebrowser/commit/e336a25ad29ed8b956169d426992860a877ee551))
+* Fixing the inability to play MKV video files online and enhancing the auxiliary features of the VideoPlayer. ([#3181](https://github.com/filebrowser/filebrowser/issues/3181)) ([782375b](https://github.com/filebrowser/filebrowser/commit/782375b1cb4c4f954468c30ec277ce021c82b40d))
+* shell window size ([#3198](https://github.com/filebrowser/filebrowser/issues/3198)) ([4c5b612](https://github.com/filebrowser/filebrowser/commit/4c5b612cb2563817f9da50413c7cf9e89b4c4d4a))
+* The file type icon in the file list is sensitive to the case of the suffix name ([#3187](https://github.com/filebrowser/filebrowser/issues/3187)) ([a9c327c](https://github.com/filebrowser/filebrowser/commit/a9c327cc0687796a3c7bfafd4ddabf4342859e31))
+
 ## [2.29.0](https://github.com/filebrowser/filebrowser/compare/v2.28.0...v2.29.0) (2024-04-30)
 
 

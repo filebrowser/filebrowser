@@ -241,6 +241,9 @@ html[dir="rtl"] #listing {
 
 #listing.list .name {
   font-weight: normal;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
 }
 
 #listing.list .item.header .name {

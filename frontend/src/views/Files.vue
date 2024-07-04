@@ -45,6 +45,8 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import FileListing from "@/views/files/FileListing.vue";
 import { StatusError } from "@/api/utils";
+import { name } from "../utils/constants";
+
 const Editor = defineAsyncComponent(() => import("@/views/files/Editor.vue"));
 const Preview = defineAsyncComponent(() => import("@/views/files/Preview.vue"));
 
@@ -148,7 +150,7 @@ const fetchData = async () => {
     }
 
     fileStore.updateRequest(res);
-    document.title = `${res.name} - ${document.title}`;
+    document.title = `${res.name} - ${t("files.files")} - ${name}`;
   } catch (err) {
     if (err instanceof Error) {
       error.value = err;

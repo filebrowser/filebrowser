@@ -1,4 +1,5 @@
 <template>
+  <div v-show="active" @click="closeHovers" class="overlay"></div>
   <nav :class="{ active }">
     <button v-if="user.username" @click="toAccountSettings" class="action">
       <i class="material-icons">person</i>
