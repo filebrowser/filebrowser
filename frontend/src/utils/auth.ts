@@ -101,6 +101,6 @@ export function logout() {
   if (noAuth) {
     window.location.reload();
   } else {
-    router.push({path: "/login"});
+    router.push({ path: "/login" });
   }
 }

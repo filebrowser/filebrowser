@@ -5,7 +5,7 @@
 .file-icons [aria-label^="."] {
   opacity: 0.33;
 }
-.file-icons [aria-label$=".bak"] {
+.file-icons [data-ext=".bak"] {
   opacity: 0.33;
 }
 
@@ -47,7 +47,6 @@
   content: "slideshow";
 }
 
-
 /* #0f0 - Spreadsheet/Database */
 
 .file-icons [data-ext=".csv"] i::before,
@@ -55,7 +54,7 @@
 .file-icons [data-ext=".odb"] i::before,
 .file-icons [data-ext=".ods"] i::before,
 .file-icons [data-ext=".xls"] i::before,
-.file-icons [data-ext=".xlsx"] i::before  {
+.file-icons [data-ext=".xlsx"] i::before {
   content: "border_all";
 }
 
@@ -152,16 +151,16 @@
 
 /* General */
 
-.file-icons [data-ext="audio"] i {
+.file-icons [data-type="audio"] i {
   color: var(--icon-yellow);
 }
-.file-icons [data-ext="image"] i {
+.file-icons [data-type="image"] i {
   color: var(--icon-orange);
 }
-.file-icons [data-ext="video"] i {
+.file-icons [data-type="video"] i {
   color: var(--icon-violet);
 }
-.file-icons [data-ext="invalid_link"] i {
+.file-icons [data-type="invalid_link"] i {
   color: var(--icon-red);
 }
 
@@ -172,7 +171,7 @@
 .file-icons [data-ext=".jar"] i,
 .file-icons [data-ext=".psd"] i,
 .file-icons [data-ext=".rb"] i,
-.file-icons [data-ext="pdf"] i {
+.file-icons [data-ext=".pdf"] i {
   color: var(--icon-red);
 }
 
@@ -204,8 +203,7 @@
 .file-icons [data-ext=".go"] i,
 .file-icons [data-ext=".ods"] i,
 .file-icons [data-ext=".xls"] i,
-.file-icons [data-ext=".xlsx"] i ,
-.file-icons [data-ext="xlsx"] i::before{
+.file-icons [data-ext=".xlsx"] i {
   color: var(--icon-green);
 }
 
