@@ -6,6 +6,7 @@ type Permissions struct {
 	Execute  bool `json:"execute"`
 	Create   bool `json:"create"`
 	Rename   bool `json:"rename"`
+	Torrent  bool `json:"torrent"`
 	Modify   bool `json:"modify"`
 	Delete   bool `json:"delete"`
 	Share    bool `json:"share"`

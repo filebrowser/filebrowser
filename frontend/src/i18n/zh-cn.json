@@ -14,6 +14,7 @@
     "folder": "文件夹",
     "hideDotfiles": "不显示隐藏文件",
     "info": "信息",
+    "torrent": "制作 Torrent",
     "more": "更多",
     "move": "移动",
     "moveFile": "移动文件",
@@ -41,7 +42,9 @@
     "openFile": "打开文件",
     "continue": "继续",
     "fullScreen": "切换全屏",
-    "discardChanges": "放弃更改"
+    "discardChanges": "放弃更改",
+    "detailed": "转到详细视图",
+    "compact": "转到精简视图"
   },
   "download": {
     "downloadFile": "下载文件",
@@ -117,6 +120,8 @@
     "fileInfo": "文件信息",
     "filesSelected": "已选择 {count} 个文件。",
     "lastModified": "最后修改",
+    "makeTorrentMessageSingle": "你确定要创建这个文件的种子吗？",
+    "makeTorrentMessageMultiple": "你确定要创建这 {count} 个文件的种子吗？",
     "move": "移动",
     "moveMessage": "请选择目标目录：",
     "newArchetype": "创建一个基于原型的新帖子。你的文件将会创建在内容文件夹中。",
@@ -140,7 +145,16 @@
     "optionalPassword": "密码（选填，不填即无密码）",
     "resolution": "分辨率",
     "deleteUser": "你确定要删除这个用户吗？",
-    "discardEditorChanges": "你确定要放弃所做的更改吗？"
+    "discardEditorChanges": "你确定要放弃所做的更改吗？",
+    "pieceLength": "分片大小：",
+    "auto": "自动",
+    "trackersList": "Tracker URL：",
+    "comment": "注释：",
+    "webSeeds": "Web 种子 URL：",
+    "source": "源：",
+    "includeDate": "写入创建日期",
+    "privateTorrent": "私有 torrent （不会在DHT网络上分发）",
+    "publishMessage": "你确定要发布这个种子吗？"
   },
   "search": {
     "images": "图像",
@@ -205,7 +219,8 @@
       "execute": "执行命令",
       "modify": "编辑",
       "rename": "重命名或移动文件和文件夹",
-      "share": "分享文件"
+      "share": "分享文件",
+      "torrent": "BT制种"
     },
     "permissions": "权限",
     "permissionsHelp": "你可以将该用户设置为管理员或单独选择各项权限。如果你选择了“管理员”，则其他的选项会被自动选中，同时该用户可以管理其他用户。\n",
@@ -236,7 +251,16 @@
     "userManagement": "用户管理",
     "userUpdated": "用户已更新！",
     "username": "用户名",
-    "users": "用户"
+    "users": "用户",
+    "torrentSettings": "BT设置",
+    "makeTorrent": "制种",
+    "makeTorrentSettingsDescription": "你可以在此设置BT种子（*.torrent）的默认参数。这些参数可以在创建种子时修改。",
+    "trackersListUrl": "Tracker URL 列表来源",
+    "publish": "发布",
+    "qbSettingsDescription": "你可以在此设置 qBittorrent WebUI 的地址、用户名和密码。",
+    "qbUrl": "qBittorrent WebUI 地址",
+    "qbUsername": "qBittorrent WebUI 用户名",
+    "qbPassword": "qBittorrent WebUI 密码"
   },
   "sidebar": {
     "help": "帮助",
@@ -252,7 +276,9 @@
     "siteSettings": "网站设置"
   },
   "success": {
-    "linkCopied": "链接已复制！"
+    "linkCopied": "链接已复制！",
+    "torrentCreated": "种子已创建！",
+    "torrentPublished": "种子已发布！"
   },
   "time": {
     "days": "天",

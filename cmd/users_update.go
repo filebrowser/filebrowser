@@ -48,6 +48,7 @@ options you want to change.`,
 			Perm:        user.Perm,
 			Sorting:     user.Sorting,
 			Commands:    user.Commands,
+			CreateBody:  user.CreateBody,
 		}
 		getUserDefaults(flags, &defaults, false)
 		user.Scope = defaults.Scope
@@ -57,6 +58,7 @@ options you want to change.`,
 		user.Perm = defaults.Perm
 		user.Commands = defaults.Commands
 		user.Sorting = defaults.Sorting
+		user.CreateBody = defaults.CreateBody
 		user.LockPassword = mustGetBool(flags, "lockPassword")
 
 		if newUsername != "" {

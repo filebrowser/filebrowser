@@ -135,6 +135,9 @@ func importConf(db *storm.DB, path string, sto *storage.Storage) error {
 				Share:    true,
 				Download: true,
 			},
+			CreateBody: users.CreateTorrentBody{
+				Date: true,
+			},
 		},
 	}
 

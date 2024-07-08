@@ -13,6 +13,20 @@
       <template #actions>
         <template v-if="!isMobile">
           <action
+            v-if="isTorrent"
+            id="publish-button"
+            icon="publish"
+            :label="t('buttons.publish')"
+            show="publish"
+          />
+          <action
+            v-else-if="headerButtons.torrent"
+            id="torrent-button"
+            icon="app_registration"
+            :label="t('buttons.torrent')"
+            show="torrent"
+          />
+          <action
             v-if="headerButtons.share"
             icon="share"
             :label="t('buttons.share')"
@@ -304,6 +318,7 @@ import {
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
+import { publish } from "@/api/torrent";
 
 const showLimit = ref<number>(50);
 const columnWidth = ref<number>(280);
@@ -410,9 +425,21 @@ const headerButtons = computed(() => {
     delete: fileStore.selectedCount > 0 && authStore.user?.perm.delete,
     rename: fileStore.selectedCount === 1 && authStore.user?.perm.rename,
     share: fileStore.selectedCount === 1 && authStore.user?.perm.share,
+    torrent: fileStore.selectedCount === 1 && authStore.user?.perm.torrent,
+    publish: fileStore.selectedCount === 1 && authStore.user?.perm.torrent,
     move: fileStore.selectedCount > 0 && authStore.user?.perm.rename,
     copy: fileStore.selectedCount > 0 && authStore.user?.perm.create,
   };
+});
+
+const isTorrent = computed(() => {
+  if (fileStore.selectedCount !== 1) return false;
+
+  const file = fileStore.req?.items[fileStore.selected[0]];
+
+  if (file === undefined) return false;
+
+  return file.isDir === false && file.extension === ".torrent";
 });
 
 const isMobile = computed(() => {

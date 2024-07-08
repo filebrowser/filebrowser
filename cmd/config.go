@@ -181,6 +181,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\t\tDelete:\t%t\n", set.Defaults.Perm.Delete)
 	fmt.Fprintf(w, "\t\tShare:\t%t\n", set.Defaults.Perm.Share)
 	fmt.Fprintf(w, "\t\tDownload:\t%t\n", set.Defaults.Perm.Download)
+	fmt.Fprintf(w, "\t\tTorrent:\t%t\n", set.Defaults.Perm.Torrent)
 	w.Flush()
 
 	b, err := json.MarshalIndent(auther, "", "  ")
