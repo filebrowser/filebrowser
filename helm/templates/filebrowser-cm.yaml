@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  annotations:
+    helmrepo: "{{ .Values.helmrepo }}"
+  labels:
+    app: {{ .Values.fullnameOverride }}
+    app.kubernetes.io/component: {{ .Values.fullnameOverride }}
+    app.kubernetes.io/instance: configmap
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: {{ .Values.fullnameOverride }}
+    app.kubernetes.io/version: {{ .Chart.Version }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}  
+  name: {{ .Values.fullnameOverride }}-cm
+  namespace: {{ .Values.namespace }}
+data:
+  .filebrowser.json: |
+    {
+      "port": 80,
+      "baseURL": "/files",
+      "address": "",
+      "log": "stdout",
+      "database": "/srv/config/database.db",
+      "root": "/srv"
+    }

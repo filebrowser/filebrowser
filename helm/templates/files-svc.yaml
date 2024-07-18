@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    helmrepo: "{{ .Values.helmrepo }}"
+  labels:
+    app: {{ .Values.fullnameOverride }}
+    name: {{ .Values.namespace }}
+    app.kubernetes.io/component: {{ .Values.fullnameOverride }}
+    app.kubernetes.io/instance: service
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: {{ .Values.fullnameOverride }}
+    app.kubernetes.io/version: {{ .Chart.Version }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}  
+  name: {{ .Values.fullnameOverride }}
+  namespace: {{ .Values.namespace }}
+spec:
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: {{ .Values.fullnameOverride }}
+    port: {{ .Values.loadbalancer.port }}
+    protocol: {{ .Values.loadbalancer.protocol }}
+    targetPort: {{ .Values.loadbalancer.targetport }}
+  selector:
+    app: {{ .Values.fullnameOverride }}
+    name: {{ .Values.namespace }}
+  sessionAffinity: None
+  type: ClusterIP
+
