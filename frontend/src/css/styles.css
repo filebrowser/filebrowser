@@ -15,6 +15,7 @@
 @import "./dashboard.css";
 @import "./login.css";
 @import "./mobile.css";
+@import "./epubReader.css";
 
 /* For testing only
  :focus {

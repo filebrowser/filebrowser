@@ -1,0 +1,16 @@
+.epub-reader {
+    display: flex;
+    align-items: flex-end;
+    height: 100%;
+}
+
+.epub-reader .container {
+    width: 100%;
+    max-width: 100%;
+    height: calc(100% - 56px);
+    margin: 0;
+}
+
+.epub-reader .arrow.pre {
+    left: 0
+}

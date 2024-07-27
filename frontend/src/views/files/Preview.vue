@@ -6,7 +6,7 @@
     @mousemove="toggleNavigation"
     @touchstart="toggleNavigation"
   >
-    <header-bar v-if="isPdf || showNav">
+    <header-bar v-if="isPdf || isEpub || showNav">
       <action icon="close" :label="$t('buttons.close')" @action="close()" />
       <title>{{ name }}</title>
       <action
@@ -57,7 +57,21 @@
     </div>
     <template v-else>
       <div class="preview">
-        <ExtendedImage v-if="fileStore.req?.type == 'image'" :src="raw" />
+        <div v-if="isEpub" class="epub-reader">
+          <vue-reader
+            :location="location"
+            :url="raw"
+            :epubInitOptions="{
+              requestCredentials: true,
+            }"
+            :epubOptions="{
+              allowPopups: true,
+              allowScriptedContent: true,
+            }"
+            @update:location="locationChange"
+          />
+        </div>
+        <ExtendedImage v-else-if="fileStore.req?.type == 'image'" :src="raw" />
         <audio
           v-else-if="fileStore.req?.type == 'audio'"
           ref="player"
@@ -129,20 +143,33 @@
 </template>
 
 <script setup lang="ts">
+import { useStorage } from "@vueuse/core";
 import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
 import { files as api } from "@/api";
+import { createURL } from "@/api/utils";
 import { resizePreview } from "@/utils/constants";
 import url from "@/utils/url";
 import throttle from "lodash/throttle";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import ExtendedImage from "@/components/files/ExtendedImage.vue";
+import { VueReader } from "vue-reader";
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import VideoPlayer from "@/components/files/VideoPlayer.vue";
+
+const location = useStorage("book-progress", 0, undefined, {
+  serializer: {
+    read: (v) => JSON.parse(v),
+    write: (v) => JSON.stringify(v),
+  },
+});
+
+const locationChange = (epubcifi: number) => {
+  location.value = epubcifi;
+};
 
 const mediaTypes: ResourceType[] = ["image", "video", "audio", "blob"];
 
@@ -182,10 +209,17 @@ const raw = computed(() => {
     return api.getPreviewURL(fileStore.req, "big");
   }
 
+  if (isEpub.value) {
+    return createURL("api/raw" + fileStore.req?.path, {}, false);
+  }
+
   return downloadUrl.value;
 });
 
 const isPdf = computed(() => fileStore.req?.extension.toLowerCase() == ".pdf");
+const isEpub = computed(
+  () => fileStore.req?.extension.toLowerCase() == ".epub"
+);
 
 const isResizeEnabled = computed(() => resizePreview);
 
