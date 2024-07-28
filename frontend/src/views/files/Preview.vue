@@ -61,6 +61,7 @@
           <vue-reader
             :location="location"
             :url="raw"
+            :get-rendition="getRendition"
             :epubInitOptions="{
               requestCredentials: true,
             }"
@@ -70,6 +71,21 @@
             }"
             @update:location="locationChange"
           />
+          <div class="size">
+            <button
+              @click="changeSize(Math.max(100, size - 10))"
+              class="reader-button"
+            >
+              <i class="material-icons">remove</i>
+            </button>
+            <button
+              @click="changeSize(Math.min(150, size + 10))"
+              class="reader-button"
+            >
+              <i class="material-icons">add</i>
+            </button>
+            <span>{{ size }}%</span>
+          </div>
         </div>
         <ExtendedImage v-else-if="fileStore.req?.type == 'image'" :src="raw" />
         <audio
@@ -156,11 +172,20 @@ import throttle from "lodash/throttle";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import ExtendedImage from "@/components/files/ExtendedImage.vue";
+import VideoPlayer from "@/components/files/VideoPlayer.vue";
 import { VueReader } from "vue-reader";
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import type { Rendition } from "epubjs";
+import { getTheme } from "@/utils/theme";
 
 const location = useStorage("book-progress", 0, undefined, {
+  serializer: {
+    read: (v) => JSON.parse(v),
+    write: (v) => JSON.stringify(v),
+  },
+});
+const size = useStorage("book-size", 120, undefined, {
   serializer: {
     read: (v) => JSON.parse(v),
     write: (v) => JSON.stringify(v),
@@ -169,6 +194,33 @@ const location = useStorage("book-progress", 0, undefined, {
 
 const locationChange = (epubcifi: number) => {
   location.value = epubcifi;
+};
+let rendition: Rendition | null = null;
+const changeSize = (val: number) => {
+  size.value = val;
+  rendition?.themes.fontSize(`${val}%`);
+};
+
+const getRendition = (_rendition: Rendition) => {
+  rendition = _rendition;
+  switch (getTheme()) {
+    case "dark": {
+      rendition.themes.override("color", "rgba(255, 255, 255, 0.6)");
+      break;
+    }
+    case "light": {
+      rendition.themes.override("color", "rgb(111, 111, 111)");
+      break;
+    }
+  }
+  rendition.themes.registerRules("h2Transparent", {
+    "h1,h2,h3,h4": {
+      "background-color": "transparent !important",
+    },
+  });
+  rendition?.themes.fontSize(`${size.value}%`);
+  rendition.themes.select("h2Transparent");
+  rendition.themes.override("background-color", "transparent", true);
 };
 
 const mediaTypes: ResourceType[] = ["image", "video", "audio", "blob"];
