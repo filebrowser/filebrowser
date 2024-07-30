@@ -1,0 +1,19 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  annotations:
+    helmrepo: "{{ .Values.helmrepo }}"
+  labels:
+    app: {{ .Values.fullnameOverride }}
+    app.kubernetes.io/component: {{ .Values.fullnameOverride }}
+    app.kubernetes.io/instance: middleware
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: {{ .Values.fullnameOverride }}
+    app.kubernetes.io/version: {{ .Chart.Version }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}  
+  name: redirect
+  namespace: {{ .Values.namespace }}
+spec:
+  redirectScheme:
+    permanent: true
+    scheme: https

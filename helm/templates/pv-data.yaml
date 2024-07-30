@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    helmrepo: "{{ .Values.helmrepo }}"
+  labels:
+    app: {{ .Values.fullnameOverride }}
+    app.kubernetes.io/component: {{ .Values.fullnameOverride }}
+    app.kubernetes.io/instance: web
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: {{ .Values.fullnameOverride }}
+    app.kubernetes.io/version: {{ .Chart.Version }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}  
+  name: {{ .Values.fullnameOverride }}-data-pv
+  namespace: {{ .Values.namespace }}
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 100M
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: {{ .Values.fullnameOverride }}-data-pvc
+    namespace: {{ .Values.namespace }}
+  hostPath:
+    path: /mnt/{{ .Values.fullnameOverride }}-data-pv
+    type: ""
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .Values.storage.class }}
+  volumeMode: Filesystem

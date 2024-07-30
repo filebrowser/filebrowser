@@ -1,0 +1,40 @@
+{{-  if (eq (toString .Values.ingress.enabled ) "true") }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    helmrepo: "{{ .Values.helmrepo }}"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    traefik.ingress.kubernetes.io/router.middlewares: {{ .Values.fullnameOverride }}-redirect@kubernetescrd
+  labels:
+    app: {{ .Values.fullnameOverride }}
+    app.kubernetes.io/component: {{ .Values.fullnameOverride }}
+    app.kubernetes.io/instance: web
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: {{ .Values.fullnameOverride }}
+    app.kubernetes.io/version: {{ .Chart.Version }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}  
+  name: {{ .Values.fullnameOverride }}
+  namespace: {{ .Values.namespace }}
+spec:
+  ingressClassName: {{ .Values.ingress.ingessClassName }}
+  rules:
+  - host: {{ .Values.ingress.domain }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: {{ .Values.fullnameOverride }}
+            port:
+              number: {{ .Values.loadbalancer.port }}
+        path: /
+        pathType: Prefix
+  {{-  if (eq (toString .Values.ingress.tls ) "true") }}
+  tls:
+  - hosts:
+    - {{ .Values.ingress.domain }}
+    secretName: {{ .Values.ingress.domain }}-tls
+  {{ end }}
+{{ end }}

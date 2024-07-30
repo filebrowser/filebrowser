@@ -1,0 +1,35 @@
+fullnameOverride: "filebrowser"
+
+replicaCount: 1
+
+namespace: filebrowser
+
+helmrepo: "https://github.com/filebrowser/filebrowser"
+
+storage:
+  size: 10Gi
+  class: local-path
+
+cr:
+  enbled: false
+  dockersecret: ""
+  registry: docker.io
+  image: filebrowser/filebrowser
+  tag: v2.30.0
+
+ingress:
+  enabled: true
+  tls: true
+  ingessClassName: traefik
+  domain: files.example.com
+
+loadbalancer:
+  port: 80
+  targetport: 80
+  protocol: TCP
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
