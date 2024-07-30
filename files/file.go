@@ -46,6 +46,7 @@ type FileInfo struct {
 	Token      string            `json:"token,omitempty"`
 	currentDir []os.FileInfo     `json:"-"`
 	Resolution *ImageResolution  `json:"resolution,omitempty"`
+	Options    FileOptions       `json:"-"`
 }
 
 // FileOptions are the options when getting a file info.
@@ -95,6 +96,10 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Set the Options field to be accessed directly from the file object
+	file.Options = opts
+
 	if file.IsDir && opts.FolderSize {
 		size, err := getFolderSize(file.RealPath())
 		if err != nil {

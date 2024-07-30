@@ -5,11 +5,13 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	gopath "path"
 	"path/filepath"
 	"strings"
 
 	"github.com/mholt/archiver/v3"
+	"github.com/spf13/afero"
 
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
@@ -26,7 +28,6 @@ func slashClean(name string) string {
 func parseQueryFiles(r *http.Request, f *files.FileInfo, _ *users.User) ([]string, error) {
 	var fileSlice []string
 	names := strings.Split(r.URL.Query().Get("files"), ",")
-
 	if len(names) == 0 {
 		fileSlice = append(fileSlice, f.Path)
 	} else {
@@ -107,12 +108,29 @@ var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) 
 	return rawDirHandler(w, r, d, file)
 })
 
+// function that checks if given full path exists or not
+// it helps to determine to which NFS we need to go IDC or KFS
+func CheckIfExistsInPath(pathToCheck string) bool {
+	_, pathExistsErr := os.Stat(pathToCheck)
+	return !os.IsNotExist(pathExistsErr)
+}
+
 func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
+	af := afero.NewBasePathFs(afero.NewOsFs(), d.server.Root)
+	log.Printf("adding to zip following path - %v:", path)
+
+	anotherFullPath := d.server.AnotherPath + path
+	existsInAnotherPath := CheckIfExistsInPath(anotherFullPath)
+
+	if existsInAnotherPath {
+		af = afero.NewBasePathFs(afero.NewOsFs(), d.server.AnotherPath)
+	}
+
 	if !d.Check(path) {
 		return nil
 	}
 
-	info, err := d.user.Fs.Stat(path)
+	info, err := af.Stat(path)
 	if err != nil {
 		return err
 	}
@@ -121,7 +139,7 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 		return nil
 	}
 
-	file, err := d.user.Fs.Open(path)
+	file, err := af.Open(path)
 	if err != nil {
 		return err
 	}
@@ -155,6 +173,7 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 				log.Printf("Failed to archive %s: %v", fPath, err)
 			}
 		}
+
 	}
 
 	return nil
@@ -190,7 +209,6 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 	}
 	name += extension
 	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))
-
 	for _, fname := range filenames {
 		err = addFile(ar, d, fname, commonDir)
 		if err != nil {
