@@ -18,6 +18,7 @@ export default {
       he: "עברית",
       hu: "Magyar",
       ar: "العربية",
+      ca: "Català",
       de: "Deutsch",
       el: "Ελληνικά",
       en: "English",
