@@ -82,9 +82,9 @@
     </header-bar>
 
     <div v-if="isMobile" id="file-selection">
-      <span v-if="fileStore.selectedCount > 0"
-        >{{ fileStore.selectedCount }} selected</span
-      >
+      <span v-if="fileStore.selectedCount > 0">
+        {{ t("prompts.filesSelected", fileStore.selectedCount) }}
+      </span>
       <action
         v-if="headerButtons.share"
         icon="share"
