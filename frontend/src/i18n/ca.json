@@ -138,7 +138,7 @@
     "upload": "Pujar",
     "uploadFiles": "Pujant {files} fitxers...",
     "uploadMessage": "Seleccioneu una opció per pujar.",
-    "optionalPassword": "Contrasenya opcional"
+    "optionalPassword": "Contrasenya opcional",
     "resolution": "Resolució",
     "discardEditorChanges": "Esteu segur que voleu descartar els canvis que heu fet?"
   },
@@ -222,7 +222,7 @@
     "shareDeleted": "Recurs compartit eliminat!",
     "singleClick": "Utilitza un sol clic per obrir fitxers i directoris",
     "themes": {
-      "default": "Valor per defecte del sistema"					 
+      "default": "Valor per defecte del sistema",
       "dark": "Fosc",
       "light": "Clar",
       "title": "Tema"
