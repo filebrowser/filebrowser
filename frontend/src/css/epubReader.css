@@ -1,0 +1,78 @@
+.epub-reader {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.epub-reader .container {
+  width: 100%;
+  max-width: 100%;
+  height: calc(100% - 64px);
+  margin: 0;
+}
+
+.epub-reader .arrow.pre {
+  left: 0;
+}
+
+.epub-reader .readerArea {
+  background-color: var(--background) !important;
+}
+
+.epub-reader .titleArea {
+  color: var(--text);
+}
+
+.epub-reader .tocButtonBar {
+  background: var(--divider);
+}
+
+.epub-reader .tocButton {
+  color: var(--text);
+}
+
+.epub-reader .tocButton.tocButtonExpanded {
+  background-color: var(--background);
+}
+
+.epub-reader .tocAreaButton.active {
+  color: var(--blue);
+  border-color: var(--dark-blue);
+}
+
+.epub-reader .tocArea {
+  background-color: var(--background);
+}
+
+.epub-reader .readerArea .arrow {
+  color: var(--text);
+}
+
+.epub-reader .readerArea .arrow:hover {
+  color: var(--hover);
+}
+
+.epub-reader .size {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  z-index: 111;
+  right: 25px;
+  outline: none;
+  position: absolute;
+  top: 78px;
+}
+
+.epub-reader .size span {
+  color: var(--textSecondary);
+}
+
+.epub-reader .size button {
+  background: none;
+  outline: none;
+  border: none;
+  width: 25px;
+  height: 25px;
+  color: var(--textPrimary);
+  padding: 0;
+}
