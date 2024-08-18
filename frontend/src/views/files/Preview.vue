@@ -413,7 +413,7 @@ const toggleNavigation = throttle(function () {
     clearTimeout(navTimeout.value);
   }
 
-  navTimeout.value = setTimeout(() => {
+  navTimeout.value = window.setTimeout(() => {
     showNav.value = false || hoverNav.value;
     navTimeout.value = null;
   }, 1500);

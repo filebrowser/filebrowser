@@ -273,7 +273,7 @@ const formattedChunkSize = computed({
     }
 
     // Set a new timeout to apply the format after a short delay
-    debounceTimeout.value = setTimeout(() => {
+    debounceTimeout.value = window.setTimeout(() => {
       if (settings.value) settings.value.tus.chunkSize = parseBytes(value);
     }, 1500);
   },

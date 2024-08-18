@@ -22,7 +22,7 @@ function formatSize(bytes: number): string {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
   // Return the rounded size with two decimal places
-  return (bytes / k ** i).toFixed(2) + " " + sizes[i]; 
+  return (bytes / k ** i).toFixed(2) + " " + sizes[i];
 }
 
 export const useUploadStore = defineStore("upload", {
