@@ -4,6 +4,7 @@ interface IUser {
   password: string;
   scope: string;
   locale: string;
+  dateTimeFormat: string;
   perm: Permissions;
   commands: string[];
   rules: IRule[];
@@ -23,6 +24,7 @@ interface IUserForm {
   password?: string;
   scope?: string;
   locale?: string;
+  dateTimeFormat?: string;
   perm?: Permissions;
   commands?: string[];
   rules?: IRule[];

@@ -24,6 +24,11 @@
             class="input input--block"
             v-model:locale="locale"
           ></languages>
+          <h3>{{ t("settings.dateTimeFormat") }}</h3>
+          <date-time-format
+            class="input input--block"
+            v-model:dateTimeFormat="dateTimeFormatValue"
+          ></date-time-format>
         </div>
 
         <div class="card-action">
@@ -82,6 +87,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
 import { users as api } from "@/api";
 import Languages from "@/components/settings/Languages.vue";
+import DateTimeFormat from "@/components/settings/DateTimeFormats.vue";
 import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -97,6 +103,7 @@ const passwordConf = ref<string>("");
 const hideDotfiles = ref<boolean>(false);
 const singleClick = ref<boolean>(false);
 const dateFormat = ref<boolean>(false);
+const dateTimeFormatValue = ref<string>("");
 const locale = ref<string>("");
 
 const passwordClass = computed(() => {
@@ -117,6 +124,7 @@ onMounted(() => {
   layoutStore.loading = true;
   if (authStore.user === null) return false;
   locale.value = authStore.user.locale;
+  dateTimeFormatValue.value = authStore.user.dateTimeFormat;
   hideDotfiles.value = authStore.user.hideDotfiles;
   singleClick.value = authStore.user.singleClick;
   dateFormat.value = authStore.user.dateFormat;
@@ -160,6 +168,7 @@ const updateSettings = async (event: Event) => {
       ...authStore.user,
       id: authStore.user.id,
       locale: locale.value,
+      dateTimeFormat: dateTimeFormatValue.value,
       hideDotfiles: hideDotfiles.value,
       singleClick: singleClick.value,
       dateFormat: dateFormat.value,
@@ -170,6 +179,7 @@ const updateSettings = async (event: Event) => {
       "hideDotfiles",
       "singleClick",
       "dateFormat",
+      "dateTimeFormat",
     ]);
     authStore.updateUser(data);
     $showSuccess(t("settings.settingsUpdated"));

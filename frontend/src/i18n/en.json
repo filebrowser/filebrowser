@@ -191,6 +191,7 @@
     "insertRegex": "Insert regex expression",
     "instanceName": "Instance name",
     "language": "Language",
+    "dateTimeFormat": "Date and time format",
     "lockPassword": "Prevent the user from changing the password",
     "newPassword": "Your new password",
     "newPasswordConfirm": "Confirm your new password",

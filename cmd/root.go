@@ -323,9 +323,10 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 		CreateUserDir:    false,
 		UserHomeBasePath: settings.DefaultUsersHomeBasePath,
 		Defaults: settings.UserDefaults{
-			Scope:       ".",
-			Locale:      "en",
-			SingleClick: false,
+			Scope:          ".",
+			Locale:         "en",
+			DateTimeFormat: "MM/DD/YYYY h:mm A",
+			SingleClick:    false,
 			Perm: users.Permissions{
 				Admin:    false,
 				Execute:  true,

@@ -110,7 +110,8 @@ const humanSize = () => {
 
 const humanTime = () => {
   if (!props.readOnly && authStore.user?.dateFormat) {
-    return dayjs(props.modified).format("L LT");
+    const format = authStore.user?.dateTimeFormat || "L LT";
+    return dayjs(props.modified).format(format);
   }
   return dayjs(props.modified).fromNow();
 };

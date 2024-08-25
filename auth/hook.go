@@ -157,16 +157,17 @@ func (a *HookAuth) SaveUser() (*users.User, error) {
 
 		// create user with the provided credentials
 		d := &users.User{
-			Username:     a.Cred.Username,
-			Password:     pass,
-			Scope:        a.Settings.Defaults.Scope,
-			Locale:       a.Settings.Defaults.Locale,
-			ViewMode:     a.Settings.Defaults.ViewMode,
-			SingleClick:  a.Settings.Defaults.SingleClick,
-			Sorting:      a.Settings.Defaults.Sorting,
-			Perm:         a.Settings.Defaults.Perm,
-			Commands:     a.Settings.Defaults.Commands,
-			HideDotfiles: a.Settings.Defaults.HideDotfiles,
+			Username:       a.Cred.Username,
+			Password:       pass,
+			Scope:          a.Settings.Defaults.Scope,
+			Locale:         a.Settings.Defaults.Locale,
+			DateTimeFormat: a.Settings.Defaults.DateTimeFormat,
+			ViewMode:       a.Settings.Defaults.ViewMode,
+			SingleClick:    a.Settings.Defaults.SingleClick,
+			Sorting:        a.Settings.Defaults.Sorting,
+			Perm:           a.Settings.Defaults.Perm,
+			Commands:       a.Settings.Defaults.Commands,
+			HideDotfiles:   a.Settings.Defaults.HideDotfiles,
 		}
 		u = a.GetUser(d)
 
@@ -218,13 +219,14 @@ func (a *HookAuth) GetUser(d *users.User) *users.User {
 		Download: isAdmin || a.Fields.GetBoolean("user.perm.download", d.Perm.Download),
 	}
 	user := users.User{
-		ID:          d.ID,
-		Username:    d.Username,
-		Password:    d.Password,
-		Scope:       a.Fields.GetString("user.scope", d.Scope),
-		Locale:      a.Fields.GetString("user.locale", d.Locale),
-		ViewMode:    users.ViewMode(a.Fields.GetString("user.viewMode", string(d.ViewMode))),
-		SingleClick: a.Fields.GetBoolean("user.singleClick", d.SingleClick),
+		ID:             d.ID,
+		Username:       d.Username,
+		Password:       d.Password,
+		Scope:          a.Fields.GetString("user.scope", d.Scope),
+		Locale:         a.Fields.GetString("user.locale", d.Locale),
+		ViewMode:       users.ViewMode(a.Fields.GetString("user.viewMode", string(d.ViewMode))),
+		SingleClick:    a.Fields.GetBoolean("user.singleClick", d.SingleClick),
+		DateTimeFormat: a.Fields.GetString("user.dateTimeFormat", d.DateTimeFormat),
 		Sorting: files.Sorting{
 			Asc: a.Fields.GetBoolean("user.sorting.asc", d.Sorting.Asc),
 			By:  a.Fields.GetString("user.sorting.by", d.Sorting.By),
