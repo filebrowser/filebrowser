@@ -11,11 +11,16 @@
         :label="t('buttons.save')"
         @action="save()"
       />
+
+      <action icon="preview" :label="t('buttons.preview')" @action="preview()" />
     </header-bar>
 
     <Breadcrumbs base="/files" noLink />
 
-    <form id="editor"></form>
+    <!-- preview container -->
+    <div v-show="isPreview && isMarkdownFile" id="preview-container" class="md_preview" v-html="previewContent"></div>
+
+    <form v-show="!isPreview || !isMarkdownFile" id="editor"></form>
   </div>
 </template>
 
@@ -33,10 +38,11 @@ import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
-import { inject, onBeforeUnmount, onMounted, ref } from "vue";
+import { inject, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { getTheme } from "@/utils/theme";
+import { marked } from 'marked';
 
 const $showError = inject<IToastError>("$showError")!;
 
@@ -51,10 +57,32 @@ const router = useRouter();
 
 const editor = ref<Ace.Editor | null>(null);
 
+const isPreview = ref(false);
+const previewContent = ref("");
+const isMarkdownFile = fileStore.req?.name.endsWith('.md') || fileStore.req?.name.endsWith('.markdown');
+
 onMounted(() => {
   window.addEventListener("keydown", keyEvent);
+  window.addEventListener("wheel", handleScroll);
 
   const fileContent = fileStore.req?.content || "";
+
+  watchEffect(async () => {
+    if (isMarkdownFile && isPreview.value) {
+      const new_value = editor.value?.getValue() || "";
+      try {
+        previewContent.value = await marked(new_value);
+      } catch (error) {
+        console.error("Failed to convert content to HTML:", error);
+        previewContent.value = "";
+      }
+
+      const previewContainer = document.getElementById('preview-container');
+      if (previewContainer) {
+        previewContainer.addEventListener("wheel", handleScroll, { capture: true });
+      }
+    }
+  });
 
   ace.config.set(
     "basePath",
@@ -82,6 +110,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", keyEvent);
+  window.removeEventListener("wheel", handleScroll);
   editor.value?.destroy();
 });
 
@@ -100,6 +129,13 @@ const keyEvent = (event: KeyboardEvent) => {
 
   event.preventDefault();
   save();
+};
+
+const handleScroll = (event: WheelEvent) => {
+  const editorContainer = document.getElementById('preview-container');
+  if (editorContainer) {
+    editorContainer.scrollTop += event.deltaY;
+  }
 };
 
 const save = async () => {
@@ -126,4 +162,9 @@ const close = () => {
   let uri = url.removeLastDir(route.path) + "/";
   router.push({ path: uri });
 };
+
+const preview = () => {
+  isPreview.value = !isPreview.value;
+};
 </script>
+
