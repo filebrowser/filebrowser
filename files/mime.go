@@ -597,6 +597,7 @@ var types = map[string]string{
 	".m3u8":      "application/x-mpegURL",
 	".mpd":       "application/dash+xml",
 	".webp":      "image/webp",
+	".epub":      "application/epub+zip",
 }
 
 //nolint:gochecknoinits
