@@ -12,13 +12,23 @@
         @action="save()"
       />
 
-      <action icon="preview" :label="t('buttons.preview')" @action="preview()" />
+      <action
+        icon="preview"
+        :label="t('buttons.preview')"
+        @action="preview()"
+        v-show="isMarkdownFile"
+      />
     </header-bar>
 
     <Breadcrumbs base="/files" noLink />
 
     <!-- preview container -->
-    <div v-show="isPreview && isMarkdownFile" id="preview-container" class="md_preview" v-html="previewContent"></div>
+    <div
+      v-show="isPreview && isMarkdownFile"
+      id="preview-container"
+      class="md_preview"
+      v-html="previewContent"
+    ></div>
 
     <form v-show="!isPreview || !isMarkdownFile" id="editor"></form>
   </div>
@@ -42,7 +52,7 @@ import { inject, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { getTheme } from "@/utils/theme";
-import { marked } from 'marked';
+import { marked } from "marked";
 
 const $showError = inject<IToastError>("$showError")!;
 
@@ -59,7 +69,9 @@ const editor = ref<Ace.Editor | null>(null);
 
 const isPreview = ref(false);
 const previewContent = ref("");
-const isMarkdownFile = fileStore.req?.name.endsWith('.md') || fileStore.req?.name.endsWith('.markdown');
+const isMarkdownFile =
+  fileStore.req?.name.endsWith(".md") ||
+  fileStore.req?.name.endsWith(".markdown");
 
 onMounted(() => {
   window.addEventListener("keydown", keyEvent);
@@ -77,9 +89,11 @@ onMounted(() => {
         previewContent.value = "";
       }
 
-      const previewContainer = document.getElementById('preview-container');
+      const previewContainer = document.getElementById("preview-container");
       if (previewContainer) {
-        previewContainer.addEventListener("wheel", handleScroll, { capture: true });
+        previewContainer.addEventListener("wheel", handleScroll, {
+          capture: true,
+        });
       }
     }
   });
@@ -132,7 +146,7 @@ const keyEvent = (event: KeyboardEvent) => {
 };
 
 const handleScroll = (event: WheelEvent) => {
-  const editorContainer = document.getElementById('preview-container');
+  const editorContainer = document.getElementById("preview-container");
   if (editorContainer) {
     editorContainer.scrollTop += event.deltaY;
   }
@@ -167,4 +181,3 @@ const preview = () => {
   isPreview.value = !isPreview.value;
 };
 </script>
-
