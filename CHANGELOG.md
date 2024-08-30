@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.31.1](https://github.com/filebrowser/filebrowser/compare/v2.31.0...v2.31.1) (2024-08-30)
+
+
+### Bug Fixes
+
+* command not found in shell ([#3438](https://github.com/filebrowser/filebrowser/issues/3438)) ([121d9ab](https://github.com/filebrowser/filebrowser/commit/121d9abecdc7d4e923cfc5023519995938a6ccae))
+
+
+### Build
+
+* update to alpine 3.20 ([#3447](https://github.com/filebrowser/filebrowser/issues/3447)) ([7de6bc4](https://github.com/filebrowser/filebrowser/commit/7de6bc4a912b5734dd0df02ed8391e78619e2615))
+
 ## [2.31.0](https://github.com/filebrowser/filebrowser/compare/v2.30.0...v2.31.0) (2024-08-29)
 
 
