@@ -14,7 +14,7 @@
   width: 100%;
 }
 
-.shell__divider{
+.shell__divider {
   background: rgba(127, 127, 127, 0.3);
   width: 100%;
   height: 8px;
@@ -69,8 +69,6 @@ body.rtl .shell-content {
   font-size: inherit;
 }
 
-
-
 .shell__prompt {
   width: 1.2rem;
 }
@@ -84,5 +82,5 @@ body.rtl .shell-content {
   font-family: inherit;
   white-space: pre-wrap;
   width: 100%;
-  color:var(--textSecondary);
+  color: var(--textSecondary);
 }

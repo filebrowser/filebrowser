@@ -29,6 +29,7 @@
     "jwt-decode": "^4.0.0",
     "lodash-es": "^4.17.21",
     "material-icons": "^1.13.12",
+    "marked": "^14.1.0",
     "normalize.css": "^8.0.1",
     "pinia": "^2.1.7",
     "pretty-bytes": "^6.1.1",
@@ -42,6 +43,7 @@
     "vue-final-modal": "^4.5.4",
     "vue-i18n": "^9.10.2",
     "vue-lazyload": "^3.0.0",
+    "vue-reader": "^1.2.14",
     "vue-router": "^4.3.0",
     "vue-toastification": "^2.0.0-rc.5"
   },

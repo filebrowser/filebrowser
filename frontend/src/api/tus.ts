@@ -61,7 +61,7 @@ export async function upload(
           fileData.hasStarted = true;
           fileData.lastProgressTimestamp = Date.now();
 
-          fileData.interval = setInterval(() => {
+          fileData.interval = window.setInterval(() => {
             calcProgress(filePath);
           }, SPEED_UPDATE_INTERVAL);
         }

@@ -6,7 +6,7 @@
     "copy": "複製",
     "copyFile": "複製檔案",
     "copyToClipboard": "複製到剪貼簿",
-    "copyDownloadLinkToClipboard": "複製到剪貼簿", 
+    "copyDownloadLinkToClipboard": "複製到剪貼簿",
     "create": "建立",
     "delete": "刪除",
     "download": "下載",
@@ -228,7 +228,7 @@
       "title": "主題"
     },
     "user": "使用者",
-    "userCommands": "使用者命令（Shell 命令）", 
+    "userCommands": "使用者命令（Shell 命令）",
     "userCommandsHelp": "指定該使用者可以執行的命令（Shell 命令），用空格分隔。例如：",
     "userCreated": "使用者已建立！",
     "userDefaults": "使用者預設選項",
