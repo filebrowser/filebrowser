@@ -80,6 +80,10 @@ onMounted(() => {
   const fileContent = fileStore.req?.content || "";
 
   watchEffect(async () => {
+    if (!authStore.user?.perm.modify) {
+      isPreview.value = true;
+    }
+
     if (isMarkdownFile && isPreview.value) {
       const new_value = editor.value?.getValue() || "";
       try {
@@ -178,6 +182,8 @@ const close = () => {
 };
 
 const preview = () => {
-  isPreview.value = !isPreview.value;
+  if (authStore.user?.perm.modify) {
+    isPreview.value = !isPreview.value;
+  }
 };
 </script>
