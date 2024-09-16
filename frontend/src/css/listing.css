@@ -195,7 +195,7 @@ html[dir="rtl"] #listing {
   align-items: center;
 }
 
-#listing.list .item p.name {
+#listing.list .item p.name:not(#listing.list .item.header .name) {
   margin-right: -3em;
 }
 
