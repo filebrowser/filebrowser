@@ -47,7 +47,7 @@ func errToStatus(err error) int {
 	}
 }
 
-// This is an addaptation if http.StripPrefix in which we don't
+// This is an adaptation if http.StripPrefix in which we don't
 // return 404 if the page doesn't have the needed prefix.
 func stripPrefix(prefix string, h http.Handler) http.Handler {
 	if prefix == "" || prefix == "/" {

@@ -99,7 +99,7 @@ All notable changes to this project will be documented in this file. See [standa
 * close editor when click escape key ([#2947](https://github.com/filebrowser/filebrowser/issues/2947)) ([70c8261](https://github.com/filebrowser/filebrowser/commit/70c826133b8578b8712e6db8f762a15a076cd9a9))
 * enable preview in shared folder ([#3055](https://github.com/filebrowser/filebrowser/issues/3055)) ([4c233c3](https://github.com/filebrowser/filebrowser/commit/4c233c3db39ea5a00d6e602ec0ecbddecb590877))
 * focus editor when opened ([#2946](https://github.com/filebrowser/filebrowser/issues/2946)) ([b19710e](https://github.com/filebrowser/filebrowser/commit/b19710efca6daa7af56dc211d0051d500d2eea22))
-* freezing the list in the backgroud while previewing a file ([#3004](https://github.com/filebrowser/filebrowser/issues/3004)) ([e167c3e](https://github.com/filebrowser/filebrowser/commit/e167c3e1efed8b16be45d994a8d443fda1d8cf49))
+* freezing the list in the background while previewing a file ([#3004](https://github.com/filebrowser/filebrowser/issues/3004)) ([e167c3e](https://github.com/filebrowser/filebrowser/commit/e167c3e1efed8b16be45d994a8d443fda1d8cf49))
 * prompt to confirm discard editor changes ([#2948](https://github.com/filebrowser/filebrowser/issues/2948)) ([fb1a09c](https://github.com/filebrowser/filebrowser/commit/fb1a09c7c172b913c12b30975ca545e505df0c05))
 * select multiple files with ctrl even with singleClick option ([#2953](https://github.com/filebrowser/filebrowser/issues/2953)) ([d49c3df](https://github.com/filebrowser/filebrowser/commit/d49c3dfacfc0ff07e620b3ad2700e64927b06235))
 
