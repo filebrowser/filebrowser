@@ -170,12 +170,12 @@ export const useUploadStore = defineStore("upload", {
     async processUploads() {
       const uploadsCount = Object.keys(this.uploads).length;
 
-      const isBellowLimit = uploadsCount < UPLOADS_LIMIT;
+      const isBelowLimit = uploadsCount < UPLOADS_LIMIT;
       const isQueueEmpty = this.queue.length == 0;
       const isUploadsEmpty = uploadsCount == 0;
 
       const isFinished = isQueueEmpty && isUploadsEmpty;
-      const canProcess = isBellowLimit && !isQueueEmpty;
+      const canProcess = isBelowLimit && !isQueueEmpty;
 
       if (isFinished) {
         const fileStore = useFileStore();

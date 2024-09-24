@@ -46,7 +46,7 @@
   },
   "errors": {
     "forbidden": "Sie haben keine Berechtigung dies abzurufen.",
-    "internal": "Etwas ist schief gelaufen.",
+    "internal": "Etwas ist schiefgelaufen.",
     "notFound": "Dieser Ort kann nicht angezeigt werden.",
     "connection": "Der Server ist nicht erreichbar."
   },
@@ -73,7 +73,7 @@
     "ctrl": {
       "click": "Markiere mehrere Dateien oder Ordner",
       "f": "Öffnet eine neue Suche",
-      "s": "Speichert eine Datei oder einen Ordner am akutellen Ort"
+      "s": "Speichert eine Datei oder einen Ordner am aktuellen Ort"
     },
     "del": "Löscht die ausgewählten Elemente",
     "doubleClick": "Öffnet eine Datei oder einen Ordner",
@@ -106,7 +106,7 @@
     "displayName": "Anzeigename:",
     "download": "Lade Dateien",
     "downloadMessage": "Wählen Sie ein Format zum Herunterladen aus.",
-    "error": "Etwas ist schief gelaufen",
+    "error": "Etwas ist schiefgelaufen",
     "fileInfo": "Dateiinformation",
     "filesSelected": "{count} Dateien ausgewählt.",
     "lastModified": "Zuletzt geändert",
@@ -150,13 +150,13 @@
     "allowNew": "Erstellen neuer Dateien und Ordner",
     "allowPublish": "Veröffentlichen von neuen Beiträgen und Seiten",
     "allowSignup": "Erlaube Benutzern sich zu registrieren",
-    "avoidChanges": "(leer lassen um Änderungen zu vermeiden)",
+    "avoidChanges": "(leer lassen, um Änderungen zu vermeiden)",
     "branding": "Design",
     "brandingDirectoryPath": "Designverzeichnispfad",
-    "brandingHelp": "Sie können das Erscheinungsbild Ihres File Browser anpassen, in dem Sie den Namen ändern, das Logo austauchsen oder eigene Stile definieren und sogar externe Links zu GitHub deaktivieren.\nUm mehr Informationen zum Anpassen des Designs zu bekommen, gehen Sie bitte zu {0}.",
+    "brandingHelp": "Sie können das Erscheinungsbild Ihres File Browser anpassen, in dem Sie den Namen ändern, das Logo austauschen oder eigene Stile definieren und sogar externe Links zu GitHub deaktivieren.\nUm mehr Informationen zum Anpassen des Designs zu bekommen, gehen Sie bitte zu {0}.",
     "changePassword": "Passwort ändern",
     "commandRunner": "Befehlseingabe",
-    "commandRunnerHelp": "Hier könne Sie Befehle eintragen, welche bei den benannten Aktionen ausgeführt werden. Sie müssen pro Zeile jeweils einen Befehl eingeben. Die Umgebungsvariable {0} und {1} sind verfügbar, wobei {0} relative zu {1} ist. Für mehr Informationen über diese Funktion und die verfügbaren Umgebungsvariablen, lesen Sie bitte die {2}.",
+    "commandRunnerHelp": "Hier könne Sie Befehle eintragen, welche bei den benannten Aktionen ausgeführt werden. Sie müssen pro Zeile jeweils einen Befehl eingeben. Die Umgebungsvariable {0} und {1} sind verfügbar, wobei {0} relative zu {1} ist. Für mehr Informationen über diese Funktion und die verfügbaren Umgebungsvariablen lesen Sie bitte die {2}.",
     "commandsUpdated": "Befehle aktualisiert!",
     "createUserDir": "Automatisches Erstellen des Home-Verzeichnisses beim Anlegen neuer Benutzer",
     "tusUploads": "Gestückelter Upload",
@@ -170,7 +170,7 @@
     "documentation": "Dokumentation",
     "examples": "Beispiele",
     "executeOnShell": "In Shell ausführen",
-    "executeOnShellDescription": "Es ist voreingestellt das der File Brower Befehle ausführt in dem er die Befehlsdateien direkt aufruft. Wenn Sie wollen, dass sie über einer Kommandozeile (wie Bash oder PowerShell) laufen, könne Sie diese hier definieren mit allen bennötigten Argumenten und Optionen. Wenn gesetzt, wird das Kommando das ausgeführt werden soll als Parameter angehängt. Das gilt für Benuzerkommandos sowie auch für Ereignisse.",
+    "executeOnShellDescription": "Es ist voreingestellt, dass der File Brower Befehle ausführt, indem er die Befehlsdateien direkt aufruft. Wenn Sie wollen, dass sie über einer Kommandozeile (wie Bash oder PowerShell) laufen, könne Sie diese hier definieren mit allen benötigten Argumenten und Optionen. Wenn gesetzt, wird das Kommando das ausgeführt werden soll als Parameter angehängt. Das gilt für Benutzerkommandos sowie auch für Ereignisse.",
     "globalRules": "Das ist ein globales Set von Regeln die erlauben oder nicht erlauben. Die sind für alle Benutzer zutreffend. Es können spezielle Regeln in den Einstellungen der Benutzer definiert werden, die diese überschreiben.",
     "globalSettings": "Globale Einstellungen",
     "hideDotfiles": "Versteckte Dateien ausblenden",
@@ -195,7 +195,7 @@
       "share": "Datei teilen"
     },
     "permissions": "Berechtigungen",
-    "permissionsHelp": "Sie können einem Benutzer Administratorrechte einräumen oder die Berechtigunen individuell festlegen.  Wenn Sie \"Administrator\" auswählen, werden alle anderen Rechte automatisch vergeben. Die Nutzerverwaltung kann nur durch einen Administrator erfolgen.\n",
+    "permissionsHelp": "Sie können einem Benutzer Administratorrechte einräumen oder die Berechtigungen individuell festlegen.  Wenn Sie \"Administrator\" auswählen, werden alle anderen Rechte automatisch vergeben. Die Nutzerverwaltung kann nur durch einen Administrator erfolgen.\n",
     "profileSettings": "Profileinstellungen",
     "ruleExample1": "Verhindert den Zugang zu versteckten Dateien (dot-Files, wie .git, .gitignore) in allen Ordnern\n",
     "ruleExample2": "blockiert den Zugang auf Dateien mit dem Namen Caddyfile in der Wurzel/Basis des Scopes.",
