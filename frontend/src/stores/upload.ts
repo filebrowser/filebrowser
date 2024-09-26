@@ -15,11 +15,14 @@ const beforeUnload = (event: Event) => {
 
 // Utility function to format bytes into a readable string
 function formatSize(bytes: number): string {
-  if (bytes === 0) return "0 Bytes";
+  if (bytes === 0) return "0.00 Bytes";
 
+  const k = 1024;
   const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + " " + sizes[i];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  // Return the rounded size with two decimal places
+  return (bytes / k ** i).toFixed(2) + " " + sizes[i];
 }
 
 export const useUploadStore = defineStore("upload", {
@@ -167,12 +170,12 @@ export const useUploadStore = defineStore("upload", {
     async processUploads() {
       const uploadsCount = Object.keys(this.uploads).length;
 
-      const isBellowLimit = uploadsCount < UPLOADS_LIMIT;
+      const isBelowLimit = uploadsCount < UPLOADS_LIMIT;
       const isQueueEmpty = this.queue.length == 0;
       const isUploadsEmpty = uploadsCount == 0;
 
       const isFinished = isQueueEmpty && isUploadsEmpty;
-      const canProcess = isBellowLimit && !isQueueEmpty;
+      const canProcess = isBelowLimit && !isQueueEmpty;
 
       if (isFinished) {
         const fileStore = useFileStore();

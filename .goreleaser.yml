@@ -1,3 +1,5 @@
+version: 2
+
 project_name: filebrowser
 
 env:
@@ -189,7 +191,7 @@ brews:
     repository:
       owner: filebrowser
       name: homebrew-tap
-    folder: Formula
+    directory: Formula
     homepage: https://filebrowser.org
     commit_author:
       name: FileBrowser Robot

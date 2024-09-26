@@ -98,7 +98,7 @@ func CommonPrefix(sep byte, paths ...string) string {
 	// (e.g. /home/user1, /home/user1/foo, /home/user1/bar).
 	// path.Clean will have cleaned off trailing / separators with
 	// the exception of the root directory, "/" (in which case we
-	// make it "//", but this will get fixed up to "/" bellow).
+	// make it "//", but this will get fixed up to "/" below).
 	c = append(c, sep)
 
 	// Ignore the first path since it's already in c
