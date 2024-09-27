@@ -28,7 +28,7 @@ const (
 	ContentTextHeaderValue = "text/plain"
 	// ContentXMLHeaderValue header value for XML data.
 	ContentXMLHeaderValue = "text/xml"
-	// ContentXMLUnreadableHeaderValue obselete header value for XML.
+	// ContentXMLUnreadableHeaderValue obsolete header value for XML.
 	ContentXMLUnreadableHeaderValue = "application/xml"
 	// ContentMarkdownHeaderValue custom key/content type, the real is the text/html.
 	ContentMarkdownHeaderValue = "text/markdown"
@@ -597,6 +597,7 @@ var types = map[string]string{
 	".m3u8":      "application/x-mpegURL",
 	".mpd":       "application/dash+xml",
 	".webp":      "image/webp",
+	".epub":      "application/epub+zip",
 }
 
 //nolint:gochecknoinits

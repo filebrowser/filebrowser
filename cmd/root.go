@@ -76,7 +76,7 @@ var rootCmd = &cobra.Command{
 	Use:   "filebrowser",
 	Short: "A stylish web-based file browser",
 	Long: `File Browser CLI lets you create the database to use with File Browser,
-manage your users and all the configurations without acessing the
+manage your users and all the configurations without accessing the
 web interface.
 
 If you've never run File Browser, you'll need to have a database for
@@ -108,7 +108,7 @@ name in caps. So to set "database" via an env variable, you should
 set FB_DATABASE.
 
 Also, if the database path doesn't exist, File Browser will enter into
-the quick setup mode and a new database will be bootstraped and a new
+the quick setup mode and a new database will be bootstrapped and a new
 user created with the credentials from options "username" and "password".`,
 	Run: python(func(cmd *cobra.Command, _ []string, d pythonData) {
 		log.Println(cfgFile)

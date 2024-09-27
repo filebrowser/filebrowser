@@ -282,11 +282,11 @@ const formattedChunkSize = computed({
 // Define funcs
 const capitalize = (name: string, where: string | RegExp = "_") => {
   if (where === "caps") where = /(?=[A-Z])/;
-  let splitted = name.split(where);
+  let split = name.split(where);
   name = "";
 
-  for (let i = 0; i < splitted.length; i++) {
-    name += splitted[i].charAt(0).toUpperCase() + splitted[i].slice(1) + " ";
+  for (let i = 0; i < split.length; i++) {
+    name += split[i].charAt(0).toUpperCase() + split[i].slice(1) + " ";
   }
 
   return name.slice(0, -1);
