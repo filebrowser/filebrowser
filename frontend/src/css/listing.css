@@ -195,6 +195,10 @@ html[dir="rtl"] #listing {
   align-items: center;
 }
 
+#listing.list .item p.name:not(#listing.list .item.header .name) {
+  margin-right: -3em;
+}
+
 #listing.list .item .name {
   width: 50%;
 }
@@ -227,10 +231,6 @@ html[dir="rtl"] #listing {
   width: 0;
 }
 
-#listing.list .item.header .name {
-  margin-right: 3em;
-}
-
 #listing.list .header a {
   color: inherit;
 }
@@ -244,10 +244,6 @@ html[dir="rtl"] #listing {
   word-wrap: break-word;
   word-break: break-all;
   white-space: pre-wrap;
-}
-
-#listing.list .item.header .name {
-  margin-right: 3em;
 }
 
 #listing.list .header span {
