@@ -13,6 +13,7 @@ interface ISettings {
 interface SettingsDefaults {
   scope: string;
   locale: string;
+  dateTimeFormat: string;
   viewMode: ViewModeType;
   singleClick: boolean;
   sorting: Sorting;
