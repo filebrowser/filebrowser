@@ -104,7 +104,7 @@
           href="https://github.com/filebrowser/filebrowser"
           >File Browser</a
         >
-        <span> {{ version }}</span>
+        <span> {{ ' ' }} {{ version }}</span>
       </span>
       <span>
         <a @click="help">{{ $t("sidebar.help") }}</a>
