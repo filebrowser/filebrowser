@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@chenfengyuan/vue-number-input": "^2.0.1",
+    "@onlyoffice/document-editor-vue": "^1.4.0",
     "@vueuse/core": "^10.9.0",
     "@vueuse/integrations": "^10.9.0",
     "ace-builds": "^1.32.9",
