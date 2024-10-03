@@ -3,6 +3,8 @@
   "baseURL": "",
   "address": "",
   "log": "stdout",
-  "database": "/database.db",
-  "root": "/srv"
+  "database": "/filebrowser.db",
+  "root": "/srv",
+  "cert": "/Certs/fullchain.pem",
+  "key": "/Certs/privkey.pem"
 }
