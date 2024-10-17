@@ -29,6 +29,13 @@ export const useLayoutStore = defineStore("layout", {
     toggleShell() {
       this.showShell = !this.showShell;
     },
+    setCloseOnPrompt(closeFunction: any, onPrompt: string) {
+      let prompt = this.prompts.find((prompt) => prompt.prompt === onPrompt);
+      if (prompt) {
+        prompt.close = closeFunction;
+      }
+      return null;
+    },
     showHover(value: PopupProps | string) {
       if (typeof value !== "object") {
         this.prompts.push({
@@ -36,6 +43,7 @@ export const useLayoutStore = defineStore("layout", {
           confirm: null,
           action: undefined,
           props: null,
+          close: null,
         });
         return;
       }
@@ -45,6 +53,7 @@ export const useLayoutStore = defineStore("layout", {
         confirm: value?.confirm,
         action: value?.action,
         props: value?.props,
+        close: value?.close,
       });
     },
     showError() {
@@ -53,6 +62,7 @@ export const useLayoutStore = defineStore("layout", {
         confirm: null,
         action: undefined,
         props: null,
+        close: null,
       });
     },
     showSuccess() {
@@ -61,10 +71,11 @@ export const useLayoutStore = defineStore("layout", {
         confirm: null,
         action: undefined,
         props: null,
+        close: null,
       });
     },
     closeHovers() {
-      this.prompts.shift();
+      this.prompts.shift()?.close?.();
     },
     // easily reset state using `$reset`
     clearLayout() {
