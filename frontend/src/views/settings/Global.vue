@@ -136,6 +136,31 @@
               />
             </p>
           </div>
+
+          <h3>{{ $t("settings.onlyOffice") }}</h3>
+
+          <p>
+            <label for="onlyoffice-url">{{
+              $t("settings.onlyOfficeUrl")
+            }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              v-model="settings.onlyoffice.url"
+              id="onlyoffice-url"
+            />
+          </p>
+          <p>
+            <label for="onlyoffice-jwt">{{
+              $t("settings.onlyOfficeJwtSecret")
+            }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              v-model="settings.onlyoffice.jwtSecret"
+              id="onlyoffice-jwt"
+            />
+          </p>
         </div>
 
         <div class="card-action">

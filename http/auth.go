@@ -84,6 +84,7 @@ func withUser(fn handleFunc) handleFunc {
 			w.Header().Add("X-Renew-Token", "true")
 		}
 
+		d.authToken = token.Raw
 		d.user, err = d.store.Users.Get(d.server.Root, tk.User.ID)
 		if err != nil {
 			return http.StatusInternalServerError, err

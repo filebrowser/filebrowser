@@ -205,19 +205,10 @@ func (i *FileInfo) Checksum(algo string) error {
 }
 
 func (i *FileInfo) RealPath() string {
-	if realPathFs, ok := i.Fs.(interface {
-		RealPath(name string) (fPath string, err error)
-	}); ok {
-		realPath, err := realPathFs.RealPath(i.Path)
-		if err == nil {
-			return realPath
-		}
-	}
-
-	return i.Path
+	return GetRealPath(i.Fs, i.Path)
 }
 
-//nolint:goconst
+//nolint:goconst,gocyclo
 func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	if IsNamedPipe(i.Mode) {
 		i.Type = "blob"
@@ -275,6 +266,10 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 
 			i.Content = string(content)
 		}
+		return nil
+	case strings.HasPrefix(mimetype, "application/vnd.openxmlformats-officedocument"),
+		strings.HasPrefix(mimetype, "application/vnd.oasis.opendocument"):
+		i.Type = "officedocument"
 		return nil
 	default:
 		i.Type = "blob"
