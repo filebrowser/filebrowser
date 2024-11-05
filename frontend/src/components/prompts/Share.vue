@@ -108,7 +108,7 @@
         <p>{{ $t("prompts.optionalPassword") }}</p>
         <input
           class="input input--block"
-          type="password"
+          type="text"
           v-model.trim="password"
           tabindex="3"
         />
