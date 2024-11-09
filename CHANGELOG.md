@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.31.2](https://github.com/filebrowser/filebrowser/compare/v2.31.1...v2.31.2) (2024-10-03)
+
+
+### Bug Fixes
+
+* added whitespace before version ([#3510](https://github.com/filebrowser/filebrowser/issues/3510)) ([2b37e69](https://github.com/filebrowser/filebrowser/commit/2b37e696c9bde4d0c453de236a3555d982346bbb))
+* change location of custom init scripts ([#3493](https://github.com/filebrowser/filebrowser/issues/3493)) ([406d4f7](https://github.com/filebrowser/filebrowser/commit/406d4f78845a1684df7c9c457b208f4dd9b2a930))
+* files list alignment ([#3494](https://github.com/filebrowser/filebrowser/issues/3494)) ([64400ff](https://github.com/filebrowser/filebrowser/commit/64400ffda8b09f66b8662a3c9400235139800a4d))
+* german translation spelling typos ([#3469](https://github.com/filebrowser/filebrowser/issues/3469)) ([1e7c415](https://github.com/filebrowser/filebrowser/commit/1e7c41505fb6a3b9baa1534787492a186e09bcfb))
+
+
+### Build
+
+* **deps-dev:** bump vite from 5.2.7 to 5.4.6 in /frontend ([#3496](https://github.com/filebrowser/filebrowser/issues/3496)) ([ec7b643](https://github.com/filebrowser/filebrowser/commit/ec7b643e8e9499f7ff226ec7f8e63a9df9890352))
+* **deps:** bump rollup from 4.21.3 to 4.22.4 in /frontend ([#3504](https://github.com/filebrowser/filebrowser/issues/3504)) ([03d74ee](https://github.com/filebrowser/filebrowser/commit/03d74ee7582196c09720f8d488056339f06c446c))
+
 ### [2.31.1](https://github.com/filebrowser/filebrowser/compare/v2.31.0...v2.31.1) (2024-08-30)
 
 
