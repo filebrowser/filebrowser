@@ -12,11 +12,12 @@
     :data-type="type"
     :aria-label="name"
     :aria-selected="isSelected"
-    ref="item"
+    :data-ext="getExtension(name).toLowerCase()"
+    @contextmenu.prevent="contextMenu"
   >
     <div>
       <img
-        v-if="readOnly == undefined && type === 'image' && isThumbsEnabled"
+        v-if="!readOnly && type === 'image' && isThumbsEnabled"
         v-lazy="thumbnailUrl"
       />
       <i v-else class="material-icons"></i>
@@ -28,16 +29,7 @@
       </p>
       <p v-else class="name">{{ name }}</p>
 
-      <p v-if="isDir && !diskUsage" class="size" data-order="-1">&mdash;</p>
-      <p
-        v-else-if="isDir && diskUsage"
-        class="size"
-        :data-order="humanDiskUsageSize()"
-      >
-        {{ humanDiskUsageSize() }}
-        {{ $t("prompts.inodeCount", { count: diskUsage.inodes }) }}
-      </p>
-      <p v-else class="size" :data-order="humanSize()">{{ humanSize() }}</p>
+      <p class="size" :data-order="diskUsage?.size || humanSize() || '-1'">{{ usedDiskSize }}</p>
 
       <p class="modified">
         <time :datetime="modified">{{ humanTime() }}</time>
@@ -48,279 +40,322 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { useAuthStore } from "@/stores/auth";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
+import { useContextMenuStore } from "@/stores/contextMenu";
+
+import { eventPosition } from "@/utils/event";
 import { enableThumbs } from "@/utils/constants";
-import { mapMutations, mapGetters, mapState } from "vuex";
 import { filesize } from "@/utils";
-import moment from "moment";
+import dayjs from "dayjs";
 import { files as api } from "@/api";
 import * as upload from "@/utils/upload";
-import { eventPosition } from "@/utils/event";
+import { computed, inject, ref, watch, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { storeToRefs } from "pinia";
 
-export default {
-  name: "item",
-  data: function () {
-    return {
-      diskUsage: null,
-      touches: 0,
-    };
-  },
-  props: [
-    "name",
-    "link",
-    "isSymlink",
-    "isDir",
-    "url",
-    "type",
-    "size",
-    "mode",
-    "modified",
-    "index",
-    "readOnly",
-    "path",
-  ],
-  computed: {
-    ...mapState(["user", "selected", "req", "jwt", "diskUsages"]),
-    ...mapGetters(["selectedCount"]),
-    singleClick() {
-      return this.readOnly == undefined && this.user.singleClick;
-    },
-    isSelected() {
-      return this.selected.indexOf(this.index) !== -1;
-    },
-    isDraggable() {
-      return this.readOnly == undefined && this.user.perm.rename;
-    },
-    canDrop() {
-      if (!this.isDir || this.readOnly !== undefined) return false;
+const { t } = useI18n();
 
-      for (let i of this.selected) {
-        if (this.req.items[i].url === this.url) {
-          return false;
-        }
-      }
+const touches = ref<number>(0);
 
-      return true;
-    },
-    thumbnailUrl() {
-      const file = {
-        path: this.path,
-        modified: this.modified,
-      };
+const $showError = inject<IToastError>("$showError")!;
+const router = useRouter();
 
-      return api.getPreviewURL(file, "thumb");
-    },
-    isThumbsEnabled() {
-      return enableThumbs;
-    },
-  },
-  watch: {
-    diskUsages() {
-      this.fetchDiskUsage();
-    },
-  },
-  mounted() {
-    this.$refs.item.addEventListener("contextmenu", this.contextMenu);
-    this.fetchDiskUsage();
-  },
-  beforeDestroy() {
-    this.$refs.item.removeEventListener("contextmenu", this.contextMenu);
-  },
-  methods: {
-    ...mapMutations([
-      "addSelected",
-      "removeSelected",
-      "resetSelected",
-      "showContextMenu",
-      "hideContextMenu",
-    ]),
-    fetchDiskUsage() {
-      if (this.isDir) {
-        this.diskUsage =
-          this.diskUsages[this.req.items[this.index].path] || null;
-      }
-    },
-    permissions() {
-      let s = "";
-      if (this.isSymlink) {
-        s += "l";
-      } else if (this.isDir) {
-        s += "d";
-      } else {
-        s += "-";
-      }
-      s += (this.mode & 256) != 0 ? "r" : "-";
-      s += (this.mode & 128) != 0 ? "w" : "-";
-      s += (this.mode & 64) != 0 ? "x" : "-";
-      s += (this.mode & 32) != 0 ? "r" : "-";
-      s += (this.mode & 16) != 0 ? "w" : "-";
-      s += (this.mode & 8) != 0 ? "x" : "-";
-      s += (this.mode & 4) != 0 ? "r" : "-";
-      s += (this.mode & 2) != 0 ? "w" : "-";
-      s += (this.mode & 1) != 0 ? "x" : "-";
-      return s;
-    },
-    humanDiskUsageSize: function () {
-      return filesize(this.diskUsage.size);
-    },
-    humanSize: function () {
-      return this.type == "invalid_link" ? "invalid link" : filesize(this.size);
-    },
-    humanTime: function () {
-      if (this.readOnly == undefined && this.user.dateFormat) {
-        return moment(this.modified).format("L LT");
-      }
-      return moment(this.modified).fromNow();
-    },
-    dragStart: function () {
-      if (this.selectedCount === 0) {
-        this.addSelected(this.index);
-        return;
-      }
+const props = defineProps<{
+  name: string;
+  link: string;
+  isDir: boolean;
+  isSymlink: boolean;
+  url: string;
+  type: string;
+  size: number;
+  mode: number;
+  modified: string;
+  index: number;
+  readOnly?: boolean;
+  path?: string;
+}>();
 
-      if (!this.isSelected) {
-        this.resetSelected();
-        this.addSelected(this.index);
-      }
-    },
-    dragOver: function (event) {
-      if (!this.canDrop) return;
+const authStore = useAuthStore();
+const fileStore = useFileStore();
+const layoutStore = useLayoutStore();
+const contextMenuStore = useContextMenuStore();
 
-      event.preventDefault();
-      let el = event.target;
+const { diskUsages } = storeToRefs(fileStore);
 
-      for (let i = 0; i < 5; i++) {
-        if (!el.classList.contains("item")) {
-          el = el.parentElement;
-        }
-      }
+const diskUsage = ref<DiskUsage | null>(null);
 
-      el.style.opacity = 1;
-    },
-    drop: async function (event) {
-      if (!this.canDrop) return;
-      event.preventDefault();
+const usedDiskSize = computed((): string => {
+  if (props.isDir) {
+    if (!diskUsage.value) {
+      return '-';
+    }
 
-      if (this.selectedCount === 0) return;
+    return diskUsage.value.size + ' ' + t("prompts.inodeCount", { count: diskUsage.value.inodes });
+  }
 
-      let el = event.target;
-      for (let i = 0; i < 5; i++) {
-        if (el !== null && !el.classList.contains("item")) {
-          el = el.parentElement;
-        }
-      }
+  return humanSize();
+});
+const singleClick = computed(
+  () => !props.readOnly && authStore.user?.singleClick
+);
+const isSelected = computed(
+  () => fileStore.selected.indexOf(props.index) !== -1
+);
+const isDraggable = computed(
+  () => !props.readOnly && authStore.user?.perm.rename
+);
 
-      let items = [];
+watch(diskUsages, () => {
+  updateDiskUsage();
+}, { deep: true });
 
-      for (let i of this.selected) {
-        items.push({
-          from: this.req.items[i].url,
-          to: this.url + encodeURIComponent(this.req.items[i].name),
-          name: this.req.items[i].name,
-        });
-      }
+const canDrop = computed(() => {
+  if (!props.isDir || props.readOnly) return false;
 
-      // Get url from ListingItem instance
-      let path = el.__vue__.url;
-      let baseItems = (await api.fetch(path)).items;
+  for (let i of fileStore.selected) {
+    if (fileStore.req?.items[i].url === props.url) {
+      return false;
+    }
+  }
 
-      let action = (overwrite, rename) => {
-        api
-          .move(items, overwrite, rename)
-          .then(() => {
-            this.$store.commit("setReload", true);
-          })
-          .catch(this.$showError);
-      };
+  return true;
+});
 
-      let conflict = upload.checkConflict(items, baseItems);
+const thumbnailUrl = computed(() => {
+  const file = {
+    path: props.path,
+    modified: props.modified,
+  };
 
-      let overwrite = false;
-      let rename = false;
+  return api.getPreviewURL(file as Resource, "thumb");
+});
 
-      if (conflict) {
-        this.$store.commit("showHover", {
-          prompt: "replace-rename",
-          confirm: (event, option) => {
-            overwrite = option == "overwrite";
-            rename = option == "rename";
+const isThumbsEnabled = computed(() => {
+  return enableThumbs;
+});
 
-            event.preventDefault();
-            this.$store.commit("closeHovers");
-            action(overwrite, rename);
-          },
-        });
-
-        return;
-      }
-
-      action(overwrite, rename);
-    },
-    itemClick: function (event) {
-      if (this.singleClick && !this.$store.state.multiple) this.open();
-      else this.click(event);
-    },
-    click: function (event) {
-      if (!this.singleClick && this.selectedCount !== 0) event.preventDefault();
-
-      setTimeout(() => {
-        this.touches = 0;
-      }, 300);
-
-      this.touches++;
-      if (this.touches > 1) {
-        this.open();
-      }
-
-      if (this.$store.state.selected.indexOf(this.index) !== -1) {
-        this.removeSelected(this.index);
-        return;
-      }
-
-      if (event.shiftKey && this.selected.length > 0) {
-        let fi = 0;
-        let la = 0;
-
-        if (this.index > this.selected[0]) {
-          fi = this.selected[0] + 1;
-          la = this.index;
-        } else {
-          fi = this.index;
-          la = this.selected[0] - 1;
-        }
-
-        for (; fi <= la; fi++) {
-          if (this.$store.state.selected.indexOf(fi) == -1) {
-            this.addSelected(fi);
-          }
-        }
-
-        return;
-      }
-
-      if (
-        !this.singleClick &&
-        !event.ctrlKey &&
-        !event.metaKey &&
-        !this.$store.state.multiple
-      )
-        this.resetSelected();
-      this.addSelected(this.index);
-    },
-    open: function () {
-      this.$router.push({ path: this.url });
-    },
-    contextMenu(event) {
-      event.preventDefault();
-      this.hideContextMenu();
-      if (this.$store.state.selected.indexOf(this.index) === -1) {
-        this.resetSelected();
-        this.addSelected(this.index);
-      }
-      let pos = eventPosition(event);
-      pos.x += 2;
-      this.showContextMenu(pos);
-    },
-  },
+const humanSize = () => {
+  return props.type == "invalid_link" ? "invalid link" : filesize(props.size);
 };
+
+const permissions = () => {
+  let s = "";
+  if (props.isSymlink) {
+    s += "l";
+  } else if (props.isDir) {
+    s += "d";
+  } else {
+    s += "-";
+  }
+  s += (props.mode & 256) != 0 ? "r" : "-";
+  s += (props.mode & 128) != 0 ? "w" : "-";
+  s += (props.mode & 64) != 0 ? "x" : "-";
+  s += (props.mode & 32) != 0 ? "r" : "-";
+  s += (props.mode & 16) != 0 ? "w" : "-";
+  s += (props.mode & 8) != 0 ? "x" : "-";
+  s += (props.mode & 4) != 0 ? "r" : "-";
+  s += (props.mode & 2) != 0 ? "w" : "-";
+  s += (props.mode & 1) != 0 ? "x" : "-";
+  return s;
+};
+
+const updateDiskUsage = () => {
+  if (props.path) {
+    diskUsage.value = fileStore.diskUsages.get(props.path) || null;
+  }
+};
+
+const humanTime = () => {
+  if (!props.readOnly && authStore.user?.dateFormat) {
+    return dayjs(props.modified).format("L LT");
+  }
+  return dayjs(props.modified).fromNow();
+};
+
+const dragStart = () => {
+  if (fileStore.selectedCount === 0) {
+    fileStore.selected.push(props.index);
+    return;
+  }
+
+  if (!isSelected.value) {
+    fileStore.selected = [];
+    fileStore.selected.push(props.index);
+  }
+};
+
+const dragOver = (event: Event) => {
+  if (!canDrop.value) return;
+
+  event.preventDefault();
+  let el = event.target as HTMLElement | null;
+  if (el !== null) {
+    for (let i = 0; i < 5; i++) {
+      if (!el?.classList.contains("item")) {
+        el = el?.parentElement ?? null;
+      }
+    }
+
+    if (el !== null) el.style.opacity = "1";
+  }
+};
+
+const drop = async (event: Event) => {
+  if (!canDrop.value) return;
+  event.preventDefault();
+
+  if (fileStore.selectedCount === 0) return;
+
+  let el = event.target as HTMLElement | null;
+  for (let i = 0; i < 5; i++) {
+    if (el !== null && !el.classList.contains("item")) {
+      el = el.parentElement;
+    }
+  }
+
+  let items: any[] = [];
+
+  for (let i of fileStore.selected) {
+    if (fileStore.req) {
+      items.push({
+        from: fileStore.req?.items[i].url,
+        to: props.url + encodeURIComponent(fileStore.req?.items[i].name),
+        name: fileStore.req?.items[i].name,
+      });
+    }
+  }
+
+  // Get url from ListingItem instance
+  if (el === null) {
+    return;
+  }
+  let path = el.__vue__.url;
+  let baseItems = (await api.fetch(path)).items;
+
+  let action = (overwrite: boolean, rename: boolean) => {
+    api
+      .move(items, overwrite, rename)
+      .then(() => {
+        fileStore.reload = true;
+      })
+      .catch($showError);
+  };
+
+  let conflict = upload.checkConflict(items, baseItems);
+
+  let overwrite = false;
+  let rename = false;
+
+  if (conflict) {
+    layoutStore.showHover({
+      prompt: "replace-rename",
+      confirm: (event: Event, option: any) => {
+        overwrite = option == "overwrite";
+        rename = option == "rename";
+
+        event.preventDefault();
+        layoutStore.closeHovers();
+        action(overwrite, rename);
+      },
+    });
+
+    return;
+  }
+
+  action(overwrite, rename);
+};
+
+const itemClick = (event: Event | KeyboardEvent) => {
+  if (
+    singleClick.value &&
+    !(event as KeyboardEvent).ctrlKey &&
+    !(event as KeyboardEvent).metaKey &&
+    !(event as KeyboardEvent).shiftKey &&
+    !fileStore.multiple
+  )
+    open();
+  else click(event);
+};
+
+const click = (event: Event | KeyboardEvent) => {
+  if (!singleClick.value && fileStore.selectedCount !== 0)
+    event.preventDefault();
+
+  setTimeout(() => {
+    touches.value = 0;
+  }, 300);
+
+  touches.value++;
+  if (touches.value > 1) {
+    open();
+  }
+
+  if (fileStore.selected.indexOf(props.index) !== -1) {
+    fileStore.removeSelected(props.index);
+    return;
+  }
+
+  if ((event as KeyboardEvent).shiftKey && fileStore.selected.length > 0) {
+    let fi = 0;
+    let la = 0;
+
+    if (props.index > fileStore.selected[0]) {
+      fi = fileStore.selected[0] + 1;
+      la = props.index;
+    } else {
+      fi = props.index;
+      la = fileStore.selected[0] - 1;
+    }
+
+    for (; fi <= la; fi++) {
+      if (fileStore.selected.indexOf(fi) == -1) {
+        fileStore.selected.push(fi);
+      }
+    }
+
+    return;
+  }
+
+  if (
+    !singleClick.value &&
+    !(event as KeyboardEvent).ctrlKey &&
+    !(event as KeyboardEvent).metaKey &&
+    !fileStore.multiple
+  ) {
+    fileStore.selected = [];
+  }
+  fileStore.selected.push(props.index);
+};
+
+const open = () => {
+  router.push({ path: props.url });
+};
+
+const getExtension = (fileName: string): string => {
+  const lastDotIndex = fileName.lastIndexOf(".");
+  if (lastDotIndex === -1) {
+    return fileName;
+  }
+  return fileName.substring(lastDotIndex);
+};
+
+const contextMenu = (event: MouseEvent) => {
+  contextMenuStore.hide();
+
+  if (fileStore.selected.indexOf(props.index) === -1) {
+    fileStore.selected = [props.index];
+  }
+
+  let pos = eventPosition(event);
+
+  contextMenuStore.show(pos.x + 2, pos.y);
+};
+
+onMounted(() => {
+  updateDiskUsage();
+});
 </script>

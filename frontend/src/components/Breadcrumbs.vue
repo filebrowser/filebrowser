@@ -3,8 +3,8 @@
     <component
       :is="element"
       :to="base || ''"
-      :aria-label="$t('files.home')"
-      :title="$t('files.home')"
+      :aria-label="t('files.home')"
+      :title="t('files.home')"
     >
       <i class="material-icons">home</i>
     </component>
@@ -18,58 +18,66 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "breadcrumbs",
-  props: ["base", "noLink"],
-  computed: {
-    items() {
-      const relativePath = this.$route.path.replace(this.base, "");
-      let parts = relativePath.split("/");
+<script setup lang="ts">
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRoute } from "vue-router";
 
-      if (parts[0] === "") {
-        parts.shift();
-      }
+const { t } = useI18n();
 
-      if (parts[parts.length - 1] === "") {
-        parts.pop();
-      }
+const route = useRoute();
 
-      let breadcrumbs = [];
+const props = defineProps<{
+  base: string;
+  noLink?: boolean;
+}>();
 
-      for (let i = 0; i < parts.length; i++) {
-        if (i === 0) {
-          breadcrumbs.push({
-            name: decodeURIComponent(parts[i]),
-            url: this.base + "/" + parts[i] + "/",
-          });
-        } else {
-          breadcrumbs.push({
-            name: decodeURIComponent(parts[i]),
-            url: breadcrumbs[i - 1].url + parts[i] + "/",
-          });
-        }
-      }
+const items = computed(() => {
+  const relativePath = route.path.replace(props.base, "");
+  let parts = relativePath.split("/");
 
-      if (breadcrumbs.length > 3) {
-        while (breadcrumbs.length !== 4) {
-          breadcrumbs.shift();
-        }
+  if (parts[0] === "") {
+    parts.shift();
+  }
 
-        breadcrumbs[0].name = "...";
-      }
+  if (parts[parts.length - 1] === "") {
+    parts.pop();
+  }
 
-      return breadcrumbs;
-    },
-    element() {
-      if (this.noLink !== undefined) {
-        return "span";
-      }
+  let breadcrumbs: BreadCrumb[] = [];
 
-      return "router-link";
-    },
-  },
-};
+  for (let i = 0; i < parts.length; i++) {
+    if (i === 0) {
+      breadcrumbs.push({
+        name: decodeURIComponent(parts[i]),
+        url: props.base + "/" + parts[i] + "/",
+      });
+    } else {
+      breadcrumbs.push({
+        name: decodeURIComponent(parts[i]),
+        url: breadcrumbs[i - 1].url + parts[i] + "/",
+      });
+    }
+  }
+
+  if (breadcrumbs.length > 3) {
+    while (breadcrumbs.length !== 4) {
+      breadcrumbs.shift();
+    }
+
+    breadcrumbs[0].name = "...";
+  }
+
+  return breadcrumbs;
+});
+
+const element = computed(() => {
+  if (props.noLink) {
+    return "span";
+  }
+
+  return "router-link";
+});
 </script>
 
 <style></style>

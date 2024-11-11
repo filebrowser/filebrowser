@@ -24,7 +24,7 @@ func Search(fs afero.Fs, scope, query string, checker rules.Checker, found func(
 	scope = filepath.ToSlash(filepath.Clean(scope))
 	scope = path.Join("/", scope)
 
-	return afero.Walk(fs, scope, func(fPath string, f os.FileInfo, err error) error {
+	return afero.Walk(fs, scope, func(fPath string, f os.FileInfo, _ error) error {
 		fPath = filepath.ToSlash(filepath.Clean(fPath))
 		fPath = path.Join("/", fPath)
 		relativePath := strings.TrimPrefix(fPath, scope)

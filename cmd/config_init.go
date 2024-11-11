@@ -22,7 +22,7 @@ this options can be changed in the future with the command
 to the defaults when creating new users and you don't
 override the options.`,
 	Args: cobra.NoArgs,
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	Run: python(func(cmd *cobra.Command, _ []string, d pythonData) {
 		defaults := settings.UserDefaults{}
 		flags := cmd.Flags()
 		getUserDefaults(flags, &defaults, true)
@@ -31,6 +31,7 @@ override the options.`,
 		s := &settings.Settings{
 			Key:           generateKey(),
 			Signup:        mustGetBool(flags, "signup"),
+			CreateUserDir: mustGetBool(flags, "create-user-dir"),
 			Shell:         convertCmdStrToCmdArray(mustGetString(flags, "shell")),
 			AuthMethod:    authMethod,
 			AuthLogoutURL: mustGetString(flags, "auth.logoutUrl"),
@@ -39,6 +40,7 @@ override the options.`,
 				Name:                  mustGetString(flags, "branding.name"),
 				DisableExternal:       mustGetBool(flags, "branding.disableExternal"),
 				DisableUsedPercentage: mustGetBool(flags, "branding.disableUsedPercentage"),
+				Theme:                 mustGetString(flags, "branding.theme"),
 				Files:                 mustGetString(flags, "branding.files"),
 			},
 		}

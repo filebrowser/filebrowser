@@ -5,13 +5,16 @@
     </div>
 
     <div class="card-content">
-      <file-list ref="fileList" @update:selected="(val) => (dest = val)">
-      </file-list>
+      <file-list
+        ref="fileList"
+        @update:selected="(val) => (dest = val)"
+        tabindex="1"
+      />
     </div>
 
     <div
       class="card-action"
-      style="display: flex; align-items: center; justify-content: space-between;"
+      style="display: flex; align-items: center; justify-content: space-between"
     >
       <template v-if="user.perm.create">
         <button
@@ -19,7 +22,7 @@
           @click="$refs.fileList.createDir()"
           :aria-label="$t('sidebar.newFolder')"
           :title="$t('sidebar.newFolder')"
-          style="justify-self: left;"
+          style="justify-self: left"
         >
           <span>{{ $t("sidebar.newFolder") }}</span>
         </button>
@@ -27,18 +30,21 @@
       <div>
         <button
           class="button button--flat button--grey"
-          @click="$store.commit('closeHovers')"
+          @click="closeHovers"
           :aria-label="$t('buttons.cancel')"
           :title="$t('buttons.cancel')"
+          tabindex="3"
         >
           {{ $t("buttons.cancel") }}
         </button>
         <button
+          id="focus-prompt"
           class="button button--flat"
           @click="move"
           :disabled="$route.path === dest"
           :aria-label="$t('buttons.move')"
           :title="$t('buttons.move')"
+          tabindex="2"
         >
           {{ $t("buttons.move") }}
         </button>
@@ -48,7 +54,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapActions, mapState } from "pinia";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
+import { useAuthStore } from "@/stores/auth";
 import FileList from "./FileList.vue";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
@@ -63,8 +72,13 @@ export default {
       dest: null,
     };
   },
-  computed: mapState(["req", "selected", "user"]),
+  inject: ["$showError"],
+  computed: {
+    ...mapState(useFileStore, ["req", "selected"]),
+    ...mapState(useAuthStore, ["user"]),
+  },
   methods: {
+    ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
     move: async function (event) {
       event.preventDefault();
       let items = [];
@@ -99,14 +113,14 @@ export default {
       let rename = false;
 
       if (conflict) {
-        this.$store.commit("showHover", {
+        this.showHover({
           prompt: "replace-rename",
           confirm: (event, option) => {
             overwrite = option == "overwrite";
             rename = option == "rename";
 
             event.preventDefault();
-            this.$store.commit("closeHovers");
+            this.closeHovers();
             action(overwrite, rename);
           },
         });

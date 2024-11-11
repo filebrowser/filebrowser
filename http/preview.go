@@ -4,6 +4,7 @@ package http
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -45,7 +46,7 @@ func previewHandler(imgSvc ImgService, fileCache FileCache, enableThumbnails, re
 			return http.StatusBadRequest, err
 		}
 
-		file, err := files.NewFileInfo(files.FileOptions{
+		file, err := files.NewFileInfo(&files.FileOptions{
 			Fs:         d.user.Fs,
 			Path:       "/" + vars["path"],
 			Modify:     d.user.Perm.Modify,
@@ -84,7 +85,7 @@ func handleImagePreview(
 
 	format, err := imgSvc.FormatFromExtension(file.Extension)
 	// Unsupported extensions directly return the raw data
-	if err == img.ErrUnsupportedFormat || format == img.FormatGif {
+	if errors.Is(err, img.ErrUnsupportedFormat) || format == img.FormatGif {
 		return rawFileHandler(w, r, file)
 	}
 	if err != nil {

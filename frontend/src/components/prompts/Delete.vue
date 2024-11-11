@@ -1,7 +1,7 @@
 <template>
   <div class="card floating">
     <div class="card-content">
-      <p v-if="selectedCount === 1">
+      <p v-if="!this.isListing || selectedCount === 1">
         {{ $t("prompts.deleteMessageSingle") }}
       </p>
       <p v-else>
@@ -14,18 +14,21 @@
     </div>
     <div class="card-action">
       <button
-        @click="$store.commit('closeHovers')"
+        @click="closeHovers"
         class="button button--flat button--grey"
         :aria-label="$t('buttons.cancel')"
         :title="$t('buttons.cancel')"
+        tabindex="2"
       >
         {{ $t("buttons.cancel") }}
       </button>
       <button
+        id="focus-prompt"
         @click="submit"
         class="button button--flat button--red"
         :aria-label="$t('buttons.delete')"
         :title="$t('buttons.delete')"
+        tabindex="1"
       >
         {{ $t("buttons.delete") }}
       </button>
@@ -34,10 +37,13 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from "vuex";
+import { mapActions, mapState, mapWritableState } from "pinia";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
 import { trashDir } from "@/utils/constants";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
+import { useQuotaStore } from "@/stores/quota";
 
 export default {
   name: "delete",
@@ -46,9 +52,16 @@ export default {
       skipTrash: true,
     };
   },
+  inject: ["$showError"],
   computed: {
-    ...mapGetters(["isListing", "selectedCount", "currentPrompt"]),
-    ...mapState(["req", "selected"]),
+    ...mapState(useFileStore, [
+      "isListing",
+      "selectedCount",
+      "req",
+      "selected",
+      "currentPrompt",
+    ]),
+    ...mapWritableState(useFileStore, ["reload"]),
     trashBinCheckbox() {
       if (trashDir === "") {
         return false;
@@ -72,10 +85,12 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(["closeHovers"]),
+    ...mapActions(useLayoutStore, ["closeHovers"]),
+    ...mapActions(useQuotaStore, ["fetchQuota"]),
     submit: async function () {
       buttons.loading("delete");
 
+      window.sessionStorage.setItem("modified", "true");
       try {
         if (!this.isListing) {
           await api.remove(this.$route.path, this.skipTrash);
@@ -99,12 +114,12 @@ export default {
 
         await Promise.all(promises);
         buttons.success("delete");
-        this.$store.commit("setReload", true);
-        this.$store.dispatch("quota/fetch", 3000);
+        this.reload = true;
+        this.fetchQuota(3000);
       } catch (e) {
         buttons.done("delete");
         this.$showError(e);
-        if (this.isListing) this.$store.commit("setReload", true);
+        if (this.isListing) this.reload = true;
       }
     },
   },

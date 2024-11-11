@@ -119,7 +119,7 @@ func parseWindowsCommand(cmd string) []string {
 			continue
 		}
 
-		if unicode.IsSpace(ch) && !inQuotes && len(part) > 0 {
+		if unicode.IsSpace(ch) && !inQuotes && part != "" {
 			parts = append(parts, part)
 			part = ""
 			continue
@@ -128,7 +128,7 @@ func parseWindowsCommand(cmd string) []string {
 		part += string(ch)
 	}
 
-	if len(part) > 0 {
+	if part != "" {
 		parts = append(parts, part)
 	}
 

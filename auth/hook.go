@@ -2,6 +2,7 @@ package auth
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,7 +10,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/filebrowser/filebrowser/v2/errors"
+	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -123,10 +124,10 @@ func (a *HookAuth) GetValues(s string) {
 
 	// iterate input lines
 	for _, val := range strings.Split(s, "\n") {
-		v := strings.SplitN(val, "=", 2) //nolint: gomnd
+		v := strings.SplitN(val, "=", 2)
 
 		// skips non key and value format
-		if len(v) != 2 { //nolint: gomnd
+		if len(v) != 2 {
 			continue
 		}
 
@@ -144,7 +145,7 @@ func (a *HookAuth) GetValues(s string) {
 // SaveUser updates the existing user or creates a new one when not found
 func (a *HookAuth) SaveUser() (*users.User, error) {
 	u, err := a.Users.Get(a.Server.Root, a.Cred.Username)
-	if err != nil && err != errors.ErrNotExist {
+	if err != nil && !errors.Is(err, fbErrors.ErrNotExist) {
 		return nil, err
 	}
 

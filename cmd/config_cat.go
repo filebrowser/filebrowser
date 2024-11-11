@@ -13,7 +13,7 @@ var configCatCmd = &cobra.Command{
 	Short: "Prints the configuration",
 	Long:  `Prints the configuration.`,
 	Args:  cobra.NoArgs,
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	Run: python(func(_ *cobra.Command, _ []string, d pythonData) {
 		set, err := d.store.Settings.Get()
 		checkErr(err)
 		ser, err := d.store.Settings.GetServer()

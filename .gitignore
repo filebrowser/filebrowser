@@ -31,9 +31,18 @@ bin/
 dist/
 build/
 
-/frontend/dist/*
-!/frontend/dist/.gitkeep
-
 # Hostinger-specific files
 .cagefs/
 .filebrowser/
+
+# Vue distributable files
+/frontend/dist/*
+!/frontend/dist/.gitkeep
+
+# Playwright files
+/frontend/test-results/
+/frontend/playwright-report/
+/frontend/playwright/.cache/
+
+default.nix
+Dockerfile.dev

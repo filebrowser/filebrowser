@@ -1,44 +1,46 @@
 <template>
   <div
     id="previewer"
+    @touchmove.prevent.stop
+    @wheel.prevent.stop
     @mousemove="toggleNavigation"
     @touchstart="toggleNavigation"
   >
-    <header-bar>
+    <header-bar v-if="isPdf || isEpub || showNav">
       <action icon="close" :label="$t('buttons.close')" @action="close()" />
       <title>{{ name }}</title>
       <action
-        :disabled="loading"
-        v-if="isResizeEnabled && req.type === 'image'"
+        :disabled="layoutStore.loading"
+        v-if="isResizeEnabled && fileStore.req?.type === 'image'"
         :icon="fullSize ? 'photo_size_select_large' : 'hd'"
         @action="toggleSize"
       />
 
       <template #actions>
         <action
-          :disabled="loading"
-          v-if="user.perm.rename"
+          :disabled="layoutStore.loading"
+          v-if="authStore.user?.perm.rename"
           icon="mode_edit"
           :label="$t('buttons.rename')"
           show="rename"
         />
         <action
-          :disabled="loading"
-          v-if="user.perm.delete"
+          :disabled="layoutStore.loading"
+          v-if="authStore.user?.perm.delete"
           icon="delete"
           :label="$t('buttons.delete')"
           @action="deleteFile"
           id="delete-button"
         />
         <action
-          :disabled="loading"
-          v-if="user.perm.download"
+          :disabled="layoutStore.loading"
+          v-if="authStore.user?.perm.download"
           icon="file_download"
           :label="$t('buttons.download')"
           @action="download"
         />
         <action
-          :disabled="loading"
+          :disabled="layoutStore.loading"
           icon="info"
           :label="$t('buttons.info')"
           show="info"
@@ -46,7 +48,7 @@
       </template>
     </header-bar>
 
-    <div class="loading delayed" v-if="loading">
+    <div class="loading delayed" v-if="layoutStore.loading">
       <div class="spinner">
         <div class="bounce1"></div>
         <div class="bounce2"></div>
@@ -55,41 +57,55 @@
     </div>
     <template v-else>
       <div class="preview">
-        <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
+        <div v-if="isEpub" class="epub-reader">
+          <vue-reader
+            :location="location"
+            :url="raw"
+            :get-rendition="getRendition"
+            :epubInitOptions="{
+              requestCredentials: true,
+            }"
+            :epubOptions="{
+              allowPopups: true,
+              allowScriptedContent: true,
+            }"
+            @update:location="locationChange"
+          />
+          <div class="size">
+            <button
+              @click="changeSize(Math.max(100, size - 10))"
+              class="reader-button"
+            >
+              <i class="material-icons">remove</i>
+            </button>
+            <button
+              @click="changeSize(Math.min(150, size + 10))"
+              class="reader-button"
+            >
+              <i class="material-icons">add</i>
+            </button>
+            <span>{{ size }}%</span>
+          </div>
+        </div>
+        <ExtendedImage v-else-if="fileStore.req?.type == 'image'" :src="raw" />
         <audio
-          v-else-if="req.type == 'audio'"
+          v-else-if="fileStore.req?.type == 'audio'"
           ref="player"
           :src="raw"
           controls
           :autoplay="autoPlay"
           @play="autoPlay = true"
         ></audio>
-        <video
-          v-else-if="req.type == 'video'"
+        <VideoPlayer
+          v-else-if="fileStore.req?.type == 'video'"
           ref="player"
-          :src="raw"
-          controls
-          :autoplay="autoPlay"
-          @play="autoPlay = true"
+          :source="raw"
+          :subtitles="subtitles"
+          :options="videoOptions"
         >
-          <track
-            kind="captions"
-            v-for="(sub, index) in subtitles"
-            :key="index"
-            :src="sub"
-            :label="'Subtitle ' + index"
-            :default="index === 0"
-          />
-          Sorry, your browser doesn't support embedded videos, but don't worry,
-          you can <a :href="downloadUrl">download it</a>
-          and watch it with your favorite video player!
-        </video>
-        <object
-          v-else-if="req.extension.toLowerCase() == '.pdf'"
-          class="pdf"
-          :data="raw"
-        ></object>
-        <div v-else-if="req.type == 'blob'" class="info">
+        </VideoPlayer>
+        <object v-else-if="isPdf" class="pdf" :data="raw"></object>
+        <div v-else-if="fileStore.req?.type == 'blob'" class="info">
           <div class="title">
             <i class="material-icons">feedback</i>
             {{ $t("files.noPreview") }}
@@ -105,7 +121,7 @@
               target="_blank"
               :href="raw"
               class="button button--flat"
-              v-if="!req.isDir"
+              v-if="!fileStore.req?.isDir"
             >
               <div>
                 <i class="material-icons">open_in_new</i
@@ -142,214 +158,273 @@
   </div>
 </template>
 
-<script>
-import { mapGetters, mapState } from "vuex";
+<script setup lang="ts">
+import { useStorage } from "@vueuse/core";
+import { useAuthStore } from "@/stores/auth";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
+
 import { files as api } from "@/api";
+import { createURL } from "@/api/utils";
 import { resizePreview } from "@/utils/constants";
 import url from "@/utils/url";
-import throttle from "lodash.throttle";
+import throttle from "lodash/throttle";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import ExtendedImage from "@/components/files/ExtendedImage.vue";
+import VideoPlayer from "@/components/files/VideoPlayer.vue";
+import { VueReader } from "vue-reader";
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import type { Rendition } from "epubjs";
+import { getTheme } from "@/utils/theme";
 
-const mediaTypes = ["image", "video", "audio", "blob"];
-
-export default {
-  name: "preview",
-  components: {
-    HeaderBar,
-    Action,
-    ExtendedImage,
+const location = useStorage("book-progress", 0, undefined, {
+  serializer: {
+    read: (v) => JSON.parse(v),
+    write: (v) => JSON.stringify(v),
   },
-  data: function () {
-    return {
-      previousLink: "",
-      nextLink: "",
-      listing: null,
-      name: "",
-      fullSize: false,
-      showNav: true,
-      navTimeout: null,
-      hoverNav: false,
-      autoPlay: false,
-      previousRaw: "",
-      nextRaw: "",
-    };
+});
+const size = useStorage("book-size", 120, undefined, {
+  serializer: {
+    read: (v) => JSON.parse(v),
+    write: (v) => JSON.stringify(v),
   },
-  computed: {
-    ...mapState(["req", "user", "oldReq", "jwt", "loading"]),
-    ...mapGetters(["currentPrompt"]),
-    hasPrevious() {
-      return this.previousLink !== "";
-    },
-    hasNext() {
-      return this.nextLink !== "";
-    },
-    downloadUrl() {
-      return api.getDownloadURL(this.req);
-    },
-    raw() {
-      if (this.req.type === "image" && !this.fullSize) {
-        return api.getPreviewURL(this.req, "big");
-      }
+});
 
-      return api.getDownloadURL(this.req, true);
-    },
-    showMore() {
-      return this.currentPrompt?.prompt === "more";
-    },
-    isResizeEnabled() {
-      return resizePreview;
-    },
-    subtitles() {
-      if (this.req.subtitles) {
-        return api.getSubtitlesURL(this.req);
-      }
-      return [];
-    },
-  },
-  watch: {
-    $route: function () {
-      this.updatePreview();
-      this.toggleNavigation();
-    },
-  },
-  async mounted() {
-    window.addEventListener("keydown", this.key);
-    this.listing = this.oldReq.items;
-    this.updatePreview();
-  },
-  beforeDestroy() {
-    window.removeEventListener("keydown", this.key);
-  },
-  methods: {
-    deleteFile() {
-      this.$store.commit("showHover", {
-        prompt: "delete",
-        confirm: () => {
-          this.listing = this.listing.filter((item) => item.name !== this.name);
-
-          if (this.hasNext) {
-            this.next();
-          } else if (!this.hasPrevious && !this.hasNext) {
-            this.close();
-          } else {
-            this.prev();
-          }
-        },
-      });
-    },
-    prev() {
-      this.hoverNav = false;
-      this.$router.replace({ path: this.previousLink });
-    },
-    next() {
-      this.hoverNav = false;
-      this.$router.replace({ path: this.nextLink });
-    },
-    key(event) {
-      if (this.currentPrompt !== null) {
-        return;
-      }
-
-      if (event.which === 13 || event.which === 39) {
-        // right arrow
-        if (this.hasNext) this.next();
-      } else if (event.which === 37) {
-        // left arrow
-        if (this.hasPrevious) this.prev();
-      } else if (event.which === 27) {
-        // esc
-        this.close();
-      }
-    },
-    async updatePreview() {
-      if (
-        this.$refs.player &&
-        this.$refs.player.paused &&
-        !this.$refs.player.ended
-      ) {
-        this.autoPlay = false;
-      }
-
-      let dirs = this.$route.fullPath.split("/");
-      this.name = decodeURIComponent(dirs[dirs.length - 1]);
-
-      if (!this.listing) {
-        try {
-          const path = url.removeLastDir(this.$route.path);
-          const res = await api.fetch(path);
-          this.listing = res.items;
-        } catch (e) {
-          this.$showError(e);
-        }
-      }
-
-      this.previousLink = "";
-      this.nextLink = "";
-
-      for (let i = 0; i < this.listing.length; i++) {
-        if (this.listing[i].name !== this.name) {
-          continue;
-        }
-
-        for (let j = i - 1; j >= 0; j--) {
-          if (mediaTypes.includes(this.listing[j].type)) {
-            this.previousLink = this.listing[j].url;
-            this.previousRaw = this.prefetchUrl(this.listing[j]);
-            break;
-          }
-        }
-        for (let j = i + 1; j < this.listing.length; j++) {
-          if (mediaTypes.includes(this.listing[j].type)) {
-            this.nextLink = this.listing[j].url;
-            this.nextRaw = this.prefetchUrl(this.listing[j]);
-            break;
-          }
-        }
-
-        return;
-      }
-    },
-    prefetchUrl(item) {
-      if (item.type !== "image") {
-        return "";
-      }
-
-      return this.fullSize
-        ? api.getDownloadURL(item, true)
-        : api.getPreviewURL(item, "big");
-    },
-    openMore() {
-      this.$store.commit("showHover", "more");
-    },
-    resetPrompts() {
-      this.$store.commit("closeHovers");
-    },
-    toggleSize() {
-      this.fullSize = !this.fullSize;
-    },
-    toggleNavigation: throttle(function () {
-      this.showNav = true;
-
-      if (this.navTimeout) {
-        clearTimeout(this.navTimeout);
-      }
-
-      this.navTimeout = setTimeout(() => {
-        this.showNav = false || this.hoverNav;
-        this.navTimeout = null;
-      }, 1500);
-    }, 500),
-    close() {
-      this.$store.commit("updateRequest", {});
-
-      let uri = url.removeLastDir(this.$route.path) + "/";
-      this.$router.push({ path: uri });
-    },
-    download() {
-      window.open(this.downloadUrl);
-    },
-  },
+const locationChange = (epubcifi: number) => {
+  location.value = epubcifi;
 };
+let rendition: Rendition | null = null;
+const changeSize = (val: number) => {
+  size.value = val;
+  rendition?.themes.fontSize(`${val}%`);
+};
+
+const getRendition = (_rendition: Rendition) => {
+  rendition = _rendition;
+  switch (getTheme()) {
+    case "dark": {
+      rendition.themes.override("color", "rgba(255, 255, 255, 0.6)");
+      break;
+    }
+    case "light": {
+      rendition.themes.override("color", "rgb(111, 111, 111)");
+      break;
+    }
+  }
+  rendition.themes.registerRules("h2Transparent", {
+    "h1,h2,h3,h4": {
+      "background-color": "transparent !important",
+    },
+  });
+  rendition?.themes.fontSize(`${size.value}%`);
+  rendition.themes.select("h2Transparent");
+  rendition.themes.override("background-color", "transparent", true);
+};
+
+const mediaTypes: ResourceType[] = ["image", "video", "audio", "blob"];
+
+const previousLink = ref<string>("");
+const nextLink = ref<string>("");
+const listing = ref<ResourceItem[] | null>(null);
+const name = ref<string>("");
+const fullSize = ref<boolean>(false);
+const showNav = ref<boolean>(true);
+const navTimeout = ref<null | number>(null);
+const hoverNav = ref<boolean>(false);
+const autoPlay = ref<boolean>(false);
+const previousRaw = ref<string>("");
+const nextRaw = ref<string>("");
+
+const player = ref<HTMLVideoElement | HTMLAudioElement | null>(null);
+
+const $showError = inject<IToastError>("$showError")!;
+
+const authStore = useAuthStore();
+const fileStore = useFileStore();
+const layoutStore = useLayoutStore();
+
+const route = useRoute();
+const router = useRouter();
+
+const hasPrevious = computed(() => previousLink.value !== "");
+
+const hasNext = computed(() => nextLink.value !== "");
+
+const downloadUrl = computed(() =>
+  fileStore.req ? api.getDownloadURL(fileStore.req, true) : ""
+);
+
+const raw = computed(() => {
+  if (fileStore.req?.type === "image" && !fullSize.value) {
+    return api.getPreviewURL(fileStore.req, "big");
+  }
+
+  if (isEpub.value) {
+    return createURL("api/raw" + fileStore.req?.path, {}, false);
+  }
+
+  return downloadUrl.value;
+});
+
+const isPdf = computed(() => fileStore.req?.extension.toLowerCase() == ".pdf");
+const isEpub = computed(
+  () => fileStore.req?.extension.toLowerCase() == ".epub"
+);
+
+const isResizeEnabled = computed(() => resizePreview);
+
+const subtitles = computed(() => {
+  if (fileStore.req?.subtitles) {
+    return api.getSubtitlesURL(fileStore.req);
+  }
+  return [];
+});
+
+const videoOptions = computed(() => {
+  return { autoplay: autoPlay.value };
+});
+
+watch(route, () => {
+  updatePreview();
+  toggleNavigation();
+});
+
+// Specify hooks
+onMounted(async () => {
+  window.addEventListener("keydown", key);
+  if (fileStore.oldReq) {
+    listing.value = fileStore.oldReq.items;
+    updatePreview();
+  }
+});
+
+onBeforeUnmount(() => window.removeEventListener("keydown", key));
+
+// Specify methods
+const deleteFile = () => {
+  layoutStore.showHover({
+    prompt: "delete",
+    confirm: () => {
+      if (listing.value === null) {
+        return;
+      }
+      listing.value = listing.value.filter((item) => item.name !== name.value);
+
+      if (hasNext.value) {
+        next();
+      } else if (!hasPrevious.value && !hasNext.value) {
+        close();
+      } else {
+        prev();
+      }
+    },
+  });
+};
+
+const prev = () => {
+  hoverNav.value = false;
+  router.replace({ path: previousLink.value });
+};
+
+const next = () => {
+  hoverNav.value = false;
+  router.replace({ path: nextLink.value });
+};
+
+const key = (event: KeyboardEvent) => {
+  if (layoutStore.currentPrompt !== null) {
+    return;
+  }
+  if (event.which === 13 || event.which === 39) {
+    // right arrow
+    if (hasNext.value) next();
+  } else if (event.which === 37) {
+    // left arrow
+    if (hasPrevious.value) prev();
+  } else if (event.which === 27) {
+    // esc
+    close();
+  }
+};
+const updatePreview = async () => {
+  if (player.value && player.value.paused && !player.value.ended) {
+    autoPlay.value = false;
+  }
+
+  let dirs = route.fullPath.split("/");
+  name.value = decodeURIComponent(dirs[dirs.length - 1]);
+
+  if (!listing.value) {
+    try {
+      const path = url.removeLastDir(route.path);
+      const res = await api.fetch(path);
+      listing.value = res.items;
+    } catch (e: any) {
+      $showError(e);
+    }
+  }
+
+  previousLink.value = "";
+  nextLink.value = "";
+  if (listing.value) {
+    for (let i = 0; i < listing.value.length; i++) {
+      if (listing.value[i].name !== name.value) {
+        continue;
+      }
+
+      for (let j = i - 1; j >= 0; j--) {
+        if (mediaTypes.includes(listing.value[j].type)) {
+          previousLink.value = listing.value[j].url;
+          previousRaw.value = prefetchUrl(listing.value[j]);
+          break;
+        }
+      }
+      for (let j = i + 1; j < listing.value.length; j++) {
+        if (mediaTypes.includes(listing.value[j].type)) {
+          nextLink.value = listing.value[j].url;
+          nextRaw.value = prefetchUrl(listing.value[j]);
+          break;
+        }
+      }
+
+      return;
+    }
+  }
+};
+
+const prefetchUrl = (item: ResourceItem) => {
+  if (item.type !== "image") {
+    return "";
+  }
+
+  return fullSize.value
+    ? api.getDownloadURL(item, true)
+    : api.getPreviewURL(item, "big");
+};
+
+const toggleSize = () => (fullSize.value = !fullSize.value);
+
+const toggleNavigation = throttle(function () {
+  showNav.value = true;
+
+  if (navTimeout.value) {
+    clearTimeout(navTimeout.value);
+  }
+
+  navTimeout.value = window.setTimeout(() => {
+    showNav.value = false || hoverNav.value;
+    navTimeout.value = null;
+  }, 1500);
+}, 500);
+
+const close = () => {
+  fileStore.updateRequest(null);
+
+  let uri = url.removeLastDir(route.path) + "/";
+  router.push({ path: uri });
+};
+
+const download = () => window.open(downloadUrl.value);
 </script>

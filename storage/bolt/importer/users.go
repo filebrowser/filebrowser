@@ -32,7 +32,7 @@ type oldUser struct {
 func readOldUsers(db *storm.DB) ([]*oldUser, error) {
 	var oldUsers []*oldUser
 	err := db.Bolt.View(func(tx *bolt.Tx) error {
-		return tx.Bucket([]byte("User")).ForEach(func(k []byte, v []byte) error {
+		return tx.Bucket([]byte("User")).ForEach(func(_ []byte, v []byte) error {
 			if len(v) > 0 && string(v)[0] == '{' {
 				user := &oldUser{}
 				err := json.Unmarshal(v, user)

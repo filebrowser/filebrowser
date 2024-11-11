@@ -10,6 +10,12 @@
         <div class="upload-info">
           <div class="upload-speed">{{ uploadSpeed.toFixed(2) }} MB/s</div>
           <div class="upload-eta">{{ formattedETA }} remaining</div>
+          <div class="upload-percentage">
+            {{ getProgressDecimal }}% Completed
+          </div>
+          <div class="upload-fraction">
+            {{ getTotalProgressBytes }} / {{ getTotalSize }}
+          </div>
         </div>
         <button
           class="action"
@@ -53,7 +59,9 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapState, mapWritableState, mapActions } from "pinia";
+import { useUploadStore } from "@/stores/upload";
+import { useFileStore } from "@/stores/file";
 import { abortAllUploads } from "@/api/tus";
 import buttons from "@/utils/buttons";
 
@@ -65,19 +73,23 @@ export default {
     };
   },
   computed: {
-    ...mapGetters([
+    ...mapState(useUploadStore, [
       "filesInUpload",
       "filesInUploadCount",
       "uploadSpeed",
-      "eta",
+      "getETA",
+      "getProgress",
+      "getProgressDecimal",
+      "getTotalProgressBytes",
+      "getTotalSize",
     ]),
-    ...mapMutations(["resetUpload"]),
+    ...mapWritableState(useFileStore, ["reload"]),
     formattedETA() {
-      if (!this.eta || this.eta === Infinity) {
+      if (!this.getETA || this.getETA === Infinity) {
         return "--:--:--";
       }
 
-      let totalSeconds = this.eta;
+      let totalSeconds = this.getETA;
       const hours = Math.floor(totalSeconds / 3600);
       totalSeconds %= 3600;
       const minutes = Math.floor(totalSeconds / 60);
@@ -89,6 +101,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(useUploadStore, ["reset"]), // Mapping reset action from upload store
     toggle: function () {
       this.open = !this.open;
     },
@@ -97,10 +110,18 @@ export default {
         abortAllUploads();
         buttons.done("upload");
         this.open = false;
-        this.$store.commit("resetUpload");
-        this.$store.commit("setReload", true);
+        this.reset(); // Resetting the upload store state
+        this.reload = true; // Trigger reload in the file store
       }
     },
   },
 };
 </script>
+
+<style scoped>
+.upload-info {
+  min-width: 19ch;
+  width: auto;
+  text-align: left;
+}
+</style>

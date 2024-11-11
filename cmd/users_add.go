@@ -15,7 +15,7 @@ var usersAddCmd = &cobra.Command{
 	Use:   "add <username> <password>",
 	Short: "Create a new user",
 	Long:  `Create a new user and add it to the database.`,
-	Args:  cobra.ExactArgs(2), //nolint:gomnd
+	Args:  cobra.ExactArgs(2),
 	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
 		s, err := d.store.Settings.Get()
 		checkErr(err)

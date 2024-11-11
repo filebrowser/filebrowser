@@ -17,7 +17,7 @@ var hashCmd = &cobra.Command{
 	Short: "Hashes a password",
 	Long:  `Hashes a password using bcrypt algorithm.`,
 	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, args []string) {
 		pwd, err := users.HashPwd(args[0])
 		checkErr(err)
 		fmt.Println(pwd)
