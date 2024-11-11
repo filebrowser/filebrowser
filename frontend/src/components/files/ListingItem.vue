@@ -29,7 +29,9 @@
       </p>
       <p v-else class="name">{{ name }}</p>
 
-      <p class="size" :data-order="diskUsage?.size || humanSize() || '-1'">{{ usedDiskSize }}</p>
+      <p class="size" :data-order="diskUsage?.size || humanSize() || '-1'">
+        {{ usedDiskSize }}
+      </p>
 
       <p class="modified">
         <time :datetime="modified">{{ humanTime() }}</time>
@@ -91,10 +93,14 @@ const diskUsage = ref<DiskUsage | null>(null);
 const usedDiskSize = computed((): string => {
   if (props.isDir) {
     if (!diskUsage.value) {
-      return '-';
+      return "-";
     }
 
-    return diskUsage.value.size + ' ' + t("prompts.inodeCount", { count: diskUsage.value.inodes });
+    return (
+      diskUsage.value.size +
+      " " +
+      t("prompts.inodeCount", { count: diskUsage.value.inodes })
+    );
   }
 
   return humanSize();
@@ -109,9 +115,13 @@ const isDraggable = computed(
   () => !props.readOnly && authStore.user?.perm.rename
 );
 
-watch(diskUsages, () => {
-  updateDiskUsage();
-}, { deep: true });
+watch(
+  diskUsages,
+  () => {
+    updateDiskUsage();
+  },
+  { deep: true }
+);
 
 const canDrop = computed(() => {
   if (!props.isDir || props.readOnly) return false;

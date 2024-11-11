@@ -44,23 +44,37 @@ const quotaStore = useQuotaStore();
 const { t } = useI18n();
 
 const loaded = computed(() =>
-  quotaStore.quota ? quotaStore.quota.inodes !== null && quotaStore.quota.space !== null : false
+  quotaStore.quota
+    ? quotaStore.quota.inodes !== null && quotaStore.quota.space !== null
+    : false
 );
 
 const spaceProgress = computed(() =>
-  quotaStore.quota && quotaStore.quota.space !== null ? progress(quotaStore.quota.space) : 0
+  quotaStore.quota && quotaStore.quota.space !== null
+    ? progress(quotaStore.quota.space)
+    : 0
 );
 
 const inodeProgress = computed(() =>
-  quotaStore.quota && quotaStore.quota.inodes !== null ? progress(quotaStore.quota.inodes) : 0
+  quotaStore.quota && quotaStore.quota.inodes !== null
+    ? progress(quotaStore.quota.inodes)
+    : 0
 );
 
 const spaceUsageTitle = computed(() =>
-  !quotaStore.quota ? "- / -" : filesize(quotaStore.quota.space.usage) + " / " + filesize(quotaStore.quota.space.quota)
+  !quotaStore.quota
+    ? "- / -"
+    : filesize(quotaStore.quota.space.usage) +
+      " / " +
+      filesize(quotaStore.quota.space.quota)
 );
 
 const inodeUsageTitle = computed(() =>
-  !quotaStore.quota ? "- / -" : filesize(quotaStore.quota.inodes.usage) + " / " + filesize(quotaStore.quota.inodes.quota)
+  !quotaStore.quota
+    ? "- / -"
+    : filesize(quotaStore.quota.inodes.usage) +
+      " / " +
+      filesize(quotaStore.quota.inodes.quota)
 );
 
 const progress = (info: QuotaInfo) => {
@@ -71,5 +85,5 @@ const progress = (info: QuotaInfo) => {
 
 onMounted(() => {
   quotaStore.fetchQuota();
-})
+});
 </script>

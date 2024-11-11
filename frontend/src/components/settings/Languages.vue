@@ -29,7 +29,7 @@ export default {
       ru_RU: "Русский",
       tr_TR: "Türkçe",
       uk_UA: "Український",
-      zh_CN: "中文 (简体)"
+      zh_CN: "中文 (简体)",
     };
 
     // Vue3 reactivity breaks with this configuration

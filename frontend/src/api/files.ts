@@ -188,10 +188,15 @@ export async function diskUsage(url: string) {
   return await data.json();
 }
 
-export async function archive(url: string, name: string, format: string, ...files: string[]) {
+export async function archive(
+  url: string,
+  name: string,
+  format: string,
+  ...files: string[]
+) {
   let arg = "";
 
-  for (let file of files) {
+  for (const file of files) {
     arg += file + ",";
   }
 
@@ -214,7 +219,12 @@ export async function unarchive(path: string, name: string, override: boolean) {
   return resourceAction(url, "PATCH");
 }
 
-export async function chmod(path: string, perms: number, recursive: boolean, recursionType: string) {
+export async function chmod(
+  path: string,
+  perms: number,
+  recursive: boolean,
+  recursionType: string
+) {
   const action = `chmod`;
   let url = `${path}?action=${action}&permissions=${perms}&recursive=${recursive}`;
   if (recursive) {

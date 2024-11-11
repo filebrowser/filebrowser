@@ -106,9 +106,9 @@ export const isRtl = (locale?: string) => {
 };
 
 export function setLocale(locale: string) {
-  let normalizedLocale = locale
+  let normalizedLocale = locale;
   if (locale.includes("_")) {
-    normalizedLocale = locale.split("_")[0]
+    normalizedLocale = locale.split("_")[0];
   }
 
   dayjs.locale(normalizedLocale);

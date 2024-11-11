@@ -33,8 +33,8 @@ export const useFileStore = defineStore("file", {
       return state.isFiles && state?.req?.isDir;
     },
     onlyArchivesSelected: (state) => {
-      let extensions = [".zip", ".tar", ".gz", ".bz2", ".xz", ".lz4", ".sz"];
-      let items = state.req?.items;
+      const extensions = [".zip", ".tar", ".gz", ".bz2", ".xz", ".lz4", ".sz"];
+      const items = state.req?.items;
 
       if (!items) {
         return false;
@@ -45,7 +45,7 @@ export const useFileStore = defineStore("file", {
       }
 
       for (const i of state.selected) {
-        let item = items[i];
+        const item = items[i];
         if (item.isDir || !extensions.includes(item.extension)) {
           return false;
         }

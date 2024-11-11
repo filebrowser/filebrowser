@@ -8,10 +8,10 @@ export const useContextMenuStore = defineStore("context-menu", {
   }),
   actions: {
     show(x: number, y: number) {
-      this.position = { x, y }
+      this.position = { x, y };
     },
     hide() {
-      this.position = null
+      this.position = null;
     },
   },
 });

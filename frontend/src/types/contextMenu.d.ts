@@ -1,4 +1,4 @@
 interface ContextMenuPosition {
-  x: number,
-  y: number,
+  x: number;
+  y: number;
 }

@@ -50,7 +50,8 @@ watch(route, () => {
   }
 });
 
-const contextMenuVisible = computed((): boolean =>
-  (fileStore.isListing || false) && contextMenuStore.position !== null
+const contextMenuVisible = computed(
+  (): boolean =>
+    (fileStore.isListing || false) && contextMenuStore.position !== null
 );
 </script>

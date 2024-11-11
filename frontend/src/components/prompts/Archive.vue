@@ -38,7 +38,7 @@
 import { inject, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { onMounted } from "vue";
-import { useRoute } from 'vue-router'
+import { useRoute } from "vue-router";
 import { useFileStore } from "@/stores/file";
 import { useQuotaStore } from "@/stores/quota";
 import { useLayoutStore } from "@/stores/layout";
@@ -74,7 +74,7 @@ const archive = async (format: string) => {
   let items: string[] = [];
 
   for (let i of fileStore.selected) {
-    let item = fileStore.req?.items[i].name
+    let item = fileStore.req?.items[i].name;
     if (item) {
       items.push(item);
     }

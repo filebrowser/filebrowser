@@ -79,16 +79,9 @@ const overwriteAvailable = computed((): boolean => {
     return false;
   }
 
-  return [
-    ".zip",
-    ".rar",
-    ".tar",
-    ".bz2",
-    ".gz",
-    ".xz",
-    ".lz4",
-    ".sz",
-  ].includes(item.extension);
+  return [".zip", ".rar", ".tar", ".bz2", ".gz", ".xz", ".lz4", ".sz"].includes(
+    item.extension
+  );
 });
 
 const cancel = () => {

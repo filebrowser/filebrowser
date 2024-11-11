@@ -1,10 +1,5 @@
 <template>
-  <div
-    id="context-menu"
-    ref="contextMenuDiv"
-    class="card"
-    :style="menuStyle"
-  >
+  <div id="context-menu" ref="contextMenuDiv" class="card" :style="menuStyle">
     <p>
       <action icon="info" :label="t('buttons.info')" show="info" />
     </p>
@@ -81,8 +76,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref,computed, onMounted, onBeforeUnmount, CSSProperties } from "vue";
-import { useRoute, useRouter } from 'vue-router'
+import { ref, computed, onMounted, onBeforeUnmount, CSSProperties } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
@@ -125,10 +120,9 @@ const options = computed(() => {
     download: authStore.user?.perm.download ?? false,
     delete: fileStore.selectedCount > 0 && authStore.user?.perm.delete,
     edit:
-      fileStore.selectedCount === 1 && (
-        fileStore.req?.items[fileStore.selected[0]].type === "text" ||
-        fileStore.req?.items[fileStore.selected[0]].type === "textImmutable"
-      ),
+      fileStore.selectedCount === 1 &&
+      (fileStore.req?.items[fileStore.selected[0]].type === "text" ||
+        fileStore.req?.items[fileStore.selected[0]].type === "textImmutable"),
     rename: fileStore.selectedCount === 1 && authStore.user?.perm.rename,
     share: fileStore.selectedCount === 1 && authStore.user?.perm.share,
     move: fileStore.selectedCount > 0 && authStore.user?.perm.rename,

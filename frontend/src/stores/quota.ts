@@ -16,7 +16,7 @@ export const useQuotaStore = defineStore("quota", {
 
       setTimeout(async () => {
         try {
-          let data = await api.getQuota();
+          const data = await api.getQuota();
 
           if (
             data !== null &&
@@ -29,6 +29,6 @@ export const useQuotaStore = defineStore("quota", {
           console.log(e);
         }
       }, delay);
-    }
+    },
   },
 });

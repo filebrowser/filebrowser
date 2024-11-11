@@ -903,13 +903,10 @@ const calculateDirSizes = () => {
   Promise.allSettled(promises).then((results) => {
     for (let result of results) {
       if (result.status === "fulfilled") {
-        fileStore.addDiskUsage(
-          result.value.path,
-          {
-            size: result.value.diskUsage,
-            inodes: result.value.inodes,
-          },
-        )
+        fileStore.addDiskUsage(result.value.path, {
+          size: result.value.diskUsage,
+          inodes: result.value.inodes,
+        });
       }
     }
 

@@ -117,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 import { useI18n } from "vue-i18n";
@@ -130,10 +130,28 @@ const { t } = useI18n();
 
 const $showError = inject<IToastError>("$showError")!;
 
-let loading = false;
-let recursive = false;
-let recursionType = "all";
-let masks = {
+const loading = ref<boolean>(false);
+const recursive = ref<boolean>(false);
+const recursionType = ref<string>("all");
+const permissions = ref<FilePermissions>({
+  owner: {
+    read: false,
+    write: false,
+    execute: false,
+  },
+  group: {
+    read: false,
+    write: false,
+    execute: false,
+  },
+  others: {
+    read: false,
+    write: false,
+    execute: false,
+  },
+});
+
+const masks = {
   permissions: 511,
   owner: {
     read: 256,
@@ -152,46 +170,26 @@ let masks = {
   },
 };
 
-const permissions = computed((): FilePermissions => {
-  let permObj = {
-    owner: {
-      read: false,
-      write: false,
-      execute: false,
-    },
-    group: {
-      read: false,
-      write: false,
-      execute: false,
-    },
-    others: {
-      read: false,
-      write: false,
-      execute: false,
-    },
-  };
-
+onMounted(() => {
   let item = fileStore.req?.items[fileStore.selected[0]];
   if (!item) {
-    return permObj
+    return;
   }
 
   let perms = item.mode & masks.permissions;
 
   // OWNER PERMS
-  permObj.owner.read = (perms & masks.owner.read) != 0;
-  permObj.owner.write = (perms & masks.owner.write) != 0;
-  permObj.owner.execute = (perms & masks.owner.execute) != 0;
+  permissions.value.owner.read = (perms & masks.owner.read) != 0;
+  permissions.value.owner.write = (perms & masks.owner.write) != 0;
+  permissions.value.owner.execute = (perms & masks.owner.execute) != 0;
   // GROUP PERMS
-  permObj.group.read = (perms & masks.group.read) != 0;
-  permObj.group.write = (perms & masks.group.write) != 0;
-  permObj.group.execute = (perms & masks.group.execute) != 0;
+  permissions.value.group.read = (perms & masks.group.read) != 0;
+  permissions.value.group.write = (perms & masks.group.write) != 0;
+  permissions.value.group.execute = (perms & masks.group.execute) != 0;
   // OTHERS PERMS
-  permObj.others.read = (perms & masks.others.read) != 0;
-  permObj.others.write = (perms & masks.others.write) != 0;
-  permObj.others.execute = (perms & masks.others.execute) != 0;
-
-  return permObj;
+  permissions.value.others.read = (perms & masks.others.read) != 0;
+  permissions.value.others.write = (perms & masks.others.write) != 0;
+  permissions.value.others.execute = (perms & masks.others.execute) != 0;
 });
 
 const permMode = computed((): number => {
@@ -239,21 +237,21 @@ const chmod = async () => {
   }
 
   try {
-    loading = true;
+    loading.value = true;
 
     await api.chmod(
       item.url,
       permMode.value,
-      recursive,
-      recursionType,
+      recursive.value,
+      recursionType.value
     );
 
     layoutStore.closeHovers();
-    fileStore.reload = true
+    fileStore.reload = true;
   } catch (e: any) {
     $showError(e);
   } finally {
-    loading = false;
+    loading.value = false;
   }
 };
 </script>
