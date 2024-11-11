@@ -670,6 +670,8 @@ func chmodActionHandler(r *http.Request, d *data) error {
 		return fbErrors.ErrInvalidRequestParams
 	}
 
+	permMode := uint32(mode)
+
 	info, err := d.user.Fs.Stat(target)
 	if err != nil {
 		return err
@@ -688,7 +690,7 @@ func chmodActionHandler(r *http.Request, d *data) error {
 				return !i.IsDir()
 			}
 		default:
-			recFilter = func(i os.FileInfo) bool {
+			recFilter = func(_ os.FileInfo) bool {
 				return true
 			}
 		}
@@ -696,12 +698,12 @@ func chmodActionHandler(r *http.Request, d *data) error {
 		return afero.Walk(d.user.Fs, target, func(name string, info os.FileInfo, err error) error {
 			if err == nil {
 				if recFilter(info) {
-					err = d.user.Fs.Chmod(name, os.FileMode(mode))
+					err = d.user.Fs.Chmod(name, os.FileMode(permMode))
 				}
 			}
 			return err
 		})
 	}
 
-	return d.user.Fs.Chmod(target, os.FileMode(mode))
+	return d.user.Fs.Chmod(target, os.FileMode(permMode))
 }

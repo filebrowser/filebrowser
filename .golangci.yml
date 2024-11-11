@@ -2,7 +2,7 @@ linters-settings:
   dupl:
     threshold: 100
   exhaustive:
-    default-signifies-exhaustive: false
+    default-signifies-exhaustive: true
   funlen:
     lines: 100
     statements: 50

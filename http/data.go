@@ -1,13 +1,14 @@
 package http
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/tomasen/realip"
 
-	"github.com/filebrowser/filebrowser/v2/errors"
+	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/runner"
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -74,7 +75,8 @@ func handle(fn handleFunc, prefix string, store *storage.Storage, server *settin
 
 		if status != 0 {
 			txt := strconv.Itoa(status) + " " + http.StatusText(status)
-			if httpErr, ok := err.(*errors.HTTPError); ok {
+			var httpErr *fbErrors.HTTPError
+			if errors.As(err, &httpErr) {
 				txt += " [" + httpErr.Type + "]"
 			}
 			http.Error(w, txt, status)
