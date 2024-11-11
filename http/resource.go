@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
@@ -670,7 +671,7 @@ func chmodActionHandler(r *http.Request, d *data) error {
 		return fbErrors.ErrInvalidRequestParams
 	}
 
-	permMode := uint32(mode)
+	permMode := normalizeFileMode(mode)
 
 	info, err := d.user.Fs.Stat(target)
 	if err != nil {
@@ -706,4 +707,13 @@ func chmodActionHandler(r *http.Request, d *data) error {
 	}
 
 	return d.user.Fs.Chmod(target, os.FileMode(permMode))
+}
+
+func normalizeFileMode(m uint64) uint32 {
+	fullPerms := 511
+	if m > math.MaxInt32 {
+		return uint32(fullPerms)
+	}
+
+	return uint32(m)
 }
