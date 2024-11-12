@@ -97,7 +97,7 @@ const usedDiskSize = computed((): string => {
     }
 
     return (
-      diskUsage.value.size +
+      filesize(diskUsage.value.size) +
       " " +
       t("prompts.inodeCount", { count: diskUsage.value.inodes })
     );
