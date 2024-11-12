@@ -1,16 +1,15 @@
 <template>
   <div class="card floating">
     <div class="card-title">
-      <h2>{{ $t("prompts.archive") }}</h2>
+      <h2>{{ t("prompts.archive") }}</h2>
     </div>
 
     <div class="card-content">
-      <p>{{ $t("prompts.archiveMessage") }}</p>
+      <p>{{ t("prompts.archiveMessage") }}</p>
       <input
         class="input input--block"
         v-focus
         type="text"
-        @keyup.enter="submit"
         v-model.trim="name"
         :disabled="loading"
         required
@@ -22,7 +21,6 @@
         :disabled="loading"
         class="button button--block"
         @click="archive(format)"
-        v-focus
       >
         <i
           v-if="loading && format === loadingFormat"
@@ -36,75 +34,81 @@
   </div>
 </template>
 
-<script>
-import { mapState, mapGetters } from "vuex";
+<script setup lang="ts">
+import { inject, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { useFileStore } from "@/stores/file";
+import { useQuotaStore } from "@/stores/quota";
+import { useLayoutStore } from "@/stores/layout";
 import { files as api } from "@/api";
 import url from "@/utils/url";
 import buttons from "@/utils/buttons";
 
-export default {
-  name: "archive",
-  data: function () {
-    return {
-      name: "",
-      formats: {
-        zip: "zip",
-        tar: "tar",
-        targz: "tar.gz",
-        tarbz2: "tar.bz2",
-        tarxz: "tar.xz",
-        tarlz4: "tar.lz4",
-        tarsz: "tar.sz",
-      },
-      loading: false,
-      loadingFormat: "",
-    };
-  },
-  computed: {
-    ...mapState(["req", "selected"]),
-    ...mapGetters(["isFiles", "isListing"]),
-  },
-  mounted() {
-    if (this.selected.length > 0) {
-      this.name = this.req.items[this.selected[0]].name;
-    }
-  },
-  methods: {
-    cancel: function () {
-      this.$store.commit("closeHovers");
-    },
-    archive: async function (format) {
-      let items = [];
+const fileStore = useFileStore();
+const quotaStore = useQuotaStore();
+const layoutStore = useLayoutStore();
 
-      for (let i of this.selected) {
-        items.push(this.req.items[i].name);
-      }
+const route = useRoute();
 
-      let uri = this.isFiles ? this.$route.path : "/";
+const { t } = useI18n();
 
-      if (!this.isListing) {
-        uri = url.removeLastDir(uri);
-      }
+const $showError = inject<IToastError>("$showError")!;
 
-      uri += "/archive";
-      uri = uri.replace("//", "/");
-
-      try {
-        this.loading = true;
-        this.loadingFormat = format;
-        buttons.loading("archive");
-        await api.archive(uri, this.name, format, ...items);
-        this.$store.commit("closeHovers");
-        this.$store.commit("setReload", true);
-        this.$store.dispatch("quota/fetch", 3000);
-      } catch (e) {
-        this.$showError(e);
-      } finally {
-        this.loading = false;
-        this.loadingFormat = "";
-        buttons.done("archive");
-      }
-    },
-  },
+const formats = {
+  zip: "zip",
+  tar: "tar",
+  targz: "tar.gz",
+  tarbz2: "tar.bz2",
+  tarxz: "tar.xz",
+  tarlz4: "tar.lz4",
+  tarsz: "tar.sz",
 };
+
+const name = ref<string>("");
+const loading = ref<boolean>(false);
+const loadingFormat = ref<string>("");
+
+const archive = async (format: string) => {
+  let items: string[] = [];
+
+  for (let i of fileStore.selected) {
+    let item = fileStore.req?.items[i].name;
+    if (item) {
+      items.push(item);
+    }
+  }
+
+  let uri = fileStore.isFiles ? route.path : "/";
+
+  if (!fileStore.isListing) {
+    uri = url.removeLastDir(uri);
+  }
+
+  uri += "/archive";
+  uri = uri.replace("//", "/");
+
+  try {
+    loading.value = true;
+    loadingFormat.value = format;
+    buttons.loading("archive");
+    await api.archive(uri, name.value, format, ...items);
+    layoutStore.closeHovers();
+    fileStore.reload = true;
+    quotaStore.fetchQuota(3000);
+  } catch (e: any) {
+    $showError(e);
+  } finally {
+    loading.value = false;
+    loadingFormat.value = "";
+    buttons.done("archive");
+  }
+};
+
+onMounted(() => {
+  if (fileStore.selected.length > 0) {
+    name.value = fileStore.req?.items[fileStore.selected[0]].name || "";
+  }
+});
 </script>

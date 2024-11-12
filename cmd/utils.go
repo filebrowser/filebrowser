@@ -87,16 +87,23 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 		data := pythonData{hadDB: true}
 
 		path := getParam(cmd.Flags(), "database")
+		absPath, err := filepath.Abs(path)
+		if err != nil {
+			panic(err)
+		}
 		exists, err := dbExists(path)
 
 		if err != nil {
 			panic(err)
 		} else if exists && cfg.noDB {
-			log.Fatal(path + " already exists")
+			log.Fatal(absPath + " already exists")
 		} else if !exists && !cfg.noDB && !cfg.allowNoDB {
-			log.Fatal(path + " does not exist. Please run 'filebrowser config init' first.")
+			log.Fatal(absPath + " does not exist. Please run 'filebrowser config init' first.")
+		} else if !exists && !cfg.noDB {
+			log.Println("Warning: filebrowser.db can't be found. Initialing in " + strings.TrimSuffix(absPath, "filebrowser.db"))
 		}
 
+		log.Println("Using database: " + absPath)
 		data.hadDB = exists
 		db, err := storm.Open(path)
 		checkErr(err)
@@ -181,7 +188,7 @@ func cleanUpMapValue(v interface{}) interface{} {
 }
 
 // convertCmdStrToCmdArray checks if cmd string is blank (whitespace included)
-// then returns empty string array, else returns the splitted word array of cmd.
+// then returns empty string array, else returns the split word array of cmd.
 // This is to ensure the result will never be []string{""}
 func convertCmdStrToCmdArray(cmd string) []string {
 	var cmdArray []string

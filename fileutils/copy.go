@@ -10,7 +10,7 @@ import (
 )
 
 // Copy copies a file or folder from one place to another.
-func Copy(fs afero.Fs, src, dst, scope string) error {
+func Copy(fs afero.Fs, src, dst string) error {
 	if src = path.Clean("/" + src); src == "" {
 		return os.ErrNotExist
 	}
@@ -33,18 +33,48 @@ func Copy(fs afero.Fs, src, dst, scope string) error {
 		return err
 	}
 
-	//nolint:exhaustive
+	if info.IsDir() {
+		return CopyDir(fs, src, dst)
+	}
+
+	return CopyFile(fs, src, dst)
+}
+
+// Same as Copy, but checks scope in symlinks
+func CopyScoped(fs afero.Fs, src, dst, scope string) error {
+	if src = path.Clean("/" + src); src == "" {
+		return os.ErrNotExist
+	}
+
+	if dst = path.Clean("/" + dst); dst == "" {
+		return os.ErrNotExist
+	}
+
+	if src == "/" || dst == "/" {
+		// Prohibit copying from or to the virtual root directory.
+		return os.ErrInvalid
+	}
+
+	if dst == src {
+		return os.ErrInvalid
+	}
+
+	info, err := fs.Stat(src)
+	if err != nil {
+		return err
+	}
+
 	switch info.Mode() & os.ModeType {
 	case os.ModeDir:
-		return CopyDir(fs, src, dst, scope)
+		return CopyDirScoped(fs, src, dst, scope)
 	case os.ModeSymlink:
-		return CopySymLink(fs, src, dst, scope)
+		return CopySymLinkScoped(fs, src, dst, scope)
 	default:
 		return CopyFile(fs, src, dst)
 	}
 }
 
-func CopySymLink(fs afero.Fs, source, dest, scope string) error {
+func CopySymLinkScoped(fs afero.Fs, source, dest, scope string) error {
 	if reader, ok := fs.(afero.LinkReader); ok {
 		link, err := reader.ReadlinkIfPossible(source)
 		if err != nil {

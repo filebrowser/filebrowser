@@ -2,6 +2,7 @@
   "buttons": {
     "archive": "Архивировать",
     "cancel": "Отмена",
+    "clear": "Очистить",
     "close": "Закрыть",
     "copy": "Копировать",
     "copyFile": "Скопировать файл",
@@ -62,7 +63,6 @@
   },
   "files": {
     "body": "Тело",
-    "clear": "Очистить",
     "closePreview": "Закрыть",
     "emptyFolder": "Эта папка пуста",
     "files": "Файлы",
@@ -93,23 +93,6 @@
     "f1": "помощь",
     "f2": "переименовать файл",
     "help": "Помощь"
-  },
-  "languages": {
-    "arAR": "العربية",
-    "enGB": "English",
-    "esAR": "Español (Argentina)",
-    "esCO": "Español (Colombia)",
-    "esES": "Español",
-    "esMX": "Español (Mexico)",
-    "frFR": "Français",
-    "idID": "Bahasa Indonesia",
-    "ltLT": "Lietuvių",
-    "ptBR": "Português (Brasil)",
-    "ptPT": "Português",
-    "ruRU": "Русский",
-    "trTR": "Türkçe",
-    "ukUA": "Українська",
-    "zhCN": "中文 (简体)"
   },
   "login": {
     "createAnAccount": "Создать аккаунт",

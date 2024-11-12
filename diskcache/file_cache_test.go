@@ -40,7 +40,7 @@ func TestFileCache(t *testing.T) {
 	require.False(t, exists)
 }
 
-func checkValue(t *testing.T, ctx context.Context, fs afero.Fs, fileFullPath string, cache *FileCache, key, wantValue string) { //nolint:golint
+func checkValue(t *testing.T, ctx context.Context, fs afero.Fs, fileFullPath string, cache *FileCache, key, wantValue string) { //nolint:revive
 	t.Helper()
 	// check actual file content
 	b, err := afero.ReadFile(fs, fileFullPath)

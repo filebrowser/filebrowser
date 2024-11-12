@@ -20,7 +20,6 @@ type Listing struct {
 //nolint:goconst
 func (l Listing) ApplySort() {
 	// Check '.Order' to know how to sort
-	// TODO: use enum
 	if !l.Sorting.Asc {
 		switch l.Sorting.By {
 		case "name":

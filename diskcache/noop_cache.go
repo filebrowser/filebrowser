@@ -11,14 +11,14 @@ func NewNoOp() *NoOp {
 	return &NoOp{}
 }
 
-func (n *NoOp) Store(ctx context.Context, key string, value []byte) error {
+func (n *NoOp) Store(_ context.Context, _ string, _ []byte) error {
 	return nil
 }
 
-func (n *NoOp) Load(ctx context.Context, key string) (value []byte, exist bool, err error) {
+func (n *NoOp) Load(_ context.Context, _ string) (value []byte, exist bool, err error) {
 	return nil, false, nil
 }
 
-func (n *NoOp) Delete(ctx context.Context, key string) error {
+func (n *NoOp) Delete(_ context.Context, _ string) error {
 	return nil
 }

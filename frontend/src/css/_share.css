@@ -12,8 +12,11 @@
 }
 
 .share__box {
-  box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 3px, rgba(0, 0, 0, 0.12) 0px 1px 2px;
-  background: #fff;
+  box-shadow:
+    rgba(0, 0, 0, 0.06) 0px 1px 3px,
+    rgba(0, 0, 0, 0.12) 0px 1px 2px;
+  background: var(--surfacePrimary);
+  color: var(--textPrimary);
   border-radius: 0.2em;
   margin: 5px;
   overflow: hidden;
@@ -39,7 +42,7 @@
 
 .share__box__element {
   padding: 1em;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--borderPrimary);
   word-break: break-all;
 }
 
@@ -62,21 +65,21 @@
   border-left: 0;
   border-right: 0;
   border-bottom: 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--borderPrimary);
 }
 
-.share__box__items #listing.list .item .name {
+#listing.list .item .name {
   width: 50%;
 }
 
-.share__box__items #listing.list .item .modified {
+#listing.list .item .modified {
   width: 25%;
 }
 
 .share__wrong__password {
   background: var(--red);
   color: #fff;
-  padding: .5em;
+  padding: 0.5em;
   text-align: center;
-  animation: .2s opac forwards;
+  animation: 0.2s opac forwards;
 }

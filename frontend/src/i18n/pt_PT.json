@@ -2,7 +2,9 @@
   "buttons": {
     "archive": "Arquivar",
     "cancel": "Cancelar",
+    "clear": "Limpar",
     "close": "Fechar",
+    "continue": "Continuar",
     "copy": "Copiar",
     "copyFile": "Copiar ficheiro",
     "copyToClipboard": "Copiar para o clipboard",
@@ -62,7 +64,6 @@
   },
   "files": {
     "body": "Corpo",
-    "clear": "Limpar",
     "closePreview": "Fechar pré-visualização",
     "emptyFolder": "Esta pasta está vazia",
     "files": "Ficheiros",
@@ -93,23 +94,6 @@
     "f1": "esta informação",
     "f2": "alterar o nome do ficheiro",
     "help": "Ajuda"
-  },
-  "languages": {
-    "arAR": "العربية",
-    "enGB": "English",
-    "esAR": "Español (Argentina)",
-    "esCO": "Español (Colombia)",
-    "esES": "Español",
-    "esMX": "Español (Mexico)",
-    "frFR": "Français",
-    "idID": "Bahasa Indonesia",
-    "ltLT": "Lietuvių",
-    "ptBR": "Português (Brasil)",
-    "ptPT": "Português",
-    "ruRU": "Русский",
-    "trTR": "Türkçe",
-    "ukUA": "Український",
-    "zhCN": "中文 (简体)"
   },
   "login": {
     "createAnAccount": "Criar uma conta",

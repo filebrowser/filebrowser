@@ -21,7 +21,7 @@ var upgradeCmd = &cobra.Command{
 import share links because they are incompatible with
 this version.`,
 	Args: cobra.NoArgs,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, _ []string) {
 		flags := cmd.Flags()
 		oldDB := mustGetString(flags, "old.database")
 		oldConf := mustGetString(flags, "old.config")
