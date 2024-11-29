@@ -69,5 +69,5 @@ help: ## Show this help
 
 .PHONY: build-release-bin
 build-release-bin: build-frontend
-	GO111MODULE=on GOOS=linux GOARCH=amd64 $(go) build -ldflags '$(LDFLAGS)' -o bin/filebrowser-$(VERSION)
+	GO111MODULE=on GOOS=linux GOARCH=amd64 $(go) build -trimpath -ldflags '$(LDFLAGS)' -o bin/filebrowser-$(VERSION)
 	tar -C bin -czf "dist/filebrowser-$(VERSION).tar.gz" "filebrowser-$(VERSION)"
