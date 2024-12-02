@@ -1,24 +1,11 @@
 {
-  "compilerOptions": {
-    "baseUrl": ".",
-    "allowJs": true,
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "module": "ESNext",
-    "moduleResolution": "Node10",
-    "strict": true,
-    "sourceMap": true,
-    "noImplicitReturns": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "lib": ["ESNext", "DOM"],
-    "skipLibCheck": true,
-    "types": ["vite/client", "@intlify/unplugin-vue-i18n/messages"],
-    "paths": {
-      "@/*": ["./src/*"]
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.app.json"
     }
-  },
-  "include": ["src/**/*.ts", "src/**/*.vue"],
-  "exclude": ["node_modules", "dist"]
+  ]
 }
