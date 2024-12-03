@@ -41,7 +41,7 @@
     "videojs-mobile-ui": "^1.1.1",
     "vue": "^3.4.21",
     "vue-final-modal": "^4.5.4",
-    "vue-i18n": "^9.10.2",
+    "vue-i18n": "^9.14.2",
     "vue-lazyload": "^3.0.0",
     "vue-reader": "^1.2.14",
     "vue-router": "^4.3.0",
