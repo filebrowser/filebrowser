@@ -168,7 +168,7 @@ import { files as api } from "@/api";
 import { createURL } from "@/api/utils";
 import { resizePreview } from "@/utils/constants";
 import url from "@/utils/url";
-import throttle from "lodash/throttle";
+import { throttle } from "lodash-es";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import ExtendedImage from "@/components/files/ExtendedImage.vue";

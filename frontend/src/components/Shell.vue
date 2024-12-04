@@ -50,7 +50,7 @@ import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
 import { commands } from "@/api";
-import { throttle } from "lodash";
+import { throttle } from "lodash-es";
 import { theme } from "@/utils/constants";
 
 export default {

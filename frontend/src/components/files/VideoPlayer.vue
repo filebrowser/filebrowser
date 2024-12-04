@@ -120,7 +120,7 @@ const subLabel = (subUrl: string) => {
   let url: URL;
   try {
     url = new URL(subUrl);
-  } catch (_) {
+  } catch {
     // treat it as a relative url
     // we only need this for filename
     url = new URL(subUrl, window.location.origin);

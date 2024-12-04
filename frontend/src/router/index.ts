@@ -1,4 +1,5 @@
-import { RouteLocation, createRouter, createWebHistory } from "vue-router";
+import type { RouteLocation } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import Login from "@/views/Login.vue";
 import Layout from "@/views/Layout.vue";
 import Files from "@/views/Files.vue";

@@ -1,6 +1,7 @@
 import { useAuthStore } from "@/stores/auth";
 import router from "@/router";
-import { JwtPayload, jwtDecode } from "jwt-decode";
+import type { JwtPayload } from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { baseURL, noAuth } from "./constants";
 import { StatusError } from "@/api/utils";
 

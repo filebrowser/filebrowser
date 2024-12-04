@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { useFileStore } from "./file";
 import { files as api } from "@/api";
-import throttle from "lodash/throttle";
+import { throttle } from "lodash-es";
 import buttons from "@/utils/buttons";
 
 // TODO: make this into a user setting

@@ -14,15 +14,15 @@
   </div>
 </template>
 <script setup lang="ts">
-import throttle from "lodash/throttle";
+import { throttle } from "lodash-es";
 import UTIF from "utif";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 interface IProps {
   src: string;
-  moveDisabledTime: number;
-  classList: any[];
-  zoomStep: number;
+  moveDisabledTime?: number;
+  classList?: any[];
+  zoomStep?: number;
 }
 
 const props = withDefaults(defineProps<IProps>(), {

@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.app.json",
+  // vue-tsc wont shut up about error TS9005
+  // in non-TS vue files so exclude them
+  "exclude": [
+    "src/components/Shell.vue",
+    "src/components/prompts/Copy.vue",
+    "src/components/prompts/Delete.vue",
+    "src/components/prompts/FileList.vue",
+    "src/components/prompts/Rename.vue",
+    "src/components/prompts/Share.vue",
+    "src/components/prompts/UploadFiles.vue"
+  ]
+}
