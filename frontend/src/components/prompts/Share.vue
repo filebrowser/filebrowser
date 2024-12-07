@@ -109,6 +109,7 @@
         <input
           class="input input--block"
           type="text"
+          autocomplete="one-time-code"
           v-model.trim="password"
           tabindex="3"
         />
