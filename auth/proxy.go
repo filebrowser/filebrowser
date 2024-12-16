@@ -23,7 +23,6 @@ func (a ProxyAuth) Auth(r *http.Request, usr users.Store, setting *settings.Sett
 	username := r.Header.Get(a.Header)
 	user, err := usr.Get(srv.Root, username)
 	if errors.Is(err, fbErrors.ErrNotExist) {
-
 		randomPasswordBytes := make([]byte, 32) //nolint:gomnd
 		_, err = rand.Read(randomPasswordBytes)
 		if err != nil {
