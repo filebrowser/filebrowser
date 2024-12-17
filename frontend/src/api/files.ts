@@ -1,7 +1,8 @@
-import { createURL, fetchURL, removePrefix } from "./utils";
-import { baseURL } from "@/utils/constants";
 import { useAuthStore } from "@/stores/auth";
+import { useLayoutStore } from "@/stores/layout";
+import { baseURL } from "@/utils/constants";
 import { upload as postTus, useTus } from "./tus";
+import { createURL, fetchURL, removePrefix } from "./utils";
 
 export async function fetch(url: string) {
   url = removePrefix(url);
@@ -156,6 +157,7 @@ function moveCopy(
   overwrite = false,
   rename = false
 ) {
+  const layoutStore = useLayoutStore();
   const promises = [];
 
   for (const item of items) {
@@ -166,7 +168,7 @@ function moveCopy(
     }&destination=${to}&override=${overwrite}&rename=${rename}`;
     promises.push(resourceAction(url, "PATCH"));
   }
-
+  layoutStore.closeHovers();
   return Promise.all(promises);
 }
 

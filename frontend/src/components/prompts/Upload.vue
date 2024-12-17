@@ -48,8 +48,6 @@ const layoutStore = useLayoutStore();
 
 // TODO: this is a copy of the same function in FileListing.vue
 const uploadInput = (event: Event) => {
-  layoutStore.closeHovers();
-
   let files = (event.currentTarget as HTMLInputElement)?.files;
   if (files === null) return;
 
