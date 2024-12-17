@@ -75,7 +75,7 @@ export const useLayoutStore = defineStore("layout", {
       });
     },
     closeHovers() {
-      this.prompts.pop()?.close?.();
+      this.prompts.shift()?.close?.();
     },
     // easily reset state using `$reset`
     clearLayout() {
