@@ -28,6 +28,7 @@
 import { mapState } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
 
 import url from "@/utils/url";
 import { files } from "@/api";
@@ -49,6 +50,7 @@ export default {
   computed: {
     ...mapState(useAuthStore, ["user"]),
     ...mapState(useFileStore, ["req"]),
+    ...mapState(useLayoutStore, ["showHover"]),
     nav() {
       return decodeURIComponent(this.current);
     },
@@ -139,7 +141,7 @@ export default {
       this.$emit("update:selected", this.selected);
     },
     createDir: async function () {
-      this.$store.commit("showHover", {
+      this.showHover({
         prompt: "newDir",
         action: null,
         confirm: null,
