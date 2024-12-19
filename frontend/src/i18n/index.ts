@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { createI18n } from "vue-i18n";
 
 import("dayjs/locale/ar");
+import("dayjs/locale/da");
 import("dayjs/locale/de");
 import("dayjs/locale/el");
 import("dayjs/locale/en");
@@ -109,6 +110,9 @@ export function detectLocale() {
       break;
     case /^nl-be\b/.test(locale):
       locale = "nl-be";
+      break;
+    case /^da\b/.test(locale):
+      locale = "da";
       break;
     default:
       locale = "en";
