@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -16,7 +17,8 @@ type Torrent struct {
 	*users.User
 }
 
-func (t *Torrent) MakeTorrent(fPath string, body users.CreateTorrentBody) error {
+func (t *Torrent) MakeTorrent(file *files.FileInfo, body users.CreateTorrentBody) error {
+	fPath := file.RealPath()
 	tPath := fPath + ".torrent"
 
 	// 设置 mktorrent 命令的选项
@@ -33,8 +35,37 @@ func (t *Torrent) MakeTorrent(fPath string, body users.CreateTorrentBody) error 
 		WebSeeds:   body.WebSeeds,
 	}
 
-	args := buildArgs(opts)
+	// 上传到 R2
+	if body.R2 {
+		// var bucketName = "moezakura"
+		// var accountId = "6a59886e546396fc9076ec50764dc9f3"
+		// var accessKeyId = "d65f9e3347d046e0583a8d846aa8cb46"
+		// var accessKeySecret = "a8a57f4d1525eada05f7e553815a89c4da0a3b28745eaddea89e4c52334f056e"
 
+		var accountId = t.Settings.Torrent.AccountId
+		var accessKeyId = t.Settings.Torrent.AccountKeyId
+		var accessKeySecret = t.Settings.Torrent.AccountKeySecret
+		var bucketName = t.Settings.Torrent.Bucket
+
+		// will only be called once
+		InitializeClient(accountId, accessKeyId, accessKeySecret)
+
+		// remove first slash
+		var key = file.Path[1:]
+		sigc := make(chan string)
+		go uploadHandler(bucketName, key, fPath, sigc)
+		// result := <-sigc
+		// fmt.Println(result)
+
+		// join domain and key to url
+		// eg: domain: download.moezakura.click, key: test.txt
+		// url: https://download.moezakura.click/test.txt
+		var url = "https://" + t.Torrent.Domain + "/" + key
+		opts.WebSeeds = append(opts.WebSeeds, url)
+	}
+
+	// 调用 mktorrent 命令
+	args := buildArgs(opts)
 	cmd := exec.Command("mktorrent", args...)
 
 	err := cmd.Run()

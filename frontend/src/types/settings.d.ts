@@ -55,6 +55,11 @@ interface SettingsTorrent {
   qbUrl?: string;
   qbUsername?: string;
   qbPassword?: string;
+  accountId?: string;
+  accountKeyId?: string;
+  accountKeySecret?: string;
+  bucket?: string;
+  domain?: string;
 }
 
 interface SettingsUnit {

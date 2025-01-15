@@ -43,7 +43,6 @@ var torrentPostHandler = withPermTorrent(func(w http.ResponseWriter, r *http.Req
 	if err != nil {
 		return errToStatus(err), err
 	}
-	fPath := file.RealPath()
 
 	var body users.CreateTorrentBody
 	if r.Body != nil {
@@ -53,7 +52,7 @@ var torrentPostHandler = withPermTorrent(func(w http.ResponseWriter, r *http.Req
 		defer r.Body.Close()
 	}
 
-	err = d.Torrent.MakeTorrent(fPath, body)
+	err = d.Torrent.MakeTorrent(file, body)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}

@@ -13,6 +13,7 @@ export async function makeTorrent(
   name: string,
   pieceLen: number,
   privateFlag: boolean,
+  r2Flag: boolean,
   source: string,
   webSeeds: string[]
 ) {
@@ -29,6 +30,7 @@ export async function makeTorrent(
       name: name,
       pieceLen: pieceLen,
       private: privateFlag,
+      r2: r2Flag,
       source: source,
       webSeeds: webSeeds,
     });

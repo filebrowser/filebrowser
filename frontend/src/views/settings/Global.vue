@@ -275,6 +275,59 @@
               id="qbPassword"
             ></input>
           </p>
+
+          <h3>{{ t("settings.r2") }}</h3>
+          <p class="small">{{ t("settings.r2Description") }}</p>
+          <p>
+            <label for="accountId">{{ t("settings.accountId") }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              v-model="settings.torrent.accountId"
+              id="accountId"
+            />
+          </p>
+
+          <p>
+            <label for="accountKeyId">{{ t("settings.accountKeyId") }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              v-model="settings.torrent.accountKeyId"
+              id="accountKeyId"
+            />
+          </p>
+
+          <p>
+            <label for="accountKeySecret">{{ t("settings.accountKeySecret") }}</label>
+            <input
+              class="input input--block"
+              type="password"
+              :placeholder="t('settings.accountKeySecretHidden')"
+              v-model="settings.torrent.accountKeySecret"
+              id="accountKeySecret"
+            />
+          </p>
+
+          <p>
+            <label for="bucket">{{ t("settings.bucket") }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              v-model="settings.torrent.bucket"
+              id="bucket"
+            />
+          </p>
+
+          <p>
+            <label for="domain">{{ t("settings.domain") }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              v-model="settings.torrent.domain"
+              id="bucket"
+            />
+          </p>
         </div>
 
         <div class="card-action">
@@ -383,6 +436,14 @@ const save = async () => {
     }
   }
   newSettings.shell = shellValue.value.split("\n");
+
+  // remove qbPassword & accountKeySecret if empty
+  if (newSettings.torrent.qbPassword === "") {
+    delete newSettings.torrent.qbPassword;
+  }
+  if (newSettings.torrent.accountKeySecret === "") {
+    delete newSettings.torrent.accountKeySecret;
+  }
 
   if (newSettings.branding.theme !== getTheme()) {
     setTheme(newSettings.branding.theme);

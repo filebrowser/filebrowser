@@ -99,6 +99,19 @@
       <span v-if="fileStore.selectedCount > 0"
         >{{ fileStore.selectedCount }} selected</span
       >
+
+      <action
+        v-if="isTorrent"
+        icon="publish"
+        :label="t('buttons.publish')"
+        show="publish"
+      />
+      <action
+        v-else-if="headerButtons.torrent"
+        icon="app_registration"
+        :label="t('buttons.torrent')"
+        show="torrent"
+      />
       <action
         v-if="headerButtons.share"
         icon="share"

@@ -35,7 +35,9 @@ var settingsGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, 
 		Torrent:          d.settings.Torrent,
 	}
 
+	// Hide sensitive information.
 	data.Torrent.QbPassword = ""
+	data.Torrent.AccountKeySecret = ""
 
 	return renderJSON(w, r, data)
 })

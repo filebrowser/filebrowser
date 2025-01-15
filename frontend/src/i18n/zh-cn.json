@@ -154,7 +154,8 @@
     "source": "源：",
     "includeDate": "写入创建日期",
     "privateTorrent": "私有 torrent （不会在DHT网络上分发）",
-    "publishMessage": "你确定要发布这个种子吗？"
+    "publishMessage": "你确定要发布这个种子吗？",
+    "r2": "上传到 Cloudflare R2 进行辅种"
   },
   "search": {
     "images": "图像",
@@ -260,7 +261,15 @@
     "qbSettingsDescription": "你可以在此设置 qBittorrent WebUI 的地址、用户名和密码。",
     "qbUrl": "qBittorrent WebUI 地址",
     "qbUsername": "qBittorrent WebUI 用户名",
-    "qbPassword": "qBittorrent WebUI 密码"
+    "qbPassword": "qBittorrent WebUI 密码",
+    "r2": "辅种 (Cloudflare R2)",
+    "r2Description": "你可以在此设置 Cloudflare R2 的API密钥。",
+    "accountKeySecretHidden": "API 密钥已隐藏",
+    "accountId": "账户 ID",
+    "accountKeyId": "访问密钥 ID",
+    "accountKeySecret": "机密访问密钥",
+    "bucket": "存储桶名称",
+    "domain": "公开访问域"
   },
   "sidebar": {
     "help": "帮助",

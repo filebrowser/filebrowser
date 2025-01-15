@@ -7,6 +7,7 @@ type CreateTorrentBody struct {
 	Name      string   `json:"name"`
 	PieceLen  int      `json:"pieceLen"`
 	Private   bool     `json:"private"`
+	R2        bool     `json:"r2"`
 	Source    string   `json:"source"`
 	WebSeeds  []string `json:"webSeeds"`
 }

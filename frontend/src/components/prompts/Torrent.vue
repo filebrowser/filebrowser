@@ -81,6 +81,11 @@
         <input type="checkbox" v-model="privateFlag" tabindex="7" />
         {{ $t("prompts.privateTorrent") }}
       </p>
+
+      <div>
+        <input type="checkbox" v-model="r2Flag" tabindex="8"/>
+        {{ $t("prompts.r2") }}
+      </div>
     </div>
 
     <div class="card-action">
@@ -113,6 +118,7 @@ export default {
       name: "",
       pieceLen: 0,
       privateFlag: false,
+      r2Flag: false,
       source: "",
       webSeeds: [],
       detailedView: false
@@ -148,6 +154,7 @@ export default {
       this.name = res.name;
       this.pieceLen = res.pieceLen;
       this.privateFlag = res.private;
+      this.r2Flag = res.r2Flag;
       this.source = res.source;
       this.webSeeds = res.webSeeds.join("\n");
     });
@@ -175,6 +182,7 @@ export default {
             this.name,
             parseInt(this.pieceLen),
             this.privateFlag,
+            this.r2Flag,
             this.source,
             this.webSeeds.split("\n").map((t) => t.trim()).filter((t) => t),
           ).then(
@@ -198,6 +206,7 @@ export default {
         this.date = true;
         this.pieceLen = 18;
         this.privateFlag = false;
+        this.r2Flag=false;
         this.source = "";
         this.webSeeds = [];
       } catch (e) {
