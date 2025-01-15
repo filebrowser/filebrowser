@@ -5,6 +5,7 @@ const mutations = {
   closeHovers: (state) => {
     state.show = null;
     state.showConfirm = null;
+    state.showAction = null;
   },
   toggleShell: (state) => {
     state.showShell = !state.showShell;
@@ -17,6 +18,9 @@ const mutations = {
 
     state.show = value.prompt;
     state.showConfirm = value.confirm;
+    if (value.action !== undefined) {
+      state.showAction = value.action;
+    }
   },
   showError: (state) => {
     state.show = "error";

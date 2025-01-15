@@ -18,6 +18,14 @@
         {{ $t("buttons.cancel") }}
       </button>
       <button
+        class="button button--flat button--blue"
+        @click="showAction"
+        :aria-label="$t('buttons.continue')"
+        :title="$t('buttons.continue')"
+      >
+        {{ $t("buttons.continue") }}
+      </button>
+      <button
         class="button button--flat button--red"
         @click="showConfirm"
         :aria-label="$t('buttons.replace')"
@@ -34,6 +42,6 @@ import { mapState } from "vuex";
 
 export default {
   name: "replace",
-  computed: mapState(["showConfirm"]),
+  computed: mapState(["showConfirm", "showAction"]),
 };
 </script>

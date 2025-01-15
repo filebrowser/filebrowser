@@ -377,6 +377,16 @@ body.rtl .breadcrumbs .chevron {
 }
 
 /* * * * * * * * * * * * * * * *
+ *         SETTINGS TUS        *
+ * * * * * * * * * * * * * * * */
+
+.tusConditionalSettings input:disabled {
+  background-color: #ddd;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* * * * * * * * * * * * * * * *
  *         SETTINGS RULES      *
  * * * * * * * * * * * * * * * */
 
