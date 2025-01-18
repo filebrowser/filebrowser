@@ -28,7 +28,7 @@ import (
 )
 
 const PermFile = 0644
-const PermDir = 0755
+const PermDir = 0777
 
 var (
 	reSubDirs = regexp.MustCompile("(?i)^sub(s|titles)$")
