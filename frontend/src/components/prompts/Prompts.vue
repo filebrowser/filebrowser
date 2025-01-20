@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { watch } from "vue";
 import { ModalsContainer, useModal } from "vue-final-modal";
 import { storeToRefs } from "pinia";
 import { useLayoutStore } from "@/stores/layout";

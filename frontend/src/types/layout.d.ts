@@ -3,7 +3,7 @@ interface PopupProps {
   confirm?: any;
   action?: PopupAction;
   props?: any;
-  close?: any;
+  close?: (() => Promise<string>) | null;
 }
 
 type PopupAction = (e: Event) => void;
