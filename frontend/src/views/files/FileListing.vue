@@ -753,8 +753,6 @@ const drop = async (event: DragEvent) => {
 };
 
 const uploadInput = (event: Event) => {
-  layoutStore.closeHovers();
-
   let files = (event.currentTarget as HTMLInputElement)?.files;
   if (files === null) return;
 
