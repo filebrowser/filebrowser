@@ -17,7 +17,7 @@ type Runner struct {
 	*settings.Settings
 }
 
-// RunBeforeHooks and RunAfterHooks is used for the chunked upload since it cannot use the standard RunHook
+// RunBeforeHook and RunAfterHook are triggering on their respective timings
 func (r *Runner) RunBeforeHook(evt, path, dst string, user *users.User) error {
 	path = user.FullPath(path)
 	dst = user.FullPath(dst)
