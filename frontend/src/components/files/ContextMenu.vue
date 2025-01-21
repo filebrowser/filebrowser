@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, CSSProperties } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, type CSSProperties } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";

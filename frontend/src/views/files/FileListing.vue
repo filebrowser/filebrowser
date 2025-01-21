@@ -318,7 +318,7 @@ import { users, files as api } from "@/api";
 import { enableExec } from "@/utils/constants";
 import * as upload from "@/utils/upload";
 import css from "@/utils/css";
-import throttle from "lodash/throttle";
+import { throttle } from "lodash-es";
 import { Base64 } from "js-base64";
 import buttons from "@/utils/buttons";
 
@@ -789,8 +789,6 @@ const drop = async (event: DragEvent) => {
 };
 
 const uploadInput = (event: Event) => {
-  layoutStore.closeHovers();
-
   let files = (event.currentTarget as HTMLInputElement)?.files;
   if (files === null) return;
 

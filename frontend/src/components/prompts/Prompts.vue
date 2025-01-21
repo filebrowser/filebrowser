@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { watch } from "vue";
 import { ModalsContainer, useModal } from "vue-final-modal";
 import { storeToRefs } from "pinia";
 import { useLayoutStore } from "@/stores/layout";
@@ -33,8 +33,6 @@ const layoutStore = useLayoutStore();
 
 const { currentPromptName } = storeToRefs(layoutStore);
 
-const closeModal = ref<() => Promise<string>>();
-
 const components = new Map<string, any>([
   ["info", Info],
   ["help", Help],
@@ -58,11 +56,6 @@ const components = new Map<string, any>([
 ]);
 
 watch(currentPromptName, (newValue) => {
-  if (closeModal.value) {
-    closeModal.value();
-    closeModal.value = undefined;
-  }
-
   const modal = components.get(newValue!);
   if (!modal) return;
 
@@ -73,7 +66,7 @@ watch(currentPromptName, (newValue) => {
     },
   });
 
-  closeModal.value = close;
+  layoutStore.setCloseOnPrompt(close, newValue!);
   open();
 });
 

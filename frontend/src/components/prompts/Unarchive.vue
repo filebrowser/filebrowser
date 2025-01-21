@@ -18,7 +18,7 @@
       </form>
 
       <p>{{ t("prompts.unarchiveDestinationLocationMessage") }}</p>
-      <file-list @update:selected="(val) => (dest = val)"></file-list>
+      <file-list @update:selected="(val: any) => (dest = val)"></file-list>
 
       <p v-if="overwriteAvailable">
         <input type="checkbox" v-model="overwriteExisting" />
