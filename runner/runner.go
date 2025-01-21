@@ -17,7 +17,7 @@ type Runner struct {
 	*settings.Settings
 }
 
-// RunBeforeHook and RunAfterHook are triggering on their respective timings
+// RunBeforeHook and RunAfterHook trigger the command runner at their respective times.
 func (r *Runner) RunBeforeHook(evt, path, dst string, user *users.User) error {
 	path = user.FullPath(path)
 	dst = user.FullPath(dst)
