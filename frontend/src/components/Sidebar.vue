@@ -101,7 +101,7 @@
           href="https://github.com/filebrowser/filebrowser"
           >File Browser</a
         >
-        <span> {{ ' ' }} {{ version }}</span>
+        <span> {{ " " }} {{ version }}</span>
       </span>
       <span>
         <a @click="help">{{ $t("sidebar.help") }}</a>
@@ -158,7 +158,7 @@ export default {
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),
     async fetchUsage() {
-      let path = this.$route.path.endsWith("/")
+      const path = this.$route.path.endsWith("/")
         ? this.$route.path
         : this.$route.path + "/";
       let usageStats = USAGE_DEFAULT;
@@ -166,7 +166,7 @@ export default {
         return Object.assign(this.usage, usageStats);
       }
       try {
-        let usage = await api.usage(path);
+        const usage = await api.usage(path);
         usageStats = {
           used: prettyBytes(usage.used, { binary: true }),
           total: prettyBytes(usage.total, { binary: true }),
@@ -191,8 +191,13 @@ export default {
     logout: auth.logout,
   },
   watch: {
-    isFiles(newValue) {
-      newValue && this.fetchUsage();
+    $route: {
+      handler(to) {
+        if (to.path.includes("/files")) {
+          this.fetchUsage();
+        }
+      },
+      immediate: true,
     },
   },
 };
