@@ -168,7 +168,7 @@ import { files as api } from "@/api";
 import { createURL } from "@/api/utils";
 import { resizePreview } from "@/utils/constants";
 import url from "@/utils/url";
-import throttle from "lodash/throttle";
+import { throttle } from "lodash-es";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import ExtendedImage from "@/components/files/ExtendedImage.vue";
@@ -353,7 +353,7 @@ const updatePreview = async () => {
     autoPlay.value = false;
   }
 
-  let dirs = route.fullPath.split("/");
+  const dirs = route.fullPath.split("/");
   name.value = decodeURIComponent(dirs[dirs.length - 1]);
 
   if (!listing.value) {
@@ -422,7 +422,7 @@ const toggleNavigation = throttle(function () {
 const close = () => {
   fileStore.updateRequest(null);
 
-  let uri = url.removeLastDir(route.path) + "/";
+  const uri = url.removeLastDir(route.path) + "/";
   router.push({ path: uri });
 };
 

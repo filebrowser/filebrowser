@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { SelectHTMLAttributes } from "vue";
+import type { SelectHTMLAttributes } from "vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
@@ -17,7 +17,6 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   (e: "update:theme", val: string | null): void;
 }>();
 
