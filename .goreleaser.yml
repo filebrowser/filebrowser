@@ -36,10 +36,10 @@ builds:
 archives:
   -
     name_template: "{{.Os}}-{{.Arch}}{{if .Arm}}v{{.Arm}}{{end}}-{{ .ProjectName }}"
-    format: tar.gz
+    formats: [ 'tar.gz' ]
     format_overrides:
       - goos: windows
-        format: zip
+        formats: [ 'zip' ]
 
 dockers:
   -
@@ -139,6 +139,7 @@ dockers:
       - "filebrowser/filebrowser:v{{ .Major }}-amd64-s6"
     extra_files:
       - docker/root
+      - healthcheck.sh
   -
     dockerfile: Dockerfile.s6.aarch64
     use: buildx
@@ -157,6 +158,7 @@ dockers:
       - "filebrowser/filebrowser:v{{ .Major }}-arm64-s6"
     extra_files:
       - docker/root
+      - healthcheck.sh
 docker_manifests:
   - name_template: "filebrowser/filebrowser:latest"
     image_templates:
