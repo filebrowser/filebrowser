@@ -93,7 +93,7 @@ export const rtlLanguages = ["ar_AR"];
 
 export const i18n = createI18n({
   locale: detectLocale(),
-  fallbackLocale: "en",
+  fallbackLocale: "en_GB",
   messages,
   // expose i18n.global for outside components
   legacy: true,
