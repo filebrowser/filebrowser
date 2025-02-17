@@ -145,7 +145,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "Sign up:\t%t\n", set.Signup)
 	fmt.Fprintf(w, "Create User Dir:\t%t\n", set.CreateUserDir)
 	fmt.Fprintf(w, "Auth method:\t%s\n", set.AuthMethod)
-	fmt.Fprintf(w, "Shell:\t%s\t\n", strings.Join(set.Shell, " "))
+	fmt.Fprintf(w, "Shell:\t%s\t\n", set.Shell)
 	fmt.Fprintln(w, "\nBranding:")
 	fmt.Fprintf(w, "\tName:\t%s\n", set.Branding.Name)
 	fmt.Fprintf(w, "\tFiles override:\t%s\n", set.Branding.Files)

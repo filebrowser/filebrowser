@@ -157,7 +157,7 @@ func tusPatchHandler() handleFunc {
 
 		w.Header().Set("Upload-Offset", strconv.FormatInt(uploadOffset+bytesWritten, 10))
 
-		if bytesWritten < int64(d.Settings.Tus.ChunkSize) {
+		if uint64(bytesWritten) < (d.Settings.Tus.ChunkSize) {
 			err = d.RunAfterHook("upload", r.URL.Path, "", d.user)
 			if err != nil {
 				return errToStatus(err), err

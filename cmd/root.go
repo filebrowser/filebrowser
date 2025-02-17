@@ -344,7 +344,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 			RetryCount: settings.DefaultTusRetryCount,
 		},
 		Commands: nil,
-		Shell:    nil,
+		Shell:    "",
 		Rules:    nil,
 	}
 

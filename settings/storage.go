@@ -72,8 +72,8 @@ func (s *Storage) Save(set *Settings) error {
 		set.Rules = []rules.Rule{}
 	}
 
-	if set.Shell == nil {
-		set.Shell = []string{}
+	if set.Shell == "" {
+		set.Shell = ""
 	}
 
 	if set.Commands == nil {

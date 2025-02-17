@@ -296,12 +296,7 @@ const save = async () => {
   if (settings.value === null) return false;
   let newSettings: ISettings = {
     ...settings.value,
-    shell:
-      settings.value?.shell
-        .join(" ")
-        .trim()
-        .split(" ")
-        .filter((s: string) => s !== "") ?? [],
+    shell: settings.value?.shell?.trim() ?? "", // Change this to a string
     commands: {},
   };
 
@@ -309,7 +304,6 @@ const save = async () => {
     keyof SettingsCommand
   >;
   for (const key of keys) {
-    // not sure if we can safely assume non-null
     const newValue = commandObject.value[key];
     if (!newValue) continue;
 
@@ -321,7 +315,9 @@ const save = async () => {
         .filter((cmd: string) => cmd !== "");
     }
   }
-  newSettings.shell = shellValue.value.split("\n");
+
+  // Update this line to assign the string directly, without splitting
+  newSettings.shell = shellValue.value.trim();
 
   if (newSettings.branding.theme !== getTheme()) {
     setTheme(newSettings.branding.theme);
@@ -386,7 +382,7 @@ onMounted(async () => {
 
     originalSettings.value = original;
     settings.value = newSettings;
-    shellValue.value = newSettings.shell.join("\n");
+    shellValue.value = newSettings.shell;
   } catch (err) {
     if (err instanceof Error) {
       error.value = err;

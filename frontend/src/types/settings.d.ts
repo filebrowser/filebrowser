@@ -6,7 +6,7 @@ interface ISettings {
   rules: any[];
   branding: SettingsBranding;
   tus: SettingsTus;
-  shell: string[];
+  shell: string;
   commands: SettingsCommand;
 }
 
