@@ -199,13 +199,9 @@ html[dir="rtl"] #listing {
 }
 
 #listing.list .item div:last-of-type {
-  width: calc(100% - 3em);
+  width: 100%;
   display: flex;
   align-items: center;
-}
-
-#listing.list .item p.name:not(#listing.list .item.header .name) {
-  margin-right: -3em;
 }
 
 #listing.list .item .name {
