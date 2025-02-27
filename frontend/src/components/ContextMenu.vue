@@ -4,7 +4,7 @@
     ref="contextMenu"
     v-show="show"
     :style="{
-      top: `${top}px`,
+      top: `${props.pos.y}px`,
       left: `${left}px`,
     }"
   >
@@ -18,13 +18,6 @@ import { ref, watch, computed, onUnmounted } from "vue";
 const emit = defineEmits(["hide"]);
 const props = defineProps<{ show: boolean; pos: { x: number; y: number } }>();
 const contextMenu = ref<HTMLElement | null>(null);
-
-const top = computed(() => {
-  return Math.min(
-    props.pos.y,
-    window.innerHeight - (contextMenu.value?.clientHeight ?? 0)
-  );
-});
 
 const left = computed(() => {
   return Math.min(

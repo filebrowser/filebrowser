@@ -222,21 +222,12 @@ const itemClick = (event: Event | KeyboardEvent) => {
 };
 
 const contextMenu = (event: MouseEvent) => {
-  const to = setTimeout(() => {
-    touches.value = 0;
-  }, 300);
-
-  touches.value++;
-  if (touches.value > 1) return;
-
   event.preventDefault();
   if (
-    fileStore.selected.length < 2 ||
+    fileStore.selected.length === 0 ||
     event.ctrlKey ||
     fileStore.selected.indexOf(props.index) === -1
   ) {
-    touches.value--;
-    clearTimeout(to);
     click(event);
   }
 };
