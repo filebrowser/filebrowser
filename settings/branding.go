@@ -8,4 +8,5 @@ type Branding struct {
 	Files                 string `json:"files"`
 	Theme                 string `json:"theme"`
 	Color                 string `json:"color"`
+	HomeURL               string `json:"homeURL"`
 }

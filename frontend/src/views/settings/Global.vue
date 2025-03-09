@@ -96,6 +96,16 @@
           </p>
 
           <p>
+            <label for="branding-name">{{ t("settings.homeURL") }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              v-model="settings.branding.homeURL"
+              id="branding-home-url"
+            />
+          </p>
+
+          <p>
             <label for="branding-files">{{
               t("settings.brandingDirectoryPath")
             }}</label>

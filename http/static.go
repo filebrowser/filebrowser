@@ -32,6 +32,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		"DisableExternal":       d.settings.Branding.DisableExternal,
 		"DisableUsedPercentage": d.settings.Branding.DisableUsedPercentage,
 		"Color":                 d.settings.Branding.Color,
+		"HomeURL":               d.settings.Branding.HomeURL,
 		"BaseURL":               d.server.BaseURL,
 		"Version":               version.Version,
 		"StaticURL":             path.Join(d.server.BaseURL, "/static"),

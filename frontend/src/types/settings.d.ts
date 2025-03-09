@@ -29,6 +29,7 @@ interface SettingsBranding {
   files: string;
   theme: UserTheme;
   color: string;
+  homeURL: string;
 }
 
 interface SettingsTus {
