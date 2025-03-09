@@ -48,6 +48,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("branding.files", "", "path to directory with images and custom styles")
 	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 	flags.Bool("branding.disableUsedPercentage", false, "disable used disk percentage graph")
+	flags.String("branding.homeURL", "", "URL to the home website (use in case you have filebrowser embedded in another system)")
 }
 
 //nolint:gocyclo
@@ -153,6 +154,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tDisable used disk percentage graph:\t%t\n", set.Branding.DisableUsedPercentage)
 	fmt.Fprintf(w, "\tColor:\t%s\n", set.Branding.Color)
 	fmt.Fprintf(w, "\tTheme:\t%s\n", set.Branding.Theme)
+	fmt.Fprintf(w, "\tHome URL:\t%s\n", set.Branding.HomeURL)
 	fmt.Fprintln(w, "\nServer:")
 	fmt.Fprintf(w, "\tLog:\t%s\n", ser.Log)
 	fmt.Fprintf(w, "\tPort:\t%s\n", ser.Port)

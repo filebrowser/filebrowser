@@ -41,6 +41,7 @@ override the options.`,
 				DisableUsedPercentage: mustGetBool(flags, "branding.disableUsedPercentage"),
 				Theme:                 mustGetString(flags, "branding.theme"),
 				Files:                 mustGetString(flags, "branding.files"),
+				HomeURL:               mustGetString(flags, "branding.homeURL"),
 			},
 		}
 
