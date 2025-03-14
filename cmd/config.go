@@ -165,6 +165,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tExec Enabled:\t%t\n", ser.EnableExec)
 	fmt.Fprintln(w, "\nDefaults:")
 	fmt.Fprintf(w, "\tScope:\t%s\n", set.Defaults.Scope)
+	fmt.Fprintf(w, "\tHideDotfiles:\t%t\n", set.Defaults.HideDotfiles)
 	fmt.Fprintf(w, "\tLocale:\t%s\n", set.Defaults.Locale)
 	fmt.Fprintf(w, "\tView mode:\t%s\n", set.Defaults.ViewMode)
 	fmt.Fprintf(w, "\tSingle Click:\t%t\n", set.Defaults.SingleClick)
