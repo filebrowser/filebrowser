@@ -77,6 +77,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.String("locale", "en", "locale for users")
 	flags.String("viewMode", string(users.ListViewMode), "view mode for users")
 	flags.Bool("singleClick", false, "use single clicks only")
+	flags.Bool("hide-dotfiles", false, "Hide dotfiles by default")
 }
 
 func getViewMode(flags *pflag.FlagSet) users.ViewMode {
@@ -123,6 +124,8 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 			defaults.Sorting.By = mustGetString(flags, flag.Name)
 		case "sorting.asc":
 			defaults.Sorting.Asc = mustGetBool(flags, flag.Name)
+		case "hide-dotfiles":
+			defaults.HideDotfiles = mustGetBool(flags, flag.Name)
 		}
 	}
 

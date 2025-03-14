@@ -28,6 +28,9 @@ override the options.`,
 		getUserDefaults(flags, &defaults, true)
 		authMethod, auther := getAuthentication(flags)
 
+		// Set the value of HideDotfiles from the flag
+		defaults.HideDotfiles = mustGetBool(flags, "hide-dotfiles")
+
 		s := &settings.Settings{
 			Key:           generateKey(),
 			Signup:        mustGetBool(flags, "signup"),
