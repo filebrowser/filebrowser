@@ -63,6 +63,10 @@ you want to change. Other options will remain unchanged.`,
 				set.Branding.DisableUsedPercentage = mustGetBool(flags, flag.Name)
 			case "branding.files":
 				set.Branding.Files = mustGetString(flags, flag.Name)
+			case "onlyoffice.url":
+				set.OnlyOffice.URL = mustGetString(flags, flag.Name)
+			case "onlyoffice.jwtSecret":
+				set.OnlyOffice.JWTSecret = mustGetString(flags, flag.Name)
 			}
 		})
 

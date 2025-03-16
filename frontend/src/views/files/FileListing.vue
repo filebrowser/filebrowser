@@ -82,9 +82,9 @@
     </header-bar>
 
     <div v-if="isMobile" id="file-selection">
-      <span v-if="fileStore.selectedCount > 0">
-        {{ t("prompts.filesSelected", fileStore.selectedCount) }}
-      </span>
+      <span v-if="fileStore.selectedCount > 0"
+        >{{ fileStore.selectedCount }} selected</span
+      >
       <action
         v-if="headerButtons.share"
         icon="share"
@@ -285,7 +285,7 @@ import { users, files as api } from "@/api";
 import { enableExec } from "@/utils/constants";
 import * as upload from "@/utils/upload";
 import css from "@/utils/css";
-import { throttle } from "lodash-es";
+import throttle from "lodash/throttle";
 import { Base64 } from "js-base64";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
@@ -523,12 +523,12 @@ const keyEvent = (event: KeyboardEvent) => {
       break;
     case "a":
       event.preventDefault();
-      for (const file of items.value.files) {
+      for (let file of items.value.files) {
         if (fileStore.selected.indexOf(file.index) === -1) {
           fileStore.selected.push(file.index);
         }
       }
-      for (const dir of items.value.dirs) {
+      for (let dir of items.value.dirs) {
         if (fileStore.selected.indexOf(dir.index) === -1) {
           fileStore.selected.push(dir.index);
         }
@@ -551,9 +551,9 @@ const copyCut = (event: Event | KeyboardEvent): void => {
 
   if (fileStore.req === null) return;
 
-  const items = [];
+  let items = [];
 
-  for (const i of fileStore.selected) {
+  for (let i of fileStore.selected) {
     items.push({
       from: fileStore.req.items[i].url,
       name: fileStore.req.items[i].name,
@@ -575,9 +575,9 @@ const paste = (event: Event) => {
   if ((event.target as HTMLElement).tagName?.toLowerCase() === "input") return;
 
   // TODO router location should it be
-  const items: any[] = [];
+  let items: any[] = [];
 
-  for (const item of clipboardStore.items) {
+  for (let item of clipboardStore.items) {
     const from = item.from.endsWith("/") ? item.from.slice(0, -1) : item.from;
     const to = route.path + encodeURIComponent(item.name);
     items.push({ from, to, name: item.name });
@@ -614,7 +614,7 @@ const paste = (event: Event) => {
     return;
   }
 
-  const conflict = upload.checkConflict(items, fileStore.req!.items);
+  let conflict = upload.checkConflict(items, fileStore.req!.items);
 
   let overwrite = false;
   let rename = false;
@@ -640,13 +640,14 @@ const paste = (event: Event) => {
 
 const colunmsResize = () => {
   // Update the columns size based on the window width.
-  const items_ = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
+  let items_ = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
   if (items_ === null) return;
 
   let columns = Math.floor(
     (document.querySelector("main")?.offsetWidth ?? 0) / columnWidth.value
   );
   if (columns === 0) columns = 1;
+  // @ts-ignore never type error
   items_.style.width = `calc(${100 / columns}% - 1em)`;
 };
 
@@ -676,10 +677,11 @@ const dragEnter = () => {
 
   // When the user starts dragging an item, put every
   // file on the listing with 50% opacity.
-  const items = document.getElementsByClassName("item");
+  let items = document.getElementsByClassName("item");
 
-  Array.from(items).forEach((file: Element) => {
-    (file as HTMLElement).style.opacity = "0.5";
+  // @ts-ignore
+  Array.from(items).forEach((file: HTMLElement) => {
+    file.style.opacity = "0.5";
   });
 };
 
@@ -696,7 +698,7 @@ const drop = async (event: DragEvent) => {
   dragCounter.value = 0;
   resetOpacity();
 
-  const dt = event.dataTransfer;
+  let dt = event.dataTransfer;
   let el: HTMLElement | null = event.target as HTMLElement;
 
   if (fileStore.req === null || dt === null || dt.files.length <= 0) return;
@@ -707,7 +709,7 @@ const drop = async (event: DragEvent) => {
     }
   }
 
-  const files: UploadList = (await upload.scanFiles(dt)) as UploadList;
+  let files: UploadList = (await upload.scanFiles(dt)) as UploadList;
   let items = fileStore.req.items;
   let path = route.path.endsWith("/") ? route.path : route.path + "/";
 
@@ -727,7 +729,7 @@ const drop = async (event: DragEvent) => {
     }
   }
 
-  const conflict = upload.checkConflict(files, items);
+  let conflict = upload.checkConflict(files, items);
 
   if (conflict) {
     layoutStore.showHover({
@@ -751,10 +753,12 @@ const drop = async (event: DragEvent) => {
 };
 
 const uploadInput = (event: Event) => {
-  const files = (event.currentTarget as HTMLInputElement)?.files;
+  layoutStore.closeHovers();
+
+  let files = (event.currentTarget as HTMLInputElement)?.files;
   if (files === null) return;
 
-  const folder_upload = !!files[0].webkitRelativePath;
+  let folder_upload = !!files[0].webkitRelativePath;
 
   const uploadFiles: UploadList = [];
   for (let i = 0; i < files.length; i++) {
@@ -769,8 +773,8 @@ const uploadInput = (event: Event) => {
     });
   }
 
-  const path = route.path.endsWith("/") ? route.path : route.path + "/";
-  const conflict = upload.checkConflict(uploadFiles, fileStore.req!.items);
+  let path = route.path.endsWith("/") ? route.path : route.path + "/";
+  let conflict = upload.checkConflict(uploadFiles, fileStore.req!.items);
 
   if (conflict) {
     layoutStore.showHover({
@@ -794,7 +798,7 @@ const uploadInput = (event: Event) => {
 };
 
 const resetOpacity = () => {
-  const items = document.getElementsByClassName("item");
+  let items = document.getElementsByClassName("item");
 
   Array.from(items).forEach((file: Element) => {
     (file as HTMLElement).style.opacity = "1";
@@ -820,6 +824,7 @@ const sort = async (by: string) => {
 
   try {
     if (authStore.user?.id) {
+      // @ts-ignore
       await users.update({ id: authStore.user?.id, sorting: { by, asc } }, [
         "sorting",
       ]);
@@ -870,10 +875,10 @@ const download = () => {
     confirm: (format: any) => {
       layoutStore.closeHovers();
 
-      const files = [];
+      let files = [];
 
       if (fileStore.selectedCount > 0 && fileStore.req !== null) {
-        for (const i of fileStore.selected) {
+        for (let i of fileStore.selected) {
           files.push(fileStore.req.items[i].url);
         }
       } else {
@@ -896,12 +901,13 @@ const switchView = async () => {
 
   const data = {
     id: authStore.user?.id,
-    viewMode: (modes[authStore.user?.viewMode ?? "list"] ||
-      "list") as ViewModeType,
+    viewMode: modes[authStore.user?.viewMode ?? "list"] || "list",
   };
 
+  // @ts-ignore
   users.update(data, ["viewMode"]).catch($showError);
 
+  // @ts-ignore
   authStore.updateUser(data);
 
   setItemWeight();

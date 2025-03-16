@@ -6,16 +6,13 @@ export default function getRule(rules: string[]) {
   let result = null;
   const find = Array.prototype.find;
 
-  find.call(document.styleSheets, (styleSheet: CSSStyleSheet) => {
-    result = find.call(styleSheet.cssRules, (cssRule: CSSRule) => {
+  find.call(document.styleSheets, (styleSheet) => {
+    result = find.call(styleSheet.cssRules, (cssRule) => {
       let found = false;
 
-      // faster than checking instanceof for every element
-      if (cssRule.constructor.name === "CSSStyleRule") {
+      if (cssRule instanceof window.CSSStyleRule) {
         for (let i = 0; i < rules.length; i++) {
-          if (
-            (cssRule as CSSStyleRule).selectorText.toLowerCase() === rules[i]
-          ) {
+          if (cssRule.selectorText.toLowerCase() === rules[i]) {
             found = true;
           }
         }
@@ -27,5 +24,5 @@ export default function getRule(rules: string[]) {
     return result != null;
   });
 
-  return result as CSSStyleRule | null;
+  return result;
 }

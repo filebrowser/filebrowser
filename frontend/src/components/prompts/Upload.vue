@@ -48,10 +48,12 @@ const layoutStore = useLayoutStore();
 
 // TODO: this is a copy of the same function in FileListing.vue
 const uploadInput = (event: Event) => {
-  const files = (event.currentTarget as HTMLInputElement)?.files;
+  layoutStore.closeHovers();
+
+  let files = (event.currentTarget as HTMLInputElement)?.files;
   if (files === null) return;
 
-  const folder_upload = !!files[0].webkitRelativePath;
+  let folder_upload = !!files[0].webkitRelativePath;
 
   const uploadFiles: UploadList = [];
   for (let i = 0; i < files.length; i++) {
@@ -66,8 +68,8 @@ const uploadInput = (event: Event) => {
     });
   }
 
-  const path = route.path.endsWith("/") ? route.path : route.path + "/";
-  const conflict = upload.checkConflict(uploadFiles, fileStore.req!.items);
+  let path = route.path.endsWith("/") ? route.path : route.path + "/";
+  let conflict = upload.checkConflict(uploadFiles, fileStore.req!.items);
 
   if (conflict) {
     layoutStore.showHover({

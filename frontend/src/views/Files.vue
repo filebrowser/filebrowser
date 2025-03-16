@@ -37,6 +37,7 @@ import { storeToRefs } from "pinia";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 import { useUploadStore } from "@/stores/upload";
+import { onlyOfficeUrl } from "@/utils/constants";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
@@ -45,10 +46,11 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import FileListing from "@/views/files/FileListing.vue";
 import { StatusError } from "@/api/utils";
-import { name } from "../utils/constants";
-
 const Editor = defineAsyncComponent(() => import("@/views/files/Editor.vue"));
 const Preview = defineAsyncComponent(() => import("@/views/files/Preview.vue"));
+const OnlyOfficeEditor = defineAsyncComponent(
+  () => import("@/views/files/OnlyOfficeEditor.vue")
+);
 
 const layoutStore = useLayoutStore();
 const fileStore = useFileStore();
@@ -79,6 +81,8 @@ const currentView = computed(() => {
     fileStore.req.type === "textImmutable"
   ) {
     return Editor;
+  } else if (fileStore.req.type === "officedocument" && onlyOfficeUrl) {
+    return OnlyOfficeEditor;
   } else {
     return Preview;
   }
@@ -150,7 +154,7 @@ const fetchData = async () => {
     }
 
     fileStore.updateRequest(res);
-    document.title = `${res.name} - ${t("files.files")} - ${name}`;
+    document.title = `${res.name} - ${document.title}`;
   } catch (err) {
     if (err instanceof Error) {
       error.value = err;

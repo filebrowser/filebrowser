@@ -17,7 +17,7 @@
       </button>
       <button
         class="button button--flat"
-        @click="layoutStore.currentPrompt?.confirm"
+        @click="layoutStore.currentPrompt?.confirm()"
         tabindex="2"
       >
         {{ t("buttons.delete") }}

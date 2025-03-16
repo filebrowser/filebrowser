@@ -31,8 +31,6 @@
   --hover: rgba(0, 0, 0, 0.1);
   --borderPrimary: rgba(0, 0, 0, 0.1);
   --borderSecondary: rgba(0, 0, 0, 0.2);
-  --dividerPrimary: rgba(255, 255, 255, 0.4);
-  --dividerSecondary: rgba(255, 255, 255, 0.9);
 }
 
 :root.dark {
@@ -53,6 +51,4 @@
   --hover: rgba(255, 255, 255, 0.1);
   --borderPrimary: rgba(255, 255, 255, 0.05);
   --borderSecondary: rgba(255, 255, 255, 0.15);
-  --dividerPrimary: rgba(30, 30, 30, 0.4);
-  --dividerSecondary: rgba(30, 30, 30, 0.6);
 }

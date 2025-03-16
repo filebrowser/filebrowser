@@ -1,5 +1,5 @@
 <template>
-  <div id="editor-container" @wheel.prevent.stop>
+  <div id="editor-container" @touchmove.prevent.stop @wheel.prevent.stop>
     <header-bar>
       <action icon="close" :label="t('buttons.close')" @action="close()" />
       <title>{{ fileStore.req?.name ?? "" }}</title>
@@ -11,26 +11,11 @@
         :label="t('buttons.save')"
         @action="save()"
       />
-
-      <action
-        icon="preview"
-        :label="t('buttons.preview')"
-        @action="preview()"
-        v-show="isMarkdownFile"
-      />
     </header-bar>
 
     <Breadcrumbs base="/files" noLink />
 
-    <!-- preview container -->
-    <div
-      v-show="isPreview && isMarkdownFile"
-      id="preview-container"
-      class="md_preview"
-      v-html="previewContent"
-    ></div>
-
-    <form v-show="!isPreview || !isMarkdownFile" id="editor"></form>
+    <form id="editor"></form>
   </div>
 </template>
 
@@ -48,11 +33,10 @@ import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
-import { inject, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
+import { inject, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { getTheme } from "@/utils/theme";
-import { marked } from "marked";
 
 const $showError = inject<IToastError>("$showError")!;
 
@@ -67,36 +51,10 @@ const router = useRouter();
 
 const editor = ref<Ace.Editor | null>(null);
 
-const isPreview = ref(false);
-const previewContent = ref("");
-const isMarkdownFile =
-  fileStore.req?.name.endsWith(".md") ||
-  fileStore.req?.name.endsWith(".markdown");
-
 onMounted(() => {
   window.addEventListener("keydown", keyEvent);
-  window.addEventListener("wheel", handleScroll);
 
   const fileContent = fileStore.req?.content || "";
-
-  watchEffect(async () => {
-    if (isMarkdownFile && isPreview.value) {
-      const new_value = editor.value?.getValue() || "";
-      try {
-        previewContent.value = await marked(new_value);
-      } catch (error) {
-        console.error("Failed to convert content to HTML:", error);
-        previewContent.value = "";
-      }
-
-      const previewContainer = document.getElementById("preview-container");
-      if (previewContainer) {
-        previewContainer.addEventListener("wheel", handleScroll, {
-          capture: true,
-        });
-      }
-    }
-  });
 
   ace.config.set(
     "basePath",
@@ -108,7 +66,7 @@ onMounted(() => {
     showPrintMargin: false,
     readOnly: fileStore.req?.type === "textImmutable",
     theme: "ace/theme/chrome",
-    mode: modelist.getModeForPath(fileStore.req!.name).mode,
+    mode: modelist.getModeForPath(fileStore.req?.name).mode,
     wrap: true,
     enableBasicAutocompletion: true,
     enableLiveAutocompletion: true,
@@ -124,7 +82,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", keyEvent);
-  window.removeEventListener("wheel", handleScroll);
   editor.value?.destroy();
 });
 
@@ -143,13 +100,6 @@ const keyEvent = (event: KeyboardEvent) => {
 
   event.preventDefault();
   save();
-};
-
-const handleScroll = (event: WheelEvent) => {
-  const editorContainer = document.getElementById("preview-container");
-  if (editorContainer) {
-    editorContainer.scrollTop += event.deltaY;
-  }
 };
 
 const save = async () => {
@@ -173,11 +123,7 @@ const close = () => {
 
   fileStore.updateRequest(null);
 
-  const uri = url.removeLastDir(route.path) + "/";
+  let uri = url.removeLastDir(route.path) + "/";
   router.push({ path: uri });
-};
-
-const preview = () => {
-  isPreview.value = !isPreview.value;
 };
 </script>

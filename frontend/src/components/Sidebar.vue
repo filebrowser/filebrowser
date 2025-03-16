@@ -1,5 +1,4 @@
 <template>
-  <div v-show="active" @click="closeHovers" class="overlay"></div>
   <nav :class="{ active }">
     <template v-if="isLoggedIn">
       <button
@@ -101,7 +100,7 @@
           href="https://github.com/filebrowser/filebrowser"
           >File Browser</a
         >
-        <span> {{ " " }} {{ version }}</span>
+        <span> {{ version }}</span>
       </span>
       <span>
         <a @click="help">{{ $t("sidebar.help") }}</a>
@@ -158,7 +157,7 @@ export default {
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),
     async fetchUsage() {
-      const path = this.$route.path.endsWith("/")
+      let path = this.$route.path.endsWith("/")
         ? this.$route.path
         : this.$route.path + "/";
       let usageStats = USAGE_DEFAULT;
@@ -166,7 +165,7 @@ export default {
         return Object.assign(this.usage, usageStats);
       }
       try {
-        const usage = await api.usage(path);
+        let usage = await api.usage(path);
         usageStats = {
           used: prettyBytes(usage.used, { binary: true }),
           total: prettyBytes(usage.total, { binary: true }),
@@ -191,13 +190,8 @@ export default {
     logout: auth.logout,
   },
   watch: {
-    $route: {
-      handler(to) {
-        if (to.path.includes("/files")) {
-          this.fetchUsage();
-        }
-      },
-      immediate: true,
+    isFiles(newValue) {
+      newValue && this.fetchUsage();
     },
   },
 };

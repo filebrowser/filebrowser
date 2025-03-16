@@ -14,15 +14,15 @@
   </div>
 </template>
 <script setup lang="ts">
-import { throttle } from "lodash-es";
+import throttle from "lodash/throttle";
 import UTIF from "utif";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 interface IProps {
   src: string;
-  moveDisabledTime?: number;
-  classList?: any[];
-  zoomStep?: number;
+  moveDisabledTime: number;
+  classList: any[];
+  zoomStep: number;
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -102,11 +102,10 @@ const decodeUTIF = () => {
   if (document?.location?.pathname === undefined) {
     return;
   }
-  const suff =
-    document.location.pathname.split(".")?.pop()?.toLowerCase() ?? "";
+  let suff = document.location.pathname.split(".")?.pop()?.toLowerCase() ?? "";
 
   if (sufs.indexOf(suff) == -1) return false;
-  const xhr = new XMLHttpRequest();
+  let xhr = new XMLHttpRequest();
   UTIF._xhrs.push(xhr);
   UTIF._imgs.push(imgex.value);
   xhr.open("GET", props.src);
@@ -231,7 +230,7 @@ const touchMove = (event: TouchEvent) => {
   if (imgex.value === null) {
     return;
   }
-  const step = imgex.value.width / 5;
+  let step = imgex.value.width / 5;
   if (event.targetTouches.length === 2) {
     moveDisabled.value = true;
     if (disabledTimer.value) clearTimeout(disabledTimer.value);
@@ -240,9 +239,9 @@ const touchMove = (event: TouchEvent) => {
       props.moveDisabledTime
     );
 
-    const p1 = event.targetTouches[0];
-    const p2 = event.targetTouches[1];
-    const touchDistance = Math.sqrt(
+    let p1 = event.targetTouches[0];
+    let p2 = event.targetTouches[1];
+    let touchDistance = Math.sqrt(
       Math.pow(p2.pageX - p1.pageX, 2) + Math.pow(p2.pageY - p1.pageY, 2)
     );
     if (!lastTouchDistance.value) {
@@ -254,8 +253,8 @@ const touchMove = (event: TouchEvent) => {
     setZoom();
   } else if (event.targetTouches.length === 1) {
     if (moveDisabled.value) return;
-    const x = event.targetTouches[0].pageX - (lastX.value ?? 0);
-    const y = event.targetTouches[0].pageY - (lastY.value ?? 0);
+    let x = event.targetTouches[0].pageX - (lastX.value ?? 0);
+    let y = event.targetTouches[0].pageY - (lastY.value ?? 0);
     if (Math.abs(x) >= step && Math.abs(y) >= step) return;
     lastX.value = event.targetTouches[0].pageX;
     lastY.value = event.targetTouches[0].pageY;
@@ -269,8 +268,8 @@ const doMove = (x: number, y: number) => {
   }
   const style = imgex.value.style;
 
-  const posX = pxStringToNumber(style.left) + x;
-  const posY = pxStringToNumber(style.top) + y;
+  let posX = pxStringToNumber(style.left) + x;
+  let posY = pxStringToNumber(style.top) + y;
 
   style.left = posX + "px";
   style.top = posY + "px";

@@ -178,7 +178,3 @@ html[dir="rtl"] .breadcrumbs a {
 .vue-number-input__button::after {
   background: var(--textSecondary) !important;
 }
-
-.vfm-modal {
-  z-index: 9999999 !important;
-}

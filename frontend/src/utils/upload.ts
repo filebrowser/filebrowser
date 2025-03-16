@@ -1,4 +1,3 @@
-import { useLayoutStore } from "@/stores/layout";
 import { useUploadStore } from "@/stores/upload";
 import url from "@/utils/url";
 
@@ -127,9 +126,6 @@ export function handleFiles(
   overwrite = false
 ) {
   const uploadStore = useUploadStore();
-  const layoutStore = useLayoutStore();
-
-  layoutStore.closeHovers();
 
   for (const file of files) {
     const id = uploadStore.id;

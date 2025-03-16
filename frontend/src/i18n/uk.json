@@ -36,7 +36,7 @@
     "switchView": "Вид",
     "toggleSidebar": "Бічна панель",
     "update": "Оновити",
-    "upload": "Вивантажити",
+    "upload": "Завантажити",
     "openFile": "Відкрити файл"
   },
   "download": {
@@ -102,9 +102,9 @@
     "deleteMessageMultiple": "Видалити ці файли ({count})?",
     "deleteMessageSingle": "Видалити цей файл/каталог?",
     "deleteMessageShare": "Видалити цей спільний файл/каталог ({path})?",
-    "deleteTitle": "Видалити файли",
+    "deleteTitle": "Видалити файлы",
     "displayName": "Відображене ім'я:",
-    "download": "Завантажити файли",
+    "download": "Завантажити файлы",
     "downloadMessage": "Виберіть формат, в якому хочете завантажити.",
     "error": "Помилка",
     "fileInfo": "Інформація про файл",
@@ -127,8 +127,8 @@
     "scheduleMessage": "Запланувати дату та час публікації.",
     "show": "Показати",
     "size": "Розмір",
-    "upload": "Вивантажити",
-    "uploadMessage": "Виберіть варіант для вивантаження.",
+    "upload": "Завантажити",
+    "uploadMessage": "Виберіть варіант для завантаження.",
     "optionalPassword": "Необов'язковий пароль"
   },
   "search": {

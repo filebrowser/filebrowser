@@ -124,7 +124,7 @@ export default {
 
       let sum = 0;
 
-      for (const selected of this.selected) {
+      for (let selected of this.selected) {
         sum += this.req.items[selected].size;
       }
 

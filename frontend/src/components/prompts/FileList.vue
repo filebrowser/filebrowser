@@ -80,7 +80,7 @@ export default {
 
       // Otherwise we add every directory to the
       // move options.
-      for (const item of req.items) {
+      for (let item of req.items) {
         if (!item.isDir) continue;
 
         this.items.push({
@@ -93,12 +93,12 @@ export default {
       // Retrieves the URL of the directory the user
       // just clicked in and fill the options with its
       // content.
-      const uri = event.currentTarget.dataset.url;
+      let uri = event.currentTarget.dataset.url;
 
       files.fetch(uri).then(this.fillOptions).catch(this.$showError);
     },
     touchstart(event) {
-      const url = event.currentTarget.dataset.url;
+      let url = event.currentTarget.dataset.url;
 
       // In 300 milliseconds, we shall reset the count.
       setTimeout(() => {

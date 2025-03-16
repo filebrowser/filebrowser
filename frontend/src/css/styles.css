@@ -15,8 +15,6 @@
 @import "./dashboard.css";
 @import "./login.css";
 @import "./mobile.css";
-@import "./epubReader.css";
-@import "./mdPreview.css";
 
 /* For testing only
  :focus {
@@ -236,10 +234,6 @@ main .spinner .bounce2 {
   height: 100%;
 }
 
-#previewer .vjs-error-display {
-  margin-top: 40%;
-}
-
 #previewer .preview .info {
   position: absolute;
   top: 50%;
@@ -271,7 +265,6 @@ main .spinner .bounce2 {
 #previewer .pdf {
   width: 100%;
   height: 100%;
-  padding-top: 4em;
 }
 
 #previewer h2.message {

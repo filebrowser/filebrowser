@@ -4,7 +4,7 @@ import VueNumberInput from "@chenfengyuan/vue-number-input";
 import VueLazyload from "vue-lazyload";
 import { createVfm } from "vue-final-modal";
 import Toast, { POSITION, useToast } from "vue-toastification";
-import type {
+import {
   ToastOptions,
   PluginOptions,
 } from "vue-toastification/dist/types/types";

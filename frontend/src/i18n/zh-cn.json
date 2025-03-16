@@ -22,7 +22,6 @@
     "ok": "确定",
     "permalink": "获取永久链接",
     "previous": "上一个",
-    "preview": "预览",
     "publish": "发布",
     "rename": "重命名",
     "replace": "替换",
@@ -40,9 +39,7 @@
     "update": "更新",
     "upload": "上传",
     "openFile": "打开文件",
-    "continue": "继续",
-    "fullScreen": "切换全屏",
-    "discardChanges": "放弃更改"
+    "continue": "继续"
   },
   "download": {
     "downloadFile": "下载文件",
@@ -139,9 +136,7 @@
     "uploadFiles": "正在上传 {files} ...",
     "uploadMessage": "选择上传选项。",
     "optionalPassword": "密码（选填，不填即无密码）",
-    "resolution": "分辨率",
-    "deleteUser": "你确定要删除这个用户吗？",
-    "discardEditorChanges": "你确定要放弃所做的更改吗？"
+    "resolution": "分辨率"
   },
   "search": {
     "images": "图像",
@@ -196,6 +191,8 @@
     "newPassword": "你的新密码",
     "newPasswordConfirm": "再次输入以确认你的新密码",
     "newUser": "新建用户",
+    "onlyOffice": "Only Office Integration",
+    "onlyOfficeUrl": "Only Office URL (leave blank to disable)",
     "password": "密码",
     "passwordUpdated": "密码已更新！",
     "path": "路径",
@@ -223,7 +220,6 @@
     "shareDeleted": "分享已删除！",
     "singleClick": "使用单击来打开文件和文件夹",
     "themes": {
-      "default": "系统默认",
       "dark": "深色",
       "light": "浅色",
       "title": "主题"

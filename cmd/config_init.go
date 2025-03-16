@@ -42,6 +42,10 @@ override the options.`,
 				Theme:                 mustGetString(flags, "branding.theme"),
 				Files:                 mustGetString(flags, "branding.files"),
 			},
+			OnlyOffice: settings.OnlyOffice{
+				URL:       mustGetString(flags, "onlyoffice.url"),
+				JWTSecret: mustGetString(flags, "onlyoffice.jwtSecret"),
+			},
 		}
 
 		ser := &settings.Server{

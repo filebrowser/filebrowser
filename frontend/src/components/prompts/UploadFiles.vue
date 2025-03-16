@@ -10,12 +10,6 @@
         <div class="upload-info">
           <div class="upload-speed">{{ uploadSpeed.toFixed(2) }} MB/s</div>
           <div class="upload-eta">{{ formattedETA }} remaining</div>
-          <div class="upload-percentage">
-            {{ getProgressDecimal }}% Completed
-          </div>
-          <div class="upload-fraction">
-            {{ getTotalProgressBytes }} / {{ getTotalSize }}
-          </div>
         </div>
         <button
           class="action"
@@ -78,10 +72,6 @@ export default {
       "filesInUploadCount",
       "uploadSpeed",
       "getETA",
-      "getProgress",
-      "getProgressDecimal",
-      "getTotalProgressBytes",
-      "getTotalSize",
     ]),
     ...mapWritableState(useFileStore, ["reload"]),
     formattedETA() {
@@ -101,7 +91,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(useUploadStore, ["reset"]), // Mapping reset action from upload store
+    ...mapActions(useUploadStore, ["reset"]),  // Mapping reset action from upload store
     toggle: function () {
       this.open = !this.open;
     },
@@ -110,18 +100,10 @@ export default {
         abortAllUploads();
         buttons.done("upload");
         this.open = false;
-        this.reset(); // Resetting the upload store state
-        this.reload = true; // Trigger reload in the file store
+        this.reset();  // Resetting the upload store state
+        this.reload = true;  // Trigger reload in the file store
       }
     },
   },
 };
 </script>
-
-<style scoped>
-.upload-info {
-  min-width: 19ch;
-  width: auto;
-  text-align: left;
-}
-</style>

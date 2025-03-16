@@ -1,5 +1,3 @@
-version: 2
-
 project_name: filebrowser
 
 env:
@@ -36,10 +34,10 @@ builds:
 archives:
   -
     name_template: "{{.Os}}-{{.Arch}}{{if .Arm}}v{{.Arm}}{{end}}-{{ .ProjectName }}"
-    formats: [ 'tar.gz' ]
+    format: tar.gz
     format_overrides:
       - goos: windows
-        formats: [ 'zip' ]
+        format: zip
 
 dockers:
   -
@@ -139,7 +137,6 @@ dockers:
       - "filebrowser/filebrowser:v{{ .Major }}-amd64-s6"
     extra_files:
       - docker/root
-      - healthcheck.sh
   -
     dockerfile: Dockerfile.s6.aarch64
     use: buildx
@@ -158,7 +155,6 @@ dockers:
       - "filebrowser/filebrowser:v{{ .Major }}-arm64-s6"
     extra_files:
       - docker/root
-      - healthcheck.sh
 docker_manifests:
   - name_template: "filebrowser/filebrowser:latest"
     image_templates:
@@ -193,7 +189,7 @@ brews:
     repository:
       owner: filebrowser
       name: homebrew-tap
-    directory: Formula
+    folder: Formula
     homepage: https://filebrowser.org
     commit_author:
       name: FileBrowser Robot

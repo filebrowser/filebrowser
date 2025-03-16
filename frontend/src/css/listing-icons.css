@@ -5,7 +5,7 @@
 .file-icons [aria-label^="."] {
   opacity: 0.33;
 }
-.file-icons [data-ext=".bak"] {
+.file-icons [aria-label$=".bak"] {
   opacity: 0.33;
 }
 
@@ -33,117 +33,117 @@
 
 /* #f90 - Image */
 
-.file-icons [data-ext=".ai"] i::before,
-.file-icons [data-ext=".odg"] i::before,
-.file-icons [data-ext=".xcf"] i::before {
+.file-icons [aria-label$=".ai"] i::before,
+.file-icons [aria-label$=".odg"] i::before,
+.file-icons [aria-label$=".xcf"] i::before {
   content: "image";
 }
 
 /* #f90 - Presentation */
 
-.file-icons [data-ext=".odp"] i::before,
-.file-icons [data-ext=".ppt"] i::before,
-.file-icons [data-ext=".pptx"] i::before {
+.file-icons [aria-label$=".odp"] i::before,
+.file-icons [aria-label$=".ppt"] i::before,
+.file-icons [aria-label$=".pptx"] i::before {
   content: "slideshow";
 }
 
 /* #0f0 - Spreadsheet/Database */
 
-.file-icons [data-ext=".csv"] i::before,
-.file-icons [data-ext=".db"] i::before,
-.file-icons [data-ext=".odb"] i::before,
-.file-icons [data-ext=".ods"] i::before,
-.file-icons [data-ext=".xls"] i::before,
-.file-icons [data-ext=".xlsx"] i::before {
+.file-icons [aria-label$=".csv"] i::before,
+.file-icons [aria-label$=".db"] i::before,
+.file-icons [aria-label$=".odb"] i::before,
+.file-icons [aria-label$=".ods"] i::before,
+.file-icons [aria-label$=".xls"] i::before,
+.file-icons [aria-label$=".xlsx"] i::before {
   content: "border_all";
 }
 
 /* #00f - Document */
 
-.file-icons [data-ext=".doc"] i::before,
-.file-icons [data-ext=".docx"] i::before,
-.file-icons [data-ext=".log"] i::before,
-.file-icons [data-ext=".odt"] i::before,
-.file-icons [data-ext=".rtf"] i::before {
+.file-icons [aria-label$=".doc"] i::before,
+.file-icons [aria-label$=".docx"] i::before,
+.file-icons [aria-label$=".log"] i::before,
+.file-icons [aria-label$=".odt"] i::before,
+.file-icons [aria-label$=".rtf"] i::before {
   content: "description";
 }
 
 /* #999 - Code */
 
-.file-icons [data-ext=".c"] i::before,
-.file-icons [data-ext=".cpp"] i::before,
-.file-icons [data-ext=".cs"] i::before,
-.file-icons [data-ext=".css"] i::before,
-.file-icons [data-ext=".go"] i::before,
-.file-icons [data-ext=".h"] i::before,
-.file-icons [data-ext=".html"] i::before,
-.file-icons [data-ext=".java"] i::before,
-.file-icons [data-ext=".js"] i::before,
-.file-icons [data-ext=".json"] i::before,
-.file-icons [data-ext=".kt"] i::before,
-.file-icons [data-ext=".php"] i::before,
-.file-icons [data-ext=".py"] i::before,
-.file-icons [data-ext=".rb"] i::before,
-.file-icons [data-ext=".rs"] i::before,
-.file-icons [data-ext=".vue"] i::before,
-.file-icons [data-ext=".xml"] i::before,
-.file-icons [data-ext=".yml"] i::before {
+.file-icons [aria-label$=".c"] i::before,
+.file-icons [aria-label$=".cpp"] i::before,
+.file-icons [aria-label$=".cs"] i::before,
+.file-icons [aria-label$=".css"] i::before,
+.file-icons [aria-label$=".go"] i::before,
+.file-icons [aria-label$=".h"] i::before,
+.file-icons [aria-label$=".html"] i::before,
+.file-icons [aria-label$=".java"] i::before,
+.file-icons [aria-label$=".js"] i::before,
+.file-icons [aria-label$=".json"] i::before,
+.file-icons [aria-label$=".kt"] i::before,
+.file-icons [aria-label$=".php"] i::before,
+.file-icons [aria-label$=".py"] i::before,
+.file-icons [aria-label$=".rb"] i::before,
+.file-icons [aria-label$=".rs"] i::before,
+.file-icons [aria-label$=".vue"] i::before,
+.file-icons [aria-label$=".xml"] i::before,
+.file-icons [aria-label$=".yml"] i::before {
   content: "code";
 }
 
 /* #999 - Executable */
 
-.file-icons [data-ext=".apk"] i::before,
-.file-icons [data-ext=".bat"] i::before,
-.file-icons [data-ext=".exe"] i::before,
-.file-icons [data-ext=".jar"] i::before,
-.file-icons [data-ext=".ps1"] i::before,
-.file-icons [data-ext=".sh"] i::before {
+.file-icons [aria-label$=".apk"] i::before,
+.file-icons [aria-label$=".bat"] i::before,
+.file-icons [aria-label$=".exe"] i::before,
+.file-icons [aria-label$=".jar"] i::before,
+.file-icons [aria-label$=".ps1"] i::before,
+.file-icons [aria-label$=".sh"] i::before {
   content: "web_asset";
 }
 
 /* #999 - Installer */
 
-.file-icons [data-ext=".deb"] i::before,
-.file-icons [data-ext=".msi"] i::before,
-.file-icons [data-ext=".pkg"] i::before,
-.file-icons [data-ext=".rpm"] i::before {
+.file-icons [aria-label$=".deb"] i::before,
+.file-icons [aria-label$=".msi"] i::before,
+.file-icons [aria-label$=".pkg"] i::before,
+.file-icons [aria-label$=".rpm"] i::before {
   content: "archive";
 }
 
 /* #999 - Compressed */
 
-.file-icons [data-ext=".7z"] i::before,
-.file-icons [data-ext=".bz2"] i::before,
-.file-icons [data-ext=".cab"] i::before,
-.file-icons [data-ext=".gz"] i::before,
-.file-icons [data-ext=".rar"] i::before,
-.file-icons [data-ext=".tar"] i::before,
-.file-icons [data-ext=".xz"] i::before,
-.file-icons [data-ext=".zip"] i::before,
-.file-icons [data-ext=".zst"] i::before {
+.file-icons [aria-label$=".7z"] i::before,
+.file-icons [aria-label$=".bz2"] i::before,
+.file-icons [aria-label$=".cab"] i::before,
+.file-icons [aria-label$=".gz"] i::before,
+.file-icons [aria-label$=".rar"] i::before,
+.file-icons [aria-label$=".tar"] i::before,
+.file-icons [aria-label$=".xz"] i::before,
+.file-icons [aria-label$=".zip"] i::before,
+.file-icons [aria-label$=".zst"] i::before {
   content: "folder_zip";
 }
 
 /* #999 - Disk */
 
-.file-icons [data-ext=".ccd"] i::before,
-.file-icons [data-ext=".dmg"] i::before,
-.file-icons [data-ext=".iso"] i::before,
-.file-icons [data-ext=".mdf"] i::before,
-.file-icons [data-ext=".vdi"] i::before,
-.file-icons [data-ext=".vhd"] i::before,
-.file-icons [data-ext=".vmdk"] i::before,
-.file-icons [data-ext=".wim"] i::before {
+.file-icons [aria-label$=".ccd"] i::before,
+.file-icons [aria-label$=".dmg"] i::before,
+.file-icons [aria-label$=".iso"] i::before,
+.file-icons [aria-label$=".mdf"] i::before,
+.file-icons [aria-label$=".vdi"] i::before,
+.file-icons [aria-label$=".vhd"] i::before,
+.file-icons [aria-label$=".vmdk"] i::before,
+.file-icons [aria-label$=".wim"] i::before {
   content: "album";
 }
 
 /* #999 - Font */
 
-.file-icons [data-ext=".otf"] i::before,
-.file-icons [data-ext=".ttf"] i::before,
-.file-icons [data-ext=".woff"] i::before,
-.file-icons [data-ext=".woff2"] i::before {
+.file-icons [aria-label$=".otf"] i::before,
+.file-icons [aria-label$=".ttf"] i::before,
+.file-icons [aria-label$=".woff"] i::before,
+.file-icons [aria-label$=".woff2"] i::before {
   content: "font_download";
 }
 
@@ -166,77 +166,77 @@
 
 /* #f00 - Adobe/Oracle */
 
-.file-icons [data-ext=".ai"] i,
-.file-icons [data-ext=".java"] i,
-.file-icons [data-ext=".jar"] i,
-.file-icons [data-ext=".psd"] i,
-.file-icons [data-ext=".rb"] i,
-.file-icons [data-ext=".pdf"] i {
+.file-icons [aria-label$=".ai"] i,
+.file-icons [aria-label$=".java"] i,
+.file-icons [aria-label$=".jar"] i,
+.file-icons [aria-label$=".psd"] i,
+.file-icons [aria-label$=".rb"] i,
+.file-icons [data-type="pdf"] i {
   color: var(--icon-red);
 }
 
 /* #f90 - Image/Presentation */
 
-.file-icons [data-ext=".html"] i,
-.file-icons [data-ext=".odg"] i,
-.file-icons [data-ext=".odp"] i,
-.file-icons [data-ext=".ppt"] i,
-.file-icons [data-ext=".pptx"] i,
-.file-icons [data-ext=".vue"] i,
-.file-icons [data-ext=".xcf"] i {
+.file-icons [aria-label$=".html"] i,
+.file-icons [aria-label$=".odg"] i,
+.file-icons [aria-label$=".odp"] i,
+.file-icons [aria-label$=".ppt"] i,
+.file-icons [aria-label$=".pptx"] i,
+.file-icons [aria-label$=".vue"] i,
+.file-icons [aria-label$=".xcf"] i {
   color: var(--icon-orange);
 }
 
 /* #ff0 - Various */
 
-.file-icons [data-ext=".css"] i,
-.file-icons [data-ext=".js"] i,
-.file-icons [data-ext=".json"] i,
-.file-icons [data-ext=".zip"] i {
+.file-icons [aria-label$=".css"] i,
+.file-icons [aria-label$=".js"] i,
+.file-icons [aria-label$=".json"] i,
+.file-icons [aria-label$=".zip"] i {
   color: var(--icon-yellow);
 }
 
 /* #0f0 - Spreadsheet/Google */
 
-.file-icons [data-ext=".apk"] i,
-.file-icons [data-ext=".dex"] i,
-.file-icons [data-ext=".go"] i,
-.file-icons [data-ext=".ods"] i,
-.file-icons [data-ext=".xls"] i,
-.file-icons [data-ext=".xlsx"] i {
+.file-icons [aria-label$=".apk"] i,
+.file-icons [aria-label$=".dex"] i,
+.file-icons [aria-label$=".go"] i,
+.file-icons [aria-label$=".ods"] i,
+.file-icons [aria-label$=".xls"] i,
+.file-icons [aria-label$=".xlsx"] i {
   color: var(--icon-green);
 }
 
 /* #00f - Document/Microsoft/Apple/Closed */
 
-.file-icons [data-ext=".aac"] i,
-.file-icons [data-ext=".bat"] i,
-.file-icons [data-ext=".cab"] i,
-.file-icons [data-ext=".cs"] i,
-.file-icons [data-ext=".dmg"] i,
-.file-icons [data-ext=".doc"] i,
-.file-icons [data-ext=".docx"] i,
-.file-icons [data-ext=".emf"] i,
-.file-icons [data-ext=".exe"] i,
-.file-icons [data-ext=".ico"] i,
-.file-icons [data-ext=".mp2"] i,
-.file-icons [data-ext=".mp3"] i,
-.file-icons [data-ext=".mp4"] i,
-.file-icons [data-ext=".mpg"] i,
-.file-icons [data-ext=".msi"] i,
-.file-icons [data-ext=".odt"] i,
-.file-icons [data-ext=".ps1"] i,
-.file-icons [data-ext=".rtf"] i,
-.file-icons [data-ext=".vob"] i,
-.file-icons [data-ext=".wim"] i {
+.file-icons [aria-label$=".aac"] i,
+.file-icons [aria-label$=".bat"] i,
+.file-icons [aria-label$=".cab"] i,
+.file-icons [aria-label$=".cs"] i,
+.file-icons [aria-label$=".dmg"] i,
+.file-icons [aria-label$=".doc"] i,
+.file-icons [aria-label$=".docx"] i,
+.file-icons [aria-label$=".emf"] i,
+.file-icons [aria-label$=".exe"] i,
+.file-icons [aria-label$=".ico"] i,
+.file-icons [aria-label$=".mp2"] i,
+.file-icons [aria-label$=".mp3"] i,
+.file-icons [aria-label$=".mp4"] i,
+.file-icons [aria-label$=".mpg"] i,
+.file-icons [aria-label$=".msi"] i,
+.file-icons [aria-label$=".odt"] i,
+.file-icons [aria-label$=".ps1"] i,
+.file-icons [aria-label$=".rtf"] i,
+.file-icons [aria-label$=".vob"] i,
+.file-icons [aria-label$=".wim"] i {
   color: var(--icon-blue);
 }
 
 /* #60f - Various */
 
-.file-icons [data-ext=".iso"] i,
-.file-icons [data-ext=".php"] i,
-.file-icons [data-ext=".rar"] i {
+.file-icons [aria-label$=".iso"] i,
+.file-icons [aria-label$=".php"] i,
+.file-icons [aria-label$=".rar"] i {
   color: var(--icon-violet);
 }
 

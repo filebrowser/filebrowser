@@ -136,6 +136,31 @@
               />
             </p>
           </div>
+
+          <h3>{{ $t("settings.onlyOffice") }}</h3>
+
+          <p>
+            <label for="onlyoffice-url">{{
+              $t("settings.onlyOfficeUrl")
+            }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              v-model="settings.onlyoffice.url"
+              id="onlyoffice-url"
+            />
+          </p>
+          <p>
+            <label for="onlyoffice-jwt">{{
+              $t("settings.onlyOfficeJwtSecret")
+            }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              v-model="settings.onlyoffice.jwtSecret"
+              id="onlyoffice-jwt"
+            />
+          </p>
         </div>
 
         <div class="card-action">
@@ -273,7 +298,7 @@ const formattedChunkSize = computed({
     }
 
     // Set a new timeout to apply the format after a short delay
-    debounceTimeout.value = window.setTimeout(() => {
+    debounceTimeout.value = setTimeout(() => {
       if (settings.value) settings.value.tus.chunkSize = parseBytes(value);
     }, 1500);
   },
@@ -282,11 +307,11 @@ const formattedChunkSize = computed({
 // Define funcs
 const capitalize = (name: string, where: string | RegExp = "_") => {
   if (where === "caps") where = /(?=[A-Z])/;
-  const split = name.split(where);
+  let splitted = name.split(where);
   name = "";
 
-  for (let i = 0; i < split.length; i++) {
-    name += split[i].charAt(0).toUpperCase() + split[i].slice(1) + " ";
+  for (let i = 0; i < splitted.length; i++) {
+    name += splitted[i].charAt(0).toUpperCase() + splitted[i].slice(1) + " ";
   }
 
   return name.slice(0, -1);
@@ -294,7 +319,7 @@ const capitalize = (name: string, where: string | RegExp = "_") => {
 
 const save = async () => {
   if (settings.value === null) return false;
-  const newSettings: ISettings = {
+  let newSettings: ISettings = {
     ...settings.value,
     shell:
       settings.value?.shell
@@ -376,7 +401,7 @@ onMounted(async () => {
   try {
     layoutStore.loading = true;
     const original: ISettings = await api.get();
-    const newSettings: ISettings = { ...original, commands: {} };
+    let newSettings: ISettings = { ...original, commands: {} };
 
     const keys = Object.keys(original.commands) as Array<keyof SettingsCommand>;
     for (const key of keys) {

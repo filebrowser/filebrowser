@@ -81,9 +81,9 @@ export default {
     ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
     move: async function (event) {
       event.preventDefault();
-      const items = [];
+      let items = [];
 
-      for (const item of this.selected) {
+      for (let item of this.selected) {
         items.push({
           from: this.req.items[item].url,
           to: this.dest + encodeURIComponent(this.req.items[item].name),
@@ -91,7 +91,7 @@ export default {
         });
       }
 
-      const action = async (overwrite, rename) => {
+      let action = async (overwrite, rename) => {
         buttons.loading("move");
 
         await api
@@ -106,8 +106,8 @@ export default {
           });
       };
 
-      const dstItems = (await api.fetch(this.dest)).items;
-      const conflict = upload.checkConflict(items, dstItems);
+      let dstItems = (await api.fetch(this.dest)).items;
+      let conflict = upload.checkConflict(items, dstItems);
 
       let overwrite = false;
       let rename = false;

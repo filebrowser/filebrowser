@@ -3,6 +3,8 @@ package files
 import (
 	"os"
 	"unicode/utf8"
+
+	"github.com/spf13/afero"
 )
 
 func isBinary(content []byte) bool {
@@ -56,4 +58,17 @@ func IsNamedPipe(mode os.FileMode) bool {
 
 func IsSymlink(mode os.FileMode) bool {
 	return mode&os.ModeSymlink != 0
+}
+
+func GetRealPath(fs afero.Fs, path string) string {
+	if realPathFs, ok := fs.(interface {
+		RealPath(name string) (fPath string, err error)
+	}); ok {
+		realPath, err := realPathFs.RealPath(path)
+		if err == nil {
+			return realPath
+		}
+	}
+
+	return path
 }

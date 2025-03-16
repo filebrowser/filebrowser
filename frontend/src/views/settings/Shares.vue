@@ -87,12 +87,12 @@ onMounted(async () => {
   layoutStore.loading = true;
 
   try {
-    const newLinks = await api.list();
+    let newLinks = await api.list();
     if (authStore.user?.perm.admin) {
-      const userMap = new Map<number, string>();
-      for (const user of await users.getAll())
+      let userMap = new Map<number, string>();
+      for (let user of await users.getAll())
         userMap.set(user.id, user.username);
-      for (const link of newLinks) {
+      for (let link of newLinks) {
         if (link.userID && userMap.has(link.userID))
           link.username = userMap.get(link.userID);
       }
@@ -108,23 +108,13 @@ onMounted(async () => {
 });
 
 const copyToClipboard = (text: string) => {
-  copy({ text }).then(
+  copy(text).then(
     () => {
       // clipboard successfully set
       $showSuccess(t("success.linkCopied"));
     },
     () => {
       // clipboard write failed
-      copy({ text }, { permission: true }).then(
-        () => {
-          // clipboard successfully set
-          $showSuccess(t("success.linkCopied"));
-        },
-        (e) => {
-          // clipboard write failed
-          $showError(e);
-        }
-      );
     }
   );
 };
