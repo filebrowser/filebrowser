@@ -7,6 +7,7 @@
         type="text"
         v-model="user.username"
         id="username"
+        autocomplete="username"
       />
     </p>
 
@@ -18,6 +19,7 @@
         :placeholder="passwordPlaceholder"
         v-model="user.password"
         id="password"
+        autocomplete="new-password"
       />
     </p>
 

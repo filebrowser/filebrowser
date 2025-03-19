@@ -49,11 +49,19 @@
 
         <div class="card-content">
           <input
+            type="text"
+            style="display: none"
+            name="username"
+            :value="authStore.user?.username"
+            autocomplete="username"
+          />
+          <input
             :class="passwordClass"
             type="password"
             :placeholder="t('settings.newPassword')"
             v-model="password"
             name="password"
+            autocomplete="new-password"
           />
           <input
             :class="passwordClass"
@@ -61,6 +69,7 @@
             :placeholder="t('settings.newPasswordConfirm')"
             v-model="passwordConf"
             name="passwordConf"
+            autocomplete="new-password"
           />
         </div>
 
