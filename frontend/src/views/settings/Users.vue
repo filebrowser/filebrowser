@@ -14,12 +14,14 @@
 
         <div class="card-content full">
           <table>
-            <tr>
-              <th>{{ t("settings.username") }}</th>
-              <th>{{ t("settings.admin") }}</th>
-              <th>{{ t("settings.scope") }}</th>
-              <th></th>
-            </tr>
+            <thead>
+              <tr>
+                <th>{{ t("settings.username") }}</th>
+                <th>{{ t("settings.admin") }}</th>
+                <th>{{ t("settings.scope") }}</th>
+                <th></th>
+              </tr>
+            </thead>
 
             <tr v-for="user in users" :key="user.id">
               <td>{{ user.username }}</td>

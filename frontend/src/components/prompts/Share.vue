@@ -7,12 +7,14 @@
     <template v-if="listing">
       <div class="card-content">
         <table>
-          <tr>
-            <th>#</th>
-            <th>{{ $t("settings.shareDuration") }}</th>
-            <th></th>
-            <th></th>
-          </tr>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{{ $t("settings.shareDuration") }}</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
 
           <tr v-for="link in links" :key="link.hash">
             <td>{{ link.hash }}</td>
