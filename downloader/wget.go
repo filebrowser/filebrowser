@@ -31,12 +31,12 @@ func (w *Wget) Download(url string, filename string, pathname string) error {
 			return err
 		}
 	}
-	download_filepath := filepath.Join(pathname, filename)
-	_, err = os.Stat(download_filepath)
+	downloadFilepath := filepath.Join(pathname, filename)
+	_, err = os.Stat(downloadFilepath)
 	if err != nil && os.IsExist(err) {
 		return err
 	}
-	output, err := exec.Command("wget", "-O", download_filepath, url).CombinedOutput()
+	output, err := exec.Command("wget", "-O", downloadFilepath, url).CombinedOutput()
 	if err != nil {
 		return err
 	}
