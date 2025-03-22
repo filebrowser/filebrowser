@@ -51,7 +51,7 @@ import { useLayoutStore } from "@/stores/layout";
 import { inject, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { getTheme } from "@/utils/theme";
+import { getEditorTheme } from "@/utils/theme";
 import { marked } from "marked";
 
 const $showError = inject<IToastError>("$showError")!;
@@ -107,17 +107,13 @@ onMounted(() => {
     value: fileContent,
     showPrintMargin: false,
     readOnly: fileStore.req?.type === "textImmutable",
-    theme: "ace/theme/chrome",
+    theme: getEditorTheme(authStore.user?.aceEditorTheme ?? ""),
     mode: modelist.getModeForPath(fileStore.req!.name).mode,
     wrap: true,
     enableBasicAutocompletion: true,
     enableLiveAutocompletion: true,
     enableSnippets: true,
   });
-
-  if (getTheme() === "dark") {
-    editor.value!.setTheme("ace/theme/twilight");
-  }
 
   editor.value.focus();
 });
