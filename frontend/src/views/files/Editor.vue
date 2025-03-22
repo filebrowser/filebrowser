@@ -69,7 +69,7 @@ import HeaderBar from "@/components/header/HeaderBar.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
-import { getTheme } from "@/utils/theme";
+import { getEditorTheme } from "@/utils/theme";
 import { marked } from "marked";
 import { inject, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
@@ -122,17 +122,13 @@ onMounted(() => {
     value: fileContent,
     showPrintMargin: false,
     readOnly: fileStore.req?.type === "textImmutable",
-    theme: "ace/theme/chrome",
+    theme: getEditorTheme(authStore.user?.aceEditorTheme ?? ""),
     mode: modelist.getModeForPath(fileStore.req!.name).mode,
     wrap: true,
     enableBasicAutocompletion: true,
     enableLiveAutocompletion: true,
     enableSnippets: true,
   });
-
-  if (getTheme() === "dark") {
-    editor.value!.setTheme("ace/theme/twilight");
-  }
 
   editor.value.setFontSize(fontSize.value);
   editor.value.focus();
@@ -219,6 +215,13 @@ const decreaseFontSize = () => {
 };
 
 const close = () => {
+  if (!editor.value?.session.getUndoManager().isClean()) {
+    layoutStore.showHover("discardEditorChanges");
+    return;
+  }
+
+  fileStore.updateRequest(null);
+
   const uri = url.removeLastDir(route.path) + "/";
   router.push({ path: uri });
 };
