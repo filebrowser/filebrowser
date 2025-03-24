@@ -2,23 +2,27 @@ package http
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/filebrowser/filebrowser/v2/downloader"
 	"net/http"
 )
 
 func downloadHandler() handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-		fmt.Printf("wget: %v\n", d.user.Perm.Create)
-		if !d.user.Perm.Create {
+		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
 			return http.StatusForbidden, nil
 		}
-		var wget downloader.Wget
-		if err := json.NewDecoder(r.Body).Decode(&wget); err != nil {
+		var params struct {
+			URL      string `json:"url"`
+			Filename string `json:"filename"`
+			Pathname string `json:"pathname"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 			return http.StatusBadRequest, err
 		}
+		downloadTask := downloader.NewDownloadTask(params.Filename, params.Pathname, params.URL)
 
-		err := wget.Download(wget.URL, wget.Filename, wget.Pathname)
+		err := downloadTask.Download()
+
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
