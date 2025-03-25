@@ -80,6 +80,7 @@ onMounted(() => {
   const fileContent = fileStore.req?.content || "";
 
   watchEffect(async () => {
+    isPreview.value = true;
     if (isMarkdownFile && isPreview.value) {
       const new_value = editor.value?.getValue() || "";
       try {
