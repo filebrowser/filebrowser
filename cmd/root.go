@@ -3,6 +3,7 @@ package cmd
 import (
 	"crypto/tls"
 	"errors"
+	"github.com/patrickmn/go-cache"
 	"io"
 	"io/fs"
 	"log"
@@ -13,6 +14,7 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
+	"time"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/afero"
@@ -176,7 +178,9 @@ user created with the credentials from options "username" and "password".`,
 			panic(err)
 		}
 
-		handler, err := fbhttp.NewHandler(imgSvc, fileCache, d.store, server, assetsFs)
+		downloaderCache := cache.New(cache.NoExpiration, 1*time.Minute)
+
+		handler, err := fbhttp.NewHandler(imgSvc, fileCache, d.store, server, assetsFs, downloaderCache)
 		checkErr(err)
 
 		defer listener.Close()

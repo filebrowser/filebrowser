@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/patrickmn/go-cache"
 	"io/fs"
 	"net/http"
 
@@ -21,6 +22,7 @@ func NewHandler(
 	store *storage.Storage,
 	server *settings.Server,
 	assetsFs fs.FS,
+	downloaderCache *cache.Cache,
 ) (http.Handler, error) {
 	server.Clean()
 
@@ -92,7 +94,7 @@ func NewHandler(
 	public.PathPrefix("/dl").Handler(monkey(publicDlHandler, "/api/public/dl/")).Methods("GET")
 	public.PathPrefix("/share").Handler(monkey(publicShareHandler, "/api/public/share/")).Methods("GET")
 
-	api.PathPrefix("/download").Handler(monkey(downloadHandler(), "/api/download/")).Methods("POST")
+	api.PathPrefix("/download").Handler(monkey(downloadHandler(downloaderCache), "/api/download/")).Methods("POST")
 
 	return stripPrefix(server.BaseURL, r), nil
 }
