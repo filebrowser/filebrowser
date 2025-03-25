@@ -24,6 +24,13 @@
             class="input input--block"
             v-model:locale="locale"
           ></languages>
+
+          <h3>{{ t("settings.aceEditorTheme") }}</h3>
+          <AceEditorTheme
+            class="input input--block"
+            v-model:aceEditorTheme="aceEditorTheme"
+            id="aceTheme"
+          ></AceEditorTheme>
         </div>
 
         <div class="card-action">
@@ -81,6 +88,7 @@
 import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
 import { users as api } from "@/api";
+import AceEditorTheme from "@/components/settings/AceEditorTheme.vue";
 import Languages from "@/components/settings/Languages.vue";
 import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -98,6 +106,7 @@ const hideDotfiles = ref<boolean>(false);
 const singleClick = ref<boolean>(false);
 const dateFormat = ref<boolean>(false);
 const locale = ref<string>("");
+const aceEditorTheme = ref<string>("");
 
 const passwordClass = computed(() => {
   const baseClass = "input input--block";
@@ -113,13 +122,14 @@ const passwordClass = computed(() => {
   return `${baseClass} input--red`;
 });
 
-onMounted(() => {
+onMounted(async () => {
   layoutStore.loading = true;
   if (authStore.user === null) return false;
   locale.value = authStore.user.locale;
   hideDotfiles.value = authStore.user.hideDotfiles;
   singleClick.value = authStore.user.singleClick;
   dateFormat.value = authStore.user.dateFormat;
+  aceEditorTheme.value = authStore.user.aceEditorTheme;
   layoutStore.loading = false;
   return true;
 });
@@ -163,6 +173,7 @@ const updateSettings = async (event: Event) => {
       hideDotfiles: hideDotfiles.value,
       singleClick: singleClick.value,
       dateFormat: dateFormat.value,
+      aceEditorTheme: aceEditorTheme.value,
     };
 
     await api.update(data, [
@@ -170,6 +181,7 @@ const updateSettings = async (event: Event) => {
       "hideDotfiles",
       "singleClick",
       "dateFormat",
+      "aceEditorTheme",
     ]);
     authStore.updateUser(data);
     $showSuccess(t("settings.settingsUpdated"));
