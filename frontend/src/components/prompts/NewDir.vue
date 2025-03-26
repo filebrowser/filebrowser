@@ -28,7 +28,7 @@
       </button>
       <button
         class="button button--flat"
-        :aria-label="$t('buttons.create')"
+        :aria-label="t('buttons.create')"
         :title="t('buttons.create')"
         @click="submit"
         tabindex="2"
