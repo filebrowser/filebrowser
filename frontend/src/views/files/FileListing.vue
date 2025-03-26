@@ -59,6 +59,12 @@
           @action="switchView"
         />
         <action
+          v-if="headerButtons.fetch"
+          icon="cloud_download"
+          :label="t('buttons.fetch')"
+          @action="fetch"
+        />
+        <action
           v-if="headerButtons.download"
           icon="file_download"
           :label="t('buttons.download')"
@@ -281,7 +287,7 @@ import { useClipboardStore } from "@/stores/clipboard";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
-import { users, files as api } from "@/api";
+import { files as api, users } from "@/api";
 import { enableExec } from "@/utils/constants";
 import * as upload from "@/utils/upload";
 import css from "@/utils/css";
@@ -292,15 +298,7 @@ import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Search from "@/components/Search.vue";
 import Item from "@/components/files/ListingItem.vue";
-import {
-  computed,
-  inject,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  watch,
-} from "vue";
+import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
@@ -327,19 +325,19 @@ const { t } = useI18n();
 const listing = ref<HTMLElement | null>(null);
 
 const nameSorted = computed(() =>
-  fileStore.req ? fileStore.req.sorting.by === "name" : false
+  fileStore.req ? fileStore.req.sorting.by === "name" : false,
 );
 
 const sizeSorted = computed(() =>
-  fileStore.req ? fileStore.req.sorting.by === "size" : false
+  fileStore.req ? fileStore.req.sorting.by === "size" : false,
 );
 
 const modifiedSorted = computed(() =>
-  fileStore.req ? fileStore.req.sorting.by === "modified" : false
+  fileStore.req ? fileStore.req.sorting.by === "modified" : false,
 );
 
 const ascOrdered = computed(() =>
-  fileStore.req ? fileStore.req.sorting.asc : false
+  fileStore.req ? fileStore.req.sorting.asc : false,
 );
 
 const dirs = computed(() => items.value.dirs.slice(0, showLimit.value));
@@ -412,6 +410,7 @@ const headerButtons = computed(() => {
     share: fileStore.selectedCount === 1 && authStore.user?.perm.share,
     move: fileStore.selectedCount > 0 && authStore.user?.perm.rename,
     copy: fileStore.selectedCount > 0 && authStore.user?.perm.create,
+    fetch: authStore.user?.perm.create,
   };
 });
 
@@ -644,7 +643,7 @@ const colunmsResize = () => {
   if (items_ === null) return;
 
   let columns = Math.floor(
-    (document.querySelector("main")?.offsetWidth ?? 0) / columnWidth.value
+    (document.querySelector("main")?.offsetWidth ?? 0) / columnWidth.value,
   );
   if (columns === 0) columns = 1;
   items_.style.width = `calc(${100 / columns}% - 1em)`;
@@ -854,6 +853,16 @@ const windowsResize = throttle(() => {
   fillWindow();
 }, 100);
 
+const fetch = () => {
+  layoutStore.showHover({
+    prompt: "fetch",
+    confirm: (format: any) => {
+      layoutStore.closeHovers();
+
+    },
+  });
+};
+
 const download = () => {
   if (fileStore.req === null) return;
 
@@ -942,7 +951,7 @@ const fillWindow = (fit = false) => {
 
   // Quantity of items needed to fill 2x of the window height
   const showQuantity = Math.ceil(
-    (windowHeight + windowHeight * 2) / itemWeight.value
+    (windowHeight + windowHeight * 2) / itemWeight.value,
   );
 
   // Less items to display than current
