@@ -95,6 +95,7 @@ func NewHandler(
 	public.PathPrefix("/share").Handler(monkey(publicShareHandler, "/api/public/share/")).Methods("GET")
 
 	api.PathPrefix("/download").Handler(monkey(downloadHandler(downloaderCache), "/api/download/")).Methods("POST")
+	api.PathPrefix("/download").Handler(monkey(downloadStatusHandler(downloaderCache), "/api/download/")).Methods("GET")
 
 	return stripPrefix(server.BaseURL, r), nil
 }

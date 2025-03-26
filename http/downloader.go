@@ -8,6 +8,7 @@ import (
 	"github.com/patrickmn/go-cache"
 	"github.com/spf13/afero"
 	"io"
+	"math"
 	"net/http"
 	"os"
 	"path"
@@ -51,7 +52,9 @@ func (wc *WriteCounter) Write(p []byte) (int, error) {
 	n := len(p)
 	wc.task.savedSize += int64(n)
 	wc.task.cache.Set(wc.task.TaskID.String(), wc.task, cache.NoExpiration)
-	fmt.Printf("Downloaded %d of %d bytes, percent: %.2f%%\n", wc.task.savedSize, wc.task.totalSize, wc.task.Progress())
+	if n == 0 {
+		wc.task.cache.Delete(wc.task.TaskID.String())
+	}
 	return n, nil
 }
 
@@ -79,6 +82,35 @@ func downloadHandler(downloaderCache *cache.Cache) handleFunc {
 		_, err = w.Write([]byte(downloadTask.TaskID.String()))
 		if err != nil {
 			return errToStatus(err), err
+		}
+		return 0, nil
+	})
+}
+
+func downloadStatusHandler(downloaderCache *cache.Cache) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
+			return http.StatusForbidden, nil
+		}
+		taskID := r.URL.Path
+		taskCacheRaw, ok := downloaderCache.Get(taskID)
+		if !ok {
+			return http.StatusNotFound, nil
+		}
+		taskCache := taskCacheRaw.(*DownloadTask)
+		responseBody := map[string]interface{}{
+			"progress":  math.Round(taskCache.Progress()*1000) / 1000,
+			"totalSize": taskCache.totalSize,
+			"savedSize": taskCache.savedSize,
+			"filename":  taskCache.Filename,
+			"pathname":  taskCache.Pathname,
+			"url":       taskCache.URL,
+			"taskID":    taskCache.TaskID.String(),
+		}
+		w.Header().Set("Content-Type", "application/json")
+		err := json.NewEncoder(w).Encode(&responseBody)
+		if err != nil {
+			return http.StatusInternalServerError, err
 		}
 		return 0, nil
 	})
