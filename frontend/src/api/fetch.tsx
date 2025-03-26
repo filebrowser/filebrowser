@@ -19,3 +19,18 @@ export async function fetchUrlFile(
   console.log("on create download task: ", taskID);
   return taskID;
 }
+
+type DownloadTask = {
+  filename: string;
+  pathname: string;
+  progress: number;
+  savedSize: number;
+  taskID: string;
+  totalSize: number;
+  url: string;
+};
+
+export async function queryDownloadTask(taskID: string): Promise<DownloadTask> {
+  const res = await fetchURL(`/api/download/${taskID}`, {});
+  return await res.json();
+}

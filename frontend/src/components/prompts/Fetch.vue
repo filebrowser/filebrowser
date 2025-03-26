@@ -13,6 +13,7 @@
         @keyup.enter="submit"
         v-model.trim="fetchUrl"
         tabindex="1"
+        :disabled="isDownloading"
       />
     </div>
 
@@ -24,6 +25,7 @@
         @keyup.enter="submit"
         v-model.trim="saveName"
         tabindex="2"
+        :disabled="isDownloading"
       />
     </div>
 
@@ -33,7 +35,7 @@
         @click="layoutStore.closeHovers"
         :aria-label="t('buttons.cancel')"
         :title="t('buttons.cancel')"
-        tabindex="3"
+        tabindex="4"
       >
         {{ t("buttons.cancel") }}
       </button>
@@ -42,10 +44,21 @@
         :aria-label="t('buttons.create')"
         :title="t('buttons.create')"
         @click="submit"
-        tabindex="2"
+        tabindex="3"
+        :disabled="isDownloading"
       >
         {{ t("buttons.create") }}
       </button>
+    </div>
+    <div v-if="progress > 0" class="material-progress-container">
+      <div
+        class="material-progress-bar"
+        id="downloadProgress"
+        :style="{ width: Math.floor(progress * 100) + '%' }"
+      ></div>
+      <div class="material-progress-label">
+        {{ (progress * 100).toFixed(1) + "%" }}
+      </div>
     </div>
   </div>
 </template>
@@ -54,7 +67,7 @@
 import { useLayoutStore } from "@/stores/layout.ts";
 import { useFileStore } from "@/stores/file.ts";
 import { useI18n } from "vue-i18n";
-import { inject, ref, watch } from "vue";
+import { computed, inject, onMounted, ref, watch } from "vue";
 import url from "@/utils/url.ts";
 import { fetcher as api } from "@/api";
 import { useRoute } from "vue-router";
@@ -70,6 +83,11 @@ const { t } = useI18n();
 const fetchUrl = ref<string>("");
 const saveName = ref<string>("");
 const taskID = ref<string>("");
+const progress = ref<number>(0);
+
+const isDownloading = computed(() => {
+  return taskID.value !== "" && progress.value < 1 && progress.value > 0;
+});
 
 watch(fetchUrl, (value) => {
   try {
@@ -113,8 +131,20 @@ const submit = async (event: Event) => {
       $showError(e);
     }
   }
-  layoutStore.closeHovers();
 };
+
+onMounted(() => {
+  setInterval(async () => {
+    if (!taskID.value) return;
+    const task = await api.queryDownloadTask(taskID.value);
+    if (!task) return;
+    console.log("fetch task info", task);
+    progress.value = task.progress;
+    if (task.progress >= 1) {
+      taskID.value = "";
+    }
+  }, 1000);
+});
 </script>
 
 <style scoped></style>
