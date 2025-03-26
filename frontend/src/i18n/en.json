@@ -141,7 +141,10 @@
     "uploadMessage": "Select an option to upload.",
     "optionalPassword": "Optional password",
     "resolution": "Resolution",
-    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?",
+    "fetch": "Fetch",
+    "fetchUrl": "Fetch URL",
+    "fetchSaveName": "Save as"
   },
   "search": {
     "images": "Images",
