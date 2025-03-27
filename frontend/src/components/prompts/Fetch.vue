@@ -57,7 +57,7 @@
         :style="{ width: Math.floor(progress * 100) + '%' }"
       ></div>
       <div class="material-progress-label">
-        {{ (progress * 100).toFixed(1) + "%" }}
+        {{ Math.floor((progress * 100)) + "%" }}
       </div>
     </div>
   </div>
