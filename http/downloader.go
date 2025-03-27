@@ -40,7 +40,6 @@ func NewDownloadTask(url, filename, pathname string, downloaderCache *cache.Cach
 		Pathname: pathname,
 		cache:    downloaderCache,
 	}
-	downloaderCache.Set(taskId.String(), downloadTask, cache.NoExpiration)
 	return downloadTask
 }
 
@@ -52,9 +51,6 @@ func (wc *WriteCounter) Write(p []byte) (int, error) {
 	n := len(p)
 	wc.task.savedSize += int64(n)
 	wc.task.cache.Set(wc.task.TaskID.String(), wc.task, cache.NoExpiration)
-	if n == 0 {
-		wc.task.cache.Delete(wc.task.TaskID.String())
-	}
 	return n, nil
 }
 
@@ -117,6 +113,7 @@ func downloadStatusHandler(downloaderCache *cache.Cache) handleFunc {
 }
 
 func downloadWithTask(fs afero.Fs, task *DownloadTask) error {
+	task.cache.Set(task.TaskID.String(), task, cache.NoExpiration)
 	err := fs.MkdirAll(task.Pathname, files.PermDir)
 	if err != nil {
 		return err
