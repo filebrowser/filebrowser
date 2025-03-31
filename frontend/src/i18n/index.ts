@@ -23,6 +23,7 @@ import("dayjs/locale/sk");
 import("dayjs/locale/sv");
 import("dayjs/locale/tr");
 import("dayjs/locale/uk");
+import("dayjs/locale/vi");
 import("dayjs/locale/zh-cn");
 import("dayjs/locale/zh-tw");
 
@@ -102,6 +103,9 @@ export function detectLocale() {
     // ua wasnt a valid locale for ukraine
     case /^uk\b/.test(locale):
       locale = "uk";
+      break;
+    case /^vi\b/.test(locale):
+      locale = "vi";
       break;
     case /^sv-se\b/.test(locale):
     case /^sv\b/.test(locale):
