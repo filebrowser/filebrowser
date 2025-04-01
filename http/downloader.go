@@ -108,7 +108,7 @@ func downloadStatusHandler(downloaderCache *cache.Cache) handleFunc {
 			"url":       taskCache.URL,
 			"taskID":    taskCache.TaskID.String(),
 			"status":    taskCache.status,
-			"error":     taskCache.err,
+			"error":     fmt.Sprint(taskCache.err),
 		}
 		w.Header().Set("Content-Type", "application/json")
 		err := json.NewEncoder(w).Encode(&responseBody)
