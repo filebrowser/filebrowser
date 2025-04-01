@@ -50,14 +50,17 @@
         {{ t("buttons.create") }}
       </button>
     </div>
-    <div v-if="progress > 0" class="material-progress-container">
+    <div v-if="isDownloading || isFailed" class="material-progress-container">
       <div
         class="material-progress-bar"
         id="downloadProgress"
-        :style="{ width: Math.floor(progress * 100) + '%' }"
+        :style="{ width: Math.floor(currentTask.progress * 100) + '%' }"
       ></div>
-      <div class="material-progress-label">
-        {{ Math.floor((progress * 100)) + "%" }}
+      <div
+        class="material-progress-label"
+        :style="{ color: isFailed ? '#ff4757' : '' }"
+      >
+        {{ Math.floor(currentTask.progress * 100) + "%" }}
       </div>
     </div>
   </div>
@@ -67,10 +70,11 @@
 import { useLayoutStore } from "@/stores/layout.ts";
 import { useFileStore } from "@/stores/file.ts";
 import { useI18n } from "vue-i18n";
-import { computed, inject, onMounted, ref, watch } from "vue";
+import { computed, inject, onMounted, reactive, ref, watch } from "vue";
 import url from "@/utils/url.ts";
 import { fetcher as api } from "@/api";
 import { useRoute } from "vue-router";
+import type { DownloadTask } from "@/api/fetch.tsx";
 
 const $showError = inject<IToastError>("$showError")!;
 
@@ -83,10 +87,28 @@ const { t } = useI18n();
 const fetchUrl = ref<string>("");
 const saveName = ref<string>("");
 const taskID = ref<string>("");
-const progress = ref<number>(0);
+const currentTask = reactive<DownloadTask>({
+  error: "",
+  filename: "",
+  pathname: "",
+  progress: 0,
+  savedSize: 0,
+  status: "",
+  taskID: "",
+  totalSize: 0,
+  url: "",
+});
 
 const isDownloading = computed(() => {
-  return taskID.value !== "" && progress.value < 1 && progress.value > 0;
+  return (
+    taskID.value !== "" &&
+    taskID.value === currentTask.taskID &&
+    currentTask.status === "downloading"
+  );
+});
+
+const isFailed = computed(() => {
+  return currentTask.status === "error";
 });
 
 watch(fetchUrl, (value) => {
@@ -139,8 +161,8 @@ onMounted(() => {
     const task = await api.queryDownloadTask(taskID.value);
     if (!task) return;
     console.log("fetch task info", task);
-    progress.value = task.progress;
-    if (task.progress >= 1) {
+    Object.assign(currentTask, task);
+    if (currentTask.status === "completed") {
       taskID.value = "";
     }
   }, 1000);

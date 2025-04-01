@@ -20,7 +20,7 @@ export async function fetchUrlFile(
   return taskID;
 }
 
-type DownloadTask = {
+export type DownloadTask = {
   filename: string;
   pathname: string;
   progress: number;
@@ -28,6 +28,8 @@ type DownloadTask = {
   taskID: string;
   totalSize: number;
   url: string;
+  status: string;
+  error: string;
 };
 
 export async function queryDownloadTask(taskID: string): Promise<DownloadTask> {
