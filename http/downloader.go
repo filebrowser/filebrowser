@@ -119,6 +119,24 @@ func downloadStatusHandler(downloaderCache *cache.Cache) handleFunc {
 	})
 }
 
+func cancelDownloadHandler(downloaderCache *cache.Cache) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
+			return http.StatusForbidden, nil
+		}
+		taskID := r.URL.Path
+		taskCacheRaw, ok := downloaderCache.Get(taskID)
+		if !ok {
+			return http.StatusNotFound, nil
+		}
+		taskCache := taskCacheRaw.(*DownloadTask)
+		if taskCache.cancel != nil {
+			taskCache.cancel()
+		}
+		return http.StatusOK, nil
+	})
+}
+
 func downloadWithTask(fs afero.Fs, task *DownloadTask) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	task.cancel = cancel

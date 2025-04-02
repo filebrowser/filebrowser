@@ -96,6 +96,7 @@ func NewHandler(
 
 	api.PathPrefix("/download").Handler(monkey(downloadHandler(downloaderCache), "/api/download/")).Methods("POST")
 	api.PathPrefix("/download").Handler(monkey(downloadStatusHandler(downloaderCache), "/api/download/")).Methods("GET")
+	api.PathPrefix("/download").Handler(monkey(cancelDownloadHandler(downloaderCache), "/api/download/")).Methods("DELETE")
 
 	return stripPrefix(server.BaseURL, r), nil
 }
