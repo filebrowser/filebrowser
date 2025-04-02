@@ -36,3 +36,12 @@ export async function queryDownloadTask(taskID: string): Promise<DownloadTask> {
   const res = await fetchURL(`/api/download/${taskID}`, {});
   return await res.json();
 }
+
+export async function cancelDownloadTask(taskID: string): Promise<void> {
+  const res = await fetchURL(`/api/download/${taskID}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) {
+    throw new Error("Failed to cancel download task");
+  }
+}

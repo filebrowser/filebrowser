@@ -32,7 +32,7 @@
     <div class="card-action">
       <button
         class="button button--flat button--grey"
-        @click="layoutStore.closeHovers"
+        @click="cancel"
         :aria-label="t('buttons.cancel')"
         :title="t('buttons.cancel')"
         tabindex="4"
@@ -45,12 +45,14 @@
         :title="t('buttons.create')"
         @click="submit"
         tabindex="3"
-        :disabled="isDownloading"
       >
         {{ t("buttons.create") }}
       </button>
     </div>
-    <div v-if="isDownloading || isFailed" class="material-progress-container">
+    <div
+      v-if="isDownloading || isFailed || isCanceled"
+      class="material-progress-container"
+    >
       <div
         class="material-progress-bar"
         id="downloadProgress"
@@ -58,7 +60,7 @@
       ></div>
       <div
         class="material-progress-label"
-        :style="{ color: isFailed ? '#ff4757' : '' }"
+        :style="{ color: isFailed || isCanceled ? '#ff4757' : '' }"
       >
         {{ Math.floor(currentTask.progress * 100) + "%" }}
       </div>
@@ -110,6 +112,9 @@ const isDownloading = computed(() => {
 const isFailed = computed(() => {
   return currentTask.status === "error";
 });
+const isCanceled = computed(() => {
+  return currentTask.status === "canceled";
+});
 
 watch(fetchUrl, (value) => {
   try {
@@ -119,6 +124,21 @@ watch(fetchUrl, (value) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {}
 });
+
+const cancel = async () => {
+  if (!isDownloading.value) {
+    layoutStore.closeHovers();
+    taskID.value = "";
+    return;
+  }
+  try {
+    await api.cancelDownloadTask(taskID.value);
+  } catch (e) {
+    if (e instanceof Error) {
+      $showError(e);
+    }
+  }
+};
 
 const submit = async (event: Event) => {
   event.preventDefault();
