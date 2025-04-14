@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"crypto/tls"
 	"errors"
 	"io"
@@ -13,6 +14,7 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
+	"time"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/afero"
@@ -167,10 +169,6 @@ user created with the credentials from options "username" and "password".`,
 			checkErr(err)
 		}
 
-		sigc := make(chan os.Signal, 1)
-		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
-		go cleanupHandler(listener, sigc)
-
 		assetsFs, err := fs.Sub(frontend.Assets(), "dist")
 		if err != nil {
 			panic(err)
@@ -182,18 +180,29 @@ user created with the credentials from options "username" and "password".`,
 		defer listener.Close()
 
 		log.Println("Listening on", listener.Addr().String())
-		//nolint: gosec
-		if err := http.Serve(listener, handler); err != nil {
-			log.Fatal(err)
-		}
-	}, pythonConfig{allowNoDB: true}),
-}
+		srv := &http.Server{Handler: handler}
 
-func cleanupHandler(listener net.Listener, c chan os.Signal) {
-	sig := <-c
-	log.Printf("Caught signal %s: shutting down.", sig)
-	listener.Close()
-	os.Exit(0)
+		go func() {
+			if err := srv.Serve(listener); !errors.Is(err, http.ErrServerClosed) {
+				log.Fatalf("HTTP server error: %v", err)
+			}
+
+			log.Println("Stopped serving new connections.")
+		}()
+
+		sigc := make(chan os.Signal, 1)
+		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
+		<-sigc
+
+		shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second)
+		defer shutdownRelease()
+
+		if err := srv.Shutdown(shutdownCtx); err != nil {
+			log.Fatalf("HTTP shutdown error: %v", err)
+		}
+		log.Println("Graceful shutdown complete.")
+
+	}, pythonConfig{allowNoDB: true}),
 }
 
 //nolint:gocyclo
