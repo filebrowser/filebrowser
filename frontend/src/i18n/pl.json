@@ -32,8 +32,8 @@
     "save": "Zapisz",
     "schedule": "Harmonogram",
     "search": "Szukaj",
-    "select": "Wybierz",
-    "selectMultiple": "Wybierz wiele",
+    "select": "Zaznacz",
+    "selectMultiple": "Zaznacz wiele",
     "share": "Udostępnij",
     "shell": "Przełącz powłokę",
     "submit": "Prześlij",
@@ -47,7 +47,7 @@
   "download": {
     "downloadFile": "Pobierz plik",
     "downloadFolder": "Pobierz folder",
-    "downloadSelected": "Pobierz wybrane"
+    "downloadSelected": "Pobierz zaznaczone"
   },
   "upload": {
     "abortUpload": "Czy na pewno chcesz przerwać?"
@@ -59,7 +59,7 @@
     "connection": "Serwer jest nieosiągalny."
   },
   "files": {
-    "body": "Ciało",
+    "body": "Zawartość",
     "closePreview": "Zamknij podgląd",
     "files": "Pliki",
     "folders": "Foldery",
@@ -68,7 +68,7 @@
     "loading": "Ładowanie...",
     "lonely": "Smutno, gdy tak pusto...",
     "metadata": "Metadane",
-    "multipleSelectionEnabled": "Włączono wybór wielokrotny",
+    "multipleSelectionEnabled": "Włączono zaznaczenie wielokrotne",
     "name": "Nazwa",
     "size": "Rozmiar",
     "sortByLastModified": "Sortuj wg ostatniej modyfikacji",
@@ -77,15 +77,15 @@
     "noPreview": "Podgląd tego pliku jest niedostępny."
   },
   "help": {
-    "click": "wybierz plik lub folder",
+    "click": "zaznacz plik lub folder",
     "ctrl": {
-      "click": "wybierz wiele plików lub folderów",
+      "click": "zaznacz wiele plików lub folderów",
       "f": "otwórz wyszukiwarkę",
       "s": "pobierz aktywny plik lub folder"
     },
-    "del": "usuń wybrane elementy",
+    "del": "usuń zaznaczone elementy",
     "doubleClick": "otwórz plik lub folder",
-    "esc": "wyczyść wybór i/lub zamknij monit",
+    "esc": "wyczyść zaznaczenie i/lub zamknij monit",
     "f1": "te informacje",
     "f2": "zmień nazwę pliku",
     "help": "Pomoc"
@@ -99,7 +99,7 @@
     "signup": "Rejestracja",
     "submit": "Zaloguj",
     "username": "Nazwa użytkownika",
-    "usernameTaken": "Ta nazwa jest zajęta",
+    "usernameTaken": "Ta nazwa użytkownika jest zajęta",
     "wrongCredentials": "Błędne dane logowania"
   },
   "permanent": "Permanentny",
@@ -117,7 +117,7 @@
     "downloadMessage": "Wybierz format, w którym chcesz pobrać.",
     "error": "Pojawił się jakiś błąd",
     "fileInfo": "Informacje o​ pliku",
-    "filesSelected": "Wybrane pliki: {count}",
+    "filesSelected": "Zaznaczone pliki: {count}",
     "lastModified": "Ostatnio zmodyfikowano",
     "move": "Przenieś",
     "moveMessage": "Wybierz nową lokalizację dla swoich plików/folderów:",
