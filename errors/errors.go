@@ -3,6 +3,7 @@ package errors
 import "errors"
 
 var (
+	ErrInvalidEncryptionKey = errors.New("The TOTP encryption key should be a 32-byte string encoded in Base64")
 	ErrEmptyKey             = errors.New("empty key")
 	ErrExist                = errors.New("the resource already exists")
 	ErrNotExist             = errors.New("the resource does not exist")
