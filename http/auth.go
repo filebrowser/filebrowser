@@ -17,8 +17,14 @@ import (
 )
 
 const (
-	DefaultTokenExpirationTime = time.Hour * 2
+	DefaultTokenExpirationTime     = time.Hour * 2
+	DefaultTOTPTokenExpirationTime = time.Minute * 2
 )
+
+type loginResponse struct {
+	Token string `json:"token"`
+	OTP   bool   `json:"otp"`
+}
 
 type userInfo struct {
 	ID           uint              `json:"id"`
@@ -30,6 +36,7 @@ type userInfo struct {
 	LockPassword bool              `json:"lockPassword"`
 	HideDotfiles bool              `json:"hideDotfiles"`
 	DateFormat   bool              `json:"dateFormat"`
+	OTPEnabled   bool              `json:"otpEnabled"`
 }
 
 type authToken struct {
@@ -102,7 +109,7 @@ func withAdmin(fn handleFunc) handleFunc {
 	})
 }
 
-func loginHandler(tokenExpireTime time.Duration) handleFunc {
+func loginHandler(totpLoginTokenExpireTime, tokenExpireTime time.Duration) handleFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		auther, err := d.store.Auth.Get(d.settings.AuthMethod)
 		if err != nil {
@@ -115,6 +122,10 @@ func loginHandler(tokenExpireTime time.Duration) handleFunc {
 			return http.StatusForbidden, nil
 		case err != nil:
 			return http.StatusInternalServerError, err
+		}
+
+		if user.TOTPSecret != "" {
+			return printTOTPToken(w, r, d, user, totpLoginTokenExpireTime)
 		}
 
 		return printToken(w, r, d, user, tokenExpireTime)
@@ -195,6 +206,7 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 			Commands:     user.Commands,
 			HideDotfiles: user.HideDotfiles,
 			DateFormat:   user.DateFormat,
+			OTPEnabled:   user.TOTPSecret != "",
 		},
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -209,9 +221,5 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 		return http.StatusInternalServerError, err
 	}
 
-	w.Header().Set("Content-Type", "text/plain")
-	if _, err := w.Write([]byte(signed)); err != nil {
-		return http.StatusInternalServerError, err
-	}
-	return 0, nil
+	return renderJSON(w, nil, loginResponse{Token: signed, OTP: false})
 }

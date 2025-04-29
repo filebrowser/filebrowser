@@ -48,8 +48,9 @@ func NewHandler(
 
 	api := r.PathPrefix("/api").Subrouter()
 
-	tokenExpirationTime := server.GetTokenExpirationTime(DefaultTokenExpirationTime)
-	api.Handle("/login", monkey(loginHandler(tokenExpirationTime), ""))
+	tokenExpirationTime, totpExpTime := server.GetTokenExpirationTime(DefaultTokenExpirationTime, DefaultTOTPTokenExpirationTime)
+	api.Handle("/login", monkey(loginHandler(tokenExpirationTime, totpExpTime), ""))
+	api.Handle("/login/otp", monkey(verifyTOTPHandler(tokenExpirationTime), ""))
 	api.Handle("/signup", monkey(signupHandler, ""))
 	api.Handle("/renew", monkey(renewHandler(tokenExpirationTime), ""))
 
@@ -59,6 +60,10 @@ func NewHandler(
 	users.Handle("/{id:[0-9]+}", monkey(userPutHandler, "")).Methods("PUT")
 	users.Handle("/{id:[0-9]+}", monkey(userGetHandler, "")).Methods("GET")
 	users.Handle("/{id:[0-9]+}", monkey(userDeleteHandler, "")).Methods("DELETE")
+	users.Handle("/{id:[0-9]+}/otp", monkey(userEnableTOTPHandler, "")).Methods("POST")
+	users.Handle("/{id:[0-9]+}/otp", monkey(userGetTOTPHandler, "")).Methods("GET")
+	users.Handle("/{id:[0-9]+}/otp/check", monkey(userCheckTOTPHandler, "")).Methods("POST")
+	users.Handle("/{id:[0-9]+}/otp", monkey(userDisableTOTPHandler, "")).Methods("DELETE")
 
 	api.PathPrefix("/resources").Handler(monkey(resourceGetHandler, "/api/resources")).Methods("GET")
 	api.PathPrefix("/resources").Handler(monkey(resourceDeleteHandler(fileCache), "/api/resources")).Methods("DELETE")

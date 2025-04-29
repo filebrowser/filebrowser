@@ -59,17 +59,21 @@ func (s *Server) Clean() {
 	s.BaseURL = strings.TrimSuffix(s.BaseURL, "/")
 }
 
-func (s *Server) GetTokenExpirationTime(fallback time.Duration) time.Duration {
-	if s.TokenExpirationTime == "" {
-		return fallback
+func (s *Server) GetTokenExpirationTime(tokenFB, totpFB time.Duration) (time.Duration, time.Duration) {
+	getTokenDuration := func(v string, fb time.Duration) time.Duration {
+		if v == "" {
+			return fb
+		}
+
+		dur, err := time.ParseDuration(v)
+		if err != nil {
+			log.Printf("[WARN] Failed to parse ExpirationTime(value: %s): %v", v, err)
+			return fb
+		}
+		return dur
 	}
 
-	duration, err := time.ParseDuration(s.TokenExpirationTime)
-	if err != nil {
-		log.Printf("[WARN] Failed to parse tokenExpirationTime: %v", err)
-		return fallback
-	}
-	return duration
+	return getTokenDuration(s.TokenExpirationTime, tokenFB), getTokenDuration(s.TOTPTokenExpirationTime, totpFB)
 }
 
 // GenerateKey generates a key of 512 bits.

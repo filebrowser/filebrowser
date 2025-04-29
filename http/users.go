@@ -3,12 +3,14 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"sort"
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/pquerna/otp/totp"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
@@ -18,11 +20,28 @@ import (
 
 var (
 	NonModifiableFieldsForNonAdmin = []string{"Username", "Scope", "LockPassword", "Perm", "Commands", "Rules"}
+	TOTPIssuer                     = "FileBrowser"
 )
 
 type modifyUserRequest struct {
 	modifyRequest
 	Data *users.User `json:"data"`
+}
+
+type enableTOTPVerificationRequest struct {
+	Password string `json:"password"`
+}
+
+type enableTOTPVerificationResponse struct {
+	SetupKey string `json:"setupKey"`
+}
+
+type getTOTPInfoResponse struct {
+	SetupKey string `json:"setupKey"`
+}
+
+type checkTOTPRequest struct {
+	Code string `json:"code"`
 }
 
 func getUserID(r *http.Request) (uint, error) {
@@ -76,6 +95,8 @@ var usersGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *
 
 	for _, u := range users {
 		u.Password = ""
+		u.TOTPSecret = ""
+		u.TOTPNonce = ""
 	}
 
 	sort.Slice(users, func(i, j int) bool {
@@ -96,6 +117,8 @@ var userGetHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 	}
 
 	u.Password = ""
+	u.TOTPSecret = ""
+	u.TOTPNonce = ""
 	if !d.user.Perm.Admin {
 		u.Scope = ""
 	}
@@ -202,6 +225,96 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 	err = d.store.Users.Update(req.Data, req.Which...)
 	if err != nil {
 		return http.StatusInternalServerError, err
+	}
+
+	return http.StatusOK, nil
+})
+
+var userEnableTOTPHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	if r.Body == nil {
+		return http.StatusBadRequest, fbErrors.ErrEmptyRequest
+	}
+
+	if d.user.TOTPSecret != "" {
+		return http.StatusBadRequest, fmt.Errorf("TOTP verification already enabled")
+	}
+
+	var req enableTOTPVerificationRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		return http.StatusBadRequest, fmt.Errorf("Invalid request body: %w", err)
+	} else if req.Password == "" {
+		return http.StatusBadRequest, fbErrors.ErrEmptyPassword
+	} else if !users.CheckPwd(req.Password, d.user.Password) {
+		return http.StatusBadRequest, errors.New("password is incorrect")
+	}
+
+	ops := totp.GenerateOpts{AccountName: d.user.Username, Issuer: TOTPIssuer}
+	key, err := totp.Generate(ops)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	encryptedSecret, nonce, err := users.EncryptSymmetric(d.server.TOTPEncryptionKey, []byte(key.Secret()))
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	d.user.TOTPSecret = encryptedSecret
+	d.user.TOTPNonce = nonce
+	if err := d.store.Users.Update(d.user, "TOTPSecret", "TOTPNonce"); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return renderJSON(w, r, enableTOTPVerificationResponse{SetupKey: key.URL()})
+})
+
+var userGetTOTPHandler = withTOTP(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	if d.user.TOTPSecret == "" {
+		return http.StatusForbidden, fmt.Errorf("user does not enable the TOTP verification")
+	}
+
+	secret, err := users.DecryptSymmetric(d.server.TOTPEncryptionKey, d.user.TOTPSecret, d.user.TOTPNonce)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	ops := totp.GenerateOpts{AccountName: d.user.Username, Issuer: TOTPIssuer, Secret: []byte(secret)}
+	key, err := totp.Generate(ops)
+
+	return renderJSON(w, r, getTOTPInfoResponse{SetupKey: key.URL()})
+})
+
+var userDisableTOTPHandler = withTOTP(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	if d.user.TOTPSecret == "" {
+		return http.StatusOK, nil
+	}
+
+	d.user.TOTPNonce = ""
+	d.user.TOTPSecret = ""
+
+	if err := d.store.Users.Update(d.user, "TOTPSecret", "TOTPNonce"); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return http.StatusOK, nil
+})
+
+var userCheckTOTPHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	if d.user.TOTPSecret == "" {
+		return http.StatusForbidden, nil
+	}
+
+	var req checkTOTPRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		return http.StatusBadRequest, fmt.Errorf("Invalid request body: %w", err)
+	}
+
+	if ok, err := users.CheckTOTP(d.server.TOTPEncryptionKey, d.user.TOTPSecret, d.user.TOTPNonce, req.Code); err != nil {
+		return http.StatusInternalServerError, err
+	} else if !ok {
+		return http.StatusForbidden, nil
 	}
 
 	return http.StatusOK, nil
