@@ -33,7 +33,7 @@ export async function login(
   username: string,
   password: string,
   recaptcha: string
-) {
+): Promise<{ otp: boolean; token: string }> {
   const data = { username, password, recaptcha };
 
   const res = await fetch(`${baseURL}/api/login`, {
@@ -47,7 +47,29 @@ export async function login(
   const body = await res.text();
 
   if (res.status === 200) {
-    parseToken(body);
+    const payload = JSON.parse(body);
+    return payload;
+  } else {
+    throw new StatusError(
+      body || `${res.status} ${res.statusText}`,
+      res.status
+    );
+  }
+}
+
+export async function verifyTOTP(code: string, token: string): Promise<void> {
+  const res = await fetch(`${baseURL}/api/login/otp`, {
+    method: "POST",
+    headers: {
+      "X-TOTP-CODE": code,
+      "X-TOTP-Auth": token,
+    },
+  });
+  const body = await res.text();
+
+  if (res.status === 200) {
+    const payload = JSON.parse(body);
+    parseToken(payload.token);
   } else {
     throw new StatusError(
       body || `${res.status} ${res.statusText}`,
@@ -67,7 +89,8 @@ export async function renew(jwt: string) {
   const body = await res.text();
 
   if (res.status === 200) {
-    parseToken(body);
+    const x = JSON.parse(body);
+    parseToken(x.token);
   } else {
     throw new StatusError(
       body || `${res.status} ${res.statusText}`,

@@ -41,3 +41,45 @@ export async function remove(id: number) {
     method: "DELETE",
   });
 }
+
+export async function enableOTP(id: number, password: string) {
+  const res = await fetchURL(`/api/users/${id}/otp`, {
+    method: "POST",
+    body: JSON.stringify({
+      password,
+    }),
+  });
+  const payload: IOtpSetupKey = await res.json();
+
+  return payload;
+}
+
+export async function checkOtp(id: number, code: string) {
+  return fetchURL(`/api/users/${id}/otp/check`, {
+    method: "POST",
+    body: JSON.stringify({
+      code,
+    }),
+  });
+}
+
+export async function getOtpInfo(id: number, code: string) {
+  const res = await fetchURL(`/api/users/${id}/otp`, {
+    method: "GET",
+    headers: {
+      "X-TOTP-CODE": code,
+    },
+  });
+  const payload: IOtpSetupKey = await res.json();
+
+  return payload;
+}
+
+export async function disableOtp(id: number, code: string) {
+  return fetchURL(`/api/users/${id}/otp`, {
+    method: "DELETE",
+    headers: {
+      "X-TOTP-CODE": code,
+    },
+  });
+}
