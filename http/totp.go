@@ -5,9 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/filebrowser/filebrowser/v2/users"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/golang-jwt/jwt/v4/request"
+
+	"github.com/filebrowser/filebrowser/v2/users"
 )
 
 type totpUserInfo struct {

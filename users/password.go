@@ -8,9 +8,10 @@ import (
 	"io"
 	"log"
 
-	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/pquerna/otp/totp"
 	"golang.org/x/crypto/bcrypt"
+
+	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 )
 
 // HashPwd hashes a password.
