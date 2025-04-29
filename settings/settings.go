@@ -9,7 +9,10 @@ import (
 	"github.com/filebrowser/filebrowser/v2/rules"
 )
 
-const DefaultUsersHomeBasePath = "/users"
+const (
+	DefaultLogoutPage        = "/login"
+	DefaultUsersHomeBasePath = "/users"
+)
 
 // AuthMethod describes an authentication method.
 type AuthMethod string
@@ -22,6 +25,7 @@ type Settings struct {
 	UserHomeBasePath string              `json:"userHomeBasePath"`
 	Defaults         UserDefaults        `json:"defaults"`
 	AuthMethod       AuthMethod          `json:"authMethod"`
+	LogoutPage       string              `json:"logoutPage"`
 	Branding         Branding            `json:"branding"`
 	Tus              Tus                 `json:"tus"`
 	Commands         map[string][]string `json:"commands"`

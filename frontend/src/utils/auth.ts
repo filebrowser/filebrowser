@@ -2,7 +2,7 @@ import { useAuthStore } from "@/stores/auth";
 import router from "@/router";
 import type { JwtPayload } from "jwt-decode";
 import { jwtDecode } from "jwt-decode";
-import { baseURL, noAuth } from "./constants";
+import { baseURL, noAuth, logoutPage } from "./constants";
 import { StatusError } from "@/api/utils";
 
 export function parseToken(token: string) {
@@ -101,6 +101,8 @@ export function logout() {
   localStorage.setItem("jwt", "");
   if (noAuth) {
     window.location.reload();
+  } else if (logoutPage !== "/login") {
+    document.location.href = `${logoutPage}`;
   } else {
     router.push({ path: "/login" });
   }
