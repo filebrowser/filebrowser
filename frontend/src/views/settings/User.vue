@@ -99,6 +99,7 @@ const fetchData = async () => {
         rules: [],
         lockPassword: false,
         id: 0,
+        otpEnabled: false,
       };
     } else {
       const id = Array.isArray(route.params.id)
