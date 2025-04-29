@@ -17,6 +17,7 @@
 @import "./mobile.css";
 @import "./epubReader.css";
 @import "./mdPreview.css";
+@import "./otp-modal.css";
 
 /* For testing only
  :focus {

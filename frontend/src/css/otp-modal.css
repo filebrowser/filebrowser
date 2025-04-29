@@ -1,0 +1,29 @@
+.otp-modal .card-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.otp-modal .card-title h2 {
+  text-align: center;
+  margin: 0 !important;
+}
+
+.otp-modal .card-title p {
+  text-align: center;
+  color: var(--blue);
+  text-transform: lowercase;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.otp-modal .card-content input {
+  font-size: 1.2em;
+  text-align: center;
+  letter-spacing: 0.5em;
+  transition: border 0.2s ease;
+}
+
+.otp-modal .card-content input.empty {
+  letter-spacing: 0;
+}
