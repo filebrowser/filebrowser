@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@chenfengyuan/vue-number-input": "^2.0.1",
+    "@scure/base": "^1.2.4",
     "@vueuse/core": "^12.5.0",
     "@vueuse/integrations": "^12.5.0",
     "ace-builds": "^1.37.5",

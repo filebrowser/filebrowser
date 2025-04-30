@@ -1,6 +1,7 @@
 {
   "buttons": {
     "cancel": "Cancel",
+    "check": "Check",
     "clear": "Clear",
     "close": "Close",
     "continue": "Continue",
@@ -11,6 +12,8 @@
     "create": "Create",
     "delete": "Delete",
     "download": "Download",
+    "enable": "Enable",
+    "disable": "Disable",
     "file": "File",
     "folder": "Folder",
     "fullScreen": "Toggle full screen",
@@ -41,6 +44,7 @@
     "toggleSidebar": "Toggle sidebar",
     "update": "Update",
     "upload": "Upload",
+    "verify": "Verify",
     "openFile": "Open file",
     "discardChanges": "Discard"
   },
@@ -182,6 +186,7 @@
     "disableExternalLinks": "Disable external links (except documentation)",
     "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentation",
+    "otpCodeCheckPlaceholder": "Enter the otp code to check your setup key",
     "examples": "Examples",
     "executeOnShell": "Execute on shell",
     "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you wish to run them on a shell instead (such as Bash or PowerShell), you can define it here with the required arguments and flags. If set, the command you execute will be appended as an argument. This applies to both user commands and event hooks.",
@@ -238,6 +243,15 @@
     "userUpdated": "User updated!",
     "username": "Username",
     "users": "Users"
+  },
+  "otp": {
+    "name": "Two-Factor Authentication",
+    "verifyInstructions": "Enter the code from your authenticator app",
+    "codeInputPlaceholder": "6-digit code",
+    "invalidCodeType": "Verification code should be 6 english digits",
+    "enabledSuccessfully": "OTP enabled successfully",
+    "verificationFailed": "Verfication Failed",
+    "verificationSucceed": "Verification Succeed"
   },
   "sidebar": {
     "help": "Help",

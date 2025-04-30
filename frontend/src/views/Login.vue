@@ -1,5 +1,6 @@
 <template>
   <div id="login" :class="{ recaptcha: recaptcha }">
+    <prompts></prompts>
     <form @submit="submit">
       <img :src="logoURL" alt="File Browser" />
       <h1>{{ name }}</h1>
@@ -43,6 +44,8 @@
 
 <script setup lang="ts">
 import { StatusError } from "@/api/utils";
+import { useLayoutStore } from "@/stores/layout";
+import Prompts from "@/components/prompts/Prompts.vue";
 import * as auth from "@/utils/auth";
 import {
   name,
@@ -65,6 +68,7 @@ const passwordConfirm = ref<string>("");
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n({});
+const layoutStore = useLayoutStore();
 // Define functions
 const toggleMode = () => (createMode.value = !createMode.value);
 
@@ -97,11 +101,29 @@ const submit = async (event: Event) => {
     if (createMode.value) {
       await auth.signup(username.value, password.value);
     }
-
-    await auth.login(username.value, password.value, captcha);
-    router.push({ path: redirect });
+    const res = await auth.login(username.value, password.value, captcha);
+    if (res.otp) {
+      layoutStore.showHover({
+        prompt: "otp",
+        confirm: async (code: string) => {
+          try {
+            await auth.verifyTOTP(code, res.token);
+            router.push({ path: redirect });
+          } catch (e: any) {
+            if (e instanceof StatusError) {
+              error.value = t("otp.verificationFailed");
+            } else {
+              $showError(e);
+            }
+          }
+        },
+      });
+    } else {
+      auth.parseToken(res.token);
+      router.push({ path: redirect });
+    }
   } catch (e: any) {
-    // console.error(e);
+    console.error(e);
     if (e instanceof StatusError) {
       if (e.status === 409) {
         error.value = t("login.usernameTaken");

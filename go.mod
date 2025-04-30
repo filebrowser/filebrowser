@@ -16,6 +16,7 @@ require (
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pelletier/go-toml/v2 v2.2.3
+	github.com/pquerna/otp v1.4.0
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/spf13/afero v1.11.0
 	github.com/spf13/cobra v1.8.1
@@ -35,6 +36,7 @@ require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/asticode/go-astikit v0.42.0 // indirect
 	github.com/asticode/go-astits v1.13.0 // indirect
+	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
 	github.com/dsoprea/go-logging v0.0.0-20200710184922-b02d349568dd // indirect

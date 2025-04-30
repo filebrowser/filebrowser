@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"crypto/tls"
+	"encoding/base64"
 	"errors"
 	"io"
 	"io/fs"
@@ -23,6 +24,7 @@ import (
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/diskcache"
+	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/frontend"
 	fbhttp "github.com/filebrowser/filebrowser/v2/http"
 	"github.com/filebrowser/filebrowser/v2/img"
@@ -65,6 +67,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("baseurl", "b", "", "base url")
 	flags.String("cache-dir", "", "file cache directory (disabled if empty)")
 	flags.String("token-expiration-time", "2h", "user session timeout")
+	flags.String("totp-token-exiration-time", "2m", "user totp sesstion timeout to login")
 	flags.Int("img-processors", 4, "image processors count") //nolint:gomnd
 	flags.Bool("disable-thumbnails", false, "disable image thumbnails")
 	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
@@ -141,6 +144,8 @@ user created with the credentials from options "username" and "password".`,
 		root, err := filepath.Abs(server.Root)
 		checkErr(err)
 		server.Root = root
+
+		setTOTPEncryptionKey(server)
 
 		adr := server.Address + ":" + server.Port
 
@@ -424,4 +429,13 @@ func initConfig() {
 	} else {
 		cfgFile = "Using config file: " + v.ConfigFileUsed()
 	}
+}
+
+func setTOTPEncryptionKey(server *settings.Server) {
+	totpEK, err := base64.StdEncoding.DecodeString(v.GetString("totp.encryption.key"))
+	checkErr(err)
+	if len(totpEK) != 32 {
+		checkErr(fbErrors.ErrInvalidEncryptionKey)
+	}
+	server.TOTPEncryptionKey = totpEK
 }

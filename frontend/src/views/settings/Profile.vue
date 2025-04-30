@@ -74,6 +74,8 @@
         </div>
       </form>
     </div>
+
+    <profile-2fa />
   </div>
 </template>
 
@@ -84,6 +86,7 @@ import { users as api } from "@/api";
 import Languages from "@/components/settings/Languages.vue";
 import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import Profile2fa from "@/components/settings/Profile2FA.vue";
 
 const layoutStore = useLayoutStore();
 const authStore = useAuthStore();

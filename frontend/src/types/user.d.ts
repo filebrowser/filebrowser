@@ -12,6 +12,7 @@ interface IUser {
   singleClick: boolean;
   dateFormat: boolean;
   viewMode: ViewModeType;
+  otpEnabled: boolean;
   sorting?: Sorting;
 }
 
@@ -64,3 +65,7 @@ interface IRegexp {
 }
 
 type UserTheme = "light" | "dark" | "";
+
+interface IOtpSetupKey {
+  setupKey: string;
+}

@@ -36,20 +36,22 @@ func (s *Settings) GetRules() []rules.Rule {
 
 // Server specific settings.
 type Server struct {
-	Root                  string `json:"root"`
-	BaseURL               string `json:"baseURL"`
-	Socket                string `json:"socket"`
-	TLSKey                string `json:"tlsKey"`
-	TLSCert               string `json:"tlsCert"`
-	Port                  string `json:"port"`
-	Address               string `json:"address"`
-	Log                   string `json:"log"`
-	EnableThumbnails      bool   `json:"enableThumbnails"`
-	ResizePreview         bool   `json:"resizePreview"`
-	EnableExec            bool   `json:"enableExec"`
-	TypeDetectionByHeader bool   `json:"typeDetectionByHeader"`
-	AuthHook              string `json:"authHook"`
-	TokenExpirationTime   string `json:"tokenExpirationTime"`
+	Root                    string `json:"root"`
+	BaseURL                 string `json:"baseURL"`
+	Socket                  string `json:"socket"`
+	TLSKey                  string `json:"tlsKey"`
+	TLSCert                 string `json:"tlsCert"`
+	Port                    string `json:"port"`
+	Address                 string `json:"address"`
+	Log                     string `json:"log"`
+	EnableThumbnails        bool   `json:"enableThumbnails"`
+	ResizePreview           bool   `json:"resizePreview"`
+	EnableExec              bool   `json:"enableExec"`
+	TypeDetectionByHeader   bool   `json:"typeDetectionByHeader"`
+	AuthHook                string `json:"authHook"`
+	TokenExpirationTime     string `json:"tokenExpirationTime"`
+	TOTPTokenExpirationTime string `json:"totpTokenExpirationTime"`
+	TOTPEncryptionKey       []byte `json:"totpEncryptionKey"`
 }
 
 // Clean cleans any variables that might need cleaning.
@@ -57,17 +59,21 @@ func (s *Server) Clean() {
 	s.BaseURL = strings.TrimSuffix(s.BaseURL, "/")
 }
 
-func (s *Server) GetTokenExpirationTime(fallback time.Duration) time.Duration {
-	if s.TokenExpirationTime == "" {
-		return fallback
+func (s *Server) GetTokenExpirationTime(tokenFB, totpFB time.Duration) (time.Duration, time.Duration) {
+	getTokenDuration := func(v string, fb time.Duration) time.Duration {
+		if v == "" {
+			return fb
+		}
+
+		dur, err := time.ParseDuration(v)
+		if err != nil {
+			log.Printf("[WARN] Failed to parse ExpirationTime(value: %s): %v", v, err)
+			return fb
+		}
+		return dur
 	}
 
-	duration, err := time.ParseDuration(s.TokenExpirationTime)
-	if err != nil {
-		log.Printf("[WARN] Failed to parse tokenExpirationTime: %v", err)
-		return fallback
-	}
-	return duration
+	return getTokenDuration(s.TokenExpirationTime, tokenFB), getTokenDuration(s.TOTPTokenExpirationTime, totpFB)
 }
 
 // GenerateKey generates a key of 512 bits.
