@@ -2,6 +2,8 @@ package settings
 
 import (
 	"crypto/rand"
+	"encoding/json"
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -80,4 +82,41 @@ func GenerateKey() ([]byte, error) {
 	}
 
 	return b, nil
+}
+
+// UnmarshalJSON implements custom JSON unmarshaling for Settings
+func (s *Settings) UnmarshalJSON(data []byte) error {
+
+	type Alias Settings
+	aux := &struct {
+		Shell interface{} `json:"shell"`
+		*Alias
+	}{
+		Alias: (*Alias)(s),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	// Handle the Shell field conversion
+	switch v := aux.Shell.(type) {
+	case string:
+		s.Shell = v
+	case []interface{}:
+		// Convert array to string by joining elements
+		var parts []string
+		for _, item := range v {
+			if str, ok := item.(string); ok {
+				parts = append(parts, str)
+			}
+		}
+		s.Shell = strings.Join(parts, " ")
+	case nil:
+		s.Shell = ""
+	default:
+		return fmt.Errorf("invalid type for shell field: %T", v)
+	}
+
+	return nil
 }
