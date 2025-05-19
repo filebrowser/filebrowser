@@ -253,7 +253,7 @@ const hasPrevious = computed(() => previousLink.value !== "");
 const hasNext = computed(() => nextLink.value !== "");
 
 const downloadUrl = computed(() =>
-  fileStore.req ? api.getDownloadURL(fileStore.req, true) : ""
+  fileStore.req ? api.getDownloadURL(fileStore.req, false) : ""
 );
 
 const raw = computed(() => {
