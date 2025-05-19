@@ -32,7 +32,7 @@ override the options.`,
 			Key:           generateKey(),
 			Signup:        mustGetBool(flags, "signup"),
 			CreateUserDir: mustGetBool(flags, "create-user-dir"),
-			Shell:         convertCmdStrToCmdArray(mustGetString(flags, "shell")),
+			Shell:         mustGetString(flags, "shell"),
 			AuthMethod:    authMethod,
 			Defaults:      defaults,
 			Branding: settings.Branding{
