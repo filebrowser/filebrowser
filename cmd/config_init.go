@@ -31,6 +31,7 @@ override the options.`,
 		s := &settings.Settings{
 			Key:           generateKey(),
 			Signup:        mustGetBool(flags, "signup"),
+			PublicLogin:   mustGetBool(flags, "publiclogin"),
 			CreateUserDir: mustGetBool(flags, "create-user-dir"),
 			Shell:         convertCmdStrToCmdArray(mustGetString(flags, "shell")),
 			AuthMethod:    authMethod,
