@@ -1,3 +1,6 @@
+// Modified by Lucky Jain (alias: LostB053) on 22/05/2025 (DD/MM/YYYY)
+// Modification at line 35, 36, 51, 52 of this file
+
 package cmd
 
 import (
@@ -29,6 +32,8 @@ you want to change. Other options will remain unchanged.`,
 			switch flag.Name {
 			case "baseurl":
 				ser.BaseURL = mustGetString(flags, flag.Name)
+			case "publicurl":
+				ser.PublicURL = mustGetString(flags, flag.Name)
 			case "root":
 				ser.Root = mustGetString(flags, flag.Name)
 			case "socket":
@@ -43,6 +48,8 @@ you want to change. Other options will remain unchanged.`,
 				ser.Port = mustGetString(flags, flag.Name)
 			case "log":
 				ser.Log = mustGetString(flags, flag.Name)
+			case "publiclogin":
+				set.PublicLogin = mustGetBool(flags, flag.Name)
 			case "signup":
 				set.Signup = mustGetBool(flags, flag.Name)
 			case "auth.method":

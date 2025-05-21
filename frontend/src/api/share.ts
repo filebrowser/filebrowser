@@ -1,3 +1,5 @@
+// Modified by Lucky Jain (alias: LostB053) on 22/05/2025 (DD/MM/YYYY)
+// Modification at line 46 of this file
 import { fetchURL, fetchJSON, removePrefix, createURL } from "./utils";
 
 export async function list() {
@@ -41,5 +43,5 @@ export async function create(
 }
 
 export function getShareURL(share: Share) {
-  return createURL("share/" + share.hash, {}, false);
+  return createURL("share/" + share.hash, {}, false, false, true);
 }

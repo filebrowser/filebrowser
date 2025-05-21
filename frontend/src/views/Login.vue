@@ -1,3 +1,8 @@
+<!--
+  Modified by Lucky Jain (alias: LostB053) on 22/05/2025 (DD/MM/YYYY)
+  Modification at line 115, 116, 117 of this file
+-->
+
 <template>
   <div id="login" :class="{ recaptcha: recaptcha }">
     <form @submit="submit">
@@ -107,6 +112,9 @@ const submit = async (event: Event) => {
         error.value = t("login.usernameTaken");
       } else if (e.status === 403) {
         error.value = t("login.wrongCredentials");
+        setTimeout(() => {
+          window.location.href = "/login"; // full page reload to real login page
+        }, 1500);
       } else {
         $showError(e);
       }

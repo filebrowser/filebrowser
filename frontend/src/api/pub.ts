@@ -1,5 +1,8 @@
+// Modified by Lucky Jain (alias: LostB053) on 22/05/2025 (DD/MM/YYYY)
+// Modification at line 5, 71-75, 80, 81-83, 84 of this file
+
 import { fetchURL, removePrefix, createURL } from "./utils";
-import { baseURL } from "@/utils/constants";
+import { baseURL, publicURL } from "@/utils/constants";
 
 export async function fetch(url: string, password: string = "") {
   url = removePrefix(url);
@@ -65,11 +68,18 @@ export function download(
   window.open(url);
 }
 
-export function getDownloadURL(res: Resource, inline = false) {
+export function getDownloadURL(
+  res: Resource,
+  inline = false,
+  singleShare = false
+) {
   const params = {
     ...(inline && { inline: "true" }),
     ...(res.token && { token: res.token }),
   };
-
-  return createURL("api/public/dl/" + res.hash + res.path, params, false);
+  const prefix = publicURL ? "" : "api/public/dl/";
+  const filename = singleShare
+    ? "/" + res.path.match(/\/([^\/]+)$/)?.[1]
+    : res.path;
+  return createURL(prefix + res.hash + filename, params, false, true, true);
 }

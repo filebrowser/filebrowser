@@ -1,3 +1,6 @@
+// Modified by Lucky Jain (alias: LostB053) on 22/05/2025 (DD/MM/YYYY)
+// Modification at line 39, 53 of this file
+
 package http
 
 import (
@@ -33,6 +36,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		"DisableUsedPercentage": d.settings.Branding.DisableUsedPercentage,
 		"Color":                 d.settings.Branding.Color,
 		"BaseURL":               d.server.BaseURL,
+		"PublicURL":             d.server.PublicURL,
 		"Version":               version.Version,
 		"StaticURL":             path.Join(d.server.BaseURL, "/static"),
 		"Signup":                d.settings.Signup,
@@ -46,6 +50,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		"ResizePreview":         d.server.ResizePreview,
 		"EnableExec":            d.server.EnableExec,
 		"TusSettings":           d.settings.Tus,
+		"PublicLogin":           d.settings.PublicLogin,
 	}
 
 	if d.settings.Branding.Files != "" {

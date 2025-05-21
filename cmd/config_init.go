@@ -1,3 +1,6 @@
+// Modified by Lucky Jain (alias: LostB053) on 22/05/2025 (DD/MM/YYYY)
+// Modification at line 37, 56 of this file
+
 package cmd
 
 import (
@@ -31,6 +34,7 @@ override the options.`,
 		s := &settings.Settings{
 			Key:           generateKey(),
 			Signup:        mustGetBool(flags, "signup"),
+			PublicLogin:   mustGetBool(flags, "publiclogin"),
 			CreateUserDir: mustGetBool(flags, "create-user-dir"),
 			Shell:         convertCmdStrToCmdArray(mustGetString(flags, "shell")),
 			AuthMethod:    authMethod,
@@ -45,14 +49,15 @@ override the options.`,
 		}
 
 		ser := &settings.Server{
-			Address: mustGetString(flags, "address"),
-			Socket:  mustGetString(flags, "socket"),
-			Root:    mustGetString(flags, "root"),
-			BaseURL: mustGetString(flags, "baseurl"),
-			TLSKey:  mustGetString(flags, "key"),
-			TLSCert: mustGetString(flags, "cert"),
-			Port:    mustGetString(flags, "port"),
-			Log:     mustGetString(flags, "log"),
+			Address:   mustGetString(flags, "address"),
+			Socket:    mustGetString(flags, "socket"),
+			Root:      mustGetString(flags, "root"),
+			BaseURL:   mustGetString(flags, "baseurl"),
+			PublicURL: mustGetString(flags, "publicurl"),
+			TLSKey:    mustGetString(flags, "key"),
+			TLSCert:   mustGetString(flags, "cert"),
+			Port:      mustGetString(flags, "port"),
+			Log:       mustGetString(flags, "log"),
 		}
 
 		err := d.store.Settings.Save(s)

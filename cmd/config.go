@@ -1,3 +1,6 @@
+// Modified by Lucky Jain (alias: LostB053) on 22/05/2025 (DD/MM/YYYY)
+// Modification at line 37, 150, 165 of this file
+
 package cmd
 
 import (
@@ -31,6 +34,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	addServerFlags(flags)
 	addUserFlags(flags)
 	flags.BoolP("signup", "s", false, "allow users to signup")
+	flags.Bool("publiclogin", true, "allow users to login from the public page")
 	flags.Bool("create-user-dir", false, "generate user's home directory automatically")
 	flags.String("shell", "", "shell command to which other commands should be appended")
 
@@ -143,6 +147,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 
 	fmt.Fprintf(w, "Sign up:\t%t\n", set.Signup)
+	fmt.Fprintf(w, "Public login:\t%t\n", set.PublicLogin)
 	fmt.Fprintf(w, "Create User Dir:\t%t\n", set.CreateUserDir)
 	fmt.Fprintf(w, "Auth method:\t%s\n", set.AuthMethod)
 	fmt.Fprintf(w, "Shell:\t%s\t\n", strings.Join(set.Shell, " "))
@@ -157,6 +162,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tLog:\t%s\n", ser.Log)
 	fmt.Fprintf(w, "\tPort:\t%s\n", ser.Port)
 	fmt.Fprintf(w, "\tBase URL:\t%s\n", ser.BaseURL)
+	fmt.Fprintf(w, "\tPublic URL:\t%s\n", ser.PublicURL)
 	fmt.Fprintf(w, "\tRoot:\t%s\n", ser.Root)
 	fmt.Fprintf(w, "\tSocket:\t%s\n", ser.Socket)
 	fmt.Fprintf(w, "\tAddress:\t%s\n", ser.Address)

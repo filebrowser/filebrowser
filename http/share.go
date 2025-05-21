@@ -1,3 +1,6 @@
+// Modified by Lucky Jain (alias: LostB053) on 22/05/2025 (DD/MM/YYYY)
+// Modification at line 97 of this file
+
 package http
 
 import (
@@ -91,7 +94,7 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 		defer r.Body.Close()
 	}
 
-	bytes := make([]byte, 6) //nolint:gomnd
+	bytes := make([]byte, 15) //nolint:gomnd
 	_, err := rand.Read(bytes)
 	if err != nil {
 		return http.StatusInternalServerError, err

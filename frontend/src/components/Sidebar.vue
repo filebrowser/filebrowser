@@ -1,3 +1,8 @@
+<!--
+  Modified by Lucky Jain (alias: LostB053) on 22/05/2025 (DD/MM/YYYY)
+  Modification at line 68, 130, 160 of this file
+-->
+
 <template>
   <div v-show="active" @click="closeHovers" class="overlay"></div>
   <nav :class="{ active }">
@@ -60,6 +65,7 @@
     </template>
     <template v-else>
       <router-link
+        v-if="publiclogin"
         class="action"
         to="/login"
         :aria-label="$t('sidebar.login')"
@@ -121,6 +127,7 @@ import * as auth from "@/utils/auth";
 import {
   version,
   signup,
+  publiclogin,
   disableExternal,
   disableUsedPercentage,
   noAuth,
@@ -150,6 +157,7 @@ export default {
       return this.currentPromptName === "sidebar";
     },
     signup: () => signup,
+    publiclogin: () => publiclogin,
     version: () => version,
     disableExternal: () => disableExternal,
     disableUsedPercentage: () => disableUsedPercentage,

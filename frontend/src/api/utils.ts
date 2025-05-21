@@ -1,6 +1,9 @@
+// Modified by Lucky Jain (alias: LostB053) on 22/05/2025 (DD/MM/YYYY)
+// Modification at line 6, 82-87, 90, 94, 95  of this file
+
 import { useAuthStore } from "@/stores/auth";
 import { renew, logout } from "@/utils/auth";
-import { baseURL } from "@/utils/constants";
+import { baseURL, publicURL } from "@/utils/constants";
 import { encodePath } from "@/utils/url";
 
 export class StatusError extends Error {
@@ -76,14 +79,21 @@ export function removePrefix(url: string): string {
   return url;
 }
 
-export function createURL(endpoint: string, params = {}, auth = true): string {
+export function createURL(
+  endpoint: string,
+  params = {},
+  auth = true,
+  isDL = false,
+  isShare = false
+): string {
   const authStore = useAuthStore();
 
-  let prefix = baseURL;
+  let prefix = isDL && publicURL ? "" : baseURL;
   if (!prefix.endsWith("/")) {
     prefix = prefix + "/";
   }
-  const url = new URL(prefix + encodePath(endpoint), origin);
+  const mainURL = isShare && publicURL ? publicURL : origin;
+  const url = new URL(prefix + encodePath(endpoint), mainURL);
 
   const searchParams: SearchParams = {
     ...(auth && { auth: authStore.jwt }),

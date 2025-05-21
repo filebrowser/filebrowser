@@ -1,3 +1,8 @@
+<!--
+  Modified by Lucky Jain (alias: LostB053) on 22/05/2025 (DD/MM/YYYY) 
+  Modification at line 45, 270 of this file
+-->
+
 <template>
   <div class="card floating" id="share">
     <div class="card-title">
@@ -37,7 +42,7 @@
                 class="action copy-clipboard"
                 :aria-label="$t('buttons.copyDownloadLinkToClipboard')"
                 :title="$t('buttons.copyDownloadLinkToClipboard')"
-                @click="copyToClipboard(buildDownloadLink(link))"
+                @click="copyToClipboard(buildDownloadLink(link, true))"
               >
                 <i class="material-icons">content_paste_go</i>
               </button>
@@ -262,8 +267,8 @@ export default {
         this.selected.length === 1 && !this.req.items[this.selected[0]].isDir
       );
     },
-    buildDownloadLink(share) {
-      return pub_api.getDownloadURL(share);
+    buildDownloadLink(share, singleShare = true) {
+      return pub_api.getDownloadURL(share, false, singleShare);
     },
     sort() {
       this.links = this.links.sort((a, b) => {

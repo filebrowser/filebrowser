@@ -1,3 +1,8 @@
+/*
+  Modified by Lucky Jain (alias: LostB053) on 22/05/2025 (DD/MM/YYYY)
+  Modification at line 182 of this file
+*/
+
 .dashboard {
   margin: 1em 0;
 }
@@ -174,7 +179,7 @@ table tr > *:last-child {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  max-width: 25em;
+  max-width: 32em;
   width: 90%;
   max-height: 95%;
   /* animation-duration: 0.3s;

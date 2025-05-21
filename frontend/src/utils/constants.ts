@@ -1,3 +1,6 @@
+// Modified by Lucky Jain (alias: LostB053) on 22/05/2025 (DD/MM/YYYY)
+// Modification at line 24, 25, 47, 48 of this file
+
 const name: string = window.FileBrowser.Name || "File Browser";
 const disableExternal: boolean = window.FileBrowser.DisableExternal;
 const disableUsedPercentage: boolean = window.FileBrowser.DisableUsedPercentage;
@@ -18,6 +21,8 @@ const enableExec: boolean = window.FileBrowser.EnableExec;
 const tusSettings = window.FileBrowser.TusSettings;
 const origin = window.location.origin;
 const tusEndpoint = `/api/tus`;
+const publiclogin = window.FileBrowser.PublicLogin;
+const publicURL = window.FileBrowser.PublicURL;
 
 export {
   name,
@@ -39,4 +44,6 @@ export {
   tusSettings,
   origin,
   tusEndpoint,
+  publiclogin,
+  publicURL,
 };

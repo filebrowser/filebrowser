@@ -1,3 +1,6 @@
+// Modified by Lucky Jain (alias: LostB053) on 22/05/2025 (DD/MM/YYYY)
+// Modification at line 24, 45 of this file
+
 package settings
 
 import (
@@ -18,6 +21,7 @@ type AuthMethod string
 type Settings struct {
 	Key              []byte              `json:"key"`
 	Signup           bool                `json:"signup"`
+	PublicLogin      bool                `json:"publiclogin"`
 	CreateUserDir    bool                `json:"createUserDir"`
 	UserHomeBasePath string              `json:"userHomeBasePath"`
 	Defaults         UserDefaults        `json:"defaults"`
@@ -38,6 +42,7 @@ func (s *Settings) GetRules() []rules.Rule {
 type Server struct {
 	Root                  string `json:"root"`
 	BaseURL               string `json:"baseURL"`
+	PublicURL             string `json:"publicURL"`
 	Socket                string `json:"socket"`
 	TLSKey                string `json:"tlsKey"`
 	TLSCert               string `json:"tlsCert"`
