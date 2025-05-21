@@ -144,6 +144,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 
 	fmt.Fprintf(w, "Sign up:\t%t\n", set.Signup)
+	fmt.Fprintf(w, "Public login:\t%t\n", set.PublicLogin)
 	fmt.Fprintf(w, "Create User Dir:\t%t\n", set.CreateUserDir)
 	fmt.Fprintf(w, "Auth method:\t%s\n", set.AuthMethod)
 	fmt.Fprintf(w, "Shell:\t%s\t\n", strings.Join(set.Shell, " "))
