@@ -152,6 +152,7 @@ export default {
       return this.currentPromptName === "sidebar";
     },
     signup: () => signup,
+    publiclogin: () => publiclogin,
     version: () => version,
     disableExternal: () => disableExternal,
     disableUsedPercentage: () => disableUsedPercentage,

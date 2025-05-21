@@ -40,5 +40,5 @@ export {
   tusSettings,
   origin,
   tusEndpoint,
-  publiclogin
+  publiclogin,
 };
