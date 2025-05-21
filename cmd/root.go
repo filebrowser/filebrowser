@@ -320,6 +320,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	set := &settings.Settings{
 		Key:              generateKey(),
 		Signup:           false,
+		PublicLogin:      true,
 		CreateUserDir:    false,
 		UserHomeBasePath: settings.DefaultUsersHomeBasePath,
 		Defaults: settings.UserDefaults{

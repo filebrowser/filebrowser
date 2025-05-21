@@ -60,6 +60,7 @@
     </template>
     <template v-else>
       <router-link
+        v-if="publiclogin"
         class="action"
         to="/login"
         :aria-label="$t('sidebar.login')"
@@ -121,6 +122,7 @@ import * as auth from "@/utils/auth";
 import {
   version,
   signup,
+  publiclogin,
   disableExternal,
   disableUsedPercentage,
   noAuth,
