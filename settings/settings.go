@@ -26,6 +26,7 @@ type Settings struct {
 	Tus              Tus                 `json:"tus"`
 	Commands         map[string][]string `json:"commands"`
 	Shell            []string            `json:"shell"`
+	HideDotfiles     bool                `json:"hideDotfiles"`
 	Rules            []rules.Rule        `json:"rules"`
 }
 
