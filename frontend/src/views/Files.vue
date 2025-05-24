@@ -146,7 +146,7 @@ const fetchData = async () => {
     const res = await api.fetch(url);
 
     if (clean(res.path) !== clean(`/${[...route.params.path].join("/")}`)) {
-      throw new Error("Data Mismatch!");
+      return;
     }
 
     fileStore.updateRequest(res);
