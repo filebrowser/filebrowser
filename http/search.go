@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+const searchPingInterval = 5
+
 var searchHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	response := make(chan map[string]interface{})
 	ctx, cancel := context.WithCancelCause(r.Context())
@@ -19,7 +21,7 @@ var searchHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *dat
 	go func() {
 		defer wg.Done()
 		// Avoid connection timeout
-		timeout := time.NewTimer(5 * time.Second)
+		timeout := time.NewTimer(searchPingInterval * time.Second)
 		defer timeout.Stop()
 		for {
 			var err error
