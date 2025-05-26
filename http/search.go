@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/filebrowser/filebrowser/v2/search"
 	"net/http"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/filebrowser/filebrowser/v2/search"
 )
 
 const searchPingInterval = 5
