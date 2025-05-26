@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/filebrowser/filebrowser/v2/search"
 	"net/http"
 	"os"
@@ -25,7 +26,7 @@ var searchHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *dat
 			var infoBytes []byte
 			select {
 			case info := <-response:
-				if (info) == nil {
+				if info == nil {
 					return
 				}
 				infoBytes, err = json.Marshal(info)
@@ -69,7 +70,8 @@ var searchHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *dat
 	if err == nil {
 		err = context.Cause(ctx)
 	}
-	if err != nil {
+	// ignore cancellation errors from user aborts
+	if err != nil && !errors.Is(err, context.Canceled) {
 		return http.StatusInternalServerError, err
 	}
 
