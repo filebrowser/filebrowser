@@ -33,7 +33,8 @@
     "switchView": "보기 전환",
     "toggleSidebar": "사이드바 전환",
     "update": "업데이트",
-    "upload": "업로드"
+    "upload": "업로드",
+    "stopSearch": "검색 중지"
   },
   "download": {
     "downloadFile": "파일 다운로드",

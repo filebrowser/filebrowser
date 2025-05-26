@@ -42,7 +42,8 @@
     "openFile": "打开文件",
     "continue": "继续",
     "fullScreen": "切换全屏",
-    "discardChanges": "放弃更改"
+    "discardChanges": "放弃更改",
+    "stopSearch": "停止搜索"
   },
   "download": {
     "downloadFile": "下载文件",

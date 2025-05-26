@@ -42,7 +42,8 @@
     "update": "Update",
     "upload": "Upload",
     "openFile": "Open file",
-    "discardChanges": "Discard"
+    "discardChanges": "Discard",
+    "stopSearch": "Stop searching"
   },
   "download": {
     "downloadFile": "Download File",
