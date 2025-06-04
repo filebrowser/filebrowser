@@ -10,6 +10,7 @@ interface ApiOpts {
   method?: ApiMethod;
   headers?: object;
   body?: any;
+  signal?: AbortSignal;
 }
 
 interface TusSettings {
