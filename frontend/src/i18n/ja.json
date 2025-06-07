@@ -39,7 +39,8 @@
     "update": "更新",
     "upload": "アップロード",
     "openFile": "ファイルを開く",
-    "continue": "続行"
+    "continue": "続行",
+    "stopSearch": "検索を停止"
   },
   "download": {
     "downloadFile": "ファイルのダウンロード",
