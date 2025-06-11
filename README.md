@@ -2,6 +2,10 @@
   <img src="https://raw.githubusercontent.com/filebrowser/logo/master/banner.png" width="550"/>
 </p>
 
+> [!WARNING]
+>
+> This project is currently not under active maintenance and is looking for maintainers. Please check [issue #4890](https://github.com/filebrowser/filebrowser/issues/4890).
+
 ![Preview](https://user-images.githubusercontent.com/5447088/50716739-ebd26700-107a-11e9-9817-14230c53efd2.gif)
 
 [![Build](https://github.com/filebrowser/filebrowser/actions/workflows/main.yaml/badge.svg)](https://github.com/filebrowser/filebrowser/actions/workflows/main.yaml)
@@ -14,9 +18,9 @@ filebrowser provides a file managing interface within a specified directory and 
 
 ## Demo
 
-url: https://demo.filebrowser.org/
+URL: https://demo.filebrowser.org/
 
-credentials: `demo`/`demo`
+Credentials: `demo`/`demo`
 
 ## Features
 
