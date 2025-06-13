@@ -37,7 +37,8 @@
     "toggleSidebar": "Боковая панель",
     "update": "Обновить",
     "upload": "Загрузить",
-    "openFile": "Открыть файл"
+    "openFile": "Открыть файл",
+    "stopSearch": "Прекратить поиск"
   },
   "download": {
     "downloadFile": "Скачать файл",
