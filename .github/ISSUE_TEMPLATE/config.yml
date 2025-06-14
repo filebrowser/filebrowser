@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GitHub Discussions
+    url: https://github.com/filebrowser/filebrowser/discussions
+    about: Please ask questions and discuss features here.

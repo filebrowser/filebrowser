@@ -1,0 +1,43 @@
+name: Bug Report
+description: Report a bug in FileBrowser.
+labels: [bug, triage]
+body:
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      description: Please verify that you've followed these steps
+      options:
+        - label: This is a bug report, not a question.
+          required: true
+        - label: I have searched on the [issue tracker](https://github.com/filebrowser/filebrowser/issues?q=is%3Aissue) for my bug.
+          required: true
+        - label: I am running the latest [FileBrowser version](https://github.com/filebrowser/filebrowser/releases) or have an issue updating.
+          required: true
+  - type: textarea
+    id: version
+    attributes:
+      label: Version
+      render: Text
+      description: |
+        Enter the version of FileBrowser you are using.
+  - type: textarea
+    attributes:
+      label: Description
+      description: |
+        A clear and concise description of what the issue is about. What are you trying to do?
+  - type: textarea
+    attributes:
+      label: What did you expect to happen?
+  - type: textarea
+    attributes:
+      label: What actually happened?
+  - type: textarea
+    attributes:
+      label: Reproduction Steps
+      description: |
+        Tell us how to reproduce this issue. How can someone who is starting from scratch reproduce this behavior as minimally as possible?
+  - type: textarea
+    attributes:
+      label: Files
+      description: |
+        A list of relevant files for this issue. Large files can be uploaded one-by-one or in a tarball/zipfile.

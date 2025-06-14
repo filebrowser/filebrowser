@@ -1,19 +1,15 @@
-**Description**
-<!--
-Please explain the changes you made here.
-If the feature changes current behaviour, explain why your solution is better.
--->
+## Description
 
-:rotating_light: Before submitting your PR, please indicate which issues are either fixed or closed by this PR. See [GitHub Help: Closing issues using keywords](https://help.github.com/articles/closing-issues-via-commit-messages/).
+<!-- Please explain the changes you made here. -->
 
-- [ ] DO make sure you are requesting to **pull a topic/feature/bugfix branch** (right side). Don't request your master!
-- [ ] DO make sure you are making a pull request against the **master branch** (left side). Also you should start *your branch* off *our master*.
-- [ ] DO make sure that File Browser can be successfully built. See [builds](https://github.com/filebrowser/community/blob/master/builds.md) and [development](https://github.com/filebrowser/community/blob/master/development.md).
-- [ ] AVOID breaking the continuous integration build.
+## Additional Information
 
-**Further comments**
-<!--
-If this is a relatively large or complex change, kick off the discussion by explaining why you chose the solution you did, what alternatives you considered, etc.
+<!-- If it is a relatively large or complex change, please add more information to explain what you did, how you did it, if you considered any alternatives, etc. -->
 
-:heart: Thank you!
--->
+## Checklist
+
+Before submitting your PR, please indicate which issues are either fixed or closed by this PR. See [GitHub Help: Closing issues using keywords](https://help.github.com/articles/closing-issues-via-commit-messages/).
+
+- [ ] I am aware the project is currently in maintenance-only mode. See [README](https://github.com/filebrowser/community/blob/master/README.md)
+- [ ] I am making a PR against the `master` branch.
+- [ ] I am sure File Browser can be successfully built. See [builds](https://github.com/filebrowser/community/blob/master/builds.md) and [development](https://github.com/filebrowser/community/blob/master/development.md).
