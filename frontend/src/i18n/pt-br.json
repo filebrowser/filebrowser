@@ -38,12 +38,19 @@
     "toggleSidebar": "Alternar barra lateral",
     "update": "Atualizar",
     "upload": "Enviar",
-    "openFile": "Abrir"
+    "openFile": "Abrir",
+    "copyDownloadLinkToClipboard": "Copiar link de download para a área de transferência",
+    "fullScreen": "Alternar tela cheia",
+    "preview": "Pré-visualizar",
+    "discardChanges": "Descartar"
   },
   "download": {
     "downloadFile": "Baixar arquivo",
     "downloadFolder": "Baixar pasta",
     "downloadSelected": "Baixar selecionado"
+  },
+  "upload": {
+    "abortUpload": "Tem certeza de que deseja abortar o upload?"
   },
   "errors": {
     "forbidden": "Você não tem permissões para acessar isto.",
@@ -58,8 +65,8 @@
     "folders": "Pastas",
     "home": "Início",
     "lastModified": "Última modificação",
-    "loading": "Carregando. Aguarde, por favor.",
-    "lonely": "Não existe nada aqui.",
+    "loading": "Carregando...",
+    "lonely": "Não há nada aqui...",
     "metadata": "Metadados",
     "multipleSelectionEnabled": "Seleção múltipla ativada",
     "name": "Nome",
@@ -73,12 +80,12 @@
     "click": "selecionar pasta ou arquivo",
     "ctrl": {
       "click": "selecionar várias pastas e arquivos",
-      "f": "pesquisar",
+      "f": "abrir pesquisa",
       "s": "salvar um arquivo ou baixar a pasta que você está"
     },
     "del": "apagar os arquivos selecionados",
     "doubleClick": "abrir pasta ou arquivo",
-    "esc": "limpar seleção e/ou fechar menu",
+    "esc": "limpar seleção e/ou fechar prompt",
     "f1": "esta informação",
     "f2": "renomear arquivo",
     "help": "Ajuda"
@@ -123,7 +130,7 @@
     "rename": "Renomear",
     "renameMessage": "Insira um novo nome para",
     "replace": "Substituir",
-    "replaceMessage": "Já existe um arquivo com nome igual a um dos que está tentando enviar. Deseja substituir?\n",
+    "replaceMessage": "Um dos arquivos que você está tentando enviar possui um nome conflitante. Deseja pular este arquivo e continuar o envio ou substituir o existente?\n",
     "schedule": "Agendar",
     "scheduleMessage": "Escolha uma data para agendar a publicação deste post.",
     "show": "Mostrar",
@@ -131,7 +138,10 @@
     "upload": "Enviar",
     "uploadFiles": "Enviando {files} arquivos...",
     "uploadMessage": "Selecione uma opção para enviar.",
-    "optionalPassword": "Senha opcional"
+    "optionalPassword": "Senha opcional",
+    "deleteUser": "Tem certeza de que deseja apagar este usuário?",
+    "resolution": "Resolução",
+    "discardEditorChanges": "Tem certeza de que deseja descartar as alterações feitas?"
   },
   "search": {
     "images": "Imagens",
@@ -159,7 +169,7 @@
     "commandRunner": "Execução de comandos",
     "commandRunnerHelp": "Aqui você pode definir comandos que serão executados nos eventos descritos. Escreva um por linha. As variáveis de ambiente {0} e {1} estão disponíveis, sendo {0} relativo a {1}. Para mais informações sobre esta função e as variáveis de ambiente disponíveis, leia a {2}.",
     "commandsUpdated": "Comandos atualizados!",
-    "createUserDir": "Criar diretório Home para novos usuários",
+    "createUserDir": "Criar diretório Home do usuário automaticamente ao adicionar novo usuário",
     "userHomeBasePath": "Caminho base para diretórios de usuários",
     "userScopeGenerationPlaceholder": "O escopo será gerado automaticamente",
     "createUserHomeDirectory": "Criar diretório Home de usuário",
@@ -184,7 +194,7 @@
     "newUser": "Novo usuário",
     "password": "Senha",
     "passwordUpdated": "Senha atualizada!",
-    "path": "",
+    "path": "Caminho",
     "perm": {
       "create": "Criar arquivos e diretórios",
       "delete": "Apagar arquivos e diretórios",
@@ -209,6 +219,7 @@
     "shareDeleted": "Compartilhamento apagado!",
     "singleClick": "Usar clique único para abrir arquivos e diretórios",
     "themes": {
+      "default": "Padrão do sistema",
       "dark": "Escuro",
       "light": "Claro",
       "title": "Tema"
@@ -229,7 +240,7 @@
     "hugoNew": "Hugo New",
     "login": "Login",
     "logout": "Sair",
-    "myFiles": "Arquivos",
+    "myFiles": "Meus arquivos",
     "newFile": "Novo arquivo",
     "newFolder": "Nova pasta",
     "preview": "Pré-visualizar",
@@ -245,6 +256,6 @@
     "hours": "Horas",
     "minutes": "Minutos",
     "seconds": "Segundos",
-    "unit": "Unidades de Tempo"
+    "unit": "Unidade de tempo"
   }
 }
