@@ -223,6 +223,7 @@
     "shareDeleted": "Partage supprimé !",
     "singleClick": "Utiliser un simple clic pour ouvrir les fichiers et les dossiers",
     "themes": {
+      "default": "System default",
       "dark": "Sombre",
       "light": "Clair",
       "title": "Thème"
