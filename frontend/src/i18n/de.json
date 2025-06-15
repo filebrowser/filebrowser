@@ -3,17 +3,17 @@
     "cancel": "Abbrechen",
     "clear": "Schließen",
     "close": "Schließen",
-    "continue": "Continue",
+    "continue": "",
     "copy": "Kopieren",
     "copyFile": "Kopiere Datei",
     "copyToClipboard": "In Zwischenablage kopieren",
-    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
+    "copyDownloadLinkToClipboard": "",
     "create": "Neu",
     "delete": "Löschen",
     "download": "Herunterladen",
     "file": "Datei",
     "folder": "Ordner",
-    "fullScreen": "Toggle full screen",
+    "fullScreen": "",
     "hideDotfiles": "Versteckte Dateien ausblenden",
     "info": "Info",
     "more": "mehr",
@@ -24,7 +24,7 @@
     "ok": "OK",
     "permalink": "permanenten Verweis anzeigen",
     "previous": "vorherige",
-    "preview": "Preview",
+    "preview": "",
     "publish": "Veröffentlichen",
     "rename": "umbenennen",
     "replace": "Ersetzen",
@@ -42,7 +42,7 @@
     "update": "Update",
     "upload": "Upload",
     "openFile": "Datei öffnen",
-    "discardChanges": "Discard"
+    "discardChanges": ""
   },
   "download": {
     "downloadFile": "Download Datei",
@@ -50,7 +50,7 @@
     "downloadSelected": "Auswahl herunterladen"
   },
   "upload": {
-    "abortUpload": "Are you sure you wish to abort?"
+    "abortUpload": ""
   },
   "errors": {
     "forbidden": "Sie haben keine Berechtigung dies abzurufen.",
@@ -110,7 +110,7 @@
     "deleteMessageMultiple": "Sind Sie sicher, dass Sie {count} Datei(en) löschen möchten?",
     "deleteMessageSingle": "Sind Sie sicher, dass Sie diesen Ordner/diese Datei löschen möchten?",
     "deleteMessageShare": "Sind Sie sicher, dass Sie diese Freigabe löschen möchten ({path})?",
-    "deleteUser": "Are you sure you want to delete this user?",
+    "deleteUser": "",
     "deleteTitle": "Lösche Dateien",
     "displayName": "Anzeigename:",
     "download": "Lade Dateien",
@@ -140,8 +140,8 @@
     "uploadFiles": "Upload von {files} Dateien...",
     "uploadMessage": "Wählen Sie eine Upload-Methode",
     "optionalPassword": "Optionales Passwort",
-    "resolution": "Resolution",
-    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
+    "resolution": "",
+    "discardEditorChanges": ""
   },
   "search": {
     "images": "Bilder",
@@ -174,9 +174,9 @@
     "tusUploadsHelp": "File Browser unterstützt das Hochladen von gestückelten Dateien und ermöglicht so einen effizienten, zuverlässigen, fortsetzbaren und gestückelten Datei-Upload auch in unzuverlässigen Netzwerken.",
     "tusUploadsChunkSize": "Gibt die maximale Größe pro Anfrage an (direkte Uploads werden für kleinere Uploads verwendet). Bitte geben Sie eine Byte-Angabe oder eine Zeichenfolge wie 10 MB, 1 GB usw. an",
     "tusUploadsRetryCount": "Anzahl der Wiederholungsversuche, wenn das Hochladen eines Stückes fehlschlägt.",
-    "userHomeBasePath": "Base path for user home directories",
-    "userScopeGenerationPlaceholder": "The scope will be auto generated",
-    "createUserHomeDirectory": "Create user home directory",
+    "userHomeBasePath": "",
+    "userScopeGenerationPlaceholder": "",
+    "createUserHomeDirectory": "",
     "customStylesheet": "Individuelles Stylesheet",
     "defaultUserDescription": "Das sind die Standardeinstellung für Benutzer",
     "disableExternalLinks": "Externe Links deaktivieren (außer Dokumentation)",
@@ -223,7 +223,7 @@
     "shareDeleted": "Freigabe gelöscht!",
     "singleClick": "Einfacher Klick zum Öffnen von Dateien und Ordnern",
     "themes": {
-      "default": "System default",
+      "default": "",
       "dark": "Dunkel",
       "light": "Hell",
       "title": "Erscheinungsbild"
