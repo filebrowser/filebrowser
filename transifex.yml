@@ -4,6 +4,7 @@ filters:
   source_language: en
   source_file: frontend/src/i18n/en.json
   translation_files_expression: 'frontend/src/i18n/<lang>.json'
+  mode: onlytranslated
 
 settings:
  language_mapping:
