@@ -3,17 +3,17 @@
     "cancel": "Відмінити",
     "clear": "Очистити",
     "close": "Закрити",
-    "continue": "",
+    "continue": "Continue",
     "copy": "Копіювати",
     "copyFile": "Копіювати файл",
     "copyToClipboard": "Копіювати в буфер обміну",
-    "copyDownloadLinkToClipboard": "",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Створити",
     "delete": "Видалити",
     "download": "Завантажити",
     "file": "Файл",
     "folder": "Папка",
-    "fullScreen": "",
+    "fullScreen": "Toggle full screen",
     "hideDotfiles": "Приховати точкові файли",
     "info": "Інфо",
     "more": "Більше",
@@ -24,7 +24,7 @@
     "ok": "ОК",
     "permalink": "Отримати постійне посилання",
     "previous": "Назад",
-    "preview": "",
+    "preview": "Preview",
     "publish": "Опублікувати",
     "rename": "Перейменувати",
     "replace": "Замінити",
@@ -42,7 +42,7 @@
     "update": "Оновити",
     "upload": "Вивантажити",
     "openFile": "Відкрити файл",
-    "discardChanges": ""
+    "discardChanges": "Discard"
   },
   "download": {
     "downloadFile": "Завантажити файл",
@@ -50,7 +50,7 @@
     "downloadSelected": "Завантажити вибране"
   },
   "upload": {
-    "abortUpload": ""
+    "abortUpload": "Are you sure you wish to abort?"
   },
   "errors": {
     "forbidden": "У вас немає прав доступу до цього.",
@@ -110,7 +110,7 @@
     "deleteMessageMultiple": "Видалити ці файли ({count})?",
     "deleteMessageSingle": "Видалити цей файл/каталог?",
     "deleteMessageShare": "Видалити цей спільний файл/каталог ({path})?",
-    "deleteUser": "",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "Видалити файли",
     "displayName": "Відображене ім'я:",
     "download": "Завантажити файли",
@@ -137,11 +137,11 @@
     "show": "Показати",
     "size": "Розмір",
     "upload": "Вивантажити",
-    "uploadFiles": "",
+    "uploadFiles": "Uploading {files} files...",
     "uploadMessage": "Виберіть варіант для вивантаження.",
     "optionalPassword": "Необов'язковий пароль",
-    "resolution": "",
-    "discardEditorChanges": ""
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "Зображення",
@@ -170,13 +170,13 @@
     "commandRunnerHelp": "Тут ви можете встановити команди, які будуть виконуватися у зазначених подіях. Ви повинні вказати по одній команді в кожному рядку. Змінні середовища {0} та {1} будуть доступні, будучи {0} щодо {1}. Додаткові відомості про цю функцію та доступні змінні середовища див. у {2}.",
     "commandsUpdated": "Команди оновлені!",
     "createUserDir": "Автоматичне створення домашнього каталогу користувача при додаванні нового користувача",
-    "tusUploads": "",
-    "tusUploadsHelp": "",
-    "tusUploadsChunkSize": "",
-    "tusUploadsRetryCount": "",
-    "userHomeBasePath": "",
-    "userScopeGenerationPlaceholder": "",
-    "createUserHomeDirectory": "",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "userHomeBasePath": "Base path for user home directories",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Свій стиль",
     "defaultUserDescription": "Це налаштування за замовчуванням для нових користувачів.",
     "disableExternalLinks": "Вимкнути зовнішні посилання (крім документації)",
@@ -223,7 +223,7 @@
     "shareDeleted": "Спільне посилання видалено!",
     "singleClick": "Відкриття файлів та каталогів одним кліком",
     "themes": {
-      "default": "",
+      "default": "System default",
       "dark": "Темна",
       "light": "Світла",
       "title": "Тема"
