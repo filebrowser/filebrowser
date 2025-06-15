@@ -3,17 +3,17 @@
     "cancel": "Отмена",
     "clear": "Очистить",
     "close": "Закрыть",
-    "continue": "Continue",
+    "continue": "",
     "copy": "Копировать",
     "copyFile": "Скопировать файл",
     "copyToClipboard": "Скопировать в буфер",
-    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
+    "copyDownloadLinkToClipboard": "",
     "create": "Создать",
     "delete": "Удалить",
     "download": "Скачать",
     "file": "Файл",
     "folder": "Папка",
-    "fullScreen": "Toggle full screen",
+    "fullScreen": "",
     "hideDotfiles": "Скрыть точечные файлы",
     "info": "Инфо",
     "more": "Еще",
@@ -24,7 +24,7 @@
     "ok": "OK",
     "permalink": "Получить постоянную ссылку",
     "previous": "Назад",
-    "preview": "Preview",
+    "preview": "",
     "publish": "Опубликовать",
     "rename": "Переименовать",
     "replace": "Перезаписать",
@@ -42,7 +42,7 @@
     "update": "Обновить",
     "upload": "Загрузить",
     "openFile": "Открыть файл",
-    "discardChanges": "Discard"
+    "discardChanges": ""
   },
   "download": {
     "downloadFile": "Скачать файл",
@@ -50,7 +50,7 @@
     "downloadSelected": "Скачать выбранное"
   },
   "upload": {
-    "abortUpload": "Are you sure you wish to abort?"
+    "abortUpload": ""
   },
   "errors": {
     "forbidden": "У вас нет прав доступа к этому.",
@@ -110,7 +110,7 @@
     "deleteMessageMultiple": "Удалить эти файлы ({count})?",
     "deleteMessageSingle": "Удалить этот файл/каталог?",
     "deleteMessageShare": "Удалить этот общий файл/каталог ({path})?",
-    "deleteUser": "Are you sure you want to delete this user?",
+    "deleteUser": "",
     "deleteTitle": "Удалить файлы",
     "displayName": "Отображаемое имя:",
     "download": "Скачать файлы",
@@ -137,11 +137,11 @@
     "show": "Показать",
     "size": "Размер",
     "upload": "Загрузить",
-    "uploadFiles": "Uploading {files} files...",
+    "uploadFiles": "",
     "uploadMessage": "Выберите вариант для загрузки.",
     "optionalPassword": "Необязательный пароль",
-    "resolution": "Resolution",
-    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
+    "resolution": "",
+    "discardEditorChanges": ""
   },
   "search": {
     "images": "Изображения",
@@ -170,13 +170,13 @@
     "commandRunnerHelp": "Здесь вы можете установить команды, которые будут выполняться в указанных событиях. Вы должны указать по одной команде в каждой строке. Переменные среды {0} и {1} будут доступны, будучи {0} относительно {1}. Дополнительные сведения об этой функции и доступных переменных среды см. В {2}.",
     "commandsUpdated": "Команды обновлены!",
     "createUserDir": "Автоматическое создание домашнего каталога пользователя при добавлении нового пользователя",
-    "tusUploads": "Chunked Uploads",
-    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
-    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
-    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
-    "userHomeBasePath": "Base path for user home directories",
-    "userScopeGenerationPlaceholder": "The scope will be auto generated",
-    "createUserHomeDirectory": "Create user home directory",
+    "tusUploads": "",
+    "tusUploadsHelp": "",
+    "tusUploadsChunkSize": "",
+    "tusUploadsRetryCount": "",
+    "userHomeBasePath": "",
+    "userScopeGenerationPlaceholder": "",
+    "createUserHomeDirectory": "",
     "customStylesheet": "Свой стиль",
     "defaultUserDescription": "Это настройки по умолчанию для новых пользователей.",
     "disableExternalLinks": "Отключить внешние ссылки (кроме документации)",
@@ -223,7 +223,7 @@
     "shareDeleted": "Расшаренная ссылка удалена!",
     "singleClick": "Открытие файлов и каталогов одним кликом",
     "themes": {
-      "default": "System default",
+      "default": "",
       "dark": "Темная",
       "light": "Светлая",
       "title": "Тема"
