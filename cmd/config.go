@@ -38,6 +38,8 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("auth.header", "", "HTTP header for auth.method=proxy")
 	flags.String("auth.command", "", "command for auth.method=hook")
 
+	flags.String("logoutpage", "", "custom logout page")
+
 	flags.String("recaptcha.host", "https://www.google.com", "use another host for ReCAPTCHA. recaptcha.net might be useful in China")
 	flags.String("recaptcha.key", "", "ReCaptcha site key")
 	flags.String("recaptcha.secret", "", "ReCaptcha secret")
@@ -145,6 +147,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "Sign up:\t%t\n", set.Signup)
 	fmt.Fprintf(w, "Create User Dir:\t%t\n", set.CreateUserDir)
 	fmt.Fprintf(w, "Auth method:\t%s\n", set.AuthMethod)
+	fmt.Fprintf(w, "LogoutPage:\t%s\n", set.LogoutPage)
 	fmt.Fprintf(w, "Shell:\t%s\t\n", strings.Join(set.Shell, " "))
 	fmt.Fprintln(w, "\nBranding:")
 	fmt.Fprintf(w, "\tName:\t%s\n", set.Branding.Name)

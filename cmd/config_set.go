@@ -47,6 +47,8 @@ you want to change. Other options will remain unchanged.`,
 				set.Signup = mustGetBool(flags, flag.Name)
 			case "auth.method":
 				hasAuth = true
+			case "logoutpage":
+				set.LogoutPage = mustGetString(flags, flag.Name)
 			case "shell":
 				set.Shell = convertCmdStrToCmdArray(mustGetString(flags, flag.Name))
 			case "create-user-dir":
