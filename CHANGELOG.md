@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.32.1](https://github.com/filebrowser/filebrowser/compare/v2.32.0...v2.32.1) (2025-06-16)
+
+
+### Features
+
+* add Vietnamese translation ([#3840](https://github.com/filebrowser/filebrowser/issues/3840)) ([56b80b6](https://github.com/filebrowser/filebrowser/commit/56b80b6d9b4710538765ba7df5da1f03898f6b81))
+* improve pt-br translations with new keys and refinements ([#4903](https://github.com/filebrowser/filebrowser/issues/4903)) ([a882fb6](https://github.com/filebrowser/filebrowser/commit/a882fb6c85ab6ccc845ed0bf3908d8e5e60ce346))
+* update translation ko.json ([#3852](https://github.com/filebrowser/filebrowser/issues/3852)) ([d9ebd65](https://github.com/filebrowser/filebrowser/commit/d9ebd65ffcf9b2166fec708d51849796d12b16e0))
+
+
+### Bug Fixes
+
+* err shadowing lint ([c606a01](https://github.com/filebrowser/filebrowser/commit/c606a01a2d20932fb32ee896234d57631f8c47e4))
+* generate random admin password on quick setup ([a46acba](https://github.com/filebrowser/filebrowser/commit/a46acba5f92ee044661880d6ae349e289d984328)), closes [#3646](https://github.com/filebrowser/filebrowser/issues/3646)
+* imports lint ([54b91b8](https://github.com/filebrowser/filebrowser/commit/54b91b8ff0b8ee1f02f72425ab97d27a5d942fc3))
+* set videojs locale ([#3742](https://github.com/filebrowser/filebrowser/issues/3742)) ([71a8f56](https://github.com/filebrowser/filebrowser/commit/71a8f5662c207e3cd4ee714a5b5a961121f510cd))
+
+
+### Build
+
+* **deps-dev:** bump vite from 6.0.11 to 6.1.6 in /frontend ([#3886](https://github.com/filebrowser/filebrowser/issues/3886)) ([5355629](https://github.com/filebrowser/filebrowser/commit/5355629fd1e7bd85ee3222fca22da899ba23ea95))
+* **deps:** bump golang.org/x/crypto from 0.31.0 to 0.35.0 ([#3865](https://github.com/filebrowser/filebrowser/issues/3865)) ([0ba9505](https://github.com/filebrowser/filebrowser/commit/0ba9505a19cb369653fc9f8260dc02fcc6587629))
+* **deps:** bump golang.org/x/net from 0.33.0 to 0.38.0 ([#3869](https://github.com/filebrowser/filebrowser/issues/3869)) ([cfea84f](https://github.com/filebrowser/filebrowser/commit/cfea84fd5e7ec9c1d2366293e5db12baaa4e3a81))
+* **deps:** bump vue-i18n from 11.0.1 to 11.1.2 in /frontend ([#3786](https://github.com/filebrowser/filebrowser/issues/3786)) ([35d1c09](https://github.com/filebrowser/filebrowser/commit/35d1c092434b80b22c89a614a02122e9f5965b39))
+
 ## [2.32.0](https://github.com/filebrowser/filebrowser/compare/v2.31.2...v2.32.0) (2025-01-31)
 
 
