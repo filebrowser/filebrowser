@@ -41,7 +41,8 @@
     "openFile": "開啟檔案",
     "continue": "繼續",
     "fullScreen": "切換全螢幕",
-    "discardChanges": "放棄變更"
+    "discardChanges": "放棄變更",
+    "stopSearch": "停止搜尋"
   },
   "download": {
     "downloadFile": "下載檔案",
