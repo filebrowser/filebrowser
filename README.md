@@ -41,12 +41,12 @@ File Browser is a **create-your-own-cloud-kind** of software where you can insta
 
 ## Install
 
-Check [docs/installation.md](./docs/installation.md).
+For information on how to install File Browser, please check [docs/installation.md](./docs/installation.md).
 
 ## Configuration
 
-Check [docs/configuration.md](./docs/configuration.md).
+For information on how to configure File Browser, please check [docs/configuration.md](./docs/configuration.md).
 
 ## Contributing
 
-Check [docs/contributing.md](./docs/contributing.md).
+For information on how to contribute to the project, including how translations are managed, please check [docs/contributing.md](./docs/contributing.md).
