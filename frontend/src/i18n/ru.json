@@ -140,7 +140,7 @@
     "uploadFiles": "Загружаю {files} файлы...",
     "uploadMessage": "Выберите вариант для загрузки.",
     "optionalPassword": "Необязательный пароль",
-    "resolution": "Resolution",
+    "resolution": "Разрешение",
     "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
