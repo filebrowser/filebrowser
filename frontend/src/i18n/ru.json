@@ -176,7 +176,7 @@
     "tusUploadsRetryCount": "Количество повторных попыток, которые необходимо выполнить, если фрагмент не удалось загрузить.",
     "userHomeBasePath": "Путь к домашнему каталогу пользователя",
     "userScopeGenerationPlaceholder": "Область действия будет сгенерирована автоматически",
-    "createUserHomeDirectory": "Create user home directory",
+    "createUserHomeDirectory": "Создать домашний каталог пользователя",
     "customStylesheet": "Свой стиль",
     "defaultUserDescription": "Это настройки по умолчанию для новых пользователей.",
     "disableExternalLinks": "Отключить внешние ссылки (кроме документации)",
