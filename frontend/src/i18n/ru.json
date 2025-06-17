@@ -110,7 +110,7 @@
     "deleteMessageMultiple": "Удалить эти файлы ({count})?",
     "deleteMessageSingle": "Удалить этот файл/каталог?",
     "deleteMessageShare": "Удалить этот общий файл/каталог ({path})?",
-    "deleteUser": "Are you sure you want to delete this user?",
+    "deleteUser": "Вы действительно, хотите удалить пользователя?",
     "deleteTitle": "Удалить файлы",
     "displayName": "Отображаемое имя:",
     "download": "Скачать файлы",
