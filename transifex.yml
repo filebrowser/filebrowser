@@ -6,7 +6,7 @@ filters:
   translation_files_expression: 'frontend/src/i18n/<lang>.json'
 
 settings:
- language_mapping:
+  language_mapping:
     sv_SE: sv-se
     cz-CS: cz_cs
     pt_BR: pt-br
