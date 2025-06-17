@@ -50,7 +50,7 @@
     "downloadSelected": "Скачать выбранное"
   },
   "upload": {
-    "abortUpload": "Are you sure you wish to abort?"
+    "abortUpload": "Вы действительно, что хотите прервать операцию?"
   },
   "errors": {
     "forbidden": "У вас нет прав доступа к этому.",
