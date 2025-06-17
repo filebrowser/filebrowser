@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.32.2](https://github.com/filebrowser/filebrowser/compare/v2.32.1...v2.32.2) (2025-06-17)
+
+
+### Features
+
+* updated for project File Browser ([#5159](https://github.com/filebrowser/filebrowser/issues/5159)) ([c34c0af](https://github.com/filebrowser/filebrowser/commit/c34c0afecf3242b16ad5d5584cd90a6ad323361c))
+
 ### [2.32.1](https://github.com/filebrowser/filebrowser/compare/v2.32.0...v2.32.1) (2025-06-16)
 
 
