@@ -137,7 +137,7 @@
     "show": "Показать",
     "size": "Размер",
     "upload": "Загрузить",
-    "uploadFiles": "Uploading {files} files...",
+    "uploadFiles": "Загружаю {files} файлы...",
     "uploadMessage": "Выберите вариант для загрузки.",
     "optionalPassword": "Необязательный пароль",
     "resolution": "Resolution",
