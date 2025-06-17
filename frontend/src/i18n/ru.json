@@ -175,7 +175,7 @@
     "tusUploadsChunkSize": "Указывает максимальный размер запроса (мелкие загрузки пойдут напрямую). Вы можете ввести простое целое число, обозначающее размер ввода в байтах, или строку, например 10MB, 1GB и т. д.",
     "tusUploadsRetryCount": "Количество повторных попыток, которые необходимо выполнить, если фрагмент не удалось загрузить.",
     "userHomeBasePath": "Путь к домашнему каталогу пользователя",
-    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "userScopeGenerationPlaceholder": "Область действия будет сгенерирована автоматически",
     "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Свой стиль",
     "defaultUserDescription": "Это настройки по умолчанию для новых пользователей.",
