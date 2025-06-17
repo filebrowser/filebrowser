@@ -188,15 +188,26 @@ docker_manifests:
     image_templates:
       - "filebrowser/filebrowser:v{{ .Major }}-amd64-s6"
       - "filebrowser/filebrowser:v{{ .Major }}-arm64-s6"
-brews:
+
+homebrew_casks:
   - name: filebrowser
     repository:
       owner: filebrowser
       name: homebrew-tap
-    directory: Formula
-    homepage: https://filebrowser.org
     commit_author:
       name: FileBrowser Robot
       email: robot@filebrowser.org
+    homepage: https://github.com/filebrowser/filebrowser
     description: File Browser is a create-your-own-cloud-kind of software where you can install it on a server, direct it to a path and then access your files through a nice web interface
     license: "MIT"
+    # make the old formula conflict with the cask:
+    conflicts:
+      - formula: filebrowser
+    # if your app/binary isn't signed and notarized, you'll need this:
+    hooks:
+      post:
+        install: |
+          if system_command("/usr/bin/xattr", args: ["-h"]).exit_status == 0
+            # replace 'foo' with the actual binary name
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/foo"]
+          end
