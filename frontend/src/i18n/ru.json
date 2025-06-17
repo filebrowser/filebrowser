@@ -172,7 +172,7 @@
     "createUserDir": "Автоматическое создание домашнего каталога пользователя при добавлении нового пользователя",
     "tusUploads": "Загруженные файлы",
     "tusUploadsHelp": " File Browser поддерживает загрузку файлов по частям, что позволяет работать в сетях низкого качества.",
-    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsChunkSize": "Указывает максимальный размер запроса (мелкие загрузки пойдут напрямую). Вы можете ввести простое целое число, обозначающее размер ввода в байтах, или строку, например 10MB, 1GB и т. д.",
     "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Base path for user home directories",
     "userScopeGenerationPlaceholder": "The scope will be auto generated",
