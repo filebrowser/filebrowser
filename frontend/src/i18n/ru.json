@@ -141,7 +141,7 @@
     "uploadMessage": "Выберите вариант для загрузки.",
     "optionalPassword": "Необязательный пароль",
     "resolution": "Разрешение",
-    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
+    "discardEditorChanges": "Вы действительно желаете отменить ваши правки?"
   },
   "search": {
     "images": "Изображения",
