@@ -39,31 +39,47 @@ Although this is the fastest way to bootstrap an instance, we recommend you to t
 
 ## Docker
 
-File Browser is also available as a Docker image. You can find it on [Docker Hub](https://hub.docker.com/r/filebrowser/filebrowser). The usage is as follows:
+File Browser is available as two different Docker images, which can be found on [Docker Hub](https://hub.docker.com/r/filebrowser/filebrowser).
 
 ### Alpine
 
 ```sh
 docker run \
-  -v /path/to/root:/srv \
-  -v /path/filebrowser.db:/database.db \
-  -v /path/.filebrowser.json:/.filebrowser.json \
+  -v /path/to/srv:/srv \
+  -v /path/to/filebrowser.db:/database.db \
+  -v /path/to/.filebrowser.json:/.filebrowser.json \
   -u $(id -u):$(id -g) \
   -p 8080:80 \
   filebrowser/filebrowser
 ```
 
-### LinuxServer
+Where:
+
+- `/path/to/srv` contains the files root directory for File Browser
+- `/path/to/filebrowser.db` is the `database.db`
+- `/path/to/database` is the `.filebrowser.json`
+
+> [!Warning]
+>
+> To use this image correctly, you need to first initialize a File Browser database outside of the Docker image and then start the Docker image with the database mounted. Otherwise, Docker will create an empty directory at the mounting point and fail to start.
+
+### s6 overlay
+
+The `s6` image is based on LinuxServer and leverages the [s6-overlay](https://github.com/just-containers/s6-overlay) system for a standard, highly customizable image. It should be used as follows:
 
 ```shell
 docker run \
-  -v /path/to/root:/srv \
-  -v /path/to/filebrowser.db:/database/filebrowser.db \
-  -v /path/to/settings.json:/config/settings.json \
+  -v /path/to/srv:/srv \
+  -v /path/to/database:/database \
+  -v /path/to/config:/config \
   -e PUID=$(id -u) \
   -e PGID=$(id -g) \
   -p 8080:80 \
   filebrowser/filebrowser:s6
 ```
 
-By default, we already have a [configuration file with some defaults](../docker/root/defaults/settings.json) so you can just mount the root and the database. Although you can overwrite by mounting a directory with a new config file. If you don't already have a database file, make sure to create a new empty file under the path you specified. Otherwise, Docker will create an empty folder instead of an empty file, resulting in an error when mounting the database into the container.
+Where:
+
+- `/path/to/srv` contains the files root directory for File Browser
+- `/path/to/config` contains a `settings.json` file
+- `/path/to/database` contains a `filebrowser.db` file
