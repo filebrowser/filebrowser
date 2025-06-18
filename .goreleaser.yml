@@ -19,31 +19,30 @@ builds:
       - freebsd
     goarch:
       - amd64
-      - 386
+      - "386"
       - arm
       - arm64
       - riscv64
     goarm:
-      - 5
-      - 6
-      - 7
+      - "5"
+      - "6"
+      - "7"
     ignore:
       - goos: darwin
-        goarch: 386
+        goarch: "386"
       - goos: freebsd
         goarch: arm
 
 archives:
-  -
-    name_template: "{{.Os}}-{{.Arch}}{{if .Arm}}v{{.Arm}}{{end}}-{{ .ProjectName }}"
-    formats: [ 'tar.gz' ]
+  - name_template: "{{.Os}}-{{.Arch}}{{if .Arm}}v{{.Arm}}{{end}}-{{ .ProjectName }}"
+    formats: ["tar.gz"]
     format_overrides:
       - goos: windows
-        formats: [ 'zip' ]
+        formats: ["zip"]
 
 dockers:
-  -
-    dockerfile: Dockerfile
+  # Alpine docker images
+  - dockerfile: Dockerfile
     use: buildx
     build_flag_templates:
       - "--pull"
@@ -59,10 +58,8 @@ dockers:
       - "filebrowser/filebrowser:{{ .Tag }}-amd64"
       - "filebrowser/filebrowser:v{{ .Major }}-amd64"
     extra_files:
-      - docker_config.json
-      - healthcheck.sh
-  -
-    dockerfile: Dockerfile
+      - docker
+  - dockerfile: Dockerfile
     use: buildx
     build_flag_templates:
       - "--pull"
@@ -78,10 +75,8 @@ dockers:
       - "filebrowser/filebrowser:{{ .Tag }}-arm64"
       - "filebrowser/filebrowser:v{{ .Major }}-arm64"
     extra_files:
-      - docker_config.json
-      - healthcheck.sh
-  -
-    dockerfile: Dockerfile
+      - docker
+  - dockerfile: Dockerfile
     use: buildx
     build_flag_templates:
       - "--pull"
@@ -93,15 +88,13 @@ dockers:
       - "--platform=linux/arm/v6"
     goos: linux
     goarch: arm
-    goarm: '6'
+    goarm: "6"
     image_templates:
       - "filebrowser/filebrowser:{{ .Tag }}-armv6"
       - "filebrowser/filebrowser:v{{ .Major }}-armv6"
     extra_files:
-      - docker_config.json
-      - healthcheck.sh
-  -
-    dockerfile: Dockerfile
+      - docker
+  - dockerfile: Dockerfile
     use: buildx
     build_flag_templates:
       - "--pull"
@@ -113,16 +106,15 @@ dockers:
       - "--platform=linux/arm/v7"
     goos: linux
     goarch: arm
-    goarm: '7'
+    goarm: "7"
     image_templates:
       - "filebrowser/filebrowser:{{ .Tag }}-armv7"
       - "filebrowser/filebrowser:v{{ .Major }}-armv7"
     extra_files:
-      - docker_config.json
-      - healthcheck.sh
-## s6 based docker images
-  -
-    dockerfile: Dockerfile.s6
+      - docker
+
+  ## s6-overlay docker images
+  - dockerfile: Dockerfile.s6
     use: buildx
     build_flag_templates:
       - "--pull"
@@ -138,10 +130,8 @@ dockers:
       - "filebrowser/filebrowser:{{ .Tag }}-amd64-s6"
       - "filebrowser/filebrowser:v{{ .Major }}-amd64-s6"
     extra_files:
-      - docker/root
-      - healthcheck.sh
-  -
-    dockerfile: Dockerfile.s6.aarch64
+      - docker
+  - dockerfile: Dockerfile.s6.aarch64
     use: buildx
     build_flag_templates:
       - "--pull"
@@ -157,8 +147,8 @@ dockers:
       - "filebrowser/filebrowser:{{ .Tag }}-arm64-s6"
       - "filebrowser/filebrowser:v{{ .Major }}-arm64-s6"
     extra_files:
-      - docker/root
-      - healthcheck.sh
+      - docker
+
 docker_manifests:
   - name_template: "filebrowser/filebrowser:latest"
     image_templates:
@@ -175,7 +165,7 @@ docker_manifests:
       - "filebrowser/filebrowser:v{{ .Major }}-amd64"
       - "filebrowser/filebrowser:v{{ .Major }}-arm64"
       - "filebrowser/filebrowser:v{{ .Major }}-armv7"
-## s6 image manifests
+  ## s6 image manifests
   - name_template: "filebrowser/filebrowser:s6"
     image_templates:
       - "filebrowser/filebrowser:{{ .Tag }}-amd64-s6"
@@ -199,11 +189,6 @@ homebrew_casks:
       email: robot@filebrowser.org
     homepage: https://github.com/filebrowser/filebrowser
     description: File Browser is a create-your-own-cloud-kind of software where you can install it on a server, direct it to a path and then access your files through a nice web interface
-    license: "MIT"
-    # make the old formula conflict with the cask:
-    conflicts:
-      - formula: filebrowser
-    # if your app/binary isn't signed and notarized, you'll need this:
     hooks:
       post:
         install: |

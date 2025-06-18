@@ -1,9 +1,6 @@
 #!/usr/bin/with-contenv bash
 
-# make folders
-mkdir -p /database
-
-# copy config
+# Ensure configuration exists
 if [ ! -f "/config/settings.json" ]; then
   cp -a /defaults/settings.json /config/settings.json
 fi

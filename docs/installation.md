@@ -46,22 +46,11 @@ File Browser is available as two different Docker images, which can be found on 
 ```sh
 docker run \
   -v /path/to/srv:/srv \
-  -v /path/to/filebrowser.db:/database.db \
-  -v /path/to/.filebrowser.json:/.filebrowser.json \
-  -u $(id -u):$(id -g) \
+  -v /path/to/database:/database \
+  -v /path/to/config:/config \
   -p 8080:80 \
   filebrowser/filebrowser
 ```
-
-Where:
-
-- `/path/to/srv` contains the files root directory for File Browser
-- `/path/to/filebrowser.db` is the `database.db`
-- `/path/to/database` is the `.filebrowser.json`
-
-> [!Warning]
->
-> To use this image correctly, you need to first initialize a File Browser database outside of the Docker image and then start the Docker image with the database mounted. Otherwise, Docker will create an empty directory at the mounting point and fail to start.
 
 ### s6 overlay
 
@@ -78,8 +67,12 @@ docker run \
   filebrowser/filebrowser:s6
 ```
 
+### Notes
+
 Where:
 
 - `/path/to/srv` contains the files root directory for File Browser
 - `/path/to/config` contains a `settings.json` file
 - `/path/to/database` contains a `filebrowser.db` file
+
+Both `settings.json` and `filebrowser.db` will automatically be initialized if they don't exist.
