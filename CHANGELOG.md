@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.33.0](https://github.com/filebrowser/filebrowser/compare/v2.32.3...v2.33.0) (2025-06-18)
+
+
+### Features
+
+* improved docker image volumes and permissions ([#5160](https://github.com/filebrowser/filebrowser/issues/5160)) ([2e26393](https://github.com/filebrowser/filebrowser/commit/2e26393a022df0eaa9e08727407aba8b997aa728))
+
 ### [2.32.3](https://github.com/filebrowser/filebrowser/compare/v2.32.2...v2.32.3) (2025-06-17)
 
 ### [2.32.2](https://github.com/filebrowser/filebrowser/compare/v2.32.1...v2.32.2) (2025-06-17)
