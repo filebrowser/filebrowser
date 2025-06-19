@@ -511,8 +511,11 @@ const keyEvent = (event: KeyboardEvent) => {
 
   switch (event.key) {
     case "f":
-      event.preventDefault();
-      layoutStore.showHover("search");
+    case "F":
+      if (event.shiftKey) {
+        event.preventDefault();
+        layoutStore.showHover("search");
+      }
       break;
     case "c":
     case "x":
