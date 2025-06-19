@@ -53,7 +53,7 @@
             <a
               class="link"
               target="_blank"
-              href="https://filebrowser.org/configuration/custom-branding"
+              href="https://github.com/filebrowser/filebrowser/blob/master/docs/configuration.md#custom-branding"
               >{{ t("settings.documentation") }}</a
             >
           </i18n-t>
@@ -192,7 +192,7 @@
             <a
               class="link"
               target="_blank"
-              href="https://filebrowser.org/configuration/command-runner"
+              href="https://github.com/filebrowser/filebrowser/blob/master/docs/configuration.md#command-runner"
               >{{ t("settings.documentation") }}</a
             >
           </i18n-t>

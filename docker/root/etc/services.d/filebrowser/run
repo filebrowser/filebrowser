@@ -1,3 +1,0 @@
-#!/usr/bin/with-contenv bash
-
-exec s6-setuidgid abc filebrowser -c /config/settings.json -d /database/filebrowser.db;

@@ -18,10 +18,9 @@ builds:
       - amd64
 
 archives:
-  -
-    name_template: "{{.Os}}-{{.Arch}}{{if .Arm}}v{{.Arm}}{{end}}-{{ .ProjectName }}"
-    formats: [ 'tar.gz' ]
+  - name_template: "{{.Os}}-{{.Arch}}{{if .Arm}}v{{.Arm}}{{end}}-{{ .ProjectName }}"
+    formats: ["tar.gz"]
     format_overrides:
       - goos: windows
-        formats: [ 'zip' ]
+        formats: ["zip"]
 
