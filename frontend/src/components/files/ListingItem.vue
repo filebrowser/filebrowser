@@ -8,6 +8,7 @@
     @dragover="dragOver"
     @drop="drop"
     @click="itemClick"
+    @contextmenu="contextMenu"
     :data-dir="isDir"
     :data-type="type"
     :aria-label="name"
@@ -218,6 +219,17 @@ const itemClick = (event: Event | KeyboardEvent) => {
   )
     open();
   else click(event);
+};
+
+const contextMenu = (event: MouseEvent) => {
+  event.preventDefault();
+  if (
+    fileStore.selected.length === 0 ||
+    event.ctrlKey ||
+    fileStore.selected.indexOf(props.index) === -1
+  ) {
+    click(event);
+  }
 };
 
 const click = (event: Event | KeyboardEvent) => {
