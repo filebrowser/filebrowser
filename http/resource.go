@@ -65,12 +65,17 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			Fs:         d.user.Fs,
 			Path:       r.URL.Path,
 			Modify:     d.user.Perm.Modify,
-			Expand:     false,
+			Expand:     true,
 			ReadHeader: d.server.TypeDetectionByHeader,
 			Checker:    d,
 		})
 		if err != nil {
 			return errToStatus(err), err
+		}
+
+		// delete potential shares for this path
+		for _, path := range flatListFilePaths(file, d) {
+			d.store.Share.DeleteWithPath(path)
 		}
 
 		// delete thumbnails
@@ -330,6 +335,41 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 	default:
 		return fmt.Errorf("unsupported action %s: %w", action, fbErrors.ErrInvalidRequestParams)
 	}
+}
+
+func flatListFilePaths(fileInfo *files.FileInfo, d *data) []string {
+	var paths []string
+
+	paths = append(paths, fileInfo.Path)
+
+	if (!fileInfo.isDir) {
+		return paths
+	}
+
+	for _, item := range fileInfo.Items {
+		// no need to add the directory's path here as it will provide itself in the next recursion
+		if (item.IsDir) {
+			file, err := files.NewFileInfo(&files.FileOptions{
+				Fs:         item.Fs,
+				Path:       item.Path + "/", // ensure we add the suffix "/" for a directory
+				Modify:     false,
+				Expand:     true,
+				ReadHeader: false,
+				Checker: 	d,
+			})
+
+			if (err != nil) {
+				return paths
+			}
+
+			deeperFiles := flatListFilePaths(file, d)
+			paths = append(paths, deeperFiles...)
+		} else {
+			paths = append(paths, item.Path)
+		}
+	}
+
+	return paths
 }
 
 type DiskUsageResponse struct {

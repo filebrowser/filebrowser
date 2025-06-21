@@ -75,3 +75,11 @@ func (s shareBackend) Delete(hash string) error {
 	}
 	return err
 }
+
+func (s shareBackend) DeleteWithPath(path string) error {
+	err := s.db.Select(q.Eq("Path", path)).Delete(&share.Link{})
+	if errors.Is(err, storm.ErrNotFound) {
+		return nil
+	}
+	return err
+}
