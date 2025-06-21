@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.33.2](https://github.com/filebrowser/filebrowser/compare/v2.33.1...v2.33.2) (2025-06-21)
+
+
+### Bug Fixes
+
+* create user dir on signup ([0ca8059](https://github.com/filebrowser/filebrowser/commit/0ca8059d8dea4fe079146471ce4f24acc96021f2))
+
 ### [2.33.1](https://github.com/filebrowser/filebrowser/compare/v2.33.0...v2.33.1) (2025-06-21)
 
 
