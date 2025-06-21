@@ -157,6 +157,9 @@ var signupHandler = func(_ http.ResponseWriter, r *http.Request, d *data) (int, 
 	}
 
 	user.Password = pwd
+	if d.settings.CreateUserDir {
+		user.Scope = ""
+	}
 
 	userHome, err := d.settings.MakeUserDir(user.Username, user.Scope, d.server.Root)
 	if err != nil {
