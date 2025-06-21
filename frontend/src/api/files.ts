@@ -2,14 +2,22 @@ import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
 import { baseURL } from "@/utils/constants";
 import { upload as postTus, useTus } from "./tus";
-import { createURL, fetchURL, removePrefix } from "./utils";
+import { createURL, fetchURL, removePrefix, StatusError } from "./utils";
 
-export async function fetch(url: string) {
+export async function fetch(url: string, signal?: AbortSignal) {
   url = removePrefix(url);
+  const res = await fetchURL(`/api/resources${url}`, { signal });
 
-  const res = await fetchURL(`/api/resources${url}`, {});
-
-  const data = (await res.json()) as Resource;
+  let data: Resource;
+  try {
+    data = (await res.json()) as Resource;
+  } catch (e) {
+    // Check if the error is an intentional cancellation
+    if (e instanceof Error && e.name === "AbortError") {
+      throw new StatusError("000 No connection", 0, true);
+    }
+    throw e;
+  }
   data.url = `/files${url}`;
 
   if (data.isDir) {
@@ -205,10 +213,18 @@ export function getSubtitlesURL(file: ResourceItem) {
   return file.subtitles?.map((d) => createURL("api/subtitle" + d, params));
 }
 
-export async function usage(url: string) {
+export async function usage(url: string, signal: AbortSignal) {
   url = removePrefix(url);
 
-  const res = await fetchURL(`/api/usage${url}`, {});
+  const res = await fetchURL(`/api/usage${url}`, { signal });
 
-  return await res.json();
+  try {
+    return await res.json();
+  } catch (e) {
+    // Check if the error is an intentional cancellation
+    if (e instanceof Error && e.name == "AbortError") {
+      throw new StatusError("000 No connection", 0, true);
+    }
+    throw e;
+  }
 }

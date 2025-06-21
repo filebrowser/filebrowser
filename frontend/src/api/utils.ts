@@ -6,7 +6,8 @@ import { encodePath } from "@/utils/url";
 export class StatusError extends Error {
   constructor(
     message: any,
-    public status?: number
+    public status?: number,
+    public is_canceled?: boolean
   ) {
     super(message);
     this.name = "StatusError";
@@ -33,7 +34,11 @@ export async function fetchURL(
       },
       ...rest,
     });
-  } catch {
+  } catch (e) {
+    // Check if the error is an intentional cancellation
+    if (e instanceof Error && e.name === "AbortError") {
+      throw new StatusError("000 No connection", 0, true);
+    }
     throw new StatusError("000 No connection", 0);
   }
 
