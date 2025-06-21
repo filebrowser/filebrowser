@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.33.1](https://github.com/filebrowser/filebrowser/compare/v2.33.0...v2.33.1) (2025-06-21)
+
+
+### Bug Fixes
+
+* downloadUrl of file preview ([#3728](https://github.com/filebrowser/filebrowser/issues/3728)) ([8a14018](https://github.com/filebrowser/filebrowser/commit/8a14018861fe581672bbd27cdc3ae5691f70a108))
+* remove auth query parameter from download and preview links ([cbb7124](https://github.com/filebrowser/filebrowser/commit/cbb712484d3bdabc033acaf3b696ef4f5865813d))
+* search uses ctrl+shift+f instead of hijacking browser's ctrl+f ([#4638](https://github.com/filebrowser/filebrowser/issues/4638)) ([a02b297](https://github.com/filebrowser/filebrowser/commit/a02b2972ebde2a58806ad1377bad46e748b63166))
+
 ## [2.33.0](https://github.com/filebrowser/filebrowser/compare/v2.32.3...v2.33.0) (2025-06-18)
 
 
