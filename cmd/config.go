@@ -31,6 +31,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	addServerFlags(flags)
 	addUserFlags(flags)
 	flags.BoolP("signup", "s", false, "allow users to signup")
+	flags.Bool("publiclogin", true, "allow users to login from the public page")
 	flags.Bool("create-user-dir", false, "generate user's home directory automatically")
 	flags.String("shell", "", "shell command to which other commands should be appended")
 
@@ -143,6 +144,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 
 	fmt.Fprintf(w, "Sign up:\t%t\n", set.Signup)
+	fmt.Fprintf(w, "Public login:\t%t\n", set.PublicLogin)
 	fmt.Fprintf(w, "Create User Dir:\t%t\n", set.CreateUserDir)
 	fmt.Fprintf(w, "Auth method:\t%s\n", set.AuthMethod)
 	fmt.Fprintf(w, "Shell:\t%s\t\n", strings.Join(set.Shell, " "))

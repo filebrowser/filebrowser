@@ -10,6 +10,7 @@ import (
 
 type settingsData struct {
 	Signup           bool                  `json:"signup"`
+	PublicLogin      bool                  `json:"publiclogin"`
 	CreateUserDir    bool                  `json:"createUserDir"`
 	UserHomeBasePath string                `json:"userHomeBasePath"`
 	Defaults         settings.UserDefaults `json:"defaults"`
@@ -23,6 +24,7 @@ type settingsData struct {
 var settingsGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	data := &settingsData{
 		Signup:           d.settings.Signup,
+		PublicLogin:      d.settings.PublicLogin,
 		CreateUserDir:    d.settings.CreateUserDir,
 		UserHomeBasePath: d.settings.UserHomeBasePath,
 		Defaults:         d.settings.Defaults,

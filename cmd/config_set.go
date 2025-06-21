@@ -43,6 +43,8 @@ you want to change. Other options will remain unchanged.`,
 				ser.Port = mustGetString(flags, flag.Name)
 			case "log":
 				ser.Log = mustGetString(flags, flag.Name)
+			case "publiclogin":
+				set.PublicLogin = mustGetBool(flags, flag.Name)
 			case "signup":
 				set.Signup = mustGetBool(flags, flag.Name)
 			case "auth.method":
