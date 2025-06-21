@@ -262,7 +262,7 @@ const raw = computed(() => {
   }
 
   if (isEpub.value) {
-    return createURL("api/raw" + fileStore.req?.path, {}, false);
+    return createURL("api/raw" + fileStore.req?.path, {});
   }
 
   return downloadUrl.value;
