@@ -176,7 +176,7 @@
     "tusUploadsRetryCount": "Anzahl der Wiederholungsversuche, wenn das Hochladen eines Stückes fehlschlägt.",
     "userHomeBasePath": "Basispfad für Benutzer-Home-Verzeichnisse",
     "userScopeGenerationPlaceholder": "Scope wird automatisch generiert",
-    "createUserHomeDirectory": "Create user home directory",
+    "createUserHomeDirectory": "Benutzer-Home-Verzeichnis erstellen",
     "customStylesheet": "Individuelles Stylesheet",
     "defaultUserDescription": "Das sind die Standardeinstellung für Benutzer",
     "disableExternalLinks": "Externe Links deaktivieren (außer Dokumentation)",
