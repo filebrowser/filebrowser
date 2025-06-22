@@ -110,7 +110,7 @@
     "deleteMessageMultiple": "Sind Sie sicher, dass Sie {count} Datei(en) löschen möchten?",
     "deleteMessageSingle": "Sind Sie sicher, dass Sie diesen Ordner/diese Datei löschen möchten?",
     "deleteMessageShare": "Sind Sie sicher, dass Sie diese Freigabe löschen möchten ({path})?",
-    "deleteUser": "Are you sure you want to delete this user?",
+    "deleteUser": "Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?",
     "deleteTitle": "Lösche Dateien",
     "displayName": "Anzeigename:",
     "download": "Lade Dateien",
