@@ -50,7 +50,7 @@
     "downloadSelected": "Auswahl herunterladen"
   },
   "upload": {
-    "abortUpload": "Are you sure you wish to abort?"
+    "abortUpload": "Sind Sie sicher, dass Sie den Vorgang abbrechen möchten?"
   },
   "errors": {
     "forbidden": "Sie haben keine Berechtigung dies abzurufen.",
