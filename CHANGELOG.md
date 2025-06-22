@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.33.3](https://github.com/filebrowser/filebrowser/compare/v2.33.2...v2.33.3) (2025-06-22)
+
+
+### Bug Fixes
+
+* keep command behavior in Dockerfile ([7c0c782](https://github.com/filebrowser/filebrowser/commit/7c0c7820efbbed2f0499353cc76ecb85d00ff7c3))
+* update search hotkey in help prompt ([#5178](https://github.com/filebrowser/filebrowser/issues/5178)) ([2741616](https://github.com/filebrowser/filebrowser/commit/2741616473636d40b7e9f14c9906ada08d328c3c))
+
 ### [2.33.2](https://github.com/filebrowser/filebrowser/compare/v2.33.1...v2.33.2) (2025-06-21)
 
 
