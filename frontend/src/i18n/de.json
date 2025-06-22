@@ -175,7 +175,7 @@
     "tusUploadsChunkSize": "Gibt die maximale Größe pro Anfrage an (direkte Uploads werden für kleinere Uploads verwendet). Bitte geben Sie eine Byte-Angabe oder eine Zeichenfolge wie 10 MB, 1 GB usw. an",
     "tusUploadsRetryCount": "Anzahl der Wiederholungsversuche, wenn das Hochladen eines Stückes fehlschlägt.",
     "userHomeBasePath": "Basispfad für Benutzer-Home-Verzeichnisse",
-    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "userScopeGenerationPlaceholder": "Scope wird automatisch generiert",
     "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Individuelles Stylesheet",
     "defaultUserDescription": "Das sind die Standardeinstellung für Benutzer",
