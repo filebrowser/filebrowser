@@ -8,7 +8,6 @@ filters:
 settings:
   language_mapping:
     sv_SE: sv-se
-    cz-CS: cz_cs
     pt_BR: pt-br
     zh_CN: zh-cn
     zh_HK: zh-hk
