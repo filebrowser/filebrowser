@@ -19,6 +19,7 @@ export default {
       hu: "Magyar",
       ar: "العربية",
       ca: "Català",
+      cs: "Čeština",
       de: "Deutsch",
       el: "Ελληνικά",
       en: "English",
