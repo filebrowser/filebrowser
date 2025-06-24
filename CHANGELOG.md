@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.33.6](https://github.com/filebrowser/filebrowser/compare/v2.33.5...v2.33.6) (2025-06-24)
+
+
+### Bug Fixes
+
+* remove incorrect default for password flag ([23bd8f6](https://github.com/filebrowser/filebrowser/commit/23bd8f67155081d707d4799393d3b1e2bebeaa34))
+
 ### [2.33.5](https://github.com/filebrowser/filebrowser/compare/v2.33.4...v2.33.5) (2025-06-24)
 
 
