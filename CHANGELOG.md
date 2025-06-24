@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.33.5](https://github.com/filebrowser/filebrowser/compare/v2.33.4...v2.33.5) (2025-06-24)
+
+
+### Features
+
+* update languages for project File Browser ([#5190](https://github.com/filebrowser/filebrowser/issues/5190)) ([f330764](https://github.com/filebrowser/filebrowser/commit/f33076462a133935ca97fb6c7345303fe350e167))
+
+
+### Bug Fixes
+
+* actually register the czech language ([#5189](https://github.com/filebrowser/filebrowser/issues/5189)) ([0268506](https://github.com/filebrowser/filebrowser/commit/0268506f80d33d2d31e38055e12530241d27a11b))
+
 ### [2.33.4](https://github.com/filebrowser/filebrowser/compare/v2.33.3...v2.33.4) (2025-06-22)
 
 
