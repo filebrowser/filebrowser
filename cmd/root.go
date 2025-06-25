@@ -276,7 +276,7 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 // if a flag is binded. Our alternative way is to manually check
 // the flag and then the value from env/config/gotten by viper.
 // https://github.com/spf13/viper/pull/331
-func getBoolParamB(flags *pflag.FlagSet, key string) (value bool, ok bool) {
+func getBoolParamB(flags *pflag.FlagSet, key string) (value, ok bool) {
 	value, _ = flags.GetBool(key)
 
 	// If set on Flags, use it.
