@@ -68,7 +68,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.Int("img-processors", 4, "image processors count") //nolint:gomnd
 	flags.Bool("disable-thumbnails", false, "disable image thumbnails")
 	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
-	flags.Bool("disable-exec", false, "disables Command Runner feature")
+	flags.Bool("disable-exec", true, "disables Command Runner feature")
 	flags.Bool("disable-type-detection-by-header", false, "disables type detection by reading file headers")
 }
 
@@ -261,6 +261,13 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 
 	disableExec := getBoolParam(flags, "disable-exec")
 	server.EnableExec = !disableExec
+
+	if server.EnableExec {
+		log.Println("WARNING: Command Runner feature enabled!")
+		log.Println("WARNING: This feature has known security vulnerabilities and should not")
+		log.Println("WARNING: you fully understand the risks involved. For more information")
+		log.Println("WARNING: read https://github.com/filebrowser/filebrowser/issues/5199")
+	}
 
 	if val, set := getStringParamB(flags, "token-expiration-time"); set {
 		server.TokenExpirationTime = val
