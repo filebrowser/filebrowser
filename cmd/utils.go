@@ -14,6 +14,7 @@ import (
 	"github.com/spf13/pflag"
 	yaml "gopkg.in/yaml.v2"
 
+	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
@@ -105,7 +106,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 
 		log.Println("Using database: " + absPath)
 		data.hadDB = exists
-		db, err := storm.Open(path)
+		db, err := storm.Open(path, storm.BoltOptions(files.PermFile, nil))
 		checkErr(err)
 		defer db.Close()
 		data.store, err = bolt.NewStorage(db)
