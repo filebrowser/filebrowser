@@ -86,7 +86,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) {
 		data := pythonData{hadDB: true}
 
-		path := getParam(cmd.Flags(), "database")
+		path := getStringParam(cmd.Flags(), "database")
 		absPath, err := filepath.Abs(path)
 		if err != nil {
 			panic(err)
