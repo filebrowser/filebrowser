@@ -81,5 +81,5 @@ export function getDownloadURL(
   const filename = singleShare
     ? "/" + res.path.match(/\/([^\/]+)$/)?.[1]
     : res.path;
-  return createURL(prefix + res.hash + filename, params, false, true, true);
+  return createURL(prefix + res.hash + filename, params, true, true);
 }

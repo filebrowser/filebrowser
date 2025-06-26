@@ -2,6 +2,67 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.33.8](https://github.com/filebrowser/filebrowser/compare/v2.33.7...v2.33.8) (2025-06-25)
+
+### [2.33.7](https://github.com/filebrowser/filebrowser/compare/v2.33.6...v2.33.7) (2025-06-25)
+
+
+### Bug Fixes
+
+* correctly parse negative boolean flags ([221451a](https://github.com/filebrowser/filebrowser/commit/221451a5179c8f139819a315b80d0ecb0e7220c3))
+* linting issues ([4bfbf33](https://github.com/filebrowser/filebrowser/commit/4bfbf332499fc8aea5f6df6aae1efa0de918d1ae))
+* linting issues ([e74c958](https://github.com/filebrowser/filebrowser/commit/e74c95886226c0ee429af1860eed21dd1f8601aa))
+
+### [2.33.6](https://github.com/filebrowser/filebrowser/compare/v2.33.5...v2.33.6) (2025-06-24)
+
+
+### Bug Fixes
+
+* remove incorrect default for password flag ([23bd8f6](https://github.com/filebrowser/filebrowser/commit/23bd8f67155081d707d4799393d3b1e2bebeaa34))
+
+### [2.33.5](https://github.com/filebrowser/filebrowser/compare/v2.33.4...v2.33.5) (2025-06-24)
+
+
+### Features
+
+* update languages for project File Browser ([#5190](https://github.com/filebrowser/filebrowser/issues/5190)) ([f330764](https://github.com/filebrowser/filebrowser/commit/f33076462a133935ca97fb6c7345303fe350e167))
+
+
+### Bug Fixes
+
+* actually register the czech language ([#5189](https://github.com/filebrowser/filebrowser/issues/5189)) ([0268506](https://github.com/filebrowser/filebrowser/commit/0268506f80d33d2d31e38055e12530241d27a11b))
+
+### [2.33.4](https://github.com/filebrowser/filebrowser/compare/v2.33.3...v2.33.4) (2025-06-22)
+
+
+### Features
+
+* translation updates for project File Browser ([#5179](https://github.com/filebrowser/filebrowser/issues/5179)) ([f714e71](https://github.com/filebrowser/filebrowser/commit/f714e71a356c2301f394d651c9b6c467440508e3))
+
+### [2.33.3](https://github.com/filebrowser/filebrowser/compare/v2.33.2...v2.33.3) (2025-06-22)
+
+
+### Bug Fixes
+
+* keep command behavior in Dockerfile ([7c0c782](https://github.com/filebrowser/filebrowser/commit/7c0c7820efbbed2f0499353cc76ecb85d00ff7c3))
+* update search hotkey in help prompt ([#5178](https://github.com/filebrowser/filebrowser/issues/5178)) ([2741616](https://github.com/filebrowser/filebrowser/commit/2741616473636d40b7e9f14c9906ada08d328c3c))
+
+### [2.33.2](https://github.com/filebrowser/filebrowser/compare/v2.33.1...v2.33.2) (2025-06-21)
+
+
+### Bug Fixes
+
+* create user dir on signup ([0ca8059](https://github.com/filebrowser/filebrowser/commit/0ca8059d8dea4fe079146471ce4f24acc96021f2))
+
+### [2.33.1](https://github.com/filebrowser/filebrowser/compare/v2.33.0...v2.33.1) (2025-06-21)
+
+
+### Bug Fixes
+
+* downloadUrl of file preview ([#3728](https://github.com/filebrowser/filebrowser/issues/3728)) ([8a14018](https://github.com/filebrowser/filebrowser/commit/8a14018861fe581672bbd27cdc3ae5691f70a108))
+* remove auth query parameter from download and preview links ([cbb7124](https://github.com/filebrowser/filebrowser/commit/cbb712484d3bdabc033acaf3b696ef4f5865813d))
+* search uses ctrl+shift+f instead of hijacking browser's ctrl+f ([#4638](https://github.com/filebrowser/filebrowser/issues/4638)) ([a02b297](https://github.com/filebrowser/filebrowser/commit/a02b2972ebde2a58806ad1377bad46e748b63166))
+
 ## [2.33.0](https://github.com/filebrowser/filebrowser/compare/v2.32.3...v2.33.0) (2025-06-18)
 
 

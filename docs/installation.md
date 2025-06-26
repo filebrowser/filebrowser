@@ -52,6 +52,8 @@ docker run \
   filebrowser/filebrowser
 ```
 
+The default user has PID 1000 and GID 1000. Please make sure that this user has access to the different mounted volumes. To change the user running inside the Docker image, you need to use the [`--user` flag](https://docs.docker.com/engine/containers/run/#user).
+
 ### s6 overlay
 
 The `s6` image is based on LinuxServer and leverages the [s6-overlay](https://github.com/just-containers/s6-overlay) system for a standard, highly customizable image. It should be used as follows:

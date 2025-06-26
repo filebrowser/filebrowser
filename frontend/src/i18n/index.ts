@@ -26,6 +26,7 @@ import("dayjs/locale/uk");
 import("dayjs/locale/vi");
 import("dayjs/locale/zh-cn");
 import("dayjs/locale/zh-tw");
+import("dayjs/locale/cs");
 
 // All i18n resources specified in the plugin `include` option can be loaded
 // at once using the import syntax

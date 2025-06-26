@@ -43,5 +43,5 @@ export async function create(
 }
 
 export function getShareURL(share: Share) {
-  return createURL("share/" + share.hash, {}, false, false, true);
+  return createURL("share/" + share.hash, {}, false, true);
 }

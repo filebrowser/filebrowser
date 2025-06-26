@@ -75,11 +75,6 @@ export function download(format: any, ...files: string[]) {
     url += `algo=${format}&`;
   }
 
-  const authStore = useAuthStore();
-  if (authStore.jwt) {
-    url += `auth=${authStore.jwt}&`;
-  }
-
   window.open(url);
 }
 

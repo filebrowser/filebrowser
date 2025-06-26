@@ -81,8 +81,7 @@ export function removePrefix(url: string): string {
 
 export function createURL(
   endpoint: string,
-  params = {},
-  auth = true,
+  searchParams = {},
   isDL = false,
   isShare = false
 ): string {
@@ -94,15 +93,7 @@ export function createURL(
   }
   const mainURL = isShare && publicURL ? publicURL : origin;
   const url = new URL(prefix + encodePath(endpoint), mainURL);
-
-  const searchParams: SearchParams = {
-    ...(auth && { auth: authStore.jwt }),
-    ...params,
-  };
-
-  for (const key in searchParams) {
-    url.searchParams.set(key, searchParams[key]);
-  }
+  url.search = new URLSearchParams(searchParams).toString();
 
   return url.toString();
 }

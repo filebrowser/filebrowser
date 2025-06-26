@@ -29,5 +29,4 @@ VOLUME /srv /config /database
 
 EXPOSE 80
 
-ENTRYPOINT [ "tini", "--", "/init.sh" ]
-CMD [ "filebrowser", "--config", "/config/settings.json" ]
+ENTRYPOINT [ "tini", "--", "/init.sh", "filebrowser", "--config", "/config/settings.json" ]
