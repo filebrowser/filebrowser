@@ -48,7 +48,7 @@ you want to change. Other options will remain unchanged.`,
 			case "auth.method":
 				hasAuth = true
 			case "shell":
-				set.Shell = convertCmdStrToCmdArray(mustGetString(flags, flag.Name))
+				set.Shell = mustGetString(flags, flag.Name)
 			case "create-user-dir":
 				set.CreateUserDir = mustGetBool(flags, flag.Name)
 			case "branding.name":
