@@ -85,8 +85,6 @@ export function createURL(
   isDL = false,
   isShare = false
 ): string {
-  const authStore = useAuthStore();
-
   let prefix = isDL && publicURL ? "" : baseURL;
   if (!prefix.endsWith("/")) {
     prefix = prefix + "/";
