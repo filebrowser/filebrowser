@@ -73,7 +73,7 @@ func dbExists(path string) (bool, error) {
 		d := filepath.Dir(path)
 		_, err = os.Stat(d)
 		if os.IsNotExist(err) {
-			if err := os.MkdirAll(d, 0700); err != nil { //nolint:govet,gomnd
+			if err := os.MkdirAll(d, 0700); err != nil { //nolint:govet,mnd
 				return false, err
 			}
 			return false, nil
@@ -121,7 +121,7 @@ func marshal(filename string, data interface{}) error {
 	defer fd.Close()
 
 	switch ext := filepath.Ext(filename); ext {
-	case ".json":
+	case ".json": //nolint:goconst
 		encoder := json.NewEncoder(fd)
 		encoder.SetIndent("", "    ")
 		return encoder.Encode(data)
