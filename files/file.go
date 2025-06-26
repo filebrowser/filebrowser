@@ -314,7 +314,7 @@ func (i *FileInfo) readFirstBytes() []byte {
 	}
 	defer reader.Close()
 
-	buffer := make([]byte, 512) //nolint:gomnd
+	buffer := make([]byte, 512) //nolint:mnd
 	n, err := reader.Read(buffer)
 	if err != nil && !errors.Is(err, io.EOF) {
 		log.Print(err)
