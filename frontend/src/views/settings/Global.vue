@@ -321,7 +321,10 @@ const save = async () => {
         .filter((cmd: string) => cmd !== "");
     }
   }
-  newSettings.shell = shellValue.value.split("\n");
+  newSettings.shell = shellValue.value
+    .trim()
+    .split(" ")
+    .filter((s) => s !== "");
 
   if (newSettings.branding.theme !== getTheme()) {
     setTheme(newSettings.branding.theme);
