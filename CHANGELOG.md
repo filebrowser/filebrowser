@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.33.10](https://github.com/filebrowser/filebrowser/compare/v2.33.9...v2.33.10) (2025-06-26)
+
+
+### Bug Fixes
+
+* correctly check if command is allowed when using shell ([4d830f7](https://github.com/filebrowser/filebrowser/commit/4d830f707fc4314741fd431e70c2ce50cd5a3108))
+* correctly split shell ([f84a6db](https://github.com/filebrowser/filebrowser/commit/f84a6db680b6df1c7c8f06f1816f7e4c9e963668))
+* ignore linting error ([e735491](https://github.com/filebrowser/filebrowser/commit/e735491c57b12c3b19dd2e4b570723df78f4eb44))
+
+### [2.33.9](https://github.com/filebrowser/filebrowser/compare/v2.33.8...v2.33.9) (2025-06-26)
+
+
+### Bug Fixes
+
+* check exact match on command allow list ([e2e1e49](https://github.com/filebrowser/filebrowser/commit/e2e1e4913085cca8917e0f69171dc28d3c6af1b6))
+* remove auth token from /api/command ([d5b39a1](https://github.com/filebrowser/filebrowser/commit/d5b39a14fd3fc0d1c364116b41289484df7c27b2))
+* remove unused import ([c232d41](https://github.com/filebrowser/filebrowser/commit/c232d41f903d3026ec290bbe819b6c59a933048e))
+
 ### [2.33.8](https://github.com/filebrowser/filebrowser/compare/v2.33.7...v2.33.8) (2025-06-25)
 
 ### [2.33.7](https://github.com/filebrowser/filebrowser/compare/v2.33.6...v2.33.7) (2025-06-25)

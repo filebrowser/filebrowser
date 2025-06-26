@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"slices"
 	"strings"
 	"time"
 
@@ -60,7 +61,16 @@ var commandsHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *d
 		}
 	}
 
-	command, err := runner.ParseCommand(d.settings, raw)
+	// Fail fast
+	if !d.server.EnableExec || !d.user.Perm.Execute {
+		if err := conn.WriteMessage(websocket.TextMessage, cmdNotAllowed); err != nil { //nolint:govet
+			wsErr(conn, r, http.StatusInternalServerError, err)
+		}
+
+		return 0, nil
+	}
+
+	command, name, err := runner.ParseCommand(d.settings, raw)
 	if err != nil {
 		if err := conn.WriteMessage(websocket.TextMessage, []byte(err.Error())); err != nil { //nolint:govet
 			wsErr(conn, r, http.StatusInternalServerError, err)
@@ -68,7 +78,7 @@ var commandsHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *d
 		return 0, nil
 	}
 
-	if !d.server.EnableExec || !d.user.CanExecute(command[0]) {
+	if !slices.Contains(d.user.Commands, name) {
 		if err := conn.WriteMessage(websocket.TextMessage, cmdNotAllowed); err != nil { //nolint:govet
 			wsErr(conn, r, http.StatusInternalServerError, err)
 		}

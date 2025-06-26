@@ -1,33 +1,24 @@
 package runner
 
 import (
-	"os/exec"
-
 	"github.com/filebrowser/filebrowser/v2/settings"
 )
 
 // ParseCommand parses the command taking in account if the current
 // instance uses a shell to run the commands or just calls the binary
-// directyly.
-func ParseCommand(s *settings.Settings, raw string) ([]string, error) {
-	var command []string
+// directly.
+func ParseCommand(s *settings.Settings, raw string) (command []string, name string, err error) {
+	name, args, err := SplitCommandAndArgs(raw)
+	if err != nil {
+		return
+	}
 
 	if len(s.Shell) == 0 || s.Shell[0] == "" {
-		cmd, args, err := SplitCommandAndArgs(raw)
-		if err != nil {
-			return nil, err
-		}
-
-		_, err = exec.LookPath(cmd)
-		if err != nil {
-			return nil, err
-		}
-
-		command = append(command, cmd)
+		command = append(command, name)
 		command = append(command, args...)
 	} else {
 		command = append(s.Shell, raw) //nolint:gocritic
 	}
 
-	return command, nil
+	return command, name, nil
 }
