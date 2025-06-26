@@ -1,4 +1,3 @@
-import { useAuthStore } from "@/stores/auth";
 import { baseURL } from "@/utils/constants";
 import { removePrefix } from "./utils";
 
@@ -11,8 +10,6 @@ export default function command(
   onmessage: WebSocket["onmessage"],
   onclose: WebSocket["onclose"]
 ) {
-  const authStore = useAuthStore();
-
   url = removePrefix(url);
   url = `${protocol}//${window.location.host}${baseURL}/api/command${url}`;
 
