@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.33.9](https://github.com/filebrowser/filebrowser/compare/v2.33.8...v2.33.9) (2025-06-26)
+
+
+### Bug Fixes
+
+* check exact match on command allow list ([e2e1e49](https://github.com/filebrowser/filebrowser/commit/e2e1e4913085cca8917e0f69171dc28d3c6af1b6))
+* remove auth token from /api/command ([d5b39a1](https://github.com/filebrowser/filebrowser/commit/d5b39a14fd3fc0d1c364116b41289484df7c27b2))
+* remove unused import ([c232d41](https://github.com/filebrowser/filebrowser/commit/c232d41f903d3026ec290bbe819b6c59a933048e))
+
 ### [2.33.8](https://github.com/filebrowser/filebrowser/compare/v2.33.7...v2.33.8) (2025-06-25)
 
 ### [2.33.7](https://github.com/filebrowser/filebrowser/compare/v2.33.6...v2.33.7) (2025-06-25)
