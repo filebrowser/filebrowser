@@ -2,7 +2,7 @@ package users
 
 import (
 	"path/filepath"
-	"regexp"
+	"slices"
 
 	"github.com/spf13/afero"
 
@@ -111,11 +111,5 @@ func (u *User) CanExecute(command string) bool {
 		return false
 	}
 
-	for _, cmd := range u.Commands {
-		if regexp.MustCompile(cmd).MatchString(command) {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(u.Commands, command)
 }

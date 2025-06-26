@@ -8,7 +8,7 @@ import (
 
 // ParseCommand parses the command taking in account if the current
 // instance uses a shell to run the commands or just calls the binary
-// directyly.
+// directly.
 func ParseCommand(s *settings.Settings, raw string) ([]string, error) {
 	var command []string
 
