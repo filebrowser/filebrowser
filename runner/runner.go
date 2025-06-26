@@ -60,7 +60,7 @@ func (r *Runner) exec(raw, evt, path, dst string, user *users.User) error {
 		raw = strings.TrimSpace(strings.TrimSuffix(raw, "&"))
 	}
 
-	command, err := ParseCommand(r.Settings, raw)
+	command, _, err := ParseCommand(r.Settings, raw)
 	if err != nil {
 		return err
 	}
