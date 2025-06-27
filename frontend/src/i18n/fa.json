@@ -181,7 +181,7 @@
     "defaultUserDescription": "این تنظیمات پیش‌فرض برای کاربران جدید است.",
     "disableExternalLinks": "غیرفعال کردن لینک‌های خارجی (به جز مستندات)",
     "disableUsedDiskPercentage": "نمودار درصد دیسک استفاده شده را غیرفعال کنید",
-    "documentation": "documentation",
+    "documentation": "مستندسازی",
     "examples": "Examples",
     "executeOnShell": "Execute on shell",
     "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you wish to run them on a shell instead (such as Bash or PowerShell), you can define it here with the required arguments and flags. If set, the command you execute will be appended as an argument. This applies to both user commands and event hooks.",
