@@ -173,7 +173,7 @@
     "tusUploads": "آپلودهای بخش بخش شده",
     "tusUploadsHelp": "مرورگر فایل از آپلود فایل بخش بخش شده پشتیبانی می‌کند و امکان ایجاد آپلودهای فایل کارآمد، قابل اعتماد، قابل از سرگیری و بخش بخش شده را حتی در شبکه‌های غیرقابل اعتماد فراهم می‌کند.",
     "tusUploadsChunkSize": "حداکثر اندازه یک درخواست را نشان می‌دهد (برای آپلودهای کوچک‌تر از آپلود مستقیم استفاده می‌شود). می‌توانید یک عدد صحیح ساده که نشان‌دهنده اندازه بایت است یا یک رشته مانند ۱۰ مگابایت، ۱ گیگابایت و غیره وارد کنید.",
-    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "tusUploadsRetryCount": "تعداد تلاش‌های مجدد برای انجام در صورت عدم موفقیت در آپلود یک قطعه داده.",
     "userHomeBasePath": "Base path for user home directories",
     "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "createUserHomeDirectory": "Create user home directory",
