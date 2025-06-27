@@ -177,7 +177,7 @@
     "userHomeBasePath": "مسیر پایه برای پوشه های کاربر",
     "userScopeGenerationPlaceholder": "محدوده به صورت خودکار تولید خواهد شد",
     "createUserHomeDirectory": "ایجاد پوشه ناحیه کاربری",
-    "customStylesheet": "Custom Stylesheet",
+    "customStylesheet": "Stylesheet سفارشی",
     "defaultUserDescription": "These are the default settings for new users.",
     "disableExternalLinks": "Disable external links (except documentation)",
     "disableUsedDiskPercentage": "Disable used disk percentage graph",
