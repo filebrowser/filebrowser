@@ -217,7 +217,7 @@
     "rulesHelp": "در اینجا می‌توانید مجموعه‌ای از قوانین مجاز و غیرمجاز را برای این کاربر خاص تعریف کنید. فایل‌های مسدود شده در لیست‌ها نمایش داده نمی‌شوند و کاربر به آنها دسترسی نخواهد داشت. ما از regex و مسیرهای مربوط به محدوده کاربر پشتیبانی می‌کنیم.",
     "scope": "محدوده",
     "setDateFormat": "تنظیم قالب دقیق تاریخ",
-    "settingsUpdated": "Settings updated!",
+    "settingsUpdated": "تنظیمات به روز شد!",
     "shareDuration": "Share Duration",
     "shareManagement": "Share Management",
     "shareDeleted": "Share deleted!",
