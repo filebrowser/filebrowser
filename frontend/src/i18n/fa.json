@@ -208,7 +208,7 @@
       "rename": "تغییر نام یا انتقال فایل ها و پوشه ها",
       "share": "به اشتراک گذاری فایل ها"
     },
-    "permissions": "Permissions",
+    "permissions": "دسترسی ها",
     "permissionsHelp": "You can set the user to be an administrator or choose the permissions individually. If you select \"Administrator\", all of the other options will be automatically checked. The management of users remains a privilege of an administrator.\n",
     "profileSettings": "Profile Settings",
     "ruleExample1": "prevents the access to any dotfile (such as .git, .gitignore) in every folder.\n",
