@@ -63,7 +63,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("key", "k", "", "tls key")
 	flags.StringP("root", "r", ".", "root to prepend to relative paths")
 	flags.String("socket", "", "socket to listen to (cannot be used with address, port, cert nor key flags)")
-	flags.Uint32("socket-perm", 0666, "unix socket file permissions") //nolint:mnd
+	flags.Uint32("socket-perm", 0666, "unix socket file permissions")
 	flags.StringP("baseurl", "b", "", "base url")
 	flags.String("cache-dir", "", "file cache directory (disabled if empty)")
 	flags.String("token-expiration-time", "2h", "user session timeout")
@@ -131,7 +131,7 @@ user created with the credentials from options "username" and "password".`,
 		cacheDir, err := cmd.Flags().GetString("cache-dir")
 		checkErr(err)
 		if cacheDir != "" {
-			if err := os.MkdirAll(cacheDir, 0700); err != nil { //nolint:govet,mnd
+			if err := os.MkdirAll(cacheDir, 0700); err != nil { //nolint:govet
 				log.Fatalf("can't make directory %s: %s", cacheDir, err)
 			}
 			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
@@ -180,7 +180,10 @@ user created with the credentials from options "username" and "password".`,
 		defer listener.Close()
 
 		log.Println("Listening on", listener.Addr().String())
-		srv := &http.Server{Handler: handler}
+		srv := &http.Server{
+			Handler:           handler,
+			ReadHeaderTimeout: 60 * time.Second,
+		}
 
 		go func() {
 			if err := srv.Serve(listener); !errors.Is(err, http.ErrServerClosed) {
@@ -194,14 +197,13 @@ user created with the credentials from options "username" and "password".`,
 		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
 		<-sigc
 
-		shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second)
+		shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second) //nolint:mnd
 		defer shutdownRelease()
 
 		if err := srv.Shutdown(shutdownCtx); err != nil {
 			log.Fatalf("HTTP shutdown error: %v", err)
 		}
 		log.Println("Graceful shutdown complete.")
-
 	}, pythonConfig{allowNoDB: true}),
 }
 
