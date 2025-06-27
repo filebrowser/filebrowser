@@ -188,7 +188,7 @@
     "globalRules": "این یک مجموعه جهانی از قوانین مجاز و غیرمجاز است. آنها برای هر کاربر اعمال می‌شوند. شما می‌توانید قوانین خاصی را در تنظیمات هر کاربر تعریف کنید تا این قوانین را لغو کنید.",
     "globalSettings": "تنظیمات سراسری",
     "hideDotfiles": "مخفی کردن دات فایل ها",
-    "insertPath": "Insert the path",
+    "insertPath": "وارد کردن مسیر",
     "insertRegex": "Insert regex expression",
     "instanceName": "Instance name",
     "language": "Language",
