@@ -180,7 +180,7 @@
     "customStylesheet": "Stylesheet سفارشی",
     "defaultUserDescription": "این تنظیمات پیش‌فرض برای کاربران جدید است.",
     "disableExternalLinks": "غیرفعال کردن لینک‌های خارجی (به جز مستندات)",
-    "disableUsedDiskPercentage": "Disable used disk percentage graph",
+    "disableUsedDiskPercentage": "نمودار درصد دیسک استفاده شده را غیرفعال کنید",
     "documentation": "documentation",
     "examples": "Examples",
     "executeOnShell": "Execute on shell",
