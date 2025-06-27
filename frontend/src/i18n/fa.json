@@ -200,8 +200,8 @@
     "passwordUpdated": "رمز عبور ویرایش شد!",
     "path": "مسیر",
     "perm": {
-      "create": "Create files and directories",
-      "delete": "Delete files and directories",
+      "create": "استاد فایل ها و پوشه ها",
+      "delete": "حذف فایل ها و پوشه ها",
       "download": "Download",
       "execute": "Execute commands",
       "modify": "Edit files",
