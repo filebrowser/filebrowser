@@ -184,7 +184,7 @@
     "documentation": "مستندسازی",
     "examples": "مثال ها",
     "executeOnShell": "اجرا روی shell",
-    "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you wish to run them on a shell instead (such as Bash or PowerShell), you can define it here with the required arguments and flags. If set, the command you execute will be appended as an argument. This applies to both user commands and event hooks.",
+    "executeOnShellDescription": "به طور پیش‌فرض، مرورگر فایل، دستورات را با فراخوانی مستقیم فایل‌های باینری آنها اجرا می‌کند. اگر می‌خواهید آنها را روی یک پوسته (مانند Bash یا PowerShell) اجرا کنید، می‌توانید آن را در اینجا با آرگومان‌ها و پرچم‌های مورد نیاز تعریف کنید. در صورت تنظیم، دستوری که اجرا می‌کنید به عنوان یک آرگومان پیوست می‌شود. این موضوع هم در مورد دستورات کاربر و هم در مورد هوک ها صدق می‌کند.",
     "globalRules": "This is a global set of allow and disallow rules. They apply to every user. You can define specific rules on each user's settings to override these ones.",
     "globalSettings": "Global Settings",
     "hideDotfiles": "Hide dotfiles",
