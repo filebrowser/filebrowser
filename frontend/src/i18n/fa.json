@@ -192,7 +192,7 @@
     "insertRegex": "وارد کردن عبارات باقاعده",
     "instanceName": "نام نمونه",
     "language": "زبان",
-    "lockPassword": "Prevent the user from changing the password",
+    "lockPassword": "جلوگیری از تغییر رمز توسط کاربر",
     "newPassword": "Your new password",
     "newPasswordConfirm": "Confirm your new password",
     "newUser": "New User",
