@@ -165,7 +165,7 @@
     "branding": "Branding",
     "brandingDirectoryPath": "Branding directory path",
     "brandingHelp": "شما می‌توانید ظاهر و حس نمونه‌ی مرورگر فایل خود را با تغییر نام، جایگزینی لوگو، اضافه کردن سبک‌های سفارشی و حتی غیرفعال کردن لینک‌های خارجی به گیت‌هاب، سفارشی کنید.\nبرای اطلاعات بیشتر در مورد برندسازی سفارشی، لطفاً به {0} مراجعه کنید.",
-    "changePassword": "Change Password",
+    "changePassword": "تعبیر رمز",
     "commandRunner": "Command runner",
     "commandRunnerHelp": "Here you can set commands that are executed in the named events. You must write one per line. The environment variables {0} and {1} will be available, being {0} relative to {1}. For more information about this feature and the available environment variables, please read the {2}.",
     "commandsUpdated": "Commands updated!",
