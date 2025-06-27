@@ -206,7 +206,7 @@
       "execute": "اجرای دستورات",
       "modify": "ویرایش فایل ها",
       "rename": "تغییر نام یا انتقال فایل ها و پوشه ها",
-      "share": "Share files"
+      "share": "به اشتراک گذاری فایل ها"
     },
     "permissions": "Permissions",
     "permissionsHelp": "You can set the user to be an administrator or choose the permissions individually. If you select \"Administrator\", all of the other options will be automatically checked. The management of users remains a privilege of an administrator.\n",
