@@ -209,7 +209,7 @@
       "share": "به اشتراک گذاری فایل ها"
     },
     "permissions": "دسترسی ها",
-    "permissionsHelp": "You can set the user to be an administrator or choose the permissions individually. If you select \"Administrator\", all of the other options will be automatically checked. The management of users remains a privilege of an administrator.\n",
+    "permissionsHelp": "شما می‌توانید کاربر را به عنوان مدیر تنظیم کنید یا دسترسی‌ها را به صورت جداگانه انتخاب کنید. اگر \"مدیر\" را انتخاب کنید، تمام گزینه‌های دیگر به طور خودکار اعمال می‌شوند. مدیریت کاربران همچنان از اختیارات مدیر است.",
     "profileSettings": "Profile Settings",
     "ruleExample1": "prevents the access to any dotfile (such as .git, .gitignore) in every folder.\n",
     "ruleExample2": "blocks the access to the file named Caddyfile on the root of the scope.",
