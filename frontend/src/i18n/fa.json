@@ -202,7 +202,7 @@
     "perm": {
       "create": "استاد فایل ها و پوشه ها",
       "delete": "حذف فایل ها و پوشه ها",
-      "download": "Download",
+      "download": "دانلود",
       "execute": "Execute commands",
       "modify": "Edit files",
       "rename": "Rename or move files and directories",
