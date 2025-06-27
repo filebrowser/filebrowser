@@ -171,7 +171,7 @@
     "commandsUpdated": "دستورات ویرایش شد!",
     "createUserDir": "ایجاد خودکار پوشه برای هر کاربر هنگام اضافه کردن کاربر جدید",
     "tusUploads": "آپلودهای بخش بخش شده",
-    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsHelp": "مرورگر فایل از آپلود فایل بخش بخش شده پشتیبانی می‌کند و امکان ایجاد آپلودهای فایل کارآمد، قابل اعتماد، قابل از سرگیری و بخش بخش شده را حتی در شبکه‌های غیرقابل اعتماد فراهم می‌کند.",
     "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
     "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Base path for user home directories",
