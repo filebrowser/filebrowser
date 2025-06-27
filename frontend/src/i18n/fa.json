@@ -179,7 +179,7 @@
     "createUserHomeDirectory": "ایجاد پوشه ناحیه کاربری",
     "customStylesheet": "Stylesheet سفارشی",
     "defaultUserDescription": "این تنظیمات پیش‌فرض برای کاربران جدید است.",
-    "disableExternalLinks": "Disable external links (except documentation)",
+    "disableExternalLinks": "غیرفعال کردن لینک‌های خارجی (به جز مستندات)",
     "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentation",
     "examples": "Examples",
