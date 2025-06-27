@@ -215,7 +215,7 @@
     "ruleExample2": "دسترسی به فایلی به نام Caddyfile را در ریشه دامنه مسدود می‌کند.",
     "rules": "قواعد",
     "rulesHelp": "در اینجا می‌توانید مجموعه‌ای از قوانین مجاز و غیرمجاز را برای این کاربر خاص تعریف کنید. فایل‌های مسدود شده در لیست‌ها نمایش داده نمی‌شوند و کاربر به آنها دسترسی نخواهد داشت. ما از regex و مسیرهای مربوط به محدوده کاربر پشتیبانی می‌کنیم.",
-    "scope": "Scope",
+    "scope": "محدوده",
     "setDateFormat": "Set exact date format",
     "settingsUpdated": "Settings updated!",
     "shareDuration": "Share Duration",
