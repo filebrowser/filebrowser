@@ -154,7 +154,7 @@
     "video": "ویدئو "
   },
   "settings": {
-    "admin": "ادمین",
+    "admin": "Admin",
     "administrator": "Administrator",
     "allowCommands": "Execute commands",
     "allowEdit": "Edit, rename and delete files or directories",
