@@ -139,7 +139,7 @@
     "upload": "آپلود",
     "uploadFiles": "در حال آپلود {files} فایل‌ها...",
     "uploadMessage": "یک گزینه برای آپلود انتخاب کنید.",
-    "optionalPassword": "Optional password",
+    "optionalPassword": "رمز عبور اختیاری",
     "resolution": "Resolution",
     "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
