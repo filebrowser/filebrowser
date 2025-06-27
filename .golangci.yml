@@ -77,8 +77,12 @@ linters:
         - "1"
         - "2"
         - "3"
+        - "0666"
+        - "0700"
+        - "0700"
       ignored-functions:
         - strings.SplitN
+        - make
     nolintlint:
       allow-unused: false # report any unused nolint directives
       require-explanation: false # require an explanation for nolint directives
