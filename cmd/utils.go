@@ -121,11 +121,11 @@ func marshal(filename string, data interface{}) error {
 	defer fd.Close()
 
 	switch ext := filepath.Ext(filename); ext {
-	case ".json": //nolint:goconst
+	case ".json":
 		encoder := json.NewEncoder(fd)
 		encoder.SetIndent("", "    ")
 		return encoder.Encode(data)
-	case ".yml", ".yaml": //nolint:goconst
+	case ".yml", ".yaml":
 		encoder := yaml.NewEncoder(fd)
 		return encoder.Encode(data)
 	default:

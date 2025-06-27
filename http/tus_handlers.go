@@ -41,7 +41,7 @@ func tusPostHandler() handleFunc {
 		}
 
 		fileFlags := os.O_CREATE | os.O_WRONLY
-		if r.URL.Query().Get("override") == "true" { //nolint:goconst
+		if r.URL.Query().Get("override") == "true" {
 			fileFlags |= os.O_TRUNC
 		}
 

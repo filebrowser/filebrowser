@@ -13,7 +13,6 @@ linters:
     - funlen
     - gocheckcompilerdirectives
     - gochecknoinits
-    - goconst
     - gocritic
     - gocyclo
     - godox
@@ -43,9 +42,6 @@ linters:
     funlen:
       lines: 100
       statements: 50
-    goconst:
-      min-len: 2
-      min-occurrences: 2
     gocritic:
       disabled-checks:
         - dupImport # https://github.com/go-critic/go-critic/issues/845
