@@ -176,7 +176,7 @@
     "tusUploadsRetryCount": "تعداد تلاش‌های مجدد برای انجام در صورت عدم موفقیت در آپلود یک قطعه داده.",
     "userHomeBasePath": "مسیر پایه برای پوشه های کاربر",
     "userScopeGenerationPlaceholder": "محدوده به صورت خودکار تولید خواهد شد",
-    "createUserHomeDirectory": "Create user home directory",
+    "createUserHomeDirectory": "ایجاد پوشه ناحیه کاربری",
     "customStylesheet": "Custom Stylesheet",
     "defaultUserDescription": "These are the default settings for new users.",
     "disableExternalLinks": "Disable external links (except documentation)",
