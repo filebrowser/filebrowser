@@ -160,7 +160,7 @@
     "allowEdit": "ویرایش، تغییر نام، و حذف فایل ها و پوشه ها",
     "allowNew": "ایجاد فایلها و پوشه های جدید",
     "allowPublish": "انتشار پست ها و صفحات جدید",
-    "allowSignup": "Allow users to signup",
+    "allowSignup": "اجاره دادن به کاربران برای ثبت نام",
     "avoidChanges": "(leave blank to avoid changes)",
     "branding": "Branding",
     "brandingDirectoryPath": "Branding directory path",
