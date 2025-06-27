@@ -175,7 +175,7 @@
     "tusUploadsChunkSize": "حداکثر اندازه یک درخواست را نشان می‌دهد (برای آپلودهای کوچک‌تر از آپلود مستقیم استفاده می‌شود). می‌توانید یک عدد صحیح ساده که نشان‌دهنده اندازه بایت است یا یک رشته مانند ۱۰ مگابایت، ۱ گیگابایت و غیره وارد کنید.",
     "tusUploadsRetryCount": "تعداد تلاش‌های مجدد برای انجام در صورت عدم موفقیت در آپلود یک قطعه داده.",
     "userHomeBasePath": "مسیر پایه برای پوشه های کاربر",
-    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "userScopeGenerationPlaceholder": "محدوده به صورت خودکار تولید خواهد شد",
     "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Custom Stylesheet",
     "defaultUserDescription": "These are the default settings for new users.",
