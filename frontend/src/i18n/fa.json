@@ -172,7 +172,7 @@
     "createUserDir": "ایجاد خودکار پوشه برای هر کاربر هنگام اضافه کردن کاربر جدید",
     "tusUploads": "آپلودهای بخش بخش شده",
     "tusUploadsHelp": "مرورگر فایل از آپلود فایل بخش بخش شده پشتیبانی می‌کند و امکان ایجاد آپلودهای فایل کارآمد، قابل اعتماد، قابل از سرگیری و بخش بخش شده را حتی در شبکه‌های غیرقابل اعتماد فراهم می‌کند.",
-    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsChunkSize": "حداکثر اندازه یک درخواست را نشان می‌دهد (برای آپلودهای کوچک‌تر از آپلود مستقیم استفاده می‌شود). می‌توانید یک عدد صحیح ساده که نشان‌دهنده اندازه بایت است یا یک رشته مانند ۱۰ مگابایت، ۱ گیگابایت و غیره وارد کنید.",
     "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Base path for user home directories",
     "userScopeGenerationPlaceholder": "The scope will be auto generated",
