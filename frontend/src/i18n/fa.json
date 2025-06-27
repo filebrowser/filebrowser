@@ -237,10 +237,10 @@
     "userManagement": "مدیریت کاربران",
     "userUpdated": "کاربر به روز شد!",
     "username": "نام کاربری",
-    "users": "Users"
+    "users": "کاربران"
   },
   "sidebar": {
-    "help": "Help",
+    "help": "راهنما",
     "hugoNew": "Hugo New",
     "login": "Login",
     "logout": "Logout",
