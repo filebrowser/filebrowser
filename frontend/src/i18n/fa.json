@@ -229,7 +229,7 @@
       "title": "تم یا زمینه"
     },
     "user": "کاربر",
-    "userCommands": "Commands",
+    "userCommands": "دستورات",
     "userCommandsHelp": "A space separated list with the available commands for this user. Example:\n",
     "userCreated": "User created!",
     "userDefaults": "User default settings",
