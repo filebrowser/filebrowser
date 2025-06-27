@@ -230,7 +230,7 @@
     },
     "user": "کاربر",
     "userCommands": "دستورات",
-    "userCommandsHelp": "A space separated list with the available commands for this user. Example:\n",
+    "userCommandsHelp": "فهرستی از دستورات موجود برای این کاربر که با فاصله از هم جدا شده‌اند. مثال:",
     "userCreated": "User created!",
     "userDefaults": "User default settings",
     "userDeleted": "User deleted!",
