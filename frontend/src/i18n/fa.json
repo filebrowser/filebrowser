@@ -158,7 +158,7 @@
     "administrator": "Administrator",
     "allowCommands": "اجرای دستورات",
     "allowEdit": "ویرایش، تغییر نام، و حذف فایل ها و پوشه ها",
-    "allowNew": "Create new files and directories",
+    "allowNew": "ایجاد فایلها و پوشه های جدید",
     "allowPublish": "Publish new posts and pages",
     "allowSignup": "Allow users to signup",
     "avoidChanges": "(leave blank to avoid changes)",
