@@ -137,7 +137,7 @@
     "show": "نمایش",
     "size": "اندازه",
     "upload": "آپلود",
-    "uploadFiles": "Uploading {files} files...",
+    "uploadFiles": "در حال آپلود {files} فایل‌ها...",
     "uploadMessage": "Select an option to upload.",
     "optionalPassword": "Optional password",
     "resolution": "Resolution",
