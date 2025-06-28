@@ -4,14 +4,15 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 
-	"github.com/filebrowser/filebrowser/v2/errors"
 	"golang.org/x/crypto/bcrypt"
+
+	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 )
 
 // HashPwd hashes a password.
 func HashAndValidatePwd(password string, minimumLength uint) (string, error) {
-	if len(password) < int(minimumLength) {
-		return "", errors.ErrShortPassword
+	if uint(len(password)) < minimumLength {
+		return "", fbErrors.ErrShortPassword
 	}
 
 	return HashPwd(password)

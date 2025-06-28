@@ -28,7 +28,8 @@ func (a ProxyAuth) Auth(r *http.Request, usr users.Store, setting *settings.Sett
 }
 
 func (a ProxyAuth) createUser(usr users.Store, setting *settings.Settings, srv *settings.Server, username string) (*users.User, error) {
-	pwd, err := users.RandomPwd(setting.MinimumPasswordLength + 10)
+	const randomPasswordLength = settings.DefaultMinimumPasswordLength + 10
+	pwd, err := users.RandomPwd(randomPasswordLength)
 	if err != nil {
 		return nil, err
 	}

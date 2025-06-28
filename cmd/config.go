@@ -32,7 +32,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	addUserFlags(flags)
 	flags.BoolP("signup", "s", false, "allow users to signup")
 	flags.Bool("create-user-dir", false, "generate user's home directory automatically")
-	flags.Uint("minimum-password-length", 12, "minimum password length for new users")
+	flags.Uint("minimum-password-length", settings.DefaultMinimumPasswordLength, "minimum password length for new users")
 	flags.String("shell", "", "shell command to which other commands should be appended")
 
 	flags.String("auth.method", string(auth.MethodJSONAuth), "authentication type")
