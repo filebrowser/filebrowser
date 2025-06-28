@@ -170,6 +170,7 @@
     "commandRunnerHelp": "Ici, vous pouvez définir les commandes qui seront exécutées lors des événements nommés précédemments. Vous devez en écrire une par ligne. Les variables d'environnement {0} et {1} seront disponibles, {0} étant relatif à {1}. Pour plus d'informations sur cette fonctionnalité et les variables d'environnement disponibles, veuillez lire la {2}.",
     "commandsUpdated": "Commandes mises à jour !",
     "createUserDir": "Créer automatiquement un dossier pour l'utilisateur",
+    "minimumPasswordLength": "Minimum password length",
     "tusUploads": "Uploads segmentés",
     "tusUploadsHelp": "File Browser prend en charge les uploads segmentés afin de permettre une gestion efficace, fiable et reprenable sur des réseaux instables.",
     "tusUploadsChunkSize": "Taille maximale autorisée par segment (les uploads directs seront utilisés pour les fichiers plus petits). Vous pouvez entrer un entier en octets ou une chaîne telle que 10MB, 1GB, etc.",
@@ -223,6 +224,7 @@
     "shareDeleted": "Partage supprimé !",
     "singleClick": "Utiliser un simple clic pour ouvrir les fichiers et les dossiers",
     "themes": {
+      "default": "System default",
       "dark": "Sombre",
       "light": "Clair",
       "title": "Thème"
