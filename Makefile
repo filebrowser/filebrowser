@@ -55,7 +55,7 @@ bump-version: $(standard-version) ## Bump app version
 
 .PHONY: site
 site: ## Build site
-	@rm -f  site/public/*
+	@rm -rf  site/public/site*
 	@docker rm -f spot-site
 	docker build -f Dockerfile.site --progress=plain -t filebrowser.site .
 	docker run -d --name=filebrowser-site filebrowser.site
@@ -66,7 +66,7 @@ site: ## Build site
 .PHONY: site-serve
 site-serve: ## Serve site for development
 	docker build -f Dockerfile.site.dev -t filebrowser.site.dev .
-	docker run --rm -it -p 8000:8000 -v $(CURDIR)/site:/build/ -v $(CURDIR)/README.md:/tmp/README.md filebrowser.site.dev
+	docker run --rm -it -p 8000:8000 -v $(CURDIR)/docs:/build/docs/docs -v $(CURDIR)/README.md:/build/docs/index.md filebrowser.site.dev
 
 ## Help:
 help: ## Show this help

@@ -42,7 +42,7 @@ The icons are cached, to make the new ones appear more quickly open developer to
 
 ## Authentication Method
 
-Right now, there are three possible authentication methods. Each one of them has its own capabilities and specification. If you are interested in contributing with one more authentication method, please [check the guidelines](./contributing.md).
+Right now, there are three possible authentication methods. Each one of them has its own capabilities and specification. If you are interested in contributing with one more authentication method, please [check the guidelines](contributing.md).
 
 ### JSON Auth (default)
 

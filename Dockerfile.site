@@ -7,8 +7,8 @@ COPY LICENSE /build/docs/LICENSE
 
 COPY site/ /build/
 
+COPY docs/ /build/docs/docs
 COPY README.md /build/docs/index.md
-RUN sed -i 's|site/docs/||g' /build/docs/index.md
 
 RUN mkdocs build
 

@@ -5,15 +5,15 @@ site_url: 'https://filebrowser.org'
 
 repo_name: 'filebrowser/filebrowser'
 repo_url: 'https://github.com/filebrowser/filebrowser'
-edit_uri: 'edit/master/site/docs/'
+edit_uri: 'edit/master/docs/'
 
 copyright: 'Copyright &copy; 2025 Filebrowser Community'
 
 theme:
   name: material
   language: en
-  logo: logo.png
-  favicon: favicon.png
+  logo: docs/assets/logo.png
+  favicon: docs/assets/favicon.png
   palette:
     - scheme: default
       primary: blue
@@ -44,8 +44,6 @@ theme:
     - search.highlight
     - search.share
     - content.code.copy
-    - content.action.edit
-    - content.action.view
     - toc.follow
     - toc.integrate
 
@@ -113,9 +111,9 @@ extra:
 nav:
   - Home: index.md
   - Getting Started:
-      - Installation: installation.md
-      - Configuration: configuration.md
-      - Security: security.md
+      - Installation: docs/installation.md
+      - Configuration: docs/configuration.md
+      - Security: docs/security.md
   - Contributing:
-      - Contributing: contributing.md
-      - Code of Conduct: code-of-conduct.md
+      - Contributing: docs/contributing.md
+      - Code of Conduct: docs/code-of-conduct.md
