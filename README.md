@@ -38,10 +38,6 @@ File Browser is a **create-your-own-cloud-kind** of software where you can insta
 | :----------------------: | :----------------------: | :----------------------: |
 | ![](./docs/assets/4.jpg) | ![](./docs/assets/5.jpg) | ![](./docs/assets/6.jpg) |
 
-> [!CAUTION]
->
-> The **command execution** functionality has been disabled for all existent and new installations by default from version v2.33.8 and onwards, due to continuous and known security vulnerabilities. You should only use this feature if you are aware of all of the security risks involved. For more up to date information, consult issue [#5199](https://github.com/filebrowser/filebrowser/issues/5199).
-
 ## Install
 
 For information on how to install File Browser, please check [docs/installation.md](./docs/installation.md).

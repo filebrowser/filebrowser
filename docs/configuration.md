@@ -123,20 +123,21 @@ filebrowser cmds ls
 
 Or you can use the web interface to manage them via **Settings** → **Global Settings**.
 
+## Command Execution
 
-## Shell commands
+> [!CAUTION]
+>
+> The **command execution** functionality has been disabled for all existent and new installations by default from version v2.33.8 and onwards, due to continuous and known security vulnerabilities. You should only use this feature if you are aware of all of the security risks involved. For more up to date information, consult issue [#5199](https://github.com/filebrowser/filebrowser/issues/5199).
 
-Within Filebrowser you can toggle the shell (`< >` icon at the top right) and this will open a shell command window at the bottom of the screen.
+Within File Browser you can toggle the shell (`< >` icon at the top right) and this will open a shell command window at the bottom of the screen. This functionality can be turned on using the environment variable `FB_DISABLE_EXEC=false` or the flag `--disable-exec=false`.
 
-**By default no commands are available as the command list is empty**
-
-To enable commands these need to either be done on a per-user basis (including for the Admin user).
+By default no commands are available as the command list is empty. To enable commands these need to either be done on a per-user basis (including for the Admin user).
 
 You can do this by adding them in Settings > User Management > (edit user) > Commands or to *apply to all new users created from that point forward* they can be set in Settings > Global Settings
 
 > [!NOTE]
 > 
-> If using a proxy manager then remember to enable websockets support for the Filebrowser proxy
+> If using a proxy manager then remember to enable websockets support for the File Browser proxy
 
 > [!NOTE]
 > 
