@@ -3,6 +3,7 @@
     "cancel": "取消",
     "clear": "清空",
     "close": "關閉",
+    "continue": "繼續",
     "copy": "複製",
     "copyFile": "複製檔案",
     "copyToClipboard": "複製到剪貼簿",
@@ -12,6 +13,7 @@
     "download": "下載",
     "file": "檔案",
     "folder": "資料夾",
+    "fullScreen": "切換全螢幕",
     "hideDotfiles": "隱藏隱藏檔案",
     "info": "資訊",
     "more": "更多",
@@ -22,6 +24,7 @@
     "ok": "確認",
     "permalink": "獲取永久連結",
     "previous": "上一個",
+    "preview": "Preview",
     "publish": "發佈",
     "rename": "重新命名",
     "replace": "更換",
@@ -39,8 +42,6 @@
     "update": "更新",
     "upload": "上傳",
     "openFile": "開啟檔案",
-    "continue": "繼續",
-    "fullScreen": "切換全螢幕",
     "discardChanges": "放棄變更"
   },
   "download": {
@@ -109,6 +110,7 @@
     "deleteMessageMultiple": "你確定要刪除這 {count} 個檔案嗎?",
     "deleteMessageSingle": "你確定要刪除這個檔案/資料夾嗎?",
     "deleteMessageShare": "你確定要刪除這個分享（{path}）嗎？",
+    "deleteUser": "你確定要刪除這個使用者嗎?",
     "deleteTitle": "刪除檔案",
     "displayName": "名稱：",
     "download": "下載檔案",
@@ -139,7 +141,6 @@
     "uploadMessage": "選擇上傳項。",
     "optionalPassword": "密碼（選填，不填即無密碼）",
     "resolution": "解析度",
-    "deleteUser": "你確定要刪除這個使用者嗎?",
     "discardEditorChanges": "你確定要放棄所做的變更嗎?"
   },
   "search": {
@@ -169,6 +170,7 @@
     "commandRunnerHelp": "在這裡你可以設定在下面的事件中執行的命令。每行必須寫一條命令。可以在命令中使用環境變數 {0} 和 {1}。關於此功能和可用環境變數的更多資訊，請閱讀{2}.",
     "commandsUpdated": "命令已更新！",
     "createUserDir": "在新增新使用者的同時自動建立使用者的個人目錄",
+    "minimumPasswordLength": "Minimum password length",
     "tusUploads": "分塊上傳",
     "tusUploadsHelp": "File Browser 支援分塊上傳，在不佳的網絡環境下也可進行高效、可靠、可續的檔案上傳",
     "tusUploadsChunkSize": "分塊上傳大小，例如 10MB 或 1GB",

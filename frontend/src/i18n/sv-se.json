@@ -3,13 +3,18 @@
     "cancel": "Avbryt",
     "clear": "Rensa",
     "close": "Stäng",
+    "continue": "Continue",
     "copy": "Kopiera",
     "copyFile": "Kopiera fil",
     "copyToClipboard": "Kopiera till urklipp",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Skapa",
     "delete": "Ta bort",
     "download": "Ladda ner",
-    "hideDotfiles": "",
+    "file": "File",
+    "folder": "Folder",
+    "fullScreen": "Toggle full screen",
+    "hideDotfiles": "Hide dotfiles",
     "info": "Info",
     "more": "Mer",
     "move": "Flytta",
@@ -19,6 +24,7 @@
     "ok": "OK",
     "permalink": "Skapa en permanent länk",
     "previous": "Föregående",
+    "preview": "Preview",
     "publish": "Publisera",
     "rename": "Ändra namn",
     "replace": "Ersätt",
@@ -30,20 +36,27 @@
     "selectMultiple": "Välj flera",
     "share": "Dela",
     "shell": "Växla skal",
+    "submit": "Submit",
     "switchView": "Byt vy",
     "toggleSidebar": "Växla sidofält",
     "update": "Uppdatera",
-    "upload": "Ladda upp"
+    "upload": "Ladda upp",
+    "openFile": "Open file",
+    "discardChanges": "Discard"
   },
   "download": {
     "downloadFile": "Ladda ner fil",
     "downloadFolder": "Ladda ner mapp",
-    "downloadSelected": ""
+    "downloadSelected": "Download Selected"
+  },
+  "upload": {
+    "abortUpload": "Are you sure you wish to abort?"
   },
   "errors": {
     "forbidden": "Du saknar rättigheter till detta",
     "internal": "Något gick fel",
-    "notFound": "Det går inte att nå den här platsen."
+    "notFound": "Det går inte att nå den här platsen.",
+    "connection": "The server can't be reached."
   },
   "files": {
     "body": "Huvud",
@@ -60,7 +73,8 @@
     "size": "Storlek",
     "sortByLastModified": "Sortera på senast ändrad",
     "sortByName": "Sortera på namn",
-    "sortBySize": "Sortera på storlek"
+    "sortBySize": "Sortera på storlek",
+    "noPreview": "Preview is not available for this file."
   },
   "help": {
     "click": "välj fil eller mapp",
@@ -95,6 +109,8 @@
     "currentlyNavigating": "För närvarande navigerar du på:",
     "deleteMessageMultiple": "Är du säker på att du vill radera {count} filer(na)?",
     "deleteMessageSingle": "Är du säker på att du vill radera denna fil/mapp",
+    "deleteMessageShare": "Are you sure you wish to delete this share({path})?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "Ta bort filer",
     "displayName": "Visningsnamn:",
     "download": "Ladda ner filer",
@@ -120,8 +136,12 @@
     "scheduleMessage": "Pick a date and time to schedule the publication of this post.",
     "show": "Visa",
     "size": "Storlek",
-    "upload": "",
-    "uploadMessage": ""
+    "upload": "Upload",
+    "uploadFiles": "Uploading {files} files...",
+    "uploadMessage": "Select an option to upload.",
+    "optionalPassword": "Optional password",
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "Bilder",
@@ -150,6 +170,14 @@
     "commandRunnerHelp": "Här kan du ange kommandon som körs i de namngivna händelserna. Du måste skriva en per rad. Miljövariablerna {0} och {1} kommer att vara tillgängliga, och vara {0} i förhållande till {1}. För mer information om den här funktionen och de tillgängliga miljövariablerna, vänligen läs {2}.",
     "commandsUpdated": "Kommandon uppdaterade!",
     "createUserDir": "Auto skapa användarens hemkatalog när du lägger till nya användare",
+    "minimumPasswordLength": "Minimum password length",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "userHomeBasePath": "Base path for user home directories",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Anpassad formatmall",
     "defaultUserDescription": "Detta är standard inställningar för användare.",
     "disableExternalLinks": "Inaktivera externa länkar (förutom dokumentation)",
@@ -160,7 +188,7 @@
     "executeOnShellDescription": "Som standard kör fil bläddraren kommandona genom att anropa deras binärfiler direkt. Om du vill köra dem på ett skal i stället (till exempel bash eller PowerShell), kan du definiera det här med nödvändiga argument och flaggor. Om det är inställt kommer kommandot du kör att läggas till som ett argument. Detta gäller både användar kommandon och händelse krokar.",
     "globalRules": "Det här är en global uppsättning regler för att tillåta och inte tillåta. De gäller för alla användare. Du kan definiera specifika regler för varje användares inställningar för att åsidosätta de här inställningarna.",
     "globalSettings": "Globala inställningar",
-    "hideDotfiles": "",
+    "hideDotfiles": "Hide dotfiles",
     "insertPath": "Ange sökväg",
     "insertRegex": "Sätt in regex expression",
     "instanceName": "Instans namn",
@@ -171,7 +199,7 @@
     "newUser": "Ny användare",
     "password": "Lösenord",
     "passwordUpdated": "Lösenord uppdaterat",
-    "path": "",
+    "path": "Path",
     "perm": {
       "create": "Skapa filer och mappar",
       "delete": "Ta bort filer och mappar",
@@ -189,14 +217,17 @@
     "rules": "Regler",
     "rulesHelp": "Här kan du definiera en uppsättning regler för godkänna och neka för den här specifika användaren. Den blockerade filen kommer inte upp i listningarna och kommer inte att vara tillgänglig till användaren. Vi stöder regex och sökvägar i förhållande till användarnas omfång.\n",
     "scope": "Omfattning",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Inställning uppdaterad!",
-    "shareDuration": "",
-    "shareManagement": "",
-    "singleClick": "",
+    "shareDuration": "Share Duration",
+    "shareManagement": "Share Management",
+    "shareDeleted": "Share deleted!",
+    "singleClick": "Use single clicks to open files and directories",
     "themes": {
-      "dark": "",
-      "light": "",
-      "title": ""
+      "default": "System default",
+      "dark": "Dark",
+      "light": "Light",
+      "title": "Theme"
     },
     "user": "Användare",
     "userCommands": "Kommandon",

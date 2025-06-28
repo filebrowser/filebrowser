@@ -170,6 +170,7 @@
     "commandRunnerHelp": "Tu możesz ustawić polecenia, które będą wykonywane przy danych zdarzeniach. Musisz wpisywać po jednym na wiersz. Zmienne środowiskowe {0} i {1} będą dostępne, gdzie {0} jest względne wobec {1}. Więcej informacji o tej funkcji i dostępnych zmiennych środowiskowych znajdziesz w {2}.",
     "commandsUpdated": "Polecenie zaktualizowane!",
     "createUserDir": "Automatycznie twórz katalog domowy podczas dodawania użytkownika",
+    "minimumPasswordLength": "Minimalna długość hasła",
     "tusUploads": "Przesyłanie we fragmentach",
     "tusUploadsHelp": "File Browser wspiera przesyłanie plików we fragmentach, co pozwala na proces przesyłania, który jest wydajny, pewny i możliwy do wznowienia nawet w sieciach o wątpliwej stabilności przesyłu danych.",
     "tusUploadsChunkSize": "Oznacza maksymalny rozmiar przesyłanych plików (dla mniejszych plików użyte zostanie przesyłanie bezpośrednie). Możesz ustawić tę wartość zarówno zapisaną samymi cyframi w bajtach, jak i podać ją w formie skróconej, np. poprzez 10MB, 1GB itp.",

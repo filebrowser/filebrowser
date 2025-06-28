@@ -3,13 +3,18 @@
     "cancel": "Hætta við",
     "clear": "Hreinsa",
     "close": "Loka",
+    "continue": "Continue",
     "copy": "Afrita",
     "copyFile": "Afrita skjal",
     "copyToClipboard": "Afrita",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Búa til",
     "delete": "Eyða",
     "download": "Sækja",
-    "hideDotfiles": "",
+    "file": "File",
+    "folder": "Folder",
+    "fullScreen": "Toggle full screen",
+    "hideDotfiles": "Hide dotfiles",
     "info": "Upplýsingar",
     "more": "Meira",
     "move": "Færa",
@@ -19,6 +24,7 @@
     "ok": "OK",
     "permalink": "Sækja fastan hlekk",
     "previous": "Fyrri",
+    "preview": "Preview",
     "publish": "Gefa út",
     "rename": "Endurnefna",
     "replace": "Skipta út",
@@ -30,20 +36,27 @@
     "selectMultiple": "Velja mörg",
     "share": "Deila",
     "shell": "Sýna skipanaglugga",
+    "submit": "Submit",
     "switchView": "Skipta um útlit",
     "toggleSidebar": "Sýna hliðarstiku",
     "update": "Vista",
-    "upload": "Hlaða upp"
+    "upload": "Hlaða upp",
+    "openFile": "Open file",
+    "discardChanges": "Discard"
   },
   "download": {
     "downloadFile": "Sækja skjal",
     "downloadFolder": "Sækja möppu",
-    "downloadSelected": ""
+    "downloadSelected": "Download Selected"
+  },
+  "upload": {
+    "abortUpload": "Are you sure you wish to abort?"
   },
   "errors": {
     "forbidden": "Þú hefur ekki aðgang að þessari síðu.",
     "internal": "Eitthvað fór úrskeiðis.",
-    "notFound": "Ekki er hægt að opna þessa síðu."
+    "notFound": "Ekki er hægt að opna þessa síðu.",
+    "connection": "The server can't be reached."
   },
   "files": {
     "body": "Meginmál",
@@ -60,7 +73,8 @@
     "size": "Stærð",
     "sortByLastModified": "Flokka eftir Seinast breytt",
     "sortByName": "Flokka eftir nafni",
-    "sortBySize": "Flokka eftir stærð"
+    "sortBySize": "Flokka eftir stærð",
+    "noPreview": "Preview is not available for this file."
   },
   "help": {
     "click": "velja skjal eða möppu",
@@ -95,6 +109,8 @@
     "currentlyNavigating": "Núverandi staðsetning:",
     "deleteMessageMultiple": "Ertu viss um að þú viljir eyða {count} skjölum?",
     "deleteMessageSingle": "Ertu viss um að þú viljir eyða þessu skjali/möppu?",
+    "deleteMessageShare": "Are you sure you wish to delete this share({path})?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "Eyða skjölum",
     "displayName": "Nafn: ",
     "download": "Sækja skjöl",
@@ -120,8 +136,12 @@
     "scheduleMessage": "Veldu dagsetningu og tíma fyrir áætlaða útgáfu. ",
     "show": "Sýna",
     "size": "Stærð",
-    "upload": "",
-    "uploadMessage": ""
+    "upload": "Upload",
+    "uploadFiles": "Uploading {files} files...",
+    "uploadMessage": "Select an option to upload.",
+    "optionalPassword": "Optional password",
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "Myndir",
@@ -150,6 +170,14 @@
     "commandRunnerHelp": "Hér geturðu sett inn skipanir sem eru keyrðar eftir því sem þú tilgreinir. Skrifaðu eina skipun í hverja línu. Umhverfisbreyturnar {0} og {1} verða aðgengilegar ({0} miðast við {1}). Til að lesa meira og sjá lista yfir þær skipanir sem eru í boði, vinsamlegast lestu {2}. ",
     "commandsUpdated": "Skipanastillingar vistaðar!",
     "createUserDir": "Auto create user home dir while adding new user",
+    "minimumPasswordLength": "Minimum password length",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "userHomeBasePath": "Base path for user home directories",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Custom Stylesheet",
     "defaultUserDescription": "Þetta eru sjálfgefnar stillingar fyrir nýja notendur.",
     "disableExternalLinks": "Sýna ytri-hlekki (fyrir utan leiðbeiningar)",
@@ -160,7 +188,7 @@
     "executeOnShellDescription": "Sjálfgefnar stillingar File Browser eru að keyra skipanir beint með því að sækja binaries. Ef þú villt keyra skipanir í skel (t.d. í Bash eða PowerShell), þá geturðu skilgreint það hér með nauðsynlegum arguments og flags. Ef þetta er stillt, þá verður skipuninni bætt fyrir aftan sem argument. Þetta gildir bæði um skipanir notenda og event hooks.",
     "globalRules": "Þetta eru sjálfgegnar aðgangsreglur. Þær gilda um alla notendur. Þú getur tilgreint sérstakar reglur í stillingum fyrir hvern notenda til að ógilda þessar reglur. ",
     "globalSettings": "Global stillingar",
-    "hideDotfiles": "",
+    "hideDotfiles": "Hide dotfiles",
     "insertPath": "Settu inn slóð",
     "insertRegex": "Setja inn reglulega segð",
     "instanceName": "Nafn tilviks",
@@ -171,7 +199,7 @@
     "newUser": "Nýr notandi",
     "password": "Lykilorð",
     "passwordUpdated": "Lykilorð vistað!",
-    "path": "",
+    "path": "Path",
     "perm": {
       "create": "Búa til sköl og möppur",
       "delete": "Eyða skjölum og möppum",
@@ -189,14 +217,17 @@
     "rules": "Reglur",
     "rulesHelp": "Hér getur þú skilgreint hvaða reglur gilda um notandann. Skjölin sem hann hefur ekki aðgang að eru óaðgengileg og hann sér þau ekki. Stuðst er við reglulegar segðir og slóðir sem miðast við sýn notandans. ",
     "scope": "Sýn notandans",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Stillingar vistaðar!",
-    "shareDuration": "",
-    "shareManagement": "",
-    "singleClick": "",
+    "shareDuration": "Share Duration",
+    "shareManagement": "Share Management",
+    "shareDeleted": "Share deleted!",
+    "singleClick": "Use single clicks to open files and directories",
     "themes": {
-      "dark": "",
-      "light": "",
-      "title": ""
+      "default": "System default",
+      "dark": "Dark",
+      "light": "Light",
+      "title": "Theme"
     },
     "user": "Notandi",
     "userCommands": "Skipanir",

@@ -3,13 +3,18 @@
     "cancel": "Annuleren",
     "clear": "Wissen",
     "close": "Sluiten",
+    "continue": "Continue",
     "copy": "Kopiëren",
     "copyFile": "Bestand kopiëren",
     "copyToClipboard": "Kopiëren naar klembord",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Aanmaken",
     "delete": "Verwijderen",
     "download": "Downloaden",
-    "hideDotfiles": "",
+    "file": "File",
+    "folder": "Folder",
+    "fullScreen": "Toggle full screen",
+    "hideDotfiles": "Hide dotfiles",
     "info": "Info",
     "more": "Meer",
     "move": "Verplaatsen",
@@ -19,6 +24,7 @@
     "ok": "OK",
     "permalink": "Maak permanente link",
     "previous": "Vorige",
+    "preview": "Preview",
     "publish": "Publiceren",
     "rename": "Hernoemen",
     "replace": "Vervangen",
@@ -30,20 +36,27 @@
     "selectMultiple": "Meerdere selecteren",
     "share": "Delen",
     "shell": "Open shell",
+    "submit": "Submit",
     "switchView": "Beeld wisselen",
     "toggleSidebar": "Zijbalk tonen",
     "update": "Updaten",
-    "upload": "Uploaden"
+    "upload": "Uploaden",
+    "openFile": "Open file",
+    "discardChanges": "Discard"
   },
   "download": {
     "downloadFile": "Bestand downloaden",
     "downloadFolder": "Map downloaden",
-    "downloadSelected": ""
+    "downloadSelected": "Download Selected"
+  },
+  "upload": {
+    "abortUpload": "Are you sure you wish to abort?"
   },
   "errors": {
     "forbidden": "U hebt geen rechten om hier toegang toe te krijgen.",
     "internal": "Er ging iets mis.",
-    "notFound": "Deze locatie kan niet worden bereikt."
+    "notFound": "Deze locatie kan niet worden bereikt.",
+    "connection": "The server can't be reached."
   },
   "files": {
     "body": "Body",
@@ -60,7 +73,8 @@
     "size": "Grootte",
     "sortByLastModified": "Sorteren op laatst bewerkt",
     "sortByName": "Sorteren op naam",
-    "sortBySize": "Sorteren op grootte"
+    "sortBySize": "Sorteren op grootte",
+    "noPreview": "Preview is not available for this file."
   },
   "help": {
     "click": "selecteer bestand of map",
@@ -95,6 +109,8 @@
     "currentlyNavigating": "Momenteel zoeken op: ",
     "deleteMessageMultiple": "Weet u zeker dat u {count} bestand(en) wil verwijderen?",
     "deleteMessageSingle": "Weet u zeker dat u dit bestand/map wil verwijderen?",
+    "deleteMessageShare": "Are you sure you wish to delete this share({path})?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "Bestanden verwijderen",
     "displayName": "Weergavenaam: ",
     "download": "Bestanden downloaden",
@@ -120,8 +136,12 @@
     "scheduleMessage": "Kies een datum en tijd om de publicatie van dit bericht in te plannen.",
     "show": "Tonen",
     "size": "Grootte",
-    "upload": "",
-    "uploadMessage": ""
+    "upload": "Upload",
+    "uploadFiles": "Uploading {files} files...",
+    "uploadMessage": "Select an option to upload.",
+    "optionalPassword": "Optional password",
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "Afbeeldingen",
@@ -150,6 +170,14 @@
     "commandRunnerHelp": "Hier kunt u opdrachten instellen die worden uitgevoerd in de benoemde gebeurtenissen. U moet er één per regel schrijven. De omgevingsvariabelen {0} en {1} zijn beschikbaar, zijnde {0} relatief ten opzichte van {1}. Raadpleeg {2} voor meer informatie over deze functie en de beschikbare omgevingsvariabelen.",
     "commandsUpdated": "Commando's bijgewerkt!",
     "createUserDir": "Maak automatisch een thuismap aan wanneer een nieuwe gebruiker wordt aangemaakt",
+    "minimumPasswordLength": "Minimum password length",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "userHomeBasePath": "Base path for user home directories",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Aangepast Stylesheet",
     "defaultUserDescription": "Dit zijn de standaardinstellingen voor nieuwe gebruikers.",
     "disableExternalLinks": "Schakel externe links uit (behalve documentatie)",
@@ -160,7 +188,7 @@
     "executeOnShellDescription": "File Browser voert de opdrachten standaard uit door hun binaire bestanden rechtstreeks op te roepen. Als u ze in plaats daarvan wilt uitvoeren op een shell (zoals Bash of PowerShell), kunt u dit hier definiëren met de vereiste argumenten en vlaggen. Indien ingesteld, wordt de opdracht die u uitvoert, toegevoegd als een argument. Dit is van toepassing op zowel gebruikersopdrachten als event hooks.",
     "globalRules": "Dit is een algemene reeks toegestane en niet toegestane regels. Ze zijn van toepassing op elke gebruiker. U kunt specifieke regels voor de instellingen van elke gebruiker definiëren om deze te overschrijven.",
     "globalSettings": "Algemene Instellingen",
-    "hideDotfiles": "",
+    "hideDotfiles": "Hide dotfiles",
     "insertPath": "Voeg een pad toe",
     "insertRegex": "Regex expressie invoeren",
     "instanceName": "Instantienaam",
@@ -171,7 +199,7 @@
     "newUser": "Nieuwe gebruiker",
     "password": "Wachtwoord",
     "passwordUpdated": "Wachtwoord bijgewerkt!",
-    "path": "",
+    "path": "Path",
     "perm": {
       "create": "Bestanden en mappen aanmaken",
       "delete": "Bestanden en mappen verwijderen",
@@ -189,14 +217,17 @@
     "rules": "Regels",
     "rulesHelp": "Hier kunt u een reeks regels voor toestaan en niet toestaan voor deze specifieke gebruiker definiëren. De geblokkeerde bestanden verschijnen niet in de lijsten en zijn niet toegankelijk voor de gebruiker. We ondersteunen regex en paden relatief ten opzichte van het bereik van gebruikers. \n",
     "scope": "Scope",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Instellingen bijgewerkt!",
-    "shareDuration": "",
-    "shareManagement": "",
-    "singleClick": "",
+    "shareDuration": "Share Duration",
+    "shareManagement": "Share Management",
+    "shareDeleted": "Share deleted!",
+    "singleClick": "Use single clicks to open files and directories",
     "themes": {
-      "dark": "",
-      "light": "",
-      "title": ""
+      "default": "System default",
+      "dark": "Dark",
+      "light": "Light",
+      "title": "Theme"
     },
     "user": "Gebruiker",
     "userCommands": "Commando's",

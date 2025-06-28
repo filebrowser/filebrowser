@@ -7,11 +7,13 @@
     "copy": "Copiar",
     "copyFile": "Copiar archivo",
     "copyToClipboard": "Copiar al portapapeles",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Crear",
     "delete": "Borrar",
     "download": "Descargar",
     "file": "Archivo",
     "folder": "Carpeta",
+    "fullScreen": "Toggle full screen",
     "hideDotfiles": "Ocultar archivos empezados por punto",
     "info": "Info",
     "more": "Más",
@@ -22,6 +24,7 @@
     "ok": "OK",
     "permalink": "Link permanente",
     "previous": "Anterior",
+    "preview": "Preview",
     "publish": "Publicar",
     "rename": "Renombrar",
     "replace": "Reemplazar",
@@ -38,12 +41,16 @@
     "toggleSidebar": "Mostrar/Ocultar menú",
     "update": "Actualizar",
     "upload": "Subir",
-    "openFile": "Abrir archivo"
+    "openFile": "Abrir archivo",
+    "discardChanges": "Discard"
   },
   "download": {
     "downloadFile": "Descargar fichero",
     "downloadFolder": "Descargar directorio",
     "downloadSelected": "Descargar seleccionados"
+  },
+  "upload": {
+    "abortUpload": "Are you sure you wish to abort?"
   },
   "errors": {
     "forbidden": "No tienes los permisos necesarios para acceder.",
@@ -103,6 +110,7 @@
     "deleteMessageMultiple": "¿Estás seguro que quieres eliminar {count} archivo(s)?",
     "deleteMessageSingle": "¿Estás seguro que quieres eliminar este archivo/carpeta?",
     "deleteMessageShare": "¿Está seguro de que quiere eliminar este recurso compartido({path})?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "Borrar archivos",
     "displayName": "Nombre:",
     "download": "Descargar archivos",
@@ -131,7 +139,9 @@
     "upload": "Subir",
     "uploadFiles": "Subiendo {files} archivos...",
     "uploadMessage": "Seleccione una opción para subir.",
-    "optionalPassword": "Contraseña opcional"
+    "optionalPassword": "Contraseña opcional",
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "Imágenes",
@@ -160,6 +170,11 @@
     "commandRunnerHelp": "Aquí puede establecer los comandos que se ejecutan en los eventos nombrados. Debe escribir uno por línea. Las variables de entorno {0} y {1} estarán disponibles, siendo {0} relativa a {1}. Para más información sobre esta característica y las variables de entorno disponibles, por favor lea el {2}.",
     "commandsUpdated": "¡Comandos actualizados!",
     "createUserDir": "Crea automaticamente una carpeta de inicio cuando se agrega un usuario",
+    "minimumPasswordLength": "Minimum password length",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Ruta base para los directorios personales de los usuarios",
     "userScopeGenerationPlaceholder": "El ámbito se generará automáticamente",
     "createUserHomeDirectory": "Crear el directorio principal del usuario",
@@ -209,6 +224,7 @@
     "shareDeleted": "¡Recurso compartido eliminado!",
     "singleClick": "Utilice un solo clic para abrir archivos y directorios",
     "themes": {
+      "default": "System default",
       "dark": "Oscuro",
       "light": "Claro",
       "title": "Tema"
