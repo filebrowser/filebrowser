@@ -5,10 +5,18 @@ import (
 	"encoding/base64"
 
 	"golang.org/x/crypto/bcrypt"
+
+	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 )
 
-// randomPasswordBytesCount is chosen to fit in a base64 string without padding
-const randomPasswordBytesCount = 9
+// HashPwd hashes a password.
+func HashAndValidatePwd(password string, minimumLength uint) (string, error) {
+	if uint(len(password)) < minimumLength {
+		return "", fbErrors.ErrShortPassword
+	}
+
+	return HashPwd(password)
+}
 
 // HashPwd hashes a password.
 func HashPwd(password string) (string, error) {
@@ -22,8 +30,8 @@ func CheckPwd(password, hash string) bool {
 	return err == nil
 }
 
-func RandomPwd() (string, error) {
-	randomPasswordBytes := make([]byte, randomPasswordBytesCount)
+func RandomPwd(passwordLength uint) (string, error) {
+	randomPasswordBytes := make([]byte, passwordLength)
 	var _, err = rand.Read(randomPasswordBytes)
 	if err != nil {
 		return "", err

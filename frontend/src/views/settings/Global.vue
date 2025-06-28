@@ -18,14 +18,26 @@
             {{ t("settings.createUserDir") }}
           </p>
 
-          <div>
-            <p class="small">{{ t("settings.userHomeBasePath") }}</p>
+          <p>
+            <label class="small">{{ t("settings.userHomeBasePath") }}</label>
             <input
               class="input input--block"
               type="text"
               v-model="settings.userHomeBasePath"
             />
-          </div>
+          </p>
+
+          <p>
+            <label for="minimumPasswordLength">{{
+              t("settings.minimumPasswordLength")
+            }}</label>
+            <vue-number-input
+              controls
+              v-model.number="settings.minimumPasswordLength"
+              id="minimumPasswordLength"
+              :min="1"
+            />
+          </p>
 
           <h3>{{ t("settings.rules") }}</h3>
           <p class="small">{{ t("settings.globalRules") }}</p>
@@ -229,17 +241,17 @@
 </template>
 
 <script setup lang="ts">
-import { useLayoutStore } from "@/stores/layout";
 import { settings as api } from "@/api";
-import { enableExec } from "@/utils/constants";
-import UserForm from "@/components/settings/UserForm.vue";
+import { StatusError } from "@/api/utils";
 import Rules from "@/components/settings/Rules.vue";
 import Themes from "@/components/settings/Themes.vue";
+import UserForm from "@/components/settings/UserForm.vue";
+import { useLayoutStore } from "@/stores/layout";
+import { enableExec } from "@/utils/constants";
+import { getTheme, setTheme } from "@/utils/theme";
 import Errors from "@/views/Errors.vue";
 import { computed, inject, onBeforeUnmount, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { StatusError } from "@/api/utils";
-import { getTheme, setTheme } from "@/utils/theme";
 
 const error = ref<StatusError | null>(null);
 const originalSettings = ref<ISettings | null>(null);

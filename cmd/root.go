@@ -365,10 +365,11 @@ func setupLog(logMethod string) {
 
 func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	set := &settings.Settings{
-		Key:              generateKey(),
-		Signup:           false,
-		CreateUserDir:    false,
-		UserHomeBasePath: settings.DefaultUsersHomeBasePath,
+		Key:                   generateKey(),
+		Signup:                false,
+		CreateUserDir:         false,
+		MinimumPasswordLength: settings.DefaultMinimumPasswordLength,
+		UserHomeBasePath:      settings.DefaultUsersHomeBasePath,
 		Defaults: settings.UserDefaults{
 			Scope:       ".",
 			Locale:      "en",
@@ -426,12 +427,12 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 
 	if password == "" {
 		var pwd string
-		pwd, err = users.RandomPwd()
+		pwd, err = users.RandomPwd(set.MinimumPasswordLength)
 		checkErr(err)
 
 		log.Println("Randomly generated password for user 'admin':", pwd)
 
-		password, err = users.HashPwd(pwd)
+		password, err = users.HashAndValidatePwd(pwd, set.MinimumPasswordLength)
 		checkErr(err)
 	}
 

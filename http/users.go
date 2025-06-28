@@ -125,7 +125,11 @@ var userPostHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *
 		return http.StatusBadRequest, fbErrors.ErrEmptyPassword
 	}
 
-	req.Data.Password, err = users.HashPwd(req.Data.Password)
+	if len(req.Data.Password) < int(d.settings.MinimumPasswordLength) {
+		return http.StatusBadRequest, fbErrors.ErrShortPassword
+	}
+
+	req.Data.Password, err = users.HashAndValidatePwd(req.Data.Password, d.settings.MinimumPasswordLength)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -163,7 +167,7 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 		}
 
 		if req.Data.Password != "" {
-			req.Data.Password, err = users.HashPwd(req.Data.Password)
+			req.Data.Password, err = users.HashAndValidatePwd(req.Data.Password, d.settings.MinimumPasswordLength)
 		} else {
 			var suser *users.User
 			suser, err = d.store.Users.Get(d.server.Root, d.raw.(uint))
@@ -186,7 +190,11 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 				return http.StatusForbidden, nil
 			}
 
-			req.Data.Password, err = users.HashPwd(req.Data.Password)
+			if len(req.Data.Password) < int(d.settings.MinimumPasswordLength) {
+				return http.StatusBadRequest, fbErrors.ErrShortPassword
+			}
+
+			req.Data.Password, err = users.HashAndValidatePwd(req.Data.Password, d.settings.MinimumPasswordLength)
 			if err != nil {
 				return http.StatusInternalServerError, err
 			}

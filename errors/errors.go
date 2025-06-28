@@ -7,6 +7,7 @@ var (
 	ErrExist                = errors.New("the resource already exists")
 	ErrNotExist             = errors.New("the resource does not exist")
 	ErrEmptyPassword        = errors.New("password is empty")
+	ErrShortPassword        = errors.New("password is too short")
 	ErrEmptyUsername        = errors.New("username is empty")
 	ErrEmptyRequest         = errors.New("empty request")
 	ErrScopeIsRelative      = errors.New("scope is a relative path")
