@@ -3,6 +3,7 @@
     "cancel": "取消",
     "clear": "清空",
     "close": "关闭",
+    "continue": "继续",
     "copy": "复制",
     "copyFile": "复制文件",
     "copyToClipboard": "复制到剪贴板",
@@ -12,6 +13,7 @@
     "download": "下载",
     "file": "文件",
     "folder": "文件夹",
+    "fullScreen": "切换全屏",
     "hideDotfiles": "不显示隐藏文件",
     "info": "信息",
     "more": "更多",
@@ -40,8 +42,6 @@
     "update": "更新",
     "upload": "上传",
     "openFile": "打开文件",
-    "continue": "继续",
-    "fullScreen": "切换全屏",
     "discardChanges": "放弃更改"
   },
   "download": {
@@ -110,6 +110,7 @@
     "deleteMessageMultiple": "你确定要删除这 {count} 个文件吗？",
     "deleteMessageSingle": "你确定要删除这个文件/文件夹吗？",
     "deleteMessageShare": "你确定要删除这个分享（{path}）吗？",
+    "deleteUser": "你确定要删除这个用户吗？",
     "deleteTitle": "删除文件",
     "displayName": "名称：",
     "download": "下载文件",
@@ -140,7 +141,6 @@
     "uploadMessage": "选择上传选项。",
     "optionalPassword": "密码（选填，不填即无密码）",
     "resolution": "分辨率",
-    "deleteUser": "你确定要删除这个用户吗？",
     "discardEditorChanges": "你确定要放弃所做的更改吗？"
   },
   "search": {
@@ -170,6 +170,7 @@
     "commandRunnerHelp": "你可以在此设置在下列事件中执行的命令。每行必须写一条命令。可以在命令中使用环境变量 {0} 和 {1}，使 {0} 与 {1} 相关联。关于此功能和可用环境变量的更多信息，请阅读 {2}。",
     "commandsUpdated": "命令已更新！",
     "createUserDir": "在添加新用户的同时自动创建用户的主目录",
+    "minimumPasswordLength": "Minimum password length",
     "tusUploads": "分块上传",
     "tusUploadsHelp": "File Browser 支持分块上传，在不佳的网络下也可进行高效、可靠、可续的文件上传",
     "tusUploadsChunkSize": "分块上传大小，例如 10MB 或 1GB",

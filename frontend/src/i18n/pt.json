@@ -7,10 +7,14 @@
     "copy": "Copiar",
     "copyFile": "Copiar ficheiro",
     "copyToClipboard": "Copiar",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Criar",
     "delete": "Eliminar",
     "download": "Descarregar",
-    "hideDotfiles": "",
+    "file": "File",
+    "folder": "Folder",
+    "fullScreen": "Toggle full screen",
+    "hideDotfiles": "Hide dotfiles",
     "info": "Info",
     "more": "Mais",
     "move": "Mover",
@@ -20,6 +24,7 @@
     "ok": "OK",
     "permalink": "Obter link permanente",
     "previous": "Anterior",
+    "preview": "Preview",
     "publish": "Publicar",
     "rename": "Alterar nome",
     "replace": "Substituir",
@@ -31,20 +36,27 @@
     "selectMultiple": "Selecionar vários",
     "share": "Partilhar",
     "shell": "Alternar shell",
+    "submit": "Submit",
     "switchView": "Alterar vista",
     "toggleSidebar": "Alternar barra lateral",
     "update": "Atualizar",
-    "upload": "Enviar"
+    "upload": "Enviar",
+    "openFile": "Open file",
+    "discardChanges": "Discard"
   },
   "download": {
     "downloadFile": "Descarregar ficheiro",
     "downloadFolder": "Descarregar pasta",
-    "downloadSelected": ""
+    "downloadSelected": "Download Selected"
+  },
+  "upload": {
+    "abortUpload": "Are you sure you wish to abort?"
   },
   "errors": {
     "forbidden": "Não tem permissões para aceder a isto",
     "internal": "Algo correu bastante mal.",
-    "notFound": "Esta localização não é alcançável."
+    "notFound": "Esta localização não é alcançável.",
+    "connection": "The server can't be reached."
   },
   "files": {
     "body": "Corpo",
@@ -61,7 +73,8 @@
     "size": "Tamanho",
     "sortByLastModified": "Ordenar pela última alteração",
     "sortByName": "Ordenar pelo nome",
-    "sortBySize": "Ordenar pelo tamanho"
+    "sortBySize": "Ordenar pelo tamanho",
+    "noPreview": "Preview is not available for this file."
   },
   "help": {
     "click": "selecionar pasta ou ficheiro",
@@ -96,6 +109,8 @@
     "currentlyNavigating": "A navegar em:",
     "deleteMessageMultiple": "Quer eliminar {count} ficheiro(s)?",
     "deleteMessageSingle": "Quer eliminar esta pasta/ficheiro?",
+    "deleteMessageShare": "Are you sure you wish to delete this share({path})?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "Eliminar ficheiros",
     "displayName": "Nome:",
     "download": "Descarregar ficheiros",
@@ -121,8 +136,12 @@
     "scheduleMessage": "Escolha uma data para publicar este post.",
     "show": "Mostrar",
     "size": "Tamanho",
-    "upload": "",
-    "uploadMessage": ""
+    "upload": "Upload",
+    "uploadFiles": "Uploading {files} files...",
+    "uploadMessage": "Select an option to upload.",
+    "optionalPassword": "Optional password",
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "Imagens",
@@ -151,6 +170,14 @@
     "commandRunnerHelp": "Aqui pode definir comandos que são executados nos eventos nomeados. Tem de escrever um por linha. As variáveis de ambiente {0} e {1} estarão disponíveis, sendo {0} relativo a {1}. Para mais informações sobre esta funcionalidade e as variáveis de ambiente, veja {2}.",
     "commandsUpdated": "Comandos atualizados!",
     "createUserDir": "Criar automaticamente a pasta de início ao adicionar um novo utilizador",
+    "minimumPasswordLength": "Minimum password length",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "userHomeBasePath": "Base path for user home directories",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Folha de estilos personalizada",
     "defaultUserDescription": "Estas são as configurações padrão para novos utilizadores.",
     "disableExternalLinks": "Desativar links externos (exceto documentação)",
@@ -161,7 +188,7 @@
     "executeOnShellDescription": "Por padrão, o Navegador de Ficheiros executa os comandos chamando os seus binários diretamente. Se em vez disso, quiser executá-los numa shell (como Bash ou PowerShell), pode definir isso aqui com os argumentos e bandeiras necessários. Se definido, o comando que executa será anexado como um argumento. Isto aplica-se tanto a comandos do utilizador como a hooks de eventos.",
     "globalRules": "Isto é um conjunto global de regras de permissão e negação. Elas aplicam-se a todos os utilizadores. Pode especificar regras específicas para cada configuração do utilizador para sobreporem-se a estas.",
     "globalSettings": "Configurações globais",
-    "hideDotfiles": "",
+    "hideDotfiles": "Hide dotfiles",
     "insertPath": "Inserir o caminho",
     "insertRegex": "Inserir expressão regular",
     "instanceName": "Nome da instância",
@@ -172,7 +199,7 @@
     "newUser": "Novo utilizador",
     "password": "Palavra-passe",
     "passwordUpdated": "Palavra-passe atualizada!",
-    "path": "",
+    "path": "Path",
     "perm": {
       "create": "Criar ficheiros e pastas",
       "delete": "Eliminar ficheiros e pastas",
@@ -190,14 +217,17 @@
     "rules": "Regras",
     "rulesHelp": "Aqui pode definir um conjunto de regras para permitir ou bloquear o acesso do utilizador a determinados ficheiros ou pastas. Os ficheiros bloqueados não irão aparecer durante a navegação. Suportamos expressões regulares e os caminhos dos ficheiros devem ser relativos à base do utilizador.\n",
     "scope": "Base",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Configurações atualizadas!",
-    "shareDuration": "",
-    "shareManagement": "",
-    "singleClick": "",
+    "shareDuration": "Share Duration",
+    "shareManagement": "Share Management",
+    "shareDeleted": "Share deleted!",
+    "singleClick": "Use single clicks to open files and directories",
     "themes": {
-      "dark": "",
-      "light": "",
-      "title": ""
+      "default": "System default",
+      "dark": "Dark",
+      "light": "Light",
+      "title": "Theme"
     },
     "user": "Utilizador",
     "userCommands": "Comandos",
