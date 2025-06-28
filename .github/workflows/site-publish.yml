@@ -34,6 +34,7 @@ jobs:
           context: .
           file: ./Dockerfile.site
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             filebrowser/site:latest
             ghcr.io/filebrowser/site:latest
