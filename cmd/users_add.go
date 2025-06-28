@@ -21,7 +21,7 @@ var usersAddCmd = &cobra.Command{
 		checkErr(err)
 		getUserDefaults(cmd.Flags(), &s.Defaults, false)
 
-		password, err := users.HashPwd(args[1])
+		password, err := users.HashAndValidatePwd(args[1], s.MinimumPasswordLength)
 		checkErr(err)
 
 		user := &users.User{
