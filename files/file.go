@@ -86,6 +86,11 @@ func NewFileInfo(opts *FileOptions) (*FileInfo, error) {
 		return nil, err
 	}
 
+	// Do not expose the name of root directory.
+	if file.Path == "/" {
+		file.Name = ""
+	}
+
 	if opts.Expand {
 		if file.IsDir {
 			if err := file.readListing(opts.Checker, opts.ReadHeader); err != nil { //nolint:govet
