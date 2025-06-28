@@ -1,0 +1,4 @@
+mkdocs-material
+mkdocs-minify-plugin
+mkdocs-redirects
+markdown-callouts
