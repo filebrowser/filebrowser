@@ -3,12 +3,17 @@
     "cancel": "Vazgeç",
     "clear": "Temizle",
     "close": "Kapat",
+    "continue": "Continue",
     "copy": "Kopyala",
     "copyFile": "Dosyayı kopyala",
     "copyToClipboard": "Panoya kopyala",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Oluştur",
     "delete": "Sil",
     "download": "İndir",
+    "file": "File",
+    "folder": "Folder",
+    "fullScreen": "Toggle full screen",
     "hideDotfiles": "Nokta dosyalarını gizle",
     "info": "Bilgi",
     "more": "Daha fazla",
@@ -19,6 +24,7 @@
     "ok": "Tamam",
     "permalink": "Kalıcı Bağlantı Alın",
     "previous": "Önceki",
+    "preview": "Preview",
     "publish": "Yayınla",
     "rename": "Yeniden anlandır",
     "replace": "Değiştir",
@@ -35,12 +41,16 @@
     "toggleSidebar": "Menüyü aç/kapat",
     "update": "Güncelle",
     "upload": "Yükle",
-    "openFile": "Dosyayı aç"
+    "openFile": "Dosyayı aç",
+    "discardChanges": "Discard"
   },
   "download": {
     "downloadFile": "Dosyayı indir",
     "downloadFolder": "Klasörü indir",
     "downloadSelected": "Seçilileri indir"
+  },
+  "upload": {
+    "abortUpload": "Are you sure you wish to abort?"
   },
   "errors": {
     "forbidden": "Buna erişim izniniz yok.",
@@ -100,6 +110,7 @@
     "deleteMessageMultiple": "{count} dosyayı/dosyaları silmek istediğinizden emin misiniz?",
     "deleteMessageSingle": "Bu dosyayı/klasörü silmek istediğinizden emin misiniz?",
     "deleteMessageShare": "Bu paylaşımı({path}) silmek istediğinizden emin misiniz?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "Dosyaları sil",
     "displayName": "Görünen Ad:",
     "download": "Dosyaları indirŞ",
@@ -126,8 +137,11 @@
     "show": "Göster",
     "size": "Boyut",
     "upload": "Gönder",
+    "uploadFiles": "Uploading {files} files...",
     "uploadMessage": "Yüklemek için bir seçenek belirleyin.",
-    "optionalPassword": "İsteğe bağlı şifre"
+    "optionalPassword": "İsteğe bağlı şifre",
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "Görseller",
@@ -156,6 +170,14 @@
     "commandRunnerHelp": "Burada, adlandırılmış olaylarda yürütülen komutları ayarlayabilirsiniz. Her satıra bir tane yazmalısınız. {0} ve {1} ortam değişkenleri, {1}'ye göre {0} olacak şekilde kullanılabilir olacaktır. Bu özellik ve mevcut ortam değişkenleri hakkında daha fazla bilgi için lütfen {2}'yi okuyun.",
     "commandsUpdated": "Komutlar güncellendi!",
     "createUserDir": "Kullanıcı eklerken, kullanıcı ana dizinini otomatik oluştur",
+    "minimumPasswordLength": "Minimum password length",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "userHomeBasePath": "Base path for user home directories",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Özel CSS",
     "defaultUserDescription": "Bu, yeni kullanıcılar için varsayılan ayarlardır.",
     "disableExternalLinks": "Harici bağlantıları devre dışı bırakın (dökümantasyon hariç)",
@@ -195,12 +217,14 @@
     "rules": "Kurallar",
     "rulesHelp": "Burada, bu belirli kullanıcı için bir dizi izin verme ve izin vermeme kuralı tanımlayabilirsiniz. Engellenen dosyalar listelerde görünmeyecek ve kullanıcı bunlara erişemeyecek. Kullanıcı erişimine göre regex ifadeleri destekliyoruz.\n",
     "scope": "Kapsam",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Ayarlar güncellendi!",
     "shareDuration": "Paylaşım süresi",
     "shareManagement": "Paylaşım yönetimi",
     "shareDeleted": "Paylaşım silindi!",
     "singleClick": "Dosyaları ve dizinleri açmak için tek tıklamayı kullanın",
     "themes": {
+      "default": "System default",
       "dark": "Dark",
       "light": "Light",
       "title": "Theme"
