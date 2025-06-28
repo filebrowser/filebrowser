@@ -1,3 +1,8 @@
-*
-!docker/*
-!filebrowser
+.venv
+dist
+.idea
+frontend/node_modules
+frontend/dist
+filebrowser.db
+site/docs/index.md
+site/docs/quickstart.md
