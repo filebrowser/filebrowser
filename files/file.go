@@ -88,7 +88,7 @@ func NewFileInfo(opts *FileOptions) (*FileInfo, error) {
 
 	// Do not expose the name of root directory.
 	if file.Path == "/" {
-		file.Name = "/"
+		file.Name = ""
 	}
 
 	if opts.Expand {
