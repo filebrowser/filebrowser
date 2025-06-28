@@ -4,5 +4,4 @@ dist
 frontend/node_modules
 frontend/dist
 filebrowser.db
-site/docs/index.md
-site/docs/quickstart.md
+docs/index.md

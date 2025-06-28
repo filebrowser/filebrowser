@@ -1,10 +1,4 @@
----
-hide:
-  - navigation
-  - toc
----
 #
-
 <p align="center">
   <img src="https://raw.githubusercontent.com/filebrowser/logo/master/banner.png" width="550"/>
 </p>
@@ -38,21 +32,21 @@ File Browser is a **create-your-own-cloud-kind** of software where you can insta
 
 |    Easy Login System     |     Sleek Interface      |     User Management      |
 | :----------------------: | :----------------------: | :----------------------: |
-| ![](./site/docs/assets/1.jpg) | ![](./site/docs/assets/2.jpg) | ![](./site/docs/assets/3.jpg) |
+| ![](docs/assets/1.jpg) | ![](docs/assets/2.jpg) | ![](docs/assets/3.jpg) |
 
 
 |       File Editing       |     Custom Commands      |      Customization       |
 | :----------------------: | :----------------------: | :----------------------: |
-| ![](./site/docs/assets/4.jpg) | ![](./site/docs/assets/5.jpg) | ![](./site/docs/assets/6.jpg) |
+| ![](docs/assets/4.jpg) | ![](docs/assets/5.jpg) | ![](docs/assets/6.jpg) |
 
 ## Install
 
-For information on how to install File Browser, please check [installation](./site/docs/installation.md).
+For information on how to install File Browser, please check [installation](docs/installation.md).
 
 ## Configuration
 
-For information on how to configure File Browser, please check [configuration](./site/docs/configuration.md).
+For information on how to configure File Browser, please check [configuration](docs/configuration.md).
 
 ## Contributing
 
-For information on how to contribute to the project, including how translations are managed, please check [contributing](./site/docs/contributing.md).
+For information on how to contribute to the project, including how translations are managed, please check [contributing](docs/contributing.md).

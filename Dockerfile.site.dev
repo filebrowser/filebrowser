@@ -5,15 +5,11 @@ RUN apk add --no-cache inotify-tools
 
 WORKDIR /build
 
-COPY site/requirements.txt /build/requirements.txt
+COPY site/ /build/
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose the port for mkdocs serve
 EXPOSE 8000
 
-# Copy the watch script and make it executable
-COPY scripts/watch.sh /usr/local/bin/watch.sh
-RUN chmod +x /usr/local/bin/watch.sh
-
 # The entrypoint will run the initial setup and then start the server.
-ENTRYPOINT ["/usr/local/bin/watch.sh"]
+ENTRYPOINT ["mkdocs", "serve", "-a", "0.0.0.0:8000", "--dirtyreload"]
