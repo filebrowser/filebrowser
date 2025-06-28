@@ -3,13 +3,18 @@
     "cancel": "Anulează",
     "clear": "Curăță",
     "close": "Închide",
+    "continue": "Continue",
     "copy": "Copiază",
     "copyFile": "Copiază fișier",
     "copyToClipboard": "Copiază în clipboard",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Crează",
     "delete": "Șterge",
     "download": "Descarcă",
-    "hideDotfiles": "",
+    "file": "File",
+    "folder": "Folder",
+    "fullScreen": "Toggle full screen",
+    "hideDotfiles": "Hide dotfiles",
     "info": "Info",
     "more": "Mai mult",
     "move": "Mută",
@@ -19,6 +24,7 @@
     "ok": "OK",
     "permalink": "Obține legătura permanentă",
     "previous": "Precedent",
+    "preview": "Preview",
     "publish": "Puplică",
     "rename": "Redenumește",
     "replace": "Înlocuiește",
@@ -30,20 +36,27 @@
     "selectMultiple": "Selecție multiplă",
     "share": "Distribuie",
     "shell": "Comută linia de comandă",
+    "submit": "Submit",
     "switchView": "Schimba vizualizarea",
     "toggleSidebar": "Comută bara laterală",
     "update": "Actualizează",
-    "upload": "Încarcă"
+    "upload": "Încarcă",
+    "openFile": "Open file",
+    "discardChanges": "Discard"
   },
   "download": {
     "downloadFile": "Descarcă fișier",
     "downloadFolder": "Descarcă director",
-    "downloadSelected": ""
+    "downloadSelected": "Download Selected"
+  },
+  "upload": {
+    "abortUpload": "Are you sure you wish to abort?"
   },
   "errors": {
     "forbidden": "Nu ai permisiuni sa accesezi asta.",
     "internal": "Ceva nu a funcționat corect.",
-    "notFound": "Aceasta locație nu poate fi accesată."
+    "notFound": "Aceasta locație nu poate fi accesată.",
+    "connection": "The server can't be reached."
   },
   "files": {
     "body": "Corp",
@@ -60,7 +73,8 @@
     "size": "Dimensiune",
     "sortByLastModified": "Ordonează dup ultima modificare",
     "sortByName": "Ordonează după nume",
-    "sortBySize": "Ordonează după dimensiune"
+    "sortBySize": "Ordonează după dimensiune",
+    "noPreview": "Preview is not available for this file."
   },
   "help": {
     "click": "alege fișier sau director",
@@ -95,6 +109,8 @@
     "currentlyNavigating": "Navigare curentă în:",
     "deleteMessageMultiple": "Ești sigur că vrei să ștergi aceste {count} fișier(e)?",
     "deleteMessageSingle": "Ești sigur că vrei să ștergi acest fișier/director?",
+    "deleteMessageShare": "Are you sure you wish to delete this share({path})?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "Șterge fișiere",
     "displayName": "Nume afișat:",
     "download": "Descarcă fișiere",
@@ -120,8 +136,12 @@
     "scheduleMessage": "Alege data si ora pentru a programa publicarea acestei postări.",
     "show": "Arată",
     "size": "Dimensiune",
-    "upload": "",
-    "uploadMessage": ""
+    "upload": "Upload",
+    "uploadFiles": "Uploading {files} files...",
+    "uploadMessage": "Select an option to upload.",
+    "optionalPassword": "Optional password",
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "Imagini",
@@ -150,6 +170,14 @@
     "commandRunnerHelp": "Aici poti seta comenzile care sunt executate in evenimente. Trebuie să scrii una pe linie. Variabilele de mediu {0} și {1} vor fi disponile, {0} fiind relativă la {1}. Pentru mai multe informații despre acest feature si variabilele de mediu disponibile, cititi {2}.",
     "commandsUpdated": "Comenzi actualizate!",
     "createUserDir": "Auto create user home dir while adding new user",
+    "minimumPasswordLength": "Minimum password length",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "userHomeBasePath": "Base path for user home directories",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "CSS personalizat",
     "defaultUserDescription": "Acestea sunt setările implicite pentru noii utilizatori.",
     "disableExternalLinks": "Dezactivează linkurile externe (exceptând documentația)",
@@ -160,7 +188,7 @@
     "executeOnShellDescription": "Implicit, File Browser execută comenzile prin apelare directă a binarelor. Daca vrei sa le rulezi într-un shell (cum ar fi Bash sau PowerShell), le poți defini aici cu argumentele necesare. Daca este setata, comanda va fi adăugată ca argument. Se aplică pentru comenzi si hookuri.",
     "globalRules": "Acesta este un set global de reguli. Se aplică tuturor utilizatorilor. Poți defini reguli specifice din setările fiecărui utilizator pentru a le suprascrie pe acestea.",
     "globalSettings": "Setări globale",
-    "hideDotfiles": "",
+    "hideDotfiles": "Hide dotfiles",
     "insertPath": "Redactează calea",
     "insertRegex": "Redactează expresia regulată",
     "instanceName": "Numele instanței",
@@ -171,7 +199,7 @@
     "newUser": "Utilizator nou",
     "password": "Parola",
     "passwordUpdated": "Parola actualizată!",
-    "path": "",
+    "path": "Path",
     "perm": {
       "create": "Crează fișiere și directoare",
       "delete": "Șterge fișiere și directoare",
@@ -189,14 +217,17 @@
     "rules": "Reguli",
     "rulesHelp": "Aici poți defini un set de reguli pentru acest utilizator. Fișierele blocate nu vor apărea in lista și nici nu vor putea fi accesate de utilizator. Expresiile regulate si căile relative la domeniul utilizatorului sunt permise.\n",
     "scope": "Domeniu",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Setări actualizate!",
-    "shareDuration": "",
-    "shareManagement": "",
-    "singleClick": "",
+    "shareDuration": "Share Duration",
+    "shareManagement": "Share Management",
+    "shareDeleted": "Share deleted!",
+    "singleClick": "Use single clicks to open files and directories",
     "themes": {
-      "dark": "",
-      "light": "",
-      "title": ""
+      "default": "System default",
+      "dark": "Dark",
+      "light": "Light",
+      "title": "Theme"
     },
     "user": "Utilizator",
     "userCommands": "Comenzi",
