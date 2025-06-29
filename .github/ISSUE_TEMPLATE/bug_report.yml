@@ -20,22 +20,32 @@ body:
       render: Text
       description: |
         Enter the version of FileBrowser you are using.
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Description
       description: |
         A clear and concise description of what the issue is about. What are you trying to do?
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: What did you expect to happen?
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: What actually happened?
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Reproduction Steps
       description: |
         Tell us how to reproduce this issue. How can someone who is starting from scratch reproduce this behavior as minimally as possible?
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Files
