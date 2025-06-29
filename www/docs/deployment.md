@@ -12,7 +12,7 @@ before = common.conf
 
 [Definition]
 datepattern = `^%%Y\/%%m\/%%d %%H:%%M:%%S`
-failregex   = `\/[a-z]*\/[a-z]*: \d{3} <HOST> *`
+failregex   = `\/api\/login: 403 <HOST> *`
 ```
 
 ### Jail Configuration
