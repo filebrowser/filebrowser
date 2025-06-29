@@ -1,13 +1,13 @@
-site_name: Filebrowser
+site_name: File Browser
 site_description: 'A web-based file browser and manager for your files'
-site_author: 'Filebrowser Community'
+site_author: 'File Browser Community'
 site_url: 'https://filebrowser.org'
 
 repo_name: 'filebrowser/filebrowser'
 repo_url: 'https://github.com/filebrowser/filebrowser'
 edit_uri: 'edit/master/docs/'
 
-copyright: 'Copyright &copy; 2025 Filebrowser Community'
+copyright: 'Copyright &copy; 2025 File Browser Community'
 
 theme:
   name: material
