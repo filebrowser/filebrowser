@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.34.1](https://github.com/filebrowser/filebrowser/compare/v2.34.0...v2.34.1) (2025-06-29)
+
+
+### Bug Fixes
+
+* exclude to-be-moved folder from move dialog ([#5235](https://github.com/filebrowser/filebrowser/issues/5235)) ([7354eb6](https://github.com/filebrowser/filebrowser/commit/7354eb6cf966244141277c2808988855c004f908))
+* passthrough the minimum password length ([#5236](https://github.com/filebrowser/filebrowser/issues/5236)) ([bf37f88](https://github.com/filebrowser/filebrowser/commit/bf37f88c32222ad9c186482bb97338a9c9b4a93c))
+
 ## [2.34.0](https://github.com/filebrowser/filebrowser/compare/v2.33.10...v2.34.0) (2025-06-29)
 
 
