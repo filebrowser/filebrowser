@@ -33,11 +33,11 @@ theme:
 
   features:
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
     - navigation.expand
     - navigation.indexes
     - navigation.top
-    - navigation.tabs.sticky
     - navigation.instant
     - search.suggest
     - search.highlight
