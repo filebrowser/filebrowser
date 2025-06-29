@@ -35,7 +35,7 @@ func (a ProxyAuth) createUser(usr users.Store, setting *settings.Settings, srv *
 	}
 
 	var hashedRandomPassword string
-	hashedRandomPassword, err = users.HashAndValidatePwd(pwd, setting.MinimumPasswordLength)
+	hashedRandomPassword, err = users.ValidateAndHashPwd(pwd, setting.MinimumPasswordLength)
 	if err != nil {
 		return nil, err
 	}

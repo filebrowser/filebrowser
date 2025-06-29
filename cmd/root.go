@@ -432,7 +432,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 
 		log.Println("Randomly generated password for user 'admin':", pwd)
 
-		password, err = users.HashAndValidatePwd(pwd, set.MinimumPasswordLength)
+		password, err = users.ValidateAndHashPwd(pwd, set.MinimumPasswordLength)
 		checkErr(err)
 	}
 

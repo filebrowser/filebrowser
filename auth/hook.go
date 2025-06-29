@@ -150,7 +150,7 @@ func (a *HookAuth) SaveUser() (*users.User, error) {
 	}
 
 	if u == nil {
-		pass, err := users.HashAndValidatePwd(a.Cred.Password, a.Settings.MinimumPasswordLength)
+		pass, err := users.ValidateAndHashPwd(a.Cred.Password, a.Settings.MinimumPasswordLength)
 		if err != nil {
 			return nil, err
 		}
@@ -186,7 +186,7 @@ func (a *HookAuth) SaveUser() (*users.User, error) {
 
 		// update the password when it doesn't match the current
 		if p {
-			pass, err := users.HashAndValidatePwd(a.Cred.Password, a.Settings.MinimumPasswordLength)
+			pass, err := users.ValidateAndHashPwd(a.Cred.Password, a.Settings.MinimumPasswordLength)
 			if err != nil {
 				return nil, err
 			}
