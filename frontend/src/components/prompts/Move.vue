@@ -8,6 +8,7 @@
       <file-list
         ref="fileList"
         @update:selected="(val) => (dest = val)"
+        :exclude="excludedFolders"
         tabindex="1"
       />
     </div>
@@ -76,6 +77,11 @@ export default {
   computed: {
     ...mapState(useFileStore, ["req", "selected"]),
     ...mapState(useAuthStore, ["user"]),
+    excludedFolders() {
+      return this.selected
+        .filter((idx) => this.req.items[idx].isDir)
+        .map((idx) => this.req.items[idx].url);
+    },
   },
   methods: {
     ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
