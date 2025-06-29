@@ -57,7 +57,7 @@ bump-version: $(standard-version) ## Bump app version
 site: ## Build site
 	@rm -rf www/public
 	docker build -f www/Dockerfile --progress=plain -t filebrowser.site www
-	docker run --rm -it -v $(CURDIR)/www:/docs \
+	docker run --rm -v $(CURDIR)/www:/docs \
 		-v $(CURDIR)/SECURITY.md:/docs/docs/security.md \
 		-v $(CURDIR)/CHANGELOG.md:/docs/docs/changelog.md \
 		-v $(CURDIR)/CODE-OF-CONDUCT.md:/docs/docs/code-of-conduct.md \
