@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.34.2](https://github.com/filebrowser/filebrowser/compare/v2.34.1...v2.34.2) (2025-06-29)
+
+
+### Bug Fixes
+
+* mitigate unprotected shares ([2b5d6cb](https://github.com/filebrowser/filebrowser/commit/2b5d6cbb996a61a769acc56af0acc12eec2d8d8f))
+
 ### [2.34.1](https://github.com/filebrowser/filebrowser/compare/v2.34.0...v2.34.1) (2025-06-29)
 
 
