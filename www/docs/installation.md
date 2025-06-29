@@ -30,12 +30,13 @@ filebrowser -r /path/to/your/files
 
 ### Configuring
 
-Done! It will bootstrap a database in which all the configurations and users are stored. Now, you can see on your command line the address in which your instance is running. You just need to go to that URL and use the following credentials:
-
-* Username: `admin`
-* Password: (printed in your console)
+Now your instance is up and running. File Browser will automatically bootstrap a database, in which the configuration and the users are stored. You can find the address in which your instance is running, as well as the randomly generated password for the user `admin`, in the console logs.
 
 Although this is the fastest way to bootstrap an instance, we recommend you to take a look at other possible options, by checking `config init --help` and `config set --help`, to make the installation as safe and customized as it can be.
+
+> [!WARNING]
+>
+> The automatically generated password for the user `admin` is only displayed once. If you fail to remember it, you will need to manually delete the database and start File Browser again.
 
 ## Docker
 
