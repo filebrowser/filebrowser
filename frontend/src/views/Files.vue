@@ -147,7 +147,7 @@ const fetchData = async () => {
   try {
     const res = await api.fetch(url, fetchDataController.signal);
     fileStore.updateRequest(res);
-    document.title = `${res.name} - ${t("files.files")} - ${name}`;
+    document.title = `${res.name || t("sidebar.myFiles")} - ${t("files.files")} - ${name}`;
     layoutStore.loading = false;
   } catch (err) {
     if (err instanceof StatusError && err.is_canceled) {

@@ -19,6 +19,7 @@ export default {
       hu: "Magyar",
       ar: "العربية",
       ca: "Català",
+      cs: "Čeština",
       de: "Deutsch",
       el: "Ελληνικά",
       en: "English",
@@ -38,6 +39,7 @@ export default {
       "sv-se": "Swedish (Sweden)",
       tr: "Türkçe",
       uk: "Українська",
+      vi: "Tiếng Việt",
       "zh-cn": "中文 (简体)",
       "zh-tw": "中文 (繁體)",
     };

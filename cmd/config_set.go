@@ -51,6 +51,8 @@ you want to change. Other options will remain unchanged.`,
 				set.Shell = convertCmdStrToCmdArray(mustGetString(flags, flag.Name))
 			case "create-user-dir":
 				set.CreateUserDir = mustGetBool(flags, flag.Name)
+			case "minimum-password-length":
+				set.MinimumPasswordLength = mustGetUint(flags, flag.Name)
 			case "branding.name":
 				set.Branding.Name = mustGetString(flags, flag.Name)
 			case "branding.color":

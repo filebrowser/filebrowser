@@ -6,6 +6,7 @@ rice-box.go
 /filebrowser
 /filebrowser.exe
 /dist
+.venv
 
 .DS_Store
 node_modules
@@ -41,3 +42,4 @@ build/
 
 default.nix
 Dockerfile.dev
+site/public/

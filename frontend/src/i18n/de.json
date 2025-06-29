@@ -3,14 +3,17 @@
     "cancel": "Abbrechen",
     "clear": "Schließen",
     "close": "Schließen",
+    "continue": "Fortfahren",
     "copy": "Kopieren",
     "copyFile": "Kopiere Datei",
     "copyToClipboard": "In Zwischenablage kopieren",
+    "copyDownloadLinkToClipboard": "Download-Link in die Zwischenablage kopieren",
     "create": "Neu",
     "delete": "Löschen",
     "download": "Herunterladen",
     "file": "Datei",
     "folder": "Ordner",
+    "fullScreen": "Vollbildmodus umschalten",
     "hideDotfiles": "Versteckte Dateien ausblenden",
     "info": "Info",
     "more": "mehr",
@@ -21,6 +24,7 @@
     "ok": "OK",
     "permalink": "permanenten Verweis anzeigen",
     "previous": "vorherige",
+    "preview": "Vorschau",
     "publish": "Veröffentlichen",
     "rename": "umbenennen",
     "replace": "Ersetzen",
@@ -37,12 +41,16 @@
     "toggleSidebar": "Seitenleiste anzeigen",
     "update": "Update",
     "upload": "Upload",
-    "openFile": "Datei öffnen"
+    "openFile": "Datei öffnen",
+    "discardChanges": "Verwerfen"
   },
   "download": {
     "downloadFile": "Download Datei",
     "downloadFolder": "Download Ordner",
     "downloadSelected": "Auswahl herunterladen"
+  },
+  "upload": {
+    "abortUpload": "Sind Sie sicher, dass Sie den Vorgang abbrechen möchten?"
   },
   "errors": {
     "forbidden": "Sie haben keine Berechtigung dies abzurufen.",
@@ -102,6 +110,7 @@
     "deleteMessageMultiple": "Sind Sie sicher, dass Sie {count} Datei(en) löschen möchten?",
     "deleteMessageSingle": "Sind Sie sicher, dass Sie diesen Ordner/diese Datei löschen möchten?",
     "deleteMessageShare": "Sind Sie sicher, dass Sie diese Freigabe löschen möchten ({path})?",
+    "deleteUser": "Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?",
     "deleteTitle": "Lösche Dateien",
     "displayName": "Anzeigename:",
     "download": "Lade Dateien",
@@ -130,7 +139,9 @@
     "upload": "Upload",
     "uploadFiles": "Upload von {files} Dateien...",
     "uploadMessage": "Wählen Sie eine Upload-Methode",
-    "optionalPassword": "Optionales Passwort"
+    "optionalPassword": "Optionales Passwort",
+    "resolution": "Auflösung",
+    "discardEditorChanges": "Möchten Sie die vorgenommenen Änderungen wirklich verwerfen?"
   },
   "search": {
     "images": "Bilder",
@@ -159,10 +170,14 @@
     "commandRunnerHelp": "Hier könne Sie Befehle eintragen, welche bei den benannten Aktionen ausgeführt werden. Sie müssen pro Zeile jeweils einen Befehl eingeben. Die Umgebungsvariable {0} und {1} sind verfügbar, wobei {0} relative zu {1} ist. Für mehr Informationen über diese Funktion und die verfügbaren Umgebungsvariablen lesen Sie bitte die {2}.",
     "commandsUpdated": "Befehle aktualisiert!",
     "createUserDir": "Automatisches Erstellen des Home-Verzeichnisses beim Anlegen neuer Benutzer",
+    "minimumPasswordLength": "Minimum password length",
     "tusUploads": "Gestückelter Upload",
     "tusUploadsHelp": "File Browser unterstützt das Hochladen von gestückelten Dateien und ermöglicht so einen effizienten, zuverlässigen, fortsetzbaren und gestückelten Datei-Upload auch in unzuverlässigen Netzwerken.",
     "tusUploadsChunkSize": "Gibt die maximale Größe pro Anfrage an (direkte Uploads werden für kleinere Uploads verwendet). Bitte geben Sie eine Byte-Angabe oder eine Zeichenfolge wie 10 MB, 1 GB usw. an",
     "tusUploadsRetryCount": "Anzahl der Wiederholungsversuche, wenn das Hochladen eines Stückes fehlschlägt.",
+    "userHomeBasePath": "Basispfad für Benutzer-Home-Verzeichnisse",
+    "userScopeGenerationPlaceholder": "Scope wird automatisch generiert",
+    "createUserHomeDirectory": "Benutzer-Home-Verzeichnis erstellen",
     "customStylesheet": "Individuelles Stylesheet",
     "defaultUserDescription": "Das sind die Standardeinstellung für Benutzer",
     "disableExternalLinks": "Externe Links deaktivieren (außer Dokumentation)",
@@ -209,6 +224,7 @@
     "shareDeleted": "Freigabe gelöscht!",
     "singleClick": "Einfacher Klick zum Öffnen von Dateien und Ordnern",
     "themes": {
+      "default": "Systemstandard",
       "dark": "Dunkel",
       "light": "Hell",
       "title": "Erscheinungsbild"

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"crypto/tls"
 	"errors"
 	"io"
@@ -13,6 +14,7 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
+	"time"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/afero"
@@ -48,7 +50,7 @@ func init() {
 	persistent.StringP("database", "d", "./filebrowser.db", "database path")
 	flags.Bool("noauth", false, "use the noauth auther when using quick setup")
 	flags.String("username", "admin", "username for the first user when using quick config")
-	flags.String("password", "", "hashed password for the first user when using quick config (default \"admin\")")
+	flags.String("password", "", "hashed password for the first user when using quick config")
 
 	addServerFlags(flags)
 }
@@ -61,14 +63,14 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("key", "k", "", "tls key")
 	flags.StringP("root", "r", ".", "root to prepend to relative paths")
 	flags.String("socket", "", "socket to listen to (cannot be used with address, port, cert nor key flags)")
-	flags.Uint32("socket-perm", 0666, "unix socket file permissions") //nolint:gomnd
+	flags.Uint32("socket-perm", 0666, "unix socket file permissions")
 	flags.StringP("baseurl", "b", "", "base url")
 	flags.String("cache-dir", "", "file cache directory (disabled if empty)")
 	flags.String("token-expiration-time", "2h", "user session timeout")
-	flags.Int("img-processors", 4, "image processors count") //nolint:gomnd
+	flags.Int("img-processors", 4, "image processors count") //nolint:mnd
 	flags.Bool("disable-thumbnails", false, "disable image thumbnails")
 	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
-	flags.Bool("disable-exec", false, "disables Command Runner feature")
+	flags.Bool("disable-exec", true, "disables Command Runner feature")
 	flags.Bool("disable-type-detection-by-header", false, "disables type detection by reading file headers")
 }
 
@@ -129,7 +131,7 @@ user created with the credentials from options "username" and "password".`,
 		cacheDir, err := cmd.Flags().GetString("cache-dir")
 		checkErr(err)
 		if cacheDir != "" {
-			if err := os.MkdirAll(cacheDir, 0700); err != nil { //nolint:govet,gomnd
+			if err := os.MkdirAll(cacheDir, 0700); err != nil { //nolint:govet
 				log.Fatalf("can't make directory %s: %s", cacheDir, err)
 			}
 			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
@@ -167,10 +169,6 @@ user created with the credentials from options "username" and "password".`,
 			checkErr(err)
 		}
 
-		sigc := make(chan os.Signal, 1)
-		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
-		go cleanupHandler(listener, sigc)
-
 		assetsFs, err := fs.Sub(frontend.Assets(), "dist")
 		if err != nil {
 			panic(err)
@@ -182,18 +180,31 @@ user created with the credentials from options "username" and "password".`,
 		defer listener.Close()
 
 		log.Println("Listening on", listener.Addr().String())
-		//nolint: gosec
-		if err := http.Serve(listener, handler); err != nil {
-			log.Fatal(err)
+		srv := &http.Server{
+			Handler:           handler,
+			ReadHeaderTimeout: 60 * time.Second,
 		}
-	}, pythonConfig{allowNoDB: true}),
-}
 
-func cleanupHandler(listener net.Listener, c chan os.Signal) { //nolint:interfacer
-	sig := <-c
-	log.Printf("Caught signal %s: shutting down.", sig)
-	listener.Close()
-	os.Exit(0)
+		go func() {
+			if err := srv.Serve(listener); !errors.Is(err, http.ErrServerClosed) {
+				log.Fatalf("HTTP server error: %v", err)
+			}
+
+			log.Println("Stopped serving new connections.")
+		}()
+
+		sigc := make(chan os.Signal, 1)
+		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
+		<-sigc
+
+		shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second) //nolint:mnd
+		defer shutdownRelease()
+
+		if err := srv.Shutdown(shutdownCtx); err != nil {
+			log.Fatalf("HTTP shutdown error: %v", err)
+		}
+		log.Println("Graceful shutdown complete.")
+	}, pythonConfig{allowNoDB: true}),
 }
 
 //nolint:gocyclo
@@ -201,42 +212,42 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 	server, err := st.Settings.GetServer()
 	checkErr(err)
 
-	if val, set := getParamB(flags, "root"); set {
+	if val, set := getStringParamB(flags, "root"); set {
 		server.Root = val
 	}
 
-	if val, set := getParamB(flags, "baseurl"); set {
+	if val, set := getStringParamB(flags, "baseurl"); set {
 		server.BaseURL = val
 	}
 
-	if val, set := getParamB(flags, "log"); set {
+	if val, set := getStringParamB(flags, "log"); set {
 		server.Log = val
 	}
 
 	isSocketSet := false
 	isAddrSet := false
 
-	if val, set := getParamB(flags, "address"); set {
+	if val, set := getStringParamB(flags, "address"); set {
 		server.Address = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getParamB(flags, "port"); set {
+	if val, set := getStringParamB(flags, "port"); set {
 		server.Port = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getParamB(flags, "key"); set {
+	if val, set := getStringParamB(flags, "key"); set {
 		server.TLSKey = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getParamB(flags, "cert"); set {
+	if val, set := getStringParamB(flags, "cert"); set {
 		server.TLSCert = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getParamB(flags, "socket"); set {
+	if val, set := getStringParamB(flags, "socket"); set {
 		server.Socket = val
 		isSocketSet = isSocketSet || set
 	}
@@ -250,33 +261,69 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 		server.Socket = ""
 	}
 
-	_, disableThumbnails := getParamB(flags, "disable-thumbnails")
+	disableThumbnails := getBoolParam(flags, "disable-thumbnails")
 	server.EnableThumbnails = !disableThumbnails
 
-	_, disablePreviewResize := getParamB(flags, "disable-preview-resize")
+	disablePreviewResize := getBoolParam(flags, "disable-preview-resize")
 	server.ResizePreview = !disablePreviewResize
 
-	_, disableTypeDetectionByHeader := getParamB(flags, "disable-type-detection-by-header")
+	disableTypeDetectionByHeader := getBoolParam(flags, "disable-type-detection-by-header")
 	server.TypeDetectionByHeader = !disableTypeDetectionByHeader
 
-	_, disableExec := getParamB(flags, "disable-exec")
+	disableExec := getBoolParam(flags, "disable-exec")
 	server.EnableExec = !disableExec
 
-	if val, set := getParamB(flags, "token-expiration-time"); set {
+	if server.EnableExec {
+		log.Println("WARNING: Command Runner feature enabled!")
+		log.Println("WARNING: This feature has known security vulnerabilities and should not")
+		log.Println("WARNING: you fully understand the risks involved. For more information")
+		log.Println("WARNING: read https://github.com/filebrowser/filebrowser/issues/5199")
+	}
+
+	if val, set := getStringParamB(flags, "token-expiration-time"); set {
 		server.TokenExpirationTime = val
 	}
 
 	return server
 }
 
-// getParamB returns a parameter as a string and a boolean to tell if it is different from the default
+// getBoolParamB returns a parameter as a string and a boolean to tell if it is different from the default
 //
 // NOTE: we could simply bind the flags to viper and use IsSet.
 // Although there is a bug on Viper that always returns true on IsSet
 // if a flag is binded. Our alternative way is to manually check
 // the flag and then the value from env/config/gotten by viper.
 // https://github.com/spf13/viper/pull/331
-func getParamB(flags *pflag.FlagSet, key string) (string, bool) {
+func getBoolParamB(flags *pflag.FlagSet, key string) (value, ok bool) {
+	value, _ = flags.GetBool(key)
+
+	// If set on Flags, use it.
+	if flags.Changed(key) {
+		return value, true
+	}
+
+	// If set through viper (env, config), return it.
+	if v.IsSet(key) {
+		return v.GetBool(key), true
+	}
+
+	// Otherwise use default value on flags.
+	return value, false
+}
+
+func getBoolParam(flags *pflag.FlagSet, key string) bool {
+	val, _ := getBoolParamB(flags, key)
+	return val
+}
+
+// getStringParamB returns a parameter as a string and a boolean to tell if it is different from the default
+//
+// NOTE: we could simply bind the flags to viper and use IsSet.
+// Although there is a bug on Viper that always returns true on IsSet
+// if a flag is binded. Our alternative way is to manually check
+// the flag and then the value from env/config/gotten by viper.
+// https://github.com/spf13/viper/pull/331
+func getStringParamB(flags *pflag.FlagSet, key string) (string, bool) {
 	value, _ := flags.GetString(key)
 
 	// If set on Flags, use it.
@@ -293,8 +340,8 @@ func getParamB(flags *pflag.FlagSet, key string) (string, bool) {
 	return value, false
 }
 
-func getParam(flags *pflag.FlagSet, key string) string {
-	val, _ := getParamB(flags, key)
+func getStringParam(flags *pflag.FlagSet, key string) string {
+	val, _ := getStringParamB(flags, key)
 	return val
 }
 
@@ -318,10 +365,11 @@ func setupLog(logMethod string) {
 
 func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	set := &settings.Settings{
-		Key:              generateKey(),
-		Signup:           false,
-		CreateUserDir:    false,
-		UserHomeBasePath: settings.DefaultUsersHomeBasePath,
+		Key:                   generateKey(),
+		Signup:                false,
+		CreateUserDir:         false,
+		MinimumPasswordLength: settings.DefaultMinimumPasswordLength,
+		UserHomeBasePath:      settings.DefaultUsersHomeBasePath,
 		Defaults: settings.UserDefaults{
 			Scope:       ".",
 			Locale:      "en",
@@ -349,7 +397,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	}
 
 	var err error
-	if _, noauth := getParamB(flags, "noauth"); noauth {
+	if _, noauth := getStringParamB(flags, "noauth"); noauth {
 		set.AuthMethod = auth.MethodNoAuth
 		err = d.store.Auth.Save(&auth.NoAuth{})
 	} else {
@@ -362,23 +410,29 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	checkErr(err)
 
 	ser := &settings.Server{
-		BaseURL: getParam(flags, "baseurl"),
-		Port:    getParam(flags, "port"),
-		Log:     getParam(flags, "log"),
-		TLSKey:  getParam(flags, "key"),
-		TLSCert: getParam(flags, "cert"),
-		Address: getParam(flags, "address"),
-		Root:    getParam(flags, "root"),
+		BaseURL: getStringParam(flags, "baseurl"),
+		Port:    getStringParam(flags, "port"),
+		Log:     getStringParam(flags, "log"),
+		TLSKey:  getStringParam(flags, "key"),
+		TLSCert: getStringParam(flags, "cert"),
+		Address: getStringParam(flags, "address"),
+		Root:    getStringParam(flags, "root"),
 	}
 
 	err = d.store.Settings.SaveServer(ser)
 	checkErr(err)
 
-	username := getParam(flags, "username")
-	password := getParam(flags, "password")
+	username := getStringParam(flags, "username")
+	password := getStringParam(flags, "password")
 
 	if password == "" {
-		password, err = users.HashPwd("admin")
+		var pwd string
+		pwd, err = users.RandomPwd(set.MinimumPasswordLength)
+		checkErr(err)
+
+		log.Println("Randomly generated password for user 'admin':", pwd)
+
+		password, err = users.HashAndValidatePwd(pwd, set.MinimumPasswordLength)
 		checkErr(err)
 	}
 
@@ -414,6 +468,7 @@ func initConfig() {
 	v.SetEnvPrefix("FB")
 	v.AutomaticEnv()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	v.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 
 	if err := v.ReadInConfig(); err != nil {
 		var configParseError v.ConfigParseError

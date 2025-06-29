@@ -1,0 +1,119 @@
+site_name: Filebrowser
+site_description: 'A web-based file browser and manager for your files'
+site_author: 'Filebrowser Community'
+site_url: 'https://filebrowser.org'
+
+repo_name: 'filebrowser/filebrowser'
+repo_url: 'https://github.com/filebrowser/filebrowser'
+edit_uri: 'edit/master/docs/'
+
+copyright: 'Copyright &copy; 2025 Filebrowser Community'
+
+theme:
+  name: material
+  language: en
+  logo: docs/assets/logo.png
+  favicon: docs/assets/favicon.png
+  palette:
+    - scheme: default
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - navigation.instant
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - toc.follow
+    - toc.integrate
+
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+
+plugins:
+  - search:
+      separator: '[\\s\\-\\/]+'
+  - offline
+  - minify:
+      minify_html: true
+
+markdown_extensions:
+  - smarty
+  - sane_lists
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - meta
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      use_pygments: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - callouts
+  - github-callouts
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/filebrowser/filebrowser
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/r/filebrowser/filebrowser
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: docs/installation.md
+      - Configuration: docs/configuration.md
+      - Security: docs/security.md
+  - Contributing:
+      - Contributing: docs/contributing.md
+      - Code of Conduct: docs/code-of-conduct.md

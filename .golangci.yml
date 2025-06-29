@@ -1,121 +1,132 @@
-linters-settings:
-  dupl:
-    threshold: 100
-  exhaustive:
-    default-signifies-exhaustive: false
-  funlen:
-    lines: 100
-    statements: 50
-  goconst:
-    min-len: 2
-    min-occurrences: 2
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - experimental
-      - opinionated
-      - performance
-      - style
-    disabled-checks:
-      - dupImport # https://github.com/go-critic/go-critic/issues/845
-      - ifElseChain
-      - octalLiteral
-      - whyNoLint
-      - wrapperFunc
-  gocyclo:
-    min-complexity: 15
-  goimports:
-    local-prefixes: github.com/filebrowser/filebrowser
-  gomnd:
-    # don't include the "operation" and "assign"
-    checks:
-      - argument
-      - case
-      - condition
-      - return
-    ignored-numbers:
-      - '0'
-      - '1'
-      - '2'
-      - '3'
-    ignored-functions:
-      - strings.SplitN
-  govet:
-    enable:
-      - nilness
-      - shadow
-  lll:
-    line-length: 140
-  misspell:
-    locale: US
-  nolintlint:
-    allow-unused: false # report any unused nolint directives
-    require-explanation: false # require an explanation for nolint directives
-    require-specific: true # require nolint directives to be specific about which linter is being skipped
+version: "2"
 
 linters:
-  # please, do not use `enable-all`: it's deprecated and will be removed soon.
-  # inverted configuration with `enable-all` and `disable` is not scalable during updates of golangci-lint
-  disable-all: true
+  # inverted configuration with `default: all` and `disable` is not scalable during updates of golangci-lint
+  default: none
   enable:
     - bodyclose
     - dogsled
     - dupl
     - errcheck
     - errorlint
-    - exportloopref
     - exhaustive
     - funlen
     - gocheckcompilerdirectives
     - gochecknoinits
-    - goconst
     - gocritic
     - gocyclo
     - godox
-    - goimports
-    - gomnd
     - goprintffuncname
     - gosec
-    - gosimple
     - govet
     - ineffassign
     - lll
     - misspell
+    - mnd
     - nakedret
     - nolintlint
     - prealloc
     - revive
     - rowserrcheck
     - staticcheck
-    - stylecheck
     - testifylint
-    - typecheck
     - unconvert
     - unparam
     - unused
     - whitespace
+  settings:
+    dupl:
+      threshold: 100
+    exhaustive:
+      default-signifies-exhaustive: false
+    funlen:
+      lines: 100
+      statements: 50
+    gocritic:
+      disabled-checks:
+        - dupImport # https://github.com/go-critic/go-critic/issues/845
+        - ifElseChain
+        - octalLiteral
+        - whyNoLint
+        - wrapperFunc
+      enabled-tags:
+        - diagnostic
+        - experimental
+        - opinionated
+        - performance
+        - style
+    gocyclo:
+      min-complexity: 15
+    govet:
+      enable:
+        - nilness
+        - shadow
+    lll:
+      line-length: 140
+    misspell:
+      locale: US
+    mnd:
+      # don't include the "operation" and "assign"
+      checks:
+        - argument
+        - case
+        - condition
+        - return
+      ignored-numbers:
+        - "0"
+        - "1"
+        - "2"
+        - "3"
+        - "0666"
+        - "0700"
+        - "0700"
+      ignored-functions:
+        - strings.SplitN
+        - make
+    nolintlint:
+      allow-unused: false # report any unused nolint directives
+      require-explanation: false # require an explanation for nolint directives
+      require-specific: true # require nolint directives to be specific about which linter is being skipped
+    staticcheck:
+      checks:
+        - "all"
+        - "-QF*"
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - gochecknoinits
+        path: cmd/.*.go
+      - linters:
+          - dupl
+          - funlen
+          - gochecknoinits
+          - gocyclo
+          - lll
+          - scopelint
+        path: .*_test.go
+      - linters:
+          - misspell
+        text: "[aA]uther"
+      - linters:
+          - mnd
+        text: strconv.Parse
+    paths:
+      - frontend/
 
-issues:
-  exclude-dirs:
-    - frontend/
-  exclude-rules:
-    - path: cmd/.*.go
-      linters:
-        - gochecknoinits
-    - path: .*_test.go
-      linters:
-        - lll
-        - gochecknoinits
-        - gocyclo
-        - funlen
-        - dupl
-        - scopelint
-    - text: "Auther"
-      linters:
-        - misspell
-    - text: "strconv.Parse"
-      linters:
-        - gomnd
-
-run:
-  timeout: 5m
+formatters:
+  enable:
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/filebrowser/filebrowser
+  exclusions:
+    generated: lax
+    paths:
+      - frontend/

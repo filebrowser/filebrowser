@@ -27,8 +27,10 @@ options you want to change.`,
 		password := mustGetString(flags, "password")
 		newUsername := mustGetString(flags, "username")
 
+		s, err := d.store.Settings.Get()
+		checkErr(err)
+
 		var (
-			err  error
 			user *users.User
 		)
 
@@ -64,7 +66,7 @@ options you want to change.`,
 		}
 
 		if password != "" {
-			user.Password, err = users.HashPwd(password)
+			user.Password, err = users.HashAndValidatePwd(password, s.MinimumPasswordLength)
 			checkErr(err)
 		}
 

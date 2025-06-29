@@ -207,7 +207,7 @@ func getEmbeddedThumbnail(in io.Reader) ([]byte, io.Reader, error) {
 
 	offset := 0
 	offsets := []int{12, 30}
-	head := make([]byte, 0xffff) //nolint:gomnd
+	head := make([]byte, 0xffff)
 
 	_, err := r.Read(head)
 	if err != nil {

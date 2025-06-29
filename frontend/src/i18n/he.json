@@ -3,6 +3,7 @@
     "cancel": "ביטול",
     "clear": "נקה",
     "close": "סגירה",
+    "continue": "המשך",
     "copy": "העתקה",
     "copyFile": "העתק קובץ",
     "copyToClipboard": "העתק ללוח",
@@ -12,6 +13,7 @@
     "download": "הורדה",
     "file": "קובץ",
     "folder": "תיקייה",
+    "fullScreen": "Toggle full screen",
     "hideDotfiles": "הסתר קבצים/תיקיות ששמם מתחיל בנקודה",
     "info": "מידע",
     "more": "עוד",
@@ -22,6 +24,7 @@
     "ok": "אישור",
     "permalink": "יצירת קישור קבוע",
     "previous": "הקודם",
+    "preview": "Preview",
     "publish": "פרסום",
     "rename": "שינוי שם",
     "replace": "החלפה",
@@ -39,7 +42,6 @@
     "update": "עדכון",
     "upload": "העלאה",
     "openFile": "פתח קובץ",
-    "continue": "המשך",
     "discardChanges": "זריקת השינויים"
   },
   "download": {
@@ -58,7 +60,6 @@
   },
   "files": {
     "body": "גוף",
-    "clear": "ניקוי",
     "closePreview": "סגירת תצוגה מקדימה",
     "files": "קבצים",
     "folders": "תיקיות",
@@ -109,6 +110,7 @@
     "deleteMessageMultiple": "האם אתה בטוח שברצונך למחוק {count} קבצים?",
     "deleteMessageSingle": "האם אתה בטוח שברצונך למחוק את הקובץ/התיקייה?",
     "deleteMessageShare": "האם אתה בטוח שברצונך למחוק את השיתוף הזה ({path})?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "מחיקת קבצים",
     "displayName": "שם:",
     "download": "הורדת קבצים",
@@ -138,6 +140,7 @@
     "uploadFiles": "מעלה {files} קבצים...",
     "uploadMessage": "בחר אפשרות העלאה.",
     "optionalPassword": "סיסמא אופציונלית",
+    "resolution": "Resolution",
     "discardEditorChanges": "האם אתה בטוח שברצונך לבטל את השינויים שביצעת?"
   },
   "search": {
@@ -167,6 +170,11 @@
     "commandRunnerHelp": "אתה יכול להגדיר פקודות שיבוצעו באירועים שונים. עליך לכתוב אחד בכל שורה. משתני הסביבה {0} ו-{1} יהיו זמינים, בהיותם {0} ביחס ל-{1}. למידע נוסף על תכונה זו ועל משתני הסביבה הזמינים, עיין ב {2}.",
     "commandsUpdated": "הפקודות עודכנו!",
     "createUserDir": "צור אוטומטית תיקיית בית בעת הוספת משתמש חדש",
+    "minimumPasswordLength": "Minimum password length",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "נתיב ראשי לתיקיות הבית של משתמשים",
     "userScopeGenerationPlaceholder": "ההיקף יווצר אוטומטית",
     "createUserHomeDirectory": "צור תיקיית בית למשתמש",
@@ -216,6 +224,7 @@
     "shareDeleted": "השיתוף נמחק!",
     "singleClick": "השתמש בלחיצה בודדת כדי לפתוח קובץ/תיקייה",
     "themes": {
+      "default": "System default",
       "dark": "כהה",
       "light": "בהיר",
       "title": "ערכת נושא"

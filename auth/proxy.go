@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"crypto/rand"
 	"errors"
 	"net/http"
 
@@ -29,15 +28,14 @@ func (a ProxyAuth) Auth(r *http.Request, usr users.Store, setting *settings.Sett
 }
 
 func (a ProxyAuth) createUser(usr users.Store, setting *settings.Settings, srv *settings.Server, username string) (*users.User, error) {
-	const passwordSize = 32
-	randomPasswordBytes := make([]byte, passwordSize)
-	_, err := rand.Read(randomPasswordBytes)
+	const randomPasswordLength = settings.DefaultMinimumPasswordLength + 10
+	pwd, err := users.RandomPwd(randomPasswordLength)
 	if err != nil {
 		return nil, err
 	}
 
 	var hashedRandomPassword string
-	hashedRandomPassword, err = users.HashPwd(string(randomPasswordBytes))
+	hashedRandomPassword, err = users.HashAndValidatePwd(pwd, setting.MinimumPasswordLength)
 	if err != nil {
 		return nil, err
 	}

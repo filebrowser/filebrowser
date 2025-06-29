@@ -1,0 +1,22 @@
+FROM  squidfunk/mkdocs-material as build
+
+WORKDIR /build
+COPY site/requirements.txt /build/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+COPY LICENSE /build/docs/LICENSE
+
+COPY site/ /build/
+
+COPY docs/ /build/docs/docs
+COPY README.md /build/docs/index.md
+
+RUN mkdocs build
+
+
+FROM ghcr.io/umputun/reproxy
+# enables automatic changelog generation by tools like Dependabot
+LABEL org.opencontainers.image.source="https://github.com/filebrowser/filebrowser"
+COPY --from=build /build/site /srv/site
+EXPOSE 8080
+USER app
+ENTRYPOINT ["/srv/reproxy", "--assets.location=/srv/site", "--assets.cache=30d", "--assets.cache=text/html:30s"]

@@ -14,6 +14,7 @@ import (
 	"github.com/spf13/pflag"
 	yaml "gopkg.in/yaml.v2"
 
+	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
@@ -72,7 +73,7 @@ func dbExists(path string) (bool, error) {
 		d := filepath.Dir(path)
 		_, err = os.Stat(d)
 		if os.IsNotExist(err) {
-			if err := os.MkdirAll(d, 0700); err != nil { //nolint:govet,gomnd
+			if err := os.MkdirAll(d, 0700); err != nil { //nolint:govet
 				return false, err
 			}
 			return false, nil
@@ -86,7 +87,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) {
 		data := pythonData{hadDB: true}
 
-		path := getParam(cmd.Flags(), "database")
+		path := getStringParam(cmd.Flags(), "database")
 		absPath, err := filepath.Abs(path)
 		if err != nil {
 			panic(err)
@@ -105,7 +106,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 
 		log.Println("Using database: " + absPath)
 		data.hadDB = exists
-		db, err := storm.Open(path)
+		db, err := storm.Open(path, storm.BoltOptions(files.PermFile, nil))
 		checkErr(err)
 		defer db.Close()
 		data.store, err = bolt.NewStorage(db)
@@ -124,7 +125,7 @@ func marshal(filename string, data interface{}) error {
 		encoder := json.NewEncoder(fd)
 		encoder.SetIndent("", "    ")
 		return encoder.Encode(data)
-	case ".yml", ".yaml": //nolint:goconst
+	case ".yml", ".yaml":
 		encoder := yaml.NewEncoder(fd)
 		return encoder.Encode(data)
 	default:

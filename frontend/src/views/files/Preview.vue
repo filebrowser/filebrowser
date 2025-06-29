@@ -253,7 +253,7 @@ const hasPrevious = computed(() => previousLink.value !== "");
 const hasNext = computed(() => nextLink.value !== "");
 
 const downloadUrl = computed(() =>
-  fileStore.req ? api.getDownloadURL(fileStore.req, true) : ""
+  fileStore.req ? api.getDownloadURL(fileStore.req, false) : ""
 );
 
 const raw = computed(() => {
@@ -262,7 +262,7 @@ const raw = computed(() => {
   }
 
   if (isEpub.value) {
-    return createURL("api/raw" + fileStore.req?.path, {}, false);
+    return createURL("api/raw" + fileStore.req?.path, {});
   }
 
   return downloadUrl.value;

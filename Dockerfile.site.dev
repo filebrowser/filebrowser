@@ -1,0 +1,15 @@
+FROM squidfunk/mkdocs-material
+
+# Install inotify-tools for watching file changes
+RUN apk add --no-cache inotify-tools
+
+WORKDIR /build
+
+COPY site/ /build/
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Expose the port for mkdocs serve
+EXPOSE 8000
+
+# The entrypoint will run the initial setup and then start the server.
+ENTRYPOINT ["mkdocs", "serve", "-a", "0.0.0.0:8000", "--dirtyreload"]

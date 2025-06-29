@@ -2,4 +2,4 @@
 # Unless a later match takes precedence, @o1egl will be requested for
 # review when someone opens a pull request.
 
-*       @o1egl
+*       @o1egl @hacdias

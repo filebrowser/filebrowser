@@ -3,12 +3,17 @@
     "cancel": "취소",
     "clear": "지우기",
     "close": "닫기",
+    "continue": "Continue",
     "copy": "복사",
     "copyFile": "파일 복사",
     "copyToClipboard": "클립보드 복사",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "생성",
     "delete": "삭제",
     "download": "다운로드",
+    "file": "File",
+    "folder": "Folder",
+    "fullScreen": "Toggle full screen",
     "hideDotfiles": "숨김파일(dotfile)을 표시 안함",
     "info": "정보",
     "more": "더보기",
@@ -19,6 +24,7 @@
     "ok": "확인",
     "permalink": "링크 얻기",
     "previous": "이전",
+    "preview": "Preview",
     "publish": "게시",
     "rename": "이름 바꾸기",
     "replace": "대체",
@@ -30,20 +36,27 @@
     "selectMultiple": "다중 선택",
     "share": "공유",
     "shell": "쉘 전환",
+    "submit": "Submit",
     "switchView": "보기 전환",
     "toggleSidebar": "사이드바 전환",
     "update": "업데이트",
-    "upload": "업로드"
+    "upload": "업로드",
+    "openFile": "Open file",
+    "discardChanges": "Discard"
   },
   "download": {
     "downloadFile": "파일 다운로드",
     "downloadFolder": "폴더 다운로드",
     "downloadSelected": "선택 항목 다운로드"
   },
+  "upload": {
+    "abortUpload": "Are you sure you wish to abort?"
+  },
   "errors": {
     "forbidden": "접근 권한이 없습니다.",
     "internal": "오류가 발생하였습니다.",
-    "notFound": "해당 경로를 찾을 수 없습니다."
+    "notFound": "해당 경로를 찾을 수 없습니다.",
+    "connection": "The server can't be reached."
   },
   "files": {
     "body": "본문",
@@ -60,7 +73,8 @@
     "size": "크기",
     "sortByLastModified": "수정시간순 정렬",
     "sortByName": "이름순",
-    "sortBySize": "크기순"
+    "sortBySize": "크기순",
+    "noPreview": "Preview is not available for this file."
   },
   "help": {
     "click": "파일이나 디렉토리를 선택해주세요.",
@@ -95,6 +109,8 @@
     "currentlyNavigating": "현재 위치:",
     "deleteMessageMultiple": "{count} 개의 파일을 삭제하시겠습니까?",
     "deleteMessageSingle": "파일 혹은 디렉토리를 삭제하시겠습니까?",
+    "deleteMessageShare": "Are you sure you wish to delete this share({path})?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "파일 삭제",
     "displayName": "게시 이름:",
     "download": "파일 다운로드",
@@ -121,7 +137,11 @@
     "show": "보기",
     "size": "크기",
     "upload": "업로드",
-    "uploadMessage": "업로드 옵션을 선택하세요."
+    "uploadFiles": "Uploading {files} files...",
+    "uploadMessage": "업로드 옵션을 선택하세요.",
+    "optionalPassword": "Optional password",
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "이미지",
@@ -150,6 +170,14 @@
     "commandRunnerHelp": "이벤트에 해당하는 명령을 설정하세요. 줄당 1개의 명령을 적으세요. 환경 변수{0} 와 {1}이 사용가능하며,  {0} 은 {1}에 상대 경로 입니다. 자세한 사항은 {2} 를 참조하세요.",
     "commandsUpdated": "명령 수정됨!",
     "createUserDir": "Auto create user home dir while adding new user",
+    "minimumPasswordLength": "Minimum password length",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "userHomeBasePath": "Base path for user home directories",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "커스텀 스타일시트",
     "defaultUserDescription": "아래 사항은 신규 사용자들에 대한 기본 설정입니다.",
     "disableExternalLinks": "외부 링크 감추기",
@@ -189,11 +217,14 @@
     "rules": "룰",
     "rulesHelp": "사용자별로 규칙을 허용/방지를 지정할 수 있습니다. 방지된 파일은 보이지 않고 사용자들은 접근할 수 없습니다. 사용자의 접근 허용 범위와 관련해 정규표현식(regex)과 경로를 지원합니다.\n",
     "scope": "범위",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "설정 수정됨!",
     "shareDuration": "공유 기간",
     "shareManagement": "공유 내역 관리",
+    "shareDeleted": "Share deleted!",
     "singleClick": "한번 클릭으로 파일과 폴더를 열도록 합니다.",
     "themes": {
+      "default": "System default",
       "dark": "다크테마",
       "light": "라이트테마",
       "title": "테마"

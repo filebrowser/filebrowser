@@ -3,14 +3,17 @@
     "cancel": "Zrušiť",
     "clear": "Zrušiť výber",
     "close": "Zavrieť",
+    "continue": "Continue",
     "copy": "Kopírovať",
     "copyFile": "Kopírovať súbor",
     "copyToClipboard": "Kopírovať do schránky",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Vytvoriť",
     "delete": "Odstrániť",
     "download": "Stiahnuť",
     "file": "Súbor",
     "folder": "Priečinok",
+    "fullScreen": "Toggle full screen",
     "hideDotfiles": "Skryť súbory začínajúce bodkou",
     "info": "Info",
     "more": "Viac",
@@ -21,6 +24,7 @@
     "ok": "OK",
     "permalink": "Získať trvalý odkaz",
     "previous": "Predošlé",
+    "preview": "Preview",
     "publish": "Zverejniť",
     "rename": "Premenovať",
     "replace": "Nahradiť",
@@ -37,12 +41,16 @@
     "toggleSidebar": "Prepnúť sidebar",
     "update": "Aktualizovať",
     "upload": "Nahrať",
-    "openFile": "Otvoriť súbor"
+    "openFile": "Otvoriť súbor",
+    "discardChanges": "Discard"
   },
   "download": {
     "downloadFile": "Stiahnuť súbor",
     "downloadFolder": "Stiahnuť priečinok",
     "downloadSelected": "Stiahnuť vybraté"
+  },
+  "upload": {
+    "abortUpload": "Are you sure you wish to abort?"
   },
   "errors": {
     "forbidden": "You don't have permissions to access this.",
@@ -102,6 +110,7 @@
     "deleteMessageMultiple": "Naozaj chcete odstrániť {count} súbor(ov)?",
     "deleteMessageSingle": "Naozaj chcete odstrániť tento súbor/priečinok?",
     "deleteMessageShare": "Naozaj chcete odstrániť toto zdieľanie({path})?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "Odstránenie súborov",
     "displayName": "Zobrazený názov:",
     "download": "Stiahnuť súbory",
@@ -128,8 +137,11 @@
     "show": "Zobraziť",
     "size": "Veľkosť",
     "upload": "Nahrať",
+    "uploadFiles": "Uploading {files} files...",
     "uploadMessage": "Zvoľte možnosť nahrávania.",
-    "optionalPassword": "Voliteľné heslo"
+    "optionalPassword": "Voliteľné heslo",
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "Obrázky",
@@ -158,6 +170,14 @@
     "commandRunnerHelp": "Sem môžete nastaviť príkazy, ktoré sa vykonajú pri určitých udalostiach. Musíte písať jeden na riadok. Premenné prostredia {0} a {1} sú k dispozícii, s tým že {0} relatívne k {1}. Viac informácií o tejto funkcionalite a dostupných premenných prostredia nájdete na {2}.",
     "commandsUpdated": "Príkazy upravené!",
     "createUserDir": "Automaticky vytvoriť domovský priečinok pri pridaní používateľa",
+    "minimumPasswordLength": "Minimum password length",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "userHomeBasePath": "Base path for user home directories",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Vlastný Stylesheet",
     "defaultUserDescription": "Toto sú predvolané nastavenia nového používateľa.",
     "disableExternalLinks": "Vypnúť externé odkazy (okrem dokumentácie)",
@@ -197,12 +217,14 @@
     "rules": "Pravidlá",
     "rulesHelp": "Tu môžete definovať pravidlá pre konkrétneho používateľa. Blokované súbory používateľ nebude vidieť a ani nebude k nim mať prístup. Podporujeme regex a cesty relatívne k používateľovi.\n",
     "scope": "Scope",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Nastavenia upravené!",
     "shareDuration": "Trvanie zdieľania",
     "shareManagement": "Správa zdieľania",
     "shareDeleted": "Zdieľanie odstránené!",
     "singleClick": "Používať jeden klik na otváranie súborov a priečinkov",
     "themes": {
+      "default": "System default",
       "dark": "Tmavá",
       "light": "Svetlá",
       "title": "Téma"

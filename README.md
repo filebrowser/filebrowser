@@ -1,3 +1,4 @@
+#
 <p align="center">
   <img src="https://raw.githubusercontent.com/filebrowser/logo/master/banner.png" width="550"/>
 </p>
@@ -12,28 +13,40 @@
 
 filebrowser provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its own directory. It can be used as a standalone app.
 
-## Demo
+> [!WARNING]
+>
+> This project is currently on **maintenance-only** mode, and is looking for new maintainers. For more information, please read the [discussion #4906](https://github.com/filebrowser/filebrowser/discussions/4906). Therefore, please note the following:
+>
+> - It can take a while until someone gets back to you. Please be patient.
+> - [Issues][issues] are only being used to track bugs. Any unrelated issues will be converted into a [discussion][discussions].
+> - No new features will be implemented until further notice. The priority is on triaging issues and merge bug fixes.
+> 
+> If you're interested in maintaining this project, please reach out via the discussion above.
 
-url: https://demo.filebrowser.org/
-
-credentials: `demo`/`demo`
+[issues]: https://github.com/filebrowser/filebrowser/issues
+[discussions]: https://github.com/filebrowser/filebrowser/discussions
 
 ## Features
 
-Please refer to our docs at [https://filebrowser.org/features](https://filebrowser.org/features)
+File Browser is a **create-your-own-cloud-kind** of software where you can install it on a server, direct it to a path and then access your files through a nice web interface. You have many available features!
+
+|    Easy Login System     |     Sleek Interface      |     User Management      |
+| :----------------------: | :----------------------: | :----------------------: |
+| ![](docs/assets/1.jpg) | ![](docs/assets/2.jpg) | ![](docs/assets/3.jpg) |
+
+
+|       File Editing       |     Custom Commands      |      Customization       |
+| :----------------------: | :----------------------: | :----------------------: |
+| ![](docs/assets/4.jpg) | ![](docs/assets/5.jpg) | ![](docs/assets/6.jpg) |
 
 ## Install
 
-For installation instructions please refer to our docs at [https://filebrowser.org/installation](https://filebrowser.org/installation).
+For information on how to install File Browser, please check [installation](docs/installation.md).
 
 ## Configuration
 
-[Authentication Method](https://filebrowser.org/configuration/authentication-method) - You can change the way the user authenticates with the filebrowser server
-
-[Command Runner](https://filebrowser.org/configuration/command-runner) - The command runner is a feature that enables you to execute any shell command you want before or after a certain event.
-
-[Custom Branding](https://filebrowser.org/configuration/custom-branding) - You can customize your File Browser installation by change its name to any other you want, by adding a global custom style sheet and by using your own logotype if you want.
+For information on how to configure File Browser, please check [configuration](docs/configuration.md).
 
 ## Contributing
 
-If you're interested in contributing to this project, our docs are best places to start [https://filebrowser.org/contributing](https://filebrowser.org/contributing).
+For information on how to contribute to the project, including how translations are managed, please check [contributing](docs/contributing.md).
