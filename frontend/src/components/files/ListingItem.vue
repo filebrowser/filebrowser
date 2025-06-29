@@ -8,6 +8,13 @@
     @dragover="dragOver"
     @drop="drop"
     @click="itemClick"
+    @mousedown="handleMouseDown"
+    @mouseup="handleMouseUp"
+    @mouseleave="handleMouseLeave"
+    @touchstart="handleTouchStart"
+    @touchend="handleTouchEnd"
+    @touchcancel="handleTouchCancel"
+    @touchmove="handleTouchMove"
     :data-dir="isDir"
     :data-type="type"
     :aria-label="name"
@@ -49,6 +56,12 @@ import { computed, inject, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const touches = ref<number>(0);
+
+const longPressTimer = ref<number | null>(null);
+const longPressTriggered = ref<boolean>(false);
+const longPressDelay = ref<number>(500);
+const startPosition = ref<{ x: number; y: number } | null>(null);
+const moveThreshold = ref<number>(10);
 
 const $showError = inject<IToastError>("$showError")!;
 const router = useRouter();
@@ -209,6 +222,12 @@ const drop = async (event: Event) => {
 };
 
 const itemClick = (event: Event | KeyboardEvent) => {
+  // If long press was triggered, prevent normal click behavior
+  if (longPressTriggered.value) {
+    longPressTriggered.value = false;
+    return;
+  }
+
   if (
     singleClick.value &&
     !(event as KeyboardEvent).ctrlKey &&
@@ -280,5 +299,77 @@ const getExtension = (fileName: string): string => {
     return fileName;
   }
   return fileName.substring(lastDotIndex);
+};
+
+// Long-press helper functions
+const startLongPress = (clientX: number, clientY: number) => {
+  startPosition.value = { x: clientX, y: clientY };
+  longPressTimer.value = window.setTimeout(() => {
+    handleLongPress();
+  }, longPressDelay.value);
+};
+
+const cancelLongPress = () => {
+  if (longPressTimer.value !== null) {
+    window.clearTimeout(longPressTimer.value);
+    longPressTimer.value = null;
+  }
+  startPosition.value = null;
+};
+
+const handleLongPress = () => {
+  if (singleClick.value) {
+    longPressTriggered.value = true;
+    click(new Event("longpress"));
+  }
+  cancelLongPress();
+};
+
+const checkMovement = (clientX: number, clientY: number): boolean => {
+  if (!startPosition.value) return false;
+
+  const deltaX = Math.abs(clientX - startPosition.value.x);
+  const deltaY = Math.abs(clientY - startPosition.value.y);
+
+  return deltaX > moveThreshold.value || deltaY > moveThreshold.value;
+};
+
+// Event handlers
+const handleMouseDown = (event: MouseEvent) => {
+  if (event.button === 0) {
+    startLongPress(event.clientX, event.clientY);
+  }
+};
+
+const handleMouseUp = () => {
+  cancelLongPress();
+};
+
+const handleMouseLeave = () => {
+  cancelLongPress();
+};
+
+const handleTouchStart = (event: TouchEvent) => {
+  if (event.touches.length === 1) {
+    const touch = event.touches[0];
+    startLongPress(touch.clientX, touch.clientY);
+  }
+};
+
+const handleTouchEnd = () => {
+  cancelLongPress();
+};
+
+const handleTouchCancel = () => {
+  cancelLongPress();
+};
+
+const handleTouchMove = (event: TouchEvent) => {
+  if (event.touches.length === 1 && startPosition.value) {
+    const touch = event.touches[0];
+    if (checkMovement(touch.clientX, touch.clientY)) {
+      cancelLongPress();
+    }
+  }
 };
 </script>
