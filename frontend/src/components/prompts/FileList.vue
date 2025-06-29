@@ -35,6 +35,12 @@ import { StatusError } from "@/api/utils.js";
 
 export default {
   name: "file-list",
+  props: {
+    exclude: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data: function () {
     return {
       items: [],
@@ -90,6 +96,7 @@ export default {
       // move options.
       for (const item of req.items) {
         if (!item.isDir) continue;
+        if (this.exclude?.includes(item.url)) continue;
 
         this.items.push({
           name: item.name,
