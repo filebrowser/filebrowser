@@ -8,11 +8,11 @@
   <img src="https://raw.githubusercontent.com/filebrowser/logo/master/banner.png" width="550"/>
 </p>
 
-![Preview](static/example.gif)
-
 > [!WARNING]
 >
 > This project is currently on **maintenance-only** mode. For more information, read the information on [GitHub](https://github.com/filebrowser/filebrowser#project-status).
+
+![Preview](static/example.gif)
 
 File Browser provides a file managing interface within a specified directory and it can be used to upload, delete, preview and edit your files. It is a **create-your-own-cloud**-kind of software where you can just install it on your server, direct it to a path and access your files through a nice web interface.
 
