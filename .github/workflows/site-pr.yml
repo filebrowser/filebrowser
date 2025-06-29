@@ -1,7 +1,10 @@
-name: Build Site Image
+name: Build Site
 
 on:
   pull_request:
+    paths:
+      - 'www'
+      - '*.md'
 
 jobs:
   build:
@@ -13,11 +16,5 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./Dockerfile.site
-          platforms: linux/amd64,linux/arm64
-          push: false
-
+      - name: Build site
+        run: make site

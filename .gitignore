@@ -42,4 +42,3 @@ build/
 
 default.nix
 Dockerfile.dev
-site/public/
