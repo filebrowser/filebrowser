@@ -10,7 +10,7 @@ You are able to customize your File Browser installation by changing its name to
 * **Disable external links:** this will disable any external links (except the ones to this documentation).
 * **Folder:** is the path to a directory that can contain two items:
   * **custom.css**, containing the styles you want to apply to your installation.
-  * **img** a directory whose files can replace the [default logotypes](../frontend/public/img) in the application.
+  * **img** a directory whose files can replace the [default logotypes](https://github.com/filebrowser/filebrowser/tree/master/frontend/public/img) in the application.
 
 These options can be either set via the CLI interface using the following command:
 
