@@ -58,6 +58,7 @@ site: ## Build site
 	@rm -rf www/public
 	docker build -f www/Dockerfile --progress=plain -t filebrowser.site www
 	docker run --rm -v $(CURDIR)/www:/docs \
+		-v $(CURDIR)/LICENSE:/docs/docs/LICENSE \
 		-v $(CURDIR)/SECURITY.md:/docs/docs/security.md \
 		-v $(CURDIR)/CHANGELOG.md:/docs/docs/changelog.md \
 		-v $(CURDIR)/CODE-OF-CONDUCT.md:/docs/docs/code-of-conduct.md \
@@ -69,6 +70,7 @@ site-serve: ## Serve site for development
 	docker build -f www/Dockerfile --progress=plain -t filebrowser.site www
 	docker run --rm -it -p 8000:8000 \
 		-v $(CURDIR)/www:/docs \
+		-v $(CURDIR)/LICENSE:/docs/docs/LICENSE \
 		-v $(CURDIR)/SECURITY.md:/docs/docs/security.md \
 		-v $(CURDIR)/CHANGELOG.md:/docs/docs/changelog.md \
 		-v $(CURDIR)/CODE-OF-CONDUCT.md:/docs/docs/code-of-conduct.md \
