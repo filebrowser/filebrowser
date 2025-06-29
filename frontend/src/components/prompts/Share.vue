@@ -12,6 +12,7 @@
             <th>{{ $t("settings.shareDuration") }}</th>
             <th></th>
             <th></th>
+            <th></th>
           </tr>
 
           <tr v-for="link in links" :key="link.hash">
@@ -40,6 +41,16 @@
                 @click="copyToClipboard(buildDownloadLink(link))"
               >
                 <i class="material-icons">content_paste_go</i>
+              </button>
+            </td>
+            <td class="small" v-if="hasDownloadLink()">
+              <button
+                class="action copy-clipboard"
+                :aria-label="$t('buttons.copyInlineLinkToClipboard')"
+                :title="$t('buttons.copyInlineLinkToClipboard')"
+                @click="copyToClipboard(buildInlineLink(link))"
+              >
+                <i class="material-icons">insert_link</i>
               </button>
             </td>
             <td class="small">
@@ -264,6 +275,9 @@ export default {
     },
     buildDownloadLink(share) {
       return pub_api.getDownloadURL(share);
+    },
+    buildInlineLink(share) {
+      return pub_api.getDownloadURL(share,true);
     },
     sort() {
       this.links = this.links.sort((a, b) => {
