@@ -9,10 +9,10 @@ import (
 	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 )
 
-// HashPwd hashes a password.
-func HashAndValidatePwd(password string, minimumLength uint) (string, error) {
+// ValidateAndHashPwd validates and hashes a password.
+func ValidateAndHashPwd(password string, minimumLength uint) (string, error) {
 	if uint(len(password)) < minimumLength {
-		return "", fbErrors.ErrShortPassword
+		return "", fbErrors.ErrShortPassword{MinimumLength: minimumLength}
 	}
 
 	return HashPwd(password)

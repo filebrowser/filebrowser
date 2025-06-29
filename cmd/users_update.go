@@ -66,7 +66,7 @@ options you want to change.`,
 		}
 
 		if password != "" {
-			user.Password, err = users.HashAndValidatePwd(password, s.MinimumPasswordLength)
+			user.Password, err = users.ValidateAndHashPwd(password, s.MinimumPasswordLength)
 			checkErr(err)
 		}
 
