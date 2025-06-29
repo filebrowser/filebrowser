@@ -97,8 +97,10 @@ extra:
 
 nav:
   - Home: index.md
-  - Installation: installation.md
-  - Configuration: configuration.md
+  - Getting Started:
+    - Installation: installation.md
+    - Configuration: configuration.md
+    - Deployment: deployment.md
   - Contributing:
     - Contributing: contributing.md
     - Code of Conduct: code-of-conduct.md
