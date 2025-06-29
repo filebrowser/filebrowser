@@ -77,6 +77,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.String("locale", "en", "locale for users")
 	flags.String("viewMode", string(users.ListViewMode), "view mode for users")
 	flags.Bool("singleClick", false, "use single clicks only")
+	flags.String("aceEditorTheme", "", "ace editor's syntax highlighting theme for users")
 }
 
 func getViewMode(flags *pflag.FlagSet) users.ViewMode {
@@ -99,6 +100,8 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 			defaults.ViewMode = getViewMode(flags)
 		case "singleClick":
 			defaults.SingleClick = mustGetBool(flags, flag.Name)
+		case "aceEditorTheme":
+			defaults.AceEditorTheme = mustGetString(flags, flag.Name)
 		case "perm.admin":
 			defaults.Perm.Admin = mustGetBool(flags, flag.Name)
 		case "perm.execute":

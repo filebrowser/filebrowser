@@ -21,6 +21,7 @@ interface SettingsDefaults {
   commands: any[];
   hideDotfiles: boolean;
   dateFormat: boolean;
+  aceEditorTheme: string;
 }
 
 interface SettingsBranding {
