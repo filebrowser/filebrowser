@@ -61,9 +61,7 @@ const route = useRoute();
 
 const { t } = useI18n({});
 
-const clean = (path: string) => {
-  return path.endsWith("/") ? path.slice(0, -1) : path;
-};
+let fetchDataController = new AbortController();
 
 const error = ref<StatusError | null>(null);
 
@@ -101,6 +99,7 @@ onUnmounted(() => {
     layoutStore.toggleShell();
   }
   fileStore.updateRequest(null);
+  fetchDataController.abort();
 });
 
 watch(route, (to, from) => {
@@ -142,20 +141,21 @@ const fetchData = async () => {
   let url = route.path;
   if (url === "") url = "/";
   if (url[0] !== "/") url = "/" + url;
+  // Cancel the ongoing request
+  fetchDataController.abort();
+  fetchDataController = new AbortController();
   try {
-    const res = await api.fetch(url);
-
-    if (clean(res.path) !== clean(`/${[...route.params.path].join("/")}`)) {
-      throw new Error("Data Mismatch!");
-    }
-
+    const res = await api.fetch(url, fetchDataController.signal);
     fileStore.updateRequest(res);
     document.title = `${res.name || t("sidebar.myFiles")} - ${t("files.files")} - ${name}`;
+    layoutStore.loading = false;
   } catch (err) {
+    if (err instanceof StatusError && err.is_canceled) {
+      return;
+    }
     if (err instanceof Error) {
       error.value = err;
     }
-  } finally {
     layoutStore.loading = false;
   }
 };
