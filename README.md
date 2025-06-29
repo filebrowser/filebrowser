@@ -28,3 +28,11 @@ Documentation on how to install, configure, and contribute to this project is ho
 
 [issues]: https://github.com/filebrowser/filebrowser/issues
 [discussions]: https://github.com/filebrowser/filebrowser/discussions
+
+## Contributing
+
+Contributions are always welcome. To start contributing to this project, read our [guidelines](CONTRIBUTING.md) first.
+
+## License
+
+[Apache License 2.0](LICENSE) © File Browser Contributors
