@@ -14,7 +14,7 @@ File Browser provides a file managing interface within a specified directory and
 
 Documentation on how to install, configure, and contribute to this project is hosted at [filebrowser.org](https://filebrowser.org).
 
-## Status
+## Project Status
 
 > [!WARNING]
 >
