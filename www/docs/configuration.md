@@ -97,6 +97,10 @@ filebrowser config set --auth.method=noauth
 
 ## Command Runner
 
+> [!CAUTION]
+>
+> The **command execution** functionality has been disabled for all existent and new installations by default from version v2.33.8 and onwards, due to continuous and known security vulnerabilities. You should only use this feature if you are aware of all of the security risks involved. For more up to date information, consult issue [#5199](https://github.com/filebrowser/filebrowser/issues/5199).
+
 The command runner is a feature that enables you to execute any shell command you want before or after a certain event. Right now, these are the events:
 
 * Copy
