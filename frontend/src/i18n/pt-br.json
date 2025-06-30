@@ -7,11 +7,13 @@
     "copy": "Copiar",
     "copyFile": "Copiar arquivo",
     "copyToClipboard": "Copiar",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Criar",
     "delete": "Apagar",
     "download": "Baixar",
     "file": "Arquivo",
     "folder": "Pasta",
+    "fullScreen": "Toggle full screen",
     "hideDotfiles": "Ocultar dotfiles",
     "info": "Informações",
     "more": "Mais",
@@ -22,6 +24,7 @@
     "ok": "OK",
     "permalink": "Obter link permanente",
     "previous": "Anterior",
+    "preview": "Preview",
     "publish": "Publicar",
     "rename": "Renomear",
     "replace": "Substituir",
@@ -39,10 +42,7 @@
     "update": "Atualizar",
     "upload": "Enviar",
     "openFile": "Abrir",
-    "copyDownloadLinkToClipboard": "Copiar link de download para a área de transferência",
-    "fullScreen": "Alternar tela cheia",
-    "preview": "Pré-visualizar",
-    "discardChanges": "Descartar"
+    "discardChanges": "Discard"
   },
   "download": {
     "downloadFile": "Baixar arquivo",
@@ -50,7 +50,7 @@
     "downloadSelected": "Baixar selecionado"
   },
   "upload": {
-    "abortUpload": "Tem certeza de que deseja abortar o upload?"
+    "abortUpload": "Are you sure you wish to abort?"
   },
   "errors": {
     "forbidden": "Você não tem permissões para acessar isto.",
@@ -65,8 +65,8 @@
     "folders": "Pastas",
     "home": "Início",
     "lastModified": "Última modificação",
-    "loading": "Carregando...",
-    "lonely": "Não há nada aqui...",
+    "loading": "Carregando. Aguarde, por favor.",
+    "lonely": "Não existe nada aqui.",
     "metadata": "Metadados",
     "multipleSelectionEnabled": "Seleção múltipla ativada",
     "name": "Nome",
@@ -80,12 +80,12 @@
     "click": "selecionar pasta ou arquivo",
     "ctrl": {
       "click": "selecionar várias pastas e arquivos",
-      "f": "abrir pesquisa",
+      "f": "pesquisar",
       "s": "salvar um arquivo ou baixar a pasta que você está"
     },
     "del": "apagar os arquivos selecionados",
     "doubleClick": "abrir pasta ou arquivo",
-    "esc": "limpar seleção e/ou fechar prompt",
+    "esc": "limpar seleção e/ou fechar menu",
     "f1": "esta informação",
     "f2": "renomear arquivo",
     "help": "Ajuda"
@@ -110,6 +110,7 @@
     "deleteMessageMultiple": "Deseja apagar {count} arquivo(s)?",
     "deleteMessageSingle": "Deseja apagar esta pasta/arquivo?",
     "deleteMessageShare": "Deseja apagar este compartilhamento ({path})?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "Apagar arquivos",
     "displayName": "Nome:",
     "download": "Baixar arquivos",
@@ -130,7 +131,7 @@
     "rename": "Renomear",
     "renameMessage": "Insira um novo nome para",
     "replace": "Substituir",
-    "replaceMessage": "Um dos arquivos que você está tentando enviar possui um nome conflitante. Deseja pular este arquivo e continuar o envio ou substituir o existente?\n",
+    "replaceMessage": "Já existe um arquivo com nome igual a um dos que está tentando enviar. Deseja substituir?\n",
     "schedule": "Agendar",
     "scheduleMessage": "Escolha uma data para agendar a publicação deste post.",
     "show": "Mostrar",
@@ -139,9 +140,8 @@
     "uploadFiles": "Enviando {files} arquivos...",
     "uploadMessage": "Selecione uma opção para enviar.",
     "optionalPassword": "Senha opcional",
-    "deleteUser": "Tem certeza de que deseja apagar este usuário?",
-    "resolution": "Resolução",
-    "discardEditorChanges": "Tem certeza de que deseja descartar as alterações feitas?"
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "Imagens",
@@ -169,7 +169,12 @@
     "commandRunner": "Execução de comandos",
     "commandRunnerHelp": "Aqui você pode definir comandos que serão executados nos eventos descritos. Escreva um por linha. As variáveis de ambiente {0} e {1} estão disponíveis, sendo {0} relativo a {1}. Para mais informações sobre esta função e as variáveis de ambiente disponíveis, leia a {2}.",
     "commandsUpdated": "Comandos atualizados!",
-    "createUserDir": "Criar diretório Home do usuário automaticamente ao adicionar novo usuário",
+    "createUserDir": "Criar diretório Home para novos usuários",
+    "minimumPasswordLength": "Minimum password length",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Caminho base para diretórios de usuários",
     "userScopeGenerationPlaceholder": "O escopo será gerado automaticamente",
     "createUserHomeDirectory": "Criar diretório Home de usuário",
@@ -194,7 +199,7 @@
     "newUser": "Novo usuário",
     "password": "Senha",
     "passwordUpdated": "Senha atualizada!",
-    "path": "Caminho",
+    "path": "Path",
     "perm": {
       "create": "Criar arquivos e diretórios",
       "delete": "Apagar arquivos e diretórios",
@@ -219,7 +224,7 @@
     "shareDeleted": "Compartilhamento apagado!",
     "singleClick": "Usar clique único para abrir arquivos e diretórios",
     "themes": {
-      "default": "Padrão do sistema",
+      "default": "System default",
       "dark": "Escuro",
       "light": "Claro",
       "title": "Tema"
@@ -240,7 +245,7 @@
     "hugoNew": "Hugo New",
     "login": "Login",
     "logout": "Sair",
-    "myFiles": "Meus arquivos",
+    "myFiles": "Arquivos",
     "newFile": "Novo arquivo",
     "newFolder": "Nova pasta",
     "preview": "Pré-visualizar",
@@ -256,6 +261,6 @@
     "hours": "Horas",
     "minutes": "Minutos",
     "seconds": "Segundos",
-    "unit": "Unidade de tempo"
+    "unit": "Unidades de Tempo"
   }
 }

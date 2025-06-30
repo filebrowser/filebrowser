@@ -4,6 +4,7 @@
 package cmd
 
 import (
+	"context"
 	"crypto/tls"
 	"errors"
 	"io"
@@ -16,6 +17,7 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
+	"time"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/afero"
@@ -64,12 +66,12 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("key", "k", "", "tls key")
 	flags.StringP("root", "r", ".", "root to prepend to relative paths")
 	flags.String("socket", "", "socket to listen to (cannot be used with address, port, cert nor key flags)")
-	flags.Uint32("socket-perm", 0666, "unix socket file permissions") //nolint:gomnd
+	flags.Uint32("socket-perm", 0666, "unix socket file permissions")
 	flags.StringP("baseurl", "b", "", "base url")
 	flags.String("publicurl", "", "public url (overrides baseurl and any other url in use for share links)")
 	flags.String("cache-dir", "", "file cache directory (disabled if empty)")
 	flags.String("token-expiration-time", "2h", "user session timeout")
-	flags.Int("img-processors", 4, "image processors count") //nolint:gomnd
+	flags.Int("img-processors", 4, "image processors count") //nolint:mnd
 	flags.Bool("disable-thumbnails", false, "disable image thumbnails")
 	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
 	flags.Bool("disable-exec", true, "disables Command Runner feature")
@@ -133,7 +135,7 @@ user created with the credentials from options "username" and "password".`,
 		cacheDir, err := cmd.Flags().GetString("cache-dir")
 		checkErr(err)
 		if cacheDir != "" {
-			if err := os.MkdirAll(cacheDir, 0700); err != nil { //nolint:govet,gomnd
+			if err := os.MkdirAll(cacheDir, 0700); err != nil { //nolint:govet
 				log.Fatalf("can't make directory %s: %s", cacheDir, err)
 			}
 			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
@@ -171,10 +173,6 @@ user created with the credentials from options "username" and "password".`,
 			checkErr(err)
 		}
 
-		sigc := make(chan os.Signal, 1)
-		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
-		go cleanupHandler(listener, sigc)
-
 		assetsFs, err := fs.Sub(frontend.Assets(), "dist")
 		if err != nil {
 			panic(err)
@@ -186,18 +184,31 @@ user created with the credentials from options "username" and "password".`,
 		defer listener.Close()
 
 		log.Println("Listening on", listener.Addr().String())
-		//nolint: gosec
-		if err := http.Serve(listener, handler); err != nil {
-			log.Fatal(err)
+		srv := &http.Server{
+			Handler:           handler,
+			ReadHeaderTimeout: 60 * time.Second,
 		}
-	}, pythonConfig{allowNoDB: true}),
-}
 
-func cleanupHandler(listener net.Listener, c chan os.Signal) { //nolint:interfacer
-	sig := <-c
-	log.Printf("Caught signal %s: shutting down.", sig)
-	listener.Close()
-	os.Exit(0)
+		go func() {
+			if err := srv.Serve(listener); !errors.Is(err, http.ErrServerClosed) {
+				log.Fatalf("HTTP server error: %v", err)
+			}
+
+			log.Println("Stopped serving new connections.")
+		}()
+
+		sigc := make(chan os.Signal, 1)
+		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
+		<-sigc
+
+		shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second) //nolint:mnd
+		defer shutdownRelease()
+
+		if err := srv.Shutdown(shutdownCtx); err != nil {
+			log.Fatalf("HTTP shutdown error: %v", err)
+		}
+		log.Println("Graceful shutdown complete.")
+	}, pythonConfig{allowNoDB: true}),
 }
 
 //nolint:gocyclo
@@ -358,11 +369,12 @@ func setupLog(logMethod string) {
 
 func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	set := &settings.Settings{
-		Key:              generateKey(),
-		Signup:           false,
-		PublicLogin:      true,
-		CreateUserDir:    false,
-		UserHomeBasePath: settings.DefaultUsersHomeBasePath,
+		Key:                   generateKey(),
+		Signup:                false,
+		PublicLogin:           true,
+		CreateUserDir:         false,
+		MinimumPasswordLength: settings.DefaultMinimumPasswordLength,
+		UserHomeBasePath:      settings.DefaultUsersHomeBasePath,
 		Defaults: settings.UserDefaults{
 			Scope:       ".",
 			Locale:      "en",
@@ -420,12 +432,12 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 
 	if password == "" {
 		var pwd string
-		pwd, err = users.RandomPwd()
+		pwd, err = users.RandomPwd(set.MinimumPasswordLength)
 		checkErr(err)
 
 		log.Println("Randomly generated password for user 'admin':", pwd)
 
-		password, err = users.HashPwd(pwd)
+		password, err = users.ValidateAndHashPwd(pwd, set.MinimumPasswordLength)
 		checkErr(err)
 	}
 

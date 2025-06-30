@@ -10,7 +10,7 @@ You are able to customize your File Browser installation by changing its name to
 * **Disable external links:** this will disable any external links (except the ones to this documentation).
 * **Folder:** is the path to a directory that can contain two items:
   * **custom.css**, containing the styles you want to apply to your installation.
-  * **img** a directory whose files can replace the [default logotypes](../frontend/public/img) in the application.
+  * **img** a directory whose files can replace the [default logotypes](https://github.com/filebrowser/filebrowser/tree/master/frontend/public/img) in the application.
 
 These options can be either set via the CLI interface using the following command:
 
@@ -42,7 +42,7 @@ The icons are cached, to make the new ones appear more quickly open developer to
 
 ## Authentication Method
 
-Right now, there are three possible authentication methods. Each one of them has its own capabilities and specification. If you are interested in contributing with one more authentication method, please [check the guidelines](./contributing.md).
+Right now, there are three possible authentication methods. Each one of them has its own capabilities and specification. If you are interested in contributing with one more authentication method, please [check the guidelines](contributing.md).
 
 ### JSON Auth (default)
 
@@ -97,6 +97,10 @@ filebrowser config set --auth.method=noauth
 
 ## Command Runner
 
+> [!CAUTION]
+>
+> The **command execution** functionality has been disabled for all existent and new installations by default from version v2.33.8 and onwards, due to continuous and known security vulnerabilities. You should only use this feature if you are aware of all of the security risks involved. For more up to date information, consult issue [#5199](https://github.com/filebrowser/filebrowser/issues/5199).
+
 The command runner is a feature that enables you to execute any shell command you want before or after a certain event. Right now, these are the events:
 
 * Copy
@@ -123,20 +127,21 @@ filebrowser cmds ls
 
 Or you can use the web interface to manage them via **Settings** → **Global Settings**.
 
+## Command Execution
 
-## Shell commands
+> [!CAUTION]
+>
+> The **command execution** functionality has been disabled for all existent and new installations by default from version v2.33.8 and onwards, due to continuous and known security vulnerabilities. You should only use this feature if you are aware of all of the security risks involved. For more up to date information, consult issue [#5199](https://github.com/filebrowser/filebrowser/issues/5199).
 
-Within Filebrowser you can toggle the shell (`< >` icon at the top right) and this will open a shell command window at the bottom of the screen.
+Within File Browser you can toggle the shell (`< >` icon at the top right) and this will open a shell command window at the bottom of the screen. This functionality can be turned on using the environment variable `FB_DISABLE_EXEC=false` or the flag `--disable-exec=false`.
 
-**By default no commands are available as the command list is empty**
-
-To enable commands these need to either be done on a per-user basis (including for the Admin user).
+By default no commands are available as the command list is empty. To enable commands these need to either be done on a per-user basis (including for the Admin user).
 
 You can do this by adding them in Settings > User Management > (edit user) > Commands or to *apply to all new users created from that point forward* they can be set in Settings > Global Settings
 
 > [!NOTE]
 > 
-> If using a proxy manager then remember to enable websockets support for the Filebrowser proxy
+> If using a proxy manager then remember to enable websockets support for the File Browser proxy
 
 > [!NOTE]
 > 

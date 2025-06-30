@@ -17,7 +17,8 @@ func ParseCommand(s *settings.Settings, raw string) (command []string, name stri
 		command = append(command, name)
 		command = append(command, args...)
 	} else {
-		command = append(s.Shell, raw) //nolint:gocritic
+		command = append(command, s.Shell...)
+		command = append(command, raw)
 	}
 
 	return command, name, nil

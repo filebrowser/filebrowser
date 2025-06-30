@@ -2,6 +2,66 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.35.0](https://github.com/filebrowser/filebrowser/compare/v2.34.2...v2.35.0) (2025-06-30)
+
+
+### Features
+
+* Long press selects item in single click mode ([8d75220](https://github.com/filebrowser/filebrowser/commit/8d7522049ced83f28f0933b55772c32e3ad04627))
+
+
+### Bug Fixes
+
+* shell value must be joined by blank space ([4403cd3](https://github.com/filebrowser/filebrowser/commit/4403cd35720dbda5a8bb1013b92582accf3317bc))
+* update documentation links ([38d0366](https://github.com/filebrowser/filebrowser/commit/38d0366acf88352b5a9a97c45837b0f865efae0b))
+
+### [2.34.2](https://github.com/filebrowser/filebrowser/compare/v2.34.1...v2.34.2) (2025-06-29)
+
+
+### Bug Fixes
+
+* mitigate unprotected shares ([2b5d6cb](https://github.com/filebrowser/filebrowser/commit/2b5d6cbb996a61a769acc56af0acc12eec2d8d8f))
+
+### [2.34.1](https://github.com/filebrowser/filebrowser/compare/v2.34.0...v2.34.1) (2025-06-29)
+
+
+### Bug Fixes
+
+* exclude to-be-moved folder from move dialog ([#5235](https://github.com/filebrowser/filebrowser/issues/5235)) ([7354eb6](https://github.com/filebrowser/filebrowser/commit/7354eb6cf966244141277c2808988855c004f908))
+* passthrough the minimum password length ([#5236](https://github.com/filebrowser/filebrowser/issues/5236)) ([bf37f88](https://github.com/filebrowser/filebrowser/commit/bf37f88c32222ad9c186482bb97338a9c9b4a93c))
+
+## [2.34.0](https://github.com/filebrowser/filebrowser/compare/v2.33.10...v2.34.0) (2025-06-29)
+
+
+### Features
+
+* Translate frontend/src/i18n/en.json in fa ([0acd69c](https://github.com/filebrowser/filebrowser/commit/0acd69c537ce2909ff62c4bb6980982524ece221))
+* Translate frontend/src/i18n/en.json in fa ([#5233](https://github.com/filebrowser/filebrowser/issues/5233)) ([09f679f](https://github.com/filebrowser/filebrowser/commit/09f679fae43398f5b87d21acc9d974d4d053392f))
+* update translations for project File Browser ([#5226](https://github.com/filebrowser/filebrowser/issues/5226)) ([a5ea2a2](https://github.com/filebrowser/filebrowser/commit/a5ea2a266bef619d1c4322266d1aa7d397d2c856))
+
+
+### Bug Fixes
+
+* abort ongoing requests when changing pages ([#3927](https://github.com/filebrowser/filebrowser/issues/3927)) ([93c4b2e](https://github.com/filebrowser/filebrowser/commit/93c4b2e03c5176da01a7e00a03c03ffcce279bc8))
+* add configurable minimum password length ([#5225](https://github.com/filebrowser/filebrowser/issues/5225)) ([464b644](https://github.com/filebrowser/filebrowser/commit/464b644adf22a2178414a6f1e4fa286276de81d2))
+* do not expose the name of the root directory ([#5224](https://github.com/filebrowser/filebrowser/issues/5224)) ([0892559](https://github.com/filebrowser/filebrowser/commit/089255997a653c284cd4249990b58bed00086c61))
+* Graceful shutdown ([8230eb7](https://github.com/filebrowser/filebrowser/commit/8230eb7ab51ccbd00b03f5b9d6964fa4aae331d4))
+
+
+### Reverts
+
+* Revert "docs: change cloudflare environment (#5231)" (#5232) ([9e273cd](https://github.com/filebrowser/filebrowser/commit/9e273cd9475d57b9500034e8b341ff8b620bcab8)), closes [#5231](https://github.com/filebrowser/filebrowser/issues/5231) [#5232](https://github.com/filebrowser/filebrowser/issues/5232)
+
+
+### Build
+
+* add an arm64 target for the site image ([#5229](https://github.com/filebrowser/filebrowser/issues/5229)) ([f5e531c](https://github.com/filebrowser/filebrowser/commit/f5e531c8ae0b9b18717e184856ace0ce19beef82))
+* bump golangci-lint to 2.1.6 ([1d494ff](https://github.com/filebrowser/filebrowser/commit/1d494ff3159ef939cfb4980ccde6f27df3e738b5))
+* **deps:** bump brace-expansion from 1.1.11 to 1.1.12 in /tools ([#5228](https://github.com/filebrowser/filebrowser/issues/5228)) ([5a07291](https://github.com/filebrowser/filebrowser/commit/5a072913062a6b2b0e5c74a02ca7710218ed3e5e))
+* **deps:** bump github.com/go-viper/mapstructure/v2 ([f32f273](https://github.com/filebrowser/filebrowser/commit/f32f27383d1fafa074f038cc873bd37b7f20ee27))
+* **deps:** bump github.com/go-viper/mapstructure/v2 in /tools ([5331969](https://github.com/filebrowser/filebrowser/commit/5331969163f5ae1fd2389f665059fc9e4a98db15))
+* publish docs to cloudflare pages ([#5230](https://github.com/filebrowser/filebrowser/issues/5230)) ([8861933](https://github.com/filebrowser/filebrowser/commit/8861933cf845b104e072f35e5f37d7c26097c9dc))
+
 ### [2.33.10](https://github.com/filebrowser/filebrowser/compare/v2.33.9...v2.33.10) (2025-06-26)
 
 

@@ -136,6 +136,7 @@ import {
 import { files as api } from "@/api";
 import ProgressBar from "@/components/ProgressBar.vue";
 import prettyBytes from "pretty-bytes";
+import { StatusError } from "@/api/utils.js";
 
 const USAGE_DEFAULT = { used: "0 B", total: "0 B", usedPercentage: 0 };
 
@@ -143,7 +144,7 @@ export default {
   name: "sidebar",
   setup() {
     const usage = reactive(USAGE_DEFAULT);
-    return { usage };
+    return { usage, usageAbortController: new AbortController() };
   },
   components: {
     ProgressBar,
@@ -165,6 +166,9 @@ export default {
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),
+    abortOngoingFetchUsage() {
+      this.usageAbortController.abort();
+    },
     async fetchUsage() {
       const path = this.$route.path.endsWith("/")
         ? this.$route.path
@@ -174,13 +178,18 @@ export default {
         return Object.assign(this.usage, usageStats);
       }
       try {
-        const usage = await api.usage(path);
+        this.abortOngoingFetchUsage();
+        this.usageAbortController = new AbortController();
+        const usage = await api.usage(path, this.usageAbortController.signal);
         usageStats = {
           used: prettyBytes(usage.used, { binary: true }),
           total: prettyBytes(usage.total, { binary: true }),
           usedPercentage: Math.round((usage.used / usage.total) * 100),
         };
       } catch (error) {
+        if (error instanceof StatusError && error.is_canceled) {
+          return;
+        }
         this.$showError(error);
       }
       return Object.assign(this.usage, usageStats);
@@ -207,6 +216,9 @@ export default {
       },
       immediate: true,
     },
+  },
+  unmounted() {
+    this.abortOngoingFetchUsage();
   },
 };
 </script>
