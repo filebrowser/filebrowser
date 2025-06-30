@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.35.0](https://github.com/filebrowser/filebrowser/compare/v2.34.2...v2.35.0) (2025-06-30)
+
+
+### Features
+
+* Long press selects item in single click mode ([8d75220](https://github.com/filebrowser/filebrowser/commit/8d7522049ced83f28f0933b55772c32e3ad04627))
+
+
+### Bug Fixes
+
+* shell value must be joined by blank space ([4403cd3](https://github.com/filebrowser/filebrowser/commit/4403cd35720dbda5a8bb1013b92582accf3317bc))
+* update documentation links ([38d0366](https://github.com/filebrowser/filebrowser/commit/38d0366acf88352b5a9a97c45837b0f865efae0b))
+
 ### [2.34.2](https://github.com/filebrowser/filebrowser/compare/v2.34.1...v2.34.2) (2025-06-29)
 
 
