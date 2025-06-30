@@ -401,7 +401,7 @@ onMounted(async () => {
 
     originalSettings.value = original;
     settings.value = newSettings;
-    shellValue.value = newSettings.shell.join("\n");
+    shellValue.value = newSettings.shell.join(" ");
   } catch (err) {
     if (err instanceof Error) {
       error.value = err;
