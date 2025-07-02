@@ -73,7 +73,10 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			return errToStatus(err), err
 		}
 
-		d.store.Share.DeleteWithPathPrefix(file.Path)
+		err = d.store.Share.DeleteWithPathPrefix(file.Path)
+		if err != nil {
+			fmt.Println("Warning: Error(s) occurred while deleting associated shares with file:" + err.Error())
+		}
 
 		// delete thumbnails
 		err = delThumbs(r.Context(), fileCache, file)
