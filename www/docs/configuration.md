@@ -72,11 +72,6 @@ filebrowser config set --recaptcha.host https://recaptcha.net
 
 Where `https://recaptcha.net` is any provider you want.
 
-
-> [!CAUTION]
-> 
-> Note that you **always** need to set the `--auth.method` flag when changing authentication configurations and that it will completely overwrite your current settings. [This is a known issue.](https://github.com/filebrowser/filebrowser/issues/715)
-
 ### Proxy Header
 
 If you have a reverse proxy you want to use to login your users, you do it via our `proxy` authentication method. To configure this method, your proxy must send an HTTP header containing the username of the logged in user:
