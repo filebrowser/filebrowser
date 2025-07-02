@@ -73,7 +73,7 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			return errToStatus(err), err
 		}
 
-		d.store.Share.DeleteWithPath(file.Path)
+		d.store.Share.DeleteWithPathPrefix(file.Path)
 
 		// delete thumbnails
 		err = delThumbs(r.Context(), fileCache, file)

@@ -76,10 +76,10 @@ func (s shareBackend) Delete(hash string) error {
 	return err
 }
 
-func (s shareBackend) DeleteWithPath(pathPrefix string) {
+func (s shareBackend) DeleteWithPathPrefix(pathPrefix string) {
 	var links []share.Link
 	s.db.Prefix("Path", pathPrefix, &links)
-	for _, link :=range links {
+	for _, link := range links {
 		s.db.DeleteStruct(&share.Link{Hash: link.Hash})
 	}
 }
