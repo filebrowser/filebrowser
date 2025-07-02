@@ -4,41 +4,45 @@ Most of the configuration can be understood through our Command Line Interface d
 
 ## Custom Branding
 
-You are able to customize your File Browser installation by changing its name to any other you want, by adding a global custom style sheet and by using your own logotype if you want. To address this, there are three configuration options that can be changed:
+You can customize File Browser to use your own branding. This includes the following:
 
-* **Name:** which is the instance name that will show up on login and signup pages. This won't replace the version message in the sidebar.
-* **Disable external links:** this will disable any external links (except the ones to this documentation).
-* **Folder:** is the path to a directory that can contain two items:
-  * **custom.css**, containing the styles you want to apply to your installation.
-  * **img** a directory whose files can replace the [default logotypes](https://github.com/filebrowser/filebrowser/tree/master/frontend/public/img) in the application.
+- **Name**: the name of the instance that shows up on the tab title, login pages, and some other places.
+- **Disable External Links**: disables all external links, except to the documentation.
+- **Disable Used Percentage**: disables the disk usage information on the sidebar.
+- **Branding Folder**: directory which can contain two items:
+    - `custom.css`, containing a global stylesheet to apply to all users.
+    - `img`, a directory which can replace all the [default logotypes](https://github.com/filebrowser/filebrowser/tree/master/frontend/public/img) from the application.
 
-These options can be either set via the CLI interface using the following command:
+This can be configured by the administrator user, under **Settings → Global Settings**. You can also update the configuration directly using the CLI:
 
 ```sh
 filebrowser config set --branding.name "My Name" \
   --branding.files "/abs/path/to/my/dir" \
   --branding.disableExternal
 ```
-Or can be set under 'Branding directory path' in **Settings → Global Settings**. 
 
 > [!NOTE] 
 >
-> If using Docker then remember to bind this directory, for example as `/home/username/containers/filebrowser/branding:/branding`
+> If you are using Docker, you need to mount a volume with the `branding` directory in order for it to be accessible from within the container.
 
-For custom icons to be recognized you need to create `img` and `img/icons` directories and place the svg in the `branding/img` directory:
+### Custom Icons
+
+To replace the default logotype and favicons, you need to create an `img` directory under the branding directory. The structure of this directory must mimic the one from the [default logotypes](https://github.com/filebrowser/filebrowser/tree/master/frontend/public/img):
 
 ```
-- filebrowser
-  - branding
-    - img
-      - icons
-      - logo.svg
-  - filebrowser.db
+img/
+  logo.svg
+  icons/
+    favicon.ico
+    favicon.svg
+    (...)
 ```
 
-To replace the favicon you need to place this in the `img/icons` directory but also note that some of the other PNG icon types will be required too (see the default logotypes link above) as the browser will normally use the highest resolution option available (at a minimum the 16x16 and 32x32 options). You can use the [Real Favicon Generator](https://realfavicongenerator.net/) to generate these for you from your base image.  
+Note that there are different versions of the same favicon in multiple sizes. To replace all of them, you need to add versions for all of them. You can use the [Real Favicon Generator](https://realfavicongenerator.net/) to generate these for you from your base image. 
 
-The icons are cached, to make the new ones appear more quickly open developer tools in your browser, then click on the Application tab, then Storage and then 'Clear Site Data'.
+> [!NOTE]
+>
+> The icons are cached by the browser, so you may not see your changes immediately. You can address this by clearing your browser's cache.
 
 ## Authentication Method
 
