@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.36.0](https://github.com/filebrowser/filebrowser/compare/v2.35.0...v2.36.0) (2025-07-02)
+
+
+### Features
+
+* update icons, remove deprecated Microsoft Tiles ([04166e8](https://github.com/filebrowser/filebrowser/commit/04166e81e52d38b1f66ba3313ccb1291c239eea2))
+
 ## [2.35.0](https://github.com/filebrowser/filebrowser/compare/v2.34.2...v2.35.0) (2025-06-30)
 
 
