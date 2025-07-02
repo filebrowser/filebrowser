@@ -74,6 +74,23 @@ Both `settings.json` and `filebrowser.db` will automatically be initialized if t
 
 File Browser is now up and running. Read some [first boot](#first-boot) for more information.
 
+> [!NOTE]
+>
+> The Alpine Docker image has breaking changes from v2.33.0, in order to address multiple issues that have continuously affected multiple users. The changes are as follows:
+>
+> - **User**: File Browser no longer runs as `root`, but as user with PID 1000 and GID 1000. You can still change this by using Docker's [`--user` flag](https://www.docker.com/blog/understanding-the-docker-user-instruction/).
+> - **Volumes**: the volumes with the database and configuration are now aligned with the s6-overlay images. Instead of mounting the files themselves, which leads to frequent issues, you now mount the surrounding directory.
+>
+> Assuming you have a `database.db`, a `.filebrowser.json` and the data in `/data`, do the following:
+> 
+> 1. Change the path of `database` in `.filebrowser.json` to `/database/filebrowser.db`
+> 2. Rename `database.db` to `filebrowser.db`
+> 3. Rename `.filebrowser.json` to `settings.json`
+> 4. Put them in the same directory locally, let's say `/app/filebrowser/`
+> 5. Change the permissions of both directories: `sudo chown -R 1000:1000 /app/filebrowser /data`
+> 6. Mount with the flags `-v /app/filebrowser:/database -v /app/filebrowser:/config` - you can also choose to put them in separate directories, but it is not needed.
+
+
 ## First Boot
 
 Your instance is now up and running. File Browser will automatically bootstrap a database, in which the configuration and the users are stored. You can find the address in which your instance is running, as well as the randomly generated password for the user `admin`, in the console logs.
