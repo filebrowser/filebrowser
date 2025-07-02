@@ -76,10 +76,10 @@ func (s shareBackend) Delete(hash string) error {
 	return err
 }
 
-func (s shareBackend) DeleteWithPath(path string) error {
-	err := s.db.Select(q.Eq("Path", path)).Delete(&share.Link{})
-	if errors.Is(err, storm.ErrNotFound) {
-		return nil
+func (s shareBackend) DeleteWithPath(pathPrefix string) {
+	var links []share.Link
+	s.db.Prefix("Path", pathPrefix, &links)
+	for _, link :=range links {
+		s.db.DeleteStruct(&share.Link{Hash: link.Hash})
 	}
-	return err
 }
