@@ -65,7 +65,7 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			Fs:         d.user.Fs,
 			Path:       r.URL.Path,
 			Modify:     d.user.Perm.Modify,
-			Expand:     true,
+			Expand:     false,
 			ReadHeader: d.server.TypeDetectionByHeader,
 			Checker:    d,
 		})
