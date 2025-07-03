@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.36.1](https://github.com/filebrowser/filebrowser/compare/v2.36.0...v2.36.1) (2025-07-03)
+
+
+### Bug Fixes
+
+* remove associated shares when deleting file/folder ([e99e0b3](https://github.com/filebrowser/filebrowser/commit/e99e0b3028e1c8a50e1744bb07ecc8e809bdb8e6))
+
 ## [2.36.0](https://github.com/filebrowser/filebrowser/compare/v2.35.0...v2.36.0) (2025-07-02)
 
 
