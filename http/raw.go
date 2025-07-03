@@ -182,9 +182,10 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 			name = file.Name
 		} else {
 			// This should indicate that the fs root is the directory being downloaded, lookup its name
-			actual, err := file.Fs.Stat(".")
-			if err != nil {
-				return http.StatusInternalServerError, err
+
+			actual, statErr := file.Fs.Stat(".")
+			if statErr != nil {
+				return http.StatusInternalServerError, statErr
 			}
 			name = actual.Name()
 		}
