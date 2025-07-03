@@ -78,7 +78,6 @@ func (s shareBackend) Delete(hash string) error {
 
 func (s shareBackend) DeleteWithPathPrefix(pathPrefix string) error {
 	var links []share.Link
-	s.db.Prefix("Path", pathPrefix, &links)
 	if err := s.db.Prefix("Path", pathPrefix, &links); err != nil {
 		return err
 	}
