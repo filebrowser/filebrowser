@@ -53,7 +53,7 @@ The default user that runs File Browser inside the container has PID 1000 and GI
 >
 > When using [bind mounts](https://docs.docker.com/engine/storage/bind-mounts/), that is, when you mount a path on the host in the container, you must manually ensure that they have the correct **permissions**. Docker does not do this automatically for you. The host directories must be readable and writable by the user running inside the container. You can use the [`chown`](https://linux.die.net/man/1/chown) command to change the owner of those paths.
 
-File Browser is now up and running. Read the ["First Book"](#first-boot) section for more information.
+File Browser is now up and running. Read the ["First Boot"](#first-boot) section for more information.
 
 ### S6 Overlay Image
 
@@ -78,7 +78,7 @@ Where:
 
 Both `settings.json` and `filebrowser.db` will automatically be initialized if they don't exist.
 
-File Browser is now up and running. Read the ["First Book"](#first-boot) section for more information.
+File Browser is now up and running. Read the ["First Boot"](#first-boot) section for more information.
 
 ## First Boot
 
