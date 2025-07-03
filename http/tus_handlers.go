@@ -11,11 +11,36 @@ import (
 
 	"github.com/spf13/afero"
 
+	"sync"
+
 	"github.com/filebrowser/filebrowser/v2/files"
 )
 
+// Tracks active uploads along with their respective upload lengths
+var activeUploads sync.Map
+
+func registerUpload(filePath string, fileSize int64) {
+	activeUploads.Store(filePath, fileSize)
+}
+
+func unregisterUpload(filePath string) {
+	activeUploads.Delete(filePath)
+}
+
+func getActiveUploadLength(filePath string) (int64, error) {
+	value, exists := activeUploads.Load(filePath)
+	if !exists {
+		return 0, fmt.Errorf("no active upload found for the given path")
+	}
+
+	return value.(int64), nil
+}
+
 func tusPostHandler() handleFunc {
-	return withUser(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if !d.user.Perm.Create {
+			return http.StatusForbidden, nil
+		}
 		file, err := files.NewFileInfo(&files.FileOptions{
 			Fs:         d.user.Fs,
 			Path:       r.URL.Path,
@@ -41,24 +66,54 @@ func tusPostHandler() handleFunc {
 		}
 
 		fileFlags := os.O_CREATE | os.O_WRONLY
-		if r.URL.Query().Get("override") == "true" {
-			fileFlags |= os.O_TRUNC
-		}
 
 		// if file exists
 		if file != nil {
 			if file.IsDir {
 				return http.StatusBadRequest, fmt.Errorf("cannot upload to a directory %s", file.RealPath())
 			}
+
+			// Existing files will remain untouched unless explicitly instructed to override
+			if r.URL.Query().Get("override") != "true" {
+				return http.StatusConflict, nil
+			}
+
+			// Permission for overwriting the file
+			if !d.user.Perm.Modify {
+				return http.StatusForbidden, nil
+			}
+
+			fileFlags |= os.O_TRUNC
 		}
 
 		openFile, err := d.user.Fs.OpenFile(r.URL.Path, fileFlags, files.PermFile)
 		if err != nil {
 			return errToStatus(err), err
 		}
-		if err := openFile.Close(); err != nil {
+		defer openFile.Close()
+
+		file, err = files.NewFileInfo(&files.FileOptions{
+			Fs:         d.user.Fs,
+			Path:       r.URL.Path,
+			Modify:     d.user.Perm.Modify,
+			Expand:     false,
+			ReadHeader: false,
+			Checker:    d,
+			Content:    false,
+		})
+		if err != nil {
 			return errToStatus(err), err
 		}
+
+		uploadLength, err := getUploadLength(r)
+		if err != nil {
+			return http.StatusBadRequest, fmt.Errorf("invalid upload length: %w", err)
+		}
+
+		// Enables the user to utilize the PATCH endpoint for uploading file data
+		registerUpload(file.RealPath(), uploadLength)
+
+		w.Header().Set("Location", "/api/tus/"+r.URL.Path)
 
 		return http.StatusCreated, nil
 	})
@@ -92,7 +147,7 @@ func tusHeadHandler() handleFunc {
 
 func tusPatchHandler() handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-		if !d.user.Perm.Modify || !d.Check(r.URL.Path) {
+		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
 			return http.StatusForbidden, nil
 		}
 		if r.Header.Get("Content-Type") != "application/offset+octet-stream" {
@@ -101,7 +156,7 @@ func tusPatchHandler() handleFunc {
 
 		uploadOffset, err := getUploadOffset(r)
 		if err != nil {
-			return http.StatusBadRequest, fmt.Errorf("invalid upload offset: %w", err)
+			return http.StatusBadRequest, fmt.Errorf("invalid upload offset")
 		}
 
 		file, err := files.NewFileInfo(&files.FileOptions{
@@ -118,6 +173,11 @@ func tusPatchHandler() handleFunc {
 			return http.StatusNotFound, nil
 		case err != nil:
 			return errToStatus(err), err
+		}
+
+		uploadLength, err := getActiveUploadLength(file.RealPath())
+		if err != nil {
+			return http.StatusForbidden, err
 		}
 
 		switch {
@@ -148,10 +208,23 @@ func tusPatchHandler() handleFunc {
 			return http.StatusInternalServerError, fmt.Errorf("could not write to file: %w", err)
 		}
 
-		w.Header().Set("Upload-Offset", strconv.FormatInt(uploadOffset+bytesWritten, 10))
+		newOffset := uploadOffset + bytesWritten
+		w.Header().Set("Upload-Offset", strconv.FormatInt(newOffset, 10))
+
+		if newOffset >= uploadLength {
+			unregisterUpload(file.RealPath())
+		}
 
 		return http.StatusNoContent, nil
 	})
+}
+
+func getUploadLength(r *http.Request) (int64, error) {
+	uploadOffset, err := strconv.ParseInt(r.Header.Get("Upload-Length"), 10, 64)
+	if err != nil {
+		return 0, fmt.Errorf("invalid upload length: %w", err)
+	}
+	return uploadOffset, nil
 }
 
 func getUploadOffset(r *http.Request) (int64, error) {

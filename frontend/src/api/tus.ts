@@ -3,7 +3,6 @@ import { baseURL, tusEndpoint, tusSettings } from "@/utils/constants";
 import { useAuthStore } from "@/stores/auth";
 import { useUploadStore } from "@/stores/upload";
 import { removePrefix } from "@/api/utils";
-import { fetchURL } from "./utils";
 
 const RETRY_BASE_DELAY = 1000;
 const RETRY_MAX_DELAY = 20000;
@@ -28,8 +27,6 @@ export async function upload(
   filePath = removePrefix(filePath);
   const resourcePath = `${tusEndpoint}${filePath}?override=${overwrite}`;
 
-  await createUpload(resourcePath);
-
   const authStore = useAuthStore();
 
   // Exit early because of typescript, tus content can't be a string
@@ -38,13 +35,25 @@ export async function upload(
   }
   return new Promise<void | string>((resolve, reject) => {
     const upload = new tus.Upload(content, {
-      uploadUrl: `${baseURL}${resourcePath}`,
+      endpoint: `${baseURL}${resourcePath}`,
       chunkSize: tusSettings.chunkSize,
       retryDelays: computeRetryDelays(tusSettings),
       parallelUploads: 1,
       storeFingerprintForResuming: false,
       headers: {
         "X-Auth": authStore.jwt,
+      },
+      onShouldRetry: function (err) {
+        const status = err.originalResponse
+          ? err.originalResponse.getStatus()
+          : 0;
+
+        // Do not retry for file conflict.
+        if (status === 409) {
+          return false;
+        }
+
+        return true;
       },
       onError: function (error) {
         if (CURRENT_UPLOAD_LIST[filePath].interval) {
@@ -90,17 +99,6 @@ export async function upload(
     };
     upload.start();
   });
-}
-
-async function createUpload(resourcePath: string) {
-  const headResp = await fetchURL(resourcePath, {
-    method: "POST",
-  });
-  if (headResp.status !== 201) {
-    throw new Error(
-      `Failed to create an upload: ${headResp.status} ${headResp.statusText}`
-    );
-  }
 }
 
 function computeRetryDelays(tusSettings: TusSettings): number[] | undefined {
