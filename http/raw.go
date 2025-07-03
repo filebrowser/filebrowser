@@ -177,7 +177,17 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 
 	name := filepath.Base(commonDir)
 	if name == "." || name == "" || name == string(filepath.Separator) {
-		name = file.Name
+		// Not sure when/if this will ever be true, though kept incase there is an edge-case where it is
+		if file.Name != "" {
+			name = file.Name
+		} else {
+			// This should indicate that the fs root is the directory being downloaded, lookup its name
+			actual, err := file.Fs.Stat(".")
+			if err != nil {
+				return http.StatusInternalServerError, err
+			}
+			name = actual.Name()
+		}
 	}
 	// Prefix used to distinguish a filelist generated
 	// archive from the full directory archive
