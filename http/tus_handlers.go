@@ -131,21 +131,65 @@ func tusPatchHandler() handleFunc {
 			)
 		}
 
-		openFile, err := d.user.Fs.OpenFile(r.URL.Path, os.O_WRONLY|os.O_APPEND, files.PermFile)
-		if err != nil {
-			return http.StatusInternalServerError, fmt.Errorf("could not open file: %w", err)
-		}
-		defer openFile.Close()
+		// Create a temp file in /tmp directory for copy-on-write approach
+		tempDir := "/tmp"
+		tempFilePath := filepath.Join(tempDir, "filebrowser_"+filepath.Base(r.URL.Path)+"_"+strconv.FormatInt(uploadOffset, 10))
 
-		_, err = openFile.Seek(uploadOffset, 0)
+		tempFile, err := os.OpenFile(tempFilePath, os.O_CREATE|os.O_WRONLY, files.PermFile)
 		if err != nil {
-			return http.StatusInternalServerError, fmt.Errorf("could not seek file: %w", err)
+			return http.StatusInternalServerError, fmt.Errorf("could not create temp file: %w", err)
+		}
+		defer func() {
+			tempFile.Close()
+			os.Remove(tempFilePath) // Clean up temp file after use
+		}()
+
+		// If we're not starting from zero, copy the existing content
+		if uploadOffset > 0 {
+			srcFile, err := d.user.Fs.Open(r.URL.Path)
+			if err != nil {
+				return http.StatusInternalServerError, fmt.Errorf("could not open source file: %w", err)
+			}
+
+			_, err = io.Copy(tempFile, srcFile)
+			srcFile.Close()
+			if err != nil {
+				return http.StatusInternalServerError, fmt.Errorf("could not copy existing content: %w", err)
+			}
 		}
 
-		defer r.Body.Close()
-		bytesWritten, err := io.Copy(openFile, r.Body)
+		// Write the new content to the temp file
+		_, err = tempFile.Seek(uploadOffset, 0)
 		if err != nil {
-			return http.StatusInternalServerError, fmt.Errorf("could not write to file: %w", err)
+			return http.StatusInternalServerError, fmt.Errorf("could not seek temp file: %w", err)
+		}
+
+		bytesWritten, err := io.Copy(tempFile, r.Body)
+		r.Body.Close()
+		if err != nil {
+			return http.StatusInternalServerError, fmt.Errorf("could not write to temp file: %w", err)
+		}
+
+		// Close the temp file to ensure all data is flushed
+		tempFile.Close()
+
+		// Open the temp file for reading
+		tempFile, err = os.Open(tempFilePath)
+		if err != nil {
+			return http.StatusInternalServerError, fmt.Errorf("could not open temp file for reading: %w", err)
+		}
+		defer tempFile.Close()
+
+		// Create/truncate the destination file and copy the content from temp file
+		destFile, err := d.user.Fs.OpenFile(r.URL.Path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, files.PermFile)
+		if err != nil {
+			return http.StatusInternalServerError, fmt.Errorf("could not open destination file: %w", err)
+		}
+		defer destFile.Close()
+
+		_, err = io.Copy(destFile, tempFile)
+		if err != nil {
+			return http.StatusInternalServerError, fmt.Errorf("could not copy from temp to destination: %w", err)
 		}
 
 		w.Header().Set("Upload-Offset", strconv.FormatInt(uploadOffset+bytesWritten, 10))
