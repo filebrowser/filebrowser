@@ -80,7 +80,7 @@ export default {
   },
   methods: {
     ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
-    copy: async function (event) {
+    copy: function (event) {
       event.preventDefault();
       const items = [];
 
@@ -122,29 +122,29 @@ export default {
         return;
       }
 
-      const dstItems = (await api.fetch(this.dest)).items;
-      const conflict = upload.checkConflict(items, dstItems);
-
       let overwrite = false;
       let rename = false;
 
-      if (conflict) {
-        this.showHover({
-          prompt: "replace-rename",
-          confirm: (event, option) => {
-            overwrite = option == "overwrite";
-            rename = option == "rename";
+      api.fetch(this.dest).then((dst) => {
+        const conflict = upload.checkConflict(items, dst.items);
+        if (conflict) {
+          this.showHover({
+            prompt: "replace-rename",
+            confirm: (event, option) => {
+              overwrite = option == "overwrite";
+              rename = option == "rename";
 
-            event.preventDefault();
-            this.closeHovers();
-            action(overwrite, rename);
-          },
-        });
+              event.preventDefault();
+              this.closeHovers();
+              action(overwrite, rename);
+            },
+          });
 
-        return;
-      }
+          return;
+        }
 
-      action(overwrite, rename);
+        action(overwrite, rename);
+      });
     },
   },
 };
