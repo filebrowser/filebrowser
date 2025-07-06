@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.36.2](https://github.com/filebrowser/filebrowser/compare/v2.36.1...v2.36.2) (2025-07-06)
+
+
+### Bug Fixes
+
+* lookup directory name if blank when downloading shared directory ([046d619](https://github.com/filebrowser/filebrowser/commit/046d6193c57b4df0e3dc583b6518b43d29d302c9))
+
 ### [2.36.1](https://github.com/filebrowser/filebrowser/compare/v2.36.0...v2.36.1) (2025-07-03)
 
 
