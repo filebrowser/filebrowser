@@ -1,19 +1,32 @@
-FROM alpine:latest
-RUN apk --update add ca-certificates \
-                     mailcap \
-                     curl \
-                     jq
+FROM alpine:3.22
 
-COPY healthcheck.sh /healthcheck.sh
-RUN chmod +x /healthcheck.sh  # Make the script executable
+RUN apk update && \
+  apk --no-cache add ca-certificates mailcap curl jq tini
 
-HEALTHCHECK --start-period=2s --interval=5s --timeout=3s \
-    CMD /healthcheck.sh || exit 1
+# Make user and create necessary directories
+ENV UID=1000
+ENV GID=1000
 
-VOLUME /srv
+RUN addgroup -g $GID user && \
+  adduser -D -u $UID -G user user && \
+  mkdir -p /config /database /srv && \
+  chown -R user:user /config /database /srv
+
+# Copy files and set permissions
+COPY filebrowser /bin/filebrowser
+COPY docker/common/ /
+COPY docker/alpine/ /
+
+RUN chown -R user:user /bin/filebrowser /defaults healthcheck.sh init.sh
+
+# Define healthcheck script
+HEALTHCHECK --start-period=2s --interval=5s --timeout=3s CMD /healthcheck.sh
+
+# Set the user, volumes and exposed ports
+USER user
+
+VOLUME /srv /config /database
+
 EXPOSE 80
 
-COPY docker_config.json /.filebrowser.json
-COPY filebrowser /filebrowser
-
-ENTRYPOINT [ "/filebrowser" ]
+ENTRYPOINT [ "tini", "--", "/init.sh", "filebrowser", "--config", "/config/settings.json" ]

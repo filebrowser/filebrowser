@@ -3,6 +3,7 @@
     "cancel": "キャンセル",
     "clear": "クリアー",
     "close": "閉じる",
+    "continue": "続行",
     "copy": "コピー",
     "copyFile": "ファイルのコピー",
     "copyToClipboard": "共有リンクをコピー",
@@ -12,6 +13,7 @@
     "download": "ダウンロード",
     "file": "ファイル",
     "folder": "フォルダー",
+    "fullScreen": "Toggle full screen",
     "hideDotfiles": "ドットで始まるファイルを表示しない",
     "info": "情報",
     "more": "さらに",
@@ -22,6 +24,7 @@
     "ok": "OK",
     "permalink": "パーマリンクを取得",
     "previous": "前へ",
+    "preview": "Preview",
     "publish": "公開",
     "rename": "名前の変更",
     "replace": "置換する",
@@ -39,7 +42,7 @@
     "update": "更新",
     "upload": "アップロード",
     "openFile": "ファイルを開く",
-    "continue": "続行"
+    "discardChanges": "Discard"
   },
   "download": {
     "downloadFile": "ファイルのダウンロード",
@@ -57,7 +60,6 @@
   },
   "files": {
     "body": "本文",
-    "clear": "消去",
     "closePreview": "プレビューを閉じる",
     "files": "ファイル",
     "folders": "フォルダー",
@@ -108,6 +110,7 @@
     "deleteMessageMultiple": "{count} 個のファイルを削除してもよろしいですか？",
     "deleteMessageSingle": "このファイル／フォルダーを削除してもよろしいですか？",
     "deleteMessageShare": "共有中のファイル（{path}）を削除してもよろしいですか？",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "ファイルの削除",
     "displayName": "表示名：",
     "download": "ファイルのダウンロード",
@@ -136,7 +139,9 @@
     "upload": "アップロード",
     "uploadFiles": "{files} 個のファイルをアップロードしています…",
     "uploadMessage": "アップロードするオプションを選択してください。",
-    "optionalPassword": "パスワード（オプション）"
+    "optionalPassword": "パスワード（オプション）",
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "画像",
@@ -165,6 +170,7 @@
     "commandRunnerHelp": "ここでは、指定したイベントの際に実行されるコマンドを設定することができます。1行に1つずつ書く必要があります。環境変数として {0} や {1} が使用可能で、{0} は {1} に関連した変数として扱われます。この機能と使用可能な環境変数の詳細については、{2}をお読みください。",
     "commandsUpdated": "コマンドを更新しました！",
     "createUserDir": "新規ユーザー追加時にユーザーのホームディレクトリを自動生成する",
+    "minimumPasswordLength": "Minimum password length",
     "tusUploads": "チャンクされたファイルアップロード",
     "tusUploadsHelp": "File Browser はチャンクされたファイルアップロードをサポートしており、信頼性の低いネットワーク上でも、効率的で信頼性の高い、再開可能なチャンクされたファイルアップロードを作成することができます。",
     "tusUploadsChunkSize": "1チャンクあたりのリクエストの最大サイズ。バイト数を示す整数か、10MB、1GBなどの文字列を入力できます。",
@@ -218,6 +224,7 @@
     "shareDeleted": "ファイルの共有を削除しました！",
     "singleClick": "ダブルクリックの代わりにクリックでファイルやフォルダーを開く",
     "themes": {
+      "default": "System default",
       "dark": "ダーク",
       "light": "ライト",
       "title": "テーマ"

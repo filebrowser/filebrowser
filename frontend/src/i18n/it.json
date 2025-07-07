@@ -7,9 +7,13 @@
     "copy": "Copia",
     "copyFile": "Copia file",
     "copyToClipboard": "Copia negli appunti",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Crea",
     "delete": "Elimina",
     "download": "Scarica",
+    "file": "File",
+    "folder": "Folder",
+    "fullScreen": "Toggle full screen",
     "hideDotfiles": "Nascondi dotfile",
     "info": "Informazioni",
     "more": "Altro",
@@ -20,6 +24,7 @@
     "ok": "OK",
     "permalink": "Ottieni link permanente",
     "previous": "Precedente",
+    "preview": "Preview",
     "publish": "Publica",
     "rename": "Rinomina",
     "replace": "Sostituisci",
@@ -31,20 +36,27 @@
     "selectMultiple": "Seleziona molteplici",
     "share": "Condividi",
     "shell": "Mostra/nascondi shell",
+    "submit": "Submit",
     "switchView": "Cambia vista",
     "toggleSidebar": "Mostra/nascondi la barra laterale",
     "update": "Aggiorna",
-    "upload": "Carica"
+    "upload": "Carica",
+    "openFile": "Open file",
+    "discardChanges": "Discard"
   },
   "download": {
     "downloadFile": "Scarica file",
     "downloadFolder": "Scarica cartella",
     "downloadSelected": "Scarica selezionati"
   },
+  "upload": {
+    "abortUpload": "Are you sure you wish to abort?"
+  },
   "errors": {
     "forbidden": "Non hai i permessi per accedere a questo file.",
     "internal": "Qualcosa è andato veramente male.",
-    "notFound": "Questo percorso non può essere raggiunto."
+    "notFound": "Questo percorso non può essere raggiunto.",
+    "connection": "The server can't be reached."
   },
   "files": {
     "body": "Contenuto",
@@ -61,7 +73,8 @@
     "size": "Dimensione",
     "sortByLastModified": "Ordina per ultima modifica",
     "sortByName": "Ordina per nome",
-    "sortBySize": "Ordina per dimensione"
+    "sortBySize": "Ordina per dimensione",
+    "noPreview": "Preview is not available for this file."
   },
   "help": {
     "click": "seleziona un file o una cartella",
@@ -96,6 +109,8 @@
     "currentlyNavigating": "Attualmente navigando su:",
     "deleteMessageMultiple": "Sei sicuro di voler eliminare {count} file?",
     "deleteMessageSingle": "Sei sicuro di voler eliminare questo file/cartella?",
+    "deleteMessageShare": "Are you sure you wish to delete this share({path})?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "Elimina",
     "displayName": "Nome visualizzato:",
     "download": "Scarica files",
@@ -122,7 +137,11 @@
     "show": "Mostra",
     "size": "Dimensione",
     "upload": "Carica",
-    "uploadMessage": "Seleziona un'opzione per il caricamento."
+    "uploadFiles": "Uploading {files} files...",
+    "uploadMessage": "Seleziona un'opzione per il caricamento.",
+    "optionalPassword": "Optional password",
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "Immagini",
@@ -151,6 +170,14 @@
     "commandRunnerHelp": "Qui puoi impostare i comandi da eseguire negli eventi nominati. Ne devi scrivere uno per riga. Le variabili d'ambiente {0} e {1} sono disponibili, essendo {0} relativo a {1}. Per altre informazioni su questa funzionalità e sulle variabili d'ambiente utilizzabili, leggi la {2}.",
     "commandsUpdated": "Comandi aggiornati!",
     "createUserDir": "Crea automaticamente la home directory dell'utente quando lo aggiungi",
+    "minimumPasswordLength": "Minimum password length",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "userHomeBasePath": "Base path for user home directories",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Foglio di stile personalizzato",
     "defaultUserDescription": "Queste sono le impostazioni predefinite per i nuovi utenti.",
     "disableExternalLinks": "Disabilita link esterni (tranne per la documentazione)",
@@ -190,11 +217,14 @@
     "rules": "Regole",
     "rulesHelp": "Qui è possibile definire una serie di regole e permessi per questo specifico utente. I file bloccati non appariranno negli elenchi e non saranno accessibili dagli utenti. all'utente. Sia regex che i percorsi relativi all'ambito di applicazione degli utenti sono supportati.\n",
     "scope": "Scope",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Impostazioni aggiornate!",
     "shareDuration": "Durata della condivisione",
     "shareManagement": "Gestione delle condivisioni",
+    "shareDeleted": "Share deleted!",
     "singleClick": "Usa un singolo click per aprire file e cartelle",
     "themes": {
+      "default": "System default",
       "dark": "Scuro",
       "light": "Chiaro",
       "title": "Tema"

@@ -41,6 +41,7 @@ import url from "@/utils/url";
 import ace, { Ace, version as ace_version } from "ace-builds";
 import modelist from "ace-builds/src-noconflict/ext-modelist";
 import "ace-builds/src-noconflict/ext-language_tools";
+import DOMPurify from "dompurify";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
@@ -83,7 +84,7 @@ onMounted(() => {
     if (isMarkdownFile && isPreview.value) {
       const new_value = editor.value?.getValue() || "";
       try {
-        previewContent.value = await marked(new_value);
+        previewContent.value = DOMPurify.sanitize(await marked(new_value));
       } catch (error) {
         console.error("Failed to convert content to HTML:", error);
         previewContent.value = "";

@@ -3,14 +3,17 @@
     "cancel": "Mégse",
     "clear": "Törlése",
     "close": "Bezárás",
+    "continue": "Continue",
     "copy": "Másolás",
     "copyFile": "Fájl másolása",
     "copyToClipboard": "Másolás vágólapra",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Létrehozás",
     "delete": "Törlése",
     "download": "Letöltés",
     "file": "Fájl",
     "folder": "Mappa",
+    "fullScreen": "Toggle full screen",
     "hideDotfiles": "Rejtett fájlok elrejtése",
     "info": "Infó",
     "more": "További",
@@ -21,6 +24,7 @@
     "ok": "OK",
     "permalink": "Állandó link lekérése",
     "previous": "Előző",
+    "preview": "Preview",
     "publish": "Publikálása",
     "rename": "Átnevezés",
     "replace": "Csere",
@@ -37,12 +41,16 @@
     "toggleSidebar": "Oldalsáv átváltása",
     "update": "Frissítés",
     "upload": "Feltöltés",
-    "openFile": "Fájl megnyitása"
+    "openFile": "Fájl megnyitása",
+    "discardChanges": "Discard"
   },
   "download": {
     "downloadFile": "Fájl letöltése",
     "downloadFolder": "Mappa letöltése",
     "downloadSelected": "Kijelölés letöltése"
+  },
+  "upload": {
+    "abortUpload": "Are you sure you wish to abort?"
   },
   "errors": {
     "forbidden": "Nincs jogosultsága a hozzáféréshez.",
@@ -102,6 +110,7 @@
     "deleteMessageMultiple": "Biztosan törölni szeretne {count} fájlt?",
     "deleteMessageSingle": "Biztosan törölni szeretné ezt a fájl vagy mappát?",
     "deleteMessageShare": "Biztosan törölni szeretné ezt a megosztást ({path})?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "Fájlok törlése",
     "displayName": "Megjelenített név:",
     "download": "Fájlok letöltése",
@@ -130,7 +139,9 @@
     "upload": "Feltöltés",
     "uploadFiles": "{files} fájl feltöltése…",
     "uploadMessage": "Válasszon egy feltöltési módot.",
-    "optionalPassword": "Választható jelszó"
+    "optionalPassword": "Választható jelszó",
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "Képek",
@@ -159,12 +170,18 @@
     "commandRunnerHelp": "Beállíthatja azokat a parancsokat, amelyek a megnevezett események során végrehajtásra kerülnek. Soronként egyet kell megadni. A {0} és a {1} környezeti változók lesznek elérhetőek, ahol a {0} relatív a {1}-hez. A funkcióról és a rendelkezésre álló környezeti változókról további információ: {2}.",
     "commandsUpdated": "Parancsok frissítve!",
     "createUserDir": "Felhasználók saját mappáinak automatikus létrehozása új felhasználók hozzáadásakor",
+    "minimumPasswordLength": "Minimum password length",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Alap elérési útvonal a felhasználók saját mappáihoz",
     "userScopeGenerationPlaceholder": "A környezet automatikus lesz létrehozva",
     "createUserHomeDirectory": "Felhasználói saját mappák létrehozása",
     "customStylesheet": "Egyéni stíluslap",
     "defaultUserDescription": "Ezek az alapértelmezett beállítások az új felhasználók számára.",
     "disableExternalLinks": "Külső linkek letiltása (kivéve a dokumentáció)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "dokumentáció",
     "examples": "Példák",
     "executeOnShell": "Futtatás parancsértelmezőben",
@@ -207,6 +224,7 @@
     "shareDeleted": "Megosztás törölve!",
     "singleClick": "Fájlok és könyvtárak megnyitása egyetlen kattintással",
     "themes": {
+      "default": "System default",
       "dark": "Sötét",
       "light": "Világos",
       "title": "Téma"

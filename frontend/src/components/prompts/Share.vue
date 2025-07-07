@@ -32,16 +32,6 @@
                 <i class="material-icons">content_paste</i>
               </button>
             </td>
-            <td class="small" v-if="hasDownloadLink()">
-              <button
-                class="action copy-clipboard"
-                :aria-label="$t('buttons.copyDownloadLinkToClipboard')"
-                :title="$t('buttons.copyDownloadLinkToClipboard')"
-                @click="copyToClipboard(buildDownloadLink(link))"
-              >
-                <i class="material-icons">content_paste_go</i>
-              </button>
-            </td>
             <td class="small">
               <button
                 class="action"
@@ -142,7 +132,7 @@
 <script>
 import { mapActions, mapState } from "pinia";
 import { useFileStore } from "@/stores/file";
-import { share as api, pub as pub_api } from "@/api";
+import { share as api } from "@/api";
 import dayjs from "dayjs";
 import { useLayoutStore } from "@/stores/layout";
 import { copy } from "@/utils/clipboard";
@@ -256,14 +246,6 @@ export default {
     },
     buildLink(share) {
       return api.getShareURL(share);
-    },
-    hasDownloadLink() {
-      return (
-        this.selected.length === 1 && !this.req.items[this.selected[0]].isDir
-      );
-    },
-    buildDownloadLink(share) {
-      return pub_api.getDownloadURL(share);
     },
     sort() {
       this.links = this.links.sort((a, b) => {

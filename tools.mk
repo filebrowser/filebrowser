@@ -18,7 +18,7 @@ $(goimports): $(TOOLS_GO_DEPS)
 
 golangci-lint=$(TOOLS_BIN)/golangci-lint
 $(golangci-lint): $(TOOLS_GO_DEPS)
-	$Q cd $(TOOLS_DIR) && $(go) build -o $@ github.com/golangci/golangci-lint/cmd/golangci-lint
+	$Q cd $(TOOLS_DIR) && $(go) build -o $@ github.com/golangci/golangci-lint/v2/cmd/golangci-lint
 
 # js tools
 TOOLS_JS_DEPS=$(TOOLS_DIR)/node_modules/.modified

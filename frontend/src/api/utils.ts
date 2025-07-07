@@ -6,7 +6,8 @@ import { encodePath } from "@/utils/url";
 export class StatusError extends Error {
   constructor(
     message: any,
-    public status?: number
+    public status?: number,
+    public is_canceled?: boolean
   ) {
     super(message);
     this.name = "StatusError";
@@ -33,7 +34,11 @@ export async function fetchURL(
       },
       ...rest,
     });
-  } catch {
+  } catch (e) {
+    // Check if the error is an intentional cancellation
+    if (e instanceof Error && e.name === "AbortError") {
+      throw new StatusError("000 No connection", 0, true);
+    }
     throw new StatusError("000 No connection", 0);
   }
 
@@ -76,23 +81,13 @@ export function removePrefix(url: string): string {
   return url;
 }
 
-export function createURL(endpoint: string, params = {}, auth = true): string {
-  const authStore = useAuthStore();
-
+export function createURL(endpoint: string, searchParams = {}): string {
   let prefix = baseURL;
   if (!prefix.endsWith("/")) {
     prefix = prefix + "/";
   }
   const url = new URL(prefix + encodePath(endpoint), origin);
-
-  const searchParams: SearchParams = {
-    ...(auth && { auth: authStore.jwt }),
-    ...params,
-  };
-
-  for (const key in searchParams) {
-    url.searchParams.set(key, searchParams[key]);
-  }
+  url.search = new URLSearchParams(searchParams).toString();
 
   return url.toString();
 }

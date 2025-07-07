@@ -56,7 +56,7 @@ The path must be for a json or yaml file.`,
 		checkErr(err)
 
 		var rawAuther interface{}
-		if filepath.Ext(args[0]) != ".json" { //nolint:goconst
+		if filepath.Ext(args[0]) != ".json" {
 			rawAuther = cleanUpInterfaceMap(file.Auther.(map[interface{}]interface{}))
 		} else {
 			rawAuther = file.Auther

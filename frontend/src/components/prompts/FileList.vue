@@ -31,9 +31,16 @@ import { useFileStore } from "@/stores/file";
 
 import url from "@/utils/url";
 import { files } from "@/api";
+import { StatusError } from "@/api/utils.js";
 
 export default {
   name: "file-list",
+  props: {
+    exclude: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data: function () {
     return {
       items: [],
@@ -43,6 +50,7 @@ export default {
       },
       selected: null,
       current: window.location.pathname,
+      nextAbortController: new AbortController(),
     };
   },
   inject: ["$showError"],
@@ -56,7 +64,13 @@ export default {
   mounted() {
     this.fillOptions(this.req);
   },
+  unmounted() {
+    this.abortOngoingNext();
+  },
   methods: {
+    abortOngoingNext() {
+      this.nextAbortController.abort();
+    },
     fillOptions(req) {
       // Sets the current path and resets
       // the current items.
@@ -82,6 +96,7 @@ export default {
       // move options.
       for (const item of req.items) {
         if (!item.isDir) continue;
+        if (this.exclude?.includes(item.url)) continue;
 
         this.items.push({
           name: item.name,
@@ -94,8 +109,17 @@ export default {
       // just clicked in and fill the options with its
       // content.
       const uri = event.currentTarget.dataset.url;
-
-      files.fetch(uri).then(this.fillOptions).catch(this.$showError);
+      this.abortOngoingNext();
+      this.nextAbortController = new AbortController();
+      files
+        .fetch(uri, this.nextAbortController.signal)
+        .then(this.fillOptions)
+        .catch((e) => {
+          if (e instanceof StatusError && e.is_canceled) {
+            return;
+          }
+          this.$showError(e);
+        });
     },
     touchstart(event) {
       const url = event.currentTarget.dataset.url;
