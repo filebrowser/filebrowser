@@ -162,7 +162,6 @@
       >
         <div>
           <div class="item header">
-            <div></div>
             <div>
               <p
                 :class="{ active: nameSorted }"
