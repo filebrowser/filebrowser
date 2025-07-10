@@ -205,6 +205,9 @@ export function abortAllUploads() {
     }
     if (CURRENT_UPLOAD_LIST[filePath].upload) {
       CURRENT_UPLOAD_LIST[filePath].upload.abort(true);
+      CURRENT_UPLOAD_LIST[filePath].upload.options!.onError!(
+        new Error("Upload aborted")
+      );
     }
     delete CURRENT_UPLOAD_LIST[filePath];
   }
