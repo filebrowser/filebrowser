@@ -141,7 +141,7 @@
     "uploadMessage": "Виберіть варіант для вивантаження.",
     "optionalPassword": "Необов'язковий пароль",
     "resolution": "Resolution",
-    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
+    "discardEditorChanges": "Чи дійсно ви хочете скасувати поточні зміни?"
   },
   "search": {
     "images": "Зображення",
