@@ -50,7 +50,7 @@
     "downloadSelected": "Завантажити вибране"
   },
   "upload": {
-    "abortUpload": "Are you sure you wish to abort?"
+    "abortUpload": "Ви впевнені, що хочете перервати?"
   },
   "errors": {
     "forbidden": "У вас немає прав доступу до цього.",
