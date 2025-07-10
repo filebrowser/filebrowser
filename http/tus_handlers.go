@@ -76,7 +76,7 @@ func keepUploadActive(filePath string) func() {
 
 func tusPostHandler() handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-		if !d.user.Perm.Create {
+		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
 			return http.StatusForbidden, nil
 		}
 		file, err := files.NewFileInfo(&files.FileOptions{
@@ -89,10 +89,6 @@ func tusPostHandler() handleFunc {
 		})
 		switch {
 		case errors.Is(err, afero.ErrFileNotFound):
-			if !d.user.Perm.Create || !d.Check(r.URL.Path) {
-				return http.StatusForbidden, nil
-			}
-
 			dirPath := filepath.Dir(r.URL.Path)
 			if _, statErr := d.user.Fs.Stat(dirPath); os.IsNotExist(statErr) {
 				if mkdirErr := d.user.Fs.MkdirAll(dirPath, files.PermDir); mkdirErr != nil {
@@ -160,7 +156,7 @@ func tusPostHandler() handleFunc {
 func tusHeadHandler() handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		w.Header().Set("Cache-Control", "no-store")
-		if !d.Check(r.URL.Path) {
+		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
 			return http.StatusForbidden, nil
 		}
 
@@ -176,8 +172,13 @@ func tusHeadHandler() handleFunc {
 			return errToStatus(err), err
 		}
 
+		uploadLength, err := getActiveUploadLength(file.RealPath())
+		if err != nil {
+			return http.StatusNotFound, err
+		}
+
 		w.Header().Set("Upload-Offset", strconv.FormatInt(file.Size, 10))
-		w.Header().Set("Upload-Length", "-1")
+		w.Header().Set("Upload-Length", strconv.FormatInt(uploadLength, 10))
 
 		return http.StatusOK, nil
 	})
@@ -215,7 +216,7 @@ func tusPatchHandler() handleFunc {
 
 		uploadLength, err := getActiveUploadLength(file.RealPath())
 		if err != nil {
-			return http.StatusForbidden, err
+			return http.StatusNotFound, err
 		}
 
 		// Prevent the upload from being evicted during the transfer
