@@ -1,11 +1,11 @@
 <template>
   <div v-show="active" @click="closeHovers" class="overlay"></div>
   <nav :class="{ active }">
-    <button v-if="user.username" @click="toAccountSettings" class="action">
-      <i class="material-icons">person</i>
-      <span>{{ user.username }}</span>
-    </button>
     <template v-if="isLoggedIn">
+      <button @click="toAccountSettings" class="action">
+        <i class="material-icons">person</i>
+        <span>{{ user.username }}</span>
+      </button>
       <button
         class="action"
         @click="toRoot"
@@ -195,7 +195,7 @@ export default {
     },
     toAccountSettings() {
       this.$router.push({ path: "/settings/profile" });
-      this.$store.commit("closeHovers");
+      this.closeHovers();
     },
     toSettings() {
       this.$router.push({ path: "/settings/global" });
