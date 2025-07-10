@@ -52,6 +52,28 @@ func getActiveUploadLength(filePath string) (int64, error) {
 	return item.Value(), nil
 }
 
+func keepUploadActive(filePath string) func() {
+	stop := make(chan bool)
+
+	go func() {
+		ticker := time.NewTicker(2 * time.Second)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-stop:
+				return
+			case <-ticker.C:
+				activeUploads.Touch(filePath)
+			}
+		}
+	}()
+
+	return func() {
+		close(stop)
+	}
+}
+
 func tusPostHandler() handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Create {
@@ -195,6 +217,10 @@ func tusPatchHandler() handleFunc {
 		if err != nil {
 			return http.StatusForbidden, err
 		}
+
+		// Prevent the upload from being evicted during the transfer
+		stop := keepUploadActive(file.RealPath())
+		defer stop()
 
 		switch {
 		case file.IsDir:
