@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -8,32 +9,47 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 
+	"github.com/jellydator/ttlcache/v3"
 	"github.com/spf13/afero"
-
-	"sync"
 
 	"github.com/filebrowser/filebrowser/v2/files"
 )
 
-// Tracks active uploads along with their respective upload lengths
-var activeUploads sync.Map
+const maxUploadWait = 3 * time.Minute
 
-func registerUpload(filePath string, fileSize int64) {
-	activeUploads.Store(filePath, fileSize)
+// Tracks active uploads along with their respective upload lengths
+var activeUploads = initActiveUploads()
+
+func initActiveUploads() *ttlcache.Cache[string, int64] {
+	cache := ttlcache.New[string, int64]()
+	cache.OnEviction(func(_ context.Context, reason ttlcache.EvictionReason, item *ttlcache.Item[string, int64]) {
+		if reason == ttlcache.EvictionReasonExpired {
+			fmt.Printf("deleting incomplete upload file: \"%s\"", item.Key())
+			os.Remove(item.Key())
+		}
+	})
+	go cache.Start()
+
+	return cache
 }
 
-func unregisterUpload(filePath string) {
+func registerUpload(filePath string, fileSize int64) {
+	activeUploads.Set(filePath, fileSize, maxUploadWait)
+}
+
+func completeUpload(filePath string) {
 	activeUploads.Delete(filePath)
 }
 
 func getActiveUploadLength(filePath string) (int64, error) {
-	value, exists := activeUploads.Load(filePath)
-	if !exists {
+	item := activeUploads.Get(filePath)
+	if item == nil {
 		return 0, fmt.Errorf("no active upload found for the given path")
 	}
 
-	return value.(int64), nil
+	return item.Value(), nil
 }
 
 func tusPostHandler() handleFunc {
@@ -212,7 +228,7 @@ func tusPatchHandler() handleFunc {
 		w.Header().Set("Upload-Offset", strconv.FormatInt(newOffset, 10))
 
 		if newOffset >= uploadLength {
-			unregisterUpload(file.RealPath())
+			completeUpload(file.RealPath())
 			_ = d.RunHook(func() error { return nil }, "upload", r.URL.Path, "", d.user)
 		}
 
