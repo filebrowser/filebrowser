@@ -137,7 +137,7 @@
     "show": "Показати",
     "size": "Розмір",
     "upload": "Вивантажити",
-    "uploadFiles": "Uploading {files} files...",
+    "uploadFiles": "Вивантаження {files} файлів...",
     "uploadMessage": "Виберіть варіант для вивантаження.",
     "optionalPassword": "Необов'язковий пароль",
     "resolution": "Resolution",
