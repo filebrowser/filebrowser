@@ -177,7 +177,7 @@
     "tusUploadsRetryCount": "Кількість повторних спроб які потрібно виконати, якщо фрагмент не вдалося завантажити.",
     "userHomeBasePath": "Base path for user home directories",
     "userScopeGenerationPlaceholder": "The scope will be auto generated",
-    "createUserHomeDirectory": "Create user home directory",
+    "createUserHomeDirectory": "Створити домашній каталог користувача",
     "customStylesheet": "Свій стиль",
     "defaultUserDescription": "Це налаштування за замовчуванням для нових користувачів.",
     "disableExternalLinks": "Вимкнути зовнішні посилання (крім документації)",
