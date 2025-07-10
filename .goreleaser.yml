@@ -131,7 +131,7 @@ dockers:
       - "filebrowser/filebrowser:v{{ .Major }}-amd64-s6"
     extra_files:
       - docker
-  - dockerfile: Dockerfile.s6.aarch64
+  - dockerfile: Dockerfile.s6
     use: buildx
     build_flag_templates:
       - "--pull"

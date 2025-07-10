@@ -74,7 +74,12 @@ export const useUploadStore = defineStore("upload", {
       if (state.progress.length === 0 || state.sizes.length === 0) {
         return "0 Bytes";
       }
-      const sum = state.progress.reduce((acc, val) => +acc + +val, 0) as number;
+      const sum = state.progress.reduce(
+        (sum, p, i) =>
+          (sum as number) +
+          (typeof p === "number" ? p : p ? state.sizes[i] : 0),
+        0
+      ) as number;
       return formatSize(sum);
     },
     getTotalSize: (state) => {
