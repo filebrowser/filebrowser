@@ -140,7 +140,7 @@
     "uploadFiles": "Вивантаження {files} файлів...",
     "uploadMessage": "Виберіть варіант для вивантаження.",
     "optionalPassword": "Необов'язковий пароль",
-    "resolution": "Resolution",
+    "resolution": "Розширення",
     "discardEditorChanges": "Чи дійсно ви хочете скасувати поточні зміни?"
   },
   "search": {
