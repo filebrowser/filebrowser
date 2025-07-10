@@ -172,7 +172,7 @@
     "createUserDir": "Автоматичне створення домашнього каталогу користувача при додаванні нового користувача",
     "minimumPasswordLength": "Мінімальна довжина паролю",
     "tusUploads": "Chunked Uploads",
-    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsHelp": "File Browser підтримує завантаження частинами, дозволяючи створення ефективних, надійних, відновлюваних та фрагментованих завантажень навіть при ненадійному з'єднанні.",
     "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
     "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Base path for user home directories",
