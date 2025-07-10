@@ -170,7 +170,7 @@
     "commandRunnerHelp": "Тут ви можете встановити команди, які будуть виконуватися у зазначених подіях. Ви повинні вказати по одній команді в кожному рядку. Змінні середовища {0} та {1} будуть доступні, будучи {0} щодо {1}. Додаткові відомості про цю функцію та доступні змінні середовища див. у {2}.",
     "commandsUpdated": "Команди оновлені!",
     "createUserDir": "Автоматичне створення домашнього каталогу користувача при додаванні нового користувача",
-    "minimumPasswordLength": "Minimum password length",
+    "minimumPasswordLength": "Мінімальна довжина паролю",
     "tusUploads": "Chunked Uploads",
     "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
     "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
