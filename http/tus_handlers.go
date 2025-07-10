@@ -263,6 +263,40 @@ func tusPatchHandler() handleFunc {
 	})
 }
 
+func tusDeleteHandler() handleFunc {
+	return withUser(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if r.URL.Path == "/" || !d.user.Perm.Delete {
+			return http.StatusForbidden, nil
+		}
+
+		file, err := files.NewFileInfo(&files.FileOptions{
+			Fs:         d.user.Fs,
+			Path:       r.URL.Path,
+			Modify:     d.user.Perm.Modify,
+			Expand:     false,
+			ReadHeader: d.server.TypeDetectionByHeader,
+			Checker:    d,
+		})
+		if err != nil {
+			return errToStatus(err), err
+		}
+
+		_, err = getActiveUploadLength(file.RealPath())
+		if err != nil {
+			return http.StatusNotFound, err
+		}
+
+		err = d.user.Fs.RemoveAll(r.URL.Path)
+		if err != nil {
+			return errToStatus(err), err
+		}
+
+		completeUpload(file.RealPath())
+
+		return http.StatusNoContent, nil
+	})
+}
+
 func getUploadLength(r *http.Request) (int64, error) {
 	uploadOffset, err := strconv.ParseInt(r.Header.Get("Upload-Length"), 10, 64)
 	if err != nil {
