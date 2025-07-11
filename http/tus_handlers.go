@@ -265,7 +265,7 @@ func tusPatchHandler() handleFunc {
 
 func tusDeleteHandler() handleFunc {
 	return withUser(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
-		if r.URL.Path == "/" || !d.user.Perm.Delete {
+		if r.URL.Path == "/" || !d.user.Perm.Create {
 			return http.StatusForbidden, nil
 		}
 
