@@ -60,7 +60,7 @@
         <div v-if="isEpub" class="epub-reader">
           <vue-reader
             :location="location"
-            :url="raw"
+            :url="previewUrl"
             :get-rendition="getRendition"
             :epubInitOptions="{
               requestCredentials: true,
@@ -87,11 +87,14 @@
             <span>{{ size }}%</span>
           </div>
         </div>
-        <ExtendedImage v-else-if="fileStore.req?.type == 'image'" :src="raw" />
+        <ExtendedImage
+          v-else-if="fileStore.req?.type == 'image'"
+          :src="previewUrl"
+        />
         <audio
           v-else-if="fileStore.req?.type == 'audio'"
           ref="player"
-          :src="raw"
+          :src="previewUrl"
           controls
           :autoplay="autoPlay"
           @play="autoPlay = true"
@@ -99,12 +102,12 @@
         <VideoPlayer
           v-else-if="fileStore.req?.type == 'video'"
           ref="player"
-          :source="raw"
+          :source="previewUrl"
           :subtitles="subtitles"
           :options="videoOptions"
         >
         </VideoPlayer>
-        <object v-else-if="isPdf" class="pdf" :data="raw"></object>
+        <object v-else-if="isPdf" class="pdf" :data="previewUrl"></object>
         <div v-else-if="fileStore.req?.type == 'blob'" class="info">
           <div class="title">
             <i class="material-icons">feedback</i>
@@ -119,7 +122,7 @@
             </a>
             <a
               target="_blank"
-              :href="raw"
+              :href="previewUrl"
               class="button button--flat"
               v-if="!fileStore.req?.isDir"
             >
@@ -256,16 +259,20 @@ const downloadUrl = computed(() =>
   fileStore.req ? api.getDownloadURL(fileStore.req, false) : ""
 );
 
-const raw = computed(() => {
-  if (fileStore.req?.type === "image" && !fullSize.value) {
+const previewUrl = computed(() => {
+  if (!fileStore.req) {
+    return "";
+  }
+
+  if (fileStore.req.type === "image" && !fullSize.value) {
     return api.getPreviewURL(fileStore.req, "big");
   }
 
   if (isEpub.value) {
-    return createURL("api/raw" + fileStore.req?.path, {});
+    return createURL("api/raw" + fileStore.req.path, {});
   }
 
-  return downloadUrl.value;
+  return api.getDownloadURL(fileStore.req, true);
 });
 
 const isPdf = computed(() => fileStore.req?.extension.toLowerCase() == ".pdf");

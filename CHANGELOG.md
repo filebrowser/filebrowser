@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.37.0](https://github.com/filebrowser/filebrowser/compare/v2.36.3...v2.37.0) (2025-07-08)
+
+
+### Features
+
+* Translate frontend/src/i18n/en.json in zh_CN ([65bbf44](https://github.com/filebrowser/filebrowser/commit/65bbf44e3c0bff83e64193d46e9d6ad302952276))
+* Translate frontend/src/i18n/en.json in zh_TW ([b28952c](https://github.com/filebrowser/filebrowser/commit/b28952cb2582bd4eb44e91d0676e2803c458cf31))
+* Translate frontend/src/i18n/en.json in zh_TW ([1e96fd9](https://github.com/filebrowser/filebrowser/commit/1e96fd9035d5185dc80970a2826ccb573b5f000e))
+
+
+### Bug Fixes
+
+* long file name overlap ([fcb248a](https://github.com/filebrowser/filebrowser/commit/fcb248a5feb7b7404ca5923aae17f6d3f8d3cc96))
+* preview PDF is correctly displayed ([bf73e4d](https://github.com/filebrowser/filebrowser/commit/bf73e4dea3b27c01c8f6e60fb2048e1a2122a70e))
+* Upload progress size calculation ([e423395](https://github.com/filebrowser/filebrowser/commit/e423395ef0bcd106ddc7d460c055b95b5208415e))
+
+### [2.36.3](https://github.com/filebrowser/filebrowser/compare/v2.36.2...v2.36.3) (2025-07-06)
+
+
+### Bug Fixes
+
+* log error if branding file exists but cannot be loaded ([3645b57](https://github.com/filebrowser/filebrowser/commit/3645b578cddb9fc8f25a00e0153fb600ad1b9266))
+
+### [2.36.2](https://github.com/filebrowser/filebrowser/compare/v2.36.1...v2.36.2) (2025-07-06)
+
+
+### Bug Fixes
+
+* lookup directory name if blank when downloading shared directory ([046d619](https://github.com/filebrowser/filebrowser/commit/046d6193c57b4df0e3dc583b6518b43d29d302c9))
+
 ### [2.36.1](https://github.com/filebrowser/filebrowser/compare/v2.36.0...v2.36.1) (2025-07-03)
 
 

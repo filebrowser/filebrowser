@@ -170,7 +170,7 @@
     "commandRunnerHelp": "你可以在此设置在下列事件中执行的命令。每行必须写一条命令。可以在命令中使用环境变量 {0} 和 {1}，使 {0} 与 {1} 相关联。关于此功能和可用环境变量的更多信息，请阅读 {2}。",
     "commandsUpdated": "命令已更新！",
     "createUserDir": "在添加新用户的同时自动创建用户的主目录",
-    "minimumPasswordLength": "Minimum password length",
+    "minimumPasswordLength": "最小密码长度",
     "tusUploads": "分块上传",
     "tusUploadsHelp": "File Browser 支持分块上传，在不佳的网络下也可进行高效、可靠、可续的文件上传",
     "tusUploadsChunkSize": "分块上传大小，例如 10MB 或 1GB",
