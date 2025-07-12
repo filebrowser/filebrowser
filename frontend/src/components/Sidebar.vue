@@ -197,7 +197,7 @@ export default {
       this.$router.push({ path: "/settings/profile" });
       this.closeHovers();
     },
-    toSettings() {
+    toGlobalSettings() {
       this.$router.push({ path: "/settings/global" });
       this.closeHovers();
     },
