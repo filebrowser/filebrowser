@@ -11,7 +11,7 @@ fi
 has_config_arg=0
 for arg in "$@"; do
   case "$arg" in
-  --config=*)
+  --config|--config=*|-c|-c=*)
     has_config_arg=1
     break
     ;;
