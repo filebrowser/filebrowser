@@ -25,7 +25,7 @@ file. You can use this command to import new users to your
 installation. For that, just don't place their ID on the files
 list or set it to 0.`,
 	Args: jsonYamlArg,
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
 		fd, err := os.Open(args[0])
 		checkErr(err)
 		defer fd.Close()
@@ -80,6 +80,7 @@ list or set it to 0.`,
 			err = d.store.Users.Save(user)
 			checkErr(err)
 		}
+		return nil
 	}, pythonConfig{}),
 }
 

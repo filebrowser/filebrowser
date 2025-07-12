@@ -16,7 +16,7 @@ var configSetCmd = &cobra.Command{
 	Long: `Updates the configuration. Set the flags for the options
 you want to change. Other options will remain unchanged.`,
 	Args: cobra.NoArgs,
-	Run: python(func(cmd *cobra.Command, _ []string, d pythonData) {
+	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
 		flags := cmd.Flags()
 		set, err := d.store.Settings.Get()
 		checkErr(err)
@@ -84,5 +84,6 @@ you want to change. Other options will remain unchanged.`,
 		err = d.store.Settings.SaveServer(ser)
 		checkErr(err)
 		printSettings(ser, set, auther)
+		return nil
 	}, pythonConfig{}),
 }

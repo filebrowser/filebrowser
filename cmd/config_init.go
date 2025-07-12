@@ -22,7 +22,7 @@ this options can be changed in the future with the command
 to the defaults when creating new users and you don't
 override the options.`,
 	Args: cobra.NoArgs,
-	Run: python(func(cmd *cobra.Command, _ []string, d pythonData) {
+	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
 		defaults := settings.UserDefaults{}
 		flags := cmd.Flags()
 		getUserDefaults(flags, &defaults, true)
@@ -69,5 +69,6 @@ Now add your first user via 'filebrowser users add' and then you just
 need to call the main command to boot up the server.
 `)
 		printSettings(ser, s, auther)
+		return nil
 	}, pythonConfig{noDB: true}),
 }

@@ -40,7 +40,7 @@ including 'index_end'.`,
 
 		return nil
 	},
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
 		i, err := strconv.Atoi(args[0])
 		checkErr(err)
 		f := i
@@ -62,5 +62,6 @@ including 'index_end'.`,
 		}
 
 		runRules(d.store, cmd, user, global)
+		return nil
 	}, pythonConfig{}),
 }

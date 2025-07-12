@@ -16,7 +16,7 @@ var usersAddCmd = &cobra.Command{
 	Short: "Create a new user",
 	Long:  `Create a new user and add it to the database.`,
 	Args:  cobra.ExactArgs(2),
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
 		s, err := d.store.Settings.Get()
 		checkErr(err)
 		getUserDefaults(cmd.Flags(), &s.Defaults, false)
@@ -47,5 +47,6 @@ var usersAddCmd = &cobra.Command{
 		err = d.store.Users.Save(user)
 		checkErr(err)
 		printUsers([]*users.User{user})
+		return nil
 	}, pythonConfig{}),
 }

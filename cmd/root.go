@@ -25,6 +25,7 @@ import (
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/diskcache"
+	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/frontend"
 	fbhttp "github.com/filebrowser/filebrowser/v2/http"
 	"github.com/filebrowser/filebrowser/v2/img"
@@ -39,6 +40,7 @@ var (
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	rootCmd.SilenceUsage = true
 	cobra.MousetrapHelpText = ""
 
 	rootCmd.SetVersionTemplate("File Browser version {{printf \"%s\" .Version}}\n")
@@ -112,11 +114,11 @@ set FB_DATABASE.
 Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstrapped and a new
 user created with the credentials from options "username" and "password".`,
-	Run: python(func(cmd *cobra.Command, _ []string, d pythonData) {
+	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
 		log.Println(cfgFile)
 
 		if !d.hadDB {
-			quickSetup(cmd.Flags(), d)
+			quickSetup(cmd.Flags(), *d)
 		}
 
 		// build img service
@@ -194,8 +196,15 @@ user created with the credentials from options "username" and "password".`,
 		}()
 
 		sigc := make(chan os.Signal, 1)
-		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
-		<-sigc
+		signal.Notify(sigc,
+			os.Interrupt,
+			syscall.SIGHUP,
+			syscall.SIGINT,
+			syscall.SIGTERM,
+			syscall.SIGQUIT,
+		)
+		sig := <-sigc
+		log.Println("Got signal:", sig)
 
 		shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second) //nolint:mnd
 		defer shutdownRelease()
@@ -204,6 +213,19 @@ user created with the credentials from options "username" and "password".`,
 			log.Fatalf("HTTP shutdown error: %v", err)
 		}
 		log.Println("Graceful shutdown complete.")
+
+		switch sig {
+		case syscall.SIGHUP:
+			d.err = fbErrors.ErrSighup
+		case syscall.SIGINT:
+			d.err = fbErrors.ErrSigint
+		case syscall.SIGQUIT:
+			d.err = fbErrors.ErrSigquit
+		case syscall.SIGTERM:
+			d.err = fbErrors.ErrSigTerm
+		}
+
+		return d.err
 	}, pythonConfig{allowNoDB: true}),
 }
 

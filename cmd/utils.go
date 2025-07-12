@@ -50,8 +50,8 @@ func generateKey() []byte {
 	return k
 }
 
-type cobraFunc func(cmd *cobra.Command, args []string)
-type pythonFunc func(cmd *cobra.Command, args []string, data pythonData)
+type cobraFunc func(cmd *cobra.Command, args []string) error
+type pythonFunc func(cmd *cobra.Command, args []string, data *pythonData) error
 
 type pythonConfig struct {
 	noDB      bool
@@ -61,6 +61,7 @@ type pythonConfig struct {
 type pythonData struct {
 	hadDB bool
 	store *storage.Storage
+	err   error
 }
 
 func dbExists(path string) (bool, error) {
@@ -84,8 +85,8 @@ func dbExists(path string) (bool, error) {
 }
 
 func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
-	return func(cmd *cobra.Command, args []string) {
-		data := pythonData{hadDB: true}
+	return func(cmd *cobra.Command, args []string) error {
+		data := &pythonData{hadDB: true}
 
 		path := getStringParam(cmd.Flags(), "database")
 		absPath, err := filepath.Abs(path)
@@ -111,7 +112,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 		defer db.Close()
 		data.store, err = bolt.NewStorage(db)
 		checkErr(err)
-		fn(cmd, args, data)
+		return fn(cmd, args, data)
 	}
 }
 

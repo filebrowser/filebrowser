@@ -34,7 +34,7 @@ database.
 
 The path must be for a json or yaml file.`,
 	Args: jsonYamlArg,
-	Run: python(func(_ *cobra.Command, args []string, d pythonData) {
+	RunE: python(func(_ *cobra.Command, args []string, d *pythonData) error {
 		var key []byte
 		if d.hadDB {
 			settings, err := d.store.Settings.Get()
@@ -80,6 +80,7 @@ The path must be for a json or yaml file.`,
 		checkErr(err)
 
 		printSettings(file.Server, file.Settings, auther)
+		return nil
 	}, pythonConfig{allowNoDB: true}),
 }
 

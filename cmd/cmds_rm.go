@@ -35,7 +35,7 @@ including 'index_end'.`,
 
 		return nil
 	},
-	Run: python(func(_ *cobra.Command, args []string, d pythonData) {
+	RunE: python(func(_ *cobra.Command, args []string, d *pythonData) error {
 		s, err := d.store.Settings.Get()
 		checkErr(err)
 		evt := args[0]
@@ -52,5 +52,6 @@ including 'index_end'.`,
 		err = d.store.Settings.Save(s)
 		checkErr(err)
 		printEvents(s.Commands)
+		return nil
 	}, pythonConfig{}),
 }

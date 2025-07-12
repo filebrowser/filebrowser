@@ -21,7 +21,7 @@ var usersUpdateCmd = &cobra.Command{
 	Long: `Updates an existing user. Set the flags for the
 options you want to change.`,
 	Args: cobra.ExactArgs(1),
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
 		username, id := parseUsernameOrID(args[0])
 		flags := cmd.Flags()
 		password := mustGetString(flags, "password")
@@ -73,5 +73,6 @@ options you want to change.`,
 		err = d.store.Users.Update(user)
 		checkErr(err)
 		printUsers([]*users.User{user})
+		return nil
 	}, pythonConfig{}),
 }
