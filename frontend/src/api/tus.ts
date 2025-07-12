@@ -128,7 +128,8 @@ function isTusSupported() {
   return tus.isSupported === true;
 }
 
-function computeETA(state: ETAState, speed?: number) {
+function computeETA(speed?: number) {
+  const state = useUploadStore();
   if (state.speedMbyte === 0) {
     return Infinity;
   }
@@ -136,22 +137,13 @@ function computeETA(state: ETAState, speed?: number) {
     (acc: number, size: number) => acc + size,
     0
   );
-  const uploadedSize = state.progress.reduce(
-    (acc: number, progress: Progress) => {
-      if (typeof progress === "number") {
-        return acc + progress;
-      }
-      return acc;
-    },
-    0
-  );
+  const uploadedSize = state.progress.reduce((a, b) => a + b, 0);
   const remainingSize = totalSize - uploadedSize;
   const speedBytesPerSecond = (speed ?? state.speedMbyte) * 1024 * 1024;
   return remainingSize / speedBytesPerSecond;
 }
 
 function computeGlobalSpeedAndETA() {
-  const uploadStore = useUploadStore();
   let totalSpeed = 0;
   let totalCount = 0;
 
@@ -163,7 +155,7 @@ function computeGlobalSpeedAndETA() {
   if (totalCount === 0) return { speed: 0, eta: Infinity };
 
   const averageSpeed = totalSpeed / totalCount;
-  const averageETA = computeETA(uploadStore, averageSpeed);
+  const averageETA = computeETA(averageSpeed);
 
   return { speed: averageSpeed, eta: averageETA };
 }
