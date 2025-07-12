@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.38.0](https://github.com/filebrowser/filebrowser/compare/v2.37.0...v2.38.0) (2025-07-12)
+
+
+### Features
+
+* Show the current users name in the sidebar ([#2821](https://github.com/filebrowser/filebrowser/issues/2821)) ([528ce92](https://github.com/filebrowser/filebrowser/commit/528ce92fad6dcc8e8b7910036bf9175146e27bf7))
+* Updates for project File Browser  ([b4eddf4](https://github.com/filebrowser/filebrowser/commit/b4eddf45e4d7e6f6ccf242e67fe20f89f5e2f9a9))
+
+
+### Bug Fixes
+
+* prevent page change if there are outstanding edits ([#5260](https://github.com/filebrowser/filebrowser/issues/5260)) ([fbe169b](https://github.com/filebrowser/filebrowser/commit/fbe169b84f28cba22ea87f01b52f2420f1ea6814))
+
 ## [2.37.0](https://github.com/filebrowser/filebrowser/compare/v2.36.3...v2.37.0) (2025-07-08)
 
 
