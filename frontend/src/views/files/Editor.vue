@@ -39,21 +39,21 @@ import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
 import url from "@/utils/url";
 import ace, { Ace, version as ace_version } from "ace-builds";
-import modelist from "ace-builds/src-noconflict/ext-modelist";
 import "ace-builds/src-noconflict/ext-language_tools";
+import modelist from "ace-builds/src-noconflict/ext-modelist";
 import DOMPurify from "dompurify";
 
-import HeaderBar from "@/components/header/HeaderBar.vue";
-import Action from "@/components/header/Action.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import Action from "@/components/header/Action.vue";
+import HeaderBar from "@/components/header/HeaderBar.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
-import { inject, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useI18n } from "vue-i18n";
 import { getTheme } from "@/utils/theme";
 import { marked } from "marked";
+import { inject, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
+import { useI18n } from "vue-i18n";
+import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 
 const $showError = inject<IToastError>("$showError")!;
 
@@ -77,6 +77,7 @@ const isMarkdownFile =
 onMounted(() => {
   window.addEventListener("keydown", keyEvent);
   window.addEventListener("wheel", handleScroll);
+  window.addEventListener("beforeunload", handlePageChange);
 
   const fileContent = fileStore.req?.content || "";
 
@@ -126,7 +127,17 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", keyEvent);
   window.removeEventListener("wheel", handleScroll);
+  window.removeEventListener("beforeunload", handlePageChange);
   editor.value?.destroy();
+});
+
+onBeforeRouteUpdate((to, from, next) => {
+  if (!editor.value?.session.getUndoManager().isClean()) {
+    layoutStore.showHover("discardEditorChanges");
+    next(false);
+  } else {
+    next();
+  }
 });
 
 const keyEvent = (event: KeyboardEvent) => {
@@ -150,6 +161,15 @@ const handleScroll = (event: WheelEvent) => {
   const editorContainer = document.getElementById("preview-container");
   if (editorContainer) {
     editorContainer.scrollTop += event.deltaY;
+  }
+};
+
+const handlePageChange = (event: BeforeUnloadEvent) => {
+  if (!editor.value?.session.getUndoManager().isClean()) {
+    event.preventDefault();
+    // returnValue is now depecrated, though keeping in for legacy browser support
+    // https://developer.mozilla.org/en-US/docs/Web/API/BeforeUnloadEvent/returnValue
+    event.returnValue = true;
   }
 };
 
