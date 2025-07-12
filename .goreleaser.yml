@@ -40,6 +40,17 @@ archives:
       - goos: windows
         formats: ["zip"]
 
+upx:
+  - enabled: true
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    compress: "best"
+    lzma: true
+
 dockers:
   # Alpine docker images
   - dockerfile: Dockerfile
