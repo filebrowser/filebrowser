@@ -1,7 +1,7 @@
 FROM alpine:3.22
 
 RUN apk update && \
-  apk --no-cache add ca-certificates mailcap curl jq tini
+  apk --no-cache add ca-certificates mailcap jq tini
 
 # Make user and create necessary directories
 ENV UID=1000
