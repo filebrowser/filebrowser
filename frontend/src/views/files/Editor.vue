@@ -53,7 +53,7 @@ import { getTheme } from "@/utils/theme";
 import { marked } from "marked";
 import { inject, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRoute, useRouter } from "vue-router";
+import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 
 const $showError = inject<IToastError>("$showError")!;
 
@@ -129,6 +129,15 @@ onBeforeUnmount(() => {
   window.removeEventListener("wheel", handleScroll);
   window.removeEventListener("beforeunload", handlePageChange);
   editor.value?.destroy();
+});
+
+onBeforeRouteUpdate((to, from, next) => {
+  if (!editor.value?.session.getUndoManager().isClean()) {
+    layoutStore.showHover("discardEditorChanges");
+    next(false);
+  } else {
+    next();
+  }
 });
 
 const keyEvent = (event: KeyboardEvent) => {
