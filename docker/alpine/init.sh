@@ -33,6 +33,6 @@ if [ -z "$config_file" ]; then
 fi                                                                                                                                                                                                                                                                                                                                                             
 
 # Create a symlink to the config file for compatibility with the healthcheck script
-ln -s "$config_file" /tmp/FB_CONFIG
+ln -s "$config_file" /tmp/FB_CONFIG || true
 
 exec filebrowser "$@"
