@@ -5,6 +5,18 @@
       <title>{{ fileStore.req?.name ?? "" }}</title>
 
       <action
+        icon="add"
+        @action="increaseFontSize"
+        :label="t('buttons.increaseFontSize')"
+      />
+      <span class="editor-font-size">{{ fontSize }}px</span>
+      <action
+        icon="remove"
+        @action="decreaseFontSize"
+        :label="t('buttons.decreaseFontSize')"
+      />
+
+      <action
         v-if="authStore.user?.perm.modify"
         id="save-button"
         icon="save"
@@ -67,6 +79,7 @@ const route = useRoute();
 const router = useRouter();
 
 const editor = ref<Ace.Editor | null>(null);
+const fontSize = ref(parseInt(localStorage.getItem("editorFontSize") || "14"));
 
 const isPreview = ref(false);
 const previewContent = ref("");
@@ -121,6 +134,7 @@ onMounted(() => {
     editor.value!.setTheme("ace/theme/twilight");
   }
 
+  editor.value.setFontSize(fontSize.value);
   editor.value.focus();
 });
 
@@ -186,6 +200,21 @@ const save = async () => {
     $showError(e);
   }
 };
+
+const increaseFontSize = () => {
+  fontSize.value += 1;
+  editor.value?.setFontSize(fontSize.value);
+  localStorage.setItem("editorFontSize", fontSize.value.toString());
+};
+
+const decreaseFontSize = () => {
+  if (fontSize.value > 1) {
+    fontSize.value -= 1;
+    editor.value?.setFontSize(fontSize.value);
+    localStorage.setItem("editorFontSize", fontSize.value.toString());
+  }
+};
+
 const close = () => {
   if (!editor.value?.session.getUndoManager().isClean()) {
     layoutStore.showHover("discardEditorChanges");
@@ -202,3 +231,10 @@ const preview = () => {
   isPreview.value = !isPreview.value;
 };
 </script>
+
+<style scoped>
+.editor-font-size {
+  margin: 0 0.5em;
+  color: var(--fg);
+}
+</style>
