@@ -32,7 +32,4 @@ if [ -z "$config_file" ]; then
   set -- --config=/config/settings.json "$@"                                                                                                       
 fi                                                                                                                                                                                                                                                                                                                                                             
 
-# Create a symlink to the config file for compatibility with the healthcheck script
-ln -s "$config_file" /tmp/FB_CONFIG
-
 exec filebrowser "$@"

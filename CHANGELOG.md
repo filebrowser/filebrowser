@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.40.0](https://github.com/filebrowser/filebrowser/compare/v2.39.0...v2.40.0) (2025-07-13)
+
+
+### Features
+
+* add font size botton to text editor ([#5290](https://github.com/filebrowser/filebrowser/issues/5290)) ([035084d](https://github.com/filebrowser/filebrowser/commit/035084d8e83243065fad69bfac1b69559fbad5fb))
+
+
+### Bug Fixes
+
+* invalid path when uploading files ([9072cbc](https://github.com/filebrowser/filebrowser/commit/9072cbce340da55477906f5419a4cfb6d6937dc0))
+* Only left click should drag the image in extended image view ([b8454bb](https://github.com/filebrowser/filebrowser/commit/b8454bb2e41ca2848b926b66354468ba4b1c7ba5))
+
 ## [2.39.0](https://github.com/filebrowser/filebrowser/compare/v2.38.0...v2.39.0) (2025-07-13)
 
 
