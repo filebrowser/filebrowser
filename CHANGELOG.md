@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.39.0](https://github.com/filebrowser/filebrowser/compare/v2.38.0...v2.39.0) (2025-07-13)
+
+
+### Features
+
+* Improve Docker entrypoint and config handling ([01c814c](https://github.com/filebrowser/filebrowser/commit/01c814cf98f81f2bcd622aea75e5b1efe3484940))
+* rewrite the archiver and added support for zstd and brotli ([#5283](https://github.com/filebrowser/filebrowser/issues/5283)) ([7c71686](https://github.com/filebrowser/filebrowser/commit/7c716862c1bd3cdedd3c02d3a37207293db197ca))
+
+
+### Bug Fixes
+
+* drop modify permission for uploading new file ([#5270](https://github.com/filebrowser/filebrowser/issues/5270)) ([0f27c91](https://github.com/filebrowser/filebrowser/commit/0f27c91eca581482ce4f82f6429f5dac12f8b64e))
+* Settings button in the sidebar ([5a8e717](https://github.com/filebrowser/filebrowser/commit/5a8e7171b1b41eff771fe27133c91d2c250896a8))
+
+
+### Build
+
+* improve docker image and binary sizes ([35ca24a](https://github.com/filebrowser/filebrowser/commit/35ca24adb886721fc9d5e1a68cfc577e2c5f0230))
+* lightweight busybox-based container build ([#5285](https://github.com/filebrowser/filebrowser/issues/5285)) ([5c5942d](https://github.com/filebrowser/filebrowser/commit/5c5942d99514b433e09d90624bbe58992eab6be2))
+* remove upx ([1a5c83b](https://github.com/filebrowser/filebrowser/commit/1a5c83bcfe847f1e41a44cef23fd795b19b6b434))
+
 ## [2.38.0](https://github.com/filebrowser/filebrowser/compare/v2.37.0...v2.38.0) (2025-07-12)
 
 
