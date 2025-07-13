@@ -7,19 +7,32 @@ if [ ! -f "/config/settings.json" ]; then
   cp -a /defaults/settings.json /config/settings.json
 fi
 
-# Deal with the case where user does not provide a config argument
-has_config_arg=0
+# Extract config file path from arguments
+config_file=""
+next_is_config=0
 for arg in "$@"; do
-  case "$arg" in
-  --config|--config=*|-c|-c=*)
-    has_config_arg=1
+  if [ "$next_is_config" -eq 1 ]; then
+    config_file="$arg"
     break
-    ;;
+  fi
+  case "$arg" in
+    -c|--config)
+      next_is_config=1
+      ;;
+    -c=*|--config=*)
+      config_file="${arg#*=}"
+      break
+      ;;
   esac
 done
 
-if [ "$has_config_arg" -eq 0 ]; then
-  set -- --config=/config/settings.json "$@"
-fi
+# If no config argument is provided, set the default and add it to the args                                                                 
+if [ -z "$config_file" ]; then 
+  config_file="/config/settings.json"                                                                                                                                                                                                 
+  set -- --config=/config/settings.json "$@"                                                                                                       
+fi                                                                                                                                                                                                                                                                                                                                                             
+
+# Create a symlink to the config file for compatibility with the healthcheck script
+ln -s "$config_file" /tmp/FB_CONFIG
 
 exec filebrowser "$@"
