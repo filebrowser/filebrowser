@@ -172,7 +172,8 @@ const setCenter = () => {
   imgex.value.style.top = position.value.center.y + "px";
 };
 
-const mousedownStart = (event: Event) => {
+const mousedownStart = (event: MouseEvent) => {
+  if (event.button !== 0) return;
   lastX.value = null;
   lastY.value = null;
   inDrag.value = true;
@@ -184,8 +185,10 @@ const mouseMove = (event: MouseEvent) => {
   event.preventDefault();
 };
 const mouseUp = (event: Event) => {
+  if (inDrag.value) {
+    event.preventDefault();
+  }
   inDrag.value = false;
-  event.preventDefault();
 };
 const touchStart = (event: TouchEvent) => {
   lastX.value = null;
