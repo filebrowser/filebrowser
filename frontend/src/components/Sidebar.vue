@@ -41,7 +41,7 @@
       <div v-if="user.perm.admin">
         <button
           class="action"
-          @click="toSettings"
+          @click="toGlobalSettings"
           :aria-label="$t('sidebar.settings')"
           :title="$t('sidebar.settings')"
         >
