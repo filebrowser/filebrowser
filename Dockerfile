@@ -1,18 +1,10 @@
 ## Multistage build: First stage fetches dependencies
 FROM alpine:3.22 AS fetcher
 
-# Set working directory
-WORKDIR /workdir
-
 # install and copy ca-certificates, mailcap, and tini-static; download JSON.sh
 RUN apk update && \
     apk --no-cache add ca-certificates mailcap tini-static && \
-    wget -O ./JSON.sh https://raw.githubusercontent.com/dominictarr/JSON.sh/0d5e5c77365f63809bf6e77ef44a1f34b0e05840/JSON.sh && \
-    cp -r /etc/ssl ./ && \
-    cp -r /etc/ca-certificates ./ && \
-    cp /etc/ca-certificates.conf ./ && \
-    cp /etc/mime.types ./ && \
-    cp /sbin/tini-static ./
+    wget -O /JSON.sh https://raw.githubusercontent.com/dominictarr/JSON.sh/0d5e5c77365f63809bf6e77ef44a1f34b0e05840/JSON.sh
 
 ## Second stage: Use lightweight BusyBox image for final runtime environment
 FROM busybox:1.37.0-musl
@@ -29,12 +21,12 @@ RUN addgroup -g $GID user && \
 COPY --chown=user:user filebrowser /bin/filebrowser
 COPY --chown=user:user docker/common/ /
 COPY --chown=user:user docker/alpine/ /
-COPY --chown=user:user --from=fetcher /workdir/tini-static /bin/tini
-COPY --from=fetcher /workdir/JSON.sh /JSON.sh
-COPY --from=fetcher /workdir/ca-certificates.conf /etc/ca-certificates.conf
-COPY --from=fetcher /workdir/ca-certificates /etc/ca-certificates
-COPY --from=fetcher /workdir/mime.types /etc/mime.types
-COPY --from=fetcher /workdir/ssl /etc/ssl
+COPY --chown=user:user --from=fetcher /sbin/tini-static /bin/tini
+COPY --from=fetcher /JSON.sh /JSON.sh
+COPY --from=fetcher /etc/ca-certificates.conf /etc/ca-certificates.conf
+COPY --from=fetcher /etc/ca-certificates /etc/ca-certificates
+COPY --from=fetcher /etc/mime.types /etc/mime.types
+COPY --from=fetcher /etc/ssl /etc/ssl
 
 # Create data directories, set ownership, and ensure healthcheck script is executable
 RUN mkdir -p /config /database /srv && \
