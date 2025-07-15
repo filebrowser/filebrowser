@@ -192,7 +192,8 @@ export default {
         style["position"] = "absolute";
         style["top"] = "0";
         style["height"] = "100%";
-        (style["min-height"] = this.size_px + "px"), (style["z-index"] = "-1");
+        ((style["min-height"] = this.size_px + "px"),
+          (style["z-index"] = "-1"));
       }
 
       return style;
