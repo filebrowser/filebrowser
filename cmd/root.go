@@ -364,6 +364,8 @@ func setupLog(logMethod string) {
 }
 
 func quickSetup(flags *pflag.FlagSet, d pythonData) {
+	log.Println("Performing quick setup")
+
 	set := &settings.Settings{
 		Key:                   generateKey(),
 		Signup:                false,
@@ -430,10 +432,11 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 		pwd, err = users.RandomPwd(set.MinimumPasswordLength)
 		checkErr(err)
 
-		log.Println("Randomly generated password for user 'admin':", pwd)
-
+		log.Printf("User '%s' initialized with randomly generated password: %s\n", username, pwd)
 		password, err = users.ValidateAndHashPwd(pwd, set.MinimumPasswordLength)
 		checkErr(err)
+	} else {
+		log.Printf("User '%s' initialize wth user-provided password\n", username)
 	}
 
 	if username == "" || password == "" {
