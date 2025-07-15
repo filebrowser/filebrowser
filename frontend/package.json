@@ -64,6 +64,7 @@
     "autoprefixer": "^10.4.21",
     "concurrently": "^9.2.0",
     "eslint": "^9.31.0",
+    "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.1",
     "eslint-plugin-vue": "^9.24.0",
     "jsdom": "^26.1.0",
