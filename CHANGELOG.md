@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.40.1](https://github.com/filebrowser/filebrowser/compare/v2.40.0...v2.40.1) (2025-07-15)
+
+
+### Bug Fixes
+
+* print correct user on setup ([88f1442](https://github.com/filebrowser/filebrowser/commit/88f144293267260fd4d823e3259783309b1a57b3))
+
 ## [2.40.0](https://github.com/filebrowser/filebrowser/compare/v2.39.0...v2.40.0) (2025-07-13)
 
 
