@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.40.2](https://github.com/filebrowser/filebrowser/compare/v2.40.1...v2.40.2) (2025-07-17)
+
+
+### Bug Fixes
+
+* Location header on TUS endpoint ([#5302](https://github.com/filebrowser/filebrowser/issues/5302)) ([607f570](https://github.com/filebrowser/filebrowser/commit/607f5708a2484428ab837781a5ef26b8cc3194f4))
+
+
+### Build
+
+* **deps:** bump vue-i18n from 11.1.9 to 11.1.10 in /frontend ([d61110e](https://github.com/filebrowser/filebrowser/commit/d61110e4d7155a5849557adf3b75dc0191f17e80))
+
 ### [2.40.1](https://github.com/filebrowser/filebrowser/compare/v2.40.0...v2.40.1) (2025-07-15)
 
 
