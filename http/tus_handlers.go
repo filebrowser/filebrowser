@@ -147,8 +147,7 @@ func tusPostHandler() handleFunc {
 		// Enables the user to utilize the PATCH endpoint for uploading file data
 		registerUpload(file.RealPath(), uploadLength)
 
-		// Signal the frontend to reuse the current request URL
-		w.Header().Set("Location", "")
+		w.Header().Set("Location", "/api/tus"+r.URL.Path)
 
 		return http.StatusCreated, nil
 	})
