@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -147,9 +148,12 @@ func tusPostHandler() handleFunc {
 		// Enables the user to utilize the PATCH endpoint for uploading file data
 		registerUpload(file.RealPath(), uploadLength)
 
-		// Signal the frontend to reuse the current request URL
-		w.Header().Set("Location", "")
+		path, err := url.JoinPath("/", d.server.BaseURL, "/api/tus", r.URL.Path)
+		if err != nil {
+			return http.StatusBadRequest, fmt.Errorf("invalid path: %w", err)
+		}
 
+		w.Header().Set("Location", path)
 		return http.StatusCreated, nil
 	})
 }
