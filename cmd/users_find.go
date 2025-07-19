@@ -46,7 +46,9 @@ var findUsers = python(func(_ *cobra.Command, args []string, d *pythonData) erro
 		list, err = d.store.Users.Gets("")
 	}
 
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 	printUsers(list)
 	return nil
 }, pythonConfig{})

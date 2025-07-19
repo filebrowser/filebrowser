@@ -25,7 +25,9 @@ var usersRmCmd = &cobra.Command{
 			err = d.store.Users.Delete(id)
 		}
 
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		fmt.Println("user deleted successfully")
 		return nil
 	}, pythonConfig{}),

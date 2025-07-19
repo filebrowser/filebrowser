@@ -26,22 +26,26 @@ func checkErr(err error) {
 	}
 }
 
-func mustGetString(flags *pflag.FlagSet, flag string) string {
+func returnErr(err error) error {
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func mustGetString(flags *pflag.FlagSet, flag string) (string, error) {
 	s, err := flags.GetString(flag)
-	checkErr(err)
-	return s
+	return s, returnErr(err)
 }
 
-func mustGetBool(flags *pflag.FlagSet, flag string) bool {
+func mustGetBool(flags *pflag.FlagSet, flag string) (bool, error) {
 	b, err := flags.GetBool(flag)
-	checkErr(err)
-	return b
+	return b, returnErr(err)
 }
 
-func mustGetUint(flags *pflag.FlagSet, flag string) uint {
+func mustGetUint(flags *pflag.FlagSet, flag string) (uint, error) {
 	b, err := flags.GetUint(flag)
-	checkErr(err)
-	return b
+	return b, returnErr(err)
 }
 
 func generateKey() []byte {
@@ -108,17 +112,23 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 		log.Println("Using database: " + absPath)
 		data.hadDB = exists
 		db, err := storm.Open(path, storm.BoltOptions(files.PermFile, nil))
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		defer db.Close()
 		data.store, err = bolt.NewStorage(db)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		return fn(cmd, args, data)
 	}
 }
 
 func marshal(filename string, data interface{}) error {
 	fd, err := os.Create(filename)
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 	defer fd.Close()
 
 	switch ext := filepath.Ext(filename); ext {
@@ -136,7 +146,9 @@ func marshal(filename string, data interface{}) error {
 
 func unmarshal(filename string, data interface{}) error {
 	fd, err := os.Open(filename)
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 	defer fd.Close()
 
 	switch ext := filepath.Ext(filename); ext {

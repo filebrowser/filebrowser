@@ -19,71 +19,102 @@ you want to change. Other options will remain unchanged.`,
 	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
 		flags := cmd.Flags()
 		set, err := d.store.Settings.Get()
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 
 		ser, err := d.store.Settings.GetServer()
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 
 		hasAuth := false
+		var visitErr error
 		flags.Visit(func(flag *pflag.Flag) {
+			if visitErr != nil {
+				return
+			}
+			var configSetErr error
 			switch flag.Name {
 			case "baseurl":
-				ser.BaseURL = mustGetString(flags, flag.Name)
+				ser.BaseURL, configSetErr = mustGetString(flags, flag.Name)
 			case "root":
-				ser.Root = mustGetString(flags, flag.Name)
+				ser.Root, configSetErr = mustGetString(flags, flag.Name)
 			case "socket":
-				ser.Socket = mustGetString(flags, flag.Name)
+				ser.Socket, configSetErr = mustGetString(flags, flag.Name)
 			case "cert":
-				ser.TLSCert = mustGetString(flags, flag.Name)
+				ser.TLSCert, configSetErr = mustGetString(flags, flag.Name)
 			case "key":
-				ser.TLSKey = mustGetString(flags, flag.Name)
+				ser.TLSKey, configSetErr = mustGetString(flags, flag.Name)
 			case "address":
-				ser.Address = mustGetString(flags, flag.Name)
+				ser.Address, configSetErr = mustGetString(flags, flag.Name)
 			case "port":
-				ser.Port = mustGetString(flags, flag.Name)
+				ser.Port, configSetErr = mustGetString(flags, flag.Name)
 			case "log":
-				ser.Log = mustGetString(flags, flag.Name)
+				ser.Log, configSetErr = mustGetString(flags, flag.Name)
 			case "signup":
-				set.Signup = mustGetBool(flags, flag.Name)
+				set.Signup, configSetErr = mustGetBool(flags, flag.Name)
 			case "auth.method":
 				hasAuth = true
 			case "shell":
-				set.Shell = convertCmdStrToCmdArray(mustGetString(flags, flag.Name))
+				var shell string
+				shell, configSetErr = mustGetString(flags, flag.Name)
+				set.Shell = convertCmdStrToCmdArray(shell)
 			case "create-user-dir":
-				set.CreateUserDir = mustGetBool(flags, flag.Name)
+				set.CreateUserDir, configSetErr = mustGetBool(flags, flag.Name)
 			case "minimum-password-length":
-				set.MinimumPasswordLength = mustGetUint(flags, flag.Name)
+				set.MinimumPasswordLength, configSetErr = mustGetUint(flags, flag.Name)
 			case "branding.name":
-				set.Branding.Name = mustGetString(flags, flag.Name)
+				set.Branding.Name, configSetErr = mustGetString(flags, flag.Name)
 			case "branding.color":
-				set.Branding.Color = mustGetString(flags, flag.Name)
+				set.Branding.Color, configSetErr = mustGetString(flags, flag.Name)
 			case "branding.theme":
-				set.Branding.Theme = mustGetString(flags, flag.Name)
+				set.Branding.Theme, configSetErr = mustGetString(flags, flag.Name)
 			case "branding.disableExternal":
-				set.Branding.DisableExternal = mustGetBool(flags, flag.Name)
+				set.Branding.DisableExternal, configSetErr = mustGetBool(flags, flag.Name)
 			case "branding.disableUsedPercentage":
-				set.Branding.DisableUsedPercentage = mustGetBool(flags, flag.Name)
+				set.Branding.DisableUsedPercentage, configSetErr = mustGetBool(flags, flag.Name)
 			case "branding.files":
-				set.Branding.Files = mustGetString(flags, flag.Name)
+				set.Branding.Files, configSetErr = mustGetString(flags, flag.Name)
+			}
+			if configSetErr != nil {
+				visitErr = configSetErr
 			}
 		})
 
-		getUserDefaults(flags, &set.Defaults, false)
+		if visitErr != nil {
+			return visitErr
+		}
+
+		err = getUserDefaults(flags, &set.Defaults, false)
+		if err != nil {
+			return err
+		}
 
 		// read the defaults
 		auther, err := d.store.Auth.Get(set.AuthMethod)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 
 		// check if there are new flags for existing auth method
-		set.AuthMethod, auther = getAuthentication(flags, hasAuth, set, auther)
+		set.AuthMethod, auther, err = getAuthentication(flags, hasAuth, set, auther)
+		if err != nil {
+			return err
+		}
 
 		err = d.store.Auth.Save(auther)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		err = d.store.Settings.Save(set)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		err = d.store.Settings.SaveServer(ser)
-		checkErr(err)
-		printSettings(ser, set, auther)
-		return nil
+		if err != nil {
+			return err
+		}
+		return printSettings(ser, set, auther)
 	}, pythonConfig{}),
 }

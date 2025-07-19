@@ -16,8 +16,13 @@ var cmdsLsCmd = &cobra.Command{
 	Args:  cobra.NoArgs,
 	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
 		s, err := d.store.Settings.Get()
-		checkErr(err)
-		evt := mustGetString(cmd.Flags(), "event")
+		if err != nil {
+			return err
+		}
+		evt, err := mustGetString(cmd.Flags(), "event")
+		if err != nil {
+			return err
+		}
 
 		if evt == "" {
 			printEvents(s.Commands)

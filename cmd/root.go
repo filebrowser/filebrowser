@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"log"
@@ -123,18 +124,22 @@ user created with the credentials from options "username" and "password".`,
 
 		// build img service
 		workersCount, err := cmd.Flags().GetInt("img-processors")
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		if workersCount < 1 {
-			log.Fatal("Image resize workers count could not be < 1")
+			return errors.New("image resize workers count could not be < 1")
 		}
 		imgSvc := img.New(workersCount)
 
 		var fileCache diskcache.Interface = diskcache.NewNoOp()
 		cacheDir, err := cmd.Flags().GetString("cache-dir")
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		if cacheDir != "" {
 			if err := os.MkdirAll(cacheDir, 0700); err != nil { //nolint:govet
-				log.Fatalf("can't make directory %s: %s", cacheDir, err)
+				return fmt.Errorf("can't make directory %s: %w", cacheDir, err)
 			}
 			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
 		}
@@ -143,7 +148,9 @@ user created with the credentials from options "username" and "password".`,
 		setupLog(server.Log)
 
 		root, err := filepath.Abs(server.Root)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		server.Root = root
 
 		adr := server.Address + ":" + server.Port
@@ -153,22 +160,34 @@ user created with the credentials from options "username" and "password".`,
 		switch {
 		case server.Socket != "":
 			listener, err = net.Listen("unix", server.Socket)
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 			socketPerm, err := cmd.Flags().GetUint32("socket-perm") //nolint:govet
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 			err = os.Chmod(server.Socket, os.FileMode(socketPerm))
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 		case server.TLSKey != "" && server.TLSCert != "":
 			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey) //nolint:govet
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 			listener, err = tls.Listen("tcp", adr, &tls.Config{
 				MinVersion:   tls.VersionTLS12,
 				Certificates: []tls.Certificate{cer}},
 			)
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 		default:
 			listener, err = net.Listen("tcp", adr)
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 		}
 
 		assetsFs, err := fs.Sub(frontend.Assets(), "dist")
@@ -177,7 +196,9 @@ user created with the credentials from options "username" and "password".`,
 		}
 
 		handler, err := fbhttp.NewHandler(imgSvc, fileCache, d.store, server, assetsFs)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 
 		defer listener.Close()
 

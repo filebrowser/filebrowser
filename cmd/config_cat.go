@@ -15,12 +15,17 @@ var configCatCmd = &cobra.Command{
 	Args:  cobra.NoArgs,
 	RunE: python(func(_ *cobra.Command, _ []string, d *pythonData) error {
 		set, err := d.store.Settings.Get()
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		ser, err := d.store.Settings.GetServer()
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		auther, err := d.store.Auth.Get(set.AuthMethod)
-		checkErr(err)
-		printSettings(ser, set, auther)
-		return nil
+		if err != nil {
+			return err
+		}
+		return printSettings(ser, set, auther)
 	}, pythonConfig{}),
 }
