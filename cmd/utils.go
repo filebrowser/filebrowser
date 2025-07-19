@@ -26,22 +26,26 @@ func checkErr(err error) {
 	}
 }
 
-func mustGetString(flags *pflag.FlagSet, flag string) string {
+func returnErr(err error) error {
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func mustGetString(flags *pflag.FlagSet, flag string) (string, error) {
 	s, err := flags.GetString(flag)
-	checkErr(err)
-	return s
+	return s, returnErr(err)
 }
 
-func mustGetBool(flags *pflag.FlagSet, flag string) bool {
+func mustGetBool(flags *pflag.FlagSet, flag string) (bool, error) {
 	b, err := flags.GetBool(flag)
-	checkErr(err)
-	return b
+	return b, returnErr(err)
 }
 
-func mustGetUint(flags *pflag.FlagSet, flag string) uint {
+func mustGetUint(flags *pflag.FlagSet, flag string) (uint, error) {
 	b, err := flags.GetUint(flag)
-	checkErr(err)
-	return b
+	return b, returnErr(err)
 }
 
 func generateKey() []byte {
@@ -50,8 +54,8 @@ func generateKey() []byte {
 	return k
 }
 
-type cobraFunc func(cmd *cobra.Command, args []string)
-type pythonFunc func(cmd *cobra.Command, args []string, data pythonData)
+type cobraFunc func(cmd *cobra.Command, args []string) error
+type pythonFunc func(cmd *cobra.Command, args []string, data *pythonData) error
 
 type pythonConfig struct {
 	noDB      bool
@@ -61,6 +65,7 @@ type pythonConfig struct {
 type pythonData struct {
 	hadDB bool
 	store *storage.Storage
+	err   error
 }
 
 func dbExists(path string) (bool, error) {
@@ -84,8 +89,8 @@ func dbExists(path string) (bool, error) {
 }
 
 func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
-	return func(cmd *cobra.Command, args []string) {
-		data := pythonData{hadDB: true}
+	return func(cmd *cobra.Command, args []string) error {
+		data := &pythonData{hadDB: true}
 
 		path := getStringParam(cmd.Flags(), "database")
 		absPath, err := filepath.Abs(path)
@@ -107,17 +112,23 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 		log.Println("Using database: " + absPath)
 		data.hadDB = exists
 		db, err := storm.Open(path, storm.BoltOptions(files.PermFile, nil))
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		defer db.Close()
 		data.store, err = bolt.NewStorage(db)
-		checkErr(err)
-		fn(cmd, args, data)
+		if err != nil {
+			return err
+		}
+		return fn(cmd, args, data)
 	}
 }
 
 func marshal(filename string, data interface{}) error {
 	fd, err := os.Create(filename)
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 	defer fd.Close()
 
 	switch ext := filepath.Ext(filename); ext {
@@ -135,7 +146,9 @@ func marshal(filename string, data interface{}) error {
 
 func unmarshal(filename string, data interface{}) error {
 	fd, err := os.Open(filename)
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 	defer fd.Close()
 
 	switch ext := filepath.Ext(filename); ext {

@@ -17,9 +17,12 @@ var hashCmd = &cobra.Command{
 	Short: "Hashes a password",
 	Long:  `Hashes a password using bcrypt algorithm.`,
 	Args:  cobra.ExactArgs(1),
-	Run: func(_ *cobra.Command, args []string) {
+	RunE: func(_ *cobra.Command, args []string) error {
 		pwd, err := users.HashPwd(args[0])
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		fmt.Println(pwd)
+		return nil
 	},
 }

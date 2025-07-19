@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"log"
@@ -25,6 +26,7 @@ import (
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/diskcache"
+	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/frontend"
 	fbhttp "github.com/filebrowser/filebrowser/v2/http"
 	"github.com/filebrowser/filebrowser/v2/img"
@@ -39,6 +41,7 @@ var (
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	rootCmd.SilenceUsage = true
 	cobra.MousetrapHelpText = ""
 
 	rootCmd.SetVersionTemplate("File Browser version {{printf \"%s\" .Version}}\n")
@@ -112,27 +115,31 @@ set FB_DATABASE.
 Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstrapped and a new
 user created with the credentials from options "username" and "password".`,
-	Run: python(func(cmd *cobra.Command, _ []string, d pythonData) {
+	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
 		log.Println(cfgFile)
 
 		if !d.hadDB {
-			quickSetup(cmd.Flags(), d)
+			quickSetup(cmd.Flags(), *d)
 		}
 
 		// build img service
 		workersCount, err := cmd.Flags().GetInt("img-processors")
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		if workersCount < 1 {
-			log.Fatal("Image resize workers count could not be < 1")
+			return errors.New("image resize workers count could not be < 1")
 		}
 		imgSvc := img.New(workersCount)
 
 		var fileCache diskcache.Interface = diskcache.NewNoOp()
 		cacheDir, err := cmd.Flags().GetString("cache-dir")
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		if cacheDir != "" {
 			if err := os.MkdirAll(cacheDir, 0700); err != nil { //nolint:govet
-				log.Fatalf("can't make directory %s: %s", cacheDir, err)
+				return fmt.Errorf("can't make directory %s: %w", cacheDir, err)
 			}
 			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
 		}
@@ -141,7 +148,9 @@ user created with the credentials from options "username" and "password".`,
 		setupLog(server.Log)
 
 		root, err := filepath.Abs(server.Root)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		server.Root = root
 
 		adr := server.Address + ":" + server.Port
@@ -151,22 +160,34 @@ user created with the credentials from options "username" and "password".`,
 		switch {
 		case server.Socket != "":
 			listener, err = net.Listen("unix", server.Socket)
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 			socketPerm, err := cmd.Flags().GetUint32("socket-perm") //nolint:govet
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 			err = os.Chmod(server.Socket, os.FileMode(socketPerm))
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 		case server.TLSKey != "" && server.TLSCert != "":
 			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey) //nolint:govet
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 			listener, err = tls.Listen("tcp", adr, &tls.Config{
 				MinVersion:   tls.VersionTLS12,
 				Certificates: []tls.Certificate{cer}},
 			)
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 		default:
 			listener, err = net.Listen("tcp", adr)
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 		}
 
 		assetsFs, err := fs.Sub(frontend.Assets(), "dist")
@@ -175,7 +196,9 @@ user created with the credentials from options "username" and "password".`,
 		}
 
 		handler, err := fbhttp.NewHandler(imgSvc, fileCache, d.store, server, assetsFs)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 
 		defer listener.Close()
 
@@ -194,8 +217,15 @@ user created with the credentials from options "username" and "password".`,
 		}()
 
 		sigc := make(chan os.Signal, 1)
-		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
-		<-sigc
+		signal.Notify(sigc,
+			os.Interrupt,
+			syscall.SIGHUP,
+			syscall.SIGINT,
+			syscall.SIGTERM,
+			syscall.SIGQUIT,
+		)
+		sig := <-sigc
+		log.Println("Got signal:", sig)
 
 		shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second) //nolint:mnd
 		defer shutdownRelease()
@@ -204,6 +234,19 @@ user created with the credentials from options "username" and "password".`,
 			log.Fatalf("HTTP shutdown error: %v", err)
 		}
 		log.Println("Graceful shutdown complete.")
+
+		switch sig {
+		case syscall.SIGHUP:
+			d.err = fbErrors.ErrSighup
+		case syscall.SIGINT:
+			d.err = fbErrors.ErrSigint
+		case syscall.SIGQUIT:
+			d.err = fbErrors.ErrSigquit
+		case syscall.SIGTERM:
+			d.err = fbErrors.ErrSigTerm
+		}
+
+		return d.err
 	}, pythonConfig{allowNoDB: true}),
 }
 

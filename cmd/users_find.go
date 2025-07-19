@@ -16,17 +16,17 @@ var usersFindCmd = &cobra.Command{
 	Short: "Find a user by username or id",
 	Long:  `Find a user by username or id. If no flag is set, all users will be printed.`,
 	Args:  cobra.ExactArgs(1),
-	Run:   findUsers,
+	RunE:  findUsers,
 }
 
 var usersLsCmd = &cobra.Command{
 	Use:   "ls",
 	Short: "List all users.",
 	Args:  cobra.NoArgs,
-	Run:   findUsers,
+	RunE:  findUsers,
 }
 
-var findUsers = python(func(_ *cobra.Command, args []string, d pythonData) {
+var findUsers = python(func(_ *cobra.Command, args []string, d *pythonData) error {
 	var (
 		list []*users.User
 		user *users.User
@@ -46,6 +46,9 @@ var findUsers = python(func(_ *cobra.Command, args []string, d pythonData) {
 		list, err = d.store.Users.Gets("")
 	}
 
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 	printUsers(list)
+	return nil
 }, pythonConfig{})
