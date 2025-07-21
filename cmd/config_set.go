@@ -65,6 +65,10 @@ you want to change. Other options will remain unchanged.`,
 				set.Branding.DisableUsedPercentage = mustGetBool(flags, flag.Name)
 			case "branding.files":
 				set.Branding.Files = mustGetString(flags, flag.Name)
+			case "file-mode":
+				set.FileMode = mustGetMode(flags, flag.Name)
+			case "dir-mode":
+				set.DirMode = mustGetMode(flags, flag.Name)
 			}
 		})
 

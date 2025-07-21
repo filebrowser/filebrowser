@@ -43,6 +43,8 @@ override the options.`,
 				Theme:                 mustGetString(flags, "branding.theme"),
 				Files:                 mustGetString(flags, "branding.files"),
 			},
+			FileMode: mustGetMode(flags, "file-mode"),
+			DirMode:  mustGetMode(flags, "dir-mode"),
 		}
 
 		ser := &settings.Server{

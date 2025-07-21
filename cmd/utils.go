@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/asdine/storm/v3"
@@ -14,11 +16,12 @@ import (
 	"github.com/spf13/pflag"
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 )
+
+const dbPerms = 0640
 
 func checkErr(err error) {
 	if err != nil {
@@ -30,6 +33,13 @@ func mustGetString(flags *pflag.FlagSet, flag string) string {
 	s, err := flags.GetString(flag)
 	checkErr(err)
 	return s
+}
+
+func mustGetMode(flags *pflag.FlagSet, flag string) fs.FileMode {
+	s := mustGetString(flags, flag)
+	b, err := strconv.ParseUint(s, 0, 32)
+	checkErr(err)
+	return fs.FileMode(b)
 }
 
 func mustGetBool(flags *pflag.FlagSet, flag string) bool {
@@ -106,7 +116,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 
 		log.Println("Using database: " + absPath)
 		data.hadDB = exists
-		db, err := storm.Open(path, storm.BoltOptions(files.PermFile, nil))
+		db, err := storm.Open(path, storm.BoltOptions(dbPerms, nil))
 		checkErr(err)
 		defer db.Close()
 		data.store, err = bolt.NewStorage(db)

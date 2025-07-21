@@ -1,6 +1,7 @@
 package fileutils
 
 import (
+	"io/fs"
 	"os"
 	"path"
 
@@ -8,7 +9,7 @@ import (
 )
 
 // Copy copies a file or folder from one place to another.
-func Copy(fs afero.Fs, src, dst string) error {
+func Copy(afs afero.Fs, src, dst string, fileMode, dirMode fs.FileMode) error {
 	if src = path.Clean("/" + src); src == "" {
 		return os.ErrNotExist
 	}
@@ -26,14 +27,14 @@ func Copy(fs afero.Fs, src, dst string) error {
 		return os.ErrInvalid
 	}
 
-	info, err := fs.Stat(src)
+	info, err := afs.Stat(src)
 	if err != nil {
 		return err
 	}
 
 	if info.IsDir() {
-		return CopyDir(fs, src, dst)
+		return CopyDir(afs, src, dst, fileMode, dirMode)
 	}
 
-	return CopyFile(fs, src, dst)
+	return CopyFile(afs, src, dst, fileMode, dirMode)
 }
