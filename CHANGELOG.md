@@ -2,6 +2,72 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.40.2](https://github.com/filebrowser/filebrowser/compare/v2.40.1...v2.40.2) (2025-07-17)
+
+
+### Bug Fixes
+
+* Location header on TUS endpoint ([#5302](https://github.com/filebrowser/filebrowser/issues/5302)) ([607f570](https://github.com/filebrowser/filebrowser/commit/607f5708a2484428ab837781a5ef26b8cc3194f4))
+
+
+### Build
+
+* **deps:** bump vue-i18n from 11.1.9 to 11.1.10 in /frontend ([d61110e](https://github.com/filebrowser/filebrowser/commit/d61110e4d7155a5849557adf3b75dc0191f17e80))
+
+### [2.40.1](https://github.com/filebrowser/filebrowser/compare/v2.40.0...v2.40.1) (2025-07-15)
+
+
+### Bug Fixes
+
+* print correct user on setup ([88f1442](https://github.com/filebrowser/filebrowser/commit/88f144293267260fd4d823e3259783309b1a57b3))
+
+## [2.40.0](https://github.com/filebrowser/filebrowser/compare/v2.39.0...v2.40.0) (2025-07-13)
+
+
+### Features
+
+* add font size botton to text editor ([#5290](https://github.com/filebrowser/filebrowser/issues/5290)) ([035084d](https://github.com/filebrowser/filebrowser/commit/035084d8e83243065fad69bfac1b69559fbad5fb))
+
+
+### Bug Fixes
+
+* invalid path when uploading files ([9072cbc](https://github.com/filebrowser/filebrowser/commit/9072cbce340da55477906f5419a4cfb6d6937dc0))
+* Only left click should drag the image in extended image view ([b8454bb](https://github.com/filebrowser/filebrowser/commit/b8454bb2e41ca2848b926b66354468ba4b1c7ba5))
+
+## [2.39.0](https://github.com/filebrowser/filebrowser/compare/v2.38.0...v2.39.0) (2025-07-13)
+
+
+### Features
+
+* Improve Docker entrypoint and config handling ([01c814c](https://github.com/filebrowser/filebrowser/commit/01c814cf98f81f2bcd622aea75e5b1efe3484940))
+* rewrite the archiver and added support for zstd and brotli ([#5283](https://github.com/filebrowser/filebrowser/issues/5283)) ([7c71686](https://github.com/filebrowser/filebrowser/commit/7c716862c1bd3cdedd3c02d3a37207293db197ca))
+
+
+### Bug Fixes
+
+* drop modify permission for uploading new file ([#5270](https://github.com/filebrowser/filebrowser/issues/5270)) ([0f27c91](https://github.com/filebrowser/filebrowser/commit/0f27c91eca581482ce4f82f6429f5dac12f8b64e))
+* Settings button in the sidebar ([5a8e717](https://github.com/filebrowser/filebrowser/commit/5a8e7171b1b41eff771fe27133c91d2c250896a8))
+
+
+### Build
+
+* improve docker image and binary sizes ([35ca24a](https://github.com/filebrowser/filebrowser/commit/35ca24adb886721fc9d5e1a68cfc577e2c5f0230))
+* lightweight busybox-based container build ([#5285](https://github.com/filebrowser/filebrowser/issues/5285)) ([5c5942d](https://github.com/filebrowser/filebrowser/commit/5c5942d99514b433e09d90624bbe58992eab6be2))
+* remove upx ([1a5c83b](https://github.com/filebrowser/filebrowser/commit/1a5c83bcfe847f1e41a44cef23fd795b19b6b434))
+
+## [2.38.0](https://github.com/filebrowser/filebrowser/compare/v2.37.0...v2.38.0) (2025-07-12)
+
+
+### Features
+
+* Show the current users name in the sidebar ([#2821](https://github.com/filebrowser/filebrowser/issues/2821)) ([528ce92](https://github.com/filebrowser/filebrowser/commit/528ce92fad6dcc8e8b7910036bf9175146e27bf7))
+* Updates for project File Browser  ([b4eddf4](https://github.com/filebrowser/filebrowser/commit/b4eddf45e4d7e6f6ccf242e67fe20f89f5e2f9a9))
+
+
+### Bug Fixes
+
+* prevent page change if there are outstanding edits ([#5260](https://github.com/filebrowser/filebrowser/issues/5260)) ([fbe169b](https://github.com/filebrowser/filebrowser/commit/fbe169b84f28cba22ea87f01b52f2420f1ea6814))
+
 ## [2.37.0](https://github.com/filebrowser/filebrowser/compare/v2.36.3...v2.37.0) (2025-07-08)
 
 

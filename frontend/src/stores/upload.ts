@@ -30,7 +30,7 @@ export const useUploadStore = defineStore("upload", {
   state: (): {
     id: number;
     sizes: number[];
-    progress: Progress[];
+    progress: number[];
     queue: UploadItem[];
     uploads: Uploads;
     speedMbyte: number;
@@ -54,9 +54,7 @@ export const useUploadStore = defineStore("upload", {
       }
 
       const totalSize = state.sizes.reduce((a, b) => a + b, 0);
-
-      // TODO: this looks ugly but it works with ts now
-      const sum = state.progress.reduce((acc, val) => +acc + +val) as number;
+      const sum = state.progress.reduce((a, b) => a + b, 0);
       return Math.ceil((sum / totalSize) * 100);
     },
     getProgressDecimal: (state) => {
@@ -65,21 +63,14 @@ export const useUploadStore = defineStore("upload", {
       }
 
       const totalSize = state.sizes.reduce((a, b) => a + b, 0);
-
-      // TODO: this looks ugly but it works with ts now
-      const sum = state.progress.reduce((acc, val) => +acc + +val) as number;
+      const sum = state.progress.reduce((a, b) => a + b, 0);
       return ((sum / totalSize) * 100).toFixed(2);
     },
     getTotalProgressBytes: (state) => {
       if (state.progress.length === 0 || state.sizes.length === 0) {
         return "0 Bytes";
       }
-      const sum = state.progress.reduce(
-        (sum, p, i) =>
-          (sum as number) +
-          (typeof p === "number" ? p : p ? state.sizes[i] : 0),
-        0
-      ) as number;
+      const sum = state.progress.reduce((a, b) => a + b, 0);
       return formatSize(sum);
     },
     getTotalSize: (state) => {
@@ -104,7 +95,7 @@ export const useUploadStore = defineStore("upload", {
         const isDir = upload.file.isDir;
         const progress = isDir
           ? 100
-          : Math.ceil(((state.progress[id] as number) / size) * 100);
+          : Math.ceil((state.progress[id] / size) * 100);
 
         files.push({
           id,
@@ -124,7 +115,7 @@ export const useUploadStore = defineStore("upload", {
   },
   actions: {
     // no context as first argument, use `this` instead
-    setProgress({ id, loaded }: { id: number; loaded: Progress }) {
+    setProgress({ id, loaded }: { id: number; loaded: number }) {
       this.progress[id] = loaded;
     },
     setError(error: Error) {
@@ -168,7 +159,7 @@ export const useUploadStore = defineStore("upload", {
       this.processUploads();
     },
     finishUpload(item: UploadItem) {
-      this.setProgress({ id: item.id, loaded: item.file.size > 0 });
+      this.setProgress({ id: item.id, loaded: item.file.size });
       this.removeJob(item.id);
       this.processUploads();
     },

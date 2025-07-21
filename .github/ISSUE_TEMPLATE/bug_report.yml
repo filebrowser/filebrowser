@@ -1,6 +1,6 @@
 name: Bug Report
 description: Report a bug in FileBrowser.
-labels: [bug, triage]
+labels: [bug, 'waiting: triage']
 body:
   - type: checkboxes
     attributes:

@@ -28,8 +28,6 @@ interface UploadEntry {
 
 type UploadList = UploadEntry[];
 
-type Progress = number | boolean;
-
 type CurrentUploadList = {
   [key: string]: {
     upload: import("tus-js-client").Upload;
@@ -43,9 +41,3 @@ type CurrentUploadList = {
     interval: number | undefined;
   };
 };
-
-interface ETAState {
-  sizes: number[];
-  progress: Progress[];
-  speedMbyte: number;
-}

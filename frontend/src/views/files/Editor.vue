@@ -5,6 +5,18 @@
       <title>{{ fileStore.req?.name ?? "" }}</title>
 
       <action
+        icon="add"
+        @action="increaseFontSize"
+        :label="t('buttons.increaseFontSize')"
+      />
+      <span class="editor-font-size">{{ fontSize }}px</span>
+      <action
+        icon="remove"
+        @action="decreaseFontSize"
+        :label="t('buttons.decreaseFontSize')"
+      />
+
+      <action
         v-if="authStore.user?.perm.modify"
         id="save-button"
         icon="save"
@@ -39,21 +51,21 @@ import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
 import url from "@/utils/url";
 import ace, { Ace, version as ace_version } from "ace-builds";
-import modelist from "ace-builds/src-noconflict/ext-modelist";
 import "ace-builds/src-noconflict/ext-language_tools";
+import modelist from "ace-builds/src-noconflict/ext-modelist";
 import DOMPurify from "dompurify";
 
-import HeaderBar from "@/components/header/HeaderBar.vue";
-import Action from "@/components/header/Action.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import Action from "@/components/header/Action.vue";
+import HeaderBar from "@/components/header/HeaderBar.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
-import { inject, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useI18n } from "vue-i18n";
 import { getTheme } from "@/utils/theme";
 import { marked } from "marked";
+import { inject, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
+import { useI18n } from "vue-i18n";
+import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 
 const $showError = inject<IToastError>("$showError")!;
 
@@ -67,6 +79,7 @@ const route = useRoute();
 const router = useRouter();
 
 const editor = ref<Ace.Editor | null>(null);
+const fontSize = ref(parseInt(localStorage.getItem("editorFontSize") || "14"));
 
 const isPreview = ref(false);
 const previewContent = ref("");
@@ -77,6 +90,7 @@ const isMarkdownFile =
 onMounted(() => {
   window.addEventListener("keydown", keyEvent);
   window.addEventListener("wheel", handleScroll);
+  window.addEventListener("beforeunload", handlePageChange);
 
   const fileContent = fileStore.req?.content || "";
 
@@ -120,13 +134,24 @@ onMounted(() => {
     editor.value!.setTheme("ace/theme/twilight");
   }
 
+  editor.value.setFontSize(fontSize.value);
   editor.value.focus();
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", keyEvent);
   window.removeEventListener("wheel", handleScroll);
+  window.removeEventListener("beforeunload", handlePageChange);
   editor.value?.destroy();
+});
+
+onBeforeRouteUpdate((to, from, next) => {
+  if (!editor.value?.session.getUndoManager().isClean()) {
+    layoutStore.showHover("discardEditorChanges");
+    next(false);
+  } else {
+    next();
+  }
 });
 
 const keyEvent = (event: KeyboardEvent) => {
@@ -153,6 +178,15 @@ const handleScroll = (event: WheelEvent) => {
   }
 };
 
+const handlePageChange = (event: BeforeUnloadEvent) => {
+  if (!editor.value?.session.getUndoManager().isClean()) {
+    event.preventDefault();
+    // returnValue is now depecrated, though keeping in for legacy browser support
+    // https://developer.mozilla.org/en-US/docs/Web/API/BeforeUnloadEvent/returnValue
+    event.returnValue = true;
+  }
+};
+
 const save = async () => {
   const button = "save";
   buttons.loading("save");
@@ -166,6 +200,21 @@ const save = async () => {
     $showError(e);
   }
 };
+
+const increaseFontSize = () => {
+  fontSize.value += 1;
+  editor.value?.setFontSize(fontSize.value);
+  localStorage.setItem("editorFontSize", fontSize.value.toString());
+};
+
+const decreaseFontSize = () => {
+  if (fontSize.value > 1) {
+    fontSize.value -= 1;
+    editor.value?.setFontSize(fontSize.value);
+    localStorage.setItem("editorFontSize", fontSize.value.toString());
+  }
+};
+
 const close = () => {
   if (!editor.value?.session.getUndoManager().isClean()) {
     layoutStore.showHover("discardEditorChanges");
@@ -182,3 +231,10 @@ const preview = () => {
   isPreview.value = !isPreview.value;
 };
 </script>
+
+<style scoped>
+.editor-font-size {
+  margin: 0 0.5em;
+  color: var(--fg);
+}
+</style>

@@ -7,6 +7,10 @@
   <div v-show="active" @click="closeHovers" class="overlay"></div>
   <nav :class="{ active }">
     <template v-if="isLoggedIn">
+      <button @click="toAccountSettings" class="action">
+        <i class="material-icons">person</i>
+        <span>{{ user.username }}</span>
+      </button>
       <button
         class="action"
         @click="toRoot"
@@ -39,29 +43,28 @@
         </button>
       </div>
 
-      <div>
+      <div v-if="user.perm.admin">
         <button
           class="action"
-          @click="toSettings"
+          @click="toGlobalSettings"
           :aria-label="$t('sidebar.settings')"
           :title="$t('sidebar.settings')"
         >
           <i class="material-icons">settings_applications</i>
           <span>{{ $t("sidebar.settings") }}</span>
         </button>
-
-        <button
-          v-if="canLogout"
-          @click="logout"
-          class="action"
-          id="logout"
-          :aria-label="$t('sidebar.logout')"
-          :title="$t('sidebar.logout')"
-        >
-          <i class="material-icons">exit_to_app</i>
-          <span>{{ $t("sidebar.logout") }}</span>
-        </button>
       </div>
+      <button
+        v-if="canLogout"
+        @click="logout"
+        class="action"
+        id="logout"
+        :aria-label="$t('sidebar.logout')"
+        :title="$t('sidebar.logout')"
+      >
+        <i class="material-icons">exit_to_app</i>
+        <span>{{ $t("sidebar.logout") }}</span>
+      </button>
     </template>
     <template v-else>
       <router-link
@@ -198,8 +201,12 @@ export default {
       this.$router.push({ path: "/files" });
       this.closeHovers();
     },
-    toSettings() {
-      this.$router.push({ path: "/settings" });
+    toAccountSettings() {
+      this.$router.push({ path: "/settings/profile" });
+      this.closeHovers();
+    },
+    toGlobalSettings() {
+      this.$router.push({ path: "/settings/global" });
       this.closeHovers();
     },
     help() {

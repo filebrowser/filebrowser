@@ -1,9 +1,8 @@
 import * as tus from "tus-js-client";
-import { baseURL, tusEndpoint, tusSettings } from "@/utils/constants";
+import { baseURL, tusEndpoint, tusSettings, origin } from "@/utils/constants";
 import { useAuthStore } from "@/stores/auth";
 import { useUploadStore } from "@/stores/upload";
 import { removePrefix } from "@/api/utils";
-import { fetchURL } from "./utils";
 
 const RETRY_BASE_DELAY = 1000;
 const RETRY_MAX_DELAY = 20000;
@@ -28,8 +27,6 @@ export async function upload(
   filePath = removePrefix(filePath);
   const resourcePath = `${tusEndpoint}${filePath}?override=${overwrite}`;
 
-  await createUpload(resourcePath);
-
   const authStore = useAuthStore();
 
   // Exit early because of typescript, tus content can't be a string
@@ -38,13 +35,25 @@ export async function upload(
   }
   return new Promise<void | string>((resolve, reject) => {
     const upload = new tus.Upload(content, {
-      uploadUrl: `${baseURL}${resourcePath}`,
+      endpoint: `${origin}${baseURL}${resourcePath}`,
       chunkSize: tusSettings.chunkSize,
       retryDelays: computeRetryDelays(tusSettings),
       parallelUploads: 1,
       storeFingerprintForResuming: false,
       headers: {
         "X-Auth": authStore.jwt,
+      },
+      onShouldRetry: function (err) {
+        const status = err.originalResponse
+          ? err.originalResponse.getStatus()
+          : 0;
+
+        // Do not retry for file conflict.
+        if (status === 409) {
+          return false;
+        }
+
+        return true;
       },
       onError: function (error) {
         if (CURRENT_UPLOAD_LIST[filePath].interval) {
@@ -92,17 +101,6 @@ export async function upload(
   });
 }
 
-async function createUpload(resourcePath: string) {
-  const headResp = await fetchURL(resourcePath, {
-    method: "POST",
-  });
-  if (headResp.status !== 201) {
-    throw new Error(
-      `Failed to create an upload: ${headResp.status} ${headResp.statusText}`
-    );
-  }
-}
-
 function computeRetryDelays(tusSettings: TusSettings): number[] | undefined {
   if (!tusSettings.retryCount || tusSettings.retryCount < 1) {
     // Disable retries altogether
@@ -130,7 +128,8 @@ function isTusSupported() {
   return tus.isSupported === true;
 }
 
-function computeETA(state: ETAState, speed?: number) {
+function computeETA(speed?: number) {
+  const state = useUploadStore();
   if (state.speedMbyte === 0) {
     return Infinity;
   }
@@ -138,22 +137,13 @@ function computeETA(state: ETAState, speed?: number) {
     (acc: number, size: number) => acc + size,
     0
   );
-  const uploadedSize = state.progress.reduce(
-    (acc: number, progress: Progress) => {
-      if (typeof progress === "number") {
-        return acc + progress;
-      }
-      return acc;
-    },
-    0
-  );
+  const uploadedSize = state.progress.reduce((a, b) => a + b, 0);
   const remainingSize = totalSize - uploadedSize;
   const speedBytesPerSecond = (speed ?? state.speedMbyte) * 1024 * 1024;
   return remainingSize / speedBytesPerSecond;
 }
 
 function computeGlobalSpeedAndETA() {
-  const uploadStore = useUploadStore();
   let totalSpeed = 0;
   let totalCount = 0;
 
@@ -165,7 +155,7 @@ function computeGlobalSpeedAndETA() {
   if (totalCount === 0) return { speed: 0, eta: Infinity };
 
   const averageSpeed = totalSpeed / totalCount;
-  const averageETA = computeETA(uploadStore, averageSpeed);
+  const averageETA = computeETA(averageSpeed);
 
   return { speed: averageSpeed, eta: averageETA };
 }
@@ -207,6 +197,9 @@ export function abortAllUploads() {
     }
     if (CURRENT_UPLOAD_LIST[filePath].upload) {
       CURRENT_UPLOAD_LIST[filePath].upload.abort(true);
+      CURRENT_UPLOAD_LIST[filePath].upload.options!.onError!(
+        new Error("Upload aborted")
+      );
     }
     delete CURRENT_UPLOAD_LIST[filePath];
   }

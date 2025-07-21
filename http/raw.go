@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	"io/fs"
 	"log"
 	"net/http"
 	"net/url"
@@ -9,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mholt/archiver/v3"
+	"github.com/mholt/archives"
 
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
@@ -44,22 +45,26 @@ func parseQueryFiles(r *http.Request, f *files.FileInfo, _ *users.User) ([]strin
 	return fileSlice, nil
 }
 
-func parseQueryAlgorithm(r *http.Request) (string, archiver.Writer, error) {
+func parseQueryAlgorithm(r *http.Request) (string, archives.Archival, error) {
 	switch r.URL.Query().Get("algo") {
 	case "zip", "true", "":
-		return ".zip", archiver.NewZip(), nil
+		return ".zip", archives.Zip{}, nil
 	case "tar":
-		return ".tar", archiver.NewTar(), nil
+		return ".tar", archives.Tar{}, nil
 	case "targz":
-		return ".tar.gz", archiver.NewTarGz(), nil
+		return ".tar.gz", archives.CompressedArchive{Compression: archives.Gz{}, Archival: archives.Tar{}}, nil
 	case "tarbz2":
-		return ".tar.bz2", archiver.NewTarBz2(), nil
+		return ".tar.bz2", archives.CompressedArchive{Compression: archives.Bz2{}, Archival: archives.Tar{}}, nil
 	case "tarxz":
-		return ".tar.xz", archiver.NewTarXz(), nil
+		return ".tar.xz", archives.CompressedArchive{Compression: archives.Xz{}, Archival: archives.Tar{}}, nil
 	case "tarlz4":
-		return ".tar.lz4", archiver.NewTarLz4(), nil
+		return ".tar.lz4", archives.CompressedArchive{Compression: archives.Lz4{}, Archival: archives.Tar{}}, nil
 	case "tarsz":
-		return ".tar.sz", archiver.NewTarSz(), nil
+		return ".tar.sz", archives.CompressedArchive{Compression: archives.Sz{}, Archival: archives.Tar{}}, nil
+	case "tarbr":
+		return ".tar.br", archives.CompressedArchive{Compression: archives.Brotli{}, Archival: archives.Tar{}}, nil
+	case "tarzst":
+		return ".tar.zst", archives.CompressedArchive{Compression: archives.Zstd{}, Archival: archives.Tar{}}, nil
 	default:
 		return "", nil, errors.New("format not implemented")
 	}
@@ -103,57 +108,55 @@ var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) 
 	return rawDirHandler(w, r, d, file)
 })
 
-func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
+func getFiles(d *data, path, commonPath string) ([]archives.FileInfo, error) {
 	if !d.Check(path) {
-		return nil
+		return nil, nil
 	}
 
 	info, err := d.user.Fs.Stat(path)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if !info.IsDir() && !info.Mode().IsRegular() {
-		return nil
-	}
-
-	file, err := d.user.Fs.Open(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
+	var archiveFiles []archives.FileInfo
 
 	if path != commonPath {
-		filename := strings.TrimPrefix(path, commonPath)
-		filename = strings.TrimPrefix(filename, string(filepath.Separator))
-		err = ar.Write(archiver.File{
-			FileInfo: archiver.FileInfo{
-				FileInfo:   info,
-				CustomName: filename,
+		nameInArchive := strings.TrimPrefix(path, commonPath)
+		nameInArchive = strings.TrimPrefix(nameInArchive, string(filepath.Separator))
+
+		archiveFiles = append(archiveFiles, archives.FileInfo{
+			FileInfo:      info,
+			NameInArchive: nameInArchive,
+			Open: func() (fs.File, error) {
+				return d.user.Fs.Open(path)
 			},
-			ReadCloser: file,
 		})
-		if err != nil {
-			return err
-		}
 	}
 
 	if info.IsDir() {
-		names, err := file.Readdirnames(0)
+		f, err := d.user.Fs.Open(path)
 		if err != nil {
-			return err
+			return nil, err
+		}
+		defer f.Close()
+
+		names, err := f.Readdirnames(0)
+		if err != nil {
+			return nil, err
 		}
 
 		for _, name := range names {
 			fPath := filepath.Join(path, name)
-			err = addFile(ar, d, fPath, commonPath)
+			subFiles, err := getFiles(d, fPath, commonPath)
 			if err != nil {
-				log.Printf("Failed to archive %s: %v", fPath, err)
+				log.Printf("Failed to get files from %s: %v", fPath, err)
+				continue
 			}
+			archiveFiles = append(archiveFiles, subFiles...)
 		}
 	}
 
-	return nil
+	return archiveFiles, nil
 }
 
 func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.FileInfo) (int, error) {
@@ -162,27 +165,28 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 		return http.StatusInternalServerError, err
 	}
 
-	extension, ar, err := parseQueryAlgorithm(r)
+	extension, archiver, err := parseQueryAlgorithm(r)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
-
-	err = ar.Create(w)
-	if err != nil {
-		return http.StatusInternalServerError, err
-	}
-	defer ar.Close()
 
 	commonDir := fileutils.CommonPrefix(filepath.Separator, filenames...)
 
+	var allFiles []archives.FileInfo
+	for _, fname := range filenames {
+		archiveFiles, err := getFiles(d, fname, commonDir)
+		if err != nil {
+			log.Printf("Failed to get files from %s: %v", fname, err)
+			continue
+		}
+		allFiles = append(allFiles, archiveFiles...)
+	}
+
 	name := filepath.Base(commonDir)
 	if name == "." || name == "" || name == string(filepath.Separator) {
-		// Not sure when/if this will ever be true, though kept incase there is an edge-case where it is
 		if file.Name != "" {
 			name = file.Name
 		} else {
-			// This should indicate that the fs root is the directory being downloaded, lookup its name
-
 			actual, statErr := file.Fs.Stat(".")
 			if statErr != nil {
 				return http.StatusInternalServerError, statErr
@@ -190,19 +194,14 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 			name = actual.Name()
 		}
 	}
-	// Prefix used to distinguish a filelist generated
-	// archive from the full directory archive
 	if len(filenames) > 1 {
 		name = "_" + name
 	}
 	name += extension
 	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))
 
-	for _, fname := range filenames {
-		err = addFile(ar, d, fname, commonDir)
-		if err != nil {
-			log.Printf("Failed to archive %s: %v", fname, err)
-		}
+	if err := archiver.Archive(r.Context(), w, allFiles); err != nil {
+		return http.StatusInternalServerError, err
 	}
 
 	return 0, nil
