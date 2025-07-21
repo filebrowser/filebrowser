@@ -49,6 +49,10 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("branding.files", "", "path to directory with images and custom styles")
 	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 	flags.Bool("branding.disableUsedPercentage", false, "disable used disk percentage graph")
+	// NB: these are string so they can be presented as octal in the help text
+	// as that's the conventional representation for modes in Unix.
+	flags.String("file-mode", fmt.Sprintf("%O", settings.DefaultFileMode), "Mode bits that new files are created with")
+	flags.String("dir-mode", fmt.Sprintf("%O", settings.DefaultDirMode), "Mode bits that new directories are created with")
 }
 
 //nolint:gocyclo
@@ -170,6 +174,8 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tLocale:\t%s\n", set.Defaults.Locale)
 	fmt.Fprintf(w, "\tView mode:\t%s\n", set.Defaults.ViewMode)
 	fmt.Fprintf(w, "\tSingle Click:\t%t\n", set.Defaults.SingleClick)
+	fmt.Fprintf(w, "\tFile Creation Mode:\t%O\n", set.FileMode)
+	fmt.Fprintf(w, "\tDirectory Creation Mode:\t%O\n", set.DirMode)
 	fmt.Fprintf(w, "\tCommands:\t%s\n", strings.Join(set.Defaults.Commands, " "))
 	fmt.Fprintf(w, "\tSorting:\n")
 	fmt.Fprintf(w, "\t\tBy:\t%s\n", set.Defaults.Sorting.By)
