@@ -98,6 +98,16 @@ override the options.`,
 			},
 		}
 
+		s.FileMode, err = mustGetMode(flags, "file-mode")
+		if err != nil {
+			return err
+		}
+
+		s.DirMode, err = mustGetMode(flags, "file-mode")
+		if err != nil {
+			return err
+		}
+
 		address, err := mustGetString(flags, "address")
 		if err != nil {
 			return err

@@ -76,7 +76,12 @@ you want to change. Other options will remain unchanged.`,
 				set.Branding.DisableUsedPercentage, configSetErr = mustGetBool(flags, flag.Name)
 			case "branding.files":
 				set.Branding.Files, configSetErr = mustGetString(flags, flag.Name)
+			case "file-mode":
+				set.FileMode, configSetErr = mustGetMode(flags, flag.Name)
+			case "dir-mode":
+				set.DirMode, configSetErr = mustGetMode(flags, flag.Name)
 			}
+
 			if configSetErr != nil {
 				visitErr = configSetErr
 			}

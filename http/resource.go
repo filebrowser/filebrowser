@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"net/http"
 	"net/url"
@@ -105,7 +106,7 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 
 		// Directories creation on POST.
 		if strings.HasSuffix(r.URL.Path, "/") {
-			err := d.user.Fs.MkdirAll(r.URL.Path, files.PermDir)
+			err := d.user.Fs.MkdirAll(r.URL.Path, d.settings.DirMode)
 			return errToStatus(err), err
 		}
 
@@ -134,7 +135,7 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 		}
 
 		err = d.RunHook(func() error {
-			info, writeErr := writeFile(d.user.Fs, r.URL.Path, r.Body)
+			info, writeErr := writeFile(d.user.Fs, r.URL.Path, r.Body, d.settings.FileMode, d.settings.DirMode)
 			if writeErr != nil {
 				return writeErr
 			}
@@ -171,7 +172,7 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 	}
 
 	err = d.RunHook(func() error {
-		info, writeErr := writeFile(d.user.Fs, r.URL.Path, r.Body)
+		info, writeErr := writeFile(d.user.Fs, r.URL.Path, r.Body, d.settings.FileMode, d.settings.DirMode)
 		if writeErr != nil {
 			return writeErr
 		}
@@ -243,14 +244,14 @@ func checkParent(src, dst string) error {
 	return nil
 }
 
-func addVersionSuffix(source string, fs afero.Fs) string {
+func addVersionSuffix(source string, afs afero.Fs) string {
 	counter := 1
 	dir, name := path.Split(source)
 	ext := filepath.Ext(name)
 	base := strings.TrimSuffix(name, ext)
 
 	for {
-		if _, err := fs.Stat(source); err != nil {
+		if _, err := afs.Stat(source); err != nil {
 			break
 		}
 		renamed := fmt.Sprintf("%s(%d)%s", base, counter, ext)
@@ -261,14 +262,14 @@ func addVersionSuffix(source string, fs afero.Fs) string {
 	return source
 }
 
-func writeFile(fs afero.Fs, dst string, in io.Reader) (os.FileInfo, error) {
+func writeFile(afs afero.Fs, dst string, in io.Reader, fileMode, dirMode fs.FileMode) (os.FileInfo, error) {
 	dir, _ := path.Split(dst)
-	err := fs.MkdirAll(dir, files.PermDir)
+	err := afs.MkdirAll(dir, dirMode)
 	if err != nil {
 		return nil, err
 	}
 
-	file, err := fs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, files.PermFile)
+	file, err := afs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, fileMode)
 	if err != nil {
 		return nil, err
 	}
@@ -306,7 +307,7 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 			return fbErrors.ErrPermissionDenied
 		}
 
-		return fileutils.Copy(d.user.Fs, src, dst)
+		return fileutils.Copy(d.user.Fs, src, dst, d.settings.FileMode, d.settings.DirMode)
 	case "rename":
 		if !d.user.Perm.Rename {
 			return fbErrors.ErrPermissionDenied
@@ -332,7 +333,7 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 			return err
 		}
 
-		return fileutils.MoveFile(d.user.Fs, src, dst)
+		return fileutils.MoveFile(d.user.Fs, src, dst, d.settings.FileMode, d.settings.DirMode)
 	default:
 		return fmt.Errorf("unsupported action %s: %w", action, fbErrors.ErrInvalidRequestParams)
 	}
