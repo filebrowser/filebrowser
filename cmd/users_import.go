@@ -25,34 +25,54 @@ file. You can use this command to import new users to your
 installation. For that, just don't place their ID on the files
 list or set it to 0.`,
 	Args: jsonYamlArg,
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
 		fd, err := os.Open(args[0])
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		defer fd.Close()
 
 		list := []*users.User{}
 		err = unmarshal(args[0], &list)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 
 		for _, user := range list {
 			err = user.Clean("")
-			checkErr(err)
-		}
-
-		if mustGetBool(cmd.Flags(), "replace") {
-			oldUsers, err := d.store.Users.Gets("")
-			checkErr(err)
-
-			err = marshal("users.backup.json", list)
-			checkErr(err)
-
-			for _, user := range oldUsers {
-				err = d.store.Users.Delete(user.ID)
-				checkErr(err)
+			if err != nil {
+				return err
 			}
 		}
 
-		overwrite := mustGetBool(cmd.Flags(), "overwrite")
+		replace, err := getBool(cmd.Flags(), "replace")
+		if err != nil {
+			return err
+		}
+
+		if replace {
+			oldUsers, userImportErr := d.store.Users.Gets("")
+			if userImportErr != nil {
+				return userImportErr
+			}
+
+			err = marshal("users.backup.json", list)
+			if err != nil {
+				return err
+			}
+
+			for _, user := range oldUsers {
+				err = d.store.Users.Delete(user.ID)
+				if err != nil {
+					return err
+				}
+			}
+		}
+
+		overwrite, err := getBool(cmd.Flags(), "overwrite")
+		if err != nil {
+			return err
+		}
 
 		for _, user := range list {
 			onDB, err := d.store.Users.Get("", user.ID)
@@ -60,7 +80,7 @@ list or set it to 0.`,
 			// User exists in DB.
 			if err == nil {
 				if !overwrite {
-					checkErr(errors.New("user " + strconv.Itoa(int(user.ID)) + " is already registered"))
+					return errors.New("user " + strconv.Itoa(int(user.ID)) + " is already registered")
 				}
 
 				// If the usernames mismatch, check if there is another one in the DB
@@ -68,7 +88,7 @@ list or set it to 0.`,
 				// operation
 				if user.Username != onDB.Username {
 					if conflictuous, err := d.store.Users.Get("", user.Username); err == nil { //nolint:govet
-						checkErr(usernameConflictError(user.Username, conflictuous.ID, user.ID))
+						return usernameConflictError(user.Username, conflictuous.ID, user.ID)
 					}
 				}
 			} else {
@@ -78,8 +98,11 @@ list or set it to 0.`,
 			}
 
 			err = d.store.Users.Save(user)
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 		}
+		return nil
 	}, pythonConfig{}),
 }
 

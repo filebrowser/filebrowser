@@ -55,9 +55,12 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("dir-mode", fmt.Sprintf("%O", settings.DefaultDirMode), "Mode bits that new directories are created with")
 }
 
-//nolint:gocyclo
-func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, auth.Auther) {
-	method := settings.AuthMethod(mustGetString(flags, "auth.method"))
+func getAuthMethod(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, map[string]interface{}, error) {
+	methodStr, err := getString(flags, "auth.method")
+	if err != nil {
+		return "", nil, err
+	}
+	method := settings.AuthMethod(methodStr)
 
 	var defaultAuther map[string]interface{}
 	if len(defaults) > 0 {
@@ -68,83 +71,124 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 					method = def.AuthMethod
 				case auth.Auther:
 					ms, err := json.Marshal(def)
-					checkErr(err)
+					if err != nil {
+						return "", nil, err
+					}
 					err = json.Unmarshal(ms, &defaultAuther)
-					checkErr(err)
+					if err != nil {
+						return "", nil, err
+					}
 				}
 			}
 		}
 	}
 
-	var auther auth.Auther
-	if method == auth.MethodProxyAuth {
-		header := mustGetString(flags, "auth.header")
-
-		if header == "" {
-			header = defaultAuther["header"].(string)
-		}
-
-		if header == "" {
-			checkErr(nerrors.New("you must set the flag 'auth.header' for method 'proxy'"))
-		}
-
-		auther = &auth.ProxyAuth{Header: header}
-	}
-
-	if method == auth.MethodNoAuth {
-		auther = &auth.NoAuth{}
-	}
-
-	if method == auth.MethodJSONAuth {
-		jsonAuth := &auth.JSONAuth{}
-		host := mustGetString(flags, "recaptcha.host")
-		key := mustGetString(flags, "recaptcha.key")
-		secret := mustGetString(flags, "recaptcha.secret")
-
-		if key == "" {
-			if kmap, ok := defaultAuther["recaptcha"].(map[string]interface{}); ok {
-				key = kmap["key"].(string)
-			}
-		}
-
-		if secret == "" {
-			if smap, ok := defaultAuther["recaptcha"].(map[string]interface{}); ok {
-				secret = smap["secret"].(string)
-			}
-		}
-
-		if key != "" && secret != "" {
-			jsonAuth.ReCaptcha = &auth.ReCaptcha{
-				Host:   host,
-				Key:    key,
-				Secret: secret,
-			}
-		}
-		auther = jsonAuth
-	}
-
-	if method == auth.MethodHookAuth {
-		command := mustGetString(flags, "auth.command")
-
-		if command == "" {
-			command = defaultAuther["command"].(string)
-		}
-
-		if command == "" {
-			checkErr(nerrors.New("you must set the flag 'auth.command' for method 'hook'"))
-		}
-
-		auther = &auth.HookAuth{Command: command}
-	}
-
-	if auther == nil {
-		panic(errors.ErrInvalidAuthMethod)
-	}
-
-	return method, auther
+	return method, defaultAuther, nil
 }
 
-func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Auther) {
+func getProxyAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
+	header, err := getString(flags, "auth.header")
+	if err != nil {
+		return nil, err
+	}
+
+	if header == "" {
+		header = defaultAuther["header"].(string)
+	}
+
+	if header == "" {
+		return nil, nerrors.New("you must set the flag 'auth.header' for method 'proxy'")
+	}
+
+	return &auth.ProxyAuth{Header: header}, nil
+}
+
+func getNoAuth() auth.Auther {
+	return &auth.NoAuth{}
+}
+
+func getJSONAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
+	jsonAuth := &auth.JSONAuth{}
+	host, err := getString(flags, "recaptcha.host")
+	if err != nil {
+		return nil, err
+	}
+	key, err := getString(flags, "recaptcha.key")
+	if err != nil {
+		return nil, err
+	}
+	secret, err := getString(flags, "recaptcha.secret")
+	if err != nil {
+		return nil, err
+	}
+
+	if key == "" {
+		if kmap, ok := defaultAuther["recaptcha"].(map[string]interface{}); ok {
+			key = kmap["key"].(string)
+		}
+	}
+
+	if secret == "" {
+		if smap, ok := defaultAuther["recaptcha"].(map[string]interface{}); ok {
+			secret = smap["secret"].(string)
+		}
+	}
+
+	if key != "" && secret != "" {
+		jsonAuth.ReCaptcha = &auth.ReCaptcha{
+			Host:   host,
+			Key:    key,
+			Secret: secret,
+		}
+	}
+	return jsonAuth, nil
+}
+
+func getHookAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
+	command, err := getString(flags, "auth.command")
+	if err != nil {
+		return nil, err
+	}
+
+	if command == "" {
+		command = defaultAuther["command"].(string)
+	}
+
+	if command == "" {
+		return nil, nerrors.New("you must set the flag 'auth.command' for method 'hook'")
+	}
+
+	return &auth.HookAuth{Command: command}, nil
+}
+
+func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, auth.Auther, error) {
+	method, defaultAuther, err := getAuthMethod(flags, defaults...)
+	if err != nil {
+		return "", nil, err
+	}
+
+	var auther auth.Auther
+	switch method {
+	case auth.MethodProxyAuth:
+		auther, err = getProxyAuth(flags, defaultAuther)
+	case auth.MethodNoAuth:
+		auther = getNoAuth()
+	case auth.MethodJSONAuth:
+		auther, err = getJSONAuth(flags, defaultAuther)
+	case auth.MethodHookAuth:
+		auther, err = getHookAuth(flags, defaultAuther)
+	default:
+		return "", nil, errors.ErrInvalidAuthMethod
+	}
+
+	if err != nil {
+		return "", nil, err
+	}
+
+	return method, auther, nil
+}
+
+func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Auther) error {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 
 	fmt.Fprintf(w, "Sign up:\t%t\n", set.Signup)
@@ -192,6 +236,9 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	w.Flush()
 
 	b, err := json.MarshalIndent(auther, "", "  ")
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 	fmt.Printf("\nAuther configuration (raw):\n\n%s\n\n", string(b))
+	return nil
 }

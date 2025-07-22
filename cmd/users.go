@@ -79,50 +79,60 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.Bool("singleClick", false, "use single clicks only")
 }
 
-func getViewMode(flags *pflag.FlagSet) users.ViewMode {
-	viewMode := users.ViewMode(mustGetString(flags, "viewMode"))
-	if viewMode != users.ListViewMode && viewMode != users.MosaicViewMode {
-		checkErr(errors.New("view mode must be \"" + string(users.ListViewMode) + "\" or \"" + string(users.MosaicViewMode) + "\""))
+func getViewMode(flags *pflag.FlagSet) (users.ViewMode, error) {
+	viewModeStr, err := getString(flags, "viewMode")
+	if err != nil {
+		return "", err
 	}
-	return viewMode
+	viewMode := users.ViewMode(viewModeStr)
+	if viewMode != users.ListViewMode && viewMode != users.MosaicViewMode {
+		return "", errors.New("view mode must be \"" + string(users.ListViewMode) + "\" or \"" + string(users.MosaicViewMode) + "\"")
+	}
+	return viewMode, nil
 }
 
 //nolint:gocyclo
-func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all bool) {
+func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all bool) error {
+	var visitErr error
 	visit := func(flag *pflag.Flag) {
+		if visitErr != nil {
+			return
+		}
+		var err error
 		switch flag.Name {
 		case "scope":
-			defaults.Scope = mustGetString(flags, flag.Name)
+			defaults.Scope, err = getString(flags, flag.Name)
 		case "locale":
-			defaults.Locale = mustGetString(flags, flag.Name)
+			defaults.Locale, err = getString(flags, flag.Name)
 		case "viewMode":
-			defaults.ViewMode = getViewMode(flags)
+			defaults.ViewMode, err = getViewMode(flags)
 		case "singleClick":
-			defaults.SingleClick = mustGetBool(flags, flag.Name)
+			defaults.SingleClick, err = getBool(flags, flag.Name)
 		case "perm.admin":
-			defaults.Perm.Admin = mustGetBool(flags, flag.Name)
+			defaults.Perm.Admin, err = getBool(flags, flag.Name)
 		case "perm.execute":
-			defaults.Perm.Execute = mustGetBool(flags, flag.Name)
+			defaults.Perm.Execute, err = getBool(flags, flag.Name)
 		case "perm.create":
-			defaults.Perm.Create = mustGetBool(flags, flag.Name)
+			defaults.Perm.Create, err = getBool(flags, flag.Name)
 		case "perm.rename":
-			defaults.Perm.Rename = mustGetBool(flags, flag.Name)
+			defaults.Perm.Rename, err = getBool(flags, flag.Name)
 		case "perm.modify":
-			defaults.Perm.Modify = mustGetBool(flags, flag.Name)
+			defaults.Perm.Modify, err = getBool(flags, flag.Name)
 		case "perm.delete":
-			defaults.Perm.Delete = mustGetBool(flags, flag.Name)
+			defaults.Perm.Delete, err = getBool(flags, flag.Name)
 		case "perm.share":
-			defaults.Perm.Share = mustGetBool(flags, flag.Name)
+			defaults.Perm.Share, err = getBool(flags, flag.Name)
 		case "perm.download":
-			defaults.Perm.Download = mustGetBool(flags, flag.Name)
+			defaults.Perm.Download, err = getBool(flags, flag.Name)
 		case "commands":
-			commands, err := flags.GetStringSlice(flag.Name)
-			checkErr(err)
-			defaults.Commands = commands
+			defaults.Commands, err = flags.GetStringSlice(flag.Name)
 		case "sorting.by":
-			defaults.Sorting.By = mustGetString(flags, flag.Name)
+			defaults.Sorting.By, err = getString(flags, flag.Name)
 		case "sorting.asc":
-			defaults.Sorting.Asc = mustGetBool(flags, flag.Name)
+			defaults.Sorting.Asc, err = getBool(flags, flag.Name)
+		}
+		if err != nil {
+			visitErr = err
 		}
 	}
 
@@ -131,4 +141,5 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 	} else {
 		flags.Visit(visit)
 	}
+	return visitErr
 }

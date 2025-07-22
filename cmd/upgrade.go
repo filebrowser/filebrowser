@@ -21,11 +21,20 @@ var upgradeCmd = &cobra.Command{
 import share links because they are incompatible with
 this version.`,
 	Args: cobra.NoArgs,
-	Run: func(cmd *cobra.Command, _ []string) {
+	RunE: func(cmd *cobra.Command, _ []string) error {
 		flags := cmd.Flags()
-		oldDB := mustGetString(flags, "old.database")
-		oldConf := mustGetString(flags, "old.config")
-		err := importer.Import(oldDB, oldConf, getStringParam(flags, "database"))
-		checkErr(err)
+		oldDB, err := getString(flags, "old.database")
+		if err != nil {
+			return err
+		}
+		oldConf, err := getString(flags, "old.config")
+		if err != nil {
+			return err
+		}
+		db, err := getString(flags, "database")
+		if err != nil {
+			return err
+		}
+		return importer.Import(oldDB, oldConf, db)
 	},
 }

@@ -21,14 +21,22 @@ var usersUpdateCmd = &cobra.Command{
 	Long: `Updates an existing user. Set the flags for the
 options you want to change.`,
 	Args: cobra.ExactArgs(1),
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
 		username, id := parseUsernameOrID(args[0])
 		flags := cmd.Flags()
-		password := mustGetString(flags, "password")
-		newUsername := mustGetString(flags, "username")
+		password, err := getString(flags, "password")
+		if err != nil {
+			return err
+		}
+		newUsername, err := getString(flags, "username")
+		if err != nil {
+			return err
+		}
 
 		s, err := d.store.Settings.Get()
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 
 		var (
 			user *users.User
@@ -40,7 +48,9 @@ options you want to change.`,
 			user, err = d.store.Users.Get("", username)
 		}
 
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 
 		defaults := settings.UserDefaults{
 			Scope:       user.Scope,
@@ -51,7 +61,10 @@ options you want to change.`,
 			Sorting:     user.Sorting,
 			Commands:    user.Commands,
 		}
-		getUserDefaults(flags, &defaults, false)
+		err = getUserDefaults(flags, &defaults, false)
+		if err != nil {
+			return err
+		}
 		user.Scope = defaults.Scope
 		user.Locale = defaults.Locale
 		user.ViewMode = defaults.ViewMode
@@ -59,7 +72,10 @@ options you want to change.`,
 		user.Perm = defaults.Perm
 		user.Commands = defaults.Commands
 		user.Sorting = defaults.Sorting
-		user.LockPassword = mustGetBool(flags, "lockPassword")
+		user.LockPassword, err = getBool(flags, "lockPassword")
+		if err != nil {
+			return err
+		}
 
 		if newUsername != "" {
 			user.Username = newUsername
@@ -67,11 +83,16 @@ options you want to change.`,
 
 		if password != "" {
 			user.Password, err = users.ValidateAndHashPwd(password, s.MinimumPasswordLength)
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 		}
 
 		err = d.store.Users.Update(user)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		printUsers([]*users.User{user})
+		return nil
 	}, pythonConfig{}),
 }
