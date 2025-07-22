@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.41.0](https://github.com/filebrowser/filebrowser/compare/v2.40.2...v2.41.0) (2025-07-22)
+
+
+### Features
+
+* Allow file and directory creation modes to be configured ([21ad653](https://github.com/filebrowser/filebrowser/commit/21ad653b7eb246c0e95ccdc131f8d59267de7818)), closes [#5316](https://github.com/filebrowser/filebrowser/issues/5316) [#5200](https://github.com/filebrowser/filebrowser/issues/5200)
+* better error handling for sys kill signals ([1582b8b](https://github.com/filebrowser/filebrowser/commit/1582b8b2cd1c62fa93e60ca9b4e740e940b02e84))
+
 ### [2.40.2](https://github.com/filebrowser/filebrowser/compare/v2.40.1...v2.40.2) (2025-07-17)
 
 
