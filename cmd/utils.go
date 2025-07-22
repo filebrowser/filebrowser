@@ -30,13 +30,13 @@ func returnErr(err error) error {
 	return nil
 }
 
-func mustGetString(flags *pflag.FlagSet, flag string) (string, error) {
+func getString(flags *pflag.FlagSet, flag string) (string, error) {
 	s, err := flags.GetString(flag)
 	return s, returnErr(err)
 }
 
-func mustGetMode(flags *pflag.FlagSet, flag string) (fs.FileMode, error) {
-	s, err := mustGetString(flags, flag)
+func getMode(flags *pflag.FlagSet, flag string) (fs.FileMode, error) {
+	s, err := getString(flags, flag)
 	if err != nil {
 		return 0, err
 	}
@@ -47,12 +47,12 @@ func mustGetMode(flags *pflag.FlagSet, flag string) (fs.FileMode, error) {
 	return fs.FileMode(b), nil
 }
 
-func mustGetBool(flags *pflag.FlagSet, flag string) (bool, error) {
+func getBool(flags *pflag.FlagSet, flag string) (bool, error) {
 	b, err := flags.GetBool(flag)
 	return b, returnErr(err)
 }
 
-func mustGetUint(flags *pflag.FlagSet, flag string) (uint, error) {
+func getUint(flags *pflag.FlagSet, flag string) (uint, error) {
 	b, err := flags.GetUint(flag)
 	return b, returnErr(err)
 }

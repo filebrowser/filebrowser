@@ -23,15 +23,15 @@ this version.`,
 	Args: cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		flags := cmd.Flags()
-		oldDB, err := mustGetString(flags, "old.database")
+		oldDB, err := getString(flags, "old.database")
 		if err != nil {
 			return err
 		}
-		oldConf, err := mustGetString(flags, "old.config")
+		oldConf, err := getString(flags, "old.config")
 		if err != nil {
 			return err
 		}
-		db, err := mustGetString(flags, "database")
+		db, err := getString(flags, "database")
 		if err != nil {
 			return err
 		}

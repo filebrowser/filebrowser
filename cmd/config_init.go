@@ -36,47 +36,47 @@ override the options.`,
 
 		key := generateKey()
 
-		signup, err := mustGetBool(flags, "signup")
+		signup, err := getBool(flags, "signup")
 		if err != nil {
 			return err
 		}
 
-		createUserDir, err := mustGetBool(flags, "create-user-dir")
+		createUserDir, err := getBool(flags, "create-user-dir")
 		if err != nil {
 			return err
 		}
 
-		minLength, err := mustGetUint(flags, "minimum-password-length")
+		minLength, err := getUint(flags, "minimum-password-length")
 		if err != nil {
 			return err
 		}
 
-		shell, err := mustGetString(flags, "shell")
+		shell, err := getString(flags, "shell")
 		if err != nil {
 			return err
 		}
 
-		brandingName, err := mustGetString(flags, "branding.name")
+		brandingName, err := getString(flags, "branding.name")
 		if err != nil {
 			return err
 		}
 
-		brandingDisableExternal, err := mustGetBool(flags, "branding.disableExternal")
+		brandingDisableExternal, err := getBool(flags, "branding.disableExternal")
 		if err != nil {
 			return err
 		}
 
-		brandingDisableUsedPercentage, err := mustGetBool(flags, "branding.disableUsedPercentage")
+		brandingDisableUsedPercentage, err := getBool(flags, "branding.disableUsedPercentage")
 		if err != nil {
 			return err
 		}
 
-		brandingTheme, err := mustGetString(flags, "branding.theme")
+		brandingTheme, err := getString(flags, "branding.theme")
 		if err != nil {
 			return err
 		}
 
-		brandingFiles, err := mustGetString(flags, "branding.files")
+		brandingFiles, err := getString(flags, "branding.files")
 		if err != nil {
 			return err
 		}
@@ -98,52 +98,52 @@ override the options.`,
 			},
 		}
 
-		s.FileMode, err = mustGetMode(flags, "file-mode")
+		s.FileMode, err = getMode(flags, "file-mode")
 		if err != nil {
 			return err
 		}
 
-		s.DirMode, err = mustGetMode(flags, "file-mode")
+		s.DirMode, err = getMode(flags, "file-mode")
 		if err != nil {
 			return err
 		}
 
-		address, err := mustGetString(flags, "address")
+		address, err := getString(flags, "address")
 		if err != nil {
 			return err
 		}
 
-		socket, err := mustGetString(flags, "socket")
+		socket, err := getString(flags, "socket")
 		if err != nil {
 			return err
 		}
 
-		root, err := mustGetString(flags, "root")
+		root, err := getString(flags, "root")
 		if err != nil {
 			return err
 		}
 
-		baseURL, err := mustGetString(flags, "baseurl")
+		baseURL, err := getString(flags, "baseurl")
 		if err != nil {
 			return err
 		}
 
-		tlsKey, err := mustGetString(flags, "key")
+		tlsKey, err := getString(flags, "key")
 		if err != nil {
 			return err
 		}
 
-		cert, err := mustGetString(flags, "cert")
+		cert, err := getString(flags, "cert")
 		if err != nil {
 			return err
 		}
 
-		port, err := mustGetString(flags, "port")
+		port, err := getString(flags, "port")
 		if err != nil {
 			return err
 		}
 
-		log, err := mustGetString(flags, "log")
+		log, err := getString(flags, "log")
 		if err != nil {
 			return err
 		}

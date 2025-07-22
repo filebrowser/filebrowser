@@ -24,11 +24,11 @@ options you want to change.`,
 	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
 		username, id := parseUsernameOrID(args[0])
 		flags := cmd.Flags()
-		password, err := mustGetString(flags, "password")
+		password, err := getString(flags, "password")
 		if err != nil {
 			return err
 		}
-		newUsername, err := mustGetString(flags, "username")
+		newUsername, err := getString(flags, "username")
 		if err != nil {
 			return err
 		}
@@ -72,7 +72,7 @@ options you want to change.`,
 		user.Perm = defaults.Perm
 		user.Commands = defaults.Commands
 		user.Sorting = defaults.Sorting
-		user.LockPassword, err = mustGetBool(flags, "lockPassword")
+		user.LockPassword, err = getBool(flags, "lockPassword")
 		if err != nil {
 			return err
 		}

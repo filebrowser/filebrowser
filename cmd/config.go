@@ -56,7 +56,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 }
 
 func getAuthMethod(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, map[string]interface{}, error) {
-	methodStr, err := mustGetString(flags, "auth.method")
+	methodStr, err := getString(flags, "auth.method")
 	if err != nil {
 		return "", nil, err
 	}
@@ -87,7 +87,7 @@ func getAuthMethod(flags *pflag.FlagSet, defaults ...interface{}) (settings.Auth
 }
 
 func getProxyAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
-	header, err := mustGetString(flags, "auth.header")
+	header, err := getString(flags, "auth.header")
 	if err != nil {
 		return nil, err
 	}
@@ -109,15 +109,15 @@ func getNoAuth() auth.Auther {
 
 func getJSONAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
 	jsonAuth := &auth.JSONAuth{}
-	host, err := mustGetString(flags, "recaptcha.host")
+	host, err := getString(flags, "recaptcha.host")
 	if err != nil {
 		return nil, err
 	}
-	key, err := mustGetString(flags, "recaptcha.key")
+	key, err := getString(flags, "recaptcha.key")
 	if err != nil {
 		return nil, err
 	}
-	secret, err := mustGetString(flags, "recaptcha.secret")
+	secret, err := getString(flags, "recaptcha.secret")
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +145,7 @@ func getJSONAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (au
 }
 
 func getHookAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
-	command, err := mustGetString(flags, "auth.command")
+	command, err := getString(flags, "auth.command")
 	if err != nil {
 		return nil, err
 	}

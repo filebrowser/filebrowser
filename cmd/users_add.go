@@ -31,7 +31,7 @@ var usersAddCmd = &cobra.Command{
 			return err
 		}
 
-		lockPassword, err := mustGetBool(cmd.Flags(), "lockPassword")
+		lockPassword, err := getBool(cmd.Flags(), "lockPassword")
 		if err != nil {
 			return err
 		}

@@ -40,7 +40,7 @@ var docsCmd = &cobra.Command{
 	Hidden: true,
 	Args:   cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, _ []string) error {
-		dir, err := mustGetString(cmd.Flags(), "path")
+		dir, err := getString(cmd.Flags(), "path")
 		if err != nil {
 			return err
 		}

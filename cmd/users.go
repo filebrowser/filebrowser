@@ -80,7 +80,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 }
 
 func getViewMode(flags *pflag.FlagSet) (users.ViewMode, error) {
-	viewModeStr, err := mustGetString(flags, "viewMode")
+	viewModeStr, err := getString(flags, "viewMode")
 	if err != nil {
 		return "", err
 	}
@@ -101,35 +101,35 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 		var err error
 		switch flag.Name {
 		case "scope":
-			defaults.Scope, err = mustGetString(flags, flag.Name)
+			defaults.Scope, err = getString(flags, flag.Name)
 		case "locale":
-			defaults.Locale, err = mustGetString(flags, flag.Name)
+			defaults.Locale, err = getString(flags, flag.Name)
 		case "viewMode":
 			defaults.ViewMode, err = getViewMode(flags)
 		case "singleClick":
-			defaults.SingleClick, err = mustGetBool(flags, flag.Name)
+			defaults.SingleClick, err = getBool(flags, flag.Name)
 		case "perm.admin":
-			defaults.Perm.Admin, err = mustGetBool(flags, flag.Name)
+			defaults.Perm.Admin, err = getBool(flags, flag.Name)
 		case "perm.execute":
-			defaults.Perm.Execute, err = mustGetBool(flags, flag.Name)
+			defaults.Perm.Execute, err = getBool(flags, flag.Name)
 		case "perm.create":
-			defaults.Perm.Create, err = mustGetBool(flags, flag.Name)
+			defaults.Perm.Create, err = getBool(flags, flag.Name)
 		case "perm.rename":
-			defaults.Perm.Rename, err = mustGetBool(flags, flag.Name)
+			defaults.Perm.Rename, err = getBool(flags, flag.Name)
 		case "perm.modify":
-			defaults.Perm.Modify, err = mustGetBool(flags, flag.Name)
+			defaults.Perm.Modify, err = getBool(flags, flag.Name)
 		case "perm.delete":
-			defaults.Perm.Delete, err = mustGetBool(flags, flag.Name)
+			defaults.Perm.Delete, err = getBool(flags, flag.Name)
 		case "perm.share":
-			defaults.Perm.Share, err = mustGetBool(flags, flag.Name)
+			defaults.Perm.Share, err = getBool(flags, flag.Name)
 		case "perm.download":
-			defaults.Perm.Download, err = mustGetBool(flags, flag.Name)
+			defaults.Perm.Download, err = getBool(flags, flag.Name)
 		case "commands":
 			defaults.Commands, err = flags.GetStringSlice(flag.Name)
 		case "sorting.by":
-			defaults.Sorting.By, err = mustGetString(flags, flag.Name)
+			defaults.Sorting.By, err = getString(flags, flag.Name)
 		case "sorting.asc":
-			defaults.Sorting.Asc, err = mustGetBool(flags, flag.Name)
+			defaults.Sorting.Asc, err = getBool(flags, flag.Name)
 		}
 		if err != nil {
 			visitErr = err

@@ -35,49 +35,49 @@ you want to change. Other options will remain unchanged.`,
 			}
 			switch flag.Name {
 			case "baseurl":
-				ser.BaseURL, err = mustGetString(flags, flag.Name)
+				ser.BaseURL, err = getString(flags, flag.Name)
 			case "root":
-				ser.Root, err = mustGetString(flags, flag.Name)
+				ser.Root, err = getString(flags, flag.Name)
 			case "socket":
-				ser.Socket, err = mustGetString(flags, flag.Name)
+				ser.Socket, err = getString(flags, flag.Name)
 			case "cert":
-				ser.TLSCert, err = mustGetString(flags, flag.Name)
+				ser.TLSCert, err = getString(flags, flag.Name)
 			case "key":
-				ser.TLSKey, err = mustGetString(flags, flag.Name)
+				ser.TLSKey, err = getString(flags, flag.Name)
 			case "address":
-				ser.Address, err = mustGetString(flags, flag.Name)
+				ser.Address, err = getString(flags, flag.Name)
 			case "port":
-				ser.Port, err = mustGetString(flags, flag.Name)
+				ser.Port, err = getString(flags, flag.Name)
 			case "log":
-				ser.Log, err = mustGetString(flags, flag.Name)
+				ser.Log, err = getString(flags, flag.Name)
 			case "signup":
-				set.Signup, err = mustGetBool(flags, flag.Name)
+				set.Signup, err = getBool(flags, flag.Name)
 			case "auth.method":
 				hasAuth = true
 			case "shell":
 				var shell string
-				shell, err = mustGetString(flags, flag.Name)
+				shell, err = getString(flags, flag.Name)
 				set.Shell = convertCmdStrToCmdArray(shell)
 			case "create-user-dir":
-				set.CreateUserDir, err = mustGetBool(flags, flag.Name)
+				set.CreateUserDir, err = getBool(flags, flag.Name)
 			case "minimum-password-length":
-				set.MinimumPasswordLength, err = mustGetUint(flags, flag.Name)
+				set.MinimumPasswordLength, err = getUint(flags, flag.Name)
 			case "branding.name":
-				set.Branding.Name, err = mustGetString(flags, flag.Name)
+				set.Branding.Name, err = getString(flags, flag.Name)
 			case "branding.color":
-				set.Branding.Color, err = mustGetString(flags, flag.Name)
+				set.Branding.Color, err = getString(flags, flag.Name)
 			case "branding.theme":
-				set.Branding.Theme, err = mustGetString(flags, flag.Name)
+				set.Branding.Theme, err = getString(flags, flag.Name)
 			case "branding.disableExternal":
-				set.Branding.DisableExternal, err = mustGetBool(flags, flag.Name)
+				set.Branding.DisableExternal, err = getBool(flags, flag.Name)
 			case "branding.disableUsedPercentage":
-				set.Branding.DisableUsedPercentage, err = mustGetBool(flags, flag.Name)
+				set.Branding.DisableUsedPercentage, err = getBool(flags, flag.Name)
 			case "branding.files":
-				set.Branding.Files, err = mustGetString(flags, flag.Name)
+				set.Branding.Files, err = getString(flags, flag.Name)
 			case "file-mode":
-				set.FileMode, err = mustGetMode(flags, flag.Name)
+				set.FileMode, err = getMode(flags, flag.Name)
 			case "dir-mode":
-				set.DirMode, err = mustGetMode(flags, flag.Name)
+				set.DirMode, err = getMode(flags, flag.Name)
 			}
 		})
 

@@ -45,7 +45,7 @@ list or set it to 0.`,
 			}
 		}
 
-		replace, err := mustGetBool(cmd.Flags(), "replace")
+		replace, err := getBool(cmd.Flags(), "replace")
 		if err != nil {
 			return err
 		}
@@ -69,7 +69,7 @@ list or set it to 0.`,
 			}
 		}
 
-		overwrite, err := mustGetBool(cmd.Flags(), "overwrite")
+		overwrite, err := getBool(cmd.Flags(), "overwrite")
 		if err != nil {
 			return err
 		}

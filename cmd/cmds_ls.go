@@ -19,7 +19,7 @@ var cmdsLsCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		evt, err := mustGetString(cmd.Flags(), "event")
+		evt, err := getString(cmd.Flags(), "event")
 		if err != nil {
 			return err
 		}
