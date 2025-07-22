@@ -44,13 +44,14 @@ var docsCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+
 		err = generateDocs(rootCmd, dir)
 		if err != nil {
 			return err
 		}
 		names := []string{}
 
-		walkErr := filepath.Walk(dir, func(_ string, info os.FileInfo, err error) error {
+		err = filepath.Walk(dir, func(_ string, info os.FileInfo, err error) error {
 			if err != nil || info.IsDir() {
 				return err
 			}
@@ -62,10 +63,10 @@ var docsCmd = &cobra.Command{
 			names = append(names, info.Name())
 			return nil
 		})
-
-		if walkErr != nil {
-			return walkErr
+		if err != nil {
+			return err
 		}
+
 		printToc(names)
 		return nil
 	},
