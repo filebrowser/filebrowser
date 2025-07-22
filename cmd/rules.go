@@ -29,19 +29,22 @@ rules.`,
 	Args: cobra.NoArgs,
 }
 
-func runRules(st *storage.Storage, cmd *cobra.Command, usersFn func(*users.User), globalFn func(*settings.Settings)) error {
+func runRules(st *storage.Storage, cmd *cobra.Command, usersFn func(*users.User) error, globalFn func(*settings.Settings) error) error {
 	id, err := getUserIdentifier(cmd.Flags())
 	if err != nil {
 		return err
 	}
 	if id != nil {
-		user, usrErr := st.Users.Get("", id)
-		if usrErr != nil {
-			return usrErr
+		user, err := st.Users.Get("", id)
+		if err != nil {
+			return err
 		}
 
 		if usersFn != nil {
-			usersFn(user)
+			err = usersFn(user)
+			if err != nil {
+				return err
+			}
 		}
 
 		printRules(user.Rules, id)
@@ -54,7 +57,10 @@ func runRules(st *storage.Storage, cmd *cobra.Command, usersFn func(*users.User)
 	}
 
 	if globalFn != nil {
-		globalFn(s)
+		err = globalFn(s)
+		if err != nil {
+			return err
+		}
 	}
 
 	printRules(s.Rules, id)

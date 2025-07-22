@@ -53,20 +53,14 @@ including 'index_end'.`,
 			}
 		}
 
-		user := func(u *users.User) {
+		user := func(u *users.User) error {
 			u.Rules = append(u.Rules[:i], u.Rules[f+1:]...)
-			err := d.store.Users.Save(u)
-			if err != nil {
-				checkErr(err)
-			}
+			return d.store.Users.Save(u)
 		}
 
-		global := func(s *settings.Settings) {
+		global := func(s *settings.Settings) error {
 			s.Rules = append(s.Rules[:i], s.Rules[f+1:]...)
-			err := d.store.Settings.Save(s)
-			if err != nil {
-				checkErr(err)
-			}
+			return d.store.Settings.Save(s)
 		}
 
 		return runRules(d.store, cmd, user, global)

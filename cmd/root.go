@@ -119,7 +119,10 @@ user created with the credentials from options "username" and "password".`,
 		log.Println(cfgFile)
 
 		if !d.hadDB {
-			quickSetup(cmd.Flags(), *d)
+			err := quickSetup(cmd.Flags(), *d)
+			if err != nil {
+				return err
+			}
 		}
 
 		// build img service
@@ -144,7 +147,10 @@ user created with the credentials from options "username" and "password".`,
 			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
 		}
 
-		server := getRunParams(cmd.Flags(), d.store)
+		server, err := getRunParams(cmd.Flags(), d.store)
+		if err != nil {
+			return err
+		}
 		setupLog(server.Log)
 
 		root, err := filepath.Abs(server.Root)
@@ -251,9 +257,11 @@ user created with the credentials from options "username" and "password".`,
 }
 
 //nolint:gocyclo
-func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
+func getRunParams(flags *pflag.FlagSet, st *storage.Storage) (*settings.Server, error) {
 	server, err := st.Settings.GetServer()
-	checkErr(err)
+	if err != nil {
+		return nil, err
+	}
 
 	if val, set := getStringParamB(flags, "root"); set {
 		server.Root = val
@@ -296,7 +304,7 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 	}
 
 	if isAddrSet && isSocketSet {
-		checkErr(errors.New("--socket flag cannot be used with --address, --port, --key nor --cert"))
+		return nil, errors.New("--socket flag cannot be used with --address, --port, --key nor --cert")
 	}
 
 	// Do not use saved Socket if address was manually set.
@@ -327,7 +335,7 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 		server.TokenExpirationTime = val
 	}
 
-	return server
+	return server, nil
 }
 
 // getBoolParamB returns a parameter as a string and a boolean to tell if it is different from the default
@@ -406,7 +414,7 @@ func setupLog(logMethod string) {
 	}
 }
 
-func quickSetup(flags *pflag.FlagSet, d pythonData) {
+func quickSetup(flags *pflag.FlagSet, d pythonData) error {
 	log.Println("Performing quick setup")
 
 	set := &settings.Settings{
@@ -449,10 +457,14 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 		set.AuthMethod = auth.MethodJSONAuth
 		err = d.store.Auth.Save(&auth.JSONAuth{})
 	}
+	if err != nil {
+		return err
+	}
 
-	checkErr(err)
 	err = d.store.Settings.Save(set)
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 
 	ser := &settings.Server{
 		BaseURL: getStringParam(flags, "baseurl"),
@@ -465,7 +477,9 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	}
 
 	err = d.store.Settings.SaveServer(ser)
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 
 	username := getStringParam(flags, "username")
 	password := getStringParam(flags, "password")
@@ -473,11 +487,15 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	if password == "" {
 		var pwd string
 		pwd, err = users.RandomPwd(set.MinimumPasswordLength)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 
 		log.Printf("User '%s' initialized with randomly generated password: %s\n", username, pwd)
 		password, err = users.ValidateAndHashPwd(pwd, set.MinimumPasswordLength)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 	} else {
 		log.Printf("User '%s' initialize wth user-provided password\n", username)
 	}
@@ -495,14 +513,15 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	set.Defaults.Apply(user)
 	user.Perm.Admin = true
 
-	err = d.store.Users.Save(user)
-	checkErr(err)
+	return d.store.Users.Save(user)
 }
 
 func initConfig() {
 	if cfgFile == "" {
 		home, err := homedir.Dir()
-		checkErr(err)
+		if err != nil {
+			panic(err)
+		}
 		v.AddConfigPath(".")
 		v.AddConfigPath(home)
 		v.AddConfigPath("/etc/filebrowser/")

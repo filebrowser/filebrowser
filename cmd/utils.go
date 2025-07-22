@@ -23,12 +23,6 @@ import (
 
 const dbPerms = 0640
 
-func checkErr(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func returnErr(err error) error {
 	if err != nil {
 		return err
@@ -65,7 +59,9 @@ func mustGetUint(flags *pflag.FlagSet, flag string) (uint, error) {
 
 func generateKey() []byte {
 	k, err := settings.GenerateKey()
-	checkErr(err)
+	if err != nil {
+		panic(err)
+	}
 	return k
 }
 
