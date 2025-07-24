@@ -146,12 +146,19 @@ onBeforeUnmount(() => {
 });
 
 onBeforeRouteUpdate((to, from, next) => {
-  if (!editor.value?.session.getUndoManager().isClean()) {
-    layoutStore.showHover("discardEditorChanges");
-    next(false);
-  } else {
+  if (editor.value?.session.getUndoManager().isClean()) {
     next();
+
+    return;
   }
+
+  layoutStore.showHover({
+    prompt: "discardEditorChanges",
+    confirm: (event: Event) => {
+      event.preventDefault();
+      next();
+    },
+  });
 });
 
 const keyEvent = (event: KeyboardEvent) => {
@@ -216,13 +223,6 @@ const decreaseFontSize = () => {
 };
 
 const close = () => {
-  if (!editor.value?.session.getUndoManager().isClean()) {
-    layoutStore.showHover("discardEditorChanges");
-    return;
-  }
-
-  fileStore.updateRequest(null);
-
   const uri = url.removeLastDir(route.path) + "/";
   router.push({ path: uri });
 };

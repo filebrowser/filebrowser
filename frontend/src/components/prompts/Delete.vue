@@ -48,9 +48,9 @@ export default {
       "selectedCount",
       "req",
       "selected",
-      "currentPrompt",
     ]),
-    ...mapWritableState(useFileStore, ["reload"]),
+    ...mapState(useLayoutStore, ["currentPrompt"]),
+    ...mapWritableState(useFileStore, ["reload", "preselect"]),
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),
@@ -80,6 +80,12 @@ export default {
 
         await Promise.all(promises);
         buttons.success("delete");
+
+        const nearbyItem =
+          this.req.items[Math.max(0, Math.min(this.selected) - 1)];
+
+        this.preselect = nearbyItem?.path;
+
         this.reload = true;
       } catch (e) {
         buttons.done("delete");
