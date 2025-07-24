@@ -17,7 +17,7 @@
       </button>
       <button
         id="focus-prompt"
-        @click="submit"
+        @click="currentPrompt.confirm"
         class="button button--flat button--red"
         :aria-label="$t('buttons.discardChanges')"
         :title="$t('buttons.discardChanges')"
@@ -30,22 +30,16 @@
 </template>
 
 <script>
-import { mapActions } from "pinia";
-import url from "@/utils/url";
+import { mapState, mapActions } from "pinia";
 import { useLayoutStore } from "@/stores/layout";
-import { useFileStore } from "@/stores/file";
 
 export default {
   name: "discardEditorChanges",
+  computed: {
+    ...mapState(useLayoutStore, ["currentPrompt"]),
+  },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),
-    ...mapActions(useFileStore, ["updateRequest"]),
-    submit: async function () {
-      this.updateRequest(null);
-
-      const uri = url.removeLastDir(this.$route.path) + "/";
-      this.$router.push({ path: uri });
-    },
   },
 };
 </script>

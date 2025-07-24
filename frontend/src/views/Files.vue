@@ -114,6 +114,32 @@ watch(uploadError, (newValue) => {
 
 // Define functions
 
+const applyPreSelection = () => {
+  const preselect = fileStore.preselect;
+  fileStore.preselect = null;
+
+  if (!fileStore.req?.isDir || fileStore.oldReq === null) return;
+
+  let index = -1;
+  if (preselect) {
+    // Find item with the specified path
+    index = fileStore.req.items.findIndex((item) => item.path === preselect);
+  } else if (fileStore.oldReq.path.startsWith(fileStore.req.path)) {
+    // Get immediate child folder of the previous path
+    const name = fileStore.oldReq.path
+      .substring(fileStore.req.path.length)
+      .split("/")
+      .shift();
+
+    index = fileStore.req.items.findIndex(
+      (val) => val.path == fileStore.req!.path + name
+    );
+  }
+
+  if (index === -1) return;
+  fileStore.selected.push(index);
+};
+
 const fetchData = async () => {
   // Reset view information.
   fileStore.reload = false;
@@ -136,6 +162,9 @@ const fetchData = async () => {
     fileStore.updateRequest(res);
     document.title = `${res.name || t("sidebar.myFiles")} - ${t("files.files")} - ${name}`;
     layoutStore.loading = false;
+
+    // Selects the post-reload target item or the previously visited child folder
+    applyPreSelection();
   } catch (err) {
     if (err instanceof StatusError && err.is_canceled) {
       return;
