@@ -420,25 +420,16 @@ const isMobile = computed(() => {
 
 watch(req, () => {
   // Reset the show value
-  if (
-    window.sessionStorage.getItem("listFrozen") !== "true" &&
-    window.sessionStorage.getItem("modified") !== "true"
-  ) {
-    showLimit.value = 50;
+  showLimit.value = 50;
 
-    nextTick(() => {
-      // Ensures that the listing is displayed
-      // How much every listing item affects the window height
-      setItemWeight();
+  nextTick(() => {
+    // Ensures that the listing is displayed
+    // How much every listing item affects the window height
+    setItemWeight();
 
-      // Fill and fit the window with listing items
-      fillWindow(true);
-    });
-  }
-  if (req.value?.isDir) {
-    window.sessionStorage.setItem("listFrozen", "false");
-    window.sessionStorage.setItem("modified", "false");
-  }
+    // Fill and fit the window with listing items
+    fillWindow(true);
+  });
 });
 
 onMounted(() => {

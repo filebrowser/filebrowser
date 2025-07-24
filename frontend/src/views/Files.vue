@@ -102,15 +102,7 @@ onUnmounted(() => {
   fetchDataController.abort();
 });
 
-watch(route, (to, from) => {
-  if (from.path.endsWith("/")) {
-    window.sessionStorage.setItem(
-      "listFrozen",
-      (!to.path.endsWith("/")).toString()
-    );
-  } else if (to.path.endsWith("/")) {
-    fileStore.updateRequest(null);
-  }
+watch(route, () => {
   fetchData();
 });
 watch(reload, (newValue) => {
@@ -130,12 +122,7 @@ const fetchData = async () => {
   layoutStore.closeHovers();
 
   // Set loading to true and reset the error.
-  if (
-    window.sessionStorage.getItem("listFrozen") !== "true" &&
-    window.sessionStorage.getItem("modified") !== "true"
-  ) {
-    layoutStore.loading = true;
-  }
+  layoutStore.loading = true;
   error.value = null;
 
   let url = route.path;
