@@ -351,6 +351,8 @@ main .spinner .bounce2 {
 #editor-container .breadcrumbs {
   height: 2.3em;
   padding: 0 1em;
+  position: relative;
+  top: 0;
 }
 
 /*** RTL - flip and position arrow of path ***/
