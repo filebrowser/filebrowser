@@ -1,7 +1,7 @@
 <template>
   <div>
     <header-bar
-      v-if="error || fileStore.req?.type === null"
+      v-if="error || fileStore.req?.type === undefined"
       showMenu
       showLogo
     />
@@ -9,7 +9,7 @@
     <breadcrumbs base="/files" />
     <errors v-if="error" :errorCode="error.status" />
     <component v-else-if="currentView" :is="currentView"></component>
-    <div v-else-if="currentView !== null">
+    <div v-else>
       <h2 class="message delayed">
         <div class="spinner">
           <div class="bounce1"></div>

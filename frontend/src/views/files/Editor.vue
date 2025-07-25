@@ -32,17 +32,25 @@
       />
     </header-bar>
 
-    <Breadcrumbs base="/files" noLink />
-
     <!-- preview container -->
-    <div
-      v-show="isPreview && isMarkdownFile"
-      id="preview-container"
-      class="md_preview"
-      v-html="previewContent"
-    ></div>
+    <div class="loading delayed" v-if="layoutStore.loading">
+      <div class="spinner">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+      </div>
+    </div>
+    <template v-else>
+      <Breadcrumbs base="/files" noLink />
 
-    <form v-show="!isPreview || !isMarkdownFile" id="editor"></form>
+      <div
+        v-show="isPreview && isMarkdownFile"
+        id="preview-container"
+        class="md_preview"
+        v-html="previewContent"
+      ></div>
+      <form v-show="!isPreview || !isMarkdownFile" id="editor"></form>
+    </template>
   </div>
 </template>
 

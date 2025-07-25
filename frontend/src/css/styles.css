@@ -329,6 +329,7 @@ main .spinner .bounce2 {
 #editor-container {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   background-color: var(--background);
   position: fixed;
   padding-top: 4em;
