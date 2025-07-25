@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "pinia";
+import { mapActions, mapState, mapWritableState } from "pinia";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 import { useAuthStore } from "@/stores/auth";
@@ -63,6 +63,7 @@ import FileList from "./FileList.vue";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
 import * as upload from "@/utils/upload";
+import { removePrefix } from "@/api/utils";
 
 export default {
   name: "move",
@@ -77,6 +78,7 @@ export default {
   computed: {
     ...mapState(useFileStore, ["req", "selected"]),
     ...mapState(useAuthStore, ["user"]),
+    ...mapWritableState(useFileStore, ["preselect"]),
     excludedFolders() {
       return this.selected
         .filter((idx) => this.req.items[idx].isDir)
@@ -104,6 +106,7 @@ export default {
           .move(items, overwrite, rename)
           .then(() => {
             buttons.success("move");
+            this.preselect = removePrefix(items[0].to);
             this.$router.push({ path: this.dest });
           })
           .catch((e) => {

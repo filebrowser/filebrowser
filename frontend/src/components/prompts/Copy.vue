@@ -62,6 +62,7 @@ import FileList from "./FileList.vue";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
 import * as upload from "@/utils/upload";
+import { removePrefix } from "@/api/utils";
 
 export default {
   name: "copy",
@@ -76,7 +77,7 @@ export default {
   computed: {
     ...mapState(useFileStore, ["req", "selected"]),
     ...mapState(useAuthStore, ["user"]),
-    ...mapWritableState(useFileStore, ["reload"]),
+    ...mapWritableState(useFileStore, ["reload", "preselect"]),
   },
   methods: {
     ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
@@ -100,6 +101,7 @@ export default {
           .copy(items, overwrite, rename)
           .then(() => {
             buttons.success("copy");
+            this.preselect = removePrefix(items[0].to);
 
             if (this.$route.path === this.dest) {
               this.reload = true;
