@@ -301,10 +301,8 @@ watch(route, () => {
 // Specify hooks
 onMounted(async () => {
   window.addEventListener("keydown", key);
-  if (fileStore.oldReq) {
-    listing.value = fileStore.oldReq.items;
-    updatePreview();
-  }
+  listing.value = fileStore.oldReq?.items ?? null;
+  updatePreview();
 });
 
 onBeforeUnmount(() => window.removeEventListener("keydown", key));
