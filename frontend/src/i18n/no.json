@@ -230,7 +230,7 @@
       "title": "Tema"
     },
     "user": "Bruker",
-    "userCommands": "Commands",
+    "userCommands": "Kommando",
     "userCommandsHelp": "A space separated list with the available commands for this user. Example:\n",
     "userCreated": "User created!",
     "userDefaults": "User default settings",
