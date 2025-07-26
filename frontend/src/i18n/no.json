@@ -158,7 +158,7 @@
     "administrator": "Administrator",
     "allowCommands": "Utfør kommandoer",
     "allowEdit": "Rediger, gi nytt navn til og slett filer eller mapper",
-    "allowNew": "Create new files and directories",
+    "allowNew": "Opprett nye filer og direktorater",
     "allowPublish": "Publish new posts and pages",
     "allowSignup": "Allow users to signup",
     "avoidChanges": "(leave blank to avoid changes)",
