@@ -231,7 +231,7 @@
     },
     "user": "Bruker",
     "userCommands": "Kommando",
-    "userCommandsHelp": "A space separated list with the available commands for this user. Example:\n",
+    "userCommandsHelp": "En mellomromsseparert liste med tilgjengelige kommandoer for denne brukeren. Eksempel:\n",
     "userCreated": "User created!",
     "userDefaults": "User default settings",
     "userDeleted": "User deleted!",
