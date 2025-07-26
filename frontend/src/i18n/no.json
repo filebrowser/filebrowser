@@ -226,10 +226,10 @@
     "themes": {
       "default": "Systemstandard",
       "dark": "Mørk",
-      "light": "Light",
-      "title": "Theme"
+      "light": "Lyst",
+      "title": "Tema"
     },
-    "user": "User",
+    "user": "Bruker",
     "userCommands": "Commands",
     "userCommandsHelp": "A space separated list with the available commands for this user. Example:\n",
     "userCreated": "User created!",
