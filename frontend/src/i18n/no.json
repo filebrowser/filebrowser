@@ -180,7 +180,7 @@
     "createUserHomeDirectory": "Opprett bruker hjemme direktorat",
     "customStylesheet": "Egendefinert stilark",
     "defaultUserDescription": "Dette er standardinnstillingene for nye brukere.",
-    "disableExternalLinks": "Disable external links (except documentation)",
+    "disableExternalLinks": "Deaktiver eksterne lenker (unntatt dokumentasjon)",
     "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentation",
     "examples": "Examples",
