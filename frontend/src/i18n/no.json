@@ -179,7 +179,7 @@
     "userScopeGenerationPlaceholder": "Omfanget vil bli generert automatisk",
     "createUserHomeDirectory": "Opprett bruker hjemme direktorat",
     "customStylesheet": "Egendefinert stilark",
-    "defaultUserDescription": "These are the default settings for new users.",
+    "defaultUserDescription": "Dette er standardinnstillingene for nye brukere.",
     "disableExternalLinks": "Disable external links (except documentation)",
     "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentation",
