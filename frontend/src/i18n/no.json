@@ -218,7 +218,7 @@
     "rulesHelp": "Her kan du definere et sett med tillatelses- og forbudsregler for denne spesifikke brukeren. De blokkerte filene vil ikke vises i listene, og de vil ikke være tilgjengelige for brukeren. Vi støtter regex og stier i forhold til brukerens omfang.",
     "scope": "Omfang",
     "setDateFormat": "Sett eksakt dato format",
-    "settingsUpdated": "Settings updated!",
+    "settingsUpdated": "Innstilinger opptatert!",
     "shareDuration": "Share Duration",
     "shareManagement": "Share Management",
     "shareDeleted": "Share deleted!",
