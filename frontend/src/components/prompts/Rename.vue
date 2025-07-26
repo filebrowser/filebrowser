@@ -46,6 +46,7 @@ import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 import url from "@/utils/url";
 import { files as api } from "@/api";
+import { removePrefix } from "@/api/utils";
 
 export default {
   name: "rename",
@@ -65,7 +66,7 @@ export default {
       "selectedCount",
       "isListing",
     ]),
-    ...mapWritableState(useFileStore, ["reload"]),
+    ...mapWritableState(useFileStore, ["reload", "preselect"]),
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),
@@ -97,13 +98,14 @@ export default {
       newLink =
         url.removeLastDir(oldLink) + "/" + encodeURIComponent(this.name);
 
-      window.sessionStorage.setItem("modified", "true");
       try {
         await api.move([{ from: oldLink, to: newLink }]);
         if (!this.isListing) {
           this.$router.push({ path: newLink });
           return;
         }
+
+        this.preselect = removePrefix(newLink);
 
         this.reload = true;
       } catch (e) {

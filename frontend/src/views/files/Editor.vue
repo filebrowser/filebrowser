@@ -32,17 +32,25 @@
       />
     </header-bar>
 
-    <Breadcrumbs base="/files" noLink />
-
     <!-- preview container -->
-    <div
-      v-show="isPreview && isMarkdownFile"
-      id="preview-container"
-      class="md_preview"
-      v-html="previewContent"
-    ></div>
+    <div class="loading delayed" v-if="layoutStore.loading">
+      <div class="spinner">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+      </div>
+    </div>
+    <template v-else>
+      <Breadcrumbs base="/files" noLink />
 
-    <form v-show="!isPreview || !isMarkdownFile" id="editor"></form>
+      <div
+        v-show="isPreview && isMarkdownFile"
+        id="preview-container"
+        class="md_preview"
+        v-html="previewContent"
+      ></div>
+      <form v-show="!isPreview || !isMarkdownFile" id="editor"></form>
+    </template>
   </div>
 </template>
 
@@ -146,12 +154,19 @@ onBeforeUnmount(() => {
 });
 
 onBeforeRouteUpdate((to, from, next) => {
-  if (!editor.value?.session.getUndoManager().isClean()) {
-    layoutStore.showHover("discardEditorChanges");
-    next(false);
-  } else {
+  if (editor.value?.session.getUndoManager().isClean()) {
     next();
+
+    return;
   }
+
+  layoutStore.showHover({
+    prompt: "discardEditorChanges",
+    confirm: (event: Event) => {
+      event.preventDefault();
+      next();
+    },
+  });
 });
 
 const keyEvent = (event: KeyboardEvent) => {
@@ -216,13 +231,6 @@ const decreaseFontSize = () => {
 };
 
 const close = () => {
-  if (!editor.value?.session.getUndoManager().isClean()) {
-    layoutStore.showHover("discardEditorChanges");
-    return;
-  }
-
-  fileStore.updateRequest(null);
-
   const uri = url.removeLastDir(route.path) + "/";
   router.push({ path: uri });
 };

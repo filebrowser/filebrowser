@@ -1,7 +1,7 @@
 <template>
   <div>
     <header-bar
-      v-if="error || fileStore.req?.type === null"
+      v-if="error || fileStore.req?.type === undefined"
       showMenu
       showLogo
     />
@@ -9,7 +9,7 @@
     <breadcrumbs base="/files" />
     <errors v-if="error" :errorCode="error.status" />
     <component v-else-if="currentView" :is="currentView"></component>
-    <div v-else-if="currentView !== null">
+    <div v-else>
       <h2 class="message delayed">
         <div class="spinner">
           <div class="bounce1"></div>
@@ -102,15 +102,7 @@ onUnmounted(() => {
   fetchDataController.abort();
 });
 
-watch(route, (to, from) => {
-  if (from.path.endsWith("/")) {
-    window.sessionStorage.setItem(
-      "listFrozen",
-      (!to.path.endsWith("/")).toString()
-    );
-  } else if (to.path.endsWith("/")) {
-    fileStore.updateRequest(null);
-  }
+watch(route, () => {
   fetchData();
 });
 watch(reload, (newValue) => {
@@ -122,6 +114,32 @@ watch(uploadError, (newValue) => {
 
 // Define functions
 
+const applyPreSelection = () => {
+  const preselect = fileStore.preselect;
+  fileStore.preselect = null;
+
+  if (!fileStore.req?.isDir || fileStore.oldReq === null) return;
+
+  let index = -1;
+  if (preselect) {
+    // Find item with the specified path
+    index = fileStore.req.items.findIndex((item) => item.path === preselect);
+  } else if (fileStore.oldReq.path.startsWith(fileStore.req.path)) {
+    // Get immediate child folder of the previous path
+    const name = fileStore.oldReq.path
+      .substring(fileStore.req.path.length)
+      .split("/")
+      .shift();
+
+    index = fileStore.req.items.findIndex(
+      (val) => val.path == fileStore.req!.path + name
+    );
+  }
+
+  if (index === -1) return;
+  fileStore.selected.push(index);
+};
+
 const fetchData = async () => {
   // Reset view information.
   fileStore.reload = false;
@@ -130,12 +148,7 @@ const fetchData = async () => {
   layoutStore.closeHovers();
 
   // Set loading to true and reset the error.
-  if (
-    window.sessionStorage.getItem("listFrozen") !== "true" &&
-    window.sessionStorage.getItem("modified") !== "true"
-  ) {
-    layoutStore.loading = true;
-  }
+  layoutStore.loading = true;
   error.value = null;
 
   let url = route.path;
@@ -149,6 +162,9 @@ const fetchData = async () => {
     fileStore.updateRequest(res);
     document.title = `${res.name || t("sidebar.myFiles")} - ${t("files.files")} - ${name}`;
     layoutStore.loading = false;
+
+    // Selects the post-reload target item or the previously visited child folder
+    applyPreSelection();
   } catch (err) {
     if (err instanceof StatusError && err.is_canceled) {
       return;
