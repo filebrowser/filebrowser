@@ -156,7 +156,7 @@
   "settings": {
     "admin": "Admin",
     "administrator": "Administrator",
-    "allowCommands": "Execute commands",
+    "allowCommands": "Utfør kommandoer",
     "allowEdit": "Edit, rename and delete files or directories",
     "allowNew": "Create new files and directories",
     "allowPublish": "Publish new posts and pages",
