@@ -163,7 +163,7 @@
     "allowSignup": "Tilat brukere å registrere seg",
     "avoidChanges": "(la stå tomt for å unngå endringer)",
     "branding": "Merkevarebygging",
-    "brandingDirectoryPath": "Branding directory path",
+    "brandingDirectoryPath": "Bane for merkevarekatalog",
     "brandingHelp": "You can customize how your File Browser instance looks and feels by changing its name, replacing the logo, adding custom styles and even disable external links to GitHub.\nFor more information about custom branding, please check out the {0}.",
     "changePassword": "Change Password",
     "commandRunner": "Command runner",
