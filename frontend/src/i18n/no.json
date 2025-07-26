@@ -165,7 +165,7 @@
     "branding": "Merkevarebygging",
     "brandingDirectoryPath": "Bane for merkevarekatalog",
     "brandingHelp": "Du kan tilpasse hvordan Filleser-instansen din ser ut og føles ved å endre navnet, erstatte logoen, legge til egendefinerte stiler og til og med deaktivere eksterne lenker til GitHub.\n\nFor mer informasjon om tilpasset merkevarebygging, se {0}.",
-    "changePassword": "Change Password",
+    "changePassword": "Skift Passord",
     "commandRunner": "Command runner",
     "commandRunnerHelp": "Here you can set commands that are executed in the named events. You must write one per line. The environment variables {0} and {1} will be available, being {0} relative to {1}. For more information about this feature and the available environment variables, please read the {2}.",
     "commandsUpdated": "Commands updated!",
