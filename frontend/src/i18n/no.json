@@ -168,7 +168,7 @@
     "changePassword": "Skift Passord",
     "commandRunner": "Kommandoløper",
     "commandRunnerHelp": "Her kan du angi kommandoer som skal utføres i de navngitte hendelsene. Du må skrive én per linje. Miljøvariablene {0} og {1} vil være tilgjengelige, siden de er {0} relative til {1}. For mer informasjon om denne funksjonen og de tilgjengelige miljøvariablene, vennligst les {2}.",
-    "commandsUpdated": "Commands updated!",
+    "commandsUpdated": "Komando opptatert!",
     "createUserDir": "Auto create user home dir while adding new user",
     "minimumPasswordLength": "Minimum password length",
     "tusUploads": "Chunked Uploads",
