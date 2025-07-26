@@ -216,7 +216,7 @@
     "ruleExample2": "blokkerer tilgangen til filen med navnet Caddyfile på roten av omfanget.",
     "rules": "Regler",
     "rulesHelp": "Her kan du definere et sett med tillatelses- og forbudsregler for denne spesifikke brukeren. De blokkerte filene vil ikke vises i listene, og de vil ikke være tilgjengelige for brukeren. Vi støtter regex og stier i forhold til brukerens omfang.",
-    "scope": "Scope",
+    "scope": "Omfang",
     "setDateFormat": "Set exact date format",
     "settingsUpdated": "Settings updated!",
     "shareDuration": "Share Duration",
