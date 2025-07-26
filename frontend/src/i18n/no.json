@@ -202,9 +202,9 @@
     "path": "Veg",
     "perm": {
       "create": "Opprett filer og direktorater",
-      "delete": "Delete files and directories",
-      "download": "Download",
-      "execute": "Execute commands",
+      "delete": "Slett filer og direktorater",
+      "download": "Nedlast",
+      "execute": "Utfør kommandoer",
       "modify": "Edit files",
       "rename": "Rename or move files and directories",
       "share": "Share files"
