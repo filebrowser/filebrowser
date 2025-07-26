@@ -174,7 +174,7 @@
     "tusUploads": "Klumpede opplastinger",
     "tusUploadsHelp": "Filleseren støtter opplasting av delte filer, noe som gjør det mulig å lage effektive, pålitelige, gjenopptakbare og delte filer, selv på upålitelige nettverk.",
     "tusUploadsChunkSize": "Angir maksimal størrelse på en forespørsel (direkte opplastinger vil bli brukt for mindre opplastinger). Du kan legge inn et heltall som angir bytestørrelsen, eller en streng som 10 MB, 1 GB osv.",
-    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "tusUploadsRetryCount": "Antall nye forsøk som skal utføres hvis en del ikke lastes opp.",
     "userHomeBasePath": "Base path for user home directories",
     "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "createUserHomeDirectory": "Create user home directory",
