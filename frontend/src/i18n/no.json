@@ -184,7 +184,7 @@
     "disableUsedDiskPercentage": "Deaktiver grafen for prosentandelen brukt disk",
     "documentation": "dokumentasjon",
     "examples": "Eksempel",
-    "executeOnShell": "Execute on shell",
+    "executeOnShell": "Kjør på skall",
     "executeOnShellDescription": "Som standard kjører Filleseren kommandoene ved å kalle binærfilene direkte. Hvis du heller ønsker å kjøre dem på et skall (som Bash eller PowerShell), kan du definere det her med de nødvendige argumentene og flaggene. Hvis dette er angitt, vil kommandoen du kjører bli lagt til som et argument. Dette gjelder både brukerkommandoer og hendelseshooker.",
     "globalRules": "This is a global set of allow and disallow rules. They apply to every user. You can define specific rules on each user's settings to override these ones.",
     "globalSettings": "Global Settings",
