@@ -254,10 +254,10 @@
     "siteSettings": "Side innstillinger"
   },
   "success": {
-    "linkCopied": "Link copied!"
+    "linkCopied": "Link koppiert!"
   },
   "time": {
-    "days": "Days",
+    "days": "Dager",
     "hours": "Hours",
     "minutes": "Minutes",
     "seconds": "Seconds",
