@@ -177,7 +177,7 @@
     "tusUploadsRetryCount": "Antall nye forsøk som skal utføres hvis en del ikke lastes opp.",
     "userHomeBasePath": "Basissti for brukerens hjemmekataloger",
     "userScopeGenerationPlaceholder": "Omfanget vil bli generert automatisk",
-    "createUserHomeDirectory": "Create user home directory",
+    "createUserHomeDirectory": "Opprett bruker hjemme direktorat",
     "customStylesheet": "Custom Stylesheet",
     "defaultUserDescription": "These are the default settings for new users.",
     "disableExternalLinks": "Disable external links (except documentation)",
