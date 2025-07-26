@@ -170,7 +170,7 @@
     "commandRunnerHelp": "Her kan du angi kommandoer som skal utføres i de navngitte hendelsene. Du må skrive én per linje. Miljøvariablene {0} og {1} vil være tilgjengelige, siden de er {0} relative til {1}. For mer informasjon om denne funksjonen og de tilgjengelige miljøvariablene, vennligst les {2}.",
     "commandsUpdated": "Komando opptatert!",
     "createUserDir": "Opprett brukerens hjemmappe automatisk når du legger til en ny bruker",
-    "minimumPasswordLength": "Minimum password length",
+    "minimumPasswordLength": "Minimum passord lengde",
     "tusUploads": "Chunked Uploads",
     "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
     "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
