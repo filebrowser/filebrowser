@@ -196,8 +196,8 @@
     "lockPassword": "Hindre brukeren i å endre passordet",
     "newPassword": "Sett ditt nye passord",
     "newPasswordConfirm": "Bekreft ditt nye passord",
-    "newUser": "New User",
-    "password": "Password",
+    "newUser": "Ny bruker",
+    "password": "Passord",
     "passwordUpdated": "Password updated!",
     "path": "Path",
     "perm": {
