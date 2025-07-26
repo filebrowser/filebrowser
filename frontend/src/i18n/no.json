@@ -137,7 +137,7 @@
     "show": "Vis",
     "size": "Størrelse",
     "upload": "Last opp",
-    "uploadFiles": "Uploading {files} files...",
+    "uploadFiles": "Laster opp (filer) filer...",
     "uploadMessage": "Select an option to upload.",
     "optionalPassword": "Optional password",
     "resolution": "Resolution",
