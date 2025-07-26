@@ -261,6 +261,6 @@
     "hours": "Timer",
     "minutes": "Minutt",
     "seconds": "Sekunder",
-    "unit": "Time Unit"
+    "unit": "Time format"
   }
 }
