@@ -189,7 +189,7 @@
     "globalRules": "Dette er et globalt sett med regler for tillatelse og forbud. De gjelder for alle brukere. Du kan definere spesifikke regler for hver brukers innstillinger for å overstyre disse.",
     "globalSettings": "Globale Innstillinger",
     "hideDotfiles": "Skjul punktfiler",
-    "insertPath": "Insert the path",
+    "insertPath": "Sett inn banen",
     "insertRegex": "Insert regex expression",
     "instanceName": "Instance name",
     "language": "Language",
