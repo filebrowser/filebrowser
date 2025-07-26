@@ -207,7 +207,7 @@
       "execute": "Utfør kommandoer",
       "modify": "Endre filer",
       "rename": "Gi nytt navn eller flytt filer og direktorater",
-      "share": "Share files"
+      "share": "Del filer"
     },
     "permissions": "Permissions",
     "permissionsHelp": "You can set the user to be an administrator or choose the permissions individually. If you select \"Administrator\", all of the other options will be automatically checked. The management of users remains a privilege of an administrator.\n",
