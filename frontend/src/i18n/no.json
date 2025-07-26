@@ -258,9 +258,9 @@
   },
   "time": {
     "days": "Dager",
-    "hours": "Hours",
-    "minutes": "Minutes",
-    "seconds": "Seconds",
+    "hours": "Timer",
+    "minutes": "Minutt",
+    "seconds": "Sekunder",
     "unit": "Time Unit"
   }
 }
