@@ -178,7 +178,7 @@
     "userHomeBasePath": "Basissti for brukerens hjemmekataloger",
     "userScopeGenerationPlaceholder": "Omfanget vil bli generert automatisk",
     "createUserHomeDirectory": "Opprett bruker hjemme direktorat",
-    "customStylesheet": "Custom Stylesheet",
+    "customStylesheet": "Egendefinert stilark",
     "defaultUserDescription": "These are the default settings for new users.",
     "disableExternalLinks": "Disable external links (except documentation)",
     "disableUsedDiskPercentage": "Disable used disk percentage graph",
