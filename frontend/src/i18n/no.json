@@ -243,9 +243,9 @@
   "sidebar": {
     "help": "Hjelp",
     "hugoNew": "Hugo Ny",
-    "login": "Login",
+    "login": "Logg inn",
     "logout": "Logg Ut",
-    "myFiles": "My files",
+    "myFiles": "Mine filer",
     "newFile": "New file",
     "newFolder": "New folder",
     "preview": "Preview",
