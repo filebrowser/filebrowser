@@ -132,7 +132,6 @@ import {
 import { files as api } from "@/api";
 import ProgressBar from "@/components/ProgressBar.vue";
 import prettyBytes from "pretty-bytes";
-import { StatusError } from "@/api/utils.js";
 
 const USAGE_DEFAULT = { used: "0 B", total: "0 B", usedPercentage: 0 };
 
@@ -181,13 +180,9 @@ export default {
           total: prettyBytes(usage.total, { binary: true }),
           usedPercentage: Math.round((usage.used / usage.total) * 100),
         };
-      } catch (error) {
-        if (error instanceof StatusError && error.is_canceled) {
-          return;
-        }
-        this.$showError(error);
+      } finally {
+        return Object.assign(this.usage, usageStats);
       }
-      return Object.assign(this.usage, usageStats);
     },
     toRoot() {
       this.$router.push({ path: "/files" });
