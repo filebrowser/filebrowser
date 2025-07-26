@@ -201,7 +201,7 @@
     "passwordUpdated": "Passord opptatert!",
     "path": "Veg",
     "perm": {
-      "create": "Create files and directories",
+      "create": "Opprett filer og direktorater",
       "delete": "Delete files and directories",
       "download": "Download",
       "execute": "Execute commands",
