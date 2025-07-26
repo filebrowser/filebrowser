@@ -193,7 +193,7 @@
     "insertRegex": "sett inn regex-uttrykk",
     "instanceName": "Forekomstnavn",
     "language": "Språk",
-    "lockPassword": "Prevent the user from changing the password",
+    "lockPassword": "Hindre brukeren i å endre passordet",
     "newPassword": "Your new password",
     "newPasswordConfirm": "Confirm your new password",
     "newUser": "New User",
