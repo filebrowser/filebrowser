@@ -139,8 +139,8 @@
     "upload": "Last opp",
     "uploadFiles": "Laster opp {filer} filer...",
     "uploadMessage": "Velg et alternativ for opplasting.",
-    "optionalPassword": "Optional password",
-    "resolution": "Resolution",
+    "optionalPassword": "Valgfritt passord",
+    "resolution": "Oppløysning",
     "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
