@@ -141,10 +141,10 @@
     "uploadMessage": "Velg et alternativ for opplasting.",
     "optionalPassword": "Valgfritt passord",
     "resolution": "Oppløysning",
-    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
+    "discardEditorChanges": "Er du sikker på at du vil forkaste endringene du har gjort?"
   },
   "search": {
-    "images": "Images",
+    "images": "Bilde",
     "music": "Music",
     "pdf": "PDF",
     "pressToSearch": "Press enter to search...",
