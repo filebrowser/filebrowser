@@ -224,8 +224,8 @@
     "shareDeleted": "Delte ting slettet!",
     "singleClick": "Bruk enkeltklikk for å åpne filer og mapper",
     "themes": {
-      "default": "System default",
-      "dark": "Dark",
+      "default": "Systemstandard",
+      "dark": "Mørk",
       "light": "Light",
       "title": "Theme"
     },
