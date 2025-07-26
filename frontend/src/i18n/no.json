@@ -236,9 +236,9 @@
     "userDefaults": "Bruker systemstandard instillinger",
     "userDeleted": "Bruker slettet!",
     "userManagement": "Brukeradministrasjon",
-    "userUpdated": "User updated!",
-    "username": "Username",
-    "users": "Users"
+    "userUpdated": "Bruker opprettet!",
+    "username": "Brukernavn",
+    "users": "Bruker"
   },
   "sidebar": {
     "help": "Help",
