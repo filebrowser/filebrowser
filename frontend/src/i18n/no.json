@@ -210,7 +210,7 @@
       "share": "Del filer"
     },
     "permissions": "Tilaterser",
-    "permissionsHelp": "Du kan angi brukeren som administrator eller velge tillatelsene individuelt. Hvis du velger «Administrator», vil alle de andre alternativene \nbli automatisk avkrysset. Administrasjon av brukere er fortsatt et privilegium for en administrator.",
+    "permissionsHelp": "Du kan angi brukeren som administrator eller velge tillatelsene individuelt. Hvis du velger «Administrator», vil alle de andre alternativene bli automatisk avkrysset. Administrasjon av brukere er fortsatt et privilegium for en administrator.\n",
     "profileSettings": "Profile Settings",
     "ruleExample1": "prevents the access to any dotfile (such as .git, .gitignore) in every folder.\n",
     "ruleExample2": "blocks the access to the file named Caddyfile on the root of the scope.",
