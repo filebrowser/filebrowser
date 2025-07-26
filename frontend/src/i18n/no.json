@@ -169,7 +169,7 @@
     "commandRunner": "Kommandoløper",
     "commandRunnerHelp": "Her kan du angi kommandoer som skal utføres i de navngitte hendelsene. Du må skrive én per linje. Miljøvariablene {0} og {1} vil være tilgjengelige, siden de er {0} relative til {1}. For mer informasjon om denne funksjonen og de tilgjengelige miljøvariablene, vennligst les {2}.",
     "commandsUpdated": "Komando opptatert!",
-    "createUserDir": "Auto create user home dir while adding new user",
+    "createUserDir": "Opprett brukerens hjemmappe automatisk når du legger til en ny bruker",
     "minimumPasswordLength": "Minimum password length",
     "tusUploads": "Chunked Uploads",
     "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
