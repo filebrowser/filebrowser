@@ -173,7 +173,7 @@
     "minimumPasswordLength": "Minimum password length",
     "tusUploads": "Chunked Uploads",
     "tusUploadsHelp": "Prehliadač súborov podporuje nahrávanie súborov po častiach, čo umožňuje vytváranie efektívnych, spoľahlivých, obnoviteľných a po častiach nahrávaných súborov aj v prípade nespoľahlivých sietí.",
-    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsChunkSize": "Označuje maximálnu veľkosť požiadavky (pre menšie nahratia sa použijú priame nahratia). Môžete zadať celé číslo označujúce veľkosť v bajtoch alebo reťazec ako 10 MB, 1 GB atď.",
     "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Base path for user home directories",
     "userScopeGenerationPlaceholder": "The scope will be auto generated",
