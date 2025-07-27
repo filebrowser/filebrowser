@@ -217,7 +217,7 @@
     "rules": "Pravidlá",
     "rulesHelp": "Tu môžete definovať pravidlá pre konkrétneho používateľa. Blokované súbory používateľ nebude vidieť a ani nebude k nim mať prístup. Podporujeme regex a cesty relatívne k používateľovi.\n",
     "scope": "Scope",
-    "setDateFormat": "Set exact date format",
+    "setDateFormat": "Nastaviť presný formát dátumu",
     "settingsUpdated": "Nastavenia upravené!",
     "shareDuration": "Trvanie zdieľania",
     "shareManagement": "Správa zdieľania",
