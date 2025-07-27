@@ -176,7 +176,7 @@
     "tusUploadsChunkSize": "Označuje maximálnu veľkosť požiadavky (pre menšie nahratia sa použijú priame nahratia). Môžete zadať celé číslo označujúce veľkosť v bajtoch alebo reťazec ako 10 MB, 1 GB atď.",
     "tusUploadsRetryCount": "Počet opakovaných pokusov, ktoré sa majú vykonať, ak sa nepodarí nahrať časť súboru.",
     "userHomeBasePath": "Východisková cesta pre domáce adresáre používateľov",
-    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "userScopeGenerationPlaceholder": "Rozsah bude automaticky generovaný",
     "createUserHomeDirectory": "Vytvoriť domovský adresár používateľa",
     "customStylesheet": "Vlastný Stylesheet",
     "defaultUserDescription": "Toto sú predvolané nastavenia nového používateľa.",
