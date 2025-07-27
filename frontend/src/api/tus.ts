@@ -68,6 +68,8 @@ export async function upload(
               : error.originalResponse.getBody()
             : "Upload failed";
 
+        console.error(error);
+
         reject(new Error(message));
       },
       onProgress: function (bytesUploaded) {
