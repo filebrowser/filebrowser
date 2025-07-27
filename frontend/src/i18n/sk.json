@@ -174,7 +174,7 @@
     "tusUploads": "Chunked Uploads",
     "tusUploadsHelp": "Prehliadač súborov podporuje nahrávanie súborov po častiach, čo umožňuje vytváranie efektívnych, spoľahlivých, obnoviteľných a po častiach nahrávaných súborov aj v prípade nespoľahlivých sietí.",
     "tusUploadsChunkSize": "Označuje maximálnu veľkosť požiadavky (pre menšie nahratia sa použijú priame nahratia). Môžete zadať celé číslo označujúce veľkosť v bajtoch alebo reťazec ako 10 MB, 1 GB atď.",
-    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "tusUploadsRetryCount": "Počet opakovaných pokusov, ktoré sa majú vykonať, ak sa nepodarí nahrať časť súboru.",
     "userHomeBasePath": "Base path for user home directories",
     "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "createUserHomeDirectory": "Vytvoriť domovský adresár používateľa",
