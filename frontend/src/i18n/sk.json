@@ -170,7 +170,7 @@
     "commandRunnerHelp": "Sem môžete nastaviť príkazy, ktoré sa vykonajú pri určitých udalostiach. Musíte písať jeden na riadok. Premenné prostredia {0} a {1} sú k dispozícii, s tým že {0} relatívne k {1}. Viac informácií o tejto funkcionalite a dostupných premenných prostredia nájdete na {2}.",
     "commandsUpdated": "Príkazy upravené!",
     "createUserDir": "Automaticky vytvoriť domovský priečinok pri pridaní používateľa",
-    "minimumPasswordLength": "Minimum password length",
+    "minimumPasswordLength": "Minimálna dĺžka hesla",
     "tusUploads": "Nahrávanie po častiach",
     "tusUploadsHelp": "Prehliadač súborov podporuje nahrávanie súborov po častiach, čo umožňuje vytváranie efektívnych, spoľahlivých, obnoviteľných a po častiach nahrávaných súborov aj v prípade nespoľahlivých sietí.",
     "tusUploadsChunkSize": "Označuje maximálnu veľkosť požiadavky (pre menšie nahratia sa použijú priame nahratia). Môžete zadať celé číslo označujúce veľkosť v bajtoch alebo reťazec ako 10 MB, 1 GB atď.",
