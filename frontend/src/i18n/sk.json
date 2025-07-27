@@ -137,7 +137,7 @@
     "show": "Zobraziť",
     "size": "Veľkosť",
     "upload": "Nahrať",
-    "uploadFiles": "Uploading {files} files...",
+    "uploadFiles": "Nahráva sa {files} súborov...",
     "uploadMessage": "Zvoľte možnosť nahrávania.",
     "optionalPassword": "Voliteľné heslo",
     "resolution": "Resolution",
