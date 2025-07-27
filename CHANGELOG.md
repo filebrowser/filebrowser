@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.42.0](https://github.com/filebrowser/filebrowser/compare/v2.41.0...v2.42.0) (2025-07-27)
+
+
+### Features
+
+* add Norwegian support ([#5332](https://github.com/filebrowser/filebrowser/issues/5332)) ([25e47c3](https://github.com/filebrowser/filebrowser/commit/25e47c3ce8b35b820b5370a4b8bfdf682bd5ae0b))
+* select item on file list after navigating back ([#5329](https://github.com/filebrowser/filebrowser/issues/5329)) ([cbeec6d](https://github.com/filebrowser/filebrowser/commit/cbeec6d225691723c4750d7f84122ebb14d662bf))
+* Translate frontend/src/i18n/en.json in no ([5eb3bf4](https://github.com/filebrowser/filebrowser/commit/5eb3bf40586c2ffc32f4834b5dd59f0eb719c1f7))
+* Translate frontend/src/i18n/en.json in sk ([07dfdce](https://github.com/filebrowser/filebrowser/commit/07dfdce8e4c371f4ca7480f3cef0bd66ff5c9abb))
+
+
+### Build
+
+* bump go version to 1.23.11 ([c7a5c7e](https://github.com/filebrowser/filebrowser/commit/c7a5c7efee2b2bede89ec90bafd1af61c39519ff))
+* bump to go 1.24 ([c1b0207](https://github.com/filebrowser/filebrowser/commit/c1b0207800b4bb52c8dd459c1d69ce0f785473b6))
+
 ## [2.41.0](https://github.com/filebrowser/filebrowser/compare/v2.40.2...v2.41.0) (2025-07-22)
 
 
