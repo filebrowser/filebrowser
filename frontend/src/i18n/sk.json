@@ -50,7 +50,7 @@
     "downloadSelected": "Stiahnuť vybraté"
   },
   "upload": {
-    "abortUpload": "Are you sure you wish to abort?"
+    "abortUpload": "Naozaj chcete prerušiť?"
   },
   "errors": {
     "forbidden": "You don't have permissions to access this.",
