@@ -242,9 +242,8 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	return nil
 }
 
-func printPermsissions(set *settings.Settings) error {
+func printPermsissions(set *settings.Settings) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	
 	fmt.Fprintf(w, "\tPermissions:\n")
 	fmt.Fprintf(w, "\t\tAdmin:\t%t\n", set.Defaults.Perm.Admin)
 	fmt.Fprintf(w, "\t\tExecute:\t%t\n", set.Defaults.Perm.Execute)
@@ -256,5 +255,4 @@ func printPermsissions(set *settings.Settings) error {
 	fmt.Fprintf(w, "\t\tDownload:\t%t\n", set.Defaults.Perm.Download)
 
 	w.Flush()
-	return nil
 }
