@@ -230,7 +230,8 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tSorting:\n")
 	fmt.Fprintf(w, "\t\tBy:\t%s\n", set.Defaults.Sorting.By)
 	fmt.Fprintf(w, "\t\tAsc:\t%t\n", set.Defaults.Sorting.Asc)
-	printPermsissions(ser, set)
+
+	_ = printPermsissions(set)
 	w.Flush()
 
 	b, err := json.MarshalIndent(auther, "", "  ")
@@ -241,7 +242,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	return nil
 }
 
-func printPermsissions(ser *settings.Server, set *settings.Settings) error {
+func printPermsissions(set *settings.Settings) error {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 	
 	fmt.Fprintf(w, "\tPermissions:\n")
