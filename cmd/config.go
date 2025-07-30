@@ -231,7 +231,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\t\tBy:\t%s\n", set.Defaults.Sorting.By)
 	fmt.Fprintf(w, "\t\tAsc:\t%t\n", set.Defaults.Sorting.Asc)
 
-	_ = printPermsissions(set)
+	printPermsissions(set)
 	w.Flush()
 
 	b, err := json.MarshalIndent(auther, "", "  ")
