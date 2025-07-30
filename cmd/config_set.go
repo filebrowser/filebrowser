@@ -40,7 +40,7 @@ you want to change. Other options will remain unchanged.`,
 			case "baseurl":
 				ser.BaseURL, err = getString(flags, flag.Name)
 			case "publicurl":
-				ser.PublicURL, err = mustGetString(flags, flag.Name)
+				ser.PublicURL, err = getString(flags, flag.Name)
 			case "root":
 				ser.Root, err = getString(flags, flag.Name)
 			case "socket":
@@ -56,7 +56,7 @@ you want to change. Other options will remain unchanged.`,
 			case "log":
 				ser.Log, err = getString(flags, flag.Name)
 			case "public-login":
-				set.PublicLogin, err = mustGetBool(flags, flag.Name)
+				set.PublicLogin, err = getBool(flags, flag.Name)
 			case "signup":
 				set.Signup, err = getBool(flags, flag.Name)
 			case "auth.method":
