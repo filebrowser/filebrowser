@@ -7,6 +7,7 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"log"
@@ -28,6 +29,7 @@ import (
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/diskcache"
+	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/frontend"
 	fbhttp "github.com/filebrowser/filebrowser/v2/http"
 	"github.com/filebrowser/filebrowser/v2/img"
@@ -42,6 +44,7 @@ var (
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	rootCmd.SilenceUsage = true
 	cobra.MousetrapHelpText = ""
 
 	rootCmd.SetVersionTemplate("File Browser version {{printf \"%s\" .Version}}\n")
@@ -116,36 +119,48 @@ set FB_DATABASE.
 Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstrapped and a new
 user created with the credentials from options "username" and "password".`,
-	Run: python(func(cmd *cobra.Command, _ []string, d pythonData) {
+	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
 		log.Println(cfgFile)
 
 		if !d.hadDB {
-			quickSetup(cmd.Flags(), d)
+			err := quickSetup(cmd.Flags(), *d)
+			if err != nil {
+				return err
+			}
 		}
 
 		// build img service
 		workersCount, err := cmd.Flags().GetInt("img-processors")
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		if workersCount < 1 {
-			log.Fatal("Image resize workers count could not be < 1")
+			return errors.New("image resize workers count could not be < 1")
 		}
 		imgSvc := img.New(workersCount)
 
 		var fileCache diskcache.Interface = diskcache.NewNoOp()
 		cacheDir, err := cmd.Flags().GetString("cache-dir")
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		if cacheDir != "" {
 			if err := os.MkdirAll(cacheDir, 0700); err != nil { //nolint:govet
-				log.Fatalf("can't make directory %s: %s", cacheDir, err)
+				return fmt.Errorf("can't make directory %s: %w", cacheDir, err)
 			}
 			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
 		}
 
-		server := getRunParams(cmd.Flags(), d.store)
+		server, err := getRunParams(cmd.Flags(), d.store)
+		if err != nil {
+			return err
+		}
 		setupLog(server.Log)
 
 		root, err := filepath.Abs(server.Root)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		server.Root = root
 
 		adr := server.Address + ":" + server.Port
@@ -155,22 +170,34 @@ user created with the credentials from options "username" and "password".`,
 		switch {
 		case server.Socket != "":
 			listener, err = net.Listen("unix", server.Socket)
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 			socketPerm, err := cmd.Flags().GetUint32("socket-perm") //nolint:govet
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 			err = os.Chmod(server.Socket, os.FileMode(socketPerm))
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 		case server.TLSKey != "" && server.TLSCert != "":
 			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey) //nolint:govet
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 			listener, err = tls.Listen("tcp", adr, &tls.Config{
 				MinVersion:   tls.VersionTLS12,
 				Certificates: []tls.Certificate{cer}},
 			)
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 		default:
 			listener, err = net.Listen("tcp", adr)
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 		}
 
 		assetsFs, err := fs.Sub(frontend.Assets(), "dist")
@@ -179,7 +206,9 @@ user created with the credentials from options "username" and "password".`,
 		}
 
 		handler, err := fbhttp.NewHandler(imgSvc, fileCache, d.store, server, assetsFs)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 
 		defer listener.Close()
 
@@ -198,8 +227,15 @@ user created with the credentials from options "username" and "password".`,
 		}()
 
 		sigc := make(chan os.Signal, 1)
-		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
-		<-sigc
+		signal.Notify(sigc,
+			os.Interrupt,
+			syscall.SIGHUP,
+			syscall.SIGINT,
+			syscall.SIGTERM,
+			syscall.SIGQUIT,
+		)
+		sig := <-sigc
+		log.Println("Got signal:", sig)
 
 		shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second) //nolint:mnd
 		defer shutdownRelease()
@@ -208,13 +244,28 @@ user created with the credentials from options "username" and "password".`,
 			log.Fatalf("HTTP shutdown error: %v", err)
 		}
 		log.Println("Graceful shutdown complete.")
+
+		switch sig {
+		case syscall.SIGHUP:
+			d.err = fbErrors.ErrSighup
+		case syscall.SIGINT:
+			d.err = fbErrors.ErrSigint
+		case syscall.SIGQUIT:
+			d.err = fbErrors.ErrSigquit
+		case syscall.SIGTERM:
+			d.err = fbErrors.ErrSigTerm
+		}
+
+		return d.err
 	}, pythonConfig{allowNoDB: true}),
 }
 
 //nolint:gocyclo
-func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
+func getRunParams(flags *pflag.FlagSet, st *storage.Storage) (*settings.Server, error) {
 	server, err := st.Settings.GetServer()
-	checkErr(err)
+	if err != nil {
+		return nil, err
+	}
 
 	if val, set := getStringParamB(flags, "root"); set {
 		server.Root = val
@@ -257,7 +308,7 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 	}
 
 	if isAddrSet && isSocketSet {
-		checkErr(errors.New("--socket flag cannot be used with --address, --port, --key nor --cert"))
+		return nil, errors.New("--socket flag cannot be used with --address, --port, --key nor --cert")
 	}
 
 	// Do not use saved Socket if address was manually set.
@@ -288,7 +339,7 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 		server.TokenExpirationTime = val
 	}
 
-	return server
+	return server, nil
 }
 
 // getBoolParamB returns a parameter as a string and a boolean to tell if it is different from the default
@@ -367,7 +418,7 @@ func setupLog(logMethod string) {
 	}
 }
 
-func quickSetup(flags *pflag.FlagSet, d pythonData) {
+func quickSetup(flags *pflag.FlagSet, d pythonData) error {
 	log.Println("Performing quick setup")
 
 	set := &settings.Settings{
@@ -411,10 +462,14 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 		set.AuthMethod = auth.MethodJSONAuth
 		err = d.store.Auth.Save(&auth.JSONAuth{})
 	}
+	if err != nil {
+		return err
+	}
 
-	checkErr(err)
 	err = d.store.Settings.Save(set)
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 
 	ser := &settings.Server{
 		BaseURL: getStringParam(flags, "baseurl"),
@@ -427,7 +482,9 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	}
 
 	err = d.store.Settings.SaveServer(ser)
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 
 	username := getStringParam(flags, "username")
 	password := getStringParam(flags, "password")
@@ -435,11 +492,15 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	if password == "" {
 		var pwd string
 		pwd, err = users.RandomPwd(set.MinimumPasswordLength)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 
 		log.Printf("User '%s' initialized with randomly generated password: %s\n", username, pwd)
 		password, err = users.ValidateAndHashPwd(pwd, set.MinimumPasswordLength)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 	} else {
 		log.Printf("User '%s' initialize wth user-provided password\n", username)
 	}
@@ -457,14 +518,15 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	set.Defaults.Apply(user)
 	user.Perm.Admin = true
 
-	err = d.store.Users.Save(user)
-	checkErr(err)
+	return d.store.Users.Save(user)
 }
 
 func initConfig() {
 	if cfgFile == "" {
 		home, err := homedir.Dir()
-		checkErr(err)
+		if err != nil {
+			panic(err)
+		}
 		v.AddConfigPath(".")
 		v.AddConfigPath(home)
 		v.AddConfigPath("/etc/filebrowser/")

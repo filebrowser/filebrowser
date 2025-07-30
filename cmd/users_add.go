@@ -16,36 +16,57 @@ var usersAddCmd = &cobra.Command{
 	Short: "Create a new user",
 	Long:  `Create a new user and add it to the database.`,
 	Args:  cobra.ExactArgs(2),
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
 		s, err := d.store.Settings.Get()
-		checkErr(err)
-		getUserDefaults(cmd.Flags(), &s.Defaults, false)
+		if err != nil {
+			return err
+		}
+		err = getUserDefaults(cmd.Flags(), &s.Defaults, false)
+		if err != nil {
+			return err
+		}
 
 		password, err := users.ValidateAndHashPwd(args[1], s.MinimumPasswordLength)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
+
+		lockPassword, err := getBool(cmd.Flags(), "lockPassword")
+		if err != nil {
+			return err
+		}
 
 		user := &users.User{
 			Username:     args[0],
 			Password:     password,
-			LockPassword: mustGetBool(cmd.Flags(), "lockPassword"),
+			LockPassword: lockPassword,
 		}
 
 		s.Defaults.Apply(user)
 
 		servSettings, err := d.store.Settings.GetServer()
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		// since getUserDefaults() polluted s.Defaults.Scope
 		// which makes the Scope not the one saved in the db
 		// we need the right s.Defaults.Scope here
 		s2, err := d.store.Settings.Get()
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 
 		userHome, err := s2.MakeUserDir(user.Username, user.Scope, servSettings.Root)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		user.Scope = userHome
 
 		err = d.store.Users.Save(user)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		printUsers([]*users.User{user})
+		return nil
 	}, pythonConfig{}),
 }

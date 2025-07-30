@@ -30,6 +30,7 @@ export default {
       ja: "日本語",
       ko: "한국어",
       "nl-be": "Dutch (Belgium)",
+      no: "Norsk",
       pl: "Polski",
       "pt-br": "Português",
       pt: "Português (Brasil)",

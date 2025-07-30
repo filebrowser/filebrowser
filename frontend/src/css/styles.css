@@ -329,6 +329,7 @@ main .spinner .bounce2 {
 #editor-container {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   background-color: var(--background);
   position: fixed;
   padding-top: 4em;
@@ -351,6 +352,8 @@ main .spinner .bounce2 {
 #editor-container .breadcrumbs {
   height: 2.3em;
   padding: 0 1em;
+  position: relative;
+  top: 0;
 }
 
 /*** RTL - flip and position arrow of path ***/

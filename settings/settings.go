@@ -5,6 +5,7 @@ package settings
 
 import (
 	"crypto/rand"
+	"io/fs"
 	"log"
 	"strings"
 	"time"
@@ -14,6 +15,8 @@ import (
 
 const DefaultUsersHomeBasePath = "/users"
 const DefaultMinimumPasswordLength = 12
+const DefaultFileMode = 0640
+const DefaultDirMode = 0750
 
 // AuthMethod describes an authentication method.
 type AuthMethod string
@@ -33,6 +36,8 @@ type Settings struct {
 	Shell                 []string            `json:"shell"`
 	Rules                 []rules.Rule        `json:"rules"`
 	MinimumPasswordLength uint                `json:"minimumPasswordLength"`
+	FileMode              fs.FileMode         `json:"fileMode"`
+	DirMode               fs.FileMode         `json:"dirMode"`
 }
 
 // GetRules implements rules.Provider.

@@ -301,10 +301,8 @@ watch(route, () => {
 // Specify hooks
 onMounted(async () => {
   window.addEventListener("keydown", key);
-  if (fileStore.oldReq) {
-    listing.value = fileStore.oldReq.items;
-    updatePreview();
-  }
+  listing.value = fileStore.oldReq?.items ?? null;
+  updatePreview();
 });
 
 onBeforeUnmount(() => window.removeEventListener("keydown", key));
@@ -317,11 +315,16 @@ const deleteFile = () => {
       if (listing.value === null) {
         return;
       }
-      listing.value = listing.value.filter((item) => item.name !== name.value);
+
+      const index = listing.value.findIndex((item) => item.name == name.value);
+      listing.value.splice(index, 1);
 
       if (hasNext.value) {
         next();
       } else if (!hasPrevious.value && !hasNext.value) {
+        const nearbyItem = listing.value[Math.max(0, index - 1)];
+        fileStore.preselect = nearbyItem?.path;
+
         close();
       } else {
         prev();
@@ -427,8 +430,6 @@ const toggleNavigation = throttle(function () {
 }, 500);
 
 const close = () => {
-  fileStore.updateRequest(null);
-
   const uri = url.removeLastDir(route.path) + "/";
   router.push({ path: uri });
 };

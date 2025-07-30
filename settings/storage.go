@@ -42,6 +42,12 @@ func (s *Storage) Get() (*Settings, error) {
 			RetryCount: DefaultTusRetryCount,
 		}
 	}
+	if set.FileMode == 0 {
+		set.FileMode = DefaultFileMode
+	}
+	if set.DirMode == 0 {
+		set.DirMode = DefaultDirMode
+	}
 	return set, nil
 }
 
