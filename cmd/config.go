@@ -230,6 +230,18 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tSorting:\n")
 	fmt.Fprintf(w, "\t\tBy:\t%s\n", set.Defaults.Sorting.By)
 	fmt.Fprintf(w, "\t\tAsc:\t%t\n", set.Defaults.Sorting.Asc)
+	printPermsissions(w, ser, set)
+	w.Flush()
+
+	b, err := json.MarshalIndent(auther, "", "  ")
+	if err != nil {
+		return err
+	}
+	fmt.Printf("\nAuther configuration (raw):\n\n%s\n\n", string(b))
+	return nil
+}
+
+func printPermsissions(w, ser *settings.Server, set *settings.Settings) error {
 	fmt.Fprintf(w, "\tPermissions:\n")
 	fmt.Fprintf(w, "\t\tAdmin:\t%t\n", set.Defaults.Perm.Admin)
 	fmt.Fprintf(w, "\t\tExecute:\t%t\n", set.Defaults.Perm.Execute)
@@ -239,12 +251,4 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\t\tDelete:\t%t\n", set.Defaults.Perm.Delete)
 	fmt.Fprintf(w, "\t\tShare:\t%t\n", set.Defaults.Perm.Share)
 	fmt.Fprintf(w, "\t\tDownload:\t%t\n", set.Defaults.Perm.Download)
-	w.Flush()
-
-	b, err := json.MarshalIndent(auther, "", "  ")
-	if err != nil {
-		return err
-	}
-	fmt.Printf("\nAuther configuration (raw):\n\n%s\n\n", string(b))
-	return nil
 }
