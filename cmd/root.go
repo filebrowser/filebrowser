@@ -275,6 +275,10 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) (*settings.Server, 
 		server.BaseURL = val
 	}
 
+	if val, set := getStringParamB(flags, "publicurl"); set {
+		server.PublicURL = val
+	}
+
 	if val, set := getStringParamB(flags, "log"); set {
 		server.Log = val
 	}

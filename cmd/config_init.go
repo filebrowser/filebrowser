@@ -49,7 +49,7 @@ override the options.`,
 			return err
 		}
 
-		publicLogin, err := getBool(flags, "public-login")
+		publicLogin, err := getBool(flags, "publiclogin")
 		if err != nil {
 			return err
 		}
@@ -137,7 +137,7 @@ override the options.`,
 			return err
 		}
 
-		publicUrl, err := getString(flags, "publicurl")
+		publicurl, err := getString(flags, "publicurl")
 		if err != nil {
 			return err
 		}
@@ -167,7 +167,7 @@ override the options.`,
 			Socket:    socket,
 			Root:      root,
 			BaseURL:   baseURL,
-			PublicURL: publicUrl,
+			PublicURL: publicurl,
 			TLSKey:    tlsKey,
 			TLSCert:   cert,
 			Port:      port,
