@@ -103,7 +103,7 @@ override the options.`,
 			return err
 		}
 
-		s.DirMode, err = getMode(flags, "file-mode")
+		s.DirMode, err = getMode(flags, "dir-mode")
 		if err != nil {
 			return err
 		}
