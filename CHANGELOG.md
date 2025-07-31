@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.42.1](https://github.com/filebrowser/filebrowser/compare/v2.42.0...v2.42.1) (2025-07-31)
+
+
+### Features
+
+* Translate frontend/src/i18n/en.json in sk  ([14ee054](https://github.com/filebrowser/filebrowser/commit/14ee0543599f2ec73b7f5d2dbd8415f47fe592aa))
+* Translate frontend/src/i18n/en.json in vi ([75baf7c](https://github.com/filebrowser/filebrowser/commit/75baf7ce337671a1045f897ba4a19967a31b1aec))
+
+
+### Bug Fixes
+
+* directory mode on config init ([4ff6347](https://github.com/filebrowser/filebrowser/commit/4ff634715543b65878943273dff70f340167900b))
+
 ## [2.42.0](https://github.com/filebrowser/filebrowser/compare/v2.41.0...v2.42.0) (2025-07-27)
 
 
