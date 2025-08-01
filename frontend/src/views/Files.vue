@@ -26,6 +26,7 @@
 import {
   computed,
   defineAsyncComponent,
+  inject,
   onBeforeUnmount,
   onMounted,
   onUnmounted,
@@ -49,6 +50,8 @@ import { name } from "../utils/constants";
 
 const Editor = defineAsyncComponent(() => import("@/views/files/Editor.vue"));
 const Preview = defineAsyncComponent(() => import("@/views/files/Preview.vue"));
+
+const $showError = inject<IToastError>("$showError")!;
 
 const layoutStore = useLayoutStore();
 const fileStore = useFileStore();
@@ -109,7 +112,7 @@ watch(reload, (newValue) => {
   newValue && fetchData();
 });
 watch(uploadError, (newValue) => {
-  newValue && layoutStore.showError();
+  newValue && $showError(newValue);
 });
 
 // Define functions
