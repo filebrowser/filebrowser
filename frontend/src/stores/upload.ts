@@ -3,6 +3,7 @@ import { useFileStore } from "./file";
 import { files as api } from "@/api";
 import { throttle } from "lodash-es";
 import buttons from "@/utils/buttons";
+import { computed, ref } from "vue";
 
 // TODO: make this into a user setting
 const UPLOADS_LIMIT = 5;
@@ -25,186 +26,224 @@ function formatSize(bytes: number): string {
   return (bytes / k ** i).toFixed(2) + " " + sizes[i];
 }
 
-export const useUploadStore = defineStore("upload", {
-  // convert to a function
-  state: (): {
-    id: number;
-    sizes: number[];
-    progress: number[];
-    queue: UploadItem[];
-    uploads: Uploads;
-    error: Error | null;
-  } => ({
-    id: 0,
-    sizes: [],
-    progress: [],
-    queue: [],
-    uploads: {},
-    error: null,
-  }),
-  getters: {
-    // user and jwt getter removed, no longer needed
-    getProgress: (state) => {
-      if (state.progress.length === 0) {
-        return 0;
+export const useUploadStore = defineStore("upload", () => {
+  //
+  // STATE
+  //
+
+  const id = ref<number>(0);
+  const sizes = ref<number[]>([]);
+  const progress = ref<number[]>([]);
+  const queue = ref<UploadItem[]>([]);
+  const uploads = ref<Uploads>({});
+  const error = ref<Error | null>(null);
+
+  //
+  // GETTERS
+  //
+
+  const getProgress = computed(() => {
+    if (progress.value.length === 0) {
+      return 0;
+    }
+
+    const totalSize = sizes.value.reduce((a, b) => a + b, 0);
+    const sum = progress.value.reduce((a, b) => a + b, 0);
+    return Math.ceil((sum / totalSize) * 100);
+  });
+
+  const getProgressDecimal = computed(() => {
+    if (progress.value.length === 0) {
+      return 0;
+    }
+
+    const totalSize = sizes.value.reduce((a, b) => a + b, 0);
+    const sum = progress.value.reduce((a, b) => a + b, 0);
+    return ((sum / totalSize) * 100).toFixed(2);
+  });
+
+  const getTotalProgressBytes = computed(() => {
+    if (progress.value.length === 0 || sizes.value.length === 0) {
+      return "0 Bytes";
+    }
+    const sum = progress.value.reduce((a, b) => a + b, 0);
+    return formatSize(sum);
+  });
+
+  const getTotalProgress = computed(() => {
+    return progress.value.reduce((a, b) => a + b, 0);
+  });
+
+  const getTotalSize = computed(() => {
+    if (sizes.value.length === 0) {
+      return "0 Bytes";
+    }
+    const totalSize = sizes.value.reduce((a, b) => a + b, 0);
+    return formatSize(totalSize);
+  });
+
+  const getTotalBytes = computed(() => {
+    return sizes.value.reduce((a, b) => a + b, 0);
+  });
+
+  const filesInUploadCount = computed(() => {
+    return Object.keys(uploads.value).length + queue.value.length;
+  });
+
+  const filesInUpload = computed(() => {
+    const files = [];
+
+    for (const index in uploads.value) {
+      const upload = uploads.value[index];
+      const id = upload.id;
+      const type = upload.type;
+      const name = upload.file.name;
+      const size = sizes.value[id];
+      const isDir = upload.file.isDir;
+      const p = isDir ? 100 : Math.ceil((progress.value[id] / size) * 100);
+
+      files.push({
+        id,
+        name,
+        progress: p,
+        type,
+        isDir,
+      });
+    }
+
+    return files.sort((a, b) => a.progress - b.progress);
+  });
+
+  //
+  // ACTIONS
+  //
+
+  const setProgress = ({ id, loaded }: { id: number; loaded: number }) => {
+    progress.value[id] = loaded;
+  };
+
+  const setError = (err: Error) => {
+    error.value = err;
+  };
+
+  const reset = () => {
+    id.value = 0;
+    sizes.value = [];
+    progress.value = [];
+    queue.value = [];
+    uploads.value = {};
+    error.value = null;
+  };
+
+  const addJob = (item: UploadItem) => {
+    queue.value.push(item);
+    sizes.value[id.value] = item.file.size;
+    id.value++;
+  };
+
+  const moveJob = () => {
+    const item = queue.value[0];
+    queue.value.shift();
+    uploads.value[item.id] = item;
+  };
+
+  const removeJob = (id: number) => {
+    delete uploads.value[id];
+  };
+
+  const upload = (item: UploadItem) => {
+    const uploadsCount = Object.keys(uploads.value).length;
+
+    const isQueueEmpty = queue.value.length == 0;
+    const isUploadsEmpty = uploadsCount == 0;
+
+    if (isQueueEmpty && isUploadsEmpty) {
+      window.addEventListener("beforeunload", beforeUnload);
+      buttons.loading("upload");
+    }
+
+    addJob(item);
+    processUploads();
+  };
+
+  const finishUpload = (item: UploadItem) => {
+    setProgress({ id: item.id, loaded: item.file.size });
+    removeJob(item.id);
+    processUploads();
+  };
+
+  const processUploads = async () => {
+    const uploadsCount = Object.keys(uploads.value).length;
+
+    const isBelowLimit = uploadsCount < UPLOADS_LIMIT;
+    const isQueueEmpty = queue.value.length == 0;
+    const isUploadsEmpty = uploadsCount == 0;
+
+    const isFinished = isQueueEmpty && isUploadsEmpty;
+    const canProcess = isBelowLimit && !isQueueEmpty;
+
+    if (isFinished) {
+      const fileStore = useFileStore();
+      window.removeEventListener("beforeunload", beforeUnload);
+      buttons.success("upload");
+      reset();
+      fileStore.reload = true;
+    }
+
+    if (canProcess) {
+      const item = queue.value[0];
+      moveJob();
+
+      if (item.file.isDir) {
+        await api.post(item.path).catch(setError);
+      } else {
+        const onUpload = throttle(
+          (event: ProgressEvent) =>
+            setProgress({
+              id: item.id,
+              loaded: event.loaded,
+            }),
+          100,
+          { leading: true, trailing: false }
+        );
+
+        await api
+          .post(item.path, item.file.file as File, item.overwrite, onUpload)
+          .catch(setError);
       }
 
-      const totalSize = state.sizes.reduce((a, b) => a + b, 0);
-      const sum = state.progress.reduce((a, b) => a + b, 0);
-      return Math.ceil((sum / totalSize) * 100);
-    },
-    getProgressDecimal: (state) => {
-      if (state.progress.length === 0) {
-        return 0;
-      }
+      finishUpload(item);
+    }
+  };
 
-      const totalSize = state.sizes.reduce((a, b) => a + b, 0);
-      const sum = state.progress.reduce((a, b) => a + b, 0);
-      return ((sum / totalSize) * 100).toFixed(2);
-    },
-    getTotalProgressBytes: (state) => {
-      if (state.progress.length === 0 || state.sizes.length === 0) {
-        return "0 Bytes";
-      }
-      const sum = state.progress.reduce((a, b) => a + b, 0);
-      return formatSize(sum);
-    },
-    getTotalProgress: (state) => {
-      return state.progress.reduce((a, b) => a + b, 0);
-    },
-    getTotalSize: (state) => {
-      if (state.sizes.length === 0) {
-        return "0 Bytes";
-      }
-      const totalSize = state.sizes.reduce((a, b) => a + b, 0);
-      return formatSize(totalSize);
-    },
-    getTotalBytes: (state) => {
-      return state.sizes.reduce((a, b) => a + b, 0);
-    },
-    filesInUploadCount: (state) => {
-      return Object.keys(state.uploads).length + state.queue.length;
-    },
-    filesInUpload: (state) => {
-      const files = [];
+  return {
+    // STATE
+    id,
+    sizes,
+    progress,
+    queue,
+    uploads,
+    error,
 
-      for (const index in state.uploads) {
-        const upload = state.uploads[index];
-        const id = upload.id;
-        const type = upload.type;
-        const name = upload.file.name;
-        const size = state.sizes[id];
-        const isDir = upload.file.isDir;
-        const progress = isDir
-          ? 100
-          : Math.ceil((state.progress[id] / size) * 100);
+    // GETTERS
+    getProgress,
+    getProgressDecimal,
+    getTotalProgressBytes,
+    getTotalProgress,
+    getTotalSize,
+    getTotalBytes,
+    filesInUploadCount,
+    filesInUpload,
 
-        files.push({
-          id,
-          name,
-          progress,
-          type,
-          isDir,
-        });
-      }
-
-      return files.sort((a, b) => a.progress - b.progress);
-    },
-  },
-  actions: {
-    // no context as first argument, use `this` instead
-    setProgress({ id, loaded }: { id: number; loaded: number }) {
-      this.progress[id] = loaded;
-    },
-    setError(error: Error) {
-      this.error = error;
-    },
-    reset() {
-      this.id = 0;
-      this.sizes = [];
-      this.progress = [];
-      this.queue = [];
-      this.uploads = {};
-      this.error = null;
-    },
-    addJob(item: UploadItem) {
-      this.queue.push(item);
-      this.sizes[this.id] = item.file.size;
-      this.id++;
-    },
-    moveJob() {
-      const item = this.queue[0];
-      this.queue.shift();
-      this.uploads[item.id] = item;
-    },
-    removeJob(id: number) {
-      delete this.uploads[id];
-    },
-    upload(item: UploadItem) {
-      const uploadsCount = Object.keys(this.uploads).length;
-
-      const isQueueEmpty = this.queue.length == 0;
-      const isUploadsEmpty = uploadsCount == 0;
-
-      if (isQueueEmpty && isUploadsEmpty) {
-        window.addEventListener("beforeunload", beforeUnload);
-        buttons.loading("upload");
-      }
-
-      this.addJob(item);
-      this.processUploads();
-    },
-    finishUpload(item: UploadItem) {
-      this.setProgress({ id: item.id, loaded: item.file.size });
-      this.removeJob(item.id);
-      this.processUploads();
-    },
-    async processUploads() {
-      const uploadsCount = Object.keys(this.uploads).length;
-
-      const isBelowLimit = uploadsCount < UPLOADS_LIMIT;
-      const isQueueEmpty = this.queue.length == 0;
-      const isUploadsEmpty = uploadsCount == 0;
-
-      const isFinished = isQueueEmpty && isUploadsEmpty;
-      const canProcess = isBelowLimit && !isQueueEmpty;
-
-      if (isFinished) {
-        const fileStore = useFileStore();
-        window.removeEventListener("beforeunload", beforeUnload);
-        buttons.success("upload");
-        this.reset();
-        fileStore.reload = true;
-      }
-
-      if (canProcess) {
-        const item = this.queue[0];
-        this.moveJob();
-
-        if (item.file.isDir) {
-          await api.post(item.path).catch(this.setError);
-        } else {
-          const onUpload = throttle(
-            (event: ProgressEvent) =>
-              this.setProgress({
-                id: item.id,
-                loaded: event.loaded,
-              }),
-            100,
-            { leading: true, trailing: false }
-          );
-
-          await api
-            .post(item.path, item.file.file as File, item.overwrite, onUpload)
-            .catch(this.setError);
-        }
-
-        this.finishUpload(item);
-      }
-    },
-    // easily reset state using `$reset`
-    clearUpload() {
-      this.$reset();
-    },
-  },
+    // ACTIONS
+    setProgress,
+    setError,
+    reset,
+    addJob,
+    moveJob,
+    removeJob,
+    upload,
+    finishUpload,
+    processUploads,
+  };
 });
