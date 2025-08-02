@@ -1,22 +1,12 @@
-interface Uploads {
-  [key: number]: Upload;
-}
-
-interface Upload {
-  id: number;
-  file: UploadEntry;
-  type?: ResourceType;
-}
-
-interface UploadItem {
-  id: number;
-  url?: string;
+type Upload = {
   path: string;
-  file: UploadEntry;
-  dir?: boolean;
-  overwrite?: boolean;
-  type?: ResourceType;
-}
+  name: string;
+  file: File | null;
+  type: ResourceType;
+  overwrite: boolean;
+  totalBytes: number;
+  sentBytes: number;
+};
 
 interface UploadEntry {
   name: string;

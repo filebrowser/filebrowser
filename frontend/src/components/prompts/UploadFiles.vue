@@ -1,20 +1,25 @@
 <template>
   <div
-    v-if="filesInUploadCount > 0"
+    v-if="uploadStore.activeUploads.size > 0"
     class="upload-files"
     v-bind:class="{ closed: !open }"
   >
     <div class="card floating">
       <div class="card-title">
-        <h2>{{ $t("prompts.uploadFiles", { files: filesInUploadCount }) }}</h2>
+        <h2>
+          {{
+            $t("prompts.uploadFiles", { files: uploadStore.activeUploads.size })
+          }}
+        </h2>
         <div class="upload-info">
           <div class="upload-speed">{{ speed.toFixed(2) }} MB/s</div>
           <div class="upload-eta">{{ formattedETA }} remaining</div>
           <div class="upload-percentage">
-            {{ getProgressDecimal }}% Completed
+            {{ uploadStore.getProgressDecimal }}% Completed
           </div>
           <div class="upload-fraction">
-            {{ getTotalProgressBytes }} / {{ getTotalSize }}
+            {{ uploadStore.getTotalProgressBytes }} /
+            {{ uploadStore.getTotalSize }}
           </div>
         </div>
         <button
@@ -40,17 +45,21 @@
       <div class="card-content file-icons">
         <div
           class="file"
-          v-for="file in filesInUpload"
-          :key="file.id"
-          :data-dir="file.isDir"
-          :data-type="file.type"
-          :aria-label="file.name"
+          v-for="upload in uploadStore.activeUploads"
+          :key="upload.path"
+          :data-dir="upload.type === 'dir'"
+          :data-type="upload.type"
+          :aria-label="upload.name"
         >
           <div class="file-name">
-            <i class="material-icons"></i> {{ file.name }}
+            <i class="material-icons"></i> {{ upload.name }}
           </div>
           <div class="file-progress">
-            <div v-bind:style="{ width: file.progress + '%' }"></div>
+            <div
+              v-bind:style="{
+                width: (upload.sentBytes / upload.totalBytes) * 100 + '%',
+              }"
+            ></div>
           </div>
         </div>
       </div>
@@ -76,22 +85,14 @@ const eta = ref<number>(Infinity);
 const fileStore = useFileStore();
 const uploadStore = useUploadStore();
 
-const {
-  filesInUpload,
-  filesInUploadCount,
-  getProgressDecimal,
-  getTotalProgressBytes,
-  getTotalProgress,
-  getTotalSize,
-  getTotalBytes,
-} = storeToRefs(uploadStore);
+const { sentBytes } = storeToRefs(uploadStore);
 
 let lastSpeedUpdate: number = 0;
 const recentSpeeds: number[] = [];
 
-const calculateSpeed = (progress: number, oldProgress: number) => {
+const calculateSpeed = (sentBytes: number, oldSentBytes: number) => {
   const elapsedTime = (Date.now() - (lastSpeedUpdate ?? 0)) / 1000;
-  const bytesSinceLastUpdate = progress - oldProgress;
+  const bytesSinceLastUpdate = sentBytes - oldSentBytes;
   const currentSpeed = bytesSinceLastUpdate / (1024 * 1024) / elapsedTime;
 
   recentSpeeds.push(currentSpeed);
@@ -115,13 +116,13 @@ const calculateEta = () => {
     return Infinity;
   }
 
-  const remainingSize = getTotalBytes.value - getTotalProgress.value;
+  const remainingSize = uploadStore.totalBytes - uploadStore.sentBytes;
   const speedBytesPerSecond = speed.value * 1024 * 1024;
 
   eta.value = remainingSize / speedBytesPerSecond;
 };
 
-watch(getTotalProgress, calculateSpeed);
+watch(sentBytes, calculateSpeed);
 
 const formattedETA = computed(() => {
   if (!eta.value || eta.value === Infinity) {
