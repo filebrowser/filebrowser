@@ -1,9 +1,8 @@
 import { defineStore } from "pinia";
 import { useFileStore } from "./file";
 import { files as api } from "@/api";
-import { throttle } from "lodash-es";
 import buttons from "@/utils/buttons";
-import { inject, ref } from "vue";
+import { inject, markRaw, ref } from "vue";
 
 // TODO: make this into a user setting
 const UPLOADS_LIMIT = 5;
@@ -16,6 +15,8 @@ const beforeUnload = (event: Event) => {
 
 export const useUploadStore = defineStore("upload", () => {
   const $showError = inject<IToastError>("$showError")!;
+
+  let progressInterval: number | null = null;
 
   //
   // STATE
@@ -32,6 +33,11 @@ export const useUploadStore = defineStore("upload", () => {
   //
 
   const reset = () => {
+    if (progressInterval !== null) {
+      clearInterval(progressInterval);
+      progressInterval = null;
+    }
+
     allUploads.value = [];
     activeUploads.value = new Set();
     lastUpload.value = -1;
@@ -73,6 +79,9 @@ export const useUploadStore = defineStore("upload", () => {
       type,
       totalBytes: file?.size ?? 0,
       sentBytes: 0,
+      rawProgress: markRaw({
+        sentBytes: 0,
+      }),
     };
 
     totalBytes.value += upload.totalBytes;
@@ -82,6 +91,7 @@ export const useUploadStore = defineStore("upload", () => {
   };
 
   const finishUpload = (upload: Upload) => {
+    sentBytes.value += upload.totalBytes - upload.sentBytes;
     upload.sentBytes = upload.totalBytes;
     upload.file = null;
 
@@ -101,21 +111,18 @@ export const useUploadStore = defineStore("upload", () => {
     }
 
     if (isActiveUploadsOnLimit() && hasPendingUploads()) {
+      if (!hasActiveUploads()) {
+        progressInterval = window.setInterval(syncState, 1000);
+      }
+
       const upload = nextUpload();
 
       if (upload.type === "dir") {
         await api.post(upload.path).catch($showError);
       } else {
-        const onUpload = throttle(
-          (event: ProgressEvent) => {
-            const delta = event.loaded - upload.sentBytes;
-            sentBytes.value += delta;
-
-            upload.sentBytes = event.loaded;
-          },
-          100,
-          { leading: true, trailing: false }
-        );
+        const onUpload = (event: ProgressEvent) => {
+          upload.rawProgress.sentBytes = event.loaded;
+        };
 
         await api
           .post(upload.path, upload.file!, upload.overwrite, onUpload)
@@ -123,6 +130,13 @@ export const useUploadStore = defineStore("upload", () => {
       }
 
       finishUpload(upload);
+    }
+  };
+
+  const syncState = () => {
+    for (const upload of activeUploads.value) {
+      sentBytes.value += upload.rawProgress.sentBytes - upload.sentBytes;
+      upload.sentBytes = upload.rawProgress.sentBytes;
     }
   };
 

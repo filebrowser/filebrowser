@@ -6,6 +6,9 @@ type Upload = {
   overwrite: boolean;
   totalBytes: number;
   sentBytes: number;
+  rawProgress: {
+    sentBytes: number;
+  };
 };
 
 interface UploadEntry {
