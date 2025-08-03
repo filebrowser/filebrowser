@@ -14,12 +14,10 @@
         <div class="upload-info">
           <div class="upload-speed">{{ speed.toFixed(2) }} MB/s</div>
           <div class="upload-eta">{{ formattedETA }} remaining</div>
-          <div class="upload-percentage">
-            {{ uploadStore.getProgressDecimal }}% Completed
-          </div>
+          <div class="upload-percentage">{{ sentPercent }}% Completed</div>
           <div class="upload-fraction">
-            {{ uploadStore.getTotalProgressBytes }} /
-            {{ uploadStore.getTotalSize }}
+            {{ sentMbytes }} /
+            {{ totalMbytes }}
           </div>
         </div>
         <button
@@ -75,6 +73,7 @@ import { computed, ref, watch } from "vue";
 import { abortAllUploads } from "@/api/tus";
 import buttons from "@/utils/buttons";
 import { useI18n } from "vue-i18n";
+import { partial } from "filesize";
 
 const { t } = useI18n({});
 
@@ -86,6 +85,16 @@ const fileStore = useFileStore();
 const uploadStore = useUploadStore();
 
 const { sentBytes } = storeToRefs(uploadStore);
+
+const byteToMbyte = partial({ exponent: 2 });
+
+const sentPercent = computed(() =>
+  ((uploadStore.sentBytes / uploadStore.totalBytes) * 100).toFixed(2)
+);
+
+const sentMbytes = computed(() => byteToMbyte(uploadStore.sentBytes));
+
+const totalMbytes = computed(() => byteToMbyte(uploadStore.totalBytes));
 
 let lastSpeedUpdate: number = 0;
 const recentSpeeds: number[] = [];

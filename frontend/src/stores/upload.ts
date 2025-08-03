@@ -3,7 +3,7 @@ import { useFileStore } from "./file";
 import { files as api } from "@/api";
 import { throttle } from "lodash-es";
 import buttons from "@/utils/buttons";
-import { computed, inject, ref } from "vue";
+import { inject, ref } from "vue";
 
 // TODO: make this into a user setting
 const UPLOADS_LIMIT = 5;
@@ -13,18 +13,6 @@ const beforeUnload = (event: Event) => {
   // To remove >> is deprecated
   // event.returnValue = "";
 };
-
-// Utility function to format bytes into a readable string
-function formatSize(bytes: number): string {
-  if (bytes === 0) return "0.00 Bytes";
-
-  const k = 1024;
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  // Return the rounded size with two decimal places
-  return (bytes / k ** i).toFixed(2) + " " + sizes[i];
-}
 
 export const useUploadStore = defineStore("upload", () => {
   const $showError = inject<IToastError>("$showError")!;
@@ -38,26 +26,6 @@ export const useUploadStore = defineStore("upload", () => {
   const lastUpload = ref<number>(-1);
   const totalBytes = ref<number>(0);
   const sentBytes = ref<number>(0);
-
-  //
-  // GETTERS
-  //
-
-  const getProgress = computed(() => {
-    return Math.ceil((sentBytes.value / totalBytes.value) * 100);
-  });
-
-  const getProgressDecimal = computed(() => {
-    return ((sentBytes.value / totalBytes.value) * 100).toFixed(2);
-  });
-
-  const getTotalProgressBytes = computed(() => {
-    return formatSize(sentBytes.value);
-  });
-
-  const getTotalSize = computed(() => {
-    return formatSize(totalBytes.value);
-  });
 
   //
   // ACTIONS
@@ -165,12 +133,6 @@ export const useUploadStore = defineStore("upload", () => {
     lastUpload,
     totalBytes,
     sentBytes,
-
-    // GETTERS
-    getProgress,
-    getProgressDecimal,
-    getTotalProgressBytes,
-    getTotalSize,
 
     // ACTIONS
     reset,
