@@ -84,7 +84,7 @@ const eta = ref<number>(Infinity);
 const fileStore = useFileStore();
 const uploadStore = useUploadStore();
 
-const { sentBytes } = storeToRefs(uploadStore);
+const { sentBytes, totalBytes } = storeToRefs(uploadStore);
 
 const byteToMbyte = partial({ exponent: 2 });
 
@@ -99,9 +99,19 @@ const totalMbytes = computed(() => byteToMbyte(uploadStore.totalBytes));
 const speedMbytes = computed(() => byteToMbyte(speed.value));
 
 let lastSpeedUpdate: number = 0;
-const recentSpeeds: number[] = [];
+let recentSpeeds: number[] = [];
 
 const calculateSpeed = (sentBytes: number, oldSentBytes: number) => {
+  if (sentBytes === 0) {
+    lastSpeedUpdate = 0;
+    recentSpeeds = [];
+
+    eta.value = Infinity;
+    speed.value = 0;
+
+    return;
+  }
+
   const elapsedTime = (Date.now() - (lastSpeedUpdate ?? 0)) / 1000;
   const bytesSinceLastUpdate = sentBytes - oldSentBytes;
   const currentSpeed = bytesSinceLastUpdate / elapsedTime;
@@ -114,7 +124,12 @@ const calculateSpeed = (sentBytes: number, oldSentBytes: number) => {
   const recentSpeedsAverage =
     recentSpeeds.reduce((acc, curr) => acc + curr) / recentSpeeds.length;
 
-  speed.value = recentSpeedsAverage * 0.2 + speed.value * 0.8;
+  if (recentSpeeds.length === 1) {
+    speed.value = recentSpeedsAverage;
+  } else {
+    speed.value = recentSpeedsAverage * 0.2 + speed.value * 0.8;
+  }
+
   lastSpeedUpdate = Date.now();
 
   calculateEta();
@@ -134,6 +149,14 @@ const calculateEta = () => {
 };
 
 watch(sentBytes, calculateSpeed);
+
+watch(totalBytes, (totalBytes, oldTotalBytes) => {
+  if (oldTotalBytes > 0) {
+    return;
+  }
+
+  lastSpeedUpdate = Date.now();
+});
 
 const formattedETA = computed(() => {
   if (!eta.value || eta.value === Infinity) {
