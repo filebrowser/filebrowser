@@ -27,17 +27,3 @@ interface UploadEntry {
 }
 
 type UploadList = UploadEntry[];
-
-type CurrentUploadList = {
-  [key: string]: {
-    upload: import("tus-js-client").Upload;
-    recentSpeeds: number[];
-    initialBytesUploaded: number;
-    currentBytesUploaded: number;
-    currentAverageSpeed: number;
-    lastProgressTimestamp: number | null;
-    sumOfRecentSpeeds: number;
-    hasStarted: boolean;
-    interval: number | undefined;
-  };
-};

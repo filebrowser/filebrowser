@@ -33,8 +33,6 @@ export const useUploadStore = defineStore("upload", {
     progress: number[];
     queue: UploadItem[];
     uploads: Uploads;
-    speedMbyte: number;
-    eta: number;
     error: Error | null;
   } => ({
     id: 0,
@@ -42,8 +40,6 @@ export const useUploadStore = defineStore("upload", {
     progress: [],
     queue: [],
     uploads: {},
-    speedMbyte: 0,
-    eta: 0,
     error: null,
   }),
   getters: {
@@ -73,12 +69,18 @@ export const useUploadStore = defineStore("upload", {
       const sum = state.progress.reduce((a, b) => a + b, 0);
       return formatSize(sum);
     },
+    getTotalProgress: (state) => {
+      return state.progress.reduce((a, b) => a + b, 0);
+    },
     getTotalSize: (state) => {
       if (state.sizes.length === 0) {
         return "0 Bytes";
       }
       const totalSize = state.sizes.reduce((a, b) => a + b, 0);
       return formatSize(totalSize);
+    },
+    getTotalBytes: (state) => {
+      return state.sizes.reduce((a, b) => a + b, 0);
     },
     filesInUploadCount: (state) => {
       return Object.keys(state.uploads).length + state.queue.length;
@@ -108,10 +110,6 @@ export const useUploadStore = defineStore("upload", {
 
       return files.sort((a, b) => a.progress - b.progress);
     },
-    uploadSpeed: (state) => {
-      return state.speedMbyte;
-    },
-    getETA: (state) => state.eta,
   },
   actions: {
     // no context as first argument, use `this` instead
@@ -127,8 +125,6 @@ export const useUploadStore = defineStore("upload", {
       this.progress = [];
       this.queue = [];
       this.uploads = {};
-      this.speedMbyte = 0;
-      this.eta = 0;
       this.error = null;
     },
     addJob(item: UploadItem) {
@@ -205,12 +201,6 @@ export const useUploadStore = defineStore("upload", {
 
         this.finishUpload(item);
       }
-    },
-    setUploadSpeed(value: number) {
-      this.speedMbyte = value;
-    },
-    setETA(value: number) {
-      this.eta = value;
     },
     // easily reset state using `$reset`
     clearUpload() {

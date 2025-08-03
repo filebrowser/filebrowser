@@ -8,7 +8,7 @@
       <div class="card-title">
         <h2>{{ $t("prompts.uploadFiles", { files: filesInUploadCount }) }}</h2>
         <div class="upload-info">
-          <div class="upload-speed">{{ uploadSpeed.toFixed(2) }} MB/s</div>
+          <div class="upload-speed">{{ speed.toFixed(2) }} MB/s</div>
           <div class="upload-eta">{{ formattedETA }} remaining</div>
           <div class="upload-percentage">
             {{ getProgressDecimal }}% Completed
@@ -62,7 +62,7 @@
 import { useFileStore } from "@/stores/file";
 import { useUploadStore } from "@/stores/upload";
 import { storeToRefs } from "pinia";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { abortAllUploads } from "@/api/tus";
 import buttons from "@/utils/buttons";
 import { useI18n } from "vue-i18n";
@@ -70,6 +70,8 @@ import { useI18n } from "vue-i18n";
 const { t } = useI18n({});
 
 const open = ref<boolean>(false);
+const speed = ref<number>(0);
+const eta = ref<number>(Infinity);
 
 const fileStore = useFileStore();
 const uploadStore = useUploadStore();
@@ -77,19 +79,56 @@ const uploadStore = useUploadStore();
 const {
   filesInUpload,
   filesInUploadCount,
-  uploadSpeed,
-  getETA,
   getProgressDecimal,
   getTotalProgressBytes,
+  getTotalProgress,
   getTotalSize,
+  getTotalBytes,
 } = storeToRefs(uploadStore);
 
+let lastSpeedUpdate: number = 0;
+const recentSpeeds: number[] = [];
+
+const calculateSpeed = (progress: number, oldProgress: number) => {
+  const elapsedTime = (Date.now() - (lastSpeedUpdate ?? 0)) / 1000;
+  const bytesSinceLastUpdate = progress - oldProgress;
+  const currentSpeed = bytesSinceLastUpdate / (1024 * 1024) / elapsedTime;
+
+  recentSpeeds.push(currentSpeed);
+  if (recentSpeeds.length > 5) {
+    recentSpeeds.shift();
+  }
+
+  const recentSpeedsAverage =
+    recentSpeeds.reduce((acc, curr) => acc + curr) / recentSpeeds.length;
+
+  speed.value = recentSpeedsAverage * 0.2 + speed.value * 0.8;
+  lastSpeedUpdate = Date.now();
+
+  calculateEta();
+};
+
+const calculateEta = () => {
+  if (speed.value === 0) {
+    eta.value = Infinity;
+
+    return Infinity;
+  }
+
+  const remainingSize = getTotalBytes.value - getTotalProgress.value;
+  const speedBytesPerSecond = speed.value * 1024 * 1024;
+
+  eta.value = remainingSize / speedBytesPerSecond;
+};
+
+watch(getTotalProgress, calculateSpeed);
+
 const formattedETA = computed(() => {
-  if (!getETA.value || getETA.value === Infinity) {
+  if (!eta.value || eta.value === Infinity) {
     return "--:--:--";
   }
 
-  let totalSeconds = getETA.value;
+  let totalSeconds = eta.value;
   const hours = Math.floor(totalSeconds / 3600);
   totalSeconds %= 3600;
   const minutes = Math.floor(totalSeconds / 60);
