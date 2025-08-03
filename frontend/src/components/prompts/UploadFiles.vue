@@ -12,7 +12,7 @@
           }}
         </h2>
         <div class="upload-info">
-          <div class="upload-speed">{{ speed.toFixed(2) }} MB/s</div>
+          <div class="upload-speed">{{ speedMbytes }}/s</div>
           <div class="upload-eta">{{ formattedETA }} remaining</div>
           <div class="upload-percentage">{{ sentPercent }}% Completed</div>
           <div class="upload-fraction">
@@ -96,13 +96,15 @@ const sentMbytes = computed(() => byteToMbyte(uploadStore.sentBytes));
 
 const totalMbytes = computed(() => byteToMbyte(uploadStore.totalBytes));
 
+const speedMbytes = computed(() => byteToMbyte(speed.value));
+
 let lastSpeedUpdate: number = 0;
 const recentSpeeds: number[] = [];
 
 const calculateSpeed = (sentBytes: number, oldSentBytes: number) => {
   const elapsedTime = (Date.now() - (lastSpeedUpdate ?? 0)) / 1000;
   const bytesSinceLastUpdate = sentBytes - oldSentBytes;
-  const currentSpeed = bytesSinceLastUpdate / (1024 * 1024) / elapsedTime;
+  const currentSpeed = bytesSinceLastUpdate / elapsedTime;
 
   recentSpeeds.push(currentSpeed);
   if (recentSpeeds.length > 5) {
@@ -126,7 +128,7 @@ const calculateEta = () => {
   }
 
   const remainingSize = uploadStore.totalBytes - uploadStore.sentBytes;
-  const speedBytesPerSecond = speed.value * 1024 * 1024;
+  const speedBytesPerSecond = speed.value;
 
   eta.value = remainingSize / speedBytesPerSecond;
 };
