@@ -58,63 +58,60 @@
   </div>
 </template>
 
-<script>
-import { mapState, mapWritableState, mapActions } from "pinia";
-import { useUploadStore } from "@/stores/upload";
+<script setup lang="ts">
 import { useFileStore } from "@/stores/file";
+import { useUploadStore } from "@/stores/upload";
+import { storeToRefs } from "pinia";
+import { computed, ref } from "vue";
 import { abortAllUploads } from "@/api/tus";
 import buttons from "@/utils/buttons";
+import { useI18n } from "vue-i18n";
 
-export default {
-  name: "uploadFiles",
-  data: function () {
-    return {
-      open: false,
-    };
-  },
-  computed: {
-    ...mapState(useUploadStore, [
-      "filesInUpload",
-      "filesInUploadCount",
-      "uploadSpeed",
-      "getETA",
-      "getProgress",
-      "getProgressDecimal",
-      "getTotalProgressBytes",
-      "getTotalSize",
-    ]),
-    ...mapWritableState(useFileStore, ["reload"]),
-    formattedETA() {
-      if (!this.getETA || this.getETA === Infinity) {
-        return "--:--:--";
-      }
+const { t } = useI18n({});
 
-      let totalSeconds = this.getETA;
-      const hours = Math.floor(totalSeconds / 3600);
-      totalSeconds %= 3600;
-      const minutes = Math.floor(totalSeconds / 60);
-      const seconds = Math.round(totalSeconds % 60);
+const open = ref<boolean>(false);
 
-      return `${hours.toString().padStart(2, "0")}:${minutes
-        .toString()
-        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-    },
-  },
-  methods: {
-    ...mapActions(useUploadStore, ["reset"]), // Mapping reset action from upload store
-    toggle: function () {
-      this.open = !this.open;
-    },
-    abortAll() {
-      if (confirm(this.$t("upload.abortUpload"))) {
-        abortAllUploads();
-        buttons.done("upload");
-        this.open = false;
-        this.reset(); // Resetting the upload store state
-        this.reload = true; // Trigger reload in the file store
-      }
-    },
-  },
+const fileStore = useFileStore();
+const uploadStore = useUploadStore();
+
+const {
+  filesInUpload,
+  filesInUploadCount,
+  uploadSpeed,
+  getETA,
+  getProgressDecimal,
+  getTotalProgressBytes,
+  getTotalSize,
+} = storeToRefs(uploadStore);
+
+const formattedETA = computed(() => {
+  if (!getETA.value || getETA.value === Infinity) {
+    return "--:--:--";
+  }
+
+  let totalSeconds = getETA.value;
+  const hours = Math.floor(totalSeconds / 3600);
+  totalSeconds %= 3600;
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = Math.round(totalSeconds % 60);
+
+  return `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+});
+
+const toggle = () => {
+  open.value = !open.value;
+};
+
+const abortAll = () => {
+  if (confirm(t("upload.abortUpload"))) {
+    abortAllUploads();
+    buttons.done("upload");
+    open.value = false;
+    uploadStore.reset(); // Resetting the upload store state
+    fileStore.reload = true; // Trigger reload in the file store
+  }
 };
 </script>
 
