@@ -1,6 +1,6 @@
 # Configuration
 
-Most of the configuration can be understood through our Command Line Interface documentation. Although there are some specific topics that we want to cover on this section.
+Most of the configuration can be understood through the command line interface documentation. To access it, you need to install File Browser and run `filebrowser --help`. In this page, we cover some specific, more complex, topics.
 
 ## Custom Branding
 
