@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { useFileStore } from "./file";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
-import { inject, markRaw, ref } from "vue";
+import { computed, inject, markRaw, ref } from "vue";
 import * as tus from "@/api/tus";
 
 // TODO: make this into a user setting
@@ -70,6 +70,17 @@ export const useUploadStore = defineStore("upload", () => {
     lastUpload.value = Infinity;
     tus.abortAllUploads();
   };
+
+  //
+  // GETTERS
+  //
+
+  const pendingUploadCount = computed(
+    () =>
+      allUploads.value.length -
+      (lastUpload.value + 1) +
+      activeUploads.value.size
+  );
 
   //
   // PRIVATE FUNCTIONS
@@ -162,5 +173,8 @@ export const useUploadStore = defineStore("upload", () => {
     // ACTIONS
     upload,
     abort,
+
+    // GETTERS
+    pendingUploadCount,
   };
 });
