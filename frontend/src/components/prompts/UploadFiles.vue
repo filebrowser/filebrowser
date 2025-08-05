@@ -70,7 +70,6 @@ import { useFileStore } from "@/stores/file";
 import { useUploadStore } from "@/stores/upload";
 import { storeToRefs } from "pinia";
 import { computed, ref, watch } from "vue";
-import { abortAllUploads } from "@/api/tus";
 import buttons from "@/utils/buttons";
 import { useI18n } from "vue-i18n";
 import { partial } from "filesize";
@@ -181,10 +180,9 @@ const toggle = () => {
 
 const abortAll = () => {
   if (confirm(t("upload.abortUpload"))) {
-    abortAllUploads();
     buttons.done("upload");
     open.value = false;
-    uploadStore.reset(); // Resetting the upload store state
+    uploadStore.abort();
     fileStore.reload = true; // Trigger reload in the file store
   }
 };

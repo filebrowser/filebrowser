@@ -52,6 +52,10 @@ export async function upload(
       onError: function (error: Error | tus.DetailedError) {
         delete CURRENT_UPLOAD_LIST[filePath];
 
+        if (error.message === "Upload aborted") {
+          return reject(error);
+        }
+
         const message =
           error instanceof tus.DetailedError
             ? error.originalResponse === null

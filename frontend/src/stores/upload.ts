@@ -3,6 +3,7 @@ import { useFileStore } from "./file";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
 import { inject, markRaw, ref } from "vue";
+import * as tus from "@/api/tus";
 
 // TODO: make this into a user setting
 const UPLOADS_LIMIT = 5;
@@ -64,6 +65,12 @@ export const useUploadStore = defineStore("upload", () => {
     processUploads();
   };
 
+  const abort = () => {
+    // Resets the state by preventing the processing of the remaning uploads
+    lastUpload.value = Infinity;
+    tus.abortAllUploads();
+  };
+
   //
   // PRIVATE FUNCTIONS
   //
@@ -101,7 +108,7 @@ export const useUploadStore = defineStore("upload", () => {
 
         await api
           .post(upload.path, upload.file!, upload.overwrite, onUpload)
-          .catch($showError);
+          .catch((err) => err.message !== "Upload aborted" && $showError(err));
       }
 
       finishUpload(upload);
@@ -154,5 +161,6 @@ export const useUploadStore = defineStore("upload", () => {
 
     // ACTIONS
     upload,
+    abort,
   };
 });
