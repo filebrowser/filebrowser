@@ -51,7 +51,7 @@ export const useUploadStore = defineStore("upload", () => {
       file,
       overwrite,
       type,
-      totalBytes: file?.size ?? 0,
+      totalBytes: file?.size || 1,
       sentBytes: 0,
       // Stores rapidly changing sent bytes value without causing component re-renders
       rawProgress: markRaw({
