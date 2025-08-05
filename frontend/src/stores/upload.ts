@@ -32,33 +32,6 @@ export const useUploadStore = defineStore("upload", () => {
   // ACTIONS
   //
 
-  const reset = () => {
-    if (progressInterval !== null) {
-      clearInterval(progressInterval);
-      progressInterval = null;
-    }
-
-    allUploads.value = [];
-    activeUploads.value = new Set();
-    lastUpload.value = -1;
-    totalBytes.value = 0;
-    sentBytes.value = 0;
-  };
-
-  const nextUpload = (): Upload => {
-    lastUpload.value++;
-
-    const upload = allUploads.value[lastUpload.value];
-    activeUploads.value.add(upload);
-
-    return upload;
-  };
-
-  const hasActiveUploads = () => activeUploads.value.size > 0;
-
-  const hasPendingUploads = () =>
-    allUploads.value.length > lastUpload.value + 1;
-
   const upload = (
     path: string,
     name: string,
@@ -79,6 +52,7 @@ export const useUploadStore = defineStore("upload", () => {
       type,
       totalBytes: file?.size ?? 0,
       sentBytes: 0,
+      // Stores rapidly changing sent bytes value without causing component re-renders
       rawProgress: markRaw({
         sentBytes: 0,
       }),
@@ -90,14 +64,14 @@ export const useUploadStore = defineStore("upload", () => {
     processUploads();
   };
 
-  const finishUpload = (upload: Upload) => {
-    sentBytes.value += upload.totalBytes - upload.sentBytes;
-    upload.sentBytes = upload.totalBytes;
-    upload.file = null;
+  //
+  // PRIVATE FUNCTIONS
+  //
 
-    activeUploads.value.delete(upload);
-    processUploads();
-  };
+  const hasActiveUploads = () => activeUploads.value.size > 0;
+
+  const hasPendingUploads = () =>
+    allUploads.value.length > lastUpload.value + 1;
 
   const isActiveUploadsOnLimit = () => activeUploads.value.size < UPLOADS_LIMIT;
 
@@ -112,6 +86,7 @@ export const useUploadStore = defineStore("upload", () => {
 
     if (isActiveUploadsOnLimit() && hasPendingUploads()) {
       if (!hasActiveUploads()) {
+        // Update the state in a fixed time interval
         progressInterval = window.setInterval(syncState, 1000);
       }
 
@@ -133,6 +108,24 @@ export const useUploadStore = defineStore("upload", () => {
     }
   };
 
+  const nextUpload = (): Upload => {
+    lastUpload.value++;
+
+    const upload = allUploads.value[lastUpload.value];
+    activeUploads.value.add(upload);
+
+    return upload;
+  };
+
+  const finishUpload = (upload: Upload) => {
+    sentBytes.value += upload.totalBytes - upload.sentBytes;
+    upload.sentBytes = upload.totalBytes;
+    upload.file = null;
+
+    activeUploads.value.delete(upload);
+    processUploads();
+  };
+
   const syncState = () => {
     for (const upload of activeUploads.value) {
       sentBytes.value += upload.rawProgress.sentBytes - upload.sentBytes;
@@ -140,18 +133,26 @@ export const useUploadStore = defineStore("upload", () => {
     }
   };
 
+  const reset = () => {
+    if (progressInterval !== null) {
+      clearInterval(progressInterval);
+      progressInterval = null;
+    }
+
+    allUploads.value = [];
+    activeUploads.value = new Set();
+    lastUpload.value = -1;
+    totalBytes.value = 0;
+    sentBytes.value = 0;
+  };
+
   return {
     // STATE
-    allUploads,
     activeUploads,
-    lastUpload,
     totalBytes,
     sentBytes,
 
     // ACTIONS
-    reset,
     upload,
-    finishUpload,
-    processUploads,
   };
 });

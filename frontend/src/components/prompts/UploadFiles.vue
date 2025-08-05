@@ -93,15 +93,14 @@ const sentPercent = computed(() =>
 );
 
 const sentMbytes = computed(() => byteToMbyte(uploadStore.sentBytes));
-
 const totalMbytes = computed(() => byteToMbyte(uploadStore.totalBytes));
-
 const speedMbytes = computed(() => byteToMbyte(speed.value));
 
 let lastSpeedUpdate: number = 0;
 let recentSpeeds: number[] = [];
 
 const calculateSpeed = (sentBytes: number, oldSentBytes: number) => {
+  // Reset the state when the uploads batch is complete
   if (sentBytes === 0) {
     lastSpeedUpdate = 0;
     recentSpeeds = [];
@@ -124,11 +123,12 @@ const calculateSpeed = (sentBytes: number, oldSentBytes: number) => {
   const recentSpeedsAverage =
     recentSpeeds.reduce((acc, curr) => acc + curr) / recentSpeeds.length;
 
+  // Use the current speed for the first update to avoid smoothing lag
   if (recentSpeeds.length === 1) {
-    speed.value = recentSpeedsAverage;
-  } else {
-    speed.value = recentSpeedsAverage * 0.2 + speed.value * 0.8;
+    speed.value = currentSpeed;
   }
+
+  speed.value = recentSpeedsAverage * 0.2 + speed.value * 0.8;
 
   lastSpeedUpdate = Date.now();
 
@@ -151,10 +151,11 @@ const calculateEta = () => {
 watch(sentBytes, calculateSpeed);
 
 watch(totalBytes, (totalBytes, oldTotalBytes) => {
-  if (oldTotalBytes > 0) {
+  if (oldTotalBytes !== 0) {
     return;
   }
 
+  // Mark the start time of a new upload batch
   lastSpeedUpdate = Date.now();
 });
 
