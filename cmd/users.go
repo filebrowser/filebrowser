@@ -77,6 +77,8 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.String("locale", "en", "locale for users")
 	flags.String("viewMode", string(users.ListViewMode), "view mode for users")
 	flags.Bool("singleClick", false, "use single clicks only")
+	flags.Bool("dateFormat", false, "use date format (true for absolute time, false for relative)")
+	flags.Bool("hideDotfiles", false, "hide dotfiles")
 }
 
 func getViewMode(flags *pflag.FlagSet) (users.ViewMode, error) {
