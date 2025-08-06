@@ -225,7 +225,10 @@ const itemClick = (event: Event | KeyboardEvent) => {
   // If long press was triggered, prevent normal click behavior
   if (longPressTriggered.value) {
     longPressTriggered.value = false;
-    return;
+    // In non-singleClick mode, long press should only select, not open
+    if (!singleClick.value) {
+      return;
+    }
   }
 
   if (
@@ -318,10 +321,10 @@ const cancelLongPress = () => {
 };
 
 const handleLongPress = () => {
-  if (singleClick.value) {
-    longPressTriggered.value = true;
-    click(new Event("longpress"));
-  }
+  // Allow long press to select items regardless of singleClick mode
+  // This is essential for mobile devices where right-click is not available
+  longPressTriggered.value = true;
+  click(new Event("longpress"));
   cancelLongPress();
 };
 
