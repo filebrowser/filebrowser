@@ -55,12 +55,22 @@ export async function upload(
 
         return true;
       },
-      onError: function (error) {
+      onError: function (error: Error | tus.DetailedError) {
         if (CURRENT_UPLOAD_LIST[filePath].interval) {
           clearInterval(CURRENT_UPLOAD_LIST[filePath].interval);
         }
         delete CURRENT_UPLOAD_LIST[filePath];
-        reject(new Error(`Upload failed: ${error.message}`));
+
+        const message =
+          error instanceof tus.DetailedError
+            ? error.originalResponse === null
+              ? "000 No connection"
+              : error.originalResponse.getBody()
+            : "Upload failed";
+
+        console.error(error);
+
+        reject(new Error(message));
       },
       onProgress: function (bytesUploaded) {
         const fileData = CURRENT_UPLOAD_LIST[filePath];
