@@ -26,7 +26,6 @@
 import {
   computed,
   defineAsyncComponent,
-  inject,
   onBeforeUnmount,
   onMounted,
   onUnmounted,
@@ -37,7 +36,6 @@ import { files as api } from "@/api";
 import { storeToRefs } from "pinia";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
-import { useUploadStore } from "@/stores/upload";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
@@ -51,14 +49,10 @@ import { name } from "../utils/constants";
 const Editor = defineAsyncComponent(() => import("@/views/files/Editor.vue"));
 const Preview = defineAsyncComponent(() => import("@/views/files/Preview.vue"));
 
-const $showError = inject<IToastError>("$showError")!;
-
 const layoutStore = useLayoutStore();
 const fileStore = useFileStore();
-const uploadStore = useUploadStore();
 
 const { reload } = storeToRefs(fileStore);
-const { error: uploadError } = storeToRefs(uploadStore);
 
 const route = useRoute();
 
@@ -110,9 +104,6 @@ watch(route, () => {
 });
 watch(reload, (newValue) => {
   newValue && fetchData();
-});
-watch(uploadError, (newValue) => {
-  newValue && $showError(newValue);
 });
 
 // Define functions
