@@ -27,6 +27,7 @@ interface Share {
   userID?: number;
   token?: string;
   username?: string;
+  password_hash?: string;
 }
 
 interface SearchParams {

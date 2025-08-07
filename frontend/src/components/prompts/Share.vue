@@ -32,7 +32,7 @@
                 <i class="material-icons">content_paste</i>
               </button>
             </td>
-            <td class="small" v-if="hasDownloadLink()">
+            <td class="small" v-if="hasDownloadLink(link)">
               <button
                 class="action copy-clipboard"
                 :aria-label="$t('buttons.copyDownloadLinkToClipboard')"
@@ -257,10 +257,11 @@ export default {
     buildLink(share) {
       return api.getShareURL(share);
     },
-    hasDownloadLink() {
-      return (
-        this.selectedCount === 1 && !this.req.items[this.selected[0]].isDir
-      );
+    hasDownloadLink(link) {
+      // Only show direct download link for single files without password protection
+      const isSingleFile = this.selectedCount === 1 && !this.req.items[this.selected[0]].isDir;
+      const hasNoPassword = !link.password_hash || link.password_hash === "";
+      return isSingleFile && hasNoPassword;
     },
     buildDownloadLink(share) {
       return pubApi.getDownloadURL(share);
