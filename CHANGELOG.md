@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.42.2](https://github.com/filebrowser/filebrowser/compare/v2.42.1...v2.42.2) (2025-08-06)
+
+
+### Bug Fixes
+
+* show file upload errors ([06e8713](https://github.com/filebrowser/filebrowser/commit/06e8713fa55065d38f02499d3e8d39fc86926cab))
+
+
+### Refactorings
+
+* upload progress calculation ([#5350](https://github.com/filebrowser/filebrowser/issues/5350)) ([c14cf86](https://github.com/filebrowser/filebrowser/commit/c14cf86f8304e01d804e01a7eef5ea093627ef37))
+
 ### [2.42.1](https://github.com/filebrowser/filebrowser/compare/v2.42.0...v2.42.1) (2025-07-31)
 
 
