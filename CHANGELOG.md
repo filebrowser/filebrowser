@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.42.3](https://github.com/filebrowser/filebrowser/compare/v2.42.2...v2.42.3) (2025-08-09)
+
+
+### Bug Fixes
+
+* add missing CLI flags for user management ([#5351](https://github.com/filebrowser/filebrowser/issues/5351)) ([cd51a59](https://github.com/filebrowser/filebrowser/commit/cd51a59e72c72560fce7bcc9b12aaf02646b699c))
+
 ### [2.42.2](https://github.com/filebrowser/filebrowser/compare/v2.42.1...v2.42.2) (2025-08-06)
 
 
