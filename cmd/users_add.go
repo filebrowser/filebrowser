@@ -36,10 +36,22 @@ var usersAddCmd = &cobra.Command{
 			return err
 		}
 
+		dateFormat, err := getBool(cmd.Flags(), "dateFormat")
+		if err != nil {
+			return err
+		}
+
+		hideDotfiles, err := getBool(cmd.Flags(), "hideDotfiles")
+		if err != nil {
+			return err
+		}
+
 		user := &users.User{
 			Username:     args[0],
 			Password:     password,
 			LockPassword: lockPassword,
+			DateFormat:   dateFormat,
+			HideDotfiles: hideDotfiles,
 		}
 
 		s.Defaults.Apply(user)

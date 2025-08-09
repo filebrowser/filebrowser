@@ -76,6 +76,14 @@ options you want to change.`,
 		if err != nil {
 			return err
 		}
+		user.DateFormat, err = getBool(flags, "dateFormat")
+		if err != nil {
+			return err
+		}
+		user.HideDotfiles, err = getBool(flags, "hideDotfiles")
+		if err != nil {
+			return err
+		}
 
 		if newUsername != "" {
 			user.Username = newUsername
