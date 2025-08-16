@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.42.4](https://github.com/filebrowser/filebrowser/compare/v2.42.3...v2.42.4) (2025-08-16)
+
+
+### Bug Fixes
+
+* add libcap to Dockerfile.s6 ([342b239](https://github.com/filebrowser/filebrowser/commit/342b239ac6f4af2453d5f7aa27f7f0093024dd72))
+
 ### [2.42.3](https://github.com/filebrowser/filebrowser/compare/v2.42.2...v2.42.3) (2025-08-09)
 
 
