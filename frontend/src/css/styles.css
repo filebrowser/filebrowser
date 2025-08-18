@@ -460,3 +460,30 @@ html[dir="rtl"] .card.floating .card-content .file-list {
   direction: ltr;
   text-align: left;
 }
+
+.path-container {
+  display: flex;
+  align-items: center;
+  margin: 0.2em 0;
+  gap: 0.25em;
+  overflow-x: auto;
+  max-width: 100%;
+  scrollbar-width: none;
+  opacity: 0.5;
+}
+
+.path-container::-webkit-scrollbar {
+  display: none;
+}
+
+.path-item {
+  display: flex;
+  align-items: center;
+  margin: 0.2em 0;
+  gap: 0.25em;
+  white-space: nowrap;
+}
+
+.path-item > span {
+  font-size: 0.9em;
+}
