@@ -84,7 +84,7 @@
       "s": "Enregistrer un fichier ou télécharger le dossier actuel"
     },
     "del": "Supprimer les éléments sélectionnés",
-    "doubleClick": "Ouvrir un élément",
+    "doubleClick": "Ouvrir un fichier ou dossier",
     "esc": "Désélectionner et/ou fermer la boîte de dialogue",
     "f1": "Ouvrir l'aide",
     "f2": "Renommer le fichier",
