@@ -231,7 +231,7 @@
     },
     "user": "Utilisateur·ice",
     "userCommands": "Commandes",
-    "userCommandsHelp": "Une liste séparée par des espaces des commandes permises pour l'utilisateur. Exemple :\n",
+    "userCommandsHelp": "Une liste séparée par des espaces des commandes permises pour l'utilisateur·ice. Exemple :\n",
     "userCreated": "Utilisateur créé !",
     "userDefaults": "Paramètres par défaut de l'utilisateur",
     "userDeleted": "Utilisateur supprimé !",
