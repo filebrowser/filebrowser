@@ -81,7 +81,7 @@
     "ctrl": {
       "click": "Sélectionner plusieurs fichiers ou dossiers",
       "f": "Ouvrir l'invité de recherche",
-      "s": "Télécharger l'élément actuel"
+      "s": "Enregistrer un fichier ou télécharger le dossier actuel"
     },
     "del": "Supprimer les éléments sélectionnés",
     "doubleClick": "Ouvrir un élément",
