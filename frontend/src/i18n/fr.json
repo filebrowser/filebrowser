@@ -193,7 +193,7 @@
     "insertRegex": "Insérer une expression régulière",
     "instanceName": "Nom de l'instance",
     "language": "Langue",
-    "lockPassword": "Empêcher l'utilisateur de changer son mot de passe",
+    "lockPassword": "Empêcher l'utilisateur·ice de changer son mot de passe",
     "newPassword": "Votre nouveau mot de passe",
     "newPasswordConfirm": "Confirmation du nouveau mot de passe",
     "newUser": "Nouvel utilisateur",
