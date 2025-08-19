@@ -120,7 +120,7 @@
     "filesSelected": "{count} éléments sélectionnés",
     "lastModified": "Dernière modification",
     "move": "Déplacer",
-    "moveMessage": "Choisissez un nouveau dossier principal pour vos fichiers/dossiers :",
+    "moveMessage": "Choisissez un nouveau dossier principal pour vos fichier(s)/dossier(s) :",
     "newArchetype": "Créer un nouveau post basé sur un archétype. Votre fichier sera créé dans le dossier de contenu.",
     "newDir": "Nouveau dossier",
     "newDirMessage": "Nom du nouveau dossier :",
