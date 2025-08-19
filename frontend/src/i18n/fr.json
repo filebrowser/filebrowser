@@ -216,7 +216,7 @@
     "ruleExample2": "Bloque l'accès au fichier nommé \"Caddyfile\" à la racine du dossier utilisateur·ice.",
     "rules": "Règles",
     "rulesHelp": "Vous pouvez définir ici un ensemble de règles pour cet utilisateur·ice. Les fichiers bloqués ne seront pas affichés et ne seront pas accessibles par l'utilisateur·ice. Les expressions régulières sont supportées et les chemins d'accès sont relatifs par rapport au dossier de l'utilisateur·ice.\n",
-    "scope": "Portée du dossier utilisateur",
+    "scope": "Portée du dossier utilisateur·ice",
     "setDateFormat": "Définir le format de la date",
     "settingsUpdated": "Les paramètres ont été mis à jour !",
     "shareDuration": "Durée du partage",
