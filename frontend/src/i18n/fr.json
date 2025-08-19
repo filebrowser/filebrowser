@@ -224,12 +224,12 @@
     "shareDeleted": "Partage supprimé !",
     "singleClick": "Utiliser un simple clic pour ouvrir les fichiers et les dossiers",
     "themes": {
-      "default": "System default",
+      "default": "Par défaut du système",
       "dark": "Sombre",
       "light": "Clair",
       "title": "Thème"
     },
-    "user": "Utilisateur",
+    "user": "Utilisateur·ice",
     "userCommands": "Commandes",
     "userCommandsHelp": "Une liste séparée par des espaces des commandes permises pour l'utilisateur. Exemple :\n",
     "userCreated": "Utilisateur créé !",
