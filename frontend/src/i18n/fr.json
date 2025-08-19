@@ -169,7 +169,7 @@
     "commandRunner": "Exécuteur de commandes",
     "commandRunnerHelp": "Ici, vous pouvez définir les commandes qui seront exécutées lors des événements nommés précédemments. Vous devez en écrire une par ligne. Les variables d'environnement {0} et {1} seront disponibles, {0} étant relatif à {1}. Pour plus d'informations sur cette fonctionnalité et les variables d'environnement disponibles, veuillez lire la {2}.",
     "commandsUpdated": "Commandes mises à jour !",
-    "createUserDir": "Créer automatiquement un dossier pour l'utilisateur",
+    "createUserDir": "Créer automatiquement un dossier pour l'utilisateur·ice",
     "minimumPasswordLength": "Minimum password length",
     "tusUploads": "Uploads segmentés",
     "tusUploadsHelp": "File Browser prend en charge les uploads segmentés afin de permettre une gestion efficace, fiable et reprenable sur des réseaux instables.",
