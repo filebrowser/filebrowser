@@ -188,7 +188,7 @@
     "executeOnShellDescription": "Par défaut, File Browser exécute les commandes en appelant directement leurs binaires. Si vous voulez les exécuter sur un shell à la place (comme Bash ou PowerShell), vous pouvez le définir ici avec les arguments et les drapeaux requis. S'il est défini, la commande que vous exécutez sera ajoutée en tant qu'argument. Cela s'applique à la fois aux commandes utilisateur et aux crochets d'événements.",
     "globalRules": "Il s'agit d'un ensemble global de règles d'autorisation et d'interdiction. Elles s'appliquent à tous les utilisateurs. Vous pouvez définir des règles spécifiques sur les paramètres de chaque utilisateur pour remplacer celles-ci.",
     "globalSettings": "Paramètres globaux",
-    "hideDotfiles": "Cacher les fichiers de configuration utilisateur (dotfiles)",
+    "hideDotfiles": "Cacher les fichiers de configuration commançant par un point",
     "insertPath": "Insérer le chemin",
     "insertRegex": "Insérer une expression régulière",
     "instanceName": "Nom de l'instance",
