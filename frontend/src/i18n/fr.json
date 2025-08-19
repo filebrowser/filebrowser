@@ -79,7 +79,7 @@
   "help": {
     "click": "Sélectionner un fichier ou dossier",
     "ctrl": {
-      "click": "Sélectionner plusieurs éléments",
+      "click": "Sélectionner plusieurs fichiers ou dossiers",
       "f": "Ouvrir l'invité de recherche",
       "s": "Télécharger l'élément actuel"
     },
