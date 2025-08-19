@@ -177,7 +177,7 @@
     "tusUploadsRetryCount": "Nombre de tentatives en cas d'échec d'un segment.",
     "userHomeBasePath": "Chemin de base pour les dossiers personnels des utilisateur·ices",
     "userScopeGenerationPlaceholder": "Le périmètre sera généré automatiquement",
-    "createUserHomeDirectory": "Créer le répertoire personnel de l'utilisateur",
+    "createUserHomeDirectory": "Créer le dossier personnel de l'utilisateur·ice",
     "customStylesheet": "Feuille de style personnalisée",
     "defaultUserDescription": "Paramètres par défaut pour les nouveaux utilisateurs.",
     "disableExternalLinks": "Désactiver les liens externes (sauf la documentation)",
