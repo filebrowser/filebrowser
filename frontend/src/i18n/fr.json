@@ -77,7 +77,7 @@
     "noPreview": "L'aperçu n'est pas disponible pour ce fichier."
   },
   "help": {
-    "click": "Sélectionner un élément",
+    "click": "Sélectionner un fichier ou dossier",
     "ctrl": {
       "click": "Sélectionner plusieurs éléments",
       "f": "Ouvrir l'invité de recherche",
