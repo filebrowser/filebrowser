@@ -175,7 +175,7 @@
     "tusUploadsHelp": "File Browser prend en charge les uploads segmentés afin de permettre une gestion efficace, fiable et reprenable sur des réseaux instables.",
     "tusUploadsChunkSize": "Taille maximale autorisée par segment (les uploads directs seront utilisés pour les fichiers plus petits). Vous pouvez entrer un entier en octets ou une chaîne telle que 10MB, 1GB, etc.",
     "tusUploadsRetryCount": "Nombre de tentatives en cas d'échec d'un segment.",
-    "userHomeBasePath": "Chemin de base pour les répertoires personnels des utilisateurs",
+    "userHomeBasePath": "Chemin de base pour les dossiers personnels des utilisateur·ices",
     "userScopeGenerationPlaceholder": "Le périmètre sera généré automatiquement",
     "createUserHomeDirectory": "Créer le répertoire personnel de l'utilisateur",
     "customStylesheet": "Feuille de style personnalisée",
