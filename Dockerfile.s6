@@ -1,7 +1,7 @@
 FROM ghcr.io/linuxserver/baseimage-alpine:3.22
 
 RUN apk update && \
-  apk --no-cache add ca-certificates mailcap jq
+  apk --no-cache add ca-certificates mailcap jq libcap
 
 # Make user and create necessary directories
 RUN mkdir -p /config /database /srv && \
@@ -12,7 +12,8 @@ COPY filebrowser /bin/filebrowser
 COPY docker/common/ /
 COPY docker/s6/ /
 
-RUN chown -R abc:abc /bin/filebrowser /defaults healthcheck.sh
+RUN chown -R abc:abc /bin/filebrowser /defaults healthcheck.sh && \
+  setcap 'cap_net_bind_service=+ep' /bin/filebrowser
 
 # Define healthcheck script
 HEALTHCHECK --start-period=2s --interval=5s --timeout=3s CMD /healthcheck.sh

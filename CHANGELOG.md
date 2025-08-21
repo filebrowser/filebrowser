@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.42.5](https://github.com/filebrowser/filebrowser/compare/v2.42.4...v2.42.5) (2025-08-16)
+
+
+### Bug Fixes
+
+* "new folder" button not working in the move and copy popup ([#5368](https://github.com/filebrowser/filebrowser/issues/5368)) ([3107ae4](https://github.com/filebrowser/filebrowser/commit/3107ae41475ae9383c3af414d25a133e549f8087))
+
+### [2.42.4](https://github.com/filebrowser/filebrowser/compare/v2.42.3...v2.42.4) (2025-08-16)
+
+
+### Bug Fixes
+
+* add libcap to Dockerfile.s6 ([342b239](https://github.com/filebrowser/filebrowser/commit/342b239ac6f4af2453d5f7aa27f7f0093024dd72))
+
+### [2.42.3](https://github.com/filebrowser/filebrowser/compare/v2.42.2...v2.42.3) (2025-08-09)
+
+
+### Bug Fixes
+
+* add missing CLI flags for user management ([#5351](https://github.com/filebrowser/filebrowser/issues/5351)) ([cd51a59](https://github.com/filebrowser/filebrowser/commit/cd51a59e72c72560fce7bcc9b12aaf02646b699c))
+
 ### [2.42.2](https://github.com/filebrowser/filebrowser/compare/v2.42.1...v2.42.2) (2025-08-06)
 
 
