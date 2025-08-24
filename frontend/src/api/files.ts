@@ -213,6 +213,14 @@ export function getSubtitlesURL(file: ResourceItem) {
   return file.subtitles?.map((d) => createURL("api/subtitle" + d, params));
 }
 
+export async function downloadFromURL(url: string, path: string) {
+	const res = await fetchURL(`/api/downloads`, {
+		method: "POST",
+		body: JSON.stringify({ url, path }),
+	});
+	return res.json();
+}
+
 export async function usage(url: string, signal: AbortSignal) {
   url = removePrefix(url);
 

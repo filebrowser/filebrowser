@@ -70,6 +70,7 @@ func NewHandler(
 	api.PathPrefix("/tus").Handler(monkey(tusHeadHandler(), "/api/tus")).Methods("HEAD", "GET")
 	api.PathPrefix("/tus").Handler(monkey(tusPatchHandler(), "/api/tus")).Methods("PATCH")
 	api.PathPrefix("/tus").Handler(monkey(tusDeleteHandler(), "/api/tus")).Methods("DELETE")
+	api.PathPrefix("/downloads").Handler(monkey(urlDownloadHandler, "/api/downloads")).Methods("POST")
 
 	api.PathPrefix("/usage").Handler(monkey(diskUsage, "/api/usage")).Methods("GET")
 

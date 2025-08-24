@@ -72,6 +72,13 @@
           :label="t('buttons.upload')"
           @action="uploadFunc"
         />
+        <action
+          v-if="headerButtons.upload"
+          icon="file_download"
+          id="download-url-button"
+          :label="t('buttons.downloadFromUrl')"
+          @action="downloadUrl"
+        />
         <action icon="info" :label="t('buttons.info')" show="info" />
         <action
           icon="check_circle"
@@ -890,6 +897,26 @@ const download = () => {
       }
 
       api.download(format, ...files);
+    },
+  });
+};
+
+const downloadUrl = () => {
+  layoutStore.showHover({
+    prompt: "url",
+    confirm: (event: Event, url: string) => {
+      event.preventDefault();
+      layoutStore.closeHovers();
+
+      if (url === "") {
+        return;
+      }
+
+      api.downloadFromURL(url, route.path)
+        .then(() => {
+          fileStore.reload = true;
+        })
+        .catch($showError);
     },
   });
 };

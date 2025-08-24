@@ -11,6 +11,7 @@
     "create": "Create",
     "delete": "Delete",
     "download": "Download",
+    "downloadFromUrl": "Download from URL",
     "file": "File",
     "folder": "Folder",
     "fullScreen": "Toggle full screen",
