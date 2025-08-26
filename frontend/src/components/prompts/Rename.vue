@@ -16,7 +16,6 @@
         @keyup.enter="submit"
         v-model.trim="name"
       />
-      <p class=""></p>
     </div>
 
     <div class="card-action">
