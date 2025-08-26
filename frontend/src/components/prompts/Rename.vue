@@ -6,8 +6,7 @@
 
     <div class="card-content">
       <p>
-        {{ $t("prompts.renameMessage") }} <code>{{ oldName() }}</code
-        >:
+        {{ $t("prompts.renameMessage") }} <code>{{ oldName() }}</code>:
       </p>
       <input
         id="focus-prompt"
@@ -40,85 +39,75 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState, mapWritableState } from "pinia";
+<script setup>
+import { ref, inject, onMounted } from "vue";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 import url from "@/utils/url";
 import { files as api } from "@/api";
 import { removePrefix } from "@/api/utils";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 
-export default {
-  name: "rename",
-  data: function () {
-    return {
-      name: "",
-    };
-  },
-  created() {
-    this.name = this.oldName();
-  },
-  inject: ["$showError"],
-  computed: {
-    ...mapState(useFileStore, [
-      "req",
-      "selected",
-      "selectedCount",
-      "isListing",
-    ]),
-    ...mapWritableState(useFileStore, ["reload", "preselect"]),
-  },
-  methods: {
-    ...mapActions(useLayoutStore, ["closeHovers"]),
-    cancel: function () {
-      this.closeHovers();
-    },
-    oldName: function () {
-      if (!this.isListing) {
-        return this.req.name;
-      }
+const { t } = useI18n();
+const $showError = inject("$showError");
+const router = useRouter();
 
-      if (this.selectedCount === 0 || this.selectedCount > 1) {
-        // This shouldn't happen.
-        return;
-      }
+const fileStore = useFileStore();
+const layoutStore = useLayoutStore();
 
-      return this.req.items[this.selected[0]].name;
-    },
-    submit: async function () {
-      if(this.name.includes('/')) {
-        this.$showError(new Error(this.$t('errors.invalidName')));
-        this.closeHovers();
-        return;
-      }
-      let oldLink = "";
-      let newLink = "";
+const name = ref("");
 
-      if (!this.isListing) {
-        oldLink = this.req.url;
-      } else {
-        oldLink = this.req.items[this.selected[0]].url;
-      }
+const oldName = () => {
+  if (!fileStore.isListing) {
+    return fileStore.req.name;
+  }
 
-      newLink =
-        url.removeLastDir(oldLink) + "/" + encodeURIComponent(this.name);
+  if (fileStore.selectedCount === 0 || fileStore.selectedCount > 1) {
+    return;
+  }
 
-      try {
-        await api.move([{ from: oldLink, to: newLink }]);
-        if (!this.isListing) {
-          this.$router.push({ path: newLink });
-          return;
-        }
-
-        this.preselect = removePrefix(newLink);
-
-        this.reload = true;
-      } catch (e) {
-        this.$showError(e);
-      }
-
-      this.closeHovers();
-    },
-  },
+  return fileStore.req.items[fileStore.selected[0]].name;
 };
+
+onMounted(() => {
+  name.value = oldName();
+});
+
+const submit = async () => {
+  if (name.value.includes("/")) {
+    $showError(new Error(t("errors.invalidName")));
+    layoutStore.closeHovers();
+    return;
+  }
+
+  let oldLink = "";
+  let newLink = "";
+
+  if (!fileStore.isListing) {
+    oldLink = fileStore.req.url;
+  } else {
+    oldLink = fileStore.req.items[fileStore.selected[0]].url;
+  }
+
+  newLink = url.removeLastDir(oldLink) + "/" + encodeURIComponent(name.value);
+
+  try {
+    await api.move([{ from: oldLink, to: newLink }]);
+
+    if (!fileStore.isListing) {
+      router.push({ path: newLink });
+      return;
+    }
+
+    fileStore.preselect = removePrefix(newLink);
+    fileStore.reload = true;
+  } catch (e) {
+    $showError(e);
+  }
+
+  layoutStore.closeHovers();
+};
+
+const closeHovers = layoutStore.closeHovers;
 </script>
