@@ -16,6 +16,7 @@
         @keyup.enter="submit"
         v-model.trim="name"
       />
+      <p class=""></p>
     </div>
 
     <div class="card-action">
@@ -86,6 +87,11 @@ export default {
       return this.req.items[this.selected[0]].name;
     },
     submit: async function () {
+      if(this.name.includes('/')) {
+        this.$showError(new Error(this.$t('errors.invalidName')));
+        this.closeHovers();
+        return;
+      }
       let oldLink = "";
       let newLink = "";
 
