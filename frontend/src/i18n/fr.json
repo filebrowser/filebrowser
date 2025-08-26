@@ -56,7 +56,8 @@
     "forbidden": "Vous n'avez pas la permission d'accéder à cela.",
     "internal": "Aïe ! Quelque chose s'est mal passé.",
     "notFound": "Impossible d'accéder à cet emplacement.",
-    "connection": "Le serveur est injoignable."
+    "connection": "Le serveur est injoignable.",
+    "invalidName": "Nom invalide pour le fichier ou le répertoire."
   },
   "files": {
     "body": "Corps",

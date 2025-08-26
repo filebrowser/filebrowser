@@ -56,7 +56,8 @@
     "forbidden": "No tienes los permisos necesarios para acceder.",
     "internal": "La verdad es que algo ha ido mal.",
     "notFound": "No se puede acceder a este lugar.",
-    "connection": "No se puede acceder al servidor."
+    "connection": "No se puede acceder al servidor.",
+    "invalidName": "Nombre de archivo o directorio incorrecto."
   },
   "files": {
     "body": "Cuerpo",

@@ -56,7 +56,8 @@
     "forbidden": "Non hai i permessi per accedere a questo file.",
     "internal": "Qualcosa è andato veramente male.",
     "notFound": "Questo percorso non può essere raggiunto.",
-    "connection": "The server can't be reached."
+    "connection": "The server can't be reached.",
+    "invalidName": "Nome non valido per il file o la directory"
   },
   "files": {
     "body": "Contenuto",

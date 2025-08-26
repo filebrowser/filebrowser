@@ -56,7 +56,8 @@
     "forbidden": "您無權訪問。",
     "internal": "伺服器出了點問題。",
     "notFound": "找不到檔案。",
-    "connection": "無法連接到伺服器。"
+    "connection": "無法連接到伺服器。",
+    "invalidName": "檔案或目錄的名稱無效。"
   },
   "files": {
     "body": "内容",

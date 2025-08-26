@@ -56,7 +56,8 @@
     "forbidden": "Nincs jogosultsága a hozzáféréshez.",
     "internal": "Valami nagyon elromlott.",
     "notFound": "Ez a hely nem érhető el.",
-    "connection": "A kiszolgáló nem érhető el."
+    "connection": "A kiszolgáló nem érhető el.",
+    "invalidName": "Érvénytelen fájl- vagy könyvtárnév."
   },
   "files": {
     "body": "Törzs",

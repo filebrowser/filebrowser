@@ -56,7 +56,8 @@
     "forbidden": "Nie masz zezwolenia na dostęp do tego.",
     "internal": "Pojawił się poważny problem.",
     "notFound": "Ta lokalizacja jest nieosiągalna.",
-    "connection": "Serwer jest nieosiągalny."
+    "connection": "Serwer jest nieosiągalny.",
+    "invalidName": "Nieprawidłowa nazwa pliku lub katalogu."
   },
   "files": {
     "body": "Zawartość",

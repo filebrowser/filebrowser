@@ -56,7 +56,8 @@
     "forbidden": "Du saknar rättigheter till detta",
     "internal": "Något gick fel",
     "notFound": "Det går inte att nå den här platsen.",
-    "connection": "The server can't be reached."
+    "connection": "The server can't be reached.",
+    "invalidName": "Ogiltigt namn för fil eller katalog."
   },
   "files": {
     "body": "Huvud",

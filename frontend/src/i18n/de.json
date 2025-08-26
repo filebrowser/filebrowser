@@ -56,7 +56,8 @@
     "forbidden": "Sie haben keine Berechtigung dies abzurufen.",
     "internal": "Etwas ist schiefgelaufen.",
     "notFound": "Dieser Ort kann nicht angezeigt werden.",
-    "connection": "Der Server ist nicht erreichbar."
+    "connection": "Der Server ist nicht erreichbar.",
+    "invalidName": "Ungültiger Name für Datei oder Verzeichnis."
   },
   "files": {
     "body": "Body",

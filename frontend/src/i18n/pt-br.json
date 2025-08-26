@@ -56,7 +56,8 @@
     "forbidden": "Você não tem permissões para acessar isto.",
     "internal": "Ops! Algum erro ocorreu.",
     "notFound": "Ops! Nada foi encontrado.",
-    "connection": "O servidor não pode ser alcançado."
+    "connection": "O servidor não pode ser alcançado.",
+    "invalidName": "Nome inválido para arquivo ou diretório."
   },
   "files": {
     "body": "Corpo",

@@ -56,7 +56,8 @@
     "forbidden": "Não tem permissões para aceder a isto",
     "internal": "Algo correu bastante mal.",
     "notFound": "Esta localização não é alcançável.",
-    "connection": "The server can't be reached."
+    "connection": "The server can't be reached.",
+    "invalidName": "Nome inválido para ficheiro ou diretório."
   },
   "files": {
     "body": "Corpo",

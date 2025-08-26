@@ -56,7 +56,8 @@
     "forbidden": "Nemáte oprávnění k přístupu.",
     "internal": "Nastala vážná chyba.",
     "notFound": "Tuto lokaci nelze najít.",
-    "connection": "Server nelze dosáhnout."
+    "connection": "Server nelze dosáhnout.",
+    "invalidName": "Neplatný název souboru nebo adresáře."
   },
   "files": {
     "body": "Tělo",
