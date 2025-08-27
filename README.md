@@ -36,3 +36,24 @@ Contributions are always welcome. To start contributing to this project, read ou
 ## License
 
 [Apache License 2.0](LICENSE) © File Browser Contributors
+
+
+<!-- GitHub Frontend Bot Testing Improvement Contribution -->
+
+This comment was added by GitHub Frontend Bot as part of a testing infrastructure improvement initiative.
+
+**Suggested Testing Improvements:**
+
+**Recommended Testing Stack:**
+- **Built-in testing package** - Go's native testing
+- **testify** - Assertion library for better readability
+- **GoConvey** - BDD-style testing framework
+- **golangci-lint** - Comprehensive linting
+
+**Example setup:**
+```bash
+go get github.com/stretchr/testify
+```
+
+---
+*Generated on 2025-08-27T08:00:03.586Z*
