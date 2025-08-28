@@ -9,5 +9,6 @@
 
 #preview-container {
   overflow: auto;
-  max-height: 80vh; /* Match the max-height of md_preview for scrolling */
+  max-height: 100vh;
+  flex: 1;
 }
