@@ -56,7 +56,8 @@
     "forbidden": "U hebt geen rechten om hier toegang toe te krijgen.",
     "internal": "Er ging iets mis.",
     "notFound": "Deze locatie kan niet worden bereikt.",
-    "connection": "The server can't be reached."
+    "connection": "The server can't be reached.",
+    "invalidName": "Ongeldige naam voor bestand of map"
   },
   "files": {
     "body": "Body",

@@ -56,7 +56,8 @@
     "forbidden": "No tens els permisos necessaris per accedir.",
     "internal": "La veritat és que alguna cosa ha anat malament.",
     "notFound": "No es pot accedir a aquest lloc.",
-    "connection": "No es pot accedir al servidor."
+    "connection": "No es pot accedir al servidor.",
+    "invalidName": "Nom no vàlid per a fitxer o directori"
   },
   "files": {
     "body": "Cos",

@@ -56,7 +56,8 @@
     "forbidden": "Bạn không có quyền truy cập vào nội dung này.",
     "internal": "Đã xảy ra lỗi nghiêm trọng.",
     "notFound": "Không thể truy cập vị trí này.",
-    "connection": "Không thể kết nối đến máy chủ."
+    "connection": "Không thể kết nối đến máy chủ.",
+    "invalidName": "Tên tệp hoặc thư mục không hợp lệ."
   },
   "files": {
     "body": "Nội dung",

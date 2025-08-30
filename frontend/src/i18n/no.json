@@ -56,7 +56,8 @@
     "forbidden": "Du har ikkje tilgang til denne filen.",
     "internal": "Noko gikk virkelig galt.",
     "notFound": "Denne lokasjonen kan ikkje bli nådd.",
-    "connection": "Denne serveren kan ikkje nås."
+    "connection": "Denne serveren kan ikkje nås.",
+    "invalidName": "Ugyldig navn for fil eller katalog."
   },
   "files": {
     "body": "Kropp",
