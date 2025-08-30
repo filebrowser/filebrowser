@@ -56,7 +56,8 @@
     "forbidden": "Buna erişim izniniz yok.",
     "internal": "Bir şeyler ters gitti.",
     "notFound": "Bu konuma ulaşılamıyor.",
-    "connection": "Sunucuya ulaşılamıyor."
+    "connection": "Sunucuya ulaşılamıyor.",
+    "invalidName": "Dosya veya dizin için geçersiz ad."
   },
   "files": {
     "body": "Sayfa",

@@ -56,7 +56,8 @@
     "forbidden": "Þú hefur ekki aðgang að þessari síðu.",
     "internal": "Eitthvað fór úrskeiðis.",
     "notFound": "Ekki er hægt að opna þessa síðu.",
-    "connection": "The server can't be reached."
+    "connection": "The server can't be reached.",
+    "invalidName": "Ógilt nafn fyrir skrá eða möppu"
   },
   "files": {
     "body": "Meginmál",

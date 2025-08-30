@@ -56,7 +56,8 @@
     "forbidden": "你无权限访问",
     "internal": "服务器出了点问题。",
     "notFound": "找不到文件。",
-    "connection": "无法连接到服务器。"
+    "connection": "无法连接到服务器。",
+    "invalidName": "文件或目录的名称无效。"
   },
   "files": {
     "body": "内容",

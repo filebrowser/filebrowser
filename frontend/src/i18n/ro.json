@@ -56,7 +56,8 @@
     "forbidden": "Nu ai permisiuni sa accesezi asta.",
     "internal": "Ceva nu a funcționat corect.",
     "notFound": "Aceasta locație nu poate fi accesată.",
-    "connection": "The server can't be reached."
+    "connection": "The server can't be reached.",
+    "invalidName": "Nume nevalid pentru fișier sau director."
   },
   "files": {
     "body": "Corp",
