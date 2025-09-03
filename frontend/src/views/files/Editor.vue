@@ -1,5 +1,5 @@
 <template>
-  <div id="editor-container" @wheel.prevent.stop>
+  <div id="editor-container">
     <header-bar>
       <action icon="close" :label="t('buttons.close')" @action="close()" />
       <title>{{ fileStore.req?.name ?? "" }}</title>
@@ -97,7 +97,6 @@ const isMarkdownFile =
 
 onMounted(() => {
   window.addEventListener("keydown", keyEvent);
-  window.addEventListener("wheel", handleScroll);
   window.addEventListener("beforeunload", handlePageChange);
 
   const fileContent = fileStore.req?.content || "";
@@ -110,13 +109,6 @@ onMounted(() => {
       } catch (error) {
         console.error("Failed to convert content to HTML:", error);
         previewContent.value = "";
-      }
-
-      const previewContainer = document.getElementById("preview-container");
-      if (previewContainer) {
-        previewContainer.addEventListener("wheel", handleScroll, {
-          capture: true,
-        });
       }
     }
   });
@@ -148,7 +140,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", keyEvent);
-  window.removeEventListener("wheel", handleScroll);
   window.removeEventListener("beforeunload", handlePageChange);
   editor.value?.destroy();
 });
@@ -184,13 +175,6 @@ const keyEvent = (event: KeyboardEvent) => {
 
   event.preventDefault();
   save();
-};
-
-const handleScroll = (event: WheelEvent) => {
-  const editorContainer = document.getElementById("preview-container");
-  if (editorContainer) {
-    editorContainer.scrollTop += event.deltaY;
-  }
 };
 
 const handlePageChange = (event: BeforeUnloadEvent) => {
