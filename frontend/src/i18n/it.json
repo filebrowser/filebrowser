@@ -173,7 +173,7 @@
     "minimumPasswordLength": "Lunghezza minima della parola chiave",
     "tusUploads": "Tranci di invii",
     "tusUploadsHelp": "File Browser supporta tranci di invii fornendo così la possibilità di inviare efficientemente i file anche su reti instabili.",
-    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsChunkSize": "Indica la dimensione massima di una richiesta (invii diretti saranno usati per piccoli invii). Puoi inserire un numero intero per indicare la dimensione in byte, oppure una stringa con l'unità di misura come in 10MB, 1GB, ecc.",
     "tusUploadsRetryCount": "Numero di tentativi da effettuare se un trancio di file fallisce.",
     "userHomeBasePath": "Percorso base per le cartelle utente",
     "userScopeGenerationPlaceholder": "La portata verrà autogenerata",
