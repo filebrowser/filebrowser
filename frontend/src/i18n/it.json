@@ -56,7 +56,7 @@
     "forbidden": "Non hai i permessi per accedere a questo file.",
     "internal": "Qualcosa è andato veramente male.",
     "notFound": "Questo percorso non può essere raggiunto.",
-    "connection": "The server can't be reached."
+    "connection": "Il server non è raggiungibile"
   },
   "files": {
     "body": "Contenuto",
