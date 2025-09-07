@@ -174,7 +174,7 @@
     "tusUploads": "Tranci di invii",
     "tusUploadsHelp": "File Browser supporta tranci di invii fornendo così la possibilità di inviare efficientemente i file anche su reti instabili.",
     "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
-    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "tusUploadsRetryCount": "Numero di tentativi da effettuare se un trancio di file fallisce.",
     "userHomeBasePath": "Percorso base per le cartelle utente",
     "userScopeGenerationPlaceholder": "La portata verrà autogenerata",
     "createUserHomeDirectory": "Crea cartella utente",
