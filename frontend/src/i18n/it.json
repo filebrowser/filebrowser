@@ -50,7 +50,7 @@
     "downloadSelected": "Scarica selezionati"
   },
   "upload": {
-    "abortUpload": "Are you sure you wish to abort?"
+    "abortUpload": "Sei sicuro di voler abortire la procedura?"
   },
   "errors": {
     "forbidden": "Non hai i permessi per accedere a questo file.",
