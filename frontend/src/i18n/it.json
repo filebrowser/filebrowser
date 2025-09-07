@@ -177,7 +177,7 @@
     "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Base path for user home directories",
     "userScopeGenerationPlaceholder": "The scope will be auto generated",
-    "createUserHomeDirectory": "Create user home directory",
+    "createUserHomeDirectory": "Crea cartella utente",
     "customStylesheet": "Foglio di stile personalizzato",
     "defaultUserDescription": "Queste sono le impostazioni predefinite per i nuovi utenti.",
     "disableExternalLinks": "Disabilita link esterni (tranne per la documentazione)",
