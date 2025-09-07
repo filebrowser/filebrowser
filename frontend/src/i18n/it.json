@@ -110,7 +110,7 @@
     "deleteMessageMultiple": "Sei sicuro di voler eliminare {count} file?",
     "deleteMessageSingle": "Sei sicuro di voler eliminare questo file/cartella?",
     "deleteMessageShare": "Sei sicuro di voler eliminare questo percorso condiviso ({path})?",
-    "deleteUser": "Are you sure you want to delete this user?",
+    "deleteUser": "Sei sicuro di voler eliminare questo utente?",
     "deleteTitle": "Elimina",
     "displayName": "Nome visualizzato:",
     "download": "Scarica files",
