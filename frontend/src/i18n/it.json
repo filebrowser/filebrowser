@@ -217,7 +217,7 @@
     "rules": "Regole",
     "rulesHelp": "Qui è possibile definire una serie di regole e permessi per questo specifico utente. I file bloccati non appariranno negli elenchi e non saranno accessibili dagli utenti. all'utente. Sia regex che i percorsi relativi all'ambito di applicazione degli utenti sono supportati.\n",
     "scope": "Scope",
-    "setDateFormat": "Set exact date format",
+    "setDateFormat": "Fissa il formato di data esatto",
     "settingsUpdated": "Impostazioni aggiornate!",
     "shareDuration": "Durata della condivisione",
     "shareManagement": "Gestione delle condivisioni",
