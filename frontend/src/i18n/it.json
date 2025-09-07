@@ -137,7 +137,7 @@
     "show": "Mostra",
     "size": "Dimensione",
     "upload": "Carica",
-    "uploadFiles": "Uploading {files} files...",
+    "uploadFiles": "Inviando {files} file...",
     "uploadMessage": "Seleziona un'opzione per il caricamento.",
     "optionalPassword": "Optional password",
     "resolution": "Resolution",
