@@ -50,7 +50,6 @@ export default {
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),
     saveAndClose() {
-      // Ejecutar la función de guardado si está disponible
       if (this.currentPrompt?.saveAction) {
         this.currentPrompt.saveAction();
       }
