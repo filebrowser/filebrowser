@@ -157,6 +157,10 @@ onBeforeRouteUpdate((to, from, next) => {
       event.preventDefault();
       next();
     },
+    saveAction: async () => {
+      await save();
+      next();
+    },
   });
 });
 
