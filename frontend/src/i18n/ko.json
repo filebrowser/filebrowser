@@ -42,7 +42,8 @@
     "update": "업데이트",
     "upload": "업로드",
     "openFile": "Open file",
-    "discardChanges": "Discard"
+  "discardChanges": "Discard",
+  "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "파일 다운로드",
