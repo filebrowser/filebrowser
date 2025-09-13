@@ -42,7 +42,8 @@
     "update": "Mettre à jour",
     "upload": "Importer",
     "openFile": "Ouvrir le fichier",
-    "discardChanges": "Annuler"
+  "discardChanges": "Annuler",
+  "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Télécharger le fichier",
