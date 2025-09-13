@@ -42,7 +42,8 @@
     "update": "به روز سانی",
     "upload": "آپلود",
     "openFile": "باز کردن فایل",
-    "discardChanges": "لغو کردن"
+  "discardChanges": "لغو کردن",
+  "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "دانلود فایل",
