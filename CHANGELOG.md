@@ -18,6 +18,38 @@ All notable changes to this project will be documented in this file. See [standa
 * optimize markdown preview height ([783503a](https://github.com/filebrowser/filebrowser/commit/783503aece7fca9e26f7e849b0e7478aba976acb))
 
 
+### Reverts
+
+* build(deps): bump github.com/ulikunitz/xz from 0.5.12 to 0.5.14 ([0769265](https://github.com/filebrowser/filebrowser/commit/07692653ffe0ea5e517e6dc1fd3961172e931843))
+
+
+### Build
+
+* **deps-dev:** bump vite from 6.1.6 to 6.3.6 in /frontend ([36c6cc2](https://github.com/filebrowser/filebrowser/commit/36c6cc203e10947439519a0413d5817921a1690d))
+* **deps:** bump github.com/go-viper/mapstructure/v2 in /tools ([280fa56](https://github.com/filebrowser/filebrowser/commit/280fa562a67824887ae6e2530a3b73739d6e1bb4))
+* **deps:** bump github.com/ulikunitz/xz from 0.5.12 to 0.5.14 ([950028a](https://github.com/filebrowser/filebrowser/commit/950028abebe2898bac4ecfd8715c0967246310cb))
+
+
+### Refactorings
+
+* to use strings.Lines ([b482a9b](https://github.com/filebrowser/filebrowser/commit/b482a9bf0d292ec6542d2145a4408971e4c985f1))
+
+## [2.43.0](https://github.com/filebrowser/filebrowser/compare/v2.42.5...v2.43.0) (2025-09-13)
+
+
+### Features
+
+* "save changes" button to discard changes dialog ([84e8632](https://github.com/filebrowser/filebrowser/commit/84e8632b98e315bfef2da77dd7d1049daec99241))
+* Translate frontend/src/i18n/en.json in es ([571ce6c](https://github.com/filebrowser/filebrowser/commit/571ce6cb0d7c8725d1cc1a3238ea506ddc72b060))
+* Translate frontend/src/i18n/en.json in fr ([6b1fa87](https://github.com/filebrowser/filebrowser/commit/6b1fa87ad38ebbb1a9c5d0e5fc88ba796c148bcf))
+* Updates for project File Browser ([#5427](https://github.com/filebrowser/filebrowser/issues/5427)) ([8950585](https://github.com/filebrowser/filebrowser/commit/89505851414bfcee6b9ff02087eb4cec51c330f6))
+
+
+### Bug Fixes
+
+* optimize markdown preview height ([783503a](https://github.com/filebrowser/filebrowser/commit/783503aece7fca9e26f7e849b0e7478aba976acb))
+
+
 ### Build
 
 * **deps-dev:** bump vite from 6.1.6 to 6.3.6 in /frontend ([36c6cc2](https://github.com/filebrowser/filebrowser/commit/36c6cc203e10947439519a0413d5817921a1690d))
