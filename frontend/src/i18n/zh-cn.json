@@ -42,7 +42,8 @@
     "update": "更新",
     "upload": "上传",
     "openFile": "打开文件",
-    "discardChanges": "放弃更改"
+  "discardChanges": "放弃更改",
+  "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "下载文件",
