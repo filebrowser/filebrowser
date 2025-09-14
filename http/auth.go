@@ -214,8 +214,13 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 		return http.StatusInternalServerError, err
 	}
 
-	w.Header().Set("Content-Type", "text/plain")
-	if _, err := w.Write([]byte(signed)); err != nil {
+	response := map[string]interface{}{
+		"token":     signed,
+		"expiresAt": claims.ExpiresAt.Time.Format(time.RFC3339), // fecha en string ISO 8601
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(response); err != nil {
 		return http.StatusInternalServerError, err
 	}
 	return 0, nil

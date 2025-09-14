@@ -64,3 +64,8 @@ interface IRegexp {
 }
 
 type UserTheme = "light" | "dark" | "";
+
+interface SessionToken {
+  token: string;
+  expiresAt: string;
+}
