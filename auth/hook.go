@@ -123,7 +123,7 @@ func (a *HookAuth) GetValues(s string) {
 	s = strings.ReplaceAll(s, "\r\n", "\n")
 
 	// iterate input lines
-	for _, val := range strings.Split(s, "\n") {
+	for val := range strings.Lines(s) {
 		v := strings.SplitN(val, "=", 2)
 
 		// skips non key and value format
