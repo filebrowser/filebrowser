@@ -5,24 +5,23 @@ import { jwtDecode } from "jwt-decode";
 import { baseURL, noAuth } from "./constants";
 import { StatusError } from "@/api/utils";
 
-export function parseToken(body: SessionToken) {
+export function parseToken(token: string) {
   // falsy or malformed jwt will throw InvalidTokenError
-  const data = jwtDecode<JwtPayload & { user: IUser }>(body.token);
+  const data = jwtDecode<JwtPayload & { user: IUser }>(token);
 
-  document.cookie = `auth=${body.token}; Path=/; SameSite=Strict;`;
+  document.cookie = `auth=${token}; Path=/; SameSite=Strict;`;
 
-  localStorage.setItem("jwt", body.token);
+  localStorage.setItem("jwt", token);
 
   const authStore = useAuthStore();
-  authStore.jwt = body.token;
+  authStore.jwt = token;
   authStore.setUser(data.user);
-
-  const expiresAt = new Date(body.expiresAt);
 
   if (authStore.logoutTimer) {
     clearTimeout(authStore.logoutTimer);
   }
 
+  const expiresAt = new Date(data.exp! * 1000);
   authStore.setLogoutTimer(
     window.setTimeout(() => {
       logout();
@@ -56,12 +55,11 @@ export async function login(
     body: JSON.stringify(data),
   });
 
+  const body = await res.text();
 
   if (res.status === 200) {
-    const body = await res.json();
     parseToken(body);
   } else {
-    const body = await res.text();
     throw new StatusError(
       body || `${res.status} ${res.statusText}`,
       res.status
@@ -77,12 +75,11 @@ export async function renew(jwt: string) {
     },
   });
 
+  const body = await res.text();
 
   if (res.status === 200) {
-    const body = await res.json();
     parseToken(body);
   } else {
-    const body = await res.text();
     throw new StatusError(
       body || `${res.status} ${res.statusText}`,
       res.status
