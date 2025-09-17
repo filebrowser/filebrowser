@@ -5,19 +5,20 @@ import (
 	"encoding/base64"
 
 	"golang.org/x/crypto/bcrypt"
-
-	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
+	// fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 )
 
 // ValidateAndHashPwd validates and hashes a password.
 func ValidateAndHashPwd(password string, minimumLength uint) (string, error) {
-	if uint(len(password)) < minimumLength {
-		return "", fbErrors.ErrShortPassword{MinimumLength: minimumLength}
-	}
+	// nduc custom: remove weak password checks
 
-	if _, ok := commonPasswords[password]; ok {
-		return "", fbErrors.ErrEasyPassword
-	}
+	// if uint(len(password)) < minimumLength {
+	// 	return "", fbErrors.ErrShortPassword{MinimumLength: minimumLength}
+	// }
+
+	// if _, ok := commonPasswords[password]; ok {
+	// 	return "", fbErrors.ErrEasyPassword
+	// }
 
 	return HashPwd(password)
 }

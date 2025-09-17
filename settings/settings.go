@@ -11,7 +11,7 @@ import (
 )
 
 const DefaultUsersHomeBasePath = "/users"
-const DefaultMinimumPasswordLength = 12
+const DefaultMinimumPasswordLength = 6 // nduc custom: reduce from 12 to 6
 const DefaultFileMode = 0640
 const DefaultDirMode = 0750
 
