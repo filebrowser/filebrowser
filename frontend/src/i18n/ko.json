@@ -218,7 +218,7 @@
     "rules": "룰",
     "rulesHelp": "사용자별로 규칙을 허용/방지를 지정할 수 있습니다. 방지된 파일은 보이지 않고 사용자들은 접근할 수 없습니다. 사용자의 접근 허용 범위와 관련해 정규표현식(regex)과 경로를 지원합니다.\n",
     "scope": "범위",
-    "setDateFormat": "Set exact date format",
+    "setDateFormat": "날짜 형식 설정",
     "settingsUpdated": "설정 수정됨!",
     "shareDuration": "공유 기간",
     "shareManagement": "공유 내역 관리",
