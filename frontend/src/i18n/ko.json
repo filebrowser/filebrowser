@@ -222,10 +222,10 @@
     "settingsUpdated": "설정 수정됨!",
     "shareDuration": "공유 기간",
     "shareManagement": "공유 내역 관리",
-    "shareDeleted": "Share deleted!",
+    "shareDeleted": "공유 삭제됨!",
     "singleClick": "한번 클릭으로 파일과 폴더를 열도록 합니다.",
     "themes": {
-      "default": "System default",
+      "default": "시스템 기본값",
       "dark": "다크테마",
       "light": "라이트테마",
       "title": "테마"
