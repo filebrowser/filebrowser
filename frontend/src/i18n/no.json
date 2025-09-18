@@ -42,7 +42,8 @@
     "update": "Opptater",
     "upload": "Last opp",
     "openFile": "Open file",
-    "discardChanges": "Slett"
+  "discardChanges": "Slett",
+  "saveChanges": "Lagre Endringane "
   },
   "download": {
     "downloadFile": "Nedlast filen",
