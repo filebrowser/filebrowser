@@ -173,7 +173,7 @@
     "createUserDir": "Auto create user home dir while adding new user",
     "minimumPasswordLength": "최소 비밀번호 길이",
     "tusUploads": "분할 업로드",
-    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsHelp": "File Browser는 불안정한 네트워크에서도 효율적이고 신뢰성 있는 분할 업로드를 지원합니다.",
     "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
     "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Base path for user home directories",
