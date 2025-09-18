@@ -178,7 +178,7 @@
     "tusUploadsRetryCount": "업로드 실패 시 재시도 횟수",
     "userHomeBasePath": "사용자 홈 폴더 기본 경로",
     "userScopeGenerationPlaceholder": "범위는 자동으로 생성됩니다.",
-    "createUserHomeDirectory": "Create user home directory",
+    "createUserHomeDirectory": "사용자 홈 폴더 생성",
     "customStylesheet": "커스텀 스타일시트",
     "defaultUserDescription": "아래 사항은 신규 사용자들에 대한 기본 설정입니다.",
     "disableExternalLinks": "외부 링크 감추기",
