@@ -51,7 +51,7 @@
     "downloadSelected": "선택 항목 다운로드"
   },
   "upload": {
-    "abortUpload": "Are you sure you wish to abort?"
+    "abortUpload": "업로드를 중단하시겠습니까?"
   },
   "errors": {
     "forbidden": "접근 권한이 없습니다.",
