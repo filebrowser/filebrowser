@@ -140,7 +140,7 @@
     "upload": "업로드",
     "uploadFiles": "Uploading {files} files...",
     "uploadMessage": "업로드 옵션을 선택하세요.",
-    "optionalPassword": "Optional password",
+    "optionalPassword": "암호 (선택)",
     "resolution": "Resolution",
     "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
