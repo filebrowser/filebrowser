@@ -110,7 +110,7 @@
     "currentlyNavigating": "현재 위치:",
     "deleteMessageMultiple": "{count} 개의 파일을 삭제하시겠습니까?",
     "deleteMessageSingle": "파일 혹은 디렉토리를 삭제하시겠습니까?",
-    "deleteMessageShare": "Are you sure you wish to delete this share({path})?",
+    "deleteMessageShare": "이 공유({path})를 삭제하시겠습니까?",
     "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "파일 삭제",
     "displayName": "게시 이름:",
