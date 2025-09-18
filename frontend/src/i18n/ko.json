@@ -176,7 +176,7 @@
     "tusUploadsHelp": "File Browser는 불안정한 네트워크에서도 효율적이고 신뢰성 있는 분할 업로드를 지원합니다.",
     "tusUploadsChunkSize": "업로드 요청의 최대 크기 (예: 10MB, 1GB)",
     "tusUploadsRetryCount": "업로드 실패 시 재시도 횟수",
-    "userHomeBasePath": "사용자 홈 디렉토리 기본 경로",
+    "userHomeBasePath": "사용자 홈 디렉터리의 기본 경로",
     "userScopeGenerationPlaceholder": "범위는 자동으로 생성됩니다.",
     "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "커스텀 스타일시트",
