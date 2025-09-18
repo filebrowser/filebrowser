@@ -42,7 +42,8 @@
     "update": "Ενημέρωση",
     "upload": "Μεταφόρτωση",
     "openFile": "Άνοιγμα αρχείου",
-    "discardChanges": "Discard"
+  "discardChanges": "Discard",
+  "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Λήψη αρχείου",
