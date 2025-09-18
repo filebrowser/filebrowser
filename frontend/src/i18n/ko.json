@@ -75,7 +75,7 @@
     "sortByLastModified": "수정시간순 정렬",
     "sortByName": "이름순",
     "sortBySize": "크기순",
-    "noPreview": "Preview is not available for this file."
+    "noPreview": "미리 보기가 지원되지 않는 파일 유형입니다."
   },
   "help": {
     "click": "파일이나 디렉토리를 선택해주세요.",
