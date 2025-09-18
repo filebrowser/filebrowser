@@ -42,7 +42,8 @@
     "update": "Aggiorna",
     "upload": "Carica",
     "openFile": "Apri file",
-    "discardChanges": "Ignora"
+  "discardChanges": "Ignora",
+  "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Scarica file",
