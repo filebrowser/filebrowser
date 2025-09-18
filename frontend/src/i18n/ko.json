@@ -142,7 +142,7 @@
     "uploadMessage": "업로드 옵션을 선택하세요.",
     "optionalPassword": "비밀번호 (선택)",
     "resolution": "해상도",
-    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
+    "discardEditorChanges": "변경 사항을 취소하시겠습니까?"
   },
   "search": {
     "images": "이미지",
