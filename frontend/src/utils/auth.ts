@@ -24,7 +24,7 @@ export function parseToken(token: string) {
   const expiresAt = new Date(data.exp! * 1000);
   authStore.setLogoutTimer(
     window.setTimeout(() => {
-      logout('inactivity');
+      logout("inactivity");
     }, expiresAt.getTime() - Date.now())
   );
 }
@@ -113,16 +113,15 @@ export function logout(reason?: string) {
   if (noAuth) {
     window.location.reload();
   } else {
-    if(typeof reason === "string" && reason.trim() !== "") {
-      router.push({ 
-        path: "/login", 
-        query: { "logout-reason": reason }
+    if (typeof reason === "string" && reason.trim() !== "") {
+      router.push({
+        path: "/login",
+        query: { "logout-reason": reason },
       });
     } else {
-      router.push({ 
+      router.push({
         path: "/login",
       });
     }
-    
   }
 }

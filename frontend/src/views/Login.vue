@@ -3,7 +3,9 @@
     <form @submit="submit">
       <img :src="logoURL" alt="File Browser" />
       <h1>{{ name }}</h1>
-      <p v-if="reason != null" class="logout-message">{{t(`login.logout_reasons.${reason}`)}}</p>
+      <p v-if="reason != null" class="logout-message">
+        {{ t(`login.logout_reasons.${reason}`) }}
+      </p>
       <div v-if="error !== ''" class="wrong">{{ error }}</div>
 
       <input
@@ -71,7 +73,7 @@ const toggleMode = () => (createMode.value = !createMode.value);
 
 const $showError = inject<IToastError>("$showError")!;
 
-const reason = route.query['logout-reason'] ?? null;
+const reason = route.query["logout-reason"] ?? null;
 
 const submit = async (event: Event) => {
   event.preventDefault();
