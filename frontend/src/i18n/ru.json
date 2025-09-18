@@ -42,7 +42,8 @@
     "update": "Обновить",
     "upload": "Загрузить",
     "openFile": "Открыть файл",
-    "discardChanges": "Отказаться"
+  "discardChanges": "Отказаться",
+  "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Скачать файл",
