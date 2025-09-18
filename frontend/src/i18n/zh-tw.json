@@ -42,7 +42,8 @@
     "update": "更新",
     "upload": "上傳",
     "openFile": "開啟檔案",
-    "discardChanges": "放棄變更"
+  "discardChanges": "放棄變更",
+  "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "下載檔案",

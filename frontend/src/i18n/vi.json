@@ -42,7 +42,8 @@
     "update": "Cập nhật",
     "upload": "Tải lên",
     "openFile": "Mở tệp",
-    "discardChanges": "Hủy bỏ thay đổi"
+  "discardChanges": "Hủy bỏ thay đổi",
+  "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Tải xuống tệp tin",

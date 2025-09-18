@@ -42,7 +42,8 @@
     "update": "Actualizează",
     "upload": "Încarcă",
     "openFile": "Open file",
-    "discardChanges": "Discard"
+  "discardChanges": "Discard",
+  "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Descarcă fișier",

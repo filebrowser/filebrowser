@@ -42,7 +42,8 @@
     "update": "Actualitzar",
     "upload": "Pujar",
     "openFile": "Obrir fitxer",
-    "discardChanges": "Descartar"
+  "discardChanges": "Descartar",
+  "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Descarregar fitxer",

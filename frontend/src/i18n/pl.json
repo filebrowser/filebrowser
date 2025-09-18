@@ -42,7 +42,8 @@
     "update": "Aktualizuj",
     "upload": "Wyślij",
     "openFile": "Otwórz plik",
-    "discardChanges": "Odrzuć"
+  "discardChanges": "Odrzuć",
+  "saveChanges": "Zapisz zmiany"
   },
   "download": {
     "downloadFile": "Pobierz plik",

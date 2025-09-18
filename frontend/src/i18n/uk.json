@@ -42,7 +42,8 @@
     "update": "Оновити",
     "upload": "Вивантажити",
     "openFile": "Відкрити файл",
-    "discardChanges": "Скасувати"
+  "discardChanges": "Скасувати",
+  "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Завантажити файл",
