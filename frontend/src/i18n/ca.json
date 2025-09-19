@@ -101,7 +101,10 @@
     "submit": "Iniciar sessió",
     "username": "Usuari",
     "usernameTaken": "Nom d'usuari no disponible",
-    "wrongCredentials": "Usuari i/o contrasenya incorrectes"
+    "wrongCredentials": "Usuari i/o contrasenya incorrectes",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanent",
   "prompts": {
