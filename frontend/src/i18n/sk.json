@@ -101,7 +101,10 @@
     "submit": "Prihlásiť",
     "username": "Používateľské meno",
     "usernameTaken": "Meno je už obsadené",
-    "wrongCredentials": "Nesprávne prihlasovacie údaje"
+    "wrongCredentials": "Nesprávne prihlasovacie údaje",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Trvalé",
   "prompts": {
