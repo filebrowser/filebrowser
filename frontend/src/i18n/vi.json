@@ -101,7 +101,10 @@
     "submit": "Đăng nhập",
     "username": "Tên người dùng",
     "usernameTaken": "Tên người dùng đã tồn tại",
-    "wrongCredentials": "Thông tin đăng nhập không đúng"
+    "wrongCredentials": "Thông tin đăng nhập không đúng",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Vĩnh viễn",
   "prompts": {
