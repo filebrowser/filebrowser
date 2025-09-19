@@ -101,7 +101,10 @@
     "submit": "Login",
     "username": "Benutzername",
     "usernameTaken": "Benutzername ist bereits vergeben",
-    "wrongCredentials": "Falsche Zugangsdaten"
+    "wrongCredentials": "Falsche Zugangsdaten",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanent",
   "prompts": {
