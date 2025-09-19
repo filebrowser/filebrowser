@@ -101,7 +101,10 @@
     "submit": "Logg inn",
     "username": "Brukernavn",
     "usernameTaken": "Brukernavn er allerede i bruk",
-    "wrongCredentials": "Feil legitimasjon"
+    "wrongCredentials": "Feil legitimasjon",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanent",
   "prompts": {

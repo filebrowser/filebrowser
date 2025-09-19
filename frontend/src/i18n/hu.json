@@ -101,7 +101,10 @@
     "submit": "Belépés",
     "username": "Felhasználói név",
     "usernameTaken": "A felhasználói név már foglalt",
-    "wrongCredentials": "Hibás hitelesítő adatok"
+    "wrongCredentials": "Hibás hitelesítő adatok",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Állandó",
   "prompts": {

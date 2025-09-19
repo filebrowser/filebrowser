@@ -101,7 +101,10 @@
     "submit": "Iniciar sesión",
     "username": "Usuario",
     "usernameTaken": "Nombre usuario no disponible",
-    "wrongCredentials": "Usuario y/o contraseña incorrectos"
+    "wrongCredentials": "Usuario y/o contraseña incorrectos",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanente",
   "prompts": {

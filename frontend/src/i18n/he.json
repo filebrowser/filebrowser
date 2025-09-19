@@ -101,7 +101,10 @@
     "submit": "התחברות",
     "username": "שם משתמש",
     "usernameTaken": "שם המשתמש כבר קיים",
-    "wrongCredentials": "פרטי התחברות שגויים"
+    "wrongCredentials": "פרטי התחברות שגויים",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "קבוע",
   "prompts": {

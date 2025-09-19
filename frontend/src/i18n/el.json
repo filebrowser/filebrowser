@@ -101,7 +101,10 @@
     "submit": "Είσοδος",
     "username": "Όνομα χρήστη",
     "usernameTaken": "Το όνομα χρήστη χρησιμοποιείται ήδη",
-    "wrongCredentials": "Λάθος όνομα ή/και κωδικός πρόσβασης"
+    "wrongCredentials": "Λάθος όνομα ή/και κωδικός πρόσβασης",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Μόνιμο",
   "prompts": {
