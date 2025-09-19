@@ -103,7 +103,7 @@
     "usernameTaken": "Ta nazwa użytkownika jest zajęta",
     "wrongCredentials": "Błędne dane logowania",
     "logout_reasons": {
-      "inactivity": "You have been logged out due to inactivity."
+      "inactivity": "Wylogowano z powodu braku aktywności."
     }
   },
   "permanent": "Permanentny",
