@@ -101,7 +101,10 @@
     "submit": "Login",
     "username": "Nome do usuário",
     "usernameTaken": "Nome de usuário já existe",
-    "wrongCredentials": "Ops! Dados incorretos."
+    "wrongCredentials": "Ops! Dados incorretos.",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanente",
   "prompts": {
