@@ -16,6 +16,9 @@
         @keyup.enter="submit"
         v-model.trim="name"
       />
+      <p class="invalid-name" v-if="!isValidName">
+        {{ $t("errors.invalidFileName") }}
+      </p>
     </div>
 
     <div class="card-action">
@@ -31,6 +34,7 @@
         @click="submit"
         class="button button--flat"
         type="submit"
+        :disabled="!isValidName"
         :aria-label="$t('buttons.rename')"
         :title="$t('buttons.rename')"
       >
@@ -47,6 +51,8 @@ import { useLayoutStore } from "@/stores/layout";
 import url from "@/utils/url";
 import { files as api } from "@/api";
 import { removePrefix } from "@/api/utils";
+
+const INVALID_CHARACTERS = ["/"];
 
 export default {
   name: "rename",
@@ -67,6 +73,9 @@ export default {
       "isListing",
     ]),
     ...mapWritableState(useFileStore, ["reload", "preselect"]),
+    isValidName() {
+      return !INVALID_CHARACTERS.some((char) => this.name.includes(char));
+    },
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),
@@ -117,3 +126,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+.invalid-name {
+  color: var(--red);
+  font-size: 0.9em;
+}
+</style>
