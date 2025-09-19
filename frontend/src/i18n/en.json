@@ -57,7 +57,8 @@
     "forbidden": "You don't have permissions to access this.",
     "internal": "Something really went wrong.",
     "notFound": "This location can't be reached.",
-    "connection": "The server can't be reached."
+    "connection": "The server can't be reached.",
+    "invalidFileName": "The file or directory name is not valid."
   },
   "files": {
     "body": "Body",
