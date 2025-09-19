@@ -101,7 +101,10 @@
     "submit": "Entrar na conta",
     "username": "Nome de utilizador",
     "usernameTaken": "O nome de utilizador já está registado",
-    "wrongCredentials": "Dados errados"
+    "wrongCredentials": "Dados errados",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanente",
   "prompts": {

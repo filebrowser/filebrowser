@@ -101,7 +101,10 @@
     "submit": "Войти",
     "username": "Имя пользователя",
     "usernameTaken": "Данное имя пользователя уже занято",
-    "wrongCredentials": "Неверные данные"
+    "wrongCredentials": "Неверные данные",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Постоянный",
   "prompts": {

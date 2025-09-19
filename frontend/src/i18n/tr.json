@@ -101,7 +101,10 @@
     "submit": "Giriş",
     "username": "Kullanıcı adı",
     "usernameTaken": "Kullanıcı adı mevcut",
-    "wrongCredentials": "Yanlış hesap bilgileri"
+    "wrongCredentials": "Yanlış hesap bilgileri",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Kalıcı",
   "prompts": {

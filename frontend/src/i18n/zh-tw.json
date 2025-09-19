@@ -101,7 +101,10 @@
     "submit": "登入",
     "username": "帳號",
     "usernameTaken": "用戶名已存在",
-    "wrongCredentials": "帳號或密碼錯誤"
+    "wrongCredentials": "帳號或密碼錯誤",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "永久",
   "prompts": {

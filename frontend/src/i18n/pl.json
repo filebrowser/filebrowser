@@ -101,7 +101,10 @@
     "submit": "Zaloguj",
     "username": "Nazwa użytkownika",
     "usernameTaken": "Ta nazwa użytkownika jest zajęta",
-    "wrongCredentials": "Błędne dane logowania"
+    "wrongCredentials": "Błędne dane logowania",
+    "logout_reasons": {
+      "inactivity": "Wylogowano z powodu braku aktywności."
+    }
   },
   "permanent": "Permanentny",
   "prompts": {
