@@ -101,7 +101,10 @@
     "submit": "ورود",
     "username": "نام کاربری",
     "usernameTaken": "نام کاربری تکراری",
-    "wrongCredentials": "خطا در اعتبارسنجی"
+    "wrongCredentials": "خطا در اعتبارسنجی",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "دائمی",
   "prompts": {
