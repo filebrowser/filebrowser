@@ -101,7 +101,10 @@
     "submit": "Увійти",
     "username": "Ім'я користувача",
     "usernameTaken": "Ім'я користувача вже використовується",
-    "wrongCredentials": "Неправильне ім'я користувача або пароль"
+    "wrongCredentials": "Неправильне ім'я користувача або пароль",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Постійний",
   "prompts": {
