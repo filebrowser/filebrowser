@@ -101,7 +101,10 @@
     "submit": "تسجيل دخول",
     "username": "إسم المستخدم",
     "usernameTaken": "إسم المستخدم غير متاح",
-    "wrongCredentials": "بيانات دخول خاطئة"
+    "wrongCredentials": "بيانات دخول خاطئة",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "دائم",
   "prompts": {
