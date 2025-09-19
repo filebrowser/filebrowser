@@ -101,7 +101,10 @@
     "submit": "Innskráning",
     "username": "Notendanafn",
     "usernameTaken": "Þetta norendanafn er þegar í notkun",
-    "wrongCredentials": "Rangar notendaupplýsingar"
+    "wrongCredentials": "Rangar notendaupplýsingar",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Varanlegt",
   "prompts": {
