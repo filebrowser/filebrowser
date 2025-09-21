@@ -42,7 +42,8 @@
     "update": "Aggiorna",
     "upload": "Carica",
     "openFile": "Apri file",
-    "discardChanges": "Ignora"
+  "discardChanges": "Ignora",
+  "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Scarica file",
@@ -100,7 +101,10 @@
     "submit": "Entra",
     "username": "Nome utente",
     "usernameTaken": "Username già usato",
-    "wrongCredentials": "Credenziali errate"
+    "wrongCredentials": "Credenziali errate",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanente",
   "prompts": {

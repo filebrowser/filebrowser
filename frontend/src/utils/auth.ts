@@ -16,6 +16,17 @@ export function parseToken(token: string) {
   const authStore = useAuthStore();
   authStore.jwt = token;
   authStore.setUser(data.user);
+
+  if (authStore.logoutTimer) {
+    clearTimeout(authStore.logoutTimer);
+  }
+
+  const expiresAt = new Date(data.exp! * 1000);
+  authStore.setLogoutTimer(
+    window.setTimeout(() => {
+      logout("inactivity");
+    }, expiresAt.getTime() - Date.now())
+  );
 }
 
 export async function validateLogin() {
@@ -92,7 +103,7 @@ export async function signup(username: string, password: string) {
   }
 }
 
-export function logout() {
+export function logout(reason?: string) {
   document.cookie = "auth=; Max-Age=0; Path=/; SameSite=Strict;";
 
   const authStore = useAuthStore();
@@ -102,6 +113,15 @@ export function logout() {
   if (noAuth) {
     window.location.reload();
   } else {
-    router.push({ path: "/login" });
+    if (typeof reason === "string" && reason.trim() !== "") {
+      router.push({
+        path: "/login",
+        query: { "logout-reason": reason },
+      });
+    } else {
+      router.push({
+        path: "/login",
+      });
+    }
   }
 }

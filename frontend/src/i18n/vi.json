@@ -42,7 +42,8 @@
     "update": "Cập nhật",
     "upload": "Tải lên",
     "openFile": "Mở tệp",
-    "discardChanges": "Hủy bỏ thay đổi"
+  "discardChanges": "Hủy bỏ thay đổi",
+  "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Tải xuống tệp tin",
@@ -100,7 +101,10 @@
     "submit": "Đăng nhập",
     "username": "Tên người dùng",
     "usernameTaken": "Tên người dùng đã tồn tại",
-    "wrongCredentials": "Thông tin đăng nhập không đúng"
+    "wrongCredentials": "Thông tin đăng nhập không đúng",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Vĩnh viễn",
   "prompts": {
