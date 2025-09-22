@@ -103,7 +103,7 @@
     "usernameTaken": "Brukernavn er allerede i bruk",
     "wrongCredentials": "Feil legitimasjon",
     "logout_reasons": {
-      "inactivity": "You have been logged out due to inactivity."
+      "inactivity": "Du har blitt logget ut på grunn av inaktivitet"
     }
   },
   "permanent": "Permanent",
