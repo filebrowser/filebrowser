@@ -100,6 +100,18 @@ const speedMbytes = computed(() => byteToMbyte(speed.value));
 let lastSpeedUpdate: number = 0;
 let recentSpeeds: number[] = [];
 
+let lastThrottleTime = 0;
+
+const throttledCalcullateSpeed = (sentBytes: number, oldSentBytes: number) => {
+  const now = Date.now();
+  if (now - lastThrottleTime < 100) {
+    return;
+  }
+
+  lastThrottleTime = now;
+  calculateSpeed(sentBytes, oldSentBytes);
+};
+
 const calculateSpeed = (sentBytes: number, oldSentBytes: number) => {
   // Reset the state when the uploads batch is complete
   if (sentBytes === 0) {
@@ -149,7 +161,7 @@ const calculateEta = () => {
   eta.value = remainingSize / speedBytesPerSecond;
 };
 
-watch(sentBytes, calculateSpeed);
+watch(sentBytes, throttledCalcullateSpeed);
 
 watch(totalBytes, (totalBytes, oldTotalBytes) => {
   if (oldTotalBytes !== 0) {
