@@ -158,6 +158,7 @@
     "video": "Βίντεο"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Διαχειριστής",
     "administrator": "Διαχειριστής",
     "allowCommands": "Εκτέλεση εντολών",

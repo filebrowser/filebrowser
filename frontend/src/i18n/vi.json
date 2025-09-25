@@ -158,6 +158,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Quản trị viên",
     "administrator": "Người quản trị",
     "allowCommands": "Thực thi lệnh",

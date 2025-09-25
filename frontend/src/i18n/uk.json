@@ -158,6 +158,7 @@
     "video": "Відео"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Адмін",
     "administrator": "Адміністратор",
     "allowCommands": "Запуск команд",

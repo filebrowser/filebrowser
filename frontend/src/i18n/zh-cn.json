@@ -158,6 +158,7 @@
     "video": "视频"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "管理员",
     "administrator": "管理员",
     "allowCommands": "执行命令（Shell 命令）",
