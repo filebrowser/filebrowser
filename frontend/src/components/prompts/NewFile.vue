@@ -13,6 +13,7 @@
         @keyup.enter="submit"
         v-model.trim="name"
       />
+      <CreateFilePath :name="name" />
     </div>
 
     <div class="card-action">
@@ -42,6 +43,7 @@ import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
+import CreateFilePath from "@/components/prompts/CreateFilePath.vue";
 
 import { files as api } from "@/api";
 import url from "@/utils/url";
