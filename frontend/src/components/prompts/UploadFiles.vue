@@ -113,7 +113,7 @@ let recentSpeeds: number[] = [];
 
 let lastThrottleTime = 0;
 
-const throttledCalcullateSpeed = (sentBytes: number, oldSentBytes: number) => {
+const throttledCalculateSpeed = (sentBytes: number, oldSentBytes: number) => {
   const now = Date.now();
   if (now - lastThrottleTime < 100) {
     return;
@@ -172,7 +172,7 @@ const calculateEta = () => {
   eta.value = remainingSize / speedBytesPerSecond;
 };
 
-watch(sentBytes, throttledCalcullateSpeed);
+watch(sentBytes, throttledCalculateSpeed);
 
 watch(totalBytes, (totalBytes, oldTotalBytes) => {
   if (oldTotalBytes !== 0) {
