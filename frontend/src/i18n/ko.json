@@ -158,6 +158,7 @@
     "video": "비디오"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "관리자",
     "administrator": "관리자",
     "allowCommands": "명령 실행",
