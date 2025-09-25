@@ -14,7 +14,7 @@
           }}
         </h2>
         <div class="upload-info">
-          <div class="upload-speed">{{ speedMbytes }}/s</div>
+          <div class="upload-speed">{{ speedText }}/s</div>
           <div class="upload-eta">{{ formattedETA }} remaining</div>
           <div class="upload-percentage">{{ sentPercent }}% Completed</div>
           <div class="upload-fraction">
@@ -88,6 +88,7 @@ const uploadStore = useUploadStore();
 const { sentBytes, totalBytes } = storeToRefs(uploadStore);
 
 const byteToMbyte = partial({ exponent: 2 });
+const byteToKbyte = partial({ exponent: 1 });
 
 const sentPercent = computed(() =>
   ((uploadStore.sentBytes / uploadStore.totalBytes) * 100).toFixed(2)
@@ -95,10 +96,32 @@ const sentPercent = computed(() =>
 
 const sentMbytes = computed(() => byteToMbyte(uploadStore.sentBytes));
 const totalMbytes = computed(() => byteToMbyte(uploadStore.totalBytes));
-const speedMbytes = computed(() => byteToMbyte(speed.value));
+const speedText = computed(() => {
+  const bytes = speed.value;
+
+  if (bytes < 1024 * 1024) {
+    const kb = parseFloat(byteToKbyte(bytes));
+    return `${kb.toFixed(2)} KB`;
+  } else {
+    const mb = parseFloat(byteToMbyte(bytes));
+    return `${mb.toFixed(2)} MB`;
+  }
+});
 
 let lastSpeedUpdate: number = 0;
 let recentSpeeds: number[] = [];
+
+let lastThrottleTime = 0;
+
+const throttledCalculateSpeed = (sentBytes: number, oldSentBytes: number) => {
+  const now = Date.now();
+  if (now - lastThrottleTime < 100) {
+    return;
+  }
+
+  lastThrottleTime = now;
+  calculateSpeed(sentBytes, oldSentBytes);
+};
 
 const calculateSpeed = (sentBytes: number, oldSentBytes: number) => {
   // Reset the state when the uploads batch is complete
@@ -149,7 +172,7 @@ const calculateEta = () => {
   eta.value = remainingSize / speedBytesPerSecond;
 };
 
-watch(sentBytes, calculateSpeed);
+watch(sentBytes, throttledCalculateSpeed);
 
 watch(totalBytes, (totalBytes, oldTotalBytes) => {
   if (oldTotalBytes !== 0) {
