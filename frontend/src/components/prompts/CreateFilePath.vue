@@ -41,12 +41,11 @@ const container = ref<HTMLElement | null>(null);
 
 const path = computed(() => {
   let basePath = fileStore.isFiles ? route.path : url.removeLastDir(route.path);
+  if (!basePath.endsWith("/")) {
+    basePath += "/";
+  }
   basePath += props.name;
-
-  return basePath
-    .replace(/^\/[^\/]+/, "")
-    .split("/")
-    .filter(Boolean);
+  return basePath.split("/").filter(Boolean).splice(1);
 });
 
 watch(path, () => {
