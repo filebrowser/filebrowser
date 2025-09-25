@@ -158,6 +158,7 @@
     "video": "動画"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "管理者",
     "administrator": "管理者",
     "allowCommands": "コマンドの実行",
