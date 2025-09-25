@@ -42,8 +42,8 @@
     "update": "Aktualizovat",
     "upload": "Nahrát",
     "openFile": "Otevřít soubor",
-  "discardChanges": "Zrušit změny",
-  "saveChanges": "Save changes"
+    "discardChanges": "Zrušit změny",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Stáhnout soubor",

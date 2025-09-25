@@ -42,8 +42,8 @@
     "update": "업데이트",
     "upload": "업로드",
     "openFile": "파일 열기",
-  "discardChanges": "변경 사항 취소",
-  "saveChanges": "변경사항 저장"
+    "discardChanges": "변경 사항 취소",
+    "saveChanges": "변경사항 저장"
   },
   "download": {
     "downloadFile": "파일 다운로드",

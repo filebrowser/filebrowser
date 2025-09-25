@@ -42,8 +42,8 @@
     "update": "Güncelle",
     "upload": "Yükle",
     "openFile": "Dosyayı aç",
-  "discardChanges": "Discard",
-  "saveChanges": "Save changes"
+    "discardChanges": "Discard",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Dosyayı indir",
