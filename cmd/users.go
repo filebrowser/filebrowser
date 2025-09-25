@@ -112,7 +112,7 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 		case "singleClick":
 			defaults.SingleClick, err = getBool(flags, flag.Name)
 		case "aceEditorTheme":
-			defaults.AceEditorTheme = getString(flags, flag.Name)
+			defaults.AceEditorTheme, err = getString(flags, flag.Name)
 		case "perm.admin":
 			defaults.Perm.Admin, err = getBool(flags, flag.Name)
 		case "perm.execute":

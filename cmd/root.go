@@ -427,7 +427,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) error {
 			Scope:          ".",
 			Locale:         "en",
 			SingleClick:    false,
-			AceEditorTheme: getParam(flags, "defaults.aceEditorTheme"),
+			AceEditorTheme: getStringParam(flags, "defaults.aceEditorTheme"),
 			Perm: users.Permissions{
 				Admin:    false,
 				Execute:  true,
