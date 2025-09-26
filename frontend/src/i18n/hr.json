@@ -174,7 +174,7 @@
     "commandRunner": "Izvršitelj naredbi",
     "commandRunnerHelp": "Ovdje možete postaviti naredbe koje se izvršuju u imenovanim događajima. Morate napisati jednu po liniji. Varijable okruženja {0} i {1} bit će dostupne, tako da je {0} relativna {1}. Za više informacija o ovoj značajci, molimo Vas pogledajte {2}.",
     "commandsUpdated": "Naredbe ažurirane!",
-    "createUserDir": "Auto create user home dir while adding new user",
+    "createUserDir": "Automatsko stvaranje kućne mape korisnika pri dodavanju novog korisnika",
     "minimumPasswordLength": "Minimum password length",
     "tusUploads": "Chunked Uploads",
     "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
