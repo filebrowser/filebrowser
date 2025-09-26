@@ -223,7 +223,7 @@
     "rulesHelp": "Ovdje možete definirati skup pravila dopuštanja i zabrane za ovog korisnika. Blokirane datoteke neće se prikazivati u popisima i neće biti dostupne korisniku. Podržavamo regex i puteve relativne opsegu korisnika.\n",
     "scope": "Opseg",
     "setDateFormat": "Odredi točan format datuma",
-    "settingsUpdated": "Settings updated!",
+    "settingsUpdated": "Postavke ažurirane!",
     "shareDuration": "Share Duration",
     "shareManagement": "Share Management",
     "shareDeleted": "Share deleted!",
