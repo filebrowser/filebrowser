@@ -243,10 +243,10 @@
     "userManagement": "Upravljanje Korisnicima",
     "userUpdated": "Korisnik ažuriran!",
     "username": "Korisničko ime",
-    "users": "Users"
+    "users": "Korisnici"
   },
   "sidebar": {
-    "help": "Help",
+    "help": "Pomoć",
     "hugoNew": "Hugo New",
     "login": "Login",
     "logout": "Logout",
