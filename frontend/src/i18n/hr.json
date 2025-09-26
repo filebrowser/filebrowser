@@ -54,7 +54,7 @@
     "abortUpload": "Jeste li sigurni da hoćete otkazati?"
   },
   "errors": {
-    "forbidden": "You don't have permissions to access this.",
+    "forbidden": "Nemate dopuštenje pristupiti ovome.",
     "internal": "Nešto je pošlo po zlu.",
     "notFound": "Lokacija ne može biti dohvaćena.",
     "connection": "Poslužitelj ne može biti dohvaćen."
