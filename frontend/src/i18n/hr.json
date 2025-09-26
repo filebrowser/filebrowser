@@ -211,8 +211,8 @@
       "download": "Preuzimanje",
       "execute": "Izvršavanje naredbi",
       "modify": "Uređivanje datoteka",
-      "rename": "Preimenuj ili premjesti datoteke i mape",
-      "share": "Podijeli datoteke"
+      "rename": "Preimenovanje ili premještanje datoteka i mapa",
+      "share": "Dijeljenje datoteka"
     },
     "permissions": "Dopuštenja",
     "permissionsHelp": "Korisnika možete postaviti administratorom ili odabrati dopuštenja individualno. Odabirom na \"Administrator\", sve druge opcije bit će automatski odabrane. Upravljanje korisnicima ostaje privilegija administratora.\n",
