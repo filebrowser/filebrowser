@@ -55,7 +55,7 @@
   },
   "errors": {
     "forbidden": "Nemate dopuštenje pristupiti ovome.",
-    "internal": "Nešto je pošlo po zlu.",
+    "internal": "Nešto je stvarno pošlo po zlu.",
     "notFound": "Lokacija ne može biti dohvaćena.",
     "connection": "Poslužitelj ne može biti dohvaćen."
   },
