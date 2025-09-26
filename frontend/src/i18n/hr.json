@@ -207,8 +207,8 @@
     "path": "Put",
     "perm": {
       "create": "Stvorite datoteke i mape",
-      "delete": "Delete files and directories",
-      "download": "Download",
+      "delete": "Izbrišite datoteke i mape",
+      "download": "Preuzmite",
       "execute": "Execute commands",
       "modify": "Edit files",
       "rename": "Rename or move files and directories",
