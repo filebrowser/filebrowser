@@ -111,7 +111,7 @@
     "copy": "Kopiraj",
     "copyMessage": "Odaberite lokaciju za kopiranje datoteka:",
     "currentlyNavigating": "Trenutno navigiranje na:",
-    "deleteMessageMultiple": "Jeste li sigurni da hoćete izbrisati {count} datoteku(e)?",
+    "deleteMessageMultiple": "Jeste li sigurni da hoćete izbrisati datoteke: {count}?",
     "deleteMessageSingle": "Jeste li sigurni da hoćete izbrisati ovu datoteku/mapu?",
     "deleteMessageShare": "Jeste li sigurni da hoćete izbrisati ovo dijeljenje({path})?",
     "deleteUser": "Jeste li sigurni da hoćete izbrisati ovaj korisnički račun?",
