@@ -172,7 +172,7 @@
     "brandingHelp": "Možete prilagoditi izgled i funkcionalnost Vašeg File Browsera mijenjanjem njegovog naziva, zamjenom logotipa, dodavanjem prilagođenih stilova pa čak i onemogućavanjem vanjskih poveznica na GitHub.\nZa više informacija o prilagođenome brendiranju, molimo Vas pogledajte {0}.",
     "changePassword": "Promjena lozinke",
     "commandRunner": "Izvršitelj naredbi",
-    "commandRunnerHelp": "Here you can set commands that are executed in the named events. You must write one per line. The environment variables {0} and {1} will be available, being {0} relative to {1}. For more information about this feature and the available environment variables, please read the {2}.",
+    "commandRunnerHelp": "Ovdje možete postaviti naredbe koje se izvršuju u imenovanim događajima. Morate napisati jednu po liniji. Varijable okruženja {0} i {1} bit će dostupne, tako da je {0} relativna {1}. Za više informacija o ovoj značajci, molimo Vas pogledajte {2}.",
     "commandsUpdated": "Commands updated!",
     "createUserDir": "Auto create user home dir while adding new user",
     "minimumPasswordLength": "Minimum password length",
