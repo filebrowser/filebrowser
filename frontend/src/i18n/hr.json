@@ -248,9 +248,9 @@
   "sidebar": {
     "help": "Pomoć",
     "hugoNew": "Hugo New",
-    "login": "Login",
-    "logout": "Logout",
-    "myFiles": "My files",
+    "login": "Prijava",
+    "logout": "Odjava",
+    "myFiles": "Moje datoteke",
     "newFile": "New file",
     "newFolder": "New folder",
     "preview": "Preview",
