@@ -207,7 +207,7 @@
     "path": "Put",
     "perm": {
       "create": "Stvaranje datoteka i mapa",
-      "delete": "Brisanje datoteka i mape",
+      "delete": "Brisanje datoteka i mapa",
       "download": "Preuzimanje",
       "execute": "Izvrši naredbe",
       "modify": "Uredi datoteke",
