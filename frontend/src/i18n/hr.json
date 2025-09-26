@@ -46,9 +46,9 @@
     "saveChanges": "Spremi promjene"
   },
   "download": {
-    "downloadFile": "Preuzmi datoteku",
+    "downloadFile": "Preuzmi Datoteku",
     "downloadFolder": "Preuzmi Mapu",
-    "downloadSelected": "Preuzmi odabrano"
+    "downloadSelected": "Preuzmi Odabrano"
   },
   "upload": {
     "abortUpload": "Jeste li sigurni da hoćete otkazati?"
