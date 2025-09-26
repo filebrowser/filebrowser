@@ -113,7 +113,7 @@
     "currentlyNavigating": "Currently navigating on:",
     "deleteMessageMultiple": "Jeste li sigurni da hoćete izbrisati {count} datoteku(e)?",
     "deleteMessageSingle": "Jeste li sigurni da hoćete izbrisati ovu datoteku/mapu?",
-    "deleteMessageShare": "Are you sure you wish to delete this share({path})?",
+    "deleteMessageShare": "Jeste li sigurni da hoćete izbrisati ovo dijeljenje({path})?",
     "deleteUser": "Jeste li sigurni da hoćete izbrisati ovaj korisnički račun?",
     "deleteTitle": "Izbriši datoteke",
     "displayName": "Display Name:",
