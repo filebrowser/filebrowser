@@ -202,8 +202,8 @@
     "newPassword": "Vaša nova lozinka",
     "newPasswordConfirm": "Potvrdite Vašu novu lozinku",
     "newUser": "Novi Korisnik",
-    "password": "Password",
-    "passwordUpdated": "Password updated!",
+    "password": "Lozinka",
+    "passwordUpdated": "Lozinka ažurirana!",
     "path": "Path",
     "perm": {
       "create": "Create files and directories",
