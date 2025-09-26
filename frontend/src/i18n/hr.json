@@ -163,7 +163,7 @@
     "administrator": "Administrator",
     "allowCommands": "Izvrši naredbe",
     "allowEdit": "Uredi, preimenuj i izbriši datoteke ili mape",
-    "allowNew": "Create new files and directories",
+    "allowNew": "Stvori nove datoteke i mape",
     "allowPublish": "Publish new posts and pages",
     "allowSignup": "Allow users to signup",
     "avoidChanges": "(leave blank to avoid changes)",
