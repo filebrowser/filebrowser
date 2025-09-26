@@ -172,7 +172,7 @@
     "brandingHelp": "Možete prilagoditi izgled i funkcionalnost Vašeg File Browsera mijenjanjem njegovog naziva, zamjenom logotipa, dodavanjem prilagođenih stilova pa čak i onemogućavanjem vanjskih poveznica na GitHub.\nZa više informacija o prilagođenome brendiranju pogledajte {0}.",
     "changePassword": "Promjena lozinke",
     "commandRunner": "Izvršitelj naredbi",
-    "commandRunnerHelp": "Ovdje možete postaviti naredbe koje se izvršuju u imenovanim događajima. Morate napisati jednu po liniji. Varijable okruženja {0} i {1} bit će dostupne, tako da je {0} relativna {1}. Za više informacija o ovoj značajci, molimo Vas pogledajte {2}.",
+    "commandRunnerHelp": "Ovdje možete postaviti naredbe koje se izvršuju u imenovanim događajima. Morate napisati jednu po liniji. Varijable okruženja {0} i {1} bit će dostupne, tako da je {0} relativna {1}. Za više informacija o ovoj značajci pogledajte {2}.",
     "commandsUpdated": "Naredbe ažurirane!",
     "createUserDir": "Automatsko stvaranje kućne mape korisnika pri dodavanju novog korisnika",
     "minimumPasswordLength": "Minimalna duljina lozinke",
