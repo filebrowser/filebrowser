@@ -231,10 +231,10 @@
     "themes": {
       "default": "Zadano - Sustav",
       "dark": "Tamno",
-      "light": "Light",
-      "title": "Theme"
+      "light": "Svijetlo",
+      "title": "Tema"
     },
-    "user": "User",
+    "user": "Korisnik",
     "userCommands": "Commands",
     "userCommandsHelp": "A space separated list with the available commands for this user. Example:\n",
     "userCreated": "User created!",
