@@ -185,7 +185,7 @@
     "createUserHomeDirectory": "Stvori kućnu mapu korisnika",
     "customStylesheet": "Prilagođeni Stylesheet",
     "defaultUserDescription": "Zadane postavke za nove korisnike.",
-    "disableExternalLinks": "Disable external links (except documentation)",
+    "disableExternalLinks": "Onemogući vanjske poveznice (osim dokumentacije)",
     "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentation",
     "examples": "Examples",
