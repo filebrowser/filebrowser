@@ -169,7 +169,7 @@
     "avoidChanges": "(ostavi prazno kako biste izbjegli promjene)",
     "branding": "Brendiranje",
     "brandingDirectoryPath": "Branding directory path",
-    "brandingHelp": "You can customize how your File Browser instance looks and feels by changing its name, replacing the logo, adding custom styles and even disable external links to GitHub.\nFor more information about custom branding, please check out the {0}.",
+    "brandingHelp": "Možete prilagoditi izgled i funkcionalnost Vašeg File Browsera mijenjanjem njegovog naziva, zamjenom logotipa, dodavanjem prilagođenih stilova pa čak i onemogućavanjem vanjskih poveznica na GitHub.\nZa više informacija o prilagođenome brendiranju, molimo Vas pogledajte {0}.",
     "changePassword": "Change Password",
     "commandRunner": "Command runner",
     "commandRunnerHelp": "Here you can set commands that are executed in the named events. You must write one per line. The environment variables {0} and {1} will be available, being {0} relative to {1}. For more information about this feature and the available environment variables, please read the {2}.",
