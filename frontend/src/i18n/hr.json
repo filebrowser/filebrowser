@@ -190,7 +190,7 @@
     "documentation": "dokumentacija",
     "examples": "Primjeri",
     "executeOnShell": "Izvrši u ljusci",
-    "executeOnShellDescription": "Po zadanim postavkama, File Browser izvršava naredbe izravnim pozivanjem njihovih binarnih datoteka. Ako ih želite izvršiti u ljusci (kao što su Bash ili PowerShell), možete ih definirati ovdje s potrebnim argumentima i oznakama. Ako je postavljena, naredba koju izvršavate bit će dodana kao argument. Ovo se odnosi i na korisničke naredbe i na event hooks.",
+    "executeOnShellDescription": "Po zadanim postavkama, File Browser izvršava naredbe izravnim pozivanjem njihovih binarnih datoteka. Ako ih želite izvršiti u ljusci (kao što su Bash ili PowerShell), možete ih definirati ovdje s potrebnim argumentima i oznakama. Ako je postavljena, naredba koju izvršavate bit će dodana kao argument. To se odnosi i na korisničke naredbe i na događajne kuke.",
     "globalRules": "This is a global set of allow and disallow rules. They apply to every user. You can define specific rules on each user's settings to override these ones.",
     "globalSettings": "Globalne postavke",
     "hideDotfiles": "Hide dotfiles",
