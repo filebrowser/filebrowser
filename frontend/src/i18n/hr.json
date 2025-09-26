@@ -209,8 +209,8 @@
       "create": "Stvorite datoteke i mape",
       "delete": "Izbrišite datoteke i mape",
       "download": "Preuzmite",
-      "execute": "Execute commands",
-      "modify": "Edit files",
+      "execute": "Izvrši naredbe",
+      "modify": "Uredi datoteke",
       "rename": "Rename or move files and directories",
       "share": "Share files"
     },
