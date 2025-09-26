@@ -220,7 +220,7 @@
     "ruleExample1": "onemogućava pristup svakom dotfileu (npr. .git, .gitignore) u svakoj mapi.\n",
     "ruleExample2": "blokira pristup datoteci naziva Caddyfile na korijenu opsega.",
     "rules": "Pravila",
-    "rulesHelp": "Ovdje možete definirati skup pravila dopuštanja i zabrane za ovog korisnika. Blokirane datoteke neće se prikazivati u popisima i neće biti dostupne korisniku. Podržavamo regex i puteve relativne opsegu korisnika.\n",
+    "rulesHelp": "Ovdje možete definirati skup pravila dopuštanja i zabrane za ovog specifičnog korisnika. Blokirane datoteke neće se prikazivati u popisima i neće biti dostupne korisniku. Podržavamo regex i puteve relativne opsegu korisnika.\n",
     "scope": "Opseg",
     "setDateFormat": "Odredi točan format datuma",
     "settingsUpdated": "Postavke ažurirane!",
