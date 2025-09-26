@@ -239,8 +239,8 @@
     "userCommandsHelp": "Popis dostupnih naredbi za ovog korisnika. Primjer:\n",
     "userCreated": "Korisnik stvoren!",
     "userDefaults": "Zadane postavke korisnika",
-    "userDeleted": "User deleted!",
-    "userManagement": "User Management",
+    "userDeleted": "Korisnik izbrisan!",
+    "userManagement": "Upravljanje Korisnicima",
     "userUpdated": "User updated!",
     "username": "Username",
     "users": "Users"
