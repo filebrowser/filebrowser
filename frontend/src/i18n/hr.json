@@ -208,7 +208,7 @@
     "perm": {
       "create": "Stvorite datoteke i mape",
       "delete": "Izbrišite datoteke i mape",
-      "download": "Preuzmite",
+      "download": "Preuzimanje",
       "execute": "Izvrši naredbe",
       "modify": "Uredi datoteke",
       "rename": "Preimenuj ili premjesti datoteke i mape",
