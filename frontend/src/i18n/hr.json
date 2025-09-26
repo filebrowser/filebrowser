@@ -100,7 +100,7 @@
     "signup": "Registracija",
     "submit": "Prijava",
     "username": "Korisničko ime",
-    "usernameTaken": "Korisničko ime nedostupno",
+    "usernameTaken": "Korisničko ime zauzeto",
     "wrongCredentials": "Netočno korističko ime/lozinka",
     "logout_reasons": {
       "inactivity": "Odjavljeni ste zbog neaktivnosti."
