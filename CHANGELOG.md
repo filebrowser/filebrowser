@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.44.0](https://github.com/filebrowser/filebrowser/compare/v2.43.0...v2.44.0) (2025-09-25)
+
+
+### Features
+
+* allow setting ace editor theme ([#3826](https://github.com/filebrowser/filebrowser/issues/3826)) ([b9787c7](https://github.com/filebrowser/filebrowser/commit/b9787c78f3889171f94db19e7655dce68c64b6fb))
+* Improved path display in the new file and directory modal ([#5451](https://github.com/filebrowser/filebrowser/issues/5451)) ([d29ad35](https://github.com/filebrowser/filebrowser/commit/d29ad356d1067c87b2821debab91286549f512a0))
+* Translate frontend/src/i18n/en.json in no ([dec7a02](https://github.com/filebrowser/filebrowser/commit/dec7a027378fbc6948d203199c44a640a141bcad))
+* Updates for project File Browser ([#5446](https://github.com/filebrowser/filebrowser/issues/5446)) ([4ff247e](https://github.com/filebrowser/filebrowser/commit/4ff247e134e4d61668ee656a258ed67f71414e18))
+* Updates for project File Browser ([#5450](https://github.com/filebrowser/filebrowser/issues/5450)) ([0eade71](https://github.com/filebrowser/filebrowser/commit/0eade717ce9d04bf48051922f11d983edbc7c2d0))
+* Updates for project File Browser ([#5457](https://github.com/filebrowser/filebrowser/issues/5457)) ([1165f00](https://github.com/filebrowser/filebrowser/commit/1165f00bd4dcb0dcfbc084f54f51902ba4b4a714))
+
+
+### Bug Fixes
+
+* computation of file path ([c472542](https://github.com/filebrowser/filebrowser/commit/c4725428e07da72b855009e2c13c6ed91d32e0b7))
+* show login when session token expires ([e6c674b](https://github.com/filebrowser/filebrowser/commit/e6c674b3c616831942c4d4aacab0907d58003e23))
+* some formatting issues with i18n files ([949ddff](https://github.com/filebrowser/filebrowser/commit/949ddffef20e38169902c5fd74dca4815dcecf11))
+* **upload:** throttle upload speed calculation to 100ms to avoid Infinity MB/s ([#5456](https://github.com/filebrowser/filebrowser/issues/5456)) ([692ca5e](https://github.com/filebrowser/filebrowser/commit/692ca5eaf01e4dcf346ba03f82c5dbd50cce246b))
+
 ## [2.43.0](https://github.com/filebrowser/filebrowser/compare/v2.42.5...v2.43.0) (2025-09-13)
 
 

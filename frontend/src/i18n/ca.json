@@ -42,7 +42,8 @@
     "update": "Actualitzar",
     "upload": "Pujar",
     "openFile": "Obrir fitxer",
-    "discardChanges": "Descartar"
+    "discardChanges": "Descartar",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Descarregar fitxer",
@@ -100,7 +101,10 @@
     "submit": "Iniciar sessió",
     "username": "Usuari",
     "usernameTaken": "Nom d'usuari no disponible",
-    "wrongCredentials": "Usuari i/o contrasenya incorrectes"
+    "wrongCredentials": "Usuari i/o contrasenya incorrectes",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanent",
   "prompts": {
@@ -154,6 +158,7 @@
     "video": "Vídeo"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrador",
     "allowCommands": "Executar comandes",

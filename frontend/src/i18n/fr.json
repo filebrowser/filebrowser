@@ -42,7 +42,8 @@
     "update": "Mettre à jour",
     "upload": "Importer",
     "openFile": "Ouvrir le fichier",
-    "discardChanges": "Annuler"
+    "discardChanges": "Annuler",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Télécharger le fichier",
@@ -100,7 +101,10 @@
     "submit": "Se connecter",
     "username": "Utilisateur·ice",
     "usernameTaken": "Le nom d'utilisateur·ice est déjà pris",
-    "wrongCredentials": "Identifiants incorrects !"
+    "wrongCredentials": "Identifiants incorrects !",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanent",
   "prompts": {
@@ -154,6 +158,7 @@
     "video": "Vidéo"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrateur·ice",
     "allowCommands": "Exécuter des commandes",

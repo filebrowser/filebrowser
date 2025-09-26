@@ -42,7 +42,8 @@
     "update": "更新",
     "upload": "上傳",
     "openFile": "開啟檔案",
-    "discardChanges": "放棄變更"
+    "discardChanges": "放棄變更",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "下載檔案",
@@ -100,7 +101,10 @@
     "submit": "登入",
     "username": "帳號",
     "usernameTaken": "用戶名已存在",
-    "wrongCredentials": "帳號或密碼錯誤"
+    "wrongCredentials": "帳號或密碼錯誤",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "永久",
   "prompts": {
@@ -154,6 +158,7 @@
     "video": "影片"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "管理員",
     "administrator": "管理員",
     "allowCommands": "執行命令",

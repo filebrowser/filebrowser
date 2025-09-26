@@ -42,7 +42,8 @@
     "update": "Opptater",
     "upload": "Last opp",
     "openFile": "Open file",
-    "discardChanges": "Slett"
+    "discardChanges": "Slett",
+    "saveChanges": "Lagre Endringane "
   },
   "download": {
     "downloadFile": "Nedlast filen",
@@ -100,7 +101,10 @@
     "submit": "Logg inn",
     "username": "Brukernavn",
     "usernameTaken": "Brukernavn er allerede i bruk",
-    "wrongCredentials": "Feil legitimasjon"
+    "wrongCredentials": "Feil legitimasjon",
+    "logout_reasons": {
+      "inactivity": "Du har blitt logget ut på grunn av inaktivitet"
+    }
   },
   "permanent": "Permanent",
   "prompts": {
@@ -154,6 +158,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrator",
     "allowCommands": "Utfør kommandoer",

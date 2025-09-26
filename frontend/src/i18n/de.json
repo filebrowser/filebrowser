@@ -42,7 +42,8 @@
     "update": "Update",
     "upload": "Upload",
     "openFile": "Datei öffnen",
-    "discardChanges": "Verwerfen"
+    "discardChanges": "Verwerfen",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Download Datei",
@@ -100,7 +101,10 @@
     "submit": "Login",
     "username": "Benutzername",
     "usernameTaken": "Benutzername ist bereits vergeben",
-    "wrongCredentials": "Falsche Zugangsdaten"
+    "wrongCredentials": "Falsche Zugangsdaten",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanent",
   "prompts": {
@@ -154,6 +158,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrator",
     "allowCommands": "Befehle ausführen",

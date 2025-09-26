@@ -42,7 +42,8 @@
     "update": "Aktualizovat",
     "upload": "Nahrát",
     "openFile": "Otevřít soubor",
-    "discardChanges": "Zrušit změny"
+    "discardChanges": "Zrušit změny",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Stáhnout soubor",
@@ -100,7 +101,10 @@
     "submit": "Přihlásit se",
     "username": "Uživatelské jméno",
     "usernameTaken": "Uživatelské jméno již existuje",
-    "wrongCredentials": "Nesprávné přihlašovací údaje"
+    "wrongCredentials": "Nesprávné přihlašovací údaje",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Trvalý",
   "prompts": {
@@ -154,6 +158,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrátor",
     "allowCommands": "Povolit příkazy",

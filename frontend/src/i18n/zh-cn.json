@@ -42,7 +42,8 @@
     "update": "更新",
     "upload": "上传",
     "openFile": "打开文件",
-    "discardChanges": "放弃更改"
+    "discardChanges": "放弃更改",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "下载文件",
@@ -100,7 +101,10 @@
     "submit": "登录",
     "username": "用户名",
     "usernameTaken": "用户名已经被使用",
-    "wrongCredentials": "用户名或密码错误"
+    "wrongCredentials": "用户名或密码错误",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "永久",
   "prompts": {
@@ -154,6 +158,7 @@
     "video": "视频"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "管理员",
     "administrator": "管理员",
     "allowCommands": "执行命令（Shell 命令）",

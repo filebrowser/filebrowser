@@ -42,7 +42,8 @@
     "update": "Aktualizuj",
     "upload": "Wyślij",
     "openFile": "Otwórz plik",
-    "discardChanges": "Odrzuć"
+    "discardChanges": "Odrzuć",
+    "saveChanges": "Zapisz zmiany"
   },
   "download": {
     "downloadFile": "Pobierz plik",
@@ -100,7 +101,10 @@
     "submit": "Zaloguj",
     "username": "Nazwa użytkownika",
     "usernameTaken": "Ta nazwa użytkownika jest zajęta",
-    "wrongCredentials": "Błędne dane logowania"
+    "wrongCredentials": "Błędne dane logowania",
+    "logout_reasons": {
+      "inactivity": "Wylogowano z powodu braku aktywności."
+    }
   },
   "permanent": "Permanentny",
   "prompts": {
@@ -154,6 +158,7 @@
     "video": "Wideo"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrator",
     "allowCommands": "Wykonaj polecenie",

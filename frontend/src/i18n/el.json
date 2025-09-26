@@ -42,7 +42,8 @@
     "update": "Ενημέρωση",
     "upload": "Μεταφόρτωση",
     "openFile": "Άνοιγμα αρχείου",
-    "discardChanges": "Discard"
+    "discardChanges": "Discard",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Λήψη αρχείου",
@@ -100,7 +101,10 @@
     "submit": "Είσοδος",
     "username": "Όνομα χρήστη",
     "usernameTaken": "Το όνομα χρήστη χρησιμοποιείται ήδη",
-    "wrongCredentials": "Λάθος όνομα ή/και κωδικός πρόσβασης"
+    "wrongCredentials": "Λάθος όνομα ή/και κωδικός πρόσβασης",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Μόνιμο",
   "prompts": {
@@ -154,6 +158,7 @@
     "video": "Βίντεο"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Διαχειριστής",
     "administrator": "Διαχειριστής",
     "allowCommands": "Εκτέλεση εντολών",

@@ -42,7 +42,8 @@
     "update": "更新",
     "upload": "アップロード",
     "openFile": "ファイルを開く",
-    "discardChanges": "Discard"
+    "discardChanges": "Discard",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "ファイルのダウンロード",
@@ -100,7 +101,10 @@
     "submit": "ログイン",
     "username": "ユーザー名",
     "usernameTaken": "ユーザー名はすでに取得されています",
-    "wrongCredentials": "ユーザー名またはパスワードが間違っています"
+    "wrongCredentials": "ユーザー名またはパスワードが間違っています",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "永久",
   "prompts": {
@@ -154,6 +158,7 @@
     "video": "動画"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "管理者",
     "administrator": "管理者",
     "allowCommands": "コマンドの実行",

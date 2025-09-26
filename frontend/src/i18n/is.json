@@ -42,7 +42,8 @@
     "update": "Vista",
     "upload": "Hlaða upp",
     "openFile": "Open file",
-    "discardChanges": "Discard"
+    "discardChanges": "Discard",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Sækja skjal",
@@ -100,7 +101,10 @@
     "submit": "Innskráning",
     "username": "Notendanafn",
     "usernameTaken": "Þetta norendanafn er þegar í notkun",
-    "wrongCredentials": "Rangar notendaupplýsingar"
+    "wrongCredentials": "Rangar notendaupplýsingar",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Varanlegt",
   "prompts": {
@@ -154,6 +158,7 @@
     "video": "Myndbönd"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Stjórnandi",
     "administrator": "Stjórnandi",
     "allowCommands": "Senda skipanir",

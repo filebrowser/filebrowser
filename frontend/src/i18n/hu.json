@@ -42,7 +42,8 @@
     "update": "Frissítés",
     "upload": "Feltöltés",
     "openFile": "Fájl megnyitása",
-    "discardChanges": "Discard"
+    "discardChanges": "Discard",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Fájl letöltése",
@@ -100,7 +101,10 @@
     "submit": "Belépés",
     "username": "Felhasználói név",
     "usernameTaken": "A felhasználói név már foglalt",
-    "wrongCredentials": "Hibás hitelesítő adatok"
+    "wrongCredentials": "Hibás hitelesítő adatok",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Állandó",
   "prompts": {
@@ -154,6 +158,7 @@
     "video": "Videó"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Adminisztrátor",
     "allowCommands": "Parancsok futtatása",

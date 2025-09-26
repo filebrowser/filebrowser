@@ -42,7 +42,8 @@
     "update": "به روز سانی",
     "upload": "آپلود",
     "openFile": "باز کردن فایل",
-    "discardChanges": "لغو کردن"
+    "discardChanges": "لغو کردن",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "دانلود فایل",
@@ -100,7 +101,10 @@
     "submit": "ورود",
     "username": "نام کاربری",
     "usernameTaken": "نام کاربری تکراری",
-    "wrongCredentials": "خطا در اعتبارسنجی"
+    "wrongCredentials": "خطا در اعتبارسنجی",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "دائمی",
   "prompts": {
@@ -154,6 +158,7 @@
     "video": "ویدئو "
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrator",
     "allowCommands": "اجرای دستورات",

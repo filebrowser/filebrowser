@@ -45,6 +45,15 @@
   animation: 0.2s opac forwards;
 }
 
+#login .logout-message {
+  background: var(--icon-orange);
+  color: #fff;
+  padding: 0.5em;
+  text-align: center;
+  animation: 0.2s opac forwards;
+  text-transform: none;
+}
+
 @keyframes opac {
   0% {
     opacity: 0;

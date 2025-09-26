@@ -42,7 +42,8 @@
     "update": "Güncelle",
     "upload": "Yükle",
     "openFile": "Dosyayı aç",
-    "discardChanges": "Discard"
+    "discardChanges": "Discard",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Dosyayı indir",
@@ -100,7 +101,10 @@
     "submit": "Giriş",
     "username": "Kullanıcı adı",
     "usernameTaken": "Kullanıcı adı mevcut",
-    "wrongCredentials": "Yanlış hesap bilgileri"
+    "wrongCredentials": "Yanlış hesap bilgileri",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Kalıcı",
   "prompts": {
@@ -154,6 +158,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Yönetim",
     "administrator": "Yönetici",
     "allowCommands": "Komutları çalıştır",
