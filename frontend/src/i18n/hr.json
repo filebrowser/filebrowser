@@ -229,7 +229,7 @@
     "shareDeleted": "Podjela izbrisana!",
     "singleClick": "Koristi jednostruke klikove za otvaranje datoteka i mapa",
     "themes": {
-      "default": "System default",
+      "default": "Zadano (Sustav)",
       "dark": "Dark",
       "light": "Light",
       "title": "Theme"
