@@ -211,8 +211,8 @@
       "download": "Preuzmite",
       "execute": "Izvrši naredbe",
       "modify": "Uredi datoteke",
-      "rename": "Rename or move files and directories",
-      "share": "Share files"
+      "rename": "Preimenuj ili premjesti datoteke i mape",
+      "share": "Podijeli datoteke"
     },
     "permissions": "Permissions",
     "permissionsHelp": "You can set the user to be an administrator or choose the permissions individually. If you select \"Administrator\", all of the other options will be automatically checked. The management of users remains a privilege of an administrator.\n",
