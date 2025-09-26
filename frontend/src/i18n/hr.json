@@ -184,7 +184,7 @@
     "userScopeGenerationPlaceholder": "Opseg će se automatski generirati",
     "createUserHomeDirectory": "Stvori kućnu mapu korisnika",
     "customStylesheet": "Prilagođeni Stylesheet",
-    "defaultUserDescription": "These are the default settings for new users.",
+    "defaultUserDescription": "Zadane postavke za nove korisnike.",
     "disableExternalLinks": "Disable external links (except documentation)",
     "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentation",
