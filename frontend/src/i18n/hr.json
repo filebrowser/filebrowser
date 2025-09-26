@@ -193,7 +193,7 @@
     "executeOnShellDescription": "Po zadanim postavkama, File Browser izvršava naredbe izravnim pozivanjem njihovih binarnih datoteka. Ako ih želite izvršiti u ljusci (kao što su Bash ili PowerShell), možete ih definirati ovdje s potrebnim argumentima i oznakama. Ako je postavljena, naredba koju izvršavate bit će dodana kao argument. To se odnosi i na korisničke naredbe i na događajne kuke.",
     "globalRules": "Ovo je globalan skup pravila dopuštanja i zabrane. Primjenjuju se na svakog korisnika. Moguće je definirati specifična pravila u postavkama svakog korisnika da biste nadjačali ove postavke.",
     "globalSettings": "Globalne postavke",
-    "hideDotfiles": "Hide dotfiles",
+    "hideDotfiles": "Sakrij dotfileove",
     "insertPath": "Umetni put",
     "insertRegex": "Umetni regex izraz",
     "instanceName": "Naziv instance",
