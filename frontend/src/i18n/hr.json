@@ -218,7 +218,7 @@
     "permissionsHelp": "Korisnika možete postaviti administratorom ili odabrati dopuštenja individualno. Odabirom na \"Administrator\", sve druge opcije bit će automatski odabrane. Upravljanje korisnicima ostaje privilegija administratora.\n",
     "profileSettings": "Postavke profila",
     "ruleExample1": "prevents the access to any dotfile (such as .git, .gitignore) in every folder.\n",
-    "ruleExample2": "blocks the access to the file named Caddyfile on the root of the scope.",
+    "ruleExample2": "blokira pristup datoteci naziva Caddyfile na korijenu opsega.",
     "rules": "Pravila",
     "rulesHelp": "Ovdje možete definirati skup pravila dopuštanja i zabrane za ovog korisnika. Blokirane datoteke neće se prikazivati u popisima i neće biti dostupne korisniku. Podržavamo regex i puteve relativne opsegu korisnika.\n",
     "scope": "Opseg",
