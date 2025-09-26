@@ -204,9 +204,9 @@
     "newUser": "Novi Korisnik",
     "password": "Lozinka",
     "passwordUpdated": "Lozinka ažurirana!",
-    "path": "Path",
+    "path": "Put",
     "perm": {
-      "create": "Create files and directories",
+      "create": "Stvorite datoteke i mape",
       "delete": "Delete files and directories",
       "download": "Download",
       "execute": "Execute commands",
