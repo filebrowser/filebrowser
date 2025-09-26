@@ -206,8 +206,8 @@
     "passwordUpdated": "Lozinka ažurirana!",
     "path": "Put",
     "perm": {
-      "create": "Stvorite datoteke i mape",
-      "delete": "Izbrišite datoteke i mape",
+      "create": "Stvaranje datoteka i mapa",
+      "delete": "Brisanje datoteka i mape",
       "download": "Preuzimanje",
       "execute": "Izvrši naredbe",
       "modify": "Uredi datoteke",
