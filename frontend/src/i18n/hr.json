@@ -251,9 +251,9 @@
     "login": "Prijava",
     "logout": "Odjava",
     "myFiles": "Moje datoteke",
-    "newFile": "New file",
-    "newFolder": "New folder",
-    "preview": "Preview",
+    "newFile": "Nova datoteka",
+    "newFolder": "Nova mapa",
+    "preview": "Pregled",
     "settings": "Settings",
     "signup": "Signup",
     "siteSettings": "Site Settings"
