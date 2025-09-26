@@ -110,7 +110,7 @@
   "prompts": {
     "copy": "Kopiraj",
     "copyMessage": "Odaberite lokaciju za kopiranje datoteka:",
-    "currentlyNavigating": "Currently navigating on:",
+    "currentlyNavigating": "Trenutno navigiranje na:",
     "deleteMessageMultiple": "Jeste li sigurni da hoćete izbrisati {count} datoteku(e)?",
     "deleteMessageSingle": "Jeste li sigurni da hoćete izbrisati ovu datoteku/mapu?",
     "deleteMessageShare": "Jeste li sigurni da hoćete izbrisati ovo dijeljenje({path})?",
