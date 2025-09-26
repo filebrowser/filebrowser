@@ -171,7 +171,7 @@
     "brandingDirectoryPath": "Branding directory path",
     "brandingHelp": "Možete prilagoditi izgled i funkcionalnost Vašeg File Browsera mijenjanjem njegovog naziva, zamjenom logotipa, dodavanjem prilagođenih stilova pa čak i onemogućavanjem vanjskih poveznica na GitHub.\nZa više informacija o prilagođenome brendiranju, molimo Vas pogledajte {0}.",
     "changePassword": "Promjena lozinke",
-    "commandRunner": "Command runner",
+    "commandRunner": "Izvršitelj naredbi",
     "commandRunnerHelp": "Here you can set commands that are executed in the named events. You must write one per line. The environment variables {0} and {1} will be available, being {0} relative to {1}. For more information about this feature and the available environment variables, please read the {2}.",
     "commandsUpdated": "Commands updated!",
     "createUserDir": "Auto create user home dir while adding new user",
