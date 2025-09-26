@@ -256,15 +256,15 @@
     "preview": "Pregled",
     "settings": "Postavke",
     "signup": "Registracija",
-    "siteSettings": "Postavke tranice"
+    "siteSettings": "Postavke stranice"
   },
   "success": {
     "linkCopied": "Poveznica kopirana!"
   },
   "time": {
-    "days": "Days",
-    "hours": "Hours",
-    "minutes": "Minutes",
+    "days": "Dani",
+    "hours": "Sati",
+    "minutes": "Minute",
     "seconds": "Seconds",
     "unit": "Time Unit"
   }
