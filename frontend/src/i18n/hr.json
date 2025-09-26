@@ -101,7 +101,7 @@
     "submit": "Prijava",
     "username": "Korisničko ime",
     "usernameTaken": "Korisničko ime zauzeto",
-    "wrongCredentials": "Netočno korističko ime/lozinka",
+    "wrongCredentials": "Neispravno korisničko ime/lozinka",
     "logout_reasons": {
       "inactivity": "Odjavljeni ste zbog neaktivnosti."
     }
