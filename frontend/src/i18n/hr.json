@@ -217,7 +217,7 @@
     "permissions": "Dopuštenja",
     "permissionsHelp": "Korisnika možete postaviti administratorom ili odabrati dopuštenja individualno. Odabirom na \"Administrator\", sve druge opcije bit će automatski odabrane. Upravljanje korisnicima ostaje privilegija administratora.\n",
     "profileSettings": "Postavke profila",
-    "ruleExample1": "onemogućava pristup svakoj datoteci koja počinje s točkom (poput .git, .gitignore) u svakoj mapi.\n",
+    "ruleExample1": "onemogućava pristup svakoj datoteci koja započinje točkom (poput .git, .gitignore) u svakoj mapi.\n",
     "ruleExample2": "blokira pristup datoteci naziva Caddyfile na korijenu opsega.",
     "rules": "Pravila",
     "rulesHelp": "Ovdje možete definirati skup pravila dopuštanja i zabrane za ovog specifičnog korisnika. Blokirane datoteke neće se prikazivati u popisima i neće biti dostupne korisniku. Podržavamo regex i puteve relativne opsegu korisnika.\n",
