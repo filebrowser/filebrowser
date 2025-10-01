@@ -470,7 +470,6 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) error {
 	if err != nil {
 		return err
 	}
-
 	err = d.store.Settings.Save(set)
 	if err != nil {
 		return err
@@ -490,10 +489,8 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) error {
 	if err != nil {
 		return err
 	}
-
 	username := getStringParam(flags, "username")
 	password := getStringParam(flags, "password")
-
 	if password == "" {
 		var pwd string
 		pwd, err = users.RandomPwd(set.MinimumPasswordLength)
