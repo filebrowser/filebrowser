@@ -42,8 +42,8 @@
     "update": "更新",
     "upload": "上传",
     "openFile": "打开文件",
-  "discardChanges": "放弃更改",
-  "saveChanges": "Save changes"
+    "discardChanges": "放弃更改",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "下载文件",
@@ -158,6 +158,7 @@
     "video": "视频"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "管理员",
     "administrator": "管理员",
     "allowCommands": "执行命令（Shell 命令）",

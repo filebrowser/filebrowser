@@ -42,8 +42,8 @@
     "update": "Aktualizovat",
     "upload": "Nahrát",
     "openFile": "Otevřít soubor",
-  "discardChanges": "Zrušit změny",
-  "saveChanges": "Save changes"
+    "discardChanges": "Zrušit změny",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Stáhnout soubor",
@@ -158,6 +158,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrátor",
     "allowCommands": "Povolit příkazy",

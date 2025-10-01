@@ -42,8 +42,8 @@
     "update": "به روز سانی",
     "upload": "آپلود",
     "openFile": "باز کردن فایل",
-  "discardChanges": "لغو کردن",
-  "saveChanges": "Save changes"
+    "discardChanges": "لغو کردن",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "دانلود فایل",
@@ -158,6 +158,7 @@
     "video": "ویدئو "
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrator",
     "allowCommands": "اجرای دستورات",

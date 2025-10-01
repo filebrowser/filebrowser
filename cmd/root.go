@@ -433,9 +433,10 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) error {
 		MinimumPasswordLength: settings.DefaultMinimumPasswordLength,
 		UserHomeBasePath:      settings.DefaultUsersHomeBasePath,
 		Defaults: settings.UserDefaults{
-			Scope:       ".",
-			Locale:      "en",
-			SingleClick: false,
+			Scope:          ".",
+			Locale:         "en",
+			SingleClick:    false,
+			AceEditorTheme: getStringParam(flags, "defaults.aceEditorTheme"),
 			Perm: users.Permissions{
 				Admin:    false,
 				Execute:  true,

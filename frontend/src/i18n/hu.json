@@ -42,8 +42,8 @@
     "update": "Frissítés",
     "upload": "Feltöltés",
     "openFile": "Fájl megnyitása",
-  "discardChanges": "Discard",
-  "saveChanges": "Save changes"
+    "discardChanges": "Discard",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Fájl letöltése",
@@ -158,6 +158,7 @@
     "video": "Videó"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Adminisztrátor",
     "allowCommands": "Parancsok futtatása",

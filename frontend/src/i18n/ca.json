@@ -42,8 +42,8 @@
     "update": "Actualitzar",
     "upload": "Pujar",
     "openFile": "Obrir fitxer",
-  "discardChanges": "Descartar",
-  "saveChanges": "Save changes"
+    "discardChanges": "Descartar",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Descarregar fitxer",
@@ -158,6 +158,7 @@
     "video": "Vídeo"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrador",
     "allowCommands": "Executar comandes",

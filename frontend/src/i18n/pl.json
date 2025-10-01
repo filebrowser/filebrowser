@@ -42,8 +42,8 @@
     "update": "Aktualizuj",
     "upload": "Wyślij",
     "openFile": "Otwórz plik",
-  "discardChanges": "Odrzuć",
-  "saveChanges": "Zapisz zmiany"
+    "discardChanges": "Odrzuć",
+    "saveChanges": "Zapisz zmiany"
   },
   "download": {
     "downloadFile": "Pobierz plik",
@@ -158,6 +158,7 @@
     "video": "Wideo"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrator",
     "allowCommands": "Wykonaj polecenie",

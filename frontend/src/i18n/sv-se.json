@@ -42,8 +42,8 @@
     "update": "Uppdatera",
     "upload": "Ladda upp",
     "openFile": "Open file",
-  "discardChanges": "Discard",
-  "saveChanges": "Save changes"
+    "discardChanges": "Discard",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Ladda ner fil",
@@ -158,6 +158,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administratör",
     "allowCommands": "Exekvera kommandon",

@@ -42,8 +42,8 @@
     "update": "עדכון",
     "upload": "העלאה",
     "openFile": "פתח קובץ",
-  "discardChanges": "זריקת השינויים",
-  "saveChanges": "Save changes"
+    "discardChanges": "זריקת השינויים",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "הורד קובץ",
@@ -158,6 +158,7 @@
     "video": "וידאו"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "מנהל",
     "administrator": "מנהל ראשי",
     "allowCommands": "הפעלת פקודות",

@@ -42,8 +42,8 @@
     "update": "업데이트",
     "upload": "업로드",
     "openFile": "파일 열기",
-  "discardChanges": "변경 사항 취소",
-  "saveChanges": "변경사항 저장"
+    "discardChanges": "변경 사항 취소",
+    "saveChanges": "변경사항 저장"
   },
   "download": {
     "downloadFile": "파일 다운로드",
@@ -158,6 +158,7 @@
     "video": "비디오"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "관리자",
     "administrator": "관리자",
     "allowCommands": "명령 실행",

@@ -42,8 +42,8 @@
     "update": "Обновить",
     "upload": "Загрузить",
     "openFile": "Открыть файл",
-  "discardChanges": "Отказаться",
-  "saveChanges": "Save changes"
+    "discardChanges": "Отказаться",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Скачать файл",
@@ -158,6 +158,7 @@
     "video": "Видео"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Админ",
     "administrator": "Администратор",
     "allowCommands": "Запуск команд",

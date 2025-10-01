@@ -42,8 +42,8 @@
     "update": "Actualizar",
     "upload": "Subir",
     "openFile": "Abrir archivo",
-  "discardChanges": "Discard",
-  "saveChanges": "Guardar cambios"
+    "discardChanges": "Discard",
+    "saveChanges": "Guardar cambios"
   },
   "download": {
     "downloadFile": "Descargar fichero",
@@ -158,6 +158,7 @@
     "video": "Vídeo"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrador",
     "allowCommands": "Ejecutar comandos",
