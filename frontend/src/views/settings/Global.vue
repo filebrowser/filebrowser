@@ -65,7 +65,7 @@
             <a
               class="link"
               target="_blank"
-              href="https://filebrowser.org/configuration.html#command-runner"
+              href="https://filebrowser.org/configuration.html#custom-branding"
               >{{ t("settings.documentation") }}</a
             >
           </i18n-t>
