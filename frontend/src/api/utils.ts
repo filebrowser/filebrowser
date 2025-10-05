@@ -91,3 +91,23 @@ export function createURL(endpoint: string, searchParams = {}): string {
 
   return url.toString();
 }
+
+export function setSafeTimeout(callback: () => void, delay: number): number {
+  const MAX_DELAY = 86_400_000;
+  let remaining = delay;
+  let timerId: number;
+
+  function scheduleNext() {
+    if (remaining <= MAX_DELAY) {
+      timerId = window.setTimeout(callback, remaining);
+    } else {
+      timerId = window.setTimeout(() => {
+        remaining -= MAX_DELAY;
+        scheduleNext();
+      }, MAX_DELAY);
+    }
+  }
+
+  scheduleNext();
+  return timerId;
+}
