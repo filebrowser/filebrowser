@@ -95,19 +95,17 @@ export function createURL(endpoint: string, searchParams = {}): string {
 export function setSafeTimeout(callback: () => void, delay: number): number {
   const MAX_DELAY = 86_400_000;
   let remaining = delay;
-  let timerId: number;
 
-  function scheduleNext() {
+  function scheduleNext(): number {
     if (remaining <= MAX_DELAY) {
-      timerId = window.setTimeout(callback, remaining);
+      return window.setTimeout(callback, remaining);
     } else {
-      timerId = window.setTimeout(() => {
+      return window.setTimeout(() => {
         remaining -= MAX_DELAY;
         scheduleNext();
       }, MAX_DELAY);
     }
   }
 
-  scheduleNext();
-  return timerId;
+  return scheduleNext();
 }
