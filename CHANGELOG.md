@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.44.2](https://github.com/filebrowser/filebrowser/compare/v2.44.1...v2.44.2) (2025-10-22)
+
+
+### Bug Fixes
+
+* **http:** remove auth query parameter ([57db25d](https://github.com/filebrowser/filebrowser/commit/57db25d08a1ef2cd0b41f34e312b7b7c35c7ed38))
+
+
+### Build
+
+* **deps-dev:** bump vite from 6.3.6 to 6.4.1 in /frontend ([b8f64a1](https://github.com/filebrowser/filebrowser/commit/b8f64a1c1bc235df784d7f52abd3a9e84c6db6ce))
+
 ### [2.44.1](https://github.com/filebrowser/filebrowser/compare/v2.44.0...v2.44.1) (2025-10-17)
 
 
