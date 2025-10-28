@@ -178,7 +178,7 @@
     "minimumPasswordLength": "Minsta lösenordslängd",
     "tusUploads": "Uppdelade uppladdningar",
     "tusUploadsHelp": "Filbläddraren stöder uppdelade filuppladdningar, vilket möjliggör effektiva, tillförlitliga, återupptagbara och uppdelade filuppladdningar även på otillförlitliga nätverk.",
-    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsChunkSize": "Anger maximal storlek för en begäran (direkta uppladdningar används för mindre uppladdningar). Du kan ange ett helt tal som anger storleken i byte eller en sträng som 10 MB, 1 GB osv.",
     "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Base path for user home directories",
     "userScopeGenerationPlaceholder": "The scope will be auto generated",
