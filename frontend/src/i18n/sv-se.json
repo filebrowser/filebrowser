@@ -230,9 +230,9 @@
     "singleClick": "Använd enkla klick för att öppna filer och kataloger",
     "themes": {
       "default": "Systemet standard",
-      "dark": "Dark",
-      "light": "Light",
-      "title": "Theme"
+      "dark": "Mörk",
+      "light": "Ljus",
+      "title": "Tema"
     },
     "user": "Användare",
     "userCommands": "Kommandon",
