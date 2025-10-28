@@ -103,7 +103,7 @@
     "usernameTaken": "Användarnamn upptaget",
     "wrongCredentials": "Fel inloggning",
     "logout_reasons": {
-      "inactivity": "You have been logged out due to inactivity."
+      "inactivity": "Du har blivit utloggad på grund av inaktivitet."
     }
   },
   "permanent": "Permanent",
