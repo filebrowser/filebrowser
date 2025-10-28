@@ -142,7 +142,7 @@
     "size": "Storlek",
     "upload": "Ladda upp",
     "uploadFiles": "Laddar upp {files} filer...",
-    "uploadMessage": "Select an option to upload.",
+    "uploadMessage": "Välj ett alternativ att ladda upp.",
     "optionalPassword": "Optional password",
     "resolution": "Resolution",
     "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
