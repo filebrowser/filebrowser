@@ -43,12 +43,12 @@
     "upload": "Ladda upp",
     "openFile": "Öppna fil",
     "discardChanges": "Förkasta",
-    "saveChanges": "Save changes"
+    "saveChanges": "Spara ändringar"
   },
   "download": {
     "downloadFile": "Ladda ner fil",
     "downloadFolder": "Ladda ner mapp",
-    "downloadSelected": "Download Selected"
+    "downloadSelected": "Hämta markerade"
   },
   "upload": {
     "abortUpload": "Are you sure you wish to abort?"
