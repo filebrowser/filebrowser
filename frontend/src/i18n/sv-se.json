@@ -141,7 +141,7 @@
     "show": "Visa",
     "size": "Storlek",
     "upload": "Ladda upp",
-    "uploadFiles": "Uploading {files} files...",
+    "uploadFiles": "Laddar upp {files} filer...",
     "uploadMessage": "Select an option to upload.",
     "optionalPassword": "Optional password",
     "resolution": "Resolution",
