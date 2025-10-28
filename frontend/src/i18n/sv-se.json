@@ -51,13 +51,13 @@
     "downloadSelected": "Hämta markerade"
   },
   "upload": {
-    "abortUpload": "Are you sure you wish to abort?"
+    "abortUpload": "Är du säker på att du vill avbryta?"
   },
   "errors": {
     "forbidden": "Du saknar rättigheter till detta",
     "internal": "Något gick fel",
     "notFound": "Det går inte att nå den här platsen.",
-    "connection": "The server can't be reached."
+    "connection": "Servern går inte att nå."
   },
   "files": {
     "body": "Huvud",
