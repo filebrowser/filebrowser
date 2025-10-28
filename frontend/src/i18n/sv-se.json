@@ -227,9 +227,9 @@
     "shareDuration": "Utdelningstid",
     "shareManagement": "Utdelningshantering",
     "shareDeleted": "Utdelning borttagen!",
-    "singleClick": "Use single clicks to open files and directories",
+    "singleClick": "Använd enkla klick för att öppna filer och kataloger",
     "themes": {
-      "default": "System default",
+      "default": "Systemet standard",
       "dark": "Dark",
       "light": "Light",
       "title": "Theme"
