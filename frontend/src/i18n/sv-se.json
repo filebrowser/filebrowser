@@ -179,7 +179,7 @@
     "tusUploads": "Uppdelade uppladdningar",
     "tusUploadsHelp": "Filbläddraren stöder uppdelade filuppladdningar, vilket möjliggör effektiva, tillförlitliga, återupptagbara och uppdelade filuppladdningar även på otillförlitliga nätverk.",
     "tusUploadsChunkSize": "Anger maximal storlek för en begäran (direkta uppladdningar används för mindre uppladdningar). Du kan ange ett helt tal som anger storleken i byte eller en sträng som 10 MB, 1 GB osv.",
-    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "tusUploadsRetryCount": "Antal försök som ska göras om en del inte kan laddas upp.",
     "userHomeBasePath": "Base path for user home directories",
     "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "createUserHomeDirectory": "Create user home directory",
