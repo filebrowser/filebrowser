@@ -143,8 +143,8 @@
     "upload": "Ladda upp",
     "uploadFiles": "Laddar upp {files} filer...",
     "uploadMessage": "Välj ett alternativ att ladda upp.",
-    "optionalPassword": "Optional password",
-    "resolution": "Resolution",
+    "optionalPassword": "Valfritt lösenord",
+    "resolution": "Upplösning",
     "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
