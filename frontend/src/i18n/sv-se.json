@@ -225,8 +225,8 @@
     "setDateFormat": "Ställ in exakt datumformat",
     "settingsUpdated": "Inställning uppdaterad!",
     "shareDuration": "Utdelningstid",
-    "shareManagement": "Share Management",
-    "shareDeleted": "Share deleted!",
+    "shareManagement": "Utdelningshantering",
+    "shareDeleted": "Utdelning borttagen!",
     "singleClick": "Use single clicks to open files and directories",
     "themes": {
       "default": "System default",
