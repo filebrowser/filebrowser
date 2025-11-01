@@ -8,6 +8,7 @@ import("dayjs/locale/en");
 import("dayjs/locale/es");
 import("dayjs/locale/fr");
 import("dayjs/locale/he");
+import("dayjs/locale/hr");
 import("dayjs/locale/hu");
 import("dayjs/locale/is");
 import("dayjs/locale/it");
@@ -40,6 +41,9 @@ export function detectLocale() {
   switch (true) {
     case /^he\b/.test(locale):
       locale = "he";
+      break;
+    case /^hr\b/.test(locale):
+      locale = "hr";
       break;
     case /^hu\b/.test(locale):
       locale = "hu";
