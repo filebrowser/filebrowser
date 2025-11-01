@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.45.0](https://github.com/filebrowser/filebrowser/compare/v2.44.2...v2.45.0) (2025-11-01)
+
+
+### Features
+
+* update translations ([#5458](https://github.com/filebrowser/filebrowser/issues/5458)) ([b9a03fa](https://github.com/filebrowser/filebrowser/commit/b9a03fabd98119d6588882f5ba2a7d29b012d729))
+
+
+### Bug Fixes
+
+* support croatian ([#5502](https://github.com/filebrowser/filebrowser/issues/5502)) ([93fe31c](https://github.com/filebrowser/filebrowser/commit/93fe31cc55c9d9d27c634993619a768fa700da1d))
+
 ### [2.44.2](https://github.com/filebrowser/filebrowser/compare/v2.44.1...v2.44.2) (2025-10-22)
 
 
