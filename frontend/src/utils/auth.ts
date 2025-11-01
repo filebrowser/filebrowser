@@ -4,6 +4,7 @@ import type { JwtPayload } from "jwt-decode";
 import { jwtDecode } from "jwt-decode";
 import { baseURL, noAuth } from "./constants";
 import { StatusError } from "@/api/utils";
+import { setSafeTimeout } from "@/api/utils";
 
 export function parseToken(token: string) {
   // falsy or malformed jwt will throw InvalidTokenError
@@ -22,10 +23,11 @@ export function parseToken(token: string) {
   }
 
   const expiresAt = new Date(data.exp! * 1000);
+  const timeout = expiresAt.getTime() - Date.now();
   authStore.setLogoutTimer(
-    window.setTimeout(() => {
+    setSafeTimeout(() => {
       logout("inactivity");
-    }, expiresAt.getTime() - Date.now())
+    }, timeout)
   );
 }
 

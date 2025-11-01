@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.44.2](https://github.com/filebrowser/filebrowser/compare/v2.44.1...v2.44.2) (2025-10-22)
+
+
+### Bug Fixes
+
+* **http:** remove auth query parameter ([57db25d](https://github.com/filebrowser/filebrowser/commit/57db25d08a1ef2cd0b41f34e312b7b7c35c7ed38))
+
+
+### Build
+
+* **deps-dev:** bump vite from 6.3.6 to 6.4.1 in /frontend ([b8f64a1](https://github.com/filebrowser/filebrowser/commit/b8f64a1c1bc235df784d7f52abd3a9e84c6db6ce))
+
+### [2.44.1](https://github.com/filebrowser/filebrowser/compare/v2.44.0...v2.44.1) (2025-10-17)
+
+
+### Bug Fixes
+
+* **auth:** prevent integer overflow in logout timer using safeTimeout ([#5470](https://github.com/filebrowser/filebrowser/issues/5470)) ([dd88398](https://github.com/filebrowser/filebrowser/commit/dd883985bb484af9dfea2677a40d56999fdc72f3))
+* editor discard prompt doesn't save nor discard ([a397e73](https://github.com/filebrowser/filebrowser/commit/a397e7305d1572baf67823413f97a29eea38f0cc))
+* wrong url on settings branding link ([d0039af](https://github.com/filebrowser/filebrowser/commit/d0039afbb76a9364c1e6ac9715ccc3c239dc8cb6))
+
+
+### Refactorings
+
+* use slices.Contains to simplify code ([#5483](https://github.com/filebrowser/filebrowser/issues/5483)) ([97b8911](https://github.com/filebrowser/filebrowser/commit/97b8911ba8a65456091cbec0202f6b5209fcf363))
+
 ## [2.44.0](https://github.com/filebrowser/filebrowser/compare/v2.43.0...v2.44.0) (2025-09-25)
 
 

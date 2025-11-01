@@ -51,11 +51,6 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 		return token, nil
 	}
 
-	auth := r.URL.Query().Get("auth")
-	if auth != "" && strings.Count(auth, ".") == 2 {
-		return auth, nil
-	}
-
 	if r.Method == http.MethodGet {
 		cookie, _ := r.Cookie("auth")
 		if cookie != nil && strings.Count(cookie.Value, ".") == 2 {

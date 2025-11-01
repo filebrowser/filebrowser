@@ -17,7 +17,7 @@
       </button>
       <button
         class="button button--flat button--blue"
-        @click="saveAndClose"
+        @click="currentPrompt.saveAction"
         :aria-label="$t('buttons.saveChanges')"
         :title="$t('buttons.saveChanges')"
         tabindex="1"
@@ -39,8 +39,8 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "pinia";
 import { useLayoutStore } from "@/stores/layout";
+import { mapActions, mapState } from "pinia";
 
 export default {
   name: "discardEditorChanges",
@@ -49,12 +49,6 @@ export default {
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),
-    saveAndClose() {
-      if (this.currentPrompt?.saveAction) {
-        this.currentPrompt.saveAction();
-      }
-      this.closeHovers();
-    },
   },
 };
 </script>
