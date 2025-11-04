@@ -100,3 +100,21 @@ export function createURL(
 
   return url.toString();
 }
+
+export function setSafeTimeout(callback: () => void, delay: number): number {
+  const MAX_DELAY = 86_400_000;
+  let remaining = delay;
+
+  function scheduleNext(): number {
+    if (remaining <= MAX_DELAY) {
+      return window.setTimeout(callback, remaining);
+    } else {
+      return window.setTimeout(() => {
+        remaining -= MAX_DELAY;
+        scheduleNext();
+      }, MAX_DELAY);
+    }
+  }
+
+  return scheduleNext();
+}

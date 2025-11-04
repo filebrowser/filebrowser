@@ -216,12 +216,24 @@ const decreaseFontSize = () => {
 
 const close = () => {
   if (!editor.value?.session.getUndoManager().isClean()) {
-    layoutStore.showHover("discardEditorChanges");
+    layoutStore.showHover({
+      prompt: "discardEditorChanges",
+      confirm: (event: Event) => {
+        event.preventDefault();
+        finishClose();
+      },
+      saveAction: async () => {
+        await save();
+        finishClose();
+      },
+    });
     return;
   }
+  finishClose();
+};
 
+const finishClose = () => {
   fileStore.updateRequest(null);
-
   const uri = url.removeLastDir(route.path) + "/";
   router.push({ path: uri });
 };

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"slices"
 	"strings"
 
 	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
@@ -266,13 +267,7 @@ var validHookFields = []string{
 
 // IsValid checks if the provided field is on the valid fields list
 func (hf *hookFields) IsValid(field string) bool {
-	for _, val := range validHookFields {
-		if field == val {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(validHookFields, field)
 }
 
 // GetString returns the string value or provided default

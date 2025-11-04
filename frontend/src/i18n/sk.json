@@ -43,7 +43,7 @@
     "upload": "Nahrať",
     "openFile": "Otvoriť súbor",
     "discardChanges": "Zahodiť",
-    "saveChanges": "Save changes"
+    "saveChanges": "Uložiť zmeny"
   },
   "download": {
     "downloadFile": "Stiahnuť súbor",
@@ -103,7 +103,7 @@
     "usernameTaken": "Meno je už obsadené",
     "wrongCredentials": "Nesprávne prihlasovacie údaje",
     "logout_reasons": {
-      "inactivity": "You have been logged out due to inactivity."
+      "inactivity": "Boli ste odhlásení z dôvodu nečinnosti."
     }
   },
   "permanent": "Trvalé",
