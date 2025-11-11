@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.45.1](https://github.com/filebrowser/filebrowser/compare/v2.45.0...v2.45.1) (2025-11-11)
+
+
+### Bug Fixes
+
+* share page preview items to contain baseUrl ([#5510](https://github.com/filebrowser/filebrowser/issues/5510)) ([6950c2e](https://github.com/filebrowser/filebrowser/commit/6950c2e4d2868f06235f93c0a18b303b4095ca0a))
+
 ## [2.45.0](https://github.com/filebrowser/filebrowser/compare/v2.44.2...v2.45.0) (2025-11-01)
 
 
