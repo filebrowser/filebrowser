@@ -5,7 +5,7 @@
 </style>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/filebrowser/logo/master/banner.png" width="550"/>
+  <img src="https://raw.githubusercontent.com/filebrowser/filebrowser/master/branding/banner.png" width="550"/>
 </p>
 
 > [!WARNING]
