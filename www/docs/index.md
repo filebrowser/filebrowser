@@ -10,7 +10,7 @@
 
 > [!WARNING]
 >
-> This project is currently on **maintenance-only** mode. For more information, read the information on [GitHub](https://github.com/filebrowser/filebrowser#project-status).
+> This project is on **maintenance-only** mode. For more information, read the information on [GitHub](https://github.com/filebrowser/filebrowser#project-status).
 
 ![Preview](static/example.gif)
 

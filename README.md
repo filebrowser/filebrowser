@@ -14,18 +14,12 @@ Documentation on how to install, configure, and contribute to this project is ho
 
 ## Project Status
 
-> [!WARNING]
->
-> This project is currently on **maintenance-only** mode, and is looking for new maintainers. For more information, please read the [discussion #4906](https://github.com/filebrowser/filebrowser/discussions/4906). Therefore, please note the following:
->
-> - It can take a while until someone gets back to you. Please be patient.
-> - [Issues][issues] are only being used to track bugs. Any unrelated issues will be converted into a [discussion][discussions].
-> - No new features will be implemented until further notice. The priority is on triaging issues and merge bug fixes.
-> 
-> If you're interested in maintaining this project, please reach out via the discussion above.
+This project is a finished product which fulfills its goal: be a single binary web File Browser which can be run by anyone anywhere. That means that File Browser is currently on **maintenance-only** mode. Therefore, please note the following:
 
-[issues]: https://github.com/filebrowser/filebrowser/issues
-[discussions]: https://github.com/filebrowser/filebrowser/discussions
+- It can take a while until someone gets back to you. Please be patient.
+- [Issues](https://github.com/filebrowser/filebrowser/issues) are meant to track bugs. Unrelated issues will be converted into [discussions](https://github.com/filebrowser/filebrowser/discussions).
+- No new features will be implemented. Pull requests for new features will be reviewed on a case by case basis.
+- The priority is triaging issues, addressing security issues, and fixing bug fixes.
 
 ## Contributing
 
