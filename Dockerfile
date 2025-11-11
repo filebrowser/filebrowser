@@ -8,6 +8,7 @@ RUN apk update && \
 
 ## Second stage: Use lightweight BusyBox image for final runtime environment
 FROM busybox:1.37.0-musl
+ARG TARGETPLATFORM
 
 # Define non-root user UID and GID
 ENV UID=1000
@@ -18,7 +19,7 @@ RUN addgroup -g $GID user && \
     adduser -D -u $UID -G user user
 
 # Copy binary, scripts, and configurations into image with proper ownership
-COPY --chown=user:user filebrowser /bin/filebrowser
+COPY --chown=user:user $TARGETPLATFORM/filebrowser /bin/filebrowser
 COPY --chown=user:user docker/common/ /
 COPY --chown=user:user docker/alpine/ /
 COPY --chown=user:user --from=fetcher /sbin/tini-static /bin/tini

@@ -1,4 +1,5 @@
 FROM ghcr.io/linuxserver/baseimage-alpine:3.22
+ARG TARGETPLATFORM
 
 RUN apk update && \
   apk --no-cache add ca-certificates mailcap jq libcap
@@ -8,7 +9,7 @@ RUN mkdir -p /config /database /srv && \
   chown -R abc:abc /config /database /srv
 
 # Copy files and set permissions
-COPY filebrowser /bin/filebrowser
+COPY $TARGETPLATFORM/filebrowser /bin/filebrowser
 COPY docker/common/ /
 COPY docker/s6/ /
 
