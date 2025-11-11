@@ -1,5 +1,9 @@
 <template>
-  <select name="selectAceEditorTheme" v-on:change="change" :value="aceEditorTheme">
+  <select
+    name="selectAceEditorTheme"
+    v-on:change="change"
+    :value="aceEditorTheme"
+  >
     <option v-for="theme in themes" :value="theme.theme" :key="theme.theme">
       {{ theme.name }}
     </option>
