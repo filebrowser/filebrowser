@@ -77,7 +77,16 @@ var shareDeleteHandler = withPermShare(func(_ http.ResponseWriter, r *http.Reque
 		return http.StatusBadRequest, nil
 	}
 
-	err := d.store.Share.Delete(hash)
+	link, err := d.store.Share.GetByHash(hash)
+	if err != nil {
+		return errToStatus(err), err
+	}
+
+	if link.UserID != d.user.ID && !d.user.Perm.Admin {
+		return http.StatusForbidden, nil
+	}
+
+	err = d.store.Share.Delete(hash)
 	return errToStatus(err), err
 })
 
