@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
-	"github.com/golang-jwt/jwt/v4/request"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v5/request"
 
 	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -69,15 +69,19 @@ func withUser(fn handleFunc) handleFunc {
 
 		var tk authToken
 		token, err := request.ParseFromRequest(r, &extractor{}, keyFunc, request.WithClaims(&tk))
-
 		if err != nil || !token.Valid {
 			return http.StatusUnauthorized, nil
 		}
 
-		expired := !tk.VerifyExpiresAt(time.Now().Add(time.Hour), true)
+		err = jwt.NewValidator(jwt.WithExpirationRequired()).Validate(tk)
+		if err != nil {
+			return http.StatusUnauthorized, nil
+		}
+
+		expiresSoon := tk.ExpiresAt != nil && time.Until(tk.ExpiresAt.Time) < time.Hour
 		updated := tk.IssuedAt != nil && tk.IssuedAt.Unix() < d.store.Users.LastUpdate(tk.User.ID)
 
-		if expired || updated {
+		if expiresSoon || updated {
 			w.Header().Add("X-Renew-Token", "true")
 		}
 
