@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.45.2](https://github.com/filebrowser/filebrowser/compare/v2.45.1...v2.45.2) (2025-11-13)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/shirou/gopsutil/v3 to v4 ([#5536](https://github.com/filebrowser/filebrowser/issues/5536)) ([fdff7a3](https://github.com/filebrowser/filebrowser/commit/fdff7a38f4711f2b58dfdd60bebbb057bd3a478d))
+* **deps:** update module gopkg.in/yaml.v2 to v3 ([#5537](https://github.com/filebrowser/filebrowser/issues/5537)) ([f26a685](https://github.com/filebrowser/filebrowser/commit/f26a68587d8432b536453093f42dc255d19d10fa))
+
 ### [2.45.1](https://github.com/filebrowser/filebrowser/compare/v2.45.0...v2.45.1) (2025-11-11)
 
 
