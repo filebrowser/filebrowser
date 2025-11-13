@@ -33,17 +33,24 @@ tasks:
       - task: build-frontend
       - task: build-backend
 
+  release-make:
+    internal: true
+    prompt: Do you wish to proceed?
+    cmds:
+      - pnpm dlx commit-and-tag-version -s
+
+  release-dry-run:
+    internal: true
+    cmds:
+      - pnpm dlx commit-and-tag-version --dry-run --skip
+
   release:
     desc: Create a new release
     cmds:
-      - pnpm dlx commit-and-tag-version -s
-  
-  release-dry-run:
-    desc: Perform a dry run of the release
-    cmds:
-      - pnpm dlx commit-and-tag-version -dry-run --skip
+      - task: release-dry-run
+      - task: release-make
 
-  make-docs-image:
+  docs-image-make:
     internal: true
     cmds: 
       - docker build -f www/Dockerfile --progress=plain -t filebrowser.site www
@@ -52,11 +59,11 @@ tasks:
     desc: Generate documentation
     cmds:
       - rm -rf www/public
-      - task: make-docs-image
+      - task: docs-image-make
       - docker run --rm {{.SITE_DOCKER_FLAGS}} filebrowser.site build -d "public"
 
   docs-serve:
     desc: Serve documentation
     cmds:
-      - task: make-docs-image
+      - task: docs-image-make
       - docker run --rm -it -p 8000:8000 {{.SITE_DOCKER_FLAGS}} filebrowser.site
