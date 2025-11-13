@@ -1,4 +1,4 @@
-name: Build Site
+name: Build Docs
 
 on:
   pull_request:
@@ -12,9 +12,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
+      - name: Install Task
+        uses: go-task/setup-task@v1
       - name: Build site
-        run: make site
+        run: task docs
