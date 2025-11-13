@@ -4,7 +4,8 @@
     "config:recommended",
     "group:allNonMajor",
     "group:allDigest",
-    ":disableDependencyDashboard"
+    ":disableDependencyDashboard",
+    ":semanticCommitTypeAll(chore)"
   ],
   "postUpdateOptions": [
     "gomodUpdateImportPaths",
