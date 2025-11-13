@@ -2,6 +2,12 @@
 
 Most of the configuration can be understood through the command line interface documentation. To access it, you need to install File Browser and run `filebrowser --help`. In this page, we cover some specific, more complex, topics.
 
+## Flags as Environment Variables
+
+In some situations, it is easier to use environment variables instead of flags. For example, if you're using our provided Docker image, it's easier for you to use environment variables to customize the settings instead of flags.
+
+All flags should be available as environment variables prefixed with `FB_`. For example, the flag `--disable-thumbnails` is available as `FB_DISABLE_THUMBNAILS`.
+
 ## Custom Branding
 
 You can customize File Browser to use your own branding. This includes the following:
