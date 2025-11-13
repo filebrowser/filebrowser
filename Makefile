@@ -46,10 +46,6 @@ lint-frontend: ## Run frontend linters
 lint-backend: | $(golangci-lint) ## Run backend linters
 	$Q $(golangci-lint) run -v
 
-.PHONY: lint-commits
-lint-commits: $(commitlint) ## Run commit linters
-	$Q ./scripts/commitlint.sh
-
 fmt: $(goimports) ## Format source files
 	$Q $(goimports) -local $(MODULE) -w $$(find . -type f -name '*.go' -not -path "./vendor/*")
 

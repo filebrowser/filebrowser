@@ -25,8 +25,3 @@ TOOLS_JS_DEPS=$(TOOLS_DIR)/node_modules/.modified
 $(TOOLS_JS_DEPS): $(TOOLS_DIR)/package.json $(TOOLS_DIR)/yarn.lock
 	$Q cd ${TOOLS_DIR} && yarn install
 	$Q touch -am $@
-
-commitlint=$(TOOLS_BIN)/commitlint
-$(commitlint): $(TOOLS_JS_DEPS)
-	$Q ln -sf $(TOOLS_DIR)/node_modules/.bin/commitlint $@
-	$Q touch -am $@
