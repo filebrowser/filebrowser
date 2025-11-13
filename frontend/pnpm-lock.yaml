@@ -112,17 +112,17 @@ importers:
         specifier: ^4.17.12
         version: 4.17.12
       '@types/node':
-        specifier: ^22.10.10
-        version: 22.19.1
+        specifier: ^24.0.0
+        version: 24.10.1
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.37.0
         version: 8.46.4(@typescript-eslint/parser@8.37.0(eslint@9.39.1)(typescript@5.6.3))(eslint@9.39.1)(typescript@5.6.3)
       '@vitejs/plugin-legacy':
         specifier: ^7.2.1
-        version: 7.2.1(terser@5.44.1)(vite@7.2.2(@types/node@22.19.1)(terser@5.44.1)(yaml@2.7.0))
+        version: 7.2.1(terser@5.44.1)(vite@7.2.2(@types/node@24.10.1)(terser@5.44.1)(yaml@2.7.0))
       '@vitejs/plugin-vue':
         specifier: ^6.0.1
-        version: 6.0.1(vite@7.2.2(@types/node@22.19.1)(terser@5.44.1)(yaml@2.7.0))(vue@3.5.24(typescript@5.6.3))
+        version: 6.0.1(vite@7.2.2(@types/node@24.10.1)(terser@5.44.1)(yaml@2.7.0))(vue@3.5.24(typescript@5.6.3))
       '@vue/eslint-config-prettier':
         specifier: ^10.2.0
         version: 10.2.0(eslint@9.39.1)(prettier@3.6.2)
@@ -164,7 +164,7 @@ importers:
         version: 5.44.1
       vite:
         specifier: ^7.2.2
-        version: 7.2.2(@types/node@22.19.1)(terser@5.44.1)(yaml@2.7.0)
+        version: 7.2.2(@types/node@24.10.1)(terser@5.44.1)(yaml@2.7.0)
       vite-plugin-compression2:
         specifier: ^2.3.1
         version: 2.3.1(rollup@4.52.5)
@@ -1164,8 +1164,8 @@ packages:
   '@types/lodash@4.17.13':
     resolution: {integrity: sha512-lfx+dftrEZcdBPczf9d0Qv0x+j/rfNCMuC6OcfXmO8gkfeNAY88PgKUbvG56whcN23gc27yenwF6oJZXGFpYxg==}
 
-  '@types/node@22.19.1':
-    resolution: {integrity: sha512-LCCV0HdSZZZb34qifBsyWlUmok6W7ouER+oQIGBScS8EsZsQbrtFTUrDX4hOl+CS6p7cnNC4td+qrSVGSCTUfQ==}
+  '@types/node@24.10.1':
+    resolution: {integrity: sha512-GNWcUTRBgIRJD5zj+Tq0fKOJ5XZajIiBroOF0yvj2bSU1WvNdYS/dn9UxwsujGW4JX06dnHyjV2y9rRaybH0iQ==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
@@ -2557,8 +2557,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  undici-types@6.21.0:
-    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
+  undici-types@7.16.0:
+    resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
   unicode-canonical-property-names-ecmascript@2.0.1:
     resolution: {integrity: sha512-dA8WbNeb2a6oQzAQ55YlT5vQAWGV9WXOsi3SskE3bcCdM0P4SDd+24zS/OCacdRq5BkdsRj9q3Pg6YyQoxIGqg==}
@@ -3835,9 +3835,9 @@ snapshots:
 
   '@types/lodash@4.17.13': {}
 
-  '@types/node@22.19.1':
+  '@types/node@24.10.1':
     dependencies:
-      undici-types: 6.21.0
+      undici-types: 7.16.0
 
   '@types/trusted-types@2.0.7':
     optional: true
@@ -4040,7 +4040,7 @@ snapshots:
       global: 4.4.0
       is-function: 1.0.2
 
-  '@vitejs/plugin-legacy@7.2.1(terser@5.44.1)(vite@7.2.2(@types/node@22.19.1)(terser@5.44.1)(yaml@2.7.0))':
+  '@vitejs/plugin-legacy@7.2.1(terser@5.44.1)(vite@7.2.2(@types/node@24.10.1)(terser@5.44.1)(yaml@2.7.0))':
     dependencies:
       '@babel/core': 7.28.5
       '@babel/plugin-transform-dynamic-import': 7.27.1(@babel/core@7.28.5)
@@ -4055,14 +4055,14 @@ snapshots:
       regenerator-runtime: 0.14.1
       systemjs: 6.15.1
       terser: 5.44.1
-      vite: 7.2.2(@types/node@22.19.1)(terser@5.44.1)(yaml@2.7.0)
+      vite: 7.2.2(@types/node@24.10.1)(terser@5.44.1)(yaml@2.7.0)
     transitivePeerDependencies:
       - supports-color
 
-  '@vitejs/plugin-vue@6.0.1(vite@7.2.2(@types/node@22.19.1)(terser@5.44.1)(yaml@2.7.0))(vue@3.5.24(typescript@5.6.3))':
+  '@vitejs/plugin-vue@6.0.1(vite@7.2.2(@types/node@24.10.1)(terser@5.44.1)(yaml@2.7.0))(vue@3.5.24(typescript@5.6.3))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-beta.29
-      vite: 7.2.2(@types/node@22.19.1)(terser@5.44.1)(yaml@2.7.0)
+      vite: 7.2.2(@types/node@24.10.1)(terser@5.44.1)(yaml@2.7.0)
       vue: 3.5.24(typescript@5.6.3)
 
   '@volar/language-core@2.4.23':
@@ -5318,7 +5318,7 @@ snapshots:
 
   typescript@5.6.3: {}
 
-  undici-types@6.21.0: {}
+  undici-types@7.16.0: {}
 
   unicode-canonical-property-names-ecmascript@2.0.1: {}
 
@@ -5399,7 +5399,7 @@ snapshots:
     transitivePeerDependencies:
       - rollup
 
-  vite@7.2.2(@types/node@22.19.1)(terser@5.44.1)(yaml@2.7.0):
+  vite@7.2.2(@types/node@24.10.1)(terser@5.44.1)(yaml@2.7.0):
     dependencies:
       esbuild: 0.25.11
       fdir: 6.5.0(picomatch@4.0.3)
@@ -5408,7 +5408,7 @@ snapshots:
       rollup: 4.52.5
       tinyglobby: 0.2.15
     optionalDependencies:
-      '@types/node': 22.19.1
+      '@types/node': 24.10.1
       fsevents: 2.3.3
       terser: 5.44.1
       yaml: 2.7.0
