@@ -57,10 +57,6 @@ clean: clean-tools ## Clean
 
 ## Release:
 
-.PHONY: bump-version
-bump-version: $(standard-version) ## Bump app version
-	$Q ./scripts/bump_version.sh
-
 .PHONY: site
 site: ## Build site
 	@rm -rf www/public

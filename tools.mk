@@ -26,11 +26,6 @@ $(TOOLS_JS_DEPS): $(TOOLS_DIR)/package.json $(TOOLS_DIR)/yarn.lock
 	$Q cd ${TOOLS_DIR} && yarn install
 	$Q touch -am $@
 
-standard-version=$(TOOLS_BIN)/standard-version
-$(standard-version): $(TOOLS_JS_DEPS)
-	$Q ln -sf $(TOOLS_DIR)/node_modules/.bin/standard-version $@
-	$Q touch -am $@
-
 commitlint=$(TOOLS_BIN)/commitlint
 $(commitlint): $(TOOLS_JS_DEPS)
 	$Q ln -sf $(TOOLS_DIR)/node_modules/.bin/commitlint $@
