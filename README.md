@@ -18,7 +18,7 @@ This project is a finished product which fulfills its goal: be a single binary w
 
 - It can take a while until someone gets back to you. Please be patient.
 - [Issues](https://github.com/filebrowser/filebrowser/issues) are meant to track bugs. Unrelated issues will be converted into [discussions](https://github.com/filebrowser/filebrowser/discussions).
-- No new features will be implemented. Pull requests for new features will be reviewed on a case by case basis.
+- No new features will be implemented by maintainers. Pull requests for new features will be reviewed on a case by case basis.
 - The priority is triaging issues, addressing security issues, and fixing bug fixes.
 
 ## Contributing
