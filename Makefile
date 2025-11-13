@@ -53,6 +53,14 @@ clean: clean-tools ## Clean
 
 ## Release:
 
+.PHONY: release-dry-run
+release-dry-run: 
+	pnpm dlx commit-and-tag-version --dry-run --skip
+
+.PHONY: release
+release: 
+	pnpm dlx commit-and-tag-version -s
+
 .PHONY: site
 site: ## Build site
 	@rm -rf www/public
