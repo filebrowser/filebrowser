@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.45.3](https://github.com/filebrowser/filebrowser/compare/v2.45.2...v2.45.3) (2025-11-13)
 
+This is a test release to ensure the updated workflow works.
+
 ## [2.45.2](https://github.com/filebrowser/filebrowser/compare/v2.45.1...v2.45.2) (2025-11-13)
 
 
