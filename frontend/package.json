@@ -5,7 +5,7 @@
   "type": "module",
   "engines": {
     "node": ">=24.0.0",
-    "pnpm": ">=9.0.0"
+    "pnpm": ">=10.0.0"
   },
   "scripts": {
     "dev": "vite dev",
