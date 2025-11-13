@@ -17,7 +17,7 @@
       </button>
       <button
         class="button button--flat button--blue"
-        @click="currentPrompt.saveAction"
+        @click="currentPrompt?.saveAction"
         :aria-label="$t('buttons.saveChanges')"
         :title="$t('buttons.saveChanges')"
         tabindex="1"
@@ -26,7 +26,7 @@
       </button>
       <button
         id="focus-prompt"
-        @click="currentPrompt.confirm"
+        @click="currentPrompt?.confirm"
         class="button button--flat button--red"
         :aria-label="$t('buttons.discardChanges')"
         :title="$t('buttons.discardChanges')"
@@ -38,17 +38,11 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { storeToRefs } from "pinia";
 import { useLayoutStore } from "@/stores/layout";
-import { mapActions, mapState } from "pinia";
 
-export default {
-  name: "discardEditorChanges",
-  computed: {
-    ...mapState(useLayoutStore, ["currentPrompt"]),
-  },
-  methods: {
-    ...mapActions(useLayoutStore, ["closeHovers"]),
-  },
-};
+const layoutStore = useLayoutStore();
+const { currentPrompt } = storeToRefs(layoutStore);
+const { closeHovers } = layoutStore;
 </script>

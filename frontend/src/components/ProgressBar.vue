@@ -1,6 +1,3 @@
-<!-- This component taken directly from vue-simple-progress
-since it didnt support Vue 3 but the component itself does
-https://raw.githubusercontent.com/dzwillia/vue-simple-progress/master/src/components/Progress.vue -->
 <template>
   <div>
     <div
@@ -44,182 +41,164 @@ https://raw.githubusercontent.com/dzwillia/vue-simple-progress/master/src/compon
   </div>
 </template>
 
-<script>
-// We're leaving this untouched as you can read in the beginning
-const isNumber = function (n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
+<script setup lang="ts">
+import { computed } from "vue";
+
+const isNumber = (n: number | string): boolean => {
+  return !isNaN(parseFloat(n as string)) && isFinite(n as number);
 };
 
-export default {
-  name: "progress-bar",
-  props: {
-    val: {
-      default: 0,
-    },
-    max: {
-      default: 100,
-    },
-    size: {
-      // either a number (pixel width/height) or 'tiny', 'small',
-      // 'medium', 'large', 'huge', 'massive' for common sizes
-      default: 3,
-    },
-    "bg-color": {
-      type: String,
-      default: "#eee",
-    },
-    "bar-color": {
-      type: String,
-      default: "#2196f3", // match .blue color to Material Design's 'Blue 500' color
-    },
-    "bar-transition": {
-      type: String,
-      default: "all 0.5s ease",
-    },
-    "bar-border-radius": {
-      type: Number,
-      default: 0,
-    },
-    spacing: {
-      type: Number,
-      default: 4,
-    },
-    text: {
-      type: String,
-      default: "",
-    },
-    "text-align": {
-      type: String,
-      default: "center", // 'left', 'right'
-    },
-    "text-position": {
-      type: String,
-      default: "bottom", // 'bottom', 'top', 'middle', 'inside'
-    },
-    "font-size": {
-      type: Number,
-      default: 13,
-    },
-    "text-fg-color": {
-      type: String,
-      default: "#222",
-    },
-  },
-  computed: {
-    pct() {
-      let pct = (this.val / this.max) * 100;
-      pct = pct.toFixed(2);
-      return Math.min(pct, this.max);
-    },
-    size_px() {
-      switch (this.size) {
-        case "tiny":
-          return 2;
-        case "small":
-          return 4;
-        case "medium":
-          return 8;
-        case "large":
-          return 12;
-        case "big":
-          return 16;
-        case "huge":
-          return 32;
-        case "massive":
-          return 64;
-      }
+const props = withDefaults(
+  defineProps<{
+    val?: number;
+    max?: number;
+    size?: number | string;
+    bgColor?: string;
+    barColor?: string;
+    barTransition?: string;
+    barBorderRadius?: number;
+    spacing?: number;
+    text?: string;
+    textAlign?: string;
+    textPosition?: string;
+    fontSize?: number;
+    textFgColor?: string;
+  }>(),
+  {
+    val: 0,
+    max: 100,
+    size: 3,
+    bgColor: "#eee",
+    barColor: "#2196f3",
+    barTransition: "all 0.5s ease",
+    barBorderRadius: 0,
+    spacing: 4,
+    text: "",
+    textAlign: "center",
+    textPosition: "bottom",
+    fontSize: 13,
+    textFgColor: "#222",
+  }
+);
 
-      return isNumber(this.size) ? this.size : 32;
-    },
-    text_padding() {
-      switch (this.size) {
-        case "tiny":
-        case "small":
-        case "medium":
-        case "large":
-        case "big":
-        case "huge":
-        case "massive":
-          return Math.min(Math.max(Math.ceil(this.size_px / 8), 3), 12);
-      }
+const pct = computed(() => {
+  const pct = (props.val / props.max) * 100;
+  const pctFixed = pct.toFixed(2);
+  return Math.min(parseFloat(pctFixed), props.max);
+});
 
-      return isNumber(this.spacing) ? this.spacing : 4;
-    },
-    text_font_size() {
-      switch (this.size) {
-        case "tiny":
-        case "small":
-        case "medium":
-        case "large":
-        case "big":
-        case "huge":
-        case "massive":
-          return Math.min(Math.max(Math.ceil(this.size_px * 1.4), 11), 32);
-      }
+const size_px = computed(() => {
+  switch (props.size) {
+    case "tiny":
+      return 2;
+    case "small":
+      return 4;
+    case "medium":
+      return 8;
+    case "large":
+      return 12;
+    case "big":
+      return 16;
+    case "huge":
+      return 32;
+    case "massive":
+      return 64;
+  }
 
-      return isNumber(this.fontSize) ? this.fontSize : 13;
-    },
-    progress_style() {
-      const style = {
-        background: this.bgColor,
-      };
+  return isNumber(props.size) ? (props.size as number) : 32;
+});
 
-      if (this.textPosition == "middle" || this.textPosition == "inside") {
-        style["position"] = "relative";
-        style["min-height"] = this.size_px + "px";
-        style["z-index"] = "-2";
-      }
+const text_padding = computed(() => {
+  switch (props.size) {
+    case "tiny":
+    case "small":
+    case "medium":
+    case "large":
+    case "big":
+    case "huge":
+    case "massive":
+      return Math.min(Math.max(Math.ceil(size_px.value / 8), 3), 12);
+  }
 
-      if (this.barBorderRadius > 0) {
-        style["border-radius"] = this.barBorderRadius + "px";
-      }
+  return isNumber(props.spacing) ? props.spacing : 4;
+});
 
-      return style;
-    },
-    bar_style() {
-      const style = {
-        background: this.barColor,
-        width: this.pct + "%",
-        height: this.size_px + "px",
-        transition: this.barTransition,
-      };
+const text_font_size = computed(() => {
+  switch (props.size) {
+    case "tiny":
+    case "small":
+    case "medium":
+    case "large":
+    case "big":
+    case "huge":
+    case "massive":
+      return Math.min(Math.max(Math.ceil(size_px.value * 1.4), 11), 32);
+  }
 
-      if (this.barBorderRadius > 0) {
-        style["border-radius"] = this.barBorderRadius + "px";
-      }
+  return isNumber(props.fontSize) ? props.fontSize : 13;
+});
 
-      if (this.textPosition == "middle" || this.textPosition == "inside") {
-        style["position"] = "absolute";
-        style["top"] = "0";
-        style["height"] = "100%";
-        ((style["min-height"] = this.size_px + "px"),
-          (style["z-index"] = "-1"));
-      }
+const progress_style = computed(() => {
+  const style: Record<string, string> = {
+    background: props.bgColor,
+  };
 
-      return style;
-    },
-    text_style() {
-      const style = {
-        color: this.textFgColor,
-        "font-size": this.text_font_size + "px",
-        "text-align": this.textAlign,
-      };
+  if (props.textPosition == "middle" || props.textPosition == "inside") {
+    style["position"] = "relative";
+    style["min-height"] = size_px.value + "px";
+    style["z-index"] = "-2";
+  }
 
-      if (
-        this.textPosition == "top" ||
-        this.textPosition == "middle" ||
-        this.textPosition == "inside"
-      )
-        style["padding-bottom"] = this.text_padding + "px";
-      if (
-        this.textPosition == "bottom" ||
-        this.textPosition == "middle" ||
-        this.textPosition == "inside"
-      )
-        style["padding-top"] = this.text_padding + "px";
+  if (props.barBorderRadius > 0) {
+    style["border-radius"] = props.barBorderRadius + "px";
+  }
 
-      return style;
-    },
-  },
-};
+  return style;
+});
+
+const bar_style = computed(() => {
+  const style: Record<string, string> = {
+    background: props.barColor,
+    width: pct.value + "%",
+    height: size_px.value + "px",
+    transition: props.barTransition,
+  };
+
+  if (props.barBorderRadius > 0) {
+    style["border-radius"] = props.barBorderRadius + "px";
+  }
+
+  if (props.textPosition == "middle" || props.textPosition == "inside") {
+    style["position"] = "absolute";
+    style["top"] = "0";
+    style["height"] = "100%";
+    style["min-height"] = size_px.value + "px";
+    style["z-index"] = "-1";
+  }
+
+  return style;
+});
+
+const text_style = computed(() => {
+  const style: Record<string, string> = {
+    color: props.textFgColor,
+    "font-size": text_font_size.value + "px",
+    "text-align": props.textAlign,
+  };
+
+  if (
+    props.textPosition == "top" ||
+    props.textPosition == "middle" ||
+    props.textPosition == "inside"
+  )
+    style["padding-bottom"] = text_padding.value + "px";
+  if (
+    props.textPosition == "bottom" ||
+    props.textPosition == "middle" ||
+    props.textPosition == "inside"
+  )
+    style["padding-top"] = text_padding.value + "px";
+
+  return style;
+});
 </script>

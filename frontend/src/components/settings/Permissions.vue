@@ -39,27 +39,28 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from "vue";
 import { enableExec } from "@/utils/constants";
-export default {
-  name: "permissions",
-  props: ["perm"],
-  computed: {
-    admin: {
-      get() {
-        return this.perm.admin;
-      },
-      set(value) {
-        if (value) {
-          for (const key in this.perm) {
-            this.perm[key] = true;
-          }
-        }
 
-        this.perm.admin = value;
-      },
-    },
-    isExecEnabled: () => enableExec,
+const props = defineProps<{
+  perm: UserPermissions;
+}>();
+
+const admin = computed({
+  get() {
+    return props.perm.admin;
   },
-};
+  set(value: boolean) {
+    if (value) {
+      for (const key in props.perm) {
+        props.perm[key as keyof UserPermissions] = true;
+      }
+    }
+
+    props.perm.admin = value;
+  },
+});
+
+const isExecEnabled = enableExec;
 </script>

@@ -2,13 +2,13 @@
   <div
     class="shell"
     :class="{ ['shell--hidden']: !showShell }"
-    :style="{ height: `${this.shellHeight}em`, direction: 'ltr' }"
+    :style="{ height: `${shellHeight}em`, direction: 'ltr' }"
   >
     <div
       @pointerdown="startDrag()"
       @pointerup="stopDrag()"
       class="shell__divider"
-      :style="this.shellDrag ? { background: `${checkTheme()}` } : ''"
+      :style="shellDrag ? { background: `${checkTheme()}` } : ''"
     ></div>
     <div @click="focus" class="shell__content" ref="scrollable">
       <div v-for="(c, index) in content" :key="index" class="shell__result">
@@ -39,13 +39,15 @@
     <div
       @pointerup="stopDrag()"
       class="shell__overlay"
-      v-show="this.shellDrag"
+      v-show="shellDrag"
     ></div>
   </div>
 </template>
 
-<script>
-import { mapState, mapActions } from "pinia";
+<script setup lang="ts">
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { storeToRefs } from "pinia";
+import { useRoute } from "vue-router";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
@@ -53,142 +55,164 @@ import { commands } from "@/api";
 import { throttle } from "lodash-es";
 import { theme } from "@/utils/constants";
 
-export default {
-  name: "shell",
-  computed: {
-    ...mapState(useLayoutStore, ["showShell"]),
-    ...mapState(useFileStore, ["isFiles"]),
-    path: function () {
-      if (this.isFiles) {
-        return this.$route.path;
-      }
+const route = useRoute();
 
-      return "";
-    },
-  },
-  data: () => ({
-    content: [],
-    history: [],
-    historyPos: 0,
-    canInput: true,
-    shellDrag: false,
-    shellHeight: 25,
-    fontsize: parseFloat(getComputedStyle(document.documentElement).fontSize),
-  }),
-  mounted() {
-    window.addEventListener("resize", this.resize);
-  },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.resize);
-  },
-  methods: {
-    ...mapActions(useLayoutStore, ["toggleShell"]),
-    checkTheme() {
-      if (theme == "dark") {
-        return "rgba(255, 255, 255, 0.4)";
-      }
-      return "rgba(127, 127, 127, 0.4)";
-    },
-    startDrag() {
-      document.addEventListener("pointermove", this.handleDrag);
-      this.shellDrag = true;
-    },
-    stopDrag() {
-      document.removeEventListener("pointermove", this.handleDrag);
-      this.shellDrag = false;
-    },
-    handleDrag: throttle(function (event) {
-      const top = window.innerHeight / this.fontsize - 4;
-      const userPos = (window.innerHeight - event.clientY) / this.fontsize;
-      const bottom =
-        2.25 +
-        document.querySelector(".shell__divider").offsetHeight / this.fontsize;
+const fileStore = useFileStore();
+const layoutStore = useLayoutStore();
 
-      if (userPos <= top && userPos >= bottom) {
-        this.shellHeight = userPos.toFixed(2);
-      }
-    }, 32),
-    resize: throttle(function () {
-      const top = window.innerHeight / this.fontsize - 4;
-      const bottom =
-        2.25 +
-        document.querySelector(".shell__divider").offsetHeight / this.fontsize;
+const { showShell } = storeToRefs(layoutStore);
+const { isFiles } = storeToRefs(fileStore);
+const { toggleShell } = layoutStore;
 
-      if (this.shellHeight > top) {
-        this.shellHeight = top;
-      } else if (this.shellHeight < bottom) {
-        this.shellHeight = bottom;
-      }
-    }, 32),
-    scroll: function () {
-      this.$refs.scrollable.scrollTop = this.$refs.scrollable.scrollHeight;
-    },
-    focus: function () {
-      this.$refs.input.focus();
-    },
-    historyUp() {
-      if (this.historyPos > 0) {
-        this.$refs.input.innerText = this.history[--this.historyPos];
-        this.focus();
-      }
-    },
-    historyDown() {
-      if (this.historyPos >= 0 && this.historyPos < this.history.length - 1) {
-        this.$refs.input.innerText = this.history[++this.historyPos];
-        this.focus();
-      } else {
-        this.historyPos = this.history.length;
-        this.$refs.input.innerText = "";
-      }
-    },
-    submit: function (event) {
-      const cmd = event.target.innerText.trim();
+const scrollable = ref<HTMLElement | null>(null);
+const input = ref<HTMLElement | null>(null);
 
-      if (cmd === "") {
-        return;
-      }
+const content = ref<Array<{ text: string }>>([]);
+const history = ref<string[]>([]);
+const historyPos = ref(0);
+const canInput = ref(true);
+const shellDrag = ref(false);
+const shellHeight = ref(25);
+const fontsize = ref(
+  parseFloat(getComputedStyle(document.documentElement).fontSize)
+);
 
-      if (cmd === "clear") {
-        this.content = [];
-        event.target.innerHTML = "";
-        return;
-      }
+const path = computed(() => {
+  if (isFiles.value) {
+    return route.path;
+  }
+  return "";
+});
 
-      if (cmd === "exit") {
-        event.target.innerHTML = "";
-        this.toggleShell();
-        return;
-      }
-
-      this.canInput = false;
-      event.target.innerHTML = "";
-
-      const results = {
-        text: `${cmd}\n\n`,
-      };
-
-      this.history.push(cmd);
-      this.historyPos = this.history.length;
-      this.content.push(results);
-
-      commands(
-        this.path,
-        cmd,
-        (event) => {
-          results.text += `${event.data}\n`;
-          this.scroll();
-        },
-        () => {
-          results.text = results.text
-
-            .replace(/\u001b\[[0-9;]+m/g, "") // Filter ANSI color for now
-            .trimEnd();
-          this.canInput = true;
-          this.$refs.input.focus();
-          this.scroll();
-        }
-      );
-    },
-  },
+const checkTheme = () => {
+  if (theme == "dark") {
+    return "rgba(255, 255, 255, 0.4)";
+  }
+  return "rgba(127, 127, 127, 0.4)";
 };
+
+const scroll = () => {
+  if (scrollable.value) {
+    scrollable.value.scrollTop = scrollable.value.scrollHeight;
+  }
+};
+
+const focus = () => {
+  input.value?.focus();
+};
+
+const handleDrag = throttle((event: PointerEvent) => {
+  const top = window.innerHeight / fontsize.value - 4;
+  const userPos = (window.innerHeight - event.clientY) / fontsize.value;
+  const divider = document.querySelector(".shell__divider") as HTMLElement;
+  const bottom = 2.25 + (divider?.offsetHeight ?? 0) / fontsize.value;
+
+  if (userPos <= top && userPos >= bottom) {
+    shellHeight.value = parseFloat(userPos.toFixed(2));
+  }
+}, 32);
+
+const resize = throttle(() => {
+  const top = window.innerHeight / fontsize.value - 4;
+  const divider = document.querySelector(".shell__divider") as HTMLElement;
+  const bottom = 2.25 + (divider?.offsetHeight ?? 0) / fontsize.value;
+
+  if (shellHeight.value > top) {
+    shellHeight.value = top;
+  } else if (shellHeight.value < bottom) {
+    shellHeight.value = bottom;
+  }
+}, 32);
+
+const startDrag = () => {
+  document.addEventListener("pointermove", handleDrag as any);
+  shellDrag.value = true;
+};
+
+const stopDrag = () => {
+  document.removeEventListener("pointermove", handleDrag as any);
+  shellDrag.value = false;
+};
+
+const historyUp = () => {
+  if (historyPos.value > 0 && input.value) {
+    historyPos.value--;
+    input.value.innerText = history.value[historyPos.value];
+    focus();
+  }
+};
+
+const historyDown = () => {
+  if (
+    historyPos.value >= 0 &&
+    historyPos.value < history.value.length - 1 &&
+    input.value
+  ) {
+    historyPos.value++;
+    input.value.innerText = history.value[historyPos.value];
+    focus();
+  } else {
+    historyPos.value = history.value.length;
+    if (input.value) {
+      input.value.innerText = "";
+    }
+  }
+};
+
+const submit = (event: Event) => {
+  const target = event.target as HTMLElement;
+  const cmd = target.innerText.trim();
+
+  if (cmd === "") {
+    return;
+  }
+
+  if (cmd === "clear") {
+    content.value = [];
+    target.innerHTML = "";
+    return;
+  }
+
+  if (cmd === "exit") {
+    target.innerHTML = "";
+    toggleShell();
+    return;
+  }
+
+  canInput.value = false;
+  target.innerHTML = "";
+
+  const results = {
+    text: `${cmd}\n\n`,
+  };
+
+  history.value.push(cmd);
+  historyPos.value = history.value.length;
+  content.value.push(results);
+
+  commands(
+    path.value,
+    cmd,
+    (event: MessageEvent) => {
+      results.text += `${event.data}\n`;
+      scroll();
+    },
+    () => {
+      results.text = results.text
+        .replace(/\u001b\[[0-9;]+m/g, "") // Filter ANSI color for now
+        .trimEnd();
+      canInput.value = true;
+      input.value?.focus();
+      scroll();
+    }
+  );
+};
+
+onMounted(() => {
+  window.addEventListener("resize", resize as any);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", resize as any);
+});
 </script>

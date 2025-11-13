@@ -129,138 +129,146 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState } from "pinia";
+<script setup lang="ts">
+import { ref, computed, inject, onBeforeMount } from "vue";
+import { storeToRefs } from "pinia";
+import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useFileStore } from "@/stores/file";
 import { share as api } from "@/api";
 import dayjs from "dayjs";
 import { useLayoutStore } from "@/stores/layout";
 import { copy } from "@/utils/clipboard";
 
-export default {
-  name: "share",
-  data: function () {
-    return {
-      time: 0,
-      unit: "hours",
-      links: [],
-      clip: null,
-      password: "",
-      listing: true,
-    };
-  },
-  inject: ["$showError", "$showSuccess"],
-  computed: {
-    ...mapState(useFileStore, [
-      "req",
-      "selected",
-      "selectedCount",
-      "isListing",
-    ]),
-    url() {
-      if (!this.isListing) {
-        return this.$route.path;
-      }
+const route = useRoute();
+const { t } = useI18n();
+const $showError = inject<(error: unknown) => void>("$showError");
+const $showSuccess = inject<(message: string) => void>("$showSuccess");
 
-      if (this.selectedCount === 0 || this.selectedCount > 1) {
-        // This shouldn't happen.
-        return;
-      }
+const fileStore = useFileStore();
+const layoutStore = useLayoutStore();
 
-      return this.req.items[this.selected[0]].url;
+const { req, selected, selectedCount, isListing } = storeToRefs(fileStore);
+const { closeHovers } = layoutStore;
+
+const time = ref(0);
+const unit = ref("hours");
+const links = ref<any[]>([]);
+const password = ref("");
+const listing = ref(true);
+
+const url = computed(() => {
+  if (!isListing.value) {
+    return route.path;
+  }
+
+  if (selectedCount.value === 0 || selectedCount.value > 1) {
+    // This shouldn't happen.
+    return "";
+  }
+
+  return req.value?.items[selected.value[0]].url ?? "";
+});
+
+const copyToClipboard = (text: string) => {
+  copy({ text }).then(
+    () => {
+      // clipboard successfully set
+      $showSuccess?.(t("success.linkCopied"));
     },
-  },
-  async beforeMount() {
-    try {
-      const links = await api.get(this.url);
-      this.links = links;
-      this.sort();
-
-      if (this.links.length == 0) {
-        this.listing = false;
-      }
-    } catch (e) {
-      this.$showError(e);
-    }
-  },
-  methods: {
-    ...mapActions(useLayoutStore, ["closeHovers"]),
-    copyToClipboard: function (text) {
-      copy({ text }).then(
+    () => {
+      // clipboard write failed
+      copy({ text }, { permission: true }).then(
         () => {
           // clipboard successfully set
-          this.$showSuccess(this.$t("success.linkCopied"));
+          $showSuccess?.(t("success.linkCopied"));
         },
-        () => {
+        (e) => {
           // clipboard write failed
-          copy({ text }, { permission: true }).then(
-            () => {
-              // clipboard successfully set
-              this.$showSuccess(this.$t("success.linkCopied"));
-            },
-            (e) => {
-              // clipboard write failed
-              this.$showError(e);
-            }
-          );
+          $showError?.(e);
         }
       );
-    },
-    submit: async function () {
-      try {
-        let res = null;
-
-        if (!this.time) {
-          res = await api.create(this.url, this.password);
-        } else {
-          res = await api.create(this.url, this.password, this.time, this.unit);
-        }
-
-        this.links.push(res);
-        this.sort();
-
-        this.time = 0;
-        this.unit = "hours";
-        this.password = "";
-
-        this.listing = true;
-      } catch (e) {
-        this.$showError(e);
-      }
-    },
-    deleteLink: async function (event, link) {
-      event.preventDefault();
-      try {
-        await api.remove(link.hash);
-        this.links = this.links.filter((item) => item.hash !== link.hash);
-
-        if (this.links.length == 0) {
-          this.listing = false;
-        }
-      } catch (e) {
-        this.$showError(e);
-      }
-    },
-    humanTime(time) {
-      return dayjs(time * 1000).fromNow();
-    },
-    buildLink(share) {
-      return api.getShareURL(share);
-    },
-    sort() {
-      this.links = this.links.sort((a, b) => {
-        if (a.expire === 0) return -1;
-        if (b.expire === 0) return 1;
-        return new Date(a.expire) - new Date(b.expire);
-      });
-    },
-    switchListing() {
-      if (this.links.length == 0 && !this.listing) {
-        this.closeHovers();
-      }
-
-      this.listing = !this.listing;
-    },
-  },
+    }
+  );
 };
+
+const submit = async () => {
+  try {
+    let res = null;
+
+    if (!time.value) {
+      res = await api.create(url.value, password.value);
+    } else {
+      res = await api.create(
+        url.value,
+        password.value,
+        String(time.value),
+        unit.value
+      );
+    }
+
+    links.value.push(res);
+    sort();
+
+    time.value = 0;
+    unit.value = "hours";
+    password.value = "";
+
+    listing.value = true;
+  } catch (e) {
+    $showError?.(e);
+  }
+};
+
+const deleteLink = async (event: Event, link: any) => {
+  event.preventDefault();
+  try {
+    await api.remove(link.hash);
+    links.value = links.value.filter((item) => item.hash !== link.hash);
+
+    if (links.value.length == 0) {
+      listing.value = false;
+    }
+  } catch (e) {
+    $showError?.(e);
+  }
+};
+
+const humanTime = (time: number) => {
+  return dayjs(time * 1000).fromNow();
+};
+
+const buildLink = (share: any) => {
+  return api.getShareURL(share);
+};
+
+const sort = () => {
+  links.value = links.value.sort((a, b) => {
+    if (a.expire === 0) return -1;
+    if (b.expire === 0) return 1;
+    return new Date(a.expire).getTime() - new Date(b.expire).getTime();
+  });
+};
+
+const switchListing = () => {
+  if (links.value.length == 0 && !listing.value) {
+    closeHovers();
+  }
+
+  listing.value = !listing.value;
+};
+
+onBeforeMount(async () => {
+  try {
+    const fetchedLinks = await api.get(url.value);
+    links.value = Array.isArray(fetchedLinks) ? fetchedLinks : [fetchedLinks];
+    sort();
+
+    if (links.value.length == 0) {
+      listing.value = false;
+    }
+  } catch (e) {
+    $showError?.(e);
+  }
+});
 </script>

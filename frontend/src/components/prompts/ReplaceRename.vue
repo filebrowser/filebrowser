@@ -20,7 +20,7 @@
       </button>
       <button
         class="button button--flat button--blue"
-        @click="(event) => currentPrompt.confirm(event, 'rename')"
+        @click="(event) => currentPrompt?.confirm(event, 'rename')"
         :aria-label="$t('buttons.rename')"
         :title="$t('buttons.rename')"
         tabindex="2"
@@ -30,7 +30,7 @@
       <button
         id="focus-prompt"
         class="button button--flat button--red"
-        @click="(event) => currentPrompt.confirm(event, 'overwrite')"
+        @click="(event) => currentPrompt?.confirm(event, 'overwrite')"
         :aria-label="$t('buttons.replace')"
         :title="$t('buttons.replace')"
         tabindex="1"
@@ -41,17 +41,11 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState } from "pinia";
+<script setup lang="ts">
+import { storeToRefs } from "pinia";
 import { useLayoutStore } from "@/stores/layout";
 
-export default {
-  name: "replace-rename",
-  computed: {
-    ...mapState(useLayoutStore, ["currentPrompt"]),
-  },
-  methods: {
-    ...mapActions(useLayoutStore, ["closeHovers"]),
-  },
-};
+const layoutStore = useLayoutStore();
+const { currentPrompt } = storeToRefs(layoutStore);
+const { closeHovers } = layoutStore;
 </script>

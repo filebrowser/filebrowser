@@ -1,7 +1,7 @@
 <template>
   <div class="card floating">
     <div class="card-content">
-      <p v-if="!this.isListing || selectedCount === 1">
+      <p v-if="!isListing || selectedCount === 1">
         {{ $t("prompts.deleteMessageSingle") }}
       </p>
       <p v-else>
@@ -32,67 +32,62 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState, mapWritableState } from "pinia";
+<script setup lang="ts">
+import { inject } from "vue";
+import { storeToRefs } from "pinia";
+import { useRoute } from "vue-router";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
-export default {
-  name: "delete",
-  inject: ["$showError"],
-  computed: {
-    ...mapState(useFileStore, [
-      "isListing",
-      "selectedCount",
-      "req",
-      "selected",
-    ]),
-    ...mapState(useLayoutStore, ["currentPrompt"]),
-    ...mapWritableState(useFileStore, ["reload", "preselect"]),
-  },
-  methods: {
-    ...mapActions(useLayoutStore, ["closeHovers"]),
-    submit: async function () {
-      buttons.loading("delete");
+const route = useRoute();
+const $showError = inject<(error: unknown) => void>("$showError");
 
-      try {
-        if (!this.isListing) {
-          await api.remove(this.$route.path);
-          buttons.success("delete");
+const fileStore = useFileStore();
+const layoutStore = useLayoutStore();
 
-          this.currentPrompt?.confirm();
-          this.closeHovers();
-          return;
-        }
+const { isListing, selectedCount, req, selected } = storeToRefs(fileStore);
+const { currentPrompt } = storeToRefs(layoutStore);
+const { closeHovers } = layoutStore;
 
-        this.closeHovers();
+const submit = async () => {
+  buttons.loading("delete");
 
-        if (this.selectedCount === 0) {
-          return;
-        }
+  try {
+    if (!isListing.value) {
+      await api.remove(route.path);
+      buttons.success("delete");
 
-        const promises = [];
-        for (const index of this.selected) {
-          promises.push(api.remove(this.req.items[index].url));
-        }
+      currentPrompt.value?.confirm();
+      closeHovers();
+      return;
+    }
 
-        await Promise.all(promises);
-        buttons.success("delete");
+    closeHovers();
 
-        const nearbyItem =
-          this.req.items[Math.max(0, Math.min(this.selected) - 1)];
+    if (selectedCount.value === 0) {
+      return;
+    }
 
-        this.preselect = nearbyItem?.path;
+    const promises = [];
+    for (const index of selected.value) {
+      promises.push(api.remove(req.value!.items[index].url));
+    }
 
-        this.reload = true;
-      } catch (e) {
-        buttons.done("delete");
-        this.$showError(e);
-        if (this.isListing) this.reload = true;
-      }
-    },
-  },
+    await Promise.all(promises);
+    buttons.success("delete");
+
+    const nearbyItem =
+      req.value!.items[Math.max(0, Math.min(...selected.value) - 1)];
+
+    fileStore.preselect = nearbyItem?.path;
+
+    fileStore.reload = true;
+  } catch (e) {
+    buttons.done("delete");
+    $showError?.(e);
+    if (isListing.value) fileStore.reload = true;
+  }
 };
 </script>

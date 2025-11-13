@@ -4,7 +4,7 @@ interface IUser {
   password: string;
   scope: string;
   locale: string;
-  perm: Permissions;
+  perm: UserPermissions;
   commands: string[];
   rules: IRule[];
   lockPassword: boolean;
@@ -20,20 +20,20 @@ type ViewModeType = "list" | "mosaic" | "mosaic gallery";
 
 interface IUserForm {
   id?: number;
-  username?: string;
-  password?: string;
-  scope?: string;
-  locale?: string;
-  perm?: Permissions;
-  commands?: string[];
-  rules?: IRule[];
-  lockPassword?: boolean;
-  hideDotfiles?: boolean;
-  singleClick?: boolean;
-  dateFormat?: boolean;
+  username: string;
+  password: string;
+  scope: string;
+  locale: string;
+  perm: UserPermissions;
+  commands: string[];
+  rules: IRule[];
+  lockPassword: boolean;
+  hideDotfiles: boolean;
+  singleClick: boolean;
+  dateFormat: boolean;
 }
 
-interface Permissions {
+interface UserPermissions {
   admin: boolean;
   copy: boolean;
   create: boolean;

@@ -6,61 +6,50 @@
   </select>
 </template>
 
-<script>
+<script setup lang="ts">
 import { markRaw } from "vue";
 
-export default {
-  name: "languages",
-  props: ["locale"],
-  data() {
-    const dataObj = {};
-    const locales = {
-      he: "עברית",
-      hr: "Hrvatski",
-      hu: "Magyar",
-      ar: "العربية",
-      ca: "Català",
-      cs: "Čeština",
-      de: "Deutsch",
-      el: "Ελληνικά",
-      en: "English",
-      es: "Español",
-      fr: "Français",
-      is: "Icelandic",
-      it: "Italiano",
-      ja: "日本語",
-      ko: "한국어",
-      "nl-be": "Dutch (Belgium)",
-      no: "Norsk",
-      pl: "Polski",
-      "pt-br": "Português",
-      pt: "Português (Brasil)",
-      ro: "Romanian",
-      ru: "Русский",
-      sk: "Slovenčina",
-      "sv-se": "Swedish (Sweden)",
-      tr: "Türkçe",
-      uk: "Українська",
-      vi: "Tiếng Việt",
-      "zh-cn": "中文 (简体)",
-      "zh-tw": "中文 (繁體)",
-    };
+defineProps<{
+  locale: string;
+}>();
 
-    // Vue3 reactivity breaks with this configuration
-    // so we need to use markRaw as a workaround
-    // https://github.com/vuejs/core/issues/3024
-    Object.defineProperty(dataObj, "locales", {
-      value: markRaw(locales),
-      configurable: false,
-      writable: false,
-    });
+const emit = defineEmits<{
+  "update:locale": [locale: string];
+}>();
 
-    return dataObj;
-  },
-  methods: {
-    change(event) {
-      this.$emit("update:locale", event.target.value);
-    },
-  },
+const locales = markRaw({
+  he: "עברית",
+  hr: "Hrvatski",
+  hu: "Magyar",
+  ar: "العربية",
+  ca: "Català",
+  cs: "Čeština",
+  de: "Deutsch",
+  el: "Ελληνικά",
+  en: "English",
+  es: "Español",
+  fr: "Français",
+  is: "Icelandic",
+  it: "Italiano",
+  ja: "日本語",
+  ko: "한국어",
+  "nl-be": "Dutch (Belgium)",
+  no: "Norsk",
+  pl: "Polski",
+  "pt-br": "Português",
+  pt: "Português (Brasil)",
+  ro: "Romanian",
+  ru: "Русский",
+  sk: "Slovenčina",
+  "sv-se": "Swedish (Sweden)",
+  tr: "Türkçe",
+  uk: "Українська",
+  vi: "Tiếng Việt",
+  "zh-cn": "中文 (简体)",
+  "zh-tw": "中文 (繁體)",
+});
+
+const change = (event: Event) => {
+  emit("update:locale", (event.target as HTMLSelectElement).value);
 };
 </script>

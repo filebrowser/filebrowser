@@ -27,20 +27,15 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState } from "pinia";
+<script setup lang="ts">
+import { storeToRefs } from "pinia";
 import { useLayoutStore } from "@/stores/layout";
 
-export default {
-  name: "share-delete",
-  computed: {
-    ...mapState(useLayoutStore, ["currentPrompt"]),
-  },
-  methods: {
-    ...mapActions(useLayoutStore, ["closeHovers"]),
-    submit: function () {
-      this.currentPrompt?.confirm();
-    },
-  },
+const layoutStore = useLayoutStore();
+const { currentPrompt } = storeToRefs(layoutStore);
+const { closeHovers } = layoutStore;
+
+const submit = () => {
+  currentPrompt.value?.confirm();
 };
 </script>

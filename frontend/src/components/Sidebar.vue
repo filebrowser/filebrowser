@@ -4,7 +4,7 @@
     <template v-if="isLoggedIn">
       <button @click="toAccountSettings" class="action">
         <i class="material-icons">person</i>
-        <span>{{ user.username }}</span>
+        <span>{{ user?.username }}</span>
       </button>
       <button
         class="action"
@@ -16,7 +16,7 @@
         <span>{{ $t("sidebar.myFiles") }}</span>
       </button>
 
-      <div v-if="user.perm.create">
+      <div v-if="user?.perm.create">
         <button
           @click="showHover('newDir')"
           class="action"
@@ -38,7 +38,7 @@
         </button>
       </div>
 
-      <div v-if="user.perm.admin">
+      <div v-if="user?.perm.admin">
         <button
           class="action"
           @click="toGlobalSettings"
@@ -113,9 +113,10 @@
   </nav>
 </template>
 
-<script>
-import { reactive } from "vue";
-import { mapActions, mapState } from "pinia";
+<script setup lang="ts">
+import { reactive, ref, computed, watch, onUnmounted } from "vue";
+import { storeToRefs } from "pinia";
+import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
@@ -135,84 +136,85 @@ import prettyBytes from "pretty-bytes";
 
 const USAGE_DEFAULT = { used: "0 B", total: "0 B", usedPercentage: 0 };
 
-export default {
-  name: "sidebar",
-  setup() {
-    const usage = reactive(USAGE_DEFAULT);
-    return { usage, usageAbortController: new AbortController() };
-  },
-  components: {
-    ProgressBar,
-  },
-  inject: ["$showError"],
-  computed: {
-    ...mapState(useAuthStore, ["user", "isLoggedIn"]),
-    ...mapState(useFileStore, ["isFiles", "reload"]),
-    ...mapState(useLayoutStore, ["currentPromptName"]),
-    active() {
-      return this.currentPromptName === "sidebar";
-    },
-    signup: () => signup,
-    version: () => version,
-    disableExternal: () => disableExternal,
-    disableUsedPercentage: () => disableUsedPercentage,
-    canLogout: () => !noAuth && loginPage,
-  },
-  methods: {
-    ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),
-    abortOngoingFetchUsage() {
-      this.usageAbortController.abort();
-    },
-    async fetchUsage() {
-      const path = this.$route.path.endsWith("/")
-        ? this.$route.path
-        : this.$route.path + "/";
-      let usageStats = USAGE_DEFAULT;
-      if (this.disableUsedPercentage) {
-        return Object.assign(this.usage, usageStats);
-      }
-      try {
-        this.abortOngoingFetchUsage();
-        this.usageAbortController = new AbortController();
-        const usage = await api.usage(path, this.usageAbortController.signal);
-        usageStats = {
-          used: prettyBytes(usage.used, { binary: true }),
-          total: prettyBytes(usage.total, { binary: true }),
-          usedPercentage: Math.round((usage.used / usage.total) * 100),
-        };
-      } finally {
-        return Object.assign(this.usage, usageStats);
-      }
-    },
-    toRoot() {
-      this.$router.push({ path: "/files" });
-      this.closeHovers();
-    },
-    toAccountSettings() {
-      this.$router.push({ path: "/settings/profile" });
-      this.closeHovers();
-    },
-    toGlobalSettings() {
-      this.$router.push({ path: "/settings/global" });
-      this.closeHovers();
-    },
-    help() {
-      this.showHover("help");
-    },
-    logout: auth.logout,
-  },
-  watch: {
-    $route: {
-      handler(to) {
-        if (to.path.includes("/files")) {
-          this.fetchUsage();
-        }
-      },
-      immediate: true,
-    },
-  },
-  unmounted() {
-    this.abortOngoingFetchUsage();
-  },
+const route = useRoute();
+const router = useRouter();
+
+const authStore = useAuthStore();
+const fileStore = useFileStore();
+const layoutStore = useLayoutStore();
+
+const { user, isLoggedIn } = storeToRefs(authStore);
+const { isFiles } = storeToRefs(fileStore);
+const { currentPromptName } = storeToRefs(layoutStore);
+const { closeHovers, showHover } = layoutStore;
+
+const usage = reactive(USAGE_DEFAULT);
+const usageAbortController = ref(new AbortController());
+
+const active = computed(() => {
+  return currentPromptName.value === "sidebar";
+});
+
+const canLogout = !noAuth && loginPage;
+
+const abortOngoingFetchUsage = () => {
+  usageAbortController.value.abort();
 };
+
+const fetchUsage = async () => {
+  const path = route.path.endsWith("/") ? route.path : route.path + "/";
+  let usageStats = USAGE_DEFAULT;
+  if (disableUsedPercentage) {
+    return Object.assign(usage, usageStats);
+  }
+  try {
+    abortOngoingFetchUsage();
+    usageAbortController.value = new AbortController();
+    const usageData = await api.usage(path, usageAbortController.value.signal);
+    usageStats = {
+      used: prettyBytes(usageData.used, { binary: true }),
+      total: prettyBytes(usageData.total, { binary: true }),
+      usedPercentage: Math.round((usageData.used / usageData.total) * 100),
+    };
+  } finally {
+    return Object.assign(usage, usageStats);
+  }
+};
+
+const toRoot = () => {
+  router.push({ path: "/files" });
+  closeHovers();
+};
+
+const toAccountSettings = () => {
+  router.push({ path: "/settings/profile" });
+  closeHovers();
+};
+
+const toGlobalSettings = () => {
+  router.push({ path: "/settings/global" });
+  closeHovers();
+};
+
+const help = () => {
+  showHover("help");
+};
+
+const logout = () => {
+  auth.logout();
+};
+
+watch(
+  () => route.path,
+  (newPath) => {
+    if (newPath.includes("/files")) {
+      fetchUsage();
+    }
+  },
+  { immediate: true }
+);
+
+onUnmounted(() => {
+  abortOngoingFetchUsage();
+});
 </script>

@@ -17,7 +17,7 @@ interface SettingsDefaults {
   viewMode: ViewModeType;
   singleClick: boolean;
   sorting: Sorting;
-  perm: Permissions;
+  perm: UserPermissions;
   commands: any[];
   hideDotfiles: boolean;
   dateFormat: boolean;

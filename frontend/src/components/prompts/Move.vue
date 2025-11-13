@@ -7,7 +7,7 @@
     <div class="card-content">
       <file-list
         ref="fileList"
-        @update:selected="(val) => (dest = val)"
+        @update:selected="(val: string) => (dest = val)"
         :exclude="excludedFolders"
         tabindex="1"
       />
@@ -17,10 +17,10 @@
       class="card-action"
       style="display: flex; align-items: center; justify-content: space-between"
     >
-      <template v-if="user.perm.create">
+      <template v-if="user?.perm.create">
         <button
           class="button button--flat"
-          @click="$refs.fileList.createDir()"
+          @click="fileList?.createDir()"
           :aria-label="$t('sidebar.newFolder')"
           :title="$t('sidebar.newFolder')"
           style="justify-self: left"
@@ -54,8 +54,10 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState, mapWritableState } from "pinia";
+<script setup lang="ts">
+import { ref, computed, inject } from "vue";
+import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 import { useAuthStore } from "@/stores/auth";
@@ -65,80 +67,76 @@ import buttons from "@/utils/buttons";
 import * as upload from "@/utils/upload";
 import { removePrefix } from "@/api/utils";
 
-export default {
-  name: "move",
-  components: { FileList },
-  data: function () {
-    return {
-      current: window.location.pathname,
-      dest: null,
-    };
-  },
-  inject: ["$showError"],
-  computed: {
-    ...mapState(useFileStore, ["req", "selected"]),
-    ...mapState(useAuthStore, ["user"]),
-    ...mapWritableState(useFileStore, ["preselect"]),
-    excludedFolders() {
-      return this.selected
-        .filter((idx) => this.req.items[idx].isDir)
-        .map((idx) => this.req.items[idx].url);
-    },
-  },
-  methods: {
-    ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
-    move: async function (event) {
-      event.preventDefault();
-      const items = [];
+const router = useRouter();
+const $showError = inject<(error: unknown) => void>("$showError");
 
-      for (const item of this.selected) {
-        items.push({
-          from: this.req.items[item].url,
-          to: this.dest + encodeURIComponent(this.req.items[item].name),
-          name: this.req.items[item].name,
-        });
-      }
+const fileStore = useFileStore();
+const layoutStore = useLayoutStore();
+const authStore = useAuthStore();
 
-      const action = async (overwrite, rename) => {
-        buttons.loading("move");
+const { req, selected } = storeToRefs(fileStore);
+const { user } = storeToRefs(authStore);
+const { showHover, closeHovers } = layoutStore;
 
-        await api
-          .move(items, overwrite, rename)
-          .then(() => {
-            buttons.success("move");
-            this.preselect = removePrefix(items[0].to);
-            this.$router.push({ path: this.dest });
-          })
-          .catch((e) => {
-            buttons.done("move");
-            this.$showError(e);
-          });
-      };
+const fileList = ref<InstanceType<typeof FileList> | null>(null);
+const dest = ref<string | null>(null);
 
-      const dstItems = (await api.fetch(this.dest)).items;
-      const conflict = upload.checkConflict(items, dstItems);
+const excludedFolders = computed(() => {
+  return selected.value
+    .filter((idx) => req.value!.items[idx].isDir)
+    .map((idx) => req.value!.items[idx].url);
+});
 
-      let overwrite = false;
-      let rename = false;
+const move = async (event: Event) => {
+  event.preventDefault();
+  const items: Array<{ from: string; to: string; name: string }> = [];
 
-      if (conflict) {
-        this.showHover({
-          prompt: "replace-rename",
-          confirm: (event, option) => {
-            overwrite = option == "overwrite";
-            rename = option == "rename";
+  for (const item of selected.value) {
+    items.push({
+      from: req.value!.items[item].url,
+      to: dest.value! + encodeURIComponent(req.value!.items[item].name),
+      name: req.value!.items[item].name,
+    });
+  }
 
-            event.preventDefault();
-            this.closeHovers();
-            action(overwrite, rename);
-          },
-        });
+  const action = async (overwrite: boolean, rename: boolean) => {
+    buttons.loading("move");
 
-        return;
-      }
+    await api
+      .move(items, overwrite, rename)
+      .then(() => {
+        buttons.success("move");
+        fileStore.preselect = removePrefix(items[0].to);
+        router.push({ path: dest.value! });
+      })
+      .catch((e) => {
+        buttons.done("move");
+        $showError?.(e);
+      });
+  };
 
-      action(overwrite, rename);
-    },
-  },
+  const dstItems = (await api.fetch(dest.value!)).items;
+  const conflict = upload.checkConflict(items as any, dstItems);
+
+  let overwrite = false;
+  let rename = false;
+
+  if (conflict) {
+    showHover({
+      prompt: "replace-rename",
+      confirm: (event: Event, option: string) => {
+        overwrite = option == "overwrite";
+        rename = option == "rename";
+
+        event.preventDefault();
+        closeHovers();
+        action(overwrite, rename);
+      },
+    });
+
+    return;
+  }
+
+  action(overwrite, rename);
 };
 </script>

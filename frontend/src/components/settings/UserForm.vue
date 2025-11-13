@@ -80,12 +80,20 @@ const { t } = useI18n();
 const createUserDirData = ref<boolean | null>(null);
 const originalUserScope = ref<string | null>(null);
 
-const props = defineProps<{
-  user: IUserForm;
-  isNew: boolean;
-  isDefault: boolean;
-  createUserDir?: boolean;
-}>();
+const props = defineProps<
+  | {
+      user: IUserForm;
+      isNew: boolean;
+      isDefault: false;
+      createUserDir?: boolean;
+    }
+  | {
+      user: SettingsDefaults;
+      isNew: boolean;
+      isDefault: true;
+      createUserDir?: boolean;
+    }
+>();
 
 onMounted(() => {
   if (props.user.scope) {
@@ -108,6 +116,7 @@ watch(
   () => props.user,
   () => {
     if (!props.user?.perm?.admin) return;
+    if (props.isDefault) return;
     props.user.lockPassword = false;
   }
 );
