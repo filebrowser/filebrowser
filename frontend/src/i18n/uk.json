@@ -166,6 +166,7 @@
     "allowNew": "Створення нових файлів або каталогів",
     "allowPublish": "Публікація нових записів та сторінок",
     "allowSignup": "Дозволити користувачам реєструватися",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(залишіть поле порожнім, щоб уникнути змін)",
     "branding": "Брендинг",
     "brandingDirectoryPath": "Шлях до каталогу брендів",
