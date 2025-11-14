@@ -81,9 +81,6 @@ override the options.`,
 			return err
 		}
 
-		// Set the value of HideDotfiles from the flag
-		defaults.HideDotfiles = mustGetBool(flags, "hide-dotfiles")
-
 		s := &settings.Settings{
 			Key:                   key,
 			Signup:                signup,
