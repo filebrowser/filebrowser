@@ -166,6 +166,7 @@
     "allowNew": "יצירת קבצים ותיקיות חדשות",
     "allowPublish": "פרסום פוסטים ודפים חדשים",
     "allowSignup": "אפשר למשתמשים חדשים להירשם",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(השאר ריק כדי למנוע שינויים)",
     "branding": "מיתוג",
     "brandingDirectoryPath": "נתיב תיקיית מיתוג",
