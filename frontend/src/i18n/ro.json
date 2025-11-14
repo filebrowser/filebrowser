@@ -166,6 +166,7 @@
     "allowNew": "Crează noi fișiere sau directoare",
     "allowPublish": "Publică noi pagini și postări",
     "allowSignup": "Permite utilizatorilor să se înregistreze",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(lasă gol pentru a nu schimba)",
     "branding": "Branding",
     "brandingDirectoryPath": "Calea către directorul de branding",
