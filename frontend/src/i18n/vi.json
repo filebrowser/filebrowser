@@ -166,6 +166,7 @@
     "allowNew": "Tạo tệp và thư mục mới",
     "allowPublish": "Xuất bản bài viết và trang mới",
     "allowSignup": "Cho phép người dùng đăng ký",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(để trống để tránh thay đổi)",
     "branding": "Thương hiệu",
     "brandingDirectoryPath": "Đường dẫn thư mục thương hiệu",
