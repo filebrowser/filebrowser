@@ -29,41 +29,62 @@ rules.`,
 	Args: cobra.NoArgs,
 }
 
-func runRules(st *storage.Storage, cmd *cobra.Command, usersFn func(*users.User), globalFn func(*settings.Settings)) {
-	id := getUserIdentifier(cmd.Flags())
+func runRules(st *storage.Storage, cmd *cobra.Command, usersFn func(*users.User) error, globalFn func(*settings.Settings) error) error {
+	id, err := getUserIdentifier(cmd.Flags())
+	if err != nil {
+		return err
+	}
 	if id != nil {
-		user, err := st.Users.Get("", id)
-		checkErr(err)
+		var user *users.User
+		user, err = st.Users.Get("", id)
+		if err != nil {
+			return err
+		}
 
 		if usersFn != nil {
-			usersFn(user)
+			err = usersFn(user)
+			if err != nil {
+				return err
+			}
 		}
 
 		printRules(user.Rules, id)
-		return
+		return nil
 	}
 
 	s, err := st.Settings.Get()
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 
 	if globalFn != nil {
-		globalFn(s)
+		err = globalFn(s)
+		if err != nil {
+			return err
+		}
 	}
 
 	printRules(s.Rules, id)
+	return nil
 }
 
-func getUserIdentifier(flags *pflag.FlagSet) interface{} {
-	id := mustGetUint(flags, "id")
-	username := mustGetString(flags, "username")
-
-	if id != 0 {
-		return id
-	} else if username != "" {
-		return username
+func getUserIdentifier(flags *pflag.FlagSet) (interface{}, error) {
+	id, err := getUint(flags, "id")
+	if err != nil {
+		return nil, err
+	}
+	username, err := getString(flags, "username")
+	if err != nil {
+		return nil, err
 	}
 
-	return nil
+	if id != 0 {
+		return id, nil
+	} else if username != "" {
+		return username, nil
+	}
+
+	return nil, nil
 }
 
 func printRules(rulez []rules.Rule, id interface{}) {

@@ -1,4 +1,6 @@
 import { theme } from "./constants";
+import "ace-builds";
+import { themesByName } from "ace-builds/src-noconflict/ext-themelist";
 
 export const getTheme = (): UserTheme => {
   return (document.documentElement.className as UserTheme) || theme;
@@ -30,5 +32,19 @@ export const getMediaPreference = (): UserTheme => {
     return "dark";
   } else {
     return "light";
+  }
+};
+
+export const getEditorTheme = (themeName: string) => {
+  if (!themeName.startsWith("ace/theme/")) {
+    themeName = `ace/theme/${themeName}`;
+  }
+  const themeKey = themeName.replace("ace/theme/", "");
+  if (themesByName[themeKey] !== undefined) {
+    return themeName;
+  } else if (getTheme() === "dark") {
+    return "ace/theme/twilight";
+  } else {
+    return "ace/theme/chrome";
   }
 };

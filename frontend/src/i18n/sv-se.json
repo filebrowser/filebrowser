@@ -3,13 +3,18 @@
     "cancel": "Avbryt",
     "clear": "Rensa",
     "close": "Stäng",
+    "continue": "Fortsätt",
     "copy": "Kopiera",
     "copyFile": "Kopiera fil",
     "copyToClipboard": "Kopiera till urklipp",
+    "copyDownloadLinkToClipboard": "Kopiera hämtningslänk till urklipp",
     "create": "Skapa",
     "delete": "Ta bort",
     "download": "Ladda ner",
-    "hideDotfiles": "",
+    "file": "Fil",
+    "folder": "Mapp",
+    "fullScreen": "Växla helskärm",
+    "hideDotfiles": "Dölj punktfiler",
     "info": "Info",
     "more": "Mer",
     "move": "Flytta",
@@ -19,6 +24,7 @@
     "ok": "OK",
     "permalink": "Skapa en permanent länk",
     "previous": "Föregående",
+    "preview": "Förhandsvisa",
     "publish": "Publisera",
     "rename": "Ändra namn",
     "replace": "Ersätt",
@@ -30,20 +36,28 @@
     "selectMultiple": "Välj flera",
     "share": "Dela",
     "shell": "Växla skal",
+    "submit": "Skicka",
     "switchView": "Byt vy",
     "toggleSidebar": "Växla sidofält",
     "update": "Uppdatera",
-    "upload": "Ladda upp"
+    "upload": "Ladda upp",
+    "openFile": "Öppna fil",
+    "discardChanges": "Förkasta",
+    "saveChanges": "Spara ändringar"
   },
   "download": {
     "downloadFile": "Ladda ner fil",
     "downloadFolder": "Ladda ner mapp",
-    "downloadSelected": ""
+    "downloadSelected": "Hämta markerade"
+  },
+  "upload": {
+    "abortUpload": "Är du säker på att du vill avbryta?"
   },
   "errors": {
     "forbidden": "Du saknar rättigheter till detta",
     "internal": "Något gick fel",
-    "notFound": "Det går inte att nå den här platsen."
+    "notFound": "Det går inte att nå den här platsen.",
+    "connection": "Servern går inte att nå."
   },
   "files": {
     "body": "Huvud",
@@ -60,7 +74,8 @@
     "size": "Storlek",
     "sortByLastModified": "Sortera på senast ändrad",
     "sortByName": "Sortera på namn",
-    "sortBySize": "Sortera på storlek"
+    "sortBySize": "Sortera på storlek",
+    "noPreview": "Förhandsvisning är inte tillgänglig för denna fil."
   },
   "help": {
     "click": "välj fil eller mapp",
@@ -86,7 +101,10 @@
     "submit": "Logga in",
     "username": "Användarnamn",
     "usernameTaken": "Användarnamn upptaget",
-    "wrongCredentials": "Fel inloggning"
+    "wrongCredentials": "Fel inloggning",
+    "logout_reasons": {
+      "inactivity": "Du har blivit utloggad på grund av inaktivitet."
+    }
   },
   "permanent": "Permanent",
   "prompts": {
@@ -95,6 +113,8 @@
     "currentlyNavigating": "För närvarande navigerar du på:",
     "deleteMessageMultiple": "Är du säker på att du vill radera {count} filer(na)?",
     "deleteMessageSingle": "Är du säker på att du vill radera denna fil/mapp",
+    "deleteMessageShare": "Är du säker på att du vill ta bort denna utdelning({path})?",
+    "deleteUser": "Är du säker på att du vill ta bort denna användare?",
     "deleteTitle": "Ta bort filer",
     "displayName": "Visningsnamn:",
     "download": "Ladda ner filer",
@@ -120,8 +140,12 @@
     "scheduleMessage": "Pick a date and time to schedule the publication of this post.",
     "show": "Visa",
     "size": "Storlek",
-    "upload": "",
-    "uploadMessage": ""
+    "upload": "Ladda upp",
+    "uploadFiles": "Laddar upp {files} filer...",
+    "uploadMessage": "Välj ett alternativ att ladda upp.",
+    "optionalPassword": "Valfritt lösenord",
+    "resolution": "Upplösning",
+    "discardEditorChanges": "Är du säker på att du vill förkasta ändringarna du gjort?"
   },
   "search": {
     "images": "Bilder",
@@ -134,6 +158,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Tema för Ace editor",
     "admin": "Admin",
     "administrator": "Administratör",
     "allowCommands": "Exekvera kommandon",
@@ -150,6 +175,14 @@
     "commandRunnerHelp": "Här kan du ange kommandon som körs i de namngivna händelserna. Du måste skriva en per rad. Miljövariablerna {0} och {1} kommer att vara tillgängliga, och vara {0} i förhållande till {1}. För mer information om den här funktionen och de tillgängliga miljövariablerna, vänligen läs {2}.",
     "commandsUpdated": "Kommandon uppdaterade!",
     "createUserDir": "Auto skapa användarens hemkatalog när du lägger till nya användare",
+    "minimumPasswordLength": "Minsta lösenordslängd",
+    "tusUploads": "Uppdelade uppladdningar",
+    "tusUploadsHelp": "Filbläddraren stöder uppdelade filuppladdningar, vilket möjliggör effektiva, tillförlitliga, återupptagbara och uppdelade filuppladdningar även på otillförlitliga nätverk.",
+    "tusUploadsChunkSize": "Anger maximal storlek för en begäran (direkta uppladdningar används för mindre uppladdningar). Du kan ange ett helt tal som anger storleken i byte eller en sträng som 10 MB, 1 GB osv.",
+    "tusUploadsRetryCount": "Antal försök som ska göras om en del inte kan laddas upp.",
+    "userHomeBasePath": "Bassökväg för användarnas hemkataloger",
+    "userScopeGenerationPlaceholder": "Omfånget kommer att automatiskt genereras",
+    "createUserHomeDirectory": "Skapa användarens hemkatalog",
     "customStylesheet": "Anpassad formatmall",
     "defaultUserDescription": "Detta är standard inställningar för användare.",
     "disableExternalLinks": "Inaktivera externa länkar (förutom dokumentation)",
@@ -160,7 +193,7 @@
     "executeOnShellDescription": "Som standard kör fil bläddraren kommandona genom att anropa deras binärfiler direkt. Om du vill köra dem på ett skal i stället (till exempel bash eller PowerShell), kan du definiera det här med nödvändiga argument och flaggor. Om det är inställt kommer kommandot du kör att läggas till som ett argument. Detta gäller både användar kommandon och händelse krokar.",
     "globalRules": "Det här är en global uppsättning regler för att tillåta och inte tillåta. De gäller för alla användare. Du kan definiera specifika regler för varje användares inställningar för att åsidosätta de här inställningarna.",
     "globalSettings": "Globala inställningar",
-    "hideDotfiles": "",
+    "hideDotfiles": "Dölj punktfiler",
     "insertPath": "Ange sökväg",
     "insertRegex": "Sätt in regex expression",
     "instanceName": "Instans namn",
@@ -171,7 +204,7 @@
     "newUser": "Ny användare",
     "password": "Lösenord",
     "passwordUpdated": "Lösenord uppdaterat",
-    "path": "",
+    "path": "Sökväg",
     "perm": {
       "create": "Skapa filer och mappar",
       "delete": "Ta bort filer och mappar",
@@ -189,14 +222,17 @@
     "rules": "Regler",
     "rulesHelp": "Här kan du definiera en uppsättning regler för godkänna och neka för den här specifika användaren. Den blockerade filen kommer inte upp i listningarna och kommer inte att vara tillgänglig till användaren. Vi stöder regex och sökvägar i förhållande till användarnas omfång.\n",
     "scope": "Omfattning",
+    "setDateFormat": "Ställ in exakt datumformat",
     "settingsUpdated": "Inställning uppdaterad!",
-    "shareDuration": "",
-    "shareManagement": "",
-    "singleClick": "",
+    "shareDuration": "Utdelningstid",
+    "shareManagement": "Utdelningshantering",
+    "shareDeleted": "Utdelning borttagen!",
+    "singleClick": "Använd enkla klick för att öppna filer och kataloger",
     "themes": {
-      "dark": "",
-      "light": "",
-      "title": ""
+      "default": "Systemet standard",
+      "dark": "Mörk",
+      "light": "Ljus",
+      "title": "Tema"
     },
     "user": "Användare",
     "userCommands": "Kommandon",

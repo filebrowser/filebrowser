@@ -16,9 +16,11 @@ export default {
     const dataObj = {};
     const locales = {
       he: "עברית",
+      hr: "Hrvatski",
       hu: "Magyar",
       ar: "العربية",
       ca: "Català",
+      cs: "Čeština",
       de: "Deutsch",
       el: "Ελληνικά",
       en: "English",
@@ -29,6 +31,7 @@ export default {
       ja: "日本語",
       ko: "한국어",
       "nl-be": "Dutch (Belgium)",
+      no: "Norsk",
       pl: "Polski",
       "pt-br": "Português",
       pt: "Português (Brasil)",
@@ -38,6 +41,7 @@ export default {
       "sv-se": "Swedish (Sweden)",
       tr: "Türkçe",
       uk: "Українська",
+      vi: "Tiếng Việt",
       "zh-cn": "中文 (简体)",
       "zh-tw": "中文 (繁體)",
     };

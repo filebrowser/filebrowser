@@ -33,11 +33,20 @@ func (s *Storage) Get() (*Settings, error) {
 	if set.UserHomeBasePath == "" {
 		set.UserHomeBasePath = DefaultUsersHomeBasePath
 	}
+	if set.MinimumPasswordLength == 0 {
+		set.MinimumPasswordLength = DefaultMinimumPasswordLength
+	}
 	if set.Tus == (Tus{}) {
 		set.Tus = Tus{
 			ChunkSize:  DefaultTusChunkSize,
 			RetryCount: DefaultTusRetryCount,
 		}
+	}
+	if set.FileMode == 0 {
+		set.FileMode = DefaultFileMode
+	}
+	if set.DirMode == 0 {
+		set.DirMode = DefaultDirMode
 	}
 	return set, nil
 }

@@ -40,27 +40,29 @@ including 'index_end'.`,
 
 		return nil
 	},
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
+	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
 		i, err := strconv.Atoi(args[0])
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		f := i
 		if len(args) == 2 {
 			f, err = strconv.Atoi(args[1])
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 		}
 
-		user := func(u *users.User) {
+		user := func(u *users.User) error {
 			u.Rules = append(u.Rules[:i], u.Rules[f+1:]...)
-			err := d.store.Users.Save(u)
-			checkErr(err)
+			return d.store.Users.Save(u)
 		}
 
-		global := func(s *settings.Settings) {
+		global := func(s *settings.Settings) error {
 			s.Rules = append(s.Rules[:i], s.Rules[f+1:]...)
-			err := d.store.Settings.Save(s)
-			checkErr(err)
+			return d.store.Settings.Save(s)
 		}
 
-		runRules(d.store, cmd, user, global)
+		return runRules(d.store, cmd, user, global)
 	}, pythonConfig{}),
 }
