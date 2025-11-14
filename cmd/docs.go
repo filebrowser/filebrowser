@@ -21,7 +21,7 @@ func init() {
 func printToc(names []string) {
 	for i, name := range names {
 		name = strings.TrimSuffix(name, filepath.Ext(name))
-		name = strings.Replace(name, "-", " ", -1)
+		name = strings.ReplaceAll(name, "-", " ")
 		names[i] = name
 	}
 
@@ -29,7 +29,7 @@ func printToc(names []string) {
 
 	toc := ""
 	for _, name := range names {
-		toc += "* [" + name + "](cli/" + strings.Replace(name, " ", "-", -1) + ".md)\n"
+		toc += "* [" + name + "](cli/" + strings.ReplaceAll(name, " ", "-") + ".md)\n"
 	}
 
 	fmt.Println(toc)
@@ -84,7 +84,7 @@ func generateDocs(cmd *cobra.Command, dir string) error {
 		}
 	}
 
-	basename := strings.Replace(cmd.CommandPath(), " ", "-", -1) + ".md"
+	basename := strings.ReplaceAll(cmd.CommandPath(), " ", "-") + ".md"
 	filename := filepath.Join(dir, basename)
 	f, err := os.Create(filename)
 	if err != nil {
