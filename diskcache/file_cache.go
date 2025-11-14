@@ -37,11 +37,11 @@ func (f *FileCache) Store(_ context.Context, key string, value []byte) error {
 	defer mu.Unlock()
 
 	fileName := f.getFileName(key)
-	if err := f.fs.MkdirAll(filepath.Dir(fileName), 0700); err != nil { //nolint:gomnd
+	if err := f.fs.MkdirAll(filepath.Dir(fileName), 0700); err != nil {
 		return err
 	}
 
-	if err := afero.WriteFile(f.fs, fileName, value, 0700); err != nil { //nolint:gomnd
+	if err := afero.WriteFile(f.fs, fileName, value, 0700); err != nil {
 		return err
 	}
 

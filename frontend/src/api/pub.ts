@@ -71,5 +71,5 @@ export function getDownloadURL(res: Resource, inline = false) {
     ...(res.token && { token: res.token }),
   };
 
-  return createURL("api/public/dl/" + res.hash + res.path, params, false);
+  return createURL("api/public/dl/" + res.hash + res.path, params);
 }

@@ -1,7 +1,11 @@
 <template>
   <div>
-    <div v-if="uploadStore.getProgress" class="progress">
-      <div v-bind:style="{ width: uploadStore.getProgress + '%' }"></div>
+    <div v-if="uploadStore.totalBytes" class="progress">
+      <div
+        v-bind:style="{
+          width: sentPercent + '%',
+        }"
+      ></div>
     </div>
     <sidebar></sidebar>
     <main>
@@ -27,7 +31,7 @@ import Prompts from "@/components/prompts/Prompts.vue";
 import Shell from "@/components/Shell.vue";
 import UploadFiles from "@/components/prompts/UploadFiles.vue";
 import { enableExec } from "@/utils/constants";
-import { watch } from "vue";
+import { computed, watch } from "vue";
 import { useRoute } from "vue-router";
 
 const layoutStore = useLayoutStore();
@@ -35,6 +39,10 @@ const authStore = useAuthStore();
 const fileStore = useFileStore();
 const uploadStore = useUploadStore();
 const route = useRoute();
+
+const sentPercent = computed(() =>
+  ((uploadStore.sentBytes / uploadStore.totalBytes) * 100).toFixed(2)
+);
 
 watch(route, () => {
   fileStore.selected = [];
