@@ -166,6 +166,7 @@
     "allowNew": "Criar novos ficheiros e pastas",
     "allowPublish": "Publicar novas páginas e conteúdos",
     "allowSignup": "Permitir que os utilizadores criem contas",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(deixe em branco para manter)",
     "branding": "Marca",
     "brandingDirectoryPath": "Caminho da pasta de marca",
