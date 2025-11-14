@@ -166,6 +166,7 @@
     "allowNew": "Új fájlok és mappák létrehozása",
     "allowPublish": "Új bejegyzések és oldalak létrehozása",
     "allowSignup": "Felhasználók regisztrációjának engedélyezése",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(üresen hagyva nincs változás)",
     "branding": "Márkázás",
     "brandingDirectoryPath": "Márkázás mappaútvonala",
