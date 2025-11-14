@@ -166,6 +166,7 @@
     "allowNew": "Búa til ný skjöl og möppur",
     "allowPublish": "Gefa út nýjar færslur og síður",
     "allowSignup": "Leyfa nýjum notendum að skrá sig",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(engar breytingar ef ekkert er skrifað)",
     "branding": "Útlit",
     "brandingDirectoryPath": "Mappa fyrir branding-skjöl",
