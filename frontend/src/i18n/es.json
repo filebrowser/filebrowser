@@ -166,6 +166,7 @@
     "allowNew": "Crear nuevos archivos y carpetas",
     "allowPublish": "Publicar nuevos posts y páginas",
     "allowSignup": "Permitir registro de usuarios",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(dejar en blanco para evitar cambios)",
     "branding": "Marca",
     "brandingDirectoryPath": "Ruta de la carpeta de personalizacion de marca",
