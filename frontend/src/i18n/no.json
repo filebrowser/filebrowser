@@ -166,6 +166,7 @@
     "allowNew": "Opprett nye filer og direktorater",
     "allowPublish": "Publiser nye innlegg og sider",
     "allowSignup": "Tilat brukere å registrere seg",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(la stå tomt for å unngå endringer)",
     "branding": "Merkevarebygging",
     "brandingDirectoryPath": "Bane for merkevarekatalog",
