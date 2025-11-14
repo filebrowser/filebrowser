@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.46.0](https://github.com/filebrowser/filebrowser/compare/v2.45.3...v2.46.0) (2025-11-14)
+
+
+### Features
+
+* add 'hide-dotfiles' as command line parameter ([#3802](https://github.com/filebrowser/filebrowser/issues/3802)) ([0d973d3](https://github.com/filebrowser/filebrowser/commit/0d973d3aad70ceb88950f2cd9c297fc76e7955b1))
+* add context menu ([#3343](https://github.com/filebrowser/filebrowser/issues/3343)) ([1ace579](https://github.com/filebrowser/filebrowser/commit/1ace579a553486bb15af2d11f537414156606434))
+* add option to hide the login button from public-facing pages ([#3922](https://github.com/filebrowser/filebrowser/issues/3922)) ([ac7b49c](https://github.com/filebrowser/filebrowser/commit/ac7b49c1484b4e27a1149310542ccd1e90659ee2))
+* Updates for project File Browser ([#5544](https://github.com/filebrowser/filebrowser/issues/5544)) ([fb5d099](https://github.com/filebrowser/filebrowser/commit/fb5d099f8514516216f407be012d2e3f25de2441))
+
 ## [2.45.3](https://github.com/filebrowser/filebrowser/compare/v2.45.2...v2.45.3) (2025-11-13)
 
 This is a test release to ensure the updated workflow works.
