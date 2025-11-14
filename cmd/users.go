@@ -80,6 +80,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.Bool("dateFormat", false, "use date format (true for absolute time, false for relative)")
 	flags.Bool("hideDotfiles", false, "hide dotfiles")
 	flags.String("aceEditorTheme", "", "ace editor's syntax highlighting theme for users")
+	flags.Bool("hide-dotfiles", false, "Hide dotfiles by default")
 }
 
 func getViewMode(flags *pflag.FlagSet) (users.ViewMode, error) {
@@ -135,6 +136,8 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 			defaults.Sorting.By, err = getString(flags, flag.Name)
 		case "sorting.asc":
 			defaults.Sorting.Asc, err = getBool(flags, flag.Name)
+		case "hide-dotfiles":
+			defaults.HideDotfiles, err = getBool(flags, flag.Name)
 		}
 		if err != nil {
 			visitErr = err

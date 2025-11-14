@@ -34,6 +34,7 @@ type Settings struct {
 	MinimumPasswordLength uint                `json:"minimumPasswordLength"`
 	FileMode              fs.FileMode         `json:"fileMode"`
 	DirMode               fs.FileMode         `json:"dirMode"`
+	HideDotfiles          bool                `json:"hideDotfiles"`
 }
 
 // GetRules implements rules.Provider.
