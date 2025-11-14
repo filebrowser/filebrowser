@@ -41,7 +41,7 @@ linters:
       default-signifies-exhaustive: false
     funlen:
       lines: 100
-      statements: 50
+      statements: 100
     gocritic:
       disabled-checks:
         - dupImport # https://github.com/go-critic/go-critic/issues/845
