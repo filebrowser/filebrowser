@@ -1,7 +1,7 @@
 <template>
   <div>
     <header-bar
-      v-if="error || fileStore.req?.type === null"
+      v-if="error || fileStore.req?.type === undefined"
       showMenu
       showLogo
     />
@@ -9,7 +9,7 @@
     <breadcrumbs base="/files" />
     <errors v-if="error" :errorCode="error.status" />
     <component v-else-if="currentView" :is="currentView"></component>
-    <div v-else-if="currentView !== null">
+    <div v-else>
       <h2 class="message delayed">
         <div class="spinner">
           <div class="bounce1"></div>
@@ -36,7 +36,6 @@ import { files as api } from "@/api";
 import { storeToRefs } from "pinia";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
-import { useUploadStore } from "@/stores/upload";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
@@ -52,18 +51,14 @@ const Preview = defineAsyncComponent(() => import("@/views/files/Preview.vue"));
 
 const layoutStore = useLayoutStore();
 const fileStore = useFileStore();
-const uploadStore = useUploadStore();
 
 const { reload } = storeToRefs(fileStore);
-const { error: uploadError } = storeToRefs(uploadStore);
 
 const route = useRoute();
 
 const { t } = useI18n({});
 
-const clean = (path: string) => {
-  return path.endsWith("/") ? path.slice(0, -1) : path;
-};
+let fetchDataController = new AbortController();
 
 const error = ref<StatusError | null>(null);
 
@@ -101,27 +96,43 @@ onUnmounted(() => {
     layoutStore.toggleShell();
   }
   fileStore.updateRequest(null);
+  fetchDataController.abort();
 });
 
-watch(route, (to, from) => {
-  if (from.path.endsWith("/")) {
-    window.sessionStorage.setItem(
-      "listFrozen",
-      (!to.path.endsWith("/")).toString()
-    );
-  } else if (to.path.endsWith("/")) {
-    fileStore.updateRequest(null);
-  }
+watch(route, () => {
   fetchData();
 });
 watch(reload, (newValue) => {
   newValue && fetchData();
 });
-watch(uploadError, (newValue) => {
-  newValue && layoutStore.showError();
-});
 
 // Define functions
+
+const applyPreSelection = () => {
+  const preselect = fileStore.preselect;
+  fileStore.preselect = null;
+
+  if (!fileStore.req?.isDir || fileStore.oldReq === null) return;
+
+  let index = -1;
+  if (preselect) {
+    // Find item with the specified path
+    index = fileStore.req.items.findIndex((item) => item.path === preselect);
+  } else if (fileStore.oldReq.path.startsWith(fileStore.req.path)) {
+    // Get immediate child folder of the previous path
+    const name = fileStore.oldReq.path
+      .substring(fileStore.req.path.length)
+      .split("/")
+      .shift();
+
+    index = fileStore.req.items.findIndex(
+      (val) => val.path == fileStore.req!.path + name
+    );
+  }
+
+  if (index === -1) return;
+  fileStore.selected.push(index);
+};
 
 const fetchData = async () => {
   // Reset view information.
@@ -131,31 +142,30 @@ const fetchData = async () => {
   layoutStore.closeHovers();
 
   // Set loading to true and reset the error.
-  if (
-    window.sessionStorage.getItem("listFrozen") !== "true" &&
-    window.sessionStorage.getItem("modified") !== "true"
-  ) {
-    layoutStore.loading = true;
-  }
+  layoutStore.loading = true;
   error.value = null;
 
   let url = route.path;
   if (url === "") url = "/";
   if (url[0] !== "/") url = "/" + url;
+  // Cancel the ongoing request
+  fetchDataController.abort();
+  fetchDataController = new AbortController();
   try {
-    const res = await api.fetch(url);
-
-    if (clean(res.path) !== clean(`/${[...route.params.path].join("/")}`)) {
-      throw new Error("Data Mismatch!");
-    }
-
+    const res = await api.fetch(url, fetchDataController.signal);
     fileStore.updateRequest(res);
-    document.title = `${res.name} - ${t("files.files")} - ${name}`;
+    document.title = `${res.name || t("sidebar.myFiles")} - ${t("files.files")} - ${name}`;
+    layoutStore.loading = false;
+
+    // Selects the post-reload target item or the previously visited child folder
+    applyPreSelection();
   } catch (err) {
+    if (err instanceof StatusError && err.is_canceled) {
+      return;
+    }
     if (err instanceof Error) {
       error.value = err;
     }
-  } finally {
     layoutStore.loading = false;
   }
 };

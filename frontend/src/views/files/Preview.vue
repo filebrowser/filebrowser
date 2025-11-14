@@ -60,7 +60,7 @@
         <div v-if="isEpub" class="epub-reader">
           <vue-reader
             :location="location"
-            :url="raw"
+            :url="previewUrl"
             :get-rendition="getRendition"
             :epubInitOptions="{
               requestCredentials: true,
@@ -87,11 +87,14 @@
             <span>{{ size }}%</span>
           </div>
         </div>
-        <ExtendedImage v-else-if="fileStore.req?.type == 'image'" :src="raw" />
+        <ExtendedImage
+          v-else-if="fileStore.req?.type == 'image'"
+          :src="previewUrl"
+        />
         <audio
           v-else-if="fileStore.req?.type == 'audio'"
           ref="player"
-          :src="raw"
+          :src="previewUrl"
           controls
           :autoplay="autoPlay"
           @play="autoPlay = true"
@@ -99,12 +102,12 @@
         <VideoPlayer
           v-else-if="fileStore.req?.type == 'video'"
           ref="player"
-          :source="raw"
+          :source="previewUrl"
           :subtitles="subtitles"
           :options="videoOptions"
         >
         </VideoPlayer>
-        <object v-else-if="isPdf" class="pdf" :data="raw"></object>
+        <object v-else-if="isPdf" class="pdf" :data="previewUrl"></object>
         <div v-else-if="fileStore.req?.type == 'blob'" class="info">
           <div class="title">
             <i class="material-icons">feedback</i>
@@ -119,7 +122,7 @@
             </a>
             <a
               target="_blank"
-              :href="raw"
+              :href="previewUrl"
               class="button button--flat"
               v-if="!fileStore.req?.isDir"
             >
@@ -253,19 +256,23 @@ const hasPrevious = computed(() => previousLink.value !== "");
 const hasNext = computed(() => nextLink.value !== "");
 
 const downloadUrl = computed(() =>
-  fileStore.req ? api.getDownloadURL(fileStore.req, true) : ""
+  fileStore.req ? api.getDownloadURL(fileStore.req, false) : ""
 );
 
-const raw = computed(() => {
-  if (fileStore.req?.type === "image" && !fullSize.value) {
+const previewUrl = computed(() => {
+  if (!fileStore.req) {
+    return "";
+  }
+
+  if (fileStore.req.type === "image" && !fullSize.value) {
     return api.getPreviewURL(fileStore.req, "big");
   }
 
   if (isEpub.value) {
-    return createURL("api/raw" + fileStore.req?.path, {}, false);
+    return createURL("api/raw" + fileStore.req.path, {});
   }
 
-  return downloadUrl.value;
+  return api.getDownloadURL(fileStore.req, true);
 });
 
 const isPdf = computed(() => fileStore.req?.extension.toLowerCase() == ".pdf");
@@ -294,10 +301,8 @@ watch(route, () => {
 // Specify hooks
 onMounted(async () => {
   window.addEventListener("keydown", key);
-  if (fileStore.oldReq) {
-    listing.value = fileStore.oldReq.items;
-    updatePreview();
-  }
+  listing.value = fileStore.oldReq?.items ?? null;
+  updatePreview();
 });
 
 onBeforeUnmount(() => window.removeEventListener("keydown", key));
@@ -310,11 +315,16 @@ const deleteFile = () => {
       if (listing.value === null) {
         return;
       }
-      listing.value = listing.value.filter((item) => item.name !== name.value);
+
+      const index = listing.value.findIndex((item) => item.name == name.value);
+      listing.value.splice(index, 1);
 
       if (hasNext.value) {
         next();
       } else if (!hasPrevious.value && !hasNext.value) {
+        const nearbyItem = listing.value[Math.max(0, index - 1)];
+        fileStore.preselect = nearbyItem?.path;
+
         close();
       } else {
         prev();
@@ -420,8 +430,6 @@ const toggleNavigation = throttle(function () {
 }, 500);
 
 const close = () => {
-  fileStore.updateRequest(null);
-
   const uri = url.removeLastDir(route.path) + "/";
   router.push({ path: uri });
 };

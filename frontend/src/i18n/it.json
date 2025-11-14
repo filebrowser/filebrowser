@@ -7,9 +7,13 @@
     "copy": "Copia",
     "copyFile": "Copia file",
     "copyToClipboard": "Copia negli appunti",
+    "copyDownloadLinkToClipboard": "Copia link di scarica negli appunti",
     "create": "Crea",
     "delete": "Elimina",
     "download": "Scarica",
+    "file": "File",
+    "folder": "Cartella",
+    "fullScreen": "Abilita schermo intero",
     "hideDotfiles": "Nascondi dotfile",
     "info": "Informazioni",
     "more": "Altro",
@@ -20,6 +24,7 @@
     "ok": "OK",
     "permalink": "Ottieni link permanente",
     "previous": "Precedente",
+    "preview": "Anteprima",
     "publish": "Publica",
     "rename": "Rinomina",
     "replace": "Sostituisci",
@@ -31,20 +36,28 @@
     "selectMultiple": "Seleziona molteplici",
     "share": "Condividi",
     "shell": "Mostra/nascondi shell",
+    "submit": "Invia",
     "switchView": "Cambia vista",
     "toggleSidebar": "Mostra/nascondi la barra laterale",
     "update": "Aggiorna",
-    "upload": "Carica"
+    "upload": "Carica",
+    "openFile": "Apri file",
+    "discardChanges": "Ignora",
+    "saveChanges": "Save changes"
   },
   "download": {
     "downloadFile": "Scarica file",
     "downloadFolder": "Scarica cartella",
     "downloadSelected": "Scarica selezionati"
   },
+  "upload": {
+    "abortUpload": "Sei sicuro di voler abortire la procedura?"
+  },
   "errors": {
     "forbidden": "Non hai i permessi per accedere a questo file.",
     "internal": "Qualcosa è andato veramente male.",
-    "notFound": "Questo percorso non può essere raggiunto."
+    "notFound": "Questo percorso non può essere raggiunto.",
+    "connection": "Il server non è raggiungibile"
   },
   "files": {
     "body": "Contenuto",
@@ -61,7 +74,8 @@
     "size": "Dimensione",
     "sortByLastModified": "Ordina per ultima modifica",
     "sortByName": "Ordina per nome",
-    "sortBySize": "Ordina per dimensione"
+    "sortBySize": "Ordina per dimensione",
+    "noPreview": "L'anteprima non è disponibile per questo file."
   },
   "help": {
     "click": "seleziona un file o una cartella",
@@ -87,7 +101,10 @@
     "submit": "Entra",
     "username": "Nome utente",
     "usernameTaken": "Username già usato",
-    "wrongCredentials": "Credenziali errate"
+    "wrongCredentials": "Credenziali errate",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanente",
   "prompts": {
@@ -96,6 +113,8 @@
     "currentlyNavigating": "Attualmente navigando su:",
     "deleteMessageMultiple": "Sei sicuro di voler eliminare {count} file?",
     "deleteMessageSingle": "Sei sicuro di voler eliminare questo file/cartella?",
+    "deleteMessageShare": "Sei sicuro di voler eliminare questo percorso condiviso ({path})?",
+    "deleteUser": "Sei sicuro di voler eliminare questo utente?",
     "deleteTitle": "Elimina",
     "displayName": "Nome visualizzato:",
     "download": "Scarica files",
@@ -122,7 +141,11 @@
     "show": "Mostra",
     "size": "Dimensione",
     "upload": "Carica",
-    "uploadMessage": "Seleziona un'opzione per il caricamento."
+    "uploadFiles": "Inviando {files} file...",
+    "uploadMessage": "Seleziona un'opzione per il caricamento.",
+    "optionalPassword": "Password opzionale",
+    "resolution": "Risoluzione",
+    "discardEditorChanges": "Sei sicuro di voler scartare le modifiche apportate?"
   },
   "search": {
     "images": "Immagini",
@@ -135,6 +158,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Amministratore",
     "allowCommands": "Esegui comandi",
@@ -151,6 +175,14 @@
     "commandRunnerHelp": "Qui puoi impostare i comandi da eseguire negli eventi nominati. Ne devi scrivere uno per riga. Le variabili d'ambiente {0} e {1} sono disponibili, essendo {0} relativo a {1}. Per altre informazioni su questa funzionalità e sulle variabili d'ambiente utilizzabili, leggi la {2}.",
     "commandsUpdated": "Comandi aggiornati!",
     "createUserDir": "Crea automaticamente la home directory dell'utente quando lo aggiungi",
+    "minimumPasswordLength": "Lunghezza minima della password",
+    "tusUploads": "Tranci di invii",
+    "tusUploadsHelp": "File Browser supporta tranci di invii fornendo così la possibilità di inviare efficientemente i file anche su reti instabili.",
+    "tusUploadsChunkSize": "Indica la dimensione massima di una richiesta (invii diretti saranno usati per piccoli invii). Puoi inserire un numero intero per indicare la dimensione in byte, oppure una stringa con l'unità di misura come in 10MB, 1GB, etc.",
+    "tusUploadsRetryCount": "Numero di tentativi da effettuare se un trancio di file fallisce.",
+    "userHomeBasePath": "Percorso base per le cartelle utente",
+    "userScopeGenerationPlaceholder": "La portata verrà autogenerata",
+    "createUserHomeDirectory": "Crea cartella utente",
     "customStylesheet": "Foglio di stile personalizzato",
     "defaultUserDescription": "Queste sono le impostazioni predefinite per i nuovi utenti.",
     "disableExternalLinks": "Disabilita link esterni (tranne per la documentazione)",
@@ -190,11 +222,14 @@
     "rules": "Regole",
     "rulesHelp": "Qui è possibile definire una serie di regole e permessi per questo specifico utente. I file bloccati non appariranno negli elenchi e non saranno accessibili dagli utenti. all'utente. Sia regex che i percorsi relativi all'ambito di applicazione degli utenti sono supportati.\n",
     "scope": "Scope",
+    "setDateFormat": "Fissa il formato di data esatto",
     "settingsUpdated": "Impostazioni aggiornate!",
     "shareDuration": "Durata della condivisione",
     "shareManagement": "Gestione delle condivisioni",
+    "shareDeleted": "Percorso condiviso eliminato!",
     "singleClick": "Usa un singolo click per aprire file e cartelle",
     "themes": {
+      "default": "Impostazione predefinita del sistema",
       "dark": "Scuro",
       "light": "Chiaro",
       "title": "Tema"

@@ -4,6 +4,7 @@ import type { JwtPayload } from "jwt-decode";
 import { jwtDecode } from "jwt-decode";
 import { baseURL, noAuth, logoutPage } from "./constants";
 import { StatusError } from "@/api/utils";
+import { setSafeTimeout } from "@/api/utils";
 
 export function parseToken(token: string) {
   // falsy or malformed jwt will throw InvalidTokenError
@@ -16,6 +17,18 @@ export function parseToken(token: string) {
   const authStore = useAuthStore();
   authStore.jwt = token;
   authStore.setUser(data.user);
+
+  if (authStore.logoutTimer) {
+    clearTimeout(authStore.logoutTimer);
+  }
+
+  const expiresAt = new Date(data.exp! * 1000);
+  const timeout = expiresAt.getTime() - Date.now();
+  authStore.setLogoutTimer(
+    setSafeTimeout(() => {
+      logout("inactivity");
+    }, timeout)
+  );
 }
 
 export async function validateLogin() {
@@ -92,7 +105,7 @@ export async function signup(username: string, password: string) {
   }
 }
 
-export function logout() {
+export function logout(reason?: string) {
   document.cookie = "auth=; Max-Age=0; Path=/; SameSite=Strict;";
 
   const authStore = useAuthStore();
@@ -104,6 +117,15 @@ export function logout() {
   } else if (logoutPage !== "/login") {
     document.location.href = `${logoutPage}`;
   } else {
-    router.push({ path: "/login" });
+    if (typeof reason === "string" && reason.trim() !== "") {
+      router.push({
+        path: "/login",
+        query: { "logout-reason": reason },
+      });
+    } else {
+      router.push({
+        path: "/login",
+      });
+    }
   }
 }

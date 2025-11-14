@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"slices"
 	"strings"
 
 	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
@@ -123,7 +124,7 @@ func (a *HookAuth) GetValues(s string) {
 	s = strings.ReplaceAll(s, "\r\n", "\n")
 
 	// iterate input lines
-	for _, val := range strings.Split(s, "\n") {
+	for val := range strings.Lines(s) {
 		v := strings.SplitN(val, "=", 2)
 
 		// skips non key and value format
@@ -150,7 +151,7 @@ func (a *HookAuth) SaveUser() (*users.User, error) {
 	}
 
 	if u == nil {
-		pass, err := users.HashPwd(a.Cred.Password)
+		pass, err := users.ValidateAndHashPwd(a.Cred.Password, a.Settings.MinimumPasswordLength)
 		if err != nil {
 			return nil, err
 		}
@@ -186,7 +187,7 @@ func (a *HookAuth) SaveUser() (*users.User, error) {
 
 		// update the password when it doesn't match the current
 		if p {
-			pass, err := users.HashPwd(a.Cred.Password)
+			pass, err := users.ValidateAndHashPwd(a.Cred.Password, a.Settings.MinimumPasswordLength)
 			if err != nil {
 				return nil, err
 			}
@@ -266,13 +267,7 @@ var validHookFields = []string{
 
 // IsValid checks if the provided field is on the valid fields list
 func (hf *hookFields) IsValid(field string) bool {
-	for _, val := range validHookFields {
-		if field == val {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(validHookFields, field)
 }
 
 // GetString returns the string value or provided default

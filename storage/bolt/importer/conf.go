@@ -9,7 +9,7 @@ import (
 
 	"github.com/asdine/storm/v3"
 	"github.com/pelletier/go-toml/v2"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/settings"

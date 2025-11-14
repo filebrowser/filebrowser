@@ -125,9 +125,9 @@ var userPostHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *
 		return http.StatusBadRequest, fbErrors.ErrEmptyPassword
 	}
 
-	req.Data.Password, err = users.HashPwd(req.Data.Password)
+	req.Data.Password, err = users.ValidateAndHashPwd(req.Data.Password, d.settings.MinimumPasswordLength)
 	if err != nil {
-		return http.StatusInternalServerError, err
+		return http.StatusBadRequest, err
 	}
 
 	userHome, err := d.settings.MakeUserDir(req.Data.Username, req.Data.Scope, d.server.Root)
@@ -163,15 +163,17 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 		}
 
 		if req.Data.Password != "" {
-			req.Data.Password, err = users.HashPwd(req.Data.Password)
+			req.Data.Password, err = users.ValidateAndHashPwd(req.Data.Password, d.settings.MinimumPasswordLength)
+			if err != nil {
+				return http.StatusBadRequest, err
+			}
 		} else {
 			var suser *users.User
 			suser, err = d.store.Users.Get(d.server.Root, d.raw.(uint))
+			if err != nil {
+				return http.StatusInternalServerError, err
+			}
 			req.Data.Password = suser.Password
-		}
-
-		if err != nil {
-			return http.StatusInternalServerError, err
 		}
 
 		req.Which = []string{}
@@ -186,9 +188,9 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 				return http.StatusForbidden, nil
 			}
 
-			req.Data.Password, err = users.HashPwd(req.Data.Password)
+			req.Data.Password, err = users.ValidateAndHashPwd(req.Data.Password, d.settings.MinimumPasswordLength)
 			if err != nil {
-				return http.StatusInternalServerError, err
+				return http.StatusBadRequest, err
 			}
 		}
 

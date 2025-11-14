@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
-	"github.com/golang-jwt/jwt/v4/request"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v5/request"
 
 	fbAuth "github.com/filebrowser/filebrowser/v2/auth"
 	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
@@ -23,15 +23,17 @@ const (
 )
 
 type userInfo struct {
-	ID           uint              `json:"id"`
-	Locale       string            `json:"locale"`
-	ViewMode     users.ViewMode    `json:"viewMode"`
-	SingleClick  bool              `json:"singleClick"`
-	Perm         users.Permissions `json:"perm"`
-	Commands     []string          `json:"commands"`
-	LockPassword bool              `json:"lockPassword"`
-	HideDotfiles bool              `json:"hideDotfiles"`
-	DateFormat   bool              `json:"dateFormat"`
+	ID             uint              `json:"id"`
+	Locale         string            `json:"locale"`
+	ViewMode       users.ViewMode    `json:"viewMode"`
+	SingleClick    bool              `json:"singleClick"`
+	Perm           users.Permissions `json:"perm"`
+	Commands       []string          `json:"commands"`
+	LockPassword   bool              `json:"lockPassword"`
+	HideDotfiles   bool              `json:"hideDotfiles"`
+	DateFormat     bool              `json:"dateFormat"`
+	Username       string            `json:"username"`
+	AceEditorTheme string            `json:"aceEditorTheme"`
 }
 
 type authToken struct {
@@ -51,11 +53,6 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 		return token, nil
 	}
 
-	auth := r.URL.Query().Get("auth")
-	if auth != "" && strings.Count(auth, ".") == 2 {
-		return auth, nil
-	}
-
 	if r.Method == http.MethodGet {
 		cookie, _ := r.Cookie("auth")
 		if cookie != nil && strings.Count(cookie.Value, ".") == 2 {
@@ -70,13 +67,15 @@ func renewableErr(err error, d *data) bool {
 	if d.settings.AuthMethod != fbAuth.MethodProxyAuth || err == nil {
 		return false
 	}
+
 	if d.settings.LogoutPage == "" || d.settings.LogoutPage == settings.DefaultLogoutPage {
 		return false
 	}
-	var verr *jwt.ValidationError
-	if !errors.As(err, &verr) || verr == nil || verr.Errors != jwt.ValidationErrorExpired {
+
+	if !errors.Is(err, jwt.ErrTokenExpired) {
 		return false
 	}
+
 	return true
 }
 
@@ -89,15 +88,19 @@ func withUser(fn handleFunc) handleFunc {
 		var tk authToken
 		p := jwt.NewParser(jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}))
 		token, err := request.ParseFromRequest(r, &extractor{}, keyFunc, request.WithClaims(&tk), request.WithParser(p))
-
 		if (err != nil || !token.Valid) && !renewableErr(err, d) {
 			return http.StatusUnauthorized, nil
 		}
 
-		expired := !tk.VerifyExpiresAt(time.Now().Add(time.Hour), true)
+		err = jwt.NewValidator(jwt.WithExpirationRequired()).Validate(tk)
+		if err != nil {
+			return http.StatusUnauthorized, nil
+		}
+
+		expiresSoon := tk.ExpiresAt != nil && time.Until(tk.ExpiresAt.Time) < time.Hour
 		updated := tk.IssuedAt != nil && tk.IssuedAt.Unix() < d.store.Users.LastUpdate(tk.User.ID)
 
-		if expired || updated {
+		if expiresSoon || updated {
 			w.Header().Add("X-Renew-Token", "true")
 		}
 
@@ -168,12 +171,15 @@ var signupHandler = func(_ http.ResponseWriter, r *http.Request, d *data) (int, 
 
 	d.settings.Defaults.Apply(user)
 
-	pwd, err := users.HashPwd(info.Password)
+	pwd, err := users.ValidateAndHashPwd(info.Password, d.settings.MinimumPasswordLength)
 	if err != nil {
-		return http.StatusInternalServerError, err
+		return http.StatusBadRequest, err
 	}
 
 	user.Password = pwd
+	if d.settings.CreateUserDir {
+		user.Scope = ""
+	}
 
 	userHome, err := d.settings.MakeUserDir(user.Username, user.Scope, d.server.Root)
 	if err != nil {
@@ -203,15 +209,17 @@ func renewHandler(tokenExpireTime time.Duration) handleFunc {
 func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.User, tokenExpirationTime time.Duration) (int, error) {
 	claims := &authToken{
 		User: userInfo{
-			ID:           user.ID,
-			Locale:       user.Locale,
-			ViewMode:     user.ViewMode,
-			SingleClick:  user.SingleClick,
-			Perm:         user.Perm,
-			LockPassword: user.LockPassword,
-			Commands:     user.Commands,
-			HideDotfiles: user.HideDotfiles,
-			DateFormat:   user.DateFormat,
+			ID:             user.ID,
+			Locale:         user.Locale,
+			ViewMode:       user.ViewMode,
+			SingleClick:    user.SingleClick,
+			Perm:           user.Perm,
+			LockPassword:   user.LockPassword,
+			Commands:       user.Commands,
+			HideDotfiles:   user.HideDotfiles,
+			DateFormat:     user.DateFormat,
+			Username:       user.Username,
+			AceEditorTheme: user.AceEditorTheme,
 		},
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

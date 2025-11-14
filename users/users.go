@@ -2,7 +2,6 @@ package users
 
 import (
 	"path/filepath"
-	"regexp"
 
 	"github.com/spf13/afero"
 
@@ -21,21 +20,22 @@ const (
 
 // User describes a user.
 type User struct {
-	ID           uint          `storm:"id,increment" json:"id"`
-	Username     string        `storm:"unique" json:"username"`
-	Password     string        `json:"password"`
-	Scope        string        `json:"scope"`
-	Locale       string        `json:"locale"`
-	LockPassword bool          `json:"lockPassword"`
-	ViewMode     ViewMode      `json:"viewMode"`
-	SingleClick  bool          `json:"singleClick"`
-	Perm         Permissions   `json:"perm"`
-	Commands     []string      `json:"commands"`
-	Sorting      files.Sorting `json:"sorting"`
-	Fs           afero.Fs      `json:"-" yaml:"-"`
-	Rules        []rules.Rule  `json:"rules"`
-	HideDotfiles bool          `json:"hideDotfiles"`
-	DateFormat   bool          `json:"dateFormat"`
+	ID             uint          `storm:"id,increment" json:"id"`
+	Username       string        `storm:"unique" json:"username"`
+	Password       string        `json:"password"`
+	Scope          string        `json:"scope"`
+	Locale         string        `json:"locale"`
+	LockPassword   bool          `json:"lockPassword"`
+	ViewMode       ViewMode      `json:"viewMode"`
+	SingleClick    bool          `json:"singleClick"`
+	Perm           Permissions   `json:"perm"`
+	Commands       []string      `json:"commands"`
+	Sorting        files.Sorting `json:"sorting"`
+	Fs             afero.Fs      `json:"-" yaml:"-"`
+	Rules          []rules.Rule  `json:"rules"`
+	HideDotfiles   bool          `json:"hideDotfiles"`
+	DateFormat     bool          `json:"dateFormat"`
+	AceEditorTheme string        `json:"aceEditorTheme"`
 }
 
 // GetRules implements rules.Provider.
@@ -103,19 +103,4 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 // FullPath gets the full path for a user's relative path.
 func (u *User) FullPath(path string) string {
 	return afero.FullBaseFsPath(u.Fs.(*afero.BasePathFs), path)
-}
-
-// CanExecute checks if an user can execute a specific command.
-func (u *User) CanExecute(command string) bool {
-	if !u.Perm.Execute {
-		return false
-	}
-
-	for _, cmd := range u.Commands {
-		if regexp.MustCompile(cmd).MatchString(command) {
-			return true
-		}
-	}
-
-	return false
 }
