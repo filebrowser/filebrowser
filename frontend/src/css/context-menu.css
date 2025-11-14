@@ -15,3 +15,7 @@
   display: flex;
   align-items: center;
 }
+
+.context-menu .action .counter {
+  left: 1.75em;
+}
