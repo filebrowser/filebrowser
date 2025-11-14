@@ -41,6 +41,11 @@ override the options.`,
 			return err
 		}
 
+		hideLoginButton, err := getBool(flags, "hide-login-button")
+		if err != nil {
+			return err
+		}
+
 		createUserDir, err := getBool(flags, "create-user-dir")
 		if err != nil {
 			return err
@@ -84,6 +89,7 @@ override the options.`,
 		s := &settings.Settings{
 			Key:                   key,
 			Signup:                signup,
+			HideLoginButton:       hideLoginButton,
 			CreateUserDir:         createUserDir,
 			MinimumPasswordLength: minLength,
 			Shell:                 convertCmdStrToCmdArray(shell),

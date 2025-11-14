@@ -420,6 +420,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) error {
 	set := &settings.Settings{
 		Key:                   generateKey(),
 		Signup:                false,
+		HideLoginButton:       true,
 		CreateUserDir:         false,
 		MinimumPasswordLength: settings.DefaultMinimumPasswordLength,
 		UserHomeBasePath:      settings.DefaultUsersHomeBasePath,

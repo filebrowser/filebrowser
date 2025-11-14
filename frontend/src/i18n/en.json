@@ -166,6 +166,7 @@
     "allowNew": "Create new files and directories",
     "allowPublish": "Publish new posts and pages",
     "allowSignup": "Allow users to signup",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(leave blank to avoid changes)",
     "branding": "Branding",
     "brandingDirectoryPath": "Branding directory path",
