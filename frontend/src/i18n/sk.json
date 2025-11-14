@@ -166,6 +166,7 @@
     "allowNew": "Vytvárať nové súbory a priečinky",
     "allowPublish": "Zverejňovať nové príspevky a stránky",
     "allowSignup": "Povoliť registráciu používateľov",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(nechajte prázdne, aby sa nezmenilo)",
     "branding": "Vlastný vzhľad",
     "brandingDirectoryPath": "Cesta k priečinku s vlastným vzhľadom",
