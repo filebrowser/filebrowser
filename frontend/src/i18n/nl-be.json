@@ -166,6 +166,7 @@
     "allowNew": "Nieuwe bestanden of mappen aanmaken",
     "allowPublish": "Publiceer nieuwe berichten en pagina's",
     "allowSignup": "Sta gebruikers toe om zich te registreren",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(laat leeg om wijzigingen te voorkomen)",
     "branding": "Branding",
     "brandingDirectoryPath": "Branding directory path",

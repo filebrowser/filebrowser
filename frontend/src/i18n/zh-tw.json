@@ -166,6 +166,7 @@
     "allowNew": "建立新檔案和目錄",
     "allowPublish": "發佈新的貼文與頁面",
     "allowSignup": "允許使用者註冊",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "（留空以避免更改）",
     "branding": "品牌",
     "brandingDirectoryPath": "品牌資訊資料夾路徑",

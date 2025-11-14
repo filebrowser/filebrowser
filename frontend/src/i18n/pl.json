@@ -166,6 +166,7 @@
     "allowNew": "Tworzenie nowych plików lub folderów",
     "allowPublish": "Tworzenie nowych wpisów i stron",
     "allowSignup": "Pozwól użytkownikom na rejestrację",
+    "hideLoginButton": "Ukryj przycisk logowania na stronach publicznych",
     "avoidChanges": "(pozostaw puste, aby uniknąć zmian)",
     "branding": "Personalizacja",
     "brandingDirectoryPath": "Ścieżka do folderu personalizacji",

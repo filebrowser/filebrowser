@@ -166,6 +166,7 @@
     "allowNew": "Skapa nya filer eller mappar",
     "allowPublish": "Publicera nya inlägg och sidor",
     "allowSignup": "Tillåt användare att registrera sig",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(lämna blankt för att undvika ändringar)",
     "branding": "Varumärke",
     "brandingDirectoryPath": "Sökväg till varumärkes katalog",

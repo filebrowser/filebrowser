@@ -166,6 +166,7 @@
     "allowNew": "Vytvářet nové soubory a adresáře",
     "allowPublish": "Publikovat nové příspěvky a stránky",
     "allowSignup": "Povolit uživatelům registraci",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(ponechte prázdné pro zabránění změnám)",
     "branding": "Branding",
     "brandingDirectoryPath": "Cesta ke složce s brandingem",

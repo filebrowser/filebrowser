@@ -166,6 +166,7 @@
     "allowNew": "Δημιουργία νέων αρχείων και φακέλων",
     "allowPublish": "Δημοσίευση νέων αναρτήσεων και σελίδων",
     "allowSignup": "Να επιτρέπεται η εγγραφή νέων χρηστών",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(αφήστε το κενό για αποφυγή αλλαγών)",
     "branding": "Εξατομίκευση",
     "brandingDirectoryPath": "Διαδρομή φακέλου εξατομίκευσης",

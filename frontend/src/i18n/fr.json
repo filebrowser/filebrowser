@@ -166,6 +166,7 @@
     "allowNew": "Créer de nouveaux fichiers et dossiers",
     "allowPublish": "Publier de nouveaux posts et pages",
     "allowSignup": "Autoriser les utilisateur·ices à s'inscrire",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(Laisser vide pour conserver l'actuel)",
     "branding": "Image de marque",
     "brandingDirectoryPath": "Chemin du dossier d'image de marque",
