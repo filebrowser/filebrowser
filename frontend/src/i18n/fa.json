@@ -166,6 +166,7 @@
     "allowNew": "ایجاد فایلها و پوشه های جدید",
     "allowPublish": "انتشار پست ها و صفحات جدید",
     "allowSignup": "اجاره دادن به کاربران برای ثبت نام",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(خالی بگذارید تا تغییر ایجاد نشود)",
     "branding": "برندسازی",
     "brandingDirectoryPath": "مسیر پوشه برند",
