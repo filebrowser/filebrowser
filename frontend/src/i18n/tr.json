@@ -166,6 +166,7 @@
     "allowNew": "Yeni dosyalar ve dizinler oluşturun",
     "allowPublish": "Yeni linkler ve sayfaları yayınlayın",
     "allowSignup": "Kullanıcıların kaydolmasına izin ver",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(değişiklikleri önlemek için boş bırakın)",
     "branding": "Marka",
     "brandingDirectoryPath": "Marka dizin yolu",
