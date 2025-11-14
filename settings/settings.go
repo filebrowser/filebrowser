@@ -22,7 +22,7 @@ type AuthMethod string
 type Settings struct {
 	Key                   []byte              `json:"key"`
 	Signup                bool                `json:"signup"`
-	PublicLogin           bool                `json:"publiclogin"`
+	HideLoginButton       bool                `json:"hideLoginButton"`
 	CreateUserDir         bool                `json:"createUserDir"`
 	UserHomeBasePath      string              `json:"userHomeBasePath"`
 	Defaults              UserDefaults        `json:"defaults"`

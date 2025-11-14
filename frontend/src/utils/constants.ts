@@ -18,7 +18,7 @@ const enableExec: boolean = window.FileBrowser.EnableExec;
 const tusSettings = window.FileBrowser.TusSettings;
 const origin = window.location.origin;
 const tusEndpoint = `/api/tus`;
-const publiclogin = window.FileBrowser.PublicLogin;
+const hideLoginButton = window.FileBrowser.HideLoginButton;
 
 export {
   name,
@@ -40,5 +40,5 @@ export {
   tusSettings,
   origin,
   tusEndpoint,
-  publiclogin,
+  hideLoginButton,
 };

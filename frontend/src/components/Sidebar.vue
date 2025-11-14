@@ -63,7 +63,7 @@
     </template>
     <template v-else>
       <router-link
-        v-if="publiclogin"
+        v-if="!hideLoginButton"
         class="action"
         to="/login"
         :aria-label="$t('sidebar.login')"
@@ -125,7 +125,7 @@ import * as auth from "@/utils/auth";
 import {
   version,
   signup,
-  publiclogin,
+  hideLoginButton,
   disableExternal,
   disableUsedPercentage,
   noAuth,
@@ -155,7 +155,7 @@ export default {
       return this.currentPromptName === "sidebar";
     },
     signup: () => signup,
-    publiclogin: () => publiclogin,
+    hideLoginButton: () => hideLoginButton,
     version: () => version,
     disableExternal: () => disableExternal,
     disableUsedPercentage: () => disableUsedPercentage,

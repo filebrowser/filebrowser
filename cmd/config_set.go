@@ -50,8 +50,8 @@ you want to change. Other options will remain unchanged.`,
 				ser.Port, err = getString(flags, flag.Name)
 			case "log":
 				ser.Log, err = getString(flags, flag.Name)
-			case "publiclogin":
-				set.PublicLogin, err = getBool(flags, flag.Name)
+			case "hide-login-button":
+				set.HideLoginButton, err = getBool(flags, flag.Name)
 			case "signup":
 				set.Signup, err = getBool(flags, flag.Name)
 			case "auth.method":

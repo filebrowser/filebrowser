@@ -41,7 +41,7 @@ override the options.`,
 			return err
 		}
 
-		publicLogin, err := getBool(flags, "public-login")
+		hideLoginButton, err := getBool(flags, "hide-login-button")
 		if err != nil {
 			return err
 		}
@@ -89,7 +89,7 @@ override the options.`,
 		s := &settings.Settings{
 			Key:                   key,
 			Signup:                signup,
-			PublicLogin:           publicLogin,
+			HideLoginButton:       hideLoginButton,
 			CreateUserDir:         createUserDir,
 			MinimumPasswordLength: minLength,
 			Shell:                 convertCmdStrToCmdArray(shell),
