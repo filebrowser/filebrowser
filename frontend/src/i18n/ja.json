@@ -166,6 +166,7 @@
     "allowNew": "ファイルやフォルダーの新規作成",
     "allowPublish": "新しい投稿やページの公開",
     "allowSignup": "ユーザーの新規登録を許可",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "（変更しない場合は空白のままにしてください）",
     "branding": "ブランディング",
     "brandingDirectoryPath": "ブランディングのディレクトリへのパス",
