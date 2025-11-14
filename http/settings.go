@@ -57,6 +57,7 @@ var settingsPutHandler = withAdmin(func(_ http.ResponseWriter, r *http.Request, 
 	d.settings.Tus = req.Tus
 	d.settings.Shell = req.Shell
 	d.settings.Commands = req.Commands
+	d.settings.HideLoginButton = req.HideLoginButton
 
 	err = d.store.Settings.Save(d.settings)
 	return errToStatus(err), err
