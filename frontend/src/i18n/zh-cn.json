@@ -166,6 +166,7 @@
     "allowNew": "创建新文件和文件夹",
     "allowPublish": "发布新的帖子与页面",
     "allowSignup": "允许用户注册",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "（留空以避免更改）",
     "branding": "品牌",
     "brandingDirectoryPath": "品牌信息文件夹路径",
