@@ -162,7 +162,6 @@
       >
         <div>
           <div class="item header">
-            <div></div>
             <div>
               <p
                 :class="{ active: nameSorted }"
@@ -304,6 +303,7 @@ import {
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
+import { removePrefix } from "@/api/utils";
 
 const showLimit = ref<number>(50);
 const columnWidth = ref<number>(280);
@@ -421,25 +421,19 @@ const isMobile = computed(() => {
 
 watch(req, () => {
   // Reset the show value
-  if (
-    window.sessionStorage.getItem("listFrozen") !== "true" &&
-    window.sessionStorage.getItem("modified") !== "true"
-  ) {
-    showLimit.value = 50;
+  showLimit.value = 50;
 
-    nextTick(() => {
-      // Ensures that the listing is displayed
-      // How much every listing item affects the window height
-      setItemWeight();
+  nextTick(() => {
+    // Ensures that the listing is displayed
+    // How much every listing item affects the window height
+    setItemWeight();
 
+    // Scroll to the item opened previously
+    if (!revealPreviousItem()) {
       // Fill and fit the window with listing items
       fillWindow(true);
-    });
-  }
-  if (req.value?.isDir) {
-    window.sessionStorage.setItem("listFrozen", "false");
-    window.sessionStorage.setItem("modified", "false");
-  }
+    }
+  });
 });
 
 onMounted(() => {
@@ -449,8 +443,11 @@ onMounted(() => {
   // How much every listing item affects the window height
   setItemWeight();
 
-  // Fill and fit the window with listing items
-  fillWindow(true);
+  // Scroll to the item opened previously
+  if (!revealPreviousItem()) {
+    // Fill and fit the window with listing items
+    fillWindow(true);
+  }
 
   // Add the needed event listeners to the window and document.
   window.addEventListener("keydown", keyEvent);
@@ -511,8 +508,11 @@ const keyEvent = (event: KeyboardEvent) => {
 
   switch (event.key) {
     case "f":
-      event.preventDefault();
-      layoutStore.showHover("search");
+    case "F":
+      if (event.shiftKey) {
+        event.preventDefault();
+        layoutStore.showHover("search");
+      }
       break;
     case "c":
     case "x":
@@ -587,10 +587,13 @@ const paste = (event: Event) => {
     return;
   }
 
+  const preselect = removePrefix(route.path) + items[0].name;
+
   let action = (overwrite: boolean, rename: boolean) => {
     api
       .copy(items, overwrite, rename)
       .then(() => {
+        fileStore.preselect = preselect;
         fileStore.reload = true;
       })
       .catch($showError);
@@ -602,6 +605,7 @@ const paste = (event: Event) => {
         .move(items, overwrite, rename)
         .then(() => {
           clipboardStore.resetClipboard();
+          fileStore.preselect = preselect;
           fileStore.reload = true;
         })
         .catch($showError);
@@ -729,6 +733,8 @@ const drop = async (event: DragEvent) => {
 
   const conflict = upload.checkConflict(files, items);
 
+  const preselect = removePrefix(path) + (files[0].fullPath || files[0].name);
+
   if (conflict) {
     layoutStore.showHover({
       prompt: "replace",
@@ -736,11 +742,13 @@ const drop = async (event: DragEvent) => {
         event.preventDefault();
         layoutStore.closeHovers();
         upload.handleFiles(files, path, false);
+        fileStore.preselect = preselect;
       },
       confirm: (event: Event) => {
         event.preventDefault();
         layoutStore.closeHovers();
         upload.handleFiles(files, path, true);
+        fileStore.preselect = preselect;
       },
     });
 
@@ -748,6 +756,7 @@ const drop = async (event: DragEvent) => {
   }
 
   upload.handleFiles(files, path);
+  fileStore.preselect = preselect;
 };
 
 const uploadInput = (event: Event) => {
@@ -950,5 +959,22 @@ const fillWindow = (fit = false) => {
 
   // Set the number of displayed items
   showLimit.value = showQuantity > totalItems ? totalItems : showQuantity;
+};
+
+const revealPreviousItem = () => {
+  if (!fileStore.req || !fileStore.oldReq) return;
+
+  const index = fileStore.selected[0];
+  if (index === undefined) return;
+
+  showLimit.value =
+    index + Math.ceil((window.innerHeight * 2) / itemWeight.value);
+
+  nextTick(() => {
+    const items = document.querySelectorAll("#listing .item");
+    items[index].scrollIntoView({ block: "center" });
+  });
+
+  return true;
 };
 </script>

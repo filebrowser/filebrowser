@@ -39,12 +39,19 @@ var docsCmd = &cobra.Command{
 	Use:    "docs",
 	Hidden: true,
 	Args:   cobra.NoArgs,
-	Run: func(cmd *cobra.Command, _ []string) {
-		dir := mustGetString(cmd.Flags(), "path")
-		generateDocs(rootCmd, dir)
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		dir, err := getString(cmd.Flags(), "path")
+		if err != nil {
+			return err
+		}
+
+		err = generateDocs(rootCmd, dir)
+		if err != nil {
+			return err
+		}
 		names := []string{}
 
-		err := filepath.Walk(dir, func(_ string, info os.FileInfo, err error) error {
+		err = filepath.Walk(dir, func(_ string, info os.FileInfo, err error) error {
 			if err != nil || info.IsDir() {
 				return err
 			}
@@ -56,30 +63,38 @@ var docsCmd = &cobra.Command{
 			names = append(names, info.Name())
 			return nil
 		})
+		if err != nil {
+			return err
+		}
 
-		checkErr(err)
 		printToc(names)
+		return nil
 	},
 }
 
-func generateDocs(cmd *cobra.Command, dir string) {
+func generateDocs(cmd *cobra.Command, dir string) error {
 	for _, c := range cmd.Commands() {
 		if !c.IsAvailableCommand() || c.IsAdditionalHelpTopicCommand() {
 			continue
 		}
 
-		generateDocs(c, dir)
+		err := generateDocs(c, dir)
+		if err != nil {
+			return err
+		}
 	}
 
 	basename := strings.Replace(cmd.CommandPath(), " ", "-", -1) + ".md"
 	filename := filepath.Join(dir, basename)
 	f, err := os.Create(filename)
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 	defer f.Close()
-	generateMarkdown(cmd, f)
+	return generateMarkdown(cmd, f)
 }
 
-func generateMarkdown(cmd *cobra.Command, w io.Writer) {
+func generateMarkdown(cmd *cobra.Command, w io.Writer) error {
 	cmd.InitDefaultHelpCmd()
 	cmd.InitDefaultHelpFlag()
 
@@ -108,7 +123,7 @@ func generateMarkdown(cmd *cobra.Command, w io.Writer) {
 
 	printOptions(buf, cmd)
 	_, err := buf.WriteTo(w)
-	checkErr(err)
+	return err
 }
 
 func generateFlagsTable(fs *pflag.FlagSet, buf io.StringWriter) {

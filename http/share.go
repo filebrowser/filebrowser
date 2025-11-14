@@ -77,7 +77,16 @@ var shareDeleteHandler = withPermShare(func(_ http.ResponseWriter, r *http.Reque
 		return http.StatusBadRequest, nil
 	}
 
-	err := d.store.Share.Delete(hash)
+	link, err := d.store.Share.GetByHash(hash)
+	if err != nil {
+		return errToStatus(err), err
+	}
+
+	if link.UserID != d.user.ID && !d.user.Perm.Admin {
+		return http.StatusForbidden, nil
+	}
+
+	err = d.store.Share.Delete(hash)
 	return errToStatus(err), err
 })
 
@@ -91,7 +100,7 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 		defer r.Body.Close()
 	}
 
-	bytes := make([]byte, 6) //nolint:gomnd
+	bytes := make([]byte, 6)
 	_, err := rand.Read(bytes)
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -130,7 +139,7 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 
 	var token string
 	if len(hash) > 0 {
-		tokenBuffer := make([]byte, 96) //nolint:gomnd
+		tokenBuffer := make([]byte, 96)
 		if _, err := rand.Read(tokenBuffer); err != nil {
 			return http.StatusInternalServerError, err
 		}

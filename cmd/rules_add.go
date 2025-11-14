@@ -21,9 +21,15 @@ var rulesAddCmd = &cobra.Command{
 	Short: "Add a global rule or user rule",
 	Long:  `Add a global rule or user rule.`,
 	Args:  cobra.ExactArgs(1),
-	Run: python(func(cmd *cobra.Command, args []string, d pythonData) {
-		allow := mustGetBool(cmd.Flags(), "allow")
-		regex := mustGetBool(cmd.Flags(), "regex")
+	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
+		allow, err := getBool(cmd.Flags(), "allow")
+		if err != nil {
+			return err
+		}
+		regex, err := getBool(cmd.Flags(), "regex")
+		if err != nil {
+			return err
+		}
 		exp := args[0]
 
 		if regex {
@@ -41,18 +47,16 @@ var rulesAddCmd = &cobra.Command{
 			rule.Path = exp
 		}
 
-		user := func(u *users.User) {
+		user := func(u *users.User) error {
 			u.Rules = append(u.Rules, rule)
-			err := d.store.Users.Save(u)
-			checkErr(err)
+			return d.store.Users.Save(u)
 		}
 
-		global := func(s *settings.Settings) {
+		global := func(s *settings.Settings) error {
 			s.Rules = append(s.Rules, rule)
-			err := d.store.Settings.Save(s)
-			checkErr(err)
+			return d.store.Settings.Save(s)
 		}
 
-		runRules(d.store, cmd, user, global)
+		return runRules(d.store, cmd, user, global)
 	}, pythonConfig{}),
 }

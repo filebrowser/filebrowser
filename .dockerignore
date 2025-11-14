@@ -1,5 +1,7 @@
-*
-!docker/*
-!healthcheck.sh
-!docker_config.json
-!filebrowser
+.venv
+dist
+.idea
+frontend/node_modules
+frontend/dist
+filebrowser.db
+docs/index.md

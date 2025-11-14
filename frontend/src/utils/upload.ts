@@ -132,7 +132,6 @@ export function handleFiles(
   layoutStore.closeHovers();
 
   for (const file of files) {
-    const id = uploadStore.id;
     let path = base;
 
     if (file.fullPath !== undefined) {
@@ -145,14 +144,8 @@ export function handleFiles(
       path += "/";
     }
 
-    const item: UploadItem = {
-      id,
-      path,
-      file,
-      overwrite,
-      ...(!file.isDir && { type: detectType((file.file as File).type) }),
-    };
+    const type = file.isDir ? "dir" : detectType((file.file as File).type);
 
-    uploadStore.upload(item);
+    uploadStore.upload(path, file.name, file.file ?? null, overwrite, type);
   }
 }

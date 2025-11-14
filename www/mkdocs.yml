@@ -1,0 +1,108 @@
+site_name: File Browser
+site_description: 'A web-based file browser and manager for your files'
+site_author: 'File Browser Contributors'
+site_url: 'https://filebrowser.org'
+
+repo_name: 'filebrowser/filebrowser'
+repo_url: 'https://github.com/filebrowser/filebrowser'
+
+copyright: 'Copyright &copy; 2025 File Browser Contributors'
+
+theme:
+  name: material
+  language: en
+  logo: static/logo.png
+  favicon: static/favicon.png
+  palette:
+    - scheme: default
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/lightbulb
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to light mode
+
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - navigation.instant
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - toc.follow
+    - toc.integrate
+
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+
+plugins:
+  - search:
+      separator: '[\\s\\-\\/]+'
+  - offline
+  - minify:
+      minify_html: true
+
+markdown_extensions:
+  - smarty
+  - sane_lists
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - meta
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.caret
+  - pymdownx.highlight:
+      anchor_linenums: true
+      use_pygments: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - callouts
+  - github-callouts
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/filebrowser/filebrowser
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/r/filebrowser/filebrowser
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: installation.md
+    - Configuration: configuration.md
+    - Deployment: deployment.md
+  - Contributing:
+    - Contributing: contributing.md
+    - Code of Conduct: code-of-conduct.md
+    - Security Policy: security.md
+  - Changelog: changelog.md

@@ -96,6 +96,9 @@ main {
   height: 3em;
   background: var(--background);
   border-bottom: 1px solid var(--divider);
+  position: sticky;
+  z-index: 1000;
+  top: 4em;
 }
 
 .breadcrumbs span,
