@@ -16,6 +16,7 @@ require (
 	github.com/marusama/semaphore/v2 v2.5.0
 	github.com/mholt/archives v0.1.5
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/samber/lo v1.52.0
 	github.com/shirou/gopsutil/v4 v4.25.10
 	github.com/spf13/afero v1.15.0
 	github.com/spf13/cobra v1.10.1

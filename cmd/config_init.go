@@ -25,12 +25,11 @@ override the options.`,
 	Args: cobra.NoArgs,
 	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
 		defaults := settings.UserDefaults{}
-		flags := cmd.Flags()
 		err := getUserDefaults(&defaults, true)
 		if err != nil {
 			return err
 		}
-		authMethod, auther, err := getAuthentication(flags)
+		authMethod, auther, err := getAuthentication()
 		if err != nil {
 			return err
 		}
@@ -38,9 +37,9 @@ override the options.`,
 		s := &settings.Settings{
 			Key:                   generateKey(),
 			Signup:                v.GetBool("signup"),
-			HideLoginButton:       v.GetBool("hide-login-button"),
-			CreateUserDir:         v.GetBool("create-user-dir"),
-			MinimumPasswordLength: v.GetUint("minimum-password-length"),
+			HideLoginButton:       v.GetBool("hideloginbutton"),
+			CreateUserDir:         v.GetBool("createuserdir"),
+			MinimumPasswordLength: v.GetUint("minimumpasswordlength"),
 			Shell:                 convertCmdStrToCmdArray(v.GetString("shell")),
 			AuthMethod:            authMethod,
 			Defaults:              defaults,
@@ -53,12 +52,12 @@ override the options.`,
 			},
 		}
 
-		s.FileMode, err = getAndParseMode("file-mode")
+		s.FileMode, err = getAndParseMode("filemode")
 		if err != nil {
 			return err
 		}
 
-		s.DirMode, err = getAndParseMode("dir-mode")
+		s.DirMode, err = getAndParseMode("dirmode")
 		if err != nil {
 			return err
 		}
