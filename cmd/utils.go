@@ -23,16 +23,8 @@ import (
 
 const dbPerms = 0640
 
-func returnErr(err error) error {
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func getString(flags *pflag.FlagSet, flag string) (string, error) {
-	s, err := flags.GetString(flag)
-	return s, returnErr(err)
+	return flags.GetString(flag)
 }
 
 func getMode(flags *pflag.FlagSet, flag string) (fs.FileMode, error) {
@@ -48,13 +40,11 @@ func getMode(flags *pflag.FlagSet, flag string) (fs.FileMode, error) {
 }
 
 func getBool(flags *pflag.FlagSet, flag string) (bool, error) {
-	b, err := flags.GetBool(flag)
-	return b, returnErr(err)
+	return flags.GetBool(flag)
 }
 
 func getUint(flags *pflag.FlagSet, flag string) (uint, error) {
-	b, err := flags.GetUint(flag)
-	return b, returnErr(err)
+	return flags.GetUint(flag)
 }
 
 func generateKey() []byte {
