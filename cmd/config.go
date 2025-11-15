@@ -10,6 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	v "github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/errors"
@@ -56,11 +57,8 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("dir-mode", fmt.Sprintf("%O", settings.DefaultDirMode), "Mode bits that new directories are created with")
 }
 
-func getAuthMethod(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, map[string]interface{}, error) {
-	methodStr, err := getString(flags, "auth.method")
-	if err != nil {
-		return "", nil, err
-	}
+func getAuthMethod(defaults ...interface{}) (settings.AuthMethod, map[string]interface{}, error) {
+	methodStr := v.GetString("auth.method")
 	method := settings.AuthMethod(methodStr)
 
 	var defaultAuther map[string]interface{}
@@ -87,12 +85,8 @@ func getAuthMethod(flags *pflag.FlagSet, defaults ...interface{}) (settings.Auth
 	return method, defaultAuther, nil
 }
 
-func getProxyAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
-	header, err := getString(flags, "auth.header")
-	if err != nil {
-		return nil, err
-	}
-
+func getProxyAuth(defaultAuther map[string]interface{}) (auth.Auther, error) {
+	header := v.GetString("auth.header")
 	if header == "" {
 		header = defaultAuther["header"].(string)
 	}
@@ -108,20 +102,11 @@ func getNoAuth() auth.Auther {
 	return &auth.NoAuth{}
 }
 
-func getJSONAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
+func getJSONAuth(defaultAuther map[string]interface{}) (auth.Auther, error) {
 	jsonAuth := &auth.JSONAuth{}
-	host, err := getString(flags, "recaptcha.host")
-	if err != nil {
-		return nil, err
-	}
-	key, err := getString(flags, "recaptcha.key")
-	if err != nil {
-		return nil, err
-	}
-	secret, err := getString(flags, "recaptcha.secret")
-	if err != nil {
-		return nil, err
-	}
+	host := v.GetString("recaptcha.host")
+	key := v.GetString("recaptcha.key")
+	secret := v.GetString("recaptcha.secret")
 
 	if key == "" {
 		if kmap, ok := defaultAuther["recaptcha"].(map[string]interface{}); ok {
@@ -145,12 +130,8 @@ func getJSONAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (au
 	return jsonAuth, nil
 }
 
-func getHookAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
-	command, err := getString(flags, "auth.command")
-	if err != nil {
-		return nil, err
-	}
-
+func getHookAuth(defaultAuther map[string]interface{}) (auth.Auther, error) {
+	command := v.GetString("auth.command")
 	if command == "" {
 		command = defaultAuther["command"].(string)
 	}
@@ -162,8 +143,8 @@ func getHookAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (au
 	return &auth.HookAuth{Command: command}, nil
 }
 
-func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, auth.Auther, error) {
-	method, defaultAuther, err := getAuthMethod(flags, defaults...)
+func getAuthentication(defaults ...interface{}) (settings.AuthMethod, auth.Auther, error) {
+	method, defaultAuther, err := getAuthMethod(defaults...)
 	if err != nil {
 		return "", nil, err
 	}
@@ -171,13 +152,13 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 	var auther auth.Auther
 	switch method {
 	case auth.MethodProxyAuth:
-		auther, err = getProxyAuth(flags, defaultAuther)
+		auther, err = getProxyAuth(defaultAuther)
 	case auth.MethodNoAuth:
 		auther = getNoAuth()
 	case auth.MethodJSONAuth:
-		auther, err = getJSONAuth(flags, defaultAuther)
+		auther, err = getJSONAuth(defaultAuther)
 	case auth.MethodHookAuth:
-		auther, err = getHookAuth(flags, defaultAuther)
+		auther, err = getHookAuth(defaultAuther)
 	default:
 		return "", nil, errors.ErrInvalidAuthMethod
 	}

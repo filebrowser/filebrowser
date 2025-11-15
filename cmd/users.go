@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	v "github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -82,11 +83,8 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.String("aceEditorTheme", "", "ace editor's syntax highlighting theme for users")
 }
 
-func getViewMode(flags *pflag.FlagSet) (users.ViewMode, error) {
-	viewModeStr, err := getString(flags, "viewMode")
-	if err != nil {
-		return "", err
-	}
+func getViewMode() (users.ViewMode, error) {
+	viewModeStr := v.GetString("viewmode")
 	viewMode := users.ViewMode(viewModeStr)
 	if viewMode != users.ListViewMode && viewMode != users.MosaicViewMode {
 		return "", errors.New("view mode must be \"" + string(users.ListViewMode) + "\" or \"" + string(users.MosaicViewMode) + "\"")
@@ -94,58 +92,55 @@ func getViewMode(flags *pflag.FlagSet) (users.ViewMode, error) {
 	return viewMode, nil
 }
 
-func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all bool) error {
-	var visitErr error
-	visit := func(flag *pflag.Flag) {
-		if visitErr != nil {
-			return
+func getUserDefaults(defaults *settings.UserDefaults, all bool) error {
+	keys := v.AllKeys()
+
+	for _, key := range keys {
+		if !all && !v.IsSet(key) {
+			continue
 		}
+
 		var err error
-		switch flag.Name {
+		switch key {
 		case "scope":
-			defaults.Scope, err = getString(flags, flag.Name)
+			defaults.Scope = v.GetString(key)
 		case "locale":
-			defaults.Locale, err = getString(flags, flag.Name)
-		case "viewMode":
-			defaults.ViewMode, err = getViewMode(flags)
-		case "singleClick":
-			defaults.SingleClick, err = getBool(flags, flag.Name)
-		case "aceEditorTheme":
-			defaults.AceEditorTheme, err = getString(flags, flag.Name)
+			defaults.Locale = v.GetString(key)
+		case "viewmode":
+			defaults.ViewMode, err = getViewMode()
+		case "singleclick":
+			defaults.SingleClick = v.GetBool(key)
+		case "aceeditortheme":
+			defaults.AceEditorTheme = v.GetString(key)
 		case "perm.admin":
-			defaults.Perm.Admin, err = getBool(flags, flag.Name)
+			defaults.Perm.Admin = v.GetBool(key)
 		case "perm.execute":
-			defaults.Perm.Execute, err = getBool(flags, flag.Name)
+			defaults.Perm.Execute = v.GetBool(key)
 		case "perm.create":
-			defaults.Perm.Create, err = getBool(flags, flag.Name)
+			defaults.Perm.Create = v.GetBool(key)
 		case "perm.rename":
-			defaults.Perm.Rename, err = getBool(flags, flag.Name)
+			defaults.Perm.Rename = v.GetBool(key)
 		case "perm.modify":
-			defaults.Perm.Modify, err = getBool(flags, flag.Name)
+			defaults.Perm.Modify = v.GetBool(key)
 		case "perm.delete":
-			defaults.Perm.Delete, err = getBool(flags, flag.Name)
+			defaults.Perm.Delete = v.GetBool(key)
 		case "perm.share":
-			defaults.Perm.Share, err = getBool(flags, flag.Name)
+			defaults.Perm.Share = v.GetBool(key)
 		case "perm.download":
-			defaults.Perm.Download, err = getBool(flags, flag.Name)
+			defaults.Perm.Download = v.GetBool(key)
 		case "commands":
-			defaults.Commands, err = flags.GetStringSlice(flag.Name)
+			defaults.Commands = v.GetStringSlice(key)
 		case "sorting.by":
-			defaults.Sorting.By, err = getString(flags, flag.Name)
+			defaults.Sorting.By = v.GetString(key)
 		case "sorting.asc":
-			defaults.Sorting.Asc, err = getBool(flags, flag.Name)
-		case "hideDotfiles":
-			defaults.HideDotfiles, err = getBool(flags, flag.Name)
+			defaults.Sorting.Asc = v.GetBool(key)
+		case "hidedotfiles":
+			defaults.HideDotfiles = v.GetBool(key)
 		}
 		if err != nil {
-			visitErr = err
+			return err
 		}
 	}
 
-	if all {
-		flags.VisitAll(visit)
-	} else {
-		flags.Visit(visit)
-	}
-	return visitErr
+	return nil
 }

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	v "github.com/spf13/viper"
 )
 
 func init() {
@@ -19,11 +20,7 @@ var cmdsLsCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		evt, err := getString(cmd.Flags(), "event")
-		if err != nil {
-			return err
-		}
-
+		evt := v.GetString("event")
 		if evt == "" {
 			printEvents(s.Commands)
 		} else {
