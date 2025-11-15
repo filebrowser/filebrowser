@@ -11,6 +11,7 @@ import (
 )
 
 const DefaultUsersHomeBasePath = "/users"
+const DefaultLogoutPage = "/login"
 const DefaultMinimumPasswordLength = 12
 const DefaultFileMode = 0640
 const DefaultDirMode = 0750
@@ -27,6 +28,7 @@ type Settings struct {
 	UserHomeBasePath      string              `json:"userHomeBasePath"`
 	Defaults              UserDefaults        `json:"defaults"`
 	AuthMethod            AuthMethod          `json:"authMethod"`
+	LogoutPage            string              `json:"logoutPage"`
 	Branding              Branding            `json:"branding"`
 	Tus                   Tus                 `json:"tus"`
 	Commands              map[string][]string `json:"commands"`
