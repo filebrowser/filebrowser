@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.46.1](https://github.com/filebrowser/filebrowser/compare/v2.46.0...v2.46.1) (2025-11-15)
+
+
+### Bug Fixes
+
+* env key replacer and remove unused function ([#5547](https://github.com/filebrowser/filebrowser/issues/5547)) ([13814e1](https://github.com/filebrowser/filebrowser/commit/13814e11197ebd9101940883e3ca85998f86d442))
+* remove duplicated 'hide-defaults' flag (is 'hideDefaults') ([#5548](https://github.com/filebrowser/filebrowser/issues/5548)) ([ffc8504](https://github.com/filebrowser/filebrowser/commit/ffc850454e4cb8f10b970511681d6c627340afc7))
+
 ## [2.46.0](https://github.com/filebrowser/filebrowser/compare/v2.45.3...v2.46.0) (2025-11-14)
 
 
