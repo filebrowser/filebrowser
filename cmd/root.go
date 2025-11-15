@@ -13,7 +13,6 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strings"
 	"syscall"
 	"time"
 
@@ -37,7 +36,32 @@ import (
 
 var (
 	cfgFile string
+
+	flatNamesMigrations = map[string]string{
+		"file-mode":                        "fileMode",
+		"dir-mode":                         "dirMode",
+		"hide-login-button":                "hideLoginButton",
+		"create-user-dir":                  "createUserDir",
+		"minimum-password-length":          "minimumPasswordLength",
+		"socket-perm":                      "socketPerm",
+		"disable-thumbnails":               "disableThumbnails",
+		"disable-preview-resize":           "disablePreviewResize",
+		"disable-exec":                     "disableExec",
+		"disable-type-detection-by-header": "disableTypeDetectionByHeader",
+		"img-processors":                   "imageProcessors",
+		"cache-dir":                        "cacheDir",
+		"token-expiration-time":            "tokenExpirationTime",
+		"baseurl":                          "baseURL",
+	}
 )
+
+func migrateFlagNames(f *pflag.FlagSet, name string) pflag.NormalizedName {
+	if newName, ok := flatNamesMigrations[name]; ok {
+		name = newName
+	}
+
+	return pflag.NormalizedName(name)
+}
 
 func init() {
 	cobra.OnInitialize(initConfig)
@@ -56,6 +80,8 @@ func init() {
 	flags.String("password", "", "hashed password for the first user when using quick config")
 
 	addServerFlags(flags)
+
+	rootCmd.SetGlobalNormalizationFunc(migrateFlagNames)
 }
 
 func addServerFlags(flags *pflag.FlagSet) {
@@ -66,15 +92,15 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("key", "k", "", "tls key")
 	flags.StringP("root", "r", ".", "root to prepend to relative paths")
 	flags.String("socket", "", "socket to listen to (cannot be used with address, port, cert nor key flags)")
-	flags.Uint32("socket-perm", 0666, "unix socket file permissions")
-	flags.StringP("baseurl", "b", "", "base url")
-	flags.String("cache-dir", "", "file cache directory (disabled if empty)")
-	flags.String("token-expiration-time", "2h", "user session timeout")
-	flags.Int("img-processors", 4, "image processors count")
-	flags.Bool("disable-thumbnails", false, "disable image thumbnails")
-	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
-	flags.Bool("disable-exec", true, "disables Command Runner feature")
-	flags.Bool("disable-type-detection-by-header", false, "disables type detection by reading file headers")
+	flags.Uint32("socketPerm", 0666, "unix socket file permissions")
+	flags.StringP("baseURL", "b", "", "base url")
+	flags.String("cacheDir", "", "file cache directory (disabled if empty)")
+	flags.String("tokenExpirationTime", "2h", "user session timeout")
+	flags.Int("imageProcessors", 4, "image processors count")
+	flags.Bool("disableThumbnails", false, "disable image thumbnails")
+	flags.Bool("disablePreviewResize", false, "disable resize of image previews")
+	flags.Bool("disableExec", true, "disables Command Runner feature")
+	flags.Bool("disableTypeDetectionByHeader", false, "disables type detection by reading file headers")
 }
 
 var rootCmd = &cobra.Command{
@@ -89,9 +115,8 @@ it. Don't worry: you don't need to setup a separate database server.
 We're using Bolt DB which is a single file database and all managed
 by ourselves.
 
-For this specific command, all the flags you have available (except
-"config" for the configuration file), can be given either through
-environment variables or configuration files.
+All the flags you have available (except "config" for the configuration file),
+can be given either through environment variables or configuration files.
 
 If you don't set "config", it will look for a configuration file called
 .filebrowser.{json, toml, yaml, yml} in the following directories:
@@ -126,17 +151,14 @@ user created with the credentials from options "username" and "password".`,
 		}
 
 		// build img service
-		workersCount, err := cmd.Flags().GetInt("img-processors")
-		if err != nil {
-			return err
-		}
+		workersCount := v.GetInt("imageprocessors")
 		if workersCount < 1 {
 			return errors.New("image resize workers count could not be < 1")
 		}
 		imgSvc := img.New(workersCount)
 
 		var fileCache diskcache.Interface = diskcache.NewNoOp()
-		cacheDir, err := cmd.Flags().GetString("cache-dir")
+		cacheDir, err := cmd.Flags().GetString("cachedir")
 		if err != nil {
 			return err
 		}
@@ -169,7 +191,7 @@ user created with the credentials from options "username" and "password".`,
 			if err != nil {
 				return err
 			}
-			socketPerm, err := cmd.Flags().GetUint32("socket-perm")
+			socketPerm, err := cmd.Flags().GetUint32("socketperm")
 			if err != nil {
 				return err
 			}
@@ -311,16 +333,16 @@ func getRunParams(st *storage.Storage) (*settings.Server, error) {
 		server.Socket = ""
 	}
 
-	disableThumbnails := v.GetBool("disable-thumbnails")
+	disableThumbnails := v.GetBool("disablethumbnails")
 	server.EnableThumbnails = !disableThumbnails
 
-	disablePreviewResize := v.GetBool("disable-preview-resize")
+	disablePreviewResize := v.GetBool("disablepreviewresize")
 	server.ResizePreview = !disablePreviewResize
 
-	disableTypeDetectionByHeader := v.GetBool("disable-type-detection-by-header")
+	disableTypeDetectionByHeader := v.GetBool("disabletypedetectionbyheader")
 	server.TypeDetectionByHeader = !disableTypeDetectionByHeader
 
-	disableExec := v.GetBool("disable-exec")
+	disableExec := v.GetBool("disableexec")
 	server.EnableExec = !disableExec
 
 	if server.EnableExec {
@@ -330,7 +352,7 @@ func getRunParams(st *storage.Storage) (*settings.Server, error) {
 		log.Println("WARNING: read https://github.com/filebrowser/filebrowser/issues/5199")
 	}
 
-	if val, set := getStringParamB("token-expiration-time"); set {
+	if val, set := getStringParamB("tokenexpirationtime"); set {
 		server.TokenExpirationTime = val
 	}
 
@@ -479,7 +501,6 @@ func initConfig() {
 
 	v.SetEnvPrefix("FB")
 	v.AutomaticEnv()
-	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 
 	if err := v.ReadInConfig(); err != nil {
 		var configParseError v.ConfigParseError

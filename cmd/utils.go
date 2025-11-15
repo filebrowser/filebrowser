@@ -12,7 +12,9 @@ import (
 	"strings"
 
 	"github.com/asdine/storm/v3"
+	"github.com/samber/lo"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	v "github.com/spf13/viper"
 	yaml "gopkg.in/yaml.v3"
 
@@ -74,8 +76,26 @@ func dbExists(path string) (bool, error) {
 	return false, err
 }
 
+// Generate the replacements for all environment variables. This allows to
+// use FB_BRANDING_DISABLE_EXTERNAL environment variables, even when the
+// option name is branding.disableexternal.
+func generateEnvKeyReplacements(cmd *cobra.Command) []string {
+	replacements := []string{}
+
+	cmd.Flags().VisitAll(func(f *pflag.Flag) {
+		oldName := strings.ToUpper(f.Name)
+		newName := strings.ToUpper(lo.SnakeCase(f.Name))
+		replacements = append(replacements, oldName, newName)
+	})
+
+	return replacements
+}
+
 func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) error {
+		v.SetEnvKeyReplacer(strings.NewReplacer(generateEnvKeyReplacements(cmd)...))
+
+		// Bind the flags
 		err := v.BindPFlags(cmd.Flags())
 		if err != nil {
 			panic(err)

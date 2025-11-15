@@ -32,9 +32,9 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	addServerFlags(flags)
 	addUserFlags(flags)
 	flags.BoolP("signup", "s", false, "allow users to signup")
-	flags.Bool("hide-login-button", false, "hide login button from public pages")
-	flags.Bool("create-user-dir", false, "generate user's home directory automatically")
-	flags.Uint("minimum-password-length", settings.DefaultMinimumPasswordLength, "minimum password length for new users")
+	flags.Bool("hideLoginButton", false, "hide login button from public pages")
+	flags.Bool("createUserDir", false, "generate user's home directory automatically")
+	flags.Uint("minimumPasswordLength", settings.DefaultMinimumPasswordLength, "minimum password length for new users")
 	flags.String("shell", "", "shell command to which other commands should be appended")
 
 	flags.String("auth.method", string(auth.MethodJSONAuth), "authentication type")
@@ -53,8 +53,8 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.Bool("branding.disableUsedPercentage", false, "disable used disk percentage graph")
 	// NB: these are string so they can be presented as octal in the help text
 	// as that's the conventional representation for modes in Unix.
-	flags.String("file-mode", fmt.Sprintf("%O", settings.DefaultFileMode), "Mode bits that new files are created with")
-	flags.String("dir-mode", fmt.Sprintf("%O", settings.DefaultDirMode), "Mode bits that new directories are created with")
+	flags.String("fileMode", fmt.Sprintf("%O", settings.DefaultFileMode), "Mode bits that new files are created with")
+	flags.String("dirMode", fmt.Sprintf("%O", settings.DefaultDirMode), "Mode bits that new directories are created with")
 }
 
 func getAuthMethod(defaults ...interface{}) (settings.AuthMethod, map[string]interface{}, error) {

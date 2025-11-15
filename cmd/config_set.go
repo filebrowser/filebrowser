@@ -17,7 +17,6 @@ var configSetCmd = &cobra.Command{
 you want to change. Other options will remain unchanged.`,
 	Args: cobra.NoArgs,
 	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
-		flags := cmd.Flags()
 		set, err := d.store.Settings.Get()
 		if err != nil {
 			return err
@@ -52,7 +51,7 @@ you want to change. Other options will remain unchanged.`,
 				ser.Port = v.GetString(key)
 			case "log":
 				ser.Log = v.GetString(key)
-			case "hide-login-button":
+			case "hideloginbutton":
 				set.HideLoginButton = v.GetBool(key)
 			case "signup":
 				set.Signup = v.GetBool(key)
@@ -62,9 +61,9 @@ you want to change. Other options will remain unchanged.`,
 				var shell string
 				shell = v.GetString(key)
 				set.Shell = convertCmdStrToCmdArray(shell)
-			case "create-user-dir":
+			case "createuserdir":
 				set.CreateUserDir = v.GetBool(key)
-			case "minimum-password-length":
+			case "minimumpasswordlength":
 				set.MinimumPasswordLength = v.GetUint(key)
 			case "branding.name":
 				set.Branding.Name = v.GetString(key)
@@ -78,9 +77,9 @@ you want to change. Other options will remain unchanged.`,
 				set.Branding.DisableUsedPercentage = v.GetBool(key)
 			case "branding.files":
 				set.Branding.Files = v.GetString(key)
-			case "file-mode":
+			case "filemode":
 				set.FileMode, err = getAndParseMode(key)
-			case "dir-mode":
+			case "dirmode":
 				set.DirMode, err = getAndParseMode(key)
 			}
 
