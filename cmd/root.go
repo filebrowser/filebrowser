@@ -456,13 +456,14 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) error {
 	}
 
 	ser := &settings.Server{
-		BaseURL: getStringParam(flags, "baseurl"),
-		Port:    getStringParam(flags, "port"),
-		Log:     getStringParam(flags, "log"),
-		TLSKey:  getStringParam(flags, "key"),
-		TLSCert: getStringParam(flags, "cert"),
-		Address: getStringParam(flags, "address"),
-		Root:    getStringParam(flags, "root"),
+		BaseURL:             getStringParam(flags, "baseurl"),
+		Port:                getStringParam(flags, "port"),
+		Log:                 getStringParam(flags, "log"),
+		TLSKey:              getStringParam(flags, "key"),
+		TLSCert:             getStringParam(flags, "cert"),
+		Address:             getStringParam(flags, "address"),
+		Root:                getStringParam(flags, "root"),
+		TokenExpirationTime: getStringParam(flags, "token-expiration-time"),
 	}
 
 	err = d.store.Settings.SaveServer(ser)

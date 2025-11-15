@@ -168,15 +168,18 @@ override the options.`,
 			return err
 		}
 
+		tokenExpirationTime := getStringParam(flags, "token-expiration-time")
+
 		ser := &settings.Server{
-			Address: address,
-			Socket:  socket,
-			Root:    root,
-			BaseURL: baseURL,
-			TLSKey:  tlsKey,
-			TLSCert: cert,
-			Port:    port,
-			Log:     log,
+			Address:             address,
+			Socket:              socket,
+			Root:                root,
+			BaseURL:             baseURL,
+			TLSKey:              tlsKey,
+			TLSCert:             cert,
+			Port:                port,
+			Log:                 log,
+			TokenExpirationTime: tokenExpirationTime,
 		}
 
 		err = d.store.Settings.Save(s)
