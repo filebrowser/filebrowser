@@ -8,6 +8,52 @@ In some situations, it is easier to use environment variables instead of flags. 
 
 All flags should be available as environment variables prefixed with `FB_`. For example, the flag `--disable-thumbnails` is available as `FB_DISABLE_THUMBNAILS`.
 
+## Session Timeout
+
+By default, user sessions expire after **2 hours**. If you're uploading large files over slower connections, you may need to increase this timeout to prevent sessions from expiring mid-upload. You can configure the session timeout using the `token-expiration-time` setting.
+
+### Configuration File
+
+Add the setting to your configuration file (e.g., `/config/settings.json` in Docker):
+
+```json
+{
+  "token-expiration-time": "6h"
+}
+```
+
+> [!IMPORTANT]
+>
+> The key must use kebab-case format: `token-expiration-time`. Valid duration formats include `"2h"`, `"30m"`, `"24h"`, or combinations like `"2h30m"`.
+
+### Environment Variable
+
+Set the corresponding environment variable:
+
+```sh
+docker run -e FB_TOKEN_EXPIRATION_TIME=6h ...
+```
+
+### CLI Flag
+
+Pass the flag when starting File Browser:
+
+```sh
+filebrowser --token-expiration-time 6h
+```
+
+### Updating an Existing Installation
+
+For existing databases, update the stored value with:
+
+```sh
+filebrowser config set --token-expiration-time 6h
+```
+
+> [!NOTE]
+>
+> Configuration values are saved to the database during initial setup. Updating the config file or environment variables alone **will not** modify an existing database entry. Use the `config set` command to update values in an existing installation.
+
 ## Custom Branding
 
 You can customize File Browser to use your own branding. This includes the following:
@@ -16,8 +62,8 @@ You can customize File Browser to use your own branding. This includes the follo
 - **Disable External Links**: disables all external links, except to the documentation.
 - **Disable Used Percentage**: disables the disk usage information on the sidebar.
 - **Branding Folder**: directory which can contain two items:
-    - `custom.css`, containing a global stylesheet to apply to all users.
-    - `img`, a directory which can replace all the [default logotypes](https://github.com/filebrowser/filebrowser/tree/master/frontend/public/img) from the application.
+  - `custom.css`, containing a global stylesheet to apply to all users.
+  - `img`, a directory which can replace all the [default logotypes](https://github.com/filebrowser/filebrowser/tree/master/frontend/public/img) from the application.
 
 This can be configured by the administrator user, under **Settings → Global Settings**. You can also update the configuration directly using the CLI:
 
@@ -27,7 +73,7 @@ filebrowser config set --branding.name "My Name" \
   --branding.disableExternal
 ```
 
-> [!NOTE] 
+> [!NOTE]
 >
 > If you are using Docker, you need to mount a volume with the `branding` directory in order for it to be accessible from within the container.
 
@@ -44,7 +90,7 @@ img/
     (...)
 ```
 
-Note that there are different versions of the same favicon in multiple sizes. To replace all of them, you need to add versions for all of them. You can use the [Real Favicon Generator](https://realfavicongenerator.net/) to generate these for you from your base image. 
+Note that there are different versions of the same favicon in multiple sizes. To replace all of them, you need to add versions for all of them. You can use the [Real Favicon Generator](https://realfavicongenerator.net/) to generate these for you from your base image.
 
 > [!NOTE]
 >
@@ -89,7 +135,7 @@ filebrowser config set --auth.method=proxy --auth.header=X-My-Header
 Where `X-My-Header` is the HTTP header provided by your proxy with the username.
 
 > [!WARNING]
-> 
+>
 > File Browser will blindly trust the provided header. If the proxy can be bypassed, an attacker could simply attach the header and get admin access.
 
 ### No Authentication
@@ -108,19 +154,19 @@ filebrowser config set --auth.method=noauth
 
 The command runner is a feature that enables you to execute any shell command you want before or after a certain event. Right now, these are the events:
 
-* Copy
-* Rename
-* Upload
-* Delete
-* Save
+- Copy
+- Rename
+- Upload
+- Delete
+- Save
 
 Also, during the execution of the commands set for those hooks, there will be some environment variables available to help you perform your commands:
 
-* `FILE` with the full absolute path to the changed file.
-* `SCOPE` with the path to user's scope.
-* `TRIGGER` with the name of the event.
-* `USERNAME` with the user's username.
-* `DESTINATION` with the absolute path to the destination. Only used for **copy** and **rename.**
+- `FILE` with the full absolute path to the changed file.
+- `SCOPE` with the path to user's scope.
+- `TRIGGER` with the name of the event.
+- `USERNAME` with the user's username.
+- `DESTINATION` with the absolute path to the destination. Only used for **copy** and **rename.**
 
 At this moment, you can edit the commands via the command line interface, using the following commands \(please check the flag `--help` to know more about them\):
 
@@ -142,16 +188,16 @@ Within File Browser you can toggle the shell (`< >` icon at the top right) and t
 
 By default no commands are available as the command list is empty. To enable commands these need to either be done on a per-user basis (including for the Admin user).
 
-You can do this by adding them in Settings > User Management > (edit user) > Commands or to *apply to all new users created from that point forward* they can be set in Settings > Global Settings
+You can do this by adding them in Settings > User Management > (edit user) > Commands or to _apply to all new users created from that point forward_ they can be set in Settings > Global Settings
 
 > [!NOTE]
-> 
+>
 > If using a proxy manager then remember to enable websockets support for the File Browser proxy
 
 > [!NOTE]
-> 
-> If using Docker and you want to add a new command that is not in the base image then you will need to build a custom Docker image using `filebrowser/filebrowser` as a base image.  For example to add 7z:
-> 
+>
+> If using Docker and you want to add a new command that is not in the base image then you will need to build a custom Docker image using `filebrowser/filebrowser` as a base image. For example to add 7z:
+>
 > ```docker
 > FROM filebrowser/filebrowser
 > RUN sudo apt install p7zip-full
