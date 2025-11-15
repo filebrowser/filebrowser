@@ -40,7 +40,7 @@ func (a JSONAuth) Auth(r *http.Request, usr users.Store, _ *settings.Settings, s
 
 	// If ReCaptcha is enabled, check the code.
 	if a.ReCaptcha != nil && a.ReCaptcha.Secret != "" {
-		ok, err := a.ReCaptcha.Ok(cred.ReCaptcha) //nolint:govet
+		ok, err := a.ReCaptcha.Ok(cred.ReCaptcha)
 
 		if err != nil {
 			return nil, err

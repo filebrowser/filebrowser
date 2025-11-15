@@ -70,7 +70,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("baseurl", "b", "", "base url")
 	flags.String("cache-dir", "", "file cache directory (disabled if empty)")
 	flags.String("token-expiration-time", "2h", "user session timeout")
-	flags.Int("img-processors", 4, "image processors count") //nolint:mnd
+	flags.Int("img-processors", 4, "image processors count")
 	flags.Bool("disable-thumbnails", false, "disable image thumbnails")
 	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
 	flags.Bool("disable-exec", true, "disables Command Runner feature")
@@ -141,7 +141,7 @@ user created with the credentials from options "username" and "password".`,
 			return err
 		}
 		if cacheDir != "" {
-			if err := os.MkdirAll(cacheDir, 0700); err != nil { //nolint:govet
+			if err := os.MkdirAll(cacheDir, 0700); err != nil {
 				return fmt.Errorf("can't make directory %s: %w", cacheDir, err)
 			}
 			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
@@ -169,7 +169,7 @@ user created with the credentials from options "username" and "password".`,
 			if err != nil {
 				return err
 			}
-			socketPerm, err := cmd.Flags().GetUint32("socket-perm") //nolint:govet
+			socketPerm, err := cmd.Flags().GetUint32("socket-perm")
 			if err != nil {
 				return err
 			}
@@ -178,7 +178,7 @@ user created with the credentials from options "username" and "password".`,
 				return err
 			}
 		case server.TLSKey != "" && server.TLSCert != "":
-			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey) //nolint:govet
+			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey)
 			if err != nil {
 				return err
 			}
@@ -233,7 +233,7 @@ user created with the credentials from options "username" and "password".`,
 		sig := <-sigc
 		log.Println("Got signal:", sig)
 
-		shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second) //nolint:mnd
+		shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second)
 		defer shutdownRelease()
 
 		if err := srv.Shutdown(shutdownCtx); err != nil {
@@ -256,7 +256,6 @@ user created with the credentials from options "username" and "password".`,
 	}, pythonConfig{allowNoDB: true}),
 }
 
-//nolint:gocyclo
 func getRunParams(flags *pflag.FlagSet, st *storage.Storage) (*settings.Server, error) {
 	server, err := st.Settings.GetServer()
 	if err != nil {

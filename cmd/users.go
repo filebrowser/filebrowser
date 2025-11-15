@@ -94,7 +94,6 @@ func getViewMode(flags *pflag.FlagSet) (users.ViewMode, error) {
 	return viewMode, nil
 }
 
-//nolint:gocyclo
 func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all bool) error {
 	var visitErr error
 	visit := func(flag *pflag.Flag) {

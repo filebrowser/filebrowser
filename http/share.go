@@ -111,7 +111,6 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 	var expire int64 = 0
 
 	if body.Expires != "" {
-		//nolint:govet
 		num, err := strconv.Atoi(body.Expires)
 		if err != nil {
 			return http.StatusInternalServerError, err
