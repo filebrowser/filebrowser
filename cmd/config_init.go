@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	v "github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
 )
@@ -24,145 +25,52 @@ override the options.`,
 	Args: cobra.NoArgs,
 	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
 		defaults := settings.UserDefaults{}
-		flags := cmd.Flags()
-		err := getUserDefaults(flags, &defaults, true)
+		err := getUserDefaults(&defaults, true)
 		if err != nil {
 			return err
 		}
-		authMethod, auther, err := getAuthentication(flags)
-		if err != nil {
-			return err
-		}
-
-		key := generateKey()
-
-		signup, err := getBool(flags, "signup")
-		if err != nil {
-			return err
-		}
-
-		hideLoginButton, err := getBool(flags, "hide-login-button")
-		if err != nil {
-			return err
-		}
-
-		createUserDir, err := getBool(flags, "create-user-dir")
-		if err != nil {
-			return err
-		}
-
-		minLength, err := getUint(flags, "minimum-password-length")
-		if err != nil {
-			return err
-		}
-
-		shell, err := getString(flags, "shell")
-		if err != nil {
-			return err
-		}
-
-		brandingName, err := getString(flags, "branding.name")
-		if err != nil {
-			return err
-		}
-
-		brandingDisableExternal, err := getBool(flags, "branding.disableExternal")
-		if err != nil {
-			return err
-		}
-
-		brandingDisableUsedPercentage, err := getBool(flags, "branding.disableUsedPercentage")
-		if err != nil {
-			return err
-		}
-
-		brandingTheme, err := getString(flags, "branding.theme")
-		if err != nil {
-			return err
-		}
-
-		brandingFiles, err := getString(flags, "branding.files")
+		authMethod, auther, err := getAuthentication()
 		if err != nil {
 			return err
 		}
 
 		s := &settings.Settings{
-			Key:                   key,
-			Signup:                signup,
-			HideLoginButton:       hideLoginButton,
-			CreateUserDir:         createUserDir,
-			MinimumPasswordLength: minLength,
-			Shell:                 convertCmdStrToCmdArray(shell),
+			Key:                   generateKey(),
+			Signup:                v.GetBool("signup"),
+			HideLoginButton:       v.GetBool("hideloginbutton"),
+			CreateUserDir:         v.GetBool("createuserdir"),
+			MinimumPasswordLength: v.GetUint("minimumpasswordlength"),
+			Shell:                 convertCmdStrToCmdArray(v.GetString("shell")),
 			AuthMethod:            authMethod,
 			Defaults:              defaults,
 			Branding: settings.Branding{
-				Name:                  brandingName,
-				DisableExternal:       brandingDisableExternal,
-				DisableUsedPercentage: brandingDisableUsedPercentage,
-				Theme:                 brandingTheme,
-				Files:                 brandingFiles,
+				Name:                  v.GetString("branding.name"),
+				DisableExternal:       v.GetBool("branding.disableexternal"),
+				DisableUsedPercentage: v.GetBool("branding.disableusedpercentage"),
+				Theme:                 v.GetString("branding.theme"),
+				Files:                 v.GetString("branding.files"),
 			},
 		}
 
-		s.FileMode, err = getMode(flags, "file-mode")
+		s.FileMode, err = getAndParseMode("filemode")
 		if err != nil {
 			return err
 		}
 
-		s.DirMode, err = getMode(flags, "dir-mode")
-		if err != nil {
-			return err
-		}
-
-		address, err := getString(flags, "address")
-		if err != nil {
-			return err
-		}
-
-		socket, err := getString(flags, "socket")
-		if err != nil {
-			return err
-		}
-
-		root, err := getString(flags, "root")
-		if err != nil {
-			return err
-		}
-
-		baseURL, err := getString(flags, "baseurl")
-		if err != nil {
-			return err
-		}
-
-		tlsKey, err := getString(flags, "key")
-		if err != nil {
-			return err
-		}
-
-		cert, err := getString(flags, "cert")
-		if err != nil {
-			return err
-		}
-
-		port, err := getString(flags, "port")
-		if err != nil {
-			return err
-		}
-
-		log, err := getString(flags, "log")
+		s.DirMode, err = getAndParseMode("dirmode")
 		if err != nil {
 			return err
 		}
 
 		ser := &settings.Server{
-			Address: address,
-			Socket:  socket,
-			Root:    root,
-			BaseURL: baseURL,
-			TLSKey:  tlsKey,
-			TLSCert: cert,
-			Port:    port,
-			Log:     log,
+			Address: v.GetString("address"),
+			Socket:  v.GetString("socket"),
+			Root:    v.GetString("root"),
+			BaseURL: v.GetString("baseurl"),
+			TLSKey:  v.GetString("key"),
+			TLSCert: v.GetString("cert"),
+			Port:    v.GetString("port"),
+			Log:     v.GetString("log"),
 		}
 
 		err = d.store.Settings.Save(s)

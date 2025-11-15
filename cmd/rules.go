@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
+	v "github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -30,7 +30,7 @@ rules.`,
 }
 
 func runRules(st *storage.Storage, cmd *cobra.Command, usersFn func(*users.User) error, globalFn func(*settings.Settings) error) error {
-	id, err := getUserIdentifier(cmd.Flags())
+	id, err := getUserIdentifier()
 	if err != nil {
 		return err
 	}
@@ -68,15 +68,9 @@ func runRules(st *storage.Storage, cmd *cobra.Command, usersFn func(*users.User)
 	return nil
 }
 
-func getUserIdentifier(flags *pflag.FlagSet) (interface{}, error) {
-	id, err := getUint(flags, "id")
-	if err != nil {
-		return nil, err
-	}
-	username, err := getString(flags, "username")
-	if err != nil {
-		return nil, err
-	}
+func getUserIdentifier() (interface{}, error) {
+	id := v.GetUint("id")
+	username := v.GetString("username")
 
 	if id != 0 {
 		return id, nil

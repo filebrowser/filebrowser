@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
+	v "github.com/spf13/viper"
 )
 
 func init() {
@@ -17,7 +17,6 @@ var configSetCmd = &cobra.Command{
 you want to change. Other options will remain unchanged.`,
 	Args: cobra.NoArgs,
 	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
-		flags := cmd.Flags()
 		set, err := d.store.Settings.Get()
 		if err != nil {
 			return err
@@ -29,65 +28,67 @@ you want to change. Other options will remain unchanged.`,
 		}
 
 		hasAuth := false
-		flags.Visit(func(flag *pflag.Flag) {
-			if err != nil {
-				return
+
+		for _, key := range v.AllKeys() {
+			if !v.IsSet(key) {
+				continue
 			}
-			switch flag.Name {
+
+			switch key {
 			case "baseurl":
-				ser.BaseURL, err = getString(flags, flag.Name)
+				ser.BaseURL = v.GetString(key)
 			case "root":
-				ser.Root, err = getString(flags, flag.Name)
+				ser.Root = v.GetString(key)
 			case "socket":
-				ser.Socket, err = getString(flags, flag.Name)
+				ser.Socket = v.GetString(key)
 			case "cert":
-				ser.TLSCert, err = getString(flags, flag.Name)
+				ser.TLSCert = v.GetString(key)
 			case "key":
-				ser.TLSKey, err = getString(flags, flag.Name)
+				ser.TLSKey = v.GetString(key)
 			case "address":
-				ser.Address, err = getString(flags, flag.Name)
+				ser.Address = v.GetString(key)
 			case "port":
-				ser.Port, err = getString(flags, flag.Name)
+				ser.Port = v.GetString(key)
 			case "log":
-				ser.Log, err = getString(flags, flag.Name)
-			case "hide-login-button":
-				set.HideLoginButton, err = getBool(flags, flag.Name)
+				ser.Log = v.GetString(key)
+			case "hideloginbutton":
+				set.HideLoginButton = v.GetBool(key)
 			case "signup":
-				set.Signup, err = getBool(flags, flag.Name)
+				set.Signup = v.GetBool(key)
 			case "auth.method":
 				hasAuth = true
 			case "shell":
 				var shell string
-				shell, err = getString(flags, flag.Name)
+				shell = v.GetString(key)
 				set.Shell = convertCmdStrToCmdArray(shell)
-			case "create-user-dir":
-				set.CreateUserDir, err = getBool(flags, flag.Name)
-			case "minimum-password-length":
-				set.MinimumPasswordLength, err = getUint(flags, flag.Name)
+			case "createuserdir":
+				set.CreateUserDir = v.GetBool(key)
+			case "minimumpasswordlength":
+				set.MinimumPasswordLength = v.GetUint(key)
 			case "branding.name":
-				set.Branding.Name, err = getString(flags, flag.Name)
+				set.Branding.Name = v.GetString(key)
 			case "branding.color":
-				set.Branding.Color, err = getString(flags, flag.Name)
+				set.Branding.Color = v.GetString(key)
 			case "branding.theme":
-				set.Branding.Theme, err = getString(flags, flag.Name)
-			case "branding.disableExternal":
-				set.Branding.DisableExternal, err = getBool(flags, flag.Name)
-			case "branding.disableUsedPercentage":
-				set.Branding.DisableUsedPercentage, err = getBool(flags, flag.Name)
+				set.Branding.Theme = v.GetString(key)
+			case "branding.disableexternal":
+				set.Branding.DisableExternal = v.GetBool(key)
+			case "branding.disableusedpercentage":
+				set.Branding.DisableUsedPercentage = v.GetBool(key)
 			case "branding.files":
-				set.Branding.Files, err = getString(flags, flag.Name)
-			case "file-mode":
-				set.FileMode, err = getMode(flags, flag.Name)
-			case "dir-mode":
-				set.DirMode, err = getMode(flags, flag.Name)
+				set.Branding.Files = v.GetString(key)
+			case "filemode":
+				set.FileMode, err = getAndParseMode(key)
+			case "dirmode":
+				set.DirMode, err = getAndParseMode(key)
 			}
-		})
 
-		if err != nil {
-			return err
+			if err != nil {
+				return err
+			}
 		}
 
-		err = getUserDefaults(flags, &set.Defaults, false)
+		err = getUserDefaults(&set.Defaults, false)
 		if err != nil {
 			return err
 		}
@@ -99,7 +100,7 @@ you want to change. Other options will remain unchanged.`,
 		}
 
 		// check if there are new flags for existing auth method
-		set.AuthMethod, auther, err = getAuthentication(flags, hasAuth, set, auther)
+		set.AuthMethod, auther, err = getAuthentication(hasAuth, set, auther)
 		if err != nil {
 			return err
 		}
