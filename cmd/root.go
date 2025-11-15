@@ -119,7 +119,7 @@ user created with the credentials from options "username" and "password".`,
 		log.Println(cfgFile)
 
 		if !d.hadDB {
-			err := quickSetup(cmd.Flags(), *d)
+			err := quickSetup(*d)
 			if err != nil {
 				return err
 			}
@@ -147,7 +147,7 @@ user created with the credentials from options "username" and "password".`,
 			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
 		}
 
-		server, err := getRunParams(cmd.Flags(), d.store)
+		server, err := getRunParams(d.store)
 		if err != nil {
 			return err
 		}
@@ -256,48 +256,48 @@ user created with the credentials from options "username" and "password".`,
 	}, pythonConfig{allowNoDB: true}),
 }
 
-func getRunParams(flags *pflag.FlagSet, st *storage.Storage) (*settings.Server, error) {
+func getRunParams(st *storage.Storage) (*settings.Server, error) {
 	server, err := st.Settings.GetServer()
 	if err != nil {
 		return nil, err
 	}
 
-	if val, set := getStringParamB(flags, "root"); set {
+	if val, set := getStringParamB("root"); set {
 		server.Root = val
 	}
 
-	if val, set := getStringParamB(flags, "baseurl"); set {
+	if val, set := getStringParamB("baseurl"); set {
 		server.BaseURL = val
 	}
 
-	if val, set := getStringParamB(flags, "log"); set {
+	if val, set := getStringParamB("log"); set {
 		server.Log = val
 	}
 
 	isSocketSet := false
 	isAddrSet := false
 
-	if val, set := getStringParamB(flags, "address"); set {
+	if val, set := getStringParamB("address"); set {
 		server.Address = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getStringParamB(flags, "port"); set {
+	if val, set := getStringParamB("port"); set {
 		server.Port = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getStringParamB(flags, "key"); set {
+	if val, set := getStringParamB("key"); set {
 		server.TLSKey = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getStringParamB(flags, "cert"); set {
+	if val, set := getStringParamB("cert"); set {
 		server.TLSCert = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getStringParamB(flags, "socket"); set {
+	if val, set := getStringParamB("socket"); set {
 		server.Socket = val
 		isSocketSet = isSocketSet || set
 	}
@@ -311,16 +311,16 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) (*settings.Server, 
 		server.Socket = ""
 	}
 
-	disableThumbnails := getBoolParam(flags, "disable-thumbnails")
+	disableThumbnails := v.GetBool("disable-thumbnails")
 	server.EnableThumbnails = !disableThumbnails
 
-	disablePreviewResize := getBoolParam(flags, "disable-preview-resize")
+	disablePreviewResize := v.GetBool("disable-preview-resize")
 	server.ResizePreview = !disablePreviewResize
 
-	disableTypeDetectionByHeader := getBoolParam(flags, "disable-type-detection-by-header")
+	disableTypeDetectionByHeader := v.GetBool("disable-type-detection-by-header")
 	server.TypeDetectionByHeader = !disableTypeDetectionByHeader
 
-	disableExec := getBoolParam(flags, "disable-exec")
+	disableExec := v.GetBool("disable-exec")
 	server.EnableExec = !disableExec
 
 	if server.EnableExec {
@@ -330,69 +330,15 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) (*settings.Server, 
 		log.Println("WARNING: read https://github.com/filebrowser/filebrowser/issues/5199")
 	}
 
-	if val, set := getStringParamB(flags, "token-expiration-time"); set {
+	if val, set := getStringParamB("token-expiration-time"); set {
 		server.TokenExpirationTime = val
 	}
 
 	return server, nil
 }
 
-// getBoolParamB returns a parameter as a string and a boolean to tell if it is different from the default
-//
-// NOTE: we could simply bind the flags to viper and use IsSet.
-// Although there is a bug on Viper that always returns true on IsSet
-// if a flag is binded. Our alternative way is to manually check
-// the flag and then the value from env/config/gotten by viper.
-// https://github.com/spf13/viper/pull/331
-func getBoolParamB(flags *pflag.FlagSet, key string) (value, ok bool) {
-	value, _ = flags.GetBool(key)
-
-	// If set on Flags, use it.
-	if flags.Changed(key) {
-		return value, true
-	}
-
-	// If set through viper (env, config), return it.
-	if v.IsSet(key) {
-		return v.GetBool(key), true
-	}
-
-	// Otherwise use default value on flags.
-	return value, false
-}
-
-func getBoolParam(flags *pflag.FlagSet, key string) bool {
-	val, _ := getBoolParamB(flags, key)
-	return val
-}
-
-// getStringParamB returns a parameter as a string and a boolean to tell if it is different from the default
-//
-// NOTE: we could simply bind the flags to viper and use IsSet.
-// Although there is a bug on Viper that always returns true on IsSet
-// if a flag is binded. Our alternative way is to manually check
-// the flag and then the value from env/config/gotten by viper.
-// https://github.com/spf13/viper/pull/331
-func getStringParamB(flags *pflag.FlagSet, key string) (string, bool) {
-	value, _ := flags.GetString(key)
-
-	// If set on Flags, use it.
-	if flags.Changed(key) {
-		return value, true
-	}
-
-	// If set through viper (env, config), return it.
-	if v.IsSet(key) {
-		return v.GetString(key), true
-	}
-
-	// Otherwise use default value on flags.
-	return value, false
-}
-
-func getStringParam(flags *pflag.FlagSet, key string) string {
-	val, _ := getStringParamB(flags, key)
-	return val
+func getStringParamB(key string) (string, bool) {
+	return v.GetString(key), v.IsSet(key)
 }
 
 func setupLog(logMethod string) {
@@ -413,7 +359,7 @@ func setupLog(logMethod string) {
 	}
 }
 
-func quickSetup(flags *pflag.FlagSet, d pythonData) error {
+func quickSetup(d pythonData) error {
 	log.Println("Performing quick setup")
 
 	set := &settings.Settings{
@@ -427,7 +373,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) error {
 			Scope:          ".",
 			Locale:         "en",
 			SingleClick:    false,
-			AceEditorTheme: getStringParam(flags, "defaults.aceEditorTheme"),
+			AceEditorTheme: v.GetString("defaults.aceeditortheme"),
 			Perm: users.Permissions{
 				Admin:    false,
 				Execute:  true,
@@ -451,7 +397,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) error {
 	}
 
 	var err error
-	if _, noauth := getStringParamB(flags, "noauth"); noauth {
+	if _, noauth := getStringParamB("noauth"); noauth {
 		set.AuthMethod = auth.MethodNoAuth
 		err = d.store.Auth.Save(&auth.NoAuth{})
 	} else {
@@ -468,13 +414,13 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) error {
 	}
 
 	ser := &settings.Server{
-		BaseURL: getStringParam(flags, "baseurl"),
-		Port:    getStringParam(flags, "port"),
-		Log:     getStringParam(flags, "log"),
-		TLSKey:  getStringParam(flags, "key"),
-		TLSCert: getStringParam(flags, "cert"),
-		Address: getStringParam(flags, "address"),
-		Root:    getStringParam(flags, "root"),
+		BaseURL: v.GetString("baseurl"),
+		Port:    v.GetString("port"),
+		Log:     v.GetString("log"),
+		TLSKey:  v.GetString("key"),
+		TLSCert: v.GetString("cert"),
+		Address: v.GetString("address"),
+		Root:    v.GetString("root"),
 	}
 
 	err = d.store.Settings.SaveServer(ser)
@@ -482,8 +428,8 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) error {
 		return err
 	}
 
-	username := getStringParam(flags, "username")
-	password := getStringParam(flags, "password")
+	username := v.GetString("username")
+	password := v.GetString("password")
 
 	if password == "" {
 		var pwd string

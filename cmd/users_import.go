@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
+	v "github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -45,12 +46,7 @@ list or set it to 0.`,
 			}
 		}
 
-		replace, err := getBool(cmd.Flags(), "replace")
-		if err != nil {
-			return err
-		}
-
-		if replace {
+		if v.GetBool("replace") {
 			oldUsers, userImportErr := d.store.Users.Gets("")
 			if userImportErr != nil {
 				return userImportErr
@@ -69,10 +65,7 @@ list or set it to 0.`,
 			}
 		}
 
-		overwrite, err := getBool(cmd.Flags(), "overwrite")
-		if err != nil {
-			return err
-		}
+		overwrite := v.GetBool("overwrite")
 
 		for _, user := range list {
 			onDB, err := d.store.Users.Get("", user.ID)

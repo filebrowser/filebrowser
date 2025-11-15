@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	v "github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -23,15 +24,8 @@ options you want to change.`,
 	Args: cobra.ExactArgs(1),
 	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
 		username, id := parseUsernameOrID(args[0])
-		flags := cmd.Flags()
-		password, err := getString(flags, "password")
-		if err != nil {
-			return err
-		}
-		newUsername, err := getString(flags, "username")
-		if err != nil {
-			return err
-		}
+		password := v.GetString("password")
+		newUsername := v.GetString("username")
 
 		s, err := d.store.Settings.Get()
 		if err != nil {
@@ -61,7 +55,7 @@ options you want to change.`,
 			Sorting:     user.Sorting,
 			Commands:    user.Commands,
 		}
-		err = getUserDefaults(flags, &defaults, false)
+		err = getUserDefaults(&defaults, false)
 		if err != nil {
 			return err
 		}
@@ -72,18 +66,9 @@ options you want to change.`,
 		user.Perm = defaults.Perm
 		user.Commands = defaults.Commands
 		user.Sorting = defaults.Sorting
-		user.LockPassword, err = getBool(flags, "lockPassword")
-		if err != nil {
-			return err
-		}
-		user.DateFormat, err = getBool(flags, "dateFormat")
-		if err != nil {
-			return err
-		}
-		user.HideDotfiles, err = getBool(flags, "hideDotfiles")
-		if err != nil {
-			return err
-		}
+		user.LockPassword = v.GetBool("lockpassword")
+		user.DateFormat = v.GetBool("dateformat")
+		user.HideDotfiles = v.GetBool("hidedotfiles")
 
 		if newUsername != "" {
 			user.Username = newUsername
