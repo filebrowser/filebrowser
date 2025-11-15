@@ -101,7 +101,7 @@ you want to change. Other options will remain unchanged.`,
 		}
 
 		// check if there are new flags for existing auth method
-		set.AuthMethod, auther, err = getAuthentication(flags, hasAuth, set, auther)
+		set.AuthMethod, auther, err = getAuthentication(hasAuth, set, auther)
 		if err != nil {
 			return err
 		}
