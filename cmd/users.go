@@ -83,7 +83,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.String("aceEditorTheme", "", "ace editor's syntax highlighting theme for users")
 }
 
-func getViewMode() (users.ViewMode, error) {
+func getAndParseViewMode() (users.ViewMode, error) {
 	viewModeStr := v.GetString("viewmode")
 	viewMode := users.ViewMode(viewModeStr)
 	if viewMode != users.ListViewMode && viewMode != users.MosaicViewMode {
@@ -107,7 +107,7 @@ func getUserDefaults(defaults *settings.UserDefaults, all bool) error {
 		case "locale":
 			defaults.Locale = v.GetString(key)
 		case "viewmode":
-			defaults.ViewMode, err = getViewMode()
+			defaults.ViewMode, err = getAndParseViewMode()
 		case "singleclick":
 			defaults.SingleClick = v.GetBool(key)
 		case "aceeditortheme":
