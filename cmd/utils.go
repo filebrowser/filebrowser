@@ -148,16 +148,16 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 		}
 
 		data := &pythonData{hadDB: true}
-
 		path := v.GetString("database")
+
 		absPath, err := filepath.Abs(path)
 		if err != nil {
-			panic(err)
+			return err
 		}
-		exists, err := dbExists(path)
 
+		exists, err := dbExists(path)
 		if err != nil {
-			panic(err)
+			return err
 		} else if exists && cfg.noDB {
 			log.Fatal(absPath + " already exists")
 		} else if !exists && !cfg.noDB && !cfg.allowNoDB {
@@ -168,15 +168,18 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 
 		log.Println("Using database: " + absPath)
 		data.hadDB = exists
+
 		db, err := storm.Open(path, storm.BoltOptions(databasePermissions, nil))
 		if err != nil {
 			return err
 		}
 		defer db.Close()
+
 		data.store, err = bolt.NewStorage(db)
 		if err != nil {
 			return err
 		}
+
 		return fn(cmd, args, v, data)
 	}
 }
