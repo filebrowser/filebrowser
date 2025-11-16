@@ -10,14 +10,14 @@ vars:
     -v ./CONTRIBUTING.md:/docs/docs/contributing.md
 
 tasks:
-  build-frontend:
+  build:frontend:
     desc: Build frontend assets
     dir: frontend
     cmds:
       - pnpm install --frozen-lockfile
       - pnpm run build
 
-  build-backend:
+  build:backend:
     desc: Build backend binary
     cmds:
       - go build -ldflags='-s -w -X "github.com/filebrowser/filebrowser/v2/version.Version={{.VERSION}}" -X "github.com/filebrowser/filebrowser/v2/version.CommitSHA={{.GIT_COMMIT}}"' -o filebrowser .
@@ -30,16 +30,16 @@ tasks:
   build:
     desc: Build both frontend and backend
     cmds:
-      - task: build-frontend
-      - task: build-backend
+      - task: build:frontend
+      - task: build:backend
 
-  release-make:
+  release:make:
     internal: true
     prompt: Do you wish to proceed?
     cmds:
       - pnpm dlx commit-and-tag-version -s
 
-  release-dry-run:
+  release:dry-run:
     internal: true
     cmds:
       - pnpm dlx commit-and-tag-version --dry-run --skip
@@ -47,10 +47,20 @@ tasks:
   release:
     desc: Create a new release
     cmds:
-      - task: release-dry-run
-      - task: release-make
+      - task: docs:cli:generate
+      - git add www/docs/cli
+      - task: release:dry-run
+      - task: release:make
 
-  docs-image-make:
+  docs:cli:generate:
+    cmds:
+      - rm -rf www/docs/cli
+      - mkdir -p www/docs/cli
+      - go run . docs
+    generates:
+      - www/docs/cli
+
+  docs:docker:generate:
     internal: true
     cmds: 
       - docker build -f www/Dockerfile --progress=plain -t filebrowser.site www
@@ -59,11 +69,11 @@ tasks:
     desc: Generate documentation
     cmds:
       - rm -rf www/public
-      - task: docs-image-make
+      - task: docs:docker:generate
       - docker run --rm {{.SITE_DOCKER_FLAGS}} filebrowser.site build -d "public"
 
-  docs-serve:
+  docs:serve:
     desc: Serve documentation
     cmds:
-      - task: docs-image-make
+      - task: docs:docker:generate
       - docker run --rm -it -p 8000:8000 {{.SITE_DOCKER_FLAGS}} filebrowser.site

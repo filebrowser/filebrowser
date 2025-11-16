@@ -86,7 +86,7 @@ task docs
 To start a local server on port `8000` to view the built documentation:
 
 ```bash
-task docs-serve
+task docs:serve
 ```
 
 ## Release
