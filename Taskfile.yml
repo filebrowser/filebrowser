@@ -49,6 +49,7 @@ tasks:
     cmds:
       - task: docs:cli:generate
       - git add www/docs/cli
+      - "git commit -m 'chore(docs): update CLI documentation'"
       - task: release:dry-run
       - task: release:make
 

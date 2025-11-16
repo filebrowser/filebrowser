@@ -50,6 +50,10 @@ override the options.`,
 				Theme:                 v.GetString("branding.theme"),
 				Files:                 v.GetString("branding.files"),
 			},
+			Tus: settings.Tus{
+				ChunkSize:  v.GetUint64("tus.chunkSize"),
+				RetryCount: v.GetUint16("tus.retryCount"),
+			},
 		}
 
 		s.FileMode, err = parseFileMode(v.GetString("fileMode"))

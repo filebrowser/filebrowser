@@ -137,7 +137,6 @@ type pythonConfig struct {
 type pythonData struct {
 	hadDB bool
 	store *storage.Storage
-	err   error
 }
 
 func python(fn pythonFunc, cfg pythonConfig) cobraFunc {

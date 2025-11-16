@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.47.0](https://github.com/filebrowser/filebrowser/compare/v2.46.1...v2.47.0) (2025-11-16)
+
+
+### Features
+
+* add TUS settings to the command line ([#5556](https://github.com/filebrowser/filebrowser/issues/5556)) ([e24e1f1](https://github.com/filebrowser/filebrowser/commit/e24e1f1abae9e80add620c4ad65660ca1b575a49))
+* remove importer of v1 config ([#5550](https://github.com/filebrowser/filebrowser/issues/5550)) ([ceb5e72](https://github.com/filebrowser/filebrowser/commit/ceb5e723f3ee2c966bb561a804015246450280ca))
+
+
+### Bug Fixes
+
+* exit 0 when gracefully shutting down ([#5555](https://github.com/filebrowser/filebrowser/issues/5555)) ([5de4099](https://github.com/filebrowser/filebrowser/commit/5de4099cba2cf012d4a213c8eb29c412fc72c151))
+
 ## [2.46.1](https://github.com/filebrowser/filebrowser/compare/v2.46.0...v2.46.1) (2025-11-15)
 
 

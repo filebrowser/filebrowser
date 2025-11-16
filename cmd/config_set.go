@@ -81,6 +81,10 @@ you want to change. Other options will remain unchanged.`,
 				set.FileMode, err = parseFileMode(v.GetString(key))
 			case "dirmode":
 				set.DirMode, err = parseFileMode(v.GetString(key))
+			case "tus.chunksize":
+				set.Tus.ChunkSize = v.GetUint64(key)
+			case "tus.retrycount":
+				set.Tus.RetryCount = v.GetUint16(key)
 			}
 
 			if err != nil {
