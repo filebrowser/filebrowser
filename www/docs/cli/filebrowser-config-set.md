@@ -31,12 +31,12 @@ filebrowser config set [flags]
       --commands strings                   a list of the commands a user can execute
       --create-user-dir                    generate user's home directory automatically
       --dateFormat                         use date format (true for absolute time, false for relative)
-      --dir-mode string                    Mode bits that new directories are created with (default "0o750")
+      --dir-mode string                    mode bits that new directories are created with (default "0o750")
       --disable-exec                       disables Command Runner feature (default true)
       --disable-preview-resize             disable resize of image previews
       --disable-thumbnails                 disable image thumbnails
       --disable-type-detection-by-header   disables type detection by reading file headers
-      --file-mode string                   Mode bits that new files are created with (default "0o640")
+      --file-mode string                   mode bits that new files are created with (default "0o640")
   -h, --help                               help for set
       --hide-login-button                  hide login button from public pages
       --hideDotfiles                       hide dotfiles
@@ -68,6 +68,8 @@ filebrowser config set [flags]
       --sorting.asc                        sorting by ascending order
       --sorting.by string                  sorting mode (name, size or modified) (default "name")
       --token-expiration-time string       user session timeout (default "2h")
+      --tus.chunkSize uint                 the tus chunk size (default 10485760)
+      --tus.retryCount uint16              the tus retry count (default 5)
       --viewMode string                    view mode for users (default "list")
 ```
 
