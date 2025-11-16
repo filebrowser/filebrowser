@@ -52,8 +52,11 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.Bool("branding.disableUsedPercentage", false, "disable used disk percentage graph")
 	// NB: these are string so they can be presented as octal in the help text
 	// as that's the conventional representation for modes in Unix.
-	flags.String("file-mode", fmt.Sprintf("%O", settings.DefaultFileMode), "Mode bits that new files are created with")
-	flags.String("dir-mode", fmt.Sprintf("%O", settings.DefaultDirMode), "Mode bits that new directories are created with")
+	flags.String("file-mode", fmt.Sprintf("%O", settings.DefaultFileMode), "mode bits that new files are created with")
+	flags.String("dir-mode", fmt.Sprintf("%O", settings.DefaultDirMode), "mode bits that new directories are created with")
+
+	flags.Uint64("tus.chunkSize", settings.DefaultTusChunkSize, "the tus chunk size")
+	flags.Uint16("tus.retryCount", settings.DefaultTusRetryCount, "the tus retry count")
 }
 
 func getAuthMethod(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, map[string]interface{}, error) {
@@ -215,6 +218,9 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tTLS Cert:\t%s\n", ser.TLSCert)
 	fmt.Fprintf(w, "\tTLS Key:\t%s\n", ser.TLSKey)
 	fmt.Fprintf(w, "\tExec Enabled:\t%t\n", ser.EnableExec)
+	fmt.Fprintln(w, "\nTUS:")
+	fmt.Fprintf(w, "\tChunk size:\t%d\n", set.Tus.ChunkSize)
+	fmt.Fprintf(w, "\tRetry count:\t%d\n", set.Tus.RetryCount)
 	fmt.Fprintln(w, "\nDefaults:")
 	fmt.Fprintf(w, "\tScope:\t%s\n", set.Defaults.Scope)
 	fmt.Fprintf(w, "\tHideDotfiles:\t%t\n", set.Defaults.HideDotfiles)
