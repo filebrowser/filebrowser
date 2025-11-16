@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -40,7 +41,7 @@ including 'index_end'.`,
 
 		return nil
 	},
-	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
+	RunE: python(func(cmd *cobra.Command, args []string, v *viper.Viper, d *pythonData) error {
 		i, err := strconv.Atoi(args[0])
 		if err != nil {
 			return err
@@ -63,6 +64,6 @@ including 'index_end'.`,
 			return d.store.Settings.Save(s)
 		}
 
-		return runRules(d.store, cmd, user, global)
+		return runRules(d.store, cmd, v, user, global)
 	}, pythonConfig{}),
 }

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -26,7 +27,7 @@ var usersLsCmd = &cobra.Command{
 	RunE:  findUsers,
 }
 
-var findUsers = python(func(_ *cobra.Command, args []string, d *pythonData) error {
+var findUsers = python(func(_ *cobra.Command, args []string, v *viper.Viper, d *pythonData) error {
 	var (
 		list []*users.User
 		user *users.User

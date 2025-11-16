@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	v "github.com/spf13/viper"
+	"github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -29,8 +29,8 @@ rules.`,
 	Args: cobra.NoArgs,
 }
 
-func runRules(st *storage.Storage, cmd *cobra.Command, usersFn func(*users.User) error, globalFn func(*settings.Settings) error) error {
-	id, err := getUserIdentifier()
+func runRules(st *storage.Storage, cmd *cobra.Command, v *viper.Viper, usersFn func(*users.User) error, globalFn func(*settings.Settings) error) error {
+	id, err := getUserIdentifier(v)
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func runRules(st *storage.Storage, cmd *cobra.Command, usersFn func(*users.User)
 	return nil
 }
 
-func getUserIdentifier() (interface{}, error) {
+func getUserIdentifier(v *viper.Viper) (interface{}, error) {
 	id := v.GetUint("id")
 	username := v.GetString("username")
 

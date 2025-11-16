@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
-	v "github.com/spf13/viper"
+	"github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -26,7 +26,7 @@ file. You can use this command to import new users to your
 installation. For that, just don't place their ID on the files
 list or set it to 0.`,
 	Args: jsonYamlArg,
-	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
+	RunE: python(func(cmd *cobra.Command, args []string, v *viper.Viper, d *pythonData) error {
 		fd, err := os.Open(args[0])
 		if err != nil {
 			return err

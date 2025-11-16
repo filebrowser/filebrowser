@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	v "github.com/spf13/viper"
+	"github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -17,12 +17,12 @@ var usersAddCmd = &cobra.Command{
 	Short: "Create a new user",
 	Long:  `Create a new user and add it to the database.`,
 	Args:  cobra.ExactArgs(2),
-	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
+	RunE: python(func(cmd *cobra.Command, args []string, v *viper.Viper, d *pythonData) error {
 		s, err := d.store.Settings.Get()
 		if err != nil {
 			return err
 		}
-		err = getUserDefaults(&s.Defaults, false)
+		err = getUserDefaults(v, &s.Defaults, false)
 		if err != nil {
 			return err
 		}

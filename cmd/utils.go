@@ -12,10 +12,11 @@ import (
 	"strings"
 
 	"github.com/asdine/storm/v3"
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	v "github.com/spf13/viper"
+	"github.com/spf13/viper"
 	yaml "gopkg.in/yaml.v3"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -25,7 +26,7 @@ import (
 
 const dbPerms = 0640
 
-func getAndParseMode(param string) (fs.FileMode, error) {
+func getAndParseMode(v *viper.Viper, param string) (fs.FileMode, error) {
 	s := v.GetString(param)
 	b, err := strconv.ParseUint(s, 0, 32)
 	if err != nil {
@@ -43,7 +44,7 @@ func generateKey() []byte {
 }
 
 type cobraFunc func(cmd *cobra.Command, args []string) error
-type pythonFunc func(cmd *cobra.Command, args []string, data *pythonData) error
+type pythonFunc func(cmd *cobra.Command, args []string, v *viper.Viper, data *pythonData) error
 
 type pythonConfig struct {
 	noDB      bool
@@ -91,14 +92,60 @@ func generateEnvKeyReplacements(cmd *cobra.Command) []string {
 	return replacements
 }
 
+func initViper(cmd *cobra.Command) (*viper.Viper, error) {
+	v := viper.New()
+
+	// Get config file from flag
+	cfgFile, err := cmd.Flags().GetString("config")
+	if err != nil {
+		return nil, err
+	}
+
+	// Configuration file
+	if cfgFile == "" {
+		home, err := homedir.Dir()
+		if err != nil {
+			return nil, err
+		}
+		v.AddConfigPath(".")
+		v.AddConfigPath(home)
+		v.AddConfigPath("/etc/filebrowser/")
+		v.SetConfigName(".filebrowser")
+	} else {
+		v.SetConfigFile(cfgFile)
+	}
+
+	// Environment variables
+	v.SetEnvPrefix("FB")
+	v.AutomaticEnv()
+	v.SetEnvKeyReplacer(strings.NewReplacer(generateEnvKeyReplacements(cmd)...))
+
+	// Bind the flags
+	err = v.BindPFlags(cmd.Flags())
+	if err != nil {
+		return nil, err
+	}
+
+	// Read in configuration
+	if err := v.ReadInConfig(); err != nil {
+		if errors.Is(err, viper.ConfigParseError{}) {
+			return nil, err
+		}
+
+		log.Println("No config file used")
+	} else {
+		log.Printf("Using config file: %s", v.ConfigFileUsed())
+	}
+
+	// Return Viper
+	return v, nil
+}
+
 func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) error {
-		v.SetEnvKeyReplacer(strings.NewReplacer(generateEnvKeyReplacements(cmd)...))
-
-		// Bind the flags
-		err := v.BindPFlags(cmd.Flags())
+		v, err := initViper(cmd)
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		data := &pythonData{hadDB: true}
@@ -131,7 +178,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 		if err != nil {
 			return err
 		}
-		return fn(cmd, args, data)
+		return fn(cmd, args, v, data)
 	}
 }
 

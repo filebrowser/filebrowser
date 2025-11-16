@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func init() {
@@ -13,7 +14,7 @@ var configCatCmd = &cobra.Command{
 	Short: "Prints the configuration",
 	Long:  `Prints the configuration.`,
 	Args:  cobra.NoArgs,
-	RunE: python(func(_ *cobra.Command, _ []string, d *pythonData) error {
+	RunE: python(func(_ *cobra.Command, _ []string, v *viper.Viper, d *pythonData) error {
 		set, err := d.store.Settings.Get()
 		if err != nil {
 			return err

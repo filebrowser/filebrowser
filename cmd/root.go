@@ -16,11 +16,10 @@ import (
 	"syscall"
 	"time"
 
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	v "github.com/spf13/viper"
+	"github.com/spf13/viper"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
@@ -35,8 +34,6 @@ import (
 )
 
 var (
-	cfgFile string
-
 	flagNamesMigrations = map[string]string{
 		"file-mode":                        "fileMode",
 		"dir-mode":                         "dirMode",
@@ -65,7 +62,6 @@ func migrateFlagNames(f *pflag.FlagSet, name string) pflag.NormalizedName {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
 	rootCmd.SilenceUsage = true
 	cobra.MousetrapHelpText = ""
 
@@ -74,7 +70,7 @@ func init() {
 	flags := rootCmd.Flags()
 	persistent := rootCmd.PersistentFlags()
 
-	persistent.StringVarP(&cfgFile, "config", "c", "", "config file path")
+	persistent.StringP("config", "c", "", "config file path")
 	persistent.StringP("database", "d", "./filebrowser.db", "database path")
 	flags.Bool("noauth", false, "use the noauth auther when using quick setup")
 	flags.String("username", "admin", "username for the first user when using quick config")
@@ -141,11 +137,9 @@ set FB_DATABASE.
 Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstrapped and a new
 user created with the credentials from options "username" and "password".`,
-	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
-		log.Println(cfgFile)
-
+	RunE: python(func(cmd *cobra.Command, _ []string, v *viper.Viper, d *pythonData) error {
 		if !d.hadDB {
-			err := quickSetup(*d)
+			err := quickSetup(v, *d)
 			if err != nil {
 				return err
 			}
@@ -167,7 +161,7 @@ user created with the credentials from options "username" and "password".`,
 			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
 		}
 
-		server, err := getRunParams(d.store)
+		server, err := getRunParams(v, d.store)
 		if err != nil {
 			return err
 		}
@@ -273,48 +267,48 @@ user created with the credentials from options "username" and "password".`,
 	}, pythonConfig{allowNoDB: true}),
 }
 
-func getRunParams(st *storage.Storage) (*settings.Server, error) {
+func getRunParams(v *viper.Viper, st *storage.Storage) (*settings.Server, error) {
 	server, err := st.Settings.GetServer()
 	if err != nil {
 		return nil, err
 	}
 
-	if val, set := getStringParamB("root"); set {
+	if val, set := getStringParamB(v, "root"); set {
 		server.Root = val
 	}
 
-	if val, set := getStringParamB("baseurl"); set {
+	if val, set := getStringParamB(v, "baseurl"); set {
 		server.BaseURL = val
 	}
 
-	if val, set := getStringParamB("log"); set {
+	if val, set := getStringParamB(v, "log"); set {
 		server.Log = val
 	}
 
 	isSocketSet := false
 	isAddrSet := false
 
-	if val, set := getStringParamB("address"); set {
+	if val, set := getStringParamB(v, "address"); set {
 		server.Address = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getStringParamB("port"); set {
+	if val, set := getStringParamB(v, "port"); set {
 		server.Port = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getStringParamB("key"); set {
+	if val, set := getStringParamB(v, "key"); set {
 		server.TLSKey = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getStringParamB("cert"); set {
+	if val, set := getStringParamB(v, "cert"); set {
 		server.TLSCert = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getStringParamB("socket"); set {
+	if val, set := getStringParamB(v, "socket"); set {
 		server.Socket = val
 		isSocketSet = isSocketSet || set
 	}
@@ -347,14 +341,14 @@ func getRunParams(st *storage.Storage) (*settings.Server, error) {
 		log.Println("WARNING: read https://github.com/filebrowser/filebrowser/issues/5199")
 	}
 
-	if val, set := getStringParamB("tokenExpirationTime"); set {
+	if val, set := getStringParamB(v, "tokenExpirationTime"); set {
 		server.TokenExpirationTime = val
 	}
 
 	return server, nil
 }
 
-func getStringParamB(key string) (string, bool) {
+func getStringParamB(v *viper.Viper, key string) (string, bool) {
 	return v.GetString(key), v.IsSet(key)
 }
 
@@ -376,7 +370,7 @@ func setupLog(logMethod string) {
 	}
 }
 
-func quickSetup(d pythonData) error {
+func quickSetup(v *viper.Viper, d pythonData) error {
 	log.Println("Performing quick setup")
 
 	set := &settings.Settings{
@@ -414,7 +408,7 @@ func quickSetup(d pythonData) error {
 	}
 
 	var err error
-	if _, noauth := getStringParamB("noauth"); noauth {
+	if _, noauth := getStringParamB(v, "noauth"); noauth {
 		set.AuthMethod = auth.MethodNoAuth
 		err = d.store.Auth.Save(&auth.NoAuth{})
 	} else {
@@ -478,32 +472,4 @@ func quickSetup(d pythonData) error {
 	user.Perm.Admin = true
 
 	return d.store.Users.Save(user)
-}
-
-func initConfig() {
-	if cfgFile == "" {
-		home, err := homedir.Dir()
-		if err != nil {
-			panic(err)
-		}
-		v.AddConfigPath(".")
-		v.AddConfigPath(home)
-		v.AddConfigPath("/etc/filebrowser/")
-		v.SetConfigName(".filebrowser")
-	} else {
-		v.SetConfigFile(cfgFile)
-	}
-
-	v.SetEnvPrefix("FB")
-	v.AutomaticEnv()
-
-	if err := v.ReadInConfig(); err != nil {
-		var configParseError v.ConfigParseError
-		if errors.As(err, &configParseError) {
-			panic(err)
-		}
-		cfgFile = "No config file used"
-	} else {
-		cfgFile = "Using config file: " + v.ConfigFileUsed()
-	}
 }

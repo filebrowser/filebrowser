@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	v "github.com/spf13/viper"
+	"github.com/spf13/viper"
 )
 
 func init() {
@@ -16,7 +16,7 @@ var configSetCmd = &cobra.Command{
 	Long: `Updates the configuration. Set the flags for the options
 you want to change. Other options will remain unchanged.`,
 	Args: cobra.NoArgs,
-	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
+	RunE: python(func(cmd *cobra.Command, _ []string, v *viper.Viper, d *pythonData) error {
 		set, err := d.store.Settings.Get()
 		if err != nil {
 			return err
@@ -78,9 +78,9 @@ you want to change. Other options will remain unchanged.`,
 			case "branding.files":
 				set.Branding.Files = v.GetString(key)
 			case "filemode":
-				set.FileMode, err = getAndParseMode(key)
+				set.FileMode, err = getAndParseMode(v, key)
 			case "dirmode":
-				set.DirMode, err = getAndParseMode(key)
+				set.DirMode, err = getAndParseMode(v, key)
 			}
 
 			if err != nil {
@@ -88,7 +88,7 @@ you want to change. Other options will remain unchanged.`,
 			}
 		}
 
-		err = getUserDefaults(&set.Defaults, false)
+		err = getUserDefaults(v, &set.Defaults, false)
 		if err != nil {
 			return err
 		}
@@ -100,7 +100,7 @@ you want to change. Other options will remain unchanged.`,
 		}
 
 		// check if there are new flags for existing auth method
-		set.AuthMethod, auther, err = getAuthentication(hasAuth, set, auther)
+		set.AuthMethod, auther, err = getAuthentication(v, hasAuth, set, auther)
 		if err != nil {
 			return err
 		}

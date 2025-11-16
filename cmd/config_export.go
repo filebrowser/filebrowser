@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func init() {
@@ -15,7 +16,7 @@ var configExportCmd = &cobra.Command{
 json or yaml file. This exported configuration can be changed,
 and imported again with 'config import' command.`,
 	Args: jsonYamlArg,
-	RunE: python(func(_ *cobra.Command, args []string, d *pythonData) error {
+	RunE: python(func(_ *cobra.Command, args []string, v *viper.Viper, d *pythonData) error {
 		settings, err := d.store.Settings.Get()
 		if err != nil {
 			return err

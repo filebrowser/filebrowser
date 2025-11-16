@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	v "github.com/spf13/viper"
+	"github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -22,7 +22,7 @@ var usersUpdateCmd = &cobra.Command{
 	Long: `Updates an existing user. Set the flags for the
 options you want to change.`,
 	Args: cobra.ExactArgs(1),
-	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
+	RunE: python(func(cmd *cobra.Command, args []string, v *viper.Viper, d *pythonData) error {
 		username, id := parseUsernameOrID(args[0])
 		password := v.GetString("password")
 		newUsername := v.GetString("username")
@@ -55,7 +55,7 @@ options you want to change.`,
 			Sorting:     user.Sorting,
 			Commands:    user.Commands,
 		}
-		err = getUserDefaults(&defaults, false)
+		err = getUserDefaults(v, &defaults, false)
 		if err != nil {
 			return err
 		}

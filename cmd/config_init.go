@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	v "github.com/spf13/viper"
+	"github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
 )
@@ -23,13 +23,13 @@ this options can be changed in the future with the command
 to the defaults when creating new users and you don't
 override the options.`,
 	Args: cobra.NoArgs,
-	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
+	RunE: python(func(cmd *cobra.Command, _ []string, v *viper.Viper, d *pythonData) error {
 		defaults := settings.UserDefaults{}
-		err := getUserDefaults(&defaults, true)
+		err := getUserDefaults(v, &defaults, true)
 		if err != nil {
 			return err
 		}
-		authMethod, auther, err := getAuthentication()
+		authMethod, auther, err := getAuthentication(v)
 		if err != nil {
 			return err
 		}
@@ -52,12 +52,12 @@ override the options.`,
 			},
 		}
 
-		s.FileMode, err = getAndParseMode("filemode")
+		s.FileMode, err = getAndParseMode(v, "filemode")
 		if err != nil {
 			return err
 		}
 
-		s.DirMode, err = getAndParseMode("dirmode")
+		s.DirMode, err = getAndParseMode(v, "dirmode")
 		if err != nil {
 			return err
 		}

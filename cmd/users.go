@@ -9,7 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	v "github.com/spf13/viper"
+	"github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -83,7 +83,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.String("aceEditorTheme", "", "ace editor's syntax highlighting theme for users")
 }
 
-func getAndParseViewMode() (users.ViewMode, error) {
+func getAndParseViewMode(v *viper.Viper) (users.ViewMode, error) {
 	viewModeStr := v.GetString("viewMode")
 	viewMode := users.ViewMode(viewModeStr)
 	if viewMode != users.ListViewMode && viewMode != users.MosaicViewMode {
@@ -92,7 +92,7 @@ func getAndParseViewMode() (users.ViewMode, error) {
 	return viewMode, nil
 }
 
-func getUserDefaults(defaults *settings.UserDefaults, all bool) error {
+func getUserDefaults(v *viper.Viper, defaults *settings.UserDefaults, all bool) error {
 	keys := v.AllKeys()
 
 	for _, key := range keys {
@@ -107,7 +107,7 @@ func getUserDefaults(defaults *settings.UserDefaults, all bool) error {
 		case "locale":
 			defaults.Locale = v.GetString(key)
 		case "viewmode":
-			defaults.ViewMode, err = getAndParseViewMode()
+			defaults.ViewMode, err = getAndParseViewMode(v)
 		case "singleclick":
 			defaults.SingleClick = v.GetBool(key)
 		case "aceeditortheme":

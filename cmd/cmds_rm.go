@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func init() {
@@ -35,7 +36,7 @@ including 'index_end'.`,
 
 		return nil
 	},
-	RunE: python(func(_ *cobra.Command, args []string, d *pythonData) error {
+	RunE: python(func(_ *cobra.Command, args []string, v *viper.Viper, d *pythonData) error {
 		s, err := d.store.Settings.Get()
 		if err != nil {
 			return err
