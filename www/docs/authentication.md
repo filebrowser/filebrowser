@@ -47,3 +47,47 @@ We also provide a no authentication mechanism for users that want to use File Br
 ```sh
 filebrowser config set --auth.method=noauth
 ```
+
+## Session Timeout
+
+By default, user sessions expire after **2 hours**. If you're uploading large files over slower connections, you may need to increase this timeout to prevent sessions from expiring mid-upload. You can configure the session timeout using the `token-expiration-time` setting.
+
+### Configuration File
+
+Add the setting to your configuration file (e.g., `/config/settings.json` in Docker):
+
+```json
+{
+  "token-expiration-time": "6h"
+}
+```
+
+> [!IMPORTANT]
+>
+> The key must use kebab-case format: `token-expiration-time`. Valid duration formats include `"2h"`, `"30m"`, `"24h"`, or combinations like `"2h30m"`.
+
+### Environment Variable
+
+Set the corresponding environment variable:
+
+```sh
+docker run -e FB_TOKEN_EXPIRATION_TIME=6h ...
+```
+
+### CLI Flag
+
+Pass the flag when starting File Browser:
+
+```sh
+filebrowser --token-expiration-time 6h
+```
+
+### Updating an Existing Installation
+
+File Browser saves configuration values to the database during the **first run**.
+Updating `settings.json` or environment variables later **will not affect an existing installation**.
+To change the timeout, use:
+
+```sh
+filebrowser config set --token-expiration-time 6h
+```
