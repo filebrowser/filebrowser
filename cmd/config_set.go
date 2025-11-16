@@ -78,9 +78,9 @@ you want to change. Other options will remain unchanged.`,
 			case "branding.files":
 				set.Branding.Files = v.GetString(key)
 			case "filemode":
-				set.FileMode, err = getAndParseMode(v, key)
+				set.FileMode, err = parseFileMode(v.GetString(key))
 			case "dirmode":
-				set.DirMode, err = getAndParseMode(v, key)
+				set.DirMode, err = parseFileMode(v.GetString(key))
 			}
 
 			if err != nil {

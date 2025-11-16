@@ -24,11 +24,10 @@ import (
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 )
 
-const dbPerms = 0640
+const databasePermissions = 0640
 
-func getAndParseMode(v *viper.Viper, param string) (fs.FileMode, error) {
-	s := v.GetString(param)
-	b, err := strconv.ParseUint(s, 0, 32)
+func parseFileMode(value string) (fs.FileMode, error) {
+	b, err := strconv.ParseUint(value, 0, 32)
 	if err != nil {
 		return 0, err
 	}
@@ -41,20 +40,6 @@ func generateKey() []byte {
 		panic(err)
 	}
 	return k
-}
-
-type cobraFunc func(cmd *cobra.Command, args []string) error
-type pythonFunc func(cmd *cobra.Command, args []string, v *viper.Viper, data *pythonData) error
-
-type pythonConfig struct {
-	noDB      bool
-	allowNoDB bool
-}
-
-type pythonData struct {
-	hadDB bool
-	store *storage.Storage
-	err   error
 }
 
 func dbExists(path string) (bool, error) {
@@ -79,7 +64,7 @@ func dbExists(path string) (bool, error) {
 
 // Generate the replacements for all environment variables. This allows to
 // use FB_BRANDING_DISABLE_EXTERNAL environment variables, even when the
-// option name is branding.disableexternal.
+// option name is branding.disableExternal.
 func generateEnvKeyReplacements(cmd *cobra.Command) []string {
 	replacements := []string{}
 
@@ -141,6 +126,20 @@ func initViper(cmd *cobra.Command) (*viper.Viper, error) {
 	return v, nil
 }
 
+type cobraFunc func(cmd *cobra.Command, args []string) error
+type pythonFunc func(cmd *cobra.Command, args []string, v *viper.Viper, data *pythonData) error
+
+type pythonConfig struct {
+	noDB      bool
+	allowNoDB bool
+}
+
+type pythonData struct {
+	hadDB bool
+	store *storage.Storage
+	err   error
+}
+
 func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) error {
 		v, err := initViper(cmd)
@@ -169,7 +168,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 
 		log.Println("Using database: " + absPath)
 		data.hadDB = exists
-		db, err := storm.Open(path, storm.BoltOptions(dbPerms, nil))
+		db, err := storm.Open(path, storm.BoltOptions(databasePermissions, nil))
 		if err != nil {
 			return err
 		}

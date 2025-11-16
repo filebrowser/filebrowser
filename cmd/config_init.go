@@ -52,12 +52,12 @@ override the options.`,
 			},
 		}
 
-		s.FileMode, err = getAndParseMode(v, "filemode")
+		s.FileMode, err = parseFileMode(v.GetString("fileMode"))
 		if err != nil {
 			return err
 		}
 
-		s.DirMode, err = getAndParseMode(v, "dirmode")
+		s.DirMode, err = parseFileMode(v.GetString("dirMode"))
 		if err != nil {
 			return err
 		}
