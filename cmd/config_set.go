@@ -97,7 +97,7 @@ you want to change. Other options will remain unchanged.`,
 			return err
 		}
 
-		err = getUserDefaults(cmd.Flags(), &set.Defaults, false)
+		err = getUserDefaults(flags, &set.Defaults, false)
 		if err != nil {
 			return err
 		}
