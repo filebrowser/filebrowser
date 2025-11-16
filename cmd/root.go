@@ -49,11 +49,18 @@ var (
 		"token-expiration-time":            "tokenExpirationTime",
 		"baseurl":                          "baseURL",
 	}
+
+	warnedFlags = map[string]bool{}
 )
 
 func migrateFlagNames(f *pflag.FlagSet, name string) pflag.NormalizedName {
 	if newName, ok := flagNamesMigrations[name]; ok {
-		fmt.Printf("Flag --%s has been deprecated, use --%s instead\n", name, newName)
+
+		if !warnedFlags[name] {
+			warnedFlags[name] = true
+			fmt.Printf("WARNING: Flag --%s has been deprecated, use --%s instead\n", name, newName)
+		}
+
 		name = newName
 	}
 
