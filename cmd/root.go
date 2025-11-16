@@ -37,7 +37,7 @@ import (
 var (
 	cfgFile string
 
-	flatNamesMigrations = map[string]string{
+	flagNamesMigrations = map[string]string{
 		"file-mode":                        "fileMode",
 		"dir-mode":                         "dirMode",
 		"hide-login-button":                "hideLoginButton",
@@ -56,7 +56,8 @@ var (
 )
 
 func migrateFlagNames(f *pflag.FlagSet, name string) pflag.NormalizedName {
-	if newName, ok := flatNamesMigrations[name]; ok {
+	if newName, ok := flagNamesMigrations[name]; ok {
+		fmt.Printf("Flag --%s has been deprecated, use --%s instead\n", name, newName)
 		name = newName
 	}
 
