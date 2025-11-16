@@ -151,17 +151,14 @@ user created with the credentials from options "username" and "password".`,
 		}
 
 		// build img service
-		workersCount := v.GetInt("imageprocessors")
+		workersCount := v.GetInt("imageProcessors")
 		if workersCount < 1 {
 			return errors.New("image resize workers count could not be < 1")
 		}
 		imgSvc := img.New(workersCount)
 
 		var fileCache diskcache.Interface = diskcache.NewNoOp()
-		cacheDir, err := cmd.Flags().GetString("cachedir")
-		if err != nil {
-			return err
-		}
+		cacheDir := v.GetString("cacheDir")
 		if cacheDir != "" {
 			if err := os.MkdirAll(cacheDir, 0700); err != nil {
 				return fmt.Errorf("can't make directory %s: %w", cacheDir, err)
@@ -191,10 +188,7 @@ user created with the credentials from options "username" and "password".`,
 			if err != nil {
 				return err
 			}
-			socketPerm, err := cmd.Flags().GetUint32("socketperm")
-			if err != nil {
-				return err
-			}
+			socketPerm := v.GetUint32("socketPerm")
 			err = os.Chmod(server.Socket, os.FileMode(socketPerm))
 			if err != nil {
 				return err
@@ -333,16 +327,16 @@ func getRunParams(st *storage.Storage) (*settings.Server, error) {
 		server.Socket = ""
 	}
 
-	disableThumbnails := v.GetBool("disablethumbnails")
+	disableThumbnails := v.GetBool("disableThumbnails")
 	server.EnableThumbnails = !disableThumbnails
 
-	disablePreviewResize := v.GetBool("disablepreviewresize")
+	disablePreviewResize := v.GetBool("disablePreviewResize")
 	server.ResizePreview = !disablePreviewResize
 
-	disableTypeDetectionByHeader := v.GetBool("disabletypedetectionbyheader")
+	disableTypeDetectionByHeader := v.GetBool("disableTypeDetectionByHeader")
 	server.TypeDetectionByHeader = !disableTypeDetectionByHeader
 
-	disableExec := v.GetBool("disableexec")
+	disableExec := v.GetBool("disableExec")
 	server.EnableExec = !disableExec
 
 	if server.EnableExec {
@@ -352,7 +346,7 @@ func getRunParams(st *storage.Storage) (*settings.Server, error) {
 		log.Println("WARNING: read https://github.com/filebrowser/filebrowser/issues/5199")
 	}
 
-	if val, set := getStringParamB("tokenexpirationtime"); set {
+	if val, set := getStringParamB("tokenExpirationTime"); set {
 		server.TokenExpirationTime = val
 	}
 
@@ -395,7 +389,7 @@ func quickSetup(d pythonData) error {
 			Scope:          ".",
 			Locale:         "en",
 			SingleClick:    false,
-			AceEditorTheme: v.GetString("defaults.aceeditortheme"),
+			AceEditorTheme: v.GetString("defaults.aceEditorTheme"),
 			Perm: users.Permissions{
 				Admin:    false,
 				Execute:  true,
@@ -436,7 +430,7 @@ func quickSetup(d pythonData) error {
 	}
 
 	ser := &settings.Server{
-		BaseURL: v.GetString("baseurl"),
+		BaseURL: v.GetString("baseURL"),
 		Port:    v.GetString("port"),
 		Log:     v.GetString("log"),
 		TLSKey:  v.GetString("key"),

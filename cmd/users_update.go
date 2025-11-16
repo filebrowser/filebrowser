@@ -66,9 +66,9 @@ options you want to change.`,
 		user.Perm = defaults.Perm
 		user.Commands = defaults.Commands
 		user.Sorting = defaults.Sorting
-		user.LockPassword = v.GetBool("lockpassword")
-		user.DateFormat = v.GetBool("dateformat")
-		user.HideDotfiles = v.GetBool("hidedotfiles")
+		user.LockPassword = v.GetBool("lockPassword")
+		user.DateFormat = v.GetBool("dateFormat")
+		user.HideDotfiles = v.GetBool("hideDotfiles")
 
 		if newUsername != "" {
 			user.Username = newUsername

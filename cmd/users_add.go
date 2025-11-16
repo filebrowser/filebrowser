@@ -35,9 +35,9 @@ var usersAddCmd = &cobra.Command{
 		user := &users.User{
 			Username:     args[0],
 			Password:     password,
-			LockPassword: v.GetBool("lockpassword"),
-			DateFormat:   v.GetBool("dateformat"),
-			HideDotfiles: v.GetBool("hidedotfiles"),
+			LockPassword: v.GetBool("lockPassword"),
+			DateFormat:   v.GetBool("dateFormat"),
+			HideDotfiles: v.GetBool("hideDotfiles"),
 		}
 
 		s.Defaults.Apply(user)

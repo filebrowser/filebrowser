@@ -84,7 +84,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 }
 
 func getAndParseViewMode() (users.ViewMode, error) {
-	viewModeStr := v.GetString("viewmode")
+	viewModeStr := v.GetString("viewMode")
 	viewMode := users.ViewMode(viewModeStr)
 	if viewMode != users.ListViewMode && viewMode != users.MosaicViewMode {
 		return "", errors.New("view mode must be \"" + string(users.ListViewMode) + "\" or \"" + string(users.MosaicViewMode) + "\"")
