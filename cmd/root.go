@@ -26,7 +26,6 @@ import (
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/diskcache"
-	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/frontend"
 	fbhttp "github.com/filebrowser/filebrowser/v2/http"
 	"github.com/filebrowser/filebrowser/v2/img"
@@ -241,18 +240,7 @@ user created with the credentials from options "username" and "password".`,
 		}
 		log.Println("Graceful shutdown complete.")
 
-		switch sig {
-		case syscall.SIGHUP:
-			d.err = fbErrors.ErrSighup
-		case syscall.SIGINT:
-			d.err = fbErrors.ErrSigint
-		case syscall.SIGQUIT:
-			d.err = fbErrors.ErrSigquit
-		case syscall.SIGTERM:
-			d.err = fbErrors.ErrSigTerm
-		}
-
-		return d.err
+		return nil
 	}, pythonConfig{allowNoDB: true}),
 }
 

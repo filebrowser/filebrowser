@@ -66,7 +66,6 @@ type pythonConfig struct {
 type pythonData struct {
 	hadDB bool
 	store *storage.Storage
-	err   error
 }
 
 func dbExists(path string) (bool, error) {
