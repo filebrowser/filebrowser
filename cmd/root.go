@@ -73,8 +73,8 @@ func init() {
 	persistent.StringP("config", "c", "", "config file path")
 	persistent.StringP("database", "d", "./filebrowser.db", "database path")
 	flags.Bool("noauth", false, "use the noauth auther when using quick setup")
-	flags.String("username", "admin", "username for the first user when using quick config")
-	flags.String("password", "", "hashed password for the first user when using quick config")
+	flags.String("username", "admin", "username for the first user when using quick setup")
+	flags.String("password", "", "hashed password for the first user when using quick setup")
 
 	addServerFlags(flags)
 
@@ -112,11 +112,13 @@ it. Don't worry: you don't need to setup a separate database server.
 We're using Bolt DB which is a single file database and all managed
 by ourselves.
 
-All the flags you have available (except "config" for the configuration file),
-can be given either through environment variables or configuration files.
+All flags are available as environmental variables, except for "--config",
+which specifies the configuration file to use. The environment variables
+are prefixed by "FB_" followed by the flag name in UPPER_SNAKE_CASE. For
+example, the flag "--disablePreviewResize" is as FB_DISABLE_PREVIEW_RESIZE.
 
-If you don't set "config", it will look for a configuration file called
-.filebrowser.{json, toml, yaml, yml} in the following directories:
+If "--config" is not specified, File Browser will look for a configuration
+file named .filebrowser.{json, toml, yaml, yml} in the following directories:
 
 - ./
 - $HOME/
@@ -124,15 +126,11 @@ If you don't set "config", it will look for a configuration file called
 
 The precedence of the configuration values are as follows:
 
-- flags
-- environment variables
-- configuration file
-- database values
-- defaults
-
-The environment variables are prefixed by "FB_" followed by the option
-name in caps. So to set "database" via an env variable, you should
-set FB_DATABASE.
+- Flags
+- Environment variables
+- Configuration file
+- Database values
+- Defaults
 
 Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstrapped and a new
