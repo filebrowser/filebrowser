@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func init() {
@@ -15,12 +14,17 @@ var cmdsLsCmd = &cobra.Command{
 	Short: "List all commands for each event",
 	Long:  `List all commands for each event.`,
 	Args:  cobra.NoArgs,
-	RunE: python(func(cmd *cobra.Command, _ []string, v *viper.Viper, d *pythonData) error {
+	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
 		s, err := d.store.Settings.Get()
 		if err != nil {
 			return err
 		}
-		evt := v.GetString("event")
+
+		evt, err := cmd.Flags().GetString("event")
+		if err != nil {
+			return err
+		}
+
 		if evt == "" {
 			printEvents(s.Commands)
 		} else {
@@ -29,6 +33,7 @@ var cmdsLsCmd = &cobra.Command{
 			show["after_"+evt] = s.Commands["after_"+evt]
 			printEvents(show)
 		}
+
 		return nil
 	}, pythonConfig{}),
 }

@@ -10,7 +10,6 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/errors"
@@ -62,8 +61,11 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.Uint16("tus.retryCount", settings.DefaultTusRetryCount, "the tus retry count")
 }
 
-func getAuthMethod(v *viper.Viper, defaults ...interface{}) (settings.AuthMethod, map[string]interface{}, error) {
-	methodStr := v.GetString("auth.method")
+func getAuthMethod(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, map[string]interface{}, error) {
+	methodStr, err := flags.GetString("auth.method")
+	if err != nil {
+		return "", nil, err
+	}
 	method := settings.AuthMethod(methodStr)
 
 	var defaultAuther map[string]interface{}
@@ -90,8 +92,12 @@ func getAuthMethod(v *viper.Viper, defaults ...interface{}) (settings.AuthMethod
 	return method, defaultAuther, nil
 }
 
-func getProxyAuth(v *viper.Viper, defaultAuther map[string]interface{}) (auth.Auther, error) {
-	header := v.GetString("auth.header")
+func getProxyAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
+	header, err := flags.GetString("auth.header")
+	if err != nil {
+		return nil, err
+	}
+
 	if header == "" {
 		header = defaultAuther["header"].(string)
 	}
@@ -107,11 +113,22 @@ func getNoAuth() auth.Auther {
 	return &auth.NoAuth{}
 }
 
-func getJSONAuth(v *viper.Viper, defaultAuther map[string]interface{}) (auth.Auther, error) {
+func getJSONAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
 	jsonAuth := &auth.JSONAuth{}
-	host := v.GetString("recaptcha.host")
-	key := v.GetString("recaptcha.key")
-	secret := v.GetString("recaptcha.secret")
+	host, err := flags.GetString("recaptcha.host")
+	if err != nil {
+		return nil, err
+	}
+
+	key, err := flags.GetString("recaptcha.key")
+	if err != nil {
+		return nil, err
+	}
+
+	secret, err := flags.GetString("recaptcha.secret")
+	if err != nil {
+		return nil, err
+	}
 
 	if key == "" {
 		if kmap, ok := defaultAuther["recaptcha"].(map[string]interface{}); ok {
@@ -135,8 +152,11 @@ func getJSONAuth(v *viper.Viper, defaultAuther map[string]interface{}) (auth.Aut
 	return jsonAuth, nil
 }
 
-func getHookAuth(v *viper.Viper, defaultAuther map[string]interface{}) (auth.Auther, error) {
-	command := v.GetString("auth.command")
+func getHookAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
+	command, err := flags.GetString("auth.command")
+	if err != nil {
+		return nil, err
+	}
 	if command == "" {
 		command = defaultAuther["command"].(string)
 	}
@@ -148,8 +168,8 @@ func getHookAuth(v *viper.Viper, defaultAuther map[string]interface{}) (auth.Aut
 	return &auth.HookAuth{Command: command}, nil
 }
 
-func getAuthentication(v *viper.Viper, defaults ...interface{}) (settings.AuthMethod, auth.Auther, error) {
-	method, defaultAuther, err := getAuthMethod(v, defaults...)
+func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, auth.Auther, error) {
+	method, defaultAuther, err := getAuthMethod(flags, defaults...)
 	if err != nil {
 		return "", nil, err
 	}
@@ -157,13 +177,13 @@ func getAuthentication(v *viper.Viper, defaults ...interface{}) (settings.AuthMe
 	var auther auth.Auther
 	switch method {
 	case auth.MethodProxyAuth:
-		auther, err = getProxyAuth(v, defaultAuther)
+		auther, err = getProxyAuth(flags, defaultAuther)
 	case auth.MethodNoAuth:
 		auther = getNoAuth()
 	case auth.MethodJSONAuth:
-		auther, err = getJSONAuth(v, defaultAuther)
+		auther, err = getJSONAuth(flags, defaultAuther)
 	case auth.MethodHookAuth:
-		auther, err = getHookAuth(v, defaultAuther)
+		auther, err = getHookAuth(flags, defaultAuther)
 	default:
 		return "", nil, errors.ErrInvalidAuthMethod
 	}

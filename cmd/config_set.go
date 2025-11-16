@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"github.com/spf13/pflag"
 )
 
 func init() {
@@ -16,7 +16,9 @@ var configSetCmd = &cobra.Command{
 	Long: `Updates the configuration. Set the flags for the options
 you want to change. Other options will remain unchanged.`,
 	Args: cobra.NoArgs,
-	RunE: python(func(cmd *cobra.Command, _ []string, v *viper.Viper, d *pythonData) error {
+	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
+		flags := cmd.Flags()
+
 		set, err := d.store.Settings.Get()
 		if err != nil {
 			return err
@@ -29,70 +31,73 @@ you want to change. Other options will remain unchanged.`,
 
 		hasAuth := false
 
-		for _, key := range v.AllKeys() {
-			if !v.IsSet(key) {
-				continue
+		flags.Visit(func(flag *pflag.Flag) {
+			if err != nil {
+				return
 			}
 
-			switch key {
-			case "baseurl":
-				ser.BaseURL = v.GetString(key)
+			switch flag.Name {
+			case "baseURL":
+				ser.BaseURL, err = flags.GetString(flag.Name)
 			case "root":
-				ser.Root = v.GetString(key)
+				ser.Root, err = flags.GetString(flag.Name)
 			case "socket":
-				ser.Socket = v.GetString(key)
+				ser.Socket, err = flags.GetString(flag.Name)
 			case "cert":
-				ser.TLSCert = v.GetString(key)
+				ser.TLSCert, err = flags.GetString(flag.Name)
 			case "key":
-				ser.TLSKey = v.GetString(key)
+				ser.TLSKey, err = flags.GetString(flag.Name)
 			case "address":
-				ser.Address = v.GetString(key)
+				ser.Address, err = flags.GetString(flag.Name)
 			case "port":
-				ser.Port = v.GetString(key)
+				ser.Port, err = flags.GetString(flag.Name)
 			case "log":
-				ser.Log = v.GetString(key)
-			case "hideloginbutton":
-				set.HideLoginButton = v.GetBool(key)
+				ser.Log, err = flags.GetString(flag.Name)
+			case "hideLoginButton":
+				set.HideLoginButton, err = flags.GetBool(flag.Name)
 			case "signup":
-				set.Signup = v.GetBool(key)
+				set.Signup, err = flags.GetBool(flag.Name)
 			case "auth.method":
 				hasAuth = true
 			case "shell":
 				var shell string
-				shell = v.GetString(key)
+				shell, err = flags.GetString(flag.Name)
+				if err != nil {
+					return
+				}
 				set.Shell = convertCmdStrToCmdArray(shell)
-			case "createuserdir":
-				set.CreateUserDir = v.GetBool(key)
-			case "minimumpasswordlength":
-				set.MinimumPasswordLength = v.GetUint(key)
+			case "createUserDir":
+				set.CreateUserDir, err = flags.GetBool(flag.Name)
+			case "minimumPasswordLength":
+				set.MinimumPasswordLength, err = flags.GetUint(flag.Name)
 			case "branding.name":
-				set.Branding.Name = v.GetString(key)
+				set.Branding.Name, err = flags.GetString(flag.Name)
 			case "branding.color":
-				set.Branding.Color = v.GetString(key)
+				set.Branding.Color, err = flags.GetString(flag.Name)
 			case "branding.theme":
-				set.Branding.Theme = v.GetString(key)
-			case "branding.disableexternal":
-				set.Branding.DisableExternal = v.GetBool(key)
-			case "branding.disableusedpercentage":
-				set.Branding.DisableUsedPercentage = v.GetBool(key)
+				set.Branding.Theme, err = flags.GetString(flag.Name)
+			case "branding.disableExternal":
+				set.Branding.DisableExternal, err = flags.GetBool(flag.Name)
+			case "branding.disableUsedPercentage":
+				set.Branding.DisableUsedPercentage, err = flags.GetBool(flag.Name)
 			case "branding.files":
-				set.Branding.Files = v.GetString(key)
-			case "filemode":
-				set.FileMode, err = parseFileMode(v.GetString(key))
-			case "dirmode":
-				set.DirMode, err = parseFileMode(v.GetString(key))
-			case "tus.chunksize":
-				set.Tus.ChunkSize = v.GetUint64(key)
-			case "tus.retrycount":
-				set.Tus.RetryCount = v.GetUint16(key)
+				set.Branding.Files, err = flags.GetString(flag.Name)
+			case "fileMode":
+				set.FileMode, err = getAndParseFileMode(flags, flag.Name)
+			case "dirMode":
+				set.DirMode, err = getAndParseFileMode(flags, flag.Name)
+			case "tus.chunkSize":
+				set.Tus.ChunkSize, err = flags.GetUint64(flag.Name)
+			case "tus.retryCount":
+				set.Tus.RetryCount, err = flags.GetUint16(flag.Name)
 			}
 
-			if err != nil {
-				return err
-			}
+		})
+		if err != nil {
+			return err
 		}
 
-		err = getUserDefaults(v, &set.Defaults, false)
+		err = getUserDefaults(cmd.Flags(), &set.Defaults, false)
 		if err != nil {
 			return err
 		}
@@ -104,7 +109,7 @@ you want to change. Other options will remain unchanged.`,
 		}
 
 		// check if there are new flags for existing auth method
-		set.AuthMethod, auther, err = getAuthentication(v, hasAuth, set, auther)
+		set.AuthMethod, auther, err = getAuthentication(flags, hasAuth, set, auther)
 		if err != nil {
 			return err
 		}

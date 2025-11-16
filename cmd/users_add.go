@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -17,12 +16,13 @@ var usersAddCmd = &cobra.Command{
 	Short: "Create a new user",
 	Long:  `Create a new user and add it to the database.`,
 	Args:  cobra.ExactArgs(2),
-	RunE: python(func(cmd *cobra.Command, args []string, v *viper.Viper, d *pythonData) error {
+	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
+		flags := cmd.Flags()
 		s, err := d.store.Settings.Get()
 		if err != nil {
 			return err
 		}
-		err = getUserDefaults(v, &s.Defaults, false)
+		err = getUserDefaults(flags, &s.Defaults, false)
 		if err != nil {
 			return err
 		}
@@ -33,11 +33,23 @@ var usersAddCmd = &cobra.Command{
 		}
 
 		user := &users.User{
-			Username:     args[0],
-			Password:     password,
-			LockPassword: v.GetBool("lockPassword"),
-			DateFormat:   v.GetBool("dateFormat"),
-			HideDotfiles: v.GetBool("hideDotfiles"),
+			Username: args[0],
+			Password: password,
+		}
+
+		user.LockPassword, err = flags.GetBool("lockPassword")
+		if err != nil {
+			return err
+		}
+
+		user.DateFormat, err = flags.GetBool("dateFormat")
+		if err != nil {
+			return err
+		}
+
+		user.HideDotfiles, err = flags.GetBool("hideDotfiles")
+		if err != nil {
+			return err
 		}
 
 		s.Defaults.Apply(user)

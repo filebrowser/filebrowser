@@ -7,7 +7,6 @@ import (
 	"reflect"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -35,7 +34,7 @@ database.
 
 The path must be for a json or yaml file.`,
 	Args: jsonYamlArg,
-	RunE: python(func(_ *cobra.Command, args []string, v *viper.Viper, d *pythonData) error {
+	RunE: python(func(_ *cobra.Command, args []string, d *pythonData) error {
 		var key []byte
 		var err error
 		if d.hadDB {

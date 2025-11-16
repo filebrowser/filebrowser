@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func init() {
@@ -16,7 +15,7 @@ var cmdsAddCmd = &cobra.Command{
 	Short: "Add a command to run on a specific event",
 	Long:  `Add a command to run on a specific event.`,
 	Args:  cobra.MinimumNArgs(2),
-	RunE: python(func(_ *cobra.Command, args []string, v *viper.Viper, d *pythonData) error {
+	RunE: python(func(_ *cobra.Command, args []string, d *pythonData) error {
 		s, err := d.store.Settings.Get()
 		if err != nil {
 			return err

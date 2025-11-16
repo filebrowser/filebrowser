@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -26,7 +25,8 @@ file. You can use this command to import new users to your
 installation. For that, just don't place their ID on the files
 list or set it to 0.`,
 	Args: jsonYamlArg,
-	RunE: python(func(cmd *cobra.Command, args []string, v *viper.Viper, d *pythonData) error {
+	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
+		flags := cmd.Flags()
 		fd, err := os.Open(args[0])
 		if err != nil {
 			return err
@@ -46,7 +46,12 @@ list or set it to 0.`,
 			}
 		}
 
-		if v.GetBool("replace") {
+		replace, err := flags.GetBool("replace")
+		if err != nil {
+			return err
+		}
+
+		if replace {
 			oldUsers, userImportErr := d.store.Users.Gets("")
 			if userImportErr != nil {
 				return userImportErr
@@ -65,7 +70,10 @@ list or set it to 0.`,
 			}
 		}
 
-		overwrite := v.GetBool("overwrite")
+		overwrite, err := flags.GetBool("overwrite")
+		if err != nil {
+			return err
+		}
 
 		for _, user := range list {
 			onDB, err := d.store.Users.Get("", user.ID)

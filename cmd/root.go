@@ -134,23 +134,23 @@ The precedence of the configuration values are as follows:
 Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstrapped and a new
 user created with the credentials from options "username" and "password".`,
-	RunE: python(func(cmd *cobra.Command, _ []string, v *viper.Viper, d *pythonData) error {
+	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
 		if !d.hadDB {
-			err := quickSetup(v, *d)
+			err := quickSetup(d.viper, *d)
 			if err != nil {
 				return err
 			}
 		}
 
 		// build img service
-		workersCount := v.GetInt("imageProcessors")
-		if workersCount < 1 {
+		imgWorkersCount := d.viper.GetInt("imageProcessors")
+		if imgWorkersCount < 1 {
 			return errors.New("image resize workers count could not be < 1")
 		}
-		imgSvc := img.New(workersCount)
+		imageService := img.New(imgWorkersCount)
 
 		var fileCache diskcache.Interface = diskcache.NewNoOp()
-		cacheDir := v.GetString("cacheDir")
+		cacheDir := d.viper.GetString("cacheDir")
 		if cacheDir != "" {
 			if err := os.MkdirAll(cacheDir, 0700); err != nil {
 				return fmt.Errorf("can't make directory %s: %w", cacheDir, err)
@@ -158,7 +158,7 @@ user created with the credentials from options "username" and "password".`,
 			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
 		}
 
-		server, err := getRunParams(v, d.store)
+		server, err := getServerSettings(d.viper, d.store)
 		if err != nil {
 			return err
 		}
@@ -180,7 +180,7 @@ user created with the credentials from options "username" and "password".`,
 			if err != nil {
 				return err
 			}
-			socketPerm := v.GetUint32("socketPerm")
+			socketPerm := d.viper.GetUint32("socketPerm")
 			err = os.Chmod(server.Socket, os.FileMode(socketPerm))
 			if err != nil {
 				return err
@@ -209,7 +209,7 @@ user created with the credentials from options "username" and "password".`,
 			panic(err)
 		}
 
-		handler, err := fbhttp.NewHandler(imgSvc, fileCache, d.store, server, assetsFs)
+		handler, err := fbhttp.NewHandler(imageService, fileCache, d.store, server, assetsFs)
 		if err != nil {
 			return err
 		}
@@ -253,50 +253,54 @@ user created with the credentials from options "username" and "password".`,
 	}, pythonConfig{allowNoDB: true}),
 }
 
-func getRunParams(v *viper.Viper, st *storage.Storage) (*settings.Server, error) {
+func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, error) {
 	server, err := st.Settings.GetServer()
 	if err != nil {
 		return nil, err
 	}
 
-	if val, set := getStringParamB(v, "root"); set {
+	if val, set := vGetStringIsSet(v, "root"); set {
 		server.Root = val
 	}
 
-	if val, set := getStringParamB(v, "baseurl"); set {
+	if val, set := vGetStringIsSet(v, "baseURL"); set {
 		server.BaseURL = val
 	}
 
-	if val, set := getStringParamB(v, "log"); set {
+	if val, set := vGetStringIsSet(v, "log"); set {
 		server.Log = val
 	}
 
 	isSocketSet := false
 	isAddrSet := false
 
-	if val, set := getStringParamB(v, "address"); set {
+	if val, set := vGetStringIsSet(v, "address"); set {
 		server.Address = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getStringParamB(v, "port"); set {
+	if val, set := vGetStringIsSet(v, "port"); set {
 		server.Port = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getStringParamB(v, "key"); set {
+	if val, set := vGetStringIsSet(v, "key"); set {
 		server.TLSKey = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getStringParamB(v, "cert"); set {
+	if val, set := vGetStringIsSet(v, "cert"); set {
 		server.TLSCert = val
 		isAddrSet = isAddrSet || set
 	}
 
-	if val, set := getStringParamB(v, "socket"); set {
+	if val, set := vGetStringIsSet(v, "socket"); set {
 		server.Socket = val
 		isSocketSet = isSocketSet || set
+	}
+
+	if val, set := vGetStringIsSet(v, "tokenExpirationTime"); set {
+		server.TokenExpirationTime = val
 	}
 
 	if isAddrSet && isSocketSet {
@@ -308,17 +312,10 @@ func getRunParams(v *viper.Viper, st *storage.Storage) (*settings.Server, error)
 		server.Socket = ""
 	}
 
-	disableThumbnails := v.GetBool("disableThumbnails")
-	server.EnableThumbnails = !disableThumbnails
-
-	disablePreviewResize := v.GetBool("disablePreviewResize")
-	server.ResizePreview = !disablePreviewResize
-
-	disableTypeDetectionByHeader := v.GetBool("disableTypeDetectionByHeader")
-	server.TypeDetectionByHeader = !disableTypeDetectionByHeader
-
-	disableExec := v.GetBool("disableExec")
-	server.EnableExec = !disableExec
+	server.EnableThumbnails = !v.GetBool("disableThumbnails")
+	server.ResizePreview = !v.GetBool("disablePreviewResize")
+	server.TypeDetectionByHeader = !v.GetBool("disableTypeDetectionByHeader")
+	server.EnableExec = !v.GetBool("disableExec")
 
 	if server.EnableExec {
 		log.Println("WARNING: Command Runner feature enabled!")
@@ -327,14 +324,10 @@ func getRunParams(v *viper.Viper, st *storage.Storage) (*settings.Server, error)
 		log.Println("WARNING: read https://github.com/filebrowser/filebrowser/issues/5199")
 	}
 
-	if val, set := getStringParamB(v, "tokenExpirationTime"); set {
-		server.TokenExpirationTime = val
-	}
-
 	return server, nil
 }
 
-func getStringParamB(v *viper.Viper, key string) (string, bool) {
+func vGetStringIsSet(v *viper.Viper, key string) (string, bool) {
 	return v.GetString(key), v.IsSet(key)
 }
 
@@ -394,7 +387,7 @@ func quickSetup(v *viper.Viper, d pythonData) error {
 	}
 
 	var err error
-	if _, noauth := getStringParamB(v, "noauth"); noauth {
+	if _, noauth := vGetStringIsSet(v, "noauth"); noauth {
 		set.AuthMethod = auth.MethodNoAuth
 		err = d.store.Auth.Save(&auth.NoAuth{})
 	} else {

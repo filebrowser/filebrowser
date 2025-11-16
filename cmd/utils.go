@@ -26,8 +26,13 @@ import (
 
 const databasePermissions = 0640
 
-func parseFileMode(value string) (fs.FileMode, error) {
-	b, err := strconv.ParseUint(value, 0, 32)
+func getAndParseFileMode(flags *pflag.FlagSet, name string) (fs.FileMode, error) {
+	mode, err := flags.GetString(name)
+	if err != nil {
+		return 0, err
+	}
+
+	b, err := strconv.ParseUint(mode, 0, 32)
 	if err != nil {
 		return 0, err
 	}
@@ -127,7 +132,7 @@ func initViper(cmd *cobra.Command) (*viper.Viper, error) {
 }
 
 type cobraFunc func(cmd *cobra.Command, args []string) error
-type pythonFunc func(cmd *cobra.Command, args []string, v *viper.Viper, data *pythonData) error
+type pythonFunc func(cmd *cobra.Command, args []string, data *pythonData) error
 
 type pythonConfig struct {
 	noDB      bool
@@ -136,6 +141,7 @@ type pythonConfig struct {
 
 type pythonData struct {
 	hadDB bool
+	viper *viper.Viper
 	store *storage.Storage
 }
 
@@ -146,7 +152,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 			return err
 		}
 
-		data := &pythonData{hadDB: true}
+		data := &pythonData{hadDB: true, viper: v}
 		path := v.GetString("database")
 
 		absPath, err := filepath.Abs(path)
@@ -179,7 +185,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 			return err
 		}
 
-		return fn(cmd, args, v, data)
+		return fn(cmd, args, data)
 	}
 }
 

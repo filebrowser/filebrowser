@@ -4,7 +4,6 @@ import (
 	"regexp"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -22,9 +21,19 @@ var rulesAddCmd = &cobra.Command{
 	Short: "Add a global rule or user rule",
 	Long:  `Add a global rule or user rule.`,
 	Args:  cobra.ExactArgs(1),
-	RunE: python(func(cmd *cobra.Command, args []string, v *viper.Viper, d *pythonData) error {
-		allow := v.GetBool("allow")
-		regex := v.GetBool("regex")
+	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
+		flags := cmd.Flags()
+
+		allow, err := flags.GetBool("allow")
+		if err != nil {
+			return err
+		}
+
+		regex, err := flags.GetBool("regex")
+		if err != nil {
+			return err
+		}
+
 		exp := args[0]
 
 		if regex {
@@ -52,6 +61,6 @@ var rulesAddCmd = &cobra.Command{
 			return d.store.Settings.Save(s)
 		}
 
-		return runRules(d.store, cmd, v, user, global)
+		return runRules(d.store, cmd, user, global)
 	}, pythonConfig{}),
 }
