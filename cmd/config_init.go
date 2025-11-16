@@ -86,6 +86,16 @@ override the options.`,
 			return err
 		}
 
+		tusChunkSize, err := flags.GetUint64("tus.chunkSize")
+		if err != nil {
+			return err
+		}
+
+		tusRetryCount, err := flags.GetUint16("tus.retryCount")
+		if err != nil {
+			return err
+		}
+
 		s := &settings.Settings{
 			Key:                   key,
 			Signup:                signup,
@@ -101,6 +111,10 @@ override the options.`,
 				DisableUsedPercentage: brandingDisableUsedPercentage,
 				Theme:                 brandingTheme,
 				Files:                 brandingFiles,
+			},
+			Tus: settings.Tus{
+				ChunkSize:  tusChunkSize,
+				RetryCount: tusRetryCount,
 			},
 		}
 

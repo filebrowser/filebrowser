@@ -80,6 +80,10 @@ you want to change. Other options will remain unchanged.`,
 				set.FileMode, err = getMode(flags, flag.Name)
 			case "dir-mode":
 				set.DirMode, err = getMode(flags, flag.Name)
+			case "tus.chunkSize":
+				set.Tus.ChunkSize, err = flags.GetUint64(flag.Name)
+			case "tus.retryCount":
+				set.Tus.RetryCount, err = flags.GetUint16(flag.Name)
 			}
 		})
 
