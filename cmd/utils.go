@@ -12,8 +12,11 @@ import (
 	"strings"
 
 	"github.com/asdine/storm/v3"
+	homedir "github.com/mitchellh/go-homedir"
+	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 	yaml "gopkg.in/yaml.v3"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -21,30 +24,19 @@ import (
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 )
 
-const dbPerms = 0640
+const databasePermissions = 0640
 
-func getString(flags *pflag.FlagSet, flag string) (string, error) {
-	return flags.GetString(flag)
-}
-
-func getMode(flags *pflag.FlagSet, flag string) (fs.FileMode, error) {
-	s, err := getString(flags, flag)
+func getAndParseFileMode(flags *pflag.FlagSet, name string) (fs.FileMode, error) {
+	mode, err := flags.GetString(name)
 	if err != nil {
 		return 0, err
 	}
-	b, err := strconv.ParseUint(s, 0, 32)
+
+	b, err := strconv.ParseUint(mode, 0, 32)
 	if err != nil {
 		return 0, err
 	}
 	return fs.FileMode(b), nil
-}
-
-func getBool(flags *pflag.FlagSet, flag string) (bool, error) {
-	return flags.GetBool(flag)
-}
-
-func getUint(flags *pflag.FlagSet, flag string) (uint, error) {
-	return flags.GetUint(flag)
 }
 
 func generateKey() []byte {
@@ -53,19 +45,6 @@ func generateKey() []byte {
 		panic(err)
 	}
 	return k
-}
-
-type cobraFunc func(cmd *cobra.Command, args []string) error
-type pythonFunc func(cmd *cobra.Command, args []string, data *pythonData) error
-
-type pythonConfig struct {
-	noDB      bool
-	allowNoDB bool
-}
-
-type pythonData struct {
-	hadDB bool
-	store *storage.Storage
 }
 
 func dbExists(path string) (bool, error) {
@@ -88,38 +67,131 @@ func dbExists(path string) (bool, error) {
 	return false, err
 }
 
+// Generate the replacements for all environment variables. This allows to
+// use FB_BRANDING_DISABLE_EXTERNAL environment variables, even when the
+// option name is branding.disableExternal.
+func generateEnvKeyReplacements(cmd *cobra.Command) []string {
+	replacements := []string{}
+
+	cmd.Flags().VisitAll(func(f *pflag.Flag) {
+		oldName := strings.ToUpper(f.Name)
+		newName := strings.ToUpper(lo.SnakeCase(f.Name))
+		replacements = append(replacements, oldName, newName)
+	})
+
+	return replacements
+}
+
+func initViper(cmd *cobra.Command) (*viper.Viper, error) {
+	v := viper.New()
+
+	// Get config file from flag
+	cfgFile, err := cmd.Flags().GetString("config")
+	if err != nil {
+		return nil, err
+	}
+
+	// Configuration file
+	if cfgFile == "" {
+		home, err := homedir.Dir()
+		if err != nil {
+			return nil, err
+		}
+		v.AddConfigPath(".")
+		v.AddConfigPath(home)
+		v.AddConfigPath("/etc/filebrowser/")
+		v.SetConfigName(".filebrowser")
+	} else {
+		v.SetConfigFile(cfgFile)
+	}
+
+	// Environment variables
+	v.SetEnvPrefix("FB")
+	v.AutomaticEnv()
+	v.SetEnvKeyReplacer(strings.NewReplacer(generateEnvKeyReplacements(cmd)...))
+
+	// Bind the flags
+	err = v.BindPFlags(cmd.Flags())
+	if err != nil {
+		return nil, err
+	}
+
+	// Read in configuration
+	if err := v.ReadInConfig(); err != nil {
+		if errors.Is(err, viper.ConfigParseError{}) {
+			return nil, err
+		}
+
+		log.Println("No config file used")
+	} else {
+		log.Printf("Using config file: %s", v.ConfigFileUsed())
+	}
+
+	// Return Viper
+	return v, nil
+}
+
+type cobraFunc func(cmd *cobra.Command, args []string) error
+type pythonFunc func(cmd *cobra.Command, args []string, data *pythonData) error
+
+type pythonConfig struct {
+	expectsNoDatabase bool
+	allowsNoDatabase  bool
+}
+
+type pythonData struct {
+	databaseExisted bool
+	viper           *viper.Viper
+	store           *storage.Storage
+}
+
 func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) error {
-		data := &pythonData{hadDB: true}
+		v, err := initViper(cmd)
+		if err != nil {
+			return err
+		}
 
-		path := getStringParam(cmd.Flags(), "database")
+		data := &pythonData{databaseExisted: true}
+		path := v.GetString("database")
+
+		// Only make the viper instance available to the root command (filebrowser).
+		// This is to make sure that we don't make the mistake of using it somewhere
+		// else.
+		if cmd.Name() == "filebrowser" {
+			data.viper = v
+		}
+
 		absPath, err := filepath.Abs(path)
 		if err != nil {
-			panic(err)
+			return err
 		}
-		exists, err := dbExists(path)
 
+		exists, err := dbExists(path)
 		if err != nil {
-			panic(err)
-		} else if exists && cfg.noDB {
+			return err
+		} else if exists && cfg.expectsNoDatabase {
 			log.Fatal(absPath + " already exists")
-		} else if !exists && !cfg.noDB && !cfg.allowNoDB {
+		} else if !exists && !cfg.expectsNoDatabase && !cfg.allowsNoDatabase {
 			log.Fatal(absPath + " does not exist. Please run 'filebrowser config init' first.")
-		} else if !exists && !cfg.noDB {
+		} else if !exists && !cfg.expectsNoDatabase {
 			log.Println("Warning: filebrowser.db can't be found. Initialing in " + strings.TrimSuffix(absPath, "filebrowser.db"))
 		}
 
 		log.Println("Using database: " + absPath)
-		data.hadDB = exists
-		db, err := storm.Open(path, storm.BoltOptions(dbPerms, nil))
+		data.databaseExisted = exists
+
+		db, err := storm.Open(path, storm.BoltOptions(databasePermissions, nil))
 		if err != nil {
 			return err
 		}
 		defer db.Close()
+
 		data.store, err = bolt.NewStorage(db)
 		if err != nil {
 			return err
 		}
+
 		return fn(cmd, args, data)
 	}
 }

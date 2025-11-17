@@ -100,6 +100,7 @@ nav:
       - customization.md
       - authentication.md
       - command-execution.md
+    - Troubleshooting: troubleshooting.md
     - Deployment: deployment.md
     - Command Line Usage:
       - cli/filebrowser.md

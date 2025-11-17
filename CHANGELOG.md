@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.48.1](https://github.com/filebrowser/filebrowser/compare/v2.48.0...v2.48.1) (2025-11-17)
+
+
+### Bug Fixes
+
+* options should only override if set ([420adea](https://github.com/filebrowser/filebrowser/commit/420adea7e61a1c182cddd6fb2544a0752e5709f7))
+
+## [2.48.0](https://github.com/filebrowser/filebrowser/compare/v2.47.0...v2.48.0) (2025-11-17)
+
+
+### Features
+
+* consistent flags and environment variables ([#5549](https://github.com/filebrowser/filebrowser/issues/5549)) ([0a0cb80](https://github.com/filebrowser/filebrowser/commit/0a0cb8046fce52f1ff926171b34bcdb7cd39aab3))
+
+
+### Bug Fixes
+
+* add tokenExpirationTime to `config init` and troubleshoot docs ([#5546](https://github.com/filebrowser/filebrowser/issues/5546)) ([8c5dc76](https://github.com/filebrowser/filebrowser/commit/8c5dc7641e6f8aadd9e5d5d3b25a2ad9f1ec9a1e))
+* use all available flags in quick setup ([f41585f](https://github.com/filebrowser/filebrowser/commit/f41585f0392d65c08c01ab65b62d3eeb04c03b7d))
+
+
+### Refactorings
+
+* reuse logic for config init and set ([89be0b1](https://github.com/filebrowser/filebrowser/commit/89be0b1873527987dd2dddac746e93b8bc684d46))
+
 ## [2.47.0](https://github.com/filebrowser/filebrowser/compare/v2.46.1...v2.47.0) (2025-11-16)
 
 

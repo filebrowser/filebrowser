@@ -37,7 +37,7 @@ The path must be for a json or yaml file.`,
 	RunE: python(func(_ *cobra.Command, args []string, d *pythonData) error {
 		var key []byte
 		var err error
-		if d.hadDB {
+		if d.databaseExisted {
 			settings, settingErr := d.store.Settings.Get()
 			if settingErr != nil {
 				return settingErr
@@ -104,7 +104,7 @@ The path must be for a json or yaml file.`,
 		}
 
 		return printSettings(file.Server, file.Settings, auther)
-	}, pythonConfig{allowNoDB: true}),
+	}, pythonConfig{allowsNoDatabase: true}),
 }
 
 func getAuther(sample auth.Auther, data interface{}) (interface{}, error) {

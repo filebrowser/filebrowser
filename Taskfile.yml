@@ -49,7 +49,10 @@ tasks:
     cmds:
       - task: docs:cli:generate
       - git add www/docs/cli
-      - "git commit -m 'chore(docs): update CLI documentation'"
+      - |
+        if [[ `git status www/docs/cli --porcelain` ]]; then
+          git commit -m 'chore(docs): update CLI documentation'
+        fi
       - task: release:dry-run
       - task: release:make
 
