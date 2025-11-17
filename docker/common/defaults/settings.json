@@ -4,6 +4,5 @@
   "address": "",
   "log": "stdout",
   "database": "/database/filebrowser.db",
-  "root": "/srv",
-  "token-expiration-time": "2h"
+  "root": "/srv"
 }
