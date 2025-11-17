@@ -22,14 +22,18 @@ var rulesAddCmd = &cobra.Command{
 	Long:  `Add a global rule or user rule.`,
 	Args:  cobra.ExactArgs(1),
 	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
-		allow, err := getBool(cmd.Flags(), "allow")
+		flags := cmd.Flags()
+
+		allow, err := flags.GetBool("allow")
 		if err != nil {
 			return err
 		}
-		regex, err := getBool(cmd.Flags(), "regex")
+
+		regex, err := flags.GetBool("regex")
 		if err != nil {
 			return err
 		}
+
 		exp := args[0]
 
 		if regex {

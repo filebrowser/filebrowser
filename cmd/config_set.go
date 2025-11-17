@@ -18,6 +18,7 @@ you want to change. Other options will remain unchanged.`,
 	Args: cobra.NoArgs,
 	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
 		flags := cmd.Flags()
+
 		set, err := d.store.Settings.Get()
 		if err != nil {
 			return err
@@ -29,64 +30,86 @@ you want to change. Other options will remain unchanged.`,
 		}
 
 		hasAuth := false
+
 		flags.Visit(func(flag *pflag.Flag) {
 			if err != nil {
 				return
 			}
+
 			switch flag.Name {
-			case "baseurl":
-				ser.BaseURL, err = getString(flags, flag.Name)
-			case "root":
-				ser.Root, err = getString(flags, flag.Name)
-			case "socket":
-				ser.Socket, err = getString(flags, flag.Name)
-			case "cert":
-				ser.TLSCert, err = getString(flags, flag.Name)
-			case "key":
-				ser.TLSKey, err = getString(flags, flag.Name)
+			// Server flags from [addServerFlags]
 			case "address":
-				ser.Address, err = getString(flags, flag.Name)
-			case "port":
-				ser.Port, err = getString(flags, flag.Name)
+				ser.Address, err = flags.GetString(flag.Name)
 			case "log":
-				ser.Log, err = getString(flags, flag.Name)
-			case "hide-login-button":
-				set.HideLoginButton, err = getBool(flags, flag.Name)
+				ser.Log, err = flags.GetString(flag.Name)
+			case "port":
+				ser.Port, err = flags.GetString(flag.Name)
+			case "cert":
+				ser.TLSCert, err = flags.GetString(flag.Name)
+			case "key":
+				ser.TLSKey, err = flags.GetString(flag.Name)
+			case "root":
+				ser.Root, err = flags.GetString(flag.Name)
+			case "socket":
+				ser.Socket, err = flags.GetString(flag.Name)
+			case "baseURL":
+				ser.BaseURL, err = flags.GetString(flag.Name)
+			case "tokenExpirationTime":
+				ser.TokenExpirationTime, err = flags.GetString(flag.Name)
+			case "disableThumbnails":
+				ser.EnableThumbnails, err = flags.GetBool(flag.Name)
+				ser.EnableThumbnails = !ser.EnableThumbnails
+			case "disablePreviewResize":
+				ser.ResizePreview, err = flags.GetBool(flag.Name)
+				ser.ResizePreview = !ser.ResizePreview
+			case "disableExec":
+				ser.EnableExec, err = flags.GetBool(flag.Name)
+				ser.EnableExec = !ser.EnableExec
+			case "disableTypeDetectionByHeader":
+				ser.TypeDetectionByHeader, err = flags.GetBool(flag.Name)
+				ser.TypeDetectionByHeader = !ser.TypeDetectionByHeader
+
+				// Settings flags from [addConfigFlags]
 			case "signup":
-				set.Signup, err = getBool(flags, flag.Name)
-			case "auth.method":
-				hasAuth = true
+				set.Signup, err = flags.GetBool(flag.Name)
+			case "hideLoginButton":
+				set.HideLoginButton, err = flags.GetBool(flag.Name)
+			case "createUserDir":
+				set.CreateUserDir, err = flags.GetBool(flag.Name)
+			case "minimumPasswordLength":
+				set.MinimumPasswordLength, err = flags.GetUint(flag.Name)
 			case "shell":
 				var shell string
-				shell, err = getString(flags, flag.Name)
+				shell, err = flags.GetString(flag.Name)
+				if err != nil {
+					return
+				}
 				set.Shell = convertCmdStrToCmdArray(shell)
-			case "create-user-dir":
-				set.CreateUserDir, err = getBool(flags, flag.Name)
-			case "minimum-password-length":
-				set.MinimumPasswordLength, err = getUint(flags, flag.Name)
+			case "auth.method":
+				hasAuth = true
 			case "branding.name":
-				set.Branding.Name, err = getString(flags, flag.Name)
-			case "branding.color":
-				set.Branding.Color, err = getString(flags, flag.Name)
+				set.Branding.Name, err = flags.GetString(flag.Name)
 			case "branding.theme":
-				set.Branding.Theme, err = getString(flags, flag.Name)
-			case "branding.disableExternal":
-				set.Branding.DisableExternal, err = getBool(flags, flag.Name)
-			case "branding.disableUsedPercentage":
-				set.Branding.DisableUsedPercentage, err = getBool(flags, flag.Name)
+				set.Branding.Theme, err = flags.GetString(flag.Name)
+			case "branding.color":
+				set.Branding.Color, err = flags.GetString(flag.Name)
 			case "branding.files":
-				set.Branding.Files, err = getString(flags, flag.Name)
-			case "file-mode":
-				set.FileMode, err = getMode(flags, flag.Name)
-			case "dir-mode":
-				set.DirMode, err = getMode(flags, flag.Name)
+				set.Branding.Files, err = flags.GetString(flag.Name)
+			case "branding.disableExternal":
+				set.Branding.DisableExternal, err = flags.GetBool(flag.Name)
+			case "branding.disableUsedPercentage":
+				set.Branding.DisableUsedPercentage, err = flags.GetBool(flag.Name)
+			case "fileMode":
+				set.FileMode, err = getAndParseFileMode(flags, flag.Name)
+			case "dirMode":
+				set.DirMode, err = getAndParseFileMode(flags, flag.Name)
 			case "tus.chunkSize":
 				set.Tus.ChunkSize, err = flags.GetUint64(flag.Name)
 			case "tus.retryCount":
 				set.Tus.RetryCount, err = flags.GetUint16(flag.Name)
 			}
-		})
 
+		})
 		if err != nil {
 			return err
 		}

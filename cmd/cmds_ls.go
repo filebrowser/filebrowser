@@ -19,7 +19,8 @@ var cmdsLsCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		evt, err := getString(cmd.Flags(), "event")
+
+		evt, err := cmd.Flags().GetString("event")
 		if err != nil {
 			return err
 		}
@@ -32,6 +33,7 @@ var cmdsLsCmd = &cobra.Command{
 			show["after_"+evt] = s.Commands["after_"+evt]
 			printEvents(show)
 		}
+
 		return nil
 	}, pythonConfig{}),
 }

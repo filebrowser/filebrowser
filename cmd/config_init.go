@@ -5,6 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/settings"
 )
 
@@ -23,170 +24,147 @@ to the defaults when creating new users and you don't
 override the options.`,
 	Args: cobra.NoArgs,
 	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
-		defaults := settings.UserDefaults{}
 		flags := cmd.Flags()
-		err := getUserDefaults(flags, &defaults, true)
-		if err != nil {
-			return err
-		}
-		authMethod, auther, err := getAuthentication(flags)
-		if err != nil {
-			return err
-		}
 
-		key := generateKey()
-
-		signup, err := getBool(flags, "signup")
-		if err != nil {
-			return err
-		}
-
-		hideLoginButton, err := getBool(flags, "hide-login-button")
-		if err != nil {
-			return err
-		}
-
-		createUserDir, err := getBool(flags, "create-user-dir")
-		if err != nil {
-			return err
-		}
-
-		minLength, err := getUint(flags, "minimum-password-length")
-		if err != nil {
-			return err
-		}
-
-		shell, err := getString(flags, "shell")
-		if err != nil {
-			return err
-		}
-
-		brandingName, err := getString(flags, "branding.name")
-		if err != nil {
-			return err
-		}
-
-		brandingDisableExternal, err := getBool(flags, "branding.disableExternal")
-		if err != nil {
-			return err
-		}
-
-		brandingDisableUsedPercentage, err := getBool(flags, "branding.disableUsedPercentage")
-		if err != nil {
-			return err
-		}
-
-		brandingTheme, err := getString(flags, "branding.theme")
-		if err != nil {
-			return err
-		}
-
-		brandingFiles, err := getString(flags, "branding.files")
-		if err != nil {
-			return err
-		}
-
-		tusChunkSize, err := flags.GetUint64("tus.chunkSize")
-		if err != nil {
-			return err
-		}
-
-		tusRetryCount, err := flags.GetUint16("tus.retryCount")
-		if err != nil {
-			return err
-		}
-
+		// General Settings
 		s := &settings.Settings{
-			Key:                   key,
-			Signup:                signup,
-			HideLoginButton:       hideLoginButton,
-			CreateUserDir:         createUserDir,
-			MinimumPasswordLength: minLength,
-			Shell:                 convertCmdStrToCmdArray(shell),
-			AuthMethod:            authMethod,
-			Defaults:              defaults,
-			Branding: settings.Branding{
-				Name:                  brandingName,
-				DisableExternal:       brandingDisableExternal,
-				DisableUsedPercentage: brandingDisableUsedPercentage,
-				Theme:                 brandingTheme,
-				Files:                 brandingFiles,
-			},
-			Tus: settings.Tus{
-				ChunkSize:  tusChunkSize,
-				RetryCount: tusRetryCount,
-			},
+			Key: generateKey(),
 		}
 
-		s.FileMode, err = getMode(flags, "file-mode")
+		err := getUserDefaults(flags, &s.Defaults, true)
 		if err != nil {
 			return err
 		}
 
-		s.DirMode, err = getMode(flags, "dir-mode")
+		s.Signup, err = flags.GetBool("signup")
 		if err != nil {
 			return err
 		}
 
-		address, err := getString(flags, "address")
+		s.HideLoginButton, err = flags.GetBool("hideLoginButton")
 		if err != nil {
 			return err
 		}
 
-		socket, err := getString(flags, "socket")
+		s.CreateUserDir, err = flags.GetBool("createUserDir")
 		if err != nil {
 			return err
 		}
 
-		root, err := getString(flags, "root")
+		s.MinimumPasswordLength, err = flags.GetUint("minimumPasswordLength")
 		if err != nil {
 			return err
 		}
 
-		baseURL, err := getString(flags, "baseurl")
+		shell, err := flags.GetString("shell")
+		if err != nil {
+			return err
+		}
+		s.Shell = convertCmdStrToCmdArray(shell)
+
+		s.FileMode, err = getAndParseFileMode(flags, "fileMode")
 		if err != nil {
 			return err
 		}
 
-		tlsKey, err := getString(flags, "key")
+		s.DirMode, err = getAndParseFileMode(flags, "dirMode")
 		if err != nil {
 			return err
 		}
 
-		cert, err := getString(flags, "cert")
+		s.Branding.Name, err = flags.GetString("branding.name")
 		if err != nil {
 			return err
 		}
 
-		port, err := getString(flags, "port")
+		s.Branding.DisableExternal, err = flags.GetBool("branding.disableExternal")
 		if err != nil {
 			return err
 		}
 
-		log, err := getString(flags, "log")
+		s.Branding.DisableUsedPercentage, err = flags.GetBool("branding.disableUsedPercentage")
 		if err != nil {
 			return err
 		}
 
-		ser := &settings.Server{
-			Address: address,
-			Socket:  socket,
-			Root:    root,
-			BaseURL: baseURL,
-			TLSKey:  tlsKey,
-			TLSCert: cert,
-			Port:    port,
-			Log:     log,
+		s.Branding.Theme, err = flags.GetString("branding.themes")
+		if err != nil {
+			return err
+		}
+
+		s.Branding.Files, err = flags.GetString("branding.files")
+		if err != nil {
+			return err
+		}
+
+		s.Tus.ChunkSize, err = flags.GetUint64("tus.chunkSize")
+		if err != nil {
+			return err
+		}
+
+		s.Tus.RetryCount, err = flags.GetUint16("tus.retryCount")
+		if err != nil {
+			return err
+		}
+
+		var auther auth.Auther
+		s.AuthMethod, auther, err = getAuthentication(flags)
+		if err != nil {
+			return err
+		}
+
+		// Server Settings
+		ser := &settings.Server{}
+		ser.Address, err = flags.GetString("address")
+		if err != nil {
+			return err
+		}
+
+		ser.Socket, err = flags.GetString("socket")
+		if err != nil {
+			return err
+		}
+
+		ser.Root, err = flags.GetString("root")
+		if err != nil {
+			return err
+		}
+
+		ser.BaseURL, err = flags.GetString("baseURL")
+		if err != nil {
+			return err
+		}
+
+		ser.TLSKey, err = flags.GetString("key")
+		if err != nil {
+			return err
+		}
+
+		ser.TLSCert, err = flags.GetString("cert")
+		if err != nil {
+			return err
+		}
+
+		ser.Port, err = flags.GetString("port")
+		if err != nil {
+			return err
+		}
+
+		ser.Log, err = flags.GetString("log")
+		if err != nil {
+			return err
 		}
 
 		err = d.store.Settings.Save(s)
 		if err != nil {
 			return err
 		}
+
 		err = d.store.Settings.SaveServer(ser)
 		if err != nil {
 			return err
 		}
+
 		err = d.store.Auth.Save(auther)
 		if err != nil {
 			return err
@@ -198,5 +176,5 @@ Now add your first user via 'filebrowser users add' and then you just
 need to call the main command to boot up the server.
 `)
 		return printSettings(ser, s, auther)
-	}, pythonConfig{noDB: true}),
+	}, pythonConfig{expectsNoDatabase: true}),
 }
