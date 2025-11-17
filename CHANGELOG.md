@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.48.1](https://github.com/filebrowser/filebrowser/compare/v2.48.0...v2.48.1) (2025-11-17)
+
+
+### Bug Fixes
+
+* options should only override if set ([420adea](https://github.com/filebrowser/filebrowser/commit/420adea7e61a1c182cddd6fb2544a0752e5709f7))
+
 ## [2.48.0](https://github.com/filebrowser/filebrowser/compare/v2.47.0...v2.48.0) (2025-11-17)
 
 
