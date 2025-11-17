@@ -307,7 +307,7 @@ func getSettings(flags *pflag.FlagSet, set *settings.Settings, ser *settings.Ser
 			ser.TypeDetectionByHeader, err = flags.GetBool(flag.Name)
 			ser.TypeDetectionByHeader = !ser.TypeDetectionByHeader
 
-			// Settings flags from [addConfigFlags]
+		// Settings flags from [addConfigFlags]
 		case "signup":
 			set.Signup, err = flags.GetBool(flag.Name)
 		case "hideLoginButton":
@@ -322,6 +322,10 @@ func getSettings(flags *pflag.FlagSet, set *settings.Settings, ser *settings.Ser
 			if err == nil {
 				set.Shell = convertCmdStrToCmdArray(shell)
 			}
+		case "fileMode":
+			set.FileMode, err = getAndParseFileMode(flags, flag.Name)
+		case "dirMode":
+			set.DirMode, err = getAndParseFileMode(flags, flag.Name)
 		case "auth.method":
 			hasAuth = true
 		case "branding.name":
@@ -336,10 +340,6 @@ func getSettings(flags *pflag.FlagSet, set *settings.Settings, ser *settings.Ser
 			set.Branding.DisableExternal, err = flags.GetBool(flag.Name)
 		case "branding.disableUsedPercentage":
 			set.Branding.DisableUsedPercentage, err = flags.GetBool(flag.Name)
-		case "fileMode":
-			set.FileMode, err = getAndParseFileMode(flags, flag.Name)
-		case "dirMode":
-			set.DirMode, err = getAndParseFileMode(flags, flag.Name)
 		case "tus.chunkSize":
 			set.Tus.ChunkSize, err = flags.GetUint64(flag.Name)
 		case "tus.retryCount":

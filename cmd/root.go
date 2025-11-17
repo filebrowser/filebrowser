@@ -416,13 +416,18 @@ func quickSetup(d pythonData) error {
 	}
 
 	ser := &settings.Server{
-		BaseURL: d.viper.GetString("baseURL"),
-		Port:    d.viper.GetString("port"),
-		Log:     d.viper.GetString("log"),
-		TLSKey:  d.viper.GetString("key"),
-		TLSCert: d.viper.GetString("cert"),
-		Address: d.viper.GetString("address"),
-		Root:    d.viper.GetString("root"),
+		BaseURL:               d.viper.GetString("baseURL"),
+		Port:                  d.viper.GetString("port"),
+		Log:                   d.viper.GetString("log"),
+		TLSKey:                d.viper.GetString("key"),
+		TLSCert:               d.viper.GetString("cert"),
+		Address:               d.viper.GetString("address"),
+		Root:                  d.viper.GetString("root"),
+		TokenExpirationTime:   d.viper.GetString("tokenExpirationTime"),
+		EnableThumbnails:      !d.viper.GetBool("disableThumbnails"),
+		ResizePreview:         !d.viper.GetBool("disablePreviewResize"),
+		EnableExec:            !d.viper.GetBool("disableExec"),
+		TypeDetectionByHeader: !d.viper.GetBool("disableTypeDetectionByHeader"),
 	}
 
 	err = d.store.Settings.SaveServer(ser)
