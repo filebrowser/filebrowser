@@ -13,12 +13,14 @@ it. Don't worry: you don't need to setup a separate database server.
 We're using Bolt DB which is a single file database and all managed
 by ourselves.
 
-For this specific command, all the flags you have available (except
-"config" for the configuration file), can be given either through
-environment variables or configuration files.
+For this command, all flags are available as environmental variables,
+except for "--config", which specifies the configuration file to use.
+The environment variables are prefixed by "FB_" followed by the flag name in
+UPPER_SNAKE_CASE. For example, the flag "--disablePreviewResize" is available
+as FB_DISABLE_PREVIEW_RESIZE.
 
-If you don't set "config", it will look for a configuration file called
-.filebrowser.{json, toml, yaml, yml} in the following directories:
+If "--config" is not specified, File Browser will look for a configuration
+file named .filebrowser.{json, toml, yaml, yml} in the following directories:
 
 - ./
 - $HOME/
@@ -26,15 +28,11 @@ If you don't set "config", it will look for a configuration file called
 
 The precedence of the configuration values are as follows:
 
-- flags
-- environment variables
-- configuration file
-- database values
-- defaults
-
-The environment variables are prefixed by "FB_" followed by the option
-name in caps. So to set "database" via an env variable, you should
-set FB_DATABASE.
+- Flags
+- Environment variables
+- Configuration file
+- Database values
+- Defaults
 
 Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstrapped and a new
@@ -47,28 +45,28 @@ filebrowser [flags]
 ## Options
 
 ```
-  -a, --address string                     address to listen on (default "127.0.0.1")
-  -b, --baseurl string                     base url
-      --cache-dir string                   file cache directory (disabled if empty)
-  -t, --cert string                        tls certificate
-  -c, --config string                      config file path
-  -d, --database string                    database path (default "./filebrowser.db")
-      --disable-exec                       disables Command Runner feature (default true)
-      --disable-preview-resize             disable resize of image previews
-      --disable-thumbnails                 disable image thumbnails
-      --disable-type-detection-by-header   disables type detection by reading file headers
-  -h, --help                               help for filebrowser
-      --img-processors int                 image processors count (default 4)
-  -k, --key string                         tls key
-  -l, --log string                         log output (default "stdout")
-      --noauth                             use the noauth auther when using quick setup
-      --password string                    hashed password for the first user when using quick config
-  -p, --port string                        port to listen on (default "8080")
-  -r, --root string                        root to prepend to relative paths (default ".")
-      --socket string                      socket to listen to (cannot be used with address, port, cert nor key flags)
-      --socket-perm uint32                 unix socket file permissions (default 438)
-      --token-expiration-time string       user session timeout (default "2h")
-      --username string                    username for the first user when using quick config (default "admin")
+  -a, --address string                 address to listen on (default "127.0.0.1")
+  -b, --baseURL string                 base url
+      --cacheDir string                file cache directory (disabled if empty)
+  -t, --cert string                    tls certificate
+  -c, --config string                  config file path
+  -d, --database string                database path (default "./filebrowser.db")
+      --disableExec                    disables Command Runner feature (default true)
+      --disablePreviewResize           disable resize of image previews
+      --disableThumbnails              disable image thumbnails
+      --disableTypeDetectionByHeader   disables type detection by reading file headers
+  -h, --help                           help for filebrowser
+      --imageProcessors int            image processors count (default 4)
+  -k, --key string                     tls key
+  -l, --log string                     log output (default "stdout")
+      --noauth                         use the noauth auther when using quick setup
+      --password string                hashed password for the first user when using quick setup
+  -p, --port string                    port to listen on (default "8080")
+  -r, --root string                    root to prepend to relative paths (default ".")
+      --socket string                  socket to listen to (cannot be used with address, port, cert nor key flags)
+      --socketPerm uint32              unix socket file permissions (default 438)
+      --tokenExpirationTime string     user session timeout (default "2h")
+      --username string                username for the first user when using quick setup (default "admin")
 ```
 
 ## See Also
