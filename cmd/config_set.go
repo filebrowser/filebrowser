@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 )
 
 func init() {
@@ -19,6 +18,7 @@ you want to change. Other options will remain unchanged.`,
 	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
 		flags := cmd.Flags()
 
+		// Read existing config
 		set, err := d.store.Settings.Get()
 		if err != nil {
 			return err
@@ -29,116 +29,28 @@ you want to change. Other options will remain unchanged.`,
 			return err
 		}
 
-		hasAuth := false
-
-		flags.Visit(func(flag *pflag.Flag) {
-			if err != nil {
-				return
-			}
-
-			switch flag.Name {
-			// Server flags from [addServerFlags]
-			case "address":
-				ser.Address, err = flags.GetString(flag.Name)
-			case "log":
-				ser.Log, err = flags.GetString(flag.Name)
-			case "port":
-				ser.Port, err = flags.GetString(flag.Name)
-			case "cert":
-				ser.TLSCert, err = flags.GetString(flag.Name)
-			case "key":
-				ser.TLSKey, err = flags.GetString(flag.Name)
-			case "root":
-				ser.Root, err = flags.GetString(flag.Name)
-			case "socket":
-				ser.Socket, err = flags.GetString(flag.Name)
-			case "baseURL":
-				ser.BaseURL, err = flags.GetString(flag.Name)
-			case "tokenExpirationTime":
-				ser.TokenExpirationTime, err = flags.GetString(flag.Name)
-			case "disableThumbnails":
-				ser.EnableThumbnails, err = flags.GetBool(flag.Name)
-				ser.EnableThumbnails = !ser.EnableThumbnails
-			case "disablePreviewResize":
-				ser.ResizePreview, err = flags.GetBool(flag.Name)
-				ser.ResizePreview = !ser.ResizePreview
-			case "disableExec":
-				ser.EnableExec, err = flags.GetBool(flag.Name)
-				ser.EnableExec = !ser.EnableExec
-			case "disableTypeDetectionByHeader":
-				ser.TypeDetectionByHeader, err = flags.GetBool(flag.Name)
-				ser.TypeDetectionByHeader = !ser.TypeDetectionByHeader
-
-				// Settings flags from [addConfigFlags]
-			case "signup":
-				set.Signup, err = flags.GetBool(flag.Name)
-			case "hideLoginButton":
-				set.HideLoginButton, err = flags.GetBool(flag.Name)
-			case "createUserDir":
-				set.CreateUserDir, err = flags.GetBool(flag.Name)
-			case "minimumPasswordLength":
-				set.MinimumPasswordLength, err = flags.GetUint(flag.Name)
-			case "shell":
-				var shell string
-				shell, err = flags.GetString(flag.Name)
-				if err != nil {
-					return
-				}
-				set.Shell = convertCmdStrToCmdArray(shell)
-			case "auth.method":
-				hasAuth = true
-			case "branding.name":
-				set.Branding.Name, err = flags.GetString(flag.Name)
-			case "branding.theme":
-				set.Branding.Theme, err = flags.GetString(flag.Name)
-			case "branding.color":
-				set.Branding.Color, err = flags.GetString(flag.Name)
-			case "branding.files":
-				set.Branding.Files, err = flags.GetString(flag.Name)
-			case "branding.disableExternal":
-				set.Branding.DisableExternal, err = flags.GetBool(flag.Name)
-			case "branding.disableUsedPercentage":
-				set.Branding.DisableUsedPercentage, err = flags.GetBool(flag.Name)
-			case "fileMode":
-				set.FileMode, err = getAndParseFileMode(flags, flag.Name)
-			case "dirMode":
-				set.DirMode, err = getAndParseFileMode(flags, flag.Name)
-			case "tus.chunkSize":
-				set.Tus.ChunkSize, err = flags.GetUint64(flag.Name)
-			case "tus.retryCount":
-				set.Tus.RetryCount, err = flags.GetUint16(flag.Name)
-			}
-
-		})
-		if err != nil {
-			return err
-		}
-
-		err = getUserDefaults(flags, &set.Defaults, false)
-		if err != nil {
-			return err
-		}
-
-		// read the defaults
 		auther, err := d.store.Auth.Get(set.AuthMethod)
 		if err != nil {
 			return err
 		}
 
-		// check if there are new flags for existing auth method
-		set.AuthMethod, auther, err = getAuthentication(flags, hasAuth, set, auther)
+		// Get updated config
+		auther, err = getSettings(flags, set, ser, auther, false)
 		if err != nil {
 			return err
 		}
 
+		// Save updated config
 		err = d.store.Auth.Save(auther)
 		if err != nil {
 			return err
 		}
+
 		err = d.store.Settings.Save(set)
 		if err != nil {
 			return err
 		}
+
 		err = d.store.Settings.SaveServer(ser)
 		if err != nil {
 			return err
