@@ -155,6 +155,11 @@ override the options.`,
 			return err
 		}
 
+		ser.TokenExpirationTime, err = flags.GetString("tokenExpirationTime")
+		if err != nil {
+			return err
+		}
+
 		err = d.store.Settings.Save(s)
 		if err != nil {
 			return err
