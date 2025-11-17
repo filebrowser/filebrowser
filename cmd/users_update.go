@@ -22,13 +22,14 @@ var usersUpdateCmd = &cobra.Command{
 options you want to change.`,
 	Args: cobra.ExactArgs(1),
 	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
-		username, id := parseUsernameOrID(args[0])
 		flags := cmd.Flags()
-		password, err := getString(flags, "password")
+		username, id := parseUsernameOrID(args[0])
+		password, err := flags.GetString("password")
 		if err != nil {
 			return err
 		}
-		newUsername, err := getString(flags, "username")
+
+		newUsername, err := flags.GetString("username")
 		if err != nil {
 			return err
 		}
@@ -41,13 +42,11 @@ options you want to change.`,
 		var (
 			user *users.User
 		)
-
 		if id != 0 {
 			user, err = d.store.Users.Get("", id)
 		} else {
 			user, err = d.store.Users.Get("", username)
 		}
-
 		if err != nil {
 			return err
 		}
@@ -61,10 +60,12 @@ options you want to change.`,
 			Sorting:     user.Sorting,
 			Commands:    user.Commands,
 		}
+
 		err = getUserDefaults(flags, &defaults, false)
 		if err != nil {
 			return err
 		}
+
 		user.Scope = defaults.Scope
 		user.Locale = defaults.Locale
 		user.ViewMode = defaults.ViewMode
@@ -72,15 +73,17 @@ options you want to change.`,
 		user.Perm = defaults.Perm
 		user.Commands = defaults.Commands
 		user.Sorting = defaults.Sorting
-		user.LockPassword, err = getBool(flags, "lockPassword")
+		user.LockPassword, err = flags.GetBool("lockPassword")
 		if err != nil {
 			return err
 		}
-		user.DateFormat, err = getBool(flags, "dateFormat")
+
+		user.DateFormat, err = flags.GetBool("dateFormat")
 		if err != nil {
 			return err
 		}
-		user.HideDotfiles, err = getBool(flags, "hideDotfiles")
+
+		user.HideDotfiles, err = flags.GetBool("hideDotfiles")
 		if err != nil {
 			return err
 		}

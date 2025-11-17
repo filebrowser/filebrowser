@@ -30,10 +30,11 @@ var configCmd = &cobra.Command{
 func addConfigFlags(flags *pflag.FlagSet) {
 	addServerFlags(flags)
 	addUserFlags(flags)
+
 	flags.BoolP("signup", "s", false, "allow users to signup")
-	flags.Bool("hide-login-button", false, "hide login button from public pages")
-	flags.Bool("create-user-dir", false, "generate user's home directory automatically")
-	flags.Uint("minimum-password-length", settings.DefaultMinimumPasswordLength, "minimum password length for new users")
+	flags.Bool("hideLoginButton", false, "hide login button from public pages")
+	flags.Bool("createUserDir", false, "generate user's home directory automatically")
+	flags.Uint("minimumPasswordLength", settings.DefaultMinimumPasswordLength, "minimum password length for new users")
 	flags.String("shell", "", "shell command to which other commands should be appended")
 
 	flags.String("auth.method", string(auth.MethodJSONAuth), "authentication type")
@@ -50,17 +51,18 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("branding.files", "", "path to directory with images and custom styles")
 	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 	flags.Bool("branding.disableUsedPercentage", false, "disable used disk percentage graph")
+
 	// NB: these are string so they can be presented as octal in the help text
 	// as that's the conventional representation for modes in Unix.
-	flags.String("file-mode", fmt.Sprintf("%O", settings.DefaultFileMode), "mode bits that new files are created with")
-	flags.String("dir-mode", fmt.Sprintf("%O", settings.DefaultDirMode), "mode bits that new directories are created with")
+	flags.String("fileMode", fmt.Sprintf("%O", settings.DefaultFileMode), "mode bits that new files are created with")
+	flags.String("dirMode", fmt.Sprintf("%O", settings.DefaultDirMode), "mode bits that new directories are created with")
 
 	flags.Uint64("tus.chunkSize", settings.DefaultTusChunkSize, "the tus chunk size")
 	flags.Uint16("tus.retryCount", settings.DefaultTusRetryCount, "the tus retry count")
 }
 
 func getAuthMethod(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, map[string]interface{}, error) {
-	methodStr, err := getString(flags, "auth.method")
+	methodStr, err := flags.GetString("auth.method")
 	if err != nil {
 		return "", nil, err
 	}
@@ -91,7 +93,7 @@ func getAuthMethod(flags *pflag.FlagSet, defaults ...interface{}) (settings.Auth
 }
 
 func getProxyAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
-	header, err := getString(flags, "auth.header")
+	header, err := flags.GetString("auth.header")
 	if err != nil {
 		return nil, err
 	}
@@ -113,15 +115,17 @@ func getNoAuth() auth.Auther {
 
 func getJSONAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
 	jsonAuth := &auth.JSONAuth{}
-	host, err := getString(flags, "recaptcha.host")
+	host, err := flags.GetString("recaptcha.host")
 	if err != nil {
 		return nil, err
 	}
-	key, err := getString(flags, "recaptcha.key")
+
+	key, err := flags.GetString("recaptcha.key")
 	if err != nil {
 		return nil, err
 	}
-	secret, err := getString(flags, "recaptcha.secret")
+
+	secret, err := flags.GetString("recaptcha.secret")
 	if err != nil {
 		return nil, err
 	}
@@ -149,11 +153,10 @@ func getJSONAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (au
 }
 
 func getHookAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
-	command, err := getString(flags, "auth.command")
+	command, err := flags.GetString("auth.command")
 	if err != nil {
 		return nil, err
 	}
-
 	if command == "" {
 		command = defaultAuther["command"].(string)
 	}
@@ -201,6 +204,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "Minimum Password Length:\t%d\n", set.MinimumPasswordLength)
 	fmt.Fprintf(w, "Auth Method:\t%s\n", set.AuthMethod)
 	fmt.Fprintf(w, "Shell:\t%s\t\n", strings.Join(set.Shell, " "))
+
 	fmt.Fprintln(w, "\nBranding:")
 	fmt.Fprintf(w, "\tName:\t%s\n", set.Branding.Name)
 	fmt.Fprintf(w, "\tFiles override:\t%s\n", set.Branding.Files)
@@ -208,6 +212,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tDisable used disk percentage graph:\t%t\n", set.Branding.DisableUsedPercentage)
 	fmt.Fprintf(w, "\tColor:\t%s\n", set.Branding.Color)
 	fmt.Fprintf(w, "\tTheme:\t%s\n", set.Branding.Theme)
+
 	fmt.Fprintln(w, "\nServer:")
 	fmt.Fprintf(w, "\tLog:\t%s\n", ser.Log)
 	fmt.Fprintf(w, "\tPort:\t%s\n", ser.Port)
@@ -219,9 +224,14 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tTLS Key:\t%s\n", ser.TLSKey)
 	fmt.Fprintf(w, "\tToken Expiration Time:\t%s\n", ser.TokenExpirationTime)
 	fmt.Fprintf(w, "\tExec Enabled:\t%t\n", ser.EnableExec)
+	fmt.Fprintf(w, "\tThumbnails Enabled:\t%t\n", ser.EnableThumbnails)
+	fmt.Fprintf(w, "\tResize Preview:\t%t\n", ser.ResizePreview)
+	fmt.Fprintf(w, "\tType Detection by Header:\t%t\n", ser.TypeDetectionByHeader)
+
 	fmt.Fprintln(w, "\nTUS:")
 	fmt.Fprintf(w, "\tChunk size:\t%d\n", set.Tus.ChunkSize)
 	fmt.Fprintf(w, "\tRetry count:\t%d\n", set.Tus.RetryCount)
+
 	fmt.Fprintln(w, "\nDefaults:")
 	fmt.Fprintf(w, "\tScope:\t%s\n", set.Defaults.Scope)
 	fmt.Fprintf(w, "\tHideDotfiles:\t%t\n", set.Defaults.HideDotfiles)
@@ -232,9 +242,11 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tDirectory Creation Mode:\t%O\n", set.DirMode)
 	fmt.Fprintf(w, "\tCommands:\t%s\n", strings.Join(set.Defaults.Commands, " "))
 	fmt.Fprintf(w, "\tAce editor syntax highlighting theme:\t%s\n", set.Defaults.AceEditorTheme)
+
 	fmt.Fprintf(w, "\tSorting:\n")
 	fmt.Fprintf(w, "\t\tBy:\t%s\n", set.Defaults.Sorting.By)
 	fmt.Fprintf(w, "\t\tAsc:\t%t\n", set.Defaults.Sorting.Asc)
+
 	fmt.Fprintf(w, "\tPermissions:\n")
 	fmt.Fprintf(w, "\t\tAdmin:\t%t\n", set.Defaults.Perm.Admin)
 	fmt.Fprintf(w, "\t\tExecute:\t%t\n", set.Defaults.Perm.Execute)
@@ -244,6 +256,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\t\tDelete:\t%t\n", set.Defaults.Perm.Delete)
 	fmt.Fprintf(w, "\t\tShare:\t%t\n", set.Defaults.Perm.Share)
 	fmt.Fprintf(w, "\t\tDownload:\t%t\n", set.Defaults.Perm.Download)
+
 	w.Flush()
 
 	b, err := json.MarshalIndent(auther, "", "  ")

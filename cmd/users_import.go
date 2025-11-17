@@ -26,6 +26,7 @@ installation. For that, just don't place their ID on the files
 list or set it to 0.`,
 	Args: jsonYamlArg,
 	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
+		flags := cmd.Flags()
 		fd, err := os.Open(args[0])
 		if err != nil {
 			return err
@@ -45,7 +46,7 @@ list or set it to 0.`,
 			}
 		}
 
-		replace, err := getBool(cmd.Flags(), "replace")
+		replace, err := flags.GetBool("replace")
 		if err != nil {
 			return err
 		}
@@ -69,7 +70,7 @@ list or set it to 0.`,
 			}
 		}
 
-		overwrite, err := getBool(cmd.Flags(), "overwrite")
+		overwrite, err := flags.GetBool("overwrite")
 		if err != nil {
 			return err
 		}

@@ -17,11 +17,12 @@ var usersAddCmd = &cobra.Command{
 	Long:  `Create a new user and add it to the database.`,
 	Args:  cobra.ExactArgs(2),
 	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
+		flags := cmd.Flags()
 		s, err := d.store.Settings.Get()
 		if err != nil {
 			return err
 		}
-		err = getUserDefaults(cmd.Flags(), &s.Defaults, false)
+		err = getUserDefaults(flags, &s.Defaults, false)
 		if err != nil {
 			return err
 		}
@@ -31,27 +32,24 @@ var usersAddCmd = &cobra.Command{
 			return err
 		}
 
-		lockPassword, err := getBool(cmd.Flags(), "lockPassword")
-		if err != nil {
-			return err
-		}
-
-		dateFormat, err := getBool(cmd.Flags(), "dateFormat")
-		if err != nil {
-			return err
-		}
-
-		hideDotfiles, err := getBool(cmd.Flags(), "hideDotfiles")
-		if err != nil {
-			return err
-		}
-
 		user := &users.User{
-			Username:     args[0],
-			Password:     password,
-			LockPassword: lockPassword,
-			DateFormat:   dateFormat,
-			HideDotfiles: hideDotfiles,
+			Username: args[0],
+			Password: password,
+		}
+
+		user.LockPassword, err = flags.GetBool("lockPassword")
+		if err != nil {
+			return err
+		}
+
+		user.DateFormat, err = flags.GetBool("dateFormat")
+		if err != nil {
+			return err
+		}
+
+		user.HideDotfiles, err = flags.GetBool("hideDotfiles")
+		if err != nil {
+			return err
 		}
 
 		s.Defaults.Apply(user)
