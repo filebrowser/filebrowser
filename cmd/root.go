@@ -53,6 +53,7 @@ var (
 	warnedFlags = map[string]bool{}
 )
 
+// TODO(remove): remove after July 2026.
 func migrateFlagNames(f *pflag.FlagSet, name string) pflag.NormalizedName {
 	if newName, ok := flagNamesMigrations[name]; ok {
 
