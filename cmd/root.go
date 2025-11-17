@@ -271,48 +271,64 @@ func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, e
 		return nil, err
 	}
 
-	if val, set := vGetStringIsSet(v, "root"); set {
-		server.Root = val
-	}
-
-	if val, set := vGetStringIsSet(v, "baseURL"); set {
-		server.BaseURL = val
-	}
-
-	if val, set := vGetStringIsSet(v, "log"); set {
-		server.Log = val
-	}
-
 	isSocketSet := false
 	isAddrSet := false
 
-	if val, set := vGetStringIsSet(v, "address"); set {
-		server.Address = val
-		isAddrSet = isAddrSet || set
+	if v.IsSet("address") {
+		server.Address = v.GetString("address")
+		isAddrSet = true
 	}
 
-	if val, set := vGetStringIsSet(v, "port"); set {
-		server.Port = val
-		isAddrSet = isAddrSet || set
+	if v.IsSet("log") {
+		server.Log = v.GetString("log")
 	}
 
-	if val, set := vGetStringIsSet(v, "key"); set {
-		server.TLSKey = val
-		isAddrSet = isAddrSet || set
+	if v.IsSet("port") {
+		server.Port = v.GetString("port")
+		isAddrSet = true
 	}
 
-	if val, set := vGetStringIsSet(v, "cert"); set {
-		server.TLSCert = val
-		isAddrSet = isAddrSet || set
+	if v.IsSet("cert") {
+		server.TLSCert = v.GetString("cert")
+		isAddrSet = true
 	}
 
-	if val, set := vGetStringIsSet(v, "socket"); set {
-		server.Socket = val
-		isSocketSet = isSocketSet || set
+	if v.IsSet("key") {
+		server.TLSKey = v.GetString("key")
+		isAddrSet = true
 	}
 
-	if val, set := vGetStringIsSet(v, "tokenExpirationTime"); set {
-		server.TokenExpirationTime = val
+	if v.IsSet("root") {
+		server.Root = v.GetString("root")
+	}
+
+	if v.IsSet("socket") {
+		server.Socket = v.GetString("socket")
+		isSocketSet = true
+	}
+
+	if v.IsSet("baseURL") {
+		server.BaseURL = v.GetString("baseURL")
+	}
+
+	if v.IsSet("tokenExpirationTime") {
+		server.TokenExpirationTime = v.GetString("tokenExpirationTime")
+	}
+
+	if v.IsSet("disableThumbnails") {
+		server.EnableThumbnails = !v.GetBool("disableThumbnails")
+	}
+
+	if v.IsSet("disablePreviewResize") {
+		server.ResizePreview = !v.GetBool("disablePreviewResize")
+	}
+
+	if v.IsSet("disableTypeDetectionByHeader") {
+		server.TypeDetectionByHeader = !v.GetBool("disableTypeDetectionByHeader")
+	}
+
+	if v.IsSet("disableExec") {
+		server.EnableExec = !v.GetBool("disableExec")
 	}
 
 	if isAddrSet && isSocketSet {
@@ -324,11 +340,6 @@ func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, e
 		server.Socket = ""
 	}
 
-	server.EnableThumbnails = !v.GetBool("disableThumbnails")
-	server.ResizePreview = !v.GetBool("disablePreviewResize")
-	server.TypeDetectionByHeader = !v.GetBool("disableTypeDetectionByHeader")
-	server.EnableExec = !v.GetBool("disableExec")
-
 	if server.EnableExec {
 		log.Println("WARNING: Command Runner feature enabled!")
 		log.Println("WARNING: This feature has known security vulnerabilities and should not")
@@ -337,10 +348,6 @@ func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, e
 	}
 
 	return server, nil
-}
-
-func vGetStringIsSet(v *viper.Viper, key string) (string, bool) {
-	return v.GetString(key), v.IsSet(key)
 }
 
 func setupLog(logMethod string) {
@@ -399,7 +406,7 @@ func quickSetup(d pythonData) error {
 	}
 
 	var err error
-	if _, noauth := vGetStringIsSet(d.viper, "noauth"); noauth {
+	if d.viper.GetBool("noauth") {
 		set.AuthMethod = auth.MethodNoAuth
 		err = d.store.Auth.Save(&auth.NoAuth{})
 	} else {
