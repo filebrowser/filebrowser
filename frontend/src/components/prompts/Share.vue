@@ -12,6 +12,7 @@
             <th>{{ $t("settings.shareDuration") }}</th>
             <th></th>
             <th></th>
+            <th></th>
           </tr>
 
           <tr v-for="link in links" :key="link.hash">
@@ -30,6 +31,16 @@
                 @click="copyToClipboard(buildLink(link))"
               >
                 <i class="material-icons">content_paste</i>
+              </button>
+            </td>
+            <td class="small">
+              <button
+                class="action copy-clipboard"
+                :aria-label="$t('buttons.copyInlineToClipboard')"
+                :title="$t('buttons.copyInlineToClipboard')"
+                @click="copyToClipboard(buildInlineLink(link))"
+              >
+                <i class="material-icons">insert_link</i>
               </button>
             </td>
             <td class="small">
@@ -136,6 +147,7 @@ import { share as api } from "@/api";
 import dayjs from "dayjs";
 import { useLayoutStore } from "@/stores/layout";
 import { copy } from "@/utils/clipboard";
+import { createURL } from "@/api/utils";
 
 export default {
   name: "share",
@@ -246,6 +258,9 @@ export default {
     },
     buildLink(share) {
       return api.getShareURL(share);
+    },
+    buildInlineLink(share) {
+      return createURL("api/public/dl/" + share.hash, { inline: "true" });
     },
     sort() {
       this.links = this.links.sort((a, b) => {
