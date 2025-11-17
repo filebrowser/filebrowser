@@ -176,5 +176,5 @@ Now add your first user via 'filebrowser users add' and then you just
 need to call the main command to boot up the server.
 `)
 		return printSettings(ser, s, auther)
-	}, pythonConfig{noDB: true}),
+	}, pythonConfig{expectsNoDatabase: true}),
 }

@@ -37,28 +37,47 @@ you want to change. Other options will remain unchanged.`,
 			}
 
 			switch flag.Name {
-			case "baseURL":
-				ser.BaseURL, err = flags.GetString(flag.Name)
-			case "root":
-				ser.Root, err = flags.GetString(flag.Name)
-			case "socket":
-				ser.Socket, err = flags.GetString(flag.Name)
+			// Server flags from [addServerFlags]
+			case "address":
+				ser.Address, err = flags.GetString(flag.Name)
+			case "log":
+				ser.Log, err = flags.GetString(flag.Name)
+			case "port":
+				ser.Port, err = flags.GetString(flag.Name)
 			case "cert":
 				ser.TLSCert, err = flags.GetString(flag.Name)
 			case "key":
 				ser.TLSKey, err = flags.GetString(flag.Name)
-			case "address":
-				ser.Address, err = flags.GetString(flag.Name)
-			case "port":
-				ser.Port, err = flags.GetString(flag.Name)
-			case "log":
-				ser.Log, err = flags.GetString(flag.Name)
-			case "hideLoginButton":
-				set.HideLoginButton, err = flags.GetBool(flag.Name)
+			case "root":
+				ser.Root, err = flags.GetString(flag.Name)
+			case "socket":
+				ser.Socket, err = flags.GetString(flag.Name)
+			case "baseURL":
+				ser.BaseURL, err = flags.GetString(flag.Name)
+			case "tokenExpirationTime":
+				ser.TokenExpirationTime, err = flags.GetString(flag.Name)
+			case "disableThumbnails":
+				ser.EnableThumbnails, err = flags.GetBool(flag.Name)
+				ser.EnableThumbnails = !ser.EnableThumbnails
+			case "disablePreviewResize":
+				ser.ResizePreview, err = flags.GetBool(flag.Name)
+				ser.ResizePreview = !ser.ResizePreview
+			case "disableExec":
+				ser.EnableExec, err = flags.GetBool(flag.Name)
+				ser.EnableExec = !ser.EnableExec
+			case "disableTypeDetectionByHeader":
+				ser.TypeDetectionByHeader, err = flags.GetBool(flag.Name)
+				ser.TypeDetectionByHeader = !ser.TypeDetectionByHeader
+
+				// Settings flags from [addConfigFlags]
 			case "signup":
 				set.Signup, err = flags.GetBool(flag.Name)
-			case "auth.method":
-				hasAuth = true
+			case "hideLoginButton":
+				set.HideLoginButton, err = flags.GetBool(flag.Name)
+			case "createUserDir":
+				set.CreateUserDir, err = flags.GetBool(flag.Name)
+			case "minimumPasswordLength":
+				set.MinimumPasswordLength, err = flags.GetUint(flag.Name)
 			case "shell":
 				var shell string
 				shell, err = flags.GetString(flag.Name)
@@ -66,22 +85,20 @@ you want to change. Other options will remain unchanged.`,
 					return
 				}
 				set.Shell = convertCmdStrToCmdArray(shell)
-			case "createUserDir":
-				set.CreateUserDir, err = flags.GetBool(flag.Name)
-			case "minimumPasswordLength":
-				set.MinimumPasswordLength, err = flags.GetUint(flag.Name)
+			case "auth.method":
+				hasAuth = true
 			case "branding.name":
 				set.Branding.Name, err = flags.GetString(flag.Name)
-			case "branding.color":
-				set.Branding.Color, err = flags.GetString(flag.Name)
 			case "branding.theme":
 				set.Branding.Theme, err = flags.GetString(flag.Name)
+			case "branding.color":
+				set.Branding.Color, err = flags.GetString(flag.Name)
+			case "branding.files":
+				set.Branding.Files, err = flags.GetString(flag.Name)
 			case "branding.disableExternal":
 				set.Branding.DisableExternal, err = flags.GetBool(flag.Name)
 			case "branding.disableUsedPercentage":
 				set.Branding.DisableUsedPercentage, err = flags.GetBool(flag.Name)
-			case "branding.files":
-				set.Branding.Files, err = flags.GetString(flag.Name)
 			case "fileMode":
 				set.FileMode, err = getAndParseFileMode(flags, flag.Name)
 			case "dirMode":

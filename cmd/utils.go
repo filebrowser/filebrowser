@@ -135,14 +135,14 @@ type cobraFunc func(cmd *cobra.Command, args []string) error
 type pythonFunc func(cmd *cobra.Command, args []string, data *pythonData) error
 
 type pythonConfig struct {
-	noDB      bool
-	allowNoDB bool
+	expectsNoDatabase bool
+	allowsNoDatabase  bool
 }
 
 type pythonData struct {
-	hadDB bool
-	viper *viper.Viper
-	store *storage.Storage
+	databaseExisted bool
+	viper           *viper.Viper
+	store           *storage.Storage
 }
 
 func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
@@ -152,8 +152,15 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 			return err
 		}
 
-		data := &pythonData{hadDB: true, viper: v}
+		data := &pythonData{databaseExisted: true}
 		path := v.GetString("database")
+
+		// Only make the viper instance available to the root command (filebrowser).
+		// This is to make sure that we don't make the mistake of using it somewhere
+		// else.
+		if cmd.Name() == "filebrowser" {
+			data.viper = v
+		}
 
 		absPath, err := filepath.Abs(path)
 		if err != nil {
@@ -163,16 +170,16 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 		exists, err := dbExists(path)
 		if err != nil {
 			return err
-		} else if exists && cfg.noDB {
+		} else if exists && cfg.expectsNoDatabase {
 			log.Fatal(absPath + " already exists")
-		} else if !exists && !cfg.noDB && !cfg.allowNoDB {
+		} else if !exists && !cfg.expectsNoDatabase && !cfg.allowsNoDatabase {
 			log.Fatal(absPath + " does not exist. Please run 'filebrowser config init' first.")
-		} else if !exists && !cfg.noDB {
+		} else if !exists && !cfg.expectsNoDatabase {
 			log.Println("Warning: filebrowser.db can't be found. Initialing in " + strings.TrimSuffix(absPath, "filebrowser.db"))
 		}
 
 		log.Println("Using database: " + absPath)
-		data.hadDB = exists
+		data.databaseExisted = exists
 
 		db, err := storm.Open(path, storm.BoltOptions(databasePermissions, nil))
 		if err != nil {

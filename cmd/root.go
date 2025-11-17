@@ -69,24 +69,30 @@ func migrateFlagNames(f *pflag.FlagSet, name string) pflag.NormalizedName {
 
 func init() {
 	rootCmd.SilenceUsage = true
+	rootCmd.SetGlobalNormalizationFunc(migrateFlagNames)
+
 	cobra.MousetrapHelpText = ""
 
 	rootCmd.SetVersionTemplate("File Browser version {{printf \"%s\" .Version}}\n")
 
-	flags := rootCmd.Flags()
+	// Flags available across the whole program
 	persistent := rootCmd.PersistentFlags()
-
 	persistent.StringP("config", "c", "", "config file path")
 	persistent.StringP("database", "d", "./filebrowser.db", "database path")
+
+	// Runtime flags for the root command
+	flags := rootCmd.Flags()
 	flags.Bool("noauth", false, "use the noauth auther when using quick setup")
 	flags.String("username", "admin", "username for the first user when using quick setup")
 	flags.String("password", "", "hashed password for the first user when using quick setup")
-
+	flags.Uint32("socketPerm", 0666, "unix socket file permissions")
+	flags.String("cacheDir", "", "file cache directory (disabled if empty)")
+	flags.Int("imageProcessors", 4, "image processors count")
 	addServerFlags(flags)
-
-	rootCmd.SetGlobalNormalizationFunc(migrateFlagNames)
 }
 
+// addServerFlags adds server related flags to the given FlagSet. These flags are available
+// in both the root command, config set and config init commands.
 func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("address", "a", "127.0.0.1", "address to listen on")
 	flags.StringP("log", "l", "stdout", "log output")
@@ -95,11 +101,8 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("key", "k", "", "tls key")
 	flags.StringP("root", "r", ".", "root to prepend to relative paths")
 	flags.String("socket", "", "socket to listen to (cannot be used with address, port, cert nor key flags)")
-	flags.Uint32("socketPerm", 0666, "unix socket file permissions")
 	flags.StringP("baseURL", "b", "", "base url")
-	flags.String("cacheDir", "", "file cache directory (disabled if empty)")
 	flags.String("tokenExpirationTime", "2h", "user session timeout")
-	flags.Int("imageProcessors", 4, "image processors count")
 	flags.Bool("disableThumbnails", false, "disable image thumbnails")
 	flags.Bool("disablePreviewResize", false, "disable resize of image previews")
 	flags.Bool("disableExec", true, "disables Command Runner feature")
@@ -118,10 +121,11 @@ it. Don't worry: you don't need to setup a separate database server.
 We're using Bolt DB which is a single file database and all managed
 by ourselves.
 
-All flags are available as environmental variables, except for "--config",
-which specifies the configuration file to use. The environment variables
-are prefixed by "FB_" followed by the flag name in UPPER_SNAKE_CASE. For
-example, the flag "--disablePreviewResize" is as FB_DISABLE_PREVIEW_RESIZE.
+For this command, all flags are available as environmental variables,
+except for "--config", which specifies the configuration file to use.
+The environment variables are prefixed by "FB_" followed by the flag name in
+UPPER_SNAKE_CASE. For example, the flag "--disablePreviewResize" is available
+as FB_DISABLE_PREVIEW_RESIZE.
 
 If "--config" is not specified, File Browser will look for a configuration
 file named .filebrowser.{json, toml, yaml, yml} in the following directories:
@@ -142,8 +146,8 @@ Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstrapped and a new
 user created with the credentials from options "username" and "password".`,
 	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
-		if !d.hadDB {
-			err := quickSetup(d.viper, *d)
+		if !d.databaseExisted {
+			err := quickSetup(*d)
 			if err != nil {
 				return err
 			}
@@ -257,7 +261,7 @@ user created with the credentials from options "username" and "password".`,
 		log.Println("Graceful shutdown complete.")
 
 		return nil
-	}, pythonConfig{allowNoDB: true}),
+	}, pythonConfig{allowsNoDatabase: true}),
 }
 
 func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, error) {
@@ -356,7 +360,7 @@ func setupLog(logMethod string) {
 	}
 }
 
-func quickSetup(v *viper.Viper, d pythonData) error {
+func quickSetup(d pythonData) error {
 	log.Println("Performing quick setup")
 
 	set := &settings.Settings{
@@ -370,7 +374,7 @@ func quickSetup(v *viper.Viper, d pythonData) error {
 			Scope:          ".",
 			Locale:         "en",
 			SingleClick:    false,
-			AceEditorTheme: v.GetString("defaults.aceEditorTheme"),
+			AceEditorTheme: d.viper.GetString("defaults.aceEditorTheme"),
 			Perm: users.Permissions{
 				Admin:    false,
 				Execute:  true,
@@ -394,7 +398,7 @@ func quickSetup(v *viper.Viper, d pythonData) error {
 	}
 
 	var err error
-	if _, noauth := vGetStringIsSet(v, "noauth"); noauth {
+	if _, noauth := vGetStringIsSet(d.viper, "noauth"); noauth {
 		set.AuthMethod = auth.MethodNoAuth
 		err = d.store.Auth.Save(&auth.NoAuth{})
 	} else {
@@ -411,13 +415,13 @@ func quickSetup(v *viper.Viper, d pythonData) error {
 	}
 
 	ser := &settings.Server{
-		BaseURL: v.GetString("baseURL"),
-		Port:    v.GetString("port"),
-		Log:     v.GetString("log"),
-		TLSKey:  v.GetString("key"),
-		TLSCert: v.GetString("cert"),
-		Address: v.GetString("address"),
-		Root:    v.GetString("root"),
+		BaseURL: d.viper.GetString("baseURL"),
+		Port:    d.viper.GetString("port"),
+		Log:     d.viper.GetString("log"),
+		TLSKey:  d.viper.GetString("key"),
+		TLSCert: d.viper.GetString("cert"),
+		Address: d.viper.GetString("address"),
+		Root:    d.viper.GetString("root"),
 	}
 
 	err = d.store.Settings.SaveServer(ser)
@@ -425,8 +429,8 @@ func quickSetup(v *viper.Viper, d pythonData) error {
 		return err
 	}
 
-	username := v.GetString("username")
-	password := v.GetString("password")
+	username := d.viper.GetString("username")
+	password := d.viper.GetString("password")
 
 	if password == "" {
 		var pwd string
