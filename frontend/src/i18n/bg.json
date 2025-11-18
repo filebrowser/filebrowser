@@ -217,7 +217,7 @@
     },
     "permissions": "Разрешения",
     "permissionsHelp": "Можете да зададете потребител да бъде администратор или да изберете разрешения индивидуално. Ако изберете \"Администратор\" всички други опции ще бъдат автоматично отметнати. Управлението на потребителите е привилегия на администратор.",
-    "profileSettings": "Profile Settings",
+    "profileSettings": "Настройки на Профила",
     "ruleExample1": "prevents the access to any dotfile (such as .git, .gitignore) in every folder.\n",
     "ruleExample2": "blocks the access to the file named Caddyfile on the root of the scope.",
     "rules": "Rules",
