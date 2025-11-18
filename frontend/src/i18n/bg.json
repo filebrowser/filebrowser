@@ -182,7 +182,7 @@
     "tusUploadsChunkSize": "Максимален размер на заявката (за малки качвания ще бъдат използвано директо качване). Можете да въведете цяло число, което означава размера на данните в байтове, или пък текст от вида на 10MB, 1GB и т.н..",
     "tusUploadsRetryCount": "Брой повторения, когато част от файл не се качи успешно.",
     "userHomeBasePath": "Основен път до личните директории на потребителите",
-    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "userScopeGenerationPlaceholder": "Обхватът ще бъде автоматично генериран",
     "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Custom Stylesheet",
     "defaultUserDescription": "These are the default settings for new users.",
