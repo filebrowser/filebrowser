@@ -178,7 +178,7 @@
     "createUserDir": "Създай автоматично собствена директория на потребителя, когато го добавяш.",
     "minimumPasswordLength": "Минимална дължина на паролата",
     "tusUploads": "Качване на части",
-    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsHelp": "File Browser поддържа качване на части, което позволява съзадавнето на ефективно, надеждно, и възобновяемо качване на части дори и при ненадеждна мрежа.",
     "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
     "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Base path for user home directories",
