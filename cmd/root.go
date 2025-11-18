@@ -59,7 +59,7 @@ func migrateFlagNames(f *pflag.FlagSet, name string) pflag.NormalizedName {
 
 		if !warnedFlags[name] {
 			warnedFlags[name] = true
-			fmt.Printf("WARNING: Flag --%s has been deprecated, use --%s instead\n", name, newName)
+			log.Printf("DEPRECATION NOTICE: Flag --%s has been deprecated, use --%s instead\n", name, newName)
 		}
 
 		name = newName
@@ -309,6 +309,10 @@ func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, e
 
 	if v.IsSet("baseURL") {
 		server.BaseURL = v.GetString("baseURL")
+		// TODO(remove): remove after July 2026.
+	} else if v := os.Getenv("FB_BASEURL"); v != "" {
+		log.Println("DEPRECATION NOTICE: Environment variable FB_BASEURL has been deprecated, use FB_BASE_URL instead")
+		server.BaseURL = v
 	}
 
 	if v.IsSet("tokenExpirationTime") {
