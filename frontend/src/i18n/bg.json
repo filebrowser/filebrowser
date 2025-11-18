@@ -199,7 +199,7 @@
     "insertRegex": "Вмъкни регулярен израз",
     "instanceName": "Име на инстанцията",
     "language": "Език",
-    "lockPassword": "Prevent the user from changing the password",
+    "lockPassword": "Забрани на потребителя да променя паролата",
     "newPassword": "Your new password",
     "newPasswordConfirm": "Confirm your new password",
     "newUser": "New User",
