@@ -242,12 +242,12 @@
     "userDefaults": "Настройки по подразбиране на потребителя",
     "userDeleted": "Потребителя е изтрит!",
     "userManagement": "Управление на потребители",
-    "userUpdated": "User updated!",
-    "username": "Username",
-    "users": "Users"
+    "userUpdated": "Потребителя е обновен!",
+    "username": "Потребителско име",
+    "users": "Потребители"
   },
   "sidebar": {
-    "help": "Help",
+    "help": "Помощ",
     "hugoNew": "Hugo New",
     "login": "Login",
     "logout": "Logout",
