@@ -163,7 +163,7 @@
     "administrator": "Администратор",
     "allowCommands": "Изпълни команди",
     "allowEdit": "Редактира, преименува и изтрива файлове и директории",
-    "allowNew": "Create new files and directories",
+    "allowNew": "Създава нови файлове и директорий",
     "allowPublish": "Publish new posts and pages",
     "allowSignup": "Allow users to signup",
     "hideLoginButton": "Hide the login button from public pages",
