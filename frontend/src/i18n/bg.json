@@ -235,7 +235,7 @@
       "light": "Светла",
       "title": "Тема"
     },
-    "user": "User",
+    "user": "Потребител",
     "userCommands": "Commands",
     "userCommandsHelp": "A space separated list with the available commands for this user. Example:\n",
     "userCreated": "User created!",
