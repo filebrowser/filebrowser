@@ -223,7 +223,7 @@
     "rules": "Правила",
     "rulesHelp": "Тук можете да дефинирате списък от правила за разрешаване и забрана за точно този потребител. Блокираните файлове няма да се покажат в списъците и няма да са достъпни за потребителя. Поддържаме регулярни изрази и пътища релативни на обхвата.\n",
     "scope": "Обхват",
-    "setDateFormat": "Set exact date format",
+    "setDateFormat": "Задайте точен формат на дата",
     "settingsUpdated": "Settings updated!",
     "shareDuration": "Share Duration",
     "shareManagement": "Share Management",
