@@ -184,7 +184,7 @@
     "userHomeBasePath": "Основен път до личните директории на потребителите",
     "userScopeGenerationPlaceholder": "Обхватът ще бъде автоматично генериран",
     "createUserHomeDirectory": "Създай лична директория на потребителя",
-    "customStylesheet": "Custom Stylesheet",
+    "customStylesheet": "Потребителски Стилове",
     "defaultUserDescription": "These are the default settings for new users.",
     "disableExternalLinks": "Disable external links (except documentation)",
     "disableUsedDiskPercentage": "Disable used disk percentage graph",
