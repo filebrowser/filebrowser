@@ -183,7 +183,7 @@
     "tusUploadsRetryCount": "Брой повторения, когато част от файл не се качи успешно.",
     "userHomeBasePath": "Основен път до личните директории на потребителите",
     "userScopeGenerationPlaceholder": "Обхватът ще бъде автоматично генериран",
-    "createUserHomeDirectory": "Create user home directory",
+    "createUserHomeDirectory": "Създай лична директория на потребителя",
     "customStylesheet": "Custom Stylesheet",
     "defaultUserDescription": "These are the default settings for new users.",
     "disableExternalLinks": "Disable external links (except documentation)",
