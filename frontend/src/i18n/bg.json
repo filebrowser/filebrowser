@@ -209,7 +209,7 @@
     "perm": {
       "create": "Създаване на файлове и директорий",
       "delete": "Изтриване на файлове и директорий",
-      "download": "Download",
+      "download": "Сваляне",
       "execute": "Execute commands",
       "modify": "Edit files",
       "rename": "Rename or move files and directories",
