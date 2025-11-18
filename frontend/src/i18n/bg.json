@@ -167,7 +167,7 @@
     "allowPublish": "Публикува нови публикации и страници",
     "allowSignup": "Разреши потребителите да се абонират",
     "hideLoginButton": "Скрий логин бутона от публичните страници",
-    "avoidChanges": "(leave blank to avoid changes)",
+    "avoidChanges": "(остави празно за да избегнеш промени)",
     "branding": "Branding",
     "brandingDirectoryPath": "Branding directory path",
     "brandingHelp": "You can customize how your File Browser instance looks and feels by changing its name, replacing the logo, adding custom styles and even disable external links to GitHub.\nFor more information about custom branding, please check out the {0}.",
