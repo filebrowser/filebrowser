@@ -180,7 +180,7 @@
     "tusUploads": "Качване на части",
     "tusUploadsHelp": "File Browser поддържа качване на части, което позволява съзадавнето на ефективно, надеждно, и възобновяемо качване на части дори и при ненадеждна мрежа.",
     "tusUploadsChunkSize": "Максимален размер на заявката (за малки качвания ще бъдат използвано директо качване). Можете да въведете цяло число, което означава размера на данните в байтове, или пък текст от вида на 10MB, 1GB и т.н..",
-    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "tusUploadsRetryCount": "Брой повторения, когато част от файл не се качи успешно.",
     "userHomeBasePath": "Base path for user home directories",
     "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "createUserHomeDirectory": "Create user home directory",
