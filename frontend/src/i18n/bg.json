@@ -176,7 +176,7 @@
     "commandRunnerHelp": "Тук можете да зададете команди, които да се изпълнят при определени събития. Пишете по една команда на ред. Системните променливите {0} и {1} ще са на разположение, като {0} е релативна на {1}. За повече информация относно тази възможност и наличните системни променливи, моля прочетете {2}.",
     "commandsUpdated": "Командите са запаметени!",
     "createUserDir": "Създай автоматично собствена директория на потребителя, когато го добавяш.",
-    "minimumPasswordLength": "Minimum password length",
+    "minimumPasswordLength": "Минимална дължина на паролата",
     "tusUploads": "Chunked Uploads",
     "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
     "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
