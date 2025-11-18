@@ -191,7 +191,7 @@
     "documentation": "документация",
     "examples": "Примери",
     "executeOnShell": "Изпълни в шела",
-    "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you wish to run them on a shell instead (such as Bash or PowerShell), you can define it here with the required arguments and flags. If set, the command you execute will be appended as an argument. This applies to both user commands and event hooks.",
+    "executeOnShellDescription": "По подразбиране, File Browser изпълнява командите директно. Ако искате да ги изпълните в сесия (като Bash или PowerShell), можете да я дефинирате тук заедно с необходимите аргументи и флагове. Ако това е зададено, командата която изпълните ще бъде добавена като аргумент. Това се отнася както за потребителски команди, така и за обработка на събития.",
     "globalRules": "This is a global set of allow and disallow rules. They apply to every user. You can define specific rules on each user's settings to override these ones.",
     "globalSettings": "Global Settings",
     "hideDotfiles": "Hide dotfiles",
