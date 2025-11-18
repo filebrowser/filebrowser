@@ -264,8 +264,8 @@
   },
   "time": {
     "days": "Дни",
-    "hours": "Hours",
-    "minutes": "Minutes",
+    "hours": "Часове",
+    "minutes": "Минути",
     "seconds": "Seconds",
     "unit": "Time Unit"
   }
