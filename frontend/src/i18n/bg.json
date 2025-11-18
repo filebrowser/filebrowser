@@ -166,7 +166,7 @@
     "allowNew": "Създава нови файлове и директорий",
     "allowPublish": "Публикува нови публикации и страници",
     "allowSignup": "Разреши потребителите да се абонират",
-    "hideLoginButton": "Hide the login button from public pages",
+    "hideLoginButton": "Скрий логин бутона от публичните страници",
     "avoidChanges": "(leave blank to avoid changes)",
     "branding": "Branding",
     "brandingDirectoryPath": "Branding directory path",
