@@ -208,7 +208,7 @@
     "path": "Път",
     "perm": {
       "create": "Създаване на файлове и директорий",
-      "delete": "Delete files and directories",
+      "delete": "Изтриване на файлове и директорий",
       "download": "Download",
       "execute": "Execute commands",
       "modify": "Edit files",
