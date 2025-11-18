@@ -171,7 +171,7 @@
     "branding": "Брандиране",
     "brandingDirectoryPath": "Брандиране - път до директория",
     "brandingHelp": "Можете да настроите как изглежда вашия File Browser, като промените името и логото му, да добавите стилове и дори да забраните външни линкове към GitHub.\nЗа повече информация за бандиране се обърнете към {0}",
-    "changePassword": "Change Password",
+    "changePassword": "Промени парола",
     "commandRunner": "Command runner",
     "commandRunnerHelp": "Here you can set commands that are executed in the named events. You must write one per line. The environment variables {0} and {1} will be available, being {0} relative to {1}. For more information about this feature and the available environment variables, please read the {2}.",
     "commandsUpdated": "Commands updated!",
