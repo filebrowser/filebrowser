@@ -22,7 +22,7 @@ this options can be changed in the future with the command
 to the defaults when creating new users and you don't
 override the options.`,
 	Args: cobra.NoArgs,
-	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
+	RunE: withStore(func(cmd *cobra.Command, _ []string, st *store) error {
 		flags := cmd.Flags()
 
 		// Initialize config
@@ -36,17 +36,17 @@ override the options.`,
 		}
 
 		// Save updated config
-		err = d.store.Settings.Save(s)
+		err = st.Settings.Save(s)
 		if err != nil {
 			return err
 		}
 
-		err = d.store.Settings.SaveServer(ser)
+		err = st.Settings.SaveServer(ser)
 		if err != nil {
 			return err
 		}
 
-		err = d.store.Auth.Save(auther)
+		err = st.Auth.Save(auther)
 		if err != nil {
 			return err
 		}
@@ -57,5 +57,5 @@ Now add your first user via 'filebrowser users add' and then you just
 need to call the main command to boot up the server.
 `)
 		return printSettings(ser, s, auther)
-	}, pythonConfig{expectsNoDatabase: true}),
+	}, storeOptions{expectsNoDatabase: true}),
 }

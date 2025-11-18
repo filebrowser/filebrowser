@@ -36,6 +36,7 @@ func getAndParseFileMode(flags *pflag.FlagSet, name string) (fs.FileMode, error)
 	if err != nil {
 		return 0, err
 	}
+
 	return fs.FileMode(b), nil
 }
 
@@ -131,38 +132,29 @@ func initViper(cmd *cobra.Command) (*viper.Viper, error) {
 	return v, nil
 }
 
-type cobraFunc func(cmd *cobra.Command, args []string) error
-type pythonFunc func(cmd *cobra.Command, args []string, data *pythonData) error
+type store struct {
+	*storage.Storage
+	databaseExisted bool
+}
 
-type pythonConfig struct {
+type storeOptions struct {
 	expectsNoDatabase bool
 	allowsNoDatabase  bool
 }
 
-type pythonData struct {
-	databaseExisted bool
-	viper           *viper.Viper
-	store           *storage.Storage
-}
+type cobraFunc func(cmd *cobra.Command, args []string) error
 
-func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
+// withViperAndStore initializes Viper and the storage.Store and passes them to the callback function.
+// This function should only be used by [withStore] and the root command. No other command should call
+// this function directly.
+func withViperAndStore(fn func(cmd *cobra.Command, args []string, v *viper.Viper, store *store) error, options storeOptions) cobraFunc {
 	return func(cmd *cobra.Command, args []string) error {
 		v, err := initViper(cmd)
 		if err != nil {
 			return err
 		}
 
-		data := &pythonData{databaseExisted: true}
-		path := v.GetString("database")
-
-		// Only make the viper instance available to the root command (filebrowser).
-		// This is to make sure that we don't make the mistake of using it somewhere
-		// else.
-		if cmd.Name() == "filebrowser" {
-			data.viper = v
-		}
-
-		absPath, err := filepath.Abs(path)
+		path, err := filepath.Abs(v.GetString("database"))
 		if err != nil {
 			return err
 		}
@@ -170,16 +162,15 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 		exists, err := dbExists(path)
 		if err != nil {
 			return err
-		} else if exists && cfg.expectsNoDatabase {
-			log.Fatal(absPath + " already exists")
-		} else if !exists && !cfg.expectsNoDatabase && !cfg.allowsNoDatabase {
-			log.Fatal(absPath + " does not exist. Please run 'filebrowser config init' first.")
-		} else if !exists && !cfg.expectsNoDatabase {
-			log.Println("Warning: filebrowser.db can't be found. Initialing in " + strings.TrimSuffix(absPath, "filebrowser.db"))
+		} else if exists && options.expectsNoDatabase {
+			log.Fatal(path + " already exists")
+		} else if !exists && !options.expectsNoDatabase && !options.allowsNoDatabase {
+			log.Fatal(path + " does not exist. Please run 'filebrowser config init' first.")
+		} else if !exists && !options.expectsNoDatabase {
+			log.Println("WARNING: filebrowser.db can't be found. Initialing in " + strings.TrimSuffix(path, "filebrowser.db"))
 		}
 
-		log.Println("Using database: " + absPath)
-		data.databaseExisted = exists
+		log.Println("Using database: " + path)
 
 		db, err := storm.Open(path, storm.BoltOptions(databasePermissions, nil))
 		if err != nil {
@@ -187,13 +178,24 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 		}
 		defer db.Close()
 
-		data.store, err = bolt.NewStorage(db)
+		storage, err := bolt.NewStorage(db)
 		if err != nil {
 			return err
 		}
 
-		return fn(cmd, args, data)
+		store := &store{
+			Storage:         storage,
+			databaseExisted: exists,
+		}
+
+		return fn(cmd, args, v, store)
 	}
+}
+
+func withStore(fn func(cmd *cobra.Command, args []string, store *store) error, options storeOptions) cobraFunc {
+	return withViperAndStore(func(cmd *cobra.Command, args []string, v *viper.Viper, store *store) error {
+		return fn(cmd, args, store)
+	}, options)
 }
 
 func marshal(filename string, data interface{}) error {

@@ -13,19 +13,19 @@ var configCatCmd = &cobra.Command{
 	Short: "Prints the configuration",
 	Long:  `Prints the configuration.`,
 	Args:  cobra.NoArgs,
-	RunE: python(func(_ *cobra.Command, _ []string, d *pythonData) error {
-		set, err := d.store.Settings.Get()
+	RunE: withStore(func(_ *cobra.Command, _ []string, st *store) error {
+		set, err := st.Settings.Get()
 		if err != nil {
 			return err
 		}
-		ser, err := d.store.Settings.GetServer()
+		ser, err := st.Settings.GetServer()
 		if err != nil {
 			return err
 		}
-		auther, err := d.store.Auth.Get(set.AuthMethod)
+		auther, err := st.Auth.Get(set.AuthMethod)
 		if err != nil {
 			return err
 		}
 		return printSettings(ser, set, auther)
-	}, pythonConfig{}),
+	}, storeOptions{}),
 }
