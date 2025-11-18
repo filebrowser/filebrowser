@@ -165,7 +165,7 @@
     "allowEdit": "Редактира, преименува и изтрива файлове и директории",
     "allowNew": "Създава нови файлове и директорий",
     "allowPublish": "Публикува нови публикации и страници",
-    "allowSignup": "Allow users to signup",
+    "allowSignup": "Разреши потребителите да се абонират",
     "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(leave blank to avoid changes)",
     "branding": "Branding",
