@@ -260,10 +260,10 @@
     "siteSettings": "Настройки на сървъра"
   },
   "success": {
-    "linkCopied": "Link copied!"
+    "linkCopied": "Връзката е копирана!"
   },
   "time": {
-    "days": "Days",
+    "days": "Дни",
     "hours": "Hours",
     "minutes": "Minutes",
     "seconds": "Seconds",
