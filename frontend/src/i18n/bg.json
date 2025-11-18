@@ -237,7 +237,7 @@
     },
     "user": "Потребител",
     "userCommands": "Команди",
-    "userCommandsHelp": "Списък разделен с интервал от наличните команди за този потребител.",
+    "userCommandsHelp": "Списък разделен с интервал от наличните команди за този потребител.\n",
     "userCreated": "Потребителя е създаден!",
     "userDefaults": "User default settings",
     "userDeleted": "User deleted!",
