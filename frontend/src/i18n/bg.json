@@ -207,7 +207,7 @@
     "passwordUpdated": "Паролата е променена!",
     "path": "Път",
     "perm": {
-      "create": "Create files and directories",
+      "create": "Създай файлове и директорий",
       "delete": "Delete files and directories",
       "download": "Download",
       "execute": "Execute commands",
