@@ -236,7 +236,7 @@
       "title": "Тема"
     },
     "user": "Потребител",
-    "userCommands": "Commands",
+    "userCommands": "Команди",
     "userCommandsHelp": "A space separated list with the available commands for this user. Example:\n",
     "userCreated": "User created!",
     "userDefaults": "User default settings",
