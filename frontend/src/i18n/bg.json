@@ -196,7 +196,7 @@
     "globalSettings": "Глобални Настройки",
     "hideDotfiles": "Скрий фаловете започващи с точка",
     "insertPath": "Вмъкни пътя",
-    "insertRegex": "Insert regex expression",
+    "insertRegex": "Вмъкни регулярен израз",
     "instanceName": "Instance name",
     "language": "Language",
     "lockPassword": "Prevent the user from changing the password",
