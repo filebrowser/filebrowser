@@ -159,8 +159,8 @@
   },
   "settings": {
     "aceEditorTheme": "Тема на \"Ace редактор\"",
-    "admin": "Admin",
-    "administrator": "Administrator",
+    "admin": "Админ",
+    "administrator": "Администратор",
     "allowCommands": "Execute commands",
     "allowEdit": "Edit, rename and delete files or directories",
     "allowNew": "Create new files and directories",
