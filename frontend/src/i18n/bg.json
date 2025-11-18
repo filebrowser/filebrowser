@@ -141,7 +141,7 @@
     "show": "Покажи",
     "size": "Размер",
     "upload": "Качване",
-    "uploadFiles": "Uploading {files} files...",
+    "uploadFiles": "Качване на {files} файла...",
     "uploadMessage": "Select an option to upload.",
     "optionalPassword": "Optional password",
     "resolution": "Resolution",
