@@ -142,7 +142,7 @@
     "size": "Размер",
     "upload": "Качване",
     "uploadFiles": "Качване на {files} файла...",
-    "uploadMessage": "Select an option to upload.",
+    "uploadMessage": "Изберете опция за качване.",
     "optionalPassword": "Optional password",
     "resolution": "Resolution",
     "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
