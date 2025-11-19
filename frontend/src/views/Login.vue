@@ -112,6 +112,13 @@ const submit = async (event: Event) => {
         error.value = t("login.usernameTaken");
       } else if (e.status === 403) {
         error.value = t("login.wrongCredentials");
+      } else if (e.status === 400) {
+        const match = e.message.match(/minimum length is (\d+)/);
+        if (match) {
+          error.value = t("login.passwordTooShort", { min: match[1] });
+        } else {
+          error.value = e.message;
+        }
       } else {
         $showError(e);
       }
