@@ -16,9 +16,9 @@ var usersAddCmd = &cobra.Command{
 	Short: "Create a new user",
 	Long:  `Create a new user and add it to the database.`,
 	Args:  cobra.ExactArgs(2),
-	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
+	RunE: withStore(func(cmd *cobra.Command, args []string, st *store) error {
 		flags := cmd.Flags()
-		s, err := d.store.Settings.Get()
+		s, err := st.Settings.Get()
 		if err != nil {
 			return err
 		}
@@ -54,14 +54,14 @@ var usersAddCmd = &cobra.Command{
 
 		s.Defaults.Apply(user)
 
-		servSettings, err := d.store.Settings.GetServer()
+		servSettings, err := st.Settings.GetServer()
 		if err != nil {
 			return err
 		}
 		// since getUserDefaults() polluted s.Defaults.Scope
 		// which makes the Scope not the one saved in the db
 		// we need the right s.Defaults.Scope here
-		s2, err := d.store.Settings.Get()
+		s2, err := st.Settings.Get()
 		if err != nil {
 			return err
 		}
@@ -72,11 +72,11 @@ var usersAddCmd = &cobra.Command{
 		}
 		user.Scope = userHome
 
-		err = d.store.Users.Save(user)
+		err = st.Users.Save(user)
 		if err != nil {
 			return err
 		}
 		printUsers([]*users.User{user})
 		return nil
-	}, pythonConfig{}),
+	}, storeOptions{}),
 }

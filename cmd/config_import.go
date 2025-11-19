@@ -34,11 +34,11 @@ database.
 
 The path must be for a json or yaml file.`,
 	Args: jsonYamlArg,
-	RunE: python(func(_ *cobra.Command, args []string, d *pythonData) error {
+	RunE: withStore(func(_ *cobra.Command, args []string, st *store) error {
 		var key []byte
 		var err error
-		if d.databaseExisted {
-			settings, settingErr := d.store.Settings.Get()
+		if st.databaseExisted {
+			settings, settingErr := st.Settings.Get()
 			if settingErr != nil {
 				return settingErr
 			}
@@ -54,12 +54,12 @@ The path must be for a json or yaml file.`,
 		}
 
 		file.Settings.Key = key
-		err = d.store.Settings.Save(file.Settings)
+		err = st.Settings.Save(file.Settings)
 		if err != nil {
 			return err
 		}
 
-		err = d.store.Settings.SaveServer(file.Server)
+		err = st.Settings.SaveServer(file.Server)
 		if err != nil {
 			return err
 		}
@@ -98,13 +98,13 @@ The path must be for a json or yaml file.`,
 			return autherErr
 		}
 
-		err = d.store.Auth.Save(auther)
+		err = st.Auth.Save(auther)
 		if err != nil {
 			return err
 		}
 
 		return printSettings(file.Server, file.Settings, auther)
-	}, pythonConfig{allowsNoDatabase: true}),
+	}, storeOptions{allowsNoDatabase: true}),
 }
 
 func getAuther(sample auth.Auther, data interface{}) (interface{}, error) {

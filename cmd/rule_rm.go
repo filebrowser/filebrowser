@@ -40,7 +40,7 @@ including 'index_end'.`,
 
 		return nil
 	},
-	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
+	RunE: withStore(func(cmd *cobra.Command, args []string, st *store) error {
 		i, err := strconv.Atoi(args[0])
 		if err != nil {
 			return err
@@ -55,14 +55,14 @@ including 'index_end'.`,
 
 		user := func(u *users.User) error {
 			u.Rules = append(u.Rules[:i], u.Rules[f+1:]...)
-			return d.store.Users.Save(u)
+			return st.Users.Save(u)
 		}
 
 		global := func(s *settings.Settings) error {
 			s.Rules = append(s.Rules[:i], s.Rules[f+1:]...)
-			return d.store.Settings.Save(s)
+			return st.Settings.Save(s)
 		}
 
-		return runRules(d.store, cmd, user, global)
-	}, pythonConfig{}),
+		return runRules(st.Storage, cmd, user, global)
+	}, storeOptions{}),
 }

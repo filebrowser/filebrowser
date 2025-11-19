@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.48.2](https://github.com/filebrowser/filebrowser/compare/v2.48.1...v2.48.2) (2025-11-18)
+
+
+### Bug Fixes
+
+* add transitionary support for FB_BASEURL ([984ea7b](https://github.com/filebrowser/filebrowser/commit/984ea7b569e3bd33b6f91ebdf63684a618d51e94))
+
+
+### Refactorings
+
+* rename python for clarification ([fd7b70c](https://github.com/filebrowser/filebrowser/commit/fd7b70cf38ac67c8c9ff79f2e7fde5e2ec45a1de))
+
 ## [2.48.1](https://github.com/filebrowser/filebrowser/compare/v2.48.0...v2.48.1) (2025-11-17)
 
 

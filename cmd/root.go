@@ -59,7 +59,7 @@ func migrateFlagNames(f *pflag.FlagSet, name string) pflag.NormalizedName {
 
 		if !warnedFlags[name] {
 			warnedFlags[name] = true
-			fmt.Printf("WARNING: Flag --%s has been deprecated, use --%s instead\n", name, newName)
+			log.Printf("DEPRECATION NOTICE: Flag --%s has been deprecated, use --%s instead\n", name, newName)
 		}
 
 		name = newName
@@ -146,23 +146,23 @@ The precedence of the configuration values are as follows:
 Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstrapped and a new
 user created with the credentials from options "username" and "password".`,
-	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
-		if !d.databaseExisted {
-			err := quickSetup(*d)
+	RunE: withViperAndStore(func(cmd *cobra.Command, _ []string, v *viper.Viper, st *store) error {
+		if !st.databaseExisted {
+			err := quickSetup(v, st.Storage)
 			if err != nil {
 				return err
 			}
 		}
 
 		// build img service
-		imgWorkersCount := d.viper.GetInt("imageProcessors")
+		imgWorkersCount := v.GetInt("imageProcessors")
 		if imgWorkersCount < 1 {
 			return errors.New("image resize workers count could not be < 1")
 		}
 		imageService := img.New(imgWorkersCount)
 
 		var fileCache diskcache.Interface = diskcache.NewNoOp()
-		cacheDir := d.viper.GetString("cacheDir")
+		cacheDir := v.GetString("cacheDir")
 		if cacheDir != "" {
 			if err := os.MkdirAll(cacheDir, 0700); err != nil {
 				return fmt.Errorf("can't make directory %s: %w", cacheDir, err)
@@ -170,7 +170,7 @@ user created with the credentials from options "username" and "password".`,
 			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
 		}
 
-		server, err := getServerSettings(d.viper, d.store)
+		server, err := getServerSettings(v, st.Storage)
 		if err != nil {
 			return err
 		}
@@ -192,7 +192,7 @@ user created with the credentials from options "username" and "password".`,
 			if err != nil {
 				return err
 			}
-			socketPerm := d.viper.GetUint32("socketPerm")
+			socketPerm := v.GetUint32("socketPerm")
 			err = os.Chmod(server.Socket, os.FileMode(socketPerm))
 			if err != nil {
 				return err
@@ -221,7 +221,7 @@ user created with the credentials from options "username" and "password".`,
 			panic(err)
 		}
 
-		handler, err := fbhttp.NewHandler(imageService, fileCache, d.store, server, assetsFs)
+		handler, err := fbhttp.NewHandler(imageService, fileCache, st.Storage, server, assetsFs)
 		if err != nil {
 			return err
 		}
@@ -262,7 +262,7 @@ user created with the credentials from options "username" and "password".`,
 		log.Println("Graceful shutdown complete.")
 
 		return nil
-	}, pythonConfig{allowsNoDatabase: true}),
+	}, storeOptions{allowsNoDatabase: true}),
 }
 
 func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, error) {
@@ -309,6 +309,10 @@ func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, e
 
 	if v.IsSet("baseURL") {
 		server.BaseURL = v.GetString("baseURL")
+		// TODO(remove): remove after July 2026.
+	} else if v := os.Getenv("FB_BASEURL"); v != "" {
+		log.Println("DEPRECATION NOTICE: Environment variable FB_BASEURL has been deprecated, use FB_BASE_URL instead")
+		server.BaseURL = v
 	}
 
 	if v.IsSet("tokenExpirationTime") {
@@ -368,7 +372,7 @@ func setupLog(logMethod string) {
 	}
 }
 
-func quickSetup(d pythonData) error {
+func quickSetup(v *viper.Viper, s *storage.Storage) error {
 	log.Println("Performing quick setup")
 
 	set := &settings.Settings{
@@ -382,7 +386,7 @@ func quickSetup(d pythonData) error {
 			Scope:          ".",
 			Locale:         "en",
 			SingleClick:    false,
-			AceEditorTheme: d.viper.GetString("defaults.aceEditorTheme"),
+			AceEditorTheme: v.GetString("defaults.aceEditorTheme"),
 			Perm: users.Permissions{
 				Admin:    false,
 				Execute:  true,
@@ -406,44 +410,44 @@ func quickSetup(d pythonData) error {
 	}
 
 	var err error
-	if d.viper.GetBool("noauth") {
+	if v.GetBool("noauth") {
 		set.AuthMethod = auth.MethodNoAuth
-		err = d.store.Auth.Save(&auth.NoAuth{})
+		err = s.Auth.Save(&auth.NoAuth{})
 	} else {
 		set.AuthMethod = auth.MethodJSONAuth
-		err = d.store.Auth.Save(&auth.JSONAuth{})
+		err = s.Auth.Save(&auth.JSONAuth{})
 	}
 	if err != nil {
 		return err
 	}
 
-	err = d.store.Settings.Save(set)
+	err = s.Settings.Save(set)
 	if err != nil {
 		return err
 	}
 
 	ser := &settings.Server{
-		BaseURL:               d.viper.GetString("baseURL"),
-		Port:                  d.viper.GetString("port"),
-		Log:                   d.viper.GetString("log"),
-		TLSKey:                d.viper.GetString("key"),
-		TLSCert:               d.viper.GetString("cert"),
-		Address:               d.viper.GetString("address"),
-		Root:                  d.viper.GetString("root"),
-		TokenExpirationTime:   d.viper.GetString("tokenExpirationTime"),
-		EnableThumbnails:      !d.viper.GetBool("disableThumbnails"),
-		ResizePreview:         !d.viper.GetBool("disablePreviewResize"),
-		EnableExec:            !d.viper.GetBool("disableExec"),
-		TypeDetectionByHeader: !d.viper.GetBool("disableTypeDetectionByHeader"),
+		BaseURL:               v.GetString("baseURL"),
+		Port:                  v.GetString("port"),
+		Log:                   v.GetString("log"),
+		TLSKey:                v.GetString("key"),
+		TLSCert:               v.GetString("cert"),
+		Address:               v.GetString("address"),
+		Root:                  v.GetString("root"),
+		TokenExpirationTime:   v.GetString("tokenExpirationTime"),
+		EnableThumbnails:      !v.GetBool("disableThumbnails"),
+		ResizePreview:         !v.GetBool("disablePreviewResize"),
+		EnableExec:            !v.GetBool("disableExec"),
+		TypeDetectionByHeader: !v.GetBool("disableTypeDetectionByHeader"),
 	}
 
-	err = d.store.Settings.SaveServer(ser)
+	err = s.Settings.SaveServer(ser)
 	if err != nil {
 		return err
 	}
 
-	username := d.viper.GetString("username")
-	password := d.viper.GetString("password")
+	username := v.GetString("username")
+	password := v.GetString("password")
 
 	if password == "" {
 		var pwd string
@@ -474,5 +478,5 @@ func quickSetup(d pythonData) error {
 	set.Defaults.Apply(user)
 	user.Perm.Admin = true
 
-	return d.store.Users.Save(user)
+	return s.Users.Save(user)
 }
