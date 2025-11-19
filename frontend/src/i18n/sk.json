@@ -102,6 +102,7 @@
     "username": "Používateľské meno",
     "usernameTaken": "Meno je už obsadené",
     "wrongCredentials": "Nesprávne prihlasovacie údaje",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "Boli ste odhlásení z dôvodu nečinnosti."
     }
