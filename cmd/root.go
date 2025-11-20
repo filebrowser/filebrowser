@@ -54,7 +54,7 @@ var (
 )
 
 // TODO(remove): remove after July 2026.
-func migrateFlagNames(f *pflag.FlagSet, name string) pflag.NormalizedName {
+func migrateFlagNames(_ *pflag.FlagSet, name string) pflag.NormalizedName {
 	if newName, ok := flagNamesMigrations[name]; ok {
 
 		if !warnedFlags[name] {
@@ -146,7 +146,7 @@ The precedence of the configuration values are as follows:
 Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstrapped and a new
 user created with the credentials from options "username" and "password".`,
-	RunE: withViperAndStore(func(cmd *cobra.Command, _ []string, v *viper.Viper, st *store) error {
+	RunE: withViperAndStore(func(_ *cobra.Command, _ []string, v *viper.Viper, st *store) error {
 		if !st.databaseExisted {
 			err := quickSetup(v, st.Storage)
 			if err != nil {

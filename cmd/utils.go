@@ -160,13 +160,14 @@ func withViperAndStore(fn func(cmd *cobra.Command, args []string, v *viper.Viper
 		}
 
 		exists, err := dbExists(path)
-		if err != nil {
+		switch {
+		case err != nil:
 			return err
-		} else if exists && options.expectsNoDatabase {
+		case exists && options.expectsNoDatabase:
 			log.Fatal(path + " already exists")
-		} else if !exists && !options.expectsNoDatabase && !options.allowsNoDatabase {
+		case !exists && !options.expectsNoDatabase && !options.allowsNoDatabase:
 			log.Fatal(path + " does not exist. Please run 'filebrowser config init' first.")
-		} else if !exists && !options.expectsNoDatabase {
+		case !exists && !options.expectsNoDatabase:
 			log.Println("WARNING: filebrowser.db can't be found. Initialing in " + strings.TrimSuffix(path, "filebrowser.db"))
 		}
 
@@ -193,7 +194,7 @@ func withViperAndStore(fn func(cmd *cobra.Command, args []string, v *viper.Viper
 }
 
 func withStore(fn func(cmd *cobra.Command, args []string, store *store) error, options storeOptions) cobraFunc {
-	return withViperAndStore(func(cmd *cobra.Command, args []string, v *viper.Viper, store *store) error {
+	return withViperAndStore(func(cmd *cobra.Command, args []string, _ *viper.Viper, store *store) error {
 		return fn(cmd, args, store)
 	}, options)
 }

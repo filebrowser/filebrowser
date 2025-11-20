@@ -35,7 +35,7 @@ var docsCmd = &cobra.Command{
 
 		rootCmd.Root().DisableAutoGenTag = true
 
-		err = doc.GenMarkdownTreeCustom(cmd.Root(), tempDir, func(f string) string {
+		err = doc.GenMarkdownTreeCustom(cmd.Root(), tempDir, func(_ string) string {
 			return ""
 		}, func(s string) string {
 			return s
