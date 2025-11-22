@@ -102,6 +102,7 @@
     "username": "Ім'я користувача",
     "usernameTaken": "Ім'я користувача вже використовується",
     "wrongCredentials": "Неправильне ім'я користувача або пароль",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }

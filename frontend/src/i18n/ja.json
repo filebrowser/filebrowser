@@ -102,6 +102,7 @@
     "username": "ユーザー名",
     "usernameTaken": "ユーザー名はすでに取得されています",
     "wrongCredentials": "ユーザー名またはパスワードが間違っています",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
