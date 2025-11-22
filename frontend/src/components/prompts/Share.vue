@@ -148,7 +148,6 @@ import * as api from "@/api/index";
 import dayjs from "dayjs";
 import { useLayoutStore } from "@/stores/layout";
 import { copy } from "@/utils/clipboard";
-import { createURL } from "@/api/utils";
 
 export default {
   name: "share",
