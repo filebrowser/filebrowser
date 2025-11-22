@@ -12,6 +12,7 @@
             <th>{{ $t("settings.shareDuration") }}</th>
             <th></th>
             <th></th>
+            <th></th>
           </tr>
 
           <tr v-for="link in links" :key="link.hash">
@@ -24,12 +25,23 @@
             </td>
             <td class="small">
               <button
-                class="action copy-clipboard"
+                class="action"
                 :aria-label="$t('buttons.copyToClipboard')"
                 :title="$t('buttons.copyToClipboard')"
                 @click="copyToClipboard(buildLink(link))"
               >
                 <i class="material-icons">content_paste</i>
+              </button>
+            </td>
+            <td class="small">
+              <button
+                class="action"
+                :aria-label="$t('buttons.copyDownloadLinkToClipboard')"
+                :title="$t('buttons.copyDownloadLinkToClipboard')"
+                :disabled="!!link.password_hash"
+                @click="copyToClipboard(buildDownloadLink(link))"
+              >
+                <i class="material-icons">content_paste_go</i>
               </button>
             </td>
             <td class="small">
@@ -132,7 +144,7 @@
 <script>
 import { mapActions, mapState } from "pinia";
 import { useFileStore } from "@/stores/file";
-import { share as api } from "@/api";
+import * as api from "@/api/index";
 import dayjs from "dayjs";
 import { useLayoutStore } from "@/stores/layout";
 import { copy } from "@/utils/clipboard";
@@ -172,7 +184,7 @@ export default {
   },
   async beforeMount() {
     try {
-      const links = await api.get(this.url);
+      const links = await api.share.get(this.url);
       this.links = links;
       this.sort();
 
@@ -211,9 +223,14 @@ export default {
         let res = null;
 
         if (!this.time) {
-          res = await api.create(this.url, this.password);
+          res = await api.share.create(this.url, this.password);
         } else {
-          res = await api.create(this.url, this.password, this.time, this.unit);
+          res = await api.share.create(
+            this.url,
+            this.password,
+            this.time,
+            this.unit
+          );
         }
 
         this.links.push(res);
@@ -231,7 +248,7 @@ export default {
     deleteLink: async function (event, link) {
       event.preventDefault();
       try {
-        await api.remove(link.hash);
+        await api.share.remove(link.hash);
         this.links = this.links.filter((item) => item.hash !== link.hash);
 
         if (this.links.length == 0) {
@@ -245,7 +262,16 @@ export default {
       return dayjs(time * 1000).fromNow();
     },
     buildLink(share) {
-      return api.getShareURL(share);
+      return api.share.getShareURL(share);
+    },
+    buildDownloadLink(share) {
+      return api.pub.getDownloadURL(
+        {
+          hash: share.hash,
+          path: "",
+        },
+        true
+      );
     },
     sort() {
       this.links = this.links.sort((a, b) => {
