@@ -7,7 +7,6 @@
     "copy": "Copy",
     "copyFile": "Copy file",
     "copyToClipboard": "Copy to clipboard",
-    "copyInlineToClipboard": "Copy inline link to clipboard",
     "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Create",
     "delete": "Delete",
