@@ -102,6 +102,7 @@
     "username": "Korisničko ime",
     "usernameTaken": "Korisničko ime zauzeto",
     "wrongCredentials": "Neispravno korisničko ime/lozinka",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "Odjavljeni ste zbog neaktivnosti."
     }

@@ -102,6 +102,7 @@
     "username": "帳號",
     "usernameTaken": "用戶名已存在",
     "wrongCredentials": "帳號或密碼錯誤",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
