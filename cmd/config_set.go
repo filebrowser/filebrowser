@@ -56,7 +56,7 @@ you want to change. Other options will remain unchanged.`,
 				set.Signup, err = getBool(flags, flag.Name)
 			case "auth.method":
 				hasAuth = true
-			case "logout-page":
+			case "auth.logoutPage":
 				set.LogoutPage, err = getString(flags, flag.Name)
 			case "shell":
 				var shell string

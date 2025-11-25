@@ -35,11 +35,11 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.Bool("create-user-dir", false, "generate user's home directory automatically")
 	flags.Uint("minimum-password-length", settings.DefaultMinimumPasswordLength, "minimum password length for new users")
 	flags.String("shell", "", "shell command to which other commands should be appended")
-	flags.String("logout-page", "", "url of custom logout page")
 
 	flags.String("auth.method", string(auth.MethodJSONAuth), "authentication type")
 	flags.String("auth.header", "", "HTTP header for auth.method=proxy")
 	flags.String("auth.command", "", "command for auth.method=hook")
+	flags.String("auth.logoutPage", "", "url of custom logout page")
 
 	flags.String("recaptcha.host", "https://www.google.com", "use another host for ReCAPTCHA. recaptcha.net might be useful in China")
 	flags.String("recaptcha.key", "", "ReCaptcha site key")
