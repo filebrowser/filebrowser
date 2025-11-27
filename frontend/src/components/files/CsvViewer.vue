@@ -82,6 +82,7 @@ const displayError = computed(() => {
   background-color: var(--surfacePrimary);
   color: var(--textSecondary);
   padding: 1rem;
+  padding-top: 4em;
   box-sizing: border-box;
 }
 

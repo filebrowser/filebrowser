@@ -393,13 +393,7 @@ const updatePreview = async () => {
     if (fileStore.req.size > CSV_MAX_SIZE) {
       csvError.value = t("files.csvTooLarge");
     } else {
-      try {
-        const response = await fetch(api.getDownloadURL(fileStore.req, true));
-        csvContent.value = await response.text();
-      } catch (e: any) {
-        console.error("Failed to load CSV content:", e);
-        csvError.value = t("files.csvLoadFailed");
-      }
+      csvContent.value = fileStore.req.content ?? "";
     }
   }
 
