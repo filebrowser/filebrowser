@@ -86,14 +86,9 @@ func withUser(fn handleFunc) handleFunc {
 		}
 
 		var tk authToken
-		p := jwt.NewParser(jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}))
+		p := jwt.NewParser(jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}), jwt.WithExpirationRequired())
 		token, err := request.ParseFromRequest(r, &extractor{}, keyFunc, request.WithClaims(&tk), request.WithParser(p))
 		if (err != nil || !token.Valid) && !renewableErr(err, d) {
-			return http.StatusUnauthorized, nil
-		}
-
-		err = jwt.NewValidator(jwt.WithExpirationRequired()).Validate(tk)
-		if err != nil {
 			return http.StatusUnauthorized, nil
 		}
 
