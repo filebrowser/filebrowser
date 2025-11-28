@@ -2,7 +2,7 @@ import { useAuthStore } from "@/stores/auth";
 import router from "@/router";
 import type { JwtPayload } from "jwt-decode";
 import { jwtDecode } from "jwt-decode";
-import { baseURL, noAuth, logoutPage } from "./constants";
+import { authMethod, baseURL, noAuth, logoutPage } from "./constants";
 import { StatusError } from "@/api/utils";
 import { setSafeTimeout } from "@/api/utils";
 
@@ -17,6 +17,12 @@ export function parseToken(token: string) {
   const authStore = useAuthStore();
   authStore.jwt = token;
   authStore.setUser(data.user);
+
+  // proxy auth with custom logout subject to unknown external timeout
+  if (logoutPage !== "/login" && authMethod === "proxy") {
+    console.warn("idle timeout disabled with proxy auth and custom logout");
+    return;
+  }
 
   if (authStore.logoutTimer) {
     clearTimeout(authStore.logoutTimer);
