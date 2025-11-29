@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.49.0](https://github.com/filebrowser/filebrowser/compare/v2.48.2...v2.49.0) (2025-11-22)
+
+
+### Features
+
+* add "copy download link to clipboard" button to Share prompt ([#5173](https://github.com/filebrowser/filebrowser/issues/5173)) ([d48f566](https://github.com/filebrowser/filebrowser/commit/d48f5665d6975c4cbbdf9be20dc2e0106db02f01))
+* add Bulgarian language ([8db2411](https://github.com/filebrowser/filebrowser/commit/8db2411cd43a23ae3292a817e3524cfdb5ae9b86))
+* Updates for project File Browser ([#5566](https://github.com/filebrowser/filebrowser/issues/5566)) ([54306bd](https://github.com/filebrowser/filebrowser/commit/54306bdc8700fac489326ae81e28ac5db0580d13))
+
+
+### Bug Fixes
+
+* display friendly error message for password validation on signup ([#5563](https://github.com/filebrowser/filebrowser/issues/5563)) ([6d5aa35](https://github.com/filebrowser/filebrowser/commit/6d5aa355e433d613e5a3ae137f410c63baeddf0f))
+
 ## [2.48.2](https://github.com/filebrowser/filebrowser/compare/v2.48.1...v2.48.2) (2025-11-18)
 
 
