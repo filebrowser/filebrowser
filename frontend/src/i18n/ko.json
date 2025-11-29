@@ -43,7 +43,8 @@
     "upload": "업로드",
     "openFile": "파일 열기",
     "discardChanges": "변경 사항 취소",
-    "saveChanges": "변경사항 저장"
+    "saveChanges": "변경사항 저장",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "파일 다운로드",
@@ -75,7 +76,9 @@
     "sortByLastModified": "수정시간순 정렬",
     "sortByName": "이름순",
     "sortBySize": "크기순",
-    "noPreview": "미리 보기가 지원되지 않는 파일 유형입니다."
+    "noPreview": "미리 보기가 지원되지 않는 파일 유형입니다.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "파일이나 디렉토리를 선택해주세요.",
