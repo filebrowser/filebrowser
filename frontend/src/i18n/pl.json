@@ -77,7 +77,7 @@
     "sortByName": "Sortuj wg nazwy",
     "sortBySize": "Sortuj wg rozmiaru",
     "noPreview": "Podgląd tego pliku jest niedostępny.",
-    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvTooLarge": "Plik CSV jest za duży do podglądu (>5 MB). Pobierz, aby wyświetlić.",
     "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
