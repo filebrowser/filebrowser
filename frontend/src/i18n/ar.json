@@ -43,7 +43,8 @@
     "upload": "رفع",
     "openFile": "فتح الملف",
     "discardChanges": "إلغاء التغييرات",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "تحميل الملف",
@@ -75,7 +76,9 @@
     "sortByLastModified": "الترتيب بآخر تعديل",
     "sortByName": "الترتيب باﻹسم",
     "sortBySize": "الترتيب بالحجم",
-    "noPreview": "لا يوجد عرض مسبق لهذا الملف."
+    "noPreview": "لا يوجد عرض مسبق لهذا الملف.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "حدد الملف أو المجلد",
