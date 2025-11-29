@@ -102,6 +102,7 @@
     "username": "사용자 이름",
     "usernameTaken": "사용자 이름이 존재합니다",
     "wrongCredentials": "사용자 이름 또는 비밀번호를 확인하십시오",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -166,6 +167,7 @@
     "allowNew": "파일/디렉토리 생성 허용",
     "allowPublish": "새 포스트/페이지 생성 허용",
     "allowSignup": "사용자 가입 허용",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(수정하지 않으면 비워두세요)",
     "branding": "브랜딩",
     "brandingDirectoryPath": "브랜드 디렉토리 경로",

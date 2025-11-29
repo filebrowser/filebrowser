@@ -107,7 +107,11 @@ export async function signup(username: string, password: string) {
   });
 
   if (res.status !== 200) {
-    throw new StatusError(`${res.status} ${res.statusText}`, res.status);
+    const body = await res.text();
+    throw new StatusError(
+      body || `${res.status} ${res.statusText}`,
+      res.status
+    );
   }
 }
 

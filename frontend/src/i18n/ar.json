@@ -102,6 +102,7 @@
     "username": "إسم المستخدم",
     "usernameTaken": "إسم المستخدم غير متاح",
     "wrongCredentials": "بيانات دخول خاطئة",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -166,6 +167,7 @@
     "allowNew": "إنشاء ملفات و مجلدات جديدة",
     "allowPublish": "نشر مقالات و صفحات جديدة",
     "allowSignup": "اسمح للمستخدمين بالاشتراك",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(أتركه فارغاً إن لم ترد تغييره)",
     "branding": "الشعار",
     "brandingDirectoryPath": "مسار مجلد الشعار",

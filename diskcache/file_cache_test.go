@@ -25,12 +25,12 @@ func TestFileCache(t *testing.T) {
 	// store new key
 	err := cache.Store(ctx, key, []byte(value))
 	require.NoError(t, err)
-	checkValue(t, ctx, fs, filepath.Join(cacheRoot, cachedFilePath), cache, key, value)
+	checkValue(ctx, t, fs, filepath.Join(cacheRoot, cachedFilePath), cache, key, value)
 
 	// update existing key
 	err = cache.Store(ctx, key, []byte(newValue))
 	require.NoError(t, err)
-	checkValue(t, ctx, fs, filepath.Join(cacheRoot, cachedFilePath), cache, key, newValue)
+	checkValue(ctx, t, fs, filepath.Join(cacheRoot, cachedFilePath), cache, key, newValue)
 
 	// delete key
 	err = cache.Delete(ctx, key)
@@ -40,7 +40,7 @@ func TestFileCache(t *testing.T) {
 	require.False(t, exists)
 }
 
-func checkValue(t *testing.T, ctx context.Context, fs afero.Fs, fileFullPath string, cache *FileCache, key, wantValue string) { //nolint:revive
+func checkValue(ctx context.Context, t *testing.T, fs afero.Fs, fileFullPath string, cache *FileCache, key, wantValue string) {
 	t.Helper()
 	// check actual file content
 	b, err := afero.ReadFile(fs, fileFullPath)

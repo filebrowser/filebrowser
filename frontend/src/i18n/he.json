@@ -102,6 +102,7 @@
     "username": "שם משתמש",
     "usernameTaken": "שם המשתמש כבר קיים",
     "wrongCredentials": "פרטי התחברות שגויים",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -166,6 +167,7 @@
     "allowNew": "יצירת קבצים ותיקיות חדשות",
     "allowPublish": "פרסום פוסטים ודפים חדשים",
     "allowSignup": "אפשר למשתמשים חדשים להירשם",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(השאר ריק כדי למנוע שינויים)",
     "branding": "מיתוג",
     "brandingDirectoryPath": "נתיב תיקיית מיתוג",

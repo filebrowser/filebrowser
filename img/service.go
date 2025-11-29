@@ -184,7 +184,7 @@ func (s *Service) Resize(ctx context.Context, in io.Reader, width, height int, o
 	case ResizeModeFill:
 		img = imaging.Fill(img, width, height, imaging.Center, config.quality.resampleFilter())
 	case ResizeModeFit:
-		fallthrough //nolint:gocritic
+		fallthrough
 	default:
 		img = imaging.Fit(img, width, height, config.quality.resampleFilter())
 	}

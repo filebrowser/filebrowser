@@ -102,6 +102,7 @@
     "username": "Benutzername",
     "usernameTaken": "Benutzername ist bereits vergeben",
     "wrongCredentials": "Falsche Zugangsdaten",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -166,6 +167,7 @@
     "allowNew": "Erstellen neuer Dateien und Ordner",
     "allowPublish": "Veröffentlichen von neuen Beiträgen und Seiten",
     "allowSignup": "Erlaube Benutzern sich zu registrieren",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(leer lassen, um Änderungen zu vermeiden)",
     "branding": "Design",
     "brandingDirectoryPath": "Designverzeichnispfad",

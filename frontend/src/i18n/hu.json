@@ -102,6 +102,7 @@
     "username": "Felhasználói név",
     "usernameTaken": "A felhasználói név már foglalt",
     "wrongCredentials": "Hibás hitelesítő adatok",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -166,6 +167,7 @@
     "allowNew": "Új fájlok és mappák létrehozása",
     "allowPublish": "Új bejegyzések és oldalak létrehozása",
     "allowSignup": "Felhasználók regisztrációjának engedélyezése",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(üresen hagyva nincs változás)",
     "branding": "Márkázás",
     "brandingDirectoryPath": "Márkázás mappaútvonala",

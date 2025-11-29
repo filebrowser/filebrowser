@@ -102,6 +102,7 @@
     "username": "Gebruikersnaam",
     "usernameTaken": "Gebruikersnaam reeds in gebruik",
     "wrongCredentials": "Verkeerde inloggegevens",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -166,6 +167,7 @@
     "allowNew": "Nieuwe bestanden of mappen aanmaken",
     "allowPublish": "Publiceer nieuwe berichten en pagina's",
     "allowSignup": "Sta gebruikers toe om zich te registreren",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(laat leeg om wijzigingen te voorkomen)",
     "branding": "Branding",
     "brandingDirectoryPath": "Branding directory path",

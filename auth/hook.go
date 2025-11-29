@@ -103,7 +103,7 @@ func (a *HookAuth) RunCommand() (string, error) {
 		command[i] = os.Expand(arg, envMapping)
 	}
 
-	cmd := exec.Command(command[0], command[1:]...) //nolint:gosec
+	cmd := exec.Command(command[0], command[1:]...)
 	cmd.Env = append(os.Environ(), fmt.Sprintf("USERNAME=%s", a.Cred.Username))
 	cmd.Env = append(cmd.Env, fmt.Sprintf("PASSWORD=%s", a.Cred.Password))
 	out, err := cmd.Output()

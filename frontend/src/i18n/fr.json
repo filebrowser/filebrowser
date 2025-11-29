@@ -102,6 +102,7 @@
     "username": "Utilisateur·ice",
     "usernameTaken": "Le nom d'utilisateur·ice est déjà pris",
     "wrongCredentials": "Identifiants incorrects !",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -166,6 +167,7 @@
     "allowNew": "Créer de nouveaux fichiers et dossiers",
     "allowPublish": "Publier de nouveaux posts et pages",
     "allowSignup": "Autoriser les utilisateur·ices à s'inscrire",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(Laisser vide pour conserver l'actuel)",
     "branding": "Image de marque",
     "brandingDirectoryPath": "Chemin du dossier d'image de marque",

@@ -102,6 +102,7 @@
     "username": "Kullanıcı adı",
     "usernameTaken": "Kullanıcı adı mevcut",
     "wrongCredentials": "Yanlış hesap bilgileri",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -166,6 +167,7 @@
     "allowNew": "Yeni dosyalar ve dizinler oluşturun",
     "allowPublish": "Yeni linkler ve sayfaları yayınlayın",
     "allowSignup": "Kullanıcıların kaydolmasına izin ver",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(değişiklikleri önlemek için boş bırakın)",
     "branding": "Marka",
     "brandingDirectoryPath": "Marka dizin yolu",

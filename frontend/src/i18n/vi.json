@@ -102,6 +102,7 @@
     "username": "Tên người dùng",
     "usernameTaken": "Tên người dùng đã tồn tại",
     "wrongCredentials": "Thông tin đăng nhập không đúng",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -166,6 +167,7 @@
     "allowNew": "Tạo tệp và thư mục mới",
     "allowPublish": "Xuất bản bài viết và trang mới",
     "allowSignup": "Cho phép người dùng đăng ký",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(để trống để tránh thay đổi)",
     "branding": "Thương hiệu",
     "brandingDirectoryPath": "Đường dẫn thư mục thương hiệu",

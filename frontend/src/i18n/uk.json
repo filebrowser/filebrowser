@@ -102,6 +102,7 @@
     "username": "Ім'я користувача",
     "usernameTaken": "Ім'я користувача вже використовується",
     "wrongCredentials": "Неправильне ім'я користувача або пароль",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -166,6 +167,7 @@
     "allowNew": "Створення нових файлів або каталогів",
     "allowPublish": "Публікація нових записів та сторінок",
     "allowSignup": "Дозволити користувачам реєструватися",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(залишіть поле порожнім, щоб уникнути змін)",
     "branding": "Брендинг",
     "brandingDirectoryPath": "Шлях до каталогу брендів",

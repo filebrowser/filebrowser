@@ -102,6 +102,7 @@
     "username": "Usuari",
     "usernameTaken": "Nom d'usuari no disponible",
     "wrongCredentials": "Usuari i/o contrasenya incorrectes",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -166,6 +167,7 @@
     "allowNew": "Crear nous fitxers i carpetes",
     "allowPublish": "Publicar nous posts i pàgines",
     "allowSignup": "Permetre registre d'usuaris",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(deixar en blanc per evitar canvis)",
     "branding": "Marca",
     "brandingDirectoryPath": "Ruta de la carpeta de personalització de marca",

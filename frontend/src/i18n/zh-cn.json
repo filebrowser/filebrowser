@@ -102,6 +102,7 @@
     "username": "用户名",
     "usernameTaken": "用户名已经被使用",
     "wrongCredentials": "用户名或密码错误",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -166,6 +167,7 @@
     "allowNew": "创建新文件和文件夹",
     "allowPublish": "发布新的帖子与页面",
     "allowSignup": "允许用户注册",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "（留空以避免更改）",
     "branding": "品牌",
     "brandingDirectoryPath": "品牌信息文件夹路径",

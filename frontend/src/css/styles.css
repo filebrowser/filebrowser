@@ -17,6 +17,7 @@
 @import "./mobile.css";
 @import "./epubReader.css";
 @import "./mdPreview.css";
+@import "./context-menu.css";
 
 /* For testing only
  :focus {
@@ -97,7 +98,8 @@ main .spinner .bounce2 {
   position: relative;
 }
 
-.action.disabled {
+.action.disabled,
+.action[disabled] {
   opacity: 0.2;
   cursor: not-allowed;
 }

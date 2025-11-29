@@ -102,6 +102,7 @@
     "username": "Nome de utilizador",
     "usernameTaken": "O nome de utilizador já está registado",
     "wrongCredentials": "Dados errados",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -166,6 +167,7 @@
     "allowNew": "Criar novos ficheiros e pastas",
     "allowPublish": "Publicar novas páginas e conteúdos",
     "allowSignup": "Permitir que os utilizadores criem contas",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(deixe em branco para manter)",
     "branding": "Marca",
     "brandingDirectoryPath": "Caminho da pasta de marca",

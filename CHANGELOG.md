@@ -2,6 +2,88 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.49.0](https://github.com/filebrowser/filebrowser/compare/v2.48.2...v2.49.0) (2025-11-22)
+
+
+### Features
+
+* add "copy download link to clipboard" button to Share prompt ([#5173](https://github.com/filebrowser/filebrowser/issues/5173)) ([d48f566](https://github.com/filebrowser/filebrowser/commit/d48f5665d6975c4cbbdf9be20dc2e0106db02f01))
+* add Bulgarian language ([8db2411](https://github.com/filebrowser/filebrowser/commit/8db2411cd43a23ae3292a817e3524cfdb5ae9b86))
+* Updates for project File Browser ([#5566](https://github.com/filebrowser/filebrowser/issues/5566)) ([54306bd](https://github.com/filebrowser/filebrowser/commit/54306bdc8700fac489326ae81e28ac5db0580d13))
+
+
+### Bug Fixes
+
+* display friendly error message for password validation on signup ([#5563](https://github.com/filebrowser/filebrowser/issues/5563)) ([6d5aa35](https://github.com/filebrowser/filebrowser/commit/6d5aa355e433d613e5a3ae137f410c63baeddf0f))
+
+## [2.48.2](https://github.com/filebrowser/filebrowser/compare/v2.48.1...v2.48.2) (2025-11-18)
+
+
+### Bug Fixes
+
+* add transitionary support for FB_BASEURL ([984ea7b](https://github.com/filebrowser/filebrowser/commit/984ea7b569e3bd33b6f91ebdf63684a618d51e94))
+
+
+### Refactorings
+
+* rename python for clarification ([fd7b70c](https://github.com/filebrowser/filebrowser/commit/fd7b70cf38ac67c8c9ff79f2e7fde5e2ec45a1de))
+
+## [2.48.1](https://github.com/filebrowser/filebrowser/compare/v2.48.0...v2.48.1) (2025-11-17)
+
+
+### Bug Fixes
+
+* options should only override if set ([420adea](https://github.com/filebrowser/filebrowser/commit/420adea7e61a1c182cddd6fb2544a0752e5709f7))
+
+## [2.48.0](https://github.com/filebrowser/filebrowser/compare/v2.47.0...v2.48.0) (2025-11-17)
+
+
+### Features
+
+* consistent flags and environment variables ([#5549](https://github.com/filebrowser/filebrowser/issues/5549)) ([0a0cb80](https://github.com/filebrowser/filebrowser/commit/0a0cb8046fce52f1ff926171b34bcdb7cd39aab3))
+
+
+### Bug Fixes
+
+* add tokenExpirationTime to `config init` and troubleshoot docs ([#5546](https://github.com/filebrowser/filebrowser/issues/5546)) ([8c5dc76](https://github.com/filebrowser/filebrowser/commit/8c5dc7641e6f8aadd9e5d5d3b25a2ad9f1ec9a1e))
+* use all available flags in quick setup ([f41585f](https://github.com/filebrowser/filebrowser/commit/f41585f0392d65c08c01ab65b62d3eeb04c03b7d))
+
+
+### Refactorings
+
+* reuse logic for config init and set ([89be0b1](https://github.com/filebrowser/filebrowser/commit/89be0b1873527987dd2dddac746e93b8bc684d46))
+
+## [2.47.0](https://github.com/filebrowser/filebrowser/compare/v2.46.1...v2.47.0) (2025-11-16)
+
+
+### Features
+
+* add TUS settings to the command line ([#5556](https://github.com/filebrowser/filebrowser/issues/5556)) ([e24e1f1](https://github.com/filebrowser/filebrowser/commit/e24e1f1abae9e80add620c4ad65660ca1b575a49))
+* remove importer of v1 config ([#5550](https://github.com/filebrowser/filebrowser/issues/5550)) ([ceb5e72](https://github.com/filebrowser/filebrowser/commit/ceb5e723f3ee2c966bb561a804015246450280ca))
+
+
+### Bug Fixes
+
+* exit 0 when gracefully shutting down ([#5555](https://github.com/filebrowser/filebrowser/issues/5555)) ([5de4099](https://github.com/filebrowser/filebrowser/commit/5de4099cba2cf012d4a213c8eb29c412fc72c151))
+
+## [2.46.1](https://github.com/filebrowser/filebrowser/compare/v2.46.0...v2.46.1) (2025-11-15)
+
+
+### Bug Fixes
+
+* env key replacer and remove unused function ([#5547](https://github.com/filebrowser/filebrowser/issues/5547)) ([13814e1](https://github.com/filebrowser/filebrowser/commit/13814e11197ebd9101940883e3ca85998f86d442))
+* remove duplicated 'hide-defaults' flag (is 'hideDefaults') ([#5548](https://github.com/filebrowser/filebrowser/issues/5548)) ([ffc8504](https://github.com/filebrowser/filebrowser/commit/ffc850454e4cb8f10b970511681d6c627340afc7))
+
+## [2.46.0](https://github.com/filebrowser/filebrowser/compare/v2.45.3...v2.46.0) (2025-11-14)
+
+
+### Features
+
+* add 'hide-dotfiles' as command line parameter ([#3802](https://github.com/filebrowser/filebrowser/issues/3802)) ([0d973d3](https://github.com/filebrowser/filebrowser/commit/0d973d3aad70ceb88950f2cd9c297fc76e7955b1))
+* add context menu ([#3343](https://github.com/filebrowser/filebrowser/issues/3343)) ([1ace579](https://github.com/filebrowser/filebrowser/commit/1ace579a553486bb15af2d11f537414156606434))
+* add option to hide the login button from public-facing pages ([#3922](https://github.com/filebrowser/filebrowser/issues/3922)) ([ac7b49c](https://github.com/filebrowser/filebrowser/commit/ac7b49c1484b4e27a1149310542ccd1e90659ee2))
+* Updates for project File Browser ([#5544](https://github.com/filebrowser/filebrowser/issues/5544)) ([fb5d099](https://github.com/filebrowser/filebrowser/commit/fb5d099f8514516216f407be012d2e3f25de2441))
+
 ## [2.45.3](https://github.com/filebrowser/filebrowser/compare/v2.45.2...v2.45.3) (2025-11-13)
 
 This is a test release to ensure the updated workflow works.

@@ -1,8 +1,8 @@
 package files
 
 import (
-	"crypto/md5"  //nolint:gosec
-	"crypto/sha1" //nolint:gosec
+	"crypto/md5"
+	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
@@ -90,7 +90,7 @@ func NewFileInfo(opts *FileOptions) (*FileInfo, error) {
 
 	if opts.Expand {
 		if file.IsDir {
-			if err := file.readListing(opts.Checker, opts.ReadHeader); err != nil { //nolint:govet
+			if err := file.readListing(opts.Checker, opts.ReadHeader); err != nil {
 				return nil, err
 			}
 			return file, nil
@@ -183,7 +183,6 @@ func (i *FileInfo) Checksum(algo string) error {
 
 	var h hash.Hash
 
-	//nolint:gosec
 	switch algo {
 	case "md5":
 		h = md5.New()

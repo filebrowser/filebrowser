@@ -102,6 +102,7 @@
     "username": "Utilizator",
     "usernameTaken": "Utilizatorul există",
     "wrongCredentials": "Informații greșite",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -166,6 +167,7 @@
     "allowNew": "Crează noi fișiere sau directoare",
     "allowPublish": "Publică noi pagini și postări",
     "allowSignup": "Permite utilizatorilor să se înregistreze",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(lasă gol pentru a nu schimba)",
     "branding": "Branding",
     "brandingDirectoryPath": "Calea către directorul de branding",

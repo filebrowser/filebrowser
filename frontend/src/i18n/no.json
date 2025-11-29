@@ -102,6 +102,7 @@
     "username": "Brukernavn",
     "usernameTaken": "Brukernavn er allerede i bruk",
     "wrongCredentials": "Feil legitimasjon",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "Du har blitt logget ut på grunn av inaktivitet"
     }
@@ -166,6 +167,7 @@
     "allowNew": "Opprett nye filer og direktorater",
     "allowPublish": "Publiser nye innlegg og sider",
     "allowSignup": "Tilat brukere å registrere seg",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(la stå tomt for å unngå endringer)",
     "branding": "Merkevarebygging",
     "brandingDirectoryPath": "Bane for merkevarekatalog",

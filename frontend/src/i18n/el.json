@@ -102,6 +102,7 @@
     "username": "Όνομα χρήστη",
     "usernameTaken": "Το όνομα χρήστη χρησιμοποιείται ήδη",
     "wrongCredentials": "Λάθος όνομα ή/και κωδικός πρόσβασης",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -166,6 +167,7 @@
     "allowNew": "Δημιουργία νέων αρχείων και φακέλων",
     "allowPublish": "Δημοσίευση νέων αναρτήσεων και σελίδων",
     "allowSignup": "Να επιτρέπεται η εγγραφή νέων χρηστών",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(αφήστε το κενό για αποφυγή αλλαγών)",
     "branding": "Εξατομίκευση",
     "brandingDirectoryPath": "Διαδρομή φακέλου εξατομίκευσης",
