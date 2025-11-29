@@ -43,7 +43,8 @@
     "upload": "Загрузить",
     "openFile": "Открыть файл",
     "discardChanges": "Отказаться",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Скачать файл",
@@ -75,7 +76,9 @@
     "sortByLastModified": "Сортировка по дате изменения",
     "sortByName": "Сортировка по имени",
     "sortBySize": "Сортировка по размеру",
-    "noPreview": "Предварительный просмотр для этого файла недоступен."
+    "noPreview": "Предварительный просмотр для этого файла недоступен.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "выбрать файл или каталог",

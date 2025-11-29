@@ -43,7 +43,8 @@
     "upload": "Nahrať",
     "openFile": "Otvoriť súbor",
     "discardChanges": "Zahodiť",
-    "saveChanges": "Uložiť zmeny"
+    "saveChanges": "Uložiť zmeny",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Stiahnuť súbor",
@@ -75,7 +76,9 @@
     "sortByLastModified": "Zoradiť podľa dátumu",
     "sortByName": "Zoradiť podľa názvu",
     "sortBySize": "Zoradiť podľa veľkosti",
-    "noPreview": "Pre tento súbor nie je dostupný náhľad."
+    "noPreview": "Pre tento súbor nie je dostupný náhľad.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "vyberie súbor alebo priečinok",

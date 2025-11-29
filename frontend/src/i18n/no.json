@@ -43,7 +43,8 @@
     "upload": "Last opp",
     "openFile": "Open file",
     "discardChanges": "Slett",
-    "saveChanges": "Lagre Endringane "
+    "saveChanges": "Lagre Endringane ",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Nedlast filen",
@@ -75,7 +76,9 @@
     "sortByLastModified": "Sorter etter sist endret",
     "sortByName": "Sorter etter navn",
     "sortBySize": "Sorter etter størrelse",
-    "noPreview": "Forhåndsvisning er ikkje tilgjengeleg for denne filen."
+    "noPreview": "Forhåndsvisning er ikkje tilgjengeleg for denne filen.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "velg fil eller katalog",

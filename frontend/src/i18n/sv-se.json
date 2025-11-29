@@ -43,7 +43,8 @@
     "upload": "Ladda upp",
     "openFile": "Öppna fil",
     "discardChanges": "Förkasta",
-    "saveChanges": "Spara ändringar"
+    "saveChanges": "Spara ändringar",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Ladda ner fil",
@@ -75,7 +76,9 @@
     "sortByLastModified": "Sortera på senast ändrad",
     "sortByName": "Sortera på namn",
     "sortBySize": "Sortera på storlek",
-    "noPreview": "Förhandsvisning är inte tillgänglig för denna fil."
+    "noPreview": "Förhandsvisning är inte tillgänglig för denna fil.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "välj fil eller mapp",

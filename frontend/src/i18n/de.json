@@ -43,7 +43,8 @@
     "upload": "Upload",
     "openFile": "Datei öffnen",
     "discardChanges": "Verwerfen",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Download Datei",
@@ -75,7 +76,9 @@
     "sortByLastModified": "Nach Änderungsdatum sortieren",
     "sortByName": "Nach Namen sortieren",
     "sortBySize": "Nach Größe sortieren",
-    "noPreview": "Für diese Datei ist keine Vorschau verfügbar."
+    "noPreview": "Für diese Datei ist keine Vorschau verfügbar.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "Wähle Datei oder Ordner",

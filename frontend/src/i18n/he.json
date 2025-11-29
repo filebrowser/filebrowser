@@ -43,7 +43,8 @@
     "upload": "העלאה",
     "openFile": "פתח קובץ",
     "discardChanges": "זריקת השינויים",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "הורד קובץ",
@@ -75,7 +76,9 @@
     "sortByLastModified": "מיין לפי השינוי האחרון",
     "sortByName": "מיין לפי שם",
     "sortBySize": "מיין לפי גודל",
-    "noPreview": "לא זמינה תצוגה מקדימה לקובץ זה"
+    "noPreview": "לא זמינה תצוגה מקדימה לקובץ זה",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "בחר קובץ או תיקייה",

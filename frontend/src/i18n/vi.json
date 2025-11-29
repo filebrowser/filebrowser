@@ -43,7 +43,8 @@
     "upload": "Tải lên",
     "openFile": "Mở tệp",
     "discardChanges": "Hủy bỏ thay đổi",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Tải xuống tệp tin",
@@ -75,7 +76,9 @@
     "sortByLastModified": "Sắp xếp theo ngày sửa đổi",
     "sortByName": "Sắp xếp theo tên",
     "sortBySize": "Sắp xếp theo kích thước",
-    "noPreview": "Không có bản xem trước cho tập tin này."
+    "noPreview": "Không có bản xem trước cho tập tin này.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "chọn tập tin hoặc thư mục",

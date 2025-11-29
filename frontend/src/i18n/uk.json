@@ -43,7 +43,8 @@
     "upload": "Вивантажити",
     "openFile": "Відкрити файл",
     "discardChanges": "Скасувати",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Завантажити файл",
@@ -75,7 +76,9 @@
     "sortByLastModified": "Сортувати за останнім зміненням",
     "sortByName": "Сортувати за іменем",
     "sortBySize": "Сортувати за розміром",
-    "noPreview": "Попередній перегляд для цього файлу недоступний."
+    "noPreview": "Попередній перегляд для цього файлу недоступний.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "вибрати файл чи каталог",

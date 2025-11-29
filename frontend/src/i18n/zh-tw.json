@@ -43,7 +43,8 @@
     "upload": "上傳",
     "openFile": "開啟檔案",
     "discardChanges": "放棄變更",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "下載檔案",
@@ -75,7 +76,9 @@
     "sortByLastModified": "按最後修改時間排序",
     "sortByName": "按名稱排序",
     "sortBySize": "按大小排序",
-    "noPreview": "此檔案無法預覽。"
+    "noPreview": "此檔案無法預覽。",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "選擇檔案或目錄",

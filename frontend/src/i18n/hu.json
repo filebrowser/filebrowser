@@ -43,7 +43,8 @@
     "upload": "Feltöltés",
     "openFile": "Fájl megnyitása",
     "discardChanges": "Discard",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Fájl letöltése",
@@ -75,7 +76,9 @@
     "sortByLastModified": "Rendezés utolsó módosítás szerint",
     "sortByName": "Rendezés név szerint",
     "sortBySize": "Rendezés méret szerint",
-    "noPreview": "Ehhez a fájlhoz nincs előnézet."
+    "noPreview": "Ehhez a fájlhoz nincs előnézet.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "mappa vagy fájl kijelölése",

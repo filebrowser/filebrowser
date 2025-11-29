@@ -43,7 +43,8 @@
     "upload": "Prenesi",
     "openFile": "Otvori datoteku",
     "discardChanges": "Odbaci",
-    "saveChanges": "Spremi promjene"
+    "saveChanges": "Spremi promjene",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Preuzmi Datoteku",
@@ -75,7 +76,9 @@
     "sortByLastModified": "Sortiraj po zadnjoj izmjeni",
     "sortByName": "Sortiraj po nazivu",
     "sortBySize": "Sortiraj po veličini",
-    "noPreview": "Pregled nije dostupan za ovu datoteku."
+    "noPreview": "Pregled nije dostupan za ovu datoteku.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "odaberi datoteku ili mapu",

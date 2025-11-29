@@ -43,7 +43,8 @@
     "upload": "Nahrát",
     "openFile": "Otevřít soubor",
     "discardChanges": "Zrušit změny",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Stáhnout soubor",
@@ -75,7 +76,9 @@
     "sortByLastModified": "Seřadit podle poslední změny",
     "sortByName": "Seřadit podle názvu",
     "sortBySize": "Seřadit podle velikosti",
-    "noPreview": "Náhled pro tento soubor není k dispozici."
+    "noPreview": "Náhled pro tento soubor není k dispozici.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "vyberte soubor nebo adresář",

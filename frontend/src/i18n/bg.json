@@ -43,7 +43,8 @@
     "upload": "Качи",
     "openFile": "Отвори файл",
     "discardChanges": "Изчисти",
-    "saveChanges": "Запиши промените"
+    "saveChanges": "Запиши промените",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Свали файл",
@@ -75,7 +76,9 @@
     "sortByLastModified": "Подредба по последна промяна",
     "sortByName": "Подредба по име",
     "sortBySize": "Подредба по размер",
-    "noPreview": "За този файл не е наличен преглед."
+    "noPreview": "За този файл не е наличен преглед.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "избери файл или директория",
