@@ -202,7 +202,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "Sign up:\t%t\n", set.Signup)
 	fmt.Fprintf(w, "Hide Login Button:\t%t\n", set.HideLoginButton)
 	fmt.Fprintf(w, "Create User Dir:\t%t\n", set.CreateUserDir)
-	fmt.Fprintf(w, "LogoutPage:\t%s\n", set.LogoutPage)
+	fmt.Fprintf(w, "Logout Page:\t%s\n", set.LogoutPage)
 	fmt.Fprintf(w, "Minimum Password Length:\t%d\n", set.MinimumPasswordLength)
 	fmt.Fprintf(w, "Auth Method:\t%s\n", set.AuthMethod)
 	fmt.Fprintf(w, "Shell:\t%s\t\n", strings.Join(set.Shell, " "))
