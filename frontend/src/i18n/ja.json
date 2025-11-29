@@ -43,7 +43,8 @@
     "upload": "アップロード",
     "openFile": "ファイルを開く",
     "discardChanges": "Discard",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "ファイルのダウンロード",
@@ -75,7 +76,9 @@
     "sortByLastModified": "更新日時で並べ替え",
     "sortByName": "名前で並べ替え",
     "sortBySize": "サイズで並べ替え",
-    "noPreview": "プレビューはこのファイルでは利用できません"
+    "noPreview": "プレビューはこのファイルでは利用できません",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "ファイルやフォルダーを選択",
