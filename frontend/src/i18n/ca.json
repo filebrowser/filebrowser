@@ -43,7 +43,8 @@
     "upload": "Pujar",
     "openFile": "Obrir fitxer",
     "discardChanges": "Descartar",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Descarregar fitxer",
@@ -75,7 +76,9 @@
     "sortByLastModified": "Ordenar per última modificació",
     "sortByName": "Ordenar per nom",
     "sortBySize": "Ordenar per mida",
-    "noPreview": "La vista prèvia no està disponible per a aquest fitxer."
+    "noPreview": "La vista prèvia no està disponible per a aquest fitxer.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "seleccionar fitxer o carpeta",
