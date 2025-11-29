@@ -78,7 +78,7 @@
     "sortBySize": "Sortuj wg rozmiaru",
     "noPreview": "Podgląd tego pliku jest niedostępny.",
     "csvTooLarge": "Plik CSV jest za duży do podglądu (>5 MB). Pobierz, aby wyświetlić.",
-    "csvLoadFailed": "Failed to load CSV file."
+    "csvLoadFailed": "Nie udało się załadować pliku CSV."
   },
   "help": {
     "click": "zaznacz plik lub folder",
