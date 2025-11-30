@@ -28,9 +28,11 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     name: Build and Release Docs
     permissions:
-      contents: read
-      deployments: write
-      pull-requests: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -42,11 +44,9 @@ jobs:
         uses: go-task/setup-task@v1
       - name: Build site
         run: task docs
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+      - name: Upload static files as artifact
+        uses: actions/upload-pages-artifact@v4
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy www/public --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }}
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-
+          path: www/public
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
