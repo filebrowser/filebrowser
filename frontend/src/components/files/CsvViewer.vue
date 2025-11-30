@@ -8,12 +8,7 @@
       <i class="material-icons">description</i>
       <p>{{ $t("files.lonely") }}</p>
     </div>
-    <div
-      v-else
-      class="csv-table-container"
-      @wheel.stop
-      @touchmove.stop
-    >
+    <div v-else class="csv-table-container" @wheel.stop @touchmove.stop>
       <table class="csv-table">
         <thead>
           <tr>
@@ -66,7 +61,11 @@ const displayError = computed(() => {
     return props.error;
   }
   // Check for parse errors
-  if (props.content && props.content.trim().length > 0 && data.value.headers.length === 0) {
+  if (
+    props.content &&
+    props.content.trim().length > 0 &&
+    data.value.headers.length === 0
+  ) {
     return "Failed to parse CSV file";
   }
   return null;
