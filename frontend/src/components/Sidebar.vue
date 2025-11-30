@@ -129,6 +129,7 @@ import {
   disableExternal,
   disableUsedPercentage,
   noAuth,
+  logoutPage,
   loginPage,
 } from "@/utils/constants";
 import { files as api } from "@/api";
@@ -159,7 +160,7 @@ export default {
     version: () => version,
     disableExternal: () => disableExternal,
     disableUsedPercentage: () => disableUsedPercentage,
-    canLogout: () => !noAuth && loginPage,
+    canLogout: () => !noAuth && (loginPage || logoutPage !== "/login"),
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),
