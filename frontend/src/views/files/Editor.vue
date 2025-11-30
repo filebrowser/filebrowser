@@ -186,7 +186,7 @@ const handlePageChange = (event: BeforeUnloadEvent) => {
   }
 };
 
-const save = async () => {
+const save = async (throwError?: boolean) => {
   const button = "save";
   buttons.loading("save");
 
@@ -197,6 +197,7 @@ const save = async () => {
   } catch (e: any) {
     buttons.done(button);
     $showError(e);
+    if (throwError) throw e;
   }
 };
 
@@ -223,8 +224,10 @@ const close = () => {
         finishClose();
       },
       saveAction: async () => {
-        await save();
-        finishClose();
+        try {
+          await save(true);
+          finishClose();
+        } catch {}
       },
     });
     return;
