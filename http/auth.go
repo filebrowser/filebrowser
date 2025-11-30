@@ -68,7 +68,7 @@ func renewableErr(err error, d *data) bool {
 		return false
 	}
 
-	if d.settings.LogoutPage == "" || d.settings.LogoutPage == settings.DefaultLogoutPage {
+	if d.settings.LogoutPage == settings.DefaultLogoutPage {
 		return false
 	}
 
