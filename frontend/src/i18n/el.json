@@ -43,7 +43,8 @@
     "upload": "Μεταφόρτωση",
     "openFile": "Άνοιγμα αρχείου",
     "discardChanges": "Discard",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Λήψη αρχείου",
@@ -75,7 +76,9 @@
     "sortByLastModified": "Ταξινόμηση κατά πρόσφατη τροποποίηση",
     "sortByName": "Ταξινόμηση κατά όνομα",
     "sortBySize": "Ταξινόμηση κατά μέγεθος",
-    "noPreview": "Η προεπισκόπηση δεν είναι διαθέσιμη για αυτό το αρχείο."
+    "noPreview": "Η προεπισκόπηση δεν είναι διαθέσιμη για αυτό το αρχείο.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "επιλέξτε αρχείο ή φάκελο",

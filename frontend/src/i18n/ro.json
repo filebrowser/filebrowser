@@ -43,7 +43,8 @@
     "upload": "Încarcă",
     "openFile": "Open file",
     "discardChanges": "Discard",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Descarcă fișier",
@@ -75,7 +76,9 @@
     "sortByLastModified": "Ordonează dup ultima modificare",
     "sortByName": "Ordonează după nume",
     "sortBySize": "Ordonează după dimensiune",
-    "noPreview": "Preview is not available for this file."
+    "noPreview": "Preview is not available for this file.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "alege fișier sau director",

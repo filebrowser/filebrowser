@@ -43,7 +43,8 @@
     "upload": "Yükle",
     "openFile": "Dosyayı aç",
     "discardChanges": "Discard",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Dosyayı indir",
@@ -75,7 +76,9 @@
     "sortByLastModified": "Güncelleme tarihine göre sırala",
     "sortByName": "İsme göre sırala",
     "sortBySize": "Boyuta göre sırala",
-    "noPreview": "Bu dosya için önizleme aktif değil"
+    "noPreview": "Bu dosya için önizleme aktif değil",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "dosya veya klasör seçin",
