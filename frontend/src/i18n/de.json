@@ -107,7 +107,7 @@
     "wrongCredentials": "Falsche Zugangsdaten",
     "passwordTooShort": "Passwort muss mindestens {min} Zeichen lang sein",
     "logout_reasons": {
-      "inactivity": "You have been logged out due to inactivity."
+      "inactivity": "Du wurdest aufgrund von Inaktivität abgemeldet."
     }
   },
   "permanent": "Permanent",
