@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.50.0](https://github.com/filebrowser/filebrowser/compare/v2.49.0...v2.50.0) (2025-11-30)
+
+
+### Features
+
+* configurable logout page URL for proxy/hook auth ([#3884](https://github.com/filebrowser/filebrowser/issues/3884)) ([b9ac45d](https://github.com/filebrowser/filebrowser/commit/b9ac45d5dac4b4eb2ba364629090fbf306cffd2b))
+* render CSVs as table ([#5569](https://github.com/filebrowser/filebrowser/issues/5569)) ([982405e](https://github.com/filebrowser/filebrowser/commit/982405ec944f94baf43594b0ed2f06329ff4e9ed))
+* update frontend/src/i18n/hr.json ([279a5cc](https://github.com/filebrowser/filebrowser/commit/279a5ccd1e8d7bde4568b63cb3c506af48b6c618))
+* update translations ([78e0395](https://github.com/filebrowser/filebrowser/commit/78e039596070a3a9e643a693cc99960c69dcfe92))
+
+
+### Bug Fixes
+
+* do not close editor if save failed ([701522a](https://github.com/filebrowser/filebrowser/commit/701522a0600cfa542469540ed764630c0ba1a732)), closes [#5591](https://github.com/filebrowser/filebrowser/issues/5591)
+
 ## [2.49.0](https://github.com/filebrowser/filebrowser/compare/v2.48.2...v2.49.0) (2025-11-22)
 
 
