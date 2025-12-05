@@ -10,5 +10,6 @@
   "postUpdateOptions": [
     "gomodUpdateImportPaths",
     "gomodTidy"
-  ]
+  ],
+  "schedule": "* * * * 0,6"
 }
