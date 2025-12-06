@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
-	nerrors "errors"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/pflag"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
-	"github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/settings"
 )
 
@@ -104,7 +104,7 @@ func getProxyAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (a
 	}
 
 	if header == "" {
-		return nil, nerrors.New("you must set the flag 'auth.header' for method 'proxy'")
+		return nil, errors.New("you must set the flag 'auth.header' for method 'proxy'")
 	}
 
 	return &auth.ProxyAuth{Header: header}, nil
@@ -163,7 +163,7 @@ func getHookAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (au
 	}
 
 	if command == "" {
-		return nil, nerrors.New("you must set the flag 'auth.command' for method 'hook'")
+		return nil, errors.New("you must set the flag 'auth.command' for method 'hook'")
 	}
 
 	return &auth.HookAuth{Command: command}, nil
@@ -186,7 +186,7 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 	case auth.MethodHookAuth:
 		auther, err = getHookAuth(flags, defaultAuther)
 	default:
-		return "", nil, errors.ErrInvalidAuthMethod
+		return "", nil, fberrors.ErrInvalidAuthMethod
 	}
 
 	if err != nil {
@@ -361,7 +361,7 @@ func getSettings(flags *pflag.FlagSet, set *settings.Settings, ser *settings.Ser
 		flags.Visit(visit)
 	}
 
-	err := nerrors.Join(errs...)
+	err := errors.Join(errs...)
 	if err != nil {
 		return nil, err
 	}

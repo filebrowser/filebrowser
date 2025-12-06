@@ -4,7 +4,7 @@ import (
 	"github.com/asdine/storm/v3"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
-	"github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/settings"
 )
 
@@ -25,7 +25,7 @@ func (s authBackend) Get(t settings.AuthMethod) (auth.Auther, error) {
 	case auth.MethodNoAuth:
 		auther = &auth.NoAuth{}
 	default:
-		return nil, errors.ErrInvalidAuthMethod
+		return nil, fberrors.ErrInvalidAuthMethod
 	}
 
 	return auther, get(s.db, "auther", auther)

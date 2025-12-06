@@ -1,5 +1,5 @@
 //go:generate go-enum --sql --marshal --names --file $GOFILE
-package http
+package fbhttp
 
 import (
 	"bytes"

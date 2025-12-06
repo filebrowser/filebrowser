@@ -7,7 +7,7 @@ import (
 
 	"github.com/asdine/storm/v3"
 
-	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
 
@@ -25,14 +25,14 @@ func (st usersBackend) GetBy(i interface{}) (user *users.User, err error) {
 	case string:
 		arg = "Username"
 	default:
-		return nil, fbErrors.ErrInvalidDataType
+		return nil, fberrors.ErrInvalidDataType
 	}
 
 	err = st.db.One(arg, i, user)
 
 	if err != nil {
 		if errors.Is(err, storm.ErrNotFound) {
-			return nil, fbErrors.ErrNotExist
+			return nil, fberrors.ErrNotExist
 		}
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (st usersBackend) Gets() ([]*users.User, error) {
 	var allUsers []*users.User
 	err := st.db.All(&allUsers)
 	if errors.Is(err, storm.ErrNotFound) {
-		return nil, fbErrors.ErrNotExist
+		return nil, fberrors.ErrNotExist
 	}
 
 	if err != nil {
@@ -76,7 +76,7 @@ func (st usersBackend) Update(user *users.User, fields ...string) error {
 func (st usersBackend) Save(user *users.User) error {
 	err := st.db.Save(user)
 	if errors.Is(err, storm.ErrAlreadyExists) {
-		return fbErrors.ErrExist
+		return fberrors.ErrExist
 	}
 	return err
 }

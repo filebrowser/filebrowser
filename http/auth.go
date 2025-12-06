@@ -1,4 +1,4 @@
-package http
+package fbhttp
 
 import (
 	"encoding/json"
@@ -13,7 +13,7 @@ import (
 	"github.com/golang-jwt/jwt/v5/request"
 
 	fbAuth "github.com/filebrowser/filebrowser/v2/auth"
-	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -185,7 +185,7 @@ var signupHandler = func(_ http.ResponseWriter, r *http.Request, d *data) (int, 
 	log.Printf("new user: %s, home dir: [%s].", user.Username, userHome)
 
 	err = d.store.Users.Save(user)
-	if errors.Is(err, fbErrors.ErrExist) {
+	if errors.Is(err, fberrors.ErrExist) {
 		return http.StatusConflict, err
 	} else if err != nil {
 		return http.StatusInternalServerError, err
