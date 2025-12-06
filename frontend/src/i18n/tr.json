@@ -272,5 +272,10 @@
     "minutes": "Dakika",
     "seconds": "Saniye",
     "unit": "Zaman birimi"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }
