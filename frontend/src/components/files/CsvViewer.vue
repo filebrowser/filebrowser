@@ -25,9 +25,29 @@
           </tr>
         </tbody>
       </table>
-      <div v-if="data.rows.length > 100" class="csv-info">
-        <i class="material-icons">info</i>
-        <span>Showing {{ data.rows.length }} rows</span>
+      <div class="csv-footer">
+        <div class="csv-info" v-if="data.rows.length > 100">
+          <i class="material-icons">info</i>
+          <span>Showing {{ data.rows.length }} rows</span>
+        </div>
+        <div class="column-separator">
+          <label for="columnSeparator">Column Separator</label>
+          <select
+            id="columnSeparator"
+            class="input input--block"
+            v-model="columnSeparator"
+          >
+            <option :value="[',']">
+              {{ $t("available_csv_separators.comma") }}
+            </option>
+            <option :value="[';']">
+              {{ $t("available_csv_separators.semicolon") }}
+            </option>
+            <option :value="[',', ';']">
+              {{ $t("available_csv_separators.both") }}
+            </option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
@@ -35,7 +55,7 @@
 
 <script setup lang="ts">
 import { parseCSV, type CsvData } from "@/utils/csv";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 interface Props {
   content: string;
@@ -46,9 +66,11 @@ const props = withDefaults(defineProps<Props>(), {
   error: "",
 });
 
+const columnSeparator = ref([","]);
+
 const data = computed<CsvData>(() => {
   try {
-    return parseCSV(props.content);
+    return parseCSV(props.content, columnSeparator.value);
   } catch (e) {
     console.error("Failed to parse CSV:", e);
     return { headers: [], rows: [] };
@@ -181,6 +203,18 @@ const displayError = computed(() => {
   transition: background-color 0.15s ease;
 }
 
+.csv-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+}
+
+.csv-footer > :only-child {
+  margin-left: auto;
+}
+
 .csv-info {
   display: flex;
   align-items: center;
@@ -192,6 +226,21 @@ const displayError = computed(() => {
   border-left: 3px solid var(--blue);
   color: var(--textSecondary);
   font-size: 0.875rem;
+}
+
+.column-separator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.column-separator > label {
+  font-size: small;
+  text-align: end;
+}
+
+.column-separator > select {
+  margin-bottom: 0;
 }
 
 .csv-info i {
