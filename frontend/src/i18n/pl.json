@@ -276,6 +276,6 @@
   "available_csv_separators": {
     "comma": "Przecinek (,)",
     "semicolon": "Średnik (;)",
-    "both": "Both (,) and (;)"
+    "both": "Zarówno (,), jak i (;)"
   }
 }
