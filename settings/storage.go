@@ -1,7 +1,7 @@
 package settings
 
 import (
-	"github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -72,7 +72,7 @@ var defaultEvents = []string{
 // Save saves the settings for the current instance.
 func (s *Storage) Save(set *Settings) error {
 	if len(set.Key) == 0 {
-		return errors.ErrEmptyKey
+		return fberrors.ErrEmptyKey
 	}
 
 	if set.Defaults.Locale == "" {

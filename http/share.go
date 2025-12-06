@@ -1,4 +1,4 @@
-package http
+package fbhttp
 
 import (
 	"crypto/rand"
@@ -14,7 +14,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/share"
 )
 
@@ -38,7 +38,7 @@ var shareListHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 	} else {
 		s, err = d.store.Share.FindByUserID(d.user.ID)
 	}
-	if errors.Is(err, fbErrors.ErrNotExist) {
+	if errors.Is(err, fberrors.ErrNotExist) {
 		return renderJSON(w, r, []*share.Link{})
 	}
 
@@ -58,7 +58,7 @@ var shareListHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 
 var shareGetsHandler = withPermShare(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	s, err := d.store.Share.Gets(r.URL.Path, d.user.ID)
-	if errors.Is(err, fbErrors.ErrNotExist) {
+	if errors.Is(err, fberrors.ErrNotExist) {
 		return renderJSON(w, r, []*share.Link{})
 	}
 
