@@ -7,7 +7,10 @@ export interface CsvData {
  * Parse CSV content into headers and rows
  * Supports quoted fields and handles commas within quotes
  */
-export function parseCSV(content: string): CsvData {
+export function parseCSV(
+  content: string,
+  columnSeparator: Array<string>
+): CsvData {
   if (!content || content.trim().length === 0) {
     return { headers: [], rows: [] };
   }
@@ -35,7 +38,7 @@ export function parseCSV(content: string): CsvData {
           // Toggle quote state
           inQuotes = !inQuotes;
         }
-      } else if (char === "," && !inQuotes) {
+      } else if (columnSeparator.includes(char) && !inQuotes) {
         // Field separator
         row.push(currentField);
         currentField = "";
