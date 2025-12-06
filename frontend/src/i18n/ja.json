@@ -272,5 +272,10 @@
     "minutes": "分",
     "seconds": "秒",
     "unit": "時間の単位"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }
