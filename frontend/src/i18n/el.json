@@ -272,5 +272,10 @@
     "minutes": "Λεπτά",
     "seconds": "Δευτερόλεπτα",
     "unit": "Μονάδα χρόνου"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }

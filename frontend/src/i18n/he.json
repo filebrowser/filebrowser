@@ -272,5 +272,10 @@
     "minutes": "דקות",
     "seconds": "שניות",
     "unit": "יחידת זמן"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }

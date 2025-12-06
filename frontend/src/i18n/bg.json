@@ -272,5 +272,10 @@
     "minutes": "Минути",
     "seconds": "Секунди",
     "unit": "Единица за време"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }

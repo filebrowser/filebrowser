@@ -43,8 +43,8 @@
     "upload": "Upload",
     "openFile": "Datei öffnen",
     "discardChanges": "Verwerfen",
-    "saveChanges": "Save changes",
-    "editAsText": "Edit as Text"
+    "saveChanges": "Änderungen speichern",
+    "editAsText": "Als Text bearbeiten"
   },
   "download": {
     "downloadFile": "Download Datei",
@@ -77,8 +77,8 @@
     "sortByName": "Nach Namen sortieren",
     "sortBySize": "Nach Größe sortieren",
     "noPreview": "Für diese Datei ist keine Vorschau verfügbar.",
-    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
-    "csvLoadFailed": "Failed to load CSV file."
+    "csvTooLarge": "Die CSV-Datei ist zu groß für die Vorschau (>5 MB). Bitte herunterladen, um sie anzuzeigen.",
+    "csvLoadFailed": "Fehler beim Laden der CSV-Datei."
   },
   "help": {
     "click": "Wähle Datei oder Ordner",
@@ -105,9 +105,9 @@
     "username": "Benutzername",
     "usernameTaken": "Benutzername ist bereits vergeben",
     "wrongCredentials": "Falsche Zugangsdaten",
-    "passwordTooShort": "Password must be at least {min} characters",
+    "passwordTooShort": "Passwort muss mindestens {min} Zeichen lang sein",
     "logout_reasons": {
-      "inactivity": "You have been logged out due to inactivity."
+      "inactivity": "Du wurdest aufgrund von Inaktivität abgemeldet."
     }
   },
   "permanent": "Permanent",
@@ -162,7 +162,7 @@
     "video": "Video"
   },
   "settings": {
-    "aceEditorTheme": "Ace editor theme",
+    "aceEditorTheme": "Ace Editor Theme",
     "admin": "Admin",
     "administrator": "Administrator",
     "allowCommands": "Befehle ausführen",
@@ -170,7 +170,7 @@
     "allowNew": "Erstellen neuer Dateien und Ordner",
     "allowPublish": "Veröffentlichen von neuen Beiträgen und Seiten",
     "allowSignup": "Erlaube Benutzern sich zu registrieren",
-    "hideLoginButton": "Hide the login button from public pages",
+    "hideLoginButton": "Den Login-Button auf öffentlichen Seiten ausblenden",
     "avoidChanges": "(leer lassen, um Änderungen zu vermeiden)",
     "branding": "Design",
     "brandingDirectoryPath": "Designverzeichnispfad",
@@ -180,7 +180,7 @@
     "commandRunnerHelp": "Hier könne Sie Befehle eintragen, welche bei den benannten Aktionen ausgeführt werden. Sie müssen pro Zeile jeweils einen Befehl eingeben. Die Umgebungsvariable {0} und {1} sind verfügbar, wobei {0} relative zu {1} ist. Für mehr Informationen über diese Funktion und die verfügbaren Umgebungsvariablen lesen Sie bitte die {2}.",
     "commandsUpdated": "Befehle aktualisiert!",
     "createUserDir": "Automatisches Erstellen des Home-Verzeichnisses beim Anlegen neuer Benutzer",
-    "minimumPasswordLength": "Minimum password length",
+    "minimumPasswordLength": "Mindestlänge für Passwörter",
     "tusUploads": "Gestückelter Upload",
     "tusUploadsHelp": "File Browser unterstützt das Hochladen von gestückelten Dateien und ermöglicht so einen effizienten, zuverlässigen, fortsetzbaren und gestückelten Datei-Upload auch in unzuverlässigen Netzwerken.",
     "tusUploadsChunkSize": "Gibt die maximale Größe pro Anfrage an (direkte Uploads werden für kleinere Uploads verwendet). Bitte geben Sie eine Byte-Angabe oder eine Zeichenfolge wie 10 MB, 1 GB usw. an",
@@ -272,5 +272,10 @@
     "minutes": "Minuten",
     "seconds": "Sekunden",
     "unit": "Zeiteinheit"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }
