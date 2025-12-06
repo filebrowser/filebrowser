@@ -272,5 +272,10 @@
     "minutes": "분",
     "seconds": "초",
     "unit": "Time Unit"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }
