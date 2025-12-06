@@ -274,8 +274,8 @@
     "unit": "Jednostka czasu"
   },
   "available_csv_separators": {
-    "comma": "Comma (,)",
-    "semicolon": "Semicolon (;)",
-    "both": "Both (,) and (;)"
+    "comma": "Przecinek (,)",
+    "semicolon": "Średnik (;)",
+    "both": "Zarówno (,), jak i (;)"
   }
 }
