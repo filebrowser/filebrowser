@@ -272,5 +272,10 @@
     "minutes": "Minuten",
     "seconds": "Seconden",
     "unit": "Tijdseenheid"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }
