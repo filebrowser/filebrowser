@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/afero"
 
-	"github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/rules"
 )
@@ -64,11 +64,11 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 		switch field {
 		case "Username":
 			if u.Username == "" {
-				return errors.ErrEmptyUsername
+				return fberrors.ErrEmptyUsername
 			}
 		case "Password":
 			if u.Password == "" {
-				return errors.ErrEmptyPassword
+				return fberrors.ErrEmptyPassword
 			}
 		case "ViewMode":
 			if u.ViewMode == "" {

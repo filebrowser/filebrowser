@@ -23,7 +23,7 @@ import (
 
 	"github.com/spf13/afero"
 
-	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
 )
 
@@ -168,7 +168,7 @@ func stat(opts *FileOptions) (*FileInfo, error) {
 // algorithm. The checksums data is saved on File object.
 func (i *FileInfo) Checksum(algo string) error {
 	if i.IsDir {
-		return fbErrors.ErrIsDirectory
+		return fberrors.ErrIsDirectory
 	}
 
 	if i.Checksums == nil {
@@ -193,7 +193,7 @@ func (i *FileInfo) Checksum(algo string) error {
 	case "sha512":
 		h = sha512.New()
 	default:
-		return fbErrors.ErrInvalidOption
+		return fberrors.ErrInvalidOption
 	}
 
 	_, err = io.Copy(h, reader)

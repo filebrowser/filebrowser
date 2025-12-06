@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -21,7 +21,7 @@ type ProxyAuth struct {
 func (a ProxyAuth) Auth(r *http.Request, usr users.Store, setting *settings.Settings, srv *settings.Server) (*users.User, error) {
 	username := r.Header.Get(a.Header)
 	user, err := usr.Get(srv.Root, username)
-	if errors.Is(err, fbErrors.ErrNotExist) {
+	if errors.Is(err, fberrors.ErrNotExist) {
 		return a.createUser(usr, setting, srv, username)
 	}
 	return user, err
