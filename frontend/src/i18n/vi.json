@@ -272,5 +272,10 @@
     "minutes": "Phút",
     "seconds": "Giây",
     "unit": "Đơn vị"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }
