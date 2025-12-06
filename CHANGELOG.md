@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.51.0](https://github.com/filebrowser/filebrowser/compare/v2.50.0...v2.51.0) (2025-12-06)
+
+
+### Features
+
+* update translations ([2d88c06](https://github.com/filebrowser/filebrowser/commit/2d88c067611e936056dbbf04247f1c1c709b2a09))
+
+
+### Bug Fixes
+
+* added column separator select (comma, semicolon and both) in CSV viewer ([#5604](https://github.com/filebrowser/filebrowser/issues/5604)) ([204a3f0](https://github.com/filebrowser/filebrowser/commit/204a3f0eeaa0c68781b60651bf27c4b27eac44e6))
+
+
+### Refactorings
+
+* cleanup package names ([#5605](https://github.com/filebrowser/filebrowser/issues/5605)) ([f029c30](https://github.com/filebrowser/filebrowser/commit/f029c3005e450cfbebb074c42dbdf65db9c8d56a))
+
 ## [2.50.0](https://github.com/filebrowser/filebrowser/compare/v2.49.0...v2.50.0) (2025-11-30)
 
 
