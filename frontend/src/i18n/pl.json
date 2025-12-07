@@ -44,7 +44,9 @@
     "openFile": "Otwórz plik",
     "discardChanges": "Odrzuć",
     "saveChanges": "Zapisz zmiany",
-    "editAsText": "Edytuj jako tekst"
+    "editAsText": "Edytuj jako tekst",
+    "increaseFontSize": "Zwiększ rozmiar czcionki",
+    "decreaseFontSize": "Zmniejsz rozmiar czcionki"
   },
   "download": {
     "downloadFile": "Pobierz plik",
@@ -78,7 +80,14 @@
     "sortBySize": "Sortuj wg rozmiaru",
     "noPreview": "Podgląd tego pliku jest niedostępny.",
     "csvTooLarge": "Plik CSV jest za duży do podglądu (>5 MB). Pobierz, aby wyświetlić.",
-    "csvLoadFailed": "Nie udało się załadować pliku CSV."
+    "csvLoadFailed": "Nie udało się załadować pliku CSV.",
+    "showingRows": "Wyświetlanie wierszy: {count}",
+    "columnSeparator": "Separator kolumn",
+    "csvSeparators": {
+      "comma": "Przecinek (,)",
+      "semicolon": "Średnik (;)",
+      "both": "Zarówno (,), jak i (;)"
+    }
   },
   "help": {
     "click": "zaznacz plik lub folder",
@@ -272,10 +281,5 @@
     "minutes": "Minuty",
     "seconds": "Sekundy",
     "unit": "Jednostka czasu"
-  },
-  "available_csv_separators": {
-    "comma": "Przecinek (,)",
-    "semicolon": "Średnik (;)",
-    "both": "Zarówno (,), jak i (;)"
   }
 }
