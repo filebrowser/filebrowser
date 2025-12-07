@@ -44,7 +44,9 @@
     "openFile": "打开文件",
     "discardChanges": "放弃更改",
     "saveChanges": "Save changes",
-    "editAsText": "Edit as Text"
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "下载文件",
@@ -78,7 +80,14 @@
     "sortBySize": "按大小排序",
     "noPreview": "此文件无法预览。",
     "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
-    "csvLoadFailed": "Failed to load CSV file."
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "选择文件或文件夹",
@@ -272,10 +281,5 @@
     "minutes": "分钟",
     "seconds": "秒",
     "unit": "时间单位"
-  },
-  "available_csv_separators": {
-    "comma": "Comma (,)",
-    "semicolon": "Semicolon (;)",
-    "both": "Both (,) and (;)"
   }
 }
