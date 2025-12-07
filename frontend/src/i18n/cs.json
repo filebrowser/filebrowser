@@ -44,7 +44,9 @@
     "openFile": "Otevřít soubor",
     "discardChanges": "Zrušit změny",
     "saveChanges": "Save changes",
-    "editAsText": "Edit as Text"
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "Stáhnout soubor",
@@ -78,7 +80,14 @@
     "sortBySize": "Seřadit podle velikosti",
     "noPreview": "Náhled pro tento soubor není k dispozici.",
     "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
-    "csvLoadFailed": "Failed to load CSV file."
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "vyberte soubor nebo adresář",
@@ -272,10 +281,5 @@
     "minutes": "Minuty",
     "seconds": "Sekundy",
     "unit": "Časová jednotka"
-  },
-  "available_csv_separators": {
-    "comma": "Comma (,)",
-    "semicolon": "Semicolon (;)",
-    "both": "Both (,) and (;)"
   }
 }
