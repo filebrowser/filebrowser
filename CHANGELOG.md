@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.51.2](https://github.com/filebrowser/filebrowser/compare/v2.51.1...v2.51.2) (2025-12-07)
+
+
+### Bug Fixes
+
+* **frontend:** add missing i18n strings ([c171599](https://github.com/filebrowser/filebrowser/commit/c1715992bda46517f801c1aa496df8a3b42a4e4d))
+
 ## [2.51.1](https://github.com/filebrowser/filebrowser/compare/v2.51.0...v2.51.1) (2025-12-07)
 
 
