@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.51.1](https://github.com/filebrowser/filebrowser/compare/v2.51.0...v2.51.1) (2025-12-07)
+
+
+### Bug Fixes
+
+* **frontend:** csv viewer i18n strings ([4cbb4b7](https://github.com/filebrowser/filebrowser/commit/4cbb4b73af816104475f15c1d996640b56203602))
+* prevent the right-click from selecting multiple items when the "single-click" option is active ([#5608](https://github.com/filebrowser/filebrowser/issues/5608)) ([152f830](https://github.com/filebrowser/filebrowser/commit/152f8302f7cda21bde37692b175c22c124233f45))
+
 ## [2.51.0](https://github.com/filebrowser/filebrowser/compare/v2.50.0...v2.51.0) (2025-12-06)
 
 
