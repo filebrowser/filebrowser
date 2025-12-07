@@ -28,23 +28,25 @@
       <div class="csv-footer">
         <div class="csv-info" v-if="data.rows.length > 100">
           <i class="material-icons">info</i>
-          <span>Showing {{ data.rows.length }} rows</span>
+          <span>
+            {{ $t("files.showingRows", { count: data.rows.length }) }}</span
+          >
         </div>
         <div class="column-separator">
-          <label for="columnSeparator">Column Separator</label>
+          <label for="columnSeparator">{{ $t("files.columnSeparator") }}</label>
           <select
             id="columnSeparator"
             class="input input--block"
             v-model="columnSeparator"
           >
             <option :value="[',']">
-              {{ $t("available_csv_separators.comma") }}
+              {{ $t("files.csvSeparators.comma") }}
             </option>
             <option :value="[';']">
-              {{ $t("available_csv_separators.semicolon") }}
+              {{ $t("files.csvSeparators.semicolon") }}
             </option>
             <option :value="[',', ';']">
-              {{ $t("available_csv_separators.both") }}
+              {{ $t("files.csvSeparators.both") }}
             </option>
           </select>
         </div>
