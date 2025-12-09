@@ -44,7 +44,9 @@
     "openFile": "Άνοιγμα αρχείου",
     "discardChanges": "Discard",
     "saveChanges": "Save changes",
-    "editAsText": "Edit as Text"
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "Λήψη αρχείου",
@@ -78,7 +80,14 @@
     "sortBySize": "Ταξινόμηση κατά μέγεθος",
     "noPreview": "Η προεπισκόπηση δεν είναι διαθέσιμη για αυτό το αρχείο.",
     "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
-    "csvLoadFailed": "Failed to load CSV file."
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "επιλέξτε αρχείο ή φάκελο",
@@ -272,10 +281,5 @@
     "minutes": "Λεπτά",
     "seconds": "Δευτερόλεπτα",
     "unit": "Μονάδα χρόνου"
-  },
-  "available_csv_separators": {
-    "comma": "Comma (,)",
-    "semicolon": "Semicolon (;)",
-    "both": "Both (,) and (;)"
   }
 }

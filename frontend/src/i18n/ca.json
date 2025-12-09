@@ -44,7 +44,9 @@
     "openFile": "Obrir fitxer",
     "discardChanges": "Descartar",
     "saveChanges": "Save changes",
-    "editAsText": "Edit as Text"
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "Descarregar fitxer",
@@ -78,7 +80,14 @@
     "sortBySize": "Ordenar per mida",
     "noPreview": "La vista prèvia no està disponible per a aquest fitxer.",
     "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
-    "csvLoadFailed": "Failed to load CSV file."
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "seleccionar fitxer o carpeta",
@@ -272,10 +281,5 @@
     "minutes": "Minuts",
     "seconds": "Segons",
     "unit": "Unitat"
-  },
-  "available_csv_separators": {
-    "comma": "Comma (,)",
-    "semicolon": "Semicolon (;)",
-    "both": "Both (,) and (;)"
   }
 }

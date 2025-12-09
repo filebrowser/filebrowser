@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, defineProps } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import { useFileStore } from "@/stores/file";
 import url from "@/utils/url";

@@ -44,7 +44,9 @@
     "openFile": "فتح الملف",
     "discardChanges": "إلغاء التغييرات",
     "saveChanges": "Save changes",
-    "editAsText": "Edit as Text"
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "تحميل الملف",
@@ -78,7 +80,14 @@
     "sortBySize": "الترتيب بالحجم",
     "noPreview": "لا يوجد عرض مسبق لهذا الملف.",
     "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
-    "csvLoadFailed": "Failed to load CSV file."
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "حدد الملف أو المجلد",
@@ -272,10 +281,5 @@
     "minutes": "دقائق",
     "seconds": "ثواني",
     "unit": "وحدة الوقت"
-  },
-  "available_csv_separators": {
-    "comma": "Comma (,)",
-    "semicolon": "Semicolon (;)",
-    "both": "Both (,) and (;)"
   }
 }

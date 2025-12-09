@@ -44,7 +44,9 @@
     "openFile": "Otvori datoteku",
     "discardChanges": "Odbaci",
     "saveChanges": "Spremi promjene",
-    "editAsText": "Edit as Text"
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "Preuzmi Datoteku",
@@ -78,7 +80,14 @@
     "sortBySize": "Sortiraj po veličini",
     "noPreview": "Pregled nije dostupan za ovu datoteku.",
     "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
-    "csvLoadFailed": "Failed to load CSV file."
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "odaberi datoteku ili mapu",
@@ -272,10 +281,5 @@
     "minutes": "Minute",
     "seconds": "Sekunde",
     "unit": "Jedinica vremena"
-  },
-  "available_csv_separators": {
-    "comma": "Comma (,)",
-    "semicolon": "Semicolon (;)",
-    "both": "Both (,) and (;)"
   }
 }
