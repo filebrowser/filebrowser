@@ -44,7 +44,9 @@
     "openFile": "Open file",
     "discardChanges": "Discard",
     "saveChanges": "Save changes",
-    "editAsText": "Edit as Text"
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "Bestand downloaden",
@@ -78,7 +80,14 @@
     "sortBySize": "Sorteren op grootte",
     "noPreview": "Preview is not available for this file.",
     "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
-    "csvLoadFailed": "Failed to load CSV file."
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "selecteer bestand of map",
@@ -272,10 +281,5 @@
     "minutes": "Minuten",
     "seconds": "Seconden",
     "unit": "Tijdseenheid"
-  },
-  "available_csv_separators": {
-    "comma": "Comma (,)",
-    "semicolon": "Semicolon (;)",
-    "both": "Both (,) and (;)"
   }
 }

@@ -44,7 +44,9 @@
     "openFile": "파일 열기",
     "discardChanges": "변경 사항 취소",
     "saveChanges": "변경사항 저장",
-    "editAsText": "Edit as Text"
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "파일 다운로드",
@@ -78,7 +80,14 @@
     "sortBySize": "크기순",
     "noPreview": "미리 보기가 지원되지 않는 파일 유형입니다.",
     "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
-    "csvLoadFailed": "Failed to load CSV file."
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "파일이나 디렉토리를 선택해주세요.",
@@ -272,10 +281,5 @@
     "minutes": "분",
     "seconds": "초",
     "unit": "Time Unit"
-  },
-  "available_csv_separators": {
-    "comma": "Comma (,)",
-    "semicolon": "Semicolon (;)",
-    "both": "Both (,) and (;)"
   }
 }

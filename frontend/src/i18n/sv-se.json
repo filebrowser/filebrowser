@@ -44,7 +44,9 @@
     "openFile": "Öppna fil",
     "discardChanges": "Förkasta",
     "saveChanges": "Spara ändringar",
-    "editAsText": "Edit as Text"
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "Ladda ner fil",
@@ -78,7 +80,14 @@
     "sortBySize": "Sortera på storlek",
     "noPreview": "Förhandsvisning är inte tillgänglig för denna fil.",
     "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
-    "csvLoadFailed": "Failed to load CSV file."
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "välj fil eller mapp",
@@ -272,10 +281,5 @@
     "minutes": "Minuter",
     "seconds": "Sekunder",
     "unit": "Tidsenhet"
-  },
-  "available_csv_separators": {
-    "comma": "Comma (,)",
-    "semicolon": "Semicolon (;)",
-    "both": "Both (,) and (;)"
   }
 }

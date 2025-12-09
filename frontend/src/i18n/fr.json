@@ -44,7 +44,9 @@
     "openFile": "Ouvrir le fichier",
     "discardChanges": "Annuler",
     "saveChanges": "Save changes",
-    "editAsText": "Edit as Text"
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "Télécharger le fichier",
@@ -78,7 +80,14 @@
     "sortBySize": "Trier par taille",
     "noPreview": "L'aperçu n'est pas disponible pour ce fichier.",
     "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
-    "csvLoadFailed": "Failed to load CSV file."
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "Sélectionner un fichier ou dossier",
@@ -272,10 +281,5 @@
     "minutes": "Minutes",
     "seconds": "Secondes",
     "unit": "Unité de temps"
-  },
-  "available_csv_separators": {
-    "comma": "Comma (,)",
-    "semicolon": "Semicolon (;)",
-    "both": "Both (,) and (;)"
   }
 }
