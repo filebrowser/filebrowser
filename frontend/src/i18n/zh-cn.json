@@ -80,7 +80,7 @@
     "sortBySize": "按大小排序",
     "noPreview": "此文件无法预览。",
     "csvTooLarge": "CSV文件大到无法预览(>5MB)。请下载查看。",
-    "csvLoadFailed": "Failed to load CSV file.",
+    "csvLoadFailed": "加载 CSV 文件失败。",
     "showingRows": "Showing {count} row(s)",
     "columnSeparator": "Column Separator",
     "csvSeparators": {
