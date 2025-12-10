@@ -81,7 +81,7 @@
     "noPreview": "此文件无法预览。",
     "csvTooLarge": "CSV文件大到无法预览(>5MB)。请下载查看。",
     "csvLoadFailed": "加载 CSV 文件失败。",
-    "showingRows": "Showing {count} row(s)",
+    "showingRows": "正在显示 {count} 行",
     "columnSeparator": "Column Separator",
     "csvSeparators": {
       "comma": "Comma (,)",
