@@ -43,10 +43,10 @@
     "upload": "上传",
     "openFile": "打开文件",
     "discardChanges": "放弃更改",
-    "saveChanges": "Save changes",
-    "editAsText": "Edit as Text",
-    "increaseFontSize": "Increase font size",
-    "decreaseFontSize": "Decrease font size"
+    "saveChanges": "保存更改",
+    "editAsText": "以文本形式编辑",
+    "increaseFontSize": "增大字体大小",
+    "decreaseFontSize": "减小字体大小"
   },
   "download": {
     "downloadFile": "下载文件",
@@ -79,9 +79,9 @@
     "sortByName": "按名称排序",
     "sortBySize": "按大小排序",
     "noPreview": "此文件无法预览。",
-    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
-    "csvLoadFailed": "Failed to load CSV file.",
-    "showingRows": "Showing {count} row(s)",
+    "csvTooLarge": "CSV文件大到无法预览(>5MB)。请下载查看。",
+    "csvLoadFailed": "加载 CSV 文件失败。",
+    "showingRows": "正在显示 {count} 行",
     "columnSeparator": "Column Separator",
     "csvSeparators": {
       "comma": "Comma (,)",
@@ -114,9 +114,9 @@
     "username": "用户名",
     "usernameTaken": "用户名已经被使用",
     "wrongCredentials": "用户名或密码错误",
-    "passwordTooShort": "Password must be at least {min} characters",
+    "passwordTooShort": "密码必须至少包含 {min} 个字符",
     "logout_reasons": {
-      "inactivity": "You have been logged out due to inactivity."
+      "inactivity": "由于未活动,您已登出。"
     }
   },
   "permanent": "永久",
@@ -171,7 +171,7 @@
     "video": "视频"
   },
   "settings": {
-    "aceEditorTheme": "Ace editor theme",
+    "aceEditorTheme": "Ace editor 主题",
     "admin": "管理员",
     "administrator": "管理员",
     "allowCommands": "执行命令（Shell 命令）",
@@ -179,7 +179,7 @@
     "allowNew": "创建新文件和文件夹",
     "allowPublish": "发布新的帖子与页面",
     "allowSignup": "允许用户注册",
-    "hideLoginButton": "Hide the login button from public pages",
+    "hideLoginButton": "从公开页面隐藏登录按钮",
     "avoidChanges": "（留空以避免更改）",
     "branding": "品牌",
     "brandingDirectoryPath": "品牌信息文件夹路径",
