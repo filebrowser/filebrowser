@@ -74,6 +74,12 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			return errToStatus(err), err
 		}
 
+		if file.IsDir {
+			// extract name from the last directory in the path
+			name := filepath.Base(strings.TrimRight(link.Path, string(filepath.Separator)))
+			file.Name = name
+		}
+
 		d.raw = file
 		return fn(w, r, d)
 	}
