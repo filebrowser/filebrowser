@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.52.0](https://github.com/filebrowser/filebrowser/compare/v2.51.2...v2.52.0) (2025-12-13)
+
+
+### Features
+
+* sync translations with Transifex ([7fa3432](https://github.com/filebrowser/filebrowser/commit/7fa3432f25610bbb55a718bc709b9a7bf41d92f0))
+* update translations ([#5615](https://github.com/filebrowser/filebrowser/issues/5615)) ([3fdca6d](https://github.com/filebrowser/filebrowser/commit/3fdca6dfd9a18c3f4895b4ef3cbd216824dbb57a))
+
+
+### Bug Fixes
+
+* display the directory name in the shared folder view ([#5617](https://github.com/filebrowser/filebrowser/issues/5617)) ([6d4c867](https://github.com/filebrowser/filebrowser/commit/6d4c86767239dad4f09f30f48678f2f3a716eb12))
+* hide the context menu when changing the route ([#5613](https://github.com/filebrowser/filebrowser/issues/5613)) ([cf96657](https://github.com/filebrowser/filebrowser/commit/cf966578d8c6beab111b74f495bac6bdec173f41))
+
 ## [2.51.2](https://github.com/filebrowser/filebrowser/compare/v2.51.1...v2.51.2) (2025-12-07)
 
 
