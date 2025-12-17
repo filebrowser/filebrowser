@@ -45,8 +45,8 @@
     "discardChanges": "Odbaci",
     "saveChanges": "Spremi promjene",
     "editAsText": "Uredi kao tekst",
-    "increaseFontSize": "Increase font size",
-    "decreaseFontSize": "Decrease font size"
+    "increaseFontSize": "Povećaj veličinu fonta",
+    "decreaseFontSize": "Smanji veličinu fonta"
   },
   "download": {
     "downloadFile": "Preuzmi Datoteku",
