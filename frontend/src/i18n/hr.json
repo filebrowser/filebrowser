@@ -82,7 +82,7 @@
     "csvTooLarge": "CSV datoteka je prevelika za pregled (>5MB). Molimo preuzmite da bi ste ju pregledali.",
     "csvLoadFailed": "Neuspješno učitavanje CSV datoteke.",
     "showingRows": "Prikazuje se {count} red(ova)",
-    "columnSeparator": "Column Separator",
+    "columnSeparator": "Separator stupaca",
     "csvSeparators": {
       "comma": "Zarez (,)",
       "semicolon": "Točka zarez (;)",
