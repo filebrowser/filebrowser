@@ -81,7 +81,7 @@
     "noPreview": "Pregled nije dostupan za ovu datoteku.",
     "csvTooLarge": "CSV datoteka je prevelika za pregled (>5MB). Molimo preuzmite da bi ste ju pregledali.",
     "csvLoadFailed": "Neuspješno učitavanje CSV datoteke.",
-    "showingRows": "Showing {count} row(s)",
+    "showingRows": "Prikazuje se {count} red(ova)",
     "columnSeparator": "Column Separator",
     "csvSeparators": {
       "comma": "Comma (,)",
