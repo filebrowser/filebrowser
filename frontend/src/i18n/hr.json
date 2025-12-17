@@ -80,7 +80,7 @@
     "sortBySize": "Sortiraj po veličini",
     "noPreview": "Pregled nije dostupan za ovu datoteku.",
     "csvTooLarge": "CSV datoteka je prevelika za pregled (>5MB). Molimo preuzmite da bi ste ju pregledali.",
-    "csvLoadFailed": "Failed to load CSV file.",
+    "csvLoadFailed": "Neuspješno učitavanje CSV datoteke.",
     "showingRows": "Showing {count} row(s)",
     "columnSeparator": "Column Separator",
     "csvSeparators": {
