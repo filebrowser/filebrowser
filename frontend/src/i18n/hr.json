@@ -84,7 +84,7 @@
     "showingRows": "Prikazuje se {count} red(ova)",
     "columnSeparator": "Column Separator",
     "csvSeparators": {
-      "comma": "Comma (,)",
+      "comma": "Zarez (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
     }
