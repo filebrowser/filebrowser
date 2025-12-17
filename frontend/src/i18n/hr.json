@@ -86,7 +86,7 @@
     "csvSeparators": {
       "comma": "Zarez (,)",
       "semicolon": "Točka zarez (;)",
-      "both": "Both (,) and (;)"
+      "both": "I (,) i (;)"
     }
   },
   "help": {
