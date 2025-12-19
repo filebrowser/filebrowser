@@ -81,7 +81,7 @@
     "noPreview": "Предварительный просмотр для этого файла недоступен.",
     "csvTooLarge": "Этот CSV файл слишком большой для предпросмотра (>5 МБ). Скачайте и откройте его локально.",
     "csvLoadFailed": "Не удалось загрузить этот CSV.",
-    "showingRows": "Showing {count} row(s)",
+    "showingRows": "Отображается {count} строк(а)",
     "columnSeparator": "Column Separator",
     "csvSeparators": {
       "comma": "Comma (,)",
