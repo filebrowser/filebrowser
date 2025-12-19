@@ -84,7 +84,7 @@
     "showingRows": "Отображается {count} строк(а)",
     "columnSeparator": "Разделитель столбцов",
     "csvSeparators": {
-      "comma": "Comma (,)",
+      "comma": "Запятая (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
     }
