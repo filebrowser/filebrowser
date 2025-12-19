@@ -82,7 +82,7 @@
     "csvTooLarge": "Этот CSV файл слишком большой для предпросмотра (>5 МБ). Скачайте и откройте его локально.",
     "csvLoadFailed": "Не удалось загрузить этот CSV.",
     "showingRows": "Отображается {count} строк(а)",
-    "columnSeparator": "Column Separator",
+    "columnSeparator": "Разделитель столбцов",
     "csvSeparators": {
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
