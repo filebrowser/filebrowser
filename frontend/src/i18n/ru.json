@@ -86,7 +86,7 @@
     "csvSeparators": {
       "comma": "Запятая (,)",
       "semicolon": "Точка с запятой (;)",
-      "both": "Both (,) and (;)"
+      "both": "(,) и (;) одновременно"
     }
   },
   "help": {
