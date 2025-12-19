@@ -114,7 +114,7 @@
     "username": "Имя пользователя",
     "usernameTaken": "Данное имя пользователя уже занято",
     "wrongCredentials": "Неверные данные",
-    "passwordTooShort": "Password must be at least {min} characters",
+    "passwordTooShort": "Пароль должен состоять как минимум из {min} символов",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
