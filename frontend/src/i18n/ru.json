@@ -116,7 +116,7 @@
     "wrongCredentials": "Неверные данные",
     "passwordTooShort": "Пароль должен состоять как минимум из {min} символов",
     "logout_reasons": {
-      "inactivity": "You have been logged out due to inactivity."
+      "inactivity": "Сессия завершена после долгого отсутствия."
     }
   },
   "permanent": "Постоянный",
