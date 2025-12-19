@@ -85,7 +85,7 @@
     "columnSeparator": "Разделитель столбцов",
     "csvSeparators": {
       "comma": "Запятая (,)",
-      "semicolon": "Semicolon (;)",
+      "semicolon": "Точка с запятой (;)",
       "both": "Both (,) and (;)"
     }
   },
