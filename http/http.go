@@ -11,9 +11,9 @@ import (
 )
 
 type modifyRequest struct {
-	What             string   `json:"what"`             // Answer to: what data type?
-	Which            []string `json:"which"`            // Answer to: which fields?
-	Current_Password string   `json:"current_password"` // Answer to: user logged password
+	What            string   `json:"what"`             // Answer to: what data type?
+	Which           []string `json:"which"`            // Answer to: which fields?
+	CurrentPassword string   `json:"current_password"` // Answer to: user logged password
 }
 
 func NewHandler(

@@ -119,7 +119,7 @@ var userPostHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *
 	}
 
 	if d.settings.AuthMethod == auth.MethodJSONAuth {
-		if !users.CheckPwd(req.modifyRequest.Current_Password, d.user.Password) {
+		if !users.CheckPwd(req.CurrentPassword, d.user.Password) {
 			return http.StatusBadRequest, fberrors.ErrCurrentPasswordIncorrect
 		}
 	}
@@ -171,9 +171,9 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 			"perm":         {},
 		}
 
-		for _, field := range req.modifyRequest.Which {
+		for _, field := range req.Which {
 			if _, ok := sensibleFields[field]; ok {
-				if !users.CheckPwd(req.modifyRequest.Current_Password, d.user.Password) {
+				if !users.CheckPwd(req.CurrentPassword, d.user.Password) {
 					return http.StatusBadRequest, fberrors.ErrCurrentPasswordIncorrect
 				}
 				break
