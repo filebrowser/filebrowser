@@ -5,6 +5,7 @@ interface ISettings {
   minimumPasswordLength: number;
   userHomeBasePath: string;
   defaults: SettingsDefaults;
+  authMethod: string;
   rules: any[];
   branding: SettingsBranding;
   tus: SettingsTus;

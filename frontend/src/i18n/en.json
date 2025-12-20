@@ -257,7 +257,8 @@
     "userManagement": "User Management",
     "userUpdated": "User updated!",
     "username": "Username",
-    "users": "Users"
+    "users": "Users",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Help",
