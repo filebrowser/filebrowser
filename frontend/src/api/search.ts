@@ -19,21 +19,39 @@ export default async function search(
     throw new StatusError("000 No connection", 0);
   }
   try {
-    const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
-    let buffer = "";
-    while (true) {
-      const { done, value } = await reader.read();
-      if (value) {
-        buffer += value;
-      }
-      const lines = buffer.split(/\n/);
-      let lastLine = lines.pop();
-      // Save incomplete last line
-      if (!lastLine) {
-        lastLine = "";
-      }
-      buffer = lastLine;
+    // Try streaming approach first (modern browsers)
+    if (res.body && typeof res.body.pipeThrough === "function") {
+      const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+      let buffer = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (value) {
+          buffer += value;
+        }
+        const lines = buffer.split(/\n/);
+        let lastLine = lines.pop();
+        // Save incomplete last line
+        if (!lastLine) {
+          lastLine = "";
+        }
+        buffer = lastLine;
 
+        for (const line of lines) {
+          if (line) {
+            const item = JSON.parse(line) as ResourceItem;
+            item.url = `/files${base}` + url.encodePath(item.path);
+            if (item.isDir) {
+              item.url += "/";
+            }
+            callback(item);
+          }
+        }
+        if (done) break;
+      }
+    } else {
+      // Fallback for browsers without streaming support (e.g., Safari)
+      const text = await res.text();
+      const lines = text.split(/\n/);
       for (const line of lines) {
         if (line) {
           const item = JSON.parse(line) as ResourceItem;
@@ -44,7 +62,6 @@ export default async function search(
           callback(item);
         }
       }
-      if (done) break;
     }
   } catch (e) {
     // Check if the error is an intentional cancellation
