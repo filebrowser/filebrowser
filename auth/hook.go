@@ -8,9 +8,10 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"slices"
 	"strings"
 
-	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -102,7 +103,7 @@ func (a *HookAuth) RunCommand() (string, error) {
 		command[i] = os.Expand(arg, envMapping)
 	}
 
-	cmd := exec.Command(command[0], command[1:]...) //nolint:gosec
+	cmd := exec.Command(command[0], command[1:]...)
 	cmd.Env = append(os.Environ(), fmt.Sprintf("USERNAME=%s", a.Cred.Username))
 	cmd.Env = append(cmd.Env, fmt.Sprintf("PASSWORD=%s", a.Cred.Password))
 	out, err := cmd.Output()
@@ -123,7 +124,7 @@ func (a *HookAuth) GetValues(s string) {
 	s = strings.ReplaceAll(s, "\r\n", "\n")
 
 	// iterate input lines
-	for _, val := range strings.Split(s, "\n") {
+	for val := range strings.Lines(s) {
 		v := strings.SplitN(val, "=", 2)
 
 		// skips non key and value format
@@ -145,12 +146,12 @@ func (a *HookAuth) GetValues(s string) {
 // SaveUser updates the existing user or creates a new one when not found
 func (a *HookAuth) SaveUser() (*users.User, error) {
 	u, err := a.Users.Get(a.Server.Root, a.Cred.Username)
-	if err != nil && !errors.Is(err, fbErrors.ErrNotExist) {
+	if err != nil && !errors.Is(err, fberrors.ErrNotExist) {
 		return nil, err
 	}
 
 	if u == nil {
-		pass, err := users.HashPwd(a.Cred.Password)
+		pass, err := users.ValidateAndHashPwd(a.Cred.Password, a.Settings.MinimumPasswordLength)
 		if err != nil {
 			return nil, err
 		}
@@ -186,7 +187,7 @@ func (a *HookAuth) SaveUser() (*users.User, error) {
 
 		// update the password when it doesn't match the current
 		if p {
-			pass, err := users.HashPwd(a.Cred.Password)
+			pass, err := users.ValidateAndHashPwd(a.Cred.Password, a.Settings.MinimumPasswordLength)
 			if err != nil {
 				return nil, err
 			}
@@ -266,13 +267,7 @@ var validHookFields = []string{
 
 // IsValid checks if the provided field is on the valid fields list
 func (hf *hookFields) IsValid(field string) bool {
-	for _, val := range validHookFields {
-		if field == val {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(validHookFields, field)
 }
 
 // GetString returns the string value or provided default

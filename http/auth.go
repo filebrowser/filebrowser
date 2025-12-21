@@ -1,4 +1,4 @@
-package http
+package fbhttp
 
 import (
 	"encoding/json"
@@ -9,10 +9,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
-	"github.com/golang-jwt/jwt/v4/request"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v5/request"
 
-	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
+	fbAuth "github.com/filebrowser/filebrowser/v2/auth"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
+	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
 
@@ -21,15 +23,17 @@ const (
 )
 
 type userInfo struct {
-	ID           uint              `json:"id"`
-	Locale       string            `json:"locale"`
-	ViewMode     users.ViewMode    `json:"viewMode"`
-	SingleClick  bool              `json:"singleClick"`
-	Perm         users.Permissions `json:"perm"`
-	Commands     []string          `json:"commands"`
-	LockPassword bool              `json:"lockPassword"`
-	HideDotfiles bool              `json:"hideDotfiles"`
-	DateFormat   bool              `json:"dateFormat"`
+	ID             uint              `json:"id"`
+	Locale         string            `json:"locale"`
+	ViewMode       users.ViewMode    `json:"viewMode"`
+	SingleClick    bool              `json:"singleClick"`
+	Perm           users.Permissions `json:"perm"`
+	Commands       []string          `json:"commands"`
+	LockPassword   bool              `json:"lockPassword"`
+	HideDotfiles   bool              `json:"hideDotfiles"`
+	DateFormat     bool              `json:"dateFormat"`
+	Username       string            `json:"username"`
+	AceEditorTheme string            `json:"aceEditorTheme"`
 }
 
 type authToken struct {
@@ -49,11 +53,6 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 		return token, nil
 	}
 
-	auth := r.URL.Query().Get("auth")
-	if auth != "" && strings.Count(auth, ".") == 2 {
-		return auth, nil
-	}
-
 	if r.Method == http.MethodGet {
 		cookie, _ := r.Cookie("auth")
 		if cookie != nil && strings.Count(cookie.Value, ".") == 2 {
@@ -64,6 +63,22 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 	return "", request.ErrNoTokenInRequest
 }
 
+func renewableErr(err error, d *data) bool {
+	if d.settings.AuthMethod != fbAuth.MethodProxyAuth || err == nil {
+		return false
+	}
+
+	if d.settings.LogoutPage == settings.DefaultLogoutPage {
+		return false
+	}
+
+	if !errors.Is(err, jwt.ErrTokenExpired) {
+		return false
+	}
+
+	return true
+}
+
 func withUser(fn handleFunc) handleFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		keyFunc := func(_ *jwt.Token) (interface{}, error) {
@@ -71,16 +86,16 @@ func withUser(fn handleFunc) handleFunc {
 		}
 
 		var tk authToken
-		token, err := request.ParseFromRequest(r, &extractor{}, keyFunc, request.WithClaims(&tk))
-
-		if err != nil || !token.Valid {
+		p := jwt.NewParser(jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}), jwt.WithExpirationRequired())
+		token, err := request.ParseFromRequest(r, &extractor{}, keyFunc, request.WithClaims(&tk), request.WithParser(p))
+		if (err != nil || !token.Valid) && !renewableErr(err, d) {
 			return http.StatusUnauthorized, nil
 		}
 
-		expired := !tk.VerifyExpiresAt(time.Now().Add(time.Hour), true)
+		expiresSoon := tk.ExpiresAt != nil && time.Until(tk.ExpiresAt.Time) < time.Hour
 		updated := tk.IssuedAt != nil && tk.IssuedAt.Unix() < d.store.Users.LastUpdate(tk.User.ID)
 
-		if expired || updated {
+		if expiresSoon || updated {
 			w.Header().Add("X-Renew-Token", "true")
 		}
 
@@ -151,12 +166,15 @@ var signupHandler = func(_ http.ResponseWriter, r *http.Request, d *data) (int, 
 
 	d.settings.Defaults.Apply(user)
 
-	pwd, err := users.HashPwd(info.Password)
+	pwd, err := users.ValidateAndHashPwd(info.Password, d.settings.MinimumPasswordLength)
 	if err != nil {
-		return http.StatusInternalServerError, err
+		return http.StatusBadRequest, err
 	}
 
 	user.Password = pwd
+	if d.settings.CreateUserDir {
+		user.Scope = ""
+	}
 
 	userHome, err := d.settings.MakeUserDir(user.Username, user.Scope, d.server.Root)
 	if err != nil {
@@ -167,7 +185,7 @@ var signupHandler = func(_ http.ResponseWriter, r *http.Request, d *data) (int, 
 	log.Printf("new user: %s, home dir: [%s].", user.Username, userHome)
 
 	err = d.store.Users.Save(user)
-	if errors.Is(err, fbErrors.ErrExist) {
+	if errors.Is(err, fberrors.ErrExist) {
 		return http.StatusConflict, err
 	} else if err != nil {
 		return http.StatusInternalServerError, err
@@ -186,15 +204,17 @@ func renewHandler(tokenExpireTime time.Duration) handleFunc {
 func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.User, tokenExpirationTime time.Duration) (int, error) {
 	claims := &authToken{
 		User: userInfo{
-			ID:           user.ID,
-			Locale:       user.Locale,
-			ViewMode:     user.ViewMode,
-			SingleClick:  user.SingleClick,
-			Perm:         user.Perm,
-			LockPassword: user.LockPassword,
-			Commands:     user.Commands,
-			HideDotfiles: user.HideDotfiles,
-			DateFormat:   user.DateFormat,
+			ID:             user.ID,
+			Locale:         user.Locale,
+			ViewMode:       user.ViewMode,
+			SingleClick:    user.SingleClick,
+			Perm:           user.Perm,
+			LockPassword:   user.LockPassword,
+			Commands:       user.Commands,
+			HideDotfiles:   user.HideDotfiles,
+			DateFormat:     user.DateFormat,
+			Username:       user.Username,
+			AceEditorTheme: user.AceEditorTheme,
 		},
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

@@ -60,7 +60,7 @@ func (r *Runner) exec(raw, evt, path, dst string, user *users.User) error {
 		raw = strings.TrimSpace(strings.TrimSuffix(raw, "&"))
 	}
 
-	command, err := ParseCommand(r.Settings, raw)
+	command, _, err := ParseCommand(r.Settings, raw)
 	if err != nil {
 		return err
 	}
@@ -89,9 +89,9 @@ func (r *Runner) exec(raw, evt, path, dst string, user *users.User) error {
 		command[i] = os.Expand(arg, envMapping)
 	}
 
-	cmd := exec.Command(command[0], command[1:]...) //nolint:gosec
+	cmd := exec.Command(command[0], command[1:]...)
 	cmd.Env = append(os.Environ(), fmt.Sprintf("FILE=%s", path))
-	cmd.Env = append(cmd.Env, fmt.Sprintf("SCOPE=%s", user.Scope)) //nolint:gocritic
+	cmd.Env = append(cmd.Env, fmt.Sprintf("SCOPE=%s", user.Scope))
 	cmd.Env = append(cmd.Env, fmt.Sprintf("TRIGGER=%s", evt))
 	cmd.Env = append(cmd.Env, fmt.Sprintf("USERNAME=%s", user.Username))
 	cmd.Env = append(cmd.Env, fmt.Sprintf("DESTINATION=%s", dst))

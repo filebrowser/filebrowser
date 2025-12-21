@@ -1,5 +1,5 @@
 //go:generate go-enum --sql --marshal --names --file $GOFILE
-package http
+package fbhttp
 
 import (
 	"bytes"
@@ -124,12 +124,12 @@ func createPreview(imgSvc ImgService, fileCache FileCache,
 		options []img.Option
 	)
 
-	switch {
-	case previewSize == PreviewSizeBig:
+	switch previewSize {
+	case PreviewSizeBig:
 		width = 1080
 		height = 1080
 		options = append(options, img.WithMode(img.ResizeModeFit), img.WithQuality(img.QualityMedium))
-	case previewSize == PreviewSizeThumb:
+	case PreviewSizeThumb:
 		width = 256
 		height = 256
 		options = append(options, img.WithMode(img.ResizeModeFill), img.WithQuality(img.QualityLow), img.WithFormat(img.FormatJpeg))

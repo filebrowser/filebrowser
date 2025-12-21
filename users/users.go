@@ -2,11 +2,10 @@ package users
 
 import (
 	"path/filepath"
-	"regexp"
 
 	"github.com/spf13/afero"
 
-	"github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/rules"
 )
@@ -21,21 +20,22 @@ const (
 
 // User describes a user.
 type User struct {
-	ID           uint          `storm:"id,increment" json:"id"`
-	Username     string        `storm:"unique" json:"username"`
-	Password     string        `json:"password"`
-	Scope        string        `json:"scope"`
-	Locale       string        `json:"locale"`
-	LockPassword bool          `json:"lockPassword"`
-	ViewMode     ViewMode      `json:"viewMode"`
-	SingleClick  bool          `json:"singleClick"`
-	Perm         Permissions   `json:"perm"`
-	Commands     []string      `json:"commands"`
-	Sorting      files.Sorting `json:"sorting"`
-	Fs           afero.Fs      `json:"-" yaml:"-"`
-	Rules        []rules.Rule  `json:"rules"`
-	HideDotfiles bool          `json:"hideDotfiles"`
-	DateFormat   bool          `json:"dateFormat"`
+	ID             uint          `storm:"id,increment" json:"id"`
+	Username       string        `storm:"unique" json:"username"`
+	Password       string        `json:"password"`
+	Scope          string        `json:"scope"`
+	Locale         string        `json:"locale"`
+	LockPassword   bool          `json:"lockPassword"`
+	ViewMode       ViewMode      `json:"viewMode"`
+	SingleClick    bool          `json:"singleClick"`
+	Perm           Permissions   `json:"perm"`
+	Commands       []string      `json:"commands"`
+	Sorting        files.Sorting `json:"sorting"`
+	Fs             afero.Fs      `json:"-" yaml:"-"`
+	Rules          []rules.Rule  `json:"rules"`
+	HideDotfiles   bool          `json:"hideDotfiles"`
+	DateFormat     bool          `json:"dateFormat"`
+	AceEditorTheme string        `json:"aceEditorTheme"`
 }
 
 // GetRules implements rules.Provider.
@@ -55,8 +55,6 @@ var checkableFields = []string{
 
 // Clean cleans up a user and verifies if all its fields
 // are alright to be saved.
-//
-//nolint:gocyclo
 func (u *User) Clean(baseScope string, fields ...string) error {
 	if len(fields) == 0 {
 		fields = checkableFields
@@ -66,11 +64,11 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 		switch field {
 		case "Username":
 			if u.Username == "" {
-				return errors.ErrEmptyUsername
+				return fberrors.ErrEmptyUsername
 			}
 		case "Password":
 			if u.Password == "" {
-				return errors.ErrEmptyPassword
+				return fberrors.ErrEmptyPassword
 			}
 		case "ViewMode":
 			if u.ViewMode == "" {
@@ -93,7 +91,7 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 
 	if u.Fs == nil {
 		scope := u.Scope
-		scope = filepath.Join(baseScope, filepath.Join("/", scope)) //nolint:gocritic
+		scope = filepath.Join(baseScope, filepath.Join("/", scope))
 		u.Fs = afero.NewBasePathFs(afero.NewOsFs(), scope)
 	}
 
@@ -103,19 +101,4 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 // FullPath gets the full path for a user's relative path.
 func (u *User) FullPath(path string) string {
 	return afero.FullBaseFsPath(u.Fs.(*afero.BasePathFs), path)
-}
-
-// CanExecute checks if an user can execute a specific command.
-func (u *User) CanExecute(command string) bool {
-	if !u.Perm.Execute {
-		return false
-	}
-
-	for _, cmd := range u.Commands {
-		if regexp.MustCompile(cmd).MatchString(command) {
-			return true
-		}
-	}
-
-	return false
 }

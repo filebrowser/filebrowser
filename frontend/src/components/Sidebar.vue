@@ -2,6 +2,10 @@
   <div v-show="active" @click="closeHovers" class="overlay"></div>
   <nav :class="{ active }">
     <template v-if="isLoggedIn">
+      <button @click="toAccountSettings" class="action">
+        <i class="material-icons">person</i>
+        <span>{{ user.username }}</span>
+      </button>
       <button
         class="action"
         @click="toRoot"
@@ -34,32 +38,32 @@
         </button>
       </div>
 
-      <div>
+      <div v-if="user.perm.admin">
         <button
           class="action"
-          @click="toSettings"
+          @click="toGlobalSettings"
           :aria-label="$t('sidebar.settings')"
           :title="$t('sidebar.settings')"
         >
           <i class="material-icons">settings_applications</i>
           <span>{{ $t("sidebar.settings") }}</span>
         </button>
-
-        <button
-          v-if="canLogout"
-          @click="logout"
-          class="action"
-          id="logout"
-          :aria-label="$t('sidebar.logout')"
-          :title="$t('sidebar.logout')"
-        >
-          <i class="material-icons">exit_to_app</i>
-          <span>{{ $t("sidebar.logout") }}</span>
-        </button>
       </div>
+      <button
+        v-if="canLogout"
+        @click="logout"
+        class="action"
+        id="logout"
+        :aria-label="$t('sidebar.logout')"
+        :title="$t('sidebar.logout')"
+      >
+        <i class="material-icons">exit_to_app</i>
+        <span>{{ $t("sidebar.logout") }}</span>
+      </button>
     </template>
     <template v-else>
       <router-link
+        v-if="!hideLoginButton"
         class="action"
         to="/login"
         :aria-label="$t('sidebar.login')"
@@ -121,15 +125,16 @@ import * as auth from "@/utils/auth";
 import {
   version,
   signup,
+  hideLoginButton,
   disableExternal,
   disableUsedPercentage,
   noAuth,
+  logoutPage,
   loginPage,
 } from "@/utils/constants";
 import { files as api } from "@/api";
 import ProgressBar from "@/components/ProgressBar.vue";
 import prettyBytes from "pretty-bytes";
-import { StatusError } from "@/api/utils.js";
 
 const USAGE_DEFAULT = { used: "0 B", total: "0 B", usedPercentage: 0 };
 
@@ -151,10 +156,11 @@ export default {
       return this.currentPromptName === "sidebar";
     },
     signup: () => signup,
+    hideLoginButton: () => hideLoginButton,
     version: () => version,
     disableExternal: () => disableExternal,
     disableUsedPercentage: () => disableUsedPercentage,
-    canLogout: () => !noAuth && loginPage,
+    canLogout: () => !noAuth && (loginPage || logoutPage !== "/login"),
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),
@@ -178,20 +184,20 @@ export default {
           total: prettyBytes(usage.total, { binary: true }),
           usedPercentage: Math.round((usage.used / usage.total) * 100),
         };
-      } catch (error) {
-        if (error instanceof StatusError && error.is_canceled) {
-          return;
-        }
-        this.$showError(error);
+      } finally {
+        return Object.assign(this.usage, usageStats);
       }
-      return Object.assign(this.usage, usageStats);
     },
     toRoot() {
       this.$router.push({ path: "/files" });
       this.closeHovers();
     },
-    toSettings() {
-      this.$router.push({ path: "/settings" });
+    toAccountSettings() {
+      this.$router.push({ path: "/settings/profile" });
+      this.closeHovers();
+    },
+    toGlobalSettings() {
+      this.$router.push({ path: "/settings/global" });
       this.closeHovers();
     },
     help() {

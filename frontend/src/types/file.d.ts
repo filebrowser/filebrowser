@@ -29,6 +29,7 @@ interface ResourceItem extends ResourceBase {
 }
 
 type ResourceType =
+  | "dir"
   | "video"
   | "audio"
   | "image"

@@ -1,10 +1,12 @@
-package http
+package fbhttp
 
 import (
 	"context"
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -12,10 +14,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/shirou/gopsutil/v3/disk"
+	"github.com/shirou/gopsutil/v4/disk"
 	"github.com/spf13/afero"
 
-	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
 )
@@ -35,14 +37,14 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 	}
 
 	if file.IsDir {
-		file.Listing.Sorting = d.user.Sorting
-		file.Listing.ApplySort()
+		file.Sorting = d.user.Sorting
+		file.ApplySort()
 		return renderJSON(w, r, file)
 	}
 
 	if checksum := r.URL.Query().Get("checksum"); checksum != "" {
 		err := file.Checksum(checksum)
-		if errors.Is(err, fbErrors.ErrInvalidOption) {
+		if errors.Is(err, fberrors.ErrInvalidOption) {
 			return http.StatusBadRequest, nil
 		} else if err != nil {
 			return http.StatusInternalServerError, err
@@ -73,6 +75,11 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			return errToStatus(err), err
 		}
 
+		err = d.store.Share.DeleteWithPathPrefix(file.Path)
+		if err != nil {
+			log.Printf("WARNING: Error(s) occurred while deleting associated shares with file: %s", err)
+		}
+
 		// delete thumbnails
 		err = delThumbs(r.Context(), fileCache, file)
 		if err != nil {
@@ -99,7 +106,7 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 
 		// Directories creation on POST.
 		if strings.HasSuffix(r.URL.Path, "/") {
-			err := d.user.Fs.MkdirAll(r.URL.Path, files.PermDir)
+			err := d.user.Fs.MkdirAll(r.URL.Path, d.settings.DirMode)
 			return errToStatus(err), err
 		}
 
@@ -128,7 +135,7 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 		}
 
 		err = d.RunHook(func() error {
-			info, writeErr := writeFile(d.user.Fs, r.URL.Path, r.Body)
+			info, writeErr := writeFile(d.user.Fs, r.URL.Path, r.Body, d.settings.FileMode, d.settings.DirMode)
 			if writeErr != nil {
 				return writeErr
 			}
@@ -165,7 +172,7 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 	}
 
 	err = d.RunHook(func() error {
-		info, writeErr := writeFile(d.user.Fs, r.URL.Path, r.Body)
+		info, writeErr := writeFile(d.user.Fs, r.URL.Path, r.Body, d.settings.FileMode, d.settings.DirMode)
 		if writeErr != nil {
 			return writeErr
 		}
@@ -231,20 +238,20 @@ func checkParent(src, dst string) error {
 
 	rel = filepath.ToSlash(rel)
 	if !strings.HasPrefix(rel, "../") && rel != ".." && rel != "." {
-		return fbErrors.ErrSourceIsParent
+		return fberrors.ErrSourceIsParent
 	}
 
 	return nil
 }
 
-func addVersionSuffix(source string, fs afero.Fs) string {
+func addVersionSuffix(source string, afs afero.Fs) string {
 	counter := 1
 	dir, name := path.Split(source)
 	ext := filepath.Ext(name)
 	base := strings.TrimSuffix(name, ext)
 
 	for {
-		if _, err := fs.Stat(source); err != nil {
+		if _, err := afs.Stat(source); err != nil {
 			break
 		}
 		renamed := fmt.Sprintf("%s(%d)%s", base, counter, ext)
@@ -255,14 +262,14 @@ func addVersionSuffix(source string, fs afero.Fs) string {
 	return source
 }
 
-func writeFile(fs afero.Fs, dst string, in io.Reader) (os.FileInfo, error) {
+func writeFile(afs afero.Fs, dst string, in io.Reader, fileMode, dirMode fs.FileMode) (os.FileInfo, error) {
 	dir, _ := path.Split(dst)
-	err := fs.MkdirAll(dir, files.PermDir)
+	err := afs.MkdirAll(dir, dirMode)
 	if err != nil {
 		return nil, err
 	}
 
-	file, err := fs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, files.PermFile)
+	file, err := afs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, fileMode)
 	if err != nil {
 		return nil, err
 	}
@@ -297,13 +304,13 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 	switch action {
 	case "copy":
 		if !d.user.Perm.Create {
-			return fbErrors.ErrPermissionDenied
+			return fberrors.ErrPermissionDenied
 		}
 
-		return fileutils.Copy(d.user.Fs, src, dst)
+		return fileutils.Copy(d.user.Fs, src, dst, d.settings.FileMode, d.settings.DirMode)
 	case "rename":
 		if !d.user.Perm.Rename {
-			return fbErrors.ErrPermissionDenied
+			return fberrors.ErrPermissionDenied
 		}
 		src = path.Clean("/" + src)
 		dst = path.Clean("/" + dst)
@@ -326,9 +333,9 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 			return err
 		}
 
-		return fileutils.MoveFile(d.user.Fs, src, dst)
+		return fileutils.MoveFile(d.user.Fs, src, dst, d.settings.FileMode, d.settings.DirMode)
 	default:
-		return fmt.Errorf("unsupported action %s: %w", action, fbErrors.ErrInvalidRequestParams)
+		return fmt.Errorf("unsupported action %s: %w", action, fberrors.ErrInvalidRequestParams)
 	}
 }
 

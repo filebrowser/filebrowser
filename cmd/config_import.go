@@ -34,61 +34,89 @@ database.
 
 The path must be for a json or yaml file.`,
 	Args: jsonYamlArg,
-	Run: python(func(_ *cobra.Command, args []string, d pythonData) {
+	RunE: withStore(func(_ *cobra.Command, args []string, st *store) error {
 		var key []byte
-		if d.hadDB {
-			settings, err := d.store.Settings.Get()
-			checkErr(err)
+		var err error
+		if st.databaseExisted {
+			settings, settingErr := st.Settings.Get()
+			if settingErr != nil {
+				return settingErr
+			}
 			key = settings.Key
 		} else {
 			key = generateKey()
 		}
 
 		file := settingsFile{}
-		err := unmarshal(args[0], &file)
-		checkErr(err)
+		err = unmarshal(args[0], &file)
+		if err != nil {
+			return err
+		}
 
 		file.Settings.Key = key
-		err = d.store.Settings.Save(file.Settings)
-		checkErr(err)
+		err = st.Settings.Save(file.Settings)
+		if err != nil {
+			return err
+		}
 
-		err = d.store.Settings.SaveServer(file.Server)
-		checkErr(err)
+		err = st.Settings.SaveServer(file.Server)
+		if err != nil {
+			return err
+		}
 
 		var rawAuther interface{}
-		if filepath.Ext(args[0]) != ".json" { //nolint:goconst
+		if filepath.Ext(args[0]) != ".json" {
 			rawAuther = cleanUpInterfaceMap(file.Auther.(map[interface{}]interface{}))
 		} else {
 			rawAuther = file.Auther
 		}
 
 		var auther auth.Auther
+		var autherErr error
 		switch file.Settings.AuthMethod {
 		case auth.MethodJSONAuth:
-			auther = getAuther(auth.JSONAuth{}, rawAuther).(*auth.JSONAuth)
+			var a interface{}
+			a, autherErr = getAuther(auth.JSONAuth{}, rawAuther)
+			auther = a.(*auth.JSONAuth)
 		case auth.MethodNoAuth:
-			auther = getAuther(auth.NoAuth{}, rawAuther).(*auth.NoAuth)
+			var a interface{}
+			a, autherErr = getAuther(auth.NoAuth{}, rawAuther)
+			auther = a.(*auth.NoAuth)
 		case auth.MethodProxyAuth:
-			auther = getAuther(auth.ProxyAuth{}, rawAuther).(*auth.ProxyAuth)
+			var a interface{}
+			a, autherErr = getAuther(auth.ProxyAuth{}, rawAuther)
+			auther = a.(*auth.ProxyAuth)
 		case auth.MethodHookAuth:
-			auther = getAuther(&auth.HookAuth{}, rawAuther).(*auth.HookAuth)
+			var a interface{}
+			a, autherErr = getAuther(&auth.HookAuth{}, rawAuther)
+			auther = a.(*auth.HookAuth)
 		default:
-			checkErr(errors.New("invalid auth method"))
+			return errors.New("invalid auth method")
 		}
 
-		err = d.store.Auth.Save(auther)
-		checkErr(err)
+		if autherErr != nil {
+			return autherErr
+		}
 
-		printSettings(file.Server, file.Settings, auther)
-	}, pythonConfig{allowNoDB: true}),
+		err = st.Auth.Save(auther)
+		if err != nil {
+			return err
+		}
+
+		return printSettings(file.Server, file.Settings, auther)
+	}, storeOptions{allowsNoDatabase: true}),
 }
 
-func getAuther(sample auth.Auther, data interface{}) interface{} {
+func getAuther(sample auth.Auther, data interface{}) (interface{}, error) {
 	authType := reflect.TypeOf(sample)
 	auther := reflect.New(authType).Interface()
 	bytes, err := json.Marshal(data)
-	checkErr(err)
+	if err != nil {
+		return nil, err
+	}
 	err = json.Unmarshal(bytes, &auther)
-	checkErr(err)
-	return auther
+	if err != nil {
+		return nil, err
+	}
+	return auther, nil
 }

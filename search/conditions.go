@@ -48,8 +48,8 @@ func parseSearch(value string) *searchOptions {
 	}
 
 	// removes the options from the value
-	value = strings.Replace(value, "case:insensitive", "", -1)
-	value = strings.Replace(value, "case:sensitive", "", -1)
+	value = strings.ReplaceAll(value, "case:insensitive", "")
+	value = strings.ReplaceAll(value, "case:sensitive", "")
 	value = strings.TrimSpace(value)
 
 	types := typeRegexp.FindAllStringSubmatch(value, -1)

@@ -12,7 +12,9 @@ currently being supported with security updates.
 
 ## Reporting a Vulnerability
 
-Vulnerabilities should be reported to filebrowser@googlegroups.com - which is a private, maintainer-only group. Maintainers will attempt to respond to/confirm reports within 2-3 days, but if you believe your report to be "critical" to user safety and security, please note as such in the subject. We have tens of thousands of users using our software, and take security vulnerabilities seriously.
+Vulnerabilities with critical impact should be reported on the [Security](https://github.com/filebrowser/filebrowser/security) page of this repository, which is a private way of communicating vulnerabilities to maintainers. This project is in maintenance-only mode and it can take a while until someone gets back to you.
+
+If it is not a critical vulnerability, please open an issue and we will categorize it as a security issue. By giving visibility, we can get more help from the community at fixing such issues.
 
 When reporting an issue, where possible, please provide at least:
 
@@ -21,6 +23,4 @@ When reporting an issue, where possible, please provide at least:
 * Steps to reproduce
 * Your recommended remediation(s), if any.
 
-The FileBrowser team is a volunteer-only effort, and may reach back out for clarification.
-
-> Note: Please do not open public issues for security issues, as GitHub does not provide facility for private issues, and deleting the issue makes it hard to triage/respond back to the reporter.
+The File Browser team is a volunteer-only effort, and may reach back out for clarification.

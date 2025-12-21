@@ -15,15 +15,21 @@ var configExportCmd = &cobra.Command{
 json or yaml file. This exported configuration can be changed,
 and imported again with 'config import' command.`,
 	Args: jsonYamlArg,
-	Run: python(func(_ *cobra.Command, args []string, d pythonData) {
-		settings, err := d.store.Settings.Get()
-		checkErr(err)
+	RunE: withStore(func(_ *cobra.Command, args []string, st *store) error {
+		settings, err := st.Settings.Get()
+		if err != nil {
+			return err
+		}
 
-		server, err := d.store.Settings.GetServer()
-		checkErr(err)
+		server, err := st.Settings.GetServer()
+		if err != nil {
+			return err
+		}
 
-		auther, err := d.store.Auth.Get(settings.AuthMethod)
-		checkErr(err)
+		auther, err := st.Auth.Get(settings.AuthMethod)
+		if err != nil {
+			return err
+		}
 
 		data := &settingsFile{
 			Settings: settings,
@@ -32,6 +38,9 @@ and imported again with 'config import' command.`,
 		}
 
 		err = marshal(args[0], data)
-		checkErr(err)
-	}, pythonConfig{}),
+		if err != nil {
+			return err
+		}
+		return nil
+	}, storeOptions{}),
 }

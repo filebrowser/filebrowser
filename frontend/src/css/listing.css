@@ -195,10 +195,6 @@ html[dir="rtl"] #listing {
   align-items: center;
 }
 
-#listing.list .item p.name:not(#listing.list .item.header .name) {
-  margin-right: -3em;
-}
-
 #listing.list .item .name {
   width: 50%;
 }
@@ -227,16 +223,16 @@ html[dir="rtl"] #listing {
   border-bottom: 1px solid var(--borderPrimary);
 }
 
-#listing.list .item.header > div:first-child {
-  width: 0;
+#listing.list .item.header > div {
+  width: 100%;
+}
+
+#listing.list .item.header .name {
+  margin-right: 3em;
 }
 
 #listing.list .header a {
   color: inherit;
-}
-
-#listing.list .item.header > div:first-child {
-  width: 0;
 }
 
 #listing.list .name {

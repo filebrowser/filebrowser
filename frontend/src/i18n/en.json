@@ -43,7 +43,11 @@
     "upload": "Upload",
     "openFile": "Open file",
     "discardChanges": "Discard",
-    "stopSearch": "Stop searching"
+    "stopSearch": "Stop searching",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "Download File",
@@ -75,7 +79,16 @@
     "sortByLastModified": "Sort by last modified",
     "sortByName": "Sort by name",
     "sortBySize": "Sort by size",
-    "noPreview": "Preview is not available for this file."
+    "noPreview": "Preview is not available for this file.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "select file or directory",
@@ -101,7 +114,11 @@
     "submit": "Login",
     "username": "Username",
     "usernameTaken": "Username already taken",
-    "wrongCredentials": "Wrong credentials"
+    "wrongCredentials": "Wrong credentials",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanent",
   "prompts": {
@@ -155,6 +172,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrator",
     "allowCommands": "Execute commands",
@@ -162,6 +180,7 @@
     "allowNew": "Create new files and directories",
     "allowPublish": "Publish new posts and pages",
     "allowSignup": "Allow users to signup",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(leave blank to avoid changes)",
     "branding": "Branding",
     "brandingDirectoryPath": "Branding directory path",
@@ -171,6 +190,7 @@
     "commandRunnerHelp": "Here you can set commands that are executed in the named events. You must write one per line. The environment variables {0} and {1} will be available, being {0} relative to {1}. For more information about this feature and the available environment variables, please read the {2}.",
     "commandsUpdated": "Commands updated!",
     "createUserDir": "Auto create user home dir while adding new user",
+    "minimumPasswordLength": "Minimum password length",
     "tusUploads": "Chunked Uploads",
     "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
     "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",

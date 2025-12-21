@@ -3,12 +3,17 @@
     "cancel": "Vazgeç",
     "clear": "Temizle",
     "close": "Kapat",
+    "continue": "Continue",
     "copy": "Kopyala",
     "copyFile": "Dosyayı kopyala",
     "copyToClipboard": "Panoya kopyala",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Oluştur",
     "delete": "Sil",
     "download": "İndir",
+    "file": "File",
+    "folder": "Folder",
+    "fullScreen": "Toggle full screen",
     "hideDotfiles": "Nokta dosyalarını gizle",
     "info": "Bilgi",
     "more": "Daha fazla",
@@ -19,6 +24,7 @@
     "ok": "Tamam",
     "permalink": "Kalıcı Bağlantı Alın",
     "previous": "Önceki",
+    "preview": "Preview",
     "publish": "Yayınla",
     "rename": "Yeniden anlandır",
     "replace": "Değiştir",
@@ -35,12 +41,20 @@
     "toggleSidebar": "Menüyü aç/kapat",
     "update": "Güncelle",
     "upload": "Yükle",
-    "openFile": "Dosyayı aç"
+    "openFile": "Dosyayı aç",
+    "discardChanges": "Discard",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "Dosyayı indir",
     "downloadFolder": "Klasörü indir",
     "downloadSelected": "Seçilileri indir"
+  },
+  "upload": {
+    "abortUpload": "Are you sure you wish to abort?"
   },
   "errors": {
     "forbidden": "Buna erişim izniniz yok.",
@@ -64,7 +78,16 @@
     "sortByLastModified": "Güncelleme tarihine göre sırala",
     "sortByName": "İsme göre sırala",
     "sortBySize": "Boyuta göre sırala",
-    "noPreview": "Bu dosya için önizleme aktif değil"
+    "noPreview": "Bu dosya için önizleme aktif değil",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "dosya veya klasör seçin",
@@ -90,7 +113,11 @@
     "submit": "Giriş",
     "username": "Kullanıcı adı",
     "usernameTaken": "Kullanıcı adı mevcut",
-    "wrongCredentials": "Yanlış hesap bilgileri"
+    "wrongCredentials": "Yanlış hesap bilgileri",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Kalıcı",
   "prompts": {
@@ -100,6 +127,7 @@
     "deleteMessageMultiple": "{count} dosyayı/dosyaları silmek istediğinizden emin misiniz?",
     "deleteMessageSingle": "Bu dosyayı/klasörü silmek istediğinizden emin misiniz?",
     "deleteMessageShare": "Bu paylaşımı({path}) silmek istediğinizden emin misiniz?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "Dosyaları sil",
     "displayName": "Görünen Ad:",
     "download": "Dosyaları indirŞ",
@@ -126,8 +154,11 @@
     "show": "Göster",
     "size": "Boyut",
     "upload": "Gönder",
+    "uploadFiles": "Uploading {files} files...",
     "uploadMessage": "Yüklemek için bir seçenek belirleyin.",
-    "optionalPassword": "İsteğe bağlı şifre"
+    "optionalPassword": "İsteğe bağlı şifre",
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "Görseller",
@@ -140,6 +171,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Yönetim",
     "administrator": "Yönetici",
     "allowCommands": "Komutları çalıştır",
@@ -147,6 +179,7 @@
     "allowNew": "Yeni dosyalar ve dizinler oluşturun",
     "allowPublish": "Yeni linkler ve sayfaları yayınlayın",
     "allowSignup": "Kullanıcıların kaydolmasına izin ver",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(değişiklikleri önlemek için boş bırakın)",
     "branding": "Marka",
     "brandingDirectoryPath": "Marka dizin yolu",
@@ -156,6 +189,14 @@
     "commandRunnerHelp": "Burada, adlandırılmış olaylarda yürütülen komutları ayarlayabilirsiniz. Her satıra bir tane yazmalısınız. {0} ve {1} ortam değişkenleri, {1}'ye göre {0} olacak şekilde kullanılabilir olacaktır. Bu özellik ve mevcut ortam değişkenleri hakkında daha fazla bilgi için lütfen {2}'yi okuyun.",
     "commandsUpdated": "Komutlar güncellendi!",
     "createUserDir": "Kullanıcı eklerken, kullanıcı ana dizinini otomatik oluştur",
+    "minimumPasswordLength": "Minimum password length",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
+    "userHomeBasePath": "Base path for user home directories",
+    "userScopeGenerationPlaceholder": "The scope will be auto generated",
+    "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Özel CSS",
     "defaultUserDescription": "Bu, yeni kullanıcılar için varsayılan ayarlardır.",
     "disableExternalLinks": "Harici bağlantıları devre dışı bırakın (dökümantasyon hariç)",
@@ -195,12 +236,14 @@
     "rules": "Kurallar",
     "rulesHelp": "Burada, bu belirli kullanıcı için bir dizi izin verme ve izin vermeme kuralı tanımlayabilirsiniz. Engellenen dosyalar listelerde görünmeyecek ve kullanıcı bunlara erişemeyecek. Kullanıcı erişimine göre regex ifadeleri destekliyoruz.\n",
     "scope": "Kapsam",
+    "setDateFormat": "Set exact date format",
     "settingsUpdated": "Ayarlar güncellendi!",
     "shareDuration": "Paylaşım süresi",
     "shareManagement": "Paylaşım yönetimi",
     "shareDeleted": "Paylaşım silindi!",
     "singleClick": "Dosyaları ve dizinleri açmak için tek tıklamayı kullanın",
     "themes": {
+      "default": "System default",
       "dark": "Dark",
       "light": "Light",
       "title": "Theme"

@@ -81,23 +81,31 @@ export function removePrefix(url: string): string {
   return url;
 }
 
-export function createURL(endpoint: string, params = {}, auth = true): string {
-  const authStore = useAuthStore();
-
+export function createURL(endpoint: string, searchParams = {}): string {
   let prefix = baseURL;
   if (!prefix.endsWith("/")) {
     prefix = prefix + "/";
   }
   const url = new URL(prefix + encodePath(endpoint), origin);
-
-  const searchParams: SearchParams = {
-    ...(auth && { auth: authStore.jwt }),
-    ...params,
-  };
-
-  for (const key in searchParams) {
-    url.searchParams.set(key, searchParams[key]);
-  }
+  url.search = new URLSearchParams(searchParams).toString();
 
   return url.toString();
+}
+
+export function setSafeTimeout(callback: () => void, delay: number): number {
+  const MAX_DELAY = 86_400_000;
+  let remaining = delay;
+
+  function scheduleNext(): number {
+    if (remaining <= MAX_DELAY) {
+      return window.setTimeout(callback, remaining);
+    } else {
+      return window.setTimeout(() => {
+        remaining -= MAX_DELAY;
+        scheduleNext();
+      }, MAX_DELAY);
+    }
+  }
+
+  return scheduleNext();
 }

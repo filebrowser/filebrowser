@@ -1,8 +1,8 @@
 package files
 
 import (
-	"crypto/md5"  //nolint:gosec
-	"crypto/sha1" //nolint:gosec
+	"crypto/md5"
+	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
@@ -23,12 +23,9 @@ import (
 
 	"github.com/spf13/afero"
 
-	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
 )
-
-const PermFile = 0644
-const PermDir = 0755
 
 var (
 	reSubDirs = regexp.MustCompile("(?i)^sub(s|titles)$")
@@ -86,9 +83,14 @@ func NewFileInfo(opts *FileOptions) (*FileInfo, error) {
 		return nil, err
 	}
 
+	// Do not expose the name of root directory.
+	if file.Path == "/" {
+		file.Name = ""
+	}
+
 	if opts.Expand {
 		if file.IsDir {
-			if err := file.readListing(opts.Checker, opts.ReadHeader); err != nil { //nolint:govet
+			if err := file.readListing(opts.Checker, opts.ReadHeader); err != nil {
 				return nil, err
 			}
 			return file, nil
@@ -166,7 +168,7 @@ func stat(opts *FileOptions) (*FileInfo, error) {
 // algorithm. The checksums data is saved on File object.
 func (i *FileInfo) Checksum(algo string) error {
 	if i.IsDir {
-		return fbErrors.ErrIsDirectory
+		return fberrors.ErrIsDirectory
 	}
 
 	if i.Checksums == nil {
@@ -181,7 +183,6 @@ func (i *FileInfo) Checksum(algo string) error {
 
 	var h hash.Hash
 
-	//nolint:gosec
 	switch algo {
 	case "md5":
 		h = md5.New()
@@ -192,7 +193,7 @@ func (i *FileInfo) Checksum(algo string) error {
 	case "sha512":
 		h = sha512.New()
 	default:
-		return fbErrors.ErrInvalidOption
+		return fberrors.ErrInvalidOption
 	}
 
 	_, err = io.Copy(h, reader)
@@ -217,7 +218,6 @@ func (i *FileInfo) RealPath() string {
 	return i.Path
 }
 
-//nolint:goconst
 func (i *FileInfo) detectType(modify, saveContent, readHeader bool) error {
 	if IsNamedPipe(i.Mode) {
 		i.Type = "blob"
@@ -314,7 +314,7 @@ func (i *FileInfo) readFirstBytes() []byte {
 	}
 	defer reader.Close()
 
-	buffer := make([]byte, 512) //nolint:gomnd
+	buffer := make([]byte, 512)
 	n, err := reader.Read(buffer)
 	if err != nil && !errors.Is(err, io.EOF) {
 		log.Print(err)

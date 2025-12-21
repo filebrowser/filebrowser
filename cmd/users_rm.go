@@ -15,17 +15,20 @@ var usersRmCmd = &cobra.Command{
 	Short: "Delete a user by username or id",
 	Long:  `Delete a user by username or id`,
 	Args:  cobra.ExactArgs(1),
-	Run: python(func(_ *cobra.Command, args []string, d pythonData) {
+	RunE: withStore(func(_ *cobra.Command, args []string, st *store) error {
 		username, id := parseUsernameOrID(args[0])
 		var err error
 
 		if username != "" {
-			err = d.store.Users.Delete(username)
+			err = st.Users.Delete(username)
 		} else {
-			err = d.store.Users.Delete(id)
+			err = st.Users.Delete(id)
 		}
 
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		fmt.Println("user deleted successfully")
-	}, pythonConfig{}),
+		return nil
+	}, storeOptions{}),
 }

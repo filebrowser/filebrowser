@@ -41,6 +41,7 @@ export const useLayoutStore = defineStore("layout", {
           prompt: value,
           confirm: null,
           action: undefined,
+          saveAction: undefined,
           props: null,
           close: null,
         });
@@ -51,6 +52,7 @@ export const useLayoutStore = defineStore("layout", {
         prompt: value.prompt,
         confirm: value?.confirm,
         action: value?.action,
+        saveAction: value?.saveAction,
         props: value?.props,
         close: value?.close,
       });

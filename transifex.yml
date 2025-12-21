@@ -1,0 +1,15 @@
+filters:
+- filter_type: file
+  file_format: KEYVALUEJSON
+  source_language: en
+  source_file: frontend/src/i18n/en.json
+  translation_files_expression: 'frontend/src/i18n/<lang>.json'
+
+settings:
+  language_mapping:
+    sv_SE: sv-se
+    pt_BR: pt-br
+    zh_CN: zh-cn
+    zh_HK: zh-hk
+    zh_TW: zh-tw
+    nl_BE: nl-be

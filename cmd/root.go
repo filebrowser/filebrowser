@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"context"
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"log"
@@ -11,14 +13,13 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strings"
 	"syscall"
+	"time"
 
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	v "github.com/spf13/viper"
+	"github.com/spf13/viper"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
@@ -32,27 +33,67 @@ import (
 )
 
 var (
-	cfgFile string
+	flagNamesMigrations = map[string]string{
+		"file-mode":                        "fileMode",
+		"dir-mode":                         "dirMode",
+		"hide-login-button":                "hideLoginButton",
+		"create-user-dir":                  "createUserDir",
+		"minimum-password-length":          "minimumPasswordLength",
+		"socket-perm":                      "socketPerm",
+		"disable-thumbnails":               "disableThumbnails",
+		"disable-preview-resize":           "disablePreviewResize",
+		"disable-exec":                     "disableExec",
+		"disable-type-detection-by-header": "disableTypeDetectionByHeader",
+		"img-processors":                   "imageProcessors",
+		"cache-dir":                        "cacheDir",
+		"token-expiration-time":            "tokenExpirationTime",
+		"baseurl":                          "baseURL",
+	}
+
+	warnedFlags = map[string]bool{}
 )
 
+// TODO(remove): remove after July 2026.
+func migrateFlagNames(_ *pflag.FlagSet, name string) pflag.NormalizedName {
+	if newName, ok := flagNamesMigrations[name]; ok {
+
+		if !warnedFlags[name] {
+			warnedFlags[name] = true
+			log.Printf("DEPRECATION NOTICE: Flag --%s has been deprecated, use --%s instead\n", name, newName)
+		}
+
+		name = newName
+	}
+
+	return pflag.NormalizedName(name)
+}
+
 func init() {
-	cobra.OnInitialize(initConfig)
+	rootCmd.SilenceUsage = true
+	rootCmd.SetGlobalNormalizationFunc(migrateFlagNames)
+
 	cobra.MousetrapHelpText = ""
 
 	rootCmd.SetVersionTemplate("File Browser version {{printf \"%s\" .Version}}\n")
 
-	flags := rootCmd.Flags()
+	// Flags available across the whole program
 	persistent := rootCmd.PersistentFlags()
-
-	persistent.StringVarP(&cfgFile, "config", "c", "", "config file path")
+	persistent.StringP("config", "c", "", "config file path")
 	persistent.StringP("database", "d", "./filebrowser.db", "database path")
-	flags.Bool("noauth", false, "use the noauth auther when using quick setup")
-	flags.String("username", "admin", "username for the first user when using quick config")
-	flags.String("password", "", "hashed password for the first user when using quick config (default \"admin\")")
 
+	// Runtime flags for the root command
+	flags := rootCmd.Flags()
+	flags.Bool("noauth", false, "use the noauth auther when using quick setup")
+	flags.String("username", "admin", "username for the first user when using quick setup")
+	flags.String("password", "", "hashed password for the first user when using quick setup")
+	flags.Uint32("socketPerm", 0666, "unix socket file permissions")
+	flags.String("cacheDir", "", "file cache directory (disabled if empty)")
+	flags.Int("imageProcessors", 4, "image processors count")
 	addServerFlags(flags)
 }
 
+// addServerFlags adds server related flags to the given FlagSet. These flags are available
+// in both the root command, config set and config init commands.
 func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("address", "a", "127.0.0.1", "address to listen on")
 	flags.StringP("log", "l", "stdout", "log output")
@@ -61,15 +102,12 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("key", "k", "", "tls key")
 	flags.StringP("root", "r", ".", "root to prepend to relative paths")
 	flags.String("socket", "", "socket to listen to (cannot be used with address, port, cert nor key flags)")
-	flags.Uint32("socket-perm", 0666, "unix socket file permissions") //nolint:gomnd
-	flags.StringP("baseurl", "b", "", "base url")
-	flags.String("cache-dir", "", "file cache directory (disabled if empty)")
-	flags.String("token-expiration-time", "2h", "user session timeout")
-	flags.Int("img-processors", 4, "image processors count") //nolint:gomnd
-	flags.Bool("disable-thumbnails", false, "disable image thumbnails")
-	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
-	flags.Bool("disable-exec", false, "disables Command Runner feature")
-	flags.Bool("disable-type-detection-by-header", false, "disables type detection by reading file headers")
+	flags.StringP("baseURL", "b", "", "base url")
+	flags.String("tokenExpirationTime", "2h", "user session timeout")
+	flags.Bool("disableThumbnails", false, "disable image thumbnails")
+	flags.Bool("disablePreviewResize", false, "disable resize of image previews")
+	flags.Bool("disableExec", true, "disables Command Runner feature")
+	flags.Bool("disableTypeDetectionByHeader", false, "disables type detection by reading file headers")
 }
 
 var rootCmd = &cobra.Command{
@@ -84,12 +122,14 @@ it. Don't worry: you don't need to setup a separate database server.
 We're using Bolt DB which is a single file database and all managed
 by ourselves.
 
-For this specific command, all the flags you have available (except
-"config" for the configuration file), can be given either through
-environment variables or configuration files.
+For this command, all flags are available as environmental variables,
+except for "--config", which specifies the configuration file to use.
+The environment variables are prefixed by "FB_" followed by the flag name in
+UPPER_SNAKE_CASE. For example, the flag "--disablePreviewResize" is available
+as FB_DISABLE_PREVIEW_RESIZE.
 
-If you don't set "config", it will look for a configuration file called
-.filebrowser.{json, toml, yaml, yml} in the following directories:
+If "--config" is not specified, File Browser will look for a configuration
+file named .filebrowser.{json, toml, yaml, yml} in the following directories:
 
 - ./
 - $HOME/
@@ -97,49 +137,49 @@ If you don't set "config", it will look for a configuration file called
 
 The precedence of the configuration values are as follows:
 
-- flags
-- environment variables
-- configuration file
-- database values
-- defaults
-
-The environment variables are prefixed by "FB_" followed by the option
-name in caps. So to set "database" via an env variable, you should
-set FB_DATABASE.
+- Flags
+- Environment variables
+- Configuration file
+- Database values
+- Defaults
 
 Also, if the database path doesn't exist, File Browser will enter into
 the quick setup mode and a new database will be bootstrapped and a new
 user created with the credentials from options "username" and "password".`,
-	Run: python(func(cmd *cobra.Command, _ []string, d pythonData) {
-		log.Println(cfgFile)
-
-		if !d.hadDB {
-			quickSetup(cmd.Flags(), d)
+	RunE: withViperAndStore(func(_ *cobra.Command, _ []string, v *viper.Viper, st *store) error {
+		if !st.databaseExisted {
+			err := quickSetup(v, st.Storage)
+			if err != nil {
+				return err
+			}
 		}
 
 		// build img service
-		workersCount, err := cmd.Flags().GetInt("img-processors")
-		checkErr(err)
-		if workersCount < 1 {
-			log.Fatal("Image resize workers count could not be < 1")
+		imgWorkersCount := v.GetInt("imageProcessors")
+		if imgWorkersCount < 1 {
+			return errors.New("image resize workers count could not be < 1")
 		}
-		imgSvc := img.New(workersCount)
+		imageService := img.New(imgWorkersCount)
 
 		var fileCache diskcache.Interface = diskcache.NewNoOp()
-		cacheDir, err := cmd.Flags().GetString("cache-dir")
-		checkErr(err)
+		cacheDir := v.GetString("cacheDir")
 		if cacheDir != "" {
-			if err := os.MkdirAll(cacheDir, 0700); err != nil { //nolint:govet,gomnd
-				log.Fatalf("can't make directory %s: %s", cacheDir, err)
+			if err := os.MkdirAll(cacheDir, 0700); err != nil {
+				return fmt.Errorf("can't make directory %s: %w", cacheDir, err)
 			}
 			fileCache = diskcache.New(afero.NewOsFs(), cacheDir)
 		}
 
-		server := getRunParams(cmd.Flags(), d.store)
+		server, err := getServerSettings(v, st.Storage)
+		if err != nil {
+			return err
+		}
 		setupLog(server.Log)
 
 		root, err := filepath.Abs(server.Root)
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		server.Root = root
 
 		adr := server.Address + ":" + server.Port
@@ -149,100 +189,154 @@ user created with the credentials from options "username" and "password".`,
 		switch {
 		case server.Socket != "":
 			listener, err = net.Listen("unix", server.Socket)
-			checkErr(err)
-			socketPerm, err := cmd.Flags().GetUint32("socket-perm") //nolint:govet
-			checkErr(err)
+			if err != nil {
+				return err
+			}
+			socketPerm := v.GetUint32("socketPerm")
 			err = os.Chmod(server.Socket, os.FileMode(socketPerm))
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 		case server.TLSKey != "" && server.TLSCert != "":
-			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey) //nolint:govet
-			checkErr(err)
+			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey)
+			if err != nil {
+				return err
+			}
 			listener, err = tls.Listen("tcp", adr, &tls.Config{
 				MinVersion:   tls.VersionTLS12,
 				Certificates: []tls.Certificate{cer}},
 			)
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 		default:
 			listener, err = net.Listen("tcp", adr)
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 		}
-
-		sigc := make(chan os.Signal, 1)
-		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
-		go cleanupHandler(listener, sigc)
 
 		assetsFs, err := fs.Sub(frontend.Assets(), "dist")
 		if err != nil {
 			panic(err)
 		}
 
-		handler, err := fbhttp.NewHandler(imgSvc, fileCache, d.store, server, assetsFs)
-		checkErr(err)
+		handler, err := fbhttp.NewHandler(imageService, fileCache, st.Storage, server, assetsFs)
+		if err != nil {
+			return err
+		}
 
 		defer listener.Close()
 
 		log.Println("Listening on", listener.Addr().String())
-		//nolint: gosec
-		if err := http.Serve(listener, handler); err != nil {
-			log.Fatal(err)
+		srv := &http.Server{
+			Handler:           handler,
+			ReadHeaderTimeout: 60 * time.Second,
 		}
-	}, pythonConfig{allowNoDB: true}),
+
+		go func() {
+			if err := srv.Serve(listener); !errors.Is(err, http.ErrServerClosed) {
+				log.Fatalf("HTTP server error: %v", err)
+			}
+
+			log.Println("Stopped serving new connections.")
+		}()
+
+		sigc := make(chan os.Signal, 1)
+		signal.Notify(sigc,
+			os.Interrupt,
+			syscall.SIGHUP,
+			syscall.SIGINT,
+			syscall.SIGTERM,
+			syscall.SIGQUIT,
+		)
+		sig := <-sigc
+		log.Println("Got signal:", sig)
+
+		shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second)
+		defer shutdownRelease()
+
+		if err := srv.Shutdown(shutdownCtx); err != nil {
+			log.Fatalf("HTTP shutdown error: %v", err)
+		}
+		log.Println("Graceful shutdown complete.")
+
+		return nil
+	}, storeOptions{allowsNoDatabase: true}),
 }
 
-func cleanupHandler(listener net.Listener, c chan os.Signal) { //nolint:interfacer
-	sig := <-c
-	log.Printf("Caught signal %s: shutting down.", sig)
-	listener.Close()
-	os.Exit(0)
-}
-
-//nolint:gocyclo
-func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
+func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, error) {
 	server, err := st.Settings.GetServer()
-	checkErr(err)
-
-	if val, set := getParamB(flags, "root"); set {
-		server.Root = val
-	}
-
-	if val, set := getParamB(flags, "baseurl"); set {
-		server.BaseURL = val
-	}
-
-	if val, set := getParamB(flags, "log"); set {
-		server.Log = val
+	if err != nil {
+		return nil, err
 	}
 
 	isSocketSet := false
 	isAddrSet := false
 
-	if val, set := getParamB(flags, "address"); set {
-		server.Address = val
-		isAddrSet = isAddrSet || set
+	if v.IsSet("address") {
+		server.Address = v.GetString("address")
+		isAddrSet = true
 	}
 
-	if val, set := getParamB(flags, "port"); set {
-		server.Port = val
-		isAddrSet = isAddrSet || set
+	if v.IsSet("log") {
+		server.Log = v.GetString("log")
 	}
 
-	if val, set := getParamB(flags, "key"); set {
-		server.TLSKey = val
-		isAddrSet = isAddrSet || set
+	if v.IsSet("port") {
+		server.Port = v.GetString("port")
+		isAddrSet = true
 	}
 
-	if val, set := getParamB(flags, "cert"); set {
-		server.TLSCert = val
-		isAddrSet = isAddrSet || set
+	if v.IsSet("cert") {
+		server.TLSCert = v.GetString("cert")
+		isAddrSet = true
 	}
 
-	if val, set := getParamB(flags, "socket"); set {
-		server.Socket = val
-		isSocketSet = isSocketSet || set
+	if v.IsSet("key") {
+		server.TLSKey = v.GetString("key")
+		isAddrSet = true
+	}
+
+	if v.IsSet("root") {
+		server.Root = v.GetString("root")
+	}
+
+	if v.IsSet("socket") {
+		server.Socket = v.GetString("socket")
+		isSocketSet = true
+	}
+
+	if v.IsSet("baseURL") {
+		server.BaseURL = v.GetString("baseURL")
+		// TODO(remove): remove after July 2026.
+	} else if v := os.Getenv("FB_BASEURL"); v != "" {
+		log.Println("DEPRECATION NOTICE: Environment variable FB_BASEURL has been deprecated, use FB_BASE_URL instead")
+		server.BaseURL = v
+	}
+
+	if v.IsSet("tokenExpirationTime") {
+		server.TokenExpirationTime = v.GetString("tokenExpirationTime")
+	}
+
+	if v.IsSet("disableThumbnails") {
+		server.EnableThumbnails = !v.GetBool("disableThumbnails")
+	}
+
+	if v.IsSet("disablePreviewResize") {
+		server.ResizePreview = !v.GetBool("disablePreviewResize")
+	}
+
+	if v.IsSet("disableTypeDetectionByHeader") {
+		server.TypeDetectionByHeader = !v.GetBool("disableTypeDetectionByHeader")
+	}
+
+	if v.IsSet("disableExec") {
+		server.EnableExec = !v.GetBool("disableExec")
 	}
 
 	if isAddrSet && isSocketSet {
-		checkErr(errors.New("--socket flag cannot be used with --address, --port, --key nor --cert"))
+		return nil, errors.New("--socket flag cannot be used with --address, --port, --key nor --cert")
 	}
 
 	// Do not use saved Socket if address was manually set.
@@ -250,52 +344,14 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 		server.Socket = ""
 	}
 
-	_, disableThumbnails := getParamB(flags, "disable-thumbnails")
-	server.EnableThumbnails = !disableThumbnails
-
-	_, disablePreviewResize := getParamB(flags, "disable-preview-resize")
-	server.ResizePreview = !disablePreviewResize
-
-	_, disableTypeDetectionByHeader := getParamB(flags, "disable-type-detection-by-header")
-	server.TypeDetectionByHeader = !disableTypeDetectionByHeader
-
-	_, disableExec := getParamB(flags, "disable-exec")
-	server.EnableExec = !disableExec
-
-	if val, set := getParamB(flags, "token-expiration-time"); set {
-		server.TokenExpirationTime = val
+	if server.EnableExec {
+		log.Println("WARNING: Command Runner feature enabled!")
+		log.Println("WARNING: This feature has known security vulnerabilities and should not")
+		log.Println("WARNING: you fully understand the risks involved. For more information")
+		log.Println("WARNING: read https://github.com/filebrowser/filebrowser/issues/5199")
 	}
 
-	return server
-}
-
-// getParamB returns a parameter as a string and a boolean to tell if it is different from the default
-//
-// NOTE: we could simply bind the flags to viper and use IsSet.
-// Although there is a bug on Viper that always returns true on IsSet
-// if a flag is binded. Our alternative way is to manually check
-// the flag and then the value from env/config/gotten by viper.
-// https://github.com/spf13/viper/pull/331
-func getParamB(flags *pflag.FlagSet, key string) (string, bool) {
-	value, _ := flags.GetString(key)
-
-	// If set on Flags, use it.
-	if flags.Changed(key) {
-		return value, true
-	}
-
-	// If set through viper (env, config), return it.
-	if v.IsSet(key) {
-		return v.GetString(key), true
-	}
-
-	// Otherwise use default value on flags.
-	return value, false
-}
-
-func getParam(flags *pflag.FlagSet, key string) string {
-	val, _ := getParamB(flags, key)
-	return val
+	return server, nil
 }
 
 func setupLog(logMethod string) {
@@ -316,16 +372,21 @@ func setupLog(logMethod string) {
 	}
 }
 
-func quickSetup(flags *pflag.FlagSet, d pythonData) {
+func quickSetup(v *viper.Viper, s *storage.Storage) error {
+	log.Println("Performing quick setup")
+
 	set := &settings.Settings{
-		Key:              generateKey(),
-		Signup:           false,
-		CreateUserDir:    false,
-		UserHomeBasePath: settings.DefaultUsersHomeBasePath,
+		Key:                   generateKey(),
+		Signup:                false,
+		HideLoginButton:       true,
+		CreateUserDir:         false,
+		MinimumPasswordLength: settings.DefaultMinimumPasswordLength,
+		UserHomeBasePath:      settings.DefaultUsersHomeBasePath,
 		Defaults: settings.UserDefaults{
-			Scope:       ".",
-			Locale:      "en",
-			SingleClick: false,
+			Scope:          ".",
+			Locale:         "en",
+			SingleClick:    false,
+			AceEditorTheme: v.GetString("defaults.aceEditorTheme"),
 			Perm: users.Permissions{
 				Admin:    false,
 				Execute:  true,
@@ -349,37 +410,59 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	}
 
 	var err error
-	if _, noauth := getParamB(flags, "noauth"); noauth {
+	if v.GetBool("noauth") {
 		set.AuthMethod = auth.MethodNoAuth
-		err = d.store.Auth.Save(&auth.NoAuth{})
+		err = s.Auth.Save(&auth.NoAuth{})
 	} else {
 		set.AuthMethod = auth.MethodJSONAuth
-		err = d.store.Auth.Save(&auth.JSONAuth{})
+		err = s.Auth.Save(&auth.JSONAuth{})
+	}
+	if err != nil {
+		return err
 	}
 
-	checkErr(err)
-	err = d.store.Settings.Save(set)
-	checkErr(err)
+	err = s.Settings.Save(set)
+	if err != nil {
+		return err
+	}
 
 	ser := &settings.Server{
-		BaseURL: getParam(flags, "baseurl"),
-		Port:    getParam(flags, "port"),
-		Log:     getParam(flags, "log"),
-		TLSKey:  getParam(flags, "key"),
-		TLSCert: getParam(flags, "cert"),
-		Address: getParam(flags, "address"),
-		Root:    getParam(flags, "root"),
+		BaseURL:               v.GetString("baseURL"),
+		Port:                  v.GetString("port"),
+		Log:                   v.GetString("log"),
+		TLSKey:                v.GetString("key"),
+		TLSCert:               v.GetString("cert"),
+		Address:               v.GetString("address"),
+		Root:                  v.GetString("root"),
+		TokenExpirationTime:   v.GetString("tokenExpirationTime"),
+		EnableThumbnails:      !v.GetBool("disableThumbnails"),
+		ResizePreview:         !v.GetBool("disablePreviewResize"),
+		EnableExec:            !v.GetBool("disableExec"),
+		TypeDetectionByHeader: !v.GetBool("disableTypeDetectionByHeader"),
 	}
 
-	err = d.store.Settings.SaveServer(ser)
-	checkErr(err)
+	err = s.Settings.SaveServer(ser)
+	if err != nil {
+		return err
+	}
 
-	username := getParam(flags, "username")
-	password := getParam(flags, "password")
+	username := v.GetString("username")
+	password := v.GetString("password")
 
 	if password == "" {
-		password, err = users.HashPwd("admin")
-		checkErr(err)
+		var pwd string
+		pwd, err = users.RandomPwd(set.MinimumPasswordLength)
+		if err != nil {
+			return err
+		}
+
+		log.Printf("User '%s' initialized with randomly generated password: %s\n", username, pwd)
+		password, err = users.ValidateAndHashPwd(pwd, set.MinimumPasswordLength)
+		if err != nil {
+			return err
+		}
+	} else {
+		log.Printf("User '%s' initialize wth user-provided password\n", username)
 	}
 
 	if username == "" || password == "" {
@@ -395,33 +478,5 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	set.Defaults.Apply(user)
 	user.Perm.Admin = true
 
-	err = d.store.Users.Save(user)
-	checkErr(err)
-}
-
-func initConfig() {
-	if cfgFile == "" {
-		home, err := homedir.Dir()
-		checkErr(err)
-		v.AddConfigPath(".")
-		v.AddConfigPath(home)
-		v.AddConfigPath("/etc/filebrowser/")
-		v.SetConfigName(".filebrowser")
-	} else {
-		v.SetConfigFile(cfgFile)
-	}
-
-	v.SetEnvPrefix("FB")
-	v.AutomaticEnv()
-	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-
-	if err := v.ReadInConfig(); err != nil {
-		var configParseError v.ConfigParseError
-		if errors.As(err, &configParseError) {
-			panic(err)
-		}
-		cfgFile = "No config file used"
-	} else {
-		cfgFile = "Using config file: " + v.ConfigFileUsed()
-	}
+	return s.Users.Save(user)
 }

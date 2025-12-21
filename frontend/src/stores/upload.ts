@@ -1,8 +1,9 @@
 import { defineStore } from "pinia";
 import { useFileStore } from "./file";
 import { files as api } from "@/api";
-import { throttle } from "lodash-es";
 import buttons from "@/utils/buttons";
+import { computed, inject, markRaw, ref } from "vue";
+import * as tus from "@/api/tus";
 
 // TODO: make this into a user setting
 const UPLOADS_LIMIT = 5;
@@ -13,212 +14,167 @@ const beforeUnload = (event: Event) => {
   // event.returnValue = "";
 };
 
-// Utility function to format bytes into a readable string
-function formatSize(bytes: number): string {
-  if (bytes === 0) return "0.00 Bytes";
+export const useUploadStore = defineStore("upload", () => {
+  const $showError = inject<IToastError>("$showError")!;
 
-  const k = 1024;
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  let progressInterval: number | null = null;
 
-  // Return the rounded size with two decimal places
-  return (bytes / k ** i).toFixed(2) + " " + sizes[i];
-}
+  //
+  // STATE
+  //
 
-export const useUploadStore = defineStore("upload", {
-  // convert to a function
-  state: (): {
-    id: number;
-    sizes: number[];
-    progress: Progress[];
-    queue: UploadItem[];
-    uploads: Uploads;
-    speedMbyte: number;
-    eta: number;
-    error: Error | null;
-  } => ({
-    id: 0,
-    sizes: [],
-    progress: [],
-    queue: [],
-    uploads: {},
-    speedMbyte: 0,
-    eta: 0,
-    error: null,
-  }),
-  getters: {
-    // user and jwt getter removed, no longer needed
-    getProgress: (state) => {
-      if (state.progress.length === 0) {
-        return 0;
+  const allUploads = ref<Upload[]>([]);
+  const activeUploads = ref<Set<Upload>>(new Set());
+  const lastUpload = ref<number>(-1);
+  const totalBytes = ref<number>(0);
+  const sentBytes = ref<number>(0);
+
+  //
+  // ACTIONS
+  //
+
+  const upload = (
+    path: string,
+    name: string,
+    file: File | null,
+    overwrite: boolean,
+    type: ResourceType
+  ) => {
+    if (!hasActiveUploads() && !hasPendingUploads()) {
+      window.addEventListener("beforeunload", beforeUnload);
+      buttons.loading("upload");
+    }
+
+    const upload: Upload = {
+      path,
+      name,
+      file,
+      overwrite,
+      type,
+      totalBytes: file?.size || 1,
+      sentBytes: 0,
+      // Stores rapidly changing sent bytes value without causing component re-renders
+      rawProgress: markRaw({
+        sentBytes: 0,
+      }),
+    };
+
+    totalBytes.value += upload.totalBytes;
+    allUploads.value.push(upload);
+
+    processUploads();
+  };
+
+  const abort = () => {
+    // Resets the state by preventing the processing of the remaning uploads
+    lastUpload.value = Infinity;
+    tus.abortAllUploads();
+  };
+
+  //
+  // GETTERS
+  //
+
+  const pendingUploadCount = computed(
+    () =>
+      allUploads.value.length -
+      (lastUpload.value + 1) +
+      activeUploads.value.size
+  );
+
+  //
+  // PRIVATE FUNCTIONS
+  //
+
+  const hasActiveUploads = () => activeUploads.value.size > 0;
+
+  const hasPendingUploads = () =>
+    allUploads.value.length > lastUpload.value + 1;
+
+  const isActiveUploadsOnLimit = () => activeUploads.value.size < UPLOADS_LIMIT;
+
+  const processUploads = async () => {
+    if (!hasActiveUploads() && !hasPendingUploads()) {
+      const fileStore = useFileStore();
+      window.removeEventListener("beforeunload", beforeUnload);
+      buttons.success("upload");
+      reset();
+      fileStore.reload = true;
+    }
+
+    if (isActiveUploadsOnLimit() && hasPendingUploads()) {
+      if (!hasActiveUploads()) {
+        // Update the state in a fixed time interval
+        progressInterval = window.setInterval(syncState, 1000);
       }
 
-      const totalSize = state.sizes.reduce((a, b) => a + b, 0);
+      const upload = nextUpload();
 
-      // TODO: this looks ugly but it works with ts now
-      const sum = state.progress.reduce((acc, val) => +acc + +val) as number;
-      return Math.ceil((sum / totalSize) * 100);
-    },
-    getProgressDecimal: (state) => {
-      if (state.progress.length === 0) {
-        return 0;
+      if (upload.type === "dir") {
+        await api.post(upload.path).catch($showError);
+      } else {
+        const onUpload = (event: ProgressEvent) => {
+          upload.rawProgress.sentBytes = event.loaded;
+        };
+
+        await api
+          .post(upload.path, upload.file!, upload.overwrite, onUpload)
+          .catch((err) => err.message !== "Upload aborted" && $showError(err));
       }
 
-      const totalSize = state.sizes.reduce((a, b) => a + b, 0);
+      finishUpload(upload);
+    }
+  };
 
-      // TODO: this looks ugly but it works with ts now
-      const sum = state.progress.reduce((acc, val) => +acc + +val) as number;
-      return ((sum / totalSize) * 100).toFixed(2);
-    },
-    getTotalProgressBytes: (state) => {
-      if (state.progress.length === 0 || state.sizes.length === 0) {
-        return "0 Bytes";
-      }
-      const sum = state.progress.reduce((acc, val) => +acc + +val, 0) as number;
-      return formatSize(sum);
-    },
-    getTotalSize: (state) => {
-      if (state.sizes.length === 0) {
-        return "0 Bytes";
-      }
-      const totalSize = state.sizes.reduce((a, b) => a + b, 0);
-      return formatSize(totalSize);
-    },
-    filesInUploadCount: (state) => {
-      return Object.keys(state.uploads).length + state.queue.length;
-    },
-    filesInUpload: (state) => {
-      const files = [];
+  const nextUpload = (): Upload => {
+    lastUpload.value++;
 
-      for (const index in state.uploads) {
-        const upload = state.uploads[index];
-        const id = upload.id;
-        const type = upload.type;
-        const name = upload.file.name;
-        const size = state.sizes[id];
-        const isDir = upload.file.isDir;
-        const progress = isDir
-          ? 100
-          : Math.ceil(((state.progress[id] as number) / size) * 100);
+    const upload = allUploads.value[lastUpload.value];
+    activeUploads.value.add(upload);
 
-        files.push({
-          id,
-          name,
-          progress,
-          type,
-          isDir,
-        });
-      }
+    return upload;
+  };
 
-      return files.sort((a, b) => a.progress - b.progress);
-    },
-    uploadSpeed: (state) => {
-      return state.speedMbyte;
-    },
-    getETA: (state) => state.eta,
-  },
-  actions: {
-    // no context as first argument, use `this` instead
-    setProgress({ id, loaded }: { id: number; loaded: Progress }) {
-      this.progress[id] = loaded;
-    },
-    setError(error: Error) {
-      this.error = error;
-    },
-    reset() {
-      this.id = 0;
-      this.sizes = [];
-      this.progress = [];
-      this.queue = [];
-      this.uploads = {};
-      this.speedMbyte = 0;
-      this.eta = 0;
-      this.error = null;
-    },
-    addJob(item: UploadItem) {
-      this.queue.push(item);
-      this.sizes[this.id] = item.file.size;
-      this.id++;
-    },
-    moveJob() {
-      const item = this.queue[0];
-      this.queue.shift();
-      this.uploads[item.id] = item;
-    },
-    removeJob(id: number) {
-      delete this.uploads[id];
-    },
-    upload(item: UploadItem) {
-      const uploadsCount = Object.keys(this.uploads).length;
+  const finishUpload = (upload: Upload) => {
+    sentBytes.value += upload.totalBytes - upload.sentBytes;
+    upload.sentBytes = upload.totalBytes;
+    upload.file = null;
 
-      const isQueueEmpty = this.queue.length == 0;
-      const isUploadsEmpty = uploadsCount == 0;
+    activeUploads.value.delete(upload);
+    processUploads();
+  };
 
-      if (isQueueEmpty && isUploadsEmpty) {
-        window.addEventListener("beforeunload", beforeUnload);
-        buttons.loading("upload");
-      }
+  const syncState = () => {
+    for (const upload of activeUploads.value) {
+      sentBytes.value += upload.rawProgress.sentBytes - upload.sentBytes;
+      upload.sentBytes = upload.rawProgress.sentBytes;
+    }
+  };
 
-      this.addJob(item);
-      this.processUploads();
-    },
-    finishUpload(item: UploadItem) {
-      this.setProgress({ id: item.id, loaded: item.file.size > 0 });
-      this.removeJob(item.id);
-      this.processUploads();
-    },
-    async processUploads() {
-      const uploadsCount = Object.keys(this.uploads).length;
+  const reset = () => {
+    if (progressInterval !== null) {
+      clearInterval(progressInterval);
+      progressInterval = null;
+    }
 
-      const isBelowLimit = uploadsCount < UPLOADS_LIMIT;
-      const isQueueEmpty = this.queue.length == 0;
-      const isUploadsEmpty = uploadsCount == 0;
+    allUploads.value = [];
+    activeUploads.value = new Set();
+    lastUpload.value = -1;
+    totalBytes.value = 0;
+    sentBytes.value = 0;
+  };
 
-      const isFinished = isQueueEmpty && isUploadsEmpty;
-      const canProcess = isBelowLimit && !isQueueEmpty;
+  return {
+    // STATE
+    activeUploads,
+    totalBytes,
+    sentBytes,
 
-      if (isFinished) {
-        const fileStore = useFileStore();
-        window.removeEventListener("beforeunload", beforeUnload);
-        buttons.success("upload");
-        this.reset();
-        fileStore.reload = true;
-      }
+    // ACTIONS
+    upload,
+    abort,
 
-      if (canProcess) {
-        const item = this.queue[0];
-        this.moveJob();
-
-        if (item.file.isDir) {
-          await api.post(item.path).catch(this.setError);
-        } else {
-          const onUpload = throttle(
-            (event: ProgressEvent) =>
-              this.setProgress({
-                id: item.id,
-                loaded: event.loaded,
-              }),
-            100,
-            { leading: true, trailing: false }
-          );
-
-          await api
-            .post(item.path, item.file.file as File, item.overwrite, onUpload)
-            .catch(this.setError);
-        }
-
-        this.finishUpload(item);
-      }
-    },
-    setUploadSpeed(value: number) {
-      this.speedMbyte = value;
-    },
-    setETA(value: number) {
-      this.eta = value;
-    },
-    // easily reset state using `$reset`
-    clearUpload() {
-      this.$reset();
-    },
-  },
+    // GETTERS
+    pendingUploadCount,
+  };
 });

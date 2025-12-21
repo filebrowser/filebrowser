@@ -1,4 +1,4 @@
-package http
+package fbhttp
 
 import (
 	"fmt"
@@ -19,7 +19,7 @@ import (
 func TestPublicShareHandlerAuthentication(t *testing.T) {
 	t.Parallel()
 
-	const passwordBcrypt = "$2y$10$TFAmdCbyd/mEZDe5fUeZJu.MaJQXRTwdqb/IQV.eTn6dWrF58gCSe" //nolint:gosec
+	const passwordBcrypt = "$2y$10$TFAmdCbyd/mEZDe5fUeZJu.MaJQXRTwdqb/IQV.eTn6dWrF58gCSe"
 	testCases := map[string]struct {
 		share              *share.Link
 		req                *http.Request
@@ -70,7 +70,7 @@ func TestPublicShareHandlerAuthentication(t *testing.T) {
 				}
 
 				t.Cleanup(func() {
-					if err := db.Close(); err != nil { //nolint:govet
+					if err := db.Close(); err != nil {
 						t.Errorf("failed to close db: %v", err)
 					}
 				})

@@ -24,6 +24,7 @@
     "ok": "موافق",
     "permalink": "الحصول على رابط دائم",
     "previous": "السابق",
+    "preview": "Preview",
     "publish": "نشر",
     "rename": "إعادة تسمية",
     "replace": "استبدال",
@@ -41,7 +42,11 @@
     "update": "تحديث",
     "upload": "رفع",
     "openFile": "فتح الملف",
-    "discardChanges": "إلغاء التغييرات"
+    "discardChanges": "إلغاء التغييرات",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "تحميل الملف",
@@ -73,7 +78,16 @@
     "sortByLastModified": "الترتيب بآخر تعديل",
     "sortByName": "الترتيب باﻹسم",
     "sortBySize": "الترتيب بالحجم",
-    "noPreview": "لا يوجد عرض مسبق لهذا الملف."
+    "noPreview": "لا يوجد عرض مسبق لهذا الملف.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "حدد الملف أو المجلد",
@@ -99,7 +113,11 @@
     "submit": "تسجيل دخول",
     "username": "إسم المستخدم",
     "usernameTaken": "إسم المستخدم غير متاح",
-    "wrongCredentials": "بيانات دخول خاطئة"
+    "wrongCredentials": "بيانات دخول خاطئة",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "دائم",
   "prompts": {
@@ -153,6 +171,7 @@
     "video": "فيديوهات"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "إدارة",
     "administrator": "مدير",
     "allowCommands": "تنفيذ اﻷوامر",
@@ -160,6 +179,7 @@
     "allowNew": "إنشاء ملفات و مجلدات جديدة",
     "allowPublish": "نشر مقالات و صفحات جديدة",
     "allowSignup": "اسمح للمستخدمين بالاشتراك",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(أتركه فارغاً إن لم ترد تغييره)",
     "branding": "الشعار",
     "brandingDirectoryPath": "مسار مجلد الشعار",
@@ -169,6 +189,7 @@
     "commandRunnerHelp": "هنا بإمكانك تعيين اﻷوامر التي سيتم تنفيذها في اﻷحداث المسماة. يجب كتابة أمر واحد في كل سطر. ستكون المتغيرات البيئية (env) {0} و {1} متاحة، حيث {0} نسبي لـ {1}. لمزيد من المعلومات حول هذه الميزة و المتغيرات البيئية المتاحة، يرجى قراءة {2}.",
     "commandsUpdated": "تم تحديث اﻷوامر",
     "createUserDir": "إنشاء مجلد المستخدم (home) تلقائياً عند إنشاء مستخدم جديد",
+    "minimumPasswordLength": "Minimum password length",
     "tusUploads": "التحميلات المتقطعة",
     "tusUploadsHelp": "يدعم متصفح الملفات تحميل الملفات المتقطعة، مما يسمح بتحميلات الملفات بشكل فعال و موثوق و قابلة للمتابغة و متقطعة حتى على الشبكات غير الموثوقة.",
     "tusUploadsChunkSize": "يشير إلى الحد اﻷقصى لحجم الطلب (سيتم استخدام التحميل المباشر للتحميلات صغيرة الخحم). يمكنك إدخال عدد صحيح عادي يدل على الحجم بوحدة البايت أو نمظ مثل10MB, 1GB, إلخ.",

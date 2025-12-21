@@ -7,11 +7,13 @@
     "copy": "Copiar",
     "copyFile": "Copiar arquivo",
     "copyToClipboard": "Copiar",
+    "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Criar",
     "delete": "Apagar",
     "download": "Baixar",
     "file": "Arquivo",
     "folder": "Pasta",
+    "fullScreen": "Toggle full screen",
     "hideDotfiles": "Ocultar dotfiles",
     "info": "Informações",
     "more": "Mais",
@@ -22,6 +24,7 @@
     "ok": "OK",
     "permalink": "Obter link permanente",
     "previous": "Anterior",
+    "preview": "Preview",
     "publish": "Publicar",
     "rename": "Renomear",
     "replace": "Substituir",
@@ -38,12 +41,20 @@
     "toggleSidebar": "Alternar barra lateral",
     "update": "Atualizar",
     "upload": "Enviar",
-    "openFile": "Abrir"
+    "openFile": "Abrir",
+    "discardChanges": "Discard",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "Baixar arquivo",
     "downloadFolder": "Baixar pasta",
     "downloadSelected": "Baixar selecionado"
+  },
+  "upload": {
+    "abortUpload": "Are you sure you wish to abort?"
   },
   "errors": {
     "forbidden": "Você não tem permissões para acessar isto.",
@@ -67,7 +78,16 @@
     "sortByLastModified": "Ordenar pela última modificação",
     "sortByName": "Ordenar pelo nome",
     "sortBySize": "Ordenar pelo tamanho",
-    "noPreview": "Pré-visualização não disponível para este arquivo."
+    "noPreview": "Pré-visualização não disponível para este arquivo.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "selecionar pasta ou arquivo",
@@ -93,7 +113,11 @@
     "submit": "Login",
     "username": "Nome do usuário",
     "usernameTaken": "Nome de usuário já existe",
-    "wrongCredentials": "Ops! Dados incorretos."
+    "wrongCredentials": "Ops! Dados incorretos.",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanente",
   "prompts": {
@@ -103,6 +127,7 @@
     "deleteMessageMultiple": "Deseja apagar {count} arquivo(s)?",
     "deleteMessageSingle": "Deseja apagar esta pasta/arquivo?",
     "deleteMessageShare": "Deseja apagar este compartilhamento ({path})?",
+    "deleteUser": "Are you sure you want to delete this user?",
     "deleteTitle": "Apagar arquivos",
     "displayName": "Nome:",
     "download": "Baixar arquivos",
@@ -131,7 +156,9 @@
     "upload": "Enviar",
     "uploadFiles": "Enviando {files} arquivos...",
     "uploadMessage": "Selecione uma opção para enviar.",
-    "optionalPassword": "Senha opcional"
+    "optionalPassword": "Senha opcional",
+    "resolution": "Resolution",
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
   },
   "search": {
     "images": "Imagens",
@@ -144,6 +171,7 @@
     "video": "Vídeos"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrador",
     "allowCommands": "Executar comandos",
@@ -151,6 +179,7 @@
     "allowNew": "Criar novos arquivos e pastas",
     "allowPublish": "Publicar novas páginas e conteúdos",
     "allowSignup": "Permitir cadastro de usuários",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(deixe em branco para manter)",
     "branding": "Customização",
     "brandingDirectoryPath": "Diretório de customização",
@@ -160,6 +189,11 @@
     "commandRunnerHelp": "Aqui você pode definir comandos que serão executados nos eventos descritos. Escreva um por linha. As variáveis de ambiente {0} e {1} estão disponíveis, sendo {0} relativo a {1}. Para mais informações sobre esta função e as variáveis de ambiente disponíveis, leia a {2}.",
     "commandsUpdated": "Comandos atualizados!",
     "createUserDir": "Criar diretório Home para novos usuários",
+    "minimumPasswordLength": "Minimum password length",
+    "tusUploads": "Chunked Uploads",
+    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Caminho base para diretórios de usuários",
     "userScopeGenerationPlaceholder": "O escopo será gerado automaticamente",
     "createUserHomeDirectory": "Criar diretório Home de usuário",
@@ -184,7 +218,7 @@
     "newUser": "Novo usuário",
     "password": "Senha",
     "passwordUpdated": "Senha atualizada!",
-    "path": "",
+    "path": "Path",
     "perm": {
       "create": "Criar arquivos e diretórios",
       "delete": "Apagar arquivos e diretórios",
@@ -209,6 +243,7 @@
     "shareDeleted": "Compartilhamento apagado!",
     "singleClick": "Usar clique único para abrir arquivos e diretórios",
     "themes": {
+      "default": "System default",
       "dark": "Escuro",
       "light": "Claro",
       "title": "Tema"

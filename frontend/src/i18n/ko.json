@@ -3,12 +3,17 @@
     "cancel": "취소",
     "clear": "지우기",
     "close": "닫기",
+    "continue": "계속",
     "copy": "복사",
     "copyFile": "파일 복사",
     "copyToClipboard": "클립보드 복사",
+    "copyDownloadLinkToClipboard": "다운로드 링크 복사",
     "create": "생성",
     "delete": "삭제",
     "download": "다운로드",
+    "file": "파일",
+    "folder": "폴더",
+    "fullScreen": "전체 화면 전환",
     "hideDotfiles": "숨김파일(dotfile)을 표시 안함",
     "info": "정보",
     "more": "더보기",
@@ -19,6 +24,7 @@
     "ok": "확인",
     "permalink": "링크 얻기",
     "previous": "이전",
+    "preview": "미리보기",
     "publish": "게시",
     "rename": "이름 바꾸기",
     "replace": "대체",
@@ -30,21 +36,32 @@
     "selectMultiple": "다중 선택",
     "share": "공유",
     "shell": "쉘 전환",
+    "submit": "제출",
     "switchView": "보기 전환",
     "toggleSidebar": "사이드바 전환",
     "update": "업데이트",
     "upload": "업로드",
-    "stopSearch": "검색 중지"
+    "stopSearch": "검색 중지",
+    "openFile": "파일 열기",
+    "discardChanges": "변경 사항 취소",
+    "saveChanges": "변경사항 저장",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "파일 다운로드",
     "downloadFolder": "폴더 다운로드",
     "downloadSelected": "선택 항목 다운로드"
   },
+  "upload": {
+    "abortUpload": "업로드를 중단하시겠습니까?"
+  },
   "errors": {
     "forbidden": "접근 권한이 없습니다.",
     "internal": "오류가 발생하였습니다.",
-    "notFound": "해당 경로를 찾을 수 없습니다."
+    "notFound": "해당 경로를 찾을 수 없습니다.",
+    "connection": "서버에 연결할 수 없습니다."
   },
   "files": {
     "body": "본문",
@@ -61,7 +78,17 @@
     "size": "크기",
     "sortByLastModified": "수정시간순 정렬",
     "sortByName": "이름순",
-    "sortBySize": "크기순"
+    "sortBySize": "크기순",
+    "noPreview": "미리 보기가 지원되지 않는 파일 유형입니다.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "파일이나 디렉토리를 선택해주세요.",
@@ -87,7 +114,11 @@
     "submit": "로그인",
     "username": "사용자 이름",
     "usernameTaken": "사용자 이름이 존재합니다",
-    "wrongCredentials": "사용자 이름 또는 비밀번호를 확인하십시오"
+    "wrongCredentials": "사용자 이름 또는 비밀번호를 확인하십시오",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "영구",
   "prompts": {
@@ -96,6 +127,8 @@
     "currentlyNavigating": "현재 위치:",
     "deleteMessageMultiple": "{count} 개의 파일을 삭제하시겠습니까?",
     "deleteMessageSingle": "파일 혹은 디렉토리를 삭제하시겠습니까?",
+    "deleteMessageShare": "이 공유({path})를 삭제하시겠습니까?",
+    "deleteUser": "이 계정을 삭제하시겠습니까?",
     "deleteTitle": "파일 삭제",
     "displayName": "게시 이름:",
     "download": "파일 다운로드",
@@ -122,7 +155,11 @@
     "show": "보기",
     "size": "크기",
     "upload": "업로드",
-    "uploadMessage": "업로드 옵션을 선택하세요."
+    "uploadFiles": "{files}개의 파일 업로드 중...",
+    "uploadMessage": "업로드 옵션을 선택하세요.",
+    "optionalPassword": "비밀번호 (선택)",
+    "resolution": "해상도",
+    "discardEditorChanges": "변경 사항을 취소하시겠습니까?"
   },
   "search": {
     "images": "이미지",
@@ -135,6 +172,7 @@
     "video": "비디오"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "관리자",
     "administrator": "관리자",
     "allowCommands": "명령 실행",
@@ -142,6 +180,7 @@
     "allowNew": "파일/디렉토리 생성 허용",
     "allowPublish": "새 포스트/페이지 생성 허용",
     "allowSignup": "사용자 가입 허용",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(수정하지 않으면 비워두세요)",
     "branding": "브랜딩",
     "brandingDirectoryPath": "브랜드 디렉토리 경로",
@@ -151,6 +190,14 @@
     "commandRunnerHelp": "이벤트에 해당하는 명령을 설정하세요. 줄당 1개의 명령을 적으세요. 환경 변수{0} 와 {1}이 사용가능하며,  {0} 은 {1}에 상대 경로 입니다. 자세한 사항은 {2} 를 참조하세요.",
     "commandsUpdated": "명령 수정됨!",
     "createUserDir": "Auto create user home dir while adding new user",
+    "minimumPasswordLength": "최소 비밀번호 길이",
+    "tusUploads": "분할 업로드",
+    "tusUploadsHelp": "File Browser는 불안정한 네트워크에서도 효율적이고 신뢰성 있는 분할 업로드를 지원합니다.",
+    "tusUploadsChunkSize": "업로드 요청의 최대 크기 (예: 10MB, 1GB)",
+    "tusUploadsRetryCount": "업로드 실패 시 재시도 횟수",
+    "userHomeBasePath": "사용자 홈 폴더 기본 경로",
+    "userScopeGenerationPlaceholder": "범위는 자동으로 생성됩니다.",
+    "createUserHomeDirectory": "사용자 홈 폴더 생성",
     "customStylesheet": "커스텀 스타일시트",
     "defaultUserDescription": "아래 사항은 신규 사용자들에 대한 기본 설정입니다.",
     "disableExternalLinks": "외부 링크 감추기",
@@ -190,11 +237,14 @@
     "rules": "룰",
     "rulesHelp": "사용자별로 규칙을 허용/방지를 지정할 수 있습니다. 방지된 파일은 보이지 않고 사용자들은 접근할 수 없습니다. 사용자의 접근 허용 범위와 관련해 정규표현식(regex)과 경로를 지원합니다.\n",
     "scope": "범위",
+    "setDateFormat": "날짜 형식 설정",
     "settingsUpdated": "설정 수정됨!",
     "shareDuration": "공유 기간",
     "shareManagement": "공유 내역 관리",
+    "shareDeleted": "공유 삭제됨!",
     "singleClick": "한번 클릭으로 파일과 폴더를 열도록 합니다.",
     "themes": {
+      "default": "시스템 기본값",
       "dark": "다크테마",
       "light": "라이트테마",
       "title": "테마"

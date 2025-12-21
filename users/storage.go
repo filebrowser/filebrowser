@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 )
 
 // StorageBackend is the interface to implement for a users storage.
@@ -63,7 +63,7 @@ func (s *Storage) Gets(baseScope string) ([]*User, error) {
 	}
 
 	for _, user := range users {
-		if err := user.Clean(baseScope); err != nil { //nolint:govet
+		if err := user.Clean(baseScope); err != nil {
 			return nil, err
 		}
 	}
@@ -109,16 +109,16 @@ func (s *Storage) Delete(id interface{}) error {
 			return err
 		}
 		if user.ID == 1 {
-			return errors.ErrRootUserDeletion
+			return fberrors.ErrRootUserDeletion
 		}
 		return s.back.DeleteByUsername(id)
 	case uint:
 		if id == 1 {
-			return errors.ErrRootUserDeletion
+			return fberrors.ErrRootUserDeletion
 		}
 		return s.back.DeleteByID(id)
 	default:
-		return errors.ErrInvalidDataType
+		return fberrors.ErrInvalidDataType
 	}
 }
 

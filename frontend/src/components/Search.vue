@@ -81,7 +81,7 @@ import { computed, inject, onMounted, ref, watch, onUnmounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
-import { StatusError } from "@/api/utils.ts";
+import { StatusError } from "@/api/utils";
 
 const boxes = {
   image: { label: "images", icon: "insert_photo" },

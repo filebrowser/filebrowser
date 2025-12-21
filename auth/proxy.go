@@ -1,11 +1,10 @@
 package auth
 
 import (
-	"crypto/rand"
 	"errors"
 	"net/http"
 
-	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -22,22 +21,21 @@ type ProxyAuth struct {
 func (a ProxyAuth) Auth(r *http.Request, usr users.Store, setting *settings.Settings, srv *settings.Server) (*users.User, error) {
 	username := r.Header.Get(a.Header)
 	user, err := usr.Get(srv.Root, username)
-	if errors.Is(err, fbErrors.ErrNotExist) {
+	if errors.Is(err, fberrors.ErrNotExist) {
 		return a.createUser(usr, setting, srv, username)
 	}
 	return user, err
 }
 
 func (a ProxyAuth) createUser(usr users.Store, setting *settings.Settings, srv *settings.Server, username string) (*users.User, error) {
-	const passwordSize = 32
-	randomPasswordBytes := make([]byte, passwordSize)
-	_, err := rand.Read(randomPasswordBytes)
+	const randomPasswordLength = settings.DefaultMinimumPasswordLength + 10
+	pwd, err := users.RandomPwd(randomPasswordLength)
 	if err != nil {
 		return nil, err
 	}
 
 	var hashedRandomPassword string
-	hashedRandomPassword, err = users.HashPwd(string(randomPasswordBytes))
+	hashedRandomPassword, err = users.ValidateAndHashPwd(pwd, setting.MinimumPasswordLength)
 	if err != nil {
 		return nil, err
 	}

@@ -3,6 +3,9 @@
     <form @submit="submit">
       <img :src="logoURL" alt="File Browser" />
       <h1>{{ name }}</h1>
+      <p v-if="reason != null" class="logout-message">
+        {{ t(`login.logout_reasons.${reason}`) }}
+      </p>
       <div v-if="error !== ''" class="wrong">{{ error }}</div>
 
       <input
@@ -70,6 +73,8 @@ const toggleMode = () => (createMode.value = !createMode.value);
 
 const $showError = inject<IToastError>("$showError")!;
 
+const reason = route.query["logout-reason"] ?? null;
+
 const submit = async (event: Event) => {
   event.preventDefault();
   event.stopPropagation();
@@ -107,6 +112,13 @@ const submit = async (event: Event) => {
         error.value = t("login.usernameTaken");
       } else if (e.status === 403) {
         error.value = t("login.wrongCredentials");
+      } else if (e.status === 400) {
+        const match = e.message.match(/minimum length is (\d+)/);
+        if (match) {
+          error.value = t("login.passwordTooShort", { min: match[1] });
+        } else {
+          error.value = e.message;
+        }
       } else {
         $showError(e);
       }

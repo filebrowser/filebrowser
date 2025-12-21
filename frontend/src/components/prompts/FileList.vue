@@ -25,9 +25,10 @@
 </template>
 
 <script>
-import { mapState } from "pinia";
+import { mapState, mapActions } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
 
 import url from "@/utils/url";
 import { files } from "@/api";
@@ -35,6 +36,12 @@ import { StatusError } from "@/api/utils.js";
 
 export default {
   name: "file-list",
+  props: {
+    exclude: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data: function () {
     return {
       items: [],
@@ -62,6 +69,7 @@ export default {
     this.abortOngoingNext();
   },
   methods: {
+    ...mapActions(useLayoutStore, ["showHover"]),
     abortOngoingNext() {
       this.nextAbortController.abort();
     },
@@ -90,6 +98,7 @@ export default {
       // move options.
       for (const item of req.items) {
         if (!item.isDir) continue;
+        if (this.exclude?.includes(item.url)) continue;
 
         this.items.push({
           name: item.name,
@@ -156,7 +165,7 @@ export default {
       this.$emit("update:selected", this.selected);
     },
     createDir: async function () {
-      this.$store.commit("showHover", {
+      this.showHover({
         prompt: "newDir",
         action: null,
         confirm: null,

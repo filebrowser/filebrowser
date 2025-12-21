@@ -3,7 +3,7 @@ package share
 import (
 	"time"
 
-	"github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 )
 
 // StorageBackend is the interface to implement for a share storage.
@@ -15,6 +15,7 @@ type StorageBackend interface {
 	Gets(path string, id uint) ([]*Link, error)
 	Save(s *Link) error
 	Delete(hash string) error
+	DeleteWithPathPrefix(path string) error
 }
 
 // Storage is a storage.
@@ -78,7 +79,7 @@ func (s *Storage) GetByHash(hash string) (*Link, error) {
 		if err := s.Delete(link.Hash); err != nil {
 			return nil, err
 		}
-		return nil, errors.ErrNotExist
+		return nil, fberrors.ErrNotExist
 	}
 
 	return link, nil
@@ -117,4 +118,8 @@ func (s *Storage) Save(l *Link) error {
 // Delete wraps a StorageBackend.Delete
 func (s *Storage) Delete(hash string) error {
 	return s.back.Delete(hash)
+}
+
+func (s *Storage) DeleteWithPathPrefix(path string) error {
+	return s.back.DeleteWithPathPrefix(path)
 }

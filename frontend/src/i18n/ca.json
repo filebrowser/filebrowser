@@ -24,6 +24,7 @@
     "ok": "D'acord",
     "permalink": "Enllaç permanent",
     "previous": "Anterior",
+    "preview": "Preview",
     "publish": "Publicar",
     "rename": "Reanomenar",
     "replace": "Substituir",
@@ -41,7 +42,11 @@
     "update": "Actualitzar",
     "upload": "Pujar",
     "openFile": "Obrir fitxer",
-    "discardChanges": "Descartar"
+    "discardChanges": "Descartar",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "Descarregar fitxer",
@@ -73,7 +78,16 @@
     "sortByLastModified": "Ordenar per última modificació",
     "sortByName": "Ordenar per nom",
     "sortBySize": "Ordenar per mida",
-    "noPreview": "La vista prèvia no està disponible per a aquest fitxer."
+    "noPreview": "La vista prèvia no està disponible per a aquest fitxer.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "seleccionar fitxer o carpeta",
@@ -99,7 +113,11 @@
     "submit": "Iniciar sessió",
     "username": "Usuari",
     "usernameTaken": "Nom d'usuari no disponible",
-    "wrongCredentials": "Usuari i/o contrasenya incorrectes"
+    "wrongCredentials": "Usuari i/o contrasenya incorrectes",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanent",
   "prompts": {
@@ -153,6 +171,7 @@
     "video": "Vídeo"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrador",
     "allowCommands": "Executar comandes",
@@ -160,6 +179,7 @@
     "allowNew": "Crear nous fitxers i carpetes",
     "allowPublish": "Publicar nous posts i pàgines",
     "allowSignup": "Permetre registre d'usuaris",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(deixar en blanc per evitar canvis)",
     "branding": "Marca",
     "brandingDirectoryPath": "Ruta de la carpeta de personalització de marca",
@@ -169,6 +189,7 @@
     "commandRunnerHelp": "Aquí pots establir les comandes que s'executen en els esdeveniments anomenats. Has d'escriure'n una per línia. Les variables d'entorn {0} i {1} estaran disponibles, sent {0} relativa a {1}. Per a més informació sobre aquesta característica i les variables d'entorn disponibles, si us plau llegeix el {2}.",
     "commandsUpdated": "Comandes actualitzades!",
     "createUserDir": "Crea automàticament una carpeta d'inici quan s'afegeix un usuari",
+    "minimumPasswordLength": "Minimum password length",
     "tusUploads": "Càrregues a trossos",
     "tusUploadsHelp": "El File Browser suporta càrregues de fitxers a trossos, permetent la creació de càrregues de fitxers eficients, fiables, reanudables i a trossos fins i tot en xarxes poc fiables.",
     "tusUploadsChunkSize": "Indica la mida màxima d'una sol·licitud (s'utilitzaran càrregues directes per a càrregues més petites). Podeu introduir un enter pla que indiqui la mida en bytes o una cadena com 10MB, 1GB, etc.",

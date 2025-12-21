@@ -5,7 +5,7 @@ export default async function search(
   base: string,
   query: string,
   signal: AbortSignal,
-  callback: (item: UploadItem) => void
+  callback: (item: ResourceItem) => void
 ) {
   base = removePrefix(base);
   query = encodeURIComponent(query);
@@ -36,9 +36,9 @@ export default async function search(
 
       for (const line of lines) {
         if (line) {
-          const item = JSON.parse(line) as UploadItem;
+          const item = JSON.parse(line) as ResourceItem;
           item.url = `/files${base}` + url.encodePath(item.path);
-          if (item.dir) {
+          if (item.isDir) {
             item.url += "/";
           }
           callback(item);
