@@ -249,7 +249,7 @@
       "title": "Tēma"
     },
     "user": "Lietotājs",
-    "userCommands": "Commands",
+    "userCommands": "Komandas",
     "userCommandsHelp": "A space separated list with the available commands for this user. Example:\n",
     "userCreated": "User created!",
     "userDefaults": "User default settings",
