@@ -172,7 +172,7 @@
   },
   "settings": {
     "aceEditorTheme": "Ace redaktora tēma",
-    "admin": "Admin",
+    "admin": "Administrators",
     "administrator": "Administrator",
     "allowCommands": "Execute commands",
     "allowEdit": "Edit, rename and delete files or directories",
