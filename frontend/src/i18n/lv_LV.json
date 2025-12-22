@@ -199,7 +199,7 @@
     "createUserHomeDirectory": "Izveidojiet lietotāja mājas direktoriju",
     "customStylesheet": "Pielāgota stila lapa",
     "defaultUserDescription": "Šie ir noklusējuma iestatījumi jaunajiem lietotājiem.",
-    "disableExternalLinks": "Disable external links (except documentation)",
+    "disableExternalLinks": "Atspējot ārējās saites (izņemot dokumentāciju)",
     "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentation",
     "examples": "Examples",
