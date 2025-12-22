@@ -206,7 +206,7 @@
     "executeOnShell": "Izpildīt uz čaulas",
     "executeOnShellDescription": "Pēc noklusējuma failu pārlūks izpilda komandas, tieši izsaucot to bināros failus. Ja vēlaties tās palaist čaulā (piemēram, Bash vai PowerShell), varat to definēt šeit ar nepieciešamajiem argumentiem un karodziņiem. Ja tas ir iestatīts, izpildītā komanda tiks pievienota kā arguments. Tas attiecas gan uz lietotāja komandām, gan notikumu piesaistes rīkiem.",
     "globalRules": "Šis ir globāls atļaušanas un aizliegšanas noteikumu kopums. Tie attiecas uz katru lietotāju. Katra lietotāja iestatījumos varat definēt konkrētus noteikumus, lai tos ignorētu.",
-    "globalSettings": "Global Settings",
+    "globalSettings": "Globālie iestatījumi",
     "hideDotfiles": "Hide dotfiles",
     "insertPath": "Insert the path",
     "insertRegex": "Insert regex expression",
