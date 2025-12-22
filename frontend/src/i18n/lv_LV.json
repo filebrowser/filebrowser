@@ -147,7 +147,7 @@
     "numberFiles": "Failu skaits",
     "rename": "Pārdēvēt",
     "renameMessage": "Ievietojiet jaunu nosaukumu",
-    "replace": "Replace",
+    "replace": "Aizstāt",
     "replaceMessage": "One of the files you're trying to upload has a conflicting name. Do you wish to skip this file and continue to upload or replace the existing one?\n",
     "schedule": "Schedule",
     "scheduleMessage": "Pick a date and time to schedule the publication of this post.",
