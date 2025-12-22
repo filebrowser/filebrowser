@@ -194,7 +194,7 @@
     "tusUploadsHelp": "Failu pārlūks atbalsta failu augšupielādi fragmentos, ļaujot izveidot efektīvu, uzticamu, atsākamu un fragmentos sadalītu failu augšupielādi pat neuzticamos tīklos.",
     "tusUploadsChunkSize": "Norāda pieprasījuma maksimālo izmēru (mazākiem augšupielādes apjomiem tiks izmantota tieša augšupielāde). Varat ievadīt vienkāršu veselu skaitli, kas apzīmē baitu izmēru, vai virkni, piemēram, 10 MB, 1 GB utt.",
     "tusUploadsRetryCount": "Atkārtotu mēģinājumu skaits, kas jāveic, ja fragmenta augšupielāde neizdodas.",
-    "userHomeBasePath": "Base path for user home directories",
+    "userHomeBasePath": "Lietotāja mājas direktoriju bāzes ceļš",
     "userScopeGenerationPlaceholder": "The scope will be auto generated",
     "createUserHomeDirectory": "Create user home directory",
     "customStylesheet": "Custom Stylesheet",
