@@ -146,7 +146,7 @@
     "numberDirs": "Katalogu skaits",
     "numberFiles": "Failu skaits",
     "rename": "Pārdēvēt",
-    "renameMessage": "Insert a new name for",
+    "renameMessage": "Ievietojiet jaunu nosaukumu",
     "replace": "Replace",
     "replaceMessage": "One of the files you're trying to upload has a conflicting name. Do you wish to skip this file and continue to upload or replace the existing one?\n",
     "schedule": "Schedule",
