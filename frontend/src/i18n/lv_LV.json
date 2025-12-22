@@ -151,7 +151,7 @@
     "replaceMessage": "Vienam no failiem, kurus mēģināt augšupielādēt, ir konfliktējošs nosaukums. Vai vēlaties izlaist šo failu un turpināt augšupielādi vai aizstāt esošo?\n",
     "schedule": "Grafiks",
     "scheduleMessage": "Izvēlieties datumu un laiku, lai ieplānotu šī ieraksta publicēšanu.",
-    "show": "Show",
+    "show": "Rādīt",
     "size": "Size",
     "upload": "Upload",
     "uploadFiles": "Uploading {files} files...",
