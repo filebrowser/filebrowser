@@ -187,7 +187,7 @@
     "changePassword": "Mainīt paroli",
     "commandRunner": "Komandu skrējējs",
     "commandRunnerHelp": "Šeit varat iestatīt komandas, kas tiek izpildītas nosauktajos notikumos. Katrā rindā jāraksta pa vienai. Būs pieejami vides mainīgie {0} un {1}, kas ir {0} relatīvi pret {1}. Lai iegūtu plašāku informāciju par šo funkciju un pieejamajiem vides mainīgajiem, lūdzu, izlasiet {2}.",
-    "commandsUpdated": "Commands updated!",
+    "commandsUpdated": "Komandas atjauninātas!",
     "createUserDir": "Auto create user home dir while adding new user",
     "minimumPasswordLength": "Minimum password length",
     "tusUploads": "Chunked Uploads",
