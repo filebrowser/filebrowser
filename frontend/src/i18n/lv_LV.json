@@ -204,7 +204,7 @@
     "documentation": "dokumentācija",
     "examples": "Piemēri",
     "executeOnShell": "Izpildīt uz čaulas",
-    "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you wish to run them on a shell instead (such as Bash or PowerShell), you can define it here with the required arguments and flags. If set, the command you execute will be appended as an argument. This applies to both user commands and event hooks.",
+    "executeOnShellDescription": "Pēc noklusējuma failu pārlūks izpilda komandas, tieši izsaucot to bināros failus. Ja vēlaties tās palaist čaulā (piemēram, Bash vai PowerShell), varat to definēt šeit ar nepieciešamajiem argumentiem un karodziņiem. Ja tas ir iestatīts, izpildītā komanda tiks pievienota kā arguments. Tas attiecas gan uz lietotāja komandām, gan notikumu piesaistes rīkiem.",
     "globalRules": "This is a global set of allow and disallow rules. They apply to every user. You can define specific rules on each user's settings to override these ones.",
     "globalSettings": "Global Settings",
     "hideDotfiles": "Hide dotfiles",
