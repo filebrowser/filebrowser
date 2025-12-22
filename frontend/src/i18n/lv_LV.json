@@ -221,7 +221,7 @@
     "path": "Ceļš",
     "perm": {
       "create": "Izveidojiet failus un direktorijus",
-      "delete": "Delete files and directories",
+      "delete": "Dzēst failus un direktorijus",
       "download": "Download",
       "execute": "Execute commands",
       "modify": "Edit files",
