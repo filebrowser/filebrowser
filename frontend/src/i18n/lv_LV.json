@@ -208,7 +208,7 @@
     "globalRules": "Šis ir globāls atļaušanas un aizliegšanas noteikumu kopums. Tie attiecas uz katru lietotāju. Katra lietotāja iestatījumos varat definēt konkrētus noteikumus, lai tos ignorētu.",
     "globalSettings": "Globālie iestatījumi",
     "hideDotfiles": "Slēpt punktfailus",
-    "insertPath": "Insert the path",
+    "insertPath": "Ievietojiet ceļu",
     "insertRegex": "Insert regex expression",
     "instanceName": "Instance name",
     "language": "Language",
