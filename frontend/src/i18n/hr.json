@@ -44,9 +44,9 @@
     "openFile": "Otvori datoteku",
     "discardChanges": "Odbaci",
     "saveChanges": "Spremi promjene",
-    "editAsText": "Edit as Text",
-    "increaseFontSize": "Increase font size",
-    "decreaseFontSize": "Decrease font size"
+    "editAsText": "Uredi kao tekst",
+    "increaseFontSize": "Povećaj veličinu fonta",
+    "decreaseFontSize": "Smanji veličinu fonta"
   },
   "download": {
     "downloadFile": "Preuzmi Datoteku",
@@ -79,14 +79,14 @@
     "sortByName": "Sortiraj po nazivu",
     "sortBySize": "Sortiraj po veličini",
     "noPreview": "Pregled nije dostupan za ovu datoteku.",
-    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
-    "csvLoadFailed": "Failed to load CSV file.",
-    "showingRows": "Showing {count} row(s)",
-    "columnSeparator": "Column Separator",
+    "csvTooLarge": "CSV datoteka je prevelika za pregled (>5MB). Molimo preuzmite da bi ste ju pregledali.",
+    "csvLoadFailed": "Neuspješno učitavanje CSV datoteke.",
+    "showingRows": "Prikazuje se {count} red(ova)",
+    "columnSeparator": "Separator stupaca",
     "csvSeparators": {
-      "comma": "Comma (,)",
-      "semicolon": "Semicolon (;)",
-      "both": "Both (,) and (;)"
+      "comma": "Zarez (,)",
+      "semicolon": "Točka zarez (;)",
+      "both": "I (,) i (;)"
     }
   },
   "help": {
