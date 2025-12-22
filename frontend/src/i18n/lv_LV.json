@@ -230,7 +230,7 @@
     },
     "permissions": "Atļaujas",
     "permissionsHelp": "Varat iestatīt lietotāju kā administratoru vai izvēlēties atļaujas individuāli. Ja atlasīsiet “Administrators”, visas pārējās opcijas tiks automātiski atzīmētas. Lietotāju pārvaldība joprojām ir administratora privilēģija.\n",
-    "profileSettings": "Profile Settings",
+    "profileSettings": "Profila iestatījumi",
     "ruleExample1": "prevents the access to any dotfile (such as .git, .gitignore) in every folder.\n",
     "ruleExample2": "blocks the access to the file named Caddyfile on the root of the scope.",
     "rules": "Rules",
