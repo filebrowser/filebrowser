@@ -154,7 +154,7 @@
     "show": "Rādīt",
     "size": "Izmērs",
     "upload": "Augšupielādēt",
-    "uploadFiles": "Uploading {files} files...",
+    "uploadFiles": "Notiek {files} failu augšupielāde...",
     "uploadMessage": "Select an option to upload.",
     "optionalPassword": "Optional password",
     "resolution": "Resolution",
