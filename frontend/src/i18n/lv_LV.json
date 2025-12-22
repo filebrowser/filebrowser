@@ -196,7 +196,7 @@
     "tusUploadsRetryCount": "Atkārtotu mēģinājumu skaits, kas jāveic, ja fragmenta augšupielāde neizdodas.",
     "userHomeBasePath": "Lietotāja mājas direktoriju bāzes ceļš",
     "userScopeGenerationPlaceholder": "Darbības joma tiks ģenerēta automātiski",
-    "createUserHomeDirectory": "Create user home directory",
+    "createUserHomeDirectory": "Izveidojiet lietotāja mājas direktoriju",
     "customStylesheet": "Custom Stylesheet",
     "defaultUserDescription": "These are the default settings for new users.",
     "disableExternalLinks": "Disable external links (except documentation)",
