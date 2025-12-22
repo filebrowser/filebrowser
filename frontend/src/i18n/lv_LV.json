@@ -145,7 +145,7 @@
     "newFileMessage": "Nosauciet savu jauno failu.",
     "numberDirs": "Katalogu skaits",
     "numberFiles": "Failu skaits",
-    "rename": "Rename",
+    "rename": "Pārdēvēt",
     "renameMessage": "Insert a new name for",
     "replace": "Replace",
     "replaceMessage": "One of the files you're trying to upload has a conflicting name. Do you wish to skip this file and continue to upload or replace the existing one?\n",
