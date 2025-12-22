@@ -237,7 +237,7 @@
     "rulesHelp": "Šeit varat definēt atļaušanas un aizliegšanas noteikumu kopu šim konkrētajam lietotājam. Bloķētie faili netiks rādīti sarakstos, un lietotājs tiem nevarēs piekļūt. Mēs atbalstām regulārās izteiksmes un ceļus attiecībā pret lietotāja darbības jomu.\n",
     "scope": "Darbības joma",
     "setDateFormat": "Iestatiet precīzu datuma formātu",
-    "settingsUpdated": "Settings updated!",
+    "settingsUpdated": "Iestatījumi atjaunināti!",
     "shareDuration": "Share Duration",
     "shareManagement": "Share Management",
     "shareDeleted": "Share deleted!",
