@@ -248,7 +248,7 @@
       "light": "Gaiša",
       "title": "Tēma"
     },
-    "user": "User",
+    "user": "Lietotājs",
     "userCommands": "Commands",
     "userCommandsHelp": "A space separated list with the available commands for this user. Example:\n",
     "userCreated": "User created!",
