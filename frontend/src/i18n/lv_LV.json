@@ -179,7 +179,7 @@
     "allowNew": "Izveidojiet jaunus failus un direktorijus",
     "allowPublish": "Publicēt jaunus ierakstus un lapas",
     "allowSignup": "Atļaut lietotājiem reģistrēties",
-    "hideLoginButton": "Hide the login button from public pages",
+    "hideLoginButton": "Paslēpt pieteikšanās pogu publiskajās lapās",
     "avoidChanges": "(leave blank to avoid changes)",
     "branding": "Branding",
     "brandingDirectoryPath": "Branding directory path",
