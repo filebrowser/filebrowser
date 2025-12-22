@@ -212,7 +212,7 @@
     "insertRegex": "Ievietojiet regex izteiksmi",
     "instanceName": "Gadījuma nosaukums",
     "language": "Valoda",
-    "lockPassword": "Prevent the user from changing the password",
+    "lockPassword": "Neļaut lietotājam mainīt paroli",
     "newPassword": "Your new password",
     "newPasswordConfirm": "Confirm your new password",
     "newUser": "New User",
