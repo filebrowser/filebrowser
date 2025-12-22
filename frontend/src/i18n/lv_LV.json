@@ -250,7 +250,7 @@
     },
     "user": "Lietotājs",
     "userCommands": "Komandas",
-    "userCommandsHelp": "A space separated list with the available commands for this user. Example:\n",
+    "userCommandsHelp": "Ar atstarpi atdalīts saraksts ar šim lietotājam pieejamajām komandām. Piemērs:\n",
     "userCreated": "User created!",
     "userDefaults": "User default settings",
     "userDeleted": "User deleted!",
