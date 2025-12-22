@@ -180,7 +180,7 @@
     "allowPublish": "Publicēt jaunus ierakstus un lapas",
     "allowSignup": "Atļaut lietotājiem reģistrēties",
     "hideLoginButton": "Paslēpt pieteikšanās pogu publiskajās lapās",
-    "avoidChanges": "(leave blank to avoid changes)",
+    "avoidChanges": "(atstājiet tukšu, lai izvairītos no izmaiņām)",
     "branding": "Branding",
     "brandingDirectoryPath": "Branding directory path",
     "brandingHelp": "You can customize how your File Browser instance looks and feels by changing its name, replacing the logo, adding custom styles and even disable external links to GitHub.\nFor more information about custom branding, please check out the {0}.",
