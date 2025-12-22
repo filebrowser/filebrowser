@@ -188,7 +188,7 @@
     "commandRunner": "Komandu skrējējs",
     "commandRunnerHelp": "Šeit varat iestatīt komandas, kas tiek izpildītas nosauktajos notikumos. Katrā rindā jāraksta pa vienai. Būs pieejami vides mainīgie {0} un {1}, kas ir {0} relatīvi pret {1}. Lai iegūtu plašāku informāciju par šo funkciju un pieejamajiem vides mainīgajiem, lūdzu, izlasiet {2}.",
     "commandsUpdated": "Komandas atjauninātas!",
-    "createUserDir": "Auto create user home dir while adding new user",
+    "createUserDir": "Automātiski izveidot lietotāja mājas direktoriju, pievienojot jaunu lietotāju",
     "minimumPasswordLength": "Minimum password length",
     "tusUploads": "Chunked Uploads",
     "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
