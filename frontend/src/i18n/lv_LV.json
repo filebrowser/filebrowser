@@ -183,7 +183,7 @@
     "avoidChanges": "(atstājiet tukšu, lai izvairītos no izmaiņām)",
     "branding": "Zīmols",
     "brandingDirectoryPath": "Zīmola direktorijas ceļš",
-    "brandingHelp": "You can customize how your File Browser instance looks and feels by changing its name, replacing the logo, adding custom styles and even disable external links to GitHub.\nFor more information about custom branding, please check out the {0}.",
+    "brandingHelp": "Jūs varat pielāgot sava failu pārlūka instances izskatu un darbību, mainot tās nosaukumu, aizstājot logotipu, pievienojot pielāgotus stilus un pat atspējojot ārējās saites uz GitHub.\nLai iegūtu plašāku informāciju par pielāgotu zīmola veidošanu, lūdzu, skatiet {0}.",
     "changePassword": "Change Password",
     "commandRunner": "Command runner",
     "commandRunnerHelp": "Here you can set commands that are executed in the named events. You must write one per line. The environment variables {0} and {1} will be available, being {0} relative to {1}. For more information about this feature and the available environment variables, please read the {2}.",
