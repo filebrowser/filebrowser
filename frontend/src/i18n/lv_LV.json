@@ -222,7 +222,7 @@
     "perm": {
       "create": "Izveidojiet failus un direktorijus",
       "delete": "Dzēst failus un direktorijus",
-      "download": "Download",
+      "download": "Lejupielādēt",
       "execute": "Execute commands",
       "modify": "Edit files",
       "rename": "Rename or move files and directories",
