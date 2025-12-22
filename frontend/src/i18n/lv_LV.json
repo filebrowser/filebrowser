@@ -191,7 +191,7 @@
     "createUserDir": "Automātiski izveidot lietotāja mājas direktoriju, pievienojot jaunu lietotāju",
     "minimumPasswordLength": "Minimālais paroles garums",
     "tusUploads": "Sadalītas augšupielādes",
-    "tusUploadsHelp": "File Browser supports chunked file uploads, allowing for the creation of efficient, reliable, resumable and chunked file uploads even on unreliable networks.",
+    "tusUploadsHelp": "Failu pārlūks atbalsta failu augšupielādi fragmentos, ļaujot izveidot efektīvu, uzticamu, atsākamu un fragmentos sadalītu failu augšupielādi pat neuzticamos tīklos.",
     "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
     "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Base path for user home directories",
