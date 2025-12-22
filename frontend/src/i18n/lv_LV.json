@@ -201,7 +201,7 @@
     "defaultUserDescription": "Šie ir noklusējuma iestatījumi jaunajiem lietotājiem.",
     "disableExternalLinks": "Atspējot ārējās saites (izņemot dokumentāciju)",
     "disableUsedDiskPercentage": "Atspējot izmantotā diska procentuālās daļas grafiku",
-    "documentation": "documentation",
+    "documentation": "dokumentācija",
     "examples": "Examples",
     "executeOnShell": "Execute on shell",
     "executeOnShellDescription": "By default, File Browser executes the commands by calling their binaries directly. If you wish to run them on a shell instead (such as Bash or PowerShell), you can define it here with the required arguments and flags. If set, the command you execute will be appended as an argument. This applies to both user commands and event hooks.",
