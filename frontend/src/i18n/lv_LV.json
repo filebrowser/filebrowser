@@ -192,7 +192,7 @@
     "minimumPasswordLength": "Minimālais paroles garums",
     "tusUploads": "Sadalītas augšupielādes",
     "tusUploadsHelp": "Failu pārlūks atbalsta failu augšupielādi fragmentos, ļaujot izveidot efektīvu, uzticamu, atsākamu un fragmentos sadalītu failu augšupielādi pat neuzticamos tīklos.",
-    "tusUploadsChunkSize": "Indicates to maximum size of a request (direct uploads will be used for smaller uploads). You may input a plain integer denoting byte size input or a string like 10MB, 1GB etc.",
+    "tusUploadsChunkSize": "Norāda pieprasījuma maksimālo izmēru (mazākiem augšupielādes apjomiem tiks izmantota tieša augšupielāde). Varat ievadīt vienkāršu veselu skaitli, kas apzīmē baitu izmēru, vai virkni, piemēram, 10 MB, 1 GB utt.",
     "tusUploadsRetryCount": "Number of retries to perform if a chunk fails to upload.",
     "userHomeBasePath": "Base path for user home directories",
     "userScopeGenerationPlaceholder": "The scope will be auto generated",
