@@ -148,7 +148,7 @@
     "rename": "Pārdēvēt",
     "renameMessage": "Ievietojiet jaunu nosaukumu",
     "replace": "Aizstāt",
-    "replaceMessage": "One of the files you're trying to upload has a conflicting name. Do you wish to skip this file and continue to upload or replace the existing one?\n",
+    "replaceMessage": "Vienam no failiem, kurus mēģināt augšupielādēt, ir konfliktējošs nosaukums. Vai vēlaties izlaist šo failu un turpināt augšupielādi vai aizstāt esošo?\n",
     "schedule": "Schedule",
     "scheduleMessage": "Pick a date and time to schedule the publication of this post.",
     "show": "Show",
