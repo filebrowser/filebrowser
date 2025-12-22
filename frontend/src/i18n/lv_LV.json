@@ -226,7 +226,7 @@
       "execute": "Izpildīt komandas",
       "modify": "Rediģēt failus",
       "rename": "Pārdēvēt vai pārvietot failus un direktorijus",
-      "share": "Share files"
+      "share": "Kopīgojiet failus"
     },
     "permissions": "Permissions",
     "permissionsHelp": "You can set the user to be an administrator or choose the permissions individually. If you select \"Administrator\", all of the other options will be automatically checked. The management of users remains a privilege of an administrator.\n",
