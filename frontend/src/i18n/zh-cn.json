@@ -116,7 +116,7 @@
     "wrongCredentials": "用户名或密码错误",
     "passwordTooShort": "密码必须至少包含 {min} 个字符",
     "logout_reasons": {
-      "inactivity": "由于未活动,您已登出。"
+      "inactivity": "由于未活动，您已登出。"
     }
   },
   "permanent": "永久",
