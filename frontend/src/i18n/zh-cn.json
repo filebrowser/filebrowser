@@ -84,7 +84,7 @@
     "showingRows": "正在显示 {count} 行",
     "columnSeparator": "列分隔符",
     "csvSeparators": {
-      "comma": "Comma (,)",
+      "comma": "逗号 (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
     }
