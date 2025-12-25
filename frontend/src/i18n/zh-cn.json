@@ -86,7 +86,7 @@
     "csvSeparators": {
       "comma": "逗号 (,)",
       "semicolon": "分号 (;)",
-      "both": "Both (,) and (;)"
+      "both": "逗号 (,) 和分号 (;)"
     }
   },
   "help": {
