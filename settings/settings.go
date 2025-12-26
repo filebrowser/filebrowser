@@ -59,6 +59,7 @@ type Server struct {
 	ResizePreview         bool   `json:"resizePreview"`
 	EnableExec            bool   `json:"enableExec"`
 	TypeDetectionByHeader bool   `json:"typeDetectionByHeader"`
+	ImageResolutionCal    bool   `json:"imageResolutionCalculation"`
 	AuthHook              string `json:"authHook"`
 	TokenExpirationTime   string `json:"tokenExpirationTime"`
 }
