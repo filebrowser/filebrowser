@@ -99,7 +99,7 @@ func getProxyAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (a
 		return nil, err
 	}
 
-	if header == ""  && defaultAuther != nil{
+	if header == ""  && defaultAuther != nil {
 		header = defaultAuther["header"].(string)
 	}
 
