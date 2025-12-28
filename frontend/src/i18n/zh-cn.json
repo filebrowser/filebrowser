@@ -42,6 +42,7 @@
     "update": "更新",
     "upload": "上传",
     "openFile": "打开文件",
+    "stopSearch": "停止搜索",
     "discardChanges": "放弃更改",
     "saveChanges": "保存更改",
     "editAsText": "以文本形式编辑",
