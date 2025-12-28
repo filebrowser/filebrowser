@@ -135,6 +135,11 @@ file named .filebrowser.{json, toml, yaml, yml} in the following directories:
 - $HOME/
 - /etc/filebrowser/
 
+**Note:** Only the options listed below can be set via the config file or
+environment variables. Other configuration options live exclusively in the
+database and so they must be set by the "config set" or "config
+import" commands.
+
 The precedence of the configuration values are as follows:
 
 - Flags
