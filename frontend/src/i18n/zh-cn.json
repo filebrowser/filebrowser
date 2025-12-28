@@ -42,7 +42,9 @@
     "update": "更新",
     "upload": "上传",
     "openFile": "打开文件",
+    "stopSearch": "停止搜索",
     "discardChanges": "放弃更改",
+    "stopSearch": "Stop searching",
     "saveChanges": "保存更改",
     "editAsText": "以文本形式编辑",
     "increaseFontSize": "增大字体大小",
@@ -82,11 +84,11 @@
     "csvTooLarge": "CSV文件大到无法预览(>5MB)。请下载查看。",
     "csvLoadFailed": "加载 CSV 文件失败。",
     "showingRows": "正在显示 {count} 行",
-    "columnSeparator": "Column Separator",
+    "columnSeparator": "列分隔符",
     "csvSeparators": {
-      "comma": "Comma (,)",
-      "semicolon": "Semicolon (;)",
-      "both": "Both (,) and (;)"
+      "comma": "逗号 (,)",
+      "semicolon": "分号 (;)",
+      "both": "逗号 (,) 和分号 (;)"
     }
   },
   "help": {
@@ -116,7 +118,7 @@
     "wrongCredentials": "用户名或密码错误",
     "passwordTooShort": "密码必须至少包含 {min} 个字符",
     "logout_reasons": {
-      "inactivity": "由于未活动,您已登出。"
+      "inactivity": "由于未活动，您已登出。"
     }
   },
   "permanent": "永久",
@@ -171,7 +173,7 @@
     "video": "视频"
   },
   "settings": {
-    "aceEditorTheme": "Ace editor 主题",
+    "aceEditorTheme": "Ace编辑器主题",
     "admin": "管理员",
     "administrator": "管理员",
     "allowCommands": "执行命令（Shell 命令）",
