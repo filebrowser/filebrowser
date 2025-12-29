@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.53.0](https://github.com/filebrowser/filebrowser/compare/v2.52.0...v2.53.0) (2025-12-29)
+
+
+### Features
+
+* add "disable image resolution calculation" flag ([#5638](https://github.com/filebrowser/filebrowser/issues/5638)) ([a2d80c6](https://github.com/filebrowser/filebrowser/commit/a2d80c62c1c17962e566f68fb7cac6960ed3e4cb))
+* support streaming response for search results ([#5630](https://github.com/filebrowser/filebrowser/issues/5630)) ([20bfd13](https://github.com/filebrowser/filebrowser/commit/20bfd131c6a4fca48a645b52171c2d1cc3ce92b7))
+* update translations ([a12a612](https://github.com/filebrowser/filebrowser/commit/a12a612970d6cc3dfbca1b35ef3a60a887a4effb))
+* update translations ([#5626](https://github.com/filebrowser/filebrowser/issues/5626)) ([f899756](https://github.com/filebrowser/filebrowser/commit/f89975603e29b9f1fc05aec58afb42bbd56ed696))
+* update translations ([#5631](https://github.com/filebrowser/filebrowser/issues/5631)) ([032d6c7](https://github.com/filebrowser/filebrowser/commit/032d6c7520a64686c9d9b1218562256f629b4703))
+
+
+### Bug Fixes
+
+* conversion of backslashes in file paths for archive creation ([#5637](https://github.com/filebrowser/filebrowser/issues/5637)) ([9595f39](https://github.com/filebrowser/filebrowser/commit/9595f3939c1c129ed875a47adcc4fbcfad9a0e65))
+* Don't crash on invalid config import ([#5640](https://github.com/filebrowser/filebrowser/issues/5640)) ([79d1aa9](https://github.com/filebrowser/filebrowser/commit/79d1aa9229b076ee8e3b71d6cf061fc90738f4da))
+* fix nil deref in config set command ([#5641](https://github.com/filebrowser/filebrowser/issues/5641)) ([60b1ee8](https://github.com/filebrowser/filebrowser/commit/60b1ee8bb9e18b21d7f2c04cb1cc90046cecd3e1))
+
 ## [2.52.0](https://github.com/filebrowser/filebrowser/compare/v2.51.2...v2.52.0) (2025-12-13)
 
 
