@@ -41,6 +41,7 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			Modify:     d.user.Perm.Modify,
 			Expand:     false,
 			ReadHeader: d.server.TypeDetectionByHeader,
+			CalcImgRes: d.server.TypeDetectionByHeader,
 			Checker:    d,
 			Token:      link.Token,
 		})
