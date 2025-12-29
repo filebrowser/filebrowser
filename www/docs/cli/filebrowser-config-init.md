@@ -36,10 +36,10 @@ filebrowser config init [flags]
       --dateFormat                       use date format (true for absolute time, false for relative)
       --dirMode string                   mode bits that new directories are created with (default "0o750")
       --disableExec                      disables Command Runner feature (default true)
+      --disableImageResolutionCalc       disables image resolution calculation by reading image files
       --disablePreviewResize             disable resize of image previews
       --disableThumbnails                disable image thumbnails
       --disableTypeDetectionByHeader     disables type detection by reading file headers
-      --disableImageResolutionCalc       disables image resolution calculation by reading image files
       --fileMode string                  mode bits that new files are created with (default "0o640")
   -h, --help                             help for init
       --hideDotfiles                     hide dotfiles

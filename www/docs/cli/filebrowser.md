@@ -57,10 +57,10 @@ filebrowser [flags]
   -c, --config string                  config file path
   -d, --database string                database path (default "./filebrowser.db")
       --disableExec                    disables Command Runner feature (default true)
+      --disableImageResolutionCalc     disables image resolution calculation by reading image files
       --disablePreviewResize           disable resize of image previews
       --disableThumbnails              disable image thumbnails
       --disableTypeDetectionByHeader   disables type detection by reading file headers
-      --disableImageResolutionCalc     disables image resolution calculation by reading image files
   -h, --help                           help for filebrowser
       --imageProcessors int            image processors count (default 4)
   -k, --key string                     tls key
