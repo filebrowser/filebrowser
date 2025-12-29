@@ -308,6 +308,9 @@ func getSettings(flags *pflag.FlagSet, set *settings.Settings, ser *settings.Ser
 		case "disableTypeDetectionByHeader":
 			ser.TypeDetectionByHeader, err = flags.GetBool(flag.Name)
 			ser.TypeDetectionByHeader = !ser.TypeDetectionByHeader
+		case "disableImageResolutionCalc":
+			ser.ImageResolutionCal, err = flags.GetBool(flag.Name)
+			ser.ImageResolutionCal = !ser.ImageResolutionCal
 
 		// Settings flags from [addConfigFlags]
 		case "signup":

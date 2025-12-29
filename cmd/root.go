@@ -108,6 +108,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.Bool("disablePreviewResize", false, "disable resize of image previews")
 	flags.Bool("disableExec", true, "disables Command Runner feature")
 	flags.Bool("disableTypeDetectionByHeader", false, "disables type detection by reading file headers")
+	flags.Bool("disableImageResolutionCalc", false, "disables image resolution calculation by reading image files")
 }
 
 var rootCmd = &cobra.Command{
@@ -134,6 +135,11 @@ file named .filebrowser.{json, toml, yaml, yml} in the following directories:
 - ./
 - $HOME/
 - /etc/filebrowser/
+
+**Note:** Only the options listed below can be set via the config file or
+environment variables. Other configuration options live exclusively in the
+database and so they must be set by the "config set" or "config
+import" commands.
 
 The precedence of the configuration values are as follows:
 
@@ -331,6 +337,10 @@ func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, e
 		server.TypeDetectionByHeader = !v.GetBool("disableTypeDetectionByHeader")
 	}
 
+	if v.IsSet("disableImageResolutionCalc") {
+		server.ImageResolutionCal = !v.GetBool("disableImageResolutionCalc")
+	}
+
 	if v.IsSet("disableExec") {
 		server.EnableExec = !v.GetBool("disableExec")
 	}
@@ -439,6 +449,7 @@ func quickSetup(v *viper.Viper, s *storage.Storage) error {
 		ResizePreview:         !v.GetBool("disablePreviewResize"),
 		EnableExec:            !v.GetBool("disableExec"),
 		TypeDetectionByHeader: !v.GetBool("disableTypeDetectionByHeader"),
+		ImageResolutionCal:    !v.GetBool("disableImageResolutionCalc"),
 	}
 
 	err = s.Settings.SaveServer(ser)
