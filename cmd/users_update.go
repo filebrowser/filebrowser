@@ -52,13 +52,14 @@ options you want to change.`,
 		}
 
 		defaults := settings.UserDefaults{
-			Scope:       user.Scope,
-			Locale:      user.Locale,
-			ViewMode:    user.ViewMode,
-			SingleClick: user.SingleClick,
-			Perm:        user.Perm,
-			Sorting:     user.Sorting,
-			Commands:    user.Commands,
+			Scope:                 user.Scope,
+			Locale:                user.Locale,
+			ViewMode:              user.ViewMode,
+			SingleClick:           user.SingleClick,
+			RedirectAfterCopyMove: user.RedirectAfterCopyMove,
+			Perm:                  user.Perm,
+			Sorting:               user.Sorting,
+			Commands:              user.Commands,
 		}
 
 		err = getUserDefaults(flags, &defaults, false)
@@ -70,6 +71,7 @@ options you want to change.`,
 		user.Locale = defaults.Locale
 		user.ViewMode = defaults.ViewMode
 		user.SingleClick = defaults.SingleClick
+		user.RedirectAfterCopyMove = defaults.RedirectAfterCopyMove
 		user.Perm = defaults.Perm
 		user.Commands = defaults.Commands
 		user.Sorting = defaults.Sorting
