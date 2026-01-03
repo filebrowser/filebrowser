@@ -250,13 +250,28 @@ func tusPatchHandler() handleFunc {
 			return http.StatusInternalServerError, fmt.Errorf("could not seek file: %w", err)
 		}
 
+		// Calculate maximum bytes we should accept to prevent quota bypass
+		maxBytesToWrite := uploadLength - uploadOffset
+		if maxBytesToWrite <= 0 {
+			return http.StatusBadRequest, fmt.Errorf("upload already complete")
+		}
+
+		// Use LimitReader to enforce the declared upload length
+		// This prevents clients from bypassing quota by falsifying Upload-Length header
 		defer r.Body.Close()
-		bytesWritten, err := io.Copy(openFile, r.Body)
+		limitedReader := io.LimitReader(r.Body, maxBytesToWrite)
+		bytesWritten, err := io.Copy(openFile, limitedReader)
 		if err != nil {
 			return http.StatusInternalServerError, fmt.Errorf("could not write to file: %w", err)
 		}
 
 		newOffset := uploadOffset + bytesWritten
+
+		// Verify we haven't exceeded the declared upload length (defense in depth)
+		if newOffset > uploadLength {
+			return http.StatusBadRequest, fmt.Errorf("upload exceeded declared length")
+		}
+
 		w.Header().Set("Upload-Offset", strconv.FormatInt(newOffset, 10))
 
 		if newOffset >= uploadLength {
