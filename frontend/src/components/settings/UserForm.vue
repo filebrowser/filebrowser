@@ -58,6 +58,13 @@
     <permissions v-model:perm="user.perm" />
     <commands v-if="enableExec" v-model:commands="user.commands" />
 
+    <quota-input
+      v-if="!isDefault && isLoggedInUserAdmin"
+      v-model:quota-limit="user.quotaLimit"
+      v-model:quota-unit="user.quotaUnit"
+      v-model:enforce-quota="user.enforceQuota"
+    />
+
     <div v-if="!isDefault">
       <h3>{{ t("settings.rules") }}</h3>
       <p class="small">{{ t("settings.rulesHelp") }}</p>
@@ -71,11 +78,15 @@ import Languages from "./Languages.vue";
 import Rules from "./Rules.vue";
 import Permissions from "./Permissions.vue";
 import Commands from "./Commands.vue";
+import QuotaInput from "./QuotaInput.vue";
 import { enableExec } from "@/utils/constants";
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useAuthStore } from "@/stores/auth";
 
 const { t } = useI18n();
+const authStore = useAuthStore();
+const isLoggedInUserAdmin = computed(() => authStore.user?.perm.admin);
 
 const createUserDirData = ref<boolean | null>(null);
 const originalUserScope = ref<string | null>(null);

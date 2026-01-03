@@ -47,6 +47,11 @@ export async function upload(
           return false;
         }
 
+        // Do not retry for quota exceeded (413 Request Entity Too Large)
+        if (status === 413) {
+          return false;
+        }
+
         return true;
       },
       onError: function (error: Error | tus.DetailedError) {
@@ -56,12 +61,29 @@ export async function upload(
           return reject(error);
         }
 
-        const message =
-          error instanceof tus.DetailedError
-            ? error.originalResponse === null
-              ? "000 No connection"
-              : error.originalResponse.getBody()
-            : "Upload failed";
+        let message = "Upload failed";
+        
+        if (error instanceof tus.DetailedError) {
+          if (error.originalResponse === null) {
+            message = "000 No connection";
+          } else {
+            const status = error.originalResponse.getStatus();
+            
+            // Handle quota exceeded error (413)
+            if (status === 413) {
+              const quotaUsed = error.originalResponse.getHeader("X-Quota-Used");
+              const quotaLimit = error.originalResponse.getHeader("X-Quota-Limit");
+              
+              if (quotaUsed && quotaLimit) {
+                message = `Cannot upload file: storage quota exceeded. Current usage: ${quotaUsed}, Limit: ${quotaLimit}`;
+              } else {
+                message = "Cannot upload file: storage quota exceeded";
+              }
+            } else {
+              message = error.originalResponse.getBody();
+            }
+          }
+        }
 
         console.error(error);
 

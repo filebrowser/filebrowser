@@ -76,7 +76,7 @@ func keepUploadActive(filePath string) func() {
 }
 
 func tusPostHandler() handleFunc {
-	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	return withUser(withQuotaCheck(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
 			return http.StatusForbidden, nil
 		}
@@ -155,7 +155,7 @@ func tusPostHandler() handleFunc {
 
 		w.Header().Set("Location", path)
 		return http.StatusCreated, nil
-	})
+	}))
 }
 
 func tusHeadHandler() handleFunc {
@@ -190,7 +190,7 @@ func tusHeadHandler() handleFunc {
 }
 
 func tusPatchHandler() handleFunc {
-	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	return withUser(withQuotaCheck(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
 			return http.StatusForbidden, nil
 		}
@@ -265,7 +265,7 @@ func tusPatchHandler() handleFunc {
 		}
 
 		return http.StatusNoContent, nil
-	})
+	}))
 }
 
 func tusDeleteHandler() handleFunc {

@@ -99,6 +99,10 @@ const fetchData = async () => {
         rules: [],
         lockPassword: false,
         id: 0,
+        quotaLimit: 0,
+        quotaUnit: "GB",
+        enforceQuota: false,
+        quotaUsed: 0,
       };
     } else {
       const id = Array.isArray(route.params.id)

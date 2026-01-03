@@ -99,7 +99,7 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 }
 
 func resourcePostHandler(fileCache FileCache) handleFunc {
-	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	return withUser(withQuotaCheck(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
 			return http.StatusForbidden, nil
 		}
@@ -150,10 +150,10 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 		}
 
 		return errToStatus(err), err
-	})
+	}))
 }
 
-var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+var resourcePutHandler = withUser(withQuotaCheck(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	if !d.user.Perm.Modify || !d.Check(r.URL.Path) {
 		return http.StatusForbidden, nil
 	}
@@ -183,7 +183,7 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 	}, "save", r.URL.Path, "", d.user)
 
 	return errToStatus(err), err
-})
+}))
 
 func resourcePatchHandler(fileCache FileCache) handleFunc {
 	return withUser(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {

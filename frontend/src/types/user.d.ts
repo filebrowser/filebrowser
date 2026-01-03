@@ -14,6 +14,10 @@ interface IUser {
   viewMode: ViewModeType;
   sorting?: Sorting;
   aceEditorTheme: string;
+  quotaLimit: number;
+  quotaUnit: string;
+  enforceQuota: boolean;
+  quotaUsed: number;
 }
 
 type ViewModeType = "list" | "mosaic" | "mosaic gallery";
@@ -31,6 +35,9 @@ interface IUserForm {
   hideDotfiles?: boolean;
   singleClick?: boolean;
   dateFormat?: boolean;
+  quotaLimit?: number;
+  quotaUnit?: string;
+  enforceQuota?: boolean;
 }
 
 interface Permissions {
@@ -62,6 +69,14 @@ interface IRule {
 
 interface IRegexp {
   raw: string;
+}
+
+interface IQuotaInfo {
+  limit: number;
+  used: number;
+  unit: string;
+  enforce: boolean;
+  percentage: number;
 }
 
 type UserTheme = "light" | "dark" | "";

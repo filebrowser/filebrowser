@@ -41,3 +41,7 @@ export async function remove(id: number) {
     method: "DELETE",
   });
 }
+
+export async function getQuota(id: number) {
+  return fetchJSON<IQuotaInfo>(`/api/users/${id}/quota`, {});
+}
