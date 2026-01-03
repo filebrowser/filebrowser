@@ -258,7 +258,8 @@
     "userManagement": "Gestion des utilisateur·ices",
     "userUpdated": "Utilisateur·ice mis à jour !",
     "username": "Nom d'utilisateur·ice",
-    "users": "Utilisateur·ices"
+    "users": "Utilisateur·ices",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Aide",
