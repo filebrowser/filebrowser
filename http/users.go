@@ -12,6 +12,7 @@ import (
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
+	"github.com/filebrowser/filebrowser/v2/auth"
 	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -117,6 +118,12 @@ var userPostHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *
 		return http.StatusBadRequest, err
 	}
 
+	if d.settings.AuthMethod == auth.MethodJSONAuth {
+		if !users.CheckPwd(req.CurrentPassword, d.user.Password) {
+			return http.StatusBadRequest, fberrors.ErrCurrentPasswordIncorrect
+		}
+	}
+
 	if len(req.Which) != 0 {
 		return http.StatusBadRequest, nil
 	}
@@ -151,6 +158,27 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 	req, err := getUser(w, r)
 	if err != nil {
 		return http.StatusBadRequest, err
+	}
+
+	if d.settings.AuthMethod == auth.MethodJSONAuth {
+		var sensibleFields = map[string]struct{}{
+			"all":          {},
+			"username":     {},
+			"password":     {},
+			"scope":        {},
+			"lockPassword": {},
+			"commands":     {},
+			"perm":         {},
+		}
+
+		for _, field := range req.Which {
+			if _, ok := sensibleFields[field]; ok {
+				if !users.CheckPwd(req.CurrentPassword, d.user.Password) {
+					return http.StatusBadRequest, fberrors.ErrCurrentPasswordIncorrect
+				}
+				break
+			}
+		}
 	}
 
 	if req.Data.ID != d.raw.(uint) {
