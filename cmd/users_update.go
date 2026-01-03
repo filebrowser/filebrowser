@@ -52,13 +52,16 @@ options you want to change.`,
 		}
 
 		defaults := settings.UserDefaults{
-			Scope:       user.Scope,
-			Locale:      user.Locale,
-			ViewMode:    user.ViewMode,
-			SingleClick: user.SingleClick,
-			Perm:        user.Perm,
-			Sorting:     user.Sorting,
-			Commands:    user.Commands,
+			Scope:        user.Scope,
+			Locale:       user.Locale,
+			ViewMode:     user.ViewMode,
+			SingleClick:  user.SingleClick,
+			Perm:         user.Perm,
+			Sorting:      user.Sorting,
+			Commands:     user.Commands,
+			QuotaLimit:   user.QuotaLimit,
+			QuotaUnit:    user.QuotaUnit,
+			EnforceQuota: user.EnforceQuota,
 		}
 
 		err = getUserDefaults(flags, &defaults, false)
@@ -73,6 +76,9 @@ options you want to change.`,
 		user.Perm = defaults.Perm
 		user.Commands = defaults.Commands
 		user.Sorting = defaults.Sorting
+		user.QuotaLimit = defaults.QuotaLimit
+		user.QuotaUnit = defaults.QuotaUnit
+		user.EnforceQuota = defaults.EnforceQuota
 		user.LockPassword, err = flags.GetBool("lockPassword")
 		if err != nil {
 			return err

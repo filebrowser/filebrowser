@@ -34,6 +34,10 @@ type userInfo struct {
 	DateFormat     bool              `json:"dateFormat"`
 	Username       string            `json:"username"`
 	AceEditorTheme string            `json:"aceEditorTheme"`
+	QuotaLimit     uint64            `json:"quotaLimit"`
+	QuotaUnit      string            `json:"quotaUnit"`
+	EnforceQuota   bool              `json:"enforceQuota"`
+	QuotaUsed      uint64            `json:"quotaUsed"`
 }
 
 type authToken struct {
@@ -202,6 +206,19 @@ func renewHandler(tokenExpireTime time.Duration) handleFunc {
 }
 
 func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.User, tokenExpirationTime time.Duration) (int, error) {
+	// Calculate current quota usage if quota is enabled
+	var quotaUsed uint64
+	if user.QuotaLimit > 0 {
+		used, err := users.CalculateUserQuota(user.Fs, user.Scope)
+		if err != nil {
+			// Log error but don't fail login - just set usage to 0
+			log.Printf("Failed to calculate quota for user %s: %v", user.Username, err)
+			quotaUsed = 0
+		} else {
+			quotaUsed = used
+		}
+	}
+
 	claims := &authToken{
 		User: userInfo{
 			ID:             user.ID,
@@ -215,6 +232,10 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 			DateFormat:     user.DateFormat,
 			Username:       user.Username,
 			AceEditorTheme: user.AceEditorTheme,
+			QuotaLimit:     user.QuotaLimit,
+			QuotaUnit:      user.QuotaUnit,
+			EnforceQuota:   user.EnforceQuota,
+			QuotaUsed:      quotaUsed,
 		},
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

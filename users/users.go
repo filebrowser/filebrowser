@@ -36,6 +36,10 @@ type User struct {
 	HideDotfiles   bool          `json:"hideDotfiles"`
 	DateFormat     bool          `json:"dateFormat"`
 	AceEditorTheme string        `json:"aceEditorTheme"`
+	QuotaLimit     uint64        `json:"quotaLimit"`     // Quota limit in bytes (0 = unlimited)
+	QuotaUnit      string        `json:"quotaUnit"`      // "KB", "MB", "GB" or "TB" for UI display
+	EnforceQuota   bool          `json:"enforceQuota"`   // Hard limit if true, soft limit if false
+	QuotaUsed      uint64        `json:"quotaUsed"`      // Current usage in bytes (calculated, not stored)
 }
 
 // GetRules implements rules.Provider.
@@ -51,6 +55,9 @@ var checkableFields = []string{
 	"Commands",
 	"Sorting",
 	"Rules",
+	"QuotaLimit",
+	"QuotaUnit",
+	"EnforceQuota",
 }
 
 // Clean cleans up a user and verifies if all its fields
@@ -86,6 +93,18 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 			if u.Rules == nil {
 				u.Rules = []rules.Rule{}
 			}
+		case "QuotaUnit":
+			if u.QuotaUnit == "" {
+				u.QuotaUnit = "GB"
+			}
+			if u.QuotaUnit != "KB" && u.QuotaUnit != "MB" && u.QuotaUnit != "GB" && u.QuotaUnit != "TB" {
+				return fberrors.ErrInvalidQuotaUnit
+			}
+		case "QuotaLimit":
+			// QuotaLimit of 0 means unlimited, which is valid
+			// No validation needed
+		case "EnforceQuota":
+			// Boolean field, no validation needed
 		}
 	}
 

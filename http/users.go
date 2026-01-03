@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	NonModifiableFieldsForNonAdmin = []string{"Username", "Scope", "LockPassword", "Perm", "Commands", "Rules"}
+	NonModifiableFieldsForNonAdmin = []string{"Username", "Scope", "LockPassword", "Perm", "Commands", "Rules", "QuotaLimit", "QuotaUnit", "EnforceQuota"}
 )
 
 type modifyUserRequest struct {
@@ -207,4 +207,22 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 	}
 
 	return http.StatusOK, nil
+})
+
+var userQuotaHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	u, err := d.store.Users.Get(d.server.Root, d.raw.(uint))
+	if errors.Is(err, fberrors.ErrNotExist) {
+		return http.StatusNotFound, err
+	}
+
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	quotaInfo, err := users.GetQuotaInfo(u)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return renderJSON(w, r, quotaInfo)
 })

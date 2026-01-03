@@ -76,7 +76,7 @@ func keepUploadActive(filePath string) func() {
 }
 
 func tusPostHandler() handleFunc {
-	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	return withUser(withQuotaCheck(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
 			return http.StatusForbidden, nil
 		}
@@ -155,7 +155,7 @@ func tusPostHandler() handleFunc {
 
 		w.Header().Set("Location", path)
 		return http.StatusCreated, nil
-	})
+	}))
 }
 
 func tusHeadHandler() handleFunc {
@@ -190,7 +190,7 @@ func tusHeadHandler() handleFunc {
 }
 
 func tusPatchHandler() handleFunc {
-	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	return withUser(withQuotaCheck(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
 			return http.StatusForbidden, nil
 		}
@@ -250,13 +250,28 @@ func tusPatchHandler() handleFunc {
 			return http.StatusInternalServerError, fmt.Errorf("could not seek file: %w", err)
 		}
 
+		// Calculate maximum bytes we should accept to prevent quota bypass
+		maxBytesToWrite := uploadLength - uploadOffset
+		if maxBytesToWrite <= 0 {
+			return http.StatusBadRequest, fmt.Errorf("upload already complete")
+		}
+
+		// Use LimitReader to enforce the declared upload length
+		// This prevents clients from bypassing quota by falsifying Upload-Length header
 		defer r.Body.Close()
-		bytesWritten, err := io.Copy(openFile, r.Body)
+		limitedReader := io.LimitReader(r.Body, maxBytesToWrite)
+		bytesWritten, err := io.Copy(openFile, limitedReader)
 		if err != nil {
 			return http.StatusInternalServerError, fmt.Errorf("could not write to file: %w", err)
 		}
 
 		newOffset := uploadOffset + bytesWritten
+
+		// Verify we haven't exceeded the declared upload length (defense in depth)
+		if newOffset > uploadLength {
+			return http.StatusBadRequest, fmt.Errorf("upload exceeded declared length")
+		}
+
 		w.Header().Set("Upload-Offset", strconv.FormatInt(newOffset, 10))
 
 		if newOffset >= uploadLength {
@@ -265,7 +280,7 @@ func tusPatchHandler() handleFunc {
 		}
 
 		return http.StatusNoContent, nil
-	})
+	}))
 }
 
 func tusDeleteHandler() handleFunc {

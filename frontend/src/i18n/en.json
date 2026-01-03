@@ -61,7 +61,8 @@
     "forbidden": "You don't have permissions to access this.",
     "internal": "Something really went wrong.",
     "notFound": "This location can't be reached.",
-    "connection": "The server can't be reached."
+    "connection": "The server can't be reached.",
+    "quotaExceeded": "Cannot upload file: storage quota exceeded. Current usage: {used}, Limit: {limit}"
   },
   "files": {
     "body": "Body",
@@ -258,7 +259,14 @@
     "userManagement": "User Management",
     "userUpdated": "User updated!",
     "username": "Username",
-    "users": "Users"
+    "users": "Users",
+    "quota": "Storage Quota",
+    "quotaLimit": "Quota Limit",
+    "quotaUnit": "Unit",
+    "enforceQuota": "Enforce Quota (Hard Limit)",
+    "quotaUsage": "Quota Usage",
+    "quotaExceeded": "Storage quota exceeded",
+    "quotaWarning": "Approaching storage quota limit"
   },
   "sidebar": {
     "help": "Help",

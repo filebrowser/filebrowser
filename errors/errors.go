@@ -22,6 +22,8 @@ var (
 	ErrInvalidRequestParams = errors.New("invalid request params")
 	ErrSourceIsParent       = errors.New("source is parent")
 	ErrRootUserDeletion     = errors.New("user with id 1 can't be deleted")
+	ErrQuotaExceeded        = errors.New("quota exceeded")
+	ErrInvalidQuotaUnit     = errors.New("invalid quota unit")
 )
 
 type ErrShortPassword struct {

@@ -80,6 +80,9 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.Bool("dateFormat", false, "use date format (true for absolute time, false for relative)")
 	flags.Bool("hideDotfiles", false, "hide dotfiles")
 	flags.String("aceEditorTheme", "", "ace editor's syntax highlighting theme for users")
+	flags.Float64("quota.limit", 0, "quota limit in KB, MB, GB or TB (0 = unlimited)")
+	flags.String("quota.unit", "GB", "quota unit (KB, MB, GB or TB)")
+	flags.Bool("quota.enforce", false, "enforce quota (hard limit)")
 }
 
 func getAndParseViewMode(flags *pflag.FlagSet) (users.ViewMode, error) {
@@ -136,6 +139,20 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 			defaults.Sorting.Asc, err = flags.GetBool(flag.Name)
 		case "hideDotfiles":
 			defaults.HideDotfiles, err = flags.GetBool(flag.Name)
+		case "quota.limit":
+			var quotaLimit float64
+			quotaLimit, err = flags.GetFloat64(flag.Name)
+			if err == nil {
+				var quotaUnit string
+				quotaUnit, err = flags.GetString("quota.unit")
+				if err == nil {
+					defaults.QuotaLimit, err = users.ConvertToBytes(quotaLimit, quotaUnit)
+				}
+			}
+		case "quota.unit":
+			defaults.QuotaUnit, err = flags.GetString(flag.Name)
+		case "quota.enforce":
+			defaults.EnforceQuota, err = flags.GetBool(flag.Name)
 		}
 
 		if err != nil {
