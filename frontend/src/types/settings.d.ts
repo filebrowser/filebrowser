@@ -18,6 +18,7 @@ interface SettingsDefaults {
   locale: string;
   viewMode: ViewModeType;
   singleClick: boolean;
+  redirectAfterCopyMove: boolean;
   sorting: Sorting;
   perm: Permissions;
   commands: any[];

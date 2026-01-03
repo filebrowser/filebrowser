@@ -61,6 +61,7 @@ filebrowser config init [flags]
       --recaptcha.host string            use another host for ReCAPTCHA. recaptcha.net might be useful in China (default "https://www.google.com")
       --recaptcha.key string             ReCaptcha site key
       --recaptcha.secret string          ReCaptcha secret
+      --redirectAfterCopyMove            redirect to destination after copy/move
   -r, --root string                      root to prepend to relative paths (default ".")
       --scope string                     scope for users (default ".")
       --shell string                     shell command to which other commands should be appended
