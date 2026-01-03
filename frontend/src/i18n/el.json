@@ -258,7 +258,8 @@
     "userManagement": "Διαχείριση χρηστών",
     "userUpdated": "Ο χρήστης ενημερώθηκε!",
     "username": "Όνομα χρήστη",
-    "users": "Χρήστες"
+    "users": "Χρήστες",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Βοήθεια",

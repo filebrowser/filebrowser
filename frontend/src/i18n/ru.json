@@ -42,7 +42,6 @@
     "update": "Обновить",
     "upload": "Загрузить",
     "openFile": "Открыть файл",
-    "stopSearch": "Прекратить поиск",
     "discardChanges": "Отказаться",
     "stopSearch": "Stop searching",
     "saveChanges": "Сохранить",
@@ -259,7 +258,8 @@
     "userManagement": "Управление пользователями",
     "userUpdated": "Пользователь изменен!",
     "username": "Имя пользователя",
-    "users": "Пользователи"
+    "users": "Пользователи",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Помощь",

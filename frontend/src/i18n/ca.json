@@ -258,7 +258,8 @@
     "userManagement": "Administració d'usuaris",
     "userUpdated": "Usuari actualitzat!",
     "username": "Usuari",
-    "users": "Usuaris"
+    "users": "Usuaris",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Ajuda",

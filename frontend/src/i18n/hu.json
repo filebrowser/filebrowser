@@ -258,7 +258,8 @@
     "userManagement": "Felhasználókezelés",
     "userUpdated": "Felhasználó frissítve!",
     "username": "Felhasználói név",
-    "users": "Felhasználók"
+    "users": "Felhasználók",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Súgó",

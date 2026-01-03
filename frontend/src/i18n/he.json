@@ -258,7 +258,8 @@
     "userManagement": "ניהול משתמש",
     "userUpdated": "המשתמש עודכן!",
     "username": "שם משתמש",
-    "users": "משתמשים"
+    "users": "משתמשים",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "עזרה",

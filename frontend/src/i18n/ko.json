@@ -41,7 +41,6 @@
     "toggleSidebar": "사이드바 전환",
     "update": "업데이트",
     "upload": "업로드",
-    "stopSearch": "검색 중지",
     "openFile": "파일 열기",
     "discardChanges": "변경 사항 취소",
     "stopSearch": "Stop searching",
@@ -259,7 +258,8 @@
     "userManagement": "사용자 관리",
     "userUpdated": "사용자 수정됨!",
     "username": "사용자 이름",
-    "users": "사용자"
+    "users": "사용자",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "도움말",

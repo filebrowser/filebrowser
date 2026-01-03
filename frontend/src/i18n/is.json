@@ -258,7 +258,8 @@
     "userManagement": "Notendastýring",
     "userUpdated": "Notandastillingar vistaðar!",
     "username": "Notendanafn",
-    "users": "Notendur"
+    "users": "Notendur",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Hjálp",

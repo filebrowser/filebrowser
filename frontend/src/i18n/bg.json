@@ -258,7 +258,8 @@
     "userManagement": "Управление на потребители",
     "userUpdated": "Потребителя е обновен!",
     "username": "Потребителско име",
-    "users": "Потребители"
+    "users": "Потребители",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Помощ",

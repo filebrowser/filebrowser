@@ -258,7 +258,8 @@
     "userManagement": "إدارة المستخدمين",
     "userUpdated": "تم تعديل المستخدم",
     "username": "إسم المستخدم",
-    "users": "المستخدمين"
+    "users": "المستخدمين",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "مساعدة",

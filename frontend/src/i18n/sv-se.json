@@ -258,7 +258,8 @@
     "userManagement": "Användarehantering",
     "userUpdated": "Användare uppdaterad!",
     "username": "Användarnamn",
-    "users": "Användare"
+    "users": "Användare",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Hjälp",

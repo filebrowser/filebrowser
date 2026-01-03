@@ -258,7 +258,8 @@
     "userManagement": "Керування користувачами",
     "userUpdated": "Користувача змінено!",
     "username": "Ім'я користувача",
-    "users": "Користувачі"
+    "users": "Користувачі",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Допомога",
