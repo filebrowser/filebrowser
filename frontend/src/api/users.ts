@@ -8,12 +8,13 @@ export async function get(id: number) {
   return fetchJSON<IUser>(`/api/users/${id}`, {});
 }
 
-export async function create(user: IUser) {
+export async function create(user: IUser, currentPassword: string) {
   const res = await fetchURL(`/api/users`, {
     method: "POST",
     body: JSON.stringify({
       what: "user",
       which: [],
+      current_password: currentPassword,
       data: user,
     }),
   });
@@ -25,12 +26,17 @@ export async function create(user: IUser) {
   throw new StatusError(await res.text(), res.status);
 }
 
-export async function update(user: Partial<IUser>, which = ["all"]) {
+export async function update(
+  user: Partial<IUser>,
+  which = ["all"],
+  currentPassword: string | null = null
+) {
   await fetchURL(`/api/users/${user.id}`, {
     method: "PUT",
     body: JSON.stringify({
       what: "user",
       which: which,
+      ...(currentPassword != null ? { current_password: currentPassword } : {}),
       data: user,
     }),
   });

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.53.1](https://github.com/filebrowser/filebrowser/compare/v2.53.0...v2.53.1) (2026-01-03)
+
+
+### Bug Fixes
+
+* download path encoding file paths ([#5655](https://github.com/filebrowser/filebrowser/issues/5655)) ([ffa893e](https://github.com/filebrowser/filebrowser/commit/ffa893e9ac387a49dba5917a41df7c3b7ce120fc))
+* request a password to change sensitive user data ([#5629](https://github.com/filebrowser/filebrowser/issues/5629)) ([b8151a0](https://github.com/filebrowser/filebrowser/commit/b8151a038a1ea55afae8073b439b74e364cac12f))
+
 ## [2.53.0](https://github.com/filebrowser/filebrowser/compare/v2.52.0...v2.53.0) (2025-12-29)
 
 

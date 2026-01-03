@@ -69,6 +69,15 @@
             v-model="passwordConf"
             name="passwordConf"
           />
+          <input
+            v-if="isCurrentPasswordRequired"
+            :class="passwordClass"
+            type="password"
+            :placeholder="t('settings.currentPassword')"
+            v-model="currentPassword"
+            name="current_password"
+            autocomplete="current-password"
+          />
         </div>
 
         <div class="card-action">
@@ -87,7 +96,7 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
-import { users as api } from "@/api";
+import { users as api, settings } from "@/api";
 import AceEditorTheme from "@/components/settings/AceEditorTheme.vue";
 import Languages from "@/components/settings/Languages.vue";
 import { computed, inject, onMounted, ref } from "vue";
@@ -102,6 +111,8 @@ const $showError = inject<IToastError>("$showError")!;
 
 const password = ref<string>("");
 const passwordConf = ref<string>("");
+const currentPassword = ref<string>("");
+const isCurrentPasswordRequired = ref<boolean>(false);
 const hideDotfiles = ref<boolean>(false);
 const singleClick = ref<boolean>(false);
 const dateFormat = ref<boolean>(false);
@@ -131,6 +142,9 @@ onMounted(async () => {
   dateFormat.value = authStore.user.dateFormat;
   aceEditorTheme.value = authStore.user.aceEditorTheme;
   layoutStore.loading = false;
+  const { authMethod } = await settings.get();
+  isCurrentPasswordRequired.value = authMethod == "json";
+
   return true;
 });
 
@@ -140,6 +154,7 @@ const updatePassword = async (event: Event) => {
   if (
     password.value !== passwordConf.value ||
     password.value === "" ||
+    currentPassword.value === "" ||
     authStore.user === null
   ) {
     return;
@@ -151,7 +166,7 @@ const updatePassword = async (event: Event) => {
       id: authStore.user.id,
       password: password.value,
     };
-    await api.update(data, ["password"]);
+    await api.update(data, ["password"], currentPassword.value);
     authStore.updateUser(data);
     $showSuccess(t("settings.passwordUpdated"));
   } catch (e: any) {
