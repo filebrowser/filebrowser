@@ -214,7 +214,7 @@
     "instanceName": "Instanzname",
     "language": "Sprache",
     "lockPassword": "Verhindere, dass der Benutzer sein Passwort ändert",
-    "newPassword": "Ihr neues Passwort.",
+    "newPassword": "Ihr neues Passwort",
     "newPasswordConfirm": "Bestätigen Sie Ihr neues Passwort",
     "newUser": "Neuer Benutzer",
     "password": "Passwort",
@@ -259,7 +259,7 @@
     "userUpdated": "Benutzer aktualisiert!",
     "username": "Nutzername",
     "users": "Nutzer",
-    "currentPassword": "Your Current Password"
+    "currentPassword": "Ihr aktuelles Passwort"
   },
   "sidebar": {
     "help": "Hilfe",
