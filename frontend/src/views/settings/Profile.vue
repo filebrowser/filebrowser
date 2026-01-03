@@ -44,7 +44,7 @@
       </form>
     </div>
 
-    <div class="column">
+    <div v-if="!isHidePasswordForm" class="column">
       <form
         class="card"
         v-if="!authStore.user?.lockPassword"
@@ -118,6 +118,7 @@ const singleClick = ref<boolean>(false);
 const dateFormat = ref<boolean>(false);
 const locale = ref<string>("");
 const aceEditorTheme = ref<string>("");
+const isHidePasswordForm = ref<boolean>(false);
 
 const passwordClass = computed(() => {
   const baseClass = "input input--block";
@@ -144,6 +145,7 @@ onMounted(async () => {
   layoutStore.loading = false;
   const { authMethod } = await settings.get();
   isCurrentPasswordRequired.value = authMethod == "json";
+  isHidePasswordForm.value = authMethod == "noauth";
 
   return true;
 });
