@@ -185,3 +185,7 @@ html[dir="rtl"] .breadcrumbs a {
 .vfm-modal {
   z-index: 9999999 !important;
 }
+
+body > div[style*="z-index: 9990"] {
+  z-index: 10000 !important;
+}
