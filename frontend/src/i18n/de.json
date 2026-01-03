@@ -258,7 +258,8 @@
     "userManagement": "Benutzerverwaltung",
     "userUpdated": "Benutzer aktualisiert!",
     "username": "Nutzername",
-    "users": "Nutzer"
+    "users": "Nutzer",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Hilfe",
