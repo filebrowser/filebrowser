@@ -90,9 +90,9 @@
       v-if="isFiles && !disableUsedPercentage"
       style="width: 90%; margin: 2em 2.5em 3em 2.5em"
     >
-      <progress-bar :val="usage.usedPercentage" size="small"></progress-bar>
+      <progress-bar :val="usagePercentage" size="small"></progress-bar>
       <br />
-      {{ usage.used }} of {{ usage.total }} used
+      {{ usedFormatted }} of {{ totalFormatted }} used
     </div>
 
     <p class="credits">
@@ -161,6 +161,37 @@ export default {
     disableExternal: () => disableExternal,
     disableUsedPercentage: () => disableUsedPercentage,
     canLogout: () => !noAuth && (loginPage || logoutPage !== "/login"),
+    hasQuotaData() {
+      return this.user?.quotaLimit && this.user.quotaLimit > 0;
+    },
+    quotaLimitBytes() {
+      // QuotaLimit is already stored in bytes in the backend
+      return this.user?.quotaLimit || 0;
+    },
+    quotaUsedBytes() {
+      // QuotaUsed is already in bytes
+      return this.user?.quotaUsed || 0;
+    },
+    // Unified properties that use quota if available, otherwise disk usage
+    usagePercentage() {
+      if (this.hasQuotaData) {
+        if (this.quotaLimitBytes === 0) return 0;
+        return Math.min(Math.round((this.quotaUsedBytes / this.quotaLimitBytes) * 100), 100);
+      }
+      return this.usage.usedPercentage;
+    },
+    usedFormatted() {
+      if (this.hasQuotaData) {
+        return prettyBytes(this.quotaUsedBytes, { binary: true });
+      }
+      return this.usage.used;
+    },
+    totalFormatted() {
+      if (this.hasQuotaData) {
+        return prettyBytes(this.quotaLimitBytes, { binary: true });
+      }
+      return this.usage.total;
+    },
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),
@@ -168,6 +199,11 @@ export default {
       this.usageAbortController.abort();
     },
     async fetchUsage() {
+      // If user has quota, don't fetch disk usage
+      if (this.hasQuotaData) {
+        return;
+      }
+      
       const path = this.$route.path.endsWith("/")
         ? this.$route.path
         : this.$route.path + "/";
