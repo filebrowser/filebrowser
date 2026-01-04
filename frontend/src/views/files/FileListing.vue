@@ -159,6 +159,7 @@
         ref="listing"
         class="file-icons"
         :class="authStore.user?.viewMode ?? ''"
+        @click="handleEmptyAreaClick"
       >
         <div>
           <div class="item header">
@@ -1051,4 +1052,15 @@ const showContextMenu = (event: MouseEvent) => {
 const hideContextMenu = () => {
   isContextMenuVisible.value = false;
 };
+
+const handleEmptyAreaClick = (e: MouseEvent) => {
+  if (e.target.closest("item") || e.target.closest(".item")) return;
+
+  fileStore.selected = [];
+};
 </script>
+<style scoped>
+#listing {
+  min-height: calc(100vh - 8rem);
+}
+</style>
