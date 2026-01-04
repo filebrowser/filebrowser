@@ -1054,7 +1054,10 @@ const hideContextMenu = () => {
 };
 
 const handleEmptyAreaClick = (e: MouseEvent) => {
-  if (e.target.closest("item") || e.target.closest(".item")) return;
+  const target = e.target;
+  if (!(target instanceof HTMLElement)) return;
+
+  if (target.closest("item") || target.closest(".item")) return;
 
   fileStore.selected = [];
 };
