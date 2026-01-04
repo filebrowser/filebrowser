@@ -43,11 +43,11 @@
     "upload": "Upload",
     "openFile": "Datei öffnen",
     "discardChanges": "Verwerfen",
-    "stopSearch": "Stop searching",
+    "stopSearch": "Suche abbrechen",
     "saveChanges": "Änderungen speichern",
     "editAsText": "Als Text bearbeiten",
-    "increaseFontSize": "Increase font size",
-    "decreaseFontSize": "Decrease font size"
+    "increaseFontSize": "Schriftgröße vergrößern",
+    "decreaseFontSize": "Schriftgröße verkleinern"
   },
   "download": {
     "downloadFile": "Download Datei",
@@ -82,12 +82,12 @@
     "noPreview": "Für diese Datei ist keine Vorschau verfügbar.",
     "csvTooLarge": "Die CSV-Datei ist zu groß für die Vorschau (>5 MB). Bitte herunterladen, um sie anzuzeigen.",
     "csvLoadFailed": "Fehler beim Laden der CSV-Datei.",
-    "showingRows": "Showing {count} row(s)",
-    "columnSeparator": "Column Separator",
+    "showingRows": "{count} Zeile(n) werden angezeigt",
+    "columnSeparator": "Spaltentrennzeichen",
     "csvSeparators": {
-      "comma": "Comma (,)",
-      "semicolon": "Semicolon (;)",
-      "both": "Both (,) and (;)"
+      "comma": "Komma (,)",
+      "semicolon": "Semikolon (;)",
+      "both": "Sowohl (,) als auch (;)"
     }
   },
   "help": {
