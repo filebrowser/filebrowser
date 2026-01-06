@@ -80,7 +80,7 @@
     "sortByName": "Trier par nom",
     "sortBySize": "Trier par taille",
     "noPreview": "L'aperçu n'est pas disponible pour ce fichier.",
-    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvTooLarge": "Le fichier CSV est trop volumineux pour être prévisualisé (>5MB). Veuillez le télécharger pour le voir.",
     "csvLoadFailed": "Impossible de charger le fichier CSV.",
     "showingRows": "Affichage de {count} ligne(s)",
     "columnSeparator": "Séparateur de Colonnes",
