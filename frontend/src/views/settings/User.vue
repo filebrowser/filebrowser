@@ -146,7 +146,7 @@ const deleteUser = async (e: Event) => {
     return false;
   }
   try {
-    await api.remove(user.value.id);
+    await api.remove(user.value.id, currentPassword.value);
     router.push({ path: "/settings/users" });
     $showSuccess(t("settings.userDeleted"));
   } catch (err) {

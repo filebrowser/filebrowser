@@ -142,7 +142,7 @@ onMounted(async () => {
   dateFormat.value = authStore.user.dateFormat;
   aceEditorTheme.value = authStore.user.aceEditorTheme;
   layoutStore.loading = false;
-  const { authMethod } = await settings.get();
+  const { authMethod } = await settings.getAuthMethod();
   isCurrentPasswordRequired.value = authMethod == "json";
 
   return true;
