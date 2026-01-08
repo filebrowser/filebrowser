@@ -42,14 +42,6 @@ var settingsGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, 
 	return renderJSON(w, r, data)
 })
 
-var authMethodGetHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	data := &settingsData{
-		AuthMethod: d.settings.AuthMethod,
-	}
-
-	return renderJSON(w, r, data)
-}
-
 var settingsPutHandler = withAdmin(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	req := &settingsData{}
 	err := json.NewDecoder(r.Body).Decode(req)

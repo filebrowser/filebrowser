@@ -96,11 +96,12 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
-import { users as api, settings } from "@/api";
+import { users as api } from "@/api";
 import AceEditorTheme from "@/components/settings/AceEditorTheme.vue";
 import Languages from "@/components/settings/Languages.vue";
 import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { authMethod } from "@/utils/constants";
 
 const layoutStore = useLayoutStore();
 const authStore = useAuthStore();
@@ -142,7 +143,6 @@ onMounted(async () => {
   dateFormat.value = authStore.user.dateFormat;
   aceEditorTheme.value = authStore.user.aceEditorTheme;
   layoutStore.loading = false;
-  const { authMethod } = await settings.getAuthMethod();
   isCurrentPasswordRequired.value = authMethod == "json";
 
   return true;

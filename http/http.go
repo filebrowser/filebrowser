@@ -80,7 +80,6 @@ func NewHandler(
 	api.PathPrefix("/share").Handler(monkey(shareDeleteHandler, "/api/share")).Methods("DELETE")
 
 	api.Handle("/settings", monkey(settingsGetHandler, "")).Methods("GET")
-	api.Handle("/settings/auth-method", monkey(authMethodGetHandler, "")).Methods("GET")
 	api.Handle("/settings", monkey(settingsPutHandler, "")).Methods("PUT")
 
 	api.PathPrefix("/raw").Handler(monkey(rawHandler, "/api/raw")).Methods("GET")

@@ -71,6 +71,7 @@ import { computed, inject, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { StatusError } from "@/api/utils";
+import { authMethod } from "@/utils/constants";
 
 const error = ref<StatusError>();
 const originalUser = ref<IUser>();
@@ -105,11 +106,7 @@ const fetchData = async () => {
 
   try {
     if (isNew.value) {
-      const {
-        authMethod,
-        defaults,
-        createUserDir: _createUserDir,
-      } = await settings.get();
+      const { defaults, createUserDir: _createUserDir } = await settings.get();
       isCurrentPasswordRequired.value = authMethod == "json";
       createUserDir.value = _createUserDir;
       user.value = {
