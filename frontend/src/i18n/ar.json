@@ -232,6 +232,7 @@
     "permissions": "الصلاحيات",
     "permissionsHelp": "يمكنك تعيين المستخدم كـ \"مدير\" أو تحديد الصلاحيات بشكل منفرد.\n    إذا قمت بتحديد المستخدم كـ \"مدير\"، باقي الخيارات سيتم تحديدها تلقائياً.\n    إدارة المستخدمين تبقى صلاحية فريدة للـ \"مدير\" فقط.\n",
     "profileSettings": "إعدادات الحساب",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "منع الوصول إلى الملفات التي تبدأ بنقطة مثل (.git، و .gitignore) في كل مجلد.\n",
     "ruleExample2": "منع الوصول إلى الملف المسمى Caddyfile في نطاق الجذر.",
     "rules": "المجموعات",
