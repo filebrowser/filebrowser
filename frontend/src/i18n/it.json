@@ -232,6 +232,7 @@
     "permissions": "Permessi",
     "permissionsHelp": "È possibile impostare l'utente come amministratore o scegliere i permessi singolarmente. Se si seleziona \"Amministratore\", tutte le altre opzioni saranno automaticamente assegnate. La gestione degli utenti rimane un privilegio di un amministratore.\n",
     "profileSettings": "Impostazioni del profilo",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "impedisci l'accesso a qualsiasi file avente come prefisso un punto\n (ad esempio .git, .gitignore) presente in ogni cartella.\n",
     "ruleExample2": "blocca l'accesso al file denominato Caddyfile nella radice del campo di applicazione.",
     "rules": "Regole",
