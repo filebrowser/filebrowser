@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.54.0](https://github.com/filebrowser/filebrowser/compare/v2.53.1...v2.54.0) (2026-01-10)
+
+
+### Features
+
+* add "redirect after copy/move" user setting ([#5662](https://github.com/filebrowser/filebrowser/issues/5662)) ([fda8a99](https://github.com/filebrowser/filebrowser/commit/fda8a992929b1466e75fb2813f2c4e293c12d244))
+* force file sync while uploading file ([#5668](https://github.com/filebrowser/filebrowser/issues/5668)) ([4fd18a3](https://github.com/filebrowser/filebrowser/commit/4fd18a382c31bbe7059d6733ffa371e70051865b))
+* update translations ([#5659](https://github.com/filebrowser/filebrowser/issues/5659)) ([464b581](https://github.com/filebrowser/filebrowser/commit/464b581953139c17e3276b774e381e4052827125))
+
+
+### Bug Fixes
+
+* clear selection by clicking on empty area ([#5663](https://github.com/filebrowser/filebrowser/issues/5663)) ([208535a](https://github.com/filebrowser/filebrowser/commit/208535a8cc23254de0013dfab9008486707ee6c2))
+* hide "change password form" in noauth setting ([#5652](https://github.com/filebrowser/filebrowser/issues/5652)) ([219582c](https://github.com/filebrowser/filebrowser/commit/219582c0b03fd90979b1d1398dba7919d086a23f))
+
 ## [2.53.1](https://github.com/filebrowser/filebrowser/compare/v2.53.0...v2.53.1) (2026-01-03)
 
 
