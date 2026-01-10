@@ -30,13 +30,14 @@ func printUsers(usrs []*users.User) {
 	fmt.Fprintln(w, "ID\tUsername\tScope\tLocale\tV. Mode\tS.Click\tAdmin\tExecute\tCreate\tRename\tModify\tDelete\tShare\tDownload\tPwd Lock")
 
 	for _, u := range usrs {
-		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t\n",
+		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t\n",
 			u.ID,
 			u.Username,
 			u.Scope,
 			u.Locale,
 			u.ViewMode,
 			u.SingleClick,
+			u.RedirectAfterCopyMove,
 			u.Perm.Admin,
 			u.Perm.Execute,
 			u.Perm.Create,
@@ -77,6 +78,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.String("locale", "en", "locale for users")
 	flags.String("viewMode", string(users.ListViewMode), "view mode for users")
 	flags.Bool("singleClick", false, "use single clicks only")
+	flags.Bool("redirectAfterCopyMove", false, "redirect to destination after copy/move")
 	flags.Bool("dateFormat", false, "use date format (true for absolute time, false for relative)")
 	flags.Bool("hideDotfiles", false, "hide dotfiles")
 	flags.String("aceEditorTheme", "", "ace editor's syntax highlighting theme for users")
@@ -110,6 +112,8 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 			defaults.ViewMode, err = getAndParseViewMode(flags)
 		case "singleClick":
 			defaults.SingleClick, err = flags.GetBool(flag.Name)
+		case "redirectAfterCopyMove":
+			defaults.RedirectAfterCopyMove, err = flags.GetBool(flag.Name)
 		case "aceEditorTheme":
 			defaults.AceEditorTheme, err = flags.GetString(flag.Name)
 		case "perm.admin":

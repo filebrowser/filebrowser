@@ -16,6 +16,14 @@
             {{ t("settings.singleClick") }}
           </p>
           <p>
+            <input
+              type="checkbox"
+              name="redirectAfterCopyMove"
+              v-model="redirectAfterCopyMove"
+            />
+            {{ t("settings.redirectAfterCopyMove") }}
+          </p>
+          <p>
             <input type="checkbox" name="dateFormat" v-model="dateFormat" />
             {{ t("settings.setDateFormat") }}
           </p>
@@ -116,6 +124,7 @@ const currentPassword = ref<string>("");
 const isCurrentPasswordRequired = ref<boolean>(false);
 const hideDotfiles = ref<boolean>(false);
 const singleClick = ref<boolean>(false);
+const redirectAfterCopyMove = ref<boolean>(false);
 const dateFormat = ref<boolean>(false);
 const locale = ref<string>("");
 const aceEditorTheme = ref<string>("");
@@ -140,6 +149,7 @@ onMounted(async () => {
   locale.value = authStore.user.locale;
   hideDotfiles.value = authStore.user.hideDotfiles;
   singleClick.value = authStore.user.singleClick;
+  redirectAfterCopyMove.value = authStore.user.redirectAfterCopyMove;
   dateFormat.value = authStore.user.dateFormat;
   aceEditorTheme.value = authStore.user.aceEditorTheme;
   layoutStore.loading = false;
@@ -187,6 +197,7 @@ const updateSettings = async (event: Event) => {
       locale: locale.value,
       hideDotfiles: hideDotfiles.value,
       singleClick: singleClick.value,
+      redirectAfterCopyMove: redirectAfterCopyMove.value,
       dateFormat: dateFormat.value,
       aceEditorTheme: aceEditorTheme.value,
     };
@@ -195,6 +206,7 @@ const updateSettings = async (event: Event) => {
       "locale",
       "hideDotfiles",
       "singleClick",
+      "redirectAfterCopyMove",
       "dateFormat",
       "aceEditorTheme",
     ]);
