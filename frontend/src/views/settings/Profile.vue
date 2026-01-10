@@ -16,7 +16,11 @@
             {{ t("settings.singleClick") }}
           </p>
           <p>
-            <input type="checkbox" name="redirectAfterCopyMove" v-model="redirectAfterCopyMove" />
+            <input
+              type="checkbox"
+              name="redirectAfterCopyMove"
+              v-model="redirectAfterCopyMove"
+            />
             {{ t("settings.redirectAfterCopyMove") }}
           </p>
           <p>

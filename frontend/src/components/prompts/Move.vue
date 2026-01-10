@@ -108,7 +108,8 @@ export default {
           .then(() => {
             buttons.success("move");
             this.preselect = removePrefix(items[0].to);
-            if (this.user.redirectAfterCopyMove) this.$router.push({ path: this.dest });
+            if (this.user.redirectAfterCopyMove)
+              this.$router.push({ path: this.dest });
             else this.reload = true;
           })
           .catch((e) => {
