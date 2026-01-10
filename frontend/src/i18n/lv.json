@@ -232,6 +232,7 @@
     "permissions": "Atļaujas",
     "permissionsHelp": "Varat iestatīt lietotāju kā administratoru vai izvēlēties atļaujas individuāli. Ja atlasīsiet “Administrators”, visas pārējās opcijas tiks automātiski atzīmētas. Lietotāju pārvaldība joprojām ir administratora privilēģija.\n",
     "profileSettings": "Profila iestatījumi",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "neļauj piekļūt jebkuram dotfile failam (piemēram, .git, .gitignore) katrā mapē.\n",
     "ruleExample2": "bloķē piekļuvi failam ar nosaukumu Caddyfile darbības jomas saknē.",
     "rules": "Noteikumi",
