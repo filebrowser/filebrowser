@@ -232,6 +232,7 @@
     "permissions": "Permisiuni",
     "permissionsHelp": "Poți alege ca un utilizator să fie administrator sau să-i alegi permisiunile individual. Dacă alegi \"Administrator\", toate celelalte opțiuni vor fi bifate automat. Gestionarea utilizatorilor rămâne un privilegiu exclusiv al administratorilor.\n",
     "profileSettings": "Setări profil",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "împiedică accesul la fisiere cu punct in față (.), cum ar fi .git, .gitignore în orice director.\n",
     "ruleExample2": "împiedică accesul la fișierul Caddyfile din rădăcina domeniului.",
     "rules": "Reguli",
