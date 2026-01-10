@@ -232,6 +232,7 @@
     "permissions": "Permissies",
     "permissionsHelp": "U kunt de gebruiker instellen als beheerder of de machtigingen afzonderlijk kiezen. Als u \"Beheerder\" selecteert, worden alle andere opties automatisch gecontroleerd. Het beheer van gebruikers blijft een privilege van een beheerder.\n",
     "profileSettings": "Profielinstellingen",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "voorkomt de toegang tot elk puntbestand (zoals .git, .gitignore) in elke map.\n",
     "ruleExample2": "blokkeert de toegang tot het bestand met de naam Caddyfile in de hoofdmap van het bereik.",
     "rules": "Regels",
