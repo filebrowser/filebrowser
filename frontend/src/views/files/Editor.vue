@@ -318,7 +318,7 @@ const preview = () => {
 
 .editor-header > div > button {
   background: transparent;
-  color: white;
+  color: var(--action);
   border: none;
   outline: none;
   opacity: 0.8;
