@@ -232,6 +232,7 @@
     "permissions": "הרשאות",
     "permissionsHelp": "אתה יכול להגדיר את המשתמש להיות מנהל מערכת או לבחור את ההרשאות בנפרד. אם תבחר \"מנהל מערכת\", כל ההרשאות יינתנו אוטומטית. ניהול המשתמשים נשאר הרשאה של מנהל מערכת.\n",
     "profileSettings": "הגדרות פרופיל",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "מנע גישה לקבצים נסתרים (כל קובץ/תיקייה שמתחיל בנקודה, לדוגמא .git)",
     "ruleExample2": "חסימת גישה לקובץ בשם Caddyfile בהיקף הראשי.",
     "rules": "חוקים",
