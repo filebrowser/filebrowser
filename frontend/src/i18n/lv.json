@@ -258,7 +258,8 @@
     "userManagement": "Lietotāju pārvaldība",
     "userUpdated": "Lietotājs atjaunināts!",
     "username": "Lietotājvārds",
-    "users": "Lietotāji"
+    "users": "Lietotāji",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Palīdzība",

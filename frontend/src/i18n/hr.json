@@ -258,7 +258,8 @@
     "userManagement": "Upravljanje Korisnicima",
     "userUpdated": "Korisnik ažuriran!",
     "username": "Korisničko ime",
-    "users": "Korisnici"
+    "users": "Korisnici",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Pomoć",

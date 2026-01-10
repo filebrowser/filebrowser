@@ -42,7 +42,6 @@
     "update": "更新",
     "upload": "上传",
     "openFile": "打开文件",
-    "stopSearch": "停止搜索",
     "discardChanges": "放弃更改",
     "stopSearch": "Stop searching",
     "saveChanges": "保存更改",
@@ -259,7 +258,8 @@
     "userManagement": "用户管理",
     "userUpdated": "用户已更新！",
     "username": "用户名",
-    "users": "用户"
+    "users": "用户",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "帮助",
