@@ -258,7 +258,8 @@
     "userManagement": "Quản lý người dùng",
     "userUpdated": "Người dùng đã được cập nhật!",
     "username": "Tên người dùng",
-    "users": "Người dùng"
+    "users": "Người dùng",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Trợ giúp",
