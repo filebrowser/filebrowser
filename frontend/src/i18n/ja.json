@@ -42,7 +42,6 @@
     "update": "更新",
     "upload": "アップロード",
     "openFile": "ファイルを開く",
-    "stopSearch": "検索を停止",
     "discardChanges": "Discard",
     "stopSearch": "Stop searching",
     "saveChanges": "Save changes",
@@ -259,7 +258,8 @@
     "userManagement": "ユーザー管理",
     "userUpdated": "ユーザーを更新しました！",
     "username": "ユーザー名",
-    "users": "ユーザー"
+    "users": "ユーザー",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "ヘルプ",

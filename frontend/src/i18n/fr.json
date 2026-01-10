@@ -43,11 +43,11 @@
     "upload": "Importer",
     "openFile": "Ouvrir le fichier",
     "discardChanges": "Annuler",
-    "stopSearch": "Stop searching",
-    "saveChanges": "Save changes",
-    "editAsText": "Edit as Text",
-    "increaseFontSize": "Increase font size",
-    "decreaseFontSize": "Decrease font size"
+    "stopSearch": "Arrêter recherche",
+    "saveChanges": "Enregistrer changements",
+    "editAsText": "Editer comme Texte",
+    "increaseFontSize": "Augmenter taille police",
+    "decreaseFontSize": "Réduire taille police"
   },
   "download": {
     "downloadFile": "Télécharger le fichier",
@@ -80,14 +80,14 @@
     "sortByName": "Trier par nom",
     "sortBySize": "Trier par taille",
     "noPreview": "L'aperçu n'est pas disponible pour ce fichier.",
-    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
-    "csvLoadFailed": "Failed to load CSV file.",
-    "showingRows": "Showing {count} row(s)",
-    "columnSeparator": "Column Separator",
+    "csvTooLarge": "Le fichier CSV est trop volumineux pour être prévisualisé (>5MB). Veuillez le télécharger pour le voir.",
+    "csvLoadFailed": "Impossible de charger le fichier CSV.",
+    "showingRows": "Affichage de {count} ligne(s)",
+    "columnSeparator": "Séparateur de Colonnes",
     "csvSeparators": {
-      "comma": "Comma (,)",
-      "semicolon": "Semicolon (;)",
-      "both": "Both (,) and (;)"
+      "comma": "Virgule (,)",
+      "semicolon": "Point-virgule (;)",
+      "both": "Les (,) et (;)"
     }
   },
   "help": {
@@ -115,9 +115,9 @@
     "username": "Utilisateur·ice",
     "usernameTaken": "Le nom d'utilisateur·ice est déjà pris",
     "wrongCredentials": "Identifiants incorrects !",
-    "passwordTooShort": "Password must be at least {min} characters",
+    "passwordTooShort": "Le mot de passe doit contenir au moins {min} caractères",
     "logout_reasons": {
-      "inactivity": "You have been logged out due to inactivity."
+      "inactivity": "Vous avez été déconnecté(e) en raison d'une inactivité prolongée."
     }
   },
   "permanent": "Permanent",
@@ -172,7 +172,7 @@
     "video": "Vidéo"
   },
   "settings": {
-    "aceEditorTheme": "Ace editor theme",
+    "aceEditorTheme": "Éditeur de Thème Ace",
     "admin": "Admin",
     "administrator": "Administrateur·ice",
     "allowCommands": "Exécuter des commandes",
@@ -180,7 +180,7 @@
     "allowNew": "Créer de nouveaux fichiers et dossiers",
     "allowPublish": "Publier de nouveaux posts et pages",
     "allowSignup": "Autoriser les utilisateur·ices à s'inscrire",
-    "hideLoginButton": "Hide the login button from public pages",
+    "hideLoginButton": "Cacher le bouton d’identification sur les pages publiques",
     "avoidChanges": "(Laisser vide pour conserver l'actuel)",
     "branding": "Image de marque",
     "brandingDirectoryPath": "Chemin du dossier d'image de marque",
@@ -258,7 +258,8 @@
     "userManagement": "Gestion des utilisateur·ices",
     "userUpdated": "Utilisateur·ice mis à jour !",
     "username": "Nom d'utilisateur·ice",
-    "users": "Utilisateur·ices"
+    "users": "Utilisateur·ices",
+    "currentPassword": "Mot de Passe Actuel"
   },
   "sidebar": {
     "help": "Aide",
