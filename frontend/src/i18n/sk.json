@@ -232,6 +232,7 @@
     "permissions": "Práva",
     "permissionsHelp": "Môžete nastaviť používateľa, aby bol administrátorom alebo vybrať práva jednotlivo. Ak zvolíte \"Administrator\", všetky ďalšie budú automaticky zaškrtnuté. Manažment používateľov ostáva v správe administrátora.\n",
     "profileSettings": "Nastavenia profilu",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "blokuje prístup ku všetkým súborom začínajúcim bodkou (napríklad .git, .gitignore) v každom priečinku.\n",
     "ruleExample2": "blokuje prístup k súborom s názvom Caddyfile v koreňovom priečinku.",
     "rules": "Pravidlá",
