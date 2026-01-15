@@ -88,7 +88,9 @@
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
-    }
+    },
+    "fileEncoding": "File Encoding",
+    "utf8Encoding": "utf-8 (Default)"
   },
   "help": {
     "click": "select file or directory",

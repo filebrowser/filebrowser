@@ -9,6 +9,44 @@
       <p>{{ $t("files.lonely") }}</p>
     </div>
     <div v-else class="csv-table-container" @wheel.stop @touchmove.stop>
+      <div class="csv-header">
+        <div class="header-select">
+          <label for="columnSeparator">{{ $t("files.columnSeparator") }}</label>
+          <select
+            id="columnSeparator"
+            class="input input--block"
+            v-model="columnSeparator"
+          >
+            <option :value="[',']">
+              {{ $t("files.csvSeparators.comma") }}
+            </option>
+            <option :value="[';']">
+              {{ $t("files.csvSeparators.semicolon") }}
+            </option>
+            <option :value="[',', ';']">
+              {{ $t("files.csvSeparators.both") }}
+            </option>
+          </select>
+        </div>
+        <div class="header-select">
+          <label for="fileEncoding">{{ $t("files.fileEncoding") }}</label>
+          <select
+            @change="updateEncoding"
+            id="fileEncoding"
+            class="input input--block"
+            v-model="selectedEncoding"
+          >
+            <option value="utf-8">{{ $t("files.utf8Encoding") }}</option>
+            <option
+              v-for="encoding in availableEncodings"
+              :value="encoding"
+              :key="encoding"
+            >
+              {{ encoding }}
+            </option>
+          </select>
+        </div>
+      </div>
       <table class="csv-table">
         <thead>
           <tr>
@@ -32,43 +70,34 @@
             {{ $t("files.showingRows", { count: data.rows.length }) }}</span
           >
         </div>
-        <div class="column-separator">
-          <label for="columnSeparator">{{ $t("files.columnSeparator") }}</label>
-          <select
-            id="columnSeparator"
-            class="input input--block"
-            v-model="columnSeparator"
-          >
-            <option :value="[',']">
-              {{ $t("files.csvSeparators.comma") }}
-            </option>
-            <option :value="[';']">
-              {{ $t("files.csvSeparators.semicolon") }}
-            </option>
-            <option :value="[',', ';']">
-              {{ $t("files.csvSeparators.both") }}
-            </option>
-          </select>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { getAvailableEncodings } from "@/api/files";
 import { parseCSV, type CsvData } from "@/utils/csv";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
 interface Props {
   content: string;
   error?: string;
 }
 
+const router = useRouter();
+const route = useRoute();
+
 const props = withDefaults(defineProps<Props>(), {
   error: "",
 });
 
-const columnSeparator = ref([","]);
+const columnSeparator = ref([",", ";"]);
+
+const availableEncodings = ref<string[]>([]);
+
+const selectedEncoding = ref(route.query.encoding || "utf-8");
 
 const data = computed<CsvData>(() => {
   try {
@@ -78,6 +107,18 @@ const data = computed<CsvData>(() => {
     return { headers: [], rows: [] };
   }
 });
+
+onMounted(() => {
+  getAvailableEncodings().then((data) => {
+    availableEncodings.value = data;
+  });
+});
+
+const updateEncoding = () => {
+  router.replace({
+    query: { ...route.query, encoding: selectedEncoding.value },
+  });
+};
 
 const displayError = computed(() => {
   // External error takes priority (e.g., file too large)
@@ -213,10 +254,6 @@ const displayError = computed(() => {
   padding: 0.5rem;
 }
 
-.csv-footer > :only-child {
-  margin-left: auto;
-}
-
 .csv-info {
   display: flex;
   align-items: center;
@@ -230,18 +267,25 @@ const displayError = computed(() => {
   font-size: 0.875rem;
 }
 
-.column-separator {
+.csv-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem;
+}
+
+.header-select {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
-.column-separator > label {
+.header-select > label {
   font-size: small;
-  text-align: end;
+  max-width: 80px;
 }
 
-.column-separator > select {
+.header-select > select {
   margin-bottom: 0;
 }
 

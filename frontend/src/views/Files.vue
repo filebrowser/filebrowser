@@ -157,6 +157,10 @@ const fetchData = async () => {
   // Cancel the ongoing request
   fetchDataController.abort();
   fetchDataController = new AbortController();
+  // Add enncoding query parameter if specified
+  if (route.query.encoding) {
+    url += `?encoding=${route.query.encoding}`;
+  }
   try {
     const res = await api.fetch(url, fetchDataController.signal);
     fileStore.updateRequest(res);
