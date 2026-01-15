@@ -393,10 +393,11 @@ func quickSetup(v *viper.Viper, s *storage.Storage) error {
 		MinimumPasswordLength: settings.DefaultMinimumPasswordLength,
 		UserHomeBasePath:      settings.DefaultUsersHomeBasePath,
 		Defaults: settings.UserDefaults{
-			Scope:          ".",
-			Locale:         "en",
-			SingleClick:    false,
-			AceEditorTheme: v.GetString("defaults.aceEditorTheme"),
+			Scope:                 ".",
+			Locale:                "en",
+			SingleClick:           false,
+			RedirectAfterCopyMove: true,
+			AceEditorTheme:        v.GetString("defaults.aceEditorTheme"),
 			Perm: users.Permissions{
 				Admin:    false,
 				Execute:  true,

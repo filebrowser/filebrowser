@@ -258,7 +258,8 @@
     "userManagement": "Správa uživatelů",
     "userUpdated": "Uživatel aktualizován!",
     "username": "Uživatelské jméno",
-    "users": "Uživatelé"
+    "users": "Uživatelé",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Nápověda",
