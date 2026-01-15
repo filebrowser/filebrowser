@@ -49,7 +49,6 @@ export async function remove(
   await fetchURL(`/api/users/${id}`, {
     method: "DELETE",
     body: JSON.stringify({
-      what: "user",
       ...(currentPassword != null ? { current_password: currentPassword } : {}),
     }),
   });
