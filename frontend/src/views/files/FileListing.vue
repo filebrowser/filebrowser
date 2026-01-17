@@ -1059,6 +1059,9 @@ const handleEmptyAreaClick = (e: MouseEvent) => {
 
   if (target.closest("item") || target.closest(".item")) return;
 
+  // Do not clear selection when clicking on context menu actions
+  if (target.closest(".context-menu")) return;
+
   fileStore.selected = [];
 };
 </script>
