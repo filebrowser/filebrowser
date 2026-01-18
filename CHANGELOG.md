@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.55.0](https://github.com/filebrowser/filebrowser/compare/v2.54.0...v2.55.0) (2026-01-18)
+
+
+### Features
+
+* added cut, copy, paste and show command palette functions in header ([#5648](https://github.com/filebrowser/filebrowser/issues/5648)) ([785b7ab](https://github.com/filebrowser/filebrowser/commit/785b7abb7ba7a86cc0deae1052c319ff714c222c))
+* update translations ([#5677](https://github.com/filebrowser/filebrowser/issues/5677)) ([e7ea1ad](https://github.com/filebrowser/filebrowser/commit/e7ea1ad27d3d17e249489d3338be40bfea15e2a1))
+
+
+### Bug Fixes
+
+* prevent context menu clicks from clearing file selection ([#5681](https://github.com/filebrowser/filebrowser/issues/5681)) ([59ca0c3](https://github.com/filebrowser/filebrowser/commit/59ca0c340afc7774747c70ede9a5a5a3c9349d6b))
+* request current password when deleting users ([#5667](https://github.com/filebrowser/filebrowser/issues/5667)) ([cfa6c58](https://github.com/filebrowser/filebrowser/commit/cfa6c5864e5e7673aa9f3180e4964e0db92cc4da))
+* retain file selection when closing the editor ([#5693](https://github.com/filebrowser/filebrowser/issues/5693)) ([4094fb3](https://github.com/filebrowser/filebrowser/commit/4094fb359babac70e88d0ed4bfe3bd100744aad6))
+
 ## [2.54.0](https://github.com/filebrowser/filebrowser/compare/v2.53.1...v2.54.0) (2026-01-10)
 
 
