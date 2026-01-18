@@ -236,7 +236,6 @@ const close = () => {
 };
 
 const finishClose = () => {
-  fileStore.updateRequest(null);
   const uri = url.removeLastDir(route.path) + "/";
   router.push({ path: uri });
 };
