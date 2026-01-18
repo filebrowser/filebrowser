@@ -42,8 +42,14 @@ export async function update(
   });
 }
 
-export async function remove(id: number) {
+export async function remove(
+  id: number,
+  currentPassword: string | null = null
+) {
   await fetchURL(`/api/users/${id}`, {
     method: "DELETE",
+    body: JSON.stringify({
+      ...(currentPassword != null ? { current_password: currentPassword } : {}),
+    }),
   });
 }
