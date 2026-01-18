@@ -377,6 +377,7 @@ const key = (event: KeyboardEvent) => {
     close();
   }
 };
+
 const updatePreview = async () => {
   if (player.value && player.value.paused && !player.value.ended) {
     autoPlay.value = false;
@@ -386,16 +387,7 @@ const updatePreview = async () => {
   name.value = decodeURIComponent(dirs[dirs.length - 1]);
 
   // Load CSV content if it's a CSV file
-  if (isCsv.value && fileStore.req) {
-    csvContent.value = "";
-    csvError.value = "";
-
-    if (fileStore.req.size > CSV_MAX_SIZE) {
-      csvError.value = t("files.csvTooLarge");
-    } else {
-      csvContent.value = fileStore.req.content ?? "";
-    }
-  }
+  updateCsvContent(fileStore.req);
 
   if (!listing.value) {
     try {
@@ -435,6 +427,26 @@ const updatePreview = async () => {
   }
 };
 
+watch(
+  () => fileStore.req,
+  (newReq) => {
+    updateCsvContent(newReq);
+  }
+);
+
+const updateCsvContent = (req: Resource | null) => {
+  if (isCsv.value && req) {
+    csvContent.value = "";
+    csvError.value = "";
+
+    if (req.size > CSV_MAX_SIZE) {
+      csvError.value = t("files.csvTooLarge");
+    } else {
+      csvContent.value = req.content ?? "";
+    }
+  }
+};
+
 const prefetchUrl = (item: ResourceItem) => {
   if (item.type !== "image") {
     return "";
@@ -468,6 +480,8 @@ const close = () => {
 const download = () => window.open(downloadUrl.value);
 
 const editAsText = () => {
-  router.push({ path: route.path, query: { edit: "true" } });
+  const query = { ...route.query };
+  query.edit = "true";
+  router.push({ path: route.path, query: query });
 };
 </script>
