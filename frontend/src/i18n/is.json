@@ -232,6 +232,7 @@
     "permissions": "Heimildir",
     "permissionsHelp": "Þú getur stillt notenda sem stjórnanda eða valið einstaklingsbundnar heimildir. Ef þú velur \"Stjórnandi\", þá verða allir aðrir valmöguleikar valdir sjálfrafa. Aðgangstýring notenda er á hendi stjórnenda. \n",
     "profileSettings": "Stilla prófíl",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "kemur í veg fyrir aðgang að dot-skjali (t.d. .git, .gitignore) í öllum möppum. \n",
     "ruleExample2": "kemur í veg fyrir aðgang að Caddyfile-skjalinu í root-möppu í sýn notandans. ",
     "rules": "Reglur",

@@ -232,6 +232,7 @@
     "permissions": "Jogosultságok",
     "permissionsHelp": "A felhasználót beállíthatja rendszergazdának, vagy egyénileg is kiválaszthatja a jogosultságokat. Ha a \"Rendszergazda\" lehetőséget választja, az összes többi opció automatikusan be lesz jelölve. A felhasználók kezelése továbbra is a rendszergazda kiváltsága marad.\n",
     "profileSettings": "Profilbeállítások",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "megakadályozza a hozzáférést bármely rejtett fájlhoz (pl. .git, .gitignore) bármely mappában.\n",
     "ruleExample2": "blokkolja a hozzáférést a Caddyfile nevű fájlhoz a hatókör gyökerében.",
     "rules": "Szabályok",

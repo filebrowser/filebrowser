@@ -232,6 +232,7 @@
     "permissions": "Berechtigungen",
     "permissionsHelp": "Sie können einem Benutzer Administratorrechte einräumen oder die Berechtigungen individuell festlegen.  Wenn Sie \"Administrator\" auswählen, werden alle anderen Rechte automatisch vergeben. Die Nutzerverwaltung kann nur durch einen Administrator erfolgen.\n",
     "profileSettings": "Profileinstellungen",
+    "redirectAfterCopyMove": "Nach Kopieren/Verschieben zum Zielverzeichnis wechseln",
     "ruleExample1": "Verhindert den Zugang zu versteckten Dateien (dot-Files, wie .git, .gitignore) in allen Ordnern\n",
     "ruleExample2": "blockiert den Zugang auf Dateien mit dem Namen Caddyfile in der Wurzel/Basis des Scopes.",
     "rules": "Regeln",

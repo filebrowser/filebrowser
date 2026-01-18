@@ -232,6 +232,7 @@
     "permissions": "権限",
     "permissionsHelp": "ユーザーを管理者に設定するか、その他の権限を個別に選択することができます。「管理者」を選択すると、他のオプションはすべて自動的にチェックされます。ユーザーを管理するには管理者権限が必要です。\n",
     "profileSettings": "プロフィール設定",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": ".git や .gitignore のようなドットから始まるファイルへのアクセスを禁止します。\n",
     "ruleExample2": "スコープのルートにある Caddyfile という名前のファイルへのアクセスを禁止します。",
     "rules": "ルール",

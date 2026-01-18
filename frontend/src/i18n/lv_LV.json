@@ -43,7 +43,7 @@
     "upload": "Augšupielādēt",
     "openFile": "Atvērt failu",
     "discardChanges": "Izmest",
-    "stopSearch": "Stop searching",
+    "stopSearch": "Beigt meklēšanu",
     "saveChanges": "Saglabāt izmaiņas",
     "editAsText": "Rediģēt kā tekstu",
     "increaseFontSize": "Palieliniet fonta lielumu",
@@ -232,6 +232,7 @@
     "permissions": "Atļaujas",
     "permissionsHelp": "Varat iestatīt lietotāju kā administratoru vai izvēlēties atļaujas individuāli. Ja atlasīsiet “Administrators”, visas pārējās opcijas tiks automātiski atzīmētas. Lietotāju pārvaldība joprojām ir administratora privilēģija.\n",
     "profileSettings": "Profila iestatījumi",
+    "redirectAfterCopyMove": "Pārvirzīt uz galapunktu pēc kopēšanas/pārvietošanas",
     "ruleExample1": "neļauj piekļūt jebkuram dotfile failam (piemēram, .git, .gitignore) katrā mapē.\n",
     "ruleExample2": "bloķē piekļuvi failam ar nosaukumu Caddyfile darbības jomas saknē.",
     "rules": "Noteikumi",
@@ -241,7 +242,7 @@
     "settingsUpdated": "Iestatījumi atjaunināti!",
     "shareDuration": "Kopīgošanas ilgums",
     "shareManagement": "Kopīgošanas pārvaldība",
-    "shareDeleted": "Kopīgošana ir izdzēsta!",
+    "shareDeleted": "Kopīgojums izdzēsts!",
     "singleClick": "Failu un direktoriju atvēršanai izmantojiet vienus klikšķi",
     "themes": {
       "default": "Sistēmas noklusējums",
@@ -259,7 +260,7 @@
     "userUpdated": "Lietotājs atjaunināts!",
     "username": "Lietotājvārds",
     "users": "Lietotāji",
-    "currentPassword": "Your Current Password"
+    "currentPassword": "Esošā Parole"
   },
   "sidebar": {
     "help": "Palīdzība",

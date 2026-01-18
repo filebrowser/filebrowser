@@ -232,6 +232,7 @@
     "permissions": "Quyền",
     "permissionsHelp": "Bạn có thể đặt người dùng làm quản trị viên hoặc chọn quyền riêng lẻ. Nếu chọn \"Người quản trị\", tất cả các tùy chọn khác sẽ tự động được chọn. Việc quản lý người dùng vẫn là đặc quyền của quản trị viên.\n",
     "profileSettings": "Cài đặt hồ sơ",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "ngăn truy cập vào bất kỳ tệp ẩn nào (chẳng hạn như .git, .gitignore) trong mọi thư mục.\n",
     "ruleExample2": "chặn truy cập vào tệp có tên Caddyfile trong thư mục gốc của phạm vi.",
     "rules": "Quy tắc",

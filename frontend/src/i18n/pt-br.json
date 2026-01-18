@@ -232,6 +232,7 @@
     "permissions": "Permissões",
     "permissionsHelp": "Pode definir o usuário como administrador ou escolher as permissões manualmente. Se selecionar a opção \"Administrador\", todas as outras opções serão automaticamente selecionadas. A gestão dos usuários é um privilégio restringido aos administradores.\n",
     "profileSettings": "Configurações do usuário",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "previne o acesso a qualquer \"dotfile\" (como .git, .gitignore) em qualquer pasta\n",
     "ruleExample2": "bloqueia o acesso ao arquivo chamado Caddyfile.",
     "rules": "Regras",

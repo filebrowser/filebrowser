@@ -232,6 +232,7 @@
     "permissions": "İzinler",
     "permissionsHelp": "Kullanıcıyı yönetici olarak ayarlayabilir veya izinleri ayrı ayrı seçebilirsiniz. \"Yönetici\"yi seçerseniz, diğer tüm seçenekler otomatik olarak kontrol edilecektir. Kullanıcıların yönetimi, bir yöneticinin yetkisi olarak kalır.\n",
     "profileSettings": "Profil ayarları",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "her klasördeki herhangi bir noktalı dosyaya (.git, .gitignore gibi) erişimi engeller.\n",
     "ruleExample2": "Root erişimidenki CaddyFile dosyalarına erişimi engelle.",
     "rules": "Kurallar",
