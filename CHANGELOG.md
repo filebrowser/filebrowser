@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.56.0](https://github.com/filebrowser/filebrowser/compare/v2.55.0...v2.56.0) (2026-01-24)
+
+
+### Features
+
+* Updates for project File Browser ([#5698](https://github.com/filebrowser/filebrowser/issues/5698)) ([f0f2f1f](https://github.com/filebrowser/filebrowser/commit/f0f2f1ff069aae566d8bf25ec275da59f29a96bc))
+
+
+### Bug Fixes
+
+* adjust columns of the table from the "users ls" command ([#5716](https://github.com/filebrowser/filebrowser/issues/5716)) ([3032a1f](https://github.com/filebrowser/filebrowser/commit/3032a1fade43737c51c49b5ccda34f336394c2ed))
+* avoid clearing selection when clicking elements outside the empty area ([#5715](https://github.com/filebrowser/filebrowser/issues/5715)) ([004488c](https://github.com/filebrowser/filebrowser/commit/004488c15b3c30784e1ea564b3ca9feec7bcad08))
+
 ## [2.55.0](https://github.com/filebrowser/filebrowser/compare/v2.54.0...v2.55.0) (2026-01-18)
 
 
