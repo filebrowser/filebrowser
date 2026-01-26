@@ -3,7 +3,6 @@ package cmd
 import (
 	"encoding/json"
 	"errors"
-	"path/filepath"
 	"reflect"
 
 	"github.com/spf13/cobra"
@@ -68,12 +67,7 @@ The path must be for a json or yaml file.`,
 			return err
 		}
 
-		var rawAuther interface{}
-		if filepath.Ext(args[0]) != ".json" {
-			rawAuther = cleanUpInterfaceMap(file.Auther.(map[interface{}]interface{}))
-		} else {
-			rawAuther = file.Auther
-		}
+		var rawAuther = file.Auther
 
 		var auther auth.Auther
 		var autherErr error
