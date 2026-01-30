@@ -4,7 +4,7 @@
       <i class="material-icons">error</i>
       <p>{{ displayError }}</p>
     </div>
-    <div v-else-if="data.headers.length === 0" class="csv-empty">
+    <div v-else-if="parsed.headers.length === 0" class="csv-empty">
       <i class="material-icons">description</i>
       <p>{{ $t("files.lonely") }}</p>
     </div>
@@ -50,13 +50,13 @@
       <table class="csv-table">
         <thead>
           <tr>
-            <th v-for="(header, index) in data.headers" :key="index">
+            <th v-for="(header, index) in parsed.headers" :key="index">
               {{ header || `Column ${index + 1}` }}
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, rowIndex) in data.rows" :key="rowIndex">
+          <tr v-for="(row, rowIndex) in parsed.rows" :key="rowIndex">
             <td v-for="(cell, cellIndex) in row" :key="cellIndex">
               {{ cell }}
             </td>
@@ -64,11 +64,11 @@
         </tbody>
       </table>
       <div class="csv-footer">
-        <div class="csv-info" v-if="data.rows.length > 100">
+        <div class="csv-info" v-if="parsed.rows.length > 100">
           <i class="material-icons">info</i>
           <span>
-            {{ $t("files.showingRows", { count: data.rows.length }) }}</span
-          >
+            {{ $t("files.showingRows", { count: parsed.rows.length }) }}
+          </span>
         </div>
       </div>
     </div>
@@ -77,9 +77,12 @@
 
 <script setup lang="ts">
 import { getAvailableEncodings } from "@/api/files";
-import { parseCSV, type CsvData } from "@/utils/csv";
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { parse } from "csv-parse/browser/esm";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n({});
 
 interface Props {
   content: string;
@@ -99,12 +102,31 @@ const availableEncodings = ref<string[]>([]);
 
 const selectedEncoding = ref(route.query.encoding || "utf-8");
 
-const data = computed<CsvData>(() => {
-  try {
-    return parseCSV(props.content, columnSeparator.value);
-  } catch (e) {
-    console.error("Failed to parse CSV:", e);
-    return { headers: [], rows: [] };
+const parsed = ref<CsvData>({ headers: [], rows: [] });
+
+const displayError = ref<string | null>(null);
+
+watchEffect(() => {
+  if (props.content !== "" && columnSeparator.value.length > 0) {
+    parse(
+      props.content,
+      { delimiter: columnSeparator.value },
+      (error, output) => {
+        if (error) {
+          console.error("Failed to parse CSV:", error);
+          parsed.value = { headers: [], rows: [] };
+          displayError.value = t("errors.csv_parsing_error", {
+            error: error.toString(),
+          });
+        } else {
+          parsed.value = {
+            headers: output[0],
+            rows: output.slice(1),
+          };
+          displayError.value = null;
+        }
+      }
+    );
   }
 });
 
@@ -119,22 +141,6 @@ const updateEncoding = () => {
     query: { ...route.query, encoding: selectedEncoding.value },
   });
 };
-
-const displayError = computed(() => {
-  // External error takes priority (e.g., file too large)
-  if (props.error) {
-    return props.error;
-  }
-  // Check for parse errors
-  if (
-    props.content &&
-    props.content.trim().length > 0 &&
-    data.value.headers.length === 0
-  ) {
-    return "Failed to parse CSV file";
-  }
-  return null;
-});
 </script>
 
 <style scoped>

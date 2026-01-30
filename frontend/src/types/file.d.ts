@@ -57,3 +57,8 @@ interface BreadCrumb {
   name: string;
   url: string;
 }
+
+interface CsvData {
+  headers: string[];
+  rows: string[][];
+}
