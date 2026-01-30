@@ -232,6 +232,7 @@
     "permissions": "Permisos",
     "permissionsHelp": "Puedes nombrar al usuario como administrador o elegir los permisos individualmente. Si seleccionas \"Administrador\", todas las otras opciones serán activadas automáticamente. La administración de usuarios es un privilegio de administrador.\n",
     "profileSettings": "Ajustes del perfil",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "previene el acceso a una extensión de archivo (Como .git) en cada carpeta.\n",
     "ruleExample2": "bloquea el acceso al archivo llamado Caddyfile en la carpeta raíz.",
     "rules": "Reglas",

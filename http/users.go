@@ -103,7 +103,25 @@ var userGetHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 	return renderJSON(w, r, u)
 })
 
-var userDeleteHandler = withSelfOrAdmin(func(_ http.ResponseWriter, _ *http.Request, d *data) (int, error) {
+var userDeleteHandler = withSelfOrAdmin(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	if r.Body == nil {
+		return http.StatusBadRequest, fberrors.ErrEmptyRequest
+	}
+
+	var body struct {
+		CurrentPassword string `json:"current_password"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		return http.StatusBadRequest, err
+	}
+
+	if d.settings.AuthMethod == auth.MethodJSONAuth {
+		if !users.CheckPwd(body.CurrentPassword, d.user.Password) {
+			return http.StatusBadRequest, fberrors.ErrCurrentPasswordIncorrect
+		}
+	}
+
 	err := d.store.Users.Delete(d.raw.(uint))
 	if err != nil {
 		return errToStatus(err), err

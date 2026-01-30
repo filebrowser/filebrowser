@@ -232,6 +232,7 @@
     "permissions": "Permisos",
     "permissionsHelp": "Pots nomenar l'usuari com a administrador o triar els permisos individualment. Si selecciones \"Administrador\", totes les altres opcions s'activaran automàticament. L'administració d'usuaris és un privilegi d'administrador.\n",
     "profileSettings": "Ajustos del perfil",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "prevé l'accés a una extensió de fitxer (Com .git) en cada carpeta.\n",
     "ruleExample2": "bloqueja l'accés al fitxer anomenat Caddyfile a la carpeta arrel.",
     "rules": "Regles",

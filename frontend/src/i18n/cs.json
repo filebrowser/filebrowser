@@ -232,6 +232,7 @@
     "permissions": "Oprávnění",
     "permissionsHelp": "Můžete nastavit uživatele jako administrátora nebo zvolit jednotlivá oprávnění. Pokud vyberete \"Administrátor\", všechny ostatní možnosti budou automaticky zaškrtnuty. Správa uživatelů zůstává výsadou administrátora.\n",
     "profileSettings": "Nastavení profilu",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "zabraňuje přístupu k jakémukoli skrytému souboru (např. .git, .gitignore) v každé složce.\n",
     "ruleExample2": "blokuje přístup k souboru s názvem Caddyfile v kořenovém adresáři.",
     "rules": "Pravidla",

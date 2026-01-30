@@ -232,6 +232,7 @@
     "permissions": "Dopuštenja",
     "permissionsHelp": "Korisnika možete postaviti administratorom ili odabrati dopuštenja individualno. Odabirom na \"Administrator\", sve druge opcije bit će automatski odabrane. Upravljanje korisnicima ostaje privilegija administratora.\n",
     "profileSettings": "Postavke profila",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "onemogućava pristup svakoj datoteci koja započinje točkom (poput .git, .gitignore) u svakoj mapi.\n",
     "ruleExample2": "blokira pristup datoteci naziva Caddyfile na korijenu opsega.",
     "rules": "Pravila",

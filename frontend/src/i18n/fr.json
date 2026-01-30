@@ -232,6 +232,7 @@
     "permissions": "Permissions",
     "permissionsHelp": "Vous pouvez définir l'utilisateur·ice comme étant administrateur·ice ou encore choisir les permissions individuellement. Si vous sélectionnez \"Administrateur·ice\", toutes les autres options seront automatiquement activées. La gestion des utilisateur·ices est un privilège que seul l'administrateur·ice possède.\n",
     "profileSettings": "Paramètres du profil",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "Bloque l'accès à tous les fichiers commençant par un point (comme par exemple .git, .gitignore) dans tous les dossiers.\n",
     "ruleExample2": "Bloque l'accès au fichier nommé \"Caddyfile\" à la racine du dossier utilisateur·ice.",
     "rules": "Règles",

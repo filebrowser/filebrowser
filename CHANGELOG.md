@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.56.0](https://github.com/filebrowser/filebrowser/compare/v2.55.0...v2.56.0) (2026-01-24)
+
+
+### Features
+
+* Updates for project File Browser ([#5698](https://github.com/filebrowser/filebrowser/issues/5698)) ([f0f2f1f](https://github.com/filebrowser/filebrowser/commit/f0f2f1ff069aae566d8bf25ec275da59f29a96bc))
+
+
+### Bug Fixes
+
+* adjust columns of the table from the "users ls" command ([#5716](https://github.com/filebrowser/filebrowser/issues/5716)) ([3032a1f](https://github.com/filebrowser/filebrowser/commit/3032a1fade43737c51c49b5ccda34f336394c2ed))
+* avoid clearing selection when clicking elements outside the empty area ([#5715](https://github.com/filebrowser/filebrowser/issues/5715)) ([004488c](https://github.com/filebrowser/filebrowser/commit/004488c15b3c30784e1ea564b3ca9feec7bcad08))
+
+## [2.55.0](https://github.com/filebrowser/filebrowser/compare/v2.54.0...v2.55.0) (2026-01-18)
+
+
+### Features
+
+* added cut, copy, paste and show command palette functions in header ([#5648](https://github.com/filebrowser/filebrowser/issues/5648)) ([785b7ab](https://github.com/filebrowser/filebrowser/commit/785b7abb7ba7a86cc0deae1052c319ff714c222c))
+* update translations ([#5677](https://github.com/filebrowser/filebrowser/issues/5677)) ([e7ea1ad](https://github.com/filebrowser/filebrowser/commit/e7ea1ad27d3d17e249489d3338be40bfea15e2a1))
+
+
+### Bug Fixes
+
+* prevent context menu clicks from clearing file selection ([#5681](https://github.com/filebrowser/filebrowser/issues/5681)) ([59ca0c3](https://github.com/filebrowser/filebrowser/commit/59ca0c340afc7774747c70ede9a5a5a3c9349d6b))
+* request current password when deleting users ([#5667](https://github.com/filebrowser/filebrowser/issues/5667)) ([cfa6c58](https://github.com/filebrowser/filebrowser/commit/cfa6c5864e5e7673aa9f3180e4964e0db92cc4da))
+* retain file selection when closing the editor ([#5693](https://github.com/filebrowser/filebrowser/issues/5693)) ([4094fb3](https://github.com/filebrowser/filebrowser/commit/4094fb359babac70e88d0ed4bfe3bd100744aad6))
+
 ## [2.54.0](https://github.com/filebrowser/filebrowser/compare/v2.53.1...v2.54.0) (2026-01-10)
 
 

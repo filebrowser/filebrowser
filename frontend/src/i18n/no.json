@@ -232,6 +232,7 @@
     "permissions": "Tilaterser",
     "permissionsHelp": "Du kan angi brukeren som administrator eller velge tillatelsene individuelt. Hvis du velger «Administrator», vil alle de andre alternativene bli automatisk avkrysset. Administrasjon av brukere er fortsatt et privilegium for en administrator.\n",
     "profileSettings": "Profil Innstilinger",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "forhindrer tilgang til noen dotfiler (som .git, .gitignore) i alle mapper.\n",
     "ruleExample2": "blokkerer tilgangen til filen med navnet Caddyfile på roten av omfanget.",
     "rules": "Regler",

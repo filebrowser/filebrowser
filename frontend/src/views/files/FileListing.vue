@@ -81,7 +81,13 @@
       </template>
     </header-bar>
 
-    <div v-if="isMobile" id="file-selection">
+    <div
+      v-if="isMobile"
+      id="file-selection"
+      :class="{
+        'file-selection-margin-bottom': fileStore.multiple,
+      }"
+    >
       <span v-if="fileStore.selectedCount > 0">
         {{ t("prompts.filesSelected", fileStore.selectedCount) }}
       </span>
@@ -158,6 +164,7 @@
         id="listing"
         ref="listing"
         class="file-icons"
+        data-clear-on-click="true"
         :class="authStore.user?.viewMode ?? ''"
         @click="handleEmptyAreaClick"
       >
@@ -205,11 +212,12 @@
           </div>
         </div>
 
-        <h2 v-if="fileStore.req?.numDirs ?? false">
+        <h2 data-clear-on-click="true" v-if="fileStore.req?.numDirs ?? false">
           {{ t("files.folders") }}
         </h2>
         <div
           v-if="fileStore.req?.numDirs ?? false"
+          data-clear-on-click="true"
           @contextmenu="showContextMenu"
         >
           <item
@@ -227,11 +235,12 @@
           </item>
         </div>
 
-        <h2 v-if="fileStore.req?.numFiles ?? false">
+        <h2 data-clear-on-click="true" v-if="fileStore.req?.numFiles ?? false">
           {{ t("files.files") }}
         </h2>
         <div
           v-if="fileStore.req?.numFiles ?? false"
+          data-clear-on-click="true"
           @contextmenu="showContextMenu"
         >
           <item
@@ -1057,16 +1066,17 @@ const handleEmptyAreaClick = (e: MouseEvent) => {
   const target = e.target;
   if (!(target instanceof HTMLElement)) return;
 
-  if (target.closest("item") || target.closest(".item")) return;
-
-  // Do not clear selection when clicking on context menu actions
-  if (target.closest(".context-menu")) return;
-
-  fileStore.selected = [];
+  if (target.dataset.clearOnClick === "true") {
+    fileStore.selected = [];
+  }
 };
 </script>
 <style scoped>
 #listing {
   min-height: calc(100vh - 8rem);
+}
+
+.file-selection-margin-bottom {
+  margin-bottom: 3.5rem;
 }
 </style>
