@@ -56,12 +56,22 @@ export async function upload(
           return reject(error);
         }
 
-        const message =
-          error instanceof tus.DetailedError
-            ? error.originalResponse === null
-              ? "000 No connection"
-              : error.originalResponse.getBody()
-            : "Upload failed";
+        let message = "Upload failed";
+        if (error instanceof tus.DetailedError) {
+          const response = error.originalResponse;
+
+          if (response === null) {
+            message = "000 No connection";
+          } else {
+            if (response.getStatus() === 409 && !overwrite) {
+              //do not display error if "continue" was pressed
+              resolve();
+              return;
+            } else {
+              message = response.getBody();
+            }
+          }
+        }
 
         console.error(error);
 
