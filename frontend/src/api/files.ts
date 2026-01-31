@@ -2,7 +2,13 @@ import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
 import { baseURL } from "@/utils/constants";
 import { upload as postTus, useTus } from "./tus";
-import { createURL, fetchURL, removePrefix, StatusError } from "./utils";
+import {
+  createURL,
+  fetchJSON,
+  fetchURL,
+  removePrefix,
+  StatusError,
+} from "./utils";
 
 export async function fetch(url: string, signal?: AbortSignal) {
   url = removePrefix(url);
@@ -225,6 +231,16 @@ export async function usage(url: string, signal: AbortSignal) {
     if (e instanceof Error && e.name == "AbortError") {
       throw new StatusError("000 No connection", 0, true);
     }
+    throw e;
+  }
+}
+
+export async function getAvailableEncodings() {
+  const res = await fetchJSON<{ encodings: Array<string> }>(`/api/encodings`);
+
+  try {
+    return await res.encodings;
+  } catch (e) {
     throw e;
   }
 }

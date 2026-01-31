@@ -64,6 +64,7 @@ type FileOptions struct {
 	Token      string
 	Checker    rules.Checker
 	Content    bool
+	Encoding   string
 }
 
 type ImageResolution struct {
@@ -97,7 +98,7 @@ func NewFileInfo(opts *FileOptions) (*FileInfo, error) {
 			return file, nil
 		}
 
-		err = file.detectType(opts.Modify, opts.Content, true, opts.CalcImgRes)
+		err = file.detectType(opts.Modify, opts.Content, true, opts.CalcImgRes, opts.Encoding)
 		if err != nil {
 			return nil, err
 		}
@@ -219,7 +220,7 @@ func (i *FileInfo) RealPath() string {
 	return i.Path
 }
 
-func (i *FileInfo) detectType(modify, saveContent, readHeader bool, calcImgRes bool) error {
+func (i *FileInfo) detectType(modify, saveContent, readHeader bool, calcImgRes bool, encoding string) error {
 	if IsNamedPipe(i.Mode) {
 		i.Type = "blob"
 		return nil
@@ -276,7 +277,11 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool, calcImgRes b
 				return err
 			}
 
-			i.Content = string(content)
+			decoded, err := decodeFileContent([]byte(content), encoding)
+			if err != nil {
+				return err
+			}
+			i.Content = decoded
 		}
 		return nil
 	default:
@@ -454,7 +459,7 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool, calcImgRe
 			if isInvalidLink {
 				file.Type = "invalid_link"
 			} else {
-				err := file.detectType(true, false, readHeader, calcImgRes)
+				err := file.detectType(true, false, readHeader, calcImgRes, "utf-8")
 				if err != nil {
 					return err
 				}
@@ -466,4 +471,15 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool, calcImgRe
 
 	i.Listing = listing
 	return nil
+}
+
+func decodeFileContent(raw []byte, enc string) (string, error) {
+	enc = strings.ToLower(enc)
+
+	if e, ok := Encodings[enc]; ok {
+		return e.NewDecoder().String(string(raw))
+	}
+
+	// UTF‑8 (default)
+	return string(raw), nil
 }
