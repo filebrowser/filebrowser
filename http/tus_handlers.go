@@ -1,7 +1,6 @@
 package fbhttp
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -12,48 +11,13 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jellydator/ttlcache/v3"
 	"github.com/spf13/afero"
 
 	"github.com/filebrowser/filebrowser/v2/files"
 )
 
-const maxUploadWait = 3 * time.Minute
-
-// Tracks active uploads along with their respective upload lengths
-var activeUploads = initActiveUploads()
-
-func initActiveUploads() *ttlcache.Cache[string, int64] {
-	cache := ttlcache.New[string, int64]()
-	cache.OnEviction(func(_ context.Context, reason ttlcache.EvictionReason, item *ttlcache.Item[string, int64]) {
-		if reason == ttlcache.EvictionReasonExpired {
-			fmt.Printf("deleting incomplete upload file: \"%s\"", item.Key())
-			os.Remove(item.Key())
-		}
-	})
-	go cache.Start()
-
-	return cache
-}
-
-func registerUpload(filePath string, fileSize int64) {
-	activeUploads.Set(filePath, fileSize, maxUploadWait)
-}
-
-func completeUpload(filePath string) {
-	activeUploads.Delete(filePath)
-}
-
-func getActiveUploadLength(filePath string) (int64, error) {
-	item := activeUploads.Get(filePath)
-	if item == nil {
-		return 0, fmt.Errorf("no active upload found for the given path")
-	}
-
-	return item.Value(), nil
-}
-
-func keepUploadActive(filePath string) func() {
+// keepUploadActive periodically touches the cache entry to prevent eviction during transfer
+func keepUploadActive(cache UploadCache, filePath string) func() {
 	stop := make(chan bool)
 
 	go func() {
@@ -65,7 +29,7 @@ func keepUploadActive(filePath string) func() {
 			case <-stop:
 				return
 			case <-ticker.C:
-				activeUploads.Touch(filePath)
+				cache.Touch(filePath)
 			}
 		}
 	}()
@@ -75,7 +39,7 @@ func keepUploadActive(filePath string) func() {
 	}
 }
 
-func tusPostHandler() handleFunc {
+func tusPostHandler(cache UploadCache) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
 			return http.StatusForbidden, nil
@@ -146,7 +110,7 @@ func tusPostHandler() handleFunc {
 		}
 
 		// Enables the user to utilize the PATCH endpoint for uploading file data
-		registerUpload(file.RealPath(), uploadLength)
+		cache.Register(file.RealPath(), uploadLength)
 
 		path, err := url.JoinPath("/", d.server.BaseURL, "/api/tus", r.URL.Path)
 		if err != nil {
@@ -158,7 +122,7 @@ func tusPostHandler() handleFunc {
 	})
 }
 
-func tusHeadHandler() handleFunc {
+func tusHeadHandler(cache UploadCache) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		w.Header().Set("Cache-Control", "no-store")
 		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
@@ -177,7 +141,7 @@ func tusHeadHandler() handleFunc {
 			return errToStatus(err), err
 		}
 
-		uploadLength, err := getActiveUploadLength(file.RealPath())
+		uploadLength, err := cache.GetLength(file.RealPath())
 		if err != nil {
 			return http.StatusNotFound, err
 		}
@@ -189,7 +153,7 @@ func tusHeadHandler() handleFunc {
 	})
 }
 
-func tusPatchHandler() handleFunc {
+func tusPatchHandler(cache UploadCache) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
 			return http.StatusForbidden, nil
@@ -219,13 +183,13 @@ func tusPatchHandler() handleFunc {
 			return errToStatus(err), err
 		}
 
-		uploadLength, err := getActiveUploadLength(file.RealPath())
+		uploadLength, err := cache.GetLength(file.RealPath())
 		if err != nil {
 			return http.StatusNotFound, err
 		}
 
 		// Prevent the upload from being evicted during the transfer
-		stop := keepUploadActive(file.RealPath())
+		stop := keepUploadActive(cache, file.RealPath())
 		defer stop()
 
 		switch {
@@ -266,7 +230,7 @@ func tusPatchHandler() handleFunc {
 		w.Header().Set("Upload-Offset", strconv.FormatInt(newOffset, 10))
 
 		if newOffset >= uploadLength {
-			completeUpload(file.RealPath())
+			cache.Complete(file.RealPath())
 			_ = d.RunHook(func() error { return nil }, "upload", r.URL.Path, "", d.user)
 		}
 
@@ -274,7 +238,7 @@ func tusPatchHandler() handleFunc {
 	})
 }
 
-func tusDeleteHandler() handleFunc {
+func tusDeleteHandler(cache UploadCache) handleFunc {
 	return withUser(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if r.URL.Path == "/" || !d.user.Perm.Create {
 			return http.StatusForbidden, nil
@@ -292,7 +256,7 @@ func tusDeleteHandler() handleFunc {
 			return errToStatus(err), err
 		}
 
-		_, err = getActiveUploadLength(file.RealPath())
+		_, err = cache.GetLength(file.RealPath())
 		if err != nil {
 			return http.StatusNotFound, err
 		}
@@ -302,7 +266,7 @@ func tusDeleteHandler() handleFunc {
 			return errToStatus(err), err
 		}
 
-		completeUpload(file.RealPath())
+		cache.Complete(file.RealPath())
 
 		return http.StatusNoContent, nil
 	})

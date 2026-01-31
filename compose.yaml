@@ -1,0 +1,37 @@
+# Run using:
+#   docker compose up --build
+
+services:
+  filebrowser:
+    container_name: filebrowser
+    build:
+      dockerfile: Dockerfile
+      context: .
+    networks:
+      - filebrowser
+    ports:
+      - 8000:80
+    volumes:
+      - filebrowser:/flux/vault
+    environment:
+      - REDIS_CACHE_URL=redis://default:filebrowser@redis:6379 # Use rediss:// for ssl
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    networks:
+      - filebrowser
+    command:
+      - sh
+      - -c
+      - |
+        cat > /tmp/users.acl <<EOF
+        user default on >filebrowser ~* +@all
+        EOF
+        redis-server --aclfile /tmp/users.acl
+
+networks:
+  filebrowser:
+
+volumes:
+  filebrowser:
