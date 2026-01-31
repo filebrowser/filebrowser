@@ -44,7 +44,7 @@
     "vue-i18n": "^11.1.10",
     "vue-lazyload": "^3.0.0",
     "vue-reader": "^1.2.17",
-    "vue-router": "^4.5.1",
+    "vue-router": "^5.0.0",
     "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
