@@ -13,7 +13,7 @@ importers:
         version: 2.0.1(vue@3.5.27(typescript@5.9.3))
       '@vueuse/core':
         specifier: ^14.0.0
-        version: 14.1.0(vue@3.5.27(typescript@5.9.3))
+        version: 14.2.0(vue@3.5.27(typescript@5.9.3))
       '@vueuse/integrations':
         specifier: ^14.0.0
         version: 14.2.0(focus-trap@7.6.2)(jwt-decode@4.0.0)(vue@3.5.27(typescript@5.9.3))
@@ -58,7 +58,7 @@ importers:
         version: 7.1.0
       qrcode.vue:
         specifier: ^3.6.0
-        version: 3.7.0(vue@3.5.27(typescript@5.9.3))
+        version: 3.7.1(vue@3.5.27(typescript@5.9.3))
       tus-js-client:
         specifier: ^4.3.1
         version: 4.3.1
@@ -79,7 +79,7 @@ importers:
         version: 3.5.27(typescript@5.9.3)
       vue-final-modal:
         specifier: ^4.5.5
-        version: 4.5.5(@vueuse/core@14.1.0(vue@3.5.27(typescript@5.9.3)))(@vueuse/integrations@14.2.0(focus-trap@7.6.2)(jwt-decode@4.0.0)(vue@3.5.27(typescript@5.9.3)))(focus-trap@7.6.2)(vue@3.5.27(typescript@5.9.3))
+        version: 4.5.5(@vueuse/core@14.2.0(vue@3.5.27(typescript@5.9.3)))(@vueuse/integrations@14.2.0(focus-trap@7.6.2)(jwt-decode@4.0.0)(vue@3.5.27(typescript@5.9.3)))(focus-trap@7.6.2)(vue@3.5.27(typescript@5.9.3))
       vue-i18n:
         specifier: ^11.1.10
         version: 11.2.8(vue@3.5.27(typescript@5.9.3))
@@ -1567,11 +1567,6 @@ packages:
       vue:
         optional: true
 
-  '@vueuse/core@14.1.0':
-    resolution: {integrity: sha512-rgBinKs07hAYyPF834mDTigH7BtPqvZ3Pryuzt1SD/lg5wEcWqvwzXXYGEDb2/cP0Sj5zSvHl3WkmMELr5kfWw==}
-    peerDependencies:
-      vue: ^3.5.0
-
   '@vueuse/core@14.2.0':
     resolution: {integrity: sha512-tpjzVl7KCQNVd/qcaCE9XbejL38V6KJAEq/tVXj7mDPtl6JtzmUdnXelSS+ULRkkrDgzYVK7EerQJvd2jR794Q==}
     peerDependencies:
@@ -1619,16 +1614,8 @@ packages:
       universal-cookie:
         optional: true
 
-  '@vueuse/metadata@14.1.0':
-    resolution: {integrity: sha512-7hK4g015rWn2PhKcZ99NyT+ZD9sbwm7SGvp7k+k+rKGWnLjS/oQozoIZzWfCewSUeBmnJkIb+CNr7Zc/EyRnnA==}
-
   '@vueuse/metadata@14.2.0':
     resolution: {integrity: sha512-i3axTGjU8b13FtyR4Keeama+43iD+BwX9C2TmzBVKqjSHArF03hjkp2SBZ1m72Jk2UtrX0aYCugBq2R1fhkuAQ==}
-
-  '@vueuse/shared@14.1.0':
-    resolution: {integrity: sha512-EcKxtYvn6gx1F8z9J5/rsg3+lTQnvOruQd8fUecW99DCK04BkWD7z5KQ/wTAx+DazyoEE9dJt/zV8OIEQbM6kw==}
-    peerDependencies:
-      vue: ^3.5.0
 
   '@vueuse/shared@14.2.0':
     resolution: {integrity: sha512-Z0bmluZTlAXgUcJ4uAFaML16JcD8V0QG00Db3quR642I99JXIDRa2MI2LGxiLVhcBjVnL1jOzIvT5TT2lqJlkA==}
@@ -2413,8 +2400,8 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
-  qrcode.vue@3.7.0:
-    resolution: {integrity: sha512-Wh5JCtweVO/QiIoS/K9En+GXqFwaKyoF2j4xmqxT8TzAn5VeOs2pLD8uPaaTKuS1Uzze+UAl6MkI4d1SdjH6TQ==}
+  qrcode.vue@3.7.1:
+    resolution: {integrity: sha512-80ZDvXaajD7TS9l5ZZpuFH+i1vp/T1k7mPpJEz0MrOAoElauKC1zGIB4FJSGzsiTtl2uUJBrhRzXyr4PAKLLBg==}
     peerDependencies:
       vue: ^3.0.0
 
@@ -4271,13 +4258,6 @@ snapshots:
       typescript: 5.9.3
       vue: 3.5.27(typescript@5.9.3)
 
-  '@vueuse/core@14.1.0(vue@3.5.27(typescript@5.9.3))':
-    dependencies:
-      '@types/web-bluetooth': 0.0.21
-      '@vueuse/metadata': 14.1.0
-      '@vueuse/shared': 14.1.0(vue@3.5.27(typescript@5.9.3))
-      vue: 3.5.27(typescript@5.9.3)
-
   '@vueuse/core@14.2.0(vue@3.5.27(typescript@5.9.3))':
     dependencies:
       '@types/web-bluetooth': 0.0.21
@@ -4294,13 +4274,7 @@ snapshots:
       focus-trap: 7.6.2
       jwt-decode: 4.0.0
 
-  '@vueuse/metadata@14.1.0': {}
-
   '@vueuse/metadata@14.2.0': {}
-
-  '@vueuse/shared@14.1.0(vue@3.5.27(typescript@5.9.3))':
-    dependencies:
-      vue: 3.5.27(typescript@5.9.3)
 
   '@vueuse/shared@14.2.0(vue@3.5.27(typescript@5.9.3))':
     dependencies:
@@ -5092,7 +5066,7 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  qrcode.vue@3.7.0(vue@3.5.27(typescript@5.9.3)):
+  qrcode.vue@3.7.1(vue@3.5.27(typescript@5.9.3)):
     dependencies:
       vue: 3.5.27(typescript@5.9.3)
 
@@ -5401,9 +5375,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vue-final-modal@4.5.5(@vueuse/core@14.1.0(vue@3.5.27(typescript@5.9.3)))(@vueuse/integrations@14.2.0(focus-trap@7.6.2)(jwt-decode@4.0.0)(vue@3.5.27(typescript@5.9.3)))(focus-trap@7.6.2)(vue@3.5.27(typescript@5.9.3)):
+  vue-final-modal@4.5.5(@vueuse/core@14.2.0(vue@3.5.27(typescript@5.9.3)))(@vueuse/integrations@14.2.0(focus-trap@7.6.2)(jwt-decode@4.0.0)(vue@3.5.27(typescript@5.9.3)))(focus-trap@7.6.2)(vue@3.5.27(typescript@5.9.3)):
     dependencies:
-      '@vueuse/core': 14.1.0(vue@3.5.27(typescript@5.9.3))
+      '@vueuse/core': 14.2.0(vue@3.5.27(typescript@5.9.3))
       '@vueuse/integrations': 14.2.0(focus-trap@7.6.2)(jwt-decode@4.0.0)(vue@3.5.27(typescript@5.9.3))
       focus-trap: 7.6.2
       vue: 3.5.27(typescript@5.9.3)
