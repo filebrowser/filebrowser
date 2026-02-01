@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.57.0](https://github.com/filebrowser/filebrowser/compare/v2.56.0...v2.57.0) (2026-02-01)
+
+
+### Features
+
+* Add Redis upload cache for multi-replica deployments ([#5724](https://github.com/filebrowser/filebrowser/issues/5724)) ([08d7a15](https://github.com/filebrowser/filebrowser/commit/08d7a1504c42c115fdd82d3845694fe87147f1db))
+* Updates for project File Browser ([#5725](https://github.com/filebrowser/filebrowser/issues/5725)) ([8fee256](https://github.com/filebrowser/filebrowser/commit/8fee2561afbf968ed577bc4139562a42b2278243))
+
+
+### Bug Fixes
+
+* adjust yaml config decodification to yaml.v3 ([#5722](https://github.com/filebrowser/filebrowser/issues/5722)) ([b594d4d](https://github.com/filebrowser/filebrowser/commit/b594d4d4e28a1b35e69d81d2c35948fe0d629888))
+* avoid 409 conflict when renaming files differing only by case ([#5729](https://github.com/filebrowser/filebrowser/issues/5729)) ([d441b28](https://github.com/filebrowser/filebrowser/commit/d441b28f432c3448a29ac828400321f1f4ed32d9))
+
 ## [2.56.0](https://github.com/filebrowser/filebrowser/compare/v2.55.0...v2.56.0) (2026-01-24)
 
 
