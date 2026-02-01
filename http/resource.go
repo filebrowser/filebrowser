@@ -206,20 +206,25 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 			return http.StatusBadRequest, err
 		}
 
-		override := r.URL.Query().Get("override") == "true"
-		rename := r.URL.Query().Get("rename") == "true"
-		if !override && !rename {
-			if _, err = d.user.Fs.Stat(dst); err == nil {
-				return http.StatusConflict, nil
-			}
-		}
-		if rename {
-			dst = addVersionSuffix(dst, d.user.Fs)
-		}
+		srcInfo, _ := d.user.Fs.Stat(src)
+		dstInfo, _ := d.user.Fs.Stat(dst)
+		same := os.SameFile(srcInfo, dstInfo)
 
-		// Permission for overwriting the file
-		if override && !d.user.Perm.Modify {
-			return http.StatusForbidden, nil
+		if action != "rename" || !same {
+			override := r.URL.Query().Get("override") == "true"
+			rename := r.URL.Query().Get("rename") == "true"
+			if !override && !rename {
+				if _, err = d.user.Fs.Stat(dst); err == nil {
+					return http.StatusConflict, nil
+				}
+			}
+			if rename {
+				dst = addVersionSuffix(dst, d.user.Fs)
+			}
+
+			if override && !d.user.Perm.Modify {
+				return http.StatusForbidden, nil
+			}
 		}
 
 		err = d.RunHook(func() error {
