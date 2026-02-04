@@ -40,7 +40,7 @@ Where `X-My-Header` is the HTTP header provided by your proxy with the username.
 > 
 > File Browser will blindly trust the provided header. If the proxy can be bypassed, an attacker could simply attach the header and get admin access.
 
-### Hook Authentication
+## Hook Authentication
 
 The Hook Authentication method in FileBrowser allows developers to delegate user authentication to an external script or program. Instead of validating credentials internally, FileBrowser sends the username and password to a custom command defined by the administrator. This command receives the credentials through environment variables and returns key‑value pairs indicating whether the user should be authenticated, blocked, or passed through.
 
@@ -53,6 +53,7 @@ filebrowser config set --auth.method=hook --auth.command="powershell.exe -File C
 ```
 
 This is the code for the auth.ps1 script
+
 ```sh
 param()
 
@@ -95,16 +96,20 @@ if ($users.ContainsKey($username) -and $users[$username] -eq $password) {
 }
 ```
 
-##### Hook Output Format
+### Hook Output Format
+
 A hook authentication script must output a series of key–value pairs, one per line, using the format:
+
 ```
 key=value
 ```
 
 FileBrowser reads these lines and applies the corresponding authentication action and user configuration.
 
-###### Required Output
+### Required Output
+
 The hook must output one of the following actions:
+
 | Key    | Description |
 |--------|------------ |
 | hook.action=auth | Authenticates the user. FileBrowser will create or update the user if needed. |
@@ -114,12 +119,14 @@ The hook must output one of the following actions:
 For most custom authentication flows, auth or block are used.
 
 Example of a successful authentication:
+
 ```sh
 hook.action=auth
 ```
 
-###### Optional User Fields
-When hook.action=auth is returned, the hook may also define additional user attributes. These fields override FileBrowser defaults and allow full customization of the authenticated user.
+#### Optional User Fields
+
+When `hook.action=auth` is returned, the hook may also define additional user attributes. These fields override FileBrowser defaults and allow full customization of the authenticated user.
 
 1. Permissions
 ```
@@ -147,7 +154,7 @@ user.hideDotfiles=false
 user.scope=/
 ```
 
-### No Authentication
+## No Authentication
 
 We also provide a no authentication mechanism for users that want to use File Browser privately such in a home network. By setting this authentication method, the user with **id 1** will be used as the default users. Creating more users won't have any effect.
 
