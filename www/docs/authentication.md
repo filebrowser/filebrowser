@@ -106,7 +106,7 @@ key=value
 
 FileBrowser reads these lines and applies the corresponding authentication action and user configuration.
 
-### Required Output
+#### Required Fields
 
 The hook must output one of the following actions:
 
