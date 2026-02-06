@@ -21,6 +21,7 @@
     "@vueuse/core": "^14.0.0",
     "@vueuse/integrations": "^14.0.0",
     "ace-builds": "^1.43.2",
+    "csv-parse": "^6.1.0",
     "dayjs": "^1.11.13",
     "dompurify": "^3.2.6",
     "epubjs": "^0.3.93",
