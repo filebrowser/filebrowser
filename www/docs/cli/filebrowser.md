@@ -58,6 +58,7 @@ filebrowser [flags]
   -d, --database string                database path (default "./filebrowser.db")
       --disableExec                    disables Command Runner feature (default true)
       --disableImageResolutionCalc     disables image resolution calculation by reading image files
+      --unzipEnabled                   enable zip file extraction
       --disablePreviewResize           disable resize of image previews
       --disableThumbnails              disable image thumbnails
       --disableTypeDetectionByHeader   disables type detection by reading file headers

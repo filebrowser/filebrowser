@@ -183,6 +183,36 @@ export function copy(items: any[], overwrite = false, rename = false) {
   return moveCopy(items, true, overwrite, rename);
 }
 
+export function unzip(
+  zipFilePath: string,
+  destPath: string,
+  overwrite = false
+) {
+  const from = removePrefix(zipFilePath);
+  const to = encodeURIComponent(removePrefix(destPath));
+  const url = `${from}?destination=${to}&override=${overwrite}`;
+  const authStore = useAuthStore();
+  return new Promise((resolve, reject) => {
+    const request = new XMLHttpRequest();
+    request.open("POST", `${baseURL}/api/unzip${url}`, true);
+    request.setRequestHeader("X-Auth", authStore.jwt);
+
+    request.onload = () => {
+      if (request.status === 200) {
+        resolve(request.responseText);
+      } else {
+        reject(new Error(request.responseText));
+      }
+    };
+
+    request.onerror = () => {
+      reject(new Error("001 Connection aborted"));
+    };
+
+    request.send();
+  });
+}
+
 export async function checksum(url: string, algo: ChecksumAlg) {
   const data = await resourceAction(`${url}?checksum=${algo}`, "GET");
   return (await data.json()).checksums[algo];

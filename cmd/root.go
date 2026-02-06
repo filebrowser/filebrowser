@@ -111,6 +111,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.Bool("disableExec", true, "disables Command Runner feature")
 	flags.Bool("disableTypeDetectionByHeader", false, "disables type detection by reading file headers")
 	flags.Bool("disableImageResolutionCalc", false, "disables image resolution calculation by reading image files")
+	flags.Bool("unzipEnabled", false, "enable zip file extraction")
 }
 
 var rootCmd = &cobra.Command{
@@ -349,6 +350,40 @@ func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, e
 		server.ImageResolutionCal = !v.GetBool("disableImageResolutionCalc")
 	}
 
+	if v.IsSet("unzipEnabled") {
+		server.UnzipEnabled = v.GetBool("unzipEnabled")
+	}
+
+	if v.IsSet("maxZipFileSize") {
+		server.MaxZipFileSize = v.GetInt64("maxZipFileSize")
+	} else {
+		server.MaxZipFileSize = settings.DefaultMaxZipFileSize
+	}
+
+	if v.IsSet("maxZipFileEntries") {
+		server.MaxZipFileEntries = v.GetInt("maxZipFileEntries")
+	} else {
+		server.MaxZipFileEntries = settings.DefaultMaxZipFileEntries
+	}
+
+	if v.IsSet("maxTotalUncompressedSize") {
+		server.MaxTotalUncompressedSize = v.GetUint64("maxTotalUncompressedSize")
+	} else {
+		server.MaxTotalUncompressedSize = settings.DefaultMaxTotalUncompressedSize
+	}
+
+	if v.IsSet("maxUncompressedSizeRate") {
+		server.MaxUncompressedSizeRate = v.GetFloat64("maxUncompressedSizeRate")
+	} else {
+		server.MaxUncompressedSizeRate = settings.DefaultMaxUncompressedSizeRate
+	}
+
+	if v.IsSet("maxUncompressedFileSize") {
+		server.MaxUncompressedFileSize = v.GetUint64("maxUncompressedFileSize")
+	} else {
+		server.MaxUncompressedFileSize = settings.DefaultMaxUncompressedFileSize
+	}
+
 	if v.IsSet("disableExec") {
 		server.EnableExec = !v.GetBool("disableExec")
 	}
@@ -446,19 +481,25 @@ func quickSetup(v *viper.Viper, s *storage.Storage) error {
 	}
 
 	ser := &settings.Server{
-		BaseURL:               v.GetString("baseURL"),
-		Port:                  v.GetString("port"),
-		Log:                   v.GetString("log"),
-		TLSKey:                v.GetString("key"),
-		TLSCert:               v.GetString("cert"),
-		Address:               v.GetString("address"),
-		Root:                  v.GetString("root"),
-		TokenExpirationTime:   v.GetString("tokenExpirationTime"),
-		EnableThumbnails:      !v.GetBool("disableThumbnails"),
-		ResizePreview:         !v.GetBool("disablePreviewResize"),
-		EnableExec:            !v.GetBool("disableExec"),
-		TypeDetectionByHeader: !v.GetBool("disableTypeDetectionByHeader"),
-		ImageResolutionCal:    !v.GetBool("disableImageResolutionCalc"),
+		BaseURL:                  v.GetString("baseURL"),
+		Port:                     v.GetString("port"),
+		Log:                      v.GetString("log"),
+		TLSKey:                   v.GetString("key"),
+		TLSCert:                  v.GetString("cert"),
+		Address:                  v.GetString("address"),
+		Root:                     v.GetString("root"),
+		TokenExpirationTime:      v.GetString("tokenExpirationTime"),
+		EnableThumbnails:         !v.GetBool("disableThumbnails"),
+		ResizePreview:            !v.GetBool("disablePreviewResize"),
+		EnableExec:               !v.GetBool("disableExec"),
+		TypeDetectionByHeader:    !v.GetBool("disableTypeDetectionByHeader"),
+		ImageResolutionCal:       !v.GetBool("disableImageResolutionCalc"),
+		UnzipEnabled:             v.GetBool("UnzipEnabled"),
+		MaxZipFileSize:           settings.DefaultMaxZipFileSize,
+		MaxZipFileEntries:        settings.DefaultMaxZipFileEntries,
+		MaxTotalUncompressedSize: settings.DefaultMaxTotalUncompressedSize,
+		MaxUncompressedSizeRate:  settings.DefaultMaxUncompressedSizeRate,
+		MaxUncompressedFileSize:  settings.DefaultMaxUncompressedFileSize,
 	}
 
 	err = s.Settings.SaveServer(ser)
