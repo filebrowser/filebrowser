@@ -303,6 +303,12 @@
             :counter="fileStore.selectedCount"
           />
           <action icon="info" :label="t('buttons.info')" show="info" />
+          <action
+            v-if="headerButtons.unzip"
+            icon="archive"
+            :label="t('buttons.unzip')"
+            show="unzip"
+          />
         </context-menu>
 
         <input
@@ -346,7 +352,7 @@ import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
 import { users, files as api } from "@/api";
-import { enableExec } from "@/utils/constants";
+import { enableExec, unzipEnabled } from "@/utils/constants";
 import * as upload from "@/utils/upload";
 import css from "@/utils/css";
 import { throttle } from "lodash-es";
@@ -483,6 +489,13 @@ const headerButtons = computed(() => {
     share: fileStore.selectedCount === 1 && authStore.user?.perm.share,
     move: fileStore.selectedCount > 0 && authStore.user?.perm.rename,
     copy: fileStore.selectedCount > 0 && authStore.user?.perm.create,
+    unzip:
+      unzipEnabled &&
+      authStore.user?.perm.create &&
+      fileStore.selectedCount == 1 &&
+      fileStore.req != null &&
+      fileStore.req.items.length > 0 &&
+      fileStore.req.items[fileStore.selected[0]].extension == ".zip",
   };
 });
 
