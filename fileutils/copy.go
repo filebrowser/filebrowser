@@ -18,8 +18,8 @@ func Copy(afs afero.Fs, src, dst string, fileMode, dirMode fs.FileMode) error {
 		return os.ErrNotExist
 	}
 
-	if src == "/" || dst == "/" {
-		// Prohibit copying from or to the virtual root directory.
+	if src == "/" {
+		// Prohibit copying from the virtual root directory.
 		return os.ErrInvalid
 	}
 

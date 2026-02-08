@@ -197,7 +197,7 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		if err != nil {
 			return errToStatus(err), err
 		}
-		if dst == "/" || src == "/" {
+		if src == "/" {
 			return http.StatusForbidden, nil
 		}
 
