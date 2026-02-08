@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.57.1](https://github.com/filebrowser/filebrowser/compare/v2.57.0...v2.57.1) (2026-02-08)
+
+
+### Bug Fixes
+
+* normalize fields capitalization ([ff2f004](https://github.com/filebrowser/filebrowser/commit/ff2f00498cff151e2fb1f5f0b16963bf33c3d6d4))
+* remove skip clean ([489af40](https://github.com/filebrowser/filebrowser/commit/489af403a19057f6b6b4b1dc0e48cbb26a202ef9))
+
 ## [2.57.0](https://github.com/filebrowser/filebrowser/compare/v2.56.0...v2.57.0) (2026-02-01)
 
 
