@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"golang.org/x/text/cases"
@@ -190,7 +191,7 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 		}
 
 		for _, field := range req.Which {
-			if _, ok := sensibleFields[field]; ok {
+			if _, ok := sensibleFields[strings.ToLower(field)]; ok {
 				if !users.CheckPwd(req.CurrentPassword, d.user.Password) {
 					return http.StatusBadRequest, fberrors.ErrCurrentPasswordIncorrect
 				}
