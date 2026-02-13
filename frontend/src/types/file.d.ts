@@ -21,6 +21,7 @@ interface Resource extends ResourceBase {
   index: number;
   subtitles?: string[];
   content?: string;
+  rawContent?: ArrayBuffer;
 }
 
 interface ResourceItem extends ResourceBase {
@@ -56,4 +57,9 @@ interface ClipItem {
 interface BreadCrumb {
   name: string;
   url: string;
+}
+
+interface CsvData {
+  headers: string[];
+  rows: string[][];
 }

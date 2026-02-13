@@ -36,10 +36,31 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		return errToStatus(err), err
 	}
 
+	encoding := r.Header.Get("X-Encoding")
 	if file.IsDir {
 		file.Sorting = d.user.Sorting
 		file.ApplySort()
 		return renderJSON(w, r, file)
+	} else if encoding == "true" {
+		if file.Type != "text" {
+			return http.StatusUnsupportedMediaType, fmt.Errorf("file is not a text file")
+		}
+
+		f, err := d.user.Fs.Open(r.URL.Path)
+		if err != nil {
+			return errToStatus(err), err
+		}
+		defer f.Close()
+
+		data, err := io.ReadAll(f)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		w.Header().Set("Content-Type", "application/octet-stream")
+		w.WriteHeader(http.StatusOK)
+		_, err = w.Write(data)
+		return 0, err
 	}
 
 	if checksum := r.URL.Query().Get("checksum"); checksum != "" {
