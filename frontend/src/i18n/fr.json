@@ -88,7 +88,8 @@
       "comma": "Virgule (,)",
       "semicolon": "Point-virgule (;)",
       "both": "Les (,) et (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "Sélectionner un fichier ou dossier",
