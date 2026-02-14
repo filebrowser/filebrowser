@@ -88,7 +88,8 @@
       "comma": "Zarez (,)",
       "semicolon": "Točka zarez (;)",
       "both": "I (,) i (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "odaberi datoteku ili mapu",
