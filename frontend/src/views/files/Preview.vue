@@ -26,13 +26,6 @@
         />
         <action
           :disabled="layoutStore.loading"
-          v-if="fileStore.req?.type === 'image' && authStore.user?.perm.download"
-          icon="open_in_new"
-          :label="t('buttons.openDirect')"
-          @action="openDirect"
-        />
-        <action
-          :disabled="layoutStore.loading"
           v-if="isCsv && authStore.user?.perm.modify"
           icon="edit_note"
           :label="t('buttons.editAsText')"
@@ -52,6 +45,16 @@
           icon="file_download"
           :label="$t('buttons.download')"
           @action="download"
+        />
+        <action
+          :disabled="layoutStore.loading"
+          v-if="
+            ['image', 'audio', 'video'].includes(fileStore.req?.type || '') &&
+            authStore.user?.perm.download
+          "
+          icon="open_in_new"
+          :label="t('buttons.openDirect')"
+          @action="openDirect"
         />
         <action
           :disabled="layoutStore.loading"
