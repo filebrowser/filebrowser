@@ -88,7 +88,8 @@
       "comma": "Komma (,)",
       "semicolon": "Puntkomma (;)",
       "both": "Beide (,) en (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "selecteer bestand of map",

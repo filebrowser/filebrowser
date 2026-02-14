@@ -88,7 +88,8 @@
       "comma": "逗号 (,)",
       "semicolon": "分号 (;)",
       "both": "逗号 (,) 和分号 (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "选择文件或文件夹",
