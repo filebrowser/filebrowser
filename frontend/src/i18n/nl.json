@@ -89,7 +89,7 @@
       "semicolon": "Puntkomma (;)",
       "both": "Beide (,) en (;)"
     },
-    "fileEncoding": "File Encoding"
+    "fileEncoding": "Bestandscodering"
   },
   "help": {
     "click": "selecteer bestand of map",
