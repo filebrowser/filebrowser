@@ -151,9 +151,9 @@ async function postResources(
       if (request.status === 200) {
         resolve(request.responseText);
       } else if (request.status === 409) {
-        reject(request.status);
+        reject(new Error(request.status.toString()));
       } else {
-        reject(request.responseText);
+        reject(new Error(request.responseText));
       }
     };
 
