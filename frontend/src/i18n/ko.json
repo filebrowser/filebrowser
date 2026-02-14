@@ -88,7 +88,8 @@
       "comma": "반점 (,)",
       "semicolon": "쌍반점 (;)",
       "both": "(,) 및 (;) 모두"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "파일 또는 디렉터리 선택",
