@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.58.0](https://github.com/filebrowser/filebrowser/compare/v2.57.1...v2.58.0) (2026-02-14)
+
+
+### Features
+
+* nederlands ([88b97de](https://github.com/filebrowser/filebrowser/commit/88b97def9ee72fe6e8094209aebb71830b7305be))
+* support for multiple encodings in CSV files ([#5756](https://github.com/filebrowser/filebrowser/issues/5756)) ([f67bccf](https://github.com/filebrowser/filebrowser/commit/f67bccf8c5470cb280fe854d92aa2666c270bcf5))
+* Updates for project File Browser ([#5749](https://github.com/filebrowser/filebrowser/issues/5749)) ([c94870f](https://github.com/filebrowser/filebrowser/commit/c94870fcfe1b4acb2db9ab897b9f7d35e3b75770))
+* Updates for project File Browser ([#5759](https://github.com/filebrowser/filebrowser/issues/5759)) ([5e8f5be](https://github.com/filebrowser/filebrowser/commit/5e8f5be245fd0126545ef5ca61c2d428ac128ad5))
+
+
+### Bug Fixes
+
+* **frontend:** pnpm lock ([b09960e](https://github.com/filebrowser/filebrowser/commit/b09960e538387ff29371c80be1584720f65181e7))
+* ignore version.go ([1f7904d](https://github.com/filebrowser/filebrowser/commit/1f7904dad21a87f04e1543ee10b60ce79e5eebe9))
+* respect Accept-Encoding for pre-compressed JS ([#5750](https://github.com/filebrowser/filebrowser/issues/5750)) ([6a76dfe](https://github.com/filebrowser/filebrowser/commit/6a76dfeba9254a938e320928c67d110f73f83715))
+* wrap response text in Error before reject ([#5753](https://github.com/filebrowser/filebrowser/issues/5753)) ([e5bc0d3](https://github.com/filebrowser/filebrowser/commit/e5bc0d3cce18fa7b069688b176b99efbb67382d2))
+
 ## [2.57.1](https://github.com/filebrowser/filebrowser/compare/v2.57.0...v2.57.1) (2026-02-08)
 
 
