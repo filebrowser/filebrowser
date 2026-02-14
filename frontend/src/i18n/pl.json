@@ -89,7 +89,7 @@
       "semicolon": "Średnik (;)",
       "both": "Zarówno (,), jak i (;)"
     },
-    "fileEncoding": "File Encoding"
+    "fileEncoding": "Kodowanie plików"
   },
   "help": {
     "click": "zaznacz plik lub folder",
