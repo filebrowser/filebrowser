@@ -253,7 +253,7 @@ const hoverNav = ref<boolean>(false);
 const autoPlay = ref<boolean>(false);
 const previousRaw = ref<string>("");
 const nextRaw = ref<string>("");
-const csvContent = ref<string>("");
+const csvContent = ref<ArrayBuffer | string>("");
 const csvError = ref<string>("");
 
 const player = ref<HTMLVideoElement | HTMLAudioElement | null>(null);
@@ -393,7 +393,11 @@ const updatePreview = async () => {
     if (fileStore.req.size > CSV_MAX_SIZE) {
       csvError.value = t("files.csvTooLarge");
     } else {
-      csvContent.value = fileStore.req.content ?? "";
+      if (fileStore.req.rawContent != null) {
+        csvContent.value = fileStore.req.rawContent;
+      } else {
+        csvContent.value = fileStore.req.content ?? "";
+      }
     }
   }
 

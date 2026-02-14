@@ -4,35 +4,13 @@
       <i class="material-icons">error</i>
       <p>{{ displayError }}</p>
     </div>
-    <div v-else-if="data.headers.length === 0" class="csv-empty">
+    <div v-else-if="parsed.headers.length === 0" class="csv-empty">
       <i class="material-icons">description</i>
       <p>{{ $t("files.lonely") }}</p>
     </div>
     <div v-else class="csv-table-container" @wheel.stop @touchmove.stop>
-      <table class="csv-table">
-        <thead>
-          <tr>
-            <th v-for="(header, index) in data.headers" :key="index">
-              {{ header || `Column ${index + 1}` }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(row, rowIndex) in data.rows" :key="rowIndex">
-            <td v-for="(cell, cellIndex) in row" :key="cellIndex">
-              {{ cell }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="csv-footer">
-        <div class="csv-info" v-if="data.rows.length > 100">
-          <i class="material-icons">info</i>
-          <span>
-            {{ $t("files.showingRows", { count: data.rows.length }) }}</span
-          >
-        </div>
-        <div class="column-separator">
+      <div class="csv-header">
+        <div class="header-select">
           <label for="columnSeparator">{{ $t("files.columnSeparator") }}</label>
           <select
             id="columnSeparator"
@@ -50,17 +28,61 @@
             </option>
           </select>
         </div>
+        <div class="header-select" v-if="isEncodedContent">
+          <label for="fileEncoding">{{ $t("files.fileEncoding") }}</label>
+          <select
+            id="fileEncoding"
+            class="input input--block"
+            v-model="selectedEncoding"
+          >
+            <option
+              v-for="encoding in availableEncodings"
+              :value="encoding"
+              :key="encoding"
+            >
+              {{ encoding }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <table class="csv-table">
+        <thead>
+          <tr>
+            <th v-for="(header, index) in parsed.headers" :key="index">
+              {{ header || `Column ${index + 1}` }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(row, rowIndex) in parsed.rows" :key="rowIndex">
+            <td v-for="(cell, cellIndex) in row" :key="cellIndex">
+              {{ cell }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="csv-footer">
+        <div class="csv-info" v-if="parsed.rows.length > 100">
+          <i class="material-icons">info</i>
+          <span>
+            {{ $t("files.showingRows", { count: parsed.rows.length }) }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { parseCSV, type CsvData } from "@/utils/csv";
-import { computed, ref } from "vue";
+import { computed, ref, watchEffect } from "vue";
+import { parse } from "csv-parse/browser/esm";
+import { useI18n } from "vue-i18n";
+import { availableEncodings, decode } from "@/utils/encodings";
+
+const { t } = useI18n({});
 
 interface Props {
-  content: string;
+  content: ArrayBuffer | string;
   error?: string;
 }
 
@@ -68,31 +90,43 @@ const props = withDefaults(defineProps<Props>(), {
   error: "",
 });
 
-const columnSeparator = ref([","]);
+const columnSeparator = ref([",", ";"]);
 
-const data = computed<CsvData>(() => {
-  try {
-    return parseCSV(props.content, columnSeparator.value);
-  } catch (e) {
-    console.error("Failed to parse CSV:", e);
-    return { headers: [], rows: [] };
-  }
+const selectedEncoding = ref("utf-8");
+
+const parsed = ref<CsvData>({ headers: [], rows: [] });
+
+const displayError = ref<string | null>(null);
+
+const isEncodedContent = computed(() => {
+  return props.content instanceof ArrayBuffer;
 });
 
-const displayError = computed(() => {
-  // External error takes priority (e.g., file too large)
-  if (props.error) {
-    return props.error;
+watchEffect(() => {
+  if (props.content !== "" && columnSeparator.value.length > 0) {
+    const content = isEncodedContent.value
+      ? decode(props.content as ArrayBuffer, selectedEncoding.value)
+      : props.content;
+    parse(
+      content as string,
+      { delimiter: columnSeparator.value, skip_empty_lines: true },
+      (error, output) => {
+        if (error) {
+          console.error("Failed to parse CSV:", error);
+          parsed.value = { headers: [], rows: [] };
+          displayError.value = t("files.csvLoadFailed", {
+            error: error.toString(),
+          });
+        } else {
+          parsed.value = {
+            headers: output[0],
+            rows: output.slice(1),
+          };
+          displayError.value = null;
+        }
+      }
+    );
   }
-  // Check for parse errors
-  if (
-    props.content &&
-    props.content.trim().length > 0 &&
-    data.value.headers.length === 0
-  ) {
-    return "Failed to parse CSV file";
-  }
-  return null;
 });
 </script>
 
@@ -213,10 +247,6 @@ const displayError = computed(() => {
   padding: 0.5rem;
 }
 
-.csv-footer > :only-child {
-  margin-left: auto;
-}
-
 .csv-info {
   display: flex;
   align-items: center;
@@ -230,18 +260,25 @@ const displayError = computed(() => {
   font-size: 0.875rem;
 }
 
-.column-separator {
+.csv-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem;
+}
+
+.header-select {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
-.column-separator > label {
+.header-select > label {
   font-size: small;
-  text-align: end;
+  max-width: 80px;
 }
 
-.column-separator > select {
+.header-select > select {
   margin-bottom: 0;
 }
 
