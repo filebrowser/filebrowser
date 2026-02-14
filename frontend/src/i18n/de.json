@@ -89,7 +89,7 @@
       "semicolon": "Semikolon (;)",
       "both": "Beides (,) und (;)"
     },
-    "fileEncoding": "File Encoding"
+    "fileEncoding": "Dateikodierung"
   },
   "help": {
     "click": "Datei oder Verzeichnis auswählen",
