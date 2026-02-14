@@ -19,6 +19,7 @@ type modifyRequest struct {
 func NewHandler(
 	imgSvc ImgService,
 	fileCache FileCache,
+	uploadCache UploadCache,
 	store *storage.Storage,
 	server *settings.Server,
 	assetsFs fs.FS,
@@ -33,11 +34,6 @@ func NewHandler(
 		})
 	})
 	index, static := getStaticHandlers(store, server, assetsFs)
-
-	// NOTE: This fixes the issue where it would redirect if people did not put a
-	// trailing slash in the end. I hate this decision since this allows some awful
-	// URLs https://www.gorillatoolkit.org/pkg/mux#Router.SkipClean
-	r = r.SkipClean(true)
 
 	monkey := func(fn handleFunc, prefix string) http.Handler {
 		return handle(fn, prefix, store, server)
@@ -67,10 +63,10 @@ func NewHandler(
 	api.PathPrefix("/resources").Handler(monkey(resourcePutHandler, "/api/resources")).Methods("PUT")
 	api.PathPrefix("/resources").Handler(monkey(resourcePatchHandler(fileCache), "/api/resources")).Methods("PATCH")
 
-	api.PathPrefix("/tus").Handler(monkey(tusPostHandler(), "/api/tus")).Methods("POST")
-	api.PathPrefix("/tus").Handler(monkey(tusHeadHandler(), "/api/tus")).Methods("HEAD", "GET")
-	api.PathPrefix("/tus").Handler(monkey(tusPatchHandler(), "/api/tus")).Methods("PATCH")
-	api.PathPrefix("/tus").Handler(monkey(tusDeleteHandler(), "/api/tus")).Methods("DELETE")
+	api.PathPrefix("/tus").Handler(monkey(tusPostHandler(uploadCache), "/api/tus")).Methods("POST")
+	api.PathPrefix("/tus").Handler(monkey(tusHeadHandler(uploadCache), "/api/tus")).Methods("HEAD", "GET")
+	api.PathPrefix("/tus").Handler(monkey(tusPatchHandler(uploadCache), "/api/tus")).Methods("PATCH")
+	api.PathPrefix("/tus").Handler(monkey(tusDeleteHandler(uploadCache), "/api/tus")).Methods("DELETE")
 
 	api.PathPrefix("/usage").Handler(monkey(diskUsage, "/api/usage")).Methods("GET")
 

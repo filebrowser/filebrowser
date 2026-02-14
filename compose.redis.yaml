@@ -1,0 +1,17 @@
+# Run using:
+#   docker compose -f compose.yaml -f compose.redis.yaml up --build
+
+services:
+  redis:
+    container_name: redis
+    image: redis:latest
+    networks:
+      - filebrowser
+    command:
+      - sh
+      - -c
+      - |
+        cat > /tmp/users.acl <<EOF
+        user default on >filebrowser ~* +@all
+        EOF
+        redis-server --aclfile /tmp/users.acl

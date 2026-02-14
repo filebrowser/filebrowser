@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"io"
+	"compress/gzip"
 	"log"
 	"net/http"
 	"os"
@@ -144,16 +146,32 @@ func getStaticHandlers(store *storage.Storage, server *settings.Server, assetsFs
 			return 0, nil
 		}
 
-		fileContents, err := fs.ReadFile(assetsFs, r.URL.Path+".gz")
+		f, err := assetsFs.Open(r.URL.Path + ".gz")
 		if err != nil {
 			return http.StatusNotFound, err
 		}
+		defer f.Close()
 
-		w.Header().Set("Content-Encoding", "gzip")
-		w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
+		acceptEncoding := r.Header.Get("Accept-Encoding")
+		if strings.Contains(acceptEncoding, "gzip") {		
+			w.Header().Set("Content-Encoding", "gzip")
+			w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
 
-		if _, err := w.Write(fileContents); err != nil {
-			return http.StatusInternalServerError, err
+			if _, err := io.Copy(w, f); err != nil {
+				return http.StatusInternalServerError, err
+			}
+		} else {
+			gzReader, err := gzip.NewReader(f)
+			if err != nil {
+				return http.StatusInternalServerError, err
+			}
+			defer gzReader.Close()
+
+			w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
+			
+			if _, err := io.Copy(w, gzReader); err != nil {
+				return http.StatusInternalServerError, err
+			}
 		}
 
 		return 0, nil

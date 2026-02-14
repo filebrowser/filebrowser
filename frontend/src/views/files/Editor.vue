@@ -41,7 +41,30 @@
       </div>
     </div>
     <template v-else>
-      <Breadcrumbs base="/files" noLink />
+      <div class="editor-header">
+        <Breadcrumbs base="/files" noLink />
+
+        <div>
+          <button
+            :disabled="isSelectionEmpty"
+            @click="executeEditorCommand('copy')"
+          >
+            <span><i class="material-icons">content_copy</i></span>
+          </button>
+          <button
+            :disabled="isSelectionEmpty"
+            @click="executeEditorCommand('cut')"
+          >
+            <span><i class="material-icons">content_cut</i></span>
+          </button>
+          <button @click="executeEditorCommand('paste')">
+            <span><i class="material-icons">content_paste</i></span>
+          </button>
+          <button @click="executeEditorCommand('openCommandPalette')">
+            <span><i class="material-icons">more_vert</i></span>
+          </button>
+        </div>
+      </div>
 
       <div
         v-show="isPreview && isMarkdownFile"
@@ -74,6 +97,7 @@ import { marked } from "marked";
 import { inject, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import { read, copy } from "@/utils/clipboard";
 
 const $showError = inject<IToastError>("$showError")!;
 
@@ -94,6 +118,35 @@ const previewContent = ref("");
 const isMarkdownFile =
   fileStore.req?.name.endsWith(".md") ||
   fileStore.req?.name.endsWith(".markdown");
+
+const isSelectionEmpty = ref(true);
+
+const executeEditorCommand = (name: string) => {
+  if (name == "paste") {
+    read()
+      .then((data) => {
+        editor.value?.execCommand("paste", {
+          text: data,
+        });
+      })
+      .catch((e) => {
+        if (
+          document.queryCommandSupported &&
+          document.queryCommandSupported("paste")
+        ) {
+          document.execCommand("paste");
+        } else {
+          console.warn("the clipboard api is not supported", e);
+        }
+      });
+    return;
+  }
+  if (name == "copy" || name == "cut") {
+    const selectedText = editor.value?.getCopyText();
+    copy({ text: selectedText });
+  }
+  editor.value?.execCommand(name);
+};
 
 onMounted(() => {
   window.addEventListener("keydown", keyEvent);
@@ -118,20 +171,19 @@ onMounted(() => {
     `https://cdn.jsdelivr.net/npm/ace-builds@${ace_version}/src-min-noconflict/`
   );
 
-  editor.value = ace.edit("editor", {
-    value: fileContent,
-    showPrintMargin: false,
-    readOnly: fileStore.req?.type === "textImmutable",
-    theme: getEditorTheme(authStore.user?.aceEditorTheme ?? ""),
-    mode: modelist.getModeForPath(fileStore.req!.name).mode,
-    wrap: true,
-    enableBasicAutocompletion: true,
-    enableLiveAutocompletion: true,
-    enableSnippets: true,
-  });
-
-  editor.value.setFontSize(fontSize.value);
-  editor.value.focus();
+  if (!layoutStore.loading) {
+    initEditor(fileContent);
+  } else {
+    const unwatch = watchEffect(() => {
+      // Initialize editor when layout is loaded
+      if (!layoutStore.loading) {
+        setTimeout(() => {
+          initEditor(fileContent);
+          unwatch();
+        }, 50);
+      }
+    });
+  }
 });
 
 onBeforeUnmount(() => {
@@ -159,6 +211,23 @@ onBeforeRouteUpdate((to, from, next) => {
     },
   });
 });
+
+const initEditor = (fileContent: string) => {
+  editor.value = ace.edit("editor", {
+    value: fileContent,
+    showPrintMargin: false,
+    readOnly: fileStore.req?.type === "textImmutable",
+    theme: getEditorTheme(authStore.user?.aceEditorTheme ?? ""),
+    mode: modelist.getModeForPath(fileStore.req!.name).mode,
+    wrap: true,
+    enableBasicAutocompletion: true,
+    enableLiveAutocompletion: true,
+    enableSnippets: true,
+  });
+
+  editor.value.setFontSize(fontSize.value);
+  editor.value.focus();
+};
 
 const keyEvent = (event: KeyboardEvent) => {
   if (event.code === "Escape") {
@@ -236,7 +305,6 @@ const close = () => {
 };
 
 const finishClose = () => {
-  fileStore.updateRequest(null);
   const uri = url.removeLastDir(route.path) + "/";
   router.push({ path: uri });
 };
@@ -250,5 +318,33 @@ const preview = () => {
 .editor-font-size {
   margin: 0 0.5em;
   color: var(--fg);
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.editor-header > div > button {
+  background: transparent;
+  color: var(--action);
+  border: none;
+  outline: none;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.editor-header > div > button:hover:not(:disabled) {
+  opacity: 1;
+}
+
+.editor-header > div > button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.editor-header > div > button > span > i {
+  font-size: 1.2rem;
 }
 </style>
