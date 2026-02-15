@@ -20,11 +20,11 @@ import Copy from "./Copy.vue";
 import NewFile from "./NewFile.vue";
 import NewDir from "./NewDir.vue";
 import Replace from "./Replace.vue";
-import ReplaceRename from "./ReplaceRename.vue";
 import Share from "./Share.vue";
 import ShareDelete from "./ShareDelete.vue";
 import Upload from "./Upload.vue";
 import DiscardEditorChanges from "./DiscardEditorChanges.vue";
+import ResolveConflict from "./ResolveConflict.vue";
 
 const layoutStore = useLayoutStore();
 
@@ -41,12 +41,12 @@ const components = new Map<string, any>([
   ["newDir", NewDir],
   ["download", Download],
   ["replace", Replace],
-  ["replace-rename", ReplaceRename],
   ["share", Share],
   ["upload", Upload],
   ["share-delete", ShareDelete],
   ["deleteUser", DeleteUser],
   ["discardEditorChanges", DiscardEditorChanges],
+  ["resolve-conflict", ResolveConflict],
 ]);
 
 watch(currentPromptName, (newValue) => {

@@ -166,9 +166,12 @@ function moveCopy(
   for (const item of items) {
     const from = item.from;
     const to = encodeURIComponent(removePrefix(item.to ?? ""));
+    const finalOverwrite =
+      item.overwrite == undefined ? overwrite : item.overwrite;
+    const finalRename = item.rename == undefined ? rename : item.rename;
     const url = `${from}?action=${
       copy ? "copy" : "rename"
-    }&destination=${to}&override=${overwrite}&rename=${rename}`;
+    }&destination=${to}&override=${finalOverwrite}&rename=${finalRename}`;
     promises.push(resourceAction(url, "PATCH"));
   }
   layoutStore.closeHovers();
