@@ -42,6 +42,7 @@
     "update": "Atjaunināt",
     "upload": "Augšupielādēt",
     "openFile": "Atvērt failu",
+    "openDirect": "View raw",
     "discardChanges": "Izmest",
     "stopSearch": "Beigt meklēšanu",
     "saveChanges": "Saglabāt izmaiņas",
@@ -88,7 +89,8 @@
       "comma": "Komats (,)",
       "semicolon": "Semikols (;)",
       "both": "Gan (,) gan (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "atlasiet failu vai direktoriju",

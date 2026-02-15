@@ -42,6 +42,7 @@
     "update": "更新",
     "upload": "上传",
     "openFile": "打开文件",
+    "openDirect": "View raw",
     "discardChanges": "放弃更改",
     "stopSearch": "停止搜索",
     "saveChanges": "保存更改",
@@ -88,7 +89,8 @@
       "comma": "逗号 (,)",
       "semicolon": "分号 (;)",
       "both": "逗号 (,) 和分号 (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "选择文件或文件夹",
@@ -232,7 +234,7 @@
     "permissions": "权限",
     "permissionsHelp": "你可以将该用户设置为管理员或单独选择各项权限。如果你选择了“管理员”，则其他的选项会被自动选中，同时该用户可以管理其他用户。\n",
     "profileSettings": "个人设置",
-    "redirectAfterCopyMove": "Redirect to destination after copy/move",
+    "redirectAfterCopyMove": "复制/移动后转到目标位置",
     "ruleExample1": "阻止用户访问所有文件夹下任何以 . 开头的文件（隐藏文件, 例如: .git, .gitignore）。\n",
     "ruleExample2": "阻止用户访问其目录范围的根目录下名为 Caddyfile 的文件。",
     "rules": "规则",

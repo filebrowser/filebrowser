@@ -42,6 +42,7 @@
     "update": "Actualitzar",
     "upload": "Pujar",
     "openFile": "Obrir fitxer",
+    "openDirect": "View raw",
     "discardChanges": "Descartar",
     "stopSearch": "Stop searching",
     "saveChanges": "Save changes",
@@ -88,7 +89,8 @@
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "seleccionar fitxer o carpeta",

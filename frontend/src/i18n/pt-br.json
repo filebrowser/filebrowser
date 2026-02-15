@@ -42,6 +42,7 @@
     "update": "Atualizar",
     "upload": "Enviar",
     "openFile": "Abrir",
+    "openDirect": "View raw",
     "discardChanges": "Discard",
     "stopSearch": "Stop searching",
     "saveChanges": "Save changes",
@@ -88,7 +89,8 @@
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "selecionar pasta ou arquivo",

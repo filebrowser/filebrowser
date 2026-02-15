@@ -21,6 +21,7 @@ interface Resource extends ResourceBase {
   index: number;
   subtitles?: string[];
   content?: string;
+  rawContent?: ArrayBuffer;
 }
 
 interface ResourceItem extends ResourceBase {
@@ -71,4 +72,9 @@ interface ConflictingResource {
   origin: ConflictingItem;
   dest: ConflictingItem;
   checked: Array<"origin" | "dest">;
+}
+  
+interface CsvData {
+  headers: string[];
+  rows: string[][];
 }

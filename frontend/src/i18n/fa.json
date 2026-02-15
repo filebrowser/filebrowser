@@ -42,6 +42,7 @@
     "update": "به روز سانی",
     "upload": "آپلود",
     "openFile": "باز کردن فایل",
+    "openDirect": "View raw",
     "discardChanges": "لغو کردن",
     "stopSearch": "Stop searching",
     "saveChanges": "Save changes",
@@ -88,7 +89,8 @@
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "انتخاب فایل یا پوشه",

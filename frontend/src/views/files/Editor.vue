@@ -94,6 +94,7 @@ import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 import { getEditorTheme } from "@/utils/theme";
 import { marked } from "marked";
+import markedKatex from "marked-katex-extension";
 import { inject, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
@@ -118,6 +119,11 @@ const previewContent = ref("");
 const isMarkdownFile =
   fileStore.req?.name.endsWith(".md") ||
   fileStore.req?.name.endsWith(".markdown");
+const katexOptions = {
+  output: "mathml" as const,
+  throwOnError: false
+};
+marked.use(markedKatex(katexOptions));
 
 const isSelectionEmpty = ref(true);
 
@@ -171,25 +177,19 @@ onMounted(() => {
     `https://cdn.jsdelivr.net/npm/ace-builds@${ace_version}/src-min-noconflict/`
   );
 
-  editor.value = ace.edit("editor", {
-    value: fileContent,
-    showPrintMargin: false,
-    readOnly: fileStore.req?.type === "textImmutable",
-    theme: getEditorTheme(authStore.user?.aceEditorTheme ?? ""),
-    mode: modelist.getModeForPath(fileStore.req!.name).mode,
-    wrap: true,
-    enableBasicAutocompletion: true,
-    enableLiveAutocompletion: true,
-    enableSnippets: true,
-  });
-
-  editor.value.setFontSize(fontSize.value);
-  editor.value.focus();
-
-  editor.value.getSelection().on("changeSelection", () => {
-    isSelectionEmpty.value =
-      editor.value == null || editor.value.getSelectedText().length == 0;
-  });
+  if (!layoutStore.loading) {
+    initEditor(fileContent);
+  } else {
+    const unwatch = watchEffect(() => {
+      // Initialize editor when layout is loaded
+      if (!layoutStore.loading) {
+        setTimeout(() => {
+          initEditor(fileContent);
+          unwatch();
+        }, 50);
+      }
+    });
+  }
 });
 
 onBeforeUnmount(() => {
@@ -217,6 +217,23 @@ onBeforeRouteUpdate((to, from, next) => {
     },
   });
 });
+
+const initEditor = (fileContent: string) => {
+  editor.value = ace.edit("editor", {
+    value: fileContent,
+    showPrintMargin: false,
+    readOnly: fileStore.req?.type === "textImmutable",
+    theme: getEditorTheme(authStore.user?.aceEditorTheme ?? ""),
+    mode: modelist.getModeForPath(fileStore.req!.name).mode,
+    wrap: true,
+    enableBasicAutocompletion: true,
+    enableLiveAutocompletion: true,
+    enableSnippets: true,
+  });
+
+  editor.value.setFontSize(fontSize.value);
+  editor.value.focus();
+};
 
 const keyEvent = (event: KeyboardEvent) => {
   if (event.code === "Escape") {
