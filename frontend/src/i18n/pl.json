@@ -42,6 +42,7 @@
     "update": "Aktualizuj",
     "upload": "Wyślij",
     "openFile": "Otwórz plik",
+    "openDirect": "View raw",
     "discardChanges": "Odrzuć",
     "stopSearch": "Zatrzymaj wyszukiwanie",
     "saveChanges": "Zapisz zmiany",
@@ -88,7 +89,8 @@
       "comma": "Przecinek (,)",
       "semicolon": "Średnik (;)",
       "both": "Zarówno (,), jak i (;)"
-    }
+    },
+    "fileEncoding": "Kodowanie pliku"
   },
   "help": {
     "click": "zaznacz plik lub folder",

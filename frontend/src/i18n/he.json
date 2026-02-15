@@ -42,6 +42,7 @@
     "update": "עדכון",
     "upload": "העלאה",
     "openFile": "פתח קובץ",
+    "openDirect": "View raw",
     "discardChanges": "זריקת השינויים",
     "stopSearch": "Stop searching",
     "saveChanges": "Save changes",
@@ -88,7 +89,8 @@
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "בחר קובץ או תיקייה",

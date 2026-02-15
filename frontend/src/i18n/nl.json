@@ -42,6 +42,7 @@
     "update": "Bijwerken",
     "upload": "Uploaden",
     "openFile": "Bestand openen",
+    "openDirect": "View raw",
     "discardChanges": "Weggooien",
     "stopSearch": "Stoppen met zoeken",
     "saveChanges": "Wijzigingen opslaan",
@@ -88,7 +89,8 @@
       "comma": "Komma (,)",
       "semicolon": "Puntkomma (;)",
       "both": "Beide (,) en (;)"
-    }
+    },
+    "fileEncoding": "Bestandscodering"
   },
   "help": {
     "click": "selecteer bestand of map",

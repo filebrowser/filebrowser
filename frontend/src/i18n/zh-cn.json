@@ -42,6 +42,7 @@
     "update": "更新",
     "upload": "上传",
     "openFile": "打开文件",
+    "openDirect": "View raw",
     "discardChanges": "放弃更改",
     "stopSearch": "停止搜索",
     "saveChanges": "保存更改",
@@ -88,7 +89,8 @@
       "comma": "逗号 (,)",
       "semicolon": "分号 (;)",
       "both": "逗号 (,) 和分号 (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "选择文件或文件夹",

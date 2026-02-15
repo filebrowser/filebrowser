@@ -42,6 +42,7 @@
     "update": "Aktualizovat",
     "upload": "Nahrát",
     "openFile": "Otevřít soubor",
+    "openDirect": "View raw",
     "discardChanges": "Zrušit změny",
     "stopSearch": "Stop searching",
     "saveChanges": "Save changes",
@@ -88,7 +89,8 @@
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "vyberte soubor nebo adresář",

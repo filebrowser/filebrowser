@@ -42,6 +42,7 @@
     "update": "Оновити",
     "upload": "Вивантажити",
     "openFile": "Відкрити файл",
+    "openDirect": "View raw",
     "discardChanges": "Скасувати",
     "stopSearch": "Stop searching",
     "saveChanges": "Save changes",
@@ -88,7 +89,8 @@
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "вибрати файл чи каталог",

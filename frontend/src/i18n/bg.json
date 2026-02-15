@@ -42,6 +42,7 @@
     "update": "Обнови",
     "upload": "Качи",
     "openFile": "Отвори файл",
+    "openDirect": "View raw",
     "discardChanges": "Изчисти",
     "stopSearch": "Stop searching",
     "saveChanges": "Запиши промените",
@@ -88,7 +89,8 @@
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "избери файл или директория",
