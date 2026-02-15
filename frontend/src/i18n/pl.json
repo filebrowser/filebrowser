@@ -42,6 +42,7 @@
     "update": "Aktualizuj",
     "upload": "Wyślij",
     "openFile": "Otwórz plik",
+    "openDirect": "View raw",
     "discardChanges": "Odrzuć",
     "stopSearch": "Zatrzymaj wyszukiwanie",
     "saveChanges": "Zapisz zmiany",
@@ -89,7 +90,7 @@
       "semicolon": "Średnik (;)",
       "both": "Zarówno (,), jak i (;)"
     },
-    "fileEncoding": "File Encoding"
+    "fileEncoding": "Kodowanie pliku"
   },
   "help": {
     "click": "zaznacz plik lub folder",

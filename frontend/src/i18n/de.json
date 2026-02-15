@@ -42,6 +42,7 @@
     "update": "Aktualisieren",
     "upload": "Hochladen",
     "openFile": "Datei öffnen",
+    "openDirect": "View raw",
     "discardChanges": "Verwerfen",
     "stopSearch": "Suche beenden",
     "saveChanges": "Änderungen speichern",
@@ -89,7 +90,7 @@
       "semicolon": "Semikolon (;)",
       "both": "Beides (,) und (;)"
     },
-    "fileEncoding": "File Encoding"
+    "fileEncoding": "Dateikodierung"
   },
   "help": {
     "click": "Datei oder Verzeichnis auswählen",

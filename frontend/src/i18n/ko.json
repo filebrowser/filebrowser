@@ -42,6 +42,7 @@
     "update": "업데이트",
     "upload": "업로드",
     "openFile": "파일 열기",
+    "openDirect": "View raw",
     "discardChanges": "변경 사항 취소",
     "stopSearch": "검색 중단",
     "saveChanges": "변경사항 저장",
@@ -89,7 +90,7 @@
       "semicolon": "쌍반점 (;)",
       "both": "(,) 및 (;) 모두"
     },
-    "fileEncoding": "File Encoding"
+    "fileEncoding": "파일 인코딩"
   },
   "help": {
     "click": "파일 또는 디렉터리 선택",
