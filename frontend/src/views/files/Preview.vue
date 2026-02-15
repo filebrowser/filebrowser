@@ -48,6 +48,16 @@
         />
         <action
           :disabled="layoutStore.loading"
+          v-if="
+            ['image', 'audio', 'video'].includes(fileStore.req?.type || '') &&
+            authStore.user?.perm.download
+          "
+          icon="open_in_new"
+          :label="t('buttons.openDirect')"
+          @action="openDirect"
+        />
+        <action
+          :disabled="layoutStore.loading"
           icon="info"
           :label="$t('buttons.info')"
           show="info"
@@ -277,6 +287,10 @@ const downloadUrl = computed(() =>
   fileStore.req ? api.getDownloadURL(fileStore.req, false) : ""
 );
 
+const directUrl = computed(() =>
+  fileStore.req ? api.getDownloadURL(fileStore.req, true) : ""
+);
+
 const previewUrl = computed(() => {
   if (!fileStore.req) {
     return "";
@@ -470,6 +484,7 @@ const close = () => {
 };
 
 const download = () => window.open(downloadUrl.value);
+const openDirect = () => window.open(directUrl.value);
 
 const editAsText = () => {
   router.push({ path: route.path, query: { edit: "true" } });
