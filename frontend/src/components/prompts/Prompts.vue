@@ -1,10 +1,13 @@
 <template>
-  <ModalsContainer />
+  <base-modal v-if="modal != null" :prompt="currentPromptName" @closed="close">
+    <keep-alive>
+      <component :is="modal" />
+    </keep-alive>
+  </base-modal>
 </template>
 
 <script setup lang="ts">
-import { watch } from "vue";
-import { ModalsContainer, useModal } from "vue-final-modal";
+import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useLayoutStore } from "@/stores/layout";
 
@@ -49,27 +52,15 @@ const components = new Map<string, any>([
   ["discardEditorChanges", DiscardEditorChanges],
 ]);
 
-watch(currentPromptName, (newValue) => {
-  const modal = components.get(newValue!);
-  if (!modal) return;
+const modal = computed(() => {
+  const modal = components.get(currentPromptName.value!);
+  if (!modal) null;
 
-  const { open, close } = useModal({
-    component: BaseModal,
-    slots: {
-      default: modal,
-    },
-  });
-
-  layoutStore.setCloseOnPrompt(close, newValue!);
-  open();
+  return modal;
 });
 
-window.addEventListener("keydown", (event) => {
+const close = () => {
   if (!layoutStore.currentPrompt) return;
-
-  if (event.key === "Escape") {
-    event.stopImmediatePropagation();
-    layoutStore.closeHovers();
-  }
-});
+  layoutStore.closeHovers();
+};
 </script>

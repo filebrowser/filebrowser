@@ -83,9 +83,6 @@ importers:
       vue:
         specifier: ^3.5.17
         version: 3.5.28(typescript@5.9.3)
-      vue-final-modal:
-        specifier: ^4.5.5
-        version: 4.5.5(@vueuse/core@14.2.1(vue@3.5.28(typescript@5.9.3)))(@vueuse/integrations@14.2.1(focus-trap@8.0.0)(jwt-decode@4.0.0)(vue@3.5.28(typescript@5.9.3)))(focus-trap@8.0.0)(vue@3.5.28(typescript@5.9.3))
       vue-i18n:
         specifier: ^11.1.10
         version: 11.2.8(vue@3.5.28(typescript@5.9.3))
@@ -2640,14 +2637,6 @@ packages:
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0 || ^10.0.0
 
-  vue-final-modal@4.5.5:
-    resolution: {integrity: sha512-A6xgsXqE6eLw9e6Tq/W6pxDBmimPuSuvq20WL9TOZpZy7itPdGeNn8e1P15PCGqP2yHM3q2gJIchPY9ZJd8YsA==}
-    peerDependencies:
-      '@vueuse/core': '>=10.0.0'
-      '@vueuse/integrations': '>=10.0.0'
-      focus-trap: '>=7.2.0'
-      vue: '>=3.2.0'
-
   vue-i18n@11.2.8:
     resolution: {integrity: sha512-vJ123v/PXCZntd6Qj5Jumy7UBmIuE92VrtdX+AXr+1WzdBHojiBxnAxdfctUFL+/JIN+VQH4BhsfTtiGsvVObg==}
     engines: {node: '>= 16'}
@@ -4562,6 +4551,7 @@ snapshots:
   focus-trap@8.0.0:
     dependencies:
       tabbable: 6.4.0
+    optional: true
 
   fraction.js@5.3.4: {}
 
@@ -5053,7 +5043,8 @@ snapshots:
 
   systemjs@6.15.1: {}
 
-  tabbable@6.4.0: {}
+  tabbable@6.4.0:
+    optional: true
 
   tar-mini@0.2.0: {}
 
@@ -5227,13 +5218,6 @@ snapshots:
       semver: 7.7.4
     transitivePeerDependencies:
       - supports-color
-
-  vue-final-modal@4.5.5(@vueuse/core@14.2.1(vue@3.5.28(typescript@5.9.3)))(@vueuse/integrations@14.2.1(focus-trap@8.0.0)(jwt-decode@4.0.0)(vue@3.5.28(typescript@5.9.3)))(focus-trap@8.0.0)(vue@3.5.28(typescript@5.9.3)):
-    dependencies:
-      '@vueuse/core': 14.2.1(vue@3.5.28(typescript@5.9.3))
-      '@vueuse/integrations': 14.2.1(focus-trap@8.0.0)(jwt-decode@4.0.0)(vue@3.5.28(typescript@5.9.3))
-      focus-trap: 8.0.0
-      vue: 3.5.28(typescript@5.9.3)
 
   vue-i18n@11.2.8(vue@3.5.28(typescript@5.9.3)):
     dependencies:
