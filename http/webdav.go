@@ -29,6 +29,14 @@ func webDavHandler(w http.ResponseWriter, r *http.Request, d *data) (int, error)
 	}
 
 	// WebDAV uses Basic Auth
+	if r.Method == "OPTIONS" {
+		w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, LOCK, PUT, MKCOL, PROPFIND, PROPPATCH, COPY, MOVE, UNLOCK")
+		w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, Depth, X-Requested-With")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("DAV", "1, 2")
+		return 0, nil
+	}
+
 	username, password, ok := r.BasicAuth()
 	if !ok {
 		w.Header().Set("WWW-Authenticate", `Basic realm="File Browser"`)

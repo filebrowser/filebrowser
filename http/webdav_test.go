@@ -20,6 +20,7 @@ func TestWebDavHandler(t *testing.T) {
 
 	testCases := map[string]struct {
 		enableWebDAV       bool
+		method             string
 		username           string
 		password           string
 		expectedStatusCode int
@@ -47,6 +48,13 @@ func TestWebDavHandler(t *testing.T) {
 			username:           "admin",
 			password:           password,
 			expectedStatusCode: 207, // PROPFIND on root returns Multi-Status
+		},
+		"WebDAV enabled, no auth, OPTIONS": {
+			enableWebDAV:       true,
+			method:             "OPTIONS",
+			username:           "",
+			password:           "",
+			expectedStatusCode: 200,
 		},
 	}
 
@@ -102,7 +110,11 @@ func TestWebDavHandler(t *testing.T) {
 				t.Fatalf("failed to save settings: %v", err)
 			}
 
-			req := httptest.NewRequest("PROPFIND", "/webdav/", nil)
+			method := "PROPFIND"
+			if tc.method != "" {
+				method = tc.method
+			}
+			req := httptest.NewRequest(method, "/webdav/", nil)
 			if tc.username != "" {
 				req.SetBasicAuth(tc.username, tc.password)
 			}
