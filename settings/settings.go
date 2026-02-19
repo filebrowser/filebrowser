@@ -38,6 +38,7 @@ type Settings struct {
 	FileMode              fs.FileMode         `json:"fileMode"`
 	DirMode               fs.FileMode         `json:"dirMode"`
 	HideDotfiles          bool                `json:"hideDotfiles"`
+	EnableWebDAV          bool                `json:"enableWebDAV"`
 }
 
 // GetRules implements rules.Provider.

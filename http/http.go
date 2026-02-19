@@ -41,6 +41,7 @@ func NewHandler(
 
 	r.HandleFunc("/health", healthHandler)
 	r.PathPrefix("/static").Handler(static)
+	r.PathPrefix("/webdav").Handler(monkey(webDavHandler, ""))
 	r.NotFoundHandler = index
 
 	api := r.PathPrefix("/api").Subrouter()
