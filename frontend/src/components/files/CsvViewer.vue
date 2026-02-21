@@ -1,5 +1,41 @@
 <template>
   <div class="csv-viewer">
+    <div class="csv-header">
+      <div class="header-select">
+        <label for="columnSeparator">{{ $t("files.columnSeparator") }}</label>
+        <select
+          id="columnSeparator"
+          class="input input--block"
+          v-model="columnSeparator"
+        >
+          <option :value="[',']">
+            {{ $t("files.csvSeparators.comma") }}
+          </option>
+          <option :value="[';']">
+            {{ $t("files.csvSeparators.semicolon") }}
+          </option>
+          <option :value="[',', ';']">
+            {{ $t("files.csvSeparators.both") }}
+          </option>
+        </select>
+      </div>
+      <div class="header-select" v-if="isEncodedContent">
+        <label for="fileEncoding">{{ $t("files.fileEncoding") }}</label>
+        <select
+          id="fileEncoding"
+          class="input input--block"
+          v-model="selectedEncoding"
+        >
+          <option
+            v-for="encoding in availableEncodings"
+            :value="encoding"
+            :key="encoding"
+          >
+            {{ encoding }}
+          </option>
+        </select>
+      </div>
+    </div>
     <div v-if="displayError" class="csv-error">
       <i class="material-icons">error</i>
       <p>{{ displayError }}</p>
@@ -9,42 +45,6 @@
       <p>{{ $t("files.lonely") }}</p>
     </div>
     <div v-else class="csv-table-container" @wheel.stop @touchmove.stop>
-      <div class="csv-header">
-        <div class="header-select">
-          <label for="columnSeparator">{{ $t("files.columnSeparator") }}</label>
-          <select
-            id="columnSeparator"
-            class="input input--block"
-            v-model="columnSeparator"
-          >
-            <option :value="[',']">
-              {{ $t("files.csvSeparators.comma") }}
-            </option>
-            <option :value="[';']">
-              {{ $t("files.csvSeparators.semicolon") }}
-            </option>
-            <option :value="[',', ';']">
-              {{ $t("files.csvSeparators.both") }}
-            </option>
-          </select>
-        </div>
-        <div class="header-select" v-if="isEncodedContent">
-          <label for="fileEncoding">{{ $t("files.fileEncoding") }}</label>
-          <select
-            id="fileEncoding"
-            class="input input--block"
-            v-model="selectedEncoding"
-          >
-            <option
-              v-for="encoding in availableEncodings"
-              :value="encoding"
-              :key="encoding"
-            >
-              {{ encoding }}
-            </option>
-          </select>
-        </div>
-      </div>
       <table class="csv-table">
         <thead>
           <tr>
