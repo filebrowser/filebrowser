@@ -121,7 +121,7 @@ const isMarkdownFile =
   fileStore.req?.name.endsWith(".markdown");
 const katexOptions = {
   output: "mathml" as const,
-  throwOnError: false
+  throwOnError: false,
 };
 marked.use(markedKatex(katexOptions));
 
@@ -233,6 +233,11 @@ const initEditor = (fileContent: string) => {
 
   editor.value.setFontSize(fontSize.value);
   editor.value.focus();
+
+  const selection = editor.value?.getSelection();
+  selection.on("changeSelection", function () {
+    isSelectionEmpty.value = selection.isEmpty();
+  });
 };
 
 const keyEvent = (event: KeyboardEvent) => {
@@ -296,6 +301,7 @@ const close = () => {
       prompt: "discardEditorChanges",
       confirm: (event: Event) => {
         event.preventDefault();
+        editor.value?.session.getUndoManager().reset();
         finishClose();
       },
       saveAction: async () => {
