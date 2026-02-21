@@ -14,7 +14,7 @@
         v-model.trim="name"
         tabindex="1"
       />
-      <CreateFilePath :name="name" :is-dir="true" />
+      <CreateFilePath :name="name" :is-dir="true" :path="base" />
     </div>
 
     <div class="card-action">
@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref } from "vue";
+import { computed, inject, ref } from "vue";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
@@ -53,16 +53,12 @@ import CreateFilePath from "@/components/prompts/CreateFilePath.vue";
 
 const $showError = inject<IToastError>("$showError")!;
 
-const props = defineProps({
-  base: String,
-  redirect: {
-    type: Boolean,
-    default: true,
-  },
-});
-
 const fileStore = useFileStore();
 const layoutStore = useLayoutStore();
+
+const base = computed(() => {
+  return layoutStore.currentPrompt?.props?.base;
+});
 
 const route = useRoute();
 const router = useRouter();
@@ -76,7 +72,7 @@ const submit = async (event: Event) => {
 
   // Build the path of the new directory.
   let uri: string;
-  if (props.base) uri = props.base;
+  if (base.value) uri = base.value;
   else if (fileStore.isFiles) uri = route.path + "/";
   else uri = "/";
 
@@ -89,11 +85,14 @@ const submit = async (event: Event) => {
 
   try {
     await api.post(uri);
-    if (props.redirect) {
+    if (layoutStore.currentPrompt?.props?.redirect) {
       router.push({ path: uri });
-    } else if (!props.base) {
+    } else if (!base.value) {
       const res = await api.fetch(url.removeLastDir(uri) + "/");
       fileStore.updateRequest(res);
+    }
+    if (layoutStore.currentPrompt?.confirm) {
+      layoutStore.currentPrompt?.confirm(uri);
     }
   } catch (e) {
     if (e instanceof Error) {

@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.60.0](https://github.com/filebrowser/filebrowser/compare/v2.59.0...v2.60.0) (2026-02-21)
+
+
+### Features
+
+* Updates for project File Browser ([#5764](https://github.com/filebrowser/filebrowser/issues/5764)) ([9940bdd](https://github.com/filebrowser/filebrowser/commit/9940bdd663ff5141110778524b8a22c957036e78))
+
+
+### Bug Fixes
+
+* always show separators and encoding list in the CSV viewer ([#5774](https://github.com/filebrowser/filebrowser/issues/5774)) ([3169a14](https://github.com/filebrowser/filebrowser/commit/3169a14a4d63a0a11a5288f4f3a674c0a0edb972))
+* modal lifecycle issues, multiple modals, new directory creation and discard changes behavior ([#5773](https://github.com/filebrowser/filebrowser/issues/5773)) ([200d501](https://github.com/filebrowser/filebrowser/commit/200d5015472c79d5caa683ea291ebf500356a39f))
+
 ## [2.59.0](https://github.com/filebrowser/filebrowser/compare/v2.58.0...v2.59.0) (2026-02-15)
 
 
