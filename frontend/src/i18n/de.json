@@ -49,10 +49,10 @@
     "editAsText": "Als Text bearbeiten",
     "increaseFontSize": "Schrift vergrößern",
     "decreaseFontSize": "Schrift verkleinern",
-    "overrideAll": "Replace all files in destination folder",
-    "skipAll": "Skip all conflicting files",
-    "renameAll": "Rename all files (create a copy)",
-    "singleDecision": "Decide for each conflicting file"
+    "overrideAll": "Alle Dateien im Zielordner ersetzen",
+    "skipAll": "Alle in Konflikt stehenden Dateien überspringen",
+    "renameAll": "Alle Dateien umbenennen (Kopie erstellen)",
+    "singleDecision": "Bei jeder Datei mit Konflikt entscheiden"
   },
   "download": {
     "downloadFile": "Datei herunterladen",
@@ -166,16 +166,16 @@
     "optionalPassword": "Optionales Passwort",
     "resolution": "Auflösung",
     "discardEditorChanges": "Möchtest du deine Änderungen wirklich verwerfen?",
-    "replaceOrSkip": "Replace or skip files",
-    "resolveConflict": "Which files do you want to keep?",
-    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
-    "fastConflictResolve": "The destination folder there are {count} files with same name.",
-    "uploadingFiles": "Uploading files",
-    "filesInOrigin": "Files in origin",
-    "filesInDest": "Files in destination",
-    "override": "Overwrite",
-    "skip": "Skip",
-    "forbiddenError": "Forbidden Error"
+    "replaceOrSkip": "Dateien ersetzen oder überspringen",
+    "resolveConflict": "Welche Dateien möchtest du behalten?",
+    "singleConflictResolve": "Wenn du beide Versionen auswählst, wird dem Namen der kopierten Datei eine Nummer hinzugefügt.",
+    "fastConflictResolve": "Der Zielordner enthält {count} Dateien mit demselben Namen.",
+    "uploadingFiles": "Dateien werden hochgeladen",
+    "filesInOrigin": "Dateien im Ursprungsordner",
+    "filesInDest": "Dateien im Zielordner",
+    "override": "Überschreiben",
+    "skip": "Überspringen",
+    "forbiddenError": "Zugriff verweigert"
   },
   "search": {
     "images": "Bilder",
