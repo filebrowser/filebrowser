@@ -69,18 +69,29 @@ const uploadInput = (event: Event) => {
   const path = route.path.endsWith("/") ? route.path : route.path + "/";
   const conflict = upload.checkConflict(uploadFiles, fileStore.req!.items);
 
-  if (conflict) {
+  if (conflict.length > 0) {
     layoutStore.showHover({
-      prompt: "replace",
-      action: (event: Event) => {
-        event.preventDefault();
-        layoutStore.closeHovers();
-        upload.handleFiles(uploadFiles, path, false);
+      prompt: "resolve-conflict",
+      props: {
+        conflict: conflict,
+        isUploadAction: true,
       },
-      confirm: (event: Event) => {
+      confirm: (event: Event, result: Array<ConflictingResource>) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        upload.handleFiles(uploadFiles, path, true);
+        for (let i = result.length - 1; i >= 0; i--) {
+          const item = result[i];
+          if (item.checked.length == 2) {
+            continue;
+          } else if (item.checked.length == 1 && item.checked[0] == "origin") {
+            uploadFiles[item.index].overwrite = true;
+          } else {
+            uploadFiles.splice(item.index, 1);
+          }
+        }
+        if (uploadFiles.length > 0) {
+          upload.handleFiles(uploadFiles, path);
+        }
       },
     });
 
