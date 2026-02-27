@@ -49,10 +49,10 @@
     "editAsText": "Als tekst bewerken",
     "increaseFontSize": "Lettertype vergroten",
     "decreaseFontSize": "Lettertype verkleinen",
-    "overrideAll": "Replace all files in destination folder",
-    "skipAll": "Skip all conflicting files",
-    "renameAll": "Rename all files (create a copy)",
-    "singleDecision": "Decide for each conflicting file"
+    "overrideAll": "Alle bestanden in doelmap vervangen",
+    "skipAll": "Alle conflicterende bestanden overslaan",
+    "renameAll": "Alle bestanden hernoemen (een kopie maken)",
+    "singleDecision": "Voor elk conflicterend bestand besluiten"
   },
   "download": {
     "downloadFile": "Bestand downloaden",
@@ -166,16 +166,16 @@
     "optionalPassword": "Optioneel wachtwoord",
     "resolution": "Resolutie",
     "discardEditorChanges": "Weet u zeker dat u de door u aangebrachte wijzigingen wilt weggooien?",
-    "replaceOrSkip": "Replace or skip files",
-    "resolveConflict": "Which files do you want to keep?",
-    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
-    "fastConflictResolve": "The destination folder there are {count} files with same name.",
-    "uploadingFiles": "Uploading files",
-    "filesInOrigin": "Files in origin",
-    "filesInDest": "Files in destination",
-    "override": "Overwrite",
-    "skip": "Skip",
-    "forbiddenError": "Forbidden Error"
+    "replaceOrSkip": "Bestanden vervangen of overslaan",
+    "resolveConflict": "Welke bestanden wilt u behouden?",
+    "singleConflictResolve": "Als u beide versies selecteert, wordt er een nummer toegevoegd aan de naam van het gekopieerde bestand.",
+    "fastConflictResolve": "De doelmap daar bevat {count} bestanden met dezelfde naam.",
+    "uploadingFiles": "Bestanden uploaden",
+    "filesInOrigin": "Bestanden in origineel",
+    "filesInDest": "Bestanden in bestemming",
+    "override": "Overschrijven",
+    "skip": "Overslaan",
+    "forbiddenError": "Verboden Fout"
   },
   "search": {
     "images": "Afbeeldingen",
