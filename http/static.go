@@ -50,6 +50,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		"EnableExec":            d.server.EnableExec,
 		"TusSettings":           d.settings.Tus,
 		"HideLoginButton":       d.settings.HideLoginButton,
+		"UnzipEnabled":          d.server.UnzipEnabled,
 	}
 
 	if d.settings.Branding.Files != "" {
