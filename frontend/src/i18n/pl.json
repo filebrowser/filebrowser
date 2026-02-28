@@ -48,7 +48,11 @@
     "saveChanges": "Zapisz zmiany",
     "editAsText": "Edytuj jako tekst",
     "increaseFontSize": "Zwiększ rozmiar czcionki",
-    "decreaseFontSize": "Zmniejsz rozmiar czcionki"
+    "decreaseFontSize": "Zmniejsz rozmiar czcionki",
+    "overrideAll": "Zastąp wszystkie pliki w folderze docelowym",
+    "skipAll": "Pomiń wszystkie pliki powodujące konflikty",
+    "renameAll": "Zmień nazwy wszystkich plików (utwórz kopię)",
+    "singleDecision": "Podejmij decyzję dla każdego pliku powodującego konflikt"
   },
   "download": {
     "downloadFile": "Pobierz plik",
@@ -161,7 +165,17 @@
     "uploadMessage": "Wybierz opcję przesyłania.",
     "optionalPassword": "Opcjonalne hasło",
     "resolution": "Rozdzielczość",
-    "discardEditorChanges": "Czy na pewno chcesz odrzucić wprowadzone zmiany?"
+    "discardEditorChanges": "Czy na pewno chcesz odrzucić wprowadzone zmiany?",
+    "replaceOrSkip": "Zastąp lub pomiń pliki",
+    "resolveConflict": "Które pliki chcesz zachować?",
+    "singleConflictResolve": "Jeśli wybierzesz obie wersje, do nazwy kopiowanego pliku zostanie dodany numer.",
+    "fastConflictResolve": "W folderze docelowym liczba plików o tej samej nazwie to {count}.",
+    "uploadingFiles": "Wysyłanie plików",
+    "filesInOrigin": "Pliki w miejscu pochodzenia",
+    "filesInDest": "Pliki w miejscu docelowym",
+    "override": "Zastąp",
+    "skip": "Pomiń",
+    "forbiddenError": "Błąd zabronionego dostępu"
   },
   "search": {
     "images": "Obrazy",

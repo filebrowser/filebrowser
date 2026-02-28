@@ -48,7 +48,11 @@
     "saveChanges": "Änderungen speichern",
     "editAsText": "Als Text bearbeiten",
     "increaseFontSize": "Schrift vergrößern",
-    "decreaseFontSize": "Schrift verkleinern"
+    "decreaseFontSize": "Schrift verkleinern",
+    "overrideAll": "Alle Dateien im Zielordner ersetzen",
+    "skipAll": "Alle in Konflikt stehenden Dateien überspringen",
+    "renameAll": "Alle Dateien umbenennen (Kopie erstellen)",
+    "singleDecision": "Bei jeder Datei mit Konflikt entscheiden"
   },
   "download": {
     "downloadFile": "Datei herunterladen",
@@ -161,7 +165,17 @@
     "uploadMessage": "Wähle eine Upload-Option.",
     "optionalPassword": "Optionales Passwort",
     "resolution": "Auflösung",
-    "discardEditorChanges": "Möchtest du deine Änderungen wirklich verwerfen?"
+    "discardEditorChanges": "Möchtest du deine Änderungen wirklich verwerfen?",
+    "replaceOrSkip": "Dateien ersetzen oder überspringen",
+    "resolveConflict": "Welche Dateien möchtest du behalten?",
+    "singleConflictResolve": "Wenn du beide Versionen auswählst, wird dem Namen der kopierten Datei eine Nummer hinzugefügt.",
+    "fastConflictResolve": "Der Zielordner enthält {count} Dateien mit demselben Namen.",
+    "uploadingFiles": "Dateien werden hochgeladen",
+    "filesInOrigin": "Dateien im Ursprungsordner",
+    "filesInDest": "Dateien im Zielordner",
+    "override": "Überschreiben",
+    "skip": "Überspringen",
+    "forbiddenError": "Zugriff verweigert"
   },
   "search": {
     "images": "Bilder",

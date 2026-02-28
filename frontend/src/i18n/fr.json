@@ -48,7 +48,11 @@
     "saveChanges": "Enregistrer changements",
     "editAsText": "Editer comme Texte",
     "increaseFontSize": "Augmenter taille police",
-    "decreaseFontSize": "Réduire taille police"
+    "decreaseFontSize": "Réduire taille police",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "Télécharger le fichier",
@@ -161,7 +165,17 @@
     "uploadMessage": "Sélectionnez une option d'import.",
     "optionalPassword": "Mot de passe optionnel",
     "resolution": "Résolution",
-    "discardEditorChanges": "Êtes-vous sûr de vouloir annuler les modifications apportées ?"
+    "discardEditorChanges": "Êtes-vous sûr de vouloir annuler les modifications apportées ?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error"
   },
   "search": {
     "images": "Images",
