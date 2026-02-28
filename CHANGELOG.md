@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.61.0](https://github.com/filebrowser/filebrowser/compare/v2.60.0...v2.61.0) (2026-02-28)
+
+
+### Features
+
+* improved conflict resolution when uploading/copying/moving files ([#5765](https://github.com/filebrowser/filebrowser/issues/5765)) ([aa80909](https://github.com/filebrowser/filebrowser/commit/aa809096eb35fdfbdeb6784b1ebfe2ca1e42f52b))
+
+
+### Bug Fixes
+
+* correctly clean path ([31194fb](https://github.com/filebrowser/filebrowser/commit/31194fb57a5b92e7155219d7ec7273028fcb2e83))
+
 ## [2.60.0](https://github.com/filebrowser/filebrowser/compare/v2.59.0...v2.60.0) (2026-02-21)
 
 
