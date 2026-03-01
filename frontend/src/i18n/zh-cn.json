@@ -48,7 +48,11 @@
     "saveChanges": "保存更改",
     "editAsText": "以文本形式编辑",
     "increaseFontSize": "增大字体大小",
-    "decreaseFontSize": "减小字体大小"
+    "decreaseFontSize": "减小字体大小",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "下载文件",
@@ -161,7 +165,17 @@
     "uploadMessage": "选择上传选项。",
     "optionalPassword": "密码（选填，不填即无密码）",
     "resolution": "分辨率",
-    "discardEditorChanges": "你确定要放弃所做的更改吗？"
+    "discardEditorChanges": "你确定要放弃所做的更改吗？",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error"
   },
   "search": {
     "images": "图像",

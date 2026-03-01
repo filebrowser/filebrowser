@@ -48,7 +48,11 @@
     "saveChanges": "Wijzigingen opslaan",
     "editAsText": "Als tekst bewerken",
     "increaseFontSize": "Lettertype vergroten",
-    "decreaseFontSize": "Lettertype verkleinen"
+    "decreaseFontSize": "Lettertype verkleinen",
+    "overrideAll": "Alle bestanden in doelmap vervangen",
+    "skipAll": "Alle conflicterende bestanden overslaan",
+    "renameAll": "Alle bestanden hernoemen (een kopie maken)",
+    "singleDecision": "Voor elk conflicterend bestand besluiten"
   },
   "download": {
     "downloadFile": "Bestand downloaden",
@@ -161,7 +165,17 @@
     "uploadMessage": "Kies een optie bij de upload.",
     "optionalPassword": "Optioneel wachtwoord",
     "resolution": "Resolutie",
-    "discardEditorChanges": "Weet u zeker dat u de door u aangebrachte wijzigingen wilt weggooien?"
+    "discardEditorChanges": "Weet u zeker dat u de door u aangebrachte wijzigingen wilt weggooien?",
+    "replaceOrSkip": "Bestanden vervangen of overslaan",
+    "resolveConflict": "Welke bestanden wilt u behouden?",
+    "singleConflictResolve": "Als u beide versies selecteert, wordt er een nummer toegevoegd aan de naam van het gekopieerde bestand.",
+    "fastConflictResolve": "De doelmap daar bevat {count} bestanden met dezelfde naam.",
+    "uploadingFiles": "Bestanden uploaden",
+    "filesInOrigin": "Bestanden in origineel",
+    "filesInDest": "Bestanden in bestemming",
+    "override": "Overschrijven",
+    "skip": "Overslaan",
+    "forbiddenError": "Verboden Fout"
   },
   "search": {
     "images": "Afbeeldingen",

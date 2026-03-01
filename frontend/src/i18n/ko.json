@@ -48,7 +48,11 @@
     "saveChanges": "변경사항 저장",
     "editAsText": "텍스트로 편집",
     "increaseFontSize": "글꼴 크기 증가",
-    "decreaseFontSize": "글꼴 크기 감소"
+    "decreaseFontSize": "글꼴 크기 감소",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "파일 다운로드",
@@ -161,7 +165,17 @@
     "uploadMessage": "업로드 옵션을 선택하세요.",
     "optionalPassword": "비밀번호 (선택)",
     "resolution": "해상도",
-    "discardEditorChanges": "변경 사항을 취소하시겠습니까?"
+    "discardEditorChanges": "변경 사항을 취소하시겠습니까?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error"
   },
   "search": {
     "images": "이미지",
