@@ -43,7 +43,7 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		return renderJSON(w, r, file)
 	} else if encoding == "true" {
 		if file.Type != "text" {
-			return http.StatusUnsupportedMediaType, fmt.Errorf("file is not a text file")
+			return renderJSON(w, r, file)
 		}
 
 		f, err := d.user.Fs.Open(r.URL.Path)
