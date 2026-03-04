@@ -240,7 +240,7 @@ func tusPatchHandler(cache UploadCache) handleFunc {
 
 func tusDeleteHandler(cache UploadCache) handleFunc {
 	return withUser(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
-		if r.URL.Path == "/" || !d.user.Perm.Create {
+		if r.URL.Path == "/" || !d.user.Perm.Delete {
 			return http.StatusForbidden, nil
 		}
 
