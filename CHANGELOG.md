@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.61.1](https://github.com/filebrowser/filebrowser/compare/v2.61.0...v2.61.1) (2026-03-04)
+
+
+### Bug Fixes
+
+* check for correct permission in TUS Delete ([7ed1425](https://github.com/filebrowser/filebrowser/commit/7ed1425115be602c2b23236c410098ea2d74b42f))
+
 ## [2.61.0](https://github.com/filebrowser/filebrowser/compare/v2.60.0...v2.61.0) (2026-02-28)
 
 
