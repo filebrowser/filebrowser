@@ -168,6 +168,7 @@ func (a *HookAuth) SaveUser() (*users.User, error) {
 			Sorting:               a.Settings.Defaults.Sorting,
 			Perm:                  a.Settings.Defaults.Perm,
 			Commands:              a.Settings.Defaults.Commands,
+			DateFormat:            a.Settings.Defaults.DateFormat,
 			HideDotfiles:          a.Settings.Defaults.HideDotfiles,
 		}
 		u = a.GetUser(d)
@@ -233,6 +234,7 @@ func (a *HookAuth) GetUser(d *users.User) *users.User {
 			By:  a.Fields.GetString("user.sorting.by", d.Sorting.By),
 		},
 		Commands:     a.Fields.GetArray("user.commands", d.Commands),
+		DateFormat:   a.Fields.GetBoolean("user.dateFormat", d.DateFormat),
 		HideDotfiles: a.Fields.GetBoolean("user.hideDotfiles", d.HideDotfiles),
 		Perm:         perms,
 		LockPassword: true,

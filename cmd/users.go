@@ -138,6 +138,8 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 			defaults.Sorting.By, err = flags.GetString(flag.Name)
 		case "sorting.asc":
 			defaults.Sorting.Asc, err = flags.GetBool(flag.Name)
+		case "dateFormat":
+			defaults.DateFormat, err = flags.GetBool(flag.Name)
 		case "hideDotfiles":
 			defaults.HideDotfiles, err = flags.GetBool(flag.Name)
 		}
