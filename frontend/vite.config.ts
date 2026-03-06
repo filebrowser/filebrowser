@@ -14,7 +14,7 @@ const plugins = [
     // defaults already drop IE support
     targets: ["defaults"],
   }),
-  compression({ include: /\.js$/i, deleteOriginalAssets: true }),
+  compression({ include: /\.js$/, deleteOriginalAssets: false }),
 ];
 
 const resolve = {
