@@ -175,7 +175,9 @@
     "filesInDest": "Pliki w miejscu docelowym",
     "override": "Zastąp",
     "skip": "Pomiń",
-    "forbiddenError": "Błąd zabronionego dostępu"
+    "forbiddenError": "Błąd zabronionego dostępu",
+    "currentPassword": "Twoje hasło",
+    "currentPasswordMessage": "Wpisz swoje hasło, aby zatwierdzić tę czynność."
   },
   "search": {
     "images": "Obrazy",

@@ -175,7 +175,9 @@
     "filesInDest": "Bestanden in bestemming",
     "override": "Overschrijven",
     "skip": "Overslaan",
-    "forbiddenError": "Verboden Fout"
+    "forbiddenError": "Verboden Fout",
+    "currentPassword": "Uw wachtwoord",
+    "currentPasswordMessage": "Voer uw wachtwoord in om deze actie te valideren."
   },
   "search": {
     "images": "Afbeeldingen",
