@@ -11,7 +11,7 @@
       <input
         id="focus-prompt"
         class="input input--block"
-        type="text"
+        type="password"
         @keyup.enter="submit"
         v-model="password"
       />
