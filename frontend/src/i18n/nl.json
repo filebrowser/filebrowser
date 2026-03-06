@@ -176,8 +176,8 @@
     "override": "Overschrijven",
     "skip": "Overslaan",
     "forbiddenError": "Verboden Fout",
-    "currentPassword": "Your password",
-    "currentPasswordMessage": "Enter your password to validate this action."
+    "currentPassword": "Uw wachtwoord",
+    "currentPasswordMessage": "Voer uw wachtwoord in om deze actie te valideren."
   },
   "search": {
     "images": "Afbeeldingen",
