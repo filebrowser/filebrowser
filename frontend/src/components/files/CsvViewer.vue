@@ -21,19 +21,37 @@
       </div>
       <div class="header-select" v-if="isEncodedContent">
         <label for="fileEncoding">{{ $t("files.fileEncoding") }}</label>
-        <select
-          id="fileEncoding"
-          class="input input--block"
-          v-model="selectedEncoding"
+        <DropdownModal
+          v-model="isEncondingDropdownOpen"
+          :close-on-click="false"
         >
-          <option
-            v-for="encoding in availableEncodings"
-            :value="encoding"
-            :key="encoding"
-          >
-            {{ encoding }}
-          </option>
-        </select>
+          <div>
+            <span class="selected-encoding">{{ selectedEncoding }}</span>
+          </div>
+          <template v-slot:list>
+            <input
+              v-model="encodingSearch"
+              :placeholder="$t('search.search')"
+              class="input input--block"
+              name="encoding"
+            />
+            <div class="encoding-list">
+              <div v-if="encodingList.length == 0" class="message">
+                <i class="material-icons">sentiment_dissatisfied</i>
+                <span>{{ $t("files.lonely") }}</span>
+              </div>
+              <button
+                v-for="encoding in encodingList"
+                :value="encoding"
+                :key="encoding"
+                class="encoding-button"
+                @click="selectedEncoding = encoding"
+              >
+                {{ encoding }}
+              </button>
+            </div>
+          </template>
+        </DropdownModal>
       </div>
     </div>
     <div v-if="displayError" class="csv-error">
@@ -74,10 +92,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watchEffect } from "vue";
+import { computed, ref, watch, watchEffect } from "vue";
 import { parse } from "csv-parse/browser/esm";
 import { useI18n } from "vue-i18n";
 import { availableEncodings, decode } from "@/utils/encodings";
+import DropdownModal from "../DropdownModal.vue";
 
 const { t } = useI18n({});
 
@@ -88,6 +107,16 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   error: "",
+});
+
+const isEncondingDropdownOpen = ref(false);
+
+const encodingSearch = ref<string>("");
+
+const encodingList = computed(() => {
+  return availableEncodings.filter((e) =>
+    e.toLowerCase().includes(encodingSearch.value.toLowerCase())
+  );
 });
 
 const columnSeparator = ref([",", ";"]);
@@ -127,6 +156,11 @@ watchEffect(() => {
       }
     );
   }
+});
+
+watch(selectedEncoding, () => {
+  isEncondingDropdownOpen.value = false;
+  encodingSearch.value = "";
 });
 </script>
 
@@ -271,19 +305,62 @@ watchEffect(() => {
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
+  flex-direction: column;
+  @media (width >= 640px) {
+    flex-direction: row;
+  }
 }
 
 .header-select > label {
   font-size: small;
-  max-width: 80px;
+  @media (width >= 640px) {
+    max-width: 70px;
+  }
 }
 
-.header-select > select {
+.header-select > select,
+.header-select > div {
   margin-bottom: 0;
 }
 
 .csv-info i {
   font-size: 1.2rem;
   color: var(--blue);
+}
+
+.encoding-list {
+  max-height: 300px;
+  min-width: 120px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+.encoding-button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  padding: 0.25rem 0.5rem;
+  color: var(--textPrimary);
+  text-align: left;
+  cursor: pointer;
+  border-radius: 0.2rem;
+  white-space: nowrap;
+  display: block;
+  width: 100%;
+}
+
+.encoding-button:hover {
+  background-color: var(--surfaceSecondary);
+}
+
+.selected-encoding {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.message {
+  font-size: 1.25em;
 }
 </style>
