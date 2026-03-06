@@ -175,7 +175,9 @@
     "filesInDest": "Files in destination",
     "override": "Overwrite",
     "skip": "Skip",
-    "forbiddenError": "Forbidden Error"
+    "forbiddenError": "Forbidden Error",
+    "currentPassword": "Your password",
+    "currentPasswordMessage": "Enter your password to validate this action."
   },
   "search": {
     "images": "图像",
