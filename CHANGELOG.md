@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.61.2](https://github.com/filebrowser/filebrowser/compare/v2.61.1...v2.61.2) (2026-03-06)
+
+
+### Bug Fixes
+
+* added dateFormat to getUserDefaults so this is respected in the … ([#5804](https://github.com/filebrowser/filebrowser/issues/5804)) ([8598db2](https://github.com/filebrowser/filebrowser/commit/8598db2accccf5b87353e5e718b2ad1c946e5c44))
+* avoid sending the same name in the file/folder rename modal ([#5806](https://github.com/filebrowser/filebrowser/issues/5806)) ([d7b00ce](https://github.com/filebrowser/filebrowser/commit/d7b00ce5f672b7ce0b26ce31abdfc74f8b00b939))
+* **csv-viewer:** add support for missing text encodings in dropdown list ([#5795](https://github.com/filebrowser/filebrowser/issues/5795)) ([4af3f85](https://github.com/filebrowser/filebrowser/commit/4af3f85e64e795e8ae1d87d4caee8185028294ac))
+* **frontend:** do not delete original assets ([4d9e6b8](https://github.com/filebrowser/filebrowser/commit/4d9e6b821852203cef67233791a922013bd5b64d))
+* **frontend:** input password type ([8ee5576](https://github.com/filebrowser/filebrowser/commit/8ee55761a1aa9bc091d8466c44f03c2043a8ca79))
+* validate current password with a modal ([#5805](https://github.com/filebrowser/filebrowser/issues/5805)) ([177c7cf](https://github.com/filebrowser/filebrowser/commit/177c7cfcce36779e2c5ebaa4b59a055dd1e17648))
+
 ## [2.61.1](https://github.com/filebrowser/filebrowser/compare/v2.61.0...v2.61.1) (2026-03-04)
 
 
