@@ -15,6 +15,7 @@ export default {
   data() {
     const dataObj = {};
     const locales = {
+      af: "Afrikaans",
       ar: "العربية",
       bg: "български език",
       ca: "Català",
@@ -44,8 +45,10 @@ export default {
       tr: "Türkçe",
       uk: "Українська",
       vi: "Tiếng Việt",
+      xh: "isiXhosa",
       "zh-cn": "中文 (简体)",
       "zh-tw": "中文 (繁體)",
+      zu: "isiZulu",
     };
 
     // Vue3 reactivity breaks with this configuration

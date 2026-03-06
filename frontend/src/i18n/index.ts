@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { createI18n } from "vue-i18n";
 
 import("dayjs/locale/ar");
+import("dayjs/locale/af");
 import("dayjs/locale/bg");
 import("dayjs/locale/cs");
 import("dayjs/locale/de");
@@ -41,6 +42,9 @@ export function detectLocale() {
   // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language
   let locale = navigator.language.toLowerCase();
   switch (true) {
+    case /^af\b/.test(locale):
+      locale = "af";
+      break;
     case /^he\b/.test(locale):
       locale = "he";
       break;
@@ -113,6 +117,12 @@ export function detectLocale() {
       break;
     case /^vi\b/.test(locale):
       locale = "vi";
+      break;
+    case /^xh\b/.test(locale):
+      locale = "xh";
+      break;
+    case /^zu\b/.test(locale):
+      locale = "zu";
       break;
     case /^sv-se\b/.test(locale):
     case /^sv\b/.test(locale):
