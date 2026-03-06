@@ -175,7 +175,7 @@
     "filesInDest": "대상 경로의 파일",
     "override": "덮어쓰기",
     "skip": "건너뛰기",
-    "forbiddenError": "Forbidden Error"
+    "forbiddenError": "권한 오류"
   },
   "search": {
     "images": "이미지",
