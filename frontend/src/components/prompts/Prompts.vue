@@ -28,6 +28,7 @@ import ShareDelete from "./ShareDelete.vue";
 import Upload from "./Upload.vue";
 import DiscardEditorChanges from "./DiscardEditorChanges.vue";
 import ResolveConflict from "./ResolveConflict.vue";
+import CurrentPassword from "./CurrentPassword.vue";
 
 const layoutStore = useLayoutStore();
 
@@ -50,6 +51,7 @@ const components = new Map<string, any>([
   ["deleteUser", DeleteUser],
   ["discardEditorChanges", DiscardEditorChanges],
   ["resolve-conflict", ResolveConflict],
+  ["current-password", CurrentPassword],
 ]);
 
 const modal = computed(() => {
