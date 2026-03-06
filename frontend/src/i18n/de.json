@@ -176,8 +176,8 @@
     "override": "Überschreiben",
     "skip": "Überspringen",
     "forbiddenError": "Zugriff verweigert",
-    "currentPassword": "Your password",
-    "currentPasswordMessage": "Enter your password to validate this action."
+    "currentPassword": "Dein Passwort",
+    "currentPasswordMessage": "Gib dein Passwort ein, um diese Aktion zu bestätigen."
   },
   "search": {
     "images": "Bilder",
