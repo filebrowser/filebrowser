@@ -16,6 +16,12 @@ const DefaultMinimumPasswordLength = 12
 const DefaultFileMode = 0640
 const DefaultDirMode = 0750
 
+const DefaultMaxZipFileSize = 5 * 1024 * 1024 * 1024            // 5GB
+const DefaultMaxZipFileEntries = 100000                         // 100k files
+const DefaultMaxTotalUncompressedSize = 20 * 1024 * 1024 * 1024 // 20GB
+const DefaultMaxUncompressedSizeRate = 0.01                     // 1%
+const DefaultMaxUncompressedFileSize = 5 * 1024 * 1024 * 1024   // 5GB
+
 // AuthMethod describes an authentication method.
 type AuthMethod string
 
@@ -47,21 +53,27 @@ func (s *Settings) GetRules() []rules.Rule {
 
 // Server specific settings.
 type Server struct {
-	Root                  string `json:"root"`
-	BaseURL               string `json:"baseURL"`
-	Socket                string `json:"socket"`
-	TLSKey                string `json:"tlsKey"`
-	TLSCert               string `json:"tlsCert"`
-	Port                  string `json:"port"`
-	Address               string `json:"address"`
-	Log                   string `json:"log"`
-	EnableThumbnails      bool   `json:"enableThumbnails"`
-	ResizePreview         bool   `json:"resizePreview"`
-	EnableExec            bool   `json:"enableExec"`
-	TypeDetectionByHeader bool   `json:"typeDetectionByHeader"`
-	ImageResolutionCal    bool   `json:"imageResolutionCalculation"`
-	AuthHook              string `json:"authHook"`
-	TokenExpirationTime   string `json:"tokenExpirationTime"`
+	Root                     string  `json:"root"`
+	BaseURL                  string  `json:"baseURL"`
+	Socket                   string  `json:"socket"`
+	TLSKey                   string  `json:"tlsKey"`
+	TLSCert                  string  `json:"tlsCert"`
+	Port                     string  `json:"port"`
+	Address                  string  `json:"address"`
+	Log                      string  `json:"log"`
+	EnableThumbnails         bool    `json:"enableThumbnails"`
+	ResizePreview            bool    `json:"resizePreview"`
+	EnableExec               bool    `json:"enableExec"`
+	TypeDetectionByHeader    bool    `json:"typeDetectionByHeader"`
+	ImageResolutionCal       bool    `json:"imageResolutionCalculation"`
+	AuthHook                 string  `json:"authHook"`
+	TokenExpirationTime      string  `json:"tokenExpirationTime"`
+	UnzipEnabled             bool    `json:"unzipEnabled"`
+	MaxZipFileSize           int64   `json:"maxZipFileSize"`
+	MaxZipFileEntries        int     `json:"maxZipFileEntries"`
+	MaxTotalUncompressedSize uint64  `json:"maxTotalUncompressedSize"`
+	MaxUncompressedSizeRate  float64 `json:"maxUncompressedSizeRate"`
+	MaxUncompressedFileSize  uint64  `json:"maxUncompressedFileSize"`
 }
 
 // Clean cleans any variables that might need cleaning.

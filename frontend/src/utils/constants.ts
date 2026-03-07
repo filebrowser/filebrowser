@@ -20,6 +20,7 @@ const tusSettings = window.FileBrowser.TusSettings;
 const origin = window.location.origin;
 const tusEndpoint = `/api/tus`;
 const hideLoginButton = window.FileBrowser.HideLoginButton;
+const unzipEnabled: boolean = window.FileBrowser.UnzipEnabled;
 
 export {
   name,
@@ -43,4 +44,5 @@ export {
   origin,
   tusEndpoint,
   hideLoginButton,
+  unzipEnabled,
 };

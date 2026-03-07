@@ -313,6 +313,9 @@ func getSettings(flags *pflag.FlagSet, set *settings.Settings, ser *settings.Ser
 		case "disableImageResolutionCalc":
 			ser.ImageResolutionCal, err = flags.GetBool(flag.Name)
 			ser.ImageResolutionCal = !ser.ImageResolutionCal
+		case "unzipEnabled":
+			ser.UnzipEnabled, err = flags.GetBool(flag.Name)
+			ser.UnzipEnabled = !ser.UnzipEnabled
 
 		// Settings flags from [addConfigFlags]
 		case "signup":
