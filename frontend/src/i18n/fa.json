@@ -42,12 +42,17 @@
     "update": "به روز سانی",
     "upload": "آپلود",
     "openFile": "باز کردن فایل",
+    "openDirect": "View raw",
     "discardChanges": "لغو کردن",
     "stopSearch": "Stop searching",
     "saveChanges": "Save changes",
     "editAsText": "Edit as Text",
     "increaseFontSize": "Increase font size",
-    "decreaseFontSize": "Decrease font size"
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "دانلود فایل",
@@ -88,7 +93,8 @@
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "انتخاب فایل یا پوشه",
@@ -159,7 +165,17 @@
     "uploadMessage": "یک گزینه برای آپلود انتخاب کنید.",
     "optionalPassword": "رمز عبور اختیاری",
     "resolution": "وضوح تصویر",
-    "discardEditorChanges": "آیا مطمئن هستید که می‌خواهید تغییراتی را که ایجاد کرده‌اید، لغو کنید؟"
+    "discardEditorChanges": "آیا مطمئن هستید که می‌خواهید تغییراتی را که ایجاد کرده‌اید، لغو کنید؟",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error"
   },
   "search": {
     "images": "تصاویر",
@@ -232,6 +248,7 @@
     "permissions": "دسترسی ها",
     "permissionsHelp": "شما می‌توانید کاربر را به عنوان مدیر تنظیم کنید یا دسترسی‌ها را به صورت جداگانه انتخاب کنید. اگر \"مدیر\" را انتخاب کنید، تمام گزینه‌های دیگر به طور خودکار اعمال می‌شوند. مدیریت کاربران همچنان از اختیارات مدیر است.",
     "profileSettings": "تنظیمات ناحیه کاربری",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "از دسترسی به هرگونه فایل نقطه‌ای (مانند .git، .gitignore) در هر پوشه جلوگیری می‌کند.",
     "ruleExample2": "دسترسی به فایلی به نام Caddyfile را در ریشه دامنه مسدود می‌کند.",
     "rules": "قواعد",
@@ -258,7 +275,8 @@
     "userManagement": "مدیریت کاربران",
     "userUpdated": "کاربر به روز شد!",
     "username": "نام کاربری",
-    "users": "کاربران"
+    "users": "کاربران",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "راهنما",

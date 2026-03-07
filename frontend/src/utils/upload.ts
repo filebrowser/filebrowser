@@ -3,16 +3,24 @@ import { useUploadStore } from "@/stores/upload";
 import url from "@/utils/url";
 
 export function checkConflict(
-  files: UploadList,
+  files: UploadList | Array<any>,
   dest: ResourceItem[]
-): boolean {
+): ConflictingResource[] {
   if (typeof dest === "undefined" || dest === null) {
     dest = [];
   }
+  const conflictingFiles: ConflictingResource[] = [];
 
   const folder_upload = files[0].fullPath !== undefined;
 
-  const names = new Set<string>();
+  function getFile(name: string): ResourceItem | null {
+    for (const item of dest) {
+      if (item.name == name) return item;
+    }
+
+    return null;
+  }
+
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     let name = file.name;
@@ -24,10 +32,25 @@ export function checkConflict(
       }
     }
 
-    names.add(name);
+    const item = getFile(name);
+    if (item != null) {
+      conflictingFiles.push({
+        index: i,
+        name: item.path,
+        origin: {
+          lastModified: file.modified || file.file?.lastModified,
+          size: file.size,
+        },
+        dest: {
+          lastModified: item.modified,
+          size: item.size,
+        },
+        checked: ["origin"],
+      });
+    }
   }
 
-  return dest.some((d) => names.has(d.name));
+  return conflictingFiles;
 }
 
 export function scanFiles(dt: DataTransfer): Promise<UploadList | FileList> {
@@ -146,6 +169,12 @@ export function handleFiles(
 
     const type = file.isDir ? "dir" : detectType((file.file as File).type);
 
-    uploadStore.upload(path, file.name, file.file ?? null, overwrite, type);
+    uploadStore.upload(
+      path,
+      file.name,
+      file.file ?? null,
+      file.overwrite || overwrite,
+      type
+    );
   }
 }

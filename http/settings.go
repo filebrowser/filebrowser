@@ -15,6 +15,7 @@ type settingsData struct {
 	MinimumPasswordLength uint                  `json:"minimumPasswordLength"`
 	UserHomeBasePath      string                `json:"userHomeBasePath"`
 	Defaults              settings.UserDefaults `json:"defaults"`
+	AuthMethod            settings.AuthMethod   `json:"authMethod"`
 	Rules                 []rules.Rule          `json:"rules"`
 	Branding              settings.Branding     `json:"branding"`
 	Tus                   settings.Tus          `json:"tus"`
@@ -30,6 +31,7 @@ var settingsGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, 
 		MinimumPasswordLength: d.settings.MinimumPasswordLength,
 		UserHomeBasePath:      d.settings.UserHomeBasePath,
 		Defaults:              d.settings.Defaults,
+		AuthMethod:            d.settings.AuthMethod,
 		Rules:                 d.settings.Rules,
 		Branding:              d.settings.Branding,
 		Tus:                   d.settings.Tus,

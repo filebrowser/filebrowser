@@ -1,10 +1,13 @@
 <template>
-  <ModalsContainer />
+  <base-modal v-if="modal != null" :prompt="currentPromptName" @closed="close">
+    <keep-alive>
+      <component :is="modal" />
+    </keep-alive>
+  </base-modal>
 </template>
 
 <script setup lang="ts">
-import { watch } from "vue";
-import { ModalsContainer, useModal } from "vue-final-modal";
+import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useLayoutStore } from "@/stores/layout";
 
@@ -20,11 +23,12 @@ import Copy from "./Copy.vue";
 import NewFile from "./NewFile.vue";
 import NewDir from "./NewDir.vue";
 import Replace from "./Replace.vue";
-import ReplaceRename from "./ReplaceRename.vue";
 import Share from "./Share.vue";
 import ShareDelete from "./ShareDelete.vue";
 import Upload from "./Upload.vue";
 import DiscardEditorChanges from "./DiscardEditorChanges.vue";
+import ResolveConflict from "./ResolveConflict.vue";
+import CurrentPassword from "./CurrentPassword.vue";
 
 const layoutStore = useLayoutStore();
 
@@ -41,35 +45,24 @@ const components = new Map<string, any>([
   ["newDir", NewDir],
   ["download", Download],
   ["replace", Replace],
-  ["replace-rename", ReplaceRename],
   ["share", Share],
   ["upload", Upload],
   ["share-delete", ShareDelete],
   ["deleteUser", DeleteUser],
   ["discardEditorChanges", DiscardEditorChanges],
+  ["resolve-conflict", ResolveConflict],
+  ["current-password", CurrentPassword],
 ]);
 
-watch(currentPromptName, (newValue) => {
-  const modal = components.get(newValue!);
-  if (!modal) return;
+const modal = computed(() => {
+  const modal = components.get(currentPromptName.value!);
+  if (!modal) null;
 
-  const { open, close } = useModal({
-    component: BaseModal,
-    slots: {
-      default: modal,
-    },
-  });
-
-  layoutStore.setCloseOnPrompt(close, newValue!);
-  open();
+  return modal;
 });
 
-window.addEventListener("keydown", (event) => {
+const close = () => {
   if (!layoutStore.currentPrompt) return;
-
-  if (event.key === "Escape") {
-    event.stopImmediatePropagation();
-    layoutStore.closeHovers();
-  }
-});
+  layoutStore.closeHovers();
+};
 </script>

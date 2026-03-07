@@ -42,12 +42,17 @@
     "update": "עדכון",
     "upload": "העלאה",
     "openFile": "פתח קובץ",
+    "openDirect": "View raw",
     "discardChanges": "זריקת השינויים",
     "stopSearch": "Stop searching",
     "saveChanges": "Save changes",
     "editAsText": "Edit as Text",
     "increaseFontSize": "Increase font size",
-    "decreaseFontSize": "Decrease font size"
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "הורד קובץ",
@@ -88,7 +93,8 @@
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "בחר קובץ או תיקייה",
@@ -159,7 +165,17 @@
     "uploadMessage": "בחר אפשרות העלאה.",
     "optionalPassword": "סיסמא אופציונלית",
     "resolution": "Resolution",
-    "discardEditorChanges": "האם אתה בטוח שברצונך לבטל את השינויים שביצעת?"
+    "discardEditorChanges": "האם אתה בטוח שברצונך לבטל את השינויים שביצעת?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error"
   },
   "search": {
     "images": "תמונות",
@@ -232,6 +248,7 @@
     "permissions": "הרשאות",
     "permissionsHelp": "אתה יכול להגדיר את המשתמש להיות מנהל מערכת או לבחור את ההרשאות בנפרד. אם תבחר \"מנהל מערכת\", כל ההרשאות יינתנו אוטומטית. ניהול המשתמשים נשאר הרשאה של מנהל מערכת.\n",
     "profileSettings": "הגדרות פרופיל",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "מנע גישה לקבצים נסתרים (כל קובץ/תיקייה שמתחיל בנקודה, לדוגמא .git)",
     "ruleExample2": "חסימת גישה לקובץ בשם Caddyfile בהיקף הראשי.",
     "rules": "חוקים",
@@ -258,7 +275,8 @@
     "userManagement": "ניהול משתמש",
     "userUpdated": "המשתמש עודכן!",
     "username": "שם משתמש",
-    "users": "משתמשים"
+    "users": "משתמשים",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "עזרה",

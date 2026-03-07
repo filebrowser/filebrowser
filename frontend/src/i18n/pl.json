@@ -42,12 +42,17 @@
     "update": "Aktualizuj",
     "upload": "Wyślij",
     "openFile": "Otwórz plik",
+    "openDirect": "Otwórz bezpośrednio",
     "discardChanges": "Odrzuć",
     "stopSearch": "Zatrzymaj wyszukiwanie",
     "saveChanges": "Zapisz zmiany",
     "editAsText": "Edytuj jako tekst",
     "increaseFontSize": "Zwiększ rozmiar czcionki",
-    "decreaseFontSize": "Zmniejsz rozmiar czcionki"
+    "decreaseFontSize": "Zmniejsz rozmiar czcionki",
+    "overrideAll": "Zastąp wszystkie pliki w folderze docelowym",
+    "skipAll": "Pomiń wszystkie pliki powodujące konflikty",
+    "renameAll": "Zmień nazwy wszystkich plików (utwórz kopię)",
+    "singleDecision": "Podejmij decyzję dla każdego pliku powodującego konflikt"
   },
   "download": {
     "downloadFile": "Pobierz plik",
@@ -88,7 +93,8 @@
       "comma": "Przecinek (,)",
       "semicolon": "Średnik (;)",
       "both": "Zarówno (,), jak i (;)"
-    }
+    },
+    "fileEncoding": "Kodowanie pliku"
   },
   "help": {
     "click": "zaznacz plik lub folder",
@@ -159,7 +165,17 @@
     "uploadMessage": "Wybierz opcję przesyłania.",
     "optionalPassword": "Opcjonalne hasło",
     "resolution": "Rozdzielczość",
-    "discardEditorChanges": "Czy na pewno chcesz odrzucić wprowadzone zmiany?"
+    "discardEditorChanges": "Czy na pewno chcesz odrzucić wprowadzone zmiany?",
+    "replaceOrSkip": "Zastąp lub pomiń pliki",
+    "resolveConflict": "Które pliki chcesz zachować?",
+    "singleConflictResolve": "Jeśli wybierzesz obie wersje, do nazwy kopiowanego pliku zostanie dodany numer.",
+    "fastConflictResolve": "W folderze docelowym liczba plików o tej samej nazwie to {count}.",
+    "uploadingFiles": "Wysyłanie plików",
+    "filesInOrigin": "Pliki w miejscu pochodzenia",
+    "filesInDest": "Pliki w miejscu docelowym",
+    "override": "Zastąp",
+    "skip": "Pomiń",
+    "forbiddenError": "Błąd zabronionego dostępu"
   },
   "search": {
     "images": "Obrazy",
@@ -231,7 +247,8 @@
     },
     "permissions": "Uprawnienia",
     "permissionsHelp": "Możesz ustawić użytkownika jako administratora lub wybrać uprawnienia indywidualnie. Jeśli wybierzesz „Administrator”, wszystkie pozostałe opcje zostaną automatycznie zaznaczone. Zarządzanie użytkownikami pozostaje przywilejem administratora.\n",
-    "profileSettings": "Twój profil",
+    "profileSettings": "Ustawienia profilu",
+    "redirectAfterCopyMove": "Przekieruj do miejsca docelowego po skopiowaniu lub przeniesieniu",
     "ruleExample1": "uniemożliwia dostęp do plików poprzedzonych kropką (takich jak .git, .gitignore) we wszystkich folderach.\n",
     "ruleExample2": "blokuje dostęp do pliku o nazwie Caddyfile w katalogu głównym zakresu.",
     "rules": "Uprawnienia",
@@ -258,7 +275,8 @@
     "userManagement": "Zarządzanie użytkownikami",
     "userUpdated": "Użytkownik zapisany!",
     "username": "Nazwa użytkownika",
-    "users": "Użytkownicy"
+    "users": "Użytkownicy",
+    "currentPassword": "Twoje aktualne hasło"
   },
   "sidebar": {
     "help": "Pomoc",

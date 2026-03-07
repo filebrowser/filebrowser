@@ -79,7 +79,7 @@ export default {
   computed: {
     ...mapState(useFileStore, ["req", "selected"]),
     ...mapState(useAuthStore, ["user"]),
-    ...mapWritableState(useFileStore, ["preselect"]),
+    ...mapWritableState(useFileStore, ["reload", "preselect"]),
     excludedFolders() {
       return this.selected
         .filter((idx) => this.req.items[idx].isDir)
@@ -97,6 +97,10 @@ export default {
           from: this.req.items[item].url,
           to: this.dest + encodeURIComponent(this.req.items[item].name),
           name: this.req.items[item].name,
+          size: this.req.items[item].size,
+          modified: this.req.items[item].modified,
+          overwrite: false,
+          rename: false,
         });
       }
 
@@ -108,7 +112,9 @@ export default {
           .then(() => {
             buttons.success("move");
             this.preselect = removePrefix(items[0].to);
-            this.$router.push({ path: this.dest });
+            if (this.user.redirectAfterCopyMove)
+              this.$router.push({ path: this.dest });
+            else this.reload = true;
           })
           .catch((e) => {
             buttons.done("move");
@@ -119,26 +125,39 @@ export default {
       const dstItems = (await api.fetch(this.dest)).items;
       const conflict = upload.checkConflict(items, dstItems);
 
-      let overwrite = false;
-      let rename = false;
-
-      if (conflict) {
+      if (conflict.length > 0) {
         this.showHover({
-          prompt: "replace-rename",
-          confirm: (event, option) => {
-            overwrite = option == "overwrite";
-            rename = option == "rename";
-
+          prompt: "resolve-conflict",
+          props: {
+            conflict: conflict,
+            files: items,
+          },
+          confirm: (event, result) => {
             event.preventDefault();
             this.closeHovers();
-            action(overwrite, rename);
+            for (let i = result.length - 1; i >= 0; i--) {
+              const item = result[i];
+              if (item.checked.length == 2) {
+                items[item.index].rename = true;
+              } else if (
+                item.checked.length == 1 &&
+                item.checked[0] == "origin"
+              ) {
+                items[item.index].overwrite = true;
+              } else {
+                items.splice(item.index, 1);
+              }
+            }
+            if (items.length > 0) {
+              action();
+            }
           },
         });
 
         return;
       }
 
-      action(overwrite, rename);
+      action(false, false);
     },
   },
 };

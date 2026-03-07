@@ -42,12 +42,17 @@
     "update": "Ažuriraj",
     "upload": "Prenesi",
     "openFile": "Otvori datoteku",
+    "openDirect": "View raw",
     "discardChanges": "Odbaci",
     "stopSearch": "Stop searching",
     "saveChanges": "Spremi promjene",
     "editAsText": "Uredi kao tekst",
     "increaseFontSize": "Povećaj veličinu fonta",
-    "decreaseFontSize": "Smanji veličinu fonta"
+    "decreaseFontSize": "Smanji veličinu fonta",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "Preuzmi Datoteku",
@@ -88,7 +93,8 @@
       "comma": "Zarez (,)",
       "semicolon": "Točka zarez (;)",
       "both": "I (,) i (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "odaberi datoteku ili mapu",
@@ -159,7 +165,17 @@
     "uploadMessage": "Odaberite opciju za prijenos.",
     "optionalPassword": "Opcionalna lozinka",
     "resolution": "Rezolucija",
-    "discardEditorChanges": "Jeste li sigurni da želite odbaciti promjene koje ste napravili?"
+    "discardEditorChanges": "Jeste li sigurni da želite odbaciti promjene koje ste napravili?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error"
   },
   "search": {
     "images": "Slike",
@@ -232,6 +248,7 @@
     "permissions": "Dopuštenja",
     "permissionsHelp": "Korisnika možete postaviti administratorom ili odabrati dopuštenja individualno. Odabirom na \"Administrator\", sve druge opcije bit će automatski odabrane. Upravljanje korisnicima ostaje privilegija administratora.\n",
     "profileSettings": "Postavke profila",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "onemogućava pristup svakoj datoteci koja započinje točkom (poput .git, .gitignore) u svakoj mapi.\n",
     "ruleExample2": "blokira pristup datoteci naziva Caddyfile na korijenu opsega.",
     "rules": "Pravila",
@@ -258,7 +275,8 @@
     "userManagement": "Upravljanje Korisnicima",
     "userUpdated": "Korisnik ažuriran!",
     "username": "Korisničko ime",
-    "users": "Korisnici"
+    "users": "Korisnici",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Pomoć",

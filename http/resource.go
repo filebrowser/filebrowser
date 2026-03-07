@@ -36,10 +36,31 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		return errToStatus(err), err
 	}
 
+	encoding := r.Header.Get("X-Encoding")
 	if file.IsDir {
 		file.Sorting = d.user.Sorting
 		file.ApplySort()
 		return renderJSON(w, r, file)
+	} else if encoding == "true" {
+		if file.Type != "text" {
+			return renderJSON(w, r, file)
+		}
+
+		f, err := d.user.Fs.Open(r.URL.Path)
+		if err != nil {
+			return errToStatus(err), err
+		}
+		defer f.Close()
+
+		data, err := io.ReadAll(f)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		w.Header().Set("Content-Type", "application/octet-stream")
+		w.WriteHeader(http.StatusOK)
+		_, err = w.Write(data)
+		return 0, err
 	}
 
 	if checksum := r.URL.Query().Get("checksum"); checksum != "" {
@@ -206,20 +227,25 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 			return http.StatusBadRequest, err
 		}
 
-		override := r.URL.Query().Get("override") == "true"
-		rename := r.URL.Query().Get("rename") == "true"
-		if !override && !rename {
-			if _, err = d.user.Fs.Stat(dst); err == nil {
-				return http.StatusConflict, nil
-			}
-		}
-		if rename {
-			dst = addVersionSuffix(dst, d.user.Fs)
-		}
+		srcInfo, _ := d.user.Fs.Stat(src)
+		dstInfo, _ := d.user.Fs.Stat(dst)
+		same := os.SameFile(srcInfo, dstInfo)
 
-		// Permission for overwriting the file
-		if override && !d.user.Perm.Modify {
-			return http.StatusForbidden, nil
+		if action != "rename" || !same {
+			override := r.URL.Query().Get("override") == "true"
+			rename := r.URL.Query().Get("rename") == "true"
+			if !override && !rename {
+				if _, err = d.user.Fs.Stat(dst); err == nil {
+					return http.StatusConflict, nil
+				}
+			}
+			if rename {
+				dst = addVersionSuffix(dst, d.user.Fs)
+			}
+
+			if override && !d.user.Perm.Modify {
+				return http.StatusForbidden, nil
+			}
 		}
 
 		err = d.RunHook(func() error {
@@ -277,6 +303,12 @@ func writeFile(afs afero.Fs, dst string, in io.Reader, fileMode, dirMode fs.File
 
 	_, err = io.Copy(file, in)
 	if err != nil {
+		return nil, err
+	}
+
+	// Sync the file to ensure all data is written to storage.
+	// to prevent file corruption.
+	if err := file.Sync(); err != nil {
 		return nil, err
 	}
 

@@ -1,10 +1,64 @@
 <template>
   <div class="csv-viewer">
+    <div class="csv-header">
+      <div class="header-select">
+        <label for="columnSeparator">{{ $t("files.columnSeparator") }}</label>
+        <select
+          id="columnSeparator"
+          class="input input--block"
+          v-model="columnSeparator"
+        >
+          <option :value="[',']">
+            {{ $t("files.csvSeparators.comma") }}
+          </option>
+          <option :value="[';']">
+            {{ $t("files.csvSeparators.semicolon") }}
+          </option>
+          <option :value="[',', ';']">
+            {{ $t("files.csvSeparators.both") }}
+          </option>
+        </select>
+      </div>
+      <div class="header-select" v-if="isEncodedContent">
+        <label for="fileEncoding">{{ $t("files.fileEncoding") }}</label>
+        <DropdownModal
+          v-model="isEncondingDropdownOpen"
+          :close-on-click="false"
+        >
+          <div>
+            <span class="selected-encoding">{{ selectedEncoding }}</span>
+          </div>
+          <template v-slot:list>
+            <input
+              v-model="encodingSearch"
+              :placeholder="$t('search.search')"
+              class="input input--block"
+              name="encoding"
+            />
+            <div class="encoding-list">
+              <div v-if="encodingList.length == 0" class="message">
+                <i class="material-icons">sentiment_dissatisfied</i>
+                <span>{{ $t("files.lonely") }}</span>
+              </div>
+              <button
+                v-for="encoding in encodingList"
+                :value="encoding"
+                :key="encoding"
+                class="encoding-button"
+                @click="selectedEncoding = encoding"
+              >
+                {{ encoding }}
+              </button>
+            </div>
+          </template>
+        </DropdownModal>
+      </div>
+    </div>
     <div v-if="displayError" class="csv-error">
       <i class="material-icons">error</i>
       <p>{{ displayError }}</p>
     </div>
-    <div v-else-if="data.headers.length === 0" class="csv-empty">
+    <div v-else-if="parsed.headers.length === 0" class="csv-empty">
       <i class="material-icons">description</i>
       <p>{{ $t("files.lonely") }}</p>
     </div>
@@ -12,13 +66,13 @@
       <table class="csv-table">
         <thead>
           <tr>
-            <th v-for="(header, index) in data.headers" :key="index">
+            <th v-for="(header, index) in parsed.headers" :key="index">
               {{ header || `Column ${index + 1}` }}
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, rowIndex) in data.rows" :key="rowIndex">
+          <tr v-for="(row, rowIndex) in parsed.rows" :key="rowIndex">
             <td v-for="(cell, cellIndex) in row" :key="cellIndex">
               {{ cell }}
             </td>
@@ -26,29 +80,11 @@
         </tbody>
       </table>
       <div class="csv-footer">
-        <div class="csv-info" v-if="data.rows.length > 100">
+        <div class="csv-info" v-if="parsed.rows.length > 100">
           <i class="material-icons">info</i>
           <span>
-            {{ $t("files.showingRows", { count: data.rows.length }) }}</span
-          >
-        </div>
-        <div class="column-separator">
-          <label for="columnSeparator">{{ $t("files.columnSeparator") }}</label>
-          <select
-            id="columnSeparator"
-            class="input input--block"
-            v-model="columnSeparator"
-          >
-            <option :value="[',']">
-              {{ $t("files.csvSeparators.comma") }}
-            </option>
-            <option :value="[';']">
-              {{ $t("files.csvSeparators.semicolon") }}
-            </option>
-            <option :value="[',', ';']">
-              {{ $t("files.csvSeparators.both") }}
-            </option>
-          </select>
+            {{ $t("files.showingRows", { count: parsed.rows.length }) }}
+          </span>
         </div>
       </div>
     </div>
@@ -56,11 +92,16 @@
 </template>
 
 <script setup lang="ts">
-import { parseCSV, type CsvData } from "@/utils/csv";
-import { computed, ref } from "vue";
+import { computed, ref, watch, watchEffect } from "vue";
+import { parse } from "csv-parse/browser/esm";
+import { useI18n } from "vue-i18n";
+import { availableEncodings, decode } from "@/utils/encodings";
+import DropdownModal from "../DropdownModal.vue";
+
+const { t } = useI18n({});
 
 interface Props {
-  content: string;
+  content: ArrayBuffer | string;
   error?: string;
 }
 
@@ -68,31 +109,58 @@ const props = withDefaults(defineProps<Props>(), {
   error: "",
 });
 
-const columnSeparator = ref([","]);
+const isEncondingDropdownOpen = ref(false);
 
-const data = computed<CsvData>(() => {
-  try {
-    return parseCSV(props.content, columnSeparator.value);
-  } catch (e) {
-    console.error("Failed to parse CSV:", e);
-    return { headers: [], rows: [] };
+const encodingSearch = ref<string>("");
+
+const encodingList = computed(() => {
+  return availableEncodings.filter((e) =>
+    e.toLowerCase().includes(encodingSearch.value.toLowerCase())
+  );
+});
+
+const columnSeparator = ref([",", ";"]);
+
+const selectedEncoding = ref("utf-8");
+
+const parsed = ref<CsvData>({ headers: [], rows: [] });
+
+const displayError = ref<string | null>(null);
+
+const isEncodedContent = computed(() => {
+  return props.content instanceof ArrayBuffer;
+});
+
+watchEffect(() => {
+  if (props.content !== "" && columnSeparator.value.length > 0) {
+    const content = isEncodedContent.value
+      ? decode(props.content as ArrayBuffer, selectedEncoding.value)
+      : props.content;
+    parse(
+      content as string,
+      { delimiter: columnSeparator.value, skip_empty_lines: true },
+      (error, output) => {
+        if (error) {
+          console.error("Failed to parse CSV:", error);
+          parsed.value = { headers: [], rows: [] };
+          displayError.value = t("files.csvLoadFailed", {
+            error: error.toString(),
+          });
+        } else {
+          parsed.value = {
+            headers: output[0],
+            rows: output.slice(1),
+          };
+          displayError.value = null;
+        }
+      }
+    );
   }
 });
 
-const displayError = computed(() => {
-  // External error takes priority (e.g., file too large)
-  if (props.error) {
-    return props.error;
-  }
-  // Check for parse errors
-  if (
-    props.content &&
-    props.content.trim().length > 0 &&
-    data.value.headers.length === 0
-  ) {
-    return "Failed to parse CSV file";
-  }
-  return null;
+watch(selectedEncoding, () => {
+  isEncondingDropdownOpen.value = false;
+  encodingSearch.value = "";
 });
 </script>
 
@@ -213,10 +281,6 @@ const displayError = computed(() => {
   padding: 0.5rem;
 }
 
-.csv-footer > :only-child {
-  margin-left: auto;
-}
-
 .csv-info {
   display: flex;
   align-items: center;
@@ -230,23 +294,73 @@ const displayError = computed(() => {
   font-size: 0.875rem;
 }
 
-.column-separator {
+.csv-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem;
+}
+
+.header-select {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-direction: column;
+  @media (width >= 640px) {
+    flex-direction: row;
+  }
 }
 
-.column-separator > label {
+.header-select > label {
   font-size: small;
-  text-align: end;
+  @media (width >= 640px) {
+    max-width: 70px;
+  }
 }
 
-.column-separator > select {
+.header-select > select,
+.header-select > div {
   margin-bottom: 0;
 }
 
 .csv-info i {
   font-size: 1.2rem;
   color: var(--blue);
+}
+
+.encoding-list {
+  max-height: 300px;
+  min-width: 120px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+.encoding-button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  padding: 0.25rem 0.5rem;
+  color: var(--textPrimary);
+  text-align: left;
+  cursor: pointer;
+  border-radius: 0.2rem;
+  white-space: nowrap;
+  display: block;
+  width: 100%;
+}
+
+.encoding-button:hover {
+  background-color: var(--surfaceSecondary);
+}
+
+.selected-encoding {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.message {
+  font-size: 1.25em;
 }
 </style>

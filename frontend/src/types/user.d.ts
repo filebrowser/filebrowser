@@ -10,6 +10,7 @@ interface IUser {
   lockPassword: boolean;
   hideDotfiles: boolean;
   singleClick: boolean;
+  redirectAfterCopyMove: boolean;
   dateFormat: boolean;
   viewMode: ViewModeType;
   sorting?: Sorting;
@@ -30,6 +31,7 @@ interface IUserForm {
   lockPassword?: boolean;
   hideDotfiles?: boolean;
   singleClick?: boolean;
+  redirectAfterCopyMove?: boolean;
   dateFormat?: boolean;
 }
 

@@ -17,6 +17,7 @@ import("dayjs/locale/it");
 import("dayjs/locale/ja");
 import("dayjs/locale/ko");
 import("dayjs/locale/nb");
+import("dayjs/locale/nl");
 import("dayjs/locale/nl-be");
 import("dayjs/locale/pl");
 import("dayjs/locale/pt-br");
@@ -110,13 +111,15 @@ export function detectLocale() {
     case /^uk\b/.test(locale):
       locale = "uk";
       break;
-
     case /^vi\b/.test(locale):
       locale = "vi";
       break;
     case /^sv-se\b/.test(locale):
     case /^sv\b/.test(locale):
       locale = "sv";
+      break;
+    case /^nl\b/.test(locale):
+      locale = "nl";
       break;
     case /^nl-be\b/.test(locale):
       locale = "nl-be";

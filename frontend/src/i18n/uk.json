@@ -42,12 +42,17 @@
     "update": "Оновити",
     "upload": "Вивантажити",
     "openFile": "Відкрити файл",
+    "openDirect": "View raw",
     "discardChanges": "Скасувати",
     "stopSearch": "Stop searching",
     "saveChanges": "Save changes",
     "editAsText": "Edit as Text",
     "increaseFontSize": "Increase font size",
-    "decreaseFontSize": "Decrease font size"
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "Завантажити файл",
@@ -88,7 +93,8 @@
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "вибрати файл чи каталог",
@@ -159,7 +165,17 @@
     "uploadMessage": "Виберіть варіант для вивантаження.",
     "optionalPassword": "Необов'язковий пароль",
     "resolution": "Розширення",
-    "discardEditorChanges": "Чи дійсно ви хочете скасувати поточні зміни?"
+    "discardEditorChanges": "Чи дійсно ви хочете скасувати поточні зміни?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error"
   },
   "search": {
     "images": "Зображення",
@@ -232,6 +248,7 @@
     "permissions": "Дозволи",
     "permissionsHelp": "Можна налаштувати користувача як адміністратора чи вибрати індивідуальні дозволи. При виборі \"Адміністратор\" всі інші параметри будуть автоматично вибрані. Керування користувачами - привілей адміністратора.\n",
     "profileSettings": "Налаштування профілю",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "запобігти доступу до будь-якого прихованого файлу (наприклад: .git, .gitignore) у кожній папці.\n",
     "ruleExample2": "блокує доступ до файлу з ім'ям Caddyfile у кореневій області.",
     "rules": "Права",
@@ -258,7 +275,8 @@
     "userManagement": "Керування користувачами",
     "userUpdated": "Користувача змінено!",
     "username": "Ім'я користувача",
-    "users": "Користувачі"
+    "users": "Користувачі",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Допомога",

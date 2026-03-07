@@ -99,7 +99,7 @@ func getProxyAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (a
 		return nil, err
 	}
 
-	if header == ""  && defaultAuther != nil {
+	if header == "" && defaultAuther != nil {
 		header = defaultAuther["header"].(string)
 	}
 
@@ -236,10 +236,12 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 
 	fmt.Fprintln(w, "\nDefaults:")
 	fmt.Fprintf(w, "\tScope:\t%s\n", set.Defaults.Scope)
+	fmt.Fprintf(w, "\tDateFormat:\t%t\n", set.Defaults.DateFormat)
 	fmt.Fprintf(w, "\tHideDotfiles:\t%t\n", set.Defaults.HideDotfiles)
 	fmt.Fprintf(w, "\tLocale:\t%s\n", set.Defaults.Locale)
 	fmt.Fprintf(w, "\tView mode:\t%s\n", set.Defaults.ViewMode)
 	fmt.Fprintf(w, "\tSingle Click:\t%t\n", set.Defaults.SingleClick)
+	fmt.Fprintf(w, "\tRedirect after Copy/Move:\t%t\n", set.Defaults.RedirectAfterCopyMove)
 	fmt.Fprintf(w, "\tFile Creation Mode:\t%O\n", set.FileMode)
 	fmt.Fprintf(w, "\tDirectory Creation Mode:\t%O\n", set.DirMode)
 	fmt.Fprintf(w, "\tCommands:\t%s\n", strings.Join(set.Defaults.Commands, " "))

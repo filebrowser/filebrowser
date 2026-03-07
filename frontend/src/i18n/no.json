@@ -42,12 +42,17 @@
     "update": "Opptater",
     "upload": "Last opp",
     "openFile": "Open file",
+    "openDirect": "View raw",
     "discardChanges": "Slett",
     "stopSearch": "Stop searching",
     "saveChanges": "Lagre Endringane ",
     "editAsText": "Edit as Text",
     "increaseFontSize": "Increase font size",
-    "decreaseFontSize": "Decrease font size"
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "Nedlast filen",
@@ -88,7 +93,8 @@
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "velg fil eller katalog",
@@ -159,7 +165,17 @@
     "uploadMessage": "Velg et alternativ for opplasting.",
     "optionalPassword": "Valgfritt passord",
     "resolution": "Oppløysning",
-    "discardEditorChanges": "Er du sikker på at du vil forkaste endringene du har gjort?"
+    "discardEditorChanges": "Er du sikker på at du vil forkaste endringene du har gjort?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error"
   },
   "search": {
     "images": "Bilde",
@@ -232,6 +248,7 @@
     "permissions": "Tilaterser",
     "permissionsHelp": "Du kan angi brukeren som administrator eller velge tillatelsene individuelt. Hvis du velger «Administrator», vil alle de andre alternativene bli automatisk avkrysset. Administrasjon av brukere er fortsatt et privilegium for en administrator.\n",
     "profileSettings": "Profil Innstilinger",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "forhindrer tilgang til noen dotfiler (som .git, .gitignore) i alle mapper.\n",
     "ruleExample2": "blokkerer tilgangen til filen med navnet Caddyfile på roten av omfanget.",
     "rules": "Regler",
@@ -258,7 +275,8 @@
     "userManagement": "Brukeradministrasjon",
     "userUpdated": "Bruker opprettet!",
     "username": "Brukernavn",
-    "users": "Bruker"
+    "users": "Bruker",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Hjelp",

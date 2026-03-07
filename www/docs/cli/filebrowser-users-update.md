@@ -30,6 +30,7 @@ filebrowser users update <id|username> [flags]
       --perm.modify             modify perm for users (default true)
       --perm.rename             rename perm for users (default true)
       --perm.share              share perm for users (default true)
+      --redirectAfterCopyMove   redirect to destination after copy/move
       --scope string            scope for users (default ".")
       --singleClick             use single clicks only
       --sorting.asc             sorting by ascending order

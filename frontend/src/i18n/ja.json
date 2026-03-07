@@ -42,13 +42,17 @@
     "update": "更新",
     "upload": "アップロード",
     "openFile": "ファイルを開く",
-    "stopSearch": "検索を停止",
+    "openDirect": "View raw",
     "discardChanges": "Discard",
     "stopSearch": "Stop searching",
     "saveChanges": "Save changes",
     "editAsText": "Edit as Text",
     "increaseFontSize": "Increase font size",
-    "decreaseFontSize": "Decrease font size"
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "ファイルのダウンロード",
@@ -89,7 +93,8 @@
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "ファイルやフォルダーを選択",
@@ -160,7 +165,17 @@
     "uploadMessage": "アップロードするオプションを選択してください。",
     "optionalPassword": "パスワード（オプション）",
     "resolution": "Resolution",
-    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error"
   },
   "search": {
     "images": "画像",
@@ -233,6 +248,7 @@
     "permissions": "権限",
     "permissionsHelp": "ユーザーを管理者に設定するか、その他の権限を個別に選択することができます。「管理者」を選択すると、他のオプションはすべて自動的にチェックされます。ユーザーを管理するには管理者権限が必要です。\n",
     "profileSettings": "プロフィール設定",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": ".git や .gitignore のようなドットから始まるファイルへのアクセスを禁止します。\n",
     "ruleExample2": "スコープのルートにある Caddyfile という名前のファイルへのアクセスを禁止します。",
     "rules": "ルール",
@@ -259,7 +275,8 @@
     "userManagement": "ユーザー管理",
     "userUpdated": "ユーザーを更新しました！",
     "username": "ユーザー名",
-    "users": "ユーザー"
+    "users": "ユーザー",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "ヘルプ",

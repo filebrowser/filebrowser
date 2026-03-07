@@ -42,12 +42,17 @@
     "update": "Aktualizovat",
     "upload": "Nahrát",
     "openFile": "Otevřít soubor",
+    "openDirect": "View raw",
     "discardChanges": "Zrušit změny",
     "stopSearch": "Stop searching",
     "saveChanges": "Save changes",
     "editAsText": "Edit as Text",
     "increaseFontSize": "Increase font size",
-    "decreaseFontSize": "Decrease font size"
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "Stáhnout soubor",
@@ -88,7 +93,8 @@
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "vyberte soubor nebo adresář",
@@ -159,7 +165,17 @@
     "uploadMessage": "Vyberte možnost pro nahrání.",
     "optionalPassword": "Volitelné heslo",
     "resolution": "Rozlišení",
-    "discardEditorChanges": "Opravdu chcete zrušit provedené změny?"
+    "discardEditorChanges": "Opravdu chcete zrušit provedené změny?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error"
   },
   "search": {
     "images": "Obrázky",
@@ -232,6 +248,7 @@
     "permissions": "Oprávnění",
     "permissionsHelp": "Můžete nastavit uživatele jako administrátora nebo zvolit jednotlivá oprávnění. Pokud vyberete \"Administrátor\", všechny ostatní možnosti budou automaticky zaškrtnuty. Správa uživatelů zůstává výsadou administrátora.\n",
     "profileSettings": "Nastavení profilu",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "zabraňuje přístupu k jakémukoli skrytému souboru (např. .git, .gitignore) v každé složce.\n",
     "ruleExample2": "blokuje přístup k souboru s názvem Caddyfile v kořenovém adresáři.",
     "rules": "Pravidla",
@@ -258,7 +275,8 @@
     "userManagement": "Správa uživatelů",
     "userUpdated": "Uživatel aktualizován!",
     "username": "Uživatelské jméno",
-    "users": "Uživatelé"
+    "users": "Uživatelé",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Nápověda",

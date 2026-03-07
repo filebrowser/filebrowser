@@ -81,7 +81,13 @@
       </template>
     </header-bar>
 
-    <div v-if="isMobile" id="file-selection">
+    <div
+      v-if="isMobile"
+      id="file-selection"
+      :class="{
+        'file-selection-margin-bottom': fileStore.multiple,
+      }"
+    >
       <span v-if="fileStore.selectedCount > 0">
         {{ t("prompts.filesSelected", fileStore.selectedCount) }}
       </span>
@@ -158,7 +164,9 @@
         id="listing"
         ref="listing"
         class="file-icons"
+        data-clear-on-click="true"
         :class="authStore.user?.viewMode ?? ''"
+        @click="handleEmptyAreaClick"
       >
         <div>
           <div class="item header">
@@ -204,11 +212,12 @@
           </div>
         </div>
 
-        <h2 v-if="fileStore.req?.numDirs ?? false">
+        <h2 data-clear-on-click="true" v-if="fileStore.req?.numDirs ?? false">
           {{ t("files.folders") }}
         </h2>
         <div
           v-if="fileStore.req?.numDirs ?? false"
+          data-clear-on-click="true"
           @contextmenu="showContextMenu"
         >
           <item
@@ -226,11 +235,12 @@
           </item>
         </div>
 
-        <h2 v-if="fileStore.req?.numFiles ?? false">
+        <h2 data-clear-on-click="true" v-if="fileStore.req?.numFiles ?? false">
           {{ t("files.files") }}
         </h2>
         <div
           v-if="fileStore.req?.numFiles ?? false"
+          data-clear-on-click="true"
           @contextmenu="showContextMenu"
         >
           <item
@@ -618,6 +628,8 @@ const copyCut = (event: Event | KeyboardEvent): void => {
     items.push({
       from: fileStore.req.items[i].url,
       name: fileStore.req.items[i].name,
+      size: fileStore.req.items[i].size,
+      modified: fileStore.req.items[i].modified,
     });
   }
 
@@ -641,7 +653,15 @@ const paste = (event: Event) => {
   for (const item of clipboardStore.items) {
     const from = item.from.endsWith("/") ? item.from.slice(0, -1) : item.from;
     const to = route.path + encodeURIComponent(item.name);
-    items.push({ from, to, name: item.name });
+    items.push({
+      from,
+      to,
+      name: item.name,
+      size: item.size,
+      modified: item.modified,
+      overwrite: false,
+      rename: clipboardStore.path == route.path,
+    });
   }
 
   if (items.length === 0) {
@@ -650,7 +670,7 @@ const paste = (event: Event) => {
 
   const preselect = removePrefix(route.path) + items[0].name;
 
-  let action = (overwrite: boolean, rename: boolean) => {
+  let action = (overwrite?: boolean, rename?: boolean) => {
     api
       .copy(items, overwrite, rename)
       .then(() => {
@@ -673,34 +693,37 @@ const paste = (event: Event) => {
     };
   }
 
-  if (clipboardStore.path == route.path) {
-    action(false, true);
-
-    return;
-  }
-
   const conflict = upload.checkConflict(items, fileStore.req!.items);
 
-  let overwrite = false;
-  let rename = false;
-
-  if (conflict) {
+  if (conflict.length > 0) {
     layoutStore.showHover({
-      prompt: "replace-rename",
-      confirm: (event: Event, option: string) => {
-        overwrite = option == "overwrite";
-        rename = option == "rename";
-
+      prompt: "resolve-conflict",
+      props: {
+        conflict: conflict,
+      },
+      confirm: (event: Event, result: Array<ConflictingResource>) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        action(overwrite, rename);
+        for (let i = result.length - 1; i >= 0; i--) {
+          const item = result[i];
+          if (item.checked.length == 2) {
+            items[item.index].rename = true;
+          } else if (item.checked.length == 1 && item.checked[0] == "origin") {
+            items[item.index].overwrite = true;
+          } else {
+            items.splice(item.index, 1);
+          }
+        }
+        if (items.length > 0) {
+          action();
+        }
       },
     });
 
     return;
   }
 
-  action(overwrite, rename);
+  action(false, false);
 };
 
 const columnsResize = () => {
@@ -796,20 +819,30 @@ const drop = async (event: DragEvent) => {
 
   const preselect = removePrefix(path) + (files[0].fullPath || files[0].name);
 
-  if (conflict) {
+  if (conflict.length > 0) {
     layoutStore.showHover({
-      prompt: "replace",
-      action: (event: Event) => {
-        event.preventDefault();
-        layoutStore.closeHovers();
-        upload.handleFiles(files, path, false);
-        fileStore.preselect = preselect;
+      prompt: "resolve-conflict",
+      props: {
+        conflict: conflict,
+        isUploadAction: true,
       },
-      confirm: (event: Event) => {
+      confirm: (event: Event, result: Array<ConflictingResource>) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        upload.handleFiles(files, path, true);
-        fileStore.preselect = preselect;
+        for (let i = result.length - 1; i >= 0; i--) {
+          const item = result[i];
+          if (item.checked.length == 2) {
+            continue;
+          } else if (item.checked.length == 1 && item.checked[0] == "origin") {
+            files[item.index].overwrite = true;
+          } else {
+            files.splice(item.index, 1);
+          }
+        }
+        if (files.length > 0) {
+          upload.handleFiles(files, path, true);
+          fileStore.preselect = preselect;
+        }
       },
     });
 
@@ -842,18 +875,29 @@ const uploadInput = (event: Event) => {
   const path = route.path.endsWith("/") ? route.path : route.path + "/";
   const conflict = upload.checkConflict(uploadFiles, fileStore.req!.items);
 
-  if (conflict) {
+  if (conflict.length > 0) {
     layoutStore.showHover({
-      prompt: "replace",
-      action: (event: Event) => {
-        event.preventDefault();
-        layoutStore.closeHovers();
-        upload.handleFiles(uploadFiles, path, false);
+      prompt: "resolve-conflict",
+      props: {
+        conflict: conflict,
+        isUploadAction: true,
       },
-      confirm: (event: Event) => {
+      confirm: (event: Event, result: Array<ConflictingResource>) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        upload.handleFiles(uploadFiles, path, true);
+        for (let i = result.length - 1; i >= 0; i--) {
+          const item = result[i];
+          if (item.checked.length == 2) {
+            continue;
+          } else if (item.checked.length == 1 && item.checked[0] == "origin") {
+            uploadFiles[item.index].overwrite = true;
+          } else {
+            uploadFiles.splice(item.index, 1);
+          }
+        }
+        if (uploadFiles.length > 0) {
+          upload.handleFiles(uploadFiles, path, true);
+        }
       },
     });
 
@@ -1051,4 +1095,22 @@ const showContextMenu = (event: MouseEvent) => {
 const hideContextMenu = () => {
   isContextMenuVisible.value = false;
 };
+
+const handleEmptyAreaClick = (e: MouseEvent) => {
+  const target = e.target;
+  if (!(target instanceof HTMLElement)) return;
+
+  if (target.dataset.clearOnClick === "true") {
+    fileStore.selected = [];
+  }
+};
 </script>
+<style scoped>
+#listing {
+  min-height: calc(100vh - 8rem);
+}
+
+.file-selection-margin-bottom {
+  margin-bottom: 3.5rem;
+}
+</style>

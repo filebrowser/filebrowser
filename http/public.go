@@ -56,7 +56,7 @@ var withHashFile = func(fn handleFunc) handleFunc {
 		filePath := ""
 
 		if file.IsDir {
-			basePath = filepath.Dir(basePath)
+			basePath = filepath.Clean(link.Path)
 			filePath = ifPath
 		}
 

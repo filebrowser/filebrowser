@@ -35,12 +35,17 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  path: {
+    type: String,
+    default: null,
+  },
 });
 
 const container = ref<HTMLElement | null>(null);
 
 const path = computed(() => {
-  let basePath = fileStore.isFiles ? route.path : url.removeLastDir(route.path);
+  const routePath = props.path || route.path;
+  let basePath = fileStore.isFiles ? routePath : url.removeLastDir(routePath);
   if (!basePath.endsWith("/")) {
     basePath += "/";
   }
