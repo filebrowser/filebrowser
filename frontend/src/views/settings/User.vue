@@ -59,6 +59,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { StatusError } from "@/api/utils";
 import { authMethod } from "@/utils/constants";
+import { logout } from "@/utils/auth";
 
 const error = ref<StatusError>();
 const originalUser = ref<IUser>();
@@ -144,7 +145,11 @@ const deleteUser = async (currentPassword: string) => {
   }
   try {
     await api.remove(user.value.id, currentPassword);
-    router.push({ path: "/settings/users" });
+    if (user.value.id == authStore.user?.id) {
+      logout();
+    } else {
+      router.push({ path: "/settings/users" });
+    }
     $showSuccess(t("settings.userDeleted"));
   } catch (err) {
     if (err instanceof StatusError) {

@@ -21,7 +21,7 @@ var (
 	ErrPermissionDenied         = errors.New("permission denied")
 	ErrInvalidRequestParams     = errors.New("invalid request params")
 	ErrSourceIsParent           = errors.New("source is parent")
-	ErrRootUserDeletion         = errors.New("user with id 1 can't be deleted")
+	ErrRootUserDeletion         = errors.New("the sole admin can't be deleted")
 	ErrCurrentPasswordIncorrect = errors.New("the current password is incorrect")
 )
 
