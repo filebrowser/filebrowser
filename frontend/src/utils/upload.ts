@@ -25,7 +25,7 @@ export function checkConflict(
     const file = files[i];
     let name = file.name;
 
-    if (folder_upload) {
+    if (folder_upload && file.isDir) {
       const dirs = file.fullPath?.split("/");
       if (dirs && dirs.length > 1) {
         name = dirs[0];
