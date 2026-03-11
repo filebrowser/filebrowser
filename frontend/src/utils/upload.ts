@@ -23,12 +23,16 @@ export function checkConflict(
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
-    let name = file.name;
+    const name = file.name;
 
     if (folder_upload && file.isDir) {
       const dirs = file.fullPath?.split("/");
+      // For folder uploads, destination listing is flat and only contains
+      // top-level entries. Treating every nested file as a conflict when the
+      // parent folder exists blocks the whole upload (see #5798), so skip
+      // preflight conflict detection for nested files.
       if (dirs && dirs.length > 1) {
-        name = dirs[0];
+        continue;
       }
     }
 
