@@ -34,6 +34,7 @@ filebrowser config set [flags]
       --dirMode string                   mode bits that new directories are created with (default "0o750")
       --disableExec                      disables Command Runner feature (default true)
       --disableImageResolutionCalc       disables image resolution calculation by reading image files
+      --unzipEnabled                     enable zip file extraction
       --disablePreviewResize             disable resize of image previews
       --disableThumbnails                disable image thumbnails
       --disableTypeDetectionByHeader     disables type detection by reading file headers
