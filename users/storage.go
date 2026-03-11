@@ -15,6 +15,7 @@ type StorageBackend interface {
 	Update(u *User, fields ...string) error
 	DeleteByID(uint) error
 	DeleteByUsername(string) error
+	CountAdmins() (int, error)
 }
 
 type Store interface {
@@ -108,14 +109,20 @@ func (s *Storage) Delete(id interface{}) error {
 		if err != nil {
 			return err
 		}
-		if user.ID == 1 {
+		if s.IsUniqueAdmin(user) {
 			return fberrors.ErrRootUserDeletion
 		}
+
 		return s.back.DeleteByUsername(id)
 	case uint:
-		if id == 1 {
+		user, err := s.back.GetBy(id)
+		if err != nil {
+			return err
+		}
+		if s.IsUniqueAdmin(user) {
 			return fberrors.ErrRootUserDeletion
 		}
+
 		return s.back.DeleteByID(id)
 	default:
 		return fberrors.ErrInvalidDataType
@@ -130,4 +137,16 @@ func (s *Storage) LastUpdate(id uint) int64 {
 		return val
 	}
 	return 0
+}
+
+func (s *Storage) IsUniqueAdmin(user *User) bool {
+	if !user.Perm.Admin {
+		return false
+	}
+
+	count, err := s.back.CountAdmins()
+	if err != nil {
+		return true
+	}
+	return count <= 1
 }

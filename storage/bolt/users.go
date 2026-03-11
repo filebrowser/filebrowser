@@ -6,6 +6,7 @@ import (
 	"reflect"
 
 	"github.com/asdine/storm/v3"
+	bolt "go.etcd.io/bbolt"
 
 	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -92,4 +93,30 @@ func (st usersBackend) DeleteByUsername(username string) error {
 	}
 
 	return st.db.DeleteStruct(user)
+}
+
+func (st usersBackend) CountAdmins() (int, error) {
+	count := 0
+
+	err := st.db.Bolt.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(reflect.TypeOf(users.User{}).Name()))
+		if bucket == nil {
+			return nil
+		}
+
+		c := bucket.Cursor()
+		for _, v := c.First(); v != nil; _, v = c.Next() {
+			var u users.User
+			if err := st.db.Codec().Unmarshal(v, &u); err != nil {
+				return err
+			}
+			if u.Perm.Admin {
+				count++
+			}
+		}
+
+		return nil
+	})
+
+	return count, err
 }
