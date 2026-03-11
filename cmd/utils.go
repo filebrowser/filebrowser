@@ -119,8 +119,7 @@ func initViper(cmd *cobra.Command) (*viper.Viper, error) {
 	// Read in configuration
 	if err := v.ReadInConfig(); err != nil {
 
-		var parseErr viper.ConfigParseError
-		if errors.As(err, &parseErr) {
+		if errors.As(err, &viper.ConfigParseError{}) {
 			return nil, err
 		}
 
