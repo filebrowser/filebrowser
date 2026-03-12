@@ -256,7 +256,7 @@ user created with the credentials from options "username" and "password".`,
 			for {
 				select {
 				case <-ticker.C:
-					if err := st.Storage.Tokens.DeleteExpired(); err != nil {
+					if err := st.Tokens.DeleteExpired(); err != nil {
 						log.Printf("token cleanup error: %v", err)
 					}
 				case <-cleanupDone:

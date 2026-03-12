@@ -122,7 +122,7 @@ func TestWithUser_NoToken(t *testing.T) {
 	t.Parallel()
 	env := setupTestStorage(t)
 
-	handler := handle(withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	handler := handle(withUser(func(_ http.ResponseWriter, _ *http.Request, _ *data) (int, error) {
 		return http.StatusOK, nil
 	}), "", env.storage, env.server)
 
@@ -139,7 +139,7 @@ func TestWithUser_InvalidToken(t *testing.T) {
 	t.Parallel()
 	env := setupTestStorage(t)
 
-	handler := handle(withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	handler := handle(withUser(func(_ http.ResponseWriter, _ *http.Request, _ *data) (int, error) {
 		return http.StatusOK, nil
 	}), "", env.storage, env.server)
 
@@ -159,7 +159,7 @@ func TestWithUser_ExpiredToken(t *testing.T) {
 
 	tokenStr := createTestToken(t, env, env.user.ID, -1*time.Hour)
 
-	handler := handle(withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	handler := handle(withUser(func(_ http.ResponseWriter, _ *http.Request, _ *data) (int, error) {
 		return http.StatusOK, nil
 	}), "", env.storage, env.server)
 
@@ -185,7 +185,7 @@ func TestWithUser_ValidToken(t *testing.T) {
 	tokenStr := createTestToken(t, env, env.user.ID, 1*time.Hour)
 
 	var capturedUser *users.User
-	handler := handle(withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	handler := handle(withUser(func(_ http.ResponseWriter, _ *http.Request, d *data) (int, error) {
 		capturedUser = d.user
 		return http.StatusOK, nil
 	}), "", env.storage, env.server)
