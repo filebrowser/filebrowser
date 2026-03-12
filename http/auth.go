@@ -50,7 +50,11 @@ func userInfoFrom(user *users.User) userInfo {
 }
 
 func extractToken(r *http.Request) string {
-	return r.Header.Get("X-Auth")
+	token := r.Header.Get("X-Auth")
+	if token == "" {
+		token = r.URL.Query().Get("auth")
+	}
+	return token
 }
 
 func withUser(fn handleFunc) handleFunc {

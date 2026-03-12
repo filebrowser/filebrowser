@@ -74,6 +74,7 @@ export async function put(url: string, content = "") {
 }
 
 export function download(format: any, ...files: string[]) {
+  const authStore = useAuthStore();
   let url = `${baseURL}/api/raw`;
 
   if (files.length === 1) {
@@ -93,6 +94,8 @@ export function download(format: any, ...files: string[]) {
   if (format) {
     url += `algo=${format}&`;
   }
+
+  url += `auth=${authStore.jwt}`;
 
   window.open(url);
 }
@@ -203,25 +206,31 @@ export async function checksum(url: string, algo: ChecksumAlg) {
 }
 
 export function getDownloadURL(file: ResourceItem, inline: any) {
+  const authStore = useAuthStore();
   const params = {
     ...(inline && { inline: "true" }),
+    auth: authStore.jwt,
   };
 
   return createURL("api/raw" + file.path, params);
 }
 
 export function getPreviewURL(file: ResourceItem, size: string) {
+  const authStore = useAuthStore();
   const params = {
     inline: "true",
     key: Date.parse(file.modified),
+    auth: authStore.jwt,
   };
 
   return createURL("api/preview/" + size + file.path, params);
 }
 
 export function getSubtitlesURL(file: ResourceItem) {
+  const authStore = useAuthStore();
   const params = {
     inline: "true",
+    auth: authStore.jwt,
   };
 
   return file.subtitles?.map((d) => createURL("api/subtitle" + d, params));
