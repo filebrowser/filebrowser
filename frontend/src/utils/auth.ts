@@ -1,22 +1,30 @@
 import { useAuthStore } from "@/stores/auth";
 import router from "@/router";
-import type { JwtPayload } from "jwt-decode";
-import { jwtDecode } from "jwt-decode";
 import { authMethod, baseURL, noAuth, logoutPage } from "./constants";
 import { StatusError } from "@/api/utils";
 import { setSafeTimeout } from "@/api/utils";
 
-export function parseToken(token: string) {
-  // falsy or malformed jwt will throw InvalidTokenError
-  const data = jwtDecode<JwtPayload & { user: IUser }>(token);
-
-  document.cookie = `auth=${token}; Path=/; SameSite=Strict;`;
-
-  localStorage.setItem("jwt", token);
-
+export async function saveToken(token: string) {
   const authStore = useAuthStore();
+
+  localStorage.setItem("token", token);
   authStore.jwt = token;
-  authStore.setUser(data.user);
+
+  const res = await fetch(`${baseURL}/api/me`, {
+    headers: {
+      "X-Auth": token,
+    },
+  });
+
+  if (res.status !== 200) {
+    throw new StatusError(
+      `${res.status} ${res.statusText}`,
+      res.status
+    );
+  }
+
+  const user = await res.json();
+  authStore.setUser(user);
 
   // proxy auth with custom logout subject to unknown external timeout
   if (logoutPage !== "/login" && authMethod === "proxy") {
@@ -28,8 +36,8 @@ export function parseToken(token: string) {
     clearTimeout(authStore.logoutTimer);
   }
 
-  const expiresAt = new Date(data.exp! * 1000);
-  const timeout = expiresAt.getTime() - Date.now();
+  // Default session timeout: 2 hours (matches server default)
+  const timeout = 2 * 60 * 60 * 1000;
   authStore.setLogoutTimer(
     setSafeTimeout(() => {
       logout("inactivity");
@@ -39,11 +47,11 @@ export function parseToken(token: string) {
 
 export async function validateLogin() {
   try {
-    if (localStorage.getItem("jwt")) {
-      await renew(<string>localStorage.getItem("jwt"));
+    if (localStorage.getItem("token")) {
+      await renew(<string>localStorage.getItem("token"));
     }
   } catch (error) {
-    console.warn("Invalid JWT token in storage");
+    console.warn("Invalid token in storage");
     throw error;
   }
 }
@@ -66,7 +74,7 @@ export async function login(
   const body = await res.text();
 
   if (res.status === 200) {
-    parseToken(body);
+    await saveToken(body);
   } else {
     throw new StatusError(
       body || `${res.status} ${res.statusText}`,
@@ -75,18 +83,18 @@ export async function login(
   }
 }
 
-export async function renew(jwt: string) {
+export async function renew(token: string) {
   const res = await fetch(`${baseURL}/api/renew`, {
     method: "POST",
     headers: {
-      "X-Auth": jwt,
+      "X-Auth": token,
     },
   });
 
   const body = await res.text();
 
   if (res.status === 200) {
-    parseToken(body);
+    await saveToken(body);
   } else {
     throw new StatusError(
       body || `${res.status} ${res.statusText}`,
@@ -115,13 +123,23 @@ export async function signup(username: string, password: string) {
   }
 }
 
-export function logout(reason?: string) {
-  document.cookie = "auth=; Max-Age=0; Path=/; SameSite=Strict;";
-
+export async function logout(reason?: string) {
   const authStore = useAuthStore();
-  authStore.clearUser();
 
-  localStorage.setItem("jwt", "");
+  if (authStore.jwt) {
+    try {
+      await fetch(`${baseURL}/api/logout`, {
+        method: "POST",
+        headers: {
+          "X-Auth": authStore.jwt,
+        },
+      });
+    } catch {}
+  }
+
+  authStore.clearUser();
+  localStorage.setItem("token", "");
+
   if (noAuth) {
     window.location.reload();
   } else if (logoutPage !== "/login") {

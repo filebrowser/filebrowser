@@ -248,6 +248,23 @@ user created with the credentials from options "username" and "password".`,
 			ReadHeaderTimeout: 60 * time.Second,
 		}
 
+		// Periodically clean up expired tokens
+		cleanupDone := make(chan struct{})
+		go func() {
+			ticker := time.NewTicker(1 * time.Hour)
+			defer ticker.Stop()
+			for {
+				select {
+				case <-ticker.C:
+					if err := st.Storage.Tokens.DeleteExpired(); err != nil {
+						log.Printf("token cleanup error: %v", err)
+					}
+				case <-cleanupDone:
+					return
+				}
+			}
+		}()
+
 		go func() {
 			if err := srv.Serve(listener); !errors.Is(err, http.ErrServerClosed) {
 				log.Fatalf("HTTP server error: %v", err)
@@ -266,6 +283,8 @@ user created with the credentials from options "username" and "password".`,
 		)
 		sig := <-sigc
 		log.Println("Got signal:", sig)
+
+		close(cleanupDone)
 
 		shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second)
 		defer shutdownRelease()

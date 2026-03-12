@@ -6,15 +6,10 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"time"
-
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/golang-jwt/jwt/v5/request"
 
 	fbAuth "github.com/filebrowser/filebrowser/v2/auth"
 	fberrors "github.com/filebrowser/filebrowser/v2/errors"
-	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
 
@@ -37,73 +32,52 @@ type userInfo struct {
 	AceEditorTheme        string            `json:"aceEditorTheme"`
 }
 
-type authToken struct {
-	User userInfo `json:"user"`
-	jwt.RegisteredClaims
+func userInfoFrom(user *users.User) userInfo {
+	return userInfo{
+		ID:                    user.ID,
+		Locale:                user.Locale,
+		ViewMode:              user.ViewMode,
+		SingleClick:           user.SingleClick,
+		RedirectAfterCopyMove: user.RedirectAfterCopyMove,
+		Perm:                  user.Perm,
+		LockPassword:          user.LockPassword,
+		Commands:              user.Commands,
+		HideDotfiles:          user.HideDotfiles,
+		DateFormat:            user.DateFormat,
+		Username:              user.Username,
+		AceEditorTheme:        user.AceEditorTheme,
+	}
 }
 
-type extractor []string
-
-func (e extractor) ExtractToken(r *http.Request) (string, error) {
-	token, _ := request.HeaderExtractor{"X-Auth"}.ExtractToken(r)
-
-	// Checks if the token isn't empty and if it contains two dots.
-	// The former prevents incompatibility with URLs that previously
-	// used basic auth.
-	if token != "" && strings.Count(token, ".") == 2 {
-		return token, nil
-	}
-
-	if r.Method == http.MethodGet {
-		cookie, _ := r.Cookie("auth")
-		if cookie != nil && strings.Count(cookie.Value, ".") == 2 {
-			return cookie.Value, nil
-		}
-	}
-
-	return "", request.ErrNoTokenInRequest
-}
-
-func renewableErr(err error, d *data) bool {
-	if d.settings.AuthMethod != fbAuth.MethodProxyAuth || err == nil {
-		return false
-	}
-
-	if d.settings.LogoutPage == settings.DefaultLogoutPage {
-		return false
-	}
-
-	if !errors.Is(err, jwt.ErrTokenExpired) {
-		return false
-	}
-
-	return true
+func extractToken(r *http.Request) string {
+	return r.Header.Get("X-Auth")
 }
 
 func withUser(fn handleFunc) handleFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-		keyFunc := func(_ *jwt.Token) (interface{}, error) {
-			return d.settings.Key, nil
-		}
-
-		var tk authToken
-		p := jwt.NewParser(jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}), jwt.WithExpirationRequired())
-		token, err := request.ParseFromRequest(r, &extractor{}, keyFunc, request.WithClaims(&tk), request.WithParser(p))
-		if (err != nil || !token.Valid) && !renewableErr(err, d) {
+		tokenStr := extractToken(r)
+		if tokenStr == "" {
 			return http.StatusUnauthorized, nil
 		}
 
-		expiresSoon := tk.ExpiresAt != nil && time.Until(tk.ExpiresAt.Time) < time.Hour
-		updated := tk.IssuedAt != nil && tk.IssuedAt.Unix() < d.store.Users.LastUpdate(tk.User.ID)
-
-		if expiresSoon || updated {
-			w.Header().Add("X-Renew-Token", "true")
+		token, err := d.store.Tokens.Get(tokenStr)
+		if err != nil {
+			if errors.Is(err, fberrors.ErrNotExist) {
+				return http.StatusUnauthorized, nil
+			}
+			return http.StatusInternalServerError, err
 		}
 
-		d.user, err = d.store.Users.Get(d.server.Root, tk.User.ID)
+		if token.IsExpired() {
+			_ = d.store.Tokens.Delete(tokenStr)
+			return http.StatusUnauthorized, nil
+		}
+
+		d.user, err = d.store.Users.Get(d.server.Root, token.UserID)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
+
 		return fn(w, r, d)
 	}
 }
@@ -133,7 +107,7 @@ func loginHandler(tokenExpireTime time.Duration) handleFunc {
 			return http.StatusInternalServerError, err
 		}
 
-		return printToken(w, r, d, user, tokenExpireTime)
+		return createAndReturnToken(w, d, user, tokenExpireTime)
 	}
 }
 
@@ -197,42 +171,48 @@ var signupHandler = func(_ http.ResponseWriter, r *http.Request, d *data) (int, 
 
 func renewHandler(tokenExpireTime time.Duration) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-		w.Header().Set("X-Renew-Token", "false")
-		return printToken(w, r, d, d.user, tokenExpireTime)
+
+		oldToken := extractToken(r)
+		if oldToken != "" {
+			_ = d.store.Tokens.Delete(oldToken)
+		}
+
+		return createAndReturnToken(w, d, d.user, tokenExpireTime)
 	})
 }
 
-func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.User, tokenExpirationTime time.Duration) (int, error) {
-	claims := &authToken{
-		User: userInfo{
-			ID:                    user.ID,
-			Locale:                user.Locale,
-			ViewMode:              user.ViewMode,
-			SingleClick:           user.SingleClick,
-			RedirectAfterCopyMove: user.RedirectAfterCopyMove,
-			Perm:                  user.Perm,
-			LockPassword:          user.LockPassword,
-			Commands:              user.Commands,
-			HideDotfiles:          user.HideDotfiles,
-			DateFormat:            user.DateFormat,
-			Username:              user.Username,
-			AceEditorTheme:        user.AceEditorTheme,
-		},
-		RegisteredClaims: jwt.RegisteredClaims{
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(tokenExpirationTime)),
-			Issuer:    "File Browser",
-		},
+var logoutHandler = withUser(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	tokenStr := extractToken(r)
+	if tokenStr != "" {
+		_ = d.store.Tokens.Delete(tokenStr)
 	}
+	return http.StatusOK, nil
+})
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signed, err := token.SignedString(d.settings.Key)
+var meHandler = withUser(func(w http.ResponseWriter, _ *http.Request, d *data) (int, error) {
+	info := userInfoFrom(d.user)
+	return renderJSON(w, nil, info)
+})
+
+func createAndReturnToken(w http.ResponseWriter, d *data, user *users.User, tokenExpirationTime time.Duration) (int, error) {
+	tokenStr, err := fbAuth.GenerateToken()
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
+	token := &fbAuth.Token{
+		Token:     tokenStr,
+		UserID:    user.ID,
+		ExpiresAt: time.Now().Add(tokenExpirationTime),
+		CreatedAt: time.Now(),
+	}
+
+	if err := d.store.Tokens.Save(token); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
 	w.Header().Set("Content-Type", "text/plain")
-	if _, err := w.Write([]byte(signed)); err != nil {
+	if _, err := w.Write([]byte(tokenStr)); err != nil {
 		return http.StatusInternalServerError, err
 	}
 	return 0, nil

@@ -22,10 +22,13 @@ func NewStorage(db *storm.DB) (*storage.Storage, error) {
 		return nil, err
 	}
 
+	tokenStore := tokenBackend{db: db}
+
 	return &storage.Storage{
 		Auth:     authStore,
 		Users:    userStore,
 		Share:    shareStore,
 		Settings: settingsStore,
+		Tokens:   tokenStore,
 	}, nil
 }

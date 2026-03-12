@@ -14,4 +14,5 @@ type Storage struct {
 	Share    *share.Storage
 	Auth     *auth.Storage
 	Settings *settings.Storage
+	Tokens   auth.TokenStore
 }
