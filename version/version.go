@@ -3,7 +3,7 @@ package version
 
 var (
 	// Version is the current File Browser version.
-	Version = "(untracked)"
+	Version = ""
 	// CommitSHA is the commit sha.
-	CommitSHA = "(unknown)"
+	CommitSHA = ""
 )
