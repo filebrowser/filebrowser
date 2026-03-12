@@ -518,7 +518,7 @@ const jobUrl = computed(() => {
     }
   }
 
-  return `https://${jobDomain}/${jobTeamID}/jobs/create?sid=${jobFilesystemID}&stype=filesystem&path=${encodeURIComponent(folderPath)}`;
+  return `${jobDomain}/${jobTeamID}/jobs/create?sid=${jobFilesystemID}&stype=filesystem&path=${encodeURIComponent(folderPath)}`;
 });
 
 const showJobButton = computed(() => {
