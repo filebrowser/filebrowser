@@ -313,12 +313,12 @@ func getSettings(flags *pflag.FlagSet, set *settings.Settings, ser *settings.Ser
 		case "disableImageResolutionCalc":
 			ser.ImageResolutionCal, err = flags.GetBool(flag.Name)
 			ser.ImageResolutionCal = !ser.ImageResolutionCal
-		case "jobDomain":
-			ser.JobDomain, err = flags.GetString(flag.Name)
-		case "jobTeamID":
-			ser.JobTeamID, err = flags.GetString(flag.Name)
-		case "jobFilesystemID":
-			ser.JobFilesystemID, err = flags.GetString(flag.Name)
+		case "domain":
+			ser.Domain, err = flags.GetString(flag.Name)
+		case "teamId":
+			ser.TeamId, err = flags.GetString(flag.Name)
+		case "filesystemId":
+			ser.FilesystemId, err = flags.GetString(flag.Name)
 
 		// Settings flags from [addConfigFlags]
 		case "signup":

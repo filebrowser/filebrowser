@@ -20,9 +20,9 @@ const tusSettings = window.FileBrowser.TusSettings;
 const origin = window.location.origin;
 const tusEndpoint = `/api/tus`;
 const hideLoginButton = window.FileBrowser.HideLoginButton;
-const jobDomain: string = window.FileBrowser.JobDomain;
-const jobTeamID: string = window.FileBrowser.JobTeamID;
-const jobFilesystemID: string = window.FileBrowser.JobFilesystemID;
+const domain: string = window.FileBrowser.Domain;
+const teamId: string = window.FileBrowser.TeamId;
+const filesystemId: string = window.FileBrowser.FilesystemId;
 
 export {
   name,
@@ -46,7 +46,7 @@ export {
   origin,
   tusEndpoint,
   hideLoginButton,
-  jobDomain,
-  jobTeamID,
-  jobFilesystemID,
+  domain,
+  teamId,
+  filesystemId,
 };

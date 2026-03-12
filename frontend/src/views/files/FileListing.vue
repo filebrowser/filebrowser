@@ -47,6 +47,18 @@
           />
         </template>
 
+        <a
+          v-if="showJobButton"
+          class="action job-action"
+          :href="jobUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          :title="t('buttons.job')"
+          :aria-label="t('buttons.job')"
+        >
+          <i class="fa-kit fa-converge-mark"></i>
+          <span>{{ t("buttons.job") }}</span>
+        </a>
         <action
           v-if="headerButtons.shell"
           icon="code"
@@ -72,18 +84,6 @@
           :label="t('buttons.upload')"
           @action="uploadFunc"
         />
-        <a
-          v-if="showJobButton"
-          class="action job-action"
-          :href="jobUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          :title="t('buttons.job')"
-          :aria-label="t('buttons.job')"
-        >
-          <i class="fa-kit fa-converge-mark"></i>
-          <span>{{ t("buttons.job") }}</span>
-        </a>
         <action icon="info" :label="t('buttons.info')" show="info" />
         <action
           icon="check_circle"
@@ -127,12 +127,6 @@
         :label="t('buttons.moveFile')"
         show="move"
       />
-      <action
-        v-if="headerButtons.delete"
-        icon="delete"
-        :label="t('buttons.delete')"
-        show="delete"
-      />
       <a
         v-if="showJobButton"
         class="action job-action"
@@ -145,6 +139,12 @@
         <i class="fa-kit fa-converge-mark"></i>
         <span>{{ t("buttons.job") }}</span>
       </a>
+      <action
+        v-if="headerButtons.delete"
+        icon="delete"
+        :label="t('buttons.delete')"
+        show="delete"
+      />
     </div>
 
     <div v-if="layoutStore.loading">
@@ -372,9 +372,9 @@ import { useLayoutStore } from "@/stores/layout";
 import { users, files as api } from "@/api";
 import {
   enableExec,
-  jobDomain,
-  jobTeamID,
-  jobFilesystemID,
+  domain,
+  teamId,
+  filesystemId,
 } from "@/utils/constants";
 import * as upload from "@/utils/upload";
 import css from "@/utils/css";
@@ -503,35 +503,21 @@ const viewIcon = computed(() => {
 });
 
 const jobEnabled = computed(() => {
-  return !!jobDomain && !!jobTeamID && !!jobFilesystemID;
+  return !!domain && !!teamId && !!filesystemId;
 });
 
 const jobUrl = computed(() => {
   if (!jobEnabled.value) return "";
 
-  let folderPath = fileStore.req?.path || "/";
+  const folderPath = fileStore.req?.path || "/";
 
-  if (fileStore.selectedCount === 1 && fileStore.req?.items) {
-    const selectedItem = fileStore.req.items[fileStore.selected[0]];
-    if (selectedItem?.isDir) {
-      folderPath = selectedItem.path;
-    }
-  }
-
-  return `${jobDomain}/${jobTeamID}/jobs/create?sid=${jobFilesystemID}&stype=filesystem&path=${encodeURIComponent(folderPath)}`;
+  return `${domain}/${teamId}/jobs/create?sid=${filesystemId}&stype=filesystem&path=${encodeURIComponent(folderPath)}`;
 });
 
 const showJobButton = computed(() => {
   if (!jobEnabled.value || !authStore.user) return false;
 
-  if (fileStore.selectedCount === 0) return true;
-
-  if (fileStore.selectedCount === 1 && fileStore.req?.items) {
-    const selectedItem = fileStore.req.items[fileStore.selected[0]];
-    return selectedItem?.isDir === true;
-  }
-
-  return false;
+  return true;
 });
 
 const headerButtons = computed(() => {
