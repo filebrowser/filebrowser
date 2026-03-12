@@ -50,6 +50,16 @@ func TestPublicShareHandlerAuthentication(t *testing.T) {
 			req:                newHTTPRequest(t, func(r *http.Request) { r.Header.Set("X-SHARE-PASSWORD", "wrong-password") }),
 			expectedStatusCode: 401,
 		},
+		"Private share, authentication via query parameter": {
+			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt},
+			req:                newHTTPRequest(t, func(r *http.Request) { r.URL.RawQuery = "password=password" }),
+			expectedStatusCode: 200,
+		},
+		"Private share, authentication via invalid query parameter, 401": {
+			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt},
+			req:                newHTTPRequest(t, func(r *http.Request) { r.URL.RawQuery = "password=wrong-password" }),
+			expectedStatusCode: 401,
+		},
 	}
 
 	for name, tc := range testCases {

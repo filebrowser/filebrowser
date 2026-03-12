@@ -351,16 +351,18 @@ const icon = computed(() => {
   return "insert_drive_file";
 });
 
-const link = computed(() => (req.value ? api.getDownloadURL(req.value) : ""));
+const link = computed(() =>
+  req.value ? api.getDownloadURL(req.value, false, password.value) : ""
+);
 const raw = computed(() => {
   if (!req.value || !req.value.items[fileStore.selected[0]]) return "";
   return createURL(
     `api/public/dl/${hash.value}${req.value.items[fileStore.selected[0]].path}`,
-    {}
+    { ...(password.value && { password: password.value }) }
   );
 });
 const inlineLink = computed(() =>
-  req.value ? api.getDownloadURL(req.value, true) : ""
+  req.value ? api.getDownloadURL(req.value, true, password.value) : ""
 );
 const humanSize = computed(() => {
   if (req.value) {
@@ -443,7 +445,12 @@ const download = () => {
   if (!req.value) return false;
 
   if (isSingleFile()) {
-    api.download(null, hash.value, req.value.items[fileStore.selected[0]].path);
+    api.download(
+      null,
+      hash.value,
+      password.value,
+      req.value.items[fileStore.selected[0]].path
+    );
     return true;
   }
 
@@ -459,7 +466,7 @@ const download = () => {
         files.push(req.value.items[i].path);
       }
 
-      api.download(format, hash.value, ...files);
+      api.download(format, hash.value, password.value, ...files);
       return true;
     },
   });
@@ -469,11 +476,15 @@ const download = () => {
 
 const linkSelected = () => {
   return isSingleFile() && req.value
-    ? api.getDownloadURL({
-        ...req.value,
-        hash: hash.value,
-        path: req.value.items[fileStore.selected[0]].path,
-      })
+    ? api.getDownloadURL(
+        {
+          ...req.value,
+          hash: hash.value,
+          path: req.value.items[fileStore.selected[0]].path,
+        },
+        false,
+        password.value
+      )
     : "";
 };
 

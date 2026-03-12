@@ -95,7 +95,7 @@
             <option value="days">{{ $t("time.days") }}</option>
           </select>
         </div>
-        <p>{{ $t("prompts.password") }}</p>
+        <p>{{ $t("settings.password") }}</p>
         <input
           class="input input--block"
           type="password"

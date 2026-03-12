@@ -132,6 +132,9 @@ func authenticateShareRequest(r *http.Request, l *share.Link) (int, error) {
 		return 0, err
 	}
 	if password == "" {
+		password = r.URL.Query().Get("password")
+	}
+	if password == "" {
 		return http.StatusUnauthorized, nil
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(l.PasswordHash), []byte(password)); err != nil {
