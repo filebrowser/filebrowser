@@ -48,7 +48,6 @@ type FileInfo struct {
 	Subtitles  []string          `json:"subtitles,omitempty"`
 	Content    string            `json:"content,omitempty"`
 	Checksums  map[string]string `json:"checksums,omitempty"`
-	Token      string            `json:"token,omitempty"`
 	currentDir []os.FileInfo     `json:"-"`
 	Resolution *ImageResolution  `json:"resolution,omitempty"`
 }
@@ -61,7 +60,6 @@ type FileOptions struct {
 	Expand     bool
 	ReadHeader bool
 	CalcImgRes bool
-	Token      string
 	Checker    rules.Checker
 	Content    bool
 }
@@ -124,7 +122,6 @@ func stat(opts *FileOptions) (*FileInfo, error) {
 			IsSymlink: IsSymlink(info.Mode()),
 			Size:      info.Size(),
 			Extension: filepath.Ext(info.Name()),
-			Token:     opts.Token,
 		}
 	}
 
@@ -159,7 +156,6 @@ func stat(opts *FileOptions) (*FileInfo, error) {
 		IsDir:     info.IsDir(),
 		Size:      info.Size(),
 		Extension: filepath.Ext(info.Name()),
-		Token:     opts.Token,
 	}
 
 	return file, nil

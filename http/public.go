@@ -2,6 +2,7 @@ package fbhttp
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"path"
@@ -43,7 +44,6 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			ReadHeader: d.server.TypeDetectionByHeader,
 			CalcImgRes: d.server.TypeDetectionByHeader,
 			Checker:    d,
-			Token:      link.Token,
 		})
 		if err != nil {
 			return errToStatus(err), err
@@ -69,7 +69,6 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			Modify:  d.user.Perm.Modify,
 			Expand:  true,
 			Checker: d,
-			Token:   link.Token,
 		})
 		if err != nil {
 			return errToStatus(err), err
@@ -124,11 +123,7 @@ var publicDlHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, 
 
 func authenticateShareRequest(r *http.Request, l *share.Link) (int, error) {
 	if l.PasswordHash == "" {
-		return 0, nil
-	}
-
-	if r.URL.Query().Get("token") == l.Token {
-		return 0, nil
+		return http.StatusForbidden, fmt.Errorf("Share is not password-protected")
 	}
 
 	password := r.Header.Get("X-SHARE-PASSWORD")

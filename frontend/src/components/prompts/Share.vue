@@ -12,7 +12,6 @@
             <th>{{ $t("settings.shareDuration") }}</th>
             <th></th>
             <th></th>
-            <th></th>
           </tr>
 
           <tr v-for="link in links" :key="link.hash">
@@ -31,17 +30,6 @@
                 @click="copyToClipboard(buildLink(link))"
               >
                 <i class="material-icons">content_paste</i>
-              </button>
-            </td>
-            <td class="small">
-              <button
-                class="action"
-                :aria-label="$t('buttons.copyDownloadLinkToClipboard')"
-                :title="$t('buttons.copyDownloadLinkToClipboard')"
-                :disabled="!!link.password_hash"
-                @click="copyToClipboard(buildDownloadLink(link))"
-              >
-                <i class="material-icons">content_paste_go</i>
               </button>
             </td>
             <td class="small">
@@ -90,7 +78,7 @@
             controls
             size="small"
             :max="2147483647"
-            :min="0"
+            :min="1"
             @keyup.enter="submit"
             v-model="time"
             tabindex="1"
@@ -107,11 +95,12 @@
             <option value="days">{{ $t("time.days") }}</option>
           </select>
         </div>
-        <p>{{ $t("prompts.optionalPassword") }}</p>
+        <p>{{ $t("prompts.password") }}</p>
         <input
           class="input input--block"
           type="password"
           v-model.trim="password"
+          required
           tabindex="3"
         />
       </div>
@@ -153,7 +142,7 @@ export default {
   name: "share",
   data: function () {
     return {
-      time: 0,
+      time: 1,
       unit: "hours",
       links: [],
       clip: null,
@@ -219,24 +208,26 @@ export default {
       );
     },
     submit: async function () {
+      if (!this.password) {
+        this.$showError(this.$t("prompts.passwordRequired"));
+        return;
+      }
+      if (!this.time || this.time <= 0) {
+        this.$showError(this.$t("prompts.expirationRequired"));
+        return;
+      }
       try {
-        let res = null;
-
-        if (!this.time) {
-          res = await api.share.create(this.url, this.password);
-        } else {
-          res = await api.share.create(
-            this.url,
-            this.password,
-            this.time,
-            this.unit
-          );
-        }
+        let res = await api.share.create(
+          this.url,
+          this.password,
+          this.time,
+          this.unit
+        );
 
         this.links.push(res);
         this.sort();
 
-        this.time = 0;
+        this.time = 1;
         this.unit = "hours";
         this.password = "";
 
@@ -263,15 +254,6 @@ export default {
     },
     buildLink(share) {
       return api.share.getShareURL(share);
-    },
-    buildDownloadLink(share) {
-      return api.pub.getDownloadURL(
-        {
-          hash: share.hash,
-          path: "",
-        },
-        true
-      );
     },
     sort() {
       this.links = this.links.sort((a, b) => {

@@ -100,6 +100,14 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 		defer r.Body.Close()
 	}
 
+	if body.Password == "" {
+		return http.StatusBadRequest, fmt.Errorf("Password is required for sharing")
+	}
+
+	if body.Expires == "" {
+		return http.StatusBadRequest, fmt.Errorf("Expiration date is required for sharing")
+	}
+
 	bytes := make([]byte, 6)
 	_, err := rand.Read(bytes)
 	if err != nil {
@@ -108,41 +116,32 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 
 	str := base64.URLEncoding.EncodeToString(bytes)
 
-	var expire int64 = 0
-
-	if body.Expires != "" {
-		num, err := strconv.Atoi(body.Expires)
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		var add time.Duration
-		switch body.Unit {
-		case "seconds":
-			add = time.Second * time.Duration(num)
-		case "minutes":
-			add = time.Minute * time.Duration(num)
-		case "days":
-			add = time.Hour * 24 * time.Duration(num)
-		default:
-			add = time.Hour * time.Duration(num)
-		}
-
-		expire = time.Now().Add(add).Unix()
+	num, err := strconv.Atoi(body.Expires)
+	if err != nil {
+		return http.StatusBadRequest, fmt.Errorf("invalid expiration value: %w", err)
 	}
+
+	if num <= 0 {
+		return http.StatusBadRequest, fmt.Errorf("expiration must be greater than zero")
+	}
+
+	var add time.Duration
+	switch body.Unit {
+	case "seconds":
+		add = time.Second * time.Duration(num)
+	case "minutes":
+		add = time.Minute * time.Duration(num)
+	case "days":
+		add = time.Hour * 24 * time.Duration(num)
+	default:
+		add = time.Hour * time.Duration(num)
+	}
+
+	expire := time.Now().Add(add).Unix()
 
 	hash, status, err := getSharePasswordHash(body)
 	if err != nil {
 		return status, err
-	}
-
-	var token string
-	if len(hash) > 0 {
-		tokenBuffer := make([]byte, 96)
-		if _, err := rand.Read(tokenBuffer); err != nil {
-			return http.StatusInternalServerError, err
-		}
-		token = base64.URLEncoding.EncodeToString(tokenBuffer)
 	}
 
 	s = &share.Link{
@@ -151,7 +150,6 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 		Expire:       expire,
 		UserID:       d.user.ID,
 		PasswordHash: string(hash),
-		Token:        token,
 	}
 
 	if err := d.store.Share.Save(s); err != nil {
@@ -162,10 +160,6 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 })
 
 func getSharePasswordHash(body share.CreateBody) (data []byte, statuscode int, err error) {
-	if body.Password == "" {
-		return nil, 0, nil
-	}
-
 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("failed to hash password: %w", err)

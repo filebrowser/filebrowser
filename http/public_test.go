@@ -25,33 +25,28 @@ func TestPublicShareHandlerAuthentication(t *testing.T) {
 		req                *http.Request
 		expectedStatusCode int
 	}{
-		"Public share, no auth required": {
+		"Share without password is forbidden": {
 			share:              &share.Link{Hash: "h", UserID: 1},
 			req:                newHTTPRequest(t),
-			expectedStatusCode: 200,
+			expectedStatusCode: 403,
 		},
 		"Private share, no auth provided, 401": {
-			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt, Token: "123"},
+			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt},
 			req:                newHTTPRequest(t),
 			expectedStatusCode: 401,
 		},
-		"Private share, authentication via token": {
-			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt, Token: "123"},
+		"Private share, token in URL is ignored, 401": {
+			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt},
 			req:                newHTTPRequest(t, func(r *http.Request) { r.URL.RawQuery = "token=123" }),
-			expectedStatusCode: 200,
-		},
-		"Private share, authentication via invalid token, 401": {
-			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt, Token: "123"},
-			req:                newHTTPRequest(t, func(r *http.Request) { r.URL.RawQuery = "token=1234" }),
 			expectedStatusCode: 401,
 		},
 		"Private share, authentication via password": {
-			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt, Token: "123"},
+			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt},
 			req:                newHTTPRequest(t, func(r *http.Request) { r.Header.Set("X-SHARE-PASSWORD", "password") }),
 			expectedStatusCode: 200,
 		},
 		"Private share, authentication via invalid password, 401": {
-			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt, Token: "123"},
+			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt},
 			req:                newHTTPRequest(t, func(r *http.Request) { r.Header.Set("X-SHARE-PASSWORD", "wrong-password") }),
 			expectedStatusCode: 401,
 		},
