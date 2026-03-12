@@ -12,6 +12,10 @@
     <script src="[{[ .ReCaptchaHost ]}]/recaptcha/api.js?render=explicit"></script>
     [{[ end ]}]
 
+    [{[ if .JobDomain -]}]
+    <link rel="stylesheet" href="https://kit.fontawesome.com/15eb3be31d.css" crossorigin="anonymous" />
+    [{[ end ]}]
+
     <title>
       [{[ if .Name -]}][{[ .Name ]}][{[ else ]}]File Browser[{[ end ]}]
     </title>

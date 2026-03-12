@@ -148,6 +148,20 @@ main .spinner .bounce2 {
   visibility: visible;
 }
 
+.job-action {
+  text-decoration: none;
+  color: var(--action);
+}
+
+.job-action i {
+  font-size: 1.5em;
+  padding: 0.27em;
+}
+
+.job-action:hover {
+  color: var(--action);
+}
+
 .action .counter {
   display: block;
   position: absolute;

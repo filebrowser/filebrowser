@@ -62,6 +62,9 @@ type Server struct {
 	ImageResolutionCal    bool   `json:"imageResolutionCalculation"`
 	AuthHook              string `json:"authHook"`
 	TokenExpirationTime   string `json:"tokenExpirationTime"`
+	JobDomain             string `json:"jobDomain"`
+	JobTeamID             string `json:"jobTeamID"`
+	JobFilesystemID       string `json:"jobFilesystemID"`
 }
 
 // Clean cleans any variables that might need cleaning.

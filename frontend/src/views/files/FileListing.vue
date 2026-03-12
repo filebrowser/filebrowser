@@ -72,6 +72,18 @@
           :label="t('buttons.upload')"
           @action="uploadFunc"
         />
+        <a
+          v-if="showJobButton"
+          class="action job-action"
+          :href="jobUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          :title="t('buttons.job')"
+          :aria-label="t('buttons.job')"
+        >
+          <i class="fa-kit fa-converge-mark"></i>
+          <span>{{ t('buttons.job') }}</span>
+        </a>
         <action icon="info" :label="t('buttons.info')" show="info" />
         <action
           icon="check_circle"
@@ -121,6 +133,18 @@
         :label="t('buttons.delete')"
         show="delete"
       />
+      <a
+        v-if="showJobButton"
+        class="action job-action"
+        :href="jobUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        :title="t('buttons.job')"
+        :aria-label="t('buttons.job')"
+      >
+        <i class="fa-kit fa-converge-mark"></i>
+        <span>{{ t('buttons.job') }}</span>
+      </a>
     </div>
 
     <div v-if="layoutStore.loading">
@@ -346,7 +370,12 @@ import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
 import { users, files as api } from "@/api";
-import { enableExec } from "@/utils/constants";
+import {
+  enableExec,
+  jobDomain,
+  jobTeamID,
+  jobFilesystemID,
+} from "@/utils/constants";
 import * as upload from "@/utils/upload";
 import css from "@/utils/css";
 import { throttle } from "lodash-es";
@@ -471,6 +500,38 @@ const viewIcon = computed(() => {
   return authStore.user === null
     ? icons["list"]
     : icons[authStore.user.viewMode];
+});
+
+const jobEnabled = computed(() => {
+  return !!jobDomain && !!jobTeamID && !!jobFilesystemID;
+});
+
+const jobUrl = computed(() => {
+  if (!jobEnabled.value) return "";
+
+  let folderPath = fileStore.req?.path || "/";
+
+  if (fileStore.selectedCount === 1 && fileStore.req?.items) {
+    const selectedItem = fileStore.req.items[fileStore.selected[0]];
+    if (selectedItem?.isDir) {
+      folderPath = selectedItem.path;
+    }
+  }
+
+  return `https://${jobDomain}/${jobTeamID}/jobs/create?sid=${jobFilesystemID}&stype=filesystem&path=${encodeURIComponent(folderPath)}`;
+});
+
+const showJobButton = computed(() => {
+  if (!jobEnabled.value || !authStore.user) return false;
+
+  if (fileStore.selectedCount === 0) return true;
+
+  if (fileStore.selectedCount === 1 && fileStore.req?.items) {
+    const selectedItem = fileStore.req.items[fileStore.selected[0]];
+    return selectedItem?.isDir === true;
+  }
+
+  return false;
 });
 
 const headerButtons = computed(() => {

@@ -111,6 +111,9 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.Bool("disableExec", true, "disables Command Runner feature")
 	flags.Bool("disableTypeDetectionByHeader", false, "disables type detection by reading file headers")
 	flags.Bool("disableImageResolutionCalc", false, "disables image resolution calculation by reading image files")
+	flags.String("jobDomain", "", "Job platform domain (e.g. app.job.io)")
+	flags.String("jobTeamID", "", "Job platform team ID")
+	flags.String("jobFilesystemID", "", "Job platform filesystem ID")
 }
 
 var rootCmd = &cobra.Command{
@@ -370,6 +373,18 @@ func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, e
 
 	if v.IsSet("disableExec") {
 		server.EnableExec = !v.GetBool("disableExec")
+	}
+
+	if v.IsSet("jobDomain") {
+		server.JobDomain = v.GetString("jobDomain")
+	}
+
+	if v.IsSet("jobTeamID") {
+		server.JobTeamID = v.GetString("jobTeamID")
+	}
+
+	if v.IsSet("jobFilesystemID") {
+		server.JobFilesystemID = v.GetString("jobFilesystemID")
 	}
 
 	if isAddrSet && isSocketSet {

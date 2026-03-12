@@ -101,11 +101,11 @@ var sharePostHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 	}
 
 	if body.Password == "" {
-		return http.StatusBadRequest, fmt.Errorf("Password is required for sharing")
+		return http.StatusBadRequest, fmt.Errorf("password is required for sharing")
 	}
 
 	if body.Expires == "" {
-		return http.StatusBadRequest, fmt.Errorf("Expiration date is required for sharing")
+		return http.StatusBadRequest, fmt.Errorf("expiration date is required for sharing")
 	}
 
 	bytes := make([]byte, 6)

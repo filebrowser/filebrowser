@@ -123,7 +123,7 @@ var publicDlHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, 
 
 func authenticateShareRequest(r *http.Request, l *share.Link) (int, error) {
 	if l.PasswordHash == "" {
-		return http.StatusForbidden, fmt.Errorf("Share is not password-protected")
+		return http.StatusForbidden, fmt.Errorf("share is not password-protected")
 	}
 
 	password := r.Header.Get("X-SHARE-PASSWORD")
