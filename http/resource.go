@@ -46,21 +46,24 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 			return renderJSON(w, r, file)
 		}
 
+		const maxReadSize = 10 * 1024 * 1024 // 10 MB
+		if file.Size > maxReadSize {
+			return http.StatusRequestEntityTooLarge, fmt.Errorf("file size %d exceeds maximum allowed read size of %d bytes", file.Size, maxReadSize)
+		}
+
 		f, err := d.user.Fs.Open(r.URL.Path)
 		if err != nil {
 			return errToStatus(err), err
 		}
 		defer f.Close()
 
-		data, err := io.ReadAll(f)
+		w.Header().Set("Content-Type", "application/octet-stream")
+		w.WriteHeader(http.StatusOK)
+		_, err = io.Copy(w, io.LimitReader(f, maxReadSize))
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
-
-		w.Header().Set("Content-Type", "application/octet-stream")
-		w.WriteHeader(http.StatusOK)
-		_, err = w.Write(data)
-		return 0, err
+		return 0, nil
 	}
 
 	if checksum := r.URL.Query().Get("checksum"); checksum != "" {
