@@ -51,8 +51,8 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		"TusSettings":           d.settings.Tus,
 		"HideLoginButton":       d.settings.HideLoginButton,
 		"Domain":                d.server.Domain,
-		"TeamId":                d.server.TeamId,
-		"FilesystemId":          d.server.FilesystemId,
+		"TeamID":                d.server.TeamID,
+		"FilesystemID":          d.server.FilesystemID,
 	}
 
 	if d.settings.Branding.Files != "" {

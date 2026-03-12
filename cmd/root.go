@@ -380,11 +380,11 @@ func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, e
 	}
 
 	if v.IsSet("teamId") {
-		server.TeamId = v.GetString("teamId")
+		server.TeamID = v.GetString("teamId")
 	}
 
 	if v.IsSet("filesystemId") {
-		server.FilesystemId = v.GetString("filesystemId")
+		server.FilesystemID = v.GetString("filesystemId")
 	}
 
 	if isAddrSet && isSocketSet {

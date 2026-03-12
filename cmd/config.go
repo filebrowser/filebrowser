@@ -316,9 +316,9 @@ func getSettings(flags *pflag.FlagSet, set *settings.Settings, ser *settings.Ser
 		case "domain":
 			ser.Domain, err = flags.GetString(flag.Name)
 		case "teamId":
-			ser.TeamId, err = flags.GetString(flag.Name)
+			ser.TeamID, err = flags.GetString(flag.Name)
 		case "filesystemId":
-			ser.FilesystemId, err = flags.GetString(flag.Name)
+			ser.FilesystemID, err = flags.GetString(flag.Name)
 
 		// Settings flags from [addConfigFlags]
 		case "signup":

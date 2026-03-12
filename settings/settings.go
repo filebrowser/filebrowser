@@ -63,8 +63,8 @@ type Server struct {
 	AuthHook              string `json:"authHook"`
 	TokenExpirationTime   string `json:"tokenExpirationTime"`
 	Domain                string `json:"domain"`
-	TeamId                string `json:"teamId"`
-	FilesystemId          string `json:"filesystemId"`
+	TeamID                string `json:"teamId"`
+	FilesystemID          string `json:"filesystemId"`
 }
 
 // Clean cleans any variables that might need cleaning.
