@@ -111,6 +111,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.Bool("disableExec", true, "disables Command Runner feature")
 	flags.Bool("disableTypeDetectionByHeader", false, "disables type detection by reading file headers")
 	flags.Bool("disableImageResolutionCalc", false, "disables image resolution calculation by reading image files")
+	flags.Bool("enableWebDAV", false, "enables WebDAV feature")
 }
 
 var rootCmd = &cobra.Command{
@@ -423,9 +424,10 @@ func quickSetup(v *viper.Viper, s *storage.Storage) error {
 			ChunkSize:  settings.DefaultTusChunkSize,
 			RetryCount: settings.DefaultTusRetryCount,
 		},
-		Commands: nil,
-		Shell:    nil,
-		Rules:    nil,
+		Commands:     nil,
+		Shell:        nil,
+		Rules:        nil,
+		EnableWebDAV: v.GetBool("enableWebDAV"),
 	}
 
 	var err error

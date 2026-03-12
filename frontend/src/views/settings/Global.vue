@@ -124,6 +124,22 @@
             />
           </p>
 
+          <h3>{{ t("settings.webdav") }}</h3>
+          <p>
+            <input type="checkbox" v-model="settings.enableWebDAV" />
+            {{ t("settings.enableWebDAV") }}
+          </p>
+          <p v-if="settings.enableWebDAV" class="small">
+            {{ t("settings.webdavURL") }}
+            <code>{{ webdavURL }}</code>
+          </p>
+          <p v-if="settings.enableWebDAV && authStore.user" class="small">
+            {{ t("settings.username") }}: <code>{{ authStore.user.username }}</code>
+          </p>
+          <p v-if="settings.enableWebDAV" class="small">
+            {{ t("settings.password") }}: <code>{{ t("settings.webdavPasswordHint") }}</code>
+          </p>
+
           <h3>{{ t("settings.tusUploads") }}</h3>
 
           <p class="small">{{ t("settings.tusUploadsHelp") }}</p>
@@ -251,6 +267,7 @@ import { StatusError } from "@/api/utils";
 import Rules from "@/components/settings/Rules.vue";
 import Themes from "@/components/settings/Themes.vue";
 import UserForm from "@/components/settings/UserForm.vue";
+import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
 import { enableExec } from "@/utils/constants";
 import { getTheme, setTheme } from "@/utils/theme";
@@ -273,6 +290,7 @@ const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
 
 const { t } = useI18n();
 
+const authStore = useAuthStore();
 const layoutStore = useLayoutStore();
 
 const formattedChunkSize = computed({
@@ -294,6 +312,10 @@ const formattedChunkSize = computed({
       if (settings.value) settings.value.tus.chunkSize = parseBytes(value);
     }, 1500);
   },
+});
+
+const webdavURL = computed(() => {
+  return window.location.origin + "/webdav";
 });
 
 // Define funcs
