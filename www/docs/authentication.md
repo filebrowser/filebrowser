@@ -38,7 +38,7 @@ Where `X-My-Header` is the HTTP header provided by your proxy with the username.
 
 > [!WARNING]
 > 
-> File Browser will blindly trust the provided header. If the proxy can be bypassed, an attacker could simply attach the header and get admin access.
+> File Browser will blindly trust the provided header. If the proxy can be bypassed, an attacker could simply attach the header and get admin access. Please ensure that File Browser is not accessible from untrusted networks, and that the proxy is correctly configured to strip/overwrite the header from client requests.
 
 ## Hook Authentication
 
