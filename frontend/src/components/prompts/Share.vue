@@ -217,7 +217,7 @@ export default {
         return;
       }
       try {
-        let res = await api.share.create(
+        const res = await api.share.create(
           this.url,
           this.password,
           this.time,

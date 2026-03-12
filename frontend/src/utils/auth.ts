@@ -17,10 +17,7 @@ export async function saveToken(token: string) {
   });
 
   if (res.status !== 200) {
-    throw new StatusError(
-      `${res.status} ${res.statusText}`,
-      res.status
-    );
+    throw new StatusError(`${res.status} ${res.statusText}`, res.status);
   }
 
   const user = await res.json();

@@ -82,7 +82,7 @@
           :aria-label="t('buttons.job')"
         >
           <i class="fa-kit fa-converge-mark"></i>
-          <span>{{ t('buttons.job') }}</span>
+          <span>{{ t("buttons.job") }}</span>
         </a>
         <action icon="info" :label="t('buttons.info')" show="info" />
         <action
@@ -143,7 +143,7 @@
         :aria-label="t('buttons.job')"
       >
         <i class="fa-kit fa-converge-mark"></i>
-        <span>{{ t('buttons.job') }}</span>
+        <span>{{ t("buttons.job") }}</span>
       </a>
     </div>
 

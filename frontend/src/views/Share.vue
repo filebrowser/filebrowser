@@ -443,11 +443,7 @@ const download = () => {
   if (!req.value) return false;
 
   if (isSingleFile()) {
-    api.download(
-      null,
-      hash.value,
-      req.value.items[fileStore.selected[0]].path
-    );
+    api.download(null, hash.value, req.value.items[fileStore.selected[0]].path);
     return true;
   }
 
