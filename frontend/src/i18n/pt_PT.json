@@ -270,37 +270,37 @@
     },
     "user": "Utilizador",
     "userCommands": "Comandos",
-    "userCommandsHelp": "A space separated list with the available commands for this user. Example:\n",
-    "userCreated": "User created!",
-    "userDefaults": "User default settings",
-    "userDeleted": "User deleted!",
-    "userManagement": "User Management",
-    "userUpdated": "User updated!",
-    "username": "Username",
-    "users": "Users",
-    "currentPassword": "Your Current Password"
+    "userCommandsHelp": "Uma lista separada por espaços com os comandos disponíveis para este utilizador. Exemplo:\n",
+    "userCreated": "Utilizador criado!",
+    "userDefaults": "Definições de utilizador por defeito",
+    "userDeleted": "Utilizador eliminado!",
+    "userManagement": "Gestão de Utilizadores",
+    "userUpdated": "Utilizador actualizado!",
+    "username": "Nome de utilizador",
+    "users": "Utilizadores",
+    "currentPassword": "A Sua Palavra-passe Actual"
   },
   "sidebar": {
-    "help": "Help",
+    "help": "Ajuda",
     "hugoNew": "Hugo New",
-    "login": "Login",
-    "logout": "Logout",
-    "myFiles": "My files",
-    "newFile": "New file",
-    "newFolder": "New folder",
-    "preview": "Preview",
-    "settings": "Settings",
-    "signup": "Signup",
-    "siteSettings": "Site Settings"
+    "login": "Iniciar sessão",
+    "logout": "Sair",
+    "myFiles": "Os meus ficheiros",
+    "newFile": "Novo ficheiro",
+    "newFolder": "Nova pasta",
+    "preview": "Pré-visualizar",
+    "settings": "Definições",
+    "signup": "Registar",
+    "siteSettings": "Definições do Site"
   },
   "success": {
-    "linkCopied": "Link copied!"
+    "linkCopied": "Link copiado!"
   },
   "time": {
-    "days": "Days",
-    "hours": "Hours",
-    "minutes": "Minutes",
-    "seconds": "Seconds",
-    "unit": "Time Unit"
+    "days": "Dias",
+    "hours": "Horas",
+    "minutes": "Minutos",
+    "seconds": "Segundos",
+    "unit": "Unidade de Tempo"
   }
 }
