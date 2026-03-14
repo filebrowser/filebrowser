@@ -212,6 +212,8 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		dst := r.URL.Query().Get("destination")
 		action := r.URL.Query().Get("action")
 		dst, err := url.QueryUnescape(dst)
+		dst = path.Clean("/" + dst)
+		src = path.Clean("/" + src)
 		if !d.Check(src) || !d.Check(dst) {
 			return http.StatusForbidden, nil
 		}
