@@ -20,7 +20,7 @@ import (
 
 func withPermShare(fn handleFunc) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-		if !d.user.Perm.Share {
+		if !d.user.Perm.Share || !d.user.Perm.Download {
 			return http.StatusForbidden, nil
 		}
 
