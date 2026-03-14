@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.62.1](https://github.com/filebrowser/filebrowser/compare/v2.62.0...v2.62.1) (2026-03-14)
+
+
+### Bug Fixes
+
+* base url/reverse proxy redirect ([fc80f4f](https://github.com/filebrowser/filebrowser/commit/fc80f4f44c856ddc19df3024c245990fffd55630))
+
 ## [2.62.0](https://github.com/filebrowser/filebrowser/compare/v2.61.2...v2.62.0) (2026-03-14)
 
 
