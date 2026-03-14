@@ -3,6 +3,7 @@ import { createI18n } from "vue-i18n";
 
 import("dayjs/locale/ar");
 import("dayjs/locale/bg");
+import("dayjs/locale/ca");
 import("dayjs/locale/cs");
 import("dayjs/locale/de");
 import("dayjs/locale/el");
@@ -16,6 +17,7 @@ import("dayjs/locale/is");
 import("dayjs/locale/it");
 import("dayjs/locale/ja");
 import("dayjs/locale/ko");
+import("dayjs/locale/lv");
 import("dayjs/locale/nb");
 import("dayjs/locale/nl");
 import("dayjs/locale/nl-be");
@@ -41,6 +43,18 @@ export function detectLocale() {
   // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language
   let locale = navigator.language.toLowerCase();
   switch (true) {
+    case /^ar\b/.test(locale):
+      locale = "ar";
+      break;
+    case /^bg\b/.test(locale):
+      locale = "bg";
+      break;
+    case /^cs\b/.test(locale):
+      locale = "cs";
+      break;
+    case /^lv\b/.test(locale):
+      locale = "lv";
+      break;
     case /^he\b/.test(locale):
       locale = "he";
       break;
@@ -49,9 +63,6 @@ export function detectLocale() {
       break;
     case /^hu\b/.test(locale):
       locale = "hu";
-      break;
-    case /^ar\b/.test(locale):
-      locale = "ar";
       break;
     case /^el.*/i.test(locale):
       locale = "el";
@@ -74,8 +85,9 @@ export function detectLocale() {
     case /^pt-br\b/.test(locale):
       locale = "pt-br";
       break;
+    case /^pt-pt\b/.test(locale):
     case /^pt\b/.test(locale):
-      locale = "pt";
+      locale = "pt-pt";
       break;
     case /^ja\b/.test(locale):
       locale = "ja";
@@ -128,9 +140,7 @@ export function detectLocale() {
     case /^no\b/.test(locale):
       locale = "no";
       break;
-    case /^bg\b/.test(locale):
-      locale = "bg";
-      break;
+
     default:
       locale = "en";
   }
