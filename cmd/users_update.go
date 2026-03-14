@@ -60,6 +60,7 @@ options you want to change.`,
 			Perm:                  user.Perm,
 			Sorting:               user.Sorting,
 			Commands:              user.Commands,
+			ShowDirectorySizes:    user.ShowDirectorySizes,
 		}
 
 		err = getUserDefaults(flags, &defaults, false)
@@ -75,6 +76,7 @@ options you want to change.`,
 		user.Perm = defaults.Perm
 		user.Commands = defaults.Commands
 		user.Sorting = defaults.Sorting
+		user.ShowDirectorySizes = defaults.ShowDirectorySizes
 		user.LockPassword, err = flags.GetBool("lockPassword")
 		if err != nil {
 			return err

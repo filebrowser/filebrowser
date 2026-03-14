@@ -32,6 +32,7 @@ filebrowser users update <id|username> [flags]
       --perm.share              share perm for users (default true)
       --redirectAfterCopyMove   redirect to destination after copy/move
       --scope string            scope for users (default ".")
+      --showDirectorySizes      show directory sizes in listings
       --singleClick             use single clicks only
       --sorting.asc             sorting by ascending order
       --sorting.by string       sorting mode (name, size or modified) (default "name")
@@ -49,4 +50,3 @@ filebrowser users update <id|username> [flags]
 ## See Also
 
 * [filebrowser users](filebrowser-users.md)	 - Users management utility
-

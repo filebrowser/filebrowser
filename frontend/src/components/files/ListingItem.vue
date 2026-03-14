@@ -33,7 +33,14 @@
     <div>
       <p class="name">{{ name }}</p>
 
-      <p v-if="isDir" class="size" data-order="-1">&mdash;</p>
+      <p
+        v-if="isDir && showDirectorySizes"
+        class="size"
+        :data-order="humanSize()"
+      >
+        {{ humanSize() }}
+      </p>
+      <p v-else-if="isDir" class="size" data-order="-1">&mdash;</p>
       <p v-else class="size" :data-order="humanSize()">{{ humanSize() }}</p>
 
       <p class="modified">
@@ -116,6 +123,10 @@ const thumbnailUrl = computed(() => {
 
 const isThumbsEnabled = computed(() => {
   return enableThumbs;
+});
+
+const showDirectorySizes = computed(() => {
+  return !props.readOnly && props.isDir && !!authStore.user?.showDirectorySizes;
 });
 
 const humanSize = () => {
