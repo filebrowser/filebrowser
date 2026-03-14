@@ -81,6 +81,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.Bool("redirectAfterCopyMove", false, "redirect to destination after copy/move")
 	flags.Bool("dateFormat", false, "use date format (true for absolute time, false for relative)")
 	flags.Bool("hideDotfiles", false, "hide dotfiles")
+	flags.Bool("showDirectorySizes", false, "show directory sizes in listings")
 	flags.String("aceEditorTheme", "", "ace editor's syntax highlighting theme for users")
 }
 
@@ -142,6 +143,8 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 			defaults.DateFormat, err = flags.GetBool(flag.Name)
 		case "hideDotfiles":
 			defaults.HideDotfiles, err = flags.GetBool(flag.Name)
+		case "showDirectorySizes":
+			defaults.ShowDirectorySizes, err = flags.GetBool(flag.Name)
 		}
 
 		if err != nil {

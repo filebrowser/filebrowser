@@ -259,6 +259,8 @@
     "shareDuration": "Freigabedauer",
     "shareManagement": "Freigabeverwaltung",
     "shareDeleted": "Freigabe gelöscht!",
+    "showDirectorySizes": "Verzeichnisgrößen in Listen anzeigen",
+    "showDirectorySizesHelp": "Die Berechnung von Verzeichnisgrößen kann große Ordner verlangsamen.",
     "singleClick": "Einfacher Klick zum Öffnen von Dateien und Verzeichnissen",
     "themes": {
       "default": "Systemstandard",
