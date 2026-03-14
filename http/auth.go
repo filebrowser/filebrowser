@@ -167,6 +167,10 @@ var signupHandler = func(_ http.ResponseWriter, r *http.Request, d *data) (int, 
 
 	d.settings.Defaults.Apply(user)
 
+	// Users signed up via the signup handler should never become admins, even
+	// if that is the default permission.
+	user.Perm.Admin = false
+
 	pwd, err := users.ValidateAndHashPwd(info.Password, d.settings.MinimumPasswordLength)
 	if err != nil {
 		return http.StatusBadRequest, err
