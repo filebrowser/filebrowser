@@ -9,7 +9,9 @@ settings:
   language_mapping:
     sv_SE: sv-se
     pt_BR: pt-br
+    pt_PT: pt-pt
     zh_CN: zh-cn
     zh_HK: zh-hk
     zh_TW: zh-tw
     nl_BE: nl-be
+    lv_LV: lv-lv

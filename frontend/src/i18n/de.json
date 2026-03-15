@@ -175,7 +175,9 @@
     "filesInDest": "Dateien im Zielordner",
     "override": "Überschreiben",
     "skip": "Überspringen",
-    "forbiddenError": "Zugriff verweigert"
+    "forbiddenError": "Zugriff verweigert",
+    "currentPassword": "Dein Passwort",
+    "currentPasswordMessage": "Gib dein Passwort ein, um diese Aktion zu bestätigen."
   },
   "search": {
     "images": "Bilder",

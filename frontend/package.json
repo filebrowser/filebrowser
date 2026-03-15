@@ -54,7 +54,7 @@
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
-    "@vitejs/plugin-legacy": "^7.2.1",
+    "@vitejs/plugin-legacy": "^8.0.0",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.6.0",
@@ -68,9 +68,9 @@
     "prettier": "^3.6.2",
     "terser": "^5.43.1",
     "typescript": "^5.9.3",
-    "vite": "^7.2.2",
+    "vite": "^8.0.0",
     "vite-plugin-compression2": "^2.3.1",
     "vue-tsc": "^3.1.3"
   },
-  "packageManager": "pnpm@10.30.3+sha512.c961d1e0a2d8e354ecaa5166b822516668b7f44cb5bd95122d590dd81922f606f5473b6d23ec4a5be05e7fcd18e8488d47d978bbe981872f1145d06e9a740017"
+  "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be"
 }

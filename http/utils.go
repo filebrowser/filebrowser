@@ -60,6 +60,15 @@ func stripPrefix(prefix string, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		p := strings.TrimPrefix(r.URL.Path, prefix)
 		rp := strings.TrimPrefix(r.URL.RawPath, prefix)
+
+		// If the path is exactly the prefix (no trailing slash), redirect to
+		// the prefix with a trailing slash so the router receives "/" instead
+		// of "", which would otherwise cause a redirect to the site root.
+		if p == "" {
+			http.Redirect(w, r, prefix+"/", http.StatusMovedPermanently)
+			return
+		}
+
 		r2 := new(http.Request)
 		*r2 = *r
 		r2.URL = new(url.URL)

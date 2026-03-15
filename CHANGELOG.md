@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.62.1](https://github.com/filebrowser/filebrowser/compare/v2.62.0...v2.62.1) (2026-03-14)
+
+
+### Bug Fixes
+
+* base url/reverse proxy redirect ([fc80f4f](https://github.com/filebrowser/filebrowser/commit/fc80f4f44c856ddc19df3024c245990fffd55630))
+
+## [2.62.0](https://github.com/filebrowser/filebrowser/compare/v2.61.2...v2.62.0) (2026-03-14)
+
+
+### Features
+
+* Updates for project File Browser ([#5807](https://github.com/filebrowser/filebrowser/issues/5807)) ([858eb42](https://github.com/filebrowser/filebrowser/commit/858eb426515ec55172e9cca47bdf1e25a0d0d81d))
+
+
+### Bug Fixes
+
+* allow deleting the user's own account ([#5820](https://github.com/filebrowser/filebrowser/issues/5820)) ([f04af0c](https://github.com/filebrowser/filebrowser/commit/f04af0cac6c808b8e7c9a9651380c252c4de9132))
+* around languages ([c21af07](https://github.com/filebrowser/filebrowser/commit/c21af0791a5df458c2ddb81ce9ae44b772b6d82d))
+* clean path in patch handler ([4bd7d69](https://github.com/filebrowser/filebrowser/commit/4bd7d69c82163b201a987e99c0c50d7ecc6ee5f1))
+* make perm.share depend on share.download ([09a2616](https://github.com/filebrowser/filebrowser/commit/09a26166b4f79446e7174c017380f6db45444e32))
+* properly surface config parse errors ([#5822](https://github.com/filebrowser/filebrowser/issues/5822)) ([ef2e999](https://github.com/filebrowser/filebrowser/commit/ef2e9992dc3098f6c4722c2a98966cd8abf8bab5))
+* signup handler shouldn't create admins ([a63573b](https://github.com/filebrowser/filebrowser/commit/a63573b67eb302167b4c4f218361a2d0c138deab))
+* **tus:** preserve percent-encoded upload paths in Location header ([#5817](https://github.com/filebrowser/filebrowser/issues/5817)) ([0542fc0](https://github.com/filebrowser/filebrowser/commit/0542fc0ba43740c967414eebd156bac86ad80376))
+* **upload:** avoid skipping whole folder upload on conflict modal ([#5814](https://github.com/filebrowser/filebrowser/issues/5814)) ([f5f8b60](https://github.com/filebrowser/filebrowser/commit/f5f8b60b331a07729a1fed1ed065cb6fc20930ea))
+* **upload:** don't mark every folder-upload file as conflicting ([#5813](https://github.com/filebrowser/filebrowser/issues/5813)) ([6dcef07](https://github.com/filebrowser/filebrowser/commit/6dcef07f40d550acee63dd01e0a3bcf78532f690))
+
 ## [2.61.2](https://github.com/filebrowser/filebrowser/compare/v2.61.1...v2.61.2) (2026-03-06)
 
 
