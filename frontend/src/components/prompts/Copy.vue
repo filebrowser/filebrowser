@@ -106,10 +106,10 @@ export default {
           .then(() => {
             buttons.success("copy");
             this.preselect = removePrefix(items[0].to);
+            this.closeHovers();
 
             if (this.$route.path === this.dest) {
               this.reload = true;
-
               return;
             }
 
