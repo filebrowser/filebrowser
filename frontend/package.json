@@ -14,7 +14,8 @@
     "typecheck": "vue-tsc -p ./tsconfig.app.json --noEmit",
     "lint": "eslint src/",
     "lint:fix": "eslint --fix src/",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "vitest run"
   },
   "dependencies": {
     "@chenfengyuan/vue-number-input": "^2.0.1",
@@ -70,6 +71,7 @@
     "typescript": "^5.9.3",
     "vite": "^8.0.0",
     "vite-plugin-compression2": "^2.3.1",
+    "vitest": "^4.1.0",
     "vue-tsc": "^3.1.3"
   },
   "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be"
