@@ -38,6 +38,21 @@
         </button>
       </div>
 
+      <div v-if="jobEnabled">
+        <a
+          class="action job-action"
+          :href="jobUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          :aria-label="$t('sidebar.createJob')"
+          :title="$t('sidebar.createJob')"
+          @click="closeHovers"
+        >
+          <i class="fa-kit fa-converge-mark"></i>
+          <span>{{ $t("sidebar.createJob") }}</span>
+        </a>
+      </div>
+
       <div v-if="user.perm.admin">
         <button
           class="action"
@@ -49,17 +64,18 @@
           <span>{{ $t("sidebar.settings") }}</span>
         </button>
       </div>
-      <button
-        v-if="canLogout"
-        @click="logout"
-        class="action"
-        id="logout"
-        :aria-label="$t('sidebar.logout')"
-        :title="$t('sidebar.logout')"
-      >
-        <i class="material-icons">exit_to_app</i>
-        <span>{{ $t("sidebar.logout") }}</span>
-      </button>
+      <div v-if="canLogout">
+        <button
+          @click="logout"
+          class="action"
+          id="logout"
+          :aria-label="$t('sidebar.logout')"
+          :title="$t('sidebar.logout')"
+        >
+          <i class="material-icons">exit_to_app</i>
+          <span>{{ $t("sidebar.logout") }}</span>
+        </button>
+      </div>
     </template>
     <template v-else>
       <router-link
@@ -120,6 +136,9 @@ import {
   noAuth,
   logoutPage,
   loginPage,
+  domain,
+  teamId,
+  filesystemId,
 } from "@/utils/constants";
 import { files as api } from "@/api";
 import ProgressBar from "@/components/ProgressBar.vue";
@@ -150,6 +169,12 @@ export default {
     disableExternal: () => disableExternal,
     disableUsedPercentage: () => disableUsedPercentage,
     canLogout: () => !noAuth && (loginPage || logoutPage !== "/login"),
+    jobEnabled: () => !!domain && !!teamId && !!filesystemId,
+    jobUrl() {
+      if (!this.jobEnabled) return "";
+      const folderPath = this.$route.path.replace(/^\/files/, "") || "/";
+      return `${domain}/${teamId}/jobs/create?sid=${filesystemId}&stype=filesystem&path=${encodeURIComponent(folderPath)}`;
+    },
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),

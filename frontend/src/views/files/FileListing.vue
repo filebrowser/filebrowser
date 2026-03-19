@@ -47,18 +47,6 @@
           />
         </template>
 
-        <a
-          v-if="showJobButton"
-          class="action job-action"
-          :href="jobUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          :title="t('buttons.job')"
-          :aria-label="t('buttons.job')"
-        >
-          <i class="fa-kit fa-converge-mark"></i>
-          <span>{{ t("buttons.job") }}</span>
-        </a>
         <action
           v-if="headerButtons.shell"
           icon="code"
@@ -127,18 +115,6 @@
         :label="t('buttons.moveFile')"
         show="move"
       />
-      <a
-        v-if="showJobButton"
-        class="action job-action"
-        :href="jobUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        :title="t('buttons.job')"
-        :aria-label="t('buttons.job')"
-      >
-        <i class="fa-kit fa-converge-mark"></i>
-        <span>{{ t("buttons.job") }}</span>
-      </a>
       <action
         v-if="headerButtons.delete"
         icon="delete"
@@ -370,12 +346,7 @@ import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
 import { users, files as api } from "@/api";
-import {
-  enableExec,
-  domain,
-  teamId,
-  filesystemId,
-} from "@/utils/constants";
+import { enableExec } from "@/utils/constants";
 import * as upload from "@/utils/upload";
 import css from "@/utils/css";
 import { throttle } from "lodash-es";
@@ -501,25 +472,6 @@ const viewIcon = computed(() => {
     ? icons["list"]
     : icons[authStore.user.viewMode];
 });
-
-const jobEnabled = computed(() => {
-  return !!domain && !!teamId && !!filesystemId;
-});
-
-const jobUrl = computed(() => {
-  if (!jobEnabled.value) return "";
-
-  const folderPath = fileStore.req?.path || "/";
-
-  return `${domain}/${teamId}/jobs/create?sid=${filesystemId}&stype=filesystem&path=${encodeURIComponent(folderPath)}`;
-});
-
-const showJobButton = computed(() => {
-  if (!jobEnabled.value || !authStore.user) return false;
-
-  return true;
-});
-
 const headerButtons = computed(() => {
   return {
     upload: authStore.user?.perm.create,
