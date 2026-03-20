@@ -14,8 +14,8 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	fberrors "github.com/filebrowser/filebrowser/v2/errors"
-	"github.com/filebrowser/filebrowser/v2/share"
+	fberrors "github.com/rforced/filebrowser/v2/errors"
+	"github.com/rforced/filebrowser/v2/share"
 )
 
 func withPermShare(fn handleFunc) handleFunc {

@@ -20,7 +20,7 @@ tasks:
   build:backend:
     desc: Build backend binary
     cmds:
-      - go build -ldflags='-s -w -X "github.com/filebrowser/filebrowser/v2/version.Version={{.VERSION}}" -X "github.com/filebrowser/filebrowser/v2/version.CommitSHA={{.GIT_COMMIT}}"' -o filebrowser .
+      - go build -ldflags='-s -w -X "github.com/rforced/filebrowser/v2/version.Version={{.VERSION}}" -X "github.com/rforced/filebrowser/v2/version.CommitSHA={{.GIT_COMMIT}}"' -o filebrowser .
     vars:
       GIT_COMMIT:
         sh: git log -n 1 --format=%h

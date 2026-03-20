@@ -23,8 +23,8 @@ import (
 
 	"github.com/spf13/afero"
 
-	fberrors "github.com/filebrowser/filebrowser/v2/errors"
-	"github.com/filebrowser/filebrowser/v2/rules"
+	fberrors "github.com/rforced/filebrowser/v2/errors"
+	"github.com/rforced/filebrowser/v2/rules"
 )
 
 var (

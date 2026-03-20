@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/filebrowser/filebrowser/v2/cmd"
+	"github.com/rforced/filebrowser/v2/cmd"
 )
 
 func main() {

@@ -13,7 +13,7 @@ import (
 
 	"github.com/spf13/afero"
 
-	"github.com/filebrowser/filebrowser/v2/files"
+	"github.com/rforced/filebrowser/v2/files"
 )
 
 // keepUploadActive periodically touches the cache entry to prevent eviction during transfer

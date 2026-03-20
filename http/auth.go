@@ -8,9 +8,9 @@ import (
 	"os"
 	"time"
 
-	fbAuth "github.com/filebrowser/filebrowser/v2/auth"
-	fberrors "github.com/filebrowser/filebrowser/v2/errors"
-	"github.com/filebrowser/filebrowser/v2/users"
+	fbAuth "github.com/rforced/filebrowser/v2/auth"
+	fberrors "github.com/rforced/filebrowser/v2/errors"
+	"github.com/rforced/filebrowser/v2/users"
 )
 
 const (

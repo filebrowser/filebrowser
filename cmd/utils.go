@@ -18,9 +18,9 @@ import (
 	"github.com/spf13/viper"
 	yaml "gopkg.in/yaml.v3"
 
-	"github.com/filebrowser/filebrowser/v2/settings"
-	"github.com/filebrowser/filebrowser/v2/storage"
-	"github.com/filebrowser/filebrowser/v2/storage/bolt"
+	"github.com/rforced/filebrowser/v2/settings"
+	"github.com/rforced/filebrowser/v2/storage"
+	"github.com/rforced/filebrowser/v2/storage/bolt"
 )
 
 const databasePermissions = 0640

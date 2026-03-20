@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/filebrowser/filebrowser/v2/rules"
+	"github.com/rforced/filebrowser/v2/rules"
 )
 
 const DefaultUsersHomeBasePath = "/users"

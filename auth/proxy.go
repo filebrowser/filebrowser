@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	fberrors "github.com/filebrowser/filebrowser/v2/errors"
-	"github.com/filebrowser/filebrowser/v2/settings"
-	"github.com/filebrowser/filebrowser/v2/users"
+	fberrors "github.com/rforced/filebrowser/v2/errors"
+	"github.com/rforced/filebrowser/v2/settings"
+	"github.com/rforced/filebrowser/v2/users"
 )
 
 // MethodProxyAuth is used to identify no auth.

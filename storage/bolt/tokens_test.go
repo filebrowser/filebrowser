@@ -7,8 +7,8 @@ import (
 
 	"github.com/asdine/storm/v3"
 
-	"github.com/filebrowser/filebrowser/v2/auth"
-	fberrors "github.com/filebrowser/filebrowser/v2/errors"
+	"github.com/rforced/filebrowser/v2/auth"
+	fberrors "github.com/rforced/filebrowser/v2/errors"
 )
 
 func newTestTokenStore(t *testing.T) auth.TokenStore {

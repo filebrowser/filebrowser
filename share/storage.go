@@ -3,7 +3,7 @@ package share
 import (
 	"time"
 
-	fberrors "github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/rforced/filebrowser/v2/errors"
 )
 
 // StorageBackend is the interface to implement for a share storage.
