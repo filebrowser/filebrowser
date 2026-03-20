@@ -8,6 +8,9 @@ on:
       - "v*"
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   lint-frontend:
     name: Lint Frontend
@@ -100,7 +103,7 @@ jobs:
           version: latest
           args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
 
