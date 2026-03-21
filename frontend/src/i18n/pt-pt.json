@@ -100,7 +100,7 @@
     "click": "seleccionar ficheiro ou pasta",
     "ctrl": {
       "click": "seleccionar vários ficheiros e pastas",
-      "f": "opens search",
+      "f": "abre a pesquisa",
       "s": "guarda um ficheiro ou descarrega a pasta onde estiver"
     },
     "del": "elimina os itens seleccionados",
@@ -145,7 +145,7 @@
     "lastModified": "última modificação",
     "move": "Mover",
     "moveMessage": "Escolha uma nova casa para o(s) seu(s) ficheiro(s)/pasta(s):",
-    "newArchetype": "Escolha um novo post baseado no archetype. O seu ficheiro irá criado no conteúdo da pasta.",
+    "newArchetype": "Criar uma nova publicação baseado no archetype. O seu ficheiro irá ser criado no conteúdo da pasta.",
     "newDir": "Nova pasta",
     "newDirMessage": "Nomeie a sua nova pasta.",
     "newFile": "Novo ficheiro",
@@ -157,7 +157,7 @@
     "replace": "Substituir",
     "replaceMessage": "Um dos ficheiros que está a tentar enviar tem um nome em conflito. Quer ignorar este ficheiro e continuar a enviar ou substituir o existente?\none?\n",
     "schedule": "Agendar",
-    "scheduleMessage": "Escolha a data e hora para agendar a autenticação desta publicação.",
+    "scheduleMessage": "Escolha a data e hora para agendar a publicação desta publicação.",
     "show": "Mostrar",
     "size": "Tamanho",
     "upload": "Enviar",
