@@ -23,6 +23,7 @@ interface SettingsDefaults {
   perm: Permissions;
   commands: any[];
   hideDotfiles: boolean;
+  showDirectorySizes: boolean;
   dateFormat: boolean;
   aceEditorTheme: string;
 }

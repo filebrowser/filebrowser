@@ -17,6 +17,7 @@ type UserDefaults struct {
 	Perm                  users.Permissions `json:"perm"`
 	Commands              []string          `json:"commands"`
 	HideDotfiles          bool              `json:"hideDotfiles"`
+	ShowDirectorySizes    bool              `json:"showDirectorySizes"`
 	DateFormat            bool              `json:"dateFormat"`
 	AceEditorTheme        string            `json:"aceEditorTheme"`
 }
@@ -32,6 +33,7 @@ func (d *UserDefaults) Apply(u *users.User) {
 	u.Sorting = d.Sorting
 	u.Commands = d.Commands
 	u.HideDotfiles = d.HideDotfiles
+	u.ShowDirectorySizes = d.ShowDirectorySizes
 	u.DateFormat = d.DateFormat
 	u.AceEditorTheme = d.AceEditorTheme
 }
