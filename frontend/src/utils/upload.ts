@@ -124,11 +124,14 @@ export function scanFiles(dt: DataTransfer): Promise<UploadList | FileList> {
       reader.readEntries((entries) => {
         reading--;
         if (entries.length > 0) {
+          const dirWithSlash = directory.endsWith("/")
+            ? directory
+            : `${directory}/`;
           for (const entry of entries) {
-            readEntry(entry, `${directory}/`);
+            readEntry(entry, dirWithSlash);
           }
 
-          readReaderContent(reader, `${directory}/`);
+          readReaderContent(reader, dirWithSlash);
         }
 
         if (reading === 0) {
