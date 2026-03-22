@@ -251,6 +251,7 @@ import { StatusError } from "@/api/utils";
 import Rules from "@/components/settings/Rules.vue";
 import Themes from "@/components/settings/Themes.vue";
 import UserForm from "@/components/settings/UserForm.vue";
+import { setHtmlLocale, setLocale } from "@/i18n";
 import { useLayoutStore } from "@/stores/layout";
 import { enableExec } from "@/utils/constants";
 import { getTheme, setTheme } from "@/utils/theme";
@@ -349,6 +350,8 @@ const save = async () => {
 
   try {
     await api.update(newSettings);
+    setLocale(newSettings.defaults.locale); // change language
+    setHtmlLocale(newSettings.defaults.locale); // change language
     $showSuccess(t("settings.settingsUpdated"));
   } catch (e: any) {
     $showError(e);
@@ -397,6 +400,7 @@ onMounted(async () => {
     layoutStore.loading = true;
     const original: ISettings = await api.get();
     const newSettings: ISettings = { ...original, commands: {} };
+    setLocale(original.defaults.locale);
 
     const keys = Object.keys(original.commands) as Array<keyof SettingsCommand>;
     for (const key of keys) {
