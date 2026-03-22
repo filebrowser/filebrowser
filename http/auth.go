@@ -133,6 +133,8 @@ func loginHandler(tokenExpireTime time.Duration) handleFunc {
 			return http.StatusInternalServerError, err
 		}
 
+		user.Locale = d.settings.Defaults.Locale // set language
+
 		return printToken(w, r, d, user, tokenExpireTime)
 	}
 }
