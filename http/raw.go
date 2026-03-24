@@ -72,7 +72,7 @@ func parseQueryAlgorithm(r *http.Request) (string, archives.Archival, error) {
 
 func setContentDisposition(w http.ResponseWriter, r *http.Request, file *files.FileInfo) {
 	if r.URL.Query().Get("inline") == "true" {
-		w.Header().Set("Content-Disposition", "inline")
+		w.Header().Set("Content-Disposition", "inline; filename*=utf-8''"+url.PathEscape(file.Name))
 	} else {
 		// As per RFC6266 section 4.3
 		w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(file.Name))
