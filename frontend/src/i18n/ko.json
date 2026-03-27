@@ -176,8 +176,8 @@
     "override": "덮어쓰기",
     "skip": "건너뛰기",
     "forbiddenError": "권한 오류",
-    "currentPassword": "Your password",
-    "currentPasswordMessage": "Enter your password to validate this action."
+    "currentPassword": "기존 비밀번호",
+    "currentPasswordMessage": "기존 비밀번호를 입력해 이 동작을 확인하십시오."
   },
   "search": {
     "images": "이미지",
