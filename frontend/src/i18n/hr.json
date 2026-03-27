@@ -42,17 +42,17 @@
     "update": "Ažuriraj",
     "upload": "Prenesi",
     "openFile": "Otvori datoteku",
-    "openDirect": "View raw",
+    "openDirect": "Pregled neobrađenog",
     "discardChanges": "Odbaci",
-    "stopSearch": "Stop searching",
+    "stopSearch": "Prestanak pretraživanja",
     "saveChanges": "Spremi promjene",
     "editAsText": "Uredi kao tekst",
     "increaseFontSize": "Povećaj veličinu fonta",
     "decreaseFontSize": "Smanji veličinu fonta",
-    "overrideAll": "Replace all files in destination folder",
-    "skipAll": "Skip all conflicting files",
-    "renameAll": "Rename all files (create a copy)",
-    "singleDecision": "Decide for each conflicting file"
+    "overrideAll": "Zamijeni sve datoteke u destinacijskoj mapi",
+    "skipAll": "Preskoči sve konfliktirajuće datoteke",
+    "renameAll": "Preimenuj sve datoteke (stvori kopiju)",
+    "singleDecision": "Odluči za svaku konfliktirajuću datoteku"
   },
   "download": {
     "downloadFile": "Preuzmi Datoteku",
@@ -94,7 +94,7 @@
       "semicolon": "Točka zarez (;)",
       "both": "I (,) i (;)"
     },
-    "fileEncoding": "File Encoding"
+    "fileEncoding": "Kodiranje datoteka"
   },
   "help": {
     "click": "odaberi datoteku ili mapu",
@@ -166,18 +166,18 @@
     "optionalPassword": "Opcionalna lozinka",
     "resolution": "Rezolucija",
     "discardEditorChanges": "Jeste li sigurni da želite odbaciti promjene koje ste napravili?",
-    "replaceOrSkip": "Replace or skip files",
-    "resolveConflict": "Which files do you want to keep?",
-    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
-    "fastConflictResolve": "The destination folder there are {count} files with same name.",
-    "uploadingFiles": "Uploading files",
-    "filesInOrigin": "Files in origin",
-    "filesInDest": "Files in destination",
-    "override": "Overwrite",
-    "skip": "Skip",
-    "forbiddenError": "Forbidden Error",
-    "currentPassword": "Your password",
-    "currentPasswordMessage": "Enter your password to validate this action."
+    "replaceOrSkip": "Zamijeni ili preskoči datoteke",
+    "resolveConflict": "Koje datoteke želite sačuvati?",
+    "singleConflictResolve": "Ako odaberete obje verzije, u ime kopirane datoteke bit će dodan broj.",
+    "fastConflictResolve": "Destinacijska mapa sadrži {count} istoimenih datoteka.",
+    "uploadingFiles": "Prenošenje datoteka",
+    "filesInOrigin": "Datoteke u izvornoj mapi",
+    "filesInDest": "Datoteke u destinacijskoj mapi",
+    "override": "Prebrisivanje",
+    "skip": "Preskoči",
+    "forbiddenError": "Greška zabrane pristupa",
+    "currentPassword": "Vaša lozinka",
+    "currentPasswordMessage": "Unesite Vašu lozinku da biste validirali ovu akciju."
   },
   "search": {
     "images": "Slike",
@@ -250,7 +250,7 @@
     "permissions": "Dopuštenja",
     "permissionsHelp": "Korisnika možete postaviti administratorom ili odabrati dopuštenja individualno. Odabirom na \"Administrator\", sve druge opcije bit će automatski odabrane. Upravljanje korisnicima ostaje privilegija administratora.\n",
     "profileSettings": "Postavke profila",
-    "redirectAfterCopyMove": "Redirect to destination after copy/move",
+    "redirectAfterCopyMove": "Preusmjeri na destinaciju nakon kopiranja/premještanja",
     "ruleExample1": "onemogućava pristup svakoj datoteci koja započinje točkom (poput .git, .gitignore) u svakoj mapi.\n",
     "ruleExample2": "blokira pristup datoteci naziva Caddyfile na korijenu opsega.",
     "rules": "Pravila",
@@ -278,7 +278,7 @@
     "userUpdated": "Korisnik ažuriran!",
     "username": "Korisničko ime",
     "users": "Korisnici",
-    "currentPassword": "Your Current Password"
+    "currentPassword": "Vaša trenutna lozinka"
   },
   "sidebar": {
     "help": "Pomoć",
