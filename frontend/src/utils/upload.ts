@@ -25,12 +25,8 @@ export function checkConflict(
     const file = files[i];
     const name = file.name;
 
-    if (folder_upload && file.isDir) {
+    if (folder_upload) {
       const dirs = file.fullPath?.split("/");
-      // For folder uploads, destination listing is flat and only contains
-      // top-level entries. Treating every nested file as a conflict when the
-      // parent folder exists blocks the whole upload (see #5798), so skip
-      // preflight conflict detection for nested files.
       if (dirs && dirs.length > 1) {
         continue;
       }
@@ -154,7 +150,8 @@ function detectType(mimetype: string): ResourceType {
 export function handleFiles(
   files: UploadList,
   base: string,
-  overwrite = false
+  overwrite?: boolean,
+  skip = false
 ) {
   const uploadStore = useUploadStore();
   const layoutStore = useLayoutStore();
@@ -180,7 +177,8 @@ export function handleFiles(
       path,
       file.name,
       file.file ?? null,
-      file.overwrite || overwrite,
+      overwrite ?? file.overwrite ?? false,
+      skip,
       type
     );
   }

@@ -72,6 +72,10 @@ func tusPostHandler(cache UploadCache) handleFunc {
 				return http.StatusBadRequest, fmt.Errorf("cannot upload to a directory %s", file.RealPath())
 			}
 
+			if r.URL.Query().Get("skip") == "true" {
+				return http.StatusNoContent, nil
+			}
+
 			// Existing files will remain untouched unless explicitly instructed to override
 			if r.URL.Query().Get("override") != "true" {
 				return http.StatusConflict, nil

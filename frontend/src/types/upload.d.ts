@@ -4,6 +4,7 @@ type Upload = {
   file: File | null;
   type: ResourceType;
   overwrite: boolean;
+  skip: boolean;
   totalBytes: number;
   sentBytes: number;
   rawProgress: {
@@ -18,6 +19,7 @@ interface UploadEntry {
   fullPath?: string;
   file?: File;
   overwrite?: boolean;
+  skip?: boolean;
 }
 
 type UploadList = UploadEntry[];

@@ -39,6 +39,7 @@ import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
 import * as upload from "@/utils/upload";
+import { clearUploadList } from "@/api/utils";
 
 const { t } = useI18n();
 const route = useRoute();
@@ -76,19 +77,23 @@ const uploadInput = (event: Event) => {
         conflict: conflict,
         isUploadAction: true,
       },
-      confirm: (event: Event, result: Array<ConflictingResource>) => {
+      confirm: (
+        event: Event,
+        entries: Array<ConflictingResource>,
+        result: string
+      ) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        for (let i = result.length - 1; i >= 0; i--) {
-          const item = result[i];
-          if (item.checked.length == 2) {
-            continue;
-          } else if (item.checked.length == 1 && item.checked[0] == "origin") {
-            uploadFiles[item.index].overwrite = true;
-          } else {
-            uploadFiles.splice(item.index, 1);
-          }
+        if (result !== "deep-resolve") {
+          upload.handleFiles(
+            uploadFiles,
+            path,
+            result == "overwrite",
+            result == "skip"
+          );
+          return;
         }
+        clearUploadList(uploadFiles, entries);
         if (uploadFiles.length > 0) {
           upload.handleFiles(uploadFiles, path);
         }

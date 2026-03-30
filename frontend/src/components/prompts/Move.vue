@@ -64,7 +64,7 @@ import FileList from "./FileList.vue";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
 import * as upload from "@/utils/upload";
-import { removePrefix } from "@/api/utils";
+import { removePrefix, clearCopyMoveList } from "@/api/utils";
 
 export default {
   name: "move",
@@ -104,11 +104,11 @@ export default {
         });
       }
 
-      const action = async (overwrite, rename) => {
+      const action = async (overwrite, rename, skip) => {
         buttons.loading("move");
 
         await api
-          .move(items, overwrite, rename)
+          .move(items, overwrite, rename, skip)
           .then(() => {
             buttons.success("move");
             this.preselect = removePrefix(items[0].to);
@@ -130,26 +130,21 @@ export default {
           prompt: "resolve-conflict",
           props: {
             conflict: conflict,
-            files: items,
           },
-          confirm: (event, result) => {
+          confirm: (event, entries, result) => {
             event.preventDefault();
             this.closeHovers();
-            for (let i = result.length - 1; i >= 0; i--) {
-              const item = result[i];
-              if (item.checked.length == 2) {
-                items[item.index].rename = true;
-              } else if (
-                item.checked.length == 1 &&
-                item.checked[0] == "origin"
-              ) {
-                items[item.index].overwrite = true;
-              } else {
-                items.splice(item.index, 1);
-              }
+            if (result !== "deep-resolve") {
+              action(
+                result == "overwrite",
+                result == "rename",
+                result == "skip"
+              );
+              return;
             }
+            clearCopyMoveList(items, entries);
             if (items.length > 0) {
-              action();
+              action(null, null, false);
             }
           },
         });
@@ -157,7 +152,7 @@ export default {
         return;
       }
 
-      action(false, false);
+      action(false, false, false);
     },
   },
 };

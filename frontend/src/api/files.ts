@@ -101,6 +101,7 @@ export async function post(
   url: string,
   content: ApiContent = "",
   overwrite = false,
+  skip = false,
   onupload: any = () => {}
 ) {
   // Use the pre-existing API if:
@@ -113,14 +114,15 @@ export async function post(
     // Tus is disabled / not applicable
     !(await useTus(content));
   return useResourcesApi
-    ? postResources(url, content, overwrite, onupload)
-    : postTus(url, content, overwrite, onupload);
+    ? postResources(url, content, overwrite, skip, onupload)
+    : postTus(url, content, overwrite, skip, onupload);
 }
 
 async function postResources(
   url: string,
   content: ApiContent = "",
   overwrite = false,
+  skip = false,
   onupload: any
 ) {
   url = removePrefix(url);
@@ -138,7 +140,7 @@ async function postResources(
     const request = new XMLHttpRequest();
     request.open(
       "POST",
-      `${baseURL}/api/resources${url}?override=${overwrite}`,
+      `${baseURL}/api/resources${url}?override=${overwrite}&skip=${skip}`,
       true
     );
     request.setRequestHeader("X-Auth", authStore.jwt);
@@ -168,8 +170,9 @@ async function postResources(
 function moveCopy(
   items: any[],
   copy = false,
-  overwrite = false,
-  rename = false
+  overwrite?: boolean,
+  rename?: boolean,
+  skip = false
 ) {
   const layoutStore = useLayoutStore();
   const promises = [];
@@ -177,24 +180,31 @@ function moveCopy(
   for (const item of items) {
     const from = item.from;
     const to = encodeURIComponent(removePrefix(item.to ?? ""));
-    const finalOverwrite =
-      item.overwrite == undefined ? overwrite : item.overwrite;
-    const finalRename = item.rename == undefined ? rename : item.rename;
     const url = `${from}?action=${
       copy ? "copy" : "rename"
-    }&destination=${to}&override=${finalOverwrite}&rename=${finalRename}`;
+    }&destination=${to}&override=${overwrite ?? item.overwrite}&rename=${rename ?? item.rename}&skip=${skip}`;
     promises.push(resourceAction(url, "PATCH"));
   }
   layoutStore.closeHovers();
   return Promise.all(promises);
 }
 
-export function move(items: any[], overwrite = false, rename = false) {
-  return moveCopy(items, false, overwrite, rename);
+export function move(
+  items: any[],
+  overwrite?: boolean,
+  rename?: boolean,
+  skip = false
+) {
+  return moveCopy(items, false, overwrite, rename, skip);
 }
 
-export function copy(items: any[], overwrite = false, rename = false) {
-  return moveCopy(items, true, overwrite, rename);
+export function copy(
+  items: any[],
+  overwrite?: boolean,
+  rename?: boolean,
+  skip = false
+) {
+  return moveCopy(items, true, overwrite, rename, skip);
 }
 
 export async function checksum(url: string, algo: ChecksumAlg) {

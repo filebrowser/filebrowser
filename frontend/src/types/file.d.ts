@@ -73,7 +73,7 @@ interface ConflictingResource {
   dest: ConflictingItem;
   checked: Array<"origin" | "dest">;
 }
-  
+
 interface CsvData {
   headers: string[];
   rows: string[][];

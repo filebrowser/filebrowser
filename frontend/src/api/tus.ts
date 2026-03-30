@@ -11,6 +11,7 @@ export async function upload(
   filePath: string,
   content: ApiContent = "",
   overwrite = false,
+  skip = false,
   onupload: any
 ) {
   if (!tusSettings) {
@@ -19,7 +20,7 @@ export async function upload(
   }
 
   filePath = removePrefix(filePath);
-  const resourcePath = `${tusEndpoint}${filePath}?override=${overwrite}`;
+  const resourcePath = `${tusEndpoint}${filePath}?override=${overwrite}&skip=${skip}`;
 
   const authStore = useAuthStore();
 
@@ -36,6 +37,19 @@ export async function upload(
       storeFingerprintForResuming: false,
       headers: {
         "X-Auth": authStore.jwt,
+      },
+      onBeforeRequest: function (req) {
+        if (req.getMethod() === "POST") {
+          req.getUnderlyingObject().onreadystatechange = function () {
+            if (this.readyState === 4) {
+              if (this.status == 204) {
+                upload.abort();
+                delete CURRENT_UPLOAD_LIST[filePath];
+                resolve("skipped");
+              }
+            }
+          };
+        }
       },
       onShouldRetry: function (err) {
         const status = err.originalResponse
@@ -73,6 +87,7 @@ export async function upload(
         }
       },
       onSuccess: function () {
+        console.log("Upload finished:", upload.url);
         delete CURRENT_UPLOAD_LIST[filePath];
         resolve();
       },

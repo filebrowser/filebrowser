@@ -135,7 +135,9 @@
           v-if="personalized"
           id="focus-prompt"
           class="button button--flat"
-          @click="(event) => currentPrompt?.confirm(event, conflict)"
+          @click="
+            (event) => currentPrompt?.confirm(event, conflict, 'deep-resolve')
+          "
           :aria-label="$t('buttons.ok')"
           :title="$t('buttons.ok')"
           tabindex="1"
@@ -195,10 +197,15 @@ const humanTime = (modified: string | number | undefined) => {
 };
 
 const resolve = (event: Event, result: Array<"origin" | "dest">) => {
-  for (const item of conflict.value) {
-    item.checked = result;
+  let type = "rename";
+  if (result.length == 1) {
+    if (result[0] == "origin") {
+      type = "overwrite";
+    } else {
+      type = "skip";
+    }
   }
-  currentPrompt?.confirm(event, conflict.value);
+  currentPrompt?.confirm(event, conflict.value, type);
 };
 
 const toogleCheckAll = (e: Event) => {

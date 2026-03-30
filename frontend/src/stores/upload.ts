@@ -38,6 +38,7 @@ export const useUploadStore = defineStore("upload", () => {
     name: string,
     file: File | null,
     overwrite: boolean,
+    skip: boolean,
     type: ResourceType
   ) => {
     if (!hasActiveUploads() && !hasPendingUploads()) {
@@ -50,6 +51,7 @@ export const useUploadStore = defineStore("upload", () => {
       name,
       file,
       overwrite,
+      skip,
       type,
       totalBytes: file?.size || 1,
       sentBytes: 0,
@@ -116,9 +118,14 @@ export const useUploadStore = defineStore("upload", () => {
         const onUpload = (event: ProgressEvent) => {
           upload.rawProgress.sentBytes = event.loaded;
         };
-
         await api
-          .post(upload.path, upload.file!, upload.overwrite, onUpload)
+          .post(
+            upload.path,
+            upload.file!,
+            upload.overwrite,
+            upload.skip,
+            onUpload
+          )
           .catch((err) => err.message !== "Upload aborted" && $showError(err));
       }
 

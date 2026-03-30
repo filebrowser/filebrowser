@@ -55,6 +55,7 @@ import { files as api } from "@/api";
 import * as upload from "@/utils/upload";
 import { computed, inject, ref } from "vue";
 import { useRouter } from "vue-router";
+import { clearCopyMoveList } from "@/api/utils";
 
 const touches = ref<number>(0);
 
@@ -193,9 +194,9 @@ const drop = async (event: Event) => {
   const path = el.__vue__.url;
   const baseItems = (await api.fetch(path)).items;
 
-  const action = (overwrite?: boolean, rename?: boolean) => {
+  const action = (overwrite?: boolean, rename?: boolean, skip?: boolean) => {
     api
-      .move(items, overwrite, rename)
+      .move(items, overwrite, rename, skip)
       .then(() => {
         fileStore.reload = true;
       })
@@ -210,19 +211,18 @@ const drop = async (event: Event) => {
       props: {
         conflict: conflict,
       },
-      confirm: (event: Event, result: Array<ConflictingResource>) => {
+      confirm: (
+        event: Event,
+        entries: Array<ConflictingResource>,
+        result: string
+      ) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        for (let i = result.length - 1; i >= 0; i--) {
-          const item = result[i];
-          if (item.checked.length == 2) {
-            items[item.index].rename = true;
-          } else if (item.checked.length == 1 && item.checked[0] == "origin") {
-            items[item.index].overwrite = true;
-          } else {
-            items.splice(item.index, 1);
-          }
+        if (result !== "deep-resolve") {
+          action(result == "overwrite", result == "rename", result == "skip");
+          return;
         }
+        clearCopyMoveList(items, entries);
         if (items.length > 0) {
           action();
         }

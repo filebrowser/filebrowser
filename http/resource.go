@@ -140,6 +140,10 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 			Checker:    d,
 		})
 		if err == nil {
+			if r.URL.Query().Get("skip") == "true" {
+				return http.StatusNoContent, nil
+			}
+
 			if r.URL.Query().Get("override") != "true" {
 				return http.StatusConflict, nil
 			}
@@ -238,6 +242,10 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 			rename := r.URL.Query().Get("rename") == "true"
 			if !override && !rename {
 				if _, err = d.user.Fs.Stat(dst); err == nil {
+					skip := r.URL.Query().Get("skip") == "true"
+					if skip {
+						return http.StatusNoContent, nil
+					}
 					return http.StatusConflict, nil
 				}
 			}

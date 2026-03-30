@@ -369,7 +369,7 @@ import {
 import { useRoute, onBeforeRouteUpdate } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
-import { removePrefix } from "@/api/utils";
+import { clearCopyMoveList, clearUploadList, removePrefix } from "@/api/utils";
 
 const showLimit = ref<number>(50);
 const columnWidth = ref<number>(280);
@@ -673,9 +673,9 @@ const paste = (event: Event) => {
 
   const preselect = removePrefix(route.path) + items[0].name;
 
-  let action = (overwrite?: boolean, rename?: boolean) => {
+  let action = (overwrite?: boolean, rename?: boolean, skip?: boolean) => {
     api
-      .copy(items, overwrite, rename)
+      .copy(items, overwrite, rename, skip)
       .then(() => {
         fileStore.preselect = preselect;
         fileStore.reload = true;
@@ -704,19 +704,18 @@ const paste = (event: Event) => {
       props: {
         conflict: conflict,
       },
-      confirm: (event: Event, result: Array<ConflictingResource>) => {
+      confirm: (
+        event: Event,
+        entries: Array<ConflictingResource>,
+        result: string
+      ) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        for (let i = result.length - 1; i >= 0; i--) {
-          const item = result[i];
-          if (item.checked.length == 2) {
-            items[item.index].rename = true;
-          } else if (item.checked.length == 1 && item.checked[0] == "origin") {
-            items[item.index].overwrite = true;
-          } else {
-            items.splice(item.index, 1);
-          }
+        if (result !== "deep-resolve") {
+          action(result == "overwrite", result == "rename", result == "skip");
+          return;
         }
+        clearCopyMoveList(items, entries);
         if (items.length > 0) {
           action();
         }
@@ -829,21 +828,25 @@ const drop = async (event: DragEvent) => {
         conflict: conflict,
         isUploadAction: true,
       },
-      confirm: (event: Event, result: Array<ConflictingResource>) => {
+      confirm: (
+        event: Event,
+        entries: Array<ConflictingResource>,
+        result: string
+      ) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        for (let i = result.length - 1; i >= 0; i--) {
-          const item = result[i];
-          if (item.checked.length == 2) {
-            continue;
-          } else if (item.checked.length == 1 && item.checked[0] == "origin") {
-            files[item.index].overwrite = true;
-          } else {
-            files.splice(item.index, 1);
-          }
+        if (result !== "deep-resolve") {
+          upload.handleFiles(
+            files,
+            path,
+            result == "overwrite",
+            result == "skip"
+          );
+          return;
         }
+        clearUploadList(files, entries);
         if (files.length > 0) {
-          upload.handleFiles(files, path, true);
+          upload.handleFiles(files, path);
           fileStore.preselect = preselect;
         }
       },
@@ -885,21 +888,25 @@ const uploadInput = (event: Event) => {
         conflict: conflict,
         isUploadAction: true,
       },
-      confirm: (event: Event, result: Array<ConflictingResource>) => {
+      confirm: (
+        event: Event,
+        entries: Array<ConflictingResource>,
+        result: string
+      ) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        for (let i = result.length - 1; i >= 0; i--) {
-          const item = result[i];
-          if (item.checked.length == 2) {
-            continue;
-          } else if (item.checked.length == 1 && item.checked[0] == "origin") {
-            uploadFiles[item.index].overwrite = true;
-          } else {
-            uploadFiles.splice(item.index, 1);
-          }
+        if (result !== "deep-resolve") {
+          upload.handleFiles(
+            uploadFiles,
+            path,
+            result == "overwrite",
+            result == "skip"
+          );
+          return;
         }
+        clearUploadList(uploadFiles, entries);
         if (uploadFiles.length > 0) {
-          upload.handleFiles(uploadFiles, path, true);
+          upload.handleFiles(uploadFiles, path);
         }
       },
     });
