@@ -16,6 +16,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/caddyserver/certmagic"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -111,6 +112,11 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.Bool("disableExec", true, "disables Command Runner feature")
 	flags.Bool("disableTypeDetectionByHeader", false, "disables type detection by reading file headers")
 	flags.Bool("disableImageResolutionCalc", false, "disables image resolution calculation by reading image files")
+	flags.StringSlice("certmagic.domains", nil, "enable automatic TLS with CertMagic for these domain names")
+	flags.String("certmagic.email", "", "email used by ACME issuer when certmagic is enabled")
+	flags.String("certmagic.ca", "", "optional ACME directory URL override for certmagic")
+	flags.String("certmagic.storage", "", "directory where certmagic stores certificates and account data")
+	flags.Bool("certmagic.agree", true, "agree to ACME subscriber agreement for certmagic")
 }
 
 var rootCmd = &cobra.Command{
@@ -197,10 +203,40 @@ user created with the credentials from options "username" and "password".`,
 		server.Root = root
 
 		adr := server.Address + ":" + server.Port
+		certmagicDomains := v.GetStringSlice("certmagic.domains")
+		useCertMagic := len(certmagicDomains) > 0
 
 		var listener net.Listener
 
 		switch {
+		case useCertMagic:
+			if server.Socket != "" {
+				return errors.New("certmagic cannot be used with --socket")
+			}
+			if server.TLSKey != "" || server.TLSCert != "" {
+				return errors.New("certmagic cannot be used together with --cert or --key")
+			}
+			certmagic.DefaultACME.Agreed = v.GetBool("certmagic.agree")
+			if email := v.GetString("certmagic.email"); email != "" {
+				certmagic.DefaultACME.Email = email
+			}
+			if ca := v.GetString("certmagic.ca"); ca != "" {
+				certmagic.DefaultACME.CA = ca
+			}
+			if certStorage := v.GetString("certmagic.storage"); certStorage != "" {
+				certmagic.Default.Storage = &certmagic.FileStorage{Path: certStorage}
+			}
+
+			tlsConfig, err := certmagic.TLS(certmagicDomains)
+			if err != nil {
+				return fmt.Errorf("failed to initialize certmagic TLS: %w", err)
+			}
+			tlsConfig.MinVersion = tls.VersionTLS12
+
+			listener, err = tls.Listen("tcp", adr, tlsConfig)
+			if err != nil {
+				return err
+			}
 		case server.Socket != "":
 			listener, err = net.Listen("unix", server.Socket)
 			if err != nil {
