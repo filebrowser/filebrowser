@@ -818,7 +818,9 @@ const drop = async (event: DragEvent) => {
     }
   }
 
-  const conflict = upload.checkConflict(files, items);
+  // TODO check the if above
+  // const conflict = upload.checkConflict(files, items);
+  const conflict = await upload.deepCheckConflict(files, path);
 
   const preselect = removePrefix(path) + (files[0].fullPath || files[0].name);
 

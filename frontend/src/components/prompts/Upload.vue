@@ -67,6 +67,8 @@ const uploadInput = (event: Event) => {
   }
 
   const path = route.path.endsWith("/") ? route.path : route.path + "/";
+
+  // It's a problem to have only current folder inside it
   const conflict = upload.checkConflict(uploadFiles, fileStore.req!.items);
 
   if (conflict.length > 0) {
