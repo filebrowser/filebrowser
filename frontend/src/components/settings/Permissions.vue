@@ -19,7 +19,7 @@
     <p>
       <input
         type="checkbox"
-        :disabled="admin || isShareEnabled"
+        :disabled="admin || perm.share"
         v-model="perm.download"
       />
       {{ $t("settings.perm.download") }}
@@ -49,9 +49,6 @@ export default {
   name: "permissions",
   props: ["perm"],
   computed: {
-    isShareEnabled() {
-      return this.perm.share;
-    },
     admin: {
       get() {
         return this.perm.admin;
