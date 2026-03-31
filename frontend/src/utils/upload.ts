@@ -58,17 +58,17 @@ function flatToTree(flatArray: UploadList, basePath : string): UploadEntryWithCh
 /**
  * Return conflict files from
  * @param files  - flat upload list to check
- * @param base   - server destination path (e.g. "/files/uploads/")
+ * @param basePath   - server destination path (e.g. "/files/uploads/")
  */
 export async function checkConflict(
   files: UploadList,
-  base: string
+  basePath: string
 ): Promise<ConflictingResource[]> {
   console.log("Starting deepCheck conflict");
   console.debug(files.length + " possible conflict found:");
   console.debug(files);
 
-  const tree = flatToTree(files);
+  const tree = flatToTree(files, basePath);
   if (!tree) return [];
 
   const conflicts: ConflictingResource[] = [];
@@ -121,7 +121,7 @@ export async function checkConflict(
           }
 
           const serverItem = getFileInServerItems(
-            `${base}${child.fullPath!}`
+            `${basePath}${child.fullPath!}`
           );
 
           if (serverItem) {
@@ -146,7 +146,7 @@ export async function checkConflict(
   }
 
   // Start by checking the root node against the base destination
-  await recursiveCheckConflict(tree, base);
+  await recursiveCheckConflict(tree, basePath);
 
   console.debug(conflicts.length + " conflicts found:");
   console.debug(conflicts);
