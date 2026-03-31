@@ -815,6 +815,7 @@ const drop = async (event: DragEvent) => {
       items = (await api.fetch(path)).items;
     } catch (error: any) {
       $showError(error);
+      return;
     }
   }
 

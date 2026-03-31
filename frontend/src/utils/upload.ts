@@ -151,6 +151,8 @@ export async function deepCheckConflict(
   console.debug(conflicts.length + " conflicts found:");
   console.debug(conflicts);
 
+  conflicts.sort((a, b) => a.index - b.index);
+
   return conflicts;
 }
 
