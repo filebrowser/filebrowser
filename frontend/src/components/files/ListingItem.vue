@@ -194,8 +194,11 @@ const drop = async (event: Event) => {
   const baseItems = (await api.fetch(path)).items;
 
   const action = (overwrite?: boolean, rename?: boolean) => {
-    api
-      .move(items, overwrite, rename)
+    const action =
+      (event as KeyboardEvent).ctrlKey || (event as KeyboardEvent).metaKey
+        ? api.copy
+        : api.move;
+    action(items, overwrite, rename)
       .then(() => {
         fileStore.reload = true;
       })
