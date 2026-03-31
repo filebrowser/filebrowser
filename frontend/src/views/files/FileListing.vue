@@ -799,7 +799,6 @@ const drop = async (event: DragEvent) => {
   }
 
   const files: UploadList = (await upload.scanFiles(dt)) as UploadList;
-  let items = fileStore.req.items;
   let path = route.path.endsWith("/") ? route.path : route.path + "/";
 
   if (
@@ -812,7 +811,7 @@ const drop = async (event: DragEvent) => {
     path = el.__vue__.url;
 
     try {
-      items = (await api.fetch(path)).items;
+      (await api.fetch(path)).items;
     } catch (error: any) {
       $showError(error);
       return;
