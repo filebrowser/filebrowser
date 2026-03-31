@@ -112,6 +112,10 @@
             <i class="material-icons">undo</i>
             {{ $t("buttons.skipAll") }}
           </button>
+          <button @click="(e) => resolve(e, ['dest'])">
+            <i class="material-icons">replay</i>
+            {{ $t("buttons.resumeTransfer") }}
+          </button>
           <button @click="personalized = true">
             <i class="material-icons">checklist</i>
             {{ $t("buttons.singleDecision") }}
