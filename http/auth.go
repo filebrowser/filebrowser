@@ -31,6 +31,7 @@ type userInfo struct {
 	Perm                  users.Permissions `json:"perm"`
 	Commands              []string          `json:"commands"`
 	LockPassword          bool              `json:"lockPassword"`
+	LockProfileSettings   bool              `json:"lockProfileSettings"`
 	HideDotfiles          bool              `json:"hideDotfiles"`
 	DateFormat            bool              `json:"dateFormat"`
 	Username              string            `json:"username"`
@@ -222,6 +223,7 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 			RedirectAfterCopyMove: user.RedirectAfterCopyMove,
 			Perm:                  user.Perm,
 			LockPassword:          user.LockPassword,
+			LockProfileSettings:   user.LockProfileSettings,
 			Commands:              user.Commands,
 			HideDotfiles:          user.HideDotfiles,
 			DateFormat:            user.DateFormat,

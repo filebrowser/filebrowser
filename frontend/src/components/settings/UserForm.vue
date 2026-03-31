@@ -55,6 +55,35 @@
       {{ t("settings.lockPassword") }}
     </p>
 
+    <p v-if="!isDefault && user.perm">
+      <input
+        type="checkbox"
+        :disabled="user.perm.admin"
+        v-model="user.lockProfileSettings"
+      />
+      {{ t("settings.lockProfileSettings") }}
+    </p>
+
+    <div v-if="!isDefault">
+      <h3>{{ t("settings.profileSettings") }}</h3>
+      <p>
+        <input type="checkbox" v-model="user.hideDotfiles" />
+        {{ t("settings.hideDotfiles") }}
+      </p>
+      <p>
+        <input type="checkbox" v-model="user.singleClick" />
+        {{ t("settings.singleClick") }}
+      </p>
+      <p>
+        <input type="checkbox" v-model="user.redirectAfterCopyMove" />
+        {{ t("settings.redirectAfterCopyMove") }}
+      </p>
+      <p>
+        <input type="checkbox" v-model="user.dateFormat" />
+        {{ t("settings.setDateFormat") }}
+      </p>
+    </div>
+
     <permissions v-model:perm="user.perm" />
     <commands v-if="enableExec" v-model:commands="user.commands" />
 

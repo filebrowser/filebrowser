@@ -8,6 +8,7 @@ interface IUser {
   commands: string[];
   rules: IRule[];
   lockPassword: boolean;
+  lockProfileSettings: boolean;
   hideDotfiles: boolean;
   singleClick: boolean;
   redirectAfterCopyMove: boolean;
@@ -29,10 +30,12 @@ interface IUserForm {
   commands?: string[];
   rules?: IRule[];
   lockPassword?: boolean;
+  lockProfileSettings?: boolean;
   hideDotfiles?: boolean;
   singleClick?: boolean;
   redirectAfterCopyMove?: boolean;
   dateFormat?: boolean;
+  aceEditorTheme?: string;
 }
 
 interface Permissions {

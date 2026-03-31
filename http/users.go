@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	NonModifiableFieldsForNonAdmin = []string{"Username", "Scope", "LockPassword", "Perm", "Commands", "Rules"}
+	NonModifiableFieldsForNonAdmin = []string{"Username", "Scope", "LockPassword", "LockProfileSettings", "Perm", "Commands", "Rules"}
 )
 
 type modifyUserRequest struct {
@@ -238,6 +238,16 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 			req.Data.Password, err = users.ValidateAndHashPwd(req.Data.Password, d.settings.MinimumPasswordLength)
 			if err != nil {
 				return http.StatusBadRequest, err
+			}
+		}
+
+		lockedProfileFields := map[string]bool{
+			"Locale": true, "HideDotfiles": true, "SingleClick": true,
+			"RedirectAfterCopyMove": true, "DateFormat": true, "AceEditorTheme": true,
+		}
+		if lockedProfileFields[v] {
+			if !d.user.Perm.Admin && d.user.LockProfileSettings {
+				return http.StatusForbidden, nil
 			}
 		}
 

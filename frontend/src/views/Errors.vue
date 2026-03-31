@@ -6,6 +6,12 @@
       <i class="material-icons">{{ info.icon }}</i>
       <span>{{ t(info.message) }}</span>
     </h2>
+
+    <div v-if="showHeader" class="message" style="margin-top: 1em">
+      <router-link to="/files/" class="button button--flat">
+        {{ t("sidebar.myFiles") }}
+      </router-link>
+    </div>
   </div>
 </template>
 

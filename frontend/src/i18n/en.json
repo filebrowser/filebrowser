@@ -238,6 +238,7 @@
     "instanceName": "Instance name",
     "language": "Language",
     "lockPassword": "Prevent the user from changing the password",
+    "lockProfileSettings": "Prevent the user from changing profile settings",
     "newPassword": "Your new password",
     "newPasswordConfirm": "Confirm your new password",
     "newUser": "New User",
