@@ -115,6 +115,12 @@
           <button @click="(e) => resume(e)">
             <i class="material-icons">replay</i>
             {{ $t("buttons.resumeTransfer") }}
+            <span class="info-tooltip">
+              <i class="material-icons info-icon">info_outline</i>
+              <span class="info-tooltip-text">
+                {{ $t("buttons.resumeTransferTooltip") }}
+              </span>
+            </span>
           </button>
           <button @click="personalized = true">
             <i class="material-icons">checklist</i>
@@ -318,5 +324,43 @@ const toogleCheckAll = (e: Event) => {
 
 .result-buttons > button:hover {
   border: solid 1px var(--icon-blue);
+}
+
+.info-tooltip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.info-icon {
+  font-size: 1rem;
+  color: var(--icon-blue);
+  cursor: help;
+}
+
+.info-tooltip-text {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--surfacePrimary, #333);
+  color: var(--textPrimary, #fff);
+  font-size: 0.75rem;
+  line-height: 1.3;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  width: 220px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: opacity 200ms ease-in-out;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.info-tooltip:hover .info-tooltip-text {
+  visibility: visible;
+  opacity: 1;
 }
 </style>

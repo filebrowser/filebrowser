@@ -30,6 +30,7 @@
     "replace": "Replace",
     "reportIssue": "Report Issue",
     "resumeTransfer": "Resume previous transfert",
+    "resumeTransferTooltip": "Only re-uploads files that are smaller on the server, skipping those already fully transferred.",
     "save": "Save",
     "schedule": "Schedule",
     "search": "Search",
