@@ -1,7 +1,7 @@
 import { useLayoutStore } from "@/stores/layout";
 import { useUploadStore } from "@/stores/upload";
 import url from "@/utils/url";
-import { files as api } from '@/api';
+import { files as api } from "@/api";
 
 interface UploadEntryWithChild extends UploadEntry {
   children?: UploadEntryWithChild[];
@@ -15,7 +15,10 @@ interface UploadEntryWithChild extends UploadEntry {
  * @param flatArray
  * @param basePath
  */
-function flatToForest(flatArray: UploadList, basePath: string): UploadEntryWithChild[] {
+function flatToForest(
+  flatArray: UploadList,
+  basePath: string
+): UploadEntryWithChild[] {
   const nodeMap: Record<string, UploadEntryWithChild> = {};
 
   // First pass: create all nodes
@@ -114,10 +117,14 @@ export async function checkConflict(
         }
       } else {
         // File – check for a conflict against the server listing
-        const cleanFullPath = `${basePath}${node.fullPath!}`.replaceAll("/", "");
-        const serverItem = serverItems.find(
-          (item) => item.url.replaceAll("/", "") === cleanFullPath
-        ) ?? null;
+        const cleanFullPath = `${basePath}${node.fullPath!}`.replaceAll(
+          "/",
+          ""
+        );
+        const serverItem =
+          serverItems.find(
+            (item) => item.url.replaceAll("/", "") === cleanFullPath
+          ) ?? null;
 
         if (serverItem) {
           conflicts.push({
