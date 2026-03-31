@@ -54,13 +54,11 @@ function flatToTree(flatArray: UploadList): UploadEntryWithChild | null {
 }
 
 /**
- * Return conflict files from the tree structure instead the classic UploadList.
- * Unlike checkConflict which only checks the top-level, this recursively walks
- * the tree and fetches server listings at each directory level.
+ * Return conflict files from
  * @param files  - flat upload list to check
  * @param base   - server destination path (e.g. "/files/uploads/")
  */
-export async function deepCheckConflict(
+export async function checkConflict(
   files: UploadList,
   base: string
 ): Promise<ConflictingResource[]> {
@@ -154,63 +152,6 @@ export async function deepCheckConflict(
   conflicts.sort((a, b) => a.index - b.index);
 
   return conflicts;
-}
-
-export function checkConflict(
-  files: UploadList | Array<any>,
-  dest: ResourceItem[]
-): ConflictingResource[] {
-  if (typeof dest === "undefined" || dest === null) {
-    dest = [];
-  }
-  const conflictingFiles: ConflictingResource[] = [];
-
-  const folder_upload = files[0].fullPath !== undefined;
-
-  function getFile(name: string): ResourceItem | null {
-    for (const item of dest) {
-      if (item.name == name) return item;
-    }
-
-    return null;
-  }
-
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    const name = file.name;
-
-    if (folder_upload && file.isDir) {
-      const dirs = file.fullPath?.split("/");
-      // For folder uploads, destination listing is flat and only contains
-      // top-level entries. Treating every nested file as a conflict when the
-      // parent folder exists blocks the whole upload (see #5798), so skip
-      // preflight conflict detection for nested files.
-      if (dirs && dirs.length > 1) {
-        continue;
-      }
-    }
-
-    const item = getFile(name);
-    if (item != null) {
-      conflictingFiles.push({
-        index: i,
-        name: item.path,
-        origin: {
-          lastModified: file.modified || file.file?.lastModified,
-          size: file.size,
-        },
-        dest: {
-          lastModified: item.modified,
-          size: item.size,
-        },
-        checked: ["origin"],
-      });
-    }
-
-    // Add check on Size
-  }
-
-  return conflictingFiles;
 }
 
 export function scanFiles(dt: DataTransfer): Promise<UploadList | FileList> {

@@ -122,8 +122,7 @@ export default {
           });
       };
 
-      const dstItems = (await api.fetch(this.dest)).items;
-      const conflict = upload.checkConflict(items, dstItems);
+      const conflict = upload.checkConflict(items, this.dest);
 
       if (conflict.length > 0) {
         this.showHover({

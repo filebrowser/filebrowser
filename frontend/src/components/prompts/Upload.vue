@@ -43,11 +43,10 @@ import * as upload from "@/utils/upload";
 const { t } = useI18n();
 const route = useRoute();
 
-const fileStore = useFileStore();
 const layoutStore = useLayoutStore();
 
 // TODO: this is a copy of the same function in FileListing.vue
-const uploadInput = (event: Event) => {
+const uploadInput = async (event: Event) => {
   const files = (event.currentTarget as HTMLInputElement)?.files;
   if (files === null) return;
 
@@ -69,7 +68,7 @@ const uploadInput = (event: Event) => {
   const path = route.path.endsWith("/") ? route.path : route.path + "/";
 
   // It's a problem to have only current folder inside it
-  const conflict = upload.checkConflict(uploadFiles, fileStore.req!.items);
+  const conflict = await upload.checkConflict(uploadFiles, path);
 
   if (conflict.length > 0) {
     layoutStore.showHover({
