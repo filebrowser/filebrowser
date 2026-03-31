@@ -8,6 +8,12 @@ interface UploadEntryWithChild extends UploadEntry {
   originalIndex: number;
 }
 
+/**
+ * Convert UploadList into a tree. The root node is an UploadEntryWithChild.
+ * It will be easier to check conflicts with the server when we have the tree structure, as we can fetch server
+ * listings at each directory level and compare with the corresponding subtree.
+ * @param flatArray
+ */
 function flatToTree(flatArray: UploadList): UploadEntryWithChild | null {
   const nodeMap: Record<string, UploadEntryWithChild> = {};
 
@@ -58,11 +64,22 @@ export async function deepCheckConflict(
   files: UploadList,
   base: string
 ): Promise<ConflictingResource[]> {
+  console.log("Starting deepCheck conflict");
+  console.debug(files.length + " possible conflict found:");
+  console.debug(files);
+
   const tree = flatToTree(files);
   if (!tree) return [];
 
   const conflicts: ConflictingResource[] = [];
 
+  /**
+   * Recursively check for conflicts between the upload tree and the server listing at the given path.
+   * For directories, it fetches the server listing and checks each child node against it. For files, it directly checks for a conflict.
+   * The serverPath should always end with a slash, and the file.fullPath should be relative to the base (i.e. not start with a slash).
+   * @param file
+   * @param serverPath
+   */
   async function recursiveCheckConflict(
     file: UploadEntryWithChild,
     serverPath: string
@@ -74,7 +91,6 @@ export async function deepCheckConflict(
       try {
         const res = await api.fetch(serverPath + file.name);
         serverItems = res.items || [];
-
       } catch {
         // Directory doesn't exist on server, no conflicts possible
         console.error(`Failed to fetch server listing for ${serverPath}. Assuming directory doesn't exist and skipping conflict check for this branch.`);
@@ -89,11 +105,14 @@ export async function deepCheckConflict(
           );
           conflicts.push(...conflictsResources);
         } else {
+          /**
+           * Get file in server items if available.
+           * @param fullPath
+           */
           function getFileInServerItems(fullPath: string): ResourceItem | null {
             const cleanFullPath = fullPath.replaceAll("/", "");
             for (const item of serverItems) {
               if (item.url.replaceAll("/", "") == cleanFullPath) {
-                console.log(`Conflict found: ${item.path} on server matches ${fullPath} on upload list`);
                 return item;
               }
             }
@@ -128,6 +147,9 @@ export async function deepCheckConflict(
 
   // Start by checking the root node against the base destination
   await recursiveCheckConflict(tree, base);
+
+  console.debug(conflicts.length + " conflicts found:");
+  console.debug(conflicts);
 
   return conflicts;
 }
