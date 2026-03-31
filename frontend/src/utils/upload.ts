@@ -14,13 +14,14 @@ interface UploadEntryWithChild extends UploadEntry {
  * listings at each directory level and compare with the corresponding subtree.
  * @param flatArray
  */
-function flatToTree(flatArray: UploadList): UploadEntryWithChild | null {
+function flatToTree(flatArray: UploadList, basePath : string): UploadEntryWithChild | null {
   const nodeMap: Record<string, UploadEntryWithChild> = {};
 
   // First pass: create all nodes
   flatArray.forEach((item) => {
-    nodeMap[item.fullPath!] = {
-      fullPath: item.fullPath!,
+    const fullPathOrTo = item.fullPath || item.to?.replace(basePath, "");
+    nodeMap[fullPathOrTo!] = {
+      fullPath: fullPathOrTo,
       isDir: item.isDir,
       name: item.name,
       size: item.size,
@@ -35,14 +36,15 @@ function flatToTree(flatArray: UploadList): UploadEntryWithChild | null {
   // Second pass: build hierarchy
   flatArray.forEach((item) => {
     // TODO C'est un problème si item.fullPath est undefined
+    const fullPathOrTo = item.fullPath || item.to?.replace(basePath, "");
 
-    const node = nodeMap[item.fullPath!];
-    const lastSlash = item.fullPath!.lastIndexOf("/");
+    const node = nodeMap[fullPathOrTo!];
+    const lastSlash = fullPathOrTo!.lastIndexOf("/");
 
     if (lastSlash === -1) {
       root = node;
     } else {
-      const parentPath = item.fullPath!.substring(0, lastSlash);
+      const parentPath = fullPathOrTo!.substring(0, lastSlash);
       const parent = nodeMap[parentPath];
       if (parent?.children) {
         parent.children.push(node);
