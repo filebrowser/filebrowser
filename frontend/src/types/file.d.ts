@@ -71,7 +71,7 @@ interface ConflictingResource {
   name: string;
   origin: ConflictingItem;
   dest: ConflictingItem;
-  checked: Array<"origin" | "dest">;
+  checked: Array<"origin" | "dest", "origin-resume">;
   isSmallerOnServer?: boolean;
 }
 

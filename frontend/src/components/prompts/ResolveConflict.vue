@@ -112,7 +112,7 @@
             <i class="material-icons">undo</i>
             {{ $t("buttons.skipAll") }}
           </button>
-          <button @click="(e) => resolve(e, ['dest'])">
+          <button @click="(e) => currentPrompt?.confirm(e, conflict.filter((item) => !item.isSmallerOnServer))">
             <i class="material-icons">replay</i>
             {{ $t("buttons.resumeTransfer") }}
           </button>
@@ -198,7 +198,10 @@ const humanTime = (modified: string | number | undefined) => {
   return dayjs(modified).format("L LT");
 };
 
-const resolve = (event: Event, result: Array<"origin" | "dest">) => {
+const resolve = (
+  event: Event,
+  result: Array<"origin" | "dest" | "origin-resume">
+) => {
   for (const item of conflict.value) {
     item.checked = result;
   }
