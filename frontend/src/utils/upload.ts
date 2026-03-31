@@ -9,40 +9,40 @@ interface UploadEntryWithChild extends UploadEntry {
 }
 
 /**
- * Convert UploadList into a tree. The root node is an UploadEntryWithChild.
- * It will be easier to check conflicts with the server when we have the tree structure, as we can fetch server
- * listings at each directory level and compare with the corresponding subtree.
+ * Convert UploadList into a forest (array of root nodes).
+ * This properly handles uploads with multiple top-level files/folders
+ * instead of assuming a single root.
  * @param flatArray
+ * @param basePath
  */
-function flatToTree(flatArray: UploadList, basePath : string): UploadEntryWithChild | null {
+function flatToForest(flatArray: UploadList, basePath: string): UploadEntryWithChild[] {
   const nodeMap: Record<string, UploadEntryWithChild> = {};
 
   // First pass: create all nodes
-  flatArray.forEach((item) => {
+  flatArray.forEach((item, index) => {
     const fullPathOrTo = item.fullPath || item.to?.replace(basePath, "");
     nodeMap[fullPathOrTo!] = {
       fullPath: fullPathOrTo,
       isDir: item.isDir,
       name: item.name,
       size: item.size,
-      originalIndex: flatArray.indexOf(item),
+      originalIndex: index,
       ...(item.isDir && { children: [] }),
       ...(item.file && { file: item.file }),
     };
   });
 
-  let root: UploadEntryWithChild | null = null;
+  const roots: UploadEntryWithChild[] = [];
 
   // Second pass: build hierarchy
   flatArray.forEach((item) => {
-    // TODO C'est un problème si item.fullPath est undefined
     const fullPathOrTo = item.fullPath || item.to?.replace(basePath, "");
 
     const node = nodeMap[fullPathOrTo!];
     const lastSlash = fullPathOrTo!.lastIndexOf("/");
 
     if (lastSlash === -1) {
-      root = node;
+      roots.push(node);
     } else {
       const parentPath = fullPathOrTo!.substring(0, lastSlash);
       const parent = nodeMap[parentPath];
@@ -52,7 +52,7 @@ function flatToTree(flatArray: UploadList, basePath : string): UploadEntryWithCh
     }
   });
 
-  return root;
+  return roots;
 }
 
 /**
@@ -68,85 +68,78 @@ export async function checkConflict(
   console.debug(files.length + " possible conflict found:");
   console.debug(files);
 
-  const tree = flatToTree(files, basePath);
-  if (!tree) return [];
+  const forest = flatToForest(files, basePath);
+  if (forest.length === 0) return [];
 
   const conflicts: ConflictingResource[] = [];
 
   /**
-   * Recursively check for conflicts between the upload tree and the server listing at the given path.
-   * For directories, it fetches the server listing and checks each child node against it. For files, it directly checks for a conflict.
-   * The serverPath should always end with a slash, and the file.fullPath should be relative to the base (i.e. not start with a slash).
-   * @param file
-   * @param serverPath
+   * Check a list of sibling nodes against the server listing at the given path.
+   * For directories that exist on the server, recurse into their children.
+   * @param nodes   - sibling nodes to check at this level
+   * @param serverPath - the server directory path to fetch (must end with "/")
    */
   async function recursiveCheckConflict(
-    file: UploadEntryWithChild,
+    nodes: UploadEntryWithChild[],
     serverPath: string
-  ): Promise<ConflictingResource[]> {
+  ): Promise<void> {
     let serverItems: ResourceItem[] = [];
-    let conflictsResources: ConflictingResource[] = [];
 
-    if (file.isDir && file.children) {
-      try {
-        const res = await api.fetch(serverPath + file.name);
-        serverItems = res.items || [];
-      } catch {
-        // Directory doesn't exist on server, no conflicts possible
-        console.error(`Failed to fetch server listing for ${serverPath}. Assuming directory doesn't exist and skipping conflict check for this branch.`);
-        return [];
-      }
+    try {
+      const res = await api.fetch(serverPath);
+      serverItems = res.items || [];
+    } catch {
+      // Directory doesn't exist on server, no conflicts possible
+      console.error(
+        `Failed to fetch server listing for ${serverPath}. ` +
+          `Assuming directory doesn't exist and skipping conflict check for this branch.`
+      );
+      return;
+    }
 
-      for (const child of file.children) {
-        if(child.isDir && child.children) {
-          conflictsResources = await recursiveCheckConflict(
-            child,
-            serverPath + encodeURIComponent(file.name) + "/"
+    for (const node of nodes) {
+      if (node.isDir && node.children) {
+        // Check if this directory exists on the server before recursing
+        const dirExists = serverItems.some(
+          (item) =>
+            item.url.replaceAll("/", "") ===
+            `${serverPath}${node.name}`.replaceAll("/", "")
+        );
+
+        if (dirExists) {
+          await recursiveCheckConflict(
+            node.children,
+            serverPath + encodeURIComponent(node.name) + "/"
           );
-          conflicts.push(...conflictsResources);
-        } else {
-          /**
-           * Get file in server items if available.
-           * @param fullPath
-           */
-          function getFileInServerItems(fullPath: string): ResourceItem | null {
-            const cleanFullPath = fullPath.replaceAll("/", "");
-            for (const item of serverItems) {
-              if (item.url.replaceAll("/", "") == cleanFullPath) {
-                return item;
-              }
-            }
+        }
+      } else {
+        // File – check for a conflict against the server listing
+        const cleanFullPath = `${basePath}${node.fullPath!}`.replaceAll("/", "");
+        const serverItem = serverItems.find(
+          (item) => item.url.replaceAll("/", "") === cleanFullPath
+        ) ?? null;
 
-            return null;
-          }
-
-          const serverItem = getFileInServerItems(
-            `${basePath}${child.fullPath!}`
-          );
-
-          if (serverItem) {
-            conflicts.push({
-              index: child.originalIndex,
-              name: serverItem.path,
-              origin: {
-                lastModified: child.file?.lastModified,
-                size: child.size,
-              },
-              dest: {
-                lastModified: serverItem.modified,
-                size: serverItem.size,
-              },
-              checked: ["origin"],
-            });
-          }
+        if (serverItem) {
+          conflicts.push({
+            index: node.originalIndex,
+            name: serverItem.path,
+            origin: {
+              lastModified: node.file?.lastModified,
+              size: node.size,
+            },
+            dest: {
+              lastModified: serverItem.modified,
+              size: serverItem.size,
+            },
+            checked: ["origin"],
+          });
         }
       }
     }
-    return conflictsResources;
   }
 
-  // Start by checking the root node against the base destination
-  await recursiveCheckConflict(tree, basePath);
+  // Check all root nodes against the base destination
+  await recursiveCheckConflict(forest, basePath);
 
   console.debug(conflicts.length + " conflicts found:");
   console.debug(conflicts);
