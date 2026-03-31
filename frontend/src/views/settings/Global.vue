@@ -112,11 +112,52 @@
             />
           </p>
 
+          <h3>{{ t("settings.customThemes") }}</h3>
+          <p class="small">{{ t("settings.customThemesHelp") }}</p>
+
           <p>
-            <label for="branding-files">{{
-              t("settings.brandingDirectoryPath")
+            <label for="branding-themes-path">{{
+              t("settings.customThemesDirectory")
             }}</label>
             <input
+              class="input input--block"
+              type="text"
+              v-model="settings.branding.themesPath"
+              id="branding-themes-path"
+              @change="fetchThemes"
+            />
+          </p>
+
+          <p>
+            <label for="branding-files">{{
+              t("settings.customThemeSelect")
+            }}</label>
+            <select
+              v-if="availableThemes.length > 0"
+              class="input input--block"
+              v-model="settings.branding.files"
+              id="branding-files"
+            >
+              <option value="">{{ t("settings.noTheme") }}</option>
+              <option
+                v-for="theme in availableThemes"
+                :key="theme"
+                :value="settings.branding.themesPath + '/' + theme"
+              >
+                {{ theme }}
+              </option>
+            </select>
+            <template v-else-if="settings.branding.themesPath">
+              <p class="small">{{ t("settings.noThemesFound") }}</p>
+              <input
+                class="input input--block"
+                type="text"
+                v-model="settings.branding.files"
+                id="branding-files"
+              />
+            </template>
+            <input
+              v-else
               class="input input--block"
               type="text"
               v-model="settings.branding.files"
@@ -262,6 +303,7 @@ const error = ref<StatusError | null>(null);
 const originalSettings = ref<ISettings | null>(null);
 const settings = ref<ISettings | null>(null);
 const debounceTimeout = ref<number | null>(null);
+const availableThemes = ref<string[]>([]);
 
 const commandObject = ref<{
   [key: string]: string[] | string;
@@ -295,6 +337,15 @@ const formattedChunkSize = computed({
     }, 1500);
   },
 });
+
+const fetchThemes = async () => {
+  try {
+    const themes = await api.getThemes();
+    availableThemes.value = themes || [];
+  } catch {
+    availableThemes.value = [];
+  }
+};
 
 // Define funcs
 const capitalize = (name: string, where: string | RegExp = "_") => {
@@ -347,9 +398,24 @@ const save = async () => {
     setTheme(newSettings.branding.theme);
   }
 
+  const brandingFilesChanged =
+    originalSettings.value?.branding.files !== newSettings.branding.files;
+  const themesPathChanged =
+    originalSettings.value?.branding.themesPath !== newSettings.branding.themesPath;
+
   try {
     await api.update(newSettings);
+    originalSettings.value = { ...newSettings };
     $showSuccess(t("settings.settingsUpdated"));
+
+    if (themesPathChanged) {
+      await fetchThemes();
+    }
+
+    if (brandingFilesChanged) {
+      window.location.reload();
+      return true;
+    }
   } catch (e: any) {
     $showError(e);
   }
@@ -407,6 +473,10 @@ onMounted(async () => {
     originalSettings.value = original;
     settings.value = newSettings;
     shellValue.value = newSettings.shell.join(" ");
+
+    if (newSettings.branding.themesPath) {
+      await fetchThemes();
+    }
   } catch (err) {
     if (err instanceof Error) {
       error.value = err;

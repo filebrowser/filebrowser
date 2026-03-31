@@ -55,6 +55,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("branding.theme", "", "set the theme")
 	flags.String("branding.color", "", "set the theme color")
 	flags.String("branding.files", "", "path to directory with images and custom styles")
+	flags.String("branding.themesPath", "", "path to directory containing theme subdirectories")
 	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 	flags.Bool("branding.disableUsedPercentage", false, "disable used disk percentage graph")
 
@@ -210,6 +211,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintln(w, "\nBranding:")
 	fmt.Fprintf(w, "\tName:\t%s\n", set.Branding.Name)
 	fmt.Fprintf(w, "\tFiles override:\t%s\n", set.Branding.Files)
+	fmt.Fprintf(w, "\tThemes path:\t%s\n", set.Branding.ThemesPath)
 	fmt.Fprintf(w, "\tDisable external links:\t%t\n", set.Branding.DisableExternal)
 	fmt.Fprintf(w, "\tDisable used disk percentage graph:\t%t\n", set.Branding.DisableUsedPercentage)
 	fmt.Fprintf(w, "\tColor:\t%s\n", set.Branding.Color)
@@ -345,6 +347,8 @@ func getSettings(flags *pflag.FlagSet, set *settings.Settings, ser *settings.Ser
 			set.Branding.Color, err = flags.GetString(flag.Name)
 		case "branding.files":
 			set.Branding.Files, err = flags.GetString(flag.Name)
+		case "branding.themesPath":
+			set.Branding.ThemesPath, err = flags.GetString(flag.Name)
 		case "branding.disableExternal":
 			set.Branding.DisableExternal, err = flags.GetBool(flag.Name)
 		case "branding.disableUsedPercentage":

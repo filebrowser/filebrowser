@@ -136,6 +136,7 @@ func getStaticHandlers(store *storage.Storage, server *settings.Server, assetsFs
 					return 0, nil
 				}
 			} else if r.URL.Path == "custom.css" && d.settings.Branding.Files != "" {
+				w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 				http.ServeFile(w, r, filepath.Join(d.settings.Branding.Files, "custom.css"))
 				return 0, nil
 			}
