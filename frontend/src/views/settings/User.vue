@@ -86,6 +86,7 @@ watch(route, () => fetchData());
 watch(user, () => {
   if (!user.value?.perm.admin) return;
   user.value.lockPassword = false;
+  user.value.lockProfileSettings = false;
 });
 
 const fetchData = async () => {
@@ -102,6 +103,7 @@ const fetchData = async () => {
         password: "",
         rules: [],
         lockPassword: false,
+        lockProfileSettings: false,
         id: 0,
       };
     } else {

@@ -10,3 +10,7 @@ export async function update(settings: ISettings) {
     body: JSON.stringify(settings),
   });
 }
+
+export function getThemes() {
+  return fetchJSON<string[]>(`/api/branding/themes`, {});
+}

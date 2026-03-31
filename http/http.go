@@ -29,7 +29,7 @@ func NewHandler(
 	r := mux.NewRouter()
 	r.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Security-Policy", `default-src 'self'; style-src 'unsafe-inline';`)
+			w.Header().Set("Content-Security-Policy", `default-src 'self'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline';`)
 			next.ServeHTTP(w, r)
 		})
 	})
@@ -77,6 +77,8 @@ func NewHandler(
 
 	api.Handle("/settings", monkey(settingsGetHandler, "")).Methods("GET")
 	api.Handle("/settings", monkey(settingsPutHandler, "")).Methods("PUT")
+
+	api.Handle("/branding/themes", monkey(brandingThemesHandler, "")).Methods("GET")
 
 	api.PathPrefix("/raw").Handler(monkey(rawHandler, "/api/raw")).Methods("GET")
 	api.PathPrefix("/preview/{size}/{path:.*}").

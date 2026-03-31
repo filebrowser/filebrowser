@@ -26,6 +26,7 @@ type User struct {
 	Scope                 string        `json:"scope"`
 	Locale                string        `json:"locale"`
 	LockPassword          bool          `json:"lockPassword"`
+	LockProfileSettings   bool          `json:"lockProfileSettings"`
 	ViewMode              ViewMode      `json:"viewMode"`
 	SingleClick           bool          `json:"singleClick"`
 	RedirectAfterCopyMove bool          `json:"redirectAfterCopyMove"`

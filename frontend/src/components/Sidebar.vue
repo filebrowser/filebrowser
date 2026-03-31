@@ -2,10 +2,14 @@
   <div v-show="active" @click="closeHovers" class="overlay"></div>
   <nav :class="{ active }">
     <template v-if="isLoggedIn">
-      <button @click="toAccountSettings" class="action">
+      <button v-if="!user.lockPassword || !user.lockProfileSettings" @click="toAccountSettings" class="action">
         <i class="material-icons">person</i>
         <span>{{ user.username }}</span>
       </button>
+      <span v-else class="action">
+        <i class="material-icons">person</i>
+        <span>{{ user.username }}</span>
+      </span>
       <button
         class="action"
         @click="toRoot"

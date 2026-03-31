@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <div class="column">
+    <div class="column" v-if="!authStore.user?.lockProfileSettings">
       <form class="card" @submit="updateSettings">
         <div class="card-title">
           <h2>{{ t("settings.profileSettings") }}</h2>
@@ -64,6 +64,15 @@
 
         <div class="card-content">
           <input
+            v-if="isCurrentPasswordRequired"
+            :class="passwordClass"
+            type="password"
+            :placeholder="t('settings.currentPassword')"
+            v-model="currentPassword"
+            name="current_password"
+            autocomplete="current-password"
+          />
+          <input
             :class="passwordClass"
             type="password"
             :placeholder="t('settings.newPassword')"
@@ -76,15 +85,6 @@
             :placeholder="t('settings.newPasswordConfirm')"
             v-model="passwordConf"
             name="passwordConf"
-          />
-          <input
-            v-if="isCurrentPasswordRequired"
-            :class="passwordClass"
-            type="password"
-            :placeholder="t('settings.currentPassword')"
-            v-model="currentPassword"
-            name="current_password"
-            autocomplete="current-password"
           />
         </div>
 
