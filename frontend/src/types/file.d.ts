@@ -72,8 +72,9 @@ interface ConflictingResource {
   origin: ConflictingItem;
   dest: ConflictingItem;
   checked: Array<"origin" | "dest">;
+  isSmallerOnServer?: boolean;
 }
-  
+
 interface CsvData {
   headers: string[];
   rows: string[][];

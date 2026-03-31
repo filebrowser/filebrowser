@@ -139,6 +139,7 @@ export async function checkConflict(
               size: serverItem.size,
             },
             checked: ["origin"],
+            isSmallerOnServer: node.size < serverItem.size,
           });
         }
       }
