@@ -124,7 +124,8 @@
     "passwordTooShort": "Wymagana minimalna liczba znaków hasła: {min}",
     "logout_reasons": {
       "inactivity": "Wylogowano z powodu braku aktywności."
-    }
+    },
+    "ssoLogin": "Login with SSO"
   },
   "permanent": "Permanentny",
   "prompts": {

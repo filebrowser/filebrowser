@@ -124,7 +124,8 @@
     "passwordTooShort": "비밀번호는 최소 {min}자 이상이어야 함",
     "logout_reasons": {
       "inactivity": "활동이 없어 로그아웃 되었습니다."
-    }
+    },
+    "ssoLogin": "Login with SSO"
   },
   "permanent": "영구",
   "prompts": {

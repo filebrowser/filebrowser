@@ -124,7 +124,8 @@
     "passwordTooShort": "A palavra-passe tem de ter pelo menos {min} caracteres",
     "logout_reasons": {
       "inactivity": "Foi terminada a sessão por inactividade."
-    }
+    },
+    "ssoLogin": "Login with SSO"
   },
   "permanent": "Permanente",
   "prompts": {

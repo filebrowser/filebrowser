@@ -124,7 +124,8 @@
     "passwordTooShort": "密码必须至少包含 {min} 个字符",
     "logout_reasons": {
       "inactivity": "由于未活动，您已登出。"
-    }
+    },
+    "ssoLogin": "Login with SSO"
   },
   "permanent": "永久",
   "prompts": {

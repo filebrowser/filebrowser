@@ -46,6 +46,10 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("auth.header", "", "HTTP header for auth.method=proxy")
 	flags.String("auth.command", "", "command for auth.method=hook")
 	flags.String("auth.logoutPage", "", "url of custom logout page")
+	flags.String("auth.oidc.issuer", "", "OIDC issuer URL for auth.method=oidc (overridden by FB_OIDC_ISSUER)")
+	flags.String("auth.oidc.clientId", "", "OIDC client ID for auth.method=oidc (overridden by FB_OIDC_CLIENT_ID)")
+	flags.String("auth.oidc.clientSecret", "", "OIDC client secret for auth.method=oidc (overridden by FB_OIDC_CLIENT_SECRET)")
+	flags.String("auth.oidc.usernameClaim", "preferred_username", "OIDC claim to use as username (overridden by FB_OIDC_USERNAME_CLAIM)")
 
 	flags.String("recaptcha.host", "https://www.google.com", "use another host for ReCAPTCHA. recaptcha.net might be useful in China")
 	flags.String("recaptcha.key", "", "ReCaptcha site key")
@@ -153,6 +157,49 @@ func getJSONAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (au
 	return jsonAuth, nil
 }
 
+func getOIDCAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
+	issuer, err := flags.GetString("auth.oidc.issuer")
+	if err != nil {
+		return nil, err
+	}
+	clientID, err := flags.GetString("auth.oidc.clientId")
+	if err != nil {
+		return nil, err
+	}
+	clientSecret, err := flags.GetString("auth.oidc.clientSecret")
+	if err != nil {
+		return nil, err
+	}
+	usernameClaim, err := flags.GetString("auth.oidc.usernameClaim")
+	if err != nil {
+		return nil, err
+	}
+
+	// Fall back to DB values when flags are not explicitly set
+	if issuer == "" && defaultAuther != nil {
+		if v, ok := defaultAuther["issuerUrl"].(string); ok {
+			issuer = v
+		}
+	}
+	if clientID == "" && defaultAuther != nil {
+		if v, ok := defaultAuther["clientId"].(string); ok {
+			clientID = v
+		}
+	}
+	if clientSecret == "" && defaultAuther != nil {
+		if v, ok := defaultAuther["clientSecret"].(string); ok {
+			clientSecret = v
+		}
+	}
+
+	return &auth.OIDCAuth{
+		IssuerURL:     issuer,
+		ClientID:      clientID,
+		ClientSecret:  clientSecret,
+		UsernameClaim: usernameClaim,
+	}, nil
+}
+
 func getHookAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (auth.Auther, error) {
 	command, err := flags.GetString("auth.command")
 	if err != nil {
@@ -185,6 +232,8 @@ func getAuthentication(flags *pflag.FlagSet, defaults ...interface{}) (settings.
 		auther, err = getJSONAuth(flags, defaultAuther)
 	case auth.MethodHookAuth:
 		auther, err = getHookAuth(flags, defaultAuther)
+	case auth.MethodOIDCAuth:
+		auther, err = getOIDCAuth(flags, defaultAuther)
 	default:
 		return "", nil, fberrors.ErrInvalidAuthMethod
 	}

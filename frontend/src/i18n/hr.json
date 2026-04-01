@@ -124,7 +124,8 @@
     "passwordTooShort": "Lozinka mora sadržavati minimalno {min} znakova",
     "logout_reasons": {
       "inactivity": "Odjavljeni ste zbog neaktivnosti."
-    }
+    },
+    "ssoLogin": "Login with SSO"
   },
   "permanent": "Trajan",
   "prompts": {

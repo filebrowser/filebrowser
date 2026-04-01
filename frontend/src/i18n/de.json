@@ -124,7 +124,8 @@
     "passwordTooShort": "Passwort muss mindestens {min} Zeichen lang sein",
     "logout_reasons": {
       "inactivity": "Du wurdest wegen Inaktivität abgemeldet."
-    }
+    },
+    "ssoLogin": "Mit SSO anmelden"
   },
   "permanent": "Permanent",
   "prompts": {

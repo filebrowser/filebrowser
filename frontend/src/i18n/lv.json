@@ -124,7 +124,8 @@
     "passwordTooShort": "Parolei jābūt vismaz {min} rakstzīmju garai",
     "logout_reasons": {
       "inactivity": "Jūs esat atteicies no sistēmas neaktivitātes dēļ."
-    }
+    },
+    "ssoLogin": "Login with SSO"
   },
   "permanent": "Pastāvīgs",
   "prompts": {

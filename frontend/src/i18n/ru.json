@@ -124,7 +124,8 @@
     "passwordTooShort": "Пароль должен состоять как минимум из {min} символов",
     "logout_reasons": {
       "inactivity": "Сессия завершена после долгого отсутствия."
-    }
+    },
+    "ssoLogin": "Login with SSO"
   },
   "permanent": "Постоянный",
   "prompts": {

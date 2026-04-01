@@ -1,0 +1,59 @@
+## Stage 1: Build frontend
+FROM node:22-alpine AS frontend-builder
+WORKDIR /app/frontend
+RUN npm install -g pnpm@latest
+COPY frontend/package.json frontend/pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+COPY frontend/ ./
+RUN pnpm run build
+
+## Stage 2: Build Go backend
+FROM golang:1.25-alpine AS backend-builder
+RUN apk add --no-cache git
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
+RUN go build -ldflags='-s -w -X "github.com/filebrowser/filebrowser/v2/version.Version=oidc-custom"' \
+    -o filebrowser .
+
+## Stage 3: Fetch runtime dependencies
+FROM alpine:3.23 AS fetcher
+RUN apk update && \
+    apk --no-cache add ca-certificates mailcap tini-static wget && \
+    wget -O /JSON.sh https://raw.githubusercontent.com/dominictarr/JSON.sh/0d5e5c77365f63809bf6e77ef44a1f34b0e05840/JSON.sh
+
+## Stage 4: Final runtime image
+FROM busybox:1.37.0-musl
+
+ENV UID=991
+ENV GID=984
+
+RUN addgroup -g $GID share 2>/dev/null || true && \
+    addgroup -g 985 media 2>/dev/null || true && \
+    adduser -D -u $UID -G share user
+
+COPY --chown=user:share --from=backend-builder /app/filebrowser /bin/filebrowser
+COPY --chown=user:share docker/common/ /
+COPY --chown=user:share docker/alpine/ /
+COPY --chown=user:share --from=fetcher /sbin/tini-static /bin/tini
+COPY --from=fetcher /JSON.sh /JSON.sh
+COPY --from=fetcher /etc/ca-certificates.conf /etc/ca-certificates.conf
+COPY --from=fetcher /etc/ca-certificates /etc/ca-certificates
+COPY --from=fetcher /etc/ssl /etc/ssl
+COPY --from=fetcher /etc/mime.types /etc/mime.types
+
+RUN mkdir -p /config /database /srv && \
+    chown -R user:share /config /database /srv && \
+    chmod +x /healthcheck.sh
+
+HEALTHCHECK --start-period=2s --interval=5s --timeout=3s CMD /healthcheck.sh
+
+USER user
+
+VOLUME /srv /config /database
+
+EXPOSE 80
+
+ENTRYPOINT [ "tini", "--", "/init.sh" ]

@@ -124,7 +124,8 @@
     "passwordTooShort": "Wachtwoord moet minstens {min} tekens bevatten",
     "logout_reasons": {
       "inactivity": "U bent uitgelogd vanwege inactiviteit."
-    }
+    },
+    "ssoLogin": "Login with SSO"
   },
   "permanent": "Permanent",
   "prompts": {

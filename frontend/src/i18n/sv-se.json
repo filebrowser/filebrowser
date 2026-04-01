@@ -124,7 +124,8 @@
     "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "Du har blivit utloggad på grund av inaktivitet."
-    }
+    },
+    "ssoLogin": "Login with SSO"
   },
   "permanent": "Permanent",
   "prompts": {

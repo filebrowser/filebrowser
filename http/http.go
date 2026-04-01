@@ -49,6 +49,8 @@ func NewHandler(
 	api.Handle("/login", monkey(loginHandler(tokenExpirationTime), ""))
 	api.Handle("/signup", monkey(signupHandler, ""))
 	api.Handle("/renew", monkey(renewHandler(tokenExpirationTime), ""))
+	api.Handle("/auth/oidc", monkey(oidcRedirectHandler, "")).Methods("GET")
+	api.Handle("/auth/oidc/callback", monkey(oidcCallbackHandler(tokenExpirationTime), "")).Methods("GET")
 
 	users := api.PathPrefix("/users").Subrouter()
 	users.Handle("", monkey(usersGetHandler, "")).Methods("GET")

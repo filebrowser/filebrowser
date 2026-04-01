@@ -124,7 +124,8 @@
     "passwordTooShort": "Le mot de passe doit contenir au moins {min} caractères",
     "logout_reasons": {
       "inactivity": "Vous avez été déconnecté(e) en raison d'une inactivité prolongée."
-    }
+    },
+    "ssoLogin": "Login with SSO"
   },
   "permanent": "Permanent",
   "prompts": {
