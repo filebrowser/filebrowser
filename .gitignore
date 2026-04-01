@@ -37,7 +37,3 @@ build/
 
 default.nix
 Dockerfile.dev
-
-# TODO Remove folder when submitting PRs to the main repository
-TEST_FOLDER/
-__debug_bin*
