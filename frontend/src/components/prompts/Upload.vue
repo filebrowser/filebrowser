@@ -67,7 +67,6 @@ const uploadInput = async (event: Event) => {
 
   const path = route.path.endsWith("/") ? route.path : route.path + "/";
 
-  // It's a problem to have only current folder inside it
   const conflict = await upload.checkConflict(uploadFiles, path);
 
   if (conflict.length > 0) {
