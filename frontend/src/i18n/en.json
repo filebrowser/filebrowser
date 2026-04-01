@@ -30,7 +30,7 @@
     "replace": "Replace",
     "reportIssue": "Report Issue",
     "resumeTransfer": "Resume previous transfert",
-    "resumeTransferTooltip": "Only re-uploads files that are smaller on the server, skipping those already fully transferred.",
+    "resumeTransferTooltip": "Skip all conflicting files, except the ones that are smaller on the server as we suppose that their transfert has been interrupted.",
     "save": "Save",
     "schedule": "Schedule",
     "search": "Search",
