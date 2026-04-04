@@ -245,7 +245,7 @@
       "execute": "Keyra skipanir",
       "modify": "Breyta skjölum",
       "rename": "Endurnefna eða færa skjöl og möppur",
-      "share": "Deila skjölum"
+      "share": "Share files (require download permission)"
     },
     "permissions": "Heimildir",
     "permissionsHelp": "Þú getur stillt notenda sem stjórnanda eða valið einstaklingsbundnar heimildir. Ef þú velur \"Stjórnandi\", þá verða allir aðrir valmöguleikar valdir sjálfrafa. Aðgangstýring notenda er á hendi stjórnenda. \n",
