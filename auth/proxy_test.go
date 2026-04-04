@@ -14,8 +14,7 @@ type mockUserStore struct {
 }
 
 func (m *mockUserStore) Get(_ string, id interface{}) (*users.User, error) {
-	switch v := id.(type) {
-	case string:
+	if v, ok := id.(string); ok {
 		if u, ok := m.users[v]; ok {
 			return u, nil
 		}
