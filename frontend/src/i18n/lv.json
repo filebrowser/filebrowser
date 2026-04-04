@@ -245,7 +245,7 @@
       "execute": "Izpildīt komandas",
       "modify": "Rediģēt failus",
       "rename": "Pārdēvēt vai pārvietot failus un direktorijus",
-      "share": "Kopīgojiet failus"
+      "share": "Share files (require download permission)"
     },
     "permissions": "Atļaujas",
     "permissionsHelp": "Varat iestatīt lietotāju kā administratoru vai izvēlēties atļaujas individuāli. Ja atlasīsiet “Administrators”, visas pārējās opcijas tiks automātiski atzīmētas. Lietotāju pārvaldība joprojām ir administratora privilēģija.\n",
