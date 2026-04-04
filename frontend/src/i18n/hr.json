@@ -245,7 +245,7 @@
       "execute": "Izvršavanje naredbi",
       "modify": "Uređivanje datoteka",
       "rename": "Preimenovanje ili premještanje datoteka i mapa",
-      "share": "Dijeljenje datoteka"
+      "share": "Share files (require download permission)"
     },
     "permissions": "Dopuštenja",
     "permissionsHelp": "Korisnika možete postaviti administratorom ili odabrati dopuštenja individualno. Odabirom na \"Administrator\", sve druge opcije bit će automatski odabrane. Upravljanje korisnicima ostaje privilegija administratora.\n",
