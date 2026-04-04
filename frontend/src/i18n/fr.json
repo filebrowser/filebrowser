@@ -245,7 +245,7 @@
       "execute": "Exécuter des commandes",
       "modify": "Modifier des fichiers",
       "rename": "Renommer ou déplacer des fichiers ou des dossiers",
-      "share": "Partager des fichiers"
+      "share": "Share files (require download permission)"
     },
     "permissions": "Permissions",
     "permissionsHelp": "Vous pouvez définir l'utilisateur comme étant un administrateur ou encore choisir les permissions individuellement. Si vous sélectionnez \"Administrateur\", toutes les autres options seront automatiquement activées. La gestion des utilisateurs est un privilège que seul l'administrateur possède.\n",
