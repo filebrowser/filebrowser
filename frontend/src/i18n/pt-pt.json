@@ -245,7 +245,7 @@
       "execute": "Executar comandos",
       "modify": "Editar ficheiros",
       "rename": "Mudar o nome ou mover ficheiros e pastas",
-      "share": "Ficheiros partilhados"
+      "share": "Share files (require download permission)"
     },
     "permissions": "Permissões",
     "permissionsHelp": "Pode definir um utilizador um administrador ou escolher as permissões individualmente. Se escolher \"Administrador\", todas as outras opções serão automaticamente marcadas. A gestão de utilizadores continua a ser um privilégio de um administrador.\n",
