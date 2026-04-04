@@ -245,7 +245,7 @@
       "execute": "Execută comenzi",
       "modify": "Modifică fișiere",
       "rename": "Redenumește sau mută fișiere și directoare",
-      "share": "Distribuie fișiere"
+      "share": "Share files (require download permission)"
     },
     "permissions": "Permisiuni",
     "permissionsHelp": "Poți alege ca un utilizator să fie administrator sau să-i alegi permisiunile individual. Dacă alegi \"Administrator\", toate celelalte opțiuni vor fi bifate automat. Gestionarea utilizatorilor rămâne un privilegiu exclusiv al administratorilor.\n",
